@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/05 23:27:22 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/07 12:06:46 $
  */
 
 package com.scriptographer;
@@ -40,17 +40,21 @@ import com.scriptographer.js.*;
 import org.mozilla.javascript.*;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Iterator;
 
-public class ScriptographerEngine extends ScriptableObject {
+public class ScriptographerEngine {
+	public static final File baseDir = new File("/Users/Lehni/Development/C & C++/Scriptographer/scripts");
 
 	private static ScriptographerEngine engine = null;
 	private Context context;
-	private Tool[] tools;
+	private HashMap scriptCache = new HashMap();
+	private GlobalScope global;
 	public static final boolean isWindows, isMacOSX;
 
 	static {
 		// immediatelly redirect system streams.
-		ConsoleOutputStream.getConsole().enableRedirection(true);
+		ConsoleOutputStream.getInstance().enableRedirection(true);
 		// getSystem variables
 		String os = System.getProperty("os.name").toLowerCase();
 		isWindows = (os.indexOf("windows") != -1);
@@ -60,134 +64,38 @@ public class ScriptographerEngine extends ScriptableObject {
 	public ScriptographerEngine() throws Exception {
 		// create the context
 		context = Context.enter();
-		// context.setCompileFunctionsWithDynamicScope(true);
-
-        WrapFactory wrapper = new ScriptographerWrapFactory();
-        wrapper.setJavaPrimitiveWrap(false);
-		context.setApplicationClassLoader(getClass().getClassLoader());
-        context.setWrapFactory(wrapper);
-
-		context.setOptimizationLevel(9);
-		// init the global scope and seal it. Use dynamic scopes?
-		context.initStandardObjects(this, true);
-		// define some global functions and objects:
-		String[] names = { "print", "include", "commit" };
-		defineFunctionProperties(names, ScriptographerEngine.class, ScriptableObject.DONTENUM);
-
-		// define classes. the createPrototypes flag is set so
-		// the classes' constructors can now wether an object
-		// is created as prototype or as real object through
-		// isCreatingPrototypes()
-
-		// ADM
-		new ExtendedJavaClass(this, Dialog.class);
-		new ExtendedJavaClass(this, Drawer.class);
-		new ExtendedJavaClass(this, Tracker.class);
-		new ExtendedJavaClass(this, Image.class);
-		new ExtendedJavaClass(this, List.class);
-		new ExtendedJavaClass(this, ListEntry.class);
-		new ExtendedJavaClass(this, HierarchyList.class);
-		new ExtendedJavaClass(this, HierarchyListEntry.class);
-		// all item classes:
-		new ExtendedJavaClass(this, Frame.class);
-		new ExtendedJavaClass(this, ItemGroup.class);
-		new ExtendedJavaClass(this, ListBox.class);
-		new ExtendedJavaClass(this, HierarchyListBox.class);
-		new ExtendedJavaClass(this, PushButton.class);
-		new ExtendedJavaClass(this, CheckBox.class);
-		new ExtendedJavaClass(this, RadioButton.class);
-		new ExtendedJavaClass(this, Static.class);
-		new ExtendedJavaClass(this, ScrollBar.class);
-		new ExtendedJavaClass(this, Slider.class);
-		new ExtendedJavaClass(this, ProgressBar.class);
-		new ExtendedJavaClass(this, TextEdit.class);
-		new ExtendedJavaClass(this, Dial.class);
-		new ExtendedJavaClass(this, ChasingArrows.class);
-
-		new ExtendedJavaClass(this, ItemContainer.class);
-
-		// AI
-		new ExtendedJavaClass(this, Rectangle.class);
-		new ExtendedJavaClass(this, Point.class);
-		new ExtendedJavaClass(this, Matrix.class);
-
-		new ExtendedJavaClass(this, Color.class);
-		new ExtendedJavaClass(this, Grayscale.class);
-		new ExtendedJavaClass(this, RGBColor.class);
-		new ExtendedJavaClass(this, CMYKColor.class);
-
-		new ExtendedJavaClass(this, Path.class);
-		new ExtendedJavaClass(this, Group.class);
-		new ExtendedJavaClass(this, Raster.class);
-		new ExtendedJavaClass(this, Layer.class);
-
-		new ExtendedJavaClass(this, Segment.class);
-		new ExtendedJavaClass(this, Curve.class);
-		new ExtendedJavaClass(this, SegmentPosition.class);
-		new ExtendedJavaClass(this, Pathfinder.class);
-		new ExtendedJavaClass(this, Document.class);
-		new ExtendedJavaClass(this, LiveEffect.class);
-		new ExtendedJavaClass(this, MenuItem.class);
-		new ExtendedJavaClass(this, MenuGroup.class);
-
-		new ExtendedJavaClass(this, ArtSet.class);
-		new ExtendedJavaClass(this, SegmentList.class);
-		new ExtendedJavaClass(this, CurveList.class);
-		// not needed: new ExtendedJavaClass(this, DocumentList.class);
-		// not needed: new ExtendedJavaClass(this, LayerList.class);
-
-		// Java
-		new ExtendedJavaClass(this, File.class);
-
-		new ExtendedJavaClass(this, Event.class);
-
-		defineProperty("layers", LayerList.getInstance(), ScriptableObject.READONLY | ScriptableObject.DONTENUM);
-		defineProperty("documents", DocumentList.getInstance(), ScriptableObject.READONLY | ScriptableObject.DONTENUM);
-
-		tools = new Tool[2];
+		global = new GlobalScope(context);
 	}
 
-	public static void init() {
+	public static void init() throws Exception {
 		ConsoleOutputStream.enableOutput(true);
+		// execute all scripts in startup folder:
+		getInstance().executeAll(new File(baseDir, "startup"));
 	}
 
 	public static void destroy() {
 		Dialog.destroyAll();
 		LiveEffect.removeAll();
 		MenuItem.removeAll();
-		ConsoleOutputStream.getConsole().enableRedirection(false);
+		ConsoleOutputStream.getInstance().enableRedirection(false);
 	}
 
-	public static ScriptographerEngine getEngine() throws Exception {
+	public static ScriptographerEngine getInstance() throws Exception {
 		if (engine == null)
 			engine = new ScriptographerEngine();
 		return engine;
 	}
 
-	/**
-	 * @see org.mozilla.javascript.ScriptableObject#getClassName()
-	 */
-	public String getClassName() {
-		return "global";
-	}
-
-	private Scriptable createScope() {
-		Scriptable scope = context.newObject(this);
-		scope.setPrototype(this);
-		scope.setParentScope(null);
-		return scope;
-	}
-
-	public Script compileFile(String filename) {
+	public Script compileFile(File file) {
 		FileReader in = null;
 		Script script = null;
 		try {
-			in = new FileReader(filename);
-			script = context.compileReader(in, filename, 1, null);
+			in = new FileReader(file);
+			script = context.compileReader(in, file.getPath(), 1, null);
 		} catch (RhinoException re) {
 			System.err.println(re.sourceName() + ":" + re.lineNumber() + "," + re.columnNumber() + ": " + re.getMessage());
 		} catch (FileNotFoundException ex) {
-			Context.reportError("Couldn't open file \"" + filename + "\".");
+			Context.reportError("Couldn't open file \"" + file + "\".");
 		} catch (IOException ioe) {
 			System.err.println(ioe.toString());
 		} finally {
@@ -211,16 +119,19 @@ public class ScriptographerEngine extends ScriptableObject {
 		return null;
 	}
 
-	public Scriptable execScript(Script script) {
+	public Scriptable executeScript(Script script, Scriptable scope) {
 		Scriptable ret = null;
 		try {
 			// This is needed on mac, where there is more than one thread and the Loader is initiated on startup
 			// in the second thread. The ScriptographerEngine get loaded through the Loader, so getting the
 			// ClassLoader from there is save:
 			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-			Scriptable scope = createScope();
+			if (scope == null)
+				scope = global.createScope();
+			// disable output to the console while the script is executed as it won't get updated anyway
 			ConsoleOutputStream.enableOutput(false);
 			script.exec(context, scope);
+			// now commit all the changes:
 			CommitManager.commit();
 			ret = scope;
 		} catch (WrappedException we) {
@@ -229,80 +140,86 @@ public class ScriptographerEngine extends ScriptableObject {
 		} catch (RhinoException re) {
 			System.err.println(re.sourceName() + ":" + re.lineNumber() + "," + re.columnNumber() + ": " + re.getMessage());
 		} finally {
+			// now reenable the console, this also writes out all the things that were printed in the meantime:
 			ConsoleOutputStream.enableOutput(true);
 		}
 		return ret;
 	}
 
-	public Scriptable evaluateFile(String filename) {
-		// TODO: use cashing of compiled script files, watch changes!
-		Script script = compileFile(filename);
-		if (script != null)
-			return execScript(script);
-		return null;
+	/**
+	 * executes all scripts in the given folder
+	 *
+	 * @param dir
+	 */
+	private void executeAll(File dir) {
+		File []files = dir.listFiles();
+		for (int i = 0; i < files.length; i++) {
+			File file = files[i];
+			if (file.isDirectory()) {
+				executeAll(file);
+			} else if (file.getName().endsWith(".js")) {
+				executeFile(file, null);
+			}
+		}
 	}
 
-	public Scriptable evaluateString(String string) {
+	/**
+	 * Internal Class used for caching scripts
+	 */
+	class ScriptCacheEntry {
+		File file;
+		long lastModified;
+		Script script;
+
+		ScriptCacheEntry(File file) {
+			this.file = file;
+			lastModified = -1;
+			script = null;
+		}
+
+		Scriptable execute(Scriptable scope) {
+			long modified = file.lastModified();
+			if (script == null || modified > lastModified) {
+				lastModified = modified;
+				script = ScriptographerEngine.this.compileFile(file);
+			}
+			if (script != null) {
+				return ScriptographerEngine.this.executeScript(script, scope);
+			} else {
+				return null;
+			}
+		}
+	}
+
+	/**
+	 * evaluates the specified file. Caching for the compiled scripts is used for speed increase
+	 *
+	 * @param file
+	 * @return
+	 */
+	public Scriptable executeFile(File file, Scriptable scope) {
+		String path = file.getPath();
+		ScriptCacheEntry entry = (ScriptCacheEntry) scriptCache.get(path);
+		if (entry == null) {
+			entry = new ScriptCacheEntry(file);
+			scriptCache.put(path, entry);
+		}
+		return entry.execute(scope);
+	}
+
+	public Scriptable executeFile(String path, Scriptable scope) {
+		return executeFile(new File(path), scope);
+	}
+
+	public Scriptable executeString(String string, Scriptable scope) {
 		Script script = compileString(string);
 		if (script != null)
-			return execScript(script);
+			return executeScript(script, scope);
 		return null;
-	}
-
-	public Tool getTool(int index) {
-		Tool tool = tools[index];
-		if (tool == null) tools[index] = tool = new Tool();
-		return tool;
-	}
-
-	/*
-	 * JavaScript functions
-	 * 
-	 */
-
-	/**
-	 * Print the string segmentValues of its arguments.
-	 *
-	 * This method is defined as a JavaScript function.
-	 * Note that its arguments are of the "varargs" form, which
-	 * allows it to handle an arbitrary number of arguments
-	 * supplied to the JavaScript function.
-	 *
-	 */
-	public static void print(Context cx, Scriptable thisObj, Object[] args,
-		Function funObj) {
-		for (int i = 0; i < args.length; i++) {
-			if (i > 0)
-				System.out.print(", ");
-
-			// Convert the arbitrary JavaScript value into a string form.
-			String s = Context.toString(args[i]);
-			System.out.print(s);
-		}
-		System.out.println();
-	}
-
-	/**
-	 * Load and execute a set of JavaScript source files.
-	 *
-	 * This method is defined as a JavaScript function.
-	 *
-	 */
-	public static void include(Context cx, Scriptable thisObj, Object[] args,
-		Function funObj) throws Exception {
-		ScriptographerEngine engine = getEngine();
-		for (int i = 0; i < args.length; i++) {
-			engine.evaluateFile(Context.toString(args[i]));
-		}
-	}
-
-	public static void commit(Context cx, Scriptable thisObj, Object[] args,
-		Function funObj) {
-		CommitManager.commit();
 	}
 
 	public static void main(String args[]) throws Exception {
-		ConsoleOutputStream.getConsole().enableRedirection(false);
-	 	getEngine().evaluateFile("/Users/Lehni/Development/C & C++/Java Scriptographer/Scriptographer Scripts/test.js");
+		ConsoleOutputStream.getInstance().enableRedirection(false);
+	 	getInstance().executeFile("/Users/Lehni/Development/C & C++/Scriptographer/scripts/test.js", null);
 	}
 }
