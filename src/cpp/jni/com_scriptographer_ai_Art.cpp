@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:44:18 $
  */
  
 #include "stdHeaders.h"
@@ -460,15 +460,20 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_moveBelow(JNIEnv *env,
 /*
  * void transform(java.awt.geom.AffineTransform at, int scaleFlags)
  */
- 
+
 // if 'deep' is set, artTransform traverses the children recursively and transforms them: 
-void artTransform(AIArtHandle art, AIRealMatrix *matrix, AIReal lineScale, long flags) {
+void artTransform(JNIEnv *env, jobject obj, AIArtHandle art, AIRealMatrix *matrix, AIReal lineScale, long flags) {
 	sAITransformArt->TransformArt(art, matrix, lineScale, flags);
+	short type = artGetType(art);
+	// TODO: add all art objects that need invalidate to be called after transform!
+	if (type == kPathArt)
+		gEngine->callStaticVoidMethod(env, gEngine->cls_Art, gEngine->mid_Art_invalidateIfWrapped, (jint) art);
+
 	if (flags & com_scriptographer_ai_Art_TRANSFORM_DEEP) {
 		AIArtHandle child;
 		sAIArt->GetArtFirstChild(art, &child);
 		while (child != NULL) {
-			artTransform(child, matrix, lineScale, flags);
+			artTransform(env, NULL, child, matrix, lineScale, flags);
 			sAIArt->GetArtSibling(child, &child);
 		}
 	}
@@ -496,6 +501,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_transform(JNIEnv *env, job
 		sAIRealMath->AIRealMatrixGetScale(&m, &sx, &sy);
 		AIReal lineScale = sAIRealMath->AIRealSqrt(sx) * sAIRealMath->AIRealSqrt(sy);
 
-		artTransform(handle, &m, lineScale, flags);
+		artTransform(env, obj, handle, &m, lineScale, flags);
 	} EXCEPTION_CONVERT(env)
 }
