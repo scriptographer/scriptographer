@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainWindow.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/10 22:55:18 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/10 23:13:31 $
  */
 
 package com.scriptographer.gui;
@@ -54,8 +54,9 @@ public class MainWindow extends Dialog {
 	
 	public static Image getImage(String filename) {
 		try {
-			return new Image((ImageProducer) Thread.currentThread().getContextClassLoader().getResource("com/scriptographer/gui/resources/" + filename).getContent());
+			return new Image(MainWindow.class.getClassLoader().getResource("com/scriptographer/gui/resources/" + filename));
 		} catch (IOException e) {
+			System.err.println(e);
 			return new Image(1, 1, Image.TYPE_RGB);
 		}
 	}

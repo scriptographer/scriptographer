@@ -28,8 +28,8 @@
  *
  * $RCSfile: Image.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/10 23:13:28 $
  */
 
 package com.scriptographer.adm;
@@ -155,8 +155,13 @@ public class Image {
 	}
 
 	public Image(String str) throws IOException {
-//		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(str)), str));
 		this(getURL(str));
+	}
+	
+	public Image(InputStream in) throws IOException {
+//		this(checkImage(ImageIO.read(in), url));
+		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(getBytes(in))), in));
+		System.out.println(in);
 	}
 
 	private static java.awt.Image checkImage(java.awt.Image image, Object srcObj) {
@@ -176,6 +181,14 @@ public class Image {
 			image = null;
 		}
 		return image;
+	}
+	
+	private static byte[] getBytes(InputStream in) throws IOException {
+		if (in == null)
+			throw new IOException("InputStream is null");
+		byte bytes[] = new byte[in.available()];
+		in.read(bytes);
+		return bytes;
 	}
 
 	private static URL getURL(String str) throws IOException {
