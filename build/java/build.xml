@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+
+<project name="Scriptographer" default="usage" basedir=".">
+
+    <!-- =================================================================== -->
+    <!-- Initializes some variables                                          -->
+    <!-- =================================================================== -->
+    <target name="init">
+        <property name="Name" value="Scriptographer"/>
+        <property name="year" value="1998-${year}"/>
+        <property name="version" value="0.0.1"/>
+        <property name="project" value="scriptographer"/>
+
+        <property name="scriptographer" value=":pserver:anonymous@cvs.sourceforge.net:/cvsroot/scriptographer"/>
+        <property name="cvs.apps.tag" value="HEAD"/>
+
+        <property name="home.dir" value="../.."/>
+        <property name="build.dir" value="${home.dir}/build/java/build"/>
+        <property name="build.src" value="${home.dir}/src/java"/>
+        <property name="build.lib" value="${build.dir}/lib"/>
+        <property name="build.jni" value="${home.dir}/src/cpp/jni"/>
+        <property name="build.classes" value="${build.dir}/classes"/>
+        <property name="build.docs" value="${home.dir}/docs"/>
+        <property name="build.javadocs" value="${home.dir}/docs/api"/>
+
+        <property name="jar.name" value="${project}"/>
+        <property name="package.name" value="${project}-${version}"/>
+
+        <property name="debug" value="on"/>
+        <property name="optimize" value="on"/>
+        <property name="deprecation" value="off"/>
+
+        <path id="build.class.path">
+            <fileset dir="${build.dir}/lib">
+                <exclude name="**/scriptographer*.jar" />
+                <include name="**/*.jar" />
+            </fileset>
+        </path>
+
+        <tstamp/>
+
+        <filter token="year" value="${year}"/>
+        <filter token="version" value="${version}"/>
+        <filter token="date" value="${TODAY}"/>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!-- Help on usage                                                       -->
+    <!-- =================================================================== -->
+    <target name="help" depends="usage" />
+    <target name="usage">
+        <echo message=""/>
+        <echo message=""/>
+        <echo message="Scriptographer build instructions"/>
+        <echo message="-------------------------------------------------------------"/>
+        <echo message=""/>
+        <echo message=" available targets are:"/>
+        <echo message=""/>
+        <echo message=" compile    --> compiles the source code to ./classes"/>
+        <echo message=" jar        --> generates the ./lib/scriptographer-YYYYMMDD.jar file"/>
+        <echo message=" jni        --> generates jni headers and registerNatives.cpp in ./jni/"/>
+        <echo message=" jnibodies  --> generates empty jni bodies in ./jni/"/>
+        <echo message=" javadocs   --> generates the API docs"/>
+        <echo message=" docs       --> tries to retrieve the HTML documentation "/>
+        <echo message="                (may need proxy settings in startscript)"/>
+        <echo message=""/>
+        <echo message=" usage      --> provides help on using the build tool (default)"/>
+        <echo message=""/>
+        <echo message=" See comments inside the build.xml file for more details."/>
+        <echo message="-------------------------------------------------------------"/>
+        <echo message=""/>
+        <echo message=""/>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!-- Compiles the source directory                                       -->
+    <!-- =================================================================== -->
+    <target name="compile" depends="init">
+        <mkdir dir="${build.classes}"/>
+        <!-- copy the icc profiles -->
+        <copy todir="${build.classes}/com/scriptographer/cmm">
+            <fileset dir="${build.src}/com/scriptographer/cmm">
+                <include name="**/*.icc" />
+            </fileset>
+        </copy>
+        <javac srcdir="${build.src}"
+            destdir="${build.classes}"
+            debug="${debug}"
+            deprecation="${deprecation}"
+            optimize="${optimize}">
+            <classpath refid="build.class.path" />
+        </javac>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!-- Creates a scriptographer.jar file in the lib-directory              -->
+    <!-- =================================================================== -->
+    <target name="jar" depends="compile">
+        <jar jarfile="${build.lib}/${jar.name}.jar"
+            basedir="${build.classes}"
+            excludes="**/loader/**"/>
+        <jar jarfile="${build.dir}/loader.jar"
+            basedir="${build.classes}"
+            includes="**/loader/**"/>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!-- Compiles the source directory                                       -->
+    <!-- =================================================================== -->
+    <target name="jni" depends="compile">
+        <mkdir dir="${build.jni}"/>
+        <javah destdir="${build.jni}" classpath="${build.classes}">
+            <classpath refid="build.class.path" />
+        	<class name="com.scriptographer.ConsoleOutputStream" />
+        	<class name="com.scriptographer.ai.Tool" />
+        	<class name="com.scriptographer.ai.Art" />
+    		<class name="com.scriptographer.ai.Path" />
+			<class name="com.scriptographer.ai.PathStyle" />
+        	<class name="com.scriptographer.ai.Group" />
+        	<class name="com.scriptographer.ai.Raster" />
+			<class name="com.scriptographer.ai.SegmentList" />
+			<class name="com.scriptographer.ai.Curve" />
+			<class name="com.scriptographer.ai.ArtSet" />
+			<class name="com.scriptographer.ai.Layer" />
+			<class name="com.scriptographer.ai.LayerList" />
+			<class name="com.scriptographer.ai.Document" />
+			<class name="com.scriptographer.ai.DocumentList" />
+			<class name="com.scriptographer.ai.Color" />
+			<class name="com.scriptographer.ai.Pathfinder" />
+			<class name="com.scriptographer.ai.LiveEffect" />
+			<class name="com.scriptographer.ai.MenuItem" />
+			<class name="com.scriptographer.ai.MenuGroup" />
+
+        	<class name="com.scriptographer.adm.Dialog" />
+        	<class name="com.scriptographer.adm.Item" />
+           	<class name="com.scriptographer.adm.ValueItem" />
+           	<class name="com.scriptographer.adm.TextItem" />
+           	<class name="com.scriptographer.adm.PictureItem" />
+			<class name="com.scriptographer.adm.ItemGroup" />
+           	<class name="com.scriptographer.adm.TextEdit" />
+           	<class name="com.scriptographer.adm.ListBox" />
+           	<class name="com.scriptographer.adm.ScrollBar" />
+
+        	<class name="com.scriptographer.adm.List" />
+           	<class name="com.scriptographer.adm.ListEntry" />
+           	<class name="com.scriptographer.adm.HierarchyList" />
+           	<class name="com.scriptographer.adm.HierarchyListEntry" />
+        	
+           	<class name="com.scriptographer.adm.Drawer" />
+           	<class name="com.scriptographer.adm.Image" />
+           	<class name="com.scriptographer.adm.Tracker" />
+        </javah>
+		<echo id="echo" level="info" />
+		<script language="javascript" src="jni.js">
+		<![CDATA[
+			// create registerNatives.cpp by parsing the generated files by javah, see jni.js:
+			registerNatives(project.getProperty("build.jni"), project.getProperty("build.jni") + "/registerNatives.cpp");
+		]]>
+    	</script>
+    </target>
+
+        	
+    <!-- =================================================================== -->
+    <!-- Compiles the source directory                                       -->
+    <!-- =================================================================== -->
+	<target name="jnibodies" depends="jni">
+		<script language="javascript" src="jni.js">
+		<![CDATA[
+			// create jni bodies by parsing the generated files by javah, see jni.js:
+			createJniBodies(project.getProperty("build.jni"));
+		]]>
+		</script>
+	</target>
+
+    <!-- =================================================================== -->
+    <!-- Creates the API documentation                                       -->
+    <!-- =================================================================== -->
+    <target name="javadocs" depends="init">
+        <mkdir dir="${build.javadocs}"/>
+        <javadoc packagenames="scriptographer.*"
+            sourcepath="${build.src}"
+            destdir="${build.javadocs}"
+            author="false"
+            private="false"
+            version="false"
+            windowtitle="${Name} ${version} API"
+            doctitle="${Name} ${version} API"
+            bottom="Copyright &#169; ${year} Scratchdisk.com. All Rights Reserved."
+            classpathref="build.class.path"
+        />
+    </target>
+
+</project>
