@@ -26,8 +26,8 @@
  *
  * $RCSfile: consoleDialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:30:37 $
  */
  
 #include "stdHeaders.h"
@@ -90,14 +90,14 @@ bool consoleVisible() {
 void consoleShowText(char **strings, int numStrings) {
 	ADMDialogRef dlg = gPlugin->console.dlg;
 	if (dlg == NULL) {
-		int len = 0;
-		for (int i = 0; i < numStrings; i++)
+		int len = 0, i;
+		for (i = 0; i < numStrings; i++)
 			len += strlen(strings[i]) + strlen(NEWLINE);
 			
 		char *msg = new char[len];
 		msg[0] = '\0';
 		
-		for (int i = 0; i < numStrings; i++) {
+		for (i = 0; i < numStrings; i++) {
 			strcat(msg, strings[i]);
 			strcat(msg, NEWLINE);
 		}

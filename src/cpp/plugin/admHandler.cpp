@@ -26,8 +26,8 @@
  *
  * $RCSfile: admHandler.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:29:44 $
  */
  
 #include "stdHeaders.h"
@@ -156,9 +156,11 @@ void dialogSavePreference(ADMDialogRef dlg, char *name) {
 
 void dialogSetEditFont(ADMDialogRef dlg, int editID) {
 	ADMItemRef itemRef = sADMDialog->GetItem(dlg, editID);
+	/*
 #ifdef WIN_ENV
-	SendMessage((HWND)sADMItem->GetWindowRef(itemRef), WM_SETFONT, (WPARAM)gPlugin->font, false);
+	SendMessage((HWND)sADMItem->GetWindowRef(itemRef), WM_SETFONT, (WPARAM)gPlugin->fFont, false);
 #else
+	*/
 /*
 	WindowRef ref = (WindowRef)sADMDialog->GetWindowRef(dlg);
 	FSSpec spec;
@@ -186,10 +188,11 @@ void dialogSetEditFont(ADMDialogRef dlg, int editID) {
 	ControlID id, id1;
 	GetControlID (ctrl, &id);
 	GetControlID (ctrl1, &id1);
-*/
-//	GetControlBounds(ctrl1, &bounds);
+
+  //	GetControlBounds(ctrl1, &bounds);
 //	WindowGroupRef group = GetWindowGroup (ref);
 #endif
+*/
 }
 
 void dialogTextDlgNotify(ADMDialogRef dlg, ADMNotifierRef notifier, int editID) {

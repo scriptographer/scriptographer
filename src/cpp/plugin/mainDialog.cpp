@@ -26,8 +26,8 @@
  *
  * $RCSfile: mainDialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:33:03 $
  */
  
 #include "stdHeaders.h"
@@ -97,7 +97,6 @@ void addFiles(ADMHierarchyListRef listRef, char *path) {
 #ifdef WIN_ENV
 		isDir = (finddata.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY);
 		name = (char *) &finddata.cFileName;
-		more = FindNextFile(handle, &finddata);
 #elif MAC_ENV
 		info.hFileInfo.ioFDirIndex = i + 1;
 		info.hFileInfo.ioNamePtr = fname;
@@ -136,6 +135,9 @@ void addFiles(ADMHierarchyListRef listRef, char *path) {
 			sADMListEntry->ExpandHierarchy(dirRef, false);
 		}
 		i++;
+#ifdef WIN_ENV
+		more = FindNextFile(handle, &finddata);
+#endif
 	}
 #ifdef WIN_ENV
 	FindClose(handle);
@@ -370,12 +372,14 @@ bail:
 static ASBoolean ASAPI mainScriptListTrack( ADMListEntryRef entry, ADMTrackerRef tracker) {
 	if (sADMTracker->GetAction(tracker) == kADMButtonUpAction && (sADMTracker->GetModifiers(tracker) & kADMDoubleClickModifier)) {
 		if (sADMListEntry->GetUserData(entry) != NULL) {
-//			editorOpen(entry);
+			editorOpen(entry);
+			/*
 			char *filename;
 			if (entry != NULL) filename = (char *)sADMListEntry->GetUserData(entry);
 			else filename = NULL;
 			if (filename != NULL)
 				openFile(filename);
+			*/
 		}
 	}
 

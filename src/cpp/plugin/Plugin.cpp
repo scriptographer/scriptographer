@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:34:21 $
  */
  
 #include "stdHeaders.h"
@@ -164,21 +164,22 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 		if (!fileSpecToPath(&fileSpec, homeDir))
 			throw;
 		// now find the last occurence of '/'
-		// TODO: implement this as a CONSTANT, depending on the host ('/', '\\'):
-#ifdef MAC_ENV
-		char *p = strrchr(homeDir, '/') + 1;
-#else
-		char *p = strrchr(homeDir, '\\') + 1;
-#endif
+		char *p = strrchr(homeDir, PATH_SEP_CHR) + 1;
 		// and write the java path over it:
 		strcpy(p, "java");
 		// homeDir now contains the full path to the java stuff
 
 		fEngine = new ScriptographerEngine(homeDir);
+	} catch(Exception *e) {
+		e->report(NULL);
+		delete e;
+		fEngine = NULL;
 	} catch(...) {
 		fEngine = NULL;
-		return kCantHappenErr;
 	}
+
+	if (fEngine == NULL)
+		return kCantHappenErr;
 
 	setGlobal(true);
 	
@@ -389,7 +390,7 @@ bool Plugin::fileSpecToPath(SPPlatformFileSpecification *fileSpec, char *path) {
 	FSRef fsRef;
 	if (FSpMakeFSRef(&fsSpec, &fsRef) != noErr)
 		return false;
-	if (FSRefMakePath(&fsRef, (unsigned char*) path, kMaxPathLength) != noErr)
+	if (FSRefMakePath(&fsRef, (unsigned char*) path, kMaxPathLength))
 		return false;
 #else
 	// on windows, things are easier because we don't have to convert to a posix path:
@@ -627,7 +628,7 @@ void Plugin::reportError(const char* str, ...) {
 			gotBasic = true;
 	}
 	if (sADMBasic != NULL) {
-		char *text = new char[strlen(str) * 2];
+		char *text = new char[1024];
 		va_list args;
 		va_start(args, str);
 		vsprintf(text, str, args);
