@@ -28,8 +28,8 @@
  *
  * $RCSfile: ConsoleOutputStream.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:01 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:19:24 $
  */
 
 package com.scriptographer;
@@ -42,6 +42,7 @@ public class ConsoleOutputStream extends OutputStream {
 	private static ConsoleOutputStream console;
 	private boolean output = false;
 	private static final String lineSeparator = System.getProperty("line.separator");
+    private static final char newLine = lineSeparator.charAt(lineSeparator.length() - 1);
 
 	private StringBuffer buffer;
 	private PrintStream stream;
@@ -81,7 +82,7 @@ public class ConsoleOutputStream extends OutputStream {
 	 */
 	public void write(int b) throws IOException {
 		char c = (char) b;
-		if (c == '\r' || c == '\n') {
+		if (c == newLine) {
 			if (output) {
 				int pos = buffer.lastIndexOf(lineSeparator);
 				int sepLength = lineSeparator.length();
@@ -105,7 +106,7 @@ public class ConsoleOutputStream extends OutputStream {
 		if (enable && console.buffer.length() > 0) {
 			try {
 				// write a newline character so the buffer is flushed to the console
-				console.write('\r');
+				console.write(newLine);
 			} catch (IOException e) {
 				// never happens!
 			}
