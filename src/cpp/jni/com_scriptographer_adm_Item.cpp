@@ -48,6 +48,12 @@ void ASAPI callbackItemDestroy(ADMItemRef item) {
 			if (listObj != NULL) {
 				if (env->IsInstanceOf(listObj, gEngine->cls_HierarchyList)) {
 					ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, listObj);
+					// I don't know why the listObj's UserData is wrong on Windows
+					// but for some reason it has to be set again otherwise 
+					// callbackHierarchyListDestroy does not work:
+					// (probably UserData is not valid any longer
+					// on Windows when the ListBox gets deleted...),
+					sADMHierarchyList->SetUserData(list, listObj);
 					callbackHierarchyListDestroy(list);
 				} else {
 					ADMListRef list = gEngine->getListRef(env, listObj);
@@ -490,7 +496,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_isToolTipEnabled(JNI
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setToolTipEnabled(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
-		return sADMItem->EnableTip(item, enabled);
+		sADMItem->EnableTip(item, enabled);
 	} EXCEPTION_CONVERT(env)
 }
 
