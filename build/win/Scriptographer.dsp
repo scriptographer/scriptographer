@@ -429,10 +429,6 @@ SOURCE=..\..\src\cpp\plugin\Suites.cpp
 SOURCE=..\..\src\cpp\plugin\Tool.cpp
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\plugin.rc
-# End Source File
 # End Group
 # Begin Group "Header"
 
@@ -515,79 +511,59 @@ SOURCE=..\..\src\cpp\plugin\stdHeaders.h
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
 # Begin Source File
 
-SOURCE=.\bitmap1.bmp
+SOURCE=..\..\src\cpp\win\console.ico
 # End Source File
 # Begin Source File
 
-SOURCE=.\console.ico
+SOURCE=..\..\src\cpp\win\folder.ico
 # End Source File
 # Begin Source File
 
-SOURCE=.\folder.ico
+SOURCE=..\..\src\cpp\win\kstoppic.ico
 # End Source File
 # Begin Source File
 
-SOURCE=.\icon1.ico
+SOURCE=..\..\src\cpp\win\play.ico
 # End Source File
 # Begin Source File
 
-SOURCE=.\kstoppic.ico
+SOURCE=..\..\src\cpp\win\plugin.rc
 # End Source File
 # Begin Source File
 
-SOURCE=.\ktool1ic.ico
+SOURCE=..\..\src\cpp\win\refresh.ico
 # End Source File
 # Begin Source File
 
-SOURCE=.\PiPL.bin
+SOURCE=..\..\src\cpp\win\save.ico
 # End Source File
 # Begin Source File
 
-SOURCE=.\play.ico
+SOURCE=..\..\src\cpp\win\script.ico
 # End Source File
 # Begin Source File
 
-SOURCE=.\refresh.ico
+SOURCE=..\..\src\cpp\win\tool1.cur
 # End Source File
 # Begin Source File
 
-SOURCE=.\save.ico
+SOURCE=..\..\src\cpp\win\tool1.ico
 # End Source File
 # Begin Source File
 
-SOURCE=.\script.ico
+SOURCE=..\..\src\cpp\win\tool1script.ico
 # End Source File
 # Begin Source File
 
-SOURCE=.\tool.cur
+SOURCE=..\..\src\cpp\win\tool2.cur
 # End Source File
 # Begin Source File
 
-SOURCE=.\tool.ico
+SOURCE=..\..\src\cpp\win\tool2.ico
 # End Source File
 # Begin Source File
 
-SOURCE=.\tool1.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\tool1.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\tool1script.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\tool2.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\tool2.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\tool2script.ico
+SOURCE=..\..\src\cpp\win\tool2script.ico
 # End Source File
 # End Group
 # End Target
