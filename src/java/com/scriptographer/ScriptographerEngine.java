@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:01 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:21:16 $
  */
 
 package com.scriptographer;
@@ -66,6 +66,7 @@ public class ScriptographerEngine extends ScriptableObject {
 
         WrapFactory wrapper = new ScriptographerWrapFactory();
         wrapper.setJavaPrimitiveWrap(false);
+		context.setApplicationClassLoader(getClass().getClassLoader());
         context.setWrapFactory(wrapper);
 
 		context.setOptimizationLevel(9);
@@ -213,21 +214,26 @@ public class ScriptographerEngine extends ScriptableObject {
 	}
 
 	public Scriptable execScript(Script script) {
-		Scriptable scope = createScope();
+		Scriptable ret = null;
 		try {
+			// This is needed on mac, where there is more than one thread and the Loader is initiated on startup
+			// in the second thread. The ScriptographerEngine get loaded through the Loader, so getting the
+			// ClassLoader from there is save:
+			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+			Scriptable scope = createScope();
 			ConsoleOutputStream.enableOutput(false);
 			script.exec(context, scope);
 			CommitManager.commit();
-			ConsoleOutputStream.enableOutput(true);
-			return scope;
+			ret = scope;
 		} catch (WrappedException we) {
 			System.err.println(we.getMessage());
-			Throwable t = we.getWrappedException();
-			t.printStackTrace();
+			we.getWrappedException().printStackTrace();
 		} catch (RhinoException re) {
 			System.err.println(re.sourceName() + ":" + re.lineNumber() + "," + re.columnNumber() + ": " + re.getMessage());
+		} finally {
+			ConsoleOutputStream.enableOutput(true);
 		}
-		return null;
+		return ret;
 	}
 
 	public Scriptable evaluateFile(String filename) {
