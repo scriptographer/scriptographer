@@ -28,8 +28,8 @@
  *
  * $RCSfile: TextEdit.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 23:27:22 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/07 12:08:26 $
  */
 
 package com.scriptographer.adm;
@@ -100,6 +100,11 @@ public class TextEdit extends TextItem {
 		super(dialog, Item.TYPE_TEXT_EDIT, bounds, text,0, 0);
 	}
 
+	public String getText() {
+		text = nativeGetText();
+		return text;
+	}
+
 	public void setStringValue(Object value) {
 		String str = new ArgumentReader().readString(value);
 		if (str != null)
@@ -118,12 +123,12 @@ public class TextEdit extends TextItem {
 	public native void setMaxLength(int length);
 	public native int getMaxLength();
 
-	public native void setSelectionRange(int start, int end);
-	public native int[] getSelectionRange();
+	public native void setSelection(int start, int end);
+	public native int[] getSelection();
 	public native void selectAll();
 	
-	public void setSelectionRange(int[] range) {
-		setSelectionRange(range[0], range[1]);
+	public void setSelection(int[] range) {
+		setSelection(range[0], range[1]);
 	}
 	
 	public native void setAllowMath(boolean allowMath);
