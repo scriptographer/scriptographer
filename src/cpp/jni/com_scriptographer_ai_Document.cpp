@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:51:40 $
  */
  
 #include "stdHeaders.h"
@@ -220,7 +220,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setCropBox(JNIEnv *en
  * boolean isModified()
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_isModified(JNIEnv *env, jobject obj) {
-	jboolean modified = false;
+	ASBoolean modified = false;
 	
 	DOCUMENT_BEGIN
 	

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_HierarchyList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:51:40 $
  */
  
 #include "stdHeaders.h"
@@ -332,7 +332,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getIndentationW
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setLocalLeftMargin(JNIEnv *env, jobject obj, jint width) {
 	try {
 		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
-		return sADMHierarchyList->SetLocalLeftMargin(list, width);
+		sADMHierarchyList->SetLocalLeftMargin(list, width);
 	} EXCEPTION_CONVERT(env)
 }
 

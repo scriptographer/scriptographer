@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Path.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:51:40 $
  */
  
 #include "stdHeaders.h"
@@ -246,7 +246,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Path_getLength(JNIEnv *env, 
 		sAIPath->GetPathLength(handle, &length, flatness);
 		return length;
 	} EXCEPTION_CONVERT(env)
-	return 0f;
+	return 0.0;
 }
 
 /*
@@ -259,7 +259,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Path_getArea(JNIEnv *env, jo
 		sAIPath->GetPathArea(handle, &area);
 		return area;
 	} EXCEPTION_CONVERT(env)
-	return 0f;
+	return 0.0;
 }
 
 static void *pathAllocate( long size) {

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ScrollBar.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:51:40 $
  */
  
 #include "stdHeaders.h"
@@ -58,10 +58,10 @@ JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_adm_ScrollBar_getIncrement
 /*
  * void setIncrements(float arg1, float arg2)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_ScrollBar_setIncrements(JNIEnv *env, jobject obj, jfloat small, jfloat large) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ScrollBar_setIncrements(JNIEnv *env, jobject obj, jfloat smallInc, jfloat largeInc) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->SetSmallIncrement(item, small);
-		sADMItem->SetLargeIncrement(item, large);
+		sADMItem->SetSmallIncrement(item, smallInc);
+		sADMItem->SetLargeIncrement(item, largeInc);
 	} EXCEPTION_CONVERT(env)
 }
