@@ -1,11 +1,15 @@
+var printDetails = true;
+
 if (!this.print) {
-	// if print is not defined, we're running within the ant environment, let's define it here:
+	// if print is not defined, we're running within the Ant environment, let's define it here:
 	this.print = function(str) {
 		// replace white spaces with non breaking spaces so that they don't get trimmed away.
 		// also replace empty with a non breaking space, otherwise it won't be printed
 		echo.setMessage(str ? str.replace(/\s/gi, '\xa0') : '\xa0');
 		echo.execute();
 	}
+	// under Ant, we're not printing details:
+	printDetails = false;
 }
 
 function loadJniClasses(dir) {
@@ -136,7 +140,7 @@ JniTypeReader.prototype.readNext = function() {
 				this.position++;
 				return 'void';
 			case 'L': // fully qualified class
-				var m = this.string.substring(this.position).match(/L(.*);/);
+				var m = this.string.substring(this.position).match(/L([^;]*);/);
 				if (m != null) {
 					var cls = m[1];
 					this.position += cls.length + 2;
@@ -183,18 +187,21 @@ function registerNatives(srcDir, output) {
 	// first the method lists:
 	for (var cls in classes) {
 		print(cls + ".h:");
-		print();
+		if (printDetails)
+			print();
 		out.println('/* Native methods for class ' + cls + ' */');
 		out.println('const JNINativeMethod ' + cls + '_methods[] = {');
 		var functions = classes[cls];
 		for (var i in functions) {
 			var func = functions[i];
 			out.println('\t{ "' + func.javaName + '", "' + func.signature + '", &' + func.jniName + ' }' + (i < functions.length - 1 ? ',' : ''));
-			print('    ' + func.javaName);
+			if (printDetails)
+				print('    ' + func.javaName);
 		}
 		out.println('};');
 		out.println();
-		print();
+		if (printDetails)
+			print();
 	}
 	// and now the register methods:
 
@@ -235,7 +242,8 @@ function createJniBodies(srcDir) {
 		var existingBodies = file.exists() ? collectJniBodies(file) : null;
 		
 		print(cls + ".cpp: " + (existingBodies != null ? " appending..." : "creating..."));
-		print();
+		if (printDetails)
+			print();
 		file.createNewFile();
 		var out = new java.io.PrintStream(new java.io.FileOutputStream(file, existingBodies != null));
 
@@ -293,11 +301,11 @@ function createJniBodies(srcDir) {
 				
 				var append = true;
 				
-				if (existingBodies != null)Ê{
+				if (existingBodies != null) {
 					var body = existingBodies[func.jniName];
 					if (body != null) {
 						append = !(func.paramTypes.join().equals(body.paramTypes.join()) && func.returnType.equals(body.returnType));
-						if (!append)
+						if (printDetails && !append)
 							print('        ' + func.jniName + ':  already defined');
 					}
 					// now remove it and see what remains in the end:
@@ -344,7 +352,7 @@ function createJniBodies(srcDir) {
 				}
 			}
 		}
-		if (existingBodies != null)Ê{
+		if (existingBodies != null) {
 			var first = true;
 			for (var n in existingBodies) {
 				if (first) {
@@ -354,6 +362,7 @@ function createJniBodies(srcDir) {
 				print('    --> ' + n + ':  no longer needed');
 			}
 		}
-		print();
+		if (printDetails)
+			print();
 	}
 }

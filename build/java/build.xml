@@ -90,6 +90,12 @@
                 <include name="**/*.icc" />
             </fileset>
         </copy>
+        <!-- copy the gui resources -->
+        <copy todir="${build.classes}/com/scriptographer/gui/resources">
+            <fileset dir="${build.src}/com/scriptographer/gui/resources">
+                <include name="**/*.png" />
+            </fileset>
+        </copy>
         <javac srcdir="${build.src}"
             destdir="${build.classes}"
             debug="${debug}"
@@ -135,6 +141,7 @@
         <javah destdir="${build.jni}" classpath="${build.classes}">
             <classpath refid="build.class.path" />
 
+			<class name="com.scriptographer.ScriptographerEngine" />
 			<class name="com.scriptographer.Test" />
 
         	<class name="com.scriptographer.ai.Tool" />

@@ -17,8 +17,6 @@ CFG=Scriptographer - Win32 Illustrator CS Debug
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "Scriptographer - Win32 Illustrator 9 Debug" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE "Scriptographer - Win32 Illustrator 9 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "Scriptographer - Win32 Illustrator 10 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "Scriptographer - Win32 Illustrator 10 Debug" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "Scriptographer - Win32 Illustrator CS Release" (based on "Win32 (x86) Dynamic-Link Library")
@@ -33,61 +31,7 @@ CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "Scriptographer - Win32 Illustrator 9 Debug"
-
-# PROP BASE Use_MFC 0
-# PROP BASE Use_Debug_Libraries 1
-# PROP BASE Output_Dir "Illustrator_9_Debug"
-# PROP BASE Intermediate_Dir "Illustrator_9_Debug"
-# PROP Use_MFC 0
-# PROP Use_Debug_Libraries 1
-# PROP Output_Dir "Scriptographer_9_Debug"
-# PROP Intermediate_Dir "Scriptographer_9_Debug"
-# PROP Ignore_Export_Lib 0
-# ADD BASE CPP /nologo /MT /W3 /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FR /YX /c
-# ADD CPP /nologo /MTd /Gm /Gi /GX /Zi /Od /I "..\..\Illustrator 9.0 SDK\IllustratorAPI" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\ADM" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Illustrator" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\General" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\PICA_SP" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Undocumented" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Legacy\v7" /I "..\Common\\" /I "..\Common\jsEngine\\" /I "..\Common\jsWrapper" /I "..\Common\plugin" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /FR /YX"stdHeaders.h" /FD /c
-# ADD BASE MTL /nologo /D "_DEBUG" /win32
-# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
-# ADD BASE RSC /l 0x409 /d "_DEBUG"
-# ADD RSC /l 0x409 /d "_DEBUG"
-BSC32=bscmake.exe
-# ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
-LINK32=link.exe
-# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib winmm.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"C:\Programme\Adobe\Illustrator 9.0\Plug-ins\Extensions\Scriptographer.aip"
-# SUBTRACT LINK32 /pdb:none /incremental:no
-
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 Illustrator 9 Release"
-
-# PROP BASE Use_MFC 0
-# PROP BASE Use_Debug_Libraries 1
-# PROP BASE Output_Dir "Illustrator_9_Release"
-# PROP BASE Intermediate_Dir "Illustrator_9_Release"
-# PROP BASE Ignore_Export_Lib 0
-# PROP BASE Target_Dir ""
-# PROP Use_MFC 0
-# PROP Use_Debug_Libraries 1
-# PROP Output_Dir "Scriptographer_9_Release"
-# PROP Intermediate_Dir "Scriptographer_9_Release"
-# PROP Ignore_Export_Lib 0
-# PROP Target_Dir ""
-# ADD BASE CPP /nologo /MTd /Gm /GX /Zi /Od /I "..\Common\js\src\\" /I "..\Common" /I "..\..\Common\includes" /I "..\ \..\IllustratorAPI" /I "..\..\..\IllustratorAPI\ADM" /I "..\..\..\IllustratorAPI\Illustrator" /I "..\..\..\IllustratorAPI\General" /I "..\..\..\IllustratorAPI\PICA_SP" /I "..\..\..\IllustratorAPI\Undocumented" /I "..\..\..\IllustratorAPI\Legacy\v7" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /D "XP_PC" /D "JSFILE" /D "EXPORT_JS_API" /D "_IEEE_LIBM" /D "JS_HAS_REGEXPS" /FR /YX /FD /c
-# ADD CPP /nologo /MTd /Gi /GX /O1 /I "..\..\Illustrator 9.0 SDK\IllustratorAPI" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\ADM" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Illustrator" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\General" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\PICA_SP" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Undocumented" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Legacy\v7" /I "..\Common\\" /I "..\Common\jsEngine\\" /I "..\Common\jsWrapper" /I "..\Common\plugin" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /FR /YX"stdHeaders.h" /FD /c
-# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
-# ADD MTL /nologo /mktyplib203 /win32
-# ADD BASE RSC /l 0x409 /i "..\includes" /i ".\Win" /d "_DEBUG"
-# ADD RSC /l 0x409
-BSC32=bscmake.exe
-# ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
-LINK32=link.exe
-# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /nologo /subsystem:windows /dll /incremental:no /debug /machine:I386 /out:"C:\Programme\Adobe\Illustrator 9.0\Plug-ins\Extensions\Scriptographer.aip"
-# SUBTRACT BASE LINK32 /pdb:none
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib winmm.lib /nologo /subsystem:windows /dll /machine:I386 /out:"C:\Programme\Adobe\Illustrator 9.0\Plug-ins\Extensions\Scriptographer.aip"
-# SUBTRACT LINK32 /pdb:none /incremental:no /debug
-
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 Illustrator 10 Release"
+!IF  "$(CFG)" == "Scriptographer - Win32 Illustrator 10 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -102,7 +46,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /Gi /GX /O1 /I "..\Common\js\\" /I "..\Common" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\ADM" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Illustrator" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\General" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\PICA_SP" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Undocumented" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Legacy\v7" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /D "XP_PC" /D "JSFILE" /D "EXPORT_JS_API" /D "_IEEE_LIBM" /D "JS_HAS_REGEXPS" /FR /YX"Common.h" /FD /c
-# ADD CPP /nologo /MTd /Gi /GX /O1 /I "..\..\Illustrator 10 SDK\IllustratorAPI" /I "..\..\Illustrator 10 SDK\IllustratorAPI\ADM" /I "..\..\Illustrator 10 SDK\IllustratorAPI\Illustrator" /I "..\..\Illustrator 10 SDK\IllustratorAPI\General" /I "..\..\Illustrator 10 SDK\IllustratorAPI\PICA_SP" /I "..\..\Illustrator 10 SDK\IllustratorAPI\Undocumented" /I "..\..\Illustrator 10 SDK\IllustratorAPI\Legacy\v7" /I "..\Common\\" /I "..\Common\jsEngine\\" /I "..\Common\jsWrapper" /I "..\Common\plugin" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /FR /YX"stdHeaders.h" /FD /c
+# ADD CPP /nologo /MTd /Gi /GX /O1 /I "..\..\src\cpp\win" /I "..\..\src\cpp\jni" /I "..\..\src\cpp\plugin" /I "..\..\..\Illustrator 10 SDK\IllustratorAPI" /I "..\..\..\Illustrator 10 SDK\IllustratorAPI\ADM" /I "..\..\..\Illustrator 10 SDK\IllustratorAPI\Illustrator" /I "..\..\..\Illustrator 10 SDK\IllustratorAPI\General" /I "..\..\..\Illustrator 10 SDK\IllustratorAPI\PICA_SP" /I "..\..\..\Illustrator 10 SDK\IllustratorAPI\Illustrator\Legacy" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /FR /YX"stdHeaders.h" /FD /c
 # ADD BASE MTL /nologo /mktyplib203 /win32
 # ADD MTL /nologo /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /i "..\includes" /i ".\Win"
@@ -131,7 +75,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /Gm /Gi /GX /Zi /Od /I "..\Common\js\\" /I "..\Common" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\ADM" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Illustrator" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\General" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\PICA_SP" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Undocumented" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Legacy\v7" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /D "XP_PC" /D "JSFILE" /D "EXPORT_JS_API" /D "_IEEE_LIBM" /D "JS_HAS_REGEXPS" /FR /YX"Common.h" /FD /c
-# ADD CPP /nologo /MTd /Gm /Gi /GX /Zi /Od /I "..\..\Illustrator 10 SDK\IllustratorAPI" /I "..\..\Illustrator 10 SDK\IllustratorAPI\ADM" /I "..\..\Illustrator 10 SDK\IllustratorAPI\Illustrator" /I "..\..\Illustrator 10 SDK\IllustratorAPI\General" /I "..\..\Illustrator 10 SDK\IllustratorAPI\PICA_SP" /I "..\..\Illustrator 10 SDK\IllustratorAPI\Legacy\v7" /I "..\Common\\" /I "..\Common\jsEngine\\" /I "..\Common\jsWrapper" /I "..\Common\plugin" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /FR /YX"stdHeaders.h" /FD /c
+# ADD CPP /nologo /MTd /Gm /Gi /GX /Zi /Od /I "..\..\src\cpp\win" /I "..\..\src\cpp\jni" /I "..\..\src\cpp\plugin" /I "..\..\..\Illustrator 10 SDK\IllustratorAPI" /I "..\..\..\Illustrator 10 SDK\IllustratorAPI\ADM" /I "..\..\..\Illustrator 10 SDK\IllustratorAPI\Illustrator" /I "..\..\..\Illustrator 10 SDK\IllustratorAPI\General" /I "..\..\..\Illustrator 10 SDK\IllustratorAPI\PICA_SP" /I "..\..\..\Illustrator 10 SDK\IllustratorAPI\Illustrator\Legacy" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /FR /YX"stdHeaders.h" /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /i "..\includes" /i ".\Win" /d "_DEBUG"
@@ -160,7 +104,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /Gi /GX /O1 /I "..\..\Illustrator 9.0 SDK\IllustratorAPI" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\ADM" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Illustrator" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\General" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\PICA_SP" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Undocumented" /I "..\..\Illustrator 9.0 SDK\IllustratorAPI\Legacy\v7" /I "..\Common\\" /I "..\Common\jsEngine\\" /I "..\Common\jsWrapper" /I "..\Common\plugin" /D "SERIALPORT" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /D "XP_PC" /D "JSFILE" /D "EXPORT_JS_API" /D "_IEEE_LIBM" /D "JS_HAS_REGEXPS" /FR /YX"Common.h" /FD /c
-# ADD CPP /nologo /MTd /Gi /GX /O1 /I "..\..\Illustrator CS SDK\IllustratorAPI" /I "..\..\Illustrator CS SDK\IllustratorAPI\ADM" /I "..\..\Illustrator CS SDK\IllustratorAPI\Illustrator" /I "..\..\Illustrator CS SDK\IllustratorAPI\General" /I "..\..\Illustrator CS SDK\IllustratorAPI\PICA_SP" /I "..\..\Illustrator CS SDK\IllustratorAPI\Undocumented" /I "..\..\Illustrator CS SDK\IllustratorAPI\Illustrator\Legacy" /I "..\Common\\" /I "..\Common\jsEngine\\" /I "..\Common\jsWrapper" /I "..\Common\plugin" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /FR /YX"stdHeaders.h" /FD /c
+# ADD CPP /nologo /MTd /Gi /GX /O1 /I "..\..\src\cpp\win" /I "..\..\src\cpp\jni" /I "..\..\src\cpp\plugin" /I "..\..\..\Illustrator CS SDK\IllustratorAPI" /I "..\..\..\Illustrator CS SDK\IllustratorAPI\ADM" /I "..\..\..\Illustrator CS SDK\IllustratorAPI\Illustrator" /I "..\..\..\Illustrator CS SDK\IllustratorAPI\General" /I "..\..\..\Illustrator CS SDK\IllustratorAPI\PICA_SP" /I "..\..\..\Illustrator CS SDK\IllustratorAPI\Illustrator\Legacy" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /FR /YX"stdHeaders.h" /FD /c
 # ADD BASE MTL /nologo /mktyplib203 /win32
 # ADD MTL /nologo /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /i "..\includes" /i ".\Win"
@@ -201,15 +145,13 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib winmm.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"C:\Programme\Adobe\Illustrator 10\Plug-ins\Extensions\Scriptographer.aip"
 # SUBTRACT BASE LINK32 /pdb:none /incremental:no
-# ADD LINK32 jvm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"C:\Programme\Adobe\Illustrator CS\Plug-ins\Extensions\Scriptographer\Scriptographer.aip"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"C:\Programme\Adobe\Illustrator CS\Plug-ins\Extensions\Scriptographer\Scriptographer.aip"
 # SUBTRACT LINK32 /pdb:none /incremental:no
 
 !ENDIF 
 
 # Begin Target
 
-# Name "Scriptographer - Win32 Illustrator 9 Debug"
-# Name "Scriptographer - Win32 Illustrator 9 Release"
 # Name "Scriptographer - Win32 Illustrator 10 Release"
 # Name "Scriptographer - Win32 Illustrator 10 Debug"
 # Name "Scriptographer - Win32 Illustrator CS Release"
@@ -369,7 +311,11 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Tool.cpp
 # End Group
 # Begin Source File
 
-SOURCE=..\..\src\cpp\jni\com_scriptographer_ConsoleOutputStream.cpp
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ScriptographerEngine.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_Test.cpp
 # End Source File
 # End Group
 # Begin Source File
@@ -378,7 +324,7 @@ SOURCE=..\..\src\cpp\jni\registerNatives.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\jni\ScriptographerEngine.cpp
+SOURCE=..\..\src\cpp\plugin\ScriptographerEngine.cpp
 # End Source File
 # End Group
 # Begin Group "Plugin Source"
@@ -386,19 +332,7 @@ SOURCE=..\..\src\cpp\jni\ScriptographerEngine.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\cpp\plugin\admHandler.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\cpp\plugin\AppContext.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\consoleDialog.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\editorDialog.cpp
 # End Source File
 # Begin Source File
 
@@ -414,19 +348,11 @@ SOURCE=..\..\src\cpp\plugin\Main.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\plugin\mainDialog.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\cpp\plugin\Plugin.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\cpp\plugin\Suites.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\Tool.cpp
 # End Source File
 # End Group
 # End Group
@@ -446,11 +372,11 @@ SOURCE=..\..\src\cpp\jni\aiGlobals.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\jni\jniMacros.h
+SOURCE=..\..\src\cpp\plugin\jniMacros.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\jni\ScriptographerEngine.h
+SOURCE=..\..\src\cpp\plugin\ScriptographerEngine.h
 # End Source File
 # End Group
 # Begin Group "Plugin Header"
@@ -458,19 +384,7 @@ SOURCE=..\..\src\cpp\jni\ScriptographerEngine.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\cpp\plugin\admHandler.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\cpp\plugin\AppContext.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\consoleDialog.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\editorDialog.h
 # End Source File
 # Begin Source File
 
@@ -479,10 +393,6 @@ SOURCE=..\..\src\cpp\plugin\exceptions.h
 # Begin Source File
 
 SOURCE=..\..\src\cpp\win\loadJava.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\mainDialog.h
 # End Source File
 # Begin Source File
 
@@ -495,10 +405,6 @@ SOURCE=..\..\src\cpp\plugin\resourceIds.h
 # Begin Source File
 
 SOURCE=..\..\src\cpp\plugin\Suites.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\Tool.h
 # End Source File
 # End Group
 # Begin Source File
@@ -520,6 +426,10 @@ SOURCE=..\..\src\cpp\win\folder.ico
 # Begin Source File
 
 SOURCE=..\..\src\cpp\win\kstoppic.ico
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\win\PiPL.bin
 # End Source File
 # Begin Source File
 
