@@ -1,7 +1,7 @@
 importPackage(Packages.com.scriptographer);
 
 var baseDir = ScriptographerEngine.baseDir;
-var scriptoDir = new File(baseDir, "startup/scriptographer");
+var scriptoDir = baseDir;
 
 var lineHeight = 16;
 var scriptImage = new Image(scriptoDir + "/script.png");
@@ -12,11 +12,17 @@ var refreshImage = new Image(scriptoDir + "/refresh.png");
 var consoleImage = new Image(scriptoDir + "/console.png");
 var tool1Image = new Image(scriptoDir + "/tool1.png");
 var tool2Image = new Image(scriptoDir + "/tool2.png");
-var buttonRect = new Rectangle(0, 0, 32, 17);
+var buttonSize = new java.awt.Dimension(32, 17);
 
-var consoleDialog = new Dialog(Dialog.STYLE_TABBED_RESIZING_FLOATING, "Scriptographer Console", new Rectangle(200, 200, 400, 300), Dialog.OPTION_TABBED_DIALOG_SHOWS_CYCLE, function() {
-	var textIn = new TextEdit(this, new Rectangle(0, 0, 300, 50), "", TextEdit.STYLE_MULTILINE);
-	var textOut = new TextEdit(this, new Rectangle(0, 0, 300, 100), "", TextEdit.STYLE_READONLY | TextEdit.STYLE_MULTILINE);
+/*
+var consoleDialog = new Dialog(Dialog.STYLE_TABBED_RESIZING_FLOATING, Dialog.OPTION_TABBED_DIALOG_SHOWS_CYCLE, function() {
+	this.setTitle("Scriptographer Console");
+	this.setBounds(new Rectangle(200, 200, 400, 300));
+
+	var textIn = new TextEdit(this, TextEdit.OPTION_MULTILINE);
+	textIn.setBounds(new Rectangle(0, 0, 300, 50));
+	var textOut = new TextEdit(this, TextEdit.OPTION_READONLY | TextEdit.OPTION_MULTILINE);
+	textOut.setBounds(new Rectangle(0, 0, 300, 100));
 	textIn.setMinimumSize(200, 18);
 	textOut.setMinimumSize(200, 18);
 	textOut.setBackgroundColor(Drawer.COLOR_INACTIVE_TAB);
@@ -46,7 +52,7 @@ var consoleDialog = new Dialog(Dialog.STYLE_TABBED_RESIZING_FLOATING, "Scriptogr
 		}
 	};
 	
-	ConsoleOutputStream.getInstance().setWriter(consoleWriter);
+//	ConsoleOutputStream.getInstance().setWriter(consoleWriter);
 
 	this.onDestroy = function() {
 		textOut = null;
@@ -80,7 +86,8 @@ var consoleDialog = new Dialog(Dialog.STYLE_TABBED_RESIZING_FLOATING, "Scriptogr
 
 	// buttons:
 
-	var clearButton = new PushButton(this, buttonRect, refreshImage);
+	var clearButton = new PushButton(this, refreshImage);
+	clearButton.setSize(buttonSize);
 	clearButton.onChange = function() {
 		textOut.text = "";
 		consoleText.setLength(0);
@@ -96,10 +103,39 @@ var consoleDialog = new Dialog(Dialog.STYLE_TABBED_RESIZING_FLOATING, "Scriptogr
 	buttons.add(clearButton);
 	this.addToLayout(buttons, "0, 2");
 });
+*/
 
-var mainDialog = new Dialog(Dialog.STYLE_TABBED_RESIZING_FLOATING, "Scriptographer", new Rectangle(100, 100, 400, 400), Dialog.OPTION_TABBED_DIALOG_SHOWS_CYCLE, function() {
+FloatingDialog = Packages.com.scriptographer.adm.FloatingDialog;
+
+var mainDialog = new FloatingDialog(FloatingDialog.OPTION_TABBED | FloatingDialog.OPTION_RESIZING | FloatingDialog.OPTION_SHOW_CYCLE, function() {
+	this.setVisible(false);
+});
+
+mainDialog.init = function() {
+	var popupMenu = this.getPopupMenu();
+	popupMenu.setVisible(true);
+	var list = popupMenu.getList();
+	var entryOne = new ListEntry(list);
+	entryOne.setText("bla bla bla");
+	entryOne.onClick = function() {
+		print("HI");
+	}
+	var entryTwo = new ListEntry(list);
+	entryTwo.setText("bla bli blu");
+	entryTwo.onClick = function() {
+		print("Ho");
+	}
+
+	list.onClickEntry = function(entry) {
+		print(entry.text);
+	}
+
+	this.setTitle("Scriptographer");
+	this.setBounds(new Rectangle(100, 100, 400, 400));
 	// Script List:
-	var scriptListBox = new HierarchyListBox(this, new Rectangle(0, 0, 241, 20 * lineHeight), HierarchyListBox.STYLE_BLACK_RECT);
+	var scriptListBox = new HierarchyListBox(this);
+	scriptListBox.setBounds(new Rectangle(0, 0, 241, 20 * lineHeight));
+	scriptListBox.setStyle(HierarchyListBox.STYLE_BLACK_RECT);
 
 	var scriptList = scriptListBox.getList();
 	with (scriptList) {
@@ -159,7 +195,8 @@ var mainDialog = new Dialog(Dialog.STYLE_TABBED_RESIZING_FLOATING, "Scriptograph
 
 	// buttons:
 	
-	var playButton = new PushButton(this, buttonRect, playImage);
+	var playButton = new PushButton(this, playImage);
+	playButton.setSize(buttonSize);
 	playButton.onChange = function() {
 		var entry = scriptList.getActiveEntry();
 		if (entry && entry.file) {
@@ -167,32 +204,38 @@ var mainDialog = new Dialog(Dialog.STYLE_TABBED_RESIZING_FLOATING, "Scriptograph
 		}
 	}
 
-	var stopButton = new PushButton(this, buttonRect, stopImage);
+	var stopButton = new PushButton(this, stopImage);
+	stopButton.setSize(buttonSize);
 	stopButton.onChange = function() {
 		print('stop');
 	}
 
-	var refreshButton = new PushButton(this, buttonRect, refreshImage);
+	var refreshButton = new PushButton(this, refreshImage);
+	refreshButton.setSize(buttonSize);
 	refreshButton.onChange = function() {
 		removeFiles();
 		addFiles();
 	}
 
-	var consoleButton = new PushButton(this, buttonRect, consoleImage);
+	var consoleButton = new PushButton(this, consoleImage);
+	consoleButton.setSize(buttonSize);
 	consoleButton.onChange = function() {
 		consoleDialog.visible = !consoleDialog.visible;
 	}
 
-	var newButton = new PushButton(this, buttonRect, scriptImage);
+	var newButton = new PushButton(this, scriptImage);
+	newButton.setSize(buttonSize);
 	newButton.onChange = function() {
 		print('new');
 	}
 
-	var tool1Button = new PushButton(this, buttonRect, tool1Image);
+	var tool1Button = new PushButton(this, tool1Image);
+	tool1Button.setSize(buttonSize);
 	tool1Button.toolIndex = 0;
 	tool1Button.entryPicture = tool1Image;
 
-	var tool2Button = new PushButton(this, buttonRect, tool2Image);
+	var tool2Button = new PushButton(this, tool2Image);
+	tool2Button.setSize(buttonSize);
 	tool2Button.toolIndex = 1;
 	tool2Button.entryPicture = tool2Image;
 	
@@ -228,11 +271,18 @@ var mainDialog = new Dialog(Dialog.STYLE_TABBED_RESIZING_FLOATING, "Scriptograph
 	buttons.add(tool2Button);
 	
 	this.addToLayout(buttons, BorderLayout.SOUTH);
-});
+
+	this.setSize(this.getPreferredSize());
+	this.doLayout();
+
+	this.setVisible(true);
+}
+
+mainDialog.init();
 
 mainDialog.onClose = function() {
 	this.destroy();
-	consoleDialog.destroy();
+//	consoleDialog.destroy();
 }
 
 mainDialog.onResize = function(dx, dy) {

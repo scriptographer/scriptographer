@@ -2,18 +2,31 @@ function onInit() {
     minScale = 0.2;
     maxScale = 0.8;
     rotationValue = 0.5;
-    minBranch = 2;
-    maxBranch = 2;
+    minBranch = 4;
+    maxBranch = 6;
 }
 
 function onOptions() {
-    var values = prompt("Tree:", 
-        {type: "number", value: minScale, title: "minimal scale", width: 50},
-        {type: "number", value: maxScale, title: "maximal scale", width: 50},
-        {type: "number", value: rotationValue, title: "rotation", width: 50},
-        {type: "number", value: minBranch, title: "minimal branch count", width: 50},
-        {type: "number", value: maxBranch, title: "maximal branch count", width: 50}
-    );
+	/*
+	var values = Dialog.prompt("Tree:", [
+		new Dialog.PromptItem(Dialog.PromptItem.TYPE_NUMBER, "Minimal Scale", minScale),
+		new Dialog.PromptItem(Dialog.PromptItem.TYPE_NUMBER, "Maximal Scale", maxScale),
+		new Dialog.PromptItem(Dialog.PromptItem.TYPE_NUMBER, "Rotation", rotationValue),
+		new Dialog.PromptItem(Dialog.PromptItem.TYPE_NUMBER, "Minimal Branch Number", minBranch),
+		new Dialog.PromptItem(Dialog.PromptItem.TYPE_NUMBER, "Maximal Branch Number", maxBranch)
+	]);
+	*/
+
+	print(minScale);
+//	var values = Dialog.prompt("Tree:", [
+    var values = Dialog["prompt(java.lang.String,org.mozilla.javascript.NativeArray)"]("Tree:", [
+        { value: minScale, description: "Minimal Scale", width: 50 },
+        { value: maxScale, description: "Maximal Scale", width: 50 },
+        { value: rotationValue, description: "Rotation", width: 50 },
+        { value: minBranch, description: "Minimal Branch Number", width: 50 },
+        { value: maxBranch, description: "Maximal Branch Number", width: 50 }
+	]);
+
     if (values != null) {
         minScale = values[0];
         maxScale = values[1];
