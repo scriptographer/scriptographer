@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_List.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:51:40 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/07 13:42:29 $
  */
  
 #include "stdHeaders.h"
@@ -353,12 +353,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_List_getNumEntries(JNIEnv *en
 }
 
 /*
- * void nativeSetBGColor(int color)
+ * void nativeSetBackgroundColor(int color)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_nativeSetBGColor(JNIEnv *env, jobject obj, jint color) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_nativeSetBackgroundColor(JNIEnv *env, jobject obj, jint color) {
 	try {
 		#define SET_BG_COLOR(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
-			LIST_SUITE->SetBackgroundColor(list, (ADMColor)color);
+			LIST_SUITE->SetBackgroundColor(list, (ADMColor) color);
 
 		DEFINE_METHOD(SET_BG_COLOR)
 	} EXCEPTION_CONVERT(env)

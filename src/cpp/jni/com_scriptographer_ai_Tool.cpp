@@ -26,12 +26,13 @@
  *
  * $RCSfile: com_scriptographer_ai_Tool.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:42:29 $
  */
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
+#include "Plugin.h"
 #include "com_scriptographer_ai_Tool.h"
 
 /*
@@ -48,4 +49,33 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tool_hasPressure(JNIEnv *e
 		return hasPressure;
 	} EXCEPTION_CONVERT(env)
 	return JNI_FALSE;
+}
+
+/*
+ * java.util.HashMap getCreatedTools()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Tool_getCreatedTools(JNIEnv *env, jclass cls) {
+	try {
+		jobject map = gEngine->newObject(env, gEngine->cls_HashMap, gEngine->cid_HashMap);
+		long count;
+		sAITool->CountTools(&count);
+		SPPluginRef plugin = gPlugin->getPluginRef();
+		for (int i = 0; i < count; i++) {
+			AIToolHandle tool;
+			sAITool->GetNthTool(i, &tool);
+			SPPluginRef toolPlugin;
+			sAITool->GetToolPlugin(tool, &toolPlugin);
+			if (plugin == toolPlugin) {
+				char *title;
+				sAITool->GetToolTitle(tool, &title);
+				// extract the index from the title, assume that the last word is a number:
+				int index = atoi(strrchr(title, ' ')) - 1;
+				jobject toolObj = gEngine->newObject(env, gEngine->cls_Tool, gEngine->cid_Tool, (jint) tool, index);
+				jobject keyObj = gEngine->newObject(env, gEngine->cls_Integer, gEngine->cid_Integer, (jint) tool);
+				gEngine->callObjectMethod(env, map, gEngine->mid_Map_put, keyObj, toolObj);
+			}
+		}
+		return map;
+	} EXCEPTION_CONVERT(env)
+	return NULL;
 }

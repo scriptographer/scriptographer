@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/05 23:14:32 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/07 13:42:29 $
  */
  
 #include "stdHeaders.h"
@@ -59,7 +59,8 @@ OSStatus javaThread(ScriptographerEngine *engine) {
 	// do not call this in ScriptographerEngine::javaThread because ScriptographerEngine
 	// will be destroyed after the fResponseQueue notification.
 	JavaVM *jvm = engine->javaThread();
-	jvm->DestroyJavaVM();
+	if (jvm != NULL)
+		jvm->DestroyJavaVM();
 	return noErr;
 }
 
@@ -67,7 +68,15 @@ OSStatus javaThread(ScriptographerEngine *engine) {
  * returns the JavaVM to be destroyed after execution.
  */
 JavaVM *ScriptographerEngine::javaThread() {
-	init();
+	try {
+		init();
+		// tell the constructor that the initialization is done:
+		MPNotifyQueue(fResponseQueue, NULL, NULL, NULL);
+	} catch (Exception *e) {
+		// let the user know about this error:
+		MPNotifyQueue(fResponseQueue, e, NULL, NULL);
+		return NULL;
+	}
 	// keep this thread alive until the JVM is to be destroyed. This needs
 	// to happen from the creation thread as well, otherwise JNI hangs endlessly:
 	MPWaitOnQueue(fRequestQueue, NULL, NULL, NULL, kDurationForever);
@@ -75,7 +84,7 @@ JavaVM *ScriptographerEngine::javaThread() {
 	JavaVM *jvm = exit();
 	// now tell the caller that the engine can be deleted, before DestroyJavaVM is called,
 	// which may block the current thread until the end of the app.
-	MPNotifyQueue(fResponseQueue, 0, NULL, NULL);
+	MPNotifyQueue(fResponseQueue, NULL, NULL, NULL);
 	return jvm; 
 }
 
@@ -83,16 +92,30 @@ JavaVM *ScriptographerEngine::javaThread() {
 
 ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 	fHomeDir = new char[strlen(homeDir) + 1];
+	fInitialized = false;
 	strcpy(fHomeDir, homeDir);
+	Exception *exc = NULL;
 #ifdef MAC_ENV
 	if(MPLibraryIsLoaded()) {
 		MPCreateQueue(&fRequestQueue);
 		MPCreateQueue(&fResponseQueue);
 		MPCreateTask((TaskProc)::javaThread, this, 0, NULL, NULL, NULL, 0, NULL); 
+		// now wait for the javaThread to finish initialization
+		// exceptions that happen in the javaThread are passed through to this thread in order to display the error code:
+		MPWaitOnQueue(fResponseQueue, (void **) &exc, NULL, NULL, kDurationForever);
 	} else 
 #endif
 	{	// on windows, we can directly call the initialize function:
-		init();
+		try {
+			init();
+		} catch (Exception *e) {
+			exc = e;
+		}
+	}
+	if (exc != NULL) {
+		exc->report(getEnv());
+		delete exc;
+		throw new StringException("Cannot create ScriptographerEngine.");
 	}
 }
 
@@ -102,7 +125,7 @@ ScriptographerEngine::~ScriptographerEngine() {
 #ifdef MAC_ENV
 	if(MPLibraryIsLoaded()) {
 		// notify the JVM thread to end, then clean up:
-		MPNotifyQueue(fRequestQueue, 0, NULL, NULL);
+		MPNotifyQueue(fRequestQueue, NULL, NULL, NULL);
 		// now wait for the javaThread to finish before destroying the engine
 		MPWaitOnQueue(fResponseQueue, NULL, NULL, NULL, kDurationForever);
 		// clean up...
@@ -158,7 +181,7 @@ void ScriptographerEngine::init() {
 	options[numOptions++].optionString = "-Djava.compiler=NONE";
 	options[numOptions++].optionString = "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=4000";
 #endif
-//	numOptions = noDebug;
+	numOptions = noDebug;
 
 	args.options = options;
 	args.nOptions = numOptions;
@@ -175,21 +198,13 @@ void ScriptographerEngine::init() {
 	
 	// link the native functions to the java functions. The code for this is in registerNatives.cpp,
 	// which is automatically generated from the JNI header files by jni.js
-	gEngine = this;
-	try {
-		cls_Loader = env->FindClass("com/scriptographer/loader/Loader");
-		mid_Loader_init = getStaticMethodID(env, cls_Loader, "init", "(Ljava/lang/String;)V");
-		mid_Loader_reload = getStaticMethodID(env, cls_Loader, "reload", "()Ljava/lang/String;");
-		mid_Loader_loadClass = getStaticMethodID(env, cls_Loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
-		callStaticObjectMethodReport(env, cls_Loader, mid_Loader_init, env->NewStringUTF(fHomeDir));
-		registerNatives(env);
-		initReflection(env);
-	} catch (Exception *e) {
-		e->report(env);
-		delete e;
-		gEngine = NULL;
-		throw new StringException("Cannot create ScriptographerEngine.");
-	}
+	cls_Loader = env->FindClass("com/scriptographer/loader/Loader");
+	mid_Loader_init = getStaticMethodID(env, cls_Loader, "init", "(Ljava/lang/String;)V");
+	mid_Loader_reload = getStaticMethodID(env, cls_Loader, "reload", "()Ljava/lang/String;");
+	mid_Loader_loadClass = getStaticMethodID(env, cls_Loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+	callStaticObjectMethodReport(env, cls_Loader, mid_Loader_init, env->NewStringUTF(fHomeDir));
+	registerNatives(env);
+	initReflection(env);
 }
 
 /**
@@ -197,7 +212,11 @@ void ScriptographerEngine::init() {
  * all the underlying native structures are initiialized.
  */
 void ScriptographerEngine::initEngine() {
-	callStaticVoidMethodReport(NULL, cls_ScriptographerEngine, mid_ScriptographerEngine_init);
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethodReport(env, cls_ScriptographerEngine, mid_ScriptographerEngine_init);
+		fInitialized = true;
+	} EXCEPTION_CATCH_REPORT(env)
 }
 
 /**
@@ -207,6 +226,7 @@ void ScriptographerEngine::initEngine() {
 char *ScriptographerEngine::reloadEngine() {
 	JNIEnv *env = getEnv();
 	jstring errors = (jstring) callStaticObjectMethodReport(env, cls_Loader, mid_Loader_reload);
+	fInitialized = false;
 	registerNatives(env);
 	initReflection(env);
 	fJavaEngine = NULL;
@@ -328,10 +348,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 // Scriptographer:
 
 	cls_ScriptographerEngine = loadClass(env, "com/scriptographer/ScriptographerEngine");
-	mid_ScriptographerEngine_getEngine = getStaticMethodID(env, cls_ScriptographerEngine, "getEngine", "()Lcom/scriptographer/ScriptographerEngine;");
-	mid_ScriptographerEngine_evaluateString = getMethodID(env, cls_ScriptographerEngine, "evaluateString", "(Ljava/lang/String;)Lorg/mozilla/javascript/Scriptable;");
-	mid_ScriptographerEngine_evaluateFile = getMethodID(env, cls_ScriptographerEngine, "evaluateFile", "(Ljava/lang/String;)Lorg/mozilla/javascript/Scriptable;");
-	mid_ScriptographerEngine_getTool = getMethodID(env, cls_ScriptographerEngine, "getTool", "(I)Lcom/scriptographer/ai/Tool;");
+	mid_ScriptographerEngine_getInstance = getStaticMethodID(env, cls_ScriptographerEngine, "getInstance", "()Lcom/scriptographer/ScriptographerEngine;");
+	mid_ScriptographerEngine_executeString = getMethodID(env, cls_ScriptographerEngine, "executeString", "(Ljava/lang/String;Lorg/mozilla/javascript/Scriptable;)Lorg/mozilla/javascript/Scriptable;");
+	mid_ScriptographerEngine_executeFile = getMethodID(env, cls_ScriptographerEngine, "executeFile", "(Ljava/lang/String;Lorg/mozilla/javascript/Scriptable;)Lorg/mozilla/javascript/Scriptable;");
 	mid_ScriptographerEngine_init = getStaticMethodID(env, cls_ScriptographerEngine, "init", "()V");
 	mid_ScriptographerEngine_destroy = getStaticMethodID(env, cls_ScriptographerEngine, "destroy", "()V");
 
@@ -339,14 +358,14 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 // AI:
 	cls_Tool = loadClass(env, "com/scriptographer/ai/Tool");
-	mid_Tool_initScript = getMethodID(env, cls_Tool, "initScript", "(Ljava/lang/String;)V");
-	mid_Tool_onEditOptions = getMethodID(env, cls_Tool, "onEditOptions", "()V");
-	mid_Tool_onSelect = getMethodID(env, cls_Tool, "onSelect", "()V");
-	mid_Tool_onDeselect = getMethodID(env, cls_Tool, "onDeselect", "()V");
-	mid_Tool_onReselect = getMethodID(env, cls_Tool, "onReselect", "()V");
-	mid_Tool_onMouseDrag = getMethodID(env, cls_Tool, "onMouseDrag", "(FFI)V");
-	mid_Tool_onMouseDown = getMethodID(env, cls_Tool, "onMouseDown", "(FFI)V");
-	mid_Tool_onMouseUp = getMethodID(env, cls_Tool, "onMouseUp", "(FFI)V");
+	cid_Tool = getConstructorID(env, cls_Tool, "(II)V");
+	mid_Tool_onEditOptions = getStaticMethodID(env, cls_Tool, "onEditOptions", "(I)V");
+	mid_Tool_onSelect = getStaticMethodID(env, cls_Tool, "onSelect", "(I)V");
+	mid_Tool_onDeselect = getStaticMethodID(env, cls_Tool, "onDeselect", "(I)V");
+	mid_Tool_onReselect = getStaticMethodID(env, cls_Tool, "onReselect", "(I)V");
+	mid_Tool_onMouseDrag = getStaticMethodID(env, cls_Tool, "onMouseDrag", "(IFFI)V");
+	mid_Tool_onMouseDown = getStaticMethodID(env, cls_Tool, "onMouseDown", "(IFFI)V");
+	mid_Tool_onMouseUp = getStaticMethodID(env, cls_Tool, "onMouseUp", "(IFFI)V");
 
 	cls_Point = loadClass(env, "com/scriptographer/ai/Point");
 	cid_Point = getConstructorID(env, cls_Point, "(FF)V");
@@ -413,6 +432,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_LiveEffect = loadClass(env, "com/scriptographer/ai/LiveEffect");
 	fid_LiveEffect_effectHandle = getFieldID(env, cls_LiveEffect, "effectHandle", "I");
+	cid_LiveEffect = getConstructorID(env, cls_LiveEffect, "(ILjava/lang/String;Ljava/lang/String;IIIII)V");
 	mid_LiveEffect_onEditParameters = getStaticMethodID(env, cls_LiveEffect, "onEditParameters", "(ILjava/util/Map;IZ)V");
 	mid_LiveEffect_onExecute = getStaticMethodID(env, cls_LiveEffect, "onExecute", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
 	mid_LiveEffect_onGetInputType = getStaticMethodID(env, cls_LiveEffect, "onGetInputType", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
@@ -477,14 +497,14 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 }
 
 /**
- * Cashes the javaScriptEngine, returned by ScriptographerEngine.getEngine()
+ * Cashes the javaScriptEngine, returned by ScriptographerEngine.getInstance()
  *
  * throws exceptions
  */
 jobject ScriptographerEngine::getJavaEngine() {
 	if (fJavaEngine == NULL) {
 		JNIEnv *env = getEnv();
-		fJavaEngine = env->NewWeakGlobalRef(callStaticObjectMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_getEngine));
+		fJavaEngine = env->NewWeakGlobalRef(callStaticObjectMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_getInstance));
 	}
 	return fJavaEngine;
 }
@@ -496,11 +516,11 @@ jobject ScriptographerEngine::getJavaEngine() {
  *
  * catches exceptions
  */
-void ScriptographerEngine::evaluateString(const char* string) {
+void ScriptographerEngine::executeString(const char* string) {
 	JNIEnv *env = getEnv();
 	try {
 		jobject engine = getJavaEngine();
-		callVoidMethod(env, engine, mid_ScriptographerEngine_evaluateString, createJString(env, string));
+		callVoidMethod(env, engine, mid_ScriptographerEngine_executeString, createJString(env, string), NULL);
 	} EXCEPTION_CATCH_REPORT(env)
 }
 
@@ -511,7 +531,7 @@ void ScriptographerEngine::evaluateString(const char* string) {
  *
  * catches exceptions
  */
-void ScriptographerEngine::evaluateFile(const char* filename) {
+void ScriptographerEngine::executeFile(const char* filename) {
 #ifdef MAC_ENV
 	char path[512];
 	carbonPathToPosixPath(filename, path);
@@ -521,7 +541,7 @@ void ScriptographerEngine::evaluateFile(const char* filename) {
 	JNIEnv *env = getEnv();
 	try {
 		jobject engine = getJavaEngine();
-		callVoidMethod(env, engine, mid_ScriptographerEngine_evaluateFile, createJString(env, path));
+		callVoidMethod(env, engine, mid_ScriptographerEngine_executeFile, createJString(env, path), NULL);
 	} EXCEPTION_CATCH_REPORT(env)
 }
 
@@ -827,7 +847,7 @@ jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dic
 			while (!sAIDictionaryIterator->AtEnd(iterator)) {
 				AIDictKey key = sAIDictionaryIterator->GetKey(iterator);
 				const char *name = sAIDictionary->GetKeyString(key);
-				jobject nameObj = gEngine->createJString(env, name); // consider newStringUTF!
+				jobject nameObj = createJString(env, name); // consider newStringUTF!
 				// if onlyNew is set, check first wether that key already exists in the map and if so, skip it:
 				if (onlyNew) {
 					jobject obj = callObjectMethod(env, map, mid_Map_get, nameObj, obj);
@@ -900,7 +920,7 @@ jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dic
 							case StringType: {
 								const char *value;
 								if (!sAIEntry->ToString(entry, &value)) {
-									obj = gEngine->createJString(env, value);
+									obj = createJString(env, value);
 								}
 							} break;
 							case DictType: {
@@ -924,7 +944,7 @@ jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dic
 							case FillStyleType: {
 								AIFillStyle fill;
 								if (!sAIEntry->ToFillStyle(entry, &fill)) {
-									jobject color = gEngine->convertColor(env, &fill.color);
+									jobject color = convertColor(env, &fill.color);
 									obj = newObject(env, cls_FillStyle, cid_FillStyle, color, fill.overprint);
 								}
 							}
@@ -932,7 +952,7 @@ jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dic
 							case StrokeStyleType: {
 								AIStrokeStyle stroke;
 								if (!sAIEntry->ToStrokeStyle(entry, &stroke)) {
-									jobject color = gEngine->convertColor(env, &stroke.color);
+									jobject color = convertColor(env, &stroke.color);
 									int count = stroke.dash.length;
 									jfloatArray dashArray = env->NewFloatArray(count);
 									env->SetFloatArrayRegion(dashArray, 0, count, stroke.dash.array);
@@ -1092,26 +1112,83 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 		!sAIMenu->GetItemMenuGroup(item, &group) &&
 		!sAIMenu->GetMenuGroupName(group, &groupName)) {
 		return callStaticObjectMethod(env, cls_MenuItem, mid_MenuItem_wrapItemHandle,
-			(jint) item, gEngine->createJString(env, name), gEngine->createJString(env, text),
-			(jint) group, gEngine->createJString(env, groupName)
+			(jint) item, createJString(env, name), createJString(env, text),
+			(jint) group, createJString(env, groupName)
 		);
 	}
 	return NULL;
 }
 
-
 /**
  * AI Tool
  *
  */
-jobject ScriptographerEngine::getTool(int index) {
-	jobject res = NULL;
+
+ASErr ScriptographerEngine::toolEditOptions(AIToolMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		jobject engine = getJavaEngine();
-		res = env->NewWeakGlobalRef(callObjectMethod(env, engine, mid_ScriptographerEngine_getTool, index));
+		callStaticVoidMethod(env, cls_Tool, mid_Tool_onEditOptions, (jint) message->tool);
+		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env)
-	return res;
+	return kExceptionErr;
+}
+
+ASErr ScriptographerEngine::toolTrackCursor(AIToolMessage *message) {
+	return kNoErr;
+}
+
+ASErr ScriptographerEngine::toolSelect(AIToolMessage *message) {
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_Tool, mid_Tool_onSelect, (jint) message->tool);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env)
+	return kExceptionErr;
+}
+
+ASErr ScriptographerEngine::toolDeselect(AIToolMessage *message) {
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_Tool, mid_Tool_onDeselect, (jint) message->tool);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env)
+	return kExceptionErr;
+}
+
+ASErr ScriptographerEngine::toolReselect(AIToolMessage *message) {
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_Tool, mid_Tool_onReselect, (jint) message->tool);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env)
+	return kExceptionErr;
+}
+
+ASErr ScriptographerEngine::toolMouseDrag(AIToolMessage *message) {
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_Tool, mid_Tool_onMouseDrag, (jint) message->tool, (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env)
+	return kExceptionErr;
+}
+
+ASErr ScriptographerEngine::toolMouseDown(AIToolMessage *message) {
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_Tool, mid_Tool_onMouseDown, (jint) message->tool, (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env)
+	return kExceptionErr;
+}
+
+ASErr ScriptographerEngine::toolMouseUp(AIToolMessage *message) {
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_Tool, mid_Tool_onMouseUp, (jint) message->tool, (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env)
+	return kExceptionErr;
 }
 
 /**

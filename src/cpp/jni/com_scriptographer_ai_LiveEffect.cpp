@@ -26,14 +26,16 @@
  *
  * $RCSfile: com_scriptographer_ai_LiveEffect.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:42:29 $
  */
 
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "Plugin.h"
 #include "com_scriptographer_ai_LiveEffect.h"
+
+#define NAME_PREFIX "Scriptographer "
 
 /*
  * com.scriptographer.ai.LiveEffect
@@ -47,14 +49,20 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_LiveEffect_nativeCreate(JNIEnv
 	try {
 		AILiveEffectData effectInfo;
 		effectInfo.self = gPlugin->getPluginRef();
-		effectInfo.name = gEngine->createCString(env, name);
+		// add the prefix to the name so getCreatedEffects() knows which live effects where created by this plugin:
+		char *shortName = gEngine->createCString(env, name);
+		char *longName = new char[strlen(shortName) + strlen(NAME_PREFIX) + 1];
+		strcpy(longName, NAME_PREFIX);
+		strcat(longName, shortName);
+		effectInfo.name = longName;
 		effectInfo.title = gEngine->createCString(env, title);
 		effectInfo.majorVersion = majorVersion;
 		effectInfo.minorVersion = minorVersion;
 		effectInfo.prefersAsInput = preferedInput;
 		effectInfo.styleFilterFlags = type | flags;
 		sAILiveEffect->AddLiveEffect(&effectInfo, &liveEffectHandle);
-		delete effectInfo.name;
+		delete shortName;
+		delete longName;
 		delete effectInfo.title;
 	} EXCEPTION_CONVERT(env)
 	return (jint) liveEffectHandle;
@@ -125,6 +133,50 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_getMenuItem(JNIE
 		if (menuItem != NULL) {
 			return gEngine->wrapMenuItemHandle(env, menuItem);	
 		}
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * java.util.HashMap getCreatedEffects()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_getCreatedEffects(JNIEnv *env, jclass cls) {
+	try {
+	try {
+		jobject map = gEngine->newObject(env, gEngine->cls_HashMap, gEngine->cid_HashMap);
+		long count;
+		sAILiveEffect->CountLiveEffects(&count);
+		int prefixLen = strlen(NAME_PREFIX);
+		for (int i = 0; i < count; i++) {
+			AILiveEffectHandle effect;
+			sAILiveEffect->GetNthLiveEffect(i, &effect);
+			const char *name;
+			sAILiveEffect->GetLiveEffectName(effect, &name);
+			// see wether it starts with Scriptographer :
+			if (strstr(name, NAME_PREFIX) == name) {
+				// collect all the settings:
+				const char *realname = &name[prefixLen];
+				const char *title;
+				long major, minor, inputPreference, styleFilterFlags;
+				sAILiveEffect->GetLiveEffectTitle(effect, &title);
+				sAILiveEffect->GetLiveEffectVersion(effect, &major, &minor);
+				sAILiveEffect->GetInputPreference(effect, &inputPreference);
+				sAILiveEffect->GetStyleFilterFlags(effect, &styleFilterFlags);
+				
+				jint type = styleFilterFlags & kFilterTypeMask;
+				jint flags = styleFilterFlags & ~kFilterTypeMask;
+				// create the wrapper
+				jobject effectObj = gEngine->newObject(env, gEngine->cls_LiveEffect, gEngine->cid_LiveEffect,
+						(jint) effect, gEngine->createJString(env, realname), gEngine->createJString(env, title),
+						(jint) inputPreference, type, flags, (jint) major, (jint) minor);
+				jobject keyObj = gEngine->newObject(env, gEngine->cls_Integer, gEngine->cid_Integer, (jint) effect);
+				// and add it to the map
+				gEngine->callObjectMethod(env, map, gEngine->mid_Map_put, keyObj, effectObj);
+			}
+		}
+		return map;
+	} EXCEPTION_CONVERT(env)
+	return NULL;
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }

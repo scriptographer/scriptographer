@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/05 23:14:32 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/07 13:43:07 $
  */
 
 #include "jniMacros.h"
@@ -38,8 +38,9 @@ class Tool;
 class ScriptographerEngine {
 private:
     JavaVM* fJavaVM;
-	jobject fJavaEngine; // returned by ScriptographerEngine.getEngine
+	jobject fJavaEngine; // returned by ScriptographerEngine.getInstance
 	char *fHomeDir;
+	bool fInitialized;
 
 #ifdef MAC_ENV
 	// used for the javaThread workaround:
@@ -150,10 +151,9 @@ public:
 	
 // Scriptographer:
 	jclass cls_ScriptographerEngine;
-	jmethodID mid_ScriptographerEngine_getEngine;
-	jmethodID mid_ScriptographerEngine_evaluateString;
-	jmethodID mid_ScriptographerEngine_evaluateFile;
-	jmethodID mid_ScriptographerEngine_getTool;
+	jmethodID mid_ScriptographerEngine_getInstance;
+	jmethodID mid_ScriptographerEngine_executeString;
+	jmethodID mid_ScriptographerEngine_executeFile;
 	jmethodID mid_ScriptographerEngine_init;
 	jmethodID mid_ScriptographerEngine_destroy;
 
@@ -161,7 +161,7 @@ public:
 
 // AI:
 	jclass cls_Tool;
-	jmethodID mid_Tool_initScript;
+	jmethodID cid_Tool;
 	jmethodID mid_Tool_onEditOptions;
 	jmethodID mid_Tool_onSelect;
 	jmethodID mid_Tool_onDeselect;
@@ -235,6 +235,7 @@ public:
 	
 	jclass cls_LiveEffect;
 	jfieldID fid_LiveEffect_effectHandle;
+	jmethodID cid_LiveEffect;
 	jmethodID mid_LiveEffect_onEditParameters;
 	jmethodID mid_LiveEffect_onExecute;
 	jmethodID mid_LiveEffect_onInterpolate;
@@ -317,9 +318,13 @@ public:
 	void initEngine();
 	char *reloadEngine();
 	jobject getJavaEngine();
+	
+	bool isInitialized() {
+		return fInitialized;
+	}
 		
-	void evaluateString(const char *filename);
-	void evaluateFile(const char *script);
+	void executeString(const char *filename);
+	void executeFile(const char *script);
 	void println(JNIEnv *env, const char *str, ...);
 	
 	// com.scriptographer.awt.Point <-> AIRealPoint
@@ -378,10 +383,17 @@ public:
 	jobject wrapArtHandle(JNIEnv *env, AIArtHandle handle);
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
-
-	// AI Tool
-	jobject getTool(int index);
 	
+	// AI Tool
+	ASErr toolEditOptions(AIToolMessage *message);
+	ASErr toolTrackCursor(AIToolMessage *message);
+	ASErr toolSelect(AIToolMessage *message);
+	ASErr toolDeselect(AIToolMessage *message);
+	ASErr toolReselect(AIToolMessage *message);
+	ASErr toolMouseDrag(AIToolMessage *message);
+	ASErr toolMouseDown(AIToolMessage *message);
+	ASErr toolMouseUp(AIToolMessage *message);
+
 	// AI LiveEffect
 	jobject getLiveEffectParameters(JNIEnv *env, AILiveEffectParameters parameters);
 	AILiveEffectParamContext getLiveEffectContext(JNIEnv *env, jobject parameters);

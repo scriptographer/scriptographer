@@ -134,7 +134,9 @@
         <mkdir dir="${build.jni}"/>
         <javah destdir="${build.jni}" classpath="${build.classes}">
             <classpath refid="build.class.path" />
-        	<class name="com.scriptographer.ConsoleOutputStream" />
+
+			<class name="com.scriptographer.Test" />
+
         	<class name="com.scriptographer.ai.Tool" />
         	<class name="com.scriptographer.ai.Art" />
     		<class name="com.scriptographer.ai.Path" />

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_TextEdit.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:42:29 $
  */
  
 #include "stdHeaders.h"
@@ -60,9 +60,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEdit_getMaxLength(JNIEnv 
 }
 
 /*
- * void setSelectionRange(int arg1, int arg2)
+ * void setSelection(int start, int end)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setSelectionRange(JNIEnv *env, jobject obj, jint start, jint end) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setSelection(JNIEnv *env, jobject obj, jint start, jint end) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetSelectionRange(item, start, end);
@@ -70,9 +70,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setSelectionRange(JN
 }
 
 /*
- * int[] getSelectionRange()
+ * int[] getSelection()
  */
-JNIEXPORT jintArray JNICALL Java_com_scriptographer_adm_TextEdit_getSelectionRange(JNIEnv *env, jobject obj) {
+JNIEXPORT jintArray JNICALL Java_com_scriptographer_adm_TextEdit_getSelection(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		long start, end;

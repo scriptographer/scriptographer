@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:51:40 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/07 13:42:29 $
  */
  
 #include "stdHeaders.h"
@@ -40,7 +40,7 @@
  * com.scriptographer.ai.Document
  */
 
-// documentStart and documentStop are necessary because only the active document
+// DOCUMENT_BEGIN and DOCUMENT_END are necessary because only the active document
 // can be accessed and modified throught sAIDocument. it seems like adobe forgot
 // tu use the AIDocumentHandle parameter there...
 

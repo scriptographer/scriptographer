@@ -520,3 +520,24 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_hideToolTip(JNIEnv *env,
 		sADMItem->HideToolTip(item);
 	} EXCEPTION_CONVERT(env)
 }
+
+/*
+ * void setBackgroundColor(int color)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setBackgroundColor(JNIEnv *env, jobject obj, jint color) {
+	try {
+		ADMItemRef item = gEngine->getItemRef(env, obj);
+		sADMItem->SetBackColor(item, (ADMColor) color);
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * int getBackgroundColor()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getBackgroundColor(JNIEnv *env, jobject obj) {
+	try {
+		ADMItemRef item = gEngine->getItemRef(env, obj);
+		return sADMItem->GetBackColor(item);
+	} EXCEPTION_CONVERT(env)
+	return 0;
+}

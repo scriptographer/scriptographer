@@ -403,7 +403,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Dialog_isVisible(JNIEnv *
 }
 
 /*
- * void setVisible(boolean arg1)
+ * void setVisible(boolean visible)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setVisible(JNIEnv *env, jobject obj, jboolean visible) {
 	try {

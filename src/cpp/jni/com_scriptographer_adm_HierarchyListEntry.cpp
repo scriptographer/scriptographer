@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_HierarchyListEntry.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:42:29 $
  */
  
 #include "stdHeaders.h"
@@ -307,9 +307,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_nativeSetT
 }
 
 /*
- * void nativeSetBGColor(int color)
+ * void nativeSetBackgroundColor(int color)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_nativeSetBGColor(JNIEnv *env, jobject obj, jint color) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_nativeSetBackgroundColor(JNIEnv *env, jobject obj, jint color) {
 	try {
 		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
 		sADMListEntry->SetBackgroundColor(entry, (ADMColor)color);
