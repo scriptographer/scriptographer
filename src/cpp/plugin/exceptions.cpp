@@ -26,8 +26,8 @@
  *
  * $RCSfile: exceptions.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/07 13:40:32 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/27 10:06:15 $
  */
  
 #include "stdHeaders.h"
@@ -108,8 +108,10 @@ char *JThrowableException::toString(JNIEnv *env) {
 
 	jclass cls_PrintWriter = env->FindClass("java/io/PrintWriter");
 	jmethodID ctr_PrintWriter = env->GetMethodID(cls_PrintWriter, "<init>", "(Ljava/io/Writer;)V");
+	jmethodID mid_println = env->GetMethodID(cls_PrintWriter, "println", "(Ljava/lang/String;)V");
 
 	jclass cls_Throwable = env->FindClass("java/lang/Throwable");
+	jmethodID mid_getMessage = env->GetMethodID(cls_Throwable, "getMessage", "()Ljava/lang/String;");
 	jmethodID mid_printStackTrace = env->GetMethodID(cls_Throwable, "printStackTrace", "(Ljava/io/PrintWriter;)V");
 
 	jclass cls_String = env->FindClass("java/lang/String");
@@ -119,9 +121,12 @@ char *JThrowableException::toString(JNIEnv *env) {
 	} else {
 		// create the string writer...
 		jobject writer = env->NewObject(cls_StringWriter, ctr_StringWriter);
-		// ...wrap it in a PrintWriter
+		// ... and wrap it in a PrintWriter.
 		jobject printer = env->NewObject(cls_PrintWriter, ctr_PrintWriter, writer);
-		// and print the stacktrace to it.
+		// now print the message...
+		jobject message = env->CallObjectMethod(fThrowable, mid_getMessage);
+		env->CallVoidMethod(printer, mid_println, message);
+		// ... and stacktrace to it.
 		env->CallVoidMethod(fThrowable, mid_printStackTrace, printer);
 		// now fetch the string:
 		jstring jstr = (jstring)env->CallObjectMethod(writer, mid_toString);

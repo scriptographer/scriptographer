@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 17:09:14 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/27 10:06:15 $
  */
 
 #include "jniMacros.h"
@@ -489,7 +489,7 @@ public:
 
 extern ScriptographerEngine *gEngine;
 
-// for the JVM invocation:
+// Callback function pointers for dynamically loading JNI invocation functions on Windows
 typedef jint (JNICALL *CreateJavaVMProc)(JavaVM **jvm, void **env, void *args);
 typedef jint (JNICALL *GetDefaultJavaVMInitArgsProc)(void *args);
 

@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 17:09:14 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/27 10:06:15 $
  */
  
 #include "stdHeaders.h"
@@ -142,15 +142,15 @@ ScriptographerEngine::~ScriptographerEngine() {
 }
 
 void ScriptographerEngine::init() {
-	// The VM Invokation functions need to be loaded dynamically on Windows,
+	// The VM invocation functions need to be loaded dynamically on Windows,
 	// On Mac, the static ones can be used without problems:
     CreateJavaVMProc createJavaVM = NULL;
     GetDefaultJavaVMInitArgsProc getDefaultJavaVMInitArgs = NULL;
 #ifdef WIN_ENV
 	loadJavaVM("client", &createJavaVM, &getDefaultJavaVMInitArgs);
 #else
-	createJavaVM = &JNI_CreateJavaVM;
-	getDefaultJavaVMInitArgs = &JNI_GetDefaultJavaVMInitArgs;
+	createJavaVM = JNI_CreateJavaVM;
+	getDefaultJavaVMInitArgs = JNI_GetDefaultJavaVMInitArgs;
 #endif
 	
 	// init args
@@ -166,16 +166,15 @@ void ScriptographerEngine::init() {
 	options[numOptions++].optionString = classpath;
 #ifdef MAC_ENV
 	// start headless, in order to avoid conflicts with AWT and Illustrator on Mac
-	// TODO: see wether this works on windows
 	options[numOptions++].optionString = "-Djava.awt.headless=true";
 	// use the carbon line separator instead of the unix one on mac:
 	options[numOptions++].optionString = "-Dline.separator=\r";
 #else
+	// TODO: see wether this works on windows
 //	options[numOptions++].optionString = "-Djava.awt.headless=true";
 #endif
 
 	int noDebug = numOptions;
-
 #ifdef _DEBUG
 	// start JVM in debug mode, for remote debuggin on port 4000
 	options[numOptions++].optionString = "-Xdebug";
@@ -183,7 +182,7 @@ void ScriptographerEngine::init() {
 	options[numOptions++].optionString = "-Djava.compiler=NONE";
 	options[numOptions++].optionString = "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=4000";
 #endif
-//	numOptions = noDebug;
+	numOptions = noDebug;
 
 	args.options = options;
 	args.nOptions = numOptions;
@@ -1180,7 +1179,7 @@ ASErr ScriptographerEngine::selectionChanged() {
 	JNIEnv *env = getEnv();
 	try {
 		AIArtHandle **matches;
-		long i, numMatches;
+		long numMatches;
 		ASErr error = sAIMatchingArt->GetSelectedArt(&matches, &numMatches);
 		if (error) return error;
 		if (numMatches == 0) return kNoErr;

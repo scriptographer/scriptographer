@@ -26,18 +26,15 @@
  *
  * $RCSfile: resourceIds.h,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/27 10:06:15 $
  */
-
-#define kTool1IconID					134
-#define kTool2IconID					135
 
 #define kTool1CursorID					128
 #define kTool2CursorID					129
 
-#define kMainPulldownMenuID				700
-#define kEditorPulldownMenuID			701
+#define kTool1IconID					130
+#define kTool2IconID					131
 
 #define kEmptyDialogID                  16000
 

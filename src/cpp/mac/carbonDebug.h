@@ -26,15 +26,15 @@
  *
  * $RCSfile: carbonDebug.h,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/27 10:06:13 $
  */
 
-#ifndef __PIDebugCarbon_H__	// Has this not been defined yet?
-#define __PIDebugCarbon_H__	// Only include this once by predefining it
+#ifndef __carbonDebug_h__	// Has this not been defined yet?
+#define __carbonDebug_h__	// Only include this once by predefining it
 
 #ifndef _DEBUG
-#define _DEBUG	1
+#define _DEBUG 1
 #endif
 
 #ifndef ACCESSOR_CALLS_ARE_FUNCTIONS
@@ -70,5 +70,5 @@
 #define TARGET_RT_MAC_CFM 1 
 #endif
 
-#endif // __PIDebugCarbon_H__
-// end PIDebugCarbon.h
+#endif // __carbonDebug_h__
+// end carbonDebug.h

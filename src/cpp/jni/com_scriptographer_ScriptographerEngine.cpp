@@ -24,7 +24,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_launch(J
 		return false;
 
 	char *path = NULL;
-	boolean result = false;
+	bool result = false;
 
 	try {
 		path = gEngine->createCString(env, filename);
@@ -43,7 +43,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_launch(J
 
 		// SEE http://developer.apple.com/technotes/tn/tn1002.html
 		SPPlatformFileSpecification fileSpec;
-		sAIUser->Path2SPPlatformFileSpecification(filename, &fileSpec);
+		sAIUser->Path2SPPlatformFileSpecification(path, &fileSpec);
 		FSSpec spec;
 		FSMakeFSSpec(fileSpec.vRefNum, fileSpec.parID, fileSpec.name, &spec);
 

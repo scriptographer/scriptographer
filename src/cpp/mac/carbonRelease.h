@@ -26,12 +26,12 @@
  *
  * $RCSfile: carbonRelease.h,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/27 10:06:14 $
  */
 
-#ifndef __PICarbon_H__	// Has this not been defined yet?
-#define __PICarbon_H__	// Only include this once by predefining it
+#ifndef __carbonRelease_h__	// Has this not been defined yet?
+#define __carbonRelease_h__	// Only include this once by predefining it
 
 #ifndef ACCESSOR_CALLS_ARE_FUNCTIONS
 #define ACCESSOR_CALLS_ARE_FUNCTIONS 1
@@ -66,5 +66,5 @@
 #define TARGET_RT_MAC_CFM 1 
 #endif
 
-#endif // __PICarbon_H__
-// end PICarbon.h
+#endif // __carbonRelease_h__
+// end carbonRelease.h

@@ -28,8 +28,8 @@
  *
  * $RCSfile: AboutDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/27 10:06:16 $
  */
 
 package com.scriptographer.gui;
@@ -57,10 +57,10 @@ public 	class AboutDialog extends ModalDialog {
 					int height = this.getTextSize(" ", -1).height;
 					int line = pt.y / height;
 					String url = null;
-					if (line >= 3) {
-						url = "http://www.scratchdisk.com";
-					} else if (line >= 2) {
+					if (line == 1) {
 						url = "http://www.scriptographer.com";
+					} else if (line == 3) {
+						url = "http://www.scratchdisk.com";
 					}
 					if (url != null) {
 						if (pt.x < this.getTextSize(url, -1).width)
@@ -73,9 +73,10 @@ public 	class AboutDialog extends ModalDialog {
 		text.setTrackCallback(true);
 		String newLine = System.getProperty("line.separator");
 		text.setText(
-			"Scriptographer 0.5 © 2001-2005 Jürg Lehni" + newLine + 
-			newLine + 
-			"http://www.scriptographer.com" +  newLine + 
+			"Scriptographer 0.5" + newLine + 
+			"http://www.scriptographer.com" +  newLine +
+			newLine +
+			"© 2001-2005 JŸrg Lehni" + newLine + 
 			"http://www.scratchdisk.com");
 		
 		PushButton okButton = new PushButton(this);
