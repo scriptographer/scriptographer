@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.h,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/05 23:16:06 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/07 13:40:32 $
  */
 
 #define kMaxStringLength 256
@@ -38,30 +38,11 @@
 
 DLLExport SPAPI SPErr PluginMain( char *caller, char *selector, void *message );
 
-/* common.h */
-
-struct Timer {
-#ifdef WIN_ENV
-	DWORD handle;
-	int period;
-#else
-	AITimerHandle handle;
-	ASBoolean free;
-#endif
-/*
-	JSObject *scope;
-	JSFunction *function;
-	JSObject *timer;
-*/	
-	char name[32];
-};
-
 class ScriptographerEngine;
 class Tool;
 
-/* common.h end */
-
 class Plugin {
+
 protected:
 	SPPluginRef fPluginRef;
 	char *fPluginName;
@@ -71,52 +52,10 @@ protected:
 	long fErrorTimeout;
 	ASBoolean fSupressDuplicateErrors;
 	unsigned long fLastErrorTime;
-
 	AINotifierHandle fAppStartedNotifier;
-
 	ASBoolean fLoaded;
-	
-	// common.h
-public:
-	AIMenuItemHandle showMain;
-	AIMenuItemHandle showEditor;
-	AIMenuItemHandle showConsole;
-#ifdef WIN_ENV
-	HCURSOR	cursor;
-	HFONT font;
-#elif MAC_ENV
-	CursHandle cursor;
-#endif
-
-	struct {
-		ADMDialogRef dlg;
-		char *name;
-		ADMItemRef buttonItems[7];
-	} main;
-
-	struct {
-		ADMDialogRef dlg;
-		char *name;
-		ADMItemRef buttonItems[5];
-		ASBoolean modified;
-	} editor;
-	
-	struct {
-		ADMDialogRef dlg;
-		char *name;
-	} console;
-
-
-	char baseDir[300];
-
-	ASBoolean showProgress;
-	
 	ScriptographerEngine *fEngine;
-	Tool *fTools[2];
-	// for timers
-//	Array <Timer *, Timer *> timers;
-
-	// common.h end
+	AIMenuItemHandle fReload;
 
 public:
 	Plugin(SPPluginRef pluginRef);
@@ -133,13 +72,8 @@ public:
 
 	bool fileSpecToPath(SPPlatformFileSpecification *fileSpec, char *path);
 	bool pathToFileSpec(char *path, SPPlatformFileSpecification *fileSpec);
-
-	Tool *getTool(char *filename);
-	Tool *getTool(AIToolMessage *message);
-	Tool *getTool(ADMListEntryRef entry);
-	Tool *getTool(int index) {
-		return fTools[index];
-	}
+	
+	ASErr createTool(char *title, int iconID, int cursorID, long options, char *sameGroupTool = NULL, char *sameToolsetTool = NULL);
 	
 	void reloadEngine();
 
@@ -210,20 +144,6 @@ public:
 	ASErr checkFileFormat(AIFileFormatMessage *message) {
 		return kUnhandledMsgErr;
 	}
-
-	ASErr editToolOptions(AIToolMessage *message);
-	ASErr trackToolCursor(AIToolMessage *message);
-	ASErr toolMouseDown(AIToolMessage *message);
-	ASErr toolMouseDrag(AIToolMessage *message);
-	ASErr toolMouseUp(AIToolMessage *message);
-	ASErr selectTool(AIToolMessage *message);
-	ASErr deselectTool(AIToolMessage *message);
-	ASErr reselectTool(AIToolMessage *message);
-
-	ASErr editLiveEffectParameters(AILiveEffectEditParamMessage *message);
-	ASErr goLiveEffect(AILiveEffectGoMessage *message);
-	ASErr liveEffectInterpolate(AILiveEffectInterpParamMessage *message);
-	ASErr liveEffectGetInputType(AILiveEffectInputTypeMessage *message);
 	
 	ASErr timer(AITimerMessage *message) {
 		return kNoErr;

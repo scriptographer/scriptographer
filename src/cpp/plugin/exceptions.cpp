@@ -26,39 +26,72 @@
  *
  * $RCSfile: exceptions.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:39:40 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/07 13:40:32 $
  */
  
 #include "stdHeaders.h"
 #include "Plugin.h"
 #include "ScriptographerEngine.h"
-#include "consoleDialog.h"
 
 void Exception::convert(JNIEnv *env) {
 }
 
+char *Exception::toString(JNIEnv *env) {
+	return strdup("Unknown Error");
+}
+
 void Exception::report(JNIEnv *env) {
-	if (gPlugin != NULL)
-		gPlugin->reportError("Unknown Error");
+	char *str = toString(env);
+	if (gEngine != NULL && gEngine->isInitialized()) {
+		gEngine->println(env, str);
+	} else {
+#ifdef MAC_ENV
+		int len = strlen(str);
+		// convert line breaks on mac:
+		for (int i = 0; i < len; i++) {
+			if (str[i] == '\r') str[i] = '\n';
+		}
+#endif
+		if (gPlugin != NULL)
+			gPlugin->reportError(str);
+	}
+	delete str;
+}
+
+StringException::StringException(char *message, ...) {
+	fMessage = new char[1024];
+	va_list args;
+	va_start(args, message);
+	vsprintf(fMessage, message, args);
+	va_end(args);
 }
 
 void StringException::convert(JNIEnv *env) {
 	gEngine->throwException(env, fMessage);
 }
 
-void StringException::report(JNIEnv *env) {
-	if (gPlugin != NULL)
-		gPlugin->reportError(fMessage);
+char *StringException::toString(JNIEnv *env) {
+	return strdup(fMessage);
+}
+
+ASErrException::ASErrException(ASErr error) {
+	fError = error;
 }
 
 void ASErrException::convert(JNIEnv *env) {
 	// TODO: declare this
 }
 
-void ASErrException::report(JNIEnv *env) {
-	if (gPlugin != NULL)
-		gPlugin->reportError("ASErrException %i\n", fError);
+char *ASErrException::toString(JNIEnv *env) {
+	char *format = "ASErrException %i\n";
+	char *str = new char[strlen(format) + 16];
+	sprintf(str, format, fError);
+	return str;
+}
+
+JThrowableException::JThrowableException(jthrowable throwable) {
+	fThrowable = throwable;
 }
 
 void JThrowableException::convert(JNIEnv *env) {
@@ -66,7 +99,7 @@ void JThrowableException::convert(JNIEnv *env) {
 	env->DeleteLocalRef(fThrowable);
 }
 
-void JThrowableException::report(JNIEnv *env) {
+char *JThrowableException::toString(JNIEnv *env) {
 	// we don't depend on any underlaying structures like gEngine here, so all the classes need
 	// to be loaded first:
 	jclass cls_StringWriter = env->FindClass("java/io/StringWriter");
@@ -102,26 +135,28 @@ void JThrowableException::report(JNIEnv *env) {
 			env->GetByteArrayRegion(bytes, 0, len, (jbyte *)str);
 			str[len] = 0; // NULL-terminate
 			env->DeleteLocalRef(bytes);
-			/*
-#ifdef MAC_ENV
-			// convert line breaks on mac:
-			for (int i = 0; i < len; i++) {
-				if (str[i] == '\r') str[i] = '\n';
-			}
-#endif
-			*/
-			if (gPlugin != NULL)
-				consoleShowText(str);
-				// gPlugin->reportError("JThrowableException %s\n", str);
-			delete str;
+			return str;
 		}
 	}
+	return strdup("Unable to generate the Throwable's Stacktrace");
 }
+
+JThrowableClassException::JThrowableClassException(jclass cls) {
+	fClass = cls;
+}
+
+JThrowableClassException::JThrowableClassException(JNIEnv *env, const char *name) {
+	fClass = env->FindClass(name);
+}
+
 
 void JThrowableClassException::convert(JNIEnv *env) {
 	env->ThrowNew(fClass, NULL);
 }
 
-void JThrowableClassException::report(JNIEnv *env) {
-	gPlugin->reportError("JThrowableClassException %i\n", fClass);
+char *JThrowableClassException::toString(JNIEnv *env) {
+	char *format = "JThrowableClassException %i\n";
+	char *str = new char[strlen(format) + 16];
+	sprintf(str, format, fClass);
+	return str;
 }

@@ -26,22 +26,17 @@
  *
  * $RCSfile: Plugin.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:34:21 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/07 13:40:32 $
  */
  
 #include "stdHeaders.h"
 
 #include "Plugin.h"
-#include "Tool.h"
 #include "ScriptographerEngine.h"
 
 #include "resourceIds.h"
 #include "AppContext.h"
-
-#include "consoleDialog.h"
-#include "editorDialog.h"
-#include "mainDialog.h"
 
 Plugin *gPlugin = NULL;
 
@@ -55,43 +50,14 @@ Plugin::Plugin(SPPluginRef pluginRef) {
 	fErrorTimeout = 5;		// seconds
 	fLastErrorTime = 0;
 	fAppStartedNotifier = NULL;
-	
+	fEngine = NULL;	
 	fLoaded = false;
 }
 
 Plugin::~Plugin() {
 }
 
-// Tools:
-
-Tool *Plugin::getTool(char *filename) {
-	for (int i = 0; i < sizeof(fTools) / sizeof(Tool *); i++) {
-		Tool *tool = fTools[i];
-		if (tool != NULL && strcmp(tool->fFilename, filename) == 0) return tool;
-	}
-	return NULL;
-}
-
-Tool *Plugin::getTool(AIToolMessage *message) {
-	for (int i = 0; i < sizeof(fTools) / sizeof(Tool *); i++) {
-		Tool *tool = fTools[i];
-		if (tool != NULL && tool->fHandle == message->tool) return tool;
-	}
-	return NULL;
-}
-
-Tool *Plugin::getTool(ADMListEntryRef entry) {
-	for (int i = 0; i < sizeof(fTools) / sizeof(Tool *); i++) {
-		Tool *tool = fTools[i];
-		if (tool != NULL && tool->fListEntry == entry) return tool;
-	}
-	return NULL;
-}
-
 void Plugin::reloadEngine() {
-	for (int i = 0; i < sizeof(fTools) / sizeof(Tool *); i++) {
-		fTools[i]->reset();
-	}
 	char *errors = fEngine->reloadEngine();
 	if (errors != NULL) {
 		reportError(errors);
@@ -111,8 +77,45 @@ void Plugin::setGlobal(ASBoolean set) {
 	}
 }
 
+ASErr Plugin::createTool(char *title, int iconID, int cursorID, long options, char *sameGroupTool, char *sameToolsetTool) {
+	AIAddToolData data;
+	
+	data.title = title;
+	data.tooltip = title;
+	
+	data.icon = sADMIcon->GetFromResource(fPluginRef, NULL, iconID, 0);
+	if (data.icon == NULL || sADMIcon->GetType(data.icon) == kUnknown) throw new ASErrException('!ico');
+
+	ASErr error;
+	
+	if (sameGroupTool != NULL) {
+		error = sAITool->GetToolNumberFromName(sameGroupTool, &data.sameGroupAs);
+		if (error) return error;
+	} else {
+		data.sameGroupAs = kNoTool;
+	}
+	
+	if (sameToolsetTool != NULL) {
+		error = sAITool->GetToolNumberFromName(sameToolsetTool, &data.sameToolsetAs);
+		if (error) return error;
+	} else {
+		data.sameToolsetAs = kNoTool;
+	}
+
+	AIToolHandle handle;
+	error = sAITool->AddTool(fPluginRef, title, &data, options, &handle);
+	if (error) return error;
+
+	error = sAITool->SetToolOptions(handle, options);
+	if (error) return error;
+	
+	return kNoErr;
+}
+
+
 ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 	setGlobal(false);
+	
 	// aquire only the basic suites that are needed here. the rest is acquired in postStartup.
 	ASErr error = acquireSuites(&gBasicSuites);
 	if (error) return error;
@@ -126,36 +129,10 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 	error = sAINotifier->AddNotifier(fPluginRef, notifierName, kAIApplicationStartedNotifier, &fAppStartedNotifier);
 	if (error) return error;
 
-	// Adds the menu items
-	AIPlatformAddMenuItemData menuData;
-	AIMenuGroup	menuGroup;
-	AIMenuItemHandle menuItem;
-	unsigned char pstr[128]; // a buffer for all the pstring conversions:
+	// set gPlugin:
+	setGlobal(true);
 
-	menuData.groupName = kOtherPalettesMenuGroup;
-	menuData.itemText = toPascal(fPluginName, pstr);
-	error = sAIMenu->AddMenuItem(fPluginRef, fPluginName, &menuData, 0, &menuItem);
-	if (error) return error;
-
-	error = sAIMenu->AddMenuGroupAsSubMenu(fPluginName, 0, menuItem, &menuGroup);
-	if (error) return error;
-
-	menuData.groupName = fPluginName;
-	menuData.itemText = toPascal("Main", pstr);	
-	error = sAIMenu->AddMenuItem(fPluginRef, fPluginName, &menuData, kMenuItemWantsUpdateOption, &showMain);
-	if (error) return error;
-
-	menuData.itemText = toPascal("Editor", pstr);	
-	error = sAIMenu->AddMenuItem(fPluginRef, fPluginName, &menuData, kMenuItemWantsUpdateOption, &showEditor);
-	if (error) return error;
-
-	menuData.itemText = toPascal("Console", pstr);
-	error = sAIMenu->AddMenuItem(fPluginRef, fPluginName, &menuData, kMenuItemWantsUpdateOption, &showConsole);
-	if (error) return error;
-
-//	error = sAIMenu->SetItemFunctionKey(g->showDialog, 2, kMenuItemCmdOptionModifier);
-//	if (error) return error;
-
+	// try to create the Java Engine:
 	// determine baseDirectory from plugin location:
 	char homeDir[kMaxPathLength];
 	SPPlatformFileSpecification fileSpec;
@@ -163,97 +140,73 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
     try {
 		if (!fileSpecToPath(&fileSpec, homeDir))
 			throw;
-		// now find the last occurence of '/'
-		char *p = strrchr(homeDir, PATH_SEP_CHR) + 1;
-		// and write the java path over it:
-		strcpy(p, "java");
+		// now find the last occurence of PATH_SEP_CHR and write the java path over it:
+		strcpy(strrchr(homeDir, PATH_SEP_CHR) + 1, "java");
 		// homeDir now contains the full path to the java stuff
-
 		fEngine = new ScriptographerEngine(homeDir);
 	} catch(Exception *e) {
 		e->report(NULL);
 		delete e;
-		fEngine = NULL;
-	} catch(...) {
-		fEngine = NULL;
-	}
-
-	if (fEngine == NULL)
 		return kCantHappenErr;
-
-	setGlobal(true);
-	
-	// add the two script tools:
-	try {
-		fTools[0] = new Tool(0, fPluginRef, kTool1IconID, kTool1ScriptPictureID, kTool1CursorID, kToolWantsToTrackCursorOption | kToolWantsBufferedDraggingOption);
-		fTools[1] = new Tool(1, fPluginRef, kTool2IconID, kTool2ScriptPictureID, kTool2CursorID, kToolWantsToTrackCursorOption | kToolWantsBufferedDraggingOption, fTools[0]);
-	} catch (ASErr err) {
-		return err;
+	} catch(...) {
+		return kCantHappenErr;
 	}
 		
-	fLoaded = true;
+	// for gEngine:
+	setGlobal(true);
+
+	// add the menu items
+	AIPlatformAddMenuItemData menuData;
+	unsigned char pstr[32]; // a buffer for the pstring conversions:
+	menuData.groupName = kOtherPalettesMenuGroup;
+	menuData.itemText = toPascal("Reload Scriptographer", pstr);
+	error = sAIMenu->AddMenuItem(fPluginRef, fPluginName, &menuData, 0, &fReload);
+	if (error) return error;
 	
+	// add the two script tools:
+	char *title0 = "Scriptographer Tool 1";
+	char *title1 = "Scriptographer Tool 2";
+	error = createTool(title0, kTool1IconID, kTool1CursorID, kToolWantsToTrackCursorOption | kToolWantsBufferedDraggingOption);
+	if (error) return error;
+
+	error = createTool(title1, kTool2IconID, kTool2CursorID, kToolWantsToTrackCursorOption | kToolWantsBufferedDraggingOption, title0);
+	if (error) return error;
+
+	fLoaded = true;
+
 	return error;
 }
 
 ASErr Plugin::postStartupPlugin() {
-	if (gEngine == NULL)
+	if (fEngine == NULL)
 		return kCantHappenErr;
 	
 	// now accuire the rest of the suites:
 	ASErr error = acquireSuites(&gAdditionalSuites);
 	if (error) return error;
 	
-	// create adm dialogs:
-	console.name = "ScriptConsoleDialog";
-	editor.name = "ScriptEditorDialog";
-	main.name = "ScriptMainDialog";
-
-	console.dlg = sADMDialog->Create(fPluginRef, console.name, kConsoleDialogID, kADMTabbedResizingFloatingDialogStyle, consoleDlgInit, NULL, 0);
-	editor.dlg = sADMDialog->Create(fPluginRef, editor.name, kEditorDialogID, kADMTabbedResizingFloatingDialogStyle, editorDlgInit, NULL, 0);
-	main.dlg = sADMDialog->Create(fPluginRef, main.name, kMainDialogID, kADMTabbedResizingFloatingDialogStyle, mainDlgInit, NULL, 0);
+	fEngine->initEngine();
 
 	return error;
 }
 
 ASErr Plugin::shutdownPlugin(SPInterfaceMessage *message) {
-	
-	// check wether the content of the editor needs to be saved
-	editorCheckModified(false);
-
-	// TODO: handle errors:	
-	if (sAIPreference != NULL)
-		sAIPreference->PutStringPreference(main.name, "baseDir", baseDir);
-
-	// We destroy the dialog only if it still exists
-	// If ADM shuts down before our plug-in, then ADM will automatically 
-	// destroy the dialog
-	if (main.dlg) sADMDialog->Destroy(main.dlg);
-	if (editor.dlg) sADMDialog->Destroy(editor.dlg);
-	if (console.dlg) sADMDialog->Destroy(console.dlg);
-
 	delete fEngine;
-	
 	unloadPlugin(NULL);
-	
 	return kNoErr;
 }
 
 ASErr Plugin::goMenuItem(AIMenuMessage *message) {
 	// TODO: as soon as the native dialogs are gone, call gEngine directly from handleMessage
-	if (message->menuItem == showMain) mainShow(!mainVisible());
-	else if (message->menuItem == showEditor) editorShow(!editorVisible());
-	else if (message->menuItem == showConsole) consoleShow(!consoleVisible());
+	if (message->menuItem == fReload) gEngine->reloadEngine();
 	else return gEngine->menuItemExecute(message);
 	return kNoErr;
 }
 
 ASErr Plugin::updateMenuItem(AIMenuMessage *message) {
 	// TODO: as soon as the native dialogs are gone, call gEngine directly from handleMessage
-	if (message->menuItem == showMain) sAIMenu->CheckItem(message->menuItem, mainVisible());
-	else if (message->menuItem == showEditor) sAIMenu->CheckItem(message->menuItem, editorVisible());
-	else if (message->menuItem == showConsole) sAIMenu->CheckItem(message->menuItem, consoleVisible());
-	else {
+	if (message->menuItem == fReload) {
+	} else {
 		long inArtwork, isSelected, isTrue;
 		sAIMenu->GetUpdateFlags(&inArtwork, &isSelected, &isTrue);
 		return gEngine->menuItemUpdate(message, inArtwork, isSelected, isTrue);
@@ -282,70 +235,6 @@ inline ASErr Plugin::reloadPlugin(SPInterfaceMessage *message) {
 
 	return kNoErr;
 }
-
-inline ASErr Plugin::editToolOptions(AIToolMessage *message) {
-	Tool *tool = getTool(message);
-	if (tool != NULL) tool->onEditOptions();
-	return kNoErr;
-}
-
-inline ASErr Plugin::trackToolCursor(AIToolMessage *message) {
-	return kNoErr;
-}
-
-inline ASErr Plugin::toolMouseDrag(AIToolMessage *message) {
-	Tool *tool = getTool(message);
-	if (tool != NULL) tool->onMouseDrag(message->cursor.h, message->cursor.v, message->pressure);
-	return kNoErr;
-}
-
-inline ASErr Plugin::toolMouseDown(AIToolMessage *message) {
-	Tool *tool = getTool(message);
-	if (tool != NULL) tool->onMouseDown(message->cursor.h, message->cursor.v, message->pressure);
-	return kNoErr;
-}
-
-inline ASErr Plugin::toolMouseUp(AIToolMessage *message) {
-	Tool *tool = getTool(message);
-	if (tool != NULL) tool->onMouseUp(message->cursor.h, message->cursor.v, message->pressure);
-	return kNoErr;
-}
-
-inline ASErr Plugin::selectTool(AIToolMessage *message) {
-	Tool *tool = getTool(message);
-	if (tool != NULL) tool->onSelect();
-	return kNoErr;
-}
-
-inline ASErr Plugin::deselectTool(AIToolMessage *message) {
-	Tool *tool = getTool(message);
-	if (tool != NULL) tool->onDeselect();
-	return kNoErr;
-}
-
-inline ASErr Plugin::reselectTool(AIToolMessage *message) {
-	Tool *tool = getTool(message);
-	if (tool != NULL) tool->onReselect();
-	return kNoErr;
-}
-
-inline ASErr Plugin::editLiveEffectParameters(AILiveEffectEditParamMessage *message) {
-	gEngine->callStaticVoidMethodReport(NULL, gEngine->cls_LiveEffect, gEngine->mid_LiveEffect_onEditParameters, message->effect, NULL);
-	return kNoErr;
-}
-
-inline ASErr Plugin::goLiveEffect(AILiveEffectGoMessage *message) {
-	return kNoErr;
-}
-
-inline ASErr Plugin::liveEffectInterpolate(AILiveEffectInterpParamMessage *message) {
-	return kNoErr;
-}
-
-inline ASErr Plugin::liveEffectGetInputType(AILiveEffectInputTypeMessage *message) {
-	return kNoErr;
-}
-
 
 unsigned char *Plugin::toPascal(const char *src, unsigned char *dst) {
 	int len = strlen(src);
@@ -571,22 +460,22 @@ ASErr Plugin::handleMessage(char *caller, char *selector, void *message) {
 			error = checkFileFormat((AIFileFormatMessage *)message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAITool)) {
-		if (sSPBasic->IsEqual( selector, kSelectorAIEditToolOptions )) {
-			error = editToolOptions((AIToolMessage *)message);
+		if (sSPBasic->IsEqual( selector, kSelectorAIToolMouseDrag )) {
+			error = gEngine->toolMouseDrag((AIToolMessage *)message);
 		} else if (sSPBasic->IsEqual( selector, kSelectorAITrackToolCursor )) {
-			error = trackToolCursor((AIToolMessage *)message);
+			error = gEngine->toolTrackCursor((AIToolMessage *)message);
 		} else if (sSPBasic->IsEqual( selector, kSelectorAIToolMouseDown )) {
-			error = toolMouseDown((AIToolMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAIToolMouseDrag )) {
-			error = toolMouseDrag((AIToolMessage *)message);
+			error = gEngine->toolMouseDown((AIToolMessage *)message);
 		} else if (sSPBasic->IsEqual( selector, kSelectorAIToolMouseUp )) {
-			error = toolMouseUp((AIToolMessage *)message);
+			error = gEngine->toolMouseUp((AIToolMessage *)message);
 		} else if (sSPBasic->IsEqual( selector, kSelectorAISelectTool )) {
-			error = selectTool((AIToolMessage *)message);
+			error = gEngine->toolSelect((AIToolMessage *)message);
 		} else if (sSPBasic->IsEqual( selector, kSelectorAIDeselectTool )) {
-			error = deselectTool((AIToolMessage *)message);
+			error = gEngine->toolDeselect((AIToolMessage *)message);
 		} else if (sSPBasic->IsEqual( selector, kSelectorAIReselectTool )) {
-			error = reselectTool((AIToolMessage *)message);
+			error = gEngine->toolReselect((AIToolMessage *)message);
+		} else if (sSPBasic->IsEqual( selector, kSelectorAIEditToolOptions )) {
+			error = gEngine->toolEditOptions((AIToolMessage *)message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAILiveEffect)) {
 		if (sSPBasic->IsEqual( selector, kSelectorAIEditLiveEffectParameters )) {

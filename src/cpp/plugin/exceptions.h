@@ -26,8 +26,8 @@
  *
  * $RCSfile: exceptions.h,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:32:09 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/07 13:40:32 $
  */
  
 #define kExceptionErr 'EXPT';
@@ -35,8 +35,8 @@
 class Exception : public std::exception {
 public:
 	virtual void convert(JNIEnv *env);
-
-	virtual void report(JNIEnv *env);
+	virtual char *toString(JNIEnv *env);
+	void report(JNIEnv *env);
 };
 
 class StringException : public Exception {
@@ -44,17 +44,9 @@ private:
 	char *fMessage;
 	
 public:
-
-	StringException(char *message, ...) {
-		fMessage = new char[1024];
-		va_list args;
-		va_start(args, message);
-		vsprintf(fMessage, message, args);
-		va_end(args);
-	}
-
+	StringException(char *message, ...);
 	void convert(JNIEnv *env);
-	void report(JNIEnv *env);
+	char *toString(JNIEnv *env);
 	
 	~StringException() {
 		delete fMessage;
@@ -66,12 +58,9 @@ private:
 	ASErr fError;
 	
 public:
-	ASErrException(ASErr error) {
-		fError = error;
-	}
-
+	ASErrException(ASErr error);
 	void convert(JNIEnv *env);
-	void report(JNIEnv *env);
+	char *toString(JNIEnv *env);
 };
 
 class JThrowableException : public Exception {
@@ -79,12 +68,9 @@ private:
 	jthrowable fThrowable;	
 	
 public:
-	JThrowableException(jthrowable throwable) {
-		fThrowable = throwable;
-	}
-
+	JThrowableException(jthrowable throwable);
 	void convert(JNIEnv *env);
-	void report(JNIEnv *env);
+	char *toString(JNIEnv *env);
 };
 
 class JThrowableClassException : public Exception {
@@ -92,14 +78,8 @@ private:
 	jclass fClass;
 		
 public:
-	JThrowableClassException(jclass cls) {
-		fClass = cls;
-	}
-
-	JThrowableClassException(JNIEnv *env, const char *name) {
-		fClass = env->FindClass(name);
-	}
-
+	JThrowableClassException(jclass cls);
+	JThrowableClassException(JNIEnv *env, const char *name);
 	void convert(JNIEnv *env);
-	void report(JNIEnv *env);
+	char *toString(JNIEnv *env);
 };
