@@ -28,8 +28,8 @@
  * 
  * $RCSfile: ArtSet.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 17:09:15 $
  */
 
 package com.scriptographer.ai;
@@ -37,29 +37,8 @@ package com.scriptographer.ai;
 import java.util.*;
 
 import com.scriptographer.util.ArrayList;
-import com.scriptographer.js.FunctionHelper;
-import org.mozilla.javascript.NativeObject;
 
 public class ArtSet extends ArrayList {
-	// TODO: move getSelected, getMatching to document, getLayer to layer.getAll()!
-
-	public final static Integer
-			ATTR_SELECTED = new Integer(Art.ATTR_SELECTED),
-			ATTR_LOCKED = new Integer(Art.ATTR_LOCKED),
-			ATTR_HIDDEN = new Integer(Art.ATTR_HIDDEN),
-			ATTR_FULLY_SELECTED = new Integer(Art.ATTR_FULLY_SELECTED),
-			ATTR_EXPANDED = new Integer(Art.ATTR_EXPANDED),
-			ATTR_TARGETED = new Integer(Art.ATTR_TARGETED),
-			ATTR_IS_CLIPMASK = new Integer(Art.ATTR_IS_CLIPMASK),
-			ATTR_IS_TEXTWRAP = new Integer(Art.ATTR_IS_TEXTWRAP),
-			ATTR_SELECTED_TOPLEVEL_GROUPS = new Integer(Art.ATTR_SELECTED_TOPLEVEL_GROUPS),
-			ATTR_SELECTED_LAYERS = new Integer(Art.ATTR_SELECTED_LAYERS),
-			ATTR_SELECTED_TOPLEVEL_WITH_PAINT = new Integer(Art.ATTR_SELECTED_TOPLEVEL_WITH_PAINT),
-			ATTR_HAS_SIMPLE_STYLE = new Integer(Art.ATTR_HAS_SIMPLE_STYLE),
-			ATTR_HAS_ACTIVE_STYLE = new Integer(Art.ATTR_HAS_ACTIVE_STYLE),
-			ATTR_PART_OF_COMPOUND = new Integer(Art.ATTR_PART_OF_COMPOUND),
-			ATTR_STYLE_IS_DIRTY = new Integer(Art.ATTR_STYLE_IS_DIRTY);
-
 	// use a map to keep track of already added art objects:
 	HashMap map;
 
@@ -120,28 +99,17 @@ public class ArtSet extends ArrayList {
 		return map.get(element) != null;
 	}
 
-	private static native Object[] nativeGetSelected();
-	private static native Object[] nativeGetMatching(Class type, Map attributes);
-	private static native Object[] nativeGetLayer(int artHandle);
-	private static native Object[] nativeInvert(Object[] artObjects);
-
-	public static ArtSet getSelected() {
-		return new ArtSet(nativeGetSelected());
-	}
-
-	public static ArtSet getMatching(Class type, Map attributes) {
-		return new ArtSet(nativeGetMatching(type, attributes));
-	}
-
-	public static ArtSet getMatching(Class type, NativeObject attributes) {
-		return getMatching(type, FunctionHelper.convertToMap(attributes));
-	}
-
-	public static ArtSet getLayer(Layer layer) {
-		return new ArtSet(nativeGetLayer(layer.handle));
-	}
-
-	public ArtSet invert() {
-		return new ArtSet(nativeInvert(toArray()));
+	public native ArtSet invert();
+	
+	public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[");
+		for (int i = 0; i < getLength(); i++) {
+			if (i > 0)
+				buffer.append(", ");
+			buffer.append(get(i).toString());
+		}
+		buffer.append("]");
+		return buffer.toString();
 	}
 }

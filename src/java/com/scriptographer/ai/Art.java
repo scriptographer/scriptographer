@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/25 17:09:15 $
  */
 
 package com.scriptographer.ai;
@@ -134,62 +134,63 @@ abstract class Art extends AIObject {
 		ORDER_SECOND_INSIDE_FIRST = 4;
 
 	// AIArtUserAttr:
-	protected final static int
-		ATTR_SELECTED = 0x00000001,
-		ATTR_LOCKED = 0x00000002,
-		ATTR_HIDDEN = 0x00000004,
-		ATTR_FULLY_SELECTED = 0x00000008,
+	// used in Document.getMatching:
+	public final static Integer
+		ATTR_SELECTED = new Integer(0x00000001),
+		ATTR_LOCKED = new Integer(0x00000002),
+		ATTR_HIDDEN = new Integer(0x00000004),
+		ATTR_FULLY_SELECTED = new Integer(0x00000008),
 
 		// Valid only for groups and plugin groups. Indicates whether the contents
 		// of the object are expanded in the layers palette.
-		ATTR_EXPANDED = 0x00000010,
-		ATTR_TARGETED = 0x00000020,
+		ATTR_EXPANDED = new Integer(0x00000010),
+		ATTR_TARGETED = new Integer(0x00000020),
 
 		// Indicates that the object defines a clip mask. This can only be set on
-		// paths, compound paths, and text frame objects. This property can only be
+		// paths), compound paths), and text frame objects. This property can only be
 		// set on an object if the object is already contained within a clip group.
-		ATTR_IS_CLIPMASK = 0x00001000,
+		ATTR_IS_CLIPMASK = new Integer(0x00001000),
 
 		// Indicates that text is to wrap around the object. This property cannot be
-		// set on an object that is part of compound group, it will return
+		// set on an object that is part of compound group), it will return
 		// kBadParameterErr. private final int ATTR_IsTextWrap has to be set to the
 		// ancestor compound group in this case.
-		ATTR_IS_TEXTWRAP = 0x00010000,
+		ATTR_IS_TEXTWRAP = new Integer(0x00010000),
 
 		// Meaningful only to GetMatchingArt passing to SetArtUserAttr will cause an error. Only one
-		// of kArtSelectedTopLevelGroups, kArtSelectedLeaves or kArtSelectedTopLevelWithPaint can
-		// be passed into GetMatchingArt, and they cannot be combined with anything else. When
+		// of kArtSelectedTopLevelGroups), kArtSelectedLeaves or kArtSelectedTopLevelWithPaint can
+		// be passed into GetMatchingArt), and they cannot be combined with anything else. When
 		// passed to GetMatchingArt causes only fully selected top level objects to be returned
 		// and not their children.
-		ATTR_SELECTED_TOPLEVEL_GROUPS = 0x00000040,
+		ATTR_SELECTED_TOPLEVEL_GROUPS = new Integer(0x00000040),
 		// Meaningful only to GetMatchingArt passing to SetArtUserAttr will cause an error. When passed
 		// to GetMatchingArt causes only leaf selected objects to be returned and not their containers.
 		// See also kArtSelectedTopLevelGroups
-		ATTR_SELECTED_LAYERS = 0x00000080,
+		ATTR_SELECTED_LAYERS = new Integer(0x00000080),
 		// Meaningful only to GetMatchingArt passing to SetArtUserAttr will cause an error. When passed
 		// to GetMatchingArt causes only top level selected objects that have a stroke or fill to be
 		// returned. See also kArtSelectedTopLevelGroups
-		ATTR_SELECTED_TOPLEVEL_WITH_PAINT = 0x00000100,	// Top level groups that have a stroke or fill, or leaves
+		ATTR_SELECTED_TOPLEVEL_WITH_PAINT = new Integer(0x00000100),	// Top level groups that have a stroke or fill), or leaves
 
 		// Valid only for GetArtUserAttr and GetMatchingArt passing to
 		// SetArtUserAttr will cause an error. true if the art object has a simple
 		// style.
-		ATTR_HAS_SIMPLE_STYLE = 0x00000200,
+		ATTR_HAS_SIMPLE_STYLE = new Integer(0x00000200),
 
 		// Valid only for GetArtUserAttr and GetMatchingArt passing to
 		// SetArtUserAttr will cause an error. true if the art object has an active
 		// style.
-		ATTR_HAS_ACTIVE_STYLE = 0x00000400,
+		ATTR_HAS_ACTIVE_STYLE = new Integer(0x00000400),
 
 		// Valid only for GetArtUserAttr and GetMatchingArt passing to
 		// SetArtUserAttr will cause an error. true if the art object is a part of a
 		// compound path.
-		ATTR_PART_OF_COMPOUND = 0x00000800,
+		ATTR_PART_OF_COMPOUND = new Integer(0x00000800),
 
-		// On GetArtUserAttr, reports whether the object has an art style that is
-		// pending re-execution. On SetArtUserAttr, marks the art style dirty
+		// On GetArtUserAttr), reports whether the object has an art style that is
+		// pending re-execution. On SetArtUserAttr), marks the art style dirty
 		// without making any other changes to the art or to the style.
-		ATTR_STYLE_IS_DIRTY = 0x00040000;
+		ATTR_STYLE_IS_DIRTY = new Integer(0x00040000);
 
 	/**
 	 * Creates an Art object that wraps an existing AIArtHandle. Make sure the
@@ -229,7 +230,7 @@ abstract class Art extends AIObject {
 	 * @param type
 	 * @return
 	 */
-	protected static Art wrapArtHandle(int artHandle, int type) {
+	protected static Art wrapHandle(int artHandle, int type) {
 		// first see wether the object was already wrapped before:
 		Handle handle = new Handle(artHandle);
 		Art art = (Art) artWrappers.get(handle);
@@ -253,6 +254,23 @@ abstract class Art extends AIObject {
 		return art;
 	}
 	
+	/**
+	 * Increases the version of the art object associated with artHandle,
+	 * if there is one. It does not wrap the artHandle if it wasn't
+	 * already.
+	 *
+	 * @param artHandle
+	 * @return true if the object was updated
+	 */
+	protected static boolean updateIfWrapped(int artHandle) {
+		Art art = (Art) artWrappers.get(new Handle(artHandle));
+		if (art != null) {
+			art.version++;
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * This gets fired from the native environment if the selection was changed
 	 * all the contained artHandles should increase their version counter, if
@@ -320,7 +338,10 @@ abstract class Art extends AIObject {
 	public native Rectangle getBounds();
 
 	public native void setName(String name);
+	
 	public native String getName();
+	
+	public native boolean hasDefaultName();
 
 	public PathStyle getStyle() {
 		if (style == null)
@@ -337,31 +358,31 @@ abstract class Art extends AIObject {
 	public native boolean isCenterVisible();
 	public native void setCenterVisible(boolean centerVisible);
 
-	protected native void setUserAttributes(int flags, int values);
-	protected native int getUserAttributes(int flags);
+	protected native void setAttribute(int attribute, boolean value);
+	protected native boolean getAttribute(int attribute);
 
 	public boolean isSelected() {
-		return (getUserAttributes(ATTR_SELECTED) & ATTR_SELECTED) != 0;
+		return getAttribute(ATTR_SELECTED.intValue());
 	}
 
 	public void setSelected(boolean selected) {
-		setUserAttributes(ATTR_SELECTED, selected ? ATTR_SELECTED : 0);
+		setAttribute(ATTR_SELECTED.intValue(), selected);
 	}
 
 	public boolean isLocked() {
-		return (getUserAttributes(ATTR_LOCKED) & ATTR_LOCKED) != 0;
+		return getAttribute(ATTR_LOCKED.intValue());
 	}
 
 	public void setLocked(boolean locked) {
-		setUserAttributes(ATTR_LOCKED, locked ? ATTR_LOCKED : 0);
+		setAttribute(ATTR_LOCKED.intValue(), locked);
 	}
 
 	public boolean isHidden() {
-		return (getUserAttributes(ATTR_HIDDEN) & ATTR_HIDDEN) != 0;
+		return getAttribute(ATTR_HIDDEN.intValue());
 	}
 
 	public void setHidden(boolean hidden) {
-		setUserAttributes(ATTR_HIDDEN, hidden ? ATTR_HIDDEN : 0);
+		setAttribute(ATTR_HIDDEN.intValue(), hidden);
 	}
 
 	// for text
@@ -397,6 +418,18 @@ abstract class Art extends AIObject {
 
 	public void transform(AffineTransform at) {
 		transform(at, TRANSFORM_OBJECTS | TRANSFORM_DEEP);
+	}
+	
+	public String toString() {
+		String name = getClass().getName();
+		name = name.substring(name.lastIndexOf('.') + 1);
+		name += " (";
+		if (hasDefaultName()) {
+			name += "@" + Integer.toHexString(handle);
+		} else {
+			name += getName();
+		}
+		return name + ")";
 	}
 
 	/*

@@ -352,10 +352,10 @@ SOURCE=..\..\src\cpp\plugin\Suites.cpp
 # End Source File
 # End Group
 # End Group
-# Begin Group "Header"
+# Begin Group "Headers"
 
 # PROP Default_Filter "h;hpp;hxx;hm;inl;fi;fd"
-# Begin Group "Java Header"
+# Begin Group "Java Headers"
 
 # PROP Default_Filter ""
 # Begin Source File
@@ -375,7 +375,7 @@ SOURCE=..\..\src\cpp\plugin\jniMacros.h
 SOURCE=..\..\src\cpp\plugin\ScriptographerEngine.h
 # End Source File
 # End Group
-# Begin Group "Plugin Header"
+# Begin Group "Plugin Headers"
 
 # PROP Default_Filter ""
 # Begin Source File
@@ -409,39 +409,11 @@ SOURCE=..\..\src\cpp\plugin\stdHeaders.h
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
 # Begin Source File
 
-SOURCE=..\..\src\cpp\win\console.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\win\folder.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\win\kstoppic.ico
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\cpp\win\PiPL.bin
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\win\play.ico
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\cpp\win\plugin.rc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\win\refresh.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\win\save.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\win\script.ico
 # End Source File
 # Begin Source File
 
@@ -453,19 +425,11 @@ SOURCE=..\..\src\cpp\win\tool1.ico
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\win\tool1script.ico
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\cpp\win\tool2.cur
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\cpp\win\tool2.ico
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\win\tool2script.ico
 # End Source File
 # End Group
 # End Target

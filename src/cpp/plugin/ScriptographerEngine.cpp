@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 17:09:14 $
  */
  
 #include "stdHeaders.h"
@@ -39,6 +39,7 @@
 #else
 #include "loadJava.h"
 #endif
+#include "aiGlobals.h"
 
 ScriptographerEngine *gEngine = NULL;
 
@@ -215,7 +216,7 @@ void ScriptographerEngine::init() {
 void ScriptographerEngine::initEngine() {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethodReport(env, cls_ScriptographerEngine, mid_ScriptographerEngine_init);
+		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_init);
 		fInitialized = true;
 	} EXCEPTION_CATCH_REPORT(env)
 }
@@ -284,6 +285,11 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_File = loadClass(env, "java/io/File");
 	cid_File = getConstructorID(env, cls_File, "(Ljava/lang/String;)V");
 	mid_File_getPath = getMethodID(env, cls_File, "getPath", "()Ljava/lang/String;");
+
+	cls_Collection = loadClass(env, "java/util/Collection");
+	mid_Collection_add = getMethodID(env, cls_Collection, "add", "(Ljava/lang/Object;)Z");
+	mid_Collection_iterator = getMethodID(env, cls_Collection, "iterator", "()Ljava/util/Iterator;");
+	mid_Collection_size = getMethodID(env, cls_Collection, "size", "()I");
 	
 	cls_Map = loadClass(env, "java/util/Map");
 	mid_Map_entrySet = getMethodID(env, cls_Map, "entrySet", "()Ljava/util/Set;");
@@ -400,8 +406,12 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cid_CMYKColor = getConstructorID(env, cls_CMYKColor, "(FFFFF)V");
 
 	cls_Art = loadClass(env, "com/scriptographer/ai/Art");
-	mid_Art_wrapArtHandle = getStaticMethodID(env, cls_Art, "wrapArtHandle", "(II)Lcom/scriptographer/ai/Art;");
+	mid_Art_wrapHandle = getStaticMethodID(env, cls_Art, "wrapHandle", "(II)Lcom/scriptographer/ai/Art;");
+	mid_Art_updateIfWrapped = getStaticMethodID(env, cls_Art, "updateIfWrapped", "(I)Z");
 	mid_Art_onSelectionChanged = getStaticMethodID(env, cls_Art, "onSelectionChanged", "([I)V");
+
+	cls_ArtSet = loadClass(env, "com/scriptographer/ai/ArtSet");
+	cid_ArtSet = getConstructorID(env, cls_ArtSet, "()V");
 
 	cls_Path = loadClass(env, "com/scriptographer/ai/Path");
 	
@@ -477,8 +487,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_ListItem = loadClass(env, "com/scriptographer/adm/ListItem");
 	fid_ListItem_listHandle = getFieldID(env, cls_ListItem, "listHandle", "I");	
-
-	cls_List = loadClass(env, "com/scriptographer/adm/List");
 	
 	cls_HierarchyList = loadClass(env, "com/scriptographer/adm/HierarchyList");
 
@@ -838,6 +846,42 @@ AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env, jobject mt, AIRea
 	return res;
 }
 
+
+// AIArtSet <-> ArtSet
+
+jobject ScriptographerEngine::convertArtSet(JNIEnv *env, AIArtSet set, bool layerOnly) {
+	artSetFilter(set, layerOnly);
+	long count;
+	sAIArtSet->CountArtSet(set, &count);
+	jobject artSet = newObject(env, cls_ArtSet, cid_ArtSet); 
+	for (long i = 0; i < count; i++) {
+		jobject obj;
+		AIArtHandle art;
+		if (!sAIArtSet->IndexArtSet(set, i, &art)) {
+			obj = wrapArtHandle(env, art);
+			if (obj != NULL)
+				callBooleanMethod(env, artSet, mid_Collection_add, obj);
+		}
+	}
+	EXCEPTION_CHECK(env)
+	return artSet;
+}
+
+AIArtSet ScriptographerEngine::convertArtSet(JNIEnv *env, jobject artSet) {
+	AIArtSet set = NULL;
+	if (!sAIArtSet->NewArtSet(&set)) {
+		// use a for loop with size instead of hasNext, because that saves us many calls...
+		jint length = callIntMethod(env, artSet, mid_Collection_size);
+		jobject iterator = callObjectMethod(env, artSet, mid_Collection_iterator);
+		for (int i = 0; i < length; i++) {
+			jobject obj = callObjectMethod(env, iterator, mid_Iterator_next);
+			if (obj != NULL)
+				sAIArtSet->AddArtToArtSet(set, getArtHandle(env, obj));
+		}
+	}
+	EXCEPTION_CHECK(env)
+	return set;
+}
 // java.util.Map <-> AIDictionary
 jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dictionary, jobject map, bool onlyNew) {
 	JNI_CHECK_ENV
@@ -1088,7 +1132,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art) {
 	if (sAIArt->GetArtType(art, &type) || sAIArt->IsArtLayerGroup(art, &isLayer)) throw new StringException("Cannot determine the art object's type");
 	// self defined type for layer groups:
 	if (isLayer) type = com_scriptographer_ai_Art_TYPE_LAYER;
-	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapArtHandle, (jint) art, (jint) type);
+	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) type);
 }
 
 jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) {
@@ -1097,7 +1141,7 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) 
 	// an art group:
 	AIArtHandle art;
 	sAIArt->GetFirstArtOfLayer(layer, &art);
-	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapArtHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER);
+	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER);
 }
 
 /**

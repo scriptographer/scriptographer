@@ -28,8 +28,8 @@
  *
  * $RCSfile: ModalDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 17:09:15 $
  */
 
 package com.scriptographer.adm;
@@ -87,4 +87,6 @@ public class ModalDialog extends Dialog {
 
 	public native Item doModal();
 	public native void endModal();
+	
+	public native void setVisible(boolean visible);
 }

@@ -28,14 +28,19 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 17:09:15 $
  */
 
 package com.scriptographer.ai;
 
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.util.Map;
+
+import org.mozilla.javascript.NativeObject;
+
+import com.scriptographer.js.FunctionHelper;
 
 public class Document extends AIObject {
 
@@ -79,12 +84,13 @@ public class Document extends AIObject {
 	}
 
 	private static native int nativeCreate(File file, int colorModel, int dialogStatus);
+	
 	private static native int nativeCreate(String title, float width, float height, int colorModel, int dialogStatus);
 
 	protected Document(int handle) {
 		super(handle);
 	}
-
+	
 	public LayerList getLayers() {
 		if (layers == null)
 			layers = new LayerList(this);
@@ -92,9 +98,11 @@ public class Document extends AIObject {
 	}
 
 	public native Point getPageOrigin();
+	
 	public native void setPageOrigin(Point pt);
 
 	public native Point getRulerOrigin();
+	
 	public native void setRulerOrigin(Point pt);
 
 	public native Point getSize();
@@ -106,20 +114,25 @@ public class Document extends AIObject {
 	 * @param height
 	 */
 	public native void setSize(float width, float height);
+	
 	public void setSize(Point2D size) {
 		setSize((float) size.getX(), (float) size.getY());
 	}
 
 	public native Rectangle getCropBox();
+	
 	public native void setCropBox(Rectangle cropBox);
 
 	public native boolean isModified();
+	
 	public native void setModified(boolean modified);
 
 	public native File getFile();
 
 	private static String[] formats = null;
+	
 	private static native String[] nativeGetFormats();
+	
 	public static String[] getFileFormats() {
 		if (formats == null)
 			formats = nativeGetFormats();
@@ -127,13 +140,21 @@ public class Document extends AIObject {
 	}
 
 	public native void activate();
+	
 	public native void print(int dialogStatus);
+	
 	public native void save();
+	
 	public native void close();
+	
 	public native void redraw();
+	
 	public native void copy();
+	
 	public native void cut();
+	
 	public native void paste();
+	
 	public native boolean write(File file, String format, boolean ask);
 
 	public boolean write(File file, String format) {
@@ -142,5 +163,13 @@ public class Document extends AIObject {
 
 	public boolean write(File file) {
 		return write(file, null, false);
+	}
+
+	public native ArtSet getSelectedArt();
+	
+	public native ArtSet getMatchingArt(Class type, Map attributes);
+
+	public ArtSet getMatchingArt(Class type, NativeObject attributes) {
+		return getMatchingArt(type, FunctionHelper.convertToMap(attributes));
 	}
 }

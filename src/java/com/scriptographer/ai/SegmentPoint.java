@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentPoint.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 17:09:15 $
  */
 
 package com.scriptographer.ai;
@@ -47,6 +47,12 @@ public class SegmentPoint extends Point {
 
 	protected SegmentPoint(Segment listener, int index, Point2D pt) {
 		super(pt);
+		this.segment = listener;
+		this.index = index;
+	}
+
+	protected SegmentPoint(Segment listener, int index, float x, float y) {
+		super(x, y);
 		this.segment = listener;
 		this.index = index;
 	}

@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 17:09:15 $
  */
 
 package com.scriptographer.ai;
@@ -71,6 +71,138 @@ public class SegmentList extends AbstractFetchList {
 		updateLength(-1);
 	}
 	
+	/*
+	 *  postscript-like interface: moveTo, lineTo, curveTo, arcTo
+	 */	
+	public void moveTo(float x, float y) {
+		if (length > 0)
+			throw new UnsupportedOperationException("moveTo can only be called at the beginning of a SegmentList");
+		add(new Segment(x, y));
+	}
+	
+	public void moveTo(Point pt) {
+		moveTo(pt.x, pt.y);
+	}
+	
+	public void moveTo(Point2D pt) {
+		moveTo((float) pt.getX(), (float) pt.getY());
+	}
+	
+	public void lineTo(float x, float y) {
+		if (length == 0)
+			throw new UnsupportedOperationException("Use a moveTo command first");
+		add(new Segment(x, y));
+	}
+	
+	public void lineTo(Point pt) {
+		lineTo(pt.x, pt.y);
+	}
+	
+	public void lineTo(Point2D pt) {
+		lineTo((float) pt.getX(), (float) pt.getY());
+	}
+	
+	public void curveTo(float c1x, float c1y, float c2x, float c2y, float x, float y) {
+		if (length == 0)
+			throw new UnsupportedOperationException("Use a moveTo command first");
+		// first modify the current segment:
+		Segment lastSegment = getSegment(length - 1);
+		lastSegment.handleOut.setLocation(c1x, c1y);
+		lastSegment.setCorner(false);
+		// and add the new segment, with handleIn set to c2
+		add(new Segment(x, y, c2x, c2y, x, y, false));
+	}
+	
+	public void curveTo(Point c1, Point c2, Point pt) {
+		curveTo(c1.x, c1.y, c2.x, c2.y, pt.x, pt.y);
+	}
+	
+	public void curveTo(Point2D c1, Point2D c2, Point2D pt) {
+		curveTo((float) c1.getX(), (float) c1.getY(), (float) c2.getX(), (float) c2.getY(), (float) pt.getX(), (float) pt.getY());
+	}
+
+	public void arcTo(float centerX, float centerY, float endX, float endY, int ccw) {
+		if (length == 0)
+			throw new UnsupportedOperationException("Use a moveTo command first");
+		
+		// get the startPoint:
+		Segment startSegment = getSegment(length - 1);
+		double startX = startSegment.point.x;
+		double startY = startSegment.point.y;
+		
+		// determine the width and height of the ellipse by the 3 given points
+		// center, startPoint and endPoint:
+		// find the scaleFactor that scales this system horicontally so a circle
+		// would fit. the resulting radius is the ellipse's height.
+		// Then apply the opposite factor to the radius in order to get the width.
+		
+		double x1 = startX - centerX;
+		double y1 = startY - centerY;
+		double x2 = endX - centerX;
+		double y2 = endY - centerY;
+		
+		double s = Math.sqrt(
+			(y2 * y2 - y1 * y1) /
+			(x1 * x1 - x2 * x2)
+		);
+		
+		double h = Math.sqrt(x1 * x1 + y1 * y1);
+		double w = h / s;
+		if (s == 0 || h == 0)
+			throw new UnsupportedOperationException("Cannot create an arc with the given center end starting point");
+		
+		// Note: reversing the Y equations negates the angle to adjust
+		// for the upside down coordinate system.
+		double angle = Math.atan2(centerY - startY, startX - centerX);
+		double extent = Math.atan2(centerY - endY, endX - centerX);
+		extent -= angle;
+		if (extent <= 0.0) {
+			extent += Math.PI * 2.0;
+		}
+		if (ccw < 0) extent = Math.PI * 2.0 - extent;
+		else extent = -extent;
+		angle = -angle;
+			
+		double ext = Math.abs(extent);
+		int arcSegs;
+		if (ext >= 2 * Math.PI) arcSegs = 4;
+		else arcSegs = (int) Math.ceil(ext * 2 / Math.PI);
+
+		double inc = extent;
+		if (inc > 2 * Math.PI) inc = 2 * Math.PI;
+		else if (inc < -2 * Math.PI) inc = -2 * Math.PI;
+		inc /= arcSegs;
+		
+		double halfInc = inc / 2.0;
+		double z = 4.0 / 3.0 * Math.sin(halfInc) / (1.0 + Math.cos(halfInc));
+		
+		for (int i = 0; i <= arcSegs; i++) {
+			double relx = Math.cos(angle);
+			double rely = Math.sin(angle);
+			Point pt = new Point(centerX + relx * w, centerY + rely * h);
+			Point out;
+			if (i == arcSegs) out = null;
+			else out = new Point(centerX + (relx - z * rely) * w, centerY + (rely + z * relx) * h);
+			if (i == 0) {
+				// modify startSegment
+				startSegment.handleOut.setLocation(out);
+			} else {
+				// add new Segment
+				Point in = new Point(centerX + (relx + z * rely) * w, centerY + (rely - z * relx) * h);
+				add(new Segment(pt, in, out, false));
+			}
+			angle += inc;
+		}
+	}
+
+	public void arcTo(Point center, Point endPoint, int ccw) {
+		arcTo(center.x, center.y, endPoint.x, endPoint.y, ccw);
+	}
+
+	public void arcTo(Point2D center, Point2D endPoint, int ccw) {
+		arcTo((float) center.getX(), (float) center.getY(), (float) endPoint.getX(), (float) endPoint.getY(), ccw);
+	}
+
 	protected Path getPath() {
 		return path;
 	}

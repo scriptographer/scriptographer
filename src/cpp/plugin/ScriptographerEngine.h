@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 17:09:14 $
  */
 
 #include "jniMacros.h"
@@ -86,6 +86,11 @@ public:
 	jmethodID cid_File;
 	jmethodID mid_File_getPath;
 	
+	jclass cls_Collection;
+	jmethodID mid_Collection_add;
+	jmethodID mid_Collection_iterator;
+	jmethodID mid_Collection_size;
+
 	jclass cls_Map;
 	jmethodID mid_Map_entrySet;
 	jmethodID mid_Map_put;
@@ -205,8 +210,12 @@ public:
 	jmethodID cid_CMYKColor;
 
 	jclass cls_Art;
-	jmethodID mid_Art_wrapArtHandle;
+	jmethodID mid_Art_wrapHandle;
+	jmethodID mid_Art_updateIfWrapped;
 	jmethodID mid_Art_onSelectionChanged;
+
+	jclass cls_ArtSet;
+	jmethodID cid_ArtSet;
 
 	jclass cls_Path;
 	
@@ -283,7 +292,6 @@ public:
 	jclass cls_ListItem;
 	jfieldID fid_ListItem_listHandle;
 
-	jclass cls_List;	
 	jclass cls_HierarchyList;
 	
 	jclass cls_ListEntry;
@@ -370,6 +378,10 @@ public:
 	// java.awt.AffineTransform <-> AIRealMatrix
 	jobject convertMatrix(JNIEnv *env, AIRealMatrix *mt, jobject res = NULL);
 	AIRealMatrix *convertMatrix(JNIEnv *env, jobject mt, AIRealMatrix *res = NULL);
+
+	// AIArtSet <-> ArtSet
+	jobject convertArtSet(JNIEnv *env, AIArtSet set, bool layerOnly = false);
+	AIArtSet convertArtSet(JNIEnv *env, jobject artSet);
 	
 	// java.util.Map <-> AIDictionary
 	jobject convertDictionary(JNIEnv *env, AIDictionaryRef dictionary, jobject map = NULL, bool onlyNew = false);

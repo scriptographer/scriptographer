@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/25 17:09:15 $
  */
  
 #include "stdHeaders.h"
@@ -35,6 +35,7 @@
 #include "Plugin.h"
 #include "aiGlobals.h"
 #include "com_scriptographer_ai_Document.h"
+#include "com_scriptographer_ai_Art.h"
 
 /*
  * com.scriptographer.ai.Document
@@ -398,4 +399,66 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_paste(JNIEnv *env, jo
 	sAIDocument->Paste();
 	
 	DOCUMENT_END
+}
+
+// ArtSet stuff:
+
+/*
+ * com.scriptographer.ai.ArtSet getSelectedArt()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedArt(JNIEnv *env, jobject obj) {
+	try {
+		// TODO: consider using Matching Art Suite instead!!! (faster, direct array access)
+		AIArtSet set;
+		if (!sAIArtSet->NewArtSet(&set)) {
+			if (!sAIArtSet->SelectedArtSet(set)) {
+				jobject artSet = gEngine->convertArtSet(env, set);
+				sAIArtSet->DisposeArtSet(&set);
+				return artSet;
+			}
+		}
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * com.scriptographer.ai.ArtSet getMatchingArt(java.lang.Class typeClass, java.util.Map attributes)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingArt(JNIEnv *env, jobject obj, jclass typeClass, jobject attributes) {
+	try {
+		AIArtSet set;
+		if (!sAIArtSet->NewArtSet(&set)) {
+			bool layerOnly = false;
+			short type = artGetType(env, typeClass);
+			if (type == com_scriptographer_ai_Art_TYPE_LAYER) {
+				type = kGroupArt;
+				layerOnly = true;
+			}
+			AIArtSpec spec;
+			spec.type = type;
+			spec.whichAttr = 0;
+			spec.attr = 0;
+			// use the env's version of the callers for speed reasons. check for exceptions only once at the end:		
+			jobject entrySet = env->CallObjectMethod(attributes, gEngine->mid_Map_entrySet);
+			jobject iterator = env->CallObjectMethod(entrySet, gEngine->mid_Set_iterator);
+			while (env->CallBooleanMethod(iterator, gEngine->mid_Iterator_hasNext)) {
+				jobject entry = env->CallObjectMethod(iterator, gEngine->mid_Iterator_next);
+				jobject key = env->CallObjectMethod(entry, gEngine->mid_Map_Entry_getKey);
+				jobject value = env->CallObjectMethod(entry, gEngine->mid_Map_Entry_getValue);
+				if (env->IsInstanceOf(key, gEngine->cls_Number) && env->IsInstanceOf(value, gEngine->cls_Boolean)) {
+					jint flag = env->CallIntMethod(key, gEngine->mid_Number_intValue);
+					jboolean set = env->CallBooleanMethod(value, gEngine->mid_Boolean_booleanValue);
+					spec.whichAttr |= flag;
+					if (set) spec.attr |=  flag;
+				}
+			}
+			EXCEPTION_CHECK(env)
+			if (!sAIArtSet->MatchingArtSet(&spec, 1, set)) {
+				jobject artSet = gEngine->convertArtSet(env, set);
+				sAIArtSet->DisposeArtSet(&set);
+				return artSet;
+			}
+		}
+	} EXCEPTION_CONVERT(env)
+	return NULL;
 }

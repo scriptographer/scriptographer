@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.6 $
+ * $Date: 2005/03/25 17:09:13 $
  */
  
 #include "stdHeaders.h"
@@ -167,13 +167,6 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 	return error;
 }
 
-/*
-ASErr ASAPI dialogHide(ADMDialogRef dialog) {
-	sADMDialog->Show(dialog, false);
-	return kNoErr;
-}
-*/
-
 ASErr Plugin::postStartupPlugin() {
 	if (fEngine == NULL)
 		return kCantHappenErr;
@@ -182,13 +175,8 @@ ASErr Plugin::postStartupPlugin() {
 	ASErr error = acquireSuites(&gAdditionalSuites);
 	if (error) return error;
 	
+	// and finally initialize the engine:
 	fEngine->initEngine();
-
-	/*
-	// this seems to be needed to make the plugin persistant. otherwise it would be
-	// unloaded immediatelly on windows (?):create a dummy dialog that is hidden.
-	sADMDialog->Create(fPluginRef, "Scriptographer", kEmptyDialogID, kADMFloatingDialogStyle, dialogHide, NULL, 0);
-	*/
 
 	return error;
 }

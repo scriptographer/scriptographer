@@ -26,8 +26,8 @@
  *
  * $RCSfile: aiGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:14:12 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 17:09:15 $
  */
 
 short artGetType(AIArtHandle handle);
@@ -35,12 +35,12 @@ short artGetType(JNIEnv *env, jclass cls);
 jboolean artHasChildren(AIArtHandle handle);
 jboolean artIsLayer(AIArtHandle handle);
 
+void artSetFilter(AIArtSet set, bool layerOnly = false);
+
 short pathGetBezierCount(AIArtHandle art);
 
 double curveGetPartLength(AIRealBezier *bezier, AIReal t1, AIReal t2, AIReal step);
 double curveGetPositionWithLength(AIRealBezier *bezier, AIReal length, AIReal flatness);
-
-
 
 #define DEFINE_SEGMENT(NAME, PTX, PTY, INX, INY, OUTX, OUTY, CORNER) \
 	AIPathSegment NAME; \
@@ -52,7 +52,6 @@ double curveGetPositionWithLength(AIRealBezier *bezier, AIReal length, AIReal fl
 	NAME.out.v = OUTY; \
 	NAME.corner = CORNER;
 
-
 #define DEFINE_BEZIER(NAME, P1X, P1Y, H1X, H1Y, H2X, H2Y, P2X, P2Y) \
 	AIRealBezier NAME; \
 	NAME.p0.h = P1X; \
@@ -63,8 +62,7 @@ double curveGetPositionWithLength(AIRealBezier *bezier, AIReal length, AIReal fl
 	NAME.p2.v = H2Y; \
 	NAME.p3.h = P2X; \
 	NAME.p3.v = P2Y;
-	
-	
+
 #define DEFINE_POINT(NAME, X, Y) \
 	AIRealPoint NAME; \
 	NAME.h = X; \

@@ -26,13 +26,14 @@
  *
  * $RCSfile: com_scriptographer_ai_Layer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 17:09:15 $
  */
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "Plugin.h"
+#include "aiGlobals.h"
 #include "com_scriptographer_ai_Layer.h"
 
 /*
@@ -186,6 +187,24 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getColor(JNIEnv *env,
 			AIColor aiColor;
 			gEngine->convertColor(&rgbColor, &aiColor);
 			return gEngine->convertColor(env, &aiColor);
+		}
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * com.scriptographer.ai.ArtSet getArt()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getArt(JNIEnv *env, jobject obj) {
+	try {
+		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
+		AIArtSet set;
+		if (!sAIArtSet->NewArtSet(&set)) {
+			if (!sAIArtSet->LayerArtSet(layer, set)) {
+				jobject artSet = gEngine->convertArtSet(env, set);
+				sAIArtSet->DisposeArtSet(&set);
+				return artSet;
+			}
 		}
 	} EXCEPTION_CONVERT(env)
 	return NULL;

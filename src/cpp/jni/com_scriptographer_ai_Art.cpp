@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 17:09:15 $
  */
  
 #include "stdHeaders.h"
@@ -303,27 +303,29 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setCenterVisible(JNIEnv *e
 }
 
 /*
- * void setUserAttributes(long flags, long values)
+ * void setAttribute(long attribute, boolean value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setUserAttributes(JNIEnv *env, jobject obj, jint flags, jint values) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setAttribute(JNIEnv *env, jobject obj, jint attribute, jboolean value) {
 	try {
 	    AIArtHandle handle = gEngine->getArtHandle(env, obj);
-		if (sAIArt->SetArtUserAttr(handle, flags, values))
+		if (sAIArt->SetArtUserAttr(handle, attribute, value ? attribute : 0))
 			throw new StringException("Cannot set attributes for art object");
     } EXCEPTION_CONVERT(env)
 }
 
 /*
- * int getUserAttributes(long flags)
+ * boolean getAttribute(long attribute)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_getUserAttributes(JNIEnv *env, jobject obj, jint flags) {
-	long values;
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_getAttribute(JNIEnv *env, jobject obj, jint attribute) {
+	jboolean value = false;
 	try {
 		AIArtHandle handle = gEngine->getArtHandle(env, obj);
-		if (sAIArt->GetArtUserAttr(handle, flags, &values))
+		long values;
+		if (sAIArt->GetArtUserAttr(handle, attribute, &values))
 			throw new StringException("Cannot get attributes for art object");
+		value = values & attribute;
     } EXCEPTION_CONVERT(env)
-	return values;
+	return value;
 }
 
 /*
@@ -350,6 +352,21 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Art_getName(JNIEnv *env, jo
 		}
 	} EXCEPTION_CONVERT(env)
 	return NULL;
+}
+
+/*
+ * boolean hasDefaultName()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_hasDefaultName(JNIEnv *env, jobject obj) {
+	ASBoolean isDefaultName = true;
+	try {
+		AIArtHandle handle = gEngine->getArtHandle(env, obj);
+		// at least one byte for the name needs to be specified, otherwise this
+		// doesn't work:
+		char name;
+		sAIArt->GetArtName(handle, &name, 1, &isDefaultName);
+	} EXCEPTION_CONVERT(env)
+	return isDefaultName;
 }
 
 /*
@@ -465,6 +482,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_moveBelow(JNIEnv *env,
 void artTransform(JNIEnv *env, jobject obj, AIArtHandle art, AIRealMatrix *matrix, AIReal lineScale, long flags) {
 	sAITransformArt->TransformArt(art, matrix, lineScale, flags);
 	short type = artGetType(art);
+	// TODO: add all art objects that need invalidate to be called after transform!
+	if (type == kPathArt)
+		gEngine->callStaticBooleanMethod(env, gEngine->cls_Art, gEngine->mid_Art_updateIfWrapped, (jint) art);
 
 	if (flags & com_scriptographer_ai_Art_TRANSFORM_DEEP) {
 		AIArtHandle child;

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 17:09:15 $
  */
 
 package com.scriptographer;
@@ -42,6 +42,7 @@ import com.scriptographer.ai.*;
 import com.scriptographer.adm.*;
 
 import java.io.File;
+import java.lang.reflect.Method;
 
 public class GlobalObject extends ImporterTopLevel {
 
@@ -58,9 +59,6 @@ public class GlobalObject extends ImporterTopLevel {
         context.setWrapFactory(wrapper);
 
 		context.setOptimizationLevel(9);
-		// define some global functions and objects:
-		String[] names = { "print", "include", "execute", "evaluate", "commit" };
-		defineFunctionProperties(names, GlobalObject.class, ScriptableObject.DONTENUM);
 
 		// define classes. the createPrototypes flag is set so
 		// the classes' constructors can now wether an object
@@ -140,8 +138,19 @@ public class GlobalObject extends ImporterTopLevel {
 
 		new ExtendedJavaClass(this, Event.class);
 
+		// define some global functions and objects:
+		String[] names = { "print", "include", "execute", "evaluate", "commit" };
+		defineFunctionProperties(names, GlobalObject.class, ScriptableObject.DONTENUM);
+
+		// properties:
 		defineProperty("documents", DocumentList.getInstance(), ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 		defineProperty("baseDir", ScriptographerEngine.getBaseDirectory(), ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+		try {
+			Method getter = GlobalObject.class.getDeclaredMethod("getActiveDocument", new Class[] { ScriptableObject.class });
+			defineProperty("activeDocument", null, getter, null, ScriptableObject.DONTENUM);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public String getClassName() {
@@ -178,6 +187,10 @@ public class GlobalObject extends ImporterTopLevel {
 	 *
 	 */
 
+	static Object getActiveDocument(ScriptableObject obj) {
+		return DocumentList.getActiveDocument();
+	}
+	
 	/**
 	 * Print the string segmentValues of its arguments.
 	 *

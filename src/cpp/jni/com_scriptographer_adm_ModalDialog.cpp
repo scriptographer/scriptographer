@@ -48,7 +48,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ModalDialog_endModal(JNIEnv *
 /*
  * void setVisible(boolean visible)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setVisible(JNIEnv *env, jobject obj, jboolean visible) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ModalDialog_setVisible(JNIEnv *env, jobject obj, jboolean visible) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		if (!visible && gEngine->getBooleanField(env, obj, gEngine->fid_ModalDialog_doesModal)) {

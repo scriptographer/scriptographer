@@ -28,8 +28,8 @@
  *
  * $RCSfile: Segment.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 17:09:15 $
  */
 
 package com.scriptographer.ai;
@@ -48,7 +48,7 @@ public class Segment implements Commitable {
 	protected SegmentPoint handleIn;
 	protected SegmentPoint handleOut;
 	// corner
-	protected boolean corner = false;
+	protected boolean corner;
 	//
 	protected int version = -1;
 	protected boolean dirty = false;
@@ -58,18 +58,6 @@ public class Segment implements Commitable {
 		handleIn = new SegmentPoint(this, 2);
 		handleOut = new SegmentPoint(this, 4);
 	}
-	
-	public Segment(SegmentList segments, int index) {
-		this();
-		this.segments = segments;
-		this.index = index;
-	}
-	
-	public Segment(Segment segment) {
-		point = new SegmentPoint(this, 0, segment.point);
-		handleIn = new SegmentPoint(this, 2, segment.handleIn);
-		handleOut = new SegmentPoint(this, 4, segment.handleOut);
-	}
 
 	public Segment(Point2D pt, Point2D in, Point2D out, boolean corner) {
 		point = new SegmentPoint(this, 0, pt);
@@ -78,10 +66,29 @@ public class Segment implements Commitable {
 		this.corner = corner;
 	}
 
+	public Segment(float x, float y, float inX, float inY, float outX, float outY, boolean corner) {
+		point = new SegmentPoint(this, 0, x, y);
+		handleIn = new SegmentPoint(this, 2, inX, inY);
+		handleOut = new SegmentPoint(this, 4, outX, outY);
+		this.corner = corner;
+	}
+
+	public Segment(float x, float y) {
+		this(x, y, x, y, x, y, true);
+	}
+	
 	public Segment(Point2D pt) {
-		point = new SegmentPoint(this, 0, pt);
-		handleIn = new SegmentPoint(this, 2, pt);
-		handleOut = new SegmentPoint(this, 4, pt);
+		this((float) pt.getX(), (float) pt.getY());
+	}
+	
+	public Segment(Segment segment) {
+		this(segment.point, segment.handleIn, segment.handleOut, segment.corner);
+	}
+	
+	protected Segment(SegmentList segments, int index) {
+		this();
+		this.segments = segments;
+		this.index = index;
 	}
 
 	/**
