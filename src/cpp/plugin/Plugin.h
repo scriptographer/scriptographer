@@ -26,17 +26,9 @@
  *
  * $RCSfile: Plugin.h,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:34:43 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/05 23:16:06 $
  */
-
-#ifdef WIN_ENV
-#define PATH_SEP_CHR '\\'
-#define PATH_SEP_STR "\\"
-#else
-#define PATH_SEP_CHR '/'
-#define PATH_SEP_STR "/"
-#endif
 
 #define kMaxStringLength 256
 
