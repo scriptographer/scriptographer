@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:15:50 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/05 23:14:32 $
  */
  
 #include "stdHeaders.h"
@@ -136,7 +136,7 @@ void ScriptographerEngine::init() {
 	
 	char classpath[512];
 	// only add the loader to the classpath, the rest is done in java:
-	sprintf(classpath, "-Djava.class.path=%s\\loader.jar", fHomeDir);
+	sprintf(classpath, "-Djava.class.path=%s" PATH_SEP_STR "loader.jar", fHomeDir);
 	int numOptions = 0;
 	options[numOptions++].optionString = classpath;
 #ifdef MAC_ENV

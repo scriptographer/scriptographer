@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:15:50 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/05 23:14:32 $
  */
 
 #include "jniMacros.h"
@@ -459,3 +459,11 @@ extern ScriptographerEngine *gEngine;
 // for the JVM invocation:
 typedef jint (JNICALL *CreateJavaVMProc)(JavaVM **jvm, void **env, void *args);
 typedef jint (JNICALL *GetDefaultJavaVMInitArgsProc)(void *args);
+
+#ifdef WIN_ENV
+#define PATH_SEP_CHR '\\'
+#define PATH_SEP_STR "\\"
+#else
+#define PATH_SEP_CHR '/'
+#define PATH_SEP_STR "/"
+#endif
