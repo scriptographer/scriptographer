@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:01 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:25:43 $
  */
 
 package com.scriptographer.ai;
@@ -38,6 +38,7 @@ import org.mozilla.javascript.NativeArray;
 
 import java.util.Collection;
 import java.util.Arrays;
+import java.awt.geom.AffineTransform;
 
 public class Path extends Art {
 
@@ -78,6 +79,14 @@ public class Path extends Art {
 		return createOval(rect, false);
 	}
 
+    public boolean remove() {
+        boolean ret = super.remove();
+        // dereference from path if they're used somewhere else!
+        if (segments != null)
+            segments.path = null;
+        return ret;
+    }
+
 	public int hashCode() {
 		return artHandle;
 	}
@@ -108,13 +117,10 @@ public class Path extends Art {
 		return curves;
 	}
 
-	public boolean remove() {
-		boolean ret = super.remove();
-		// dereference from path if they're used somewhere else!
-		if (segments != null)
-			segments.path = null;
-		return ret;
-	}
+    protected void invalidate() {
+        if (segments != null)
+            segments.invalidate();
+    }
 
 	public native boolean getClosed();
 	public native void setClosed(boolean closed);

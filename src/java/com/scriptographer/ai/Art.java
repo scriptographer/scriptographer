@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:25:31 $
  */
 
 package com.scriptographer.ai;
@@ -220,16 +220,16 @@ abstract class Art extends WrappableObject {
 	}
 
 	/**
-	 * Wraps an AIArtHandle of given type (determined by sAIArt->GetType(handle)) by
+	 * Wraps an AIArtHandle of given type (determined by sAIArt->GetType(artHandle)) by
 	 * the correct Art anchestor class:
-	 * @param handle
+	 * @param artHandle
 	 * @param type
 	 * @return
 	 */
-	protected static Art wrapArtHandle(int handle, int type) {
+	protected static Art wrapArtHandle(int artHandle, int type) {
 		// first see wether the object was already wrapped before:
-		Integer handleObj = new Integer(handle);
-		Art art = (Art)artWrappers.get(handleObj);
+		Integer handleObj = new Integer(artHandle);
+		Art art = (Art) artWrappers.get(handleObj);
 		// if it wasn't wrapped yet, do it now:
 		if (art == null) {
 			switch (type) {
@@ -248,6 +248,23 @@ abstract class Art extends WrappableObject {
 			}
 		}
 		return art;
+	}
+
+	/**
+	 * Calls invalidate of the art object associated with artHandle,
+	 * if there is one. It does not wrap the artHandle if it wasn't
+	 * already.
+	 *
+	 * @param artHandle
+	 * @return true if invalidate was called
+	 */
+	protected static boolean invalidateIfWrapped(int artHandle) {
+		Art art = (Art) artWrappers.get(new Integer(artHandle));
+		if (art != null) {
+			art.invalidate();
+			return true;
+		}
+		return false;
 	}
 
 	public boolean remove() {
@@ -370,10 +387,21 @@ abstract class Art extends WrappableObject {
 		TRANSFORM_DEEP				= 1 << 10;
 
 	public native void transform(AffineTransform at, int flags);
-	
+
 	public void transform(AffineTransform at) {
 		transform(at, TRANSFORM_OBJECTS | TRANSFORM_DEEP);
 	}
+
+    /**
+     * invalidate is called from transform, to let the Art object
+     * know that something was changed. The default implementation
+     * does nothing, but path objects should refetch the segment
+     * values afterwards
+     */
+    protected void invalidate() {
+        // do nothing
+    }
+
 	/*
 	{"toString",		artToString,			0},
 	{"equals",			artEquals,				0},

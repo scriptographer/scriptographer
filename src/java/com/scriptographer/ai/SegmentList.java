@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:01 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:26:18 $
  */
 
 package com.scriptographer.ai;
@@ -112,6 +112,10 @@ public class SegmentList extends AbstractFetchList {
 		lengthVersion = CommitManager.getVersion();
 	}
 
+    protected void invalidate() {
+        lengthVersion++; // forces an update in next checkUpdate
+    }
+
 	protected void checkUpdate() {
 		if (lengthVersion != CommitManager.getVersion()) {
 			updateLength(-1);
@@ -184,7 +188,7 @@ public class SegmentList extends AbstractFetchList {
 				fetchCount -= count;
 				if (values == null || values.length < count)
 					values = new float[count * VALUES_PER_SEGMENT];
-				System.out.println("nativeFetch " + start + " " + count);
+//				System.out.println("nativeFetch " + start + " " + count);
 				nativeFetch(path.artHandle, start, count, values);
 				int valueIndex = 0;
 				for (int i = start; i < end; i++) {
