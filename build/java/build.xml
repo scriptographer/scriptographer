@@ -23,6 +23,10 @@
         <property name="build.docs" value="${home.dir}/docs"/>
         <property name="build.javadocs" value="${home.dir}/docs/api"/>
 
+        <!-- The path to the install directory within Illustrator -->
+        <property name="install.dir" value="C:\Programme\Adobe\Illustrator CS\Plug-ins\Extensions\Scriptographer\java"/>
+        <property name="install.lib" value="${install.dir}/lib"/>
+
         <property name="jar.name" value="${project}"/>
         <property name="package.name" value="${project}-${version}"/>
 
@@ -58,7 +62,8 @@
         <echo message=" available targets are:"/>
         <echo message=""/>
         <echo message=" compile    --> compiles the source code to ./classes"/>
-        <echo message=" jar        --> generates the ./lib/scriptographer-YYYYMMDD.jar file"/>
+        <echo message=" jar        --> generates the ./lib/scriptographer.jar file"/>
+        <echo message=" install    --> installs the jar files in the Adobe Illustrator directory "/>
         <echo message=" jni        --> generates jni headers and registerNatives.cpp in ./jni/"/>
         <echo message=" jnibodies  --> generates empty jni bodies in ./jni/"/>
         <echo message=" javadocs   --> generates the API docs"/>
@@ -96,15 +101,29 @@
 
 
     <!-- =================================================================== -->
-    <!-- Creates a scriptographer.jar file in the lib-directory              -->
+    <!-- Creates scriptographer.jar and loader.jar in the lib-directory      -->
     <!-- =================================================================== -->
     <target name="jar" depends="compile">
+        <copy todir="${build.classes}/com/scriptographer/cmm">
+            <fileset dir="${build.src}/com/scriptographer/cmm">
+                <include name="**/*.icc" />
+            </fileset>
+        </copy>
         <jar jarfile="${build.lib}/${jar.name}.jar"
             basedir="${build.classes}"
             excludes="**/loader/**"/>
         <jar jarfile="${build.dir}/loader.jar"
             basedir="${build.classes}"
             includes="**/loader/**"/>
+    </target>
+
+
+    <!-- =================================================================== -->
+    <!-- Installs the jar files in the Illustrator directory                 -->
+    <!-- =================================================================== -->
+    <target name="install" depends="jar">
+        <copy file="${build.dir}/loader.jar" todir="${install.dir}/"/>
+        <copy file="${build.lib}/${jar.name}.jar" todir="${install.lib}/"/>
     </target>
 
 
