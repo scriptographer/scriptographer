@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:23:42 $
  */
 
 package com.scriptographer.adm;
@@ -46,8 +46,8 @@ public abstract class Item extends CallbackHandler {
 		TYPE_FRAME = "ADM Frame Type", // wrapped
 		TYPE_ITEMGROUP = "ADM Item Group Type",  // wrapped
 		TYPE_TABBED_MENU = "ADM Tabbed MenuItem Type",
-		TYPE_LISTBOX = "ADM SegmentList Box Type", // wrapped
-		TYPE_HIERARCHY_LISTBOX = "ADM Hierarchy SegmentList Box Type", // wrapped
+		TYPE_LISTBOX = "ADM List Box Type", // wrapped
+		TYPE_HIERARCHY_LISTBOX = "ADM Hierarchy List Box Type", // wrapped
 		TYPE_PICTURE_CHECKBOX = "ADM Picture Check Box Button Type", // wrapped
 		TYPE_PICTURE_PUSHBUTTON = "ADM Picture Push Button Type", // wrapped
 		TYPE_PICTURE_RADIOBUTTON = "ADM Picture Radio Button Type", // wrapped
@@ -55,11 +55,11 @@ public abstract class Item extends CallbackHandler {
 		TYPE_POPUP_CONTROL = "ADM Popup Control Type",
 		TYPE_POPUP_CONTROLBUTTON = "ADM Popup Control Button Type",
 		TYPE_POPUP_SPINEDIT_CONTROL = "ADM Popup Spin Edit Control Type",
-		TYPE_POPUP_LIST = "ADM Popup SegmentList Type",
+		TYPE_POPUP_LIST = "ADM Popup List Type",
 		TYPE_POPUP_MENU = "ADM Popup MenuItem Type",
 		TYPE_RESIZE = "ADM Resize Type",
 		TYPE_SCROLLBAR = "ADM Scrollbar Type", // wrapped
-		TYPE_SCROLLING_POPUP_LIST = "ADM Scrolling Popup SegmentList Type",
+		TYPE_SCROLLING_POPUP_LIST = "ADM Scrolling Popup List Type",
 		TYPE_SLIDER = "ADM Slider Type", // wrapped
 		TYPE_SPINEDIT = "ADM Spin Edit Type",
 		TYPE_SPINEDIT_POPUP = "ADM Spin Edit Popup Type",
@@ -79,7 +79,7 @@ public abstract class Item extends CallbackHandler {
 		TYPE_PROGRESS_BAR = "ADM Progress Bar Type", // wrapped
 		TYPE_CHASING_ARROWS = "ADM Chasing Arrows Type", // wrapped
 		TYPE_USER = "ADM User Type",
-		TYPE_MULTICOLUMN_LISTVIEW = "ADM Multi Column SegmentList View Type",
+		TYPE_MULTICOLUMN_LISTVIEW = "ADM Multi Column List View Type",
 		TYPE_SCROLLING_VIEW = "ADM Scrolling View Type",
 		TYPE_TABGROUP = "ADM Tab Group Type";
 	
