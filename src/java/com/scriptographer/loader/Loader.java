@@ -28,8 +28,8 @@
  *
  * $RCSfile: Loader.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:02 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:29:10 $
  */
 
 package com.scriptographer.loader;
@@ -64,6 +64,8 @@ public class Loader {
 		urls[libs.length] = new URL("file://" + homeDir + "/classes/");
 
 		loader = new URLClassLoader(urls);
+		// set the new class loader as context class loader
+		Thread.currentThread().setContextClassLoader(loader);
 	}
 
 	/**
