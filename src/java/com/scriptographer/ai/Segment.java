@@ -28,14 +28,13 @@
  *
  * $RCSfile: Segment.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 23:27:22 $
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.js.ArgumentReader;
-import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
 

@@ -28,14 +28,13 @@
  *
  * $RCSfile: FunctionHelper.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 23:27:21 $
  */
 
 package com.scriptographer.js;
 
 import org.mozilla.javascript.*;
-import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.CommitManager;
 
 import java.util.HashMap;

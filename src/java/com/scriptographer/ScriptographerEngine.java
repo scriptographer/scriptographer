@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:21:16 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/05 23:27:22 $
  */
 
 package com.scriptographer;
@@ -40,8 +40,6 @@ import com.scriptographer.js.*;
 import org.mozilla.javascript.*;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Iterator;
 
 public class ScriptographerEngine extends ScriptableObject {
 

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Point.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 23:27:22 $
  */
 
 package com.scriptographer.ai;
@@ -39,7 +39,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.AffineTransform;
 
 import org.mozilla.javascript.*;
-import com.scriptographer.js.Wrappable;
 import com.scriptographer.js.Wrappable;
 
 /**

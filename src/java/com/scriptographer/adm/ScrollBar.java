@@ -28,15 +28,14 @@
  *
  * $RCSfile: ScrollBar.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 23:27:22 $
  */
 
 package com.scriptographer.adm;
 
 import java.awt.geom.Rectangle2D;
 
-import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.js.FunctionHelper;
 
 public class ScrollBar extends ValueItem {

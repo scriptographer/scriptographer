@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:25:31 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/05 23:27:21 $
  */
 
 package com.scriptographer.ai;
@@ -38,9 +38,7 @@ import java.util.ArrayList;
 import java.util.WeakHashMap;
 import java.awt.geom.AffineTransform;
 
-import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.js.WrappableObject;
-
 
 abstract class Art extends WrappableObject {
 	// used for storing the AIHandle to this object

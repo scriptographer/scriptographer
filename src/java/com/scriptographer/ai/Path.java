@@ -28,17 +28,14 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:25:43 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/05 23:27:22 $
  */
 
 package com.scriptographer.ai;
 
-import org.mozilla.javascript.NativeArray;
-
 import java.util.Collection;
 import java.util.Arrays;
-import java.awt.geom.AffineTransform;
 
 public class Path extends Art {
 
