@@ -28,8 +28,8 @@
  *
  * $RCSfile: AIObject.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/04 17:06:16 $
  */
 
 package com.scriptographer.ai;
@@ -37,7 +37,7 @@ package com.scriptographer.ai;
 import com.scriptographer.js.WrappableObject;
 import com.scriptographer.util.Handle;
 
-public abstract class AIObject extends WrappableObject {
+abstract class AIObject extends WrappableObject {
 	// used for storing the native handle for this object
 	protected int handle;
 	

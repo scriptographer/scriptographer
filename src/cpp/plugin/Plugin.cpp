@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/03/30 08:16:59 $
+ * $Revision: 1.8 $
+ * $Date: 2005/04/04 17:04:33 $
  */
  
 #include "stdHeaders.h"
@@ -241,8 +241,11 @@ bool Plugin::fileSpecToPath(SPPlatformFileSpecification *fileSpec, char *path) {
 #ifdef MAC_ENV
 	// java needs a posix path on mac, not a Carbon one, as used by Illustrator:
 	// Then transform this into a real FSSpec
+
+	// as the file refered to by fileSpec may not exist yet, create a FSSpec for its parent directory add the name afterwards
+	unsigned char empty = 0; // 0-length p-string
 	FSSpec fsSpec;
-	if (FSMakeFSSpec(fileSpec->vRefNum, fileSpec->parID, fileSpec->name, &fsSpec) != noErr)
+	if (FSMakeFSSpec(fileSpec->vRefNum, fileSpec->parID, &empty, &fsSpec) != noErr)
 		return false;
 	// and from there into a Posix path:
 	// TODO: in order to be working for non existing files, this would need to be done in a more complicated manner:
@@ -252,6 +255,11 @@ bool Plugin::fileSpecToPath(SPPlatformFileSpecification *fileSpec, char *path) {
 		return false;
 	if (FSRefMakePath(&fsRef, (unsigned char*) path, kMaxPathLength))
 		return false;
+	
+	// ow add the name to it:
+	char *name = fromPascal(fileSpec->name);
+	sprintf(path, "%s%s%s", path, PATH_SEP_STR, name);
+	delete name;
 #else
 	// on windows, things are easier because we don't have to convert to a posix path:
 	if (sAIUser->SPPlatformFileSpecification2Path(fileSpec, path))
@@ -406,60 +414,60 @@ ASErr Plugin::handleMessage(char *caller, char *selector, void *message) {
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIFilter)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIGetFilterParameters)) {
-			error = getFilterParameters((AIFilterMessage *)message);
+			error = getFilterParameters((AIFilterMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIGoFilter)) {
-			error = goFilter((AIFilterMessage *)message);
+			error = goFilter((AIFilterMessage *) message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIPluginGroup)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAINotifyEdits)) {
-			error = pluginGroupNotify((AIPluginGroupMessage *)message);
+			error = pluginGroupNotify((AIPluginGroupMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIUpdateArt)) {
-			error = pluginGroupUpdate((AIPluginGroupMessage *)message);
+			error = pluginGroupUpdate((AIPluginGroupMessage *) message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIFileFormat)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIGetFileFormatParameters)) {
-			error = getFileFormatParameters((AIFileFormatMessage *)message);
+			error = getFileFormatParameters((AIFileFormatMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIGoFileFormat)) {
-			error = goFileFormat((AIFileFormatMessage *)message);
+			error = goFileFormat((AIFileFormatMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAICheckFileFormat)) {
-			error = checkFileFormat((AIFileFormatMessage *)message);
+			error = checkFileFormat((AIFileFormatMessage *) message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAITool)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIToolMouseDrag)) {
-			error = gEngine->toolMouseDrag((AIToolMessage *)message);
+			error = gEngine->toolMouseDrag((AIToolMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAITrackToolCursor)) {
-			error = gEngine->toolTrackCursor((AIToolMessage *)message);
+			error = gEngine->toolTrackCursor((AIToolMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIToolMouseDown)) {
-			error = gEngine->toolMouseDown((AIToolMessage *)message);
+			error = gEngine->toolMouseDown((AIToolMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIToolMouseUp)) {
-			error = gEngine->toolMouseUp((AIToolMessage *)message);
+			error = gEngine->toolMouseUp((AIToolMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAISelectTool)) {
-			error = gEngine->toolSelect((AIToolMessage *)message);
+			error = gEngine->toolSelect((AIToolMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIDeselectTool)) {
-			error = gEngine->toolDeselect((AIToolMessage *)message);
+			error = gEngine->toolDeselect((AIToolMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIReselectTool)) {
-			error = gEngine->toolReselect((AIToolMessage *)message);
+			error = gEngine->toolReselect((AIToolMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIEditToolOptions)) {
-			error = gEngine->toolEditOptions((AIToolMessage *)message);
+			error = gEngine->toolEditOptions((AIToolMessage *) message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAILiveEffect)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIEditLiveEffectParameters)) {
-			error = gEngine->liveEffectEditParameters((AILiveEffectEditParamMessage *)message);
+			error = gEngine->liveEffectEditParameters((AILiveEffectEditParamMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIGoLiveEffect)) {
-			error = gEngine->liveEffectCalculate((AILiveEffectGoMessage *)message);
+			error = gEngine->liveEffectCalculate((AILiveEffectGoMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAILiveEffectInterpolate)) {
-			error = gEngine->liveEffectInterpolate((AILiveEffectInterpParamMessage *)message);
+			error = gEngine->liveEffectInterpolate((AILiveEffectInterpParamMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAILiveEffectInputType)) {
-			error = gEngine->liveEffectGetInputType((AILiveEffectInputTypeMessage *)message);
+			error = gEngine->liveEffectGetInputType((AILiveEffectInputTypeMessage *) message);
 		}
 
 	} else if (sSPBasic->IsEqual(caller, kCallerAITimer)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIGoTimer)) {
-			error = timer((AITimerMessage *)message);
+			error = gEngine->timerExecute((AITimerMessage *) message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIAnnotation)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIDrawAnnotation)) {
-			AIAnnotatorMessage *m = (AIAnnotatorMessage *)message;
+			AIAnnotatorMessage *m = (AIAnnotatorMessage *) message;
 			/*
 			ADMRect rect;
 			ADMFont font;

@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/30 08:16:59 $
+ * $Revision: 1.6 $
+ * $Date: 2005/04/04 17:04:36 $
  */
 
 #include "jniMacros.h"
@@ -102,6 +102,9 @@ public:
 	
 	jclass cls_HashMap;
 	jmethodID cid_HashMap;
+	
+	jclass cls_ArrayList;
+	jmethodID cid_ArrayList;
 	
 	jclass cls_Set;
 	jmethodID mid_Set_iterator;
@@ -257,11 +260,15 @@ public:
 	jmethodID mid_LiveEffect_onGetInputType;
 	
 	jclass cls_MenuItem;
-	jmethodID mid_MenuItem_wrapItemHandle;
+	jmethodID mid_MenuItem_wrapHandle;
 	jmethodID mid_MenuItem_onClick;
 	jmethodID mid_MenuItem_onUpdate;
 
 	jclass cls_MenuGroup;
+	
+	jclass cls_Timer;
+	jmethodID cid_Timer;
+	jmethodID mid_Timer_onExecute;
 	
 // ADM:
 	jclass cls_ADMObject;
@@ -423,6 +430,9 @@ public:
 	// AI MenuItem
 	ASErr menuItemExecute(AIMenuMessage *message);
 	ASErr menuItemUpdate(AIMenuMessage *message, long inArtwork, long isSelected, long isTrue);
+
+	// AI Timer
+	ASErr timerExecute(AITimerMessage *message);
 	
 	// ADM CallbackListener
 	void callOnNotify(jobject handler, ADMNotifierRef notifier); 

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Image.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/30 08:15:38 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/04 17:02:29 $
  */
  
 #include "stdHeaders.h"
@@ -48,13 +48,13 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Image_nativeCreate(JNIEnv *en
 			case com_scriptographer_adm_Image_TYPE_RGB:
 				image = sADMImage->Create(width, height, 0);
 				break;
-			case com_scriptographer_adm_Image_TYPE_RGB_ALPHA:
+			case com_scriptographer_adm_Image_TYPE_ARGB:
 				image = sADMImage->Create(width, height, kADMImageHasAlphaChannelOption);
 				break;
-			case com_scriptographer_adm_Image_TYPE_OFFSCREEN:
+			case com_scriptographer_adm_Image_TYPE_SCREEN:
 				image = sADMImage->CreateOffscreen(width, height, 0);
 				break;
-			case com_scriptographer_adm_Image_TYPE_OFFSCREEN_ALPHA:
+			case com_scriptographer_adm_Image_TYPE_ASCREEN:
 				image = sADMImage->CreateOffscreen(width, height, kADMImageHasAlphaChannelOption);
 				break;
 		}

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/04 17:06:09 $
  */
 
 package com.scriptographer;
@@ -128,6 +128,7 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, MenuItem.class);
 		new ExtendedJavaClass(this, MenuGroup.class);
 		new ExtendedJavaClass(this, Tool.class);
+		new ExtendedJavaClass(this, Timer.class);
 
 		new ExtendedJavaClass(this, ArtSet.class);
 		new ExtendedJavaClass(this, SegmentList.class);
@@ -135,8 +136,6 @@ public class GlobalObject extends ImporterTopLevel {
 
 		// Java
 		new ExtendedJavaClass(this, File.class);
-
-		new ExtendedJavaClass(this, Event.class);
 
 		// define some global functions and objects:
 		String[] names = { "print", "include", "execute", "evaluate", "commit" };

@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/03/30 08:21:33 $
+ * $Revision: 1.8 $
+ * $Date: 2005/04/04 17:06:12 $
  */
 
 package com.scriptographer;
@@ -96,6 +96,7 @@ public class ScriptographerEngine {
 		Dialog.destroyAll();
 		LiveEffect.removeAll();
 		MenuItem.removeAll();
+		Timer.disposeAll();
 		ConsoleOutputStream.getInstance().enableRedirection(false);
 	}
 	

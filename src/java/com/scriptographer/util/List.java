@@ -18,8 +18,8 @@ import java.util.Collection;
  * Reason to implement this:
  * - getLength adds .length to the JS wrapper
  * - ad(int, element) returns boolean as well, which makes it easier to implement both adds.
- * - defines less functions and makes it therefore easier to implement
- * - defines other needed functions, e.g. remove(fromIndex, toIndex)
+ * - defines less functions and makes it therefore easier to implement (no ListIterator, no SubLists)
+ * - defines other often needed functions, e.g. remove(fromIndex, toIndex)
  * - gives complete control over behavior of lists
  * - avoids wrapping of standard java.util.lists in the JS ListObject
  * - ...

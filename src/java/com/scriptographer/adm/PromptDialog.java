@@ -28,8 +28,8 @@
  * 
  * $RCSfile: PromptDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/30 08:21:31 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/04 17:06:15 $
  */
 
 package com.scriptographer.adm;
@@ -40,7 +40,7 @@ import java.util.Map;
 
 import org.mozilla.javascript.ScriptRuntime;
 
-class PromptDialog extends ModalDialog {
+public class PromptDialog extends ModalDialog {
 
 	private Object[] values = null;
 	

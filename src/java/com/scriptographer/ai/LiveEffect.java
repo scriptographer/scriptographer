@@ -28,8 +28,8 @@
  * 
  * $RCSfile: LiveEffect.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.6 $
+ * $Date: 2005/04/04 17:06:16 $
  */
 
 package com.scriptographer.ai;
@@ -159,8 +159,6 @@ public class LiveEffect extends AIObject implements Unsealed {
 		FLAG_USE_AUTO_RASTARIZE 		= 0x040000,
 		FLAG_CAN_GENERATE_SVG_FILTER	= 0x080000;
 
-	private int effectHandle = 0;
-
 	private String name;
 	private String title;
 	private int preferedInput;
@@ -176,6 +174,9 @@ public class LiveEffect extends AIObject implements Unsealed {
 	private static HashMap effects = new HashMap();
 	private static ArrayList unusedEffects = null;
 
+	/**
+	 * Called from the native environment.
+	 */
 	protected LiveEffect(int effectHandle, String name, String title, int preferedInput, int type, int flags, int majorVersion, int minorVersion) {
 		super(effectHandle);
 		this.name = name;
@@ -207,18 +208,18 @@ public class LiveEffect extends AIObject implements Unsealed {
 		if (index >= 0) {
 			// found one, let's reuse it's handle and remove the old effect from the list:
 			LiveEffect effect = (LiveEffect) unusedEffects.get(index);
-			effectHandle = effect.effectHandle;
-			effect.effectHandle = 0;
+			handle = effect.handle;
+			effect.handle = 0;
 			unusedEffects.remove(index);
 		} else {
 			// no previously existing effect found, create a new one:
-			effectHandle = nativeCreate(name, title, preferedInput, type, flags, majorVersion, minorVersion);
+			handle = nativeCreate(name, title, preferedInput, type, flags, majorVersion, minorVersion);
 		}
 
-		if (effectHandle == 0)
+		if (handle == 0)
 			throw new RuntimeException("Unable to create LifeEffect");
 
-		effects.put(new Handle(effectHandle), this);
+		effects.put(new Handle(handle), this);
 	}
 
 	/**
@@ -242,7 +243,7 @@ public class LiveEffect extends AIObject implements Unsealed {
 	 * the effect's menu item, if there is one. It keeps the effectHandle and puts itself in the list of unused effects
 	 */
 	public void remove() {
-		Handle key = new Handle(effectHandle);
+		Handle key = new Handle(handle);
 		// see wether we're still linked:
 		if (effects.get(key) == this) {
 			// if so remove it and put it to the list of unsed effects, for later recycling
@@ -292,11 +293,11 @@ public class LiveEffect extends AIObject implements Unsealed {
 
 	private static ArrayList getUnusedEffects() {
 		if (unusedEffects == null)
-			unusedEffects = new ArrayList(nativeGetEffects().values());
+			unusedEffects = nativeGetEffects();
 		return unusedEffects;
 	}
 
-	private static native HashMap nativeGetEffects();
+	private static native ArrayList nativeGetEffects();
 
 	/**
 	 * Call only from onEditParameters!
@@ -360,9 +361,9 @@ public class LiveEffect extends AIObject implements Unsealed {
 	/**
 	 * To be called from the native environment:
 	 */
-	private static void onEditParameters(int effectHandle, Map parameters, int effectContext, boolean allowPreview)
+	private static void onEditParameters(int handle, Map parameters, int effectContext, boolean allowPreview)
 			throws Exception {
-		LiveEffect effect = getEffect(effectHandle);
+		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
 			// put these special values to the parameters for the duration of the handler
 			// the parameter map then needs to be passed to functions like updateParameters
@@ -377,8 +378,8 @@ public class LiveEffect extends AIObject implements Unsealed {
 	/**
 	 * To be called from the native environment:
 	 */
-	private static int onCalculate(int effectHandle, Map parameters, Art art) throws Exception {
-		LiveEffect effect = getEffect(effectHandle);
+	private static int onCalculate(int handle, Map parameters, Art art) throws Exception {
+		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
 			Art newArt = effect.onCalculate(parameters, art);
 			if (newArt != null)
@@ -391,14 +392,14 @@ public class LiveEffect extends AIObject implements Unsealed {
 	/**
 	 * To be called from the native environment:
 	 */
-	private static int onGetInputType(int effectHandle, Map parameters, Art art) throws Exception {
-		LiveEffect effect = getEffect(effectHandle);
+	private static int onGetInputType(int handle, Map parameters, Art art) throws Exception {
+		LiveEffect effect = getEffect(handle);
 		if (effect != null)
 			return effect.onGetInputType(parameters, art);
 		return 0;
 	}
 
-	private static LiveEffect getEffect(int effectHandle) {
-		return (LiveEffect) effects.get(new Handle(effectHandle));
+	private static LiveEffect getEffect(int handle) {
+		return (LiveEffect) effects.get(new Handle(handle));
 	}
 }

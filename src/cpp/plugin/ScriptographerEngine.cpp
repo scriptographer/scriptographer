@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/30 08:16:59 $
+ * $Revision: 1.6 $
+ * $Date: 2005/04/04 17:04:37 $
  */
  
 #include "stdHeaders.h"
@@ -155,13 +155,15 @@ void ScriptographerEngine::init() {
 	JavaVMInitArgs args;
 	args.version = JNI_VERSION_1_4;
 	if (args.version < JNI_VERSION_1_4) getDefaultJavaVMInitArgs(&args);
-	JavaVMOption options[11];
+	JavaVMOption options[10];
 	int numOptions = 0;
 	
 	char classpath[512];
 	// only add the loader to the classpath, the rest is done in java:
 	sprintf(classpath, "-Djava.class.path=%s" PATH_SEP_STR "loader.jar", fHomeDir);
 	options[numOptions++].optionString = classpath;
+	options[numOptions++].optionString = "-Xms64m";
+	options[numOptions++].optionString = "-Xmx496m";
 #ifdef MAC_ENV
 	// use the carbon line separator instead of the unix one on mac:
 	options[numOptions++].optionString = "-Dline.separator=\r";
@@ -309,6 +311,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_HashMap = loadClass(env, "java/util/HashMap");
 	cid_HashMap = getConstructorID(env, cls_HashMap, "()V");
+	
+	cls_ArrayList = loadClass(env, "java/util/ArrayList");
+	cid_ArrayList = getConstructorID(env, cls_ArrayList, "()V");
 	
 	cls_Set = loadClass(env, "java/util/Set");
 	mid_Set_iterator = getMethodID(env, cls_Set, "iterator", "()Ljava/util/Iterator;");
@@ -459,9 +464,13 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_LiveEffect_onGetInputType = getStaticMethodID(env, cls_LiveEffect, "onGetInputType", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
 	
 	cls_MenuItem = loadClass(env, "com/scriptographer/ai/MenuItem");
-	mid_MenuItem_wrapItemHandle =getStaticMethodID(env, cls_MenuItem, "wrapItemHandle", "(ILjava/lang/String;Ljava/lang/String;ILjava/lang/String;)Lcom/scriptographer/ai/MenuItem;");
+	mid_MenuItem_wrapHandle =getStaticMethodID(env, cls_MenuItem, "wrapHandle", "(ILjava/lang/String;Ljava/lang/String;ILjava/lang/String;)Lcom/scriptographer/ai/MenuItem;");
 	mid_MenuItem_onClick = getStaticMethodID(env, cls_MenuItem, "onClick", "(I)V");
 	mid_MenuItem_onUpdate = getStaticMethodID(env, cls_MenuItem, "onUpdate", "(IIII)V");
+	
+	cls_Timer = loadClass(env, "com/scriptographer/ai/Timer");
+	cid_Timer = getConstructorID(env, cls_Timer, "(I)V");
+	mid_Timer_onExecute = getStaticMethodID(env, cls_Timer, "onExecute", "(I)V");
 
 	cls_MenuGroup = loadClass(env, "com/scriptographer/ai/MenuGroup");
 	
@@ -1121,7 +1130,7 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) 
 }
 
 /**
- * Wraps the handle in a java object. see the Java function MenuItem.wrapItemHandle to see how 
+ * Wraps the handle in a java object. see the Java function MenuItem.wrapHandle to see how 
  * the cashing of already wrapped objects is handled.
  *
  * throws exceptions
@@ -1135,7 +1144,7 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 		!sAIMenu->GetItemText(item, text) &&
 		!sAIMenu->GetItemMenuGroup(item, &group) &&
 		!sAIMenu->GetMenuGroupName(group, &groupName)) {
-		return callStaticObjectMethod(env, cls_MenuItem, mid_MenuItem_wrapItemHandle,
+		return callStaticObjectMethod(env, cls_MenuItem, mid_MenuItem_wrapHandle,
 			(jint) item, createJString(env, name), createJString(env, text),
 			(jint) group, createJString(env, groupName)
 		);
@@ -1341,6 +1350,19 @@ ASErr ScriptographerEngine::menuItemUpdate(AIMenuMessage *message, long inArtwor
 	return kExceptionErr;
 }
 
+/**
+ * AI Timer
+ *
+ */
+
+ASErr ScriptographerEngine::timerExecute(AITimerMessage *message) {
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_Timer, mid_Timer_onExecute, (jint) message->timer);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env)
+	return kExceptionErr;
+}
 
 /**
  * ADM CallbackListener

@@ -28,15 +28,15 @@
  *
  * $RCSfile: ADMObject.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/04 17:06:15 $
  */
 
 package com.scriptographer.adm;
 
 import com.scriptographer.js.WrappableObject;
 
-public abstract class ADMObject extends WrappableObject {
+abstract class ADMObject extends WrappableObject {
 	// used for storing the native handle for this object
 	protected int handle;
 	

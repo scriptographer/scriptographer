@@ -28,8 +28,8 @@
  * 
  * $RCSfile: MenuItem.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/04 17:06:17 $
  */
 
 package com.scriptographer.ai;
@@ -108,7 +108,7 @@ public class MenuItem extends AIObject implements Unsealed {
 	 * @param parentItem
 	 * @param options
 	 *
-	 * @see MenuItem(String, String, MenuGroup, int)
+	 * @see MenuItem(MenuGroup, String, String, int)
 	 */
 	public MenuItem(MenuItem parentItem, String name, String text, int options) {
 		// if a subGroup as created earlier, createSubGroup does not create a new one
@@ -153,9 +153,9 @@ public class MenuItem extends AIObject implements Unsealed {
 	}
 
 	/**
-	 * Used in wrapItemHandle
+	 * Used in wrapHandle
 	 *
-	 * @param itemHandle
+	 * @param handle
 	 * @param name
 	 * @param text
 	 */
@@ -170,14 +170,14 @@ public class MenuItem extends AIObject implements Unsealed {
 	/**
 	 * Called from the native environment to wrap a MenuItem:
 	 *
-	 * @param itemHandle
+	 * @param handle
 	 * @param name
 	 * @param text
 	 * @param groupHandle
 	 * @param groupName
 	 * @return
 	 */
-	protected static MenuItem wrapItemHandle(int handle, String name, String text, int groupHandle, String groupName) {
+	protected static MenuItem wrapHandle(int handle, String name, String text, int groupHandle, String groupName) {
 		MenuItem item = getItem(handle);
 		if (item == null)
 			item = new MenuItem(handle, name, text, MenuGroup.wrapGroupHandle(groupHandle, groupName));
@@ -254,8 +254,8 @@ public class MenuItem extends AIObject implements Unsealed {
 	/**
 	 * To be called from the native environment:
 	 */
-	private static void onClick(int itemHandle) throws Exception {
-		MenuItem item = getItem(itemHandle);
+	private static void onClick(int handle) throws Exception {
+		MenuItem item = getItem(handle);
 		if (item != null)
 			item.onClick();
 	}
@@ -263,8 +263,8 @@ public class MenuItem extends AIObject implements Unsealed {
 	/**
 	 * To be called from the native environment:
 	 */
-	private static void onUpdate(int itemHandle, int inArtwork, int isSelected, int isTrue) throws Exception {
-		MenuItem item = getItem(itemHandle);
+	private static void onUpdate(int handle, int inArtwork, int isSelected, int isTrue) throws Exception {
+		MenuItem item = getItem(handle);
 		if (item != null)
 			item.onUpdate(inArtwork, isSelected, isTrue);
 	}
@@ -273,7 +273,7 @@ public class MenuItem extends AIObject implements Unsealed {
 		items.put(new Handle(item.handle), item);
 	}
 
-	private static MenuItem getItem(int itemHandle) {
-		return (MenuItem) items.get(new Handle(itemHandle));
+	private static MenuItem getItem(int handle) {
+		return (MenuItem) items.get(new Handle(handle));
 	}
 }

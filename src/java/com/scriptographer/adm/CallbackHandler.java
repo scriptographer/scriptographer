@@ -28,8 +28,8 @@
  *
  * $RCSfile: CallbackHandler.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.5 $
+ * $Date: 2005/04/04 17:06:16 $
  */
 
 package com.scriptographer.adm;
@@ -56,7 +56,7 @@ import com.scriptographer.js.FunctionHelper;
  * It also adds the onResize handler as both Item and Dialog need it,
  * and these are the only subclasses of CallbackHandler 
  */
-public abstract class CallbackHandler extends NotificationHandler {
+abstract class CallbackHandler extends NotificationHandler {
 	/*
 	 * Use an actiavtion mechanism for the expensive callback routines (the ones that
 	 * get called often). These are only activated if the user actually sets a callback

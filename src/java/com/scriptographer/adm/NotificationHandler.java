@@ -28,8 +28,8 @@
  *
  * $RCSfile: NotificationHandler.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/04 17:06:13 $
  */
 
 package com.scriptographer.adm;
@@ -39,7 +39,7 @@ import org.mozilla.javascript.Function;
 import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.js.Unsealed;
 
-public abstract class NotificationHandler extends ADMObject implements Unsealed {
+abstract class NotificationHandler extends ADMObject implements Unsealed {
 	private Tracker tracker = new Tracker();
  	private Drawer drawer = new Drawer();
 

@@ -665,8 +665,9 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_Dialog_nativeFileDialog(JN
 			sADMBasic->StandardGetFileDialog(msg, &specs, hasDir ? &dir : NULL, name, &result) :
 			sADMBasic->StandardPutFileDialog(msg, &specs, hasDir ? &dir : NULL, name, &result)) {
 			char path[kMaxPathLength];
-			gPlugin->fileSpecToPath(&result, path);
-			ret = gEngine->createJString(env, path);
+			
+			if (gPlugin->fileSpecToPath(&result, path))
+				ret = gEngine->createJString(env, path);
 		}
 
 		// env->ReleaseStringChars(message, msg);

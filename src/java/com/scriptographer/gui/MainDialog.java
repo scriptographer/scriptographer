@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/04 17:05:59 $
  */
 
 package com.scriptographer.gui;
@@ -48,6 +48,7 @@ import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.*;
 import com.scriptographer.ai.MenuGroup;
 import com.scriptographer.ai.MenuItem;
+import com.scriptographer.ai.Timer;
 import com.scriptographer.ai.Tool;
 
 public class MainDialog extends FloatingDialog {
@@ -165,7 +166,7 @@ public class MainDialog extends FloatingDialog {
 
 		stopButton = new PushButton(this, getImage("stop.png")) {
 			protected void onClick() {
-				System.out.println("stop");
+				Timer.stopAll();
 			}
 		};
 		stopButton.setSize(buttonSize);

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Tool.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/04 17:02:29 $
  */
  
 #include "stdHeaders.h"
@@ -62,10 +62,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Tool_nativeGetTools(JNIEnv 
 		SPPluginRef plugin = gPlugin->getPluginRef();
 		for (int i = 0; i < count; i++) {
 			AIToolHandle tool;
-			sAITool->GetNthTool(i, &tool);
 			SPPluginRef toolPlugin;
-			sAITool->GetToolPlugin(tool, &toolPlugin);
-			if (plugin == toolPlugin) {
+			if (!sAITool->GetNthTool(i, &tool) &&
+				!sAITool->GetToolPlugin(tool, &toolPlugin) &&
+				plugin == toolPlugin) {
 				char *title;
 				sAITool->GetToolTitle(tool, &title);
 				// extract the index from the title, assume that the last word is a number:

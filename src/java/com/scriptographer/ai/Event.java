@@ -28,8 +28,8 @@
  *
  * $RCSfile: Event.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/04 17:06:16 $
  */
 
 package com.scriptographer.ai;
@@ -38,11 +38,11 @@ public class Event {
 	private Point point;
 	private double pressure;
 	
-	public Event() {
+	protected Event() {
 		point = new Point();
 	}
 	
-	public void setValues(float x, float y, int pressure) {
+	protected void setValues(float x, float y, int pressure) {
 		point.setLocation(x, y);
 		this.pressure = pressure / 255.0;
 	}

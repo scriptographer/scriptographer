@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_LiveEffect.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/04 17:02:29 $
  */
 
 #include "StdHeaders.h"
@@ -138,12 +138,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_getMenuItem(JNIE
 }
 
 /*
- * java.util.HashMap nativeGetEffects()
+ * java.util.ArrayList nativeGetEffects()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeGetEffects(JNIEnv *env, jclass cls) {
 	try {
-	try {
-		jobject map = gEngine->newObject(env, gEngine->cls_HashMap, gEngine->cid_HashMap);
+		jobject array = gEngine->newObject(env, gEngine->cls_ArrayList, gEngine->cid_ArrayList);
 		long count;
 		sAILiveEffect->CountLiveEffects(&count);
 		int prefixLen = strlen(NAME_PREFIX);
@@ -169,14 +168,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeGetEffects
 				jobject effectObj = gEngine->newObject(env, gEngine->cls_LiveEffect, gEngine->cid_LiveEffect,
 						(jint) effect, gEngine->createJString(env, realname), gEngine->createJString(env, title),
 						(jint) inputPreference, type, flags, (jint) major, (jint) minor);
-				jobject keyObj = gEngine->newObject(env, gEngine->cls_Handle, gEngine->cid_Handle, (jint) effect);
-				// and add it to the map
-				gEngine->callObjectMethod(env, map, gEngine->mid_Map_put, keyObj, effectObj);
+				// and add it to the array
+				gEngine->callObjectMethod(env, array, gEngine->mid_Collection_add, effectObj);
 			}
 		}
-		return map;
-	} EXCEPTION_CONVERT(env)
-	return NULL;
+		return array;
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }
