@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_SegmentList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:45:54 $
  */
  
 #include "stdHeaders.h"
@@ -68,11 +68,11 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeFetch(JNIEnv
 		if (count == 1) {
 			// for only one segment, this seems to be faster than the GetPrimitiveArrayCritical way.
 			jfloat data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
+			int i = com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT * sizeof(float);
+			int j = sizeof(AIPathSegment);
 			data[6] = 0; // make shure the upper 3 bytes are not set to arbitrary values
 			if (sAIPath->GetPathSegments((AIArtHandle) handle, index, 1, (AIPathSegment *) data))
 				throw new StringException("Cannot get path segment");
-			
-			((AIPathSegment *) data)->corner = true;
 		
 			// now write this values into the float array that was passed and we're done. 
 			env->SetFloatArrayRegion(values, 0, com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT, data); 
