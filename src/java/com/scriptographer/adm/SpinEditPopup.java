@@ -24,41 +24,26 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: AppContext.cpp,v $
+ * File created on 11.03.2005.
+ *
+ * $RCSfile: SpinEditPopup.java,v $
  * $Author: lehni $
  * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
-/*
- *        Name:	AppContext.cpp
- *      Author:	Dave Lazarony 
- *        Date:	6/11/96
- *     Purpose:	Creates a Application Context for setting up the globals in the applications suite.
- *
- *		  NOTE:	This implementation is Illustrator Specific.
- *
- * Copyright (c) 1986-1996 Adobe Systems Incorporated, All Rights Reserved.
- *
- */
+package com.scriptographer.adm;
 
-#include "stdHeaders.h"
-#include "AppContext.h"
+public class SpinEditPopup extends ListItem {
 
-/*
-	NOTE: this file was yanked out of the PaintStyle plugin and stuck in the GlobLists
-	experimental plugin.  If this code is ever stuck into the real PlugInDev tree, this
-	file should be shared with the corresponding file in PaintStyle.
-	THERE IS NO GLOBLISTS SPECIFIC CODE HERE
-*/
+	/**
+	 * @param dialog
+	 * @param type
+	 * @param options
+	 */
+	protected SpinEditPopup(Dialog dialog, int type, int options) {
+		super(dialog, type, options);
+		// TODO Auto-generated constructor stub
+	}
 
-AppContext::AppContext(SPPluginRef pluginRef) {
-	fAppContext = NULL;
-	if (sAIAppContext)
-		sAIAppContext->PushAppContext(pluginRef, (AIAppContextHandle *)&fAppContext);
-}
-
-AppContext::~AppContext() {
-	if (sAIAppContext)
-		sAIAppContext->PopAppContext((AIAppContextHandle)fAppContext);
 }

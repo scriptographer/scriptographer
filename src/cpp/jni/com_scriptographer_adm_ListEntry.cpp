@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ListEntry.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:58 $
  */
  
 #include "stdHeaders.h"
@@ -40,7 +40,7 @@
  */
 
 void ASAPI callbackListEntryDestroy(ADMEntryRef entry) {
-	// this seems to be necessary:
+	// this seems to be necessary otherwise crashes occur:
 	sADMEntry->SetPicture(entry, NULL);
 	sADMEntry->SetDisabledPicture(entry, NULL);
 	sADMEntry->SetSelectedPicture(entry, NULL);
@@ -48,12 +48,10 @@ void ASAPI callbackListEntryDestroy(ADMEntryRef entry) {
 	JNIEnv *env = gEngine->getEnv();
 	try {
 		jobject obj = gEngine->getListEntryObject(entry);
-		ADMListRef list = sADMEntry->GetList(entry);
-		jobject listObj = gEngine->getListObject(list);
-		// call onDestoryEntry on the list object
-		gEngine->callVoidMethodReport(env, listObj, gEngine->mid_List_onDestroyEntry, obj);
+		// call onDestory on the entry object
+		gEngine->callOnDestroy(obj);
 		// clear the handle
-		gEngine->setIntField(env, obj, gEngine->fid_ListEntry_entryRef, 0);
+		gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
 		env->DeleteGlobalRef(obj);
 	} EXCEPTION_CATCH_REPORT(env)
 }
@@ -62,24 +60,23 @@ void ASAPI callbackListEntryNotify(ADMEntryRef entry, ADMNotifierRef notifier) {
 	sADMEntry->DefaultNotify(entry, notifier);
 	ADMListRef list = sADMEntry->GetList(entry);
 	jobject entryObj = gEngine->getListEntryObject(entry);
-	jobject listObj = gEngine->getListObject(list);
-	gEngine->callOnNotify(listObj, notifier, entryObj);
+	gEngine->callOnNotify(entryObj, notifier);
 }
 
 ASBoolean ASAPI callbackListEntryTrack(ADMEntryRef entry, ADMTrackerRef tracker) {
 	ADMListRef list = sADMEntry->GetList(entry);
 	jobject entryObj = gEngine->getListEntryObject(entry);
-	jobject listObj = gEngine->getListObject(list);
-	gEngine->callOnTrack(listObj, tracker, entryObj);
-	return sADMEntry->DefaultTrack(entry, tracker);
+	ASBoolean ret = gEngine->callOnTrack(entryObj, tracker);
+	if (ret)
+		ret = sADMEntry->DefaultTrack(entry, tracker);
+	return ret;
 }
 
 void ASAPI callbackListEntryDraw(ADMEntryRef entry, ADMDrawerRef drawer) {
 	sADMEntry->DefaultDraw(entry, drawer);
 	ADMListRef list = sADMEntry->GetList(entry);
 	jobject entryObj = gEngine->getListEntryObject(entry);
-	jobject listObj = gEngine->getListObject(list);
-	gEngine->callOnDraw(listObj, drawer, entryObj);
+	gEngine->callOnDraw(entryObj, drawer);
 }
 
 #define DEFINE_METHOD(METHOD) \
@@ -92,22 +89,28 @@ void ASAPI callbackListEntryDraw(ADMEntryRef entry, ADMDrawerRef drawer) {
 		}
 
 /*
- * int nativeCreate(com.scriptographer.adm.List list, int index)
+ * int nativeCreate(com.scriptographer.adm.List list, int index, int id)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListEntry_nativeCreate(JNIEnv *env, jobject obj, jobject list, jint index) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListEntry_nativeCreate(JNIEnv *env, jobject obj, jobject list, jint index, jint id) {
 	try {
 		// if index is bellow 0, insert at the end:
 		if (env->IsInstanceOf(obj, gEngine->cls_HierarchyListEntry)) {
 			ADMHierarchyListRef lst = gEngine->getHierarchyListRef(env, list);
 			ADMListEntryRef entry = index < 0 ? sADMListEntry->Create(lst) :
 				sADMHierarchyList->InsertEntry(lst, index);
-			sADMListEntry->SetUserData(entry, env->NewGlobalRef(obj));
+			if (entry != NULL) {
+				sADMListEntry->SetID(entry, id);
+				sADMListEntry->SetUserData(entry, env->NewGlobalRef(obj));
+			}
 			return (jint) entry;
 		} else {
 			ADMListRef lst = gEngine->getListRef(env, list);
 			ADMEntryRef entry = index < 0 ? sADMEntry->Create(lst) : 
 				sADMList->InsertEntry(lst, index);
-			sADMEntry->SetUserData(entry, env->NewGlobalRef(obj));
+			if (entry != NULL) {
+				sADMEntry->SetID(entry, id);
+				sADMEntry->SetUserData(entry, env->NewGlobalRef(obj));
+			}
 			return (jint) entry;
 		}
 	} EXCEPTION_CONVERT(env)

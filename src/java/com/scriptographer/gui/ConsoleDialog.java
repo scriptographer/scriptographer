@@ -26,16 +26,16 @@
  *
  * File created on 08.03.2005.
  *
- * $RCSfile: ConsoleWindow.java,v $
+ * $RCSfile: ConsoleDialog.java,v $
  * $Author: lehni $
  * $Revision: 1.1 $
- * $Date: 2005/03/10 22:55:18 $
+ * $Date: 2005/03/25 00:27:58 $
  */
 
 package com.scriptographer.gui;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Rectangle;
 
 import org.mozilla.javascript.Scriptable;
 
@@ -44,26 +44,16 @@ import com.scriptographer.ConsoleOutputWriter;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.*;
 
-public class ConsoleWindow extends Dialog implements ConsoleOutputWriter {
+public class ConsoleDialog extends FloatingDialog implements ConsoleOutputWriter {
+	static final String title = "Scriptographer Console";
 
-	public ConsoleWindow() {
-		super(Dialog.STYLE_TABBED_RESIZING_FLOATING, "Scriptographer Console", new Rectangle(200, 200, 400, 300), Dialog.OPTION_TABBED_DIALOG_SHOWS_CYCLE);
-		// let the ConsoleOutputStream know about this console
-		ConsoleOutputStream.getInstance().setWriter(this);
-	}
+	public ConsoleDialog() throws Exception {
+		super(FloatingDialog.OPTION_TABBED | FloatingDialog.OPTION_RESIZING | FloatingDialog.OPTION_SHOW_CYCLE);
+		setTitle(title);
+		setSize(200, 240);
 
-	static final Rectangle buttonRect = new Rectangle(0, 0, 32, 17);
-	static final String newLine = java.lang.System.getProperty("line.separator");
-
-	TextEdit textIn;
-	TextEdit textOut;
-	PushButton clearButton;
-	StringBuffer consoleText;
-	Scriptable consoleScope;
-
-	protected void onCreate() throws Exception {
-		textIn = new TextEdit(this, new Rectangle(0, 0, 300, 50), "", TextEdit.STYLE_MULTILINE) {
-			public void onTrack(Tracker tracker) throws Exception {
+		textIn = new TextEdit(this, TextEdit.OPTION_MULTILINE) {
+			public boolean onTrack(Tracker tracker) throws Exception {
 				if (tracker.getAction() == Tracker.ACTION_KEY_STROKE && tracker.getVirtualKey() == Tracker.KEY_RETURN) {
 					// enter was pressed in the input field. determine the current line:
 					String text = this.getText();
@@ -84,25 +74,29 @@ public class ConsoleWindow extends Dialog implements ConsoleOutputWriter {
 					}
 					ScriptographerEngine.getInstance().executeString(text, consoleScope);
 				}
+				return true;
 			}
 		};
+		textIn.setSize(300, 100);
 		textIn.setMinimumSize(200, 18);
-		textIn.setTrackCallbackEnabled(true);
+		textIn.setTrackCallback(true);
 				
-		textOut = new TextEdit(this, new Rectangle(0, 0, 300, 100), "", TextEdit.STYLE_READONLY | TextEdit.STYLE_MULTILINE);
+		textOut = new TextEdit(this, TextEdit.OPTION_READONLY | TextEdit.OPTION_MULTILINE);
+		textOut.setSize(300, 100);
 		textOut.setMinimumSize(200, 18);
 		textOut.setBackgroundColor(Drawer.COLOR_INACTIVE_TAB);
 		
 		consoleText = new StringBuffer();
-		consoleScope = ScriptographerEngine.getInstance().createScope();
+		consoleScope = ScriptographerEngine.getInstance().createScope(null);
 
 		// buttons:
-		clearButton = new PushButton(this, buttonRect, MainWindow.getImage("refresh.png")) {
+		clearButton = new PushButton(this, MainDialog.getImage("refresh.png")) {
 			public void onClick() {
 				textOut.setText("");
 				consoleText.setLength(0);
 			}
 		};
+		clearButton.setSize(buttonSize);
 		
 		// layout:
 		this.setInsets(-1, -1, -1, -1);
@@ -113,10 +107,26 @@ public class ConsoleWindow extends Dialog implements ConsoleOutputWriter {
 		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1));
 		buttons.add(clearButton);
 		this.addToLayout(buttons, "0, 2");
+
+		autoLayout();
+		loadPreferences(title);
+
+		// let the ConsoleOutputStream know about this consoleDialog
+		ConsoleOutputStream.getInstance().setWriter(this);
 	}
 
+	static final Dimension buttonSize = new Dimension(27, 17);
+	static final String newLine = java.lang.System.getProperty("line.separator");
+
+	TextEdit textIn;
+	TextEdit textOut;
+	PushButton clearButton;
+	StringBuffer consoleText;
+	Scriptable consoleScope;
+	
 	protected void onDestroy() {
 		textOut = null;
+		savePreferences(title);
 	}
 	
 	public void println(String str) {
@@ -132,7 +142,7 @@ public class ConsoleWindow extends Dialog implements ConsoleOutputWriter {
 			textOut.setText(consoleText.toString());
 			int end = consoleText.length();
 			textOut.setSelection(end);
-			ConsoleWindow.this.setVisible(true);
+			ConsoleDialog.this.setVisible(true);
 		}
 	}
 }

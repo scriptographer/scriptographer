@@ -28,18 +28,20 @@
  *
  * $RCSfile: Raster.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:01 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
+
+import com.scriptographer.util.Handle;
 
 public class Raster extends Art {
 
 	// native pointer to an attached data struct:
 	private int rasterData = 0;
 
-	public Raster(Integer handle) {
+	public Raster(Handle handle) {
 		super(handle);
 	}
 

@@ -28,14 +28,16 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/05 23:27:22 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
 
 import java.util.Collection;
 import java.util.Arrays;
+
+import com.scriptographer.util.Handle;
 
 public class Path extends Art {
 
@@ -45,7 +47,7 @@ public class Path extends Art {
 	/**
 	 * Wraps an AIArtHandle in a Path object
 	 */
-	protected Path(Integer handle) {
+	protected Path(Handle handle) {
 		super(handle);
 	}
 
@@ -84,10 +86,6 @@ public class Path extends Art {
         return ret;
     }
 
-	public int hashCode() {
-		return artHandle;
-	}
-
 	public SegmentList getSegments() {
 		if (segments == null)
 			segments = new SegmentList(this);
@@ -114,11 +112,6 @@ public class Path extends Art {
 		return curves;
 	}
 
-    protected void invalidate() {
-        if (segments != null)
-            segments.invalidate();
-    }
-
 	public native boolean getClosed();
 	public native void setClosed(boolean closed);
 	public native boolean getGuide();
@@ -137,7 +130,7 @@ public class Path extends Art {
 	private static native int nativePointsToCurves(int handle, float tolerance, float threshold, int cornerRadius, float scale);
 
 	public int pointsToCurves(float tolerance, float threshold, int cornerRadius, float scale) {
-		int length = nativePointsToCurves(artHandle, tolerance, threshold, cornerRadius, scale);
+		int length = nativePointsToCurves(handle, tolerance, threshold, cornerRadius, scale);
 		if (segments != null)
 			segments.updateLength(length);
 		return length;
@@ -162,7 +155,7 @@ public class Path extends Art {
 	private static native int nativeCurvesToPoints(int handle, float maxPointDistance, float flatness);
 
 	public int curvesToPoints(float maxPointDistance, float flatness) {
-		int length = nativeCurvesToPoints(artHandle, maxPointDistance, flatness);
+		int length = nativeCurvesToPoints(handle, maxPointDistance, flatness);
 		if (segments != null)
 			segments.updateLength(length);
 		return length;
@@ -179,7 +172,7 @@ public class Path extends Art {
 	private static native void nativeReduceSegments(int handle, float flatness);
 
 	public void reduceSegments(float flatness) {
-		nativeReduceSegments(artHandle, flatness);
+		nativeReduceSegments(handle, flatness);
 		if (segments != null)
 			segments.updateLength(-1);
 	}
@@ -191,9 +184,9 @@ public class Path extends Art {
 	private static native int nativeSplit(int handle, int index, float position);
 
 	public Path split(int index, float position) {
-		int handle = nativeSplit(artHandle, index, position);
-		if (handle != 0) {
-			Path path = new Path(new Integer(handle));
+		int newHandle = nativeSplit(handle, index, position);
+		if (newHandle != 0) {
+			Path path = new Path(new Handle(newHandle));
 			if (segments != null)
 				segments.updateLength(-1);
 			return path;

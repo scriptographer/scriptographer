@@ -28,8 +28,8 @@
  *
  * $RCSfile: FunctionHelper.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 23:27:21 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.js;
@@ -89,5 +89,16 @@ public class FunctionHelper {
 			map.put(id, val);
 		}
 		return map;
+	}
+	
+	public static Object[] convertToArray(NativeArray array) {
+		Object[] objects = new Object[(int) array.getLength()];
+		for (int i = 0; i < objects.length; i++) {
+			Object obj = array.get(i, array);
+			if (obj instanceof NativeObject)
+				obj = convertToMap((NativeObject) obj);
+			objects[i] = obj;
+		}
+		return objects;
 	}
 }

@@ -5,20 +5,20 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import com.scriptographer.js.Unsealed;
-import com.scriptographer.js.WrappableObject;
+import org.mozilla.javascript.ScriptRuntime;
 
-public class ListEntry extends WrappableObject implements Unsealed {
-	protected int entryRef = 0;
-	
+import com.scriptographer.js.FunctionHelper;
+
+public class ListEntry extends NotificationHandler {
 	private String text;
 
 	private Image picture;
 	private Image selectedPicture;
 	private Image disabledPicture;
-	private List list;
+
+	protected ListItem list;
 	
-	public ListEntry(List list, int index) {
+	public ListEntry(ListItem list, int index) {
 		if (this instanceof HierarchyListEntry) {
 			if (!(list instanceof HierarchyList))
 				throw new RuntimeException("HierarchListEntry is required for HierarchyList");
@@ -26,18 +26,20 @@ public class ListEntry extends WrappableObject implements Unsealed {
 			if (list instanceof HierarchyList)
 				throw new RuntimeException("HierarchListEntry is only allowed for HierarchyList");
 		}
-		entryRef = nativeCreate(list, index);
+		handle = nativeCreate(list, index, list.getUniqueId());
+		if (handle == 0)
+			throw new RuntimeException("Cannot create list entry");
 		this.list = list;
 	}
 	
-	public ListEntry(List list) {
+	public ListEntry(ListItem list) {
 		this(list, -1); // -1 means insert at the end
 	}
 	
 	public boolean remove() {
-		if (entryRef > 0) {
+		if (handle > 0) {
 			nativeDestroy();
-			entryRef = 0;
+			handle = 0;
 			return true;
 		}
 		return false;
@@ -47,28 +49,47 @@ public class ListEntry extends WrappableObject implements Unsealed {
 	 * Callback functions
 	 */
 
-	protected void onDestroy() throws Exception {
-		// do not call JS functions here as in JS, the list's onDestroyEntry
-		// should be used instead
+	protected void onDraw(Drawer drawer) throws Exception {
+		list.callFunction(list.onDrawEntry, drawer, this);
 	}
 
-	protected void onChange() throws Exception {
-		list.callFunction("onChangeEntry", this);
+	protected boolean onTrack(Tracker tracker) throws Exception {
+		Object result = list.callFunction(list.onTrackEntry, tracker, this);
+		if (result != null)
+			return ScriptRuntime.toBoolean(result);
+		return true;
+	}
+
+	protected void onDestroy() throws Exception {
+		if (wrapper != null)
+			FunctionHelper.callFunction(wrapper, "onDestroy");
+		list.callFunction("onDestroyEntry", this);
+	}
+
+	protected void onClick() throws Exception {
+		if (wrapper != null)
+			FunctionHelper.callFunction(wrapper, "onClick");
+		list.callFunction("onClickEntry", this);
 	}
 	
 	protected void onChangeText() throws Exception {
-		// do not call JS functions here as in JS, the list's onChangeEntryText
-		// should be used instead
+		if (wrapper != null)
+			FunctionHelper.callFunction(wrapper, "onChangeText");
+		list.callFunction("onChangeEntryText", this);
 	}
-
-	protected void onDraw(Drawer drawer) throws Exception {
-		// do not call JS functions here as in JS, the list's onDrawEntry
-		// should be used instead
-	}
-
-	protected void onTrack(Tracker tracker) throws Exception {
-		// do not call JS functions here as in JS, the list's onTrackEntry
-		// should be used instead
+	
+	protected void onNotify(int notifier) throws Exception {
+		switch (notifier) {
+			case Notifier.NOTIFIER_DESTROY:
+				onDestroy();
+			break;
+			case Notifier.NOTIFIER_USER_CHANGED:
+				onClick();
+				break;
+			case Notifier.NOTIFIER_ENTRY_TEXT_CHANGED:
+				onChangeText();
+				break;
+		}
 	}
 
 	/*
@@ -76,7 +97,7 @@ public class ListEntry extends WrappableObject implements Unsealed {
 	 * 
 	 */
 
-	private native int nativeCreate(List list, int index);
+	private native int nativeCreate(ListItem list, int index, int id);
 	private native void nativeDestroy();
 
 
@@ -87,7 +108,7 @@ public class ListEntry extends WrappableObject implements Unsealed {
 	
 	public native int getIndex();
 	
-	public List getList() {
+	public ListItem getList() {
 		return list;
 	}
 
@@ -184,9 +205,9 @@ public class ListEntry extends WrappableObject implements Unsealed {
 	 * 
 	 */
 
-	private native void nativeSetPicture(int iconRef);
-	private native void nativeSetSelectedPicture(int iconRef);
-	private native void nativeSetDisabledPicture(int iconRef);
+	private native void nativeSetPicture(int iconHandle);
+	private native void nativeSetSelectedPicture(int iconHandle);
+	private native void nativeSetDisabledPicture(int iconHandle);
 
 	public Image getPicture() {
 		return picture;
@@ -194,7 +215,7 @@ public class ListEntry extends WrappableObject implements Unsealed {
 		
 	public void setPicture(Object obj) throws IOException {
 		picture = Image.getImage(obj);
-		nativeSetPicture(picture != null ? picture.createIconRef() : 0);
+		nativeSetPicture(picture != null ? picture.createIconHandle() : 0);
 	}
 	
 	public Image getSelectedPicture() {
@@ -203,7 +224,7 @@ public class ListEntry extends WrappableObject implements Unsealed {
 	
 	public void setSelectedPicture(Object obj) throws IOException {
 		selectedPicture = Image.getImage(obj);
-		nativeSetSelectedPicture(selectedPicture != null ? selectedPicture.createIconRef() : 0);
+		nativeSetSelectedPicture(selectedPicture != null ? selectedPicture.createIconHandle() : 0);
 	}
 
 	public Image getDisabledPicture() {
@@ -212,7 +233,7 @@ public class ListEntry extends WrappableObject implements Unsealed {
 
 	public void setDisabledPicture(Object obj) throws IOException {
 		disabledPicture = Image.getImage(obj);
-		nativeSetDisabledPicture(disabledPicture != null ? disabledPicture.createIconRef() : 0);
+		nativeSetDisabledPicture(disabledPicture != null ? disabledPicture.createIconHandle() : 0);
 	}
 
 	/* 

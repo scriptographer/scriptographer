@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Drawer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:58 $
  */
  
 #include "stdHeaders.h"
@@ -456,7 +456,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawRecoloredImage(JNI
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		ADMImageRef img = gEngine->getImageRef(env, image);
-		ADMIconRef icn = (ADMIconRef)gEngine->callIntMethod(env, obj, gEngine->mid_Image_getIconRef);
+		ADMIconRef icn = (ADMIconRef)gEngine->callIntMethod(env, obj, gEngine->mid_Image_getIconHandle);
 		if (icn == NULL) throw new StringException("Cannot create icon from image.");
 		ADMPoint pt;
 		gEngine->convertPoint(env, topLeft, &pt);
@@ -471,7 +471,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawRecoloredImageCent
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		ADMImageRef img = gEngine->getImageRef(env, image);
-		ADMIconRef icn = (ADMIconRef)gEngine->callIntMethod(env, obj, gEngine->mid_Image_getIconRef);
+		ADMIconRef icn = (ADMIconRef)gEngine->callIntMethod(env, obj, gEngine->mid_Image_getIconHandle);
 		if (icn == NULL) throw new StringException("Cannot create icon from image.");
 		ADMRect rt;
 		gEngine->convertRectangle(env, rect, &rt);

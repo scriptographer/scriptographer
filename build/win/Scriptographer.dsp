@@ -198,23 +198,19 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_ItemGroup.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_List.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_ListBox.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_ListEntry.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_PictureItem.cpp
+SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_ListItem.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_ScrollBar.cpp
+SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_ModalDialog.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_PictureItem.cpp
 # End Source File
 # Begin Source File
 
@@ -223,6 +219,10 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_TextEdit.cpp
 # Begin Source File
 
 SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_TextItem.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_ToggleItem.cpp
 # End Source File
 # Begin Source File
 
@@ -332,10 +332,6 @@ SOURCE=..\..\src\cpp\plugin\ScriptographerEngine.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\cpp\plugin\AppContext.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\cpp\plugin\exceptions.cpp
 # End Source File
 # Begin Source File
@@ -382,10 +378,6 @@ SOURCE=..\..\src\cpp\plugin\ScriptographerEngine.h
 # Begin Group "Plugin Header"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\AppContext.h
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\src\cpp\plugin\exceptions.h

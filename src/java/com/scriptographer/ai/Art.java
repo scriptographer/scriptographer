@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/05 23:27:21 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
@@ -38,11 +38,16 @@ import java.util.ArrayList;
 import java.util.WeakHashMap;
 import java.awt.geom.AffineTransform;
 
-import com.scriptographer.js.WrappableObject;
+import com.scriptographer.util.Handle;
 
-abstract class Art extends WrappableObject {
-	// used for storing the AIHandle to this object
-	protected int artHandle = 0;
+abstract class Art extends AIObject {
+	
+	// the internal version. this is used for internally reflected data,
+	// such as segmentList, pathStyle, and so on. Everytime an object gets
+	// modified, ScriptographerEngine.selectionChanged() gets fired that
+	// increases the version of all involved art objects.
+	// update-commit related code needs to check against this variable
+	protected int version = 0;
 	
 	// internal hash map that keeps track of already wrapped objects. defined
 	// as weak.
@@ -195,8 +200,8 @@ abstract class Art extends WrappableObject {
 	 * the Art(Integer handle) constructor
 	 * @param handle
 	 */
-	protected Art(Integer handle) {
-		this.artHandle = handle.intValue();
+	protected Art(Handle handle) {
+		super(handle);
 		// keep track of this object from now on, see wrapArtHandle
 		artWrappers.put(handle, this);
 		// store the wrapper also in the paren'ts childrenWrappers segmentList, so
@@ -214,7 +219,7 @@ abstract class Art extends WrappableObject {
 	 * @param type
 	 */
 	protected Art(int type) {
-		this(new Integer(nativeCreate(type)));
+		this(new Handle(nativeCreate(type)));
 	}
 
 	/**
@@ -226,50 +231,54 @@ abstract class Art extends WrappableObject {
 	 */
 	protected static Art wrapArtHandle(int artHandle, int type) {
 		// first see wether the object was already wrapped before:
-		Integer handleObj = new Integer(artHandle);
-		Art art = (Art) artWrappers.get(handleObj);
+		Handle handle = new Handle(artHandle);
+		Art art = (Art) artWrappers.get(handle);
 		// if it wasn't wrapped yet, do it now:
 		if (art == null) {
 			switch (type) {
 			case TYPE_PATH:
-				art = new Path(handleObj);
+				art = new Path(handle);
 				break;
 			case TYPE_GROUP:
-				art = new Group(handleObj);
+				art = new Group(handle);
 				break;
 			case TYPE_RASTER:
-				art = new Raster(handleObj);
+				art = new Raster(handle);
 				break;
 			case TYPE_LAYER:
-				art = new Layer(handleObj);
+				art = new Layer(handle);
 				break;
 			}
 		}
 		return art;
 	}
-
+	
 	/**
-	 * Calls invalidate of the art object associated with artHandle,
-	 * if there is one. It does not wrap the artHandle if it wasn't
-	 * already.
-	 *
-	 * @param artHandle
-	 * @return true if invalidate was called
+	 * This gets fired from the native environment if the selection was changed
+	 * all the contained artHandles should increase their version counter, if
+	 * they're already wrapped:
+	 * 
+	 * @param artHandles
 	 */
-	protected static boolean invalidateIfWrapped(int artHandle) {
-		Art art = (Art) artWrappers.get(new Integer(artHandle));
-		if (art != null) {
-			art.invalidate();
-			return true;
+	private static void onSelectionChanged(int[] artHandles) {
+		// reuse one object for lookups, instead of creating a new one
+		// for every artHandle
+		Handle handle = new Handle();
+		for (int i = 0; i < artHandles.length; i++) {
+			handle.handle = artHandles[i];
+			Art art = (Art) artWrappers.get(handle);
+			if (art != null) {
+				art.version++;
+			}
 		}
-		return false;
 	}
 
 	public boolean remove() {
 		boolean ret = false;
-		if (artHandle != 0) {
-			ret = nativeRemove(artHandle);
-			artHandle = 0;
+		if (handle != 0) {
+			ret = nativeRemove(handle);
+			artWrappers.remove(new Handle(handle));
+			handle = 0;			
 		}
 		return ret;
 	}
@@ -389,16 +398,6 @@ abstract class Art extends WrappableObject {
 	public void transform(AffineTransform at) {
 		transform(at, TRANSFORM_OBJECTS | TRANSFORM_DEEP);
 	}
-
-    /**
-     * invalidate is called from transform, to let the Art object
-     * know that something was changed. The default implementation
-     * does nothing, but path objects should refetch the segment
-     * values afterwards
-     */
-    protected void invalidate() {
-        // do nothing
-    }
 
 	/*
 	{"toString",		artToString,			0},

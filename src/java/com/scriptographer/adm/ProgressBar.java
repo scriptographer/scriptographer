@@ -28,21 +28,15 @@
  *
  * $RCSfile: ProgressBar.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Rectangle2D;
-
 public class ProgressBar extends ValueItem {
 
-	public ProgressBar(Dialog dialog, Rectangle2D bounds, int style) {
-		super(dialog, Item.TYPE_PROGRESS_BAR, bounds, style, 0);
-	}
-
-	public ProgressBar(Dialog dialog, Rectangle2D bounds) {
-		this(dialog, bounds, 0);
+	public ProgressBar(Dialog dialog) {
+		super(dialog, Item.TYPE_PROGRESS_BAR, OPTION_NONE);
 	}
 }

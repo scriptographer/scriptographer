@@ -28,13 +28,11 @@
  *
  * $RCSfile: TextItem.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:35:07 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:56 $
  */
 
 package com.scriptographer.adm;
-
-import java.awt.geom.Rectangle2D;
 
 public abstract class TextItem extends ValueItem {
 
@@ -62,24 +60,14 @@ public abstract class TextItem extends ValueItem {
 
 	protected String text;
 
-	public TextItem(Dialog dialog, String type, Rectangle2D bounds, String text, int style, int options) {
-		super(dialog, type, bounds, style, options);
-		this.text = text;
-		if (text != null)
-			nativeSetText(text);
-	}
-
-	public TextItem(Dialog dialog, String type, Rectangle2D bounds, String text, int style) {
-		this (dialog, type, bounds, text, style, 0);
+	protected TextItem(Dialog dialog, int type, int options) {
+		super(dialog, type, options);
 	}
 
 	/* 
 	 * item text accessors
 	 * 
 	 */
-
-	public native int getFont();
-	public native void setFont(int font);
 
 	protected native void nativeSetText(String text);
 	protected native String nativeGetText();

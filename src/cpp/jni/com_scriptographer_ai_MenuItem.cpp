@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_MenuItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:58 $
  */
 
 #include "StdHeaders.h"
@@ -42,7 +42,7 @@
 /*
  * int nativeCreate(String name, String text, String group, int options)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_MenuItem_nativeCreate(JNIEnv *env, jobject obj, jstring name, jstring text, jstring group, jint options) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_MenuItem_nativeCreate(JNIEnv *env, jclass cls, jstring name, jstring text, jstring group, jint options) {
 	try {
 		char *nameStr = gEngine->createCString(env, name);
 		AIPlatformAddMenuItemData data;
@@ -62,7 +62,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_MenuItem_nativeCreate(JNIEnv *
 /*
  * int nativeRemove(int itemHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_MenuItem_nativeRemove(JNIEnv *env, jobject obj, jint itemHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_MenuItem_nativeRemove(JNIEnv *env, jclass cls, jint itemHandle) {
 	try {
 		sAIMenu->RemoveMenuItem((AIMenuItemHandle) itemHandle);
 	} EXCEPTION_CONVERT(env)

@@ -28,13 +28,14 @@
  *
  * $RCSfile: DocumentList.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.util.AbstractReadOnlyList;
+import com.scriptographer.util.Handle;
 
 import java.util.WeakHashMap;
 
@@ -52,7 +53,7 @@ public class DocumentList extends AbstractReadOnlyList {
 		int handle = getDocumentHandle(index);
 		if (handle == 0)
 			return null;
-		Object key = new Integer(index);
+		Handle key = new Handle(index);
 		Document doc = (Document) documents.get(key);
 		if (doc == null) {
 			doc = new Document(handle);

@@ -28,13 +28,11 @@
  *
  * $RCSfile: Slider.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:56 $
  */
 
 package com.scriptographer.adm;
-
-import java.awt.geom.Rectangle2D;
 
 public class Slider extends ValueItem {
 
@@ -44,8 +42,8 @@ public class Slider extends ValueItem {
 		STYLE_NONLINEAR = 1,
 		STYLE_SHOW_FRACTION = 2;
 
-	public Slider(Dialog dialog, Rectangle2D bounds, int style) {
-		super(dialog, Item.TYPE_SLIDER, bounds, style, STYLE_NO);
+	public Slider(Dialog dialog) {
+		super(dialog, Item.TYPE_SLIDER, OPTION_NONE);
 	}
 
 }

@@ -28,48 +28,40 @@
  *
  * $RCSfile: RadioButton.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-
-public class RadioButton extends PictureItem {
+/**
+ * A RadioButton is by default text based.
+ * Only if it is created with an image passed to the constructor,
+ * It is picture based.
+ * Picture based items (CheckBox, Static, PushButton, RadioButton),
+ * this policy has been chosen to avoid 4 more classes.
+ */
+public class RadioButton extends ToggleItem {
 
 	// ADMRadioButtonStyle
 	public final static int
 		STYLE_ONE_ALWAYS_SET = 0,
 		STYLE_ALLOW_NONE_SET = 2;
 
-	public RadioButton(Dialog dialog, Rectangle2D bounds, String text, int style) {
-		super(dialog, Item.TYPE_TEXT_RADIOBUTTON, bounds, text, style);
+	public RadioButton(Dialog dialog) {
+		super(dialog, Item.TYPE_TEXT_RADIOBUTTON);
 	}
 	
-	public RadioButton(Dialog dialog, Rectangle2D bounds, String text) {
-		this(dialog, bounds, text, STYLE_ONE_ALWAYS_SET);
-	}
-	
-	public RadioButton(Dialog dialog, Rectangle2D bounds, Image image, int style) {
-		super(dialog, Item.TYPE_PICTURE_RADIOBUTTON, bounds, null, style);
-		try {
-			setPicture(image);
-		} catch (IOException e) {
-			// will never happen with type Image
+	public RadioButton(Dialog dialog, Image picture) {
+		super(dialog, Item.TYPE_PICTURE_RADIOBUTTON);
+		hasPictures = true;
+		if (picture != null) {
+			try {
+				setPicture(picture);
+			} catch(Exception e) {
+				// OperationNotSupportedException cannot happen because of allowPictures above
+				// IOException cannot happen with parameter of class Image
+			}
 		}
-	}
-	
-	public RadioButton(Dialog dialog, Rectangle2D bounds, Image image) {
-		this(dialog, bounds, image, STYLE_ONE_ALWAYS_SET);
-	}
-	
-	public Object getValue() {
-		return new Boolean(getBooleanValue());
-	}
-	
-	public void setValue(Object value) {
-		setBooleanValue(value);
 	}
 }

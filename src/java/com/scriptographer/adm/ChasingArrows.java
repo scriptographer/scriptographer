@@ -28,21 +28,15 @@
  *
  * $RCSfile: ChasingArrows.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Rectangle2D;
-
 public class ChasingArrows extends Item {
 
-	public ChasingArrows(Dialog dialog, Rectangle2D bounds) {
-		super(dialog, Item.TYPE_CHASING_ARROWS, bounds, 0, 0);
-	}
-
-	protected void onNotify(int notifier, ListEntry entry) throws Exception {
-		// TODO: could there be some notifiactions for ChasingArrows?
+	public ChasingArrows(Dialog dialog) {
+		super(dialog, Item.TYPE_CHASING_ARROWS, 0);
 	}
 }

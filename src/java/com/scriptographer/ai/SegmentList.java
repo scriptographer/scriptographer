@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:26:18 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
@@ -39,7 +39,6 @@ import java.awt.geom.Point2D;
 
 import com.scriptographer.util.ExtendedJavaList;
 import com.scriptographer.util.AbstractFetchList;
-import com.scriptographer.CommitManager;
 
 public class SegmentList extends AbstractFetchList {
 	protected Path path;
@@ -77,7 +76,7 @@ public class SegmentList extends AbstractFetchList {
 	}
 
 	public int hashCode() {
-		return path.artHandle;
+		return path != null ? path.handle : super.hashCode();
 	}
 
 	private static native int nativeGetLength(int handle);
@@ -101,23 +100,19 @@ public class SegmentList extends AbstractFetchList {
 				}
 			}
 			if (newLength == -1)
-				newLength = nativeGetLength(path.artHandle);
+				newLength = nativeGetLength(path.handle);
 			list.setSize(newLength);
 			length = newLength;
 			if (curves != null)
 				curves.updateLength();
+			// decrease maxVersion so elements gets refetched, see fetch:
+			maxVersion--;
+			lengthVersion = path.version;
 		}
-		// decrease maxVersion so elements gets refetched, see fetch:
-		maxVersion--;
-		lengthVersion = CommitManager.getVersion();
 	}
 
-    protected void invalidate() {
-        lengthVersion++; // forces an update in next checkUpdate
-    }
-
 	protected void checkUpdate() {
-		if (lengthVersion != CommitManager.getVersion()) {
+		if (path != null && lengthVersion != path.version) {
 			updateLength(-1);
 		}
 	}
@@ -136,14 +131,14 @@ public class SegmentList extends AbstractFetchList {
 	 */
 	protected void fetch(int fromIndex, int toIndex) {
 		if (path != null) {
-			int commitVersion = CommitManager.getVersion();
+			int pathVersion = path.version;
 			// if all are out of maxVersion or only one segment is fetched, no scanning for valid segments is needed:
 			int fetchCount = toIndex - fromIndex;
-			boolean fetchAll = maxVersion != commitVersion || fetchCount <= 1;
+			boolean fetchAll = maxVersion != pathVersion || fetchCount <= 1;
 
 			// even if not everything is fetched, update the maxVersion as
 			// this field just signifies that some elements are up to date.
-			maxVersion = commitVersion;
+			maxVersion = pathVersion;
 
 			int start = fromIndex, end;
 
@@ -156,7 +151,7 @@ public class SegmentList extends AbstractFetchList {
 					Segment segment;
 					while (start < toIndex &&
 							((segment = (Segment) list.get(start)) != null) &&
-							segment.version == commitVersion) {
+							segment.version == pathVersion) {
 						start++;
 					}
 
@@ -177,7 +172,7 @@ public class SegmentList extends AbstractFetchList {
 
 					while (end < toIndex && (
 								((segment = (Segment) list.get(start)) == null) ||
-								(segment != null && segment.version != commitVersion)
+								(segment != null && segment.version != pathVersion)
 							)
 						)
 						end++;
@@ -189,7 +184,7 @@ public class SegmentList extends AbstractFetchList {
 				if (values == null || values.length < count)
 					values = new float[count * VALUES_PER_SEGMENT];
 //				System.out.println("nativeFetch " + start + " " + count);
-				nativeFetch(path.artHandle, start, count, values);
+				nativeFetch(path.handle, start, count, values);
 				int valueIndex = 0;
 				for (int i = start; i < end; i++) {
 					Segment segment = (Segment) list.get(i);
@@ -198,7 +193,7 @@ public class SegmentList extends AbstractFetchList {
 						list.set(i, segment);
 					}
 					segment.setValues(values, valueIndex);
-					segment.version = commitVersion;
+					segment.version = pathVersion;
 					valueIndex += VALUES_PER_SEGMENT;
 				}
 
@@ -271,12 +266,19 @@ public class SegmentList extends AbstractFetchList {
 		if (count == 0)
 			return false;
 
-		float[] values = path != null ? new float[count * VALUES_PER_SEGMENT] : null;
+		float[] values;
+		int commitVersion;
+		if (path != null) {
+			values = new float[count * VALUES_PER_SEGMENT];
+			commitVersion = path.version;
+		} else {
+			values = null;
+			commitVersion = 0;
+		}
 
 		int valueIndex = 0;
 		int addCount = 0;
 		int addIndex = index;
-		int commitVersion = CommitManager.getVersion();
 
 		Iterator e = c.iterator();
 		while (e.hasNext()) {
@@ -307,7 +309,7 @@ public class SegmentList extends AbstractFetchList {
 
 		// and add the segments to illustrator as well
 		if (values != null && addCount > 0) {
-			SegmentList.nativeInsert(path.artHandle, index, addCount, values);
+			SegmentList.nativeInsert(path.handle, index, addCount, values);
 			return true;
 		}
 
@@ -350,7 +352,7 @@ public class SegmentList extends AbstractFetchList {
 			}
 
 			if (path != null) {
-				length = nativeRemove(path.artHandle, fromIndex, toIndex - fromIndex);
+				length = nativeRemove(path.handle, fromIndex, toIndex - fromIndex);
 			}
 
 			list.removeRange(fromIndex, toIndex);
@@ -371,7 +373,7 @@ public class SegmentList extends AbstractFetchList {
 	public void reverse() {
 		if (path != null) {
 			// reverse underlying ai structures:
-			nativeReverse(path.artHandle);
+			nativeReverse(path.handle);
 		}
 		// reverse internal arrays:
 		Object[] objs = list.toArray();

@@ -4,8 +4,7 @@ import java.awt.Color;
 
 import com.scriptographer.ai.*;
 
-public class Drawer {
-	private int drawerRef = 0;
+public class Drawer extends ADMObject {
 	// if this drawer draws into an image:
 	private Image image;
 	
@@ -47,13 +46,13 @@ public class Drawer {
 	protected Drawer() {
 	}
 
-	protected Drawer(int drawerRef, Image image) {
-		this.drawerRef = drawerRef;
+	protected Drawer(int handle, Image image) {
+		super(handle);
 		this.image = image;
 	}
 	
-	protected Drawer(int drawerRef) {
-		this(drawerRef, null);
+	protected Drawer(int handle) {
+		this(handle, null);
 	}
 	
 	public void dispose() {
@@ -61,7 +60,7 @@ public class Drawer {
 			image.endDrawer();
 			image = null;
 		}
-		drawerRef = 0;
+		handle = 0;
 	}
 
 	/* 

@@ -26,15 +26,16 @@
  * 
  * File created on 06.03.2005.
  * 
- * $RCSfile: GlobalScope.java,v $
+ * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.1 $
+ * $Date: 2005/03/25 00:27:58 $
  */
 
 package com.scriptographer;
 
 import org.mozilla.javascript.*;
+
 import com.scriptographer.js.ScriptographerWrapFactory;
 import com.scriptographer.js.ExtendedJavaClass;
 import com.scriptographer.ai.*;
@@ -42,16 +43,14 @@ import com.scriptographer.adm.*;
 
 import java.io.File;
 
-public class GlobalScope extends ImporterTopLevel {
+public class GlobalObject extends ImporterTopLevel {
 
 	private Context context;
 
-	protected GlobalScope(Context context) {
+	protected GlobalObject(Context context) {
 		super(context);
 
 		this.context = context;
-
-		// context.setCompileFunctionsWithDynamicScope(true);
 
         WrapFactory wrapper = new ScriptographerWrapFactory();
         wrapper.setJavaPrimitiveWrap(false);
@@ -61,7 +60,7 @@ public class GlobalScope extends ImporterTopLevel {
 		context.setOptimizationLevel(9);
 		// define some global functions and objects:
 		String[] names = { "print", "include", "execute", "evaluate", "commit" };
-		defineFunctionProperties(names, GlobalScope.class, ScriptableObject.DONTENUM);
+		defineFunctionProperties(names, GlobalObject.class, ScriptableObject.DONTENUM);
 
 		// define classes. the createPrototypes flag is set so
 		// the classes' constructors can now wether an object
@@ -70,18 +69,21 @@ public class GlobalScope extends ImporterTopLevel {
 
 		// ADM
 		new ExtendedJavaClass(this, Dialog.class);
+		new ExtendedJavaClass(this, ModalDialog.class);
+		new ExtendedJavaClass(this, FloatingDialog.class);
+		new ExtendedJavaClass(this, PopupDialog.class);
 		new ExtendedJavaClass(this, Drawer.class);
 		new ExtendedJavaClass(this, Tracker.class);
 		new ExtendedJavaClass(this, Image.class);
-		new ExtendedJavaClass(this, List.class);
+		new ExtendedJavaClass(this, ListItem.class);
 		new ExtendedJavaClass(this, ListEntry.class);
 		new ExtendedJavaClass(this, HierarchyList.class);
 		new ExtendedJavaClass(this, HierarchyListEntry.class);
 		// all item classes:
 		new ExtendedJavaClass(this, Frame.class);
 		new ExtendedJavaClass(this, ItemGroup.class);
-		new ExtendedJavaClass(this, ListBox.class);
-		new ExtendedJavaClass(this, HierarchyListBox.class);
+		new ExtendedJavaClass(this, List.class);
+		new ExtendedJavaClass(this, HierarchyList.class);
 		new ExtendedJavaClass(this, PushButton.class);
 		new ExtendedJavaClass(this, CheckBox.class);
 		new ExtendedJavaClass(this, RadioButton.class);
@@ -92,6 +94,10 @@ public class GlobalScope extends ImporterTopLevel {
 		new ExtendedJavaClass(this, TextEdit.class);
 		new ExtendedJavaClass(this, Dial.class);
 		new ExtendedJavaClass(this, ChasingArrows.class);
+		new ExtendedJavaClass(this, PopupList.class);
+		new ExtendedJavaClass(this, PopupMenu.class);
+		new ExtendedJavaClass(this, SpinEditPopup.class);
+		new ExtendedJavaClass(this, TextEditPopup.class);
 
 		// layout specific classes
 		new ExtendedJavaClass(this, ItemContainer.class);
@@ -135,17 +141,36 @@ public class GlobalScope extends ImporterTopLevel {
 		new ExtendedJavaClass(this, Event.class);
 
 		defineProperty("documents", DocumentList.getInstance(), ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+		defineProperty("baseDir", ScriptographerEngine.getBaseDirectory(), ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 	}
 
 	public String getClassName() {
 		return "global";
 	}
 
-	protected Scriptable createScope() {
-		Scriptable scope = context.newObject(this);
+	protected Scriptable createScope(File scriptFile) {
+		ScriptableObject scope = new org.mozilla.javascript.NativeObject();
 		scope.setPrototype(this);
 		scope.setParentScope(null);
+		scope.defineProperty("scriptFile", scriptFile, ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 		return scope;
+	}
+	
+	/**
+	 * Determines the directory of a script by reading it's scriptFile property
+	 * in the main scope. If script file is empty (e.g. for console),
+	 * Scriptographer's base directory is used
+	 * 
+	 * @param scope
+	 * @return
+	 */
+	protected static File getDirectory(Scriptable scope) {
+		File file = (File) scope.get("scriptFile", scope);
+		if (file != null)
+			file = file.getParentFile();
+		else
+			file = ScriptographerEngine.getBaseDirectory();
+		return file;
 	}
 
 	/*
@@ -181,8 +206,9 @@ public class GlobalScope extends ImporterTopLevel {
 	public static void include(Context cx, Scriptable thisObj, Object[] args,
 		Function funObj) throws Exception {
 		ScriptographerEngine engine = ScriptographerEngine.getInstance();
+		File baseDir = getDirectory(thisObj);
 		for (int i = 0; i < args.length; i++) {
-			engine.executeFile(Context.toString(args[i]), thisObj);
+			engine.executeFile(new File(baseDir, Context.toString(args[i])), thisObj);
 		}
 	}
 
@@ -192,8 +218,9 @@ public class GlobalScope extends ImporterTopLevel {
 	public static void execute(Context cx, Scriptable thisObj, Object[] args,
 		Function funObj) throws Exception {
 		ScriptographerEngine engine = ScriptographerEngine.getInstance();
+		File baseDir = getDirectory(thisObj);
 		for (int i = 0; i < args.length; i++) {
-			engine.executeFile(Context.toString(args[i]), null);
+			engine.executeFile(new File(baseDir, Context.toString(args[i])), null);
 		}
 	}
 

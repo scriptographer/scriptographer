@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_TextItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:42:29 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:58 $
  */
  
 #include "stdHeaders.h"
@@ -37,27 +37,6 @@
 /*
  * com.scriptographer.adm.TextItem
  */
-
-/*
- * void setFont(int font)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextItem_setFont(JNIEnv *env, jobject obj, jint font) {
-	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->SetFont(item, (ADMFont)font);
-	} EXCEPTION_CONVERT(env)
-}
-
-/*
- * int getFont()
- */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextItem_getFont(JNIEnv *env, jobject obj) {
-	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
-		return sADMItem->GetFont(item);
-	} EXCEPTION_CONVERT(env)
-	return 0;
-}
 
 /*
  * void nativeSetText(java.lang.String text)

@@ -24,32 +24,42 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: AppContext.h,v $
+ * File created on 24.03.2005.
+ *
+ * $RCSfile: Handle.java,v $
  * $Author: lehni $
  * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Date: 2005/03/25 00:27:58 $
  */
 
-/*
- *        Name:	AppContext.hpp
- *      Author:	Dave Lazarony 
- *        Date:	6/11/96					  
- *     Purpose:	Creates a Application Context for setting up the globals in the applications suite.
- *
- * Copyright (c) 1986-1996 Adobe Systems Incorporated, All Rights Reserved.
- *
- */
+package com.scriptographer.util;
 
-#ifndef __SPAccess__
-#include "SPAccess.h"
-#endif
+public class Handle extends Object {
+	public int handle;
+	
+	public Handle(int handle) {
+		this.handle = handle;
+	}
 
-class AppContext
-{
-protected:
-	void *fAppContext;
+	public Handle() {
+	}
 
-public:
-	AppContext(SPPluginRef plugin);
-	~AppContext();
-};
+	public int hashCode() {
+		return handle;
+	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof Handle) {
+			return handle == ((Handle) obj).handle;
+		}
+		return false;
+	}
+	
+	public int getHandle() {
+		return handle;
+	}
+	
+	public void setHandle(int handle) {
+		this.handle = handle;
+	}
+}

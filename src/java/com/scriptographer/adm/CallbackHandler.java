@@ -28,16 +28,15 @@
  *
  * $RCSfile: CallbackHandler.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
 
 import org.mozilla.javascript.Function;
+import org.mozilla.javascript.ScriptRuntime;
 
-import com.scriptographer.js.Unsealed;
-import com.scriptographer.js.WrappableObject;
 import com.scriptographer.js.FunctionHelper;
 
 /**
@@ -49,18 +48,15 @@ import com.scriptographer.js.FunctionHelper;
  * 
  * @author Lehni
  */
-public abstract class CallbackHandler extends WrappableObject implements Unsealed {
-	private Tracker tracker = new Tracker();
- 	private Drawer drawer = new Drawer();
-	
- 	protected Function onTrack = null;
-	protected Function onDraw = null;
-	protected Function onResize = null;
-	
-	protected static Object[] zeroArgs = new Object[0];
-	protected Object[] oneArg = new Object[1];
-	protected Object[] twoArgs = new Object[2];
 
+/**
+ * Subclasses the NotificationHandler and adds functionality for
+ * defining track and draw callbacks (NotificationHandler can handle
+ * these but not set them).
+ * It also adds the onResize handler as both Item and Dialog need it,
+ * and these are the only subclasses of CallbackHandler 
+ */
+public abstract class CallbackHandler extends NotificationHandler {
 	/*
 	 * Use an actiavtion mechanism for the expensive callback routines (the ones that
 	 * get called often). These are only activated if the user actually sets a callback
@@ -69,32 +65,35 @@ public abstract class CallbackHandler extends WrappableObject implements Unseale
 	 * Abstract declarations for native functions that enable and disable the native
 	 * track and draw proc procedures:
 	 */
-	private boolean trackCallbackEnabled = false;
-	private boolean drawCallbackEnabled = false;
+	private boolean trackCallback = false;
+	private boolean drawCallback = false;
 
-	abstract protected void nativeSetTrackCallbackEnabled(boolean enabled);
-	abstract protected void nativeSetDrawCallbackEnabled(boolean enabled);
+	abstract protected void nativeSetTrackCallback(boolean enabled);
+	abstract protected void nativeSetDrawCallback(boolean enabled);
 
-	public void setTrackCallbackEnabled(boolean enabled) {
-		nativeSetTrackCallbackEnabled(enabled);
-		trackCallbackEnabled = enabled;
+	public void setTrackCallback(boolean enabled) {
+		nativeSetTrackCallback(enabled);
+		trackCallback = enabled;
 	}
 
-	public boolean isTrackCallbackEnabled() {
-		return trackCallbackEnabled;
+	public boolean getTrackCallback() {
+		return trackCallback;
 	}
 
-	public void setDrawCallbackEnabled(boolean enabled) {
-		nativeSetDrawCallbackEnabled(enabled);
-		drawCallbackEnabled = enabled;
+	public void setDrawCallback(boolean enabled) {
+		nativeSetDrawCallback(enabled);
+		drawCallback = enabled;
 	}
 
-	public boolean isDrawCallbackEnabled() {
-		return drawCallbackEnabled;
+	public boolean getDrawCallback() {
+		return drawCallback;
 	}
+
+ 	protected Function onTrack = null;
+	protected Function onDraw = null;
 
 	public void setOnTrack(Function func) {
-		setTrackCallbackEnabled(func != null);
+		setTrackCallback(func != null);
 		onTrack = func;
 	}
 
@@ -102,15 +101,18 @@ public abstract class CallbackHandler extends WrappableObject implements Unseale
 		return onTrack;
 	}
 
-	protected void onTrack(Tracker tracker) throws Exception {
+	protected boolean onTrack(Tracker tracker) throws Exception {
 		if (wrapper != null && onTrack != null) {
 			oneArg[0] = tracker;
-			FunctionHelper.callFunction(wrapper, onTrack, oneArg);
+			Object result = FunctionHelper.callFunction(wrapper, onTrack, oneArg);
+			if (result != null)
+				return ScriptRuntime.toBoolean(result);
 		}
+		return true;
 	}
 
 	public void setOnDraw(Function func) {
-		setDrawCallbackEnabled(func != null);
+		setDrawCallback(func != null);
 		onDraw = func;
 	}
 
@@ -124,6 +126,8 @@ public abstract class CallbackHandler extends WrappableObject implements Unseale
 			FunctionHelper.callFunction(wrapper, onDraw, oneArg);
 		}
 	}
+	
+	protected Function onResize = null;
 
 	public void setOnResize(Function onResize) {
 		this.onResize = onResize;
@@ -138,37 +142,6 @@ public abstract class CallbackHandler extends WrappableObject implements Unseale
 			twoArgs[0] = new Integer(dx);
 			twoArgs[1] = new Integer(dy);
 			FunctionHelper.callFunction(wrapper, onResize, twoArgs);
-		}
-	}
-	
-	protected abstract void onNotify(int notifier, ListEntry entry) throws Exception;
-
-	protected final void onNotify(String notifier, ListEntry entry) throws Exception {
-//		System.out.println(this + " " + notifier);
-		onNotify(Notifier.lookup(notifier), entry);
-	}
-
-	protected void onDestroy() throws Exception {
-		callFunction("onDestroy");
-	}
-	
-	protected void callFunction(String name) throws Exception {
-		if (wrapper != null)
-			FunctionHelper.callFunction(wrapper, name, zeroArgs);
-	}
-	
-	protected void callFunction(String name, Object param1) throws Exception {
-		if (wrapper != null) {
-			oneArg[0] = param1;
-			FunctionHelper.callFunction(wrapper, name, oneArg);
-		}
-	}
-	
-	protected void callFunction(String name, Object param1, Object param2) throws Exception {
-		if (wrapper != null) {
-			twoArgs[0] = param1;
-			twoArgs[1] = param2;
-			FunctionHelper.callFunction(wrapper, name, twoArgs);
 		}
 	}
 }

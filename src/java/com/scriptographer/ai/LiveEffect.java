@@ -28,15 +28,15 @@
  * 
  * $RCSfile: LiveEffect.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
 
-import com.scriptographer.js.WrappableObject;
 import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.js.Unsealed;
+import com.scriptographer.util.Handle;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -102,7 +102,7 @@ picture of the live effect architecture.
 Hope that helps,
 -Frank
 */
-public class LiveEffect extends WrappableObject implements Unsealed {
+public class LiveEffect extends AIObject implements Unsealed {
 	// AIStyleFilterPreferredInputArtType
 	public final static int
 		INPUT_DYNAMIC	 		= 0,
@@ -177,7 +177,7 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 	private static ArrayList unusedEffects = null;
 
 	protected LiveEffect(int effectHandle, String name, String title, int preferedInput, int type, int flags, int majorVersion, int minorVersion) {
-		this.effectHandle = effectHandle;
+		super(effectHandle);
 		this.name = name;
 		this.title = title;
 		this.preferedInput = preferedInput;
@@ -218,7 +218,7 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 		if (effectHandle == 0)
 			throw new RuntimeException("Unable to create LifeEffect");
 
-		effects.put(new Integer(effectHandle), this);
+		effects.put(new Handle(effectHandle), this);
 	}
 
 	/**
@@ -242,7 +242,7 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 	 * the effect's menu item, if there is one. It keeps the effectHandle and puts itself in the list of unused effects
 	 */
 	public void remove() {
-		Integer key = new Integer(effectHandle);
+		Handle key = new Handle(effectHandle);
 		// see wether we're still linked:
 		if (effects.get(key) == this) {
 			// if so remove it and put it to the list of unsed effects, for later recycling
@@ -292,11 +292,11 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 
 	private static ArrayList getUnusedEffects() {
 		if (unusedEffects == null)
-			unusedEffects = new ArrayList(getCreatedEffects().values());
+			unusedEffects = new ArrayList(nativeGetEffects().values());
 		return unusedEffects;
 	}
 
-	private static native HashMap getCreatedEffects();
+	private static native HashMap nativeGetEffects();
 
 	/**
 	 * Call only from onEditParameters!
@@ -309,42 +309,40 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 	// TODO: is this still needed? difference to getMenuItem()?
 	public native Object getMenuItem(Map parameters);
 
-	// Callback stuff:
-
-	private Function onEditParameters = null;
-	private Function onExecute = null;
-	private Function onGetInputType = null;
+	// Callback functions:
 
 	protected void onEditParameters(Map parameters) throws Exception {
 		System.out.println("onEditParameters");
-		if (wrapper != null) {
-			if (onEditParameters == null)
-				onEditParameters = FunctionHelper.getFunction(wrapper, "onEditParameters");
-			if (onEditParameters != null)
-				FunctionHelper.callFunction(wrapper, onEditParameters, new Object[] { parameters });
-		}
+		if (wrapper != null)
+			FunctionHelper.callFunction(wrapper, "onEditParameters", new Object[] { parameters });
 	}
 
-	protected Art onExecute(Map parameters, Art art) throws Exception {
-		System.out.println("onExecute");
-		if (wrapper != null) {
-			if (onExecute == null)
-				onExecute = FunctionHelper.getFunction(wrapper, "onExecute");
-			if (onExecute != null) {
-				Object ret = FunctionHelper.callFunction(wrapper, onExecute, new Object[] { parameters, art });
-				// it is only possible to either return the art itself or set the art to null!
-				// everything else semse to cause a illustrator crash
+	private Function onCalculate = null;
+	
+	public void setOnCalculate(Function onCalculate) {
+		this.onCalculate = onCalculate;
+	}
+	
+	public Function getOnCalculate() {
+		return onCalculate;
+	}
 
-				// TODO: This is not correct handling:
-				// Am 23.02.2005 um 18:53 schrieb Frank Stokes-Guinan:
-				// When creating output art for the go message, the output art must be a child of the same parent as
-				// the input art. It also must be the only child of this parent, so if you create a copy of the input
-				// art, work on it and attempt to return the copy as the output art, you must make sure to dispose the
-				// original input art first. It is not legal to create an art object in an arbitrary place and return
-				// that as the output art.
+	protected Art onCalculate(Map parameters, Art art) throws Exception {
+		System.out.println("onCalculate");
+		if (wrapper != null && onCalculate != null) {
+			Object ret = FunctionHelper.callFunction(wrapper, onCalculate, new Object[] { parameters, art });
+			// it is only possible to either return the art itself or set the art to null!
+			// everything else semse to cause a illustrator crash
 
-				return ret == art ? art : null;
-			}
+			// TODO: This is not correct handling:
+			// Am 23.02.2005 um 18:53 schrieb Frank Stokes-Guinan:
+			// When creating output art for the go message, the output art must be a child of the same parent as
+			// the input art. It also must be the only child of this parent, so if you create a copy of the input
+			// art, work on it and attempt to return the copy as the output art, you must make sure to dispose the
+			// original input art first. It is not legal to create an art object in an arbitrary place and return
+			// that as the output art.
+
+			return ret == art ? art : null;
 		}
 		return null;
 	}
@@ -352,13 +350,9 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 	protected int onGetInputType(Map parameters, Art art) throws Exception {
 		System.out.println("onGetInputType");
 		if (wrapper != null) {
-			if (onGetInputType == null)
-				onGetInputType = FunctionHelper.getFunction(wrapper, "onGetInputType");
-			if (onGetInputType != null) {
-				return ScriptRuntime.toInt32(
-						FunctionHelper.callFunction(wrapper, onGetInputType, new Object[] { parameters, art })
-				);
-			}
+			return ScriptRuntime.toInt32(
+				FunctionHelper.callFunction(wrapper, "onGetInputType", new Object[] { parameters, art })
+			);
 		}
 		return 0;
 	}
@@ -372,7 +366,7 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 		if (effect != null) {
 			// put these special values to the parameters for the duration of the handler
 			// the parameter map then needs to be passed to functions like updateParameters
-			parameters.put("context", new Integer(effectContext));
+			parameters.put("context", new Handle(effectContext));
 			parameters.put("allowPreview", new Boolean(allowPreview));
 			effect.onEditParameters(parameters);
 			parameters.remove("context");
@@ -383,15 +377,15 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 	/**
 	 * To be called from the native environment:
 	 */
-	private static int onExecute(int effectHandle, Map parameters, Art art) throws Exception {
+	private static int onCalculate(int effectHandle, Map parameters, Art art) throws Exception {
 		LiveEffect effect = getEffect(effectHandle);
 		if (effect != null) {
-			Art newArt = effect.onExecute(parameters, art);
+			Art newArt = effect.onCalculate(parameters, art);
 			if (newArt != null)
 				art = newArt;
 		}
 		// already return the handle to the native environment so it doesn't need to access it there...
-		return art.artHandle;
+		return art.handle;
 	}
 
 	/**
@@ -405,6 +399,6 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 	}
 
 	private static LiveEffect getEffect(int effectHandle) {
-		return (LiveEffect) effects.get(new Integer(effectHandle));
+		return (LiveEffect) effects.get(new Handle(effectHandle));
 	}
 }

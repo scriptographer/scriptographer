@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Image.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:58 $
  */
  
 #include "stdHeaders.h"
@@ -39,7 +39,7 @@
  */
 
 /*
- * int nativeCreate(int arg1, int arg2, int arg3)
+ * int nativeCreate(int width, int height, int type)
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Image_nativeCreate(JNIEnv *env, jobject obj, jint width, jint height, jint type) {
 	try {
@@ -66,12 +66,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Image_nativeCreate(JNIEnv *en
 }
 
 /*
- * void nativeDestroy(int imageRef, int iconRef)
+ * void nativeDestroy(int handle, int iconHandle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeDestroy(JNIEnv *env, jobject obj, jint imageRef, jint iconRef) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeDestroy(JNIEnv *env, jobject obj, jint handle, jint iconHandle) {
 	try {
-		if (imageRef != NULL) sADMImage->Destroy((ADMImageRef)imageRef);
-		if (iconRef != NULL) sADMIcon->Destroy((ADMIconRef)iconRef);
+		if (handle != 0) sADMImage->Destroy((ADMImageRef) handle);
+		if (iconHandle != 0) sADMIcon->Destroy((ADMIconRef) iconHandle);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -101,12 +101,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels___3IIII
 }
 
 /*
- * void nativeSetPixels(int imageRef, int numBytes)
+ * void nativeSetPixels(int handle, int numBytes)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels__II(JNIEnv *env, jobject obj, jint imageRef, jint numBytes) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels__II(JNIEnv *env, jobject obj, jint handle, jint numBytes) {
 	try {
 		ADMImageRef dstImage = gEngine->getImageRef(env, obj);
-		ADMImageRef srcImage = (ADMImageRef)imageRef;
+		ADMImageRef srcImage = (ADMImageRef) handle;
 		char *src = (char *)sADMImage->BeginBaseAddressAccess(srcImage); 
 		char *dst = (char *)sADMImage->BeginBaseAddressAccess(dstImage); 
 		

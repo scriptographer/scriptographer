@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ValueItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:58 $
  */
  
 #include "stdHeaders.h"
@@ -39,9 +39,9 @@
  */
 
 /*
- * float[] getValueRange()
+ * float[] getRange()
  */
-JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_adm_ValueItem_getValueRange(JNIEnv *env, jobject obj) {
+JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_adm_ValueItem_getRange(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		// create a float array with these values:
@@ -56,9 +56,9 @@ JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_adm_ValueItem_getValueRang
 }
 
 /*
- * void setValueRange(float arg1, float arg2)
+ * void setRange(float min, float max)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setValueRange(JNIEnv *env, jobject obj, jfloat min, jfloat max) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setRange(JNIEnv *env, jobject obj, jfloat min, jfloat max) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetMinFloatValue(item, min);
@@ -78,7 +78,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ValueItem_getPrecision(JNIEnv
 }
 
 /*
- * void setPrecision(int arg1)
+ * void setPrecision(int precision)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setPrecision(JNIEnv *env, jobject obj, jint precision) {
 	try {
@@ -87,32 +87,38 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setPrecision(JNIEnv
 	} EXCEPTION_CONVERT(env)
 }
 
-
 /*
- * boolean getBooleanValue()
+ * float[] getIncrements()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_ValueItem_getBooleanValue(JNIEnv *env, jobject obj) {
+JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_adm_ValueItem_getIncrements(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
-		return sADMItem->GetBooleanValue(item);
+		// create a float array with these values:
+		jfloatArray res = env->NewFloatArray(2);
+		jfloat range[] = {
+			sADMItem->GetSmallIncrement(item), sADMItem->GetLargeIncrement(item)
+		};
+		env->SetFloatArrayRegion(res, 0, 2, range);
+		return res;
 	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	return NULL;
 }
 
 /*
- * void setBooleanValue(boolean arg1)
+ * void setIncrements(float smallInc, float largeInc)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setBooleanValue(JNIEnv *env, jobject obj, jboolean value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setIncrements(JNIEnv *env, jobject obj, jfloat smallInc, jfloat largeInc) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->SetBooleanValue(item, value);
+		sADMItem->SetSmallIncrement(item, smallInc);
+		sADMItem->SetLargeIncrement(item, largeInc);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * float getFloatValue()
+ * float getValue()
  */
-JNIEXPORT jfloat JNICALL Java_com_scriptographer_adm_ValueItem_getFloatValue(JNIEnv *env, jobject obj) {
+JNIEXPORT jfloat JNICALL Java_com_scriptographer_adm_ValueItem_getValue(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetFloatValue(item);
@@ -121,9 +127,9 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_adm_ValueItem_getFloatValue(JNI
 }
 
 /*
- * void setFloatValue(float arg1)
+ * void setValue(float value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setFloatValue(JNIEnv *env, jobject obj, jfloat value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setValue(JNIEnv *env, jobject obj, jfloat value) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetFloatValue(item, value);

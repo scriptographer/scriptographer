@@ -28,8 +28,8 @@
  *
  * $RCSfile: Curve.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:38:54 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
@@ -53,7 +53,6 @@ public class Curve {
 	}
 
 	public Curve(SegmentList segmentList, int index) {
-		this();
 		this.segmentList = segmentList;
 		this.index1 = index;
 		updateSegments();
@@ -280,7 +279,7 @@ public class Curve {
 		segment2.setValues(values, 1);
 		// don't mark dirty, commit immediatelly both as all the values have been modified:
 		if (segmentList.path != null)
-			SegmentList.nativeCommit(segmentList.path.artHandle, index1, 2, values);
+			SegmentList.nativeCommit(segmentList.path.handle, index1, 2, values);
 	}
 
 	public Curve divide() {

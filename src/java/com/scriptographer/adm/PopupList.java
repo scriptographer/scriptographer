@@ -24,35 +24,23 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: com_scriptographer_adm_ListBox.cpp,v $
+ * File created on 11.03.2005.
+ *
+ * $RCSfile: PopupList.java,v $
  * $Author: lehni $
  * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
- */
- 
-#include "stdHeaders.h"
-#include "ScriptographerEngine.h"
-#include "com_scriptographer_adm_ListBox.h"
-
-/*
- * com.scriptographer.adm.ListBox
+ * $Date: 2005/03/25 00:27:57 $
  */
 
-/*
- * com.scriptographer.adm.List nativeGetList()
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListBox_nativeGetList(JNIEnv *env, jobject obj) {
-	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
-		ADMListRef list = sADMItem->GetList(item);
-		if (list != NULL) {
-			return gEngine->getListObject(list);
-		} else {
-			ADMHierarchyListRef hierarchyList = sADMItem->GetHierarchyList(item);
-			if (hierarchyList != NULL) {
-				return gEngine->getListObject(hierarchyList);
-			}
-		}
-	} EXCEPTION_CONVERT(env)
-	return NULL;
+package com.scriptographer.adm;
+
+public class PopupList extends ListItem {
+
+	public PopupList(Dialog dialog, int options) {
+		super(dialog, Item.TYPE_POPUP_LIST, options);
+	}
+
+	public PopupList(Dialog dialog) {
+		this(dialog, Item.OPTION_NONE);
+	}
 }

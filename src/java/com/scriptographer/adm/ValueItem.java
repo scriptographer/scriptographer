@@ -28,23 +28,19 @@
  *
  * $RCSfile: ValueItem.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Rectangle2D;
-
-import com.scriptographer.js.ArgumentReader;
-
 public abstract class ValueItem extends Item {
-	public ValueItem(Dialog dialog, String type, Rectangle2D bounds, int style, int options) {
-		super(dialog, type, bounds, style, options);
+	public ValueItem(Dialog dialog, int type, int options) {
+		super(dialog, type, options);
 	}
 	
 	/*
-	 * Callback stuff
+	 * Callback functions
 	 */
 	
 	protected void onChange() throws Exception {
@@ -59,7 +55,8 @@ public abstract class ValueItem extends Item {
 		callFunction("onNumberOutOfBounds");
 	}
 
-	protected void onNotify(int notifier, ListEntry entry) throws Exception {
+	protected void onNotify(int notifier) throws Exception {
+		super.onNotify(notifier);
 		switch (notifier) {
 			case Notifier.NOTIFIER_NUMBER_OUT_OF_BOUNDS:
 				onNumberOutOfBounds();
@@ -78,39 +75,25 @@ public abstract class ValueItem extends Item {
 	 * 
 	 */
 
-	public native float[] getValueRange();
-	public native void setValueRange(float minValue, float maxValue);
+	public native float[] getRange();
+	public native void setRange(float minValue, float maxValue);
 	
-	public void setValueRange(float[] range) {
-		setValueRange(range[0], range[1]);
+	public void setRange(float[] range) {
+		setRange(range[0], range[1]);
 	}
 
+	// TODO: check wether precision belongs to TextEdit?
+	
 	public native int getPrecision();
 	public native void setPrecision(int precision);
 	
-	public native boolean getBooleanValue();
-	public native void setBooleanValue(boolean value);
+	public native float[] getIncrements();
+	public native void setIncrements(float small, float large);
 	
-	public native float getFloatValue();
-	public native void setFloatValue(float value);
-
-	public void setFloatValue(Object value) {
-		Number num = new ArgumentReader().readNumber(value);
-		if (num != null)
-			setFloatValue(num.floatValue());
+	public void setIncrements(float[] increments) {
+		setIncrements(increments[0], increments[1]);
 	}
 	
-	public void setBooleanValue(Object value) {
-		Boolean bool = new ArgumentReader().readBoolean(value);
-		if (bool != null)
-			setBooleanValue(bool.booleanValue());
-	}
-	
-	public Object getValue() {
-		return new Double(getFloatValue());
-	}
-	
-	public void setValue(Object value) {
-		setFloatValue(value);
-	}
+	public native float getValue();
+	public native void setValue(float value);
 }

@@ -28,14 +28,16 @@
  *
  * $RCSfile: Group.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:01 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
 
+import com.scriptographer.util.Handle;
+
 public class Group extends Art {
-	protected Group(Integer handle) {
+	protected Group(Handle handle) {
 		super(handle);
 	}
 

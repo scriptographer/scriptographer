@@ -5,20 +5,24 @@ if (!this.print) {
 	this.print = function(str) {
 		// replace white spaces with non breaking spaces so that they don't get trimmed away.
 		// also replace empty with a non breaking space, otherwise it won't be printed
-		echo.setMessage(str ? str.replace(/\s/gi, '\xa0') : '\xa0');
+		echo.setMessage(str ? str.toString().replace(/\s/gi, '\xa0') : '\xa0');
 		echo.execute();
 	}
 	// under Ant, we're not printing details:
 	printDetails = false;
 }
 
-function loadJniClasses(dir) {
+function loadJniClasses(dir, endsWithMask) {
 	dir = new java.io.File(dir);
 	var classes = {};
-	var lst = dir.list();
+	filter = new java.io.FilenameFilter() {
+		accept: function(dir, name) {
+			return new java.lang.String(name).endsWith(endsWithMask ? endsWithMask : ".h");
+		}
+	}
+	var lst = dir.listFiles(filter);
 	for (var i=0; i < lst.length; i++) {
-		if (lst[i].endsWith(".h"))
-			collectJniClasses(new java.io.File(dir, lst[i]), classes);
+		collectJniClasses(lst[i], classes);
 	}
 	return classes;
 }
@@ -232,9 +236,9 @@ function registerNatives(srcDir, output) {
 	out.println('}');
 }
 
-function createJniBodies(srcDir) {
+function createJniBodies(srcDir, endsWithMask) {
 	// read the files in the directory
-	var classes = loadJniClasses(srcDir);
+	var classes = loadJniClasses(srcDir, endsWithMask);
 
 	for (var cls in classes) {
 		var file = new java.io.File(srcDir, cls + ".cpp");

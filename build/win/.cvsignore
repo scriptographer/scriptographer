@@ -1,6 +1,7 @@
-Scriptographer_*
 Scriptographer.exp
 Scriptographer.lib
 Scriptographer.ncb
 Scriptographer.opt
 Scriptographer.plg
+Scriptographer_*
+hs_err_*.log

@@ -24,51 +24,38 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * File created on 03.01.2005.
+ * File created on 14.03.2005.
  *
- * $RCSfile: ListBox.java,v $
+ * $RCSfile: ToggleItem.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.1 $
+ * $Date: 2005/03/25 00:27:56 $
  */
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Rectangle2D;
+public abstract class ToggleItem extends PictureItem {
+	public ToggleItem(Dialog dialog, int type) {
+		super(dialog, type);
+	}
 
-public class ListBox extends Item {
+	/* 
+	 * item value accessors
+	 * 
+	 */
 	
-	// SegmentList box styles
-	public final static int
-		STYLE_MULTISELECT = (1 << 0),
-		STYLE_DIVIDED = (1 << 1),
-		STYLE_TILE = (1 << 2),
-		STYLE_ENTRY_ALWAYS_SELECTED = (1 << 3),
-		STYLE_BLACK_RECT = (1 << 4),
-		STYLE_USE_IMAGE = (1 << 5),
-		STYLE_ENTRYTEXT_EDITABLE = (1 << 6);
-
-	protected List list;
-
-	protected ListBox(Dialog dialog, String type, Rectangle2D bounds, int style, int options) {
-		super(dialog, type, bounds, style, options);
+	public native boolean isChecked();
+	public native void setChecked(boolean value);
+	
+	protected void onClick() throws Exception {
+		callFunction("onClick");
 	}
-
-	public ListBox(Dialog dialog, Rectangle2D bounds, int style) {
-		this(dialog, Item.TYPE_LISTBOX, bounds, style, 0);
-	}
-
-	public ListBox(Dialog dialog, Rectangle2D bounds) {
-		this(dialog, bounds, 0);
-	}
-
-	protected void onNotify(int notifier, ListEntry entry) throws Exception {
-		// TODO: could there be some notifiactions for Frame?
-	}
-
-	public List getList() {
-		if (list == null)
-			list = new List(this);
-		return list;
+	
+	/**
+	 * Redirect onChange to onClick for buttons, as onChange is
+	 * not a suitable name for button click handlers
+	 */
+	protected void onChange() throws Exception {
+		onClick();
 	}
 }

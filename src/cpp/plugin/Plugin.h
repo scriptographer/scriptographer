@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.h,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.6 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 #define kMaxStringLength 256
@@ -53,6 +53,7 @@ protected:
 	ASBoolean fSupressDuplicateErrors;
 	unsigned long fLastErrorTime;
 	AINotifierHandle fAppStartedNotifier;
+	AINotifierHandle fSelectionChangedNotifier;
 	ASBoolean fLoaded;
 	ScriptographerEngine *fEngine;
 
@@ -105,10 +106,6 @@ public:
 	ASErr postStartupPlugin();
 
 	void setGlobal(ASBoolean set);
-
-	ASErr notify(AINotifierMessage *message) {
-		return kNoErr;
-	}
 
 	ASErr getFilterParameters(AIFilterMessage *message) {
 		return kUnhandledMsgErr;

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:44:18 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:58 $
  */
  
 #include "stdHeaders.h"
@@ -465,9 +465,6 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_moveBelow(JNIEnv *env,
 void artTransform(JNIEnv *env, jobject obj, AIArtHandle art, AIRealMatrix *matrix, AIReal lineScale, long flags) {
 	sAITransformArt->TransformArt(art, matrix, lineScale, flags);
 	short type = artGetType(art);
-	// TODO: add all art objects that need invalidate to be called after transform!
-	if (type == kPathArt)
-		gEngine->callStaticVoidMethod(env, gEngine->cls_Art, gEngine->mid_Art_invalidateIfWrapped, (jint) art);
 
 	if (flags & com_scriptographer_ai_Art_TRANSFORM_DEEP) {
 		AIArtHandle child;

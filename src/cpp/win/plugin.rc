@@ -33,97 +33,6 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-kAboutDialogID DIALOG DISCARDABLE  0, 0, 191, 39
-STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-CAPTION "About Scriptographer"
-FONT 8, "MS Sans Serif"
-BEGIN
-    DEFPUSHBUTTON   "OK",kDlgOKButton,137,19,48,14
-    LTEXT           "Scriptographer 0.2 © 2001 Jürg Lehni",IDC_STATIC,14,7,
-                    120,8
-    LTEXT           "http://www.scratchdisk.com",IDC_STATIC,14,20,93,8
-END
-
-kMainDialogID DIALOG DISCARDABLE  0, 0, 169, 159
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Scriptographer"
-FONT 8, "MS Sans Serif"
-BEGIN
-    CONTROL         "",kMainScriptListItem,"ADM Hierarchy List Box Type",0x0,
-                    0,0,169,147
-    CONTROL         "",kMainPlayItem,"ADM Picture Push Button Type",0x0,0,
-                    147,21,12
-    CONTROL         "",kMainStopItem,"ADM Picture Push Button Type",0x0,20,
-                    147,21,12
-    CONTROL         "",kMainConsoleItem,"ADM Picture Push Button Type",0x0,
-                    88,147,21,12
-    CONTROL         "",kMainEditorItem,"ADM Picture Push Button Type",0x0,68,
-                    147,21,12
-    CONTROL         "",kMainTool2Item,"ADM Picture Push Button Type",0x0,132,
-                    147,21,12
-    CONTROL         "",kMainTool1Item,"ADM Picture Push Button Type",0x0,112,
-                    147,21,12
-    CONTROL         "",kMainRefreshItem,"ADM Picture Push Button Type",0x0,
-                    44,147,21,12
-END
-
-kErrorDialogID DIALOG DISCARDABLE  175, 224, 209, 98
-STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-CAPTION "Scriptographer Error"
-FONT 8, "MS Sans Serif"
-BEGIN
-    DEFPUSHBUTTON   "OK",kDlgOKButton,153,78,50,14
-    LTEXT           "Code",kErrorCodeText,6,66,140,8
-    LTEXT           "Message",kErrorMessageText,6,6,197,57
-END
-
-kJavaScriptErrorDialogID DIALOG DISCARDABLE  175, 224, 209, 98
-STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-CAPTION "Scriptographer Error"
-FONT 8, "MS Sans Serif"
-BEGIN
-    DEFPUSHBUTTON   "OK",kDlgOKButton,153,78,50,14
-    LTEXT           "Message",kErrorMessageText,6,6,197,66
-END
-
-kEditorDialogID DIALOG DISCARDABLE  0, 0, 139, 159
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Scriptographer Editor"
-FONT 8, "MS Sans Serif"
-BEGIN
-    LTEXT           "untitled.js",kEditorFileNameItem,2,0,137,8,NOT WS_GROUP
-    EDITTEXT        kEditorTextItem,0,9,139,138,ES_MULTILINE | 
-                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | NOT 
-                    WS_BORDER | WS_VSCROLL | WS_HSCROLL | NOT WS_TABSTOP
-    CONTROL         "",kEditorPlayItem,"ADM Picture Push Button Type",0x0,0,
-                    147,21,12
-    CONTROL         "",kEditorSaveItem,"ADM Picture Push Button Type",0x0,44,
-                    147,21,12
-    CONTROL         "",kEditorNewItem,"ADM Picture Push Button Type",0x0,64,
-                    147,21,12
-    CONTROL         "",kEditorStopItem,"ADM Picture Push Button Type",0x0,20,
-                    147,21,12
-    LTEXT           "",kEditorLineItem,99,150,40,9
-END
-
-kConsoleDialogID DIALOG DISCARDABLE  0, 0, 139, 159
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Scriptographer Console"
-FONT 8, "MS Sans Serif"
-BEGIN
-    EDITTEXT        kConsoleTextItem,0,0,139,148,ES_MULTILINE | 
-                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | NOT WS_BORDER | NOT 
-                    WS_TABSTOP
-END
-
-kCustomDialogID DIALOG DISCARDABLE  175, 224, 87, 12
-STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-FONT 7, "Verdana"
-BEGIN
-    DEFPUSHBUTTON   "OK",kDlgOKButton,0,0,41,12
-    PUSHBUTTON      "Cancel",kDlgCancelButton,45,0,41,12
-END
-
 kEmptyDialogID DIALOG DISCARDABLE  0, 0, 140, 139
 STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 7, "Verdana"
@@ -179,18 +88,6 @@ BEGIN
     END
 END
 
-kEditorPulldownMenuID MENU DISCARDABLE 
-BEGIN
-    POPUP "Dialog List"
-    BEGIN
-        MENUITEM "Execute",                     1
-        MENUITEM "Stop All Scripts",            2
-        MENUITEM SEPARATOR
-        MENUITEM "Save",                        4
-        MENUITEM "New",                         5
-    END
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -234,17 +131,8 @@ LANGUAGE LANG_GERMAN, SUBLANG_GERMAN_SWISS
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-kFolderPictureID        ICON    DISCARDABLE     "folder.ico"
-kStopPictureID          ICON    DISCARDABLE     "play.ico"
-kScriptPictureID        ICON    DISCARDABLE     "script.ico"
-kSavePictureID          ICON    DISCARDABLE     "save.ico"
-kRefreshPictureID       ICON    DISCARDABLE     "refresh.ico"
-kConsolePictureID       ICON    DISCARDABLE     "console.ico"
 kTool1IconID            ICON    DISCARDABLE     "tool1.ico"
 kTool2IconID            ICON    DISCARDABLE     "tool2.ico"
-kTool1ScriptPictureID   ICON    DISCARDABLE     "tool1script.ico"
-kTool2ScriptPictureID   ICON    DISCARDABLE     "tool2script.ico"
-kPlayPictureID          ICON    DISCARDABLE     "kstoppic.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

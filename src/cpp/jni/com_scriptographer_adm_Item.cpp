@@ -1,3 +1,35 @@
+/*
+ * Scriptographer
+ *
+ * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
+ *
+ * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * All rights reserved.
+ *
+ * Please visit http://scriptographer.com/ for updates and contact.
+ *
+ * -- GPL LICENSE NOTICE --
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * -- GPL LICENSE NOTICE --
+ *
+ * $RCSfile: com_scriptographer_adm_Item.cpp,v $
+ * $Author: lehni $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/25 00:27:58 $
+ */
+
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "admGlobals.h"
@@ -14,20 +46,21 @@
 
 ASErr ASAPI callbackItemInit(ADMItemRef item) {
 	jobject obj = gEngine->getItemObject(item);
+	// Set the java's reflections of size and bounds.
+	// if the item's bounds are set to -1, set them to best size now:
+	JNIEnv *env = gEngine->getEnv();
+	// set size and bounds:
+	ADMRect rect;
+	sADMItem->GetLocalRect(item, &rect);
+	DEFINE_ADM_POINT(size, rect.right, rect.bottom);
+	gEngine->setObjectField(env, obj, gEngine->fid_Item_size, gEngine->convertDimension(env, &size));
+	sADMItem->GetBoundsRect(item, &rect);
+	gEngine->setObjectField(env, obj, gEngine->fid_Item_bounds, gEngine->convertRectangle(env, &rect));
+
 	// Attach the item-level callbacks
 	sADMItem->SetDestroyProc(item, callbackItemDestroy);
 	sADMItem->SetNotifyProc(item, callbackItemNotify);
-	// is this a list or hierarchy list?
-	// if so, call its init function, as this is not automatically done:
-	ADMListRef list = sADMItem->GetList(item);
-	if (list != NULL) { // List
-		callbackListInit(list);
-	} else {
-		ADMHierarchyListRef hierarchyList = sADMItem->GetHierarchyList(item);
-		if (hierarchyList != NULL) { // HierarchyList
-			callbackHierarchyListInit(hierarchyList);
-		}
-	}
+
 	return kNoErr;
 }
 
@@ -35,32 +68,23 @@ void ASAPI callbackItemDestroy(ADMItemRef item) {
 	JNIEnv *env = gEngine->getEnv();
 	try {
 		jobject obj = gEngine->getItemObject(item);
-		gEngine->callVoidMethodReport(env, obj, gEngine->mid_CallbackHandler_onDestroy);
+		gEngine->callOnDestroy(obj);
 		// clear the handle:
-		gEngine->setIntField(env, obj, gEngine->fid_Item_itemRef, 0);
+		gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
 
 		// is this a list or hierarchy list?
 		// if so, call its destroy function, as this is not automatically done:
+		// SetUserData needs to be called again as the user data is not valid anymore here:
 
-		// unfortunatelly, calling sADMItem->GetHierarchyList in callbackItemDestroy crashes illustrator,
-		// so let's access the listRefs through the existing java wrapper instead:
-		
-		if (env->IsInstanceOf(obj, gEngine->cls_ListBox)) {
-			jobject listObj = gEngine->getObjectField(env, obj, gEngine->fid_ListBox_list);
-			if (listObj != NULL) {
-				if (env->IsInstanceOf(listObj, gEngine->cls_HierarchyList)) {
-					ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, listObj);
-					// I don't know why the listObj's UserData is wrong on Windows
-					// but for some reason it has to be set again otherwise 
-					// callbackHierarchyListDestroy does not work:
-					// (probably UserData is not valid any longer
-					// on Windows when the ListBox gets deleted...),
-					sADMHierarchyList->SetUserData(list, listObj);
-					callbackHierarchyListDestroy(list);
-				} else {
-					ADMListRef list = gEngine->getListRef(env, listObj);
-					callbackListDestroy(list);
-				}
+		if (env->IsInstanceOf(obj, gEngine->cls_ListItem)) {
+			if (env->IsInstanceOf(obj, gEngine->cls_HierarchyList)) {
+				ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+				sADMHierarchyList->SetUserData(list, obj);
+				callbackHierarchyListDestroy(list);
+			} else {
+				ADMListRef list = gEngine->getListRef(env, obj);
+				sADMList->SetUserData(list, obj);
+				callbackListDestroy(list);
 			}
 		}
 		env->DeleteGlobalRef(obj);
@@ -74,20 +98,22 @@ void ASAPI callbackItemNotify(ADMItemRef item, ADMNotifierRef notifier) {
 		JNIEnv *env = gEngine->getEnv();
 		try {
 			jobject size = gEngine->getObjectField(env, obj, gEngine->fid_Item_size);
-			ADMPoint pt;
-			gEngine->convertDimension(env, size, &pt);
-			// calculate differnce:
-			ADMRect rt;
-			sADMItem->GetLocalRect(item, &rt);
-			int dx = rt.right - pt.h;
-			int dy = rt.bottom - pt.v;
-			if (dx != 0 || dy != 0) {
-				// write size back:
-				pt.h = rt.right;
-				pt.v = rt.bottom;
-				gEngine->convertDimension(env, &pt, size);
-				// and call handler:
-				gEngine->callVoidMethod(env, obj, gEngine->mid_CallbackHandler_onResize, dx, dy);
+			if (size != NULL) {
+				ADMPoint pt;
+				gEngine->convertDimension(env, size, &pt);
+				// calculate differnce:
+				ADMRect rt;
+				sADMItem->GetLocalRect(item, &rt);
+				int dx = rt.right - pt.h;
+				int dy = rt.bottom - pt.v;
+				if (dx != 0 || dy != 0) {
+					// write size back:
+					pt.h = rt.right;
+					pt.v = rt.bottom;
+					gEngine->convertDimension(env, &pt, size);
+					// and call handler:
+					gEngine->callVoidMethod(env, obj, gEngine->mid_CallbackHandler_onResize, dx, dy);
+				}
 			}
 		} EXCEPTION_CATCH_REPORT(env)
 	} else {
@@ -97,8 +123,10 @@ void ASAPI callbackItemNotify(ADMItemRef item, ADMNotifierRef notifier) {
 
 ASBoolean ASAPI callbackItemTrack(ADMItemRef item, ADMTrackerRef tracker) {
 	jobject obj = gEngine->getItemObject(item);
-	gEngine->callOnTrack(obj, tracker);
-	return sADMItem->DefaultTrack(item, tracker);
+	ASBoolean ret = gEngine->callOnTrack(obj, tracker);
+	if (ret)
+		ret = sADMItem->DefaultTrack(item, tracker);
+	return ret;
 }
 
 void ASAPI callbackItemDraw(ADMItemRef item, ADMDrawerRef drawer) {
@@ -108,38 +136,48 @@ void ASAPI callbackItemDraw(ADMItemRef item, ADMDrawerRef drawer) {
 }
 
 /*
- * int nativeCreate(int dialogRef, java.lang.String type, java.awt.Rectangle bounds, int options)
+ * int nativeCreate(int dialogHandle, java.lang.String type, int options)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeCreate(JNIEnv *env, jobject obj, jobject dialog, jstring type, jobject bounds, jint options) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeCreate(JNIEnv *env, jobject obj, jint dialogHandle, jstring type, jint options) {
 	try {
-		ADMDialogRef dlg = gEngine->getDialogRef(env, dialog);
 		char *itemType = gEngine->createCString(env, type);
-		ADMRect rt;
-		gEngine->convertRectangle(env, bounds, &rt);
-		ADMItemRef item = sADMItem->Create(dlg, kADMUniqueItemID, itemType, &rt, callbackItemInit, env->NewGlobalRef(obj), options);
+		// create with default dimensions:
+		DEFINE_ADM_RECT(rect, 0, 0, 100, 100);
+		ADMItemRef item = sADMItem->Create((ADMDialogRef) dialogHandle, kADMUniqueItemID, itemType, &rect, callbackItemInit, env->NewGlobalRef(obj), options);
 		delete itemType;
 		if (item == NULL)
 			throw new StringException("Cannot create dialog item.");
-		
-		return (jint)item;
+
+		return (jint) item;
 	} EXCEPTION_CONVERT(env)
 	return 0;
 }
 
 /*
- * void destroy()
+ * String nativeInit(int handle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeDestroy(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_Item_nativeInit(JNIEnv *env, jobject obj, jint handle) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->Destroy(item);
+		sADMItem->SetUserData((ADMItemRef) handle, env->NewGlobalRef(obj));
+		callbackItemInit((ADMItemRef) handle);
+		return gEngine->createJString(env, sADMItem->GetItemType((ADMItemRef) handle));
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * void nativeDestroy(int handle)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeDestroy(JNIEnv *env, jobject obj, jint handle) {
+	try {
+		sADMItem->Destroy((ADMItemRef) handle);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void nativeSetTrackCallbackEnabled(boolean enabled)
+ * void nativeSetTrackCallback(boolean enabled)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetTrackCallbackEnabled(JNIEnv *env, jobject obj, jboolean enabled) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetTrackCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetTrackProc(item, enabled ? callbackItemTrack : NULL);
@@ -147,23 +185,35 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetTrackCallbackEn
 }
 
 /*
- * void nativeSetDrawCallbackEnabled(boolean enabled)
+ * void nativeSetDrawCallback(boolean enabled)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetDrawCallbackEnabled(JNIEnv *env, jobject obj, jboolean enabled) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetDrawCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetDrawProc(item, enabled ? callbackItemDraw : NULL);
 	} EXCEPTION_CONVERT(env)
 }
 
+
 /*
- * void nativeSetStyle(int style)
+ * void setStyle(int style)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetStyle(JNIEnv *env, jobject obj, jint style) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setStyle(JNIEnv *env, jobject obj, jint style) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->SetItemStyle(item, (ADMItemStyle)style);
+		sADMItem->SetItemStyle(item, (ADMItemStyle) style);
 	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * int getStyle()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getStyle(JNIEnv *env, jobject obj) {
+	try {
+		ADMItemRef item = gEngine->getItemRef(env, obj);
+		return (jint) sADMItem->GetItemStyle(item);
+	} EXCEPTION_CONVERT(env)
+	return 0;
 }
 
 /*
@@ -189,6 +239,44 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetSize(JNIEnv *en
 	    DEFINE_ADM_RECT(rt, 0, 0, width, height);
 		sADMItem->SetLocalRect(item, &rt);
 	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * java.awt.Dimension nativeGetBestSize()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetBestSize(JNIEnv *env, jobject obj) {
+	try {
+		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMPoint size;
+		sADMItem->GetBestSize(item, &size);
+		return gEngine->convertDimension(env, &size);
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * java.awt.Dimension nativeGetTextSize(java.lang.String text, int maxWidth)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetTextSize(JNIEnv *env, jobject obj, jstring text, jint maxWidth) {
+	if (text != NULL) {
+		try {
+			ADMItemRef item = gEngine->getItemRef(env, obj);
+			const jchar *chars = env->GetStringChars(text, NULL);
+			if (chars == NULL) EXCEPTION_CHECK(env)
+			ADMImageRef image = sADMImage->Create(1, 1, 0);
+			ADMDrawerRef drawer = sADMImage->BeginADMDrawer(image);
+			sADMDrawer->SetFont(drawer, sADMItem->GetFont(item));
+			ADMPoint size;
+			size.h = sADMDrawer->GetTextWidthW(drawer, chars);
+			if (maxWidth >= 0 && size.h > maxWidth)
+				size.h = maxWidth;
+			size.v = sADMDrawer->GetTextRectHeightW(drawer, size.h + 1, chars);
+			sADMImage->EndADMDrawer(image);
+			env->ReleaseStringChars(text, chars);
+			return gEngine->convertDimension(env, &size);
+		} EXCEPTION_CONVERT(env)
+	}
+	return NULL;
 }
 
 /*
@@ -334,7 +422,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_isVisible(JNIEnv *en
 }
 
 /*
- * void setVisible(boolean arg1)
+ * void setVisible(boolean visible)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setVisible(JNIEnv *env, jobject obj, jboolean visible) {
 	try {
@@ -446,26 +534,13 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_wantsFocus(JNIEnv *e
 }
 
 /*
- * void setWantsFocus(boolean arg1)
+ * void setWantsFocus(boolean wantsFocus)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setWantsFocus(JNIEnv *env, jobject obj, jboolean wantsFocus) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetWantsFocus(item, wantsFocus);
 	} EXCEPTION_CONVERT(env)
-}
-
-/*
- * java.awt.Dimension getPreferredSize()
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_getPreferredSize(JNIEnv *env, jobject obj) {
-	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
-		ADMPoint point;
-		sADMItem->GetBestSize(item, &point);
-		return gEngine->convertDimension(env, &point);
-	} EXCEPTION_CONVERT(env)
-	return NULL;
 }
 
 /*
@@ -521,6 +596,27 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_hideToolTip(JNIEnv *env,
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->HideToolTip(item);
 	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * void setFont(int font)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setFont(JNIEnv *env, jobject obj, jint font) {
+	try {
+	    ADMItemRef item = gEngine->getItemRef(env, obj);
+		sADMItem->SetFont(item, (ADMFont)font);
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * int getFont()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getFont(JNIEnv *env, jobject obj) {
+	try {
+	    ADMItemRef item = gEngine->getItemRef(env, obj);
+		return sADMItem->GetFont(item);
+	} EXCEPTION_CONVERT(env)
+	return 0;
 }
 
 /*

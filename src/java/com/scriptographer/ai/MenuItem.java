@@ -28,28 +28,25 @@
  * 
  * $RCSfile: MenuItem.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
 
-import com.scriptographer.js.WrappableObject;
 import com.scriptographer.js.Unsealed;
 import com.scriptographer.js.FunctionHelper;
+import com.scriptographer.util.Handle;
 
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.mozilla.javascript.Function;
-
-public class MenuItem extends WrappableObject implements Unsealed {
+public class MenuItem extends AIObject implements Unsealed {
 	public final static int
 		OPTION_NONE 			= 0,
 		OPTION_WANTS_UPDATE 	= 1 << 0,
 		OPTION_ALWAYS_ENABLED	= 1 << 1;
 
-	protected int itemHandle;
 	protected String name;
 	protected String text;
 	protected MenuGroup group;
@@ -62,23 +59,22 @@ public class MenuItem extends WrappableObject implements Unsealed {
 		this.text = text;
 		this.group = group;
 
-		itemHandle = 0;
 		synchronized(items) {
 			for (Iterator iterator = items.values().iterator(); iterator.hasNext();) {
 				MenuItem item = (MenuItem) iterator.next();
 				if (this.equals(item)) {
 					// take over this item:
-					itemHandle = item.itemHandle;
-					item.itemHandle = 0;
+					handle = item.handle;
+					item.handle = 0;
 				}
 			}
 		}
-
+		
 		// if no item has been taken over, create a new one:
-		if (itemHandle == 0)
-			itemHandle = nativeCreate(name, text, group.name, options);
+		if (handle == 0)
+			handle = nativeCreate(name, text, group.name, options);
 
-		if (itemHandle == 0)
+		if (handle == 0)
 			throw new RuntimeException("Unable to create MenuItem");
 
 		putItem(this);
@@ -147,11 +143,9 @@ public class MenuItem extends WrappableObject implements Unsealed {
 	 * @return
 	 */
 	public MenuGroup createSubGroup(int options) {
-		if (subGroup == null) {
+		if (subGroup == null)
 			subGroup = new MenuGroup(name, this, options);
-			return subGroup;
-		}
-		return null;
+		return subGroup;
 	}
 
 	public MenuGroup createSubGroup() {
@@ -165,8 +159,8 @@ public class MenuItem extends WrappableObject implements Unsealed {
 	 * @param name
 	 * @param text
 	 */
-	protected MenuItem(int itemHandle, String name, String text, MenuGroup group) {
-		this.itemHandle = itemHandle;
+	protected MenuItem(int handle, String name, String text, MenuGroup group) {
+		super(handle);
 		this.name = name;
 		this.text = text;
 		this.group = group;
@@ -183,19 +177,19 @@ public class MenuItem extends WrappableObject implements Unsealed {
 	 * @param groupName
 	 * @return
 	 */
-	protected static MenuItem wrapItemHandle(int itemHandle, String name, String text, int groupHandle, String groupName) {
-		MenuItem item = getItem(itemHandle);
+	protected static MenuItem wrapItemHandle(int handle, String name, String text, int groupHandle, String groupName) {
+		MenuItem item = getItem(handle);
 		if (item == null)
-			item = new MenuItem(itemHandle, name, text, MenuGroup.wrapGroupHandle(groupHandle, groupName));
+			item = new MenuItem(handle, name, text, MenuGroup.wrapGroupHandle(groupHandle, groupName));
 		return item;
 	}
 
 	public void remove() {
-		nativeRemove(itemHandle);
-		Integer key = new Integer(itemHandle);
+		nativeRemove(handle);
+		Handle key = new Handle(handle);
 		if (items.get(key) == this)
 			items.remove(key);
-		itemHandle = 0;
+		handle = 0;
 	}
 
 	public static void removeAll() {
@@ -206,8 +200,8 @@ public class MenuItem extends WrappableObject implements Unsealed {
 		}
 	}
 
-	private native int nativeCreate(String name, String text, String group, int options);
-	private native int nativeRemove(int itemHandle);
+	private static native int nativeCreate(String name, String text, String group, int options);
+	private static native int nativeRemove(int handle);
 
 	public boolean equals(Object obj) {
 		if (obj instanceof MenuItem) {
@@ -245,39 +239,25 @@ public class MenuItem extends WrappableObject implements Unsealed {
 
 	// TODO: add support for UpdateMenuItemAutomatically and all the parameters needed for it
 
-	// Callback stuff:
+	// Callback functions:
 
-	private Function onExecute = null;
-	private Function onUpdate = null;
-
-	protected void onExecute() throws Exception {
-		if (wrapper != null) {
-			if (onExecute == null)
-				onExecute = FunctionHelper.getFunction(wrapper, "onExecute");
-			if (onExecute != null)
-				FunctionHelper.callFunction(wrapper, onExecute);
-		}
+	protected void onClick() throws Exception {
+		if (wrapper != null)
+			FunctionHelper.callFunction(wrapper, "onClick");
 	}
 
 	protected void onUpdate(int inArtwork, int isSelected, int isTrue) throws Exception {
-		if (wrapper != null) {
-			if (onUpdate == null)
-				onUpdate = FunctionHelper.getFunction(wrapper, "onUpdate");
-			if (onUpdate != null) {
-				FunctionHelper.callFunction(wrapper, onUpdate, new Object[] {
-					new Integer(inArtwork), new Integer(isSelected), new Integer(isTrue)
-				});
-			}
-		}
+		if (wrapper != null)
+			FunctionHelper.callFunction(wrapper, "onUpdate");
 	}
 
 	/**
 	 * To be called from the native environment:
 	 */
-	private static void onExecute(int itemHandle) throws Exception {
+	private static void onClick(int itemHandle) throws Exception {
 		MenuItem item = getItem(itemHandle);
 		if (item != null)
-			item.onExecute();
+			item.onClick();
 	}
 
 	/**
@@ -290,10 +270,10 @@ public class MenuItem extends WrappableObject implements Unsealed {
 	}
 
 	private static void putItem(MenuItem item) {
-		items.put(new Integer(item.itemHandle), item);
+		items.put(new Handle(item.handle), item);
 	}
 
 	private static MenuItem getItem(int itemHandle) {
-		return (MenuItem) items.get(new Integer(itemHandle));
+		return (MenuItem) items.get(new Handle(itemHandle));
 	}
 }

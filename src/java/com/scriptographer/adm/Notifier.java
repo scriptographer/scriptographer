@@ -28,8 +28,8 @@
  *
  * $RCSfile: Notifier.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
@@ -37,9 +37,6 @@ package com.scriptographer.adm;
 import java.util.HashMap;
 
 public class Notifier {
-	// hashmap for conversation to unique strings that can be compared with == instead of .equals
-	private static HashMap notifiers = new HashMap();
-	
 	public final static int
 		NOTIFIER_USER_CHANGED = 0,
 		NOTIFIER_INTERMEDIATE_CHANGED = 1,
@@ -72,7 +69,9 @@ public class Notifier {
 		NOTIFIER_PRE_CLIPBOARD_REDO = 28,
 		NOTIFIER_POST_CLIPBOARD_REDO = 29,
 		NOTIFIER_PRE_CLIPBOARD_UNDO = 30,
-		NOTIFIER_POST_CLIPBOARD_UNDO = 31;
+		NOTIFIER_POST_CLIPBOARD_UNDO = 31,
+		// Pseudo notifiers:
+		NOTIFIER_DESTROY = 32;
 
 	private final static String[] notifierTypes = {
 		"ADM User Changed Notifier",
@@ -106,9 +105,14 @@ public class Notifier {
 		"ADM Pre Clipboard Redo Notifier",
 		"ADM Post Clipboard Redo Notifier",
 		"ADM Pre Clipboard Undo Notifier",
-		"ADM Post Clipboard Undo Notifier"
+		"ADM Post Clipboard Undo Notifier",
+		// Pseudo notifiers:
+		"Destroy Notifier"
 	};
-	
+
+	// hashmap for conversation to unique ids that can be compared with == instead of .equals
+	private static HashMap notifiers = new HashMap();
+
 	static {
 		for (int i = 0; i < notifierTypes.length; i++) {
 			notifiers.put(notifierTypes[i], new Integer(i));

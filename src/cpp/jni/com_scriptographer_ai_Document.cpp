@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/07 13:42:29 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 00:27:58 $
  */
  
 #include "stdHeaders.h"
@@ -63,7 +63,7 @@
 /*
  * int nativeCreate(java.io.File file, int colorModel, int dialogStatus)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_io_File_2II(JNIEnv *env, jobject obj, jobject file, jint colorModel, jint dialogStatus) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_io_File_2II(JNIEnv *env, jclass cls, jobject file, jint colorModel, jint dialogStatus) {
 	char *str = NULL;
 	AIDocumentHandle doc = NULL;
 	try {
@@ -82,7 +82,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_i
 /*
  * int nativeCreate(java.lang.String title, float width, float height, int colorModel, int dialogStatus)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_lang_String_2FFII(JNIEnv *env, jobject obj, jstring title, jfloat width, jfloat height, jint colorModel, jint dialogStatus) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_lang_String_2FFII(JNIEnv *env, jclass cls, jstring title, jfloat width, jfloat height, jint colorModel, jint dialogStatus) {
 	char *str = NULL;
 	AIDocumentHandle doc = NULL;
 	try {

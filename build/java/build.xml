@@ -26,6 +26,7 @@
         <!-- The path to the install directory within Illustrator -->
         <property name="install.dir" value="C:\Programme\Adobe\Illustrator CS\Plug-ins\Extensions\Scriptographer\java"/>
         <property name="install.lib" value="${install.dir}/lib"/>
+        <property name="install.classes" value="${install.dir}/classes"/>
 
         <property name="jar.name" value="${project}"/>
         <property name="package.name" value="${project}-${version}"/>
@@ -123,13 +124,23 @@
             includes="**/loader/**"/>
     </target>
 
-
     <!-- =================================================================== -->
     <!-- Installs the jar files in the Illustrator directory                 -->
     <!-- =================================================================== -->
     <target name="install" depends="jar">
         <copy file="${build.dir}/loader.jar" todir="${install.dir}/"/>
         <copy file="${build.lib}/${jar.name}.jar" todir="${install.lib}/"/>
+    </target>
+
+    <!-- =================================================================== -->
+    <!-- Copy classes to the Illustrator directory                           -->
+    <!-- =================================================================== -->
+    <target name="copyclasses" depends="compile">
+        <copy todir="${install.classes}">
+            <fileset dir="${build.classes}">
+                <include name="**/*.*" />
+            </fileset>
+        </copy>
     </target>
 
 
@@ -163,17 +174,18 @@
 			<class name="com.scriptographer.ai.MenuItem" />
 			<class name="com.scriptographer.ai.MenuGroup" />
 
+        	<class name="com.scriptographer.adm.Notifier" />
         	<class name="com.scriptographer.adm.Dialog" />
+        	<class name="com.scriptographer.adm.ModalDialog" />
         	<class name="com.scriptographer.adm.Item" />
            	<class name="com.scriptographer.adm.ValueItem" />
+        	<class name="com.scriptographer.adm.ToggleItem" />
            	<class name="com.scriptographer.adm.TextItem" />
            	<class name="com.scriptographer.adm.PictureItem" />
 			<class name="com.scriptographer.adm.ItemGroup" />
            	<class name="com.scriptographer.adm.TextEdit" />
-           	<class name="com.scriptographer.adm.ListBox" />
-           	<class name="com.scriptographer.adm.ScrollBar" />
 
-        	<class name="com.scriptographer.adm.List" />
+           	<class name="com.scriptographer.adm.ListItem" />
            	<class name="com.scriptographer.adm.ListEntry" />
            	<class name="com.scriptographer.adm.HierarchyList" />
            	<class name="com.scriptographer.adm.HierarchyListEntry" />

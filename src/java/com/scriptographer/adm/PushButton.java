@@ -28,15 +28,19 @@
  *
  * $RCSfile: PushButton.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-
+/**
+ * A PushButton is by default text based.
+ * Only if it is created with an image passed to the constructor,
+ * It is picture based.
+ * Picture based items (CheckBox, Static, PushButton, RadioButton),
+ * this policy has been chosen to avoid 4 more classes.
+ */
 public class PushButton extends PictureItem {
 
 	// ADMPictureButtonStyle
@@ -44,22 +48,21 @@ public class PushButton extends PictureItem {
 		STYLE_BLACK_SUNKEN_RECT = 0,
 		STYLE_BLACK_RECT = 1;
 
-	public PushButton(Dialog dialog, Rectangle2D bounds, String text) {
-		super(dialog, Item.TYPE_TEXT_PUSHBUTTON, bounds, text, 0);
+	public PushButton(Dialog dialog) {
+		super(dialog, Item.TYPE_TEXT_PUSHBUTTON);
 	}
 	
-	public PushButton(Dialog dialog, Rectangle2D bounds, Image image, int style) {
-		super(dialog, Item.TYPE_PICTURE_PUSHBUTTON, bounds, null, style);
-		try {
-			if (image != null)
-				setPicture(image);
-		} catch (IOException e) {
-			// will never happen with type Image
+	public PushButton(Dialog dialog, Image picture) {
+		super(dialog, Item.TYPE_PICTURE_PUSHBUTTON);
+		hasPictures = true;
+		if (picture != null) {
+			try {
+				setPicture(picture);
+			} catch(Exception e) {
+				// OperationNotSupportedException cannot happen because of allowPictures above
+				// IOException cannot happen with parameter of class Image
+			}
 		}
-	}
-
-	public PushButton(Dialog dialog, Rectangle2D bounds, Image image) {
-		this(dialog, bounds, image, STYLE_BLACK_SUNKEN_RECT);
 	}
 	
 	protected void onClick() throws Exception {
@@ -67,8 +70,8 @@ public class PushButton extends PictureItem {
 	}
 	
 	/**
-	 * Redirect onChange to onClick for buttons, as this would sound
-	 * strange otherwise
+	 * Redirect onChange to onClick for buttons, as onChange is
+	 * not a suitable name for button click handlers
 	 */
 	protected void onChange() throws Exception {
 		onClick();

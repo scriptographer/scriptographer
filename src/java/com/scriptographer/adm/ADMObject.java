@@ -24,39 +24,38 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * File created on 03.01.2005.
+ * File created on 24.03.2005.
  *
- * $RCSfile: HierarchyListBox.java,v $
+ * $RCSfile: ADMObject.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.1 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Rectangle2D;
+import com.scriptographer.js.WrappableObject;
 
-public class HierarchyListBox extends ListBox {
-	public final static int
-			// hathaway : 8/22/02 : Added to support creation of hierarchical palette popups for Pangea
-			// Popup menu creation options
-		OPTION_HIERARCHY_POPUP = (1 << 0);
-
-	public HierarchyListBox(Dialog dialog, Rectangle2D bounds, int style, int options) {
-		super(dialog, Item.TYPE_HIERARCHY_LISTBOX, bounds, style, options);
+public abstract class ADMObject extends WrappableObject {
+	// used for storing the native handle for this object
+	protected int handle;
+	
+	public ADMObject() {
+		handle = 0;
 	}
-
-	public HierarchyListBox(Dialog dialog, Rectangle2D bounds, int style) {
-		this(dialog, bounds, style, 0);
+	
+	public ADMObject(int handle) {
+		this.handle = handle;
 	}
-
-	public HierarchyListBox(Dialog dialog, Rectangle2D bounds) {
-		this(dialog, bounds, 0, 0);
+	
+	public int hashCode() {
+		return handle;
 	}
-
-	public List getList() {
-		if (list == null)
-			list = new HierarchyList(this);
-		return list;
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof ADMObject) {
+			return handle == ((ADMObject) obj).handle;
+		}
+		return false;
 	}
 }

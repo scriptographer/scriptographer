@@ -28,8 +28,8 @@
  *
  * $RCSfile: ItemContainer.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:56 $
  */
 
 package com.scriptographer.adm;
@@ -55,6 +55,10 @@ public class ItemContainer {
 	
 	public ItemContainer(LayoutManager mgr) {
 		this(mgr, null);
+	}
+
+	public ItemContainer() {
+		this(null, null);
 	}
 
 	protected Component getComponent() {
@@ -117,7 +121,8 @@ public class ItemContainer {
 		Insets insets;
 
 		public AWTItemContainer(LayoutManager mgr) {
-			setLayout(mgr);
+			if (mgr != null)
+				setLayout(mgr);
 			setInsets(0, 0, 0, 0);
 		}
 

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
@@ -37,60 +37,11 @@ package com.scriptographer.adm;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.StringTokenizer;
 
 public abstract class Item extends CallbackHandler {
-
-	// ADMItemType:
-	protected final static String
-		TYPE_DIAL = "ADM Dial Type", // wrapped
-		TYPE_FRAME = "ADM Frame Type", // wrapped
-		TYPE_ITEMGROUP = "ADM Item Group Type",  // wrapped
-		TYPE_TABBED_MENU = "ADM Tabbed MenuItem Type",
-		TYPE_LISTBOX = "ADM List Box Type", // wrapped
-		TYPE_HIERARCHY_LISTBOX = "ADM Hierarchy List Box Type", // wrapped
-		TYPE_PICTURE_CHECKBOX = "ADM Picture Check Box Button Type", // wrapped
-		TYPE_PICTURE_PUSHBUTTON = "ADM Picture Push Button Type", // wrapped
-		TYPE_PICTURE_RADIOBUTTON = "ADM Picture Radio Button Type", // wrapped
-		TYPE_PICTURE_STATIC = "ADM Picture Static Type", // wrapped
-		TYPE_POPUP_CONTROL = "ADM Popup Control Type",
-		TYPE_POPUP_CONTROLBUTTON = "ADM Popup Control Button Type",
-		TYPE_POPUP_SPINEDIT_CONTROL = "ADM Popup Spin Edit Control Type",
-		TYPE_POPUP_LIST = "ADM Popup List Type",
-		TYPE_POPUP_MENU = "ADM Popup MenuItem Type",
-		TYPE_RESIZE = "ADM Resize Type",
-		TYPE_SCROLLBAR = "ADM Scrollbar Type", // wrapped
-		TYPE_SCROLLING_POPUP_LIST = "ADM Scrolling Popup List Type",
-		TYPE_SLIDER = "ADM Slider Type", // wrapped
-		TYPE_SPINEDIT = "ADM Spin Edit Type",
-		TYPE_SPINEDIT_POPUP = "ADM Spin Edit Popup Type",
-		TYPE_SPINEDIT_SCROLLING_POPUP = "ADM Spin Edit Scrolling Popup Type",
-		TYPE_TEXT_CHECKBOX = "ADM Text Check Box Type", // wrapped
-		TYPE_TEXT_EDIT = "ADM Text Edit Type", // wrapped
-		TYPE_TEXT_EDIT_READONLY = "ADM Text Edit Read-only Type", // wrapped
-		TYPE_TEXT_EDIT_MULTILINE = "ADM Text Edit Multi Line Type", // wrapped
-		TYPE_TEXT_EDIT_MULTILINE_READONLY = "ADM Text Edit Multi Line Read-only Type", // wrapped
-		TYPE_TEXT_EDIT_POPUP = "ADM Text Edit Popup Type", // wrapped
-		TYPE_TEXT_EDIT_SCROLLING_POPUP = "ADM Text Edit Scrolling Popup Type", // wrapped
-		TYPE_TEXT_EDIT_PASSWORD = "ADM Password Text Edit Type", // wrapped
-		TYPE_TEXT_PUSHBUTTON = "ADM Text Push Button Type", // wrapped
-		TYPE_TEXT_RADIOBUTTON = "ADM Text Radio Button Type", // wrapped
-		TYPE_TEXT_STATIC = "ADM Text Static Type", // wrapped
-		TYPE_TEXT_STATIC_MULTILINE = "ADM Text Static Multi Line Type", // wrapped
-		TYPE_PROGRESS_BAR = "ADM Progress Bar Type", // wrapped
-		TYPE_CHASING_ARROWS = "ADM Chasing Arrows Type", // wrapped
-		TYPE_USER = "ADM User Type",
-		TYPE_MULTICOLUMN_LISTVIEW = "ADM Multi Column List View Type",
-		TYPE_SCROLLING_VIEW = "ADM Scrolling View Type",
-		TYPE_TABGROUP = "ADM Tab Group Type";
-	
 	// TODO: move constants to their places!
-	
-	// ADMPopupMenuStyle
-	public final static int
-		POPUP_MENU_RIGHT = 0,
-		POPUP_MENU_BOTTOM = 1,
-		POPUP_MENU_ROUND = 2,
-		POPUP_MENU_ROUND_HIERARCHY = 4;
 	
 	// ADMSpinEditStyle
 	public final static int
@@ -102,36 +53,157 @@ public abstract class Item extends CallbackHandler {
 		SPINEDIT_POPUP_VERTICAL = 0,
 		SPINEDIT_POPUP_HORIZONTAL = 4;
 	
+	// options
+	public final static int
+		OPTION_NONE = 0;
+
+	// ADMItemType:
+	protected final static int
+		TYPE_DIAL = 0, // wrapped
+		TYPE_FRAME = 1, // wrapped
+		TYPE_ITEMGROUP = 2,  // wrapped
+		TYPE_TABBED_MENU = 3,
+		TYPE_LISTBOX = 4, // wrapped
+		TYPE_HIERARCHY_LISTBOX = 5, // wrapped
+		TYPE_PICTURE_CHECKBOX = 6, // wrapped
+		TYPE_PICTURE_PUSHBUTTON = 7, // wrapped
+		TYPE_PICTURE_RADIOBUTTON = 8, // wrapped
+		TYPE_PICTURE_STATIC = 9, // wrapped
+		TYPE_POPUP_CONTROL = 10,
+		TYPE_POPUP_CONTROLBUTTON = 11,
+		TYPE_POPUP_SPINEDIT_CONTROL = 12,
+		TYPE_POPUP_LIST = 13,
+		TYPE_POPUP_MENU = 14, // wrapped
+		TYPE_RESIZE = 15,
+		TYPE_SCROLLBAR = 16, // wrapped
+		TYPE_SCROLLING_POPUP_LIST = 17,
+		TYPE_SLIDER = 18, // wrapped
+		TYPE_SPINEDIT = 19,
+		TYPE_SPINEDIT_POPUP = 20,
+		TYPE_SPINEDIT_SCROLLING_POPUP = 21,
+		TYPE_TEXT_CHECKBOX = 22, // wrapped
+		TYPE_TEXT_EDIT = 23, // wrapped
+		TYPE_TEXT_EDIT_READONLY = 24, // wrapped
+		TYPE_TEXT_EDIT_MULTILINE = 25, // wrapped
+		TYPE_TEXT_EDIT_MULTILINE_READONLY = 26, // wrapped
+		TYPE_TEXT_EDIT_POPUP = 27, // wrapped
+		TYPE_TEXT_EDIT_SCROLLING_POPUP = 28, // wrapped
+		TYPE_TEXT_EDIT_PASSWORD = 29, // wrapped
+		TYPE_TEXT_PUSHBUTTON = 30, // wrapped
+		TYPE_TEXT_RADIOBUTTON = 31, // wrapped
+		TYPE_TEXT_STATIC = 32, // wrapped
+		TYPE_TEXT_STATIC_MULTILINE = 33, // wrapped
+		TYPE_PROGRESS_BAR = 34, // wrapped
+		TYPE_CHASING_ARROWS = 35, // wrapped
+		TYPE_USER = 36,
+		TYPE_MULTICOLUMN_LISTVIEW = 37,
+		TYPE_SCROLLING_VIEW = 38,
+		TYPE_TABGROUP = 39;
+	
+	protected static final String[] itemTypes = {
+		"ADM Dial Type",
+		"ADM Frame Type",
+		"ADM Item Group Type",
+		"ADM Tabbed Menu Type",
+		"ADM List Box Type",
+		"ADM Hierarchy List Box Type",
+		"ADM Picture Check Box Button Type",
+		"ADM Picture Push Button Type",
+		"ADM Picture Radio Button Type",
+		"ADM Picture Static Type",
+		"ADM Popup Control Type",
+		"ADM Popup Control Button Type",
+		"ADM Popup Spin Edit Control Type",
+		"ADM Popup List Type",
+		"ADM Popup Menu Type",
+		"ADM Resize Type",
+		"ADM Scrollbar Type",
+		"ADM Scrolling Popup List Type",
+		"ADM Slider Type",
+		"ADM Spin Edit Type",
+		"ADM Spin Edit Popup Type",
+		"ADM Spin Edit Scrolling Popup Type",
+		"ADM Text Check Box Type",
+		"ADM Text Edit Type",
+		"ADM Text Edit Read-only Type",
+		"ADM Text Edit Multi Line Type",
+		"ADM Text Edit Multi Line Read-only Type",
+		"ADM Text Edit Popup Type",
+		"ADM Text Edit Scrolling Popup Type",
+		"ADM Password Text Edit Type",
+		"ADM Text Push Button Type",
+		"ADM Text Radio Button Type",
+		"ADM Text Static Type",
+		"ADM Text Static Multi Line Type",
+		"ADM Progress Bar Type",
+		"ADM Chasing Arrows Type",
+		"ADM User Type",
+		"ADM Multi Column List View Type",
+		"ADM Scrolling View Type",
+		"ADM Tab Group Type"
+	};
+
+	// hashmap for conversation to unique ids that can be compared with == instead of .equals
+	private static HashMap types = new HashMap();
+	
+	static {
+		for (int i = 0; i < itemTypes.length; i++) {
+			types.put(itemTypes[i], new Integer(i));
+		}
+	}
+	
+	protected static int convertType(String type) {
+		Integer value = (Integer) types.get(type);
+		if (value != null)
+			return value.intValue();
+		else return -1;
+	}
+	
+	protected static String convertType(int type) {
+		return itemTypes[type];
+	}
+	
 	/**
 	 * used for storing the ADMItemRef in this object
 	 */
-	protected int itemRef = 0;
+	protected int type;
 
 	protected Dialog dialog;
 
-	protected Dimension size;
-	protected Rectangle bounds;
-	protected String type;
-	protected int style;
-	protected int options;
+	protected Dimension size = null;
+	protected Rectangle bounds = null;
 
 	private String toolTip;
 
 	protected AWTComponent component = null;
 	private Dimension minSize = null;
 	private Dimension maxSize = null;
+	private Dimension prefSize = null;
 
-	public Item(Dialog dialog, String type, Rectangle2D bounds, int style, int options) {
+	/**
+	 * Constructor for newly created Items
+	 * 
+	 * @param dialog
+	 * @param type
+	 * @param options
+	 */
+	protected Item(Dialog dialog, int type, int options) {
 		this.dialog = dialog;
 		this.type = type;
-		this.bounds = new Rectangle((int) bounds.getX(), (int) bounds.getY(), (int) bounds.getWidth(), (int) bounds.getHeight());
-		this.options = options;
-
-		itemRef = nativeCreate(dialog, type, this.bounds, options);
-		// get length:
-		size = nativeGetSize();
-		// length needs to be set for this, as it may cause a onResize call:
-		nativeSetStyle(style);
+		handle = nativeCreate(dialog.handle, convertType(type), options);
+	}
+	
+	/**
+	 * Constructor for allready existing Items that get wrapped,
+	 * e.g. PopupMenu 
+	 * 
+	 * @param dialog
+	 * @param handle
+	 */
+	protected Item(Dialog dialog, int handle) {
+		this.dialog = dialog;
+		this.handle = handle;
+		this.type = convertType(nativeInit(handle));
 	}
 
 	/**
@@ -141,9 +213,9 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	public void destroy() {
-		if (itemRef != 0) {
-			nativeDestroy();
-			itemRef = 0;
+		if (handle != 0) {
+			nativeDestroy(handle);
+			handle = 0;
 			dialog.removeItem(this);
 			dialog = null;
 		}
@@ -167,8 +239,17 @@ public abstract class Item extends CallbackHandler {
 	}
 	
 	/*
-	 * Callback stuff:
+	 * Callback functions:
 	 */
+
+	protected void onDestroy() throws Exception {
+		callFunction("onDestroy");
+	}
+
+	protected void onNotify(int notifier) throws Exception {
+		if (notifier == Notifier.NOTIFIER_DESTROY)
+			onDestroy();
+	}
 	
 	/*
 	 * ADM stuff:
@@ -183,14 +264,23 @@ public abstract class Item extends CallbackHandler {
 	 * 
 	 */
 
-	private native int nativeCreate(Dialog dialog, String type, Rectangle bounds, int options);
-	private native void nativeDestroy();
+	/**
+	 * sets size and bounds to valid values
+	 */
+	private native int nativeCreate(int dialogHandle, String type, int options);
+	
+	/**
+	 * sets size and bounds to valid values
+	 */
+	private native String nativeInit(int handle);
+	
+	private native void nativeDestroy(int handle);
 
 	/*
 	 * Handler activation / deactivation
 	 */
-	protected native void nativeSetTrackCallbackEnabled(boolean enabled);
-	protected native void nativeSetDrawCallbackEnabled(boolean enabled);
+	protected native void nativeSetTrackCallback(boolean enabled);
+	protected native void nativeSetDrawCallback(boolean enabled);
 
 	/* 
 	 * item timer
@@ -208,17 +298,13 @@ public abstract class Item extends CallbackHandler {
 	 * item information accessors
 	 * 
 	 */
+	
+	protected int getType() {
+		return type;
+	}
 
-	public native void nativeSetStyle(int style);
-	
-	public int getStyle() {
-		return style;
-	}
-	
-	public void setStyle(int style) {
-		this.style = style;
-		nativeSetStyle(style);
-	}
+	public native void setStyle(int style);
+	public native int getStyle();
 
 	/* 
 	 * item state accessors
@@ -281,20 +367,101 @@ public abstract class Item extends CallbackHandler {
 
 	public final void setSize(Point2D size) {
 		setSize((int) size.getX(), (int) size.getY());
+		// Set prefSize so getPreferredSize does not return results from getBestSize()
+		prefSize = this.size;
 	}
 
-	public native Dimension getPreferredSize();
+	private native Dimension nativeGetTextSize(String text, int maxWidth);
+	
+	public Dimension getTextSize(String text, int maxWidth) {
+		String delim = System.getProperty("line.separator");
+		StringTokenizer st = new StringTokenizer(text, delim, true);
+		Dimension size = new Dimension(0, 0);
+		boolean isDelim = false;
+		while (st.hasMoreTokens()) {
+			// detect several newlines in a row, and use a " " instead, so
+			// we get the height of the line:
+			boolean wasDelim = isDelim;
+			text = st.nextToken();
+			isDelim = delim.indexOf(text) != -1; 
+			if (isDelim) {
+				if (text.charAt(0) == delim.charAt(0)) {
+					if (wasDelim) text = " ";
+					else continue;
+				} else continue;
+			}
+			Dimension partSize = nativeGetTextSize(text, maxWidth);
+			if (partSize.width > size.width)
+				size.width = partSize.width;
+			size.height += partSize.height;
+		}
+		return size;
+	}
+
+	private native Dimension nativeGetBestSize();
+
+	public Dimension getBestSize() {
+		// TODO: verify for which items getBestSize really works!
+		switch (type) {
+//			case TYPE_TEXT_STATIC:
+//			case TYPE_TEXT_STATIC_MULTILINE:
+			case TYPE_PICTURE_STATIC:
+			case TYPE_PICTURE_CHECKBOX:
+			case TYPE_PICTURE_PUSHBUTTON:
+			case TYPE_PICTURE_RADIOBUTTON:
+				return nativeGetBestSize();
+			default:
+				if (this instanceof TextItem) {
+					String text = ((TextItem) this).getText();
+					if (text != null && text.length() > 0) {
+						Dimension size = getTextSize(text, -1);
+						if (size != null) {
+							size.height += 6;
+							if (this instanceof PushButton) {
+								size.width += 20;
+							} else if (this instanceof ToggleItem) {
+								size.width += 32;
+							} else {
+								size.width += 6;
+							}
+							return size;
+						}
+					}
+				}
+		}
+		return new Dimension(120, 20);
+	}
+
+	public void setPreferredSize(int width, int height) {
+		prefSize = new Dimension(width, height);
+	}
+
+	public void setPreferredSize(Dimension size) {
+		if (size == null) prefSize = null;
+		else setPreferredSize(size.width, size.height);
+	}
+
+	public final void setPreferredSize(Point2D size) {
+		if (size == null) prefSize = null;
+		else setPreferredSize((int) size.getX(), (int) size.getY());
+	}
+
+	public Dimension getPreferredSize() {
+		return prefSize != null ? minSize : getBestSize();
+	}
 
 	public void setMinimumSize(int width, int height) {
 		minSize = new Dimension(width, height);
 	}
 
 	public void setMinimumSize(Dimension size) {
-		setMinimumSize(size.width, size.height);
+		if (size == null) minSize = null;
+		else setMinimumSize(size.width, size.height);
 	}
 
 	public final void setMinimumSize(Point2D size) {
-		setMinimumSize((int) size.getX(), (int) size.getY());
+		if (size == null) minSize = null;
+		else setMinimumSize((int) size.getX(), (int) size.getY());
 	}
 
 	public Dimension getMinimumSize() {
@@ -306,11 +473,13 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	public void setMaximumSize(Dimension size) {
-		setMaximumSize(size.width, size.height);
+		if (size == null) maxSize = null;
+		else setMaximumSize(size.width, size.height);
 	}
 
 	public final void setMaximumSize(Point2D size) {
-		setMaximumSize((int) size.getX(), (int) size.getY());
+		if (size == null) maxSize = null;
+		else setMaximumSize((int) size.getX(), (int) size.getY());
 	}
 
 	public Dimension getMaximumSize() {
@@ -355,19 +524,19 @@ public abstract class Item extends CallbackHandler {
 	public native Rectangle localToScreen(int x, int y, int width, int height);
 	public native Rectangle screenToLocal(int x, int y, int width, int height);
 
-	public final Point localToScreen(Point2D pt) {
+	public Point localToScreen(Point2D pt) {
 		return localToScreen((int) pt.getX(), (int) pt.getY());
 	}
 
-	public final Point screenToLocal(Point2D pt) {
+	public Point screenToLocal(Point2D pt) {
 		return screenToLocal((int) pt.getX(), (int) pt.getY());
 	}
 
-	public final Rectangle localToScreen(Rectangle2D rt) {
+	public Rectangle localToScreen(Rectangle2D rt) {
 		return localToScreen((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
 	}
 
-	public final Rectangle screenToLocal(Rectangle2D rt) {
+	public Rectangle screenToLocal(Rectangle2D rt) {
 		return screenToLocal((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
 	}
 
@@ -383,6 +552,9 @@ public abstract class Item extends CallbackHandler {
 	public final void invalidate(Rectangle2D rt) {
 		invalidate((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
 	}
+
+	public native int getFont();
+	public native void setFont(int font);
 
 	public native void setBackgroundColor(int color); // Drawer.COLOR_*
 	public native int getBackgroundColor();

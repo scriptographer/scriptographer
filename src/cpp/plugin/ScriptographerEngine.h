@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/10 22:56:13 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:58 $
  */
 
 #include "jniMacros.h"
@@ -156,10 +156,18 @@ public:
 	jmethodID mid_ScriptographerEngine_executeFile;
 	jmethodID mid_ScriptographerEngine_init;
 	jmethodID mid_ScriptographerEngine_destroy;
+	jmethodID mid_ScriptographerEngine_onAbout;
 
 	jclass cls_ScriptographerException;
 
+	jclass cls_Handle;
+	jmethodID cid_Handle;
+	jfieldID fid_Handle_handle;
+
 // AI:
+	jclass cls_AIObject;
+	jfieldID fid_AIObject_handle;
+
 	jclass cls_Tool;
 	jmethodID cid_Tool;
 	jmethodID mid_Tool_onEditOptions;
@@ -197,9 +205,8 @@ public:
 	jmethodID cid_CMYKColor;
 
 	jclass cls_Art;
-	jfieldID fid_Art_artHandle;
 	jmethodID mid_Art_wrapArtHandle;
-	jmethodID mid_Art_invalidateIfWrapped;
+	jmethodID mid_Art_onSelectionChanged;
 
 	jclass cls_Path;
 	
@@ -231,70 +238,69 @@ public:
 	jfieldID fid_TabletValue_value;
 	
 	jclass cls_Document;
-	jfieldID fid_Document_documentHandle;
 	
 	jclass cls_LiveEffect;
-	jfieldID fid_LiveEffect_effectHandle;
 	jmethodID cid_LiveEffect;
 	jmethodID mid_LiveEffect_onEditParameters;
-	jmethodID mid_LiveEffect_onExecute;
+	jmethodID mid_LiveEffect_onCalculate;
 	jmethodID mid_LiveEffect_onInterpolate;
 	jmethodID mid_LiveEffect_onGetInputType;
 	
 	jclass cls_MenuItem;
-	jfieldID fid_MenuItem_itemHandle;
 	jmethodID mid_MenuItem_wrapItemHandle;
-	jmethodID mid_MenuItem_onExecute;
+	jmethodID mid_MenuItem_onClick;
 	jmethodID mid_MenuItem_onUpdate;
 
 	jclass cls_MenuGroup;
-	jfieldID fid_MenuGroup_groupHandle;
 	
 // ADM:
+	jclass cls_ADMObject;
+	jfieldID fid_ADMObject_handle;
+
 	jclass cls_Dialog;
-	jfieldID fid_Dialog_dialogRef;
-	jfieldID fid_Dialog_doesModal;
 	jfieldID fid_Dialog_size;
-	jmethodID mid_Dialog_dialogInit;
+	jfieldID fid_Dialog_bounds;
+
+	jclass cls_ModalDialog;
+	jfieldID fid_ModalDialog_doesModal;
+
+	jclass cls_PopupDialog;
+
+	jclass cls_DialogGroupInfo;
+	jmethodID cid_DialogGroupInfo;
 	
 	jclass cls_Drawer;
-	jfieldID fid_Drawer_drawerRef;
 	
 	jclass cls_Image;
-	jfieldID fid_Image_imageRef;
 	jfieldID fid_Image_byteWidth;
 	jfieldID fid_Image_bitsPerPixel;
-	jmethodID mid_Image_getIconRef;
+	jmethodID mid_Image_getIconHandle;
 
 	jclass cls_Item;
-	jfieldID fid_Item_itemRef;
 	jfieldID fid_Item_size;
-	
-	jclass cls_ListBox;
-	jfieldID fid_ListBox_list;
+	jfieldID fid_Item_bounds;
 
-	jclass cls_List;
-	jfieldID fid_List_listRef;
-	jmethodID mid_List_onDestroyEntry;
-	jmethodID mid_List_onDrawEntry;
-	
+	jclass cls_ListItem;
+	jfieldID fid_ListItem_listHandle;
+
+	jclass cls_List;	
 	jclass cls_HierarchyList;
 	
 	jclass cls_ListEntry;
-	jfieldID fid_ListEntry_entryRef;
 	
 	jclass cls_HierarchyListEntry;
 
+	jclass cls_NotificationHandler;
+	jfieldID fid_NotificationHandler_tracker;
+	jfieldID fid_NotificationHandler_drawer;
+	jmethodID mid_NotificationHandler_onNotify_String;
+	jmethodID mid_NotificationHandler_onNotify_int;
+	jmethodID mid_NotificationHandler_onDraw;
+
 	jclass cls_CallbackHandler;
-	jfieldID fid_CallbackHandler_tracker;
-	jfieldID fid_CallbackHandler_drawer;
-	jmethodID mid_CallbackHandler_onNotify;
 	jmethodID mid_CallbackHandler_onResize;
-	jmethodID mid_CallbackHandler_onDestroy;
-	jmethodID mid_CallbackHandler_onDraw;
 		
 	jclass cls_Tracker;
-	jfieldID fid_Tracker_trackerRef;
 	jmethodID mid_Tracker_onTrack;
 
 public:
@@ -381,6 +387,8 @@ public:
 	jobject wrapArtHandle(JNIEnv *env, AIArtHandle handle);
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
+
+	ASErr selectionChanged();
 	
 	// AI Tool
 	ASErr toolEditOptions(AIToolMessage *message);
@@ -405,9 +413,12 @@ public:
 	ASErr menuItemUpdate(AIMenuMessage *message, long inArtwork, long isSelected, long isTrue);
 	
 	// ADM CallbackListener
-	void callOnNotify(jobject listener, ADMNotifierRef notifier, jobject entry = NULL); 
-	void callOnTrack(jobject listener, ADMTrackerRef tracker, jobject entry = NULL);
-	void callOnDraw(jobject listener, ADMDrawerRef drawer, jobject entry = NULL);
+	void callOnNotify(jobject handler, ADMNotifierRef notifier); 
+	void callOnDestroy(jobject handler); 
+	bool callOnTrack(jobject handler, ADMTrackerRef tracker);
+	void callOnDraw(jobject handler, ADMDrawerRef drawer);
+
+	ASErr about();
 
 	// ADM Refs
 	ADMDialogRef getDialogRef(JNIEnv *env, jobject obj);

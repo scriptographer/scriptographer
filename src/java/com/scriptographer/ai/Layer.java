@@ -28,16 +28,18 @@
  * 
  * $RCSfile: Layer.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
 
+import com.scriptographer.util.Handle;
+
 // TODO: subclass Group instead!
 public class Layer extends Art {
 
-	protected Layer(Integer handle) {
+	protected Layer(Handle handle) {
 		super(handle);
 	}
 

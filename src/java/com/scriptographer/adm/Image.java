@@ -28,8 +28,8 @@
  *
  * $RCSfile: Image.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/10 23:13:28 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/25 00:27:56 $
  */
 
 package com.scriptographer.adm;
@@ -39,12 +39,9 @@ import java.awt.*;
 import java.io.*;
 import java.net.*;
 
-import javax.imageio.ImageIO;
-
-public class Image {
-	private int imageRef = 0;
+public class Image extends ADMObject {
 	// an image can wrap its representation as an icon as well...
-	private int iconRef = 0;
+	private int iconHandle = 0;
 	
 	private int width;
 	private int height;
@@ -66,12 +63,12 @@ public class Image {
 		this.width = width;
 		this.height = height;
 		this.type = type;
-		imageRef = nativeCreate(width, height, type);
+		handle = nativeCreate(width, height, type);
 	}
 	
 	public Object clone() {
 		Image copy = new Image(width, height, type);
-		copy.nativeSetPixels(imageRef, byteWidth * height);
+		copy.nativeSetPixels(handle, byteWidth * height);
 		return copy;
 	}
 
@@ -129,7 +126,7 @@ public class Image {
 			buf.createGraphics().drawImage(image, 0, 0, null);
 			type = TYPE_RGB_ALPHA;
 		}
-		imageRef = nativeCreate(width, height, type);
+		handle = nativeCreate(width, height, type);
 		DataBufferInt buffer = (DataBufferInt) buf.getRaster().getDataBuffer();
 		int data[] = buffer.getData();
 		nativeSetPixels(data, width, height, byteWidth);
@@ -164,9 +161,9 @@ public class Image {
 		System.out.println(in);
 	}
 
-	private static java.awt.Image checkImage(java.awt.Image image, Object srcObj) {
+	private static java.awt.Image checkImage(java.awt.Image image, Object srcObj) throws IOException {
 		if (image == null)
-			throw new RuntimeException("The specified image could not be read: " + srcObj);
+			throw new IOException("The specified image could not be read: " + srcObj);
 		return image;
 	}
 
@@ -253,10 +250,10 @@ public class Image {
 		return bitsPerPixel;
 	}
 	
-	public int getIconRef() {
-		if (iconRef == 0)
-			iconRef = nativeCreateIcon();
-		return iconRef;
+	public int getIconHandle() {
+		if (iconHandle == 0)
+			iconHandle = nativeCreateIcon();
+		return iconHandle;
 	}
 	
 	/*
@@ -272,13 +269,13 @@ public class Image {
 	 * Tracker would be needed in order to emulate rollover behavior. But it may be worth
 	 * geting around the memory consumption of this dirty hack here...
 	 */
-	public int createIconRef() {
+	public int createIconHandle() {
 		Image img = ((Image) clone());
-		int ref = img.nativeCreateIcon();
-		// clear the imageRef so that nothing happens in finalize or destroy!
-		img.imageRef = 0;
-		img.iconRef = 0;
-		return ref;
+		int handle = img.nativeCreateIcon();
+		// clear the handle so that nothing happens in finalize or destroy!
+		img.handle = 0;
+		img.iconHandle = 0;
+		return handle;
 	}
 	
 	public Drawer getDrawer() {
@@ -288,14 +285,14 @@ public class Image {
 	}
 	
 	public void dispose() {
-		if (imageRef != 0) {
+		if (handle != 0) {
 			if (drawer != null) {
 				drawer.dispose();
 				drawer = null;
 			}
-			nativeDestroy(imageRef, iconRef);
-			imageRef = 0;
-			iconRef = 0;
+			nativeDestroy(handle, iconHandle);
+			handle = 0;
+			iconHandle = 0;
 		}
 	}
 	
@@ -314,11 +311,11 @@ public class Image {
 	}
 
 	private native int nativeCreate(int width, int height, int type);
-	private native void nativeDestroy(int imageRef, int iconRef);
+	private native void nativeDestroy(int handle, int iconHandle);
 
 	private native void nativeSetPixels(int[] data, int width, int height, int byteWidth);
 	private native void nativeGetPixels(int[] data, int width, int height, int byteWidth);
-	private native void nativeSetPixels(int imageRef, int numBytes);
+	private native void nativeSetPixels(int handle, int numBytes);
 	
 	private native int nativeCreateIcon();
 

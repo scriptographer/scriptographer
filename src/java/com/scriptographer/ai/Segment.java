@@ -28,8 +28,8 @@
  *
  * $RCSfile: Segment.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 23:27:22 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
@@ -112,10 +112,10 @@ public class Segment implements Commitable {
 
 	public void commit() {
 		if (segments != null && segments.path != null) {
-			SegmentList.nativeCommit(segments.path.artHandle, index, point.x, point.y, handleIn.x, handleIn.y, handleOut.x, handleOut.y, corner);
+			SegmentList.nativeCommit(segments.path.handle, index, point.x, point.y, handleIn.x, handleIn.y, handleOut.x, handleOut.y, corner);
 			System.out.println("nativeCommit " + index + " " + 1);
 			// update to current maxVersion after commit.
-			version = CommitManager.getVersion();
+			version = segments.path.version;
 			dirty = false;
 		}
 	}
@@ -126,9 +126,9 @@ public class Segment implements Commitable {
 	 */
 	protected void insert() {
 		if (segments != null && segments.path != null) {
-			SegmentList.nativeInsert(segments.path.artHandle, index, point.x, point.y, handleIn.x, handleIn.y, handleOut.x, handleOut.y, corner);
+			SegmentList.nativeInsert(segments.path.handle, index, point.x, point.y, handleIn.x, handleIn.y, handleOut.x, handleOut.y, corner);
 			// update to current maxVersion after commit.
-			version = CommitManager.getVersion();
+			version = segments.path.version;
 			dirty = false;
 		}
 	}

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_LiveEffect.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:42:29 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:58 $
  */
 
 #include "StdHeaders.h"
@@ -138,9 +138,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_getMenuItem(JNIE
 }
 
 /*
- * java.util.HashMap getCreatedEffects()
+ * java.util.HashMap nativeGetEffects()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_getCreatedEffects(JNIEnv *env, jclass cls) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeGetEffects(JNIEnv *env, jclass cls) {
 	try {
 	try {
 		jobject map = gEngine->newObject(env, gEngine->cls_HashMap, gEngine->cid_HashMap);
@@ -169,7 +169,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_getCreatedEffect
 				jobject effectObj = gEngine->newObject(env, gEngine->cls_LiveEffect, gEngine->cid_LiveEffect,
 						(jint) effect, gEngine->createJString(env, realname), gEngine->createJString(env, title),
 						(jint) inputPreference, type, flags, (jint) major, (jint) minor);
-				jobject keyObj = gEngine->newObject(env, gEngine->cls_Integer, gEngine->cid_Integer, (jint) effect);
+				jobject keyObj = gEngine->newObject(env, gEngine->cls_Handle, gEngine->cid_Handle, (jint) effect);
 				// and add it to the map
 				gEngine->callObjectMethod(env, map, gEngine->mid_Map_put, keyObj, effectObj);
 			}

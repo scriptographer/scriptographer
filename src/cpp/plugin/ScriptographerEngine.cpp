@@ -26,13 +26,14 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/10 22:56:13 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:57 $
  */
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "com_scriptographer_ai_Art.h" // for com_scriptographer_ai_Art_TYPE_LAYER
+#include "com_scriptographer_adm_Notifier.h"
 #ifdef MAC_ENV 
 #include "macUtils.h"
 #else
@@ -91,8 +92,8 @@ JavaVM *ScriptographerEngine::javaThread() {
 #endif
 
 ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
-	fHomeDir = new char[strlen(homeDir) + 1];
 	fInitialized = false;
+	fHomeDir = new char[strlen(homeDir) + 1];
 	strcpy(fHomeDir, homeDir);
 	Exception *exc = NULL;
 #ifdef MAC_ENV
@@ -186,7 +187,7 @@ void ScriptographerEngine::init() {
 	args.options = options;
 	args.nOptions = numOptions;
 	
-	args.ignoreUnrecognized = JNI_TRUE;	
+	args.ignoreUnrecognized = JNI_TRUE;
 
 	// create the JVM
 	JNIEnv *env;
@@ -340,6 +341,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_awt_ICC_Profile = loadClass(env, "java/awt/color/ICC_Profile");
 	mid_awt_ICC_Profile_getInstance = getStaticMethodID(env, cls_awt_ICC_Profile, "getInstance", "([B)Ljava/awt/color/ICC_Profile;");
+
 // Scriptographer:
 
 	cls_ScriptographerEngine = loadClass(env, "com/scriptographer/ScriptographerEngine");
@@ -348,10 +350,19 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ScriptographerEngine_executeFile = getMethodID(env, cls_ScriptographerEngine, "executeFile", "(Ljava/lang/String;Lorg/mozilla/javascript/Scriptable;)Lorg/mozilla/javascript/Scriptable;");
 	mid_ScriptographerEngine_init = getStaticMethodID(env, cls_ScriptographerEngine, "init", "()V");
 	mid_ScriptographerEngine_destroy = getStaticMethodID(env, cls_ScriptographerEngine, "destroy", "()V");
+	mid_ScriptographerEngine_onAbout = getStaticMethodID(env, cls_ScriptographerEngine, "onAbout", "()V");
 
 	cls_ScriptographerException = loadClass(env, "com/scriptographer/ScriptographerException");
 
+	cls_Handle = loadClass(env, "com/scriptographer/util/Handle");
+	cid_Handle = getConstructorID(env, cls_Handle, "(I)V");
+	fid_Handle_handle = getFieldID(env, cls_Handle, "handle", "I");
+
 // AI:
+
+	cls_AIObject = loadClass(env, "com/scriptographer/ai/AIObject");
+	fid_AIObject_handle = getFieldID(env, cls_AIObject, "handle", "I");
+
 	cls_Tool = loadClass(env, "com/scriptographer/ai/Tool");
 	cid_Tool = getConstructorID(env, cls_Tool, "(II)V");
 	mid_Tool_onEditOptions = getStaticMethodID(env, cls_Tool, "onEditOptions", "(I)V");
@@ -389,9 +400,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cid_CMYKColor = getConstructorID(env, cls_CMYKColor, "(FFFFF)V");
 
 	cls_Art = loadClass(env, "com/scriptographer/ai/Art");
-	fid_Art_artHandle = getFieldID(env, cls_Art, "artHandle", "I");
 	mid_Art_wrapArtHandle = getStaticMethodID(env, cls_Art, "wrapArtHandle", "(II)Lcom/scriptographer/ai/Art;");
-	mid_Art_invalidateIfWrapped = getStaticMethodID(env, cls_Art, "invalidateIfWrapped", "(I)Z");
+	mid_Art_onSelectionChanged = getStaticMethodID(env, cls_Art, "onSelectionChanged", "([I)V");
 
 	cls_Path = loadClass(env, "com/scriptographer/ai/Path");
 	
@@ -423,70 +433,71 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_TabletValue_value = getFieldID(env, cls_TabletValue, "value", "F");
 	
 	cls_Document = loadClass(env, "com/scriptographer/ai/Document");
-	fid_Document_documentHandle = getFieldID(env, cls_Document, "documentHandle", "I");
 
 	cls_LiveEffect = loadClass(env, "com/scriptographer/ai/LiveEffect");
-	fid_LiveEffect_effectHandle = getFieldID(env, cls_LiveEffect, "effectHandle", "I");
 	cid_LiveEffect = getConstructorID(env, cls_LiveEffect, "(ILjava/lang/String;Ljava/lang/String;IIIII)V");
 	mid_LiveEffect_onEditParameters = getStaticMethodID(env, cls_LiveEffect, "onEditParameters", "(ILjava/util/Map;IZ)V");
-	mid_LiveEffect_onExecute = getStaticMethodID(env, cls_LiveEffect, "onExecute", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
+	mid_LiveEffect_onCalculate = getStaticMethodID(env, cls_LiveEffect, "onCalculate", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
 	mid_LiveEffect_onGetInputType = getStaticMethodID(env, cls_LiveEffect, "onGetInputType", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
 	
 	cls_MenuItem = loadClass(env, "com/scriptographer/ai/MenuItem");
-	fid_MenuItem_itemHandle = getFieldID(env, cls_MenuItem, "itemHandle", "I");
 	mid_MenuItem_wrapItemHandle =getStaticMethodID(env, cls_MenuItem, "wrapItemHandle", "(ILjava/lang/String;Ljava/lang/String;ILjava/lang/String;)Lcom/scriptographer/ai/MenuItem;");
-	mid_MenuItem_onExecute = getStaticMethodID(env, cls_MenuItem, "onExecute", "(I)V");
+	mid_MenuItem_onClick = getStaticMethodID(env, cls_MenuItem, "onClick", "(I)V");
 	mid_MenuItem_onUpdate = getStaticMethodID(env, cls_MenuItem, "onUpdate", "(IIII)V");
 
 	cls_MenuGroup = loadClass(env, "com/scriptographer/ai/MenuGroup");
-	fid_MenuGroup_groupHandle = getFieldID(env, cls_MenuGroup, "groupHandle", "I");
 	
 // ADM:
+
+	cls_ADMObject = loadClass(env, "com/scriptographer/adm/ADMObject");
+	fid_ADMObject_handle = getFieldID(env, cls_ADMObject, "handle", "I");
+
 	cls_Dialog = loadClass(env, "com/scriptographer/adm/Dialog");
-	fid_Dialog_dialogRef = getFieldID(env, cls_Dialog, "dialogRef", "I");
-	fid_Dialog_doesModal = getFieldID(env, cls_Dialog, "doesModal", "Z");
 	fid_Dialog_size = getFieldID(env, cls_Dialog, "size", "Ljava/awt/Dimension;");
-	mid_Dialog_dialogInit = getMethodID(env, cls_Dialog, "dialogInit", "()V");
+	fid_Dialog_bounds = getFieldID(env, cls_Dialog, "bounds", "Ljava/awt/Rectangle;");
+
+	cls_ModalDialog = loadClass(env, "com/scriptographer/adm/ModalDialog");
+	fid_ModalDialog_doesModal = getFieldID(env, cls_ModalDialog, "doesModal", "Z");
+
+	cls_PopupDialog = loadClass(env, "com/scriptographer/adm/PopupDialog");
+
+	cls_DialogGroupInfo = loadClass(env, "com/scriptographer/adm/DialogGroupInfo");
+	cid_DialogGroupInfo = getConstructorID(env, cls_DialogGroupInfo, "(Ljava/lang/String;I)V");
 
 	cls_Drawer = loadClass(env, "com/scriptographer/adm/Drawer");
-	fid_Drawer_drawerRef = getFieldID(env, cls_Drawer, "drawerRef", "I");
 
 	cls_Image = loadClass(env, "com/scriptographer/adm/Image");
-	fid_Image_imageRef = getFieldID(env, cls_Image, "imageRef", "I");
 	fid_Image_byteWidth = getFieldID(env, cls_Image, "byteWidth", "I");
 	fid_Image_bitsPerPixel = getFieldID(env, cls_Image, "bitsPerPixel", "I");
-	mid_Image_getIconRef = getMethodID(env, cls_Image, "getIconRef", "()I");
+	mid_Image_getIconHandle = getMethodID(env, cls_Image, "getIconHandle", "()I");
 
 	cls_Item = loadClass(env, "com/scriptographer/adm/Item");
-	fid_Item_itemRef = getFieldID(env, cls_Item, "itemRef", "I");
 	fid_Item_size = getFieldID(env, cls_Item, "size", "Ljava/awt/Dimension;");
+	fid_Item_bounds = getFieldID(env, cls_Item, "bounds", "Ljava/awt/Rectangle;");
 	
-	cls_ListBox = loadClass(env, "com/scriptographer/adm/ListBox");
-	fid_ListBox_list = getFieldID(env, cls_ListBox, "list", "Lcom/scriptographer/adm/List;");
+	cls_ListItem = loadClass(env, "com/scriptographer/adm/ListItem");
+	fid_ListItem_listHandle = getFieldID(env, cls_ListItem, "listHandle", "I");	
 
 	cls_List = loadClass(env, "com/scriptographer/adm/List");
-	fid_List_listRef = getFieldID(env, cls_List, "listRef", "I");	
-	mid_List_onDestroyEntry = getMethodID(env, cls_List, "onDestroyEntry", "(Lcom/scriptographer/adm/ListEntry;)V");
-	mid_List_onDrawEntry = getMethodID(env, cls_List, "onDrawEntry", "(Lcom/scriptographer/adm/Drawer;Lcom/scriptographer/adm/ListEntry;)V");
 	
 	cls_HierarchyList = loadClass(env, "com/scriptographer/adm/HierarchyList");
-	
+
 	cls_ListEntry = loadClass(env, "com/scriptographer/adm/ListEntry");
-	fid_ListEntry_entryRef = getFieldID(env, cls_ListEntry, "entryRef", "I");
 
 	cls_HierarchyListEntry = loadClass(env, "com/scriptographer/adm/HierarchyListEntry");
 
+	cls_NotificationHandler = loadClass(env, "com/scriptographer/adm/NotificationHandler");
+	fid_NotificationHandler_tracker = getFieldID(env, cls_NotificationHandler, "tracker", "Lcom/scriptographer/adm/Tracker;");
+	fid_NotificationHandler_drawer = getFieldID(env, cls_NotificationHandler, "drawer", "Lcom/scriptographer/adm/Drawer;");
+	mid_NotificationHandler_onNotify_String = getMethodID(env, cls_NotificationHandler, "onNotify", "(Ljava/lang/String;)V");
+	mid_NotificationHandler_onNotify_int = getMethodID(env, cls_NotificationHandler, "onNotify", "(I)V");
+	mid_NotificationHandler_onDraw = getMethodID(env, cls_NotificationHandler, "onDraw", "(Lcom/scriptographer/adm/Drawer;)V");
+
 	cls_CallbackHandler = loadClass(env, "com/scriptographer/adm/CallbackHandler");
-	fid_CallbackHandler_tracker =  getFieldID(env, cls_CallbackHandler, "tracker", "Lcom/scriptographer/adm/Tracker;");
-	fid_CallbackHandler_drawer =  getFieldID(env, cls_CallbackHandler, "drawer", "Lcom/scriptographer/adm/Drawer;");
-	mid_CallbackHandler_onNotify = getMethodID(env, cls_CallbackHandler, "onNotify", "(Ljava/lang/String;Lcom/scriptographer/adm/ListEntry;)V");
 	mid_CallbackHandler_onResize = getMethodID(env, cls_CallbackHandler, "onResize", "(II)V");
-	mid_CallbackHandler_onDestroy = getMethodID(env, cls_CallbackHandler, "onDestroy", "()V");
-	mid_CallbackHandler_onDraw = getMethodID(env, cls_CallbackHandler, "onDraw", "(Lcom/scriptographer/adm/Drawer;)V");
 	
 	cls_Tracker = loadClass(env, "com/scriptographer/adm/Tracker");
-	fid_Tracker_trackerRef = getFieldID(env, cls_Tracker, "trackerRef", "I");
-	mid_Tracker_onTrack = getMethodID(env, cls_Tracker, "onTrack", "(Lcom/scriptographer/adm/CallbackHandler;Lcom/scriptographer/adm/ListEntry;IIIIIICCJ)V");
+	mid_Tracker_onTrack = getMethodID(env, cls_Tracker, "onTrack", "(Lcom/scriptographer/adm/NotificationHandler;IIIIIICCJ)Z");
 }
 
 /**
@@ -987,26 +998,26 @@ AIDictionaryRef ScriptographerEngine::convertDictionary(JNIEnv *env, jobject map
 
 /**
  * Returns the wrapped AIArtHandle of an object by assuming that it is an anchestor of Class Art and
- * accessing its field 'artHandle':
+ * accessing its field 'handle':
  *
  * throws exceptions
  */
 AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj) {
 	JNI_CHECK_ENV
-	AIArtHandle art = (AIArtHandle) getIntField(env, obj, fid_Art_artHandle);
+	AIArtHandle art = (AIArtHandle) getIntField(env, obj, fid_AIObject_handle);
 	if (art == NULL) throw new StringException("Object is not wrapped around an art handle.");
 	return art;
 }
 
 /**
  * Returns the wrapped AILayerHandle of an object by assuming that it is an anchestor of Class Art and
- * accessing its field 'artHandle':
+ * accessing its field 'handle':
  *
  * throws exceptions
  */
 AILayerHandle ScriptographerEngine::getLayerHandle(JNIEnv *env, jobject obj) {
 	JNI_CHECK_ENV
-	AIArtHandle art = (AIArtHandle) getIntField(env, obj, fid_Art_artHandle);
+	AIArtHandle art = (AIArtHandle) getIntField(env, obj, fid_AIObject_handle);
 	if (art == NULL) throw new StringException("Object is not wrapped around an layer handle.");
 	AILayerHandle layer;
 	sAIArt->GetLayerOfArt(art, &layer);
@@ -1015,52 +1026,52 @@ AILayerHandle ScriptographerEngine::getLayerHandle(JNIEnv *env, jobject obj) {
 
 /**
  * Returns the wrapped AIDocumentHandle of an object by assuming that it is an anchestor of Class Document and
- * accessing its field 'documentHandle':
+ * accessing its field 'handle':
  *
  * throws exceptions
  */
 AIDocumentHandle ScriptographerEngine::getDocumentHandle(JNIEnv *env, jobject obj) {
 	JNI_CHECK_ENV
-	AIDocumentHandle document = (AIDocumentHandle) getIntField(env, obj, fid_Document_documentHandle);
+	AIDocumentHandle document = (AIDocumentHandle) getIntField(env, obj, fid_AIObject_handle);
 	if (document == NULL) throw new StringException("Object is not wrapped around a document handle.");
 	return document;
 }
 
 /**
  * Returns the wrapped AILiveEffectHandle of an object by assuming that it is an anchestor of Class LiveEffect and
- * accessing its field 'effectHandle':
+ * accessing its field 'handle':
  *
  * throws exceptions
  */
 AILiveEffectHandle ScriptographerEngine::getLiveEffectHandle(JNIEnv *env, jobject obj) {
 	JNI_CHECK_ENV
-	AILiveEffectHandle effect = (AILiveEffectHandle) getIntField(env, obj, fid_LiveEffect_effectHandle);
+	AILiveEffectHandle effect = (AILiveEffectHandle) getIntField(env, obj, fid_AIObject_handle);
 	if (effect == NULL) throw new StringException("Object is not wrapped around a effect handle.");
 	return effect;
 }
 
 /**
  * Returns the wrapped AIMenuItemHandle of an object by assuming that it is an anchestor of Class LiveEffect and
- * accessing its field 'effectHandle':
+ * accessing its field 'handle':
  *
  * throws exceptions
  */
 AIMenuItemHandle ScriptographerEngine::getMenuItemHandle(JNIEnv *env, jobject obj) {
 	JNI_CHECK_ENV
-	AIMenuItemHandle item = (AIMenuItemHandle) getIntField(env, obj, fid_MenuItem_itemHandle);
+	AIMenuItemHandle item = (AIMenuItemHandle) getIntField(env, obj, fid_AIObject_handle);
 	if (item == NULL) throw new StringException("Object is not wrapped around a menu item handle.");
 	return item;
 }
 
 /**
  * Returns the wrapped AIMenuGroup of an object by assuming that it is an anchestor of Class LiveEffect and
- * accessing its field 'effectHandle':
+ * accessing its field 'handle':
  *
  * throws exceptions
  */
 AIMenuGroup ScriptographerEngine::getMenuGroupHandle(JNIEnv *env, jobject obj) {
 	JNI_CHECK_ENV
-	AIMenuGroup group = (AIMenuGroup) getIntField(env, obj, fid_MenuGroup_groupHandle);
+	AIMenuGroup group = (AIMenuGroup) getIntField(env, obj, fid_AIObject_handle);
 	if (group == NULL) throw new StringException("Object is not wrapped around a menu group handle.");
 	return group;
 }
@@ -1110,6 +1121,35 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 		);
 	}
 	return NULL;
+}
+
+/**
+ * selectionChanged is fired in the following situations:
+ * when either a change in the selected art objects occurs or an artwork modification
+ * such as moving a point on a path occurs. In other words EITHER something was selected
+ * or deselected or targeted or untargeted, OR some aspect of the current selected
+ * object(s) changed. 
+ * It calls Art.onSelectionChanged with an array containing all the affected artHandles,
+ * which then increases the version variable of already wrapped objects
+ */
+ASErr ScriptographerEngine::selectionChanged() {
+	JNIEnv *env = getEnv();
+	try {
+		AIArtHandle **matches;
+		long i, numMatches;
+		ASErr error = sAIMatchingArt->GetSelectedArt(&matches, &numMatches);
+		if (error) return error;
+		if (numMatches == 0) return kNoErr;
+
+		jintArray artHandles = env->NewIntArray(numMatches);
+		env->SetIntArrayRegion(artHandles, 0, numMatches, (jint *) *matches);
+		callStaticVoidMethod(env, cls_Art, mid_Art_onSelectionChanged, artHandles);
+
+		sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
+
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env)
+	return kExceptionErr;
 }
 
 /**
@@ -1214,8 +1254,8 @@ jobject ScriptographerEngine::getLiveEffectParameters(JNIEnv *env, AILiveEffectP
 AILiveEffectParamContext ScriptographerEngine::getLiveEffectContext(JNIEnv *env, jobject parameters) {
 	// gets the value for key "context" from the map and converts it to a AILiveEffectParamContext
 	jobject contextObj = callObjectMethod(env, parameters, mid_Map_get, env->NewStringUTF("context"));
-	if (contextObj != NULL && env->IsInstanceOf(contextObj, cls_Integer)) {
-		return (AILiveEffectParamContext) callIntMethod(env, contextObj, mid_Number_intValue);
+	if (contextObj != NULL && env->IsInstanceOf(contextObj, cls_Handle)) {
+		return (AILiveEffectParamContext) getIntField(env, contextObj, fid_Handle_handle);
 	}
 	return NULL;
 }
@@ -1236,7 +1276,7 @@ ASErr ScriptographerEngine::liveEffectCalculate(AILiveEffectGoMessage *message) 
 	try {
 		jobject map = getLiveEffectParameters(env, message->parameters);
 		// TODO: setting art to something else seems to crash!
-		message->art = (AIArtHandle) callStaticIntMethod(env, cls_LiveEffect, mid_LiveEffect_onExecute, (jint) message->effect, map, wrapArtHandle(env, message->art));
+		message->art = (AIArtHandle) callStaticIntMethod(env, cls_LiveEffect, mid_LiveEffect_onCalculate, (jint) message->effect, map, wrapArtHandle(env, message->art));
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env)
 	return kExceptionErr;
@@ -1266,7 +1306,7 @@ ASErr ScriptographerEngine::liveEffectGetInputType(AILiveEffectInputTypeMessage 
 ASErr ScriptographerEngine::menuItemExecute(AIMenuMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_MenuItem, mid_MenuItem_onExecute, (jint) message->menuItem);
+		callStaticVoidMethod(env, cls_MenuItem, mid_MenuItem_onClick, (jint) message->menuItem);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env)
 	return kExceptionErr;
@@ -1286,160 +1326,174 @@ ASErr ScriptographerEngine::menuItemUpdate(AIMenuMessage *message, long inArtwor
  * ADM CallbackListener
  *
  */
-void ScriptographerEngine::callOnNotify(jobject listener, ADMNotifierRef notifier, jobject entry) {
+void ScriptographerEngine::callOnNotify(jobject handler, ADMNotifierRef notifier) {
+	char type[64];
+	sADMNotifier->GetNotifierType(notifier, type, 64);
 	JNIEnv *env = getEnv();
-	try {
-		char type[64];
-		sADMNotifier->GetNotifierType(notifier, type, 64);
-		callVoidMethod(env, listener, mid_CallbackHandler_onNotify, env->NewStringUTF(type), entry);
-	} EXCEPTION_CATCH_REPORT(env)
+	callVoidMethodReport(env, handler, mid_NotificationHandler_onNotify_String, env->NewStringUTF(type));
+}
+
+void ScriptographerEngine::callOnDestroy(jobject handler) {
+	callVoidMethodReport(NULL, handler, mid_NotificationHandler_onNotify_int, (jint) com_scriptographer_adm_Notifier_NOTIFIER_DESTROY);
 }
 
 /**
  *
  *
  */
-void ScriptographerEngine::callOnTrack(jobject listener, ADMTrackerRef tracker, jobject entry) {
+bool ScriptographerEngine::callOnTrack(jobject handler, ADMTrackerRef tracker) {
 	JNIEnv *env = getEnv();
 	try {
-		jobject trackerObj = getObjectField(env, listener, fid_CallbackHandler_tracker);
+		jobject trackerObj = getObjectField(env, handler, fid_NotificationHandler_tracker);
 		ADMPoint pt;
 		sADMTracker->GetPoint(tracker, &pt);
-		callVoidMethod(env, trackerObj, mid_Tracker_onTrack, listener, entry, (jint)tracker, (jint)sADMTracker->GetAction(tracker),
+		return callBooleanMethod(env, trackerObj, mid_Tracker_onTrack, handler, (jint)tracker, (jint)sADMTracker->GetAction(tracker),
 			(jint)sADMTracker->GetModifiers(tracker), pt.h, pt.v, (int)sADMTracker->GetMouseState(tracker),
 			(jchar)sADMTracker->GetVirtualKey(tracker), (int)sADMTracker->GetCharacter(tracker), (long)sADMTracker->GetTime(tracker));
 	} EXCEPTION_CATCH_REPORT(env)
+	return true;
 }
 
 /**
  *
  *
  */
-void ScriptographerEngine::callOnDraw(jobject listener, ADMDrawerRef drawer, jobject entry) {
+void ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 	JNIEnv *env = getEnv();
 	try {
-		jobject drawerObj = getObjectField(env, listener, fid_CallbackHandler_drawer);
-		setIntField(env, drawerObj, fid_Drawer_drawerRef, (jint)drawer);
-		// if entry is set, this must be a list, we need to call onDrawEntry,
-		// otherwise just call the standard onDraw
-		if (entry != NULL) {
-			callVoidMethod(env, listener, mid_List_onDrawEntry, drawerObj, entry);
-		} else {
-			callVoidMethod(env, listener, mid_CallbackHandler_onDraw, drawerObj);
-		}
+		jobject drawerObj = getObjectField(env, handler, fid_NotificationHandler_drawer);
+		setIntField(env, drawerObj, fid_ADMObject_handle, (jint)drawer);
+		callVoidMethod(env, handler, mid_NotificationHandler_onDraw, drawerObj);
 	} EXCEPTION_CATCH_REPORT(env)
+}
+
+ASErr ScriptographerEngine::about() {
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_onAbout);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env)
+	return kExceptionErr;
 }
 
 /**
  * Returns the wrapped ADMDialogRef of an object by assuming that it is an anchestor of Class Dialog and
- * accessing its field 'dialogRef':
+ * accessing its field 'handle':
  *
  * throws exceptions
  */
 ADMDialogRef ScriptographerEngine::getDialogRef(JNIEnv *env, jobject obj) {
 	JNI_CHECK_ENV
-	ADMDialogRef dlg = (ADMDialogRef) getIntField(env, obj, fid_Dialog_dialogRef);
+	ADMDialogRef dlg = (ADMDialogRef) getIntField(env, obj, fid_ADMObject_handle);
 	if (dlg == NULL) throw new StringException("Object is not wrapped around a dialog ref.");
 	return dlg;
 }
 
 /**
  * Returns the wrapped ADMDrawerRef of an object by assuming that it is an anchestor of Class Drawer and
- * accessing its field 'drawerRef':
+ * accessing its field 'handle':
  *
  * throws exceptions
  */
 ADMDrawerRef ScriptographerEngine::getDrawerRef(JNIEnv *env, jobject obj) {
-	ADMDrawerRef drawer = (ADMDrawerRef) getIntField(env, obj, fid_Drawer_drawerRef);
+	ADMDrawerRef drawer = (ADMDrawerRef) getIntField(env, obj, fid_ADMObject_handle);
 	if (drawer == NULL) throw new StringException("Object is not wrapped around a drawer ref.");
 	return drawer;
 }
 
 /**
  * Returns the wrapped ADMTrackerRef of an object by assuming that it is an anchestor of Class Tracker and
- * accessing its field 'trackerRef':
+ * accessing its field 'handle':
  *
  * throws exceptions
  */
 ADMTrackerRef ScriptographerEngine::getTrackerRef(JNIEnv *env, jobject obj) {
-	ADMTrackerRef tracker = (ADMTrackerRef) getIntField(env, obj, fid_Tracker_trackerRef);
+	ADMTrackerRef tracker = (ADMTrackerRef) getIntField(env, obj, fid_ADMObject_handle);
 	if (tracker == NULL) throw new StringException("Object is not wrapped around a tracker ref.");
 	return tracker;
 }
 
 /**
  * Returns the wrapped ADMImageRef of an object by assuming that it is an anchestor of Class Image and
- * accessing its field 'imageRef':
+ * accessing its field 'handle':
  *
  * throws exceptions
  */
 ADMImageRef ScriptographerEngine::getImageRef(JNIEnv *env, jobject obj) {
-	ADMImageRef image = (ADMImageRef) getIntField(env, obj, fid_Image_imageRef);
+	ADMImageRef image = (ADMImageRef) getIntField(env, obj, fid_ADMObject_handle);
 	if (image == NULL) throw new StringException("Object is not wrapped around a image ref.");
 	return image;
 }
 
 /**
  * Returns the wrapped ADMItemRef of an object by assuming that it is an anchestor of Class Item and
- * accessing its field 'itemRef':
+ * accessing its field 'handle':
  *
  * throws exceptions
  */
 ADMItemRef ScriptographerEngine::getItemRef(JNIEnv *env, jobject obj) {
 	JNI_CHECK_ENV
-	ADMItemRef item = (ADMItemRef) getIntField(env, obj, fid_Item_itemRef);
-	if (item == NULL) throw new StringException("Object is not wrapped around an item ref.");
+	ADMItemRef item = (ADMItemRef) getIntField(env, obj, fid_ADMObject_handle);
+	if (item == NULL) {
+		// for HierarchyLists it could be that the user wants to call item functions
+		// on a child list. report that this can only be called on the root list:
+		if (env->IsInstanceOf(obj, cls_HierarchyList)) {
+			throw new StringException("This function can only be called on the root hierarchy list.");
+		} else {
+			throw new StringException("Object is not wrapped around an item ref.");
+		}
+	}
 	return item;
 }
 
 /**
- * Returns the wrapped ADMListRef of an object by assuming that it is an anchestor of Class List and
- * accessing its field 'listRef':
+ * Returns the wrapped ADMListRef of an object by assuming that it is an anchestor of Class ListItem and
+ * accessing its field 'listHandle':
  *
  * throws exceptions
  */
 ADMListRef ScriptographerEngine::getListRef(JNIEnv *env, jobject obj) {
 	JNI_CHECK_ENV
-	ADMListRef list = (ADMListRef) getIntField(env, obj, fid_List_listRef);
+	ADMListRef list = (ADMListRef) getIntField(env, obj, fid_ListItem_listHandle);
 	if (list == NULL) throw new StringException("Object is not wrapped around a list ref.");
 	return list;
 }
 
 /**
- * Returns the wrapped ADMHierarchyListRef of an object by assuming that it is an anchestor of Class HierarchyList and
- * accessing its field 'listRef':
+ * Returns the wrapped ADMHierarchyListRef of an object by assuming that it is an anchestor of Class ListItem and
+ * accessing its field 'listHandle':
  *
  * throws exceptions
  */
 ADMHierarchyListRef ScriptographerEngine::getHierarchyListRef(JNIEnv *env, jobject obj) {
 	JNI_CHECK_ENV
-	ADMHierarchyListRef list = (ADMHierarchyListRef) getIntField(env, obj, fid_List_listRef);
+	ADMHierarchyListRef list = (ADMHierarchyListRef) getIntField(env, obj, fid_ListItem_listHandle);
 	if (list == NULL) throw new StringException("Object is not wrapped around a hierarchy list ref.");
 	return list;
 }
 
 /**
  * Returns the wrapped ADMEntryRef of an object by assuming that it is an anchestor of Class Entry and
- * accessing its field 'entryRef':
+ * accessing its field 'handle':
  *
  * throws exceptions
  */
 ADMEntryRef ScriptographerEngine::getListEntryRef(JNIEnv *env, jobject obj) {
 	JNI_CHECK_ENV
-	ADMEntryRef entry = (ADMEntryRef) getIntField(env, obj, fid_ListEntry_entryRef);
+	ADMEntryRef entry = (ADMEntryRef) getIntField(env, obj, fid_ADMObject_handle);
 	if (entry == NULL) throw new StringException("Object is not wrapped around a list entry ref.");
 	return entry;
 }
 
 /**
  * Returns the wrapped ADMListEntryRef of an object by assuming that it is an anchestor of Class Entry and
- * accessing its field 'entryRef':
+ * accessing its field 'handle':
  *
  * throws exceptions
  */
 ADMListEntryRef ScriptographerEngine::getHierarchyListEntryRef(JNIEnv *env, jobject obj) {
 	JNI_CHECK_ENV
-	ADMListEntryRef entry = (ADMListEntryRef) getIntField(env, obj, fid_ListEntry_entryRef);
+	ADMListEntryRef entry = (ADMListEntryRef) getIntField(env, obj, fid_ADMObject_handle);
 	if (entry == NULL) throw new StringException("Object is not wrapped around a hierarchy list entry ref.");
 	return entry;
 }

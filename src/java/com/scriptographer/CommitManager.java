@@ -28,8 +28,8 @@
  *
  * $RCSfile: CommitManager.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:01 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:58 $
  */
 
 package com.scriptographer;
@@ -42,10 +42,6 @@ public class CommitManager {
 	}
 
 	private static HashMap commitables = new HashMap();
-	// any object that want's to match with the latest commited maxVersion can use this counter that get's incremented
-	// whenever commit is executed. Between two commits, data may change outside scriptographer, so internally
-	// cashed data that does not match this maxVersion counter should update and fetch:
-	private static int version = 0;
 
 	public static void commit() {
 		if (commitables.size() > 0) {
@@ -54,15 +50,9 @@ public class CommitManager {
 			}
 			commitables.clear();
 		}
-		// allways increase maxVersion, read above!
-		version++;
 	}
 
 	public static void markDirty(Commitable commitable) {
 		commitables.put(commitable, commitable);
-	}
-
-	public static int getVersion() {
-		return version;
 	}
 }

@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/10 22:48:42 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/25 00:27:57 $
  */
  
 #include "stdHeaders.h"
@@ -36,7 +36,6 @@
 #include "ScriptographerEngine.h"
 
 #include "resourceIds.h"
-#include "AppContext.h"
 
 Plugin *gPlugin = NULL;
 
@@ -50,6 +49,7 @@ Plugin::Plugin(SPPluginRef pluginRef) {
 	fErrorTimeout = 5;		// seconds
 	fLastErrorTime = 0;
 	fAppStartedNotifier = NULL;
+	fSelectionChangedNotifier = NULL;
 	fEngine = NULL;	
 	fLoaded = false;
 }
@@ -115,8 +115,14 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 	error = sSPPlugins->SetPluginName(fPluginRef, fPluginName);
 	if (error) return error;
 
+	
+
 	// add app started notifier
 	error = sAINotifier->AddNotifier(fPluginRef, "Scriptographer Started", kAIApplicationStartedNotifier, &fAppStartedNotifier);
+	if (error) return error;
+
+	// add selection changed notifier
+	error = sAINotifier->AddNotifier(fPluginRef, "Scriptographer Selection Changed", kAIArtSelectionChangedNotifier, &fSelectionChangedNotifier);
 	if (error) return error;
 
 	// set gPlugin:
@@ -161,10 +167,12 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 	return error;
 }
 
+/*
 ASErr ASAPI dialogHide(ADMDialogRef dialog) {
 	sADMDialog->Show(dialog, false);
 	return kNoErr;
 }
+*/
 
 ASErr Plugin::postStartupPlugin() {
 	if (fEngine == NULL)
@@ -176,9 +184,11 @@ ASErr Plugin::postStartupPlugin() {
 	
 	fEngine->initEngine();
 
+	/*
 	// this seems to be needed to make the plugin persistant. otherwise it would be
 	// unloaded immediatelly on windows (?):create a dummy dialog that is hidden.
 	sADMDialog->Create(fPluginRef, "Scriptographer", kEmptyDialogID, kADMFloatingDialogStyle, dialogHide, NULL, 0);
+	*/
 
 	return error;
 }
@@ -340,24 +350,18 @@ ASErr Plugin::lockPlugin(ASBoolean lock) {
 }
 
 ASErr Plugin::about(SPInterfaceMessage *message) {
-/* As we don't want to have adobe credits on our about dialog box, show our own here:
-	sADMBasic->AboutBox(fPluginRef,
-		"Scriptographer Plugin http://www.scriptographer.com",
-		"Juerg Lehni http://www.scratchdisk.com"
-	);
-*/
-	sADMDialog->Modal(fPluginRef, "About Dialog", kAboutDialogID, kADMModalDialogStyle, NULL, NULL, 0);
+	gEngine->about();
 	return kNoErr;
 }
 
 ASBoolean Plugin::isReloadMsg(char *caller, char *selector) {
 	return (sSPBasic->IsEqual(caller, kSPAccessCaller ) &&
-		sSPBasic->IsEqual( selector, kSPAccessReloadSelector));
+		sSPBasic->IsEqual(selector, kSPAccessReloadSelector));
 }
 
 ASBoolean Plugin::isUnloadMsg(char *caller, char *selector) {
 	return (sSPBasic->IsEqual(caller, kSPAccessCaller ) &&
-		sSPBasic->IsEqual( selector, kSPAccessUnloadSelector));
+		sSPBasic->IsEqual(selector, kSPAccessUnloadSelector));
 }
 
 ASErr Plugin::handleMessage(char *caller, char *selector, void *message) {
@@ -366,14 +370,14 @@ ASErr Plugin::handleMessage(char *caller, char *selector, void *message) {
 	/* Sweet Pea messages */
 
 	if (sSPBasic->IsEqual(caller, kSPAccessCaller))  {
-		if (sSPBasic->IsEqual( selector, kSPAccessUnloadSelector)) {
+		if (sSPBasic->IsEqual(selector, kSPAccessUnloadSelector)) {
 			error = unloadPlugin(static_cast<SPInterfaceMessage *>(message));
-		} else if (sSPBasic->IsEqual( selector, kSPAccessReloadSelector)) {
+		} else if (sSPBasic->IsEqual(selector, kSPAccessReloadSelector)) {
 			error = reloadPlugin(static_cast<SPInterfaceMessage *>(message));
 		}
 	} else if (sSPBasic->IsEqual(caller, kSPInterfaceCaller))  {	
 		if (sSPBasic->IsEqual(selector, kSPInterfaceAboutSelector)) {
-			error = about(static_cast<SPInterfaceMessage *>(message));
+			error = gEngine->about();
 		} else if (sSPBasic->IsEqual(selector, kSPInterfaceStartupSelector)) {
 			error = startupPlugin(static_cast<SPInterfaceMessage *>(message));
 		} else if (sSPBasic->IsEqual(selector, kSPInterfaceShutdownSelector)) {
@@ -383,10 +387,10 @@ ASErr Plugin::handleMessage(char *caller, char *selector, void *message) {
 		if (sSPBasic->IsEqual(selector, kSPPluginPurgeCachesSelector)) {
 			error = purge() ? kSPPluginCachesFlushResponse : kSPPluginCouldntFlushResponse;
 		}
-	} else if (sSPBasic->IsEqual( caller, kSPPropertiesCaller )) {
-		if (sSPBasic->IsEqual( selector, kSPPropertiesAcquireSelector)) {
+	} else if (sSPBasic->IsEqual(caller, kSPPropertiesCaller)) {
+		if (sSPBasic->IsEqual(selector, kSPPropertiesAcquireSelector)) {
 			error = acquireProperty((SPPropertiesMessage *) message);
-		} else if (sSPBasic->IsEqual( selector, kSPPropertiesReleaseSelector)) {
+		} else if (sSPBasic->IsEqual(selector, kSPPropertiesReleaseSelector)) {
 			error = releaseProperty((SPPropertiesMessage *) message);
 		}
 	}
@@ -394,84 +398,82 @@ ASErr Plugin::handleMessage(char *caller, char *selector, void *message) {
 	/* Some common AI messages */
 
 	else if (sSPBasic->IsEqual(caller, kCallerAINotify)) {
-		AppContext appContext(((SPInterfaceMessage *)message)->d.self);
-
-		// Ideally we would rely upon the caller to envelop our Notify method.
-		// But since we won't work right if he doesn't, do this ourselves
-
 		AINotifierMessage *msg = (AINotifierMessage *)message;
-
-		if (sSPBasic->IsEqual(msg->type, kAIApplicationStartedNotifier)) {
+		if (msg->notifier == fSelectionChangedNotifier) {
+			error = gEngine->selectionChanged();
+		} else if (msg->notifier == fAppStartedNotifier) {
 			error = postStartupPlugin();
 		}
+		/* is this needed?
 		if (!error || error == kUnhandledMsgErr) {
-			if (sSPBasic->IsEqual( selector, kSelectorAINotify )) {
+			if (sSPBasic->IsEqual(selector, kSelectorAINotify)) {
 				error = notify(msg);
 			}
 		}
+		*/
 	} else if (sSPBasic->IsEqual(caller, kCallerAIMenu)) {
-		if (sSPBasic->IsEqual( selector, kSelectorAIGoMenuItem )) {
+		if (sSPBasic->IsEqual(selector, kSelectorAIGoMenuItem)) {
 			error = gEngine->menuItemExecute((AIMenuMessage *) message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAIUpdateMenuItem )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAIUpdateMenuItem)) {
 			long inArtwork, isSelected, isTrue;
 			sAIMenu->GetUpdateFlags(&inArtwork, &isSelected, &isTrue);
 			error = gEngine->menuItemUpdate((AIMenuMessage *) message, inArtwork, isSelected, isTrue);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIFilter)) {
-		if (sSPBasic->IsEqual( selector, kSelectorAIGetFilterParameters )) {
+		if (sSPBasic->IsEqual(selector, kSelectorAIGetFilterParameters)) {
 			error = getFilterParameters((AIFilterMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAIGoFilter )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAIGoFilter)) {
 			error = goFilter((AIFilterMessage *)message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIPluginGroup)) {
-		if (sSPBasic->IsEqual( selector, kSelectorAINotifyEdits )) {
+		if (sSPBasic->IsEqual(selector, kSelectorAINotifyEdits)) {
 			error = pluginGroupNotify((AIPluginGroupMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAIUpdateArt )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAIUpdateArt)) {
 			error = pluginGroupUpdate((AIPluginGroupMessage *)message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIFileFormat)) {
-		if (sSPBasic->IsEqual( selector, kSelectorAIGetFileFormatParameters )) {
+		if (sSPBasic->IsEqual(selector, kSelectorAIGetFileFormatParameters)) {
 			error = getFileFormatParameters((AIFileFormatMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAIGoFileFormat )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAIGoFileFormat)) {
 			error = goFileFormat((AIFileFormatMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAICheckFileFormat )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAICheckFileFormat)) {
 			error = checkFileFormat((AIFileFormatMessage *)message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAITool)) {
-		if (sSPBasic->IsEqual( selector, kSelectorAIToolMouseDrag )) {
+		if (sSPBasic->IsEqual(selector, kSelectorAIToolMouseDrag)) {
 			error = gEngine->toolMouseDrag((AIToolMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAITrackToolCursor )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAITrackToolCursor)) {
 			error = gEngine->toolTrackCursor((AIToolMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAIToolMouseDown )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAIToolMouseDown)) {
 			error = gEngine->toolMouseDown((AIToolMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAIToolMouseUp )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAIToolMouseUp)) {
 			error = gEngine->toolMouseUp((AIToolMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAISelectTool )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAISelectTool)) {
 			error = gEngine->toolSelect((AIToolMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAIDeselectTool )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAIDeselectTool)) {
 			error = gEngine->toolDeselect((AIToolMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAIReselectTool )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAIReselectTool)) {
 			error = gEngine->toolReselect((AIToolMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAIEditToolOptions )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAIEditToolOptions)) {
 			error = gEngine->toolEditOptions((AIToolMessage *)message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAILiveEffect)) {
-		if (sSPBasic->IsEqual( selector, kSelectorAIEditLiveEffectParameters )) {
+		if (sSPBasic->IsEqual(selector, kSelectorAIEditLiveEffectParameters)) {
 			error = gEngine->liveEffectEditParameters((AILiveEffectEditParamMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAIGoLiveEffect )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAIGoLiveEffect)) {
 			error = gEngine->liveEffectCalculate((AILiveEffectGoMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAILiveEffectInterpolate )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAILiveEffectInterpolate)) {
 			error = gEngine->liveEffectInterpolate((AILiveEffectInterpParamMessage *)message);
-		} else if (sSPBasic->IsEqual( selector, kSelectorAILiveEffectInputType )) {
+		} else if (sSPBasic->IsEqual(selector, kSelectorAILiveEffectInputType)) {
 			error = gEngine->liveEffectGetInputType((AILiveEffectInputTypeMessage *)message);
 		}
 
 	} else if (sSPBasic->IsEqual(caller, kCallerAITimer)) {
-		if (sSPBasic->IsEqual( selector, kSelectorAIGoTimer)) {
+		if (sSPBasic->IsEqual(selector, kSelectorAIGoTimer)) {
 			error = timer((AITimerMessage *)message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIAnnotation)) {
-		if (sSPBasic->IsEqual( selector, kSelectorAIDrawAnnotation)) {
+		if (sSPBasic->IsEqual(selector, kSelectorAIDrawAnnotation)) {
 			AIAnnotatorMessage *m = (AIAnnotatorMessage *)message;
 			/*
 			ADMRect rect;

@@ -28,8 +28,8 @@
  *
  * $RCSfile: TableLayout.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/10 22:52:30 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
@@ -37,6 +37,8 @@ package com.scriptographer.adm;
 public class TableLayout extends info.clearthought.layout.TableLayout {
 	public TableLayout(double[] col, double[] row, int hGap, int vGap) {
 		super(col, row);
+		this.hGap = hGap;
+		this.vGap = vGap;
 	}
 
 	public TableLayout(double[][] size, int hGap, int vGap) {

@@ -28,36 +28,31 @@
  *
  * $RCSfile: ScrollBar.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 23:27:22 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
-
-import java.awt.geom.Rectangle2D;
 
 import com.scriptographer.js.FunctionHelper;
 
 public class ScrollBar extends ValueItem {
 
-	public ScrollBar(Dialog dialog, Rectangle2D bounds) {
-		super(dialog, Item.TYPE_SCROLLBAR, bounds, 0, 0);
-	}
-	
-	public native float[] getIncrements();
-	public native void setIncrements(float small, float large);
-	
-	public void setIncrements(float[] increments) {
-		setIncrements(increments[0], increments[1]);
+	public ScrollBar(Dialog dialog) {
+		super(dialog, Item.TYPE_SCROLLBAR, OPTION_NONE);
 	}
 
+	protected void onChange() throws Exception {
+		FunctionHelper.callFunction(wrapper, "onChange");
+	}
+	
 	protected void onNotify(int notifier, ListEntry entry) throws Exception {
 		if (wrapper != null) {
 			// override the default behavior and give onChange for both notifiers:
 			switch(notifier) {
 				case Notifier.NOTIFIER_USER_CHANGED:
 				case Notifier.NOTIFIER_INTERMEDIATE_CHANGED:
-					FunctionHelper.callFunction(wrapper, "onChange");
+					onChange();
 					break;
 			}
 		}

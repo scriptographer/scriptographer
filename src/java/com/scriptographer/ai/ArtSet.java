@@ -28,8 +28,8 @@
  * 
  * $RCSfile: ArtSet.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:38:54 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
@@ -138,7 +138,7 @@ public class ArtSet extends ArrayList {
 	}
 
 	public static ArtSet getLayer(Layer layer) {
-		return new ArtSet(nativeGetLayer(layer.artHandle));
+		return new ArtSet(nativeGetLayer(layer.handle));
 	}
 
 	public ArtSet invert() {

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_HierarchyList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 00:27:58 $
  */
  
 #include "stdHeaders.h"
@@ -56,7 +56,7 @@ void ASAPI callbackHierarchyListDestroy(ADMHierarchyListRef list) {
 	env->DeleteGlobalRef(listObj);
 	sADMHierarchyList->SetUserData(list, NULL);
 	// clear the handle
-	gEngine->setIntField(env, listObj, gEngine->fid_List_listRef, 0);
+	gEngine->setIntField(env, listObj, gEngine->fid_ListItem_listHandle, 0);
 }
 
 /*
@@ -180,13 +180,14 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getLeafEntry
 }
 
 /*
- * com.scriptographer.adm.Entry getActiveLeafEntry()
+ * com.scriptographer.adm.HierarchyListEntry getActiveLeafEntry()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getActiveLeafEntry(JNIEnv *env, jobject obj) {
 	try {
 		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
-		ADMListEntryRef ent = sADMHierarchyList->GetActiveLeafEntry(list);
-		return gEngine->getListEntryObject(ent);
+		ADMListEntryRef entry = sADMHierarchyList->GetActiveLeafEntry(list);
+		if (entry != NULL)
+			return gEngine->getListEntryObject(entry);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }
@@ -207,32 +208,17 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getActiveLea
 	return NULL;
 
 /*
- * com.scriptographer.adm.Entry[] getAllSelectedEntries()
+ * com.scriptographer.adm.HierarchyListEntry[] getAllSelectedEntries()
  */
 JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_HierarchyList_getAllSelectedEntries(JNIEnv *env, jobject obj) {
 	GET_ENTRIES(NumberOfAllSelectedEntriesInHierarchy, IndexAllSelectedEntriesInHierarchy)
 }
 
 /*
- * com.scriptographer.adm.Entry[] getAllUnnestedSelectedEntries()
+ * com.scriptographer.adm.HierarchyListEntry[] getAllUnnestedSelectedEntries()
  */
 JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_HierarchyList_getAllUnnestedSelectedEntries(JNIEnv *env, jobject obj) {
 	GET_ENTRIES(NumberOfUnNestedSelectedEntriesInHierarchy, IndexUnNestedSelectedEntriesInHierarchy)
-}
-
-/*
- * com.scriptographer.adm.Entry getParentEntry()
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getParentEntry(JNIEnv *env, jobject obj) {
-	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
-		ADMListEntryRef ent = sADMHierarchyList->GetParentEntry(list);
-		if (ent != NULL)
-			return gEngine->getListEntryObject(ent);
-		else
-			return NULL;
-	} EXCEPTION_CONVERT(env)
-	return NULL;
 }
 
 /*
@@ -442,14 +428,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_invalidate(JNIE
 }
 
 /*
- * com.scriptographer.adm.Entry[] getLeafEntries()
+ * com.scriptographer.adm.HierarchyListEntry[] getLeafEntries()
  */
 JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_HierarchyList_getLeafEntries(JNIEnv *env, jobject obj) {
 	GET_ENTRIES(NumberOfLeafEntries, IndexLeafEntry)
 }
 
 /*
- * int getLeafIndex(com.scriptographer.adm.Entry entry)
+ * int getLeafIndex(com.scriptographer.adm.HierarchyListEntry entry)
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getLeafIndex(JNIEnv *env, jobject obj, jobject entry) {
 	try {
@@ -471,9 +457,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_swapEntries(JNI
 }
 
 /*
- * com.scriptographer.adm.Entry insertEntry(com.scriptographer.adm.Entry entry, int index)
+ * com.scriptographer.adm.HierarchyListEntry nativeInsertEntry(com.scriptographer.adm.HierarchyListEntry entry, int index)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_insertEntry(JNIEnv *env, jobject obj, jobject entry, jint index) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_nativeInsertEntry(JNIEnv *env, jobject obj, jobject entry, jint index) {
 	try {
 		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
 		ADMListEntryRef ent = gEngine->getHierarchyListEntryRef(env, entry);
@@ -484,7 +470,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_insertEntry(
 }
 
 /*
- * com.scriptographer.adm.Entry unlinkEntry(int index)
+ * com.scriptographer.adm.HierarchyListEntry unlinkEntry(int index)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_unlinkEntry(JNIEnv *env, jobject obj, jint index) {
 	try {
@@ -506,14 +492,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_deselectAll(JNI
 }
 
 /*
- * com.scriptographer.adm.Entry[] getExpandedEntries()
+ * com.scriptographer.adm.HierarchyListEntry[] getExpandedEntries()
  */
 JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_HierarchyList_getExpandedEntries(JNIEnv *env, jobject obj) {
 	GET_ENTRIES(NumberOfExpandedEntries, IndexExpandedEntry)
 }
 
 /*
- * int getExpandedIndex(com.scriptographer.adm.Entry entry)
+ * int getExpandedIndex(com.scriptographer.adm.HierarchyListEntry entry)
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getExpandedIndex(JNIEnv *env, jobject obj, jobject entry) {
 	try {

@@ -24,19 +24,19 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: com_scriptographer_adm_List.cpp,v $
+ * $RCSfile: com_scriptographer_adm_ListItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.1 $
+ * $Date: 2005/03/25 00:27:58 $
  */
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "admGlobals.h"
-#include "com_scriptographer_adm_List.h"
+#include "com_scriptographer_adm_ListItem.h"
 
 /*
- * com.scriptographer.adm.List
+ * com.scriptographer.adm.ListItem
  */
  
 // lists don't have init callbacks that automatically get called, but just for simetry let's use the same scheme:
@@ -56,7 +56,7 @@ void ASAPI callbackListDestroy(ADMListRef list) {
 	env->DeleteGlobalRef(listObj);
 	sADMList->SetUserData(list, NULL);
 	// clear the handle
-	gEngine->setIntField(env, listObj, gEngine->fid_List_listRef, 0);
+	gEngine->setIntField(env, listObj, gEngine->fid_ListItem_listHandle, 0);
 }
 
 #define DEFINE_METHOD(METHOD) \
@@ -69,20 +69,24 @@ void ASAPI callbackListDestroy(ADMListRef list) {
 		}
 
 /*
- * int nativeCreate(int boxItemRef)
+ * int nativeInit(int itemRef)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_List_nativeCreate(JNIEnv *env, jobject obj, jint boxItemRef) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_nativeInit(JNIEnv *env, jobject obj, jint itemRef) {
 	try {
-		ADMListRef list = sADMItem->GetList((ADMItemRef) boxItemRef);
+		// the init callbacks need to be called by hand, as 
+		// there are no automatic ones for these
+		ADMListRef list = sADMItem->GetList((ADMItemRef) itemRef);
 		if (list != NULL) {
 			// link it with the java object that calls this
 			sADMList->SetUserData(list, env->NewGlobalRef(obj));
+			callbackListInit(list);
 			return (jint) list;
 		} else {
-			ADMHierarchyListRef hierarchyList = sADMItem->GetHierarchyList((ADMItemRef) boxItemRef);
+			ADMHierarchyListRef hierarchyList = sADMItem->GetHierarchyList((ADMItemRef) itemRef);
 			if (hierarchyList != NULL) {
 				// link it with the java object that calls this
 				sADMHierarchyList->SetUserData(hierarchyList, env->NewGlobalRef(obj));
+				callbackHierarchyListInit(hierarchyList);
 				return (jint) hierarchyList;
 			}
 		}
@@ -91,9 +95,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_List_nativeCreate(JNIEnv *env
 }
 
 /*
- * void nativeSetTrackCallbackEnabled(boolean enabled)
+ * void nativeSetTrackEntryCallback(boolean enabled)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_nativeSetTrackCallbackEnabled(JNIEnv *env, jobject obj, jboolean enabled) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_nativeSetTrackEntryCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		if (env->IsInstanceOf(obj, gEngine->cls_HierarchyList)) {
 			ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
@@ -106,9 +110,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_nativeSetTrackCallbackEn
 }
 
 /*
- * void nativeSetDrawCallbackEnabled(boolean enabled)
+ * void nativeSetDrawEntryCallback(boolean enabled)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_nativeSetDrawCallbackEnabled(JNIEnv *env, jobject obj, jboolean enabled) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_nativeSetDrawEntryCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		if (env->IsInstanceOf(obj, gEngine->cls_HierarchyList)) {
 			ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
@@ -123,7 +127,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_nativeSetDrawCallbackEna
 /*
  * void setEntrySize(int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_setEntrySize(JNIEnv *env, jobject obj, jint width, jint height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_setEntrySize(JNIEnv *env, jobject obj, jint width, jint height) {
 	try {
 		#define SET_ENTRY_SIZE(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			LIST_SUITE->SetEntryWidth(list, width); \
@@ -136,7 +140,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_setEntrySize(JNIEnv *env
 /*
  * void setTrackMask(int mask)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_setTrackMask(JNIEnv *env, jobject obj, jint mask) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_setTrackMask(JNIEnv *env, jobject obj, jint mask) {
 	try {
 		#define SET_TRACK_MASK(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			LIST_SUITE->SetMask(list, mask);
@@ -148,7 +152,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_setTrackMask(JNIEnv *env
 /*
  * int getTrackMask()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_List_getTrackMask(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_getTrackMask(JNIEnv *env, jobject obj) {
 	try {
 		#define GET_TRACK_MASK(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			return (jint)LIST_SUITE->GetMask(list);
@@ -161,7 +165,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_List_getTrackMask(JNIEnv *env
 /*
  * com.scriptographer.ai.Point getEntrySize()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntrySize(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntrySize(JNIEnv *env, jobject obj) {
 	try {
 		ADMPoint pt;
 		
@@ -179,7 +183,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntrySize(JNIEnv *
 /*
  * void setEntryTextRect(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_setEntryTextRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_setEntryTextRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMRect rt;
 		rt.left = x;
@@ -197,7 +201,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_setEntryTextRect(JNIEnv 
 /*
  * com.scriptographer.ai.Rectangle getEntryTextRect()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntryTextRect(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntryTextRect(JNIEnv *env, jobject obj) {
 	try {
 		ADMRect rt;
 		
@@ -214,7 +218,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntryTextRect(JNIE
 /*
  * void removeEntry(int index)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_removeEntry(JNIEnv *env, jobject obj, jint index) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_removeEntry(JNIEnv *env, jobject obj, jint index) {
 	try {
 		#define REMOVE_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			LIST_SUITE->RemoveEntry(list, index);
@@ -226,7 +230,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_removeEntry(JNIEnv *env,
 /*
  * com.scriptographer.adm.Entry getEntry(int index)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntry__I(JNIEnv *env, jobject obj, jint index) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntry__I(JNIEnv *env, jobject obj, jint index) {
 	try {
 		#define GET_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			ENTRY_TYPE ent = LIST_SUITE->GetEntry(list, index); \
@@ -240,7 +244,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntry__I(JNIEnv *e
 /*
  * com.scriptographer.adm.Entry getEntry(java.lang.String text)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntry__Ljava_lang_String_2(JNIEnv *env, jobject obj, jstring text) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntry__Ljava_lang_String_2(JNIEnv *env, jobject obj, jstring text) {
 	const jchar *chars = NULL;
 	try {
 		chars = env->GetStringChars(text, NULL);
@@ -261,7 +265,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntry__Ljava_lang_
 /*
  * com.scriptographer.adm.ListEntry getEntry(int x, int y)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntry__II(JNIEnv *env, jobject obj, jint x, jint y) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntry__II(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
 		ADMPoint pt;
 		pt.h = x;
@@ -280,11 +284,12 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntry__II(JNIEnv *
 /*
  * com.scriptographer.adm.Entry getActiveEntry()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getActiveEntry(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getActiveEntry(JNIEnv *env, jobject obj) {
 	try {
 		#define GET_ACTIVE_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
-			ENTRY_TYPE ent = LIST_SUITE->GetActiveEntry(list); \
-			return gEngine->getListEntryObject(ent);
+			ENTRY_TYPE entry = LIST_SUITE->GetActiveEntry(list); \
+			if (entry != NULL) \
+				return gEngine->getListEntryObject(entry);
 
 		DEFINE_METHOD(GET_ACTIVE_ENTRY)
 	} EXCEPTION_CONVERT(env)
@@ -294,7 +299,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getActiveEntry(JNIEnv
 /*
  * com.scriptographer.adm.Entry[] getSelectedEntries()
  */
-JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_List_getSelectedEntries(JNIEnv *env, jobject obj) {
+JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_ListItem_getSelectedEntries(JNIEnv *env, jobject obj) {
 	try {
 		#define GET_SELECTED_ENTRIES(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			int length = LIST_SUITE->NumberOfSelectedEntries(list); \
@@ -315,7 +320,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_List_getSelectedEntri
 /*
  * com.scriptographer.adm.Entry[] getEntries()
  */
-JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_List_getEntries(JNIEnv *env, jobject obj) {
+JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_ListItem_getEntries(JNIEnv *env, jobject obj) {
 	try {
 		#define GET_ENTRIES(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			int length = LIST_SUITE->NumberOfEntries(list); \
@@ -337,7 +342,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_List_getEntries(JNIEn
 /*
  * int getNumEntries()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_List_getNumEntries(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_getNumEntries(JNIEnv *env, jobject obj) {
 	try {
 		#define GET_NUM_ENTRIES(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			return LIST_SUITE->NumberOfEntries(list);
@@ -350,7 +355,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_List_getNumEntries(JNIEnv *en
 /*
  * void nativeSetBackgroundColor(int color)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_nativeSetBackgroundColor(JNIEnv *env, jobject obj, jint color) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_nativeSetBackgroundColor(JNIEnv *env, jobject obj, jint color) {
 	try {
 		#define SET_BG_COLOR(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			LIST_SUITE->SetBackgroundColor(list, (ADMColor) color);
@@ -362,7 +367,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_nativeSetBackgroundColor
 /*
  * void selectByText(java.lang.String text)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_List_selectByText(JNIEnv *env, jobject obj, jstring text) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_selectByText(JNIEnv *env, jobject obj, jstring text) {
 	try {
 		if (env->IsInstanceOf(obj, gEngine->cls_HierarchyList)) {
 			throw new StringException("selectByText is not supported in hierarchy lists.");

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:38:54 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
@@ -37,7 +37,7 @@ package com.scriptographer.ai;
 import java.awt.geom.Point2D;
 import java.io.File;
 
-public class Document {
+public class Document extends AIObject {
 
 	// TODO: move this to app.DIALOG_* and have a global function set / getDialogStatus,
 	// that controls the general handling of dialogs on a global setting level.
@@ -62,7 +62,7 @@ public class Document {
 	 * @param dialogStatus how dialogs should be handled, Document.DIALOG_* values
 	 */
 	public Document(File file, int colorModel, int dialogStatus) {
-		documentHandle = nativeCreate(file, colorModel, dialogStatus);
+		super(nativeCreate(file, colorModel, dialogStatus));
 	}
 
 	/**
@@ -75,14 +75,14 @@ public class Document {
 	 * @param dialogStatus how dialogs should be handled, Document.DIALOG_* values
 	 */
 	public Document(String title, float width, float height, int colorModel, int dialogStatus) {
-		documentHandle = nativeCreate(title, width, height, colorModel, dialogStatus);
+		super(nativeCreate(title, width, height, colorModel, dialogStatus));
 	}
 
-	private native int nativeCreate(File file, int colorModel, int dialogStatus);
-	private native int nativeCreate(String title, float width, float height, int colorModel, int dialogStatus);
+	private static native int nativeCreate(File file, int colorModel, int dialogStatus);
+	private static native int nativeCreate(String title, float width, float height, int colorModel, int dialogStatus);
 
 	protected Document(int handle) {
-		this.documentHandle = handle;
+		super(handle);
 	}
 
 	public LayerList getLayers() {

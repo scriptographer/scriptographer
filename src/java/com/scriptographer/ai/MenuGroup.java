@@ -28,15 +28,17 @@
  * 
  * $RCSfile: MenuGroup.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
 
 import java.util.HashMap;
 
-public class MenuGroup {
+import com.scriptographer.util.Handle;
+
+public class MenuGroup extends AIObject {
 	// AIMenuGroups.h:
 	public static final MenuGroup
 		GROUP_ABOUT 							= new MenuGroup("About"),
@@ -169,7 +171,6 @@ public class MenuGroup {
 		OPTION_SEPERATOR_ABOVE 					= 1 << 1,
 		OPTION_SEPARATOR_BELOW					= 1 << 2;
 
-	protected int groupHandle = 0;
 	protected String name;
 
 	private static HashMap groups = new HashMap();
@@ -184,11 +185,13 @@ public class MenuGroup {
 	 * @param near
 	 * @param options MenuGroup.OPTION_*
 	 */
-	protected MenuGroup(String name, MenuGroup near, int options) {
+	public MenuGroup(String name, MenuGroup near, int options) {
 		this(name);
-		groupHandle = nativeCreate(name, near.name, 0, options);
+		// use this.name, instead of name, because it was modified
+		// in the constructor above
+		handle = nativeCreate(this.name, near.name, 0, options);
 
-		if (groupHandle == 0)
+		if (handle == 0)
 			throw new RuntimeException("Unable to create MenuGroup");
 
 		putGroup(this);
@@ -202,7 +205,18 @@ public class MenuGroup {
 	 */
 	public MenuGroup(String name, MenuItem parent, int options) {
 		this(name);
-		groupHandle = nativeCreate(name, null, parent.itemHandle, options);
+		// if parent already has a subGroup, append this one after:
+		MenuGroup subGroup = parent.getSubGroup();
+		if (subGroup != null) {
+			handle = nativeCreate(this.name, subGroup.name, 0, options);
+		} else {
+			handle = nativeCreate(this.name, null, parent.handle, options);
+		}
+
+		if (handle == 0)
+			throw new RuntimeException("Unable to create MenuGroup");
+
+		putGroup(this);
 	}
 
 	/**
@@ -211,10 +225,9 @@ public class MenuGroup {
 	 * @param groupHandle
 	 * @param name
 	 */
-	protected MenuGroup(int groupHandle, String name) {
-		this.groupHandle = groupHandle;
+	protected MenuGroup(int handle, String name) {
+		this.handle = handle;
 		this.name = name;
-
 		putGroup(this);
 	}
 
@@ -225,15 +238,15 @@ public class MenuGroup {
 	 * @param name
 	 * @return
 	 */
-	protected static MenuGroup wrapGroupHandle(int groupHandle, String name) {
-		MenuGroup group = getGroup(groupHandle);
+	protected static MenuGroup wrapGroupHandle(int handle, String name) {
+		MenuGroup group = getGroup(handle);
 		if (group == null) {
-			group = new MenuGroup(groupHandle, name);
+			group = new MenuGroup(handle, name);
 		}
 		return group;
 	}
 
-	private native int nativeCreate(String name, String nearGroup, int parentItemHandle, int options);
+	private static native int nativeCreate(String name, String nearGroup, int parentItemHandle, int options);
 
 	public boolean equals(Object obj) {
 		if (obj instanceof MenuGroup) {
@@ -251,10 +264,10 @@ public class MenuGroup {
 	public native int getOptions();
 
 	private static void putGroup(MenuGroup group) {
-		groups.put(new Integer(group.groupHandle), group);
+		groups.put(new Handle(group.handle), group);
 	}
 
-	private static MenuGroup getGroup(int groupHandle) {
-		return (MenuGroup) groups.get(new Integer(groupHandle));
+	private static MenuGroup getGroup(int handle) {
+		return (MenuGroup) groups.get(new Handle(handle));
 	}
 }

@@ -28,13 +28,11 @@
  *
  * $RCSfile: TextEdit.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
-
-import java.awt.geom.Rectangle2D;
 
 import com.scriptographer.js.ArgumentReader;
 
@@ -42,13 +40,6 @@ public class TextEdit extends TextItem {
 
 	// ADMTextEditStyle, ADMTextEditPopupStyle
 	public final static int
-		// self defined pseudo styles, for creation of the right TYPE:
-		STYLE_READONLY = 1 << 6,
-		STYLE_MULTILINE = 1 << 7,
-		STYLE_POPUP = 1 << 8, // exclusive, cannot be STYLE_READONLY | STYLE_MULTILINEÊ|  STYLE_MULTILINE!
-		STYLE_SCROLLING = 1 << 9, // only for POPUP!
-
-		// real ADM segmentValues:
 		STYLE_SINGLELINE = 0,
 		STYLE_NUMERIC = 2,        // 'Numeric' means float. Default.
 		STYLE_EXCLUSIVE = 5,      // only for TextEditPopup
@@ -57,51 +48,42 @@ public class TextEdit extends TextItem {
 	
 	// Options
 	public final static int
-		// TextEdit:
-		OPTION_PASSWORD = (1 << 1),
-		OPTION_UNICODE = (1 << 2), // [cpaduan] 6/18/02 - Creates a Unicode based edit box (if possible). Currently has no effect on Windows.
-		OPTION_DISABLE_DRAG_DROP = (1 << 3); // Disables drag & drop from or to text edits. Currently mac-only.
+		OPTION_PASSWORD = 1 << 1,
+		OPTION_UNICODE = 1 << 2, // [cpaduan] 6/18/02 - Creates a Unicode based edit box (if possible). Currently has no effect on Windows.
+		OPTION_DISABLE_DRAG_DROP = 1 << 3, // Disables drag & drop from or to text edits. Currently mac-only.
 
-	public TextEdit(Dialog dialog, Rectangle2D bounds, String text, int style, int options) {
-		super(dialog, getType(style), bounds, text, getStyle(style), options);
+	// self defined pseudo options, for creation of the right TYPE:
+		OPTION_READONLY = 1 << 4,
+		OPTION_MULTILINE = 1 << 5;
+	
+	public TextEdit(Dialog dialog, int options) {
+		// filter out the pseudo styles from the options:
+		// (max. real bitis 3, and the mask is (1 << (max + 1)) - 1
+		super(dialog, getType(options), options & ((1 << 4) - 1));
 	}
 
-	public TextEdit(Dialog dialog, Rectangle2D bounds, String text, int style) {
-		this(dialog, bounds, text, style, 0);
+	public TextEdit(Dialog dialog) {
+		this(dialog, OPTION_NONE);
 	}
 
-	public TextEdit(Dialog dialog, Rectangle2D bounds, String text) {
-		super(dialog, Item.TYPE_TEXT_EDIT, bounds, text,0, 0);
-	}
-
-	private static String getType(int style) {
-		if ((style & STYLE_POPUP) != 0) {
-			return (style & STYLE_SCROLLING) != 0 ? Item.TYPE_TEXT_EDIT_SCROLLING_POPUP
-				: Item.TYPE_TEXT_EDIT_POPUP;
+	private static int getType(int options) {
+		// abuse the ADM's password style for creating it as a type...
+		if ((options & OPTION_PASSWORD) != 0) {
+			return Item.TYPE_TEXT_EDIT_PASSWORD;
 		} else {
-			// abuse the ADM's password style for creating it as a type...
-			if ((style & STYLE_PASSWORD) != 0) {
-				return Item.TYPE_TEXT_EDIT_PASSWORD;
+			boolean multiline = ((options & OPTION_MULTILINE) != 0);
+			if ((options & OPTION_READONLY) != 0) {
+				return multiline ? Item.TYPE_TEXT_EDIT_MULTILINE_READONLY
+					: Item.TYPE_TEXT_EDIT_READONLY;
 			} else {
-				boolean multiline = ((style & STYLE_MULTILINE) != 0);
-				if ((style & STYLE_READONLY) != 0) {
-					return multiline ? Item.TYPE_TEXT_EDIT_MULTILINE_READONLY
-						: Item.TYPE_TEXT_EDIT_READONLY;
-				} else {
-					return multiline ? Item.TYPE_TEXT_EDIT_MULTILINE
-						: Item.TYPE_TEXT_EDIT;
-				}
+				return multiline ? Item.TYPE_TEXT_EDIT_MULTILINE
+					: Item.TYPE_TEXT_EDIT;
 			}
 		}
 	}
 	
-	private static int getStyle(int style) {
-		// filter out the pseudo styles:
-		return style & ~STYLE_READONLY & ~STYLE_MULTILINE & ~STYLE_POPUP & ~STYLE_SCROLLING;
-	}
-	
 	/*
-	 * Callback stuff
+	 * Callback functions
 	 */
 	
 	protected void onPreCut() throws Exception {

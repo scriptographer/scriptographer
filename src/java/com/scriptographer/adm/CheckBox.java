@@ -28,35 +28,35 @@
  *
  * $RCSfile: CheckBox.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:56 $
  */
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-
-public class CheckBox extends PictureItem {
-
-	public CheckBox(Dialog dialog, Rectangle2D bounds, String text) {
-		super(dialog, Item.TYPE_TEXT_CHECKBOX, bounds, text, 0);
+/**
+ * A CheckBox is by default text based.
+ * Only if it is created with an image passed to the constructor,
+ * It is picture based.
+ * Picture based items (CheckBox, Static, PushButton, RadioButton),
+ * this policy has been chosen to avoid 4 more classes.
+ */
+public class CheckBox extends ToggleItem {
+	
+	public CheckBox(Dialog dialog) {
+		super(dialog, Item.TYPE_TEXT_CHECKBOX);
 	}
 	
-	public CheckBox(Dialog dialog, Rectangle2D bounds, Image image) {
-		super(dialog, Item.TYPE_PICTURE_CHECKBOX, bounds, null, 0);
-		try {
-			setPicture(image);
-		} catch (IOException e) {
-			// will never happen with type Image
+	public CheckBox(Dialog dialog, Image picture) {
+		super(dialog, Item.TYPE_PICTURE_CHECKBOX);
+		hasPictures = true;
+		if (picture != null) {
+			try {
+				setPicture(picture);
+			} catch(Exception e) {
+				// OperationNotSupportedException cannot happen because of allowPictures above
+				// IOException cannot happen with parameter of class Image
+			}
 		}
-	}
-	
-	public Object getValue() {
-		return new Boolean(getBooleanValue());
-	}
-	
-	public void setValue(Object value) {
-		setBooleanValue(value);
 	}
 }

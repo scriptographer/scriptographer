@@ -28,15 +28,15 @@
  *
  * $RCSfile: Tracker.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
 
 import java.awt.Point;
 
-public class Tracker {
+public class Tracker extends ADMObject {
 	// ADMMouseState
 	public final static int 
 		MOUSE_NORMAL = 0,
@@ -135,7 +135,7 @@ public class Tracker {
 	public final static int 
 		MODIFIER_NULL					= 0x00000000,
 		
-		MODIFIER_BUTTON_DOWN			= 0x00000004,													MODIFIER_WIN_LEFT_BUTTON_DOWN		= 0x00000004,
+		MODIFIER_CLICK					= 0x00000004,													MODIFIER_WIN_LEFT_BUTTON_DOWN		= 0x00000004,
 																										MODIFIER_WIN_MIDDLE_BUTTON_DOWN		= 0x00000008,
 																										MODIFIER_WIN_RIGHT_BUTTON_DOWN		= 0x00000010,
 		MODIFIER_SHIFT_KEY_DOWN			= 0x00000020,
@@ -235,7 +235,6 @@ public class Tracker {
 		KEY_DUMMY				= 0xFFFF;
 	
 	
-	private int trackerRef;
 	private int action;
 	private int modifiers;
 	private Point point = new Point();
@@ -255,9 +254,9 @@ public class Tracker {
 	 * thread safety, but that's not an issue with ADM right now.
 	 * @throws Exception
 	 */
-	protected void onTrack(CallbackHandler listener, ListEntry entry, int trackerRef, int action, int modifiers,
+	protected boolean onTrack(NotificationHandler handler, int handle, int action, int modifiers,
 		int px, int py, int mouseState, char virtualKey, char character, long time) throws Exception {
-		this.trackerRef = trackerRef;
+		this.handle = handle;
 		this.action = action;
 		this.modifiers = modifiers;
 		this.point.setLocation(px, py);
@@ -265,12 +264,7 @@ public class Tracker {
 		this.virtualKey = virtualKey;
 		this.character = character;
 		this.time = time;
-		// if entry is set, this must be a List, call onTrackEntry
-		if (entry != null) {
-			((List) listener).onTrackEntry(this, entry);
-		} else {
-			listener.onTrack(this);
-		}
+		return handler.onTrack(this);
 	}
 	
 	public  Point getPoint() {

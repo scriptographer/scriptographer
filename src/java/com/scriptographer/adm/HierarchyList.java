@@ -28,8 +28,8 @@
  *
  * $RCSfile: HierarchyList.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
@@ -41,42 +41,60 @@ import java.awt.*;
 import org.mozilla.javascript.Scriptable;
 
 public class HierarchyList extends List {
-	private HierarchyList parentList;
+	public final static int
+	// hathaway : 8/22/02 : Added to support creation of hierarchical palette popups for Pangea
+	// Popup menu creation options
+	OPTION_HIERARCHY_POPUP = (1 << 0);
 	
-	public HierarchyList(HierarchyListBox box) {
-		super(box);
+	public HierarchyList(Dialog dialog, int options) {
+		super(dialog, Item.TYPE_HIERARCHY_LISTBOX, options);
 	}
 	
+	public HierarchyList(Dialog dialog) {
+		this(dialog, 0);
+	}
+
+	private HierarchyListEntry parentEntry = null;
+	
 	public HierarchyList(HierarchyListEntry entry) {
-		super();
-		listRef = nativeCreateChildList(entry.entryRef);
+		listHandle = nativeCreateChildList(entry.handle);
 		// determine the parent hierarchyList:
-		parentList = (HierarchyList) entry.getList();
+		parentEntry = entry;
+		HierarchyList parentList = (HierarchyList) entry.getList();
 		// pass through the handlers automatically.
 		// if desired otherwise, they need to be written over aftewards:
-		this.setTrackCallbackEnabled(parentList.isTrackCallbackEnabled());
-		this.setDrawCallbackEnabled(parentList.isDrawCallbackEnabled());
+		this.setTrackEntryCallback(parentList.getTrackEntryCallback());
+		this.setDrawEntryCallback(parentList.getDrawEntryCallback());
 		this.onDrawEntry = parentList.onDrawEntry;
 		this.onTrackEntry = parentList.onTrackEntry;
 	}
 	
 	public boolean remove() {
-		HierarchyListEntry parentEntry = nativeRemoveList(listRef);
+		HierarchyListEntry parentEntry = nativeRemoveList(listHandle);
 		if (parentEntry != null) {
 			parentEntry.childList = null;
-			listRef = 0;
+			listHandle = 0;
 			return true;
 		}
 		return false;
 	}
 	
-	private native int nativeCreateChildList(int entryRef);
-	private native HierarchyListEntry nativeRemoveList(int listRef);
+	protected int getUniqueId() {
+		// walk the hierarchy up and use the root's uniqueId function only:
+		if (parentEntry != null) {
+			return parentEntry.getList().getUniqueId();
+		} else {
+			return super.getUniqueId();
+		}
+	}
+	
+	private native int nativeCreateChildList(int entryHandle);
+	private native HierarchyListEntry nativeRemoveList(int listHandle);
 
 	public void setWrapper(Scriptable wrapper) {
 		super.setWrapper(wrapper);
-		if (parentList != null) {
-			Scriptable parentWrapper = parentList.getWrapper();
+		if (parentEntry != null) {
+			Scriptable parentWrapper = parentEntry.getList().getWrapper();
 			if (parentWrapper != null) {
 				// simply set parentWrapper as the prototype of this object the handler calls will be delegated:
 				wrapper.setPrototype(parentWrapper);
@@ -169,31 +187,37 @@ public class HierarchyList extends List {
 	}
 
 	/*
-	 * item bezierList manipulation
+	 * item list manipulation
 	 *
 	 */
+
+	public ListEntry createEntry(int index) {
+		return new HierarchyListEntry(this, index);
+	}
 	
-	public native ListEntry getLeafEntry(int x, int y);
-	public native ListEntry getActiveLeafEntry();
+	public native HierarchyListEntry getLeafEntry(int x, int y);
+	public native HierarchyListEntry getActiveLeafEntry();
 
 	public void getLeafEntry(Point2D point) {
 		getLeafEntry((int)point.getX(), (int)point.getY());
 	}
 
 	/*
-	 * selection bezierList manipulation
+	 * selection list manipulation
 	 *
 	 */
 
-	public native ListEntry[] getAllSelectedEntries();
-	public native ListEntry[] getAllUnnestedSelectedEntries();
+	public native HierarchyListEntry[] getAllSelectedEntries();
+	public native HierarchyListEntry[] getAllUnnestedSelectedEntries();
 		
 	/*
 	 * item hierarchy
 	 *
 	 */
 	
-	public native ListEntry getParentEntry();
+	public HierarchyListEntry getParentEntry() {
+		return parentEntry;
+	}
 
 	/*
 	 * coordate system conversion
@@ -277,8 +301,8 @@ public class HierarchyList extends List {
 	 *
 	 */
 
-	public native ListEntry[] getLeafEntries();
-	public native int getLeafIndex(ListEntry entry);
+	public native HierarchyListEntry[] getLeafEntries();
+	public native int getLeafIndex(HierarchyListEntry entry);
 
 	/*
 	 * item sequence manipulation
@@ -286,8 +310,18 @@ public class HierarchyList extends List {
 	 */
 	
 	public native void swapEntries(int fromIndex, int toIndex);
-	public native ListEntry insertEntry(ListEntry entry, int index);
-	public native ListEntry unlinkEntry(int index);
+	
+	private native HierarchyListEntry nativeInsertEntry(HierarchyListEntry entry, int index);
+
+	public HierarchyListEntry insertEntry(HierarchyListEntry entry, int index) {
+		entry = nativeInsertEntry(entry, index);
+		if (entry != null)
+			entry.list = this;
+		return entry;
+	}
+	
+	// TODO: move this to HierarchyListEntry
+	public native HierarchyListEntry unlinkEntry(int index);
 	
 	/*
 	 * item selection
@@ -301,8 +335,8 @@ public class HierarchyList extends List {
 	 *
 	 */
 
-	public native ListEntry[] getExpandedEntries();
-	public native int getExpandedIndex(ListEntry entry);
+	public native HierarchyListEntry[] getExpandedEntries();
+	public native int getExpandedIndex(HierarchyListEntry entry);
 
 	/*
 	 * restrict item invalidation

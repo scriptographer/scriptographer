@@ -28,8 +28,8 @@
  *
  * $RCSfile: PathStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.ai;
@@ -38,12 +38,17 @@ import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
 
 public class PathStyle implements Commitable {
-	protected FillStyle fill;			/* Fill style, if fillPaint is true */
-	protected StrokeStyle stroke;		/* Stroke style, if strokePaint is true */
-	protected boolean clip;				/* Whether or not to use this as a clipping path */
-	protected boolean lockClip;			/* Whether or not to lock the clipping path */
-	protected boolean evenOdd;			/* Whether or not to use the even-odd rule to determine path insideness */
-	protected float resolution;			/* Path's resolution */
+	protected FillStyle fill;
+	protected StrokeStyle stroke;
+	// Whether or not to use this as a clipping path
+	protected boolean clip;				
+	// Whether or not to lock the clipping path
+	protected boolean lockClip;
+	// Whether or not to use the even-odd rule to determine path insideness
+	protected boolean evenOdd;
+	// Path's resolution
+	protected float resolution;
+	
 	protected Art art = null;
 
 	private boolean dirty = false;
@@ -76,7 +81,7 @@ public class PathStyle implements Commitable {
 	}
 
 	protected void checkUpdate() {
-		if (version != CommitManager.getVersion())
+		if (art != null && version != art.version)
 			fetch();
 	}
 
@@ -86,21 +91,22 @@ public class PathStyle implements Commitable {
 			boolean clip, boolean lockClip, boolean evenOdd, float resolution);
 
 	public void fetch() {
+		// only fetch if it didn't change in the meantime:
 		if (!dirty && art != null) {
-			nativeFetch(art.artHandle);
-			version = CommitManager.getVersion();
+			nativeFetch(art.handle);
+			version = art.version;
 			dirty = false;
 		}
 	}
 
 	public void commit() {
 		if (art != null) {
-			nativeCommit(art.artHandle,
+			nativeCommit(art.handle,
 					fill.color.getComponents(), fill.overprint,
 					stroke.color.getComponents(), stroke.overprint, stroke.width, stroke.dashOffset, stroke.dashArray, stroke.cap, stroke.join, stroke.miterLimit,
 					clip, lockClip, evenOdd, resolution
 			);
-			version = CommitManager.getVersion();
+			version = art.version;
 			dirty = false;
 		}
 	}

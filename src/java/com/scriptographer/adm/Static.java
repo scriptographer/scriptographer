@@ -28,39 +28,63 @@
  *
  * $RCSfile: Static.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-
+/**
+ * A Static is by default text based.
+ * Only if it is created with an image passed to the constructor,
+ * It is picture based.
+ * Picture based items (CheckBox, Static, PushButton, RadioButton),
+ * this policy has been chosen to avoid 4 more classes.
+ */
 public class Static extends PictureItem {
 
 	//  Text static styles
 	public final static int
-		STYLE_CLIPPEDTEXT = (1 << 0),
-		STYLE_DISABLE_AUTO_ACTIVATE_TEXT = (1 << 1),
-		STYLE_TRUNCATE_ENDTEXT = (1 << 2),    // clipped style has priority
-		STYLE_TRUNCATE_MIDDLETEXT = (1 << 3), // truncate end has priority
-		
-		// a fake ADMStyle that tells the constructor to construct a MULTILINE static item.
-		STYLE_MULTILINE = (1 << 16);
+		STYLE_CLIPPEDTEXT 					= 1 << 0,
+		STYLE_DISABLE_AUTO_ACTIVATE_TEXT 	= 1 << 1,
+		STYLE_TRUNCATE_ENDTEXT 				= 1 << 2,    // clipped style has priority
+		STYLE_TRUNCATE_MIDDLETEXT 			= 1 << 3; // truncate end has priority
 
-	public Static(Dialog dialog, Rectangle2D bounds, String text, int style) {
+	public final static int
+		// a fake option that tells the constructor to construct a MULTILINE static item.
+		OPTION_MULTILINE = 1 << 1;
+
+	/**
+	 * Creates a text based Static item.
+	 * @param dialog
+	 * @param options
+	 */
+	public Static(Dialog dialog, int options) {
 		super(dialog,
-			(style & STYLE_MULTILINE) != 0 ? Item.TYPE_TEXT_STATIC_MULTILINE
-				: Item.TYPE_TEXT_STATIC, bounds, text, style & ~STYLE_MULTILINE);
+			(options & OPTION_MULTILINE) != 0 ? Item.TYPE_TEXT_STATIC_MULTILINE
+				: Item.TYPE_TEXT_STATIC);
 	}
 	
-	public Static(Dialog dialog, Rectangle2D bounds, Image image) {
-		super(dialog, Item.TYPE_PICTURE_STATIC, bounds, null, 0);
-		try {
-			setPicture(image);
-		} catch (IOException e) {
-			// will never happen with type Image
+	public Static(Dialog dialog) {
+		this(dialog, OPTION_NONE);
+	}
+	
+	/**
+	 * Creates a picture based Static Item.
+	 * 
+	 * @param dialog
+	 * @param picture
+	 */
+	public Static(Dialog dialog, Image picture) {
+		super(dialog, Item.TYPE_PICTURE_STATIC);
+		hasPictures = true;
+		if (picture != null) {
+			try {
+				setPicture(picture);
+			} catch(Exception e) {
+				// OperationNotSupportedException cannot happen because of allowPictures above
+				// IOException cannot happen with parameter of class Image
+			}
 		}
 	}
 }

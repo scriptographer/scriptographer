@@ -28,13 +28,11 @@
  *
  * $RCSfile: Dial.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
-
-import java.awt.geom.Rectangle2D;
 
 public class Dial extends ValueItem {
 
@@ -44,8 +42,7 @@ public class Dial extends ValueItem {
 		STYLE_ARROW_AT_END = 1,
 		STYLE_ARROW_AT_CENTER = 2;
 
-	public Dial(Dialog dialog, Rectangle2D bounds, int style) {
-		super(dialog, Item.TYPE_DIAL, bounds, style, 0);
+	public Dial(Dialog dialog) {
+		super(dialog, Item.TYPE_DIAL, OPTION_NONE);
 	}
-
 }

@@ -24,225 +24,36 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * File created on 31.12.2004.
+ * File created on 03.01.2005.
  *
  * $RCSfile: List.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/25 00:27:57 $
  */
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.*;
+public class List extends ListItem {
+	
+	// SegmentList box styles
+	public final static int
+		STYLE_MULTISELECT = (1 << 0),
+		STYLE_DIVIDED = (1 << 1),
+		STYLE_TILE = (1 << 2),
+		STYLE_ENTRY_ALWAYS_SELECTED = (1 << 3),
+		STYLE_BLACK_RECT = (1 << 4),
+		STYLE_USE_IMAGE = (1 << 5),
+		STYLE_ENTRYTEXT_EDITABLE = (1 << 6);
 
-import org.mozilla.javascript.Function;
+	protected List(Dialog dialog, int type, int options) {
+		super(dialog, type, options);
+	}
 
-import com.scriptographer.js.FunctionHelper;
-
-// TODO: subclass AbstractList and make this a normal list!!!
-// how to get around the CallbackHanlder subclassing is not clear yet
-public class List extends CallbackHandler {
-	protected int listRef = 0;
-
-	private int bgColor = Drawer.COLOR_BACKGROUND;
-
-	public List(ListBox box) {
-		this();
-		if (box.list != null)
-			throw new RuntimeException("The ListBox already has a List instance.");
-		listRef = nativeCreate(box.itemRef);
-		box.list = this;
+	public List(Dialog dialog) {
+		this(dialog, Item.TYPE_LISTBOX, OPTION_NONE);
 	}
 	
 	protected List() {
 	}
-	
-	private native int nativeCreate(int boxItemRef);
-	
-	/*
-	 * Callback stuff
-	 */
-
-	protected Function onDrawEntry = null;
-	
-	public void setOnDrawEntry(Function func) {
-		setDrawCallbackEnabled(func != null);
-		onDrawEntry = func;
-	}
-
-	public Function getOnDrawEntry() {
-		return onDrawEntry;
-	}
-	
-	protected void onDrawEntry(Drawer drawer, ListEntry entry) throws Exception {
-		entry.onDraw(drawer);
-		if (wrapper != null && onDrawEntry != null) {
-			twoArgs[0] = drawer;
-			twoArgs[1] = entry;
-			FunctionHelper.callFunction(wrapper, onDrawEntry, twoArgs);
-		}
-	}
-
-	protected Function onTrackEntry = null;
-
-	public void setOnTrackEntry(Function func) {
-		setTrackCallbackEnabled(func != null);
-		onTrackEntry = func;
-	}
-
-	public Function getOnTrackEntry() {
-		return onTrackEntry;
-	}
-	
-	protected void onTrackEntry(Tracker tracker, ListEntry entry) throws Exception {
-		entry.onTrack(tracker);
-		if (wrapper != null && onTrackEntry != null) {
-			twoArgs[0] = tracker;
-			twoArgs[1] = entry;
-			FunctionHelper.callFunction(wrapper, onTrackEntry, twoArgs);
-		}
-	}
-
-	protected void onDestroyEntry(ListEntry entry) throws Exception {
-		entry.onDestroy();
-		callFunction("onDestroyEntry", entry);
-	}
-
-	protected void onChangeEntry(ListEntry entry) throws Exception {
-		entry.onChange();
-		callFunction("onChangeEntry", entry);
-	}
-	
-	protected void onChangeEntryText(ListEntry entry) throws Exception {
-		entry.onChangeText();
-		callFunction("onChangeEntryText", entry);
-	}
-	
-	protected void onNotify(int notifier, ListEntry entry) throws Exception {
-		switch (notifier) {
-			case Notifier.NOTIFIER_USER_CHANGED:
-				onChangeEntry(entry);
-				break;
-			case Notifier.NOTIFIER_ENTRY_TEXT_CHANGED:
-				onChangeEntryText(entry);
-				break;
-		}
-	}
-
-	/*
-	 * Handler activation / deactivation
-	 */
-	protected native void nativeSetTrackCallbackEnabled(boolean enabled);
-	protected native void nativeSetDrawCallbackEnabled(boolean enabled);
-
-	/*
-	 * menu IDs
-	 *
-	 */
-
-	/*
-	public native void setMenuID(SPPluginRef inMenuResPlugin,
-				ADMInt32 inMenuResID, const char* inMenuResName);
-
-	public native ADMInt32 getMenuID(ADMListRef inList);
-	*/
-
-	/*
-	 * container accessor
-	 *
-	 */
-	
-//	public native Item getItem();
-
-	/*
-	 * override hooks
-	 *
-	 */
-
-	/*
-	 * entry bounds accessors
-	 *
-	 */
-	
-	public native void setEntrySize(int width, int height);
-	public native Dimension getEntrySize();
-	
-	public void setEntrySize(Dimension size) {
-		setEntrySize(size.width, size.height);
-	}
-
-	public void setEntrySize(Point2D size) {
-		setEntrySize((int)size.getX(), (int)size.getY());
-	}
-	
-	public void setEntrySize(int[] size) {
-		setEntrySize(size[0], size[1]);
-	}
-	
-	public native void setEntryTextRect(int x, int y, int width, int height);
-	public native Rectangle getEntryTextRect();
-	
-	public void setEntryTextRect(Rectangle2D rect) {
-		setEntryTextRect((int)rect.getX(), (int)rect.getY(), (int)rect.getWidth(), (int)rect.getHeight());
-	}
-	
-	public void setEntryTextRect(int[] rect) {
-		setEntryTextRect(rect[0], rect[1], rect[2], rect[3]);
-	}
-	
-	/*
-	 * entry array accessors
-	 *
-	 */
-
-	// TODO: maybe this fits in the List interface???
-	public native void removeEntry(int index);
-	
-	public native ListEntry getEntry(int index);
-	public native ListEntry getEntry(String text);
-	public native ListEntry getEntry(int x, int y);
-	
-	public void getEntry(Point2D point) {
-		getEntry((int)point.getX(), (int)point.getY());
-	}
-
-	public native ListEntry getActiveEntry();
-	public native ListEntry[] getEntries();
-	public native ListEntry[] getSelectedEntries();
-	
-	public native int getNumEntries();
-
-	/*
-	 * item action mask
-	 *
-	 */
-
-	protected native void setTrackMask(int mask);
-	protected native int getTrackMask();
-
-	/*
-	 * customizing appearance
-	 *
-	 */
-	
-	public native void nativeSetBackgroundColor(int color); // Drawer.COLOR_*
-
-	public void setBackgroundColor(int color) {
-		bgColor = color;
-		nativeSetBackgroundColor(color);
-	}
-
-	public int getBackgroundColor() {
-		return bgColor;
-	}
-
-	/*
-	 * searching
-	 *
-	 */
-	
-	public native void selectByText(String text);
 }
