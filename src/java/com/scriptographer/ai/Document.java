@@ -28,14 +28,15 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/30 08:21:33 $
  */
 
 package com.scriptographer.ai;
 
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.util.Collection;
 import java.util.Map;
 
 import org.mozilla.javascript.NativeObject;
@@ -172,4 +173,56 @@ public class Document extends AIObject {
 	public ArtSet getMatchingArt(Class type, NativeObject attributes) {
 		return getMatchingArt(type, FunctionHelper.convertToMap(attributes));
 	}
+
+	public native Path createRectangle(Rectangle rect);
+
+	public native Path createRoundRectangle(Rectangle rect, float hor, float ver);
+	
+	public native Path createOval(Rectangle rect, boolean circumscribed);
+	
+	public native Path createRegularPolygon(int numSides, Point center, float radius);
+	
+	public native Path createStar(int numPoints, Point center, float radius1, float radius2);
+	
+	public native Path createSpiral(Point firstArcCenter, Point start, float decayPercent, int numQuarterTurns, boolean clockwiseFromOutside);
+
+	public Path createOval(Rectangle rect) {
+		return createOval(rect, false);
+	}
+	
+	public Path createPath() {
+		return new Path(this);
+	}
+	
+	public Path createPath(Collection segments) {
+		return new Path(this, segments);
+	}
+	
+	public Path createPath(Object[] segments) {
+		return new Path(this, segments);
+	}
+	
+	public Layer createLayer() {
+		return new Layer(this);
+	}
+	
+	public Group createGroup() {
+		return new Group(this);
+	}
+	
+	public Raster createRaster(int type, int width, int height) {
+		return new Raster(this, type, width, height);
+	}
+	
+	public Raster createRaster(int type) {
+		return new Raster(this, type);
+	}
+	
+	public Raster createRaster() {
+		return new Raster(this);
+	}
+	
+	/*
+	 * TODO: add all create* functions for all types and parameters!
+	 */
 }

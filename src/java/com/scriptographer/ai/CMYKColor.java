@@ -28,8 +28,8 @@
  * 
  * $RCSfile: CMYKColor.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 23:27:22 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/30 08:21:32 $
  */
 
 package com.scriptographer.ai;
@@ -57,7 +57,7 @@ public class CMYKColor extends Color {
 
 	public java.awt.Color toAWTColor() {
 		// workaround, as there seems to be a problem with the color profiles and cmyk:
-		return this.convert(Color.CONVERSION_ARGB).toAWTColor();
+		return convert(Color.TYPE_ARGB).toAWTColor();
 		// this doesn't seem to work:
 		// return new java.awt.Color(getColorSpace(), new float[] { cyan, yellow, magenta, black }, alpha);
 	}
@@ -74,7 +74,7 @@ public class CMYKColor extends Color {
 
 	protected static ColorSpace space = null;
 
-	public ColorSpace getColorSpace() {
+	public static ColorSpace getColorSpace() {
 		if (space == null)
 			space = new ICC_ColorSpace(getProfile(MODEL_CMYK));
 		return space;

@@ -28,8 +28,8 @@
  *
  * $RCSfile: ConsoleDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/27 10:06:16 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/30 08:20:41 $
  */
 
 package com.scriptographer.gui;
@@ -47,7 +47,7 @@ import com.scriptographer.adm.*;
 public class ConsoleDialog extends FloatingDialog implements ConsoleOutputWriter {
 	static final String title = "Scriptographer Console";
 
-	public ConsoleDialog() {
+	public ConsoleDialog() throws Exception {
 		super(FloatingDialog.OPTION_TABBED | FloatingDialog.OPTION_RESIZING | FloatingDialog.OPTION_SHOW_CYCLE);
 		setTitle(title);
 		setSize(200, 240);

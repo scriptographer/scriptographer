@@ -1,5 +1,6 @@
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
+#include "Plugin.h"
 #include "com_scriptographer_ScriptographerEngine.h"
 
 /*
@@ -43,7 +44,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_launch(J
 
 		// SEE http://developer.apple.com/technotes/tn/tn1002.html
 		SPPlatformFileSpecification fileSpec;
-		sAIUser->Path2SPPlatformFileSpecification(path, &fileSpec);
+		gPlugin->pathToFileSpec(path, &fileSpec);
 		FSSpec spec;
 		FSMakeFSSpec(fileSpec.vRefNum, fileSpec.parID, fileSpec.name, &spec);
 

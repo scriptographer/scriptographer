@@ -28,14 +28,13 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/30 08:21:31 $
  */
 
 package com.scriptographer.adm;
 
 import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.ScriptRuntime;
 
 import com.scriptographer.js.FunctionHelper;
 
@@ -44,7 +43,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
@@ -798,250 +796,18 @@ public abstract class Dialog extends CallbackHandler {
 	}
 
 	public static native Rectangle getPaletteLayoutBounds();
-	
-	public static class PromptItem {
-		public static final int
-			TYPE_STRING = 0,
-			TYPE_NUMBER = 1,
-			TYPE_UNIT = 2,
-			TYPE_RANGE = 3,
-			TYPE_CHECKBOX = 4,
-			TYPE_LIST = 5;
-		
-		protected static final String[] typeNames = {
-			"String",
-			"Number",
-			"Unit",
-			"Range",
-			"CheckBox",
-			"List"
-		};
-		
-		String description;
-		int type;
-		Object value;
-		float min;
-		float max;
-		float step;
-		Item item;
-		int width;
-		
-		public PromptItem(int type, String description, Object value, int width, float min, float max, float step) {
-			this.description = description;
-			this.type = type;
-			this.value = value;
-			this.width = width;
-			this.min = min;
-			this.max = max;
-			this.step = step;
-		}
 
-		public PromptItem(int type, String description, Object value) {
-			this(type, description, value, -1, Float.MIN_VALUE, Float.MAX_VALUE, 0);
-		}
-		
-		Item createItem(Dialog dialog) {
-			// Item:
-			item = null;
-			switch (type) {
-				case TYPE_RANGE:
-					item = new Slider(dialog);
-					break;
-				case TYPE_CHECKBOX:
-					item = new CheckBox(dialog);
-					break;
-				default:
-					item = new TextEdit(dialog);
-			}
-			
-			// Value:
-			switch (type) {
-				case TYPE_STRING:
-					((TextEdit) item).setText(value.toString());
-					break;
-				case TYPE_NUMBER:
-				case TYPE_UNIT:
-				case TYPE_RANGE:
-					if (item instanceof TextEdit) {
-						((TextEdit) item).setAllowMath(true);
-						((TextEdit) item).setAllowUnits(true);
-						((TextEdit) item).setShowUnits(type == TYPE_UNIT);
-					}
-					if (type == TYPE_RANGE) {
-						((Slider) item).setIncrements(step, 8 * step);
-					}
-					((ValueItem) item).setRange(min, max);
-					((ValueItem) item).setValue((float) ScriptRuntime.toNumber(value));
-					break;
-				case TYPE_CHECKBOX:
-					((CheckBox) item).setChecked(ScriptRuntime.toBoolean(value));
-					break;
-					
-			}
-			item.setFont(Dialog.FONT_PALETTE);
-			Dimension size = item.getBestSize();
-			if (width >= 0)
-				size.width = width;
-			item.setSize(size);
-			return item;
-		}
-		
-		Object getValue() {
-			switch(type) {
-				case TYPE_STRING:
-					return ((TextItem) item).getText();
-				case TYPE_NUMBER:
-				case TYPE_UNIT:
-				case TYPE_RANGE:
-					return new Float(((ValueItem) item).getValue());
-				case TYPE_CHECKBOX:
-					return new Boolean(((ToggleItem) item).isChecked());
-			}
-			return null;
-		}
-		
-		static int getType(String type) {
-			for (int i = 0; i < typeNames.length; i++) {
-				if (typeNames[i].equals(type))
-					return i;
-			}
-			return -1;
-		}
+	/**
+	 * This function is only here for the JS environment. From java, use
+	 * PromptDialog.prompt directly!
+	 * 
+	 * @param title
+	 * @param items
+	 * @return
+	 */
+	public static Object[] prompt(String title, NativeArray items) {
+		return PromptDialog.prompt(title, FunctionHelper.convertToArray(items));
 	}
-	
-	static class PromptDialog extends ModalDialog {
-		Object[] values = null;
-		
-		PromptDialog(String title, PromptItem[] items) {
-			super();
-
-			setTitle(title);
-			
-			double[] columns = { TableLayout.PREFERRED, TableLayout.PREFERRED };
-			double[] rows = new double[items.length + 1];
-			for (int i = 0; i < rows.length; i++)
-				rows[i] = TableLayout.PREFERRED;
-			
-			TableLayout layout = new TableLayout(columns, rows, 4, 4);
-			setLayout(layout);
-			setInsets(4, 4, 4, 4);
-			
-			for (int i = 0; i < items.length; i++) {
-				PromptItem promptItem = items[i];
-				if (promptItem != null) {
-					Static descItem = new Static(this);
-					descItem.setFont(Dialog.FONT_PALETTE);
-					descItem.setText(promptItem.description + ":");
-					addToLayout(descItem, "0, " + i);
-					
-					Item valueItem = promptItem.createItem(this);
-					addToLayout(valueItem, "1, " + i);
-				}
-			}			
-			
-			ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.RIGHT));
-			
-			PushButton okButton = new PushButton(this);
-			okButton.setFont(Dialog.FONT_PALETTE);
-			okButton.setText("OK");
-			buttons.add(okButton);
-			
-			PushButton cancelButton = new PushButton(this);
-			cancelButton.setFont(Dialog.FONT_PALETTE);
-			cancelButton.setText("Cancel");
-			buttons.add(cancelButton);
-
-			addToLayout(buttons, "0, " + items.length + ", 1, " + items.length);
-			
-			this.setDefaultItem(okButton);
-			this.setCancelItem(cancelButton);
-			
-			autoLayout();
-			
-			values = new Object[items.length];
-			
-			if (doModal() == okButton) {
-				for (int i = 0; i < items.length; i++) {
-					values[i] = items[i].getValue();
-				}
-			} else {
-				for (int i = 0; i < items.length; i++) {
-					values[i] = items[i].value;
-				}
-			}
-		}
-	}
-
-	public static Object[] prompt(String title, PromptItem[] items) {
-		return new PromptDialog(title, items).values;
-	}
-
-	public static Object[] prompt(String title, NativeArray array) {
-		Object[] items = FunctionHelper.convertToArray(array);
-		PromptItem[] promptItems = new PromptItem[items.length];
-		for (int i = 0; i < items.length; i++) {
-			Object itemObj = items[i];
-			if (itemObj instanceof PromptItem) {
-				promptItems[i] = (PromptItem) itemObj;
-			} else if (itemObj instanceof Map) {
-				Map map = (Map) itemObj;
-				Object valueObj = map.get("value");
-				Object typeObj = map.get("type");
-				Object stepObj = map.get("step");
-				int type = -1;
-				if (typeObj != null) {
-					if (typeObj instanceof String) {
-						type = PromptItem.getType((String) typeObj);
-					} else if (typeObj instanceof Number) {
-						type = ((Number) typeObj).intValue();
-					}
-				} else { // determine type from value and step:
-					if (stepObj != null) {
-						type = PromptItem.TYPE_RANGE;
-					} else {
-						if (valueObj instanceof Number)
-							type = PromptItem.TYPE_NUMBER;
-						else if (valueObj instanceof String) 
-							type = PromptItem.TYPE_STRING;
-						else if (valueObj instanceof Object[])
-							type = PromptItem.TYPE_LIST;
-					}
-				}
-				
-				if (type != -1) {
-					Object descObj = map.get("description");
-					String desc = descObj instanceof String ? (String) descObj : "";
-					
-					Object widthObj = map.get("width");
-					double width = ScriptRuntime.toNumber(widthObj);
-					if (widthObj == null || width == ScriptRuntime.NaN)
-						width = -1;
-	
-					Object minObj = map.get("min");
-					double min = ScriptRuntime.toNumber(minObj);
-					if (minObj == null || min == ScriptRuntime.NaN)
-						min = Float.MIN_VALUE;
-	
-					Object maxObj = map.get("max");
-					double max = ScriptRuntime.toNumber(minObj);
-					if (maxObj == null || max == ScriptRuntime.NaN)
-						max = Float.MAX_VALUE;
-	
-					double step = ScriptRuntime.toNumber(stepObj);
-					if (step == ScriptRuntime.NaN)
-						step = 0;
-	
-					promptItems[i] = new PromptItem(type, desc, valueObj, (int) width, (float) min, (float) max, (float) step);				
-				} else {
-					promptItems[i] = null;
-				}
-			} else {
-				promptItems[i] = null;
-			}
-		}
-		return prompt(title, promptItems);
-	}
-
 	/**
 	 * AWTContainer wrapps an ADM Dialog and prentends it is an AWT Container, in
 	 * order to take advantage of all the nice LayoutManagers in AWT.

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/30 08:21:32 $
  */
 
 package com.scriptographer.ai;
@@ -54,8 +54,21 @@ public class Path extends Art {
 	/**
 	 * Creates a path object
 	 */
+	public Path(Document document) {
+		super(document, TYPE_PATH);
+	}
+
+	public Path(Document document, Collection segments) {
+		this(document);
+		setSegments(segments);
+	}
+
+	public Path(Document document, Object[] segments) {
+		this(document, Arrays.asList(segments));
+	}
+	
 	public Path() {
-		super(TYPE_PATH);
+		super(null, TYPE_PATH);
 	}
 
 	public Path(Collection segments) {
@@ -65,17 +78,6 @@ public class Path extends Art {
 
 	public Path(Object[] segments) {
 		this(Arrays.asList(segments));
-	}
-
-	public static native Path createRectangle(Rectangle rect);
-	public static native Path createRoundRectangle(Rectangle rect, float hor, float ver);
-	public static native Path createOval(Rectangle rect, boolean circumscribed);
-	public static native Path createRegularPolygon(int numSides, Point center, float radius);
-	public static native Path createStar(int numPoints, Point center, float radius1, float radius2);
-	public static native Path createSpiral(Point firstArcCenter, Point start, float decayPercent, int numQuarterTurns, boolean clockwiseFromOutside);
-
-	public static Path createOval(Rectangle rect) {
-		return createOval(rect, false);
 	}
 
     public boolean remove() {

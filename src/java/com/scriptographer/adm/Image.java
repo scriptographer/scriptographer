@@ -28,16 +28,25 @@
  *
  * $RCSfile: Image.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/25 00:27:56 $
+ * $Revision: 1.6 $
+ * $Date: 2005/03/30 08:21:31 $
  */
 
 package com.scriptographer.adm;
 
-import java.awt.image.*;
-import java.awt.*;
-import java.io.*;
-import java.net.*;
+import java.awt.Container;
+import java.awt.MediaTracker;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.awt.image.ImageProducer;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import com.scriptographer.ai.Raster;
 
 public class Image extends ADMObject {
 	// an image can wrap its representation as an icon as well...
@@ -55,9 +64,9 @@ public class Image extends ADMObject {
 	// image types
 	public final static int
 		TYPE_RGB = 0,
-		TYPE_RGB_ALPHA = 1,
-		TYPE_OFFSCREEN = 2,
-		TYPE_OFFSCREEN_ALPHA = 3;
+		TYPE_ARGB = 1,
+		TYPE_SCREEN = 2,
+		TYPE_ASCREEN = 3;
 	
 	public Image(int width, int height, int type) {
 		this.width = width;
@@ -99,7 +108,7 @@ public class Image extends ADMObject {
 					break;
 				case BufferedImage.TYPE_INT_ARGB:
 				case BufferedImage.TYPE_INT_ARGB_PRE:
-					type = TYPE_RGB_ALPHA;
+					type = TYPE_ARGB;
 					break;
 
 				// indirect types, copying is needed:
@@ -109,27 +118,34 @@ public class Image extends ADMObject {
 					BufferedImage tmp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 					tmp.createGraphics().drawImage(buf, null, 0, 0);
 					image = tmp;
-					type = TYPE_RGB_ALPHA;
+					type = TYPE_ARGB;
 				}
 				break;
 				default: {
-					BufferedImage tmp = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+					BufferedImage tmp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 					tmp.createGraphics().drawImage(buf, null, 0, 0);
-					image = tmp;
-					type = TYPE_RGB;
+					buf = tmp;
+					type = TYPE_ARGB;
 				}
 			}
 		} else {
 			width = image.getWidth(null);
 			height = image.getHeight(null);
 			buf = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-			buf.createGraphics().drawImage(image, 0, 0, null);
-			type = TYPE_RGB_ALPHA;
+			buf.getGraphics().drawImage(image, 0, 0, null);
+			type = TYPE_ARGB;
 		}
 		handle = nativeCreate(width, height, type);
 		DataBufferInt buffer = (DataBufferInt) buf.getRaster().getDataBuffer();
 		int data[] = buffer.getData();
 		nativeSetPixels(data, width, height, byteWidth);
+	}
+	
+	public Image(Raster raster) {
+		// TODO: handle this case directly, without converting back and from
+		// a java BufferedImage, through native code in Raster (the oposite
+		// of the Raster(Image admImage);
+		this(raster.getImage());
 	}
 
 	// TODO: ImageIO (or sun graphics) on OS X have a bug with the headless mode.
@@ -167,7 +183,7 @@ public class Image extends ADMObject {
 		return image;
 	}
 
-	private static java.awt.Image waitForImage(java.awt.Image image) {
+	public static java.awt.Image waitForImage(java.awt.Image image) {
 		MediaTracker mediaTracker = new MediaTracker(new Container());
 		mediaTracker.addImage(image, 0);
 		try {
@@ -203,8 +219,8 @@ public class Image extends ADMObject {
 
 	public int getCompatibleType() {
 		switch(type) {
-		case TYPE_RGB_ALPHA:
-		case TYPE_OFFSCREEN_ALPHA:
+		case TYPE_ARGB:
+		case TYPE_ASCREEN:
 			return BufferedImage.TYPE_INT_ARGB;
 		default:
 			return BufferedImage.TYPE_INT_RGB;

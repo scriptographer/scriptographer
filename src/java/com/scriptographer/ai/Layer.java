@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Layer.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/30 08:21:33 $
  */
 
 package com.scriptographer.ai;
@@ -43,8 +43,12 @@ public class Layer extends Art {
 		super(handle);
 	}
 
+	public Layer(Document document) {
+		super(document, TYPE_LAYER);
+	}
+
 	public Layer() {
-		super(TYPE_LAYER);
+		super(null, TYPE_LAYER);
 	}
 
 	public native void setVisible(boolean visible);

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Item.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.6 $
+ * $Date: 2005/03/30 08:15:38 $
  */
 
 #include "stdHeaders.h"
@@ -52,8 +52,7 @@ ASErr ASAPI callbackItemInit(ADMItemRef item) {
 	// set size and bounds:
 	ADMRect rect;
 	sADMItem->GetLocalRect(item, &rect);
-	DEFINE_ADM_POINT(size, rect.right, rect.bottom);
-	gEngine->setObjectField(env, obj, gEngine->fid_Item_size, gEngine->convertDimension(env, &size));
+	gEngine->setObjectField(env, obj, gEngine->fid_Item_size, gEngine->convertDimension(env, rect.right, rect.bottom));
 	sADMItem->GetBoundsRect(item, &rect);
 	gEngine->setObjectField(env, obj, gEngine->fid_Item_bounds, gEngine->convertRectangle(env, &rect));
 
@@ -108,9 +107,7 @@ void ASAPI callbackItemNotify(ADMItemRef item, ADMNotifierRef notifier) {
 				int dy = rt.bottom - pt.v;
 				if (dx != 0 || dy != 0) {
 					// write size back:
-					pt.h = rt.right;
-					pt.v = rt.bottom;
-					gEngine->convertDimension(env, &pt, size);
+					gEngine->convertDimension(env, rt.right, rt.bottom, size);
 					// and call handler:
 					gEngine->callVoidMethod(env, obj, gEngine->mid_CallbackHandler_onResize, dx, dy);
 				}
@@ -224,8 +221,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetSize(JNIEnv 
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		ADMRect size;
 		sADMItem->GetLocalRect(item, &size);
-		DEFINE_ADM_POINT(pt, size.right, size.bottom);
-		return gEngine->convertDimension(env, &pt);
+		return gEngine->convertDimension(env, size.right, size.bottom);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }

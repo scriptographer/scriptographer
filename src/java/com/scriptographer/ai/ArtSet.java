@@ -28,8 +28,8 @@
  * 
  * $RCSfile: ArtSet.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/30 08:21:31 $
  */
 
 package com.scriptographer.ai;
@@ -100,6 +100,20 @@ public class ArtSet extends ArrayList {
 	}
 
 	public native ArtSet invert();
+	
+	public native Raster rasterize(int type, float resolution, int antialiasing, float width, float height);
+	
+	public Raster rasterize(int type, float resolution, int antialiasing) {
+		return rasterize(type, resolution, antialiasing, -1, -1);
+	}
+	
+	public Raster rasterize(int type) {
+		return rasterize(type, 0, 4, -1, -1);
+	}
+	
+	public Raster rasterize() {
+		return rasterize(-1, 0, 4, -1, -1);
+	}
 	
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();

@@ -28,8 +28,8 @@
  *
  * $RCSfile: RGBColor.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/30 08:21:33 $
  */
 
 package com.scriptographer.ai;
@@ -72,7 +72,7 @@ public class RGBColor extends Color {
 
 	protected static ColorSpace space = null;
 
-	public ColorSpace getColorSpace() {
+	public static ColorSpace getColorSpace() {
 		if (space == null)
 			space = new ICC_ColorSpace(getProfile(MODEL_RGB));
 		return space;

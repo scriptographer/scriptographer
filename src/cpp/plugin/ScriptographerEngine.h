@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/27 10:06:15 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/30 08:16:59 $
  */
 
 #include "jniMacros.h"
@@ -210,9 +210,10 @@ public:
 	jmethodID cid_CMYKColor;
 
 	jclass cls_Art;
+	jfieldID fid_Art_version;
 	jmethodID mid_Art_wrapHandle;
-	jmethodID mid_Art_updateIfWrapped;
-	jmethodID mid_Art_onSelectionChanged;
+	jmethodID mid_Art_updateIfWrapped_int;
+	jmethodID mid_Art_updateIfWrapped_Array;
 
 	jclass cls_ArtSet;
 	jmethodID cid_ArtSet;
@@ -335,8 +336,6 @@ public:
 		return fInitialized;
 	}
 		
-	void executeString(const char *filename);
-	void executeFile(const char *script);
 	void println(JNIEnv *env, const char *str, ...);
 	
 	// com.scriptographer.awt.Point <-> AIRealPoint
@@ -356,6 +355,7 @@ public:
 	ADMRect *convertRectangle(JNIEnv *env, jobject rt, ADMRect *res = NULL);	
 
 	// java.awt.Dimension <-> ADMPoint
+	jobject convertDimension(JNIEnv *env, int width, int height, jobject res = NULL);
 	jobject convertDimension(JNIEnv *env, ADMPoint *dim, jobject res = NULL);
 	ADMPoint *convertDimension(JNIEnv *env, jobject dim, ADMPoint *res = NULL);
 

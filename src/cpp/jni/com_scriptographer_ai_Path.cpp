@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Path.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:51:40 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/30 08:15:38 $
  */
  
 #include "stdHeaders.h"
@@ -46,94 +46,6 @@ short pathGetBezierCount(AIArtHandle art) {
 	sAIPath->GetPathClosed(art, &closed);
 	if (!closed) count--; // number of beziers = number of segments - 1
 	return count;
-}
-
-/*
- * com.scriptographer.ai.Path createRectangle(com.scriptographer.ai.Rect rect)
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Path_createRectangle(JNIEnv *env, jclass cls, jobject rect) {
-	try {
-		AIRealRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
-		AIArtHandle handle;
-		sAIShapeConstruction->NewRect(rt.top, rt.left, rt.bottom, rt.right, false, &handle);
-		return gEngine->wrapArtHandle(env, handle);
-	} EXCEPTION_CONVERT(env)
-	return NULL;
-}
-
-/*
- * com.scriptographer.ai.Path createRoundRectangle(com.scriptographer.ai.Rectangle rect, float hor, float ver)
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Path_createRoundRectangle(JNIEnv *env, jclass cls, jobject rect, jfloat hor, jfloat ver) {
-	try {
-		AIRealRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
-		AIArtHandle handle;
-		sAIShapeConstruction->NewRoundedRect(rt.top, rt.left, rt.bottom, rt.right, hor, ver, false, &handle);
-		return gEngine->wrapArtHandle(env, handle);
-	} EXCEPTION_CONVERT(env)
-	return NULL;
-}
-
-/*
- * com.scriptographer.ai.Path createOval(com.scriptographer.ai.Rectangle rect, boolean circumscribed)
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Path_createOval(JNIEnv *env, jclass cls, jobject rect, jboolean circumscribed) {
-	try {
-		AIRealRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
-		AIArtHandle handle;
-		if (circumscribed)
-			sAIShapeConstruction->NewCircumscribedOval(rt.top, rt.left, rt.bottom, rt.right, false, &handle);
-		else
-			sAIShapeConstruction->NewInscribedOval(rt.top, rt.left, rt.bottom, rt.right, false, &handle);
-		return gEngine->wrapArtHandle(env, handle);
-	} EXCEPTION_CONVERT(env)
-	return NULL;
-}
-
-/*
- * com.scriptographer.ai.Path createRegularPolygon(int numSides, com.scriptographer.ai.Point center, float radius)
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Path_createRegularPolygon(JNIEnv *env, jclass cls, jint numSides, jobject center, jfloat radius) {
-	try {
-		AIRealPoint pt;
-		gEngine->convertPoint(env, center, &pt);
-		AIArtHandle handle;
-		sAIShapeConstruction->NewRegularPolygon(numSides, pt.h, pt.v, radius, false, &handle);
-		return gEngine->wrapArtHandle(env, handle);
-	} EXCEPTION_CONVERT(env)
-	return NULL;
-}
-
-/*
- * com.scriptographer.ai.Path createStar(int numPoints, com.scriptographer.ai.Point center, float radius1, float radius2)
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Path_createStar(JNIEnv *env, jclass cls, jint numPoints, jobject center, jfloat radius1, jfloat radius2) {
-	try {
-		AIRealPoint pt;
-		gEngine->convertPoint(env, center, &pt);
-		AIArtHandle handle;
-		sAIShapeConstruction->NewStar(numPoints, pt.h, pt.v, radius1, radius2, false, &handle);
-		return gEngine->wrapArtHandle(env, handle);
-	} EXCEPTION_CONVERT(env)
-	return NULL;
-}
-
-/*
- * com.scriptographer.ai.Path createSpiral(com.scriptographer.ai.Point firstArcCenter, com.scriptographer.ai.Point start, float decayPercent, int numQuarterTurns, boolean clockwiseFromOutside)
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Path_createSpiral(JNIEnv *env, jclass cls, jobject firstArcCenter, jobject start, jfloat decayPercent, jint numQuarterTurns, jboolean clockwiseFromOutside) {
-	try {
-		AIRealPoint ptCenter, ptStart;
-		gEngine->convertPoint(env, firstArcCenter, &ptCenter);
-		gEngine->convertPoint(env, start, &ptStart);
-		AIArtHandle handle;
-		sAIShapeConstruction->NewSpiral(ptCenter, ptStart, decayPercent, numQuarterTurns, clockwiseFromOutside, &handle);
-		return gEngine->wrapArtHandle(env, handle);
-	} EXCEPTION_CONVERT(env)
-	return NULL;
 }
 
 /*

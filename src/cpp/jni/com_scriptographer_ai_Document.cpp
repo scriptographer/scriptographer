@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.6 $
+ * $Date: 2005/03/30 08:15:37 $
  */
  
 #include "stdHeaders.h"
@@ -407,58 +407,184 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_paste(JNIEnv *env, jo
  * com.scriptographer.ai.ArtSet getSelectedArt()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedArt(JNIEnv *env, jobject obj) {
-	try {
-		// TODO: consider using Matching Art Suite instead!!! (faster, direct array access)
-		AIArtSet set;
-		if (!sAIArtSet->NewArtSet(&set)) {
-			if (!sAIArtSet->SelectedArtSet(set)) {
-				jobject artSet = gEngine->convertArtSet(env, set);
-				sAIArtSet->DisposeArtSet(&set);
-				return artSet;
-			}
+	jobject artSet = NULL;
+
+	DOCUMENT_BEGIN
+
+	// TODO: consider using Matching Art Suite instead!!! (faster, direct array access)
+	AIArtSet set;
+	if (!sAIArtSet->NewArtSet(&set)) {
+		if (!sAIArtSet->SelectedArtSet(set)) {
+			artSet = gEngine->convertArtSet(env, set);
+			sAIArtSet->DisposeArtSet(&set);
 		}
-	} EXCEPTION_CONVERT(env)
-	return NULL;
+	}
+
+	DOCUMENT_END
+
+	return artSet;
 }
 
 /*
  * com.scriptographer.ai.ArtSet getMatchingArt(java.lang.Class typeClass, java.util.Map attributes)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingArt(JNIEnv *env, jobject obj, jclass typeClass, jobject attributes) {
-	try {
-		AIArtSet set;
-		if (!sAIArtSet->NewArtSet(&set)) {
-			bool layerOnly = false;
-			short type = artGetType(env, typeClass);
-			if (type == com_scriptographer_ai_Art_TYPE_LAYER) {
-				type = kGroupArt;
-				layerOnly = true;
-			}
-			AIArtSpec spec;
-			spec.type = type;
-			spec.whichAttr = 0;
-			spec.attr = 0;
-			// use the env's version of the callers for speed reasons. check for exceptions only once at the end:		
-			jobject entrySet = env->CallObjectMethod(attributes, gEngine->mid_Map_entrySet);
-			jobject iterator = env->CallObjectMethod(entrySet, gEngine->mid_Set_iterator);
-			while (env->CallBooleanMethod(iterator, gEngine->mid_Iterator_hasNext)) {
-				jobject entry = env->CallObjectMethod(iterator, gEngine->mid_Iterator_next);
-				jobject key = env->CallObjectMethod(entry, gEngine->mid_Map_Entry_getKey);
-				jobject value = env->CallObjectMethod(entry, gEngine->mid_Map_Entry_getValue);
-				if (env->IsInstanceOf(key, gEngine->cls_Number) && env->IsInstanceOf(value, gEngine->cls_Boolean)) {
-					jint flag = env->CallIntMethod(key, gEngine->mid_Number_intValue);
-					jboolean set = env->CallBooleanMethod(value, gEngine->mid_Boolean_booleanValue);
-					spec.whichAttr |= flag;
-					if (set) spec.attr |=  flag;
-				}
-			}
-			EXCEPTION_CHECK(env)
-			if (!sAIArtSet->MatchingArtSet(&spec, 1, set)) {
-				jobject artSet = gEngine->convertArtSet(env, set);
-				sAIArtSet->DisposeArtSet(&set);
-				return artSet;
+	jobject artSet = NULL;
+
+	DOCUMENT_BEGIN
+
+	AIArtSet set;
+	if (!sAIArtSet->NewArtSet(&set)) {
+		bool layerOnly = false;
+		short type = artGetType(env, typeClass);
+		if (type == com_scriptographer_ai_Art_TYPE_LAYER) {
+			type = kGroupArt;
+			layerOnly = true;
+		}
+		AIArtSpec spec;
+		spec.type = type;
+		spec.whichAttr = 0;
+		spec.attr = 0;
+		// use the env's version of the callers for speed reasons. check for exceptions only once at the end:		
+		jobject entrySet = env->CallObjectMethod(attributes, gEngine->mid_Map_entrySet);
+		jobject iterator = env->CallObjectMethod(entrySet, gEngine->mid_Set_iterator);
+		while (env->CallBooleanMethod(iterator, gEngine->mid_Iterator_hasNext)) {
+			jobject entry = env->CallObjectMethod(iterator, gEngine->mid_Iterator_next);
+			jobject key = env->CallObjectMethod(entry, gEngine->mid_Map_Entry_getKey);
+			jobject value = env->CallObjectMethod(entry, gEngine->mid_Map_Entry_getValue);
+			if (env->IsInstanceOf(key, gEngine->cls_Number) && env->IsInstanceOf(value, gEngine->cls_Boolean)) {
+				jint flag = env->CallIntMethod(key, gEngine->mid_Number_intValue);
+				jboolean set = env->CallBooleanMethod(value, gEngine->mid_Boolean_booleanValue);
+				spec.whichAttr |= flag;
+				if (set) spec.attr |=  flag;
 			}
 		}
-	} EXCEPTION_CONVERT(env)
-	return NULL;
+		EXCEPTION_CHECK(env)
+		if (!sAIArtSet->MatchingArtSet(&spec, 1, set)) {
+			jobject artSet = gEngine->convertArtSet(env, set);
+			sAIArtSet->DisposeArtSet(&set);
+		}
+	}
+
+	DOCUMENT_END
+
+	return artSet;
+}
+
+/*
+ * com.scriptographer.ai.Path createRectangle(com.scriptographer.ai.Rect rect)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRectangle(JNIEnv *env, jobject obj, jobject rect) {
+	jobject path = NULL;
+
+	DOCUMENT_BEGIN
+
+	AIRealRect rt;
+	gEngine->convertRectangle(env, rect, &rt);
+	AIArtHandle handle;
+	sAIShapeConstruction->NewRect(rt.top, rt.left, rt.bottom, rt.right, false, &handle);
+	path = gEngine->wrapArtHandle(env, handle);
+
+	DOCUMENT_END
+
+	return path;
+}
+
+/*
+ * com.scriptographer.ai.Path createRoundRectangle(com.scriptographer.ai.Rectangle rect, float hor, float ver)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRoundRectangle(JNIEnv *env, jobject obj, jobject rect, jfloat hor, jfloat ver) {
+	jobject path = NULL;
+
+	DOCUMENT_BEGIN
+
+	AIRealRect rt;
+	gEngine->convertRectangle(env, rect, &rt);
+	AIArtHandle handle;
+	sAIShapeConstruction->NewRoundedRect(rt.top, rt.left, rt.bottom, rt.right, hor, ver, false, &handle);
+	path = gEngine->wrapArtHandle(env, handle);
+
+	DOCUMENT_END
+
+	return path;
+}
+
+/*
+ * com.scriptographer.ai.Path createOval(com.scriptographer.ai.Rectangle rect, boolean circumscribed)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createOval(JNIEnv *env, jobject obj, jobject rect, jboolean circumscribed) {
+	jobject path = NULL;
+
+	DOCUMENT_BEGIN
+
+	AIRealRect rt;
+	gEngine->convertRectangle(env, rect, &rt);
+	AIArtHandle handle;
+	if (circumscribed)
+		sAIShapeConstruction->NewCircumscribedOval(rt.top, rt.left, rt.bottom, rt.right, false, &handle);
+	else
+		sAIShapeConstruction->NewInscribedOval(rt.top, rt.left, rt.bottom, rt.right, false, &handle);
+	path = gEngine->wrapArtHandle(env, handle);
+
+	DOCUMENT_END
+
+	return path;
+}
+
+/*
+ * com.scriptographer.ai.Path createRegularPolygon(int numSides, com.scriptographer.ai.Point center, float radius)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRegularPolygon(JNIEnv *env, jobject obj, jint numSides, jobject center, jfloat radius) {
+	jobject path = NULL;
+
+	DOCUMENT_BEGIN
+
+	AIRealPoint pt;
+	gEngine->convertPoint(env, center, &pt);
+	AIArtHandle handle;
+	sAIShapeConstruction->NewRegularPolygon(numSides, pt.h, pt.v, radius, false, &handle);
+	path = gEngine->wrapArtHandle(env, handle);
+
+	DOCUMENT_END
+
+	return path;
+}
+
+/*
+ * com.scriptographer.ai.Path createStar(int numPoints, com.scriptographer.ai.Point center, float radius1, float radius2)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createStar(JNIEnv *env, jobject obj, jint numPoints, jobject center, jfloat radius1, jfloat radius2) {
+	jobject path = NULL;
+
+	DOCUMENT_BEGIN
+
+	AIRealPoint pt;
+	gEngine->convertPoint(env, center, &pt);
+	AIArtHandle handle;
+	sAIShapeConstruction->NewStar(numPoints, pt.h, pt.v, radius1, radius2, false, &handle);
+	path = gEngine->wrapArtHandle(env, handle);
+
+	DOCUMENT_END
+
+	return path;
+}
+
+/*
+ * com.scriptographer.ai.Path createSpiral(com.scriptographer.ai.Point firstArcCenter, com.scriptographer.ai.Point start, float decayPercent, int numQuarterTurns, boolean clockwiseFromOutside)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createSpiral(JNIEnv *env, jobject obj, jobject firstArcCenter, jobject start, jfloat decayPercent, jint numQuarterTurns, jboolean clockwiseFromOutside) {
+	jobject path = NULL;
+
+	DOCUMENT_BEGIN
+
+	AIRealPoint ptCenter, ptStart;
+	gEngine->convertPoint(env, firstArcCenter, &ptCenter);
+	gEngine->convertPoint(env, start, &ptStart);
+	AIArtHandle handle;
+	sAIShapeConstruction->NewSpiral(ptCenter, ptStart, decayPercent, numQuarterTurns, clockwiseFromOutside, &handle);
+	path = gEngine->wrapArtHandle(env, handle);
+
+	DOCUMENT_END
+
+	return path;
 }

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.6 $
+ * $Date: 2005/03/30 08:21:32 $
  */
 
 package com.scriptographer.ai;
@@ -117,24 +117,8 @@ abstract class Art extends AIObject {
 		// Lehni: self defined type for layer groups:
 		TYPE_LAYER = 100;
 
-	// AIArtOrder:
-	// TODO: is this used at all?
-	protected final static int
-		// Return segmentValues from GetArtOrder. (This is the order they would be
-		// encountered in a GetArtSibling tree traversal. For most objects, "before"
-		// means above in the paint order, and "after" means behind in the paint
-		// order, but there are exceptions. E.g., the text paths of a text object
-		// are linked from bottom to top.)
-		ORDER_UNKNOWN = 0,
-		ORDER_FIRST_BEFORE_SECOND = 1,
-		ORDER_SECOND_AFTER_FIRST = ORDER_FIRST_BEFORE_SECOND,
-		ORDER_FIRST_AFTER_SECOND = 2,
-		ORDER_SECOND_BEFORE_FIRST = ORDER_FIRST_AFTER_SECOND,
-		ORDER_FIRST_INSIDE_SECOND = 3,
-		ORDER_SECOND_INSIDE_FIRST = 4;
-
 	// AIArtUserAttr:
-	// used in Document.getMatching:
+	// used in Document.getMatchingArt:
 	public final static Integer
 		ATTR_SELECTED = new Integer(0x00000001),
 		ATTR_LOCKED = new Integer(0x00000002),
@@ -219,8 +203,8 @@ abstract class Art extends AIObject {
 	 * classes which then call this constructor here.
 	 * @param type
 	 */
-	protected Art(int type) {
-		this(new Handle(nativeCreate(type)));
+	protected Art(Document document, int type) {
+		this(new Handle(nativeCreate(document != null ? document.handle : 0, type)));
 	}
 
 	/**
@@ -272,13 +256,13 @@ abstract class Art extends AIObject {
 	}
 
 	/**
-	 * This gets fired from the native environment if the selection was changed
-	 * all the contained artHandles should increase their version counter, if
-	 * they're already wrapped:
+	 * Increases the version of the art objects associated with artHandles,
+	 * if there are any. It does not wrap the artHandles if they weren't
+	 * already.
 	 * 
 	 * @param artHandles
 	 */
-	private static void onSelectionChanged(int[] artHandles) {
+	private static void updateIfWrapped(int[] artHandles) {
 		// reuse one object for lookups, instead of creating a new one
 		// for every artHandle
 		Handle handle = new Handle();
@@ -308,7 +292,7 @@ abstract class Art extends AIObject {
 	 * @param type
 	 * @return
 	 */
-	private native static int nativeCreate(int type);
+	private native static int nativeCreate(int docHandle, int type);
 	private native boolean nativeRemove(int handle);
 
 	public native Art getFirstChild();
@@ -404,13 +388,13 @@ abstract class Art extends AIObject {
 
 	public static final int
 		TRANSFORM_OBJECTS			= 1 << 0,
-		TRANSFORM_FILL_GRADIENTS	= 1 << 1,
+		TRANSFORM_FILL_GRADIENTS		= 1 << 1,
 		TRANSFORM_FILL_PATTERNS		= 1 << 2,
-		TRANSFORM_STROKE_PATTERNS	= 1 << 3,
+		TRANSFORM_STROKE_PATTERNS		= 1 << 3,
 		TRANSFORM_LINES				= 1 << 4,
 		TRANSFORM_LINKED_MASKS		= 1 << 5,
 		TRANSFORM_CHILDREN			= 1 << 6,
-		TRANSFORM_SELECTION_ONLY	= 1 << 7,
+		TRANSFORM_SELECTION_ONLY		= 1 << 7,
 		// self defined:
 		TRANSFORM_DEEP				= 1 << 10;
 
@@ -431,9 +415,48 @@ abstract class Art extends AIObject {
 		}
 		return name + ")";
 	}
+		
+	public native Raster rasterize(int type, float resolution, int antialiasing, float width, float height);
+	
+	public Raster rasterize(int type, float resolution, int antialiasing) {
+		return rasterize(type, resolution, antialiasing, -1, -1);
+	}
+	
+	public Raster rasterize(int type) {
+		return rasterize(type, 0, 4, -1, -1);
+	}
+	
+	public Raster rasterize() {
+		return rasterize(-1, 0, 4, -1, -1);
+	}
+	
+	// AIArtOrder:
+	public final static int
+		ORDER_UNKNOWN = 0,
+		ORDER_BEFORE = 1,
+		ORDER_AFTER = 2,
+		ORDER_INSIDE = 3,
+		ORDER_ANCHESTOR = 4;
+	
+	public native int getOrder(Art art);
+	
+	public boolean isBefore(Art art) {
+		return getOrder(art) == ORDER_BEFORE;		
+	}
+	
+	public boolean isAfter(Art art) {
+		return getOrder(art) == ORDER_AFTER;		
+	}
+	
+	public boolean isInside(Art art) {
+		return getOrder(art) == ORDER_INSIDE;		
+	}
+	
+	public boolean isAnchestor(Art art) {
+		return getOrder(art) == ORDER_ANCHESTOR;		
+	}
 
 	/*
-	{"toString",		artToString,			0},
 	{"equals",			artEquals,				0},
 	{"clone",			artClone,				0},
 	{"isValid",			artIsValid,				0},

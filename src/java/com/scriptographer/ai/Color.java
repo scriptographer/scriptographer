@@ -28,17 +28,38 @@
  *
  * $RCSfile: Color.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/30 08:21:33 $
  */
 
 package com.scriptographer.ai;
 
-import java.awt.color.ColorSpace;
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
 
 public abstract class Color {
+
+	
+	// AIRasterizeType, AIColorConversionSpaceValue
+	// Used in Color.convert() and Raster
+	// the conversion to the right AIColorConversionSpaceValue values is done
+	// in native code. 
+	public final static int
+		TYPE_RGB = 0, // RGB no alpha
+		TYPE_CMYK = 1, // CMYK no alpha
+		TYPE_GRAY = 2, // Grayscale no alpha
+		TYPE_BITMAP = 3, // opaque bitmap
+		TYPE_ARGB = 4, // RGB with alpha
+		TYPE_ACMYK = 5, // CMYK with alpha
+		TYPE_AGRAY = 6, // Grayscale with alpha
+		TYPE_ABITMAP = 8; // bitmap with transparent 0-pixels
+
+	// AIWorkingColorSpace, AIColorModel,
+	public final static int
+		MODEL_GRAY = 0,
+		MODEL_RGB = 1,
+		MODEL_CMYK = 2;
+
 	protected float alpha;
 
 	/**
@@ -49,8 +70,6 @@ public abstract class Color {
 	public abstract java.awt.Color toAWTColor();
 
 	public abstract boolean equals(Object obj);
-
-	public abstract ColorSpace getColorSpace();
 
 	public abstract float[] getComponents();
 
@@ -74,29 +93,13 @@ public abstract class Color {
 		this.alpha = alpha;
 	}
 
-	// AIColorConversionSpaceValue, used in convert();
-	public final static int
-		CONVERSION_MONO = 0,
-		CONVERSION_GRAY = 1,
-		CONVERSION_RGB = 2,
-		CONVERSION_ARGB = 3,
-		CONVERSION_CMYK	= 4,
-		CONVERSION_ACMYK = 5,
-		CONVERSION_AGRAY = 6;
-
 	/**
 	 * Converts the color into another color space.
 	 *
-	 * @param conversion the conversion color space, Color.CONVERSION_*
+	 * @param type the conversion color space, Color.TYPE_*
 	 * @return the converted color.
 	 */
-	public native Color convert(int conversion);
-
-	// AIWorkingColorSpace, AIColorModel,
-	public final static int
-		MODEL_GRAY = 0,
-		MODEL_RGB = 1,
-		MODEL_CMYK = 2;
+	public native Color convert(int type);
 
 	/**
 	 * returns the native profile for the above MODEL_ constants, wrapped in an ICC_Profile
@@ -107,7 +110,7 @@ public abstract class Color {
 	 * @param space the profile for Illustrator's ColorSpace, Color.MODEL_*
 	 * @return the ICC_Profile that wraps Illustrator's ColorSpace profile
 	 */
-	private native ICC_Profile getWSProfile(int space);
+	private static native ICC_Profile getWSProfile(int space);
 
 	/**
 	 * Call first getWSProfile in order to get the illustrator's profile, and if this doesn't work,
@@ -116,7 +119,7 @@ public abstract class Color {
 	 * @param space
 	 * @return
 	 */
-	protected ICC_Profile getProfile(int space) {
+	protected static ICC_Profile getProfile(int space) {
 		// first try the illustrator internal WS profiles:
 		ICC_Profile profile = getWSProfile(space);
 		if (profile == null) {
@@ -130,7 +133,7 @@ public abstract class Color {
 			if (filename != null) {
 				try {
 					profile = ICC_Profile.getInstance(
-						getClass().getClassLoader().getResourceAsStream("com/scriptographer/cmm/" + filename)
+						Color.class.getClassLoader().getResourceAsStream("com/scriptographer/cmm/" + filename)
 					);
 				} catch (IOException e) {
 					e.printStackTrace();

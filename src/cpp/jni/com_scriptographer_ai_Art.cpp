@@ -26,12 +26,13 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/30 08:15:39 $
  */
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
+#include "aiGlobals.h"
 #include "com_scriptographer_ai_Art.h"
 
 /*
@@ -77,9 +78,15 @@ jboolean artIsLayer(AIArtHandle handle) {
 	return isLayerGroup;
 }
 
-/*
- * int nativeCreate(int type, com.scriptographer.ai.Art relative)
- */
+AIArtHandle artRasterize(AIArtHandle handle, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
+	AIArtSet artSet;
+	sAIArtSet->NewArtSet(&artSet);
+	sAIArtSet->AddArtToArtSet(artSet, handle);
+	AIArtHandle raster = artSetRasterize(artSet, type, resolution, antialiasing, width, height);
+	sAIArtSet->DisposeArtSet(&artSet);
+	return raster;
+}
+
 /*
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env, jclass cls, jint type, jobject relative) {
 	AIArtHandle art = NULL;
@@ -124,9 +131,23 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env, 
 	return (jint)art;
 }
 */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env, jclass cls, jint type) {
+
+/*
+ * int nativeCreate(int docHandle, int type)
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env, jclass cls, jint docHandle, jint type) {
 	AIArtHandle art = NULL;
+
+	// switch to the specified document first if it differs from the current one:
+	AIDocumentHandle activeDoc = NULL;
+	AIDocumentHandle prevDoc = NULL;
 	try {
+		AIDocumentHandle doc = (AIDocumentHandle) docHandle;
+		sAIDocument->GetDocument(&activeDoc);
+		if (activeDoc != doc) {
+			prevDoc = activeDoc;
+			sAIDocumentList->Activate(doc, false);
+		}
 		// if type is set to the self defined TYPE_LAYER, create a layer and return the wrapped art group object instead:
 		if (type == com_scriptographer_ai_Art_TYPE_LAYER) { // create a layer
 			// place it above all others:
@@ -142,6 +163,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env, 
 				throw new StringException("Cannot create art object. Please make sure there is an open document.");
 		}
 	} EXCEPTION_CONVERT(env)
+	// switch back to the previously active document:
+	if (prevDoc != NULL)
+		sAIDocumentList->Activate(prevDoc, false);
 	return (jint)art;
 }
 
@@ -484,7 +508,7 @@ void artTransform(JNIEnv *env, jobject obj, AIArtHandle art, AIRealMatrix *matri
 	short type = artGetType(art);
 	// TODO: add all art objects that need invalidate to be called after transform!
 	if (type == kPathArt)
-		gEngine->callStaticBooleanMethod(env, gEngine->cls_Art, gEngine->mid_Art_updateIfWrapped, (jint) art);
+		gEngine->callStaticBooleanMethod(env, gEngine->cls_Art, gEngine->mid_Art_updateIfWrapped_int, (jint) art);
 
 	if (flags & com_scriptographer_ai_Art_TRANSFORM_DEEP) {
 		AIArtHandle child;
@@ -520,4 +544,27 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_transform(JNIEnv *env, job
 
 		artTransform(env, obj, handle, &m, lineScale, flags);
 	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * com.scriptographer.ai.Raster rasterize(int type, float resolution, int antialiasing, float width, float height)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_rasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
+	try {
+		AIArtHandle handle = gEngine->getArtHandle(env, obj);
+		AIArtHandle raster = artRasterize(handle, (AIRasterizeType) type, resolution, antialiasing, width, height);
+		if (raster != NULL)
+			return gEngine->wrapArtHandle(env, raster);
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * int getOrder(com.scriptographer.ai.Art arg1)
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_getOrder(JNIEnv *env, jobject obj, jobject arg1) {
+	try {
+		// TODO: define getOrder
+	} EXCEPTION_CONVERT(env)
+	return 0;
 }

@@ -26,16 +26,18 @@
  *
  * $RCSfile: aiGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/30 08:15:38 $
  */
 
 short artGetType(AIArtHandle handle);
 short artGetType(JNIEnv *env, jclass cls);
 jboolean artHasChildren(AIArtHandle handle);
 jboolean artIsLayer(AIArtHandle handle);
+AIArtHandle artRasterize(AIArtHandle handle, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 
 void artSetFilter(AIArtSet set, bool layerOnly = false);
+AIArtHandle artSetRasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 
 short pathGetBezierCount(AIArtHandle art);
 

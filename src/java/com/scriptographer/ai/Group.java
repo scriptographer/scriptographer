@@ -28,8 +28,8 @@
  *
  * $RCSfile: Group.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/30 08:21:33 $
  */
 
 package com.scriptographer.ai;
@@ -44,8 +44,12 @@ public class Group extends Art {
 	/**
 	 * Creates a group object and links it to a AIArtHandle through createPathArt
 	 */
+	public Group(Document document) {
+		super(document, TYPE_GROUP);
+	}
+	
 	public Group() {
-		super(TYPE_GROUP);
+		super(null, TYPE_GROUP);
 	}
 
 	public native boolean isClipped();

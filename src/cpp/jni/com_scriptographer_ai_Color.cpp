@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Color.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/30 08:15:38 $
  */
  
 #include "stdHeaders.h"
@@ -39,9 +39,35 @@
  */
 
 /*
+ * com.scriptographer.ai.Color convert(int conversion)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_convert(JNIEnv *env, jobject obj, jint type) {
+	try {
+		AIColor col;
+		AIReal alpha;
+		gEngine->convertColor(env, obj, &col, &alpha);
+		// type -> conversion tranlsation table:
+		static AIColorConversionSpaceValue conversionTypes[] = {
+			kAIRGBColorSpace,
+			kAICMYKColorSpace,
+			kAIGrayColorSpace,
+			kAIMonoColorSpace,
+			kAIARGBColorSpace,
+			kAIACMYKColorSpace,
+			kAIAGrayColorSpace,
+			kAIMonoColorSpace
+		};
+		if (gEngine->convertColor(&col, conversionTypes[type], &col, alpha, &alpha) != NULL) {
+			return gEngine->convertColor(env, &col, alpha);
+		}
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
  * java.awt.color.ICC_Profile getWSProfile(int whichSpace)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_getWSProfile(JNIEnv *env, jobject obj, jint whichSpace) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_getWSProfile(JNIEnv *env, jclass cls, jint whichSpace) {
 	jobject ret = NULL;
 	try {
 		ASUInt32 profile;
@@ -64,19 +90,4 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_getWSProfile(JNIEnv *
 		}
 	} EXCEPTION_CONVERT(env)
 	return ret;
-}
-
-/*
- * com.scriptographer.ai.Color convert(int conversion)
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_convert(JNIEnv *env, jobject obj, jint conversion) {
-	try {
-		AIColor col;
-		AIReal alpha;
-		gEngine->convertColor(env, obj, &col, &alpha);
-		if (gEngine->convertColor(&col, (AIColorConversionSpaceValue) conversion, &col, alpha, &alpha) != NULL) {
-			return gEngine->convertColor(env, &col, alpha);
-		}
-	} EXCEPTION_CONVERT(env)
-	return NULL;
 }

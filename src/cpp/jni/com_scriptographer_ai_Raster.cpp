@@ -26,12 +26,13 @@
  *
  * $RCSfile: com_scriptographer_ai_Raster.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/30 08:15:38 $
  */
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
+#include "aiGlobals.h"
 #include "com_scriptographer_ai_Raster.h"
 
 /*
@@ -40,16 +41,48 @@
 
 struct RasterData {
 	AIRasterRecord info;
-	AISlice slice;
-	AITile tile;
-	unsigned char pixel[5]; // for get / set pixel
+	int numComponents;
+	int version; // the version of the raster data, if it changed, fetch it again.
+	 // for geting / seting pixels
+	AISlice pixelSlice;
+	AITile pixelTile;
+	unsigned char pixelValues[5];
 };
 
 RasterData *rasterGetData(JNIEnv *env, jobject raster, AIArtHandle art) {
-	RasterData *data = (RasterData *)gEngine->getIntField(env, raster, gEngine->fid_Raster_rasterData);
-	if (data == NULL) {
+	RasterData *data = (RasterData *) gEngine->getIntField(env, raster, gEngine->fid_Raster_rasterData);
+	// match against version
+	int version = gEngine->getIntField(env, raster, gEngine->fid_Art_version);
+	if ( data == NULL || data->version != version) {
 		// init a new data struct now:
-		data = new RasterData;
+		if ( data == NULL) {
+			data = new RasterData;
+			
+			memset(&data->info, 0, sizeof(AIRasterRecord));
+
+			// prepare the slices.
+			// use allways 5 color components, for the maximum of 5 components in the case of 
+			// a acmyk color:
+			AISlice *pixelSlice = &data->pixelSlice;
+			// set the slice for get/set pixelValues:
+			pixelSlice->left = 0;
+			pixelSlice->top = 0;
+			pixelSlice->right = 1;
+			pixelSlice->bottom = 1;
+			pixelSlice->front = 0;
+
+			AITile *pixelTile = &data->pixelTile;
+			// maximum for numComponents is 5
+			for (int i = 0; i < 5; i++) {
+				pixelTile->channelInterleave[i]=i;
+			}
+			pixelTile->planeBytes = 0;
+			pixelTile->bounds = *pixelSlice;
+			pixelTile->data = data->pixelValues;
+		}
+		
+		data->version = version;
+
 		sAIRaster->GetRasterInfo(art, &data->info);
 		
 		if (data->info.bitsPerPixel == 0) { 
@@ -70,76 +103,223 @@ RasterData *rasterGetData(JNIEnv *env, jobject raster, AIArtHandle art) {
 				data->info.bitsPerPixel = 32;
 				break;
 			}
-			data->info.byteWidth = 0;
 			sAIRaster->SetRasterInfo(art, &data->info);
 		}
-		// prepare the slices.
-		// use allways 5 color components, for the maximum of 5 components in the case of 
-		// a acmyk color:
-		AISlice *slice = &data->slice;
-		// set the slice for get/set pixel:
-		slice->left = 0;
-		slice->top = 0;
-		slice->right = 1;
-		slice->bottom = 1;
-		slice->front = 0;
-		slice->back = 5;
-
-		AITile *tile = &data->tile;
-		for (int i = 0; i < 5; i++) {
-			tile->channelInterleave[i]=i;
-		}
-		tile->colBytes = 5;
-		tile->rowBytes = 5;
-		tile->planeBytes = 0;
-		tile->bounds = *slice;
-		tile->data = data->pixel;
+		
+		// determine the number of components from bitsPerPixel:
+		int numComponents = data->info.bitsPerPixel >= 8 ? data->info.bitsPerPixel >> 3 : 1;
+		
+		data->numComponents = numComponents;
+		data->pixelSlice.back = numComponents;
+		data->pixelTile.colBytes = numComponents;
+		data->pixelTile.rowBytes = numComponents;
 
 		gEngine->setIntField(env, raster, gEngine->fid_Raster_rasterData, (jint) data);
 	}
 	return data;
 }
 
+void rasterFinalize(JNIEnv *env, jobject obj) {
+	RasterData *data = (RasterData *) gEngine->getIntField(env, obj, gEngine->fid_Raster_rasterData);
+	if (data != NULL) {
+		delete data;
+		// set to null:
+		gEngine->setIntField(env, obj, gEngine->fid_Raster_rasterData, (jint) NULL);
+	}
+}
+
+void rasterCopyPixels(JNIEnv *env, jobject obj, jbyteArray data, jint numComponents, jint x, jint y, jint width, jint height, bool get) {
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		RasterData *rasterData = rasterGetData(env, obj, art);
+		AISlice sliceFrom, sliceTo;
+		sliceFrom.left = rasterData->info.bounds.left + x;
+		sliceFrom.top = rasterData->info.bounds.top + y;
+		sliceFrom.right = x + width;
+		sliceFrom.bottom = y + height;
+		sliceFrom.front = 0;
+		sliceFrom.back = rasterData->numComponents;
+
+		sliceTo.left = 0;
+		sliceTo.top = 0;
+		sliceTo.right = width;
+		sliceTo.bottom = height;
+		sliceTo.front = 0;
+		sliceTo.back = numComponents;
+		
+		AITile tile;
+
+		// TODO: handle the case where data->numComponents != numComponents? (should never be the case, maybe throw an exception if it is?)
+		for (int i = 0; i < numComponents; i++)
+			tile.channelInterleave[i] = i;
+
+		tile.colBytes = numComponents;
+		tile.rowBytes = width * numComponents; // rasterData->info.byteWidth
+		tile.planeBytes = 0;
+		tile.bounds = sliceTo;
+		
+		char *dst = (char *)env->GetPrimitiveArrayCritical(data, 0);
+		if (dst == NULL) EXCEPTION_CHECK(env)
+		tile.data = dst;
+		
+		if (get) sAIRaster->GetRasterTile(art, &sliceFrom, &tile, &sliceTo);
+		else sAIRaster->SetRasterTile(art, &sliceFrom, &tile, &sliceTo);
+
+		env->ReleasePrimitiveArrayCritical(data, dst, 0);
+	} EXCEPTION_CONVERT(env)
+}
+
 /*
- * int getWidth()
+ * int nativeConvert(int type, int width, int height)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_getWidth(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *env, jobject obj, jint type, jint width, jint height) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		RasterData *data = rasterGetData(env, obj, art);
-		return data->info.bounds.right - data->info.bounds.left;
+
+		if (type == -1) {
+			// this is used when width and height is set...
+			long colorSpace = data->info.colorSpace;
+			ASBoolean alpha = (colorSpace & kColorSpaceHasAlpha || (data->info.flags & kRasterMaskImageType));
+			if (alpha) colorSpace &= ~kColorSpaceHasAlpha;
+			switch (colorSpace) {
+			case kGrayColorSpace: 
+				if (data->info.bitsPerPixel == 1) {
+					if (alpha) type = kRasterizeABitmap;
+					else type = kRasterizeBitmap;
+				} else {
+					if (alpha) type = kRasterizeAGrayscale;
+					else type = kRasterizeGrayscale;
+				}
+				break;
+			case kRGBColorSpace:
+				if (alpha) type = kRasterizeARGB;
+				else type = kRasterizeRGB;
+				break;
+			case kCMYKColorSpace:
+				if (alpha) type = kRasterizeACMYK;
+				else type = kRasterizeCMYK;
+				break;
+			}
+		}
+		// change the matrix during rasterizing so that no pixels get lost...
+		AIRealMatrix prevMatrix;
+		sAIRaster->GetRasterMatrix(art, &prevMatrix);
+		AIRealMatrix matrix;
+		double scale = 72.0 / 300.0;
+		sAIRealMath->AIRealMatrixSetScale(&matrix, scale, scale);
+		sAIRaster->SetRasterMatrix(art, &matrix);
+
+		float scaledWidth = width, scaledHeight = height;
+		if (width >= 0) scaledWidth *= scale;
+		if (height >= 0) scaledHeight *= scale;
+
+		// see wether the raster contains some data:
+		if (data->info.byteWidth > 0) {
+			// convert the raster by rasterizing it again and then exchange the
+			// old art by the new one:
+			// TODO: check wether the old art needs to be removed?
+			art = artRasterize(art, (AIRasterizeType) type, 0, 0, scaledWidth, scaledHeight);
+			// remove the raster info because it has changed now...
+			rasterFinalize(env, obj);
+		} else {
+			// just set the raster info:
+			AIRasterRecord *info = &data->info;
+			if (type != NULL) {
+				switch (type) {
+				case kRasterizeBitmap:
+					info->bitsPerPixel = 1;
+					info->colorSpace = kGrayColorSpace;
+					break;
+				case kRasterizeABitmap:
+					info->bitsPerPixel = 1;
+					info->colorSpace = kAlphaGrayColorSpace;
+					break;
+				case kRasterizeGrayscale:
+					info->bitsPerPixel = 8;
+					info->colorSpace = kGrayColorSpace;
+					break;
+				case kRasterizeAGrayscale:
+					info->bitsPerPixel = 16;
+					info->colorSpace = kAlphaGrayColorSpace;
+					break;
+				case kRasterizeRGB:
+					info->bitsPerPixel = 24;
+					info->colorSpace = kRGBColorSpace;
+					break;
+				case kRasterizeARGB:
+					info->bitsPerPixel = 32;
+					info->colorSpace = kAlphaRGBColorSpace;
+					break;
+				case kRasterizeCMYK:
+					info->bitsPerPixel = 32;
+					info->colorSpace = kCMYKColorSpace;
+					break;
+				case kRasterizeACMYK:
+					info->bitsPerPixel = 48;
+					info->colorSpace = kAlphaCMYKColorSpace;
+					break;
+				}
+			}
+			if (width > 0) {
+				info->bounds.right = info->bounds.left + width;
+				if (info->bitsPerPixel == 1) 
+					info->byteWidth = info->bounds.right / 8 + 1;
+				else 
+					info->byteWidth = info->bounds.right * (info->bitsPerPixel / 8);
+			}
+			if (height > 0) info->bounds.bottom = info->bounds.top + height;
+			sAIRaster->SetRasterInfo(art, info);
+		}
+		// set the old matrix after rendering:
+		sAIRaster->SetRasterMatrix(art, &prevMatrix);
+		return (jint) art;
 	} EXCEPTION_CONVERT(env)
 	return 0;
 }
 
 /*
- * void setWidth(int width)
+ * void finalize()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setWidth(JNIEnv *env, jobject obj, jint width) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_finalize(JNIEnv *env, jobject obj) {
 	try {
-		// TODO: define setWidth
+		rasterFinalize(env, obj);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * int getHeight()
+ * java.awt.Dimension getSize()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_getHeight(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getSize(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		RasterData *data = rasterGetData(env, obj, art);
-		return data->info.bounds.bottom - data->info.bounds.top;
+		return gEngine->convertDimension(env, data->info.bounds.right - data->info.bounds.left, data->info.bounds.bottom - data->info.bounds.top);
 	} EXCEPTION_CONVERT(env)
-	return 0;
+	return NULL;
 }
 
-/*
- * void setHeight(int height)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setHeight(JNIEnv *env, jobject obj, jint height) {
-	try {
-		// TODO: define setHeight
-	} EXCEPTION_CONVERT(env)
+int rasterGetType(AIRasterRecord *info) {
+	long colorSpace = info->colorSpace;
+	ASBoolean alpha = (colorSpace & kColorSpaceHasAlpha || (info->flags & kRasterMaskImageType));
+	if (alpha) colorSpace &= ~kColorSpaceHasAlpha;
+	switch (colorSpace) {
+	case kGrayColorSpace: 
+		if (info->bitsPerPixel == 1) {
+			if (alpha) return kRasterizeABitmap;
+			else return kRasterizeBitmap;
+		} else {
+			if (alpha) return kRasterizeAGrayscale;
+			else return kRasterizeGrayscale;
+		}
+	case kRGBColorSpace:
+		if (alpha) return kRasterizeARGB;
+		else return kRasterizeRGB;
+	case kCMYKColorSpace:
+		if (alpha) return kRasterizeACMYK;
+		else return kRasterizeCMYK;
+	}
+	return kRasterizeRGB;
 }
 
 /*
@@ -147,18 +327,11 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setHeight(JNIEnv *env, 
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_getType(JNIEnv *env, jobject obj) {
 	try {
-		// TODO: define getType
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		RasterData *data = rasterGetData(env, obj, art);
+		return rasterGetType(&data->info);
 	} EXCEPTION_CONVERT(env)
-	return 0;
-}
-
-/*
- * void setType(int type)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setType(JNIEnv *env, jobject obj, jint type) {
-	try {
-		// TODO: define setType
-	} EXCEPTION_CONVERT(env)
+	return kRasterizeRGB;
 }
 
 /*
@@ -169,8 +342,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getPixel(JNIEnv *env
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		RasterData *data = rasterGetData(env, obj, art);
 
-		// just get a 1 pixel big tile from the raster (this may be slow...???)
-		memset(data->pixel, 0, 5);
+		// just get a 1 pixelValues big tile from the raster
+
+		memset(data->pixelValues, 0, data->numComponents);
 
 		AISlice slice;
 		slice.left = data->info.bounds.left + x;
@@ -178,35 +352,37 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getPixel(JNIEnv *env
 		slice.right = slice.left + 1;
 		slice.bottom = slice.top + 1;
 		slice.front = 0;
-		slice.back = 5;
+		slice.back = data->numComponents;
 
-		sAIRaster->GetRasterTile(art, &slice, &data->tile, &data->slice);
+		sAIRaster->GetRasterTile(art, &slice, &data->pixelTile, &data->pixelSlice);
+		
 		long colorSpace = data->info.colorSpace;
-		unsigned char *pixel = data->pixel;
+		unsigned char *pixelValues = data->pixelValues;
 		AIReal alpha;
 		if (colorSpace & kColorSpaceHasAlpha) {
 			colorSpace &= ~kColorSpaceHasAlpha;
-			alpha = *(pixel++) / 255.0;
+			alpha = *(pixelValues++) / 255.0;
 		} else alpha = -1;
 		AIColor col;
 		switch (colorSpace) {
 		case kGrayColorSpace:
 			col.kind = kGrayColor;
 			col.c.g.gray = (data->info.bitsPerPixel == 1) ? 
-				(*(pixel++) == 0) : (255 - *(pixel++)) / 255.0;
+				*pixelValues == 0 : 
+				(255 - *pixelValues) / 255.0; // flip the gray values, in order to simulate AIColor gray
 			break;
 		case kRGBColorSpace:
 			col.kind = kThreeColor;
-			col.c.rgb.red = *(pixel++) / 255.0;
-			col.c.rgb.green = *(pixel++) / 255.0;
-			col.c.rgb.blue = *(pixel++) / 255.0;
+			col.c.rgb.red = *(pixelValues++) / 255.0;
+			col.c.rgb.green = *(pixelValues++) / 255.0;
+			col.c.rgb.blue = *pixelValues / 255.0;
 			break;
 		case kCMYKColorSpace:
 			col.kind = kFourColor;
-			col.c.f.cyan = *(pixel++) / 255.0;
-			col.c.f.magenta = *(pixel++) / 255.0;
-			col.c.f.yellow = *(pixel++) / 255.0;
-			col.c.f.black = *(pixel++) / 255.0;
+			col.c.f.cyan = *(pixelValues++) / 255.0;
+			col.c.f.magenta = *(pixelValues++) / 255.0;
+			col.c.f.yellow = *(pixelValues++) / 255.0;
+			col.c.f.black = *pixelValues / 255.0;
 			break;
 		}
 		return gEngine->convertColor(env, &col, alpha);
@@ -215,21 +391,73 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getPixel(JNIEnv *env
 }
 
 /*
- * void setPixel(int arg1, int arg2, com.scriptographer.ai.Color arg3)
+ * void setPixel(int x, int y, com.scriptographer.ai.Color color)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setPixel(JNIEnv *env, jobject obj, jint arg1, jint arg2, jobject arg3) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setPixel(JNIEnv *env, jobject obj, jint x, jint y, jobject color) {
 	try {
-		// TODO: define setPixel
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		RasterData *data = rasterGetData(env, obj, art);
+		AIColor col;
+		AIReal alpha;
+		gEngine->convertColor(env, color, &col, &alpha);
+
+		memset(data->pixelValues, 0, data->numComponents);
+		unsigned char *pixelValues = data->pixelValues;
+
+		long colorSpace = data->info.colorSpace;
+
+		if (colorSpace & kColorSpaceHasAlpha) {
+			if (alpha < 0) alpha = 1;
+			colorSpace &= ~kColorSpaceHasAlpha;
+			*(pixelValues++) = int(alpha * 255 + 0.5);
+		}
+		switch (colorSpace) {
+		case kGrayColorSpace:
+			if (col.kind != kGrayColor)
+				gEngine->convertColor(&col, kAIGrayColorSpace, &col);
+				*pixelValues = (data->info.bitsPerPixel == 1) ?
+					((col.c.g.gray >= 0.5) ? 0 : 128) :
+					255 - int(col.c.g.gray * 255 + 0.5); // flip the gray values, in order to simulate AIColor gray
+			break;
+		case kRGBColorSpace:
+			if (col.kind != kThreeColor)
+				gEngine->convertColor(&col, kAIRGBColorSpace, &col);
+			*(pixelValues++) = int(col.c.rgb.red * 255 + 0.5);
+			*(pixelValues++) = int(col.c.rgb.green * 255 + 0.5);
+			*pixelValues = int(col.c.rgb.blue * 255 + 0.5);
+			break;
+		case kCMYKColorSpace:
+			if (col.kind != kFourColor)
+				gEngine->convertColor(&col, kAICMYKColorSpace, &col);
+			*(pixelValues++) = int(col.c.f.cyan * 255 + 0.5);
+			*(pixelValues++) = int(col.c.f.magenta * 255 + 0.5);
+			*(pixelValues++) = int(col.c.f.yellow * 255 + 0.5);
+			*pixelValues = int(col.c.f.black * 255 + 0.5);
+			break;
+		}
+		
+		AISlice slice;
+		slice.left = data->info.bounds.left + x;
+		slice.top = data->info.bounds.top + y;
+		slice.right = slice.left + 1;
+		slice.bottom = slice.top + 1;
+		slice.front = 0;
+		slice.back = data->numComponents;
+
+		sAIRaster->SetRasterTile(art, &slice, &data->pixelTile, &data->pixelSlice);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void finalize()
+ * void nativeGetPixels(byte[] data, int numComponents, int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_finalize(JNIEnv *env, jobject obj) {
-	try {
-		RasterData *data = (RasterData *) gEngine->getIntField(env, obj, gEngine->fid_Raster_rasterData);
-		if (data != NULL)
-			delete data;
-	} EXCEPTION_CONVERT(env)
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_nativeGetPixels(JNIEnv *env, jobject obj, jbyteArray data, jint numComponents, jint x, jint y, jint width, jint height) {
+	rasterCopyPixels(env, obj, data, numComponents, x, y, width, height, true);
+}
+
+/*
+ * void nativeSetPixels(byte[] data, int numComponents, int x, int y, int width, int height)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_nativeSetPixels(JNIEnv *env, jobject obj, jbyteArray data, jint numComponents, jint x, jint y, jint width, jint height) {
+	rasterCopyPixels(env, obj, data, numComponents, x, y, width, height, false);
 }

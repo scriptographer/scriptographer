@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Image.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/30 08:15:38 $
  */
  
 #include "stdHeaders.h"
@@ -75,7 +75,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeDestroy(JNIEnv *e
 	} EXCEPTION_CONVERT(env)
 }
 
-
 /*
  * void nativeSetPixels(int[] data, int width, int height, int byteWidth)
  */
@@ -110,7 +109,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels__II(JNI
 		char *src = (char *)sADMImage->BeginBaseAddressAccess(srcImage); 
 		char *dst = (char *)sADMImage->BeginBaseAddressAccess(dstImage); 
 		
-		// we're copying int rgb(a) values, so *4:
 		memcpy(dst, src, numBytes);
 		
 		sADMImage->EndBaseAddressAccess(srcImage); 

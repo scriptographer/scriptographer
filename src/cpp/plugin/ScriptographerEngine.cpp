@@ -26,17 +26,15 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/27 10:06:15 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/30 08:16:59 $
  */
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "com_scriptographer_ai_Art.h" // for com_scriptographer_ai_Art_TYPE_LAYER
 #include "com_scriptographer_adm_Notifier.h"
-#ifdef MAC_ENV 
-#include "macUtils.h"
-#else
+#ifdef WIN_ENV 
 #include "loadJava.h"
 #endif
 #include "aiGlobals.h"
@@ -157,18 +155,28 @@ void ScriptographerEngine::init() {
 	JavaVMInitArgs args;
 	args.version = JNI_VERSION_1_4;
 	if (args.version < JNI_VERSION_1_4) getDefaultJavaVMInitArgs(&args);
-	JavaVMOption options[7];
+	JavaVMOption options[11];
+	int numOptions = 0;
 	
 	char classpath[512];
 	// only add the loader to the classpath, the rest is done in java:
 	sprintf(classpath, "-Djava.class.path=%s" PATH_SEP_STR "loader.jar", fHomeDir);
-	int numOptions = 0;
 	options[numOptions++].optionString = classpath;
 #ifdef MAC_ENV
-	// start headless, in order to avoid conflicts with AWT and Illustrator on Mac
-	options[numOptions++].optionString = "-Djava.awt.headless=true";
 	// use the carbon line separator instead of the unix one on mac:
 	options[numOptions++].optionString = "-Dline.separator=\r";
+	// start headless, in order to avoid conflicts with AWT and Illustrator on Mac
+	options[numOptions++].optionString = "-Djava.awt.headless=true";
+	/*
+	// pja
+	char bootClasspath[512];
+	// only add the loader to the classpath, the rest is done in java:
+	sprintf(bootClasspath, "-Xbootclasspath/a:%s" PATH_SEP_STR "lib" PATH_SEP_STR "pja.jar", fHomeDir);
+	options[numOptions++].optionString = bootClasspath;
+	options[numOptions++].optionString = "-Dawt.toolkit=com.eteks.awt.PJAToolkit";
+	options[numOptions++].optionString = "-Djava.awt.graphicsenv=com.eteks.java2d.PJAGraphicsEnvironment";
+	options[numOptions++].optionString = "-Djava.awt.fonts=/Library/Fonts";
+	*/
 #else
 	// TODO: see wether this works on windows
 //	options[numOptions++].optionString = "-Djava.awt.headless=true";
@@ -180,9 +188,9 @@ void ScriptographerEngine::init() {
 	options[numOptions++].optionString = "-Xdebug";
 	options[numOptions++].optionString = "-Xnoagent";
 	options[numOptions++].optionString = "-Djava.compiler=NONE";
-	options[numOptions++].optionString = "-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=4000";
+	options[numOptions++].optionString = "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n";
 #endif
-	numOptions = noDebug;
+//	numOptions = noDebug;
 
 	args.options = options;
 	args.nOptions = numOptions;
@@ -191,7 +199,7 @@ void ScriptographerEngine::init() {
 
 	// create the JVM
 	JNIEnv *env;
-	jint res = createJavaVM(&fJavaVM, (void **)&env, (void *)&args);
+	jint res = createJavaVM(&fJavaVM, (void **) &env, (void *) &args);
     if (res < 0)
         throw new StringException("Cannot create Java VM.");
 
@@ -405,9 +413,10 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cid_CMYKColor = getConstructorID(env, cls_CMYKColor, "(FFFFF)V");
 
 	cls_Art = loadClass(env, "com/scriptographer/ai/Art");
+	fid_Art_version = getFieldID(env, cls_Art, "version", "I");
 	mid_Art_wrapHandle = getStaticMethodID(env, cls_Art, "wrapHandle", "(II)Lcom/scriptographer/ai/Art;");
-	mid_Art_updateIfWrapped = getStaticMethodID(env, cls_Art, "updateIfWrapped", "(I)Z");
-	mid_Art_onSelectionChanged = getStaticMethodID(env, cls_Art, "onSelectionChanged", "([I)V");
+	mid_Art_updateIfWrapped_int = getStaticMethodID(env, cls_Art, "updateIfWrapped", "(I)Z");
+	mid_Art_updateIfWrapped_Array = getStaticMethodID(env, cls_Art, "updateIfWrapped", "([I)V");
 
 	cls_ArtSet = loadClass(env, "com/scriptographer/ai/ArtSet");
 	cid_ArtSet = getConstructorID(env, cls_ArtSet, "()V");
@@ -520,42 +529,6 @@ jobject ScriptographerEngine::getJavaEngine() {
 	return fJavaEngine;
 }
 
-/**
- * Evaluates the given string as a script, catches occuring exceptions and prints them out on the console.
- * TODO: Add more finegrained exception parsing instead of just printing the whole stacktrace that goes deep down
- * in Rhino
- *
- * catches exceptions
- */
-void ScriptographerEngine::executeString(const char* string) {
-	JNIEnv *env = getEnv();
-	try {
-		jobject engine = getJavaEngine();
-		callVoidMethod(env, engine, mid_ScriptographerEngine_executeString, createJString(env, string), NULL);
-	} EXCEPTION_CATCH_REPORT(env)
-}
-
-/**
- * Evaluates the given file as a script, catches occuring exceptions and prints them out on the console.
- * TODO: Add more finegrained exception parsing instead of just printing the whole stacktrace that goes deep down
- * in Rhino
- *
- * catches exceptions
- */
-void ScriptographerEngine::executeFile(const char* filename) {
-#ifdef MAC_ENV
-	char path[512];
-	carbonPathToPosixPath(filename, path);
-#else
-	const char *path = filename;
-#endif
-	JNIEnv *env = getEnv();
-	try {
-		jobject engine = getJavaEngine();
-		callVoidMethod(env, engine, mid_ScriptographerEngine_executeFile, createJString(env, path), NULL);
-	} EXCEPTION_CATCH_REPORT(env)
-}
-
 void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
 	char text[2048];
 	va_list args;
@@ -568,9 +541,9 @@ void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
 // com.scriptographer.awt.Point <-> AIRealPoint
 jobject ScriptographerEngine::convertPoint(JNIEnv *env, AIRealPoint *pt, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_Point, cid_Point, (jfloat)pt->h, (jfloat)pt->v);
+		return newObject(env, cls_Point, cid_Point, (jfloat) pt->h, (jfloat) pt->v);
 	} else {
-		callVoidMethod(env, res, mid_Point_setPoint, (jfloat)pt->h, (jfloat)pt->v);
+		callVoidMethod(env, res, mid_Point_setPoint, (jfloat) pt->h, (jfloat) pt->v);
 		return res;
 	}
 }
@@ -586,9 +559,9 @@ AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, AIRealP
 // java.awt.Point <-> ADMPoint
 jobject ScriptographerEngine::convertPoint(JNIEnv *env, ADMPoint *pt, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_awt_Point, cid_Point, (jint)pt->h, (jint)pt->v);
+		return newObject(env, cls_awt_Point, cid_Point, (jint) pt->h, (jint) pt->v);
 	} else {
-		callVoidMethod(env, res, mid_awt_Point_setLocation, (jint)pt->h, (jint)pt->v);
+		callVoidMethod(env, res, mid_awt_Point_setLocation, (jint) pt->h, (jint) pt->v);
 		return res;
 	}
 }
@@ -605,9 +578,9 @@ ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, ADMPoint *
 jobject ScriptographerEngine::convertRectangle(JNIEnv *env, AIRealRect *rt, jobject res) {
 	// AIRealRects are upside down, top and bottom are switched!
 	if (res == NULL) {
-		return newObject(env, cls_Rectangle, cid_Rectangle, (jfloat)rt->left, (jfloat)rt->bottom, (jfloat)(rt->right - rt->left), (jfloat)(rt->top - rt->bottom));
+		return newObject(env, cls_Rectangle, cid_Rectangle, (jfloat) rt->left, (jfloat) rt->bottom, (jfloat) (rt->right - rt->left), (jfloat) (rt->top - rt->bottom));
 	} else {
-		callVoidMethod(env, res, mid_Rectangle_setRect, (jfloat)rt->left, (jfloat)rt->bottom, (jfloat)(rt->right - rt->left), (jfloat)(rt->top - rt->bottom));
+		callVoidMethod(env, res, mid_Rectangle_setRect, (jfloat) rt->left, (jfloat) rt->bottom, (jfloat) (rt->right - rt->left), (jfloat) (rt->top - rt->bottom));
 		return res;
 	}
 }
@@ -626,9 +599,9 @@ AIRealRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rt, AIRe
 // java.awt.Rectangle <-> ADMRect
 jobject ScriptographerEngine::convertRectangle(JNIEnv *env, ADMRect *rt, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_awt_Rectangle, cid_awt_Rectangle, (jint)rt->left, (jint)rt->top, (jint)(rt->right - rt->left), (jint)(rt->bottom - rt->top));
+		return newObject(env, cls_awt_Rectangle, cid_awt_Rectangle, (jint) rt->left, (jint) rt->top, (jint) (rt->right - rt->left), (jint) (rt->bottom - rt->top));
 	} else {
-		callVoidMethod(env, res, mid_awt_Rectangle_setBounds, (jint)rt->left, (jint)rt->top, (jint)(rt->right - rt->left), (jint)(rt->bottom - rt->top));
+		callVoidMethod(env, res, mid_awt_Rectangle_setBounds, (jint) rt->left, (jint) rt->top, (jint) (rt->right - rt->left), (jint) (rt->bottom - rt->top));
 		return res;
 	}
 }
@@ -644,13 +617,17 @@ ADMRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rt, ADMRect
 }
 
 // java.awt.Dimension <-> ADMPoint
-jobject ScriptographerEngine::convertDimension(JNIEnv *env, ADMPoint *pt, jobject res) {
+jobject ScriptographerEngine::convertDimension(JNIEnv *env, int width, int height, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_awt_Dimension, cid_awt_Dimension, (jint)pt->h, (jint)pt->v);
+		return newObject(env, cls_awt_Dimension, cid_awt_Dimension, (jint) width, (jint) height);
 	} else {
-		callVoidMethod(env, res, mid_awt_Dimension_setSize, (jint)pt->h, (jint)pt->v);
+		callVoidMethod(env, res, mid_awt_Dimension_setSize, (jint) width, (jint) height);
 		return res;
 	}
+}
+
+jobject ScriptographerEngine::convertDimension(JNIEnv *env, ADMPoint *pt, jobject res) {
+	return convertDimension(env, pt->h, pt->v, res);
 }
 
 ADMPoint *ScriptographerEngine::convertDimension(JNIEnv *env, jobject dim, ADMPoint *res) {
@@ -663,7 +640,7 @@ ADMPoint *ScriptographerEngine::convertDimension(JNIEnv *env, jobject dim, ADMPo
 
 // java.awt.Color <-> ADMRGBColor
 jobject ScriptographerEngine::convertColor(JNIEnv *env, ADMRGBColor *srcCol) {
-	return newObject(env, cls_awt_Color, cid_awt_Color, (jfloat)srcCol->red / 65535.0, (jfloat)srcCol->green / 65535.0, (jfloat)srcCol->blue / 65535.0);
+	return newObject(env, cls_awt_Color, cid_awt_Color, (jfloat) srcCol->red / 65535.0, (jfloat) srcCol->green / 65535.0, (jfloat) srcCol->blue / 65535.0);
 }
 
 ADMRGBColor *ScriptographerEngine::convertColor(JNIEnv *env, jobject srcCol, ADMRGBColor *dstCol) {
@@ -830,7 +807,7 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSp
 
 // java.awt.AffineTransform <-> AIRealMatrix
 jobject ScriptographerEngine::convertMatrix(JNIEnv *env, AIRealMatrix *mt, jobject res) {
-	return newObject(env, cls_awt_AffineTransform, cid_awt_AffineTransform, (jdouble)mt->a, (jdouble)mt->b, (jdouble)mt->c, (jdouble)mt->d, (jdouble)mt->tx, (jdouble)mt->ty);
+	return newObject(env, cls_awt_AffineTransform, cid_awt_AffineTransform, (jdouble) mt->a, (jdouble) mt->b, (jdouble) mt->c, (jdouble) mt->d, (jdouble) mt->tx, (jdouble) mt->ty);
 }
 
 AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env, jobject mt, AIRealMatrix *res) {
@@ -1186,7 +1163,7 @@ ASErr ScriptographerEngine::selectionChanged() {
 
 		jintArray artHandles = env->NewIntArray(numMatches);
 		env->SetIntArrayRegion(artHandles, 0, numMatches, (jint *) *matches);
-		callStaticVoidMethod(env, cls_Art, mid_Art_onSelectionChanged, artHandles);
+		callStaticVoidMethod(env, cls_Art, mid_Art_updateIfWrapped_Array, artHandles);
 
 		sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
 
@@ -1622,7 +1599,7 @@ jstring ScriptographerEngine::createJString(JNIEnv *env, const char *str) {
 	int len = strlen(str);
 	jbyteArray bytes = env->NewByteArray(len);
 	if (bytes == NULL) throw new JThrowableClassException(cls_OutOfMemoryError);
-	env->SetByteArrayRegion(bytes, 0, len, (jbyte *)str);
+	env->SetByteArrayRegion(bytes, 0, len, (jbyte *) str);
 	jstring result = (jstring)env->functions->NewObject(env, cls_String, cid_String, bytes);
 	env->DeleteLocalRef(bytes);
 	return result;
@@ -1643,7 +1620,7 @@ char *ScriptographerEngine::createCString(JNIEnv *env, jstring jstr) {
 		env->DeleteLocalRef(bytes);
 		throw new JThrowableClassException(cls_OutOfMemoryError);
 	}
-	env->GetByteArrayRegion(bytes, 0, len, (jbyte *)result);
+	env->GetByteArrayRegion(bytes, 0, len, (jbyte *) result);
 	result[len] = 0; // NULL-terminate
 	env->DeleteLocalRef(bytes);
 	return result;
@@ -1686,7 +1663,7 @@ jclass ScriptographerEngine::findClass(JNIEnv *env, const char *name) {
 	// Loading with JNI would be like this:
 	// jclass cls = env->FindClass(name);
 	
-	jclass cls = (jclass)callStaticObjectMethod(env, cls_Loader, mid_Loader_loadClass, env->NewStringUTF(name));
+	jclass cls = (jclass) callStaticObjectMethod(env, cls_Loader, mid_Loader_loadClass, env->NewStringUTF(name));
 	if (cls == NULL) EXCEPTION_CHECK(env)
 	return cls;
 }
@@ -1694,7 +1671,7 @@ jclass ScriptographerEngine::findClass(JNIEnv *env, const char *name) {
 jclass ScriptographerEngine::loadClass(JNIEnv *env, const char *name) {
 	JNI_CHECK_ENV
 	jclass cls = findClass(env, name);
-	jclass res = (jclass)env->NewGlobalRef(cls);
+	jclass res = (jclass) env->NewGlobalRef(cls);
 	env->DeleteLocalRef(cls);
 	return res;
 }

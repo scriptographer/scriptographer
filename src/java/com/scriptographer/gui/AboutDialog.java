@@ -28,8 +28,8 @@
  *
  * $RCSfile: AboutDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/27 10:06:16 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/30 08:21:33 $
  */
 
 package com.scriptographer.gui;
@@ -59,12 +59,14 @@ public 	class AboutDialog extends ModalDialog {
 					String url = null;
 					if (line == 1) {
 						url = "http://www.scriptographer.com";
-					} else if (line == 3) {
+					} else if (line == 4) {
 						url = "http://www.scratchdisk.com";
 					}
 					if (url != null) {
-						if (pt.x < this.getTextSize(url, -1).width)
+						if (pt.x < this.getTextSize(url, -1).width) {
+							// TODO: get launch to work with urls on mac
 							ScriptographerEngine.launch(url);
+						}
 					}
 				}
 				return true;

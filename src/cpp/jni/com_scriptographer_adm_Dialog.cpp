@@ -143,8 +143,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetSize(JNIEn
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		ADMRect size;
 		sADMDialog->GetLocalRect(dialog, &size);
-		DEFINE_ADM_POINT(pt, size.right, size.bottom);
-		return gEngine->convertDimension(env, &pt);
+		return gEngine->convertDimension(env, size.right, size.bottom);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }

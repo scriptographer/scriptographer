@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.7 $
+ * $Date: 2005/03/30 08:21:33 $
  */
 
 package com.scriptographer;
@@ -71,6 +71,10 @@ public class ScriptographerEngine {
 	}
 
 	public static void init() throws Exception {
+		// This is needed on mac, where there is more than one thread and the Loader is initiated on startup
+		// in the second thread. The ScriptographerEngine get loaded through the Loader, so getting the
+		// ClassLoader from there is save:
+		Thread.currentThread().setContextClassLoader(ScriptographerEngine.class.getClassLoader());
 		// get the baseDir setting, if it's not set, ask the user
 		Preferences prefs = Preferences.userNodeForPackage(ScriptographerEngine.class); 
 		String dir = prefs.get("baseDir", null);
@@ -221,10 +225,6 @@ public class ScriptographerEngine {
 	public Scriptable executeScript(Script script, File scriptFile, Scriptable scope) {
 		Scriptable ret = null;
 		try {
-			// This is needed on mac, where there is more than one thread and the Loader is initiated on startup
-			// in the second thread. The ScriptographerEngine get loaded through the Loader, so getting the
-			// ClassLoader from there is save:
-			Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
 			if (scope == null)
 				scope = global.createScope(scriptFile);
 			// disable output to the console while the script is executed as it won't get updated anyway

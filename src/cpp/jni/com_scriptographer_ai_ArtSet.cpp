@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_ArtSet.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/30 08:15:38 $
  */
  
 #include "stdHeaders.h"
@@ -61,6 +61,56 @@ void artSetFilter(AIArtSet set, bool layerOnly) {
 	}
 }
 
+AIArtHandle artSetRasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
+	AIRasterizeSettings settings;
+	if (type == -1) {
+		// deterimine from document color model:
+		short colorModel;
+		sAIDocument->GetDocumentColorModel(&colorModel);
+		switch (colorModel) {
+		case kDocGrayColor:
+			type = kRasterizeAGrayscale;
+			break;
+		case kDocRGBColor:
+			type = kRasterizeARGB;
+			break;
+		case kDocCMYKColor:
+			type = kRasterizeACMYK;
+			break;
+		}
+	}
+	settings.type = type;
+	settings.resolution = resolution;
+	settings.antialiasing = antialiasing;
+	settings.options = kRasterizeOptionsNone;
+	AIRealRect artBounds;
+	sAIRasterize->ComputeArtBounds(artSet, &artBounds, false);
+	if (width >= 0)
+		artBounds.right = artBounds.left + width;
+	if (height >= 0)
+		artBounds.bottom = artBounds.top + height;
+	AIArtHandle raster = NULL;
+	// walk through artSet and find the art that is blaced above all others:
+	AIArtHandle top = NULL;
+	long count;
+	sAIArtSet->CountArtSet(artSet, &count);
+	for (long i = count - 1; i >= 0; i--) {
+		AIArtHandle art;
+		if (!sAIArtSet->IndexArtSet(artSet, i, &art)) {
+			if (top == NULL) {
+				top = art;
+			} else {
+				short order;
+				sAIArt->GetArtOrder(art, top, &order);
+				if (order == kFirstBeforeSecond || order == kSecondInsideFirst)
+					top = art;
+			}
+		}
+	}
+	sAIRasterize->Rasterize(artSet, &settings, &artBounds, kPlaceAbove, top, &raster, NULL);
+	return raster;
+}
+
 /*
  * com.scriptographer.ai.ArtSet invert()
  */
@@ -73,6 +123,20 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ArtSet_invert(JNIEnv *env, 
 				sAIArtSet->DisposeArtSet(&setTo);
 				return artSet;
 		}
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * com.scriptographer.ai.Raster rasterize(int type, float resolution, int antialiasing, float width, float height)
+ */
+
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ArtSet_rasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
+	try {
+		AIArtSet set = gEngine->convertArtSet(env, obj);
+		AIArtHandle raster = artSetRasterize(set, (AIRasterizeType) type, resolution, antialiasing, width, height);
+		if (raster != NULL)
+			return gEngine->wrapArtHandle(env, raster);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }

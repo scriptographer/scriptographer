@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/03/25 17:09:13 $
+ * $Revision: 1.7 $
+ * $Date: 2005/03/30 08:16:59 $
  */
  
 #include "stdHeaders.h"
@@ -104,7 +104,6 @@ ASErr Plugin::createTool(char *title, int iconID, int cursorID, long options, ch
 	return kNoErr;
 }
 
-
 ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 	setGlobal(false);
 	
@@ -114,8 +113,6 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 	
 	error = sSPPlugins->SetPluginName(fPluginRef, fPluginName);
 	if (error) return error;
-
-	
 
 	// add app started notifier
 	error = sAINotifier->AddNotifier(fPluginRef, "Scriptographer Started", kAIApplicationStartedNotifier, &fAppStartedNotifier);
