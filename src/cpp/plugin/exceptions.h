@@ -26,8 +26,8 @@
  *
  * $RCSfile: exceptions.h,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/05 21:32:09 $
  */
  
 #define kExceptionErr 'EXPT';
@@ -45,8 +45,12 @@ private:
 	
 public:
 
-	StringException(char *message) {
-		fMessage = strdup(message);
+	StringException(char *message, ...) {
+		fMessage = new char[1024];
+		va_list args;
+		va_start(args, message);
+		vsprintf(fMessage, message, args);
+		va_end(args);
 	}
 
 	void convert(JNIEnv *env);
