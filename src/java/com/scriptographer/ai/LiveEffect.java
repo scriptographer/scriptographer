@@ -28,8 +28,8 @@
  * 
  * $RCSfile: LiveEffect.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 23:27:22 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/07 13:39:08 $
  */
 
 package com.scriptographer.ai;
@@ -41,6 +41,7 @@ import com.scriptographer.js.Unsealed;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.ScriptRuntime;
@@ -54,7 +55,7 @@ import org.mozilla.javascript.ScriptRuntime;
  * maybe not, keep track of all existing effects and match against those first before creating a new one.
  *
  * Also, when Scriptographer is (re)loaded, the list of existing effects needs to be walked through and
- * added to the list of unusedEffects. This is done by calling nativeGetUnusedEffects.
+ * added to the list of unusedEffects. This is done by calling getUnusedEffects.
  */
 
 
@@ -174,7 +175,18 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 	 * effects maps effectHandles to their wrappers.
 	 */
 	private static HashMap effects = new HashMap();
-	private static ArrayList unusedEffects = new ArrayList();
+	private static ArrayList unusedEffects = null;
+
+	protected LiveEffect(int effectHandle, String name, String title, int preferedInput, int type, int flags, int majorVersion, int minorVersion) {
+		this.effectHandle = effectHandle;
+		this.name = name;
+		this.title = title;
+		this.preferedInput = preferedInput;
+		this.type = type;
+		this.flags = flags;
+		this.majorVersion = majorVersion;
+		this.minorVersion = minorVersion;
+	}
 
 	/**
 	 *
@@ -187,12 +199,9 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 	 * @param minorVersion
 	 */
 	public LiveEffect(String name, String title, int preferedInput, int type, int flags, int majorVersion, int minorVersion) {
-		this.name = name;
-		this.title = title;
-		this.type = type;
-		this.flags = flags;
-		this.majorVersion = majorVersion;
-		this.minorVersion = minorVersion;
+		this(0, name, title, preferedInput, type, flags, majorVersion, minorVersion);
+
+		ArrayList unusedEffects = getUnusedEffects();
 
 		// now see first wether there is an unusedEffect already:
 		int index = unusedEffects.indexOf(this);
@@ -225,7 +234,7 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 		if (effects.get(key) == this) {
 			// if so remove it and put it to the list of unsed effects, for later recycling
 			effects.remove(key);
-			unusedEffects.add(this);
+			getUnusedEffects().add(this);
 			if (menuItem != null)
 				menuItem.remove();
 			menuItem = null;
@@ -267,6 +276,14 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 		}
 		return false;
 	}
+
+	private static ArrayList getUnusedEffects() {
+		if (unusedEffects == null)
+			unusedEffects = new ArrayList(getCreatedEffects().values());
+		return unusedEffects;
+	}
+
+	private static native HashMap getCreatedEffects();
 
 	/**
 	 * Call only from onEditParameters!

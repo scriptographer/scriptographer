@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:23:42 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/07 13:35:06 $
  */
 
 package com.scriptographer.adm;
@@ -118,7 +118,9 @@ public abstract class Item extends CallbackHandler {
 	private String toolTip;
 
 	protected AWTComponent component = null;
-	
+	private Dimension minSize = null;
+	private Dimension maxSize = null;
+
 	public Item(Dialog dialog, String type, Rectangle2D bounds, int style, int options) {
 		this.dialog = dialog;
 		this.type = type;
@@ -130,6 +132,12 @@ public abstract class Item extends CallbackHandler {
 		size = nativeGetSize();
 		// length needs to be set for this, as it may cause a onResize call:
 		nativeSetStyle(style);
+	}
+
+	/**
+	 * needed for Spacer
+	 */
+	protected Item() {
 	}
 
 	public void destroy() {
@@ -246,8 +254,6 @@ public abstract class Item extends CallbackHandler {
 	public native void setLocation(int x, int y);
 	public native Point getLocation();
 
-	public native Dimension getPreferredSize();
-
 	public Dimension getSize() {
 		return new Dimension(size);
 	}
@@ -264,12 +270,46 @@ public abstract class Item extends CallbackHandler {
 		}
 	}
 
-	public void setSize(Dimension size) {
+	public final void setSize(Dimension size) {
 		setSize(size.width, size.height);
 	}
 
-	public void setSize(Point2D size) {
+	public final void setSize(Point2D size) {
 		setSize((int) size.getX(), (int) size.getY());
+	}
+
+	public native Dimension getPreferredSize();
+
+	public void setMinimumSize(int width, int height) {
+		minSize = new Dimension(width, height);
+	}
+
+	public void setMinimumSize(Dimension size) {
+		setMinimumSize(size.width, size.height);
+	}
+
+	public final void setMinimumSize(Point2D size) {
+		setMinimumSize((int) size.getX(), (int) size.getY());
+	}
+
+	public Dimension getMinimumSize() {
+		return minSize != null ? minSize : getSize();
+	}
+
+	public void setMaximumSize(int width, int height) {
+		maxSize = new Dimension(width, height);
+	}
+
+	public void setMaximumSize(Dimension size) {
+		setMaximumSize(size.width, size.height);
+	}
+
+	public final void setMaximumSize(Point2D size) {
+		setMaximumSize((int) size.getX(), (int) size.getY());
+	}
+
+	public Dimension getMaximumSize() {
+		return maxSize != null ? maxSize : getSize();
 	}
 
 	public Rectangle getBounds() {
@@ -291,11 +331,11 @@ public abstract class Item extends CallbackHandler {
 		}
 	}
 
-	public void setBounds(Rectangle2D bounds) {
+	public final void setBounds(Rectangle2D bounds) {
 		setBounds((int) bounds.getX(), (int) bounds.getY(), (int) bounds.getWidth(), (int) bounds.getHeight());
 	}
 
-	public void setLocation(Point2D loc) {
+	public final void setLocation(Point2D loc) {
 		setLocation((int) loc.getX(), (int) loc.getY());
 	}
 
@@ -310,19 +350,19 @@ public abstract class Item extends CallbackHandler {
 	public native Rectangle localToScreen(int x, int y, int width, int height);
 	public native Rectangle screenToLocal(int x, int y, int width, int height);
 
-	public Point localToScreen(Point2D pt) {
+	public final Point localToScreen(Point2D pt) {
 		return localToScreen((int) pt.getX(), (int) pt.getY());
 	}
 
-	public Point screenToLocal(Point2D pt) {
+	public final Point screenToLocal(Point2D pt) {
 		return screenToLocal((int) pt.getX(), (int) pt.getY());
 	}
 
-	public Rectangle localToScreen(Rectangle2D rt) {
+	public final Rectangle localToScreen(Rectangle2D rt) {
 		return localToScreen((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
 	}
 
-	public Rectangle screenToLocal(Rectangle2D rt) {
+	public final Rectangle screenToLocal(Rectangle2D rt) {
 		return screenToLocal((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
 	}
 
@@ -335,9 +375,12 @@ public abstract class Item extends CallbackHandler {
 	public native void invalidate(int x, int y, int width, int height);
 	public native void update();
 
-	public void invalidate(Rectangle2D rt) {
+	public final void invalidate(Rectangle2D rt) {
 		invalidate((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
 	}
+
+	public native void setBackgroundColor(int color); // Drawer.COLOR_*
+	public native int getBackgroundColor();
 
 	/* 
 	 * cursor ID accessors
@@ -358,7 +401,7 @@ public abstract class Item extends CallbackHandler {
 	public native void showToolTip(int x, int y);
 	public native void hideToolTip();
 
-	public void showToolTip(Point2D point) {
+	public final void showToolTip(Point2D point) {
 		showToolTip((int) point.getX(), (int) point.getY());
 	}
 
@@ -391,11 +434,11 @@ public abstract class Item extends CallbackHandler {
 		}
 
 		public Dimension getMaximumSize() {
-			return getSize();
+			return Item.this.getMaximumSize();
 		}
 
 		public Dimension getMinimumSize() {
-			return getSize();
+			return Item.this.getMinimumSize();
 		}
 
 		public Dimension getPreferredSize() {

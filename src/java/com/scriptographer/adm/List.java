@@ -28,8 +28,8 @@
  *
  * $RCSfile: List.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:35:07 $
  */
 
 package com.scriptographer.adm;
@@ -114,7 +114,8 @@ public class List extends CallbackHandler {
 	 * entry array accessors
 	 *
 	 */
-	
+
+	// TODO: maybe this fits in the List interface???
 	public native ListEntry createEntry(int index);
 	public native void removeEntry(int index);
 	
@@ -149,17 +150,17 @@ public class List extends CallbackHandler {
 	 *
 	 */
 	
-	public native void nativeSetBGColor(int color); // Drawer.COLOR_*
-	
-	public void setBGColor(int color) {
+	public native void nativeSetBackgroundColor(int color); // Drawer.COLOR_*
+
+	public void setBackgroundColor(int color) {
 		bgColor = color;
-		nativeSetBGColor(color);
+		nativeSetBackgroundColor(color);
 	}
-	
-	public int getBGColor() {
+
+	public int getBackgroundColor() {
 		return bgColor;
 	}
-		
+
 	/*
 	 * searching
 	 *

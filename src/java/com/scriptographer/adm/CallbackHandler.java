@@ -28,8 +28,8 @@
  *
  * $RCSfile: CallbackHandler.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:35:07 $
  */
 
 package com.scriptographer.adm;
@@ -139,6 +139,14 @@ public abstract class CallbackHandler extends WrappableObject implements Unseale
 			}
 			FunctionHelper.callFunction(wrapper, onDraw, params);
 		}
+	}
+
+	public void setOnResize(Function onResize) {
+		this.onResize = onResize;
+	}
+
+	public Function getOnResize() {
+		return onResize;
 	}
 
 	protected void onResize(int dx, int dy) throws Exception {

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:38:54 $
  */
 
 package com.scriptographer.ai;
@@ -39,6 +39,10 @@ import java.io.File;
 
 public class Document {
 
+	// TODO: move this to app.DIALOG_* and have a global function set / getDialogStatus,
+	// that controls the general handling of dialogs on a global setting level.
+	// remove the parameter from  the constructors.
+	
 	// ActionDialogStatus
 	public static final int
 		DIALOG_NONE = 0,
@@ -46,8 +50,9 @@ public class Document {
 		DIALOG_PARTIAL_ON = 2,
 		DIALOG_OFF = 3;
 
-	private int documentHandle = 0;
+	protected int documentHandle = 0;
 
+	protected LayerList layers = null;
 
 	/**
 	 * Opens an existing document.
@@ -78,6 +83,12 @@ public class Document {
 
 	protected Document(int handle) {
 		this.documentHandle = handle;
+	}
+
+	public LayerList getLayers() {
+		if (layers == null)
+			layers = new LayerList(this);
+		return layers;
 	}
 
 	public native Point getPageOrigin();

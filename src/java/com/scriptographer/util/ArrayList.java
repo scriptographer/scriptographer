@@ -25,9 +25,13 @@ public class ArrayList extends AbstractList {
 		list = new ExtendedJavaList(initialCapacity);
 	}
 
-	public ArrayList(Object[] array) {
-		this(array.length);
-		list.addAll(Arrays.asList(array));
+	public ArrayList(Collection objects) {
+		this(objects.size());
+		list.addAll(objects);
+	}
+
+	public ArrayList(Object[] objects) {
+		this(Arrays.asList(objects));
 	}
 
 	public int getLength() {

@@ -28,8 +28,8 @@
  *
  * $RCSfile: HierarchyList.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:35:07 $
  */
 
 package com.scriptographer.adm;
@@ -132,26 +132,6 @@ public class HierarchyList extends List {
 		setEntryTextRect(rect[0], rect[1], rect[2], rect[3], recursive);
 	}
 
-	public void setEntrySizeRecursive(Dimension size) {
-		setEntrySize(size, true);
-	}
- 	
-	public void setEntrySizeRecursive(Point2D size) {
-		setEntrySize(size, true);
-	}
-
-	public void setEntrySizeRecursive(int[] size) {
-		setEntrySize(size, true);
-	}
-
-	public void setEntryTextRectRecursive(Rectangle2D rect) {
-		setEntryTextRect(rect, true);
-	}
-
-	public void setEntryTextRectRecursive(int[] rect) {
-		setEntryTextRect(rect, true);
-	}
-
 	public native int getNonLeafEntryWidth();
 	public native void setNonLeafEntryTextRect(int x, int y, int width, int height, boolean recursive);
 	public native Rectangle getNonLeafEntryTextRect();
@@ -159,7 +139,7 @@ public class HierarchyList extends List {
 	public void setNonLeafEntryTextRect(Rectangle2D rect, boolean recursive) {
 		setNonLeafEntryTextRect((int)rect.getX(), (int)rect.getY(), (int)rect.getWidth(), (int)rect.getHeight(), recursive);
 	}
-	
+
 	public void setNonLeafEntryTextRect(int[] rect, boolean recursive) {
 		setNonLeafEntryTextRect(rect[0], rect[1], rect[2], rect[3], recursive);
 	}
@@ -170,14 +150,6 @@ public class HierarchyList extends List {
 
 	public void setNonLeafEntryTextRect(int[] rect) {
 		setNonLeafEntryTextRect(rect, false);
-	}
-
-	public void setNonLeafEntryTextRectRecursive(Rectangle2D rect) {
-		setNonLeafEntryTextRect(rect, true);
-	}
-
-	public void setNonLeafEntryTextRectRecursive(int[] rect) {
-		setNonLeafEntryTextRect(rect, true);
 	}
 
 	/*
@@ -269,24 +241,12 @@ public class HierarchyList extends List {
 		setIndentationWidth(width, false);
 	}
 
-	public void setIndentationWidthRecursive(int width) {
-		setIndentationWidth(width, true);
-	}
-	
 	public void setDivided(boolean divided) {
 		setDivided(divided, false);
 	}
 
-	public void setDividedRecursive(boolean divided) {
-		setDivided(divided, true);
-	}
-
 	public void setFlags(int flags) {
 		setFlags(flags, false);
-	}
-
-	public void setFlagsRecursive(int flags) {
-		setFlags(flags, true);
 	}
 
 	/*

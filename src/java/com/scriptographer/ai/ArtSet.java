@@ -28,8 +28,8 @@
  * 
  * $RCSfile: ArtSet.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:38:54 $
  */
 
 package com.scriptographer.ai;
@@ -41,6 +41,7 @@ import com.scriptographer.js.FunctionHelper;
 import org.mozilla.javascript.NativeObject;
 
 public class ArtSet extends ArrayList {
+	// TODO: move getSelected, getMatching to document, getLayer to layer.getAll()!
 
 	public final static Integer
 			ATTR_SELECTED = new Integer(Art.ATTR_SELECTED),

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:35:06 $
  */
 
 package com.scriptographer.adm;
@@ -172,6 +172,7 @@ public class Dialog extends CallbackHandler {
 	 * bellow by the different other versions...
 	 */
 	private Dialog(int style, String title, Dimension size, Rectangle bounds, int options, Function onCreate) {
+		// TODO: use an naming scheme that produce unique names that are each time the same (e.g. md5 hash of script name + title?)
 		this.name = "Scriptographer_Dialog_" + dialogs.size();
 		this.title = title;
 		this.size = size != null ? new Dimension(size) : null;
@@ -247,8 +248,6 @@ public class Dialog extends CallbackHandler {
 		dialog.setWrapper(obj); // already do this now as it is needed in dialog.create()!
 		dialog.create();
 
-		// if (obj != null) FunctionHelper.callFunction(obj, onCreate);
-
 		return obj;
 	}
 	
@@ -291,9 +290,13 @@ public class Dialog extends CallbackHandler {
 			container = new AWTContainer();
 		return container;
 	}
-	
+
 	public void setLayout(LayoutManager mgr) {
 		getContainer().setLayout(mgr);
+	}
+
+	public void setInsets(int left, int top, int right, int bottom) {
+		getContainer().setInsets(left, top, right, bottom);
 	}
 
 	public void addToLayout(Item item, Object constraints) {
@@ -349,7 +352,7 @@ public class Dialog extends CallbackHandler {
 		if (container != null) {
 			setMinimumSize(container.getMinimumSize());
 			setSize(container.getPreferredSize());
-			// This seems to crash the whole thing:
+			// TODO: This seems to crash the whole thing:
 			// setMaximumSize(container.getMaximumSize());
 			container.doLayout();
 		}
@@ -649,17 +652,23 @@ public class Dialog extends CallbackHandler {
 	 * work with length for simplicity
 	 */
 	class AWTContainer extends Container {
+		Insets insets;
 
 		public AWTContainer() {
 			updateSize(Dialog.this.getSize());
+			setInsets(0, 0, 0, 0);
 		}
 
 		public void updateSize(Dimension size) {
 			super.setSize(size.width, size.height);
 		}
 
+		public void setInsets(int left, int top, int right, int bottom) {
+			insets = new Insets(top, left, bottom, right);
+		}
+
 		public Insets getInsets() {
-			return new Insets(0, 0, 0, 0);
+			return insets;
 		}
 
 		public void setBounds(int x, int y, int width, int height) {

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Curve.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:38:54 $
  */
 
 package com.scriptographer.ai;
@@ -64,7 +64,8 @@ public class Curve {
 		segment2 = new Segment(pt2, h2, pt2, false);
 	}
 
-	// TODO: instead of calling updateSegments(); everywhere, could there be a better way to do this? e.g. calling from segments when needed?
+	// TODO: instead of calling updateSegments(); everywhere, could there be a better way
+	// to do this? e.g. calling from segments when needed?
 	public String toString() {
 		updateSegments();
 		StringBuffer buf = new StringBuffer(64);

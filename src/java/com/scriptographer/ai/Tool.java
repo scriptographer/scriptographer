@@ -28,8 +28,8 @@
  *
  * $RCSfile: Tool.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:01 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:38:54 $
  */
 
 package com.scriptographer.ai;
@@ -39,7 +39,21 @@ import org.mozilla.javascript.*;
 import com.scriptographer.*;
 import com.scriptographer.js.FunctionHelper;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
+
 public class Tool {
+	private int toolHandle = 0;
+	private int index;
+
+	private static HashMap tools = null;
+
+	protected Tool(int toolHandle, int index) {
+		this.toolHandle = toolHandle;
+		this.index = index;
+	}
+
 	private Scriptable scope;
 	private Function mouseUpFunc;
 	private Function mouseDragFunc;
@@ -48,9 +62,9 @@ public class Tool {
 	private Event event = new Event();
 	private Object[] eventArgs = new Object[] { event };
 	
-	public void initScript(String filename) throws Exception {
-		ScriptographerEngine engine = ScriptographerEngine.getEngine();
-		scope = engine.evaluateFile(filename);
+	public void setScript(File file) throws Exception {
+		ScriptographerEngine engine = ScriptographerEngine.getInstance();
+		scope = engine.executeFile(file, null);
 		if (scope != null) {
 			mouseUpFunc = FunctionHelper.getFunction(scope, "onMouseUp");
 			mouseDragFunc = FunctionHelper.getFunction(scope, "onMouseDrag");
@@ -58,51 +72,125 @@ public class Tool {
 			FunctionHelper.callFunction(scope, "onInit");
 		}
 	}
-	
-	public void onEditOptions() throws Exception {
+
+	private static HashMap getTools() {
+		if (tools == null)
+			tools = getCreatedTools();
+		return tools;
+	}
+
+	/**
+	 * Returns all tools that have been created by this plugin.
+	 * This is necessary because the java part of the plugin may be reloaded.
+	 * The plugin needs to be capable of reestablish the connections between the wrappers
+	 * and the real objects.
+	 *
+	 * @return
+	 */
+	private static native HashMap getCreatedTools();
+
+	public native boolean hasPressure();
+
+	protected void onEditOptions() throws Exception {
 		if (scope != null) {
 			FunctionHelper.callFunction(scope, "onOptions");
 		}
 	}
 
-	public void onSelect() throws Exception {
+	protected void onSelect() throws Exception {
 		if (scope != null) {
 			FunctionHelper.callFunction(scope, "onSelect");
 		}
 	}
 	
-	public void onDeselect() throws Exception {
+	protected void onDeselect() throws Exception {
 		if (scope != null) {
 			FunctionHelper.callFunction(scope, "onDeselect");
 		}
 	}
 	
-	public void onReselect() throws Exception {
+	protected void onReselect() throws Exception {
 		if (scope != null) {
 			FunctionHelper.callFunction(scope, "onReselect");
 		}
 	}
 	
-	public void onMouseDown(float x, float y, int pressure) throws Exception {
+	protected void onMouseDown(float x, float y, int pressure) throws Exception {
 		if (scope != null && mouseDownFunc != null) {
 			event.setValues(x, y, pressure);
 			FunctionHelper.callFunction(scope, mouseDownFunc, eventArgs);
 		}
 	}
 	
-	public void onMouseDrag(float x, float y, int pressure) throws Exception {
+	protected void onMouseDrag(float x, float y, int pressure) throws Exception {
 		if (scope != null && mouseDragFunc != null) {
 			event.setValues(x, y, pressure);
 			FunctionHelper.callFunction(scope, mouseDragFunc, eventArgs);
 		}
 	}
 	
-	public void onMouseUp(float x, float y, int pressure) throws Exception {
+	protected void onMouseUp(float x, float y, int pressure) throws Exception {
 		if (scope != null && mouseUpFunc != null) {
 			event.setValues(x, y, pressure);
 			FunctionHelper.callFunction(scope, mouseUpFunc, eventArgs);
 		}
 	}
-	
-	public native boolean hasPressure();
+
+	/**
+	 * To be called from the native environment:
+	 */
+	private static void onEditOptions(int toolHandle) throws Exception {
+		Tool tool = getToolByHandle(toolHandle);
+		if (tool != null)
+			tool.onEditOptions();
+	}
+
+	private static void onSelect(int toolHandle) throws Exception {
+		Tool tool = getToolByHandle(toolHandle);
+		if (tool != null)
+			tool.onSelect();
+	}
+
+	private static void onDeselect(int toolHandle) throws Exception {
+		Tool tool = getToolByHandle(toolHandle);
+		if (tool != null)
+			tool.onDeselect();
+	}
+
+	private static void onReselect(int toolHandle) throws Exception {
+		Tool tool = getToolByHandle(toolHandle);
+		if (tool != null)
+			tool.onReselect();
+	}
+
+	private static void onMouseDown(int toolHandle, float x, float y, int pressure) throws Exception {
+		Tool tool = getToolByHandle(toolHandle);
+		if (tool != null)
+			tool.onMouseDown(x, y, pressure);
+	}
+
+	private static void onMouseDrag(int toolHandle, float x, float y, int pressure) throws Exception {
+		Tool tool = getToolByHandle(toolHandle);
+		if (tool != null)
+			tool.onMouseDrag(x, y, pressure);
+	}
+
+	private static void onMouseUp(int toolHandle, float x, float y, int pressure) throws Exception {
+		Tool tool = getToolByHandle(toolHandle);
+		if (tool != null)
+			tool.onMouseUp(x, y, pressure);
+	}
+
+	public static Tool getTool(int index) {
+		for (Iterator iterator = getTools().values().iterator(); iterator.hasNext();) {
+			Tool tool = (Tool) iterator.next();
+			if (tool.index == index)
+				return tool;
+		}
+		return null;
+	}
+
+	private static Tool getToolByHandle(int toolHandle) {
+		return (Tool) getTools().get(new Integer(toolHandle));
+	}
 }

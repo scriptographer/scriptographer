@@ -28,13 +28,14 @@
  *
  * $RCSfile: Image.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:35:06 $
  */
 
 package com.scriptographer.adm;
 
 import java.awt.image.*;
+import java.awt.*;
 import java.io.*;
 import java.net.*;
 
@@ -79,77 +80,111 @@ public class Image {
 			return (Image) obj;
 		else if (obj instanceof String)
 			return new Image((String) obj);
+		else if (obj instanceof File)
+			return new Image((File) obj);
 		else if (obj instanceof URL)
 			return new Image((URL) obj);
 		else
 			return null;
 	}
 	
-	public Image(BufferedImage image) {
-		width = image.getWidth();
-		height = image.getHeight();
-		int imgType = image.getType();
-		switch(imgType) {
-		
-			// direct types:
-		
-			case BufferedImage.TYPE_INT_RGB:
-				type = TYPE_RGB;
+	public Image(java.awt.Image image) {
+		BufferedImage buf;
+		if (image instanceof BufferedImage) {
+			buf = (BufferedImage) image;
+			width = buf.getWidth();
+			height = buf.getHeight();
+			int imgType = buf.getType();
+			switch(imgType) {
+				// direct types:
+				case BufferedImage.TYPE_INT_RGB:
+					type = TYPE_RGB;
+					break;
+				case BufferedImage.TYPE_INT_ARGB:
+				case BufferedImage.TYPE_INT_ARGB_PRE:
+					type = TYPE_RGB_ALPHA;
+					break;
+
+				// indirect types, copying is needed:
+				case BufferedImage.TYPE_4BYTE_ABGR:
+				case BufferedImage.TYPE_4BYTE_ABGR_PRE:
+				case BufferedImage.TYPE_BYTE_INDEXED: {
+					BufferedImage tmp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+					tmp.createGraphics().drawImage(buf, null, 0, 0);
+					image = tmp;
+					type = TYPE_RGB_ALPHA;
+				}
 				break;
-			case BufferedImage.TYPE_INT_ARGB:
-			case BufferedImage.TYPE_INT_ARGB_PRE:
-				type = TYPE_RGB_ALPHA;
-				break;
-				
-			// indirect types, copying is needed:
-					
-			case BufferedImage.TYPE_4BYTE_ABGR:
-			case BufferedImage.TYPE_4BYTE_ABGR_PRE:
-			case BufferedImage.TYPE_BYTE_INDEXED: {
-				BufferedImage tmp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-				tmp.createGraphics().drawImage(image, 0, 0, null);
-				image = tmp;
-				type = TYPE_RGB_ALPHA;				
+				default: {
+					BufferedImage tmp = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+					tmp.createGraphics().drawImage(buf, null, 0, 0);
+					image = tmp;
+					type = TYPE_RGB;
+				}
 			}
-			break;
-				
-			default: {
-				BufferedImage tmp = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-				tmp.createGraphics().drawImage(image, 0, 0, null);
-				image = tmp;
-				type = TYPE_RGB;
-			}
-			break;
+		} else {
+			width = image.getWidth(null);
+			height = image.getHeight(null);
+			buf = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+			buf.createGraphics().drawImage(image, 0, 0, null);
+			type = TYPE_RGB_ALPHA;
 		}
 		imageRef = nativeCreate(width, height, type);
-		DataBufferInt buffer = (DataBufferInt)image.getRaster().getDataBuffer();
+		DataBufferInt buffer = (DataBufferInt) buf.getRaster().getDataBuffer();
 		int data[] = buffer.getData();
 		nativeSetPixels(data, width, height, byteWidth);
 	}
-	
-	public Image(InputStream in) throws IOException {
-		this(ImageIO.read(in));
+
+	// TODO: ImageIO (or sun graphics) on OS X have a bug with the headless mode.
+	// some images cannot be used and throw a HeadlessException when used, others
+	// work just fine. The workaround is to rely on the toolkit funtion.
+	// The resolution is to use helma's image object and generator mechanism here
+	// too:
+	public Image(File file) throws IOException {
+//		this(checkImage(ImageIO.read(file), file));
+		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(file.getPath())), file));
 	}
-	
+
 	public Image(URL url) throws IOException {
-		this(url.openStream());
+//		this(checkImage(ImageIO.read(url), url));
+		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(url)), url));
 	}
 
 	public Image(String str) throws IOException {
-		this(getInputStream(str));
+		this(getURL(str));
 	}
-	
-	private static InputStream getInputStream(String str) throws IOException {
-		// the string could either be an url or a local filename, let's try both:
+
+	private static java.awt.Image checkImage(java.awt.Image image, Object srcObj) {
+		if (image == null)
+			throw new RuntimeException("The specified image could not be read: " + srcObj);
+		return image;
+	}
+
+	private static java.awt.Image waitForImage(java.awt.Image image) {
+		MediaTracker mediaTracker = new MediaTracker(new Container());
+		mediaTracker.addImage(image, 0);
 		try {
-	        URL url = new URL(str);
-	        return url.openStream();
+			mediaTracker.waitForID(0);
+			if (image.getWidth(null) == -1 || image.getHeight(null) == -1)
+				image = null;
+		} catch (InterruptedException e) {
+			image = null;
+		}
+		return image;
+	}
+
+	private static URL getURL(String str) throws IOException {
+		// the string could either be an url or a local filename, let's try both:
+		URL url = null;
+		try {
+	        url = new URL(str);
 	    } catch (MalformedURLException e) {
 	        // try the local file now:
-	    	return new FileInputStream(str);
+			url = new URL("file://" + str);
 		}
+		return url;
 	}
-	
+
 	public int getCompatibleType() {
 		switch(type) {
 		case TYPE_RGB_ALPHA:
@@ -159,8 +194,8 @@ public class Image {
 			return BufferedImage.TYPE_INT_RGB;
 		}
 	}
-	
-	/** 
+
+	/**
 	 * fetches the pixels from the image and creates a BufferedImage from it
 	 */
 	public BufferedImage getImage() {
@@ -220,10 +255,11 @@ public class Image {
 	 */
 	public int createIconRef() {
 		Image img = ((Image) clone());
-		int iconRef = img.nativeCreateIcon();
+		int ref = img.nativeCreateIcon();
 		// clear the imageRef so that nothing happens in finalize or destroy!
 		img.imageRef = 0;
-		return iconRef;
+		img.iconRef = 0;
+		return ref;
 	}
 	
 	public Drawer getDrawer() {

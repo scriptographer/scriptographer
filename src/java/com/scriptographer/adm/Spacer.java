@@ -1,13 +1,13 @@
 /*
  * Scriptographer
- *
+ * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
- *
+ * 
  * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
- *
+ * 
  * -- GPL LICENSE NOTICE --
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,42 +23,55 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 03.01.2005.
- *
- * $RCSfile: PushButton.java,v $
+ * 
+ * File created on 06.03.2005.
+ * 
+ * $RCSfile: Spacer.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:35:07 $
+ * $Revision: 1.1 $
+ * $Date: 2005/03/07 13:35:06 $
  */
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
+import java.awt.*;
 
-public class PushButton extends PictureItem {
+public class Spacer extends Item {
 
-	// ADMPictureButtonStyle
-	public final static int
-		STYLE_BLACK_SUNKEN_RECT = 0,
-		STYLE_BLACK_RECT = 1;
-
-	public PushButton(Dialog dialog, Rectangle2D bounds, String text) {
-		super(dialog, Item.TYPE_TEXT_PUSHBUTTON, bounds, text, 0);
-	}
-	
-	public PushButton(Dialog dialog, Rectangle2D bounds, Image image, int style) {
-		super(dialog, Item.TYPE_PICTURE_PUSHBUTTON, bounds, null, style);
-		try {
-			if (image != null)
-				setPicture(image);
-		} catch (IOException e) {
-			// will never happen with type Image
-		}
+	public Spacer(int width, int height) {
+		size = new Dimension(width, height);
+		bounds = new Rectangle(0, 0, width, height);
 	}
 
-	public PushButton(Dialog dialog, Rectangle2D bounds, Image image) {
-		this(dialog, bounds, image, STYLE_BLACK_SUNKEN_RECT);
+	public Spacer(Dimension size) {
+		this(size.width, size.height);
+	}
+
+	public Dimension getPreferredSize() {
+		return size;
+	}
+
+	public Dimension getSize() {
+		return size;
+	}
+
+	public void setSize(int width, int height) {
+		size.setSize(width, height);
+	}
+
+	public Rectangle getBounds() {
+		return bounds;
+	}
+
+	public void setBounds(int x, int y, int width, int height) {
+		bounds.setBounds(x, y, width, height);
+	}
+
+	public void setLocation(int x, int y) {
+		bounds.setBounds(x, y, size.width, size.height);
+	}
+
+	public Point getLocation() {
+		return new Point(bounds.x, bounds.y);
 	}
 }

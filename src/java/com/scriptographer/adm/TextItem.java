@@ -28,8 +28,8 @@
  *
  * $RCSfile: TextItem.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:35:07 $
  */
 
 package com.scriptographer.adm;
@@ -60,7 +60,7 @@ public abstract class TextItem extends ValueItem {
 		UNITS_TIME = 11,
 		UNITS_HA = 12;
 
-	private String text;
+	protected String text;
 
 	public TextItem(Dialog dialog, String type, Rectangle2D bounds, String text, int style, int options) {
 		super(dialog, type, bounds, style, options);
@@ -81,8 +81,9 @@ public abstract class TextItem extends ValueItem {
 	public native int getFont();
 	public native void setFont(int font);
 
-	private native void nativeSetText(String text);
-	
+	protected native void nativeSetText(String text);
+	protected native String nativeGetText();
+
 	public String getText() {
 		return text;
 	}

@@ -28,8 +28,8 @@
  *
  * $RCSfile: PictureItem.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:35:06 $
  */
 
 package com.scriptographer.adm;
@@ -53,11 +53,9 @@ public abstract class PictureItem extends TextItem {
 	// unfortunatelly PictureItem is also used for text buttons, checkboxes, ...
 	// these call the constructor with the text param set, and won't allow
 	// setting of images...
-	private boolean isPictureType;
 
 	protected PictureItem(Dialog dialog, String type, Rectangle2D bounds, String text, int style) {
 		super(dialog, type, bounds, text, style, 0);
-		isPictureType = text == null;
 	}
 	
 	/* 
@@ -75,7 +73,7 @@ public abstract class PictureItem extends TextItem {
 	}
 	
 	public void setPicture(Object obj) throws IOException {
-		if (isPictureType) {
+		if (text == null) {
 			picture = Image.getImage(obj);
 			nativeSetPicture(picture != null ? picture.createIconRef() : 0);
 		}
@@ -86,7 +84,7 @@ public abstract class PictureItem extends TextItem {
 	}
 	
 	public void setRolloverPicture(Object obj) throws IOException {
-		if (isPictureType) {
+		if (text == null) {
 			rolloverPicture = Image.getImage(obj);
 			nativeSetRolloverPicture(rolloverPicture != null ? rolloverPicture.createIconRef() : 0);
 		}
@@ -97,7 +95,7 @@ public abstract class PictureItem extends TextItem {
 	}
 	
 	public void setSelectedPicture(Object obj) throws IOException {
-		if (isPictureType) {
+		if (text == null) {
 			selectedPicture = Image.getImage(obj);
 			nativeSetSelectedPicture(selectedPicture != null ? selectedPicture.createIconRef() : 0);
 		}
@@ -108,9 +106,9 @@ public abstract class PictureItem extends TextItem {
 	}
 
 	public void setDisabledPicturesetDisabledPicture(Object obj) throws IOException {
-		if (isPictureType) {
+		if (text == null) {
 			disabledPicture = Image.getImage(obj);
-			nativeSetDisabledPicture(disabledPicture != null ? disabledPicture.createIconRef() : 0);
+			nativeSetDisabledPicture(disabledPicture != null ? disabledPicture.getIconRef() : 0);
 		}
 	}
 }

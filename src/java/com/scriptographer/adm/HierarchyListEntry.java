@@ -28,8 +28,8 @@
  *
  * $RCSfile: HierarchyListEntry.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/07 13:35:07 $
  */
 
 package com.scriptographer.adm;
@@ -120,7 +120,7 @@ public class HierarchyListEntry extends ListEntry {
 	
 	public native void nativeSetFont(int font);
 	public native void nativeSetTextColor(int color);
-	public native void nativeSetBGColor(int color); // Drawer.COLOR_*
+	public native void nativeSetBackgroundColor(int color); // Drawer.COLOR_*
 	public native void nativeSetDividerColor(int color);
 
 	public void setFont(int font) {
@@ -141,18 +141,18 @@ public class HierarchyListEntry extends ListEntry {
 		return textColor;
 	}
 
-	public void setBGColor(int color) {
+	public void setBackgroundColor(int color) {
 		bgColor = color;
-		nativeSetBGColor(color);
+		nativeSetBackgroundColor(color);
 	}
 	
-	public int getBGColor() {
+	public int getBackgroundColor() {
 		return bgColor;
 	}
 
 	public void setDividerColor(int color) {
 		dividerColor = color;
-		nativeSetBGColor(color);
+		nativeSetDividerColor(color);
 	}
 	
 	public int getDividerColor() {

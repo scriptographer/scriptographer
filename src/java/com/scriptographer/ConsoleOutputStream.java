@@ -28,8 +28,8 @@
  *
  * $RCSfile: ConsoleOutputStream.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:19:24 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/07 13:36:51 $
  */
 
 package com.scriptographer;
@@ -40,7 +40,7 @@ import java.io.PrintStream;
 
 public class ConsoleOutputStream extends OutputStream {
 	private static ConsoleOutputStream console;
-	private boolean output = false;
+	private boolean enabled = false;
 	private static final String lineSeparator = System.getProperty("line.separator");
     private static final char newLine = lineSeparator.charAt(lineSeparator.length() - 1);
 
@@ -48,7 +48,8 @@ public class ConsoleOutputStream extends OutputStream {
 	private PrintStream stream;
 	private PrintStream stdOut;
 	private PrintStream stdErr;
-	
+	private ConsoleOutputWriter writer;
+
 	public ConsoleOutputStream() {
 		buffer = new StringBuffer();
 		stream = new PrintStream(this);
@@ -56,7 +57,7 @@ public class ConsoleOutputStream extends OutputStream {
 		stdErr = System.err;
 	}
 	
-	public static ConsoleOutputStream getConsole() {
+	public static ConsoleOutputStream getInstance() {
 		if (console == null)
 			console = new ConsoleOutputStream();
 		
@@ -73,6 +74,10 @@ public class ConsoleOutputStream extends OutputStream {
 		}
 	}
 
+	public void setWriter(ConsoleOutputWriter writer) {
+		this.writer = writer;
+	}
+
 	/**
 	 * Adds chars to the internal StringBuffer until a new line char is
 	 * detected, in which case the collected line is written to the
@@ -83,14 +88,15 @@ public class ConsoleOutputStream extends OutputStream {
 	public void write(int b) throws IOException {
 		char c = (char) b;
 		if (c == newLine) {
-			if (output) {
+			if (enabled) {
 				int pos = buffer.lastIndexOf(lineSeparator);
 				int sepLength = lineSeparator.length();
 				// if there is already a newline at the end of this line, remove it
 				// as writeLine adds it again...
 				if (pos > 0 && pos == buffer.length() - sepLength)
 					buffer.delete(pos, pos + sepLength);
-				writeLine(buffer.toString());
+				// writeLine(buffer.toString());
+				writer.println(buffer.toString());
 				buffer.setLength(0);
 			} else {
 				buffer.append(lineSeparator);
@@ -100,10 +106,10 @@ public class ConsoleOutputStream extends OutputStream {
 		}
 	}
 	
-	public static void enableOutput(boolean enable) {
-		ConsoleOutputStream console = getConsole();
-		console.output = enable;
-		if (enable && console.buffer.length() > 0) {
+	public static void enableOutput(boolean enabled) {
+		ConsoleOutputStream console = getInstance();
+		console.enabled = enabled && console.writer != null;
+		if (console.enabled && console.buffer.length() > 0) {
 			try {
 				// write a newline character so the buffer is flushed to the console
 				console.write(newLine);
@@ -112,9 +118,4 @@ public class ConsoleOutputStream extends OutputStream {
 			}
 		}
 	}
-
-	/**
-	 * @param string
-	 */
-	private native void writeLine(String string);
 }
