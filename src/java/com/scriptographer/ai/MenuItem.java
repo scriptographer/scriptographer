@@ -28,8 +28,8 @@
  * 
  * $RCSfile: MenuItem.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:01 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.ai;
@@ -57,7 +57,7 @@ public class MenuItem extends WrappableObject implements Unsealed {
 
 	private static HashMap items = new HashMap();
 
-	public MenuItem(String name, String text, MenuGroup group, int options) {
+	public MenuItem(MenuGroup group, String name, String text, int options) {
 		this.name = name;
 		this.text = text;
 		this.group = group;
@@ -84,8 +84,22 @@ public class MenuItem extends WrappableObject implements Unsealed {
 		putItem(this);
 	}
 
-	public MenuItem(String name, String text, MenuGroup group) {
-		this(name, text, group, OPTION_NONE);
+	public MenuItem(MenuGroup group, String name, String text) {
+		this(group, name, text, OPTION_NONE);
+	}
+
+	/**
+	 * Uses text for the item's name as well.
+	 */
+	public MenuItem(MenuGroup group, String text, int options) {
+		this (group, text, text, options);
+	}
+
+	/**
+	 * Uses text for the item's name as well.
+	 */
+	public MenuItem(MenuGroup group, String text) {
+		this (group, text, text, OPTION_NONE);
 	}
 
 	/**
@@ -100,15 +114,27 @@ public class MenuItem extends WrappableObject implements Unsealed {
 	 *
 	 * @see MenuItem(String, String, MenuGroup, int)
 	 */
-	public MenuItem(String name, String text, MenuItem parentItem, int options) {
-		this(name, text,
-				parentItem.subGroup == null ? parentItem.createSubGroup() : parentItem.subGroup,
-				options
-		);
+	public MenuItem(MenuItem parentItem, String name, String text, int options) {
+		// if a subGroup as created earlier, createSubGroup does not create a new one
+		this(parentItem.createSubGroup(), name, text, options);
 	}
 
-	public MenuItem(String name, String text, MenuItem parentItem) {
-		this(name, text, parentItem, OPTION_NONE);
+	public MenuItem(MenuItem parentItem, String name, String text) {
+		this(parentItem, name, text, OPTION_NONE);
+	}
+
+	/**
+	 * Uses text for the item's name as well.
+	 */
+	public MenuItem(MenuItem parentItem, String text, int options) {
+		this(parentItem, text, text, options);
+	}
+
+	/**
+	 * Uses text for the item's name as well.
+	 */
+	public MenuItem(MenuItem parentItem, String text) {
+		this(parentItem, text, text, OPTION_NONE);
 	}
 
 	public MenuGroup getSubGroup() {

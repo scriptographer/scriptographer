@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_List.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/07 13:42:29 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/10 22:48:43 $
  */
  
 #include "stdHeaders.h"
@@ -41,18 +41,12 @@
  
 // lists don't have init callbacks that automatically get called, but just for simetry let's use the same scheme:
 ASErr ASAPI callbackListInit(ADMListRef list) {
-	JNIEnv *env = gEngine->getEnv();
-	try {
-		jobject listObj = env->NewGlobalRef( env->NewObject(gEngine->cls_List, gEngine->cid_List, (jint)list));
-		sADMList->SetUserData(list, listObj);
-		sADMList->SetInitProc(list, callbackListEntryInit);
-		sADMList->SetDestroyProc(list, callbackListEntryDestroy);
-		sADMList->SetNotifyProc(list, callbackListEntryNotify);
-		/* these are activated in enable****Callback
-		sADMList->SetTrackProc(list, callbackListEntryTrack);
-		sADMList->SetDrawProc(list, callbackListEntryDraw);
-		*/
-	} EXCEPTION_CATCH_REPORT(env)
+	sADMList->SetDestroyProc(list, callbackListEntryDestroy);
+	sADMList->SetNotifyProc(list, callbackListEntryNotify);
+	/* these are activated in enable****Callback
+	sADMList->SetTrackProc(list, callbackListEntryTrack);
+	sADMList->SetDrawProc(list, callbackListEntryDraw);
+	*/
 	return kNoErr;
 }
 
@@ -61,6 +55,8 @@ void ASAPI callbackListDestroy(ADMListRef list) {
 	JNIEnv *env = gEngine->getEnv();
 	env->DeleteGlobalRef(listObj);
 	sADMList->SetUserData(list, NULL);
+	// clear the handle
+	gEngine->setIntField(env, listObj, gEngine->fid_List_listRef, 0);
 }
 
 #define DEFINE_METHOD(METHOD) \
@@ -71,6 +67,28 @@ void ASAPI callbackListDestroy(ADMListRef list) {
 			ADMListRef list = gEngine->getListRef(env, obj); \
 			METHOD(sADMList, sADMEntry, ADMEntryRef) \
 		}
+
+/*
+ * int nativeCreate(int boxItemRef)
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_List_nativeCreate(JNIEnv *env, jobject obj, jint boxItemRef) {
+	try {
+		ADMListRef list = sADMItem->GetList((ADMItemRef) boxItemRef);
+		if (list != NULL) {
+			// link it with the java object that calls this
+			sADMList->SetUserData(list, env->NewGlobalRef(obj));
+			return (jint) list;
+		} else {
+			ADMHierarchyListRef hierarchyList = sADMItem->GetHierarchyList((ADMItemRef) boxItemRef);
+			if (hierarchyList != NULL) {
+				// link it with the java object that calls this
+				sADMHierarchyList->SetUserData(hierarchyList, env->NewGlobalRef(obj));
+				return (jint) hierarchyList;
+			}
+		}
+	} EXCEPTION_CONVERT(env)
+	return 0;
+}
 
 /*
  * void nativeSetTrackCallbackEnabled(boolean enabled)
@@ -193,29 +211,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntryTextRect(JNIE
 	return NULL;
 }
 
-extern ASErr ASAPI callbackHierarchyListEntryInit(ADMListEntryRef entry);
-
-/*
- * com.scriptographer.adm.Entry createEntry(int index)
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_createEntry(JNIEnv *env, jobject obj, jint index) {
-	try {
-		// this includes a workaround for an ADM bug in which sometimes the init proc doesn't seem to be called 
-		// so if user data is still NULL, call it by hand:
-
-		#define CREATE_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
-			ENTRY_TYPE entry = LIST_SUITE->InsertEntry(list, index); \
-			if (ENTRY_SUITE->GetUserData(entry) == NULL) { \
-				ASErr ASAPI (*proc)(ENTRY_TYPE) = LIST_SUITE->GetInitProc(list); \
-				proc(entry); \
-			} \
-			return gEngine->getEntryObject(entry);
-
-		DEFINE_METHOD(CREATE_ENTRY)
-	} EXCEPTION_CONVERT(env)
-	return NULL;
-}
-
 /*
  * void removeEntry(int index)
  */
@@ -235,7 +230,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntry__I(JNIEnv *e
 	try {
 		#define GET_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			ENTRY_TYPE ent = LIST_SUITE->GetEntry(list, index); \
-			return gEngine->getEntryObject(ent);
+			return gEngine->getListEntryObject(ent);
 
 		DEFINE_METHOD(GET_ENTRY)
 	} EXCEPTION_CONVERT(env)
@@ -253,7 +248,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntry__Ljava_lang_
 
 		#define FIND_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			ENTRY_TYPE ent = LIST_SUITE->FindEntryW(list, chars); \
-			return gEngine->getEntryObject(ent);
+			return gEngine->getListEntryObject(ent);
 
 		DEFINE_METHOD(FIND_ENTRY)
 	} EXCEPTION_CONVERT(env)
@@ -274,7 +269,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getEntry__II(JNIEnv *
 
 		#define PICK_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			ENTRY_TYPE ent = LIST_SUITE->PickEntry(list, &pt); \
-			return gEngine->getEntryObject(ent);
+			return gEngine->getListEntryObject(ent);
 
 		DEFINE_METHOD(PICK_ENTRY)
 
@@ -289,7 +284,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_List_getActiveEntry(JNIEnv
 	try {
 		#define GET_ACTIVE_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			ENTRY_TYPE ent = LIST_SUITE->GetActiveEntry(list); \
-			return gEngine->getEntryObject(ent);
+			return gEngine->getListEntryObject(ent);
 
 		DEFINE_METHOD(GET_ACTIVE_ENTRY)
 	} EXCEPTION_CONVERT(env)
@@ -307,7 +302,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_List_getSelectedEntri
 			if (res == NULL) EXCEPTION_CHECK(env) \
 			for (int i = 0; i < length; i++) { \
 				ENTRY_TYPE ent = LIST_SUITE->IndexSelectedEntry(list, i); \
-				env->SetObjectArrayElement(res, i, gEngine->getEntryObject(ent)); \
+				env->SetObjectArrayElement(res, i, gEngine->getListEntryObject(ent)); \
 			} \
 			EXCEPTION_CHECK(env) \
 			return res;
@@ -328,7 +323,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_List_getEntries(JNIEn
 			if (res == NULL) EXCEPTION_CHECK(env) \
 			for (int i = 0; i < length; i++) { \
 				ENTRY_TYPE ent = LIST_SUITE->IndexEntry(list, i); \
-				jobject entry = gEngine->getEntryObject(ent); \
+				jobject entry = gEngine->getListEntryObject(ent); \
 				env->SetObjectArrayElement(res, i, entry); \
 			} \
 			EXCEPTION_CHECK(env) \

@@ -19,17 +19,19 @@ ASErr ASAPI callbackDialogInit(ADMDialogRef dialog) {
 	// resize handler:
 	ADMItemRef resizeItemRef = sADMDialog->GetItem(dialog, kADMResizeItemID);
 	if (resizeItemRef) sADMItem->SetNotifyProc(resizeItemRef, callbackDialogResize);
-	// then call the onCreate handler, in which more initialization can be done:
-	gEngine->callVoidMethodReport(NULL, obj, gEngine->mid_Dialog_onCreate);
+	// then call dialogInit, in which more initialization can be done:
+	gEngine->callVoidMethodReport(NULL, obj, gEngine->mid_Dialog_dialogInit);
 	return kNoErr;
 }
 
 void ASAPI callbackDialogDestroy(ADMDialogRef dialog) {
 	JNIEnv *env = gEngine->getEnv();
 	try {
-	//	dialogSavePreference(dialog, gPlugin->console.name);
+		// dialogSavePreference(dialog, gPlugin->console.name);
 		jobject obj = gEngine->getDialogObject(dialog);
-		gEngine->callVoidMethodReport(env, obj, gEngine->mid_CallbackHandler_onDestroy, NULL);
+		gEngine->callVoidMethodReport(env, obj, gEngine->mid_CallbackHandler_onDestroy);
+		// clear the handle:
+		gEngine->setIntField(env, obj, gEngine->fid_Dialog_dialogRef, 0);
 		env->DeleteGlobalRef(obj);
 	} EXCEPTION_CATCH_REPORT(env)
 }
@@ -636,4 +638,117 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setForcedOnScreen(JNIE
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		sADMDialog->SetForcedOnScreen(dialog, forcedOnScreen);
 	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * java.lang.String nativeFileDialog(java.lang.String message, java.lang.String filter, java.lang.String directory, java.lang.String filename, boolean open)
+ */
+JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_Dialog_nativeFileDialog(JNIEnv *env, jclass cls, jstring message, jstring filter, jstring directory, jstring filename, jboolean open) {
+	jstring ret = NULL;
+	try {
+		// Unicode seems to not work (at least not on Windows?)
+		// So use normal string instead...
+		// const jchar *msg = env->GetStringChars(message, NULL);
+		// if (msg == NULL) EXCEPTION_CHECK(env)
+		char *msg = gEngine->createCString(env, message);
+		char *fltr = gEngine->createCString(env, filter);
+		char *name = NULL;
+		SPPlatformFileSpecification dir, result;
+		bool hasDir = false;
+
+		if (directory != NULL) {
+			char *path = gEngine->createCString(env, directory);
+			hasDir = gPlugin->pathToFileSpec(path, &dir);
+			delete path;
+
+			if (filename != NULL)
+				name = gEngine->createCString(env, filename);
+		}
+
+		ADMPlatformFileTypesSpecification3 specs;
+		// this is needed in order to zero out the mac specific part on mac...
+		memset(&specs, 0, sizeof(ADMPlatformFileTypesSpecification3));
+		int len = strlen(fltr);
+		memcpy(specs.filter, fltr, MIN(kADMMaxFilterLength, len));
+
+		if (open ? 
+			sADMBasic->StandardGetFileDialog(msg, &specs, hasDir ? &dir : NULL, name, &result) :
+			sADMBasic->StandardPutFileDialog(msg, &specs, hasDir ? &dir : NULL, name, &result)) {
+			char path[kMaxPathLength];
+			gPlugin->fileSpecToPath(&result, path);
+			ret = gEngine->createJString(env, path);
+		}
+
+		// env->ReleaseStringChars(message, msg);
+		delete msg;
+		delete fltr;
+		if (name != NULL)
+			delete name;
+	} EXCEPTION_CONVERT(env)
+	return ret;
+}
+
+/*
+ * java.io.File chooseDirectory(java.lang.String message, java.io.File directory)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_chooseDirectory(JNIEnv *env, jclass cls, jstring message, jobject directory) {
+	jobject ret = NULL;
+	try {
+		// Unicode seems to not work (at least not on Windows?)
+		// So use normal string instead...
+		// const jchar *msg = env->GetStringChars(message, NULL);
+		// if (msg == NULL) EXCEPTION_CHECK(env)
+		char *msg = gEngine->createCString(env, message);
+
+		SPPlatformFileSpecification dir, result;
+		bool hasDir = false;
+
+		if (directory != NULL) {
+			char *path = gEngine->createCString(env, 
+				(jstring) gEngine->callObjectMethod(env, directory, gEngine->mid_File_getPath));
+			hasDir = gPlugin->pathToFileSpec(path, &dir);
+			delete path;
+		}
+
+		if (sADMBasic->StandardGetDirectoryDialog(msg, &dir, &result)) {
+			char path[kMaxPathLength];
+			gPlugin->fileSpecToPath(&result, path);
+			ret = gEngine->newObject(env, gEngine->cls_File, gEngine->cid_File, gEngine->createJString(env, path));
+		}
+
+		// env->ReleaseStringChars(message, msg);
+		delete msg;
+	} EXCEPTION_CONVERT(env)
+	return ret;
+}
+
+/*
+ * java.awt.Color chooseColor(java.awt.Point point, java.awt.Color color)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_chooseColor(JNIEnv *env, jclass cls, jobject point, jobject color) {
+	try {
+		ADMRGBColor col, result;
+		if (color != NULL) {
+			gEngine->convertColor(env, color, &col);
+		} else {
+			// white:
+			col.red = 65535;
+			col.green = 65535;
+			col.blue = 65535;
+		}
+		ADMPoint pt;
+		if (point != NULL) {
+			gEngine->convertPoint(env, point, &pt);
+		} else {
+			// center it on the main screen:
+			pt.h = 0;
+			pt.v = 0;
+			ADMRect rect;
+			sADMBasic->GetScreenDimensions(&pt, &rect);
+			pt.h = (rect.right - rect.left) / 2;
+			pt.v = (rect.bottom - rect.top) / 2;
+		}
+		sADMBasic->ChooseColor(pt, &col, &result);
+	} EXCEPTION_CONVERT(env)
+	return NULL;
 }

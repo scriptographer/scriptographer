@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/07 13:35:06 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -105,7 +105,7 @@ public abstract class Item extends CallbackHandler {
 	/**
 	 * used for storing the ADMItemRef in this object
 	 */
-	private int itemRef = 0;
+	protected int itemRef = 0;
 
 	protected Dialog dialog;
 
@@ -165,6 +165,11 @@ public abstract class Item extends CallbackHandler {
 		}
 		super.onResize(dx, dy);
 	}
+	
+	/*
+	 * Callback stuff:
+	 */
+	
 	/*
 	 * ADM stuff:
 	 */

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:35:06 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -43,6 +43,7 @@ import org.mozilla.javascript.Scriptable;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
 import java.util.ArrayList;
 
 public class Dialog extends CallbackHandler {
@@ -280,7 +281,145 @@ public class Dialog extends CallbackHandler {
 		}
 		return false;
 	}
+
+	/**
+	 * dialogInit is directly called from the dialog's initProc, and it calls the javascript
+	 * maxVersion of it which was passed to the Constructor. onCreate is the place for more
+	 * initialization and creation of interface elements, before the dialog is finally drawn
+	 */
+	protected void dialogInit() throws Exception {
+		// if length, bounds, or title was set in the constructor, finally set them here,
+		// otherwise sync them with the internal segmentValues:
+		if  (size != null) {
+			nativeSetSize(size.width, size.height);
+		} else {
+			size = nativeGetSize();
+		}
+		
+		if (bounds != null) {
+			nativeSetBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+		} else {
+			bounds = nativeGetBounds();
+		}
+		
+		if (title != null) {
+			nativeSetTitle(title);
+		} else {
+			title = nativeGetTitle();
+		}
+		
+		onCreate();
+		
+		// if a container was created, calculate the layout now:
+		if (container != null) {
+			setMinimumSize(container.getMinimumSize());
+			setSize(container.getPreferredSize());
+			// TODO: This seems to crash the whole thing:
+			// setMaximumSize(container.getMaximumSize());
+			container.doLayout();
+		}
+	}
 	
+	/*
+	 * Callback stuff
+	 */
+
+	protected void onCreate() throws Exception {
+		if (wrapper != null)
+			FunctionHelper.callFunction(wrapper, onCreate);
+	}
+
+	protected void onResize(int dx, int dy) throws Exception {
+		// if a contianer was created, the layout needs to be recalculated now:
+		if (container != null) {
+			container.updateSize(size);
+			container.doLayout();
+		}
+		super.onResize(dx, dy);
+	}
+
+	protected void onClose() throws Exception {
+		callFunction("onClose");
+	}
+	
+	protected void onZoom() throws Exception {
+		callFunction("onZoom");
+	}
+	
+	protected void onCycle() throws Exception {
+		callFunction("onCycle");
+	}
+	
+	protected void onCollapse() throws Exception {
+		callFunction("onCollapse");
+	}
+	
+	protected void onExpand() throws Exception {
+		callFunction("onExpand");
+	}
+	
+	protected void onContextMenuChange() throws Exception {
+		callFunction("onContextMenuChange");
+	}
+	
+	protected void onShow() throws Exception {
+		callFunction("onShow");
+	}
+	
+	protected void onHide() throws Exception {
+		callFunction("onHide");
+	}
+	
+	protected void onMove() throws Exception {
+		callFunction("onMove");
+	}
+	
+	protected void onActivate() throws Exception {
+		callFunction("onActivate");
+	}
+	
+	protected void onDeactivate() throws Exception {
+		callFunction("onDeactivate");
+	}
+	
+	protected void onNotify(int notifier, ListEntry entry) throws Exception {
+		switch (notifier) {
+			case Notifier.NOTIFIER_CLOSE_HIT:
+				onClose();
+				break;
+			case Notifier.NOTIFIER_ZOOM_HIT:
+				onZoom();
+				break;
+			case Notifier.NOTIFIER_CYCLE:
+				onCycle();
+				break;
+			case Notifier.NOTIFIER_COLLAPSE:
+				onCollapse();
+				break;
+			case Notifier.NOTIFIER_EXPAND:
+				onExpand();
+				break;
+			case Notifier.NOTIFIER_CONTEXT_MENU_CHANGED:
+				onContextMenuChange();
+				break;
+			case Notifier.NOTIFIER_WINDOW_SHOW:
+				onShow();
+				break;
+			case Notifier.NOTIFIER_WINDOW_HIDE:
+				onHide();
+				break;
+			case Notifier.NOTIFIER_WINDOW_DRAG_MOVED:
+				onMove();
+				break;
+			case Notifier.NOTIFIER_WINDOW_ACTIVATE:
+				onActivate();
+				break;
+			case Notifier.NOTIFIER_WINDOW_DEACTIVATE:
+				onDeactivate();
+				break;
+		}
+	}
+
 	/*
 	 * AWT LayoutManager integration:
 	 */
@@ -318,53 +457,117 @@ public class Dialog extends CallbackHandler {
 	public void doLayout() {
 		getContainer().doLayout();
 	}
-
-	/**
-	 * onCreate is directly called from the dialog's initProc, and it calls the javascript
-	 * maxVersion of it which was passed to the Constructor. onCreate is the place for more
-	 * initialization and creation of interface elements, before the dialog is finally drawn
+	
+	/*
+	 * Support for various standard dialogs: 
 	 */
-	protected void onCreate() throws Exception {
-		// if length, bounds, or title was set in the constructor, finally set them here,
-		// otherwise sync them with the internal segmentValues:
-		if  (size != null) {
-			nativeSetSize(size.width, size.height);
+	
+	private static File fileDialog(String message, String[] filters, File selectedFile, boolean open) {
+		String filter;
+		// Converts the filters to one long string, seperated by \0
+		// as needed by the native function.
+		if (filters == null) {
+			filter = "";
 		} else {
-			size = nativeGetSize();
+			StringBuffer buf = new StringBuffer();
+			for (int i = 0; i < filters.length; i++) {
+				buf.append(filters[i]);
+				buf.append('\0');
+			}
+			filter = buf.toString();
 		}
-		
-		if (bounds != null) {
-			nativeSetBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+		String directory, filename;
+		if (selectedFile == null) {
+			directory = filename = null;
+		} else if (selectedFile.isDirectory()) {
+			directory = selectedFile.getPath();
+			filename = "";
 		} else {
-			bounds = nativeGetBounds();
+			directory = selectedFile.getParent();
+			filename = selectedFile.getName();
 		}
-		
-		if (title != null) {
-			nativeSetTitle(title);
-		} else {
-			title = nativeGetTitle();
-		}
-		
-		if (wrapper != null)
-			FunctionHelper.callFunction(wrapper, onCreate);
-		
-		// if a container was created, calculate the layout now:
-		if (container != null) {
-			setMinimumSize(container.getMinimumSize());
-			setSize(container.getPreferredSize());
-			// TODO: This seems to crash the whole thing:
-			// setMaximumSize(container.getMaximumSize());
-			container.doLayout();
-		}
+		String path = nativeFileDialog(message, filter, directory, filename, open);
+		return path != null ? new File(path) : null;
 	}
 
-	protected void onResize(int dx, int dy) throws Exception {
-		// if a contianer was created, the layout needs to be recalculated now:
-		if (container != null) {
-			container.updateSize(size);
-			container.doLayout();
-		}
-		super.onResize(dx, dy);
+	private static native String nativeFileDialog(String message, String filter, String directory, String filename, boolean open);
+	
+	/**
+	 * 
+	 * @param message
+	 * @param filters
+	 * @param selectedFile
+	 * @return
+	 */
+	public static File fileOpen(String message, String[] filters, File selectedFile) {
+		return fileDialog(message, filters, selectedFile, true);
+	}
+
+	public static File fileOpen(String message, String[] filters) {
+		return fileOpen(message, filters, null);
+	}
+
+	public static File fileOpen(String message) {
+		return fileOpen(message, null, null);
+	}
+
+	public static File fileOpen() {
+		return fileOpen(null, null, null);
+	}
+
+	/**
+	 * 
+	 * @param message
+	 * @param filters
+	 * @param selectedFile
+	 * @return
+	 */
+	public static File fileSave(String message, String[] filters, File selectedFile) {
+		return fileDialog(message, filters, selectedFile, false);
+	}
+
+	public static File fileSave(String message, String[] filters) {
+		return fileSave(message, filters, null);
+	}
+
+	public static File fileSave(String message) {
+		return fileSave(message, null, null);
+	}
+
+	public static File fileSave() {
+		return fileSave(null, null, null);
+	}
+
+	/**
+	 * 
+	 * @param message
+	 * @param selectedDir
+	 * @return
+	 */
+	public static native File chooseDirectory(String message, File selectedDir);
+
+	public static File chooseDirectory(String message) {
+		return chooseDirectory(message, null);
+	}
+
+	public static File chooseDirectory() {
+		return chooseDirectory(null, null);
+	}
+	
+	/**
+	 * 
+	 * @param where
+	 * @param color
+	 * @return
+	 */
+	public static native Color chooseColor(Point where, Color color);
+
+	public static Color chooseColor(Color color) {
+		return chooseColor(null, color);
+	}
+	
+	public static Color chooseColor() {
+		return chooseColor(null, null);
 	}
 
 	/*

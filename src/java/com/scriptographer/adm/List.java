@@ -28,8 +28,8 @@
  *
  * $RCSfile: List.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:35:07 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -38,15 +38,98 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.*;
 
+import org.mozilla.javascript.Function;
+
+import com.scriptographer.js.FunctionHelper;
+
 // TODO: subclass AbstractList and make this a normal list!!!
 // how to get around the CallbackHanlder subclassing is not clear yet
 public class List extends CallbackHandler {
-	private int listRef = 0;
+	protected int listRef = 0;
 
 	private int bgColor = Drawer.COLOR_BACKGROUND;
 
-	protected List(int listRef) {
-		this.listRef = listRef;
+	public List(ListBox box) {
+		this();
+		if (box.list != null)
+			throw new RuntimeException("The ListBox already has a List instance.");
+		listRef = nativeCreate(box.itemRef);
+		box.list = this;
+	}
+	
+	protected List() {
+	}
+	
+	private native int nativeCreate(int boxItemRef);
+	
+	/*
+	 * Callback stuff
+	 */
+
+	protected Function onDrawEntry = null;
+	
+	public void setOnDrawEntry(Function func) {
+		setDrawCallbackEnabled(func != null);
+		onDrawEntry = func;
+	}
+
+	public Function getOnDrawEntry() {
+		return onDrawEntry;
+	}
+	
+	protected void onDrawEntry(Drawer drawer, ListEntry entry) throws Exception {
+		entry.onDraw(drawer);
+		if (wrapper != null && onDrawEntry != null) {
+			twoArgs[0] = drawer;
+			twoArgs[1] = entry;
+			FunctionHelper.callFunction(wrapper, onDrawEntry, twoArgs);
+		}
+	}
+
+	protected Function onTrackEntry = null;
+
+	public void setOnTrackEntry(Function func) {
+		setTrackCallbackEnabled(func != null);
+		onTrackEntry = func;
+	}
+
+	public Function getOnTrackEntry() {
+		return onTrackEntry;
+	}
+	
+	protected void onTrackEntry(Tracker tracker, ListEntry entry) throws Exception {
+		entry.onTrack(tracker);
+		if (wrapper != null && onTrackEntry != null) {
+			twoArgs[0] = tracker;
+			twoArgs[1] = entry;
+			FunctionHelper.callFunction(wrapper, onTrackEntry, twoArgs);
+		}
+	}
+
+	protected void onDestroyEntry(ListEntry entry) throws Exception {
+		entry.onDestroy();
+		callFunction("onDestroyEntry", entry);
+	}
+
+	protected void onChangeEntry(ListEntry entry) throws Exception {
+		entry.onChange();
+		callFunction("onChangeEntry", entry);
+	}
+	
+	protected void onChangeEntryText(ListEntry entry) throws Exception {
+		entry.onChangeText();
+		callFunction("onChangeEntryText", entry);
+	}
+	
+	protected void onNotify(int notifier, ListEntry entry) throws Exception {
+		switch (notifier) {
+			case Notifier.NOTIFIER_USER_CHANGED:
+				onChangeEntry(entry);
+				break;
+			case Notifier.NOTIFIER_ENTRY_TEXT_CHANGED:
+				onChangeEntryText(entry);
+				break;
+		}
 	}
 
 	/*
@@ -116,7 +199,6 @@ public class List extends CallbackHandler {
 	 */
 
 	// TODO: maybe this fits in the List interface???
-	public native ListEntry createEntry(int index);
 	public native void removeEntry(int index);
 	
 	public native ListEntry getEntry(int index);
@@ -132,10 +214,6 @@ public class List extends CallbackHandler {
 	public native ListEntry[] getSelectedEntries();
 	
 	public native int getNumEntries();
-
-	public ListEntry createEntry() {
-		return createEntry(getNumEntries());
-	}
 
 	/*
 	 * item action mask

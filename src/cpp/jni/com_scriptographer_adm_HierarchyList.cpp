@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_HierarchyList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:51:40 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/10 22:48:43 $
  */
  
 #include "stdHeaders.h"
@@ -41,18 +41,12 @@
  
 // lists don't have init callbacks that automatically get called, but just for simetry let's use the same scheme:
 ASErr ASAPI callbackHierarchyListInit(ADMHierarchyListRef list) {
-	JNIEnv *env = gEngine->getEnv();
-	try {
-		jobject listObj = env->NewGlobalRef( env->NewObject(gEngine->cls_HierarchyList, gEngine->cid_HierarchyList, (jint)list));
-		sADMHierarchyList->SetUserData(list, listObj);
-		sADMHierarchyList->SetInitProc(list, callbackHierarchyListEntryInit);
-		sADMHierarchyList->SetDestroyProc(list, callbackHierarchyListEntryDestroy);
-		sADMHierarchyList->SetNotifyProc(list, callbackHierarchyListEntryNotify);
-		/* these are activated in enable****Callback
-		sADMHierarchyList->SetTrackProc(list, callbackHierarchyListEntryTrack);
-		sADMHierarchyList->SetDrawProc(list, callbackHierarchyListEntryDraw);
-		*/
-	} EXCEPTION_CATCH_REPORT(env)
+	sADMHierarchyList->SetDestroyProc(list, callbackHierarchyListEntryDestroy);
+	sADMHierarchyList->SetNotifyProc(list, callbackHierarchyListEntryNotify);
+	/* these are activated in enable****Callback
+	sADMHierarchyList->SetTrackProc(list, callbackHierarchyListEntryTrack);
+	sADMHierarchyList->SetDrawProc(list, callbackHierarchyListEntryDraw);
+	*/
 	return kNoErr;
 }
 
@@ -61,6 +55,37 @@ void ASAPI callbackHierarchyListDestroy(ADMHierarchyListRef list) {
 	JNIEnv *env = gEngine->getEnv();
 	env->DeleteGlobalRef(listObj);
 	sADMHierarchyList->SetUserData(list, NULL);
+	// clear the handle
+	gEngine->setIntField(env, listObj, gEngine->fid_List_listRef, 0);
+}
+
+/*
+ * int nativeCreateChildList(int entryRef)
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_nativeCreateChildList(JNIEnv *env, jobject obj, jint entryRef) {
+	try {
+		ADMHierarchyListRef list = sADMListEntry->CreateChildList((ADMListEntryRef) entryRef);
+		// link it with the java object that calls this
+		sADMHierarchyList->SetUserData(list, env->NewGlobalRef(obj));
+		callbackHierarchyListInit(list);
+		return (jint) list;
+	} EXCEPTION_CONVERT(env)
+	return 0;
+}
+
+/*
+ * com.scriptographer.adm.HierarchyListEntry nativeRemoveList(int arg1)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_nativeRemoveList(JNIEnv *env, jobject obj, jint arg1) {
+	try {
+		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMListEntryRef entry = sADMHierarchyList->GetParentEntry(list);
+		if (entry != NULL) {
+			sADMListEntry->DeleteChildList(entry);
+			return gEngine->getListEntryObject(entry);
+		}
+	} EXCEPTION_CONVERT(env)
+	return NULL;
 }
 
 /*
@@ -149,7 +174,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getLeafEntry
 		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
 		ADMListEntryRef ent = sADMHierarchyList->PickLeafEntry(list, &pt);
-		return gEngine->getEntryObject(ent);
+		return gEngine->getListEntryObject(ent);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }
@@ -161,7 +186,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getActiveLea
 	try {
 		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
 		ADMListEntryRef ent = sADMHierarchyList->GetActiveLeafEntry(list);
-		return gEngine->getEntryObject(ent);
+		return gEngine->getListEntryObject(ent);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }
@@ -174,7 +199,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getActiveLea
 		if (res == NULL) EXCEPTION_CHECK(env) \
 		for (int i = 0; i < length; i++) { \
 			ADMListEntryRef ent = sADMHierarchyList->INDEX_ENTRY(list, i); \
-			env->SetObjectArrayElement(res, i, gEngine->getEntryObject(ent)); \
+			env->SetObjectArrayElement(res, i, gEngine->getListEntryObject(ent)); \
 		} \
 		EXCEPTION_CHECK(env) \
 		return res; \
@@ -203,7 +228,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getParentEnt
 		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
 		ADMListEntryRef ent = sADMHierarchyList->GetParentEntry(list);
 		if (ent != NULL)
-			return gEngine->getEntryObject(ent);
+			return gEngine->getListEntryObject(ent);
 		else
 			return NULL;
 	} EXCEPTION_CONVERT(env)
@@ -453,7 +478,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_insertEntry(
 		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
 		ADMListEntryRef ent = gEngine->getHierarchyListEntryRef(env, entry);
 		ent = sADMHierarchyList->InsertGivenEntry(list, ent, index);
-		return gEngine->getEntryObject(ent); 
+		return gEngine->getListEntryObject(ent); 
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }
@@ -465,7 +490,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_unlinkEntry(
 	try {
 		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
 		ADMListEntryRef ent = sADMHierarchyList->UnlinkEntry(list, index);
-		return gEngine->getEntryObject(ent); 
+		return gEngine->getListEntryObject(ent); 
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }

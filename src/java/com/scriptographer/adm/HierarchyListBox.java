@@ -28,8 +28,8 @@
  *
  * $RCSfile: HierarchyListBox.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -52,5 +52,11 @@ public class HierarchyListBox extends ListBox {
 
 	public HierarchyListBox(Dialog dialog, Rectangle2D bounds) {
 		this(dialog, bounds, 0, 0);
+	}
+
+	public List getList() {
+		if (list == null)
+			list = new HierarchyList(this);
+		return list;
 	}
 }

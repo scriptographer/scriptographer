@@ -26,8 +26,8 @@
  *
  * $RCSfile: admGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:14:13 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 ASErr ASAPI callbackDialogInit(ADMDialogRef dialog);
@@ -54,13 +54,11 @@ void ASAPI callbackHierarchyListDestroy(ADMHierarchyListRef list);
 ASErr ASAPI callbackHierarchyListInit(ADMHierarchyListRef lst);
 void ASAPI callbackHierarchyListDestroy(ADMHierarchyListRef lst);
 
-ASErr ASAPI callbackListEntryInit(ADMEntryRef entry);
 void ASAPI callbackListEntryDestroy(ADMEntryRef entry);
 void ASAPI callbackListEntryNotify(ADMEntryRef entry, ADMNotifierRef notifier);
 ASBoolean ASAPI callbackListEntryTrack(ADMEntryRef entry, ADMTrackerRef tracker);
 void ASAPI callbackListEntryDraw(ADMEntryRef entry, ADMDrawerRef drawer);
 
-ASErr ASAPI callbackHierarchyListEntryInit(ADMListEntryRef entry);
 void ASAPI callbackHierarchyListEntryDestroy(ADMListEntryRef entry);
 void ASAPI callbackHierarchyListEntryNotify(ADMListEntryRef entry, ADMNotifierRef notifier);
 ASBoolean ASAPI callbackHierarchyListEntryTrack(ADMListEntryRef entry, ADMTrackerRef tracker);

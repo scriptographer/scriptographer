@@ -26,8 +26,8 @@
  *
  * $RCSfile: Main.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/10 22:48:43 $
  */
  
 #include "stdHeaders.h"
@@ -68,23 +68,21 @@ DLLExport SPAPI SPErr PluginMain(char *caller, char *selector, void *message) {
 
 		if (plugin->isUnloadMsg(caller, selector))
 			shouldDelete = true;
-	}
-
-	catch (SPErr inError) {
+	} catch (SPErr inError) {
 		error = inError;
 
-		if (plugin != NULL && ( plugin->isUnloadMsg(caller, selector) || 
-		     					plugin->isReloadMsg(caller, selector) ))
+		if (plugin != NULL && (plugin->isUnloadMsg(caller, selector) || 
+		     				   plugin->isReloadMsg(caller, selector)))
 			shouldDelete = true;
-	}
-
-	catch (...) {
+	} catch (...) {
 		error = kBadParameterErr;
 
-		if (plugin != NULL && ( plugin->isUnloadMsg(caller, selector) || 
-		     					plugin->isReloadMsg(caller, selector) ))
+		if (plugin != NULL && (plugin->isUnloadMsg(caller, selector) || 
+		     				   plugin->isReloadMsg(caller, selector)))
 			shouldDelete = true;
 	}
+
+	shouldDelete = false;
 
 	if (shouldDelete) {
 		delete plugin;

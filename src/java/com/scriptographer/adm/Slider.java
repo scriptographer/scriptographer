@@ -28,15 +28,15 @@
  *
  * $RCSfile: Slider.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
 
 import java.awt.geom.Rectangle2D;
 
-public class Slider extends Item {
+public class Slider extends ValueItem {
 
 	// ADMSliderStyle
 	public final static int

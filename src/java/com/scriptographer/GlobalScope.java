@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalScope.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/07 13:36:38 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer;
@@ -93,8 +93,12 @@ public class GlobalScope extends ImporterTopLevel {
 		new ExtendedJavaClass(this, Dial.class);
 		new ExtendedJavaClass(this, ChasingArrows.class);
 
+		// layout specific classes
 		new ExtendedJavaClass(this, ItemContainer.class);
 		new ExtendedJavaClass(this, Spacer.class);
+		new ExtendedJavaClass(this, TableLayout.class);
+		new ExtendedJavaClass(this, java.awt.FlowLayout.class);
+		new ExtendedJavaClass(this, java.awt.BorderLayout.class);
 
 		// AI
 		new ExtendedJavaClass(this, Rectangle.class);
@@ -194,7 +198,16 @@ public class GlobalScope extends ImporterTopLevel {
 	}
 
 	/**
-	 * Loads and executes a set of JavaScript source files in a newly created scope.
+	 * Evaluates the given javascript string in the current scope.
+	 * Similar to eval(), but it allows the use of another object than
+	 * the global scope:
+	 * e.g.:
+	 * <code>
+	 * var obj = {
+	 *     eval: evaluate
+	 * };
+	 * obj.eval("print(this);");
+	 * </code>
 	 */
 	public static void evaluate(Context cx, Scriptable thisObj, Object[] args,
 		Function funObj) throws Exception {

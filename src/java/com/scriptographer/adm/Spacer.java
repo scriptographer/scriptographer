@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Spacer.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/07 13:35:06 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -73,5 +73,9 @@ public class Spacer extends Item {
 
 	public Point getLocation() {
 		return new Point(bounds.x, bounds.y);
+	}
+
+	protected void onNotify(int notifier, ListEntry entry) throws Exception {
+		// will never get any!
 	}
 }

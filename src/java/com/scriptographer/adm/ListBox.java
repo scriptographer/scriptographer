@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListBox.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -61,16 +61,14 @@ public class ListBox extends Item {
 	public ListBox(Dialog dialog, Rectangle2D bounds) {
 		this(dialog, bounds, 0);
 	}
-	/*
-	 * item information accessors
-	 * 
-	 */
-	
-	private native List nativeGetList();
-	
+
+	protected void onNotify(int notifier, ListEntry entry) throws Exception {
+		// TODO: could there be some notifiactions for Frame?
+	}
+
 	public List getList() {
 		if (list == null)
-			list = nativeGetList();
+			list = new List(this);
 		return list;
 	}
 }

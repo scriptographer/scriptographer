@@ -28,8 +28,8 @@
  *
  * $RCSfile: Tracker.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -265,7 +265,12 @@ public class Tracker {
 		this.virtualKey = virtualKey;
 		this.character = character;
 		this.time = time;
-		listener.onTrack(this, entry);
+		// if entry is set, this must be a List, call onTrackEntry
+		if (entry != null) {
+			((List) listener).onTrackEntry(this, entry);
+		} else {
+			listener.onTrack(this);
+		}
 	}
 	
 	public  Point getPoint() {

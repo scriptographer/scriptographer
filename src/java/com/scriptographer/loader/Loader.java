@@ -28,8 +28,8 @@
  *
  * $RCSfile: Loader.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:29:10 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.loader;
@@ -46,14 +46,16 @@ public class Loader {
 
 	public static void init(String dir) throws MalformedURLException {
 		homeDir = dir;
+		File home = new File(dir);
 		// filter out all the files in lib that are not jar or zip files and create a
 		// URL array of it:
-		File libDir = new File(homeDir + "/lib/");
-		File[] libs = libDir.listFiles(new FilenameFilter() {
+		File libDir = new File(home, "lib");
+		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return name.endsWith(".jar") || name.endsWith(".zip");
 			}
-		});
+		};
+		File[] libs = libDir.listFiles(filter);
 		// add one more for the classes diretory:
 		URL[] urls = new URL[libs.length + 1];
 		// now add the urls from above
@@ -61,7 +63,7 @@ public class Loader {
 			urls[i] = libs[i].toURL();
 		}
 		// and the classes
-		urls[libs.length] = new URL("file://" + homeDir + "/classes/");
+		urls[libs.length] = new File(home, "classes").toURL();
 
 		loader = new URLClassLoader(urls);
 		// set the new class loader as context class loader

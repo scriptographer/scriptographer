@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/07 13:40:32 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/10 22:48:42 $
  */
  
 #include "stdHeaders.h"
@@ -55,14 +55,6 @@ Plugin::Plugin(SPPluginRef pluginRef) {
 }
 
 Plugin::~Plugin() {
-}
-
-void Plugin::reloadEngine() {
-	char *errors = fEngine->reloadEngine();
-	if (errors != NULL) {
-		reportError(errors);
-		delete errors;
-	}
 }
 
 // Plugin:
@@ -122,11 +114,9 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 	
 	error = sSPPlugins->SetPluginName(fPluginRef, fPluginName);
 	if (error) return error;
-	
-	char notifierName[kMaxStringLength];
 
-	sprintf(notifierName, "%s App Started Notifier", fPluginName);
-	error = sAINotifier->AddNotifier(fPluginRef, notifierName, kAIApplicationStartedNotifier, &fAppStartedNotifier);
+	// add app started notifier
+	error = sAINotifier->AddNotifier(fPluginRef, "Scriptographer Started", kAIApplicationStartedNotifier, &fAppStartedNotifier);
 	if (error) return error;
 
 	// set gPlugin:
@@ -155,14 +145,6 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 	// for gEngine:
 	setGlobal(true);
 
-	// add the menu items
-	AIPlatformAddMenuItemData menuData;
-	unsigned char pstr[32]; // a buffer for the pstring conversions:
-	menuData.groupName = kOtherPalettesMenuGroup;
-	menuData.itemText = toPascal("Reload Scriptographer", pstr);
-	error = sAIMenu->AddMenuItem(fPluginRef, fPluginName, &menuData, 0, &fReload);
-	if (error) return error;
-	
 	// add the two script tools:
 	char *title0 = "Scriptographer Tool 1";
 	char *title1 = "Scriptographer Tool 2";
@@ -172,9 +154,16 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 	error = createTool(title1, kTool2IconID, kTool2CursorID, kToolWantsToTrackCursorOption | kToolWantsBufferedDraggingOption, title0);
 	if (error) return error;
 
+	setGlobal(true);
+
 	fLoaded = true;
 
 	return error;
+}
+
+ASErr ASAPI dialogHide(ADMDialogRef dialog) {
+	sADMDialog->Show(dialog, false);
+	return kNoErr;
 }
 
 ASErr Plugin::postStartupPlugin() {
@@ -187,30 +176,17 @@ ASErr Plugin::postStartupPlugin() {
 	
 	fEngine->initEngine();
 
+	// this seems to be needed to make the plugin persistant. otherwise it would be
+	// unloaded immediatelly on windows (?):create a dummy dialog that is hidden.
+	sADMDialog->Create(fPluginRef, "Scriptographer", kEmptyDialogID, kADMFloatingDialogStyle, dialogHide, NULL, 0);
+
 	return error;
 }
 
 ASErr Plugin::shutdownPlugin(SPInterfaceMessage *message) {
 	delete fEngine;
+	fEngine = NULL;
 	unloadPlugin(NULL);
-	return kNoErr;
-}
-
-ASErr Plugin::goMenuItem(AIMenuMessage *message) {
-	// TODO: as soon as the native dialogs are gone, call gEngine directly from handleMessage
-	if (message->menuItem == fReload) gEngine->reloadEngine();
-	else return gEngine->menuItemExecute(message);
-	return kNoErr;
-}
-
-ASErr Plugin::updateMenuItem(AIMenuMessage *message) {
-	// TODO: as soon as the native dialogs are gone, call gEngine directly from handleMessage
-	if (message->menuItem == fReload) {
-	} else {
-		long inArtwork, isSelected, isTrue;
-		sAIMenu->GetUpdateFlags(&inArtwork, &isSelected, &isTrue);
-		return gEngine->menuItemUpdate(message, inArtwork, isSelected, isTrue);
-	}
 	return kNoErr;
 }
 
@@ -435,9 +411,11 @@ ASErr Plugin::handleMessage(char *caller, char *selector, void *message) {
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIMenu)) {
 		if (sSPBasic->IsEqual( selector, kSelectorAIGoMenuItem )) {
-			error = goMenuItem((AIMenuMessage *)message);
+			error = gEngine->menuItemExecute((AIMenuMessage *) message);
 		} else if (sSPBasic->IsEqual( selector, kSelectorAIUpdateMenuItem )) {
-			error = updateMenuItem((AIMenuMessage *)message);
+			long inArtwork, isSelected, isTrue;
+			sAIMenu->GetUpdateFlags(&inArtwork, &isSelected, &isTrue);
+			error = gEngine->menuItemUpdate((AIMenuMessage *) message, inArtwork, isSelected, isTrue);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIFilter)) {
 		if (sSPBasic->IsEqual( selector, kSelectorAIGetFilterParameters )) {

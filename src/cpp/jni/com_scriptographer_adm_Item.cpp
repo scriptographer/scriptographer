@@ -35,7 +35,9 @@ void ASAPI callbackItemDestroy(ADMItemRef item) {
 	JNIEnv *env = gEngine->getEnv();
 	try {
 		jobject obj = gEngine->getItemObject(item);
-		gEngine->callVoidMethodReport(env, obj, gEngine->mid_CallbackHandler_onDestroy, NULL);
+		gEngine->callVoidMethodReport(env, obj, gEngine->mid_CallbackHandler_onDestroy);
+		// clear the handle:
+		gEngine->setIntField(env, obj, gEngine->fid_Item_itemRef, 0);
 
 		// is this a list or hierarchy list?
 		// if so, call its destroy function, as this is not automatically done:

@@ -28,8 +28,8 @@
  *
  * $RCSfile: HierarchyList.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:35:07 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -41,26 +41,42 @@ import java.awt.*;
 import org.mozilla.javascript.Scriptable;
 
 public class HierarchyList extends List {
-	private HierarchyList parent;
-
-	protected HierarchyList(int listRef) {
-		super(listRef);
-		// determine the parent bezierList:
-		HierarchyListEntry parentEntry = (HierarchyListEntry) getParentEntry();
-		if (parentEntry != null) {
-			parent = (HierarchyList) parentEntry.getList();
-			// pass through the handlers automatically. of desired otherwise, they have to be written over aftewards:
-			this.setOnTrack(parent.getOnTrack());
-			this.setOnDraw(parent.getOnDraw());
-		} else {
-			parent = null;
-		}
+	private HierarchyList parentList;
+	
+	public HierarchyList(HierarchyListBox box) {
+		super(box);
 	}
+	
+	public HierarchyList(HierarchyListEntry entry) {
+		super();
+		listRef = nativeCreateChildList(entry.entryRef);
+		// determine the parent hierarchyList:
+		parentList = (HierarchyList) entry.getList();
+		// pass through the handlers automatically.
+		// if desired otherwise, they need to be written over aftewards:
+		this.setTrackCallbackEnabled(parentList.isTrackCallbackEnabled());
+		this.setDrawCallbackEnabled(parentList.isDrawCallbackEnabled());
+		this.onDrawEntry = parentList.onDrawEntry;
+		this.onTrackEntry = parentList.onTrackEntry;
+	}
+	
+	public boolean remove() {
+		HierarchyListEntry parentEntry = nativeRemoveList(listRef);
+		if (parentEntry != null) {
+			parentEntry.childList = null;
+			listRef = 0;
+			return true;
+		}
+		return false;
+	}
+	
+	private native int nativeCreateChildList(int entryRef);
+	private native HierarchyListEntry nativeRemoveList(int listRef);
 
 	public void setWrapper(Scriptable wrapper) {
 		super.setWrapper(wrapper);
-		if (parent != null) {
-			Scriptable parentWrapper = parent.getWrapper();
+		if (parentList != null) {
+			Scriptable parentWrapper = parentList.getWrapper();
 			if (parentWrapper != null) {
 				// simply set parentWrapper as the prototype of this object the handler calls will be delegated:
 				wrapper.setPrototype(parentWrapper);

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Image.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:35:06 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -145,12 +145,17 @@ public class Image {
 		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(file.getPath())), file));
 	}
 
+	public Image(ImageProducer producer) throws IOException {
+		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(producer)), producer));
+	}
+
 	public Image(URL url) throws IOException {
 //		this(checkImage(ImageIO.read(url), url));
 		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(url)), url));
 	}
 
 	public Image(String str) throws IOException {
+//		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(str)), str));
 		this(getURL(str));
 	}
 
@@ -180,7 +185,8 @@ public class Image {
 	        url = new URL(str);
 	    } catch (MalformedURLException e) {
 	        // try the local file now:
-			url = new URL("file://" + str);
+	    	// url = new URL("file://" + str);
+	    	url = new File(str).toURL();
 		}
 		return url;
 	}

@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.h,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/07 13:40:32 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 #define kMaxStringLength 256
@@ -55,7 +55,6 @@ protected:
 	AINotifierHandle fAppStartedNotifier;
 	ASBoolean fLoaded;
 	ScriptographerEngine *fEngine;
-	AIMenuItemHandle fReload;
 
 public:
 	Plugin(SPPluginRef pluginRef);
@@ -74,8 +73,6 @@ public:
 	bool pathToFileSpec(char *path, SPPlatformFileSpecification *fileSpec);
 	
 	ASErr createTool(char *title, int iconID, int cursorID, long options, char *sameGroupTool = NULL, char *sameToolsetTool = NULL);
-	
-	void reloadEngine();
 
 	ASErr lockPlugin(ASBoolean lock);
 	ASBoolean isReloadMsg(char *caller, char *selector);
@@ -112,10 +109,6 @@ public:
 	ASErr notify(AINotifierMessage *message) {
 		return kNoErr;
 	}
-
-	ASErr goMenuItem(AIMenuMessage *message);
-
-	ASErr updateMenuItem(AIMenuMessage *message);
 
 	ASErr getFilterParameters(AIFilterMessage *message) {
 		return kUnhandledMsgErr;

@@ -28,8 +28,8 @@
  *
  * $RCSfile: CallbackHandler.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:35:07 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -53,13 +53,13 @@ public abstract class CallbackHandler extends WrappableObject implements Unseale
 	private Tracker tracker = new Tracker();
  	private Drawer drawer = new Drawer();
 	
-	private Function onTrack = null;
-	private Function onDraw = null;
-	private Function onResize = null;
+ 	protected Function onTrack = null;
+	protected Function onDraw = null;
+	protected Function onResize = null;
 	
-	private Object[] zeroArgs = new Object[0];
-	private Object[] oneArg = new Object[1];
-	private Object[] twoArgs = new Object[2];
+	protected static Object[] zeroArgs = new Object[0];
+	protected Object[] oneArg = new Object[1];
+	protected Object[] twoArgs = new Object[2];
 
 	/*
 	 * Use an actiavtion mechanism for the expensive callback routines (the ones that
@@ -94,7 +94,7 @@ public abstract class CallbackHandler extends WrappableObject implements Unseale
 	}
 
 	public void setOnTrack(Function func) {
-		nativeSetTrackCallbackEnabled(func != null);
+		setTrackCallbackEnabled(func != null);
 		onTrack = func;
 	}
 
@@ -102,23 +102,15 @@ public abstract class CallbackHandler extends WrappableObject implements Unseale
 		return onTrack;
 	}
 
-	protected void onTrack(Tracker tracker, ListEntry entry) throws Exception {
+	protected void onTrack(Tracker tracker) throws Exception {
 		if (wrapper != null && onTrack != null) {
-			Object[] params;
-			if (entry == null) {
-				oneArg[0] = tracker;
-				params = oneArg;
-			} else {
-				twoArgs[0] = tracker;
-				twoArgs[1] = entry;
-				params = twoArgs;
-			}
-			FunctionHelper.callFunction(wrapper, onTrack, params);
+			oneArg[0] = tracker;
+			FunctionHelper.callFunction(wrapper, onTrack, oneArg);
 		}
 	}
 
 	public void setOnDraw(Function func) {
-		nativeSetDrawCallbackEnabled(func != null);
+		setDrawCallbackEnabled(func != null);
 		onDraw = func;
 	}
 
@@ -126,18 +118,10 @@ public abstract class CallbackHandler extends WrappableObject implements Unseale
 		return onTrack;
 	}
 
-	protected void onDraw(Drawer drawer, ListEntry entry) throws Exception {
+	protected void onDraw(Drawer drawer) throws Exception {
 		if (wrapper != null && onDraw != null) {
-			Object[] params;
-			if (entry == null) {
-				oneArg[0] = drawer;
-				params = oneArg;
-			} else {
-				twoArgs[0] = drawer;
-				twoArgs[1] = entry;
-				params = twoArgs;
-			}
-			FunctionHelper.callFunction(wrapper, onDraw, params);
+			oneArg[0] = drawer;
+			FunctionHelper.callFunction(wrapper, onDraw, oneArg);
 		}
 	}
 
@@ -156,118 +140,35 @@ public abstract class CallbackHandler extends WrappableObject implements Unseale
 			FunctionHelper.callFunction(wrapper, onResize, twoArgs);
 		}
 	}
-
-	protected void onNotify(int notifier, ListEntry entry) throws Exception {
-		if (wrapper != null) {
-			Object[] params;
-			if (entry == null) {
-				params = zeroArgs;
-			} else {
-				oneArg[0] = entry;
-				params = oneArg;
-			}
-			switch (notifier) {
-				case Notifier.NOTIFIER_CLOSE_HIT:
-					FunctionHelper.callFunction(wrapper, "onClose", params);
-					break;
-				case Notifier.NOTIFIER_ZOOM_HIT:
-					FunctionHelper.callFunction(wrapper, "onZoom", params);
-					break;
-				case Notifier.NOTIFIER_CYCLE:
-					FunctionHelper.callFunction(wrapper, "onCycle", params);
-					break;
-				case Notifier.NOTIFIER_COLLAPSE:
-					FunctionHelper.callFunction(wrapper, "onCollapse", params);
-					break;
-				case Notifier.NOTIFIER_EXPAND:
-					FunctionHelper.callFunction(wrapper, "onExpand", params);
-					break;
-				case Notifier.NOTIFIER_CONTEXT_MENU_CHANGED:
-					FunctionHelper.callFunction(wrapper, "onContextMenuChange", params);
-					break;
-				case Notifier.NOTIFIER_WINDOW_SHOW:
-					FunctionHelper.callFunction(wrapper, "onShow", params);
-					break;
-				case Notifier.NOTIFIER_WINDOW_HIDE:
-					FunctionHelper.callFunction(wrapper, "onHide", params);
-					break;
-				case Notifier.NOTIFIER_WINDOW_DRAG_MOVED:
-					FunctionHelper.callFunction(wrapper, "onMove", params);
-					break;
-				case Notifier.NOTIFIER_WINDOW_ACTIVATE:
-					FunctionHelper.callFunction(wrapper, "onActivate", params);
-					break;
-				case Notifier.NOTIFIER_WINDOW_DEACTIVATE:
-					FunctionHelper.callFunction(wrapper, "onDeactivate", params);
-					break;
-				case Notifier.NOTIFIER_NUMBER_OUT_OF_BOUNDS:
-					FunctionHelper.callFunction(wrapper, "onNumberOutOfBounds", params);
-					break;
-				case Notifier.NOTIFIER_USER_CHANGED:
-					FunctionHelper.callFunction(wrapper, "onChange", params);
-					break;
-				case Notifier.NOTIFIER_INTERMEDIATE_CHANGED:
-					FunctionHelper.callFunction(wrapper, "onPreChange", params);
-					break;
-				case Notifier.NOTIFIER_PRE_CLIPBOARD_CUT:
-					FunctionHelper.callFunction(wrapper, "onPreCut", params);
-					break;
-				case Notifier.NOTIFIER_POST_CLIPBOARD_CUT:
-					FunctionHelper.callFunction(wrapper, "onCut", params);
-					break;
-				case Notifier.NOTIFIER_PRE_CLIPBOARD_COPY:
-					FunctionHelper.callFunction(wrapper, "onPreCopy", params);
-					break;
-				case Notifier.NOTIFIER_POST_CLIPBOARD_COPY:
-					FunctionHelper.callFunction(wrapper, "onCopy", params);
-					break;
-				case Notifier.NOTIFIER_PRE_CLIPBOARD_PASTE:
-					FunctionHelper.callFunction(wrapper, "onPrePaste", params);
-					break;
-				case Notifier.NOTIFIER_POST_CLIPBOARD_PASTE:
-					FunctionHelper.callFunction(wrapper, "onPaste", params);
-					break;
-				case Notifier.NOTIFIER_PRE_CLIPBOARD_CLEAR:
-					FunctionHelper.callFunction(wrapper, "onPreClear", params);
-					break;
-				case Notifier.NOTIFIER_POST_CLIPBOARD_CLEAR:
-					FunctionHelper.callFunction(wrapper, "onClear", params);
-					break;
-				case Notifier.NOTIFIER_PRE_TEXT_SELECTION_CHANGED:
-					FunctionHelper.callFunction(wrapper, "onPreSelectionChange", params);
-					break;
-				case Notifier.NOTIFIER_TEXT_SELECTION_CHANGED:
-					FunctionHelper.callFunction(wrapper, "onSelectionChange", params);
-					break;
-				case Notifier.NOTIFIER_PRE_CLIPBOARD_REDO:
-					FunctionHelper.callFunction(wrapper, "onPreRedo", params);
-					break;
-				case Notifier.NOTIFIER_POST_CLIPBOARD_REDO:
-					FunctionHelper.callFunction(wrapper, "onRedo", params);
-					break;
-				case Notifier.NOTIFIER_PRE_CLIPBOARD_UNDO:
-					FunctionHelper.callFunction(wrapper, "onPreUndo", params);
-					break;
-				case Notifier.NOTIFIER_POST_CLIPBOARD_UNDO:
-					FunctionHelper.callFunction(wrapper, "onUndo", params);
-					break;
-			}
-		}
-	}
+	
+	protected abstract void onNotify(int notifier, ListEntry entry) throws Exception;
 
 	protected final void onNotify(String notifier, ListEntry entry) throws Exception {
 //		System.out.println(this + " " + notifier);
 		onNotify(Notifier.lookup(notifier), entry);
 	}
 
-	protected void onDestroy(ListEntry entry) throws Exception {
+	protected void onDestroy() throws Exception {
+		callFunction("onDestroy");
+	}
+	
+	protected void callFunction(String name) throws Exception {
+		if (wrapper != null)
+			FunctionHelper.callFunction(wrapper, name, zeroArgs);
+	}
+	
+	protected void callFunction(String name, Object param1) throws Exception {
 		if (wrapper != null) {
-			if (entry != null) {
-				oneArg[0] = entry;
-				FunctionHelper.callFunction(wrapper, "onDestroy", oneArg);
-			} else {
-				FunctionHelper.callFunction(wrapper, "onDestroy");
-			}
+			oneArg[0] = param1;
+			FunctionHelper.callFunction(wrapper, name, oneArg);
+		}
+	}
+	
+	protected void callFunction(String name, Object param1, Object param2) throws Exception {
+		if (wrapper != null) {
+			twoArgs[0] = param1;
+			twoArgs[1] = param2;
+			FunctionHelper.callFunction(wrapper, name, twoArgs);
 		}
 	}
 }

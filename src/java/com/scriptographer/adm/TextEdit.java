@@ -28,8 +28,8 @@
  *
  * $RCSfile: TextEdit.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/07 12:08:26 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -62,6 +62,18 @@ public class TextEdit extends TextItem {
 		OPTION_UNICODE = (1 << 2), // [cpaduan] 6/18/02 - Creates a Unicode based edit box (if possible). Currently has no effect on Windows.
 		OPTION_DISABLE_DRAG_DROP = (1 << 3); // Disables drag & drop from or to text edits. Currently mac-only.
 
+	public TextEdit(Dialog dialog, Rectangle2D bounds, String text, int style, int options) {
+		super(dialog, getType(style), bounds, text, getStyle(style), options);
+	}
+
+	public TextEdit(Dialog dialog, Rectangle2D bounds, String text, int style) {
+		this(dialog, bounds, text, style, 0);
+	}
+
+	public TextEdit(Dialog dialog, Rectangle2D bounds, String text) {
+		super(dialog, Item.TYPE_TEXT_EDIT, bounds, text,0, 0);
+	}
+
 	private static String getType(int style) {
 		if ((style & STYLE_POPUP) != 0) {
 			return (style & STYLE_SCROLLING) != 0 ? Item.TYPE_TEXT_EDIT_SCROLLING_POPUP
@@ -87,18 +99,117 @@ public class TextEdit extends TextItem {
 		// filter out the pseudo styles:
 		return style & ~STYLE_READONLY & ~STYLE_MULTILINE & ~STYLE_POPUP & ~STYLE_SCROLLING;
 	}
-
-	public TextEdit(Dialog dialog, Rectangle2D bounds, String text, int style, int options) {
-		super(dialog, getType(style), bounds, text, getStyle(style), options);
+	
+	/*
+	 * Callback stuff
+	 */
+	
+	protected void onPreCut() throws Exception {
+		callFunction("onPreCut");
 	}
-
-	public TextEdit(Dialog dialog, Rectangle2D bounds, String text, int style) {
-		this(dialog, bounds, text, style, 0);
+	
+	protected void onCut() throws Exception {
+		callFunction("onCut");
 	}
-
-	public TextEdit(Dialog dialog, Rectangle2D bounds, String text) {
-		super(dialog, Item.TYPE_TEXT_EDIT, bounds, text,0, 0);
+	
+	protected void onPreCopy() throws Exception {
+		callFunction("onPreCopy");
 	}
+	
+	protected void onCopy() throws Exception {
+		callFunction("onCopy");
+	}
+	
+	protected void onPrePaste() throws Exception {
+		callFunction("onPrePaste");
+	}
+	
+	protected void onPaste() throws Exception {
+		callFunction("onPaste");
+	}
+	
+	protected void onPreClear() throws Exception {
+		callFunction("onPreClear");
+	}
+	
+	protected void onClear() throws Exception {
+		callFunction("onClear");
+	}
+	
+	protected void onPreSelectionChange() throws Exception {
+		callFunction("onPreSelectionChange");
+	}
+	
+	protected void onSelectionChange() throws Exception {
+		callFunction("onSelectionChange");
+	}
+	
+	protected void onPreRedo() throws Exception {
+		callFunction("onPreRedo");
+	}
+	
+	protected void onRedo() throws Exception {
+		callFunction("onRedo");
+	}
+	
+	protected void onPreUndo() throws Exception {
+		callFunction("onPreUndo");
+	}
+	
+	protected void onUndo() throws Exception {
+		callFunction("onUndo");
+	}
+	
+	protected void onNotify(int notifier, ListEntry entry) throws Exception {
+		switch (notifier) {
+			case Notifier.NOTIFIER_PRE_CLIPBOARD_CUT:
+				onPreCut();
+				break;
+			case Notifier.NOTIFIER_POST_CLIPBOARD_CUT:
+				onCut();
+				break;
+			case Notifier.NOTIFIER_PRE_CLIPBOARD_COPY:
+				onPreCopy();
+				break;
+			case Notifier.NOTIFIER_POST_CLIPBOARD_COPY:
+				onCopy();
+				break;
+			case Notifier.NOTIFIER_PRE_CLIPBOARD_PASTE:
+				onPrePaste();
+				break;
+			case Notifier.NOTIFIER_POST_CLIPBOARD_PASTE:
+				onPaste();
+				break;
+			case Notifier.NOTIFIER_PRE_CLIPBOARD_CLEAR:
+				onPreClear();
+				break;
+			case Notifier.NOTIFIER_POST_CLIPBOARD_CLEAR:
+				onClear();
+				break;
+			case Notifier.NOTIFIER_PRE_TEXT_SELECTION_CHANGED:
+				onPreSelectionChange();
+				break;
+			case Notifier.NOTIFIER_TEXT_SELECTION_CHANGED:
+				onSelectionChange();
+				break;
+			case Notifier.NOTIFIER_PRE_CLIPBOARD_REDO:
+				onPreRedo();
+				break;
+			case Notifier.NOTIFIER_POST_CLIPBOARD_REDO:
+				onRedo();
+				break;
+			case Notifier.NOTIFIER_PRE_CLIPBOARD_UNDO:
+				onPreUndo();
+				break;
+			case Notifier.NOTIFIER_POST_CLIPBOARD_UNDO:
+				onUndo();
+				break;
+		}
+	}
+	
+	/*
+	 * rest
+	 */
 
 	public String getText() {
 		text = nativeGetText();
@@ -131,6 +242,10 @@ public class TextEdit extends TextItem {
 		setSelection(range[0], range[1]);
 	}
 	
+	public void setSelection(int pos) {
+		setSelection(pos, pos);
+	}
+
 	public native void setAllowMath(boolean allowMath);
 	public native boolean getAllowMath();
 	

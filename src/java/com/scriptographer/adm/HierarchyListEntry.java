@@ -28,8 +28,8 @@
  *
  * $RCSfile: HierarchyListEntry.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:35:07 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -41,15 +41,16 @@ public class HierarchyListEntry extends ListEntry {
 	private int bgColor = Drawer.COLOR_BACKGROUND;
 	private int textColor = Drawer.COLOR_TEXT;
 	private int dividerColor = Drawer.COLOR_BLACK;
+	protected HierarchyList childList = null;
+	
+	public HierarchyListEntry(HierarchyList list, int index) {
+		super(list, index);
+	}
 
-	public HierarchyListEntry(int entryRef) {
-		super(entryRef);
+	public HierarchyListEntry(HierarchyList list) {
+		super(list);
 	}
 	
-	public static HierarchyListEntry createEntry(int ref) {
-		return new HierarchyListEntry(ref);
-	}
-		
 	/*
 	 * container accessors
 	 *
@@ -62,9 +63,16 @@ public class HierarchyListEntry extends ListEntry {
 	 *
 	 */
 	
-	public native HierarchyList getChildList();
-	public native HierarchyList createChildList();
-	public native void deleteChildList();
+	
+	public HierarchyList getChildList() {
+		return childList;
+	}
+	
+	public HierarchyList createChildList() {
+		if (childList == null)
+			childList = new HierarchyList(this);
+		return childList;
+	}
 
 	public native void setExpanded(boolean expanded);
 	public native boolean isExpanded();

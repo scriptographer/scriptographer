@@ -28,8 +28,8 @@
  *
  * $RCSfile: ValueItem.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 23:27:22 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -41,6 +41,36 @@ import com.scriptographer.js.ArgumentReader;
 public abstract class ValueItem extends Item {
 	public ValueItem(Dialog dialog, String type, Rectangle2D bounds, int style, int options) {
 		super(dialog, type, bounds, style, options);
+	}
+	
+	/*
+	 * Callback stuff
+	 */
+	
+	protected void onChange() throws Exception {
+		callFunction("onChange");
+	}
+	
+	protected void onPreChange() throws Exception {
+		callFunction("onPreChange");
+	}
+	
+	protected void onNumberOutOfBounds() throws Exception {
+		callFunction("onNumberOutOfBounds");
+	}
+
+	protected void onNotify(int notifier, ListEntry entry) throws Exception {
+		switch (notifier) {
+			case Notifier.NOTIFIER_NUMBER_OUT_OF_BOUNDS:
+				onNumberOutOfBounds();
+				break;
+			case Notifier.NOTIFIER_USER_CHANGED:
+				onChange();
+				break;
+			case Notifier.NOTIFIER_INTERMEDIATE_CHANGED:
+				onPreChange();
+				break;
+		}
 	}
 
 	/* 

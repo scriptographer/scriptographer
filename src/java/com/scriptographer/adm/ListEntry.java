@@ -9,16 +9,66 @@ import com.scriptographer.js.Unsealed;
 import com.scriptographer.js.WrappableObject;
 
 public class ListEntry extends WrappableObject implements Unsealed {
-	private int entryRef = 0;
+	protected int entryRef = 0;
 	
 	private String text;
 
 	private Image picture;
 	private Image selectedPicture;
 	private Image disabledPicture;
+	private List list;
+	
+	public ListEntry(List list, int index) {
+		if (this instanceof HierarchyListEntry) {
+			if (!(list instanceof HierarchyList))
+				throw new RuntimeException("HierarchListEntry is required for HierarchyList");
+		} else {
+			if (list instanceof HierarchyList)
+				throw new RuntimeException("HierarchListEntry is only allowed for HierarchyList");
+		}
+		entryRef = nativeCreate(list, index);
+		this.list = list;
+	}
+	
+	public ListEntry(List list) {
+		this(list, -1); // -1 means insert at the end
+	}
+	
+	public boolean remove() {
+		if (entryRef > 0) {
+			nativeDestroy();
+			entryRef = 0;
+			return true;
+		}
+		return false;
+	}
+	
+	/*
+	 * Callback functions
+	 */
 
-	protected ListEntry(int entryRef) {
-		this.entryRef = entryRef;
+	protected void onDestroy() throws Exception {
+		// do not call JS functions here as in JS, the list's onDestroyEntry
+		// should be used instead
+	}
+
+	protected void onChange() throws Exception {
+		list.callFunction("onChangeEntry", this);
+	}
+	
+	protected void onChangeText() throws Exception {
+		// do not call JS functions here as in JS, the list's onChangeEntryText
+		// should be used instead
+	}
+
+	protected void onDraw(Drawer drawer) throws Exception {
+		// do not call JS functions here as in JS, the list's onDrawEntry
+		// should be used instead
+	}
+
+	protected void onTrack(Tracker tracker) throws Exception {
+		// do not call JS functions here as in JS, the list's onTrackEntry
+		// should be used instead
 	}
 
 	/*
@@ -26,10 +76,7 @@ public class ListEntry extends WrappableObject implements Unsealed {
 	 * 
 	 */
 
-	/* 
-	 * TODO: implement these?, implement constructor?
-	 */
-	private native int nativeCreate(List list);
+	private native int nativeCreate(List list, int index);
 	private native void nativeDestroy();
 
 
@@ -39,7 +86,10 @@ public class ListEntry extends WrappableObject implements Unsealed {
 	 */
 	
 	public native int getIndex();
-	public native List getList();
+	
+	public List getList() {
+		return list;
+	}
 
 	/* 
 	 * entry ID

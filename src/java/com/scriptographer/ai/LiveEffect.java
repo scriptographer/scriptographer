@@ -28,8 +28,8 @@
  * 
  * $RCSfile: LiveEffect.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/07 13:39:08 $
+ * $Revision: 1.4 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.ai;
@@ -41,7 +41,6 @@ import com.scriptographer.js.Unsealed;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.ScriptRuntime;
@@ -220,6 +219,20 @@ public class LiveEffect extends WrappableObject implements Unsealed {
 			throw new RuntimeException("Unable to create LifeEffect");
 
 		effects.put(new Integer(effectHandle), this);
+	}
+
+	/**
+	 * Same constructor, but name is used for title and name.
+	 * 
+	 * @param name
+	 * @param preferedInput a combination of LiveEffect.INPUT_*
+	 * @param type one of LiveEffect.TYPE_
+	 * @param flags a combination of LiveEffect.FLAG_*
+	 * @param majorVersion
+	 * @param minorVersion
+	 */
+	public LiveEffect(String name, int preferedInput, int type, int flags, int majorVersion, int minorVersion) {
+		this(name, name, preferedInput, type, flags, majorVersion, minorVersion);
 	}
 
 	private native int nativeCreate(String name, String title, int preferedInput, int type, int flags, int majorVersion, int minorVersion);

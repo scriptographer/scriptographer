@@ -28,8 +28,8 @@
  *
  * $RCSfile: ChasingArrows.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 23:27:22 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -40,5 +40,9 @@ public class ChasingArrows extends Item {
 
 	public ChasingArrows(Dialog dialog, Rectangle2D bounds) {
 		super(dialog, Item.TYPE_CHASING_ARROWS, bounds, 0, 0);
+	}
+
+	protected void onNotify(int notifier, ListEntry entry) throws Exception {
+		// TODO: could there be some notifiactions for ChasingArrows?
 	}
 }

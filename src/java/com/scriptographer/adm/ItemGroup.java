@@ -28,8 +28,8 @@
  *
  * $RCSfile: ItemGroup.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -43,4 +43,8 @@ public class ItemGroup extends Item {
 	}
 
 	public native void addItem(Item item);
+
+	protected void onNotify(int notifier, ListEntry entry) throws Exception {
+		// TODO: could there be some notifiactions for ItemGroup?
+	}
 }

@@ -28,8 +28,8 @@
  *
  * $RCSfile: PushButton.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:35:07 $
+ * $Revision: 1.3 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.adm;
@@ -60,5 +60,17 @@ public class PushButton extends PictureItem {
 
 	public PushButton(Dialog dialog, Rectangle2D bounds, Image image) {
 		this(dialog, bounds, image, STYLE_BLACK_SUNKEN_RECT);
+	}
+	
+	protected void onClick() throws Exception {
+		callFunction("onClick");
+	}
+	
+	/**
+	 * Redirect onChange to onClick for buttons, as this would sound
+	 * strange otherwise
+	 */
+	protected void onChange() throws Exception {
+		onClick();
 	}
 }

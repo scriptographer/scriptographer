@@ -28,23 +28,24 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/07 12:06:46 $
+ * $Revision: 1.5 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer;
 
 import com.scriptographer.adm.*;
 import com.scriptographer.ai.*;
-import com.scriptographer.js.*;
+import com.scriptographer.gui.*;
+
 import org.mozilla.javascript.*;
 
 import java.io.*;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.prefs.Preferences;
 
 public class ScriptographerEngine {
-	public static final File baseDir = new File("/Users/Lehni/Development/C & C++/Scriptographer/scripts");
+	public static File baseDir = null;
 
 	private static ScriptographerEngine engine = null;
 	private Context context;
@@ -68,9 +69,37 @@ public class ScriptographerEngine {
 	}
 
 	public static void init() throws Exception {
+		// add the menus:
+		// use a space in the beginning of the name so it appears on top of all entries :)
+		MenuItem mainItem = new MenuItem(MenuGroup.GROUP_TOOL_PALETTES, " Scriptographer");
+		MenuItem reloadItem = new MenuItem(mainItem, "Reload") {
+			public void onExecute() {
+				String errors = ScriptographerEngine.reload();
+				if (errors != null) {
+					System.err.println(errors);
+				} else {
+					System.out.println("The classpath was successfully reloaded.");
+				}
+			}
+		};
+		
+		// get the baseDir setting, if it's not set, ask the user
+		Preferences prefs = Preferences.userNodeForPackage(ScriptographerEngine.class); 
+		String dir = prefs.get("baseDir", null);
+		baseDir = dir != null ? new File(dir) : null;
+		if (baseDir == null || !baseDir.isDirectory()) {
+			baseDir = Dialog.chooseDirectory("Please choose the Scriptographer base directory:");
+			if (baseDir != null && baseDir.isDirectory()) {
+				prefs.put("baseDir", baseDir.getPath());
+			}
+		}
+		
+		new ConsoleWindow();
+		new MainWindow();
 		ConsoleOutputStream.enableOutput(true);
 		// execute all scripts in startup folder:
-		getInstance().executeAll(new File(baseDir, "startup"));
+		if (baseDir != null)
+			getInstance().executeAll(new File(baseDir, "startup"));
 	}
 
 	public static void destroy() {
@@ -79,11 +108,22 @@ public class ScriptographerEngine {
 		MenuItem.removeAll();
 		ConsoleOutputStream.getInstance().enableRedirection(false);
 	}
+	
+	private static native String reload();
 
 	public static ScriptographerEngine getInstance() throws Exception {
 		if (engine == null)
 			engine = new ScriptographerEngine();
 		return engine;
+	}
+	
+	private void reportRhinoException(RhinoException re) {
+		String source = re.sourceName();
+		if (source != null) {
+			System.err.print(source);
+			System.err.print(":");
+		}
+		System.err.println(re.lineNumber() + "," + re.columnNumber() + ": " + re.getMessage());
 	}
 
 	public Script compileFile(File file) {
@@ -93,7 +133,7 @@ public class ScriptographerEngine {
 			in = new FileReader(file);
 			script = context.compileReader(in, file.getPath(), 1, null);
 		} catch (RhinoException re) {
-			System.err.println(re.sourceName() + ":" + re.lineNumber() + "," + re.columnNumber() + ": " + re.getMessage());
+			reportRhinoException(re);
 		} catch (FileNotFoundException ex) {
 			Context.reportError("Couldn't open file \"" + file + "\".");
 		} catch (IOException ioe) {
@@ -112,9 +152,9 @@ public class ScriptographerEngine {
 
 	public Script compileString(String string) {
 		try {
-			return context.compileString(string, "console", 1, null);
+			return context.compileString(string, null, 1, null);
 		} catch (RhinoException re) {
-			System.err.println(re.sourceName() + ":" + re.lineNumber() + "," + re.columnNumber() + ": " + re.getMessage());
+			reportRhinoException(re);
 		}
 		return null;
 	}
@@ -138,7 +178,7 @@ public class ScriptographerEngine {
 			System.err.println(we.getMessage());
 			we.getWrappedException().printStackTrace();
 		} catch (RhinoException re) {
-			System.err.println(re.sourceName() + ":" + re.lineNumber() + "," + re.columnNumber() + ": " + re.getMessage());
+			reportRhinoException(re);
 		} finally {
 			// now reenable the console, this also writes out all the things that were printed in the meantime:
 			ConsoleOutputStream.enableOutput(true);
@@ -216,6 +256,10 @@ public class ScriptographerEngine {
 		if (script != null)
 			return executeScript(script, scope);
 		return null;
+	}
+	
+	public Scriptable createScope() {
+		return global.createScope();
 	}
 
 	public static void main(String args[]) throws Exception {

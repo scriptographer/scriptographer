@@ -28,8 +28,8 @@
  * 
  * $RCSfile: MenuGroup.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/03/10 22:48:43 $
  */
 
 package com.scriptographer.ai;
@@ -49,16 +49,16 @@ public class MenuGroup {
 		GROUP_IMPORT 							= new MenuGroup("Import"),
 		GROUP_PLACE 							= new MenuGroup("Place Document"),
 		GROUP_EXPORT 							= new MenuGroup("Export Document"),
-		GROUP_DOCUMENT_UTILS 					= new MenuGroup("Document Utilities"),
+		GROUP_DOCUMENT_UTILITIES				= new MenuGroup("Document Utilities"),
 		GROUP_DOCUMENT_INTERCHANGE				= new MenuGroup("Document Interchange"),
 		GROUP_PRINT								= new MenuGroup("Print"),
 		GROUP_SEND								= new MenuGroup("Send Document"),
 
-		GROUP_APP_UTILS							= new MenuGroup("Application Utilities"),
+		GROUP_APPLICATION_UTILITIES				= new MenuGroup("Application Utilities"),
 		GROUP_QUIT								= new MenuGroup("Quit"),
 
 		GROUP_UNDO								= new MenuGroup("Undo"),
-		GROUP_PASTEUTILS 						= new MenuGroup("Paste Utilities"),
+		GROUP_PASTE_UTILITIES					= new MenuGroup("Paste Utilities"),
 		GROUP_SELECT 							= new MenuGroup("Select"),			// Select menu- internal commands
 		GROUP_SELECT_EXTERNAL					= new MenuGroup("SelectExternal"),	// Select menu- external commands,
 		GROUP_EDITTEXT							= new MenuGroup("Edit Text"),			// Find/Replace, Spell Check
@@ -103,7 +103,7 @@ public class MenuGroup {
 		GROUP_TYPE_ATTRIBUTES 					= new MenuGroup("Type Attributes"),
 		GROUP_TYPE_PALETTES 					= new MenuGroup("Type Palettes"),
 		GROUP_TYPE_LAYOUT 						= new MenuGroup("Type Layout"),
-		GROUP_TYPE_UTILS 						= new MenuGroup("Type Utilities"),
+		GROUP_TYPE_UTILITIES 					= new MenuGroup("Type Utilities"),
 		GROUP_TYPE_PLUGINS1						= new MenuGroup("Type Plugins1"),
 		GROUP_TYPE_PLUGINS2						= new MenuGroup("Type Plugins2"),
 		GROUP_TYPE_ASIAN_OPTIONS				= new MenuGroup("Type Asian Options"),
