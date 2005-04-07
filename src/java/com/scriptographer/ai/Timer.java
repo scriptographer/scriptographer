@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Timer.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/07 22:00:39 $
  */
 
 package com.scriptographer.ai;
@@ -41,10 +41,11 @@ import java.util.Iterator;
 import org.mozilla.javascript.Function;
 
 import com.scriptographer.js.FunctionHelper;
+import com.scriptographer.js.Unsealed;
 import com.scriptographer.util.Handle;
 
 
-public class Timer extends AIObject {
+public class Timer extends AIObject implements Unsealed {
 	public static final int TICKS_PER_SECONDS = 60;
 	
 	private boolean active;

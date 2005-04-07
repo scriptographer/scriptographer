@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.6 $
+ * $Date: 2005/04/07 21:58:41 $
  */
 
 package com.scriptographer.adm;
@@ -342,8 +342,17 @@ public abstract class Item extends CallbackHandler {
 	private native Rectangle nativeGetBounds();
 	private native void nativeSetBounds(int x, int y, int width, int height);
 
-	public native void setLocation(int x, int y);
-	public native Point getLocation();
+	public void setLocation(int x, int y) {
+		setBounds(x, y, bounds.width, bounds.height);
+	}
+
+	public final void setLocation(Point2D loc) {
+		setLocation((int) loc.getX(), (int) loc.getY());
+	}
+	
+	public Point getLocation() {
+		return new Point(bounds.x, bounds.y);
+	}
 
 	public Dimension getSize() {
 		return new Dimension(size);
@@ -507,10 +516,6 @@ public abstract class Item extends CallbackHandler {
 
 	public final void setBounds(Rectangle2D bounds) {
 		setBounds((int) bounds.getX(), (int) bounds.getY(), (int) bounds.getWidth(), (int) bounds.getHeight());
-	}
-
-	public final void setLocation(Point2D loc) {
-		setLocation((int) loc.getX(), (int) loc.getY());
 	}
 
 	/* 
