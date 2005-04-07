@@ -28,8 +28,8 @@
  *
  * $RCSfile: Event.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/04 17:06:16 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/07 20:12:55 $
  */
 
 package com.scriptographer.ai;
@@ -56,7 +56,7 @@ public class Event {
 	}
 
 	public Point getPoint() {
-		return point;
+		return new Point(point);
 	}
 
 	public double getPressure() {

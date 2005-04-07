@@ -26,19 +26,19 @@
  *
  * File created on 11.01.2005.
  *
- * $RCSfile: SegmentPosition.java,v $
+ * $RCSfile: CurvePosition.java,v $
  * $Author: lehni $
  * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Date: 2005/04/07 20:12:55 $
  */
 
 package com.scriptographer.ai;
 
-public class SegmentPosition {
+public class CurvePosition {
 	private int bezier;
 	private float t;
 
-	protected SegmentPosition(int bezier, float t) {
+	protected CurvePosition(int bezier, float t) {
 		this.bezier = bezier;
 		this.t = t;
 	}

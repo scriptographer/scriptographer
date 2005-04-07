@@ -238,6 +238,10 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_ValueItem.cpp
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Annotator.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Art.cpp
 # End Source File
 # Begin Source File
@@ -306,7 +310,19 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_SegmentList.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Timer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Tool.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_View.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_ViewList.cpp
 # End Source File
 # End Group
 # Begin Source File

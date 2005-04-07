@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.h,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.7 $
+ * $Date: 2005/04/07 20:12:50 $
  */
 
 #define kMaxStringLength 256
@@ -133,10 +133,6 @@ public:
 
 	ASErr checkFileFormat(AIFileFormatMessage *message) {
 		return kUnhandledMsgErr;
-	}
-	
-	ASErr timer(AITimerMessage *message) {
-		return kNoErr;
 	}
 
 private:

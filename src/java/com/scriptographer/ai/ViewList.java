@@ -24,32 +24,45 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * File created on 14.02.2005.
+ * File created on 07.04.2005.
  *
- * $RCSfile: TabletValue.java,v $
+ * $RCSfile: ViewList.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
+ * $Revision: 1.1 $
  * $Date: 2005/04/07 20:12:55 $
  */
 
 package com.scriptographer.ai;
 
-public class TabletValue {
-	public float offset;
-	public float value;
+import com.scriptographer.util.AbstractReadOnlyList;
 
-	public TabletValue(float offset, float value) {
-		this.offset = offset;
-		this.value = value;
+public class ViewList extends AbstractReadOnlyList {
+	
+	private Document document;
+	
+	protected ViewList(Document document) {
+		this.document = document;
+	}
+
+	public int size() {
+		return nativeGetViewCount(document.handle);
 	}
 	
-	public String toString() {
-		StringBuffer buf = new StringBuffer();
-		buf.append("{ offset: ");
-		buf.append(offset);
-		buf.append(", value: ");
-		buf.append(value);
-		buf.append(" }");
-		return buf.toString();
+	private static native int nativeGetViewCount(int docHandle);
+	
+	private static native int nativeGetActiveView(int docHandle); 
+	
+	public View getActiveView() {
+		return View.wrapHandle(nativeGetActiveView(document.handle));
+	}
+	
+	private static native int nativeGetView(int docHandle, int index);
+
+	public Object get(int index) {
+		return View.wrapHandle(nativeGetView(document.handle, index));
+	}
+
+	public View getView(int index) {
+		return (View) get(index);
 	}
 }

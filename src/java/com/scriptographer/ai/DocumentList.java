@@ -28,48 +28,30 @@
  *
  * $RCSfile: DocumentList.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/07 20:12:55 $
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.util.AbstractReadOnlyList;
-import com.scriptographer.util.Handle;
-
-import java.util.WeakHashMap;
 
 public class DocumentList extends AbstractReadOnlyList {
 	private DocumentList() {
 	}
 
-	public native int getLength();
+	public native int size();
 	
 	private static native int nativeGetActiveDocument(); 
 	
 	public static Document getActiveDocument() {
-		return wrapHandle(nativeGetActiveDocument());
-	}
-	
-	// use a WeakHashMap to keep track of already wrapped documents:
-	private static WeakHashMap documents = new WeakHashMap();
-	
-	protected static Document wrapHandle(int handle) {
-		if (handle == 0)
-			return null;
-		Handle key = new Handle(handle);
-		Document doc = (Document) documents.get(key);
-		if (doc == null) {
-			doc = new Document(handle);
-			documents.put(key, doc);
-		}
-		return doc;
+		return Document.wrapHandle(nativeGetActiveDocument());
 	}
 	
 	private static native int nativeGetDocument(int index);
 
 	public Object get(int index) {
-		return wrapHandle(nativeGetDocument(index));
+		return Document.wrapHandle(nativeGetDocument(index));
 	}
 
 	public Document getDocument(int index) {

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Rectangle.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 23:27:22 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/07 20:12:55 $
  */
 
 package com.scriptographer.ai;
@@ -62,8 +62,8 @@ public class Rectangle extends Rectangle2D.Float implements Wrappable {
 		super((float)x, (float)y, (float)w, (float)h);
 	}
 	
-	public Rectangle(Point2D pt, Point2D size) {
-		super((float)pt.getX(), (float)pt.getY(), (float)size.getX(), (float)size.getY());
+	public Rectangle(Point2D bottomLeft, Point2D topRight) {
+		super((float)bottomLeft.getX(), (float)bottomLeft.getY(), (float)topRight.getX() - (float)bottomLeft.getX(), (float)topRight.getY() - (float)bottomLeft.getY());
 	}
 	
 	public void setX(float x) {

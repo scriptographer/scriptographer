@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/04/04 17:06:12 $
+ * $Revision: 1.9 $
+ * $Date: 2005/04/07 20:12:53 $
  */
 
 package com.scriptographer;
@@ -97,6 +97,7 @@ public class ScriptographerEngine {
 		LiveEffect.removeAll();
 		MenuItem.removeAll();
 		Timer.disposeAll();
+		Annotator.disposeAll();
 		ConsoleOutputStream.getInstance().enableRedirection(false);
 	}
 	
@@ -140,6 +141,8 @@ public class ScriptographerEngine {
 			engine = new ScriptographerEngine();
 		return engine;
 	}
+	
+	public static native long getNanoTime();
 	
 	private void reportRhinoException(RhinoException re) {
 		String source = re.sourceName();

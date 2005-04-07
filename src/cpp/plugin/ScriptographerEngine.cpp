@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/04/04 17:04:37 $
+ * $Revision: 1.7 $
+ * $Date: 2005/04/07 20:12:50 $
  */
  
 #include "stdHeaders.h"
@@ -162,8 +162,8 @@ void ScriptographerEngine::init() {
 	// only add the loader to the classpath, the rest is done in java:
 	sprintf(classpath, "-Djava.class.path=%s" PATH_SEP_STR "loader.jar", fHomeDir);
 	options[numOptions++].optionString = classpath;
-	options[numOptions++].optionString = "-Xms64m";
-	options[numOptions++].optionString = "-Xmx496m";
+	options[numOptions++].optionString = "-Xms32m";
+	options[numOptions++].optionString = "-Xmx256m";
 #ifdef MAC_ENV
 	// use the carbon line separator instead of the unix one on mac:
 	options[numOptions++].optionString = "-Dline.separator=\r";
@@ -447,9 +447,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_Segment = loadClass(env, "com/scriptographer/ai/Segment");
 	cls_Curve = loadClass(env, "com/scriptographer/ai/Curve");
 
-	cls_SegmentPosition = loadClass(env, "com/scriptographer/ai/SegmentPosition");
-	cid_SegmentPosition = getConstructorID(env, cls_SegmentPosition, "(IF)V");
-
 	cls_TabletValue = loadClass(env, "com/scriptographer/ai/TabletValue");
 	cid_TabletValue = getConstructorID(env, cls_TabletValue, "(FF)V");
 	fid_TabletValue_offset = getFieldID(env, cls_TabletValue, "offset", "F");
@@ -472,6 +469,11 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cid_Timer = getConstructorID(env, cls_Timer, "(I)V");
 	mid_Timer_onExecute = getStaticMethodID(env, cls_Timer, "onExecute", "(I)V");
 
+	cls_Annotator = loadClass(env, "com/scriptographer/ai/Annotator");
+	cid_Annotator = getConstructorID(env, cls_Annotator, "(I)V");
+	mid_Annotator_onDraw = getStaticMethodID(env, cls_Annotator, "onDraw", "(III)V");
+	mid_Annotator_onInvalidate = getStaticMethodID(env, cls_Annotator, "onInvalidate", "(I)V");
+
 	cls_MenuGroup = loadClass(env, "com/scriptographer/ai/MenuGroup");
 	
 // ADM:
@@ -492,6 +494,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cid_DialogGroupInfo = getConstructorID(env, cls_DialogGroupInfo, "(Ljava/lang/String;I)V");
 
 	cls_Drawer = loadClass(env, "com/scriptographer/adm/Drawer");
+	cid_Drawer = getConstructorID(env, cls_Drawer, "(I)V");
 
 	cls_Image = loadClass(env, "com/scriptographer/adm/Image");
 	fid_Image_byteWidth = getFieldID(env, cls_Image, "byteWidth", "I");
@@ -548,11 +551,12 @@ void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
 }
 
 // com.scriptographer.awt.Point <-> AIRealPoint
-jobject ScriptographerEngine::convertPoint(JNIEnv *env, AIRealPoint *pt, jobject res) {
+
+jobject ScriptographerEngine::convertPoint(JNIEnv *env, AIReal x, AIReal y, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_Point, cid_Point, (jfloat) pt->h, (jfloat) pt->v);
+		return newObject(env, cls_Point, cid_Point, (jfloat) x, (jfloat) y);
 	} else {
-		callVoidMethod(env, res, mid_Point_setPoint, (jfloat) pt->h, (jfloat) pt->v);
+		callVoidMethod(env, res, mid_Point_setPoint, (jfloat) x, (jfloat) y);
 		return res;
 	}
 }
@@ -566,11 +570,12 @@ AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, AIRealP
 }
 
 // java.awt.Point <-> ADMPoint
-jobject ScriptographerEngine::convertPoint(JNIEnv *env, ADMPoint *pt, jobject res) {
+
+jobject ScriptographerEngine::convertPoint(JNIEnv *env, int x, int y, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_awt_Point, cid_Point, (jint) pt->h, (jint) pt->v);
+		return newObject(env, cls_awt_Point, cid_awt_Point, x, y);
 	} else {
-		callVoidMethod(env, res, mid_awt_Point_setLocation, (jint) pt->h, (jint) pt->v);
+		callVoidMethod(env, res, mid_awt_Point_setLocation, x, y);
 		return res;
 	}
 }
@@ -584,12 +589,13 @@ ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, ADMPoint *
 }
 
 // com.scriptographer.awt.Rectangle <-> AIRealRect
-jobject ScriptographerEngine::convertRectangle(JNIEnv *env, AIRealRect *rt, jobject res) {
+
+jobject ScriptographerEngine::convertRectangle(JNIEnv *env, AIReal left, AIReal top, AIReal right, AIReal bottom, jobject res) {
 	// AIRealRects are upside down, top and bottom are switched!
 	if (res == NULL) {
-		return newObject(env, cls_Rectangle, cid_Rectangle, (jfloat) rt->left, (jfloat) rt->bottom, (jfloat) (rt->right - rt->left), (jfloat) (rt->top - rt->bottom));
+		return newObject(env, cls_Rectangle, cid_Rectangle, (jfloat) left, (jfloat) bottom, (jfloat) (right - left), (jfloat) (top - bottom));
 	} else {
-		callVoidMethod(env, res, mid_Rectangle_setRect, (jfloat) rt->left, (jfloat) rt->bottom, (jfloat) (rt->right - rt->left), (jfloat) (rt->top - rt->bottom));
+		callVoidMethod(env, res, mid_Rectangle_setRect, (jfloat) left, (jfloat) bottom, (jfloat) (right - left), (jfloat) (top - bottom));
 		return res;
 	}
 }
@@ -606,11 +612,12 @@ AIRealRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rt, AIRe
 }
 
 // java.awt.Rectangle <-> ADMRect
-jobject ScriptographerEngine::convertRectangle(JNIEnv *env, ADMRect *rt, jobject res) {
+
+jobject ScriptographerEngine::convertRectangle(JNIEnv *env, int left, int top, int right, int bottom, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_awt_Rectangle, cid_awt_Rectangle, (jint) rt->left, (jint) rt->top, (jint) (rt->right - rt->left), (jint) (rt->bottom - rt->top));
+		return newObject(env, cls_awt_Rectangle, cid_awt_Rectangle, left, top, right - left, bottom - top);
 	} else {
-		callVoidMethod(env, res, mid_awt_Rectangle_setBounds, (jint) rt->left, (jint) rt->top, (jint) (rt->right - rt->left), (jint) (rt->bottom - rt->top));
+		callVoidMethod(env, res, mid_awt_Rectangle_setBounds, left, top, right - left, bottom - top);
 		return res;
 	}
 }
@@ -633,10 +640,6 @@ jobject ScriptographerEngine::convertDimension(JNIEnv *env, int width, int heigh
 		callVoidMethod(env, res, mid_awt_Dimension_setSize, (jint) width, (jint) height);
 		return res;
 	}
-}
-
-jobject ScriptographerEngine::convertDimension(JNIEnv *env, ADMPoint *pt, jobject res) {
-	return convertDimension(env, pt->h, pt->v, res);
 }
 
 ADMPoint *ScriptographerEngine::convertDimension(JNIEnv *env, jobject dim, ADMPoint *res) {
@@ -1067,6 +1070,19 @@ AIDocumentHandle ScriptographerEngine::getDocumentHandle(JNIEnv *env, jobject ob
 }
 
 /**
+ * Returns the wrapped AIDocumentViewHandle of an object by assuming that it is an anchestor of Class View and
+ * accessing its field 'handle':
+ *
+ * throws exceptions
+ */
+AIDocumentViewHandle ScriptographerEngine::getDocumentViewHandle(JNIEnv *env, jobject obj) {
+	JNI_CHECK_ENV
+	AIDocumentViewHandle view = (AIDocumentViewHandle) getIntField(env, obj, fid_AIObject_handle);
+	if (view == NULL) throw new StringException("Object is not wrapped around a view handle.");
+	return view;
+}
+
+/**
  * Returns the wrapped AILiveEffectHandle of an object by assuming that it is an anchestor of Class LiveEffect and
  * accessing its field 'handle':
  *
@@ -1363,6 +1379,30 @@ ASErr ScriptographerEngine::timerExecute(AITimerMessage *message) {
 	} EXCEPTION_CATCH_REPORT(env)
 	return kExceptionErr;
 }
+
+/**
+ * AI Annotator
+ *
+ */
+
+ASErr ScriptographerEngine::annotatorDraw(AIAnnotatorMessage *message) {
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_Annotator, mid_Annotator_onDraw, (jint) message->annotator, (jint) message->port, (jint) message->view);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env)
+	return kExceptionErr;
+}
+
+ASErr ScriptographerEngine::annotatorInvalidate(AIAnnotatorMessage *message) {
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_Annotator, mid_Annotator_onInvalidate, (jint) message->annotator);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env)
+	return kExceptionErr;
+}
+
 
 /**
  * ADM CallbackListener

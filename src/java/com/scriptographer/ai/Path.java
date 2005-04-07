@@ -28,15 +28,21 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/30 08:21:32 $
+ * $Revision: 1.6 $
+ * $Date: 2005/04/07 20:12:54 $
  */
 
 package com.scriptographer.ai;
 
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Arrays;
 
+import org.mozilla.javascript.NativeArray;
+import org.mozilla.javascript.ScriptRuntime;
+
+import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.util.Handle;
 
 public class Path extends Art {
@@ -120,11 +126,34 @@ public class Path extends Art {
 	public native void setGuide(boolean guide);
 	public native TabletValue[] getTabletData();
 	public native void setTabletData(TabletValue[] data);
+	
+	public void setTabletData(NativeArray data) {
+		Object[] array = FunctionHelper.convertToArray(data);
+		ArrayList values = new ArrayList();
+		for (int i = 0; i < array.length; i++) {
+			Object obj = array[i];
+			TabletValue value = null;
+			if (obj instanceof Object[]) {
+				Object[] objArray = (Object[]) obj;
+				value = new TabletValue(
+					(float) ScriptRuntime.toNumber(objArray[0]),
+					(float) ScriptRuntime.toNumber(objArray[1])
+				);
+			} else if (obj instanceof TabletValue) {
+				value = (TabletValue) obj;
+			}
+			if (value != null)
+				values.add(value);
+		}
+		TabletValue[] tabletData = new TabletValue[values.size()];
+		values.toArray(tabletData);
+		setTabletData(tabletData);
+	}
 
 	public native float getLength(float flatness);
 
 	public float getLength() {
-		return getLength(0.1f);
+		return getLength(Curve.FLATNESS);
 	}
 
 	public native float getArea();
@@ -164,11 +193,11 @@ public class Path extends Art {
 	}
 
 	public int curvesToPoints(float maxPointDistance) {
-		return curvesToPoints(maxPointDistance, 0.1f);
+		return curvesToPoints(maxPointDistance, Curve.FLATNESS);
 	}
 
 	public int curvesToPoints() {
-		return curvesToPoints(1000f, 0.1f);
+		return curvesToPoints(1000f, Curve.FLATNESS);
 	}
 
 	private static native void nativeReduceSegments(int handle, float flatness);
@@ -180,35 +209,138 @@ public class Path extends Art {
 	}
 
 	public void reduceSegments() {
-		reduceSegments(0.1f);
+		reduceSegments(Curve.FLATNESS);
 	}
 
-	private static native int nativeSplit(int handle, int index, float position);
+	public Path split(int index, float t) {
+		SegmentList segments = getSegments();
+		Object[] newSegments = null;
 
-	public Path split(int index, float position) {
-		int newHandle = nativeSplit(handle, index, position);
-		if (newHandle != 0) {
-			Path path = new Path(new Handle(newHandle));
-			if (segments != null)
-				segments.updateLength(-1);
-			return path;
+		if (t < 0.0f) t = 0.0f;
+		else if (t >= 1.0f) {
+			// t = 1 is the same as t = 0 and index ++
+			index++;
+			t = 0.0f;
 		}
-		return null;
+		if (index >= 0 && index < segments.size - 1) {
+			if (t == 0.0) { // spezial case
+				if (index > 0) {
+					// split at index
+					newSegments = segments.toArray(index, segments.size);
+					segments.remove(index + 1, segments.size);
+				}
+			}
+			// divide the segment at index at t
+			Segment segment = (Segment) segments.get(index);
+			if (segment != null) {
+				segment.divide(t);
+				// create the new path with the segments to the right of t
+				newSegments = segments.toArray(index + 1, segments.size);
+				// and delete these segments from the current path, not including the divided point
+				segments.remove(index + 2, segments.size);
+			}
+		}
+		if (newSegments != null)
+			return new Path(newSegments);
+		else
+			return null;
 	}
 
 	public Path split(int index) {
 		return split(index, 0f);
 	}
 
-	public native SegmentPosition hitTest(Point point, float epsilon);
-
-	public SegmentPosition hitTest(Point point) {
-		return hitTest(point, 0.001f);
+	public CurvePosition hitTest(Point point, float epsilon) {
+		CurveList curves = getCurves();
+		int length = curves.size();
+		
+		for (int i = 0; i < length; i++) {
+			float t = ((Curve) curves.get(i)).hitTest(point, epsilon);
+			if (t >= 0)
+				return new CurvePosition(i, t);
+		}
+		return null;
 	}
 
-	public native SegmentPosition getPositionWithLength(float length, float flatness);
+	public CurvePosition hitTest(Point point) {
+		return hitTest(point, Curve.EPSILON);
+	}
 
-	public SegmentPosition getPosWithLength(float length) {
-		return getPositionWithLength(length, 0.1f);
+	public CurvePosition getPositionWithLength(float length, float flatness) {
+		CurveList curves = getCurves();
+		float currentLength = 0;
+		for (int i = 0; i < curves.size; i++) {
+			float startLength = currentLength;
+			Curve curve = (Curve) curves.get(i);
+			currentLength += curve.getLength(flatness);
+			if (currentLength >= length) { // found the segment within which the length lies
+				float t = curve.getPositionWithLength(length - startLength, flatness);
+				return new CurvePosition(i, t);
+			}
+		}
+		return null;
+	}
+
+	public CurvePosition getPositionWithLength(float length) {
+		return getPositionWithLength(length, Curve.FLATNESS);
+	}
+	
+	/*
+	 *  postscript-like interface: moveTo, lineTo, curveTo, arcTo
+	 */	
+	public void moveTo(float x, float y) {
+		getSegments().moveTo(x, y);
+	}
+	
+	public void moveTo(Point pt) {
+		getSegments().moveTo(pt);
+	}
+	
+	public void moveTo(Point2D pt) {
+		getSegments().moveTo(pt);
+	}
+	
+	public void lineTo(float x, float y) {
+		getSegments().lineTo(x, y);
+	}
+	
+	public void lineTo(Point pt) {
+		getSegments().lineTo(pt);
+	}
+	
+	public void lineTo(Point2D pt) {
+		getSegments().lineTo(pt);
+	}
+	
+	public void curveTo(float c1x, float c1y, float c2x, float c2y, float x, float y) {
+		getSegments().curveTo(c1x, c1y, c2x, c2y, x, y);
+	}
+	
+	public void curveTo(Point c1, Point c2, Point pt) {
+		getSegments().curveTo(c1, c2, pt);
+	}
+	
+	public void curveTo(Point2D c1, Point2D c2, Point2D pt) {
+		getSegments().curveTo(c1, c2, pt);
+	}
+
+	public void arcTo(float centerX, float centerY, float endX, float endY, int ccw) {
+		getSegments().arcTo(centerX, centerY, endX, endY, ccw);
+	}
+
+	public void arcTo(Point center, Point endPoint, int ccw) {
+		getSegments().arcTo(center, endPoint, ccw);
+	}
+
+	public void arcTo(Point2D center, Point2D endPoint, int ccw) {
+		getSegments().arcTo(center, endPoint, ccw);
+	}
+	
+	public Segment getFirstSegment() {
+		return getSegments().getFirstSegment();
+	}
+	
+	public Segment getLastSegment() {
+		return getSegments().getLastSegment();
 	}
 }

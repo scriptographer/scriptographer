@@ -34,7 +34,7 @@ public class ArrayList extends AbstractList {
 		this(Arrays.asList(objects));
 	}
 
-	public int getLength() {
+	public int size() {
 		return list.size();
 	}
 

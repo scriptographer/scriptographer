@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Timer.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/04/04 17:06:18 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/07 20:12:54 $
  */
 
 package com.scriptographer.ai;
@@ -197,5 +197,4 @@ public class Timer extends AIObject {
 	protected void finalize() {
 		dispose();
 	}
-
 }

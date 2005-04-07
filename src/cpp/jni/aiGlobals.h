@@ -26,8 +26,8 @@
  *
  * $RCSfile: aiGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/30 08:15:38 $
+ * $Revision: 1.5 $
+ * $Date: 2005/04/07 20:12:54 $
  */
 
 short artGetType(AIArtHandle handle);
@@ -40,9 +40,6 @@ void artSetFilter(AIArtSet set, bool layerOnly = false);
 AIArtHandle artSetRasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 
 short pathGetBezierCount(AIArtHandle art);
-
-double curveGetPartLength(AIRealBezier *bezier, AIReal t1, AIReal t2, AIReal step);
-double curveGetPositionWithLength(AIRealBezier *bezier, AIReal length, AIReal flatness);
 
 #define DEFINE_SEGMENT(NAME, PTX, PTY, INX, INY, OUTX, OUTY, CORNER) \
 	AIPathSegment NAME; \
@@ -69,3 +66,10 @@ double curveGetPositionWithLength(AIRealBezier *bezier, AIReal length, AIReal fl
 	AIRealPoint NAME; \
 	NAME.h = X; \
 	NAME.v = Y;
+
+#define DEFINE_RECT(RT, X, Y, WIDTH, HEIGHT) \
+	AIRealRect RT; \
+	RT.left = X; \
+	RT.top  = Y; \
+	RT.right =  X + WIDTH; \
+	RT.bottom = Y + HEIGHT;

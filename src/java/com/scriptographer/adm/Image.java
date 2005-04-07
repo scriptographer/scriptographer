@@ -28,8 +28,8 @@
  *
  * $RCSfile: Image.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/03/30 08:21:31 $
+ * $Revision: 1.7 $
+ * $Date: 2005/04/07 20:12:55 $
  */
 
 package com.scriptographer.adm;
@@ -296,7 +296,7 @@ public class Image extends ADMObject {
 	
 	public Drawer getDrawer() {
 		if (drawer == null)
-			drawer = new Drawer(nativeBeginDrawer(), this);
+			drawer = new Drawer(nativeBeginDrawer(), this, false);
 		return drawer;
 	}
 	

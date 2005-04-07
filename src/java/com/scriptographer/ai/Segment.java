@@ -28,8 +28,8 @@
  *
  * $RCSfile: Segment.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.5 $
+ * $Date: 2005/04/07 20:12:55 $
  */
 
 package com.scriptographer.ai;
@@ -211,6 +211,18 @@ public class Segment implements Commitable {
 		markDirty();
 	}
 
+	public Segment divide(float t) {
+		Curve newCurve = getCurve().divide(t);
+		if (newCurve != null)
+			return newCurve.getSegment1();
+		else
+			return null;
+	}
+	
+	public Segment divide() {
+		return divide(0.5f);
+	}
+	
 	public Curve getCurve() {
 		return (Curve) segments.path.getCurves().get(index);
 	}

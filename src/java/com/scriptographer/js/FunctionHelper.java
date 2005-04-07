@@ -28,13 +28,14 @@
  *
  * $RCSfile: FunctionHelper.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/07 20:12:55 $
  */
 
 package com.scriptographer.js;
 
 import org.mozilla.javascript.*;
+
 import com.scriptographer.CommitManager;
 
 import java.util.HashMap;
@@ -85,8 +86,8 @@ public class FunctionHelper {
 		Object[] ids = object.getIds();
 		for (int i = 0; i < ids.length; i++) {
 			Object id = ids[i];
-			Object val = id instanceof String ? object.get((String) id, object) : object.get(((Number) id).intValue(), object);
-			map.put(id, val);
+			Object obj = id instanceof String ? object.get((String) id, object) : object.get(((Number) id).intValue(), object);
+			map.put(id, convertObject(obj));
 		}
 		return map;
 	}
@@ -94,11 +95,19 @@ public class FunctionHelper {
 	public static Object[] convertToArray(NativeArray array) {
 		Object[] objects = new Object[(int) array.getLength()];
 		for (int i = 0; i < objects.length; i++) {
-			Object obj = array.get(i, array);
-			if (obj instanceof NativeObject)
-				obj = convertToMap((NativeObject) obj);
-			objects[i] = obj;
+			objects[i] = convertObject(array.get(i, array));
 		}
 		return objects;
+	}
+	
+	public static Object convertObject(Object obj) {
+		if (obj instanceof NativeArray) {
+			obj = convertToArray((NativeArray) obj);
+		} else if (obj instanceof NativeObject) {
+			obj = convertToMap((NativeObject) obj);
+		} else if (obj instanceof Wrapper) {
+			obj = ((Wrapper) obj).unwrap();
+		}
+		return obj;
 	}
 }

@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/04/04 17:04:36 $
+ * $Revision: 1.7 $
+ * $Date: 2005/04/07 20:12:51 $
  */
 
 #include "jniMacros.h"
@@ -242,9 +242,6 @@ public:
 	jclass cls_Segment;
 	jclass cls_Curve;
 	
-	jclass cls_SegmentPosition;
-	jmethodID cid_SegmentPosition;
-	
 	jclass cls_TabletValue;
 	jmethodID cid_TabletValue;
 	jfieldID fid_TabletValue_offset;
@@ -270,6 +267,11 @@ public:
 	jmethodID cid_Timer;
 	jmethodID mid_Timer_onExecute;
 	
+	jclass cls_Annotator;
+	jmethodID cid_Annotator;
+	jmethodID mid_Annotator_onDraw;
+	jmethodID mid_Annotator_onInvalidate;
+
 // ADM:
 	jclass cls_ADMObject;
 	jfieldID fid_ADMObject_handle;
@@ -287,6 +289,7 @@ public:
 	jmethodID cid_DialogGroupInfo;
 	
 	jclass cls_Drawer;
+	jmethodID cid_Drawer;
 	
 	jclass cls_Image;
 	jfieldID fid_Image_byteWidth;
@@ -346,24 +349,38 @@ public:
 	void println(JNIEnv *env, const char *str, ...);
 	
 	// com.scriptographer.awt.Point <-> AIRealPoint
-	jobject convertPoint(JNIEnv *env, AIRealPoint *pt, jobject res = NULL);	
+	jobject convertPoint(JNIEnv *env, AIReal x, AIReal y, jobject res = NULL);	
+	jobject convertPoint(JNIEnv *env, AIRealPoint *pt, jobject res = NULL) {
+		return convertPoint(env, pt->h, pt->v, res);
+	}
 	AIRealPoint *convertPoint(JNIEnv *env, jobject pt, AIRealPoint *res = NULL);
 
 	// java.awt.Point <-> ADMPoint
-	jobject convertPoint(JNIEnv *env, ADMPoint *pt, jobject res = NULL);
+	jobject convertPoint(JNIEnv *env, int x, int y, jobject res = NULL);
+	jobject convertPoint(JNIEnv *env, ADMPoint *pt, jobject res = NULL) {
+		return convertPoint(env, pt->h, pt->v, res);
+	}
 	ADMPoint *convertPoint(JNIEnv *env, jobject pt, ADMPoint *res = NULL);
 
 	// com.scriptographer.awt.Rectangle <-> AIRealRect
-	jobject convertRectangle(JNIEnv *env, AIRealRect *rt, jobject res = NULL);	
+	jobject convertRectangle(JNIEnv *env, AIReal left, AIReal top, AIReal right, AIReal bottom, jobject res = NULL);
+	jobject convertRectangle(JNIEnv *env, AIRealRect *rt, jobject res = NULL) {
+		return convertRectangle(env, rt->left, rt->top, rt->right, rt->bottom, res);
+	}
 	AIRealRect *convertRectangle(JNIEnv *env, jobject rt, AIRealRect *res = NULL);	
 
 	// java.awt.Rectangle <-> ADMRect
-	jobject convertRectangle(JNIEnv *env, ADMRect *rt, jobject res = NULL);
+	jobject convertRectangle(JNIEnv *env, int left, int top, int right, int bottom, jobject res = NULL);
+	jobject convertRectangle(JNIEnv *env, ADMRect *rt, jobject res = NULL) {
+		return convertRectangle(env, rt->left, rt->top, rt->right, rt->bottom, res);
+	}
 	ADMRect *convertRectangle(JNIEnv *env, jobject rt, ADMRect *res = NULL);	
 
 	// java.awt.Dimension <-> ADMPoint
 	jobject convertDimension(JNIEnv *env, int width, int height, jobject res = NULL);
-	jobject convertDimension(JNIEnv *env, ADMPoint *dim, jobject res = NULL);
+	jobject convertDimension(JNIEnv *env, ADMPoint *dim, jobject res = NULL) {
+		return convertDimension(env, dim->h, dim->v, res);
+	}
 	ADMPoint *convertDimension(JNIEnv *env, jobject dim, ADMPoint *res = NULL);
 
 	// java.awt.Color <-> ADMRGBColor
@@ -398,6 +415,7 @@ public:
 	AIArtHandle getArtHandle(JNIEnv *env, jobject obj);
 	AILayerHandle getLayerHandle(JNIEnv *env, jobject obj);
 	AIDocumentHandle getDocumentHandle(JNIEnv *env, jobject obj);
+	AIDocumentViewHandle getDocumentViewHandle(JNIEnv *env, jobject obj);
 	AILiveEffectHandle getLiveEffectHandle(JNIEnv *env, jobject obj);
 	AIMenuItemHandle getMenuItemHandle(JNIEnv *env, jobject obj);
 	AIMenuGroup getMenuGroupHandle(JNIEnv *env, jobject obj);
@@ -433,6 +451,10 @@ public:
 
 	// AI Timer
 	ASErr timerExecute(AITimerMessage *message);
+
+	// AI Annotator
+	ASErr annotatorDraw(AIAnnotatorMessage *message);
+	ASErr annotatorInvalidate(AIAnnotatorMessage *message);
 	
 	// ADM CallbackListener
 	void callOnNotify(jobject handler, ADMNotifierRef notifier); 

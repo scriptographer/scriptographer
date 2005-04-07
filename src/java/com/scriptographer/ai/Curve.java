@@ -28,8 +28,8 @@
  *
  * $RCSfile: Curve.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/07 20:12:54 $
  */
 
 package com.scriptographer.ai;
@@ -40,12 +40,15 @@ import java.awt.geom.Point2D;
 import java.awt.geom.AffineTransform;
 
 public class Curve {
-	protected SegmentList segmentList = null;
+	protected SegmentList segments = null;
 	protected int index1;
 	protected int index2;
 	private Segment segment1;
 	private Segment segment2;
 	protected int fetchCount = -1;
+	
+	protected static final float EPSILON = 0.00001f;
+	protected static final float FLATNESS = 0.1f;
 
 	public Curve() {
 		segment1 = new Segment();
@@ -53,14 +56,28 @@ public class Curve {
 	}
 
 	public Curve(SegmentList segmentList, int index) {
-		this.segmentList = segmentList;
+		this.segments = segmentList;
 		this.index1 = index;
 		updateSegments();
+	}
+	
+	public Curve(Segment segment1, Segment segment2) {
+		segment1 = new Segment(segment1);
+		segment2 = new Segment(segment2);
+	}
+	
+	public Curve(Curve curve) {
+		this(curve.segment1, curve.segment2);
 	}
 
 	public Curve(Point2D pt1, Point2D h1, Point2D h2, Point2D pt2) {
 		segment1 = new Segment(pt1, pt1, h1, false);
 		segment2 = new Segment(pt2, h2, pt2, false);
+	}
+	
+	public Curve(float p1x, float p1y, float h1x, float h1y, float h2x, float h2y, float p2x, float p2y) {
+		segment1 = new Segment(p1x, p1y, p1x, p1y, h1x, h1y, false);
+		segment2 = new Segment(p2x, p2y, h2x, h2y, p2x, p2y, false);
 	}
 
 	// TODO: instead of calling updateSegments(); everywhere, could there be a better way
@@ -79,17 +96,17 @@ public class Curve {
 	}
 
 	protected void updateSegments() {
-		if (segmentList != null) {
+		if (segments != null) {
 			// a closing bezier?
 			index2 = index1 + 1;
-			if (index2 >= segmentList.length)
+			if (index2 >= segments.size)
 				index2 = 0;
 
 			if (segment1 == null || segment1.index != index1)
-				segment1 = (Segment) segmentList.get(index1);
+				segment1 = (Segment) segments.get(index1);
 
 			if (segment2 == null || segment2.index != index2)
-				segment2 = (Segment) segmentList.get(index2);
+				segment2 = (Segment) segments.get(index2);
 		}
 	}
 
@@ -156,6 +173,14 @@ public class Curve {
 		updateSegments();
 		segment2.point.setLocation(new ArgumentReader().readPoint(pt));
 	}
+	
+	public Segment getSegment1() {
+		return segment1;
+	}
+	
+	public Segment getSegment2() {
+		return segment2;
+	}
 
 	/*
 	 * Instead of using the underlying AI functions and loose time for calling natives,
@@ -215,7 +240,7 @@ public class Curve {
 		);
 	}
 
-	private native float nativeGetLength(float p1x, float p1y, float h1x, float h1y, float h2x, float h2y, float p2x, float p2y, float flatness);
+	private native static float nativeGetLength(float p1x, float p1y, float h1x, float h1y, float h2x, float h2y, float p2x, float p2y, float flatness);
 
 	public float getLength(float flatness) {
 		updateSegments();
@@ -229,44 +254,10 @@ public class Curve {
 	}
 
 	public float getLength() {
-		return getLength(0.1f);
+		return getLength(FLATNESS);
 	}
 
-	private native float nativeGetPartLength(float p1x, float p1y, float h1x, float h1y, float h2x, float h2y, float p2x, float p2y, float fromPosition, float toPosition, float flatness);
-
-	public float getPartLength(float fromPosition, float toPosition, float flatness) {
-		updateSegments();
-		return nativeGetPartLength(
-				segment1.point.x, segment1.point.y,
-				segment1.handleOut.x, segment1.handleOut.y,
-				segment2.handleIn.x, segment2.handleIn.y,
-				segment2.point.x, segment2.point.y,
-				fromPosition, toPosition, flatness
-		);
-	}
-
-	public float getPartLength(float fromPosition, float toPosition) {
-		return getPartLength(fromPosition, toPosition, 0.1f);
-	}
-
-	private native float nativeGetPositionWithLength(float p1x, float p1y, float h1x, float h1y, float h2x, float h2y, float p2x, float p2y, float length, float flatness);
-
-	public float getPositionWithLength(float length, float flatness) {
-		updateSegments();
-		return nativeGetPositionWithLength(
-				segment1.point.x, segment1.point.y,
-				segment1.handleOut.x, segment1.handleOut.y,
-				segment2.handleIn.x, segment2.handleIn.y,
-				segment2.point.x, segment2.point.y,
-				length, flatness
-		);
-	}
-
-	public float getPositionWithLength(float length) {
-		return getPositionWithLength(length, 0.1f);
-	}
-
-	private native void nativeAdjustThroughPoint(float[] values, float x, float y, float position);
+	private native static void nativeAdjustThroughPoint(float[] values, float x, float y, float position);
 
 	public void adjustThroughPoint(Point2D pt, float position) {
 		updateSegments();
@@ -278,16 +269,337 @@ public class Curve {
 		segment1.setValues(values, 0);
 		segment2.setValues(values, 1);
 		// don't mark dirty, commit immediatelly both as all the values have been modified:
-		if (segmentList.path != null)
-			SegmentList.nativeCommit(segmentList.path.handle, index1, 2, values);
-	}
-
-	public Curve divide() {
-		// TODO: implement;
-		return null;
+		if (segments.path != null)
+			SegmentList.nativeCommit(segments.path.handle, index1, 2, values);
 	}
 
 	public void transform(AffineTransform at) {
 		// TODO: implement ?
+	}
+	
+	public Curve divide(double t) {
+		if (t > 0 && t < 1f) {
+			updateSegments();
+			
+			double left[][] = getCurveArray();
+			double right[][] = new double[4][];
+			divide(left, t, left, right);
+		
+			// write back the results:
+			segment1.handleOut.setLocation(left[1][0], left[1][1]);
+	
+			// create the new segment:
+			Segment newSegment = new Segment((float) left[3][0], (float) left[3][1], (float) left[2][0], (float) left[2][1], (float) right[1][0], (float) right[1][1], false);
+	
+			// and insert it, if needed:
+			if (segments != null)
+				segments.add(index2, newSegment);
+	
+			segment2.handleIn.setLocation(right[2][0], right[2][1]);
+	
+			if (segments != null && segments.path != null) {
+				// if this curve is linked to a path, get the new curve there
+				return (Curve) segments.path.getCurves().get(index2);
+			} else {
+				// otherwise create it from the result of divide
+				return new Curve(newSegment, segment2);
+			}
+		}
+		return null;
+	}
+
+	public Curve divide() {
+		return divide(0.5f);
+	}
+
+	/**
+	 * @param point
+	 * @param epsilon
+	 * @return
+	 */
+	public float hitTest(Point point, float epsilon) {
+		updateSegments();
+		
+		return hitTest(getCurveArray(), point.x, point.y, epsilon);
+	}
+
+	public float hitTest(Point point) {
+		return hitTest(point, EPSILON);
+	}
+
+	public float getPartLength(float fromPosition, float toPosition, float flatness) {
+		updateSegments();
+		double[][] curve = getCurveArray();
+		return getPartLength(curve, fromPosition, toPosition, flatness, curve);
+	}
+
+	public float getPartLength(float fromPosition, float toPosition) {
+		return getPartLength(fromPosition, toPosition, FLATNESS);
+	}
+
+	public float getPositionWithLength(float length, float flatness) {
+		if (length <= 0)
+			return 0;
+		// updateSegments is not necessary here, as it is called in getLength!
+		float bezierLength = getLength(flatness);
+		if (length >= bezierLength)
+			return 1;
+		double[][] curve = getCurveArray();
+		double[][] temp = new double[4][];
+		double pos = length / bezierLength, oldF = 1;
+		for (int i = 0; i < 100; i++) { // prevent too many iterations...
+			double stepLength = getPartLength(curve, 0, pos, flatness, temp);
+			double step = (length - stepLength) / bezierLength;
+			double f = Math.abs(step); // f: value for exactness
+			if (f < 0.00001 || f >= oldF) break; // if it's exact enough or even getting worse with iteration, break the loop...
+			pos += step; // (1 + f) * step
+			// if pos < 0 then pos = 0
+			oldF = f;
+		}
+		return (float) pos;
+	}
+
+	public float getPositionWithLength(float length) {
+		return getPositionWithLength(length, FLATNESS);
+	}
+	
+	private double[][] getCurveArray() {
+		return new double[][] {
+			{segment1.point.x, segment1.point.y},
+			{segment1.handleOut.x, segment1.handleOut.y},
+			{segment2.handleIn.x, segment2.handleIn.y},
+			{segment2.point.x, segment2.point.y}
+		};
+	}
+	
+	/*
+	 * Low Level Math functions for division and calculation of roots:
+	 */
+	
+	private static void divide(double[][] curve, double t, double[][] left, double[][] right) {
+		double temp[][][] = new double[4][][];
+
+		// Copy control points
+		temp[0] = curve;
+
+		for (int i = 1; i < 4; i++) {
+			temp[i] = new double[][] {
+				{0, 0}, {0, 0}, {0, 0}, {0, 0}
+			};
+		}
+
+		// Triangle computation
+		double u = 1f - t;
+		for (int i = 1; i < 4; i++) {
+			double[][] row1 = temp[i];
+			double[][] row2 = temp[i - 1];
+			for (int j = 0 ; j < 4 - i; j++) {
+				double[] pt1 = row1[j];
+				double[] pt2 = row2[j];
+				double[] pt3 = row2[j + 1];
+				pt1[0] = u * pt2[0] + t * pt3[0];
+				pt1[1] = u * pt2[1] + t * pt3[1];
+			}
+		}
+		
+		// only write back left curve if it's not overwritten by right afterwards
+		if (left != null) {
+			left[0] = temp[0][0];
+			left[1] = temp[1][0];
+			left[2] = temp[2][0];
+			left[3] = temp[3][0];
+		}
+
+		// curve automatically contains left result, through temp[0],
+		// write right result into right:
+		if (right != null) {
+			right[0] = temp[3][0];
+			right[1] = temp[2][1];
+			right[2] = temp[1][2];
+			right[3] = temp[0][3];
+		}
+	}
+
+	/*
+	 * curve is only modified if it is passed as tempCurve as well. this is needed in getPositionWithLength above...
+	 */
+	private static float getPartLength(double curve[][], double fromPosition, double toPosition, double flatness, double tempCurve[][]) {
+		if (fromPosition > toPosition) {
+			double temp = fromPosition;
+			fromPosition = toPosition;
+			toPosition = temp;
+		} else if (fromPosition == toPosition) {
+			return 0;
+		}
+
+		if (fromPosition < 0)
+			fromPosition = 0;
+
+		if (toPosition > 1)
+			toPosition = 1;
+
+		// get the point in order to calculate the new fromPosition for the divided curve
+		// afterwards (TODO: ther must be a simpler solution for getting that value)
+		if (toPosition < 1) {
+			double fromX = 0;
+			double fromY = 0;
+			if (fromPosition > 0) {
+				// calculate the point of fromPosition (see getPoint)
+				double cx = 3f * (curve[1][0] - curve[0][0]);
+				double bx = 3f * (curve[2][0] - curve[1][0]) - cx;
+				double ax = curve[3][0] - curve[0][0] - cx - bx;
+
+				double cy = 3f * (curve[1][1] - curve[0][1]);
+				double by = 3f * (curve[2][1] - curve[1][1]) - cy;
+				double ay = curve[3][1] - curve[0][1] - cy - by;
+
+				fromX = ((ax * fromPosition + bx) * fromPosition + cx) * fromPosition + curve[0][0];
+				fromY = ((ay * fromPosition + by) * fromPosition + cy) * fromPosition + curve[0][1];
+			}
+			// cut away the second part:
+			divide(curve, toPosition, tempCurve, null);
+			curve = tempCurve;
+			// now adjust fromPosition, by calculating the position of fromX,fromY
+			if (fromPosition > 0) {
+				fromPosition = hitTest(curve, fromX, fromY, EPSILON);
+				if (fromPosition == -1)
+					return -1;
+			}
+		}
+		if (fromPosition > 0) {
+			divide(curve, fromPosition, null, tempCurve);
+			curve = tempCurve;
+		}
+		return nativeGetLength(
+				(float) curve[0][0], (float) curve[0][1],
+				(float) curve[1][0], (float) curve[1][1],
+				(float) curve[2][0], (float) curve[2][1],
+				(float) curve[3][0], (float) curve[3][1],
+				(float) flatness
+		);
+	}
+
+	private static int solveQuadraticRoots(double a, double b, double c, double roots[], double epsilon) {
+		// Solve, using closed form methods, the quadratic polynomial:	
+		//		a*x^2 + b*x + c = 0				
+		// for 2 real roots returned in root[0..1].  If error we return 0.
+		// We also return 0 or 1 real roots as appropriate, such as when
+		// the problem is actually linear.					
+		// After _Numerical Recipes in C_, 2nd edition, Press et al.,	
+		// page 183, although with some added case testing and forwarding.
+		// This is better than the _Graphics Gems_ technique, which admits
+		// the possibility of numerical errors cited in Press.		
+		int solutions = 0;
+		// If problem is actually linear, return 0 or 1 easy roots		
+		if (Math.abs(a) < epsilon) {
+			if (Math.abs(b) >= epsilon) {
+				roots[solutions++] = -c / b;
+			} else if (Math.abs(c) < epsilon) { // if all the coefficients are 0, infinite values are possible!
+				solutions = -1; // -1 indicates infinite solutions
+			}
+			return solutions;
+		}
+		double bb = b*b;
+		double q = bb-4.0*a*c;
+		if (q < 0.0) return solutions;
+		q = Math.sqrt(q);
+		if (b < 0.0) q = -q;
+		q = -0.5 * (b + q);
+		if (Math.abs(q) >= epsilon) roots[solutions++] = c / q;
+		if (Math.abs(a) >= epsilon) roots[solutions++] = q / a;
+		return solutions;
+	}
+
+	private static int solveCubicRoots(double a, double b, double c, double d, double roots[], double epsilon) {
+		// Solve, using closed form methods, the cubic polynomial:		
+		//		a*x^3 + b*x^2 + c*x + d = 0			
+		// for 1 real root returned in root[0], or 3 real roots returned
+		// in root[0..2].  If error we return 0.  Note: we alter c[].	
+		// If the polynomial is actually quadratic or linear (because	
+		// coefficients a or b are zero), we forward the problem to
+		// the quadratic/linear solver and return the appropriate 1 or 2
+		// roots.								
+		// After _Numerical Recipes in C_, 2nd edition, Press et al.,	
+		// page 184, although with some added case testing and forwarding.
+		// This is better than the _Graphics Gems_ technique, which admits
+		// the possibility of numerical errors cited in Press.		
+		// Test for a quadratic or linear degeneracy			
+		if (Math.abs(a) < epsilon) {
+			return solveQuadraticRoots(b, c, d, roots, epsilon);
+		}
+		// Normalize							
+		b /= a; c /= a; d /= a; a = 1.0;
+		// Compute discriminants						
+		double Q = (b * b - 3.0 * c) / 9.0;
+		double QQQ = Q * Q * Q;
+		double R = (2.0 * b * b * b - 9.0 * b * c + 27.0 * d) / 54.0;
+		double RR = R * R;
+		if (RR <= QQQ) { // Three real roots
+			// This sqrt and division is safe, since RR >= 0, so QQQ > RR,	
+			// so QQQ > 0.  The acos is also safe, since RR/QQQ < 1, and	
+			// thus R/sqrt(QQQ) < 1.					
+			double theta = Math.acos(R / Math.sqrt(QQQ));
+			// This sqrt is safe, since QQQ >= 0, and thus Q >= 0
+			double v1 = -2.0 * Math.sqrt(Q);
+			double v2 = b / 3.0;
+			roots[0] = v1 * Math.cos(theta / 3.0) - v2;
+			roots[1] = v1 * Math.cos((theta + 2 * Math.PI) / 3.0) - v2;
+			roots[2] = v1 * Math.cos((theta - 2 * Math.PI) / 3.0) - v2;
+			return 3;
+		} else { // One real root							
+			double A = -Math.pow(Math.abs(R)+ Math.sqrt(RR - QQQ), 1.0 / 3.0);
+			if (A != 0.0) {
+				if (R < 0.0) A = -A;
+				roots[0] = A + Q / A - b / 3.0;
+				return 1;
+			}
+		}
+		return 0;
+	}
+
+	private static int solveCubicRoots(double v1, double v2, double v3, double v4, double v, double roots[], double epsilon) {
+		// conversion from the point coordinates (v1 .. v4) to the polynomal coefficients:
+		double v1m3 = 3.0 * v1;
+		double v2m3 = 3.0 * v2;
+		double v3m3 = 3.0 * v3;
+
+		double a = v4 - v3m3 + v2m3        - v1;
+		double b =      v3m3 - v2m3 - v2m3 + v1m3;
+		double c =             v2m3        - v1m3;
+		double d =                           v1 - v;
+
+		return solveCubicRoots(a, b, c, d, roots, epsilon);
+	}
+	
+	private static float hitTest(double[][] curve, double x, double y, double epsilon) {
+		double txs[] = { 0, 0, 0 }; 
+		double tys[] = { 0, 0, 0 };
+		
+		int sx = solveCubicRoots(curve[0][0], curve[1][0], curve[2][0], curve[3][0], x, txs, epsilon);
+		int sy = solveCubicRoots(curve[0][1], curve[1][1], curve[2][1], curve[3][1], y, tys, epsilon);
+
+		int cx = 0;
+		// sx, sy == -1 means infinite solutions:
+		while (cx < sx || sx == -1) {
+			double tx = txs[cx++];
+			if (tx >= 0 && tx <= 1.0 || sx == -1) {
+				int cy = 0;
+				while (cy < sy || sy == -1) {
+					double ty = tys[cy++];
+					if (ty >= 0 && ty <= 1.0 || sy == -1) {
+						if (sx == -1) tx = ty;
+						else if (sy == -1) ty = tx;
+						if (Math.abs(tx - ty) < epsilon) { // tolerance
+							return (float) ((tx + ty) * 0.5);
+						}
+					}
+				}
+				// avoid endless loops here:
+				// if sx is infinite and there was no fitting ty, there's no solution for this bezier
+				if (sx == -1)
+					sx = 0; 
+			}
+		}
+		return -1;
 	}
 }

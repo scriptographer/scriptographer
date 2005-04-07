@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Drawer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/07 20:12:54 $
  */
  
 #include "stdHeaders.h"
@@ -37,6 +37,13 @@
 /*
  * com.scriptographer.adm.Drawer
  */
+
+/*
+ * void nativeDestroy(int handle)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_nativeDestroy(JNIEnv *env, jobject obj, jint handle) {
+	sADMDrawer->Destroy((ADMDrawerRef) handle);
+}
 
 /*
  * void clear()

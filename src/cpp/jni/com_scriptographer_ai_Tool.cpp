@@ -26,10 +26,10 @@
  *
  * $RCSfile: com_scriptographer_ai_Tool.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/04 17:02:29 $
+ * $Revision: 1.5 $
+ * $Date: 2005/04/07 20:12:54 $
  */
- 
+
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "Plugin.h"

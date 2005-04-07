@@ -139,6 +139,7 @@
         <copy todir="${install.classes}">
             <fileset dir="${build.classes}">
                 <include name="**/*.*" />
+                <exclude name="**/loader/**"/>
             </fileset>
         </copy>
     </target>
@@ -168,11 +169,16 @@
 			<class name="com.scriptographer.ai.LayerList" />
 			<class name="com.scriptographer.ai.Document" />
 			<class name="com.scriptographer.ai.DocumentList" />
+        	<class name="com.scriptographer.ai.View" />
+        	<class name="com.scriptographer.ai.ViewList" />
 			<class name="com.scriptographer.ai.Color" />
 			<class name="com.scriptographer.ai.Pathfinder" />
 			<class name="com.scriptographer.ai.LiveEffect" />
 			<class name="com.scriptographer.ai.MenuItem" />
 			<class name="com.scriptographer.ai.MenuGroup" />
+        	<class name="com.scriptographer.ai.Timer" />
+        	<class name="com.scriptographer.ai.Annotator" />
+        	
 
         	<class name="com.scriptographer.adm.Notifier" />
         	<class name="com.scriptographer.adm.Dialog" />

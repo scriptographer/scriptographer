@@ -105,3 +105,23 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_launch(J
 		delete path;
 	return result;
 }
+
+/*
+ * double getNanoTime()
+ */
+
+JNIEXPORT jlong JNICALL Java_com_scriptographer_ScriptographerEngine_getNanoTime(JNIEnv *env, jclass cls) {
+#ifdef WIN_ENV
+	static int scaleFactor = 0;
+	if (scaleFactor == 0) {
+		LARGE_INTEGER frequency;
+		QueryPerformanceFrequency (&frequency);
+		scaleFactor = frequency.QuadPart;
+	}
+	LARGE_INTEGER counter;
+	QueryPerformanceCounter (& counter);
+	return counter.QuadPart * 1000000 / scaleFactor;
+#else
+	error
+#endif
+}

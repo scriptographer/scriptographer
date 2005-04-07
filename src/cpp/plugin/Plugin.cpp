@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/04/04 17:04:33 $
+ * $Revision: 1.9 $
+ * $Date: 2005/04/07 20:12:49 $
  */
  
 #include "stdHeaders.h"
@@ -467,13 +467,9 @@ ASErr Plugin::handleMessage(char *caller, char *selector, void *message) {
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIAnnotation)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIDrawAnnotation)) {
-			AIAnnotatorMessage *m = (AIAnnotatorMessage *) message;
-			/*
-			ADMRect rect;
-			ADMFont font;
-			OpaqueGrafPtr port;
-			sADMDrawer->Create(*m->port, &rect, font, true);
-			*/
+			error = gEngine->annotatorDraw((AIAnnotatorMessage *) message);
+		} else if (sSPBasic->IsEqual(selector, kSelectorAIInvalAnnotation)) {
+			error = gEngine->annotatorInvalidate((AIAnnotatorMessage *) message);
 		}
 	}
 	// We should probably handle some ADM messages too, but I don't know

@@ -16,7 +16,6 @@ import java.util.Collection;
  * interface.
  *
  * Reason to implement this:
- * - getLength adds .length to the JS wrapper
  * - ad(int, element) returns boolean as well, which makes it easier to implement both adds.
  * - defines less functions and makes it therefore easier to implement (no ListIterator, no SubLists)
  * - defines other often needed functions, e.g. remove(fromIndex, toIndex)
@@ -25,8 +24,6 @@ import java.util.Collection;
  * - ...
  */
 public interface List extends Collection {
-	public int getLength();
-
 	public Object get(int index);
 	public boolean add(int index, Object element);
 	public Object set(int index, Object element);

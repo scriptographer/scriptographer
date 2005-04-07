@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListObject.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/07 20:12:55 $
  */
 
 package com.scriptographer.js;
@@ -64,7 +64,7 @@ public class ListObject extends NativeJavaObject {
 	public Object[] getIds() {
 		if (list != null) {
 			// act like a JS list:
-			Integer[] ids = new Integer[list.getLength()];
+			Integer[] ids = new Integer[list.size()];
 			for (int i = 0; i < ids.length; i++) {
 				ids[i] = new Integer(i);
 			}
@@ -75,7 +75,7 @@ public class ListObject extends NativeJavaObject {
 	}
 
 	public boolean has(int index, Scriptable start) {
-		return list != null && index < list.getLength();
+		return list != null && index < list.size();
 	}
 
 	public Object get(int index, Scriptable scriptable) {
@@ -89,13 +89,16 @@ public class ListObject extends NativeJavaObject {
 
 	public boolean has(String name, Scriptable start) {
 		return super.has(name, start) ||
+			name.equals("length") ||
 			this instanceof StringIndexList && list != null && ((StringIndexList) list).get(name) != null;
 	}
 
 	public Object get(String name, Scriptable scriptable) {
 		Object obj = super.get(name, scriptable);
 		if (obj == Scriptable.NOT_FOUND && list != null) {
-			if (this instanceof StringIndexList) {
+			if (name.equals("length")) {
+				return new Integer(list.size());
+			} else if (this instanceof StringIndexList) {
 				obj = ((StringIndexList) list).get(name);
 				if (obj == null)
 					obj = Scriptable.NOT_FOUND;
@@ -106,7 +109,7 @@ public class ListObject extends NativeJavaObject {
 
 	public void put(int index, Scriptable start, Object value) {
 		if (list != null) {
-			int size = list.getLength();
+			int size = list.size();
 			if (index > size) {
 				for (int i = size; i < index; i++)
 					list.add(i, null);

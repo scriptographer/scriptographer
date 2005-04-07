@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.5 $
+ * $Date: 2005/04/07 20:12:55 $
  */
 
 package com.scriptographer.ai;
@@ -42,7 +42,7 @@ import com.scriptographer.util.AbstractFetchList;
 
 public class SegmentList extends AbstractFetchList {
 	protected Path path;
-	protected int length;
+	protected int size;
 	protected CurveList curves = null;
 
 	private ExtendedJavaList list;
@@ -62,7 +62,7 @@ public class SegmentList extends AbstractFetchList {
 
 	public SegmentList() {
 		list = new ExtendedJavaList();
-		length = 0;
+		size = 0;
 	}
 
 	protected SegmentList(Path path) {
@@ -75,7 +75,7 @@ public class SegmentList extends AbstractFetchList {
 	 *  postscript-like interface: moveTo, lineTo, curveTo, arcTo
 	 */	
 	public void moveTo(float x, float y) {
-		if (length > 0)
+		if (size > 0)
 			throw new UnsupportedOperationException("moveTo can only be called at the beginning of a SegmentList");
 		add(new Segment(x, y));
 	}
@@ -89,7 +89,7 @@ public class SegmentList extends AbstractFetchList {
 	}
 	
 	public void lineTo(float x, float y) {
-		if (length == 0)
+		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		add(new Segment(x, y));
 	}
@@ -103,10 +103,10 @@ public class SegmentList extends AbstractFetchList {
 	}
 	
 	public void curveTo(float c1x, float c1y, float c2x, float c2y, float x, float y) {
-		if (length == 0)
+		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		// first modify the current segment:
-		Segment lastSegment = getSegment(length - 1);
+		Segment lastSegment = getSegment(size - 1);
 		lastSegment.handleOut.setLocation(c1x, c1y);
 		lastSegment.setCorner(false);
 		// and add the new segment, with handleIn set to c2
@@ -122,11 +122,11 @@ public class SegmentList extends AbstractFetchList {
 	}
 
 	public void arcTo(float centerX, float centerY, float endX, float endY, int ccw) {
-		if (length == 0)
+		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		
 		// get the startPoint:
-		Segment startSegment = getSegment(length - 1);
+		Segment startSegment = getSegment(size - 1);
 		double startX = startSegment.point.x;
 		double startY = startSegment.point.y;
 		
@@ -195,15 +195,19 @@ public class SegmentList extends AbstractFetchList {
 		}
 	}
 
-	public void arcTo(Point center, Point endPoint, int ccw) {
-		arcTo(center.x, center.y, endPoint.x, endPoint.y, ccw);
-	}
-
 	public void arcTo(Point2D center, Point2D endPoint, int ccw) {
 		arcTo((float) center.getX(), (float) center.getY(), (float) endPoint.getX(), (float) endPoint.getY(), ccw);
 	}
+	
+	public Segment getFirstSegment() {
+		return (Segment) get(0);
+	}
+	
+	public Segment getLastSegment() {
+		return (Segment) get(size - 1);
+	}
 
-	protected Path getPath() {
+	public Path getPath() {
 		return path;
 	}
 
@@ -223,7 +227,7 @@ public class SegmentList extends AbstractFetchList {
 		if (path != null) {
 			// updateLength is called in the beginning of a SegmentList and whenever the list completely changes,
 			// e.g. when Path.reduceSegments is called. In these cases, the existing segments are not valid anymore:
-			for (int i = 0; i < length; i++) {
+			for (int i = 0; i < size; i++) {
 				Segment segment = (Segment) list.get(i);
 				if (segment != null) {
 					// detach from SegmentList and set null
@@ -234,7 +238,7 @@ public class SegmentList extends AbstractFetchList {
 			if (newLength == -1)
 				newLength = nativeGetLength(path.handle);
 			list.setSize(newLength);
-			length = newLength;
+			size = newLength;
 			if (curves != null)
 				curves.updateLength();
 			// decrease maxVersion so elements gets refetched, see fetch:
@@ -340,8 +344,8 @@ public class SegmentList extends AbstractFetchList {
 	}
 
 	protected void fetch() {
-		if (length > 0)
-			fetch(0, length);
+		if (size > 0)
+			fetch(0, size);
 	}
 
 	public Object get(int index) {
@@ -352,8 +356,8 @@ public class SegmentList extends AbstractFetchList {
 			fromIndex = 0;
 
 		int toIndex = fromIndex + 4;
-		if (toIndex > length)
-			toIndex = length;
+		if (toIndex > size)
+			toIndex = size;
 		fetch(fromIndex, toIndex);
 		return list.get(index);
 	}
@@ -375,14 +379,14 @@ public class SegmentList extends AbstractFetchList {
 		} else return false;
 		// add to internal structure
 		list.add(index, segment);
-		length++;
+		size++;
 		// now update the segment and set the values in the value array:
 		segment.segments = this;
 		segment.index = index;
 		// and add to illustrator as well
 		segment.insert();
 		// updatePoint indices
-		for (int i = index + 1; i < length; i++) {
+		for (int i = index + 1; i < size; i++) {
 			segment = (Segment) list.get(i);
 			if (segment != null)
 				segment.index = i;
@@ -391,8 +395,8 @@ public class SegmentList extends AbstractFetchList {
 	}
 
 	public boolean addAll(int index, Collection c) {
-		if (index < 0 || index > length)
-			throw new IndexOutOfBoundsException("Index: "+index+", Size: "+length);
+		if (index < 0 || index > size)
+			throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
 
 		int count = c.size();
 		if (count == 0)
@@ -463,19 +467,19 @@ public class SegmentList extends AbstractFetchList {
 		return null;
 	}
 
-	public int getLength() {
-		return length;
+	public int size() {
+		return size;
 	}
 
 	public boolean isEmpty() {
-		return length == 0;
+		return size == 0;
 	}
 
 	private static native int nativeRemove(int handle, int index, int count);
 
 	public void remove(int fromIndex, int toIndex) {
 		if (fromIndex < toIndex) {
-			int newSize = length + fromIndex - toIndex;
+			int newSize = size + fromIndex - toIndex;
 
 			for (int i = fromIndex; i < toIndex; i++) {
 				Segment obj = (Segment) list.get(i);
@@ -484,12 +488,12 @@ public class SegmentList extends AbstractFetchList {
 			}
 
 			if (path != null) {
-				length = nativeRemove(path.handle, fromIndex, toIndex - fromIndex);
+				size = nativeRemove(path.handle, fromIndex, toIndex - fromIndex);
 			}
 
 			list.removeRange(fromIndex, toIndex);
 
-			length = newSize;
+			size = newSize;
 		}
 
 	}
@@ -510,8 +514,8 @@ public class SegmentList extends AbstractFetchList {
 		// reverse internal arrays:
 		Object[] objs = list.toArray();
 
-		for (int i = 0; i < length; i++) {
-			int ri = length - i - 1;
+		for (int i = 0; i < size; i++) {
+			int ri = size - i - 1;
 			Segment obj = (Segment)objs[ri];
 			if (obj != null)
 				obj.index = i;
@@ -523,7 +527,7 @@ public class SegmentList extends AbstractFetchList {
 		fetch();
 		StringBuffer buf = new StringBuffer(256);
 		buf.append("[ ");
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < size; i++) {
 			Segment obj = (Segment) get(i);
 			if (i > 0) buf.append(", ");
 			buf.append(obj.toString());

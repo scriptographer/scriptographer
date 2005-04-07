@@ -28,8 +28,8 @@
  *
  * $RCSfile: CurveList.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 23:27:22 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/07 20:12:54 $
  */
 
 package com.scriptographer.ai;
@@ -39,7 +39,7 @@ import com.scriptographer.util.AbstractFetchList;
 
 public class CurveList extends AbstractFetchList {
 	protected Path path;
-	protected int length;
+	protected int size;
 	protected SegmentList segments;
 	protected ExtendedJavaList list;
 
@@ -60,27 +60,27 @@ public class CurveList extends AbstractFetchList {
 	 * TODO: also call it from setClosed, as this changes the number of curves as well!
 	 */
 	protected void updateLength() {
-		int newLength = segments.length;
+		int newLength = segments.size;
 		// reduce length by one if it's an open path:
 		if (!path.getClosed())
 			newLength--;
 
 		list.setSize(newLength);
 
-		length = newLength;
+		size = newLength;
 	}
 
 	protected void fetch(int fromIndex, int toIndex) {
 		// prefetch all the needed segments now:
-		segments.fetch(fromIndex, Math.min(segments.length - 1, toIndex + 1));
+		segments.fetch(fromIndex, Math.min(segments.size - 1, toIndex + 1));
 
 		for (int i = fromIndex; i < toIndex; i++)
 			get(i);
 	}
 
 	protected void fetch() {
-		if (length > 0)
-			fetch(0, length);
+		if (size > 0)
+			fetch(0, size);
 	}
 
 	// this list is read only:
@@ -111,19 +111,19 @@ public class CurveList extends AbstractFetchList {
 		return (Curve) get(index);
 	}
 
-	public int getLength() {
-		return length;
+	public int size() {
+		return size;
 	}
 
 	public boolean isEmpty() {
-		return length == 0;
+		return size == 0;
 	}
 
 	public String toString() {
 		fetch();
 		StringBuffer buf = new StringBuffer(256);
 		buf.append("[ ");
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < size; i++) {
 			Segment obj = (Segment)list.get(i);
 			if (i > 0) buf.append(", ");
 			buf.append(obj.toString());

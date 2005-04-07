@@ -1,12 +1,14 @@
 package com.scriptographer.adm;
 
 import java.awt.Color;
+import java.awt.geom.Point2D;
 
 import com.scriptographer.ai.*;
 
 public class Drawer extends ADMObject {
 	// if this drawer draws into an image:
 	private Image image;
+	private boolean destroy;
 	
 	// ADMColor
 	public final static int
@@ -42,17 +44,25 @@ public class Drawer extends ADMObject {
 		RECOLOR_ACTIVE = 1,
 		RECOLOR_INACTIVE = 2,
 		RECOLOR_DISABLED = 3;
-	
-	protected Drawer() {
-	}
 
-	protected Drawer(int handle, Image image) {
+	protected Drawer(int handle, Image image, boolean destroy) {
 		super(handle);
 		this.image = image;
+		this.destroy = destroy;
 	}
 	
+	protected Drawer() {
+		this(0, null, false);
+	}
+	
+	/**
+	 * This constructor is only used from the native environment for
+	 * creating Drawers for Annotators. These have the destroy flag
+	 * set and get destroyed in dispose()
+	 * @param handle
+	 */
 	protected Drawer(int handle) {
-		this(handle, null);
+		this(handle, null, true);
 	}
 	
 	public void dispose() {
@@ -60,7 +70,15 @@ public class Drawer extends ADMObject {
 			image.endDrawer();
 			image = null;
 		}
+		if (destroy)
+			nativeDestroy(handle);
 		handle = 0;
+	}
+	
+	private native void nativeDestroy(int handle);
+	
+	protected void finalize() {
+		dispose();
 	}
 
 	/* 
@@ -89,6 +107,10 @@ public class Drawer extends ADMObject {
 	public native void unionClipRect(Rectangle rect);
 	public native void subtractClipRect(Rectangle rect);
 
+	// TODO: use something else than Point[]? e.g. Point2D
+	// Also decide about Rectangle vs. x, y, width, height, and so on
+	// Compare to Dialog.setBounds, and all the other functions with
+	// both versions!
 	public native void setClipPolygon(Point[] points);
 	public native void intersectClipPolygon(Point[] points);
 	public native void unionClipPolygon(Point[] points);
@@ -123,7 +145,12 @@ public class Drawer extends ADMObject {
 	 */
 
 	public native void drawLine(int x1, int y1, int x2, int y2);
+	
+	public void drawLine(Point2D p1, Point2D p2) {
+		drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
+	}
 
+	// TODO: Point vs Point2D, see above
 	public native void drawPolygon(Point[] points);
 	public native void fillPolygon(Point[] points);
 	

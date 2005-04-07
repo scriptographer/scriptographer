@@ -15,14 +15,14 @@ import java.util.Collection;
 import java.util.Arrays;
 
 public abstract class AbstractList extends WrappableObject implements List {
-	public abstract int getLength();
+	public abstract int size();
 	public abstract Object get(int index);
 	public abstract boolean add(int index, Object element);
 	public abstract Object set(int index, Object element);
 	public abstract Object remove(int index);
 
 	public int indexOf(Object element) {
-		for (int i = 0; i < getLength(); i++) {
+		for (int i = 0; i < size(); i++) {
 			Object obj = get(i);
 			if (obj == null && element == null || obj.equals(element))
 				return i;
@@ -31,7 +31,7 @@ public abstract class AbstractList extends WrappableObject implements List {
 	}
 
 	public int lastIndexOf(Object element) {
-		for (int i = getLength() - 1; i >= 0; i--) {
+		for (int i = size() - 1; i >= 0; i--) {
 			Object obj = get(i);
 			if (obj == null && element == null || obj.equals(element))
 				return i;
@@ -58,11 +58,11 @@ public abstract class AbstractList extends WrappableObject implements List {
 	}
 
 	public final void clear() {
-		remove(0, getLength());
+		remove(0, size());
 	}
 
 	public boolean add(Object element) {
-		return add(getLength(), element);
+		return add(size(), element);
 	}
 
 	public boolean addAll(int index, Collection elements) {
@@ -76,7 +76,7 @@ public abstract class AbstractList extends WrappableObject implements List {
 	}
 
 	public final boolean addAll(Collection elements) {
-		return addAll(getLength(), elements);
+		return addAll(size(), elements);
 	}
 
 	public final boolean addAll(int index, Object[] elements) {
@@ -84,7 +84,7 @@ public abstract class AbstractList extends WrappableObject implements List {
 	}
 
 	public final boolean addAll(Object[] elements) {
-		return addAll(getLength(), elements);
+		return addAll(size(), elements);
 	}
 
 	public Object[] toArray(Object[] array, int fromIndex, int toIndex) {
@@ -97,11 +97,11 @@ public abstract class AbstractList extends WrappableObject implements List {
 	}
 
 	public final Object[] toArray() {
-		return toArray(null, 0, getLength());
+		return toArray(null, 0, size());
 	}
 
 	public final Object[] toArray(Object[] array) {
-		return toArray(array, 0, getLength());
+		return toArray(array, 0, size());
 	}
 
 	public final Object[] toArray(int fromIndex, int toIndex) {
@@ -113,12 +113,12 @@ public abstract class AbstractList extends WrappableObject implements List {
 	}
 
 	public boolean isEmpty() {
-		return getLength() == 0;
+		return size() == 0;
 	}
 
 	public boolean retainAll(Collection elements) {
 		boolean modified = false;
-		for (int i = getLength() - 1; i >= 0; i--) {
+		for (int i = size() - 1; i >= 0; i--) {
 			Object obj = get(i);
 			if(!elements.contains(obj) && remove(i) != null)
 				modified = true;
@@ -128,7 +128,7 @@ public abstract class AbstractList extends WrappableObject implements List {
 
 	public boolean removeAll(Collection elements) {
 		boolean modified = false;
-		for (int i = getLength() - 1; i >= 0; i--) {
+		for (int i = size() - 1; i >= 0; i--) {
 			Object obj = get(i);
 			if(elements.contains(obj) && remove(i) != null)
 				modified = true;
@@ -145,11 +145,6 @@ public abstract class AbstractList extends WrappableObject implements List {
 		return true;
 	}
 
-	// only for compatibility with Collection
-	public final int size() {
-		return getLength();
-	}
-
 	public Iterator iterator() {
 		return new ListIterator();
 	}
@@ -159,7 +154,7 @@ public abstract class AbstractList extends WrappableObject implements List {
 		int lastIndex = -1;
 
 		public boolean hasNext() {
-			return index != getLength();
+			return index != size();
 		}
 
 		public Object next() {

@@ -28,11 +28,190 @@
  * 
  * $RCSfile: Annotator.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:00 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/07 20:12:54 $
  */
 
 package com.scriptographer.ai;
 
-public class Annotator {
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.WeakHashMap;
+
+import org.mozilla.javascript.Function;
+
+import com.scriptographer.adm.Drawer;
+import com.scriptographer.js.FunctionHelper;
+import com.scriptographer.util.Handle;
+
+public class Annotator extends AIObject {
+	private boolean active;
+
+	private static HashMap annotators = new HashMap();
+	private static ArrayList unusedAnnotators = null;
+	// this is list of drawers that map viewports to created ADM Drawer objects:
+	private static WeakHashMap drawers = new WeakHashMap();
+	private static int counter = 0;
+	
+	public Annotator() {
+		// now see first wether there is an unusedEffect already:
+		ArrayList unusedAnnotators = getUnusedAnnotators();
+		
+		int index = unusedAnnotators.size() - 1;
+		if (index >= 0) {
+			Annotator annotator = (Annotator) unusedAnnotators.get(index);
+			// found one, let's reuse it's handle and remove the old timer from the list:
+			handle = annotator.handle;
+			annotator.handle = 0;
+			unusedAnnotators.remove(index);
+		} else {
+			handle = nativeCreate("Scriptographer Annotator " + (counter++));
+		}		
+
+		if (handle == 0)
+			throw new RuntimeException("Unable to create Annotator");
+		
+		active = false;
+		
+		annotators.put(new Handle(handle), this);
+	}
+	
+	/**
+	 * Called from the native environment.
+	 */
+	protected Annotator(int handle) {
+		this.handle = handle;	
+	}
+	
+	private native int nativeCreate(String name);
+	 
+	public void setActive(boolean active) {
+		if (nativeSetActive(handle, active)) {
+			this.active = active;
+		}
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+	
+	private native boolean nativeSetActive(int handle, boolean active);
+	
+	public void invalidate(int x, int y, int width, int height) {
+		nativeInvalidate(handle, x, y, width, height);
+	}
+	
+	public void invalidate(Rectangle2D rect) {
+		// TODO: implement DocumentView and pass handle to it!
+		// nativeInvalidate(handle, (int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+	
+	private native void nativeInvalidate(int viewHandle, float x, float y, float width, float height);
+	
+	public void dispose() {
+		Handle key = new Handle(handle);
+		// see wether we're still linked:
+		if (annotators.get(key) == this) {
+			// if so remove it and put it to the list of unsed timers, for later recycling
+			annotators.remove(key);
+			getUnusedAnnotators().add(this);
+		}
+	}
+	
+	public static void disposeAll() {
+		for (Iterator it = annotators.values().iterator(); it.hasNext();)
+			((Annotator) it.next()).dispose();
+		
+		// also clean up the port drawers:
+		for (Iterator it = drawers.values().iterator(); it.hasNext();)
+			((Drawer) it.next()).dispose();
+	}
+	
+	private static ArrayList getUnusedAnnotators() {
+		if (unusedAnnotators == null)
+			unusedAnnotators = nativeGetAnnotators();
+		return unusedAnnotators;
+	}
+
+	private static native ArrayList nativeGetAnnotators();
+
+	private Function onDraw = null;
+	private Function onInvalidate = null;
+	private Object[] twoArgs = new Object[2];
+
+	public void setOnDraw(Function onDraw) {
+		this.onDraw = onDraw;
+	}
+	
+	public Function getOnDraw() {
+		return onDraw;
+	}
+
+	protected void onDraw(Drawer drawer, View view) throws Exception {
+		if (wrapper != null && onDraw != null) {
+			twoArgs[0] = drawer;
+			twoArgs[1] = view;
+			Object ret = FunctionHelper.callFunction(wrapper, onDraw, twoArgs);
+		}
+	}
+
+	public void setOnInvalidate(Function onInvalidate) {
+		this.onInvalidate = onInvalidate;
+	}
+	
+	public Function getOnInvalidate() {
+		return onInvalidate;
+	}
+
+	protected void onInvalidate() throws Exception {
+		if (wrapper != null && onInvalidate != null) {
+			Object ret = FunctionHelper.callFunction(wrapper, onInvalidate);
+		}
+	}
+
+	/**
+	 * To be called from the native environment:
+	 */
+	private static void onDraw(int handle, int portHandle, int viewHandle) throws Exception {
+		Annotator annotator = getAnnotator(handle);
+		if (annotator != null) {
+			annotator.onDraw(createDrawer(portHandle), View.wrapHandle(viewHandle));
+		}
+	}
+	
+	private static void onInvalidate(int handle) throws Exception {
+		Annotator annotator = getAnnotator(handle);
+		if (annotator != null) {
+			annotator.onInvalidate();
+		}
+	}
+
+	private static Annotator getAnnotator(int handle) {
+		return (Annotator) annotators.get(new Handle(handle));
+	}
+
+	/**
+	 * Returns a Drawer for the passed portHandle.
+	 * The drawers are cashed and reused for the same port.
+	 * 
+	 * @param portHandle
+	 * @return
+	 */
+	private static Drawer createDrawer(int portHandle) {
+		Handle key = new Handle(portHandle);
+		Drawer drawer = (Drawer) drawers.get(key);
+		if (drawer == null) {
+			drawer = nativeCreateDrawer(portHandle);
+			drawers.put(key, drawer);
+		}
+		return drawer;
+	}
+	
+	private static native Drawer nativeCreateDrawer(int portHandle);
+
+	protected void finalize() {
+		dispose();
+	}
 }

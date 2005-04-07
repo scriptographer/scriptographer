@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/30 08:21:33 $
+ * $Revision: 1.6 $
+ * $Date: 2005/04/07 20:12:55 $
  */
 
 package com.scriptographer.ai;
@@ -38,10 +38,12 @@ import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.mozilla.javascript.NativeObject;
 
 import com.scriptographer.js.FunctionHelper;
+import com.scriptographer.util.Handle;
 
 public class Document extends AIObject {
 
@@ -59,6 +61,7 @@ public class Document extends AIObject {
 	protected int documentHandle = 0;
 
 	protected LayerList layers = null;
+	protected ViewList views = null;
 
 	/**
 	 * Opens an existing document.
@@ -84,18 +87,43 @@ public class Document extends AIObject {
 		super(nativeCreate(title, width, height, colorModel, dialogStatus));
 	}
 
+	protected Document(int handle) {
+		super(handle);
+	}
+
 	private static native int nativeCreate(File file, int colorModel, int dialogStatus);
 	
 	private static native int nativeCreate(String title, float width, float height, int colorModel, int dialogStatus);
-
-	protected Document(int handle) {
-		super(handle);
+	
+	// use a WeakHashMap to keep track of already wrapped documents:
+	private static WeakHashMap documents = new WeakHashMap();
+	
+	protected static Document wrapHandle(int handle) {
+		if (handle == 0)
+			return null;
+		Handle key = new Handle(handle);
+		Document doc = (Document) documents.get(key);
+		if (doc == null) {
+			doc = new Document(handle);
+			documents.put(key, doc);
+		}
+		return doc;
 	}
 	
 	public LayerList getLayers() {
 		if (layers == null)
 			layers = new LayerList(this);
 		return layers;
+	}
+	
+	public ViewList getViews() {
+		if (views == null)
+			views = new ViewList(this);
+		return views;
+	}
+	
+	public View getActiveView() {
+		return getViews().getActiveView();
 	}
 
 	public native Point getPageOrigin();

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/04 17:06:09 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/07 20:12:53 $
  */
 
 package com.scriptographer;
@@ -121,7 +121,8 @@ public class GlobalObject extends ImporterTopLevel {
 
 		new ExtendedJavaClass(this, Segment.class);
 		new ExtendedJavaClass(this, Curve.class);
-		new ExtendedJavaClass(this, SegmentPosition.class);
+		new ExtendedJavaClass(this, CurvePosition.class);
+		new ExtendedJavaClass(this, TabletValue.class);
 		new ExtendedJavaClass(this, Pathfinder.class);
 		new ExtendedJavaClass(this, Document.class);
 		new ExtendedJavaClass(this, LiveEffect.class);
@@ -129,6 +130,7 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, MenuGroup.class);
 		new ExtendedJavaClass(this, Tool.class);
 		new ExtendedJavaClass(this, Timer.class);
+		new ExtendedJavaClass(this, Annotator.class);
 
 		new ExtendedJavaClass(this, ArtSet.class);
 		new ExtendedJavaClass(this, SegmentList.class);
@@ -138,7 +140,7 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, File.class);
 
 		// define some global functions and objects:
-		String[] names = { "print", "include", "execute", "evaluate", "commit" };
+		String[] names = { "print", "include", "execute", "evaluate", "commit", "getNanoTime" };
 		defineFunctionProperties(names, GlobalObject.class, ScriptableObject.DONTENUM);
 
 		// properties:
@@ -260,4 +262,9 @@ public class GlobalObject extends ImporterTopLevel {
 		Function funObj) {
 		CommitManager.commit();
 	}
+	
+	public static long getNanoTime(Context cx, Scriptable thisObj, Object[] args,
+			Function funObj) {
+			return ScriptographerEngine.getNanoTime();
+		}
 }

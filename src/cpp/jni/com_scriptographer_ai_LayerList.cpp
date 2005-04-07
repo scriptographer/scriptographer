@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_LayerList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:42:29 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/07 20:12:54 $
  */
  
 #include "stdHeaders.h"
@@ -59,9 +59,9 @@
 		sAIDocumentList->Activate(prevDoc, false);
 
 /*
- * int nativeGetLength(int docHandle)
+ * int nativeSize(int docHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_LayerList_nativeGetLength(JNIEnv *env, jclass cls, jint docHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_LayerList_nativeSize(JNIEnv *env, jclass cls, jint docHandle) {
 	long count = 0;
 	
 	LAYERLIST_BEGIN
