@@ -127,6 +127,7 @@ JNIEXPORT jlong JNICALL Java_com_scriptographer_ScriptographerEngine_getNanoTime
 	QueryPerformanceCounter (& counter);
 	return counter.QuadPart * 1000000 / scaleFactor;
 #else
-	error
+	Nanoseconds nano = AbsoluteToNanoseconds(UpTime());
+	return UnsignedWideToUInt64(nano);
 #endif
 }

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Annotator.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/08 22:15:54 $
  */
 
 #include "StdHeaders.h"
@@ -108,8 +108,13 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeCreateDrawe
 		rect.top = 0;
 		rect.right = 10000;
 		rect.bottom = 10000;
-		// OpaqueGrafPtr port;
-		ADMDrawerRef drawer = sADMDrawer->Create((AIPortRef) portHandle, &rect, kADMDefaultFont, false);
+
+		// on windows, ADMPortRef and AIPortRef is the same
+		// on mac, ADMPortRef is a GrafPort *, and AIPortRef is a OpaqueGrafPtr *
+		// but for some reason, assuming it's a ADMPortRef works on both, so it 
+		// must be actually the same thing...
+	
+		ADMDrawerRef drawer = sADMDrawer->Create((ADMPortRef) portHandle, &rect, kADMDefaultFont, false);
 		return gEngine->newObject(env, gEngine->cls_Drawer, gEngine->cid_Drawer, (jint) drawer);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
