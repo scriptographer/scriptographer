@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_PathStyle.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/08 21:56:40 $
  */
  
 #include "stdHeaders.h"
@@ -117,5 +117,39 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeCommit(JNIEnv 
 		style.resolution = resolution;
 		
 		sAIPathStyle->SetPathStyle((AIArtHandle) artHandle, &style);
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * void nativeInitStrokeStyle(int handle, float[] strokeColor, boolean strokeOverprint, float strokeWidth, float dashOffset, float[] dashArray, short cap, short join, float miterLimit,)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeInitStrokeStyle(JNIEnv *env, jclass cls, jint handle, jfloatArray strokeColor, jboolean strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit) {
+	try {
+		AIStrokeStyle *style = (AIStrokeStyle *) handle;
+		gEngine->convertColor(env, strokeColor, &style->color);
+		style->overprint = strokeOverprint;
+		style->width = strokeWidth;
+		style->cap = (AILineCap) cap;
+		style->join = (AILineJoin) join;
+		style->miterLimit = miterLimit;
+		
+		// Dash
+		style->dash.offset = dashOffset;
+		int count = env->GetArrayLength(dashArray);
+		style->dash.length = count;
+		if (count > 0) {
+			env->GetFloatArrayRegion(dashArray, 0, count, style->dash.array);
+		}
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * void nativeInitFillStyle(int handle, float[] fillColor, boolean fillOverprint)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeInitFillStyle(JNIEnv *env, jclass cls, jint handle, jfloatArray fillColor, jboolean fillOverprint) {
+	try {
+		AIFillStyle *style = (AIFillStyle *) handle;
+		gEngine->convertColor(env, fillColor, &style->color);
+		style->overprint = fillOverprint;
 	} EXCEPTION_CONVERT(env)
 }

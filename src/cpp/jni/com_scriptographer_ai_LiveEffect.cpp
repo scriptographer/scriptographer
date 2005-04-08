@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_LiveEffect.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/04 17:02:29 $
+ * $Revision: 1.5 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 #include "StdHeaders.h"
@@ -50,12 +50,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_LiveEffect_nativeCreate(JNIEnv
 		AILiveEffectData effectInfo;
 		effectInfo.self = gPlugin->getPluginRef();
 		// add the prefix to the name so getCreatedEffects() knows which live effects where created by this plugin:
-		char *shortName = gEngine->createCString(env, name);
+		char *shortName = gEngine->convertString(env, name);
 		char *longName = new char[strlen(shortName) + strlen(NAME_PREFIX) + 1];
 		strcpy(longName, NAME_PREFIX);
 		strcat(longName, shortName);
 		effectInfo.name = longName;
-		effectInfo.title = gEngine->createCString(env, title);
+		effectInfo.title = gEngine->convertString(env, title);
 		effectInfo.majorVersion = majorVersion;
 		effectInfo.minorVersion = minorVersion;
 		effectInfo.prefersAsInput = preferedInput;
@@ -76,12 +76,12 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeAddMenuIte
 		AILiveEffectHandle effect = gEngine->getLiveEffectHandle(env, obj);
 	
 		AddLiveEffectMenuData menuData;
-		menuData.category = gEngine->createCString(env, category);
-		menuData.title = gEngine->createCString(env, title);
+		menuData.category = gEngine->convertString(env, category);
+		menuData.title = gEngine->convertString(env, title);
 		menuData.options = 0;
 
 		AIMenuItemHandle menuItem = NULL;
-		char *strName = gEngine->createCString(env, name);
+		char *strName = gEngine->convertString(env, name);
 		sAILiveEffect->AddLiveEffectMenuItem(effect, strName, &menuData, &menuItem, NULL);
 		delete menuData.category;
 		delete menuData.title;
@@ -166,7 +166,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeGetEffects
 				jint flags = styleFilterFlags & ~kFilterTypeMask;
 				// create the wrapper
 				jobject effectObj = gEngine->newObject(env, gEngine->cls_LiveEffect, gEngine->cid_LiveEffect,
-						(jint) effect, gEngine->createJString(env, realname), gEngine->createJString(env, title),
+						(jint) effect, gEngine->convertString(env, realname), gEngine->convertString(env, title),
 						(jint) inputPreference, type, flags, (jint) major, (jint) minor);
 				// and add it to the array
 				gEngine->callObjectMethod(env, array, gEngine->mid_Collection_add, effectObj);

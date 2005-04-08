@@ -24,44 +24,56 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * File created on 24.03.2005.
+ * File created on 08.04.2005.
  *
- * $RCSfile: AIObject.java,v $
+ * $RCSfile: DictionaryObject.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
+ * $Revision: 1.1 $
  * $Date: 2005/04/08 21:56:40 $
  */
 
 package com.scriptographer.ai;
 
-import com.scriptographer.js.WrappableObject;
+import java.util.Map;
+
+import org.mozilla.javascript.NativeObject;
+
+import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.util.Handle;
 
-abstract class AIObject extends WrappableObject {
-	// used for storing the native handle for this object
-	protected int handle;
+public abstract class DictionaryObject extends AIObject {
 	
-	public AIObject() {
-		handle = 0;
+	protected DictionaryObject(Handle handle) {
+		super(handle);
 	}
 	
-	public AIObject(int handle) {
-		this.handle = handle;
+	protected DictionaryObject(int handle) {
+		super(handle);
+	}
+
+	private Dictionary dictionary = null;
+	
+	public Dictionary getDictionary() {
+		if (dictionary == null)
+			dictionary = new Dictionary(this);
+		else
+			dictionary.checkUpdate();
+		
+		return dictionary;	
+	}
+
+	public void setDictionary(Map map) {
+		Dictionary dictionary = getDictionary();
+		dictionary.clear();
+		dictionary.putAll(map);
 	}
 	
-	public AIObject(Handle handle) {
-		this.handle = handle.handle;
+	public void setDictionary(NativeObject obj) {
+		setDictionary(FunctionHelper.convertToMap(obj));	
 	}
-	/* don't use this, as it may change, e.g. Art.changeHandle
-	public int hashCode() {
-		return handle;
-	}
-	*/
 	
-	public boolean equals(Object obj) {
-		if (obj instanceof AIObject) {
-			return handle == ((AIObject) obj).handle;
-		}
-		return false;
-	}
+	protected abstract int getVersion();
+
+	protected abstract void nativeGetDictionary(Dictionary dictionary);
+	protected abstract void nativeSetDictionary(Dictionary dictionary);
 }

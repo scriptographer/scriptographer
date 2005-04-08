@@ -141,6 +141,52 @@ kTool2IconID            ICON    DISCARDABLE     "tool2.ico"
 
 kTool1CursorID          CURSOR  DISCARDABLE     "tool1.cur"
 kTool2CursorID          CURSOR  DISCARDABLE     "tool2.cur"
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "080704b0"
+        BEGIN
+            VALUE "Comments", "http://www.scriptographer.com\0"
+            VALUE "CompanyName", "Jürg Lehni, http://www.scratchdisk.com\0"
+            VALUE "FileDescription", "Scriptographer\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "Scriptographer\0"
+            VALUE "LegalCopyright", "Copyright © 2005\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "Scriptographer.aip\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "  Scriptographer\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x807, 1200
+    END
+END
+
+#endif    // !_MAC
+
 #endif    // German (Switzerland) resources
 /////////////////////////////////////////////////////////////////////////////
 

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/30 08:15:39 $
+ * $Revision: 1.6 $
+ * $Date: 2005/04/08 21:56:40 $
  */
  
 #include "stdHeaders.h"
@@ -39,9 +39,9 @@
  * com.scriptographer.ai.Art
  */
  
-short artGetType(AIArtHandle handle) {
+short artGetType(AIArtHandle art) {
 	short type = -1;
-	sAIArt->GetArtType(handle, &type);
+	sAIArt->GetArtType(art, &type);
 	return type;
 }
 
@@ -62,26 +62,26 @@ short artGetType(JNIEnv *env, jclass cls) {
 	// TODO: make sure the above list contains all Art classes!
 }
 
-jboolean artHasChildren(AIArtHandle handle) {
+jboolean artHasChildren(AIArtHandle art) {
 	// don't show the children of textPaths and pointText 
-	short type = artGetType(handle);
+	short type = artGetType(art);
 #ifdef OLD_TEXT_SUITES
-	return (type == kTextArt && artGetTextType(handle) != kPointTextType) || (type != kTextPathArt);
+	return (type == kTextArt && artGetTextType(art) != kPointTextType) || (type != kTextPathArt);
 #else
 	return true;
 #endif
 }
 
-jboolean artIsLayer(AIArtHandle handle) {
+jboolean artIsLayer(AIArtHandle art) {
 	ASBoolean isLayerGroup = false;
-	sAIArt->IsArtLayerGroup(handle, &isLayerGroup);
+	sAIArt->IsArtLayerGroup(art, &isLayerGroup);
 	return isLayerGroup;
 }
 
-AIArtHandle artRasterize(AIArtHandle handle, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
+AIArtHandle artRasterize(AIArtHandle art, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
 	AIArtSet artSet;
 	sAIArtSet->NewArtSet(&artSet);
-	sAIArtSet->AddArtToArtSet(artSet, handle);
+	sAIArtSet->AddArtToArtSet(artSet, art);
 	AIArtHandle raster = artSetRasterize(artSet, type, resolution, antialiasing, width, height);
 	sAIArtSet->DisposeArtSet(&artSet);
 	return raster;
@@ -170,11 +170,54 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env, 
 }
 
 /*
- * boolean nativeRemove(int handle)
+ * void finalize()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_nativeRemove(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_finalize(JNIEnv *env, jobject obj) {
+	try {
+		AIDictionaryRef dictionary = gEngine->getArtDictionaryRef(env, obj);
+		if (dictionary != NULL) {
+			sAIDictionary->Release(dictionary);
+		}
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * Walks through the given dictionary and finds the key for art :)
+ */
+AIDictKey artGetDictionaryKey(AIDictionaryRef dictionary, AIArtHandle art) {
+	AIDictKey foundKey = NULL;
+	AIDictionaryIterator iterator;
+	if (!sAIDictionary->Begin(dictionary, &iterator)) {
+		while (!sAIDictionaryIterator->AtEnd(iterator)) {
+			AIDictKey key = sAIDictionaryIterator->GetKey(iterator);
+			AIArtHandle curArt;
+			if (!sAIDictionary->GetArtEntry(dictionary, key, &curArt) && art == curArt) {
+				foundKey = key;
+				break;
+			}
+			sAIDictionaryIterator->Next(iterator);
+		}
+		sAIDictionaryIterator->Release(iterator);
+	}
+	return foundKey;
+}
+
+/*
+ * boolean nativeRemove(int handle, jint dictionaryRef)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_nativeRemove(JNIEnv *env, jobject obj, jint handle, jint dictionaryRef) {
 	try {
 		AIArtHandle art = (AIArtHandle) handle;
+		// treat the object differently if it's in a dictionary than in the
+		// normal artwork tree of the document:
+		AIDictionaryRef dictionary = (AIDictionaryRef) dictionaryRef;
+		if (dictionary != NULL) {
+			AIDictKey key = artGetDictionaryKey(dictionary, art);
+			if (key != NULL) {
+				sAIDictionary->DeleteEntry(dictionary, key);
+				return true;
+			}
+		}
 		if (artIsLayer(art)) {
 			AILayerHandle layer;
 			sAIArt->GetLayerOfArt(art, &layer);
@@ -193,12 +236,22 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_nativeRemove(JNIEnv *e
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_clone(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle handle = gEngine->getArtHandle(env, obj);
 		AIArtHandle newArt = NULL;
-		sAIArt->DuplicateArt(handle, kPlaceAbove,handle, &newArt);
-		if (newArt != NULL) {
-			return gEngine->wrapArtHandle(env, newArt);
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		// treat the object differently if it's in a dictionary than in the
+		// normal artwork tree of the document:
+		AIDictionaryRef dictionary = gEngine->getArtDictionaryRef(env, obj);
+		if (dictionary != NULL) {
+			AIDictKey key = artGetDictionaryKey(dictionary, art);
+			if (key != NULL)
+				sAIDictionary->CopyEntryToArt(dictionary, key, kPlaceAboveAll, NULL, &newArt);
 		}
+
+		if (newArt == NULL)
+			sAIArt->DuplicateArt(art, kPlaceAbove, art, &newArt);
+
+		if (newArt != NULL)
+			return gEngine->wrapArtHandle(env, newArt);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }
@@ -208,10 +261,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_clone(JNIEnv *env, jobj
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getFirstChild(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle handle = gEngine->getArtHandle(env, obj);
-		if (artHasChildren(handle)) {
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		if (artHasChildren(art)) {
 			AIArtHandle child = NULL;
-			sAIArt->GetArtFirstChild(handle, &child);
+			sAIArt->GetArtFirstChild(art, &child);
 			if (child != NULL) {
 				return gEngine->wrapArtHandle(env, child);
 			}
@@ -225,11 +278,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getFirstChild(JNIEnv *e
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getLastChild(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle handle = gEngine->getArtHandle(env, obj);
-		if (artHasChildren(handle)) {
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		if (artHasChildren(art)) {
 			// there's no other way to do this:
 			AIArtHandle child = NULL, curChild = NULL;
-			sAIArt->GetArtFirstChild(handle, &curChild);
+			sAIArt->GetArtFirstChild(art, &curChild);
 			if (curChild != NULL) {
 				do {
 					child = curChild;
@@ -249,9 +302,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getLastChild(JNIEnv *en
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getNextSibling(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle handle = gEngine->getArtHandle(env, obj);
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIArtHandle child = NULL;
-		sAIArt->GetArtSibling(handle, &child);
+		sAIArt->GetArtSibling(art, &child);
 		if (child != NULL) {
 			return gEngine->wrapArtHandle(env, child);
 		}
@@ -264,9 +317,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getNextSibling(JNIEnv *
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getPreviousSibling(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle handle = gEngine->getArtHandle(env, obj);
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIArtHandle child = NULL;
-		sAIArt->GetArtPriorSibling(handle, &child);
+		sAIArt->GetArtPriorSibling(art, &child);
 		if (child != NULL) {
 			return gEngine->wrapArtHandle(env, child);
 		}
@@ -280,9 +333,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getPreviousSibling(JNIE
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getParent(JNIEnv *env, jobject obj) {
 	jobject res = NULL;
 	try {
-	    AIArtHandle handle = gEngine->getArtHandle(env, obj);
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIArtHandle child = NULL;
-		sAIArt->GetArtParent(handle, &child);
+		sAIArt->GetArtParent(art, &child);
 		if (child != NULL) {
 			res = gEngine->wrapArtHandle(env, child);
 		}
@@ -296,8 +349,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getParent(JNIEnv *env, 
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getBounds(JNIEnv *env, jobject obj) {
 	try {
 		AIRealRect rt;
-	    AIArtHandle handle = gEngine->getArtHandle(env, obj);
-	    sAIArt->GetArtBounds(handle, &rt);
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+	    sAIArt->GetArtBounds(art, &rt);
 	    return gEngine->convertRectangle(env, &rt);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
@@ -308,9 +361,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getBounds(JNIEnv *env, 
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_isCenterVisible(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle handle = gEngine->getArtHandle(env, obj);
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIBoolean visible;
-		if (!sAIArt->GetArtCenterPointVisible(handle, &visible))
+		if (!sAIArt->GetArtCenterPointVisible(art, &visible))
 			return visible;
 	} EXCEPTION_CONVERT(env)
 	return JNI_FALSE;
@@ -321,8 +374,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_isCenterVisible(JNIEnv
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setCenterVisible(JNIEnv *env, jobject obj, jboolean visible) {
 	try {
-	    AIArtHandle handle = gEngine->getArtHandle(env, obj);
-		sAIArt->SetArtCenterPointVisible(handle, visible);
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		sAIArt->SetArtCenterPointVisible(art, visible);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -331,8 +384,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setCenterVisible(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setAttribute(JNIEnv *env, jobject obj, jint attribute, jboolean value) {
 	try {
-	    AIArtHandle handle = gEngine->getArtHandle(env, obj);
-		if (sAIArt->SetArtUserAttr(handle, attribute, value ? attribute : 0))
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		if (sAIArt->SetArtUserAttr(art, attribute, value ? attribute : 0))
 			throw new StringException("Cannot set attributes for art object");
     } EXCEPTION_CONVERT(env)
 }
@@ -343,9 +396,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setAttribute(JNIEnv *env, 
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_getAttribute(JNIEnv *env, jobject obj, jint attribute) {
 	jboolean value = false;
 	try {
-		AIArtHandle handle = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		long values;
-		if (sAIArt->GetArtUserAttr(handle, attribute, &values))
+		if (sAIArt->GetArtUserAttr(art, attribute, &values))
 			throw new StringException("Cannot get attributes for art object");
 		value = values & attribute;
     } EXCEPTION_CONVERT(env)
@@ -357,9 +410,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_getAttribute(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setName(JNIEnv *env, jobject obj, jstring name) {
 	try {
-		AIArtHandle handle = gEngine->getArtHandle(env, obj);
-		char *str = gEngine->createCString(env, name);
-		sAIArt->SetArtName(handle, str);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		char *str = gEngine->convertString(env, name);
+		sAIArt->SetArtName(art, str);
 		delete str;
 	} EXCEPTION_CONVERT(env)
 }
@@ -369,10 +422,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setName(JNIEnv *env, jobje
  */
 JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Art_getName(JNIEnv *env, jobject obj) {
 	try {
-		AIArtHandle handle = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		char name[256];
-		if (!sAIArt->GetArtName(handle, name, 256, NULL)) {
-			return gEngine->createJString(env, name);
+		if (!sAIArt->GetArtName(art, name, 256, NULL)) {
+			return gEngine->convertString(env, name);
 		}
 	} EXCEPTION_CONVERT(env)
 	return NULL;
@@ -384,11 +437,11 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Art_getName(JNIEnv *env, jo
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_hasDefaultName(JNIEnv *env, jobject obj) {
 	ASBoolean isDefaultName = true;
 	try {
-		AIArtHandle handle = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		// at least one byte for the name needs to be specified, otherwise this
 		// doesn't work:
 		char name;
-		sAIArt->GetArtName(handle, &name, 1, &isDefaultName);
+		sAIArt->GetArtName(art, &name, 1, &isDefaultName);
 	} EXCEPTION_CONVERT(env)
 	return isDefaultName;
 }
@@ -398,104 +451,127 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_hasDefaultName(JNIEnv 
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_append(JNIEnv *env, jobject obj, jobject art) {
 	try {
-		AIArtHandle handle1 = gEngine->getArtHandle(env, obj);
-		AIArtHandle handle2 = gEngine->getArtHandle(env, art);
-		if (handle1 != NULL && handle2 != NULL && handle1 != handle2) {
-			short type1 = artGetType(handle1);
+		AIArtHandle art1 = gEngine->getArtHandle(env, obj);
+		AIArtHandle art2 = gEngine->getArtHandle(env, art);
+		if (art1 != NULL && art2 != NULL && art1 != art2) {
+			short type1 = artGetType(art1);
 #ifdef OLD_TEXT_SUITES
 			if (type1 == kTextArt) {
-				short type2 = artGetType(handle2);
+				short type2 = artGetType(art2);
 				if (type2 == kPathArt) {
 					// check that this path is not already in a textPath object:
 					AIArtHandle parent;
-					if (!sAIArt->GetArtParent(handle2, &parent) && artGetType(parent) != kTextPathArt) {
-						AIArtHandle path = handle2;
-						if (!sAITextPath->InsertTextPath(handle1, NULL, kPlaceInsideOnTop, &path)) {
+					if (!sAIArt->GetArtParent(art2, &parent) && artGetType(parent) != kTextPathArt) {
+						AIArtHandle path = art2;
+						if (!sAITextPath->InsertTextPath(art1, NULL, kPlaceInsideOnTop, &path)) {
 							// assign the new art handle
-							// TODO: artChangeArt(handle2, obj2, path);
-							return JNI_TRUE;
+							artChangeArt(art2, obj2, path);
+							return true;
 						}
 					}
 				}
 			} else
 #endif
 			if (type1 == kGroupArt || type1 == kCompoundPathArt || type1 == kMysteryPathArt) {
-				// simply append it!
-				if (!sAIArt->ReorderArt(handle2, kPlaceInsideOnTop, handle1))
-					return JNI_TRUE;
+				// if art belongs to a dictionary, treat it differently
+				AIDictionaryRef dict2 = gEngine->getArtDictionaryRef(env, art);
+				if (dict2 != NULL) {
+					AIDictKey key = artGetDictionaryKey(dict2, art2);
+					if (key != NULL) {
+						if (!sAIDictionary->MoveEntryToArt(dict2, key, kPlaceInsideOnTop, art1, &art2)) {
+							gEngine->changeArtHandle(env, art, art2, NULL);
+							return true;
+						}
+					}
+
+				}
+				// simply append it
+				if (!sAIArt->ReorderArt(art2, kPlaceInsideOnTop, art1))
+					return true;
 			}
 		}
 	} EXCEPTION_CONVERT(env)
 	return JNI_FALSE;
 }
 
-
 jboolean artMove(JNIEnv *env, jobject obj, jobject art, short paintOrder) {
-	AIArtHandle handle1 = gEngine->getArtHandle(env, obj);
-	AIArtHandle handle2 = gEngine->getArtHandle(env, art);
-	if (handle1 != NULL && handle2 != NULL && handle1 != handle2) {
-		AIArtHandle parent = NULL, path = NULL;
-		short type1 = artGetType(handle1);
-		short type2 = artGetType(handle2);
+	try {
+		if (art != NULL) {
+			AIArtHandle art1 = gEngine->getArtHandle(env, obj);
+			AIArtHandle art2 = gEngine->getArtHandle(env, art);
+			if (art1 != NULL && art2 != NULL && art1 != art2) {
 #ifdef OLD_TEXT_SUITES
-		if (type2 == kTextPathArt) {
-			if (type1 == kTextPathArt) {
-				// get the path of it, remove the bellonging textPath, and add the new one...
-				if (!sAIArt->GetArtParent(handle1, &parent) &&
-					!sAITextPath->DeleteTextPath(parent, handle1, &path) &&
-					!sAIArt->GetArtParent(handle2, &parent) &&
-					!sAITextPath->InsertTextPath(parent, handle2, paintOrder, &path)) {
-					artChangeArt(art1, obj, path);
-					return JNI_TRUE;
-					
+				AIArtHandle parent = NULL, path = NULL;
+				short type1 = artGetType(art1);
+				short type2 = artGetType(art2);
+				if (type2 == kTextPathArt) {
+					if (type1 == kTextPathArt) {
+						// get the path of it, remove the bellonging textPath, and add the new one...
+						if (!sAIArt->GetArtParent(art1, &parent) &&
+							!sAITextPath->DeleteTextPath(parent, art1, &path) &&
+							!sAIArt->GetArtParent(art2, &parent) &&
+							!sAITextPath->InsertTextPath(parent, art2, paintOrder, &path)) {
+							artChangeArt(art1, obj, path);
+							return true;
+							
+						}
+					} else if (type1 == kPathArt) {
+						// insert it before art2
+						AIArtHandle parent;
+						if (!sAIArt->GetArtParent(art2, &parent) &&
+							!sAITextPath->InsertTextPath(parent, art2, paintOrder, &art1))
+							artChangeArt(art1, obj, art1);
+							return true;
+					}
+				} else 
+#endif
+				{ // type2 != kTextPathArt
+#ifdef OLD_TEXT_SUITES
+					if (type1 == kTextPathArt) { // delete this textPath and get the path handle from it
+						if (!sAIArt->GetArtParent(art1, &parent) &&
+							!sAITextPath->DeleteTextPath(parent, art1, &path)) {
+							art1 = path;
+							artChangeArt(art1, obj, art1);
+						} else art1 = NULL;
+					}
+#endif
+					// simply try to reorder it
+					if (art1 != NULL && art2 != NULL) {
+						// if art belongs to a dictionary, treat it differently
+						AIDictionaryRef dict1 = gEngine->getArtDictionaryRef(env, obj);
+						if (dict1 != NULL) {
+							AIDictKey key = artGetDictionaryKey(dict1, art1);
+							if (key != NULL) {
+								if (!sAIDictionary->MoveEntryToArt(dict1, key, paintOrder, art2, &art1)) {
+									gEngine->changeArtHandle(env, obj, art1, NULL);
+									return true;
+								}
+							}
+
+						}
+
+						if (!sAIArt->ReorderArt(art1, paintOrder, art2))
+							return true;
+					}
 				}
-			} else if (type1 == kPathArt) {
-				// insert it before handle2
-				AIArtHandle parent;
-				if (!sAIArt->GetArtParent(handle2, &parent) &&
-					!sAITextPath->InsertTextPath(parent, handle2, paintOrder, &handle1))
-					artChangeArt(art1, obj, handle1);
-					return JNI_TRUE;
 			}
-		} else 
-#endif
-		{ // type2 != kTextPathArt
-#ifdef OLD_TEXT_SUITES
-			if (type1 == kTextPathArt) { // delete this textPath and get the path handle from it
-				if (!sAIArt->GetArtParent(handle1, &parent) &&
-					!sAITextPath->DeleteTextPath(parent, handle1, &path)) {
-					handle1 = path;
-					artChangeArt(art1, obj, handle1);
-				} else handle1 = NULL;
-			}
-#endif
-			// simply try to reorder it
-			if (handle1 != NULL && handle2 != NULL && !sAIArt->ReorderArt(handle1, paintOrder, handle2))
-			return JNI_TRUE;
 		}
-	}
+	} EXCEPTION_CONVERT(env)
 	return JNI_FALSE;
 }
-
 
 /*
  * boolean moveAbove(com.scriptographer.ai.Art art)
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_moveAbove(JNIEnv *env, jobject obj, jobject art) {
-	try {
-		return artMove(env, obj, art, kPlaceAbove);
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	return artMove(env, obj, art, kPlaceAbove);
 }
 
 /*
  * boolean moveBelow(com.scriptographer.ai.Art art)
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_moveBelow(JNIEnv *env, jobject obj, jobject art) {
-	try {
-		return artMove(env, obj, art, kPlaceBelow);
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	return artMove(env, obj, art, kPlaceBelow);
 }
 
 /*
@@ -508,7 +584,7 @@ void artTransform(JNIEnv *env, jobject obj, AIArtHandle art, AIRealMatrix *matri
 	short type = artGetType(art);
 	// TODO: add all art objects that need invalidate to be called after transform!
 	if (type == kPathArt)
-		gEngine->callStaticBooleanMethod(env, gEngine->cls_Art, gEngine->mid_Art_updateIfWrapped_int, (jint) art);
+		gEngine->updateArtIfWrapped(env, art);
 
 	if (flags & com_scriptographer_ai_Art_TRANSFORM_DEEP) {
 		AIArtHandle child;
@@ -522,12 +598,12 @@ void artTransform(JNIEnv *env, jobject obj, AIArtHandle art, AIRealMatrix *matri
 
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_transform(JNIEnv *env, jobject obj, jobject at, jint flags) {
 	try {
-		AIArtHandle handle = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIRealMatrix matrix;
 		gEngine->convertMatrix(env, at, &matrix);
 		// modify the matrix so that it 'acts' on the center of the selected object
 		AIRealRect bounds;
-		sAIArt->GetArtBounds(handle, &bounds);
+		sAIArt->GetArtBounds(art, &bounds);
 
 		AIReal centerX = (bounds.left + bounds.right) * 0.5f;
 		AIReal centerY = (bounds.top + bounds.bottom) * 0.5f;
@@ -542,7 +618,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_transform(JNIEnv *env, job
 		sAIRealMath->AIRealMatrixGetScale(&m, &sx, &sy);
 		AIReal lineScale = sAIRealMath->AIRealSqrt(sx) * sAIRealMath->AIRealSqrt(sy);
 
-		artTransform(env, obj, handle, &m, lineScale, flags);
+		artTransform(env, obj, art, &m, lineScale, flags);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -551,8 +627,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_transform(JNIEnv *env, job
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_rasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
 	try {
-		AIArtHandle handle = gEngine->getArtHandle(env, obj);
-		AIArtHandle raster = artRasterize(handle, (AIRasterizeType) type, resolution, antialiasing, width, height);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle raster = artRasterize(art, (AIRasterizeType) type, resolution, antialiasing, width, height);
 		if (raster != NULL)
 			return gEngine->wrapArtHandle(env, raster);
 	} EXCEPTION_CONVERT(env)
@@ -560,11 +636,45 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_rasterize(JNIEnv *env, 
 }
 
 /*
- * int getOrder(com.scriptographer.ai.Art arg1)
+ * int getOrder(com.scriptographer.ai.Art art)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_getOrder(JNIEnv *env, jobject obj, jobject arg1) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_getOrder(JNIEnv *env, jobject obj, jobject art) {
 	try {
-		// TODO: define getOrder
+		AIArtHandle handle1 = gEngine->getArtHandle(env, obj);
+		AIArtHandle handle2 = gEngine->getArtHandle(env, art);
+		short order;
+		sAIArt->GetArtOrder(handle1, handle2, &order);
+		return order;
 	} EXCEPTION_CONVERT(env)
 	return 0;
+}
+
+/*
+ * void nativeGetDictionary(com.scriptographer.ai.Dictionary map)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_nativeGetDictionary(JNIEnv *env, jobject obj, jobject map) {
+	AIDictionaryRef dictionary = NULL;
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		sAIArt->GetDictionary(art, &dictionary);
+		if (dictionary != NULL)
+			gEngine->convertDictionary(env, dictionary, map, false, true); 
+	} EXCEPTION_CONVERT(env)
+	if (dictionary != NULL)
+		sAIDictionary->Release(dictionary);
+}
+
+/*
+ * void nativeSetDictionary(com.scriptographer.ai.Dictionary map)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_nativeSetDictionary(JNIEnv *env, jobject obj, jobject map) {
+	AIDictionaryRef dictionary = NULL;
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		sAIArt->GetDictionary(art, &dictionary);
+		if (dictionary != NULL)
+			gEngine->convertDictionary(env, map, dictionary, false, true); 
+	} EXCEPTION_CONVERT(env)
+	if (dictionary != NULL)
+		sAIDictionary->Release(dictionary);
 }

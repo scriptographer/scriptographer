@@ -26,8 +26,8 @@
  *
  * $RCSfile: exceptions.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/27 10:06:15 $
+ * $Revision: 1.5 $
+ * $Date: 2005/04/08 21:56:40 $
  */
  
 #include "stdHeaders.h"
@@ -80,7 +80,9 @@ ASErrException::ASErrException(ASErr error) {
 }
 
 void ASErrException::convert(JNIEnv *env) {
-	// TODO: declare this
+	char *str = toString(env);
+	gEngine->throwException(env, str);
+	delete str;
 }
 
 char *ASErrException::toString(JNIEnv *env) {

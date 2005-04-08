@@ -28,8 +28,8 @@
  *
  * $RCSfile: PathStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 package com.scriptographer.ai;
@@ -81,7 +81,8 @@ public class PathStyle implements Commitable {
 	}
 
 	protected void checkUpdate() {
-		if (art != null && version != art.version)
+		// only update if it didn't change in the meantime:
+		if (!dirty && art != null && version != art.version)
 			fetch();
 	}
 
@@ -89,14 +90,10 @@ public class PathStyle implements Commitable {
 	private native void nativeCommit(int artHandle, float[] fillColor, boolean fillOverprint,
 			float[] strokeColor, boolean strokeOverprint, float strokeWidth, float dashOffset, float[] dashArray, short cap, short join, float miterLimit,
 			boolean clip, boolean lockClip, boolean evenOdd, float resolution);
-
-	public void fetch() {
-		// only fetch if it didn't change in the meantime:
-		if (!dirty && art != null) {
-			nativeFetch(art.handle);
-			version = art.version;
-			dirty = false;
-		}
+	
+	protected void fetch() {
+		nativeFetch(art.handle);
+		version = art.version;
 	}
 
 	public void commit() {
@@ -187,4 +184,8 @@ public class PathStyle implements Commitable {
 		this.resolution = resolution;
 		markDirty();
 	}
+
+	// These would belong to FillStyle and StrokeStyle, but in order to safe 4 new native files, they're here:
+	protected static native void nativeInitStrokeStyle(int handle, float[] color, boolean overprint, float width, float dashOffset, float[] dashArray, short cap, short join, float miterLimit);
+	protected static native void nativeInitFillStyle(int handle, float[] color, boolean overprint);
 }

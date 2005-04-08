@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/03/30 08:15:37 $
+ * $Revision: 1.7 $
+ * $Date: 2005/04/08 21:56:40 $
  */
  
 #include "stdHeaders.h"
@@ -69,7 +69,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_i
 	AIDocumentHandle doc = NULL;
 	try {
 		jstring path = (jstring) gEngine->callObjectMethod(env, file, gEngine->mid_File_getPath);
-		str = gEngine->createCString(env, path);
+		str = gEngine->convertString(env, path);
 		SPPlatformFileSpecification fileSpec;
 		if (gPlugin->pathToFileSpec(str, &fileSpec)) {
 			sAIDocumentList->Open(&fileSpec, (AIColorModel) colorModel, (ActionDialogStatus) dialogStatus, &doc);
@@ -87,7 +87,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_l
 	char *str = NULL;
 	AIDocumentHandle doc = NULL;
 	try {
-		str = gEngine->createCString(env, title);
+		str = gEngine->convertString(env, title);
 		AIColorModel model = (AIColorModel) colorModel;
 		sAIDocumentList->New(str, &model, &width, &height, (ActionDialogStatus) dialogStatus, &doc);
 	} EXCEPTION_CONVERT(env)
@@ -255,7 +255,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getFile(JNIEnv *en
 	sAIDocument->GetDocumentFileSpecification(&fileSpec);
 	char path[kMaxPathLength];
 	if (gPlugin->fileSpecToPath(&fileSpec, path)) {
-		file = env->NewObject(gEngine->cls_File, gEngine->cid_File, gEngine->createJString(env, path));
+		file = env->NewObject(gEngine->cls_File, gEngine->cid_File, gEngine->convertString(env, path));
 	}
 	
 	DOCUMENT_END
@@ -278,7 +278,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Document_nativeGetForm
 				char *name = NULL;
 				sAIFileFormat->GetFileFormatName(fileFormat, &name);
 				if (name != NULL) {
-					env->SetObjectArrayElement(array, i, gEngine->createJString(env, name));
+					env->SetObjectArrayElement(array, i, gEngine->convertString(env, name));
 				}
 			}
 		}
@@ -329,9 +329,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_write(JNIEnv *env
 	DOCUMENT_BEGIN
 	
 	jstring pathObj = (jstring) gEngine->callObjectMethod(env, fileObj, gEngine->mid_File_getPath);
-	path = gEngine->createCString(env, pathObj);
+	path = gEngine->convertString(env, pathObj);
 	if (formatObj == NULL) format = "Adobe Illustrator Any Format Writer";
-	else format = gEngine->createCString(env, formatObj);
+	else format = gEngine->convertString(env, formatObj);
 	SPPlatformFileSpecification fileSpec;
 	if (gPlugin->pathToFileSpec(path, &fileSpec)) {
 		ret = !sAIDocument->WriteDocument(&fileSpec, format, ask);
@@ -360,10 +360,26 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_close(JNIEnv *env, jo
 /*
  * void redraw()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw__(JNIEnv *env, jobject obj) {
 	DOCUMENT_BEGIN
 	
 	sAIDocument->RedrawDocument();
+	
+	DOCUMENT_END
+}
+
+/*
+ * void redraw(float x, float y, float width, float height)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw__FFFF(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
+	DOCUMENT_BEGIN
+
+	// use the DocumentView's function SetDocumentViewInvalidDocumentRect that fits
+	// much better here.
+	// Acording to DocumentView.h, we don't need to pass a view handle, as this
+	// document is now the current one anyhow and its view is on top of the others:	
+	DEFINE_RECT(rect, x, y, width, height);
+	sAIDocumentView->SetDocumentViewInvalidDocumentRect(NULL, &rect);
 	
 	DOCUMENT_END
 }
@@ -445,21 +461,20 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingArt(JNI
 		spec.type = type;
 		spec.whichAttr = 0;
 		spec.attr = 0;
-		// use the env's version of the callers for speed reasons. check for exceptions only once at the end:		
-		jobject entrySet = env->CallObjectMethod(attributes, gEngine->mid_Map_entrySet);
-		jobject iterator = env->CallObjectMethod(entrySet, gEngine->mid_Set_iterator);
+		// use the env's version of the callers for speed reasons. check for exceptions only once for every entry:
+		jobject keySet = env->CallObjectMethod(attributes, gEngine->mid_Map_keySet);
+		jobject iterator = env->CallObjectMethod(keySet, gEngine->mid_Set_iterator);
 		while (env->CallBooleanMethod(iterator, gEngine->mid_Iterator_hasNext)) {
-			jobject entry = env->CallObjectMethod(iterator, gEngine->mid_Iterator_next);
-			jobject key = env->CallObjectMethod(entry, gEngine->mid_Map_Entry_getKey);
-			jobject value = env->CallObjectMethod(entry, gEngine->mid_Map_Entry_getValue);
+			jobject key = env->CallObjectMethod(iterator, gEngine->mid_Iterator_next);
+			jobject value = env->CallObjectMethod(attributes, gEngine->mid_Map_get, key);
 			if (env->IsInstanceOf(key, gEngine->cls_Number) && env->IsInstanceOf(value, gEngine->cls_Boolean)) {
 				jint flag = env->CallIntMethod(key, gEngine->mid_Number_intValue);
 				jboolean set = env->CallBooleanMethod(value, gEngine->mid_Boolean_booleanValue);
 				spec.whichAttr |= flag;
 				if (set) spec.attr |=  flag;
 			}
+			EXCEPTION_CHECK(env)
 		}
-		EXCEPTION_CHECK(env)
 		if (!sAIArtSet->MatchingArtSet(&spec, 1, set)) {
 			jobject artSet = gEngine->convertArtSet(env, set);
 			sAIArtSet->DisposeArtSet(&set);
@@ -587,4 +602,42 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createSpiral(JNIEn
 	DOCUMENT_END
 
 	return path;
+}
+
+/*
+ * void nativeGetDictionary(com.scriptographer.ai.Dictionary map)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeGetDictionary(JNIEnv *env, jobject obj, jobject map) {
+	AIDictionaryRef dictionary = NULL;
+
+	DOCUMENT_BEGIN
+
+	AIArtHandle handle = gEngine->getArtHandle(env, obj);
+	sAIDocument->GetDictionary(&dictionary);
+	if (dictionary != NULL)
+		gEngine->convertDictionary(env, dictionary, map, false, true); 
+
+	DOCUMENT_END
+
+	if (dictionary != NULL)
+		sAIDictionary->Release(dictionary);
+}
+
+/*
+ * void nativeSetDictionary(com.scriptographer.ai.Dictionary map)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetDictionary(JNIEnv *env, jobject obj, jobject map) {
+	AIDictionaryRef dictionary = NULL;
+
+	DOCUMENT_BEGIN
+
+	AIArtHandle handle = gEngine->getArtHandle(env, obj);
+	sAIDocument->GetDictionary(&dictionary);
+	if (dictionary != NULL)
+		gEngine->convertDictionary(env, map, dictionary, false, true); 
+
+	DOCUMENT_END
+
+	if (dictionary != NULL)
+		sAIDictionary->Release(dictionary);
 }

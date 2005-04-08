@@ -28,8 +28,8 @@
  *
  * $RCSfile: StrokeStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:01 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 package com.scriptographer.ai;
@@ -86,6 +86,10 @@ public class StrokeStyle {
 		this.cap = cap;
 		this.join = join;
 		this.miterLimit = miterLimit;
+	}
+	
+	protected void initNative(int handle) {
+		PathStyle.nativeInitStrokeStyle(handle, color.getComponents(), overprint, width, dashOffset, dashArray, cap, join, miterLimit);
 	}
 
 	public Color getColor() {

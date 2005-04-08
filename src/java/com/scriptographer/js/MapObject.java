@@ -28,14 +28,15 @@
  * 
  * $RCSfile: MapObject.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 package com.scriptographer.js;
 
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.Wrapper;
 
 import java.util.Map;
 
@@ -89,8 +90,11 @@ public class MapObject extends NativeJavaObject {
 	}
 
 	public void put(int index, Scriptable start, Object value) {
-		if (map != null)
+		if (map != null) {
+			if (value instanceof Wrapper)
+				value = ((Wrapper) value).unwrap();
 			map.put(new Integer(index), value);
+		}
 	}
 
 	public boolean has(String name, Scriptable start) {
@@ -109,7 +113,10 @@ public class MapObject extends NativeJavaObject {
 	}
 
 	public void put(String name, Scriptable start, Object value) {
-		if (map != null)
+		if (map != null) {
+			if (value instanceof Wrapper)
+				value = ((Wrapper) value).unwrap();
 			map.put(name, value);
+		}
 	}
 }

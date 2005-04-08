@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_MenuItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 #include "StdHeaders.h"
@@ -44,10 +44,10 @@
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_MenuItem_nativeCreate(JNIEnv *env, jclass cls, jstring name, jstring text, jstring group, jint options) {
 	try {
-		char *nameStr = gEngine->createCString(env, name);
+		char *nameStr = gEngine->convertString(env, name);
 		AIPlatformAddMenuItemData data;
-		data.groupName = gEngine->createCString(env, group);
-		char *textStr = gEngine->createCString(env, text);
+		data.groupName = gEngine->convertString(env, group);
+		char *textStr = gEngine->convertString(env, text);
 		data.itemText = gPlugin->toPascal(textStr, (unsigned char*) textStr);
 		AIMenuItemHandle menuItem = NULL;
 		sAIMenu->AddMenuItem(gPlugin->getPluginRef(), nameStr, &data, options, &menuItem);
@@ -75,7 +75,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_MenuItem_nativeRemove(JNIEnv *
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_MenuItem_nativeSetText(JNIEnv *env, jobject obj, jstring text) {
 	try {
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
-		char *textStr = gEngine->createCString(env, text);
+		char *textStr = gEngine->convertString(env, text);
 		sAIMenu->SetItemText(item, textStr);
 		delete textStr;
 	} EXCEPTION_CONVERT(env)

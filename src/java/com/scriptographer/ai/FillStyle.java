@@ -28,8 +28,8 @@
  *
  * $RCSfile: FillStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:01 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 package com.scriptographer.ai;
@@ -45,7 +45,7 @@ public class FillStyle {
 	}
 
 	protected FillStyle(FillStyle fill, PathStyle style) {
-		this(fill);
+		init(fill.color, fill.overprint);
 		this.style = style;
 	}
 
@@ -64,6 +64,10 @@ public class FillStyle {
 	protected void init(Color color, boolean overprint) {
 		this.color = color;
 		this.overprint = overprint;
+	}
+	
+	protected void initNative(int handle) {
+		PathStyle.nativeInitFillStyle(handle, color.getComponents(), overprint);
 	}
 
 	public Color getColor() {

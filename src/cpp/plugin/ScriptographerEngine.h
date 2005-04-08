@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/07 20:12:51 $
+ * $Revision: 1.8 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 #include "jniMacros.h"
@@ -54,6 +54,9 @@ public:
 	 * Java reflection.  These are computed and cached during initialization.
 	 */
 // JSE:
+	jclass cls_Object;
+	jmethodID mid_Object_toString;
+
 	jclass cls_System;
 	jfieldID fid_System_out;
 	
@@ -69,6 +72,7 @@ public:
 	
 	jclass cls_Number;
 	jmethodID mid_Number_intValue;
+	jmethodID mid_Number_floatValue;
 	
 	jclass cls_Integer;
 	jmethodID cid_Integer;
@@ -92,13 +96,9 @@ public:
 	jmethodID mid_Collection_size;
 
 	jclass cls_Map;
-	jmethodID mid_Map_entrySet;
+	jmethodID mid_Map_keySet;
 	jmethodID mid_Map_put;
 	jmethodID mid_Map_get;
-	
-	jclass cls_Map_Entry;
-	jmethodID mid_Map_Entry_getKey;
-	jmethodID mid_Map_Entry_getValue;
 	
 	jclass cls_HashMap;
 	jmethodID cid_HashMap;
@@ -112,6 +112,7 @@ public:
 	jclass cls_Iterator;
 	jmethodID mid_Iterator_hasNext;
 	jmethodID mid_Iterator_next;
+	jmethodID mid_Iterator_remove;
 
 	jclass cls_OutOfMemoryError;
 	
@@ -132,6 +133,10 @@ public:
 	jfieldID fid_awt_Point_x;
 	jfieldID fid_awt_Point_y;
 	jmethodID mid_awt_Point_setLocation;
+
+	jclass cls_awt_Point2D;
+	jmethodID mid_awt_Point2D_getX;
+	jmethodID mid_awt_Point2D_getY;
 	
 	jclass cls_awt_Dimension;
 	jmethodID cid_awt_Dimension;
@@ -214,9 +219,11 @@ public:
 
 	jclass cls_Art;
 	jfieldID fid_Art_version;
+	jfieldID fid_Art_dictionaryRef;
 	jmethodID mid_Art_wrapHandle;
 	jmethodID mid_Art_updateIfWrapped_int;
 	jmethodID mid_Art_updateIfWrapped_Array;
+	jmethodID mid_Art_changeHandle;
 
 	jclass cls_ArtSet;
 	jmethodID cid_ArtSet;
@@ -228,9 +235,13 @@ public:
 	
 	jclass cls_FillStyle;
 	jmethodID cid_FillStyle;
+	jmethodID mid_FillStyle_init;
+	jmethodID mid_FillStyle_initNative;
 	
 	jclass cls_StrokeStyle;
 	jmethodID cid_StrokeStyle;
+	jmethodID mid_StrokeStyle_init;
+	jmethodID mid_StrokeStyle_initNative;
 	
 	jclass cls_Group;
 	
@@ -290,6 +301,9 @@ public:
 	
 	jclass cls_Drawer;
 	jmethodID cid_Drawer;
+
+	jclass cls_FontInfo;
+	jmethodID cid_FontInfo;
 	
 	jclass cls_Image;
 	jfieldID fid_Image_byteWidth;
@@ -403,13 +417,21 @@ public:
 	jobject convertMatrix(JNIEnv *env, AIRealMatrix *mt, jobject res = NULL);
 	AIRealMatrix *convertMatrix(JNIEnv *env, jobject mt, AIRealMatrix *res = NULL);
 
-	// AIArtSet <-> ArtSet
+	// AIFillStyle <-> com.scriptoggrapher.ai.FillStyle
+	jobject convertFillStyle(JNIEnv *env, AIFillStyle *style, jobject res = NULL);
+	AIFillStyle *convertFillStyle(JNIEnv *env, jobject style, AIFillStyle *res = NULL);
+
+	// AIStrokeStyle <-> com.scriptoggrapher.ai.StrokeStyle
+	jobject convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, jobject res = NULL);
+	AIStrokeStyle *convertStrokeStyle(JNIEnv *env, jobject style, AIStrokeStyle *res = NULL);
+
+	// AIArtSet <-> com.scriptoggrapher.ai.ArtSet
 	jobject convertArtSet(JNIEnv *env, AIArtSet set, bool layerOnly = false);
 	AIArtSet convertArtSet(JNIEnv *env, jobject artSet);
 	
 	// java.util.Map <-> AIDictionary
-	jobject convertDictionary(JNIEnv *env, AIDictionaryRef dictionary, jobject map = NULL, bool onlyNew = false);
-	AIDictionaryRef convertDictionary(JNIEnv *env, jobject map, AIDictionaryRef dictionary = NULL);
+	jobject convertDictionary(JNIEnv *env, AIDictionaryRef dictionary, jobject map = NULL, bool dontOverwrite = false, bool removeOld = false);
+	AIDictionaryRef convertDictionary(JNIEnv *env, jobject map, AIDictionaryRef dictionary = NULL, bool dontOverwrite = false, bool removeOld = false);
 
 	// AI Handles
 	AIArtHandle getArtHandle(JNIEnv *env, jobject obj);
@@ -419,9 +441,12 @@ public:
 	AILiveEffectHandle getLiveEffectHandle(JNIEnv *env, jobject obj);
 	AIMenuItemHandle getMenuItemHandle(JNIEnv *env, jobject obj);
 	AIMenuGroup getMenuGroupHandle(JNIEnv *env, jobject obj);
+	AIDictionaryRef getArtDictionaryRef(JNIEnv *env, jobject obj);
 	
 	// AI Wrap Handles
-	jobject wrapArtHandle(JNIEnv *env, AIArtHandle handle);
+	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDictionaryRef dictionary = NULL);
+	bool updateArtIfWrapped(JNIEnv *env, AIArtHandle art);
+	void changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary = NULL);
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
 
@@ -487,8 +512,9 @@ public:
 	// JNI stuff:
 	JNIEnv *getEnv();
 	
-	jstring createJString(JNIEnv *env, const char *str);
-	char *createCString(JNIEnv *env, jstring jstr);
+	jstring convertString(JNIEnv *env, const char *str);
+	char *convertString(JNIEnv *env, jstring jstr);
+
 	void throwException(JNIEnv *env, const char* name, const char* msg);
 	void throwException(JNIEnv *env, const char* msg);
 

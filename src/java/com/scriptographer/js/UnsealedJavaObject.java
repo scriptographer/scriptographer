@@ -28,8 +28,8 @@
  *
  * $RCSfile: UnsealedJavaObject.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 package com.scriptographer.js;
@@ -108,7 +108,7 @@ public class UnsealedJavaObject extends NativeJavaObject {
 	public void put(String name, Scriptable start, Object value) {
 		if (super.has(name, start))
 			super.put(name, start, value);
-		else 
+		else
 			properties.put(name, value);
 	}
 }

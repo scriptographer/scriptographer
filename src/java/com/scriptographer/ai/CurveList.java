@@ -28,8 +28,8 @@
  *
  * $RCSfile: CurveList.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 package com.scriptographer.ai;
@@ -51,8 +51,12 @@ public class CurveList extends AbstractFetchList {
 		updateLength();
 	}
 	
-	protected Path getPath() {
+	public Path getPath() {
 		return path;
+	}
+	
+	public int hashCode() {
+		return path != null ? path.hashCode() : super.hashCode();
 	}
 
 	/**

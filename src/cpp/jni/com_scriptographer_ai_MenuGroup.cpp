@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_MenuGroup.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 #include "StdHeaders.h"
@@ -43,10 +43,10 @@
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_MenuGroup_nativeCreate(JNIEnv *env, jclass cls, jstring name, jstring nearGroup, jint parentItemHandle, jint options) {
 	try {
-		char *nameStr = gEngine->createCString(env, name);
+		char *nameStr = gEngine->convertString(env, name);
 		AIMenuGroup group = NULL;
 		if (nearGroup != NULL) {
-			char *nearGroupStr = gEngine->createCString(env, nearGroup);
+			char *nearGroupStr = gEngine->convertString(env, nearGroup);
 			sAIMenu->AddMenuGroup(nameStr, options, nearGroupStr, &group);
 			delete nearGroupStr;
 		} else if (parentItemHandle != 0) {

@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/04/07 20:12:55 $
+ * $Revision: 1.6 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 package com.scriptographer.ai;
@@ -212,7 +212,7 @@ public class SegmentList extends AbstractFetchList {
 	}
 
 	public int hashCode() {
-		return path != null ? path.handle : super.hashCode();
+		return path != null ? path.hashCode() : super.hashCode();
 	}
 
 	private static native int nativeGetLength(int handle);

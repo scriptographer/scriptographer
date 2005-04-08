@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Annotator.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 #include "StdHeaders.h"
@@ -45,7 +45,7 @@
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Annotator_nativeCreate(JNIEnv *env, jobject obj, jstring name) {
 	try {
-		char *str = gEngine->createCString(env, name);
+		char *str = gEngine->convertString(env, name);
 		AIAnnotatorHandle annotator = NULL;
 		sAIAnnotator->AddAnnotator(gPlugin->getPluginRef(), str, &annotator);
 		delete str;

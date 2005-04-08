@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Item.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/03/30 08:15:38 $
+ * $Revision: 1.7 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 #include "stdHeaders.h"
@@ -137,7 +137,7 @@ void ASAPI callbackItemDraw(ADMItemRef item, ADMDrawerRef drawer) {
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeCreate(JNIEnv *env, jobject obj, jint dialogHandle, jstring type, jint options) {
 	try {
-		char *itemType = gEngine->createCString(env, type);
+		char *itemType = gEngine->convertString(env, type);
 		// create with default dimensions:
 		DEFINE_ADM_RECT(rect, 0, 0, 100, 100);
 		ADMItemRef item = sADMItem->Create((ADMDialogRef) dialogHandle, kADMUniqueItemID, itemType, &rect, callbackItemInit, env->NewGlobalRef(obj), options);
@@ -157,7 +157,7 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_Item_nativeInit(JNIEnv *en
 	try {
 		sADMItem->SetUserData((ADMItemRef) handle, env->NewGlobalRef(obj));
 		callbackItemInit((ADMItemRef) handle);
-		return gEngine->createJString(env, sADMItem->GetItemType((ADMItemRef) handle));
+		return gEngine->convertString(env, sADMItem->GetItemType((ADMItemRef) handle));
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }

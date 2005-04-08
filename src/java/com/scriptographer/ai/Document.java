@@ -28,13 +28,14 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/04/07 20:12:55 $
+ * $Revision: 1.7 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 package com.scriptographer.ai;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
@@ -45,7 +46,7 @@ import org.mozilla.javascript.NativeObject;
 import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.util.Handle;
 
-public class Document extends AIObject {
+public class Document extends DictionaryObject {
 
 	// TODO: move this to app.DIALOG_* and have a global function set / getDialogStatus,
 	// that controls the general handling of dialogs on a global setting level.
@@ -116,6 +117,10 @@ public class Document extends AIObject {
 		return layers;
 	}
 	
+	public Layer getActiveLayer() {
+		return null; // TODO:
+	}
+	
 	public ViewList getViews() {
 		if (views == null)
 			views = new ViewList(this);
@@ -183,6 +188,16 @@ public class Document extends AIObject {
 	public native void cut();
 	
 	public native void paste();
+
+	/**
+	 * Invalidates the rectangle in artwork coordinates. This will cause all views of the
+	 * document that contain the given rectangle to update at the next opportunity.
+	 */
+	public native void redraw(float x, float y, float width, float height);
+	
+	public void redraw(Rectangle2D rect) {
+		redraw((float) rect.getX(), (float) rect.getY(), (float) rect.getWidth(), (float) rect.getHeight());
+	}
 	
 	public native boolean write(File file, String format, boolean ask);
 
@@ -249,8 +264,17 @@ public class Document extends AIObject {
 	public Raster createRaster() {
 		return new Raster(this);
 	}
-	
-	/*
-	 * TODO: add all create* functions for all types and parameters!
-	 */
+
+	protected int getVersion() {
+		// TODO: getVersion is used for Dictionary. But right now
+		// document is not version aware. This means that once
+		// the Dictionary is created, it will ignore changes to the
+		// document's dictionary from other parts of illustrator.
+		// this should be changed!
+		return 0;
+	}
+
+	protected native void nativeGetDictionary(Dictionary dictionary);
+
+	protected native void nativeSetDictionary(Dictionary dictionary);
 }

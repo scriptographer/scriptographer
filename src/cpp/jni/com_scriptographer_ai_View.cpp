@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_View.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/08 11:05:24 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 #include "StdHeaders.h"
@@ -186,9 +186,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_View_getScreenMode(JNIEnv *env
 }
 
 /*
- * boolean templateVisible()
+ * boolean isTemplateVisible()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_templateVisible(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_isTemplateVisible(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		AIBoolean visible = false;
@@ -210,9 +210,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_scrollBy(JNIEnv *env, job
 }
 
 /*
- * com.scriptographer.ai.Rectangle getInvalidRect()
+ * com.scriptographer.ai.Rectangle getUpdateRect()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_getInvalidRect(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_getUpdateRect(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		AIRealRect rect;
@@ -223,9 +223,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_getInvalidRect(JNIEnv 
 }
 
 /*
- * void setInvalidRect(float x, float y, float width, float height)
+ * void invalidate(float x, float y, float width, float height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setInvalidRect(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_invalidate(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		DEFINE_RECT(rect, x, y, width, height);

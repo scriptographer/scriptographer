@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/03/30 08:21:32 $
+ * $Revision: 1.7 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 package com.scriptographer.ai;
@@ -40,7 +40,7 @@ import java.awt.geom.AffineTransform;
 
 import com.scriptographer.util.Handle;
 
-abstract class Art extends AIObject {
+abstract class Art extends DictionaryObject {
 	
 	// the internal version. this is used for internally reflected data,
 	// such as segmentList, pathStyle, and so on. Everytime an object gets
@@ -48,6 +48,9 @@ abstract class Art extends AIObject {
 	// increases the version of all involved art objects.
 	// update-commit related code needs to check against this variable
 	protected int version = 0;
+	
+	// the reference to the dictionary that contains this Art object, if any
+	protected int dictionaryRef = 0;
 	
 	// internal hash map that keeps track of already wrapped objects. defined
 	// as weak.
@@ -214,7 +217,7 @@ abstract class Art extends AIObject {
 	 * @param type
 	 * @return
 	 */
-	protected static Art wrapHandle(int artHandle, int type) {
+	protected static Art wrapHandle(int artHandle, int type, int dictionaryRef) {
 		// first see wether the object was already wrapped before:
 		Handle handle = new Handle(artHandle);
 		Art art = (Art) artWrappers.get(handle);
@@ -235,6 +238,7 @@ abstract class Art extends AIObject {
 				break;
 			}
 		}
+		art.dictionaryRef = dictionaryRef;
 		return art;
 	}
 	
@@ -274,16 +278,34 @@ abstract class Art extends AIObject {
 			}
 		}
 	}
+	
+	private void changeHandle(int newHandle, int newDictionaryRef) {
+		// remove the object at the old handle
+		if (handle != newHandle) {
+			Handle handleObj = new Handle(handle);
+			artWrappers.remove(handleObj);
+			// change the handles
+			handle = newHandle;
+			// and insert it again
+			handleObj.handle = newHandle;
+			artWrappers.put(handleObj, this);
+		}
+		dictionaryRef = newDictionaryRef;
+		// udpate
+		version++;
+	}
 
 	public boolean remove() {
 		boolean ret = false;
 		if (handle != 0) {
-			ret = nativeRemove(handle);
+			ret = nativeRemove(handle, dictionaryRef);
 			artWrappers.remove(new Handle(handle));
 			handle = 0;			
 		}
 		return ret;
 	}
+	
+	protected native void finalize();
 
 	public native Object clone();
 
@@ -293,13 +315,14 @@ abstract class Art extends AIObject {
 	 * @return
 	 */
 	private native static int nativeCreate(int docHandle, int type);
-	private native boolean nativeRemove(int handle);
+	private native boolean nativeRemove(int handle, int dictionaryRef);
+
+	public native Art getParent();
 
 	public native Art getFirstChild();
 	public native Art getLastChild();
 	public native Art getNextSibling();
 	public native Art getPreviousSibling();
-	public native Art getParent();
 
 	// don't implement this in native as the number of Art objects is not known in advance
 	// and like this, a java ArrayList can be used:
@@ -383,6 +406,12 @@ abstract class Art extends AIObject {
 	 */
 
 	public native boolean append(Art art);
+	
+	/**
+	 * 
+	 * @param art
+	 * @return
+	 */
 	public native boolean moveAbove(Art art);
 	public native boolean moveBelow(Art art);
 
@@ -456,7 +485,10 @@ abstract class Art extends AIObject {
 		return getOrder(art) == ORDER_ANCHESTOR;		
 	}
 
-	/*
+	protected native void nativeGetDictionary(Dictionary dictionary);
+	protected native void nativeSetDictionary(Dictionary dictionary);
+
+	/* TODO:
 	{"equals",			artEquals,				0},
 	{"clone",			artClone,				0},
 	{"isValid",			artIsValid,				0},
@@ -465,4 +497,9 @@ abstract class Art extends AIObject {
 	{"hasStroke",		artHasStroke,			0},
 	{"isClipping",		artIsClipping,			0},
 	*/
+	
+	protected int getVersion() {
+		return version;
 	}
+	
+}

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Drawer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/08 21:56:40 $
  */
  
 #include "stdHeaders.h"
@@ -501,26 +501,32 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Drawer_getTextWidth(JNIEnv *e
 	return 0;
 }
 
+jobject drawerGetFontInfo(JNIEnv *env, jobject obj, int font = -1) {
+	try {
+		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
+		ADMFontInfo info;
+		if (font == -1)
+			sADMDrawer->GetFontInfo(drawer, &info);
+		else
+			sADMDrawer->GetThisFontInfo((ADMFont) font, &info);
+		
+		return gEngine->newObject(env, gEngine->cls_FontInfo, gEngine->cid_FontInfo, info.height, info.ascent, info.descent, info.leading, info.maxWidth);
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
 /*
  * com.scriptographer.adm.Drawer$FontInfo getFontInfo()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Drawer_getFontInfo__(JNIEnv *env, jobject obj) {
-	try {
-		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-// TODO: define getFontInfo
-	} EXCEPTION_CONVERT(env)
-	return NULL;
+	return drawerGetFontInfo(env, obj, 0);
 }
 
 /*
  * com.scriptographer.adm.Drawer$FontInfo getFontInfo(int font)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Drawer_getFontInfo__I(JNIEnv *env, jobject obj, jint font) {
-	try {
-		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-// TODO: define getFontInfo
-	} EXCEPTION_CONVERT(env)
-	return NULL;
+	return drawerGetFontInfo(env, obj, font);
 }
 
 /*

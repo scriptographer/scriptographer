@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Timer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 #include "StdHeaders.h"
@@ -44,7 +44,7 @@
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Timer_nativeCreate(JNIEnv *env, jobject obj, jstring name, jint period) {
 	try {
-		char *str = gEngine->createCString(env, name);
+		char *str = gEngine->convertString(env, name);
 		AITimerHandle timer = NULL;
 		sAITimer->AddTimer(gPlugin->getPluginRef(), str, period, &timer);
 		delete str;

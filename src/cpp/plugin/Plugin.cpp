@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.cpp,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/04/07 20:12:49 $
+ * $Revision: 1.10 $
+ * $Date: 2005/04/08 21:56:39 $
  */
  
 #include "stdHeaders.h"
@@ -168,6 +168,8 @@ ASErr Plugin::postStartupPlugin() {
 	if (fEngine == NULL)
 		return kCantHappenErr;
 	
+	sSPAccess->AcquirePlugin(fPluginRef, &fPluginAccess);
+
 	// now accuire the rest of the suites:
 	ASErr error = acquireSuites(&gAdditionalSuites);
 	if (error) return error;
@@ -179,9 +181,11 @@ ASErr Plugin::postStartupPlugin() {
 }
 
 ASErr Plugin::shutdownPlugin(SPInterfaceMessage *message) {
+	sSPAccess->ReleasePlugin(fPluginAccess);
+	fPluginAccess = NULL;
 	delete fEngine;
 	fEngine = NULL;
-	unloadPlugin(NULL);
+	setGlobal(false);
 	return kNoErr;
 }
 
@@ -189,7 +193,6 @@ ASErr Plugin::unloadPlugin(SPInterfaceMessage *message) {
 	// TODO: error handling:
 	releaseSuites(&gBasicSuites);
 	releaseSuites(&gAdditionalSuites);
-	setGlobal(false);
 
 	return kNoErr;
 }
@@ -198,7 +201,6 @@ inline ASErr Plugin::reloadPlugin(SPInterfaceMessage *message) {
 	// only execute the reaload code if the plugin was already loaded once,
 	// because the reload message is even sent before the first startup message.
 	if (fLoaded) {
-		// TODO: error handling:
 		setGlobal(true);
 		acquireSuites(&gBasicSuites);
 		acquireSuites(&gAdditionalSuites);
@@ -248,15 +250,13 @@ bool Plugin::fileSpecToPath(SPPlatformFileSpecification *fileSpec, char *path) {
 	if (FSMakeFSSpec(fileSpec->vRefNum, fileSpec->parID, &empty, &fsSpec) != noErr)
 		return false;
 	// and from there into a Posix path:
-	// TODO: in order to be working for non existing files, this would need to be done in a more complicated manner:
-	// get the parent dir, convert this to a FSRef and add the filename there, like in pathToFileSpec
 	FSRef fsRef;
 	if (FSpMakeFSRef(&fsSpec, &fsRef) != noErr)
 		return false;
 	if (FSRefMakePath(&fsRef, (unsigned char*) path, kMaxPathLength))
 		return false;
 	
-	// ow add the name to it:
+	// now add the name to it:
 	char *name = fromPascal(fileSpec->name);
 	sprintf(path, "%s%s%s", path, PATH_SEP_STR, name);
 	delete name;
@@ -324,24 +324,6 @@ bool Plugin::pathToFileSpec(char *path, SPPlatformFileSpecification *fileSpec) {
 	return true;
 }
 
-ASErr Plugin::lockPlugin(ASBoolean lock) {
-	if (lock) {
-		fLockCount++;
-		if (fLockCount == 1)
-			sSPAccess->AcquirePlugin(fPluginRef, &fPluginAccess);
-	} else {
-		fLockCount--;
-		if (fLockCount == 0) {
-			sSPAccess->ReleasePlugin(fPluginAccess);
-			fPluginAccess = NULL;
-		}
-		else if (fLockCount < 0)
-			fLockCount = 0;
-	}
-
-	return kNoErr;
-}
-
 ASErr Plugin::about(SPInterfaceMessage *message) {
 	gEngine->about();
 	return kNoErr;
@@ -391,6 +373,9 @@ ASErr Plugin::handleMessage(char *caller, char *selector, void *message) {
 	/* Some common AI messages */
 
 	else if (sSPBasic->IsEqual(caller, kCallerAINotify)) {
+		AIAppContextHandle appContext = NULL;
+		sAIAppContext->PushAppContext(fPluginRef, &appContext);
+
 		AINotifierMessage *msg = (AINotifierMessage *)message;
 		if (msg->notifier == fSelectionChangedNotifier) {
 			error = gEngine->selectionChanged();
@@ -404,6 +389,7 @@ ASErr Plugin::handleMessage(char *caller, char *selector, void *message) {
 			}
 		}
 		*/
+		sAIAppContext->PopAppContext(appContext);
 	} else if (sSPBasic->IsEqual(caller, kCallerAIMenu)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIGoMenuItem)) {
 			error = gEngine->menuItemExecute((AIMenuMessage *) message);

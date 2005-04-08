@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Dialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.8 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 #include "stdHeaders.h"
@@ -128,7 +128,7 @@ void ASAPI callbackDialogDraw(ADMDialogRef dialog, ADMDrawerRef drawer) {
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_nativeCreate(JNIEnv *env, jobject obj, jstring name, jint style, jint options) {
 	try {
-		char *str = gEngine->createCString(env, name);
+		char *str = gEngine->convertString(env, name);
 		ADMDialogRef dialog = sADMDialog->Create(gPlugin->getPluginRef(), str, kEmptyDialogID, (ADMDialogStyle) style, callbackDialogInit, env->NewGlobalRef(obj), options);
 		delete str;
 		if (dialog == NULL)
@@ -657,7 +657,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_getGroupInfo(JNIEnv
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setGroupInfo(JNIEnv *env, jobject obj, jstring group, jint positionCode) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
-		char *groupStr = gEngine->createCString(env, group);
+		char *groupStr = gEngine->convertString(env, group);
 		sADMDialogGroup->SetDialogGroupInfo(dialog, groupStr, positionCode);
 		delete groupStr;
 	} EXCEPTION_CONVERT(env)
@@ -673,19 +673,19 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_Dialog_nativeFileDialog(JN
 		// So use normal string instead...
 		// const jchar *msg = env->GetStringChars(message, NULL);
 		// if (msg == NULL) EXCEPTION_CHECK(env)
-		char *msg = gEngine->createCString(env, message);
-		char *fltr = gEngine->createCString(env, filter);
+		char *msg = gEngine->convertString(env, message);
+		char *fltr = gEngine->convertString(env, filter);
 		char *name = NULL;
 		SPPlatformFileSpecification dir, result;
 		bool hasDir = false;
 
 		if (directory != NULL) {
-			char *path = gEngine->createCString(env, directory);
+			char *path = gEngine->convertString(env, directory);
 			hasDir = gPlugin->pathToFileSpec(path, &dir);
 			delete path;
 
 			if (filename != NULL)
-				name = gEngine->createCString(env, filename);
+				name = gEngine->convertString(env, filename);
 		}
 
 		ADMPlatformFileTypesSpecification3 specs;
@@ -699,7 +699,7 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_Dialog_nativeFileDialog(JN
 			char path[kMaxPathLength];
 			
 			if (gPlugin->fileSpecToPath(&result, path))
-				ret = gEngine->createJString(env, path);
+				ret = gEngine->convertString(env, path);
 		}
 
 		// env->ReleaseStringChars(message, msg);
@@ -721,13 +721,13 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_chooseDirectory(JNI
 		// So use normal string instead...
 		// const jchar *msg = env->GetStringChars(message, NULL);
 		// if (msg == NULL) EXCEPTION_CHECK(env)
-		char *msg = gEngine->createCString(env, message);
+		char *msg = gEngine->convertString(env, message);
 
 		SPPlatformFileSpecification dir, result;
 		bool hasDir = false;
 
 		if (directory != NULL) {
-			char *path = gEngine->createCString(env, 
+			char *path = gEngine->convertString(env, 
 				(jstring) gEngine->callObjectMethod(env, directory, gEngine->mid_File_getPath));
 			hasDir = gPlugin->pathToFileSpec(path, &dir);
 			delete path;
@@ -736,7 +736,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_chooseDirectory(JNI
 		if (sADMBasic->StandardGetDirectoryDialog(msg, &dir, &result)) {
 			char path[kMaxPathLength];
 			gPlugin->fileSpecToPath(&result, path);
-			ret = gEngine->newObject(env, gEngine->cls_File, gEngine->cid_File, gEngine->createJString(env, path));
+			ret = gEngine->newObject(env, gEngine->cls_File, gEngine->cid_File, gEngine->convertString(env, path));
 		}
 
 		// env->ReleaseStringChars(message, msg);

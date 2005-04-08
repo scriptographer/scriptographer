@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_DocumentList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/08 21:56:40 $
  */
  
 #include "stdHeaders.h"
@@ -46,14 +46,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentList_size(JNIEnv *env,
 	try {
 		long count;
 		sAIDocumentList->Count(&count);
-		
-		PlatformAddFilterData data;
-		data.category = gPlugin->toPascal("Scriptographer");
-		data.title = gPlugin->toPascal("So en Seich");
-		AIFilterHandle filter;
-		sAIFilter->AddFilter(gPlugin->getPluginRef(), "Test", &data, 0, &filter); 
-		delete data.category;
-		delete data.title;
 		return count;
 	} EXCEPTION_CONVERT(env)
 	return 0;

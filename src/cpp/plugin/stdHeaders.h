@@ -26,8 +26,8 @@
  *
  * $RCSfile: stdHeaders.h,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/08 21:56:40 $
  */
  
 #if !defined(__STDHEADERS_H_INCLUDED__)
@@ -127,6 +127,7 @@ using namespace std;
 #include "AICustomColor.h"
 #include "AIDocument.h"
 #include "AIDocumentList.h"
+#include "AIDocumentView.h"
 #include "AIFileFormat.h"
 #include "AIFilter.h"
 #include "AIGroup.h"
@@ -158,7 +159,7 @@ using namespace std;
 #include "AITransformArt.h"
 #include "AIUser.h"
 #include "AIUndo.h"
-#include "AIDocumentView.h"
+#include "AIURL.h"
 
 #include "AIContext.h"
 #include "AIPreference.h"

@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.h,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/07 20:12:50 $
+ * $Revision: 1.8 $
+ * $Date: 2005/04/08 21:56:39 $
  */
 
 #define kMaxStringLength 256
@@ -75,7 +75,6 @@ public:
 	
 	ASErr createTool(char *title, int iconID, int cursorID, long options, char *sameGroupTool = NULL, char *sameToolsetTool = NULL);
 
-	ASErr lockPlugin(ASBoolean lock);
 	ASBoolean isReloadMsg(char *caller, char *selector);
 	ASBoolean isUnloadMsg(char *caller, char *selector);
 

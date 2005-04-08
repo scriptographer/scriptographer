@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/07 20:12:50 $
+ * $Revision: 1.8 $
+ * $Date: 2005/04/08 21:56:39 $
  */
  
 #include "stdHeaders.h"
@@ -164,11 +164,11 @@ void ScriptographerEngine::init() {
 	options[numOptions++].optionString = classpath;
 	options[numOptions++].optionString = "-Xms32m";
 	options[numOptions++].optionString = "-Xmx256m";
+	// start headless, in order to avoid conflicts with AWT and Illustrator
+	options[numOptions++].optionString = "-Djava.awt.headless=true";
 #ifdef MAC_ENV
 	// use the carbon line separator instead of the unix one on mac:
 	options[numOptions++].optionString = "-Dline.separator=\r";
-	// start headless, in order to avoid conflicts with AWT and Illustrator on Mac
-	options[numOptions++].optionString = "-Djava.awt.headless=true";
 	/*
 	// pja
 	char bootClasspath[512];
@@ -179,9 +179,6 @@ void ScriptographerEngine::init() {
 	options[numOptions++].optionString = "-Djava.awt.graphicsenv=com.eteks.java2d.PJAGraphicsEnvironment";
 	options[numOptions++].optionString = "-Djava.awt.fonts=/Library/Fonts";
 	*/
-#else
-	// TODO: see wether this works on windows
-//	options[numOptions++].optionString = "-Djava.awt.headless=true";
 #endif
 
 	int noDebug = numOptions;
@@ -263,6 +260,9 @@ JavaVM *ScriptographerEngine::exit() {
  * Returns true on success, false on failure.
  */
 void ScriptographerEngine::initReflection(JNIEnv *env) {
+	cls_Object = env->FindClass("java/lang/Object");
+	mid_Object_toString = env->GetMethodID(cls_Object, "toString", "()Ljava/lang/String;");
+
 	cls_System = env->FindClass("java/lang/System");
 	fid_System_out = env->GetStaticFieldID(cls_System, "out", "Ljava/io/PrintStream;");
 
@@ -278,6 +278,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_Number = loadClass(env, "java/lang/Number");
 	mid_Number_intValue = getMethodID(env, cls_Number, "intValue", "()I");
+	mid_Number_floatValue = getMethodID(env, cls_Number, "floatValue", "()F");
 
 	cls_Integer = loadClass(env, "java/lang/Integer");
 	cid_Integer = getConstructorID(env, cls_Integer, "(I)V");
@@ -301,13 +302,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_Collection_size = getMethodID(env, cls_Collection, "size", "()I");
 	
 	cls_Map = loadClass(env, "java/util/Map");
-	mid_Map_entrySet = getMethodID(env, cls_Map, "entrySet", "()Ljava/util/Set;");
+	mid_Map_keySet = getMethodID(env, cls_Map, "keySet", "()Ljava/util/Set;");
 	mid_Map_put = getMethodID(env, cls_Map, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
 	mid_Map_get = getMethodID(env, cls_Map, "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
-	
-	cls_Map_Entry = loadClass(env, "java/util/Map$Entry");
-	mid_Map_Entry_getKey = getMethodID(env, cls_Map_Entry, "getKey", "()Ljava/lang/Object;");
-	mid_Map_Entry_getValue = getMethodID(env, cls_Map_Entry, "getValue", "()Ljava/lang/Object;");
 	
 	cls_HashMap = loadClass(env, "java/util/HashMap");
 	cid_HashMap = getConstructorID(env, cls_HashMap, "()V");
@@ -321,6 +318,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_Iterator = loadClass(env, "java/util/Iterator");
 	mid_Iterator_hasNext = getMethodID(env, cls_Iterator, "hasNext", "()Z");
 	mid_Iterator_next = getMethodID(env, cls_Iterator, "next", "()Ljava/lang/Object;");
+	mid_Iterator_remove = getMethodID(env, cls_Iterator, "remove", "()V");
 
 	cls_OutOfMemoryError = loadClass(env, "java/lang/OutOfMemoryError");
 
@@ -341,7 +339,11 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_awt_Point_x = getFieldID(env, cls_awt_Point, "x", "I");
 	fid_awt_Point_y = getFieldID(env, cls_awt_Point, "y", "I");
 	mid_awt_Point_setLocation = getMethodID(env, cls_awt_Point, "setLocation", "(II)V");
-	
+
+	cls_awt_Point2D = loadClass(env, "java/awt/geom/Point2D");
+	mid_awt_Point2D_getX = getMethodID(env, cls_awt_Point2D, "getX", "()D");
+	mid_awt_Point2D_getY = getMethodID(env, cls_awt_Point2D, "getY", "()D");
+
 	cls_awt_Dimension = loadClass(env, "java/awt/Dimension");
 	cid_awt_Dimension = getConstructorID(env, cls_awt_Dimension, "(II)V");
 	fid_awt_Dimension_width = getFieldID(env, cls_awt_Dimension, "width", "I");
@@ -419,9 +421,11 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_Art = loadClass(env, "com/scriptographer/ai/Art");
 	fid_Art_version = getFieldID(env, cls_Art, "version", "I");
-	mid_Art_wrapHandle = getStaticMethodID(env, cls_Art, "wrapHandle", "(II)Lcom/scriptographer/ai/Art;");
+	fid_Art_dictionaryRef = getFieldID(env, cls_Art, "dictionaryRef", "I");
+	mid_Art_wrapHandle = getStaticMethodID(env, cls_Art, "wrapHandle", "(III)Lcom/scriptographer/ai/Art;");
 	mid_Art_updateIfWrapped_int = getStaticMethodID(env, cls_Art, "updateIfWrapped", "(I)Z");
 	mid_Art_updateIfWrapped_Array = getStaticMethodID(env, cls_Art, "updateIfWrapped", "([I)V");
+	mid_Art_changeHandle = getMethodID(env, cls_Art, "changeHandle", "(II)V");
 
 	cls_ArtSet = loadClass(env, "com/scriptographer/ai/ArtSet");
 	cid_ArtSet = getConstructorID(env, cls_ArtSet, "()V");
@@ -433,9 +437,13 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_FillStyle = loadClass(env, "com/scriptographer/ai/FillStyle");
 	cid_FillStyle = getConstructorID(env, cls_FillStyle, "(Lcom/scriptographer/ai/Color;Z)V");
+	mid_FillStyle_init = getMethodID(env, cls_FillStyle, "init", "(Lcom/scriptographer/ai/Color;Z)V");
+	mid_FillStyle_initNative = getMethodID(env, cls_FillStyle, "initNative", "(I)V");
 
 	cls_StrokeStyle = loadClass(env, "com/scriptographer/ai/StrokeStyle");
 	cid_StrokeStyle = getConstructorID(env, cls_StrokeStyle, "(Lcom/scriptographer/ai/Color;ZFF[FSSF)V");
+	mid_StrokeStyle_init = getMethodID(env, cls_StrokeStyle, "init", "(Lcom/scriptographer/ai/Color;ZFF[FSSF)V");
+	mid_StrokeStyle_initNative = getMethodID(env, cls_StrokeStyle, "initNative", "(I)V");
 	
 	cls_Group = loadClass(env, "com/scriptographer/ai/Group");
 	
@@ -496,6 +504,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_Drawer = loadClass(env, "com/scriptographer/adm/Drawer");
 	cid_Drawer = getConstructorID(env, cls_Drawer, "(I)V");
 
+	cls_FontInfo = loadClass(env, "com/scriptographer/adm/Drawer$FontInfo");
+	cid_FontInfo = getConstructorID(env, cls_FontInfo, "(IIIII)V");
+
 	cls_Image = loadClass(env, "com/scriptographer/adm/Image");
 	fid_Image_byteWidth = getFieldID(env, cls_Image, "byteWidth", "I");
 	fid_Image_bitsPerPixel = getFieldID(env, cls_Image, "bitsPerPixel", "I");
@@ -550,7 +561,7 @@ void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
 	callVoidMethodReport(env, env->GetStaticObjectField(cls_System, fid_System_out), mid_PrintStream_println, env->NewStringUTF(text));
 }
 
-// com.scriptographer.awt.Point <-> AIRealPoint
+// com.scriptographer.ai.Point <-> AIRealPoint
 
 jobject ScriptographerEngine::convertPoint(JNIEnv *env, AIReal x, AIReal y, jobject res) {
 	if (res == NULL) {
@@ -561,16 +572,24 @@ jobject ScriptographerEngine::convertPoint(JNIEnv *env, AIReal x, AIReal y, jobj
 	}
 }
 
+// This handles 3 types of points: com.scriptographer.ai.Point, java.awt.geom.Point2D, java.awt.Point
 AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, AIRealPoint *res) {
 	if (res == NULL) res = new AIRealPoint;
-	res->h = env->GetFloatField(pt, fid_Point_x);
-	res->v = env->GetFloatField(pt, fid_Point_y);
+	if (env->IsInstanceOf(pt, cls_Point)) {
+		res->h = env->GetFloatField(pt, fid_Point_x);
+		res->v = env->GetFloatField(pt, fid_Point_y);
+	} else if (env->IsInstanceOf(pt, cls_awt_Point2D)) {
+		res->h = env->CallFloatMethod(pt, mid_awt_Point2D_getX);
+		res->v = env->CallFloatMethod(pt, mid_awt_Point2D_getY);
+	} else if (env->IsInstanceOf(pt, cls_awt_Point)) {
+		res->h = env->GetIntField(pt, fid_awt_Point_x);
+		res->v = env->GetIntField(pt, fid_awt_Point_y);
+	}
 	EXCEPTION_CHECK(env)
 	return res;
 }
 
 // java.awt.Point <-> ADMPoint
-
 jobject ScriptographerEngine::convertPoint(JNIEnv *env, int x, int y, jobject res) {
 	if (res == NULL) {
 		return newObject(env, cls_awt_Point, cid_awt_Point, x, y);
@@ -580,10 +599,19 @@ jobject ScriptographerEngine::convertPoint(JNIEnv *env, int x, int y, jobject re
 	}
 }
 
+// This handles 3 types of points: java.awt.Point,com.scriptographer.ai.Point, java.awt.geom.Point2D
 ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, ADMPoint *res) {
 	if (res == NULL) res = new ADMPoint;
-	res->h = env->GetIntField(pt, fid_awt_Point_x);
-	res->v = env->GetIntField(pt, fid_awt_Point_y);
+	if (env->IsInstanceOf(pt, cls_awt_Point)) {
+		res->h = env->GetIntField(pt, fid_awt_Point_x);
+		res->v = env->GetIntField(pt, fid_awt_Point_y);
+	} else if (env->IsInstanceOf(pt, cls_Point)) {
+		res->h = env->GetFloatField(pt, fid_Point_x);
+		res->v = env->GetFloatField(pt, fid_Point_y);
+	} else if (env->IsInstanceOf(pt, cls_awt_Point2D)) {
+		res->h = env->CallFloatMethod(pt, mid_awt_Point2D_getX);
+		res->v = env->CallFloatMethod(pt, mid_awt_Point2D_getY);
+	}
 	EXCEPTION_CHECK(env)
 	return res;
 }
@@ -835,6 +863,48 @@ AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env, jobject mt, AIRea
 }
 
 
+// AIFillStyle <-> com.scriptoggrapher.ai.FillStyle
+jobject ScriptographerEngine::convertFillStyle(JNIEnv *env, AIFillStyle *style, jobject res) {
+	jobject color = convertColor(env, &style->color);
+	if (res == NULL) {
+		res = newObject(env, cls_FillStyle, cid_FillStyle, color, style->overprint);
+	} else {
+		callVoidMethod(env, res, mid_FillStyle_init, color, style->overprint);
+	}
+	return res;
+}
+
+AIFillStyle *ScriptographerEngine::convertFillStyle(JNIEnv *env, jobject style, AIFillStyle *res) {
+	if (res == NULL) res = new AIFillStyle;
+
+	callVoidMethod(env, style, mid_FillStyle_initNative, res);
+	
+	return res;
+}
+
+// AIStrokeStyle <-> com.scriptoggrapher.ai.StrokeStyle
+jobject ScriptographerEngine::convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, jobject res) {
+	jobject color = convertColor(env, &style->color);
+	int count = style->dash.length;
+	jfloatArray dashArray = env->NewFloatArray(count);
+	env->SetFloatArrayRegion(dashArray, 0, count, style->dash.array);
+	if (res == NULL) {
+		res = newObject(env, cls_StrokeStyle, cid_StrokeStyle, color, style->overprint, style->width, style->dash.offset, dashArray, style->cap, style->join, style->miterLimit);
+	} else {
+		callVoidMethod(env, res, mid_StrokeStyle_init, color, style->overprint, style->width, style->dash.offset, dashArray, style->cap, style->join, style->miterLimit);
+	}
+	return res;
+}
+
+AIStrokeStyle *ScriptographerEngine::convertStrokeStyle(JNIEnv *env, jobject style, AIStrokeStyle *res) {
+	if (res == NULL) res = new AIStrokeStyle;
+	
+	callVoidMethod(env, style, mid_StrokeStyle_initNative, res);
+
+	return res;
+}
+
+
 // AIArtSet <-> ArtSet
 
 jobject ScriptographerEngine::convertArtSet(JNIEnv *env, AIArtSet set, bool layerOnly) {
@@ -871,26 +941,43 @@ AIArtSet ScriptographerEngine::convertArtSet(JNIEnv *env, jobject artSet) {
 	return set;
 }
 // java.util.Map <-> AIDictionary
-jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dictionary, jobject map, bool onlyNew) {
+jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dictionary, jobject map, bool dontOverwrite, bool removeOld) {
 	JNI_CHECK_ENV
 	AIDictionaryIterator iterator = NULL;
 	Exception *exc = NULL;
 	try {
-		if (map == NULL)
+		if (map == NULL) {
 			map = newObject(env, cls_HashMap, cid_HashMap);
+		} else if (removeOld) {
+			// scan through the map and remove the entries that are not contained
+			// in the dictionary any longer (just tell by name):
+
+			// use the env's version of the callers for speed reasons. check for exceptions only once for every entry:
+			jobject keySet = env->CallObjectMethod(map, mid_Map_keySet);
+			jobject iterator = env->CallObjectMethod(keySet, mid_Set_iterator);
+			while (env->CallBooleanMethod(iterator, mid_Iterator_hasNext)) {
+				jobject key = env->CallObjectMethod(iterator, mid_Iterator_next);
+				char *name = convertString(env, (jstring) env->CallObjectMethod(key, mid_Object_toString));
+				// now see if there's an entry called like this, and if not, removed it
+				// from the map as well:
+				if (!sAIDictionary->IsKnown(dictionary, sAIDictionary->Key(name))) {
+					env->CallVoidMethod(iterator, mid_Iterator_remove);
+				}
+				delete name;
+				EXCEPTION_CHECK(env)
+			}
+		}
 		// walk through the dictionary and see what we can add:
 		if (!sAIDictionary->Begin(dictionary, &iterator)) {
 			while (!sAIDictionaryIterator->AtEnd(iterator)) {
 				AIDictKey key = sAIDictionaryIterator->GetKey(iterator);
 				const char *name = sAIDictionary->GetKeyString(key);
-				jobject nameObj = createJString(env, name); // consider newStringUTF!
-				// if onlyNew is set, check first wether that key already exists in the map and if so, skip it:
-				if (onlyNew) {
-					jobject obj = callObjectMethod(env, map, mid_Map_get, nameObj, obj);
-					if (obj != NULL) { // skip this entry
-						sAIDictionaryIterator->Next(iterator);
-						continue;
-					}
+				jobject keyObj = convertString(env, name); // consider newStringUTF!
+				// if dontOverwrite is set, check first wether that key already exists in the map and if so, skip it:
+				if (dontOverwrite && callObjectMethod(env, map, mid_Map_get, keyObj) != NULL) {
+					// skip this entry
+					sAIDictionaryIterator->Next(iterator);
+					continue;
 				}
 				AIEntryRef entry = sAIDictionary->Get(dictionary, key);
 				jobject obj = NULL;
@@ -956,13 +1043,21 @@ jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dic
 							case StringType: {
 								const char *value;
 								if (!sAIEntry->ToString(entry, &value)) {
-									obj = createJString(env, value);
+									obj = convertString(env, value);
 								}
 							} break;
 							case DictType: {
 								AIDictionaryRef dict;
-								if (!sAIEntry->ToDict(entry, &dict)) {
-									obj = convertDictionary(env, dict);
+								// this could be an art object:
+								AIArtHandle art;
+								if (!sAIEntry->ToArt(entry, &art)) {
+									obj = wrapArtHandle(env, art, dictionary);
+								} else if (!sAIEntry->ToDict(entry, &dict)) {
+									// add to the existing object, if there's any
+									jobject subMap = callObjectMethod(env, map, mid_Map_get, keyObj);
+									if (subMap != NULL && !env->IsInstanceOf(subMap, cls_Map))
+										subMap = NULL;
+									obj = convertDictionary(env, dict, subMap, dontOverwrite, removeOld);
 								}
 							} break;
 							case PointType: {
@@ -980,19 +1075,14 @@ jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dic
 							case FillStyleType: {
 								AIFillStyle fill;
 								if (!sAIEntry->ToFillStyle(entry, &fill)) {
-									jobject color = convertColor(env, &fill.color);
-									obj = newObject(env, cls_FillStyle, cid_FillStyle, color, fill.overprint);
+									obj = convertFillStyle(env, &fill);
 								}
 							}
 							break;
 							case StrokeStyleType: {
 								AIStrokeStyle stroke;
 								if (!sAIEntry->ToStrokeStyle(entry, &stroke)) {
-									jobject color = convertColor(env, &stroke.color);
-									int count = stroke.dash.length;
-									jfloatArray dashArray = env->NewFloatArray(count);
-									env->SetFloatArrayRegion(dashArray, 0, count, stroke.dash.array);
-									obj = newObject(env, cls_StrokeStyle, cid_StrokeStyle, color, stroke.overprint, stroke.width, stroke.dash.offset, dashArray, stroke.cap, stroke.join, stroke.miterLimit);
+									obj = convertStrokeStyle(env,&stroke);
 								}
 							}
 						}
@@ -1004,7 +1094,7 @@ jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dic
 						throw exc;
 				}
 				if (obj != NULL) {
-					callObjectMethod(env, map, mid_Map_put, nameObj, obj);
+					callObjectMethod(env, map, mid_Map_put, keyObj, obj);
 				}
 				sAIDictionaryIterator->Next(iterator);
 			}
@@ -1021,10 +1111,172 @@ jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dic
 	return map;
 }
 
-AIDictionaryRef ScriptographerEngine::convertDictionary(JNIEnv *env, jobject map, AIDictionaryRef dictionary) {
-	// TODO: define!
-	// Syncing:  not only needs the map be filled back into res, also already
-	// existing fields in res that do not exist in map should be deleted!
+AIDictionaryRef ScriptographerEngine::convertDictionary(JNIEnv *env, jobject map, AIDictionaryRef dictionary, bool dontOverwrite, bool removeOld) {
+	JNI_CHECK_ENV
+
+	if (dictionary == NULL) {
+		sAIDictionary->CreateDictionary(&dictionary);
+		if (dictionary == NULL)
+			throw new StringException("Cannot create the dictionary");
+	} else if (removeOld) {
+		// scan through the dictionary and remove the entries that are not contained
+		// in the map any longer (just tell by name):
+		AIDictionaryIterator iterator = NULL;
+		Exception *exc = NULL;
+		try {
+			if (!sAIDictionary->Begin(dictionary, &iterator)) {
+				while (!sAIDictionaryIterator->AtEnd(iterator)) {
+					AIDictKey key = sAIDictionaryIterator->GetKey(iterator);
+					jobject keyObj = convertString(env, sAIDictionary->GetKeyString(key)); // consider newStringUTF!
+					// now see if there's an entry called like this, and if not, removed it
+					// from the dictionary as well:
+					jobject obj = callObjectMethod(env, map, mid_Map_get, keyObj);
+					if (obj == NULL) {
+						// be carefull: only delete objects that can actually be wrapped
+						// in java. the others are not from us because they could not be wrapped
+						// when creating the map, so don't remove them now.
+						// TODO: Make sure this list is allways the opposite of what is handled bellow:
+						AIEntryType type = UnknownType;
+						sAIDictionary->GetEntryType(dictionary, key, &type);
+						switch (type) {
+							UnknownType:
+							ArrayType:
+							BinaryType:
+							PatternRefType:
+							BrushPatternRefType:
+							CustomColorRefType:
+							GradientRefType:
+							PluginObjectRefType:
+							UIDType:
+							UIDREFType:
+							XMLNodeType:
+							SVGFilterType:
+							ArtStyleType:
+							SymbolPatternRefType:
+							GraphDesignRefType:
+							BlendStyleType:
+							GraphicObjectType:
+								// do nothing
+								break;
+							default:
+								sAIDictionary->DeleteEntry(dictionary, key);
+						}
+						
+					}
+					sAIDictionaryIterator->Next(iterator);
+				}
+			}
+		} catch(Exception *e) {
+			exc = e;
+		}
+		if (iterator != NULL)
+			sAIDictionaryIterator->Release(iterator);
+		
+		if (exc != NULL)
+			throw exc;
+	}
+	// walk through the map and see what we can add:
+	// use the env's version of the callers for speed reasons. check for exceptions only once for every entry:
+	jobject keySet = env->CallObjectMethod(map, mid_Map_keySet);
+	jobject iterator = env->CallObjectMethod(keySet, mid_Set_iterator);
+	while (env->CallBooleanMethod(iterator, mid_Iterator_hasNext)) {
+		jobject keyObj = env->CallObjectMethod(iterator, mid_Iterator_next);
+		jobject value = env->CallObjectMethod(map, mid_Map_get, keyObj);
+		char *name = convertString(env, (jstring) env->CallObjectMethod(keyObj, mid_Object_toString));
+		EXCEPTION_CHECK(env)
+		// if dontOverwrite is set, check first wether that key already exists in the dictionary and if so, skip it:
+		AIDictKey key = sAIDictionary->Key(name);
+		delete name;
+		if (dontOverwrite && sAIDictionary->IsKnown(dictionary, key)) {
+			// skip this entry
+			continue;
+		}
+
+		/*
+		TODO: implement these:
+		UnknownType,
+		// array
+		ArrayType,
+		// Binary data. if the data is stored to file it is the clients responsibility to
+			deal with the endianess of the data.
+		BinaryType,
+		// a reference to a pattern
+		PatternRefType,
+		// a reference to a brush pattern
+		BrushPatternRefType,
+		// a reference to a custom color (either spot or global process)
+		CustomColorRefType,
+		// a reference to a gradient
+		GradientRefType,
+		// a reference to a plugin global object
+		PluginObjectRefType,
+		// an unique id
+		UIDType,
+		// an unique id reference
+		UIDREFType,
+		// an XML node
+		XMLNodeType,
+		// a SVG filter
+		SVGFilterType,
+		// an art style
+		ArtStyleType,
+		// a symbol definition reference
+		SymbolPatternRefType,
+		// a graph design reference
+		GraphDesignRefType,
+		// a blend style (transpareny attributes)
+		BlendStyleType,
+		// a graphical object
+		GraphicObjectType
+		*/
+		AIEntryRef entry = NULL;
+
+		if (value == NULL) {
+			sAIDictionary->SetBinaryEntry(dictionary, key, NULL, 0); 
+		} else {
+			if (env->IsInstanceOf(value, cls_Integer)) {
+				entry = sAIEntry->FromInteger(callIntMethod(env, value, mid_Number_intValue));
+			} else if (env->IsInstanceOf(value, cls_Boolean)) {
+				entry = sAIEntry->FromBoolean(callBooleanMethod(env, value, mid_Boolean_booleanValue));
+			} else if (env->IsInstanceOf(value, cls_Float)) {
+				entry = sAIEntry->FromInteger(callFloatMethod(env, value, mid_Number_floatValue));
+			} else if (env->IsInstanceOf(value, cls_String)) {
+				char *string = convertString(env, (jstring) value);
+				entry = sAIEntry->FromString(string);
+				delete string;
+			} else if (env->IsInstanceOf(value, cls_Art)) {
+				AIArtHandle art = getArtHandle(env, value);
+				sAIDictionary->MoveArtToEntry(dictionary, key, art);
+				// let the art object know it's part of a dictionary now:
+				setIntField(env, value, fid_Art_dictionaryRef, (jint) dictionary);
+			} else if (env->IsInstanceOf(value, cls_Map)) {
+				// add to the existing object, if there's any
+				AIDictionaryRef subDictionary = NULL;
+				sAIDictionary->GetDictEntry(dictionary, key, &subDictionary);
+				subDictionary = convertDictionary(env, value, subDictionary, dontOverwrite, removeOld);
+				entry = sAIEntry->FromDict(subDictionary);
+			} else if (env->IsInstanceOf(value, cls_awt_Point2D)) {
+				AIRealPoint point;
+				convertPoint(env, value, &point);
+				entry = sAIEntry->FromRealPoint(&point);
+			} else if (env->IsInstanceOf(value, cls_awt_AffineTransform)) {
+				AIRealMatrix matrix;
+				convertMatrix(env, value, &matrix);
+				entry = sAIEntry->FromRealMatrix(&matrix);
+			} else if (env->IsInstanceOf(value, cls_FillStyle)) {
+				AIFillStyle style;
+				convertFillStyle(env, value, &style);
+				entry = sAIEntry->FromFillStyle(&style);
+			} else if (env->IsInstanceOf(value, cls_StrokeStyle)) {
+				AIStrokeStyle style;
+				convertStrokeStyle(env, value, &style);
+				entry = sAIEntry->FromStrokeStyle(&style);
+			}
+			if (entry != NULL)
+				sAIDictionary->Set(dictionary, key, entry);
+		}
+	}
+	
 	return dictionary;
 }
 
@@ -1039,6 +1291,16 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj) {
 	AIArtHandle art = (AIArtHandle) getIntField(env, obj, fid_AIObject_handle);
 	if (art == NULL) throw new StringException("Object is not wrapped around an art handle.");
 	return art;
+}
+
+/**
+ * Returns the AIDictionaryRef that contains the wrapped AIArtHandle, if any
+ *
+ * throws exceptions
+ */
+AIDictionaryRef ScriptographerEngine::getArtDictionaryRef(JNIEnv *env, jobject obj) {
+	JNI_CHECK_ENV
+	return (AIDictionaryRef) gEngine->getIntField(env, obj, gEngine->fid_Art_dictionaryRef);
 }
 
 /**
@@ -1126,14 +1388,24 @@ AIMenuGroup ScriptographerEngine::getMenuGroupHandle(JNIEnv *env, jobject obj) {
  *
  * throws exceptions
  */
-jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art) {
+jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDictionaryRef dictionary) {
 	JNI_CHECK_ENV
 	short type = -1;
 	ASBoolean isLayer;
 	if (sAIArt->GetArtType(art, &type) || sAIArt->IsArtLayerGroup(art, &isLayer)) throw new StringException("Cannot determine the art object's type");
 	// self defined type for layer groups:
 	if (isLayer) type = com_scriptographer_ai_Art_TYPE_LAYER;
-	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) type);
+	if (dictionary != NULL) // increase reference counter. It's decreased in finalize
+		sAIDictionary->AddRef(dictionary);
+	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) type, (jint) dictionary);
+}
+
+bool ScriptographerEngine::updateArtIfWrapped(JNIEnv *env, AIArtHandle art) {
+	return callStaticBooleanMethod(env, cls_Art, mid_Art_updateIfWrapped_int, (jint) art);
+}
+
+void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary) {
+	callVoidMethod(env, artObject, mid_Art_changeHandle, (jint) art, (jint) dictionary);
 }
 
 jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) {
@@ -1161,8 +1433,8 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 		!sAIMenu->GetItemMenuGroup(item, &group) &&
 		!sAIMenu->GetMenuGroupName(group, &groupName)) {
 		return callStaticObjectMethod(env, cls_MenuItem, mid_MenuItem_wrapHandle,
-			(jint) item, createJString(env, name), createJString(env, text),
-			(jint) group, createJString(env, groupName)
+			(jint) item, convertString(env, name), convertString(env, text),
+			(jint) group, convertString(env, groupName)
 		);
 	}
 	return NULL;
@@ -1656,7 +1928,7 @@ JNIEnv *ScriptographerEngine::getEnv() {
  *
  * throws exceptions
  */
-jstring ScriptographerEngine::createJString(JNIEnv *env, const char *str) {
+jstring ScriptographerEngine::convertString(JNIEnv *env, const char *str) {
 	JNI_CHECK_ENV
 	int len = strlen(str);
 	jbyteArray bytes = env->NewByteArray(len);
@@ -1673,7 +1945,7 @@ jstring ScriptographerEngine::createJString(JNIEnv *env, const char *str) {
  *
  * throws exceptions
  */
-char *ScriptographerEngine::createCString(JNIEnv *env, jstring jstr) {
+char *ScriptographerEngine::convertString(JNIEnv *env, jstring jstr) {
 	JNI_CHECK_ENV
 	jbyteArray bytes = (jbyteArray)callObjectMethod(env, jstr, mid_String_getBytes);
 	jint len = env->GetArrayLength(bytes);

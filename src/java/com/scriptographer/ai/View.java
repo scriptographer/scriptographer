@@ -28,8 +28,8 @@
  *
  * $RCSfile: View.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/08 11:04:56 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/08 21:56:40 $
  */
 
 package com.scriptographer.ai;
@@ -41,6 +41,28 @@ import java.util.WeakHashMap;
 import com.scriptographer.util.Handle;
 
 public class View extends AIObject {
+	public static final int 
+		/** Only when there is no visibile document */
+		MODE_NOSCREEN = 0,
+		/** The normal display mode. Multiple windows are visible. */
+		MODE_MULTIWINDOW = 1,
+		/** A single view takes up the whole screen but the menu is visible. */
+		MODE_FULLSCREEN_MENU = 2,
+		/** A single view takes up the whole screen, the menu is not visible. */
+		MODE_FULLSCREEN = 3;
+	
+	public static final int
+		/** Outline mode. */
+		STYLE_ARTWORK = 0x0001,
+		/** Preview mode. */
+		STYLE_PREVIEW = 0x0002,
+		/** Pixel preview mode. */
+		STYLE_RASTER = 0x0040,
+		/** Unimplemented. Transparency attributes and masks are ignored. */
+		STYLE_OPAQUE = 0x0040,
+		/** OPP preview mode. */
+		STYLE_INK = 0x0100;
+	
 	private Document document = null;
 	
 	protected View(int handle) {
@@ -132,12 +154,16 @@ public class View extends AIObject {
 	/**
 	 * This function sets the screen mode of the specified view. The screen mode is
 	 * selected via the three screen mode icons on the bottom of the tool palette.
+	 * 
+	 * @param mode View.MODE_*
 	 */
 	public native void setScreenMode(int mode);
 	
 	/**
 	 * This function gets the screen mode of the specified view. The screen mode is
 	 * selected via the three screen mode icons on the bottom of the tool palette.
+	 * 
+	 * @return View.MODE_*
 	 */
 	public native int getScreenMode();
 
@@ -148,9 +174,9 @@ public class View extends AIObject {
 	// public native PageTiling getPageTiling(); // TODO: implement
 
 	/**
-	 *True if there is a visible template layer.
+	 * True if there is a visible template layer.
 	 */
-	public native boolean templateVisible();
+	public native boolean isTemplateVisible();
 
 	/**
 	 * Scrolls the document window by a vector in artwork coordinates.
@@ -167,29 +193,19 @@ public class View extends AIObject {
 	 * be empty each time the #kAIDocumentViewInvalidRectChangedNotifier is sent.
 	 */
 	
-	public native Rectangle getInvalidRect();
+	public native Rectangle getUpdateRect();
 
-	/**
-	 * Sets the rectangle returned by AIDocumentViewSuite::GetDocumentViewInvalidRect()
-	 */
-	public native void setInvalidRect(float x, float y, float width, float height);
+	public native void invalidate(float x, float y, float width, float height);
 	
-	public void setInvalidRect(Rectangle2D rect) {
-		setInvalidRect((float) rect.getX(), (float) rect.getY(), (float) rect.getWidth(), (float) rect.getHeight());
+	public void invalidate(Rectangle2D rect) {
+		invalidate((float) rect.getX(), (float) rect.getY(), (float) rect.getWidth(), (float) rect.getHeight());
 	}
 
 	/**
 	 * Get the display mode for the current view. This is a set of flags whose values may be
-	 * #kVsArtwork, #kVsPreview, #kVsRaster, #kVsOpaque, #kVsInk.
+	 * View.STYLE_*
 	 */
 	public native int getStyle();
-
-	/**
-	 * Invalidates the rectangle in artwork coordinates. This will cause all views of the
-	 * document that contain the given rectangle to update at the next opportunity.
-	 */
-	// TODO: what to do with this?
-	// AIAPI AIErr (*SetDocumentViewInvalidDocumentRect)( AIDocumentViewHandle view, AIRealRect *invalidRect );
 
 	/**
 	 * Is page tiling being shown? This API operates on the current view though each view
