@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_View.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/08 11:05:24 $
  */
 
 #include "StdHeaders.h"
@@ -102,60 +102,60 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setZoom(JNIEnv *env, jobj
 
 
 /*
- * java.awt.Point artworkToView(float x, float y)
+ * Point artworkToView(float x, float y)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_artworkToView__FF(JNIEnv *env, jobject obj, jfloat x, jfloat y) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		DEFINE_POINT(pointIn, x, y);
-		AIPoint pointOut;
-		sAIDocumentView->ArtworkPointToViewPoint(view, &pointIn, &pointOut);
+		AIRealPoint pointOut;
+		sAIDocumentView->FixedArtworkPointToViewPoint(view, &pointIn, &pointOut);
 		return gEngine->convertPoint(env, &pointOut);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }
 
 /*
- * java.awt.Rectangle artworkToView(float x, float y, float width, float height)
+ * Rectangle artworkToView(float x, float y, float width, float height)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_artworkToView__FFFF(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		DEFINE_POINT(bottomLeftIn, x, y);
 		DEFINE_POINT(topRightIn, x + width, y + height);
-		AIPoint bottomLeftOut, topRightOut;
-		sAIDocumentView->ArtworkPointToViewPoint(view, &bottomLeftIn, &bottomLeftOut);
-		sAIDocumentView->ArtworkPointToViewPoint(view, &topRightIn, &topRightOut);
+		AIRealPoint bottomLeftOut, topRightOut;
+		sAIDocumentView->FixedArtworkPointToViewPoint(view, &bottomLeftIn, &bottomLeftOut);
+		sAIDocumentView->FixedArtworkPointToViewPoint(view, &topRightIn, &topRightOut);
 		return gEngine->convertRectangle(env, bottomLeftOut.h, topRightOut.v, topRightOut.h, bottomLeftOut.v);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }
 
 /*
- * com.scriptographer.ai.Point viewToArtwork(int x, int y)
+ * com.scriptographer.ai.Point viewToArtwork(float x, float y)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_viewToArtwork__II(JNIEnv *env, jobject obj, jint x, jint y) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_viewToArtwork__FF(JNIEnv *env, jobject obj, jfloat x, jfloat y) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
-		DEFINE_ADM_POINT(pointIn, x, y);
+		DEFINE_POINT(pointIn, x, y);
 		AIRealPoint pointOut;
-		sAIDocumentView->ViewPointToArtworkPoint(view, &pointIn, &pointOut);
+		sAIDocumentView->FixedViewPointToArtworkPoint(view, &pointIn, &pointOut);
 		return gEngine->convertPoint(env, &pointOut);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }
 
 /*
- * com.scriptographer.ai.Rectangle viewToArtwork(int x, int y, int width, int height)
+ * com.scriptographer.ai.Rectangle viewToArtwork(float x, float y, float width, float height)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_viewToArtwork__IIII(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_viewToArtwork__FFFF(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
-		DEFINE_ADM_POINT(bottomLeftIn, x, y);
-		DEFINE_ADM_POINT(topRightIn, x + width, y + height);
+		DEFINE_POINT(bottomLeftIn, x, y);
+		DEFINE_POINT(topRightIn, x + width, y + height);
 		AIRealPoint bottomLeftOut, topRightOut;
-		sAIDocumentView->ViewPointToArtworkPoint(view, &bottomLeftIn, &bottomLeftOut);
-		sAIDocumentView->ViewPointToArtworkPoint(view, &topRightIn, &topRightOut);
+		sAIDocumentView->FixedViewPointToArtworkPoint(view, &bottomLeftIn, &bottomLeftOut);
+		sAIDocumentView->FixedViewPointToArtworkPoint(view, &topRightIn, &topRightOut);
 		return gEngine->convertRectangle(env, bottomLeftOut.h, topRightOut.v, topRightOut.h, bottomLeftOut.v);
 	} EXCEPTION_CONVERT(env)
 	return NULL;

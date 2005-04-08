@@ -28,8 +28,8 @@
  *
  * $RCSfile: View.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/04/07 20:12:55 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/08 11:04:56 $
  */
 
 package com.scriptographer.ai;
@@ -99,39 +99,34 @@ public class View extends AIObject {
 	public native void setZoom(float zoom);
 
 	/**
-	 * Convert a point from artwork coordinates to view (window) coordinates. The resulting
-	 * view coordinate is rounded to the nearest pixel. See AIDocumentViewSuite::FixedArtworkPointToViewPoint()
-	 * for a version that does not round.
+	 * Convert a point from artwork coordinates to view (window) coordinates.
 	 */
-	public native java.awt.Point artworkToView(float x, float y);
+	public native Point artworkToView(float x, float y);
 	
-	public java.awt.Point artworkToView(Point2D point) {
+	public Point artworkToView(Point2D point) {
 		return artworkToView((float) point.getX(), (float) point.getY());
 	}
 	
-	public native java.awt.Rectangle artworkToView(float x, float y, float width, float height);
-//	return new Rectangle(artworkToView(x, y), artworkToView(x + width, y + height)); 
+	public native Rectangle artworkToView(float x, float y, float width, float height);
 	
-	public java.awt.Rectangle artworkToView(Rectangle2D rect) {
+	public Rectangle artworkToView(Rectangle2D rect) {
 		return artworkToView((float) rect.getX(), (float) rect.getY(), (float) rect.getWidth(), (float) rect.getHeight()); 
 	}
 
 	/**
 	 * Convert a point from view coordinates to artwork coordinates. This version takes pixel
-	 * coordinates as an input. See AIDocumentViewSuite::FixedViewPointToArtworkPoint() for a
-	 * version that takes floating point input. 
+	 * coordinates as an input. 
 	 */
-	public native Point viewToArtwork(int x, int y);
+	public native Point viewToArtwork(float x, float y);
 	
 	public Point viewToArtwork(Point2D point) {
-		return viewToArtwork((int) point.getX(), (int) point.getY());
+		return viewToArtwork((float) point.getX(), (float) point.getY());
 	}
 	
-	public native Rectangle viewToArtwork(int x, int y, int width, int height);
-//	return new Rectangle(viewToArtwork(x, y), viewToArtwork(x + width, y + height)); 
+	public native Rectangle viewToArtwork(float x, float y, float width, float height);
 	
 	public Rectangle viewToArtwork(Rectangle2D rect) {
-		return viewToArtwork((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight()); 
+		return viewToArtwork((float) rect.getX(), (float) rect.getY(), (float) rect.getWidth(), (float) rect.getHeight()); 
 	}
 	
 	/**
