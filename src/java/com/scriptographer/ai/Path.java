@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.7 $
+ * $Date: 2005/04/20 13:49:36 $
  */
 
 package com.scriptographer.ai;
@@ -42,6 +42,7 @@ import java.util.Arrays;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.ScriptRuntime;
 
+import com.scriptographer.CommitManager;
 import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.util.Handle;
 
@@ -93,6 +94,12 @@ public class Path extends Art {
             segments.path = null;
         return ret;
     }
+    
+	public Object clone() {
+		// TODO: only commit the objects that concenr this art object, not everything!
+		CommitManager.commit();
+		return super.clone();
+	}
 
 	public SegmentList getSegments() {
 		if (segments == null)
@@ -102,12 +109,12 @@ public class Path extends Art {
 		return segments;
 	}
 
-	public void setSegments(Collection segments) {
-		SegmentList list = getSegments();
+	public void setSegments(Collection list) {
+		SegmentList segments = getSegments();
 		// TODO: implement SegmentList.setAll so clear is not necesssary and nativeCommit is used instead of nativeInsert
 		// removeRange would still be needed in cases the new list is smaller than the old one...
-		list.clear();
-		list.addAll(segments);
+		segments.clear();
+		segments.addAll(list);
 	}
 
 	public void setSegments(Object[] segments) {
@@ -163,7 +170,7 @@ public class Path extends Art {
 	public int pointsToCurves(float tolerance, float threshold, int cornerRadius, float scale) {
 		int length = nativePointsToCurves(handle, tolerance, threshold, cornerRadius, scale);
 		if (segments != null)
-			segments.updateLength(length);
+			segments.updateSize(length);
 		return length;
 	}
 
@@ -188,7 +195,7 @@ public class Path extends Art {
 	public int curvesToPoints(float maxPointDistance, float flatness) {
 		int length = nativeCurvesToPoints(handle, maxPointDistance, flatness);
 		if (segments != null)
-			segments.updateLength(length);
+			segments.updateSize(length);
 		return length;
 	}
 
@@ -205,35 +212,35 @@ public class Path extends Art {
 	public void reduceSegments(float flatness) {
 		nativeReduceSegments(handle, flatness);
 		if (segments != null)
-			segments.updateLength(-1);
+			segments.updateSize(-1);
 	}
 
 	public void reduceSegments() {
 		reduceSegments(Curve.FLATNESS);
 	}
 
-	public Path split(int index, float t) {
+	public Path split(int index, float parameter) {
 		SegmentList segments = getSegments();
 		Object[] newSegments = null;
 
-		if (t < 0.0f) t = 0.0f;
-		else if (t >= 1.0f) {
+		if (parameter < 0.0f) parameter = 0.0f;
+		else if (parameter >= 1.0f) {
 			// t = 1 is the same as t = 0 and index ++
 			index++;
-			t = 0.0f;
+			parameter = 0.0f;
 		}
 		if (index >= 0 && index < segments.size - 1) {
-			if (t == 0.0) { // spezial case
+			if (parameter == 0.0) { // spezial case
 				if (index > 0) {
 					// split at index
 					newSegments = segments.toArray(index, segments.size);
 					segments.remove(index + 1, segments.size);
 				}
 			}
-			// divide the segment at index at t
+			// divide the segment at index at parameter
 			Segment segment = (Segment) segments.get(index);
 			if (segment != null) {
-				segment.divide(t);
+				segment.divide(parameter);
 				// create the new path with the segments to the right of t
 				newSegments = segments.toArray(index + 1, segments.size);
 				// and delete these segments from the current path, not including the divided point
@@ -266,7 +273,7 @@ public class Path extends Art {
 		return hitTest(point, Curve.EPSILON);
 	}
 
-	public CurvePosition getPositionWithLength(float length, float flatness) {
+	public CurvePosition getParameterWithLength(float length, float flatness) {
 		CurveList curves = getCurves();
 		float currentLength = 0;
 		for (int i = 0; i < curves.size; i++) {
@@ -274,15 +281,15 @@ public class Path extends Art {
 			Curve curve = (Curve) curves.get(i);
 			currentLength += curve.getLength(flatness);
 			if (currentLength >= length) { // found the segment within which the length lies
-				float t = curve.getPositionWithLength(length - startLength, flatness);
+				float t = curve.getParameterWithLength(length - startLength, flatness);
 				return new CurvePosition(i, t);
 			}
 		}
 		return null;
 	}
 
-	public CurvePosition getPositionWithLength(float length) {
-		return getPositionWithLength(length, Curve.FLATNESS);
+	public CurvePosition getParameterWithLength(float length) {
+		return getParameterWithLength(length, Curve.FLATNESS);
 	}
 	
 	/*

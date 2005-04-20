@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/04 17:05:59 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/20 13:49:36 $
  */
 
 package com.scriptographer.gui;
@@ -60,11 +60,11 @@ public class MainDialog extends FloatingDialog {
 	FilenameFilter scriptFilter;
 	Image folderImage;
 	Image scriptImage;
-	PushButton playButton;
-	PushButton stopButton;
-	PushButton refreshButton;
-	PushButton consoleButton;
-	PushButton newButton;
+	Button playButton;
+	Button stopButton;
+	Button refreshButton;
+	Button consoleButton;
+	Button newButton;
 	ToolButton tool1Button;
 	ToolButton tool2Button;
 
@@ -157,35 +157,35 @@ public class MainDialog extends FloatingDialog {
 		addFiles();
 		// buttons:
 		
-		playButton = new PushButton(this, getImage("play.png")) {
+		playButton = new Button(this, getImage("play.png")) {
 			protected void onClick() throws Exception {
 				execute();
 			}
 		};
 		playButton.setSize(buttonSize);
 
-		stopButton = new PushButton(this, getImage("stop.png")) {
+		stopButton = new Button(this, getImage("stop.png")) {
 			protected void onClick() {
 				Timer.stopAll();
 			}
 		};
 		stopButton.setSize(buttonSize);
 
-		refreshButton = new PushButton(this, getImage("refresh.png")) {
+		refreshButton = new Button(this, getImage("refresh.png")) {
 			protected void onClick() throws Exception {
 				refreshFiles();
 			}
 		};
 		refreshButton.setSize(buttonSize);
 
-		consoleButton = new PushButton(this, getImage("console.png")) {
+		consoleButton = new Button(this, getImage("console.png")) {
 			protected void onClick() {
 				consoleDialog.setVisible(!consoleDialog.isVisible());
 			}
 		};
 		consoleButton.setSize(buttonSize);
 
-		newButton = new PushButton(this, getImage("script.png")) {
+		newButton = new Button(this, getImage("script.png")) {
 			protected void onClick() throws IOException {
 				createFile();
 			}
@@ -258,7 +258,7 @@ public class MainDialog extends FloatingDialog {
 		addFiles(scriptList, ScriptographerEngine.getBaseDirectory());
 	}
 	
-	class ToolButton extends PushButton {
+	class ToolButton extends Button {
 		ToolButton(Dialog dialog, int index) throws IOException {
 			super(dialog, MainDialog.getImage("tool" + (index + 1) + ".png"));
 			toolIndex = index;

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/07 20:12:53 $
+ * $Revision: 1.5 $
+ * $Date: 2005/04/20 13:49:34 $
  */
 
 package com.scriptographer;
@@ -82,7 +82,7 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, ItemGroup.class);
 		new ExtendedJavaClass(this, List.class);
 		new ExtendedJavaClass(this, HierarchyList.class);
-		new ExtendedJavaClass(this, PushButton.class);
+		new ExtendedJavaClass(this, Button.class);
 		new ExtendedJavaClass(this, CheckBox.class);
 		new ExtendedJavaClass(this, RadioButton.class);
 		new ExtendedJavaClass(this, Static.class);
@@ -114,6 +114,7 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, RGBColor.class);
 		new ExtendedJavaClass(this, CMYKColor.class);
 
+		new ExtendedJavaClass(this, Art.class);
 		new ExtendedJavaClass(this, Path.class);
 		new ExtendedJavaClass(this, Group.class);
 		new ExtendedJavaClass(this, Raster.class);
@@ -140,7 +141,7 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, File.class);
 
 		// define some global functions and objects:
-		String[] names = { "print", "include", "execute", "evaluate", "commit", "getNanoTime" };
+		String[] names = { "print", "include", "execute", "evaluate", "commit", "getNanoTime", "isKeyDown", "getMousePoint" };
 		defineFunctionProperties(names, GlobalObject.class, ScriptableObject.DONTENUM);
 
 		// properties:
@@ -264,7 +265,17 @@ public class GlobalObject extends ImporterTopLevel {
 	}
 	
 	public static long getNanoTime(Context cx, Scriptable thisObj, Object[] args,
-			Function funObj) {
-			return ScriptographerEngine.getNanoTime();
-		}
+		Function funObj) {
+		return ScriptographerEngine.getNanoTime();
+	}
+	
+	public static boolean isKeyDown(Context cx, Scriptable thisObj, Object[] args,
+		Function funObj) {
+		return ScriptographerEngine.isKeyDown((short) Context.toNumber(args[0]));
+	}
+	
+	public static Point getMousePoint(Context cx, Scriptable thisObj, Object[] args,
+		Function funObj) {
+		return ScriptographerEngine.getMousePoint();
+	}
 }

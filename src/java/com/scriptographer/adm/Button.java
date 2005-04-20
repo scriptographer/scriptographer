@@ -26,10 +26,10 @@
  *
  * File created on 03.01.2005.
  *
- * $RCSfile: PushButton.java,v $
+ * $RCSfile: Button.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.1 $
+ * $Date: 2005/04/20 13:49:37 $
  */
 
 package com.scriptographer.adm;
@@ -41,18 +41,18 @@ package com.scriptographer.adm;
  * Picture based items (CheckBox, Static, PushButton, RadioButton),
  * this policy has been chosen to avoid 4 more classes.
  */
-public class PushButton extends PictureItem {
+public class Button extends PictureItem {
 
 	// ADMPictureButtonStyle
 	public final static int
 		STYLE_BLACK_SUNKEN_RECT = 0,
 		STYLE_BLACK_RECT = 1;
 
-	public PushButton(Dialog dialog) {
+	public Button(Dialog dialog) {
 		super(dialog, Item.TYPE_TEXT_PUSHBUTTON);
 	}
 	
-	public PushButton(Dialog dialog, Image picture) {
+	public Button(Dialog dialog, Image picture) {
 		super(dialog, Item.TYPE_PICTURE_PUSHBUTTON);
 		hasPictures = true;
 		if (picture != null) {

@@ -105,8 +105,6 @@ var consoleDialog = new Dialog(Dialog.STYLE_TABBED_RESIZING_FLOATING, Dialog.OPT
 });
 */
 
-FloatingDialog = Packages.com.scriptographer.adm.FloatingDialog;
-
 var mainDialog = new FloatingDialog(FloatingDialog.OPTION_TABBED | FloatingDialog.OPTION_RESIZING | FloatingDialog.OPTION_SHOW_CYCLE, function() {
 	this.setVisible(false);
 });

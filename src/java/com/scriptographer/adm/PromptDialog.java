@@ -28,8 +28,8 @@
  * 
  * $RCSfile: PromptDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/04 17:06:15 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/20 13:49:37 $
  */
 
 package com.scriptographer.adm;
@@ -72,12 +72,12 @@ public class PromptDialog extends ModalDialog {
 		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.RIGHT, 8, 0));
 		buttons.setInsets(-8, 2, -6, 4);
 		
-		PushButton okButton = new PushButton(this);
+		Button okButton = new Button(this);
 		okButton.setFont(Dialog.FONT_PALETTE);
 		okButton.setText("OK");
 		buttons.add(okButton);
 		
-		PushButton cancelButton = new PushButton(this);
+		Button cancelButton = new Button(this);
 		cancelButton.setFont(Dialog.FONT_PALETTE);
 		cancelButton.setText("Cancel");
 		buttons.add(cancelButton);

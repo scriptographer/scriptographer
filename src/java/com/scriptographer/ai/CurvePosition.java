@@ -28,26 +28,26 @@
  *
  * $RCSfile: CurvePosition.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/04/07 20:12:55 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/20 13:49:36 $
  */
 
 package com.scriptographer.ai;
 
 public class CurvePosition {
-	private int bezier;
-	private float t;
+	private int index;
+	private float parameter;
 
-	protected CurvePosition(int bezier, float t) {
-		this.bezier = bezier;
-		this.t = t;
+	protected CurvePosition(int index, float parameter) {
+		this.index = index;
+		this.parameter = parameter;
 	}
 
-	public int getBezier() {
-		return bezier;
+	public int getIndex() {
+		return index;
 	}
 
-	public float getT() {
-		return t;
+	public float getParameter() {
+		return parameter;
 	}
 }

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.7 $
+ * $Date: 2005/04/20 13:49:37 $
  */
  
 #include "stdHeaders.h"
@@ -46,16 +46,16 @@ short artGetType(AIArtHandle art) {
 }
 
 short artGetType(JNIEnv *env, jclass cls) {
-	if (env->IsInstanceOf(cls, gEngine->cls_Art)) {
+	if (env->IsSameObject(cls, gEngine->cls_Art)) {
 		return kAnyArt;
-	} else if (env->IsInstanceOf(cls, gEngine->cls_Path)) {
+	} else if (env->IsSameObject(cls, gEngine->cls_Path)) {
 		return kPathArt;
-	} else if (env->IsInstanceOf(cls, gEngine->cls_Raster)) {
+	} else if (env->IsSameObject(cls, gEngine->cls_Raster)) {
 		return kRasterArt;
-	} else if (env->IsInstanceOf(cls, gEngine->cls_Layer)) {
+	} else if (env->IsSameObject(cls, gEngine->cls_Layer)) {
 		// special defined type for layers, needs handling!
 		return com_scriptographer_ai_Art_TYPE_LAYER;
-	} else if (env->IsInstanceOf(cls, gEngine->cls_Group)) {
+	} else if (env->IsSameObject(cls, gEngine->cls_Group)) {
 		return kGroupArt;
 	}
 	return kUnknownArt;

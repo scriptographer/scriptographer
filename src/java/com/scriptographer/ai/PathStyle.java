@@ -28,8 +28,8 @@
  *
  * $RCSfile: PathStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/20 13:49:36 $
  */
 
 package com.scriptographer.ai;
@@ -99,8 +99,8 @@ public class PathStyle implements Commitable {
 	public void commit() {
 		if (art != null) {
 			nativeCommit(art.handle,
-					fill.color.getComponents(), fill.overprint,
-					stroke.color.getComponents(), stroke.overprint, stroke.width, stroke.dashOffset, stroke.dashArray, stroke.cap, stroke.join, stroke.miterLimit,
+					fill.color != null ? fill.color.getComponents() : null, fill.overprint,
+					stroke.color != null ? stroke.color.getComponents() : null, stroke.overprint, stroke.width, stroke.dashOffset, stroke.dashArray, stroke.cap, stroke.join, stroke.miterLimit,
 					clip, lockClip, evenOdd, resolution
 			);
 			version = art.version;

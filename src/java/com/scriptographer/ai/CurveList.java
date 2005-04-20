@@ -28,8 +28,8 @@
  *
  * $RCSfile: CurveList.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.5 $
+ * $Date: 2005/04/20 13:49:36 $
  */
 
 package com.scriptographer.ai;
@@ -48,7 +48,7 @@ public class CurveList extends AbstractFetchList {
 		this.segments = segments;
 		segments.curves = this;
 		list = new ExtendedJavaList();
-		updateLength();
+		updateSize();
 	}
 	
 	public Path getPath() {
@@ -63,15 +63,16 @@ public class CurveList extends AbstractFetchList {
 	 * This is called from the linked CurveList, when this changes.
 	 * TODO: also call it from setClosed, as this changes the number of curves as well!
 	 */
-	protected void updateLength() {
-		int newLength = segments.size;
+	protected void updateSize() {
+		int newSize = segments.size;
 		// reduce length by one if it's an open path:
-		if (!path.getClosed())
-			newLength--;
-
-		list.setSize(newLength);
-
-		size = newLength;
+		if (!path.getClosed() && newSize > 0)
+			newSize--;
+		
+		if (size != newSize) {
+			list.setSize(newSize);
+			size = newSize;
+		}
 	}
 
 	protected void fetch(int fromIndex, int toIndex) {
@@ -128,7 +129,7 @@ public class CurveList extends AbstractFetchList {
 		StringBuffer buf = new StringBuffer(256);
 		buf.append("[ ");
 		for (int i = 0; i < size; i++) {
-			Segment obj = (Segment)list.get(i);
+			Object obj = list.get(i);
 			if (i > 0) buf.append(", ");
 			buf.append(obj.toString());
 		}

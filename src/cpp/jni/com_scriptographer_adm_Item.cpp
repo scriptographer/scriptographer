@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Item.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.8 $
+ * $Date: 2005/04/20 13:49:37 $
  */
 
 #include "stdHeaders.h"
@@ -64,30 +64,32 @@ ASErr ASAPI callbackItemInit(ADMItemRef item) {
 }
 
 void ASAPI callbackItemDestroy(ADMItemRef item) {
-	JNIEnv *env = gEngine->getEnv();
-	try {
-		jobject obj = gEngine->getItemObject(item);
-		gEngine->callOnDestroy(obj);
-		// clear the handle:
-		gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
+	if (gEngine != NULL) {
+		JNIEnv *env = gEngine->getEnv();
+		try {
+			jobject obj = gEngine->getItemObject(item);
+			gEngine->callOnDestroy(obj);
+			// clear the handle:
+			gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
 
-		// is this a list or hierarchy list?
-		// if so, call its destroy function, as this is not automatically done:
-		// SetUserData needs to be called again as the user data is not valid anymore here:
+			// is this a list or hierarchy list?
+			// if so, call its destroy function, as this is not automatically done:
+			// SetUserData needs to be called again as the user data is not valid anymore here:
 
-		if (env->IsInstanceOf(obj, gEngine->cls_ListItem)) {
-			if (env->IsInstanceOf(obj, gEngine->cls_HierarchyList)) {
-				ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
-				sADMHierarchyList->SetUserData(list, obj);
-				callbackHierarchyListDestroy(list);
-			} else {
-				ADMListRef list = gEngine->getListRef(env, obj);
-				sADMList->SetUserData(list, obj);
-				callbackListDestroy(list);
+			if (env->IsInstanceOf(obj, gEngine->cls_ListItem)) {
+				if (env->IsInstanceOf(obj, gEngine->cls_HierarchyList)) {
+					ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+					sADMHierarchyList->SetUserData(list, obj);
+					callbackHierarchyListDestroy(list);
+				} else {
+					ADMListRef list = gEngine->getListRef(env, obj);
+					sADMList->SetUserData(list, obj);
+					callbackListDestroy(list);
+				}
 			}
-		}
-		env->DeleteGlobalRef(obj);
-	} EXCEPTION_CATCH_REPORT(env)
+			env->DeleteGlobalRef(obj);
+		} EXCEPTION_CATCH_REPORT(env)
+	}
 }
 
 void ASAPI callbackItemNotify(ADMItemRef item, ADMNotifierRef notifier) {

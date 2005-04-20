@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_SegmentList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 21:45:54 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/20 13:49:36 $
  */
  
 #include "stdHeaders.h"
@@ -40,9 +40,9 @@
  */
 
 /*
- * int nativeGetLength(int handle)
+ * int nativeGetSize(int handle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SegmentList_nativeGetLength(JNIEnv *env, jclass cls, jint handle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SegmentList_nativeGetSize(JNIEnv *env, jclass cls, jint handle) {
 	try {
 		short count;
 		if (sAIPath->GetPathSegmentCount((AIArtHandle)handle, &count))

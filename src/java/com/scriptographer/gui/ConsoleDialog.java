@@ -28,8 +28,8 @@
  *
  * $RCSfile: ConsoleDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/30 08:20:41 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/20 13:49:36 $
  */
 
 package com.scriptographer.gui;
@@ -90,7 +90,7 @@ public class ConsoleDialog extends FloatingDialog implements ConsoleOutputWriter
 		consoleScope = ScriptographerEngine.getInstance().createScope(null);
 
 		// buttons:
-		clearButton = new PushButton(this, MainDialog.getImage("refresh.png")) {
+		clearButton = new Button(this, MainDialog.getImage("refresh.png")) {
 			public void onClick() {
 				textOut.setText("");
 				consoleText.setLength(0);
@@ -120,7 +120,7 @@ public class ConsoleDialog extends FloatingDialog implements ConsoleOutputWriter
 
 	TextEdit textIn;
 	TextEdit textOut;
-	PushButton clearButton;
+	Button clearButton;
 	StringBuffer consoleText;
 	Scriptable consoleScope;
 	

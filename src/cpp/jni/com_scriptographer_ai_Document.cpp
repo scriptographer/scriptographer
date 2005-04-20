@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.8 $
+ * $Date: 2005/04/20 13:49:37 $
  */
  
 #include "stdHeaders.h"
@@ -476,7 +476,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingArt(JNI
 			EXCEPTION_CHECK(env)
 		}
 		if (!sAIArtSet->MatchingArtSet(&spec, 1, set)) {
-			jobject artSet = gEngine->convertArtSet(env, set);
+			artSet = gEngine->convertArtSet(env, set);
 			sAIArtSet->DisposeArtSet(&set);
 		}
 	}

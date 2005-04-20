@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ListItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/04/20 13:49:37 $
  */
  
 #include "stdHeaders.h"
@@ -51,12 +51,14 @@ ASErr ASAPI callbackListInit(ADMListRef list) {
 }
 
 void ASAPI callbackListDestroy(ADMListRef list) {
-	jobject listObj = gEngine->getListObject(list);
-	JNIEnv *env = gEngine->getEnv();
-	env->DeleteGlobalRef(listObj);
-	sADMList->SetUserData(list, NULL);
-	// clear the handle
-	gEngine->setIntField(env, listObj, gEngine->fid_ListItem_listHandle, 0);
+	if (gEngine != NULL) {
+		jobject listObj = gEngine->getListObject(list);
+		JNIEnv *env = gEngine->getEnv();
+		env->DeleteGlobalRef(listObj);
+		sADMList->SetUserData(list, NULL);
+		// clear the handle
+		gEngine->setIntField(env, listObj, gEngine->fid_ListItem_listHandle, 0);
+	}
 }
 
 #define DEFINE_METHOD(METHOD) \

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.8 $
+ * $Date: 2005/04/20 13:49:36 $
  */
 
 package com.scriptographer.ai;
@@ -40,7 +40,7 @@ import java.awt.geom.AffineTransform;
 
 import com.scriptographer.util.Handle;
 
-abstract class Art extends DictionaryObject {
+public abstract class Art extends DictionaryObject {
 	
 	// the internal version. this is used for internally reflected data,
 	// such as segmentList, pathStyle, and so on. Everytime an object gets

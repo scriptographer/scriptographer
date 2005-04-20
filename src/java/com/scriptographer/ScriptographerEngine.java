@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/04/07 20:12:53 $
+ * $Revision: 1.10 $
+ * $Date: 2005/04/20 13:49:34 $
  */
 
 package com.scriptographer;
@@ -142,8 +142,6 @@ public class ScriptographerEngine {
 		return engine;
 	}
 	
-	public static native long getNanoTime();
-	
 	private void reportRhinoException(RhinoException re) {
 		String source = re.sourceName();
 		if (source != null) {
@@ -232,7 +230,7 @@ public class ScriptographerEngine {
 			if (scope == null)
 				scope = global.createScope(scriptFile);
 			// disable output to the console while the script is executed as it won't get updated anyway
-			ConsoleOutputStream.enableOutput(false);
+			// ConsoleOutputStream.enableOutput(false);
 			script.exec(context, scope);
 			// now commit all the changes:
 			CommitManager.commit();
@@ -244,7 +242,7 @@ public class ScriptographerEngine {
 			reportRhinoException(re);
 		} finally {
 			// now reenable the console, this also writes out all the things that were printed in the meantime:
-			ConsoleOutputStream.enableOutput(true);
+			// ConsoleOutputStream.enableOutput(true);
 		}
 		return ret;
 	}
@@ -306,6 +304,12 @@ public class ScriptographerEngine {
 	public static boolean launch(File file) {
 		return launch(file.getPath());
 	}
+	
+	public static native long getNanoTime();
+
+	public static native boolean isKeyDown(short keycode);
+
+	public static native Point getMousePoint();
 
 	public static void main(String args[]) throws Exception {
 		ConsoleOutputStream.getInstance().enableRedirection(false);

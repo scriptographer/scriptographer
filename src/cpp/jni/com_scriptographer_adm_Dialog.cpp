@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Dialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.9 $
+ * $Date: 2005/04/20 13:49:36 $
  */
 
 #include "stdHeaders.h"
@@ -63,15 +63,17 @@ ASErr ASAPI callbackDialogInit(ADMDialogRef dialog) {
 }
 
 void ASAPI callbackDialogDestroy(ADMDialogRef dialog) {
-	JNIEnv *env = gEngine->getEnv();
-	try {
-		// dialogSavePreference(dialog, gPlugin->console.name);
-		jobject obj = gEngine->getDialogObject(dialog);
-		gEngine->callOnDestroy(obj);
-		// clear the handle:
-		gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
-		env->DeleteGlobalRef(obj);
-	} EXCEPTION_CATCH_REPORT(env)
+	if (gEngine != NULL) {
+		JNIEnv *env = gEngine->getEnv();
+		try {
+			// dialogSavePreference(dialog, gPlugin->console.name);
+			jobject obj = gEngine->getDialogObject(dialog);
+			gEngine->callOnDestroy(obj);
+			// clear the handle:
+			gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
+			env->DeleteGlobalRef(obj);
+		} EXCEPTION_CATCH_REPORT(env)
+	}
 }
 
 void ASAPI callbackDialogResize(ADMItemRef item, ADMNotifierRef notifier) {

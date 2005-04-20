@@ -28,13 +28,13 @@
  *
  * $RCSfile: Frame.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/20 13:49:37 $
  */
 
 package com.scriptographer.adm;
 
-public class Frame extends Item {
+public class Frame extends TextItem {
 
 	// ADMFrameStyle
 	public final static int

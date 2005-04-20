@@ -28,8 +28,8 @@
  *
  * $RCSfile: Rectangle.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/07 20:12:55 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/20 13:49:36 $
  */
 
 package com.scriptographer.ai;
@@ -74,12 +74,60 @@ public class Rectangle extends Rectangle2D.Float implements Wrappable {
 		this.y = y;
 	}
 	
+	public Point getCenter() {
+		return new Point(
+			x + width * 0.5f,
+			y + height * 0.5f
+		);
+	}
+	
+	public void setCenter(float x, float y) {
+		this.x = x - width * 0.5f;
+		this.y = y - height * 0.5f;
+	}
+	
+	public void setCenter(Point center) {
+		setCenter((float) center.getX(), (float) center.getY());
+	}
+	
 	public void setWidth(float width) {
 		this.width = width;
 	}
 	
 	public void setHeight(float height) {
 		this.height = height;
+	}
+	
+	public float getLeft() {
+		return x;
+	}
+	
+	public void setLeft(float left) {
+		x = left;
+	}
+	
+	public float getRight() {
+		return x + width;
+	}
+	
+	public void setRight(float right) {
+		width = right - x;
+	}
+	
+	public float getBottom() {
+		return y;
+	}
+	
+	public void setBottom(float bottom) {
+		y = bottom;
+	}
+	
+	public float getTop() {
+		return y + height;
+	}
+	
+	public void setTop(float top) {
+		height = top - y;
 	}
 	
 	public String toString() {
@@ -94,10 +142,6 @@ public class Rectangle extends Rectangle2D.Float implements Wrappable {
 	
 	public Object clone() {
 		return new Rectangle(this);
-	}
-
-	public Point getCenter() {
-		return new Point(x + width * 0.5f, y + height * 0.5f);
 	}
 
 	// wrappable interface:

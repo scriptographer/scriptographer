@@ -28,13 +28,11 @@
  *
  * $RCSfile: Curve.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.5 $
+ * $Date: 2005/04/20 13:49:36 $
  */
 
 package com.scriptographer.ai;
-
-import com.scriptographer.js.ArgumentReader;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.AffineTransform;
@@ -71,13 +69,13 @@ public class Curve {
 	}
 
 	public Curve(Point2D pt1, Point2D h1, Point2D h2, Point2D pt2) {
-		segment1 = new Segment(pt1, pt1, h1, false);
-		segment2 = new Segment(pt2, h2, pt2, false);
+		segment1 = new Segment(pt1, null, h1, false);
+		segment2 = new Segment(pt2, h2, null, false);
 	}
 	
 	public Curve(float p1x, float p1y, float h1x, float h1y, float h2x, float h2y, float p2x, float p2y) {
-		segment1 = new Segment(p1x, p1y, p1x, p1y, h1x, h1y, false);
-		segment2 = new Segment(p2x, p2y, h2x, h2y, p2x, p2y, false);
+		segment1 = new Segment(p1x, p1y, 0, 0, h1x, h1y, false);
+		segment2 = new Segment(p2x, p2y, h2x, h2y, 0, 0, false);
 	}
 
 	// TODO: instead of calling updateSegments(); everywhere, could there be a better way
@@ -86,9 +84,9 @@ public class Curve {
 		updateSegments();
 		StringBuffer buf = new StringBuffer(64);
 		buf.append("{ point1: ").append(segment1.point.toString());
-		if (!segment1.handleOut.equals(segment1.point))
+		if (segment1.handleOut.x != 0 || segment1.handleOut.y != 0)
 			buf.append(", handle1: ").append(segment1.handleOut.toString());
-		if (!segment2.handleIn.equals(segment2.point))
+		if (segment2.handleIn.x != 0 || segment2.handleIn.y != 0)
 			buf.append(", handle2: ").append(segment2.handleIn.toString());
 		buf.append(", point2: ").append(segment2.point.toString());
 		buf.append(" }");
@@ -124,9 +122,9 @@ public class Curve {
 		segment1.point.setLocation(pt);
 	}
 
-	public void setPoint1(Object pt) {
+	public void setPoint1(float x, float y) {
 		updateSegments();
-		segment1.point.setLocation(new ArgumentReader().readPoint(pt));
+		segment1.point.setLocation(x, y);
 	}
 
 	public Point getHandle1() {
@@ -139,9 +137,9 @@ public class Curve {
 		segment1.handleOut.setLocation(pt);
 	}
 
-	public void setHandle1(Object pt) {
+	public void setHandle1(float x, float y) {
 		updateSegments();
-		segment1.handleOut.setLocation(new ArgumentReader().readPoint(pt));
+		segment1.handleOut.setLocation(x, y);
 	}
 
 	public Point getHandle2() {
@@ -154,9 +152,9 @@ public class Curve {
 		segment2.handleIn.setLocation(pt);
 	}
 
-	public void setHandle2(Object pt) {
+	public void setHandle2(float x, float y) {
 		updateSegments();
-		segment2.handleIn.setLocation(new ArgumentReader().readPoint(pt));
+		segment2.handleIn.setLocation(x, y);
 	}
 
 	public Point getPoint2() {
@@ -169,9 +167,9 @@ public class Curve {
 		segment2.point.setLocation(pt);
 	}
 
-	public void setPoint2(Object pt) {
+	public void setPoint2(float x, float y) {
 		updateSegments();
-		segment2.point.setLocation(new ArgumentReader().readPoint(pt));
+		segment2.point.setLocation(x, y);
 	}
 	
 	public Segment getSegment1() {
@@ -188,50 +186,56 @@ public class Curve {
 	 */
 	public Point getPoint(float position) {
 		updateSegments();
-		// calculate the polynomial coefficients
-		float cx = 3f * (segment1.handleOut.x - segment1.point.x);
-		float bx = 3f * (segment2.handleIn.x - segment1.handleOut.x) - cx;
-		float ax = segment2.point.x - segment1.point.x - cx - bx;
+		// calculate the polynomial coefficients. caution: handles are relative to points
+		float dx = segment2.point.x - segment1.point.x;
+		float cx = 3f * segment1.handleOut.x;
+		float bx = 3f * (dx + segment2.handleIn.x - segment1.handleOut.x) - cx;
+		float ax = dx - cx - bx;
 
-		float cy = 3f * (segment1.handleOut.y - segment1.point.y);
-		float by = 3f * (segment2.handleIn.y - segment1.handleOut.y) - cy;
-		float ay = segment2.point.y - segment1.point.y - cy - by;
+		float dy = segment2.point.y - segment1.point.y;
+		float cy = 3f * segment1.handleOut.y;
+		float by = 3f * (dy + segment2.handleIn.y - segment1.handleOut.y) - cy;
+		float ay = dy - cy - by;
 
 		return new Point(
-				( (ax * position + bx) * position + cx) * position + segment1.point.x,
-				( (ay * position + by) * position + cy) * position + segment1.point.y
+				((ax * position + bx) * position + cx) * position + segment1.point.x,
+				((ay * position + by) * position + cy) * position + segment1.point.y
 		);
 	}
 
 	public Point getTangent(float position) {
 		updateSegments();
-		// calculate the polynomial coefficients
-		float cx = 3f * (segment1.handleOut.x - segment1.point.x);
-		float bx = 3f * (segment2.handleIn.x - segment1.handleOut.x) - cx;
-		float ax = segment2.point.x - segment1.point.x - cx - bx;
+		// calculate the polynomial coefficients. caution: handles are relative to points
+		float dx = segment2.point.x - segment1.point.x;
+		float cx = 3f * segment1.handleOut.x;
+		float bx = 3f * (dx + segment2.handleIn.x - segment1.handleOut.x) - cx;
+		float ax = dx - cx - bx;
 
-		float cy = 3f * (segment1.handleOut.y - segment1.point.y);
-		float by = 3f * (segment2.handleIn.y - segment1.handleOut.y) - cy;
-		float ay = segment2.point.y - segment1.point.y - cy - by;
+		float dy = segment2.point.y - segment1.point.y;
+		float cy = 3f * segment1.handleOut.y;
+		float by = 3f * (dy + segment2.handleIn.y - segment1.handleOut.y) - cy;
+		float ay = dy - cy - by;
 
 		// simply use the derivation of the bezier function
 		// for both the x and y coordinates:
 		return new Point(
-				( 3f * ax * position + 2f * bx) * position + cx,
-				( 3f * ay * position + 2f * by) * position + cy
+				(3f * ax * position + 2f * bx) * position + cx,
+				(3f * ay * position + 2f * by) * position + cy
 		);
 	}
 
 	public Point getNormal(float position) {
 		updateSegments();
-		// calculate the polynomial coefficients
-		float cx = 3f * (segment1.handleOut.x - segment1.point.x);
-		float bx = 3f * (segment2.handleIn.x - segment1.handleOut.x) - cx;
-		float ax = segment2.point.x - segment1.point.x - cx - bx;
+		// calculate the polynomial coefficients. caution: handles are relative to points
+		float dx = segment2.point.x - segment1.point.x;
+		float cx = 3f * segment1.handleOut.x;
+		float bx = 3f * (dx + segment2.handleIn.x - segment1.handleOut.x) - cx;
+		float ax = dx - cx - bx;
 
-		float cy = 3f * (segment1.handleOut.y - segment1.point.y);
-		float by = 3f * (segment2.handleIn.y - segment1.handleOut.y) - cy;
-		float ay = segment2.point.y - segment1.point.y - cy - by;
+		float dy = segment2.point.y - segment1.point.y;
+		float cy = 3f * segment1.handleOut.y;
+		float by = 3f * (dy + segment2.handleIn.y - segment1.handleOut.y) - cy;
+		float ay = dy - cy - by;
 
 		// the normal is simply the rotated tangent:
 		return new Point(
@@ -246,8 +250,8 @@ public class Curve {
 		updateSegments();
 		return nativeGetLength(
 				segment1.point.x, segment1.point.y,
-				segment1.handleOut.x, segment1.handleOut.y,
-				segment2.handleIn.x, segment2.handleIn.y,
+				segment1.handleOut.x + segment1.point.x, segment1.handleOut.y + segment1.point.y,
+				segment2.handleIn.x + segment2.point.x, segment2.handleIn.y + segment2.point.y,
 				segment2.point.x, segment2.point.y,
 				flatness
 		);
@@ -286,16 +290,19 @@ public class Curve {
 			divide(left, t, left, right);
 		
 			// write back the results:
-			segment1.handleOut.setLocation(left[1][0], left[1][1]);
+			segment1.handleOut.setLocation(left[1][0] - segment1.point.x, left[1][1] - segment1.point.y);
 	
-			// create the new segment:
-			Segment newSegment = new Segment((float) left[3][0], (float) left[3][1], (float) left[2][0], (float) left[2][1], (float) right[1][0], (float) right[1][1], false);
+			// create the new segment, absolute -> relative:
+			float x = (float) left[3][0];
+			float y = (float) left[3][1];
+			Segment newSegment = new Segment(x, y, (float) left[2][0] - x, (float) left[2][1] - y, (float) right[1][0] - x, (float) right[1][1] - y, false);
 	
 			// and insert it, if needed:
 			if (segments != null)
 				segments.add(index2, newSegment);
 	
-			segment2.handleIn.setLocation(right[2][0], right[2][1]);
+			// absolute->relative
+			segment2.handleIn.setLocation(right[2][0] - segment2.point.x, right[2][1] - segment2.point.y);
 	
 			if (segments != null && segments.path != null) {
 				// if this curve is linked to a path, get the new curve there
@@ -337,7 +344,7 @@ public class Curve {
 		return getPartLength(fromPosition, toPosition, FLATNESS);
 	}
 
-	public float getPositionWithLength(float length, float flatness) {
+	public float getParameterWithLength(float length, float flatness) {
 		if (length <= 0)
 			return 0;
 		// updateSegments is not necessary here, as it is called in getLength!
@@ -346,28 +353,28 @@ public class Curve {
 			return 1;
 		double[][] curve = getCurveArray();
 		double[][] temp = new double[4][];
-		double pos = length / bezierLength, oldF = 1;
+		double param = length / bezierLength, oldF = 1;
 		for (int i = 0; i < 100; i++) { // prevent too many iterations...
-			double stepLength = getPartLength(curve, 0, pos, flatness, temp);
+			double stepLength = getPartLength(curve, 0, param, flatness, temp);
 			double step = (length - stepLength) / bezierLength;
 			double f = Math.abs(step); // f: value for exactness
 			if (f < 0.00001 || f >= oldF) break; // if it's exact enough or even getting worse with iteration, break the loop...
-			pos += step; // (1 + f) * step
+			param += step; // (1 + f) * step
 			// if pos < 0 then pos = 0
 			oldF = f;
 		}
-		return (float) pos;
+		return (float) param;
 	}
 
-	public float getPositionWithLength(float length) {
-		return getPositionWithLength(length, FLATNESS);
+	public float getParameterWithLength(float length) {
+		return getParameterWithLength(length, FLATNESS);
 	}
 	
 	private double[][] getCurveArray() {
 		return new double[][] {
 			{segment1.point.x, segment1.point.y},
-			{segment1.handleOut.x, segment1.handleOut.y},
-			{segment2.handleIn.x, segment2.handleIn.y},
+			{segment1.handleOut.x + segment1.point.x, segment1.handleOut.y + segment1.point.y},
+			{segment2.handleIn.x + segment2.point.x, segment2.handleIn.y + segment2.point.y},
 			{segment2.point.x, segment2.point.y}
 		};
 	}

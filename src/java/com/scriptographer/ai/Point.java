@@ -28,8 +28,8 @@
  *
  * $RCSfile: Point.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/05 23:27:22 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/20 13:49:36 $
  */
 
 package com.scriptographer.ai;
@@ -124,12 +124,20 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 		return new Point(x + pt.x, y + pt.y);
 	}
 
+	public Point add(float x, float y) {
+		return new Point(this.x + x, this.y + y);
+	}
+
 	public Point subtract(Point2D pt) {
 		return new Point(x - pt.getX(), y - pt.getY());
 	}
 
 	public Point subtract(Point pt) {
 		return new Point(x - pt.x, y - pt.y);
+	}
+
+	public Point subtract(float x, float y) {
+		return new Point(this.x - x, this.y - y);
 	}
 
 	public Point multiply(Point2D pt) {
@@ -140,12 +148,26 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 		return new Point(x * pt.x, y * pt.y);
 	}
 
+	public Point multiply(float x, float y) {
+		return new Point(this.x * x, this.y * y);
+	}
+
 	public Point multiply(float scale) {
 		return new Point(x * scale, y * scale);
 	}
 
 	public boolean isClose(Point pt, float tolerance) {
 		return distance(pt) < tolerance;
+	}
+	
+	public float getDistance(float px, float py) {
+		px -= x;
+		py -= y;
+		return (float) Math.sqrt(px * px + py * py);
+	}
+
+	public float getDistance(Point2D pt) {
+		return getDistance((float) pt.getX(), (float) pt.getY());
 	}
 
 	public float getLength() {

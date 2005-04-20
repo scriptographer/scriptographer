@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListObject.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/20 13:49:36 $
  */
 
 package com.scriptographer.js;
@@ -90,7 +90,7 @@ public class ListObject extends NativeJavaObject {
 	public boolean has(String name, Scriptable start) {
 		return super.has(name, start) ||
 			name.equals("length") ||
-			this instanceof StringIndexList && list != null && ((StringIndexList) list).get(name) != null;
+			list instanceof StringIndexList && list != null && ((StringIndexList) list).get(name) != null;
 	}
 
 	public Object get(String name, Scriptable scriptable) {
@@ -98,7 +98,7 @@ public class ListObject extends NativeJavaObject {
 		if (obj == Scriptable.NOT_FOUND && list != null) {
 			if (name.equals("length")) {
 				return new Integer(list.size());
-			} else if (this instanceof StringIndexList) {
+			} else if (list instanceof StringIndexList) {
 				obj = ((StringIndexList) list).get(name);
 				if (obj == null)
 					obj = Scriptable.NOT_FOUND;

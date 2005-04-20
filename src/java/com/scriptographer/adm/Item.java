@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/04/07 21:58:41 $
+ * $Revision: 1.7 $
+ * $Date: 2005/04/20 13:49:38 $
  */
 
 package com.scriptographer.adm;
@@ -426,7 +426,7 @@ public abstract class Item extends CallbackHandler {
 						Dimension size = getTextSize(text, -1);
 						if (size != null) {
 							size.height += 6;
-							if (this instanceof PushButton) {
+							if (this instanceof Button) {
 								size.width += 20;
 							} else if (this instanceof ToggleItem) {
 								size.width += 32;

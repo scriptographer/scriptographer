@@ -91,7 +91,7 @@ public abstract class AbstractList extends WrappableObject implements List {
 		if (array == null)
 			array = new Object[toIndex - fromIndex];
 		for (int i = fromIndex; i < toIndex; i++) {
-			array[i] = get(i);
+			array[i - fromIndex] = get(i);
 		}
 		return array;
 	}

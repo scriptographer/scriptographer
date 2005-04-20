@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_HierarchyListEntry.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.5 $
+ * $Date: 2005/04/20 13:49:37 $
  */
  
 #include "stdHeaders.h"
@@ -45,22 +45,24 @@ void ASAPI callbackHierarchyListEntryDestroy(ADMListEntryRef entry) {
 	sADMListEntry->SetDisabledPicture(entry, NULL);
 	sADMListEntry->SetSelectedPicture(entry, NULL);
 
-	JNIEnv *env = gEngine->getEnv();
-	try {
-		jobject obj = gEngine->getListEntryObject(entry);
-		// call onDestry on the entry object
-		gEngine->callOnDestroy(obj);
-		// clear the handle
-		gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
-		env->DeleteGlobalRef(obj);
-		// if the object is the last of its parent list, remove the parent as well. do like that so that
-		// all the itmes destory proc get called before the parent's!
-		// but only call if it's not the root list:
-		ADMHierarchyListRef list = sADMListEntry->GetList(entry);
-		if (sADMHierarchyList->NumberOfEntries(list) == 0 && sADMHierarchyList->GetParentEntry(list) != NULL) {
-			callbackHierarchyListDestroy(list);
-		}
-	} EXCEPTION_CATCH_REPORT(env)
+	if (gEngine != NULL) {
+		JNIEnv *env = gEngine->getEnv();
+		try {
+			jobject obj = gEngine->getListEntryObject(entry);
+			// call onDestry on the entry object
+			gEngine->callOnDestroy(obj);
+			// clear the handle
+			gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
+			env->DeleteGlobalRef(obj);
+			// if the object is the last of its parent list, remove the parent as well. do like that so that
+			// all the itmes destory proc get called before the parent's!
+			// but only call if it's not the root list:
+			ADMHierarchyListRef list = sADMListEntry->GetList(entry);
+			if (sADMHierarchyList->NumberOfEntries(list) == 0 && sADMHierarchyList->GetParentEntry(list) != NULL) {
+				callbackHierarchyListDestroy(list);
+			}
+		} EXCEPTION_CATCH_REPORT(env)
+	}
 }
 
 void ASAPI callbackHierarchyListEntryNotify(ADMListEntryRef entry, ADMNotifierRef notifier) {

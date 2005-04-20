@@ -28,8 +28,8 @@
  *
  * $RCSfile: AboutDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/30 08:21:33 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/20 13:49:36 $
  */
 
 package com.scriptographer.gui;
@@ -39,7 +39,7 @@ import java.awt.Point;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.Dialog;
 import com.scriptographer.adm.ModalDialog;
-import com.scriptographer.adm.PushButton;
+import com.scriptographer.adm.Button;
 import com.scriptographer.adm.Static;
 import com.scriptographer.adm.TableLayout;
 import com.scriptographer.adm.Tracker;
@@ -81,7 +81,7 @@ public 	class AboutDialog extends ModalDialog {
 			"© 2001-2005 JŸrg Lehni" + newLine + 
 			"http://www.scratchdisk.com");
 		
-		PushButton okButton = new PushButton(this);
+		Button okButton = new Button(this);
 		okButton.setFont(Dialog.FONT_PALETTE);
 		okButton.setText("OK");
 		setDefaultItem(okButton);

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ListEntry.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.4 $
+ * $Date: 2005/04/20 13:49:37 $
  */
  
 #include "stdHeaders.h"
@@ -45,15 +45,17 @@ void ASAPI callbackListEntryDestroy(ADMEntryRef entry) {
 	sADMEntry->SetDisabledPicture(entry, NULL);
 	sADMEntry->SetSelectedPicture(entry, NULL);
 
-	JNIEnv *env = gEngine->getEnv();
-	try {
-		jobject obj = gEngine->getListEntryObject(entry);
-		// call onDestory on the entry object
-		gEngine->callOnDestroy(obj);
-		// clear the handle
-		gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
-		env->DeleteGlobalRef(obj);
-	} EXCEPTION_CATCH_REPORT(env)
+	if (gEngine != NULL) {
+		JNIEnv *env = gEngine->getEnv();
+		try {
+			jobject obj = gEngine->getListEntryObject(entry);
+			// call onDestory on the entry object
+			gEngine->callOnDestroy(obj);
+			// clear the handle
+			gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
+			env->DeleteGlobalRef(obj);
+		} EXCEPTION_CATCH_REPORT(env)
+	}
 }
 
 void ASAPI callbackListEntryNotify(ADMEntryRef entry, ADMNotifierRef notifier) {

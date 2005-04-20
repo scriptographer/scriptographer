@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Curve.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.3 $
+ * $Date: 2005/04/20 13:49:36 $
  */
  
 #include "stdHeaders.h"
@@ -61,12 +61,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Curve_nativeAdjustThroughPoint
 		bezier.p0 = segments[0].p;
 		bezier.p1 = segments[0].out;
 		bezier.p2 = segments[1].in;
-		bezier.p3 = segments[2].p;
+		bezier.p3 = segments[1].p;
 		sAIRealBezier->AdjustThroughPoint(&bezier, &pt, position);
 		segments[0].p = bezier.p0;
 		segments[0].out = bezier.p1;
 		segments[1].in = bezier.p2;
-		segments[2].p = bezier.p3;
+		segments[1].p = bezier.p3;
 		env->ReleaseFloatArrayElements(values, (jfloat *) segments, 0);
 	} EXCEPTION_CONVERT(env)
 }
