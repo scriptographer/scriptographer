@@ -28,8 +28,8 @@
  *
  * $RCSfile: Curve.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.6 $
+ * $Date: 2005/04/22 11:14:24 $
  */
 
 package com.scriptographer.ai;
@@ -428,7 +428,7 @@ public class Curve {
 	}
 
 	/*
-	 * curve is only modified if it is passed as tempCurve as well. this is needed in getPositionWithLength above...
+	 * curve is only modified if it is passed as tempCurve as well. this is needed in getParameterWithLength above...
 	 */
 	private static float getPartLength(double curve[][], double fromPosition, double toPosition, double flatness, double tempCurve[][]) {
 		if (fromPosition > toPosition) {

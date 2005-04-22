@@ -28,8 +28,8 @@
  *
  * $RCSfile: Segment.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.7 $
+ * $Date: 2005/04/22 11:14:24 $
  */
 
 package com.scriptographer.ai;
@@ -37,7 +37,6 @@ package com.scriptographer.ai;
 import com.scriptographer.js.ArgumentReader;
 import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
-import com.scriptographer.ScriptographerException;
 
 import java.awt.geom.Point2D;
 
