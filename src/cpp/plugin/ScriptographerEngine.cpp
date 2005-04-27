@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/04/08 21:56:39 $
+ * $Revision: 1.9 $
+ * $Date: 2005/04/27 14:08:27 $
  */
  
 #include "stdHeaders.h"
@@ -92,6 +92,7 @@ JavaVM *ScriptographerEngine::javaThread() {
 
 ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 	fInitialized = false;
+	fJavaVM = NULL;
 	fHomeDir = new char[strlen(homeDir) + 1];
 	strcpy(fHomeDir, homeDir);
 	Exception *exc = NULL;
@@ -154,16 +155,19 @@ void ScriptographerEngine::init() {
 	// init args
 	JavaVMInitArgs args;
 	args.version = JNI_VERSION_1_4;
-	if (args.version < JNI_VERSION_1_4) getDefaultJavaVMInitArgs(&args);
+	if (args.version < JNI_VERSION_1_4)
+		getDefaultJavaVMInitArgs(&args);
 	JavaVMOption options[10];
 	int numOptions = 0;
+	memset(options, 0, sizeof(JavaVMOption));
 	
 	char classpath[512];
 	// only add the loader to the classpath, the rest is done in java:
 	sprintf(classpath, "-Djava.class.path=%s" PATH_SEP_STR "loader.jar", fHomeDir);
 	options[numOptions++].optionString = classpath;
-	options[numOptions++].optionString = "-Xms32m";
-	options[numOptions++].optionString = "-Xmx256m";
+	options[numOptions++].optionString = "-Xms64m";
+//	options[numOptions++].optionString = "-Xmx256m";
+	options[numOptions++].optionString = "-Xmx128m";
 	// start headless, in order to avoid conflicts with AWT and Illustrator
 	options[numOptions++].optionString = "-Djava.awt.headless=true";
 #ifdef MAC_ENV
@@ -199,8 +203,8 @@ void ScriptographerEngine::init() {
 	// create the JVM
 	JNIEnv *env;
 	jint res = createJavaVM(&fJavaVM, (void **) &env, (void *) &args);
-    if (res < 0)
-        throw new StringException("Cannot create Java VM.");
+	if (res < 0)
+		throw new StringException("Cannot create Java VM.");
 
 	fJavaEngine = NULL;
 	
@@ -1917,9 +1921,13 @@ jobject ScriptographerEngine::getListEntryObject(ADMListEntryRef entry) {
  */
 
 JNIEnv *ScriptographerEngine::getEnv() {
-	JNIEnv *env;
-	fJavaVM->AttachCurrentThread((void **)&env, NULL);
-	return env;
+	if (fJavaVM != NULL) {
+		JNIEnv *env;
+		fJavaVM->AttachCurrentThread((void **)&env, NULL);
+		return env;
+	} else {
+		return NULL;
+	}
 }
 
 /**

@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/04/20 13:49:34 $
+ * $Revision: 1.11 $
+ * $Date: 2005/04/27 14:08:28 $
  */
 
 package com.scriptographer;
@@ -254,12 +254,14 @@ public class ScriptographerEngine {
 	 */
 	private void executeAll(File dir) {
 		File []files = dir.listFiles();
-		for (int i = 0; i < files.length; i++) {
-			File file = files[i];
-			if (file.isDirectory()) {
-				executeAll(file);
-			} else if (file.getName().endsWith(".js")) {
-				executeFile(file, null);
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				File file = files[i];
+				if (file.isDirectory()) {
+					executeAll(file);
+				} else if (file.getName().endsWith(".js")) {
+					executeFile(file, null);
+				}
 			}
 		}
 	}

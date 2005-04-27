@@ -170,7 +170,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_isKeyDow
 		}
 		return false;
 #elif WIN_ENV
-		return GetAsyncKeyState(keycode) & 0x8000) == 0x8000;
+		return (GetAsyncKeyState(keycode) & 0x8000) == 0x8000;
 #endif
 	} EXCEPTION_CONVERT(env)
 	return JNI_FALSE;
