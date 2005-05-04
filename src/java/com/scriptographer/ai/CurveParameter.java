@@ -28,8 +28,8 @@
  *
  * $RCSfile: CurveParameter.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/05/04 10:41:10 $
+ * $Revision: 1.1 $
+ * $Date: 2005/05/04 10:35:48 $
  */
 
 package com.scriptographer.ai;
@@ -46,11 +46,7 @@ public class CurveParameter {
 	public Curve getCurve() {
 		return curve;
 	}
-	
-	public int getIndex() {
-		return curve.getIndex();
-	}
-	
+
 	public float getParameter() {
 		return parameter;
 	}
