@@ -28,8 +28,8 @@
  *
  * $RCSfile: CurveList.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.6 $
+ * $Date: 2005/05/04 23:40:55 $
  */
 
 package com.scriptographer.ai;
@@ -66,7 +66,7 @@ public class CurveList extends AbstractFetchList {
 	protected void updateSize() {
 		int newSize = segments.size;
 		// reduce length by one if it's an open path:
-		if (!path.getClosed() && newSize > 0)
+		if (!path.isClosed() && newSize > 0)
 			newSize--;
 		
 		if (size != newSize) {

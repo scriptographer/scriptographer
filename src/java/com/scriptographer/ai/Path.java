@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/05/04 23:40:55 $
+ * $Revision: 1.10 $
+ * $Date: 2005/05/04 23:45:09 $
  */
 
 package com.scriptographer.ai;
@@ -286,7 +286,12 @@ public class Path extends Art {
 				return new CurveParameter(curve, t);
 			}
 		}
-		return null;
+		// it may be that through unpreciseness of getLength, that the end of the curves was missed:
+		if (length <= getLength(flatness)) {
+			return new CurveParameter((Curve) curves.get(curves.size - 1), 1);
+		} else {
+			return null;
+		}
 	}
 
 	public CurveParameter getParameterWithLength(float length) {

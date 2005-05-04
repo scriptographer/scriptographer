@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Path.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/07 20:12:53 $
+ * $Revision: 1.5 $
+ * $Date: 2005/05/04 23:42:51 $
  */
  
 #include "stdHeaders.h"
@@ -49,9 +49,9 @@ short pathGetBezierCount(AIArtHandle art) {
 }
 
 /*
- * boolean getClosed()
+ * boolean isClosed()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Path_getClosed(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Path_isClosed(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle handle = gEngine->getArtHandle(env, obj);
 		AIBoolean closed;
@@ -72,9 +72,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setClosed(JNIEnv *env, jo
 }
 
 /*
- * boolean getGuide()
+ * boolean isGuide()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Path_getGuide(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Path_isGuide(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle handle = gEngine->getArtHandle(env, obj);
 		AIBoolean guide;
