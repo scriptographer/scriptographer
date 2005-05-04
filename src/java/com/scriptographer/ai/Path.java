@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/05/04 10:35:24 $
+ * $Revision: 1.9 $
+ * $Date: 2005/05/04 23:40:55 $
  */
 
 package com.scriptographer.ai;
@@ -127,9 +127,9 @@ public class Path extends Art {
 		return curves;
 	}
 
-	public native boolean getClosed();
+	public native boolean isClosed();
 	public native void setClosed(boolean closed);
-	public native boolean getGuide();
+	public native boolean isGuide();
 	public native void setGuide(boolean guide);
 	public native TabletValue[] getTabletData();
 	public native void setTabletData(TabletValue[] data);
