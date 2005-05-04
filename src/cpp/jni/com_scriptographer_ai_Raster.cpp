@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Raster.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/30 08:15:38 $
+ * $Revision: 1.3 $
+ * $Date: 2005/05/04 10:34:19 $
  */
  
 #include "stdHeaders.h"
@@ -111,6 +111,7 @@ RasterData *rasterGetData(JNIEnv *env, jobject raster, AIArtHandle art) {
 		
 		data->numComponents = numComponents;
 		data->pixelSlice.back = numComponents;
+		data->pixelTile.bounds.back = numComponents;
 		data->pixelTile.colBytes = numComponents;
 		data->pixelTile.rowBytes = numComponents;
 

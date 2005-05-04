@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/04/20 13:49:34 $
+ * $Revision: 1.6 $
+ * $Date: 2005/05/04 10:34:57 $
  */
 
 package com.scriptographer;
@@ -122,7 +122,7 @@ public class GlobalObject extends ImporterTopLevel {
 
 		new ExtendedJavaClass(this, Segment.class);
 		new ExtendedJavaClass(this, Curve.class);
-		new ExtendedJavaClass(this, CurvePosition.class);
+		new ExtendedJavaClass(this, CurveParameter.class);
 		new ExtendedJavaClass(this, TabletValue.class);
 		new ExtendedJavaClass(this, Pathfinder.class);
 		new ExtendedJavaClass(this, Document.class);

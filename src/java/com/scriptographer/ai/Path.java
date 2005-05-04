@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.8 $
+ * $Date: 2005/05/04 10:35:24 $
  */
 
 package com.scriptographer.ai;
@@ -257,23 +257,24 @@ public class Path extends Art {
 		return split(index, 0f);
 	}
 
-	public CurvePosition hitTest(Point point, float epsilon) {
+	public CurveParameter hitTest(Point point, float epsilon) {
 		CurveList curves = getCurves();
 		int length = curves.size();
 		
 		for (int i = 0; i < length; i++) {
-			float t = ((Curve) curves.get(i)).hitTest(point, epsilon);
+			Curve curve = (Curve) curves.get(i);
+			float t = curve.hitTest(point, epsilon);
 			if (t >= 0)
-				return new CurvePosition(i, t);
+				return new CurveParameter(curve, t);
 		}
 		return null;
 	}
 
-	public CurvePosition hitTest(Point point) {
+	public CurveParameter hitTest(Point point) {
 		return hitTest(point, Curve.EPSILON);
 	}
 
-	public CurvePosition getParameterWithLength(float length, float flatness) {
+	public CurveParameter getParameterWithLength(float length, float flatness) {
 		CurveList curves = getCurves();
 		float currentLength = 0;
 		for (int i = 0; i < curves.size; i++) {
@@ -282,13 +283,13 @@ public class Path extends Art {
 			currentLength += curve.getLength(flatness);
 			if (currentLength >= length) { // found the segment within which the length lies
 				float t = curve.getParameterWithLength(length - startLength, flatness);
-				return new CurvePosition(i, t);
+				return new CurveParameter(curve, t);
 			}
 		}
 		return null;
 	}
 
-	public CurvePosition getParameterWithLength(float length) {
+	public CurveParameter getParameterWithLength(float length) {
 		return getParameterWithLength(length, Curve.FLATNESS);
 	}
 	

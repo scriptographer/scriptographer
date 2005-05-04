@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/04/27 14:08:28 $
+ * $Revision: 1.12 $
+ * $Date: 2005/05/04 10:34:57 $
  */
 
 package com.scriptographer;
@@ -115,11 +115,11 @@ public class ScriptographerEngine {
 		return baseDir;
 	}
 	
-	public boolean isWindows() {
+	public static boolean isWindows() {
 		return isWindows;
 	}
 	
-	public boolean isMacintosh() {
+	public static boolean isMacintosh() {
 		return isMacintosh;
 	}
 

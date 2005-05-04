@@ -26,27 +26,31 @@
  *
  * File created on 11.01.2005.
  *
- * $RCSfile: CurvePosition.java,v $
+ * $RCSfile: CurveParameter.java,v $
  * $Author: lehni $
  * $Revision: 1.2 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Date: 2005/05/04 10:41:10 $
  */
 
 package com.scriptographer.ai;
 
-public class CurvePosition {
-	private int index;
+public class CurveParameter {
+	private Curve curve;
 	private float parameter;
 
-	protected CurvePosition(int index, float parameter) {
-		this.index = index;
+	protected CurveParameter(Curve curve, float parameter) {
+		this.curve = curve;
 		this.parameter = parameter;
 	}
 
-	public int getIndex() {
-		return index;
+	public Curve getCurve() {
+		return curve;
 	}
-
+	
+	public int getIndex() {
+		return curve.getIndex();
+	}
+	
 	public float getParameter() {
 		return parameter;
 	}

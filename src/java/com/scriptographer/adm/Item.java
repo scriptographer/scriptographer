@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/20 13:49:38 $
+ * $Revision: 1.8 $
+ * $Date: 2005/05/04 10:35:09 $
  */
 
 package com.scriptographer.adm;
@@ -39,6 +39,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.StringTokenizer;
+
+import com.scriptographer.ScriptographerEngine;
 
 public abstract class Item extends CallbackHandler {
 	// TODO: move constants to their places!
@@ -431,7 +433,7 @@ public abstract class Item extends CallbackHandler {
 							} else if (this instanceof ToggleItem) {
 								size.width += 32;
 							} else {
-								size.width += 6;
+								size.width += ScriptographerEngine.isMacintosh() ? 12 : 6;
 							}
 							return size;
 						}

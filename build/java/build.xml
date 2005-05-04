@@ -178,7 +178,6 @@
 			<class name="com.scriptographer.ai.MenuGroup" />
         	<class name="com.scriptographer.ai.Timer" />
         	<class name="com.scriptographer.ai.Annotator" />
-        	
 
         	<class name="com.scriptographer.adm.Notifier" />
         	<class name="com.scriptographer.adm.Dialog" />
@@ -199,7 +198,7 @@
            	<class name="com.scriptographer.adm.Drawer" />
            	<class name="com.scriptographer.adm.Image" />
            	<class name="com.scriptographer.adm.Tracker" />
-        </javah>
+		</javah>
 		<echo id="echo" level="info" />
 		<script language="javascript" src="jni.js">
 		<![CDATA[

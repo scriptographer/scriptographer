@@ -28,8 +28,8 @@
  *
  * $RCSfile: Point.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.4 $
+ * $Date: 2005/05/04 10:37:43 $
  */
 
 package com.scriptographer.ai;
@@ -128,6 +128,10 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 		return new Point(this.x + x, this.y + y);
 	}
 
+	public Point add(double x, double y) {
+		return new Point(this.x + x, this.y + y);
+	}
+
 	public Point subtract(Point2D pt) {
 		return new Point(x - pt.getX(), y - pt.getY());
 	}
@@ -137,6 +141,10 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 	}
 
 	public Point subtract(float x, float y) {
+		return new Point(this.x - x, this.y - y);
+	}
+
+	public Point subtract(double x, double y) {
 		return new Point(this.x - x, this.y - y);
 	}
 
@@ -152,7 +160,15 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 		return new Point(this.x * x, this.y * y);
 	}
 
+	public Point multiply(double x, double y) {
+		return new Point(this.x * x, this.y * y);
+	}
+
 	public Point multiply(float scale) {
+		return new Point(x * scale, y * scale);
+	}
+
+	public Point multiply(double scale) {
 		return new Point(x * scale, y * scale);
 	}
 
@@ -217,6 +233,10 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 		}
 	}
 
+	public Point normalize(double length) {
+		return normalize((float) length);
+	}
+
 	public Point normalize() {
 		return normalize(1f);
 	}
@@ -228,6 +248,10 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 			x * c - y * s,
 			y * c + x * s
  		);
+	}
+
+	public Point rotate(double theta) {
+		return rotate((float) theta);
 	}
 
 	public float dotProduct(Point2D pt) {
