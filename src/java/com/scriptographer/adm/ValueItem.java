@@ -28,8 +28,8 @@
  *
  * $RCSfile: ValueItem.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.5 $
+ * $Date: 2005/07/22 17:39:22 $
  */
 
 package com.scriptographer.adm;
@@ -47,6 +47,10 @@ public abstract class ValueItem extends Item {
 		callFunction("onChange");
 	}
 	
+	/**
+	 * TODO: Change that name. It's not suitable!
+	 * @throws Exception
+	 */
 	protected void onPreChange() throws Exception {
 		callFunction("onPreChange");
 	}

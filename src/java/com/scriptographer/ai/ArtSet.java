@@ -28,22 +28,26 @@
  * 
  * $RCSfile: ArtSet.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/04/07 20:12:55 $
+ * $Revision: 1.7 $
+ * $Date: 2005/07/22 17:39:23 $
  */
 
 package com.scriptographer.ai;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import com.scriptographer.util.ArrayList;
 
 public class ArtSet extends ArrayList {
 	// use a map to keep track of already added art objects:
-	HashMap map;
+	// use a linked list to preserve insertion order! TODO: needed?
+	LinkedHashMap map;
 
 	public ArtSet() {
-		map = new HashMap();
+		map = new LinkedHashMap();
 	}
 
 	public ArtSet(Collection artObjects) {
@@ -101,6 +105,15 @@ public class ArtSet extends ArrayList {
 
 	public native ArtSet invert();
 	
+	/**
+	 * 
+	 * @param type Color.TYPE_*
+	 * @param resolution
+	 * @param antialiasing
+	 * @param width
+	 * @param height
+	 * @return
+	 */
 	public native Raster rasterize(int type, float resolution, int antialiasing, float width, float height);
 	
 	public Raster rasterize(int type, float resolution, int antialiasing) {

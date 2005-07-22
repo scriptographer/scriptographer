@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.9 $
+ * $Date: 2005/07/22 17:39:23 $
  */
 
 package com.scriptographer.ai;
@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.WeakHashMap;
 import java.awt.geom.AffineTransform;
 
+import com.scriptographer.CommitManager;
 import com.scriptographer.util.Handle;
 
 public abstract class Art extends DictionaryObject {
@@ -274,9 +275,11 @@ public abstract class Art extends DictionaryObject {
 			handle.handle = artHandles[i];
 			Art art = (Art) artWrappers.get(handle);
 			if (art != null) {
+				// System.out.print(artHandles[i] + " ");
 				art.version++;
 			}
 		}
+		// System.out.println();
 	}
 	
 	private void changeHandle(int newHandle, int newDictionaryRef) {
@@ -427,7 +430,14 @@ public abstract class Art extends DictionaryObject {
 		// self defined:
 		TRANSFORM_DEEP				= 1 << 10;
 
-	public native void transform(AffineTransform at, int flags);
+	private native void nativeTransform(AffineTransform at, int flags);
+	
+	public void transform(AffineTransform at, int flags) {
+		// first commit all changes:
+		// TODO: only commit changes in this segmentList
+		CommitManager.commit();
+		nativeTransform(at, flags);
+	}
 
 	public void transform(AffineTransform at) {
 		transform(at, TRANSFORM_OBJECTS | TRANSFORM_DEEP);

@@ -28,8 +28,8 @@
  *
  * $RCSfile: CallbackHandler.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/04/04 17:06:16 $
+ * $Revision: 1.6 $
+ * $Date: 2005/07/22 17:39:22 $
  */
 
 package com.scriptographer.adm;
@@ -88,6 +88,9 @@ abstract class CallbackHandler extends NotificationHandler {
 	public boolean getDrawCallback() {
 		return drawCallback;
 	}
+	
+	abstract public void setTrackMask(int mask);
+	abstract public int getTrackMask();
 
  	protected Function onTrack = null;
 	protected Function onDraw = null;

@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.8 $
+ * $Date: 2005/07/22 17:39:23 $
  */
 
 package com.scriptographer.ai;
@@ -37,6 +37,7 @@ package com.scriptographer.ai;
 import java.util.*;
 import java.awt.geom.Point2D;
 
+import com.scriptographer.CommitManager;
 import com.scriptographer.util.ExtendedJavaList;
 import com.scriptographer.util.AbstractFetchList;
 
@@ -188,21 +189,23 @@ public class SegmentList extends AbstractFetchList {
 
 				// fetch these segmentValues and set the segments:
 				int count = end - start;
-				fetchCount -= count;
-				if (values == null || values.length < count)
-					values = new float[count * VALUES_PER_SEGMENT];
-//				System.out.println("nativeFetch " + start + " " + count);
-				nativeFetch(path.handle, start, count, values);
-				int valueIndex = 0;
-				for (int i = start; i < end; i++) {
-					Segment segment = (Segment) list.get(i);
-					if (segment == null) {
-						segment = new Segment(this, i);
-						list.set(i, segment);
+				if (count > 0) {
+					fetchCount -= count;
+					if (values == null || values.length < count)
+						values = new float[count * VALUES_PER_SEGMENT];
+	//				System.out.println("nativeFetch " + start + " " + count);
+					nativeFetch(path.handle, start, count, values);
+					int valueIndex = 0;
+					for (int i = start; i < end; i++) {
+						Segment segment = (Segment) list.get(i);
+						if (segment == null) {
+							segment = new Segment(this, i);
+							list.set(i, segment);
+						}
+						segment.setValues(values, valueIndex);
+						segment.version = pathVersion;
+						valueIndex += VALUES_PER_SEGMENT;
 					}
-					segment.setValues(values, valueIndex);
-					segment.version = pathVersion;
-					valueIndex += VALUES_PER_SEGMENT;
 				}
 
 				// are we at the end? if so, jump out
@@ -405,6 +408,9 @@ public class SegmentList extends AbstractFetchList {
 	private static native void nativeReverse(int handle);
 
 	public void reverse() {
+		// first save all changes:
+		// TODO: only commit changes in this segmentList
+		CommitManager.commit();
 		if (path != null) {
 			// reverse underlying ai structures:
 			nativeReverse(path.handle);

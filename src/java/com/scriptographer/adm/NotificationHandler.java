@@ -28,8 +28,8 @@
  *
  * $RCSfile: NotificationHandler.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/04 17:06:13 $
+ * $Revision: 1.3 $
+ * $Date: 2005/07/22 17:39:21 $
  */
 
 package com.scriptographer.adm;
@@ -52,7 +52,7 @@ abstract class NotificationHandler extends ADMObject implements Unsealed {
 	protected abstract void onDraw(Drawer drawer) throws Exception;
 
 	protected final void onNotify(String notifier) throws Exception {
-//		System.out.println(this + " " + notifier);
+		// System.out.println(this + " " + notifier);
 		onNotify(Notifier.lookup(notifier));
 	}
 	

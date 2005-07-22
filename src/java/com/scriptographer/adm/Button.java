@@ -28,17 +28,17 @@
  *
  * $RCSfile: Button.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/04/20 13:49:37 $
+ * $Revision: 1.2 $
+ * $Date: 2005/07/22 17:39:22 $
  */
 
 package com.scriptographer.adm;
 
 /**
- * A PushButton is by default text based.
+ * A Button is by default text based.
  * Only if it is created with an image passed to the constructor,
  * It is picture based.
- * Picture based items (CheckBox, Static, PushButton, RadioButton),
+ * Picture based items (CheckBox, Static, Button, RadioButton),
  * this policy has been chosen to avoid 4 more classes.
  */
 public class Button extends PictureItem {

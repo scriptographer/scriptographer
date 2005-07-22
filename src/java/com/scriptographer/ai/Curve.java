@@ -28,8 +28,8 @@
  *
  * $RCSfile: Curve.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/04/22 11:14:24 $
+ * $Revision: 1.7 $
+ * $Date: 2005/07/22 17:39:23 $
  */
 
 package com.scriptographer.ai;
@@ -95,15 +95,18 @@ public class Curve {
 
 	protected void updateSegments() {
 		if (segments != null) {
-			// a closing bezier?
 			index2 = index1 + 1;
+			// a closing bezier?
 			if (index2 >= segments.size)
 				index2 = 0;
+			
+			// check wether the segments were moved (others were deleted) or even moved to
+			// another path. fetch again if they were:
 
-			if (segment1 == null || segment1.index != index1)
+			// if (segment1 == null || segment1.index != index1 || segments != segment1.segments)
 				segment1 = (Segment) segments.get(index1);
 
-			if (segment2 == null || segment2.index != index2)
+			// if (segment2 == null || segment2.index != index2 || segments != segment2.segments)
 				segment2 = (Segment) segments.get(index2);
 		}
 	}
@@ -359,7 +362,9 @@ public class Curve {
 			double step = (length - stepLength) / bezierLength;
 			double f = Math.abs(step); // f: value for exactness
 			if (f < 0.00001 || f >= oldF) break; // if it's exact enough or even getting worse with iteration, break the loop...
-			param += step; // (1 + f) * step
+			param += step * 0.5; // (1 + f) * step;
+			if (param < 0) param = 0;
+			else if (param > 1) param = 1;
 			// if pos < 0 then pos = 0
 			oldF = f;
 		}

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/05/04 10:35:09 $
+ * $Revision: 1.9 $
+ * $Date: 2005/07/22 17:39:22 $
  */
 
 package com.scriptographer.adm;
@@ -283,6 +283,9 @@ public abstract class Item extends CallbackHandler {
 	 */
 	protected native void nativeSetTrackCallback(boolean enabled);
 	protected native void nativeSetDrawCallback(boolean enabled);
+
+	public native int getTrackMask();
+	public native void setTrackMask(int mask);
 
 	/* 
 	 * item timer

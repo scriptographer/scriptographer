@@ -28,8 +28,8 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/30 08:21:31 $
+ * $Revision: 1.6 $
+ * $Date: 2005/07/22 17:39:22 $
  */
 
 package com.scriptographer.adm;
@@ -431,7 +431,10 @@ public abstract class Dialog extends CallbackHandler {
 	 */
 	protected native void nativeSetTrackCallback(boolean enabled);
 	protected native void nativeSetDrawCallback(boolean enabled);
-	
+
+	public native int getTrackMask();
+	public native void setTrackMask(int mask);
+
 	/* 
 	 * dialog timer
 	 * 

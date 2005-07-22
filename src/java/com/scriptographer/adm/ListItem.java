@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListItem.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.2 $
+ * $Date: 2005/07/22 17:39:15 $
  */
 
 package com.scriptographer.adm;
@@ -253,8 +253,13 @@ public class ListItem extends Item {
 	 *
 	 */
 
-	protected native void setTrackMask(int mask);
-	protected native int getTrackMask();
+	/**
+	 * TODO: these are for the list object underneath, not the
+	 * dialog item object. but they override the one from item
+	 * therefore they should be renamed. but how?
+	 */
+	public native void setTrackMask(int mask);
+	public native int getTrackMask();
 
 	/*
 	 * customizing appearance

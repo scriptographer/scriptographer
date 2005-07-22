@@ -28,8 +28,8 @@
  *
  * $RCSfile: Raster.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/30 08:21:33 $
+ * $Revision: 1.4 $
+ * $Date: 2005/07/22 17:39:23 $
  */
 
 package com.scriptographer.ai;
@@ -110,6 +110,10 @@ public class Raster extends Art {
 	}
 
 	private native int nativeConvert(int type, int width, int height);
+	
+	public native Matrix getMatrix();
+	
+	public native void setMatrix(Matrix matrix);
 
 	public native Dimension getSize();
 	
