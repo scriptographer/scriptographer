@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Item.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/04/20 13:49:37 $
+ * $Revision: 1.9 $
+ * $Date: 2005/07/22 17:30:56 $
  */
 
 #include "stdHeaders.h"
@@ -184,6 +184,27 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetTrackCallback(J
 }
 
 /*
+ * int getTrackMask()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getTrackMask(JNIEnv *env, jobject obj) {
+	try {
+		ADMItemRef item = gEngine->getItemRef(env, obj);
+		return sADMItem->GetMask(item);
+	} EXCEPTION_CONVERT(env)
+	return 0;
+}
+
+/*
+ * void setTrackMask(int mask)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setTrackMask(JNIEnv *env, jobject obj, jint mask) {
+	try {
+		ADMItemRef item = gEngine->getItemRef(env, obj);
+		sADMItem->SetMask(item, mask);
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
  * void nativeSetDrawCallback(boolean enabled)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetDrawCallback(JNIEnv *env, jobject obj, jboolean enabled) {
@@ -299,30 +320,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetBounds(JNIEnv *
 	    DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMItem->SetBoundsRect(item, &rt);
 	} EXCEPTION_CONVERT(env)
-}
-
-/*
- * void setLocation(int x, int y)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setLocation(JNIEnv *env, jobject obj, jint x, jint y) {
-	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->Move(item, x, y);
-	} EXCEPTION_CONVERT(env)
-}
-
-/*
- * java.awt.Point getLocation()
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_getLocation(JNIEnv *env, jobject obj) {
-	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
-		ADMRect rt;
-		sADMItem->GetBoundsRect(item, &rt);
-		DEFINE_ADM_POINT(pt, rt.left, rt.top);
-		return gEngine->convertPoint(env, &pt);
-	} EXCEPTION_CONVERT(env)
-	return NULL;
 }
 
 /*

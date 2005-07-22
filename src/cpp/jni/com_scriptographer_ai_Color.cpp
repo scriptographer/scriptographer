@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Color.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/30 08:15:38 $
+ * $Revision: 1.3 $
+ * $Date: 2005/07/22 17:30:56 $
  */
  
 #include "stdHeaders.h"
@@ -70,7 +70,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_convert(JNIEnv *env, 
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_getWSProfile(JNIEnv *env, jclass cls, jint whichSpace) {
 	jobject ret = NULL;
 	try {
-		ASUInt32 profile;
+		AIColorProfile profile;
 		AIErr err = sAIOverrideColorConversion->GetWSProfile(whichSpace, &profile);
 		if (err == kNoErr) {
 			ASUInt32 size;

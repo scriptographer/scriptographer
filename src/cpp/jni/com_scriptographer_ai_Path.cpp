@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Path.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/05/04 23:42:51 $
+ * $Revision: 1.6 $
+ * $Date: 2005/07/22 17:30:56 $
  */
  
 #include "stdHeaders.h"
@@ -149,9 +149,15 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setTabletData(JNIEnv *env
 			sAITabletData->SetTabletDataInUse(handle, count > 0);
 			delete profiles;
 		} else {
+			// just setting to 0 doesn't seem to work. first set to a straight envelope, then to 0
+			AITabletProfile profiles[] = {
+				{ 0, 1 },
+				{ 1, 1 }
+			};
+			sAITabletData->SetTabletData(handle, profiles, 2, kTabletPressure);
+			// now set to 0
+			sAITabletData->SetTabletData(handle, profiles, 0, kTabletPressure);
 			sAITabletData->SetTabletDataInUse(handle, false);
-			AITabletProfile profiles; // this doesn't do anything. it may be necessary for SetTabletData...
-			sAITabletData->SetTabletData(handle, &profiles, 0, kTabletPressure);
 		}
 		// simply swap the closed flag of this path in order to get the 
 		// Illustrator to recognize the change in the object, because

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/04/20 13:49:37 $
+ * $Revision: 1.9 $
+ * $Date: 2005/07/22 17:30:56 $
  */
  
 #include "stdHeaders.h"
@@ -72,7 +72,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_i
 		str = gEngine->convertString(env, path);
 		SPPlatformFileSpecification fileSpec;
 		if (gPlugin->pathToFileSpec(str, &fileSpec)) {
+#if kPluginInterfaceVersion < kAI12
 			sAIDocumentList->Open(&fileSpec, (AIColorModel) colorModel, (ActionDialogStatus) dialogStatus, &doc);
+#else
+			ai::FilePath filePath(fileSpec);
+			sAIDocumentList->Open(filePath, (AIColorModel) colorModel, (ActionDialogStatus) dialogStatus, &doc);
+#endif
 		}		
 	} EXCEPTION_CONVERT(env)
 	if (str != NULL)
@@ -84,15 +89,22 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_i
  * int nativeCreate(java.lang.String title, float width, float height, int colorModel, int dialogStatus)
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_lang_String_2FFII(JNIEnv *env, jclass cls, jstring title, jfloat width, jfloat height, jint colorModel, jint dialogStatus) {
-	char *str = NULL;
 	AIDocumentHandle doc = NULL;
+	AIColorModel model = (AIColorModel) colorModel;
+#if kPluginInterfaceVersion < kAI12
+	char *str = NULL;
 	try {
 		str = gEngine->convertString(env, title);
-		AIColorModel model = (AIColorModel) colorModel;
 		sAIDocumentList->New(str, &model, &width, &height, (ActionDialogStatus) dialogStatus, &doc);
 	} EXCEPTION_CONVERT(env)
 	if (str != NULL)
 		delete str;
+#else
+	try {
+		ai::UnicodeString str = gEngine->convertUnicodeString(env, title);
+		sAIDocumentList->New(str, &model, &width, &height, (ActionDialogStatus) dialogStatus, &doc);
+	} EXCEPTION_CONVERT(env)
+#endif
 	return (jint) doc;
 }
 
@@ -250,9 +262,15 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getFile(JNIEnv *en
 	jobject file = NULL;
 	
 	DOCUMENT_BEGIN
-	
+
 	SPPlatformFileSpecification fileSpec;
+#if kPluginInterfaceVersion < kAI12
 	sAIDocument->GetDocumentFileSpecification(&fileSpec);
+#else
+	ai::FilePath filePath;
+	sAIDocument->GetDocumentFileSpecification(filePath);
+	filePath.GetAsSPPlatformFileSpec(fileSpec);
+#endif
 	char path[kMaxPathLength];
 	if (gPlugin->fileSpecToPath(&fileSpec, path)) {
 		file = env->NewObject(gEngine->cls_File, gEngine->cid_File, gEngine->convertString(env, path));
@@ -334,7 +352,12 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_write(JNIEnv *env
 	else format = gEngine->convertString(env, formatObj);
 	SPPlatformFileSpecification fileSpec;
 	if (gPlugin->pathToFileSpec(path, &fileSpec)) {
+#if kPluginInterfaceVersion < kAI12
 		ret = !sAIDocument->WriteDocument(&fileSpec, format, ask);
+#else
+		ai::FilePath filePath(fileSpec);
+		ret = !sAIDocument->WriteDocument(filePath, format, ask);
+#endif
 	}
 	
 	DOCUMENT_END
@@ -467,11 +490,34 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingArt(JNI
 		while (env->CallBooleanMethod(iterator, gEngine->mid_Iterator_hasNext)) {
 			jobject key = env->CallObjectMethod(iterator, gEngine->mid_Iterator_next);
 			jobject value = env->CallObjectMethod(attributes, gEngine->mid_Map_get, key);
-			if (env->IsInstanceOf(key, gEngine->cls_Number) && env->IsInstanceOf(value, gEngine->cls_Boolean)) {
-				jint flag = env->CallIntMethod(key, gEngine->mid_Number_intValue);
-				jboolean set = env->CallBooleanMethod(value, gEngine->mid_Boolean_booleanValue);
-				spec.whichAttr |= flag;
-				if (set) spec.attr |=  flag;
+			jint set = -1;
+			if (env->IsInstanceOf(value, gEngine->cls_Boolean)) {
+				set = env->CallBooleanMethod(value, gEngine->mid_Boolean_booleanValue);
+			} else if (env->IsInstanceOf(value, gEngine->cls_Number)) {
+				set = env->CallIntMethod(value, gEngine->mid_Number_intValue) != 0;
+			}
+			if (set != -1) {
+				jint flag = -1;
+				// the flag can be specified both as a Art.ATTR_* Integer or a string. These strings are allowed:
+				// selected, locked, hidden.
+				// TODO: Implement full wrapping of ATTR_* values in Strings!
+				if (env->IsInstanceOf(key, gEngine->cls_Number)) {
+					flag = env->CallIntMethod(key, gEngine->mid_Number_intValue);
+				} else if (env->IsInstanceOf(key, gEngine->cls_String)) {
+					char *str = gEngine->convertString(env, (jstring) key);
+					if (strcmp(str, "selected") == 0) {
+						flag = kArtSelected;
+					} else if (strcmp(str, "locked") == 0) {
+						flag = kArtLocked;
+					} else if (strcmp(str, "hidden") == 0) {
+						flag = kArtHidden;
+					}
+					delete str;
+				}
+				if (flag != -1) {
+					spec.whichAttr |= flag;
+					if (set) spec.attr |=  flag;
+				}
 			}
 			EXCEPTION_CHECK(env)
 		}

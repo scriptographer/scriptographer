@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Pathfinder.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2005/07/22 17:30:56 $
  */
  
 #include "stdHeaders.h"
@@ -94,7 +94,13 @@ void pathfinderEnd(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelected) 
 	// select the previously selected objects:
 	sAIArtSet->CountArtSet(*prevSelected, &count);
 	for (long i = 0; i < count; i++) {
-		if (!sAIArtSet->IndexArtSet(*prevSelected, i, &art) && sAIArt->ValidArt(art))
+		if (!sAIArtSet->IndexArtSet(*prevSelected, i, &art) &&
+#if kPluginInterfaceVersion < kAI12
+			sAIArt->ValidArt(art)
+#else
+			sAIArt->ValidArt(art, false)
+#endif
+			)
 			sAIArt->SetArtUserAttr(art, kArtSelected, kArtSelected);
 	}
 

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/20 13:49:37 $
+ * $Revision: 1.8 $
+ * $Date: 2005/07/22 17:30:57 $
  */
  
 #include "stdHeaders.h"
@@ -411,9 +411,14 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_getAttribute(JNIEnv *e
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setName(JNIEnv *env, jobject obj, jstring name) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
+#if kPluginInterfaceVersion < kAI12
 		char *str = gEngine->convertString(env, name);
 		sAIArt->SetArtName(art, str);
 		delete str;
+#else
+		ai::UnicodeString str = gEngine->convertUnicodeString(env, name);
+		sAIArt->SetArtName(art, str);
+#endif
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -423,10 +428,17 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setName(JNIEnv *env, jobje
 JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Art_getName(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
+#if kPluginInterfaceVersion < kAI12
 		char name[256];
 		if (!sAIArt->GetArtName(art, name, 256, NULL)) {
 			return gEngine->convertString(env, name);
 		}
+#else
+		ai::UnicodeString name;
+		if (!sAIArt->GetArtName(art, name, NULL)) {
+			return gEngine->convertUnicodeString(env, name);
+		}
+#endif
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }
@@ -438,10 +450,15 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_hasDefaultName(JNIEnv 
 	ASBoolean isDefaultName = true;
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
+#if kPluginInterfaceVersion < kAI12
 		// at least one byte for the name needs to be specified, otherwise this
 		// doesn't work:
 		char name;
 		sAIArt->GetArtName(art, &name, 1, &isDefaultName);
+#else
+		ai::UnicodeString name;
+		sAIArt->GetArtName(art, name, &isDefaultName);
+#endif
 	} EXCEPTION_CONVERT(env)
 	return isDefaultName;
 }
@@ -596,7 +613,7 @@ void artTransform(JNIEnv *env, jobject obj, AIArtHandle art, AIRealMatrix *matri
 	}
 }
 
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_transform(JNIEnv *env, jobject obj, jobject at, jint flags) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_nativeTransform(JNIEnv *env, jobject obj, jobject at, jint flags) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIRealMatrix matrix;

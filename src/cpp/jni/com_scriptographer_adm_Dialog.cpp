@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Dialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.10 $
+ * $Date: 2005/07/22 17:30:56 $
  */
 
 #include "stdHeaders.h"
@@ -156,6 +156,27 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetTrackCallback
 	try {
 		ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		sADMDialog->SetTrackProc(dialog, enabled ? callbackDialogTrack : NULL);
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * int getTrackMask()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_getTrackMask(JNIEnv *env, jobject obj) {
+	try {
+		ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
+		return sADMDialog->GetMask(dialog);
+	} EXCEPTION_CONVERT(env)
+	return 0;
+}
+
+/*
+ * void setTrackMask(int mask)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setTrackMask(JNIEnv *env, jobject obj, jint mask) {
+	try {
+		ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
+		sADMDialog->SetMask(dialog, mask);
 	} EXCEPTION_CONVERT(env)
 }
 

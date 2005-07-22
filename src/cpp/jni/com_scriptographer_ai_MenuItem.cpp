@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_MenuItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.4 $
+ * $Date: 2005/07/22 17:30:56 $
  */
 
 #include "StdHeaders.h"
@@ -44,6 +44,7 @@
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_MenuItem_nativeCreate(JNIEnv *env, jclass cls, jstring name, jstring text, jstring group, jint options) {
 	try {
+#if kPluginInterfaceVersion < kAI12
 		char *nameStr = gEngine->convertString(env, name);
 		AIPlatformAddMenuItemData data;
 		data.groupName = gEngine->convertString(env, group);
@@ -55,6 +56,17 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_MenuItem_nativeCreate(JNIEnv *
 		delete data.groupName;
 		delete textStr;
 		return (jint) menuItem;
+#else
+		char *nameStr = gEngine->convertString(env, name);
+		AIPlatformAddMenuItemDataUS data;
+		data.groupName = gEngine->convertString(env, group);
+		data.itemText = gEngine->convertUnicodeString(env, text);
+		AIMenuItemHandle menuItem = NULL;
+		sAIMenu->AddMenuItem(gPlugin->getPluginRef(), nameStr, &data, options, &menuItem);
+		delete nameStr;
+		delete data.groupName;
+		return (jint) menuItem;
+#endif
 	} EXCEPTION_CONVERT(env)
 	return 0;
 }
@@ -75,9 +87,14 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_MenuItem_nativeRemove(JNIEnv *
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_MenuItem_nativeSetText(JNIEnv *env, jobject obj, jstring text) {
 	try {
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
+#if kPluginInterfaceVersion < kAI12
 		char *textStr = gEngine->convertString(env, text);
 		sAIMenu->SetItemText(item, textStr);
 		delete textStr;
+#else
+		ai::UnicodeString textStr = gEngine->convertUnicodeString(env, text);
+		sAIMenu->SetItemText(item, textStr);
+#endif
 	} EXCEPTION_CONVERT(env)
 }
 

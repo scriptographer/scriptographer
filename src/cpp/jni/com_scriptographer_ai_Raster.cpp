@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Raster.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/05/04 10:34:19 $
+ * $Revision: 1.4 $
+ * $Date: 2005/07/22 17:30:56 $
  */
  
 #include "stdHeaders.h"
@@ -461,4 +461,29 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_nativeGetPixels(JNIEnv 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_nativeSetPixels(JNIEnv *env, jobject obj, jbyteArray data, jint numComponents, jint x, jint y, jint width, jint height) {
 	rasterCopyPixels(env, obj, data, numComponents, x, y, width, height, false);
+}
+
+/*
+ * com.scriptographer.ai.Matrix getMatrix()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getMatrix(JNIEnv *env, jobject obj) {
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIRealMatrix m;
+		sAIRaster->GetRasterMatrix(art, &m);
+		return gEngine->convertMatrix(env, &m);
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * void setMatrix(com.scriptographer.ai.Matrix matrix)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setMatrix(JNIEnv *env, jobject obj, jobject matrix) {
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIRealMatrix m;
+		gEngine->convertMatrix(env, matrix, &m);
+		sAIRaster->SetRasterMatrix(art, &m);
+	} EXCEPTION_CONVERT(env)
 }
