@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/04/27 14:08:27 $
+ * $Revision: 1.10 $
+ * $Date: 2005/07/22 17:40:14 $
  */
  
 #include "stdHeaders.h"
@@ -193,7 +193,7 @@ void ScriptographerEngine::init() {
 	options[numOptions++].optionString = "-Djava.compiler=NONE";
 	options[numOptions++].optionString = "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n";
 #endif
-//	numOptions = noDebug;
+	numOptions = noDebug;
 
 	args.options = options;
 	args.nOptions = numOptions;
@@ -810,7 +810,12 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSp
 		// TODO: why swapping kGrayColor???
 		if (srcCol->kind == kGrayColor) src[0] = 1.0 - src[0];
 		ASBoolean inGamut;
+#if kPluginInterfaceVersion < kAI12
 		sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace, dst, &inGamut);
+#else
+		AIColorConvertOptions options;
+		sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace, dst, options, &inGamut);
+#endif
 		if (dstCol == NULL)
 			dstCol = new AIColor;
 		// init the destCol with 0
@@ -1429,6 +1434,7 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) 
  */
 jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item) {
 	JNI_CHECK_ENV
+#if kPluginInterfaceVersion < kAI12
 	char *name, *groupName;
 	char text[256];
 	AIMenuGroup group;
@@ -1441,6 +1447,20 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 			(jint) group, convertString(env, groupName)
 		);
 	}
+#else
+	const char *name, *groupName;
+	ai::UnicodeString text;
+	AIMenuGroup group;
+	if (!sAIMenu->GetMenuItemKeyboardShortcutDictionaryKey(item, &name) &&
+		!sAIMenu->GetItemText(item, text) &&
+		!sAIMenu->GetItemMenuGroup(item, &group) &&
+		!sAIMenu->GetMenuGroupName(group, &groupName)) {
+		return callStaticObjectMethod(env, cls_MenuItem, mid_MenuItem_wrapHandle,
+			(jint) item, convertString(env, name), convertUnicodeString(env, text),
+			(jint) group, convertString(env, groupName)
+		);
+	}
+#endif
 	return NULL;
 }
 
@@ -1946,6 +1966,29 @@ jstring ScriptographerEngine::convertString(JNIEnv *env, const char *str) {
 	env->DeleteLocalRef(bytes);
 	return result;
 }
+
+#if kPluginInterfaceVersion >= kAI12
+
+/**
+ * Creates a Java String from a given UTF-16-String.
+ * Only supported in CS2 and above
+ */
+jstring ScriptographerEngine::convertUnicodeString(JNIEnv *env, ai::UnicodeString &str) {
+	JNI_CHECK_ENV
+	const UTF16Char *buffer;
+	int len = str.utf_16(buffer);
+	return env->NewString(buffer, len);
+}
+
+ai::UnicodeString ScriptographerEngine::convertUnicodeString(JNIEnv *env, jstring jstr) {
+	JNI_CHECK_ENV
+	const jchar *chars = env->GetStringCritical(jstr, NULL);
+	ai::UnicodeString str(chars, env->GetStringLength(jstr));
+	env->ReleaseStringCritical(jstr, chars); 
+	return str;
+}
+
+#endif
 
 /**
  * Creates a C-String from a given Java String. 

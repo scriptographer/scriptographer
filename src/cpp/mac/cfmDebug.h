@@ -24,14 +24,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: carbonRelease.h,v $
+ * $RCSfile: cfmDebug.h,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/27 10:06:14 $
+ * $Revision: 1.1 $
+ * $Date: 2005/07/22 17:37:24 $
  */
 
-#ifndef __carbonRelease_h__	// Has this not been defined yet?
-#define __carbonRelease_h__	// Only include this once by predefining it
+#ifndef __cfmDebug_h__	// Has this not been defined yet?
+#define __cfmDebug_h__	// Only include this once by predefining it
+
+#ifndef _DEBUG
+#define _DEBUG 1
+#endif
 
 #ifndef ACCESSOR_CALLS_ARE_FUNCTIONS
 #define ACCESSOR_CALLS_ARE_FUNCTIONS 1
@@ -66,5 +70,5 @@
 #define TARGET_RT_MAC_CFM 1 
 #endif
 
-#endif // __carbonRelease_h__
-// end carbonRelease.h
+#endif // __cfmDebug_h__
+// end cfmDebug.h

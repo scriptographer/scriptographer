@@ -26,8 +26,8 @@
  *
  * $RCSfile: stdHeaders.h,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.3 $
+ * $Date: 2005/07/22 17:40:15 $
  */
  
 #if !defined(__STDHEADERS_H_INCLUDED__)
@@ -38,24 +38,19 @@
 // Derective for Codewarrior to build the pre-compiled header file
 #if (defined(__PIMWCWMacPPC__) && !(defined(MakingPreCompiledHeader)))
 	#if _DEBUG
-		#include "ScriptographerDebug.ch"
+		#if TARGET_BUILD_MACHO
+			#include "machoDebug.ch"
+		#else
+			#include "cfmDebug.ch"
+		#endif
 	#else
-		#include "ScriptographerRelease.ch"
+		#if TARGET_BUILD_MACHO
+			#include "machoRelease.ch"
+		#else
+			#include "cfmRelease.ch"
+		#endif
 	#endif
 #else
-
-// os stuff
-#ifdef MAC_ENV
-	#include <MacHeadersCarbon.h>
-	#include <MacTypes.h>
-#endif
-
-#ifdef WIN_ENV
-	#include "windows.h"
-	#include <time.h>
-#endif
-
-#define PI 3.14159265358979323846
 
 // std library 
 #include <stdio.h>
@@ -65,8 +60,16 @@
 #include <fstream>
 #include <algorithm>
 
-using namespace std;
+#ifdef MAC_ENV
+	#include <Carbon.h>
+#endif
 
+#ifdef WIN_ENV
+	#include "windows.h"
+	#include <time.h>
+#endif
+
+using namespace std;
 
 // sweet pea headers
 #include "SPTypes.h"
@@ -95,9 +98,14 @@ using namespace std;
 #include "ADMResource.h"
 
 // illustrator headers
-#include "AITypes.h"                        
+#include "AITypes.h"
 
-#ifdef ILL9OR10
+// define versions so they can even be used when compiling for 10 or CS1:
+#define kAI10	0x10000001	// AI 10.0
+#define kAI11	0x11000001	// AI 11.0
+#define kAI12	0x12000001	// AI 12.0
+
+#if kPluginInterfaceVersion < kAI11
 // Compatibility for Illustrator version before CS:
 // ASRect, ASPoint, ASRGBColor, etc. have been deprecated in favor of ADM types with the same
 // name, ADMRect, ADMPoint, etc. The switch to ADMxxx types is painless and makes for a more
@@ -106,9 +114,12 @@ using namespace std;
 #define ADMRect ASRect
 #define ADMPoint ASPoint
 #define OLD_TEXT_SUITES 1
-#else
-// Illustrator 11 and above
-#endif // #ifdef ILL9OR10
+#endif // #if kPluginInterfaceVersion < kAI11
+
+#if kPluginInterfaceVersion < kAI12
+	// GetWSProfile in AIOverrideColorConversion.h takes AIColorProfile instead of ASUInt32 since AI12
+	#define AIColorProfile ASUInt32
+#endif
 
 // System Suites
 #include "AIPlugin.h"
@@ -174,6 +185,8 @@ using namespace std;
 #else
 #include "IText.h"
 #endif
+
+#define PI 3.14159265358979323846
 
 #include <jni.h>
 #include "Suites.h"

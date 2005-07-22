@@ -24,14 +24,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: stdHeadersDebug.pch,v $
+ * $RCSfile: cfmRelease.pch,v $
  * $Author: lehni $
  * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Date: 2005/07/22 17:37:24 $
  */
 
 #define MakingPreCompiledHeader 1
-#include "carbonDebug.h"
+#include "cfmRelease.h"
 #include "stdHeaders.h"
-#pragma precompile_target "stdHeadersDebug.ch"
+#pragma precompile_target "cfmRelease.ch"
 #undef MakingPreCompiledHeader

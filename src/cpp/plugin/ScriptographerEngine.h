@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.9 $
+ * $Date: 2005/07/22 17:40:14 $
  */
 
 #include "jniMacros.h"
@@ -514,6 +514,10 @@ public:
 	
 	jstring convertString(JNIEnv *env, const char *str);
 	char *convertString(JNIEnv *env, jstring jstr);
+#if kPluginInterfaceVersion >= kAI12
+	jstring convertUnicodeString(JNIEnv *env, ai::UnicodeString &str);
+	ai::UnicodeString convertUnicodeString(JNIEnv *env, jstring jstr);
+#endif
 
 	void throwException(JNIEnv *env, const char* name, const char* msg);
 	void throwException(JNIEnv *env, const char* msg);

@@ -24,14 +24,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: stdHeadersRelease.pch,v $
+ * $RCSfile: machoDebug.pch,v $
  * $Author: lehni $
  * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Date: 2005/07/22 17:37:24 $
  */
 
 #define MakingPreCompiledHeader 1
-#include "carbonRelease.h"
+#include "machoDebug.h"
 #include "stdHeaders.h"
-#pragma precompile_target "stdHeadersRelease.ch"
+#pragma precompile_target "machoDebug.ch"
 #undef MakingPreCompiledHeader

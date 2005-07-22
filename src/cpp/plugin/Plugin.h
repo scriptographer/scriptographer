@@ -26,15 +26,19 @@
  *
  * $RCSfile: Plugin.h,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/04/08 21:56:39 $
+ * $Revision: 1.9 $
+ * $Date: 2005/07/22 17:40:14 $
  */
 
 #define kMaxStringLength 256
 
 #define kUnhandledMsgErr '!MSG'		// This isn't really an error
 
-#define DLLExport extern "C" __declspec(dllexport)
+#define DLLExport	extern "C" __declspec(dllexport)
+
+#if MAC_ENV && kPluginInterfaceVersion >= kAI12
+	#define PluginMain main
+#endif
 
 DLLExport SPAPI SPErr PluginMain( char *caller, char *selector, void *message );
 
