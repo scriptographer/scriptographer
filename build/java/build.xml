@@ -1,167 +1,168 @@
 <?xml version="1.0"?>
-
 <project name="Scriptographer" default="usage" basedir=".">
+	<!-- =================================================================== -->
+	<!-- Initializes some variables                                          -->
+	<!-- =================================================================== -->
+	<target name="init">
+		<!-- get current year -->
+		<tstamp><format property="year" pattern="yyyy"/></tstamp>
 
-    <!-- =================================================================== -->
-    <!-- Initializes some variables                                          -->
-    <!-- =================================================================== -->
-    <target name="init">
-        <property name="Name" value="Scriptographer"/>
-        <property name="year" value="1998-${year}"/>
-        <property name="version" value="0.0.1"/>
-        <property name="project" value="scriptographer"/>
+		<property name="Name" value="Scriptographer"/>
+		<property name="year" value="1998-${YEAR}"/>
+		<property name="version" value="0.2"/>
+		<property name="project" value="scriptographer"/>
 
-        <property name="scriptographer" value=":pserver:anonymous@cvs.sourceforge.net:/cvsroot/scriptographer"/>
-        <property name="cvs.apps.tag" value="HEAD"/>
+		<property name="scriptographer" value=":pserver:anonymous@cvs.sourceforge.net:/cvsroot/scriptographer"/>
+		<property name="cvs.apps.tag" value="HEAD"/>
 
-        <property name="home.dir" value="../.."/>
-        <property name="build.dir" value="${home.dir}/build/java/build"/>
-        <property name="build.src" value="${home.dir}/src/java"/>
-        <property name="build.lib" value="${build.dir}/lib"/>
-        <property name="build.jni" value="${home.dir}/src/cpp/jni"/>
-        <property name="build.classes" value="${build.dir}/classes"/>
-        <property name="build.docs" value="${home.dir}/docs"/>
-        <property name="build.javadocs" value="${home.dir}/docs/api"/>
+		<property name="home.dir" value="../.."/>
+		<property name="build.dir" value="${home.dir}/build/java/build"/>
+		<property name="build.src" value="${home.dir}/src/java"/>
+		<property name="build.lib" value="${build.dir}/lib"/>
+		<property name="build.jni" value="${home.dir}/src/cpp/jni"/>
+		<property name="build.classes" value="${build.dir}/classes"/>
+		<property name="build.docs" value="${home.dir}/docs"/>
+		<property name="build.javadocs" value="${home.dir}/docs/api"/>
+		<property name="build.jsdocs" value="${home.dir}/docs/js"/>
 
-        <!-- The path to the install directory within Illustrator -->
-        <property name="install.dir" value="C:\Programme\Adobe\Illustrator CS\Plug-ins\Extensions\Scriptographer\java"/>
-        <property name="install.lib" value="${install.dir}/lib"/>
-        <property name="install.classes" value="${install.dir}/classes"/>
+		<!-- The path to the install directory within Illustrator -->
+		<property name="install.dir" value="C:\Programme\Adobe\Illustrator CS\Plug-ins\Extensions\Scriptographer\java"/>
+		<property name="install.lib" value="${install.dir}/lib"/>
+		<property name="install.classes" value="${install.dir}/classes"/>
 
-        <property name="jar.name" value="${project}"/>
-        <property name="package.name" value="${project}-${version}"/>
+		<property name="jar.name" value="${project}"/>
+		<property name="package.name" value="${project}-${version}"/>
 
-        <property name="debug" value="on"/>
-        <property name="optimize" value="on"/>
-        <property name="deprecation" value="off"/>
+		<property name="debug" value="on"/>
+		<property name="optimize" value="on"/>
+		<property name="deprecation" value="off"/>
 
-        <path id="build.class.path">
-            <fileset dir="${build.dir}/lib">
-                <exclude name="**/scriptographer*.jar" />
-                <include name="**/*.jar" />
-            </fileset>
-        </path>
+		<path id="build.classpath">
+			<fileset dir="${build.dir}/lib">
+				<exclude name="**/scriptographer*.jar" />
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
 
-        <tstamp/>
-
-        <filter token="year" value="${year}"/>
-        <filter token="version" value="${version}"/>
-        <filter token="date" value="${TODAY}"/>
-    </target>
-
-
-    <!-- =================================================================== -->
-    <!-- Help on usage                                                       -->
-    <!-- =================================================================== -->
-    <target name="help" depends="usage" />
-    <target name="usage">
-        <echo message=""/>
-        <echo message=""/>
-        <echo message="Scriptographer build instructions"/>
-        <echo message="-------------------------------------------------------------"/>
-        <echo message=""/>
-        <echo message=" available targets are:"/>
-        <echo message=""/>
-        <echo message=" compile    --> compiles the source code to ./classes"/>
-        <echo message=" jar        --> generates the ./lib/scriptographer.jar file"/>
-        <echo message=" install    --> installs the jar files in the Adobe Illustrator directory "/>
-        <echo message=" jni        --> generates jni headers and registerNatives.cpp in ./jni/"/>
-        <echo message=" jnibodies  --> generates empty jni bodies in ./jni/"/>
-        <echo message=" javadocs   --> generates the API docs"/>
-        <echo message=" docs       --> tries to retrieve the HTML documentation "/>
-        <echo message="                (may need proxy settings in startscript)"/>
-        <echo message=""/>
-        <echo message=" usage      --> provides help on using the build tool (default)"/>
-        <echo message=""/>
-        <echo message=" See comments inside the build.xml file for more details."/>
-        <echo message="-------------------------------------------------------------"/>
-        <echo message=""/>
-        <echo message=""/>
-    </target>
+		<tstamp/>
+		<filter token="year" value="${year}"/>
+		<filter token="version" value="${version}"/>
+		<filter token="date" value="${TODAY}"/>
+	</target>
 
 
-    <!-- =================================================================== -->
-    <!-- Compiles the source directory                                       -->
-    <!-- =================================================================== -->
-    <target name="compile" depends="init">
-        <mkdir dir="${build.classes}"/>
-        <!-- copy the icc profiles -->
-        <copy todir="${build.classes}/com/scriptographer/cmm">
-            <fileset dir="${build.src}/com/scriptographer/cmm">
-                <include name="**/*.icc" />
-            </fileset>
-        </copy>
-        <!-- copy the gui resources -->
-        <copy todir="${build.classes}/com/scriptographer/gui/resources">
-            <fileset dir="${build.src}/com/scriptographer/gui/resources">
-                <include name="**/*.png" />
-            </fileset>
-        </copy>
-        <javac srcdir="${build.src}"
-            destdir="${build.classes}"
-            debug="${debug}"
-            deprecation="${deprecation}"
-            optimize="${optimize}">
-            <classpath refid="build.class.path" />
-        </javac>
-    </target>
+	<!-- =================================================================== -->
+	<!-- Help on usage                                                       -->
+	<!-- =================================================================== -->
+	<target name="help" depends="usage" />
+	<target name="usage">
+		<echo message=""/>
+		<echo message=""/>
+		<echo message="Scriptographer build instructions"/>
+		<echo message="-------------------------------------------------------------"/>
+		<echo message=""/>
+		<echo message=" available targets are:"/>
+		<echo message=""/>
+		<echo message=" compile    --> compiles the source code to ./classes"/>
+		<echo message=" jar        --> generates the ./lib/scriptographer.jar file"/>
+		<echo message=" install    --> installs the jar files in the Adobe Illustrator directory "/>
+		<echo message=" jni        --> generates jni headers and registerNatives.cpp in ./jni/"/>
+		<echo message=" jnibodies  --> generates empty jni bodies in ./jni/"/>
+		<echo message=" javadocs   --> generates the API docs"/>
+		<echo message=" docs       --> tries to retrieve the HTML documentation "/>
+		<echo message="                (may need proxy settings in startscript)"/>
+		<echo message=""/>
+		<echo message=" usage	      --> provides help on using the build tool (default)"/>
+		<echo message=""/>
+		<echo message=" See comments inside the build.xml file for more details."/>
+		<echo message="-------------------------------------------------------------"/>
+		<echo message=""/>
+		<echo message=""/>
+	</target>
 
 
-    <!-- =================================================================== -->
-    <!-- Creates scriptographer.jar and loader.jar in the lib-directory      -->
-    <!-- =================================================================== -->
-    <target name="jar" depends="compile">
-        <copy todir="${build.classes}/com/scriptographer/cmm">
-            <fileset dir="${build.src}/com/scriptographer/cmm">
-                <include name="**/*.icc" />
-            </fileset>
-        </copy>
-        <jar jarfile="${build.lib}/${jar.name}.jar"
-            basedir="${build.classes}"
-            excludes="**/loader/**"/>
-        <jar jarfile="${build.dir}/loader.jar"
-            basedir="${build.classes}"
-            includes="**/loader/**"/>
-    </target>
-
-    <!-- =================================================================== -->
-    <!-- Installs the jar files in the Illustrator directory                 -->
-    <!-- =================================================================== -->
-    <target name="install" depends="jar">
-        <copy file="${build.dir}/loader.jar" todir="${install.dir}/"/>
-        <copy file="${build.lib}/${jar.name}.jar" todir="${install.lib}/"/>
-    </target>
-
-    <!-- =================================================================== -->
-    <!-- Copy classes to the Illustrator directory                           -->
-    <!-- =================================================================== -->
-    <target name="copyclasses" depends="compile">
-        <copy todir="${install.classes}">
-            <fileset dir="${build.classes}">
-                <include name="**/*.*" />
-                <exclude name="**/loader/**"/>
-            </fileset>
-        </copy>
-    </target>
+	<!-- =================================================================== -->
+	<!-- Compiles the source directory                                       -->
+	<!-- =================================================================== -->
+	<target name="compile" depends="init">
+		<mkdir dir="${build.classes}"/>
+		<!-- copy the icc profiles -->
+		<copy todir="${build.classes}/com/scriptographer/cmm">
+			<fileset dir="${build.src}/com/scriptographer/cmm">
+				<include name="**/*.icc" />
+			</fileset>
+		</copy>
+		<!-- copy the gui resources -->
+		<copy todir="${build.classes}/com/scriptographer/gui/resources">
+			<fileset dir="${build.src}/com/scriptographer/gui/resources">
+				<include name="**/*.png" />
+			</fileset>
+		</copy>
+		<javac srcdir="${build.src}"
+			destdir="${build.classes}"
+			debug="${debug}"
+			deprecation="${deprecation}"
+			optimize="${optimize}">
+			<classpath refid="build.classpath" />
+		</javac>
+	</target>
 
 
-    <!-- =================================================================== -->
-    <!-- Compiles the source directory                                       -->
-    <!-- =================================================================== -->
-    <target name="jni" depends="compile">
-        <mkdir dir="${build.jni}"/>
-        <javah destdir="${build.jni}" classpath="${build.classes}">
-            <classpath refid="build.class.path" />
+	<!-- =================================================================== -->
+	<!-- Creates scriptographer.jar and loader.jar in the lib-directory      -->
+	<!-- =================================================================== -->
+	<target name="jar" depends="compile">
+		<copy todir="${build.classes}/com/scriptographer/cmm">
+			<fileset dir="${build.src}/com/scriptographer/cmm">
+				<include name="**/*.icc" />
+			</fileset>
+		</copy>
+		<jar jarfile="${build.lib}/${jar.name}.jar"
+			basedir="${build.classes}"
+			excludes="**/loader/**"/>
+		<jar jarfile="${build.dir}/loader.jar"
+			basedir="${build.classes}"
+			includes="**/loader/**"/>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Installs the jar files in the Illustrator directory                 -->
+	<!-- =================================================================== -->
+	<target name="install" depends="jar">
+		<copy file="${build.dir}/loader.jar" todir="${install.dir}/"/>
+		<copy file="${build.lib}/${jar.name}.jar" todir="${install.lib}/"/>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Copy classes to the Illustrator directory                           -->
+	<!-- =================================================================== -->
+	<target name="copyclasses" depends="compile">
+		<copy todir="${install.classes}">
+			<fileset dir="${build.classes}">
+				<include name="**" />
+				<exclude name="**/loader/**"/>
+			</fileset>
+		</copy>
+	</target>
+
+
+	<!-- =================================================================== -->
+	<!-- Compiles the source directory                                       -->
+	<!-- =================================================================== -->
+	<target name="jni" depends="compile">
+		<mkdir dir="${build.jni}"/>
+		<javah destdir="${build.jni}" classpath="${build.classes}">
+			<classpath refid="build.classpath" />
 
 			<class name="com.scriptographer.ScriptographerEngine" />
 			<class name="com.scriptographer.Test" />
 
-        	<class name="com.scriptographer.ai.Tool" />
-        	<class name="com.scriptographer.ai.Art" />
-    		<class name="com.scriptographer.ai.Path" />
+			<class name="com.scriptographer.ai.Tool" />
+			<class name="com.scriptographer.ai.Art" />
+			<class name="com.scriptographer.ai.Path" />
 			<class name="com.scriptographer.ai.PathStyle" />
-        	<class name="com.scriptographer.ai.Group" />
-        	<class name="com.scriptographer.ai.Raster" />
+			<class name="com.scriptographer.ai.Group" />
+			<class name="com.scriptographer.ai.Raster" />
 			<class name="com.scriptographer.ai.SegmentList" />
 			<class name="com.scriptographer.ai.Curve" />
 			<class name="com.scriptographer.ai.ArtSet" />
@@ -169,35 +170,35 @@
 			<class name="com.scriptographer.ai.LayerList" />
 			<class name="com.scriptographer.ai.Document" />
 			<class name="com.scriptographer.ai.DocumentList" />
-        	<class name="com.scriptographer.ai.View" />
-        	<class name="com.scriptographer.ai.ViewList" />
+			<class name="com.scriptographer.ai.View" />
+			<class name="com.scriptographer.ai.ViewList" />
 			<class name="com.scriptographer.ai.Color" />
 			<class name="com.scriptographer.ai.Pathfinder" />
 			<class name="com.scriptographer.ai.LiveEffect" />
 			<class name="com.scriptographer.ai.MenuItem" />
 			<class name="com.scriptographer.ai.MenuGroup" />
-        	<class name="com.scriptographer.ai.Timer" />
-        	<class name="com.scriptographer.ai.Annotator" />
+			<class name="com.scriptographer.ai.Timer" />
+			<class name="com.scriptographer.ai.Annotator" />
 
-        	<class name="com.scriptographer.adm.Notifier" />
-        	<class name="com.scriptographer.adm.Dialog" />
-        	<class name="com.scriptographer.adm.ModalDialog" />
-        	<class name="com.scriptographer.adm.Item" />
-           	<class name="com.scriptographer.adm.ValueItem" />
-        	<class name="com.scriptographer.adm.ToggleItem" />
-           	<class name="com.scriptographer.adm.TextItem" />
-           	<class name="com.scriptographer.adm.PictureItem" />
+			<class name="com.scriptographer.adm.Notifier" />
+			<class name="com.scriptographer.adm.Dialog" />
+			<class name="com.scriptographer.adm.ModalDialog" />
+			<class name="com.scriptographer.adm.Item" />
+		   	<class name="com.scriptographer.adm.ValueItem" />
+			<class name="com.scriptographer.adm.ToggleItem" />
+		   	<class name="com.scriptographer.adm.TextItem" />
+		   	<class name="com.scriptographer.adm.PictureItem" />
 			<class name="com.scriptographer.adm.ItemGroup" />
-           	<class name="com.scriptographer.adm.TextEdit" />
+		   	<class name="com.scriptographer.adm.TextEdit" />
 
-           	<class name="com.scriptographer.adm.ListItem" />
-           	<class name="com.scriptographer.adm.ListEntry" />
-           	<class name="com.scriptographer.adm.HierarchyList" />
-           	<class name="com.scriptographer.adm.HierarchyListEntry" />
-        	
-           	<class name="com.scriptographer.adm.Drawer" />
-           	<class name="com.scriptographer.adm.Image" />
-           	<class name="com.scriptographer.adm.Tracker" />
+		   	<class name="com.scriptographer.adm.ListItem" />
+		   	<class name="com.scriptographer.adm.ListEntry" />
+		   	<class name="com.scriptographer.adm.HierarchyList" />
+		   	<class name="com.scriptographer.adm.HierarchyListEntry" />
+			
+		   	<class name="com.scriptographer.adm.Drawer" />
+		   	<class name="com.scriptographer.adm.Image" />
+		   	<class name="com.scriptographer.adm.Tracker" />
 		</javah>
 		<echo id="echo" level="info" />
 		<script language="javascript" src="jni.js">
@@ -205,13 +206,13 @@
 			// create registerNatives.cpp by parsing the generated files by javah, see jni.js:
 			registerNatives(project.getProperty("build.jni"), project.getProperty("build.jni") + "/registerNatives.cpp");
 		]]>
-    	</script>
-    </target>
+		</script>
+	</target>
 
-        	
-    <!-- =================================================================== -->
-    <!-- Compiles the source directory                                       -->
-    <!-- =================================================================== -->
+			
+	<!-- =================================================================== -->
+	<!-- Compiles the source directory                                       -->
+	<!-- =================================================================== -->
 	<target name="jnibodies" depends="jni">
 		<script language="javascript" src="jni.js">
 		<![CDATA[
@@ -221,22 +222,43 @@
 		</script>
 	</target>
 
-    <!-- =================================================================== -->
-    <!-- Creates the API documentation                                       -->
-    <!-- =================================================================== -->
-    <target name="javadocs" depends="init">
-        <mkdir dir="${build.javadocs}"/>
-        <javadoc packagenames="scriptographer.*"
-            sourcepath="${build.src}"
-            destdir="${build.javadocs}"
-            author="false"
-            private="false"
-            version="false"
-            windowtitle="${Name} ${version} API"
-            doctitle="${Name} ${version} API"
-            bottom="Copyright &#169; ${year} Scratchdisk.com. All Rights Reserved."
-            classpathref="build.class.path"
-        />
-    </target>
+	<!-- =================================================================== -->
+	<!-- Creates the API documentation                                       -->
+	<!-- =================================================================== -->
+	<target name="javadocs" depends="init">
+		<mkdir dir="${build.javadocs}"/>
+		<javadoc packagenames="com.scriptographer.*"
+				sourcepath="${build.src}"
+				destdir="${build.javadocs}"
+				author="false"
+				version="false"
+				private="false"
+				windowtitle="${Name} ${version} API"
+				classpathref="build.classpath">
+		    <doctitle><![CDATA[${Name} ${version} API]]></doctitle>
+		    <bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, Scratchdisk.com. All Rights Reserved.]]></bottom>
+		</javadoc>
+	</target>
 
+	<!-- =================================================================== -->
+	<!-- Creates the JS API documentation                                    -->
+	<!-- =================================================================== -->
+	<target name="jsdocs" depends="init">
+		<mkdir dir="${build.jsdocs}"/>
+		<javadoc packagenames="com.scriptographer.ai.*,com.scriptographer.adm.*"
+				sourcepath="${build.src}"
+				destdir="${build.jsdocs}"
+				author="false"
+				version="false"
+				access="public"
+				protected="false"
+				private="false"
+				windowtitle="${Name} ${version} API"
+				classpathref="build.classpath">
+			<bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, Scratchdisk.com. All Rights Reserved.]]></bottom>
+			<doclet name="com.scriptographer.doclets.JSDoclet" path="${build.classes}">
+				<param name="-basepackage" value="com.scriptographer"/>
+			</doclet>
+		</javadoc>
+	</target>
 </project>
