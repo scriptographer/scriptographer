@@ -1,13 +1,13 @@
 /*
  * Scriptographer
- *
+ * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
- *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * 
+ * Copyright (c) 2004-2005 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
- *
+ * 
  * -- GPL LICENSE NOTICE --
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,35 +23,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 03.12.2004.
- *
- * $RCSfile: Group.java,v $
+ * 
+ * File created on 26.07.2005.
+ * 
+ * $RCSfile: CompoundPath.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
+ * $Revision: 1.1 $
  * $Date: 2005/07/26 10:04:03 $
  */
 
 package com.scriptographer.ai;
 
-import com.scriptographer.util.Handle;
-
-public class Group extends Art {
-	protected Group(Handle handle) {
-		super(handle);
-	}
-
+public class CompoundPath extends Art {
 	/**
-	 * Creates a group object
+	 * Creates a compound path object
 	 */
-	public Group(Document document) {
-		super(document, TYPE_GROUP);
+	public CompoundPath(Document document) {
+		super(document, TYPE_COMPOUNDPATH);
 	}
 	
-	public Group() {
-		super(null, TYPE_GROUP);
+	public CompoundPath() {
+		super(null, TYPE_COMPOUNDPATH);
 	}
-
-	public native boolean isClipped();
-	public native void setClipped(boolean clipped);
 }

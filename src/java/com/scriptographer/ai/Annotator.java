@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Annotator.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.3 $
+ * $Date: 2005/07/26 10:04:03 $
  */
 
 package com.scriptographer.ai;
@@ -153,7 +153,7 @@ public class Annotator extends AIObject {
 		if (wrapper != null && onDraw != null) {
 			twoArgs[0] = drawer;
 			twoArgs[1] = view;
-			Object ret = FunctionHelper.callFunction(wrapper, onDraw, twoArgs);
+			FunctionHelper.callFunction(wrapper, onDraw, twoArgs);
 		}
 	}
 
@@ -167,7 +167,7 @@ public class Annotator extends AIObject {
 
 	protected void onInvalidate() throws Exception {
 		if (wrapper != null && onInvalidate != null) {
-			Object ret = FunctionHelper.callFunction(wrapper, onInvalidate);
+			FunctionHelper.callFunction(wrapper, onInvalidate);
 		}
 	}
 

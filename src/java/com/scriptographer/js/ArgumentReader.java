@@ -28,8 +28,8 @@
  *
  * $RCSfile: ArgumentReader.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/07/26 10:04:00 $
  */
 
 package com.scriptographer.js;
@@ -345,11 +345,11 @@ public class ArgumentReader {
 	 * Color
 	 */
 	
+	/*
 	private static final String[] colorRGBProperties = {
 		"red", "green", "blue"
 	};
 	
-	/*
 	public Color readColor(Object arg) {
 		Color res = null;
 		if (arg instanceof NativeJavaObject) {
