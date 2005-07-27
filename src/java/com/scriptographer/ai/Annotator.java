@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Annotator.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/07/26 10:04:03 $
+ * $Revision: 1.4 $
+ * $Date: 2005/07/27 22:55:30 $
  */
 
 package com.scriptographer.ai;
@@ -86,7 +86,11 @@ public class Annotator extends AIObject {
 	}
 	
 	private native int nativeCreate(String name);
-	 
+	
+	/**
+	 * 
+	 * @param active if <code>true</code>, activates the annotator, otherwise deactivates it
+	 */
 	public void setActive(boolean active) {
 		if (nativeSetActive(handle, active)) {
 			this.active = active;

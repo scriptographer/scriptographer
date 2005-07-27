@@ -28,8 +28,8 @@
  * 
  * $RCSfile: ArtSet.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/07/22 17:39:23 $
+ * $Revision: 1.8 $
+ * $Date: 2005/07/27 22:55:30 $
  */
 
 package com.scriptographer.ai;
@@ -81,10 +81,10 @@ public class ArtSet extends ArrayList {
 		return false;
 	}
 
-	public boolean addAll(int index, Collection c) {
+	public boolean addAll(int index, Collection elements) {
 		// get around ArrayList's addAll that does not rely on add() but the much faster version that adds all elemnts at once:
 		boolean modified = false;
-		Iterator e = c.iterator();
+		Iterator e = elements.iterator();
 		while (e.hasNext()) {
 			if (add(index++, e.next()))
 				modified = true;

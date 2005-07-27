@@ -28,8 +28,8 @@
  *
  * $RCSfile: CallbackHandler.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/07/22 17:39:22 $
+ * $Revision: 1.7 $
+ * $Date: 2005/07/27 22:55:30 $
  */
 
 package com.scriptographer.adm;
@@ -132,8 +132,8 @@ abstract class CallbackHandler extends NotificationHandler {
 	
 	protected Function onResize = null;
 
-	public void setOnResize(Function onResize) {
-		this.onResize = onResize;
+	public void setOnResize(Function func) {
+		onResize = func;
 	}
 
 	public Function getOnResize() {
