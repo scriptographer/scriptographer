@@ -14,7 +14,7 @@ import java.util.*;
  * @author Stefan Marx
  */
 public class JSDoclet extends Doclet {
-	private static boolean debug = false;
+	private static boolean debug = true;
 	private static boolean inherited = true;
 	private static String basePackage = "";
 	private static String doctitle;
@@ -34,38 +34,108 @@ public class JSDoclet extends Doclet {
 	private static String section2Close = "</h2>";
 	private static boolean shortInherited = false;
 	private static Hashtable classInfos;
-	private static Hashtable memberGroups;
+	private static Hashtable memberInfos;
 
+	static class MemberInfo {
+		ClassInfo classInfo;
+		MemberDoc member = null;
+
+		void init() {
+		}
+		
+		MemberInfo(ClassInfo classInfo) {
+			this.classInfo = classInfo;
+		}
+		
+		MemberInfo(ClassInfo classInfo, MemberDoc member) {
+			this.classInfo = classInfo;
+			this.member = member;
+		}
+
+		String name() {
+			return member.name();
+		}
+
+		Tag[] firstSentenceTags() {
+			return member.firstSentenceTags();
+		}
+
+		boolean isStatic() {
+			return member.isStatic();
+		}
+
+		ClassDoc containingClass() {
+			return member.containingClass();
+		}
+
+		Tag[] inlineTags() {
+			return member.inlineTags();
+		}
+
+		SeeTag[] seeTags() {
+			return member.seeTags();
+		}
+
+		PackageDoc containingPackage() {
+			return member.containingPackage();
+		}
+
+		String signature() {
+			return "";
+		}
+
+		String getParameterText() {
+			return "";
+		}
+
+		public String getEmptyParameterText() {
+			return "";
+		}
+		
+		ParamTag[] paramTags() {
+			return null;
+		}
+
+		String modifiers() {
+			return member.modifiers();
+		}
+
+		Parameter[] parameters() {
+			return null;
+		}
+
+		ClassDoc[] thrownExceptions() {
+			return null;
+		}
+
+		Tag[] tags(String tagname) {
+			return member.tags(tagname);
+		}
+
+		public Type returnType() {
+			return null;
+		}
+	}
+	
 	/**
 	 * A group of members that are all "compatible" in a JS way, e.g. have the same
 	 * amount of parameter with different types each (e.g. setters)
 	 * or various amount of parameters with default parameter versions, e.g.
 	 * all com.scriptogrpaher.ai.Pathfinder functions
 	 */
-	static class MemberGroup {
+	static class MethodInfo extends MemberInfo {
 		Vector members = new Vector();
 		Hashtable map = new Hashtable();
-		ClassInfo classInfo;
 		String name;
-		static final int MODE_NONE = 0;
-		static final int MODE_PARAMCOUNT = 1;
-		static final int MODE_PARAMS = 2;
-		int mode = MODE_NONE;
 		
-		boolean isField = false;
-		boolean isMethod = false;
+		boolean isGrouped = false;
 		String parameters = null;
-		MemberDoc mainMember = null;
 		
-		MemberGroup(ClassInfo classInfo, String name) {
-			this.classInfo = classInfo;
+		MethodInfo(ClassInfo classInfo, String name) {
+			super(classInfo);
 			this.name = name;
 		}
-		
-		boolean isArray(String typeName) {
-			return typeName.indexOf('[') != -1 && typeName.indexOf(']') != -1;
-		}
-		
+				
 		boolean isSuperclass(ClassDoc cd, String superclass) {
 			while (cd != null) {
 				if (cd.qualifiedName().equals(superclass))
@@ -74,41 +144,42 @@ public class JSDoclet extends Doclet {
 			}
 			return false;
 		}
-		
-		boolean isCollection(ClassDoc cd) {
-			return isSuperclass(cd, "java.util.Collection");
+
+		boolean isArray(Parameter param) {
+			String typeName = param.typeName();
+			return typeName.indexOf('[') != -1 && typeName.indexOf(']') != -1 || isSuperclass(param.type().asClassDoc(), "java.util.Collection");
 		}
 		
-		boolean isPoint(ClassDoc cd) {
-			return isSuperclass(cd, "java.awt.geom.Point2D");
+		boolean isPoint(Parameter param) {
+			ClassDoc cd = param.type().asClassDoc();
+			return isSuperclass(cd, "java.awt.geom.Point2D") || isSuperclass(cd, "java.awt.Dimension");
 		}
 		
-		boolean isPointCompatible(ClassDoc cd) {
-			return isSuperclass(cd, "java.awt.Dimension") || isSuperclass(cd, "java.awt.geom.Point2D");
+		boolean isNumber(Parameter param) {
+			String type = param.typeName();
+			return isSuperclass(param.type().asClassDoc(), "java.lang.Number") ||
+				type.equals("int") || type.equals("double") || type.equals("float");
+		}
+		
+		boolean isMap(Parameter param) {
+			ClassDoc cd = param.type().asClassDoc();
+			return isSuperclass(cd, "java.util.Map") || isSuperclass(cd, "org.mozilla.javascript.NativeArray");
 		}
 		
 		boolean isCompatible(Parameter param1 ,Parameter param2) {
-		//  if (param1.name().equals(param2.name())) {
-				String typeName1 = param1.typeName();
-				String typeName2 = param2.typeName();
-				ClassDoc cd1 = param1.type().asClassDoc();
-				ClassDoc cd2 = param2.type().asClassDoc();
-				if (typeName1.equals(typeName2))
-					return true;
-				else if (cd1 != null && cd2 != null && (cd1.subclassOf(cd2) || cd2.subclassOf(cd1))) {
-						return true;
-				} else if (isArray(typeName1) && (isArray(typeName2) || isCollection(cd2)) ||
-						  isArray(typeName2) && (isArray(typeName1) || isCollection(cd1))) {
-					return true;
-				} else if (isPoint(cd1) && isPointCompatible(cd2) || isPoint(cd2) && isPointCompatible(cd1)) {
-					return true;
-				}
-		//  }
-			return false;
+			String typeName1 = param1.typeName();
+			String typeName2 = param2.typeName();
+			ClassDoc cd1 = param1.type().asClassDoc();
+			ClassDoc cd2 = param2.type().asClassDoc();
+			return typeName1.equals(typeName2) ||
+				(cd1 != null && cd2 != null && (cd1.subclassOf(cd2) || cd2.subclassOf(cd1))) ||
+				(isNumber(param1) && isNumber(param2)) ||
+				(isArray(param1) && isArray(param2)) ||
+				(isPoint(param1) && isPoint(param2));
 		}
 
 		boolean isCompatible(MemberDoc member1, MemberDoc member2) {
-			if (debug) System.out.println(mode + " " + member1 + " " + member2);
+			if (debug) System.out.println(member1 + " " + member2);
 			if (member1 instanceof ExecutableMemberDoc && member2 instanceof ExecutableMemberDoc) {
 				ExecutableMemberDoc method1 = (ExecutableMemberDoc) member1;
 				ExecutableMemberDoc method2 = (ExecutableMemberDoc) member2;
@@ -125,30 +196,16 @@ public class JSDoclet extends Doclet {
 				}
 				Parameter[] params1 = method1.parameters();
 				Parameter[] params2 = method2.parameters();
-				if ((mode == MODE_NONE || mode == MODE_PARAMCOUNT) && params1.length == params2.length) {
-					// rule 3: in case of same amount of params,  the types should be compatible
-					for (int i = 0; i < params1.length; i++) {
-						Parameter param1 = params1[i];
-						Parameter param2 = params2[i];
-						if (!isCompatible(param1, param2)) {
-							if (debug) System.out.println("R 3 " + params1[i].name() + " " + params2[i].name());
-							return false;
-						}
+
+				// rule 3: if not the same amount of params, the types need to be the same:
+				int count = Math.min(params1.length, params2.length);
+				for (int i = 0; i < count; i++) {
+					if (!isCompatible(params1[i], params2[i])) {
+						if (debug) System.out.println("R 3");
+						return false;
 					}
-					mode = MODE_PARAMCOUNT;
-					return true;
-				} else if (mode == MODE_NONE || mode == MODE_PARAMS) {
-					// rule 4: if not the same amount of params, the types need to be the same:
-					int count = Math.min(params1.length, params2.length);
-					for (int i = 0; i < count; i++) {
-						if (!isCompatible(params1[i], params2[i])) {
-							if (debug) System.out.println("R 4");
-							return false;
-						}
-					}
-					mode = MODE_PARAMS;
-					return true;
 				}
+				isGrouped = true;
 				return true;
 			} else { // fields cannot be grouped
 				return false;
@@ -157,16 +214,11 @@ public class JSDoclet extends Doclet {
 
 		boolean add(MemberDoc member) {
 			boolean swallow = true;
-			if (member instanceof ExecutableMemberDoc) {
-				isMethod = true;
-				// do not add base versions for overridden functions 
-				String signature = ((ExecutableMemberDoc) member).signature();
-				if (map.get(signature) != null)
-					swallow = false;
-				map.put(signature, member);
-			} else {
-				isField = true;
-			}
+			// do not add base versions for overridden functions 
+			String signature = ((ExecutableMemberDoc) member).signature();
+			if (map.get(signature) != null)
+				swallow = false;
+			map.put(signature, member);
 			if (swallow) {
 				// see wther the new member fits the existing ones:
 				for (Iterator it = members.iterator(); it.hasNext();) {
@@ -176,12 +228,12 @@ public class JSDoclet extends Doclet {
 				members.add(member);
 			}
 			// even add it to the global table when it's not added here, so hrefs to overriden functions work
-			memberGroups.put(member.qualifiedName(), this);
+			memberInfos.put(member.qualifiedName(), this);
 			return true;
 		}
 		
 		void init() {
-			if (mode == MODE_PARAMS) {
+			if (isGrouped) {
 				// now sort the members by param count:
 				Comparator comp = new Comparator() {
 					public int compare(Object o1, Object o2) {
@@ -199,8 +251,8 @@ public class JSDoclet extends Doclet {
 					}
 				};
 				Collections.sort(members, comp);
-				mainMember = (MemberDoc) members.lastElement();
-			} else if (mode == MODE_PARAMCOUNT) {
+				member = (MemberDoc) members.lastElement();
+			} /*else if (mode == MODE_PARAMCOUNT) {
 				// find the suiting member: take the one with the most documentation
 				int maxTags = 0;
 				for (Iterator it = members.iterator(); it.hasNext();) {
@@ -211,23 +263,21 @@ public class JSDoclet extends Doclet {
 						maxTags = numTags;
 					}
 				}
+			}*/ else {
+				member = (MemberDoc) members.firstElement();
 			}
 		}
 
 		String name() {
 			return name;
 		}
-		
-		MemberDoc getFirstMember() {
-			return ((MemberDoc) members.get(0));
-		}
 
 		Tag[] firstSentenceTags() {
-			return getFirstMember().firstSentenceTags();
+			return member.firstSentenceTags();
 		}
 
 		boolean isStatic() {
-			return getFirstMember().isStatic();
+			return member.isStatic();
 		}
 
 		ClassDoc containingClass() {
@@ -235,11 +285,11 @@ public class JSDoclet extends Doclet {
 		}
 
 		Tag[] inlineTags() {
-			return getFirstMember().inlineTags();
+			return member.inlineTags();
 		}
 
 		SeeTag[] seeTags() {
-			return getFirstMember().seeTags();
+			return member.seeTags();
 		}
 
 		PackageDoc containingPackage() {
@@ -247,110 +297,253 @@ public class JSDoclet extends Doclet {
 		}
 
 		String signature() {
-			if (isMethod) {
-				return ((ExecutableMemberDoc) getFirstMember()).signature();
-			} else {
-				return "";
-			}
+			return ((ExecutableMemberDoc) member).signature();
 		}
 
 		String getParameterText() {
 			if (parameters == null) {
-				parameters = "";
-				if (isMethod) {
-					parameters += "(";
-					if (mode == MODE_PARAMS) {
-						int prevCount = 0;
-						int closeCount = 0;
-						for (Iterator it = members.iterator(); it.hasNext();) {
-							ExecutableMemberDoc mem = ((ExecutableMemberDoc) it.next());
-							Parameter[] params = mem.parameters();
-							int count = params.length;
-							if (count > prevCount) {
-								if (prevCount > 0)
-									parameters += "[";
-								
-								for (int i = prevCount; i < count; i++) {
-									if (i > 0)
-										parameters += ", ";
-									parameters += params[i].name();
-								}
-								closeCount++;
-								prevCount = count;
+				parameters = "(";
+				if (isGrouped) {
+					int prevCount = 0;
+					int closeCount = 0;
+					for (Iterator it = members.iterator(); it.hasNext();) {
+						ExecutableMemberDoc mem = ((ExecutableMemberDoc) it.next());
+						Parameter[] params = mem.parameters();
+						int count = params.length;
+						if (count > prevCount) {
+							if (prevCount > 0)
+								parameters += "[";
+							
+							for (int i = prevCount; i < count; i++) {
+								if (i > 0)
+									parameters += ", ";
+								parameters += params[i].name();
 							}
-						}
-						for (int i = 1; i < closeCount; i++)
-							parameters += "]";
-					} else {
-						ExecutableMemberDoc member = (ExecutableMemberDoc) getFirstMember();
-						Parameter[] params = member.parameters();
-						for (int i = 0; i < params.length; i++) {
-							if (i > 0)
-								parameters += ", ";
-							parameters += params[i].name();
+							closeCount++;
+							prevCount = count;
 						}
 					}
-					parameters += ")";
+					for (int i = 1; i < closeCount; i++)
+						parameters += "]";
+				} else {
+					ExecutableMemberDoc mem = (ExecutableMemberDoc) member;
+					Parameter[] params = mem.parameters();
+					for (int i = 0; i < params.length; i++) {
+						if (i > 0)
+							parameters += ", ";
+						parameters += params[i].name();
+					}
 				}
+				parameters += ")";
 			}
 			return parameters;
 		}
 
 		public String getEmptyParameterText() {
-			if (isMethod) return "()";
-			else return "";
+			return "()";
 		}
 		
 		ParamTag[] paramTags() {
-			MemberDoc member = getFirstMember();
-			if (member instanceof ExecutableMemberDoc)
-				return ((ExecutableMemberDoc) member).paramTags();
-			else return null;
+			return ((ExecutableMemberDoc) member).paramTags();
 		}
 
 		String modifiers() {
-			return getFirstMember().modifiers();
+			return member.modifiers();
 		}
 
 		Parameter[] parameters() {
-			MemberDoc member = getFirstMember();
-			if (member instanceof ExecutableMemberDoc)
-				return ((ExecutableMemberDoc) member).parameters();
-			else return null;
+			return ((ExecutableMemberDoc) member).parameters();
 		}
 
 		ClassDoc[] thrownExceptions() {
-			MemberDoc member = getFirstMember();
-			if (member instanceof ExecutableMemberDoc)
-				return ((ExecutableMemberDoc) member).thrownExceptions();
-			else return null;
+			return ((ExecutableMemberDoc) member).thrownExceptions();
 		}
 
 		Tag[] tags(String string) {
-			return getFirstMember().tags();
+			return member.tags();
+		}
+
+		public Type returnType() {
+			return ((MethodDoc) member).returnType();
 		}
 	}
 	
 	/**
-	 * A list of member group that are unified under the same name 
+	 * A virtual field that unifies getter and setter functions, just like Rhino does
 	 */
-	static class MemberGroupList {
+	static class BeanProperty extends MemberInfo {
+		String name;
+		MethodInfo getter;
+		MethodInfo setter;
+		Tag[] textTags;
+		SeeTag[] seeTags;
+
+		BeanProperty(ClassInfo classInfo, String name, MethodInfo getter, MethodInfo setter) {
+			super(classInfo);
+			this.name = name;
+			this.getter = getter;
+			this.setter = setter;
+			String str = "A ";
+			if (setter == null)
+				str += "read-only ";
+			str += "BeanProperty, defined by <tt>" + this.getter.name + "</tt>";
+			if (setter != null)
+				str += " and " + setter.name;
+			textTags = new Tag[] {
+				new BeanTag(str)
+			};
+			if (setter != null) {
+				seeTags = new SeeTag[] {
+					new BeanSeeTag(getter),
+					new BeanSeeTag(setter)
+				};
+			} else {
+				seeTags = new SeeTag[] {
+					new BeanSeeTag(getter)
+				};
+			}
+		}
+		
+		class BeanTag implements Tag {
+			String text;
+			
+			BeanTag(String text) {
+				this.text = text;
+			}
+			
+			public String name() {
+				return null;
+			}
+
+			public Doc holder() {
+				return null;
+			}
+
+			public String kind() {
+				return null;
+			}
+
+			public String text() {
+				return text;
+			}
+
+			public Tag[] inlineTags() {
+				return null;
+			}
+
+			public Tag[] firstSentenceTags() {
+				return null;
+			}
+
+			public SourcePosition position() {
+				return null;
+			}
+			
+		}
+
+		class BeanSeeTag extends BeanTag implements SeeTag {
+			MemberInfo member;
+			
+			BeanSeeTag(MemberInfo member) {
+				super("");
+				this.member = member;
+			}
+
+			public String label() {
+				return null;
+			}
+
+			public PackageDoc referencedPackage() {
+				return member.containingPackage();
+			}
+
+			public String referencedClassName() {
+				return member.containingClass().name();
+			}
+
+			public ClassDoc referencedClass() {
+				return member.containingClass();
+			}
+
+			public String referencedMemberName() {
+				return member.name();
+			}
+
+			public MemberDoc referencedMember() {
+				return member.member;
+			}
+		}
+		
+		String name() {
+			return name;
+		}
+
+		Tag[] firstSentenceTags() {
+			return textTags;
+		}
+
+		boolean isStatic() {
+			return getter.isStatic();
+		}
+
+		ClassDoc containingClass() {
+			return getter.containingClass();
+		}
+
+		Tag[] inlineTags() {
+			return textTags;
+		}
+
+		SeeTag[] seeTags() {
+			return seeTags;
+		}
+
+		PackageDoc containingPackage() {
+			return getter.containingPackage();
+		}
+
+		String modifiers() {
+			return "";
+		}
+
+		Tag[] tags(String tagname) {
+			return new Tag[]{};
+		}
+	}
+	
+	/**
+	 * A list of members or groups of members that are unified under the same name 
+	 */
+	static class MemberList {
 		ClassInfo classInfo;
 		String name;
 		Vector lists = new Vector();
 		
-		public MemberGroupList(ClassInfo classInfo, String name) {
+		MemberList(ClassInfo classInfo, String name) {
 			this.classInfo = classInfo;
 			this.name = name;
+		}
+
+		MemberList(ClassInfo classInfo, FieldDoc member) {
+			this.classInfo = classInfo;
+			this.name = member.name();
+			lists.add(new MemberInfo(classInfo, member));
+		}
+
+		MemberList(ClassInfo classInfo, MemberInfo member) {
+			this.classInfo = classInfo;
+			this.name = member.name();
+			lists.add(member);
 		}
 
 		static String[] methodNameFilter = {
 			"setWrapper",
 			"getWrapper",
-			"iterator"
+			"iterator",
+			"hashCode"
 		};
 		
-		void add(MemberDoc member) {
+		void add(ExecutableMemberDoc member) {
 			if (member instanceof MethodDoc) {
 				String name = member.name();
 				// filter out stuff:
@@ -361,7 +554,7 @@ public class JSDoclet extends Doclet {
 			
 			boolean add = true;
 			for (Iterator it = lists.iterator(); it.hasNext();) {
-				MemberGroup group = (MemberGroup) it.next();
+				MethodInfo group = (MethodInfo) it.next();
 				if (group.add(member)) {
 					add = false;
 					break;
@@ -369,8 +562,7 @@ public class JSDoclet extends Doclet {
 			}
 			// couldn't add to an existing MemberInfo, create a new one:
 			if (add) {
-//				System.out.println("Group " + member.qualifiedName());
-				MemberGroup list = new MemberGroup(classInfo, name);
+				MethodInfo list = new MethodInfo(classInfo, member.name());
 				list.add(member);
 				lists.add(list);
 			}
@@ -378,7 +570,7 @@ public class JSDoclet extends Doclet {
 
 		public void init() {
 			for (Iterator it = lists.iterator(); it.hasNext();) {
-				((MemberGroup) it.next()).init();
+				((MemberInfo) it.next()).init();
 			}
 		}
 
@@ -387,47 +579,129 @@ public class JSDoclet extends Doclet {
 				list.add(it.next());
 			}
 		}
+
+		/**
+		 * @return
+		 */
+		public MethodInfo extractGetMethod() {
+		    // Inspect the list of all MemberBox for the only one having no
+	        // parameters
+			for (Iterator it = lists.iterator(); it.hasNext();) {
+				MethodInfo method = (MethodInfo) it.next();
+	            // Does getter method have an empty parameter list with a return
+	            // value (eg. a getSomething() or isSomething())?
+	            if (method.parameters().length == 0/* && (!isStatic || method.isStatic())*/ ) {
+	                if (!method.returnType().equals("void")) {
+	                    return method;
+	                }
+	                break;
+	            }
+	        }
+			return null;
+		}
+
+		public MethodInfo extractSetMethod(Type type) {
+			//
+			// Note: it may be preferable to allow
+			// NativeJavaMethod.findFunction()
+			//       to find the appropriate setter; unfortunately, it requires an
+			//       instance of the target arg to determine that.
+			//
+
+			// Make two passes: one to find a method with direct type
+			// assignment,
+			// and one to find a widening conversion.
+			for (int pass = 1; pass <= 2; ++pass) {
+				for (Iterator it = lists.iterator(); it.hasNext();) {
+					MethodInfo method = (MethodInfo) it.next();
+					//	                if (!isStatic || method.isStatic()) {
+					if (method.returnType().typeName().equals("void")) {
+						Parameter[] params = method.parameters();
+						if (params.length == 1) {
+							if (pass == 1) {
+								if (params[0].typeName().equals(type.typeName())) {
+									return method;
+								}
+							} else {
+								 // TODO: if (params[0].isAssignableFrom(type)) {
+								 // return method; }
+								return method;
+							}
+						}
+					}
+				}
+			}
+			return null;
+		}
 	}
 	
 	/**
-	 * A list of member-group lists, accessible by member name:
+	 * A list of member lists, accessible by member name:
 	 */
-	static class MemberGroupLists {
+	static class MemberLists {
 		Hashtable groups = new Hashtable();
+		Hashtable lookup = null;
 		Vector flatList = null;
 		ClassInfo classInfo;
 		
-		MemberGroupLists(ClassInfo classInfo) {
+		MemberLists(ClassInfo classInfo) {
 			this.classInfo = classInfo;
 		}
-		void add(MemberDoc member) {
+		
+		void add(ExecutableMemberDoc member) {
 			String name = member.name();
-			MemberGroupList group = (MemberGroupList) groups.get(name); 
-			if (group == null)
-				group = new MemberGroupList(classInfo, name); 
+			String key = name;
+			if (member instanceof MethodDoc) {
+				// for members, use the return type for grouping as well!
+				key = ((MethodDoc) member).returnType().typeName() + " " + name;
+			}
+			MemberList group = (MemberList) groups.get(key); 
+			if (group == null) {
+				group = new MemberList(classInfo, name); 
+				groups.put(key, group);
+				if (lookup == null)
+					lookup = new Hashtable();
+				lookup.put(name, group);
+			}
+
 			group.add(member);
+		}
+		
+		void add(FieldDoc member) {
+			// fields won't be grouped, but for simplicty, greate groups of one element for each field,
+			// so it can be treated the same as functions:
+			String name = member.name();
+			MemberList group = new MemberList(classInfo, member); 
 			groups.put(name, group);
 		}
 		
+		void add(MemberInfo member) {
+			groups.put(member.name(), new MemberList(classInfo, member));
+		}
+
+		public void addAll(ExecutableMemberDoc[] members) {
+			for (int i = 0; i < members.length; i++)
+				add(members[i]);
+		}
+
+		public void addAll(FieldDoc[] members) {
+			for (int i = 0; i < members.length; i++)
+				add(members[i]);
+		}
+
 		void init() {
 			for (Enumeration e = groups.elements(); e.hasMoreElements();) {
-				((MemberGroupList) e.nextElement()).init();
+				((MemberList) e.nextElement()).init();
 			}
 		}
 
-		public void addAll(MemberDoc[] members) {
-			for (int i = 0; i < members.length; i++) {
-				add(members[i]);
-			}
-		}
-		
-		public MemberGroup[] getFlattened() {
+		public MemberInfo[] getFlattened() {
 			if (flatList == null) {
 				// now sort the lists alphabetically
 				Comparator comp = new Comparator() {
 					public int compare(Object o1, Object o2) {
-						MemberGroupList cls1 = (MemberGroupList) o1;
-						MemberGroupList cls2 = (MemberGroupList) o2;
+						MemberList cls1 = (MemberList) o1;
+						MemberList cls2 = (MemberList) o2;
 						return cls1.name.compareToIgnoreCase(cls2.name);
 					}
 
@@ -440,21 +714,76 @@ public class JSDoclet extends Doclet {
 				// flatten the list of groups:
 				flatList = new Vector();
 				for (Iterator it = sorted.iterator(); it.hasNext();) {
-					MemberGroupList group = (MemberGroupList) it.next();
+					MemberList group = (MemberList) it.next();
 					group.addLists(flatList);
 				}
 			}
-			MemberGroup[] array = new MemberGroup[flatList.size()];
+			MemberInfo[] array = new MemberInfo[flatList.size()];
 			flatList.toArray(array);
 			return array;
+		}
+
+		/**
+		 * @param fields
+		 */
+		public void scanBeanProperties(MemberLists fields) {
+			for (Enumeration e = groups.elements(); e.hasMoreElements();) {
+				MemberList member = (MemberList) e.nextElement();
+				String name = member.name;
+	            // Is this a getter?
+	            boolean memberIsGetMethod = name.startsWith("get");
+	            boolean memberIsIsMethod = name.startsWith("is");
+	            if (memberIsGetMethod || memberIsIsMethod) {
+	                // Double check name component.
+	                String nameComponent = name.substring(memberIsGetMethod ? 3 : 2);
+	                if (nameComponent.length() == 0)
+	                    continue;
+	
+	                // Make the bean property name.
+	                String beanPropertyName = nameComponent;
+	                char ch0 = nameComponent.charAt(0);
+	                if (Character.isUpperCase(ch0)) {
+	                    if (nameComponent.length() == 1) {
+	                        beanPropertyName = nameComponent.toLowerCase();
+	                    } else {
+	                        char ch1 = nameComponent.charAt(1);
+	                        if (!Character.isUpperCase(ch1)) {
+	                            beanPropertyName = Character.toLowerCase(ch0) + nameComponent.substring(1);
+	                        }
+	                    }
+	                }
+	
+	                // If we already have a member by this name, don't do this
+	                // property.
+	                if (fields.contains(beanPropertyName))
+	                    continue;
+	
+	                MethodInfo getter = member.extractGetMethod();
+	                MethodInfo setter = null;
+	                if (getter != null) {
+	                    // We have a getter. Now, do we have a setter?
+	                    MemberList setters = (MemberList) lookup.get("set" + nameComponent);
+	                    if (setters != null) {
+	                        // Is this value a method?
+                            setter = setters.extractSetMethod(getter.returnType());
+	                    }
+	                }
+                    // Make the property.
+                    fields.add(new BeanProperty(classInfo, beanPropertyName, getter, setter));
+	            }
+            }
+		}
+
+		boolean contains(String name) {
+			return groups.containsKey(name);
 		}
 	}
 	
 	static class ClassInfo {
 		ClassDoc classDoc;
-		MemberGroupLists fields;
-		MemberGroupLists methods;
-		MemberGroupLists constructors;
+		MemberLists fields;
+		MemberLists methods;
+		MemberLists constructors;
 
 		ClassInfo(ClassDoc cd) {
 			this.classDoc = cd;
@@ -468,9 +797,9 @@ public class JSDoclet extends Doclet {
 		}
 		
 		void init() {
-			fields = new MemberGroupLists(this);
-			methods = new MemberGroupLists(this);
-			constructors = new MemberGroupLists(this);
+			fields = new MemberLists(this);
+			methods = new MemberLists(this);
+			constructors = new MemberLists(this);
 			add(classDoc, true);
 			ClassDoc superclass = classDoc.superclass();
 			// add the members of direct invisible superclasses to this class for JS documentation:
@@ -478,20 +807,22 @@ public class JSDoclet extends Doclet {
 				add(superclass, false);
 				superclass = superclass.superclass();
 			}
-			fields.init();
+			// now scan for beanProperties:
 			methods.init();
 			constructors.init();
+			
+			methods.scanBeanProperties(fields);
 		}
 		
-		MemberGroup[] methods() {
+		MemberInfo[] methods() {
 			return methods.getFlattened();
 		}
 		
-		MemberGroup[] fields() {
+		MemberInfo[] fields() {
 			return fields.getFlattened();
 		}
 
-		public MemberGroup[] constructors() {
+		public MemberInfo[] constructors() {
 			return constructors.getFlattened();
 		}
 	}
@@ -501,15 +832,15 @@ public class JSDoclet extends Doclet {
 	}
 	
 	static boolean isVisibleMember(MemberDoc mem) {
-		return memberGroups.get(mem.qualifiedName()) != null;
+		return memberInfos.get(mem.qualifiedName()) != null;
 	}
 
 	static ClassInfo getClassInfo(ClassDoc cd) {
 		return (ClassInfo) classInfos.get(cd.qualifiedName());
 	}
 
-	static MemberGroup getMemberGroup(MemberDoc mem) {
-		return (MemberGroup) memberGroups.get(mem.qualifiedName());
+	static MemberInfo getMemberGroup(MemberDoc mem) {
+		return (MethodInfo) memberInfos.get(mem.qualifiedName());
 	}
 	
 	/**
@@ -538,7 +869,7 @@ public class JSDoclet extends Doclet {
 
 			// Setting up fields and methods for all visible classes:
 			classInfos = new Hashtable();
-			memberGroups = new Hashtable();
+			memberInfos = new Hashtable();
 			ClassDoc[] classes = root.classes();
 			for (int i = 0; i < classes.length; i++) {
 				ClassDoc cd = classes[i];
@@ -694,7 +1025,7 @@ public class JSDoclet extends Doclet {
 
 			printTags(writer, cd, cd.inlineTags());
 
-			printSeeTags(writer, cd, cd.seeTags(), section2Open + "See also" + section2Close, null);
+			printSeeTags(writer, cd, cd.seeTags(), section2Open + "See also:" + section2Close, null);
 
 			Tag[] verTags = cd.tags("version");
 			if (versionInfo && verTags.length > 0) {
@@ -744,9 +1075,9 @@ public class JSDoclet extends Doclet {
 			}
 
 			ClassInfo info = getClassInfo(cd);
-			MemberGroup[] fields = info.fields(); // cd.fields(true);
-			MemberGroup[] constructors = info.constructors(); // cd.constructors(true);
-			MemberGroup[] methods = info.methods(); // cd.methods(true);
+			MemberInfo[] fields = info.fields(); // cd.fields(true);
+			MemberInfo[] constructors = info.constructors(); // cd.constructors(true);
+			MemberInfo[] methods = info.methods(); // cd.methods(true);
 
 			if (summaries) {
 				if (fieldSummary && fields.length > 0)
@@ -777,7 +1108,7 @@ public class JSDoclet extends Doclet {
 						info = getClassInfo(superclass);
 						fields = info.fields(); // par.fields(true);
 						methods = info.methods(); // par.methods(true);
-						MemberGroup[] inheritedMembers = new MemberGroup[fields.length + methods.length];
+						MemberInfo[] inheritedMembers = new MemberInfo[fields.length + methods.length];
 						for (int k = 0; k < fields.length; k++) {
 							inheritedMembers[k] = fields[k];
 						}
@@ -819,10 +1150,10 @@ public class JSDoclet extends Doclet {
 	 * 
 	 * @param flds the fields to format
 	 */
-	static void printFields(PrintWriter writer, ClassDoc cd, MemberGroup[] flds, String title) {
+	static void printFields(PrintWriter writer, ClassDoc cd, MemberInfo[] flds, String title) {
 		boolean yet = false;
 		for (int i = 0; i < flds.length; ++i) {
-			MemberGroup f = flds[i];
+			MemberInfo f = flds[i];
 			if (!yet) {
 				writer.println(section2Open + "" + title + "" + section2Close);
 				writer.println("<ul>");
@@ -831,18 +1162,18 @@ public class JSDoclet extends Doclet {
 			writer.println("<li>");
 			writer.print(createAnchor(f, cd));
 
-			writer.print("<b>");
+			writer.print("<tt><b>");
 			// Static = PROTOTYPE.NAME
 			if (f.isStatic())
 				writer.print(f.containingClass().name() + ".");
-			writer.print(f.name() + "</b>");
+			writer.print(f.name() + "</b></tt>");
 
 			Tag[] inlineTags = f.inlineTags();
 			SeeTag[] seeTags = f.seeTags();
 			if (inlineTags.length > 0 || seeTags.length > 0) {
 				writer.println("<ul>");
 				printTags(writer, cd, inlineTags, "<li>", "</li>", false);
-				printSeeTags(writer, cd, seeTags, "<li>See also", "</li>");
+				printSeeTags(writer, cd, seeTags, "<li>See also:", "</li>");
 				writer.println("</ul>");
 			}
 		}
@@ -857,16 +1188,21 @@ public class JSDoclet extends Doclet {
 	 * @param dmems The fields to be summarized.
 	 * @param title The title of the section.
 	 */
-	static void printSummary(PrintWriter writer, ClassDoc cd, MemberGroup[] dmems, String title) {
+	static void printSummary(PrintWriter writer, ClassDoc cd, MemberInfo[] dmems, String title) {
 		if (dmems.length > 0) {
 			writer.println(section2Open + "" + title + "" + section2Close);
 			writer.println("<ul>");
+			String prevName = null;
 			for (int i = 0; i < dmems.length; i++) {
-				MemberGroup mem = dmems[i];
-				writer.println("<li>");
-				writer.print(createLink(mem, cd));
-				printTags(writer, cd, mem.firstSentenceTags(), "<ul><li>", "</li></ul>", true);
-				writer.println("</li>");
+				MemberInfo mem = dmems[i];
+				String name = mem.name();
+				if (!name.equals(prevName)) {
+					writer.println("<li>");
+					writer.print(createLink(mem, cd));
+					printTags(writer, cd, mem.firstSentenceTags(), "<ul><li>", "</li></ul>", true);
+					writer.println("</li>");
+				}
+				prevName = name;
 			}
 			writer.println("</ul>");
 		}
@@ -876,12 +1212,12 @@ public class JSDoclet extends Doclet {
 	 * Enumerates the members of a section of the document and formats them
 	 * using Tex statements.
 	 */
-	static void printMembers(PrintWriter writer, ClassDoc cd, MemberGroup[] dmems, String title) {
+	static void printMembers(PrintWriter writer, ClassDoc cd, MemberInfo[] dmems, String title) {
 		if (dmems.length > 0) {
 			writer.println(section2Open + "" + title + "" + section2Close);
 			writer.println("<ul>");
 			for (int i = 0; i < dmems.length; i++) {
-				MemberGroup mem = dmems[i];
+				MemberInfo mem = dmems[i];
 				printMember(writer, cd, mem);
 				writer.println("<br/>");
 			}
@@ -893,7 +1229,7 @@ public class JSDoclet extends Doclet {
 	 * Enumerates the members of a section of the document and formats them
 	 * using Tex statements.
 	 */
-	static void printMember(PrintWriter writer, ClassDoc cd, MemberGroup mem) {
+	static void printMember(PrintWriter writer, ClassDoc cd, MemberInfo mem) {
 		printMember(writer, cd, mem, null);
 	}
 
@@ -901,7 +1237,7 @@ public class JSDoclet extends Doclet {
 	 * Enumerates the members of a section of the document and formats them
 	 * using Tex statements.
 	 */
-	static void printMember(PrintWriter writer, ClassDoc cd, MemberGroup mem, MemberGroup copiedTo) {
+	static void printMember(PrintWriter writer, ClassDoc cd, MemberInfo mem, MemberInfo copiedTo) {
 		if (mem instanceof MethodDoc) {
 			MethodDoc method = (MethodDoc) mem;
 			if (method.commentText() == "" && method.seeTags().length == 0 && method.throwsTags().length == 0
@@ -917,7 +1253,7 @@ public class JSDoclet extends Doclet {
 				ClassDoc doc = method.overriddenClass();
 				ClassInfo info = getClassInfo(doc);
 				if (info != null) {
-					MemberGroup[] methods = info.methods();
+					MemberInfo[] methods = info.methods();
 					for (int i = 0; !found && i < methods.length; ++i) {
 						if (methods[i].name().equals(mem.name())
 							&& methods[i].signature().equals(mem.signature())) {
@@ -942,7 +1278,7 @@ public class JSDoclet extends Doclet {
 			writer.print(createAnchor(copiedTo, cd));
 		}
 
-		writer.print("<b>" + mem.name + "</b>" + mem.getParameterText());
+		writer.print("<tt><b>" + mem.name() + "</b>" + mem.getParameterText() + "</tt>");
 
 		// Thrown exceptions
 		ClassDoc[] thrownExceptions = mem.thrownExceptions();
@@ -1040,7 +1376,7 @@ public class JSDoclet extends Doclet {
 				writer.println("<ul>");
 				yet = true;
 			}
-			printSeeTags(writer, cd, seeTags, "<li><b>See also</b>", "</li>");
+			printSeeTags(writer, cd, seeTags, "<li><b>See also:</b>", "</li>");
 		}
 		if (yet)
 			writer.println("</ul>");
@@ -1055,13 +1391,13 @@ public class JSDoclet extends Doclet {
 	 * @param mems the members of this entity
 	 * @see #start
 	 */
-	static void printInheritedMembers(PrintWriter writer, ClassDoc cd, MemberGroup[] dmems, boolean labels) {
+	static void printInheritedMembers(PrintWriter writer, ClassDoc cd, MemberInfo[] dmems, boolean labels) {
 		if (dmems.length == 0)
 			return;
 
 		if (shortInherited) {
 			for (int i = 0; i < dmems.length; i++) {
-				MemberGroup mem = dmems[i];
+				MemberInfo mem = dmems[i];
 				// print only member names
 				if (i != 0)
 					writer.print(", ");
@@ -1071,7 +1407,7 @@ public class JSDoclet extends Doclet {
 
 			writer.println("<ul>");
 			for (int i = 0; i < dmems.length; i++) {
-				MemberGroup mem = dmems[i];
+				MemberInfo mem = dmems[i];
 				writer.println("<li>" + createLink(mem, cd) + "</li>");
 			}
 			writer.println("</ul>");
@@ -1115,7 +1451,7 @@ public class JSDoclet extends Doclet {
 		if (seeTags.length > 0) {
 			if (prefix != null)
 				writer.println(prefix);
-			writer.println("<ul>");
+			// writer.println("<ul>");
 			boolean first = true;
 			for (int i = 0; i < seeTags.length; ++i) {
 				MemberDoc mem = seeTags[i].referencedMember();
@@ -1125,7 +1461,7 @@ public class JSDoclet extends Doclet {
 					writer.print(createLink(mem, cd));
 				}
 			}
-			writer.println("</ul>");
+			// writer.println("</ul>");
 			if (sufix != null)
 				writer.println(sufix);
 		}
@@ -1259,7 +1595,7 @@ public class JSDoclet extends Doclet {
 		return str;
 	}
 
-	static ClassDoc getMemberClass(MemberGroup group, ClassDoc currentClass) {
+	static ClassDoc getMemberClass(MemberInfo group, ClassDoc currentClass) {
 		// in case the class is invisible, the current class needs to be used instead
 		ClassDoc containingClass = group.containingClass();
 		if (isVisibleClass(containingClass) || currentClass.superclass() != containingClass)
@@ -1269,14 +1605,14 @@ public class JSDoclet extends Doclet {
 	}
 	
 	static String createLink(MemberDoc mem, ClassDoc currentClass) {
-		MemberGroup group = getMemberGroup(mem);
+		MemberInfo group = getMemberGroup(mem);
 		if (group != null)
 			return createLink(group, currentClass);
 		else
 			return "";
 	}
 
-	static String createLink(MemberGroup mem, ClassDoc currentClass) {
+	static String createLink(MemberInfo mem, ClassDoc currentClass) {
 		ClassDoc cd = getMemberClass(mem, currentClass);
 		// dont use mem.qualifiedName(). use cd.qualifiedName() + "." + mem.name()
 		// instead in order to catch the case where functions are moved from invisible
@@ -1295,7 +1631,7 @@ public class JSDoclet extends Doclet {
 		return createAnchor(cl.qualifiedName());
 	}
 
-	static String createAnchor(MemberGroup mem, ClassDoc currentClass) {
+	static String createAnchor(MemberInfo mem, ClassDoc currentClass) {
 		ClassDoc cd = getMemberClass(mem, currentClass);
 		return createAnchor(cd.qualifiedName() + "." + mem.name() + mem.signature());
 	}
