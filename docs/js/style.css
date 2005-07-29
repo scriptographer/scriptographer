@@ -1,0 +1,46 @@
+body, td, th, font, select, input, file, textarea, div, p {
+	color: #000000;
+	font-family: 'Lucida Grande', Geneva, Verdana, Arial, sans-serif;
+	font-size: 12px;
+}
+
+h1 {
+	font-size: 18px;
+	margin: 0 0 8px 0;
+}
+
+h2 {
+	font-size: 14px;
+	margin: 16px 0 8px 0;
+}
+
+/*
+a:link, a:visited, a:active {
+	color: #000000;
+}
+
+a:hover {
+	color: #2084FF;
+}
+*/
+ul {
+	padding: 0;
+	margin: 0 0 0 16px;
+	list-style-type: none;
+}
+
+pre {
+	margin: 8px 0 0 0;
+}
+
+.paragraph {
+	margin-top: 4px;
+}
+
+.member {
+	margin-top: 16px;
+}
+
+.summary {
+	margin-bottom: 4px;
+}

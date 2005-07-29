@@ -24,7 +24,9 @@
 		<property name="build.docs" value="${home.dir}/docs"/>
 		<property name="build.javadocs" value="${home.dir}/docs/api"/>
 		<property name="build.jsdocs" value="${home.dir}/docs/js"/>
-
+		<!-- this is used for importing comments from the gnu classpath file into the js documentation -->
+		<property name="build.src.jdk" value="${home.dir}/docs/src/"/>
+		
 		<!-- The path to the install directory within Illustrator -->
 		<property name="install.dir" value="C:\Programme\Adobe\Illustrator CS\Plug-ins\Extensions\Scriptographer\java"/>
 		<property name="install.lib" value="${install.dir}/lib"/>
@@ -119,7 +121,7 @@
 		</copy>
 		<jar jarfile="${build.lib}/${jar.name}.jar"
 			basedir="${build.classes}"
-			excludes="**/loader/**"/>
+			excludes="**/loader/**,**/test/**"/>
 		<jar jarfile="${build.dir}/loader.jar"
 			basedir="${build.classes}"
 			includes="**/loader/**"/>
@@ -246,18 +248,20 @@
 	<target name="jsdocs" depends="init">
 		<mkdir dir="${build.jsdocs}"/>
 		<javadoc packagenames="com.scriptographer.ai.*,com.scriptographer.adm.*"
-				sourcepath="${build.src}"
+				sourcepath="${build.src}:${build.src.jdk}"
 				destdir="${build.jsdocs}"
 				author="false"
 				version="false"
-				access="public"
-				protected="false"
-				private="false"
+				public="true"
 				windowtitle="${Name} ${version} API"
 				classpathref="build.classpath">
+		    <doctitle><![CDATA[${Name} ${version} API]]></doctitle>
 			<bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, Scratchdisk.com. All Rights Reserved.]]></bottom>
 			<doclet name="com.scriptographer.doclets.JSDoclet" path="${build.classes}">
 				<param name="-basepackage" value="com.scriptographer"/>
+				<param name="-filterclasses" value="com.scriptographer.ai.DictionaryObject,com.scriptographer.ai.Tool,com.scriptographer.ai.Annotator,com.scriptographer.ai.FileFormat"/>
+				<param name="-packagesequence" value="com.scriptographer.ai,com.scriptographer.adm,com.scriptographer.test"/>
+				<param name="-methodfilter" value="setWrapper,getWrapper,iterator,hashCode"/>
 			</doclet>
 		</javadoc>
 	</target>
