@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2005/05/04 10:34:57 $
+ * $Revision: 1.13 $
+ * $Date: 2005/07/31 12:09:52 $
  */
 
 package com.scriptographer;
@@ -53,7 +53,8 @@ public class ScriptographerEngine {
 	private static final boolean isWindows, isMacintosh;
 	private static ConsoleDialog consoleDialog;
 	private static MainDialog mainDialog;
-	private static File baseDir = null;
+	private static File scriptDir = null;
+	private static File pluginDir = null;
 
 	static {
 		// immediatelly redirect system streams.
@@ -70,17 +71,22 @@ public class ScriptographerEngine {
 		global = new GlobalObject(context);
 	}
 
-	public static void init() throws Exception {
+	public static void init(String javaPath) throws Exception {
+		pluginDir = new File(javaPath).getParentFile();
 		// This is needed on mac, where there is more than one thread and the Loader is initiated on startup
 		// in the second thread. The ScriptographerEngine get loaded through the Loader, so getting the
 		// ClassLoader from there is save:
 		Thread.currentThread().setContextClassLoader(ScriptographerEngine.class.getClassLoader());
 		// get the baseDir setting, if it's not set, ask the user
 		Preferences prefs = Preferences.userNodeForPackage(ScriptographerEngine.class); 
-		String dir = prefs.get("baseDir", null);
-		baseDir = dir != null ? new File(dir) : null;
-		if (baseDir == null || !baseDir.isDirectory()) {
-			chooseBaseDirectory();
+		String dir = prefs.get("scriptDir", null);
+		// If nothing is defined, try the default place for Scripts: In the plugin's folder
+		if (dir == null)
+			scriptDir = new File(pluginDir, "scripts");
+		else
+			scriptDir = new File(dir);
+		if (!scriptDir.exists() || !scriptDir.isDirectory()) {
+			chooseScriptDirectory();
 		}
 		
 		consoleDialog = new ConsoleDialog();
@@ -88,8 +94,8 @@ public class ScriptographerEngine {
 		ConsoleOutputStream.enableOutput(true);
 		
 		// execute all scripts in startup folder:
-		if (baseDir != null)
-			getInstance().executeAll(new File(baseDir, "startup"));
+		if (scriptDir != null)
+			getInstance().executeAll(new File(scriptDir, "startup"));
 	}
 
 	public static void destroy() {
@@ -101,18 +107,22 @@ public class ScriptographerEngine {
 		ConsoleOutputStream.getInstance().enableRedirection(false);
 	}
 	
-	public static boolean chooseBaseDirectory() {
-		baseDir = Dialog.chooseDirectory("Please choose the Scriptographer base directory:", baseDir);
-		if (baseDir != null && baseDir.isDirectory()) {
+	public static boolean chooseScriptDirectory() {
+		scriptDir = Dialog.chooseDirectory("Please choose the Scriptographer Script directory:", scriptDir);
+		if (scriptDir != null && scriptDir.isDirectory()) {
 			Preferences prefs = Preferences.userNodeForPackage(ScriptographerEngine.class); 
-			prefs.put("baseDir", baseDir.getPath());
+			prefs.put("scriptDir", scriptDir.getPath());
 			return true;
 		}
 		return false;
 	}
 	
-	public static File getBaseDirectory() {
-		return baseDir;
+	public static File getPluginDirectory() {
+		return pluginDir;
+	}
+	
+	public static File getScriptDirectory() {
+		return scriptDir;
 	}
 	
 	public static boolean isWindows() {
@@ -308,8 +318,6 @@ public class ScriptographerEngine {
 	}
 	
 	public static native long getNanoTime();
-
-	public static native boolean isKeyDown(short keycode);
 
 	public static native Point getMousePoint();
 

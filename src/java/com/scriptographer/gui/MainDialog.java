@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.4 $
+ * $Date: 2005/07/31 12:09:52 $
  */
 
 package com.scriptographer.gui;
@@ -106,13 +106,13 @@ public class MainDialog extends FloatingDialog {
 		};
 		consoleEntry.setText("Show / Hide Console");
 
-		ListEntry baseDirEntry = new ListEntry(menu) {
+		ListEntry scriptDirEntry = new ListEntry(menu) {
 			protected void onClick() throws Exception {
-				if (ScriptographerEngine.chooseBaseDirectory())
+				if (ScriptographerEngine.chooseScriptDirectory())
 					refreshFiles();
 			}
 		};
-		baseDirEntry.setText("Set Base Directory...");
+		scriptDirEntry.setText("Set Script Directory...");
 		
 		ListEntry aboutEntry = new ListEntry(menu) {
 			protected void onClick() {
@@ -120,6 +120,13 @@ public class MainDialog extends FloatingDialog {
 			}
 		};
 		aboutEntry.setText("About Scriptographer...");
+		
+		ListEntry helpEntry = new ListEntry(menu) {
+			protected void onClick() {
+				ScriptographerEngine.launch("file://" + new File(ScriptographerEngine.getPluginDirectory(), "doc/index.html"));
+			}
+		};
+		helpEntry.setText("Help...");
 
 		ListEntry separatorEntry = new ListEntry(menu);
 		separatorEntry.setSeparator(true);
@@ -255,7 +262,9 @@ public class MainDialog extends FloatingDialog {
 	}
 	
 	void addFiles() throws IOException {
-		addFiles(scriptList, ScriptographerEngine.getBaseDirectory());
+		File dir = ScriptographerEngine.getScriptDirectory();
+		if (dir != null)
+			addFiles(scriptList, dir);
 	}
 	
 	class ToolButton extends Button {
@@ -395,25 +404,27 @@ public class MainDialog extends FloatingDialog {
 		}
 		File dir;
 		// if we're at root, entry is null:
-		if (entry == null) dir = ScriptographerEngine.getBaseDirectory();
+		if (entry == null) dir = ScriptographerEngine.getScriptDirectory();
 		else dir = entry.file;
 		
-		// create a non existing filename:
-		File file;
-		for (int i = 1;;i++) {
-			file = new File(dir, "Untitled " + i + ".js");
-			if (!file.exists())
-				break;
-		}
-		file = Dialog.fileSave("Create A New Script:", new String[] {
-			"JavaScript Files (*.js)",
-				"*.js",
-			"All Files",
-				"*.*"
-		}, file);
-		if (file != null && file.createNewFile()) {
-			// add it to the list as well:
-			new ScriptEntry(list, file);
+		if (dir != null) {
+			// create a non existing filename:
+			File file;
+			for (int i = 1;;i++) {
+				file = new File(dir, "Untitled " + i + ".js");
+				if (!file.exists())
+					break;
+			}
+			file = Dialog.fileSave("Create A New Script:", new String[] {
+				"JavaScript Files (*.js)",
+					"*.js",
+				"All Files",
+					"*.*"
+			}, file);
+			if (file != null && file.createNewFile()) {
+				// add it to the list as well:
+				new ScriptEntry(list, file);
+			}
 		}
 	}
 

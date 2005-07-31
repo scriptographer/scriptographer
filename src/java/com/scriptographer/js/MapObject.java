@@ -28,8 +28,8 @@
  * 
  * $RCSfile: MapObject.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.3 $
+ * $Date: 2005/07/31 12:09:52 $
  */
 
 package com.scriptographer.js;
@@ -50,39 +50,28 @@ import java.util.Map;
  *
  */
 public class MapObject extends NativeJavaObject {
-	private Map map = null;
-
 	public MapObject() {
 	}
 
 	public MapObject(Scriptable scope, Map map, Class staticType) {
 		super(scope, map, staticType);
-		this.map = map;
-	}
-
-	public Object unwrap() {
-		return map;
-	}
-
-	public String getClassName() {
-		return "MapObject";
 	}
 
 	public Object[] getIds() {
-		if (map != null) {
-			return map.keySet().toArray();
+		if (javaObject != null) {
+			return ((Map) javaObject).keySet().toArray();
 		} else {
 			return new Object[]{};
 		}
 	}
 
 	public boolean has(int index, Scriptable start) {
-		return map != null && map.get(new Integer(index)) != null;
+		return javaObject != null && ((Map) javaObject).get(new Integer(index)) != null;
 	}
 
 	public Object get(int index, Scriptable scriptable) {
-		if (map != null) {
-			Object obj = map.get(new Integer(index));
+		if (javaObject != null) {
+			Object obj = ((Map) javaObject).get(new Integer(index));
 			return obj != null ? obj : Scriptable.NOT_FOUND;
 		} else {
 			return Scriptable.NOT_FOUND;
@@ -90,22 +79,22 @@ public class MapObject extends NativeJavaObject {
 	}
 
 	public void put(int index, Scriptable start, Object value) {
-		if (map != null) {
+		if (javaObject != null) {
 			if (value instanceof Wrapper)
 				value = ((Wrapper) value).unwrap();
-			map.put(new Integer(index), value);
+			((Map) javaObject).put(new Integer(index), value);
 		}
 	}
 
 	public boolean has(String name, Scriptable start) {
 		return super.has(name, start) ||
-			map != null && map.get(name) != null;
+			javaObject != null && ((Map) javaObject).get(name) != null;
 	}
 
 	public Object get(String name, Scriptable scriptable) {
 		Object obj = super.get(name, scriptable);
-		if (obj == Scriptable.NOT_FOUND && map != null) {
-			obj = map.get(name);
+		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
+			obj = ((Map) javaObject).get(name);
 			if (obj == null)
 				obj = Scriptable.NOT_FOUND;
 		}
@@ -113,10 +102,10 @@ public class MapObject extends NativeJavaObject {
 	}
 
 	public void put(String name, Scriptable start, Object value) {
-		if (map != null) {
+		if (javaObject != null) {
 			if (value instanceof Wrapper)
 				value = ((Wrapper) value).unwrap();
-			map.put(name, value);
+			((Map) javaObject).put(name, value);
 		}
 	}
 }

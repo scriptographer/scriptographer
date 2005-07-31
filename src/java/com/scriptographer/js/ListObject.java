@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListObject.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.5 $
+ * $Date: 2005/07/31 12:09:52 $
  */
 
 package com.scriptographer.js;
@@ -43,28 +43,17 @@ import org.mozilla.javascript.*;
  * It also defines getIds(), so enumeration is possible too: for (var i in list) ...
  */
 public class ListObject extends NativeJavaObject {
-	private List list = null;
-
 	public ListObject() {
 	}
 
 	public ListObject(Scriptable scope, List list, Class staticType) {
 		super(scope, list, staticType);
-		this.list = list;
-	}
-
-	public Object unwrap() {
-		return list;
-	}
-
-	public String getClassName() {
-		return "ListObject";
 	}
 
 	public Object[] getIds() {
-		if (list != null) {
-			// act like a JS list:
-			Integer[] ids = new Integer[list.size()];
+		if (javaObject != null) {
+			// act like a JS javaObject:
+			Integer[] ids = new Integer[((List) javaObject).size()];
 			for (int i = 0; i < ids.length; i++) {
 				ids[i] = new Integer(i);
 			}
@@ -75,12 +64,12 @@ public class ListObject extends NativeJavaObject {
 	}
 
 	public boolean has(int index, Scriptable start) {
-		return list != null && index < list.size();
+		return javaObject != null && index < ((List) javaObject).size();
 	}
 
 	public Object get(int index, Scriptable scriptable) {
-		if (list != null) {
-			Object obj = list.get(index);
+		if (javaObject != null) {
+			Object obj = ((List) javaObject).get(index);
 			if (obj != null)
 				return obj;
 		}
@@ -90,16 +79,16 @@ public class ListObject extends NativeJavaObject {
 	public boolean has(String name, Scriptable start) {
 		return super.has(name, start) ||
 			name.equals("length") ||
-			list instanceof StringIndexList && list != null && ((StringIndexList) list).get(name) != null;
+			javaObject instanceof StringIndexList && javaObject != null && ((StringIndexList) javaObject).get(name) != null;
 	}
 
 	public Object get(String name, Scriptable scriptable) {
 		Object obj = super.get(name, scriptable);
-		if (obj == Scriptable.NOT_FOUND && list != null) {
+		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
 			if (name.equals("length")) {
-				return new Integer(list.size());
-			} else if (list instanceof StringIndexList) {
-				obj = ((StringIndexList) list).get(name);
+				return new Integer(((List) javaObject).size());
+			} else if (javaObject instanceof StringIndexList) {
+				obj = ((StringIndexList) javaObject).get(name);
 				if (obj == null)
 					obj = Scriptable.NOT_FOUND;
 			}
@@ -108,7 +97,8 @@ public class ListObject extends NativeJavaObject {
 	}
 
 	public void put(int index, Scriptable start, Object value) {
-		if (list != null) {
+		if (javaObject != null) {
+			List list = ((List) javaObject);
 			if (value instanceof Wrapper)
 				value = ((Wrapper) value).unwrap();
 			int size = list.size();

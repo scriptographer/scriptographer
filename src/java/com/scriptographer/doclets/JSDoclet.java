@@ -48,6 +48,19 @@ public class JSDoclet extends Doclet {
 		return false;
 	}
 	
+	static boolean isInterface(ClassDoc cd, String face) {
+		if (cd != null) {
+			if (isSuperclass(cd, face))
+				return true;
+			ClassDoc[] faces = cd.interfaces();
+			for (int i = 0; i < faces.length; i++) {
+				if (isSuperclass(faces[i], face))
+					return true;
+			}
+		}
+		return false;
+	}
+
 	static boolean isNumber(Type type) {
 		String typeName = type.toString();
 		return isSuperclass(type.asClassDoc(), "java.lang.Number") ||
@@ -66,13 +79,13 @@ public class JSDoclet extends Doclet {
 		String typeName = type.toString();
 		ClassDoc cd = type.asClassDoc();
 		return typeName.indexOf('[') != -1 && typeName.indexOf(']') != -1 ||
-			isSuperclass(cd, "java.util.Collection") || 
+			isInterface(cd, "java.util.Collection") || 
 			isSuperclass(cd, "org.mozilla.javascript.NativeArray");
 	}
 	
 	static boolean isMap(Type type) {
 		ClassDoc cd = type.asClassDoc();
-		return isSuperclass(cd, "java.util.Map") ||
+		return isInterface(cd, "java.util.Map") ||
 			isSuperclass(cd, "org.mozilla.javascript.NativeObject");
 	}
 	
@@ -599,7 +612,7 @@ public class JSDoclet extends Doclet {
 					lookup.put(origTags[i].parameterName(), origTags[i]);
 				}
 				writer.println("<li class=\"paragraph\"><b>Parameters:</b></li>");
-				writer.println("<li><ul>");
+				writer.println("<ul>");
 				for (int i = 0; i < params.length; i++) {
 					Parameter param = params[i];
 					String name = param.name();
@@ -613,7 +626,7 @@ public class JSDoclet extends Doclet {
 					}
 					writer.println("</li>");
 				}
-				writer.println("</ul></li>");
+				writer.println("</ul>");
 				return true;
 			}
 			return false;
@@ -1148,8 +1161,10 @@ public class JSDoclet extends Doclet {
 			for (int i = 0; i < packageSequence.length; i++) {
 				PackageDoc pkg = (PackageDoc) packages.get(packageSequence[i]);
 				if (pkg != null) {
-					writer.println(section2Open + "Package " + packageRelativIdentifier(basePackage, pkg.name()) + section2Close);
-					writer.print(createAnchor(pkg.name()));
+					String name = pkg.name();
+					if (!name.equals(basePackage))
+						writer.println(section2Open + "Package " + packageRelativIdentifier(basePackage, name) + section2Close);
+					writer.print(createAnchor(name));
 	
 					processClasses(writer, "Interfaces", pkg.interfaces());
 					processClasses(writer, "Classes", pkg.allClasses(true));
@@ -1222,10 +1237,12 @@ public class JSDoclet extends Doclet {
 		for (int i = classes.length - 1;  i >= 0; i--) {
 			ClassDoc cd = classes[i];
 			ClassNode node = (ClassNode) nodes.get(cd);
-			ClassNode superclass = (ClassNode) nodes.get(cd.superclass());
-			if (node != null && superclass != null) {
-				root.remove(node);
-				superclass.add(node);
+			if (node != null) {
+				ClassNode superclass = (ClassNode) nodes.get(cd.superclass());
+				if (superclass != null) {
+					root.remove(node);
+					superclass.add(node);
+				}
 			}
 		}
 		root.printHierarchy(writer);
@@ -1246,7 +1263,7 @@ public class JSDoclet extends Doclet {
 			path = path.substring(0, path.length() - name.length());
 			path = packageRelativIdentifier(basePackage, path);
 			// now split into packages and create subdirs:
-			String[] parts = path.split("\\.");
+			String[] parts = ("classes." + path).split("\\.");
 			path = "";
 			int levels = 0;
 			for (int j = 0; j < parts.length; j++) {
@@ -1304,7 +1321,7 @@ public class JSDoclet extends Doclet {
 			String subclasses = "";
 			for (int index = 0; index < root.classes().length; index++) {
 				ClassDoc cls = root.classes()[index];
-				if (cls.superclass() == cd && !cls.equals(cd)) {
+				if (isVisibleClass(cls) && cls.superclass() == cd && !cls.equals(cd)) {
 					if (!subclasses.equals(""))
 						subclasses += ", ";
 					subclasses += createLink(cls);
@@ -1451,7 +1468,7 @@ public class JSDoclet extends Doclet {
 			for (int i = 0; i < dmems.length; i++) {
 				writer.println("<li class=\"member\">");
 				dmems[i].printMember(writer, cd);
-				writer.println("<li/>");
+				writer.println("</li>");
 			}
 			writer.println("</ul>");
 		}
@@ -1469,7 +1486,9 @@ public class JSDoclet extends Doclet {
 			writer.println("<ul>");
 			for (int i = 0; i < dmems.length; i++) {
 				MemberInfo mem = dmems[i];
-				writer.println("<li class=\"summary\">" + createLink(mem, cd) + "</li>");
+				writer.print("<li class=\"summary\">");
+				writer.print(createLink(mem, cd));
+				writer.println("</li>");
 			}
 			writer.println("</ul>");
 		}
@@ -1552,7 +1571,7 @@ public class JSDoclet extends Doclet {
 			str += "<a href=\"";
 			if (qualifiedName != null) {
 				String path = qualifiedName.substring(0, qualifiedName.length() - name.length());
-				path = packageRelativIdentifier(basePackage, path).replace('.', '/');
+				path = "classes/" + packageRelativIdentifier(basePackage, path).replace('.', '/');
 				str += path + name + ".html";
 			}
 			str += "#" + anchor + "\" target=\"classFrame\">" + title + "</a>";
@@ -1732,11 +1751,11 @@ public class JSDoclet extends Doclet {
 			} else if (option.equals("-author")) {
 				author = arg[1];
 			} else if (option.equals("-filterclasses")) {
-				filterClasses = arg[1].split("\\,");
+				filterClasses = arg[1].split("\\s");
 			} else if (option.equals("-packagesequence")) {
-				packageSequence = arg[1].split("\\,");
+				packageSequence = arg[1].split("\\s");
 			} else if (option.equals("-methodfilter")) {
-				methodFilter = arg[1].split("\\,");
+				methodFilter = arg[1].split("\\s");
 			} else if (option.equals("-noinherited")) {
 				inherited = false;
 			} else if (option.equals("-nosummaries")) {

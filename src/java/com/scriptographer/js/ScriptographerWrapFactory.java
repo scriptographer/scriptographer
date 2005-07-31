@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerWrapFactory.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/07/31 12:09:52 $
  */
 
 package com.scriptographer.js;
@@ -99,6 +99,8 @@ public class ScriptographerWrapFactory extends WrapFactory {
 			return new ListObject(scope, (List) javaObj, staticType);
 		} else if (javaObj instanceof Map) {
 			return new MapObject(scope, (Map) javaObj, staticType);
+		} else if (javaObj instanceof SegmentPoint) {
+			return new SegmentPointObject(scope, (SegmentPoint) javaObj, staticType);
 		} else {
 			return new NativeJavaObject(scope, javaObj, staticType);
 		}

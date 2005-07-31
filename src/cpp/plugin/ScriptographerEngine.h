@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/07/22 17:40:14 $
+ * $Revision: 1.10 $
+ * $Date: 2005/07/31 12:09:52 $
  */
 
 #include "jniMacros.h"
@@ -195,7 +195,7 @@ public:
 	jmethodID cid_Point;
 	jfieldID fid_Point_x;
 	jfieldID fid_Point_y;
-	jmethodID mid_Point_setPoint;
+	jmethodID mid_Point_setLocation;
 
 	jclass cls_Rectangle;
 	jmethodID cid_Rectangle;

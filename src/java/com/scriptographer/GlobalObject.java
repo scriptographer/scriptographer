@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/05/04 10:34:57 $
+ * $Revision: 1.7 $
+ * $Date: 2005/07/31 12:09:52 $
  */
 
 package com.scriptographer;
@@ -141,12 +141,12 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, File.class);
 
 		// define some global functions and objects:
-		String[] names = { "print", "include", "execute", "evaluate", "commit", "getNanoTime", "isKeyDown", "getMousePoint" };
+		String[] names = { "print", "include", "execute", "evaluate", "commit", "getNanoTime", "getMousePoint" };
 		defineFunctionProperties(names, GlobalObject.class, ScriptableObject.DONTENUM);
 
 		// properties:
 		defineProperty("documents", DocumentList.getInstance(), ScriptableObject.READONLY | ScriptableObject.DONTENUM);
-		defineProperty("baseDir", ScriptographerEngine.getBaseDirectory(), ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+		defineProperty("scriptDir", ScriptographerEngine.getScriptDirectory(), ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 		try {
 			Method getter = GlobalObject.class.getDeclaredMethod("getActiveDocument", new Class[] { ScriptableObject.class });
 			defineProperty("activeDocument", null, getter, null, ScriptableObject.DONTENUM);
@@ -180,7 +180,7 @@ public class GlobalObject extends ImporterTopLevel {
 		if (file != null)
 			file = file.getParentFile();
 		else
-			file = ScriptographerEngine.getBaseDirectory();
+			file = ScriptographerEngine.getScriptDirectory();
 		return file;
 	}
 
@@ -267,11 +267,6 @@ public class GlobalObject extends ImporterTopLevel {
 	public static long getNanoTime(Context cx, Scriptable thisObj, Object[] args,
 		Function funObj) {
 		return ScriptographerEngine.getNanoTime();
-	}
-	
-	public static boolean isKeyDown(Context cx, Scriptable thisObj, Object[] args,
-		Function funObj) {
-		return ScriptographerEngine.isKeyDown((short) Context.toNumber(args[0]));
 	}
 	
 	public static Point getMousePoint(Context cx, Scriptable thisObj, Object[] args,

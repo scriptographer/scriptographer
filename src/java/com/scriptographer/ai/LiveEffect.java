@@ -28,8 +28,8 @@
  * 
  * $RCSfile: LiveEffect.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/04/04 17:06:16 $
+ * $Revision: 1.7 $
+ * $Date: 2005/07/31 12:09:53 $
  */
 
 package com.scriptographer.ai;
@@ -313,7 +313,6 @@ public class LiveEffect extends AIObject implements Unsealed {
 	// Callback functions:
 
 	protected void onEditParameters(Map parameters) throws Exception {
-		System.out.println("onEditParameters");
 		if (wrapper != null)
 			FunctionHelper.callFunction(wrapper, "onEditParameters", new Object[] { parameters });
 	}
@@ -329,7 +328,6 @@ public class LiveEffect extends AIObject implements Unsealed {
 	}
 
 	protected Art onCalculate(Map parameters, Art art) throws Exception {
-		System.out.println("onCalculate");
 		if (wrapper != null && onCalculate != null) {
 			Object ret = FunctionHelper.callFunction(wrapper, onCalculate, new Object[] { parameters, art });
 			// it is only possible to either return the art itself or set the art to null!
@@ -349,7 +347,6 @@ public class LiveEffect extends AIObject implements Unsealed {
 	}
 
 	protected int onGetInputType(Map parameters, Art art) throws Exception {
-		System.out.println("onGetInputType");
 		if (wrapper != null) {
 			return ScriptRuntime.toInt32(
 				FunctionHelper.callFunction(wrapper, "onGetInputType", new Object[] { parameters, art })

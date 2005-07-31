@@ -28,8 +28,8 @@
  *
  * $RCSfile: Point.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/05/04 10:37:43 $
+ * $Revision: 1.5 $
+ * $Date: 2005/07/31 12:09:53 $
  */
 
 package com.scriptographer.ai;
@@ -41,8 +41,8 @@ import java.awt.geom.AffineTransform;
 import org.mozilla.javascript.*;
 import com.scriptographer.js.Wrappable;
 
-/**
- * Extend the Point2D type and add some usefull functions
+/*
+ * Extend java.awt.geom.Point2D and adds other usefull functions
  */
 public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 	public Point() {
@@ -53,7 +53,7 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 	}
 
 	public Point(Point2D pt) {
-		super((float)pt.getX(), (float)pt.getY());
+		super((float) pt.getX(), (float) pt.getY());
 	}
 
 	public Point(java.awt.Dimension d) {
@@ -65,17 +65,12 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 	}
 	
 	public Point(double x, double y) {
-		super((float)x, (float)y);
+		super((float) x, (float) y);
 	}
 
 	/*
 	 * called from native code:
 	 */
-	protected void setPoint(float x, float y) {
-		this.x = x;
-		this.y = y;
-	}
-
 	public void setLocation(float x, float y) {
 		this.x = x;
 		this.y = y;

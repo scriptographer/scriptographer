@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/07/22 17:40:14 $
+ * $Revision: 1.11 $
+ * $Date: 2005/07/31 12:09:53 $
  */
  
 #include "stdHeaders.h"
@@ -226,7 +226,7 @@ void ScriptographerEngine::init() {
 void ScriptographerEngine::initEngine() {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_init);
+		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_init, env->NewStringUTF(fHomeDir));
 		fInitialized = true;
 	} EXCEPTION_CATCH_REPORT(env)
 }
@@ -372,7 +372,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ScriptographerEngine_getInstance = getStaticMethodID(env, cls_ScriptographerEngine, "getInstance", "()Lcom/scriptographer/ScriptographerEngine;");
 	mid_ScriptographerEngine_executeString = getMethodID(env, cls_ScriptographerEngine, "executeString", "(Ljava/lang/String;Lorg/mozilla/javascript/Scriptable;)Lorg/mozilla/javascript/Scriptable;");
 	mid_ScriptographerEngine_executeFile = getMethodID(env, cls_ScriptographerEngine, "executeFile", "(Ljava/lang/String;Lorg/mozilla/javascript/Scriptable;)Lorg/mozilla/javascript/Scriptable;");
-	mid_ScriptographerEngine_init = getStaticMethodID(env, cls_ScriptographerEngine, "init", "()V");
+	mid_ScriptographerEngine_init = getStaticMethodID(env, cls_ScriptographerEngine, "init", "(Ljava/lang/String;)V");
 	mid_ScriptographerEngine_destroy = getStaticMethodID(env, cls_ScriptographerEngine, "destroy", "()V");
 	mid_ScriptographerEngine_onAbout = getStaticMethodID(env, cls_ScriptographerEngine, "onAbout", "()V");
 
@@ -401,7 +401,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cid_Point = getConstructorID(env, cls_Point, "(FF)V");
 	fid_Point_x = getFieldID(env, cls_Point, "x", "F");
 	fid_Point_y = getFieldID(env, cls_Point, "y", "F");
-	mid_Point_setPoint = getMethodID(env, cls_Point, "setPoint", "(FF)V");
+	mid_Point_setLocation = getMethodID(env, cls_Point, "setLocation", "(FF)V");
 
 	cls_Rectangle = loadClass(env, "com/scriptographer/ai/Rectangle");
 	cid_Rectangle = getConstructorID(env, cls_Rectangle, "(FFFF)V");
@@ -571,7 +571,7 @@ jobject ScriptographerEngine::convertPoint(JNIEnv *env, AIReal x, AIReal y, jobj
 	if (res == NULL) {
 		return newObject(env, cls_Point, cid_Point, (jfloat) x, (jfloat) y);
 	} else {
-		callVoidMethod(env, res, mid_Point_setPoint, (jfloat) x, (jfloat) y);
+		callVoidMethod(env, res, mid_Point_setLocation, (jfloat) x, (jfloat) y);
 		return res;
 	}
 }
