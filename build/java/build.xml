@@ -4,14 +4,15 @@
 	<!-- Initializes some variables                                          -->
 	<!-- =================================================================== -->
 	<target name="init">
-		<!-- get current year -->
-		<tstamp><format property="year" pattern="yyyy"/></tstamp>
-
 		<property name="Name" value="Scriptographer"/>
-		<property name="year" value="1998-${YEAR}"/>
 		<property name="version" value="0.2"/>
 		<property name="project" value="scriptographer"/>
-
+		<tstamp>
+			<!-- get current year -->
+			<format property="year" pattern="yyyy"/>
+			<format property="date" pattern="yyyy_MM_dd"/>
+		</tstamp>
+		<property name="year" value="1998-${year}"/>
 		<property name="scriptographer" value=":pserver:anonymous@cvs.sourceforge.net:/cvsroot/scriptographer"/>
 		<property name="cvs.apps.tag" value="HEAD"/>
 
@@ -24,6 +25,8 @@
 		<property name="build.docs" value="${home.dir}/docs"/>
 		<property name="build.javadocs" value="${home.dir}/docs/api"/>
 		<property name="build.jsdocs" value="${home.dir}/docs/js"/>
+		<property name="build.packages" value="${home.dir}/build/packages"/>
+
 		<!-- this is used for importing comments from the gnu classpath file into the js documentation -->
 		<property name="build.src.jdk" value="${home.dir}/docs/src/"/>
 		
@@ -45,11 +48,6 @@
 				<include name="**/*.jar" />
 			</fileset>
 		</path>
-
-		<tstamp/>
-		<filter token="year" value="${year}"/>
-		<filter token="version" value="${version}"/>
-		<filter token="date" value="${TODAY}"/>
 	</target>
 
 
@@ -147,6 +145,55 @@
 		</copy>
 	</target>
 
+	<!-- =================================================================== -->
+	<!-- Installs the jar files in the Illustrator directory                 -->
+	<!-- =================================================================== -->
+	<target name="packages" depends="jar">
+		<mkdir dir="${build.packages}"/>
+
+		<mkdir dir="${build.packages}/Scriptographer"/>
+		<mkdir dir="${build.packages}/Scriptographer/java"/>
+		<copy file="${build.dir}/loader.jar" todir="${build.packages}/Scriptographer/java"/>
+		<copy todir="${build.packages}/Scriptographer/java/lib">
+			<fileset dir="${build.lib}">
+				<include name="**/${jar.name}.jar"/>
+				<include name="**/js.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="${build.packages}/Scriptographer/doc">
+			<fileset dir="${build.jsdocs}"/>
+		</copy>
+		<!-- On Mac OS X, use ditto for copying the Plugin and generating a zip file, so the data-forks are preserved -->
+		<exec executable="ditto" os="Mac OS X">
+			<arg file="${home.dir}/build/mac/build/cs1/release/Scriptographer"/>
+			<arg path="${build.packages}/Scriptographer/"/>
+		</exec>
+		<exec executable="ditto" os="Mac OS X">
+			<arg line="-c -k"/>
+			<arg path="${build.packages}/Scriptographer"/>
+			<arg path="${build.packages}/Scriptographer_Mac_CS1_${date}.zip"/>
+		</exec>
+		
+		<!-- remove the plugin file again, in order to copy the CS2 one -->
+		<delete includeEmptyDirs="true">
+			<fileset dir="${build.packages}" includes="**/Scriptographer/Scriptographer*"/>
+		</delete>
+		
+		<exec executable="ditto" os="Mac OS X">
+			<arg path="${home.dir}/build/mac/build/cs2/release/Scriptographer.aip"/>
+			<arg path="${build.packages}/Scriptographer/Scriptographer.aip"/>
+		</exec>
+		<exec executable="ditto" os="Mac OS X">
+			<arg line="-c -k"/>
+			<arg path="${build.packages}/Scriptographer"/>
+			<arg path="${build.packages}/Scriptographer_Mac_CS2_${date}.zip"/>
+		</exec>
+
+		<!-- remove everything except the archives -->
+		<delete includeEmptyDirs="true">
+			<fileset dir="${build.packages}" excludes="**/Scriptographer*.zip"/>
+		</delete>
+	</target>
 
 	<!-- =================================================================== -->
 	<!-- Compiles the source directory                                       -->
@@ -157,6 +204,7 @@
 			<classpath refid="build.classpath" />
 
 			<class name="com.scriptographer.ScriptographerEngine" />
+			<class name="com.scriptographer.Key" />
 			<class name="com.scriptographer.Test" />
 
 			<class name="com.scriptographer.ai.Tool" />
@@ -247,7 +295,7 @@
 	<!-- =================================================================== -->
 	<target name="jsdocs" depends="init">
 		<mkdir dir="${build.jsdocs}"/>
-		<javadoc packagenames="com.scriptographer.ai.*,com.scriptographer.adm.*"
+		<javadoc packagenames="com.scriptographer,com.scriptographer.ai.*,com.scriptographer.adm.*"
 				sourcepath="${build.src}:${build.src.jdk}"
 				destdir="${build.jsdocs}"
 				author="false"
@@ -259,9 +307,32 @@
 			<bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, Scratchdisk.com. All Rights Reserved.]]></bottom>
 			<doclet name="com.scriptographer.doclets.JSDoclet" path="${build.classes}">
 				<param name="-basepackage" value="com.scriptographer"/>
-				<param name="-filterclasses" value="com.scriptographer.ai.DictionaryObject,com.scriptographer.ai.Tool,com.scriptographer.ai.Annotator,com.scriptographer.ai.FileFormat"/>
-				<param name="-packagesequence" value="com.scriptographer.ai,com.scriptographer.adm,com.scriptographer.test"/>
-				<param name="-methodfilter" value="setWrapper,getWrapper,iterator,hashCode"/>
+				<param name="-filterclasses" value="
+					com.scriptographer.Commitable
+					com.scriptographer.CommitManager
+					com.scriptographer.ConsoleOutputStream
+					com.scriptographer.ConsoleOutputWriter
+					com.scriptographer.GlobalObject
+					com.scriptographer.ScriptographerEngine
+					com.scriptographer.ScriptographerException
+					com.scriptographer.Test
+					com.scriptographer.ai.DictionaryObject
+					com.scriptographer.ai.SegmentPoint
+					com.scriptographer.ai.Tool
+					com.scriptographer.ai.FileFormat
+				"/>
+				<param name="-packagesequence" value="
+					com.scriptographer
+					com.scriptographer.ai
+					com.scriptographer.adm
+					com.scriptographer.test
+				"/>
+				<param name="-methodfilter" value="
+					setWrapper
+					getWrapper
+					iterator
+					hashCode
+				"/>
 			</doclet>
 		</javadoc>
 	</target>
