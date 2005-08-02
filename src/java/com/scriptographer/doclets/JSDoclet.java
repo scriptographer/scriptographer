@@ -323,7 +323,7 @@ public class JSDoclet extends Doclet {
 			return "";
 		}
 
-		public String getNameSuffix() {
+		String getNameSuffix() {
 			return "";
 		}
 
@@ -365,6 +365,16 @@ public class JSDoclet extends Doclet {
 			this.name = name;
 		}
 				
+		/**
+		 * used only in printMember for overriding tags
+		 * @param doc
+		 */
+		MethodInfo(ClassInfo info, MethodDoc doc) {
+			this(info, doc.name());
+			add(doc);
+			member = doc;
+		}
+
 		boolean add(MemberDoc member) {
 			boolean swallow = true;
 			// do not add base versions for overridden functions 
@@ -435,135 +445,143 @@ public class JSDoclet extends Doclet {
 			}
 		}
 
-		public String getNameSuffix() {
+		String getNameSuffix() {
 			return "()";
 		}
-
-		/**
-		 * Enumerates the members of a section of the document and formats them
-		 * using Tex statements.
-		 */
-		void printMember(PrintWriter writer, ClassDoc cd) {
-			printMember(writer, cd, null);
-		}
-
-		/**
-		 * Enumerates the members of a section of the document and formats them
-		 * using Tex statements.
-		 */
-		void printMember(PrintWriter writer, ClassDoc cd, MemberInfo copiedTo) {
-			ExecutableMemberDoc executable = (ExecutableMemberDoc) member;
+		
+		MethodInfo getOverriddenMethodToUse() {
 			if (member instanceof MethodDoc) {
 				MethodDoc method = (MethodDoc) member;
-				if (method.commentText() == "" && method.seeTags().length == 0 && method.throwsTags().length == 0
-					&& method.paramTags().length == 0) {
-	
+				if (method.commentText().equals("") &&
+					method.seeTags().length == 0 &&
+					method.throwsTags().length == 0 &&
+					method.paramTags().length == 0) {
 					// No javadoc available for this method. Recurse through
 					// superclasses
 					// and implemented interfaces to find javadoc of overridden
 					// methods.
-					ClassDoc doc = method.overriddenClass();
-					if (doc != null) {
-						ClassInfo info = getClassInfo(doc);
-						if (info != null) {
-							MemberInfo[] methods = info.methods();
-							for (int i = 0; i < methods.length; ++i) {
-								if (methods[i].name().equals(method.name())
-									&& methods[i].signature().equals(method.signature())) {
-									((MethodInfo) methods[i]).printMember(writer, cd, copiedTo == null ? this : copiedTo);
-									return;
-								}
-							}
-						}
+					MethodDoc overridden = method.overriddenMethod();
+					if (overridden != null) {
+						MethodInfo info = (MethodInfo) getMemberInfo(overridden);
+						// prevent endless loops:
+						// if this method is not wrapped, quickly wrap it just to call printMember
+						// prevent endless loops that happen when overriden functions from inivisble classes
+						// where moved to the derived class and getMethodInfo lookup points there instead of
+						// the overridden version:
+						if (info != null && info.member.containingClass() != method.overriddenClass())
+							info = null;
+						if (info == null)
+							info = new MethodInfo(classInfo, overridden);
+						return info;
 					}
 				}
 			}
+			return null;
+		}
 
-			// Some index and hyperref stuff
-			if (copiedTo == null) {
-				writer.print(createAnchor(this, cd));
+		public void printSummary(PrintWriter writer, ClassDoc cd) {
+			MethodInfo overridden = getOverriddenMethodToUse();
+			if (overridden != null)
+				overridden.printSummary(writer, cd);
+			else
+				super.printSummary(writer, cd);
+		}
+
+		void printMember(PrintWriter writer, ClassDoc cd) {
+			printMember(writer, cd, null);
+		}
+
+		void printMember(PrintWriter writer, ClassDoc cd, MemberInfo copiedTo) {
+			MethodInfo overridden = getOverriddenMethodToUse();
+			if (overridden != null) {
+				overridden.printMember(writer, cd, copiedTo == null ? this : copiedTo);
 			} else {
-				writer.print(createAnchor(copiedTo, cd));
-			}
-
-			writer.print("<tt><b>");
-			writer.print(name());
-			writer.print("</b>");
-			printParameters(writer);
-			writer.print("</tt>");
-
-			// Thrown exceptions
-			/*
-			ClassDoc[] thrownExceptions = executable.thrownExceptions();
-			if (thrownExceptions != null && thrownExceptions.length > 0) {
-				writer.print(" throws <tt>");
-				for (int e = 0; e < thrownExceptions.length; e++) {
-					if (e > 0)
-						writer.print(", ");
-					writer.print(thrownExceptions[e].qualifiedName());
-				}
+				ExecutableMemberDoc executable = (ExecutableMemberDoc) member;
+				// Some index and hyperref stuff
+				if (copiedTo == null)
+					writer.print(createAnchor(this, cd));
+				else
+					writer.print(createAnchor(copiedTo, cd));
+	
+				writer.print("<tt><b>");
+				writer.print(name());
+				writer.print("</b>");
+				printParameters(writer);
 				writer.print("</tt>");
-			}
-			writer.println();
-			*/
-
-			StringWriter strBuffer = new StringWriter();
-			PrintWriter strWriter = new PrintWriter(strBuffer);
-
-			// Description
-			Tag[] inlineTags = inlineTags();
-			if (inlineTags().length > 0) {
-				strWriter.println("<li class=\"paragraph\"><b>Description:</b></li>");
-				printTags(strWriter, classInfo.classDoc, inlineTags, "<ul><li>", "</li></ul>", true);
-			}
-			// Parameter tags
-			printParameterTags(strWriter, cd);
-
-			// Return tag
-			if (member instanceof MethodDoc) {
-				Type retType = ((MethodDoc)member).returnType();
-				if (retType != null && !retType.typeName().equals("void")) {
-				strWriter.print("<li class=\"paragraph\"><b>Returns:</b> ");
-				strWriter.print(createLink(retType));
-				Tag[] ret = member.tags("return");
-				boolean first = true;
-				if (ret.length > 0) {
-					for (int j = 0; j < ret.length; ++j) {
-						inlineTags = ret[j].inlineTags();
-						if (inlineTags.length > 0) {
-							if (first) {
-								strWriter.print(" - ");
-								first = false;
+	
+				// Thrown exceptions
+				/*
+				ClassDoc[] thrownExceptions = executable.thrownExceptions();
+				if (thrownExceptions != null && thrownExceptions.length > 0) {
+					writer.print(" throws <tt>");
+					for (int e = 0; e < thrownExceptions.length; e++) {
+						if (e > 0)
+							writer.print(", ");
+						writer.print(thrownExceptions[e].qualifiedName());
+					}
+					writer.print("</tt>");
+				}
+				writer.println();
+				*/
+	
+				StringWriter strBuffer = new StringWriter();
+				PrintWriter strWriter = new PrintWriter(strBuffer);
+	
+				// Description
+				Tag[] inlineTags = inlineTags();
+				if (inlineTags().length > 0) {
+					strWriter.println("<li class=\"paragraph\"><b>Description:</b></li>");
+					printTags(strWriter, classInfo.classDoc, inlineTags, "<ul><li>", "</li></ul>", true);
+				}
+				// Parameter tags
+				printParameterTags(strWriter, cd);
+	
+				// Return tag
+				if (member instanceof MethodDoc) {
+					Type retType = ((MethodDoc)member).returnType();
+					if (retType != null && !retType.typeName().equals("void")) {
+					strWriter.print("<li class=\"paragraph\"><b>Returns:</b> ");
+					strWriter.print(createLink(retType));
+					Tag[] ret = member.tags("return");
+					boolean first = true;
+					if (ret.length > 0) {
+						for (int j = 0; j < ret.length; ++j) {
+							inlineTags = ret[j].inlineTags();
+							if (inlineTags.length > 0) {
+								if (first) {
+									strWriter.print(" - ");
+									first = false;
+								}
+								printTags(strWriter, classInfo.classDoc, inlineTags);
 							}
-							printTags(strWriter, classInfo.classDoc, inlineTags);
 						}
 					}
+					}
 				}
+	
+				// Throws or Exceptions tag
+				ThrowsTag[] excp = executable.throwsTags();
+				if (excp.length > 0) {
+					strWriter.println("<li class=\"paragraph\"><b>Throws:</b>");
+					for (int j = 0; j < excp.length; ++j) {
+						String exception = excp[j].exceptionName();
+						ClassDoc cdoc = excp[j].exception();
+						if (cdoc != null)
+							exception = createLink(cdoc); // cdoc.qualifiedName();
+						strWriter.print("<li>" + exception + " - ");
+						printTags(strWriter, cd, excp[j].inlineTags());
+	
+					}
 				}
-			}
-
-			// Throws or Exceptions tag
-			ThrowsTag[] excp = executable.throwsTags();
-			if (excp.length > 0) {
-				strWriter.println("<li class=\"paragraph\"><b>Throws:</b>");
-				for (int j = 0; j < excp.length; ++j) {
-					String exception = excp[j].exceptionName();
-					ClassDoc cdoc = excp[j].exception();
-					if (cdoc != null)
-						exception = createLink(cdoc); // cdoc.qualifiedName();
-					strWriter.print("<li>" + exception + " - ");
-					printTags(strWriter, cd, excp[j].inlineTags());
-
+	
+				// See tags
+				printSeeTags(strWriter, cd, member.seeTags(), "<li><b>See also:</b>", "</li>");
+				String str = strBuffer.toString();
+				if (str.length() > 0) {
+					writer.println("<ul>");
+					writer.print(str);
+					writer.println("</ul>");
 				}
-			}
-
-			// See tags
-			printSeeTags(strWriter, cd, member.seeTags(), "<li><b>See also:</b>", "</li>");
-			String str = strBuffer.toString();
-			if (str.length() > 0) {
-				writer.println("<ul>");
-				writer.print(str);
-				writer.println("</ul>");
 			}
 		}
 		

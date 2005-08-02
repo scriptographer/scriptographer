@@ -28,12 +28,14 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/07/22 17:39:23 $
+ * $Revision: 1.12 $
+ * $Date: 2005/08/02 21:46:43 $
  */
 
 package com.scriptographer.ai;
 
+import java.awt.Shape;
+import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,6 +76,11 @@ public class Path extends Art {
 		this(document, Arrays.asList(segments));
 	}
 	
+	public Path(Document document, Shape shape) {
+		this(document);
+		append(shape);
+	}
+	
 	public Path() {
 		super(null, TYPE_PATH);
 	}
@@ -85,6 +92,10 @@ public class Path extends Art {
 
 	public Path(Object[] segments) {
 		this(Arrays.asList(segments));
+	}
+	
+	public Path(Shape shape) {
+		this(null, shape);
 	}
 
     public boolean remove() {
@@ -337,6 +348,18 @@ public class Path extends Art {
 	public void curveTo(Point2D c1, Point2D c2, Point2D pt) {
 		getSegments().curveTo(c1, c2, pt);
 	}
+	
+	public void quadTo(float cx, float cy, float x, float y) {
+		getSegments().quadTo(cx, cy, x, y);
+	}
+	
+	public void quadTo(Point c, Point pt) {
+		getSegments().quadTo(c, pt);
+	}
+	
+	public void quadTo(Point2D c, Point2D pt) {
+		getSegments().quadTo(c, pt);
+	}
 
 	public void arcTo(float centerX, float centerY, float endX, float endY, int ccw) {
 		getSegments().arcTo(centerX, centerY, endX, endY, ccw);
@@ -356,5 +379,74 @@ public class Path extends Art {
 	
 	public Segment getLastSegment() {
 		return getSegments().getLastSegment();
+	}
+	
+	/**
+	 * Appends the segments of a PathIterator to this Path. Optionally,
+	 * the initial {@link PathIterator#SEG_MOVETO}segment of the appended path
+	 * is changed into a {@linkPathIterator#SEG_LINETO}segment.
+	 * 
+	 * @param iter the PathIterator specifying which segments shall be appended.
+	 * 
+	 * @param connect <code>true</code> for substituting the initial
+	 * {@link PathIterator#SEG_MOVETO}segment by a {@link
+	 * PathIterator#SEG_LINETO}, or <code>false</code> for not performing any
+	 * substitution. If this GeneralPath is currently empty,
+	 * <code>connect</code> is assumed to be <code>false</code>, thus
+	 * leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
+	 */
+	public void append(PathIterator iter, boolean connect) {
+		float[] f = new float[6];
+		SegmentList segments = getSegments();
+		int size = segments.size();
+		boolean open = true;
+		while (!iter.isDone() && open) {
+			switch (iter.currentSegment(f)) {
+				case PathIterator.SEG_MOVETO:
+					if (!connect || (size == 0)) {
+						moveTo(f[0], f[1]);
+						break;
+					}
+					if (size >= 1) {
+						Point pt = segments.getLastSegment().point;
+						if (pt.x == f[0] && pt.y == f[1])
+							break;
+					}
+					// Fall through to lineto for connect!
+				case PathIterator.SEG_LINETO:
+					segments.lineTo(f[0], f[1]);
+					break;
+				case PathIterator.SEG_QUADTO:
+					quadTo(f[0], f[1], f[2], f[3]);
+					break;
+				case PathIterator.SEG_CUBICTO:
+					segments.curveTo(f[0], f[1], f[2], f[3], f[4], f[5]);
+					break;
+				case PathIterator.SEG_CLOSE:
+					setClosed(true);
+					open = false;
+					break;
+			}
+
+			// connect = false;
+			iter.next();
+		}
+	}
+	
+	public void append(PathIterator iter) {
+		append(iter, false);
+	}
+	
+	/**
+	 * Appends the segments of a Shape to the path. If <code>connect</code> is 
+	 * true, the new path segments are connected to the existing one with a line.
+	 * The winding rule of the Shape is ignored.
+	 */
+	public void append(Shape shape, boolean connect) {
+		append(shape.getPathIterator(null), connect);
+	}
+
+	public void append(Shape shape) {
+		append(shape.getPathIterator(null), false);
 	}
 }

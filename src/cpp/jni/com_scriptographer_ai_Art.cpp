@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/07/22 17:30:57 $
+ * $Revision: 1.9 $
+ * $Date: 2005/08/02 21:46:43 $
  */
  
 #include "stdHeaders.h"
@@ -618,6 +618,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_nativeTransform(JNIEnv *en
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIRealMatrix matrix;
 		gEngine->convertMatrix(env, at, &matrix);
+		
+		/*
 		// modify the matrix so that it 'acts' on the center of the selected object
 		AIRealRect bounds;
 		sAIArt->GetArtBounds(art, &bounds);
@@ -629,13 +631,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_nativeTransform(JNIEnv *en
 		sAIRealMath->AIRealMatrixSetTranslate(&m, -centerX, -centerY);
 		sAIRealMath->AIRealMatrixConcat(&m, &matrix, &m);
 		sAIRealMath->AIRealMatrixConcatTranslate(&m, centerX, centerY);
+		*/
 
 		// according to adobe sdk manual: linescale = sqrt(scaleX) * sqrt(scaleY)
 		AIReal sx, sy;
-		sAIRealMath->AIRealMatrixGetScale(&m, &sx, &sy);
+		sAIRealMath->AIRealMatrixGetScale(&matrix, &sx, &sy);
 		AIReal lineScale = sAIRealMath->AIRealSqrt(sx) * sAIRealMath->AIRealSqrt(sy);
 
-		artTransform(env, obj, art, &m, lineScale, flags);
+		artTransform(env, obj, art, &matrix, lineScale, flags);
 	} EXCEPTION_CONVERT(env)
 }
 

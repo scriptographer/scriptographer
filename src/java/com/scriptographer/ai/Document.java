@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.8 $
+ * $Date: 2005/08/02 21:46:43 $
  */
 
 package com.scriptographer.ai;
@@ -175,6 +175,9 @@ public class Document extends DictionaryObject {
 
 	public native void activate();
 	
+	/**
+	 * @param dialogStatus <tt>Document.DIALOG_*</tt>
+	 */
 	public native void print(int dialogStatus);
 	
 	public native void save();

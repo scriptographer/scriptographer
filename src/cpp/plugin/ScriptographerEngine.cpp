@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/07/31 12:09:53 $
+ * $Revision: 1.12 $
+ * $Date: 2005/08/02 21:46:43 $
  */
  
 #include "stdHeaders.h"
@@ -193,7 +193,7 @@ void ScriptographerEngine::init() {
 	options[numOptions++].optionString = "-Djava.compiler=NONE";
 	options[numOptions++].optionString = "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n";
 #endif
-	numOptions = noDebug;
+//	numOptions = noDebug;
 
 	args.options = options;
 	args.nOptions = numOptions;

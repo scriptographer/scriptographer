@@ -278,7 +278,7 @@
 	<target name="javadocs" depends="init">
 		<mkdir dir="${build.javadocs}"/>
 		<javadoc packagenames="com.scriptographer.*"
-				sourcepath="${build.src}"
+				sourcepath="${build.src}:${build.src.jdk}"
 				destdir="${build.javadocs}"
 				author="false"
 				version="false"

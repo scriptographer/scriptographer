@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Timer.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/07 22:00:39 $
+ * $Revision: 1.4 $
+ * $Date: 2005/08/02 21:46:43 $
  */
 
 package com.scriptographer.ai;
@@ -56,7 +56,13 @@ public class Timer extends AIObject implements Unsealed {
 	private static ArrayList unusedTimers = null;
 	private static int counter = 0;
 	
-	public Timer(boolean periodic, int period) {
+	/**
+	 * Creates a timer object.
+	 * 
+	 * @param period the timer's period in ticks. Multiply with {@link #TICKS_PER_SECONDS } to convert from seconds to ticks
+	 * @param periodic
+	 */
+	public Timer(int period, boolean periodic) {
 		// now see first wether there is an unusedEffect already:
 		ArrayList unusedTimers = getUnusedTimers();
 		
@@ -121,7 +127,8 @@ public class Timer extends AIObject implements Unsealed {
 		Handle key = new Handle(handle);
 		// see wether we're still linked:
 		if (timers.get(key) == this) {
-			if (active) stop();
+			if (active)
+				stop();
 			// if so remove it and put it to the list of unsed timers, for later recycling
 			timers.remove(key);
 			getUnusedTimers().add(this);

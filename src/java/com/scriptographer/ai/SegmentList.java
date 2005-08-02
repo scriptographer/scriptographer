@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/07/22 17:39:23 $
+ * $Revision: 1.9 $
+ * $Date: 2005/08/02 21:46:43 $
  */
 
 package com.scriptographer.ai;
@@ -463,10 +463,11 @@ public class SegmentList extends AbstractFetchList {
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		// first modify the current segment:
 		Segment lastSegment = getSegment(size - 1);
-		lastSegment.handleOut.setLocation(c1x, c1y);
+		// convert to relative values:
+		lastSegment.handleOut.setLocation(c1x - lastSegment.point.x, c1y - lastSegment.point.y);
 		lastSegment.setCorner(false);
 		// and add the new segment, with handleIn set to c2
-		add(new Segment(x, y, c2x, c2y, x, y, false));
+		add(new Segment(x, y, c2x - x, c2y - y, 0, 0, false));
 	}
 	
 	public void curveTo(Point c1, Point c2, Point pt) {
@@ -476,13 +477,35 @@ public class SegmentList extends AbstractFetchList {
 	public void curveTo(Point2D c1, Point2D c2, Point2D pt) {
 		curveTo((float) c1.getX(), (float) c1.getY(), (float) c2.getX(), (float) c2.getY(), (float) pt.getX(), (float) pt.getY());
 	}
+	
+	public void quadTo(float cx, float cy, float x, float y) {
+		// this is exact:
+		// if whe have the three quad poits: A E D,
+		// and the cubic is A B C D,
+		// B = E + 1/3 (A - E)
+		// C = E + 1/3 (D - E)
+		Segment segment = getSegment(size - 1);
+		float x1 = segment.point.x;
+		float y1 = segment.point.y;
+		curveTo(cx + (1f/3f) * (x1 - cx), cy + (1f/3f) * (y1 - cy), 
+				cx + (1f/3f) * (x - cx), cy + (1f/3f) * (y - cy),
+				x, y);
+	}
+	
+	public void quadTo(Point c, Point pt) {
+		quadTo(c.x, c.y, pt.x, pt.y);		
+	}
+	
+	public void quadTo(Point2D c, Point2D pt) {
+		quadTo((float) c.getX(), (float) c.getY(), (float) pt.getX(), (float) pt.getY());
+	}
 
 	public void arcTo(float centerX, float centerY, float endX, float endY, int ccw) {
 		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		
 		// get the startPoint:
-		Segment startSegment = getSegment(size - 1);
+		Segment startSegment = getLastSegment();
 		float startX = startSegment.point.x;
 		float startY = startSegment.point.y;
 		
