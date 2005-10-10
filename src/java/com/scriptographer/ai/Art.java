@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/07/22 17:39:23 $
+ * $Revision: 1.10 $
+ * $Date: 2005/10/10 08:40:01 $
  */
 
 package com.scriptographer.ai;
@@ -239,7 +239,9 @@ public abstract class Art extends DictionaryObject {
 				break;
 			}
 		}
-		art.dictionaryRef = dictionaryRef;
+		if (art != null) {
+			art.dictionaryRef = dictionaryRef;
+		}
 		return art;
 	}
 	

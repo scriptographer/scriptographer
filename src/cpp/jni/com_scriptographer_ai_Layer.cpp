@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Layer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/10 08:38:47 $
  */
  
 #include "stdHeaders.h"
@@ -208,4 +208,14 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getArt(JNIEnv *env, j
 		}
 	} EXCEPTION_CONVERT(env)
 	return NULL;
+}
+
+/*
+ * void activate()
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_activate(JNIEnv *env, jobject obj) {
+	try {
+		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
+		sAILayer->SetCurrentLayer(layer);
+	} EXCEPTION_CONVERT(env)
 }

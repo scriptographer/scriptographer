@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2005/08/02 21:46:43 $
+ * $Revision: 1.13 $
+ * $Date: 2005/10/10 08:40:01 $
  */
  
 #include "stdHeaders.h"
@@ -167,7 +167,7 @@ void ScriptographerEngine::init() {
 	options[numOptions++].optionString = classpath;
 	options[numOptions++].optionString = "-Xms64m";
 //	options[numOptions++].optionString = "-Xmx256m";
-	options[numOptions++].optionString = "-Xmx128m";
+	options[numOptions++].optionString = "-Xmx512m";
 	// start headless, in order to avoid conflicts with AWT and Illustrator
 	options[numOptions++].optionString = "-Djava.awt.headless=true";
 #ifdef MAC_ENV

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/08/02 21:46:43 $
+ * $Revision: 1.9 $
+ * $Date: 2005/10/10 08:39:21 $
  */
 
 package com.scriptographer;
@@ -46,12 +46,8 @@ import java.lang.reflect.Method;
 
 public class GlobalObject extends ImporterTopLevel {
 
-	private Context context;
-
 	protected GlobalObject(Context context) {
 		super(context);
-
-		this.context = context;
 
         WrapFactory wrapper = new ScriptographerWrapFactory();
         wrapper.setJavaPrimitiveWrap(false);
@@ -191,7 +187,7 @@ public class GlobalObject extends ImporterTopLevel {
 	 */
 
 	static Object getActiveDocument(ScriptableObject obj) {
-		return DocumentList.getActiveDocument();
+		return DocumentList.getActive();
 	}
 	
 	/**

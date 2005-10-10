@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/07/22 17:39:22 $
+ * $Revision: 1.10 $
+ * $Date: 2005/10/10 08:39:21 $
  */
 
 package com.scriptographer.adm;
@@ -181,6 +181,19 @@ public abstract class Item extends CallbackHandler {
 	private Dimension minSize = null;
 	private Dimension maxSize = null;
 	private Dimension prefSize = null;
+	private Insets insets;
+	/**
+	 *  fixes an overlapping bug with buttons on mac: (see Button)
+	 */
+	protected Insets internalInsets = null;
+
+	/**
+	 * 
+	 *
+	 */
+	protected Item() {
+		setInsets(0, 0, 0, 0);
+	}
 
 	/**
 	 * Constructor for newly created Items
@@ -190,6 +203,7 @@ public abstract class Item extends CallbackHandler {
 	 * @param options
 	 */
 	protected Item(Dialog dialog, int type, int options) {
+		this();
 		this.dialog = dialog;
 		this.type = type;
 		handle = nativeCreate(dialog.handle, convertType(type), options);
@@ -203,15 +217,10 @@ public abstract class Item extends CallbackHandler {
 	 * @param handle
 	 */
 	protected Item(Dialog dialog, int handle) {
+		this();
 		this.dialog = dialog;
 		this.handle = handle;
 		this.type = convertType(nativeInit(handle));
-	}
-
-	/**
-	 * needed for Spacer
-	 */
-	protected Item() {
 	}
 
 	public void destroy() {
@@ -372,6 +381,8 @@ public abstract class Item extends CallbackHandler {
 			if (component != null) {
 				component.updateBounds(bounds);
 			}
+			// Set prefSize so getPreferredSize does not return results from getBestSize()
+			prefSize = this.size;
 		}
 	}
 
@@ -381,8 +392,6 @@ public abstract class Item extends CallbackHandler {
 
 	public final void setSize(Point2D size) {
 		setSize((int) size.getX(), (int) size.getY());
-		// Set prefSize so getPreferredSize does not return results from getBestSize()
-		prefSize = this.size;
 	}
 
 	private native Dimension nativeGetTextSize(String text, int maxWidth);
@@ -461,7 +470,7 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	public Dimension getPreferredSize() {
-		return prefSize != null ? minSize : getBestSize();
+		return prefSize != null ? prefSize : getBestSize();
 	}
 
 	public void setMinimumSize(int width, int height) {
@@ -522,7 +531,14 @@ public abstract class Item extends CallbackHandler {
 	public final void setBounds(Rectangle2D bounds) {
 		setBounds((int) bounds.getX(), (int) bounds.getY(), (int) bounds.getWidth(), (int) bounds.getHeight());
 	}
+	
+	public void setInsets(int left, int top, int right, int bottom) {
+		insets = new Insets(top, left, bottom, right);
+	}
 
+	public Insets getInsets() {
+		return new Insets(insets.top, insets.left, insets.bottom, insets.right);
+	}
 	/* 
 	 * coordinate system transformations
 	 * 

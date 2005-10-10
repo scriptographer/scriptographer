@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_LayerList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/07/22 17:30:56 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/10 08:38:47 $
  */
  
 #include "stdHeaders.h"
@@ -74,7 +74,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_LayerList_nativeSize(JNIEnv *e
 }
 
 /*
- * com.scriptographer.ai.Art nativeGet(int docHandle, int index)
+ * java.lang.Object nativeGet(int docHandle, int index)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LayerList_nativeGet__II(JNIEnv *env, jclass cls, jint docHandle, jint index) {
 	jobject layerObj = NULL;
@@ -92,7 +92,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LayerList_nativeGet__II(JNI
 }
 
 /*
- * com.scriptographer.ai.Art nativeGet(int docHandle, java.lang.String name)
+ * java.lang.Object nativeGet(int docHandle, java.lang.String name)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LayerList_nativeGet__ILjava_lang_String_2(JNIEnv *env, jclass cls, jint docHandle, jstring name) {
 	jobject layerObj = NULL;
@@ -108,6 +108,24 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LayerList_nativeGet__ILjava
 	ai::UnicodeString str = gEngine->convertUnicodeString(env, name);
 	sAILayer->GetLayerByTitle(&layer, str);
 #endif
+	if (layer != NULL)
+		layerObj = gEngine->wrapLayerHandle(env, layer);
+	
+	LAYERLIST_END
+	
+	return layerObj;
+}
+
+/*
+ * com.scriptographer.ai.Layer nativeGetActive(int docHandle)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LayerList_nativeGetActive(JNIEnv *env, jclass cls, jint docHandle) {
+	jobject layerObj = NULL;
+
+	LAYERLIST_BEGIN
+	
+	AILayerHandle layer = NULL;
+	sAILayer->GetCurrentLayer(&layer); 
 	if (layer != NULL)
 		layerObj = gEngine->wrapLayerHandle(env, layer);
 	

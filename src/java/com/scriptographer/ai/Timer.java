@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Timer.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/08/02 21:46:43 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/10 08:40:01 $
  */
 
 package com.scriptographer.ai;
@@ -181,7 +181,7 @@ public class Timer extends AIObject implements Unsealed {
 
 	protected void onExecute() throws Exception {
 		if (wrapper != null && onExecute != null) {
-			Object ret = FunctionHelper.callFunction(wrapper, onExecute);
+			FunctionHelper.callFunction(wrapper, onExecute);
 		}
 	}
 

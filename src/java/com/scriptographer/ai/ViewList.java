@@ -28,8 +28,8 @@
  *
  * $RCSfile: ViewList.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/04/07 20:12:55 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/10 08:40:01 $
  */
 
 package com.scriptographer.ai;
@@ -45,21 +45,21 @@ public class ViewList extends AbstractReadOnlyList {
 	}
 
 	public int size() {
-		return nativeGetViewCount(document.handle);
+		return nativeSize(document.handle);
 	}
 	
-	private static native int nativeGetViewCount(int docHandle);
+	private static native int nativeSize(int docHandle);
 	
-	private static native int nativeGetActiveView(int docHandle); 
+	private static native int nativeGetActive(int docHandle); 
 	
-	public View getActiveView() {
-		return View.wrapHandle(nativeGetActiveView(document.handle));
+	public View getActive() {
+		return View.wrapHandle(nativeGetActive(document.handle));
 	}
 	
-	private static native int nativeGetView(int docHandle, int index);
+	private static native int nativeGet(int docHandle, int index);
 
 	public Object get(int index) {
-		return View.wrapHandle(nativeGetView(document.handle, index));
+		return View.wrapHandle(nativeGet(document.handle, index));
 	}
 
 	public View getView(int index) {

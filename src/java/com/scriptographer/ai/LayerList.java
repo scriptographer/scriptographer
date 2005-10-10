@@ -28,8 +28,8 @@
  *
  * $RCSfile: LayerList.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/07 20:12:55 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/10 08:40:01 $
  */
 
 package com.scriptographer.ai;
@@ -47,6 +47,7 @@ public class LayerList extends AbstractReadOnlyList implements StringIndexList {
 	private static native int nativeSize(int docHandle);
 	private static native Object nativeGet(int docHandle, int index);
 	private static native Object nativeGet(int docHandle, String name);
+	private static native Layer nativeGetActive(int docHandle);
 
 	public int size() {
 		return nativeSize(document.documentHandle);
@@ -58,6 +59,10 @@ public class LayerList extends AbstractReadOnlyList implements StringIndexList {
 
 	public Object get(String name) {
 		return nativeGet(document.documentHandle, name);
+	}
+
+	public Layer getActive() {
+		return nativeGetActive(document.documentHandle);
 	}
 
 	public Layer getLayer(int index) {

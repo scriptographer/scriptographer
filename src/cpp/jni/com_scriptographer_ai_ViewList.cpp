@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_ViewList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/10 08:38:47 $
  */
 
 #include "StdHeaders.h"
@@ -54,7 +54,7 @@
 /*
  * int nativeGetViewCount(int docHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeGetViewCount(JNIEnv *env, jclass cls, jint docHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeSize(JNIEnv *env, jclass cls, jint docHandle) {
 	VIEWLIST_BEGIN
 
 	long count = 0;
@@ -68,7 +68,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeGetViewCount(JN
 /*
  * int nativeGetActiveView(int docHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeGetActiveView(JNIEnv *env, jclass cls, jint docHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeGetActive(JNIEnv *env, jclass cls, jint docHandle) {
 	VIEWLIST_BEGIN
 
 	AIDocumentViewHandle view = NULL;
@@ -83,7 +83,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeGetActiveView(J
 /*
  * int nativeGetView(int docHandle, int index)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeGetView(JNIEnv *env, jclass cls, jint docHandle, jint index) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeGet(JNIEnv *env, jclass cls, jint docHandle, jint index) {
 	VIEWLIST_BEGIN
 
 	AIDocumentViewHandle view = NULL;

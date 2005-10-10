@@ -28,8 +28,8 @@
  *
  * $RCSfile: DocumentList.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/07 20:12:55 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/10 08:40:01 $
  */
 
 package com.scriptographer.ai;
@@ -42,16 +42,16 @@ public class DocumentList extends AbstractReadOnlyList {
 
 	public native int size();
 	
-	private static native int nativeGetActiveDocument(); 
+	private static native int nativeGetActive(); 
 	
-	public static Document getActiveDocument() {
-		return Document.wrapHandle(nativeGetActiveDocument());
+	public static Document getActive() {
+		return Document.wrapHandle(nativeGetActive());
 	}
 	
-	private static native int nativeGetDocument(int index);
+	private static native int nativeGet(int index);
 
 	public Object get(int index) {
-		return Document.wrapHandle(nativeGetDocument(index));
+		return Document.wrapHandle(nativeGet(index));
 	}
 
 	public Document getDocument(int index) {
