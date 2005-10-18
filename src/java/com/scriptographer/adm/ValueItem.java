@@ -28,8 +28,8 @@
  *
  * $RCSfile: ValueItem.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/07/22 17:39:22 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/18 15:29:07 $
  */
 
 package com.scriptographer.adm;
@@ -85,11 +85,6 @@ public abstract class ValueItem extends Item {
 	public void setRange(float[] range) {
 		setRange(range[0], range[1]);
 	}
-
-	// TODO: check wether precision belongs to TextEdit?
-	
-	public native int getPrecision();
-	public native void setPrecision(int precision);
 	
 	public native float[] getIncrements();
 	public native void setIncrements(float small, float large);

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/10/10 08:39:21 $
+ * $Revision: 1.11 $
+ * $Date: 2005/10/18 15:29:06 $
  */
 
 package com.scriptographer.adm;
@@ -169,6 +169,7 @@ public abstract class Item extends CallbackHandler {
 	 * used for storing the ADMItemRef in this object
 	 */
 	protected int type;
+	protected int options;
 
 	protected Dialog dialog;
 
@@ -206,6 +207,7 @@ public abstract class Item extends CallbackHandler {
 		this();
 		this.dialog = dialog;
 		this.type = type;
+		this.options = options;
 		handle = nativeCreate(dialog.handle, convertType(type), options);
 	}
 	
@@ -434,8 +436,8 @@ public abstract class Item extends CallbackHandler {
 			case TYPE_PICTURE_RADIOBUTTON:
 				return nativeGetBestSize();
 			default:
-				if (this instanceof TextItem) {
-					String text = ((TextItem) this).getText();
+				if (this instanceof TextValueItem) {
+					String text = ((TextValueItem) this).getText();
 					if (text != null && text.length() > 0) {
 						Dimension size = getTextSize(text, -1);
 						if (size != null) {

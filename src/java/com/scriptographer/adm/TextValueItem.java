@@ -24,26 +24,61 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * File created on 11.03.2005.
+ * File created on 03.01.2005.
  *
- * $RCSfile: SpinEditPopup.java,v $
+ * $RCSfile: TextValueItem.java,v $
  * $Author: lehni $
  * $Revision: 1.1 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Date: 2005/10/18 15:29:06 $
  */
 
 package com.scriptographer.adm;
 
-public class SpinEditPopup extends ListItem {
+public abstract class TextValueItem extends ValueItem {
 
-	/**
-	 * @param dialog
-	 * @param type
-	 * @param options
-	 */
-	protected SpinEditPopup(Dialog dialog, int type, int options) {
+	// ADMJustify
+	public final static int
+		JUSTIFY_LEFT = 0,
+		JUSTIFY_CENTER = 1,
+		JUSTIFY_RIGHT = 2;
+	
+	// ADMUnits
+	public final static int
+		UNITS_NO = 0,
+		UNITS_POINT = 1,
+		UNITS_INCH = 2,
+		UNITS_MILLIMETER = 3,
+		UNITS_CENTIMETER = 4,
+		UNITS_PICA = 5,
+		UNITS_PERCENT = 6,
+		UNITS_DEGREE = 7,
+		UNITS_Q = 8,
+		UNITS_BASE16 = 9,
+		UNITS_PIXEL = 10,
+		UNITS_TIME = 11,
+		UNITS_HA = 12;
+
+	protected TextValueItem(Dialog dialog, int type, int options) {
 		super(dialog, type, options);
-		// TODO Auto-generated constructor stub
 	}
+
+	/*
+	 * item text accessors
+	 * 
+	 */
+
+	public native void setText(String text);
+	public native String getText();
+	
+	public native void setJustify(int justify);
+	public native int getJustify();
+	
+	// justify and units: usefull for TextEdit and Static
+
+	public native void setUnits(int units);
+	public native int getUnits();
+
+	public native void setShowUnits(boolean showUnits);
+	public native boolean getShowUnits();
 
 }

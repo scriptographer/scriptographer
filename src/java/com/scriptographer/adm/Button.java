@@ -28,11 +28,13 @@
  *
  * $RCSfile: Button.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/07/22 17:39:22 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/18 15:29:06 $
  */
 
 package com.scriptographer.adm;
+
+import java.io.IOException;
 
 /**
  * A Button is by default text based.
@@ -41,13 +43,19 @@ package com.scriptographer.adm;
  * Picture based items (CheckBox, Static, Button, RadioButton),
  * this policy has been chosen to avoid 4 more classes.
  */
-public class Button extends PictureItem {
+public class Button extends TextItem {
 
 	// ADMPictureButtonStyle
 	public final static int
 		STYLE_BLACK_SUNKEN_RECT = 0,
 		STYLE_BLACK_RECT = 1;
 
+	protected boolean hasPictures = false;
+
+	protected Button(Dialog dialog, int type) {
+		super(dialog, type);
+	}
+	
 	public Button(Dialog dialog) {
 		super(dialog, Item.TYPE_TEXT_PUSHBUTTON);
 	}
@@ -64,16 +72,102 @@ public class Button extends PictureItem {
 			}
 		}
 	}
+
+	/*
+	 * Callback functions
+	 */
 	
 	protected void onClick() throws Exception {
 		callFunction("onClick");
 	}
 	
+	protected void onNotify(int notifier) throws Exception {
+		super.onNotify(notifier);
+		switch (notifier) {
+			case Notifier.NOTIFIER_USER_CHANGED:
+				onClick();
+				break;
+		}
+	}
+	
 	/**
-	 * Redirect onChange to onClick for buttons, as onChange is
-	 * not a suitable name for button click handlers
+	 * Picture stuff
 	 */
-	protected void onChange() throws Exception {
-		onClick();
+
+	private Image picture = null;
+	private Image rolloverPicture = null;
+	private Image selectedPicture = null;
+	private Image disabledPicture = null;
+	
+	/* 
+	 * picture ID accessors
+	 * 
+	 */
+	
+	public boolean hasPictures() {
+		return hasPictures;
+	}
+
+	private native void nativeSetPicture(int iconHandle);
+	private native void nativeSetRolloverPicture(int iconHandle);
+	private native void nativeSetSelectedPicture(int iconHandle);
+	private native void nativeSetDisabledPicture(int iconHandle);
+	
+	class PicutreNotAllowedException extends RuntimeException {
+		PicutreNotAllowedException() {
+			super("Text based items cannot display pictures.");
+		}
+	}
+
+	public Image getPicture() {
+		if (!hasPictures)
+			throw new PicutreNotAllowedException();
+		return picture;
+	}
+	
+	public void setPicture(Object obj) throws IOException {
+		if (!hasPictures)
+			throw new PicutreNotAllowedException();
+		picture = Image.getImage(obj);
+		nativeSetPicture(picture != null ? picture.createIconHandle() : 0);
+	}
+	
+	public Image getRolloverPicture() {
+		if (!hasPictures)
+			throw new PicutreNotAllowedException();
+		return rolloverPicture;
+	}
+	
+	public void setRolloverPicture(Object obj) throws IOException {
+		if (!hasPictures)
+			throw new PicutreNotAllowedException();
+		rolloverPicture = Image.getImage(obj);
+		nativeSetRolloverPicture(rolloverPicture != null ? rolloverPicture.createIconHandle() : 0);
+	}
+	
+	public Image getSelectedPicture() {
+		if (!hasPictures)
+			throw new PicutreNotAllowedException();
+		return selectedPicture;
+	}
+	
+	public void setSelectedPicture(Object obj) throws IOException {
+		if (!hasPictures)
+			throw new PicutreNotAllowedException();
+		selectedPicture = Image.getImage(obj);
+		nativeSetSelectedPicture(selectedPicture != null ? selectedPicture.createIconHandle() : 0);
+	}
+
+	public Image getDisabledPicture() {
+		if (!hasPictures)
+			throw new PicutreNotAllowedException();
+		return disabledPicture;
+	}
+
+	public void setDisabledPicturesetDisabledPicture(Object obj) throws IOException {
+		if (!hasPictures)
+			throw new PicutreNotAllowedException();
+		disabledPicture = Image.getImage(obj);
+		nativeSetDisabledPicture(disabledPicture != null ? disabledPicture.createIconHandle() : 0);
 	}
 }

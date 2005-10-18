@@ -28,13 +28,13 @@
  *
  * $RCSfile: ToggleItem.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/25 00:27:56 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/18 15:29:07 $
  */
 
 package com.scriptographer.adm;
 
-public abstract class ToggleItem extends PictureItem {
+public abstract class ToggleItem extends Button {
 	public ToggleItem(Dialog dialog, int type) {
 		super(dialog, type);
 	}
@@ -46,16 +46,4 @@ public abstract class ToggleItem extends PictureItem {
 	
 	public native boolean isChecked();
 	public native void setChecked(boolean value);
-	
-	protected void onClick() throws Exception {
-		callFunction("onClick");
-	}
-	
-	/**
-	 * Redirect onChange to onClick for buttons, as onChange is
-	 * not a suitable name for button click handlers
-	 */
-	protected void onChange() throws Exception {
-		onClick();
-	}
 }

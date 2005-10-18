@@ -234,7 +234,7 @@ public class Drawer extends ADMObject {
 			this.leading = leading;
 			this.maxWidth = maxWidth;
 		}
-	};
+	}
 
 	public native FontInfo getFontInfo();
 	public native FontInfo getFontInfo(int font);

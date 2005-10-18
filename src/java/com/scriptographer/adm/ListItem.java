@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListItem.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/07/22 17:39:15 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/18 15:29:06 $
  */
 
 package com.scriptographer.adm;
@@ -61,9 +61,9 @@ The following item types have valid list objects:
 "ADM Text Edit Scrolling Popup Type"
 */
 
-// TODO: subclass AbstractList and make this a normal list!!!
+// TODO: subclass AbstractList and make this a normal list!
 // how to get around the CallbackHanlder subclassing is not clear yet
-public class ListItem extends Item {
+public abstract class ListItem extends Item {
 
 	protected ListItem(Dialog dialog, int type, int options) {
 		super(dialog, type, options);

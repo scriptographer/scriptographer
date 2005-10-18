@@ -28,15 +28,26 @@
  *
  * $RCSfile: TextEdit.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/18 15:29:06 $
  */
 
 package com.scriptographer.adm;
 
-import com.scriptographer.js.ArgumentReader;
+public class TextEdit extends TextValueItem {
+	// Options
+	public final static int
+		OPTION_PASSWORD = 1 << 1,
+		OPTION_UNICODE = 1 << 2, // [cpaduan] 6/18/02 - Creates a Unicode based edit box (if possible). Currently has no effect on Windows.
+		OPTION_DISABLE_DRAG_DROP = 1 << 3, // Disables drag & drop from or to text edits. Currently mac-only.
 
-public class TextEdit extends TextItem {
+	// self defined pseudo options, for creation of the right TYPE:
+		OPTION_READONLY = 1 << 4,
+		OPTION_MULTILINE = 1 << 5, 
+		// for TYPE_TEXT_EDIT_POPUP
+		OPTION_POPUP = 1 << 6,
+		// TYPE_TEXT_EDIT_POPUP
+		OPTION_SCROLLING = 1 << 7;
 
 	// ADMTextEditStyle, ADMTextEditPopupStyle
 	public final static int
@@ -46,15 +57,6 @@ public class TextEdit extends TextItem {
 		STYLE_TRACK_RAW_KEYS = 4, // Mac-only; ignores default Carbon event processing; not compatible with kADMUnicodeEditCreateOption
 		STYLE_PASSWORD = 32;      // Win32 value for ES_PADMSWORD
 	
-	// Options
-	public final static int
-		OPTION_PASSWORD = 1 << 1,
-		OPTION_UNICODE = 1 << 2, // [cpaduan] 6/18/02 - Creates a Unicode based edit box (if possible). Currently has no effect on Windows.
-		OPTION_DISABLE_DRAG_DROP = 1 << 3, // Disables drag & drop from or to text edits. Currently mac-only.
-
-	// self defined pseudo options, for creation of the right TYPE:
-		OPTION_READONLY = 1 << 4,
-		OPTION_MULTILINE = 1 << 5;
 	
 	public TextEdit(Dialog dialog, int options) {
 		// filter out the pseudo styles from the options:
@@ -70,6 +72,9 @@ public class TextEdit extends TextItem {
 		// abuse the ADM's password style for creating it as a type...
 		if ((options & OPTION_PASSWORD) != 0) {
 			return Item.TYPE_TEXT_EDIT_PASSWORD;
+		} else if ((options & OPTION_POPUP) != 0) {
+			return (options & OPTION_SCROLLING) != 0 ? Item.TYPE_TEXT_EDIT_SCROLLING_POPUP
+				: Item.TYPE_TEXT_EDIT_POPUP;
 		} else {
 			boolean multiline = ((options & OPTION_MULTILINE) != 0);
 			if ((options & OPTION_READONLY) != 0) {
@@ -188,30 +193,23 @@ public class TextEdit extends TextItem {
 				break;
 		}
 	}
-	
-	/*
-	 * rest
-	 */
-
-	public String getText() {
-		text = nativeGetText();
-		return text;
-	}
-
-	public void setStringValue(Object value) {
-		String str = new ArgumentReader().readString(value);
-		if (str != null)
-			setText(str);
-	}
-	
-	public String getStringValue() {
-		return getText();
-	}
 
 	/* 
 	 * text edits
 	 * 
 	 */
+
+	public void setStringValue(Object value) {
+		if (value != null)
+			setText(value.toString());
+	}
+	
+	public String getStringValue() {
+		return getText();
+	}
+	
+	public native int getPrecision();
+	public native void setPrecision(int precision);
 		
 	public native void setMaxLength(int length);
 	public native int getMaxLength();

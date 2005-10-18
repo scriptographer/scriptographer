@@ -28,8 +28,8 @@
  *
  * $RCSfile: ItemContainer.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:56 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/18 15:29:06 $
  */
 
 package com.scriptographer.adm;
@@ -45,8 +45,8 @@ import java.awt.geom.Point2D;
  * @author Lehni
  */
 public class ItemContainer {
-	private AWTItemContainer container;
-	private Frame frame;
+	protected AWTItemContainer container;
+	protected Frame frame;
 
 	public ItemContainer(LayoutManager mgr, Frame frame) {
 		this.container = new AWTItemContainer(mgr);

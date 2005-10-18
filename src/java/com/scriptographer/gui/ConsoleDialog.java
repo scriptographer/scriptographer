@@ -28,11 +28,13 @@
  *
  * $RCSfile: ConsoleDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/18 15:29:07 $
  */
 
 package com.scriptographer.gui;
+
+import info.clearthought.layout.TableLayoutConstants;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -48,7 +50,7 @@ public class ConsoleDialog extends FloatingDialog implements ConsoleOutputWriter
 	static final String title = "Scriptographer Console";
 
 	public ConsoleDialog() throws Exception {
-		super(FloatingDialog.OPTION_TABBED | FloatingDialog.OPTION_RESIZING | FloatingDialog.OPTION_SHOW_CYCLE);
+		super(FloatingDialog.OPTION_TABBED | FloatingDialog.OPTION_SHOW_CYCLE | Dialog.OPTION_RESIZING);
 		setTitle(title);
 		setSize(200, 240);
 
@@ -100,7 +102,7 @@ public class ConsoleDialog extends FloatingDialog implements ConsoleOutputWriter
 		
 		// layout:
 		this.setInsets(-1, -1, -1, -1);
-		this.setLayout(new TableLayout(new double[][] { { TableLayout.FILL }, { 0.2, TableLayout.FILL, 15 } }, -1 , -1));
+		this.setLayout(new TableLayout(new double[][] { { TableLayoutConstants.FILL }, { 0.2, TableLayoutConstants.FILL, 15 } }, -1 , -1));
 		this.addToLayout(textIn, "0, 0");
 		this.addToLayout(textOut, "0, 1");
 		
@@ -142,7 +144,11 @@ public class ConsoleDialog extends FloatingDialog implements ConsoleOutputWriter
 			textOut.setText(consoleText.toString());
 			int end = consoleText.length();
 			textOut.setSelection(end);
-			ConsoleDialog.this.setVisible(true);
+			/*
+			textOut.update();
+			textOut.invalidate();
+			*/
+			this.setVisible(true);
 		}
 	}
 }

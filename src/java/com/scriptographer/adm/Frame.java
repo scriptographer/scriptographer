@@ -28,8 +28,8 @@
  *
  * $RCSfile: Frame.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/20 13:49:37 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/18 15:29:06 $
  */
 
 package com.scriptographer.adm;
@@ -45,6 +45,6 @@ public class Frame extends TextItem {
 		STYLE_ETCHED = 4;
 
 	public Frame(Dialog dialog) {
-		super(dialog, Item.TYPE_FRAME, 0);
+		super(dialog, Item.TYPE_FRAME);
 	}
 }

@@ -28,11 +28,13 @@
  *
  * $RCSfile: AboutDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/07/31 12:09:52 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/18 15:29:07 $
  */
 
 package com.scriptographer.gui;
+
+import info.clearthought.layout.TableLayoutConstants;
 
 import java.awt.Point;
 
@@ -87,8 +89,8 @@ public 	class AboutDialog extends ModalDialog {
 		setDefaultItem(okButton);
 
 		TableLayout layout = new TableLayout(new double[][] {
-			{ TableLayout.FILL, TableLayout.PREFERRED },
-			{ TableLayout.FILL, TableLayout.PREFERRED }}, 4, 4);
+			{ TableLayoutConstants.FILL, TableLayoutConstants.PREFERRED },
+			{ TableLayoutConstants.FILL, TableLayoutConstants.PREFERRED }}, 4, 4);
 		setLayout(layout);
 		setInsets(10, 10, 10, 10);
 		

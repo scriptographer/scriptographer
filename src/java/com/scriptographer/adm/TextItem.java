@@ -24,73 +24,26 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * File created on 03.01.2005.
+ * File created on 18.10.2005.
  *
  * $RCSfile: TextItem.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:56 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/18 15:29:07 $
  */
 
 package com.scriptographer.adm;
 
-public abstract class TextItem extends ValueItem {
-
-	// ADMJustify
-	public final static int
-		JUSTIFY_LEFT = 0,
-		JUSTIFY_CENTER = 1,
-		JUSTIFY_RIGHT = 2;
-	
-	// ADMUnits
-	public final static int
-		UNITS_NO = 0,
-		UNITS_POINT = 1,
-		UNITS_INCH = 2,
-		UNITS_MILLIMETER = 3,
-		UNITS_CENTIMETER = 4,
-		UNITS_PICA = 5,
-		UNITS_PERCENT = 6,
-		UNITS_DEGREE = 7,
-		UNITS_Q = 8,
-		UNITS_BASE16 = 9,
-		UNITS_PIXEL = 10,
-		UNITS_TIME = 11,
-		UNITS_HA = 12;
-
-	protected String text;
-
-	protected TextItem(Dialog dialog, int type, int options) {
-		super(dialog, type, options);
+public abstract class TextItem extends Item {
+	protected TextItem(Dialog dialog, int type) {
+		super(dialog, type, OPTION_NONE);
 	}
 
-	/* 
+	/*
 	 * item text accessors
 	 * 
 	 */
 
-	protected native void nativeSetText(String text);
-	protected native String nativeGetText();
-
-	public String getText() {
-		return text;
-	}
-	
-	public void setText(String text) {
-		this.text = text;
-		nativeSetText(text);
-	}
-	
-	public native void setJustify(int justify);
-	public native int getJustify();
-	
-	// not sure wether these are at the right place. usefull for Static as well?
-	// otherwise move to TextEdit:
-
-	public native void setUnits(int units);
-	public native int getUnits();
-
-	public native void setShowUnits(boolean showUnits);
-	public native boolean getShowUnits();
-
+	public native void setText(String text);
+	public native String getText();
 }

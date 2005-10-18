@@ -28,11 +28,13 @@
  * 
  * $RCSfile: PromptDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/20 13:49:37 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/18 15:29:06 $
  */
 
 package com.scriptographer.adm;
+
+import info.clearthought.layout.TableLayoutConstants;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -47,10 +49,10 @@ public class PromptDialog extends ModalDialog {
 	public PromptDialog(String title, Item[] items) {
 		this.setTitle(title);
 		
-		double[] columns = { TableLayout.PREFERRED, TableLayout.PREFERRED };
+		double[] columns = { TableLayoutConstants.PREFERRED, TableLayoutConstants.PREFERRED };
 		double[] rows = new double[items.length + 1];
 		for (int i = 0; i < rows.length; i++)
-			rows[i] = TableLayout.PREFERRED;
+			rows[i] = TableLayoutConstants.PREFERRED;
 		
 		TableLayout layout = new TableLayout(columns, rows, 4, 4);
 		this.setLayout(layout);
@@ -59,10 +61,12 @@ public class PromptDialog extends ModalDialog {
 		for (int i = 0; i < items.length; i++) {
 			Item promptItem = items[i];
 			if (promptItem != null) {
-				Static descItem = new Static(this);
-				descItem.setFont(Dialog.FONT_PALETTE);
-				descItem.setText(promptItem.description + ":");
-				this.addToLayout(descItem, "0, " + i);
+				if (promptItem.description != null) {
+					Static descItem = new Static(this);
+					descItem.setFont(Dialog.FONT_PALETTE);
+					descItem.setText(promptItem.description + ":");
+					this.addToLayout(descItem, "0, " + i);
+				}
 				
 				com.scriptographer.adm.Item valueItem = promptItem.createItem(this);
 				this.addToLayout(valueItem, "1, " + i);
@@ -93,11 +97,15 @@ public class PromptDialog extends ModalDialog {
 		
 		if (doModal() == okButton) {
 			for (int i = 0; i < items.length; i++) {
-				values[i] = items[i].getValue();
+				Item item = items[i];
+				if (item != null)
+					values[i] = item.getValue();
 			}
 		} else {
 			for (int i = 0; i < items.length; i++) {
-				values[i] = items[i].value;
+				Item item = items[i];
+				if (item != null)
+					values[i] = item.value;
 			}
 		}
 	}
@@ -143,7 +151,7 @@ public class PromptDialog extends ModalDialog {
 				
 				if (type != -1) {
 					Object descObj = map.get("description");
-					String desc = descObj instanceof String ? (String) descObj : "";
+					String desc = descObj != null ? descObj.toString() : null;
 					
 					Object widthObj = map.get("width");
 					double width = ScriptRuntime.toNumber(widthObj);
@@ -156,7 +164,7 @@ public class PromptDialog extends ModalDialog {
 						min = Float.MIN_VALUE;
 	
 					Object maxObj = map.get("max");
-					double max = ScriptRuntime.toNumber(minObj);
+					double max = ScriptRuntime.toNumber(maxObj);
 					if (maxObj == null || max == ScriptRuntime.NaN)
 						max = Float.MAX_VALUE;
 	
@@ -224,7 +232,7 @@ public class PromptDialog extends ModalDialog {
 			this(type, description, value, -1, Float.MIN_VALUE, Float.MAX_VALUE, 0);
 		}
 		
-		private com.scriptographer.adm.Item createItem(Dialog dialog) {
+		protected com.scriptographer.adm.Item createItem(Dialog dialog) {
 			// Item:
 			item = null;
 			switch (type) {
@@ -270,10 +278,10 @@ public class PromptDialog extends ModalDialog {
 			return item;
 		}
 		
-		private Object getValue() {
+		protected Object getValue() {
 			switch(type) {
 				case TYPE_STRING:
-					return ((TextItem) item).getText();
+					return ((TextValueItem) item).getText();
 				case TYPE_NUMBER:
 				case TYPE_UNIT:
 				case TYPE_RANGE:
@@ -284,7 +292,7 @@ public class PromptDialog extends ModalDialog {
 			return null;
 		}
 		
-		private static int getType(String type) {
+		protected static int getType(String type) {
 			for (int i = 0; i < typeNames.length; i++) {
 				if (typeNames[i].equals(type))
 					return i;

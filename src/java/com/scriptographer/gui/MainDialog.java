@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/07/31 12:09:52 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/18 15:29:07 $
  */
 
 package com.scriptographer.gui;
@@ -76,7 +76,7 @@ public class MainDialog extends FloatingDialog {
 	ConsoleDialog consoleDialog;
 
 	public MainDialog(ConsoleDialog consoleDlg) throws Exception {
-		super(FloatingDialog.OPTION_TABBED | FloatingDialog.OPTION_RESIZING | FloatingDialog.OPTION_SHOW_CYCLE);
+		super(FloatingDialog.OPTION_TABBED | FloatingDialog.OPTION_SHOW_CYCLE | Dialog.OPTION_RESIZING);
 
 		this.consoleDialog = consoleDlg;
 		
@@ -142,7 +142,7 @@ public class MainDialog extends FloatingDialog {
 
 		// Script List:
 		scriptList = new HierarchyList(this);
-		scriptList.setStyle(HierarchyList.STYLE_BLACK_RECT);
+		scriptList.setStyle(List.STYLE_BLACK_RECT);
 		scriptList.setSize(208, 20 * lineHeight);
 		scriptList.setMinimumSize(208, 8 * lineHeight);
 
@@ -352,9 +352,6 @@ public class MainDialog extends FloatingDialog {
 			scriptList.removeEntry(i);
 		directories.clear();
 		files.clear();
-	}
-	
-	void collectExpandedDirectories(HashMap expandedDirs) {
 	}
 	
 	void refreshFiles() throws IOException {

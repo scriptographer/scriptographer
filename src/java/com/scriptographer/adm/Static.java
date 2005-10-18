@@ -28,11 +28,13 @@
  *
  * $RCSfile: Static.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/18 15:29:06 $
  */
 
 package com.scriptographer.adm;
+
+import java.io.IOException;
 
 /**
  * A Static is by default text based.
@@ -41,18 +43,22 @@ package com.scriptographer.adm;
  * Picture based items (CheckBox, Static, PushButton, RadioButton),
  * this policy has been chosen to avoid 4 more classes.
  */
-public class Static extends PictureItem {
+public class Static extends TextValueItem {
 
 	//  Text static styles
 	public final static int
 		STYLE_CLIPPEDTEXT 					= 1 << 0,
-		STYLE_DISABLE_AUTO_ACTIVATE_TEXT 	= 1 << 1,
-		STYLE_TRUNCATE_ENDTEXT 				= 1 << 2,    // clipped style has priority
+		STYLE_DISABLE_AUTO_ACTIVATE_TEXT 		= 1 << 1,
+		STYLE_TRUNCATE_ENDTEXT 				= 1 << 2, // clipped style has priority
 		STYLE_TRUNCATE_MIDDLETEXT 			= 1 << 3; // truncate end has priority
 
 	public final static int
 		// a fake option that tells the constructor to construct a MULTILINE static item.
 		OPTION_MULTILINE = 1 << 1;
+
+	protected boolean hasPicture = false;
+
+	private Image picture = null;
 
 	/**
 	 * Creates a text based Static item.
@@ -62,7 +68,7 @@ public class Static extends PictureItem {
 	public Static(Dialog dialog, int options) {
 		super(dialog,
 			(options & OPTION_MULTILINE) != 0 ? Item.TYPE_TEXT_STATIC_MULTILINE
-				: Item.TYPE_TEXT_STATIC);
+				: Item.TYPE_TEXT_STATIC, OPTION_NONE);
 	}
 	
 	public Static(Dialog dialog) {
@@ -76,8 +82,8 @@ public class Static extends PictureItem {
 	 * @param picture
 	 */
 	public Static(Dialog dialog, Image picture) {
-		super(dialog, Item.TYPE_PICTURE_STATIC);
-		hasPictures = true;
+		super(dialog, Item.TYPE_PICTURE_STATIC, OPTION_NONE);
+		hasPicture = true;
 		if (picture != null) {
 			try {
 				setPicture(picture);
@@ -87,4 +93,26 @@ public class Static extends PictureItem {
 			}
 		}
 	}
+	
+	private native void nativeSetPicture(int iconHandle);
+	
+	class PicutreNotAllowedException extends RuntimeException {
+		PicutreNotAllowedException() {
+			super("Text based items cannot display pictures.");
+		}
+	}
+
+	public Image getPicture() {
+		if (!hasPicture)
+			throw new PicutreNotAllowedException();
+		return picture;
+	}
+	
+	public void setPicture(Object obj) throws IOException {
+		if (!hasPicture)
+			throw new PicutreNotAllowedException();
+		picture = Image.getImage(obj);
+		nativeSetPicture(picture != null ? picture.createIconHandle() : 0);
+	}
+
 }
