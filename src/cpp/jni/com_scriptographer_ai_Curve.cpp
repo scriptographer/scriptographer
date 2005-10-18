@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Curve.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/18 15:35:46 $
  */
  
 #include "stdHeaders.h"
@@ -51,9 +51,9 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Curve_nativeGetLength(JNIEnv
 }
 
 /*
- * void nativeAdjustThroughPoint(float[] values, float x, float y, float position)
+ * void nativeAdjustThroughPoint(float[] values, float x, float y, float parameter)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Curve_nativeAdjustThroughPoint(JNIEnv *env, jclass cls, jfloatArray values, jfloat x, jfloat y, jfloat position) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Curve_nativeAdjustThroughPoint(JNIEnv *env, jclass cls, jfloatArray values, jfloat x, jfloat y, jfloat parameter) {
 	try {
 		AIPathSegment *segments = (AIPathSegment *) env->GetFloatArrayElements(values, NULL);
 		DEFINE_POINT(pt, x, y);
@@ -62,7 +62,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Curve_nativeAdjustThroughPoint
 		bezier.p1 = segments[0].out;
 		bezier.p2 = segments[1].in;
 		bezier.p3 = segments[1].p;
-		sAIRealBezier->AdjustThroughPoint(&bezier, &pt, position);
+		sAIRealBezier->AdjustThroughPoint(&bezier, &pt, parameter);
 		segments[0].p = bezier.p0;
 		segments[0].out = bezier.p1;
 		segments[1].in = bezier.p2;

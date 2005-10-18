@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_TextItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/18 15:35:46 $
  */
  
 #include "stdHeaders.h"
@@ -39,9 +39,9 @@
  */
 
 /*
- * void nativeSetText(java.lang.String text)
+ * void setText(java.lang.String text)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextItem_nativeSetText(JNIEnv *env, jobject obj, jstring text) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextItem_setText(JNIEnv *env, jobject obj, jstring text) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		const jchar *chars = env->GetStringChars(text, NULL);
@@ -52,9 +52,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextItem_nativeSetText(JNIEnv
 }
 
 /*
- * java.lang.String nativeGetText()
+ * java.lang.String getText()
  */
-JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_TextItem_nativeGetText(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_TextItem_getText(JNIEnv *env, jobject obj) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		long len = sADMItem->GetTextLength(item);
@@ -66,67 +66,4 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_TextItem_nativeGetText(JNI
 		return res;
 	} EXCEPTION_CONVERT(env)
 	return NULL;
-}
-
-/*
- * void setJustify(int Justify)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextItem_setJustify(JNIEnv *env, jobject obj, jint justify) {
-	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->SetJustify(item, (ADMJustify)justify);
-	} EXCEPTION_CONVERT(env)
-}
-
-/*
- * int getJustify()
- */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextItem_getJustify(JNIEnv *env, jobject obj) {
-	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
-		return sADMItem->GetJustify(item);
-	} EXCEPTION_CONVERT(env)
-	return 0;
-}
-
-/*
- * void setUnits(int units)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextItem_setUnits(JNIEnv *env, jobject obj, jint units) {
-	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->SetUnits(item, (ADMUnits)units);
-	} EXCEPTION_CONVERT(env)
-}
-
-/*
- * int getUnits()
- */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextItem_getUnits(JNIEnv *env, jobject obj) {
-	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
-		return sADMItem->GetUnits(item);
-	} EXCEPTION_CONVERT(env)
-	return 0;
-}
-
-/*
- * void setShowUnits(boolean showUnits)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextItem_setShowUnits(JNIEnv *env, jobject obj, jboolean showUnits) {
-	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->ShowUnits(item, showUnits);
-	} EXCEPTION_CONVERT(env)
-}
-
-/*
- * boolean getShowUnits()
- */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_TextItem_getShowUnits(JNIEnv *env, jobject obj) {
-	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
-		return sADMItem->GetShowUnits(item);
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
 }

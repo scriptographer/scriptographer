@@ -28,13 +28,12 @@
  *
  * $RCSfile: Segment.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/22 11:14:24 $
+ * $Revision: 1.8 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer.ai;
 
-import com.scriptographer.js.ArgumentReader;
 import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
 
@@ -185,9 +184,12 @@ public class Segment implements Commitable {
 		point.setLocation(pt);
 	}
 
-	// TODO: get rid of ArgumentReader calls and implement all versions!!!
-	public void setPoint(Object pt) {
-		point.setLocation(new ArgumentReader().readPoint(pt));
+	public void setPoint(float x, float y) {
+		point.setLocation(x, y);
+	}
+
+	public void setPoint(double x, double y) {
+		point.setLocation(x, y);
 	}
 
 	public Point getHandleIn() {
@@ -198,8 +200,12 @@ public class Segment implements Commitable {
 		handleIn.setLocation(pt);
 	}
 
-	public void setHandleIn(Object pt) {
-		handleIn.setLocation(new ArgumentReader().readPoint(pt));
+	public void setHandleIn(float x, float y) {
+		handleIn.setLocation(x, y);
+	}
+
+	public void setHandleIn(double x, double y) {
+		handleIn.setLocation(x, y);
 	}
 
 	public Point getHandleOut() {
@@ -210,8 +216,12 @@ public class Segment implements Commitable {
 		handleOut.setLocation(pt);
 	}
 
-	public void setHandleOut(Object pt) {
-		handleOut.setLocation(new ArgumentReader().readPoint(pt));
+	public void setHandleOut(float x, float y) {
+		handleOut.setLocation(x, y);
+	}
+
+	public void setHandleOut(double x, double y) {
+		handleOut.setLocation(x, y);
 	}
 
 	public boolean getCorner() {
@@ -243,5 +253,9 @@ public class Segment implements Commitable {
 			return (Curve) segments.path.getCurves().get(index);
 		else
 			return null;
+	}
+	
+	public Object clone() {
+		return new Segment(point, handleIn, handleOut, corner);
 	}
 }

@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2005/10/10 08:40:01 $
+ * $Revision: 1.14 $
+ * $Date: 2005/10/18 15:35:48 $
  */
  
 #include "stdHeaders.h"
@@ -476,6 +476,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_MenuItem_wrapHandle =getStaticMethodID(env, cls_MenuItem, "wrapHandle", "(ILjava/lang/String;Ljava/lang/String;ILjava/lang/String;)Lcom/scriptographer/ai/MenuItem;");
 	mid_MenuItem_onClick = getStaticMethodID(env, cls_MenuItem, "onClick", "(I)V");
 	mid_MenuItem_onUpdate = getStaticMethodID(env, cls_MenuItem, "onUpdate", "(IIII)V");
+
+	cls_MenuGroup = loadClass(env, "com/scriptographer/ai/MenuGroup");
 	
 	cls_Timer = loadClass(env, "com/scriptographer/ai/Timer");
 	cid_Timer = getConstructorID(env, cls_Timer, "(I)V");
@@ -485,9 +487,10 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cid_Annotator = getConstructorID(env, cls_Annotator, "(I)V");
 	mid_Annotator_onDraw = getStaticMethodID(env, cls_Annotator, "onDraw", "(III)V");
 	mid_Annotator_onInvalidate = getStaticMethodID(env, cls_Annotator, "onInvalidate", "(I)V");
-
-	cls_MenuGroup = loadClass(env, "com/scriptographer/ai/MenuGroup");
 	
+	cls_HitTest = loadClass(env, "com/scriptographer/ai/HitTest");
+	cid_HitTest = getConstructorID(env, cls_HitTest, "(ILcom/scriptographer/ai/Art;IFLcom/scriptographer/ai/Point;)V");
+
 // ADM:
 
 	cls_ADMObject = loadClass(env, "com/scriptographer/adm/ADMObject");

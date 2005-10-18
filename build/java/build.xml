@@ -48,6 +48,11 @@
 				<include name="**/*.jar" />
 			</fileset>
 		</path>
+		
+		<path id="build.sourcepath" >
+			<pathelement location="${build.src}" />
+			<pathelement location="${build.src.jdk}" />
+		</path>
 	</target>
 
 
@@ -235,10 +240,12 @@
 			<class name="com.scriptographer.adm.ModalDialog" />
 			<class name="com.scriptographer.adm.Item" />
 		   	<class name="com.scriptographer.adm.ValueItem" />
-			<class name="com.scriptographer.adm.ToggleItem" />
+		   	<class name="com.scriptographer.adm.TextValueItem" />
 		   	<class name="com.scriptographer.adm.TextItem" />
-		   	<class name="com.scriptographer.adm.PictureItem" />
+		   	<class name="com.scriptographer.adm.Button" />
+			<class name="com.scriptographer.adm.ToggleItem" />
 			<class name="com.scriptographer.adm.ItemGroup" />
+		   	<class name="com.scriptographer.adm.Static" />
 		   	<class name="com.scriptographer.adm.TextEdit" />
 
 		   	<class name="com.scriptographer.adm.ListItem" />
@@ -278,7 +285,7 @@
 	<target name="javadocs" depends="init">
 		<mkdir dir="${build.javadocs}"/>
 		<javadoc packagenames="com.scriptographer.*"
-				sourcepath="${build.src}:${build.src.jdk}"
+  				sourcepathref="build.sourcepath"
 				destdir="${build.javadocs}"
 				author="false"
 				version="false"
@@ -295,8 +302,8 @@
 	<!-- =================================================================== -->
 	<target name="jsdocs" depends="init">
 		<mkdir dir="${build.jsdocs}"/>
-		<javadoc packagenames="com.scriptographer,com.scriptographer.ai.*,com.scriptographer.adm.*"
-				sourcepath="${build.src}:${build.src.jdk}"
+		<javadoc packagenames="java.awt.geom.*,com.scriptographer,com.scriptographer.ai.*,com.scriptographer.adm.*"
+				sourcepathref="build.sourcepath"
 				destdir="${build.jsdocs}"
 				author="false"
 				version="false"
@@ -320,6 +327,7 @@
 					com.scriptographer.ai.SegmentPoint
 					com.scriptographer.ai.Tool
 					com.scriptographer.ai.FileFormat
+					java.*
 				"/>
 				<param name="-packagesequence" value="
 					com.scriptographer

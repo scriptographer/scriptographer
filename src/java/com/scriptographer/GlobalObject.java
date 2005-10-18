@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/10/10 08:39:21 $
+ * $Revision: 1.10 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer;
@@ -61,6 +61,9 @@ public class GlobalObject extends ImporterTopLevel {
 		// is created as prototype or as real object through
 		// isCreatingPrototypes()
 
+		// Global
+		new ExtendedJavaClass(this, Key.class);
+		
 		// ADM
 		new ExtendedJavaClass(this, Dialog.class);
 		new ExtendedJavaClass(this, ModalDialog.class);
@@ -90,8 +93,6 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, ChasingArrows.class);
 		new ExtendedJavaClass(this, PopupList.class);
 		new ExtendedJavaClass(this, PopupMenu.class);
-		new ExtendedJavaClass(this, SpinEditPopup.class);
-		new ExtendedJavaClass(this, TextEditPopup.class);
 
 		// layout specific classes
 		new ExtendedJavaClass(this, ItemContainer.class);
@@ -119,7 +120,7 @@ public class GlobalObject extends ImporterTopLevel {
 
 		new ExtendedJavaClass(this, Segment.class);
 		new ExtendedJavaClass(this, Curve.class);
-		new ExtendedJavaClass(this, CurveParameter.class);
+		new ExtendedJavaClass(this, HitTest.class);
 		new ExtendedJavaClass(this, TabletValue.class);
 		new ExtendedJavaClass(this, Pathfinder.class);
 		new ExtendedJavaClass(this, Document.class);
@@ -129,6 +130,7 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, Tool.class);
 		new ExtendedJavaClass(this, Timer.class);
 		new ExtendedJavaClass(this, Annotator.class);
+		new ExtendedJavaClass(this, HitTest.class);
 
 		new ExtendedJavaClass(this, ArtSet.class);
 		new ExtendedJavaClass(this, SegmentList.class);

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Unsealed.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer.js;
@@ -42,4 +42,5 @@ package com.scriptographer.js;
  * @author Lehni
  */
 public interface Unsealed {
+	// this interface is merely a flag
 }

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ValueItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/18 15:35:46 $
  */
  
 #include "stdHeaders.h"
@@ -63,27 +63,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setRange(JNIEnv *en
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetMinFloatValue(item, min);
 		sADMItem->SetMaxFloatValue(item, max);
-	} EXCEPTION_CONVERT(env)
-}
-
-/*
- * int getPrecision()
- */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ValueItem_getPrecision(JNIEnv *env, jobject obj) {
-	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
-		return sADMItem->GetPrecision(item);
-	} EXCEPTION_CONVERT(env)
-	return 0;
-}
-
-/*
- * void setPrecision(int precision)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setPrecision(JNIEnv *env, jobject obj, jint precision) {
-	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->SetPrecision(item, precision);
 	} EXCEPTION_CONVERT(env)
 }
 

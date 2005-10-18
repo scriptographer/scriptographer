@@ -28,8 +28,8 @@
  *
  * $RCSfile: CommitManager.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:58 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer;
@@ -39,6 +39,7 @@ import java.util.Iterator;
 
 public class CommitManager {
 	private CommitManager() {
+		// Don't let anyone instantiate this class.
 	}
 
 	private static HashMap commitables = new HashMap();

@@ -28,12 +28,13 @@
  * 
  * $RCSfile: MapObject.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/07/31 12:09:52 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer.js;
 
+import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
@@ -72,10 +73,10 @@ public class MapObject extends NativeJavaObject {
 	public Object get(int index, Scriptable scriptable) {
 		if (javaObject != null) {
 			Object obj = ((Map) javaObject).get(new Integer(index));
-			return obj != null ? obj : Scriptable.NOT_FOUND;
-		} else {
-			return Scriptable.NOT_FOUND;
+			if (obj != null)
+				return Context.toObject(obj, scriptable);
 		}
+		return Scriptable.NOT_FOUND;
 	}
 
 	public void put(int index, Scriptable start, Object value) {
@@ -95,7 +96,9 @@ public class MapObject extends NativeJavaObject {
 		Object obj = super.get(name, scriptable);
 		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
 			obj = ((Map) javaObject).get(name);
-			if (obj == null)
+			if (obj != null)
+				return Context.toObject(obj, scriptable);
+			else
 				obj = Scriptable.NOT_FOUND;
 		}
 		return obj;

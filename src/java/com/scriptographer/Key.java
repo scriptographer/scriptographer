@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Key.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/07/31 12:09:52 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer;
@@ -179,7 +179,11 @@ public class Key {
 		VK_HALF_WIDTH = 244,
 		VK_ROMAN_CHARACTERS = 245;
 
-	/**
+    private Key() {
+    		// Don't let anyone instantiate this class.
+	}
+
+    /**
 	 * @param keycode any of <tt>Key.VK_*</tt>
 	 * @return true if the key is pressed, false otherwise
 	 */

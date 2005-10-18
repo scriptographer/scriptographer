@@ -28,8 +28,8 @@
  *
  * $RCSfile: Curve.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/07/22 17:39:23 $
+ * $Revision: 1.8 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer.ai;
@@ -92,6 +92,10 @@ public class Curve {
 		buf.append(" }");
 		return buf.toString();
 	}
+	
+	public Path getPath() {
+		return segments.path;
+	}
 
 	protected void updateSegments() {
 		if (segments != null) {
@@ -103,6 +107,7 @@ public class Curve {
 			// check wether the segments were moved (others were deleted) or even moved to
 			// another path. fetch again if they were:
 
+			// TODO: fix this!!!
 			// if (segment1 == null || segment1.index != index1 || segments != segment1.segments)
 				segment1 = (Segment) segments.get(index1);
 
@@ -187,7 +192,7 @@ public class Curve {
 	 * Instead of using the underlying AI functions and loose time for calling natives,
 	 * let's do the dirty work ourselves:
 	 */
-	public Point getPoint(float position) {
+	public Point getPoint(float parameter) {
 		updateSegments();
 		// calculate the polynomial coefficients. caution: handles are relative to points
 		float dx = segment2.point.x - segment1.point.x;
@@ -199,51 +204,67 @@ public class Curve {
 		float cy = 3f * segment1.handleOut.y;
 		float by = 3f * (dy + segment2.handleIn.y - segment1.handleOut.y) - cy;
 		float ay = dy - cy - by;
-
+		
 		return new Point(
-				((ax * position + bx) * position + cx) * position + segment1.point.x,
-				((ay * position + by) * position + cy) * position + segment1.point.y
+			((ax * parameter + bx) * parameter + cx) * parameter + segment1.point.x,
+			((ay * parameter + by) * parameter + cy) * parameter + segment1.point.y
 		);
 	}
 
-	public Point getTangent(float position) {
+	public Point getTangent(float parameter) {
 		updateSegments();
-		// calculate the polynomial coefficients. caution: handles are relative to points
-		float dx = segment2.point.x - segment1.point.x;
-		float cx = 3f * segment1.handleOut.x;
-		float bx = 3f * (dx + segment2.handleIn.x - segment1.handleOut.x) - cx;
-		float ax = dx - cx - bx;
 
-		float dy = segment2.point.y - segment1.point.y;
-		float cy = 3f * segment1.handleOut.y;
-		float by = 3f * (dy + segment2.handleIn.y - segment1.handleOut.y) - cy;
-		float ay = dy - cy - by;
+		double t = parameter;
+		// prevent normals of length 0:
+		if (t == 0 && segment1.handleOut.x == 0 && segment1.handleOut.y == 0)
+			t = 0.000000000001;
+		else if (t == 1 && segment2.handleIn.x == 0 && segment2.handleIn.y == 0)
+			t = 0.999999999999;
+
+		// calculate the polynomial coefficients. caution: handles are relative to points
+		double dx = segment2.point.x - segment1.point.x;
+		double cx = 3.0 * segment1.handleOut.x;
+		double bx = 3.0 * (dx + segment2.handleIn.x - segment1.handleOut.x) - cx;
+		double ax = dx - cx - bx;
+
+		double dy = segment2.point.y - segment1.point.y;
+		double cy = 3.0 * segment1.handleOut.y;
+		double by = 3.0 * (dy + segment2.handleIn.y - segment1.handleOut.y) - cy;
+		double ay = dy - cy - by;
 
 		// simply use the derivation of the bezier function
 		// for both the x and y coordinates:
 		return new Point(
-				(3f * ax * position + 2f * bx) * position + cx,
-				(3f * ay * position + 2f * by) * position + cy
+				(3.0 * ax * t + 2.0 * bx) * t + cx,
+				(3.0 * ay * t + 2.0 * by) * t + cy
 		);
 	}
 
-	public Point getNormal(float position) {
+	public Point getNormal(float parameter) {
 		updateSegments();
-		// calculate the polynomial coefficients. caution: handles are relative to points
-		float dx = segment2.point.x - segment1.point.x;
-		float cx = 3f * segment1.handleOut.x;
-		float bx = 3f * (dx + segment2.handleIn.x - segment1.handleOut.x) - cx;
-		float ax = dx - cx - bx;
 
-		float dy = segment2.point.y - segment1.point.y;
-		float cy = 3f * segment1.handleOut.y;
-		float by = 3f * (dy + segment2.handleIn.y - segment1.handleOut.y) - cy;
-		float ay = dy - cy - by;
+		double t = parameter;
+		// prevent normals of length 0:
+		if (t == 0 && segment1.handleOut.x == 0 && segment1.handleOut.y == 0)
+			t = 0.000000000001;
+		else if (t == 1 && segment2.handleIn.x == 0 && segment2.handleIn.y == 0)
+			t = 0.999999999999;
+
+		// calculate the polynomial coefficients. caution: handles are relative to points
+		double dx = segment2.point.x - segment1.point.x;
+		double cx = 3.0 * segment1.handleOut.x;
+		double bx = 3.0 * (dx + segment2.handleIn.x - segment1.handleOut.x) - cx;
+		double ax = dx - cx - bx;
+
+		double dy = segment2.point.y - segment1.point.y;
+		double cy = 3.0 * segment1.handleOut.y;
+		double by = 3.0 * (dy + segment2.handleIn.y - segment1.handleOut.y) - cy;
+		double ay = dy - cy - by;
 
 		// the normal is simply the rotated tangent:
 		return new Point(
-				(-3f * ay * position - 2f * by) * position - cy,
-				( 3f * ax * position + 2f * bx) * position + cx
+			(-3.0 * ay * t - 2.0 * by) * t - cy,
+			( 3.0 * ax * t + 2.0 * bx) * t + cx
 		);
 	}
 
@@ -264,15 +285,15 @@ public class Curve {
 		return getLength(FLATNESS);
 	}
 
-	private native static void nativeAdjustThroughPoint(float[] values, float x, float y, float position);
+	private native static void nativeAdjustThroughPoint(float[] values, float x, float y, float parameter);
 
-	public void adjustThroughPoint(Point2D pt, float position) {
+	public void adjustThroughPoint(Point2D pt, float parameter) {
 		updateSegments();
 
 		float[] values = new float[2 * SegmentList.VALUES_PER_SEGMENT];
 		segment1.getValues(values, 0);
 		segment2.getValues(values, 1);
-		nativeAdjustThroughPoint(values, (float)pt.getX(), (float)pt.getY(), position);
+		nativeAdjustThroughPoint(values, (float)pt.getX(), (float)pt.getY(), parameter);
 		segment1.setValues(values, 0);
 		segment2.setValues(values, 1);
 		// don't mark dirty, commit immediatelly both as all the values have been modified:
@@ -337,14 +358,14 @@ public class Curve {
 		return hitTest(point, EPSILON);
 	}
 
-	public float getPartLength(float fromPosition, float toPosition, float flatness) {
+	public float getPartLength(float fromParameter, float toParameter, float flatness) {
 		updateSegments();
 		double[][] curve = getCurveArray();
-		return getPartLength(curve, fromPosition, toPosition, flatness, curve);
+		return getPartLength(curve, fromParameter, toParameter, flatness, curve);
 	}
 
-	public float getPartLength(float fromPosition, float toPosition) {
-		return getPartLength(fromPosition, toPosition, FLATNESS);
+	public float getPartLength(float fromParameter, float toParameter) {
+		return getPartLength(fromParameter, toParameter, FLATNESS);
 	}
 
 	public float getParameterWithLength(float length, float flatness) {
@@ -435,28 +456,28 @@ public class Curve {
 	/*
 	 * curve is only modified if it is passed as tempCurve as well. this is needed in getParameterWithLength above...
 	 */
-	private static float getPartLength(double curve[][], double fromPosition, double toPosition, double flatness, double tempCurve[][]) {
-		if (fromPosition > toPosition) {
-			double temp = fromPosition;
-			fromPosition = toPosition;
-			toPosition = temp;
-		} else if (fromPosition == toPosition) {
+	private static float getPartLength(double curve[][], double fromParameter, double toParameter, double flatness, double tempCurve[][]) {
+		if (fromParameter > toParameter) {
+			double temp = fromParameter;
+			fromParameter = toParameter;
+			toParameter = temp;
+		} else if (fromParameter == toParameter) {
 			return 0;
 		}
 
-		if (fromPosition < 0)
-			fromPosition = 0;
+		if (fromParameter < 0)
+			fromParameter = 0;
 
-		if (toPosition > 1)
-			toPosition = 1;
+		if (toParameter > 1)
+			toParameter = 1;
 
-		// get the point in order to calculate the new fromPosition for the divided curve
+		// get the point in order to calculate the new fromParameter for the divided curve
 		// afterwards (TODO: ther must be a simpler solution for getting that value)
-		if (toPosition < 1) {
+		if (toParameter < 1) {
 			double fromX = 0;
 			double fromY = 0;
-			if (fromPosition > 0) {
-				// calculate the point of fromPosition (see getPoint)
+			if (fromParameter > 0) {
+				// calculate the point of fromParameter (see getPoint)
 				double cx = 3f * (curve[1][0] - curve[0][0]);
 				double bx = 3f * (curve[2][0] - curve[1][0]) - cx;
 				double ax = curve[3][0] - curve[0][0] - cx - bx;
@@ -465,21 +486,21 @@ public class Curve {
 				double by = 3f * (curve[2][1] - curve[1][1]) - cy;
 				double ay = curve[3][1] - curve[0][1] - cy - by;
 
-				fromX = ((ax * fromPosition + bx) * fromPosition + cx) * fromPosition + curve[0][0];
-				fromY = ((ay * fromPosition + by) * fromPosition + cy) * fromPosition + curve[0][1];
+				fromX = ((ax * fromParameter + bx) * fromParameter + cx) * fromParameter + curve[0][0];
+				fromY = ((ay * fromParameter + by) * fromParameter + cy) * fromParameter + curve[0][1];
 			}
 			// cut away the second part:
-			divide(curve, toPosition, tempCurve, null);
+			divide(curve, toParameter, tempCurve, null);
 			curve = tempCurve;
-			// now adjust fromPosition, by calculating the position of fromX,fromY
-			if (fromPosition > 0) {
-				fromPosition = hitTest(curve, fromX, fromY, EPSILON);
-				if (fromPosition == -1)
+			// now adjust fromParameter, by calculating the parameter of fromX,fromY
+			if (fromParameter > 0) {
+				fromParameter = hitTest(curve, fromX, fromY, EPSILON);
+				if (fromParameter == -1)
 					return -1;
 			}
 		}
-		if (fromPosition > 0) {
-			divide(curve, fromPosition, null, tempCurve);
+		if (fromParameter > 0) {
+			divide(curve, fromParameter, null, tempCurve);
 			curve = tempCurve;
 		}
 		return nativeGetLength(

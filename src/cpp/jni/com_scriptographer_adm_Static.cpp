@@ -24,30 +24,26 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * File created on 11.01.2005.
- *
- * $RCSfile: CurveParameter.java,v $
+ * $RCSfile: com_scriptographer_adm_Static.cpp,v $
  * $Author: lehni $
  * $Revision: 1.1 $
- * $Date: 2005/05/04 10:35:48 $
+ * $Date: 2005/10/18 15:35:46 $
  */
 
-package com.scriptographer.ai;
+#include "StdHeaders.h"
+#include "ScriptographerEngine.h"
+#include "com_scriptographer_adm_Static.h"
 
-public class CurveParameter {
-	private Curve curve;
-	private float parameter;
+/*
+ * com.scriptographer.adm.Static
+ */
 
-	protected CurveParameter(Curve curve, float parameter) {
-		this.curve = curve;
-		this.parameter = parameter;
-	}
-
-	public Curve getCurve() {
-		return curve;
-	}
-
-	public float getParameter() {
-		return parameter;
-	}
+/*
+ * void nativeSetPicture(int iconRef)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Static_nativeSetPicture(JNIEnv *env, jobject obj, jint iconRef) {
+	try {
+	    ADMItemRef item = gEngine->getItemRef(env, obj);
+		sADMItem->SetPicture(item, (ADMIconRef)iconRef);
+	} EXCEPTION_CONVERT(env)
 }

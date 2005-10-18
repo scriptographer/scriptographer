@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2005/08/02 21:46:43 $
+ * $Revision: 1.13 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer.ai;
@@ -269,7 +269,7 @@ public class Path extends Art {
 		return split(index, 0f);
 	}
 
-	public CurveParameter hitTest(Point point, float epsilon) {
+	public HitTest hitTest(Point point, float epsilon) {
 		CurveList curves = getCurves();
 		int length = curves.size();
 		
@@ -277,16 +277,16 @@ public class Path extends Art {
 			Curve curve = (Curve) curves.get(i);
 			float t = curve.hitTest(point, epsilon);
 			if (t >= 0)
-				return new CurveParameter(curve, t);
+				return new HitTest(curve, t);
 		}
 		return null;
 	}
 
-	public CurveParameter hitTest(Point point) {
+	public HitTest hitTest(Point point) {
 		return hitTest(point, Curve.EPSILON);
 	}
 
-	public CurveParameter getParameterWithLength(float length, float flatness) {
+	public HitTest getPositionWithLength(float length, float flatness) {
 		CurveList curves = getCurves();
 		float currentLength = 0;
 		for (int i = 0; i < curves.size; i++) {
@@ -295,19 +295,20 @@ public class Path extends Art {
 			currentLength += curve.getLength(flatness);
 			if (currentLength >= length) { // found the segment within which the length lies
 				float t = curve.getParameterWithLength(length - startLength, flatness);
-				return new CurveParameter(curve, t);
+				return new HitTest(curve, t);
 			}
 		}
 		// it may be that through unpreciseness of getLength, that the end of the curves was missed:
 		if (length <= getLength(flatness)) {
-			return new CurveParameter((Curve) curves.get(curves.size - 1), 1);
+			Curve curve = (Curve) curves.get(curves.size - 1);
+			return new HitTest(HitTest.HIT_ANCHOR, curve, 1, curve.getPoint2());
 		} else {
 			return null;
 		}
 	}
 
-	public CurveParameter getParameterWithLength(float length) {
-		return getParameterWithLength(length, Curve.FLATNESS);
+	public HitTest getPositionWithLength(float length) {
+		return getPositionWithLength(length, Curve.FLATNESS);
 	}
 	
 	/*
@@ -372,15 +373,7 @@ public class Path extends Art {
 	public void arcTo(Point2D center, Point2D endPoint, int ccw) {
 		getSegments().arcTo(center, endPoint, ccw);
 	}
-	
-	public Segment getFirstSegment() {
-		return getSegments().getFirstSegment();
-	}
-	
-	public Segment getLastSegment() {
-		return getSegments().getLastSegment();
-	}
-	
+		
 	/**
 	 * Appends the segments of a PathIterator to this Path. Optionally,
 	 * the initial {@link PathIterator#SEG_MOVETO}segment of the appended path
@@ -408,7 +401,7 @@ public class Path extends Art {
 						break;
 					}
 					if (size >= 1) {
-						Point pt = segments.getLastSegment().point;
+						Point pt = ((Segment) segments.getLast()).point;
 						if (pt.x == f[0] && pt.y == f[1])
 							break;
 					}

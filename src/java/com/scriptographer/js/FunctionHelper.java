@@ -28,8 +28,8 @@
  *
  * $RCSfile: FunctionHelper.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/07 20:12:55 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer.js;
@@ -43,6 +43,7 @@ import java.util.Map;
 
 public class FunctionHelper {
 	private FunctionHelper() {
+		// Don't let anyone instantiate this class.
 	}
 
 	private static Object[] emptyArgs = new Object[0];

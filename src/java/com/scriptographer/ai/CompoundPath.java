@@ -28,8 +28,8 @@
  * 
  * $RCSfile: CompoundPath.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/08/02 21:46:43 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer.ai;
@@ -163,7 +163,7 @@ public class CompoundPath extends Art {
 						moveTo(f[0], f[1]);
 						break;
 					} else {
-						Point pt = prevPath.getLastSegment().point;
+						Point pt = ((Segment) prevPath.getSegments().getLast()).point;
 						if (pt.x == f[0] && pt.y == f[1])
 							break;
 					}

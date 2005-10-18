@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListObject.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/07/31 12:09:52 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer.js;
@@ -71,7 +71,7 @@ public class ListObject extends NativeJavaObject {
 		if (javaObject != null) {
 			Object obj = ((List) javaObject).get(index);
 			if (obj != null)
-				return obj;
+				return Context.toObject(obj, scriptable);
 		}
 		return Scriptable.NOT_FOUND;
 	}
@@ -89,7 +89,9 @@ public class ListObject extends NativeJavaObject {
 				return new Integer(((List) javaObject).size());
 			} else if (javaObject instanceof StringIndexList) {
 				obj = ((StringIndexList) javaObject).get(name);
-				if (obj == null)
+				if (obj != null)
+					obj = Context.toObject(obj, scriptable);
+				else
 					obj = Scriptable.NOT_FOUND;
 			}
 		}

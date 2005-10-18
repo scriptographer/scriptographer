@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_TextEdit.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/07 13:42:29 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/18 15:35:46 $
  */
  
 #include "stdHeaders.h"
@@ -39,7 +39,28 @@
  */
 
 /*
- * void setMaxLength(int arg1)
+ * int getPrecision()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEdit_getPrecision(JNIEnv *env, jobject obj) {
+	try {
+		ADMItemRef item = gEngine->getItemRef(env, obj);
+		return sADMItem->GetPrecision(item);
+	} EXCEPTION_CONVERT(env)
+	return 0;
+}
+
+/*
+ * void setPrecision(int precision)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setPrecision(JNIEnv *env, jobject obj, jint precision) {
+	try {
+		ADMItemRef item = gEngine->getItemRef(env, obj);
+		sADMItem->SetPrecision(item, precision);
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * void setMaxLength(int length)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setMaxLength(JNIEnv *env, jobject obj, jint length) {
 	try {

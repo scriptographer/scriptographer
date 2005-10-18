@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/08/02 21:46:43 $
+ * $Revision: 1.10 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer.ai;
@@ -70,14 +70,6 @@ public class SegmentList extends AbstractFetchList {
 		this();
 		this.path = path;
 		updateSize(-1);
-	}
-	
-	public Segment getFirstSegment() {
-		return (Segment) get(0);
-	}
-	
-	public Segment getLastSegment() {
-		return (Segment) get(size - 1);
 	}
 
 	public Path getPath() {
@@ -505,7 +497,7 @@ public class SegmentList extends AbstractFetchList {
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		
 		// get the startPoint:
-		Segment startSegment = getLastSegment();
+		Segment startSegment = (Segment) getLast();
 		float startX = startSegment.point.x;
 		float startY = startSegment.point.y;
 		

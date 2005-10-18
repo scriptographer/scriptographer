@@ -31,6 +31,11 @@ public interface List extends Collection {
 
 	public void remove(int fromIndex, int toIndex);
 
+	public Object getFirst();
+	public Object getLast();
+	public Object removeFirst();
+	public Object removeLast();
+
 	public int indexOf(Object element);
 	public int lastIndexOf(Object element);
 

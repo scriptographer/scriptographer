@@ -14,30 +14,30 @@ import java.util.*;
  * @author Stefan Marx
  */
 public class JSDoclet extends Doclet {
-	private static boolean debug = false;
-	private static boolean inherited = true;
-	private static String basePackage = "";
-	private static String doctitle;
-	private static String bottom;
-	private static String destDir;
-	private static String author;
-	public static boolean hyperref = true;
-	private static boolean versionInfo = false;
-	private static boolean summaries = true;
-	private static RootDoc root;
+	static boolean debug = false;
+	static boolean inherited = true;
+	static String basePackage = "";
+	static String doctitle;
+	static String bottom;
+	static String destDir;
+	static String author;
+	static boolean hyperref = true;
+	static boolean versionInfo = false;
+	static boolean summaries = true;
+	static RootDoc root;
 
-	private static boolean fieldSummary = true;
-	private static boolean constructorSummary = true;
-	private static String section1Open = "<h1>";
-	private static String section2Open = "<h2>";
-	private static String section1Close = "</h1>";
-	private static String section2Close = "</h2>";
-	private static boolean shortInherited = false;
-	private static Hashtable classInfos;
-	private static Hashtable memberInfos;
-	private static String[] filterClasses = null;
-	private static String[] packageSequence = null;
-	private static String[] methodFilter = null;
+	static boolean fieldSummary = true;
+	static boolean constructorSummary = true;
+	static String section1Open = "<h1>";
+	static String section2Open = "<h2>";
+	static String section1Close = "</h1>";
+	static String section2Close = "</h2>";
+	static boolean shortInherited = false;
+	static Hashtable classInfos;
+	static Hashtable memberInfos;
+	static String[] filterClasses = null;
+	static String[] packageSequence = null;
+	static String[] methodFilter = null;
 
 	static boolean isSuperclass(ClassDoc cd, String superclass) {
 		while (cd != null) {
@@ -259,9 +259,6 @@ public class JSDoclet extends Doclet {
 		ClassInfo classInfo;
 		MemberDoc member = null;
 
-		void init() {
-		}
-		
 		MemberInfo(ClassInfo classInfo) {
 			this.classInfo = classInfo;
 		}
@@ -269,6 +266,9 @@ public class JSDoclet extends Doclet {
 		MemberInfo(ClassInfo classInfo, MemberDoc member) {
 			this.classInfo = classInfo;
 			this.member = member;
+		}
+
+		void init() {
 		}
 		
 		void printMember(PrintWriter writer, ClassDoc cd) {
@@ -342,7 +342,7 @@ public class JSDoclet extends Doclet {
 		public void printSummary(PrintWriter writer, ClassDoc cd) {
 			writer.println("<li class=\"summary\">");
 			writer.print(createLink(this, cd));
-			printTags(writer, cd, firstSentenceTags(), "<ul><li>", "</li></ul>", true);
+//			printTags(writer, cd, firstSentenceTags(), "<ul><li>", "</li></ul>", true);
 			writer.println("</li>");
 		}
 	}
@@ -504,6 +504,11 @@ public class JSDoclet extends Doclet {
 					writer.print(createAnchor(copiedTo, cd));
 	
 				writer.print("<tt><b>");
+				
+				// Static = PROTOTYPE.NAME
+				if (isStatic())
+					writer.print(containingClass().name() + ".");
+
 				writer.print(name());
 				writer.print("</b>");
 				printParameters(writer);
@@ -1148,14 +1153,17 @@ public class JSDoclet extends Doclet {
 				String name = cd.qualifiedName();
 				if (filterClasses != null) {
 					for (int j = 0; j < filterClasses.length; j++) {
-						if (filterClasses[j].equals(name)) {
+						String filter = filterClasses[j];
+						if (filter.equals(name) || (filter.endsWith("*") && name.startsWith(filter.substring(0, filter.length() - 1)))) {
 							add = false;
 							break;
 						}
 					}
 				}
-				if (add)
+				if (add) {
+					System.out.println(name);
 					classInfos.put(name, new ClassInfo(cd));
+				}
 			}
 			
 			for (Enumeration elements = classInfos.elements(); elements.hasMoreElements();) {

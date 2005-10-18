@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/07/31 12:09:52 $
+ * $Revision: 1.11 $
+ * $Date: 2005/10/18 15:35:48 $
  */
 
 #include "jniMacros.h"
@@ -282,6 +282,9 @@ public:
 	jmethodID cid_Annotator;
 	jmethodID mid_Annotator_onDraw;
 	jmethodID mid_Annotator_onInvalidate;
+	
+	jclass cls_HitTest;
+	jmethodID cid_HitTest;
 
 // ADM:
 	jclass cls_ADMObject;

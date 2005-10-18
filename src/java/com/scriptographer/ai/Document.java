@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/10/10 08:40:01 $
+ * $Revision: 1.10 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer.ai;
@@ -267,10 +267,27 @@ public class Document extends DictionaryObject {
 	public Raster createRaster() {
 		return new Raster(this);
 	}
+	
+	/**
+	 * 
+	 * @param point
+	 * @param type HitTest.TEST_*
+	 * @param art
+	 * @return
+	 */
+	public native HitTest hitTest(Point point, int type, Art art); 
+
+	public HitTest hitTest(Point point, int type) {
+		return this.hitTest(point, type, null);
+	}
+
+	public HitTest hitTest(Point point) {
+		return this.hitTest(point, HitTest.TEST_ALL, null);
+	}
 
 	protected int getVersion() {
-		// TODO: getVersion is used for Dictionary. But right now
-		// document is not version aware. This means that once
+		// TODO: getVersion is used for keeping Dictionaries up to date.
+		// But right now document is not version aware. This means that once
 		// the Dictionary is created, it will ignore changes to the
 		// document's dictionary from other parts of illustrator.
 		// this should be changed!

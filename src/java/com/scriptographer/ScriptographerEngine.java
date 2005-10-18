@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2005/07/31 12:09:52 $
+ * $Revision: 1.14 $
+ * $Date: 2005/10/18 15:31:15 $
  */
 
 package com.scriptographer;
@@ -47,7 +47,7 @@ import java.util.prefs.Preferences;
 
 public class ScriptographerEngine {
 	private static ScriptographerEngine engine = null;
-	private Context context;
+	protected Context context;
 	private HashMap scriptCache = new HashMap();
 	private GlobalObject global;
 	private static final boolean isWindows, isMacintosh;
@@ -152,15 +152,6 @@ public class ScriptographerEngine {
 		return engine;
 	}
 	
-	private void reportRhinoException(RhinoException re) {
-		String source = re.sourceName();
-		if (source != null) {
-			System.err.print(source);
-			System.err.print(":");
-		}
-		System.err.println(re.lineNumber() + "," + re.columnNumber() + ": " + re.getMessage());
-	}
-	
 	public static void onAbout() {
 		AboutDialog.show();
 	}
@@ -206,6 +197,15 @@ public class ScriptographerEngine {
 			}
 			return script;
 		}
+	}
+
+	protected void reportRhinoException(RhinoException re) {
+		String source = re.sourceName();
+		if (source != null) {
+			System.err.print(source);
+			System.err.print(":");
+		}
+		System.err.println(re.lineNumber() + "," + re.columnNumber() + ": " + re.getMessage());
 	}
 
 	/**

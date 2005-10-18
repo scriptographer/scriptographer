@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/07/22 17:30:56 $
+ * $Revision: 1.10 $
+ * $Date: 2005/10/18 15:35:46 $
  */
  
 #include "stdHeaders.h"
@@ -686,4 +686,33 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetDictionary(J
 
 	if (dictionary != NULL)
 		sAIDictionary->Release(dictionary);
+}
+
+/*
+ * com.scriptographer.ai.HitTest hitTest(com.scriptographer.ai.Point point, int type, com.scriptographer.ai.Art art)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_hitTest(JNIEnv *env, jobject obj, jobject point, jint type, jobject art) {
+	jobject hitTest = NULL;
+
+	DOCUMENT_BEGIN
+
+	AIRealPoint pt;
+	gEngine->convertPoint(env, point, &pt);
+
+    AIArtHandle handle = art != NULL ? gEngine->getArtHandle(env, art) : NULL;
+    
+	AIHitRef hit;
+	if (!sAIHitTest->HitTest(handle, &pt, type, &hit)) {
+		AIToolHitData toolHit;
+		if (sAIHitTest->IsHit(hit) && !sAIHitTest->GetHitData(hit, &toolHit)) {
+			jobject art = gEngine->wrapArtHandle(env, toolHit.object);
+			jobject point = gEngine->convertPoint(env, &toolHit.point);
+			hitTest = gEngine->newObject(env, gEngine->cls_HitTest, gEngine->cid_HitTest, toolHit.type, art, (jint) toolHit.segment, (jfloat) toolHit.t, point);
+		}
+		sAIHitTest->Release(hit);
+	}
+
+	DOCUMENT_END
+
+	return hitTest;
 }

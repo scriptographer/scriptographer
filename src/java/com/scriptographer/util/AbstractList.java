@@ -21,6 +21,26 @@ public abstract class AbstractList extends WrappableObject implements List {
 	public abstract Object set(int index, Object element);
 	public abstract Object remove(int index);
 
+	public boolean add(Object element) {
+		return add(size(), element);
+	}
+
+	public Object getFirst() {
+		return get(0);
+	}
+	
+	public Object getLast() {
+		return get(size() - 1);
+	}
+
+	public Object removeFirst() {
+		return this.remove(0);		
+	}
+	
+	public Object removeLast() {
+		return this.remove(size() - 1);
+	}
+
 	public int indexOf(Object element) {
 		for (int i = 0; i < size(); i++) {
 			Object obj = get(i);
@@ -59,10 +79,6 @@ public abstract class AbstractList extends WrappableObject implements List {
 
 	public final void clear() {
 		remove(0, size());
-	}
-
-	public boolean add(Object element) {
-		return add(size(), element);
 	}
 
 	public boolean addAll(int index, Collection elements) {
