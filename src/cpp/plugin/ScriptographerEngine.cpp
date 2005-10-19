@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.15 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.16 $
+ * $Date: 2005/10/19 02:50:45 $
  */
  
 #include "stdHeaders.h"
@@ -1512,7 +1512,7 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 ASErr ScriptographerEngine::selectionChanged() {
 	JNIEnv *env = getEnv();
 	try {
-		long t = getNanoTime();
+//		long t = getNanoTime();
 
 		AIArtHandle **matches;
 		long numMatches;
@@ -1562,7 +1562,7 @@ ASErr ScriptographerEngine::selectionChanged() {
 			
 			callStaticVoidMethod(env, cls_Art, mid_Art_updateIfWrapped_Array, artHandles);
 		}
-		println(env, "%i", (getNanoTime() - t) / 1000000);
+//		println(env, "%i", (getNanoTime() - t) / 1000000);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env)
 	return kExceptionErr;
