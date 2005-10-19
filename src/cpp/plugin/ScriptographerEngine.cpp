@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2005/10/18 15:35:48 $
+ * $Revision: 1.15 $
+ * $Date: 2005/10/19 02:48:17 $
  */
  
 #include "stdHeaders.h"
@@ -226,6 +226,15 @@ void ScriptographerEngine::init() {
 void ScriptographerEngine::initEngine() {
 	JNIEnv *env = getEnv();
 	try {
+		// create the art handle key in which the art object's original handle value is stored
+		// as this value is used to lookup wrappers on the java side, this needs to be passed
+		// in selectionChanged, in case the art's handle was changed due to manipulations
+		// the java wrappers can then be updated accordingly
+		
+		// According Adobe: note that entries whose keys are prefixed with
+		// the character '-' are considered to be temporary entries which are not saved to file.
+		fArtHandleKey = sAIDictionary->Key("-scriptographer-handle");
+		
 		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_init, env->NewStringUTF(fHomeDir));
 		fInitialized = true;
 	} EXCEPTION_CATCH_REPORT(env)
@@ -377,11 +386,11 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ScriptographerEngine_onAbout = getStaticMethodID(env, cls_ScriptographerEngine, "onAbout", "()V");
 
 	cls_ScriptographerException = loadClass(env, "com/scriptographer/ScriptographerException");
-
-	cls_Handle = loadClass(env, "com/scriptographer/util/Handle");
-	cid_Handle = getConstructorID(env, cls_Handle, "(I)V");
-	fid_Handle_handle = getFieldID(env, cls_Handle, "handle", "I");
-
+	
+	cls_ReferenceMap = loadClass(env, "com/scriptographer/util/ReferenceMap");
+	cid_ReferenceMap = getConstructorID(env, cls_ReferenceMap, "(I)V");
+	mid_ReferenceMap_put = getMethodID(env, cls_ReferenceMap, "put", "(ILjava/lang/Object;)Ljava/lang/Object;");
+	
 // AI:
 
 	cls_AIObject = loadClass(env, "com/scriptographer/ai/AIObject");
@@ -557,6 +566,23 @@ jobject ScriptographerEngine::getJavaEngine() {
 		fJavaEngine = env->NewWeakGlobalRef(callStaticObjectMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_getInstance));
 	}
 	return fJavaEngine;
+}
+
+long ScriptographerEngine::getNanoTime() {
+	#ifdef MAC_ENV
+		Nanoseconds nano = AbsoluteToNanoseconds(UpTime());
+		return UnsignedWideToUInt64(nano);
+	#elif WIN_ENV
+		static int scaleFactor = 0;
+		if (scaleFactor == 0) {
+			LARGE_INTEGER frequency;
+			QueryPerformanceFrequency (&frequency);
+			scaleFactor = frequency.QuadPart;
+		}
+		LARGE_INTEGER counter;
+		QueryPerformanceCounter (& counter);
+		return counter.QuadPart * 1000000 / scaleFactor;
+	#endif
 }
 
 void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
@@ -1409,6 +1435,13 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 	if (isLayer) type = com_scriptographer_ai_Art_TYPE_LAYER;
 	if (dictionary != NULL) // increase reference counter. It's decreased in finalize
 		sAIDictionary->AddRef(dictionary);
+	
+	// store the art object's initial handle value in its own dictionary. see selectionChanged for more explanations
+	AIDictionaryRef artDict;
+	if (!sAIArt->GetDictionary(art, &artDict)) {
+		sAIDictionary->SetIntegerEntry(artDict, fArtHandleKey, (ASInt32) art);
+		sAIDictionary->Release(artDict);
+	}
 	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) type, (jint) dictionary);
 }
 
@@ -1479,18 +1512,57 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 ASErr ScriptographerEngine::selectionChanged() {
 	JNIEnv *env = getEnv();
 	try {
+		long t = getNanoTime();
+
 		AIArtHandle **matches;
 		long numMatches;
 		ASErr error = sAIMatchingArt->GetSelectedArt(&matches, &numMatches);
 		if (error) return error;
-		if (numMatches == 0) return kNoErr;
+		if (numMatches > 0) {
+			// pass an array of twice the size to the java side:
+			// i + 0 contains the current handle
+			// i + 1 contains the previous handle, in case the object was wrapped earlier and its handle was changed 
+			// in the meantime. like this, the java side can update its wrappers. the previous handle's value is stored
+			// in the art's dictionary which is copied over to the knew instance by illustrator automatically.
+			
+			// new instances are created by illustrator when objects are moved, rotated with the rotate tool, etc.
+			// why it's doing this i don't know...
 
-		jintArray artHandles = env->NewIntArray(numMatches);
-		env->SetIntArrayRegion(artHandles, 0, numMatches, (jint *) *matches);
-		callStaticVoidMethod(env, cls_Art, mid_Art_updateIfWrapped_Array, artHandles);
+			int numHandles = numMatches * 2;
+			jint *handles = new jint[numHandles];
+			int j = 0;
+			for (int i = 0; i < numMatches; i++) {
+				AIArtHandle art = (*matches)[i];
+				AIArtHandle prevArt = NULL;
+				// see if the object already was wrapped earlier and its handle was changed due to manipulations by the user
+				// if that's the case, let the java side know about the handle change
+				AIDictionaryRef artDict;
+				if (!sAIArt->GetDictionary(art, &artDict)) {
+					if (sAIDictionary->IsKnown(artDict, fArtHandleKey)) {
+						bool changed = true;
+						if (!sAIDictionary->GetIntegerEntry(artDict, fArtHandleKey, (ASInt32 *) &prevArt) && prevArt == art) {
+							prevArt = NULL;
+							changed = false;
+						}
+						// set the new handle:
+						if (changed)
+							sAIDictionary->SetIntegerEntry(artDict, fArtHandleKey, (ASInt32) art);
+					}
+					sAIDictionary->Release(artDict);
+				}
+				handles[j++] = (jint) art;
+				handles[j++] = (jint) prevArt;
+			}
 
-		sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
+			sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
 
+			jintArray artHandles = env->NewIntArray(numHandles);
+			env->SetIntArrayRegion(artHandles, 0, numHandles, (jint *) handles);
+			delete handles;
+			
+			callStaticVoidMethod(env, cls_Art, mid_Art_updateIfWrapped_Array, artHandles);
+		}
+		println(env, "%i", (getNanoTime() - t) / 1000000);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env)
 	return kExceptionErr;
@@ -1598,8 +1670,8 @@ jobject ScriptographerEngine::getLiveEffectParameters(JNIEnv *env, AILiveEffectP
 AILiveEffectParamContext ScriptographerEngine::getLiveEffectContext(JNIEnv *env, jobject parameters) {
 	// gets the value for key "context" from the map and converts it to a AILiveEffectParamContext
 	jobject contextObj = callObjectMethod(env, parameters, mid_Map_get, env->NewStringUTF("context"));
-	if (contextObj != NULL && env->IsInstanceOf(contextObj, cls_Handle)) {
-		return (AILiveEffectParamContext) getIntField(env, contextObj, fid_Handle_handle);
+	if (contextObj != NULL && env->IsInstanceOf(contextObj, cls_Number)) {
+		return (AILiveEffectParamContext) callIntMethod(env, contextObj, mid_Number_intValue);
 	}
 	return NULL;
 }

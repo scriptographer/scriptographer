@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentPoint.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 17:09:15 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
@@ -58,36 +58,52 @@ public class SegmentPoint extends Point {
 	}
 
 	public void setLocation(float x, float y) {
+		segment.update();
 		this.x = x;
 		this.y = y;
 		segment.markDirty();
 	}
 
 	public void setLocation(double x, double y) {
+		segment.update();
 		this.x = (float) x;
 		this.y = (float) y;
 		segment.markDirty();
 	}
 
 	public void setLocation(Point pt) {
+		segment.update();
 		this.x = pt.x;
 		this.y = pt.y;
 		segment.markDirty();
 	}
 
 	public void setLocation(Point2D pt) {
+		segment.update();
 		this.x = (float) pt.getX();
 		this.y = (float) pt.getY();
 		segment.markDirty();
 	}
 
 	public void setX(float x) {
+		segment.update();
 		this.x = x;
 		segment.markDirty();
 	}
 
 	public void setY(float y) {
+		segment.update();
 		this.y = y;
 		segment.markDirty();
+	}
+	
+	public double getX() {
+		segment.update();
+		return x;
+	}
+	
+	public double getY() {
+		segment.update();
+		return y;
 	}
 }

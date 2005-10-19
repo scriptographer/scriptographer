@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2005/10/18 15:31:15 $
+ * $Revision: 1.14 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
@@ -46,7 +46,6 @@ import org.mozilla.javascript.ScriptRuntime;
 
 import com.scriptographer.CommitManager;
 import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.util.Handle;
 
 public class Path extends Art {
 
@@ -56,8 +55,8 @@ public class Path extends Art {
 	/**
 	 * Wraps an AIArtHandle in a Path object
 	 */
-	protected Path(Handle handle) {
-		super(handle);
+	protected Path(long handle) {
+		super((int) handle);
 	}
 
 	/**

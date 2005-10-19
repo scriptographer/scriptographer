@@ -28,8 +28,8 @@
  *
  * $RCSfile: DictionaryObject.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
@@ -39,13 +39,8 @@ import java.util.Map;
 import org.mozilla.javascript.NativeObject;
 
 import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.util.Handle;
 
 public abstract class DictionaryObject extends AIObject {
-	
-	protected DictionaryObject(Handle handle) {
-		super(handle);
-	}
 	
 	protected DictionaryObject(int handle) {
 		super(handle);

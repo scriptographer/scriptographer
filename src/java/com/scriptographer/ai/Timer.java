@@ -28,21 +28,20 @@
  * 
  * $RCSfile: Timer.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/10 08:40:01 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 
 import org.mozilla.javascript.Function;
 
 import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.js.Unsealed;
-import com.scriptographer.util.Handle;
+import com.scriptographer.util.ReferenceMap;
 
 
 public class Timer extends AIObject implements Unsealed {
@@ -52,7 +51,7 @@ public class Timer extends AIObject implements Unsealed {
 	private boolean periodic;
 	private int period;
 
-	private static HashMap timers = new HashMap();
+	private static ReferenceMap timers = new ReferenceMap(ReferenceMap.HARD);
 	private static ArrayList unusedTimers = null;
 	private static int counter = 0;
 	
@@ -85,7 +84,7 @@ public class Timer extends AIObject implements Unsealed {
 		active = false;
 		this.periodic = periodic;
 		
-		timers.put(new Handle(handle), this);
+		timers.put(handle, this);
 	}
 	
 	/**
@@ -124,13 +123,12 @@ public class Timer extends AIObject implements Unsealed {
 	}
 	
 	public void dispose() {
-		Handle key = new Handle(handle);
 		// see wether we're still linked:
-		if (timers.get(key) == this) {
+		if (timers.get(handle) == this) {
 			if (active)
 				stop();
 			// if so remove it and put it to the list of unsed timers, for later recycling
-			timers.remove(key);
+			timers.remove(handle);
 			getUnusedTimers().add(this);
 		}
 	}
@@ -199,7 +197,7 @@ public class Timer extends AIObject implements Unsealed {
 	}
 
 	private static Timer getTimer(int handle) {
-		return (Timer) timers.get(new Handle(handle));
+		return (Timer) timers.get(handle);
 	}
 	
 	protected void finalize() {

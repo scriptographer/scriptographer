@@ -28,8 +28,8 @@
  *
  * $RCSfile: Raster.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/07/22 17:39:23 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
@@ -46,15 +46,13 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.awt.color.ColorSpace;
 
-import com.scriptographer.util.Handle;
-
 public class Raster extends Art {
 
 	// native pointer to an attached data struct:
 	private int rasterData = 0;
 
-	public Raster(Handle handle) {
-		super(handle);
+	protected Raster(long handle) {
+		super((int) handle);
 	}
 
 	/**

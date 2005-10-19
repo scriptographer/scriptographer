@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/10/18 15:31:15 $
+ * $Revision: 1.11 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
@@ -39,12 +39,11 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.Collection;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import org.mozilla.javascript.NativeObject;
 
 import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.util.Handle;
+import com.scriptographer.util.ReferenceMap;
 
 public class Document extends DictionaryObject {
 
@@ -97,16 +96,15 @@ public class Document extends DictionaryObject {
 	private static native int nativeCreate(String title, float width, float height, int colorModel, int dialogStatus);
 	
 	// use a WeakHashMap to keep track of already wrapped documents:
-	private static WeakHashMap documents = new WeakHashMap();
+	private static ReferenceMap documents = new ReferenceMap(ReferenceMap.SOFT);
 	
 	protected static Document wrapHandle(int handle) {
 		if (handle == 0)
 			return null;
-		Handle key = new Handle(handle);
-		Document doc = (Document) documents.get(key);
+		Document doc = (Document) documents.get(handle);
 		if (doc == null) {
 			doc = new Document(handle);
-			documents.put(key, doc);
+			documents.put(handle, doc);
 		}
 		return doc;
 	}

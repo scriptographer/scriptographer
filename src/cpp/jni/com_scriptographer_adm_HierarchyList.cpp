@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_HierarchyList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/04/20 13:49:37 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/19 02:48:17 $
  */
  
 #include "stdHeaders.h"
@@ -54,10 +54,11 @@ void ASAPI callbackHierarchyListDestroy(ADMHierarchyListRef list) {
 	if (gEngine != NULL) {
 		jobject listObj = gEngine->getListObject(list);
 		JNIEnv *env = gEngine->getEnv();
-		env->DeleteGlobalRef(listObj);
 		sADMHierarchyList->SetUserData(list, NULL);
 		// clear the handle
 		gEngine->setIntField(env, listObj, gEngine->fid_ListItem_listHandle, 0);
+		// and remove global ref
+		env->DeleteGlobalRef(listObj);
 	}
 }
 

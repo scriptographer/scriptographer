@@ -28,8 +28,8 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/07/22 17:39:22 $
+ * $Revision: 1.7 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.adm;
@@ -169,7 +169,6 @@ public abstract class Dialog extends CallbackHandler {
 	public static void destroyAll() {
 		for (int i = dialogs.size() - 1; i >= 0; i--) {
 			Dialog dialog = (Dialog)dialogs.get(i);
-			dialogs.remove(i);
 			dialog.destroy();
 		}
 	}

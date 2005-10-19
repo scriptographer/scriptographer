@@ -28,31 +28,29 @@
  * 
  * $RCSfile: Annotator.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/07/27 22:55:30 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
 
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.WeakHashMap;
 
 import org.mozilla.javascript.Function;
 
 import com.scriptographer.adm.Drawer;
 import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.util.Handle;
+import com.scriptographer.util.ReferenceMap;
 
 public class Annotator extends AIObject {
 	private boolean active;
 
-	private static HashMap annotators = new HashMap();
+	private static ReferenceMap annotators = new ReferenceMap(ReferenceMap.HARD);
 	private static ArrayList unusedAnnotators = null;
 	// this is list of drawers that map viewports to created ADM Drawer objects:
-	private static WeakHashMap drawers = new WeakHashMap();
+	private static ReferenceMap drawers = new ReferenceMap(ReferenceMap.SOFT);
 	private static int counter = 0;
 	
 	public Annotator() {
@@ -75,7 +73,7 @@ public class Annotator extends AIObject {
 		
 		active = false;
 		
-		annotators.put(new Handle(handle), this);
+		annotators.put(handle, this);
 	}
 	
 	/**
@@ -115,11 +113,10 @@ public class Annotator extends AIObject {
 	private native void nativeInvalidate(int viewHandle, float x, float y, float width, float height);
 	
 	public void dispose() {
-		Handle key = new Handle(handle);
 		// see wether we're still linked:
-		if (annotators.get(key) == this) {
+		if (annotators.get(handle) == this) {
 			// if so remove it and put it to the list of unsed timers, for later recycling
-			annotators.remove(key);
+			annotators.remove(handle);
 			getUnusedAnnotators().add(this);
 		}
 	}
@@ -193,7 +190,7 @@ public class Annotator extends AIObject {
 	}
 
 	private static Annotator getAnnotator(int handle) {
-		return (Annotator) annotators.get(new Handle(handle));
+		return (Annotator) annotators.get(handle);
 	}
 
 	/**
@@ -204,11 +201,10 @@ public class Annotator extends AIObject {
 	 * @return
 	 */
 	private static Drawer createDrawer(int portHandle) {
-		Handle key = new Handle(portHandle);
-		Drawer drawer = (Drawer) drawers.get(key);
+		Drawer drawer = (Drawer) drawers.get(portHandle);
 		if (drawer == null) {
 			drawer = nativeCreateDrawer(portHandle);
-			drawers.put(key, drawer);
+			drawers.put(portHandle, drawer);
 		}
 		return drawer;
 	}

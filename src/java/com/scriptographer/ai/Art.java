@@ -28,18 +28,17 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/10/10 08:40:01 $
+ * $Revision: 1.11 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
 
 import java.util.ArrayList;
-import java.util.WeakHashMap;
 import java.awt.geom.AffineTransform;
 
 import com.scriptographer.CommitManager;
-import com.scriptographer.util.Handle;
+import com.scriptographer.util.ReferenceMap;
 
 public abstract class Art extends DictionaryObject {
 	
@@ -55,7 +54,7 @@ public abstract class Art extends DictionaryObject {
 	
 	// internal hash map that keeps track of already wrapped objects. defined
 	// as weak.
-	private static WeakHashMap artWrappers = new WeakHashMap();
+	private static ReferenceMap artWrappers = new ReferenceMap(ReferenceMap.SOFT);
 	// The same, but for the children of one object, and not weak,
 	// so they're kept alive as long as the parent lives:
 	private ArrayList childrenWrappers = new ArrayList();
@@ -189,7 +188,7 @@ public abstract class Art extends DictionaryObject {
 	 * the Art(Integer handle) constructor
 	 * @param handle
 	 */
-	protected Art(Handle handle) {
+	protected Art(int handle) {
 		super(handle);
 		// keep track of this object from now on, see wrapArtHandle
 		artWrappers.put(handle, this);
@@ -208,7 +207,7 @@ public abstract class Art extends DictionaryObject {
 	 * @param type
 	 */
 	protected Art(Document document, int type) {
-		this(new Handle(nativeCreate(document != null ? document.handle : 0, type)));
+		this(nativeCreate(document != null ? document.handle : 0, type));
 	}
 
 	/**
@@ -220,22 +219,21 @@ public abstract class Art extends DictionaryObject {
 	 */
 	protected static Art wrapHandle(int artHandle, int type, int dictionaryRef) {
 		// first see wether the object was already wrapped before:
-		Handle handle = new Handle(artHandle);
-		Art art = (Art) artWrappers.get(handle);
+		Art art = (Art) artWrappers.get(artHandle);
 		// if it wasn't wrapped yet, do it now:
 		if (art == null) {
 			switch (type) {
 			case TYPE_PATH:
-				art = new Path(handle);
+				art = new Path((long) artHandle);
 				break;
 			case TYPE_GROUP:
-				art = new Group(handle);
+				art = new Group((long) artHandle);
 				break;
 			case TYPE_RASTER:
-				art = new Raster(handle);
+				art = new Raster((long) artHandle);
 				break;
 			case TYPE_LAYER:
-				art = new Layer(handle);
+				art = new Layer((long) artHandle);
 				break;
 			}
 		}
@@ -254,7 +252,7 @@ public abstract class Art extends DictionaryObject {
 	 * @return true if the object was updated
 	 */
 	protected static boolean updateIfWrapped(int artHandle) {
-		Art art = (Art) artWrappers.get(new Handle(artHandle));
+		Art art = (Art) artWrappers.get(artHandle);
 		if (art != null) {
 			art.version++;
 			return true;
@@ -272,28 +270,48 @@ public abstract class Art extends DictionaryObject {
 	private static void updateIfWrapped(int[] artHandles) {
 		// reuse one object for lookups, instead of creating a new one
 		// for every artHandle
-		Handle handle = new Handle();
-		for (int i = 0; i < artHandles.length; i++) {
-			handle.handle = artHandles[i];
-			Art art = (Art) artWrappers.get(handle);
+		for (int i = 0; i < artHandles.length; i+=2) {
+			// artHandles contains two entries for every object:
+			// the current handle, and the initial handle that was stored
+			// in the art object's dictionary when it was wrapped. 
+			// see the native side for more explanations
+			// (ScriptographerEngine::wrapArtHandle, ScriptographerEngine::selectionChanged)
+			int curHandle = artHandles[i];
+			int prevHandle = artHandles[i + 1];
+			Art art = null;
+			// System.out.println(Integer.toHexString(prevHandle) + " " + Integer.toHexString(curHandle));
+			if (prevHandle != 0) {
+				// in case there was already a art object with the initial handle
+				// before, udpate it now:
+				art = (Art) artWrappers.get(prevHandle);
+				// System.out.println("prev " + art);
+				if (art != null) {
+					// remove the old reference
+					artWrappers.remove(prevHandle);
+					// update object
+					art.handle = curHandle;
+					// and store the new reference
+					artWrappers.put(curHandle, art);
+				}
+			} 
+			if (art == null) {
+				art = (Art) artWrappers.get(curHandle);
+			}
+			// now update it if it was found
 			if (art != null) {
-				// System.out.print(artHandles[i] + " ");
 				art.version++;
 			}
 		}
-		// System.out.println();
 	}
 	
 	private void changeHandle(int newHandle, int newDictionaryRef) {
 		// remove the object at the old handle
 		if (handle != newHandle) {
-			Handle handleObj = new Handle(handle);
-			artWrappers.remove(handleObj);
+			artWrappers.remove(handle);
 			// change the handles
 			handle = newHandle;
 			// and insert it again
-			handleObj.handle = newHandle;
-			artWrappers.put(handleObj, this);
+			artWrappers.put(newHandle, this);
 		}
 		dictionaryRef = newDictionaryRef;
 		// udpate
@@ -304,7 +322,7 @@ public abstract class Art extends DictionaryObject {
 		boolean ret = false;
 		if (handle != 0) {
 			ret = nativeRemove(handle, dictionaryRef);
-			artWrappers.remove(new Handle(handle));
+			artWrappers.remove(handle);
 			handle = 0;			
 		}
 		return ret;
@@ -396,6 +414,8 @@ public abstract class Art extends DictionaryObject {
 	public void setHidden(boolean hidden) {
 		setAttribute(ATTR_HIDDEN.intValue(), hidden);
 	}
+	
+	public native boolean isValid();
 
 	// for text
 	/*
@@ -447,14 +467,16 @@ public abstract class Art extends DictionaryObject {
 	
 	public String toString() {
 		String name = getClass().getName();
-		name = name.substring(name.lastIndexOf('.') + 1);
-		name += " (";
+		StringBuffer str = new StringBuffer();
+		str.append(name.substring(name.lastIndexOf('.') + 1));
+		str.append(" (");
 		if (hasDefaultName()) {
-			name += "@" + Integer.toHexString(handle);
+			str.append("@").append(Integer.toHexString(handle));
 		} else {
-			name += getName();
+			str.append(getName());
 		}
-		return name + ")";
+		str.append(")");
+		return str.toString();
 	}
 		
 	public native Raster rasterize(int type, float resolution, int antialiasing, float width, float height);
@@ -513,5 +535,4 @@ public abstract class Art extends DictionaryObject {
 	protected int getVersion() {
 		return version;
 	}
-	
 }

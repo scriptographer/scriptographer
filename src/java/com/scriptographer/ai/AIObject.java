@@ -28,14 +28,13 @@
  *
  * $RCSfile: AIObject.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.js.WrappableObject;
-import com.scriptographer.util.Handle;
 
 abstract class AIObject extends WrappableObject {
 	// used for storing the native handle for this object
@@ -48,15 +47,6 @@ abstract class AIObject extends WrappableObject {
 	public AIObject(int handle) {
 		this.handle = handle;
 	}
-	
-	public AIObject(Handle handle) {
-		this.handle = handle.handle;
-	}
-	/* don't use this, as it may change, e.g. Art.changeHandle
-	public int hashCode() {
-		return handle;
-	}
-	*/
 	
 	public boolean equals(Object obj) {
 		if (obj instanceof AIObject) {

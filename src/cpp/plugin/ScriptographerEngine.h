@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/10/18 15:35:48 $
+ * $Revision: 1.12 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 #include "jniMacros.h"
@@ -41,6 +41,7 @@ private:
 	jobject fJavaEngine; // returned by ScriptographerEngine.getInstance
 	char *fHomeDir;
 	bool fInitialized;
+	AIDictKey fArtHandleKey;
 
 #ifdef MAC_ENV
 	// used for the javaThread workaround:
@@ -173,10 +174,10 @@ public:
 
 	jclass cls_ScriptographerException;
 
-	jclass cls_Handle;
-	jmethodID cid_Handle;
-	jfieldID fid_Handle_handle;
-
+	jclass cls_ReferenceMap;
+	jmethodID cid_ReferenceMap;
+	jmethodID mid_ReferenceMap_put;
+	
 // AI:
 	jclass cls_AIObject;
 	jfieldID fid_AIObject_handle;
@@ -362,6 +363,8 @@ public:
 	bool isInitialized() {
 		return fInitialized;
 	}
+	
+	long getNanoTime();
 		
 	void println(JNIEnv *env, const char *str, ...);
 	

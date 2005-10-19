@@ -28,8 +28,8 @@
  *
  * $RCSfile: Curve.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/10/18 15:31:15 $
+ * $Revision: 1.9 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
@@ -78,8 +78,6 @@ public class Curve {
 		segment2 = new Segment(p2x, p2y, h2x, h2y, 0, 0, false);
 	}
 
-	// TODO: instead of calling updateSegments(); everywhere, could there be a better way
-	// to do this? e.g. calling from segments when needed?
 	public String toString() {
 		updateSegments();
 		StringBuffer buf = new StringBuffer(64);
@@ -104,14 +102,13 @@ public class Curve {
 			if (index2 >= segments.size)
 				index2 = 0;
 			
-			// check wether the segments were moved (others were deleted) or even moved to
+			// check wether the segments were moved (others were deleted), the path wa supdated or the segments even moved to
 			// another path. fetch again if they were:
 
-			// TODO: fix this!!!
-			// if (segment1 == null || segment1.index != index1 || segments != segment1.segments)
+			if (segment1 == null || segment1.index != index1 || segments != segment1.segments || (segments.path != null && segments.path.version != segment1.version))
 				segment1 = (Segment) segments.get(index1);
 
-			// if (segment2 == null || segment2.index != index2 || segments != segment2.segments)
+			if (segment2 == null || segment2.index != index2 || segments != segment2.segments || (segments.path != null && segments.path.version != segment2.version))
 				segment2 = (Segment) segments.get(index2);
 		}
 	}

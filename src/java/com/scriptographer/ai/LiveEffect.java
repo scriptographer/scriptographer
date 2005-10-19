@@ -28,18 +28,17 @@
  * 
  * $RCSfile: LiveEffect.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/07/31 12:09:53 $
+ * $Revision: 1.8 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.js.Unsealed;
-import com.scriptographer.util.Handle;
+import com.scriptographer.util.ReferenceMap;
 
 import java.util.Map;
-import java.util.HashMap;
 import java.util.ArrayList;
 
 import org.mozilla.javascript.Function;
@@ -171,7 +170,7 @@ public class LiveEffect extends AIObject implements Unsealed {
 	/**
 	 * effects maps effectHandles to their wrappers.
 	 */
-	private static HashMap effects = new HashMap();
+	private static ReferenceMap effects = new ReferenceMap(ReferenceMap.HARD);
 	private static ArrayList unusedEffects = null;
 
 	/**
@@ -219,7 +218,7 @@ public class LiveEffect extends AIObject implements Unsealed {
 		if (handle == 0)
 			throw new RuntimeException("Unable to create LifeEffect");
 
-		effects.put(new Handle(handle), this);
+		effects.put(handle, this);
 	}
 
 	/**
@@ -243,11 +242,10 @@ public class LiveEffect extends AIObject implements Unsealed {
 	 * the effect's menu item, if there is one. It keeps the effectHandle and puts itself in the list of unused effects
 	 */
 	public void remove() {
-		Handle key = new Handle(handle);
 		// see wether we're still linked:
-		if (effects.get(key) == this) {
+		if (effects.get(handle) == this) {
 			// if so remove it and put it to the list of unsed effects, for later recycling
-			effects.remove(key);
+			effects.remove(handle);
 			getUnusedEffects().add(this);
 			if (menuItem != null)
 				menuItem.remove();
@@ -364,7 +362,7 @@ public class LiveEffect extends AIObject implements Unsealed {
 		if (effect != null) {
 			// put these special values to the parameters for the duration of the handler
 			// the parameter map then needs to be passed to functions like updateParameters
-			parameters.put("context", new Handle(effectContext));
+			parameters.put("context", new Integer(effectContext));
 			parameters.put("allowPreview", new Boolean(allowPreview));
 			effect.onEditParameters(parameters);
 			parameters.remove("context");
@@ -397,6 +395,6 @@ public class LiveEffect extends AIObject implements Unsealed {
 	}
 
 	private static LiveEffect getEffect(int handle) {
-		return (LiveEffect) effects.get(new Handle(handle));
+		return (LiveEffect) effects.get(handle);
 	}
 }

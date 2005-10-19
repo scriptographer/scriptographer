@@ -28,8 +28,8 @@
  *
  * $RCSfile: Segment.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/10/18 15:31:15 $
+ * $Revision: 1.9 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
@@ -158,6 +158,13 @@ public class Segment implements Commitable {
 			dirty = true;
 		}
 	}
+	
+	protected void update() {
+		if (!dirty && segments != null && segments.path != null && version != segments.path.version) {
+			// this handles all the updating automatically:
+			segments.get(index);
+		}
+	}
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer(64);
@@ -177,6 +184,7 @@ public class Segment implements Commitable {
 	}
 
 	public Point getPoint() {
+		update();
 		return point;
 	}
 
@@ -193,6 +201,7 @@ public class Segment implements Commitable {
 	}
 
 	public Point getHandleIn() {
+		update();
 		return handleIn;
 	}
 
@@ -209,6 +218,7 @@ public class Segment implements Commitable {
 	}
 
 	public Point getHandleOut() {
+		update();
 		return handleOut;
 	}
 
@@ -225,10 +235,12 @@ public class Segment implements Commitable {
 	}
 
 	public boolean getCorner() {
+		update();
 		return corner;
 	}
 
 	public void setCorner(boolean corner) {
+		update();
 		this.corner = corner;
 		markDirty();
 	}
@@ -256,6 +268,7 @@ public class Segment implements Commitable {
 	}
 	
 	public Object clone() {
+		update();
 		return new Segment(point, handleIn, handleOut, corner);
 	}
 }

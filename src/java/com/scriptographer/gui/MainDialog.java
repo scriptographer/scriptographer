@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/18 15:29:07 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.gui;
@@ -60,18 +60,8 @@ public class MainDialog extends FloatingDialog {
 	FilenameFilter scriptFilter;
 	Image folderImage;
 	Image scriptImage;
-	Button playButton;
-	Button stopButton;
-	Button refreshButton;
-	Button consoleButton;
-	Button newButton;
 	ToolButton tool1Button;
 	ToolButton tool2Button;
-
-	MenuItem scriptographerItem;
-	MenuItem reloadItem;
-	MenuItem mainItem;
-	MenuItem consoleItem;
 
 	ConsoleDialog consoleDialog;
 
@@ -83,6 +73,29 @@ public class MainDialog extends FloatingDialog {
 		setTitle(title);
 		setIncrement(1, lineHeight);
 
+		// add the menus:
+		// use a space in the beginning of the name so it appears on top of all entries :)
+		MenuItem scriptographerItem = new MenuItem(MenuGroup.GROUP_TOOL_PALETTES, " Scriptographer");
+
+		new MenuItem(scriptographerItem, "Main") {
+			public void onClick() {
+				MainDialog.this.setVisible(true);
+			}
+		};
+
+		new MenuItem(scriptographerItem, "Console") {
+			public void onClick() {
+				consoleDialog.setVisible(true);
+			}
+		};
+
+//		new MenuItem(scriptographerItem, "Reload") {
+//			public void onClick() {
+//				ScriptographerEngine.reload();
+//			}
+//		};
+
+		// add the popup menu
 		PopupMenu menu = getPopupMenu();
 
 		ListEntry executeEntry = new ListEntry(menu) {
@@ -137,7 +150,7 @@ public class MainDialog extends FloatingDialog {
 			}
 		};
 		reloadEntry.setText("Reload");
-		
+
 		menu.setVisible(true);
 
 		// Script List:
@@ -162,37 +175,37 @@ public class MainDialog extends FloatingDialog {
 		scriptImage = getImage("script.png");
 		folderImage = getImage("folder.png");
 		addFiles();
-		// buttons:
 		
-		playButton = new Button(this, getImage("play.png")) {
+		// buttons:
+		Button playButton = new Button(this, getImage("play.png")) {
 			protected void onClick() throws Exception {
 				execute();
 			}
 		};
 		playButton.setSize(buttonSize);
 
-		stopButton = new Button(this, getImage("stop.png")) {
+		Button stopButton = new Button(this, getImage("stop.png")) {
 			protected void onClick() {
 				Timer.stopAll();
 			}
 		};
 		stopButton.setSize(buttonSize);
 
-		refreshButton = new Button(this, getImage("refresh.png")) {
+		Button refreshButton = new Button(this, getImage("refresh.png")) {
 			protected void onClick() throws Exception {
 				refreshFiles();
 			}
 		};
 		refreshButton.setSize(buttonSize);
 
-		consoleButton = new Button(this, getImage("console.png")) {
+		Button consoleButton = new Button(this, getImage("console.png")) {
 			protected void onClick() {
 				consoleDialog.setVisible(!consoleDialog.isVisible());
 			}
 		};
 		consoleButton.setSize(buttonSize);
 
-		newButton = new Button(this, getImage("script.png")) {
+		Button newButton = new Button(this, getImage("script.png")) {
 			protected void onClick() throws IOException {
 				createFile();
 			}
@@ -209,6 +222,7 @@ public class MainDialog extends FloatingDialog {
 		this.addToLayout(scriptList, BorderLayout.CENTER);
 		
 		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1));
+
 		buttons.add(playButton);
 		buttons.add(stopButton);
 		buttons.add(new Spacer(4, 0));
@@ -223,22 +237,6 @@ public class MainDialog extends FloatingDialog {
 
 		autoLayout();
 		loadPreferences(title);
-		
-		// add the menus:
-		// use a space in the beginning of the name so it appears on top of all entries :)
-		scriptographerItem = new MenuItem(MenuGroup.GROUP_TOOL_PALETTES, " Scriptographer");
-
-		mainItem = new MenuItem(scriptographerItem, "Main") {
-			public void onClick() {
-				MainDialog.this.setVisible(true);
-			}
-		};
-
-		consoleItem = new MenuItem(scriptographerItem, "Console") {
-			public void onClick() {
-				consoleDialog.setVisible(true);
-			}
-		};
 	}
 
 	public static Image getImage(String filename) {
@@ -253,7 +251,7 @@ public class MainDialog extends FloatingDialog {
 	protected void onDestroy() {
 		savePreferences(title);
 	}
-	
+
 	void execute() throws Exception {
 		ScriptEntry entry = (ScriptEntry) scriptList.getActiveLeafEntry();
 		if (entry != null && entry.file != null) {
@@ -299,10 +297,10 @@ public class MainDialog extends FloatingDialog {
 		int toolIndex;
 		Image entryImage;
 	}
-	
+
 	HashMap directories = new HashMap();
 	HashMap files = new HashMap();
-	
+
 	class ScriptEntry extends HierarchyListEntry {
 		ScriptEntry(HierarchyList list, File file) throws IOException {
 			super(list);
@@ -378,10 +376,9 @@ public class MainDialog extends FloatingDialog {
 			if (entry != null)
 				entry.setExpanded(true);
 		}
-		
+
 		tool1Button.updatePicture();
 		tool2Button.updatePicture();
-		
 	}
 	
 	void createFile() throws IOException {

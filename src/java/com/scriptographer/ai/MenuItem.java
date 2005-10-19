@@ -28,17 +28,16 @@
  * 
  * $RCSfile: MenuItem.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/04 17:06:17 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.js.Unsealed;
 import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.util.Handle;
+import com.scriptographer.util.ReferenceMap;
 
-import java.util.HashMap;
 import java.util.Iterator;
 
 public class MenuItem extends AIObject implements Unsealed {
@@ -52,7 +51,7 @@ public class MenuItem extends AIObject implements Unsealed {
 	protected MenuGroup group;
 	private MenuGroup subGroup;
 
-	private static HashMap items = new HashMap();
+	private static ReferenceMap items = new ReferenceMap(ReferenceMap.HARD);
 
 	public MenuItem(MenuGroup group, String name, String text, int options) {
 		this.name = name;
@@ -186,9 +185,8 @@ public class MenuItem extends AIObject implements Unsealed {
 
 	public void remove() {
 		nativeRemove(handle);
-		Handle key = new Handle(handle);
-		if (items.get(key) == this)
-			items.remove(key);
+		if (items.get(handle) == this)
+			items.remove(handle);
 		handle = 0;
 	}
 
@@ -270,10 +268,10 @@ public class MenuItem extends AIObject implements Unsealed {
 	}
 
 	private static void putItem(MenuItem item) {
-		items.put(new Handle(item.handle), item);
+		items.put(item.handle, item);
 	}
 
 	private static MenuItem getItem(int handle) {
-		return (MenuItem) items.get(new Handle(handle));
+		return (MenuItem) items.get(handle);
 	}
 }

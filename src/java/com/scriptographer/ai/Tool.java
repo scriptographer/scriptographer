@@ -28,8 +28,8 @@
  *
  * $RCSfile: Tool.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
@@ -38,17 +38,16 @@ import org.mozilla.javascript.*;
 
 import com.scriptographer.*;
 import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.util.Handle;
+import com.scriptographer.util.ReferenceMap;
 
 import java.io.File;
-import java.util.HashMap;
 import java.util.Iterator;
 
 public class Tool {
 	private int toolHandle = 0;
 	private int index;
 
-	private static HashMap tools = null;
+	private static ReferenceMap tools = null;
 
 	protected Tool(int toolHandle, int index) {
 		this.toolHandle = toolHandle;
@@ -74,7 +73,7 @@ public class Tool {
 		}
 	}
 
-	private static HashMap getTools() {
+	private static ReferenceMap getTools() {
 		if (tools == null)
 			tools = nativeGetTools();
 		return tools;
@@ -88,7 +87,7 @@ public class Tool {
 	 *
 	 * @return
 	 */
-	private static native HashMap nativeGetTools();
+	private static native ReferenceMap nativeGetTools();
 
 	public native boolean hasPressure();
 
@@ -192,6 +191,6 @@ public class Tool {
 	}
 
 	private static Tool getToolByHandle(int toolHandle) {
-		return (Tool) getTools().get(new Handle(toolHandle));
+		return (Tool) getTools().get(toolHandle);
 	}
 }

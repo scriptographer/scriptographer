@@ -28,8 +28,8 @@
  * 
  * $RCSfile: PromptDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/18 15:29:06 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.adm;
@@ -93,20 +93,16 @@ public class PromptDialog extends ModalDialog {
 		
 		this.autoLayout();
 		
-		values = new Object[items.length];
-		
 		if (doModal() == okButton) {
+			values = new Object[items.length];
+			
 			for (int i = 0; i < items.length; i++) {
 				Item item = items[i];
 				if (item != null)
 					values[i] = item.getValue();
 			}
 		} else {
-			for (int i = 0; i < items.length; i++) {
-				Item item = items[i];
-				if (item != null)
-					values[i] = item.value;
-			}
+			values = null;
 		}
 	}
 	

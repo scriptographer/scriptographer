@@ -28,15 +28,13 @@
  * 
  * $RCSfile: MenuGroup.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
 
-import java.util.HashMap;
-
-import com.scriptographer.util.Handle;
+import com.scriptographer.util.ReferenceMap;
 
 public class MenuGroup extends AIObject {
 	// AIMenuGroups.h:
@@ -173,7 +171,7 @@ public class MenuGroup extends AIObject {
 
 	protected String name;
 
-	private static HashMap groups = new HashMap();
+	private static ReferenceMap groups = new ReferenceMap(ReferenceMap.HARD);
 
 	private MenuGroup(String name) {
 		this.name = name;
@@ -264,10 +262,10 @@ public class MenuGroup extends AIObject {
 	public native int getOptions();
 
 	private static void putGroup(MenuGroup group) {
-		groups.put(new Handle(group.handle), group);
+		groups.put(group.handle, group);
 	}
 
 	private static MenuGroup getGroup(int handle) {
-		return (MenuGroup) groups.get(new Handle(handle));
+		return (MenuGroup) groups.get(handle);
 	}
 }

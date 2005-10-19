@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/08/02 21:46:43 $
+ * $Revision: 1.10 $
+ * $Date: 2005/10/19 02:48:17 $
  */
  
 #include "stdHeaders.h"
@@ -697,4 +697,15 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_nativeSetDictionary(JNIEnv
 	} EXCEPTION_CONVERT(env)
 	if (dictionary != NULL)
 		sAIDictionary->Release(dictionary);
+}
+
+/*
+ * boolean isValid()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_isValid(JNIEnv *env, jobject obj) {
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		return sAIArt->ValidArt(art);
+	} EXCEPTION_CONVERT(env)
+	return JNI_FALSE;
 }

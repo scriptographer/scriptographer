@@ -28,17 +28,16 @@
  *
  * $RCSfile: View.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/19 02:48:17 $
  */
 
 package com.scriptographer.ai;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.WeakHashMap;
 
-import com.scriptographer.util.Handle;
+import com.scriptographer.util.ReferenceMap;
 
 public class View extends AIObject {
 	public static final int 
@@ -70,16 +69,15 @@ public class View extends AIObject {
 	}
 	
 	// use a WeakHashMap to keep track of already wrapped documents:
-	private static WeakHashMap views = new WeakHashMap();
+	private static ReferenceMap views = new ReferenceMap(ReferenceMap.SOFT);
 	
 	protected static View wrapHandle(int handle) {
 		if (handle == 0)
 			return null;
-		Handle key = new Handle(handle);
-		View view = (View) views.get(key);
+		View view = (View) views.get(handle);
 		if (view == null) {
 			view = new View(handle);
-			views.put(key, view);
+			views.put(handle, view);
 		}
 		return view;
 	}
