@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Timer.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.7 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -41,7 +41,7 @@ import org.mozilla.javascript.Function;
 
 import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.js.Unsealed;
-import com.scriptographer.util.ReferenceMap;
+import com.scriptographer.util.IntMap;
 
 
 public class Timer extends AIObject implements Unsealed {
@@ -51,7 +51,7 @@ public class Timer extends AIObject implements Unsealed {
 	private boolean periodic;
 	private int period;
 
-	private static ReferenceMap timers = new ReferenceMap(ReferenceMap.HARD);
+	private static IntMap timers = new IntMap();
 	private static ArrayList unusedTimers = null;
 	private static int counter = 0;
 	

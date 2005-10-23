@@ -28,8 +28,8 @@
  * 
  * $RCSfile: PromptDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -46,7 +46,7 @@ public class PromptDialog extends ModalDialog {
 
 	private Object[] values = null;
 	
-	public PromptDialog(String title, Item[] items) {
+	public PromptDialog(String title, PromptItem[] items) {
 		this.setTitle(title);
 		
 		double[] columns = { TableLayoutConstants.PREFERRED, TableLayoutConstants.PREFERRED };
@@ -59,12 +59,13 @@ public class PromptDialog extends ModalDialog {
 		this.setInsets(4, 4, 4, 4);
 		
 		for (int i = 0; i < items.length; i++) {
-			Item promptItem = items[i];
+			PromptItem promptItem = items[i];
 			if (promptItem != null) {
 				if (promptItem.description != null) {
 					Static descItem = new Static(this);
 					descItem.setFont(Dialog.FONT_PALETTE);
 					descItem.setText(promptItem.description + ":");
+					descItem.setInsets(0, 2, 0, 0);
 					this.addToLayout(descItem, "0, " + i);
 				}
 				
@@ -73,31 +74,34 @@ public class PromptDialog extends ModalDialog {
 			}
 		}			
 		
-		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.RIGHT, 8, 0));
-		buttons.setInsets(-8, 2, -6, 4);
-		
-		Button okButton = new Button(this);
-		okButton.setFont(Dialog.FONT_PALETTE);
-		okButton.setText("OK");
-		buttons.add(okButton);
+		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 		
 		Button cancelButton = new Button(this);
 		cancelButton.setFont(Dialog.FONT_PALETTE);
 		cancelButton.setText("Cancel");
+		Dimension buttonSize = cancelButton.getBestSize();
+		cancelButton.setSize(buttonSize);
+		cancelButton.setInsets(0, 0, 3, 0);
 		buttons.add(cancelButton);
+		
+		Button okButton = new Button(this);
+		okButton.setFont(Dialog.FONT_PALETTE);
+		okButton.setText("OK");
+		okButton.setSize(buttonSize);
+		buttons.add(okButton);
 
 		this.addToLayout(buttons, "0, " + items.length + ", 1, " + items.length);
 		
+		this.autoLayout();
+		
 		this.setDefaultItem(okButton);
 		this.setCancelItem(cancelButton);
-		
-		this.autoLayout();
 		
 		if (doModal() == okButton) {
 			values = new Object[items.length];
 			
 			for (int i = 0; i < items.length; i++) {
-				Item item = items[i];
+				PromptItem item = items[i];
 				if (item != null)
 					values[i] = item.getValue();
 			}
@@ -114,12 +118,12 @@ public class PromptDialog extends ModalDialog {
 		return values;
 	}
 
-	private static Item[] getItems(Object[] items) {
-		Item[] promptItems = new Item[items.length];
+	private static PromptItem[] getItems(Object[] items) {
+		PromptItem[] promptItems = new PromptItem[items.length];
 		for (int i = 0; i < items.length; i++) {
 			Object itemObj = items[i];
-			if (itemObj instanceof Item) {
-				promptItems[i] = (Item) itemObj;
+			if (itemObj instanceof PromptItem) {
+				promptItems[i] = (PromptItem) itemObj;
 			} else if (itemObj instanceof Map) {
 				Map map = (Map) itemObj;
 				Object valueObj = map.get("value");
@@ -128,20 +132,20 @@ public class PromptDialog extends ModalDialog {
 				int type = -1;
 				if (typeObj != null) {
 					if (typeObj instanceof String) {
-						type = Item.getType((String) typeObj);
+						type = PromptItem.getType((String) typeObj);
 					} else if (typeObj instanceof Number) {
 						type = ((Number) typeObj).intValue();
 					}
 				} else { // determine type from value and step:
 					if (stepObj != null) {
-						type = Item.TYPE_RANGE;
+						type = PromptItem.TYPE_RANGE;
 					} else {
 						if (valueObj instanceof Number)
-							type = Item.TYPE_NUMBER;
+							type = PromptItem.TYPE_NUMBER;
 						else if (valueObj instanceof String) 
-							type = Item.TYPE_STRING;
+							type = PromptItem.TYPE_STRING;
 						else if (valueObj instanceof Object[])
-							type = Item.TYPE_LIST;
+							type = PromptItem.TYPE_LIST;
 					}
 				}
 				
@@ -168,7 +172,7 @@ public class PromptDialog extends ModalDialog {
 					if (step == ScriptRuntime.NaN)
 						step = 0;
 	
-					promptItems[i] = new Item(type, desc, valueObj, (int) width, (float) min, (float) max, (float) step);				
+					promptItems[i] = new PromptItem(type, desc, valueObj, (int) width, (float) min, (float) max, (float) step);				
 				} else {
 					promptItems[i] = null;
 				}
@@ -179,121 +183,11 @@ public class PromptDialog extends ModalDialog {
 		return promptItems;
 	}
 
-	public static Object[] prompt(String title, Item[] items) {
+	public static Object[] prompt(String title, PromptItem[] items) {
 		return new PromptDialog(title, items).values;
 	}
 
 	public static Object[] prompt(String title, Object[] items) {
 		return new PromptDialog(title, items).values;
-	}
-
-	public static class Item {
-		public static final int
-			TYPE_STRING = 0,
-			TYPE_NUMBER = 1,
-			TYPE_UNIT = 2,
-			TYPE_RANGE = 3,
-			TYPE_CHECKBOX = 4,
-			TYPE_LIST = 5;
-		
-		protected static final String[] typeNames = {
-			"String",
-			"Number",
-			"Unit",
-			"Range",
-			"CheckBox",
-			"List"
-		};
-		
-		String description;
-		int type;
-		Object value;
-		float min;
-		float max;
-		float step;
-		com.scriptographer.adm.Item item;
-		int width;
-		
-		public Item(int type, String description, Object value, int width, float min, float max, float step) {
-			this.description = description;
-			this.type = type;
-			this.value = value;
-			this.width = width;
-			this.min = min;
-			this.max = max;
-			this.step = step;
-		}
-	
-		public Item(int type, String description, Object value) {
-			this(type, description, value, -1, Float.MIN_VALUE, Float.MAX_VALUE, 0);
-		}
-		
-		protected com.scriptographer.adm.Item createItem(Dialog dialog) {
-			// Item:
-			item = null;
-			switch (type) {
-				case TYPE_RANGE:
-					item = new Slider(dialog);
-					break;
-				case TYPE_CHECKBOX:
-					item = new CheckBox(dialog);
-					break;
-				default:
-					item = new TextEdit(dialog);
-			}
-			
-			// Value:
-			switch (type) {
-				case TYPE_STRING:
-					((TextEdit) item).setText(value.toString());
-					break;
-				case TYPE_NUMBER:
-				case TYPE_UNIT:
-				case TYPE_RANGE:
-					if (item instanceof TextEdit) {
-						((TextEdit) item).setAllowMath(true);
-						((TextEdit) item).setAllowUnits(true);
-						((TextEdit) item).setShowUnits(type == TYPE_UNIT);
-					}
-					if (type == TYPE_RANGE) {
-						((Slider) item).setIncrements(step, 8 * step);
-					}
-					((ValueItem) item).setRange(min, max);
-					((ValueItem) item).setValue((float) ScriptRuntime.toNumber(value));
-					break;
-				case TYPE_CHECKBOX:
-					((CheckBox) item).setChecked(ScriptRuntime.toBoolean(value));
-					break;
-					
-			}
-			item.setFont(Dialog.FONT_PALETTE);
-			Dimension size = item.getBestSize();
-			if (width >= 0)
-				size.width = width;
-			item.setSize(size);
-			return item;
-		}
-		
-		protected Object getValue() {
-			switch(type) {
-				case TYPE_STRING:
-					return ((TextValueItem) item).getText();
-				case TYPE_NUMBER:
-				case TYPE_UNIT:
-				case TYPE_RANGE:
-					return new Float(((ValueItem) item).getValue());
-				case TYPE_CHECKBOX:
-					return new Boolean(((ToggleItem) item).isChecked());
-			}
-			return null;
-		}
-		
-		protected static int getType(String type) {
-			for (int i = 0; i < typeNames.length; i++) {
-				if (typeNames[i].equals(type))
-					return i;
-			}
-			return -1;
-		}
 	}
 }

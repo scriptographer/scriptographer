@@ -28,8 +28,8 @@
  *
  * $RCSfile: Curve.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.10 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -37,7 +37,9 @@ package com.scriptographer.ai;
 import java.awt.geom.Point2D;
 import java.awt.geom.AffineTransform;
 
-public class Curve {
+import com.scriptographer.js.WrappableObject;
+
+public class Curve extends WrappableObject {
 	protected SegmentList segments = null;
 	protected int index1;
 	protected int index2;

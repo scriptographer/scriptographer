@@ -28,8 +28,8 @@
  *
  * $RCSfile: Image.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/04/07 20:12:55 $
+ * $Revision: 1.8 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -281,7 +281,7 @@ public class Image extends ADMObject {
 	 * We don't have to take care of the disposal, as the item or entry seems to do so.
 	 * 
 	 * TODO: workaround: handle images in the DrawProc, adjust entryTextRects accordingly
-	 * and don't use the native setPicture methods at all... some more work with the
+	 * and don't use the native setImage methods at all... some more work with the
 	 * Tracker would be needed in order to emulate rollover behavior. But it may be worth
 	 * geting around the memory consumption of this dirty hack here...
 	 */

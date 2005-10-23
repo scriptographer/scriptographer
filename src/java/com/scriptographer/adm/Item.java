@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/10/18 15:29:06 $
+ * $Revision: 1.12 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -43,18 +43,7 @@ import java.util.StringTokenizer;
 import com.scriptographer.ScriptographerEngine;
 
 public abstract class Item extends CallbackHandler {
-	// TODO: move constants to their places!
-	
-	// ADMSpinEditStyle
-	public final static int
-		SPINEDIT_VERTICAL = 0,
-		SPINEDIT_HORIZONTAL = 1;
 
-	// ADMSpinEditPopupStyle
-	public final static int
-		SPINEDIT_POPUP_VERTICAL = 0,
-		SPINEDIT_POPUP_HORIZONTAL = 4;
-	
 	// options
 	public final static int
 		OPTION_NONE = 0;
@@ -64,7 +53,7 @@ public abstract class Item extends CallbackHandler {
 		TYPE_DIAL = 0, // wrapped
 		TYPE_FRAME = 1, // wrapped
 		TYPE_ITEMGROUP = 2,  // wrapped
-		TYPE_TABBED_MENU = 3,
+		TYPE_TABBED_MENU = 3,  // deprecated
 		TYPE_LISTBOX = 4, // wrapped
 		TYPE_HIERARCHY_LISTBOX = 5, // wrapped
 		TYPE_PICTURE_CHECKBOX = 6, // wrapped
@@ -74,15 +63,15 @@ public abstract class Item extends CallbackHandler {
 		TYPE_POPUP_CONTROL = 10,
 		TYPE_POPUP_CONTROLBUTTON = 11,
 		TYPE_POPUP_SPINEDIT_CONTROL = 12,
-		TYPE_POPUP_LIST = 13,
+		TYPE_POPUP_LIST = 13, // wrapped
 		TYPE_POPUP_MENU = 14, // wrapped
-		TYPE_RESIZE = 15,
+		TYPE_RESIZE = 15, // wrapped (dialog.getResizeButton() Button)
 		TYPE_SCROLLBAR = 16, // wrapped
-		TYPE_SCROLLING_POPUP_LIST = 17,
+		TYPE_SCROLLING_POPUP_LIST = 17, // wrapped
 		TYPE_SLIDER = 18, // wrapped
-		TYPE_SPINEDIT = 19,
-		TYPE_SPINEDIT_POPUP = 20,
-		TYPE_SPINEDIT_SCROLLING_POPUP = 21,
+		TYPE_SPINEDIT = 19, // wrapped
+		TYPE_SPINEDIT_POPUP = 20, // wrapped
+		TYPE_SPINEDIT_SCROLLING_POPUP = 21, // wrapped
 		TYPE_TEXT_CHECKBOX = 22, // wrapped
 		TYPE_TEXT_EDIT = 23, // wrapped
 		TYPE_TEXT_EDIT_READONLY = 24, // wrapped
@@ -106,7 +95,7 @@ public abstract class Item extends CallbackHandler {
 		"ADM Dial Type",
 		"ADM Frame Type",
 		"ADM Item Group Type",
-		"ADM Tabbed Menu Type",
+		"ADM Tabbed Menu Type", // deprecated
 		"ADM List Box Type",
 		"ADM Hierarchy List Box Type",
 		"ADM Picture Check Box Button Type",
@@ -173,8 +162,11 @@ public abstract class Item extends CallbackHandler {
 
 	protected Dialog dialog;
 
-	protected Dimension size = null;
-	protected Rectangle bounds = null;
+	private Dimension nativeSize = null;
+	private Rectangle nativeBounds = null;
+	protected Dimension size;
+	protected Rectangle bounds;
+	protected Insets insets;
 
 	private String toolTip;
 
@@ -182,11 +174,6 @@ public abstract class Item extends CallbackHandler {
 	private Dimension minSize = null;
 	private Dimension maxSize = null;
 	private Dimension prefSize = null;
-	private Insets insets;
-	/**
-	 *  fixes an overlapping bug with buttons on mac: (see Button)
-	 */
-	protected Insets internalInsets = null;
 
 	/**
 	 * 
@@ -194,6 +181,8 @@ public abstract class Item extends CallbackHandler {
 	 */
 	protected Item() {
 		setInsets(0, 0, 0, 0);
+		size = new Dimension();
+		bounds = new Rectangle();
 	}
 
 	/**
@@ -209,6 +198,7 @@ public abstract class Item extends CallbackHandler {
 		this.type = type;
 		this.options = options;
 		handle = nativeCreate(dialog.handle, convertType(type), options);
+		updateBounds();
 	}
 	
 	/**
@@ -218,11 +208,12 @@ public abstract class Item extends CallbackHandler {
 	 * @param dialog
 	 * @param handle
 	 */
-	protected Item(Dialog dialog, int handle) {
+	protected Item(Dialog dialog, long handle) {
 		this();
 		this.dialog = dialog;
-		this.handle = handle;
-		this.type = convertType(nativeInit(handle));
+		this.handle = (int) handle;
+		this.type = convertType(nativeInit(this.handle));
+		updateBounds();
 	}
 
 	public void destroy() {
@@ -266,10 +257,6 @@ public abstract class Item extends CallbackHandler {
 	
 	/*
 	 * ADM stuff:
-	 */
-	
-	/* TODO: Check these:
-	 * - getChildItem
 	 */
 
 	/*
@@ -321,6 +308,8 @@ public abstract class Item extends CallbackHandler {
 
 	public native void setStyle(int style);
 	public native int getStyle();
+	
+	protected native long getChildItemHandle(int itemID);
 
 	/* 
 	 * item state accessors
@@ -351,6 +340,19 @@ public abstract class Item extends CallbackHandler {
 	 * item bounds accessors
 	 * 
 	 */
+	
+	protected void updateBounds() {
+		// nativeSize and nativeBounds are set by the native environment
+		// size and bounds need to be updated depending on insets and internalInsets
+		int dx = insets.left + insets.right;
+		int dy = insets.top + insets.bottom;
+		size.width = nativeSize.width + dx;
+		size.height = nativeSize.height + dy;
+		bounds.x = nativeBounds.x - insets.left;
+		bounds.y =  nativeBounds.y - insets.top;
+		bounds.width = nativeBounds.width + dx;
+		bounds.height = nativeBounds.height + dy;
+	}
 
 	private native Dimension nativeGetSize();
 	private native void nativeSetSize(int width, int height);
@@ -375,17 +377,25 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	public void setSize(int width, int height) {
-		if (size.width != width || size.height != height) {
-			size.setSize(width, height);
-			nativeSetSize(width, height);
+		// calculate native values
+		int nw = width - insets.left - insets.right;
+		int nh = height - insets.top - insets.bottom;
+
+		if (nativeSize.width != nw || nativeSize.height != nh) {
+			nativeSize.setSize(nw, nh);
+			nativeSetSize(nw, nh);
 			// also updatePoint the internal bounds field:
-			bounds = nativeGetBounds();
-			if (component != null) {
-				component.updateBounds(bounds);
-			}
-			// Set prefSize so getPreferredSize does not return results from getBestSize()
-			prefSize = this.size;
+			nativeBounds = nativeGetBounds();
 		}
+
+		// update size and bounds
+		bounds.setSize(width, height);
+		size.setSize(width, height);
+		if (component != null)
+			component.updateBounds(bounds);
+		
+		// Set prefSize so getPreferredSize does not return results from getBestSize()
+		prefSize = size;
 	}
 
 	public final void setSize(Dimension size) {
@@ -427,34 +437,39 @@ public abstract class Item extends CallbackHandler {
 
 	public Dimension getBestSize() {
 		// TODO: verify for which items getBestSize really works!
+		Dimension size = null;
 		switch (type) {
-//			case TYPE_TEXT_STATIC:
-//			case TYPE_TEXT_STATIC_MULTILINE:
 			case TYPE_PICTURE_STATIC:
 			case TYPE_PICTURE_CHECKBOX:
 			case TYPE_PICTURE_PUSHBUTTON:
 			case TYPE_PICTURE_RADIOBUTTON:
-				return nativeGetBestSize();
+				size = nativeGetBestSize();
 			default:
-				if (this instanceof TextValueItem) {
-					String text = ((TextValueItem) this).getText();
-					if (text != null && text.length() > 0) {
-						Dimension size = getTextSize(text, -1);
-						if (size != null) {
-							size.height += 6;
-							if (this instanceof Button) {
-								size.width += 20;
-							} else if (this instanceof ToggleItem) {
-								size.width += 32;
-							} else {
-								size.width += ScriptographerEngine.isMacintosh() ? 12 : 6;
-							}
-							return size;
+				String text = null;
+				if (this instanceof TextValueItem)
+					text = ((TextValueItem) this).getText();
+				else if (this instanceof TextItem)
+					text = ((TextItem) this).getText();
+			
+				if (text != null && text.length() > 0) {
+					size = getTextSize(text, -1);
+					if (size != null) {
+						size.height += 6;
+						if (this instanceof Button) {
+							size.width += 20;
+						} else if (this instanceof ToggleItem) {
+							size.width += 32;
+						} else {
+							size.width += ScriptographerEngine.isMacintosh() ? 12 : 6;
 						}
 					}
 				}
 		}
-		return new Dimension(120, 20);
+		if (size == null) size = new Dimension(120, 20);
+		// add insets
+		size.width += insets.left + insets.right;
+		size.height += insets.top + insets.bottom;
+		return size;
 	}
 
 	public void setPreferredSize(int width, int height) {
@@ -516,18 +531,26 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	public void setBounds(int x, int y, int width, int height) {
-		boolean sizeChanged = (bounds.width != width || bounds.height != height);
-		if (sizeChanged || bounds.x != x || bounds.y != y) {
-			bounds.setBounds(x, y, width, height);
-			nativeSetBounds(x, y, width, height);
+		// calculate native values
+		int nx = x + insets.left;
+		int ny = y + insets.top;
+		int nw = width - insets.left - insets.right;
+		int nh = height - insets.top - insets.bottom;
+				
+		boolean sizeChanged = (nativeBounds.width != nw || nativeBounds.height != nh);
+		if (sizeChanged || nativeBounds.x != nx || nativeBounds.y != ny) {
+			nativeBounds.setBounds(nx, ny, nw, nh);
+			nativeSetBounds(nx, ny, nw, nh);
 			if (sizeChanged) {
 				// also updatePoint the internal length field:
-				size = nativeGetSize();
-				if (component != null) {
-					component.updateBounds(bounds);
-				}
+				nativeSize = nativeGetSize();
 			}
 		}
+
+		// update bounds
+		bounds.setBounds(x, y, width, height);
+		if (component != null)
+			component.updateBounds(bounds);
 	}
 
 	public final void setBounds(Rectangle2D bounds) {
@@ -536,6 +559,8 @@ public abstract class Item extends CallbackHandler {
 	
 	public void setInsets(int left, int top, int right, int bottom) {
 		insets = new Insets(top, left, bottom, right);
+		if (nativeSize != null)
+			setBounds(bounds);
 	}
 
 	public Insets getInsets() {

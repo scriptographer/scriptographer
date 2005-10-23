@@ -28,15 +28,17 @@
  * 
  * $RCSfile: Spacer.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:56 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
 
 import java.awt.*;
 
-public class Spacer extends Item {
+import com.scriptographer.js.Unsealed;
+
+public class Spacer extends Item implements Unsealed {
 
 	public Spacer(int width, int height) {
 		size = new Dimension(width, height);

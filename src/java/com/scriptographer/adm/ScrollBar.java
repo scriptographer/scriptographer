@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScrollBar.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -39,7 +39,7 @@ import com.scriptographer.js.FunctionHelper;
 public class ScrollBar extends ValueItem {
 
 	public ScrollBar(Dialog dialog) {
-		super(dialog, Item.TYPE_SCROLLBAR, OPTION_NONE);
+		super(dialog, TYPE_SCROLLBAR, OPTION_NONE);
 	}
 
 	protected void onChange() throws Exception {

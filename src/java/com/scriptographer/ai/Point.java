@@ -28,8 +28,8 @@
  *
  * $RCSfile: Point.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/07/31 12:09:53 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -39,6 +39,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.AffineTransform;
 
 import org.mozilla.javascript.*;
+
 import com.scriptographer.js.Wrappable;
 
 /*
@@ -269,14 +270,14 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 		return (Point) at.transform(this, new Point());
 	}
 
-	// wrappable interface:
+	// wrappable interface
 
-	private Scriptable wrapper;
+	protected Scriptable wrapper;
 
 	public void setWrapper(Scriptable wrapper) {
 		this.wrapper = wrapper;
 	}
-
+	
 	public Scriptable getWrapper() {
 		return wrapper;
 	}

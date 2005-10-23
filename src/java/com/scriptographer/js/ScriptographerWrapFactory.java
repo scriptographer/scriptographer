@@ -28,19 +28,19 @@
  *
  * $RCSfile: ScriptographerWrapFactory.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/07/31 12:09:52 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/23 00:30:13 $
  */
 
 package com.scriptographer.js;
 
-import java.util.WeakHashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.mozilla.javascript.*;
 
 import com.scriptographer.ai.*;
-import com.scriptographer.util.List;
+import com.scriptographer.util.ReadOnlyList;
 
 public class ScriptographerWrapFactory extends WrapFactory {
 	private WeakHashMap wrappers = new WeakHashMap();
@@ -57,6 +57,7 @@ public class ScriptographerWrapFactory extends WrapFactory {
 			} else if (obj instanceof java.awt.geom.AffineTransform && !(obj instanceof Matrix)) {
 				obj = new Matrix((java.awt.geom.AffineTransform) obj);
 			} else if (obj instanceof java.awt.Dimension) {
+				// TODO: expose Dimension to JS?
 				obj = new Point((java.awt.Dimension) obj);
 			}
 		} catch (Exception e) {
@@ -72,9 +73,15 @@ public class ScriptographerWrapFactory extends WrapFactory {
 		if (javaObj instanceof Wrappable) {
 			obj = ((Wrappable) javaObj).getWrapper();
 			if (obj == null) { // object is not yet wrapped, do it now:
-				obj = createJavaObject(scope, javaObj, staticType);
-				// let the object know about its newly created wrapper:
-				((Wrappable) javaObj).setWrapper(obj);
+				if (javaObj instanceof WrapperCreator) {
+					// the object wants to provide its own wrapper:
+					obj = ((WrapperCreator) javaObj).createWrapper(scope, staticType);
+				} else {
+					// create a default wrapper and set it
+					obj = createJavaObject(scope, javaObj, staticType);
+					// let the object know about its newly created wrapper:
+					((Wrappable) javaObj).setWrapper(obj);
+				}
 			}
 		} else {
 			// keep track of wrappers so that if a given object needs to be
@@ -91,17 +98,13 @@ public class ScriptographerWrapFactory extends WrapFactory {
 	
 	private Scriptable createJavaObject(Scriptable scope, Object javaObj,
 		Class staticType) {
-		// If the java object wants to stay unsealed, use UnsealedJavaObject
-		// instead of the default class:
 		if (javaObj instanceof Unsealed) {
 			return new UnsealedJavaObject(scope, javaObj, staticType);
-		} else if (javaObj instanceof List) {
-			return new ListObject(scope, (List) javaObj, staticType);
+		} else if (javaObj instanceof ReadOnlyList) {
+			return new ListObject(scope, (ReadOnlyList) javaObj, staticType);
 		} else if (javaObj instanceof Map) {
 			return new MapObject(scope, (Map) javaObj, staticType);
-		} else if (javaObj instanceof SegmentPoint) {
-			return new SegmentPointObject(scope, (SegmentPoint) javaObj, staticType);
-		} else {
+		} else  {
 			return new NativeJavaObject(scope, javaObj, staticType);
 		}
 	}

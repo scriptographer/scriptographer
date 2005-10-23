@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListItem.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/18 15:29:06 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -37,8 +37,14 @@ package com.scriptographer.adm;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.*;
+import java.io.IOException;
 
 import org.mozilla.javascript.Function;
+
+import com.scriptographer.util.ExtendedArrayList;
+import com.scriptographer.util.ExtendedList;
+import com.scriptographer.util.Lists;
+import com.scriptographer.util.SimpleList;
 
 /**
  * ListItem is a ADM list item (e.g. ListBox, PopupMenu, ...) and a
@@ -61,18 +67,16 @@ The following item types have valid list objects:
 "ADM Text Edit Scrolling Popup Type"
 */
 
-// TODO: subclass AbstractList and make this a normal list!
-// how to get around the CallbackHanlder subclassing is not clear yet
-public abstract class ListItem extends Item {
+public abstract class ListItem extends Item implements SimpleList {
 
 	protected ListItem(Dialog dialog, int type, int options) {
 		super(dialog, type, options);
 		listHandle = nativeInit(handle);
 	}
 	
-	protected ListItem(Dialog dialog, int itemHandle) {
+	protected ListItem(Dialog dialog, long itemHandle) {
 		super(dialog, itemHandle);
-		listHandle = nativeInit(itemHandle);
+		listHandle = nativeInit((int) itemHandle);
 	}
 	
 	protected ListItem() {
@@ -82,7 +86,7 @@ public abstract class ListItem extends Item {
 		super.onNotify(notifier);
 		if (notifier == Notifier.NOTIFIER_USER_CHANGED) {
 			// redirect to entry:
-			ListEntry entry = getActiveEntry();
+			ListEntry entry = getActive();
 			if (entry != null) {
 				entry.onNotify(notifier);
 			}
@@ -211,42 +215,6 @@ public abstract class ListItem extends Item {
 	public void setEntryTextRect(int[] rect) {
 		setEntryTextRect(rect[0], rect[1], rect[2], rect[3]);
 	}
-	
-	/*
-	 * entry array accessors
-	 *
-	 */
-
-	// TODO: maybe this fits in the List interface???
-	public native void removeEntry(int index);
-
-	public ListEntry createEntry(int index) {
-		return new ListEntry(this, index);
-	}
-	
-	public final ListEntry createEntry() {
-		return createEntry(-1);
-	}
-	
-	public final ListEntry createEntry(String text) {
-		ListEntry entry = createEntry(-1);
-		entry.setText(text);
-		return entry;
-	}
-
-	public native ListEntry getEntry(int index);
-	public native ListEntry getEntry(String text);
-	public native ListEntry getEntry(int x, int y);
-	
-	public void getEntry(Point2D point) {
-		getEntry((int)point.getX(), (int)point.getY());
-	}
-
-	public native ListEntry getActiveEntry();
-	public native ListEntry[] getEntries();
-	public native ListEntry[] getSelectedEntries();
-	
-	public native int getNumEntries();
 
 	/*
 	 * item action mask
@@ -283,4 +251,110 @@ public abstract class ListItem extends Item {
 	 */
 	
 	public native void selectByText(String text);
+	
+	/*
+	 * entry array accessors
+	 *
+	 */
+
+	public native ListEntry get(String text);
+	public native ListEntry getAt(int x, int y);
+	
+	public void getAt(Point2D point) {
+		getAt((int)point.getX(), (int)point.getY());
+	}
+
+	public native ListEntry getActive();
+	public native ListEntry[] getSelected();
+	
+	/*
+	 * List interface 
+	 * 
+	 */
+
+	public native int size();
+
+	public native Object get(int index);
+
+	public Object set(int index, Object element) {
+		Object old = remove(index);
+		if (old != null && add(index, element) != null) {
+			return old;
+		}
+		return null;
+	}
+	
+	protected ListEntry createEntry(int index) {
+		return new ListEntry(this, index);
+	}
+
+	public Object add(int index, Object element) {
+		ListEntry res = createEntry(index);
+		if (element instanceof ListEntry) {
+			ListEntry entry = (ListEntry) element;
+			res.setText(entry.getText());
+			res.setEnabled(entry.isEnabled());
+			res.setActive(entry.isActive());
+			res.setChecked(res.isChecked());
+			res.setSeparator(entry.isSeparator());
+			try {
+				res.setImage(entry.getImage());
+				res.setSelectedImage(entry.getSelectedImage());
+				res.setDisabledImage(entry.getDisabledImage());
+			} catch (IOException e) {
+				// will never happen with images
+			}
+		} else if (element != null) {
+			res.setText(element.toString());
+		}
+		return res;
+	}
+
+	// TODO: think about some kind of field value cashing in ListEntry
+	// otherwise values returned by remove() are unusable and cannot 
+	// be added to the list again.
+	public native Object remove(int index);
+
+	// as there is no Polymorphism in Java, so all these need to be copied 
+	// over from AbstractList.
+	
+	public Object add(Object element) {
+		return add(-1, element);
+	}
+
+	public void remove(int fromIndex, int toIndex) {
+		for (int i = toIndex - 1; i >= fromIndex; i--)
+			remove(i);
+	}
+
+	public final void clear() {
+		remove(0, size());
+	}
+
+	public boolean addAll(ExtendedList elements) {
+		boolean modified = false;
+		int size = elements.size();
+		int index = size();
+		for (int i = 0; i < size; i++) {
+			if (add(index++, elements.get(i)) != null)
+				modified = true;
+		}
+		return modified;
+	}
+
+	public final boolean addAll(Object[] elements) {
+		return addAll(Lists.asList(elements));
+	}
+
+	public ExtendedList subList(int fromIndex, int toIndex) {
+		ExtendedArrayList list = new ExtendedArrayList(toIndex - fromIndex);
+		for (int i = fromIndex; i < toIndex; i++)
+			list.add(get(i));
+		return list;
+	}
+
+	public boolean isEmpty() {
+		return size() == 0;
+	}
+
 }

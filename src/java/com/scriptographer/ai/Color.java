@@ -28,8 +28,8 @@
  *
  * $RCSfile: Color.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/30 08:21:33 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -37,9 +37,10 @@ package com.scriptographer.ai;
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
 
-public abstract class Color {
+import com.scriptographer.js.WrappableObject;
 
-	
+public abstract class Color extends WrappableObject {
+
 	// AIRasterizeType, AIColorConversionSpaceValue
 	// Used in Color.convert() and Raster
 	// the conversion to the right AIColorConversionSpaceValue values is done
@@ -81,16 +82,21 @@ public abstract class Color {
 	 * @return the color's alpha value
 	 */
 	public float getAlpha() {
-		return alpha;
+		// an alpha value of -1 means no alpha channel. return 1 here as no alpha means
+		// 100% alpha
+		return alpha == -1f ? 1f : alpha;
 	}
 
 	/**
 	 * Sets the color's alpha value.
+	 * Setting alpha to -1 deactivates the alpha channel.
 	 *
 	 * @param alpha the color's new alpha value
 	 */
 	public void setAlpha(float alpha) {
-		this.alpha = alpha;
+		if (alpha < 0f && alpha != -1f) this.alpha = 0f;
+		else if (alpha > 1f) this.alpha = 1f;
+		else this.alpha = alpha;
 	}
 
 	/**

@@ -28,19 +28,33 @@
  *
  * $RCSfile: PopupList.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
 
 public class PopupList extends ListItem {
+	// Options
+	public final static int
+	// self defined pseudo options, for creation of the right TYPE:
+		OPTION_SCROLLING = 1 << 1;
+	
+	protected PopupList(Dialog dialog, long itemHandle) {
+		super(dialog, itemHandle);
+	}
 
 	public PopupList(Dialog dialog, int options) {
-		super(dialog, Item.TYPE_POPUP_LIST, options);
+		super(dialog, getType(options), OPTION_NONE);
 	}
 
 	public PopupList(Dialog dialog) {
-		this(dialog, Item.OPTION_NONE);
+		this(dialog, OPTION_NONE);
+	}
+
+	private static int getType(int options) {
+		// abuse the ADM's password style for creating it as a type...
+		return (options & OPTION_SCROLLING) != 0 ? TYPE_SCROLLING_POPUP_LIST
+			: TYPE_POPUP_LIST;
 	}
 }

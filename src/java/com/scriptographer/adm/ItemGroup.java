@@ -28,16 +28,18 @@
  *
  * $RCSfile: ItemGroup.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
 
-public class ItemGroup extends Item {
+import com.scriptographer.js.Unsealed;
+
+public class ItemGroup extends Item implements Unsealed {
 
 	public ItemGroup(Dialog dialog) {
-		super(dialog, Item.TYPE_ITEMGROUP, 0);
+		super(dialog, TYPE_ITEMGROUP, 0);
 	}
 
 	public native void addItem(Item item);

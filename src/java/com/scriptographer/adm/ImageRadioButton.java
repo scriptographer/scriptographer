@@ -24,37 +24,58 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on 31.07.2005.
+ * File created on 20.10.2005.
  * 
- * $RCSfile: SegmentPointObject.java,v $
+ * $RCSfile: ImageRadioButton.java,v $
  * $Author: lehni $
  * $Revision: 1.1 $
- * $Date: 2005/07/31 12:09:52 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
-package com.scriptographer.js;
+package com.scriptographer.adm;
 
-import org.mozilla.javascript.NativeJavaObject;
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Scriptable;
+import java.awt.Insets;
+import java.io.IOException;
 
-import com.scriptographer.ai.SegmentPoint;
+public class ImageRadioButton extends RadioButton {
 
-/**
- * PointObject is neeeded so the public fields Point2D.Float.x and Point2D.Float.y are overriden
- * with the setX and setY setters, in order to reflect the changes in the underlying AI points
- */
-public class SegmentPointObject extends NativeJavaObject {
-	public SegmentPointObject(Scriptable scope, SegmentPoint point, Class staticType) {
-		super(scope, point, staticType);
+	public ImageRadioButton(Dialog dialog) {
+		super(dialog, TYPE_PICTURE_RADIOBUTTON);
+	}
+	
+	public Image getImage() {
+		return super.getImage();
 	}
 
-	public void put(String name, Scriptable start, Object value) {
-		if (javaObject != null) {
-			if (name.equals("x"))
-				((SegmentPoint) javaObject).setX((float) ScriptRuntime.toNumber(value));
-			else if (name.equals("y"))
-				((SegmentPoint) javaObject).setY((float) ScriptRuntime.toNumber(value));
-		}
+	public void setImage(Object obj) throws IOException {
+		super.setImage(obj);
+	}
+
+	public Image getRolloverImage() {
+		return super.getRolloverImage();
+	}
+
+	public void setRolloverImage(Object obj) throws IOException {
+		super.setRolloverImage(obj);
+	}
+
+	public Image getSelectedImage() {
+		return super.getSelectedImage();
+	}
+
+	public void setSelectedImage(Object obj) throws IOException {
+		super.setSelectedImage(obj);
+	}
+
+	public Image getDisabledImage() {
+		return super.getDisabledImage();
+	}
+
+	public void setDisabledImage(Object obj) throws IOException {
+		super.setDisabledImage(obj);
+	}
+
+	protected Insets getButtonInsets() {
+		return INSETS_IMAGE;
 	}
 }

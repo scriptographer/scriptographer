@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Annotator.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -42,15 +42,16 @@ import org.mozilla.javascript.Function;
 
 import com.scriptographer.adm.Drawer;
 import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.util.ReferenceMap;
+import com.scriptographer.util.IntMap;
+import com.scriptographer.util.SoftIntMap;
 
 public class Annotator extends AIObject {
 	private boolean active;
 
-	private static ReferenceMap annotators = new ReferenceMap(ReferenceMap.HARD);
+	private static IntMap annotators = new IntMap();
 	private static ArrayList unusedAnnotators = null;
 	// this is list of drawers that map viewports to created ADM Drawer objects:
-	private static ReferenceMap drawers = new ReferenceMap(ReferenceMap.SOFT);
+	private static SoftIntMap drawers = new SoftIntMap();
 	private static int counter = 0;
 	
 	public Annotator() {

@@ -28,13 +28,17 @@
  *
  * $RCSfile: Matrix.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/07/27 22:55:30 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
 
 import java.awt.geom.*;
+
+import org.mozilla.javascript.Scriptable;
+
+import com.scriptographer.js.Wrappable;
 
 /**
  * This class represents an affine transformation between two coordinate
@@ -53,7 +57,7 @@ import java.awt.geom.*;
  * represented (as in {@link #toString()}) by 
  * "[[m00, m01, m02], [m10, m11, m12]]".
  */
-public class Matrix extends AffineTransform {
+public class Matrix extends AffineTransform implements Wrappable {
 
 	public Matrix() {
 	}
@@ -127,7 +131,9 @@ public class Matrix extends AffineTransform {
 	   * @return the rotating transform
 	   */
 	public static AffineTransform getRotateInstance(double theta) {
-		return new Matrix(AffineTransform.getRotateInstance(theta));
+		Matrix m = new Matrix();
+		m.setToRotation(theta);
+		return m;
 	}
 
 	  /**
@@ -154,11 +160,15 @@ public class Matrix extends AffineTransform {
 	   * @return the rotating transform
 	   */
 	public static AffineTransform getRotateInstance(double theta, double x, double y) {
-		return new Matrix(AffineTransform.getRotateInstance(theta, x, y));
+		Matrix m = new Matrix();
+		m.setToRotation(theta, x, y);
+		return m;
 	}
 
 	public static AffineTransform getRotateInstance(double theta, Point2D center) {
-		return new Matrix(AffineTransform.getRotateInstance(theta, center.getX(), center.getY()));
+		Matrix m = new Matrix();
+		m.setToRotation(theta, center.getX(), center.getY());
+		return m;
 	}
 
 	  /**
@@ -174,11 +184,15 @@ public class Matrix extends AffineTransform {
 	   * @return the scaling transform
 	   */
 	public static AffineTransform getScaleInstance(double sx, double sy) {
-		return new Matrix(AffineTransform.getScaleInstance(sx, sy));
+		Matrix m = new Matrix();
+		m.setToScale(sx, sy);
+		return m;
 	}
 
 	public static AffineTransform getScaleInstance(double scale) {
-		return new Matrix(AffineTransform.getScaleInstance(scale, scale));
+		Matrix m = new Matrix();
+		m.setToScale(scale, scale);
+		return m;
 	}
 
 	  /**
@@ -196,7 +210,9 @@ public class Matrix extends AffineTransform {
 	   * @return the shearing transform
 	   */
 	public static AffineTransform getShearInstance(double shx, double shy) {
-		return new Matrix(AffineTransform.getShearInstance(shx, shy));
+		Matrix m = new Matrix();
+		m.setToShear(shx, shx);
+		return m;
 	}
 
 	  /**
@@ -212,11 +228,15 @@ public class Matrix extends AffineTransform {
 	   * @return the translating transform
 	   */
 	public static AffineTransform getTranslateInstance(double tx, double ty) {
-		return new Matrix(AffineTransform.getTranslateInstance(tx, ty));
+		Matrix m = new Matrix();
+		m.setToTranslation(tx, tx);
+		return m;
 	}
 
 	public static AffineTransform getTranslateInstance(Point2D pt) {
-		return new Matrix(AffineTransform.getTranslateInstance(pt.getX(), pt.getY()));
+		Matrix m = new Matrix();
+		m.setToTranslation(pt.getX(), pt.getY());
+		return m;
 	}
 
 	public void setScaleX(double scaleX) {
@@ -265,5 +285,17 @@ public class Matrix extends AffineTransform {
 
 	public void scale(double scale) {
 		super.scale(scale, scale);
+	}
+
+	// wrappable interface
+	
+ 	protected Scriptable wrapper;
+	
+	public void setWrapper(Scriptable wrapper) {
+		this.wrapper = wrapper;
+	}
+	
+	public Scriptable getWrapper() {
+		return wrapper;
 	}
 }

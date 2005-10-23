@@ -28,13 +28,15 @@
  *
  * $RCSfile: HitTest.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/18 15:31:15 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
 
-public class HitTest {
+import com.scriptographer.js.WrappableObject;
+
+public class HitTest extends WrappableObject {
 	// AIHitRequest
 	
 	/**

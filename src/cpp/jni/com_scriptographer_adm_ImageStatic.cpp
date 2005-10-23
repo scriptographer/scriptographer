@@ -24,24 +24,24 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: com_scriptographer_adm_Static.cpp,v $
+ * $RCSfile: com_scriptographer_adm_ImageStatic.cpp,v $
  * $Author: lehni $
  * $Revision: 1.1 $
- * $Date: 2005/10/18 15:35:46 $
+ * $Date: 2005/10/23 00:28:48 $
  */
 
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
-#include "com_scriptographer_adm_Static.h"
+#include "com_scriptographer_adm_ImageStatic.h"
 
 /*
- * com.scriptographer.adm.Static
+ * com.scriptographer.adm.ImageStatic
  */
 
 /*
- * void nativeSetPicture(int iconRef)
+ * void nativeSetImage(int iconRef)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Static_nativeSetPicture(JNIEnv *env, jobject obj, jint iconRef) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ImageStatic_nativeSetImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetPicture(item, (ADMIconRef)iconRef);

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Rectangle.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -144,7 +144,7 @@ public class Rectangle extends Rectangle2D.Float implements Wrappable {
 		return new Rectangle(this);
 	}
 
-	// wrappable interface:
+	// wrappable interface
 
 	private Scriptable wrapper;
 

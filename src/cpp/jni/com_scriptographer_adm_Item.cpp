@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Item.cpp,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/07/22 17:30:56 $
+ * $Revision: 1.10 $
+ * $Date: 2005/10/23 00:28:48 $
  */
 
 #include "stdHeaders.h"
@@ -52,9 +52,9 @@ ASErr ASAPI callbackItemInit(ADMItemRef item) {
 	// set size and bounds:
 	ADMRect rect;
 	sADMItem->GetLocalRect(item, &rect);
-	gEngine->setObjectField(env, obj, gEngine->fid_Item_size, gEngine->convertDimension(env, rect.right, rect.bottom));
+	gEngine->setObjectField(env, obj, gEngine->fid_Item_nativeSize, gEngine->convertDimension(env, rect.right, rect.bottom));
 	sADMItem->GetBoundsRect(item, &rect);
-	gEngine->setObjectField(env, obj, gEngine->fid_Item_bounds, gEngine->convertRectangle(env, &rect));
+	gEngine->setObjectField(env, obj, gEngine->fid_Item_nativeBounds, gEngine->convertRectangle(env, &rect));
 
 	// Attach the item-level callbacks
 	sADMItem->SetDestroyProc(item, callbackItemDestroy);
@@ -98,7 +98,7 @@ void ASAPI callbackItemNotify(ADMItemRef item, ADMNotifierRef notifier) {
 	if (sADMNotifier->IsNotifierType(notifier, kADMBoundsChangedNotifier)) {
 		JNIEnv *env = gEngine->getEnv();
 		try {
-			jobject size = gEngine->getObjectField(env, obj, gEngine->fid_Item_size);
+			jobject size = gEngine->getObjectField(env, obj, gEngine->fid_Item_nativeSize);
 			if (size != NULL) {
 				ADMPoint pt;
 				gEngine->convertDimension(env, size, &pt);
@@ -631,6 +631,17 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getBackgroundColor(JNIEn
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetBackColor(item);
+	} EXCEPTION_CONVERT(env)
+	return 0;
+}
+
+/*
+ * long getChildItemHandle(int itemID)
+ */
+JNIEXPORT jlong JNICALL Java_com_scriptographer_adm_Item_getChildItemHandle(JNIEnv *env, jobject obj, jint itemID) {
+	try {
+		ADMItemRef item = gEngine->getItemRef(env, obj);
+		return (jlong) sADMItem->GetChildItem(item, itemID);
 	} EXCEPTION_CONVERT(env)
 	return 0;
 }

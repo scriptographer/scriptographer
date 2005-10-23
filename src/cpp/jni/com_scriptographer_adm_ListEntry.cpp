@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ListEntry.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/20 13:49:37 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/23 00:28:48 $
  */
  
 #include "stdHeaders.h"
@@ -429,9 +429,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_invalidate__IIII(JN
 }
 
 /*
- * void nativeSetPicture(int iconRef)
+ * void nativeSetImage(int iconRef)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetPicture(JNIEnv *env, jobject obj, jint iconRef) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
 		#define SET_PICTURE(SUITE) \
 			SUITE->SetPicture(entry, (ADMIconRef)iconRef);
@@ -441,9 +441,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetPicture(JN
 }
 
 /*
- * void nativeSetSelectedPicture(int iconRef)
+ * void nativeSetSelectedImage(int iconRef)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetSelectedPicture(JNIEnv *env, jobject obj, jint iconRef) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetSelectedImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
 		#define SET_SELECETED_PICTURE(SUITE) \
 			SUITE->SetSelectedPicture(entry, (ADMIconRef)iconRef);
@@ -453,9 +453,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetSelectedPi
 }
 
 /*
- * void nativeSetDisabledPicture(int iconRef)
+ * void nativeSetDisabledImage(int iconRef)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetDisabledPicture(JNIEnv *env, jobject obj, jint iconRef) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetDisabledImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
 		#define SET_DISABLED_PICTURE(SUITE) \
 			SUITE->SetDisabledPicture(entry, (ADMIconRef)iconRef);
@@ -465,9 +465,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetDisabledPi
 }
 
 /*
- * void nativeSetText(java.lang.String text)
+ * void setText(java.lang.String text)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetText(JNIEnv *env, jobject obj, jstring text) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_setText(JNIEnv *env, jobject obj, jstring text) {
 	try {
 		#define SET_TEXT(SUITE) \
 			const jchar *chars = env->GetStringChars(text, NULL); \
@@ -477,6 +477,25 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetText(JNIEn
 
 		DEFINE_METHOD(SET_TEXT)
 	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * java.lang.String getText()
+ */
+JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_ListEntry_getText(JNIEnv *env, jobject obj) {
+	try {
+		#define GET_TEXT(SUITE) \
+			long len = SUITE->GetTextLength(entry); \
+			jchar *chars = new jchar[len]; \
+			SUITE->GetTextW(entry, chars, len); \
+			jstring res = env->NewString(chars, len); \
+			if (res == NULL) EXCEPTION_CHECK(env) \
+			delete chars; \
+			return res;
+			
+		DEFINE_METHOD(GET_TEXT)
+	} EXCEPTION_CONVERT(env)
+	return NULL;
 }
 
 /*

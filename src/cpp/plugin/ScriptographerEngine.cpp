@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2005/10/19 02:50:45 $
+ * $Revision: 1.17 $
+ * $Date: 2005/10/23 00:33:04 $
  */
  
 #include "stdHeaders.h"
@@ -387,9 +387,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ScriptographerException = loadClass(env, "com/scriptographer/ScriptographerException");
 	
-	cls_ReferenceMap = loadClass(env, "com/scriptographer/util/ReferenceMap");
-	cid_ReferenceMap = getConstructorID(env, cls_ReferenceMap, "(I)V");
-	mid_ReferenceMap_put = getMethodID(env, cls_ReferenceMap, "put", "(ILjava/lang/Object;)Ljava/lang/Object;");
+	cls_IntMap = loadClass(env, "com/scriptographer/util/IntMap");
+	cid_IntMap = getConstructorID(env, cls_IntMap, "()V");
+	mid_IntMap_put = getMethodID(env, cls_IntMap, "put", "(ILjava/lang/Object;)Ljava/lang/Object;");
 	
 // AI:
 
@@ -520,7 +520,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_Drawer = loadClass(env, "com/scriptographer/adm/Drawer");
 	cid_Drawer = getConstructorID(env, cls_Drawer, "(I)V");
 
-	cls_FontInfo = loadClass(env, "com/scriptographer/adm/Drawer$FontInfo");
+	cls_FontInfo = loadClass(env, "com/scriptographer/adm/FontInfo");
 	cid_FontInfo = getConstructorID(env, cls_FontInfo, "(IIIII)V");
 
 	cls_Image = loadClass(env, "com/scriptographer/adm/Image");
@@ -529,8 +529,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_Image_getIconHandle = getMethodID(env, cls_Image, "getIconHandle", "()I");
 
 	cls_Item = loadClass(env, "com/scriptographer/adm/Item");
-	fid_Item_size = getFieldID(env, cls_Item, "size", "Ljava/awt/Dimension;");
-	fid_Item_bounds = getFieldID(env, cls_Item, "bounds", "Ljava/awt/Rectangle;");
+	fid_Item_nativeSize = getFieldID(env, cls_Item, "nativeSize", "Ljava/awt/Dimension;");
+	fid_Item_nativeBounds = getFieldID(env, cls_Item, "nativeBounds", "Ljava/awt/Rectangle;");
 	
 	cls_ListItem = loadClass(env, "com/scriptographer/adm/ListItem");
 	fid_ListItem_listHandle = getFieldID(env, cls_ListItem, "listHandle", "I");	
@@ -808,7 +808,7 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSp
 	// determine srcCol's space and sample size:
 	AIColorConversionSpaceValue srcSpace;
 	int srcSize;
-	bool srcHasAlpha = srcAlpha < 1;
+	bool srcHasAlpha = srcAlpha >= 0;
 	switch (srcCol->kind) {
 		case kGrayColor:
 			srcSize = 1;
@@ -820,7 +820,7 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSp
 			if (srcHasAlpha) srcSpace = kAIARGBColorSpace;
 			else srcSpace = kAIRGBColorSpace;
 			break;
-		case kFourColor: 
+		case kFourColor:
 			srcSize = 4;
 			if (srcHasAlpha) srcSpace = kAIACMYKColorSpace;
 			else srcSpace = kAICMYKColorSpace;

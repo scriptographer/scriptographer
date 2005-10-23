@@ -245,7 +245,7 @@
 		   	<class name="com.scriptographer.adm.Button" />
 			<class name="com.scriptographer.adm.ToggleItem" />
 			<class name="com.scriptographer.adm.ItemGroup" />
-		   	<class name="com.scriptographer.adm.Static" />
+		   	<class name="com.scriptographer.adm.ImageStatic" />
 		   	<class name="com.scriptographer.adm.TextEdit" />
 
 		   	<class name="com.scriptographer.adm.ListItem" />

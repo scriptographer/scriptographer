@@ -28,14 +28,16 @@
  *
  * $RCSfile: FileFormat.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:01 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
 
+import com.scriptographer.js.WrappableObject;
+
 // TODO: unfinished!
-public class FileFormat {
+public class FileFormat extends WrappableObject {
 	private String title;
 	private String name;
 	private String extension;

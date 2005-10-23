@@ -28,16 +28,17 @@
  *
  * $RCSfile: PathStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
+import com.scriptographer.js.WrappableObject;
 
-public class PathStyle implements Commitable {
+public class PathStyle extends WrappableObject implements Commitable {
 	protected FillStyle fill;
 	protected StrokeStyle stroke;
 	// Whether or not to use this as a clipping path

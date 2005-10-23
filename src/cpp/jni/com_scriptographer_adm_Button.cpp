@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Button.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/18 15:35:46 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/23 00:28:48 $
  */
 
 #include "StdHeaders.h"
@@ -39,9 +39,9 @@
  */
 
 /*
- * void nativeSetPicture(int iconRef)
+ * void nativeSetImage(int iconRef)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetPicture(JNIEnv *env, jobject obj, jint iconRef) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetPicture(item, (ADMIconRef)iconRef);
@@ -49,9 +49,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetPicture(JNIEn
 }
 
 /*
- * void nativeSetRolloverPicture(int iconRef)
+ * void nativeSetRolloverImage(int iconRef)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetRolloverPicture(JNIEnv *env, jobject obj, jint iconRef) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetRolloverImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetRolloverPicture(item, (ADMIconRef)iconRef);
@@ -60,9 +60,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetRolloverPictu
 }
 
 /*
- * void nativeSetSelectedPicture(int iconRef)
+ * void nativeSetSelectedImage(int iconRef)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetSelectedPicture(JNIEnv *env, jobject obj, jint iconRef) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetSelectedImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetSelectedPicture(item, (ADMIconRef)iconRef);
@@ -70,9 +70,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetSelectedPictu
 }
 
 /*
- * void nativeSetDisabledPicture(int iconRef)
+ * void nativeSetDisabledImage(int iconRef)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetDisabledPicture(JNIEnv *env, jobject obj, jint iconRef) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetDisabledImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetDisabledPicture(item, (ADMIconRef)iconRef);

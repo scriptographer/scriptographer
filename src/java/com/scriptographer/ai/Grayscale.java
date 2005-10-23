@@ -28,8 +28,8 @@
  *
  * $RCSfile: Grayscale.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/30 08:21:33 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -88,7 +88,7 @@ public class Grayscale extends Color {
 	public String toString() {
 		StringBuffer buf = new StringBuffer(16);
 		buf.append("{ gray: ").append(gray);
-		if (alpha != 1f)
+		if (alpha != -1f)
 			buf.append(", alpha: ").append(alpha);
 		buf.append(" }");
 		return buf.toString();

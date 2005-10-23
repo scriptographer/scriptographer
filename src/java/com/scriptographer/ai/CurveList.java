@@ -28,26 +28,26 @@
  *
  * $RCSfile: CurveList.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/05/04 23:40:55 $
+ * $Revision: 1.7 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
 
-import com.scriptographer.util.ExtendedJavaList;
+import com.scriptographer.util.ExtendedArrayList;
 import com.scriptographer.util.AbstractFetchList;
 
 public class CurveList extends AbstractFetchList {
 	protected Path path;
 	protected int size;
 	protected SegmentList segments;
-	protected ExtendedJavaList list;
+	protected ExtendedArrayList.List list;
 
 	protected CurveList(Path path, SegmentList segments) {
 		this.path = path;
 		this.segments = segments;
 		segments.curves = this;
-		list = new ExtendedJavaList();
+		list = new ExtendedArrayList.List();
 		updateSize();
 	}
 	
@@ -89,7 +89,7 @@ public class CurveList extends AbstractFetchList {
 	}
 
 	// this list is read only:
-	public boolean add(int index, Object element) {
+	public Object add(int index, Object element) {
 		throw new UnsupportedOperationException();
 	}
 

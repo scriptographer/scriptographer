@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.11 $
+ * $Date: 2005/10/23 00:28:48 $
  */
  
 #include "stdHeaders.h"
@@ -468,43 +468,45 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_hasDefaultName(JNIEnv 
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_append(JNIEnv *env, jobject obj, jobject art) {
 	try {
-		AIArtHandle art1 = gEngine->getArtHandle(env, obj);
-		AIArtHandle art2 = gEngine->getArtHandle(env, art);
-		if (art1 != NULL && art2 != NULL && art1 != art2) {
-			short type1 = artGetType(art1);
+		if (art != NULL) {
+			AIArtHandle art1 = gEngine->getArtHandle(env, obj);
+			AIArtHandle art2 = gEngine->getArtHandle(env, art);
+			if (art1 != NULL && art2 != NULL && art1 != art2) {
+				short type1 = artGetType(art1);
 #ifdef OLD_TEXT_SUITES
-			if (type1 == kTextArt) {
-				short type2 = artGetType(art2);
-				if (type2 == kPathArt) {
-					// check that this path is not already in a textPath object:
-					AIArtHandle parent;
-					if (!sAIArt->GetArtParent(art2, &parent) && artGetType(parent) != kTextPathArt) {
-						AIArtHandle path = art2;
-						if (!sAITextPath->InsertTextPath(art1, NULL, kPlaceInsideOnTop, &path)) {
-							// assign the new art handle
-							artChangeArt(art2, obj2, path);
-							return true;
+				if (type1 == kTextArt) {
+					short type2 = artGetType(art2);
+					if (type2 == kPathArt) {
+						// check that this path is not already in a textPath object:
+						AIArtHandle parent;
+						if (!sAIArt->GetArtParent(art2, &parent) && artGetType(parent) != kTextPathArt) {
+							AIArtHandle path = art2;
+							if (!sAITextPath->InsertTextPath(art1, NULL, kPlaceInsideOnTop, &path)) {
+								// assign the new art handle
+								artChangeArt(art2, obj2, path);
+								return true;
+							}
 						}
 					}
-				}
-			} else
+				} else
 #endif
-			if (type1 == kGroupArt || type1 == kCompoundPathArt || type1 == kMysteryPathArt) {
-				// if art belongs to a dictionary, treat it differently
-				AIDictionaryRef dict2 = gEngine->getArtDictionaryRef(env, art);
-				if (dict2 != NULL) {
-					AIDictKey key = artGetDictionaryKey(dict2, art2);
-					if (key != NULL) {
-						if (!sAIDictionary->MoveEntryToArt(dict2, key, kPlaceInsideOnTop, art1, &art2)) {
-							gEngine->changeArtHandle(env, art, art2, NULL);
-							return true;
+				if (type1 == kGroupArt || type1 == kCompoundPathArt || type1 == kMysteryPathArt) {
+					// if art belongs to a dictionary, treat it differently
+					AIDictionaryRef dict2 = gEngine->getArtDictionaryRef(env, art);
+					if (dict2 != NULL) {
+						AIDictKey key = artGetDictionaryKey(dict2, art2);
+						if (key != NULL) {
+							if (!sAIDictionary->MoveEntryToArt(dict2, key, kPlaceInsideOnTop, art1, &art2)) {
+								gEngine->changeArtHandle(env, art, art2, NULL);
+								return true;
+							}
 						}
-					}
 
+					}
+					// simply append it
+					if (!sAIArt->ReorderArt(art2, kPlaceInsideOnTop, art1))
+						return true;
 				}
-				// simply append it
-				if (!sAIArt->ReorderArt(art2, kPlaceInsideOnTop, art1))
-					return true;
 			}
 		}
 	} EXCEPTION_CONVERT(env)

@@ -28,8 +28,8 @@
  *
  * $RCSfile: HierarchyListEntry.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -43,7 +43,7 @@ public class HierarchyListEntry extends ListEntry {
 	private int dividerColor = Drawer.COLOR_BLACK;
 	protected HierarchyList childList = null;
 	
-	public HierarchyListEntry(HierarchyList list, int index) {
+	protected HierarchyListEntry(HierarchyList list, int index) {
 		super(list, index);
 	}
 

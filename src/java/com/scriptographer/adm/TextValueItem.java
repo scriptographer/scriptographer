@@ -28,8 +28,8 @@
  *
  * $RCSfile: TextValueItem.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/18 15:29:06 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -57,6 +57,10 @@ public abstract class TextValueItem extends ValueItem {
 		UNITS_PIXEL = 10,
 		UNITS_TIME = 11,
 		UNITS_HA = 12;
+
+	protected TextValueItem(Dialog dialog, long itemHandle) {
+		super(dialog, itemHandle);
+	}
 
 	protected TextValueItem(Dialog dialog, int type, int options) {
 		super(dialog, type, options);

@@ -28,13 +28,11 @@
  *
  * $RCSfile: Static.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/18 15:29:06 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
-
-import java.io.IOException;
 
 /**
  * A Static is by default text based.
@@ -56,10 +54,6 @@ public class Static extends TextValueItem {
 		// a fake option that tells the constructor to construct a MULTILINE static item.
 		OPTION_MULTILINE = 1 << 1;
 
-	protected boolean hasPicture = false;
-
-	private Image picture = null;
-
 	/**
 	 * Creates a text based Static item.
 	 * @param dialog
@@ -67,52 +61,11 @@ public class Static extends TextValueItem {
 	 */
 	public Static(Dialog dialog, int options) {
 		super(dialog,
-			(options & OPTION_MULTILINE) != 0 ? Item.TYPE_TEXT_STATIC_MULTILINE
-				: Item.TYPE_TEXT_STATIC, OPTION_NONE);
+			(options & OPTION_MULTILINE) != 0 ? TYPE_TEXT_STATIC_MULTILINE
+				: TYPE_TEXT_STATIC, OPTION_NONE);
 	}
 	
 	public Static(Dialog dialog) {
 		this(dialog, OPTION_NONE);
 	}
-	
-	/**
-	 * Creates a picture based Static Item.
-	 * 
-	 * @param dialog
-	 * @param picture
-	 */
-	public Static(Dialog dialog, Image picture) {
-		super(dialog, Item.TYPE_PICTURE_STATIC, OPTION_NONE);
-		hasPicture = true;
-		if (picture != null) {
-			try {
-				setPicture(picture);
-			} catch(Exception e) {
-				// OperationNotSupportedException cannot happen because of allowPictures above
-				// IOException cannot happen with parameter of class Image
-			}
-		}
-	}
-	
-	private native void nativeSetPicture(int iconHandle);
-	
-	class PicutreNotAllowedException extends RuntimeException {
-		PicutreNotAllowedException() {
-			super("Text based items cannot display pictures.");
-		}
-	}
-
-	public Image getPicture() {
-		if (!hasPicture)
-			throw new PicutreNotAllowedException();
-		return picture;
-	}
-	
-	public void setPicture(Object obj) throws IOException {
-		if (!hasPicture)
-			throw new PicutreNotAllowedException();
-		picture = Image.getImage(obj);
-		nativeSetPicture(picture != null ? picture.createIconHandle() : 0);
-	}
-
 }

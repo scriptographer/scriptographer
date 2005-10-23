@@ -28,8 +28,8 @@
  *
  * $RCSfile: ProgressBar.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -37,6 +37,6 @@ package com.scriptographer.adm;
 public class ProgressBar extends ValueItem {
 
 	public ProgressBar(Dialog dialog) {
-		super(dialog, Item.TYPE_PROGRESS_BAR, OPTION_NONE);
+		super(dialog, TYPE_PROGRESS_BAR, OPTION_NONE);
 	}
 }

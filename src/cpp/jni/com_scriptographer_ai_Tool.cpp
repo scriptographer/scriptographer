@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Tool.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.7 $
+ * $Date: 2005/10/23 00:28:48 $
  */
 
 #include "stdHeaders.h"
@@ -56,8 +56,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tool_hasPressure(JNIEnv *e
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Tool_nativeGetTools(JNIEnv *env, jclass cls) {
 	try {
-		// 0 = HARD reference!
-		jobject map = gEngine->newObject(env, gEngine->cls_ReferenceMap, gEngine->cid_ReferenceMap, 0);
+		jobject map = gEngine->newObject(env, gEngine->cls_IntMap, gEngine->cid_IntMap);
 		long count;
 		sAITool->CountTools(&count);
 		SPPluginRef plugin = gPlugin->getPluginRef();
@@ -72,7 +71,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Tool_nativeGetTools(JNIEnv 
 				// extract the index from the title, assume that the last word is a number:
 				int index = atoi(strrchr(title, ' ')) - 1;
 				jobject toolObj = gEngine->newObject(env, gEngine->cls_Tool, gEngine->cid_Tool, (jint) tool, index);
-				gEngine->callObjectMethod(env, map, gEngine->mid_ReferenceMap_put, (jint) tool, toolObj);
+				gEngine->callObjectMethod(env, map, gEngine->mid_IntMap_put, (jint) tool, toolObj);
 			}
 		}
 		return map;

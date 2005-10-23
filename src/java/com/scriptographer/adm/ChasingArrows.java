@@ -28,15 +28,17 @@
  *
  * $RCSfile: ChasingArrows.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
 
-public class ChasingArrows extends Item {
+import com.scriptographer.js.Unsealed;
+
+public class ChasingArrows extends Item implements Unsealed {
 
 	public ChasingArrows(Dialog dialog) {
-		super(dialog, Item.TYPE_CHASING_ARROWS, 0);
+		super(dialog, TYPE_CHASING_ARROWS, 0);
 	}
 }

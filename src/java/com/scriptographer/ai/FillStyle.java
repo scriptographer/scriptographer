@@ -28,13 +28,15 @@
  *
  * $RCSfile: FillStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
 
-public class FillStyle {
+import com.scriptographer.js.WrappableObject;
+
+public class FillStyle extends WrappableObject {
 	protected Color color; 					/* Fill color */
 	protected boolean overprint;			/* Overprint */
 

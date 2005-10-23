@@ -8,38 +8,33 @@ import java.awt.geom.Rectangle2D;
 import org.mozilla.javascript.ScriptRuntime;
 
 import com.scriptographer.js.FunctionHelper;
+import com.scriptographer.js.Unsealed;
 
-public class ListEntry extends NotificationHandler {
-	private String text;
-
-	private Image picture;
-	private Image selectedPicture;
-	private Image disabledPicture;
+public class ListEntry extends NotificationHandler implements Unsealed {
+	private Image image;
+	private Image selectedImage;
+	private Image disabledImage;
 
 	protected ListItem list;
 	
 	public ListEntry(ListItem list, int index) {
-		if (this instanceof HierarchyListEntry) {
-			if (!(list instanceof HierarchyList))
-				throw new RuntimeException("HierarchListEntry is required for HierarchyList");
-		} else {
-			if (list instanceof HierarchyList)
-				throw new RuntimeException("HierarchListEntry is only allowed for HierarchyList");
-		}
+		if (!(this instanceof HierarchyListEntry) && list instanceof HierarchyList)
+			throw new RuntimeException("Use HierarchyListEntry objects for HierarchyList");
 		handle = nativeCreate(list, index, list.getUniqueId());
 		if (handle == 0)
 			throw new RuntimeException("Cannot create list entry");
 		this.list = list;
 	}
-	
+
 	public ListEntry(ListItem list) {
-		this(list, -1); // -1 means insert at the end
+		this(list, -1); // -1 == insert at the end
 	}
 	
 	public boolean remove() {
 		if (handle > 0) {
 			nativeDestroy();
 			handle = 0;
+			list = null;
 			return true;
 		}
 		return false;
@@ -97,8 +92,8 @@ public class ListEntry extends NotificationHandler {
 	 * 
 	 */
 
-	private native int nativeCreate(ListItem list, int index, int id);
-	private native void nativeDestroy();
+	protected native int nativeCreate(ListItem list, int index, int id);
+	protected native void nativeDestroy();
 
 
 	/* 
@@ -205,35 +200,35 @@ public class ListEntry extends NotificationHandler {
 	 * 
 	 */
 
-	private native void nativeSetPicture(int iconHandle);
-	private native void nativeSetSelectedPicture(int iconHandle);
-	private native void nativeSetDisabledPicture(int iconHandle);
+	private native void nativeSetImage(int iconHandle);
+	private native void nativeSetSelectedImage(int iconHandle);
+	private native void nativeSetDisabledImage(int iconHandle);
 
-	public Image getPicture() {
-		return picture;
+	public Image getImage() {
+		return image;
 	}
 		
-	public void setPicture(Object obj) throws IOException {
-		picture = Image.getImage(obj);
-		nativeSetPicture(picture != null ? picture.createIconHandle() : 0);
+	public void setImage(Object obj) throws IOException {
+		image = Image.getImage(obj);
+		nativeSetImage(image != null ? image.createIconHandle() : 0);
 	}
 	
-	public Image getSelectedPicture() {
-		return selectedPicture;
+	public Image getSelectedImage() {
+		return selectedImage;
 	}
 	
-	public void setSelectedPicture(Object obj) throws IOException {
-		selectedPicture = Image.getImage(obj);
-		nativeSetSelectedPicture(selectedPicture != null ? selectedPicture.createIconHandle() : 0);
+	public void setSelectedImage(Object obj) throws IOException {
+		selectedImage = Image.getImage(obj);
+		nativeSetSelectedImage(selectedImage != null ? selectedImage.createIconHandle() : 0);
 	}
 
-	public Image getDisabledPicture() {
-		return disabledPicture;
+	public Image getDisabledImage() {
+		return disabledImage;
 	}
 
-	public void setDisabledPicture(Object obj) throws IOException {
-		disabledPicture = Image.getImage(obj);
-		nativeSetDisabledPicture(disabledPicture != null ? disabledPicture.createIconHandle() : 0);
+	public void setDisabledImage(Object obj) throws IOException {
+		disabledImage = Image.getImage(obj);
+		nativeSetDisabledImage(disabledImage != null ? disabledImage.createIconHandle() : 0);
 	}
 
 	/* 
@@ -241,16 +236,8 @@ public class ListEntry extends NotificationHandler {
 	 * 
 	 */
 
-	private native void nativeSetText(String text);
-	
-	public String getText() {
-		return text;
-	}
-	
-	public void setText(String text) {
-		this.text = text;
-		nativeSetText(text);
-	}
+	public native void setText(String text);
+	public native String getText();
 	
 	/*
 	 *  entry timer accessors

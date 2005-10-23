@@ -1,7 +1,5 @@
 /**
  *  Copyright 2001-2004 The Apache Software Foundation
- *  Portions (modifications) Copyright 2004-2005 IBM Corp.
- *  Portions (modifications) Copyright 2005 Juerg Lehni, Scratchdisk.com.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,30 +12,25 @@
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
- *
- * Contributors:
- *    Apache Software Foundation - Initial implementation
- *    Pascal Rapicault, IBM -  Pascal remove the entrySet() implementation because it relied on another class.
- *    IBM - change to int keys, remove support for weak references, and remove unused methods
  */
 
 package com.scriptographer.util;
 
-import java.lang.ref.*;
-import java.util.*;
+import java.util.AbstractCollection;
+import java.util.AbstractMap;
+import java.util.AbstractSet;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.ArrayList;
 
 /**
  *  Hashtable-based map with integer keys that allows values to be removed 
- *  by the garbage  collector.<P>
- *
- *  When you construct a <Code>ReferenceMap</Code>, you can 
- *  specify what kind of references are used to store the
- *  map's values.  If non-hard references are 
- *  used, then the garbage collector can remove mappings
- *  if a value becomes unreachable, or if the 
- *  JVM's memory is running low.  For information on how
- *  the different reference types behave, see
- *  {@link Reference}.<P>
+ *  by the garbage collector.<P>
  *
  *  The algorithms used are basically the same as those
  *  in {@link java.util.HashMap}.  In particular, you 
@@ -51,17 +44,27 @@ import java.util.*;
  *
  *  @see java.lang.ref.Reference
  */
-public class ReferenceMap extends AbstractMap {
+public class IntMap extends AbstractMap {
 
-	/**
-	 *  Constant indicating that hard references should be used.
-	 */
-	final public static int HARD = 0;
+	protected static class Entry {
+		protected int key;
+		protected Entry next;
+		
+		/**
+		 * Reference value.  Note this can never be null.
+		 */
+		protected Object value;
 
-	/**
-	 *  Constant indiciating that soft references should be used.
-	 */
-	final public static int SOFT = 1;
+		public Entry(int key, Object value, Entry next) {
+			this.key = key;
+			this.value = value;
+			this.next = next;
+		}
+
+		public Object getValue() {
+			return value;
+		}
+	}
 
 	int entryCount;
 
@@ -73,11 +76,6 @@ public class ReferenceMap extends AbstractMap {
 	 *  @serial
 	 */
 	float loadFactor;
-
-	/**
-	 *  ReferenceQueue used to eliminate stale mappings.
-	 */
-	transient ReferenceQueue queue = new ReferenceQueue();
 
 	/**
 	 *  Number of mappings in this map.
@@ -116,46 +114,26 @@ public class ReferenceMap extends AbstractMap {
 	 */
 	transient Collection values;
 
-	/**
-	 * The reference type for values. Must be HARD or SOFT Note: I originally
-	 * marked this field as final, but then this class didn't compile under
-	 * JDK1.2.2.
-	 * 
-	 * @serial
-	 */
-	int valueType;
-
     /**
-     *  Constructs a new <Code>ReferenceMap</Code> that will
-     *  use the specified types of references.
-     *
-     *  @param referenceType  the type of reference to use for values;
-     *   must be {@link #HARD}, {@link #SOFT}
+     * Constructs a new <Code>IntMap</Code>
      */
-    public ReferenceMap(int referenceType) {
-        this(referenceType, 16, 0.75f);
+    public IntMap() {
+        this(16, 0.75f);
     }
 
 	/**
-	 *  Constructs a new <Code>ReferenceMap</Code> with the
-	 *  specified reference type, load factor and initial
-	 *  capacity.
+	 *  Constructs a new <Code>IntMap</Code> with the
+	 *  specified load factor and initial capacity.
 	 *
-	 *  @param referenceType  the type of reference to use for values;
-	 *   must be {@link #HARD} or {@link #SOFT}
 	 *  @param capacity  the initial capacity for the map
 	 *  @param loadFactor  the load factor for the map
 	 */
-	public ReferenceMap(int referenceType, int capacity, float loadFactor) {
+	public IntMap(int capacity, float loadFactor) {
 		super();
-		if (referenceType != HARD && referenceType != SOFT)
-			throw new IllegalArgumentException(" must be HARD or SOFT."); //$NON-NLS-1$
 		if (capacity <= 0)
-			throw new IllegalArgumentException("capacity must be positive"); //$NON-NLS-1$
+			throw new IllegalArgumentException("capacity must be positive");
 		if ((loadFactor <= 0.0f) || (loadFactor >= 1.0f))
-			throw new IllegalArgumentException("Load factor must be greater than 0 and less than 1."); //$NON-NLS-1$
-
-		this.valueType = referenceType;
+			throw new IllegalArgumentException("Load factor must be greater than 0 and less than 1.");
 
 		int initialSize = 1;
 		while (initialSize < capacity)
@@ -170,22 +148,22 @@ public class ReferenceMap extends AbstractMap {
 	 * @param key
 	 * @return
 	 */
-	private Object doRemove(int key) {
+	protected Object doRemove(int key) {
 		int index = indexFor(key);
 		Entry previous = null;
 		Entry entry = table[index];
 		while (entry != null) {
-			if (key == entry.getKey()) {
+			if (key == entry.key) {
 				if (previous == null)
-					table[index] = entry.getNext();
+					table[index] = entry.next;
 				else
-					previous.setNext(entry.getNext());
+					previous.next = entry.next;
 				this.size--;
 				modCount++;
 				return entry.getValue();
 			}
 			previous = entry;
-			entry = entry.getNext();
+			entry = entry.next;
 		}
 		return null;
 	}
@@ -205,26 +183,6 @@ public class ReferenceMap extends AbstractMap {
 		return hash & (table.length - 1);
 	}
 
-	/**
-	 * Constructs a new table entry for the given data
-	 * 
-	 * @param key The entry key
-	 * @param value The entry value
-	 * @param next The next value in the entry's collision chain
-	 * @return The new table entry
-	 */
-	private Entry newEntry(int key, Object value, Entry next) {
-		entryCount++;
-		switch (valueType) {
-			case HARD :
-				return new HardRef(key, value, next);
-			case SOFT :
-				return new SoftRef(key, value, next, queue);
-			default :
-				throw new Error();
-		}
-	}
-
     /**
      *  Returns the entry associated with the given key.
      *
@@ -233,32 +191,13 @@ public class ReferenceMap extends AbstractMap {
      *    if the key is not in this map
      */
 	public Entry getEntry(int key) {
-		for (Entry entry = table[indexFor(key)]; entry != null; entry = entry.getNext())
-			if (entry.getKey() == key)
+		for (Entry entry = table[indexFor(key)]; entry != null; entry = entry.next)
+			if (entry.key == key)
 				return entry;
 		return null;
 	}
 
-	/**
-	 *  Purges stale mappings from this map.<P>
-	 *
-	 *  Ordinarily, stale mappings are only removed during
-	 *  a write operation; typically a write operation will    
-	 *  occur often enough that you'll never need to manually
-	 *  invoke this method.<P>
-	 *
-	 *  Note that this method is not synchronized!  Special
-	 *  care must be taken if, for instance, you want stale
-	 *  mappings to be removed on a periodic basis by some
-	 *  background thread.
-	 */
-	private void purge() {
-		Reference ref = queue.poll();
-		while (ref != null) {
-			doRemove(((Entry) ref).getKey());
-			ref.clear();
-			ref = queue.poll();
-		}
+	protected void purge() {
 	}
 
     /**
@@ -306,10 +245,25 @@ public class ReferenceMap extends AbstractMap {
         return entry.getValue();
 	}
 
+	/**
+	 * java.util.Map compatible version of get
+	 */
 	public Object get(Object key) {
 		return key instanceof Number ? get(((Number) key).intValue()) : null;
 	}
 
+	/**
+	 * Constructs a new table entry for the given data
+	 * 
+	 * @param key The entry key
+	 * @param value The entry value
+	 * @param next The next value in the entry's collision chain
+	 * @return The new table entry
+	 */
+	protected Entry createEntry(int key, Object value, Entry next) {
+		return new Entry(key, value, next);
+	}
+	
 	/**
 	 * Associates the given key with the given value.
 	 * <P>
@@ -321,7 +275,7 @@ public class ReferenceMap extends AbstractMap {
 	 */
 	public Object put(int key, Object value) {
 		if (value == null)
-			throw new NullPointerException("null values not allowed"); //$NON-NLS-1$
+			throw new NullPointerException("null values not allowed");
 
 		purge();
 
@@ -332,20 +286,21 @@ public class ReferenceMap extends AbstractMap {
 		Entry previous = null;
 		Entry entry = table[index];
 		while (entry != null) {
-			if (key == entry.getKey()) {
+			if (key == entry.key) {
 				Object result = entry.getValue();
 				if (previous == null)
-					table[index] = newEntry(key, value, entry.getNext());
+					table[index] = createEntry(key, value, entry.next);
 				else
-					previous.setNext(newEntry(key, value, entry.getNext()));
+					previous.next = createEntry(key, value, entry.next);
 				return result;
 			}
 			previous = entry;
-			entry = entry.getNext();
+			entry = entry.next;
 		}
 		this.size++;
 		modCount++;
-		table[index] = newEntry(key, value, table[index]);
+		table[index] = createEntry(key, value, table[index]);
+		entryCount++;
 		return null;
 	}
 
@@ -366,6 +321,12 @@ public class ReferenceMap extends AbstractMap {
 		purge();
 		return doRemove(key);
 	}
+	
+	public Object remove(Object key) {
+		if (key instanceof Number)
+			return remove(((Number) key).intValue());
+		return null;
+	}
 
     /**
 	 * Clears this map.
@@ -373,9 +334,6 @@ public class ReferenceMap extends AbstractMap {
 	public void clear() {
 		Arrays.fill(table, null);
 		size = 0;
-		while (queue.poll() != null) {
-			// drain the queue
-		}
 	}
 
 	/**
@@ -392,121 +350,15 @@ public class ReferenceMap extends AbstractMap {
 			Entry next = old[i];
 			while (next != null) {
 				Entry entry = next;
-				next = next.getNext();
-				int index = indexFor(entry.getKey());
-				entry.setNext(table[index]);
+				next = next.next;
+				int index = indexFor(entry.key);
+				entry.next = table[index];
 				table[index] = entry;
 			}
 			old[i] = null;
 		}
 		threshold = (int) (table.length * loadFactor);
 	}
-
-	/**
-	 * The common interface for all elements in the map.  Both
-	 * hard and soft map values conform to this interface.
-	 */
-	private static interface Entry {
-		/**
-		 * Returns the integer key for this entry.
-		 * @return The integer key
-		 */
-		public int getKey();
-
-		/**
-		 * Returns the next entry in the linked list of entries
-		 * with the same hash value, or <code>null</code>
-		 * if there is no next entry.
-		 * @return The next entry, or <code>null</code>.
-		 */
-		public Entry getNext();
-
-		/**
-		 * Returns the value of this entry.
-		 * @return The entry value.
-		 */
-		public Object getValue();
-
-		/**
-		 * Sets the next entry in the linked list of map entries
-		 * with the same hash value.
-		 * 
-		 * @param next The next entry, or <code>null</code>.
-		 */
-		public void setNext(Entry next);
-	}
-
-	/**
-	 * IEntry implementation that acts as a hard reference.
-	 * The value of a hard reference entry is never garbage
-	 * collected until it is explicitly removed from the map.
-	 */
-	private static class HardRef implements Entry {
-
-		private int key;
-		private Entry next;
-		/**
-		 * Reference value.  Note this can never be null.
-		 */
-		private Object value;
-
-		public HardRef(int key, Object value, Entry next) {
-			this.key = key;
-			this.value = value;
-			this.next = next;
-		}
-
-		public int getKey() {
-			return key;
-		}
-
-		public Entry getNext() {
-			return next;
-		}
-
-		public Object getValue() {
-			return value;
-		}
-
-		public void setNext(Entry next) {
-			this.next = next;
-		}
-	}
-
-	/**
-	 * Augments a normal soft reference with additional information
-	 * required to implement the IEntry interface.
-	 */
-	private static class SoftRef extends SoftReference implements Entry {
-		private int key;
-		/**
-		 * For chained collisions
-		 */
-		private Entry next;
-
-		public SoftRef(int key, Object value, Entry next, ReferenceQueue q) {
-			super(value, q);
-			this.key = key;
-			this.next = next;
-		}
-
-		public int getKey() {
-			return key;
-		}
-
-		public Entry getNext() {
-			return next;
-		}
-
-		public Object getValue() {
-			return super.get();
-		}
-
-		public void setNext(Entry next) {
-			this.next = next;
-		}
-	}
-
 
     /**
 	 * Returns a set view of this map's entries.
@@ -518,11 +370,11 @@ public class ReferenceMap extends AbstractMap {
 			return entrySet;
 		entrySet = new AbstractSet() {
 			public int size() {
-				return ReferenceMap.this.size();
+				return IntMap.this.size();
 			}
 
 			public void clear() {
-				ReferenceMap.this.clear();
+				IntMap.this.clear();
 			}
 
 			public boolean contains(Object o) {
@@ -543,7 +395,7 @@ public class ReferenceMap extends AbstractMap {
 					Map.Entry e = (Map.Entry) o;
 					Object k = e.getKey();
 					if (k instanceof Number)
-						ReferenceMap.this.remove(((Number) k).intValue());
+						IntMap.this.remove(((Number) k).intValue());
 					else
 						r = false;
 				}
@@ -563,7 +415,7 @@ public class ReferenceMap extends AbstractMap {
 				Iterator iterator = iterator();
 				while (iterator.hasNext()) {
 					Entry e = (Entry) iterator.next();
-					list.add(new DefaultMapEntry(e.getKey(), e.getValue()));
+					list.add(new DefaultMapEntry(e.key, e.getValue()));
 				}
 				return list.toArray(arr);
 			}
@@ -593,11 +445,11 @@ public class ReferenceMap extends AbstractMap {
 			}
 
 			public boolean remove(Object o) {
-				return o instanceof Number ? ReferenceMap.this.remove(((Number) o).intValue()) != null : false;
+				return o instanceof Number ? IntMap.this.remove(((Number) o).intValue()) != null : false;
 			}
 
 			public void clear() {
-				ReferenceMap.this.clear();
+				IntMap.this.clear();
 			}
 
 		};
@@ -618,7 +470,7 @@ public class ReferenceMap extends AbstractMap {
 			}
 
 			public void clear() {
-				ReferenceMap.this.clear();
+				IntMap.this.clear();
 			}
 
 			public Iterator iterator() {
@@ -665,10 +517,10 @@ public class ReferenceMap extends AbstractMap {
 					currentValue = null;
 					return false;
 				}
-				nextKey = e.getKey();
+				nextKey = e.key;
 				nextValue = e.getValue();
 				if (nextNull())
-					entry = entry.getNext();
+					entry = entry.next;
 			}
 			return true;
 		}
@@ -688,7 +540,7 @@ public class ReferenceMap extends AbstractMap {
 			if (nextNull() && !hasNext())
 				throw new NoSuchElementException();
 			previous = entry;
-			entry = entry.getNext();
+			entry = entry.next;
 			currentKey = nextKey;
 			currentValue = nextValue;
 			nextKey = -1;
@@ -704,7 +556,7 @@ public class ReferenceMap extends AbstractMap {
 			checkMod();
 			if (previous == null)
 				throw new IllegalStateException();
-			ReferenceMap.this.remove(currentKey);
+			IntMap.this.remove(currentKey);
 			previous = null;
 			currentKey = -1;
 			currentValue = null;
@@ -721,7 +573,7 @@ public class ReferenceMap extends AbstractMap {
 
 	private class KeyIterator extends EntryIterator {
 		public Object next() {
-			return new Integer(nextEntry().getKey());
+			return new Integer(nextEntry().key);
 		}
 	}
 

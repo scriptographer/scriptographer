@@ -28,13 +28,16 @@
  *
  * $RCSfile: Button.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/18 15:29:06 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
 
+import java.awt.Insets;
 import java.io.IOException;
+
+import com.scriptographer.ScriptographerEngine;
 
 /**
  * A Button is by default text based.
@@ -45,32 +48,16 @@ import java.io.IOException;
  */
 public class Button extends TextItem {
 
-	// ADMPictureButtonStyle
-	public final static int
-		STYLE_BLACK_SUNKEN_RECT = 0,
-		STYLE_BLACK_RECT = 1;
-
-	protected boolean hasPictures = false;
-
 	protected Button(Dialog dialog, int type) {
 		super(dialog, type);
 	}
-	
-	public Button(Dialog dialog) {
-		super(dialog, Item.TYPE_TEXT_PUSHBUTTON);
+
+	protected Button(Dialog dialog, long itemHandle) {
+		super(dialog, itemHandle);
 	}
 	
-	public Button(Dialog dialog, Image picture) {
-		super(dialog, Item.TYPE_PICTURE_PUSHBUTTON);
-		hasPictures = true;
-		if (picture != null) {
-			try {
-				setPicture(picture);
-			} catch(Exception e) {
-				// OperationNotSupportedException cannot happen because of allowPictures above
-				// IOException cannot happen with parameter of class Image
-			}
-		}
+	public Button(Dialog dialog) {
+		super(dialog, TYPE_TEXT_PUSHBUTTON);
 	}
 
 	/*
@@ -94,80 +81,77 @@ public class Button extends TextItem {
 	 * Picture stuff
 	 */
 
-	private Image picture = null;
-	private Image rolloverPicture = null;
-	private Image selectedPicture = null;
-	private Image disabledPicture = null;
+	private Image image = null;
+	private Image rolloverImage = null;
+	private Image selectedImage = null;
+	private Image disabledImage = null;
 	
 	/* 
 	 * picture ID accessors
 	 * 
 	 */
+
+	private native void nativeSetImage(int iconHandle);
+	private native void nativeSetRolloverImage(int iconHandle);
+	private native void nativeSetSelectedImage(int iconHandle);
+	private native void nativeSetDisabledImage(int iconHandle);
 	
-	public boolean hasPictures() {
-		return hasPictures;
+	/*
+	 * These are all protected so they can be made public in the Image* subclasses
+	 * This is the only way to share this code among ImageCheckBox, ImageButton and ImageRadioButton
+	 */
+
+	protected Image getImage() {
+		return image;
+	}
+	
+	protected void setImage(Object obj) throws IOException {
+		image = Image.getImage(obj);
+		nativeSetImage(image != null ? image.createIconHandle() : 0);
+	}
+	
+	protected Image getRolloverImage() {
+		return rolloverImage;
+	}
+	
+	protected void setRolloverImage(Object obj) throws IOException {
+		rolloverImage = Image.getImage(obj);
+		nativeSetRolloverImage(rolloverImage != null ? rolloverImage.createIconHandle() : 0);
+	}
+	
+	protected Image getSelectedImage() {
+		return selectedImage;
+	}
+	
+	protected void setSelectedImage(Object obj) throws IOException {
+		selectedImage = Image.getImage(obj);
+		nativeSetSelectedImage(selectedImage != null ? selectedImage.createIconHandle() : 0);
 	}
 
-	private native void nativeSetPicture(int iconHandle);
-	private native void nativeSetRolloverPicture(int iconHandle);
-	private native void nativeSetSelectedPicture(int iconHandle);
-	private native void nativeSetDisabledPicture(int iconHandle);
-	
-	class PicutreNotAllowedException extends RuntimeException {
-		PicutreNotAllowedException() {
-			super("Text based items cannot display pictures.");
-		}
+	protected Image getDisabledImage() {
+		return disabledImage;
 	}
 
-	public Image getPicture() {
-		if (!hasPictures)
-			throw new PicutreNotAllowedException();
-		return picture;
+	protected void setDisabledImage(Object obj) throws IOException {
+		disabledImage = Image.getImage(obj);
+		nativeSetDisabledImage(disabledImage != null ? disabledImage.createIconHandle() : 0);
 	}
 	
-	public void setPicture(Object obj) throws IOException {
-		if (!hasPictures)
-			throw new PicutreNotAllowedException();
-		picture = Image.getImage(obj);
-		nativeSetPicture(picture != null ? picture.createIconHandle() : 0);
-	}
+	// int top, int left, int bottom, int right
+	protected static final Insets INSETS_IMAGE = new Insets(0, 0, 0, 0);
+	protected static final Insets INSETS_TEXT = ScriptographerEngine.isMacintosh() ? new Insets(1, 2, 3, 3) : INSETS_IMAGE;
 	
-	public Image getRolloverPicture() {
-		if (!hasPictures)
-			throw new PicutreNotAllowedException();
-		return rolloverPicture;
-	}
-	
-	public void setRolloverPicture(Object obj) throws IOException {
-		if (!hasPictures)
-			throw new PicutreNotAllowedException();
-		rolloverPicture = Image.getImage(obj);
-		nativeSetRolloverPicture(rolloverPicture != null ? rolloverPicture.createIconHandle() : 0);
-	}
-	
-	public Image getSelectedPicture() {
-		if (!hasPictures)
-			throw new PicutreNotAllowedException();
-		return selectedPicture;
-	}
-	
-	public void setSelectedPicture(Object obj) throws IOException {
-		if (!hasPictures)
-			throw new PicutreNotAllowedException();
-		selectedPicture = Image.getImage(obj);
-		nativeSetSelectedPicture(selectedPicture != null ? selectedPicture.createIconHandle() : 0);
+	protected Insets getButtonInsets() {
+		return INSETS_TEXT;
 	}
 
-	public Image getDisabledPicture() {
-		if (!hasPictures)
-			throw new PicutreNotAllowedException();
-		return disabledPicture;
+	public void setInsets(int left, int top, int right, int bottom) {
+		Insets in = getButtonInsets();
+		super.setInsets(left + in.left, top + in.top, right + in.right, bottom + in.bottom);
 	}
-
-	public void setDisabledPicturesetDisabledPicture(Object obj) throws IOException {
-		if (!hasPictures)
-			throw new PicutreNotAllowedException();
-		disabledPicture = Image.getImage(obj);
-		nativeSetDisabledPicture(disabledPicture != null ? disabledPicture.createIconHandle() : 0);
+	
+	public Insets getInsets() {
+		Insets in = getButtonInsets();
+		return new Insets(insets.top - in.top, insets.left - in.left, insets.bottom - in.bottom, insets.right - in.right);
 	}
 }

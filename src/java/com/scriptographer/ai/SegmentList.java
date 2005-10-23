@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/10/18 15:31:15 $
+ * $Revision: 1.11 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -38,7 +38,7 @@ import java.util.*;
 import java.awt.geom.Point2D;
 
 import com.scriptographer.CommitManager;
-import com.scriptographer.util.ExtendedJavaList;
+import com.scriptographer.util.ExtendedArrayList;
 import com.scriptographer.util.AbstractFetchList;
 
 public class SegmentList extends AbstractFetchList {
@@ -46,7 +46,7 @@ public class SegmentList extends AbstractFetchList {
 	protected int size;
 	protected CurveList curves = null;
 
-	private ExtendedJavaList list;
+	private ExtendedArrayList.List list;
 
 	private int maxVersion = -1; // the latest version of segments, even if there's only one of this version
 	private int lengthVersion = -1;
@@ -62,7 +62,7 @@ public class SegmentList extends AbstractFetchList {
 	protected static final int VALUES_PER_SEGMENT = 7;
 
 	public SegmentList() {
-		list = new ExtendedJavaList();
+		list = new ExtendedArrayList.List();
 		size = 0;
 	}
 
@@ -233,7 +233,7 @@ public class SegmentList extends AbstractFetchList {
 		return (Segment) get(index);
 	}
 
-	public boolean add(int index, Object obj) {
+	public Object add(int index, Object obj) {
 		Segment segment;
 		if (obj instanceof Segment) {
 			segment = (Segment) obj;
@@ -243,7 +243,7 @@ public class SegmentList extends AbstractFetchList {
 		} else if (obj instanceof Point2D) {
 			// convert single points to a segment
 			segment = new Segment((Point2D) obj);
-		} else return false;
+		} else return null;
 		// add to internal structure
 		list.add(index, segment);
 		// update verion:
@@ -265,7 +265,7 @@ public class SegmentList extends AbstractFetchList {
 			if (segment != null)
 				segment.index = i;
 		}
-		return true;
+		return segment;
 	}
 
 	public boolean addAll(int index, Collection c) {
@@ -381,7 +381,7 @@ public class SegmentList extends AbstractFetchList {
 				size = nativeRemove(path.handle, fromIndex, toIndex - fromIndex);
 			}
 
-			list.removeRange(fromIndex, toIndex);
+			list.remove(fromIndex, toIndex);
 
 			size = newSize;
 

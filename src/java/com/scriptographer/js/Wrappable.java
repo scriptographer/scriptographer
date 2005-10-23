@@ -28,8 +28,8 @@
  *
  * $RCSfile: Wrappable.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:58 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/23 00:30:13 $
  */
 
 package com.scriptographer.js;
@@ -58,7 +58,17 @@ import org.mozilla.javascript.Scriptable;
  * @author Lehni
  */
 public interface Wrappable {
-	void setWrapper(Scriptable wrapper);
-	
+	/**
+	 * 
+	 * @param scope
+	 * @param staticType
+	 * @return
+	 */
 	Scriptable getWrapper();
+	
+	/**
+	 * 
+	 * @param wrapper
+	 */
+	void setWrapper(Scriptable wrapper);
 }

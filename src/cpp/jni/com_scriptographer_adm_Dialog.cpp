@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Dialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/07/22 17:30:56 $
+ * $Revision: 1.11 $
+ * $Date: 2005/10/23 00:28:48 $
  */
 
 #include "stdHeaders.h"
@@ -336,12 +336,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setIncrement(JNIEnv *e
 }
 
 /*
- * int getItemHandle(int itemID)
+ * long getItemHandle(int itemID)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_getItemHandle(JNIEnv *env, jobject obj, jint itemID) {
+JNIEXPORT jlong JNICALL Java_com_scriptographer_adm_Dialog_getItemHandle(JNIEnv *env, jobject obj, jint itemID) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
-		return (jint) sADMDialog->GetItem(dialog, itemID);
+		return (jlong) sADMDialog->GetItem(dialog, itemID);
 	} EXCEPTION_CONVERT(env)
 	return 0;
 }

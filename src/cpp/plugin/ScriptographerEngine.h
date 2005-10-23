@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.13 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 #include "jniMacros.h"
@@ -174,9 +174,9 @@ public:
 
 	jclass cls_ScriptographerException;
 
-	jclass cls_ReferenceMap;
-	jmethodID cid_ReferenceMap;
-	jmethodID mid_ReferenceMap_put;
+	jclass cls_IntMap;
+	jmethodID cid_IntMap;
+	jmethodID mid_IntMap_put;
 	
 // AI:
 	jclass cls_AIObject;
@@ -315,8 +315,8 @@ public:
 	jmethodID mid_Image_getIconHandle;
 
 	jclass cls_Item;
-	jfieldID fid_Item_size;
-	jfieldID fid_Item_bounds;
+	jfieldID fid_Item_nativeSize;
+	jfieldID fid_Item_nativeBounds;
 
 	jclass cls_ListItem;
 	jfieldID fid_ListItem_listHandle;

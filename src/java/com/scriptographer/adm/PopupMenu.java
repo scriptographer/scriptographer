@@ -28,8 +28,8 @@
  *
  * $RCSfile: PopupMenu.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -43,7 +43,7 @@ public class PopupMenu extends ListItem {
 		POPUP_MENU_ROUND = 2,
 		POPUP_MENU_ROUND_HIERARCHY = 4;
 
-	protected PopupMenu(Dialog dialog, int itemHandle) {
+	protected PopupMenu(Dialog dialog, long itemHandle) {
 		super(dialog, itemHandle);
 	}
 }

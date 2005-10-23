@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.7 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.gui;
@@ -177,39 +177,44 @@ public class MainDialog extends FloatingDialog {
 		addFiles();
 		
 		// buttons:
-		Button playButton = new Button(this, getImage("play.png")) {
+		ImageButton playButton = new ImageButton(this) {
 			protected void onClick() throws Exception {
 				execute();
 			}
 		};
+		playButton.setImage(getImage("play.png"));
 		playButton.setSize(buttonSize);
 
-		Button stopButton = new Button(this, getImage("stop.png")) {
+		ImageButton stopButton = new ImageButton(this) {
 			protected void onClick() {
 				Timer.stopAll();
 			}
 		};
+		stopButton.setImage(getImage("stop.png"));
 		stopButton.setSize(buttonSize);
 
-		Button refreshButton = new Button(this, getImage("refresh.png")) {
+		ImageButton refreshButton = new ImageButton(this) {
 			protected void onClick() throws Exception {
 				refreshFiles();
 			}
 		};
+		refreshButton.setImage(getImage("refresh.png"));
 		refreshButton.setSize(buttonSize);
 
-		Button consoleButton = new Button(this, getImage("console.png")) {
+		ImageButton consoleButton = new ImageButton(this) {
 			protected void onClick() {
 				consoleDialog.setVisible(!consoleDialog.isVisible());
 			}
 		};
+		consoleButton.setImage(getImage("console.png"));
 		consoleButton.setSize(buttonSize);
 
-		Button newButton = new Button(this, getImage("script.png")) {
+		ImageButton newButton = new ImageButton(this) {
 			protected void onClick() throws IOException {
 				createFile();
 			}
 		};
+		newButton.setImage(getImage("script.png"));
 		newButton.setSize(buttonSize);
 
 		tool1Button = new ToolButton(this, 0);
@@ -253,7 +258,7 @@ public class MainDialog extends FloatingDialog {
 	}
 
 	void execute() throws Exception {
-		ScriptEntry entry = (ScriptEntry) scriptList.getActiveLeafEntry();
+		ScriptEntry entry = (ScriptEntry) scriptList.getActiveLeaf();
 		if (entry != null && entry.file != null) {
 			ScriptographerEngine.getInstance().executeFile(entry.file, null);
 		}
@@ -265,23 +270,24 @@ public class MainDialog extends FloatingDialog {
 			addFiles(scriptList, dir);
 	}
 	
-	class ToolButton extends Button {
+	class ToolButton extends ImageButton {
 		ToolButton(Dialog dialog, int index) throws IOException {
-			super(dialog, MainDialog.getImage("tool" + (index + 1) + ".png"));
+			super(dialog);
+			setImage(MainDialog.getImage("tool" + (index + 1) + ".png"));
 			toolIndex = index;
 			entryImage = MainDialog.getImage("tool" + (index + 1) + "script.png");
 			setSize(buttonSize);
 		}
 
 		protected void onClick() throws Exception {
-			ScriptEntry entry = (ScriptEntry) scriptList.getActiveLeafEntry();
+			ScriptEntry entry = (ScriptEntry) scriptList.getActiveLeaf();
 			if (entry != null && entry.file != null) {
 				Tool.getTool(toolIndex).setScript(entry.file);
 				if (entry.file != curFile) {
 					ScriptEntry curEntry = (ScriptEntry) files.get(curFile);
 					if (curEntry != null)
-						curEntry.setPicture(scriptImage);
-					entry.setPicture(entryImage);
+						curEntry.setImage(scriptImage);
+					entry.setImage(entryImage);
 					curFile = entry.file;
 				}
 			}
@@ -290,7 +296,7 @@ public class MainDialog extends FloatingDialog {
 		protected void updatePicture() throws IOException {
 			ScriptEntry curEntry = (ScriptEntry) files.get(curFile);
 			if (curEntry != null)
-				curEntry.setPicture(entryImage);
+				curEntry.setImage(entryImage);
 		}
 
 		File curFile;
@@ -310,11 +316,11 @@ public class MainDialog extends FloatingDialog {
 //			setBackgroundColor(Drawer.COLOR_BACKGROUND);
 			if (isDirectory) {
 				setExpanded(false);
-				setPicture(folderImage);
+				setImage(folderImage);
 				addFiles(createChildList(), file);
 				directories.put(file, this);
 			} else {
-				setPicture(scriptImage);
+				setImage(scriptImage);
 				files.put(file, this);
 			}
 		}
@@ -346,8 +352,7 @@ public class MainDialog extends FloatingDialog {
 	}
 	
 	void removeFiles() {
-		for (int i = scriptList.getNumEntries() - 1; i >= 0; i--)
-			scriptList.removeEntry(i);
+		scriptList.clear();
 		directories.clear();
 		files.clear();
 	}
@@ -382,7 +387,7 @@ public class MainDialog extends FloatingDialog {
 	}
 	
 	void createFile() throws IOException {
-		ScriptEntry entry = (ScriptEntry) scriptList.getActiveLeafEntry();
+		ScriptEntry entry = (ScriptEntry) scriptList.getActiveLeaf();
 		// determine the list and directory where the new file will be 
 		// created:
 		HierarchyList list;

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ListItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/23 00:28:48 $
  */
  
 #include "stdHeaders.h"
@@ -219,25 +219,47 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntryTextRect(
 }
 
 /*
- * void removeEntry(int index)
+ * int size()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_removeEntry(JNIEnv *env, jobject obj, jint index) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_size(JNIEnv *env, jobject obj) {
 	try {
-		#define REMOVE_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
-			LIST_SUITE->RemoveEntry(list, index);
+		#define SIZE(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
+			return LIST_SUITE->NumberOfEntries(list);
 
-		DEFINE_METHOD(REMOVE_ENTRY)
+		DEFINE_METHOD(SIZE)
 	} EXCEPTION_CONVERT(env)
+	return 0;
 }
 
 /*
- * com.scriptographer.adm.Entry getEntry(int index)
+ * java.lang.Object remove(int index)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntry__I(JNIEnv *env, jobject obj, jint index) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_remove(JNIEnv *env, jobject obj, jint index) {
+	try {
+		// before removing, a local reference needs to be created, as the global reference is destroyed in callbackListDestroy 
+	
+		#define REMOVE_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
+			ENTRY_TYPE ent = LIST_SUITE->GetEntry(list, index); \
+			if (ent != NULL) { \
+				jobject entry = gEngine->getListEntryObject(ent); \
+				if (entry != NULL) entry = env->NewLocalRef(entry); \
+				LIST_SUITE->RemoveEntry(list, index); \
+				return entry; \
+			}
+
+		DEFINE_METHOD(REMOVE_ENTRY)
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * java.lang.Object get(int index)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_get__I(JNIEnv *env, jobject obj, jint index) {
 	try {
 		#define GET_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			ENTRY_TYPE ent = LIST_SUITE->GetEntry(list, index); \
-			return gEngine->getListEntryObject(ent);
+			return ent != NULL ? gEngine->getListEntryObject(ent) : NULL;
 
 		DEFINE_METHOD(GET_ENTRY)
 	} EXCEPTION_CONVERT(env)
@@ -245,9 +267,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntry__I(JNIEn
 }
 
 /*
- * com.scriptographer.adm.Entry getEntry(java.lang.String text)
+ * com.scriptographer.adm.ListEntry get(java.lang.String text)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntry__Ljava_lang_String_2(JNIEnv *env, jobject obj, jstring text) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_get__Ljava_lang_String_2(JNIEnv *env, jobject obj, jstring text) {
 	const jchar *chars = NULL;
 	try {
 		chars = env->GetStringChars(text, NULL);
@@ -255,7 +277,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntry__Ljava_l
 
 		#define FIND_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			ENTRY_TYPE ent = LIST_SUITE->FindEntryW(list, chars); \
-			return gEngine->getListEntryObject(ent);
+			return ent != NULL ? gEngine->getListEntryObject(ent) : NULL;
 
 		DEFINE_METHOD(FIND_ENTRY)
 	} EXCEPTION_CONVERT(env)
@@ -264,11 +286,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntry__Ljava_l
 	return NULL;
 }
 
-
 /*
- * com.scriptographer.adm.ListEntry getEntry(int x, int y)
+ * com.scriptographer.adm.ListEntry getAt(int x, int y)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntry__II(JNIEnv *env, jobject obj, jint x, jint y) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getAt(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
 		ADMPoint pt;
 		pt.h = x;
@@ -276,7 +297,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntry__II(JNIE
 
 		#define PICK_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			ENTRY_TYPE ent = LIST_SUITE->PickEntry(list, &pt); \
-			return gEngine->getListEntryObject(ent);
+			return ent != NULL ? gEngine->getListEntryObject(ent) : NULL;
 
 		DEFINE_METHOD(PICK_ENTRY)
 
@@ -285,14 +306,13 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntry__II(JNIE
 }
 
 /*
- * com.scriptographer.adm.Entry getActiveEntry()
+ * com.scriptographer.adm.ListEntry getActive()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getActiveEntry(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getActive(JNIEnv *env, jobject obj) {
 	try {
 		#define GET_ACTIVE_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
-			ENTRY_TYPE entry = LIST_SUITE->GetActiveEntry(list); \
-			if (entry != NULL) \
-				return gEngine->getListEntryObject(entry);
+			ENTRY_TYPE ent = LIST_SUITE->GetActiveEntry(list); \
+			return ent != NULL ? gEngine->getListEntryObject(ent) : NULL;
 
 		DEFINE_METHOD(GET_ACTIVE_ENTRY)
 	} EXCEPTION_CONVERT(env)
@@ -300,9 +320,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getActiveEntry(JN
 }
 
 /*
- * com.scriptographer.adm.Entry[] getSelectedEntries()
+ * com.scriptographer.adm.ListEntry[] getSelected()
  */
-JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_ListItem_getSelectedEntries(JNIEnv *env, jobject obj) {
+JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_ListItem_getSelected(JNIEnv *env, jobject obj) {
 	try {
 		#define GET_SELECTED_ENTRIES(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			int length = LIST_SUITE->NumberOfSelectedEntries(list); \
@@ -310,7 +330,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_ListItem_getSelectedE
 			if (res == NULL) EXCEPTION_CHECK(env) \
 			for (int i = 0; i < length; i++) { \
 				ENTRY_TYPE ent = LIST_SUITE->IndexSelectedEntry(list, i); \
-				env->SetObjectArrayElement(res, i, gEngine->getListEntryObject(ent)); \
+				env->SetObjectArrayElement(res, i, ent != NULL ? gEngine->getListEntryObject(ent) : NULL); \
 			} \
 			EXCEPTION_CHECK(env) \
 			return res;
@@ -318,41 +338,6 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_ListItem_getSelectedE
 		DEFINE_METHOD(GET_SELECTED_ENTRIES)
 	} EXCEPTION_CONVERT(env)
 	return NULL;
-}
-
-/*
- * com.scriptographer.adm.Entry[] getEntries()
- */
-JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_ListItem_getEntries(JNIEnv *env, jobject obj) {
-	try {
-		#define GET_ENTRIES(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
-			int length = LIST_SUITE->NumberOfEntries(list); \
-			jobjectArray res = env->NewObjectArray(length, gEngine->cls_ListEntry, NULL); \
-			if (res == NULL) EXCEPTION_CHECK(env) \
-			for (int i = 0; i < length; i++) { \
-				ENTRY_TYPE ent = LIST_SUITE->IndexEntry(list, i); \
-				jobject entry = gEngine->getListEntryObject(ent); \
-				env->SetObjectArrayElement(res, i, entry); \
-			} \
-			EXCEPTION_CHECK(env) \
-			return res;
-		
-		DEFINE_METHOD(GET_ENTRIES)
-	} EXCEPTION_CONVERT(env)
-	return NULL;
-}
-
-/*
- * int getNumEntries()
- */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_getNumEntries(JNIEnv *env, jobject obj) {
-	try {
-		#define GET_NUM_ENTRIES(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
-			return LIST_SUITE->NumberOfEntries(list);
-
-		DEFINE_METHOD(GET_NUM_ENTRIES)
-	} EXCEPTION_CONVERT(env)
-	return 0;
 }
 
 /*

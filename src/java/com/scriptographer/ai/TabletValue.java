@@ -28,13 +28,15 @@
  *
  * $RCSfile: TabletValue.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/07 20:12:55 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
 
-public class TabletValue {
+import com.scriptographer.js.WrappableObject;
+
+public class TabletValue extends WrappableObject {
 	public float offset;
 	public float value;
 

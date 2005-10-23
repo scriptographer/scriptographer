@@ -28,20 +28,19 @@
  * 
  * $RCSfile: ArtSet.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/07/27 22:55:30 $
+ * $Revision: 1.9 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 
-import com.scriptographer.util.ArrayList;
+import com.scriptographer.util.ExtendedArrayList;
+import com.scriptographer.util.ExtendedList;
+import com.scriptographer.util.Lists;
 
-public class ArtSet extends ArrayList {
+public class ArtSet extends ExtendedArrayList {
 	// use a map to keep track of already added art objects:
 	// use a linked list to preserve insertion order! TODO: needed?
 	LinkedHashMap map;
@@ -50,13 +49,13 @@ public class ArtSet extends ArrayList {
 		map = new LinkedHashMap();
 	}
 
-	public ArtSet(Collection artObjects) {
+	public ArtSet(ExtendedList artObjects) {
 		this();
 		addAll(artObjects);
 	}
 
 	public ArtSet(Object[] artObjects) {
-		this(Arrays.asList(artObjects));
+		this(Lists.asList(artObjects));
 	}
 
 	public Art getArt(int index) {
@@ -69,27 +68,16 @@ public class ArtSet extends ArrayList {
 	 * @param art
 	 * @return true if the art was added to the set.
 	 */
-	public boolean add(int index, Object art) {
+	public Object add(int index, Object art) {
 		if (art instanceof Art) {
 			if (map.get(art) == null) {
-				if (super.add(index, art)) {
+				if (super.add(index, art) != null) {
 					map.put(art, art);
-					return true;
+					return art;
 				}
 			}
 		}
-		return false;
-	}
-
-	public boolean addAll(int index, Collection elements) {
-		// get around ArrayList's addAll that does not rely on add() but the much faster version that adds all elemnts at once:
-		boolean modified = false;
-		Iterator e = elements.iterator();
-		while (e.hasNext()) {
-			if (add(index++, e.next()))
-				modified = true;
-		}
-		return modified;
+		return null;
 	}
 
 	public Object remove(int index) {

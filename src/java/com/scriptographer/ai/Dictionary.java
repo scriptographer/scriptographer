@@ -28,18 +28,21 @@
  *
  * $RCSfile: Dictionary.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
 
 import java.util.HashMap;
 
+import org.mozilla.javascript.Scriptable;
+
 import com.scriptographer.CommitManager;
 import com.scriptographer.Commitable;
+import com.scriptographer.js.Wrappable;
 
-public class Dictionary extends HashMap implements Commitable {
+public class Dictionary extends HashMap implements Commitable, Wrappable {
 
 	protected DictionaryObject object;
 	protected boolean dirty = false;
@@ -97,5 +100,14 @@ public class Dictionary extends HashMap implements Commitable {
 			markDirty();
 		return obj;
 	}
+
+	protected Scriptable wrapper;
 	
+	public void setWrapper(Scriptable wrapper) {
+		this.wrapper = wrapper;
+	}
+	
+	public Scriptable getWrapper() {
+		return wrapper;
+	}
 }

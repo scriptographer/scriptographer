@@ -26,12 +26,13 @@
  *
  * $RCSfile: com_scriptographer_adm_Drawer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/23 00:28:48 $
  */
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
+#include "admGlobals.h"
 #include "com_scriptographer_adm_Drawer.h"
 
 /*
@@ -82,49 +83,45 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Drawer_getClipRect(JNIEnv 
 }
 
 /*
- * void setClipRect(com.scriptographer.ai.Rectangle rect)
+ * void setClipRect(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setClipRect(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setClipRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->SetClipRect(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void intersectClipRect(com.scriptographer.ai.Rectangle arg1)
+ * void intersectClipRect(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_intersectClipRect(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_intersectClipRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->IntersectClipRect(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void unionClipRect(com.scriptographer.ai.Rectangle arg1)
+ * void unionClipRect(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_unionClipRect(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_unionClipRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->UnionClipRect(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void subtractClipRect(com.scriptographer.ai.Rectangle arg1)
+ * void subtractClipRect(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_subtractClipRect(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_subtractClipRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->SubtractClipRect(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
@@ -205,13 +202,12 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Drawer_getOrigin(JNIEnv *e
 }
 
 /*
- * void setOrigin(com.scriptographer.ai.Point arg1)
+ * void setOrigin(int x, int y)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setOrigin(JNIEnv *env, jobject obj, jobject origin) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setOrigin(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMPoint pt;
-		gEngine->convertPoint(env, origin, &pt);
+		DEFINE_ADM_POINT(pt, x, y);
 		sADMDrawer->SetOrigin(drawer, &pt);
 	} EXCEPTION_CONVERT(env)
 }
@@ -335,153 +331,141 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_fillPolygon(JNIEnv *en
 }
 
 /*
- * void drawRect(com.scriptographer.ai.Rectangle rect)
+ * void drawRect(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawRect(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawRect(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void fillRect(com.scriptographer.ai.Rectangle rect)
+ * void fillRect(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_fillRect(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_fillRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->FillRect(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void clearRect(com.scriptographer.ai.Rectangle rect)
+ * void clearRect(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_clearRect(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_clearRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->ClearRect(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void drawSunkenRect(com.scriptographer.ai.Rectangle rect)
+ * void drawSunkenRect(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawSunkenRect(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawSunkenRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawSunkenRect(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void drawRaisedRect(com.scriptographer.ai.Rectangle rect)
+ * void drawRaisedRect(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawRaisedRect(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawRaisedRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawRaisedRect(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void invertRect(com.scriptographer.ai.Rectangle rect)
+ * void invertRect(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_invertRect(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_invertRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->InvertRect(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void drawOval(com.scriptographer.ai.Rectangle rect)
+ * void drawOval(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawOval(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawOval(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawOval(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void fillOval(com.scriptographer.ai.Rectangle rect)
+ * void fillOval(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_fillOval(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_fillOval(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->FillOval(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void drawImage(com.scriptographer.adm.Image image, Lcom.scriptographer.ai.Point topLeft)
+ * void drawImage(com.scriptographer.adm.Image image, int x, int y)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage(JNIEnv *env, jobject obj, jobject image, jobject topLeft) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_scriptographer_adm_Image_2II(JNIEnv *env, jobject obj, jobject image, jint x, jint y) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		ADMImageRef img = gEngine->getImageRef(env, image);
-		ADMPoint pt;
-		gEngine->convertPoint(env, topLeft, &pt);
+		DEFINE_ADM_POINT(pt, x, y);
 		sADMDrawer->DrawADMImage(drawer, img, &pt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void drawImageCentered(com.scriptographer.adm.Image image, Lcom.scriptographer.ai.Rectangle rect)
+ * void drawImage(com.scriptographer.adm.Image image, int x, int y, int style)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImageCentered(JNIEnv *env, jobject obj, jobject image, jobject rect) {
-	try {
-		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMImageRef img = gEngine->getImageRef(env, image);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
-		sADMDrawer->DrawADMImageCentered(drawer, img, &rt);
-	} EXCEPTION_CONVERT(env)
-}
-
-/*
- * void drawRecoloredImage(com.scriptographer.adm.Image image, Lcom.scriptographer.ai.Point topLeft, int style)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawRecoloredImage(JNIEnv *env, jobject obj, jobject image, jobject topLeft, jint style) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_scriptographer_adm_Image_2III(JNIEnv *env, jobject obj, jobject image, jint x, jint y, jint style) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		ADMImageRef img = gEngine->getImageRef(env, image);
 		ADMIconRef icn = (ADMIconRef)gEngine->callIntMethod(env, obj, gEngine->mid_Image_getIconHandle);
 		if (icn == NULL) throw new StringException("Cannot create icon from image.");
-		ADMPoint pt;
-		gEngine->convertPoint(env, topLeft, &pt);
+		DEFINE_ADM_POINT(pt, x, y);
 		sADMDrawer->DrawRecoloredIcon(drawer, icn, &pt, (ADMRecolorStyle)style);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void drawRecoloredImageCentered(com.scriptographer.adm.Image image, Lcom.scriptographer.ai.Rectangle rect, int style)
+ * void drawImage(com.scriptographer.adm.Image image, int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawRecoloredImageCentered(JNIEnv *env, jobject obj, jobject image, jobject rect, jint style) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_scriptographer_adm_Image_2IIII(JNIEnv *env, jobject obj, jobject image, jint x, jint y, jint width, jint height) {
+	try {
+		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
+		ADMImageRef img = gEngine->getImageRef(env, image);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
+		sADMDrawer->DrawADMImageCentered(drawer, img, &rt);
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * void drawImage(com.scriptographer.adm.Image image, Lint x, int y, int width, int height, int style)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_scriptographer_adm_Image_2IIIII(JNIEnv *env, jobject obj, jobject image, jint x, jint y, jint width, jint height, jint style) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		ADMImageRef img = gEngine->getImageRef(env, image);
 		ADMIconRef icn = (ADMIconRef)gEngine->callIntMethod(env, obj, gEngine->mid_Image_getIconHandle);
 		if (icn == NULL) throw new StringException("Cannot create icon from image.");
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawRecoloredIconCentered(drawer, icn, &rt, (ADMRecolorStyle)style);
 	} EXCEPTION_CONVERT(env)
 }
@@ -530,13 +514,12 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Drawer_getFontInfo__I(JNIE
 }
 
 /*
- * void drawText(java.lang.String text, Lcom.scriptographer.ai.Point topLeft)
+ * void drawText(java.lang.String text, int x, int y)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawText(JNIEnv *env, jobject obj, jstring text, jobject topLeft) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawText(JNIEnv *env, jobject obj, jstring text, jint x, jint y) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMPoint pt;
-		gEngine->convertPoint(env, topLeft, &pt);
+		DEFINE_ADM_POINT(pt, x, y);
 		const jchar *chars = env->GetStringChars(text, NULL);
 		if (chars == NULL) EXCEPTION_CHECK(env)
 		sADMDrawer->DrawTextW(drawer, chars, &pt);
@@ -545,13 +528,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawText(JNIEnv *env, 
 }
 
 /*
- * void drawTextLeft(java.lang.String text, Lcom.scriptographer.ai.Rectangle rect)
+ * void drawTextLeft(java.lang.String text, Lint x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextLeft(JNIEnv *env, jobject obj, jstring text, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextLeft(JNIEnv *env, jobject obj, jstring text, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		const jchar *chars = env->GetStringChars(text, NULL);
 		if (chars == NULL) EXCEPTION_CHECK(env)
 		sADMDrawer->DrawTextLeftW(drawer, chars, &rt);
@@ -560,13 +542,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextLeft(JNIEnv *e
 }
 
 /*
- * void drawTextCentered(java.lang.String text, Lcom.scriptographer.ai.Rectangle rect)
+ * void drawTextCentered(java.lang.String text, Lint x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextCentered(JNIEnv *env, jobject obj, jstring text, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextCentered(JNIEnv *env, jobject obj, jstring text, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		const jchar *chars = env->GetStringChars(text, NULL);
 		if (chars == NULL) EXCEPTION_CHECK(env)
 		sADMDrawer->DrawTextCenteredW(drawer, chars, &rt);
@@ -575,13 +556,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextCentered(JNIEn
 }
 
 /*
- * void drawTextRight(java.lang.String text, Lcom.scriptographer.ai.Rectangle rect)
+ * void drawTextRight(java.lang.String text, Lint x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextRight(JNIEnv *env, jobject obj, jstring text, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextRight(JNIEnv *env, jobject obj, jstring text, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		const jchar *chars = env->GetStringChars(text, NULL);
 		if (chars == NULL) EXCEPTION_CHECK(env)
 		sADMDrawer->DrawTextRightW(drawer, chars, &rt);
@@ -590,13 +570,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextRight(JNIEnv *
 }
 
 /*
- * void drawTextInABox(Ljava.lang.String text, com.scriptographer.ai.Rectangle rect)
+ * void drawTextInABox(Ljava.lang.String text, int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextInABox(JNIEnv *env, jobject obj, jstring text, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextInABox(JNIEnv *env, jobject obj, jstring text, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		const jchar *chars = env->GetStringChars(text, NULL);
 		if (chars == NULL) EXCEPTION_CHECK(env)
 		sADMDrawer->DrawTextInABoxW(drawer, &rt, chars);
@@ -605,49 +584,45 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextInABox(JNIEnv 
 }
 
 /*
- * void drawUpArrow(com.scriptographer.ai.Rectangle rect)
+ * void drawUpArrow(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawUpArrow(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawUpArrow(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawUpArrow(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void drawDownArrow(com.scriptographer.ai.Rectangle rect)
+ * void drawDownArrow(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawDownArrow(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawDownArrow(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawDownArrow(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void drawLeftArrow(com.scriptographer.ai.Rectangle rect)
+ * void drawLeftArrow(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawLeftArrow(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawLeftArrow(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawLeftArrow(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void drawRightArrow(com.scriptographer.ai.Rectangle rect)
+ * void drawRightArrow(int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawRightArrow(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawRightArrow(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		ADMRect rt;
-		gEngine->convertRectangle(env, rect, &rt);
+		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawRightArrow(drawer, &rt);
 	} EXCEPTION_CONVERT(env)
 }

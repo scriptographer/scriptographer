@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.12 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -37,13 +37,13 @@ package com.scriptographer.ai;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
-import java.util.Collection;
 import java.util.Map;
 
 import org.mozilla.javascript.NativeObject;
 
 import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.util.ReferenceMap;
+import com.scriptographer.util.ExtendedList;
+import com.scriptographer.util.SoftIntMap;
 
 public class Document extends DictionaryObject {
 
@@ -96,7 +96,7 @@ public class Document extends DictionaryObject {
 	private static native int nativeCreate(String title, float width, float height, int colorModel, int dialogStatus);
 	
 	// use a WeakHashMap to keep track of already wrapped documents:
-	private static ReferenceMap documents = new ReferenceMap(ReferenceMap.SOFT);
+	private static SoftIntMap documents = new SoftIntMap();
 	
 	protected static Document wrapHandle(int handle) {
 		if (handle == 0)
@@ -238,7 +238,7 @@ public class Document extends DictionaryObject {
 		return new Path(this);
 	}
 	
-	public Path createPath(Collection segments) {
+	public Path createPath(ExtendedList segments) {
 		return new Path(this, segments);
 	}
 	

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.15 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -38,14 +38,14 @@ import java.awt.Shape;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Arrays;
 
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.ScriptRuntime;
 
 import com.scriptographer.CommitManager;
 import com.scriptographer.js.FunctionHelper;
+import com.scriptographer.util.ExtendedList;
+import com.scriptographer.util.Lists;
 
 public class Path extends Art {
 
@@ -66,13 +66,13 @@ public class Path extends Art {
 		super(document, TYPE_PATH);
 	}
 
-	public Path(Document document, Collection segments) {
+	public Path(Document document, ExtendedList segments) {
 		this(document);
 		setSegments(segments);
 	}
 
 	public Path(Document document, Object[] segments) {
-		this(document, Arrays.asList(segments));
+		this(document, Lists.asList(segments));
 	}
 	
 	public Path(Document document, Shape shape) {
@@ -84,13 +84,13 @@ public class Path extends Art {
 		super(null, TYPE_PATH);
 	}
 
-	public Path(Collection segments) {
+	public Path(ExtendedList segments) {
 		this();
 		setSegments(segments);
 	}
 
 	public Path(Object[] segments) {
-		this(Arrays.asList(segments));
+		this(Lists.asList(segments));
 	}
 	
 	public Path(Shape shape) {
@@ -119,7 +119,7 @@ public class Path extends Art {
 		return segments;
 	}
 
-	public void setSegments(Collection list) {
+	public void setSegments(ExtendedList list) {
 		SegmentList segments = getSegments();
 		// TODO: implement SegmentList.setAll so clear is not necesssary and nativeCommit is used instead of nativeInsert
 		// removeRange would still be needed in cases the new list is smaller than the old one...
@@ -128,7 +128,7 @@ public class Path extends Art {
 	}
 
 	public void setSegments(Object[] segments) {
-		setSegments(Arrays.asList(segments));
+		setSegments(Lists.asList(segments));
 	}
 
 	public CurveList getCurves() {
@@ -231,7 +231,7 @@ public class Path extends Art {
 
 	public Path split(int index, float parameter) {
 		SegmentList segments = getSegments();
-		Object[] newSegments = null;
+		ExtendedList newSegments = null;
 
 		if (parameter < 0.0f) parameter = 0.0f;
 		else if (parameter >= 1.0f) {
@@ -243,7 +243,7 @@ public class Path extends Art {
 			if (parameter == 0.0) { // spezial case
 				if (index > 0) {
 					// split at index
-					newSegments = segments.toArray(index, segments.size);
+					newSegments = segments.subList(index, segments.size);
 					segments.remove(index + 1, segments.size);
 				}
 			} else {
@@ -252,7 +252,7 @@ public class Path extends Art {
 				if (segment != null) {
 					segment.divide(parameter);
 					// create the new path with the segments to the right of t
-					newSegments = segments.toArray(index + 1, segments.size);
+					newSegments = segments.subList(index + 1, segments.size);
 					// and delete these segments from the current path, not including the divided point
 					segments.remove(index + 2, segments.size);
 				}

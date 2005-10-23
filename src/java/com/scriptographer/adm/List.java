@@ -28,8 +28,8 @@
  *
  * $RCSfile: List.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -51,7 +51,7 @@ public class List extends ListItem {
 	}
 
 	public List(Dialog dialog) {
-		this(dialog, Item.TYPE_LISTBOX, OPTION_NONE);
+		this(dialog, TYPE_LISTBOX, OPTION_NONE);
 	}
 	
 	protected List() {

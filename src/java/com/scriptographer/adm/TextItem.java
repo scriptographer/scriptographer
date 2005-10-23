@@ -28,13 +28,20 @@
  *
  * $RCSfile: TextItem.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/18 15:29:07 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
 
-public abstract class TextItem extends Item {
+import com.scriptographer.js.Unsealed;
+
+public abstract class TextItem extends Item implements Unsealed {
+
+	protected TextItem(Dialog dialog, long itemHandle) {
+		super(dialog, itemHandle);
+	}
+	
 	protected TextItem(Dialog dialog, int type) {
 		super(dialog, type, OPTION_NONE);
 	}

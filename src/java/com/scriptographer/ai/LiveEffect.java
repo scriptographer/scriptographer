@@ -28,15 +28,15 @@
  * 
  * $RCSfile: LiveEffect.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.9 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.js.Unsealed;
-import com.scriptographer.util.ReferenceMap;
+import com.scriptographer.util.IntMap;
 
 import java.util.Map;
 import java.util.ArrayList;
@@ -170,7 +170,7 @@ public class LiveEffect extends AIObject implements Unsealed {
 	/**
 	 * effects maps effectHandles to their wrappers.
 	 */
-	private static ReferenceMap effects = new ReferenceMap(ReferenceMap.HARD);
+	private static IntMap effects = new IntMap();
 	private static ArrayList unusedEffects = null;
 
 	/**

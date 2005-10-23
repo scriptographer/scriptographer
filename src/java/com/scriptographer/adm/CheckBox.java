@@ -28,8 +28,8 @@
  *
  * $RCSfile: CheckBox.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:56 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -43,20 +43,11 @@ package com.scriptographer.adm;
  */
 public class CheckBox extends ToggleItem {
 	
-	public CheckBox(Dialog dialog) {
-		super(dialog, Item.TYPE_TEXT_CHECKBOX);
+	protected CheckBox(Dialog dialog, int type) {
+		super(dialog, type);
 	}
-	
-	public CheckBox(Dialog dialog, Image picture) {
-		super(dialog, Item.TYPE_PICTURE_CHECKBOX);
-		hasPictures = true;
-		if (picture != null) {
-			try {
-				setPicture(picture);
-			} catch(Exception e) {
-				// OperationNotSupportedException cannot happen because of allowPictures above
-				// IOException cannot happen with parameter of class Image
-			}
-		}
+
+	public CheckBox(Dialog dialog) {
+		super(dialog, TYPE_TEXT_CHECKBOX);
 	}
 }

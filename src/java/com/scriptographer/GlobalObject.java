@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/10/18 15:31:15 $
+ * $Revision: 1.11 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer;
@@ -85,6 +85,10 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, CheckBox.class);
 		new ExtendedJavaClass(this, RadioButton.class);
 		new ExtendedJavaClass(this, Static.class);
+		new ExtendedJavaClass(this, ImageButton.class);
+		new ExtendedJavaClass(this, ImageCheckBox.class);
+		new ExtendedJavaClass(this, ImageRadioButton.class);
+		new ExtendedJavaClass(this, ImageStatic.class);
 		new ExtendedJavaClass(this, ScrollBar.class);
 		new ExtendedJavaClass(this, Slider.class);
 		new ExtendedJavaClass(this, ProgressBar.class);
@@ -93,6 +97,7 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, ChasingArrows.class);
 		new ExtendedJavaClass(this, PopupList.class);
 		new ExtendedJavaClass(this, PopupMenu.class);
+		new ExtendedJavaClass(this, SpinEdit.class);
 
 		// layout specific classes
 		new ExtendedJavaClass(this, ItemContainer.class);
@@ -141,14 +146,19 @@ public class GlobalObject extends ImporterTopLevel {
 
 		// define some global functions and objects:
 		String[] names = { "print", "include", "execute", "evaluate", "commit", "getNanoTime", "getMousePoint" };
-		defineFunctionProperties(names, GlobalObject.class, ScriptableObject.DONTENUM);
+		defineFunctionProperties(names, GlobalObject.class, ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 
 		// properties:
 		defineProperty("documents", DocumentList.getInstance(), ScriptableObject.READONLY | ScriptableObject.DONTENUM);
-		defineProperty("scriptDir", ScriptographerEngine.getScriptDirectory(), ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+		defineProperty("activeDocument", "getActiveDocument", null);
+		defineProperty("scriptDir", "getScriptDirectory", null);
+	}
+	
+	protected void defineProperty(String name, String getter, String setter) {
 		try {
-			Method getter = GlobalObject.class.getDeclaredMethod("getActiveDocument", new Class[] { ScriptableObject.class });
-			defineProperty("activeDocument", null, getter, null, ScriptableObject.DONTENUM);
+			Method getterMethod = getter != null ? GlobalObject.class.getDeclaredMethod(getter, new Class[] { ScriptableObject.class }) : null;
+			Method setterMethod = setter != null ? GlobalObject.class.getDeclaredMethod(setter, new Class[] { ScriptableObject.class }) : null;
+			defineProperty(name, null, getterMethod, setterMethod, ScriptableObject.DONTENUM);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -190,6 +200,10 @@ public class GlobalObject extends ImporterTopLevel {
 
 	static Object getActiveDocument(ScriptableObject obj) {
 		return DocumentList.getActive();
+	}
+
+	static Object getScriptDirectory(ScriptableObject obj) {
+		return ScriptographerEngine.getScriptDirectory();
 	}
 	
 	/**

@@ -28,8 +28,8 @@
  *
  * $RCSfile: View.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -37,7 +37,7 @@ package com.scriptographer.ai;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import com.scriptographer.util.ReferenceMap;
+import com.scriptographer.util.SoftIntMap;
 
 public class View extends AIObject {
 	public static final int 
@@ -69,7 +69,7 @@ public class View extends AIObject {
 	}
 	
 	// use a WeakHashMap to keep track of already wrapped documents:
-	private static ReferenceMap views = new ReferenceMap(ReferenceMap.SOFT);
+	private static SoftIntMap views = new SoftIntMap();
 	
 	protected static View wrapHandle(int handle) {
 		if (handle == 0)

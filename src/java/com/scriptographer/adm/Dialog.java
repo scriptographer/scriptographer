@@ -28,8 +28,8 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.8 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -37,6 +37,7 @@ package com.scriptographer.adm;
 import org.mozilla.javascript.NativeArray;
 
 import com.scriptographer.js.FunctionHelper;
+import com.scriptographer.js.Unsealed;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -46,7 +47,7 @@ import java.util.ArrayList;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
-public abstract class Dialog extends CallbackHandler {
+public abstract class Dialog extends CallbackHandler implements Unsealed {
 	// Dialog options (for Create() call)
 	public final static int 
 		OPTION_NONE = 0,
@@ -639,14 +640,26 @@ public abstract class Dialog extends CallbackHandler {
 	 * 
 	 */
 
-	protected native int getItemHandle(int itemID);
+	protected native long getItemHandle(int itemID);
 	
 	private PopupMenu popupMenu = null;
 	
 	public PopupMenu getPopupMenu() {
-		if (popupMenu == null)
-			popupMenu = new PopupMenu(this, getItemHandle(ITEM_MENU));
+		if (popupMenu == null) {
+			long handle = getItemHandle(ITEM_MENU);
+			popupMenu = handle != 0 ? new PopupMenu(this, handle) : null;
+		}
 		return popupMenu;
+	}
+	
+	private Button resizeButton = null;
+	
+	public Button getResizeButton() {
+		if (resizeButton == null) {
+			long handle = getItemHandle(ITEM_RESIZE);
+			resizeButton = handle != 0 ? new Button(this, handle) : null;
+		}
+		return resizeButton;
 	}
 
 	/* 

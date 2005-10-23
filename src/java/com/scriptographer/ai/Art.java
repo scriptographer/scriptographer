@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.12 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.awt.geom.AffineTransform;
 
 import com.scriptographer.CommitManager;
-import com.scriptographer.util.ReferenceMap;
+import com.scriptographer.util.SoftIntMap;
 
 public abstract class Art extends DictionaryObject {
 	
@@ -54,7 +54,7 @@ public abstract class Art extends DictionaryObject {
 	
 	// internal hash map that keeps track of already wrapped objects. defined
 	// as weak.
-	private static ReferenceMap artWrappers = new ReferenceMap(ReferenceMap.SOFT);
+	private static SoftIntMap artWrappers = new SoftIntMap();
 	// The same, but for the children of one object, and not weak,
 	// so they're kept alive as long as the parent lives:
 	private ArrayList childrenWrappers = new ArrayList();
@@ -235,6 +235,9 @@ public abstract class Art extends DictionaryObject {
 			case TYPE_LAYER:
 				art = new Layer((long) artHandle);
 				break;
+			case TYPE_COMPOUNDPATH:
+				art = new CompoundPath((long) artHandle);
+				break;
 			}
 		}
 		if (art != null) {
@@ -293,7 +296,7 @@ public abstract class Art extends DictionaryObject {
 					// and store the new reference
 					artWrappers.put(curHandle, art);
 				}
-			} 
+			}
 			if (art == null) {
 				art = (Art) artWrappers.get(curHandle);
 			}

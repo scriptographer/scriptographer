@@ -28,8 +28,8 @@
  *
  * $RCSfile: RadioButton.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -47,21 +47,12 @@ public class RadioButton extends ToggleItem {
 	public final static int
 		STYLE_ONE_ALWAYS_SET = 0,
 		STYLE_ALLOW_NONE_SET = 2;
+	
+	protected RadioButton(Dialog dialog, int type) {
+		super(dialog, type);
+	}
 
 	public RadioButton(Dialog dialog) {
-		super(dialog, Item.TYPE_TEXT_RADIOBUTTON);
-	}
-	
-	public RadioButton(Dialog dialog, Image picture) {
-		super(dialog, Item.TYPE_PICTURE_RADIOBUTTON);
-		hasPictures = true;
-		if (picture != null) {
-			try {
-				setPicture(picture);
-			} catch(Exception e) {
-				// OperationNotSupportedException cannot happen because of allowPictures above
-				// IOException cannot happen with parameter of class Image
-			}
-		}
+		super(dialog, TYPE_TEXT_RADIOBUTTON);
 	}
 }

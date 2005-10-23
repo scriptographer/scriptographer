@@ -28,8 +28,8 @@
  * 
  * $RCSfile: CompoundPath.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/18 15:31:15 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -39,6 +39,13 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 
 public class CompoundPath extends Art {
+	/**
+	 * Wraps an AIArtHandle in a Path object
+	 */
+	protected CompoundPath(long handle) {
+		super((int) handle);
+	}
+
 	/**
 	 * Creates a compound path object
 	 */

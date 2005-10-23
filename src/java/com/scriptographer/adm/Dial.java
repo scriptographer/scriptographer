@@ -28,8 +28,8 @@
  *
  * $RCSfile: Dial.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -43,6 +43,6 @@ public class Dial extends ValueItem {
 		STYLE_ARROW_AT_CENTER = 2;
 
 	public Dial(Dialog dialog) {
-		super(dialog, Item.TYPE_DIAL, OPTION_NONE);
+		super(dialog, TYPE_DIAL, OPTION_NONE);
 	}
 }

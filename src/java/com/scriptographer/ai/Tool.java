@@ -28,8 +28,8 @@
  *
  * $RCSfile: Tool.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
@@ -38,16 +38,17 @@ import org.mozilla.javascript.*;
 
 import com.scriptographer.*;
 import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.util.ReferenceMap;
+import com.scriptographer.js.WrappableObject;
+import com.scriptographer.util.IntMap;
 
 import java.io.File;
 import java.util.Iterator;
 
-public class Tool {
+public class Tool extends WrappableObject {
 	private int toolHandle = 0;
 	private int index;
 
-	private static ReferenceMap tools = null;
+	private static IntMap tools = null;
 
 	protected Tool(int toolHandle, int index) {
 		this.toolHandle = toolHandle;
@@ -73,7 +74,7 @@ public class Tool {
 		}
 	}
 
-	private static ReferenceMap getTools() {
+	private static IntMap getTools() {
 		if (tools == null)
 			tools = nativeGetTools();
 		return tools;
@@ -87,7 +88,7 @@ public class Tool {
 	 *
 	 * @return
 	 */
-	private static native ReferenceMap nativeGetTools();
+	private static native IntMap nativeGetTools();
 
 	public native boolean hasPressure();
 

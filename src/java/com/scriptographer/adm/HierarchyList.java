@@ -28,8 +28,8 @@
  *
  * $RCSfile: HierarchyList.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/03/25 00:27:57 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -47,7 +47,7 @@ public class HierarchyList extends List {
 	OPTION_HIERARCHY_POPUP = (1 << 0);
 	
 	public HierarchyList(Dialog dialog, int options) {
-		super(dialog, Item.TYPE_HIERARCHY_LISTBOX, options);
+		super(dialog, TYPE_HIERARCHY_LISTBOX, options);
 	}
 	
 	public HierarchyList(Dialog dialog) {
@@ -96,7 +96,7 @@ public class HierarchyList extends List {
 		if (parentEntry != null) {
 			Scriptable parentWrapper = parentEntry.getList().getWrapper();
 			if (parentWrapper != null) {
-				// simply set parentWrapper as the prototype of this object the handler calls will be delegated:
+				// simply set parentWrapper as the prototype of this object so the handler calls will be delegated:
 				wrapper.setPrototype(parentWrapper);
 			}
 		}
@@ -185,30 +185,6 @@ public class HierarchyList extends List {
 	public void setNonLeafEntryTextRect(int[] rect) {
 		setNonLeafEntryTextRect(rect, false);
 	}
-
-	/*
-	 * item list manipulation
-	 *
-	 */
-
-	public ListEntry createEntry(int index) {
-		return new HierarchyListEntry(this, index);
-	}
-	
-	public native HierarchyListEntry getLeafEntry(int x, int y);
-	public native HierarchyListEntry getActiveLeafEntry();
-
-	public void getLeafEntry(Point2D point) {
-		getLeafEntry((int)point.getX(), (int)point.getY());
-	}
-
-	/*
-	 * selection list manipulation
-	 *
-	 */
-
-	public native HierarchyListEntry[] getAllSelectedEntries();
-	public native HierarchyListEntry[] getAllUnnestedSelectedEntries();
 		
 	/*
 	 * item hierarchy
@@ -301,27 +277,39 @@ public class HierarchyList extends List {
 	 *
 	 */
 
-	public native HierarchyListEntry[] getLeafEntries();
+	public native HierarchyListEntry[] getLeafs();
 	public native int getLeafIndex(HierarchyListEntry entry);
+
+	/*
+	 * item list manipulation
+	 *
+	 */
+	
+	protected ListEntry createEntry(int index) {
+		return new HierarchyListEntry(this, index);
+	}
+	
+	public native HierarchyListEntry getLeafAt(int x, int y);
+	public native HierarchyListEntry getActiveLeaf();
+
+	public void getLeafAt(Point2D point) {
+		getLeafAt((int)point.getX(), (int)point.getY());
+	}
+
+	/*
+	 * selection list manipulation
+	 *
+	 */
+
+	public native HierarchyListEntry[] getAllSelected();
+	public native HierarchyListEntry[] getAllUnnestedSelected();
 
 	/*
 	 * item sequence manipulation
 	 *
 	 */
 	
-	public native void swapEntries(int fromIndex, int toIndex);
-	
-	private native HierarchyListEntry nativeInsertEntry(HierarchyListEntry entry, int index);
-
-	public HierarchyListEntry insertEntry(HierarchyListEntry entry, int index) {
-		entry = nativeInsertEntry(entry, index);
-		if (entry != null)
-			entry.list = this;
-		return entry;
-	}
-	
-	// TODO: move this to HierarchyListEntry
-	public native HierarchyListEntry unlinkEntry(int index);
+	public native void swap(int fromIndex, int toIndex);
 	
 	/*
 	 * item selection
@@ -335,7 +323,7 @@ public class HierarchyList extends List {
 	 *
 	 */
 
-	public native HierarchyListEntry[] getExpandedEntries();
+	public native HierarchyListEntry[] getExpanded();
 	public native int getExpandedIndex(HierarchyListEntry entry);
 
 	/*

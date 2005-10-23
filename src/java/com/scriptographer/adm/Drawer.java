@@ -2,6 +2,7 @@ package com.scriptographer.adm;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import com.scriptographer.ai.*;
 
@@ -101,20 +102,35 @@ public class Drawer extends ADMObject {
 	 */
 	
 	public native Rectangle getClipRect();
-	public native void setClipRect(Rectangle rect);
-	public native void intersectClipRect(Rectangle rect);
-	
-	public native void unionClipRect(Rectangle rect);
-	public native void subtractClipRect(Rectangle rect);
+	public native void setClipRect(int x, int y, int width, int height);
 
-	// TODO: use something else than Point[]? e.g. Point2D
-	// Also decide about Rectangle vs. x, y, width, height, and so on
-	// Compare to Dialog.setBounds, and all the other functions with
-	// both versions!
-	public native void setClipPolygon(Point[] points);
-	public native void intersectClipPolygon(Point[] points);
-	public native void unionClipPolygon(Point[] points);
-	public native void subtractClipPolygon(Point[] points);
+	public void setClipRect(Rectangle2D rect) {
+		setClipRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
+	public native void intersectClipRect(int x, int y, int width, int height);
+
+	public void intersectClipRect(Rectangle2D rect) {
+		intersectClipRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
+	
+	public native void unionClipRect(int x, int y, int width, int height);
+
+	public void unionClipRect(Rectangle2D rect) {
+		unionClipRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
+	public native void subtractClipRect(int x, int y, int width, int height);
+
+	public void subtractClipRect(Rectangle2D rect) {
+		subtractClipRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
+	public native void setClipPolygon(Point2D[] points);
+	public native void intersectClipPolygon(Point2D[] points);
+	public native void unionClipPolygon(Point2D[] points);
+	public native void subtractClipPolygon(Point2D[] points);
 	
 	/* 
 	 * port origin
@@ -122,7 +138,12 @@ public class Drawer extends ADMObject {
 	 */
 	
 	public native Point getOrigin();
-	public native void setOrigin(Point origin);
+	
+	public native void setOrigin(int x, int y);
+	
+	public void setOrigin(Point2D point) {
+		setOrigin((int) point.getX(), (int) point.getY());
+	}
 	
 	/* 
 	 * drawing state accessors
@@ -150,51 +171,184 @@ public class Drawer extends ADMObject {
 		drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
 	}
 
-	// TODO: Point vs Point2D, see above
-	public native void drawPolygon(Point[] points);
-	public native void fillPolygon(Point[] points);
+	public native void drawPolygon(Point2D[] points);
+	public native void fillPolygon(Point2D[] points);
 	
-	public native void drawRect(Rectangle rect);
-	public native void fillRect(Rectangle rect);
-	public native void clearRect(Rectangle rect);
-	public native void drawSunkenRect(Rectangle rect);
-	public native void drawRaisedRect(Rectangle rect);
-	public native void invertRect(Rectangle rect);
+	public native void drawRect(int x, int y, int width, int height);
+
+	public void drawRect(Rectangle2D rect) {
+		drawRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
+	public native void fillRect(int x, int y, int width, int height);
+
+	public void fillRect(Rectangle2D rect) {
+		fillRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
+	public native void clearRect(int x, int y, int width, int height);
+
+	public void clearRect(Rectangle2D rect) {
+		clearRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
+	public native void drawSunkenRect(int x, int y, int width, int height);
+
+	public void drawSunkenRect(Rectangle2D rect) {
+		drawSunkenRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
+	public native void drawRaisedRect(int x, int y, int width, int height);
+
+	public void drawRaisedRect(Rectangle2D rect) {
+		drawRaisedRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
+	public native void invertRect(int x, int y, int width, int height);
+
+	public void invertRect(Rectangle2D rect) {
+		invertRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
 	
-	public native void drawOval(Rectangle rect);
-	public native void fillOval(Rectangle rect);
+	public native void drawOval(int x, int y, int width, int height);
+
+	public void drawOval(Rectangle2D rect) {
+		drawOval((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
+	public native void fillOval(int x, int y, int width, int height);
+
+	public void fillOval(Rectangle2D rect) {
+		fillOval((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
 
 	/* 
 	 * image and icon drawing
 	 * 
 	 */
 
-	public native void drawImage(Image image, Point topLeft);
-	public native void drawImageCentered(Image image, Rectangle rect);	
-	public native void drawRecoloredImage(Image image, Point topLeft, int style); // style form Drawer.RECOLOR_ segmentValues
-	public native void drawRecoloredImageCentered(Image image, Rectangle rect, int style); // style form Drawer.RECOLOR_ segmentValues
+	/**
+	 * Draws the image with a recoloring style
+	 * @param image
+	 * @param x
+	 * @param y
+	 * @param style Drawer.RECOLOR_ values
+	 */
+	public native void drawImage(Image image, int x, int y, int style);
+
+	/**
+	 * Draws the image with a recoloring style
+	 * @param image
+	 * @param point
+	 * @param style Drawer.RECOLOR_ values
+	 */
+	public void drawImage(Image image, Point2D point, int style) {
+		drawImage(image, (int) point.getX(), (int) point.getY(), style);
+	}
+
+	public native void drawImage(Image image, int x, int y);
+
+	public void drawImage(Image image, Point2D point) {
+		drawImage(image, (int) point.getX(), (int) point.getY());
+	}
+	
+	/**
+	 * Draws the image centered in a rectangle, with a recoloring style
+	 * 
+	 * @param image
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param style style Drawer.RECOLOR_ values
+	 */
+	public native void drawImage(Image image, int x, int y, int width, int height, int style);
+
+	/**
+	 * Draws the image centered in a rectangle, with a recoloring style
+	 * 
+	 * @param image
+	 * @param rect
+	 * @param style style Drawer.RECOLOR_ values
+	 */
+	public void drawImage(Image image, Rectangle2D rect, int style) {
+		drawImage(image, (int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight(), style);
+	}
+
+	public native void drawImage(Image image, int x, int y, int width, int height);	
+
+	public void drawImage(Image image, Rectangle2D rect) {
+		drawImage(image, (int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
 
 	/* 
 	 * text drawing
 	 * 
 	 */
-	
+
 	public native int getTextWidth(String text);
-	public native void drawText(String text, Point point);
-	public native void drawTextLeft(String text, Rectangle rect);
-	public native void drawTextCentered(String text, Rectangle rect);
-	public native void drawTextRight(String text, Rectangle rect);
-	public native void drawTextInABox(String text, Rectangle rect);
+	
+	public native void drawText(String text, int x, int y);
+
+	public void drawText(String text, Point2D point) {
+		drawText(text, (int) point.getX(), (int) point.getY());
+	}
+	
+	public native void drawTextLeft(String text, int x, int y, int width, int height);
+
+	public void drawTextLeft(String text, Rectangle2D rect) {
+		drawTextLeft(text, (int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+	
+	public native void drawTextCentered(String text, int x, int y, int width, int height);
+
+	public void drawTextCentered(String text, Rectangle2D rect) {
+		drawTextCentered(text, (int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+	
+	public native void drawTextRight(String text, int x, int y, int width, int height);
+
+	public void drawTextRight(String text, Rectangle2D rect) {
+		drawTextRight(text, (int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+	
+	public native void drawTextInABox(String text, int x, int y, int width, int height);
+
+	public void drawTextInABox(String text, Rectangle2D rect) {
+		drawTextRight(text, (int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
 	
 	/* 
 	 * standard arrows
 	 * 
 	 */
 
-	public native void drawUpArrow(Rectangle rect);
-	public native void drawDownArrow(Rectangle rect);
-	public native void drawLeftArrow(Rectangle rect);
-	public native void drawRightArrow(Rectangle rect);
+	public native void drawUpArrow(int x, int y, int width, int height);
+
+	public void drawUpArrow(Rectangle2D rect) {
+		drawUpArrow((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
+	public native void drawDownArrow(int x, int y, int width, int height);
+
+	public void drawDownArrow(Rectangle2D rect) {
+		drawDownArrow((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
+	public native void drawLeftArrow(int x, int y, int width, int height);
+
+	public void drawLeftArrow(Rectangle2D rect) {
+		drawLeftArrow((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
+	public native void drawRightArrow(int x, int y, int width, int height);
+
+	public void drawRightArrow(Rectangle2D rect) {
+		drawRightArrow((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+	}
+
 
 	/* 
 	 * drawer creation/destruction
@@ -219,22 +373,6 @@ public class Drawer extends ADMObject {
 	 * font information
 	 * 
 	 */
-
-	public static class FontInfo {
-		public int height;
-		public int ascent;
-		public int descent;
-		public int leading;
-		public int maxWidth;
-		
-		public FontInfo(int height, int ascent, int descent, int leading, int maxWidth) {
-			this.height = height;
-			this.ascent = ascent;
-			this.descent = descent;
-			this.leading = leading;
-			this.maxWidth = maxWidth;
-		}
-	}
 
 	public native FontInfo getFontInfo();
 	public native FontInfo getFontInfo(int font);

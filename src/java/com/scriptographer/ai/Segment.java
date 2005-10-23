@@ -28,18 +28,19 @@
  *
  * $RCSfile: Segment.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.10 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
+import com.scriptographer.js.WrappableObject;
 
 import java.awt.geom.Point2D;
 
-public class Segment implements Commitable {
+public class Segment extends WrappableObject implements Commitable {
 	protected SegmentList segments;
 	protected int index;
 	// the internal points

@@ -28,8 +28,8 @@
  *
  * $RCSfile: TextEdit.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/18 15:29:06 $
+ * $Revision: 1.7 $
+ * $Date: 2005/10/23 00:33:04 $
  */
 
 package com.scriptographer.adm;
@@ -44,9 +44,8 @@ public class TextEdit extends TextValueItem {
 	// self defined pseudo options, for creation of the right TYPE:
 		OPTION_READONLY = 1 << 4,
 		OPTION_MULTILINE = 1 << 5, 
-		// for TYPE_TEXT_EDIT_POPUP
+		// for TYPE_TEXT_EDIT_POPUP:
 		OPTION_POPUP = 1 << 6,
-		// TYPE_TEXT_EDIT_POPUP
 		OPTION_SCROLLING = 1 << 7;
 
 	// ADMTextEditStyle, ADMTextEditPopupStyle
@@ -57,6 +56,20 @@ public class TextEdit extends TextValueItem {
 		STYLE_TRACK_RAW_KEYS = 4, // Mac-only; ignores default Carbon event processing; not compatible with kADMUnicodeEditCreateOption
 		STYLE_PASSWORD = 32;      // Win32 value for ES_PADMSWORD
 	
+	protected TextEdit(Dialog dialog, long itemHandle) {
+		super(dialog, itemHandle);
+	}
+	
+	/**
+	 * For subclasses
+	 * 
+	 * @param dialog
+	 * @param type
+	 * @param options
+	 */
+	protected TextEdit(Dialog dialog, int type, int options) {
+		super(dialog, type, options);
+	}
 	
 	public TextEdit(Dialog dialog, int options) {
 		// filter out the pseudo styles from the options:
@@ -71,18 +84,18 @@ public class TextEdit extends TextValueItem {
 	private static int getType(int options) {
 		// abuse the ADM's password style for creating it as a type...
 		if ((options & OPTION_PASSWORD) != 0) {
-			return Item.TYPE_TEXT_EDIT_PASSWORD;
+			return TYPE_TEXT_EDIT_PASSWORD;
 		} else if ((options & OPTION_POPUP) != 0) {
-			return (options & OPTION_SCROLLING) != 0 ? Item.TYPE_TEXT_EDIT_SCROLLING_POPUP
-				: Item.TYPE_TEXT_EDIT_POPUP;
+			return (options & OPTION_SCROLLING) != 0 ? TYPE_TEXT_EDIT_SCROLLING_POPUP
+				: TYPE_TEXT_EDIT_POPUP;
 		} else {
 			boolean multiline = ((options & OPTION_MULTILINE) != 0);
 			if ((options & OPTION_READONLY) != 0) {
-				return multiline ? Item.TYPE_TEXT_EDIT_MULTILINE_READONLY
-					: Item.TYPE_TEXT_EDIT_READONLY;
+				return multiline ? TYPE_TEXT_EDIT_MULTILINE_READONLY
+					: TYPE_TEXT_EDIT_READONLY;
 			} else {
-				return multiline ? Item.TYPE_TEXT_EDIT_MULTILINE
-					: Item.TYPE_TEXT_EDIT;
+				return multiline ? TYPE_TEXT_EDIT_MULTILINE
+					: TYPE_TEXT_EDIT;
 			}
 		}
 	}
@@ -232,4 +245,29 @@ public class TextEdit extends TextValueItem {
 	public native void setAllowUnits(boolean allowUnits);
 	public native boolean getAllowUnits();
 
+	/*
+	 *  child items
+	 */
+	private static final int
+		ITEM_TEXTEDIT = 3,
+		ITEM_POPUP = 4;
+
+	private TextEdit textEdit;
+	private PopupList popupList;
+	
+	public TextEdit getTextEdit() {
+		if (textEdit == null) {
+			long handle = getChildItemHandle(ITEM_TEXTEDIT);
+			textEdit = handle != 0 ? new TextEdit(dialog, handle) : null;
+		}
+		return textEdit;
+	}
+	
+	public PopupList getPopupList() {
+		if (popupList == null) {
+			long handle = getChildItemHandle(ITEM_POPUP);
+			popupList = handle != 0 ? new PopupList(dialog, handle) : null;
+		}
+		return popupList;
+	}
 }
