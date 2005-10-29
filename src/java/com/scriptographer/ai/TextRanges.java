@@ -1,13 +1,13 @@
 /*
  * Scriptographer
- *
+ * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
- *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * 
+ * Copyright (c) 2004-2005 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
- *
+ * 
  * -- GPL LICENSE NOTICE --
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,39 +23,43 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 24.03.2005.
- *
- * $RCSfile: ADMObject.java,v $
+ * 
+ * File created on 28.10.2005.
+ * 
+ * $RCSfile: TextRanges.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/29 10:19:57 $
+ * $Revision: 1.1 $
+ * $Date: 2005/10/29 10:18:38 $
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.ai;
 
-import com.scriptographer.js.WrappableObject;
+import com.scriptographer.util.ExtendedArrayList;
+import com.scriptographer.util.ExtendedList;
+import com.scriptographer.util.ReadOnlyList;
 
-abstract class ADMObject extends WrappableObject {
-	// used for storing the native handle for this object
-	protected int handle;
+public class TextRanges extends AIObject implements ReadOnlyList {
 	
-	public ADMObject() {
-		handle = 0;
+	public TextRanges(int handle) {
+		super(handle);
+	}
+
+	public native void removeAll();
+
+	public native int getLength();
+
+	public native Object get(int index);
+	
+	protected native void finalize();
+
+	public boolean isEmpty() {
+		return getLength() == 0;
 	}
 	
-	public ADMObject(long handle) {
-		this.handle = (int) handle;
-	}
-	
-	public int hashCode() {
-		return handle;
-	}
-	
-	public boolean equals(Object obj) {
-		if (obj instanceof ADMObject) {
-			return handle == ((ADMObject) obj).handle;
-		}
-		return false;
+	public ExtendedList subList(int fromIndex, int toIndex) {
+		ExtendedArrayList list = new ExtendedArrayList(toIndex - fromIndex);
+		for (int i = fromIndex; i < toIndex; i++)
+			list.add(get(i));
+		return list;
 	}
 }

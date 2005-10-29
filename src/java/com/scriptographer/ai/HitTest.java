@@ -28,8 +28,8 @@
  *
  * $RCSfile: HitTest.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/29 10:18:38 $
  */
 
 package com.scriptographer.ai;
@@ -180,7 +180,7 @@ public class HitTest extends WrappableObject {
 			// curve = segment - 1, if curve < 0, curve += segmentCount
 			index--;
 			if (index < 0)
-				index += curves.size();
+				index += curves.getLength();
 			this.curve = (Curve) curves.get(index);
 			this.parameter = parameter;
 		} else {

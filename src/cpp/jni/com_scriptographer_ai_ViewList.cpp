@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_ViewList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/10/10 08:38:47 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/29 10:18:38 $
  */
 
 #include "StdHeaders.h"
@@ -52,9 +52,9 @@
 		sAIDocumentList->Activate(prevDoc, false);
 
 /*
- * int nativeGetViewCount(int docHandle)
+ * int nativeGetLength(int docHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeSize(JNIEnv *env, jclass cls, jint docHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeGetLength(JNIEnv *env, jclass cls, jint docHandle) {
 	VIEWLIST_BEGIN
 
 	long count = 0;
@@ -68,7 +68,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeSize(JNIEnv *en
 /*
  * int nativeGetActiveView(int docHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeGetActive(JNIEnv *env, jclass cls, jint docHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeGetActiveView(JNIEnv *env, jclass cls, jint docHandle) {
 	VIEWLIST_BEGIN
 
 	AIDocumentViewHandle view = NULL;

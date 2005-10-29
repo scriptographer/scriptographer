@@ -28,8 +28,8 @@
  * 
  * $RCSfile: SimpleList.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/29 10:19:57 $
  */
 
 package com.scriptographer.util;
@@ -60,5 +60,5 @@ public interface SimpleList extends ReadOnlyList {
 	boolean addAll(Object[] elements);
 	Object remove(int index);
 	void remove(int fromIndex, int toIndex);
-	void clear();
+	void removeAll();
 }

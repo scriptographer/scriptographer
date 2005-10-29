@@ -28,8 +28,8 @@
  *
  * $RCSfile: AbstractExtendedList.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/29 10:19:57 $
  */
 
 package com.scriptographer.util;
@@ -39,7 +39,7 @@ import com.scriptographer.js.WrappableObject;
 public abstract class AbstractExtendedList extends WrappableObject implements ExtendedList {
 
 	public Object add(Object element) {
-		return add(size(), element);
+		return add(getLength(), element);
 	}
 
 	public Object getFirst() {
@@ -47,7 +47,7 @@ public abstract class AbstractExtendedList extends WrappableObject implements Ex
 	}
 	
 	public Object getLast() {
-		return get(size() - 1);
+		return get(getLength() - 1);
 	}
 
 	public Object removeFirst() {
@@ -55,11 +55,11 @@ public abstract class AbstractExtendedList extends WrappableObject implements Ex
 	}
 	
 	public Object removeLast() {
-		return this.remove(size() - 1);
+		return this.remove(getLength() - 1);
 	}
 
 	public int indexOf(Object element) {
-		int size = size();
+		int size = getLength();
 		for (int i = 0; i < size; i++) {
 			Object obj = get(i);
 			if (obj == null && element == null || obj.equals(element))
@@ -69,7 +69,7 @@ public abstract class AbstractExtendedList extends WrappableObject implements Ex
 	}
 
 	public int lastIndexOf(Object element) {
-		for (int i = size() - 1; i >= 0; i--) {
+		for (int i = getLength() - 1; i >= 0; i--) {
 			Object obj = get(i);
 			if (obj == null && element == null || obj.equals(element))
 				return i;
@@ -95,13 +95,13 @@ public abstract class AbstractExtendedList extends WrappableObject implements Ex
 		}
 	}
 
-	public final void clear() {
-		remove(0, size());
+	public final void removeAll() {
+		remove(0, getLength());
 	}
 
 	public boolean addAll(int index, ExtendedList elements) {
 		boolean modified = false;
-		int size = elements.size();
+		int size = elements.getLength();
 		for (int i = 0; i < size; i++) {
 			if (add(index++, elements.get(i)) != null)
 				modified = true;
@@ -110,7 +110,7 @@ public abstract class AbstractExtendedList extends WrappableObject implements Ex
 	}
 
 	public final boolean addAll(ExtendedList elements) {
-		return addAll(size(), elements);
+		return addAll(getLength(), elements);
 	}
 
 	public final boolean addAll(int index, Object[] elements) {
@@ -118,12 +118,12 @@ public abstract class AbstractExtendedList extends WrappableObject implements Ex
 	}
 
 	public final boolean addAll(Object[] elements) {
-		return addAll(size(), elements);
+		return addAll(getLength(), elements);
 	}
 
 	public Object[] toArray(Object[] array) {
 		if (array == null)
-			array = new Object[size()];
+			array = new Object[getLength()];
 		for (int i = 0; i < array.length; i++)
 			array[i] = get(i);
 		return array;
@@ -141,12 +141,12 @@ public abstract class AbstractExtendedList extends WrappableObject implements Ex
 	}
 
 	public boolean isEmpty() {
-		return size() == 0;
+		return getLength() == 0;
 	}
 
 	public boolean retainAll(ExtendedList elements) {
 		boolean modified = false;
-		for (int i = size() - 1; i >= 0; i--) {
+		for (int i = getLength() - 1; i >= 0; i--) {
 			Object obj = get(i);
 			if(!elements.contains(obj) && remove(i) != null)
 				modified = true;
@@ -160,7 +160,7 @@ public abstract class AbstractExtendedList extends WrappableObject implements Ex
 
 	public boolean removeAll(ExtendedList elements) {
 		boolean modified = false;
-		for (int i = size() - 1; i >= 0; i--) {
+		for (int i = getLength() - 1; i >= 0; i--) {
 			Object obj = get(i);
 			if(elements.contains(obj) && remove(i) != null)
 				modified = true;
@@ -173,7 +173,7 @@ public abstract class AbstractExtendedList extends WrappableObject implements Ex
 	}
 
 	public boolean containsAll(ExtendedList elements) {
-		for (int i = elements.size() - 1; i >= 0; i--) {
+		for (int i = elements.getLength() - 1; i >= 0; i--) {
 			if (!contains(elements.get(i)))
 				return false;
 		}

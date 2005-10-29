@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.15 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.16 $
+ * $Date: 2005/10/29 10:18:38 $
  */
 
 package com.scriptographer.ai;
@@ -123,7 +123,7 @@ public class Path extends Art {
 		SegmentList segments = getSegments();
 		// TODO: implement SegmentList.setAll so clear is not necesssary and nativeCommit is used instead of nativeInsert
 		// removeRange would still be needed in cases the new list is smaller than the old one...
-		segments.clear();
+		segments.removeAll();
 		segments.addAll(list);
 	}
 
@@ -228,6 +228,12 @@ public class Path extends Art {
 	public void reduceSegments() {
 		reduceSegments(Curve.FLATNESS);
 	}
+	
+	public Path split(float position) {
+		int index = (int) Math.floor(position);
+		float parameter = position - index;
+		return this.split(index, parameter);
+	}
 
 	public Path split(int index, float parameter) {
 		SegmentList segments = getSegments();
@@ -270,7 +276,7 @@ public class Path extends Art {
 
 	public HitTest hitTest(Point point, float epsilon) {
 		CurveList curves = getCurves();
-		int length = curves.size();
+		int length = curves.getLength();
 		
 		for (int i = 0; i < length; i++) {
 			Curve curve = (Curve) curves.get(i);
@@ -390,7 +396,7 @@ public class Path extends Art {
 	public void append(PathIterator iter, boolean connect) {
 		float[] f = new float[6];
 		SegmentList segments = getSegments();
-		int size = segments.size();
+		int size = segments.getLength();
 		boolean open = true;
 		while (!iter.isDone() && open) {
 			switch (iter.currentSegment(f)) {

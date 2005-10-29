@@ -28,14 +28,14 @@
  * 
  * $RCSfile: ReadOnlyList.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/29 10:19:57 $
  */
 
 package com.scriptographer.util;
 
 public interface ReadOnlyList {
-	int size();
+	int getLength();
 	boolean isEmpty();
 	Object get(int index);
 	ExtendedList subList(int fromIndex, int toIndex);

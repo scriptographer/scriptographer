@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListItem.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/29 10:19:57 $
  */
 
 package com.scriptographer.adm;
@@ -86,7 +86,7 @@ public abstract class ListItem extends Item implements SimpleList {
 		super.onNotify(notifier);
 		if (notifier == Notifier.NOTIFIER_USER_CHANGED) {
 			// redirect to entry:
-			ListEntry entry = getActive();
+			ListEntry entry = getActiveEntry();
 			if (entry != null) {
 				entry.onNotify(notifier);
 			}
@@ -264,7 +264,7 @@ public abstract class ListItem extends Item implements SimpleList {
 		getAt((int)point.getX(), (int)point.getY());
 	}
 
-	public native ListEntry getActive();
+	public native ListEntry getActiveEntry();
 	public native ListEntry[] getSelected();
 	
 	/*
@@ -272,7 +272,7 @@ public abstract class ListItem extends Item implements SimpleList {
 	 * 
 	 */
 
-	public native int size();
+	public native int getLength();
 
 	public native Object get(int index);
 
@@ -327,14 +327,14 @@ public abstract class ListItem extends Item implements SimpleList {
 			remove(i);
 	}
 
-	public final void clear() {
-		remove(0, size());
+	public final void removeAll() {
+		remove(0, getLength());
 	}
 
 	public boolean addAll(ExtendedList elements) {
 		boolean modified = false;
-		int size = elements.size();
-		int index = size();
+		int size = elements.getLength();
+		int index = getLength();
 		for (int i = 0; i < size; i++) {
 			if (add(index++, elements.get(i)) != null)
 				modified = true;
@@ -354,7 +354,6 @@ public abstract class ListItem extends Item implements SimpleList {
 	}
 
 	public boolean isEmpty() {
-		return size() == 0;
+		return getLength() == 0;
 	}
-
 }

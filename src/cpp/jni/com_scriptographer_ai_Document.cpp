@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/10/18 15:35:46 $
+ * $Revision: 1.11 $
+ * $Date: 2005/10/29 10:18:38 $
  */
  
 #include "stdHeaders.h"
@@ -699,7 +699,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_hitTest(JNIEnv *en
 	AIRealPoint pt;
 	gEngine->convertPoint(env, point, &pt);
 
-    AIArtHandle handle = art != NULL ? gEngine->getArtHandle(env, art) : NULL;
+    AIArtHandle handle = gEngine->getArtHandle(env, art);
     
 	AIHitRef hit;
 	if (!sAIHitTest->HitTest(handle, &pt, type, &hit)) {

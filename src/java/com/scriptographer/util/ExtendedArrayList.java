@@ -28,8 +28,8 @@
  *
  * $RCSfile: ExtendedArrayList.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/29 10:19:57 $
  */
 
 package com.scriptographer.util;
@@ -60,7 +60,7 @@ public class ExtendedArrayList extends AbstractExtendedList {
 		this(list.toArray());
 	}
 
-	public int size() {
+	public int getLength() {
 		return list.size();
 	}
 

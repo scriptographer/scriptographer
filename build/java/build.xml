@@ -234,6 +234,12 @@
 			<class name="com.scriptographer.ai.MenuGroup" />
 			<class name="com.scriptographer.ai.Timer" />
 			<class name="com.scriptographer.ai.Annotator" />
+			<class name="com.scriptographer.ai.Text" />
+			<class name="com.scriptographer.ai.PointText" />
+			<class name="com.scriptographer.ai.AreaText" />
+			<class name="com.scriptographer.ai.PathText" />
+			<class name="com.scriptographer.ai.TextRange" />
+			<class name="com.scriptographer.ai.TextRanges" />
 
 			<class name="com.scriptographer.adm.Notifier" />
 			<class name="com.scriptographer.adm.Dialog" />

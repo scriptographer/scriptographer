@@ -28,8 +28,8 @@
  *
  * $RCSfile: AbstractReadOnlyList.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.3 $
+ * $Date: 2005/10/29 10:19:57 $
  */
 
 package com.scriptographer.util;
@@ -39,7 +39,7 @@ import com.scriptographer.js.WrappableObject;
 public abstract class AbstractReadOnlyList extends WrappableObject implements ReadOnlyList {
 
 	public boolean isEmpty() {
-		return size() == 0;
+		return getLength() == 0;
 	}
 
 	public ExtendedList subList(int fromIndex, int toIndex) {

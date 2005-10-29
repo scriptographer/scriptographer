@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.13 $
+ * $Date: 2005/10/29 10:18:38 $
  */
 
 package com.scriptographer.ai;
@@ -188,10 +188,10 @@ public abstract class Art extends DictionaryObject {
 	 * the Art(Integer handle) constructor
 	 * @param handle
 	 */
-	protected Art(int handle) {
-		super(handle);
+	protected Art(long handle) {
+		super((int) handle);
 		// keep track of this object from now on, see wrapArtHandle
-		artWrappers.put(handle, this);
+		artWrappers.put(this.handle, this);
 		// store the wrapper also in the paren'ts childrenWrappers segmentList, so
 		// it becomes permanent as long the object itself exists.
 		// see definitions of artWrappers and childrenWrappers.
@@ -217,28 +217,43 @@ public abstract class Art extends DictionaryObject {
 	 * @param type
 	 * @return
 	 */
-	protected static Art wrapHandle(int artHandle, int type, int dictionaryRef) {
+	protected static Art wrapHandle(int artHandle, int type, int textType, int dictionaryRef) {
 		// first see wether the object was already wrapped before:
 		Art art = (Art) artWrappers.get(artHandle);
 		// if it wasn't wrapped yet, do it now:
+		// TODO: don't forget to add all types also to the native
+		// artGetType function in com_scriptographer_ai_Art.cpp!
 		if (art == null) {
 			switch (type) {
-			case TYPE_PATH:
-				art = new Path((long) artHandle);
-				break;
-			case TYPE_GROUP:
-				art = new Group((long) artHandle);
-				break;
-			case TYPE_RASTER:
-				art = new Raster((long) artHandle);
-				break;
-			case TYPE_LAYER:
-				art = new Layer((long) artHandle);
-				break;
-			case TYPE_COMPOUNDPATH:
-				art = new CompoundPath((long) artHandle);
-				break;
-			}
+				case TYPE_PATH:
+					art = new Path((long) artHandle);
+					break;
+				case TYPE_GROUP:
+					art = new Group((long) artHandle);
+					break;
+				case TYPE_RASTER:
+					art = new Raster((long) artHandle);
+					break;
+				case TYPE_LAYER:
+					art = new Layer((long) artHandle);
+					break;
+				case TYPE_COMPOUNDPATH:
+					art = new CompoundPath((long) artHandle);
+					break;
+				case TYPE_TEXTFRAME:
+					switch (textType) {
+						case Text.TEXTTYPE_POINT:
+							art = new PointText((long) artHandle);
+							break;
+						case Text.TEXTTYPE_AREA:
+							art = new AreaText((long) artHandle);
+							break;
+						case Text.TEXTTYPE_PATH:
+							art = new PathText((long) artHandle);
+							break;
+					}
+					break;
+				}
 		}
 		if (art != null) {
 			art.dictionaryRef = dictionaryRef;
@@ -369,6 +384,10 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	public native Rectangle getBounds();
+	
+	public native Rectangle getControlBounds();
+	
+	public native Rectangle getGeometricBounds();
 
 	public native void setName(String name);
 	

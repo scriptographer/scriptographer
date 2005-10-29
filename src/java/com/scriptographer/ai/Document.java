@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.13 $
+ * $Date: 2005/10/29 10:18:38 $
  */
 
 package com.scriptographer.ai;
@@ -116,7 +116,7 @@ public class Document extends DictionaryObject {
 	}
 	
 	public Layer getActiveLayer() {
-		return getLayers().getActive();
+		return getLayers().getActiveLayer();
 	}
 	
 	public ViewList getViews() {
@@ -126,7 +126,7 @@ public class Document extends DictionaryObject {
 	}
 	
 	public View getActiveView() {
-		return getViews().getActive();
+		return getViews().getActiveView();
 	}
 
 	public native Point getPageOrigin();

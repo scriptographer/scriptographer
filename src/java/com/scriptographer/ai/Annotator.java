@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Annotator.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.7 $
+ * $Date: 2005/10/29 10:18:38 $
  */
 
 package com.scriptographer.ai;
@@ -81,7 +81,7 @@ public class Annotator extends AIObject {
 	 * Called from the native environment.
 	 */
 	protected Annotator(int handle) {
-		this.handle = handle;	
+		super(handle);
 	}
 	
 	private native int nativeCreate(String name);

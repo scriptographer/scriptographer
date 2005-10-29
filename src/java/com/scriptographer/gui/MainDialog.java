@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.8 $
+ * $Date: 2005/10/29 10:19:57 $
  */
 
 package com.scriptographer.gui;
@@ -352,7 +352,7 @@ public class MainDialog extends FloatingDialog {
 	}
 	
 	void removeFiles() {
-		scriptList.clear();
+		scriptList.removeAll();
 		directories.clear();
 		files.clear();
 	}

@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListObject.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/10/23 00:30:13 $
+ * $Revision: 1.8 $
+ * $Date: 2005/10/29 10:19:57 $
  */
 
 package com.scriptographer.js;
@@ -59,7 +59,7 @@ public class ListObject extends NativeJavaObject {
 	public Object[] getIds() {
 		if (javaObject != null) {
 			// act like a JS javaObject:
-			Integer[] ids = new Integer[((ReadOnlyList) javaObject).size()];
+			Integer[] ids = new Integer[((ReadOnlyList) javaObject).getLength()];
 			for (int i = 0; i < ids.length; i++) {
 				ids[i] = new Integer(i);
 			}
@@ -70,7 +70,7 @@ public class ListObject extends NativeJavaObject {
 	}
 
 	public boolean has(int index, Scriptable start) {
-		return javaObject != null && index < ((ReadOnlyList) javaObject).size();
+		return javaObject != null && index < ((ReadOnlyList) javaObject).getLength();
 	}
 
 	public Object get(int index, Scriptable scriptable) {
@@ -84,16 +84,16 @@ public class ListObject extends NativeJavaObject {
 
 	public boolean has(String name, Scriptable start) {
 		return super.has(name, start) ||
-			name.equals("length") ||
+			// name.equals("length") ||
 			javaObject instanceof StringIndexList && javaObject != null && ((StringIndexList) javaObject).get(name) != null;
 	}
 
 	public Object get(String name, Scriptable scriptable) {
 		Object obj = super.get(name, scriptable);
 		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
-			if (name.equals("length")) {
-				return new Integer(((ReadOnlyList) javaObject).size());
-			} else if (javaObject instanceof StringIndexList) {
+			/* if (name.equals("length")) {
+				return new Integer(((ReadOnlyList) javaObject).getLength());
+			} else*/ if (javaObject instanceof StringIndexList) {
 				obj = ((StringIndexList) javaObject).get(name);
 				if (obj != null)
 					obj = Context.toObject(obj, scriptable);
@@ -109,7 +109,7 @@ public class ListObject extends NativeJavaObject {
 			SimpleList list = ((SimpleList) javaObject);
 			if (value instanceof Wrapper)
 				value = ((Wrapper) value).unwrap();
-			int size = list.size();
+			int size = list.getLength();
 			if (index > size) {
 				for (int i = size; i < index; i++)
 					list.add(i, null);

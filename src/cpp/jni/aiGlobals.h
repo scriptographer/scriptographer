@@ -26,8 +26,8 @@
  *
  * $RCSfile: aiGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/29 10:18:38 $
  */
 
 short artGetType(AIArtHandle handle);
@@ -73,3 +73,22 @@ short pathGetBezierCount(AIArtHandle art);
 	RT.top  = Y; \
 	RT.right =  X + WIDTH; \
 	RT.bottom = Y + HEIGHT;
+
+// switch to the specified document first if it differs from the current one:
+#define CREATEART_BEGIN \
+	AIDocumentHandle activeDoc = NULL; \
+	AIDocumentHandle prevDoc = NULL; \
+	try { \
+		AIDocumentHandle doc = (AIDocumentHandle) docHandle; \
+		sAIDocument->GetDocument(&activeDoc); \
+		if (activeDoc != doc) { \
+			prevDoc = activeDoc; \
+			sAIDocumentList->Activate(doc, false); \
+		}
+		
+// switch back to the previously active document:
+#define CREATEART_END \
+	} EXCEPTION_CONVERT(env) \
+	if (prevDoc != NULL) \
+		sAIDocumentList->Activate(prevDoc, false);
+

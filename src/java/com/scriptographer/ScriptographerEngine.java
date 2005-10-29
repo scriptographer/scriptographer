@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2005/10/18 15:31:15 $
+ * $Revision: 1.15 $
+ * $Date: 2005/10/29 10:18:38 $
  */
 
 package com.scriptographer;
@@ -233,15 +233,46 @@ public class ScriptographerEngine {
 		}
 		return null;
 	}
+	
+	class ProgressUpdater implements Runnable {
+		Thread current;
+		boolean canceled;
+		boolean run;
+		
+		ProgressUpdater(Thread current) {
+			this.current = current;
+		}
+
+		public void run() {
+			canceled = false;
+			run = true;
+			while(run && !canceled) {
+				canceled = !ScriptographerEngine.updateProgress();
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					canceled = true;
+				}
+			}
+			ScriptographerEngine.closeProgress();
+			if (canceled)
+				current.stop();
+		}
+}
 
 	public Scriptable executeScript(Script script, File scriptFile, Scriptable scope) {
 		Scriptable ret = null;
+		ProgressUpdater updater = new ProgressUpdater(Thread.currentThread());
 		try {
+			showProgress("Executing " + scriptFile.getName() + "... Press ESC to Cancel.");
+			new Thread(updater).start();
+			
 			if (scope == null)
 				scope = global.createScope(scriptFile);
 			// disable output to the console while the script is executed as it won't get updated anyway
 			// ConsoleOutputStream.enableOutput(false);
 			script.exec(context, scope);
+			updater.run = false;
 			// now commit all the changes:
 			CommitManager.commit();
 			ret = scope;
@@ -251,6 +282,8 @@ public class ScriptographerEngine {
 		} catch (RhinoException re) {
 			reportRhinoException(re);
 		} finally {
+			if (updater.canceled)
+				System.out.println(scriptFile.getName() + " Canceled");
 			// now reenable the console, this also writes out all the things that were printed in the meantime:
 			// ConsoleOutputStream.enableOutput(true);
 		}
@@ -320,6 +353,10 @@ public class ScriptographerEngine {
 	public static native long getNanoTime();
 
 	public static native Point getMousePoint();
+	
+	protected static native void showProgress(String text);
+	protected static native boolean updateProgress();
+	protected static native boolean closeProgress();
 
 	public static void main(String args[]) throws Exception {
 		ConsoleOutputStream.getInstance().enableRedirection(false);

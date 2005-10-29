@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.12 $
+ * $Date: 2005/10/29 10:18:38 $
  */
 
 package com.scriptographer;
@@ -140,6 +140,11 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, ArtSet.class);
 		new ExtendedJavaClass(this, SegmentList.class);
 		new ExtendedJavaClass(this, CurveList.class);
+		
+		new ExtendedJavaClass(this, Text.class);
+		new ExtendedJavaClass(this, PointText.class);
+		new ExtendedJavaClass(this, AreaText.class);
+		new ExtendedJavaClass(this, PathText.class);
 
 		// Java
 		new ExtendedJavaClass(this, File.class);
@@ -199,7 +204,7 @@ public class GlobalObject extends ImporterTopLevel {
 	 */
 
 	static Object getActiveDocument(ScriptableObject obj) {
-		return DocumentList.getActive();
+		return DocumentList.getActiveDocument();
 	}
 
 	static Object getScriptDirectory(ScriptableObject obj) {

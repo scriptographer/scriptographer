@@ -28,8 +28,8 @@
  * 
  * $RCSfile: CompoundPath.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.5 $
+ * $Date: 2005/10/29 10:18:38 $
  */
 
 package com.scriptographer.ai;
@@ -165,7 +165,7 @@ public class CompoundPath extends Art {
 			switch (iter.currentSegment(f)) {
 				case PathIterator.SEG_MOVETO: {
 					Path prevPath = (Path) getFirstChild();
-					int size = prevPath != null ? prevPath.getSegments().size() : -1;
+					int size = prevPath != null ? prevPath.getSegments().getLength() : -1;
 				    if (!connect || size  <= 0) {
 						moveTo(f[0], f[1]);
 						break;

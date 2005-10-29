@@ -28,8 +28,8 @@
  * 
  * $RCSfile: ArtSet.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.10 $
+ * $Date: 2005/10/29 10:18:38 $
  */
 
 package com.scriptographer.ai;
@@ -119,7 +119,7 @@ public class ArtSet extends ExtendedArrayList {
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("[");
-		for (int i = 0; i < size(); i++) {
+		for (int i = 0; i < getLength(); i++) {
 			if (i > 0)
 				buffer.append(", ");
 			buffer.append(get(i).toString());

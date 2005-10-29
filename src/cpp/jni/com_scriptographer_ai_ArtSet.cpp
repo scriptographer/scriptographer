@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_ArtSet.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/30 08:15:38 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/29 10:18:38 $
  */
  
 #include "stdHeaders.h"
@@ -51,7 +51,7 @@ void artSetFilter(AIArtSet set, bool layerOnly) {
 			short type = artGetType(art);
 			bool isLayer = artIsLayer(art);
 			if (type == kUnknownArt ||
-#ifdef OLD_TEXT_SUITES
+#if kPluginInterfaceVersion < kAI11
 				type == kTextRunArt ||
 #endif
 				(layerOnly && !isLayer || !layerOnly && isLayer)) {

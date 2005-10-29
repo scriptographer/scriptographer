@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_DocumentList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/18 15:35:46 $
+ * $Revision: 1.7 $
+ * $Date: 2005/10/29 10:18:38 $
  */
  
 #include "stdHeaders.h"
@@ -40,9 +40,9 @@
  */
 
 /*
- * int size()
+ * int getLength()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentList_size(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentList_getLength(JNIEnv *env, jobject obj) {
 	try {
 		long count;
 		sAIDocumentList->Count(&count);
@@ -64,9 +64,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentList_nativeGet(JNIEnv 
 }
 
 /*
- * int nativeGetActive()
+ * int nativeGetActiveDocument()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentList_nativeGetActive(JNIEnv *env, jclass cls) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentList_nativeGetActiveDocument(JNIEnv *env, jclass cls) {
 	AIDocumentHandle doc = NULL;
 	try {
 		sAIDocument->GetDocument(&doc);

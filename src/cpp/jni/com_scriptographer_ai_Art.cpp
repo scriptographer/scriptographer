@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/10/23 00:28:48 $
+ * $Revision: 1.12 $
+ * $Date: 2005/10/29 10:18:38 $
  */
  
 #include "stdHeaders.h"
@@ -50,8 +50,12 @@ short artGetType(JNIEnv *env, jclass cls) {
 		return kAnyArt;
 	} else if (env->IsSameObject(cls, gEngine->cls_Path)) {
 		return kPathArt;
+	} else if (env->IsSameObject(cls, gEngine->cls_CompoundPath)) {
+		return kCompoundPathArt;
 	} else if (env->IsSameObject(cls, gEngine->cls_Raster)) {
 		return kRasterArt;
+	} else if (env->IsAssignableFrom(cls, gEngine->cls_Text)) {
+		return kTextFrameArt;
 	} else if (env->IsSameObject(cls, gEngine->cls_Layer)) {
 		// special defined type for layers, needs handling!
 		return com_scriptographer_ai_Art_TYPE_LAYER;
@@ -64,8 +68,8 @@ short artGetType(JNIEnv *env, jclass cls) {
 
 jboolean artHasChildren(AIArtHandle art) {
 	// don't show the children of textPaths and pointText 
+#if kPluginInterfaceVersion < kAI11
 	short type = artGetType(art);
-#ifdef OLD_TEXT_SUITES
 	return (type == kTextArt && artGetTextType(art) != kPointTextType) || (type != kTextPathArt);
 #else
 	return true;
@@ -138,34 +142,25 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env, 
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env, jclass cls, jint docHandle, jint type) {
 	AIArtHandle art = NULL;
 
-	// switch to the specified document first if it differs from the current one:
-	AIDocumentHandle activeDoc = NULL;
-	AIDocumentHandle prevDoc = NULL;
-	try {
-		AIDocumentHandle doc = (AIDocumentHandle) docHandle;
-		sAIDocument->GetDocument(&activeDoc);
-		if (activeDoc != doc) {
-			prevDoc = activeDoc;
-			sAIDocumentList->Activate(doc, false);
-		}
-		// if type is set to the self defined TYPE_LAYER, create a layer and return the wrapped art group object instead:
-		if (type == com_scriptographer_ai_Art_TYPE_LAYER) { // create a layer
-			// place it above all others:
-			AILayerHandle layer = NULL;
-			sAILayer->InsertLayer(NULL, kPlaceAboveAll, &layer);
-			if (layer != NULL)
-				sAIArt->GetFirstArtOfLayer(layer, &art);
-			if (art == NULL)
-				throw new StringException("Cannot create layer. Please make sure there is an open document.");
-		} else { // create a normal art object
-			sAIArt->NewArt(type, kPlaceAboveAll, NULL, &art);
-			if (art == NULL)
-				throw new StringException("Cannot create art object. Please make sure there is an open document.");
-		}
-	} EXCEPTION_CONVERT(env)
-	// switch back to the previously active document:
-	if (prevDoc != NULL)
-		sAIDocumentList->Activate(prevDoc, false);
+	CREATEART_BEGIN
+
+	// if type is set to the self defined TYPE_LAYER, create a layer and return the wrapped art group object instead:
+	if (type == com_scriptographer_ai_Art_TYPE_LAYER) { // create a layer
+		// place it above all others:
+		AILayerHandle layer = NULL;
+		sAILayer->InsertLayer(NULL, kPlaceAboveAll, &layer);
+		if (layer != NULL)
+			sAIArt->GetFirstArtOfLayer(layer, &art);
+		if (art == NULL)
+			throw new StringException("Cannot create layer. Please make sure there is an open document.");
+	} else { // create a normal art object
+		sAIArt->NewArt(type, kPlaceAboveAll, NULL, &art);
+		if (art == NULL)
+			throw new StringException("Cannot create art object. Please make sure there is an open document.");
+	}
+
+	CREATEART_END
+
 	return (jint)art;
 }
 
@@ -280,17 +275,22 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getLastChild(JNIEnv *en
 	try {
 	    AIArtHandle art = gEngine->getArtHandle(env, obj);
 		if (artHasChildren(art)) {
-			// there's no other way to do this:
-			AIArtHandle child = NULL, curChild = NULL;
+			AIArtHandle child = NULL;
+#if kPluginInterfaceVersion >= kAI11		
+			sAIArt->GetArtLastChild(art, &child);
+#else
+			// there's no other way to do this on < CS 1
+			AIArtHandle curChild = NULL;
 			sAIArt->GetArtFirstChild(art, &curChild);
 			if (curChild != NULL) {
 				do {
 					child = curChild;
 					sAIArt->GetArtSibling(child, &curChild);
 				} while (curChild != NULL);
-				if (child != NULL) {
-					return gEngine->wrapArtHandle(env, child);
-				}
+			}
+#endif
+			if (child != NULL) {
+				return gEngine->wrapArtHandle(env, child);
 			}
 		}
 	} EXCEPTION_CONVERT(env)
@@ -351,6 +351,32 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getBounds(JNIEnv *env, 
 		AIRealRect rt;
 	    AIArtHandle art = gEngine->getArtHandle(env, obj);
 	    sAIArt->GetArtBounds(art, &rt);
+	    return gEngine->convertRectangle(env, &rt);
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * com.scriptographer.ai.Rectangle getControlBounds()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getControlBounds(JNIEnv *env, jobject obj) {
+	try {
+		AIRealRect rt;
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+	    sAIArt->GetArtTransformBounds(art, NULL, kControlBounds | kExcludeGuideBounds, &rt);
+	    return gEngine->convertRectangle(env, &rt);
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * com.scriptographer.ai.Rectangle getGeometricBounds()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getGeometricBounds(JNIEnv *env, jobject obj) {
+	try {
+		AIRealRect rt;
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
 	    return gEngine->convertRectangle(env, &rt);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
@@ -473,7 +499,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_append(JNIEnv *env, jo
 			AIArtHandle art2 = gEngine->getArtHandle(env, art);
 			if (art1 != NULL && art2 != NULL && art1 != art2) {
 				short type1 = artGetType(art1);
-#ifdef OLD_TEXT_SUITES
+#if kPluginInterfaceVersion < kAI11
 				if (type1 == kTextArt) {
 					short type2 = artGetType(art2);
 					if (type2 == kPathArt) {
@@ -519,7 +545,7 @@ jboolean artMove(JNIEnv *env, jobject obj, jobject art, short paintOrder) {
 			AIArtHandle art1 = gEngine->getArtHandle(env, obj);
 			AIArtHandle art2 = gEngine->getArtHandle(env, art);
 			if (art1 != NULL && art2 != NULL && art1 != art2) {
-#ifdef OLD_TEXT_SUITES
+#if kPluginInterfaceVersion < kAI11
 				AIArtHandle parent = NULL, path = NULL;
 				short type1 = artGetType(art1);
 				short type2 = artGetType(art2);
@@ -545,7 +571,7 @@ jboolean artMove(JNIEnv *env, jobject obj, jobject art, short paintOrder) {
 				} else 
 #endif
 				{ // type2 != kTextPathArt
-#ifdef OLD_TEXT_SUITES
+#if kPluginInterfaceVersion < kAI11
 					if (type1 == kTextPathArt) { // delete this textPath and get the path handle from it
 						if (!sAIArt->GetArtParent(art1, &parent) &&
 							!sAITextPath->DeleteTextPath(parent, art1, &path)) {
@@ -707,7 +733,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_nativeSetDictionary(JNIEnv
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_isValid(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
+#if kPluginInterfaceVersion < kAI12
 		return sAIArt->ValidArt(art);
+#else
+		// TODO: If searchAllLayerLists is true, then this does a search through all layers in
+		// all layer lists. Otherwise, it only does a search on the current layer list.
+		return sAIArt->ValidArt(art, false);
+#endif
 	} EXCEPTION_CONVERT(env)
 	return JNI_FALSE;
 }

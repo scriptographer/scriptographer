@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.17 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.18 $
+ * $Date: 2005/10/29 10:18:38 $
  */
  
 #include "stdHeaders.h"
@@ -435,15 +435,24 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_Art = loadClass(env, "com/scriptographer/ai/Art");
 	fid_Art_version = getFieldID(env, cls_Art, "version", "I");
 	fid_Art_dictionaryRef = getFieldID(env, cls_Art, "dictionaryRef", "I");
-	mid_Art_wrapHandle = getStaticMethodID(env, cls_Art, "wrapHandle", "(III)Lcom/scriptographer/ai/Art;");
+	mid_Art_wrapHandle = getStaticMethodID(env, cls_Art, "wrapHandle", "(IIII)Lcom/scriptographer/ai/Art;");
 	mid_Art_updateIfWrapped_int = getStaticMethodID(env, cls_Art, "updateIfWrapped", "(I)Z");
 	mid_Art_updateIfWrapped_Array = getStaticMethodID(env, cls_Art, "updateIfWrapped", "([I)V");
 	mid_Art_changeHandle = getMethodID(env, cls_Art, "changeHandle", "(II)V");
 
 	cls_ArtSet = loadClass(env, "com/scriptographer/ai/ArtSet");
 	cid_ArtSet = getConstructorID(env, cls_ArtSet, "()V");
+	mid_ArtSet_add = getMethodID(env, cls_ArtSet, "add", "(Ljava/lang/Object;)Ljava/lang/Object;");
 
 	cls_Path = loadClass(env, "com/scriptographer/ai/Path");
+	cls_CompoundPath = loadClass(env, "com/scriptographer/ai/CompoundPath");
+	cls_Text = loadClass(env, "com/scriptographer/ai/Text");
+
+	cls_TextRange = loadClass(env, "com/scriptographer/ai/TextRange");
+	cid_TextRange = getConstructorID(env, cls_TextRange, "(I)V");
+
+	cls_TextRanges = loadClass(env, "com/scriptographer/ai/TextRanges");
+	cid_TextRanges = getConstructorID(env, cls_TextRanges, "(I)V");
 	
 	cls_PathStyle = loadClass(env, "com/scriptographer/ai/PathStyle");
 	mid_PathStyle_init = getMethodID(env, cls_PathStyle, "init", "(Lcom/scriptographer/ai/Color;ZLcom/scriptographer/ai/Color;ZFF[FSSFZZZF)V");
@@ -583,6 +592,41 @@ long ScriptographerEngine::getNanoTime() {
 		QueryPerformanceCounter (& counter);
 		return counter.QuadPart * 1000000 / scaleFactor;
 	#endif
+}
+
+bool ScriptographerEngine::isKeyDown(short keycode) {
+#ifdef MAC_ENV
+	// table that converts java keycodes to mac keycodes:
+	static unsigned char keycodeToMac[256] = {
+		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x33,0x30,0x4c,0xff,0xff,0x24,0xff,0xff,0x38,
+		0x3b,0x36,0xff,0x39,0xff,0xff,0xff,0xff,0xff,0xff,0x35,0xff,0xff,0xff,0xff,0x31,0x74,
+		0x79,0x77,0x73,0x7b,0x7e,0x7c,0x7d,0xff,0xff,0xff,0x2b,0xff,0x2f,0x2c,0x1d,0x12,0x13,
+		0x14,0x15,0x17,0x16,0x1a,0x1c,0x19,0xff,0x29,0xff,0x18,0xff,0xff,0xff,0x00,0x0b,0x08,
+		0x02,0x0e,0x03,0x05,0x04,0x22,0x26,0x28,0x25,0x2e,0x2d,0x1f,0x23,0x0c,0x0f,0x01,0x11,
+		0x20,0x09,0x0d,0x07,0x10,0x06,0x21,0x2a,0x1e,0xff,0xff,0x52,0x53,0x54,0x55,0x56,0x57,
+		0x58,0x59,0x5b,0x5c,0x43,0x45,0xff,0x1b,0x41,0x4b,0x7a,0x78,0x63,0x76,0x60,0x61,0x62,
+		0x64,0x65,0x6d,0x67,0x6f,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff,0x3a,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff,0xff,0x27,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+		0xff,0x32,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+	};
+	if (keycode >= 0 && keycode <= 255) {
+		keycode = keycodeToMac[keycode];
+		if (keycode != 0xff) {
+			KeyMap keys;
+			GetKeys(keys);
+			// return BitTst(&keys, keycode) != 0;
+			return (((unsigned char *) keys)[keycode >> 3] & (1 << (keycode & 7))) != 0;
+		}
+	}
+	return false;
+#elif WIN_ENV
+	return (GetAsyncKeyState(keycode) & 0x8000) == 0x8000;
+#endif
 }
 
 void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
@@ -956,7 +1000,7 @@ jobject ScriptographerEngine::convertArtSet(JNIEnv *env, AIArtSet set, bool laye
 		if (!sAIArtSet->IndexArtSet(set, i, &art)) {
 			obj = wrapArtHandle(env, art);
 			if (obj != NULL)
-				callBooleanMethod(env, artSet, mid_Collection_add, obj);
+				callBooleanMethod(env, artSet, mid_ArtSet_add, obj);
 		}
 	}
 	EXCEPTION_CHECK(env)
@@ -1325,20 +1369,13 @@ AIDictionaryRef ScriptographerEngine::convertDictionary(JNIEnv *env, jobject map
  * throws exceptions
  */
 AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	AIArtHandle art = (AIArtHandle) getIntField(env, obj, fid_AIObject_handle);
-	if (art == NULL) throw new StringException("Object is not wrapped around an art handle.");
+	if (art == NULL)
+		throw new StringException("Object is not wrapping an art handle.");
 	return art;
-}
-
-/**
- * Returns the AIDictionaryRef that contains the wrapped AIArtHandle, if any
- *
- * throws exceptions
- */
-AIDictionaryRef ScriptographerEngine::getArtDictionaryRef(JNIEnv *env, jobject obj) {
-	JNI_CHECK_ENV
-	return (AIDictionaryRef) gEngine->getIntField(env, obj, gEngine->fid_Art_dictionaryRef);
 }
 
 /**
@@ -1348,12 +1385,71 @@ AIDictionaryRef ScriptographerEngine::getArtDictionaryRef(JNIEnv *env, jobject o
  * throws exceptions
  */
 AILayerHandle ScriptographerEngine::getLayerHandle(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	AIArtHandle art = (AIArtHandle) getIntField(env, obj, fid_AIObject_handle);
-	if (art == NULL) throw new StringException("Object is not wrapped around an layer handle.");
+	if (art == NULL)
+		throw new StringException("Object is not wrapping a layer handle.");
 	AILayerHandle layer;
 	sAIArt->GetLayerOfArt(art, &layer);
 	return layer;
+}
+
+/**
+ * Returns the wrapped TextFrameRef of an object by assuming that it is an anchestor of Class Art and
+ * accessing its field 'handle':
+ *
+ * throws exceptions
+ */
+TextFrameRef ScriptographerEngine::getTextFrameRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	AIArtHandle art = (AIArtHandle) getIntField(env, obj, fid_AIObject_handle);
+	if (art == NULL)
+		throw new StringException("Object is not wrapping an art handle.");
+	TextFrameRef frame = NULL;
+	sAITextFrame->GetATETextFrame(art, &frame);
+	return frame;
+}
+
+/**
+ * Returns the wrapped TextRangeRef of an object by assuming that it is an anchestor of Class TextRange and
+ * accessing its field 'handle':
+ *
+ * throws exceptions
+ */
+TextRangeRef ScriptographerEngine::getTextRangeRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	TextRangeRef range = (TextRangeRef) getIntField(env, obj, fid_AIObject_handle);
+	if (range == NULL)
+		throw new StringException("Object is not wrapping a text range handle.");
+	return range;
+}
+
+TextRangesRef ScriptographerEngine::getTextRangesRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	TextRangesRef ranges = (TextRangesRef) getIntField(env, obj, fid_AIObject_handle);
+	if (ranges == NULL)
+		throw new StringException("Object is not wrapping a text ranges handle.");
+	return ranges;
+}
+
+/**
+ * Returns the AIDictionaryRef that contains the wrapped AIArtHandle, if any
+ *
+ * throws exceptions
+ */
+AIDictionaryRef ScriptographerEngine::getArtDictionaryRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	return (AIDictionaryRef) gEngine->getIntField(env, obj, gEngine->fid_Art_dictionaryRef);
 }
 
 /**
@@ -1363,9 +1459,12 @@ AILayerHandle ScriptographerEngine::getLayerHandle(JNIEnv *env, jobject obj) {
  * throws exceptions
  */
 AIDocumentHandle ScriptographerEngine::getDocumentHandle(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	AIDocumentHandle document = (AIDocumentHandle) getIntField(env, obj, fid_AIObject_handle);
-	if (document == NULL) throw new StringException("Object is not wrapped around a document handle.");
+	if (document == NULL)
+		throw new StringException("Object is not wrapping a document handle.");
 	return document;
 }
 
@@ -1376,9 +1475,12 @@ AIDocumentHandle ScriptographerEngine::getDocumentHandle(JNIEnv *env, jobject ob
  * throws exceptions
  */
 AIDocumentViewHandle ScriptographerEngine::getDocumentViewHandle(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	AIDocumentViewHandle view = (AIDocumentViewHandle) getIntField(env, obj, fid_AIObject_handle);
-	if (view == NULL) throw new StringException("Object is not wrapped around a view handle.");
+	if (view == NULL)
+		throw new StringException("Object is not wrapping a view handle.");
 	return view;
 }
 
@@ -1389,9 +1491,12 @@ AIDocumentViewHandle ScriptographerEngine::getDocumentViewHandle(JNIEnv *env, jo
  * throws exceptions
  */
 AILiveEffectHandle ScriptographerEngine::getLiveEffectHandle(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	AILiveEffectHandle effect = (AILiveEffectHandle) getIntField(env, obj, fid_AIObject_handle);
-	if (effect == NULL) throw new StringException("Object is not wrapped around a effect handle.");
+	if (effect == NULL)
+		throw new StringException("Object is not wrapping an effect handle.");
 	return effect;
 }
 
@@ -1402,9 +1507,12 @@ AILiveEffectHandle ScriptographerEngine::getLiveEffectHandle(JNIEnv *env, jobjec
  * throws exceptions
  */
 AIMenuItemHandle ScriptographerEngine::getMenuItemHandle(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	AIMenuItemHandle item = (AIMenuItemHandle) getIntField(env, obj, fid_AIObject_handle);
-	if (item == NULL) throw new StringException("Object is not wrapped around a menu item handle.");
+	if (item == NULL)
+		throw new StringException("Object is not wrapping a menu item handle.");
 	return item;
 }
 
@@ -1415,9 +1523,12 @@ AIMenuItemHandle ScriptographerEngine::getMenuItemHandle(JNIEnv *env, jobject ob
  * throws exceptions
  */
 AIMenuGroup ScriptographerEngine::getMenuGroupHandle(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	AIMenuGroup group = (AIMenuGroup) getIntField(env, obj, fid_AIObject_handle);
-	if (group == NULL) throw new StringException("Object is not wrapped around a menu group handle.");
+	if (group == NULL)
+		throw new StringException("Object is not wrapping a menu group handle.");
 	return group;
 }
 /**
@@ -1429,10 +1540,18 @@ AIMenuGroup ScriptographerEngine::getMenuGroupHandle(JNIEnv *env, jobject obj) {
 jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDictionaryRef dictionary) {
 	JNI_CHECK_ENV
 	short type = -1;
+	AITextFrameType textType = kUnknownTextType;
 	ASBoolean isLayer;
-	if (sAIArt->GetArtType(art, &type) || sAIArt->IsArtLayerGroup(art, &isLayer)) throw new StringException("Cannot determine the art object's type");
-	// self defined type for layer groups:
-	if (isLayer) type = com_scriptographer_ai_Art_TYPE_LAYER;
+	if (sAIArt->GetArtType(art, &type) || sAIArt->IsArtLayerGroup(art, &isLayer))
+		throw new StringException("Cannot determine the art object's type");
+	if (isLayer) {
+		// self defined type for layer groups
+		type = com_scriptographer_ai_Art_TYPE_LAYER;
+	} else if (type == kTextFrameArt) {
+		// determine text type as well
+		sAITextFrame->GetType(art, &textType);
+	}
+	
 	if (dictionary != NULL) // increase reference counter. It's decreased in finalize
 		sAIDictionary->AddRef(dictionary);
 	
@@ -1442,7 +1561,8 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 		sAIDictionary->SetIntegerEntry(artDict, fArtHandleKey, (ASInt32) art);
 		sAIDictionary->Release(artDict);
 	}
-	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) type, (jint) dictionary);
+	
+	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) type, (jint) textType, (jint) dictionary);
 }
 
 bool ScriptographerEngine::updateArtIfWrapped(JNIEnv *env, AIArtHandle art) {
@@ -1459,7 +1579,19 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) 
 	// an art group:
 	AIArtHandle art;
 	sAIArt->GetFirstArtOfLayer(layer, &art);
-	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER);
+	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER, (jint) kUnknownTextType, 0);
+}
+
+jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, TextRangeRef range) {
+	// we need to increase the ref count here. this is decreased again in TextRange.finalize
+	ATE::sTextRange->AddRef(range);
+	return newObject(env, cls_TextRange, cid_TextRange, (jint) range);
+}
+
+jobject ScriptographerEngine::wrapTextRangesRef(JNIEnv *env, TextRangesRef ranges) {
+	// we need to increase the ref count here. this is decreased again in TextRanges.finalize
+	ATE::sTextRanges->AddRef(ranges);
+	return newObject(env, cls_TextRanges, cid_TextRanges, (jint) ranges);
 }
 
 /**
@@ -1528,9 +1660,9 @@ ASErr ScriptographerEngine::selectionChanged() {
 			// new instances are created by illustrator when objects are moved, rotated with the rotate tool, etc.
 			// why it's doing this i don't know...
 
-			int numHandles = numMatches * 2;
-			jint *handles = new jint[numHandles];
-			int j = 0;
+			// the maximum possible amount of handles is the amount of matches x 2, as each wrapped art object needs two handles:
+			jint *handles = new jint[numMatches * 2];
+			int count = 0;
 			for (int i = 0; i < numMatches; i++) {
 				AIArtHandle art = (*matches)[i];
 				AIArtHandle prevArt = NULL;
@@ -1547,17 +1679,18 @@ ASErr ScriptographerEngine::selectionChanged() {
 						// set the new handle:
 						if (changed)
 							sAIDictionary->SetIntegerEntry(artDict, fArtHandleKey, (ASInt32) art);
+						// only if the fArtHandleKey was set before, this object was wrapped
+						handles[count++] = (jint) art;
+						handles[count++] = (jint) prevArt;
 					}
 					sAIDictionary->Release(artDict);
 				}
-				handles[j++] = (jint) art;
-				handles[j++] = (jint) prevArt;
 			}
 
 			sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
 
-			jintArray artHandles = env->NewIntArray(numHandles);
-			env->SetIntArrayRegion(artHandles, 0, numHandles, (jint *) handles);
+			jintArray artHandles = env->NewIntArray(count);
+			env->SetIntArrayRegion(artHandles, 0, count, (jint *) handles);
 			delete handles;
 			
 			callStaticVoidMethod(env, cls_Art, mid_Art_updateIfWrapped_Array, artHandles);
@@ -1836,9 +1969,12 @@ ASErr ScriptographerEngine::about() {
  * throws exceptions
  */
 ADMDialogRef ScriptographerEngine::getDialogRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	ADMDialogRef dlg = (ADMDialogRef) getIntField(env, obj, fid_ADMObject_handle);
-	if (dlg == NULL) throw new StringException("Object is not wrapped around a dialog ref.");
+	if (dlg == NULL)
+		throw new StringException("Object is not wrapping a dialog ref.");
 	return dlg;
 }
 
@@ -1849,8 +1985,12 @@ ADMDialogRef ScriptographerEngine::getDialogRef(JNIEnv *env, jobject obj) {
  * throws exceptions
  */
 ADMDrawerRef ScriptographerEngine::getDrawerRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
 	ADMDrawerRef drawer = (ADMDrawerRef) getIntField(env, obj, fid_ADMObject_handle);
-	if (drawer == NULL) throw new StringException("Object is not wrapped around a drawer ref.");
+	if (drawer == NULL)
+		throw new StringException("Object is not wrapping a drawer ref.");
 	return drawer;
 }
 
@@ -1861,8 +2001,12 @@ ADMDrawerRef ScriptographerEngine::getDrawerRef(JNIEnv *env, jobject obj) {
  * throws exceptions
  */
 ADMTrackerRef ScriptographerEngine::getTrackerRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
 	ADMTrackerRef tracker = (ADMTrackerRef) getIntField(env, obj, fid_ADMObject_handle);
-	if (tracker == NULL) throw new StringException("Object is not wrapped around a tracker ref.");
+	if (tracker == NULL)
+		throw new StringException("Object is not wrapping a tracker ref.");
 	return tracker;
 }
 
@@ -1873,8 +2017,12 @@ ADMTrackerRef ScriptographerEngine::getTrackerRef(JNIEnv *env, jobject obj) {
  * throws exceptions
  */
 ADMImageRef ScriptographerEngine::getImageRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
 	ADMImageRef image = (ADMImageRef) getIntField(env, obj, fid_ADMObject_handle);
-	if (image == NULL) throw new StringException("Object is not wrapped around a image ref.");
+	if (image == NULL)
+		throw new StringException("Object is not wrapping an image ref.");
 	return image;
 }
 
@@ -1885,6 +2033,8 @@ ADMImageRef ScriptographerEngine::getImageRef(JNIEnv *env, jobject obj) {
  * throws exceptions
  */
 ADMItemRef ScriptographerEngine::getItemRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	ADMItemRef item = (ADMItemRef) getIntField(env, obj, fid_ADMObject_handle);
 	if (item == NULL) {
@@ -1893,7 +2043,7 @@ ADMItemRef ScriptographerEngine::getItemRef(JNIEnv *env, jobject obj) {
 		if (env->IsInstanceOf(obj, cls_HierarchyList)) {
 			throw new StringException("This function can only be called on the root hierarchy list.");
 		} else {
-			throw new StringException("Object is not wrapped around an item ref.");
+			throw new StringException("Object is not wrapping an item ref.");
 		}
 	}
 	return item;
@@ -1906,9 +2056,11 @@ ADMItemRef ScriptographerEngine::getItemRef(JNIEnv *env, jobject obj) {
  * throws exceptions
  */
 ADMListRef ScriptographerEngine::getListRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	ADMListRef list = (ADMListRef) getIntField(env, obj, fid_ListItem_listHandle);
-	if (list == NULL) throw new StringException("Object is not wrapped around a list ref.");
+	if (list == NULL) throw new StringException("Object is not wrapping a list ref.");
 	return list;
 }
 
@@ -1919,9 +2071,11 @@ ADMListRef ScriptographerEngine::getListRef(JNIEnv *env, jobject obj) {
  * throws exceptions
  */
 ADMHierarchyListRef ScriptographerEngine::getHierarchyListRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	ADMHierarchyListRef list = (ADMHierarchyListRef) getIntField(env, obj, fid_ListItem_listHandle);
-	if (list == NULL) throw new StringException("Object is not wrapped around a hierarchy list ref.");
+	if (list == NULL) throw new StringException("Object is not wrapping a hierarchy list ref.");
 	return list;
 }
 
@@ -1932,9 +2086,11 @@ ADMHierarchyListRef ScriptographerEngine::getHierarchyListRef(JNIEnv *env, jobje
  * throws exceptions
  */
 ADMEntryRef ScriptographerEngine::getListEntryRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	ADMEntryRef entry = (ADMEntryRef) getIntField(env, obj, fid_ADMObject_handle);
-	if (entry == NULL) throw new StringException("Object is not wrapped around a list entry ref.");
+	if (entry == NULL) throw new StringException("Object is not wrapping a list entry ref.");
 	return entry;
 }
 
@@ -1945,15 +2101,17 @@ ADMEntryRef ScriptographerEngine::getListEntryRef(JNIEnv *env, jobject obj) {
  * throws exceptions
  */
 ADMListEntryRef ScriptographerEngine::getHierarchyListEntryRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	ADMListEntryRef entry = (ADMListEntryRef) getIntField(env, obj, fid_ADMObject_handle);
-	if (entry == NULL) throw new StringException("Object is not wrapped around a hierarchy list entry ref.");
+	if (entry == NULL) throw new StringException("Object is not wrapping a hierarchy list entry ref.");
 	return entry;
 }
 
 jobject ScriptographerEngine::getDialogObject(ADMDialogRef dlg) {
 	jobject obj = NULL;
-	if (sADMDialog != NULL) {
+	if (dlg != NULL && sADMDialog != NULL) {
 		obj = (jobject) sADMDialog->GetUserData(dlg);
 		if (obj == NULL) throw new StringException("Dialog does not have a wrapper object.");
 	}
@@ -1962,7 +2120,7 @@ jobject ScriptographerEngine::getDialogObject(ADMDialogRef dlg) {
 
 jobject ScriptographerEngine::getItemObject(ADMItemRef item) {
 	jobject obj = NULL;
-	if (sADMItem != NULL) {
+	if (item != NULL && sADMItem != NULL) {
 		obj = (jobject) sADMItem->GetUserData(item);
 		if (obj == NULL) throw new StringException("Item does not have a wrapper object.");
 	}
@@ -1975,7 +2133,7 @@ jobject ScriptographerEngine::getItemObject(ADMItemRef item) {
 
 jobject ScriptographerEngine::getListObject(ADMListRef list) {
 	jobject obj = NULL;
-	if (sADMList != NULL) {
+	if (list != NULL && sADMList != NULL) {
 		obj = (jobject) sADMList->GetUserData(list);
 		if (obj == NULL) throw new StringException("List does not have a wrapper object.");
 	}
@@ -1984,7 +2142,7 @@ jobject ScriptographerEngine::getListObject(ADMListRef list) {
 
 jobject ScriptographerEngine::getListObject(ADMHierarchyListRef list) {
 	jobject obj = NULL;
-	if (sADMHierarchyList != NULL) {
+	if (list != NULL && sADMHierarchyList != NULL) {
 		obj = (jobject) sADMHierarchyList->GetUserData(list);
 		if (obj == NULL) throw new StringException("Hierarchy list does not have a wrapper object.");
 	}
@@ -1993,7 +2151,7 @@ jobject ScriptographerEngine::getListObject(ADMHierarchyListRef list) {
 
 jobject ScriptographerEngine::getListEntryObject(ADMEntryRef entry) {
 	jobject obj = NULL;
-	if (sADMEntry != NULL) {
+	if (entry != NULL && sADMEntry != NULL) {
 		obj = (jobject) sADMEntry->GetUserData(entry);
 		if (obj == NULL) throw new StringException("Entry does not have a wrapper object.");
 	}
@@ -2002,7 +2160,7 @@ jobject ScriptographerEngine::getListEntryObject(ADMEntryRef entry) {
 
 jobject ScriptographerEngine::getListEntryObject(ADMListEntryRef entry) {
 	jobject obj = NULL;
-	if (sADMListEntry != NULL) {
+	if (entry != NULL && sADMListEntry != NULL) {
 		obj = (jobject) sADMListEntry->GetUserData(entry);
 		if (obj == NULL) throw new StringException("Hierarchy entry does not have a wrapper object.");
 	}

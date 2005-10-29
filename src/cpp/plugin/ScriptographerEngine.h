@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.14 $
+ * $Date: 2005/10/29 10:18:38 $
  */
 
 #include "jniMacros.h"
@@ -228,8 +228,17 @@ public:
 
 	jclass cls_ArtSet;
 	jmethodID cid_ArtSet;
+	jmethodID mid_ArtSet_add;
 
 	jclass cls_Path;
+	jclass cls_CompoundPath;
+	jclass cls_Text;
+	
+	jclass cls_TextRange;
+	jmethodID cid_TextRange;
+
+	jclass cls_TextRanges;
+	jmethodID cid_TextRanges;
 	
 	jclass cls_PathStyle;
 	jmethodID mid_PathStyle_init;
@@ -365,6 +374,7 @@ public:
 	}
 	
 	long getNanoTime();
+	bool isKeyDown(short keycode);
 		
 	void println(JNIEnv *env, const char *str, ...);
 	
@@ -442,6 +452,9 @@ public:
 	// AI Handles
 	AIArtHandle getArtHandle(JNIEnv *env, jobject obj);
 	AILayerHandle getLayerHandle(JNIEnv *env, jobject obj);
+	TextFrameRef getTextFrameRef(JNIEnv *env, jobject obj);
+	TextRangeRef getTextRangeRef(JNIEnv *env, jobject obj);
+	TextRangesRef getTextRangesRef(JNIEnv *env, jobject obj);
 	AIDocumentHandle getDocumentHandle(JNIEnv *env, jobject obj);
 	AIDocumentViewHandle getDocumentViewHandle(JNIEnv *env, jobject obj);
 	AILiveEffectHandle getLiveEffectHandle(JNIEnv *env, jobject obj);
@@ -454,6 +467,8 @@ public:
 	bool updateArtIfWrapped(JNIEnv *env, AIArtHandle art);
 	void changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary = NULL);
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer);
+	jobject wrapTextRangeRef(JNIEnv *env, TextRangeRef range);
+	jobject wrapTextRangesRef(JNIEnv *env, TextRangesRef ranges);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
 
 	ASErr selectionChanged();
