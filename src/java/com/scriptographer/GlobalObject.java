@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.13 $
+ * $Date: 2005/10/31 21:37:23 $
  */
 
 package com.scriptographer;
@@ -48,13 +48,6 @@ public class GlobalObject extends ImporterTopLevel {
 
 	protected GlobalObject(Context context) {
 		super(context);
-
-        WrapFactory wrapper = new ScriptographerWrapFactory();
-        wrapper.setJavaPrimitiveWrap(false);
-		context.setApplicationClassLoader(getClass().getClassLoader());
-        context.setWrapFactory(wrapper);
-
-		context.setOptimizationLevel(9);
 
 		// define classes. the createPrototypes flag is set so
 		// the classes' constructors can now wether an object

@@ -28,16 +28,24 @@
  * 
  * $RCSfile: TextRange.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/31 21:37:23 $
  */
 
 package com.scriptographer.ai;
+
+import java.util.StringTokenizer;
+import java.util.zip.Adler32;
+
+import com.scriptographer.util.ExtendedArrayList;
+import com.scriptographer.util.ExtendedList;
+import com.scriptographer.util.ReadOnlyList;
 
 public class TextRange extends AIObject {
 	
 	public TextRange(int handle) {
 		super(handle);
+	
 	}
 	
 	public native int getStart();
@@ -45,8 +53,10 @@ public class TextRange extends AIObject {
 	
 	public native int getEnd();
 	public native void setEnd(int end);
+
+	public native void setRange(int start, int end);
 	
-	public native int getSize();
+	public native int getLength();
 	
 	public native void insertBefore(String text);
 	public native void insertAfter(String text);
@@ -59,13 +69,18 @@ public class TextRange extends AIObject {
 	 */
 	public native void remove();
 	
-	public native String getContent();
+	public native String getText();
 	
-	public void setContent(String content) {
+	public void setText(String text) {
 		remove();
-		insertAfter(content);
+		insertAfter(text);
 	}
 	
+	public native Point[] getOrigins();
+	
+	public native String getGlyphRunContent();
+	
+	// TODO: needed?
 	public native int getSingleGlyph();
 	
 	public native void select(boolean addToSelection);
@@ -125,4 +140,153 @@ public class TextRange extends AIObject {
 	public native boolean equals(Object obj);
 	
 	protected native void finalize();
+	
+	TokenizerList words = null;
+	
+	public ReadOnlyList getWords() {
+		if (words == null)
+			words = new TokenizerList(" \t\n\r\f");
+		words.update();
+		return words;
+	}
+	
+	TokenizerList paragraphs = null;
+	
+	public ReadOnlyList getParagraphs() {
+		if (paragraphs == null)
+			paragraphs = new TokenizerList("\r");
+		paragraphs.update();
+		return paragraphs;
+	}
+	
+	CharacterList characters = null;
+	
+	public ReadOnlyList getCharacters() {
+		if (characters == null)
+			characters = new CharacterList();
+		characters.update();
+		return characters;
+	}
+	
+	/**
+	 * The base class for all TextRangeList classes
+	 */
+	abstract class TextRangeList implements ReadOnlyList {
+		ExtendedArrayList.List list;
+		
+		TextRangeList() {
+			list = new ExtendedArrayList.List();
+		}
+
+		public int getLength() {
+			return list.size();
+		}
+
+		public boolean isEmpty() {
+			return list.isEmpty();
+		}
+
+		public ExtendedList subList(int fromIndex, int toIndex) {
+			ExtendedArrayList list = new ExtendedArrayList(toIndex - fromIndex);
+			for (int i = fromIndex; i < toIndex; i++)
+				list.add(get(i));
+			return list;
+		}
+	}
+
+	/**
+	 * A list that applies a StringTokenizer to the internal text and adds each
+	 * token to the list as a TextRange. The Ranges are only created when needed,
+	 * The delimiter chars are included in the tokens at the end.
+	 */
+	class TokenizerList extends TextRangeList {
+		class Token {
+			int start;
+			int end;
+			String text;
+			TextRange range;
+			
+			Token(int start, int end, String text) {
+				this.start = start;
+				this.end = end;
+				this.text = text;
+				this.range = null;
+			}
+			
+			TextRange getRange() {
+				if (range == null) {
+					range = (TextRange) TextRange.this.clone();
+					range.setRange(start, end);
+				}
+				return range;
+			}
+		}
+		
+		String delimiter;
+		int position;
+		Adler32 checksum;
+		
+		TokenizerList(String delimiter) {
+			super();
+			this.delimiter = delimiter;
+			this.checksum = new Adler32();
+		}
+		
+		void update() {
+			String text = getText();
+			// calculate string checksum and compare, only update token list
+			// if something changed...
+			// TODO: see how this performs!
+			long oldChecksum = checksum.getValue();
+			checksum.reset();
+			checksum.update(text.getBytes());
+			this.position = getStart();
+			if (checksum.getValue() != oldChecksum) {
+				StringTokenizer st = new StringTokenizer(text, delimiter, true);
+				StringBuffer part = new StringBuffer();
+				list.clear();
+				while (st.hasMoreTokens()) {
+					String token = st.nextToken();
+					// delimiter char?
+					if (part.length() > 0 && (token.length() > 1 || delimiter.indexOf(token.charAt(0)) == -1)) {
+						addToken(part.toString());
+						part.setLength(0);
+					}
+					part.append(token);
+				}
+				if (part.length() > 0)
+					addToken(part.toString());
+			}
+		}
+		
+		void addToken(String str) {
+			int len = str.length();
+			int end = position + len;
+			list.add(new Token(position, end, str));
+			position = end;
+		}
+
+		public Object get(int index) {
+			Token token = (Token) list.get(index);
+			return token.getRange();
+		}
+	}
+
+	/**
+	 * A lis of TextRanges for each character in the TextRange
+	 */
+	class CharacterList extends TextRangeList {
+		void update() {
+			this.list.setSize(TextRange.this.getLength());
+		}
+
+		public Object get(int index) {
+			TextRange range = (TextRange) list.get(index);
+			if (range == null) {
+				range = (TextRange) TextRange.this.clone();
+				range.setRange(index, index + 1);
+			}
+			return range;
+		}
+	}
 }

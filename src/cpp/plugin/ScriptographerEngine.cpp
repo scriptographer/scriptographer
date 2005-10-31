@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.18 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.19 $
+ * $Date: 2005/10/31 21:42:13 $
  */
  
 #include "stdHeaders.h"
@@ -72,7 +72,7 @@ JavaVM *ScriptographerEngine::javaThread() {
 		init();
 		// tell the constructor that the initialization is done:
 		MPNotifyQueue(fResponseQueue, NULL, NULL, NULL);
-	} catch (Exception *e) {
+	} catch (ScriptographerException *e) {
 		// let the user know about this error:
 		MPNotifyQueue(fResponseQueue, e, NULL, NULL);
 		return NULL;
@@ -95,7 +95,7 @@ ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 	fJavaVM = NULL;
 	fHomeDir = new char[strlen(homeDir) + 1];
 	strcpy(fHomeDir, homeDir);
-	Exception *exc = NULL;
+	ScriptographerException *exc = NULL;
 #ifdef MAC_ENV
 	if(MPLibraryIsLoaded()) {
 		MPCreateQueue(&fRequestQueue);
@@ -109,7 +109,7 @@ ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 	{	// on windows, we can directly call the initialize function:
 		try {
 			init();
-		} catch (Exception *e) {
+		} catch (ScriptographerException *e) {
 			exc = e;
 		}
 	}
@@ -450,9 +450,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_TextRange = loadClass(env, "com/scriptographer/ai/TextRange");
 	cid_TextRange = getConstructorID(env, cls_TextRange, "(I)V");
-
-	cls_TextRanges = loadClass(env, "com/scriptographer/ai/TextRanges");
-	cid_TextRanges = getConstructorID(env, cls_TextRanges, "(I)V");
 	
 	cls_PathStyle = loadClass(env, "com/scriptographer/ai/PathStyle");
 	mid_PathStyle_init = getMethodID(env, cls_PathStyle, "init", "(Lcom/scriptographer/ai/Color;ZLcom/scriptographer/ai/Color;ZFF[FSSFZZZF)V");
@@ -1026,7 +1023,7 @@ AIArtSet ScriptographerEngine::convertArtSet(JNIEnv *env, jobject artSet) {
 jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dictionary, jobject map, bool dontOverwrite, bool removeOld) {
 	JNI_CHECK_ENV
 	AIDictionaryIterator iterator = NULL;
-	Exception *exc = NULL;
+	ScriptographerException *exc = NULL;
 	try {
 		if (map == NULL) {
 			map = newObject(env, cls_HashMap, cid_HashMap);
@@ -1168,7 +1165,7 @@ jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dic
 								}
 							}
 						}
-					} catch(Exception *e) {
+					} catch(ScriptographerException *e) {
 						exc = e;
 					}
 					sAIEntry->Release(entry);
@@ -1181,7 +1178,7 @@ jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dic
 				sAIDictionaryIterator->Next(iterator);
 			}
 		}
-	} catch(Exception *e) {
+	} catch(ScriptographerException *e) {
 		exc = e;
 	}
 	if (iterator != NULL)
@@ -1204,7 +1201,7 @@ AIDictionaryRef ScriptographerEngine::convertDictionary(JNIEnv *env, jobject map
 		// scan through the dictionary and remove the entries that are not contained
 		// in the map any longer (just tell by name):
 		AIDictionaryIterator iterator = NULL;
-		Exception *exc = NULL;
+		ScriptographerException *exc = NULL;
 		try {
 			if (!sAIDictionary->Begin(dictionary, &iterator)) {
 				while (!sAIDictionaryIterator->AtEnd(iterator)) {
@@ -1248,7 +1245,7 @@ AIDictionaryRef ScriptographerEngine::convertDictionary(JNIEnv *env, jobject map
 					sAIDictionaryIterator->Next(iterator);
 				}
 			}
-		} catch(Exception *e) {
+		} catch(ScriptographerException *e) {
 			exc = e;
 		}
 		if (iterator != NULL)
@@ -1402,14 +1399,14 @@ AILayerHandle ScriptographerEngine::getLayerHandle(JNIEnv *env, jobject obj) {
  *
  * throws exceptions
  */
-TextFrameRef ScriptographerEngine::getTextFrameRef(JNIEnv *env, jobject obj) {
+ATE::TextFrameRef ScriptographerEngine::getTextFrameRef(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
 	AIArtHandle art = (AIArtHandle) getIntField(env, obj, fid_AIObject_handle);
 	if (art == NULL)
 		throw new StringException("Object is not wrapping an art handle.");
-	TextFrameRef frame = NULL;
+	ATE::TextFrameRef frame = NULL;
 	sAITextFrame->GetATETextFrame(art, &frame);
 	return frame;
 }
@@ -1420,24 +1417,14 @@ TextFrameRef ScriptographerEngine::getTextFrameRef(JNIEnv *env, jobject obj) {
  *
  * throws exceptions
  */
-TextRangeRef ScriptographerEngine::getTextRangeRef(JNIEnv *env, jobject obj) {
+ATE::TextRangeRef ScriptographerEngine::getTextRangeRef(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	TextRangeRef range = (TextRangeRef) getIntField(env, obj, fid_AIObject_handle);
+	ATE::TextRangeRef range = (ATE::TextRangeRef) getIntField(env, obj, fid_AIObject_handle);
 	if (range == NULL)
 		throw new StringException("Object is not wrapping a text range handle.");
 	return range;
-}
-
-TextRangesRef ScriptographerEngine::getTextRangesRef(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	TextRangesRef ranges = (TextRangesRef) getIntField(env, obj, fid_AIObject_handle);
-	if (ranges == NULL)
-		throw new StringException("Object is not wrapping a text ranges handle.");
-	return ranges;
 }
 
 /**
@@ -1482,6 +1469,22 @@ AIDocumentViewHandle ScriptographerEngine::getDocumentViewHandle(JNIEnv *env, jo
 	if (view == NULL)
 		throw new StringException("Object is not wrapping a view handle.");
 	return view;
+}
+
+/**
+ * Returns the wrapped AIToolHandle of an object by assuming that it is an anchestor of Class Tool and
+ * accessing its field 'handle':
+ *
+ * throws exceptions
+ */
+AIToolHandle ScriptographerEngine::getToolHandle(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	AIToolHandle tool = (AIToolHandle) getIntField(env, obj, fid_AIObject_handle);
+	if (tool == NULL)
+		throw new StringException("Object is not wrapping an tool handle.");
+	return tool;
 }
 
 /**
@@ -1586,12 +1589,6 @@ jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, TextRangeRef range) 
 	// we need to increase the ref count here. this is decreased again in TextRange.finalize
 	ATE::sTextRange->AddRef(range);
 	return newObject(env, cls_TextRange, cid_TextRange, (jint) range);
-}
-
-jobject ScriptographerEngine::wrapTextRangesRef(JNIEnv *env, TextRangesRef ranges) {
-	// we need to increase the ref count here. this is decreased again in TextRanges.finalize
-	ATE::sTextRanges->AddRef(ranges);
-	return newObject(env, cls_TextRanges, cid_TextRanges, (jint) ranges);
 }
 
 /**

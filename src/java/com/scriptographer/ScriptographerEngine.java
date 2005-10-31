@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.15 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.16 $
+ * $Date: 2005/10/31 21:37:23 $
  */
 
 package com.scriptographer;
@@ -38,6 +38,7 @@ import com.scriptographer.adm.*;
 import com.scriptographer.ai.*;
 import com.scriptographer.gui.*;
 import com.scriptographer.js.ScriptographerContextFactory;
+import com.scriptographer.js.ScriptographerContextFactory.ScriptCanceledException;
 
 import org.mozilla.javascript.*;
 
@@ -234,6 +235,7 @@ public class ScriptographerEngine {
 		return null;
 	}
 	
+	/*
 	class ProgressUpdater implements Runnable {
 		Thread current;
 		boolean canceled;
@@ -254,39 +256,44 @@ public class ScriptographerEngine {
 					canceled = true;
 				}
 			}
-			ScriptographerEngine.closeProgress();
 			if (canceled)
 				current.stop();
 		}
-}
+		
+		public void stop() {
+			run = false;
+		}
+	}
+	*/
 
 	public Scriptable executeScript(Script script, File scriptFile, Scriptable scope) {
 		Scriptable ret = null;
-		ProgressUpdater updater = new ProgressUpdater(Thread.currentThread());
+		// ProgressUpdater updater = new ProgressUpdater(Thread.currentThread());
 		try {
-			showProgress("Executing " + scriptFile.getName() + "... Press ESC to Cancel.");
-			new Thread(updater).start();
+			showProgress("Executing " + scriptFile.getName() + "...");
+			// new Thread(updater).start();
 			
 			if (scope == null)
 				scope = global.createScope(scriptFile);
 			// disable output to the console while the script is executed as it won't get updated anyway
 			// ConsoleOutputStream.enableOutput(false);
 			script.exec(context, scope);
-			updater.run = false;
+			// updater.stop();
 			// now commit all the changes:
 			CommitManager.commit();
 			ret = scope;
-		} catch (WrappedException we) {
-			System.err.println(we.getMessage());
-			we.getWrappedException().printStackTrace();
-		} catch (RhinoException re) {
-			reportRhinoException(re);
-		} finally {
-			if (updater.canceled)
-				System.out.println(scriptFile.getName() + " Canceled");
+			ScriptographerEngine.closeProgress();
+		} catch (WrappedException e) {
+			System.err.println(e.getMessage());
+			e.getWrappedException().printStackTrace();
+		} catch (RhinoException e) {
+			reportRhinoException(e);
+		} catch (ScriptCanceledException e) {
+			System.out.println(scriptFile.getName() + " Canceled");
+		} /* finally {
 			// now reenable the console, this also writes out all the things that were printed in the meantime:
-			// ConsoleOutputStream.enableOutput(true);
-		}
+			ConsoleOutputStream.enableOutput(true);
+		} */
 		return ret;
 	}
 
@@ -337,6 +344,10 @@ public class ScriptographerEngine {
 		return global.createScope(scriptFile);
 	}
 	
+	public Object javaToJS(Object value) {
+		return Context.javaToJS(value, global);
+	}
+	
 	/**
 	 * Launches the filename with the default associated editor.
 	 * 
@@ -355,7 +366,7 @@ public class ScriptographerEngine {
 	public static native Point getMousePoint();
 	
 	protected static native void showProgress(String text);
-	protected static native boolean updateProgress();
+	static public native boolean updateProgress();
 	protected static native boolean closeProgress();
 
 	public static void main(String args[]) throws Exception {

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Text.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/31 21:37:23 $
  */
 
 package com.scriptographer.ai;
@@ -54,65 +54,45 @@ public abstract class Text extends Art {
 	public native int getOrientation();
 	public native void setOrientation(int orientation);
 
-	/*
-	// gets you ATE::TextRangeRef given AIArtHandle.  If this frame is the last one in the chain AND 
-	// it has overflow text, then ITextRange(textRange).getEnd() will be include the hidden text.
-	AIAPI AIErr (*GetATETextRange)			( AIArtHandle textFrame, TextRangeRef*	textRange );
-	// gets you ATE::TextFrameRef given AIArtHandle.
-	AIAPI AIErr (*GetATETextFrame)			( AIArtHandle textFrame, TextFrameRef*	ATE_textFrame );
-	AIAPI AIErr (*GetAITextFrame)			( TextFrameRef	ATE_textFrame, AIArtHandle* textFrame );
-	AIAPI AIErr (*GetATETextSelection)		( AIArtHandle textFrame, TextRangesRef*	Selection );
-	AIAPI AIErr (*DoTextFrameHit)	( const AIHitRef hitRef, TextRangeRef*	textRange );
-	
-	 */
+	// TODO:
+ 	// AIAPI AIErr (*DoTextFrameHit)	( const AIHitRef hitRef, TextRangeRef*	textRange );
 	
 	public native Art createOutline();
 	
-	/*
+	public native boolean link(Text next);
 	
-	// you can link two in path text objects, after link they will share the same story
-	AIAPI AIErr (*Link)				( AIArtHandle baseFrame, AIArtHandle nextFrame );
-
-	// you can unlink a text object from its current story, 
-	// if before is true, after is false, frames in the story will be broken into two groups right before this frame;
-	// if before is false, after is true, frames in the story will be broken into two groups right after this frame;
-	// if before is true, after is true, frame will be removed from the story and be itself;
-	// if before is false, after is false, nothing happens.
-	AIAPI AIErr (*Unlink)			( AIArtHandle frame, bool before, bool after );
-
-	/** Create a new text object based on ATE (Adobe Text Engine) version 2 blob data, 
-		specifying paint order, and prep object as they are in NewArt() in AIArtSuite. 
-		data and size refer to binary blob. index is the index of text object in the 
-		SLO TextObject list. List is zero base. */
-//	AIAPI AIErr (*CreateATEV2Text)	( short paintOrder, AIArtHandle prep, void* data, long size, long index, AIArtHandle *newTextFrame );
-
-	/** return ATE (Adobe Text Engine) version 2 blob data for the current arwork.
-		client is in charge of free memory for data. Please call SPFreeBlock(*data). */
-//	AIAPI AIErr (*GetATEV2Data)		( void** data, long* size );
-
-	/** return the story index of a given frame. index will be set to -1 
-		if the frame does not belong to the current artwork or the frame is part of 
-		result art of plugin group or styled art. */
-//	AIAPI AIErr (*GetStoryIndex)	( AIArtHandle frame, long* index );
-
-	/** return the frame index of a given frame in its story. index will be set to -1 
-		if the frame does not belong to the current artwork or the frame is part of 
-		result art of plugin group or styled art. */
-//	AIAPI AIErr (*GetFrameIndex)	( AIArtHandle frame, long* index );
-
-	/** check whether a give frame is part of a linked text */
-//	AIAPI AIErr (*PartOfLinkedText)	( AIArtHandle frame, bool* linked );
+	public native boolean unlinkBefore();
 	
+	public native boolean unlinkAfter();
+	
+	public native boolean isLinked();
+	
+	public native int getStoryIndex();
+	
+	public native int getTextIndex();
+
 	// ATE
 	
 	public native TextRange getRange(boolean includeOverflow);
 	
-	public native TextRanges getSelection();
+	public TextRange getRange() {
+		return getRange(true);
+	}
 	
-	//	ATEErr (*GetTextRange) ( TextFrameRef textframe, bool bIncludeOverflow, TextRangeRef* ret);
+	public String getText() {
+		return getRange(true).getText();
+	}
+	
+	public void setText(String text) {
+		getRange(true).setText(text);
+	}
+	
+	public native TextRange getSelection();
+	
+	public native boolean equals(Object obj);
+	
+	// TODO:
 	//	ATEErr (*GetTextLinesIterator) ( TextFrameRef textframe, TextLinesIteratorRef* ret);
-	//	ATEErr (*IsEqual) ( TextFrameRef textframe, const TextFrameRef anotherFrame, bool* ret);
-	//	ATEErr (*GetType) ( TextFrameRef textframe, FrameType* ret);
 
 	//	ATEErr (*GetLineOrientation) ( TextFrameRef textframe, LineOrientation* ret);
 	//	ATEErr (*SetLineOrientation) ( TextFrameRef textframe, LineOrientation lineOrientation);

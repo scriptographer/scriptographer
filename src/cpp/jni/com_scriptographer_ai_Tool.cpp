@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Tool.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/10/23 00:28:48 $
+ * $Revision: 1.8 $
+ * $Date: 2005/10/31 21:37:23 $
  */
 
 #include "stdHeaders.h"
@@ -42,13 +42,36 @@
 /*
  * boolean hasPressure()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tool_hasPressure(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tool_hasPressure(JNIEnv *env, jclass cls) {
 	try {
 		ASBoolean hasPressure = false;
 		sAITool->SystemHasPressure(&hasPressure);
 		return hasPressure;
 	} EXCEPTION_CONVERT(env)
 	return JNI_FALSE;
+}
+
+/*
+ * int getIdleEventInterval()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_getIdleEventInterval(JNIEnv *env, jobject obj) {
+	try {
+		AIToolHandle tool = gEngine->getToolHandle(env, obj);
+		AIToolTime interval;
+		if (!sAITool->GetToolNullEventInterval(tool, &interval))
+			return interval >= 0 ? interval * 1000 : -1;
+	} EXCEPTION_CONVERT(env)
+	return -1;
+}
+
+/*
+ * void setIdleEventInterval(int interval)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setIdleEventInterval(JNIEnv *env, jobject obj, jint interval) {
+	try {
+		AIToolHandle tool = gEngine->getToolHandle(env, obj);
+		sAITool->SetToolNullEventInterval(tool,  (AIToolTime) (interval >= 0 ? double(interval) / 1000.0 : -1));
+	} EXCEPTION_CONVERT(env)
 }
 
 /*

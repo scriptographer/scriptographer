@@ -26,8 +26,8 @@
  *
  * $RCSfile: jniMacros.h,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/03/10 22:56:13 $
+ * $Revision: 1.2 $
+ * $Date: 2005/10/31 21:42:13 $
  */
 
 /*
@@ -212,7 +212,7 @@
  */
 
 #define EXCEPTION_CONVERT(env) \
-	catch (Exception *e) { \
+	catch (ScriptographerException *e) { \
 		e->convert(env); \
 		delete e; \
 	} catch (...) { \
@@ -224,10 +224,10 @@
 		env->ExceptionDescribe();
 	
 #define EXCEPTION_CATCH_REPORT(env) \
-	catch (Exception *e) { \
+	catch (ScriptographerException *e) { \
 		e->report(env); \
 		delete e; \
 	} catch (...) { \
-		Exception e; \
+		ScriptographerException e; \
 		e.report(env); \
 	}

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Tool.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/31 21:37:23 $
  */
 
 package com.scriptographer.ai;
@@ -38,20 +38,18 @@ import org.mozilla.javascript.*;
 
 import com.scriptographer.*;
 import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.js.WrappableObject;
 import com.scriptographer.util.IntMap;
 
 import java.io.File;
 import java.util.Iterator;
 
-public class Tool extends WrappableObject {
-	private int toolHandle = 0;
+public class Tool extends AIObject {
 	private int index;
 
 	private static IntMap tools = null;
 
-	protected Tool(int toolHandle, int index) {
-		this.toolHandle = toolHandle;
+	protected Tool(int handle, int index) {
+		super(handle);
 		this.index = index;
 	}
 
@@ -66,7 +64,10 @@ public class Tool extends WrappableObject {
 	public void setScript(File file) throws Exception {
 		ScriptographerEngine engine = ScriptographerEngine.getInstance();
 		scope = engine.executeFile(file, null);
+		// execute in the tool's scope so setIdleInterval can be called
+		scope.setParentScope((Scriptable) engine.javaToJS(this));
 		if (scope != null) {
+			setIdleEventInterval(-1);
 			mouseUpFunc = FunctionHelper.getFunction(scope, "onMouseUp");
 			mouseDragFunc = FunctionHelper.getFunction(scope, "onMouseDrag");
 			mouseDownFunc = FunctionHelper.getFunction(scope, "onMouseDown");
@@ -90,7 +91,12 @@ public class Tool extends WrappableObject {
 	 */
 	private static native IntMap nativeGetTools();
 
-	public native boolean hasPressure();
+	public static native boolean hasPressure();
+	
+	// interval time in milliseconds
+	public native int getIdleEventInterval();
+	
+	public native void setIdleEventInterval(int interval);
 
 	protected void onEditOptions() throws Exception {
 		if (scope != null) {
@@ -140,44 +146,44 @@ public class Tool extends WrappableObject {
 	/**
 	 * To be called from the native environment:
 	 */
-	private static void onEditOptions(int toolHandle) throws Exception {
-		Tool tool = getToolByHandle(toolHandle);
+	private static void onEditOptions(int handle) throws Exception {
+		Tool tool = getToolByHandle(handle);
 		if (tool != null)
 			tool.onEditOptions();
 	}
 
-	private static void onSelect(int toolHandle) throws Exception {
-		Tool tool = getToolByHandle(toolHandle);
+	private static void onSelect(int handle) throws Exception {
+		Tool tool = getToolByHandle(handle);
 		if (tool != null)
 			tool.onSelect();
 	}
 
-	private static void onDeselect(int toolHandle) throws Exception {
-		Tool tool = getToolByHandle(toolHandle);
+	private static void onDeselect(int handle) throws Exception {
+		Tool tool = getToolByHandle(handle);
 		if (tool != null)
 			tool.onDeselect();
 	}
 
-	private static void onReselect(int toolHandle) throws Exception {
-		Tool tool = getToolByHandle(toolHandle);
+	private static void onReselect(int handle) throws Exception {
+		Tool tool = getToolByHandle(handle);
 		if (tool != null)
 			tool.onReselect();
 	}
 
-	private static void onMouseDown(int toolHandle, float x, float y, int pressure) throws Exception {
-		Tool tool = getToolByHandle(toolHandle);
+	private static void onMouseDown(int handle, float x, float y, int pressure) throws Exception {
+		Tool tool = getToolByHandle(handle);
 		if (tool != null)
 			tool.onMouseDown(x, y, pressure);
 	}
 
-	private static void onMouseDrag(int toolHandle, float x, float y, int pressure) throws Exception {
-		Tool tool = getToolByHandle(toolHandle);
+	private static void onMouseDrag(int handle, float x, float y, int pressure) throws Exception {
+		Tool tool = getToolByHandle(handle);
 		if (tool != null)
 			tool.onMouseDrag(x, y, pressure);
 	}
 
-	private static void onMouseUp(int toolHandle, float x, float y, int pressure) throws Exception {
-		Tool tool = getToolByHandle(toolHandle);
+	private static void onMouseUp(int handle, float x, float y, int pressure) throws Exception {
+		Tool tool = getToolByHandle(handle);
 		if (tool != null)
 			tool.onMouseUp(x, y, pressure);
 	}
@@ -191,7 +197,7 @@ public class Tool extends WrappableObject {
 		return null;
 	}
 
-	private static Tool getToolByHandle(int toolHandle) {
-		return (Tool) getTools().get(toolHandle);
+	private static Tool getToolByHandle(int handle) {
+		return (Tool) getTools().get(handle);
 	}
 }

@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.cpp,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/04/08 21:56:39 $
+ * $Revision: 1.11 $
+ * $Date: 2005/10/31 21:42:13 $
  */
  
 #include "stdHeaders.h"
@@ -137,7 +137,7 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 		strcpy(strrchr(homeDir, PATH_SEP_CHR) + 1, "java");
 		// homeDir now contains the full path to the java stuff
 		fEngine = new ScriptographerEngine(homeDir);
-	} catch(Exception *e) {
+	} catch(ScriptographerException *e) {
 		e->report(NULL);
 		delete e;
 		return kCantHappenErr;

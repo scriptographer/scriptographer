@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Drawer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/23 00:28:48 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/31 21:37:23 $
  */
  
 #include "stdHeaders.h"
@@ -137,7 +137,7 @@ inline ADMPoint *drawerGetPoints(JNIEnv *env, jobjectArray points, jint &length)
 }
 
 /*
- * void setClipPolygon(com.scriptographer.ai.Point[] arg1)
+ * void setClipPolygon(com.scriptographer.ai.Point[] points)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setClipPolygon(JNIEnv *env, jobject obj, jobjectArray points) {
 	try {
@@ -150,7 +150,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setClipPolygon(JNIEnv 
 }
 
 /*
- * void intersectClipPolygon(com.scriptographer.ai.Point[] arg1)
+ * void intersectClipPolygon(com.scriptographer.ai.Point[] points)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_intersectClipPolygon(JNIEnv *env, jobject obj, jobjectArray points) {
 	try {
@@ -163,7 +163,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_intersectClipPolygon(J
 }
 
 /*
- * void unionClipPolygon(com.scriptographer.ai.Point[] arg1)
+ * void unionClipPolygon(com.scriptographer.ai.Point[] points)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_unionClipPolygon(JNIEnv *env, jobject obj, jobjectArray points) {
 	try {
@@ -176,7 +176,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_unionClipPolygon(JNIEn
 }
 
 /*
- * void subtractClipPolygon(com.scriptographer.ai.Point[] arg1)
+ * void subtractClipPolygon(com.scriptographer.ai.Point[] points)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_subtractClipPolygon(JNIEnv *env, jobject obj, jobjectArray points) {
 	try {

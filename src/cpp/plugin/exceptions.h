@@ -26,20 +26,20 @@
  *
  * $RCSfile: exceptions.h,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/07 13:40:32 $
+ * $Revision: 1.4 $
+ * $Date: 2005/10/31 21:42:13 $
  */
  
 #define kExceptionErr 'EXPT';
 
-class Exception : public std::exception {
+class ScriptographerException : public std::exception {
 public:
 	virtual void convert(JNIEnv *env);
 	virtual char *toString(JNIEnv *env);
 	void report(JNIEnv *env);
 };
 
-class StringException : public Exception {
+class StringException : public ScriptographerException {
 private:
 	char *fMessage;
 	
@@ -53,7 +53,7 @@ public:
 	}
 };
 
-class ASErrException : public Exception {
+class ASErrException : public ScriptographerException {
 private:
 	ASErr fError;
 	
@@ -63,7 +63,7 @@ public:
 	char *toString(JNIEnv *env);
 };
 
-class JThrowableException : public Exception {
+class JThrowableException : public ScriptographerException {
 private:
 	jthrowable fThrowable;	
 	
@@ -73,7 +73,7 @@ public:
 	char *toString(JNIEnv *env);
 };
 
-class JThrowableClassException : public Exception {
+class JThrowableClassException : public ScriptographerException {
 private:
 	jclass fClass;
 		

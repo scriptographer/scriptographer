@@ -1505,7 +1505,7 @@ public class JSDoclet extends Doclet {
 	 * using Tex statements.
 	 * 
 	 * @param mems the members of this entity
-	 * @see #start
+	 * @see #position
 	 */
 	static void printInheritedMembers(PrintWriter writer, ClassDoc cd, MemberInfo[] dmems, boolean labels) {
 		if (dmems.length > 0) {

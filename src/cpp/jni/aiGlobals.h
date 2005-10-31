@@ -26,8 +26,8 @@
  *
  * $RCSfile: aiGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.7 $
+ * $Date: 2005/10/31 21:37:23 $
  */
 
 short artGetType(AIArtHandle handle);
@@ -40,6 +40,8 @@ void artSetFilter(AIArtSet set, bool layerOnly = false);
 AIArtHandle artSetRasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 
 short pathGetBezierCount(AIArtHandle art);
+
+jobject textRangeConvertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 
 #define DEFINE_SEGMENT(NAME, PTX, PTY, INX, INY, OUTX, OUTY, CORNER) \
 	AIPathSegment NAME; \

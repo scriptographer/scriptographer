@@ -26,22 +26,22 @@
  *
  * $RCSfile: exceptions.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.6 $
+ * $Date: 2005/10/31 21:42:13 $
  */
  
 #include "stdHeaders.h"
 #include "Plugin.h"
 #include "ScriptographerEngine.h"
 
-void Exception::convert(JNIEnv *env) {
+void ScriptographerException::convert(JNIEnv *env) {
 }
 
-char *Exception::toString(JNIEnv *env) {
+char *ScriptographerException::toString(JNIEnv *env) {
 	return strdup("Unknown Error");
 }
 
-void Exception::report(JNIEnv *env) {
+void ScriptographerException::report(JNIEnv *env) {
 	char *str = toString(env);
 	if (gEngine != NULL && gEngine->isInitialized()) {
 		gEngine->println(env, str);

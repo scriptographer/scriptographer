@@ -28,8 +28,8 @@
  *
  * $RCSfile: ConsoleDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.7 $
+ * $Date: 2005/10/31 21:37:23 $
  */
 
 package com.scriptographer.gui;
@@ -137,7 +137,7 @@ public class ConsoleDialog extends FloatingDialog implements ConsoleOutputWriter
 			// if the text does not grow too long, remove old lines again:
 			consoleText.append(str);
 			consoleText.append(newLine);
-			while (consoleText.length() >= 32768) {
+			while (consoleText.length() >= 8192) {
 				int pos = consoleText.indexOf(newLine);
 				if (pos == -1) pos = consoleText.length() - 1;
 				consoleText.delete(0, pos + 1);
