@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextRange.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/10/31 21:37:23 $
+ * $Revision: 1.3 $
+ * $Date: 2005/11/01 18:30:59 $
  */
 
 package com.scriptographer.ai;
@@ -42,6 +42,12 @@ import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.ReadOnlyList;
 
 public class TextRange extends AIObject {
+	// values for the native environment,
+	// to cash glyph run refrences, once their
+	// found. these values need to be cleared in
+	// setStart, setEnd ,setRange and finalize
+	private int glyhRunRef;
+	private int glyphRunStart;
 	
 	public TextRange(int handle) {
 		super(handle);

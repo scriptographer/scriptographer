@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.19 $
- * $Date: 2005/10/31 21:42:13 $
+ * $Revision: 1.20 $
+ * $Date: 2005/11/01 18:30:59 $
  */
  
 #include "stdHeaders.h"
@@ -165,9 +165,9 @@ void ScriptographerEngine::init() {
 	// only add the loader to the classpath, the rest is done in java:
 	sprintf(classpath, "-Djava.class.path=%s" PATH_SEP_STR "loader.jar", fHomeDir);
 	options[numOptions++].optionString = classpath;
-	options[numOptions++].optionString = "-Xms64m";
+//	options[numOptions++].optionString = "-Xms64m";
 //	options[numOptions++].optionString = "-Xmx256m";
-	options[numOptions++].optionString = "-Xmx512m";
+//	options[numOptions++].optionString = "-Xmx512m";
 	// start headless, in order to avoid conflicts with AWT and Illustrator
 	options[numOptions++].optionString = "-Djava.awt.headless=true";
 #ifdef MAC_ENV
@@ -450,6 +450,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_TextRange = loadClass(env, "com/scriptographer/ai/TextRange");
 	cid_TextRange = getConstructorID(env, cls_TextRange, "(I)V");
+	fid_TextRange_glyhRunRef = getFieldID(env, cls_TextRange, "glyhRunRef", "I");
+	fid_TextRange_glyphRunStart = getFieldID(env, cls_TextRange, "glyphRunStart", "I");
 	
 	cls_PathStyle = loadClass(env, "com/scriptographer/ai/PathStyle");
 	mid_PathStyle_init = getMethodID(env, cls_PathStyle, "init", "(Lcom/scriptographer/ai/Color;ZLcom/scriptographer/ai/Color;ZFF[FSSFZZZF)V");
@@ -622,7 +624,7 @@ bool ScriptographerEngine::isKeyDown(short keycode) {
 	}
 	return false;
 #elif WIN_ENV
-	return (GetAsyncKeyState(keycode) & 0x8000) == 0x8000;
+	return (GetAsyncKeyState(keycode) & 0x8000) ? 1 : 0;
 #endif
 }
 
@@ -2205,7 +2207,7 @@ jstring ScriptographerEngine::convertString(JNIEnv *env, const char *str) {
  */
 jstring ScriptographerEngine::convertUnicodeString(JNIEnv *env, ai::UnicodeString &str) {
 	JNI_CHECK_ENV
-	const UTF16Char *buffer;
+	const ASUnicode *buffer;
 	int len = str.utf_16(buffer);
 	return env->NewString(buffer, len);
 }

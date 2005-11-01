@@ -26,8 +26,8 @@
  *
  * $RCSfile: Plugin.cpp,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/10/31 21:42:13 $
+ * $Revision: 1.12 $
+ * $Date: 2005/11/01 18:30:59 $
  */
  
 #include "stdHeaders.h"
@@ -108,7 +108,7 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 	setGlobal(false);
 	
 	// aquire only the basic suites that are needed here. the rest is acquired in postStartup.
-	ASErr error = acquireSuites(&gBasicSuites);
+	ASErr error = acquireSuites(&gStartupSuites);
 	if (error) return error;
 	
 	error = sSPPlugins->SetPluginName(fPluginRef, fPluginName);
@@ -159,6 +159,9 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 
 	setGlobal(true);
 
+	// make sure the plugin stays in ram all the time and postStartupPlugin gets actually called
+	sSPAccess->AcquirePlugin(fPluginRef, &fPluginAccess);
+
 	fLoaded = true;
 
 	return error;
@@ -167,11 +170,9 @@ ASErr Plugin::startupPlugin(SPInterfaceMessage *message) {
 ASErr Plugin::postStartupPlugin() {
 	if (fEngine == NULL)
 		return kCantHappenErr;
-	
-	sSPAccess->AcquirePlugin(fPluginRef, &fPluginAccess);
 
 	// now accuire the rest of the suites:
-	ASErr error = acquireSuites(&gAdditionalSuites);
+	ASErr error = acquireSuites(&gPostStartupSuites);
 	if (error) return error;
 	
 	// and finally initialize the engine:
@@ -190,20 +191,20 @@ ASErr Plugin::shutdownPlugin(SPInterfaceMessage *message) {
 }
 
 ASErr Plugin::unloadPlugin(SPInterfaceMessage *message) {
-	// TODO: error handling:
-	releaseSuites(&gBasicSuites);
-	releaseSuites(&gAdditionalSuites);
+	releaseSuites(&gStartupSuites);
+	releaseSuites(&gPostStartupSuites);
 
 	return kNoErr;
 }
 
 inline ASErr Plugin::reloadPlugin(SPInterfaceMessage *message) {
+	// TODO: this should never happen, due to AcquirePlugin / ReleasePlugin
 	// only execute the reaload code if the plugin was already loaded once,
 	// because the reload message is even sent before the first startup message.
 	if (fLoaded) {
 		setGlobal(true);
-		acquireSuites(&gBasicSuites);
-		acquireSuites(&gAdditionalSuites);
+		acquireSuites(&gStartupSuites);
+		acquireSuites(&gPostStartupSuites);
 	}
 
 	return kNoErr;

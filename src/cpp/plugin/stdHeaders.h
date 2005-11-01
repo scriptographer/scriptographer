@@ -26,8 +26,8 @@
  *
  * $RCSfile: stdHeaders.h,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/31 21:42:13 $
+ * $Revision: 1.6 $
+ * $Date: 2005/11/01 18:30:59 $
  */
  
 #if !defined(__STDHEADERS_H_INCLUDED__)
@@ -185,7 +185,9 @@ using namespace std;
 	// GetWSProfile in AIOverrideColorConversion.h takes AIColorProfile instead of ASUInt32 since AI12
 	#define AIColorProfile ASUInt32
 	// was renamed in AI12:
-	typedef ATE::GlyphID ATE::ATEGlyphID;
+	namespace ATE {
+		typedef ATE::GlyphID ATEGlyphID;
+	}
 #endif
 
 #define PI 3.14159265358979323846
