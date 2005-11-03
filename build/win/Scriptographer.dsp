@@ -394,6 +394,14 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_SegmentList.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Story.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_StoryList.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Text.cpp
 # End Source File
 # Begin Source File

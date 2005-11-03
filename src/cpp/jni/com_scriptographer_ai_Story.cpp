@@ -83,25 +83,14 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Story_nativeGetTexListLength(J
 }
 
 /*
- * com.scriptographer.ai.Text nativeGetText(int handle, int index, com.scriptographer.ai.Text curText)
+ * com.scriptographer.ai.Text nativeGetText(int handle, int index)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Story_nativeGetText(JNIEnv *env, jobject obj, jint handle, jint index, jobject curText) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Story_nativeGetText(JNIEnv *env, jobject obj, jint handle, jint index) {
 	try {
 		TextFrameRef textRef;
-		if (!sStory->GetFrame((StoryRef) handle, index, &textRef)) {
-			TextFrameRef curTextRef = gEngine->getTextFrameRef(env, curText);
-			bool equal;
-			// check if it's the same story as before, in that case return the old wrapped text
-			// this is needed as in ATE, reference handles allways change their values
-			if (curTextRef != NULL && !sTextFrame->IsEqual(textRef, curTextRef, &equal) && equal) {
-				return curText;
-			}
-			// if we're still here, we need to wrap the text:
-			// determine AIArtHandle:
-			AIArtHandle textHandle;
-			if (!sAITextFrame->GetAITextFrame(textRef, &textHandle))
-				return gEngine->wrapArtHandle(env, textHandle);
-		}
+		AIArtHandle textHandle;
+		if (!sStory->GetFrame((StoryRef) handle, index, &textRef) && !sAITextFrame->GetAITextFrame(textRef, &textHandle))
+			return gEngine->wrapArtHandle(env, textHandle);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }
