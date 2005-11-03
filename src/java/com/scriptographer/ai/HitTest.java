@@ -28,8 +28,8 @@
  *
  * $RCSfile: HitTest.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.4 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer.ai;
@@ -135,6 +135,38 @@ public class HitTest extends WrappableObject {
 	 * hit the intersection of two guides
 	 */
 	public final static int HIT_GUIDE_INTERSECTION = 6;
+	
+	// fake HIT values for Text, added from AITextPart + 6
+	
+	/**
+	 * right on text
+	 **/
+	public final static int HIT_TEXT = 7;
+	
+	/**
+	 * in port of either AreaText or PathText
+	 **/
+	public final static int HIT_TEXT_IN_PORT = 8;
+	
+	/**
+	 * out port of either AreaText or PathText
+	 **/
+	public final static int HIT_TEXT_OUT_PORT = 9;
+	
+	/**
+	 * start point of PathText
+	 **/
+	public final static int HIT_TEXT_START = 10;
+	
+	/**
+	 * middle point of PathText
+	 **/
+	public final static int HIT_TEXT_MIDDLE	= 11;
+	
+	/**
+	 * end point of PathText
+	 **/
+	public final static int HIT_TEXT_END = 12;
 
 	private int type;
 	private Curve curve;

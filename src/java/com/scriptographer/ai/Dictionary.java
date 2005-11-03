@@ -28,8 +28,8 @@
  *
  * $RCSfile: Dictionary.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.3 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer.ai;
@@ -66,7 +66,7 @@ public class Dictionary extends HashMap implements Commitable, Wrappable {
 	protected void markDirty() {
 		// only mark it as dirty if it's attached to a path already:
 		if (!dirty && object != null) {
-			CommitManager.markDirty(this);
+			CommitManager.markDirty(this.object, this);
 			dirty = true;
 		}
 	}

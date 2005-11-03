@@ -142,9 +142,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Text_getRange(JNIEnv *env, 
 	try {
 		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
 		TextRangeRef range;
-		if (!sTextFrame->GetTextRange(frame, bIncludeOverflow, &range)) {
+		if (!sTextFrame->GetTextRange(frame, bIncludeOverflow, &range))
 			return gEngine->wrapTextRangeRef(env, range);
-		}
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }

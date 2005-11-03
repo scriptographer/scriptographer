@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Text.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/10/31 21:37:23 $
+ * $Revision: 1.3 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer.ai;
@@ -70,9 +70,17 @@ public abstract class Text extends Art {
 	public native int getStoryIndex();
 	
 	public native int getTextIndex();
+	
+	public Story getStory() {
+		// don't wrap directly. allways go through StoryList
+		// to make sure we're not getting more than one reference
+		// to the sam Story, so things can be cached there:
+		return (Story) document.getStories().get(getStoryIndex());
+	}
 
 	// ATE
 	
+	// TODO: add cashing for getRange, updating with CommitManager.version
 	public native TextRange getRange(boolean includeOverflow);
 	
 	public TextRange getRange() {

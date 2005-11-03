@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.12 $
+ * $Date: 2005/11/03 00:00:15 $
  */
  
 #include "stdHeaders.h"
@@ -443,9 +443,45 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_paste(JNIEnv *env, jo
 // ArtSet stuff:
 
 /*
- * com.scriptographer.ai.ArtSet getSelectedArt()
+ * boolean hasSelection()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedArt(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_hasSelection(JNIEnv *env, jobject obj) {
+	jboolean selected = false;
+
+	DOCUMENT_BEGIN
+
+	selected = sAIMatchingArt->IsSomeArtSelected();
+	
+	DOCUMENT_END
+
+	return selected;
+}
+
+/*
+ * void deselectAll()
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_deselectAll(JNIEnv *env, jobject obj) {
+	DOCUMENT_BEGIN
+
+#if kPluginInterfaceVersion >= kAI11
+	sAIMatchingArt->DeselectAll();
+#else
+	AIArtHandle **matches;
+	long numMatches;
+	if (!sAIMatchingArt->GetSelectedArt(&matches, &numMatches)) {
+		for (int i = 0; i < numMatches; i++)
+			sAIArt->SetArtUserAttr((*matches)[i], kArtSelected, 0);
+		sAIMDMemory->MdMemoryDisposeHandle((void **)matches);
+	}
+#endif
+
+	DOCUMENT_END
+}
+
+/*
+ * com.scriptographer.ai.ArtSet getSelection()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelection(JNIEnv *env, jobject obj) {
 	jobject artSet = NULL;
 
 	DOCUMENT_BEGIN
@@ -465,9 +501,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedArt(JNI
 }
 
 /*
- * com.scriptographer.ai.ArtSet getMatchingArt(java.lang.Class typeClass, java.util.Map attributes)
+ * com.scriptographer.ai.ArtSet getMatchingItems(java.lang.Class typeClass, java.util.Map attributes)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingArt(JNIEnv *env, jobject obj, jclass typeClass, jobject attributes) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingItems(JNIEnv *env, jobject obj, jclass typeClass, jobject attributes) {
 	jobject artSet = NULL;
 
 	DOCUMENT_BEGIN
@@ -705,9 +741,16 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_hitTest(JNIEnv *en
 	if (!sAIHitTest->HitTest(handle, &pt, type, &hit)) {
 		AIToolHitData toolHit;
 		if (sAIHitTest->IsHit(hit) && !sAIHitTest->GetHitData(hit, &toolHit)) {
+			int type = toolHit.type;
+			// Support for hittest on text frames:
+			if (artGetType(toolHit.object) == kTextFrameArt) {
+				int textPart = sAITextFrameHit->GetPart(hit);
+				if (textPart != kAITextNowhere)
+					type = textPart + 6;
+			}
 			jobject art = gEngine->wrapArtHandle(env, toolHit.object);
 			jobject point = gEngine->convertPoint(env, &toolHit.point);
-			hitTest = gEngine->newObject(env, gEngine->cls_HitTest, gEngine->cid_HitTest, toolHit.type, art, (jint) toolHit.segment, (jfloat) toolHit.t, point);
+			hitTest = gEngine->newObject(env, gEngine->cls_HitTest, gEngine->cid_HitTest, type, art, (jint) toolHit.segment, (jfloat) toolHit.t, point);
 		}
 		sAIHitTest->Release(hit);
 	}
@@ -715,4 +758,42 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_hitTest(JNIEnv *en
 	DOCUMENT_END
 
 	return hitTest;
+}
+
+/*
+ * int nativeGetStories()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetStories(JNIEnv *env, jobject obj) {
+	using namespace ATE;
+
+	jint ret = 0;
+
+	DOCUMENT_BEGIN
+	
+	// this is annoying:
+	// request a text frame and get the stories from there....
+	AIMatchingArtSpec spec;
+	spec.type = kTextFrameArt;
+	spec.whichAttr = 0;
+	spec.attr = 0;
+
+	AIArtHandle **matches;
+	long numMatches;
+	if (!sAIMatchingArt->GetMatchingArt(&spec, 1, &matches, &numMatches)) {
+		if (numMatches > 0) {
+			TextFrameRef frame;
+			StoryRef story;
+			StoriesRef stories;
+			if (!sAITextFrame->GetATETextFrame((*matches)[0], &frame) &&
+				!sTextFrame->GetStory(frame, &story) &&
+				!sStory->GetStories(story, &stories)) {
+				ret = (jint) stories;
+			}
+		}
+		sAIMDMemory->MdMemoryDisposeHandle((void **)matches);
+	}
+
+	DOCUMENT_END
+
+	return ret;
 }

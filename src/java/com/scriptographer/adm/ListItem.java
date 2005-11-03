@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListItem.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/29 10:19:57 $
+ * $Revision: 1.6 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer.adm;
@@ -347,10 +347,7 @@ public abstract class ListItem extends Item implements SimpleList {
 	}
 
 	public ExtendedList subList(int fromIndex, int toIndex) {
-		ExtendedArrayList list = new ExtendedArrayList(toIndex - fromIndex);
-		for (int i = fromIndex; i < toIndex; i++)
-			list.add(get(i));
-		return list;
+		return Lists.createSubList(this, fromIndex, toIndex);
 	}
 
 	public boolean isEmpty() {

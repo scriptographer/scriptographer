@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.14 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer.ai;
@@ -60,6 +60,8 @@ public abstract class Art extends DictionaryObject {
 	private ArrayList childrenWrappers = new ArrayList();
 
 	private PathStyle style = null;
+	
+	protected Document document = null;
 
 	// from AIArt.h
 	
@@ -208,6 +210,8 @@ public abstract class Art extends DictionaryObject {
 	 */
 	protected Art(Document document, int type) {
 		this(nativeCreate(document != null ? document.handle : 0, type));
+		// store reference to the art's document
+		this.document = document != null ? document : DocumentList.getActiveDocument();
 	}
 
 	/**
@@ -217,7 +221,7 @@ public abstract class Art extends DictionaryObject {
 	 * @param type
 	 * @return
 	 */
-	protected static Art wrapHandle(int artHandle, int type, int textType, int dictionaryRef) {
+	protected static Art wrapHandle(int artHandle, int type, int textType, int documentHandle, int dictionaryRef) {
 		// first see wether the object was already wrapped before:
 		Art art = (Art) artWrappers.get(artHandle);
 		// if it wasn't wrapped yet, do it now:
@@ -256,6 +260,7 @@ public abstract class Art extends DictionaryObject {
 				}
 		}
 		if (art != null) {
+			art.document = Document.wrapHandle(documentHandle);
 			art.dictionaryRef = dictionaryRef;
 		}
 		return art;
@@ -320,6 +325,7 @@ public abstract class Art extends DictionaryObject {
 				art.version++;
 			}
 		}
+		CommitManager.version++;
 	}
 	
 	private void changeHandle(int newHandle, int newDictionaryRef) {
@@ -406,6 +412,10 @@ public abstract class Art extends DictionaryObject {
 	public void setStyle(PathStyle style) {
 		this.style = new PathStyle(style, this);
 	}
+	
+	public Document getDocument() {
+		return document;
+	}
 
 	public native boolean isCenterVisible();
 	public native void setCenterVisible(boolean centerVisible);
@@ -477,9 +487,7 @@ public abstract class Art extends DictionaryObject {
 	private native void nativeTransform(AffineTransform at, int flags);
 	
 	public void transform(AffineTransform at, int flags) {
-		// first commit all changes:
-		// TODO: only commit changes in this segmentList
-		CommitManager.commit();
+		CommitManager.commit(this);
 		nativeTransform(at, flags);
 	}
 

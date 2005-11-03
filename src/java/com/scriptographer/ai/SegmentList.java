@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.13 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer.ai;
@@ -400,10 +400,9 @@ public class SegmentList extends AbstractFetchList {
 	private static native void nativeReverse(int handle);
 
 	public void reverse() {
-		// first save all changes:
-		// TODO: only commit changes in this segmentList
-		CommitManager.commit();
 		if (path != null) {
+			// first save all changes:
+			CommitManager.commit(path);
 			// reverse underlying ai structures:
 			nativeReverse(path.handle);
 		}

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.17 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer.ai;
@@ -106,8 +106,7 @@ public class Path extends Art {
     }
     
 	public Object clone() {
-		// TODO: only commit the objects that concenr this art object, not everything!
-		CommitManager.commit();
+		CommitManager.commit(this);
 		return super.clone();
 	}
 

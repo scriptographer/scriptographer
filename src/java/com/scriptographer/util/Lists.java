@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Lists.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/10/29 10:19:57 $
+ * $Revision: 1.3 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer.util;
@@ -37,6 +37,21 @@ package com.scriptographer.util;
 public class Lists {
 	public static ExtendedList asList(Object[] array) {
 		return new ArrayList(array);
+	}
+
+	public static ExtendedList createSubList(ReadOnlyList list, int fromIndex, int toIndex) {
+		if (fromIndex < 0)
+			throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);
+		if (toIndex > list.getLength())
+			throw new IndexOutOfBoundsException("toIndex = " + toIndex);
+		if (fromIndex > toIndex)
+			throw new IllegalArgumentException("fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
+		
+		ExtendedArrayList subList = new ExtendedArrayList(toIndex - fromIndex);
+		for (int i = fromIndex; i < toIndex; i++)
+			subList.add(list.get(i));
+		
+		return subList;
 	}
 
 	private static class ArrayList extends AbstractExtendedList {

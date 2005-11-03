@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.14 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer.ai;
@@ -41,8 +41,11 @@ import java.util.Map;
 
 import org.mozilla.javascript.NativeObject;
 
+import com.scriptographer.ai.TextRange.TokenizerList.Token;
 import com.scriptographer.js.FunctionHelper;
+import com.scriptographer.util.ExtendedArrayList;
 import com.scriptographer.util.ExtendedList;
+import com.scriptographer.util.ReadOnlyList;
 import com.scriptographer.util.SoftIntMap;
 
 public class Document extends DictionaryObject {
@@ -209,13 +212,17 @@ public class Document extends DictionaryObject {
 	public boolean write(File file) {
 		return write(file, null, false);
 	}
-
-	public native ArtSet getSelectedArt();
 	
-	public native ArtSet getMatchingArt(Class type, Map attributes);
+	public native boolean hasSelection();
 
-	public ArtSet getMatchingArt(Class type, NativeObject attributes) {
-		return getMatchingArt(type, FunctionHelper.convertToMap(attributes));
+	public native ArtSet getSelection();
+	
+	public native void deselectAll();
+	
+	public native ArtSet getMatchingItems(Class type, Map attributes);
+
+	public ArtSet getMatchingItems(Class type, NativeObject attributes) {
+		return getMatchingItems(type, FunctionHelper.convertToMap(attributes));
 	}
 
 	public native Path createRectangle(Rectangle rect);
@@ -282,7 +289,20 @@ public class Document extends DictionaryObject {
 	public HitTest hitTest(Point point) {
 		return this.hitTest(point, HitTest.TEST_ALL, null);
 	}
-
+	
+	private native int nativeGetStories();
+	
+	private StoryList stories = null;
+	
+	public ReadOnlyList getStories() {
+		if (stories == null) {
+			int handle = nativeGetStories();
+			if (handle != 0)
+				stories = new StoryList(handle);
+		}
+		return stories;
+	}
+	
 	protected int getVersion() {
 		// TODO: getVersion is used for keeping Dictionaries up to date.
 		// But right now document is not version aware. This means that once

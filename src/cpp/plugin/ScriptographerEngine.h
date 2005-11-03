@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2005/11/01 18:30:59 $
+ * $Revision: 1.17 $
+ * $Date: 2005/11/03 00:00:13 $
  */
 
 #include "jniMacros.h"
@@ -236,8 +236,11 @@ public:
 	
 	jclass cls_TextRange;
 	jmethodID cid_TextRange;
-	jfieldID fid_TextRange_glyhRunRef;
-	jfieldID fid_TextRange_glyphRunStart;
+	jfieldID fid_TextRange_glyphRunRef;
+	jfieldID fid_TextRange_glyphRunPos;
+
+	jclass cls_Story;
+	jmethodID cid_Story;
 	
 	jclass cls_PathStyle;
 	jmethodID mid_PathStyle_init;
@@ -453,6 +456,7 @@ public:
 	AILayerHandle getLayerHandle(JNIEnv *env, jobject obj);
 	ATE::TextFrameRef getTextFrameRef(JNIEnv *env, jobject obj);
 	ATE::TextRangeRef getTextRangeRef(JNIEnv *env, jobject obj);
+	ATE::StoryRef getStoryRef(JNIEnv *env, jobject obj);
 	AIDocumentHandle getDocumentHandle(JNIEnv *env, jobject obj);
 	AIDocumentViewHandle getDocumentViewHandle(JNIEnv *env, jobject obj);
 	AIToolHandle getToolHandle(JNIEnv *env, jobject obj);
@@ -467,6 +471,7 @@ public:
 	void changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary = NULL);
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer);
 	jobject wrapTextRangeRef(JNIEnv *env, TextRangeRef range);
+	jobject wrapStoryRef(JNIEnv *env, StoryRef story);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
 
 	ASErr selectionChanged();

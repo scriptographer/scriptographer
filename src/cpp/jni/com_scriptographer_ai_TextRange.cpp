@@ -5,7 +5,7 @@
 /*
  * com.scriptographer.ai.TextRange
  */
- 
+
 using namespace ATE;
 
 jobject textRangeConvertTextRanges(JNIEnv *env, TextRangesRef ranges) {
@@ -25,44 +25,86 @@ jobject textRangeConvertTextRanges(JNIEnv *env, TextRangesRef ranges) {
 	return NULL;
 }
 
-IGlyphRun textRangeGetGlyphRun(TextRangeRef rangeRef) {
+GlyphRunRef textRangeGetGlyphRun(JNIEnv *env, jobject obj, TextRangeRef rangeRef, int *glyphRunPos) {
+	GlyphRunRef glyphRunRef = (GlyphRunRef) gEngine->getIntField(env, obj, gEngine->fid_TextRange_glyphRunRef);
+	// use the cached result from last glyph search:
+	if (glyphRunRef != NULL) {
+		*glyphRunPos = gEngine->getIntField(env, obj, gEngine->fid_TextRange_glyphRunPos);
+		return glyphRunRef;
+	}
+
+	long t = gEngine->getNanoTime();
+	// use the C++ wrappers here for easier handling of ref madness
+	// TODO: move away from wrappers for speed improve and size decrease!
 	ITextRange range(rangeRef);
-	ASInt32 start = range.GetStart();
 	ITextFramesIterator frames = range.GetTextFramesIterator();
-	while (frames.IsNotDone()) {
+	if (frames.IsNotDone()) {
+		// only use the first frame in the range, as we look at the glyph at start
 		ITextFrame frame = frames.Item();
+		ITextRange frameRange = frame.GetTextRange();
+		// now see where the frame range starts. that's where glyph index 0 of the frame is
+
+		// count glyphs until start. There is a bug in glyphRun.GetCharacterSize() and glyphRun.GetContents(), so
+		// we cannot count on these. They sometimes contain chars that are in the next run or contain chars from the prvious
+		// ones....
+		// so let's do it the hard way and count only on GetSingleGlyphInRange
+		// TODO: cash these results in an int table!
+		// IDEA: cash it in the Story of the range, as a lookup table char-index -> glyph-index
+		int glyphPos = 0;
+		int charPos = range.GetStart();
+		int scanPos = frameRange.GetStart();
+		while (scanPos < charPos) {
+			int step = 1;
+			// TODO: determine maximum ligature size. assumption is 3 for now...
+			for (; step <= 3; step++) {
+				frameRange.SetRange(scanPos, scanPos + step);
+				ATEGlyphID id;
+				if (frameRange.GetSingleGlyphInRange(&id)) // found a full glyph
+					break;
+			}
+			scanPos += step;
+			glyphPos++;
+
+		}
+		if (scanPos > charPos)
+			glyphPos--;
+
+		ASInt32 glyphStart = 0;
 		ITextLinesIterator lines = frame.GetTextLinesIterator();
 		while(lines.IsNotDone()) {
-			ITextLine line = lines.Item();
-			ITextRange lineRange = line.GetTextRange();
-			ASInt32 lineStart = lineRange.GetStart();
-			ASInt32 lineSize = lineRange.GetSize();
-			if (lineStart > start) {
-				return IGlyphRun(); // too far already...
-			} else if (lineStart + lineSize > start) { // almost there now!
-				IGlyphRunsIterator glyphRuns = line.GetGlyphRunsIterator();
-				ASInt32 glyphStart = lineStart;
-				ASInt32 glyphSize;
-				while (glyphRuns.IsNotDone()) {
-					IGlyphRun glyphRun = glyphRuns.Item();
-					glyphSize = glyphRun.GetCharacterCount();
-					ASInt32 glyphEnd = glyphStart + glyphSize;
-					if (glyphStart > start) {
-						return IGlyphRun(); // too far already...
-					} else if (glyphEnd > start) {
-						// found it!
-						return glyphRun;
-					}
-					// or do something else.
-					glyphRuns.Next();
-					glyphStart = glyphEnd;
+			IGlyphRunsIterator glyphRuns = lines.Item().GetGlyphRunsIterator();
+			while (glyphRuns.IsNotDone()) {
+				IGlyphRun glyphRun = glyphRuns.Item();
+				ASInt32 glyphSize = glyphRun.GetSize();
+				ASInt32 glyphEnd = glyphStart + glyphSize;
+				if (glyphStart > glyphPos) {
+					return NULL; // too far already...
+				} else if (glyphEnd > glyphPos) {
+					// found it!
+					// now step through the glyphrun and find the right position.
+					// there is a way to discover ligatures: the textrange's GetSingleGlyphInRange
+					// only returns if the length is set to the amount of chars that produce a ligature
+					// otherwise it files. so we can test....
+					// first produce a text range over the glpyhrun:
+
+					// cache the value and return
+					glyphPos -=  glyphStart;
+					glyphRunRef = glyphRun.GetRef();
+					sGlyphRun->AddRef(glyphRunRef); // increase ref counter
+					gEngine->setIntField(env, obj, gEngine->fid_TextRange_glyphRunRef, (jint) glyphRunRef);
+					gEngine->setIntField(env, obj, gEngine->fid_TextRange_glyphRunPos, glyphPos);
+					*glyphRunPos = glyphPos;
+					gEngine->println(env, "%i", gEngine->getNanoTime() - t);
+					return glyphRunRef;
+					
 				}
+				glyphRuns.Next();
+				glyphStart = glyphEnd;
 			}
 			lines.Next();
 		}
-		frames.Next();
 	}
-	return IGlyphRun();
+	return NULL;
 	
 	/*
 	TextFramesIteratorRef frames;
@@ -126,28 +168,128 @@ IGlyphRun textRangeGetGlyphRun(TextRangeRef rangeRef) {
 	*/
 }
 
+// cleans the cached glyph run
+void textRangeCleanGlyphRun(JNIEnv *env, jobject obj) {
+	GlyphRunRef glyphRunRef = (GlyphRunRef) gEngine->getIntField(env, obj, gEngine->fid_TextRange_glyphRunRef);
+	if (glyphRunRef != NULL) {
+		gEngine->setIntField(env, obj, gEngine->fid_TextRange_glyphRunRef, 0);
+		sGlyphRun->Release(glyphRunRef);
+	}
+}
 
 /*
  * com.scriptographer.ai.Point[] getOrigins()
  */
 JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_TextRange_getOrigins(JNIEnv *env, jobject obj) {
 	try {
-		using namespace ATE;
 		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
-		IGlyphRun glyphRun = textRangeGetGlyphRun(range);
-		IArrayRealPoint points;
-		if (!glyphRun.IsNull()) {
-			IArrayRealPoint points = glyphRun.GetOrigins();
-			ASInt32 size = points.GetSize();
+		int pos;
+		GlyphRunRef glyphRun = textRangeGetGlyphRun(env, obj, range, &pos);
+		ArrayRealPointRef points;
+		ASInt32 size;
+		if (glyphRun != NULL && !sGlyphRun->GetOrigins(glyphRun, &points) && !sArrayRealPoint->GetSize(points, &size)) {
 			jobjectArray array = env->NewObjectArray(size, gEngine->cls_Point, NULL); 
 			for (int i = 0; i < size; i++) {
-				ASRealPoint pt = points.Item(i);
-				env->SetObjectArrayElement(array, i, gEngine->convertPoint(env, &pt));
+				ASRealPoint pt;
+				if (!sArrayRealPoint->Item(points, i, &pt)) {
+					env->SetObjectArrayElement(array, i, gEngine->convertPoint(env, &pt));
+				}
 			}
 			return array;
 		}
 	} EXCEPTION_CONVERT(env)
 	return NULL;
+}
+
+/*
+ * int getGlyphCount()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getGlyphCount(JNIEnv *env, jobject obj) {
+	try {
+		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		int pos;
+		GlyphRunRef glyphRun = textRangeGetGlyphRun(env, obj, range, &pos);
+		ArrayGlyphIDRef glyphs;
+		ASInt32 size;
+		if (glyphRun != NULL && !sGlyphRun->GetGlyphIDs(glyphRun, &glyphs) && !sArrayGlyphID->GetSize(glyphs, &size)) {
+			return size;
+		}
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * int[] getGlyphIds()
+ */
+JNIEXPORT jintArray JNICALL Java_com_scriptographer_ai_TextRange_getGlyphIds(JNIEnv *env, jobject obj) {
+	try {
+		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		int pos;
+		GlyphRunRef glyphRun = textRangeGetGlyphRun(env, obj, range, &pos);
+		ArrayGlyphIDRef glyphs;
+		ASInt32 size;
+		if (glyphRun != NULL && !sGlyphRun->GetGlyphIDs(glyphRun, &glyphs) && !sArrayGlyphID->GetSize(glyphs, &size)) {
+			jintArray array = env->NewIntArray(size);
+			jint *values = new jint[size];
+			for (int i = 0; i < size; i++) {
+				ATEGlyphID id;
+				if (!sArrayGlyphID->Item(glyphs, i, &id))
+					values[i] = id;
+			}
+			env->SetIntArrayRegion(array, 0, size, values);
+			return array;
+		}
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * int getGlyphId()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getGlyphId(JNIEnv *env, jobject obj) {
+	try {
+		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		int pos;
+		GlyphRunRef glyphRun = textRangeGetGlyphRun(env, obj, range, &pos);
+		ArrayGlyphIDRef glyphs;
+		ASInt32 size;
+		if (glyphRun != NULL && !sGlyphRun->GetGlyphIDs(glyphRun, &glyphs) && !sArrayGlyphID->GetSize(glyphs, &size)) {
+			ATEGlyphID id;
+			if (!sArrayGlyphID->Item(glyphs, pos, &id))
+				return id;
+		}
+	} EXCEPTION_CONVERT(env)
+	return 0;
+}
+
+/*
+ * int getCharCount()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getCharCount(JNIEnv *env, jobject obj) {
+	try {
+		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		int pos;
+		GlyphRunRef glyphRun = textRangeGetGlyphRun(env, obj, range, &pos);
+		ASInt32 count;
+		sGlyphRun->GetCharacterCount(glyphRun, &count);
+		return count;
+	} EXCEPTION_CONVERT(env)
+	return 0;
+}
+
+/*
+ * int getCount()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getCount(JNIEnv *env, jobject obj) {
+	try {
+		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		int pos;
+		GlyphRunRef glyphRun = textRangeGetGlyphRun(env, obj, range, &pos);
+		ASInt32 count;
+		sGlyphRun->GetSize(glyphRun, &count);
+		return count;
+	} EXCEPTION_CONVERT(env)
+	return 0;
 }
 
 /*
@@ -157,13 +299,13 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_TextRange_getGlyphRunConten
 	try {
 		using namespace ATE;
 		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
-		IGlyphRun glyphRun = textRangeGetGlyphRun(range);
-		IArrayRealPoint points;
-		if (!glyphRun.IsNull()) {
-			ASInt32 size = glyphRun.GetSize();
+		int pos;
+		GlyphRunRef glyphRun = textRangeGetGlyphRun(env, obj, range, &pos);
+		ASInt32 size;
+		if (glyphRun != NULL && !sGlyphRun->GetCharacterCount(glyphRun, &size)) {
 			ASUnicode *text = new ASUnicode[size];
-			size = glyphRun.GetContents(text, size);
- 			return env->NewString(text, size);
+			if (!sGlyphRun->GetContents_AsUnicode(glyphRun, text, size, &size))
+	 			return env->NewString(text, size);
 		}
 	} EXCEPTION_CONVERT(env)
 	return NULL;
@@ -188,7 +330,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getStart(JNIEnv *env
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_setStart(JNIEnv *env, jobject obj, jint start) {
 	try {
 		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
-		sTextRange->SetStart(range, start);
+		if (!sTextRange->SetStart(range, start))
+			textRangeCleanGlyphRun(env, obj);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -211,7 +354,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getEnd(JNIEnv *env, 
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_setEnd(JNIEnv *env, jobject obj, jint end) {
 	try {
 		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
-		sTextRange->SetEnd(range, end);
+		if (!sTextRange->SetEnd(range, end))
+			textRangeCleanGlyphRun(env, obj);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -221,7 +365,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_setEnd(JNIEnv *env, 
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_setRange(JNIEnv *env, jobject obj, jint start, jint end) {
 	try {
 		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
-		sTextRange->SetRange(range, start, end);
+		if (!sTextRange->SetRange(range, start, end))
+			textRangeCleanGlyphRun(env, obj);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -403,6 +548,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getCharacterType(JNI
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_finalize(JNIEnv *env, jobject obj) {
 	try {
 		sTextRange->Release(gEngine->getTextRangeRef(env, obj));
+		textRangeCleanGlyphRun(env, obj);
 	} EXCEPTION_CONVERT(env)
 }
 

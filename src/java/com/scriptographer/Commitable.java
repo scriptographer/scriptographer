@@ -28,12 +28,15 @@
  *
  * $RCSfile: Commitable.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:01:01 $
+ * $Revision: 1.2 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer;
 
 public interface Commitable {
+	/**
+	 * commits the cached change to the native object.
+	 */
 	public abstract void commit();
 }

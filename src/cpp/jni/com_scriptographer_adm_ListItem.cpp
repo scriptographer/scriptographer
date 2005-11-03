@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ListItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.6 $
+ * $Date: 2005/11/03 00:00:15 $
  */
  
 #include "stdHeaders.h"
@@ -237,9 +237,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_getLength(JNIEnv *en
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_remove(JNIEnv *env, jobject obj, jint index) {
 	try {
 		// before removing, a local reference needs to be created, as the global reference is destroyed in callbackListDestroy 
-	
+
 		#define REMOVE_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
-			ENTRY_TYPE ent = LIST_SUITE->GetEntry(list, index); \
+			ENTRY_TYPE ent = LIST_SUITE->IndexEntry(list, index); \
 			if (ent != NULL) { \
 				jobject entry = gEngine->getListEntryObject(ent); \
 				if (entry != NULL) entry = env->NewLocalRef(entry); \
@@ -258,7 +258,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_remove(JNIEnv *en
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_get__I(JNIEnv *env, jobject obj, jint index) {
 	try {
 		#define GET_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
-			ENTRY_TYPE ent = LIST_SUITE->GetEntry(list, index); \
+			ENTRY_TYPE ent = LIST_SUITE->IndexEntry(list, index); \
 			return gEngine->getListEntryObject(ent);
 
 		DEFINE_METHOD(GET_ENTRY)

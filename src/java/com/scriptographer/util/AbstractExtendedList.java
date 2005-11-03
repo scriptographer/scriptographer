@@ -28,8 +28,8 @@
  *
  * $RCSfile: AbstractExtendedList.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/10/29 10:19:57 $
+ * $Revision: 1.3 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer.util;
@@ -134,10 +134,7 @@ public abstract class AbstractExtendedList extends WrappableObject implements Ex
 	}
 
 	public ExtendedList subList(int fromIndex, int toIndex) {
-		ExtendedArrayList list = new ExtendedArrayList(toIndex - fromIndex);
-		for (int i = fromIndex; i < toIndex; i++)
-			list.add(get(i));
-		return list;
+		return Lists.createSubList(this, fromIndex, toIndex);
 	}
 
 	public boolean isEmpty() {

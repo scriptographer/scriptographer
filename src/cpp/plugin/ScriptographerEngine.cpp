@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.20 $
- * $Date: 2005/11/01 18:30:59 $
+ * $Revision: 1.21 $
+ * $Date: 2005/11/03 00:00:13 $
  */
  
 #include "stdHeaders.h"
@@ -435,7 +435,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_Art = loadClass(env, "com/scriptographer/ai/Art");
 	fid_Art_version = getFieldID(env, cls_Art, "version", "I");
 	fid_Art_dictionaryRef = getFieldID(env, cls_Art, "dictionaryRef", "I");
-	mid_Art_wrapHandle = getStaticMethodID(env, cls_Art, "wrapHandle", "(IIII)Lcom/scriptographer/ai/Art;");
+	mid_Art_wrapHandle = getStaticMethodID(env, cls_Art, "wrapHandle", "(IIIII)Lcom/scriptographer/ai/Art;");
 	mid_Art_updateIfWrapped_int = getStaticMethodID(env, cls_Art, "updateIfWrapped", "(I)Z");
 	mid_Art_updateIfWrapped_Array = getStaticMethodID(env, cls_Art, "updateIfWrapped", "([I)V");
 	mid_Art_changeHandle = getMethodID(env, cls_Art, "changeHandle", "(II)V");
@@ -450,9 +450,12 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_TextRange = loadClass(env, "com/scriptographer/ai/TextRange");
 	cid_TextRange = getConstructorID(env, cls_TextRange, "(I)V");
-	fid_TextRange_glyhRunRef = getFieldID(env, cls_TextRange, "glyhRunRef", "I");
-	fid_TextRange_glyphRunStart = getFieldID(env, cls_TextRange, "glyphRunStart", "I");
+	fid_TextRange_glyphRunRef = getFieldID(env, cls_TextRange, "glyphRunRef", "I");
+	fid_TextRange_glyphRunPos = getFieldID(env, cls_TextRange, "glyphRunPos", "I");
 	
+	cls_Story = loadClass(env, "com/scriptographer/ai/Story");
+	cid_Story = getConstructorID(env, cls_Story, "(I)V");
+
 	cls_PathStyle = loadClass(env, "com/scriptographer/ai/PathStyle");
 	mid_PathStyle_init = getMethodID(env, cls_PathStyle, "init", "(Lcom/scriptographer/ai/Color;ZLcom/scriptographer/ai/Color;ZFF[FSSFZZZF)V");
 
@@ -1407,7 +1410,7 @@ ATE::TextFrameRef ScriptographerEngine::getTextFrameRef(JNIEnv *env, jobject obj
 	JNI_CHECK_ENV
 	AIArtHandle art = (AIArtHandle) getIntField(env, obj, fid_AIObject_handle);
 	if (art == NULL)
-		throw new StringException("Object is not wrapping an art handle.");
+		throw new StringException("Object is not wrapping a text frame handle.");
 	ATE::TextFrameRef frame = NULL;
 	sAITextFrame->GetATETextFrame(art, &frame);
 	return frame;
@@ -1427,6 +1430,22 @@ ATE::TextRangeRef ScriptographerEngine::getTextRangeRef(JNIEnv *env, jobject obj
 	if (range == NULL)
 		throw new StringException("Object is not wrapping a text range handle.");
 	return range;
+}
+
+/**
+ * Returns the wrapped StoryRef of an object by assuming that it is an anchestor of Class Textstory and
+ * accessing its field 'handle':
+ *
+ * throws exceptions
+ */
+ATE::StoryRef ScriptographerEngine::getStoryRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	ATE::StoryRef story = (ATE::StoryRef) getIntField(env, obj, fid_AIObject_handle);
+	if (story == NULL)
+		throw new StringException("Object is not wrapping a text story handle.");
+	return story;
 }
 
 /**
@@ -1536,6 +1555,7 @@ AIMenuGroup ScriptographerEngine::getMenuGroupHandle(JNIEnv *env, jobject obj) {
 		throw new StringException("Object is not wrapping a menu group handle.");
 	return group;
 }
+
 /**
  * Wraps the handle in a java object. see the Java function Art.wrapArtHandle to see how 
  * the cashing of already wrapped objects is handled.
@@ -1566,8 +1586,11 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 		sAIDictionary->SetIntegerEntry(artDict, fArtHandleKey, (ASInt32) art);
 		sAIDictionary->Release(artDict);
 	}
-	
-	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) type, (jint) textType, (jint) dictionary);
+
+	AIDocumentHandle document;
+	if (sAIDocument->GetDocument(&document))
+		throw new StringException("Cannot determine active document");
+	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) type, (jint) textType, (jint) document, (jint) dictionary);
 }
 
 bool ScriptographerEngine::updateArtIfWrapped(JNIEnv *env, AIArtHandle art) {
@@ -1583,14 +1606,24 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) 
 	// Art group in the layer that contains everything (even in AI, layer seems only be a wrapper around
 	// an art group:
 	AIArtHandle art;
-	sAIArt->GetFirstArtOfLayer(layer, &art);
-	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER, (jint) kUnknownTextType, 0);
+	if (sAIArt->GetFirstArtOfLayer(layer, &art))
+		throw new StringException("Cannot get layer art");
+	AIDocumentHandle document;
+	if (sAIDocument->GetDocument(&document))
+		throw new StringException("Cannot determine active document");
+	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER, (jint) kUnknownTextType, (jint) document, 0);
 }
 
 jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, TextRangeRef range) {
 	// we need to increase the ref count here. this is decreased again in TextRange.finalize
 	ATE::sTextRange->AddRef(range);
 	return newObject(env, cls_TextRange, cid_TextRange, (jint) range);
+}
+
+jobject ScriptographerEngine::wrapStoryRef(JNIEnv *env, StoryRef story) {
+	// we need to increase the ref count here. this is decreased again in Story.finalize
+	ATE::sStory->AddRef(story);
+	return newObject(env, cls_Story, cid_Story, (jint) story);
 }
 
 /**

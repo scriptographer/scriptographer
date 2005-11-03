@@ -28,8 +28,8 @@
  *
  * $RCSfile: Segment.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.11 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer.ai;
@@ -155,7 +155,7 @@ public class Segment extends WrappableObject implements Commitable {
 	protected void markDirty() {
 		// only mark it as dirty if it's attached to a path already:
 		if (!dirty && segments != null && segments.path != null) {
-			CommitManager.markDirty(this);
+			CommitManager.markDirty(segments.path, this);
 			dirty = true;
 		}
 	}

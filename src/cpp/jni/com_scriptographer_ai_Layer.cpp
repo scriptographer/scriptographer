@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Layer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/10 08:38:47 $
+ * $Revision: 1.4 $
+ * $Date: 2005/11/03 00:00:15 $
  */
  
 #include "stdHeaders.h"
@@ -193,9 +193,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getColor(JNIEnv *env,
 }
 
 /*
- * com.scriptographer.ai.ArtSet getArt()
+ * com.scriptographer.ai.ArtSet getItems()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getArt(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getItems(JNIEnv *env, jobject obj) {
 	try {
 		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
 		AIArtSet set;
@@ -208,6 +208,19 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getArt(JNIEnv *env, j
 		}
 	} EXCEPTION_CONVERT(env)
 	return NULL;
+}
+
+/*
+ * boolean isActive()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_isActive(JNIEnv *env, jobject obj) {
+	try {
+		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
+		AILayerHandle curLayer = NULL;
+		if (!sAILayer->GetCurrentLayer(&curLayer) && layer == curLayer)
+			return true;
+	} EXCEPTION_CONVERT(env)
+	return JNI_FALSE;
 }
 
 /*

@@ -28,8 +28,8 @@
  *
  * $RCSfile: PathStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.6 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer.ai;
@@ -112,7 +112,7 @@ public class PathStyle extends WrappableObject implements Commitable {
 	protected void markDirty() {
 		// only mark it as dirty if it's attached to a path already:
 		if (!dirty && art != null) {
-			CommitManager.markDirty(this);
+			CommitManager.markDirty(art, this);
 			dirty = true;
 		}
 	}

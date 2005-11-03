@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextRange.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/11/01 18:30:59 $
+ * $Revision: 1.4 $
+ * $Date: 2005/11/03 00:00:15 $
  */
 
 package com.scriptographer.ai;
@@ -39,6 +39,7 @@ import java.util.zip.Adler32;
 
 import com.scriptographer.util.ExtendedArrayList;
 import com.scriptographer.util.ExtendedList;
+import com.scriptographer.util.Lists;
 import com.scriptographer.util.ReadOnlyList;
 
 public class TextRange extends AIObject {
@@ -46,12 +47,11 @@ public class TextRange extends AIObject {
 	// to cash glyph run refrences, once their
 	// found. these values need to be cleared in
 	// setStart, setEnd ,setRange and finalize
-	private int glyhRunRef;
-	private int glyphRunStart;
+	private int glyphRunRef;
+	private int glyphRunPos;
 	
-	public TextRange(int handle) {
+	protected TextRange(int handle) {
 		super(handle);
-	
 	}
 	
 	public native int getStart();
@@ -83,6 +83,10 @@ public class TextRange extends AIObject {
 	}
 	
 	public native Point[] getOrigins();
+	public native int[] getGlyphIds();
+	public native int getGlyphId();
+	public native int getCharCount();
+	public native int getCount();
 	
 	public native String getGlyphRunContent();
 	
@@ -193,10 +197,7 @@ public class TextRange extends AIObject {
 		}
 
 		public ExtendedList subList(int fromIndex, int toIndex) {
-			ExtendedArrayList list = new ExtendedArrayList(toIndex - fromIndex);
-			for (int i = fromIndex; i < toIndex; i++)
-				list.add(get(i));
-			return list;
+			return Lists.createSubList(this, fromIndex, toIndex);
 		}
 	}
 
