@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextRange.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/11/03 00:00:15 $
+ * $Revision: 1.5 $
+ * $Date: 2005/11/04 01:34:14 $
  */
 
 package com.scriptographer.ai;
@@ -43,6 +43,25 @@ import com.scriptographer.util.Lists;
 import com.scriptographer.util.ReadOnlyList;
 
 public class TextRange extends AIObject {
+	
+	// CaseChangeType
+	public static final int CASE_UPPER = 0;
+	public static final int CASE_LOWER = 1;
+	public static final int CASE_TITLE = 2;
+	public static final int CASE_SENTENCE = 3;
+
+	// ASCharType
+	/** undefined character */
+	public static final int CHAR_UNDEFINED = -1;
+	/** space character */
+	public static final int CHAR_SPACE = 0;
+	/** punctuation character */
+	public static final int CHAR_PUNCTUATION = 1;
+	/** paragraph end character CR */
+	public static final int CHAR_PARAGRAPH_END = 2;
+	/** this character is anything but space, punctuation or paragraphend */
+	public static final int CHAR_NORMAL = 3;
+	
 	// values for the native environment,
 	// to cash glyph run refrences, once their
 	// found. these values need to be cleared in
@@ -50,8 +69,24 @@ public class TextRange extends AIObject {
 	private int glyphRunRef;
 	private int glyphRunPos;
 	
-	protected TextRange(int handle) {
+	private Document document;
+	private Story story = null;
+	
+	protected TextRange(int handle, int documentHandle) {
 		super(handle);
+		document = Document.wrapHandle(documentHandle);
+	}
+	
+	public Document getDocument() {
+		return document;
+	}
+	
+	private native int nativeGetStoryIndex();
+	
+	public Story getStory() {
+		if (story == null)
+			story = (Story) document.getStories().get(nativeGetStoryIndex());
+		return story;
 	}
 	
 	public native int getStart();
@@ -71,17 +106,35 @@ public class TextRange extends AIObject {
 	public native void insertAfter(TextRange range);
 	
 	/**
+	 * Returns the kerning between two chars in thousands of em.
+	 */
+	public native int getKerning();
+	
+	/**
+	 * Sets the kerning between two chars in thousands of em.
+	 * @param kerning
+	 */
+	public native void setKerning(int kerning);
+	
+	/**
 	 *  This method will delete all the characters in that range.
 	 */
 	public native void remove();
 	
-	public native String getText();
+	public native String getContent();
 	
-	public void setText(String text) {
+	public void setContent(String text) {
 		remove();
 		insertAfter(text);
 	}
 	
+	/*
+	 * CharacterStyle
+	 */
+	
+	public native CharacterStyle getUniqueCharacterStyle();
+	
+	// TODO: ...
 	public native Point[] getOrigins();
 	public native int[] getGlyphIds();
 	public native int getGlyphId();
@@ -106,12 +159,6 @@ public class TextRange extends AIObject {
 	/// Note, deselecting a range can cause defregmented selection, if this range is a sub range of the current selection.
 	
 	public native Object clone();
-	
-	// CaseChangeType
-	public static final int CASE_UPPER = 0;
-	public static final int CASE_LOWER = 1;
-	public static final int CASE_TITLE = 2;
-	public static final int CASE_SENTENCE = 3;
 
 	/**
 	 * 
@@ -120,18 +167,6 @@ public class TextRange extends AIObject {
 	public native void changeCase(int type);
 	
 	public native void fitHeadlines();
-
-	// ASCharType
-	/** undefined character */
-	public static final int CHAR_UNDEFINED = -1;
-	/** space character */
-	public static final int CHAR_SPACE = 0;
-	/** punctuation character */
-	public static final int CHAR_PUNCTUATION = 1;
-	/** paragraph end character CR */
-	public static final int CHAR_PARAGRAPH_END = 2;
-	/** this character is anything but space, punctuation or paragraphend */
-	public static final int CHAR_NORMAL = 3;
 	
 	/**
 	 *  This Range has to be of size equal to 1, any other size will throw error (kBadParameter)
@@ -240,16 +275,16 @@ public class TextRange extends AIObject {
 		}
 		
 		void update() {
-			String text = getText();
+			String content = getContent();
 			// calculate string checksum and compare, only update token list
 			// if something changed...
 			// TODO: see how this performs!
 			long oldChecksum = checksum.getValue();
 			checksum.reset();
-			checksum.update(text.getBytes());
+			checksum.update(content.getBytes());
 			this.position = getStart();
 			if (checksum.getValue() != oldChecksum) {
-				StringTokenizer st = new StringTokenizer(text, delimiter, true);
+				StringTokenizer st = new StringTokenizer(content, delimiter, true);
 				StringBuffer part = new StringBuffer();
 				list.clear();
 				while (st.hasMoreTokens()) {

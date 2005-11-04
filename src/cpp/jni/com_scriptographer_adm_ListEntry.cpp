@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ListEntry.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/23 00:28:48 $
+ * $Revision: 1.6 $
+ * $Date: 2005/11/04 01:34:14 $
  */
  
 #include "stdHeaders.h"
@@ -39,7 +39,7 @@
  * com.scriptographer.adm.Entry
  */
 
-void ASAPI callbackListEntryDestroy(ADMEntryRef entry) {
+void ASAPI ListEntry_onDestroy(ADMEntryRef entry) {
 	// this seems to be necessary otherwise crashes occur:
 	sADMEntry->SetPicture(entry, NULL);
 	sADMEntry->SetDisabledPicture(entry, NULL);
@@ -58,14 +58,14 @@ void ASAPI callbackListEntryDestroy(ADMEntryRef entry) {
 	}
 }
 
-void ASAPI callbackListEntryNotify(ADMEntryRef entry, ADMNotifierRef notifier) {
+void ASAPI ListEntry_onNotify(ADMEntryRef entry, ADMNotifierRef notifier) {
 	sADMEntry->DefaultNotify(entry, notifier);
 	ADMListRef list = sADMEntry->GetList(entry);
 	jobject entryObj = gEngine->getListEntryObject(entry);
 	gEngine->callOnNotify(entryObj, notifier);
 }
 
-ASBoolean ASAPI callbackListEntryTrack(ADMEntryRef entry, ADMTrackerRef tracker) {
+ASBoolean ASAPI ListEntry_onTrack(ADMEntryRef entry, ADMTrackerRef tracker) {
 	ADMListRef list = sADMEntry->GetList(entry);
 	jobject entryObj = gEngine->getListEntryObject(entry);
 	ASBoolean ret = gEngine->callOnTrack(entryObj, tracker);
@@ -74,7 +74,7 @@ ASBoolean ASAPI callbackListEntryTrack(ADMEntryRef entry, ADMTrackerRef tracker)
 	return ret;
 }
 
-void ASAPI callbackListEntryDraw(ADMEntryRef entry, ADMDrawerRef drawer) {
+void ASAPI ListEntry_onDraw(ADMEntryRef entry, ADMDrawerRef drawer) {
 	sADMEntry->DefaultDraw(entry, drawer);
 	ADMListRef list = sADMEntry->GetList(entry);
 	jobject entryObj = gEngine->getListEntryObject(entry);

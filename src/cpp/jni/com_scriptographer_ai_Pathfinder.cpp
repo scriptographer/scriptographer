@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Pathfinder.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/07/22 17:30:56 $
+ * $Revision: 1.3 $
+ * $Date: 2005/11/04 01:34:14 $
  */
  
 #include "stdHeaders.h"
@@ -38,7 +38,7 @@
  * com.scriptographer.ai.Pathfinder
  */
 
-ASBoolean pathfinderBegin(JNIEnv *env, jobjectArray artObjects, jfloat precision, jboolean removePoints, jboolean extractUnpainted, AIPathfinderData *data, AIArtSet *prevSelected) {
+ASBoolean Pathfinder_begin(JNIEnv *env, jobjectArray artObjects, jfloat precision, jboolean removePoints, jboolean extractUnpainted, AIPathfinderData *data, AIArtSet *prevSelected) {
 	memset(data, 0, sizeof(AIPathfinderData));
 	data->options.ipmPrecision = precision;
 	data->options.removeRedundantPoints = removePoints;
@@ -76,7 +76,7 @@ ASBoolean pathfinderBegin(JNIEnv *env, jobjectArray artObjects, jfloat precision
 	return true;
 }
 
-void pathfinderEnd(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelected) {
+void Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelected) {
 	// get the now selected objects (= result) and change the artset:
 	AIArtSet selected = NULL;
 	long count;
@@ -116,9 +116,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pathfinder_unite(JNIEnv *env, 
 	try {
 		AIPathfinderData data;
 		AIArtSet prevSelected;
-		if (pathfinderBegin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
+		if (Pathfinder_begin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
 			sAIPathfinder->DoUniteEffect(&data, NULL);
-			pathfinderEnd(env, &data, &prevSelected);
+			Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env)
 }
@@ -130,9 +130,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pathfinder_intersect(JNIEnv *e
 	try {
 		AIPathfinderData data;
 		AIArtSet prevSelected;
-		if (pathfinderBegin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
+		if (Pathfinder_begin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
 			sAIPathfinder->DoIntersectEffect(&data, NULL);
-			pathfinderEnd(env, &data, &prevSelected);
+			Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env)
 }
@@ -144,9 +144,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pathfinder_exclude(JNIEnv *env
 	try {
 		AIPathfinderData data;
 		AIArtSet prevSelected;
-		if (pathfinderBegin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
+		if (Pathfinder_begin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
 			sAIPathfinder->DoExcludeEffect(&data, NULL);
-			pathfinderEnd(env, &data, &prevSelected);
+			Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env)
 }
@@ -158,9 +158,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pathfinder_backMinusFront(JNIE
 	try {
 		AIPathfinderData data;
 		AIArtSet prevSelected;
-		if (pathfinderBegin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
+		if (Pathfinder_begin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
 			sAIPathfinder->DoBackMinusFrontEffect(&data, NULL);
-			pathfinderEnd(env, &data, &prevSelected);
+			Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env)
 }
@@ -172,9 +172,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pathfinder_frontMinusBack(JNIE
 	try {
 		AIPathfinderData data;
 		AIArtSet prevSelected;
-		if (pathfinderBegin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
+		if (Pathfinder_begin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
 			sAIPathfinder->DoFrontMinusBackEffect(&data, NULL);
-			pathfinderEnd(env, &data, &prevSelected);
+			Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env)
 }
@@ -186,9 +186,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pathfinder_divide(JNIEnv *env,
 	try {
 		AIPathfinderData data;
 		AIArtSet prevSelected;
-		if (pathfinderBegin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
+		if (Pathfinder_begin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
 			sAIPathfinder->DoDivideEffect(&data, NULL);
-			pathfinderEnd(env, &data, &prevSelected);
+			Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env)
 }
@@ -200,9 +200,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pathfinder_outline(JNIEnv *env
 	try {
 		AIPathfinderData data;
 		AIArtSet prevSelected;
-		if (pathfinderBegin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
+		if (Pathfinder_begin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
 			sAIPathfinder->DoOutlineEffect(&data, NULL);
-			pathfinderEnd(env, &data, &prevSelected);
+			Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env)
 }
@@ -214,9 +214,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pathfinder_trim(JNIEnv *env, j
 	try {
 		AIPathfinderData data;
 		AIArtSet prevSelected;
-		if (pathfinderBegin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
+		if (Pathfinder_begin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
 			sAIPathfinder->DoTrimEffect(&data, NULL);
-			pathfinderEnd(env, &data, &prevSelected);
+			Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env)
 }
@@ -228,9 +228,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pathfinder_merge(JNIEnv *env, 
 	try {
 		AIPathfinderData data;
 		AIArtSet prevSelected;
-		if (pathfinderBegin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
+		if (Pathfinder_begin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
 			sAIPathfinder->DoMergeEffect(&data, NULL);
-			pathfinderEnd(env, &data, &prevSelected);
+			Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env)
 }
@@ -242,9 +242,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pathfinder_crop(JNIEnv *env, j
 	try {
 		AIPathfinderData data;
 		AIArtSet prevSelected;
-		if (pathfinderBegin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
+		if (Pathfinder_begin(env, artObjects, precision, removePoints, extractUnpainted, &data, &prevSelected)) {
 			sAIPathfinder->DoCropEffect(&data, NULL);
-			pathfinderEnd(env, &data, &prevSelected);
+			Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env)
 }

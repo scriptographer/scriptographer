@@ -28,30 +28,34 @@
  *
  * $RCSfile: StrokeStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.4 $
+ * $Date: 2005/11/04 01:34:14 $
  */
 
 package com.scriptographer.ai;
 
+import org.mozilla.javascript.Scriptable;
+
+import com.scriptographer.js.NullToUndefinedWrapper;
 import com.scriptographer.js.WrappableObject;
+import com.scriptographer.js.WrapperCreator;
 
-public class StrokeStyle extends WrappableObject {
-	protected Color color;					/* Stroke color */
-	protected boolean overprint;			/* Overprint - not meaningful if ColorTag is pattern */
-	protected float width;					/* Line width */
-	protected float dashOffset;				/* Dash dashOffset */
+public class StrokeStyle extends WrappableObject implements WrapperCreator {
+	protected Color color;				/* Stroke color */
+	protected Boolean overprint;			/* Overprint - not meaningful if ColorTag is pattern */
+	protected Float width;				/* Line width */
+	protected Float dashOffset;			/* Dash dashOffset */
 	protected float[] dashArray;			/* Dash array */
-	protected short cap;					/* Line cap */
-	protected short join;					/* Line join */
-	protected float miterLimit;				/* Line miter limit */
+	protected Integer cap;				/* Line cap */
+	protected Integer join;				/* Line join */
+	protected Float miterLimit;			/* Line miter limit */
 
-	public static final short
+	public static final int
 		CAP_BUTT = 0,
 		CAP_ROUND = 1,
 		CAP_SQUARE = 2;
 
-	public static final short
+	public static final int
 		JOIN_MITER = 0,
 		JOIN_ROUND = 1,
 		JOIN_BEVEL = 2;
@@ -71,15 +75,19 @@ public class StrokeStyle extends WrappableObject {
 		init(stroke.color, stroke.overprint, stroke.width, stroke.dashOffset, stroke.dashArray, stroke.cap, stroke.join, stroke.miterLimit);
 	}
 
-	public StrokeStyle(Color color, boolean overprint, float width, float dashOffset, float[] dashArray, short cap, short join, float miterLimit) {
+	public StrokeStyle(Color color, Boolean overprint, Float width, Float dashOffset, float[] dashArray, Integer cap, Integer join, Float miterLimit) {
 		init(color, overprint, width, dashOffset, dashArray, cap, join, miterLimit);
 	}
-
-	protected void setStyle(PathStyle style) {
-		this.style = style;
+	
+	/**
+	 * called from the native environment
+	 */
+	protected StrokeStyle(Color color, boolean hasColor, short overprint, float width, float dashOffset, float[] dashArray, short cap, short join, float miterLimit) {
+		init(color, hasColor, overprint, width, dashOffset, dashArray, cap, join, miterLimit);
 	}
 
-	protected void init(Color color, boolean overprint, float width, float dashOffset, float[] dashArray, short cap, short join, float miterLimit) {
+
+	protected void init(Color color, Boolean overprint, Float width, Float dashOffset, float[] dashArray, Integer cap, Integer join, Float miterLimit) {
 		this.color = color;
 		this.overprint = overprint;
 		this.width = width;
@@ -89,56 +97,111 @@ public class StrokeStyle extends WrappableObject {
 		this.join = join;
 		this.miterLimit = miterLimit;
 	}
-	
-	protected void initNative(int handle) {
-		PathStyle.nativeInitStrokeStyle(handle, color.getComponents(), overprint, width, dashOffset, dashArray, cap, join, miterLimit);
+
+	/**
+	 * called from the native environment
+	 */
+	protected void init(Color color, boolean hasColor, short overprint, float width, float dashOffset, float[] dashArray, short cap, short join, float miterLimit) {
+		this.color = hasColor && color == null ? Color.NONE : color;
+		this.overprint = overprint >= 0 ? new Boolean(overprint != 0) : null;
+		this.width = width >= 0 ? new Float(width) : null;
+		this.dashOffset = dashOffset >= 0 ? new Float(dashOffset) : null;
+		this.setDashArray(dashArray, false);
+		this.cap = cap >= 0 ? new Integer(cap) : null;
+		this.join = join >= 0 ? new Integer(join) : null;
+		this.miterLimit = miterLimit >= 0 ? new Float(miterLimit) : null;
 	}
 
+	protected void setStyle(PathStyle style) {
+		this.style = style;
+	}
+	
+	protected void initNative(int handle) {
+		PathStyle.nativeInitStrokeStyle(handle, 
+				color != null && color != Color.NONE ? color.getComponents() : null, color != null, 
+				overprint != null ? (short) (overprint.booleanValue() ? 1 : 0) : -1,
+				width != null ? width.floatValue() : -1,
+				dashOffset != null ? dashOffset.floatValue() : -1,
+				dashArray,
+				cap != null ? cap.shortValue() : -1,
+				join != null ? join.shortValue() : -1,
+				miterLimit != null ? miterLimit.floatValue() : -1
+		);
+	}
+
+
 	public Color getColor() {
+		if (style != null)
+			style.update();
 		return color;
 	}
 
 	public void setColor(Color color) {
-		this.color = color;
-		if (style != null)
+		if (style != null) {
+			style.update();
 			style.markDirty();
+		}
+		this.color = color;
 	}
 
-	public boolean getOverprint() {
+	// TODO: convert through getColorComponents instead!
+	public void setColor(java.awt.Color color) {
+		setColor(new RGBColor(color));
+	}
+
+	public Boolean getOverprint() {
+		if (style != null)
+			style.update();
 		return overprint;
 	}
 
-	public void setOverprint(boolean overprint) {
-		this.overprint = overprint;
-		if (style != null)
+	public void setOverprint(Boolean overprint) {
+		if (style != null) {
+			style.update();
 			style.markDirty();
+		}
+		this.overprint = overprint;
 	}
 
-	public float getWidth() {
+	public Float getWidth() {
+		if (style != null)
+			style.update();
 		return width;
 	}
 
-	public void setWidth(float width) {
-		this.width = width;
-		if (style != null)
+	public void setWidth(Float width) {
+		if (style != null) {
+			style.update();
 			style.markDirty();
+		}
+		this.width = width;
 	}
-
-	public float getDashOffset() {
+	
+	public Float getDashOffset() {
+		if (style != null)
+			style.update();
 		return dashOffset;
 	}
 
-	public void setDashOffset(float offset) {
-		this.dashOffset = offset;
-		if (style != null)
+	public void setDashOffset(Float offset) {
+		if (style != null) {
+			style.update();
 			style.markDirty();
+		}
+		this.dashOffset = offset;
 	}
-
+	
 	public float[] getDashArray() {
+		if (style != null)
+			style.update();
 		return dashArray;
 	}
 
-	private void setDashArray(float[] array, boolean mark) {
+	private void setDashArray(float[] array, boolean sync) {
+		if (style != null && sync) {
+			style.update();
+			style.markDirty();
+		}
 		if (array == null)
 			this.dashArray = null;
 		else {
@@ -149,8 +212,6 @@ public class StrokeStyle extends WrappableObject {
 			for (int i = 0; i < count; i++)
 				this.dashArray[i] = array[i];
 		}
-		if (mark && style != null)
-			style.markDirty();
 	}
 
 	public void setDashArray(float[] array) {
@@ -158,37 +219,82 @@ public class StrokeStyle extends WrappableObject {
 	}
 
 	public void setDash(float offset, float[] array) {
-		setDashOffset(offset);
-		setDashArray(array);
+		setDashOffset(new Float(offset));
+		setDashArray(array, false);
 	}
 
-	public short getCap() {
+	public Integer getCap() {
+		if (style != null)
+			style.update();
 		return cap;
 	}
 
-	public void setCap(short cap) {
-		this.cap = cap;
-		if (style != null)
+	public void setCap(Integer cap) {
+		if (style != null) {
+			style.update();
 			style.markDirty();
+		}
+		this.cap = cap;
 	}
 
-	public short getJoin() {
+	public Integer getJoin() {
+		if (style != null)
+			style.update();
 		return join;
 	}
 
-	public void setJoin(short join) {
-		this.join = join;
-		if (style != null)
+	public void setJoin(Integer join) {
+		if (style != null) {
+			style.update();
 			style.markDirty();
+		}
+		this.join = join;
 	}
-
-	public float getMiterLimit() {
+	
+	public Float getMiterLimit() {
+		if (style != null)
+			style.update();
 		return miterLimit;
 	}
 
-	public void setMiterLimit(float miterLimit) {
-		this.miterLimit = miterLimit;
-		if (style != null)
+	public void setMiterLimit(Float miterLimit) {
+		if (style != null) {
+			style.update();
 			style.markDirty();
+		}
+		this.miterLimit = miterLimit;
+	}
+
+	/*
+	 * For JDK 1.4
+	 */
+	public void setOverprint(boolean overprint) {
+		setOverprint(new Boolean(overprint));
+	}
+	
+	public void setWidth(float width) {
+	}
+	
+	public void setDashOffset(float offset) {
+		setDashOffset(new Float(offset));
+	}
+	
+	public void setCap(int cap) {
+		setCap(new Integer(cap));
+	}
+
+	public void setJoin(int join) {
+		setJoin(new Integer(join));
+	}
+
+	public void setMiterLimit(float miterLimit) {
+		setMiterLimit(new Float(miterLimit));
+	}
+
+	// wrappable interface
+
+	public Scriptable createWrapper(Scriptable scope, Class staticType) {
+		wrapper = new NullToUndefinedWrapper(scope, this, staticType);
+		return wrapper;
 	}
 }

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Path.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/07/22 17:30:56 $
+ * $Revision: 1.7 $
+ * $Date: 2005/11/04 01:34:14 $
  */
  
 #include "stdHeaders.h"
@@ -39,7 +39,7 @@
  * com.scriptographer.ai.Path
  */
  
-short pathGetBezierCount(AIArtHandle art) {
+short Path_getBezierCount(AIArtHandle art) {
 	short count;
 	sAIPath->GetPathSegmentCount(art, &count);
 	AIBoolean closed;

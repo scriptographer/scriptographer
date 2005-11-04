@@ -1,28 +1,40 @@
 package com.scriptographer.ai;
 
 import com.scriptographer.CommitManager;
-import com.scriptographer.util.ExtendedArrayList;
 import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 import com.scriptographer.util.ReadOnlyList;
 
 public class Story extends AIObject {
 	
-	protected Story(int handle) {
+	private Document document;
+	
+	protected Story(int handle, int documentHandle) {
 		super(handle);
+		document = Document.wrapHandle(documentHandle);
 	}
 	
 	// TODO: add cashing for getRange, updating with CommitManager.version
 	public native TextRange getRange();
 	
 	public native TextRange getSelection();
+	
+	public native int getIndex();
+	
+	public Document getDocument() {
+		return document;
+	}
+	
+	public ReadOnlyList getStories() {
+		return document.getStories();
+	}
 
 	public String getText() {
-		return getRange().getText();
+		return getRange().getContent();
 	}
 	
 	public void setText(String text) {
-		getRange().setText(text);
+		getRange().setContent(text);
 	}
 
 	TextList texts = null;
@@ -37,9 +49,9 @@ public class Story extends AIObject {
 	
 	protected native void finailze();
 	
-	private native int nativeGetTexListLength(int handle);
+	protected native int nativeGetTexListLength(int handle);
 	
-	private native Text nativeGetText(int handle, int index);
+	protected native Text nativeGetText(int handle, int index);
 	
 	class TextList implements ReadOnlyList {
 		int length = 0;

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Item.cpp,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/10/23 00:28:48 $
+ * $Revision: 1.11 $
+ * $Date: 2005/11/04 01:34:14 $
  */
 
 #include "stdHeaders.h"
@@ -44,7 +44,7 @@
  *
  */
 
-ASErr ASAPI callbackItemInit(ADMItemRef item) {
+ASErr ASAPI Item_onInit(ADMItemRef item) {
 	jobject obj = gEngine->getItemObject(item);
 	// Set the java's reflections of size and bounds.
 	// if the item's bounds are set to -1, set them to best size now:
@@ -57,13 +57,13 @@ ASErr ASAPI callbackItemInit(ADMItemRef item) {
 	gEngine->setObjectField(env, obj, gEngine->fid_Item_nativeBounds, gEngine->convertRectangle(env, &rect));
 
 	// Attach the item-level callbacks
-	sADMItem->SetDestroyProc(item, callbackItemDestroy);
-	sADMItem->SetNotifyProc(item, callbackItemNotify);
+	sADMItem->SetDestroyProc(item, Item_onDestroy);
+	sADMItem->SetNotifyProc(item, Item_onNotify);
 
 	return kNoErr;
 }
 
-void ASAPI callbackItemDestroy(ADMItemRef item) {
+void ASAPI Item_onDestroy(ADMItemRef item) {
 	if (gEngine != NULL) {
 		JNIEnv *env = gEngine->getEnv();
 		try {
@@ -80,11 +80,11 @@ void ASAPI callbackItemDestroy(ADMItemRef item) {
 				if (env->IsInstanceOf(obj, gEngine->cls_HierarchyList)) {
 					ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
 					sADMHierarchyList->SetUserData(list, obj);
-					callbackHierarchyListDestroy(list);
+					HierarchyList_onDestroy(list);
 				} else {
 					ADMListRef list = gEngine->getListRef(env, obj);
 					sADMList->SetUserData(list, obj);
-					callbackListDestroy(list);
+					List_onDestroy(list);
 				}
 			}
 			env->DeleteGlobalRef(obj);
@@ -92,7 +92,7 @@ void ASAPI callbackItemDestroy(ADMItemRef item) {
 	}
 }
 
-void ASAPI callbackItemNotify(ADMItemRef item, ADMNotifierRef notifier) {
+void ASAPI Item_onNotify(ADMItemRef item, ADMNotifierRef notifier) {
 	sADMItem->DefaultNotify(item, notifier);
 	jobject obj = gEngine->getItemObject(item);
 	if (sADMNotifier->IsNotifierType(notifier, kADMBoundsChangedNotifier)) {
@@ -120,7 +120,7 @@ void ASAPI callbackItemNotify(ADMItemRef item, ADMNotifierRef notifier) {
 	}
 }
 
-ASBoolean ASAPI callbackItemTrack(ADMItemRef item, ADMTrackerRef tracker) {
+ASBoolean ASAPI Item_onTrack(ADMItemRef item, ADMTrackerRef tracker) {
 	jobject obj = gEngine->getItemObject(item);
 	ASBoolean ret = gEngine->callOnTrack(obj, tracker);
 	if (ret)
@@ -128,7 +128,7 @@ ASBoolean ASAPI callbackItemTrack(ADMItemRef item, ADMTrackerRef tracker) {
 	return ret;
 }
 
-void ASAPI callbackItemDraw(ADMItemRef item, ADMDrawerRef drawer) {
+void ASAPI Item_onDraw(ADMItemRef item, ADMDrawerRef drawer) {
 	sADMItem->DefaultDraw(item, drawer);
 	jobject obj = gEngine->getItemObject(item);
 	gEngine->callOnDraw(obj, drawer);
@@ -142,7 +142,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeCreate(JNIEnv *env
 		char *itemType = gEngine->convertString(env, type);
 		// create with default dimensions:
 		DEFINE_ADM_RECT(rect, 0, 0, 100, 100);
-		ADMItemRef item = sADMItem->Create((ADMDialogRef) dialogHandle, kADMUniqueItemID, itemType, &rect, callbackItemInit, env->NewGlobalRef(obj), options);
+		ADMItemRef item = sADMItem->Create((ADMDialogRef) dialogHandle, kADMUniqueItemID, itemType, &rect, Item_onInit, env->NewGlobalRef(obj), options);
 		delete itemType;
 		if (item == NULL)
 			throw new StringException("Cannot create dialog item.");
@@ -158,7 +158,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeCreate(JNIEnv *env
 JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_Item_nativeInit(JNIEnv *env, jobject obj, jint handle) {
 	try {
 		sADMItem->SetUserData((ADMItemRef) handle, env->NewGlobalRef(obj));
-		callbackItemInit((ADMItemRef) handle);
+		Item_onInit((ADMItemRef) handle);
 		return gEngine->convertString(env, sADMItem->GetItemType((ADMItemRef) handle));
 	} EXCEPTION_CONVERT(env)
 	return NULL;
@@ -179,7 +179,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeDestroy(JNIEnv *en
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetTrackCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->SetTrackProc(item, enabled ? callbackItemTrack : NULL);
+		sADMItem->SetTrackProc(item, enabled ? Item_onTrack : NULL);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -210,7 +210,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setTrackMask(JNIEnv *env
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetDrawCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->SetDrawProc(item, enabled ? callbackItemDraw : NULL);
+		sADMItem->SetDrawProc(item, enabled ? Item_onDraw : NULL);
 	} EXCEPTION_CONVERT(env)
 }
 

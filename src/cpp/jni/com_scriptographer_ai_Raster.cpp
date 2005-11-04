@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Raster.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/07/22 17:30:56 $
+ * $Revision: 1.5 $
+ * $Date: 2005/11/04 01:34:14 $
  */
  
 #include "stdHeaders.h"
@@ -39,7 +39,7 @@
  * com.scriptographer.ai.Raster
  */
 
-struct RasterData {
+struct Raster_Data {
 	AIRasterRecord info;
 	int numComponents;
 	int version; // the version of the raster data, if it changed, fetch it again.
@@ -49,14 +49,14 @@ struct RasterData {
 	unsigned char pixelValues[5];
 };
 
-RasterData *rasterGetData(JNIEnv *env, jobject raster, AIArtHandle art) {
-	RasterData *data = (RasterData *) gEngine->getIntField(env, raster, gEngine->fid_Raster_rasterData);
+Raster_Data *Raster_getData(JNIEnv *env, jobject raster, AIArtHandle art) {
+	Raster_Data *data = (Raster_Data *) gEngine->getIntField(env, raster, gEngine->fid_Raster_rasterData);
 	// match against version
 	int version = gEngine->getIntField(env, raster, gEngine->fid_Art_version);
 	if ( data == NULL || data->version != version) {
 		// init a new data struct now:
 		if ( data == NULL) {
-			data = new RasterData;
+			data = new Raster_Data;
 			
 			memset(&data->info, 0, sizeof(AIRasterRecord));
 
@@ -120,8 +120,8 @@ RasterData *rasterGetData(JNIEnv *env, jobject raster, AIArtHandle art) {
 	return data;
 }
 
-void rasterFinalize(JNIEnv *env, jobject obj) {
-	RasterData *data = (RasterData *) gEngine->getIntField(env, obj, gEngine->fid_Raster_rasterData);
+void Raster_finalize(JNIEnv *env, jobject obj) {
+	Raster_Data *data = (Raster_Data *) gEngine->getIntField(env, obj, gEngine->fid_Raster_rasterData);
 	if (data != NULL) {
 		delete data;
 		// set to null:
@@ -129,10 +129,10 @@ void rasterFinalize(JNIEnv *env, jobject obj) {
 	}
 }
 
-void rasterCopyPixels(JNIEnv *env, jobject obj, jbyteArray data, jint numComponents, jint x, jint y, jint width, jint height, bool get) {
+void Raster_copyPixels(JNIEnv *env, jobject obj, jbyteArray data, jint numComponents, jint x, jint y, jint width, jint height, bool get) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		RasterData *rasterData = rasterGetData(env, obj, art);
+		Raster_Data *rasterData = Raster_getData(env, obj, art);
 		AISlice sliceFrom, sliceTo;
 		sliceFrom.left = rasterData->info.bounds.left + x;
 		sliceFrom.top = rasterData->info.bounds.top + y;
@@ -170,13 +170,36 @@ void rasterCopyPixels(JNIEnv *env, jobject obj, jbyteArray data, jint numCompone
 	} EXCEPTION_CONVERT(env)
 }
 
+int Raster_getType(AIRasterRecord *info) {
+	long colorSpace = info->colorSpace;
+	ASBoolean alpha = (colorSpace & kColorSpaceHasAlpha || (info->flags & kRasterMaskImageType));
+	if (alpha) colorSpace &= ~kColorSpaceHasAlpha;
+	switch (colorSpace) {
+	case kGrayColorSpace: 
+		if (info->bitsPerPixel == 1) {
+			if (alpha) return kRasterizeABitmap;
+			else return kRasterizeBitmap;
+		} else {
+			if (alpha) return kRasterizeAGrayscale;
+			else return kRasterizeGrayscale;
+		}
+	case kRGBColorSpace:
+		if (alpha) return kRasterizeARGB;
+		else return kRasterizeRGB;
+	case kCMYKColorSpace:
+		if (alpha) return kRasterizeACMYK;
+		else return kRasterizeCMYK;
+	}
+	return kRasterizeRGB;
+}
+
 /*
  * int nativeConvert(int type, int width, int height)
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *env, jobject obj, jint type, jint width, jint height) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		RasterData *data = rasterGetData(env, obj, art);
+		Raster_Data *data = Raster_getData(env, obj, art);
 
 		if (type == -1) {
 			// this is used when width and height is set...
@@ -220,9 +243,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *e
 			// convert the raster by rasterizing it again and then exchange the
 			// old art by the new one:
 			// TODO: check wether the old art needs to be removed?
-			art = artRasterize(art, (AIRasterizeType) type, 0, 0, scaledWidth, scaledHeight);
+			art = Art_rasterize(art, (AIRasterizeType) type, 0, 0, scaledWidth, scaledHeight);
 			// remove the raster info because it has changed now...
-			rasterFinalize(env, obj);
+			Raster_finalize(env, obj);
 		} else {
 			// just set the raster info:
 			AIRasterRecord *info = &data->info;
@@ -284,7 +307,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_finalize(JNIEnv *env, jobject obj) {
 	try {
-		rasterFinalize(env, obj);
+		Raster_finalize(env, obj);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -294,33 +317,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_finalize(JNIEnv *env, j
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getSize(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		RasterData *data = rasterGetData(env, obj, art);
+		Raster_Data *data = Raster_getData(env, obj, art);
 		return gEngine->convertDimension(env, data->info.bounds.right - data->info.bounds.left, data->info.bounds.bottom - data->info.bounds.top);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
-}
-
-int rasterGetType(AIRasterRecord *info) {
-	long colorSpace = info->colorSpace;
-	ASBoolean alpha = (colorSpace & kColorSpaceHasAlpha || (info->flags & kRasterMaskImageType));
-	if (alpha) colorSpace &= ~kColorSpaceHasAlpha;
-	switch (colorSpace) {
-	case kGrayColorSpace: 
-		if (info->bitsPerPixel == 1) {
-			if (alpha) return kRasterizeABitmap;
-			else return kRasterizeBitmap;
-		} else {
-			if (alpha) return kRasterizeAGrayscale;
-			else return kRasterizeGrayscale;
-		}
-	case kRGBColorSpace:
-		if (alpha) return kRasterizeARGB;
-		else return kRasterizeRGB;
-	case kCMYKColorSpace:
-		if (alpha) return kRasterizeACMYK;
-		else return kRasterizeCMYK;
-	}
-	return kRasterizeRGB;
 }
 
 /*
@@ -329,8 +329,8 @@ int rasterGetType(AIRasterRecord *info) {
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_getType(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		RasterData *data = rasterGetData(env, obj, art);
-		return rasterGetType(&data->info);
+		Raster_Data *data = Raster_getData(env, obj, art);
+		return Raster_getType(&data->info);
 	} EXCEPTION_CONVERT(env)
 	return kRasterizeRGB;
 }
@@ -341,7 +341,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_getType(JNIEnv *env, jo
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getPixel(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		RasterData *data = rasterGetData(env, obj, art);
+		Raster_Data *data = Raster_getData(env, obj, art);
 
 		// just get a 1 pixelValues big tile from the raster
 
@@ -397,7 +397,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getPixel(JNIEnv *env
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setPixel(JNIEnv *env, jobject obj, jint x, jint y, jobject color) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		RasterData *data = rasterGetData(env, obj, art);
+		Raster_Data *data = Raster_getData(env, obj, art);
 		AIColor col;
 		AIReal alpha;
 		gEngine->convertColor(env, color, &col, &alpha);
@@ -453,14 +453,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setPixel(JNIEnv *env, j
  * void nativeGetPixels(byte[] data, int numComponents, int x, int y, int width, int height)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_nativeGetPixels(JNIEnv *env, jobject obj, jbyteArray data, jint numComponents, jint x, jint y, jint width, jint height) {
-	rasterCopyPixels(env, obj, data, numComponents, x, y, width, height, true);
+	Raster_copyPixels(env, obj, data, numComponents, x, y, width, height, true);
 }
 
 /*
  * void nativeSetPixels(byte[] data, int numComponents, int x, int y, int width, int height)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_nativeSetPixels(JNIEnv *env, jobject obj, jbyteArray data, jint numComponents, jint x, jint y, jint width, jint height) {
-	rasterCopyPixels(env, obj, data, numComponents, x, y, width, height, false);
+	Raster_copyPixels(env, obj, data, numComponents, x, y, width, height, false);
 }
 
 /*

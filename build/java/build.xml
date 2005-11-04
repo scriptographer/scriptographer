@@ -241,6 +241,7 @@
 			<class name="com.scriptographer.ai.TextRange" />
 			<class name="com.scriptographer.ai.Story" />
 			<class name="com.scriptographer.ai.StoryList" />
+			<class name="com.scriptographer.ai.CharacterStyle" />
 
 			<class name="com.scriptographer.adm.Notifier" />
 			<class name="com.scriptographer.adm.Dialog" />

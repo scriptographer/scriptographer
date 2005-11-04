@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ListItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/11/03 00:00:15 $
+ * $Revision: 1.7 $
+ * $Date: 2005/11/04 01:34:14 $
  */
  
 #include "stdHeaders.h"
@@ -40,17 +40,17 @@
  */
  
 // lists don't have init callbacks that automatically get called, but just for simetry let's use the same scheme:
-ASErr ASAPI callbackListInit(ADMListRef list) {
-	sADMList->SetDestroyProc(list, callbackListEntryDestroy);
-	sADMList->SetNotifyProc(list, callbackListEntryNotify);
+ASErr ASAPI List_onInit(ADMListRef list) {
+	sADMList->SetDestroyProc(list, ListEntry_onDestroy);
+	sADMList->SetNotifyProc(list, ListEntry_onNotify);
 	/* these are activated in enable****Callback
-	sADMList->SetTrackProc(list, callbackListEntryTrack);
-	sADMList->SetDrawProc(list, callbackListEntryDraw);
+	sADMList->SetTrackProc(list, ListEntry_onTrack);
+	sADMList->SetDrawProc(list, ListEntry_onDraw);
 	*/
 	return kNoErr;
 }
 
-void ASAPI callbackListDestroy(ADMListRef list) {
+void ASAPI List_onDestroy(ADMListRef list) {
 	if (gEngine != NULL) {
 		jobject listObj = gEngine->getListObject(list);
 		JNIEnv *env = gEngine->getEnv();
@@ -82,14 +82,14 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_nativeInit(JNIEnv *e
 		if (list != NULL) {
 			// link it with the java object that calls this
 			sADMList->SetUserData(list, env->NewGlobalRef(obj));
-			callbackListInit(list);
+			List_onInit(list);
 			return (jint) list;
 		} else {
 			ADMHierarchyListRef hierarchyList = sADMItem->GetHierarchyList((ADMItemRef) itemRef);
 			if (hierarchyList != NULL) {
 				// link it with the java object that calls this
 				sADMHierarchyList->SetUserData(hierarchyList, env->NewGlobalRef(obj));
-				callbackHierarchyListInit(hierarchyList);
+				HierarchyList_onInit(hierarchyList);
 				return (jint) hierarchyList;
 			}
 		}
@@ -104,10 +104,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_nativeSetTrackEntryC
 	try {
 		if (env->IsInstanceOf(obj, gEngine->cls_HierarchyList)) {
 			ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
-			sADMHierarchyList->SetTrackProc(list, enabled ? callbackHierarchyListEntryTrack : NULL);
+			sADMHierarchyList->SetTrackProc(list, enabled ? HierarchyListEntry_onTrack : NULL);
 		} else {
 			ADMListRef list = gEngine->getListRef(env, obj);
-			sADMList->SetTrackProc(list, enabled ? callbackListEntryTrack : NULL);
+			sADMList->SetTrackProc(list, enabled ? ListEntry_onTrack : NULL);
 		}
 	} EXCEPTION_CONVERT(env)
 }
@@ -119,10 +119,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_nativeSetDrawEntryCa
 	try {
 		if (env->IsInstanceOf(obj, gEngine->cls_HierarchyList)) {
 			ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
-			sADMHierarchyList->SetDrawProc(list, enabled ? callbackHierarchyListEntryDraw : NULL);
+			sADMHierarchyList->SetDrawProc(list, enabled ? HierarchyListEntry_onDraw : NULL);
 		} else {
 			ADMListRef list = gEngine->getListRef(env, obj);
-			sADMList->SetDrawProc(list, enabled ? callbackListEntryDraw : NULL);
+			sADMList->SetDrawProc(list, enabled ? ListEntry_onDraw : NULL);
 		}
 	} EXCEPTION_CONVERT(env)
 }
@@ -236,7 +236,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_getLength(JNIEnv *en
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_remove(JNIEnv *env, jobject obj, jint index) {
 	try {
-		// before removing, a local reference needs to be created, as the global reference is destroyed in callbackListDestroy 
+		// before removing, a local reference needs to be created, as the global reference is destroyed in List_onDestroy 
 
 		#define REMOVE_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			ENTRY_TYPE ent = LIST_SUITE->IndexEntry(list, index); \

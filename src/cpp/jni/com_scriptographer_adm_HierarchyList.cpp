@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_HierarchyList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/10/23 00:28:48 $
+ * $Revision: 1.8 $
+ * $Date: 2005/11/04 01:34:14 $
  */
  
 #include "stdHeaders.h"
@@ -40,17 +40,17 @@
  */
  
 // lists don't have init callbacks that automatically get called, but just for simetry let's use the same scheme:
-ASErr ASAPI callbackHierarchyListInit(ADMHierarchyListRef list) {
-	sADMHierarchyList->SetDestroyProc(list, callbackHierarchyListEntryDestroy);
-	sADMHierarchyList->SetNotifyProc(list, callbackHierarchyListEntryNotify);
+ASErr ASAPI HierarchyList_onInit(ADMHierarchyListRef list) {
+	sADMHierarchyList->SetDestroyProc(list, HierarchyListEntry_onDestroy);
+	sADMHierarchyList->SetNotifyProc(list, HierarchyListEntry_onNotify);
 	/* these are activated in enable****Callback
-	sADMHierarchyList->SetTrackProc(list, callbackHierarchyListEntryTrack);
-	sADMHierarchyList->SetDrawProc(list, callbackHierarchyListEntryDraw);
+	sADMHierarchyList->SetTrackProc(list, HierarchyListEntry_onTrack);
+	sADMHierarchyList->SetDrawProc(list, HierarchyListEntry_onDraw);
 	*/
 	return kNoErr;
 }
 
-void ASAPI callbackHierarchyListDestroy(ADMHierarchyListRef list) {
+void ASAPI HierarchyList_onDestroy(ADMHierarchyListRef list) {
 	if (gEngine != NULL) {
 		jobject listObj = gEngine->getListObject(list);
 		JNIEnv *env = gEngine->getEnv();
@@ -70,7 +70,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_nativeCreateChi
 		ADMHierarchyListRef list = sADMListEntry->CreateChildList((ADMListEntryRef) entryRef);
 		// link it with the java object that calls this
 		sADMHierarchyList->SetUserData(list, env->NewGlobalRef(obj));
-		callbackHierarchyListInit(list);
+		HierarchyList_onInit(list);
 		return (jint) list;
 	} EXCEPTION_CONVERT(env)
 	return 0;

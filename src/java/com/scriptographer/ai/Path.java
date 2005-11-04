@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.17 $
- * $Date: 2005/11/03 00:00:15 $
+ * $Revision: 1.18 $
+ * $Date: 2005/11/04 01:34:14 $
  */
 
 package com.scriptographer.ai;
@@ -114,7 +114,7 @@ public class Path extends Art {
 		if (segments == null)
 			segments = new SegmentList(this);
 		else
-			segments.checkUpdate();
+			segments.update();
 		return segments;
 	}
 

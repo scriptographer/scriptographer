@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2005/11/03 00:00:15 $
+ * $Revision: 1.14 $
+ * $Date: 2005/11/04 01:34:14 $
  */
 
 package com.scriptographer.ai;
@@ -112,7 +112,7 @@ public class SegmentList extends AbstractFetchList {
 		}
 	}
 
-	protected void checkUpdate() {
+	protected void update() {
 		if (path != null && lengthVersion != path.version) {
 			updateSize(-1);
 		}

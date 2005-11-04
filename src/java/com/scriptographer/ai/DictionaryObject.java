@@ -28,8 +28,8 @@
  *
  * $RCSfile: DictionaryObject.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.3 $
+ * $Date: 2005/11/04 01:34:14 $
  */
 
 package com.scriptographer.ai;
@@ -52,7 +52,7 @@ public abstract class DictionaryObject extends AIObject {
 		if (dictionary == null)
 			dictionary = new Dictionary(this);
 		else
-			dictionary.checkUpdate();
+			dictionary.update();
 		
 		return dictionary;	
 	}

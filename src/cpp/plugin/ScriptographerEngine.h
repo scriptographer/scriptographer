@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.17 $
- * $Date: 2005/11/03 00:00:13 $
+ * $Revision: 1.18 $
+ * $Date: 2005/11/04 01:34:14 $
  */
 
 #include "jniMacros.h"
@@ -255,6 +255,10 @@ public:
 	jmethodID mid_StrokeStyle_init;
 	jmethodID mid_StrokeStyle_initNative;
 	
+	jclass cls_CharacterStyle;
+	jmethodID cid_CharacterStyle;
+	jmethodID mid_CharacterStyle_markSetStyle;
+	
 	jclass cls_Group;
 	
 	jclass cls_Raster;
@@ -457,6 +461,7 @@ public:
 	ATE::TextFrameRef getTextFrameRef(JNIEnv *env, jobject obj);
 	ATE::TextRangeRef getTextRangeRef(JNIEnv *env, jobject obj);
 	ATE::StoryRef getStoryRef(JNIEnv *env, jobject obj);
+	ATE::CharFeaturesRef getCharFeaturesRef(JNIEnv *env, jobject obj);
 	AIDocumentHandle getDocumentHandle(JNIEnv *env, jobject obj);
 	AIDocumentViewHandle getDocumentViewHandle(JNIEnv *env, jobject obj);
 	AIToolHandle getToolHandle(JNIEnv *env, jobject obj);
@@ -470,8 +475,9 @@ public:
 	bool updateArtIfWrapped(JNIEnv *env, AIArtHandle art);
 	void changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary = NULL);
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer);
-	jobject wrapTextRangeRef(JNIEnv *env, TextRangeRef range);
-	jobject wrapStoryRef(JNIEnv *env, StoryRef story);
+	jobject wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range);
+	jobject wrapStoryRef(JNIEnv *env, ATE::StoryRef story);
+	jobject wrapCharFeaturesRef(JNIEnv *env, ATE::CharFeaturesRef features, jobject range = NULL);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
 
 	ASErr selectionChanged();

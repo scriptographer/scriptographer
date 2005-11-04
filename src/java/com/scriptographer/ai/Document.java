@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2005/11/03 00:00:15 $
+ * $Revision: 1.15 $
+ * $Date: 2005/11/04 01:34:14 $
  */
 
 package com.scriptographer.ai;
@@ -41,9 +41,7 @@ import java.util.Map;
 
 import org.mozilla.javascript.NativeObject;
 
-import com.scriptographer.ai.TextRange.TokenizerList.Token;
 import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.util.ExtendedArrayList;
 import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.ReadOnlyList;
 import com.scriptographer.util.SoftIntMap;

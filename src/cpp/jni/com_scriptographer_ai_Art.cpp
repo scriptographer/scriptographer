@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.13 $
+ * $Date: 2005/11/04 01:34:14 $
  */
  
 #include "stdHeaders.h"
@@ -39,13 +39,13 @@
  * com.scriptographer.ai.Art
  */
  
-short artGetType(AIArtHandle art) {
+short Art_getType(AIArtHandle art) {
 	short type = -1;
 	sAIArt->GetArtType(art, &type);
 	return type;
 }
 
-short artGetType(JNIEnv *env, jclass cls) {
+short Art_getType(JNIEnv *env, jclass cls) {
 	if (env->IsSameObject(cls, gEngine->cls_Art)) {
 		return kAnyArt;
 	} else if (env->IsSameObject(cls, gEngine->cls_Path)) {
@@ -66,7 +66,7 @@ short artGetType(JNIEnv *env, jclass cls) {
 	// TODO: make sure the above list contains all Art classes!
 }
 
-jboolean artHasChildren(AIArtHandle art) {
+jboolean Art_hasChildren(AIArtHandle art) {
 	// don't show the children of textPaths and pointText 
 #if kPluginInterfaceVersion < kAI11
 	short type = artGetType(art);
@@ -76,17 +76,17 @@ jboolean artHasChildren(AIArtHandle art) {
 #endif
 }
 
-jboolean artIsLayer(AIArtHandle art) {
+jboolean Art_isLayer(AIArtHandle art) {
 	ASBoolean isLayerGroup = false;
 	sAIArt->IsArtLayerGroup(art, &isLayerGroup);
 	return isLayerGroup;
 }
 
-AIArtHandle artRasterize(AIArtHandle art, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
+AIArtHandle Art_rasterize(AIArtHandle art, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
 	AIArtSet artSet;
 	sAIArtSet->NewArtSet(&artSet);
 	sAIArtSet->AddArtToArtSet(artSet, art);
-	AIArtHandle raster = artSetRasterize(artSet, type, resolution, antialiasing, width, height);
+	AIArtHandle raster = ArtSet_rasterize(artSet, type, resolution, antialiasing, width, height);
 	sAIArtSet->DisposeArtSet(&artSet);
 	return raster;
 }
@@ -213,7 +213,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_nativeRemove(JNIEnv *e
 				return true;
 			}
 		}
-		if (artIsLayer(art)) {
+		if (Art_isLayer(art)) {
 			AILayerHandle layer;
 			sAIArt->GetLayerOfArt(art, &layer);
 			if (!sAILayer->DeleteLayer(layer))
@@ -257,7 +257,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_clone(JNIEnv *env, jobj
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getFirstChild(JNIEnv *env, jobject obj) {
 	try {
 	    AIArtHandle art = gEngine->getArtHandle(env, obj);
-		if (artHasChildren(art)) {
+		if (Art_hasChildren(art)) {
 			AIArtHandle child = NULL;
 			sAIArt->GetArtFirstChild(art, &child);
 			if (child != NULL) {
@@ -274,7 +274,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getFirstChild(JNIEnv *e
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getLastChild(JNIEnv *env, jobject obj) {
 	try {
 	    AIArtHandle art = gEngine->getArtHandle(env, obj);
-		if (artHasChildren(art)) {
+		if (Art_hasChildren(art)) {
 			AIArtHandle child = NULL;
 #if kPluginInterfaceVersion >= kAI11		
 			sAIArt->GetArtLastChild(art, &child);
@@ -498,10 +498,10 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_append(JNIEnv *env, jo
 			AIArtHandle art1 = gEngine->getArtHandle(env, obj);
 			AIArtHandle art2 = gEngine->getArtHandle(env, art);
 			if (art1 != NULL && art2 != NULL && art1 != art2) {
-				short type1 = artGetType(art1);
+				short type1 = Art_getType(art1);
 #if kPluginInterfaceVersion < kAI11
 				if (type1 == kTextArt) {
-					short type2 = artGetType(art2);
+					short type2 = Art_getType(art2);
 					if (type2 == kPathArt) {
 						// check that this path is not already in a textPath object:
 						AIArtHandle parent;
@@ -626,7 +626,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_moveBelow(JNIEnv *env,
 // if 'deep' is set, artTransform traverses the children recursively and transforms them: 
 void artTransform(JNIEnv *env, jobject obj, AIArtHandle art, AIRealMatrix *matrix, AIReal lineScale, long flags) {
 	sAITransformArt->TransformArt(art, matrix, lineScale, flags);
-	short type = artGetType(art);
+	short type = Art_getType(art);
 	// TODO: add all art objects that need invalidate to be called after transform!
 	if (type == kPathArt)
 		gEngine->updateArtIfWrapped(env, art);
@@ -676,7 +676,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_nativeTransform(JNIEnv *en
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_rasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		AIArtHandle raster = artRasterize(art, (AIRasterizeType) type, resolution, antialiasing, width, height);
+		AIArtHandle raster = Art_rasterize(art, (AIRasterizeType) type, resolution, antialiasing, width, height);
 		if (raster != NULL)
 			return gEngine->wrapArtHandle(env, raster);
 	} EXCEPTION_CONVERT(env)

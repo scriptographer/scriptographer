@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_HierarchyListEntry.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/04/20 13:49:37 $
+ * $Revision: 1.6 $
+ * $Date: 2005/11/04 01:34:14 $
  */
  
 #include "stdHeaders.h"
@@ -39,7 +39,7 @@
  * com.scriptographer.adm.HierarchyEntry
  */
 
-void ASAPI callbackHierarchyListEntryDestroy(ADMListEntryRef entry) {
+void ASAPI HierarchyListEntry_onDestroy(ADMListEntryRef entry) {
 	// this seems to be necessary:
 	sADMListEntry->SetPicture(entry, NULL);
 	sADMListEntry->SetDisabledPicture(entry, NULL);
@@ -59,20 +59,20 @@ void ASAPI callbackHierarchyListEntryDestroy(ADMListEntryRef entry) {
 			// but only call if it's not the root list:
 			ADMHierarchyListRef list = sADMListEntry->GetList(entry);
 			if (sADMHierarchyList->NumberOfEntries(list) == 0 && sADMHierarchyList->GetParentEntry(list) != NULL) {
-				callbackHierarchyListDestroy(list);
+				HierarchyList_onDestroy(list);
 			}
 		} EXCEPTION_CATCH_REPORT(env)
 	}
 }
 
-void ASAPI callbackHierarchyListEntryNotify(ADMListEntryRef entry, ADMNotifierRef notifier) {
+void ASAPI HierarchyListEntry_onNotify(ADMListEntryRef entry, ADMNotifierRef notifier) {
 	sADMListEntry->DefaultNotify(entry, notifier);
 	ADMHierarchyListRef list = sADMListEntry->GetList(entry);
 	jobject entryObj = gEngine->getListEntryObject(entry);
 	gEngine->callOnNotify(entryObj, notifier);
 }
 
-ASBoolean ASAPI callbackHierarchyListEntryTrack(ADMListEntryRef entry, ADMTrackerRef tracker) {
+ASBoolean ASAPI HierarchyListEntry_onTrack(ADMListEntryRef entry, ADMTrackerRef tracker) {
 	ADMHierarchyListRef list = sADMListEntry->GetList(entry);
 	jobject entryObj = gEngine->getListEntryObject(entry);
 	ASBoolean ret = gEngine->callOnTrack(entryObj, tracker);
@@ -81,7 +81,7 @@ ASBoolean ASAPI callbackHierarchyListEntryTrack(ADMListEntryRef entry, ADMTracke
 	return ret;
 }
 
-void ASAPI callbackHierarchyListEntryDraw(ADMListEntryRef entry, ADMDrawerRef drawer) {
+void ASAPI HierarchyListEntry_onDraw(ADMListEntryRef entry, ADMDrawerRef drawer) {
 	sADMListEntry->DefaultDraw(entry, drawer);
 	ADMHierarchyListRef list = sADMListEntry->GetList(entry);
 	jobject entryObj = gEngine->getListEntryObject(entry);

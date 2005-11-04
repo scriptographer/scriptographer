@@ -28,17 +28,21 @@
  *
  * $RCSfile: FillStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.4 $
+ * $Date: 2005/11/04 01:34:14 $
  */
 
 package com.scriptographer.ai;
 
-import com.scriptographer.js.WrappableObject;
+import org.mozilla.javascript.Scriptable;
 
-public class FillStyle extends WrappableObject {
-	protected Color color; 					/* Fill color */
-	protected boolean overprint;			/* Overprint */
+import com.scriptographer.js.NullToUndefinedWrapper;
+import com.scriptographer.js.WrappableObject;
+import com.scriptographer.js.WrapperCreator;
+
+public class FillStyle extends WrappableObject implements WrapperCreator {
+	protected Color color; 				/* Fill color */
+	protected Boolean overprint;			/* Overprint */
 
 	private PathStyle style = null;
 
@@ -55,31 +59,53 @@ public class FillStyle extends WrappableObject {
 		init(fill.color, fill.overprint);
 	}
 
-	public FillStyle(Color color, boolean overprint) {
+	public FillStyle(Color color, Boolean overprint) {
 		init(color, overprint);
 	}
 
+	/**
+	 * called from the native environment
+	 */
+	protected FillStyle(Color color, boolean hasColor, short overprint) {
+		init(color, hasColor, overprint);
+	}
+
+	protected void init(Color color, Boolean overprint) {
+		this.color = color;
+		this.overprint = overprint;
+	}
+
+	/**
+	 * called from the native environment
+	 */
+	protected void init(Color color, boolean hasColor, short overprint) {
+		this.color = hasColor && color == null ? Color.NONE : color;
+		this.overprint = overprint < 0 ? null : new Boolean(overprint != 0);
+	}
+	
 	protected void setStyle(PathStyle style) {
 		this.style = style;
 	}
 
-	protected void init(Color color, boolean overprint) {
-		this.color = color;
-		this.overprint = overprint;
-	}
-	
 	protected void initNative(int handle) {
-		PathStyle.nativeInitFillStyle(handle, color.getComponents(), overprint);
+		PathStyle.nativeInitFillStyle(handle, 
+				color != null && color != Color.NONE ? color.getComponents() : null, color != null, 
+				overprint != null ? (short) (overprint.booleanValue() ? 1 : 0) : -1
+		);
 	}
 
 	public Color getColor() {
+		if (style != null)
+			style.update();
 		return color;
 	}
 
 	public void setColor(Color color) {
-		this.color = color;
-		if (style != null)
+		if (style != null) {
+			style.update();
 			style.markDirty();
+		}
+		this.color = color;
 	}
 
 	// TODO: convert through getColorComponents instead!
@@ -87,13 +113,34 @@ public class FillStyle extends WrappableObject {
 		setColor(new RGBColor(color));
 	}
 
-	public boolean getOverprint() {
+	public Boolean getOverprint() {
+		if (style != null)
+			style.update();
 		return overprint;
 	}
 
-	public void setOverprint(boolean overprint) {
-		this.overprint = overprint;
-		if (style != null)
+	public void setOverprint(Boolean overprint) {
+		if (style != null) {
+			style.update();
 			style.markDirty();
+		}
+		this.overprint = overprint;
+	}
+
+	/*
+	 * For JDK 1.4
+	 */
+	public void setOverprint(boolean overprint) {
+		setOverprint(new Boolean(overprint));
+	}
+	
+	// wrappable interface
+
+
+	// wrappable interface
+
+	public Scriptable createWrapper(Scriptable scope, Class staticType) {
+		wrapper = new NullToUndefinedWrapper(scope, this, staticType);
+		return wrapper;
 	}
 }

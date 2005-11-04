@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2005/11/03 00:00:15 $
+ * $Revision: 1.13 $
+ * $Date: 2005/11/04 01:34:14 $
  */
  
 #include "stdHeaders.h"
@@ -511,7 +511,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingItems(J
 	AIArtSet set;
 	if (!sAIArtSet->NewArtSet(&set)) {
 		bool layerOnly = false;
-		short type = artGetType(env, typeClass);
+		short type = Art_getType(env, typeClass);
 		if (type == com_scriptographer_ai_Art_TYPE_LAYER) {
 			type = kGroupArt;
 			layerOnly = true;
@@ -743,7 +743,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_hitTest(JNIEnv *en
 		if (sAIHitTest->IsHit(hit) && !sAIHitTest->GetHitData(hit, &toolHit)) {
 			int type = toolHit.type;
 			// Support for hittest on text frames:
-			if (artGetType(toolHit.object) == kTextFrameArt) {
+			if (Art_getType(toolHit.object) == kTextFrameArt) {
 				int textPart = sAITextFrameHit->GetPart(hit);
 				if (textPart != kAITextNowhere)
 					type = textPart + 6;

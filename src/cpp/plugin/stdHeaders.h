@@ -26,8 +26,8 @@
  *
  * $RCSfile: stdHeaders.h,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/11/01 18:30:59 $
+ * $Revision: 1.7 $
+ * $Date: 2005/11/04 01:34:14 $
  */
  
 #if !defined(__STDHEADERS_H_INCLUDED__)
@@ -157,6 +157,7 @@ using namespace std;
 #if kPluginInterfaceVersion >= kAI11
 	#include "AITextFrame.h"
 	#include "IText.h"
+	#include "AIATEPaint.h"
 #else
 	#include "AIText.h"
 	#include "AITextFaceStyle.h"

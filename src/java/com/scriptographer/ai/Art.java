@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2005/11/03 00:00:15 $
+ * $Revision: 1.15 $
+ * $Date: 2005/11/04 01:34:14 $
  */
 
 package com.scriptographer.ai;
@@ -404,8 +404,6 @@ public abstract class Art extends DictionaryObject {
 	public PathStyle getStyle() {
 		if (style == null)
 			style = new PathStyle(this);
-		else
-			style.checkUpdate();
 		return style;
 	}
 

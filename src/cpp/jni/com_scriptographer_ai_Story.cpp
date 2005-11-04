@@ -19,6 +19,19 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Story_finailze(JNIEnv *env, jo
 }
 
 /*
+ * int getIndex()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Story_getIndex(JNIEnv *env, jobject obj) {
+	try {
+		StoryRef story = gEngine->getStoryRef(env, obj);
+		ASInt32 index;
+		if (!sStory->GetIndex(story, &index))
+			return index;
+	} EXCEPTION_CONVERT(env)
+	return -1;
+}
+
+/*
  * com.scriptographer.ai.TextRange getRange()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Story_getRange(JNIEnv *env, jobject obj) {
@@ -39,7 +52,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Story_getSelection(JNIEnv *
 		StoryRef story = gEngine->getStoryRef(env, obj);
 		TextRangesRef ranges;
 		if (!sStory->GetTextSelection(story, &ranges))
-			return textRangeConvertTextRanges(env, ranges);
+			return TextRange_convertTextRanges(env, ranges);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }

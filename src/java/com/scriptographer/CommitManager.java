@@ -28,15 +28,16 @@
  *
  * $RCSfile: CommitManager.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/11/03 00:00:15 $
+ * $Revision: 1.5 $
+ * $Date: 2005/11/04 01:34:15 $
  */
 
 package com.scriptographer;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+
+import com.scriptographer.ai.Text;
 
 public class CommitManager {
 	
@@ -62,8 +63,13 @@ public class CommitManager {
 	 */
 	public static void commit(Object key) {
 		Commitable obj = (Commitable) commitables.get(key);
-		if (obj != null)
+		if (obj != null) {
 			obj.commit();
+			// case it's a text, use the story as a key as well. it's used like
+			// that in CharacterAttributes
+			if (obj instanceof Text)
+				commit(((Text) obj).getStory());
+		}
 	}
 	
 	/**
@@ -71,9 +77,8 @@ public class CommitManager {
 	 */
 	public static void commit() {
 		if (commitables.size() > 0) {
-			for (Iterator iterator = commitables.entrySet().iterator(); iterator.hasNext();) {
+			for (Iterator iterator = commitables.values().iterator(); iterator.hasNext();)
 				((Commitable) iterator.next()).commit();
-			}
 			commitables.clear();
 		}
 		version++;
@@ -91,11 +96,17 @@ public class CommitManager {
 		/**
 		 * A helper class that's needed when there are more than on object for one key.
 		 * It forwards calls to commit()
+		 * It actually uses a map so that every object can only be added once in order
+		 * to void more than one call to commit at a time 
 		 */
-		class CommitableList extends ArrayList implements Commitable {
+		class CommitableList extends HashMap implements Commitable {
 			public void commit() {
-				for (int i = size() - 1; i >= 0; i--)
-					((Commitable) get(i)).commit();
+				for (Iterator iterator = values().iterator(); iterator.hasNext();)
+					((Commitable) iterator.next()).commit();
+			}
+				
+			public void add(Object obj) {
+				this.put(obj, obj);
 			}
 		}
 
@@ -115,7 +126,7 @@ public class CommitManager {
 				}
 			} else {
 				// simply add this object
-				return this.put(key, obj);
+				return super.put(key, obj);
 			}
 		}
 	}

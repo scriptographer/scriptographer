@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_ArtSet.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.5 $
+ * $Date: 2005/11/04 01:34:14 $
  */
  
 #include "stdHeaders.h"
@@ -40,7 +40,7 @@
  * com.scriptographer.ai.ArtSet
  */
 
-void artSetFilter(AIArtSet set, bool layerOnly) {
+void ArtSet_filter(AIArtSet set, bool layerOnly) {
 	// takes out all kUnknownArt, kTextRunArt, ... objs
 	// removes layergroups as well
 	long count;
@@ -48,8 +48,8 @@ void artSetFilter(AIArtSet set, bool layerOnly) {
 	for (long i = count - 1; i >= 0; i--) {
 		AIArtHandle art = NULL;
 		if (!sAIArtSet->IndexArtSet(set, i, &art)) {
-			short type = artGetType(art);
-			bool isLayer = artIsLayer(art);
+			short type = Art_getType(art);
+			bool isLayer = Art_isLayer(art);
 			if (type == kUnknownArt ||
 #if kPluginInterfaceVersion < kAI11
 				type == kTextRunArt ||
@@ -61,7 +61,7 @@ void artSetFilter(AIArtSet set, bool layerOnly) {
 	}
 }
 
-AIArtHandle artSetRasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
+AIArtHandle ArtSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
 	AIRasterizeSettings settings;
 	if (type == -1) {
 		// deterimine from document color model:
@@ -134,7 +134,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ArtSet_invert(JNIEnv *env, 
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ArtSet_rasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
 	try {
 		AIArtSet set = gEngine->convertArtSet(env, obj);
-		AIArtHandle raster = artSetRasterize(set, (AIRasterizeType) type, resolution, antialiasing, width, height);
+		AIArtHandle raster = ArtSet_rasterize(set, (AIRasterizeType) type, resolution, antialiasing, width, height);
 		if (raster != NULL)
 			return gEngine->wrapArtHandle(env, raster);
 	} EXCEPTION_CONVERT(env)

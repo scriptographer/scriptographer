@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Dialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/10/23 00:28:48 $
+ * $Revision: 1.12 $
+ * $Date: 2005/11/04 01:34:14 $
  */
 
 #include "stdHeaders.h"
@@ -41,7 +41,7 @@
  * com.scriptographer.ai.Dialog
  */
 
-ASErr ASAPI callbackDialogInit(ADMDialogRef dialog) {
+ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 	// hide the dialog by default:
 	sADMDialog->Show(dialog, false);
 	jobject obj = gEngine->getDialogObject(dialog);
@@ -54,15 +54,15 @@ ASErr ASAPI callbackDialogInit(ADMDialogRef dialog) {
 	sADMDialog->GetBoundsRect(dialog, &rect);
 	gEngine->setObjectField(env, obj, gEngine->fid_Dialog_bounds, gEngine->convertRectangle(env, &rect));
 	// Attach the dialog-level callbacks
-	sADMDialog->SetDestroyProc(dialog, callbackDialogDestroy);
-	sADMDialog->SetNotifyProc(dialog, callbackDialogNotify);
+	sADMDialog->SetDestroyProc(dialog, Dialog_onDestroy);
+	sADMDialog->SetNotifyProc(dialog, Dialog_onNotify);
 	// resize handler:
 	ADMItemRef resizeItemRef = sADMDialog->GetItem(dialog, kADMResizeItemID);
-	if (resizeItemRef) sADMItem->SetNotifyProc(resizeItemRef, callbackDialogResize);
+	if (resizeItemRef) sADMItem->SetNotifyProc(resizeItemRef, Dialog_onResize);
 	return kNoErr;
 }
 
-void ASAPI callbackDialogDestroy(ADMDialogRef dialog) {
+void ASAPI Dialog_onDestroy(ADMDialogRef dialog) {
 	if (gEngine != NULL) {
 		JNIEnv *env = gEngine->getEnv();
 		try {
@@ -76,7 +76,7 @@ void ASAPI callbackDialogDestroy(ADMDialogRef dialog) {
 	}
 }
 
-void ASAPI callbackDialogResize(ADMItemRef item, ADMNotifierRef notifier) {
+void ASAPI Dialog_onResize(ADMItemRef item, ADMNotifierRef notifier) {
 	sADMItem->DefaultNotify(item, notifier);
 	if (sADMNotifier->IsNotifierType(notifier, kADMBoundsChangedNotifier)) {
 		JNIEnv *env = gEngine->getEnv();
@@ -105,13 +105,13 @@ void ASAPI callbackDialogResize(ADMItemRef item, ADMNotifierRef notifier) {
 	}
 }
 
-void ASAPI callbackDialogNotify(ADMDialogRef dialog, ADMNotifierRef notifier) {
+void ASAPI Dialog_onNotify(ADMDialogRef dialog, ADMNotifierRef notifier) {
 	sADMDialog->DefaultNotify(dialog, notifier);
 	jobject obj = gEngine->getDialogObject(dialog);
 	gEngine->callOnNotify(obj, notifier);
 }
 
-ASBoolean ASAPI callbackDialogTrack(ADMDialogRef dialog, ADMTrackerRef tracker) {
+ASBoolean ASAPI Dialog_onTrack(ADMDialogRef dialog, ADMTrackerRef tracker) {
 	jobject obj = gEngine->getDialogObject(dialog);
 	ASBoolean ret = gEngine->callOnTrack(obj, tracker);
 	if (ret)
@@ -119,7 +119,7 @@ ASBoolean ASAPI callbackDialogTrack(ADMDialogRef dialog, ADMTrackerRef tracker) 
 	return ret;
 }
 
-void ASAPI callbackDialogDraw(ADMDialogRef dialog, ADMDrawerRef drawer) {
+void ASAPI Dialog_onDraw(ADMDialogRef dialog, ADMDrawerRef drawer) {
 	sADMDialog->DefaultDraw(dialog, drawer);
 	jobject obj = gEngine->getDialogObject(dialog);
 	gEngine->callOnDraw(obj, drawer);
@@ -131,7 +131,7 @@ void ASAPI callbackDialogDraw(ADMDialogRef dialog, ADMDrawerRef drawer) {
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_nativeCreate(JNIEnv *env, jobject obj, jstring name, jint style, jint options) {
 	try {
 		char *str = gEngine->convertString(env, name);
-		ADMDialogRef dialog = sADMDialog->Create(gPlugin->getPluginRef(), str, kEmptyDialogID, (ADMDialogStyle) style, callbackDialogInit, env->NewGlobalRef(obj), options);
+		ADMDialogRef dialog = sADMDialog->Create(gPlugin->getPluginRef(), str, kEmptyDialogID, (ADMDialogStyle) style, Dialog_onInit, env->NewGlobalRef(obj), options);
 		delete str;
 		if (dialog == NULL)
 			throw new StringException("Cannot create dialog.");
@@ -155,7 +155,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeDestroy(JNIEnv *
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetTrackCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
-		sADMDialog->SetTrackProc(dialog, enabled ? callbackDialogTrack : NULL);
+		sADMDialog->SetTrackProc(dialog, enabled ? Dialog_onTrack : NULL);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -186,7 +186,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setTrackMask(JNIEnv *e
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetDrawCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
-		sADMDialog->SetDrawProc(dialog, enabled ? callbackDialogDraw : NULL);
+		sADMDialog->SetDrawProc(dialog, enabled ? Dialog_onDraw : NULL);
 	} EXCEPTION_CONVERT(env)
 }
 

@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.21 $
- * $Date: 2005/11/03 00:00:13 $
+ * $Revision: 1.22 $
+ * $Date: 2005/11/04 01:34:14 $
  */
  
 #include "stdHeaders.h"
@@ -449,25 +449,31 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_Text = loadClass(env, "com/scriptographer/ai/Text");
 
 	cls_TextRange = loadClass(env, "com/scriptographer/ai/TextRange");
-	cid_TextRange = getConstructorID(env, cls_TextRange, "(I)V");
+	cid_TextRange = getConstructorID(env, cls_TextRange, "(II)V");
 	fid_TextRange_glyphRunRef = getFieldID(env, cls_TextRange, "glyphRunRef", "I");
 	fid_TextRange_glyphRunPos = getFieldID(env, cls_TextRange, "glyphRunPos", "I");
 	
 	cls_Story = loadClass(env, "com/scriptographer/ai/Story");
-	cid_Story = getConstructorID(env, cls_Story, "(I)V");
+	cid_Story = getConstructorID(env, cls_Story, "(II)V");
 
 	cls_PathStyle = loadClass(env, "com/scriptographer/ai/PathStyle");
-	mid_PathStyle_init = getMethodID(env, cls_PathStyle, "init", "(Lcom/scriptographer/ai/Color;ZLcom/scriptographer/ai/Color;ZFF[FSSFZZZF)V");
+	
+	mid_PathStyle_init = getMethodID(env, cls_PathStyle, "init", "(Lcom/scriptographer/ai/Color;ZSLcom/scriptographer/ai/Color;ZSFF[FSSFSSSF)V");
 
 	cls_FillStyle = loadClass(env, "com/scriptographer/ai/FillStyle");
-	cid_FillStyle = getConstructorID(env, cls_FillStyle, "(Lcom/scriptographer/ai/Color;Z)V");
-	mid_FillStyle_init = getMethodID(env, cls_FillStyle, "init", "(Lcom/scriptographer/ai/Color;Z)V");
-	mid_FillStyle_initNative = getMethodID(env, cls_FillStyle, "initNative", "(I)V");
 
+	cid_FillStyle = getConstructorID(env, cls_FillStyle, "(Lcom/scriptographer/ai/Color;ZS)V");
+	mid_FillStyle_init = getMethodID(env, cls_FillStyle, "init", "(Lcom/scriptographer/ai/Color;ZS)V");
+	mid_FillStyle_initNative = getMethodID(env, cls_FillStyle, "initNative", "(I)V");
+	
 	cls_StrokeStyle = loadClass(env, "com/scriptographer/ai/StrokeStyle");
-	cid_StrokeStyle = getConstructorID(env, cls_StrokeStyle, "(Lcom/scriptographer/ai/Color;ZFF[FSSF)V");
-	mid_StrokeStyle_init = getMethodID(env, cls_StrokeStyle, "init", "(Lcom/scriptographer/ai/Color;ZFF[FSSF)V");
+	cid_StrokeStyle = getConstructorID(env, cls_StrokeStyle, "(Lcom/scriptographer/ai/Color;ZSFF[FSSF)V");
+	mid_StrokeStyle_init = getMethodID(env, cls_StrokeStyle, "init", "(Lcom/scriptographer/ai/Color;ZSFF[FSSF)V");
 	mid_StrokeStyle_initNative = getMethodID(env, cls_StrokeStyle, "initNative", "(I)V");
+	
+	cls_CharacterStyle = loadClass(env, "com/scriptographer/ai/CharacterStyle");
+	cid_CharacterStyle = getConstructorID(env, cls_CharacterStyle, "(ILcom/scriptographer/ai/TextRange;)V");
+	mid_CharacterStyle_markSetStyle = getMethodID(env, cls_CharacterStyle, "markDirty", "()V");
 	
 	cls_Group = loadClass(env, "com/scriptographer/ai/Group");
 	
@@ -949,42 +955,40 @@ AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env, jobject mt, AIRea
 
 // AIFillStyle <-> com.scriptoggrapher.ai.FillStyle
 jobject ScriptographerEngine::convertFillStyle(JNIEnv *env, AIFillStyle *style, jobject res) {
+	// TODO: add additional AIFillStyleMap
 	jobject color = convertColor(env, &style->color);
 	if (res == NULL) {
-		res = newObject(env, cls_FillStyle, cid_FillStyle, color, style->overprint);
+		res = newObject(env, cls_FillStyle, cid_FillStyle, color, true, style->overprint);
 	} else {
-		callVoidMethod(env, res, mid_FillStyle_init, color, style->overprint);
+		callVoidMethod(env, res, mid_FillStyle_init, color, true, style->overprint);
 	}
 	return res;
 }
 
 AIFillStyle *ScriptographerEngine::convertFillStyle(JNIEnv *env, jobject style, AIFillStyle *res) {
 	if (res == NULL) res = new AIFillStyle;
-
 	callVoidMethod(env, style, mid_FillStyle_initNative, res);
-	
 	return res;
 }
 
 // AIStrokeStyle <-> com.scriptoggrapher.ai.StrokeStyle
 jobject ScriptographerEngine::convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, jobject res) {
+	// TODO: add additional AIStrokeStyleMap
 	jobject color = convertColor(env, &style->color);
 	int count = style->dash.length;
 	jfloatArray dashArray = env->NewFloatArray(count);
 	env->SetFloatArrayRegion(dashArray, 0, count, style->dash.array);
 	if (res == NULL) {
-		res = newObject(env, cls_StrokeStyle, cid_StrokeStyle, color, style->overprint, style->width, style->dash.offset, dashArray, style->cap, style->join, style->miterLimit);
+		res = newObject(env, cls_StrokeStyle, cid_StrokeStyle, color, true, style->overprint, style->width, style->dash.offset, dashArray, style->cap, style->join, style->miterLimit);
 	} else {
-		callVoidMethod(env, res, mid_StrokeStyle_init, color, style->overprint, style->width, style->dash.offset, dashArray, style->cap, style->join, style->miterLimit);
+		callVoidMethod(env, res, mid_StrokeStyle_init, color, true, style->overprint, style->width, style->dash.offset, dashArray, style->cap, style->join, style->miterLimit);
 	}
 	return res;
 }
 
 AIStrokeStyle *ScriptographerEngine::convertStrokeStyle(JNIEnv *env, jobject style, AIStrokeStyle *res) {
 	if (res == NULL) res = new AIStrokeStyle;
-	
 	callVoidMethod(env, style, mid_StrokeStyle_initNative, res);
-
 	return res;
 }
 
@@ -992,7 +996,7 @@ AIStrokeStyle *ScriptographerEngine::convertStrokeStyle(JNIEnv *env, jobject sty
 // AIArtSet <-> ArtSet
 
 jobject ScriptographerEngine::convertArtSet(JNIEnv *env, AIArtSet set, bool layerOnly) {
-	artSetFilter(set, layerOnly);
+	ArtSet_filter(set, layerOnly);
 	long count;
 	sAIArtSet->CountArtSet(set, &count);
 	jobject artSet = newObject(env, cls_ArtSet, cid_ArtSet); 
@@ -1449,6 +1453,22 @@ ATE::StoryRef ScriptographerEngine::getStoryRef(JNIEnv *env, jobject obj) {
 }
 
 /**
+ * Returns the wrapped CharFeaturesRef of an object by assuming that it is an anchestor of Class Textfeatures and
+ * accessing its field 'handle':
+ *
+ * throws exceptions
+ */
+ATE::CharFeaturesRef ScriptographerEngine::getCharFeaturesRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	ATE::CharFeaturesRef features = (ATE::CharFeaturesRef) getIntField(env, obj, fid_AIObject_handle);
+	if (features == NULL)
+		throw new StringException("Object is not wrapping a character style handle.");
+	return features;
+}
+
+/**
  * Returns the AIDictionaryRef that contains the wrapped AIArtHandle, if any
  *
  * throws exceptions
@@ -1557,6 +1577,16 @@ AIMenuGroup ScriptographerEngine::getMenuGroupHandle(JNIEnv *env, jobject obj) {
 }
 
 /**
+ * A little helper used a few times bellow... not so elegant to have it here
+ */
+AIDocumentHandle getActiveDocumentHandle() {
+	AIDocumentHandle document;
+	if (sAIDocument->GetDocument(&document))
+		throw new StringException("Cannot determine active document");
+	return document;
+}
+
+/**
  * Wraps the handle in a java object. see the Java function Art.wrapArtHandle to see how 
  * the cashing of already wrapped objects is handled.
  *
@@ -1586,11 +1616,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 		sAIDictionary->SetIntegerEntry(artDict, fArtHandleKey, (ASInt32) art);
 		sAIDictionary->Release(artDict);
 	}
-
-	AIDocumentHandle document;
-	if (sAIDocument->GetDocument(&document))
-		throw new StringException("Cannot determine active document");
-	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) type, (jint) textType, (jint) document, (jint) dictionary);
+	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) type, (jint) textType, (jint) getActiveDocumentHandle(), (jint) dictionary);
 }
 
 bool ScriptographerEngine::updateArtIfWrapped(JNIEnv *env, AIArtHandle art) {
@@ -1608,22 +1634,27 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) 
 	AIArtHandle art;
 	if (sAIArt->GetFirstArtOfLayer(layer, &art))
 		throw new StringException("Cannot get layer art");
-	AIDocumentHandle document;
-	if (sAIDocument->GetDocument(&document))
-		throw new StringException("Cannot determine active document");
-	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER, (jint) kUnknownTextType, (jint) document, 0);
+	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER, (jint) kUnknownTextType, (jint) getActiveDocumentHandle(), 0);
 }
 
-jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, TextRangeRef range) {
+jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range) {
 	// we need to increase the ref count here. this is decreased again in TextRange.finalize
+	AIDocumentHandle document = getActiveDocumentHandle(); // this might throw an exception, so do it before AddRef
 	ATE::sTextRange->AddRef(range);
-	return newObject(env, cls_TextRange, cid_TextRange, (jint) range);
+	return newObject(env, cls_TextRange, cid_TextRange, (jint) range, (jint) document);
 }
 
-jobject ScriptographerEngine::wrapStoryRef(JNIEnv *env, StoryRef story) {
+jobject ScriptographerEngine::wrapStoryRef(JNIEnv *env, ATE::StoryRef story) {
 	// we need to increase the ref count here. this is decreased again in Story.finalize
+	AIDocumentHandle document = getActiveDocumentHandle(); // this might throw an exception, so do it before AddRef
 	ATE::sStory->AddRef(story);
-	return newObject(env, cls_Story, cid_Story, (jint) story);
+	return newObject(env, cls_Story, cid_Story, (jint) story, (jint) document);
+}
+
+jobject ScriptographerEngine::wrapCharFeaturesRef(JNIEnv *env, ATE::CharFeaturesRef features, jobject range) {
+	// we need to increase the ref count here. this is decreased again in CharacterStyle.finalize
+	ATE::sCharFeatures->AddRef(features);
+	return newObject(env, cls_CharacterStyle, cid_CharacterStyle, (jint) features, range);
 }
 
 /**

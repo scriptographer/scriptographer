@@ -130,7 +130,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Text_getSelection(JNIEnv *e
 		AIArtHandle text = gEngine->getArtHandle(env, obj);
 		TextRangesRef ranges;
 		if (!sAITextFrame->GetATETextSelection(text, &ranges))
-			return textRangeConvertTextRanges(env, ranges);
+			return TextRange_convertTextRanges(env, ranges);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }

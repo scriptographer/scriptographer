@@ -26,43 +26,41 @@
  *
  * $RCSfile: admGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.4 $
+ * $Date: 2005/11/04 01:34:14 $
  */
 
-ASErr ASAPI callbackDialogInit(ADMDialogRef dialog);
-void ASAPI callbackDialogDestroy(ADMDialogRef dialog);
-void ASAPI callbackDialogResize(ADMItemRef item, ADMNotifierRef notifier); 
-void ASAPI callbackDialogNotify(ADMDialogRef dialog, ADMNotifierRef notifier);
-ASBoolean ASAPI callbackDialogTrack(ADMDialogRef dialog, ADMTrackerRef tracker);
-void ASAPI callbackDialogDraw(ADMDialogRef dialog, ADMDrawerRef drawer);
+ASErr ASAPI Dialog_onInit(ADMDialogRef dialog);
+void ASAPI Dialog_onDestroy(ADMDialogRef dialog);
+void ASAPI Dialog_onResize(ADMItemRef item, ADMNotifierRef notifier); 
+void ASAPI Dialog_onNotify(ADMDialogRef dialog, ADMNotifierRef notifier);
+ASBoolean ASAPI Dialog_onTrack(ADMDialogRef dialog, ADMTrackerRef tracker);
+void ASAPI Dialog_onDraw(ADMDialogRef dialog, ADMDrawerRef drawer);
 
-ASErr ASAPI callbackHierarchyListInit(ADMHierarchyListRef lst);
+ASErr ASAPI Item_onInit(ADMItemRef item);
+void ASAPI Item_onDestroy(ADMItemRef item);
+void ASAPI Item_onNotify(ADMItemRef item, ADMNotifierRef notifier);
+ASBoolean ASAPI Item_onTrack(ADMItemRef item, ADMTrackerRef tracker);
+void ASAPI Item_onDraw(ADMItemRef item, ADMDrawerRef drawer);
 
-ASErr ASAPI callbackItemInit(ADMItemRef item);
-void ASAPI callbackItemDestroy(ADMItemRef item);
-void ASAPI callbackItemNotify(ADMItemRef item, ADMNotifierRef notifier);
-ASBoolean ASAPI callbackItemTrack(ADMItemRef item, ADMTrackerRef tracker);
-void ASAPI callbackItemDraw(ADMItemRef item, ADMDrawerRef drawer);
+ASErr ASAPI List_onInit(ADMListRef lst);
+void ASAPI List_onDestroy(ADMListRef lst);
 
-ASErr ASAPI callbackListInit(ADMListRef lst);
-void ASAPI callbackListDestroy(ADMListRef lst);
+ASErr ASAPI HierarchyList_onInit(ADMHierarchyListRef list);
+void ASAPI HierarchyList_onDestroy(ADMHierarchyListRef list);
 
-ASErr ASAPI callbackHierarchyListInit(ADMHierarchyListRef list);
-void ASAPI callbackHierarchyListDestroy(ADMHierarchyListRef list);
+ASErr ASAPI HierarchyList_onInit(ADMHierarchyListRef lst);
+void ASAPI HierarchyList_onDestroy(ADMHierarchyListRef lst);
 
-ASErr ASAPI callbackHierarchyListInit(ADMHierarchyListRef lst);
-void ASAPI callbackHierarchyListDestroy(ADMHierarchyListRef lst);
+void ASAPI ListEntry_onDestroy(ADMEntryRef entry);
+void ASAPI ListEntry_onNotify(ADMEntryRef entry, ADMNotifierRef notifier);
+ASBoolean ASAPI ListEntry_onTrack(ADMEntryRef entry, ADMTrackerRef tracker);
+void ASAPI ListEntry_onDraw(ADMEntryRef entry, ADMDrawerRef drawer);
 
-void ASAPI callbackListEntryDestroy(ADMEntryRef entry);
-void ASAPI callbackListEntryNotify(ADMEntryRef entry, ADMNotifierRef notifier);
-ASBoolean ASAPI callbackListEntryTrack(ADMEntryRef entry, ADMTrackerRef tracker);
-void ASAPI callbackListEntryDraw(ADMEntryRef entry, ADMDrawerRef drawer);
-
-void ASAPI callbackHierarchyListEntryDestroy(ADMListEntryRef entry);
-void ASAPI callbackHierarchyListEntryNotify(ADMListEntryRef entry, ADMNotifierRef notifier);
-ASBoolean ASAPI callbackHierarchyListEntryTrack(ADMListEntryRef entry, ADMTrackerRef tracker);
-void ASAPI callbackHierarchyListEntryDraw(ADMListEntryRef entry, ADMDrawerRef drawer);
+void ASAPI HierarchyListEntry_onDestroy(ADMListEntryRef entry);
+void ASAPI HierarchyListEntry_onNotify(ADMListEntryRef entry, ADMNotifierRef notifier);
+ASBoolean ASAPI HierarchyListEntry_onTrack(ADMListEntryRef entry, ADMTrackerRef tracker);
+void ASAPI HierarchyListEntry_onDraw(ADMListEntryRef entry, ADMDrawerRef drawer);
 
 #define DEFINE_ADM_POINT(PT, X, Y) \
 	ADMPoint PT; \
