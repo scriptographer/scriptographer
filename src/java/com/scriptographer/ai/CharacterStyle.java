@@ -28,8 +28,8 @@
  * 
  * $RCSfile: CharacterStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/11/05 00:50:41 $
+ * $Revision: 1.3 $
+ * $Date: 2005/11/05 00:51:30 $
  */
 
 package com.scriptographer.ai;
@@ -37,7 +37,7 @@ package com.scriptographer.ai;
 import com.scriptographer.CommitManager;
 
 /**
- * CharacterStyle is built on top of PathStyle and adds the type related fields
+ * CharacterStyle is built on top of PathStyle and adds the text related fields
  **/
 
 /*
