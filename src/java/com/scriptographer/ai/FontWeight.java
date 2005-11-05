@@ -1,13 +1,13 @@
 /*
  * Scriptographer
- *
+ * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
- *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * 
+ * Copyright (c) 2004-2005 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
- *
+ * 
  * -- GPL LICENSE NOTICE --
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,51 +23,50 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on  16.02.2005.
- *
- * $RCSfile: DocumentList.java,v $
+ * 
+ * File created on 04.11.2005.
+ * 
+ * $RCSfile: FontWeight.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
+ * $Revision: 1.1 $
  * $Date: 2005/11/05 00:50:41 $
  */
 
 package com.scriptographer.ai;
 
-import com.scriptographer.util.AbstractReadOnlyList;
+import com.scriptographer.util.SoftIntMap;
 
-public class DocumentList extends AbstractReadOnlyList {
-
-	/**
-     * Don't let anyone instantiate this class.
-     */
-	private DocumentList() {
-	}
-
-	public native int getLength();
+public class FontWeight extends AIObject {
 	
-	private static native int nativeGetActiveDocument(); 
+	public static final FontWeight NONE = new FontWeight(0);
 	
-	public static Document getActiveDocument() {
-		return Document.wrapHandle(nativeGetActiveDocument());
+	protected FontWeight(int handle) {
+		super(handle);
 	}
 	
-	private static native int nativeGet(int index);
-
-	public Object get(int index) {
-		return Document.wrapHandle(nativeGet(index));
+	public native String getName();
+	
+	private native int nativeGetFamily(int handle);
+	
+	public FontFamily getFamily() {
+		return FontFamily.wrapHandle(nativeGetFamily(handle));
 	}
-
-	public Document getDocument(int index) {
-		return (Document) get(index);
+	
+	public native int getIndex();
+	
+	// use a SoftIntMap to keep track of already wrapped weights:
+	private static SoftIntMap weights = new SoftIntMap();
+	
+	protected static FontWeight wrapHandle(int handle) {
+		if (handle == 0)
+			return null;
+		FontWeight weight = (FontWeight) weights.get(handle);
+		if (weight == null) {
+			weight = new FontWeight(handle);
+			weights.put(handle, weight);
+		}
+		return weight;
 	}
-
-	private static DocumentList documents = null;
-
-	public static DocumentList getInstance() {
-		if (documents == null)
-			documents = new DocumentList();
-
-		return documents;
-	}
+	
+	public native boolean isValid();
 }

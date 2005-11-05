@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.15 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.16 $
+ * $Date: 2005/11/05 00:50:41 $
  */
 
 package com.scriptographer.ai;
@@ -96,7 +96,7 @@ public class Document extends DictionaryObject {
 	
 	private static native int nativeCreate(String title, float width, float height, int colorModel, int dialogStatus);
 	
-	// use a WeakHashMap to keep track of already wrapped documents:
+	// use a SoftIntMap to keep track of already wrapped documents:
 	private static SoftIntMap documents = new SoftIntMap();
 	
 	protected static Document wrapHandle(int handle) {

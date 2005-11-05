@@ -28,8 +28,8 @@
  *
  * $RCSfile: Segment.java,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/11/03 00:00:15 $
+ * $Revision: 1.12 $
+ * $Date: 2005/11/05 00:50:41 $
  */
 
 package com.scriptographer.ai;
@@ -130,7 +130,7 @@ public class Segment extends WrappableObject implements Commitable {
 	}
 
 	public void commit() {
-		if (segments != null && segments.path != null) {
+		if (dirty && segments != null && segments.path != null) {
 			SegmentList.nativeCommit(segments.path.handle, index, point.x, point.y, handleIn.x + point.x, handleIn.y + point.y, handleOut.x + point.x, handleOut.y + point.y, corner);
 			// System.out.println("nativeCommit " + index + " " + 1);
 			// update to current maxVersion after commit.

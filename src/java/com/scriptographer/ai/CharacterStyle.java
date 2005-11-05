@@ -28,8 +28,8 @@
  * 
  * $RCSfile: CharacterStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.2 $
+ * $Date: 2005/11/05 00:50:41 $
  */
 
 package com.scriptographer.ai;
@@ -55,38 +55,100 @@ import com.scriptographer.CommitManager;
 public class CharacterStyle extends PathStyle {
 	
 	// AutoKernType
-	public final int KERNING_MANUAL = 0;
-	public final int KERNING_METRIC = 1;
-	public final int KERNING_OPTICAL = 2;
+	public final Integer KERNING_MANUAL = new Integer(0);
+	public final Integer KERNING_METRIC = new Integer(1);
+	public final Integer KERNING_OPTICAL = new Integer(2);
 
-	private TextRange range = null;
+	// FontCapsOption
+	public final Integer CAPS_NORMAL = new Integer(0);
+	public final Integer CAPS_SMALL = new Integer(1);
+	public final Integer CAPS_ALL = new Integer(2);
+	public final Integer CAPS_ALL_SMALL = new Integer(3);
+
+	// FontBaselineOption
+	public final Integer BASELINE_NORMAL = new Integer(0);
+	public final Integer BASELINE_SUPERSCRIPT = new Integer(1);
+	public final Integer BASELINE_SUBSCRIPT = new Integer(2);
+
+	// FontOpenTypePositionOption
+	public final Integer POSITION_NORMAL = new Integer(0);
+	public final Integer POSITION_SUPERSCRIPT = new Integer(1);
+	public final Integer POSITION_SUBSCRIPT = new Integer(2);
+	public final Integer POSITION_NUMERATOR = new Integer(3);
+	public final Integer POSITION_DENOMINATOR = new Integer(4);
+
+	// StrikethroughPosition
+	public final Integer STRIKETHROUGH_OFF = new Integer(0);
+	public final Integer STRIKETHROUGH_XHEIGHT = new Integer(1);
+	public final Integer STRIKETHROUGH_EMBOX = new Integer(2);
+
+	// UnderlinePosition
+	public final Integer UNDERLINE_OFF = new Integer(0);
+	public final Integer UNDERLINE_RIGHT_IN_VERTICAL = new Integer(1);
+	public final Integer UNDERLINE_LEFT_IN_VERTICAL = new Integer(2);
+
+	// FigureStyle
+	public final Integer FIGURE_DEFAULT = new Integer(0);
+	public final Integer FIGURE_TABULAR = new Integer(1);
+	public final Integer FIGURE_PROPORTIONAL_OLDSTYLE = new Integer(2);
+	public final Integer FIGURE_PROPORTIONAL = new Integer(3);
+	public final Integer FIGURE_TABULAR_OLDSTYPE = new Integer(4);
+
+	private TextRange range;
 	private Object commitKey;
-	private boolean pathStyleChanged = false;
+	private boolean pathStyleChanged;
+	
+	private static native int nativeCreate();
+	
+	private CharacterStyle(int handle) {
+		super(handle);
+		version = CommitManager.version;
+		pathStyleChanged = false;
+	}
+	
+	public CharacterStyle() {
+		this(nativeCreate());
+		range = null;
+		commitKey = this;
+	}
 
 	protected CharacterStyle(int handle, TextRange range) {
-		super(handle);
+		this(handle);
 		this.range = range;
 		this.commitKey = range != null ? (Object) range.getStory() : (Object) this;
 	}
 	
-	public native Object clone();
+	protected void changeHandle(int newHandle) {
+		finalize(); // release old handle
+		handle = newHandle;
+		pathStyleChanged = false;
+		fetched = false; // force refetch of PathStyle
+	}
+	
+	private native int nativeClone();
+	
+	public Object clone() {
+		if (dirty) // make sur it's not dirty 
+			commit();
+		return new CharacterStyle(nativeClone());
+	}
 	
 	protected void update() {
 		// only update if it didn't change in the meantime:
-		if (!fetched /* TODO: add version control here? || !dirty && art != null && version != art.version)*/)
+		if (!fetched || !dirty && range != null && version != CommitManager.version)
 			fetch();
 	}
 	
 	protected native void nativeFetch(int handle);
 	
-	protected native void nativeCommit(int handle1, int handle2,
+	protected native void nativeCommit(int handle,
 		float[] fillColor, boolean hasFillColor, short fillOverprint,
 		float[] strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
 		float dashOffset, float[] dashArray,
 		short cap, short join, float miterLimit,
 		short clip, short lockClip, short evenOdd, float resolution);
 	
-	protected native void nativeSetStyle(int handle1, int handle2);
+	protected native void nativeSetStyle(int handle, int rangeHandle);
 
 	protected void fetch() {
 		nativeFetch(handle);
@@ -94,11 +156,13 @@ public class CharacterStyle extends PathStyle {
 	}
 
 	public void commit() {
-		if (pathStyleChanged)
-			nativeCommit(handle, range != null ? range.handle : 0);
-		else if (range != null)
-			nativeSetStyle(handle, range.handle);
-		dirty = false;
+		if (dirty) {
+			if (pathStyleChanged)
+				nativeCommit(handle);
+			if (range != null)
+				nativeSetStyle(handle, range.handle);
+			dirty = false;
+		}
 	}
 
 	/**
@@ -124,8 +188,33 @@ public class CharacterStyle extends PathStyle {
 		}
 	}
 	
-//	ATEErr (*GetFont) ( CharFeaturesRef charfeatures, bool* isAssigned, FontRef* ret);
-
+	private native int nativeGetFont();
+	private native void nativeSetFont(int handle);
+	
+	public FontWeight getFont() {
+		int handle = nativeGetFont();
+		if (handle == -1)
+			return null;
+		else if (handle == 0)
+			return FontWeight.NONE;
+		else
+			return FontWeight.wrapHandle(handle);
+	}
+	
+	public void setFont(FontWeight weight) {
+		int font;
+		if (weight == null)
+			font = -1;
+		else if (weight == FontWeight.NONE)
+			font = 0;
+		else
+			font = weight.handle;
+		nativeSetFont(font);
+	}
+	
+	public void setFont(FontFamily font) {
+		setFont(font != null && font.getLength() > 0 ? (FontWeight) font.get(0) : null);
+	}
 	
 	public native Float getFontSize();
 	public native void setFontSize(Float size);

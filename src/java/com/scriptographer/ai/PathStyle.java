@@ -28,8 +28,8 @@
  *
  * $RCSfile: PathStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.8 $
+ * $Date: 2005/11/05 00:50:41 $
  */
 
 package com.scriptographer.ai;
@@ -97,20 +97,7 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 
 	protected PathStyle(PathStyle style) {
 		this(0); // PathStyle doesn't use the handle
-		FillStyle fillStyle = style.fill;
-		StrokeStyle strokeStyle = style.stroke;
-		fill.init(fillStyle.color, fillStyle.overprint);
-		stroke.init(strokeStyle.color, strokeStyle.overprint, strokeStyle.width, strokeStyle.dashOffset, strokeStyle.dashArray, strokeStyle.cap, strokeStyle.join, strokeStyle.miterLimit);
-		this.clip = style.clip;
-		this.lockClip = style.lockClip;
-		this.evenOdd = style.evenOdd;
-		this.resolution = style.resolution;
-	}
-
-	protected PathStyle(PathStyle style, Art art) {
-		this(style);
-		this.art = art;
-		markDirty();
+		init(style);
 	}
 	
 	public Object clone() {
@@ -144,14 +131,21 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 		this.evenOdd = evenOdd >= 0 ? new Boolean(evenOdd != 0) : null;
 		this.resolution = resolution >= 0 ? new Float(resolution) : null;
 	}
+	
+	protected void init(PathStyle style) {
+		FillStyle fillStyle = style.fill;
+		StrokeStyle strokeStyle = style.stroke;
+		fill.init(fillStyle.color, fillStyle.overprint);
+		stroke.init(strokeStyle.color, strokeStyle.overprint, strokeStyle.width, strokeStyle.dashOffset, strokeStyle.dashArray, strokeStyle.cap, strokeStyle.join, strokeStyle.miterLimit);
+		this.clip = style.clip;
+		this.lockClip = style.lockClip;
+		this.evenOdd = style.evenOdd;
+		this.resolution = style.resolution;
+	}
 
 	protected native void nativeFetch(int handle);
 	
-	/**
-	 * handle1 and handle2 are needed for CharacterStyle, in PathStyle, handle2 is allways 0
-	 * see nativeCommit(int handle1, int thandle2);
-	 */
-	protected native void nativeCommit(int handle1, int handle2,
+	protected native void nativeCommit(int handle,
 			float[] fillColor, boolean hasFillColor, short fillOverprint,
 			float[] strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
 			float dashOffset, float[] dashArray,
@@ -166,10 +160,9 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 	/**
 	 * just a wrapper around nativeCommit, which can be used in CharacterStyle as well
 	 * (CharacterStyle has an own implementation of nativeCommit, but the calling is the same...)
-	 * handle2 is not used in PathStyle, but in CharacterStyle, where it's set to the TextRangeRef
 	 */
-	protected void nativeCommit(int handle1, int handle2) {
-		nativeCommit(handle1, handle2,
+	protected void nativeCommit(int handle) {
+		nativeCommit(handle,
 			fill.color != null && fill.color != Color.NONE ? fill.color.getComponents() : null, fill.color != null, 
 			fill.overprint != null ? (short) (fill.overprint.booleanValue() ? 1 : 0) : -1,
 			stroke.color != null && stroke.color != Color.NONE ? stroke.color.getComponents() : null, stroke.color != null,
@@ -194,8 +187,8 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 	}
 
 	public void commit() {
-		if (art != null) {
-			nativeCommit(art.handle, 0);
+		if (dirty && art != null) {
+			nativeCommit(art.handle);
 			version = art.version;
 			dirty = false;
 		}

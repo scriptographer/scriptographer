@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Text.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.5 $
+ * $Date: 2005/11/05 00:50:41 $
  */
 
 package com.scriptographer.ai;
@@ -95,6 +95,22 @@ public abstract class Text extends Art {
 		getRange(true).setContent(text);
 	}
 	
+	public CharacterStyle getCharacterStyle() {
+		return getRange(true).getCharacterStyle();
+	}
+	
+	public void setCharacterStyle(CharacterStyle style) {
+		getRange(true).setCharacterStyle(style);
+	}
+	
+	public ParagraphStyle getParagraphStyle() {
+		return getRange(true).getParagraphStyle();
+	}
+	
+	public void setParagraphStyle(ParagraphStyle style) {
+		getRange(true).setParagraphStyle(style);
+	}
+
 	public native TextRange getSelection();
 	
 	public native boolean equals(Object obj);

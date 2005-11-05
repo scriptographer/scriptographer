@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextRange.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.6 $
+ * $Date: 2005/11/05 00:50:41 $
  */
 
 package com.scriptographer.ai;
@@ -37,6 +37,7 @@ package com.scriptographer.ai;
 import java.util.StringTokenizer;
 import java.util.zip.Adler32;
 
+import com.scriptographer.CommitManager;
 import com.scriptographer.util.ExtendedArrayList;
 import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
@@ -90,12 +91,32 @@ public class TextRange extends AIObject {
 	}
 	
 	public native int getStart();
-	public native void setStart(int start);
+	
+	private native void nativeSetStart(int handle, int glyphRunRef, int start);
+	
+	public void setStart(int start) {
+		commitStyles();
+		nativeSetStart(handle, glyphRunRef, start);
+		glyphRunRef = 0;
+	}
 	
 	public native int getEnd();
-	public native void setEnd(int end);
+	
+	private native void nativeSetEnd(int handle, int glyphRunRef, int end);
+	
+	public void setEnd(int end) {
+		commitStyles();
+		nativeSetEnd(handle, glyphRunRef, end);
+		glyphRunRef = 0;
+	}
 
-	public native void setRange(int start, int end);
+	public native void nativeSetRange(int handle, int glyphRunRef, int start, int end);
+	
+	public void setRange(int start, int end) {
+		commitStyles();
+		nativeSetRange(handle, glyphRunRef, start, end);
+		glyphRunRef = 0;
+	}
 	
 	public native int getLength();
 	
@@ -116,10 +137,16 @@ public class TextRange extends AIObject {
 	 */
 	public native void setKerning(int kerning);
 	
+	private native void nativeRemove(int handle, int glyphRunRef);
+
 	/**
 	 *  This method will delete all the characters in that range.
 	 */
-	public native void remove();
+	public void remove() {
+		commitStyles();
+		nativeRemove(handle, glyphRunRef);
+		glyphRunRef = 0;
+	}
 	
 	public native String getContent();
 	
@@ -128,11 +155,71 @@ public class TextRange extends AIObject {
 		insertAfter(text);
 	}
 	
-	/*
-	 * CharacterStyle
+	/**
+	 * gets the character style handle and adds reference to it. 
+	 * attention! this needs to be wrapped in CharacterStyle so
+	 * the reference gets released in the end.
 	 */
+	private native int nativeGetCharacterStyle(int handle);
+	private native int nativeGetParagraphStyle(int handle);
 	
-	public native CharacterStyle getUniqueCharacterStyle();
+	CharacterStyle characterStyle = null;
+	ParagraphStyle paragraphStyle = null;
+	
+	public CharacterStyle getCharacterStyle() {
+		if (characterStyle == null) {
+			int styleHandle = nativeGetCharacterStyle(handle);
+			if (styleHandle != 0)
+				characterStyle = new CharacterStyle(styleHandle, this);
+		} else if (characterStyle.version != CommitManager.version) {
+			characterStyle.changeHandle(nativeGetCharacterStyle(handle));
+			characterStyle.version = CommitManager.version;
+		}
+		return characterStyle;
+	}
+	
+	public void setCharacterStyle(CharacterStyle style) {
+		if (style != null) {
+			getCharacterStyle(); // make sure it's created
+			// create a new handle and set it here
+			style = (CharacterStyle) style.clone();
+			characterStyle.changeHandle(style.handle);
+			characterStyle.version = CommitManager.version;
+			characterStyle.markSetStyle();
+			style.handle = 0; // make sure finalize doesn't mess up things...
+		}
+	}
+	
+	public ParagraphStyle getParagraphStyle() {
+		if (paragraphStyle == null) {
+			int styleHandle = nativeGetParagraphStyle(handle);
+			if (styleHandle != 0)
+				paragraphStyle = new ParagraphStyle(styleHandle, this);
+		} else if (paragraphStyle.version != CommitManager.version) {
+			paragraphStyle.changeHandle(nativeGetParagraphStyle(handle));
+			paragraphStyle.version = CommitManager.version;
+		}
+		return paragraphStyle;
+	}
+	
+	public void setParagraphStyle(ParagraphStyle style) {
+		if (style != null) {
+			getParagraphStyle(); // make sure it's created
+			// create a new handle and set it here
+			style = (ParagraphStyle) style.clone();
+			paragraphStyle.changeHandle(style.handle);
+			paragraphStyle.version = CommitManager.version;
+			paragraphStyle.markSetStyle();
+			style.handle = 0; // make sure finalize doesn't mess up things...
+		}
+	}
+	
+	protected void commitStyles() {
+		if (characterStyle != null && characterStyle.dirty)
+			characterStyle.commit();
+		if (paragraphStyle != null && paragraphStyle.dirty)
+			paragraphStyle.commit();
+	}
 	
 	// TODO: ...
 	public native Point[] getOrigins();

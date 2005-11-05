@@ -28,8 +28,8 @@
  *
  * $RCSfile: Tool.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/31 21:37:23 $
+ * $Revision: 1.7 $
+ * $Date: 2005/11/05 00:50:41 $
  */
 
 package com.scriptographer.ai;
@@ -91,7 +91,7 @@ public class Tool extends AIObject {
 	 */
 	private static native IntMap nativeGetTools();
 
-	public static native boolean hasPressure();
+	public native boolean hasPressure();
 	
 	// interval time in milliseconds
 	public native int getIdleEventInterval();

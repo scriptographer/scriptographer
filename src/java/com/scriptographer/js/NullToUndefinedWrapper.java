@@ -28,8 +28,8 @@
  * 
  * $RCSfile: NullToUndefinedWrapper.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.2 $
+ * $Date: 2005/11/05 00:50:41 $
  */
 
 package com.scriptographer.js;
@@ -39,6 +39,7 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Undefined;
 
 import com.scriptographer.ai.Color;
+import com.scriptographer.ai.FontWeight;
 
 
 // wrappable interface
@@ -60,8 +61,12 @@ public class NullToUndefinedWrapper extends NativeJavaObject {
 	public void put(String name, Scriptable start, Object value) {
 		if (value == Undefined.instance)
 			value = null;
-		else if (value == null && name.equals("color"))
-			value = Color.NONE;
+		else if (value == null) {
+			if (name.equals("color"))
+				value = Color.NONE;
+			else if (name.equals("font"))
+				value = FontWeight.NONE;
+		}
 		super.put(name, start, value);
 	}
 	
@@ -71,6 +76,8 @@ public class NullToUndefinedWrapper extends NativeJavaObject {
 		if (value == null)
 			value = Undefined.instance;
 		else if (value == Color.NONE)
+			value = null;
+		else if (value == FontWeight.NONE)
 			value = null;
 		return value;
 	}

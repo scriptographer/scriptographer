@@ -28,8 +28,8 @@
  *
  * $RCSfile: Dictionary.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.5 $
+ * $Date: 2005/11/05 00:50:41 $
  */
 
 package com.scriptographer.ai;
@@ -77,7 +77,7 @@ public class Dictionary extends HashMap implements Commitable, Wrappable {
 	}
 	
 	public void commit() {
-		if (object != null) {
+		if (dirty && object != null) {
 			object.nativeSetDictionary(this);
 			dirty = false;
 		}

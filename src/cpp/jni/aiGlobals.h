@@ -26,8 +26,8 @@
  *
  * $RCSfile: aiGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.9 $
+ * $Date: 2005/11/05 00:50:41 $
  */
 
 short Art_getType(AIArtHandle handle);
@@ -100,7 +100,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 		sAIDocumentList->Activate(prevDoc, false);
 
 // macros for style getters and setters (CharacterStyle, ParagraphStyle)
-#define STYLE_GET(NAME, TYPE, CLASS, JTYPE) \
+#define CHARACTERSTYLE_GET(NAME, TYPE, CLASS, JTYPE) \
 	try { \
 		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj); \
 		bool isAssigned; \
@@ -110,7 +110,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 	} EXCEPTION_CONVERT(env) \
 	return NULL;
 
-#define STYLE_SET(NAME, TYPE, METHOD_TYPE, METHOD_NAME) \
+#define CHARACTERSTYLE_SET(NAME, TYPE, METHOD_TYPE, METHOD_NAME) \
 	try { \
 		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj); \
 		ASErr err; \
@@ -122,26 +122,79 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 			gEngine->callVoidMethod(env, obj, gEngine->mid_CharacterStyle_markSetStyle); \
 	} EXCEPTION_CONVERT(env)
 
-#define STYLE_GET_FLOAT(NAME) \
-	STYLE_GET(NAME, ASReal, Float, jfloat)
+#define CHARACTERSTYLE_GET_FLOAT(NAME) \
+	CHARACTERSTYLE_GET(NAME, ASReal, Float, jfloat)
 
-#define STYLE_SET_FLOAT(NAME) \
-	STYLE_SET(NAME, ASReal, Float, mid_Number_floatValue)
+#define CHARACTERSTYLE_SET_FLOAT(NAME) \
+	CHARACTERSTYLE_SET(NAME, ASReal, Float, mid_Number_floatValue)
 
-#define STYLE_GET_BOOLEAN(NAME) \
-	STYLE_GET(NAME, bool, Boolean, jboolean)
+#define CHARACTERSTYLE_GET_BOOLEAN(NAME) \
+	CHARACTERSTYLE_GET(NAME, bool, Boolean, jboolean)
 
-#define STYLE_SET_BOOLEAN(NAME) \
-	STYLE_SET(NAME, bool, Boolean, mid_Boolean_booleanValue)
+#define CHARACTERSTYLE_SET_BOOLEAN(NAME) \
+	CHARACTERSTYLE_SET(NAME, bool, Boolean, mid_Boolean_booleanValue)
 
-#define STYLE_GET_INTEGER(NAME) \
-	STYLE_GET(NAME, ASInt32, Integer, jint)
+#define CHARACTERSTYLE_GET_INTEGER(NAME) \
+	CHARACTERSTYLE_GET(NAME, ASInt32, Integer, jint)
 
-#define STYLE_SET_INTEGER(NAME) \
-	STYLE_SET(NAME, ASInt32, Int, mid_Number_intValue)
+#define CHARACTERSTYLE_SET_INTEGER(NAME) \
+	CHARACTERSTYLE_SET(NAME, ASInt32, Int, mid_Number_intValue)
 
-#define STYLE_GET_ENUM(NAME) \
-	STYLE_GET(NAME, NAME, Integer, jint)
+#define CHARACTERSTYLE_GET_ENUM(NAME) \
+	CHARACTERSTYLE_GET(NAME, NAME, Integer, jint)
 
-#define STYLE_SET_ENUM(NAME) \
-	STYLE_SET(NAME, NAME, Int, mid_Number_intValue)
+#define CHARACTERSTYLE_SET_ENUM(NAME) \
+	CHARACTERSTYLE_SET(NAME, NAME, Int, mid_Number_intValue)
+
+#define PARAGRAPHSTYLE_GET(NAME, TYPE, CLASS, JTYPE) \
+	try { \
+		ParaFeaturesRef features = gEngine->getParaFeaturesRef(env, obj); \
+		bool isAssigned; \
+		TYPE value; \
+		if (!sParaFeatures->Get##NAME##(features, &isAssigned, &value) && isAssigned) \
+			return gEngine->newObject(env, gEngine->cls_##CLASS##, gEngine->cid_##CLASS##, (JTYPE) value); \
+	} EXCEPTION_CONVERT(env) \
+	return NULL;
+
+#define PARAGRAPHSTYLE_SET_CLEAR(NAME, CLEAR, TYPE, METHOD_TYPE, METHOD_NAME) \
+	try { \
+		ParaFeaturesRef features = gEngine->getParaFeaturesRef(env, obj); \
+		ASErr err; \
+		if (value == NULL) \
+			err = sParaFeatures->Clear##CLEAR##(features); \
+		else \
+			err = sParaFeatures->Set##NAME##(features, (TYPE) gEngine->call##METHOD_TYPE##Method(env, value, gEngine->METHOD_NAME)); \
+		if (!err) \
+			gEngine->callVoidMethod(env, obj, gEngine->mid_ParagraphStyle_markSetStyle); \
+	} EXCEPTION_CONVERT(env)
+
+#define PARAGRAPHSTYLE_SET(NAME, TYPE, METHOD_TYPE, METHOD_NAME) \
+	PARAGRAPHSTYLE_SET_CLEAR(NAME, NAME, TYPE, METHOD_TYPE, METHOD_NAME)
+
+#define PARAGRAPHSTYLE_GET_FLOAT(NAME) \
+	PARAGRAPHSTYLE_GET(NAME, ASReal, Float, jfloat)
+
+#define PARAGRAPHSTYLE_SET_FLOAT(NAME) \
+	PARAGRAPHSTYLE_SET(NAME, ASReal, Float, mid_Number_floatValue)
+
+#define PARAGRAPHSTYLE_SET_FLOAT_CLEAR(NAME, CLEAR) \
+	PARAGRAPHSTYLE_SET_CLEAR(NAME, CLEAR, ASReal, Float, mid_Number_floatValue)
+
+#define PARAGRAPHSTYLE_GET_BOOLEAN(NAME) \
+	PARAGRAPHSTYLE_GET(NAME, bool, Boolean, jboolean)
+
+#define PARAGRAPHSTYLE_SET_BOOLEAN(NAME) \
+	PARAGRAPHSTYLE_SET(NAME, bool, Boolean, mid_Boolean_booleanValue)
+
+#define PARAGRAPHSTYLE_GET_INTEGER(NAME) \
+	PARAGRAPHSTYLE_GET(NAME, ASInt32, Integer, jint)
+
+#define PARAGRAPHSTYLE_SET_INTEGER(NAME) \
+	PARAGRAPHSTYLE_SET(NAME, ASInt32, Int, mid_Number_intValue)
+
+#define PARAGRAPHSTYLE_GET_ENUM(NAME, TYPE) \
+	PARAGRAPHSTYLE_GET(NAME, TYPE, Integer, jint)
+
+#define PARAGRAPHSTYLE_SET_ENUM(NAME, TYPE) \
+	PARAGRAPHSTYLE_SET(NAME, TYPE, Int, mid_Number_intValue)
+

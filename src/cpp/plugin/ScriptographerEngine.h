@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.18 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.19 $
+ * $Date: 2005/11/05 00:50:40 $
  */
 
 #include "jniMacros.h"
@@ -256,8 +256,10 @@ public:
 	jmethodID mid_StrokeStyle_initNative;
 	
 	jclass cls_CharacterStyle;
-	jmethodID cid_CharacterStyle;
 	jmethodID mid_CharacterStyle_markSetStyle;
+
+	jclass cls_ParagraphStyle;
+	jmethodID mid_ParagraphStyle_markSetStyle;
 	
 	jclass cls_Group;
 	
@@ -462,6 +464,8 @@ public:
 	ATE::TextRangeRef getTextRangeRef(JNIEnv *env, jobject obj);
 	ATE::StoryRef getStoryRef(JNIEnv *env, jobject obj);
 	ATE::CharFeaturesRef getCharFeaturesRef(JNIEnv *env, jobject obj);
+	ATE::ParaFeaturesRef getParaFeaturesRef(JNIEnv *env, jobject obj);
+	AIFontKey getFontKey(JNIEnv *env, jobject obj);
 	AIDocumentHandle getDocumentHandle(JNIEnv *env, jobject obj);
 	AIDocumentViewHandle getDocumentViewHandle(JNIEnv *env, jobject obj);
 	AIToolHandle getToolHandle(JNIEnv *env, jobject obj);
@@ -544,6 +548,7 @@ public:
 	
 	jstring convertString(JNIEnv *env, const char *str);
 	char *convertString(JNIEnv *env, jstring jstr);
+	jstring convertString(JNIEnv *env, const ASUnicode *str);
 #if kPluginInterfaceVersion >= kAI12
 	jstring convertUnicodeString(JNIEnv *env, ai::UnicodeString &str);
 	ai::UnicodeString convertUnicodeString(JNIEnv *env, jstring jstr);

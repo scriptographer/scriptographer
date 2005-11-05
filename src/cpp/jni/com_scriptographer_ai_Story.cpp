@@ -14,7 +14,9 @@ using namespace ATE;
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Story_finailze(JNIEnv *env, jobject obj) {
 	try {
-		sStory->Release(gEngine->getStoryRef(env, obj));
+		StoryRef story = (StoryRef) gEngine->getIntField(env, obj, gEngine->fid_AIObject_handle);
+		if (story != NULL)
+			sStory->Release(story);
 	} EXCEPTION_CONVERT(env)
 }
 

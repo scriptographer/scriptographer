@@ -242,6 +242,10 @@
 			<class name="com.scriptographer.ai.Story" />
 			<class name="com.scriptographer.ai.StoryList" />
 			<class name="com.scriptographer.ai.CharacterStyle" />
+			<class name="com.scriptographer.ai.ParagraphStyle" />
+			<class name="com.scriptographer.ai.FontList" />
+			<class name="com.scriptographer.ai.FontFamily" />
+			<class name="com.scriptographer.ai.FontWeight" />
 
 			<class name="com.scriptographer.adm.Notifier" />
 			<class name="com.scriptographer.adm.Dialog" />

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_PathStyle.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.4 $
+ * $Date: 2005/11/05 00:50:41 $
  */
  
 #include "stdHeaders.h"
@@ -226,23 +226,23 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeFetch(JNIEnv *
 }
 
 /*
- * void nativeCommit(int handle1, int handle2,
+ * void nativeCommit(int handle,
 			float[] fillColor, boolean hasFillColor, short fillOverprint,
 			float[] strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
 			float dashOffset, float[] dashArray,
 			short cap, short join, float miterLimit,
 			short clip, short lockClip, short evenOdd, float resolution)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeCommit(JNIEnv *env, jobject obj, jint handle1, jint handle2, jfloatArray fillColor, jboolean hasFillColor, jshort fillOverprint, jfloatArray strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit, jshort clip, jshort lockClip, jshort evenOdd, jfloat resolution) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeCommit(JNIEnv *env, jobject obj, jint handle, jfloatArray fillColor, jboolean hasFillColor, jshort fillOverprint, jfloatArray strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit, jshort clip, jshort lockClip, jshort evenOdd, jfloat resolution) {
 	try {
 		AIPathStyle style;
 		AIPathStyleMap map; // is not needed here but we need to pass it
 		// fill with current values as not everything might be set
 		// TODO: instead of the path's style, this should be the current default style?
 		// because if the user sets a value to undefined, this should fall back to the default value...
-		sAIPathStyle->GetPathStyle((AIArtHandle) handle1, &style);
+		sAIPathStyle->GetPathStyle((AIArtHandle) handle, &style);
 		PathStyle_convertPathStyle(env, &style, &map, fillColor, hasFillColor, fillOverprint, strokeColor, hasStrokeColor, strokeOverprint, strokeWidth, dashOffset, dashArray, cap, join, miterLimit, clip, lockClip, evenOdd, resolution);
-		sAIPathStyle->SetPathStyle((AIArtHandle) handle1, &style);
+		sAIPathStyle->SetPathStyle((AIArtHandle) handle, &style);
 	} EXCEPTION_CONVERT(env)
 }
 

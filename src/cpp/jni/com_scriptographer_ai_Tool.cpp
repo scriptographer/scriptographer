@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Tool.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/10/31 21:37:23 $
+ * $Revision: 1.9 $
+ * $Date: 2005/11/05 00:50:41 $
  */
 
 #include "stdHeaders.h"
@@ -42,11 +42,11 @@
 /*
  * boolean hasPressure()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tool_hasPressure(JNIEnv *env, jclass cls) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tool_hasPressure(JNIEnv *env, jobject obj) {
 	try {
 		ASBoolean hasPressure = false;
-		sAITool->SystemHasPressure(&hasPressure);
-		return hasPressure;
+		if (!sAITool->SystemHasPressure(&hasPressure))
+			return hasPressure;
 	} EXCEPTION_CONVERT(env)
 	return JNI_FALSE;
 }

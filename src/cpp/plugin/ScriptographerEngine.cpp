@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.22 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.23 $
+ * $Date: 2005/11/05 00:50:40 $
  */
  
 #include "stdHeaders.h"
@@ -472,8 +472,10 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_StrokeStyle_initNative = getMethodID(env, cls_StrokeStyle, "initNative", "(I)V");
 	
 	cls_CharacterStyle = loadClass(env, "com/scriptographer/ai/CharacterStyle");
-	cid_CharacterStyle = getConstructorID(env, cls_CharacterStyle, "(ILcom/scriptographer/ai/TextRange;)V");
-	mid_CharacterStyle_markSetStyle = getMethodID(env, cls_CharacterStyle, "markDirty", "()V");
+	mid_CharacterStyle_markSetStyle = getMethodID(env, cls_CharacterStyle, "markSetStyle", "()V");
+
+	cls_ParagraphStyle = loadClass(env, "com/scriptographer/ai/ParagraphStyle");
+	mid_ParagraphStyle_markSetStyle = getMethodID(env, cls_ParagraphStyle, "markSetStyle", "()V");
 	
 	cls_Group = loadClass(env, "com/scriptographer/ai/Group");
 	
@@ -1453,7 +1455,7 @@ ATE::StoryRef ScriptographerEngine::getStoryRef(JNIEnv *env, jobject obj) {
 }
 
 /**
- * Returns the wrapped CharFeaturesRef of an object by assuming that it is an anchestor of Class Textfeatures and
+ * Returns the wrapped CharFeaturesRef of an object by assuming that it is an anchestor of Class CharacterStyle and
  * accessing its field 'handle':
  *
  * throws exceptions
@@ -1466,6 +1468,38 @@ ATE::CharFeaturesRef ScriptographerEngine::getCharFeaturesRef(JNIEnv *env, jobje
 	if (features == NULL)
 		throw new StringException("Object is not wrapping a character style handle.");
 	return features;
+}
+
+/**
+ * Returns the wrapped ParaFeaturesRef of an object by assuming that it is an anchestor of Class ParagraphStyle and
+ * accessing its field 'handle':
+ *
+ * throws exceptions
+ */
+ATE::ParaFeaturesRef ScriptographerEngine::getParaFeaturesRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	ATE::ParaFeaturesRef features = (ATE::ParaFeaturesRef) getIntField(env, obj, fid_AIObject_handle);
+	if (features == NULL)
+		throw new StringException("Object is not wrapping a paragraph style handle.");
+	return features;
+}
+
+/**
+ * Returns the wrapped AIFontKey of an object by assuming that it is an anchestor of Class Textfeatures and
+ * accessing its field 'handle':
+ *
+ * throws exceptions
+ */
+AIFontKey ScriptographerEngine::getFontKey(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	AIFontKey font = (AIFontKey) getIntField(env, obj, fid_AIObject_handle);
+	if (font == NULL)
+		throw new StringException("Object is not wrapping a font key.");
+	return font;
 }
 
 /**
@@ -1649,12 +1683,6 @@ jobject ScriptographerEngine::wrapStoryRef(JNIEnv *env, ATE::StoryRef story) {
 	AIDocumentHandle document = getActiveDocumentHandle(); // this might throw an exception, so do it before AddRef
 	ATE::sStory->AddRef(story);
 	return newObject(env, cls_Story, cid_Story, (jint) story, (jint) document);
-}
-
-jobject ScriptographerEngine::wrapCharFeaturesRef(JNIEnv *env, ATE::CharFeaturesRef features, jobject range) {
-	// we need to increase the ref count here. this is decreased again in CharacterStyle.finalize
-	ATE::sCharFeatures->AddRef(features);
-	return newObject(env, cls_CharacterStyle, cid_CharacterStyle, (jint) features, range);
 }
 
 /**
@@ -2261,6 +2289,15 @@ jstring ScriptographerEngine::convertString(JNIEnv *env, const char *str) {
 	jstring result = (jstring)env->functions->NewObject(env, cls_String, cid_String, bytes);
 	env->DeleteLocalRef(bytes);
 	return result;
+}
+
+jstring ScriptographerEngine::convertString(JNIEnv *env, const ASUnicode *str) {
+	JNI_CHECK_ENV
+	// find length
+	int length = 0;
+	while (str[length] != 0)
+		length++;
+	return env->NewString(str, length);
 }
 
 #if kPluginInterfaceVersion >= kAI12
