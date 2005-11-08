@@ -28,8 +28,8 @@
  * 
  * $RCSfile: CharacterStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/11/05 00:51:30 $
+ * $Revision: 1.4 $
+ * $Date: 2005/11/08 14:02:15 $
  */
 
 package com.scriptographer.ai;
@@ -159,8 +159,10 @@ public class CharacterStyle extends PathStyle {
 		if (dirty) {
 			if (pathStyleChanged)
 				nativeCommit(handle);
-			if (range != null)
+			if (range != null) {
+				System.out.println(range.getContent());
 				nativeSetStyle(handle, range.handle);
+			}
 			dirty = false;
 		}
 	}

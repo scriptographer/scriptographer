@@ -28,15 +28,15 @@
  * 
  * $RCSfile: PointText.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.2 $
+ * $Date: 2005/11/08 14:02:15 $
  */
 
 package com.scriptographer.ai;
 
 import java.awt.geom.Point2D;
 
-public class PointText extends Text {
+public class PointText extends TextFrame {
 
 	protected PointText(long handle) {
 		super(handle);

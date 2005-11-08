@@ -5,18 +5,40 @@ import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 import com.scriptographer.util.ReadOnlyList;
 
-public class Story extends AIObject {
+public class TextStory extends AIObject {
 	
 	private Document document;
+	private TextRange range = null;
 	
-	protected Story(int handle, int documentHandle) {
+	protected TextStory(int handle, int documentHandle) {
 		super(handle);
 		document = Document.wrapHandle(documentHandle);
 	}
 	
-	// TODO: add cashing for getRange, updating with CommitManager.version
-	public native TextRange getRange();
+	public native TextRange nativeGetRange();
+
+	public TextRange getRange() {
+		// once a range object is created, allways return the same reference
+		// and swap handles instead. like this references in JS remain...
+		TextRange newRange = nativeGetRange();
+		if (range != null) {
+			range.assignHandle(newRange);
+		} else {
+			range = newRange;
+		}
+		return range;
+	}
 	
+	/**
+	 * This is called from sub ranges whenever a change to the range's bounds 
+	 * are executed. this assures that the parent range gets updated properly
+	 * TODO: Benchmark. I hope this is no performance issue...
+	 */
+	protected void updateRange() {
+		if (range != null)
+			range.assignHandle(nativeGetRange());
+	}
+
 	public native TextRange getSelection();
 	
 	public native int getIndex();
@@ -29,20 +51,20 @@ public class Story extends AIObject {
 		return document.getStories();
 	}
 
-	public String getText() {
+	public String getContent() {
 		return getRange().getContent();
 	}
 	
-	public void setText(String text) {
+	public void setContent(String text) {
 		getRange().setContent(text);
 	}
 
-	TextList texts = null;
+	TextFrameList textFrames = null;
 	
-	public ReadOnlyList getTexts() {
-		if (texts == null)
-			texts = new TextList();
-		return texts;
+	public ReadOnlyList getTextFrames() {
+		if (textFrames == null)
+			textFrames = new TextFrameList();
+		return textFrames;
 	}
 	
 	public native boolean equals(Object obj);
@@ -51,9 +73,9 @@ public class Story extends AIObject {
 	
 	protected native int nativeGetTexListLength(int handle);
 	
-	protected native Text nativeGetText(int handle, int index);
+	protected native TextFrame nativeGetTextFrame(int handle, int index);
 	
-	class TextList implements ReadOnlyList {
+	class TextFrameList implements ReadOnlyList {
 		int length = 0;
 		int version = -1;
 		
@@ -70,7 +92,7 @@ public class Story extends AIObject {
 		}
 
 		public Object get(int index) {
-			return nativeGetText(handle, index);
+			return nativeGetTextFrame(handle, index);
 		}
 
 		public boolean isEmpty() {

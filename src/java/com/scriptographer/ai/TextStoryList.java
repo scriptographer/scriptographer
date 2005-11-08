@@ -5,10 +5,10 @@ import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 import com.scriptographer.util.ReadOnlyList;
 
-class StoryList extends AIObject implements ReadOnlyList {
+class TextStoryList extends AIObject implements ReadOnlyList {
 	ExtendedArrayList.List list;
 	
-	StoryList(int handle) {
+	TextStoryList(int handle) {
 		super(handle);
 		list = new ExtendedArrayList.List();
 	}
@@ -19,7 +19,7 @@ class StoryList extends AIObject implements ReadOnlyList {
 		return nativeGetLength(handle);
 	}
 	
-	private native Story nativeGet(int handle, int index, Story curStory);
+	private native TextStory nativeGet(int handle, int index, TextStory curStory);
 
 	public Object get(int index) {
 		// update buffer length
@@ -27,8 +27,8 @@ class StoryList extends AIObject implements ReadOnlyList {
 		// native get returns the old cached value in case it's
 		// referencing the same object, otherwise it wraps the new
 		// story and returns it
-		Story curStory = (Story) list.get(index);
-		Story story = nativeGet(handle, index, curStory);
+		TextStory curStory = (TextStory) list.get(index);
+		TextStory story = nativeGet(handle, index, curStory);
 		// update cache if story has changed
 		if (story != curStory)
 			list.set(index, story);

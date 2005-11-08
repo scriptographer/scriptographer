@@ -153,7 +153,7 @@
 	<!-- =================================================================== -->
 	<!-- Installs the jar files in the Illustrator directory                 -->
 	<!-- =================================================================== -->
-	<target name="packages" depends="jar">
+	<target name="packages" depends="jar,jsdocs">
 		<mkdir dir="${build.packages}"/>
 
 		<mkdir dir="${build.packages}/Scriptographer"/>
@@ -234,13 +234,13 @@
 			<class name="com.scriptographer.ai.MenuGroup" />
 			<class name="com.scriptographer.ai.Timer" />
 			<class name="com.scriptographer.ai.Annotator" />
-			<class name="com.scriptographer.ai.Text" />
+			<class name="com.scriptographer.ai.TextFrame" />
 			<class name="com.scriptographer.ai.PointText" />
 			<class name="com.scriptographer.ai.AreaText" />
 			<class name="com.scriptographer.ai.PathText" />
 			<class name="com.scriptographer.ai.TextRange" />
-			<class name="com.scriptographer.ai.Story" />
-			<class name="com.scriptographer.ai.StoryList" />
+			<class name="com.scriptographer.ai.TextStory" />
+			<class name="com.scriptographer.ai.TextStoryList" />
 			<class name="com.scriptographer.ai.CharacterStyle" />
 			<class name="com.scriptographer.ai.ParagraphStyle" />
 			<class name="com.scriptographer.ai.FontList" />

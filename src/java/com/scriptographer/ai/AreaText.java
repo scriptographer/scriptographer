@@ -28,13 +28,13 @@
  * 
  * $RCSfile: AreaText.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.2 $
+ * $Date: 2005/11/08 14:02:14 $
  */
 
 package com.scriptographer.ai;
 
-public class AreaText extends Text {
+public class AreaText extends TextFrame {
 
 	protected AreaText(long handle) {
 		super(handle);

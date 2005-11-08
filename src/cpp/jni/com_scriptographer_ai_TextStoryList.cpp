@@ -1,9 +1,9 @@
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
-#include "com_scriptographer_ai_StoryList.h"
+#include "com_scriptographer_ai_TextStoryList.h"
 
 /*
- * com.scriptographer.ai.StoryList
+ * com.scriptographer.ai.TextStoryList
  */
 
 using namespace ATE;
@@ -11,7 +11,7 @@ using namespace ATE;
 /*
  * int nativeGetLength(int handle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_StoryList_nativeGetLength(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStoryList_nativeGetLength(JNIEnv *env, jobject obj, jint handle) {
 	try {
 		ASInt32 size;
 		if (!sStories->GetSize((StoriesRef) handle, &size))
@@ -23,7 +23,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_StoryList_nativeGetLength(JNIE
 /*
  * com.scriptographer.ai.Story nativeGet(int handle, int index, com.scriptographer.ai.Story curStory)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_StoryList_nativeGet(JNIEnv *env, jobject obj, jint handle, jint index, jobject curStory) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStoryList_nativeGet(JNIEnv *env, jobject obj, jint handle, jint index, jobject curStory) {
 	try {
 		StoryRef storyRef;
 		if (!sStories->Item((StoriesRef) handle, index, &storyRef)) {

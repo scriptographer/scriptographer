@@ -391,9 +391,9 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_TextRange_getContent(JNIEnv
 }
 
 /*
- * void insertBefore(java.lang.String text)
+ * void nativeInsertBefore(java.lang.String text)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_insertBefore__Ljava_lang_String_2(JNIEnv *env, jobject obj, jstring text) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeInsertBefore__Ljava_lang_String_2(JNIEnv *env, jobject obj, jstring text) {
 	try {
 		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
 		int size = env->GetStringLength(text);
@@ -404,9 +404,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_insertBefore__Ljava_
 }
 
 /*
- * void insertAfter(java.lang.String text)
+ * void nativeInsertAfter(java.lang.String text)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_insertAfter__Ljava_lang_String_2(JNIEnv *env, jobject obj, jstring text) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeInsertAfter__Ljava_lang_String_2(JNIEnv *env, jobject obj, jstring text) {
 	try {
 		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
 		int size = env->GetStringLength(text);
@@ -417,26 +417,24 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_insertAfter__Ljava_l
 }
 
 /*
- * void insertBefore(com.scriptographer.ai.TextRange range)
+ * void nativeInsertBefore(com.scriptographer.ai.TextRange range)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_insertBefore__Lcom_scriptographer_ai_TextRange_2(JNIEnv *env, jobject obj, jobject range) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeInsertBefore__I(JNIEnv *env, jobject obj, jint handle) {
 	try {
-		TextRangeRef range1 = gEngine->getTextRangeRef(env, obj);
-		TextRangeRef range2 = gEngine->getTextRangeRef(env, range);
-		if (range2 != NULL)
-			sTextRange->InsertBefore_AsTextRange(range1, range2);
+		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		if (handle != 0)
+			sTextRange->InsertBefore_AsTextRange(range, (TextRangeRef) range);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * void insertAfter(com.scriptographer.ai.TextRange range)
+ * void nativeInsertAfter(com.scriptographer.ai.TextRange range)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_insertAfter__Lcom_scriptographer_ai_TextRange_2(JNIEnv *env, jobject obj, jobject range) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeInsertAfter__I(JNIEnv *env, jobject obj, jint handle) {
 	try {
-		TextRangeRef range1 = gEngine->getTextRangeRef(env, obj);
-		TextRangeRef range2 = gEngine->getTextRangeRef(env, range);
-		if (range2 != NULL)
-			sTextRange->InsertAfter_AsTextRange(range1, range2);
+		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		if (handle != 0)
+			sTextRange->InsertAfter_AsTextRange(range, (TextRangeRef) range);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -449,6 +447,49 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeRemove(JNIEnv 
 		if (glyphRunRef != 0)
 			sGlyphRun->Release((GlyphRunRef) glyphRunRef);
 	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * com.scriptographer.ai.TextFrame getFirstFrame()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextRange_getFirstFrame(JNIEnv *env, jobject obj) {
+	try {
+		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextFramesIteratorRef framesRef;
+		if (!sTextRange->GetTextFramesIterator(range, &framesRef)) {
+			ITextFramesIterator frames(framesRef);
+			if (!frames.IsEmpty()) {
+				AIArtHandle art;
+				if (!sAITextFrame->GetAITextFrame( frames.Item().GetRef(), &art)) {
+					return gEngine->wrapArtHandle(env, art);	
+				}
+			}
+		}
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
+ * com.scriptographer.ai.TextFrame getLastFrame()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextRange_getLastFrame(JNIEnv *env, jobject obj) {
+	try {
+		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextFramesIteratorRef framesRef;
+		if (!sTextRange->GetTextFramesIterator(range, &framesRef)) {
+			ITextFramesIterator frames(framesRef);
+			if (!frames.IsEmpty()) {
+				// walk to the last item
+				while(frames.IsNotDone())
+					frames.Next();
+				AIArtHandle art;
+				if (!sAITextFrame->GetAITextFrame(frames.Item().GetRef(), &art)) {
+					return gEngine->wrapArtHandle(env, art);	
+				}
+			}
+		}
+	} EXCEPTION_CONVERT(env)
+	return NULL;
 }
 
 /*

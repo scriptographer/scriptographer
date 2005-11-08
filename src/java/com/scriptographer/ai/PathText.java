@@ -28,13 +28,13 @@
  * 
  * $RCSfile: PathText.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.2 $
+ * $Date: 2005/11/08 14:02:15 $
  */
 
 package com.scriptographer.ai;
 
-public class PathText extends Text {
+public class PathText extends TextFrame {
 
 	protected PathText(long handle) {
 		super(handle);

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.14 $
+ * $Date: 2005/11/08 14:02:16 $
  */
  
 #include "stdHeaders.h"
@@ -54,7 +54,7 @@ short Art_getType(JNIEnv *env, jclass cls) {
 		return kCompoundPathArt;
 	} else if (env->IsSameObject(cls, gEngine->cls_Raster)) {
 		return kRasterArt;
-	} else if (env->IsAssignableFrom(cls, gEngine->cls_Text)) {
+	} else if (env->IsAssignableFrom(cls, gEngine->cls_TextFrame)) {
 		return kTextFrameArt;
 	} else if (env->IsSameObject(cls, gEngine->cls_Layer)) {
 		// special defined type for layers, needs handling!

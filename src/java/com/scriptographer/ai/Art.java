@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2005/11/05 00:50:41 $
+ * $Revision: 1.17 $
+ * $Date: 2005/11/08 14:02:15 $
  */
 
 package com.scriptographer.ai;
@@ -246,13 +246,13 @@ public abstract class Art extends DictionaryObject {
 					break;
 				case TYPE_TEXTFRAME:
 					switch (textType) {
-						case Text.TEXTTYPE_POINT:
+						case TextFrame.TEXTTYPE_POINT:
 							art = new PointText((long) artHandle);
 							break;
-						case Text.TEXTTYPE_AREA:
+						case TextFrame.TEXTTYPE_AREA:
 							art = new AreaText((long) artHandle);
 							break;
-						case Text.TEXTTYPE_PATH:
+						case TextFrame.TEXTTYPE_PATH:
 							art = new PathText((long) artHandle);
 							break;
 					}

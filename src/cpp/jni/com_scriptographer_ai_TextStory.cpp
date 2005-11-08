@@ -1,10 +1,10 @@
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "aiGlobals.h"
-#include "com_scriptographer_ai_Story.h"
+#include "com_scriptographer_ai_TextStory.h"
 
 /*
- * com.scriptographer.ai.Story
+ * com.scriptographer.ai.TextStory
  */
 
 using namespace ATE;
@@ -12,7 +12,7 @@ using namespace ATE;
 /*
  * void finailze()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Story_finailze(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextStory_finailze(JNIEnv *env, jobject obj) {
 	try {
 		StoryRef story = (StoryRef) gEngine->getIntField(env, obj, gEngine->fid_AIObject_handle);
 		if (story != NULL)
@@ -23,7 +23,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Story_finailze(JNIEnv *env, jo
 /*
  * int getIndex()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Story_getIndex(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStory_getIndex(JNIEnv *env, jobject obj) {
 	try {
 		StoryRef story = gEngine->getStoryRef(env, obj);
 		ASInt32 index;
@@ -34,9 +34,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Story_getIndex(JNIEnv *env, jo
 }
 
 /*
- * com.scriptographer.ai.TextRange getRange()
+ * com.scriptographer.ai.TextRange nativeGetRange()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Story_getRange(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_nativeGetRange(JNIEnv *env, jobject obj) {
 	try {
 		StoryRef story = gEngine->getStoryRef(env, obj);
 		TextRangeRef range;
@@ -49,7 +49,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Story_getRange(JNIEnv *env,
 /*
  * com.scriptographer.ai.TextRange getSelection()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Story_getSelection(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_getSelection(JNIEnv *env, jobject obj) {
 	try {
 		StoryRef story = gEngine->getStoryRef(env, obj);
 		TextRangesRef ranges;
@@ -62,9 +62,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Story_getSelection(JNIEnv *
 /*
  * boolean equals(java.lang.Object story)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Story_equals(JNIEnv *env, jobject obj, jobject story) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextStory_equals(JNIEnv *env, jobject obj, jobject story) {
 	try {
-		if (env->IsInstanceOf(story, gEngine->cls_Story)) {
+		if (env->IsInstanceOf(story, gEngine->cls_TextStory)) {
 			StoryRef story1 = gEngine->getStoryRef(env, obj);
 			StoryRef story2 = gEngine->getStoryRef(env, story);
 			if (story2 != NULL) {
@@ -80,7 +80,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Story_equals(JNIEnv *env, 
 /*
  * int nativeGetTexListLength(int handle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Story_nativeGetTexListLength(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStory_nativeGetTexListLength(JNIEnv *env, jobject obj, jint handle) {
 	try {
 		// determine amount of TextFrames by looping through the iterator
 		TextFramesIteratorRef framesRef;
@@ -98,9 +98,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Story_nativeGetTexListLength(J
 }
 
 /*
- * com.scriptographer.ai.Text nativeGetText(int handle, int index)
+ * com.scriptographer.ai.Text nativeGetTextFrame(int handle, int index)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Story_nativeGetText(JNIEnv *env, jobject obj, jint handle, jint index) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_nativeGetTextFrame(JNIEnv *env, jobject obj, jint handle, jint index) {
 	try {
 		TextFrameRef textRef;
 		AIArtHandle textHandle;

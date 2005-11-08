@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2005/11/05 00:50:41 $
+ * $Revision: 1.17 $
+ * $Date: 2005/11/08 14:02:15 $
  */
 
 package com.scriptographer.ai;
@@ -290,13 +290,13 @@ public class Document extends DictionaryObject {
 	
 	private native int nativeGetStories();
 	
-	private StoryList stories = null;
+	private TextStoryList stories = null;
 	
 	public ReadOnlyList getStories() {
 		if (stories == null) {
 			int handle = nativeGetStories();
 			if (handle != 0)
-				stories = new StoryList(handle);
+				stories = new TextStoryList(handle);
 		}
 		return stories;
 	}

@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.19 $
- * $Date: 2005/11/05 00:50:40 $
+ * $Revision: 1.20 $
+ * $Date: 2005/11/08 14:02:16 $
  */
 
 #include "jniMacros.h"
@@ -232,15 +232,15 @@ public:
 
 	jclass cls_Path;
 	jclass cls_CompoundPath;
-	jclass cls_Text;
+	jclass cls_TextFrame;
 	
 	jclass cls_TextRange;
 	jmethodID cid_TextRange;
 	jfieldID fid_TextRange_glyphRunRef;
 	jfieldID fid_TextRange_glyphRunPos;
 
-	jclass cls_Story;
-	jmethodID cid_Story;
+	jclass cls_TextStory;
+	jmethodID cid_TextStory;
 	
 	jclass cls_PathStyle;
 	jmethodID mid_PathStyle_init;

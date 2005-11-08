@@ -28,8 +28,8 @@
  *
  * $RCSfile: CommitManager.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/11/04 01:34:15 $
+ * $Revision: 1.6 $
+ * $Date: 2005/11/08 14:02:15 $
  */
 
 package com.scriptographer;
@@ -37,7 +37,8 @@ package com.scriptographer;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import com.scriptographer.ai.Text;
+import com.scriptographer.ai.TextFrame;
+import com.sun.tools.jdi.LinkedHashMap;
 
 public class CommitManager {
 	
@@ -67,8 +68,8 @@ public class CommitManager {
 			obj.commit();
 			// case it's a text, use the story as a key as well. it's used like
 			// that in CharacterAttributes
-			if (obj instanceof Text)
-				commit(((Text) obj).getStory());
+			if (obj instanceof TextFrame)
+				commit(((TextFrame) obj).getStory());
 		}
 	}
 	
@@ -93,41 +94,56 @@ public class CommitManager {
 	 * in case there was one object under a key already
 	 */
 	static class CommitableMap extends HashMap {
+		// keep track of values that have been added already, maybe under another key
+		HashMap values = new HashMap();
+		
 		/**
 		 * A helper class that's needed when there are more than on object for one key.
 		 * It forwards calls to commit()
 		 * It actually uses a map so that every object can only be added once in order
 		 * to void more than one call to commit at a time 
+		 * 
+		 * Use a LinkedHashMap in order to preserve sequence of commits
 		 */
-		class CommitableList extends HashMap implements Commitable {
+		class CommitableList extends LinkedHashMap implements Commitable {
 			public void commit() {
 				for (Iterator iterator = values().iterator(); iterator.hasNext();)
 					((Commitable) iterator.next()).commit();
 			}
-				
+			
 			public void add(Object obj) {
 				this.put(obj, obj);
 			}
 		}
 
 		public Object put(Object key, Object obj) {
-			Object prev = this.get(key);
-			if (prev != null) {
-				if (prev instanceof CommitableList) {
-					// add to existing list
-					((CommitableList) prev).add(obj);
-					return prev;
-				} else {
-					// create a new list, add both, and put back
-					CommitableList list = new CommitableList();
-					list.add(prev);
-					list.add(obj);
-					return this.put(key, list);
-				}
+			if (values.containsKey(obj)) {
+				return null;
 			} else {
-				// simply add this object
-				return super.put(key, obj);
+				values.put(obj, obj);
+				Object prev = this.get(key);
+				if (prev != null) {
+					if (prev instanceof CommitableList) {
+						// add to existing list
+						((CommitableList) prev).add(obj);
+						return prev;
+					} else {
+						// create a new list, add both, and put back
+						CommitableList list = new CommitableList();
+						list.add(prev);
+						list.add(obj);
+						return super.put(key, list);
+					}
+				} else {
+					// simply add this object
+					return super.put(key, obj);
+				}
 			}
+		}
+		
+		public void clear() {
+			super.clear();
+			values.clear();
 		}
 	}
 }

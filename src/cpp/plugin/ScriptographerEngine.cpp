@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.23 $
- * $Date: 2005/11/05 00:50:40 $
+ * $Revision: 1.24 $
+ * $Date: 2005/11/08 14:02:16 $
  */
  
 #include "stdHeaders.h"
@@ -446,15 +446,15 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_Path = loadClass(env, "com/scriptographer/ai/Path");
 	cls_CompoundPath = loadClass(env, "com/scriptographer/ai/CompoundPath");
-	cls_Text = loadClass(env, "com/scriptographer/ai/Text");
+	cls_TextFrame = loadClass(env, "com/scriptographer/ai/TextFrame");
 
 	cls_TextRange = loadClass(env, "com/scriptographer/ai/TextRange");
 	cid_TextRange = getConstructorID(env, cls_TextRange, "(II)V");
 	fid_TextRange_glyphRunRef = getFieldID(env, cls_TextRange, "glyphRunRef", "I");
 	fid_TextRange_glyphRunPos = getFieldID(env, cls_TextRange, "glyphRunPos", "I");
 	
-	cls_Story = loadClass(env, "com/scriptographer/ai/Story");
-	cid_Story = getConstructorID(env, cls_Story, "(II)V");
+	cls_TextStory = loadClass(env, "com/scriptographer/ai/TextStory");
+	cid_TextStory = getConstructorID(env, cls_TextStory, "(II)V");
 
 	cls_PathStyle = loadClass(env, "com/scriptographer/ai/PathStyle");
 	
@@ -1682,7 +1682,7 @@ jobject ScriptographerEngine::wrapStoryRef(JNIEnv *env, ATE::StoryRef story) {
 	// we need to increase the ref count here. this is decreased again in Story.finalize
 	AIDocumentHandle document = getActiveDocumentHandle(); // this might throw an exception, so do it before AddRef
 	ATE::sStory->AddRef(story);
-	return newObject(env, cls_Story, cid_Story, (jint) story, (jint) document);
+	return newObject(env, cls_TextStory, cid_TextStory, (jint) story, (jint) document);
 }
 
 /**

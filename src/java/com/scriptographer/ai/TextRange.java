@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextRange.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/11/05 00:50:41 $
+ * $Revision: 1.7 $
+ * $Date: 2005/11/08 14:02:15 $
  */
 
 package com.scriptographer.ai;
@@ -71,11 +71,17 @@ public class TextRange extends AIObject {
 	private int glyphRunPos;
 	
 	private Document document;
-	private Story story = null;
+	private TextStory story = null;
 	
 	protected TextRange(int handle, int documentHandle) {
 		super(handle);
 		document = Document.wrapHandle(documentHandle);
+	}
+
+	public void assignHandle(TextRange range) {
+		finalize(); // release old handle
+		handle = range.handle;
+		range.handle = 0;
 	}
 	
 	public Document getDocument() {
@@ -84,10 +90,39 @@ public class TextRange extends AIObject {
 	
 	private native int nativeGetStoryIndex();
 	
-	public Story getStory() {
+	public TextStory getStory() {
 		if (story == null)
-			story = (Story) document.getStories().get(nativeGetStoryIndex());
+			story = (TextStory) document.getStories().get(nativeGetStoryIndex());
 		return story;
+	}
+	
+	public native TextFrame getFirstFrame();
+	
+	public native TextFrame getLastFrame();
+	
+	public ReadOnlyList getFrames() {
+		TextFrame frame = getFirstFrame();
+		TextFrame lastFrame = getLastFrame();
+		if (frame != null) {
+			if (lastFrame == null)
+				lastFrame = frame;
+			ExtendedArrayList list = new ExtendedArrayList();
+			do {
+				list.add(frame);
+				frame = frame.getNextFrame();
+			} while (frame != null && frame != lastFrame);
+			return list;
+		}
+		return null;
+	}
+	
+	protected void updateRange() {
+		// if content lenght has changed, update ranges in all associated text frames:
+		TextFrame frame = getFirstFrame();
+		while (frame != null) {
+			frame.updateRange();
+			frame = frame.getNextFrame();
+		}
 	}
 	
 	public native int getStart();
@@ -120,11 +155,33 @@ public class TextRange extends AIObject {
 	
 	public native int getLength();
 	
-	public native void insertBefore(String text);
-	public native void insertAfter(String text);
+	private native void nativeInsertBefore(String text);
 	
-	public native void insertBefore(TextRange range);
-	public native void insertAfter(TextRange range);
+	public void insertBefore(String text) {
+		nativeInsertBefore(text);
+		updateRange();
+	}
+	
+	private native void nativeInsertAfter(String text);
+	
+	public void insertAfter(String text) {
+		nativeInsertAfter(text);
+		updateRange();
+	}
+	
+	private native void nativeInsertBefore(int handle);
+	
+	public void insertBefore(TextRange range) {
+		nativeInsertBefore(range.handle);
+		updateRange();
+	}
+
+	private native void nativeInsertAfter(int handle);
+	
+	public void insertAfter(TextRange range) {
+		nativeInsertAfter(range.handle);
+		updateRange();
+	}
 	
 	/**
 	 * Returns the kerning between two chars in thousands of em.
@@ -146,6 +203,7 @@ public class TextRange extends AIObject {
 		commitStyles();
 		nativeRemove(handle, glyphRunRef);
 		glyphRunRef = 0;
+		updateRange();
 	}
 	
 	public native String getContent();
@@ -223,10 +281,12 @@ public class TextRange extends AIObject {
 	
 	// TODO: ...
 	public native Point[] getOrigins();
+	/*
 	public native int[] getGlyphIds();
 	public native int getGlyphId();
 	public native int getCharCount();
 	public native int getCount();
+	*/
 	
 	public native String getGlyphRunContent();
 	
@@ -245,7 +305,18 @@ public class TextRange extends AIObject {
 	/// This method will remove this range from the selection.
 	/// Note, deselecting a range can cause defregmented selection, if this range is a sub range of the current selection.
 	
+	/**
+	 * clones the range.
+	 * TODO: When the original range is changed in size, the copied one seems to change as well.
+	 * so maybe, use getRange(0, getLength()) internally instead of the native clone...
+	 */
 	public native Object clone();
+	
+	public TextRange getSubRange(int start, int end) {
+		TextRange range = (TextRange) clone();
+		range.setRange(start, end);
+		return range;
+	}
 
 	/**
 	 * 
@@ -343,10 +414,8 @@ public class TextRange extends AIObject {
 			}
 			
 			TextRange getRange() {
-				if (range == null) {
-					range = (TextRange) TextRange.this.clone();
-					range.setRange(start, end);
-				}
+				if (range == null)
+					range = getSubRange(start, end);
 				return range;
 			}
 		}
@@ -411,10 +480,8 @@ public class TextRange extends AIObject {
 
 		public Object get(int index) {
 			TextRange range = (TextRange) list.get(index);
-			if (range == null) {
-				range = (TextRange) TextRange.this.clone();
-				range.setRange(index, index + 1);
-			}
+			if (range == null)
+				range = getSubRange(index, index + 1);
 			return range;
 		}
 	}
