@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextRange.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/11/08 14:02:15 $
+ * $Revision: 1.8 $
+ * $Date: 2005/11/08 21:38:21 $
  */
 
 package com.scriptographer.ai;
@@ -116,75 +116,86 @@ public class TextRange extends AIObject {
 		return null;
 	}
 	
-	protected void updateRange() {
-		// if content lenght has changed, update ranges in all associated text frames:
-		TextFrame frame = getFirstFrame();
-		while (frame != null) {
-			frame.updateRange();
-			frame = frame.getNextFrame();
-		}
-	}
-	
+	/**
+	 * returns the absolute starting point of the range inside the story in numbers of characters
+	 * 
+	 * @return start
+	 */
 	public native int getStart();
 	
-	private native void nativeSetStart(int handle, int glyphRunRef, int start);
-	
-	public void setStart(int start) {
-		commitStyles();
-		nativeSetStart(handle, glyphRunRef, start);
-		glyphRunRef = 0;
-	}
-	
+	/**
+	 * returns the absolute end point of the range inside the story in numbers of characters
+	 * 
+	 * @return end
+	 */
 	public native int getEnd();
 	
-	private native void nativeSetEnd(int handle, int glyphRunRef, int end);
-	
-	public void setEnd(int end) {
-		commitStyles();
-		nativeSetEnd(handle, glyphRunRef, end);
-		glyphRunRef = 0;
-	}
-
-	public native void nativeSetRange(int handle, int glyphRunRef, int start, int end);
-	
-	public void setRange(int start, int end) {
-		commitStyles();
-		nativeSetRange(handle, glyphRunRef, start, end);
-		glyphRunRef = 0;
-	}
-	
+	/**
+	 * returns the length of the story in number of characters
+	 * 
+	 * @return length
+	 */
 	public native int getLength();
+
+	protected native void setRange(int start, int end);
 	
-	private native void nativeInsertBefore(String text);
+	private native int nativePrepend(int handle1, String text);
 	
-	public void insertBefore(String text) {
-		nativeInsertBefore(text);
-		updateRange();
-	}
+	private native int nativeAppend(int handle1, String text);
 	
-	private native void nativeInsertAfter(String text);
-	
-	public void insertAfter(String text) {
-		nativeInsertAfter(text);
-		updateRange();
-	}
-	
-	private native void nativeInsertBefore(int handle);
-	
-	public void insertBefore(TextRange range) {
-		nativeInsertBefore(range.handle);
-		updateRange();
+	private native int nativePrepend(int handle1, int handle2);
+
+	private native int nativeAppend(int handle1, int handle2);
+
+	private void adjustStart(int oldLength) {
+		if (characters != null)
+			characters.adjustStart(oldLength);
+		if (words != null)
+			words.adjustStart(oldLength);
+		if (paragraphs != null)
+			paragraphs.adjustStart(oldLength);
 	}
 
-	private native void nativeInsertAfter(int handle);
+	private void adjustEnd(int oldLength) {
+	if (characters != null)
+		characters.adjustEnd(oldLength);
+	if (words != null)
+		words.adjustEnd(oldLength);
+	if (paragraphs != null)
+		paragraphs.adjustEnd(oldLength);
+	}
+
+	public void prepend(String text) {
+		adjustStart(nativePrepend(handle, text));
+	}
 	
-	public void insertAfter(TextRange range) {
-		nativeInsertAfter(range.handle);
-		updateRange();
+	public void append(String text) {
+		adjustEnd(nativeAppend(handle, text));
+	}
+	
+	public void prepend(TextRange range) {
+		adjustStart(nativePrepend(handle, range.handle));
+	}
+	
+	public void append(TextRange range) {
+		adjustEnd(nativeAppend(handle, range.handle));
+	}
+	
+	/**
+	 *  This method will delete all the characters in that range.
+	 */
+	public native void remove();
+	
+	public native String getContent();
+	
+	public void setContent(String text) {
+		remove();
+		append(text);
 	}
 	
 	/**
 	 * Returns the kerning between two chars in thousands of em.
+	 * TODO: mvoe to CharacterStyle
 	 */
 	public native int getKerning();
 	
@@ -193,26 +204,7 @@ public class TextRange extends AIObject {
 	 * @param kerning
 	 */
 	public native void setKerning(int kerning);
-	
-	private native void nativeRemove(int handle, int glyphRunRef);
 
-	/**
-	 *  This method will delete all the characters in that range.
-	 */
-	public void remove() {
-		commitStyles();
-		nativeRemove(handle, glyphRunRef);
-		glyphRunRef = 0;
-		updateRange();
-	}
-	
-	public native String getContent();
-	
-	public void setContent(String text) {
-		remove();
-		insertAfter(text);
-	}
-	
 	/**
 	 * gets the character style handle and adds reference to it. 
 	 * attention! this needs to be wrapped in CharacterStyle so
@@ -312,10 +304,17 @@ public class TextRange extends AIObject {
 	 */
 	public native Object clone();
 	
+	/**
+	 * Returns a Range relative to the index within the story returned by getStart()
+	 * 
+	 * @param start
+	 * @param end
+	 * @return sub range
+	 */
+	
 	public TextRange getSubRange(int start, int end) {
-		TextRange range = (TextRange) clone();
-		range.setRange(start, end);
-		return range;
+		int index = getStart();
+		return getStory().getRange(index + start, index + end);
 	}
 
 	/**
@@ -389,7 +388,7 @@ public class TextRange extends AIObject {
 			return list.isEmpty();
 		}
 
-		public ExtendedList subList(int fromIndex, int toIndex) {
+		public ExtendedList getSubList(int fromIndex, int toIndex) {
 			return Lists.createSubList(this, fromIndex, toIndex);
 		}
 	}
@@ -400,28 +399,31 @@ public class TextRange extends AIObject {
 	 * The delimiter chars are included in the tokens at the end.
 	 */
 	class TokenizerList extends TextRangeList {
+
 		class Token {
 			int start;
 			int end;
 			String text;
-			TextRange range;
-			
-			Token(int start, int end, String text) {
-				this.start = start;
-				this.end = end;
-				this.text = text;
-				this.range = null;
-			}
-			
+			TextRange range = null;
+
 			TextRange getRange() {
 				if (range == null)
 					range = getSubRange(start, end);
 				return range;
 			}
+
+			void init(int start, int end, String text) {
+				this.start = start;
+				this.end = end;
+				this.text = text;
+				if (range != null)
+					range.setRange(start, end);
+			}
 		}
 		
 		String delimiter;
-		int position;
+		int tokenPos;
+		int tokenIndex;
 		Adler32 checksum;
 		
 		TokenizerList(String delimiter) {
@@ -438,30 +440,89 @@ public class TextRange extends AIObject {
 			long oldChecksum = checksum.getValue();
 			checksum.reset();
 			checksum.update(content.getBytes());
-			this.position = getStart();
+			int position = getStart();
+			int index = 0;
+			// this loop reuses tokens
 			if (checksum.getValue() != oldChecksum) {
 				StringTokenizer st = new StringTokenizer(content, delimiter, true);
 				StringBuffer part = new StringBuffer();
-				list.clear();
 				while (st.hasMoreTokens()) {
 					String token = st.nextToken();
 					// delimiter char?
 					if (part.length() > 0 && (token.length() > 1 || delimiter.indexOf(token.charAt(0)) == -1)) {
-						addToken(part.toString());
+						position = setToken(index++, position, part.toString());
 						part.setLength(0);
 					}
 					part.append(token);
 				}
 				if (part.length() > 0)
-					addToken(part.toString());
+					position = setToken(index++, position, part.toString());
+				list.setSize(index);
 			}
 		}
 		
-		void addToken(String str) {
+		public void adjustStart(int oldLength) {
+			// get text of first token that has changed. split it again and adjust list accordingly
+			if (list.size() > 0) {
+				TextRange range = (TextRange) get(0);
+				String content = range.getContent();
+				StringTokenizer st = new StringTokenizer(content, delimiter, false);
+				int count = 0;
+				while (st.hasMoreTokens()) {
+					st.nextToken();
+					count++;
+				}
+				// in case the added text causes a new split or even several,
+				// add the amount of empty tokens so the offset is right again (in case some ranges where already
+				// referenced they need to shift properly. then update list
+				// TODO: consider optimization: only the new tokens should be parsed, the rest could be simply offset...
+				if (count > 1) {
+					for (int i = 1; i < count; i++)
+						list.add(0, null);
+					update();
+				}
+			}
+		}
+
+		public void adjustEnd(int oldLength) {
+			// get text of last token that has changed. split it again and adjust list accordingly
+			int size = list.size();
+			if (size > 0) {
+				TextRange range = (TextRange) get(size - 1);
+				String content = range.getContent();
+				StringTokenizer st = new StringTokenizer(content, delimiter, false);
+				int count = 0;
+				while (st.hasMoreTokens()) {
+					st.nextToken();
+					count++;
+				}
+				// in case the added text causes a new split or even several,
+				// add the amount of empty tokens so the offset is right again. then fix range
+				// TODO: consider optimization: only the new tokens should be parsed, the rest could be simply offset...
+				if (count > 1) {
+					for (int i = 1; i < count; i++)
+						list.add(null);
+					update();
+				}
+			}
+		}
+
+		int setToken(int index, int position, String str) {
 			int len = str.length();
 			int end = position + len;
-			list.add(new Token(position, end, str));
-			position = end;
+			Token token;
+			if (index < list.size()) {
+				token = (Token) list.get(index);
+				if (token == null) {
+					token = new Token();
+					list.set(index, token);
+				}
+			} else {
+				token = new Token();
+				list.add(token);
+			}
+			token.init(position, end, str);
+			return end;
 		}
 
 		public Object get(int index) {
@@ -475,13 +536,51 @@ public class TextRange extends AIObject {
 	 */
 	class CharacterList extends TextRangeList {
 		void update() {
-			this.list.setSize(TextRange.this.getLength());
+			list.setSize(TextRange.this.getLength());
+		}
+
+		/**
+		 * adjustEnd is called when TextRange.append changes the end point of the ranges
+		 * update here accordingly
+		 * 
+		 * @param oldLength
+		 */
+		void adjustEnd(int oldLength) {
+			int index = oldLength - 1;
+			if (index >= 0 && index < list.size()) {
+				TextRange range = (TextRange) list.get(index);
+				// the end point of the range needs to be moved so it
+				// has length 1 again. it can stay in the list
+				if (range != null) {
+					int end = getStart() + oldLength;
+					range.setRange(end - 1, end);
+				}
+			}
+		}
+		
+		/**
+		 * adjustStart is called when TextRange.prepend changes the start point of the ranges
+		 * update here accordingly
+		 */
+		void adjustStart(int oldLength) {
+			TextRange range = (TextRange) list.get(0);
+			// the starting point of the range needs to be moved and then removed from the
+			// list so a new one is return for this index
+			if (range != null) {
+				// move the range by the amount of change in the range
+				int start = getStart() + (getLength() - oldLength);
+				range.setRange(start, start + 1);
+				list.set(0, null);
+			}
 		}
 
 		public Object get(int index) {
 			TextRange range = (TextRange) list.get(index);
-			if (range == null)
-				range = getSubRange(index, index + 1);
+			if (range == null) {
+				int start = getStart() + index;
+				range = getSubRange(start, start + 1);
+				list.set(index, range);
+			}
 			return range;
 		}
 	}

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: FontList.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/11/05 00:50:41 $
+ * $Revision: 1.2 $
+ * $Date: 2005/11/08 21:38:21 $
  */
 
 package com.scriptographer.ai;
@@ -90,7 +90,7 @@ public class FontList implements ReadOnlyList, StringIndexList {
 		return getLength() == 0;
 	}
 
-	public ExtendedList subList(int fromIndex, int toIndex) {
+	public ExtendedList getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
 	}
 

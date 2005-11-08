@@ -39,7 +39,7 @@ class TextStoryList extends AIObject implements ReadOnlyList {
 		return nativeGetLength(handle) == 0;
 	}
 
-	public ExtendedList subList(int fromIndex, int toIndex) {
+	public ExtendedList getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
 	}
 }

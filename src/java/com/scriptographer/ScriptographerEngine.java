@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2005/10/31 21:37:23 $
+ * $Revision: 1.17 $
+ * $Date: 2005/11/08 21:38:21 $
  */
 
 package com.scriptographer;
@@ -277,10 +277,11 @@ public class ScriptographerEngine {
 				scope = global.createScope(scriptFile);
 			// disable output to the console while the script is executed as it won't get updated anyway
 			// ConsoleOutputStream.enableOutput(false);
+			CommitManager.begin();
 			script.exec(context, scope);
 			// updater.stop();
 			// now commit all the changes:
-			CommitManager.commit();
+			CommitManager.end();
 			ret = scope;
 			ScriptographerEngine.closeProgress();
 		} catch (WrappedException e) {

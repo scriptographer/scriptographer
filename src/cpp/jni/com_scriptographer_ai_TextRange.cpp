@@ -168,6 +168,15 @@ GlyphRunRef TextRange_getGlyphRun(JNIEnv *env, jobject obj, TextRangeRef rangeRe
 	*/
 }
 
+void TextRange_releaseGlyphRun(JNIEnv *env, jobject obj) {
+	GlyphRunRef glyphRunRef = (GlyphRunRef) gEngine->getIntField(env, obj, gEngine->fid_TextRange_glyphRunRef);
+	if (glyphRunRef != NULL) {
+		sGlyphRun->Release(glyphRunRef);
+		gEngine->setIntField(env, obj, gEngine->fid_TextRange_glyphRunRef, 0);	
+	}
+}
+
+
 /*
  * com.scriptographer.ai.Point[] getOrigins()
  */
@@ -315,17 +324,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getStart(JNIEnv *env
 }
 
 /*
- * void nativeSetStart(int handle, int glyphRunRef, int start)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeSetStart(JNIEnv *env, jobject obj, jint handle, jint glyphRunRef, jint start) {
-	try {
-		if (!sTextRange->SetStart((TextRangeRef) handle, start))
-		if (glyphRunRef != 0)
-			sGlyphRun->Release((GlyphRunRef) glyphRunRef);
-	} EXCEPTION_CONVERT(env)
-}
-
-/*
  * int getEnd()
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getEnd(JNIEnv *env, jobject obj) {
@@ -339,28 +337,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getEnd(JNIEnv *env, 
 }
 
 /*
- * void nativeSetEnd(int handle, int glyphRunRef, int end)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeSetEnd(JNIEnv *env, jobject obj, jint handle, jint glyphRunRef, jint end) {
-	try {
-		if (!sTextRange->SetEnd((TextRangeRef) handle, end))
-		if (glyphRunRef != 0)
-			sGlyphRun->Release((GlyphRunRef) glyphRunRef);
-	} EXCEPTION_CONVERT(env)
-}
-
-/*
- * void nativeSetRange(int handle, int glyphRunRef, int start, int end)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeSetRange(JNIEnv *env, jobject obj, jint handle, jint glyphRunRef, jint start, jint end) {
-	try {
-		if (!sTextRange->SetRange((TextRangeRef) handle, start, end))
-		if (glyphRunRef != 0)
-			sGlyphRun->Release((GlyphRunRef) glyphRunRef);
-	} EXCEPTION_CONVERT(env)
-}
-
-/*
  * int getLength()
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getLength(JNIEnv *env, jobject obj) {
@@ -371,6 +347,16 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getLength(JNIEnv *en
 			return size;
 	} EXCEPTION_CONVERT(env)
 	return 0;
+}
+
+/*
+ * void setRange(int start, int end)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_setRange(JNIEnv *env, jobject obj, jint start, jint end) {
+	try {
+		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		sTextRange->SetRange(range, start, end);
+	} EXCEPTION_CONVERT(env)
 }
 
 /*
@@ -391,61 +377,67 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_TextRange_getContent(JNIEnv
 }
 
 /*
- * void nativeInsertBefore(java.lang.String text)
+ * int nativePrepend(int handle, java.lang.String text)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeInsertBefore__Ljava_lang_String_2(JNIEnv *env, jobject obj, jstring text) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_nativePrepend__ILjava_lang_String_2(JNIEnv *env, jobject obj, jint handle, jstring text) {
+	ASInt32 size = 0;
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		sTextRange->GetSize((TextRangeRef) handle, &size);
 		int size = env->GetStringLength(text);
 		const jchar *chars = env->GetStringCritical(text, NULL);
-		sTextRange->InsertBefore_AsUnicode(range, chars, size);
-		env->ReleaseStringCritical(text, chars); 
+		sTextRange->InsertBefore_AsUnicode((TextRangeRef) handle, chars, size);
+		env->ReleaseStringCritical(text, chars);
 	} EXCEPTION_CONVERT(env)
+	return size;
 }
 
 /*
- * void nativeInsertAfter(java.lang.String text)
+ * int nativeAppend(int handle, java.lang.String text)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeInsertAfter__Ljava_lang_String_2(JNIEnv *env, jobject obj, jstring text) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_nativeAppend__ILjava_lang_String_2(JNIEnv *env, jobject obj, jint handle, jstring text) {
+	ASInt32 size = 0;
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		sTextRange->GetSize((TextRangeRef) handle, &size);
 		int size = env->GetStringLength(text);
 		const jchar *chars = env->GetStringCritical(text, NULL);
-		sTextRange->InsertAfter_AsUnicode(range, chars, size);
+		sTextRange->InsertAfter_AsUnicode((TextRangeRef) handle, chars, size);
 		env->ReleaseStringCritical(text, chars); 
 	} EXCEPTION_CONVERT(env)
+	return size;
 }
 
 /*
- * void nativeInsertBefore(com.scriptographer.ai.TextRange range)
+ * int nativePrepend(int handle1, int handle2)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeInsertBefore__I(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_nativePrepend__II(JNIEnv *env, jobject obj, jint handle1, jint handle2) {
+	ASInt32 size = 0;
+	try {
+		sTextRange->GetSize((TextRangeRef) handle1, &size);
+		sTextRange->InsertBefore_AsTextRange((TextRangeRef) handle1, (TextRangeRef) handle2);
+	} EXCEPTION_CONVERT(env)
+	return size;
+}
+
+/*
+ * int nativeAppend(int handle1, int handle2)
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_nativeAppend__II(JNIEnv *env, jobject obj, jint handle1, jint handle2) {
+	ASInt32 size = 0;
+	try {
+		sTextRange->GetSize((TextRangeRef) handle1, &size);
+		sTextRange->InsertAfter_AsTextRange((TextRangeRef) handle1, (TextRangeRef) handle2);
+	} EXCEPTION_CONVERT(env)
+	return size;
+}
+
+/*
+ * void remove()
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_remove(JNIEnv *env, jobject obj) {
 	try {
 		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
-		if (handle != 0)
-			sTextRange->InsertBefore_AsTextRange(range, (TextRangeRef) range);
-	} EXCEPTION_CONVERT(env)
-}
-
-/*
- * void nativeInsertAfter(com.scriptographer.ai.TextRange range)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeInsertAfter__I(JNIEnv *env, jobject obj, jint handle) {
-	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
-		if (handle != 0)
-			sTextRange->InsertAfter_AsTextRange(range, (TextRangeRef) range);
-	} EXCEPTION_CONVERT(env)
-}
-
-/*
- * void nativeRemove(int handle, int glyphRunRef)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeRemove(JNIEnv *env, jobject obj, jint handle, jint glyphRunRef) {
-	try {
-		sTextRange->Remove((TextRangeRef) handle);
-		if (glyphRunRef != 0)
-			sGlyphRun->Release((GlyphRunRef) glyphRunRef);
+		sTextRange->Remove(range);
+		TextRange_releaseGlyphRun(env, obj);
 	} EXCEPTION_CONVERT(env)
 }
 

@@ -28,8 +28,8 @@
  *
  * $RCSfile: CommitManager.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/11/08 14:02:15 $
+ * $Revision: 1.7 $
+ * $Date: 2005/11/08 21:38:21 $
  */
 
 package com.scriptographer;
@@ -37,6 +37,7 @@ package com.scriptographer;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.scriptographer.ai.Document;
 import com.scriptographer.ai.TextFrame;
 import com.sun.tools.jdi.LinkedHashMap;
 
@@ -82,7 +83,25 @@ public class CommitManager {
 				((Commitable) iterator.next()).commit();
 			commitables.clear();
 		}
+	}
+
+	/**
+	 * to be called before ai scripts are executed
+	 *
+	 */
+	public static void begin() {
+		// supsend text reflow until commit
+		Document.suspendTextReflow();
+	}
+
+	/**
+	 * to be called before ai scripts are executed
+	 *
+	 */
+	public static void end() {
+		commit();
 		version++;
+		Document.resumeTextReflow();
 	}
 
 	public static void markDirty(Object key, Commitable commitable) {

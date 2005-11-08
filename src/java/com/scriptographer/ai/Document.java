@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.17 $
- * $Date: 2005/11/08 14:02:15 $
+ * $Revision: 1.18 $
+ * $Date: 2005/11/08 21:38:21 $
  */
 
 package com.scriptographer.ai;
@@ -289,6 +289,21 @@ public class Document extends DictionaryObject {
 	}
 	
 	private native int nativeGetStories();
+	
+	public static native void suspendTextReflow();
+	
+	public static native void resumeTextReflow();
+	
+	/**
+	 * reflow is suspended during script execution.
+	 * when reflow() is called, it's quickly turned on and off again
+	 * immediatelly afterwards.
+	 */
+	public void reflowText() {
+		// TODO: test if this does the trick? does resumeTextReflow immediatelly reflow the text?
+		resumeTextReflow();
+		suspendTextReflow();
+	}
 	
 	private TextStoryList stories = null;
 	

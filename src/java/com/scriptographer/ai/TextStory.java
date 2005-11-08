@@ -15,6 +15,8 @@ public class TextStory extends AIObject {
 		document = Document.wrapHandle(documentHandle);
 	}
 	
+	public native int getLength();
+	
 	public native TextRange nativeGetRange();
 
 	public TextRange getRange() {
@@ -29,15 +31,7 @@ public class TextStory extends AIObject {
 		return range;
 	}
 	
-	/**
-	 * This is called from sub ranges whenever a change to the range's bounds 
-	 * are executed. this assures that the parent range gets updated properly
-	 * TODO: Benchmark. I hope this is no performance issue...
-	 */
-	protected void updateRange() {
-		if (range != null)
-			range.assignHandle(nativeGetRange());
-	}
+	public native TextRange getRange(int start, int end);
 
 	public native TextRange getSelection();
 	
@@ -57,6 +51,22 @@ public class TextStory extends AIObject {
 	
 	public void setContent(String text) {
 		getRange().setContent(text);
+	}
+	
+	private static native void nativeSuspendReflow(int handle);
+	
+	private static native void nativeResumeReflow(int handle);
+	
+	/**
+	 * reflow is suspended during script execution.
+	 * when reflow() is called, it's quickly turned on and off again
+	 * immediatelly afterwards.
+	 */
+	public void reflow() {
+		// TODO: test if this does the trick? does resumeTextReflow immediatelly reflow the text?
+		// if so, make reflowText native and merge these functions on the native side
+		nativeResumeReflow(handle);
+		nativeSuspendReflow(handle);
 	}
 
 	TextFrameList textFrames = null;
@@ -99,7 +109,7 @@ public class TextStory extends AIObject {
 			return getLength() == 0;
 		}
 
-		public ExtendedList subList(int fromIndex, int toIndex) {
+		public ExtendedList getSubList(int fromIndex, int toIndex) {
 			return Lists.createSubList(this, fromIndex, toIndex);
 		}
 	}

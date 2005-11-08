@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.14 $
+ * $Date: 2005/11/08 21:38:21 $
  */
  
 #include "stdHeaders.h"
@@ -796,4 +796,22 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetStories(JNIE
 	DOCUMENT_END
 
 	return ret;
+}
+
+/*
+ * void suspendTextReflow()
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_suspendTextReflow(JNIEnv *env, jclass cls) {
+	try {
+		sAIDocument->SuspendTextReflow();
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * void resumeTextReflow()
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_resumeTextReflow(JNIEnv *env, jclass cls) {
+	try {
+		sAIDocument->ResumeTextReflow();
+	} EXCEPTION_CONVERT(env)
 }

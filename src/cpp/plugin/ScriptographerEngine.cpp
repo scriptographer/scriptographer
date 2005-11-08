@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.24 $
- * $Date: 2005/11/08 14:02:16 $
+ * $Revision: 1.25 $
+ * $Date: 2005/11/08 21:38:21 $
  */
  
 #include "stdHeaders.h"
@@ -187,7 +187,7 @@ void ScriptographerEngine::init() {
 
 	int noDebug = numOptions;
 #ifdef _DEBUG
-	// start JVM in debug mode, for remote debuggin on port 4000
+	// start JVM in debug mode, for remote debuggin on port 8000
 	options[numOptions++].optionString = "-Xdebug";
 	options[numOptions++].optionString = "-Xnoagent";
 	options[numOptions++].optionString = "-Djava.compiler=NONE";

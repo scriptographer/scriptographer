@@ -47,6 +47,19 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_nativeGetRange(JN
 }
 
 /*
+ * com.scriptographer.ai.TextRange getRange(int start, int end)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_getRange(JNIEnv *env, jobject obj, jint start, jint end) {
+	try {
+		StoryRef story = gEngine->getStoryRef(env, obj);
+		TextRangeRef range;
+		if (!sStory->GetTextRange(story, start, end, &range))
+			return gEngine->wrapTextRangeRef(env, range);
+	} EXCEPTION_CONVERT(env)
+	return NULL;
+}
+
+/*
  * com.scriptographer.ai.TextRange getSelection()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_getSelection(JNIEnv *env, jobject obj) {
@@ -108,4 +121,35 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_nativeGetTextFram
 			return gEngine->wrapArtHandle(env, textHandle);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
+}
+
+/*
+ * int getLength()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStory_getLength(JNIEnv *env, jobject obj) {
+	try {
+		StoryRef story = gEngine->getStoryRef(env, obj);
+		ASInt32 length;
+		if (!sStory->GetSize(story, &length))
+			return length;
+	} EXCEPTION_CONVERT(env)
+	return 0;
+}
+
+/*
+ * void nativeSuspendReflow(int handle)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextStory_nativeSuspendReflow(JNIEnv *env, jclass cls, jint handle) {
+	try {
+		sStory->SuspendReflow((StoryRef) handle);
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * void nativeResumeReflow(int handle)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextStory_nativeResumeReflow(JNIEnv *env, jclass cls, jint handle) {
+	try {
+		sStory->ResumeReflow((StoryRef) handle);
+	} EXCEPTION_CONVERT(env)
 }

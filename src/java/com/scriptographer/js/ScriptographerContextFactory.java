@@ -28,15 +28,14 @@
  *
  * $RCSfile: ScriptographerContextFactory.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/10/31 21:37:23 $
+ * $Revision: 1.3 $
+ * $Date: 2005/11/08 21:38:21 $
  */
 
 package com.scriptographer.js;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.WrapFactory;
 
 import com.scriptographer.ScriptographerEngine;

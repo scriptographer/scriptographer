@@ -28,15 +28,14 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.15 $
- * $Date: 2005/11/08 14:02:15 $
+ * $Revision: 1.16 $
+ * $Date: 2005/11/08 21:38:21 $
  */
 
 package com.scriptographer;
 
 import org.mozilla.javascript.*;
 
-import com.scriptographer.js.ScriptographerWrapFactory;
 import com.scriptographer.js.ExtendedJavaClass;
 import com.scriptographer.ai.*;
 import com.scriptographer.adm.*;

@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListItem.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/11/03 00:00:15 $
+ * $Revision: 1.7 $
+ * $Date: 2005/11/08 21:38:21 $
  */
 
 package com.scriptographer.adm;
@@ -41,7 +41,6 @@ import java.io.IOException;
 
 import org.mozilla.javascript.Function;
 
-import com.scriptographer.util.ExtendedArrayList;
 import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 import com.scriptographer.util.SimpleList;
@@ -346,7 +345,7 @@ public abstract class ListItem extends Item implements SimpleList {
 		return addAll(Lists.asList(elements));
 	}
 
-	public ExtendedList subList(int fromIndex, int toIndex) {
+	public ExtendedList getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
 	}
 

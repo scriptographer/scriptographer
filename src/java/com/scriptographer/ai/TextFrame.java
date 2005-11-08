@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextFrame.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/11/08 14:02:15 $
+ * $Revision: 1.2 $
+ * $Date: 2005/11/08 21:38:21 $
  */
 
 package com.scriptographer.ai;
@@ -131,6 +131,8 @@ public abstract class TextFrame extends Art {
 	public TextRange getVisibleRange() {
 		// once a range object is created, allways return the same reference
 		// and swap handles instead. like this references in JS remain...
+		// as visible range or story flow might change, we need to refetch here..
+		// TODO: check if its necessary
 		TextRange newRange = nativeGetRange(false);
 		if (visibleRange != null) {
 			visibleRange.assignHandle(newRange);
@@ -149,6 +151,8 @@ public abstract class TextFrame extends Art {
 	public TextRange getRange() {
 		// once a range object is created, allways return the same reference
 		// and swap handles instead. like this references in JS remain...
+		// as story flow might change, we need to refetch here..
+		// TODO: check if its necessary
 		TextRange newRange = nativeGetRange(true);
 		if (range != null) {
 			range.assignHandle(newRange);
@@ -182,18 +186,6 @@ public abstract class TextFrame extends Art {
 			return visibleRange.getEnd();
 		else
 			return nativeGetRange(false).getEnd();
-	}
-	
-	/**
-	 * This is called from sub ranges whenever a change to the range's bounds 
-	 * are executed. this assures that the parent range gets updated properly
-	 * TODO: Benchmark. I hope this is no performance issue...
-	 */
-	protected void updateRange() {
-		if (range != null)
-			range.assignHandle(nativeGetRange(true));
-		if (visibleRange != null)
-			visibleRange.assignHandle(nativeGetRange(false));
 	}
 	
 	public String getContent() {

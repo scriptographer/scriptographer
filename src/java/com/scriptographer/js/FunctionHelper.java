@@ -28,8 +28,8 @@
  *
  * $RCSfile: FunctionHelper.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/18 15:31:15 $
+ * $Revision: 1.6 $
+ * $Date: 2005/11/08 21:38:21 $
  */
 
 package com.scriptographer.js;
@@ -57,9 +57,10 @@ public class FunctionHelper {
 	}
 	
 	public static Object callFunction(Scriptable scope, Function func, Object args[]) throws Exception {
+		CommitManager.begin();
 		Object ret = func.call(Context.getCurrentContext(), scope, scope, args);
 		// commit all changed objects after a scripting function has been called!
-		CommitManager.commit();
+		CommitManager.end();
 		// unwrap if the return value is a native java object:
 		if (ret != null && ret instanceof NativeJavaObject) {
 			ret = ((NativeJavaObject) ret).unwrap();

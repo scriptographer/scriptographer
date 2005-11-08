@@ -28,8 +28,8 @@
  *
  * $RCSfile: AbstractFetchList.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.3 $
+ * $Date: 2005/11/08 21:38:21 $
  */
 
 package com.scriptographer.util;
@@ -78,9 +78,9 @@ public abstract class AbstractFetchList extends AbstractExtendedList {
 		return super.containsAll(elements);
 	}
 	
-	public ExtendedList subList(int fromIndex, int toIndex) {
+	public ExtendedList getSubList(int fromIndex, int toIndex) {
 		fetch();
-		return super.subList(fromIndex, toIndex);
+		return super.getSubList(fromIndex, toIndex);
 	}
 	
 	

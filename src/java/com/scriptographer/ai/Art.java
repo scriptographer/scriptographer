@@ -28,14 +28,15 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.17 $
- * $Date: 2005/11/08 14:02:15 $
+ * $Revision: 1.18 $
+ * $Date: 2005/11/08 21:38:21 $
  */
 
 package com.scriptographer.ai;
 
 import java.util.ArrayList;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
 import com.scriptographer.CommitManager;
 import com.scriptographer.util.SoftIntMap;
@@ -219,7 +220,7 @@ public abstract class Art extends DictionaryObject {
 	 * the correct Art anchestor class:
 	 * @param artHandle
 	 * @param type
-	 * @return
+	 * @return the wrapped art object
 	 */
 	protected static Art wrapHandle(int artHandle, int type, int textType, int documentHandle, int dictionaryRef) {
 		// first see wether the object was already wrapped before:
@@ -359,7 +360,7 @@ public abstract class Art extends DictionaryObject {
 	/**
 	 * Creates an AIArtHandle of the given type. Used in the Art constructor
 	 * @param type
-	 * @return
+	 * @return the handle for the art object
 	 */
 	private native static int nativeCreate(int docHandle, int type);
 	private native boolean nativeRemove(int handle, int dictionaryRef);
@@ -462,39 +463,108 @@ public abstract class Art extends DictionaryObject {
 	 * {"clipped", ART_CLIPPED, JSPROP_ENUMERATE},
 	 */
 
+	// TODO: consider renaming!
 	public native boolean append(Art art);
 	
 	/**
 	 * 
 	 * @param art
-	 * @return
+	 * @return true if it was moved, false otherwise
 	 */
 	public native boolean moveAbove(Art art);
 	public native boolean moveBelow(Art art);
 
-	public static final int
-		TRANSFORM_OBJECTS			= 1 << 0,
-		TRANSFORM_FILL_GRADIENTS		= 1 << 1,
-		TRANSFORM_FILL_PATTERNS		= 1 << 2,
-		TRANSFORM_STROKE_PATTERNS		= 1 << 3,
-		TRANSFORM_LINES				= 1 << 4,
-		TRANSFORM_LINKED_MASKS		= 1 << 5,
-		TRANSFORM_CHILDREN			= 1 << 6,
-		TRANSFORM_SELECTION_ONLY		= 1 << 7,
-		// self defined:
-		TRANSFORM_DEEP				= 1 << 10;
+	public static final int TRANSFORM_OBJECTS			= 1 << 0;
+	public static final int TRANSFORM_FILL_GRADIENTS	= 1 << 1;
+	public static final int TRANSFORM_FILL_PATTERNS		= 1 << 2;
+	public static final int TRANSFORM_STROKE_PATTERNS	= 1 << 3;
+	public static final int TRANSFORM_LINES				= 1 << 4;
+	public static final int TRANSFORM_LINKED_MASKS		= 1 << 5;
+	public static final int TRANSFORM_CHILDREN			= 1 << 6;
+	public static final int TRANSFORM_SELECTION_ONLY	= 1 << 7;
+	// self defined:
+	public static final int TRANSFORM_DEEP				= 1 << 10;
 
 	private native void nativeTransform(AffineTransform at, int flags);
-	
+
+	/**
+	 * Transforms the art object with custom flags to be set.
+	 *
+	 * @param at
+	 * @param flags Art. TRANSFORM_*
+	 */
 	public void transform(AffineTransform at, int flags) {
 		CommitManager.commit(this);
 		nativeTransform(at, flags);
 	}
 
+	/**
+	 * Transforms the art object with the flags Art.TRANSFORM_OBJECTS and Art.TRANSFORM_DEEP set
+	 * @param at
+	 */
 	public void transform(AffineTransform at) {
 		transform(at, TRANSFORM_OBJECTS | TRANSFORM_DEEP);
 	}
-	
+
+	/**
+	 * scales the object by creating a scale Matrix and executing transform()
+	 * @param sx
+	 * @param sy
+	 * @see Matrix#scale(double, double)
+	 */
+	public void scale(double sx, double sy) {
+		transform(AffineTransform.getScaleInstance(sx, sy));
+	}
+
+	public void scale(double scale) {
+		scale(scale, scale);
+	}
+
+	/**
+	 * translates (moves) the object by the given offsets
+	 * @param tx
+	 * @param ty
+	 * @see Matrix#translate(double, double)
+	 */
+	public void translate(double tx, double ty) {
+		transform(AffineTransform.getTranslateInstance(tx, ty));
+	}
+
+	public void translate(Point2D t) {
+		translate(t.getX(), t.getY());
+	}
+
+	/**
+	 * rotates the object arond a anchor point by a given angle
+	 * @param theta
+	 * @see Matrix#rotate(double, double, double)
+	 */
+	public void rotate(double theta, float x, float y) {
+		transform(AffineTransform.getRotateInstance(theta, x, y));
+	}
+
+	public void rotate(double theta, Point2D anchor) {
+		transform(AffineTransform.getRotateInstance(theta, anchor.getX(), anchor.getY()));
+	}
+
+	/**
+	 *
+	 * @param shx
+	 * @param shy
+	 * @see Matrix#shear(double, double)
+	 */
+	public void shear(double shx, double shy) {
+		transform(AffineTransform.getShearInstance(shx, shy));
+	}
+
+	/**
+	 * rotates the object by a given angle
+	 * @param theta
+	 */
+	public void rotate(double theta) {
+		transform(AffineTransform.getRotateInstance(theta));
+	}
+
 	public String toString() {
 		String name = getClass().getName();
 		StringBuffer str = new StringBuffer();

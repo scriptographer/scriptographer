@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.18 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.19 $
+ * $Date: 2005/11/08 21:38:21 $
  */
 
 package com.scriptographer.ai;
@@ -248,7 +248,7 @@ public class Path extends Art {
 			if (parameter == 0.0) { // spezial case
 				if (index > 0) {
 					// split at index
-					newSegments = segments.subList(index, segments.size);
+					newSegments = segments.getSubList(index, segments.size);
 					segments.remove(index + 1, segments.size);
 				}
 			} else {
@@ -257,7 +257,7 @@ public class Path extends Art {
 				if (segment != null) {
 					segment.divide(parameter);
 					// create the new path with the segments to the right of t
-					newSegments = segments.subList(index + 1, segments.size);
+					newSegments = segments.getSubList(index + 1, segments.size);
 					// and delete these segments from the current path, not including the divided point
 					segments.remove(index + 2, segments.size);
 				}
