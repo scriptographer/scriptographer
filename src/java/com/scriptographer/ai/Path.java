@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.19 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.20 $
+ * $Date: 2006/01/03 05:38:03 $
  */
 
 package com.scriptographer.ai;
@@ -55,15 +55,15 @@ public class Path extends Art {
 	/**
 	 * Wraps an AIArtHandle in a Path object
 	 */
-	protected Path(long handle) {
-		super((int) handle);
+	protected Path(long handle, Document document) {
+		super(handle, document);
 	}
 
 	/**
 	 * Creates a path object
 	 */
 	public Path(Document document) {
-		super(document, TYPE_PATH);
+		super(TYPE_PATH, document);
 	}
 
 	public Path(Document document, ExtendedList segments) {
@@ -81,7 +81,7 @@ public class Path extends Art {
 	}
 	
 	public Path() {
-		super(null, TYPE_PATH);
+		super(TYPE_PATH, null);
 	}
 
 	public Path(ExtendedList segments) {
@@ -381,7 +381,7 @@ public class Path extends Art {
 	/**
 	 * Appends the segments of a PathIterator to this Path. Optionally,
 	 * the initial {@link PathIterator#SEG_MOVETO}segment of the appended path
-	 * is changed into a {@linkPathIterator#SEG_LINETO}segment.
+	 * is changed into a {@link PathIterator#SEG_LINETO}segment.
 	 * 
 	 * @param iter the PathIterator specifying which segments shall be appended.
 	 * 

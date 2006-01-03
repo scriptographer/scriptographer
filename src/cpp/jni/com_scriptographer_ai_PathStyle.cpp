@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_PathStyle.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/11/05 00:50:41 $
+ * $Revision: 1.5 $
+ * $Date: 2006/01/03 05:37:06 $
  */
  
 #include "stdHeaders.h"
@@ -66,7 +66,7 @@ void PathStyle_init(JNIEnv *env, jobject obj, AIPathStyle *style, AIPathStyleMap
 	}
 
 	// Dash
-	if ((map == NULL && style->strokePaint) || map->stroke.dash.length) {
+	if (style->strokePaint && (map == NULL || map->strokePaint && map->stroke.dash.length)) {
 		int count = style->stroke.dash.length;
 		dashArray = env->NewFloatArray(count);
 		env->SetFloatArrayRegion(dashArray, 0, count, style->stroke.dash.array);

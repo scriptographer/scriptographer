@@ -28,8 +28,8 @@
  * 
  * $RCSfile: CharacterStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/11/08 14:02:15 $
+ * $Revision: 1.5 $
+ * $Date: 2006/01/03 05:38:03 $
  */
 
 package com.scriptographer.ai;
@@ -41,7 +41,7 @@ import com.scriptographer.CommitManager;
  **/
 
 /*
- * This pretty hackish due to the way PathStyle was implemented:
+ * This is pretty hackish due to the way PathStyle was implemented:
  * PathStyle is completely mirrored in java through fetch and commit
  * The same is done here for CharacterStyle, by using sAIATEPaint in order
  * to convert the CharFeaturesRef into AIPathStyle and back
@@ -160,7 +160,6 @@ public class CharacterStyle extends PathStyle {
 			if (pathStyleChanged)
 				nativeCommit(handle);
 			if (range != null) {
-				System.out.println(range.getContent());
 				nativeSetStyle(handle, range.handle);
 			}
 			dirty = false;

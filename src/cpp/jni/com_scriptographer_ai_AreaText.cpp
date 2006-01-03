@@ -8,9 +8,9 @@
  */
 
 /*
- * int nativeCreate(int docHandle, int orient, int artHandle)
+ * long nativeCreate(int docHandle, int orient, int artHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_nativeCreate(JNIEnv *env, jclass cls, jint docHandle, jint orient, jint artHandle) {
+JNIEXPORT jlong JNICALL Java_com_scriptographer_ai_AreaText_nativeCreate(JNIEnv *env, jclass cls, jint docHandle, jint orient, jint artHandle) {
 	AIArtHandle art = NULL;
 
 	CREATEART_BEGIN
@@ -21,7 +21,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_nativeCreate(JNIEnv *
 
 	CREATEART_END
 
-	return (jint) art;
+	return (jlong) art;
 }
 
 /*

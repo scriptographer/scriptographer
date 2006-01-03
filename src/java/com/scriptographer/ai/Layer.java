@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Layer.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/11/03 00:00:15 $
+ * $Revision: 1.8 $
+ * $Date: 2006/01/03 05:38:03 $
  */
 
 package com.scriptographer.ai;
@@ -37,16 +37,16 @@ package com.scriptographer.ai;
 // TODO: subclass Group instead!
 public class Layer extends Art {
 
-	protected Layer(long handle) {
-		super((int) handle);
+	protected Layer(long handle, Document document) {
+		super(handle, document);
 	}
 
 	public Layer(Document document) {
-		super(document, TYPE_LAYER);
+		super(TYPE_LAYER, document);
 	}
 
 	public Layer() {
-		super(null, TYPE_LAYER);
+		super(TYPE_LAYER, null);
 	}
 
 	public native void setVisible(boolean visible);

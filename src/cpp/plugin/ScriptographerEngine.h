@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.20 $
- * $Date: 2005/11/08 14:02:16 $
+ * $Revision: 1.21 $
+ * $Date: 2006/01/03 05:37:06 $
  */
 
 #include "jniMacros.h"
@@ -173,6 +173,9 @@ public:
 	jmethodID mid_ScriptographerEngine_onAbout;
 
 	jclass cls_ScriptographerException;
+	
+	jclass cls_CommitManager;
+	jmethodID mid_CommitManager_commit;
 
 	jclass cls_IntMap;
 	jmethodID cid_IntMap;
@@ -222,8 +225,8 @@ public:
 	jfieldID fid_Art_version;
 	jfieldID fid_Art_dictionaryRef;
 	jmethodID mid_Art_wrapHandle;
-	jmethodID mid_Art_updateIfWrapped_int;
-	jmethodID mid_Art_updateIfWrapped_Array;
+	jmethodID mid_Art_getIfWrapped;
+	jmethodID mid_Art_updateIfWrapped;
 	jmethodID mid_Art_changeHandle;
 
 	jclass cls_ArtSet;
@@ -478,6 +481,7 @@ public:
 	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDictionaryRef dictionary = NULL);
 	bool updateArtIfWrapped(JNIEnv *env, AIArtHandle art);
 	void changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary = NULL);
+	jobject getIfWrapped(JNIEnv *env, AIArtHandle handle);
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer);
 	jobject wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range);
 	jobject wrapStoryRef(JNIEnv *env, ATE::StoryRef story);

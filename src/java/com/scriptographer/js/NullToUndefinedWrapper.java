@@ -28,8 +28,8 @@
  * 
  * $RCSfile: NullToUndefinedWrapper.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/11/05 00:50:41 $
+ * $Revision: 1.3 $
+ * $Date: 2006/01/03 05:38:03 $
  */
 
 package com.scriptographer.js;
@@ -37,6 +37,7 @@ package com.scriptographer.js;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Undefined;
+import org.mozilla.javascript.Wrapper;
 
 import com.scriptographer.ai.Color;
 import com.scriptographer.ai.FontWeight;
@@ -73,12 +74,13 @@ public class NullToUndefinedWrapper extends NativeJavaObject {
 	public Object get(String name, Scriptable start) {
 		Object value = super.get(name, start);
 		// convert back
-		if (value == null)
+		if (value == null) {
 			value = Undefined.instance;
-		else if (value == Color.NONE)
-			value = null;
-		else if (value == FontWeight.NONE)
-			value = null;
+		} else if (value instanceof Wrapper) {
+			Object obj = ((Wrapper) value).unwrap();
+			if (obj == Color.NONE || obj == FontWeight.NONE)
+				value = null;
+		}
 		return value;
 	}
 }

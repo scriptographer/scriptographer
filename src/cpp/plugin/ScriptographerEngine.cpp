@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.25 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.26 $
+ * $Date: 2006/01/03 05:37:06 $
  */
  
 #include "stdHeaders.h"
@@ -387,6 +387,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ScriptographerException = loadClass(env, "com/scriptographer/ScriptographerException");
 	
+	cls_CommitManager = loadClass(env, "com/scriptographer/CommitManager");
+	mid_CommitManager_commit =  getStaticMethodID(env, cls_CommitManager, "commit", "(Ljava/lang/Object;)V");
+	
 	cls_IntMap = loadClass(env, "com/scriptographer/util/IntMap");
 	cid_IntMap = getConstructorID(env, cls_IntMap, "()V");
 	mid_IntMap_put = getMethodID(env, cls_IntMap, "put", "(ILjava/lang/Object;)Ljava/lang/Object;");
@@ -436,8 +439,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_Art_version = getFieldID(env, cls_Art, "version", "I");
 	fid_Art_dictionaryRef = getFieldID(env, cls_Art, "dictionaryRef", "I");
 	mid_Art_wrapHandle = getStaticMethodID(env, cls_Art, "wrapHandle", "(IIIII)Lcom/scriptographer/ai/Art;");
-	mid_Art_updateIfWrapped_int = getStaticMethodID(env, cls_Art, "updateIfWrapped", "(I)Z");
-	mid_Art_updateIfWrapped_Array = getStaticMethodID(env, cls_Art, "updateIfWrapped", "([I)V");
+	mid_Art_getIfWrapped = getStaticMethodID(env, cls_Art, "getIfWrapped", "(I)Lcom/scriptographer/ai/Art;");
+	mid_Art_updateIfWrapped = getStaticMethodID(env, cls_Art, "updateIfWrapped", "([I)V");
 	mid_Art_changeHandle = getMethodID(env, cls_Art, "changeHandle", "(II)V");
 
 	cls_ArtSet = loadClass(env, "com/scriptographer/ai/ArtSet");
@@ -1653,12 +1656,12 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) type, (jint) textType, (jint) getActiveDocumentHandle(), (jint) dictionary);
 }
 
-bool ScriptographerEngine::updateArtIfWrapped(JNIEnv *env, AIArtHandle art) {
-	return callStaticBooleanMethod(env, cls_Art, mid_Art_updateIfWrapped_int, (jint) art);
-}
-
 void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary) {
 	callVoidMethod(env, artObject, mid_Art_changeHandle, (jint) art, (jint) dictionary);
+}
+
+jobject ScriptographerEngine::getIfWrapped(JNIEnv *env, AIArtHandle art) {
+	return callStaticObjectMethod(env, cls_Art, mid_Art_getIfWrapped, (jint) art);
 }
 
 jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) {
@@ -1784,7 +1787,7 @@ ASErr ScriptographerEngine::selectionChanged() {
 			env->SetIntArrayRegion(artHandles, 0, count, (jint *) handles);
 			delete handles;
 			
-			callStaticVoidMethod(env, cls_Art, mid_Art_updateIfWrapped_Array, artHandles);
+			callStaticVoidMethod(env, cls_Art, mid_Art_updateIfWrapped, artHandles);
 		}
 //		println(env, "%i", (getNanoTime() - t) / 1000000);
 		return kNoErr;

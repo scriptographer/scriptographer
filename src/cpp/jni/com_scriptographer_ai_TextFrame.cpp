@@ -33,13 +33,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOrientation(JNIEn
 }
 
 /*
- * com.scriptographer.ai.Art createOutline()
+ * com.scriptographer.ai.Art nativeCreateOutline()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_createOutline(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_nativeCreateOutline(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle text = gEngine->getArtHandle(env, obj);
 		AIArtHandle outline;
-		if (!sAITextFrame-> CreateOutline(text, &outline))
+		if (!sAITextFrame->CreateOutline(text, &outline))
 			return gEngine->wrapArtHandle(env, outline);
 	} EXCEPTION_CONVERT(env)
 	return NULL;

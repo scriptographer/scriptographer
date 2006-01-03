@@ -28,8 +28,8 @@
  * 
  * $RCSfile: MapObject.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/18 15:31:15 $
+ * $Revision: 1.5 $
+ * $Date: 2006/01/03 05:38:03 $
  */
 
 package com.scriptographer.js;
@@ -62,17 +62,17 @@ public class MapObject extends NativeJavaObject {
 		if (javaObject != null) {
 			return ((Map) javaObject).keySet().toArray();
 		} else {
-			return new Object[]{};
+			return new Object[0];
 		}
 	}
 
 	public boolean has(int index, Scriptable start) {
-		return javaObject != null && ((Map) javaObject).get(new Integer(index)) != null;
+		return javaObject != null && ((Map) javaObject).get(Integer.toString(index)) != null;
 	}
 
 	public Object get(int index, Scriptable scriptable) {
 		if (javaObject != null) {
-			Object obj = ((Map) javaObject).get(new Integer(index));
+			Object obj = ((Map) javaObject).get(Integer.toString(index));
 			if (obj != null)
 				return Context.toObject(obj, scriptable);
 		}
@@ -83,7 +83,7 @@ public class MapObject extends NativeJavaObject {
 		if (javaObject != null) {
 			if (value instanceof Wrapper)
 				value = ((Wrapper) value).unwrap();
-			((Map) javaObject).put(new Integer(index), value);
+			((Map) javaObject).put(Integer.toString(index), value);
 		}
 	}
 
@@ -109,6 +109,18 @@ public class MapObject extends NativeJavaObject {
 			if (value instanceof Wrapper)
 				value = ((Wrapper) value).unwrap();
 			((Map) javaObject).put(name, value);
+		}
+	}
+
+	public void delete(String name) {
+		if (javaObject != null) {
+			((Map) javaObject).remove(name);
+		}
+	}
+
+	public void delete(int index) {
+		if (javaObject != null) {
+			((Map) javaObject).remove(Integer.toString(index));
 		}
 	}
 }

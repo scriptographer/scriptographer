@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.18 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.19 $
+ * $Date: 2006/01/03 05:38:03 $
  */
 
 package com.scriptographer.ai;
@@ -191,7 +191,7 @@ public abstract class Art extends DictionaryObject {
 	 * the Art(Integer handle) constructor
 	 * @param handle
 	 */
-	protected Art(long handle) {
+	protected Art(long handle, Document document) {
 		super((int) handle);
 		// keep track of this object from now on, see wrapArtHandle
 		artWrappers.put(this.handle, this);
@@ -201,18 +201,18 @@ public abstract class Art extends DictionaryObject {
 		Art parent = getParent();
 		if (parent != null)
 			parent.childrenWrappers.add(this);
+		// store reference to the art's document
+		this.document = document != null ? document : DocumentList.getActiveDocument();
 	}
-	
+
 	/**
 	 * Creates a new AIArtHandle of the specified type and wraps it in a Art object
 	 * Do not call it from Art object, call the 0 parameter constructor of the anchestor
 	 * classes which then call this constructor here.
 	 * @param type
 	 */
-	protected Art(Document document, int type) {
-		this(nativeCreate(document != null ? document.handle : 0, type));
-		// store reference to the art's document
-		this.document = document != null ? document : DocumentList.getActiveDocument();
+	protected Art(int type, Document document) {
+		this(nativeCreate(document != null ? document.handle : 0, type), document);
 	}
 
 	/**
@@ -229,59 +229,52 @@ public abstract class Art extends DictionaryObject {
 		// TODO: don't forget to add all types also to the native
 		// artGetType function in com_scriptographer_ai_Art.cpp!
 		if (art == null) {
+			Document document = Document.wrapHandle(documentHandle);
 			switch (type) {
 				case TYPE_PATH:
-					art = new Path((long) artHandle);
+					art = new Path((long) artHandle, document);
 					break;
 				case TYPE_GROUP:
-					art = new Group((long) artHandle);
+					art = new Group((long) artHandle, document);
 					break;
 				case TYPE_RASTER:
-					art = new Raster((long) artHandle);
+					art = new Raster((long) artHandle, document);
 					break;
 				case TYPE_LAYER:
-					art = new Layer((long) artHandle);
+					art = new Layer((long) artHandle, document);
 					break;
 				case TYPE_COMPOUNDPATH:
-					art = new CompoundPath((long) artHandle);
+					art = new CompoundPath((long) artHandle, document);
 					break;
 				case TYPE_TEXTFRAME:
 					switch (textType) {
 						case TextFrame.TEXTTYPE_POINT:
-							art = new PointText((long) artHandle);
+							art = new PointText((long) artHandle, document);
 							break;
 						case TextFrame.TEXTTYPE_AREA:
-							art = new AreaText((long) artHandle);
+							art = new AreaText((long) artHandle, document);
 							break;
 						case TextFrame.TEXTTYPE_PATH:
-							art = new PathText((long) artHandle);
+							art = new PathText((long) artHandle, document);
 							break;
 					}
 					break;
 				}
 		}
 		if (art != null) {
-			art.document = Document.wrapHandle(documentHandle);
 			art.dictionaryRef = dictionaryRef;
 		}
 		return art;
 	}
-	
+
 	/**
-	 * Increases the version of the art object associated with artHandle,
-	 * if there is one. It does not wrap the artHandle if it wasn't
-	 * already.
+	 * returns the wrapper, if the object has one
 	 *
 	 * @param artHandle
-	 * @return true if the object was updated
+	 * @return the wrapper for the artHandle
 	 */
-	protected static boolean updateIfWrapped(int artHandle) {
-		Art art = (Art) artWrappers.get(artHandle);
-		if (art != null) {
-			art.version++;
-			return true;
-		}
-		return false;
+	protected static Art getIfWrapped(int artHandle) {
+		return (Art) artWrappers.get(artHandle);
 	}
 
 	/**
@@ -291,7 +284,7 @@ public abstract class Art extends DictionaryObject {
 	 * 
 	 * @param artHandles
 	 */
-	private static void updateIfWrapped(int[] artHandles) {
+	protected static void updateIfWrapped(int[] artHandles) {
 		// reuse one object for lookups, instead of creating a new one
 		// for every artHandle
 		for (int i = 0; i < artHandles.length; i+=2) {
@@ -362,7 +355,7 @@ public abstract class Art extends DictionaryObject {
 	 * @param type
 	 * @return the handle for the art object
 	 */
-	private native static int nativeCreate(int docHandle, int type);
+	private native static long nativeCreate(int docHandle, int type);
 	private native boolean nativeRemove(int handle, int dictionaryRef);
 
 	public native Art getParent();
@@ -485,18 +478,13 @@ public abstract class Art extends DictionaryObject {
 	// self defined:
 	public static final int TRANSFORM_DEEP				= 1 << 10;
 
-	private native void nativeTransform(AffineTransform at, int flags);
-
 	/**
 	 * Transforms the art object with custom flags to be set.
 	 *
 	 * @param at
 	 * @param flags Art. TRANSFORM_*
 	 */
-	public void transform(AffineTransform at, int flags) {
-		CommitManager.commit(this);
-		nativeTransform(at, flags);
-	}
+	public native void transform(AffineTransform at, int flags);
 
 	/**
 	 * Transforms the art object with the flags Art.TRANSFORM_OBJECTS and Art.TRANSFORM_DEEP set

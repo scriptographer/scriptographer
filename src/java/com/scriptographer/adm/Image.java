@@ -28,8 +28,8 @@
  *
  * $RCSfile: Image.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.9 $
+ * $Date: 2006/01/03 05:38:03 $
  */
 
 package com.scriptographer.adm;
@@ -174,7 +174,6 @@ public class Image extends ADMObject {
 	public Image(InputStream in) throws IOException {
 //		this(checkImage(ImageIO.read(in), url));
 		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(getBytes(in))), in));
-		System.out.println(in);
 	}
 
 	private static java.awt.Image checkImage(java.awt.Image image, Object srcObj) throws IOException {

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: PointText.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/11/08 14:02:15 $
+ * $Revision: 1.3 $
+ * $Date: 2006/01/03 05:38:03 $
  */
 
 package com.scriptographer.ai;
@@ -38,18 +38,18 @@ import java.awt.geom.Point2D;
 
 public class PointText extends TextFrame {
 
-	protected PointText(long handle) {
-		super(handle);
+	protected PointText(long handle, Document document) {
+		super(handle, document);
 	}
 	
 	/**
 	 * Creates a point text object
 	 */
 
-	native private static int nativeCreate(int docHandle, int orient, float x, float y);
+	native private static long nativeCreate(int docHandle, int orient, float x, float y);
 
 	public PointText(Document document, Point2D point, int orient) {
-		this(nativeCreate(document != null ? document.handle : 0, orient, (float) point.getX(), (float) point.getY()));
+		this(nativeCreate(document != null ? document.handle : 0, orient, (float) point.getX(), (float) point.getY()), document);
 	}
 
 	public PointText(Document document, Point2D point) {

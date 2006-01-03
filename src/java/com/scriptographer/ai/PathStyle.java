@@ -28,8 +28,8 @@
  *
  * $RCSfile: PathStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/11/05 00:50:41 $
+ * $Revision: 1.9 $
+ * $Date: 2006/01/03 05:38:03 $
  */
 
 package com.scriptographer.ai;
@@ -124,7 +124,7 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 			short clip, short lockClip, short evenOdd, float resolution) {
 		
 		fill.init(fillColor, hasFillColor, fillOverprint);
-		stroke.init(	strokeColor, hasStrokeColor, strokeOverprint, strokeWidth, dashOffset, dashArray, cap, join, miterLimit);
+		stroke.init(strokeColor, hasStrokeColor, strokeOverprint, strokeWidth, dashOffset, dashArray, cap, join, miterLimit);
 
 		this.clip = clip >= 0 ? new Boolean(clip != 0) : null;
 		this.lockClip = lockClip >= 0 ? new Boolean(lockClip != 0) : null;

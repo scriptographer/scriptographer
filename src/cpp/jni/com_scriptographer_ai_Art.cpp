@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2005/11/08 14:02:16 $
+ * $Revision: 1.15 $
+ * $Date: 2006/01/03 05:37:06 $
  */
  
 #include "stdHeaders.h"
@@ -137,9 +137,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env, 
 */
 
 /*
- * int nativeCreate(int docHandle, int type)
+ * long nativeCreate(int docHandle, int type)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env, jclass cls, jint docHandle, jint type) {
+JNIEXPORT jlong JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env, jclass cls, jint docHandle, jint type) {
 	AIArtHandle art = NULL;
 
 	CREATEART_BEGIN
@@ -161,7 +161,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env, 
 
 	CREATEART_END
 
-	return (jint)art;
+	return (jlong) art;
 }
 
 /*
@@ -619,54 +619,46 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_moveBelow(JNIEnv *env,
 	return artMove(env, obj, art, kPlaceBelow);
 }
 
-/*
- * void transform(java.awt.geom.AffineTransform at, int scaleFlags)
- */
-
 // if 'deep' is set, artTransform traverses the children recursively and transforms them: 
-void artTransform(JNIEnv *env, jobject obj, AIArtHandle art, AIRealMatrix *matrix, AIReal lineScale, long flags) {
+void artTransform(JNIEnv *env, AIArtHandle art, AIRealMatrix *matrix, AIReal lineScale, long flags) {
+	jobject obj = gEngine->getIfWrapped(env, art);
+	if (obj != NULL) {
+		// commit it first:
+		gEngine->callStaticObjectMethod(env, gEngine->cls_CommitManager, gEngine->mid_CommitManager_commit, obj);
+	}
 	sAITransformArt->TransformArt(art, matrix, lineScale, flags);
-	short type = Art_getType(art);
 	// TODO: add all art objects that need invalidate to be called after transform!
-	if (type == kPathArt)
-		gEngine->updateArtIfWrapped(env, art);
+	// short type = Art_getType(art);
+	// if (type == kPathArt)
+	if (obj != NULL) {
+		// only call this if it's wrapped!
+		// increasing version by one causes refetching of cached data:
+		gEngine->setIntField(env, obj, gEngine->fid_Art_version, gEngine->getIntField(env, obj, gEngine->fid_Art_version) + 1);
+	}
 
 	if (flags & com_scriptographer_ai_Art_TRANSFORM_DEEP) {
 		AIArtHandle child;
 		sAIArt->GetArtFirstChild(art, &child);
 		while (child != NULL) {
-			artTransform(env, NULL, child, matrix, lineScale, flags);
+			artTransform(env, child, matrix, lineScale, flags);
 			sAIArt->GetArtSibling(child, &child);
 		}
 	}
 }
 
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_nativeTransform(JNIEnv *env, jobject obj, jobject at, jint flags) {
+/*
+ * void transform(java.awt.geom.AffineTransform at, int scaleFlags)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_transform(JNIEnv *env, jobject obj, jobject at, jint flags) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIRealMatrix matrix;
 		gEngine->convertMatrix(env, at, &matrix);
-		
-		/*
-		// modify the matrix so that it 'acts' on the center of the selected object
-		AIRealRect bounds;
-		sAIArt->GetArtBounds(art, &bounds);
-
-		AIReal centerX = (bounds.left + bounds.right) * 0.5f;
-		AIReal centerY = (bounds.top + bounds.bottom) * 0.5f;
-
-		AIRealMatrix m;
-		sAIRealMath->AIRealMatrixSetTranslate(&m, -centerX, -centerY);
-		sAIRealMath->AIRealMatrixConcat(&m, &matrix, &m);
-		sAIRealMath->AIRealMatrixConcatTranslate(&m, centerX, centerY);
-		*/
-
 		// according to adobe sdk manual: linescale = sqrt(scaleX) * sqrt(scaleY)
 		AIReal sx, sy;
 		sAIRealMath->AIRealMatrixGetScale(&matrix, &sx, &sy);
 		AIReal lineScale = sAIRealMath->AIRealSqrt(sx) * sAIRealMath->AIRealSqrt(sy);
-
-		artTransform(env, obj, art, &matrix, lineScale, flags);
+		artTransform(env, art, &matrix, lineScale, flags);
 	} EXCEPTION_CONVERT(env)
 }
 

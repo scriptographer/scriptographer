@@ -8,9 +8,9 @@
  */
 
 /*
- * int nativeCreate(int docHandle, int orient, int artHandle)
+ * long nativeCreate(int docHandle, int orient, int artHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__III(JNIEnv *env, jclass cls, jint docHandle, jint orient, jint artHandle) {
+JNIEXPORT jlong JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__III(JNIEnv *env, jclass cls, jint docHandle, jint orient, jint artHandle) {
 	AIArtHandle art = NULL;
 
 	CREATEART_BEGIN
@@ -21,13 +21,13 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__III(JNI
 
 	CREATEART_END
 
-	return (jint) art;
+	return (jlong) art;
 }
 
 /*
- * int nativeCreate(int docHandle, int orient, int artHandle, float x, float y)
+ * jlong nativeCreate(int docHandle, int orient, int artHandle, float x, float y)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__IIIFF(JNIEnv *env, jclass cls, jint docHandle, jint orient, jint artHandle, jfloat x, jfloat y) {
+JNIEXPORT jlong JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__IIIFF(JNIEnv *env, jclass cls, jint docHandle, jint orient, jint artHandle, jfloat x, jfloat y) {
 	AIArtHandle art = NULL;
 
 	CREATEART_BEGIN
@@ -40,7 +40,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__IIIFF(J
 
 	CREATEART_END
 
-	return (jint) art;
+	return (jlong) art;
 }
 
 /*

@@ -28,26 +28,26 @@
  *
  * $RCSfile: Group.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.6 $
+ * $Date: 2006/01/03 05:38:03 $
  */
 
 package com.scriptographer.ai;
 
 public class Group extends Art {
-	protected Group(long handle) {
-		super((int) handle);
+	protected Group(long handle, Document document) {
+		super(handle, document);
 	}
 
 	/**
 	 * Creates a group object
 	 */
 	public Group(Document document) {
-		super(document, TYPE_GROUP);
+		super(TYPE_GROUP, document);
 	}
 	
 	public Group() {
-		super(null, TYPE_GROUP);
+		super(TYPE_GROUP, null);
 	}
 
 	public native boolean isClipped();

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Raster.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.6 $
+ * $Date: 2006/01/03 05:38:03 $
  */
 
 package com.scriptographer.ai;
@@ -51,8 +51,8 @@ public class Raster extends Art {
 	// native pointer to an attached data struct:
 	private int rasterData = 0;
 
-	protected Raster(long handle) {
-		super((int) handle);
+	protected Raster(long handle, Document document) {
+		super(handle, document);
 	}
 
 	/**
@@ -64,7 +64,7 @@ public class Raster extends Art {
 	 * @param type Color.TYPE_*
 	 */
 	public Raster(Document document, int type, int width, int height) {
-		super(document, TYPE_RASTER);
+		super(TYPE_RASTER, document);
 		nativeConvert(type, width, height);
 	}
 	

@@ -8,9 +8,9 @@
  */
 
 /*
- * int nativeCreate(int docHandle, int orient, float x, float y)
+ * long nativeCreate(int docHandle, int orient, float x, float y)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PointText_nativeCreate(JNIEnv *env, jclass cls, jint docHandle, jint orient, jfloat x, jfloat y) {
+JNIEXPORT jlong JNICALL Java_com_scriptographer_ai_PointText_nativeCreate(JNIEnv *env, jclass cls, jint docHandle, jint orient, jfloat x, jfloat y) {
 	AIArtHandle art = NULL;
 
 	CREATEART_BEGIN
@@ -23,7 +23,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PointText_nativeCreate(JNIEnv 
 
 	CREATEART_END
 
-	return (jint) art;
+	return (jlong) art;
 }
 
 /*

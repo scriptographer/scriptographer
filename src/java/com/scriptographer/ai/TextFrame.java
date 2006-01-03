@@ -28,70 +28,80 @@
  * 
  * $RCSfile: TextFrame.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.3 $
+ * $Date: 2006/01/03 05:38:03 $
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.util.ReadOnlyList;
+import com.scriptographer.CommitManager;
 
 public abstract class TextFrame extends Art {
 	// AITextOrientation
-	public static final int ORIENTATION_HORIZONTAL = 0;	
+	public static final int ORIENTATION_HORIZONTAL = 0;
 	public static final int ORIENTATION_VERTICAL = 1;
 
 	// AITextType
-	protected static final int 
+	protected static final int
 		TEXTTYPE_UNKNOWN	= -1,
 		TEXTTYPE_POINT	= 0,
 		TEXTTYPE_AREA	= 1,
 		TEXTTYPE_PATH	= 2;
-	
+
 	TextRange range = null;
 	TextRange visibleRange = null;
 
-	protected TextFrame(long handle) {
-		super(handle);
+	protected TextFrame(long handle, Document document) {
+		super(handle, document);
 	}
-	
+
 	// orientation
 	public native int getOrientation();
 	public native void setOrientation(int orientation);
 
 	// TODO:
- 	// AIAPI AIErr (*DoTextFrameHit)	( const AIHitRef hitRef, TextRangeRef*	textRange );
-	
-	public native Art createOutline();
-	
+	 // AIAPI AIErr (*DoTextFrameHit)	( const AIHitRef hitRef, TextRangeRef*	textRange );
+
+	private native Art nativeCreateOutline();
+
+	public Art createOutline() {
+		// apply changes and reflow the layout before creating outlines
+		// TODO: find a way to commit only changes regarding this text frame
+		// especially CharacterStyle is a problem, because it uses TextRange
+		CommitManager.commit();
+		document.reflowText();
+		return nativeCreateOutline();
+	}
+
 	public native boolean link(TextFrame next);
-	
+
 	public native boolean unlinkBefore();
-	
+
 	public native boolean unlinkAfter();
-	
+
 	public native boolean isLinked();
-	
+
 	/**
 	 * Returns the index of this text frame in the story's list of text frames
 	 * @return
 	 */
 	public native int getIndex();
-	
+
 	/**
 	 * Returns this text frame's story's index in the document's stories array
-	 * 
+	 *
 	 * @return
 	 */
 	private native int getStoryIndex();
-	
+
 	public TextStory getStory() {
 		// don't wrap directly. allways go through StoryList
 		// to make sure we're not getting more than one reference
 		// to the sam Story, so things can be cached there:
 		return (TextStory) document.getStories().get(getStoryIndex());
 	}
-	
+
 	private TextFrame getFrame(int index) {
 		ReadOnlyList list = getStory().getTextFrames();
 		if (index >= 0 && index < list.getLength()) {
@@ -100,7 +110,7 @@ public abstract class TextFrame extends Art {
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Returns the next text object in a story of various linked text frames
 	 * @return
@@ -108,7 +118,7 @@ public abstract class TextFrame extends Art {
 	public TextFrame getNextFrame() {
 		return getFrame(getIndex() + 1);
 	}
-	
+
 	/**
 	 * Returns the previous text object in a story of various linked text frames
 	 * @return
@@ -118,10 +128,10 @@ public abstract class TextFrame extends Art {
 	}
 
 	// ATE
-	
+
 	// TODO: add cashing for getRange, updating with CommitManager.version
 	public native TextRange nativeGetRange(boolean includeOverflow);
-	
+
 	/**
 	 * In case there's an overflow in the text, this only returns a range
 	 * over the visible characters, while getRange() returns one over the
@@ -141,7 +151,7 @@ public abstract class TextFrame extends Art {
 		}
 		return visibleRange;
 	}
-	
+
 	/**
 	 * Returns a range for all the characters, even the invisble ones outside
 	 * the container.
@@ -161,7 +171,7 @@ public abstract class TextFrame extends Art {
 		}
 		return range;
 	}
-	
+
 	/**
 	 * return the same as getVisibleRange().getStart()
 	 * @return
@@ -174,7 +184,7 @@ public abstract class TextFrame extends Art {
 		else
 			return nativeGetRange(false).getStart();
 	}
-	
+
 	/**
 	 * return the same as getVisibleRange().getEnd()
 	 * @return
@@ -187,41 +197,41 @@ public abstract class TextFrame extends Art {
 		else
 			return nativeGetRange(false).getEnd();
 	}
-	
+
 	public String getContent() {
 		return getRange().getContent();
 	}
-	
+
 	public void setContent(String text) {
 		getRange().setContent(text);
 	}
-	
+
 	public CharacterStyle getCharacterStyle() {
 		return getRange().getCharacterStyle();
 	}
-	
+
 	public void setCharacterStyle(CharacterStyle style) {
 		getRange().setCharacterStyle(style);
 	}
-	
+
 	public ParagraphStyle getParagraphStyle() {
 		return getRange().getParagraphStyle();
 	}
-	
+
 	public void setParagraphStyle(ParagraphStyle style) {
 		getRange().setParagraphStyle(style);
 	}
 
 	public native TextRange getSelection();
-	
+
 	public native boolean equals(Object obj);
-	
+
 	// TODO:
 	//	ATEErr (*GetTextLinesIterator) ( TextFrameRef textframe, TextLinesIteratorRef* ret);
 
 	//	ATEErr (*GetLineOrientation) ( TextFrameRef textframe, LineOrientation* ret);
 	//	ATEErr (*SetLineOrientation) ( TextFrameRef textframe, LineOrientation lineOrientation);
-	
+
 	/** Check if this frame is selected.  To set the selection, you have to use application specific
 	API for that.  In Illustrator case, you can use AIArtSuite to set the selection.
 	*/
@@ -230,7 +240,7 @@ public abstract class TextFrame extends Art {
 
 	public native float getSpacing();
 	public native void setSpacing(float spacing);
-	
+
 	public native boolean getOpticalAlignment();
 	public native void setOpticalAlignment(boolean active);
 }
