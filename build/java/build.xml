@@ -22,10 +22,12 @@
 		<property name="build.lib" value="${build.dir}/lib"/>
 		<property name="build.jni" value="${home.dir}/src/cpp/jni"/>
 		<property name="build.classes" value="${build.dir}/classes"/>
-		<property name="build.docs" value="${home.dir}/docs"/>
-		<property name="build.javadocs" value="${home.dir}/docs/api"/>
-		<property name="build.jsdocs" value="${home.dir}/docs/js"/>
 		<property name="build.packages" value="${home.dir}/build/packages"/>
+
+		<property name="docs.dir" value="${home.dir}/docs"/>
+		<property name="docs.api.dir" value="${docs.dir}/api"/>
+		<property name="docs.js.dir" id="docs.js.dir" value="${docs.dir}/js"/>
+		<property name="docs.js.templates.dir" id="docs.js.templates.dir" value="${docs.dir}/templates"/>
 
 		<!-- this is used for importing comments from the gnu classpath file into the js documentation -->
 		<property name="build.src.jdk" value="${home.dir}/docs/src/"/>
@@ -166,7 +168,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${build.packages}/Scriptographer/doc">
-			<fileset dir="${build.jsdocs}"/>
+			<fileset dir="${docs.js.dir}"/>
 		</copy>
 		<!-- On Mac OS X, use ditto for copying the Plugin and generating a zip file, so the data-forks are preserved -->
 		<exec executable="ditto" os="Mac OS X">
@@ -295,10 +297,10 @@
 	<!-- Creates the API documentation                                       -->
 	<!-- =================================================================== -->
 	<target name="javadocs" depends="init">
-		<mkdir dir="${build.javadocs}"/>
+		<mkdir dir="${docs.api.dir}"/>
 		<javadoc packagenames="com.scriptographer.*"
   				sourcepathref="build.sourcepath"
-				destdir="${build.javadocs}"
+				destdir="${docs.api.dir}"
 				author="false"
 				version="false"
 				private="false"
@@ -309,14 +311,12 @@
 		</javadoc>
 	</target>
 
-	<!-- =================================================================== -->
-	<!-- Creates the JS API documentation                                    -->
-	<!-- =================================================================== -->
-	<target name="jsdocs" depends="init">
-		<mkdir dir="${build.jsdocs}"/>
-		<javadoc packagenames="java.awt.geom.*,com.scriptographer,com.scriptographer.ai.*,com.scriptographer.adm.*"
+	<!-- "java.awt.geom.*,com.scriptographer,com.scriptographer.ai.*,com.scriptographer.adm.*" -->
+	<target name="jsdoclet">
+		<mkdir dir="${destdir}"/>
+		<javadoc packagenames="com.scriptographer.*"
 				sourcepathref="build.sourcepath"
-				destdir="${build.jsdocs}"
+				destdir="${destdir}"
 				author="false"
 				version="false"
 				public="true"
@@ -339,13 +339,13 @@
 					com.scriptographer.ai.SegmentPoint
 					com.scriptographer.ai.Tool
 					com.scriptographer.ai.FileFormat
+					com.scriptographer.test.*
 					java.*
 				"/>
 				<param name="-packagesequence" value="
-					com.scriptographer
 					com.scriptographer.ai
 					com.scriptographer.adm
-					com.scriptographer.test
+					com.scriptographer
 				"/>
 				<param name="-methodfilter" value="
 					setWrapper
@@ -353,7 +353,28 @@
 					iterator
 					hashCode
 				"/>
+				<param name="-templates" value="${templates}"/>
 			</doclet>
 		</javadoc>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Creates the JS API documentation                                    -->
+	<!-- =================================================================== -->
+	<target name="jsdocs" depends="init">
+		<antcall target="jsdoclet">
+			<param name="templates" value="off"/>
+			<param name="destdir" value="${docs.js.dir}"/>
+		</antcall>
+	</target>
+
+	<!-- =================================================================== -->
+	<!-- Creates the JS API documentation as Templates for the Server        -->
+	<!-- =================================================================== -->
+	<target name="templatedocs" depends="init">
+		<antcall target="jsdoclet">
+			<param name="templates" value="on"/>
+			<param name="destdir" value="${docs.js.templates.dir}"/>
+		</antcall>
 	</target>
 </project>

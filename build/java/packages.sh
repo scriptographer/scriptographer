@@ -1,1 +1,1 @@
-./build.sh packages
+/usr/bin/ant packages
