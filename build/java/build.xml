@@ -212,7 +212,6 @@
 
 			<class name="com.scriptographer.ScriptographerEngine" />
 			<class name="com.scriptographer.Key" />
-			<class name="com.scriptographer.Test" />
 
 			<class name="com.scriptographer.ai.Tool" />
 			<class name="com.scriptographer.ai.Art" />

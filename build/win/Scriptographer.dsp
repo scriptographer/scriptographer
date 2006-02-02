@@ -326,6 +326,10 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_ArtSet.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_CharacterStyle.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Color.cpp
 # End Source File
 # Begin Source File
@@ -339,6 +343,18 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Document.cpp
 # Begin Source File
 
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_DocumentList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_FontFamily.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_FontList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_FontWeight.cpp
 # End Source File
 # Begin Source File
 
@@ -363,6 +379,10 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_MenuGroup.cpp
 # Begin Source File
 
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_MenuItem.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_ParagraphStyle.cpp
 # End Source File
 # Begin Source File
 
@@ -394,19 +414,19 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_SegmentList.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Story.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_StoryList.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Text.cpp
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_TextFrame.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_TextRange.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_TextStory.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_TextStoryList.cpp
 # End Source File
 # Begin Source File
 
@@ -432,10 +452,6 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_Key.cpp
 # Begin Source File
 
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ScriptographerEngine.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\jni\com_scriptographer_Test.cpp
 # End Source File
 # End Group
 # Begin Source File
