@@ -181,12 +181,12 @@
 			<arg path="${build.packages}/Scriptographer"/>
 			<arg path="${build.packages}/Scriptographer_Mac_CS1_${date}.zip"/>
 		</exec>
-		
+
 		<!-- remove the plugin file again, in order to copy the CS2 one -->
 		<delete includeEmptyDirs="true">
 			<fileset dir="${build.packages}" includes="**/Scriptographer/Scriptographer*"/>
 		</delete>
-		
+
 		<exec executable="ditto" os="Mac OS X">
 			<arg path="${home.dir}/build/mac/build/cs2/release/Scriptographer.aip"/>
 			<arg path="${build.packages}/Scriptographer/Scriptographer.aip"/>
@@ -274,7 +274,7 @@
 		   	<class name="com.scriptographer.adm.ListEntry" />
 		   	<class name="com.scriptographer.adm.HierarchyList" />
 		   	<class name="com.scriptographer.adm.HierarchyListEntry" />
-			
+
 		   	<class name="com.scriptographer.adm.Drawer" />
 		   	<class name="com.scriptographer.adm.Image" />
 		   	<class name="com.scriptographer.adm.Tracker" />
@@ -288,7 +288,7 @@
 		</script>
 	</target>
 
-			
+
 	<!-- =================================================================== -->
 	<!-- Compiles the source directory                                       -->
 	<!-- =================================================================== -->
@@ -346,7 +346,7 @@
 					com.scriptographer.ai.DictionaryObject
 					com.scriptographer.ai.SegmentPoint
 					com.scriptographer.ai.Tool
-					com.scriptographer.ai.FileFormat
+					com.scriptographer.aicw.FileFormat
 					com.scriptographer.adm.Notifier
 					com.scriptographer.adm.DialogGroupInfo
 					com.scriptographer.js.*
