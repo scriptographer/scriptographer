@@ -170,6 +170,7 @@
 		<copy todir="${build.packages}/Scriptographer/doc">
 			<fileset dir="${docs.js.dir}"/>
 		</copy>
+		<!-- TODO: move this to external shell scripts just like on windows -->
 		<!-- On Mac OS X, use ditto for copying the Plugin and generating a zip file, so the data-forks are preserved -->
 		<exec executable="ditto" os="Mac OS X">
 			<arg file="${home.dir}/build/mac/build/cs1/release/Scriptographer"/>
@@ -194,6 +195,14 @@
 			<arg line="-c -k"/>
 			<arg path="${build.packages}/Scriptographer"/>
 			<arg path="${build.packages}/Scriptographer_Mac_CS2_${date}.zip"/>
+		</exec>
+
+		<!-- Windows -->
+		<exec executable="cmd.exe" os="Windows XP" dir="${home.dir}/build/win/">
+			<arg line="/C packages.bat"/>
+			<arg path="${home.dir}/build/win"/>
+			<arg path="${build.packages}"/>
+			<arg line="${date}"/>
 		</exec>
 
 		<!-- remove everything except the archives -->
@@ -382,3 +391,4 @@
 		</antcall>
 	</target>
 </project>
+
