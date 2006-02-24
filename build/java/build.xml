@@ -132,6 +132,7 @@
 			includes="**/loader/**"/>
 	</target>
 
+
 	<!-- =================================================================== -->
 	<!-- Installs the jar files in the Illustrator directory                 -->
 	<!-- =================================================================== -->
@@ -139,6 +140,7 @@
 		<copy file="${build.dir}/loader.jar" todir="${install.dir}/"/>
 		<copy file="${build.lib}/${jar.name}.jar" todir="${install.lib}/"/>
 	</target>
+
 
 	<!-- =================================================================== -->
 	<!-- Copy classes to the Illustrator directory                           -->
@@ -152,10 +154,11 @@
 		</copy>
 	</target>
 
+
 	<!-- =================================================================== -->
 	<!-- Installs the jar files in the Illustrator directory                 -->
 	<!-- =================================================================== -->
-	<target name="packages" depends="jar,jsdocs">
+	<target name="packages" depends="init"> <!-- jar,jsdocs -->
 		<mkdir dir="${build.packages}"/>
 
 		<mkdir dir="${build.packages}/Scriptographer"/>
@@ -170,38 +173,17 @@
 		<copy todir="${build.packages}/Scriptographer/doc">
 			<fileset dir="${docs.js.dir}"/>
 		</copy>
-		<!-- TODO: move this to external shell scripts just like on windows -->
-		<!-- On Mac OS X, use ditto for copying the Plugin and generating a zip file, so the data-forks are preserved -->
-		<exec executable="ditto" os="Mac OS X">
-			<arg file="${home.dir}/build/mac/build/cs1/release/Scriptographer"/>
-			<arg path="${build.packages}/Scriptographer/"/>
-		</exec>
-		<exec executable="ditto" os="Mac OS X">
-			<arg line="-c -k"/>
-			<arg path="${build.packages}/Scriptographer"/>
-			<arg path="${build.packages}/Scriptographer_Mac_CS1_${date}.zip"/>
-		</exec>
 
-		<!-- remove the plugin file again, in order to copy the CS2 one -->
-		<delete includeEmptyDirs="true">
-			<fileset dir="${build.packages}" includes="**/Scriptographer/Scriptographer*"/>
-		</delete>
-
-		<exec executable="ditto" os="Mac OS X">
-			<arg path="${home.dir}/build/mac/build/cs2/release/Scriptographer.aip"/>
-			<arg path="${build.packages}/Scriptographer/Scriptographer.aip"/>
-		</exec>
-		<exec executable="ditto" os="Mac OS X">
-			<arg line="-c -k"/>
-			<arg path="${build.packages}/Scriptographer"/>
-			<arg path="${build.packages}/Scriptographer_Mac_CS2_${date}.zip"/>
+		<!-- Macintosh -->
+		<exec executable="${home.dir}/build/mac/zipPackages.sh" os="Mac OS X" dir="${build.packages}">
+			<arg path="${home.dir}/build/mac/build"/>
+			<arg line="${date}"/>
 		</exec>
 
 		<!-- Windows -->
-		<exec executable="cmd.exe" os="Windows XP" dir="${home.dir}/build/win/">
-			<arg line="/C packages.bat"/>
+		<exec executable="cmd.exe" os="Windows XP" dir="${build.packages}">
+			<arg line="/C ${home.dir}/build/win/zipPackages.bat"/>
 			<arg path="${home.dir}/build/win"/>
-			<arg path="${build.packages}"/>
 			<arg line="${date}"/>
 		</exec>
 
@@ -210,6 +192,7 @@
 			<fileset dir="${build.packages}" excludes="**/Scriptographer*.zip"/>
 		</delete>
 	</target>
+
 
 	<!-- =================================================================== -->
 	<!-- Compiles the source directory                                       -->
@@ -301,6 +284,7 @@
 		</script>
 	</target>
 
+
 	<!-- =================================================================== -->
 	<!-- Creates the API documentation                                       -->
 	<!-- =================================================================== -->
@@ -318,6 +302,7 @@
 		    <bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, Scratchdisk.com. All Rights Reserved.]]></bottom>
 		</javadoc>
 	</target>
+
 
 	<!-- "java.awt.geom.*,com.scriptographer,com.scriptographer.ai.*,com.scriptographer.adm.*" -->
 	<target name="jsdoclet">
@@ -371,6 +356,7 @@
 		</javadoc>
 	</target>
 
+
 	<!-- =================================================================== -->
 	<!-- Creates the JS API documentation                                    -->
 	<!-- =================================================================== -->
@@ -380,6 +366,7 @@
 			<param name="destdir" value="${docs.js.dir}"/>
 		</antcall>
 	</target>
+
 
 	<!-- =================================================================== -->
 	<!-- Creates the JS API documentation as Templates for the Server        -->
