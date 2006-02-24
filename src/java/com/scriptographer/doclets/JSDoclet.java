@@ -39,6 +39,7 @@ public class JSDoclet extends Doclet {
 	static String[] filterClasses = null;
 	static String[] packageSequence = null;
 	static String[] methodFilter = null;
+	static String base;
 
 	static boolean isSuperclass(ClassDoc cd, String superclass) {
 		while (cd != null) {
@@ -274,10 +275,9 @@ public class JSDoclet extends Doclet {
 
 		void printMember(PrintWriter writer, String id, String title, String text, ClassDoc cd) {
 			writer.print("<div id=\"" + id + "-link\" class=\"member-link\">");
-			writer.print(createAnchor(id, templates));
+			writer.print(createAnchor(id, true));
 			writer.print(title);
-			if (templates)
-				writer.print("</a>");
+			writer.print("</a>");
 			writer.println("</div>");
 
 			writer.println("<div id=\"" + id + "-description\" class=\"member-description\">");
@@ -305,7 +305,7 @@ public class JSDoclet extends Doclet {
 			StringBuffer title = new StringBuffer("<tt><b>");
 			// Static = PROTOTYPE.NAME
 			if (isStatic())
-				title.append(containingClass().name()).append(".");
+				title.append(cd.name()).append(".");
 			title.append(name());
 			title.append("</b></tt>");
 
@@ -313,7 +313,7 @@ public class JSDoclet extends Doclet {
 			PrintWriter strWriter = new PrintWriter(text);
 
 			// Description
-			printTags(strWriter, classInfo.classDoc, inlineTags(), "<div class=\"member-paragraph\">", "</div>", true);
+			printTags(strWriter, cd, inlineTags(), "<div class=\"member-paragraph\">", "</div>");
 			// See tags
 			printSeeTags(strWriter, cd, seeTags(), "<div class=\"member-paragraph\"><b>See also:</b>", "</div>");
 
@@ -339,6 +339,8 @@ public class JSDoclet extends Doclet {
 		Tag[] inlineTags() {
 			return member.inlineTags();
 		}
+
+
 
 		SeeTag[] seeTags() {
 			return member.seeTags();
@@ -531,7 +533,7 @@ public class JSDoclet extends Doclet {
 				StringBuffer title = new StringBuffer("<tt><b>");
 				// Static = PROTOTYPE.NAME
 				if (isStatic())
-					title.append(containingClass().name()).append(".");
+					title.append(cd.name()).append(".");
 
 				title.append(name()).append("</b>").append(getParameters()).append("</tt>");
 
@@ -554,35 +556,35 @@ public class JSDoclet extends Doclet {
 				PrintWriter strWriter = new PrintWriter(text);
 
 				// Description
-				printTags(strWriter, classInfo.classDoc, mbr.inlineTags(), "<div class=\"member-paragraph\">", "</div>", true);
+				printTags(strWriter, classInfo.classDoc, mbr.inlineTags(), "<div class=\"member-paragraph\">", "</div>");
 
 				// Parameter tags
 				printParameterTags(strWriter, cd);
 	
 				// Return tag
-				if (mbr instanceof MethodDoc) {
-					Type retType = ((MethodDoc)mbr).returnType();
-					if (retType != null && !retType.typeName().equals("void")) {
-						strWriter.print("<div class=\"member-paragraph\"><b>Returns:</b> ");
-						strWriter.print(createLink(retType));
-						Tag[] ret = mbr.tags("return");
-						boolean first = true;
-						if (ret.length > 0) {
-							for (int j = 0; j < ret.length; ++j) {
-								Tag[] inlineTags = ret[j].inlineTags();
-								if (inlineTags.length > 0) {
-									if (first) {
-										strWriter.print(" - ");
-										first = false;
-									}
-									printTags(strWriter, classInfo.classDoc, inlineTags);
+				Type retType = mbr.returnType();
+				if (retType != null && !retType.typeName().equals("void")) {
+					strWriter.println("<div class=\"member-paragraph\"><b>Returns:</b> ");
+					strWriter.print("<div>");
+					strWriter.print(createLink(retType));
+					Tag[] ret = mbr.tags("return");
+					boolean first = true;
+					if (ret.length > 0) {
+						for (int j = 0; j < ret.length; ++j) {
+							Tag[] inlineTags = ret[j].inlineTags();
+							if (inlineTags.length > 0) {
+								if (first) {
+									strWriter.print(" - ");
+									first = false;
 								}
+								printTags(strWriter, classInfo.classDoc, inlineTags);
 							}
 						}
-						strWriter.print("</div>");
 					}
+					strWriter.println("</div>");
+					strWriter.println("</div>");
 				}
-	
+
 				// Throws or Exceptions tag
 				ThrowsTag[] excp = executable.throwsTags();
 				if (excp.length > 0) {
@@ -660,7 +662,7 @@ public class JSDoclet extends Doclet {
 					writer.print("<div><tt>" + name + ":</tt>" + createLink(new ParamType(param)));
 					if (origTag != null) {
 						Tag[] inlineTags = origTag.inlineTags();
-						printTags(writer, cd, inlineTags, " - ", null, false);
+						printTags(writer, cd, inlineTags, " - ", null);
 					}
 					writer.println("</div>");
 				}
@@ -711,7 +713,7 @@ public class JSDoclet extends Doclet {
 		}
 
 		public Type returnType() {
-			return ((MethodDoc) member).returnType();
+			return member instanceof MethodDoc ? ((MethodDoc) member).returnType() : null;
 		}
 	}
 
@@ -1139,17 +1141,19 @@ public class JSDoclet extends Doclet {
 	public static boolean start(RootDoc root) {
 		JSDoclet.root = root;
 		try {
-			PrintWriter writer = new PrintWriter(new FileWriter(destDir + (templates ? "packages.js" : "packages.html")));
+			PrintWriter writer = new PrintWriter(new FileWriter(destDir + (templates ? "packages.js" : "packages/packages.html")));
 			if (!templates) {
 				writer.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
 				writer.println("<html>");
 				writer.println("<head>");
 				if (doctitle != null)
 					writer.println("<title>" + doctitle + "</title>");
-				writer.println("<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\">");
+				writer.println("<base target=\"classFrame\">");
+				writer.println("<link rel=\"stylesheet\" href=\"../resources/style.css\" type=\"text/css\">");
+				writer.println("<script src=\"../resources/scripts.js\" type=\"text/javascript\"></script>");
 				writer.println("</head>");
 				writer.println("<html>");
-				writer.println("<body>");
+				writer.println("<body class=\"documentation\">");
 				if (doctitle != null)
 					writer.println(section1Open + doctitle + section1Close);
 				if (author != null)
@@ -1216,14 +1220,21 @@ public class JSDoclet extends Doclet {
 					processClasses(writer, pkg.exceptions());
 					processClasses(writer, pkg.errors());
 
-					if (templates)
+					if (templates) {
 						writer.print("\"");
-
-					// Package comments
-					printTags(writer, null, pkg.inlineTags());
-
-					if (templates)
+						String first = getTags(null, pkg.firstSentenceTags());
+						writer.print(encodeJs(first.trim()));
+						writer.print("\", \"");
+						String text = getTags(null, pkg.inlineTags());
+						// remove the first sentence from the main text
+						if (text.startsWith(first))
+							text = text.substring(first.length());
+						writer.print(encodeJs(text.trim()));
 						writer.println("\");");
+					} else {
+						// Package comments
+						printTags(writer, null, pkg.inlineTags());
+					}
 				}
 			}
 			if (!templates) {
@@ -1259,11 +1270,11 @@ public class JSDoclet extends Doclet {
 				writer.println(prepend + (templates ? "[" : "<ul>"));
 				for (Iterator it = nodes.keySet().iterator(); it.hasNext();) {
 					ClassNode node = (ClassNode) it.next();
-					String header = layoutClass(node.classDoc);
+					layoutClass(node.classDoc);
 					if (templates) {
-						header = header.replaceAll("(\\\"|'|\\\n|\\\r|\\\\)", "\\\\$1");
-						writer.println(prepend + "\t{ name: \"" + node.classDoc.name() + "\", isAbstract: " + node.classDoc.isAbstract() + ", header: \"" + header + "\" },");
+						writer.println(prepend + "\t{ name: \"" + node.classDoc.name() + "\", isAbstract: " + node.classDoc.isAbstract() + " },");
 					} else {
+						base = "";
 						writer.println(prepend + "\t<li>" + createLink(node.classDoc) + "</li>");
 					}
 					node.printHierarchy(writer, prepend + "\t");
@@ -1307,8 +1318,7 @@ public class JSDoclet extends Doclet {
 	/**
 	 * Lays out a list of classes.
 	 */
-	static String layoutClass(ClassDoc cd) {
-		String ret = null;
+	static void layoutClass(ClassDoc cd) {
 		try {
 			// determine folder + filename for class file:
 			String name = cd.name();
@@ -1317,7 +1327,9 @@ public class JSDoclet extends Doclet {
 			path = path.substring(0, path.length() - name.length());
 			path = packageRelativIdentifier(basePackage, path);
 			// now split into packages and create subdirs:
-			String[] parts = ("classes." + path).split("\\.");
+			if (!templates)
+				path = "packages." + path;
+			String[] parts = path.split("\\.");
 			path = "";
 			int levels = 0;
 			for (int j = 0; j < parts.length; j++) {
@@ -1330,7 +1342,35 @@ public class JSDoclet extends Doclet {
 				if (!dir.exists())
 					dir.mkdir();
 			}
-			PrintWriter writer = new PrintWriter(new FileWriter(destDir + path + name + (templates ? ".jtl" : ".html")));
+			PrintWriter writer = new PrintWriter(new FileWriter(destDir + path + name + (templates ? ".jstl" : ".html")));
+
+			if (!templates) {
+				base = "";
+				for (int j = 1; j < levels; j++)
+					base += "../";
+
+				writer.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
+				writer.println("<html>");
+				writer.println("<head>");
+				writer.println("<title>" + name + "</title>");
+				writer.println("<base target=\"classFrame\">");
+				writer.println("<link rel=\"stylesheet\" href=\"../" + base + "resources/style.css\" type=\"text/css\">");
+				writer.println("<script src=\"../" + base + "resources/scripts.js\" type=\"text/javascript\"></script>");
+				writer.println("</head>");
+				writer.println("<body class=\"documentation\">");
+			}
+
+			String subClasses = null;
+			for (int index = 0; index < root.classes().length; index++) {
+				ClassDoc cls = root.classes()[index];
+				if (isVisibleClass(cls) && cls.superclass() == cd && !cls.equals(cd)) {
+					if (subClasses == null)
+						subClasses = "";
+					else
+						subClasses += ", ";
+					subClasses += createLink(cls);
+				}
+			}
 
 			String type = "Prototype";
 			if (cd.isInterface())
@@ -1347,49 +1387,22 @@ public class JSDoclet extends Doclet {
 				superType = createLink(sc);
 			}
 
-			if (!templates) {
-				writer.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-				writer.println("<html>");
-				writer.println("<head>");
-				writer.println("<title>" + name + "</title>");
-
-				String base = "";
-				for (int j = 0; j < levels; j++)
-					base += "../";
-				writer.println("<base href=\"" + base + "\">");
-				writer.println("<link rel=\"stylesheet\" href=\"style.css\" type=\"text/css\">");
-				writer.println("</head>");
-				writer.println("<body>");
-
-				writer.println(section1Open + type + " " + cd.name() + section1Close);
+			if (cd.isAbstract() || superType != null || subClasses != null) {
+				writer.print("<p>" + type + " " + createLink(cd));
 				if (superType != null)
-					writer.println("<p><b> extends </b> " + superType + "<p/>");
-			} else {
-				ret = type + ": " + cd.name();
-				if (superType != null)
-					ret += ", extends " + superType;
+					writer.print(" extends " + superType);
+				if (subClasses != null)
+					writer.print("<br />Inherited by " + subClasses);
+				writer.println("</p>");
 			}
 
-			printTags(writer, cd, cd.inlineTags(), "<p>", "</p>", false);
+			printTags(writer, cd, cd.inlineTags(), "<p>", "</p>");
 
 			printSeeTags(writer, cd, cd.seeTags(), "<p><b>See also:</b> ", "</p>");
 
 			Tag[] verTags = cd.tags("version");
 			if (versionInfo && verTags.length > 0) {
 				writer.println(section2Open + "Version" + section2Close + verTags[0].text());
-			}
-
-			String subClasses = "";
-			for (int index = 0; index < root.classes().length; index++) {
-				ClassDoc cls = root.classes()[index];
-				if (isVisibleClass(cls) && cls.superclass() == cd && !cls.equals(cd)) {
-					if (!subClasses.equals(""))
-						subClasses += ", ";
-					subClasses += createLink(cls);
-				}
-			}
-			if (!subClasses.equals("")) {
-				writer.println(section2Open + "Sub Prototypes" + section2Close + "<div class=\"documentation-paragraph\">" + subClasses + "</div>");
 			}
 
 			if (cd.isInterface()) {
@@ -1438,13 +1451,17 @@ public class JSDoclet extends Doclet {
 			}
 
 			if (constructors.length > 0)
-				printMembers(writer, cd, constructors, "Constructors");
+				printMembers(writer, cd, constructors, "Constructors", false);
 
-			if (fields.length > 0)
-				printMembers(writer, cd, fields, "Properties");
+			if (fields.length > 0) {
+				printMembers(writer, cd, fields, "Properties", false);
+				printMembers(writer, cd, fields, "Static Properties", true);
+			}
 
-			if (methods.length > 0)
-				printMembers(writer, cd, methods, "Functions");
+			if (methods.length > 0) {
+				printMembers(writer, cd, methods, "Functions", false);
+				printMembers(writer, cd, methods, "Static Functions", true);
+			}
 
 			if (inherited) {
 				boolean yet = false;
@@ -1456,11 +1473,23 @@ public class JSDoclet extends Doclet {
 						fields = info.fields(); // par.fields(true);
 						methods = info.methods(); // par.methods(true);
 						MemberInfo[] inheritedMembers = new MemberInfo[fields.length + methods.length];
-						for (int k = 0; k < fields.length; k++) {
-							inheritedMembers[k] = fields[k];
+						// first non-static, then static:
+						int i = 0;
+						for (int j = 0; j < fields.length; j++) {
+							if (!fields[j].isStatic())
+								inheritedMembers[i++] = fields[j];
 						}
-						for (int k = 0; k < methods.length; k++) {
-							inheritedMembers[k + fields.length] = methods[k];
+						for (int j = 0; j < fields.length; j++) {
+							if (fields[j].isStatic())
+								inheritedMembers[i++] = fields[j];
+						}
+						for (int j = 0; j < methods.length; j++) {
+							if (!methods[j].isStatic())
+								inheritedMembers[i++] = methods[j];
+						}
+						for (int j = 0; j < methods.length; j++) {
+							if (methods[j].isStatic())
+								inheritedMembers[i++] = methods[j];
 						}
 						// print only if members available
 						// (if class not found because classpath not
@@ -1496,7 +1525,6 @@ public class JSDoclet extends Doclet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return ret;
 	}
 
 	/**
@@ -1525,14 +1553,22 @@ public class JSDoclet extends Doclet {
 	 * Enumerates the members of a section of the document and formats them
 	 * using Tex statements.
 	 */
-	static void printMembers(PrintWriter writer, ClassDoc cd, MemberInfo[] dmems, String title) {
-		if (dmems.length > 0) {
-			writer.println(section2Open + "" + title + "" + section2Close);
-			writer.println("<div class=\"documentation-paragraph\">");
-			for (int i = 0; i < dmems.length; i++) {
-				dmems[i].printMember(writer, cd);
+	static void printMembers(PrintWriter writer, ClassDoc cd, MemberInfo[] members, String title, boolean showStatic) {
+		if (members.length > 0) {
+			StringWriter strBuffer = new StringWriter();
+			PrintWriter strWriter = new PrintWriter(strBuffer);
+			for (int i = 0; i < members.length; i++) {
+				MemberInfo mbr = members[i];
+				if (mbr.isStatic() == showStatic)
+					mbr.printMember(strWriter, cd);
 			}
-			writer.println("</div>");
+			String str = strBuffer.toString();
+			if (str.length() > 0) {
+				writer.println(section2Open + "" + title + "" + section2Close);
+				writer.println("<div class=\"documentation-paragraph\">");
+				writer.print(str);
+				writer.println("</div>");
+			}
 		}
 	}
 
@@ -1556,7 +1592,7 @@ public class JSDoclet extends Doclet {
 	/**
 	 * Prints a sequence of tags obtained from e.g. com.sun.javadoc.Doc.tags().
 	 */
-	static void printTags(PrintWriter writer, ClassDoc cd, Tag[] tags, String prefix, String sufix, boolean filterFirstSentence) {
+	static void printTags(PrintWriter writer, ClassDoc cd, Tag[] tags, String prefix, String suffix) {
 		if (tags.length > 0) {
 			if (prefix != null)
 				writer.print(prefix);
@@ -1568,6 +1604,7 @@ public class JSDoclet extends Doclet {
 						writer.print(createLink(mem, cd));
 				} else {
 					String text = tags[i].text();
+					/*
 					if (filterFirstSentence) {
 						// cut away ":" and everything that follows:
 						int pos = text.indexOf(':');
@@ -1576,19 +1613,31 @@ public class JSDoclet extends Doclet {
 							more = false;
 						}
 					}
+					*/
 					writer.print(text);
 				}
 			}
-			if (sufix != null)
-				writer.println(sufix);
+			if (suffix != null)
+				writer.println(suffix);
 		}
 	}
 
 	static void printTags(PrintWriter writer, ClassDoc cd, Tag[] tags) {
-		printTags(writer, cd, tags, null, null, false);
+		printTags(writer, cd, tags, null, null);
 	}
 
-	static void printSeeTags(PrintWriter writer, ClassDoc cd, SeeTag[] seeTags, String prefix, String sufix) {
+	static String getTags(ClassDoc cd, Tag[] tags, String prefix, String suffix) {
+		StringWriter str = new StringWriter();
+		PrintWriter writer = new PrintWriter(str);
+		printTags(writer, cd, tags, prefix, suffix);
+		return str.toString();
+	}
+
+	static String getTags(ClassDoc cd, Tag[] tags) {
+		return getTags(cd, tags, null, null);
+	}
+
+	static void printSeeTags(PrintWriter writer, ClassDoc cd, SeeTag[] seeTags, String prefix, String suffix) {
 		if (seeTags.length > 0) {
 			if (prefix != null)
 				writer.println(prefix);
@@ -1601,8 +1650,8 @@ public class JSDoclet extends Doclet {
 					writer.print(createLink(mem, cd));
 				}
 			}
-			if (sufix != null)
-				writer.println(sufix);
+			if (suffix != null)
+				writer.println(suffix);
 		}
 	}
 
@@ -1636,13 +1685,11 @@ public class JSDoclet extends Doclet {
 				if (templates)
 					path = "/Documentation/" + path + "/";
 				else
-					path = "classes/" + path + ".html";
+					path = base + path + ".html";
 				str += path;
 			}
 			if (anchor != null)
 				str += "#" + anchor;
-			if (!templates)
-				str += "\" target=\"classFrame";
 			if (anchor != null)
 				str += "\" onClick=\"return toggleMember('" + anchor + "', true);";
 			str += "\">" + title + "</a>";
@@ -1655,11 +1702,15 @@ public class JSDoclet extends Doclet {
 	
 	static String createLink(ClassDoc cl) {
 		String str = "";
-		if (cl.isAbstract())
-			str += "<i>";
-		str += createLink(cl.qualifiedName(), cl.name(), "", cl.name());
-		if (cl.isAbstract())
-			str += "</i>";
+		if (isVisibleClass(cl)) {
+			if (cl.isAbstract())
+				str += "<i>";
+			str += createLink(cl.qualifiedName(), cl.name(), "", cl.name());
+			if (cl.isAbstract())
+				str += "</i>";
+		} else {
+			str = cl.name();
+		}
 		return str;
 	}
 
@@ -1739,8 +1790,11 @@ public class JSDoclet extends Doclet {
 	static String createAnchor(String name, boolean memberSelector) {
 		if (hyperref) {
 			String anchor = "<a name=\"" + name + "\"";
-			if (memberSelector) anchor += " href=\"#\" onClick=\"return toggleMember('" + name + "', false);\">";
-			else anchor += "></a>";
+			if (memberSelector) {
+				anchor += " href=\"#\" onClick=\"return toggleMember('" + name + "', false);\">";
+			} else {
+				anchor += "></a>";
+			}
 			return anchor;
 		} else
 			return "";
@@ -1748,6 +1802,14 @@ public class JSDoclet extends Doclet {
 
 	static String createAnchor(MemberInfo mem, boolean memberSelector) {
 		return createAnchor(getMemberId(mem), memberSelector);
+	}
+
+	static String encodeJs(String str) {
+		return str.replaceAll("(\\\"|'|\\\n|\\\r|\\\\)", "\\\\$1");
+	}
+
+	static String stripFormatTags(String str) {
+		return str.replaceAll("<i>|</i>|<tt>|</tt>", "");
 	}
 
 	/**

@@ -5,14 +5,14 @@
 	<!-- =================================================================== -->
 	<target name="init">
 		<property name="Name" value="Scriptographer"/>
-		<property name="version" value="0.2"/>
+		<property name="version" value="2.0"/>
 		<property name="project" value="scriptographer"/>
 		<tstamp>
 			<!-- get current year -->
-			<format property="year" pattern="yyyy"/>
+			<format property="now" pattern="yyyy"/>
 			<format property="date" pattern="yyyy_MM_dd"/>
 		</tstamp>
-		<property name="year" value="2001-${year}"/>
+		<property name="year" value="2001-${now}"/>
 		<property name="scriptographer" value=":pserver:anonymous@cvs.sourceforge.net:/cvsroot/scriptographer"/>
 		<property name="cvs.apps.tag" value="HEAD"/>
 
@@ -30,7 +30,7 @@
 		<property name="docs.js.templates.dir" id="docs.js.templates.dir" value="${docs.dir}/templates"/>
 
 		<!-- this is used for importing comments from the gnu classpath file into the js documentation -->
-		<property name="build.src.jdk" value="${home.dir}/docs/src/"/>
+		<property name="build.src.jdk" value="${docs.dir}/src"/>
 		
 		<!-- The path to the install directory within Illustrator -->
 		<property name="install.dir" value="C:\Programme\Adobe\Illustrator CS\Plug-ins\Extensions\Scriptographer\java"/>
@@ -313,7 +313,7 @@
 	<!-- "java.awt.geom.*,com.scriptographer,com.scriptographer.ai.*,com.scriptographer.adm.*" -->
 	<target name="jsdoclet">
 		<mkdir dir="${destdir}"/>
-		<javadoc packagenames="com.scriptographer.*"
+		<javadoc packagenames="com.scriptographer.*,java.*"
 				sourcepathref="build.sourcepath"
 				destdir="${destdir}"
 				author="false"
@@ -338,19 +338,24 @@
 					com.scriptographer.ai.SegmentPoint
 					com.scriptographer.ai.Tool
 					com.scriptographer.ai.FileFormat
-					com.scriptographer.test.*
+					com.scriptographer.adm.Notifier
+					com.scriptographer.adm.DialogGroupInfo
+					com.scriptographer.js.*
 					java.*
+					com.scriptographer.test.*
 				"/>
 				<param name="-packagesequence" value="
+					com.scriptographer
 					com.scriptographer.ai
 					com.scriptographer.adm
-					com.scriptographer
+					com.scriptographer.test
 				"/>
 				<param name="-methodfilter" value="
 					setWrapper
 					getWrapper
 					iterator
 					hashCode
+					destroyAll
 				"/>
 				<param name="-templates" value="${templates}"/>
 			</doclet>

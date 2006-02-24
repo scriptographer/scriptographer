@@ -28,8 +28,8 @@
  *
  * $RCSfile: Matrix.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.4 $
+ * $Date: 2006/02/24 07:09:26 $
  */
 
 package com.scriptographer.ai;
@@ -65,8 +65,8 @@ public class Matrix extends AffineTransform implements Wrappable {
 	/**
 	 * Create a new transform which copies the given one.
 	 *
-	 * @param tx the transform to copy
-	 * @throws NullPointerException if tx is null
+	 * @param at the transform to copy
+	 * @throws NullPointerException if at is null
 	 */
 	public Matrix(AffineTransform at) {
 		super(at);
@@ -81,12 +81,12 @@ public class Matrix extends AffineTransform implements Wrappable {
 	 *  [  0   0   1  ]
 	 * </pre>
 	 * 
-	 * @param m00 the x scaling component
-	 * @param m10 the y shearing component
-	 * @param m01 the x shearing component
-	 * @param m11 the y scaling component
-	 * @param m02 the x translation component
-	 * @param m12 the y translation component
+	 * @param scaleX the x scaling component
+	 * @param shearY the y shearing component
+	 * @param shearX the x shearing component
+	 * @param scaleY the y scaling component
+	 * @param translateX the x translation component
+	 * @param translateY the y translation component
 	 */
 	public Matrix(double scaleX, double shearY, double shearX, double scaleY, double translateX, double translateY) {
 		super(scaleX, shearY, shearX, scaleY, translateX, translateY);
@@ -102,9 +102,9 @@ public class Matrix extends AffineTransform implements Wrappable {
 	 * [  0     0    1    ]
 	 * </pre>
 	 *
-	 * @param f the matrix to copy from, with at least 4 (6) entries
-	 * @throws NullPointerException if f is null
-	 * @throws ArrayIndexOutOfBoundsException if f is too small
+	 * @param values the matrix to copy from, with at least 4 (6) entries
+	 * @throws NullPointerException if values is null
+	 * @throws ArrayIndexOutOfBoundsException if values is too small
 	 */
 	public Matrix(double[] values) {
 		super(values);

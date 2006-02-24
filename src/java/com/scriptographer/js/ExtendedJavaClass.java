@@ -28,8 +28,8 @@
  *
  * $RCSfile: ExtendedJavaClass.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:58 $
+ * $Revision: 1.2 $
+ * $Date: 2006/02/24 07:09:27 $
  */
 
 package com.scriptographer.js;
@@ -75,7 +75,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		// method:
 		if (constructor != null) {
 			try {
-				return (Scriptable)constructor.invoke(null, new Object[] {
+				return (Scriptable) constructor.invoke(null, new Object[] {
 					cx, args, this, Boolean.TRUE
 				});
 			} catch (Exception e) {

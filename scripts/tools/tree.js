@@ -9,17 +9,15 @@ function onInit() {
 function onOptions() {
 	/*
 	var values = Dialog.prompt("Tree:", [
-		new Dialog.PromptItem(Dialog.PromptItem.TYPE_NUMBER, "Minimal Scale", minScale),
-		new Dialog.PromptItem(Dialog.PromptItem.TYPE_NUMBER, "Maximal Scale", maxScale),
-		new Dialog.PromptItem(Dialog.PromptItem.TYPE_NUMBER, "Rotation", rotationValue),
-		new Dialog.PromptItem(Dialog.PromptItem.TYPE_NUMBER, "Minimal Branch Number", minBranch),
-		new Dialog.PromptItem(Dialog.PromptItem.TYPE_NUMBER, "Maximal Branch Number", maxBranch)
+		new PromptDialog.Item(PromptDialog.Item.TYPE_NUMBER, "Minimal Scale", minScale),
+		new PromptDialog.Item(PromptDialog.Item.TYPE_NUMBER, "Maximal Scale", maxScale),
+		new PromptDialog.Item(PromptDialog.Item.TYPE_NUMBER, "Rotation", rotationValue),
+		new PromptDialog.Item(PromptDialog.Item.TYPE_NUMBER, "Minimal Branch Number", minBranch),
+		new PromptDialog.Item(PromptDialog.Item.TYPE_NUMBER, "Maximal Branch Number", maxBranch)
 	]);
 	*/
 
-	print(minScale);
-//	var values = Dialog.prompt("Tree:", [
-    var values = Dialog["prompt(java.lang.String,org.mozilla.javascript.NativeArray)"]("Tree:", [
+	var values = Dialog.prompt("Tree:", [
         { value: minScale, description: "Minimal Scale", width: 50 },
         { value: maxScale, description: "Maximal Scale", width: 50 },
         { value: rotationValue, description: "Rotation", width: 50 },
@@ -40,19 +38,12 @@ function onOptions() {
 
 function onMouseDown(event) {
     path = new Path();
+    path.moveTo(event.point);
 }
 
 function onMouseUp(event) {
 	var t = new Date().getTime();
 	if (path.segments.length > 0) {
-	/*
-		var bez = path.segments[path.segments.length - 2].curve;
-		var pt = bez.getPoint(1);
-		var obj = new Path();
-		obj.segments.push(pt);
-		obj.segments.push(pt.add(bez.getTangent(0.99).normalize(200.0)));
-	*/
-		
 		path.pointsToCurves();
 		var group = new Group();
 		group.append(path);
@@ -74,8 +65,7 @@ function onMouseUp(event) {
 						newPath.transform(Matrix.getScaleInstance(scale));
 						var curStartPoint = newPath.segments[0].point;
 						var matrix = Matrix.getTranslateInstance(prevEndPoint.subtract(curStartPoint));
-						matrix.rotate(rotation, curStartPoint.subtract(newPath.bounds.center));
-
+						matrix.rotate(rotation, curStartPoint);
 						newPath.transform(matrix);
 
 						group.append(newPath);
@@ -96,5 +86,5 @@ function onMouseUp(event) {
 }
 
 function onMouseDrag(event) {
-	path.segments.add(new Segment(event.point));
+    path.lineTo(event.point);
 }

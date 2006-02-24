@@ -1,0 +1,114 @@
+body {
+	background-color: #fff;
+	margin: 8px;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	line-height: 17px;
+	color: #000;
+}
+
+select, input, textarea {
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	font-size: 10px;
+	margin: 0px;
+	color: #000;
+}
+
+a {
+	color: #000;
+	text-decoration: none;
+	padding-bottom: 1px;
+	border-bottom: 1px solid #000;
+}
+
+img {
+	border: 0px;
+}
+
+a:hover {
+	background: #e5e5e5;
+}
+
+p {
+	margin-top: 0px;
+	margin-bottom: 17px;
+}
+
+.clear {
+	clear: both;
+}
+
+.hidden {
+	display: none;
+}
+
+.documentation h1, .documentation h2 {
+	font-size: 11px;
+	font-weight: normal;
+	display: block;
+	margin: 0 0 14px 0;
+	background: url(dotted.gif) repeat bottom;        
+}
+
+.documentation a tt, .documentation a tt b {
+	padding-bottom: 1px;
+}
+
+.documentation pre {
+	background-image: url(paper.gif)
+}
+
+.documentation-inherited {
+	margin-left: 0px;
+}
+
+.documentation-packages {
+	margin-left: 0px;
+}
+
+.documentation-end {
+	height: 600px;
+}
+
+.documentation-paragraph {
+	padding-bottom: 14px;
+}
+
+.member-description {
+	border: 1px solid #999;
+	margin: 14px 0 14px 0;
+	display: none;
+}
+
+.member-header {
+	padding: 8px;
+}
+
+.member-title {
+	float: left;
+	width: 350px;
+}
+
+.member-close {
+	float: right;
+}
+
+.member-text {
+	border-top: 1px dashed #999;
+	padding: 0 8px 8px 8px;
+}
+
+.member-paragraph {
+	padding-top: 8px;
+}
+
+.member-comments {
+	padding-top: 14px;
+	display: none;
+}
+
+ul {
+	padding: 0;
+	margin: 0 0 0 14px;
+	list-style-type: none;
+}
