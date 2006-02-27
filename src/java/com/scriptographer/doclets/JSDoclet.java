@@ -6,12 +6,12 @@ import java.io.*;
 import java.util.*;
 
 /**
- * This class provides a Java 2,<code>javadoc</code> Doclet which generates a
- * HTML document out of the java classes that it is used on.
- * 
- * @author Gregg Wonderly - C2 Technologies Inc.
- * @author Søren Caspersen - XO Software.
- * @author Stefan Marx
+ * This class provides a Java 2,<code>javadoc</code> Doclet which generates
+ * the HTML documents for the Scriptographer JS Help files and the
+ * templates for the interactive version on the website.
+ *
+ * According to the rules with which Scriptogrpaher turns Java classes into JS Prototypes
+ * This doclet performs similar conversions on the javadoc structure....
  */
 public class JSDoclet extends Doclet {
 	static boolean debug = false;
@@ -283,7 +283,7 @@ public class JSDoclet extends Doclet {
 			writer.println("<div id=\"" + id + "-description\" class=\"member-description\">");
 
 			writer.println("<div class=\"member-header\">");
-			writer.println("<div class=\"member-title\">" + title + "</div>");
+			writer.println("<div class=\"member-title\"><a href=\"#\" onClick=\"toggleMember('" + id + "', false);\"" + title + "</a></div>");
 			writer.println("<div class=\"member-close\"><input type=\"button\" value=\"Close\" onClick=\"toggleMember('" + id + "', false);\"></div>");
 			writer.println("<div class=\"clear\"></div>");
 			writer.println("</div>");
@@ -1154,10 +1154,12 @@ public class JSDoclet extends Doclet {
 				writer.println("</head>");
 				writer.println("<html>");
 				writer.println("<body class=\"documentation\">");
+				writer.println("<div class=\"documentation-packages\">");
 				if (doctitle != null)
 					writer.println(section1Open + doctitle + section1Close);
 				if (author != null)
 					writer.println(author);
+				writer.println("<ul class=\"documentation-list\">");
 			} else {
 //				writer.println("var basePackage = \"" + basePackage + "\";");
 			}
@@ -1180,7 +1182,6 @@ public class JSDoclet extends Doclet {
 					}
 				}
 				if (add) {
-					System.out.println(name);
 					classInfos.put(name, new ClassInfo(cd));
 				}
 			}
@@ -1207,11 +1208,15 @@ public class JSDoclet extends Doclet {
 				PackageDoc pkg = (PackageDoc) packages.get(packageSequence[i]);
 				if (pkg != null) {
 					String name = pkg.name();
+					base = "";
+					String rel = getRelativeIdentifier(name);
+					name = basePackage + "." + rel; // rel might have changed in getRelativeIdentifier, e.g. for the .sg package
 					if (!templates) {
-						if (!name.equals(basePackage))
-							writer.println(section2Open + "Package " + packageRelativIdentifier(basePackage, name) + section2Close);
+						String pkgName = rel.toUpperCase();
+						writer.println("<li><a href=\"#\" onClick=\"return togglePackage('" + pkgName + "', false);\"><img name=\"arrow-" +  pkgName + "\" src=\"../resources/arrow-close.gif\" width=\"8\" height=\"8\" border=\"0\"></a><img src=\"../resources/spacer.gif\" width=\"6\" height=\"1\"><b>" + stripCodeTags(createLink(name, rel, null, pkgName)) + "</b>");
+						writer.println("<ul id=\"package-" + pkgName + "\" class=\"hidden\">");
 					} else {
-						String pkgName = name.equals(basePackage) ? "" : packageRelativIdentifier(basePackage, name);
+						String pkgName = rel.toUpperCase();
 						writer.print("createPackage(\"" + pkgName + "\", ");
 					}
 
@@ -1220,24 +1225,36 @@ public class JSDoclet extends Doclet {
 					processClasses(writer, pkg.exceptions());
 					processClasses(writer, pkg.errors());
 
+					String text = getTags(null, pkg.inlineTags());
+
+					String first = getTags(null, pkg.firstSentenceTags());
+					// remove the first sentence from the main text
+					if (first.length() > 0 && text.startsWith(first)) {
+						text = text.substring(first.length());
+						first = first.substring(0, first.length() - 1); // cut away dot
+					}
+
 					if (templates) {
 						writer.print("\"");
-						String first = getTags(null, pkg.firstSentenceTags());
-						writer.print(encodeJs(first.trim()));
-						writer.print("\", \"");
-						String text = getTags(null, pkg.inlineTags());
-						// remove the first sentence from the main text
-						if (text.startsWith(first))
-							text = text.substring(first.length());
 						writer.print(encodeJs(text.trim()));
 						writer.println("\");");
 					} else {
-						// Package comments
-						printTags(writer, null, pkg.inlineTags());
+						writer.println("</li></ul>");
+						// write package file:
+						try {
+							PrintWriter pkgWriter = beginDocument(rel, "index");
+							pkgWriter.println(section1Open + first + section1Close);
+							pkgWriter.println(text);
+							endDocument(pkgWriter);
+						} catch(IOException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			}
 			if (!templates) {
+				writer.println("</ul>");
+				writer.println("</div>");
 				writer.println("</body>");
 				writer.println("</html>");
 			}
@@ -1252,15 +1269,15 @@ public class JSDoclet extends Doclet {
 	static class ClassNode {
 		ClassDoc classDoc;
 		LinkedHashMap nodes = new LinkedHashMap();
-		
+
 		ClassNode(ClassDoc classNode) {
 			this.classDoc = classNode;
 		}
-		
+
 		void add(ClassNode node) {
 			nodes.put(node, node);
 		}
-		
+
 		void remove(ClassNode node) {
 			nodes.remove(node);
 		}
@@ -1275,7 +1292,7 @@ public class JSDoclet extends Doclet {
 						writer.println(prepend + "\t{ name: \"" + node.classDoc.name() + "\", isAbstract: " + node.classDoc.isAbstract() + " },");
 					} else {
 						base = "";
-						writer.println(prepend + "\t<li>" + createLink(node.classDoc) + "</li>");
+						writer.println(prepend + "\t<li>" + stripCodeTags(createLink(node.classDoc)) + "</li>");
 					}
 					node.printHierarchy(writer, prepend + "\t");
 				}
@@ -1315,6 +1332,54 @@ public class JSDoclet extends Doclet {
 		root.printHierarchy(writer, "");
 	}
 
+	static PrintWriter beginDocument(String path, String name) throws IOException {
+		// now split into packages and create subdirs:
+		if (!templates)
+			path = "packages." + path;
+		String[] parts = path.split("\\.");
+		path = "";
+		int levels = 0;
+		for (int j = 0; j < parts.length; j++) {
+			if (parts[j].equals(name))
+				break;
+
+			path += parts[j] + "/";
+			levels++;
+			File dir = new File(destDir + path);
+			if (!dir.exists())
+				dir.mkdir();
+		}
+		PrintWriter writer = new PrintWriter(new FileWriter(destDir + path + name + (templates ? ".jstl" : ".html")));
+
+		if (!templates) {
+			base = "";
+			for (int j = 1; j < levels; j++)
+				base += "../";
+
+			writer.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
+			writer.println("<html>");
+			writer.println("<head>");
+			writer.println("<title>" + name + "</title>");
+			writer.println("<base target=\"classFrame\">");
+			writer.println("<link rel=\"stylesheet\" href=\"../" + base + "resources/style.css\" type=\"text/css\">");
+			writer.println("<script src=\"../" + base + "resources/scripts.js\" type=\"text/javascript\"></script>");
+			writer.println("</head>");
+			writer.println("<body class=\"documentation\">");
+		}
+
+		return writer;
+	}
+
+	static void endDocument(PrintWriter writer) {
+		if (!templates) {
+			if (bottom != null)
+				writer.println("<p>" + bottom + "</p>");
+			writer.println("</body>");
+			writer.println("</html>");
+		}
+		writer.close();
+	}
+
 	/**
 	 * Lays out a list of classes.
 	 */
@@ -1325,40 +1390,8 @@ public class JSDoclet extends Doclet {
 			String path = cd.qualifiedName();
 			// cut away name:
 			path = path.substring(0, path.length() - name.length());
-			path = packageRelativIdentifier(basePackage, path);
-			// now split into packages and create subdirs:
-			if (!templates)
-				path = "packages." + path;
-			String[] parts = path.split("\\.");
-			path = "";
-			int levels = 0;
-			for (int j = 0; j < parts.length; j++) {
-				if (parts[j].equals(name))
-					break;
-
-				path += parts[j] + "/";
-				levels++;
-				File dir = new File(destDir + path);
-				if (!dir.exists())
-					dir.mkdir();
-			}
-			PrintWriter writer = new PrintWriter(new FileWriter(destDir + path + name + (templates ? ".jstl" : ".html")));
-
-			if (!templates) {
-				base = "";
-				for (int j = 1; j < levels; j++)
-					base += "../";
-
-				writer.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-				writer.println("<html>");
-				writer.println("<head>");
-				writer.println("<title>" + name + "</title>");
-				writer.println("<base target=\"classFrame\">");
-				writer.println("<link rel=\"stylesheet\" href=\"../" + base + "resources/style.css\" type=\"text/css\">");
-				writer.println("<script src=\"../" + base + "resources/scripts.js\" type=\"text/javascript\"></script>");
-				writer.println("</head>");
-				writer.println("<body class=\"documentation\">");
-			}
+			path = getRelativeIdentifier(path);
+			PrintWriter writer = beginDocument(path, name);
 
 			String subClasses = null;
 			for (int index = 0; index < root.classes().length; index++) {
@@ -1386,6 +1419,9 @@ public class JSDoclet extends Doclet {
 			if (sc != null && isVisibleClass(sc)) {
 				superType = createLink(sc);
 			}
+
+			if (!templates)
+				writer.println(section1Open + name + section1Close);
 
 			if (cd.isAbstract() || superType != null || subClasses != null) {
 				writer.print("<p>" + type + " " + createLink(cd));
@@ -1515,13 +1551,7 @@ public class JSDoclet extends Doclet {
 				if (shortInherited && yet)
 					writer.println("<br/><br/>");
 			}
-			if (!templates) {
-				if (bottom != null)
-					writer.println("<p>" + bottom + "</p>");
-				writer.println("</body>");
-				writer.println("</html>");
-			}
-			writer.close();
+			endDocument(writer);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -1655,22 +1685,19 @@ public class JSDoclet extends Doclet {
 		}
 	}
 
-	/**
-	 * Returns a package relative identifier.
-	 * 
-	 * @param doc The package the identifier should be relative to.
-	 * @param str The identifier to be made relative.
-	 */
-	static String packageRelativIdentifier(PackageDoc doc, String str) {
-		return packageRelativIdentifier(doc.name(), str);
-	}
-
-	static String packageRelativIdentifier(String name, String str) {
-		if (str.startsWith(name + ".")) {
-			return str.substring(name.length() + 1);
+	static String getRelativeIdentifier(String str) {
+		String rel;
+		if (str.startsWith(basePackage + ".")) {
+			rel = str.substring(basePackage.length() + 1);
+			if (rel.length() == 0 || Character.isUpperCase(rel.charAt(0)))
+				rel = "sg." + rel;
 		} else {
-			return str;
+			if (str.equals(basePackage))
+				rel = "sg";
+			else
+				rel = str;
 		}
+		return rel;
 	}
 	
 	static String createLink(String qualifiedName, String name, String anchor, String title) {
@@ -1680,8 +1707,10 @@ public class JSDoclet extends Doclet {
 				anchor = null;
 			str += "<a href=\"";
 			if (qualifiedName != null) {
-				String path = qualifiedName.substring(0, qualifiedName.length() - name.length());
-				path = packageRelativIdentifier(basePackage, path).replace('.', '/') + name;
+				String path = getRelativeIdentifier(qualifiedName).replace('.', '/');
+				// link to the index file for packages
+				if (Character.isLowerCase(name.charAt(0)))
+					path += "/index";
 				if (templates)
 					path = "/Documentation/" + path + "/";
 				else
@@ -1808,8 +1837,8 @@ public class JSDoclet extends Doclet {
 		return str.replaceAll("(\\\"|'|\\\n|\\\r|\\\\)", "\\\\$1");
 	}
 
-	static String stripFormatTags(String str) {
-		return str.replaceAll("<i>|</i>|<tt>|</tt>", "");
+	static String stripCodeTags(String str) {
+		return str.replaceAll("<tt>|</tt>", "");
 	}
 
 	/**

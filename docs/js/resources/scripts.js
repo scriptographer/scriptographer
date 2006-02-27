@@ -51,7 +51,7 @@ function togglePackage(id, def) {
 		var v = getVisible(e, def);
 		setVisible(e, !v);
 		var img = document.images["arrow-" + id];
-		if (img) img.src = "/static/img/arrow-" + (v ? "close" : "open") + ".gif";
+		if (img) img.src = "../resources/arrow-" + (v ? "close" : "open") + ".gif";
 	}
 	return false;
 }

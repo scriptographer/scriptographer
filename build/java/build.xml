@@ -298,7 +298,7 @@
 				private="false"
 				windowtitle="${Name} ${version} API"
 				classpathref="build.classpath">
-		    <doctitle><![CDATA[${Name} ${version} API]]></doctitle>
+		    <doctitle><![CDATA[${Name} ${version}]]></doctitle>
 		    <bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, Scratchdisk.com. All Rights Reserved.]]></bottom>
 		</javadoc>
 	</target>
@@ -315,7 +315,7 @@
 				public="true"
 				windowtitle="${Name} ${version} API"
 				classpathref="build.classpath">
-		    <doctitle><![CDATA[${Name} ${version} API]]></doctitle>
+		    <doctitle><![CDATA[${Name} ${version}]]></doctitle>
 			<bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, Scratchdisk.com. All Rights Reserved.]]></bottom>
 			<doclet name="com.scriptographer.doclets.JSDoclet" path="${build.classes}">
 				<param name="-basepackage" value="com.scriptographer"/>
@@ -327,7 +327,6 @@
 					com.scriptographer.GlobalObject
 					com.scriptographer.ScriptographerEngine
 					com.scriptographer.ScriptographerException
-					com.scriptographer.Test
 					com.scriptographer.ai.DictionaryObject
 					com.scriptographer.ai.SegmentPoint
 					com.scriptographer.ai.Tool
@@ -342,7 +341,6 @@
 					com.scriptographer
 					com.scriptographer.ai
 					com.scriptographer.adm
-					com.scriptographer.test
 				"/>
 				<param name="-methodfilter" value="
 					setWrapper
