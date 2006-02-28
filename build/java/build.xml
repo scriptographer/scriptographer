@@ -160,7 +160,7 @@
 	<!-- =================================================================== -->
 	<!-- Installs the jar files in the Illustrator directory                 -->
 	<!-- =================================================================== -->
-	<target name="packages" depends="jar,jsdocs">
+	<target name="packages" depends="init"> <!-- jar,jsdocs -->
 		<mkdir dir="${build.packages}"/>
 
 		<mkdir dir="${build.packages}/Scriptographer"/>
