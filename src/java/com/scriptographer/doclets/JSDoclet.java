@@ -283,7 +283,7 @@ public class JSDoclet extends Doclet {
 			writer.println("<div id=\"" + id + "-description\" class=\"member-description\">");
 
 			writer.println("<div class=\"member-header\">");
-			writer.println("<div class=\"member-title\"><a href=\"#\" onClick=\"toggleMember('" + id + "', false);\"" + title + "</a></div>");
+			writer.println("<div class=\"member-title\"><a href=\"#\" onClick=\"return toggleMember('" + id + "', false);\"" + title + "</a></div>");
 			writer.println("<div class=\"member-close\"><input type=\"button\" value=\"Close\" onClick=\"toggleMember('" + id + "', false);\"></div>");
 			writer.println("<div class=\"clear\"></div>");
 			writer.println("</div>");
