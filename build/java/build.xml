@@ -29,6 +29,8 @@
 		<property name="docs.js.dir" id="docs.js.dir" value="${docs.dir}/js"/>
 		<property name="docs.js.templates.dir" id="docs.js.templates.dir" value="${docs.dir}/templates"/>
 
+		<property name="scripts.dir" value="${home.dir}/scripts"/>
+
 		<!-- this is used for importing comments from the gnu classpath file into the js documentation -->
 		<property name="build.src.jdk" value="${docs.dir}/src"/>
 		
@@ -164,14 +166,24 @@
 		<mkdir dir="${build.packages}/Scriptographer"/>
 		<mkdir dir="${build.packages}/Scriptographer/java"/>
 		<copy file="${build.dir}/loader.jar" todir="${build.packages}/Scriptographer/java"/>
+		<!-- libs -->
 		<copy todir="${build.packages}/Scriptographer/java/lib">
 			<fileset dir="${build.lib}">
 				<include name="**/${jar.name}.jar"/>
 				<include name="**/js.jar"/>
 			</fileset>
 		</copy>
+		<!-- js docs -->
 		<copy todir="${build.packages}/Scriptographer/doc">
 			<fileset dir="${docs.js.dir}"/>
+		</copy>
+		<!-- scripts -->
+		<copy todir="${build.packages}/Scriptographer/scripts">
+			<fileset dir="${scripts.dir}">
+				<exclude name="**/old/**"/>
+				<exclude name="**/local/**"/>
+				<exclude name="**/*.ai"/>
+			</fileset>
 		</copy>
 
 		<!-- Macintosh -->
