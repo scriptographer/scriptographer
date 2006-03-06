@@ -26,12 +26,12 @@
  *
  * $RCSfile: exceptions.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/31 21:42:13 $
+ * $Revision: 1.7 $
+ * $Date: 2006/03/06 15:32:47 $
  */
  
 #include "stdHeaders.h"
-#include "Plugin.h"
+#include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
 
 void ScriptographerException::convert(JNIEnv *env) {
@@ -60,23 +60,23 @@ void ScriptographerException::report(JNIEnv *env) {
 }
 
 StringException::StringException(char *message, ...) {
-	fMessage = new char[1024];
+	m_message = new char[1024];
 	va_list args;
 	va_start(args, message);
-	vsprintf(fMessage, message, args);
+	vsprintf(m_message, message, args);
 	va_end(args);
 }
 
 void StringException::convert(JNIEnv *env) {
-	gEngine->throwException(env, fMessage);
+	gEngine->throwException(env, m_message);
 }
 
 char *StringException::toString(JNIEnv *env) {
-	return strdup(fMessage);
+	return strdup(m_message);
 }
 
 ASErrException::ASErrException(ASErr error) {
-	fError = error;
+	m_error = error;
 }
 
 void ASErrException::convert(JNIEnv *env) {
@@ -88,17 +88,17 @@ void ASErrException::convert(JNIEnv *env) {
 char *ASErrException::toString(JNIEnv *env) {
 	char *format = "ASErrException %i\n";
 	char *str = new char[strlen(format) + 16];
-	sprintf(str, format, fError);
+	sprintf(str, format, m_error);
 	return str;
 }
 
 JThrowableException::JThrowableException(jthrowable throwable) {
-	fThrowable = throwable;
+	m_throwable = throwable;
 }
 
 void JThrowableException::convert(JNIEnv *env) {
-	env->Throw(fThrowable);
-	env->DeleteLocalRef(fThrowable);
+	env->Throw(m_throwable);
+	env->DeleteLocalRef(m_throwable);
 }
 
 char *JThrowableException::toString(JNIEnv *env) {
@@ -126,10 +126,10 @@ char *JThrowableException::toString(JNIEnv *env) {
 		// ... and wrap it in a PrintWriter.
 		jobject printer = env->NewObject(cls_PrintWriter, ctr_PrintWriter, writer);
 		// now print the message...
-		jobject message = env->CallObjectMethod(fThrowable, mid_getMessage);
+		jobject message = env->CallObjectMethod(m_throwable, mid_getMessage);
 		env->CallVoidMethod(printer, mid_println, message);
 		// ... and stacktrace to it.
-		env->CallVoidMethod(fThrowable, mid_printStackTrace, printer);
+		env->CallVoidMethod(m_throwable, mid_printStackTrace, printer);
 		// now fetch the string:
 		jstring jstr = (jstring)env->CallObjectMethod(writer, mid_toString);
 		// create a c-string from it:
@@ -149,21 +149,21 @@ char *JThrowableException::toString(JNIEnv *env) {
 }
 
 JThrowableClassException::JThrowableClassException(jclass cls) {
-	fClass = cls;
+	m_class = cls;
 }
 
 JThrowableClassException::JThrowableClassException(JNIEnv *env, const char *name) {
-	fClass = env->FindClass(name);
+	m_class = env->FindClass(name);
 }
 
 
 void JThrowableClassException::convert(JNIEnv *env) {
-	env->ThrowNew(fClass, NULL);
+	env->ThrowNew(m_class, NULL);
 }
 
 char *JThrowableClassException::toString(JNIEnv *env) {
 	char *format = "JThrowableClassException %i\n";
 	char *str = new char[strlen(format) + 16];
-	sprintf(str, format, fClass);
+	sprintf(str, format, m_class);
 	return str;
 }

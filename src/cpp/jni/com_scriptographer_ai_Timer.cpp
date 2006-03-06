@@ -26,13 +26,13 @@
  *
  * $RCSfile: com_scriptographer_ai_Timer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/08/02 21:46:43 $
+ * $Revision: 1.5 $
+ * $Date: 2006/03/06 15:32:46 $
  */
 
 #include "StdHeaders.h"
+#include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
-#include "Plugin.h"
 #include "com_scriptographer_ai_Timer.h"
 
 /*

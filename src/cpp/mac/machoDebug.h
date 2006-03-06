@@ -26,8 +26,8 @@
  *
  * $RCSfile: machoDebug.h,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/07/22 17:37:24 $
+ * $Revision: 1.2 $
+ * $Date: 2006/03/06 15:32:47 $
  */
 
 #ifndef __machoDebug_h__	// Has this not been defined yet?
@@ -77,6 +77,8 @@
 
 //We don't want debugging, because some of it's macros interfere with our code. dmaclach
 #define __DEBUGGING__
+
+#define LOGFILE
 
 #endif // __machoDebug_h__
 // end machoDebug.h

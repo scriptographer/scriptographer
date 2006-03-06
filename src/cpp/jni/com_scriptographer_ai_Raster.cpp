@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Raster.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.6 $
+ * $Date: 2006/03/06 15:32:46 $
  */
  
 #include "stdHeaders.h"

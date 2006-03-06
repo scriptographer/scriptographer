@@ -26,27 +26,25 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.21 $
- * $Date: 2006/01/03 05:37:06 $
+ * $Revision: 1.22 $
+ * $Date: 2006/03/06 15:32:47 $
  */
 
 #include "jniMacros.h"
 #include "exceptions.h"
 
-class Tool;
-
 class ScriptographerEngine {
 private:
-    JavaVM* fJavaVM;
-	jobject fJavaEngine; // returned by ScriptographerEngine.getInstance
-	char *fHomeDir;
-	bool fInitialized;
-	AIDictKey fArtHandleKey;
+    JavaVM* m_javaVM;
+	jobject m_javaEngine; // returned by ScriptographerEngine.getInstance
+	char *m_homeDir;
+	bool m_initialized;
+	AIDictKey m_artHandleKey;
 
 #ifdef MAC_ENV
 	// used for the javaThread workaround:
-	MPQueueID fRequestQueue;
-	MPQueueID fResponseQueue;
+	MPQueueID m_requestQueue;
+	MPQueueID m_responseQueue;
 #endif
 
 public:
@@ -381,14 +379,14 @@ public:
 	jobject getJavaEngine();
 	
 	bool isInitialized() {
-		return fInitialized;
+		return m_initialized;
 	}
-	
+
 	long getNanoTime();
 	bool isKeyDown(short keycode);
-		
-	void println(JNIEnv *env, const char *str, ...);
 	
+	void println(JNIEnv *env, const char *str, ...);
+
 	// com.scriptographer.awt.Point <-> AIRealPoint
 	jobject convertPoint(JNIEnv *env, AIReal x, AIReal y, jobject res = NULL);	
 	jobject convertPoint(JNIEnv *env, AIRealPoint *pt, jobject res = NULL) {
@@ -597,9 +595,11 @@ typedef jint (JNICALL *GetDefaultJavaVMInitArgsProc)(void *args);
 #ifdef WIN_ENV
 #define PATH_SEP_CHR '\\'
 #define PATH_SEP_STR "\\"
+#define NATIVE_NEWLINE "\r\n"
 #else
 #define PATH_SEP_CHR '/'
 #define PATH_SEP_STR "/"
+#define NATIVE_NEWLINE "\r"
 #endif
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))

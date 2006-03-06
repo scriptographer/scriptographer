@@ -26,22 +26,22 @@
  *
  * $RCSfile: exceptions.h,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/31 21:42:13 $
+ * $Revision: 1.5 $
+ * $Date: 2006/03/06 15:32:47 $
  */
  
 #define kExceptionErr 'EXPT';
 
-class ScriptographerException : public std::exception {
+class ScriptographerException: public std::exception {
 public:
 	virtual void convert(JNIEnv *env);
 	virtual char *toString(JNIEnv *env);
 	void report(JNIEnv *env);
 };
 
-class StringException : public ScriptographerException {
+class StringException: public ScriptographerException {
 private:
-	char *fMessage;
+	char *m_message;
 	
 public:
 	StringException(char *message, ...);
@@ -49,13 +49,13 @@ public:
 	char *toString(JNIEnv *env);
 	
 	~StringException() {
-		delete fMessage;
+		delete m_message;
 	}
 };
 
-class ASErrException : public ScriptographerException {
+class ASErrException: public ScriptographerException {
 private:
-	ASErr fError;
+	ASErr m_error;
 	
 public:
 	ASErrException(ASErr error);
@@ -63,9 +63,9 @@ public:
 	char *toString(JNIEnv *env);
 };
 
-class JThrowableException : public ScriptographerException {
+class JThrowableException: public ScriptographerException {
 private:
-	jthrowable fThrowable;	
+	jthrowable m_throwable;	
 	
 public:
 	JThrowableException(jthrowable throwable);
@@ -73,9 +73,9 @@ public:
 	char *toString(JNIEnv *env);
 };
 
-class JThrowableClassException : public ScriptographerException {
+class JThrowableClassException: public ScriptographerException {
 private:
-	jclass fClass;
+	jclass m_class;
 		
 public:
 	JThrowableClassException(jclass cls);

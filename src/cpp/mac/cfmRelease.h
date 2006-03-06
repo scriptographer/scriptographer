@@ -26,8 +26,8 @@
  *
  * $RCSfile: cfmRelease.h,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/07/22 17:37:24 $
+ * $Revision: 1.2 $
+ * $Date: 2006/03/06 15:32:47 $
  */
 
 #ifndef __cfmRelease_h__	// Has this not been defined yet?
@@ -65,6 +65,8 @@
 #ifndef TARGET_RT_MAC_CFM
 #define TARGET_RT_MAC_CFM 1 
 #endif
+
+#define LOGFILE
 
 #endif // __cfmRelease_h__
 // end cfmRelease.h

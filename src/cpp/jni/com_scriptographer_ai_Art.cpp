@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.15 $
- * $Date: 2006/01/03 05:37:06 $
+ * $Revision: 1.16 $
+ * $Date: 2006/03/06 15:32:46 $
  */
  
 #include "stdHeaders.h"

@@ -26,13 +26,13 @@
  *
  * $RCSfile: com_scriptographer_ai_Annotator.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/08 22:15:54 $
+ * $Revision: 1.4 $
+ * $Date: 2006/03/06 15:32:46 $
  */
 
 #include "StdHeaders.h"
+#include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
-#include "Plugin.h"
 #include "admGlobals.h"
 #include "com_scriptographer_ai_Annotator.h"
 

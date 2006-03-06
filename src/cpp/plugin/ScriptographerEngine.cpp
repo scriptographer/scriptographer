@@ -26,12 +26,13 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.26 $
- * $Date: 2006/01/03 05:37:06 $
+ * $Revision: 1.27 $
+ * $Date: 2006/03/06 15:32:47 $
  */
- 
+
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
+#include "ScriptographerPlugin.h"
 #include "com_scriptographer_ai_Art.h" // for com_scriptographer_ai_Art_TYPE_LAYER
 #include "com_scriptographer_adm_Notifier.h"
 #ifdef WIN_ENV 
@@ -57,7 +58,7 @@ ScriptographerEngine *gEngine = NULL;
 OSStatus javaThread(ScriptographerEngine *engine) {
 	// the returned JavaVM needs to be destroyed. this may hang until the end of the app.
 	// do not call this in ScriptographerEngine::javaThread because ScriptographerEngine
-	// will be destroyed after the fResponseQueue notification.
+	// will be destroyed after the m_responseQueue notification.
 	JavaVM *jvm = engine->javaThread();
 	if (jvm != NULL)
 		jvm->DestroyJavaVM();
@@ -71,39 +72,40 @@ JavaVM *ScriptographerEngine::javaThread() {
 	try {
 		init();
 		// tell the constructor that the initialization is done:
-		MPNotifyQueue(fResponseQueue, NULL, NULL, NULL);
+		MPNotifyQueue(m_responseQueue, NULL, NULL, NULL);
 	} catch (ScriptographerException *e) {
 		// let the user know about this error:
-		MPNotifyQueue(fResponseQueue, e, NULL, NULL);
+		MPNotifyQueue(m_responseQueue, e, NULL, NULL);
 		return NULL;
 	}
 	// keep this thread alive until the JVM is to be destroyed. This needs
 	// to happen from the creation thread as well, otherwise JNI hangs endlessly:
-	MPWaitOnQueue(fRequestQueue, NULL, NULL, NULL, kDurationForever);
+	MPWaitOnQueue(m_requestQueue, NULL, NULL, NULL, kDurationForever);
 	// now exit, and destroy the JavaVM. 
 	JavaVM *jvm = exit();
 	// now tell the caller that the engine can be deleted, before DestroyJavaVM is called,
 	// which may block the current thread until the end of the app.
-	MPNotifyQueue(fResponseQueue, NULL, NULL, NULL);
+	MPNotifyQueue(m_responseQueue, NULL, NULL, NULL);
 	return jvm; 
 }
 
 #endif
 
 ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
-	fInitialized = false;
-	fJavaVM = NULL;
-	fHomeDir = new char[strlen(homeDir) + 1];
-	strcpy(fHomeDir, homeDir);
+	m_initialized = false;
+	m_javaVM = NULL;
+	m_homeDir = new char[strlen(homeDir) + 1];
+	strcpy(m_homeDir, homeDir);
 	ScriptographerException *exc = NULL;
+
 #ifdef MAC_ENV
 	if(MPLibraryIsLoaded()) {
-		MPCreateQueue(&fRequestQueue);
-		MPCreateQueue(&fResponseQueue);
+		MPCreateQueue(&m_requestQueue);
+		MPCreateQueue(&m_responseQueue);
 		MPCreateTask((TaskProc)::javaThread, this, 0, NULL, NULL, NULL, 0, NULL); 
 		// now wait for the javaThread to finish initialization
 		// exceptions that happen in the javaThread are passed through to this thread in order to display the error code:
-		MPWaitOnQueue(fResponseQueue, (void **) &exc, NULL, NULL, kDurationForever);
+		MPWaitOnQueue(m_responseQueue, (void **) &exc, NULL, NULL, kDurationForever);
 	} else 
 #endif
 	{	// on windows, we can directly call the initialize function:
@@ -114,24 +116,28 @@ ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 		}
 	}
 	if (exc != NULL) {
-		exc->report(getEnv());
+		JNIEnv *env = getEnv();
+		gPlugin->log("Cannot create ScriptographerEngine: %s", exc->toString(env));
+		exc->report(env);
 		delete exc;
 		throw new StringException("Cannot create ScriptographerEngine.");
 	}
+	gEngine = this;
 }
 
 ScriptographerEngine::~ScriptographerEngine() {
-	delete fHomeDir;
+	gEngine = NULL;
+	delete m_homeDir;
 	callStaticVoidMethodReport(NULL, cls_ScriptographerEngine, mid_ScriptographerEngine_destroy);
 #ifdef MAC_ENV
 	if(MPLibraryIsLoaded()) {
 		// notify the JVM thread to end, then clean up:
-		MPNotifyQueue(fRequestQueue, NULL, NULL, NULL);
+		MPNotifyQueue(m_requestQueue, NULL, NULL, NULL);
 		// now wait for the javaThread to finish before destroying the engine
-		MPWaitOnQueue(fResponseQueue, NULL, NULL, NULL, kDurationForever);
+		MPWaitOnQueue(m_responseQueue, NULL, NULL, NULL, kDurationForever);
 		// clean up...
-		MPDeleteQueue(fRequestQueue);
-		MPDeleteQueue(fResponseQueue);
+		MPDeleteQueue(m_requestQueue);
+		MPDeleteQueue(m_responseQueue);
 	} else 
 #endif
 	{	// call exit directly, as the machine was created in the main thread:
@@ -139,6 +145,33 @@ ScriptographerEngine::~ScriptographerEngine() {
 		jvm->DestroyJavaVM();
 	}
 }
+
+class JVMOptions {
+	JavaVMOption fOptions[128]; // make sure we have plenty
+	int fNumOptions;
+	
+public:
+	JVMOptions() {
+		fNumOptions = 0;
+		memset(fOptions, 0, sizeof(fOptions));
+	}
+	
+	~JVMOptions() {
+		for (int i = 0; i < fNumOptions; i++) {
+			free(fOptions[i].optionString);
+		}
+	}
+	
+	void add(const char *str) {
+		fOptions[fNumOptions++].optionString = strdup(str);
+		gPlugin->log("JVM Option: %s", str);
+	}
+	
+	void fillArgs(JavaVMInitArgs *args) {
+		args->options = fOptions;
+		args->nOptions = fNumOptions;
+	}
+};
 
 void ScriptographerEngine::init() {
 	// The VM invocation functions need to be loaded dynamically on Windows,
@@ -157,56 +190,61 @@ void ScriptographerEngine::init() {
 	args.version = JNI_VERSION_1_4;
 	if (args.version < JNI_VERSION_1_4)
 		getDefaultJavaVMInitArgs(&args);
-	JavaVMOption options[10];
-	int numOptions = 0;
-	memset(options, 0, sizeof(JavaVMOption));
 	
-	char classpath[512];
+	JVMOptions options;
+
+	char str[512];
 	// only add the loader to the classpath, the rest is done in java:
-	sprintf(classpath, "-Djava.class.path=%s" PATH_SEP_STR "loader.jar", fHomeDir);
-	options[numOptions++].optionString = classpath;
-//	options[numOptions++].optionString = "-Xms64m";
-//	options[numOptions++].optionString = "-Xmx256m";
-//	options[numOptions++].optionString = "-Xmx512m";
+	sprintf(str, "-Djava.class.path=%s" PATH_SEP_STR "loader.jar", m_homeDir);
+	options.add(str);
+	
 	// start headless, in order to avoid conflicts with AWT and Illustrator
-	options[numOptions++].optionString = "-Djava.awt.headless=true";
+	options.add("-Djava.awt.headless=true");
 #ifdef MAC_ENV
 	// use the carbon line separator instead of the unix one on mac:
-	options[numOptions++].optionString = "-Dline.separator=\r";
+	options.add("-Dline.separator=\r");
 	/*
 	// pja
-	char bootClasspath[512];
 	// only add the loader to the classpath, the rest is done in java:
-	sprintf(bootClasspath, "-Xbootclasspath/a:%s" PATH_SEP_STR "lib" PATH_SEP_STR "pja.jar", fHomeDir);
-	options[numOptions++].optionString = bootClasspath;
-	options[numOptions++].optionString = "-Dawt.toolkit=com.eteks.awt.PJAToolkit";
-	options[numOptions++].optionString = "-Djava.awt.graphicsenv=com.eteks.java2d.PJAGraphicsEnvironment";
-	options[numOptions++].optionString = "-Djava.awt.fonts=/Library/Fonts";
+	sprintf(str, "-Xbootclasspath/a:%s" PATH_SEP_STR "lib" PATH_SEP_STR "pja.jar", m_homeDir);
+	options.add("str);
+	options.add("-Dawt.toolkit=com.eteks.awt.PJAToolkit");
+	options.add("-Djava.awt.graphicsenv=com.eteks.java2d.PJAGraphicsEnvironment");
+	options.add("-Djava.awt.fonts=/Library/Fonts");
 	*/
 #endif
 
-	int noDebug = numOptions;
+	// read ini file and add the options here
+	sprintf(str, "%s" PATH_SEP_STR "jvm.ini", m_homeDir);
+	if (gPlugin->pathToNativePath(str, str)) {
+		FILE *file = fopen(str, "rt");
+		if (file != NULL) {
+			while (fgets(str, sizeof(str), file)) {
+				options.add(str);
+			}
+		}
+	}
+
 #ifdef _DEBUG
 	// start JVM in debug mode, for remote debuggin on port 8000
-	options[numOptions++].optionString = "-Xdebug";
-	options[numOptions++].optionString = "-Xnoagent";
-	options[numOptions++].optionString = "-Djava.compiler=NONE";
-	options[numOptions++].optionString = "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n";
+	options.add("-Xdebug");
+	options.add("-Xnoagent");
+	options.add("-Djava.compiler=NONE");
+	options.add("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n");
 #endif
-//	numOptions = noDebug;
 
-	args.options = options;
-	args.nOptions = numOptions;
-	
+	options.fillArgs(&args);
 	args.ignoreUnrecognized = JNI_TRUE;
 
 	// create the JVM
 	JNIEnv *env;
-	jint res = createJavaVM(&fJavaVM, (void **) &env, (void *) &args);
-	if (res < 0)
+	jint res = createJavaVM(&m_javaVM, (void **) &env, (void *) &args);
+	if (res < 0) {
+		gPlugin->log("Error creataing Java VM: %i", res);
 		throw new StringException("Cannot create Java VM.");
+	}
 
-	fJavaEngine = NULL;
+	m_javaEngine = NULL;
 	
 	// link the native functions to the java functions. The code for this is in registerNatives.cpp,
 	// which is automatically generated from the JNI header files by jni.js
@@ -214,7 +252,7 @@ void ScriptographerEngine::init() {
 	mid_Loader_init = getStaticMethodID(env, cls_Loader, "init", "(Ljava/lang/String;)V");
 	mid_Loader_reload = getStaticMethodID(env, cls_Loader, "reload", "()Ljava/lang/String;");
 	mid_Loader_loadClass = getStaticMethodID(env, cls_Loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
-	callStaticObjectMethodReport(env, cls_Loader, mid_Loader_init, env->NewStringUTF(fHomeDir));
+	callStaticObjectMethodReport(env, cls_Loader, mid_Loader_init, env->NewStringUTF(m_homeDir));
 	registerNatives(env);
 	initReflection(env);
 }
@@ -233,10 +271,10 @@ void ScriptographerEngine::initEngine() {
 		
 		// According Adobe: note that entries whose keys are prefixed with
 		// the character '-' are considered to be temporary entries which are not saved to file.
-		fArtHandleKey = sAIDictionary->Key("-scriptographer-handle");
+		m_artHandleKey = sAIDictionary->Key("-scriptographer-handle");
 		
-		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_init, env->NewStringUTF(fHomeDir));
-		fInitialized = true;
+		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_init, env->NewStringUTF(m_homeDir));
+		m_initialized = true;
 	} EXCEPTION_CATCH_REPORT(env)
 }
 
@@ -247,25 +285,25 @@ void ScriptographerEngine::initEngine() {
 jstring ScriptographerEngine::reloadEngine() {
 	JNIEnv *env = getEnv();
 	jstring errors = (jstring) callStaticObjectMethodReport(env, cls_Loader, mid_Loader_reload);
-	fInitialized = false;
+	m_initialized = false;
 	registerNatives(env);
 	initReflection(env);
-	fJavaEngine = NULL;
+	m_javaEngine = NULL;
 	initEngine();
 	return errors;
 }
 
 /**
- * Cleans up everything except destroying the fJavaVM, which has some problems
+ * Cleans up everything except destroying the m_javaVM, which has some problems
  * with the thread workaround on mac: It blocks until the main thread is done, which
  * is at the shutdown of the application.
  * The caller of exit() needs to call DestroyJavaVM on the returned JavaVM object after
  * having executed all other important functions, such as MPNotifyQueue...
  */ 
 JavaVM *ScriptographerEngine::exit() {
-	fJavaVM->DetachCurrentThread();
+	m_javaVM->DetachCurrentThread();
 	
-	return fJavaVM;
+	return m_javaVM;
 }
 
 /**
@@ -583,11 +621,11 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
  * throws exceptions
  */
 jobject ScriptographerEngine::getJavaEngine() {
-	if (fJavaEngine == NULL) {
+	if (m_javaEngine == NULL) {
 		JNIEnv *env = getEnv();
-		fJavaEngine = env->NewWeakGlobalRef(callStaticObjectMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_getInstance));
+		m_javaEngine = env->NewWeakGlobalRef(callStaticObjectMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_getInstance));
 	}
-	return fJavaEngine;
+	return m_javaEngine;
 }
 
 long ScriptographerEngine::getNanoTime() {
@@ -1650,7 +1688,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 	// store the art object's initial handle value in its own dictionary. see selectionChanged for more explanations
 	AIDictionaryRef artDict;
 	if (!sAIArt->GetDictionary(art, &artDict)) {
-		sAIDictionary->SetIntegerEntry(artDict, fArtHandleKey, (ASInt32) art);
+		sAIDictionary->SetIntegerEntry(artDict, m_artHandleKey, (ASInt32) art);
 		sAIDictionary->Release(artDict);
 	}
 	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) type, (jint) textType, (jint) getActiveDocumentHandle(), (jint) dictionary);
@@ -1764,16 +1802,16 @@ ASErr ScriptographerEngine::selectionChanged() {
 				// if that's the case, let the java side know about the handle change
 				AIDictionaryRef artDict;
 				if (!sAIArt->GetDictionary(art, &artDict)) {
-					if (sAIDictionary->IsKnown(artDict, fArtHandleKey)) {
+					if (sAIDictionary->IsKnown(artDict, m_artHandleKey)) {
 						bool changed = true;
-						if (!sAIDictionary->GetIntegerEntry(artDict, fArtHandleKey, (ASInt32 *) &prevArt) && prevArt == art) {
+						if (!sAIDictionary->GetIntegerEntry(artDict, m_artHandleKey, (ASInt32 *) &prevArt) && prevArt == art) {
 							prevArt = NULL;
 							changed = false;
 						}
 						// set the new handle:
 						if (changed)
-							sAIDictionary->SetIntegerEntry(artDict, fArtHandleKey, (ASInt32) art);
-						// only if the fArtHandleKey was set before, this object was wrapped
+							sAIDictionary->SetIntegerEntry(artDict, m_artHandleKey, (ASInt32) art);
+						// only if the m_artHandleKey was set before, this object was wrapped
 						handles[count++] = (jint) art;
 						handles[count++] = (jint) prevArt;
 					}
@@ -2268,9 +2306,9 @@ jobject ScriptographerEngine::getListEntryObject(ADMListEntryRef entry) {
  */
 
 JNIEnv *ScriptographerEngine::getEnv() {
-	if (fJavaVM != NULL) {
+	if (m_javaVM != NULL) {
 		JNIEnv *env;
-		fJavaVM->AttachCurrentThread((void **)&env, NULL);
+		m_javaVM->AttachCurrentThread((void **)&env, NULL);
 		return env;
 	} else {
 		return NULL;

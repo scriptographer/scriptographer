@@ -1,6 +1,6 @@
 #include "StdHeaders.h"
+#include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
-#include "Plugin.h"
 #include "com_scriptographer_ScriptographerEngine.h"
 #include "com_scriptographer_Key.h"
 

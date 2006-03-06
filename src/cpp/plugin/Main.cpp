@@ -26,68 +26,51 @@
  *
  * $RCSfile: Main.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/03/10 22:48:43 $
+ * $Revision: 1.3 $
+ * $Date: 2006/03/06 15:32:47 $
  */
  
 #include "stdHeaders.h"
 
-#include "Plugin.h"
+#include "ScriptographerPlugin.h"
 
-static bool unloaded = true;
+static bool loaded = false;
 
 DLLExport SPAPI SPErr PluginMain(char *caller, char *selector, void *message) {
 	SPErr error = kNoErr;
 
 	SPMessageData *msgData = static_cast<SPMessageData *>(message);
-		
-	Plugin *plugin = static_cast<Plugin *>(msgData->globals);
-	
-	bool shouldDelete = false;
+	ScriptographerPlugin *plugin = static_cast<ScriptographerPlugin *>(msgData->globals);
+	sSPBasic = msgData->basic;
 
-	try {
-		sSPBasic = msgData->basic;
+	bool remove = false;
 
-		if (plugin != NULL && unloaded)
-			throw((SPErr)kBadParameterErr);
-
-		if (plugin == NULL)	{
-			plugin = new Plugin(msgData->self);
-			
+	if (plugin != NULL && !loaded) {
+		plugin->log("Plugin object is created, but the loaded flag is not set.");
+		error = kBadParameterErr;
+	} else {
+		if (plugin == NULL) {
+			plugin = new ScriptographerPlugin(msgData->self);
 			if (plugin != NULL)	{
 				msgData->globals = plugin;
-				unloaded = false;
+				loaded = true;
 			} else {
 				error = kOutOfMemoryErr;
-				throw((SPErr)error);
 			}
 		}
-
-		error = plugin->handleMessage(caller, selector, message);
-		if (error) throw((SPErr)error);
-
-		if (plugin->isUnloadMsg(caller, selector))
-			shouldDelete = true;
-	} catch (SPErr inError) {
-		error = inError;
-
-		if (plugin != NULL && (plugin->isUnloadMsg(caller, selector) || 
-		     				   plugin->isReloadMsg(caller, selector)))
-			shouldDelete = true;
-	} catch (...) {
-		error = kBadParameterErr;
-
-		if (plugin != NULL && (plugin->isUnloadMsg(caller, selector) || 
-		     				   plugin->isReloadMsg(caller, selector)))
-			shouldDelete = true;
+		if (plugin != NULL)
+			error = plugin->handleMessage(caller, selector, message);
+	}
+	
+	if (error == kUnloadErr) {
+		remove = true;
+		error = kNoErr;
 	}
 
-	shouldDelete = false;
-
-	if (shouldDelete) {
+	if (remove) {
 		delete plugin;
-		msgData->globals = plugin = NULL;
-		unloaded = true;
+		msgData->globals = NULL;
+		loaded = false;
 	}
 
 	return error;

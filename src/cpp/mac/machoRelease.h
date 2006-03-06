@@ -68,5 +68,7 @@
 //We don't want debugging, because some of it's macros interfere with our code. dmaclach
 #define __DEBUGGING__
 
+#define LOGFILE
+
 #endif // __machoRelease_h__
 // end machoRelease.h

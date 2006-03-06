@@ -26,13 +26,13 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.15 $
+ * $Date: 2006/03/06 15:32:46 $
  */
  
 #include "stdHeaders.h"
+#include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
-#include "Plugin.h"
 #include "aiGlobals.h"
 #include "com_scriptographer_ai_Document.h"
 #include "com_scriptographer_ai_Art.h"

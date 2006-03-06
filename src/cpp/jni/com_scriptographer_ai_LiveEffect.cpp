@@ -26,13 +26,13 @@
  *
  * $RCSfile: com_scriptographer_ai_LiveEffect.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.6 $
+ * $Date: 2006/03/06 15:32:46 $
  */
 
 #include "StdHeaders.h"
+#include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
-#include "Plugin.h"
 #include "com_scriptographer_ai_LiveEffect.h"
 
 #define NAME_PREFIX "Scriptographer "

@@ -26,8 +26,8 @@
  *
  * $RCSfile: jniMacros.h,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/10/31 21:42:13 $
+ * $Revision: 1.3 $
+ * $Date: 2006/03/06 15:32:47 $
  */
 
 /*
@@ -35,7 +35,7 @@
  * JNI types:
  */
 #define JNI_CHECK_ENV \
-	if (env == NULL) fJavaVM->AttachCurrentThread((void **)&env, NULL);
+	if (env == NULL) m_javaVM->AttachCurrentThread((void **)&env, NULL);
 	
 #define JNI_ARGS_BEGIN(START) \
 	va_list args; \
@@ -226,6 +226,7 @@
 #define EXCEPTION_CATCH_REPORT(env) \
 	catch (ScriptographerException *e) { \
 		e->report(env); \
+		gPlugin->log("Exception: %s", e->toString(env)); \
 		delete e; \
 	} catch (...) { \
 		ScriptographerException e; \

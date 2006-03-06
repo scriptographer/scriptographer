@@ -26,11 +26,12 @@
  *
  * $RCSfile: com_scriptographer_adm_Item.cpp,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.12 $
+ * $Date: 2006/03/06 15:32:46 $
  */
 
 #include "stdHeaders.h"
+#include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
 #include "admGlobals.h"
 #include "com_scriptographer_adm_Item.h"

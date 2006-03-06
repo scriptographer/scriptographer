@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_SegmentList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/20 13:49:36 $
+ * $Revision: 1.4 $
+ * $Date: 2006/03/06 15:32:46 $
  */
  
 #include "stdHeaders.h"
