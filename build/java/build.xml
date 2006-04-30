@@ -160,7 +160,7 @@
 	<!-- =================================================================== -->
 	<!-- Installs the jar files in the Illustrator directory                 -->
 	<!-- =================================================================== -->
-	<target name="packages" depends="init"> <!-- jar,jsdocs -->
+	<target name="packages" depends="jar,jsdocs">
 		<mkdir dir="${build.packages}"/>
 
 		<mkdir dir="${build.packages}/Scriptographer"/>
@@ -350,9 +350,9 @@
 					com.scriptographer.test.*
 				"/>
 				<param name="-packagesequence" value="
-					com.scriptographer
 					com.scriptographer.ai
 					com.scriptographer.adm
+					com.scriptographer
 				"/>
 				<param name="-methodfilter" value="
 					setWrapper

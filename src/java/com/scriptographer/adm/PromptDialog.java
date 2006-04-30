@@ -28,8 +28,8 @@
  * 
  * $RCSfile: PromptDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.7 $
+ * $Date: 2006/04/30 14:37:49 $
  */
 
 package com.scriptographer.adm;
@@ -184,10 +184,20 @@ public class PromptDialog extends ModalDialog {
 	}
 
 	public static Object[] prompt(String title, PromptItem[] items) {
-		return new PromptDialog(title, items).values;
+		PromptDialog dialog = new PromptDialog(title, items);
+		// destroy the dialog again after prompting values. If this is not done
+		// a problem seems to occur where the modal dialog interfers with the progress dialog,
+		// and locks the mouse interface, for example when rendering a raster.
+		dialog.destroy();
+		return dialog.values;
 	}
 
 	public static Object[] prompt(String title, Object[] items) {
-		return new PromptDialog(title, items).values;
+		PromptDialog dialog = new PromptDialog(title, items);
+		// destroy the dialog again after prompting values. If this is not done
+		// a problem seems to occur where the modal dialog interfers with the progress dialog,
+		// and locks the mouse interface, for example when rendering a raster.
+		dialog.destroy();
+		return dialog.values;
 	}
 }

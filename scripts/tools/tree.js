@@ -7,16 +7,6 @@ function onInit() {
 }
 
 function onOptions() {
-	/*
-	var values = Dialog.prompt("Tree:", [
-		new PromptDialog.Item(PromptDialog.Item.TYPE_NUMBER, "Minimal Scale", minScale),
-		new PromptDialog.Item(PromptDialog.Item.TYPE_NUMBER, "Maximal Scale", maxScale),
-		new PromptDialog.Item(PromptDialog.Item.TYPE_NUMBER, "Rotation", rotationValue),
-		new PromptDialog.Item(PromptDialog.Item.TYPE_NUMBER, "Minimal Branch Number", minBranch),
-		new PromptDialog.Item(PromptDialog.Item.TYPE_NUMBER, "Maximal Branch Number", maxBranch)
-	]);
-	*/
-
 	var values = Dialog.prompt("Tree:", [
         { value: minScale, description: "Minimal Scale", width: 50 },
         { value: maxScale, description: "Maximal Scale", width: 50 },
@@ -42,7 +32,6 @@ function onMouseDown(event) {
 }
 
 function onMouseUp(event) {
-	var t = new Date().getTime();
 	if (path.segments.length > 0) {
 		path.pointsToCurves();
 		var group = new Group();
@@ -82,7 +71,6 @@ function onMouseUp(event) {
 			branches  = newBranches;
 		}
 	}
-	print(new Date().getTime() - t);
 }
 
 function onMouseDrag(event) {

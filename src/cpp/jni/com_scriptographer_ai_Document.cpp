@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.15 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.16 $
+ * $Date: 2006/04/30 14:37:48 $
  */
  
 #include "stdHeaders.h"
@@ -443,9 +443,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_paste(JNIEnv *env, jo
 // ArtSet stuff:
 
 /*
- * boolean hasSelection()
+ * boolean hasSelectedItems()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_hasSelection(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_hasSelectedItems(JNIEnv *env, jobject obj) {
 	jboolean selected = false;
 
 	DOCUMENT_BEGIN
@@ -455,6 +455,28 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_hasSelection(JNIE
 	DOCUMENT_END
 
 	return selected;
+}
+
+/*
+ * com.scriptographer.ai.ArtSet getSelectedItems()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(JNIEnv *env, jobject obj) {
+	jobject artSet = NULL;
+
+	DOCUMENT_BEGIN
+
+	// TODO: consider using Matching Art Suite instead!!! (faster, direct array access)
+	AIArtSet set;
+	if (!sAIArtSet->NewArtSet(&set)) {
+		if (!sAIArtSet->SelectedArtSet(set)) {
+			artSet = gEngine->convertArtSet(env, set);
+			sAIArtSet->DisposeArtSet(&set);
+		}
+	}
+
+	DOCUMENT_END
+
+	return artSet;
 }
 
 /*
@@ -476,28 +498,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_deselectAll(JNIEnv *e
 #endif
 
 	DOCUMENT_END
-}
-
-/*
- * com.scriptographer.ai.ArtSet getSelection()
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelection(JNIEnv *env, jobject obj) {
-	jobject artSet = NULL;
-
-	DOCUMENT_BEGIN
-
-	// TODO: consider using Matching Art Suite instead!!! (faster, direct array access)
-	AIArtSet set;
-	if (!sAIArtSet->NewArtSet(&set)) {
-		if (!sAIArtSet->SelectedArtSet(set)) {
-			artSet = gEngine->convertArtSet(env, set);
-			sAIArtSet->DisposeArtSet(&set);
-		}
-	}
-
-	DOCUMENT_END
-
-	return artSet;
 }
 
 /*

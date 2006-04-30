@@ -19,6 +19,6 @@ if (initRaster()) {
 	]);
 	if (values) {
 		var size = values[0], scale = values[1] / 100.0;
-		executeRaster();
+		executeRaster(createDot);
 	}
 }

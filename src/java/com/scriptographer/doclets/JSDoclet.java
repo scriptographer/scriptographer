@@ -274,14 +274,21 @@ public class JSDoclet extends Doclet {
 		}
 
 		void printMember(PrintWriter writer, String id, String title, String text, ClassDoc cd) {
-			writer.print("<div id=\"" + id + "-link\" class=\"member-link\">");
+			if (templates) {
+				writer.print("<% this.memberLink id=\"" + id + "\" %>");
+			} else {
+				writer.print("<div id=\"" + id + "-link\" class=\"member-link\">");
+			}
 			writer.print(createAnchor(id, true));
 			writer.print(title);
 			writer.print("</a>");
 			writer.println("</div>");
 
-			writer.println("<div id=\"" + id + "-description\" class=\"member-description\">");
-
+			if (templates) {
+				writer.print("<% this.memberDescription id=\"" + id + "\" %>");
+			} else {
+				writer.print("<div id=\"" + id + "-description\" class=\"member-description\">");
+			}
 			writer.println("<div class=\"member-header\">");
 			writer.println("<div class=\"member-title\"><a href=\"#\" onClick=\"return toggleMember('" + id + "', false);\"" + title + "</a></div>");
 			writer.println("<div class=\"member-close\"><input type=\"button\" value=\"Close\" onClick=\"toggleMember('" + id + "', false);\"></div>");
@@ -297,7 +304,7 @@ public class JSDoclet extends Doclet {
 			writer.println("</div>");
 
 			if (templates) {
-				writer.print("<% this.comments id=\"" + id + "\" %>");
+				writer.print("<% this.memberPosts id=\"" + id + "\" %>");
 			}
 		}
 
@@ -1717,10 +1724,11 @@ public class JSDoclet extends Doclet {
 					path = base + path + ".html";
 				str += path;
 			}
-			if (anchor != null)
+			if (anchor != null) {
+				if (templates) str += anchor + "/";
 				str += "#" + anchor;
-			if (anchor != null)
 				str += "\" onClick=\"return toggleMember('" + anchor + "', true);";
+			}
 			str += "\">" + title + "</a>";
 		} else {
 			str += title;

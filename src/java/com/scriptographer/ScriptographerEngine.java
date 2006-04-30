@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.17 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.18 $
+ * $Date: 2006/04/30 14:37:49 $
  */
 
 package com.scriptographer;
@@ -79,7 +79,7 @@ public class ScriptographerEngine {
 		// ClassLoader from there is save:
 		Thread.currentThread().setContextClassLoader(ScriptographerEngine.class.getClassLoader());
 		// get the baseDir setting, if it's not set, ask the user
-		Preferences prefs = Preferences.userNodeForPackage(ScriptographerEngine.class); 
+		Preferences prefs = Preferences.userNodeForPackage(ScriptographerEngine.class);
 		String dir = prefs.get("scriptDir", null);
 		// If nothing is defined, try the default place for Scripts: In the plugin's folder
 		if (dir == null)
@@ -89,11 +89,11 @@ public class ScriptographerEngine {
 		if (!scriptDir.exists() || !scriptDir.isDirectory()) {
 			chooseScriptDirectory();
 		}
-		
+
 		consoleDialog = new ConsoleDialog();
 		mainDialog = new MainDialog(consoleDialog);
 		ConsoleOutputStream.enableOutput(true);
-		
+
 		// execute all scripts in startup folder:
 		if (scriptDir != null)
 			getInstance().executeAll(new File(scriptDir, "startup"));
@@ -107,44 +107,49 @@ public class ScriptographerEngine {
 		Annotator.disposeAll();
 		ConsoleOutputStream.getInstance().enableRedirection(false);
 	}
-	
+
 	public static boolean chooseScriptDirectory() {
 		scriptDir = Dialog.chooseDirectory("Please choose the Scriptographer Script directory:", scriptDir);
 		if (scriptDir != null && scriptDir.isDirectory()) {
-			Preferences prefs = Preferences.userNodeForPackage(ScriptographerEngine.class); 
+			Preferences prefs = Preferences.userNodeForPackage(ScriptographerEngine.class);
 			prefs.put("scriptDir", scriptDir.getPath());
+			try {
+				prefs.flush();
+			} catch (java.util.prefs.BackingStoreException e) {
+				e.printStackTrace();
+			}
 			return true;
 		}
 		return false;
 	}
-	
+
 	public static File getPluginDirectory() {
 		return pluginDir;
 	}
-	
+
 	public static File getScriptDirectory() {
 		return scriptDir;
 	}
-	
+
 	public static boolean isWindows() {
 		return isWindows;
 	}
-	
+
 	public static boolean isMacintosh() {
 		return isMacintosh;
 	}
 
 	static int reloadCount = 0;
-	
+
 	public static int getReloadCount() {
 		return reloadCount;
 	}
-	
+
 	public static String reload() {
 		reloadCount++;
 		return nativeReload();
 	}
-	
+
 	public static native String nativeReload();
 
 	public static ScriptographerEngine getInstance() throws Exception {
@@ -152,7 +157,7 @@ public class ScriptographerEngine {
 			engine = new ScriptographerEngine();
 		return engine;
 	}
-	
+
 	public static void onAbout() {
 		AboutDialog.show();
 	}
@@ -234,56 +239,21 @@ public class ScriptographerEngine {
 		}
 		return null;
 	}
-	
-	/*
-	class ProgressUpdater implements Runnable {
-		Thread current;
-		boolean canceled;
-		boolean run;
-		
-		ProgressUpdater(Thread current) {
-			this.current = current;
-		}
-
-		public void run() {
-			canceled = false;
-			run = true;
-			while(run && !canceled) {
-				canceled = !ScriptographerEngine.updateProgress();
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e) {
-					canceled = true;
-				}
-			}
-			if (canceled)
-				current.stop();
-		}
-		
-		public void stop() {
-			run = false;
-		}
-	}
-	*/
 
 	public Scriptable executeScript(Script script, File scriptFile, Scriptable scope) {
 		Scriptable ret = null;
-		// ProgressUpdater updater = new ProgressUpdater(Thread.currentThread());
 		try {
-			showProgress("Executing " + scriptFile.getName() + "...");
-			// new Thread(updater).start();
-			
+			showProgress("Executing " + (scriptFile != null ? scriptFile.getName() : "Console Input") + "...");
 			if (scope == null)
 				scope = global.createScope(scriptFile);
 			// disable output to the console while the script is executed as it won't get updated anyway
 			// ConsoleOutputStream.enableOutput(false);
 			CommitManager.begin();
 			script.exec(context, scope);
-			// updater.stop();
 			// now commit all the changes:
 			CommitManager.end();
 			ret = scope;
-			ScriptographerEngine.closeProgress();
+			closeProgress();
 		} catch (WrappedException e) {
 			System.err.println(e.getMessage());
 			e.getWrappedException().printStackTrace();
@@ -340,38 +310,33 @@ public class ScriptographerEngine {
 			return executeScript(script, null, scope);
 		return null;
 	}
-	
+
 	public Scriptable createScope(File scriptFile) {
 		return global.createScope(scriptFile);
 	}
-	
+
 	public Object javaToJS(Object value) {
 		return Context.javaToJS(value, global);
 	}
-	
+
 	/**
 	 * Launches the filename with the default associated editor.
 	 * 
 	 * @param filename
 	 * @return
 	 */
-	
+
 	public static native boolean launch(String filename);
 
 	public static boolean launch(File file) {
 		return launch(file.getPath());
 	}
-	
+
 	public static native long getNanoTime();
 
 	public static native Point getMousePoint();
-	
+
 	protected static native void showProgress(String text);
 	static public native boolean updateProgress();
 	protected static native boolean closeProgress();
-
-	public static void main(String args[]) throws Exception {
-		ConsoleOutputStream.getInstance().enableRedirection(false);
-	 	getInstance().executeFile("/Users/Lehni/Development/C & C++/Scriptographer/scripts/test.js", null);
-	}
 }

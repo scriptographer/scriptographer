@@ -1,23 +1,32 @@
 function onInit() {
 	size = 10;
-	max = 10;
+	minAmount = 5;
+	maxAmount = 15;
+	minWidth = 0.1;
+	maxWidth = 5;
 	setIdleEventInterval(1000 / 100); // 100 times a second
 }
 
-function options() {
-	values = Dialog.prompt("Random Radius:", [
-		{ value: size, description: "Size", width: 50},
-		{ value: max, description: "Max", width: 50}
+function onOptions() {
+	values = Dialog.prompt("Weed Rounded:", [
+		{ value: size, description: "Radius", width: 50 },
+		{ value: minAmount, description: "Minimal Amount", width: 50 },
+		{ value: maxAmount, description: "Maximal Amount", width: 50 },
+		{ value: minWidth, description: "Minimal Stroke Width", width: 50 },
+		{ value: maxWidth, description: "Maximal Stroke Width", width: 50 },
 	]);
 	if (values != null) {
 		size = values[0];
-		max = values[1];
+		minAmount = values[1];
+		maxAmount = values[2];
+		minWidth = values[3];
+		maxWidth = values[4];
 	}
 }
 
 function onMouseDown(event) {
 	branches = [];
-	var count = Math.round(Math.random() * (max - 1.0) + 1.0);
+	var count = Math.floor(minAmount + Math.random() * (maxAmount - minAmount));
 	var group = new Group();
 	for (var i = 0; i < count; i++)
 		branches.push(new Branch(event.point, group));
@@ -40,7 +49,7 @@ function Branch(point, group) {
 	this.vector = new Point(1, 0).transform(Matrix.getRotateInstance(Math.random() * 2 * Math.PI));
 	this.path = new Path();
 	this.path.moveTo(point);
-	this.path.style.stroke.width = Math.random() * 8 + 0.1;
+	this.path.style.stroke.width = minWidth + Math.random() * (maxWidth - minWidth);
 	group.append(this.path);
 	this.rotate = 0.2;
 	this.count = 0;

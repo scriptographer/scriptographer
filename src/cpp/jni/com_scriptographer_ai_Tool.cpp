@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Tool.cpp,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.11 $
+ * $Date: 2006/04/30 14:37:48 $
  */
 
 #include "stdHeaders.h"
@@ -80,22 +80,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setIdleEventInterval(JNIE
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Tool_nativeGetTools(JNIEnv *env, jclass cls) {
 	try {
 		jobject map = gEngine->newObject(env, gEngine->cls_IntMap, gEngine->cid_IntMap);
-		long count;
-		sAITool->CountTools(&count);
-		SPPluginRef plugin = gPlugin->getPluginRef();
+		int count;
+		Tool *tools = gPlugin->getTools(&count);
 		for (int i = 0; i < count; i++) {
-			AIToolHandle tool;
-			SPPluginRef toolPlugin;
-			if (!sAITool->GetNthTool(i, &tool) &&
-				!sAITool->GetToolPlugin(tool, &toolPlugin) &&
-				plugin == toolPlugin) {
-				char *title;
-				sAITool->GetToolTitle(tool, &title);
-				// extract the index from the title, assume that the last word is a number:
-				int index = atoi(strrchr(title, ' ')) - 1;
-				jobject toolObj = gEngine->newObject(env, gEngine->cls_Tool, gEngine->cid_Tool, (jint) tool, index);
-				gEngine->callObjectMethod(env, map, gEngine->mid_IntMap_put, (jint) tool, toolObj);
-			}
+			AIToolHandle handle = tools[i].handle;
+			jobject toolObj = gEngine->newObject(env, gEngine->cls_Tool, gEngine->cid_Tool, (jint) handle, i);
+			gEngine->callObjectMethod(env, map, gEngine->mid_IntMap_put, (jint) handle, toolObj);
 		}
 		return map;
 	} EXCEPTION_CONVERT(env)

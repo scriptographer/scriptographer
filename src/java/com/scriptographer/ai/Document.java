@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.18 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.19 $
+ * $Date: 2006/04/30 14:37:49 $
  */
 
 package com.scriptographer.ai;
@@ -58,8 +58,6 @@ public class Document extends DictionaryObject {
 		DIALOG_ON = 1,
 		DIALOG_PARTIAL_ON = 2,
 		DIALOG_OFF = 3;
-
-	protected int documentHandle = 0;
 
 	protected LayerList layers = null;
 	protected ViewList views = null;
@@ -211,9 +209,9 @@ public class Document extends DictionaryObject {
 		return write(file, null, false);
 	}
 	
-	public native boolean hasSelection();
+	public native boolean hasSelectedItems();
 
-	public native ArtSet getSelection();
+	public native ArtSet getSelectedItems();
 	
 	public native void deselectAll();
 	
@@ -221,6 +219,26 @@ public class Document extends DictionaryObject {
 
 	public ArtSet getMatchingItems(Class type, NativeObject attributes) {
 		return getMatchingItems(type, FunctionHelper.convertToMap(attributes));
+	}
+
+	public ArtSet getPathItems() {
+		return getMatchingItems(Path.class, (Map) null);
+	}
+
+	public ArtSet getCompoundPathItems() {
+		return getMatchingItems(CompoundPath.class, (Map) null);
+	}
+
+	public ArtSet getGroupItems() {
+		return getMatchingItems(Group.class, (Map) null);
+	}
+
+	public ArtSet getTextItems() {
+		return getMatchingItems(TextFrame.class, (Map) null);
+	}
+
+	public ArtSet getRasterItems() {
+		return getMatchingItems(Raster.class, (Map) null);
 	}
 
 	public native Path createRectangle(Rectangle rect);

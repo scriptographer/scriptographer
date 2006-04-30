@@ -28,8 +28,8 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.9 $
+ * $Date: 2006/04/30 14:37:48 $
  */
 
 package com.scriptographer.adm;
@@ -44,25 +44,25 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
+import java.util.prefs.BackingStoreException;
 
 public abstract class Dialog extends CallbackHandler implements Unsealed {
 	// Dialog options (for Create() call)
-	public final static int 
+	public final static int
 		OPTION_NONE = 0,
-	
+
 		// Default ADM options:
-	
+
 		OPTION_IGNORE_KEYPAD_ENTER = 1 << 3,
 		//	 Keypad 'enter' key does not activate default item.
-	
+
 		OPTION_ITEMS_HIDDEN = 1 << 4,
 		//	 Reduce flicker by creating items hidden.
 
 		OPTION_FORCE_ROMAN = 1 << 5,
 		//	 Forces for all items within dialog, except as overridden.
-		
+
 		OPTION_ENTER_BEFORE_OK = 1 << 6,
 		//	 Track the enter keys carriage return and keypad enter before the
 		//	 dialog treats the event as equivalent to pressing the OK button --
@@ -71,7 +71,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		//	 and return true, so this option normally prevents the "OK" behavior
 		//	 when enter is pressed within a text item.
 		//	 This option currently relevant only on Mac platform.
-	
+
 		// Pseudo options, to simulate window styles:
 		OPTION_RESIZING = 1 << 10;
 
@@ -94,7 +94,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		STYLE_TABBED_HIERARCHY_FLOATING = 14,
 		STYLE_TABBED_RESIZING_HIERARCHY_FLOATING = 15,
 		STYLE_HOST_DEFINED = 65536;
-	
+
 	// 
 	protected final static int
 		ITEM_UNIQUE = 0,
@@ -106,7 +106,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		ITEM_RESIZE = -6,
 		ITEM_PRIVATE_UNIQUE = -7,
 		ITEM_FIRST_UNUSED_PRIVATE = -8;
-	
+
 	// TODO: Think about where to move all the ADM constants
 	// (Dialog.CURSOR_, Dialog.FONT_, Drawer.COLOR_
 	public final static int
@@ -119,7 +119,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		CURSOR_FIST = -7,
 		CURSOR_FISTPLUS = -8,
 		CURSOR_HOSTCONTROLS = -9;
-	
+
 	// ADMFont
 	public final static int
 		FONT_DEFAULT = 0,
@@ -135,18 +135,18 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		FONT_ITALIC_FIXEDWIDTH = 10,
 		FONT_BOLD_FIXEDWIDTH = 11,
 		FONT_BOLD_ITALIC_FIXEDWIDTH = 12;
-	
+
 	private ArrayList items;
-	
+
 	// reflections of native fields:
 	private int style;
 	private int options;
 	private Dimension size = null;
 	private Rectangle bounds = null;
 	private String title = "";
-	
+
 	protected AWTContainer container = null;
-	
+
 	private static ArrayList dialogs = new ArrayList();
 
 	protected Dialog(int style, int options) {
@@ -156,15 +156,20 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		// create a unique name for this session:
 		String name = "Scriptographer Dialog " + dialogs.size();
 		handle = nativeCreate(name, style, options);
-		
+
 		if (handle != 0)
 			dialogs.add(this);
 	}
-	
+
 	public void destroy() {
 		nativeDestroy(handle);
 		handle = 0;
 		dialogs.remove(this);
+	}
+
+	public void finalize() {
+		if (handle != 0)
+			this.destroy();
 	}
 
 	public static void destroyAll() {
@@ -181,7 +186,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		}
 		return false;
 	}
-	
+
 	public void savePreferences(String name) {
 		Preferences prefs = Preferences.userNodeForPackage(Dialog.class).node(name);
 		// saving the palette position, tab/dock preference.
@@ -191,14 +196,19 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		prefs.putInt("positionCode", groupInfo.positionCode);
 		prefs.put("location", bounds.x + " " + bounds.y);
 		prefs.put("size", bounds.width + " " + bounds.height);
+		try {
+			prefs.flush();
+		} catch (BackingStoreException e) {
+			e.printStackTrace();
+		}
 	}
-	
+
 	public boolean loadPreferences(String name) {
 		Preferences prefs = Preferences.userNodeForPackage(Dialog.class);
 		try {
 			if (prefs.nodeExists(name)) {
 				prefs = prefs.node(name);
-				
+
 				String group = prefs.get("group", "");
 				int positionCode = prefs.getInt("positionCode", DialogGroupInfo.POSITION_DEFAULT);
 
@@ -232,7 +242,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 						Integer.parseInt(sizeStr.substring(pos + 1))
 					);
 				}
-				
+
 				// restore the size and location of the dialog
 				setBounds(new Rectangle(location, size));
 				// restore the position code of the dialog
@@ -244,10 +254,10 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		}
 		return false;
 	}
-	
+
 	/*
-	 * Callback functions
-	 */
+		 * Callback functions
+		 */
 
 	protected void onResize(int dx, int dy) throws Exception {
 		// if a contianer was created, the layout needs to be recalculated now:
@@ -265,47 +275,47 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	protected void onClose() throws Exception {
 		callFunction("onClose");
 	}
-	
+
 	protected void onZoom() throws Exception {
 		callFunction("onZoom");
 	}
-	
+
 	protected void onCycle() throws Exception {
 		callFunction("onCycle");
 	}
-	
+
 	protected void onCollapse() throws Exception {
 		callFunction("onCollapse");
 	}
-	
+
 	protected void onExpand() throws Exception {
 		callFunction("onExpand");
 	}
-	
+
 	protected void onContextMenuChange() throws Exception {
 		callFunction("onContextMenuChange");
 	}
-	
+
 	protected void onShow() throws Exception {
 		callFunction("onShow");
 	}
-	
+
 	protected void onHide() throws Exception {
 		callFunction("onHide");
 	}
-	
+
 	protected void onMove() throws Exception {
 		callFunction("onMove");
 	}
-	
+
 	protected void onActivate() throws Exception {
 		callFunction("onActivate");
 	}
-	
+
 	protected void onDeactivate() throws Exception {
 		callFunction("onDeactivate");
 	}
-	
+
 	protected void onNotify(int notifier) throws Exception {
 		switch (notifier) {
 			case Notifier.NOTIFIER_DESTROY:
@@ -350,7 +360,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	/*
 	 * AWT LayoutManager integration:
 	 */
-	
+
 	protected AWTContainer getContainer() {
 		if (container == null)
 			container = new AWTContainer();
@@ -368,19 +378,19 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	public void addToLayout(Item item, Object constraints) {
 		getContainer().add(item.getComponent(), constraints);
 	}
-	
+
 	public void addToLayout(Item item) {
 		addToLayout(item, null);
 	}
-	
+
 	public void addToLayout(ItemContainer container, Object constraints) {
 		getContainer().add(container.getComponent(), constraints);
 	}
-	
+
 	public void addToLayout(ItemContainer layout) {
 		addToLayout(layout, null);
 	}
-	
+
 	/**
 	 * doLayout recalculates the layout, but does not change the dialog's size
 	 *
@@ -389,7 +399,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		if (container != null)
 			container.doLayout();
 	}
-	
+
 	/**
 	 * autoLayout is supposed to be called only once per dialog, after the initialization
 	 * if layout managers are involved. It set's the window's minimum- and preferred size
@@ -408,12 +418,12 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	/*
 	 * Wrapper stuff:
 	 */
-	
+
 	/* TODO: Check these:
-	 * - timer stuff
-	 * - createNestedItem(...);
-	 * - beginAdjustingFocusOrder, doneAdjustingFocusOrder
-	 */
+		 * - timer stuff
+		 * - createNestedItem(...);
+		 * - beginAdjustingFocusOrder, doneAdjustingFocusOrder
+		 */
 
 	/*
 	 * dialog creation/destruction
@@ -457,14 +467,14 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 
 	public native boolean isEnabled();
 	public native void setEnabled(boolean enabled);
-	
+
 	public native boolean isActive();
 	public native void setActive(boolean active);
-	
+
 	/* 
-	 * dialog bounds accessors
-	 * 
-	 */
+		 * dialog bounds accessors
+		 *
+		 */
 
 	private native Dimension nativeGetSize();
 	private native void nativeSetSize(int width, int height);
@@ -505,7 +515,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		bounds = nativeGetBounds();
 		return new Rectangle(bounds);
 	}
-	
+
 	public void setBounds(int x, int y, int width, int height) {
 		bounds.setRect(x, y, width, height);
 		nativeSetBounds(x, y, width, height);
@@ -528,7 +538,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 * coordinate system transformations
 	 * 
 	 */
-	
+
 	public native Point localToScreen(int x, int y);
 	public native Point screenToLocal(int x, int y);
 
@@ -568,14 +578,14 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 * cursor ID accessors
 	 * 
 	 */
-	
+
 	public native int getCursor();
 	public native void setCursor(int cursor);
-		
+
 	/* 
-	 * dialog text accessors
-	 * 
-	 */
+		 * dialog text accessors
+		 *
+		 */
 
 	private native void nativeSetTitle(String title);
 
@@ -585,7 +595,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	public String getTitle() {
 		return title;
 	}
-	
+
 	public void setTitle(String title) {
 		this.title = title;
 		nativeSetTitle(title);
@@ -595,10 +605,10 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 * dialog length constraints
 	 * 
 	 */
-		
+
 	public native Dimension getMinimumSize();
 	public native void setMinimumSize(int width, int height);
-	
+
 	public native Dimension getMaximumSize();
 	public native void setMaximumSize(int width, int height);
 
@@ -628,7 +638,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	public void setIncrement(Point2D increment) {
 		setIncrement((int) increment.getX(), (int) increment.getY());
 	}
-	
+
 	public Dimension getPreferredSize() {
 		if (container != null)
 			return container.getPreferredSize();
@@ -641,9 +651,9 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 */
 
 	protected native long getItemHandle(int itemID);
-	
+
 	private PopupMenu popupMenu = null;
-	
+
 	public PopupMenu getPopupMenu() {
 		if (popupMenu == null) {
 			long handle = getItemHandle(ITEM_MENU);
@@ -651,9 +661,9 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		}
 		return popupMenu;
 	}
-	
+
 	private Button resizeButton = null;
-	
+
 	public Button getResizeButton() {
 		if (resizeButton == null) {
 			long handle = getItemHandle(ITEM_RESIZE);
@@ -666,10 +676,10 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 * default/cancel items
 	 * 
 	 */
-	
+
 	public native Item getDefaultItem();
 	public native void setDefaultItem(Item item);
-	
+
 	public native Item getCancelItem();
 	public native void setCancelItem(Item item);
 
@@ -682,25 +692,25 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 
 	public native boolean isUpdateEnabled();
 	public native void setUpdateEnabled(boolean updateEnabled);
-	
+
 	public native boolean isForcedOnScreen();
 	public native void setForcedOnScreen(boolean forcedOnScreen);
-	
+
 	/*
-	 * dialog group functions
-	 * 
-	 */
-	
+		 * dialog group functions
+		 *
+		 */
+
 	public native DialogGroupInfo getGroupInfo();
 	public native void setGroupInfo(String group, int positionCode);
 	public void setGroupInfo(DialogGroupInfo info) {
 		setGroupInfo(info.group, info.positionCode);
 	}
-	
+
 	/*
-	 * Support for various standard dialogs: 
-	 */
-	
+		 * Support for various standard dialogs:
+		 */
+
 	private static File fileDialog(String message, String[] filters, File selectedFile, boolean open) {
 		String filter;
 		// Converts the filters to one long string, seperated by \0
@@ -731,7 +741,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	}
 
 	private static native String nativeFileDialog(String message, String filter, String directory, String filename, boolean open);
-	
+
 	/**
 	 * 
 	 * @param message
@@ -793,7 +803,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	public static File chooseDirectory() {
 		return chooseDirectory(null, null);
 	}
-	
+
 	/**
 	 * 
 	 * @param where
@@ -805,7 +815,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	public static Color chooseColor(Color color) {
 		return chooseColor(null, color);
 	}
-	
+
 	public static Color chooseColor() {
 		return chooseColor(null, null);
 	}

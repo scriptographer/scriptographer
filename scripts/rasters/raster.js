@@ -8,7 +8,7 @@ var dot = null;
 var sel = null;
 
 function initRaster() {
-	sel = activeDocument.getSelectedArt();
+	sel = activeDocument.getSelectedItems();
 	for (var i = 0; i < sel.length; i++) {
 		obj = sel[i];
 		if (raster == null && obj instanceof Raster) raster = obj;
@@ -18,25 +18,28 @@ function initRaster() {
 	return (raster != null && dot != null);
 }
 
-function executeRaster() {
-	var c = 0;
+function executeRaster(createDot) {
+	activeDocument.deselectAll();
 	var group = new Group();
+	// create a copy of the dot that is moved to the origin so 
+	// rasters that scale the dot are simple to realize:
 	dot = dot.clone();
-	var m = Matrix.getTranslateInstance(dot.bounds.center.multiply(-1));
-	dot.transform(m);
+	var move = dot.bounds.center;
+	dot.translate(move.multiply(-1));
 //	var img = raster.getImage();
-	for (var x = 0; x < raster.width; x++) {
-		for (var y = 0; y < raster.height; y++) {
+	for (var y = 0; y < raster.height; y++) {
+		for (var x = 0; x < raster.width; x++) {
 //			var c = new java.awt.Color(img.getRGB(x, y));
 //			var col = 1 - (0.3 * c.red + 0.59  * c.green + 0.11 * c.blue) / 255;
 			var radius = raster.getPixel(x, y).convert(Color.TYPE_GRAY).gray;
 			var obj = createDot(x, raster.height - y, dot, radius);
-			if (obj) group.append(obj);
+			if (obj) {
+				obj.translate(move);
+				group.append(obj);
+			}
 		}
+		activeDocument.redraw();
 	}
 	dot.remove();
-	for (var i = 0; i < sel.length; i++) {
-		sel[i].selected = false;
-	}
 	return group;
 }

@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.27 $
- * $Date: 2006/03/06 15:32:47 $
+ * $Revision: 1.28 $
+ * $Date: 2006/04/30 14:37:48 $
  */
 
 #include "stdHeaders.h"
@@ -35,9 +35,15 @@
 #include "ScriptographerPlugin.h"
 #include "com_scriptographer_ai_Art.h" // for com_scriptographer_ai_Art_TYPE_LAYER
 #include "com_scriptographer_adm_Notifier.h"
+
 #ifdef WIN_ENV 
 #include "loadJava.h"
 #endif
+
+#if TARGET_RT_MAC_CFM 
+#include "cfmMacho.h"
+#endif
+
 #include "aiGlobals.h"
 
 ScriptographerEngine *gEngine = NULL;
@@ -56,19 +62,14 @@ ScriptographerEngine *gEngine = NULL;
 #ifdef MAC_ENV
 
 OSStatus javaThread(ScriptographerEngine *engine) {
-	// the returned JavaVM needs to be destroyed. this may hang until the end of the app.
-	// do not call this in ScriptographerEngine::javaThread because ScriptographerEngine
-	// will be destroyed after the m_responseQueue notification.
-	JavaVM *jvm = engine->javaThread();
-	if (jvm != NULL)
-		jvm->DestroyJavaVM();
+	engine->javaThread();
 	return noErr;
 }
 
 /**
  * returns the JavaVM to be destroyed after execution.
  */
-JavaVM *ScriptographerEngine::javaThread() {
+void ScriptographerEngine::javaThread() {
 	try {
 		init();
 		// tell the constructor that the initialization is done:
@@ -76,7 +77,6 @@ JavaVM *ScriptographerEngine::javaThread() {
 	} catch (ScriptographerException *e) {
 		// let the user know about this error:
 		MPNotifyQueue(m_responseQueue, e, NULL, NULL);
-		return NULL;
 	}
 	// keep this thread alive until the JVM is to be destroyed. This needs
 	// to happen from the creation thread as well, otherwise JNI hangs endlessly:
@@ -86,7 +86,8 @@ JavaVM *ScriptographerEngine::javaThread() {
 	// now tell the caller that the engine can be deleted, before DestroyJavaVM is called,
 	// which may block the current thread until the end of the app.
 	MPNotifyQueue(m_responseQueue, NULL, NULL, NULL);
-	return jvm; 
+	// Destroy the Virtual Machine
+	jvm->DestroyJavaVM();
 }
 
 #endif
@@ -126,7 +127,6 @@ ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 }
 
 ScriptographerEngine::~ScriptographerEngine() {
-	gEngine = NULL;
 	delete m_homeDir;
 	callStaticVoidMethodReport(NULL, cls_ScriptographerEngine, mid_ScriptographerEngine_destroy);
 #ifdef MAC_ENV
@@ -144,6 +144,7 @@ ScriptographerEngine::~ScriptographerEngine() {
 		JavaVM *jvm = exit();
 		jvm->DestroyJavaVM();
 	}
+	gEngine = NULL;
 }
 
 class JVMOptions {
@@ -181,9 +182,19 @@ void ScriptographerEngine::init() {
 #ifdef WIN_ENV
 	loadJavaVM("client", &createJavaVM, &getDefaultJavaVMInitArgs);
 #else
+	// Two ways of loading the JVM function pointers on Mac: For CFM, extract them from the Mach-O bundle, otherwise
+	// directly point to them
+#if TARGET_RT_MAC_CFM
+	CFBundleRef javaVMBundle;
+	OSStatus err = LoadFrameworkBundle(CFSTR("JavaVM.framework"), &javaVMBundle);
+	
+	createJavaVM = (CreateJavaVMProc) CFBundleGetFunctionPointerForName(javaVMBundle, CFSTR("JNI_CreateJavaVM"));
+	getDefaultJavaVMInitArgs = (GetDefaultJavaVMInitArgsProc) CFBundleGetFunctionPointerForName(javaVMBundle, CFSTR("JNI_GetDefaultJavaVMInitArgs"));
+#else
 	createJavaVM = JNI_CreateJavaVM;
 	getDefaultJavaVMInitArgs = JNI_GetDefaultJavaVMInitArgs;
-#endif
+#endif // !TARGET_RT_MAC_CFM
+#endif // !WIN_ENV
 	
 	// init args
 	JavaVMInitArgs args;
@@ -213,7 +224,6 @@ void ScriptographerEngine::init() {
 	options.add("-Djava.awt.fonts=/Library/Fonts");
 	*/
 #endif
-
 	// read ini file and add the options here
 	sprintf(str, "%s" PATH_SEP_STR "jvm.ini", m_homeDir);
 	if (gPlugin->pathToNativePath(str, str)) {
@@ -1845,10 +1855,6 @@ ASErr ScriptographerEngine::toolEditOptions(AIToolMessage *message) {
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env)
 	return kExceptionErr;
-}
-
-ASErr ScriptographerEngine::toolTrackCursor(AIToolMessage *message) {
-	return kNoErr;
 }
 
 ASErr ScriptographerEngine::toolSelect(AIToolMessage *message) {

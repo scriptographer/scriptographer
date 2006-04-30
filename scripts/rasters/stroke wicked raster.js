@@ -16,13 +16,13 @@ function createDot(x, y, dot, radius) {
 }
 
 if (initRaster()) {
-    values = Dialog.prompt("Enter Raster Values:", [
+	values = Dialog.prompt("Enter Raster Values:", [
 		{ value: 10, description: "Grid Size:", width: 50 },
 		{ value: 10, description: "Stroke Scale:", width: 50}
 	]);
-    if (values) {
-        var size = values[0], scale = values[1];
+	if (values) {
+		var size = values[0], scale = values[1];
 
-        executeRaster();
-    }
+		executeRaster(createDot);
+	}
 }
