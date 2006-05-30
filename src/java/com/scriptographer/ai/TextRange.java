@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextRange.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.9 $
+ * $Date: 2006/05/30 12:02:17 $
  */
 
 package com.scriptographer.ai;
@@ -440,7 +440,7 @@ public class TextRange extends AIObject {
 			long oldChecksum = checksum.getValue();
 			checksum.reset();
 			checksum.update(content.getBytes());
-			int position = getStart();
+			int position = 0; // positions in tokens are relative to the start of the containing range
 			int index = 0;
 			// this loop reuses tokens
 			if (checksum.getValue() != oldChecksum) {
