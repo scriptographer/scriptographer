@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.22 $
- * $Date: 2006/03/06 15:32:47 $
+ * $Revision: 1.23 $
+ * $Date: 2006/05/30 12:00:19 $
  */
 
 #include "jniMacros.h"
@@ -366,7 +366,7 @@ public:
 	JavaVM *exit();
 
 #ifdef MAC_ENV
-	JavaVM *javaThread();
+	void javaThread();
 #endif
 
 	void initReflection(JNIEnv *env);

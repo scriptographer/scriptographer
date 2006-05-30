@@ -360,6 +360,7 @@
 					iterator
 					hashCode
 					destroyAll
+					disposeAll
 				"/>
 				<param name="-templates" value="${templates}"/>
 			</doclet>
