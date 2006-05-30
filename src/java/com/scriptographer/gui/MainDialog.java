@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.10 $
+ * $Date: 2006/05/30 22:46:45 $
  */
 
 package com.scriptographer.gui;
@@ -246,7 +246,6 @@ public class MainDialog extends FloatingDialog {
 	}
 
 	public static Image getImage(String filename) {
-		// return new Image(1, 1, Image.TYPE_RGB);
 		try {
 			return new Image(MainDialog.class.getClassLoader().getResource("com/scriptographer/gui/resources/" + filename));
 		} catch (IOException e) {

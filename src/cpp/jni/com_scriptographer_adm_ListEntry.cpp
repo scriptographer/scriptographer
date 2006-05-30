@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ListEntry.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.9 $
+ * $Date: 2006/05/30 22:46:45 $
  */
  
 #include "stdHeaders.h"
@@ -435,7 +435,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_invalidate__IIII(JN
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
 		#define SET_PICTURE(SUITE) \
-			SUITE->SetPicture(entry, (ADMIconRef)iconRef);
+			SUITE->SetPicture(entry, (ADMIconRef) iconRef);
 
 		DEFINE_METHOD(SET_PICTURE)
 	} EXCEPTION_CONVERT(env)
@@ -447,7 +447,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetImage(JNIE
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetSelectedImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
 		#define SET_SELECETED_PICTURE(SUITE) \
-			SUITE->SetSelectedPicture(entry, (ADMIconRef)iconRef);
+			SUITE->SetSelectedPicture(entry, (ADMIconRef) iconRef);
 
 		DEFINE_METHOD(SET_SELECETED_PICTURE)
 	} EXCEPTION_CONVERT(env)

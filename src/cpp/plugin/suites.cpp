@@ -26,8 +26,8 @@
  *
  * $RCSfile: suites.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.2 $
+ * $Date: 2006/05/30 22:46:45 $
  */
  
 #include "stdHeaders.h"
@@ -161,7 +161,7 @@ ImportSuite startup[] = {
 	kADMDialogGroupSuite, _kADMDialogGroupSuiteVersion, &sADMDialogGroup, sizeof(_ADMDialogGroupSuite),
 	kADMNotifierSuite, _kADMNotifierSuiteVersion, &sADMNotifier, sizeof(_ADMNotifierSuite),
 	kADMEntrySuite, _kADMEntrySuiteVersion, &sADMEntry, sizeof(_ADMEntrySuite),
-	kADMListEntrySuite,  kADMListEntrySuiteVersion, &sADMListEntry, sizeof(_ADMListEntrySuite),
+	kADMListEntrySuite, _kADMListEntrySuiteVersion, &sADMListEntry, sizeof(_ADMListEntrySuite),
 	kADMTrackerSuite, _kADMTrackerSuiteVersion, &sADMTracker, sizeof(_ADMTrackerSuite),
 	kADMDrawerSuite, _kADMDrawerSuiteVersion, &sADMDrawer, sizeof(_ADMDrawerSuite),
 #ifdef WIN_ENV
