@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_MenuItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.7 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 #include "StdHeaders.h"
@@ -61,7 +61,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_MenuItem_nativeCreate(JNIEnv *
 		char *groupStr = gEngine->convertString(env, group);
 		AIPlatformAddMenuItemDataUS data;
 		data.groupName = groupStr;
-		data.itemText = gEngine->convertUnicodeString(env, text);
+		data.itemText = gEngine->convertString_UnicodeString(env, text);
 		AIMenuItemHandle menuItem = NULL;
 		sAIMenu->AddMenuItem(gPlugin->getPluginRef(), nameStr, &data, options, &menuItem);
 		delete nameStr;
@@ -93,7 +93,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_MenuItem_nativeSetText(JNIEnv 
 		sAIMenu->SetItemText(item, textStr);
 		delete textStr;
 #else
-		ai::UnicodeString textStr = gEngine->convertUnicodeString(env, text);
+		ai::UnicodeString textStr = gEngine->convertString_UnicodeString(env, text);
 		sAIMenu->SetItemText(item, textStr);
 #endif
 	} EXCEPTION_CONVERT(env)

@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListItem.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.8 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 package com.scriptographer.adm;
@@ -51,7 +51,7 @@ import com.scriptographer.util.SimpleList;
  * two objects to one and makes handling much easier.
  */
 /*
-The GetList() function returns a reference to inItem’s ADM List object.
+The GetList() function returns a reference to inItem's ADM List object.
 Once obtained, the ADM List suite functions can be used to access the list.
 The following item types have valid list objects:
 #define kADMListBoxType "ADM List Box Type"

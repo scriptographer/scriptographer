@@ -28,8 +28,8 @@
  *
  * $RCSfile: ConsoleDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/10/31 21:37:23 $
+ * $Revision: 1.8 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 package com.scriptographer.gui;
@@ -107,7 +107,8 @@ public class ConsoleDialog extends FloatingDialog implements ConsoleOutputWriter
 		this.addToLayout(textIn, "0, 0");
 		this.addToLayout(textOut, "0, 1");
 		
-		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1));
+//		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1));
+		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		buttons.add(clearButton);
 		this.addToLayout(buttons, "0, 2");
 

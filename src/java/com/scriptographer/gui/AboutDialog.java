@@ -28,8 +28,8 @@
  *
  * $RCSfile: AboutDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/18 15:29:07 $
+ * $Revision: 1.7 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 package com.scriptographer.gui;
@@ -80,7 +80,7 @@ public 	class AboutDialog extends ModalDialog {
 			"Scriptographer 0.2" + newLine + 
 			"http://www.scriptographer.com" +  newLine +
 			newLine +
-			"© 2001-2005 JŸrg Lehni" + newLine + 
+			"(c) 2001-2005 Juerg Lehni" + newLine + 
 			"http://www.scratchdisk.com");
 		
 		Button okButton = new Button(this);

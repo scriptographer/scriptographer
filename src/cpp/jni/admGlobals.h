@@ -26,8 +26,8 @@
  *
  * $RCSfile: admGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.5 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 ASErr ASAPI Dialog_onInit(ADMDialogRef dialog);
@@ -49,9 +49,6 @@ void ASAPI List_onDestroy(ADMListRef lst);
 ASErr ASAPI HierarchyList_onInit(ADMHierarchyListRef list);
 void ASAPI HierarchyList_onDestroy(ADMHierarchyListRef list);
 
-ASErr ASAPI HierarchyList_onInit(ADMHierarchyListRef lst);
-void ASAPI HierarchyList_onDestroy(ADMHierarchyListRef lst);
-
 void ASAPI ListEntry_onDestroy(ADMEntryRef entry);
 void ASAPI ListEntry_onNotify(ADMEntryRef entry, ADMNotifierRef notifier);
 ASBoolean ASAPI ListEntry_onTrack(ADMEntryRef entry, ADMTrackerRef tracker);
@@ -64,13 +61,13 @@ void ASAPI HierarchyListEntry_onDraw(ADMListEntryRef entry, ADMDrawerRef drawer)
 
 #define DEFINE_ADM_POINT(PT, X, Y) \
 	ADMPoint PT; \
-	PT.h = X; \
-	PT.v  =Y;
+	PT.h = (short) X; \
+	PT.v = (short) Y;
 
 
 #define DEFINE_ADM_RECT(RT, X, Y, WIDTH, HEIGHT) \
 	ADMRect RT; \
-	RT.left = X; \
-	RT.top  = Y; \
-	RT.right =  X + WIDTH; \
-	RT.bottom = Y + HEIGHT;
+	RT.left = (short) X; \
+	RT.top  = (short) Y; \
+	RT.right =  (short) (X + WIDTH); \
+	RT.bottom = (short) (Y + HEIGHT);

@@ -26,8 +26,8 @@
  *
  * $RCSfile: jniMacros.h,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/03/06 15:32:47 $
+ * $Revision: 1.4 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 /*
@@ -65,10 +65,12 @@
 #define JNI_DECLARE_GETFIELD(NAME, TYPE) \
 	TYPE get##NAME##Field(JNIEnv *env, jobject obj, jfieldID fid);
 
+//		TYPE res = env->functions->Get##NAME##Field(env, obj, fid); \
+
 #define JNI_DEFINE_GETFIELD(NAME, TYPE) \
 	TYPE ScriptographerEngine::get##NAME##Field(JNIEnv *env, jobject obj, jfieldID fid) { \
 		JNI_CHECK_ENV \
-		TYPE res = env->functions->Get##NAME##Field(env, obj, fid); \
+		TYPE res = env->Get##NAME##Field(obj, fid); \
 		EXCEPTION_CHECK(env) \
 		return res; \
 	}
@@ -87,10 +89,12 @@
 #define JNI_DECLARE_SETFIELD(NAME, TYPE) \
 	void set##NAME##Field(JNIEnv *env, jobject obj, jfieldID fid, TYPE val);
 
+//		env->functions->Set##NAME##Field(env, obj, fid, val); \
+
 #define JNI_DEFINE_SETFIELD(NAME, TYPE) \
 	void ScriptographerEngine::set##NAME##Field(JNIEnv *env, jobject obj, jfieldID fid, TYPE val) { \
 		JNI_CHECK_ENV \
-		env->functions->Set##NAME##Field(env, obj, fid, val); \
+		env->Set##NAME##Field(obj, fid, val); \
 		EXCEPTION_CHECK(env) \
 	}
 
@@ -108,10 +112,12 @@
 #define JNI_DECLARE_GETSTATICFIELD(NAME, TYPE) \
 	TYPE getStatic##NAME##Field(JNIEnv *env, jclass cls, const char *name, const char *signature);
 
+//		TYPE res = env->functions->GetStatic##NAME##Field(env, cls, env->functions->GetStaticFieldID(env, cls, name, signature)); \
+
 #define JNI_DEFINE_GETSTATICFIELD(NAME, TYPE) \
 	TYPE ScriptographerEngine::getStatic##NAME##Field(JNIEnv *env, jclass cls, const char *name, const char *signature) { \
 		JNI_CHECK_ENV \
-		TYPE res = env->functions->GetStatic##NAME##Field(env, cls, env->functions->GetStaticFieldID(env, cls, name, signature)); \
+		TYPE res = env->GetStatic##NAME##Field(cls, env->GetStaticFieldID(cls, name, signature)); \
 		EXCEPTION_CHECK(env) \
 		return res; \
 	}
@@ -153,21 +159,26 @@
 	TYPE call##NAME##MethodReport(JNIEnv *env, jobject obj, jmethodID mid, ...); \
 	TYPE callStatic##NAME##MethodReport(JNIEnv *env, jclass cls, jmethodID mid, ...);
 
+//		CALLER(env->functions->Call##NAME##MethodV(env, obj, mid, args), TYPE, EXCEPTION_CHECK); \
+//		CALLER(env->functions->CallStatic##NAME##MethodV(env, cls, mid, args), TYPE, EXCEPTION_CHECK); \
+//		CALLER(env->functions->Call##NAME##MethodV(env, obj, mid, args), TYPE, EXCEPTION_REPORT); \
+//		CALLER(env->functions->CallStatic##NAME##MethodV(env, cls, mid, args), TYPE, EXCEPTION_REPORT); \
+
 #define JNI_DEFINE_CALLMETHODS(NAME, TYPE, CALLER) \
 	TYPE ScriptographerEngine::call##NAME##Method(JNIEnv *env, jobject obj, jmethodID mid, ...) { \
-		CALLER(env->functions->Call##NAME##MethodV(env, obj, mid, args), TYPE, EXCEPTION_CHECK); \
+		CALLER(env->Call##NAME##MethodV(obj, mid, args), TYPE, EXCEPTION_CHECK); \
 	} \
 \
 	TYPE ScriptographerEngine::callStatic##NAME##Method(JNIEnv *env, jclass cls, jmethodID mid, ...) { \
-		CALLER(env->functions->CallStatic##NAME##MethodV(env, cls, mid, args), TYPE, EXCEPTION_CHECK); \
+		CALLER(env->CallStatic##NAME##MethodV(cls, mid, args), TYPE, EXCEPTION_CHECK); \
 	} \
 \
 	TYPE ScriptographerEngine::call##NAME##MethodReport(JNIEnv *env, jobject obj, jmethodID mid, ...) { \
-		CALLER(env->functions->Call##NAME##MethodV(env, obj, mid, args), TYPE, EXCEPTION_REPORT); \
+		CALLER(env->Call##NAME##MethodV(obj, mid, args), TYPE, EXCEPTION_REPORT); \
 	} \
 \
 	TYPE ScriptographerEngine::callStatic##NAME##MethodReport(JNIEnv *env, jclass cls, jmethodID mid, ...) { \
-		CALLER(env->functions->CallStatic##NAME##MethodV(env, cls, mid, args), TYPE, EXCEPTION_REPORT); \
+		CALLER(env->CallStatic##NAME##MethodV(cls, mid, args), TYPE, EXCEPTION_REPORT); \
 	}
 
 #define JNI_DEFINE_CALLMETHODS_RETURN(NAME, TYPE) \

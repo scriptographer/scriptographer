@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ListEntry.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.8 $
+ * $Date: 2006/05/30 16:03:40 $
  */
  
 #include "stdHeaders.h"
@@ -117,7 +117,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListEntry_nativeCreate(JNIEnv
 			return (jint) entry;
 		}
 	} EXCEPTION_CONVERT(env)
-	return NULL;
+	return 0;
 }
 
 /*
@@ -471,10 +471,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_nativeSetDisabledIm
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_setText(JNIEnv *env, jobject obj, jstring text) {
 	try {
 		#define SET_TEXT(SUITE) \
-			const jchar *chars = env->GetStringChars(text, NULL); \
-			if (chars == NULL) EXCEPTION_CHECK(env) \
+			ASUnicode *chars = gEngine->convertString_ASUnicode(env, text); \
 			SUITE->SetTextW(entry, chars); \
-			env->ReleaseStringChars(text, chars);
+			delete chars;
 
 		DEFINE_METHOD(SET_TEXT)
 	} EXCEPTION_CONVERT(env)
@@ -487,10 +486,9 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_ListEntry_getText(JNIEnv *
 	try {
 		#define GET_TEXT(SUITE) \
 			long len = SUITE->GetTextLength(entry); \
-			jchar *chars = new jchar[len]; \
+			ASUnicode *chars = new ASUnicode[len]; \
 			SUITE->GetTextW(entry, chars, len); \
-			jstring res = env->NewString(chars, len); \
-			if (res == NULL) EXCEPTION_CHECK(env) \
+			jstring res = gEngine->convertString(env, chars, len); \
 			delete chars; \
 			return res;
 			

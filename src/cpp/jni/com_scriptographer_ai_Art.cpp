@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.17 $
+ * $Date: 2006/05/30 16:03:40 $
  */
  
 #include "stdHeaders.h"
@@ -442,7 +442,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setName(JNIEnv *env, jobje
 		sAIArt->SetArtName(art, str);
 		delete str;
 #else
-		ai::UnicodeString str = gEngine->convertUnicodeString(env, name);
+		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, name);
 		sAIArt->SetArtName(art, str);
 #endif
 	} EXCEPTION_CONVERT(env)
@@ -457,14 +457,12 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Art_getName(JNIEnv *env, jo
 #if kPluginInterfaceVersion < kAI12
 		char name[256];
 		if (!sAIArt->GetArtName(art, name, 256, NULL)) {
-			return gEngine->convertString(env, name);
-		}
 #else
 		ai::UnicodeString name;
 		if (!sAIArt->GetArtName(art, name, NULL)) {
-			return gEngine->convertUnicodeString(env, name);
-		}
 #endif
+			return gEngine->convertString(env, name);
+		}
 	} EXCEPTION_CONVERT(env)
 	return NULL;
 }

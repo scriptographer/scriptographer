@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_TextItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/18 15:35:46 $
+ * $Revision: 1.5 $
+ * $Date: 2006/05/30 16:03:40 $
  */
  
 #include "stdHeaders.h"
@@ -44,10 +44,9 @@
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextItem_setText(JNIEnv *env, jobject obj, jstring text) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
-		const jchar *chars = env->GetStringChars(text, NULL);
-		if (chars == NULL) EXCEPTION_CHECK(env)
+		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		sADMItem->SetTextW(item, chars);
-		env->ReleaseStringChars(text, chars);
+		delete chars;
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -58,10 +57,9 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_TextItem_getText(JNIEnv *e
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		long len = sADMItem->GetTextLength(item);
-		jchar *chars = new jchar[len];
+		ASUnicode *chars = new ASUnicode[len];
 		sADMItem->GetTextW(item, chars, len);
-		jstring res = env->NewString(chars, len);
-		if (res == NULL) EXCEPTION_CHECK(env)
+		jstring res = gEngine->convertString(env, chars, len);
 		delete chars;
 		return res;
 	} EXCEPTION_CONVERT(env)

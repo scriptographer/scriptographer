@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/10/29 10:19:57 $
+ * $Revision: 1.9 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 package com.scriptographer.gui;
@@ -226,8 +226,9 @@ public class MainDialog extends FloatingDialog {
 		
 		this.addToLayout(scriptList, BorderLayout.CENTER);
 		
-		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1));
-
+		// ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1));
+		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		
 		buttons.add(playButton);
 		buttons.add(stopButton);
 		buttons.add(new Spacer(4, 0));
@@ -245,6 +246,7 @@ public class MainDialog extends FloatingDialog {
 	}
 
 	public static Image getImage(String filename) {
+		// return new Image(1, 1, Image.TYPE_RGB);
 		try {
 			return new Image(MainDialog.class.getClassLoader().getResource("com/scriptographer/gui/resources/" + filename));
 		} catch (IOException e) {

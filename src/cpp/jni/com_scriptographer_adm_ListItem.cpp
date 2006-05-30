@@ -26,11 +26,12 @@
  *
  * $RCSfile: com_scriptographer_adm_ListItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.9 $
+ * $Date: 2006/05/30 16:03:40 $
  */
  
 #include "stdHeaders.h"
+#include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
 #include "admGlobals.h"
 #include "com_scriptographer_adm_ListItem.h"
@@ -38,11 +39,13 @@
 /*
  * com.scriptographer.adm.ListItem
  */
- 
+
 // lists don't have init callbacks that automatically get called, but just for simetry let's use the same scheme:
 ASErr ASAPI List_onInit(ADMListRef list) {
-	sADMList->SetDestroyProc(list, ListEntry_onDestroy);
-	sADMList->SetNotifyProc(list, ListEntry_onNotify);
+	DEFINE_CALLBACK_PROC(ListEntry_onDestroy);
+	sADMList->SetDestroyProc(list, (ADMEntryDestroyProc) CALLBACK_PROC(ListEntry_onDestroy));
+	DEFINE_CALLBACK_PROC(ListEntry_onNotify);
+	sADMList->SetNotifyProc(list, (ADMEntryNotifyProc) CALLBACK_PROC(ListEntry_onNotify));
 	/* these are activated in enable****Callback
 	sADMList->SetTrackProc(list, ListEntry_onTrack);
 	sADMList->SetDrawProc(list, ListEntry_onDraw);
@@ -104,10 +107,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_nativeSetTrackEntryC
 	try {
 		if (env->IsInstanceOf(obj, gEngine->cls_HierarchyList)) {
 			ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
-			sADMHierarchyList->SetTrackProc(list, enabled ? HierarchyListEntry_onTrack : NULL);
+			DEFINE_CALLBACK_PROC(HierarchyListEntry_onTrack);
+			sADMHierarchyList->SetTrackProc(list, enabled ? (ADMListEntryTrackProc) CALLBACK_PROC(HierarchyListEntry_onTrack) : NULL);
 		} else {
 			ADMListRef list = gEngine->getListRef(env, obj);
-			sADMList->SetTrackProc(list, enabled ? ListEntry_onTrack : NULL);
+			DEFINE_CALLBACK_PROC(ListEntry_onTrack);
+			sADMList->SetTrackProc(list, enabled ? (ADMEntryTrackProc) CALLBACK_PROC(ListEntry_onTrack) : NULL);
 		}
 	} EXCEPTION_CONVERT(env)
 }
@@ -119,10 +124,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_nativeSetDrawEntryCa
 	try {
 		if (env->IsInstanceOf(obj, gEngine->cls_HierarchyList)) {
 			ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
-			sADMHierarchyList->SetDrawProc(list, enabled ? HierarchyListEntry_onDraw : NULL);
+			DEFINE_CALLBACK_PROC(HierarchyListEntry_onDraw);
+			sADMHierarchyList->SetDrawProc(list, enabled ? (ADMListEntryDrawProc) CALLBACK_PROC(HierarchyListEntry_onDraw) : NULL);
 		} else {
 			ADMListRef list = gEngine->getListRef(env, obj);
-			sADMList->SetDrawProc(list, enabled ? ListEntry_onDraw : NULL);
+			DEFINE_CALLBACK_PROC(ListEntry_onDraw);
+			sADMList->SetDrawProc(list, enabled ? (ADMEntryDrawProc) CALLBACK_PROC(ListEntry_onDraw) : NULL);
 		}
 	} EXCEPTION_CONVERT(env)
 }
@@ -270,9 +277,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_get__I(JNIEnv *en
  * com.scriptographer.adm.ListEntry get(java.lang.String text)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_get__Ljava_lang_String_2(JNIEnv *env, jobject obj, jstring text) {
-	const jchar *chars = NULL;
+	ASUnicode *chars = NULL;
 	try {
-		chars = env->GetStringChars(text, NULL);
+		chars = gEngine->convertString_ASUnicode(env, text);
 		if (chars == NULL) EXCEPTION_CHECK(env)
 
 		#define FIND_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
@@ -282,7 +289,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_get__Ljava_lang_S
 		DEFINE_METHOD(FIND_ENTRY)
 	} EXCEPTION_CONVERT(env)
 	if (chars != NULL)
-		env->ReleaseStringChars(text, chars);
+		delete chars;
 	return NULL;
 }
 
@@ -361,10 +368,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_selectByText(JNIEnv 
 			throw new StringException("selectByText is not supported in hierarchy lists.");
 		} else {
 			ADMListRef list = gEngine->getListRef(env, obj);
-			const jchar *chars = env->GetStringChars(text, NULL);
-			if (chars == NULL) EXCEPTION_CHECK(env)
+			ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 			sADMList->SelectByTextW(list, chars);
-			env->ReleaseStringChars(text, chars);
+			delete chars;
 		}
 	} EXCEPTION_CONVERT(env)
 }

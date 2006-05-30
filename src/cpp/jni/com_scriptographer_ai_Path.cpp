@@ -26,11 +26,12 @@
  *
  * $RCSfile: com_scriptographer_ai_Path.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.8 $
+ * $Date: 2006/05/30 16:03:40 $
  */
  
 #include "stdHeaders.h"
+#include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
 #include "aiGlobals.h"
 #include "com_scriptographer_ai_Path.h"
@@ -195,22 +196,24 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Path_getArea(JNIEnv *env, jo
 	return 0.0;
 }
 
-static void *pathAllocate( long size) {
+static void *pathAllocate(long size) {
 	void *p;
-	PUSH_GLOBALS
-	if (sSPBlocks->AllocateBlock(size, "PathConstruction", &p)) p = NULL;
-	POP_GLOBALS
+	if (sSPBlocks->AllocateBlock(size * 2, "com.scriptographer.ai.Path", &p) != 0) {
+		throw new StringException("Out of memory.");
+	}
 	return p;
 }
 
-static void pathDispose( void *p) {
-	PUSH_GLOBALS
+static void pathDispose(void *p) {
 	sSPBlocks->FreeBlock(p);
-	POP_GLOBALS
 }
 
+DEFINE_CALLBACK_PROC(pathAllocate);
+DEFINE_CALLBACK_PROC(pathDispose);
+
 static AIPathConstructionMemoryObject pathMemoryObject = {
-	pathAllocate, pathDispose
+	(void * (*)(long int)) CALLBACK_PROC(pathAllocate),
+	(void (*)(void *)) CALLBACK_PROC(pathDispose)
 };
 
 /*

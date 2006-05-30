@@ -26,8 +26,8 @@
  *
  * $RCSfile: aiGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2005/11/05 00:50:41 $
+ * $Revision: 1.10 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 short Art_getType(AIArtHandle handle);
@@ -105,8 +105,8 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj); \
 		bool isAssigned; \
 		TYPE value; \
-		if (!sCharFeatures->Get##NAME##(features, &isAssigned, &value) && isAssigned) \
-			return gEngine->newObject(env, gEngine->cls_##CLASS##, gEngine->cid_##CLASS##, (JTYPE) value); \
+		if (!sCharFeatures->Get##NAME(features, &isAssigned, &value) && isAssigned) \
+			return gEngine->newObject(env, gEngine->cls_##CLASS, gEngine->cid_##CLASS, (JTYPE) value); \
 	} EXCEPTION_CONVERT(env) \
 	return NULL;
 
@@ -115,9 +115,9 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj); \
 		ASErr err; \
 		if (value == NULL) \
-			err = sCharFeatures->Clear##NAME##(features); \
+			err = sCharFeatures->Clear##NAME(features); \
 		else \
-			err = sCharFeatures->Set##NAME##(features, (TYPE) gEngine->call##METHOD_TYPE##Method(env, value, gEngine->METHOD_NAME)); \
+			err = sCharFeatures->Set##NAME(features, (TYPE) gEngine->call##METHOD_TYPE##Method(env, value, gEngine->METHOD_NAME)); \
 		if (!err) \
 			gEngine->callVoidMethod(env, obj, gEngine->mid_CharacterStyle_markSetStyle); \
 	} EXCEPTION_CONVERT(env)
@@ -151,8 +151,8 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 		ParaFeaturesRef features = gEngine->getParaFeaturesRef(env, obj); \
 		bool isAssigned; \
 		TYPE value; \
-		if (!sParaFeatures->Get##NAME##(features, &isAssigned, &value) && isAssigned) \
-			return gEngine->newObject(env, gEngine->cls_##CLASS##, gEngine->cid_##CLASS##, (JTYPE) value); \
+		if (!sParaFeatures->Get##NAME(features, &isAssigned, &value) && isAssigned) \
+			return gEngine->newObject(env, gEngine->cls_##CLASS, gEngine->cid_##CLASS, (JTYPE) value); \
 	} EXCEPTION_CONVERT(env) \
 	return NULL;
 
@@ -161,9 +161,9 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 		ParaFeaturesRef features = gEngine->getParaFeaturesRef(env, obj); \
 		ASErr err; \
 		if (value == NULL) \
-			err = sParaFeatures->Clear##CLEAR##(features); \
+			err = sParaFeatures->Clear##CLEAR(features); \
 		else \
-			err = sParaFeatures->Set##NAME##(features, (TYPE) gEngine->call##METHOD_TYPE##Method(env, value, gEngine->METHOD_NAME)); \
+			err = sParaFeatures->Set##NAME(features, (TYPE) gEngine->call##METHOD_TYPE##Method(env, value, gEngine->METHOD_NAME)); \
 		if (!err) \
 			gEngine->callVoidMethod(env, obj, gEngine->mid_ParagraphStyle_markSetStyle); \
 	} EXCEPTION_CONVERT(env)

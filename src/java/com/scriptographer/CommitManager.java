@@ -28,18 +28,18 @@
  *
  * $RCSfile: CommitManager.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.8 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 package com.scriptographer;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.TextFrame;
-import com.sun.tools.jdi.LinkedHashMap;
 
 public class CommitManager {
 	

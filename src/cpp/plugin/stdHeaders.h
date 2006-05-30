@@ -26,31 +26,37 @@
  *
  * $RCSfile: stdHeaders.h,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/03/06 15:32:47 $
+ * $Revision: 1.9 $
+ * $Date: 2006/05/30 16:03:40 $
  */
  
 #if !defined(__STDHEADERS_H_INCLUDED__)
 #define __STDHEADERS_H_INCLUDED__
 
-#include "SPConfig.h"
-
-// Derective for Codewarrior to build the pre-compiled header file
+// Derective for Codewarrior to use the pre-compiled header file
 #if (defined(__PIMWCWMacPPC__) && !(defined(MakingPreCompiledHeader)))
-	#if _DEBUG
-		#if TARGET_BUILD_MACHO
-			#include "machoDebug.ch"
+	#if TARGET_BUILD_MACHO
+		#if _DEBUG
+			#include "MachO_Debug.ch"
 		#else
-			#include "cfmDebug.ch"
+			#include "MachO_Release.ch"
 		#endif
 	#else
-		#if TARGET_BUILD_MACHO
-			#include "machoRelease.ch"
+		#if _DEBUG
+			#include "CFM_Debug.ch"
 		#else
-			#include "cfmRelease.ch"
+			#include "CFM_Release.ch"
 		#endif
 	#endif
 #else
+
+#ifdef MAC_ENV
+	#include <Carbon.h>
+#endif
+#ifdef WIN_ENV
+	#include "windows.h"
+	#include <time.h>
+#endif
 
 // STD Library 
 #include <stdio.h>
@@ -59,26 +65,17 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
-
-#ifdef MAC_ENV
-	#include <Carbon.h>
-#endif
-
-#ifdef WIN_ENV
-	#include "windows.h"
-	#include <time.h>
-#endif
-
 using namespace std;
 
+#include "SPConfig.h"
 // sweet pea headers
 #include "SPTypes.h"
 #include "SPBlocks.h"
 #include "SPAccess.h"
-#include "SPFiles.h"
 #include "SPInterf.h"
 #include "SPRuntme.h" 
-#include "SPSuites.h" 
+#include "SPSuites.h"
+#include "SPFiles.h"
 
 // ADM Headers
 #include "ADMBasic.h"

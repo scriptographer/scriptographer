@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Drawer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.8 $
+ * $Date: 2006/05/30 16:03:40 $
  */
  
 #include "stdHeaders.h"
@@ -476,10 +476,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_script
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Drawer_getTextWidth(JNIEnv *env, jobject obj, jstring text) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		const jchar *chars = env->GetStringChars(text, NULL);
-		if (chars == NULL) EXCEPTION_CHECK(env)
+		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		int width = sADMDrawer->GetTextWidthW(drawer, chars);
-		env->ReleaseStringChars(text, chars);
+		delete chars;
 		return width;
 	} EXCEPTION_CONVERT(env)
 	return 0;
@@ -520,10 +519,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawText(JNIEnv *env, 
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
-		const jchar *chars = env->GetStringChars(text, NULL);
-		if (chars == NULL) EXCEPTION_CHECK(env)
+		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		sADMDrawer->DrawTextW(drawer, chars, &pt);
-		env->ReleaseStringChars(text, chars);
+		delete chars;
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -534,10 +532,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextLeft(JNIEnv *e
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
-		const jchar *chars = env->GetStringChars(text, NULL);
-		if (chars == NULL) EXCEPTION_CHECK(env)
+		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		sADMDrawer->DrawTextLeftW(drawer, chars, &rt);
-		env->ReleaseStringChars(text, chars);
+		delete chars;
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -548,10 +545,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextCentered(JNIEn
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
-		const jchar *chars = env->GetStringChars(text, NULL);
-		if (chars == NULL) EXCEPTION_CHECK(env)
+		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		sADMDrawer->DrawTextCenteredW(drawer, chars, &rt);
-		env->ReleaseStringChars(text, chars);
+		delete chars;
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -562,10 +558,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextRight(JNIEnv *
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
-		const jchar *chars = env->GetStringChars(text, NULL);
-		if (chars == NULL) EXCEPTION_CHECK(env)
+		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		sADMDrawer->DrawTextRightW(drawer, chars, &rt);
-		env->ReleaseStringChars(text, chars);
+		delete chars;
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -576,10 +571,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextInABox(JNIEnv 
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
-		const jchar *chars = env->GetStringChars(text, NULL);
-		if (chars == NULL) EXCEPTION_CHECK(env)
+		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		sADMDrawer->DrawTextInABoxW(drawer, &rt, chars);
-		env->ReleaseStringChars(text, chars);
+		delete chars;
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -646,10 +640,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Drawer_getUpdateRect(JNIEn
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Drawer_getTextRectHeight(JNIEnv *env, jobject obj, jint height, jstring text) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		const jchar *chars = env->GetStringChars(text, NULL);
-		if (chars == NULL) EXCEPTION_CHECK(env)
+		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		height = sADMDrawer->GetTextRectHeightW(drawer, height, chars);
-		env->ReleaseStringChars(text, chars);
+		delete chars;
 		return height;
 	} EXCEPTION_CONVERT(env)
 	return 0;

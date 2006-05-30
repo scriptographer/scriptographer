@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.23 $
- * $Date: 2006/05/30 12:00:19 $
+ * $Revision: 1.24 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 #include "jniMacros.h"
@@ -523,7 +523,7 @@ public:
 	bool callOnTrack(jobject handler, ADMTrackerRef tracker);
 	void callOnDraw(jobject handler, ADMDrawerRef drawer);
 
-	ASErr about();
+	ASErr displayAbout();
 
 	// ADM Refs
 	ADMDialogRef getDialogRef(JNIEnv *env, jobject obj);
@@ -550,10 +550,11 @@ public:
 	
 	jstring convertString(JNIEnv *env, const char *str);
 	char *convertString(JNIEnv *env, jstring jstr);
-	jstring convertString(JNIEnv *env, const ASUnicode *str);
+	jstring convertString(JNIEnv *env, const ASUnicode *str, int length = -1);
+	ASUnicode *convertString_ASUnicode(JNIEnv *env, jstring jstr);
 #if kPluginInterfaceVersion >= kAI12
-	jstring convertUnicodeString(JNIEnv *env, ai::UnicodeString &str);
-	ai::UnicodeString convertUnicodeString(JNIEnv *env, jstring jstr);
+	jstring convertString(JNIEnv *env, ai::UnicodeString &str);
+	ai::UnicodeString convertString_UnicodeString(JNIEnv *env, jstring jstr);
 #endif
 
 	void throwException(JNIEnv *env, const char* name, const char* msg);

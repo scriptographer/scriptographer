@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Tool.cpp,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2006/04/30 14:37:48 $
+ * $Revision: 1.12 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 #include "stdHeaders.h"
@@ -59,7 +59,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_getIdleEventInterval(JNIE
 		AIToolHandle tool = gEngine->getToolHandle(env, obj);
 		AIToolTime interval;
 		if (!sAITool->GetToolNullEventInterval(tool, &interval))
-			return interval >= 0 ? interval * 1000 : -1;
+			return interval >= 0 ? (jint) interval * 1000 : -1;
 	} EXCEPTION_CONVERT(env)
 	return -1;
 }

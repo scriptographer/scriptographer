@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerContextFactory.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.4 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 package com.scriptographer.js;
@@ -44,7 +44,10 @@ public class ScriptographerContextFactory extends ContextFactory {
 	
 	protected boolean hasFeature(Context cx, int featureIndex) {
 		switch (featureIndex) {
+			case Context.FEATURE_E4X:
+				return false;
 			case Context.FEATURE_MEMBER_EXPR_AS_FUNCTION_NAME:
+				return true;
 			case Context.FEATURE_DYNAMIC_SCOPE:
 				return true;
 		}

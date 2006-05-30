@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerPlugin.h,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/05/30 11:59:32 $
+ * $Revision: 1.2 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 #define kMaxStringLength 256
@@ -35,13 +35,34 @@
 #define kUnhandledMsgErr '!MSG'		// This isn't really an error
 #define kUnloadErr '!ULD'			// This isn't really an error either, it's used to tell PluginMain to remove the plugin
 
-#define DLLExport	extern "C" __declspec(dllexport)
-
-#if MAC_ENV && kPluginInterfaceVersion >= kAI12
-	#define PluginMain main
+#ifdef MAC_ENV
+	#define DLLExport extern "C"
+#else
+	#define DLLExport extern "C" __declspec(dllexport)
 #endif
 
-DLLExport SPAPI SPErr PluginMain( char *caller, char *selector, void *message );
+DLLExport SPAPI int main(char *caller, char *selector, void *message);
+
+// Callback macros for automatically adding CFM glue to the callback methods on CS1 Mac:
+#ifdef MACHO_CFM_GLUE
+
+#include "MachO_CFM_Glue.h"
+
+#define DEFINE_CALLBACK_PROC(PROC) \
+	static TVector PROC##_Vector; \
+	static void *PROC##_Proc = createCFMGlue((void *) PROC, &PROC##_Vector);
+
+#define CALLBACK_PROC(PROC) \
+	PROC##_Proc
+
+#else
+
+#define DEFINE_CALLBACK_PROC(PROC)
+
+#define CALLBACK_PROC(PROC) \
+	PROC
+
+#endif
 
 class ScriptographerEngine;
 
@@ -72,7 +93,7 @@ protected:
 #endif
 
 public:
-	ScriptographerPlugin(SPPluginRef pluginRef);
+	ScriptographerPlugin(SPMessageData *messageData);
 	~ScriptographerPlugin();
 	
 	void reportError(const char* str, ...);
@@ -92,7 +113,6 @@ public:
 
 	bool fileSpecToPath(SPPlatformFileSpecification *fileSpec, char *path);
 	bool pathToFileSpec(const char *path, SPPlatformFileSpecification *fileSpec);
-	bool pathToNativePath(const char *path, char *nativePath);
 	void setCursor(int cursorID);
 
 	ASErr createTool(int index, char *title, int iconID, int cursorID, long options, char *sameGroupTool = NULL, char *sameToolsetTool = NULL);
@@ -149,6 +169,10 @@ public:
 		return kUnhandledMsgErr;
 	}
 
+#ifdef MACHO_CFM_GLUE
+	void createGluedSuite(void **suite, int size);
+	void disposeGluedSuite(void *suite, int size);
+#endif
 private:
 	ASErr acquireSuites(ImportSuites *suites);
 	ASErr releaseSuites(ImportSuites *suites);

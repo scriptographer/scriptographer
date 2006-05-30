@@ -26,11 +26,12 @@
  *
  * $RCSfile: com_scriptographer_adm_HierarchyList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.9 $
+ * $Date: 2006/05/30 16:03:40 $
  */
  
 #include "stdHeaders.h"
+#include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
 #include "admGlobals.h"
 #include "com_scriptographer_adm_HierarchyList.h"
@@ -41,8 +42,10 @@
  
 // lists don't have init callbacks that automatically get called, but just for simetry let's use the same scheme:
 ASErr ASAPI HierarchyList_onInit(ADMHierarchyListRef list) {
-	sADMHierarchyList->SetDestroyProc(list, HierarchyListEntry_onDestroy);
-	sADMHierarchyList->SetNotifyProc(list, HierarchyListEntry_onNotify);
+	DEFINE_CALLBACK_PROC(HierarchyListEntry_onDestroy);
+	sADMHierarchyList->SetDestroyProc(list, (ADMListEntryDestroyProc) CALLBACK_PROC(HierarchyListEntry_onDestroy));
+	DEFINE_CALLBACK_PROC(HierarchyListEntry_onNotify);
+	sADMHierarchyList->SetNotifyProc(list, (ADMListEntryNotifyProc) CALLBACK_PROC(HierarchyListEntry_onNotify));
 	/* these are activated in enable****Callback
 	sADMHierarchyList->SetTrackProc(list, HierarchyListEntry_onTrack);
 	sADMHierarchyList->SetDrawProc(list, HierarchyListEntry_onDraw);

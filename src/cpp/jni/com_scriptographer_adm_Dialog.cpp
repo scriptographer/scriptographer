@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Dialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.14 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 #include "stdHeaders.h"
@@ -53,12 +53,20 @@ ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 	gEngine->setObjectField(env, obj, gEngine->fid_Dialog_size, gEngine->convertDimension(env, &size));
 	sADMDialog->GetBoundsRect(dialog, &rect);
 	gEngine->setObjectField(env, obj, gEngine->fid_Dialog_bounds, gEngine->convertRectangle(env, &rect));
+	
 	// Attach the dialog-level callbacks
-	sADMDialog->SetDestroyProc(dialog, Dialog_onDestroy);
-	sADMDialog->SetNotifyProc(dialog, Dialog_onNotify);
+	DEFINE_CALLBACK_PROC(Dialog_onDestroy);
+	sADMDialog->SetDestroyProc(dialog, (ADMDialogDestroyProc) CALLBACK_PROC(Dialog_onDestroy));
+	
+	DEFINE_CALLBACK_PROC(Dialog_onNotify);
+	sADMDialog->SetNotifyProc(dialog, (ADMDialogNotifyProc) CALLBACK_PROC(Dialog_onNotify));
+	
 	// resize handler:
 	ADMItemRef resizeItemRef = sADMDialog->GetItem(dialog, kADMResizeItemID);
-	if (resizeItemRef) sADMItem->SetNotifyProc(resizeItemRef, Dialog_onResize);
+	if (resizeItemRef) {
+		DEFINE_CALLBACK_PROC(Dialog_onResize);
+		sADMItem->SetNotifyProc(resizeItemRef, (ADMItemNotifyProc) CALLBACK_PROC(Dialog_onResize));
+	}
 	return kNoErr;
 }
 
@@ -131,7 +139,8 @@ void ASAPI Dialog_onDraw(ADMDialogRef dialog, ADMDrawerRef drawer) {
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_nativeCreate(JNIEnv *env, jobject obj, jstring name, jint style, jint options) {
 	try {
 		char *str = gEngine->convertString(env, name);
-		ADMDialogRef dialog = sADMDialog->Create(gPlugin->getPluginRef(), str, kEmptyDialogID, (ADMDialogStyle) style, Dialog_onInit, env->NewGlobalRef(obj), options);
+		DEFINE_CALLBACK_PROC(Dialog_onInit);
+		ADMDialogRef dialog = sADMDialog->Create(gPlugin->getPluginRef(), str, kEmptyDialogID, (ADMDialogStyle) style, (ADMDialogInitProc) CALLBACK_PROC(Dialog_onInit), env->NewGlobalRef(obj), options);
 		delete str;
 		if (dialog == NULL)
 			throw new StringException("Cannot create dialog.");
@@ -155,7 +164,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeDestroy(JNIEnv *
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetTrackCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
-		sADMDialog->SetTrackProc(dialog, enabled ? Dialog_onTrack : NULL);
+		DEFINE_CALLBACK_PROC(Dialog_onTrack);
+		sADMDialog->SetTrackProc(dialog, enabled ? (ADMDialogTrackProc) CALLBACK_PROC(Dialog_onTrack) : NULL);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -186,7 +196,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setTrackMask(JNIEnv *e
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetDrawCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
-		sADMDialog->SetDrawProc(dialog, enabled ? Dialog_onDraw : NULL);
+		DEFINE_CALLBACK_PROC(Dialog_onTrack);
+		sADMDialog->SetDrawProc(dialog, enabled ? (ADMDialogDrawProc) CALLBACK_PROC(Dialog_onTrack) : NULL);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -558,10 +569,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetTitle(JNIEnv 
 	try {
 		ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		if (title != NULL) {
-			const jchar *chars = env->GetStringChars(title, NULL);
-			if (chars == NULL) EXCEPTION_CHECK(env)
+			ASUnicode *chars = gEngine->convertString_ASUnicode(env, title);
 			sADMDialog->SetTextW(dialog, chars);
-			env->ReleaseStringChars(title, chars);
+			delete chars;
 		} else {
 			sADMDialog->SetText(dialog, "");
 		}
@@ -694,8 +704,6 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_Dialog_nativeFileDialog(JN
 	try {
 		// Unicode seems to not work (at least not on Windows?)
 		// So use normal string instead...
-		// const jchar *msg = env->GetStringChars(message, NULL);
-		// if (msg == NULL) EXCEPTION_CHECK(env)
 		char *msg = gEngine->convertString(env, message);
 		char *fltr = gEngine->convertString(env, filter);
 		char *name = NULL;
@@ -725,7 +733,6 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_Dialog_nativeFileDialog(JN
 				ret = gEngine->convertString(env, path);
 		}
 
-		// env->ReleaseStringChars(message, msg);
 		delete msg;
 		delete fltr;
 		if (name != NULL)
@@ -742,8 +749,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_chooseDirectory(JNI
 	try {
 		// Unicode seems to not work (at least not on Windows?)
 		// So use normal string instead...
-		// const jchar *msg = env->GetStringChars(message, NULL);
-		// if (msg == NULL) EXCEPTION_CHECK(env)
 		char *msg = gEngine->convertString(env, message);
 
 		SPPlatformFileSpecification dir, result;
@@ -762,7 +767,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_chooseDirectory(JNI
 			ret = gEngine->newObject(env, gEngine->cls_File, gEngine->cid_File, gEngine->convertString(env, path));
 		}
 
-		// env->ReleaseStringChars(message, msg);
 		delete msg;
 	} EXCEPTION_CONVERT(env)
 	return ret;

@@ -194,11 +194,11 @@ function registerNatives(srcDir, output) {
 		if (printDetails)
 			print();
 		out.println('/* Native methods for class ' + cls + ' */');
-		out.println('const JNINativeMethod ' + cls + '_methods[] = {');
+		out.println('static const JNINativeMethod ' + cls + '_methods[] = {');
 		var functions = classes[cls];
 		for (var i in functions) {
 			var func = functions[i];
-			out.println('\t{ "' + func.javaName + '", "' + func.signature + '", &' + func.jniName + ' }' + (i < functions.length - 1 ? ',' : ''));
+			out.println('\t{ "' + func.javaName + '", "' + func.signature + '", (void *) &' + func.jniName + ' }' + (i < functions.length - 1 ? ',' : ''));
 			if (printDetails)
 				print('    ' + func.javaName);
 		}

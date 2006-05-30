@@ -26,8 +26,8 @@
  *
  * $RCSfile: exceptions.h,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/03/06 15:32:47 $
+ * $Revision: 1.6 $
+ * $Date: 2006/05/30 16:03:40 $
  */
  
 #define kExceptionErr 'EXPT';
@@ -48,7 +48,7 @@ public:
 	void convert(JNIEnv *env);
 	char *toString(JNIEnv *env);
 	
-	~StringException() {
+	~StringException() throw() {
 		delete m_message;
 	}
 };

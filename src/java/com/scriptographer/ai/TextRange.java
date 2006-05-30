@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextRange.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/05/30 12:02:17 $
+ * $Revision: 1.10 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 package com.scriptographer.ai;

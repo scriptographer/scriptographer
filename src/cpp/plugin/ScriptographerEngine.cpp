@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.28 $
- * $Date: 2006/04/30 14:37:48 $
+ * $Revision: 1.29 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 #include "stdHeaders.h"
@@ -40,8 +40,10 @@
 #include "loadJava.h"
 #endif
 
-#if TARGET_RT_MAC_CFM 
-#include "cfmMacho.h"
+#define GCJ 1
+
+#if defined(MAC_ENV) && !defined(GCJ)
+#define MAC_THREAD
 #endif
 
 #include "aiGlobals.h"
@@ -59,7 +61,7 @@ ScriptographerEngine *gEngine = NULL;
 // headless is still needed due to a bug with concurencing UI loops between 
 // carbon and java's cocoa in JDK >= 1.4.
 
-#ifdef MAC_ENV
+#ifdef MAC_THREAD
 
 OSStatus javaThread(ScriptographerEngine *engine) {
 	engine->javaThread();
@@ -99,7 +101,7 @@ ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 	strcpy(m_homeDir, homeDir);
 	ScriptographerException *exc = NULL;
 
-#ifdef MAC_ENV
+#ifdef MAC_THREAD
 	if(MPLibraryIsLoaded()) {
 		MPCreateQueue(&m_requestQueue);
 		MPCreateQueue(&m_responseQueue);
@@ -129,7 +131,7 @@ ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 ScriptographerEngine::~ScriptographerEngine() {
 	delete m_homeDir;
 	callStaticVoidMethodReport(NULL, cls_ScriptographerEngine, mid_ScriptographerEngine_destroy);
-#ifdef MAC_ENV
+#ifdef MAC_THREAD
 	if(MPLibraryIsLoaded()) {
 		// notify the JVM thread to end, then clean up:
 		MPNotifyQueue(m_requestQueue, NULL, NULL, NULL);
@@ -182,18 +184,8 @@ void ScriptographerEngine::init() {
 #ifdef WIN_ENV
 	loadJavaVM("client", &createJavaVM, &getDefaultJavaVMInitArgs);
 #else
-	// Two ways of loading the JVM function pointers on Mac: For CFM, extract them from the Mach-O bundle, otherwise
-	// directly point to them
-#if TARGET_RT_MAC_CFM
-	CFBundleRef javaVMBundle;
-	OSStatus err = LoadFrameworkBundle(CFSTR("JavaVM.framework"), &javaVMBundle);
-	
-	createJavaVM = (CreateJavaVMProc) CFBundleGetFunctionPointerForName(javaVMBundle, CFSTR("JNI_CreateJavaVM"));
-	getDefaultJavaVMInitArgs = (GetDefaultJavaVMInitArgsProc) CFBundleGetFunctionPointerForName(javaVMBundle, CFSTR("JNI_GetDefaultJavaVMInitArgs"));
-#else
 	createJavaVM = JNI_CreateJavaVM;
 	getDefaultJavaVMInitArgs = JNI_GetDefaultJavaVMInitArgs;
-#endif // !TARGET_RT_MAC_CFM
 #endif // !WIN_ENV
 	
 	// init args
@@ -203,11 +195,14 @@ void ScriptographerEngine::init() {
 		getDefaultJavaVMInitArgs(&args);
 	
 	JVMOptions options;
-
 	char str[512];
+
+#ifndef GCJ
 	// only add the loader to the classpath, the rest is done in java:
 	sprintf(str, "-Djava.class.path=%s" PATH_SEP_STR "loader.jar", m_homeDir);
+	//sprintf(str, "-Djava.class.path=/sglib/js.jar;/sglib/scriptographer.jar", m_homeDir);
 	options.add(str);
+#endif
 	
 	// start headless, in order to avoid conflicts with AWT and Illustrator
 	options.add("-Djava.awt.headless=true");
@@ -226,16 +221,20 @@ void ScriptographerEngine::init() {
 #endif
 	// read ini file and add the options here
 	sprintf(str, "%s" PATH_SEP_STR "jvm.ini", m_homeDir);
-	if (gPlugin->pathToNativePath(str, str)) {
-		FILE *file = fopen(str, "rt");
-		if (file != NULL) {
-			while (fgets(str, sizeof(str), file)) {
-				options.add(str);
+	FILE *file = fopen(str, "rt");
+	if (file != NULL) {
+		while (fgets(str, sizeof(str), file)) {
+			// trim new line and white space at the end of the line:
+			int pos = strlen(str) - 1;
+			while (pos >= 0 && isspace(str[pos])) {
+				str[pos] = '\0';
+				pos--;
 			}
+			options.add(str);
 		}
 	}
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && !defined(GCJ)
 	// start JVM in debug mode, for remote debuggin on port 8000
 	options.add("-Xdebug");
 	options.add("-Xnoagent");
@@ -256,13 +255,16 @@ void ScriptographerEngine::init() {
 
 	m_javaEngine = NULL;
 	
-	// link the native functions to the java functions. The code for this is in registerNatives.cpp,
-	// which is automatically generated from the JNI header files by jni.js
+#ifndef GCJ
 	cls_Loader = env->FindClass("com/scriptographer/loader/Loader");
 	mid_Loader_init = getStaticMethodID(env, cls_Loader, "init", "(Ljava/lang/String;)V");
 	mid_Loader_reload = getStaticMethodID(env, cls_Loader, "reload", "()Ljava/lang/String;");
 	mid_Loader_loadClass = getStaticMethodID(env, cls_Loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 	callStaticObjectMethodReport(env, cls_Loader, mid_Loader_init, env->NewStringUTF(m_homeDir));
+#endif
+	
+	// link the native functions to the java functions. The code for this is in registerNatives.cpp,
+	// which is automatically generated from the JNI header files by jni.js
 	registerNatives(env);
 	initReflection(env);
 }
@@ -639,10 +641,11 @@ jobject ScriptographerEngine::getJavaEngine() {
 }
 
 long ScriptographerEngine::getNanoTime() {
-	#ifdef MAC_ENV
+#ifdef MAC_ENV
 		Nanoseconds nano = AbsoluteToNanoseconds(UpTime());
 		return UnsignedWideToUInt64(nano);
-	#elif WIN_ENV
+#endif
+#ifdef WIN_ENV
 		static int scaleFactor = 0;
 		if (scaleFactor == 0) {
 			LARGE_INTEGER frequency;
@@ -652,7 +655,7 @@ long ScriptographerEngine::getNanoTime() {
 		LARGE_INTEGER counter;
 		QueryPerformanceCounter (& counter);
 		return counter.QuadPart * 1000000 / scaleFactor;
-	#endif
+#endif
 }
 
 bool ScriptographerEngine::isKeyDown(short keycode) {
@@ -685,7 +688,8 @@ bool ScriptographerEngine::isKeyDown(short keycode) {
 		}
 	}
 	return false;
-#elif WIN_ENV
+#endif
+#ifdef WIN_ENV
 	return (GetAsyncKeyState(keycode) & 0x8000) ? 1 : 0;
 #endif
 }
@@ -744,11 +748,11 @@ ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, ADMPoint *
 		res->h = env->GetIntField(pt, fid_awt_Point_x);
 		res->v = env->GetIntField(pt, fid_awt_Point_y);
 	} else if (env->IsInstanceOf(pt, cls_Point)) {
-		res->h = env->GetFloatField(pt, fid_Point_x);
-		res->v = env->GetFloatField(pt, fid_Point_y);
+		res->h = (short) env->GetFloatField(pt, fid_Point_x);
+		res->v = (short) env->GetFloatField(pt, fid_Point_y);
 	} else if (env->IsInstanceOf(pt, cls_awt_Point2D)) {
-		res->h = env->CallFloatMethod(pt, mid_awt_Point2D_getX);
-		res->v = env->CallFloatMethod(pt, mid_awt_Point2D_getY);
+		res->h = (short) env->CallFloatMethod(pt, mid_awt_Point2D_getX);
+		res->v = (short) env->CallFloatMethod(pt, mid_awt_Point2D_getY);
 	}
 	EXCEPTION_CHECK(env)
 	return res;
@@ -828,9 +832,9 @@ ADMRGBColor *ScriptographerEngine::convertColor(JNIEnv *env, jobject srcCol, ADM
 	// TODO: add handling for different values of length!!!
 	jfloat *values = new jfloat[length];
 	env->GetFloatArrayRegion(array, 0, length, values);
-	dstCol->red = (values[0] * 65535.0 + 0.5);
-	dstCol->green = (values[1] * 65535.0 + 0.5);
-	dstCol->blue = (values[2] * 65535.0 + 0.5);
+	dstCol->red =  (unsigned short) (values[0] * 65535.0 + 0.5);
+	dstCol->green = (unsigned short) (values[1] * 65535.0 + 0.5);
+	dstCol->blue = (unsigned short) (values[2] * 65535.0 + 0.5);
 	delete values;
 	EXCEPTION_CHECK(env)
 	return dstCol;
@@ -902,9 +906,9 @@ ADMRGBColor *ScriptographerEngine::convertColor(AIColor *srcCol, ADMRGBColor *ds
 	// convert to RGB if it isn't already:
 	if (srcCol->kind != kThreeColor && !convertColor(srcCol, kAIRGBColorSpace, srcCol))
 		return NULL;
-	dstCol->red = srcCol->c.rgb.red * 65535.0 + 0.5;
-	dstCol->green = srcCol->c.rgb.green * 65535.0 + 0.5;
-	dstCol->blue = srcCol->c.rgb.blue * 65535.0 + 0.5;
+	dstCol->red = (short) (srcCol->c.rgb.red * 65535.0 + 0.5);
+	dstCol->green = (short) (srcCol->c.rgb.green * 65535.0 + 0.5);
+	dstCol->blue = (short) (srcCol->c.rgb.blue * 65535.0 + 0.5);
 	return dstCol;
 }
 
@@ -1380,7 +1384,7 @@ AIDictionaryRef ScriptographerEngine::convertDictionary(JNIEnv *env, jobject map
 			} else if (env->IsInstanceOf(value, cls_Boolean)) {
 				entry = sAIEntry->FromBoolean(callBooleanMethod(env, value, mid_Boolean_booleanValue));
 			} else if (env->IsInstanceOf(value, cls_Float)) {
-				entry = sAIEntry->FromInteger(callFloatMethod(env, value, mid_Number_floatValue));
+				entry = sAIEntry->FromInteger((ASInt32) callFloatMethod(env, value, mid_Number_floatValue));
 			} else if (env->IsInstanceOf(value, cls_String)) {
 				char *string = convertString(env, (jstring) value);
 				entry = sAIEntry->FromString(string);
@@ -1766,7 +1770,7 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 		!sAIMenu->GetItemMenuGroup(item, &group) &&
 		!sAIMenu->GetMenuGroupName(group, &groupName)) {
 		return callStaticObjectMethod(env, cls_MenuItem, mid_MenuItem_wrapHandle,
-			(jint) item, convertString(env, name), convertUnicodeString(env, text),
+			(jint) item, convertString(env, name), convertString(env, text),
 			(jint) group, convertString(env, groupName)
 		);
 	}
@@ -2091,7 +2095,7 @@ void ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 	} EXCEPTION_CATCH_REPORT(env)
 }
 
-ASErr ScriptographerEngine::about() {
+ASErr ScriptographerEngine::displayAbout() {
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_onAbout);
@@ -2333,45 +2337,15 @@ jstring ScriptographerEngine::convertString(JNIEnv *env, const char *str) {
 	jbyteArray bytes = env->NewByteArray(len);
 	if (bytes == NULL) throw new JThrowableClassException(cls_OutOfMemoryError);
 	env->SetByteArrayRegion(bytes, 0, len, (jbyte *) str);
-	jstring result = (jstring)env->functions->NewObject(env, cls_String, cid_String, bytes);
+//	jstring result = (jstring) env->functions->NewObject(env, cls_String, cid_String, bytes);
+	jstring res = (jstring) env->NewObject(cls_String, cid_String, bytes);
 	env->DeleteLocalRef(bytes);
-	return result;
+	if (res == NULL) EXCEPTION_CHECK(env)
+	return res;
 }
-
-jstring ScriptographerEngine::convertString(JNIEnv *env, const ASUnicode *str) {
-	JNI_CHECK_ENV
-	// find length
-	int length = 0;
-	while (str[length] != 0)
-		length++;
-	return env->NewString(str, length);
-}
-
-#if kPluginInterfaceVersion >= kAI12
 
 /**
- * Creates a Java String from a given UTF-16-String.
- * Only supported in CS2 and above
- */
-jstring ScriptographerEngine::convertUnicodeString(JNIEnv *env, ai::UnicodeString &str) {
-	JNI_CHECK_ENV
-	const ASUnicode *buffer;
-	int len = str.utf_16(buffer);
-	return env->NewString(buffer, len);
-}
-
-ai::UnicodeString ScriptographerEngine::convertUnicodeString(JNIEnv *env, jstring jstr) {
-	JNI_CHECK_ENV
-	const jchar *chars = env->GetStringCritical(jstr, NULL);
-	ai::UnicodeString str(chars, env->GetStringLength(jstr));
-	env->ReleaseStringCritical(jstr, chars); 
-	return str;
-}
-
-#endif
-
-/**
- * Creates a C-String from a given Java String. 
+* Creates a C-String from a given Java String. 
  * TODO: The non depreceated version that takes an encoding parameter should be used in the future.
  *
  * throws exceptions
@@ -2390,6 +2364,54 @@ char *ScriptographerEngine::convertString(JNIEnv *env, jstring jstr) {
 	env->DeleteLocalRef(bytes);
 	return result;
 }
+
+jstring ScriptographerEngine::convertString(JNIEnv *env, const ASUnicode *str, int length) {
+	JNI_CHECK_ENV
+	if (length < 0) {
+		// find length
+		length = 0;
+		while (str[length] != 0)
+			length++;
+	}
+	jstring res = env->NewString((jchar *) str, length);
+	if (res == NULL) EXCEPTION_CHECK(env)
+	return res;
+}
+
+ASUnicode *ScriptographerEngine::convertString_ASUnicode(JNIEnv *env, jstring jstr) {
+	JNI_CHECK_ENV
+	int length = env->GetStringLength(jstr);
+	ASUnicode *chars = new ASUnicode[length + 1];
+	env->GetStringRegion(jstr, 0, length, (jchar *) chars);
+	// make it null-determined:
+	chars[length] = 0;
+	return chars;
+}
+
+#if kPluginInterfaceVersion >= kAI12
+
+/**
+ * Creates a Java String from a given UTF-16-String.
+ * Only supported in CS2 and above
+ */
+jstring ScriptographerEngine::convertString(JNIEnv *env, ai::UnicodeString &str) {
+	JNI_CHECK_ENV
+	const ASUnicode *buffer;
+	int len = str.utf_16(buffer);
+	jstring res = env->NewString(buffer, len);
+	if (res == NULL) EXCEPTION_CHECK(env)
+	return res;
+}
+
+ai::UnicodeString ScriptographerEngine::convertString_UnicodeString(JNIEnv *env, jstring jstr) {
+	JNI_CHECK_ENV
+	const jchar *chars = env->GetStringCritical(jstr, NULL);
+	ai::UnicodeString str(chars, env->GetStringLength(jstr));
+	env->ReleaseStringCritical(jstr, chars); 
+	return str;
+}
+
+#endif
 
 /**
  * Throws an exception with the given name (like "com/scriptographer/ScriptographerException") and message.
@@ -2424,11 +2446,13 @@ void ScriptographerEngine::throwException(JNIEnv *env, const char* msg) {
  */
 jclass ScriptographerEngine::findClass(JNIEnv *env, const char *name) {
 	JNI_CHECK_ENV
-
-	// Loading with JNI would be like this:
-	// jclass cls = env->FindClass(name);
-	
+#ifdef GCJ
+	// Loading with JNI throught the default classloader:
+	jclass cls = env->FindClass(name);
+#else
+	// using the URL classloader instead:
 	jclass cls = (jclass) callStaticObjectMethod(env, cls_Loader, mid_Loader_loadClass, env->NewStringUTF(name));
+#endif
 	if (cls == NULL) EXCEPTION_CHECK(env)
 	return cls;
 }
@@ -2476,7 +2500,8 @@ jfieldID ScriptographerEngine::getStaticFieldID(JNIEnv *env, jclass cls, const c
 jobject ScriptographerEngine::newObject(JNIEnv *env, jclass cls, jmethodID ctor, ...) {
 	JNI_CHECK_ENV
 	JNI_ARGS_BEGIN(ctor)
-	jobject res = env->functions->NewObjectV(env, cls, ctor, args);
+//	jobject res = env->functions->NewObjectV(env, cls, ctor, args);
+	jobject res = env->NewObjectV(cls, ctor, args);
 	JNI_ARGS_END
 	if (res == NULL) EXCEPTION_CHECK(env)
 	return res;

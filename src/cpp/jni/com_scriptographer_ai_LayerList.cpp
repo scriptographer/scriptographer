@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_LayerList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.9 $
+ * $Date: 2006/05/30 16:03:40 $
  */
  
 #include "stdHeaders.h"
@@ -105,7 +105,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LayerList_nativeGet__ILjava
 	sAILayer->GetLayerByTitle(&layer, gPlugin->toPascal(str, (unsigned char *) str));
 	delete str;
 #else
-	ai::UnicodeString str = gEngine->convertUnicodeString(env, name);
+	ai::UnicodeString str = gEngine->convertString_UnicodeString(env, name);
 	sAILayer->GetLayerByTitle(&layer, str);
 #endif
 	if (layer != NULL)

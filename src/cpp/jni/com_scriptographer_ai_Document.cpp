@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2006/04/30 14:37:48 $
+ * $Revision: 1.17 $
+ * $Date: 2006/05/30 16:03:40 $
  */
  
 #include "stdHeaders.h"
@@ -101,7 +101,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_l
 		delete str;
 #else
 	try {
-		ai::UnicodeString str = gEngine->convertUnicodeString(env, title);
+		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, title);
 		sAIDocumentList->New(str, &model, &width, &height, (ActionDialogStatus) dialogStatus, &doc);
 	} EXCEPTION_CONVERT(env)
 #endif

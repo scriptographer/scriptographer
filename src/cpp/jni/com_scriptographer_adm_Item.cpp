@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Item.cpp,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.13 $
+ * $Date: 2006/05/30 16:03:40 $
  */
 
 #include "stdHeaders.h"
@@ -58,8 +58,11 @@ ASErr ASAPI Item_onInit(ADMItemRef item) {
 	gEngine->setObjectField(env, obj, gEngine->fid_Item_nativeBounds, gEngine->convertRectangle(env, &rect));
 
 	// Attach the item-level callbacks
-	sADMItem->SetDestroyProc(item, Item_onDestroy);
-	sADMItem->SetNotifyProc(item, Item_onNotify);
+	DEFINE_CALLBACK_PROC(Item_onDestroy);
+	sADMItem->SetDestroyProc(item, (ADMItemDestroyProc) CALLBACK_PROC(Item_onDestroy));
+	
+	DEFINE_CALLBACK_PROC(Item_onNotify);
+	sADMItem->SetNotifyProc(item, (ADMItemNotifyProc) CALLBACK_PROC(Item_onNotify));
 
 	return kNoErr;
 }
@@ -143,7 +146,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeCreate(JNIEnv *env
 		char *itemType = gEngine->convertString(env, type);
 		// create with default dimensions:
 		DEFINE_ADM_RECT(rect, 0, 0, 100, 100);
-		ADMItemRef item = sADMItem->Create((ADMDialogRef) dialogHandle, kADMUniqueItemID, itemType, &rect, Item_onInit, env->NewGlobalRef(obj), options);
+		DEFINE_CALLBACK_PROC(Item_onInit);
+		ADMItemRef item = sADMItem->Create((ADMDialogRef) dialogHandle, kADMUniqueItemID, itemType, &rect, (ADMItemInitProc) CALLBACK_PROC(Item_onInit), env->NewGlobalRef(obj), options);
 		delete itemType;
 		if (item == NULL)
 			throw new StringException("Cannot create dialog item.");
@@ -179,8 +183,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeDestroy(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetTrackCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
+		DEFINE_CALLBACK_PROC(Item_onTrack);
 		ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->SetTrackProc(item, enabled ? Item_onTrack : NULL);
+		sADMItem->SetTrackProc(item, enabled ? (ADMItemTrackProc) CALLBACK_PROC(Item_onTrack) : NULL);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -210,8 +215,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setTrackMask(JNIEnv *env
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetDrawCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
+		DEFINE_CALLBACK_PROC(Item_onDraw);
 		ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->SetDrawProc(item, enabled ? Item_onDraw : NULL);
+		sADMItem->SetDrawProc(item, enabled ? (ADMItemDrawProc) CALLBACK_PROC(Item_onDraw) : NULL);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -281,8 +287,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetTextSize(JNI
 	if (text != NULL) {
 		try {
 			ADMItemRef item = gEngine->getItemRef(env, obj);
-			const jchar *chars = env->GetStringChars(text, NULL);
-			if (chars == NULL) EXCEPTION_CHECK(env)
+			ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 			ADMImageRef image = sADMImage->Create(1, 1, 0);
 			ADMDrawerRef drawer = sADMImage->BeginADMDrawer(image);
 			sADMDrawer->SetFont(drawer, sADMItem->GetFont(item));
@@ -292,7 +297,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetTextSize(JNI
 				size.h = maxWidth;
 			size.v = sADMDrawer->GetTextRectHeightW(drawer, size.h + 1, chars);
 			sADMImage->EndADMDrawer(image);
-			env->ReleaseStringChars(text, chars);
+			delete chars;
 			return gEngine->convertDimension(env, &size);
 		} EXCEPTION_CONVERT(env)
 	}
@@ -545,10 +550,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setWantsFocus(JNIEnv *en
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetTooltip(JNIEnv *env, jobject obj, jstring toolTip) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
-		const jchar *chars = env->GetStringChars(toolTip, NULL);
-		if (chars == NULL) EXCEPTION_CHECK(env)
+		ASUnicode *chars = gEngine->convertString_ASUnicode(env, toolTip);
 		sADMItem->SetTipStringW(item, chars);
-		env->ReleaseStringChars(toolTip, chars);
+		delete chars;
 	} EXCEPTION_CONVERT(env)
 }
 

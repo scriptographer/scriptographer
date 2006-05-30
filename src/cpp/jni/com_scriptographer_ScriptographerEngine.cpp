@@ -79,7 +79,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ScriptographerEngine_getMouseP
 			SetPort(GetWindowPort(ActiveNonFloatingWindow()));
 			GlobalToLocal((Point *)&pt);
 			SetPort(port);
-#elif WIN_ENV
+#endif
+#ifdef WIN_ENV
 			// on windows, the current document window is the app windows first child-child window...
 			// i didn't find a better way for the conversion of the mouse position...
 			HWND wnd = GetTopWindow(GetTopWindow((HWND)sADMWinHost->GetPlatformAppWindow()));
@@ -107,7 +108,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_showProgress
 		sAIUser->SetProgressText(str);
 		delete str;
 #else
-		ai::UnicodeString str = gEngine->convertUnicodeString(env, text);
+		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, text);
 		sAIUser->SetProgressText(str);
 #endif
 	sAIUser->UpdateProgress(jsProgressCurrent, jsProgressMax);

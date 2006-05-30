@@ -26,21 +26,26 @@
  *
  * $RCSfile: ScriptographerPlugin.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/05/30 11:59:32 $
+ * $Revision: 1.2 $
+ * $Date: 2006/05/30 16:03:40 $
  */
  
 #include "stdHeaders.h"
-
 #include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
-
 #include "resourceIds.h"
 
 ScriptographerPlugin *gPlugin = NULL;
 
-ScriptographerPlugin::ScriptographerPlugin(SPPluginRef pluginRef) {
-	m_pluginRef = pluginRef;
+ScriptographerPlugin::ScriptographerPlugin(SPMessageData *messageData) {
+	// set the global sSPBasic pointer only once here, as it may be converted to a glued version
+	// if MACHO_CFM_GLUE is defined
+	sSPBasic = messageData->basic;
+#ifdef MACHO_CFM_GLUE
+	// the basic suite is never acquired and therefore needs to be glue manually here
+	createGluedSuite((void **) &sSPBasic, sizeof(SPBasicSuite));
+#endif
+	m_pluginRef = messageData->self;
 	m_pluginName = "Scriptographer";
 	m_lockCount = 0;
 	m_pluginAccess = NULL;
@@ -50,14 +55,20 @@ ScriptographerPlugin::ScriptographerPlugin(SPPluginRef pluginRef) {
 	m_lastErrorTime = 0;
 	m_appStartedNotifier = NULL;
 	m_selectionChangedNotifier = NULL;
-	m_logFile = NULL;
 	m_engine = NULL;
 	m_loaded = false;
 	gPlugin = this;
+#ifdef LOGFILE
+	m_logFile = NULL;
+#endif
 }
 
 ScriptographerPlugin::~ScriptographerPlugin() {
 	gPlugin = NULL;
+#ifdef MACHO_CFM_GLUE
+	// the basic suite is never released and therefore needs to be unglue manually here
+	disposeGluedSuite(sSPBasic, sizeof(SPBasicSuite));
+#endif
 }
 
 // ScriptographerPlugin:
@@ -106,7 +117,6 @@ Tool *ScriptographerPlugin::getTools(int *count) {
 }
 
 ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
-	
 	// aquire only the basic suites that are needed here. the rest is acquired in postStartup.
 	ASErr error = acquireSuites(&gStartupSuites);
 	if (error) return error;
@@ -117,6 +127,7 @@ ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
 	sSPPlugins->GetPluginFileSpecification(m_pluginRef, &fileSpec);
    	if (!fileSpecToPath(&fileSpec, homeDir))
 		return kCantHappenErr;
+	
 	// now find the last occurence of PATH_SEP_CHR and determine the string there:
 	*(strrchr(homeDir, PATH_SEP_CHR) + 1) = '\0';
 
@@ -124,10 +135,7 @@ ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
 		// Create logfile:
 		char path[512];
 		sprintf(path, "%s" PATH_SEP_STR "scriptographer.log", homeDir);
-		if (pathToNativePath(path, path))
-			m_logFile = fopen(path, "wt");
-		else
-			m_logFile = NULL;
+		m_logFile = fopen(path, "wt");
 		log("Starting Scriptographer with home folder: %s", homeDir);
 	#endif
 		
@@ -141,7 +149,7 @@ ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
 	// add selection changed notifier
 	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Selection Changed", kAIArtSelectionChangedNotifier, &m_selectionChangedNotifier);
 	if (error) return error;
-
+	
 	try {
 		// try to create the Java Engine:
 		// append java to the homeDir
@@ -203,7 +211,7 @@ ASErr ScriptographerPlugin::unloadPlugin(SPInterfaceMessage *message) {
 	log("unloadPlugin");
 	releaseSuites(&gStartupSuites);
 	releaseSuites(&gPostStartupSuites);
-	return kUnloadErr; // tell PLuginMain to remove the plugin object after this
+	return kUnloadErr; // tell PluginMain to remove the plugin object after this
 }
 
 unsigned char *ScriptographerPlugin::toPascal(const char *src, unsigned char *dst) {
@@ -255,7 +263,8 @@ bool ScriptographerPlugin::fileSpecToPath(SPPlatformFileSpecification *fileSpec,
 	
 	// now add the name to it:
 	char *name = fromPascal(fileSpec->name);
-	sprintf(path, "%s%s%s", path, PATH_SEP_STR, name);
+	strcat(path, PATH_SEP_STR);
+	strcat(path, name);
 	delete name;
 #else
 	// on windows, things are easier because we don't have to convert to a posix path:
@@ -321,30 +330,15 @@ bool ScriptographerPlugin::pathToFileSpec(const char *path, SPPlatformFileSpecif
 	return true;
 }
 
-bool ScriptographerPlugin::pathToNativePath(const char *path, char *nativePath) {
-#ifdef MAC_ENV
-	// use sAIUser->SPPlatformFileSpecification2Path to get the carbon path on mac
-	SPPlatformFileSpecification fileSpec;
-	pathToFileSpec(path, &fileSpec);
-	if (sAIUser->SPPlatformFileSpecification2Path(&fileSpec, nativePath))
-		return false;
-#else
-	// on windows, nothing needs to be done
-	if (path != nativePath)
-		strcpy(nativePath, path);
-#endif
-	return true;
-}
-
 void ScriptographerPlugin::setCursor(int cursorID) {
 	ASErr error = kNoErr;
-#if MAC_ENV
+#ifdef MAC_ENV
 	CursHandle cursor; 
 
 	cursor = GetCursor(cursorID);
 	if (cursor)
 		SetCursor(*cursor);
-#elif WIN_ENV
+#else ifdef WIN_ENV
 	HCURSOR cursor;
 	SPAccessRef access;
 	SPPlatformAccessInfo accessInfo;
@@ -352,8 +346,7 @@ void ScriptographerPlugin::setCursor(int cursorID) {
 	error = sSPAccess->GetPluginAccess(m_pluginRef, &access);
 	if(kNoErr == error)
 		error = sSPAccess->GetAccessInfo(access, &accessInfo);
-	if(kNoErr == error)
-	{
+	if(kNoErr == error) {
 		cursor = LoadCursor((HINSTANCE) accessInfo.defaultAccess, MAKEINTRESOURCE(cursorID));
 		if (cursor)
 			SetCursor(cursor);
@@ -368,7 +361,7 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 	log("handleMessage: %s %s", caller, selector);
 
 	// Sweet Pea messages
-	if (sSPBasic->IsEqual(caller, kSPAccessCaller))  {
+	if (sSPBasic->IsEqual(caller, kSPAccessCaller)) {
 		if (sSPBasic->IsEqual(selector, kSPAccessUnloadSelector)) {
 			error = unloadPlugin(static_cast<SPInterfaceMessage *>(message));
 		} else if (sSPBasic->IsEqual(selector, kSPAccessReloadSelector)) {
@@ -378,7 +371,7 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		}
 	} else if (sSPBasic->IsEqual(caller, kSPInterfaceCaller))  {	
 		if (sSPBasic->IsEqual(selector, kSPInterfaceAboutSelector)) {
-			error = gEngine->about();
+			error = gEngine->displayAbout();
 		} else if (sSPBasic->IsEqual(selector, kSPInterfaceStartupSelector)) {
 			error = startupPlugin(static_cast<SPInterfaceMessage *>(message));
 		} else if (sSPBasic->IsEqual(selector, kSPInterfaceShutdownSelector)) {
@@ -512,6 +505,9 @@ void ScriptographerPlugin::reportError(const char* str, ...) {
 	ASBoolean gotBasic = false;
 	if (sADMBasic == NULL && sSPBasic != NULL) {
 		sSPBasic->AcquireSuite(kADMBasicSuite, kADMBasicSuiteVersion, (const void **) &sADMBasic);
+#ifdef MACHO_CFM_GLUE
+		createGluedSuite((void **) &sADMBasic, sizeof(ADMBasicSuite));
+#endif
 		if (sADMBasic != NULL)
 			gotBasic = true;
 	}
@@ -631,6 +627,28 @@ ASBoolean ScriptographerPlugin::filterError(ASErr error) {
 	return false;
 }
 
+#ifdef MACHO_CFM_GLUE
+
+void ScriptographerPlugin::createGluedSuite(void **suite, int size) {
+	// use UInt32 for representation of a pointer, as it has the same size on CFM
+	UInt32 *origSuite = (UInt32 *) *suite;
+	size /= 4;
+	UInt32 *gluedSuite = new UInt32[size];
+	*suite = gluedSuite;
+	while (size--)
+		*(gluedSuite++) = (UInt32) createMachOGlue((void *) *(origSuite++));
+}
+
+void ScriptographerPlugin::disposeGluedSuite(void *suite, int size) {
+	UInt32 *gluedSuite = (UInt32 *) suite;
+	size /= 4;
+	while (size--)
+		disposeMachOGlue((void *) *(gluedSuite++));
+	delete[] (UInt32 *) suite;
+}
+
+#endif
+
 ASErr ScriptographerPlugin::acquireSuites(ImportSuites *suites) {
 	if (!suites->acquired) {
 		suites->acquired = true;
@@ -660,7 +678,14 @@ ASErr ScriptographerPlugin::acquireSuite(ImportSuite *suite) {
 	char message[256];
 
 	if (suite->suite != NULL) {
-		error = sSPBasic->AcquireSuite(suite->name, suite->version, (const void **)suite->suite);
+		if (suite->name == kADMItemSuite) {
+			int i = 0;
+		}
+		error = sSPBasic->AcquireSuite(suite->name, suite->version, (const void **) suite->suite);
+#ifdef MACHO_CFM_GLUE
+		if (!error)
+			createGluedSuite((void **) suite->suite, suite->size);
+#endif
 		if (error && sADMBasic != NULL) {
 			sprintf(message, "Error: %d, suite: %s, version: %d!", error, suite->name, suite->version);
 			sADMBasic->MessageAlert(message);
@@ -675,9 +700,57 @@ ASErr ScriptographerPlugin::releaseSuite(ImportSuite *suite) {
 	if (suite->suite != NULL) {
 		void **s = (void **)suite->suite;
 		if (*s != NULL) {
+#ifdef MACHO_CFM_GLUE
+			disposeGluedSuite(*((void **) suite->suite), suite->size);
+#endif
 			error = sSPBasic->ReleaseSuite(suite->name, suite->version);
 			*s = NULL;
 		}
 	}
 	return error;
 }
+
+// The main entry point:
+
+static bool loaded = false;
+
+DLLExport SPAPI int main(char *caller, char *selector, void *message) {	
+	SPErr error = kNoErr;
+	
+	SPMessageData *messageData = static_cast<SPMessageData *>(message);
+	ScriptographerPlugin *plugin = static_cast<ScriptographerPlugin *>(messageData->globals);
+
+	bool remove = false;
+
+	if (plugin != NULL && !loaded) {
+		plugin->log("Plugin object is created, but the loaded flag is not set.");
+		error = kBadParameterErr;
+	} else {
+		if (plugin == NULL) {
+			plugin = new ScriptographerPlugin(messageData);
+			if (plugin != NULL)	{
+				messageData->globals = plugin;
+				loaded = true;
+			} else {
+				error = kOutOfMemoryErr;
+			}
+		}
+
+		if (plugin != NULL)
+			error = plugin->handleMessage(caller, selector, message);
+	}
+	
+	if (error == kUnloadErr) {
+		remove = true;
+		error = kNoErr;
+	}
+	
+	if (remove) {
+		delete plugin;
+		messageData->globals = NULL;
+		loaded = false;
+	}
+	
+	return error;
+}
+
