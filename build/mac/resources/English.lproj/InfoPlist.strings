@@ -1,0 +1,5 @@
+/* Localized versions of Info.plist keys */
+
+CFBundleName = "Scriptographer";
+CFBundleShortVersionString = "2.0";
+CFBundleGetInfoString = "Scriptographer 2.0, Copyright © 2001-2006 by JŸrg Lehni, http://www.scratchdisk.com. All rights reserved.";

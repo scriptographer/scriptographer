@@ -28,8 +28,8 @@
  *
  * $RCSfile: CommitManager.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.9 $
+ * $Date: 2006/06/07 16:44:21 $
  */
 
 package com.scriptographer;
@@ -59,18 +59,25 @@ public class CommitManager {
 	public static int version = 0;
 
 	/**
-	 * commits only changes to objects that are associated with the given key
+	 * Commits  changes to objects that are associated with the given key
 	 * this is usually a art object, where path styles and segment lists use
-	 * the art object as a key when calling markDirty
+	 * the art object as a key when calling markDirty.
+	 * If key is null, all changes are commited.
 	 */
 	public static void commit(Object key) {
-		Commitable obj = (Commitable) commitables.get(key);
-		if (obj != null) {
-			obj.commit();
-			// case it's a text, use the story as a key as well. it's used like
-			// that in CharacterAttributes
-			if (obj instanceof TextFrame)
-				commit(((TextFrame) obj).getStory());
+		if (key != null) {
+			Commitable obj = (Commitable) commitables.get(key);
+			if (obj != null) {
+				obj.commit();
+				// case it's a text, use the story as a key as well. it's used like
+				// that in CharacterAttributes
+				if (obj instanceof TextFrame)
+					commit(((TextFrame) obj).getStory());
+			}
+		} else if (commitables.size() > 0) {
+			for (Iterator iterator = commitables.values().iterator(); iterator.hasNext();)
+				((Commitable) iterator.next()).commit();
+			commitables.clear();
 		}
 	}
 	
@@ -78,11 +85,7 @@ public class CommitManager {
 	 * commit all changes
 	 */
 	public static void commit() {
-		if (commitables.size() > 0) {
-			for (Iterator iterator = commitables.values().iterator(); iterator.hasNext();)
-				((Commitable) iterator.next()).commit();
-			commitables.clear();
-		}
+		commit(null);
 	}
 
 	/**

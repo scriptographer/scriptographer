@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Raster.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.8 $
+ * $Date: 2006/06/07 16:44:19 $
  */
  
 #include "stdHeaders.h"
@@ -160,7 +160,7 @@ void Raster_copyPixels(JNIEnv *env, jobject obj, jbyteArray data, jint numCompon
 		tile.bounds = sliceTo;
 		
 		char *dst = (char *)env->GetPrimitiveArrayCritical(data, 0);
-		if (dst == NULL) EXCEPTION_CHECK(env)
+		if (dst == NULL) EXCEPTION_CHECK(env);
 		tile.data = dst;
 		
 		if (get) sAIRaster->GetRasterTile(art, &sliceFrom, &tile, &sliceTo);

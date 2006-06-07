@@ -273,9 +273,10 @@ public class JSDoclet extends Doclet {
 		void init() {
 		}
 
-		void printMember(PrintWriter writer, String id, String title, String text, ClassDoc cd) {
+		void printMember(PrintWriter writer, PrintWriter indexWriter, ClassDoc cd, String id, String title, String text, Tag[] tags) {
 			if (templates) {
 				writer.print("<% this.memberLink id=\"" + id + "\" %>");
+				indexWriter.print(", \"" + id + "\": { title: \"" + name() + "\", text: \"" + encodeJs(stripTags(getTags(cd, tags))) + "\" }");
 			} else {
 				writer.print("<div id=\"" + id + "-link\" class=\"member-link\">");
 			}
@@ -308,7 +309,7 @@ public class JSDoclet extends Doclet {
 			}
 		}
 
-		void printMember(PrintWriter writer, ClassDoc cd) {
+		void printMember(PrintWriter writer, PrintWriter indexWriter, ClassDoc cd) {
 			StringBuffer title = new StringBuffer("<tt><b>");
 			// Static = PROTOTYPE.NAME
 			if (isStatic())
@@ -324,7 +325,7 @@ public class JSDoclet extends Doclet {
 			// See tags
 			printSeeTags(strWriter, cd, seeTags(), "<div class=\"member-paragraph\"><b>See also:</b>", "</div>");
 
-			printMember(writer, getMemberId(this), title.toString(), text.toString(), cd);
+			printMember(writer, indexWriter, cd, getMemberId(this), title.toString(), text.toString(), inlineTags());
 		}
 
 		String name() {
@@ -525,14 +526,14 @@ public class JSDoclet extends Doclet {
 				super.printSummary(writer, cd);
 		}
 
-		void printMember(PrintWriter writer, ClassDoc cd) {
-			printMember(writer, cd, null);
+		void printMember(PrintWriter writer, PrintWriter indexWriter, ClassDoc cd) {
+			printMember(writer, indexWriter, cd, null);
 		}
 
-		void printMember(PrintWriter writer, ClassDoc cd, MemberInfo copiedTo) {
+		void printMember(PrintWriter writer, PrintWriter indexWriter, ClassDoc cd, MemberInfo copiedTo) {
 			MethodInfo overridden = getOverriddenMethodToUse();
 			if (overridden != null) {
-				overridden.printMember(writer, cd, copiedTo == null ? this : copiedTo);
+				overridden.printMember(writer, indexWriter, cd, copiedTo == null ? this : copiedTo);
 			} else {
 				ExecutableMemberDoc executable = (ExecutableMemberDoc) member;
 				MemberInfo mbr = copiedTo == null ? this : copiedTo;
@@ -563,7 +564,8 @@ public class JSDoclet extends Doclet {
 				PrintWriter strWriter = new PrintWriter(text);
 
 				// Description
-				printTags(strWriter, classInfo.classDoc, mbr.inlineTags(), "<div class=\"member-paragraph\">", "</div>");
+				Tag[] descriptionTags = mbr.inlineTags();
+				printTags(strWriter, classInfo.classDoc, descriptionTags, "<div class=\"member-paragraph\">", "</div>");
 
 				// Parameter tags
 				printParameterTags(strWriter, cd);
@@ -611,7 +613,7 @@ public class JSDoclet extends Doclet {
 				// See tags
 				printSeeTags(strWriter, cd, mbr.seeTags(), "<div class=\"member-paragraph\"><b>See also:</b>", "</div>");
 
-				printMember(writer, getMemberId(mbr), title.toString(), text.toString(), cd);
+				printMember(writer, indexWriter, cd, getMemberId(mbr), title.toString(), text.toString(), descriptionTags);
 			}
 		}
 		
@@ -877,7 +879,10 @@ public class JSDoclet extends Doclet {
 				MethodInfo method = (MethodInfo) it.next();
 	            // Does getter method have an empty parameter list with a return
 	            // value (eg. a getSomething() or isSomething())?
-	            if (method.parameters().length == 0/* && (!isStatic || method.isStatic())*/ ) {
+
+				// as a convention, only add non static bean properties to the documentation.
+				// static properties are all supposed to be uppercae and constants
+				if (method.parameters().length == 0 && !method.isStatic()) {
 	                if (!method.returnType().typeName().equals("void")) {
 	                    return method;
 	                }
@@ -901,18 +906,21 @@ public class JSDoclet extends Doclet {
 			for (int pass = 1; pass <= 2; ++pass) {
 				for (Iterator it = lists.iterator(); it.hasNext();) {
 					MethodInfo method = (MethodInfo) it.next();
-					//	                if (!isStatic || method.isStatic()) {
-					if (method.returnType().typeName().equals("void")) {
-						Parameter[] params = method.parameters();
-						if (params.length == 1) {
-							if (pass == 1) {
-								if (params[0].typeName().equals(type.typeName())) {
+					// as a convention, only add non static bean properties to the documentation.
+					// static properties are all supposed to be uppercae and constants
+					if (!method.isStatic()) {
+						if (method.returnType().typeName().equals("void")) {
+							Parameter[] params = method.parameters();
+							if (params.length == 1) {
+								if (pass == 1) {
+									if (params[0].typeName().equals(type.typeName())) {
+										return method;
+									}
+								} else {
+									 // TODO: if (params[0].isAssignableFrom(type)) {
+									 // return method; }
 									return method;
 								}
-							} else {
-								 // TODO: if (params[0].isAssignableFrom(type)) {
-								 // return method; }
-								return method;
 							}
 						}
 					}
@@ -1294,9 +1302,11 @@ public class JSDoclet extends Doclet {
 				writer.println(prepend + (templates ? "[" : "<ul>"));
 				for (Iterator it = nodes.keySet().iterator(); it.hasNext();) {
 					ClassNode node = (ClassNode) it.next();
-					layoutClass(node.classDoc);
+					if (templates)
+						writer.println(prepend + "\t{ name: \"" + node.classDoc.name() + "\", isAbstract: " + node.classDoc.isAbstract() + ", index: { ");
+					layoutClass(writer, node.classDoc);
 					if (templates) {
-						writer.println(prepend + "\t{ name: \"" + node.classDoc.name() + "\", isAbstract: " + node.classDoc.isAbstract() + " },");
+						writer.println(" }},");
 					} else {
 						base = "";
 						writer.println(prepend + "\t<li>" + stripCodeTags(createLink(node.classDoc)) + "</li>");
@@ -1390,7 +1400,7 @@ public class JSDoclet extends Doclet {
 	/**
 	 * Lays out a list of classes.
 	 */
-	static void layoutClass(ClassDoc cd) {
+	static void layoutClass(PrintWriter indexWriter, ClassDoc cd) {
 		try {
 			// determine folder + filename for class file:
 			String name = cd.name();
@@ -1440,6 +1450,8 @@ public class JSDoclet extends Doclet {
 			}
 
 			printTags(writer, cd, cd.inlineTags(), "<p>", "</p>");
+			if (templates)
+				indexWriter.print("\"prototype\": { title: \"" + cd.name() + "\", text: \"" + encodeJs(stripTags(getTags(cd, cd.inlineTags()))) + "\" }");
 
 			printSeeTags(writer, cd, cd.seeTags(), "<p><b>See also:</b> ", "</p>");
 
@@ -1494,16 +1506,16 @@ public class JSDoclet extends Doclet {
 			}
 
 			if (constructors.length > 0)
-				printMembers(writer, cd, constructors, "Constructors", false);
+				printMembers(writer, indexWriter, cd, constructors, "Constructors", false);
 
 			if (fields.length > 0) {
-				printMembers(writer, cd, fields, "Properties", false);
-				printMembers(writer, cd, fields, "Static Properties", true);
+				printMembers(writer, indexWriter, cd, fields, "Properties", false);
+				printMembers(writer, indexWriter, cd, fields, "Static Properties", true);
 			}
 
 			if (methods.length > 0) {
-				printMembers(writer, cd, methods, "Functions", false);
-				printMembers(writer, cd, methods, "Static Functions", true);
+				printMembers(writer, indexWriter, cd, methods, "Functions", false);
+				printMembers(writer, indexWriter, cd, methods, "Static Functions", true);
 			}
 
 			if (inherited) {
@@ -1590,14 +1602,14 @@ public class JSDoclet extends Doclet {
 	 * Enumerates the members of a section of the document and formats them
 	 * using Tex statements.
 	 */
-	static void printMembers(PrintWriter writer, ClassDoc cd, MemberInfo[] members, String title, boolean showStatic) {
+	static void printMembers(PrintWriter writer, PrintWriter indexWriter, ClassDoc cd, MemberInfo[] members, String title, boolean showStatic) {
 		if (members.length > 0) {
 			StringWriter strBuffer = new StringWriter();
 			PrintWriter strWriter = new PrintWriter(strBuffer);
 			for (int i = 0; i < members.length; i++) {
 				MemberInfo mbr = members[i];
 				if (mbr.isStatic() == showStatic)
-					mbr.printMember(strWriter, cd);
+					mbr.printMember(strWriter, indexWriter, cd);
 			}
 			String str = strBuffer.toString();
 			if (str.length() > 0) {
@@ -1847,6 +1859,10 @@ public class JSDoclet extends Doclet {
 
 	static String stripCodeTags(String str) {
 		return str.replaceAll("<tt>|</tt>", "");
+	}
+
+	static String stripTags(String str) {
+		return str.replaceAll("<.*?>|</.*?>", " ").replaceAll("\\s+", " ");
 	}
 
 	/**

@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2006/05/30 22:46:45 $
+ * $Revision: 1.11 $
+ * $Date: 2006/06/07 16:44:20 $
  */
 
 package com.scriptographer.gui;
@@ -226,8 +226,8 @@ public class MainDialog extends FloatingDialog {
 		
 		this.addToLayout(scriptList, BorderLayout.CENTER);
 		
-		// ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1));
-		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, 0, 0));
+		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1));
+		// ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		
 		buttons.add(playButton);
 		buttons.add(stopButton);

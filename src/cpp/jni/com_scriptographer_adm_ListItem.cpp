@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ListItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.10 $
+ * $Date: 2006/06/07 16:44:18 $
  */
  
 #include "stdHeaders.h"
@@ -280,7 +280,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_get__Ljava_lang_S
 	ASUnicode *chars = NULL;
 	try {
 		chars = gEngine->convertString_ASUnicode(env, text);
-		if (chars == NULL) EXCEPTION_CHECK(env)
+		if (chars == NULL) EXCEPTION_CHECK(env);
 
 		#define FIND_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			ENTRY_TYPE ent = LIST_SUITE->FindEntryW(list, chars); \
@@ -334,12 +334,12 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_ListItem_getSelected(
 		#define GET_SELECTED_ENTRIES(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			int length = LIST_SUITE->NumberOfSelectedEntries(list); \
 			jobjectArray res = env->NewObjectArray(length, gEngine->cls_ListEntry, NULL); \
-			if (res == NULL) EXCEPTION_CHECK(env) \
+			if (res == NULL) EXCEPTION_CHECK(env); \
 			for (int i = 0; i < length; i++) { \
 				ENTRY_TYPE ent = LIST_SUITE->IndexSelectedEntry(list, i); \
 				env->SetObjectArrayElement(res, i, gEngine->getListEntryObject(ent)); \
 			} \
-			EXCEPTION_CHECK(env) \
+			EXCEPTION_CHECK(env); \
 			return res;
 
 		DEFINE_METHOD(GET_SELECTED_ENTRIES)

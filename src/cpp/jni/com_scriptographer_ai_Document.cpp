@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.17 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.18 $
+ * $Date: 2006/06/07 16:44:18 $
  */
  
 #include "stdHeaders.h"
@@ -91,6 +91,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_i
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_lang_String_2FFII(JNIEnv *env, jclass cls, jstring title, jfloat width, jfloat height, jint colorModel, jint dialogStatus) {
 	AIDocumentHandle doc = NULL;
 	AIColorModel model = (AIColorModel) colorModel;
+	// FIXME: As long as Art objects need to be modified in the active document (see Bug #001) commit it first:
+	gEngine->callStaticObjectMethod(env, gEngine->cls_CommitManager, gEngine->mid_CommitManager_commit, NULL);
 #if kPluginInterfaceVersion < kAI12
 	char *str = NULL;
 	try {
@@ -312,7 +314,13 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Document_nativeGetForm
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_activate(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
-		sAIDocumentList->Activate(doc, true);
+		AIDocumentHandle activeDoc = NULL;
+		sAIDocument->GetDocument(&activeDoc);
+		if (doc != activeDoc) {
+			// FIXME: As long as Art objects need to be modified in the active document (see Bug #001) commit it first:
+			gEngine->callStaticObjectMethod(env, gEngine->cls_CommitManager, gEngine->mid_CommitManager_commit, NULL);
+			sAIDocumentList->Activate(doc, true);
+		}
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -555,7 +563,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingItems(J
 					if (set) spec.attr |=  flag;
 				}
 			}
-			EXCEPTION_CHECK(env)
+			EXCEPTION_CHECK(env);
 		}
 		if (!sAIArtSet->MatchingArtSet(&spec, 1, set)) {
 			artSet = gEngine->convertArtSet(env, set);

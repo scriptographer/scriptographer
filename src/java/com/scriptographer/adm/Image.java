@@ -28,8 +28,8 @@
  *
  * $RCSfile: Image.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/01/03 05:38:03 $
+ * $Revision: 1.10 $
+ * $Date: 2006/06/07 16:44:19 $
  */
 
 package com.scriptographer.adm;
@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import javax.imageio.ImageIO;
 
 import com.scriptographer.ai.Raster;
 
@@ -172,7 +173,7 @@ public class Image extends ADMObject {
 	}
 	
 	public Image(InputStream in) throws IOException {
-//		this(checkImage(ImageIO.read(in), url));
+//		this(checkImage(ImageIO.read(in), in));
 		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(getBytes(in))), in));
 	}
 

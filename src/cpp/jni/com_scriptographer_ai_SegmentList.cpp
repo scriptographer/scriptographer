@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_SegmentList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.5 $
+ * $Date: 2006/06/07 16:44:19 $
  */
  
 #include "stdHeaders.h"
@@ -83,7 +83,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeFetch(JNIEnv
 			if (error)
 				throw new StringException("Cannot get path segments");
 		}
-		EXCEPTION_CHECK(env)
+		EXCEPTION_CHECK(env);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -116,7 +116,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeCommit__III_
 			if (error)
 				throw new StringException("Cannot get path segments");
 		}
-		EXCEPTION_CHECK(env)
+		EXCEPTION_CHECK(env);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -149,7 +149,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__III_
 			if (error)
 				throw new StringException("Cannot get path segments");
 		}
-		EXCEPTION_CHECK(env)
+		EXCEPTION_CHECK(env);
 	} EXCEPTION_CONVERT(env)
 }
 

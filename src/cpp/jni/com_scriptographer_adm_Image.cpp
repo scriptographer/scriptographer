@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Image.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/04/04 17:02:29 $
+ * $Revision: 1.5 $
+ * $Date: 2006/06/07 16:44:18 $
  */
  
 #include "stdHeaders.h"
@@ -83,7 +83,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels___3IIII
 		ADMImageRef image = gEngine->getImageRef(env, obj);
 		jint len = env->GetArrayLength(data);
 		char *src = (char *)env->GetPrimitiveArrayCritical(data, 0);
-		if (data == NULL) EXCEPTION_CHECK(env)
+		if (data == NULL) EXCEPTION_CHECK(env);
 		char *dst = (char *)sADMImage->BeginBaseAddressAccess(image); 
 		
 		// we're copying int rgb(a) values, so *4:
@@ -124,7 +124,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeGetPixels(JNIEnv 
 		ADMImageRef image = gEngine->getImageRef(env, obj);
 		jint len = env->GetArrayLength(data);
 		char *dst = (char *)env->GetPrimitiveArrayCritical(data, 0);
-		if (data == NULL) EXCEPTION_CHECK(env)
+		if (data == NULL) EXCEPTION_CHECK(env);
 		char *src = (char *)sADMImage->BeginBaseAddressAccess(image); 
 		
 		// we're copying int rgb(a) values, so *4:

@@ -26,8 +26,8 @@
  *
  * $RCSfile: jniMacros.h,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.5 $
+ * $Date: 2006/06/07 16:44:19 $
  */
 
 /*
@@ -71,7 +71,7 @@
 	TYPE ScriptographerEngine::get##NAME##Field(JNIEnv *env, jobject obj, jfieldID fid) { \
 		JNI_CHECK_ENV \
 		TYPE res = env->Get##NAME##Field(obj, fid); \
-		EXCEPTION_CHECK(env) \
+		EXCEPTION_CHECK(env); \
 		return res; \
 	}
 
@@ -95,7 +95,7 @@
 	void ScriptographerEngine::set##NAME##Field(JNIEnv *env, jobject obj, jfieldID fid, TYPE val) { \
 		JNI_CHECK_ENV \
 		env->Set##NAME##Field(obj, fid, val); \
-		EXCEPTION_CHECK(env) \
+		EXCEPTION_CHECK(env); \
 	}
 
 #define JNI_DECLARE_SETFIELD_FUNCTIONS \
@@ -118,7 +118,7 @@
 	TYPE ScriptographerEngine::getStatic##NAME##Field(JNIEnv *env, jclass cls, const char *name, const char *signature) { \
 		JNI_CHECK_ENV \
 		TYPE res = env->GetStatic##NAME##Field(cls, env->GetStaticFieldID(cls, name, signature)); \
-		EXCEPTION_CHECK(env) \
+		EXCEPTION_CHECK(env); \
 		return res; \
 	}
 
@@ -203,7 +203,7 @@
  * In EXCEPTION_CONVERT(env), this exception is then turned back into a Java exception again.
  * This stragety also allows the C++ code to throw newly built jthrowables.
  */
-#define EXCEPTION_CHECK(env) \
+#define EXCEPTION_CHECK(env); \
 	{ \
 		jthrowable throwable = env->ExceptionOccurred(); \
 		if (throwable != NULL) { \
