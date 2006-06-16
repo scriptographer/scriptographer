@@ -59,7 +59,7 @@ function executeRaster(createDot) {
 			var radius = raster.getPixel(x, y).convert(Color.TYPE_GRAY).gray;
 			var dot = dots[Math.round(Math.random() * (dots.length - 1))];
 			var obj = createDot(x, raster.height - y, dot, radius);
-			if (obj) group.append(obj);
+			if (obj) group.appendChild(obj);
 		}
 	}
 	for (var i in dots) {

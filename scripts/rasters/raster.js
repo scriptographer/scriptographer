@@ -35,7 +35,7 @@ function executeRaster(createDot) {
 			var obj = createDot(x, raster.height - y, dot, radius);
 			if (obj) {
 				obj.translate(move);
-				group.append(obj);
+				group.appendChild(obj);
 			}
 		}
 		activeDocument.redraw();

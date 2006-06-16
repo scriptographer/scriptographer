@@ -40,7 +40,7 @@ function Branch(point, group) {
 	this.vector = new Point(Math.random() * 20, 0).transform(Matrix.getRotateInstance(Math.random() * 2 * Math.PI));
 	this.path = new Path();
 	this.path.moveTo(point);
-	group.append(this.path);
+	group.appendChild(this.path);
 }
 
 Branch.prototype.grow = function() {

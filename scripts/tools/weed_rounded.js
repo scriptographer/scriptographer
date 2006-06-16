@@ -50,7 +50,7 @@ function Branch(point, group) {
 	this.path = new Path();
 	this.path.moveTo(point);
 	this.path.style.stroke.width = minWidth + Math.random() * (maxWidth - minWidth);
-	group.append(this.path);
+	group.appendChild(this.path);
 	this.rotate = 0.2;
 	this.count = 0;
 	this.max = 0;

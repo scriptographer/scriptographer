@@ -49,7 +49,7 @@ if (raster != null && dot != null) {
 			for (var x = 0; x < raster.width; x++) {
 				var col = raster.getPixel(x, y);
 				if (!white.equals(col)) {
-					group.append(createDot(x, raster.height - y, dot, col));
+					group.appendChild(createDot(x, raster.height - y, dot, col));
 				}
 			}
 			activeDocument.redraw();

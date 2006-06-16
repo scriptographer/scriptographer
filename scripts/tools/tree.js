@@ -35,7 +35,7 @@ function onMouseUp(event) {
 	if (path.segments.length > 0) {
 		path.pointsToCurves();
 		var group = new Group();
-		group.append(path);
+		group.appendChild(path);
 		var branches = [ { path: path, scale: 1.0, rotation: 0 } ];
 		var count = 0;
 		while (branches.length != 0) {
@@ -57,7 +57,7 @@ function onMouseUp(event) {
 						matrix.rotate(rotation, curStartPoint);
 						newPath.transform(matrix);
 
-						group.append(newPath);
+						group.appendChild(newPath);
 						newBranches.push( { path: newPath, scale: scale, rotation: rotation } );
 
 						count++;

@@ -19,7 +19,7 @@ function onMouseDown(event) {
 function onMouseUp(event) {
 	path.pointsToCurves();
 	var group = new Group();
-	group.append(path);
+	group.appendChild(path);
 	var count = 0;
 	while (count++ < 100) {
 		var lastB = path.curves[path.curves.length - 1];
@@ -27,7 +27,7 @@ function onMouseUp(event) {
 		var a2 = lastB.getTangent(1).getAngle();
 		var obj = path.clone();
 		obj.transform(Matrix.getScaleInstance(scale));
-		group.append(obj);
+		group.appendChild(obj);
 		if (obj.bounds.width < 1 && obj.bounds.height < 1)
 			break;
 		var firstB = obj.curves[0];
