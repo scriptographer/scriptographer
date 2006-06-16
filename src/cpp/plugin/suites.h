@@ -26,9 +26,21 @@
  *
  * $RCSfile: suites.h,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/06/16 16:18:29 $
+ * $Revision: 1.3 $
+ * $Date: 2006/06/16 18:37:35 $
  */
+
+// Define versions so they can even be used when compiling for 10 or CS1:
+#define kAI10	0x10000001	// AI 10.0
+#define kAI11	0x11000001	// AI 11.0
+#define kAI12	0x12000001	// AI 12.0
+
+// Sweet Pea Headers
+#include "SPConfig.h"
+#include "SPTypes.h"
+
+// Illustrator Headers
+#include "AITypes.h"
 
 // Sweet Pea Suites
 #include "SPBlocks.h"
@@ -139,6 +151,25 @@ extern ImportSuites gPostStartupSuites;
 
 #if kPluginInterfaceVersion >= kAI11
 	#include "ATETextSuitesExtern.h"
+#endif
+
+#if kPluginInterfaceVersion < kAI11
+	// Compatibility for Illustrator version before CS:
+	// ASRect, ASPoint, ASRGBColor, etc. have been deprecated in favor of ADM types with the same
+	// name, ADMRect, ADMPoint, etc. The switch to ADMxxx types is painless and makes for a more
+	// uniform use of standard Adobe types. If for some reason you cannot switch you can uncomment
+	// the old ASxxx types in ASTypes.h.
+	#define ADMRect ASRect
+	#define ADMPoint ASPoint
+#endif
+
+#if kPluginInterfaceVersion < kAI12
+	// GetWSProfile in AIOverrideColorConversion.h takes AIColorProfile instead of ASUInt32 since AI12
+	#define AIColorProfile ASUInt32
+	// was renamed in AI12:
+	namespace ATE {
+		typedef ATE::GlyphID ATEGlyphID;
+	}
 #endif
 
 // ADM Suites default to the oldest versions.
