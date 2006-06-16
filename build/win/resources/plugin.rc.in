@@ -7,7 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "..\plugin\resourceIds.h"
+#include "..\..\..\src\cpp\plugin\resourceIds.h"
 #include "afxres.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -53,7 +53,7 @@ END
 
 2 TEXTINCLUDE DISCARDABLE 
 BEGIN
-    "#include ""..\\plugin\\resourceIds.h""\r\n"
+    "#include ""..\\..\\..\\src\\cpp\\plugin\\resourceIds.h""\r\n"
     "#include ""afxres.h""\0"
 END
 

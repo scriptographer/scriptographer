@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerPlugin.h,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.3 $
+ * $Date: 2006/06/16 19:41:07 $
  */
 
 #define kMaxStringLength 256
@@ -37,7 +37,8 @@
 
 #ifdef MAC_ENV
 	#define DLLExport extern "C"
-#else
+#endif
+#ifdef WIN_ENV
 	#define DLLExport extern "C" __declspec(dllexport)
 #endif
 

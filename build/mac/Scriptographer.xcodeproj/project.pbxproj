@@ -511,7 +511,7 @@
 		91EF0A4C0A20A2CD00F0EF9A /* ScriptographerEngine.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ScriptographerEngine.h; sourceTree = "<group>"; };
 		91EF0A4D0A20A2CD00F0EF9A /* ScriptographerPlugin.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = ScriptographerPlugin.cpp; sourceTree = "<group>"; };
 		91EF0A4E0A20A2CD00F0EF9A /* ScriptographerPlugin.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ScriptographerPlugin.h; sourceTree = "<group>"; };
-		91EF0A4F0A20A2CD00F0EF9A /* stdHeaders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = stdHeaders.h; path = ../../src/cpp/plugin/stdHeaders.h; sourceTree = "<group>"; };
+		91EF0A4F0A20A2CD00F0EF9A /* stdHeaders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = stdHeaders.h; sourceTree = "<group>"; };
 		91EF0A500A20A2CD00F0EF9A /* suites.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = suites.cpp; sourceTree = "<group>"; };
 		91EF0A510A20A2CD00F0EF9A /* suites.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = suites.h; sourceTree = "<group>"; };
 		91EF0ACA0A20A3F300F0EF9A /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../Adobe Illustrator CS SDK/IllustratorAPI/Illustrator/IText.cpp"; sourceTree = SOURCE_ROOT; };
@@ -635,7 +635,6 @@
 			isa = PBXGroup;
 			children = (
 				08FB77ADFE841716C02AAC07 /* Native */,
-				91EF0A4F0A20A2CD00F0EF9A /* stdHeaders.h */,
 				916FC6F40A264CC600BF8DE4 /* Java */,
 				089C167CFE841241C02AAC07 /* Resources */,
 				91CA8A6A0A227031005E0C1A /* Frameworks and Libraries */,
@@ -1002,7 +1001,7 @@
 		91EF0A450A20A2CD00F0EF9A /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
-				91EF0AC60A20A3C200F0EF9A /* CS1 */,
+				91EF0AC60A20A3C200F0EF9A /* CS */,
 				91EF0AC80A20A3D200F0EF9A /* CS2 */,
 				91EF0A4E0A20A2CD00F0EF9A /* ScriptographerPlugin.h */,
 				91EF0A4D0A20A2CD00F0EF9A /* ScriptographerPlugin.cpp */,
@@ -1014,12 +1013,13 @@
 				91EF0A510A20A2CD00F0EF9A /* suites.h */,
 				91EF0A500A20A2CD00F0EF9A /* suites.cpp */,
 				91EF0A4A0A20A2CD00F0EF9A /* resourceIds.h */,
+				91EF0A4F0A20A2CD00F0EF9A /* stdHeaders.h */,
 			);
 			name = Plugin;
 			path = ../../src/cpp/plugin;
 			sourceTree = "<group>";
 		};
-		91EF0AC60A20A3C200F0EF9A /* CS1 */ = {
+		91EF0AC60A20A3C200F0EF9A /* CS */ = {
 			isa = PBXGroup;
 			children = (
 				91EF0ACA0A20A3F300F0EF9A /* IText.cpp */,
@@ -1027,7 +1027,7 @@
 				916FC1430A25BFCC00BF8DE4 /* MachO_CFM_Glue.h */,
 				916FC1420A25BFCC00BF8DE4 /* MachO_CFM_Glue.cpp */,
 			);
-			name = CS1;
+			name = CS;
 			path = ../../../build/mac;
 			sourceTree = "<group>";
 		};
@@ -1113,10 +1113,10 @@
 		91EF0B6B0A20A51800F0EF9A /* JNI */ = {
 			isa = PBXGroup;
 			children = (
-				91EF09BF0A20A2CD00F0EF9A /* admGlobals.h */,
-				91EF09C00A20A2CD00F0EF9A /* aiGlobals.h */,
 				91EF0B520A20A4CB00F0EF9A /* ADM */,
 				91EF0B4E0A20A4B900F0EF9A /* AI */,
+				91EF09BF0A20A2CD00F0EF9A /* admGlobals.h */,
+				91EF09C00A20A2CD00F0EF9A /* aiGlobals.h */,
 				91EF0B040A20A4B200F0EF9A /* com_scriptographer_ScriptographerEngine.cpp */,
 				91EF0B030A20A4B200F0EF9A /* registerNatives.cpp */,
 			);
@@ -1167,9 +1167,9 @@
 			productReference = 91193B1F0A2DF3B100B0E3A7 /* Scriptographer.aip */;
 			productType = "com.apple.product-type.bundle";
 		};
-		91193B230A2DF3C600B0E3A7 /* Scriptographer CS1 JVM */ = {
+		91193B230A2DF3C600B0E3A7 /* Scriptographer CS JVM */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 91193B730A2DF3C600B0E3A7 /* Build configuration list for PBXNativeTarget "Scriptographer CS1 JVM" */;
+			buildConfigurationList = 91193B730A2DF3C600B0E3A7 /* Build configuration list for PBXNativeTarget "Scriptographer CS JVM" */;
 			buildPhases = (
 				91193B240A2DF3C600B0E3A7 /* Resources */,
 				91193B260A2DF3C600B0E3A7 /* Sources */,
@@ -1180,15 +1180,15 @@
 			);
 			dependencies = (
 			);
-			name = "Scriptographer CS1 JVM";
+			name = "Scriptographer CS JVM";
 			productInstallPath = "$(HOME)/Library/Bundles";
 			productName = TutorialCallMe;
 			productReference = 91193B760A2DF3C600B0E3A7 /* Scriptographer.aip */;
 			productType = "com.apple.product-type.bundle";
 		};
-		91D4E8E70A251CFA002888A3 /* Scriptographer CS1 GCJ */ = {
+		91D4E8E70A251CFA002888A3 /* Scriptographer CS GCJ */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 91D4E9300A251CFA002888A3 /* Build configuration list for PBXNativeTarget "Scriptographer CS1 GCJ" */;
+			buildConfigurationList = 91D4E9300A251CFA002888A3 /* Build configuration list for PBXNativeTarget "Scriptographer CS GCJ" */;
 			buildPhases = (
 				91D4E8E80A251CFA002888A3 /* Resources */,
 				91D4E8EA0A251CFA002888A3 /* Sources */,
@@ -1199,7 +1199,7 @@
 			);
 			dependencies = (
 			);
-			name = "Scriptographer CS1 GCJ";
+			name = "Scriptographer CS GCJ";
 			productInstallPath = "$(HOME)/Library/Bundles";
 			productName = TutorialCallMe;
 			productReference = 91D4E9330A251CFA002888A3 /* Scriptographer.aip */;
@@ -1215,9 +1215,9 @@
 			mainGroup = 089C166AFE841209C02AAC07 /* TutorialCallMe */;
 			projectDirPath = "";
 			targets = (
-				91D4E8E70A251CFA002888A3 /* Scriptographer CS1 GCJ */,
+				91D4E8E70A251CFA002888A3 /* Scriptographer CS GCJ */,
 				8D01CCC60486CAD60068D4B7 /* Scriptographer CS2 GCJ */,
-				91193B230A2DF3C600B0E3A7 /* Scriptographer CS1 JVM */,
+				91193B230A2DF3C600B0E3A7 /* Scriptographer CS JVM */,
 				91193ACC0A2DF3B100B0E3A7 /* Scriptographer CS2 JVM */,
 			);
 		};
@@ -1787,7 +1787,7 @@
 				SKIP_INSTALL = YES;
 				SRCROOT_QUOTED = "\"$(SRCROOT)\"";
 				STRIP_INSTALLED_PRODUCT = YES;
-				SYMROOT = build/CS1/JVM;
+				SYMROOT = build/CS/JVM;
 				WRAPPER_EXTENSION = aip;
 				ZERO_LINK = YES;
 			};
@@ -1831,7 +1831,7 @@
 				PRODUCT_NAME = Scriptographer;
 				SRCROOT_QUOTED = "\"$(SRCROOT)\"";
 				STRIP_INSTALLED_PRODUCT = YES;
-				SYMROOT = build/CS1/JVM;
+				SYMROOT = build/CS/JVM;
 				WRAPPER_EXTENSION = aip;
 				ZERO_LINK = NO;
 			};
@@ -1875,7 +1875,7 @@
 				SKIP_INSTALL = YES;
 				SRCROOT_QUOTED = "\"$(SRCROOT)\"";
 				STRIP_INSTALLED_PRODUCT = YES;
-				SYMROOT = build/CS1/GCJ;
+				SYMROOT = build/CS/GCJ;
 				WRAPPER_EXTENSION = aip;
 				ZERO_LINK = YES;
 			};
@@ -1922,7 +1922,7 @@
 				PRODUCT_NAME = Scriptographer;
 				SRCROOT_QUOTED = "\"$(SRCROOT)\"";
 				STRIP_INSTALLED_PRODUCT = YES;
-				SYMROOT = build/CS1/GCJ;
+				SYMROOT = build/CS/GCJ;
 				WRAPPER_EXTENSION = aip;
 				ZERO_LINK = NO;
 			};
@@ -1958,7 +1958,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		91193B730A2DF3C600B0E3A7 /* Build configuration list for PBXNativeTarget "Scriptographer CS1 JVM" */ = {
+		91193B730A2DF3C600B0E3A7 /* Build configuration list for PBXNativeTarget "Scriptographer CS JVM" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				91193B740A2DF3C600B0E3A7 /* Debug */,
@@ -1967,7 +1967,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		91D4E9300A251CFA002888A3 /* Build configuration list for PBXNativeTarget "Scriptographer CS1 GCJ" */ = {
+		91D4E9300A251CFA002888A3 /* Build configuration list for PBXNativeTarget "Scriptographer CS GCJ" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				91D4E9310A251CFA002888A3 /* Debug */,

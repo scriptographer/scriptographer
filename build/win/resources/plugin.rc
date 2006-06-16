@@ -53,7 +53,7 @@ END
 
 2 TEXTINCLUDE DISCARDABLE 
 BEGIN
-    "#include ""..\\plugin\\resourceIds.h""\r\n"
+    "#include ""..\\..\\..\\src\\cpp\\plugin\\resourceIds.h""\r\n"
     "#include ""afxres.h""\0"
 END
 

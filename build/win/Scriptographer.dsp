@@ -19,8 +19,8 @@ CFG=Scriptographer - Win32 CS2 Debug
 !MESSAGE 
 !MESSAGE "Scriptographer - Win32 10 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "Scriptographer - Win32 10 Debug" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE "Scriptographer - Win32 CS1 Release" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE "Scriptographer - Win32 CS1 Debug" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "Scriptographer - Win32 CS Release" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "Scriptographer - Win32 CS Debug" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "Scriptographer - Win32 CS2 Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE "Scriptographer - Win32 CS2 Debug" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE 
@@ -91,18 +91,18 @@ LINK32=link.exe
 # ADD LINK32 winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"Scriptographer_10_Debug\Scriptographer.aip"
 # SUBTRACT LINK32 /pdb:none /incremental:no
 
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Release"
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
-# PROP BASE Output_Dir "Scriptographer_CS1_Release"
-# PROP BASE Intermediate_Dir "Scriptographer_CS1_Release"
+# PROP BASE Output_Dir "Scriptographer_CS_Release"
+# PROP BASE Intermediate_Dir "Scriptographer_CS_Release"
 # PROP BASE Ignore_Export_Lib 0
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "Scriptographer_CS1_Release"
-# PROP Intermediate_Dir "Scriptographer_CS1_Release"
+# PROP Output_Dir "Scriptographer_CS_Release"
+# PROP Intermediate_Dir "Scriptographer_CS_Release"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /Gi /GX /O1 /I "..\..\src\cpp\win" /I "..\..\src\cpp\jni" /I "..\..\src\cpp\plugin" /I "..\..\..\Adobe Illustrator CS SDK\IllustratorAPI" /I "..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\ADM" /I "..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator" /I "..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\General" /I "..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\PICA_SP" /I "..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator\Legacy" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /FR /YX"stdHeaders.h" /FD /c
@@ -117,21 +117,21 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib winmm.lib /nologo /subsystem:windows /dll /machine:I386 /out:"C:\Programme\Adobe\Illustrator 9.0\Plug-ins\Extensions\Scriptographer.aip"
 # SUBTRACT BASE LINK32 /pdb:none /incremental:no /debug
-# ADD LINK32 winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /nologo /subsystem:windows /dll /machine:I386 /out:"Scriptographer_CS1_Release\Scriptographer.aip"
+# ADD LINK32 winmm.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /nologo /subsystem:windows /dll /machine:I386 /out:"Scriptographer_CS_Release\Scriptographer.aip"
 # SUBTRACT LINK32 /pdb:none /incremental:no /debug
 
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Debug"
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
-# PROP BASE Output_Dir "Scriptographer_CS1_Debug"
-# PROP BASE Intermediate_Dir "Scriptographer_CS1_Debug"
+# PROP BASE Output_Dir "Scriptographer_CS_Debug"
+# PROP BASE Intermediate_Dir "Scriptographer_CS_Debug"
 # PROP BASE Ignore_Export_Lib 0
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "Scriptographer_CS1_Debug"
-# PROP Intermediate_Dir "Scriptographer_CS1_Debug"
+# PROP Output_Dir "Scriptographer_CS_Debug"
+# PROP Intermediate_Dir "Scriptographer_CS_Debug"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /Gm /Gi /GX /Zi /Od /I "..\..\src\cpp\win" /I "..\..\src\cpp\jni" /I "..\..\src\cpp\plugin" /I "..\..\..\Adobe Illustrator CS SDK\IllustratorAPI" /I "..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\ADM" /I "..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator" /I "..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\General" /I "..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\PICA_SP" /I "..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator\Legacy" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "WIN_ENV" /FR /YX"stdHeaders.h" /FD /c
@@ -147,7 +147,7 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib winmm.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"C:\Programme\Adobe\Illustrator 10\Plug-ins\Extensions\Scriptographer.aip"
 # SUBTRACT BASE LINK32 /pdb:none /incremental:no
-# ADD LINK32 odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"Scriptographer_CS1_Debug\Scriptographer.aip"
+# ADD LINK32 odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"Scriptographer_CS_Debug\Scriptographer.aip"
 # SUBTRACT LINK32 /pdb:none /incremental:no
 
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS2 Release"
@@ -216,20 +216,17 @@ LINK32=link.exe
 
 # Name "Scriptographer - Win32 10 Release"
 # Name "Scriptographer - Win32 10 Debug"
-# Name "Scriptographer - Win32 CS1 Release"
-# Name "Scriptographer - Win32 CS1 Debug"
+# Name "Scriptographer - Win32 CS Release"
+# Name "Scriptographer - Win32 CS Debug"
 # Name "Scriptographer - Win32 CS2 Release"
 # Name "Scriptographer - Win32 CS2 Debug"
-# Begin Group "Source"
-
-# PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
-# Begin Group "Java Source"
+# Begin Group "Native"
 
 # PROP Default_Filter ""
-# Begin Group "JNI Source"
+# Begin Group "JNI"
 
 # PROP Default_Filter ""
-# Begin Group "ADM Source"
+# Begin Group "ADM"
 
 # PROP Default_Filter ""
 # Begin Source File
@@ -270,11 +267,23 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_ItemGroup.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_Key.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_ListEntry.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_ListItem.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_MenuGroup.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_MenuItem.cpp
 # End Source File
 # Begin Source File
 
@@ -305,7 +314,7 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_Tracker.cpp
 SOURCE=..\..\src\cpp\jni\com_scriptographer_adm_ValueItem.cpp
 # End Source File
 # End Group
-# Begin Group "AI Source"
+# Begin Group "AI"
 
 # PROP Default_Filter ""
 # Begin Source File
@@ -374,14 +383,6 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_LiveEffect.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_MenuGroup.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_MenuItem.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_ParagraphStyle.cpp
 # End Source File
 # Begin Source File
@@ -447,50 +448,25 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_ViewList.cpp
 # End Group
 # Begin Source File
 
-SOURCE=..\..\src\cpp\jni\com_scriptographer_Key.cpp
+SOURCE=..\..\src\cpp\jni\admGlobals.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\aiGlobals.h
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ScriptographerEngine.cpp
 # End Source File
-# End Group
 # Begin Source File
 
 SOURCE=..\..\src\cpp\jni\registerNatives.cpp
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\ScriptographerEngine.cpp
-# End Source File
 # End Group
-# Begin Group "Plugin Source"
+# Begin Group "Plugin"
 
 # PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\exceptions.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\win\loadJava.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\Main.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\Plugin.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\Suites.cpp
-# End Source File
-# End Group
-# Begin Group "Common Source"
-
-# PROP Default_Filter ""
-# Begin Group "CS1 Source"
+# Begin Group "CS"
 
 # PROP Default_Filter ""
 # Begin Source File
@@ -499,15 +475,11 @@ SOURCE="..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator\IText.cpp"
 
 !IF  "$(CFG)" == "Scriptographer - Win32 10 Release"
 
-# PROP Exclude_From_Build 1
-
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 10 Debug"
 
-# PROP Exclude_From_Build 1
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Release"
 
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Release"
-
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Debug"
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Debug"
 
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS2 Release"
 
@@ -526,15 +498,11 @@ SOURCE="..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator\IThrowExcep
 
 !IF  "$(CFG)" == "Scriptographer - Win32 10 Release"
 
-# PROP Exclude_From_Build 1
-
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 10 Debug"
 
-# PROP Exclude_From_Build 1
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Release"
 
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Release"
-
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Debug"
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Debug"
 
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS2 Release"
 
@@ -548,7 +516,7 @@ SOURCE="..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator\IThrowExcep
 
 # End Source File
 # End Group
-# Begin Group "CS2 Source"
+# Begin Group "CS2"
 
 # PROP Default_Filter ""
 # Begin Source File
@@ -557,27 +525,19 @@ SOURCE="..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator\IAIFilePat
 
 !IF  "$(CFG)" == "Scriptographer - Win32 10 Release"
 
-# PROP Exclude_From_Build 1
-
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 10 Debug"
 
-# PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Release"
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Release"
 
 # PROP Exclude_From_Build 1
 
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Debug"
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Debug"
 
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS2 Release"
 
-# PROP BASE Exclude_From_Build 1
-
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS2 Debug"
-
-# PROP BASE Exclude_From_Build 1
 
 !ENDIF 
 
@@ -588,27 +548,19 @@ SOURCE="..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator\IAIUnicode
 
 !IF  "$(CFG)" == "Scriptographer - Win32 10 Release"
 
-# PROP Exclude_From_Build 1
-
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 10 Debug"
 
-# PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Release"
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Release"
 
 # PROP Exclude_From_Build 1
 
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Debug"
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Debug"
 
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS2 Release"
 
-# PROP BASE Exclude_From_Build 1
-
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS2 Debug"
-
-# PROP BASE Exclude_From_Build 1
 
 !ENDIF 
 
@@ -619,27 +571,19 @@ SOURCE="..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator\IText.cpp"
 
 !IF  "$(CFG)" == "Scriptographer - Win32 10 Release"
 
-# PROP Exclude_From_Build 1
-
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 10 Debug"
 
-# PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Release"
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Release"
 
 # PROP Exclude_From_Build 1
 
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Debug"
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Debug"
 
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS2 Release"
 
-# PROP BASE Exclude_From_Build 1
-
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS2 Debug"
-
-# PROP BASE Exclude_From_Build 1
 
 !ENDIF 
 
@@ -650,47 +594,31 @@ SOURCE="..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator\IThrowExce
 
 !IF  "$(CFG)" == "Scriptographer - Win32 10 Release"
 
-# PROP Exclude_From_Build 1
-
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 10 Debug"
 
-# PROP Exclude_From_Build 1
-
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Release"
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Release"
 
 # PROP Exclude_From_Build 1
 
-!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS1 Debug"
+!ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS Debug"
 
 # PROP Exclude_From_Build 1
 
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS2 Release"
 
-# PROP BASE Exclude_From_Build 1
-
 !ELSEIF  "$(CFG)" == "Scriptographer - Win32 CS2 Debug"
-
-# PROP BASE Exclude_From_Build 1
 
 !ENDIF 
 
 # End Source File
 # End Group
-# End Group
-# End Group
-# Begin Group "Headers"
-
-# PROP Default_Filter "h;hpp;hxx;hm;inl;fi;fd"
-# Begin Group "Java Headers"
-
-# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\cpp\jni\admGlobals.h
+SOURCE=..\..\src\cpp\plugin\exceptions.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\jni\aiGlobals.h
+SOURCE=..\..\src\cpp\plugin\exceptions.h
 # End Source File
 # Begin Source File
 
@@ -698,15 +626,7 @@ SOURCE=..\..\src\cpp\plugin\jniMacros.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\plugin\ScriptographerEngine.h
-# End Source File
-# End Group
-# Begin Group "Plugin Headers"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\exceptions.h
+SOURCE=..\..\src\cpp\win\loadJava.cpp
 # End Source File
 # Begin Source File
 
@@ -714,49 +634,69 @@ SOURCE=..\..\src\cpp\win\loadJava.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\plugin\Plugin.h
+SOURCE=..\..\src\cpp\plugin\resourceIds.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\plugin\resourceIds.h
+SOURCE=..\..\src\cpp\plugin\ScriptographerEngine.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\plugin\ScriptographerEngine.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\plugin\ScriptographerPlugin.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\plugin\ScriptographerPlugin.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\plugin\stdHeaders.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\plugin\suites.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\src\cpp\plugin\Suites.h
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=..\..\src\cpp\plugin\stdHeaders.h
-# End Source File
 # End Group
 # Begin Group "Resources"
 
-# PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;cnt;rtf;gif;jpg;jpeg;jpe"
+# PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\src\cpp\win\PiPL.bin
+SOURCE=.\resources\plugin.rc
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\win\plugin.rc
+SOURCE=.\resources\resource.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\win\tool1.cur
+SOURCE=.\resources\tool1.cur
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\win\tool1.ico
+SOURCE=.\resources\tool1.ico
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\win\tool2.cur
+SOURCE=.\resources\tool2.cur
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\src\cpp\win\tool2.ico
+SOURCE=.\resources\tool2.ico
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\resources\PiPL.bin
+# End Source File
 # End Target
 # End Project

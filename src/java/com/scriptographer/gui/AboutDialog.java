@@ -28,8 +28,8 @@
  *
  * $RCSfile: AboutDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.8 $
+ * $Date: 2006/06/16 19:36:01 $
  */
 
 package com.scriptographer.gui;
@@ -77,11 +77,11 @@ public 	class AboutDialog extends ModalDialog {
 		text.setTrackCallback(true);
 		String newLine = System.getProperty("line.separator");
 		text.setText(
-			"Scriptographer 0.2" + newLine + 
+			"Scriptographer 2.0" + newLine + 
 			"http://www.scriptographer.com" +  newLine +
 			newLine +
-			"(c) 2001-2005 Juerg Lehni" + newLine + 
-			"http://www.scratchdisk.com");
+			"\u00a9 2001-2006 J\u00fcrg Lehni" + newLine + 
+			"http://www.scratchdisk.com. All rights reserved.");
 		
 		Button okButton = new Button(this);
 		okButton.setFont(Dialog.FONT_PALETTE);
