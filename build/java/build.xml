@@ -27,10 +27,22 @@
 		<property name="build.packages" value="${home.dir}/build/packages"/>
 		<loadproperties srcfile="build.number"/>
 
+		<path id="build.classpath">
+			<fileset dir="${build.dir}/lib">
+				<exclude name="**/scriptographer*.jar" />
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+		
+		<path id="build.sourcepath" >
+			<pathelement location="${build.src}" />
+			<pathelement location="${build.src.jdk}" />
+		</path>
+
 		<property name="docs.dir" value="${home.dir}/docs"/>
 		<property name="docs.api.dir" value="${docs.dir}/api"/>
-		<property name="docs.js.dir" id="docs.js.dir" value="${docs.dir}/js"/>
-		<property name="docs.js.templates.dir" id="docs.js.templates.dir" value="${docs.dir}/templates"/>
+		<property name="docs.js.dir" value="${docs.dir}/js"/>
+		<property name="docs.templates.dir" value="${docs.dir}/templates"/>
 
 		<property name="scripts.dir" value="${home.dir}/scripts"/>
 
@@ -44,18 +56,7 @@
 		<property name="optimize" value="on"/>
 		<property name="target" value="1.4"/>
 		<property name="deprecation" value="off"/>
-
-		<path id="build.classpath">
-			<fileset dir="${build.dir}/lib">
-				<exclude name="**/scriptographer*.jar" />
-				<include name="**/*.jar" />
-			</fileset>
-		</path>
 		
-		<path id="build.sourcepath" >
-			<pathelement location="${build.src}" />
-			<pathelement location="${build.src.jdk}" />
-		</path>
 	</target>
 
 
@@ -111,6 +112,7 @@
 			debug="${debug}"
 			deprecation="${deprecation}"
 			optimize="${optimize}"
+			source="${target}"
 			target="${target}">
 			<classpath refid="build.classpath" />
 			<exclude name="**/global.java"/>
@@ -164,7 +166,7 @@
 	<!-- =================================================================== -->
 	<!-- Creates install packages of Scriptographer for download             -->
 	<!-- =================================================================== -->
-	<target name="packages" depends="jar,jsdocs">
+	<target name="packages" depends="init"><!-- depends="jar,jsdocs"-->
 		<mkdir dir="${build.packages}"/>
 
 		<mkdir dir="${build.packages}/Scriptographer"/>
@@ -198,7 +200,8 @@
 
 		<!-- Windows -->
 		<exec executable="cmd.exe" os="Windows XP" dir="${build.packages}">
-			<arg line="/C ${home.dir}/build/win/zipPackages.bat"/>
+			<arg line="/C"/>
+			<arg path="${home.dir}/build/win/zipPackages.bat"/>
 			<arg path="${home.dir}/build/win"/>
 			<arg line="${version}.${build.number}"/>
 		</exec>
@@ -323,7 +326,7 @@
 	<!-- "java.awt.geom.*,com.scriptographer,com.scriptographer.ai.*,com.scriptographer.adm.*" -->
 	<target name="jsdoclet">
 		<mkdir dir="${destdir}"/>
-		<javadoc packagenames="com.scriptographer.*,java.*"
+		<javadoc packagenames="com.scriptographer,com.scriptographer.ai,com.scriptographer.adm,com.scriptographer.util,java.*"
 				sourcepathref="build.sourcepath"
 				destdir="${destdir}"
 				author="false"
@@ -372,7 +375,7 @@
 					removeAll
 					getInstance
 				"/>
-				<param name="-classorder" value="${home.dir}/build/java/classorder.properties"/>
+				<param name="-classorder" value="${home.dir}/build/java/classorder.txt"/>
 				<param name="-templates" value="${templates}"/>
 			</doclet>
 		</javadoc>
@@ -383,6 +386,7 @@
 	<!-- Creates the JS API documentation                                    -->
 	<!-- =================================================================== -->
 	<target name="jsdocs" depends="init">
+		<mkdir dir="${docs.js.dir}/packages"/>
 		<antcall target="jsdoclet">
 			<param name="templates" value="off"/>
 			<param name="destdir" value="${docs.js.dir}"/>
@@ -396,7 +400,7 @@
 	<target name="templatedocs" depends="init">
 		<antcall target="jsdoclet">
 			<param name="templates" value="on"/>
-			<param name="destdir" value="${docs.js.templates.dir}"/>
+			<param name="destdir" value="${docs.templates.dir}"/>
 		</antcall>
 	</target>
 </project>
