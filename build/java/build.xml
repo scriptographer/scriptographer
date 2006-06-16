@@ -166,7 +166,7 @@
 	<!-- =================================================================== -->
 	<!-- Creates install packages of Scriptographer for download             -->
 	<!-- =================================================================== -->
-	<target name="packages" depends="init"><!-- depends="jar,jsdocs"-->
+	<target name="packages" depends="jar,jsdocs">
 		<mkdir dir="${build.packages}"/>
 
 		<mkdir dir="${build.packages}/Scriptographer"/>
