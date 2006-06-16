@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextRange.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.11 $
+ * $Date: 2006/06/16 16:18:30 $
  */
 
 package com.scriptographer.ai;
@@ -540,7 +540,7 @@ public class TextRange extends AIObject {
 		}
 
 		/**
-		 * adjustEnd is called when TextRange.append changes the end point of the ranges
+		 * adjustEnd is called when TextRange.appendChild changes the end point of the ranges
 		 * update here accordingly
 		 * 
 		 * @param oldLength

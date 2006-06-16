@@ -28,8 +28,8 @@
  * 
  * $RCSfile: LiveEffect.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.11 $
+ * $Date: 2006/06/16 16:18:30 $
  */
 
 package com.scriptographer.ai;
@@ -37,6 +37,7 @@ package com.scriptographer.ai;
 import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.js.Unsealed;
 import com.scriptographer.util.IntMap;
+import com.scriptographer.adm.MenuItem;
 
 import java.util.Map;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ import java.util.ArrayList;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.ScriptRuntime;
 
-/**
+/*
  * Wrapper for Illustrator's LiveEffects.
  *
  * Unfortunatelly, Illustrator is not able to remove once created effects again until the next restart.

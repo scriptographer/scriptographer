@@ -28,8 +28,8 @@
  *
  * $RCSfile: PathStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/01/03 05:38:03 $
+ * $Revision: 1.10 $
+ * $Date: 2006/06/16 16:18:30 $
  */
 
 package com.scriptographer.ai;
@@ -41,7 +41,7 @@ import com.scriptographer.CommitManager;
 import com.scriptographer.js.NullToUndefinedWrapper;
 import com.scriptographer.js.WrapperCreator;
 
-/**
+/*
  * PathStyle, FillStyle and StrokeStyle are used for Art, CharacaterAttributes, and others
  * In some places, not all of the values may be defined.
  * Setting any value to null means the value is not defined. It doesn't mean the value

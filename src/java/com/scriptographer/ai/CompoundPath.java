@@ -28,8 +28,8 @@
  * 
  * $RCSfile: CompoundPath.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/01/03 05:38:03 $
+ * $Revision: 1.7 $
+ * $Date: 2006/06/16 16:18:30 $
  */
 
 package com.scriptographer.ai;
@@ -73,7 +73,7 @@ public class CompoundPath extends Art {
 	public void moveTo(float x, float y) {
 		// moveTo allways creates a new path:
 		Path path = new Path();
-		append(path);
+		appendChild(path);
 		path.moveTo(x, y);
 	}
 	

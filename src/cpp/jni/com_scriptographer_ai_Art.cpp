@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.17 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.18 $
+ * $Date: 2006/06/16 16:18:26 $
  */
  
 #include "stdHeaders.h"
@@ -432,19 +432,118 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_getAttribute(JNIEnv *e
 }
 
 /*
- * void setName(java.lang.String name)
+ * int getBlendMode()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setName(JNIEnv *env, jobject obj, jstring name) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_getBlendMode(JNIEnv *env, jobject obj) {
 	try {
-		AIArtHandle art = gEngine->getArtHandle(env, obj);
-#if kPluginInterfaceVersion < kAI12
-		char *str = gEngine->convertString(env, name);
-		sAIArt->SetArtName(art, str);
-		delete str;
-#else
-		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, name);
-		sAIArt->SetArtName(art, str);
-#endif
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		return sAIBlendStyle->GetBlendingMode(art);
+	} EXCEPTION_CONVERT(env)
+	return 0;
+}
+
+/*
+ * void setBlendMode(int mode)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setBlendMode(JNIEnv *env, jobject obj, jint mode) {
+	try {
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		sAIBlendStyle->SetBlendingMode(art, (AIBlendingMode) mode);
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * float getOpacity()
+ */
+JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Art_getOpacity(JNIEnv *env, jobject obj) {
+	try {
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		return sAIBlendStyle->GetOpacity(art);
+	} EXCEPTION_CONVERT(env)
+	return 0.0;
+}
+
+/*
+ * void setOpacity(float opacity)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setOpacity(JNIEnv *env, jobject obj, jfloat opacity) {
+	try {
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		sAIBlendStyle->SetOpacity(art, opacity);
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * boolean getIsolated()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_getIsolated(JNIEnv *env, jobject obj) {
+	try {
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		return sAIBlendStyle->GetIsolated(art);
+	} EXCEPTION_CONVERT(env)
+	return JNI_FALSE;
+}
+
+/*
+ * void setIsolated(boolean isolated)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setIsolated(JNIEnv *env, jobject obj, jboolean isolated) {
+	try {
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		sAIBlendStyle->SetIsolated(art, isolated);
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * boolean getKnockout()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_getKnockout(JNIEnv *env, jobject obj) {
+	try {
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		return sAIBlendStyle->GetKnockout(art);
+	} EXCEPTION_CONVERT(env)
+	return JNI_FALSE;
+}
+
+/*
+ * void setKnockout(int knockout)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setKnockout(JNIEnv *env, jobject obj, jint knockout) {
+	try {
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		sAIBlendStyle->SetKnockout(art, (AIKnockout) knockout);
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * boolean getKnockout()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_getKnockoutInherited(JNIEnv *env, jobject obj) {
+	try {
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		return sAIBlendStyle->GetInheritedKnockout(art);
+	} EXCEPTION_CONVERT(env)
+	return JNI_FALSE;
+}
+
+/*
+ * boolean getAlphaIsShape()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_getAlphaIsShape(JNIEnv *env, jobject obj) {
+	try {
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		return sAIBlendStyle->GetAlphaIsShape(art);
+	} EXCEPTION_CONVERT(env)
+	return JNI_FALSE;
+}
+
+/*
+ * void setAlphaIsShape(boolean isAlpha)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setAlphaIsShape(JNIEnv *env, jobject obj, jboolean isAlpha) {
+	try {
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		sAIBlendStyle->SetAlphaIsShape(art, isAlpha);
 	} EXCEPTION_CONVERT(env)
 }
 
@@ -468,6 +567,23 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Art_getName(JNIEnv *env, jo
 }
 
 /*
+ * void setName(java.lang.String name)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_setName(JNIEnv *env, jobject obj, jstring name) {
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+#if kPluginInterfaceVersion < kAI12
+		char *str = gEngine->convertString(env, name);
+		sAIArt->SetArtName(art, str);
+		delete str;
+#else
+		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, name);
+		sAIArt->SetArtName(art, str);
+#endif
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
  * boolean hasDefaultName()
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_hasDefaultName(JNIEnv *env, jobject obj) {
@@ -488,9 +604,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_hasDefaultName(JNIEnv 
 }
 
 /*
- * boolean append(com.scriptographer.ai.Art art)
+ * boolean appendChild(com.scriptographer.ai.Art art)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_append(JNIEnv *env, jobject obj, jobject art) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_appendChild(JNIEnv *env, jobject obj, jobject art) {
 	try {
 		if (art != NULL) {
 			AIArtHandle art1 = gEngine->getArtHandle(env, obj);

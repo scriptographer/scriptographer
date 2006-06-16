@@ -58,5 +58,5 @@ function togglePackage(id, def) {
 
 window.onload = function()  {
 	var h = document.location.hash;
-	if (h) toggleMember(h.substring(1), true);
+	if (h) toggleMember(unescape(h.substring(1)), true);
 }

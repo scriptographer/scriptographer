@@ -25,7 +25,6 @@
 		911691B10A2C4E480023EB84 /* libswt-webkit-carbon-3139.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 911690380A2BC5940023EB84 /* libswt-webkit-carbon-3139.dylib */; };
 		911691CD0A2C536B0023EB84 /* SWTMessages.o in Frameworks */ = {isa = PBXBuildFile; fileRef = 911691CC0A2C53690023EB84 /* SWTMessages.o */; };
 		911691CE0A2C536B0023EB84 /* SWTMessages.o in Frameworks */ = {isa = PBXBuildFile; fileRef = 911691CC0A2C53690023EB84 /* SWTMessages.o */; };
-		91193ACE0A2DF3B100B0E3A7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 91CA85530A21BE87005E0C1A /* InfoPlist.strings */; };
 		91193AD00A2DF3B100B0E3A7 /* ScriptographerEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A4B0A20A2CD00F0EF9A /* ScriptographerEngine.cpp */; };
 		91193AD10A2DF3B100B0E3A7 /* ScriptographerPlugin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A4D0A20A2CD00F0EF9A /* ScriptographerPlugin.cpp */; };
 		91193AD20A2DF3B100B0E3A7 /* suites.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A500A20A2CD00F0EF9A /* suites.cpp */; };
@@ -35,8 +34,6 @@
 		91193AD60A2DF3B100B0E3A7 /* IText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AD00A20A40A00F0EF9A /* IText.cpp */; };
 		91193AD70A2DF3B100B0E3A7 /* IThrowException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AD10A20A40A00F0EF9A /* IThrowException.cpp */; };
 		91193AD80A2DF3B100B0E3A7 /* com_scriptographer_ai_CharacterStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF40A20A4B200F0EF9A /* com_scriptographer_ai_CharacterStyle.cpp */; };
-		91193AD90A2DF3B100B0E3A7 /* com_scriptographer_ai_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE00A20A4B200F0EF9A /* com_scriptographer_ai_MenuItem.cpp */; };
-		91193ADA0A2DF3B100B0E3A7 /* com_scriptographer_ai_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE10A20A4B200F0EF9A /* com_scriptographer_ai_MenuGroup.cpp */; };
 		91193ADB0A2DF3B100B0E3A7 /* com_scriptographer_ai_LiveEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE20A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp */; };
 		91193ADC0A2DF3B100B0E3A7 /* com_scriptographer_ai_LayerList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE30A20A4B200F0EF9A /* com_scriptographer_ai_LayerList.cpp */; };
 		91193ADD0A2DF3B100B0E3A7 /* com_scriptographer_ai_Layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE40A20A4B200F0EF9A /* com_scriptographer_ai_Layer.cpp */; };
@@ -69,7 +66,6 @@
 		91193AF80A2DF3B100B0E3A7 /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B010A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp */; };
 		91193AF90A2DF3B100B0E3A7 /* com_scriptographer_ai_TextStoryList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B020A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp */; };
 		91193AFA0A2DF3B100B0E3A7 /* com_scriptographer_ScriptographerEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B040A20A4B200F0EF9A /* com_scriptographer_ScriptographerEngine.cpp */; };
-		91193AFB0A2DF3B100B0E3A7 /* com_scriptographer_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B050A20A4B200F0EF9A /* com_scriptographer_Key.cpp */; };
 		91193AFC0A2DF3B100B0E3A7 /* com_scriptographer_adm_HierarchyList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B060A20A4B200F0EF9A /* com_scriptographer_adm_HierarchyList.cpp */; };
 		91193AFD0A2DF3B100B0E3A7 /* com_scriptographer_adm_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B070A20A4B200F0EF9A /* com_scriptographer_adm_ListItem.cpp */; };
 		91193AFE0A2DF3B100B0E3A7 /* com_scriptographer_adm_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B080A20A4B200F0EF9A /* com_scriptographer_adm_Tracker.cpp */; };
@@ -92,7 +88,6 @@
 		91193B100A2DF3B100B0E3A7 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91CA8A6F0A22703F005E0C1A /* Carbon.framework */; };
 		91193B190A2DF3B100B0E3A7 /* PiPL_MachO.rsrc in Rez */ = {isa = PBXBuildFile; fileRef = 91D4EDA30A255937002888A3 /* PiPL_MachO.rsrc */; };
 		91193B1A0A2DF3B100B0E3A7 /* Scriptographer.rsrc in Rez */ = {isa = PBXBuildFile; fileRef = 91D4EDA40A255937002888A3 /* Scriptographer.rsrc */; };
-		91193B250A2DF3C600B0E3A7 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 91CA85530A21BE87005E0C1A /* InfoPlist.strings */; };
 		91193B270A2DF3C600B0E3A7 /* ScriptographerEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A4B0A20A2CD00F0EF9A /* ScriptographerEngine.cpp */; };
 		91193B280A2DF3C600B0E3A7 /* ScriptographerPlugin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A4D0A20A2CD00F0EF9A /* ScriptographerPlugin.cpp */; };
 		91193B290A2DF3C600B0E3A7 /* suites.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A500A20A2CD00F0EF9A /* suites.cpp */; };
@@ -100,8 +95,6 @@
 		91193B2B0A2DF3C600B0E3A7 /* IText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0ACA0A20A3F300F0EF9A /* IText.cpp */; };
 		91193B2C0A2DF3C600B0E3A7 /* IThrowException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0ACB0A20A3F300F0EF9A /* IThrowException.cpp */; };
 		91193B2D0A2DF3C600B0E3A7 /* com_scriptographer_ai_CharacterStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF40A20A4B200F0EF9A /* com_scriptographer_ai_CharacterStyle.cpp */; };
-		91193B2E0A2DF3C600B0E3A7 /* com_scriptographer_ai_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE00A20A4B200F0EF9A /* com_scriptographer_ai_MenuItem.cpp */; };
-		91193B2F0A2DF3C600B0E3A7 /* com_scriptographer_ai_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE10A20A4B200F0EF9A /* com_scriptographer_ai_MenuGroup.cpp */; };
 		91193B300A2DF3C600B0E3A7 /* com_scriptographer_ai_LiveEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE20A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp */; };
 		91193B310A2DF3C600B0E3A7 /* com_scriptographer_ai_LayerList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE30A20A4B200F0EF9A /* com_scriptographer_ai_LayerList.cpp */; };
 		91193B320A2DF3C600B0E3A7 /* com_scriptographer_ai_Layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE40A20A4B200F0EF9A /* com_scriptographer_ai_Layer.cpp */; };
@@ -134,7 +127,6 @@
 		91193B4D0A2DF3C600B0E3A7 /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B010A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp */; };
 		91193B4E0A2DF3C600B0E3A7 /* com_scriptographer_ai_TextStoryList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B020A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp */; };
 		91193B4F0A2DF3C600B0E3A7 /* com_scriptographer_ScriptographerEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B040A20A4B200F0EF9A /* com_scriptographer_ScriptographerEngine.cpp */; };
-		91193B500A2DF3C600B0E3A7 /* com_scriptographer_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B050A20A4B200F0EF9A /* com_scriptographer_Key.cpp */; };
 		91193B510A2DF3C600B0E3A7 /* com_scriptographer_adm_HierarchyList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B060A20A4B200F0EF9A /* com_scriptographer_adm_HierarchyList.cpp */; };
 		91193B520A2DF3C600B0E3A7 /* com_scriptographer_adm_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B070A20A4B200F0EF9A /* com_scriptographer_adm_ListItem.cpp */; };
 		91193B530A2DF3C600B0E3A7 /* com_scriptographer_adm_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B080A20A4B200F0EF9A /* com_scriptographer_adm_Tracker.cpp */; };
@@ -159,16 +151,12 @@
 		91193C420A2DF7CD00B0E3A7 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91168EAB0A2B86790023EB84 /* JavaVM.framework */; };
 		91193C430A2DF7D100B0E3A7 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91168EAB0A2B86790023EB84 /* JavaVM.framework */; };
 		916FC1440A25BFCC00BF8DE4 /* MachO_CFM_Glue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 916FC1420A25BFCC00BF8DE4 /* MachO_CFM_Glue.cpp */; };
-		91CA85580A21BE87005E0C1A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 91CA85530A21BE87005E0C1A /* InfoPlist.strings */; };
 		91CA8A700A22703F005E0C1A /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91CA8A6F0A22703F005E0C1A /* Carbon.framework */; };
-		91D4E8E90A251CFA002888A3 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 91CA85530A21BE87005E0C1A /* InfoPlist.strings */; };
 		91D4E8EB0A251CFA002888A3 /* ScriptographerEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A4B0A20A2CD00F0EF9A /* ScriptographerEngine.cpp */; };
 		91D4E8EC0A251CFA002888A3 /* ScriptographerPlugin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A4D0A20A2CD00F0EF9A /* ScriptographerPlugin.cpp */; };
 		91D4E8ED0A251CFA002888A3 /* suites.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A500A20A2CD00F0EF9A /* suites.cpp */; };
 		91D4E8F20A251CFA002888A3 /* exceptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0ADE0A20A45900F0EF9A /* exceptions.cpp */; };
 		91D4E8F30A251CFA002888A3 /* com_scriptographer_ai_CharacterStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF40A20A4B200F0EF9A /* com_scriptographer_ai_CharacterStyle.cpp */; };
-		91D4E8F40A251CFA002888A3 /* com_scriptographer_ai_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE00A20A4B200F0EF9A /* com_scriptographer_ai_MenuItem.cpp */; };
-		91D4E8F50A251CFA002888A3 /* com_scriptographer_ai_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE10A20A4B200F0EF9A /* com_scriptographer_ai_MenuGroup.cpp */; };
 		91D4E8F60A251CFA002888A3 /* com_scriptographer_ai_LiveEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE20A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp */; };
 		91D4E8F70A251CFA002888A3 /* com_scriptographer_ai_LayerList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE30A20A4B200F0EF9A /* com_scriptographer_ai_LayerList.cpp */; };
 		91D4E8F80A251CFA002888A3 /* com_scriptographer_ai_Layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE40A20A4B200F0EF9A /* com_scriptographer_ai_Layer.cpp */; };
@@ -201,7 +189,6 @@
 		91D4E9130A251CFA002888A3 /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B010A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp */; };
 		91D4E9140A251CFA002888A3 /* com_scriptographer_ai_TextStoryList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B020A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp */; };
 		91D4E9150A251CFA002888A3 /* com_scriptographer_ScriptographerEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B040A20A4B200F0EF9A /* com_scriptographer_ScriptographerEngine.cpp */; };
-		91D4E9160A251CFA002888A3 /* com_scriptographer_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B050A20A4B200F0EF9A /* com_scriptographer_Key.cpp */; };
 		91D4E9170A251CFA002888A3 /* com_scriptographer_adm_HierarchyList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B060A20A4B200F0EF9A /* com_scriptographer_adm_HierarchyList.cpp */; };
 		91D4E9180A251CFA002888A3 /* com_scriptographer_adm_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B070A20A4B200F0EF9A /* com_scriptographer_adm_ListItem.cpp */; };
 		91D4E9190A251CFA002888A3 /* com_scriptographer_adm_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B080A20A4B200F0EF9A /* com_scriptographer_adm_Tracker.cpp */; };
@@ -226,6 +213,18 @@
 		91D4E94B0A251DF7002888A3 /* IThrowException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0ACB0A20A3F300F0EF9A /* IThrowException.cpp */; };
 		91D4EDAB0A255943002888A3 /* PiPL_MachO.rsrc in Rez */ = {isa = PBXBuildFile; fileRef = 91D4EDA30A255937002888A3 /* PiPL_MachO.rsrc */; };
 		91D4EDAC0A255943002888A3 /* Scriptographer.rsrc in Rez */ = {isa = PBXBuildFile; fileRef = 91D4EDA40A255937002888A3 /* Scriptographer.rsrc */; };
+		91DEF0D90A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */; };
+		91DEF0DA0A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */; };
+		91DEF0DB0A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */; };
+		91DEF0DC0A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */; };
+		91E9C52C0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91E9C52A0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp */; };
+		91E9C52D0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91E9C52B0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp */; };
+		91E9C52E0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91E9C52A0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp */; };
+		91E9C52F0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91E9C52B0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp */; };
+		91E9C5300A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91E9C52A0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp */; };
+		91E9C5310A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91E9C52B0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp */; };
+		91E9C5320A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91E9C52A0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp */; };
+		91E9C5330A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91E9C52B0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp */; };
 		91EF0AA30A20A2CD00F0EF9A /* ScriptographerEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A4B0A20A2CD00F0EF9A /* ScriptographerEngine.cpp */; };
 		91EF0AA40A20A2CD00F0EF9A /* ScriptographerPlugin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A4D0A20A2CD00F0EF9A /* ScriptographerPlugin.cpp */; };
 		91EF0AA50A20A2CD00F0EF9A /* suites.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0A500A20A2CD00F0EF9A /* suites.cpp */; };
@@ -234,8 +233,6 @@
 		91EF0AD40A20A40A00F0EF9A /* IText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AD00A20A40A00F0EF9A /* IText.cpp */; };
 		91EF0AD50A20A40A00F0EF9A /* IThrowException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AD10A20A40A00F0EF9A /* IThrowException.cpp */; };
 		91EF0ADF0A20A45900F0EF9A /* exceptions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0ADE0A20A45900F0EF9A /* exceptions.cpp */; };
-		91EF0B170A20A4B200F0EF9A /* com_scriptographer_ai_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE00A20A4B200F0EF9A /* com_scriptographer_ai_MenuItem.cpp */; };
-		91EF0B180A20A4B200F0EF9A /* com_scriptographer_ai_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE10A20A4B200F0EF9A /* com_scriptographer_ai_MenuGroup.cpp */; };
 		91EF0B190A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE20A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp */; };
 		91EF0B1A0A20A4B200F0EF9A /* com_scriptographer_ai_LayerList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE30A20A4B200F0EF9A /* com_scriptographer_ai_LayerList.cpp */; };
 		91EF0B1B0A20A4B200F0EF9A /* com_scriptographer_ai_Layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AE40A20A4B200F0EF9A /* com_scriptographer_ai_Layer.cpp */; };
@@ -271,7 +268,6 @@
 		91EF0B390A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B020A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp */; };
 		91EF0B3A0A20A4B200F0EF9A /* registerNatives.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B030A20A4B200F0EF9A /* registerNatives.cpp */; };
 		91EF0B3B0A20A4B200F0EF9A /* com_scriptographer_ScriptographerEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B040A20A4B200F0EF9A /* com_scriptographer_ScriptographerEngine.cpp */; };
-		91EF0B3C0A20A4B200F0EF9A /* com_scriptographer_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B050A20A4B200F0EF9A /* com_scriptographer_Key.cpp */; };
 		91EF0B3D0A20A4B200F0EF9A /* com_scriptographer_adm_HierarchyList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B060A20A4B200F0EF9A /* com_scriptographer_adm_HierarchyList.cpp */; };
 		91EF0B3E0A20A4B200F0EF9A /* com_scriptographer_adm_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B070A20A4B200F0EF9A /* com_scriptographer_adm_ListItem.cpp */; };
 		91EF0B3F0A20A4B200F0EF9A /* com_scriptographer_adm_Tracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B080A20A4B200F0EF9A /* com_scriptographer_adm_Tracker.cpp */; };
@@ -313,6 +309,7 @@
 /* End PBXBuildRule section */
 
 /* Begin PBXFileReference section */
+		9115002F0A3E360500BC8EC4 /* Info.plist.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = Info.plist.in; path = resources/Info.plist.in; sourceTree = "<group>"; };
 		91168DF20A2B61E60023EB84 /* scriptographer.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; name = scriptographer.o; path = ../../src/scriptographer.o; sourceTree = SOURCE_ROOT; };
 		91168DF50A2B62130023EB84 /* js.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; name = js.o; path = ../../../../Java/Rhino/js.o; sourceTree = SOURCE_ROOT; };
 		91168DF60A2B62130023EB84 /* RhinoMessages.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; name = RhinoMessages.o; path = ../../../../Java/Rhino/RhinoMessages.o; sourceTree = SOURCE_ROOT; };
@@ -491,7 +488,6 @@
 		916FC7A60A26676D00BF8DE4 /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
 		919823D40A37257700D57E4C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = Info.plist; path = resources/Info.plist; sourceTree = "<group>"; };
 		919825220A3729B700D57E4C /* PiPL_CFM.rsrc */ = {isa = PBXFileReference; lastKnownFileType = archive.rsrc; name = PiPL_CFM.rsrc; path = resources/PiPL_CFM.rsrc; sourceTree = "<group>"; };
-		91CA85540A21BE87005E0C1A /* English */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.strings; name = English; path = InfoPlist.strings; sourceTree = "<group>"; };
 		91CA8A6F0A22703F005E0C1A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		91D4E9330A251CFA002888A3 /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
 		91D4E9510A252070002888A3 /* CFM_Debug.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CFM_Debug.h; path = prefix/CFM_Debug.h; sourceTree = "<group>"; };
@@ -504,6 +500,9 @@
 		91D4E9580A252070002888A3 /* MachO_Release.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MachO_Release.h; path = prefix/MachO_Release.h; sourceTree = "<group>"; };
 		91D4EDA30A255937002888A3 /* PiPL_MachO.rsrc */ = {isa = PBXFileReference; lastKnownFileType = archive.rsrc; name = PiPL_MachO.rsrc; path = resources/PiPL_MachO.rsrc; sourceTree = "<group>"; };
 		91D4EDA40A255937002888A3 /* Scriptographer.rsrc */ = {isa = PBXFileReference; lastKnownFileType = archive.rsrc; name = Scriptographer.rsrc; path = resources/Scriptographer.rsrc; sourceTree = "<group>"; };
+		91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_Key.cpp; path = jni/com_scriptographer_adm_Key.cpp; sourceTree = "<group>"; };
+		91E9C52A0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_MenuGroup.cpp; path = jni/com_scriptographer_adm_MenuGroup.cpp; sourceTree = "<group>"; };
+		91E9C52B0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_MenuItem.cpp; path = jni/com_scriptographer_adm_MenuItem.cpp; sourceTree = "<group>"; };
 		91EF09BF0A20A2CD00F0EF9A /* admGlobals.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = admGlobals.h; path = jni/admGlobals.h; sourceTree = "<group>"; };
 		91EF09C00A20A2CD00F0EF9A /* aiGlobals.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = aiGlobals.h; path = jni/aiGlobals.h; sourceTree = "<group>"; };
 		91EF0A470A20A2CD00F0EF9A /* exceptions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = exceptions.h; sourceTree = "<group>"; };
@@ -522,8 +521,6 @@
 		91EF0AD00A20A40A00F0EF9A /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../Adobe Illustrator CS2 SDK/IllustratorAPI/Illustrator/IText.cpp"; sourceTree = SOURCE_ROOT; };
 		91EF0AD10A20A40A00F0EF9A /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../Adobe Illustrator CS2 SDK/IllustratorAPI/Illustrator/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
 		91EF0ADE0A20A45900F0EF9A /* exceptions.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = exceptions.cpp; sourceTree = "<group>"; };
-		91EF0AE00A20A4B200F0EF9A /* com_scriptographer_ai_MenuItem.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_MenuItem.cpp; path = jni/com_scriptographer_ai_MenuItem.cpp; sourceTree = "<group>"; };
-		91EF0AE10A20A4B200F0EF9A /* com_scriptographer_ai_MenuGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_MenuGroup.cpp; path = jni/com_scriptographer_ai_MenuGroup.cpp; sourceTree = "<group>"; };
 		91EF0AE20A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_LiveEffect.cpp; path = jni/com_scriptographer_ai_LiveEffect.cpp; sourceTree = "<group>"; };
 		91EF0AE30A20A4B200F0EF9A /* com_scriptographer_ai_LayerList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_LayerList.cpp; path = jni/com_scriptographer_ai_LayerList.cpp; sourceTree = "<group>"; };
 		91EF0AE40A20A4B200F0EF9A /* com_scriptographer_ai_Layer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Layer.cpp; path = jni/com_scriptographer_ai_Layer.cpp; sourceTree = "<group>"; };
@@ -559,7 +556,6 @@
 		91EF0B020A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_TextStoryList.cpp; path = jni/com_scriptographer_ai_TextStoryList.cpp; sourceTree = "<group>"; };
 		91EF0B030A20A4B200F0EF9A /* registerNatives.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = registerNatives.cpp; path = jni/registerNatives.cpp; sourceTree = "<group>"; };
 		91EF0B040A20A4B200F0EF9A /* com_scriptographer_ScriptographerEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ScriptographerEngine.cpp; path = jni/com_scriptographer_ScriptographerEngine.cpp; sourceTree = "<group>"; };
-		91EF0B050A20A4B200F0EF9A /* com_scriptographer_Key.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_Key.cpp; path = jni/com_scriptographer_Key.cpp; sourceTree = "<group>"; };
 		91EF0B060A20A4B200F0EF9A /* com_scriptographer_adm_HierarchyList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_HierarchyList.cpp; path = jni/com_scriptographer_adm_HierarchyList.cpp; sourceTree = "<group>"; };
 		91EF0B070A20A4B200F0EF9A /* com_scriptographer_adm_ListItem.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_ListItem.cpp; path = jni/com_scriptographer_adm_ListItem.cpp; sourceTree = "<group>"; };
 		91EF0B080A20A4B200F0EF9A /* com_scriptographer_adm_Tracker.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_Tracker.cpp; path = jni/com_scriptographer_adm_Tracker.cpp; sourceTree = "<group>"; };
@@ -651,11 +647,11 @@
 		089C167CFE841241C02AAC07 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				9115002F0A3E360500BC8EC4 /* Info.plist.in */,
 				919823D40A37257700D57E4C /* Info.plist */,
 				919825220A3729B700D57E4C /* PiPL_CFM.rsrc */,
 				91D4EDA30A255937002888A3 /* PiPL_MachO.rsrc */,
 				91D4EDA40A255937002888A3 /* Scriptographer.rsrc */,
-				91CA85530A21BE87005E0C1A /* InfoPlist.strings */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1070,8 +1066,6 @@
 				91EF0AF40A20A4B200F0EF9A /* com_scriptographer_ai_CharacterStyle.cpp */,
 				91EF0AF00A20A4B200F0EF9A /* com_scriptographer_ai_Document.cpp */,
 				91EF0AF10A20A4B200F0EF9A /* com_scriptographer_ai_Curve.cpp */,
-				91EF0AE00A20A4B200F0EF9A /* com_scriptographer_ai_MenuItem.cpp */,
-				91EF0AE10A20A4B200F0EF9A /* com_scriptographer_ai_MenuGroup.cpp */,
 				91EF0AE20A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp */,
 				91EF0AE30A20A4B200F0EF9A /* com_scriptographer_ai_LayerList.cpp */,
 				91EF0AE40A20A4B200F0EF9A /* com_scriptographer_ai_Layer.cpp */,
@@ -1091,6 +1085,9 @@
 		91EF0B520A20A4CB00F0EF9A /* ADM */ = {
 			isa = PBXGroup;
 			children = (
+				91E9C52A0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp */,
+				91E9C52B0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp */,
+				91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */,
 				91EF0AEE0A20A4B200F0EF9A /* com_scriptographer_adm_ModalDialog.cpp */,
 				91EF0AEF0A20A4B200F0EF9A /* com_scriptographer_adm_Image.cpp */,
 				91EF0AF20A20A4B200F0EF9A /* com_scriptographer_adm_ToggleItem.cpp */,
@@ -1121,7 +1118,6 @@
 				91EF0B520A20A4CB00F0EF9A /* ADM */,
 				91EF0B4E0A20A4B900F0EF9A /* AI */,
 				91EF0B040A20A4B200F0EF9A /* com_scriptographer_ScriptographerEngine.cpp */,
-				91EF0B050A20A4B200F0EF9A /* com_scriptographer_Key.cpp */,
 				91EF0B030A20A4B200F0EF9A /* registerNatives.cpp */,
 			);
 			name = JNI;
@@ -1232,7 +1228,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91CA85580A21BE87005E0C1A /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1240,7 +1235,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91193ACE0A2DF3B100B0E3A7 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1248,7 +1242,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91193B250A2DF3C600B0E3A7 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1256,7 +1249,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				91D4E8E90A251CFA002888A3 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1311,8 +1303,6 @@
 				91EF0AD40A20A40A00F0EF9A /* IText.cpp in Sources */,
 				91EF0AD50A20A40A00F0EF9A /* IThrowException.cpp in Sources */,
 				91EF0B2B0A20A4B200F0EF9A /* com_scriptographer_ai_CharacterStyle.cpp in Sources */,
-				91EF0B170A20A4B200F0EF9A /* com_scriptographer_ai_MenuItem.cpp in Sources */,
-				91EF0B180A20A4B200F0EF9A /* com_scriptographer_ai_MenuGroup.cpp in Sources */,
 				91EF0B190A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp in Sources */,
 				91EF0B1A0A20A4B200F0EF9A /* com_scriptographer_ai_LayerList.cpp in Sources */,
 				91EF0B1B0A20A4B200F0EF9A /* com_scriptographer_ai_Layer.cpp in Sources */,
@@ -1345,7 +1335,6 @@
 				91EF0B380A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp in Sources */,
 				91EF0B390A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp in Sources */,
 				91EF0B3B0A20A4B200F0EF9A /* com_scriptographer_ScriptographerEngine.cpp in Sources */,
-				91EF0B3C0A20A4B200F0EF9A /* com_scriptographer_Key.cpp in Sources */,
 				91EF0B3D0A20A4B200F0EF9A /* com_scriptographer_adm_HierarchyList.cpp in Sources */,
 				91EF0B3E0A20A4B200F0EF9A /* com_scriptographer_adm_ListItem.cpp in Sources */,
 				91EF0B3F0A20A4B200F0EF9A /* com_scriptographer_adm_Tracker.cpp in Sources */,
@@ -1365,6 +1354,9 @@
 				91EF0B4D0A20A4B200F0EF9A /* com_scriptographer_adm_TextItem.cpp in Sources */,
 				91EF0B220A20A4B200F0EF9A /* com_scriptographer_ai_ParagraphStyle.cpp in Sources */,
 				91EF0B3A0A20A4B200F0EF9A /* registerNatives.cpp in Sources */,
+				91DEF0DA0A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */,
+				91E9C5300A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp in Sources */,
+				91E9C5310A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1381,8 +1373,6 @@
 				91193AD60A2DF3B100B0E3A7 /* IText.cpp in Sources */,
 				91193AD70A2DF3B100B0E3A7 /* IThrowException.cpp in Sources */,
 				91193AD80A2DF3B100B0E3A7 /* com_scriptographer_ai_CharacterStyle.cpp in Sources */,
-				91193AD90A2DF3B100B0E3A7 /* com_scriptographer_ai_MenuItem.cpp in Sources */,
-				91193ADA0A2DF3B100B0E3A7 /* com_scriptographer_ai_MenuGroup.cpp in Sources */,
 				91193ADB0A2DF3B100B0E3A7 /* com_scriptographer_ai_LiveEffect.cpp in Sources */,
 				91193ADC0A2DF3B100B0E3A7 /* com_scriptographer_ai_LayerList.cpp in Sources */,
 				91193ADD0A2DF3B100B0E3A7 /* com_scriptographer_ai_Layer.cpp in Sources */,
@@ -1415,7 +1405,6 @@
 				91193AF80A2DF3B100B0E3A7 /* com_scriptographer_ai_Timer.cpp in Sources */,
 				91193AF90A2DF3B100B0E3A7 /* com_scriptographer_ai_TextStoryList.cpp in Sources */,
 				91193AFA0A2DF3B100B0E3A7 /* com_scriptographer_ScriptographerEngine.cpp in Sources */,
-				91193AFB0A2DF3B100B0E3A7 /* com_scriptographer_Key.cpp in Sources */,
 				91193AFC0A2DF3B100B0E3A7 /* com_scriptographer_adm_HierarchyList.cpp in Sources */,
 				91193AFD0A2DF3B100B0E3A7 /* com_scriptographer_adm_ListItem.cpp in Sources */,
 				91193AFE0A2DF3B100B0E3A7 /* com_scriptographer_adm_Tracker.cpp in Sources */,
@@ -1435,6 +1424,9 @@
 				91193B0C0A2DF3B100B0E3A7 /* com_scriptographer_adm_TextItem.cpp in Sources */,
 				91193B0D0A2DF3B100B0E3A7 /* com_scriptographer_ai_ParagraphStyle.cpp in Sources */,
 				91193B0E0A2DF3B100B0E3A7 /* registerNatives.cpp in Sources */,
+				91DEF0DC0A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */,
+				91E9C52C0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp in Sources */,
+				91E9C52D0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1449,8 +1441,6 @@
 				91193B2B0A2DF3C600B0E3A7 /* IText.cpp in Sources */,
 				91193B2C0A2DF3C600B0E3A7 /* IThrowException.cpp in Sources */,
 				91193B2D0A2DF3C600B0E3A7 /* com_scriptographer_ai_CharacterStyle.cpp in Sources */,
-				91193B2E0A2DF3C600B0E3A7 /* com_scriptographer_ai_MenuItem.cpp in Sources */,
-				91193B2F0A2DF3C600B0E3A7 /* com_scriptographer_ai_MenuGroup.cpp in Sources */,
 				91193B300A2DF3C600B0E3A7 /* com_scriptographer_ai_LiveEffect.cpp in Sources */,
 				91193B310A2DF3C600B0E3A7 /* com_scriptographer_ai_LayerList.cpp in Sources */,
 				91193B320A2DF3C600B0E3A7 /* com_scriptographer_ai_Layer.cpp in Sources */,
@@ -1483,7 +1473,6 @@
 				91193B4D0A2DF3C600B0E3A7 /* com_scriptographer_ai_Timer.cpp in Sources */,
 				91193B4E0A2DF3C600B0E3A7 /* com_scriptographer_ai_TextStoryList.cpp in Sources */,
 				91193B4F0A2DF3C600B0E3A7 /* com_scriptographer_ScriptographerEngine.cpp in Sources */,
-				91193B500A2DF3C600B0E3A7 /* com_scriptographer_Key.cpp in Sources */,
 				91193B510A2DF3C600B0E3A7 /* com_scriptographer_adm_HierarchyList.cpp in Sources */,
 				91193B520A2DF3C600B0E3A7 /* com_scriptographer_adm_ListItem.cpp in Sources */,
 				91193B530A2DF3C600B0E3A7 /* com_scriptographer_adm_Tracker.cpp in Sources */,
@@ -1504,6 +1493,9 @@
 				91193B620A2DF3C600B0E3A7 /* com_scriptographer_ai_ParagraphStyle.cpp in Sources */,
 				91193B630A2DF3C600B0E3A7 /* registerNatives.cpp in Sources */,
 				91193B640A2DF3C600B0E3A7 /* MachO_CFM_Glue.cpp in Sources */,
+				91DEF0D90A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */,
+				91E9C52E0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp in Sources */,
+				91E9C52F0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1518,8 +1510,6 @@
 				91D4E94A0A251DF7002888A3 /* IText.cpp in Sources */,
 				91D4E94B0A251DF7002888A3 /* IThrowException.cpp in Sources */,
 				91D4E8F30A251CFA002888A3 /* com_scriptographer_ai_CharacterStyle.cpp in Sources */,
-				91D4E8F40A251CFA002888A3 /* com_scriptographer_ai_MenuItem.cpp in Sources */,
-				91D4E8F50A251CFA002888A3 /* com_scriptographer_ai_MenuGroup.cpp in Sources */,
 				91D4E8F60A251CFA002888A3 /* com_scriptographer_ai_LiveEffect.cpp in Sources */,
 				91D4E8F70A251CFA002888A3 /* com_scriptographer_ai_LayerList.cpp in Sources */,
 				91D4E8F80A251CFA002888A3 /* com_scriptographer_ai_Layer.cpp in Sources */,
@@ -1552,7 +1542,6 @@
 				91D4E9130A251CFA002888A3 /* com_scriptographer_ai_Timer.cpp in Sources */,
 				91D4E9140A251CFA002888A3 /* com_scriptographer_ai_TextStoryList.cpp in Sources */,
 				91D4E9150A251CFA002888A3 /* com_scriptographer_ScriptographerEngine.cpp in Sources */,
-				91D4E9160A251CFA002888A3 /* com_scriptographer_Key.cpp in Sources */,
 				91D4E9170A251CFA002888A3 /* com_scriptographer_adm_HierarchyList.cpp in Sources */,
 				91D4E9180A251CFA002888A3 /* com_scriptographer_adm_ListItem.cpp in Sources */,
 				91D4E9190A251CFA002888A3 /* com_scriptographer_adm_Tracker.cpp in Sources */,
@@ -1573,22 +1562,13 @@
 				91D4E9280A251CFA002888A3 /* com_scriptographer_ai_ParagraphStyle.cpp in Sources */,
 				91D4E9290A251CFA002888A3 /* registerNatives.cpp in Sources */,
 				916FC1440A25BFCC00BF8DE4 /* MachO_CFM_Glue.cpp in Sources */,
+				91DEF0DB0A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */,
+				91E9C5320A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp in Sources */,
+				91E9C5330A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXVariantGroup section */
-		91CA85530A21BE87005E0C1A /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				91CA85540A21BE87005E0C1A /* English */,
-			);
-			name = InfoPlist.strings;
-			path = resources/English.lproj;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		10ABD5FC098835E000A7EB07 /* Debug */ = {

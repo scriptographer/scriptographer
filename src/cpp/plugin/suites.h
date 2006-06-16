@@ -26,9 +26,101 @@
  *
  * $RCSfile: suites.h,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.2 $
+ * $Date: 2006/06/16 16:18:29 $
  */
+
+// Sweet Pea Suites
+#include "SPBlocks.h"
+#include "SPAccess.h"
+#include "SPInterf.h"
+#include "SPRuntme.h" 
+#include "SPSuites.h"
+#include "SPFiles.h"
+
+// ADM Suites
+#include "ADMBasic.h"
+#include "ADMDialog.h"
+#include "ADMHost.h"
+#include "ADMItem.h"
+#include "ADMIcon.h"
+#include "ADMImage.h"
+#include "ADMList.h"
+#include "ADMHierarchyList.h"
+#include "ADMDialogGroup.h"
+#include "ADMNotifier.h"
+#include "ADMEntry.h"
+#include "ADMListEntry.h"
+#include "ADMTracker.h"
+#include "ADMDrawer.h"
+#include "ADMResource.h"
+
+// System Suites
+#include "AIPlugin.h"
+#include "AIMDMemory.h"
+
+// General Suites
+#include "AIAnnotator.h"
+#include "AIArray.h"
+#include "AIArt.h"
+#include "AIArtSet.h"
+#include "AIBlock.h"
+#include "AIOverrideColorConversion.h"
+#include "AIColorConversion.h"
+#include "AIContext.h"
+#include "AICursorSnap.h"
+#include "AICustomColor.h"
+#include "AIDocument.h"
+#include "AIDocumentList.h"
+#include "AIDocumentView.h"
+#include "AIFileFormat.h"
+#include "AIFilter.h"
+#include "AIGroup.h"
+#include "AIHitTest.h"
+#include "AILayer.h"
+#include "AILiveEffect.h"
+#include "AIMask.h"
+#include "AIMatchingArt.h"
+#include "AIMenu.h"
+#include "AIMenuGroups.h"
+#include "AINotifier.h"
+#include "AIPaintStyle.h"
+#include "AIPath.h"
+#include "AIPathStyle.h"
+#include "AIPathConstruction.h"
+#include "AIPathfinder.h"
+#include "AIPathInterpolate.h"
+#include "AIPluginGroup.h"
+#include "AIRandom.h"
+#include "AIRaster.h"
+#include "AIRasterize.h"
+#include "AIRealMath.h"
+#include "AIRuntime.h"
+#include "AIShapeConstruction.h"
+#include "AITabletData.h"
+#include "AITag.h"
+#include "AITimer.h"
+#include "AITool.h"
+#include "AITransformArt.h"
+#include "AIUser.h"
+#include "AIUndo.h"
+#include "AIURL.h"
+
+#include "AIContext.h"
+#include "AIPreference.h"
+
+#if kPluginInterfaceVersion >= kAI11
+#include "AITextFrame.h"
+#include "IText.h"
+#include "AIATEPaint.h"
+#else
+#include "AIText.h"
+#include "AITextFaceStyle.h"
+#include "AITextLine.h"
+#include "AITextPath.h"
+#include "AITextRun.h"
+#include "AITextStream.h"
+#endif
 
 typedef struct {
 	char *name;
@@ -96,6 +188,7 @@ extern "C" AIArtSuite						*sAIArt;
 extern "C" AIArtSetSuite					*sAIArtSet;
 extern "C" AIATEPaintSuite					*sAIATEPaint;
 extern "C" AIAppContextSuite				*sAIAppContext;
+extern "C" AIBlendStyleSuite				*sAIBlendStyle;
 extern "C" AIColorConversionSuite			*sAIColorConversion;
 extern "C" AIOverrideColorConversionSuite	*sAIOverrideColorConversion;
 extern "C" AICursorSnapSuite				*sAICursorSnap;

@@ -11,7 +11,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Scriptographer</string>
 	<key>CFBundleVersion</key>
-	<string>2.0.014</string>
+	<string>@version@.@build.number@</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -25,10 +25,10 @@
 	<key>CFBundleDisplayName</key>
 	<string>Scriptographer</string>
 	<key>CFBundleGetInfoHTML</key>
-	<string>Scriptographer 2.0.014, Copyright © 2001-2006 by Jürg Lehni, http://www.scratchdisk.com. All rights reserved.</string>
+	<string>Scriptographer @version@.@build.number@, Copyright © @year@ by Jürg Lehni, http://www.scratchdisk.com. All rights reserved.</string>
 	<key>CFBundleGetInfoString</key>
-	<string>Scriptographer 2.0.014, Copyright © 2001-2006 by Jürg Lehni, http://www.scratchdisk.com. All rights reserved.</string>
+	<string>Scriptographer @version@.@build.number@, Copyright © @year@ by Jürg Lehni, http://www.scratchdisk.com. All rights reserved.</string>
 	<key>CFBundleShortVersionString</key>
-	<string>Scriptographer 2.0.014</string>
+	<string>Scriptographer @version@.@build.number@</string>
 </dict>
 </plist>

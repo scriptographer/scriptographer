@@ -123,6 +123,10 @@ p {
 	display: none;
 }
 
+.footer {
+	margin-top: 20px;
+}
+
 ul {
 	padding: 0;
 	margin: 0 0 0 14px;

@@ -5,7 +5,9 @@
 	<!-- =================================================================== -->
 	<target name="init">
 		<property name="Name" value="Scriptographer"/>
-		<property name="version" value="2.0"/>
+		<property name="version.major" value ="2" />
+		<property name="version.minor" value="0" />
+		<property name="version" value="${version.major}.${version.minor}"/>
 		<property name="project" value="scriptographer"/>
 		<tstamp>
 			<!-- get current year -->
@@ -23,6 +25,7 @@
 		<property name="build.jni" value="${home.dir}/src/cpp/jni"/>
 		<property name="build.classes" value="${build.dir}/classes"/>
 		<property name="build.packages" value="${home.dir}/build/packages"/>
+		<loadproperties srcfile="build.number"/>
 
 		<property name="docs.dir" value="${home.dir}/docs"/>
 		<property name="docs.api.dir" value="${docs.dir}/api"/>
@@ -33,17 +36,13 @@
 
 		<!-- this is used for importing comments from the gnu classpath file into the js documentation -->
 		<property name="build.src.jdk" value="${docs.dir}/src"/>
-		
-		<!-- The path to the install directory within Illustrator -->
-		<property name="install.dir" value="C:\Programme\Adobe\Illustrator CS\Plug-ins\Extensions\Scriptographer\java"/>
-		<property name="install.lib" value="${install.dir}/lib"/>
-		<property name="install.classes" value="${install.dir}/classes"/>
 
 		<property name="jar.name" value="${project}"/>
 		<property name="package.name" value="${project}-${version}"/>
 
 		<property name="debug" value="on"/>
 		<property name="optimize" value="on"/>
+		<property name="target" value="1.4"/>
 		<property name="deprecation" value="off"/>
 
 		<path id="build.classpath">
@@ -111,8 +110,10 @@
 			destdir="${build.classes}"
 			debug="${debug}"
 			deprecation="${deprecation}"
-			optimize="${optimize}">
+			optimize="${optimize}"
+			target="${target}">
 			<classpath refid="build.classpath" />
+			<exclude name="**/global.java"/>
 		</javac>
 	</target>
 
@@ -136,29 +137,32 @@
 
 
 	<!-- =================================================================== -->
-	<!-- Installs the jar files in the Illustrator directory                 -->
+	<!-- Increases the build.number by one. Execute only before publishing   -->
+	<!-- a new version.                                                      -->
 	<!-- =================================================================== -->
-	<target name="install" depends="jar">
-		<copy file="${build.dir}/loader.jar" todir="${install.dir}/"/>
-		<copy file="${build.lib}/${jar.name}.jar" todir="${install.lib}/"/>
+	<target name="buildnumber" depends="init">
+		<propertyfile file="build.number" comment="Build Number for Scriptographer Plugin.">
+			  <entry  key="build.number" type="int" default="000" operation="+" pattern="000" />
+		</propertyfile>
+		<property name="mac.resources" value="${home.dir}/build/mac/resources" />
+		<property name="win.resources" value="${home.dir}/build/win/resources" />
+		<copy file="${mac.resources}/Info.plist.in" tofile="${mac.resources}/Info.plist" overwrite="true" />
+		<replace file="${mac.resources}/Info.plist">
+			<replacefilter token="@version@" value="${version}" />
+			<replacefilter token="@build.number@" value="${build.number}" />
+			<replacefilter token="@year@" value="${year}" />
+		</replace>
+		<copy file="${win.resources}/plugin.rc.in" tofile="${win.resources}/plugin.rc" overwrite="true" />
+		<replace file="${win.resources}/plugin.rc">
+			<replacefilter token="@version.major@" value="${version.major}" />
+			<replacefilter token="@version.minor@" value="${version.minor}" />
+			<replacefilter token="@build.number@" value="${build.number}" />
+			<replacefilter token="@year@" value="${year}" />
+		</replace>
 	</target>
 
-
 	<!-- =================================================================== -->
-	<!-- Copy classes to the Illustrator directory                           -->
-	<!-- =================================================================== -->
-	<target name="copyclasses" depends="compile">
-		<copy todir="${install.classes}">
-			<fileset dir="${build.classes}">
-				<include name="**" />
-				<exclude name="**/loader/**"/>
-			</fileset>
-		</copy>
-	</target>
-
-
-	<!-- =================================================================== -->
-	<!-- Installs the jar files in the Illustrator directory                 -->
+	<!-- Creates install packages of Scriptographer for download             -->
 	<!-- =================================================================== -->
 	<target name="packages" depends="jar,jsdocs">
 		<mkdir dir="${build.packages}"/>
@@ -189,14 +193,14 @@
 		<!-- Macintosh -->
 		<exec executable="${home.dir}/build/mac/zipPackages.sh" os="Mac OS X" dir="${build.packages}">
 			<arg path="${home.dir}/build/mac/build"/>
-			<arg line="${date}"/>
+			<arg line="${version}.${build.number}"/>
 		</exec>
 
 		<!-- Windows -->
 		<exec executable="cmd.exe" os="Windows XP" dir="${build.packages}">
 			<arg line="/C ${home.dir}/build/win/zipPackages.bat"/>
 			<arg path="${home.dir}/build/win"/>
-			<arg line="${date}"/>
+			<arg line="${version}.${build.number}"/>
 		</exec>
 
 		<!-- remove everything except the archives -->
@@ -215,7 +219,7 @@
 			<classpath refid="build.classpath" />
 
 			<class name="com.scriptographer.ScriptographerEngine" />
-			<class name="com.scriptographer.Key" />
+			<class name="com.scriptographer.adm.Key" />
 
 			<class name="com.scriptographer.ai.Tool" />
 			<class name="com.scriptographer.ai.Art" />
@@ -235,8 +239,8 @@
 			<class name="com.scriptographer.ai.Color" />
 			<class name="com.scriptographer.ai.Pathfinder" />
 			<class name="com.scriptographer.ai.LiveEffect" />
-			<class name="com.scriptographer.ai.MenuItem" />
-			<class name="com.scriptographer.ai.MenuGroup" />
+			<class name="com.scriptographer.adm.MenuItem" />
+			<class name="com.scriptographer.adm.MenuGroup" />
 			<class name="com.scriptographer.ai.Timer" />
 			<class name="com.scriptographer.ai.Annotator" />
 			<class name="com.scriptographer.ai.TextFrame" />
@@ -311,7 +315,7 @@
 				windowtitle="${Name} ${version} API"
 				classpathref="build.classpath">
 		    <doctitle><![CDATA[${Name} ${version}]]></doctitle>
-		    <bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, Scratchdisk.com. All Rights Reserved.]]></bottom>
+		    <bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, <a href="http://www.scratchdisk.com" target="_blank">Scratchdisk.com</a>. All Rights Reserved.]]></bottom>
 		</javadoc>
 	</target>
 
@@ -328,7 +332,7 @@
 				windowtitle="${Name} ${version} API"
 				classpathref="build.classpath">
 		    <doctitle><![CDATA[${Name} ${version}]]></doctitle>
-			<bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, Scratchdisk.com. All Rights Reserved.]]></bottom>
+			<bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, <a href="http://www.scratchdisk.com" target="_blank">Scratchdisk.com</a>. All Rights Reserved.]]></bottom>
 			<doclet name="com.scriptographer.doclets.JSDoclet" path="${build.classes}">
 				<param name="-basepackage" value="com.scriptographer"/>
 				<param name="-filterclasses" value="
@@ -341,27 +345,34 @@
 					com.scriptographer.ScriptographerException
 					com.scriptographer.ai.DictionaryObject
 					com.scriptographer.ai.SegmentPoint
+					com.scriptographer.ai.Dictionary
+					com.scriptographer.ai.Event
+					com.scriptographer.ai.TabletValue
 					com.scriptographer.ai.Tool
 					com.scriptographer.aicw.FileFormat
 					com.scriptographer.adm.Notifier
 					com.scriptographer.adm.DialogGroupInfo
 					com.scriptographer.js.*
-					java.*
+					com.scriptographer.util.*
 					com.scriptographer.test.*
+					java.*
 				"/>
 				<param name="-packagesequence" value="
 					com.scriptographer.ai
 					com.scriptographer.adm
-					com.scriptographer
 				"/>
 				<param name="-methodfilter" value="
 					setWrapper
 					getWrapper
+					createWrapper
 					iterator
 					hashCode
 					destroyAll
 					disposeAll
+					removeAll
+					getInstance
 				"/>
+				<param name="-classorder" value="${home.dir}/build/java/classorder.properties"/>
 				<param name="-templates" value="${templates}"/>
 			</doclet>
 		</javadoc>

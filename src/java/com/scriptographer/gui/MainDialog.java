@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2006/06/07 16:44:20 $
+ * $Revision: 1.12 $
+ * $Date: 2006/06/16 16:18:31 $
  */
 
 package com.scriptographer.gui;
@@ -46,8 +46,8 @@ import java.util.Iterator;
 
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.*;
-import com.scriptographer.ai.MenuGroup;
-import com.scriptographer.ai.MenuItem;
+import com.scriptographer.adm.MenuGroup;
+import com.scriptographer.adm.MenuItem;
 import com.scriptographer.ai.Timer;
 import com.scriptographer.ai.Tool;
 

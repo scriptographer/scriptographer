@@ -2,7 +2,7 @@
 #include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
 #include "com_scriptographer_ScriptographerEngine.h"
-#include "com_scriptographer_Key.h"
+#include "com_scriptographer_adm_Key.h"
 
 /*
  * com.scriptographer.ScriptographerEngine
@@ -120,7 +120,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_showProgress
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_updateProgress(JNIEnv *env, jclass cls) {
 	try {
-		if (gEngine->isKeyDown(com_scriptographer_Key_VK_ESCAPE))
+		if (gEngine->isKeyDown(com_scriptographer_adm_Key_VK_ESCAPE))
 			return false;
 		sAIUser->UpdateProgress(jsProgressCurrent++, jsProgressMax++);
 		return !sAIUser->Cancel();

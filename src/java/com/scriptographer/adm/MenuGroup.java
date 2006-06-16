@@ -28,108 +28,114 @@
  * 
  * $RCSfile: MenuGroup.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.1 $
+ * $Date: 2006/06/16 16:18:30 $
  */
 
-package com.scriptographer.ai;
+package com.scriptographer.adm;
 
 import com.scriptographer.util.IntMap;
 
-public class MenuGroup extends AIObject {
+/*
+ * Theoretically MenuItem and MenuGroup would belong to the AI package, not ADM
+ * But as these are the only classes dealing with the interface there, they were
+ * moved here instead, where they make more sense.
+ */
+
+public class MenuGroup extends ADMObject {
 	// AIMenuGroups.h:
 	public static final MenuGroup
 		GROUP_ABOUT 							= new MenuGroup("About"),
 
-		GROUP_OPEN 							= new MenuGroup("Open Document"),
+		GROUP_OPEN 								= new MenuGroup("Open Document"),
 		GROUP_RECENT							= new MenuGroup("Recent Files"),
 		GROUP_CLOSE 							= new MenuGroup("Close Document"),
-		GROUP_SAVE 							= new MenuGroup("Save Document"),
-		GROUP_SAVE_FOR						= new MenuGroup("Save For"),
-		GROUP_IMPORT 						= new MenuGroup("Import"),
+		GROUP_SAVE 								= new MenuGroup("Save Document"),
+		GROUP_SAVE_FOR							= new MenuGroup("Save For"),
+		GROUP_IMPORT 							= new MenuGroup("Import"),
 		GROUP_PLACE 							= new MenuGroup("Place Document"),
-		GROUP_EXPORT 						= new MenuGroup("Export Document"),
+		GROUP_EXPORT 							= new MenuGroup("Export Document"),
 		GROUP_DOCUMENT_UTILITIES				= new MenuGroup("Document Utilities"),
-		GROUP_DOCUMENT_INTERCHANGE			= new MenuGroup("Document Interchange"),
-		GROUP_PRINT							= new MenuGroup("Print"),
-		GROUP_SEND							= new MenuGroup("Send Document"),
+		GROUP_DOCUMENT_INTERCHANGE				= new MenuGroup("Document Interchange"),
+		GROUP_PRINT								= new MenuGroup("Print"),
+		GROUP_SEND								= new MenuGroup("Send Document"),
 
-		GROUP_APPLICATION_UTILITIES			= new MenuGroup("Application Utilities"),
-		GROUP_QUIT							= new MenuGroup("Quit"),
+		GROUP_APPLICATION_UTILITIES				= new MenuGroup("Application Utilities"),
+		GROUP_QUIT								= new MenuGroup("Quit"),
 
-		GROUP_UNDO							= new MenuGroup("Undo"),
+		GROUP_UNDO								= new MenuGroup("Undo"),
 		GROUP_PASTE_UTILITIES					= new MenuGroup("Paste Utilities"),
-		GROUP_SELECT 						= new MenuGroup("Select"),			// Select menu- internal commands
+		GROUP_SELECT 							= new MenuGroup("Select"),			// Select menu- internal commands
 		GROUP_SELECT_EXTERNAL					= new MenuGroup("SelectExternal"),	// Select menu- external commands,
-		GROUP_EDITTEXT						= new MenuGroup("Edit Text"),			// Find/Replace, Spell Check
-		GROUP_EDIT 							= new MenuGroup("Edit"),
-		GROUP_PRESETS						= new MenuGroup("Presets Group"),		// PDF, Transparency, Print presets
+		GROUP_EDITTEXT							= new MenuGroup("Edit Text"),			// Find/Replace, Spell Check
+		GROUP_EDIT 								= new MenuGroup("Edit"),
+		GROUP_PRESETS							= new MenuGroup("Presets Group"),		// PDF, Transparency, Print presets
 
-		GROUP_SAME							= new MenuGroup("Same"),
-		GROUP_SELECT_OBJECT					= new MenuGroup("SelectObject"),
+		GROUP_SAME								= new MenuGroup("Same"),
+		GROUP_SELECT_OBJECT						= new MenuGroup("SelectObject"),
 
-		GROUP_PREFERENCES					= new MenuGroup("Preferences"),
+		GROUP_PREFERENCES						= new MenuGroup("Preferences"),
 		GROUP_EDIT_UTILITIES					= new MenuGroup("Edit Utilities"),
 		GROUP_CLIPBOARD 						= new MenuGroup("Clipboard"),
 
 		GROUP_REPEAT							= new MenuGroup("Repeat"),
-		GROUP_ARRANGE_TRANSFORM				= new MenuGroup("Arrange Transform"),
-		GROUP_ARRANGE_MOVE					= new MenuGroup("Arrange Move"),
+		GROUP_ARRANGE_TRANSFORM					= new MenuGroup("Arrange Transform"),
+		GROUP_ARRANGE_MOVE						= new MenuGroup("Arrange Move"),
 		GROUP_ARRANGE_GROUP 					= new MenuGroup("Arrange Group"),
 		GROUP_ARRANGE_ATTRIBUTES				= new MenuGroup("Arrange Attributes"),
 
-		GROUP_VIEW_MODE						= new MenuGroup("View Mode"),
+		GROUP_VIEW_MODE							= new MenuGroup("View Mode"),
 		GROUP_VIEW_ADORNMENTS					= new MenuGroup("View Adornments"),
-		GROUP_VIEW 							= new MenuGroup("View"),
+		GROUP_VIEW 								= new MenuGroup("View"),
 		GROUP_VIEW_UTILITIES 					= new MenuGroup("View Utilities"),
-		GROUP_VIEW_EXTENSION 					= new MenuGroup("View Extension"),
+		GROUP_VIEW_EXTENSION	 				= new MenuGroup("View Extension"),
 
-		GROUP_OBJECT_ATTRIBUTES				= new MenuGroup("Object Attributes"),
-		GROUP_OBJECT_UTILITIES				= new MenuGroup("Object Utilities"),
-		GROUP_OBJECTS 						= new MenuGroup("Objects"),
-		GROUP_OBJECT_PATHS 					= new MenuGroup("Objects Paths"),
-		GROUP_OBJECT_PATHS_POPUP 				= new MenuGroup("Objects Paths Popup"),
-		GROUP_LOCK							= new MenuGroup("Lock"),
-		GROUP_HIDE							= new MenuGroup("Hide"),
+		GROUP_OBJECT_ATTRIBUTES					= new MenuGroup("Object Attributes"),
+		GROUP_OBJECT_UTILITIES					= new MenuGroup("Object Utilities"),
+		GROUP_OBJECTS 							= new MenuGroup("Objects"),
+		GROUP_OBJECT_PATHS 						= new MenuGroup("Objects Paths"),
+		GROUP_OBJECT_PATHS_POPUP	 			= new MenuGroup("Objects Paths Popup"),
+		GROUP_LOCK								= new MenuGroup("Lock"),
+		GROUP_HIDE								= new MenuGroup("Hide"),
 
-		GROUP_GUIDES 						= new MenuGroup("Guides"),
-		GROUP_MASK 							= new MenuGroup("Masks"),
-		GROUP_COMPOUNDPATHS					= new MenuGroup("Compound Paths"),
+		GROUP_GUIDES 							= new MenuGroup("Guides"),
+		GROUP_MASK 								= new MenuGroup("Masks"),
+		GROUP_COMPOUNDPATHS						= new MenuGroup("Compound Paths"),
 		GROUP_CROPMARKS 						= new MenuGroup("Crop Marks"),
 		GROUP_GRAPHS							= new MenuGroup("Graphs"),
-		GROUP_BLOCKS 						= new MenuGroup("Blocks"),
-		GROUP_WRAP 							= new MenuGroup("Wrap"),
-		GROUP_TYPE_TEXTPATH					= new MenuGroup("Text Path Type"),
-		GROUP_TYPE_ATTRIBUTES 				= new MenuGroup("Type Attributes"),
+		GROUP_BLOCKS 							= new MenuGroup("Blocks"),
+		GROUP_WRAP 								= new MenuGroup("Wrap"),
+		GROUP_TYPE_TEXTPATH						= new MenuGroup("Text Path Type"),
+		GROUP_TYPE_ATTRIBUTES 					= new MenuGroup("Type Attributes"),
 		GROUP_TYPE_PALETTES 					= new MenuGroup("Type Palettes"),
-		GROUP_TYPE_LAYOUT 					= new MenuGroup("Type Layout"),
+		GROUP_TYPE_LAYOUT 						= new MenuGroup("Type Layout"),
 		GROUP_TYPE_UTILITIES 					= new MenuGroup("Type Utilities"),
-		GROUP_TYPE_PLUGINS1					= new MenuGroup("Type Plugins1"),
-		GROUP_TYPE_PLUGINS2					= new MenuGroup("Type Plugins2"),
+		GROUP_TYPE_PLUGINS1						= new MenuGroup("Type Plugins1"),
+		GROUP_TYPE_PLUGINS2						= new MenuGroup("Type Plugins2"),
 		GROUP_TYPE_ASIAN_OPTIONS				= new MenuGroup("Type Asian Options"),
 
-		GROUP_TYPE_SIZE_UTILITIES 			= new MenuGroup("Type Size Utilities"),
+		GROUP_TYPE_SIZE_UTILITIES 				= new MenuGroup("Type Size Utilities"),
 		GROUP_TYPE_SIZE 						= new MenuGroup("Type Size"),
 		GROUP_TYPE_LEADING_UTILITIES			= new MenuGroup("Type Leading Utilities"),
-		GROUP_TYPE_LEADING 					= new MenuGroup("Type Leading"),
+		GROUP_TYPE_LEADING 						= new MenuGroup("Type Leading"),
 		GROUP_TYPE_ALIGNMENT					= new MenuGroup("Type Alignment"),
 
-		GROUP_FILTER_UTILITIES				= new MenuGroup("Filter Utilities"),
+		GROUP_FILTER_UTILITIES					= new MenuGroup("Filter Utilities"),
 
-		GROUP_EFFECTS						= new MenuGroup("Effects"),
+		GROUP_EFFECTS							= new MenuGroup("Effects"),
 
-		GROUP_HELP 							= new MenuGroup("Help Menu"),
+		GROUP_HELP 								= new MenuGroup("Help Menu"),
 
 		// The following groups do not show up in the menu bar. They only
 		// show up in the keyboard shortcuts dialog.
 		GROUP_HIDDEN_OTHER_SELECT				= new MenuGroup("Hidden Other Select"),
-		GROUP_HIDDEN_OTHER_TEXT				= new MenuGroup("Hidden Other Text"),
+		GROUP_HIDDEN_OTHER_TEXT					= new MenuGroup("Hidden Other Text"),
 		GROUP_HIDDEN_OTHER_OBJECT				= new MenuGroup("Hidden Other Object"),
-		GROUP_HIDDEN_OTHER_PALETTE			= new MenuGroup("Hidden Other Palette"),
-		GROUP_HIDDEN_OTHER_MISC				= new MenuGroup("Hidden Other Misc"),
+		GROUP_HIDDEN_OTHER_PALETTE				= new MenuGroup("Hidden Other Palette"),
+		GROUP_HIDDEN_OTHER_MISC					= new MenuGroup("Hidden Other Misc"),
 
-		GROUP_WINDOW_UTILITIES 				= new MenuGroup("Window Utilities"),
-		GROUP_TOOL_PALETTES					= new MenuGroup("Tool Palettes"),
+		GROUP_WINDOW_UTILITIES 					= new MenuGroup("Window Utilities"),
+		GROUP_TOOL_PALETTES						= new MenuGroup("Tool Palettes"),
 		GROUP_WINDOW_LIBARIES					= new MenuGroup("Window Libraries"),
 
 		/////////////////////////////////////////////////
@@ -145,29 +151,29 @@ public class MenuGroup extends AIObject {
 		//
 		/////////////////////////////////////////////////
 
-		GROUP_DOCUMENT_INFO					= new MenuGroup("AIPlugin Document Info"),
+		GROUP_DOCUMENT_INFO						= new MenuGroup("AIPlugin Document Info"),
 
-		GROUP_OBJECT_RASTER					= new MenuGroup("AIPlugin Object Raster"),
+		GROUP_OBJECT_RASTER						= new MenuGroup("AIPlugin Object Raster"),
 
 		GROUP_ARRANGE_TRANSFORM_MULTIPLE		= new MenuGroup("Arrange Multiple Transform"),
 		GROUP_ARRANGE_TRANSFORM_MULTIPLE_NEAR	= GROUP_ARRANGE_TRANSFORM,
 
 		GROUP_OBJECT_PATHS_POPOUT				= new MenuGroup("More Menus in the Object Path Popout"),
-		GROUP_OBJECT_PATHS_POPOUT_NEAR		= GROUP_OBJECT_PATHS_POPUP,
+		GROUP_OBJECT_PATHS_POPOUT_NEAR			= GROUP_OBJECT_PATHS_POPUP,
 
-		GROUP_DOCUMENT_SUPPORT				= new MenuGroup("AIPlugin Document Support"),
+		GROUP_DOCUMENT_SUPPORT					= new MenuGroup("AIPlugin Document Support"),
 
-		GROUP_ASSET_MANAGEMENT				= new MenuGroup("Adobe Plugin Asset Mgmt"),
-		GROUP_WORKGROUP						= GROUP_DOCUMENT_SUPPORT,
+		GROUP_ASSET_MANAGEMENT					= new MenuGroup("Adobe Plugin Asset Mgmt"),
+		GROUP_WORKGROUP							= GROUP_DOCUMENT_SUPPORT,
 
 		//Scripting Plugin
-		GROUP_SCRIPTS 						= new MenuGroup("ScriptsMenuGroup");
+		GROUP_SCRIPTS 							= new MenuGroup("ScriptsMenuGroup");
 
 	public static final int
-		OPTION_NONE							= 0,
+		OPTION_NONE								= 0,
 		OPTION_SORTED_ALPHABETICALLY			= 1 << 0,
-		OPTION_SEPERATOR_ABOVE 				= 1 << 1,
-		OPTION_SEPARATOR_BELOW				= 1 << 2;
+		OPTION_SEPERATOR_ABOVE 					= 1 << 1,
+		OPTION_SEPARATOR_BELOW					= 1 << 2;
 
 	protected String name;
 
@@ -203,7 +209,7 @@ public class MenuGroup extends AIObject {
 	 */
 	public MenuGroup(String name, MenuItem parent, int options) {
 		this(name);
-		// if parent already has a subGroup, append this one after:
+		// if parent already has a subGroup, appendChild this one after:
 		MenuGroup subGroup = parent.getSubGroup();
 		if (subGroup != null) {
 			handle = nativeCreate(this.name, subGroup.name, 0, options);
@@ -220,7 +226,7 @@ public class MenuGroup extends AIObject {
 	/**
 	 * Used in wrapGroupHandle
 	 *
-	 * @param groupHandle
+	 * @param handle
 	 * @param name
 	 */
 	protected MenuGroup(int handle, String name) {
@@ -231,10 +237,6 @@ public class MenuGroup extends AIObject {
 
 	/**
 	 * Called from the native environment to wrap a MenuGroup:
-	 *
-	 * @param groupHandle
-	 * @param name
-	 * @return
 	 */
 	protected static MenuGroup wrapGroupHandle(int handle, String name) {
 		MenuGroup group = getGroup(handle);

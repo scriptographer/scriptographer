@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.30 $
- * $Date: 2006/06/07 16:44:19 $
+ * $Revision: 1.31 $
+ * $Date: 2006/06/16 16:18:26 $
  */
 
 #include "stdHeaders.h"
@@ -555,13 +555,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_LiveEffect_onCalculate = getStaticMethodID(env, cls_LiveEffect, "onCalculate", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
 	mid_LiveEffect_onGetInputType = getStaticMethodID(env, cls_LiveEffect, "onGetInputType", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
 	
-	cls_MenuItem = loadClass(env, "com/scriptographer/ai/MenuItem");
-	mid_MenuItem_wrapHandle =getStaticMethodID(env, cls_MenuItem, "wrapHandle", "(ILjava/lang/String;Ljava/lang/String;ILjava/lang/String;)Lcom/scriptographer/ai/MenuItem;");
-	mid_MenuItem_onClick = getStaticMethodID(env, cls_MenuItem, "onClick", "(I)V");
-	mid_MenuItem_onUpdate = getStaticMethodID(env, cls_MenuItem, "onUpdate", "(IIII)V");
-
-	cls_MenuGroup = loadClass(env, "com/scriptographer/ai/MenuGroup");
-	
 	cls_Timer = loadClass(env, "com/scriptographer/ai/Timer");
 	cid_Timer = getConstructorID(env, cls_Timer, "(I)V");
 	mid_Timer_onExecute = getStaticMethodID(env, cls_Timer, "onExecute", "(I)V");
@@ -627,6 +620,13 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_Tracker = loadClass(env, "com/scriptographer/adm/Tracker");
 	mid_Tracker_onTrack = getMethodID(env, cls_Tracker, "onTrack", "(Lcom/scriptographer/adm/NotificationHandler;IIIIIICCJ)Z");
+	
+	cls_MenuItem = loadClass(env, "com/scriptographer/adm/MenuItem");
+	mid_MenuItem_wrapHandle = getStaticMethodID(env, cls_MenuItem, "wrapHandle", "(ILjava/lang/String;Ljava/lang/String;ILjava/lang/String;)Lcom/scriptographer/adm/MenuItem;");
+	mid_MenuItem_onClick = getStaticMethodID(env, cls_MenuItem, "onClick", "(I)V");
+	mid_MenuItem_onUpdate = getStaticMethodID(env, cls_MenuItem, "onUpdate", "(IIII)V");
+	
+	cls_MenuGroup = loadClass(env, "com/scriptographer/adm/MenuGroup");
 }
 
 /**
@@ -1645,7 +1645,7 @@ AIMenuItemHandle ScriptographerEngine::getMenuItemHandle(JNIEnv *env, jobject ob
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	AIMenuItemHandle item = (AIMenuItemHandle) getIntField(env, obj, fid_AIObject_handle);
+	AIMenuItemHandle item = (AIMenuItemHandle) getIntField(env, obj, fid_ADMObject_handle);
 	if (item == NULL)
 		throw new StringException("Object is not wrapping a menu item handle.");
 	return item;
@@ -1661,7 +1661,7 @@ AIMenuGroup ScriptographerEngine::getMenuGroupHandle(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	AIMenuGroup group = (AIMenuGroup) getIntField(env, obj, fid_AIObject_handle);
+	AIMenuGroup group = (AIMenuGroup) getIntField(env, obj, fid_ADMObject_handle);
 	if (group == NULL)
 		throw new StringException("Object is not wrapping a menu group handle.");
 	return group;

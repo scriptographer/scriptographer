@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_LiveEffect.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.7 $
+ * $Date: 2006/06/16 16:18:26 $
  */
 
 #include "StdHeaders.h"
@@ -69,7 +69,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_LiveEffect_nativeCreate(JNIEnv
 }
 
 /*
- * com.scriptographer.ai.MenuItem nativeAddMenuItem(String name, String category, String title)
+ * com.scriptographer.adm.MenuItem nativeAddMenuItem(String name, String category, String title)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeAddMenuItem(JNIEnv *env, jobject obj, jstring name, jstring category, jstring title) {
 	try {

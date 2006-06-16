@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.19 $
- * $Date: 2006/01/03 05:38:03 $
+ * $Revision: 1.20 $
+ * $Date: 2006/06/16 16:18:30 $
  */
 
 package com.scriptographer.ai;
@@ -181,6 +181,33 @@ public abstract class Art extends DictionaryObject {
 		// pending re-execution. On SetArtUserAttr), marks the art style dirty
 		// without making any other changes to the art or to the style.
 		ATTR_STYLE_IS_DIRTY = new Integer(0x00040000);
+
+	// AIBlendingModeValues:
+	public final static int
+		BLEND_NORMAL			= 0,
+		BLEND_MULTIPLY			= 1,
+		BLEND_SCREEN			= 2,
+		BLEND_OVERLAY			= 3,
+		BLEND_SOFTLIGHT			= 4,
+		BLEND_HARDLIGHT			= 5,
+		BLEND_COLORDODGE		= 6,
+		BLEND_COLORBURN			= 7,
+		BLEND_DARKEN			= 8,
+		BLEND_LIGHTEN			= 9,
+		BLEND_DIFFERENCE		= 10,
+		BLEND_EXCLUSION			= 11,
+		BLEND_HUE				= 12,
+		BLEND_SATURATION		= 13,
+		BLEND_COLOR				= 14,
+		BLEND_LUMINOSITY		= 15,
+		BLEND_NUMS				= 16;
+
+	// AIKnockout:
+	public final static int
+		KNOCKOUT_UNKNOWN	= -1,
+		KNOCKOUT_OFF		= 0,
+		KNOCKOUT_ON			= 1,
+		KNOCKOUT_INHERIT	= 2;
 
 	/**
 	 * Creates an Art object that wraps an existing AIArtHandle. Make sure the
@@ -440,7 +467,44 @@ public abstract class Art extends DictionaryObject {
 	public void setHidden(boolean hidden) {
 		setAttribute(ATTR_HIDDEN.intValue(), hidden);
 	}
-	
+
+	/**
+	 * Returns the art object's blend mode.
+	 * @return any of Art.BLEND_*
+	 */
+	public native int getBlendMode();
+
+	/**
+	 * Set the art object's blend mode:
+	 * @param mode Art.BLEND_*
+	 */
+	public native void setBlendMode(int mode);
+
+	/**
+	 * @return the opacity of the art object as a value between 0 and 1.
+	 */
+	public native float getOpacity();
+
+	/**
+	 * Sets the art object's opacity.
+	 * @param opacity the opacity of the art object as a value between 0 and 1.
+	 */
+	public native void setOpacity(float opacity);
+
+	public native boolean getIsolated();
+
+	public native void setIsolated(boolean isolated);
+
+	public native boolean getKnockout();
+
+	public native boolean getKnockoutInherited();
+
+	public native void setKnockout(int knockout);
+
+	public native boolean getAlphaIsShape();
+
+	public native void setAlphaIsShape(boolean isShape);
+
 	public native boolean isValid();
 
 	// for text
@@ -457,7 +521,7 @@ public abstract class Art extends DictionaryObject {
 	 */
 
 	// TODO: consider renaming!
-	public native boolean append(Art art);
+	public native boolean appendChild(Art art);
 	
 	/**
 	 * 

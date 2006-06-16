@@ -299,7 +299,7 @@ function createJniBodies(srcDir, endsWithMask) {
 				}
 				jniDecl += ')';
 				
-				// now if we're appending to an existing file, only append this function if there is not alreaddy a body for it.
+				// now if we're appending to an existing file, only appendChild this function if there is not alreaddy a body for it.
 				// functions that have changed in the meantime will be appended again, causing a compiler-error that then can be
 				// corrected manually.
 				

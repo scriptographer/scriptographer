@@ -28,11 +28,11 @@
  * 
  * $RCSfile: MenuItem.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.1 $
+ * $Date: 2006/06/16 16:18:30 $
  */
 
-package com.scriptographer.ai;
+package com.scriptographer.adm;
 
 import com.scriptographer.js.Unsealed;
 import com.scriptographer.js.FunctionHelper;
@@ -40,7 +40,13 @@ import com.scriptographer.util.IntMap;
 
 import java.util.Iterator;
 
-public class MenuItem extends AIObject implements Unsealed {
+/*
+ * Theoretically MenuItem and MenuGroup would belong to the AI package, not ADM
+ * But as these are the only classes dealing with the interface there, they were
+ * moved here instead, where they make more sense.
+ */
+
+public class MenuItem extends ADMObject implements Unsealed {
 	public final static int
 		OPTION_NONE 			= 0,
 		OPTION_WANTS_UPDATE 	= 1 << 0,

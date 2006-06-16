@@ -26,8 +26,8 @@
  *
  * $RCSfile: suites.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/05/30 22:46:45 $
+ * $Revision: 1.3 $
+ * $Date: 2006/06/16 16:18:29 $
  */
  
 #include "stdHeaders.h"
@@ -53,6 +53,7 @@ extern "C" {
 	AIArtSetSuite					*sAIArtSet;
 	AIATEPaintSuite					*sAIATEPaint;
 	AIAppContextSuite				*sAIAppContext;
+	AIBlendStyleSuite				*sAIBlendStyle;
 	AIColorConversionSuite			*sAIColorConversion;
 	AIOverrideColorConversionSuite	*sAIOverrideColorConversion;
 	AICursorSnapSuite				*sAICursorSnap;
@@ -147,6 +148,7 @@ ImportSuite startup[] = {
 	kSPFilesSuite, kSPFilesSuiteVersion, &sSPFiles, sizeof(SPFilesSuite),
 	kSPPluginsSuite, kSPPluginsSuiteVersion, &sSPPlugins, sizeof(SPPluginsSuite),
 	kAIAppContextSuite, kAIAppContextSuiteVersion, &sAIAppContext, sizeof(AIAppContextSuite),
+	kAIBlendStyleSuite, kAIBlendStyleSuiteVersion, &sAIBlendStyle, sizeof(AIBlendStyleSuite),
 	kAINotifierSuite, kAINotifierVersion, &sAINotifier, sizeof(AINotifierSuite),
 	kAIToolSuite, kAIToolVersion, &sAITool, sizeof(AIToolSuite),
 	kAIUserSuite, kAIUserSuiteVersion, &sAIUser, sizeof(AIUserSuite),

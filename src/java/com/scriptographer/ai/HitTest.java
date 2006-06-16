@@ -28,13 +28,18 @@
  *
  * $RCSfile: HitTest.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/11/03 00:00:15 $
+ * $Revision: 1.5 $
+ * $Date: 2006/06/16 16:18:30 $
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.js.WrappableObject;
+
+/**
+ * HitTest objects are returned by {@link Document#hitTest} and {@link Path#hitTest}.
+ * They represent the result of a hit test, which is reflected in the object's properties as described bellow.
+ */
 
 public class HitTest extends WrappableObject {
 	// AIHitRequest
@@ -222,6 +227,10 @@ public class HitTest extends WrappableObject {
 		this.point = point;
 	}
 
+	/**
+	 * Returns the art object which was hit.
+	 * @return
+	 */
 	public Art getArt() {
 		return art;
 	}

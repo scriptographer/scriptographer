@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Dialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.15 $
+ * $Date: 2006/06/16 16:18:25 $
  */
 
 #include "stdHeaders.h"
@@ -813,4 +813,28 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_getPaletteLayoutBou
 		return gEngine->convertRectangle(env, &bounds);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
+}
+
+/*
+ * void alert(java.lang.String message)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_alert(JNIEnv *env, jclass cls, jstring message) {
+	try {
+		ASUnicode *text = gEngine->convertString_ASUnicode(env, message);
+		sADMBasic->MessageAlertW(text);
+		delete text;
+	} EXCEPTION_CONVERT(env)
+}
+
+/*
+ * boolean confirm(java.lang.String message)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Dialog_confirm(JNIEnv *env, jclass cls, jstring message) {
+	try {
+		ASUnicode *text = gEngine->convertString_ASUnicode(env, message);
+		ADMAnswer ret = sADMBasic->YesNoAlertW(text);
+		delete text;
+		return ret == kADMYesAnswer;
+	} EXCEPTION_CONVERT(env)
+	return JNI_FALSE;
 }

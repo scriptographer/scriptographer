@@ -28,8 +28,8 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/04/30 14:37:48 $
+ * $Revision: 1.10 $
+ * $Date: 2006/06/16 16:18:29 $
  */
 
 package com.scriptographer.adm;
@@ -822,13 +822,21 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 
 	public static native Rectangle getPaletteLayoutBounds();
 
-	/**
+	public static native void alert(String message);
+
+	public static native boolean confirm(String message);
+
+	public static Object[] prompt(String title, PromptItem[] items) {
+		return PromptDialog.prompt(title, items);
+	}
+
+	public static Object[] prompt(String title, Object[] items) {
+		return PromptDialog.prompt(title, items);
+	}
+
+	/*
 	 * This function is only here for the JS environment. From java, use
 	 * PromptDialog.prompt directly!
-	 * 
-	 * @param title
-	 * @param items
-	 * @return
 	 */
 	public static Object[] prompt(String title, NativeArray items) {
 		return PromptDialog.prompt(title, FunctionHelper.convertToArray(items));

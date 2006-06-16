@@ -28,11 +28,16 @@
  * 
  * $RCSfile: Key.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/10/18 15:31:15 $
+ * $Revision: 1.1 $
+ * $Date: 2006/06/16 16:18:29 $
  */
 
-package com.scriptographer;
+package com.scriptographer.adm;
+
+/*
+ * Technically, this is not linked to ADM. But as it makes the most sense
+ * in this package, it's here.
+ */
 
 public class Key {
 	public static final short
