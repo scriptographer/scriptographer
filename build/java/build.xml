@@ -171,10 +171,10 @@
 
 		<mkdir dir="${build.packages}/Scriptographer"/>
 		<mkdir dir="${build.packages}/Scriptographer/java"/>
-		<copy file="${build.dir}/loader.jar" todir="${build.packages}/Scriptographer/java"/>
-		<!-- libs -->
-		<copy todir="${build.packages}/Scriptographer/java/lib">
-			<fileset dir="${build.lib}">
+		<copy todir="${build.packages}/Scriptographer/java">
+			<fileset dir="${build.dir}">
+				<include name="**/loader.jar"/>
+				<include name="**/jvm.ini"/>
 				<include name="**/${jar.name}.jar"/>
 				<include name="**/js.jar"/>
 			</fileset>
@@ -186,8 +186,6 @@
 		<!-- scripts -->
 		<copy todir="${build.packages}/Scriptographer/scripts">
 			<fileset dir="${scripts.dir}">
-				<exclude name="**/old/**"/>
-				<exclude name="**/local/**"/>
 				<exclude name="**/*.ai"/>
 			</fileset>
 		</copy>
