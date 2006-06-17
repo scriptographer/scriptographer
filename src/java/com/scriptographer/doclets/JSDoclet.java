@@ -307,7 +307,7 @@ public class JSDoclet extends Doclet {
 		void printMember(PrintWriter writer, PrintWriter indexWriter, ClassDoc cd, String id, String title, String text, Tag[] tags) {
 			if (templates) {
 				writer.print("<% this.memberLink id=\"" + id + "\" %>");
-				indexWriter.print(", \"" + id + "\": { title: \"" + name() + "\", text: \"" + encodeJs(stripTags(getTags(cd, tags))) + "\" }");
+				indexWriter.print(", \"" + id + "\": { title: \"" + name() + "\", text: \"" + encodeJs(getTags(cd, tags)) + "\" }");
 			} else {
 				writer.print("<div id=\"" + id + "-link\" class=\"member-link\">");
 			}
@@ -1566,7 +1566,7 @@ public class JSDoclet extends Doclet {
 
 			printTags(writer, cd, cd.inlineTags(), "<p>", "</p>");
 			if (templates)
-				indexWriter.print("\"prototype\": { title: \"" + cd.name() + "\", text: \"" + encodeJs(stripTags(getTags(cd, cd.inlineTags()))) + "\" }");
+				indexWriter.print("\"prototype\": { title: \"" + cd.name() + "\", text: \"" + encodeJs(getTags(cd, cd.inlineTags())) + "\" }");
 
 			printSeeTags(writer, cd, cd.seeTags(), "<p><b>See also:</b> ", "</p>");
 
