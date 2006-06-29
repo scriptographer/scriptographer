@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.31 $
- * $Date: 2006/06/16 16:18:26 $
+ * $Revision: 1.32 $
+ * $Date: 2006/06/29 15:27:59 $
  */
 
 #include "stdHeaders.h"
@@ -85,13 +85,11 @@ void ScriptographerEngine::javaThread() {
 	// keep this thread alive until the JVM is to be destroyed. This needs
 	// to happen from the creation thread as well, otherwise JNI hangs endlessly:
 	MPWaitOnQueue(m_requestQueue, NULL, NULL, NULL, kDurationForever);
-	// now exit, and destroy the JavaVM. 
-	JavaVM *jvm = exit();
 	// now tell the caller that the engine can be deleted, before DestroyJavaVM is called,
 	// which may block the current thread until the end of the app.
 	MPNotifyQueue(m_responseQueue, NULL, NULL, NULL);
-	// Destroy the Virtual Machine
-	jvm->DestroyJavaVM();
+	// now exit, and destroy the JavaVM. 
+	exit();
 }
 
 #endif
@@ -144,9 +142,8 @@ ScriptographerEngine::~ScriptographerEngine() {
 		MPDeleteQueue(m_responseQueue);
 	} else 
 #endif
-	{	// call exit directly, as the machine was created in the main thread:
-		JavaVM *jvm = exit();
-		jvm->DestroyJavaVM();
+	{ // clean up:
+		exit();
 	}
 	gEngine = NULL;
 }
@@ -243,7 +240,7 @@ void ScriptographerEngine::init() {
 	options.add("-Xdebug");
 	options.add("-Xnoagent");
 	options.add("-Djava.compiler=NONE");
-	options.add("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n");
+	options.add("-Xrunjdwp:transport=dt_socket,address=8001,server=y,suspend=n");
 #endif
 
 	options.fillArgs(&args);
@@ -269,6 +266,11 @@ void ScriptographerEngine::init() {
 	// which is automatically generated from the JNI header files by jni.js
 	registerNatives(env);
 	initReflection(env);
+}
+
+void ScriptographerEngine::exit() {
+	m_javaVM->DetachCurrentThread();
+	m_javaVM->DestroyJavaVM();
 }
 
 /**
@@ -305,19 +307,6 @@ jstring ScriptographerEngine::reloadEngine() {
 	m_javaEngine = NULL;
 	initEngine();
 	return errors;
-}
-
-/**
- * Cleans up everything except destroying the m_javaVM, which has some problems
- * with the thread workaround on mac: It blocks until the main thread is done, which
- * is at the shutdown of the application.
- * The caller of exit() needs to call DestroyJavaVM on the returned JavaVM object after
- * having executed all other important functions, such as MPNotifyQueue...
- */ 
-JavaVM *ScriptographerEngine::exit() {
-	m_javaVM->DetachCurrentThread();
-	
-	return m_javaVM;
 }
 
 /**
@@ -566,6 +555,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_HitTest = loadClass(env, "com/scriptographer/ai/HitTest");
 	cid_HitTest = getConstructorID(env, cls_HitTest, "(ILcom/scriptographer/ai/Art;IFLcom/scriptographer/ai/Point;)V");
+
+	cls_Tracing = loadClass(env, "com/scriptographer/ai/Tracing");
+	mid_Tracing_markDirty = getMethodID(env, cls_Tracing, "markDirty", "()V");
 
 // ADM:
 

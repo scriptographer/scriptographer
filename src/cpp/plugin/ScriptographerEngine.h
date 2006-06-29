@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.24 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.25 $
+ * $Date: 2006/06/29 15:27:59 $
  */
 
 #include "jniMacros.h"
@@ -304,6 +304,9 @@ public:
 	
 	jclass cls_HitTest;
 	jmethodID cid_HitTest;
+	
+	jclass cls_Tracing;
+	jmethodID mid_Tracing_markDirty;
 
 // ADM:
 	jclass cls_ADMObject;
@@ -363,7 +366,7 @@ public:
 	~ScriptographerEngine();
 	
 	void init();
-	JavaVM *exit();
+	void exit();
 
 #ifdef MAC_ENV
 	void javaThread();
