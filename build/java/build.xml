@@ -224,7 +224,6 @@
 			<classpath refid="build.classpath" />
 
 			<class name="com.scriptographer.ScriptographerEngine" />
-			<class name="com.scriptographer.adm.Key" />
 
 			<class name="com.scriptographer.ai.Tool" />
 			<class name="com.scriptographer.ai.Art" />
@@ -244,8 +243,6 @@
 			<class name="com.scriptographer.ai.Color" />
 			<class name="com.scriptographer.ai.Pathfinder" />
 			<class name="com.scriptographer.ai.LiveEffect" />
-			<class name="com.scriptographer.adm.MenuItem" />
-			<class name="com.scriptographer.adm.MenuGroup" />
 			<class name="com.scriptographer.ai.Timer" />
 			<class name="com.scriptographer.ai.Annotator" />
 			<class name="com.scriptographer.ai.TextFrame" />
@@ -260,6 +257,7 @@
 			<class name="com.scriptographer.ai.FontList" />
 			<class name="com.scriptographer.ai.FontFamily" />
 			<class name="com.scriptographer.ai.FontWeight" />
+			<class name="com.scriptographer.ai.Tracing" />
 
 			<class name="com.scriptographer.adm.Notifier" />
 			<class name="com.scriptographer.adm.Dialog" />
@@ -282,6 +280,11 @@
 		   	<class name="com.scriptographer.adm.Drawer" />
 		   	<class name="com.scriptographer.adm.Image" />
 		   	<class name="com.scriptographer.adm.Tracker" />
+
+			<class name="com.scriptographer.adm.MenuItem" />
+			<class name="com.scriptographer.adm.MenuGroup" />
+
+			<class name="com.scriptographer.adm.Key" />
 		</javah>
 		<echo id="echo" level="info" />
 		<script language="javascript" src="jni.js">

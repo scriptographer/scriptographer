@@ -21,7 +21,7 @@ function getCompoundArea(obj, area) {
 }
 
 function initRaster() {
-	sel = activeDocument.getSelectedArt();
+	sel = activeDocument.getSelectedItems();
 	for (var i = 0; i < sel.length; i++) {
 		obj = sel[i];
 		if (raster == null && obj instanceof Raster) raster = obj;

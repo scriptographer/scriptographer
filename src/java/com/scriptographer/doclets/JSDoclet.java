@@ -1841,7 +1841,7 @@ public class JSDoclet extends Doclet {
 				if (Character.isLowerCase(name.charAt(0)) && !name.equals("global"))
 					path += "/index";
 				if (templates)
-					path = "/Documentation/" + path + "/";
+					path = "/Reference/" + path + "/";
 				else
 					path = base + path + ".html";
 				str += path;

@@ -1,8 +1,30 @@
+/*
 var length = 220;
 var radius1 = 30;
 var radius2 = 10;
-var position = 150;
+var position =150;
 var num = 2;
+*/
+/*
+var length = 220;
+var radius1 = 130;
+var radius2 = 32;
+var position = 101;
+var num = 8;
+*/
+/*
+var length = 220;
+var radius1 = 130;
+var radius2 = 64;
+var position = 101;
+var num = 16;
+*/
+
+var length = 220;
+var radius1 = 130;
+var radius2 = 64;
+var position = 221;
+var num = 16;
 
 values = Dialog.prompt("Enter Spirograph Values", [
 	{ value: length, description: "Length", width: 50 },

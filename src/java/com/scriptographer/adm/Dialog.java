@@ -28,8 +28,8 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2006/06/16 16:18:29 $
+ * $Revision: 1.11 $
+ * $Date: 2006/06/29 15:30:47 $
  */
 
 package com.scriptographer.adm;
@@ -197,6 +197,8 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		prefs.put("location", bounds.x + " " + bounds.y);
 		prefs.put("size", bounds.width + " " + bounds.height);
 		try {
+			// This is needed on Mac CS, as the JVM seems to not shoot down properly,
+			//and the prefs would then not be flushed to file otherwise.
 			prefs.flush();
 		} catch (BackingStoreException e) {
 			e.printStackTrace();
