@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.18 $
- * $Date: 2006/06/16 16:18:26 $
+ * $Revision: 1.19 $
+ * $Date: 2006/06/29 15:26:57 $
  */
  
 #include "stdHeaders.h"
@@ -787,6 +787,18 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_rasterize(JNIEnv *env, 
 			return gEngine->wrapArtHandle(env, raster);
 	} EXCEPTION_CONVERT(env)
 	return NULL;
+}
+
+/*
+ * void expand(int flags, int steps)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_expand(JNIEnv *env, jobject obj, jint flags, jint steps) {
+	try {
+		// commit pending changes first, before native expand is called!
+		gEngine->callStaticObjectMethod(env, gEngine->cls_CommitManager, gEngine->mid_CommitManager_commit, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		sAIExpand->Expand(art, flags, steps);
+	} EXCEPTION_CONVERT(env)
 }
 
 /*

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.20 $
- * $Date: 2006/06/16 16:18:30 $
+ * $Revision: 1.21 $
+ * $Date: 2006/06/29 15:26:57 $
  */
 
 package com.scriptographer.ai;
@@ -209,6 +209,45 @@ public abstract class Art extends DictionaryObject {
 		KNOCKOUT_ON			= 1,
 		KNOCKOUT_INHERIT	= 2;
 
+	public static final int 
+		TRANSFORM_OBJECTS			= 1 << 0,
+		TRANSFORM_FILL_GRADIENTS	= 1 << 1,
+		TRANSFORM_FILL_PATTERNS		= 1 << 2,
+		TRANSFORM_STROKE_PATTERNS	= 1 << 3,
+		TRANSFORM_LINES				= 1 << 4,
+		TRANSFORM_LINKED_MASKS		= 1 << 5,
+		TRANSFORM_CHILDREN			= 1 << 6,
+		TRANSFORM_SELECTION_ONLY	= 1 << 7,
+		// self defined:
+		TRANSFORM_DEEP				= 1 << 10;
+	
+	// AIArtOrder:
+	public final static int
+		ORDER_UNKNOWN = 0,
+		ORDER_BEFORE = 1,
+		ORDER_AFTER = 2,
+		ORDER_INSIDE = 3,
+		ORDER_ANCHESTOR = 4;
+	
+	// AIExpandFlagValue:
+	public final static int
+		EXPAND_PLUGINART	    = 0x0001,
+		EXPAND_TEXT			    = 0x0002,
+		EXPAND_STROKE		    = 0x0004,
+		EXPAND_PATTERN		    = 0x0008,
+		EXPAND_GRADIENTTOMESH   = 0x0010,
+		EXPAND_GRADIENTTOPATHS	= 0x0020,
+		EXPAND_SYMBOLINSTANCES	= 0x0040,
+	
+		EXPAND_ONEATATIME	    = 0x4000,
+		EXPAND_SHOWPROGRESS	    = 0x8000,
+		// By default objects that are locked such as those on a locked layer
+		// cannot be expanded. Setting this flag allows them to be expanded.
+		EXPAND_LOCKEDOBJECTS    = 0x10000,
+		// self defined
+		// TODO: add EXPAND_GRADIENTTOMESH or EXPAND_GRADIENTTOPATHS
+		EXPAND_ALL = EXPAND_PLUGINART | EXPAND_TEXT | EXPAND_STROKE | EXPAND_PATTERN | EXPAND_SYMBOLINSTANCES;
+
 	/**
 	 * Creates an Art object that wraps an existing AIArtHandle. Make sure the
 	 * right constructor is used (Path, Raster). Use wrapArtHandle instead of
@@ -286,6 +325,10 @@ public abstract class Art extends DictionaryObject {
 							break;
 					}
 					break;
+				case TYPE_PLUGIN:
+					if (Tracing.isTracing(artHandle))
+						art = new Tracing((long) artHandle, document);
+					break;
 				}
 		}
 		if (art != null) {
@@ -349,7 +392,7 @@ public abstract class Art extends DictionaryObject {
 		CommitManager.version++;
 	}
 	
-	private void changeHandle(int newHandle, int newDictionaryRef) {
+	protected void changeHandle(int newHandle, int newDictionaryRef) {
 		// remove the object at the old handle
 		if (handle != newHandle) {
 			artWrappers.remove(handle);
@@ -507,20 +550,6 @@ public abstract class Art extends DictionaryObject {
 
 	public native boolean isValid();
 
-	// for text
-	/*
-	 * {"textType", ART_TEXTTYPE, JSPROP_ENUMERATE},
-	 * {"matrix", ART_MATRIX, JSPROP_ENUMERATE},
-	 * {"dashOffset", ART_TEXTOFFSET, JSPROP_ENUMERATE},
-	 * {"wrapped", ART_TEXTWRAPPED, JSPROP_ENUMERATE},
-	 * {"orientation", ART_TEXTORIENTATION, JSPROP_ENUMERATE},
-	 * 
-	 * // for group
-	 * 
-	 * {"clipped", ART_CLIPPED, JSPROP_ENUMERATE},
-	 */
-
-	// TODO: consider renaming!
 	public native boolean appendChild(Art art);
 	
 	/**
@@ -530,17 +559,6 @@ public abstract class Art extends DictionaryObject {
 	 */
 	public native boolean moveAbove(Art art);
 	public native boolean moveBelow(Art art);
-
-	public static final int TRANSFORM_OBJECTS			= 1 << 0;
-	public static final int TRANSFORM_FILL_GRADIENTS	= 1 << 1;
-	public static final int TRANSFORM_FILL_PATTERNS		= 1 << 2;
-	public static final int TRANSFORM_STROKE_PATTERNS	= 1 << 3;
-	public static final int TRANSFORM_LINES				= 1 << 4;
-	public static final int TRANSFORM_LINKED_MASKS		= 1 << 5;
-	public static final int TRANSFORM_CHILDREN			= 1 << 6;
-	public static final int TRANSFORM_SELECTION_ONLY	= 1 << 7;
-	// self defined:
-	public static final int TRANSFORM_DEEP				= 1 << 10;
 
 	/**
 	 * Transforms the art object with custom flags to be set.
@@ -645,13 +663,20 @@ public abstract class Art extends DictionaryObject {
 		return rasterize(-1, 0, 4, -1, -1);
 	}
 	
-	// AIArtOrder:
-	public final static int
-		ORDER_UNKNOWN = 0,
-		ORDER_BEFORE = 1,
-		ORDER_AFTER = 2,
-		ORDER_INSIDE = 3,
-		ORDER_ANCHESTOR = 4;
+	/**
+	 * Breaks artwork up into individual parts and works just like calling
+	 * "expand" from the Object menu in Illustrator.
+	 * 
+	 * It outlines stroked lines, text objects, gradients, patterns, etc.
+	 * 
+	 * @param flags #EXPAND_*
+	 * @param steps the amount of steps for gradient, when the #EXPAND_GRADIENTTOPATHS flag is set
+	 */
+	public native void expand(int flags, int steps);
+
+	public void expand() {
+		expand(EXPAND_ALL, 0);
+	}
 	
 	public native int getOrder(Art art);
 	
@@ -676,8 +701,6 @@ public abstract class Art extends DictionaryObject {
 
 	/* TODO:
 	{"equals",			artEquals,				0},
-	{"clone",			artClone,				0},
-	{"isValid",			artIsValid,				0},
 	{"hasEqualPath",	artHasEqualPath,		1},
 	{"hasFill",			artHasFill,				0},
 	{"hasStroke",		artHasStroke,			0},
