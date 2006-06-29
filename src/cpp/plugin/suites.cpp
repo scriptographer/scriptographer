@@ -26,8 +26,8 @@
  *
  * $RCSfile: suites.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/06/16 16:18:29 $
+ * $Revision: 1.4 $
+ * $Date: 2006/06/29 15:27:29 $
  */
  
 #include "stdHeaders.h"
@@ -63,6 +63,7 @@ extern "C" {
 	AIDocumentListSuite				*sAIDocumentList;
 	AIDocumentViewSuite				*sAIDocumentView;
 	AIEntrySuite					*sAIEntry;
+	AIExpandSuite					*sAIExpand;
 	AIFileFormatSuite				*sAIFileFormat;
 	AIFilterSuite					*sAIFilter;
 	AIFontSuite						*sAIFont;
@@ -129,6 +130,8 @@ extern "C" {
 #if kPluginInterfaceVersion >= kAI12
 	AIFilePathSuite					*sAIFilePath;
 	AIUnicodeStringSuite			*sAIUnicodeString;
+	AITracingSuite					*sAITracing;
+	AITracingIPSuite				*sAITracingIP;
 #endif
 }
 
@@ -190,6 +193,7 @@ ImportSuite postStartup[] = {
 	kAIDocumentListSuite, kAIDocumentListSuiteVersion, &sAIDocumentList, sizeof(AIDocumentListSuite),
 	kAIDocumentViewSuite, kAIDocumentViewSuiteVersion, &sAIDocumentView, sizeof(AIDocumentViewSuite),
 	kAIEntrySuite, kAIEntryVersion, &sAIEntry, sizeof(AIEntrySuite),
+	kAIExpandSuite, kAIExpandSuiteVersion, &sAIExpand, sizeof(AIExpandSuite),
 	kAIFileFormatSuite, kAIFileFormatSuiteVersion, &sAIFileFormat, sizeof(AIFileFormatSuite),
 	kAIFilterSuite, kAIFilterVersion, &sAIFilter, sizeof(AIFilterSuite),
 	kAIFontSuite, kAIFontVersion, &sAIFont, sizeof(AIFontSuite),
@@ -219,6 +223,7 @@ ImportSuite postStartup[] = {
 	kAITransformArtSuite, kAITransformArtSuiteVersion, &sAITransformArt, sizeof(AITransformArtSuite),
 	kAIUndoSuite, kAIUndoSuiteVersion, &sAIUndo, sizeof(AIUndoSuite),
 	kAIURLSuite, kAIURLSuiteVersion, &sAIURL, sizeof(AIURLSuite),
+
 #if kPluginInterfaceVersion >= kAI11
 	kAITextFrameSuite, kAITextFrameSuiteVersion, &sAITextFrame, sizeof(AITextFrameSuite),
 	// Content of IMPORT_TEXT_SUITES, with added sizeof fields:
@@ -312,6 +317,8 @@ ImportSuite postStartup[] = {
 #if kPluginInterfaceVersion >= kAI12
 	kAIFilePathSuite, kAIFilePathSuiteVersion, &sAIFilePath, sizeof(AIFilePathSuite),
 	kAIUnicodeStringSuite, kAIUnicodeStringSuiteVersion, &sAIUnicodeString, sizeof(AIUnicodeStringSuite),
+	kAITracingSuite, kAITracingSuiteVersion, &sAITracing, sizeof(AITracingSuite),
+	kAITracingIPSuite, kAITracingIPSuiteVersion, &sAITracingIP, sizeof(AITracingIPSuite),
 #endif
 	
 	NULL, 0, NULL, 0

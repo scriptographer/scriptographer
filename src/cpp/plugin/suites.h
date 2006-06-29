@@ -26,8 +26,8 @@
  *
  * $RCSfile: suites.h,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/06/16 18:37:35 $
+ * $Revision: 1.4 $
+ * $Date: 2006/06/29 15:27:29 $
  */
 
 // Define versions so they can even be used when compiling for 10 or CS1:
@@ -85,6 +85,7 @@
 #include "AIDocument.h"
 #include "AIDocumentList.h"
 #include "AIDocumentView.h"
+#include "AIExpand.h"
 #include "AIFileFormat.h"
 #include "AIFilter.h"
 #include "AIGroup.h"
@@ -117,6 +118,10 @@
 #include "AIUser.h"
 #include "AIUndo.h"
 #include "AIURL.h"
+
+#if kPluginInterfaceVersion >= kAI12
+#include "AITracing.h"
+#endif
 
 #include "AIContext.h"
 #include "AIPreference.h"
@@ -229,6 +234,7 @@ extern "C" AIDocumentSuite					*sAIDocument;
 extern "C" AIDocumentListSuite				*sAIDocumentList;
 extern "C" AIDocumentViewSuite				*sAIDocumentView;
 extern "C" AIEntrySuite						*sAIEntry;
+extern "C" AIExpandSuite					*sAIExpand;
 extern "C" AIFileFormatSuite				*sAIFileFormat;
 extern "C" AIFilterSuite					*sAIFilter;
 extern "C" AIFontSuite						*sAIFont;
@@ -294,4 +300,6 @@ extern "C" AITextStreamSuite				*sAITextStream;
 #if kPluginInterfaceVersion >= kAI12
 extern "C" AIFilePathSuite					*sAIFilePath;
 extern "C" AIUnicodeStringSuite				*sAIUnicodeString;
+extern "C" AITracingSuite					*sAITracing;
+extern "C" AITracingIPSuite					*sAITracingIP;
 #endif
