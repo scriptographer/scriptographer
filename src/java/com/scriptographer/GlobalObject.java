@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.17 $
+ * $Date: 2006/06/29 15:24:48 $
  */
 
 package com.scriptographer;
@@ -68,7 +68,7 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, ListEntry.class);
 		new ExtendedJavaClass(this, HierarchyList.class);
 		new ExtendedJavaClass(this, HierarchyListEntry.class);
-		// all item classes:
+		// All item classes:
 		new ExtendedJavaClass(this, Frame.class);
 		new ExtendedJavaClass(this, ItemGroup.class);
 		new ExtendedJavaClass(this, List.class);
@@ -91,7 +91,7 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, PopupMenu.class);
 		new ExtendedJavaClass(this, SpinEdit.class);
 
-		// layout specific classes
+		// Layout specific classes
 		new ExtendedJavaClass(this, ItemContainer.class);
 		new ExtendedJavaClass(this, Spacer.class);
 		new ExtendedJavaClass(this, TableLayout.class);
@@ -138,6 +138,8 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, AreaText.class);
 		new ExtendedJavaClass(this, PathText.class);
 		new ExtendedJavaClass(this, CharacterStyle.class);
+
+		new ExtendedJavaClass(this, Tracing.class);
 
 		// Java
 		new ExtendedJavaClass(this, File.class);
