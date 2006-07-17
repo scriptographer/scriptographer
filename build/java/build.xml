@@ -210,7 +210,10 @@
 
 		<!-- remove everything except the archives -->
 		<delete includeEmptyDirs="true">
-			<fileset dir="${build.packages}" excludes="**/Scriptographer*.zip"/>
+			<fileset dir="${build.packages}">
+				<exclude name="**/Scriptographer*.zip"/>
+				<exclude name="**/Scriptographer*.dmg"/>
+			</fileset>
 		</delete>
 	</target>
 
