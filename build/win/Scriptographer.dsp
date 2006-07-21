@@ -439,6 +439,10 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Tool.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Tracing.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_View.cpp
 # End Source File
 # Begin Source File

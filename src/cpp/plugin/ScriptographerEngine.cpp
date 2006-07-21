@@ -26,12 +26,11 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.34 $
- * $Date: 2006/07/21 17:33:52 $
+ * $Revision: 1.35 $
+ * $Date: 2006/07/21 17:40:13 $
  */
 
 #include "stdHeaders.h"
-#include <stdio.h>
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
 #include "com_scriptographer_ai_Art.h" // for com_scriptographer_ai_Art_TYPE_LAYER
