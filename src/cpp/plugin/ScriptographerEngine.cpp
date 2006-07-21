@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.32 $
- * $Date: 2006/06/29 15:27:59 $
+ * $Revision: 1.33 $
+ * $Date: 2006/07/21 16:51:42 $
  */
 
 #include "stdHeaders.h"
@@ -689,12 +689,14 @@ bool ScriptographerEngine::isKeyDown(short keycode) {
 }
 
 void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
-	char text[2048];
+	int size = 8192;
+	char *text = new char[size];
 	va_list args;
 	va_start(args, str);
-	vsprintf(text, str, args);
+	vsnprintf(text, size, str, args);
 	va_end(args);
 	callVoidMethodReport(env, env->GetStaticObjectField(cls_System, fid_System_out), mid_PrintStream_println, env->NewStringUTF(text));
+	delete text;
 }
 
 // com.scriptographer.ai.Point <-> AIRealPoint
