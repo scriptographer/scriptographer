@@ -26,11 +26,12 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.33 $
- * $Date: 2006/07/21 16:51:42 $
+ * $Revision: 1.34 $
+ * $Date: 2006/07/21 17:33:52 $
  */
 
 #include "stdHeaders.h"
+#include <stdio.h>
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
 #include "com_scriptographer_ai_Art.h" // for com_scriptographer_ai_Art_TYPE_LAYER
@@ -693,7 +694,12 @@ void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
 	char *text = new char[size];
 	va_list args;
 	va_start(args, str);
+#ifdef MAC_ENV
 	vsnprintf(text, size, str, args);
+#endif
+#ifdef WIN_ENV
+	_vsnprintf(text, size, str, args);
+#endif
 	va_end(args);
 	callVoidMethodReport(env, env->GetStaticObjectField(cls_System, fid_System_out), mid_PrintStream_println, env->NewStringUTF(text));
 	delete text;
