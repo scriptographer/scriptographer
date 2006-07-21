@@ -28,8 +28,8 @@
  *
  * $RCSfile: Curve.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.11 $
+ * $Date: 2006/07/21 16:49:15 $
  */
 
 package com.scriptographer.ai;
@@ -377,6 +377,7 @@ public class Curve extends WrappableObject {
 		double[][] curve = getCurveArray();
 		double[][] temp = new double[4][];
 		double param = length / bezierLength, oldF = 1;
+		// TODO: find a better approach for this:
 		for (int i = 0; i < 100; i++) { // prevent too many iterations...
 			double stepLength = getPartLength(curve, 0, param, flatness, temp);
 			double step = (length - stepLength) / bezierLength;

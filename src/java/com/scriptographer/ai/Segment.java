@@ -28,8 +28,8 @@
  *
  * $RCSfile: Segment.java,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2005/11/05 00:50:41 $
+ * $Revision: 1.13 $
+ * $Date: 2006/07/21 16:49:15 $
  */
 
 package com.scriptographer.ai;
@@ -262,10 +262,14 @@ public class Segment extends WrappableObject implements Commitable {
 	}
 	
 	public Curve getCurve() {
-		if (segments  != null)
-			return (Curve) segments.path.getCurves().get(index);
-		else
+		if (segments  != null) {
+			CurveList curves = segments.path.getCurves();
+			// the curves list handles closing curves, so the curves.size
+			// is adjusted accordingly. just check to be in the boundaries here: 
+			return index < curves.size ? (Curve) curves.get(index) : null;
+		} else {
 			return null;
+		}
 	}
 	
 	public Object clone() {
