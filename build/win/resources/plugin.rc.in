@@ -149,8 +149,8 @@ kTool2CursorID          CURSOR  DISCARDABLE     "tool2.cur"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,1
- PRODUCTVERSION 1,0,0,1
+ FILEVERSION @version.major@,@version.minor@,0,@build.number@
+ PRODUCTVERSION @version.major@,@version.minor@,0,@build.number@
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -174,7 +174,7 @@ BEGIN
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "Scriptographer.aip\0"
             VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "  Scriptographer\0"
+            VALUE "ProductName", "Scriptographer\0"
             VALUE "ProductVersion", "@version.major@, @version.minor@, 0, @build.number@\0"
             VALUE "SpecialBuild", "\0"
         END
