@@ -77,15 +77,16 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ScriptographerEngine_getMouseP
 			GrafPtr port;
 			GetPort(&port);
 			SetPort(GetWindowPort(ActiveNonFloatingWindow()));
-			GlobalToLocal((Point *)&pt);
+			GlobalToLocal((Point *) &pt);
 			SetPort(port);
 #endif
 #ifdef WIN_ENV
-			// on windows, the current document window is the app windows first child-child window...
-			// i didn't find a better way for the conversion of the mouse position...
-			HWND wnd = GetTopWindow(GetTopWindow((HWND)sADMWinHost->GetPlatformAppWindow()));
-			ScreenToClient(wnd, (LPPOINT)&pt);
-#endif					// the rest of the conversion is easy: 
+			HWND wndApp = (HWND) sADMWinHost->GetPlatformAppWindow();
+			HWND wndMdi = FindWindowEx(wndApp, NULL, "MDIClient", NULL);
+			HWND wnd = FindWindowEx(wndMdi, NULL, "MDIClass", NULL);
+			ScreenToClient(wnd, (LPPOINT) &pt);
+#endif
+			// the rest of the conversion is easy: 
 			AIRealPoint point;
 			sAIDocumentView->ViewPointToArtworkPoint(view, &pt, &point);
 			return gEngine->convertPoint(env, &point);
