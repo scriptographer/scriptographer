@@ -28,8 +28,8 @@
  *
  * $RCSfile: Rectangle.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.6 $
+ * $Date: 2006/08/15 14:51:40 $
  */
 
 package com.scriptographer.ai;
@@ -74,6 +74,14 @@ public class Rectangle extends Rectangle2D.Float implements Wrappable {
 		this.y = y;
 	}
 	
+	public void setWidth(float width) {
+		this.width = width;
+	}
+	
+	public void setHeight(float height) {
+		this.height = height;
+	}
+	
 	public Point getCenter() {
 		return new Point(
 			x + width * 0.5f,
@@ -90,12 +98,40 @@ public class Rectangle extends Rectangle2D.Float implements Wrappable {
 		setCenter((float) center.getX(), (float) center.getY());
 	}
 	
-	public void setWidth(float width) {
-		this.width = width;
+	public Point getTopLeft() {
+		return new Point(x, y);
 	}
 	
-	public void setHeight(float height) {
-		this.height = height;
+	public void setTopLeft(Point pt) {
+		this.x = pt.x;
+		this.y = pt.y;
+	}
+	
+	public Point getTopRight() {
+		return new Point(x + width, y);
+	}
+	
+	public void setTopRight(Point pt) {
+		this.x = pt.x - width;
+		this.y = pt.y;
+	}
+	
+	public Point getBottomLeft() {
+		return new Point(x, y + height);
+	}
+	
+	public void setBottomLeft(Point pt) {
+		this.x = pt.x;
+		this.y = pt.y - height;
+	}
+	
+	public Point getBottomRight() {
+		return new Point(x + width, y + height);
+	}
+	
+	public void setBottomRight(Point pt) {
+		this.x = pt.x - width;
+		this.y = pt.y - height;
 	}
 	
 	public float getLeft() {
