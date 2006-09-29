@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.22 $
- * $Date: 2006/09/29 22:35:26 $
+ * $Revision: 1.23 $
+ * $Date: 2006/09/29 23:26:19 $
  */
 
 package com.scriptographer.ai;
@@ -493,6 +493,14 @@ public abstract class Art extends DictionaryObject {
 
 	public void setSelected(boolean selected) {
 		setAttribute(ATTR_SELECTED.intValue(), selected);
+	}
+
+	public boolean isFullySelected() {
+		return getAttribute(ATTR_FULLY_SELECTED.intValue());
+	}
+
+	public void setFullySelected(boolean selected) {
+		setAttribute(ATTR_FULLY_SELECTED.intValue(), selected);
 	}
 
 	public boolean isLocked() {
