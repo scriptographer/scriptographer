@@ -15,7 +15,8 @@ JNIEXPORT jlong JNICALL Java_com_scriptographer_ai_AreaText_nativeCreate(JNIEnv 
 
 	CREATEART_BEGIN
 
-	sAITextFrame->NewInPathText(kPlaceAboveAll, NULL, (AITextOrientation) orient, (AIArtHandle) artHandle, NULL, false, &art);
+	AIArtHandle artLayer = Layer_beginCreateArt();
+	sAITextFrame->NewInPathText(artLayer != NULL ? kPlaceInsideOnTop : kPlaceAboveAll, artLayer, (AITextOrientation) orient, (AIArtHandle) artHandle, NULL, false, &art);
 	if (art == NULL)
 		throw new StringException("Cannot create text object. Please make sure there is an open document.");
 

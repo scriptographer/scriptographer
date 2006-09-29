@@ -95,15 +95,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ScriptographerEngine_getMouseP
 	return NULL;
 }
 
-long jsProgressCurrent, jsProgressMax;
-
 /*
- * void showProgress(java.lang.String text)
+ * void nativeShowProgress(java.lang.String text)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_showProgress(JNIEnv *env, jclass cls, jstring text) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_nativeShowProgress(JNIEnv *env, jclass cls, jstring text) {
 	try {
-	jsProgressCurrent = 0;
-	jsProgressMax = 1 << 8;
 #if kPluginInterfaceVersion < kAI12
 		char *str = gEngine->convertString(env, text);
 		sAIUser->SetProgressText(str);
@@ -112,18 +108,17 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_showProgress
 		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, text);
 		sAIUser->SetProgressText(str);
 #endif
-	sAIUser->UpdateProgress(jsProgressCurrent, jsProgressMax);
 	} EXCEPTION_CONVERT(env)
 }
 
 /*
- * boolean updateProgress()
+ * boolean nativeUpdateProgress(long current, long max)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_updateProgress(JNIEnv *env, jclass cls) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_nativeUpdateProgress(JNIEnv *env, jclass cls, jlong current, jlong max) {
 	try {
 		if (gEngine->isKeyDown(com_scriptographer_adm_Key_VK_ESCAPE))
 			return false;
-		sAIUser->UpdateProgress(jsProgressCurrent++, jsProgressMax++);
+		sAIUser->UpdateProgress(current, max);
 		return !sAIUser->Cancel();
 	} EXCEPTION_CONVERT(env)
 	return JNI_FALSE;

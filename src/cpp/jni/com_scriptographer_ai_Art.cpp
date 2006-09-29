@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.19 $
- * $Date: 2006/06/29 15:26:57 $
+ * $Revision: 1.20 $
+ * $Date: 2006/09/29 22:37:12 $
  */
  
 #include "stdHeaders.h"
@@ -144,17 +144,21 @@ JNIEXPORT jlong JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env,
 
 	CREATEART_BEGIN
 
+	AIArtHandle artLayer = Layer_beginCreateArt();
 	// if type is set to the self defined TYPE_LAYER, create a layer and return the wrapped art group object instead:
 	if (type == com_scriptographer_ai_Art_TYPE_LAYER) { // create a layer
-		// place it above all others:
+		// place it above the active layer, or all others if none is active:
+		AILayerHandle currentLayer = NULL;
+		sAILayer->GetCurrentLayer(&currentLayer);
 		AILayerHandle layer = NULL;
-		sAILayer->InsertLayer(NULL, kPlaceAboveAll, &layer);
+		sAILayer->InsertLayer(currentLayer, currentLayer != NULL ? kPlaceAbove : kPlaceAboveAll, &layer);
 		if (layer != NULL)
 			sAIArt->GetFirstArtOfLayer(layer, &art);
 		if (art == NULL)
 			throw new StringException("Cannot create layer. Please make sure there is an open document.");
 	} else { // create a normal art object
-		sAIArt->NewArt(type, kPlaceAboveAll, NULL, &art);
+		// try to create in the active layer
+		sAIArt->NewArt(type, artLayer != NULL ? kPlaceInsideOnTop : kPlaceAboveAll, artLayer, &art);
 		if (art == NULL)
 			throw new StringException("Cannot create art object. Please make sure there is an open document.");
 	}

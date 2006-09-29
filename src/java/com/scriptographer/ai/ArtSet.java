@@ -28,25 +28,23 @@
  * 
  * $RCSfile: ArtSet.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2005/10/29 10:18:38 $
+ * $Revision: 1.11 $
+ * $Date: 2006/09/29 22:35:43 $
  */
 
 package com.scriptographer.ai;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 
 import com.scriptographer.util.ExtendedArrayList;
 import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 
 public class ArtSet extends ExtendedArrayList {
-	// use a map to keep track of already added art objects:
-	// use a linked list to preserve insertion order! TODO: needed?
-	LinkedHashMap map;
+	HashMap map;
 
 	public ArtSet() {
-		map = new LinkedHashMap();
+		map = new HashMap();
 	}
 
 	public ArtSet(ExtendedList artObjects) {

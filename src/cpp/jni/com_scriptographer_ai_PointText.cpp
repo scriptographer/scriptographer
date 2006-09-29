@@ -17,7 +17,8 @@ JNIEXPORT jlong JNICALL Java_com_scriptographer_ai_PointText_nativeCreate(JNIEnv
 	
 	DEFINE_POINT(pt, x, y);
 
-	sAITextFrame->NewPointText(kPlaceAboveAll, NULL, (AITextOrientation) orient, pt, &art);
+	AIArtHandle artLayer = Layer_beginCreateArt();
+	sAITextFrame->NewPointText(artLayer != NULL ? kPlaceInsideOnTop : kPlaceAboveAll, artLayer, (AITextOrientation) orient, pt, &art);
 	if (art == NULL)
 		throw new StringException("Cannot create text object. Please make sure there is an open document.");
 

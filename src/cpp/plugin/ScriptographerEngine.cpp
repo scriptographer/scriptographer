@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.35 $
- * $Date: 2006/07/21 17:40:13 $
+ * $Revision: 1.36 $
+ * $Date: 2006/09/29 22:37:22 $
  */
 
 #include "stdHeaders.h"
@@ -200,10 +200,10 @@ void ScriptographerEngine::init() {
 
 	JVMOptions options;
 
-// #ifndef GCJ
+#ifndef GCJ
 	// only add the loader to the classpath, the rest is done in java:
 	options.add("-Djava.class.path=%s" PATH_SEP_STR "loader.jar", m_homeDir);
-// #endif
+#endif
 
 	// start headless, in order to avoid conflicts with AWT and Illustrator
 	options.add("-Djava.awt.headless=true");
@@ -240,7 +240,7 @@ void ScriptographerEngine::init() {
 	options.add("-Xdebug");
 	options.add("-Xnoagent");
 	options.add("-Djava.compiler=NONE");
-	options.add("-Xrunjdwp:transport=dt_socket,address=8001,server=y,suspend=n");
+//	options.add("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n");
 #endif
 
 	options.fillArgs(&args);
@@ -256,12 +256,16 @@ void ScriptographerEngine::init() {
 
 	m_javaEngine = NULL;
 
+#ifndef GCJ
 	cls_Loader = env->FindClass("com/scriptographer/loader/Loader");
 	mid_Loader_init = getStaticMethodID(env, cls_Loader, "init", "(Ljava/lang/String;)V");
 	mid_Loader_reload = getStaticMethodID(env, cls_Loader, "reload", "()Ljava/lang/String;");
 	mid_Loader_loadClass = getStaticMethodID(env, cls_Loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 	callStaticObjectMethodReport(env, cls_Loader, mid_Loader_init, env->NewStringUTF(m_homeDir));
-
+#else
+	cls_Loader = NULL;
+#endif
+	
 	// link the native functions to the java functions. The code for this is in registerNatives.cpp,
 	// which is automatically generated from the JNI header files by jni.js
 	registerNatives(env);
@@ -1684,6 +1688,8 @@ AIDocumentHandle getActiveDocumentHandle() {
  */
 jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDictionaryRef dictionary) {
 	JNI_CHECK_ENV
+	if (art == NULL)
+		return NULL;
 	short type = -1;
 	AITextFrameType textType = kUnknownTextType;
 	ASBoolean isLayer;
@@ -2447,12 +2453,18 @@ void ScriptographerEngine::throwException(JNIEnv *env, const char* msg) {
  */
 jclass ScriptographerEngine::findClass(JNIEnv *env, const char *name) {
 	JNI_CHECK_ENV
-	// Loading with JNI throught the default classloader:
-	jclass cls = env->FindClass(name);
-	if (cls == NULL) {
-		env->ExceptionClear();
-		// using the URL classloader instead:
+	jclass cls = NULL;
+	if (cls_Loader != NULL) {
+		// Try loading using the URL classloader first:
 		cls = (jclass) callStaticObjectMethod(env, cls_Loader, mid_Loader_loadClass, env->NewStringUTF(name));
+		if (cls == NULL) {
+			env->ExceptionClear();
+			// Fallback to loading using JNI throught the default classloader:
+			cls = env->FindClass(name);
+		}
+	} else {
+		// Load using JNI throught the default classloader:
+		cls = env->FindClass(name);
 	}
 	if (cls == NULL) EXCEPTION_CHECK(env);
 	return cls;

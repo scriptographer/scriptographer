@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.18 $
- * $Date: 2006/06/07 16:44:18 $
+ * $Revision: 1.19 $
+ * $Date: 2006/09/29 22:37:12 $
  */
  
 #include "stdHeaders.h"
@@ -583,10 +583,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRectangle(JN
 	jobject path = NULL;
 
 	DOCUMENT_BEGIN
-
+		
+	Layer_beginCreateArt();
 	AIRealRect rt;
 	gEngine->convertRectangle(env, rect, &rt);
-	AIArtHandle handle;
+	AIArtHandle handle = NULL;
 	sAIShapeConstruction->NewRect(rt.top, rt.left, rt.bottom, rt.right, false, &handle);
 	path = gEngine->wrapArtHandle(env, handle);
 
@@ -603,9 +604,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRoundRectang
 
 	DOCUMENT_BEGIN
 
+	Layer_beginCreateArt();
 	AIRealRect rt;
 	gEngine->convertRectangle(env, rect, &rt);
-	AIArtHandle handle;
+	AIArtHandle handle = NULL;
 	sAIShapeConstruction->NewRoundedRect(rt.top, rt.left, rt.bottom, rt.right, hor, ver, false, &handle);
 	path = gEngine->wrapArtHandle(env, handle);
 
@@ -622,9 +624,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createOval(JNIEnv 
 
 	DOCUMENT_BEGIN
 
+	Layer_beginCreateArt();
 	AIRealRect rt;
 	gEngine->convertRectangle(env, rect, &rt);
-	AIArtHandle handle;
+	AIArtHandle handle = NULL;
 	if (circumscribed)
 		sAIShapeConstruction->NewCircumscribedOval(rt.top, rt.left, rt.bottom, rt.right, false, &handle);
 	else
@@ -644,9 +647,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRegularPolyg
 
 	DOCUMENT_BEGIN
 
+	Layer_beginCreateArt();
 	AIRealPoint pt;
 	gEngine->convertPoint(env, center, &pt);
-	AIArtHandle handle;
+	AIArtHandle handle = NULL;
 	sAIShapeConstruction->NewRegularPolygon(numSides, pt.h, pt.v, radius, false, &handle);
 	path = gEngine->wrapArtHandle(env, handle);
 
@@ -663,6 +667,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createStar(JNIEnv 
 
 	DOCUMENT_BEGIN
 
+	Layer_beginCreateArt();
 	AIRealPoint pt;
 	gEngine->convertPoint(env, center, &pt);
 	AIArtHandle handle;
@@ -682,10 +687,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createSpiral(JNIEn
 
 	DOCUMENT_BEGIN
 
+	Layer_beginCreateArt();
 	AIRealPoint ptCenter, ptStart;
 	gEngine->convertPoint(env, firstArcCenter, &ptCenter);
 	gEngine->convertPoint(env, start, &ptStart);
-	AIArtHandle handle;
+	AIArtHandle handle = NULL;
 	sAIShapeConstruction->NewSpiral(ptCenter, ptStart, decayPercent, numQuarterTurns, clockwiseFromOutside, &handle);
 	path = gEngine->wrapArtHandle(env, handle);
 
@@ -733,9 +739,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetDictionary(J
 }
 
 /*
- * com.scriptographer.ai.HitTest hitTest(com.scriptographer.ai.Point point, int type, com.scriptographer.ai.Art art)
+ * com.scriptographer.ai.HitTest nativeHitTest(com.scriptographer.ai.Point point, int type, float tolerance, com.scriptographer.ai.Art art)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_hitTest(JNIEnv *env, jobject obj, jobject point, jint type, jobject art) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIEnv *env, jobject obj, jobject point, jint type, jfloat tolerance, jobject art) {
 	jobject hitTest = NULL;
 
 	DOCUMENT_BEGIN
@@ -746,19 +752,49 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_hitTest(JNIEnv *en
     AIArtHandle handle = gEngine->getArtHandle(env, art);
     
 	AIHitRef hit;
-	if (!sAIHitTest->HitTest(handle, &pt, type, &hit)) {
+	AIHitRequest request = (AIHitRequest) type;
+	// bugfix for illustrator: does not seem to support kNearestPointOnPathHitRequest
+	if (type == kNearestPointOnPathHitRequest)
+		request = kAllNoFillHitRequest;
+	if (!sAIHitTest->HitTestEx(handle, &pt, tolerance, request, &hit)) {
+		sAIHitTest->AddRef(hit);
 		AIToolHitData toolHit;
 		if (sAIHitTest->IsHit(hit) && !sAIHitTest->GetHitData(hit, &toolHit)) {
-			int type = toolHit.type;
+			int hitType = toolHit.type;
 			// Support for hittest on text frames:
 			if (Art_getType(toolHit.object) == kTextFrameArt) {
 				int textPart = sAITextFrameHit->GetPart(hit);
+				// fake HIT values for Text, added from AITextPart + 10
 				if (textPart != kAITextNowhere)
-					type = textPart + 6;
+					hitType = textPart + 10;
+			} else if (type == kNearestPointOnPathHitRequest) {
+				// filter out to simulate kNearestPointOnPathHitRequest that does not work properly
+				if (hitType > kSegmentHitType)
+					hitType = -1;
+			} else if (hitType == kFillHitType) {
+				// bugfix for illustrator: returns kFillHitType instead of kCenterHitType when hitting center!
+				AIBoolean visible = false;
+				sAIArt->GetArtCenterPointVisible(toolHit.object, &visible);
+				if (visible) {
+					// find zoom factor
+					AIDocumentViewHandle view = NULL;
+					// the active view is at index 0:
+					sAIDocumentView->GetNthDocumentView(0, &view);
+					AIReal zoom = 1.0f;
+					sAIDocumentView->GetDocumentViewZoom(view, &zoom);
+					// messure distance from center
+					AIRealRect bounds;
+					sAIArt->GetArtBounds(toolHit.object, &bounds);
+					DEFINE_POINT(center, (bounds.left + bounds.right) / 2.0, (bounds.top + bounds.bottom) / 2.0);
+					if (sAIRealMath->AIRealPointClose(&center, &pt, tolerance / zoom))
+						hitType = kCenterHitType;
+				}
 			}
-			jobject art = gEngine->wrapArtHandle(env, toolHit.object);
-			jobject point = gEngine->convertPoint(env, &toolHit.point);
-			hitTest = gEngine->newObject(env, gEngine->cls_HitTest, gEngine->cid_HitTest, type, art, (jint) toolHit.segment, (jfloat) toolHit.t, point);
+			if (hitType >= 0) {
+				jobject art = gEngine->wrapArtHandle(env, toolHit.object);
+				jobject point = gEngine->convertPoint(env, &toolHit.point);
+				hitTest = gEngine->newObject(env, gEngine->cls_HitTest, gEngine->cid_HitTest, hitType, art, (jint) toolHit.segment, (jfloat) toolHit.t, point);
+			}
 		}
 		sAIHitTest->Release(hit);
 	}

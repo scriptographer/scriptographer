@@ -28,8 +28,8 @@
  *
  * $RCSfile: ConsoleOutputStream.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/03/07 13:36:51 $
+ * $Revision: 1.4 $
+ * $Date: 2006/09/29 22:33:00 $
  */
 
 package com.scriptographer;
@@ -62,16 +62,6 @@ public class ConsoleOutputStream extends OutputStream {
 			console = new ConsoleOutputStream();
 		
 		return console;
-	}
-	
-	public void enableRedirection(boolean enable) {
-		if (enable) {
-			System.setOut(stream);
-			System.setErr(stream);
-		} else {
-			System.setOut(stdOut);
-			System.setErr(stdErr);
-		}
 	}
 
 	public void setWriter(ConsoleOutputWriter writer) {
@@ -116,6 +106,17 @@ public class ConsoleOutputStream extends OutputStream {
 			} catch (IOException e) {
 				// never happens!
 			}
+		}
+	}
+	
+	public static void enableRedirection(boolean enable) {
+		ConsoleOutputStream console = getInstance();
+		if (enable) {
+			System.setOut(console.stream);
+			System.setErr(console.stream);
+		} else {
+			System.setOut(console.stdOut);
+			System.setErr(console.stdErr);
 		}
 	}
 }

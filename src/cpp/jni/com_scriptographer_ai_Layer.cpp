@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Layer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.6 $
+ * $Date: 2006/09/29 22:37:12 $
  */
  
 #include "stdHeaders.h"
@@ -41,6 +41,28 @@
  */
 
 // the creation of layers is handled in nativeCreateArt!
+
+
+/*
+ * Layer_beginCreateArt checks the current layer if it is not locked and returns the layer art object to insert
+ * new objects into (kPlaceInsideOnTop)
+ */
+AIArtHandle Layer_beginCreateArt() {
+	AILayerHandle currentLayer = NULL;
+	AIBoolean editable = false, visible = false;
+	if (!sAILayer->GetCurrentLayer(&currentLayer) &&
+		!sAILayer->GetLayerEditable(currentLayer, &editable) && 
+		!sAILayer->GetLayerVisible(currentLayer, &visible)) {
+		if (!editable)
+			throw new StringException("Cannot create art object. The active layer is locked.");
+		if (!visible)
+			throw new StringException("Cannot create art object. The active layer is hidden.");
+	}
+	AIArtHandle artLayer = NULL;
+	if (currentLayer != NULL)
+		sAIArt->GetFirstArtOfLayer(currentLayer, &artLayer);
+	return artLayer;
+}
 
 /*
  * void setVisible(boolean visible)
@@ -91,28 +113,17 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_getPreview(JNIEnv *e
 }
 
 /*
- * void setEditable(boolean editable)
+ * void setLocked(boolean locked)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setEditable(JNIEnv *env, jobject obj, jboolean editable) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setLocked(JNIEnv *env, jobject obj, jboolean locked) {
 	try {
 		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
-		sAILayer->SetLayerEditable(layer, editable);
+		sAILayer->SetLayerEditable(layer, locked);
 	} EXCEPTION_CONVERT(env)
 }
 
-/*
- * boolean isEditable()
- */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_isEditable(JNIEnv *env, jobject obj) {
-	try {
-		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
-		AIBoolean editable;
-		if (!sAILayer->GetLayerEditable(layer, &editable)) {
-			return editable;	
-		}
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
-}
+// void getLocked is not needed as the one from Art works! but setLocked did not do the trick, so SetLayerEditable
+// is needed here. weird...
 
 /*
  * void setPrinted(boolean printed)

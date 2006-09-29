@@ -26,8 +26,8 @@
  *
  * $RCSfile: aiGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.11 $
+ * $Date: 2006/09/29 22:37:12 $
  */
 
 short Art_getType(AIArtHandle handle);
@@ -35,6 +35,8 @@ short Art_getType(JNIEnv *env, jclass cls);
 jboolean Art_hasChildren(AIArtHandle handle);
 jboolean Art_isLayer(AIArtHandle handle);
 AIArtHandle Art_rasterize(AIArtHandle handle, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
+
+AIArtHandle Layer_beginCreateArt();
 
 void ArtSet_filter(AIArtSet set, bool layerOnly = false);
 AIArtHandle ArtSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
