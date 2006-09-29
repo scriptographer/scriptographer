@@ -28,8 +28,8 @@
  *
  * $RCSfile: Pathfinder.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.4 $
+ * $Date: 2006/09/29 22:36:10 $
  */
 
 package com.scriptographer.ai;
@@ -49,321 +49,321 @@ public final class Pathfinder {
 
 	// unite
 
-	public static native void unite(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
+	public static native ArtSet unite(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
 
-	public static void unite(Object[] artObjects, float precision, boolean removePoints) {
-		unite(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet unite(Object[] artObjects, float precision, boolean removePoints) {
+		return unite(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void unite(Object[] artObjects, float precision) {
-		unite(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet unite(Object[] artObjects, float precision) {
+		return unite(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void unite(Object[] artObjects) {
-		unite(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet unite(Object[] artObjects) {
+		return unite(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void unite(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
-		unite(artObjects.toArray(), precision, removePoints, extractUnpainted);
+	public static ArtSet unite(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
+		return unite(artObjects.toArray(), precision, removePoints, extractUnpainted);
 	}
 
-	public static void unite(ExtendedList artObjects, float precision, boolean removePoints) {
-		unite(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet unite(ExtendedList artObjects, float precision, boolean removePoints) {
+		return unite(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void unite(ExtendedList artObjects, float precision) {
-		unite(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet unite(ExtendedList artObjects, float precision) {
+		return unite(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void unite(ExtendedList artObjects) {
-		unite(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet unite(ExtendedList artObjects) {
+		return unite(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
 	// intersect
 
-	public static native void intersect(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
+	public static native ArtSet intersect(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
 
-	public static void intersect(Object[] artObjects, float precision, boolean removePoints) {
-		intersect(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet intersect(Object[] artObjects, float precision, boolean removePoints) {
+		return intersect(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void intersect(Object[] artObjects, float precision) {
-		intersect(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet intersect(Object[] artObjects, float precision) {
+		return intersect(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void intersect(Object[] artObjects) {
-		intersect(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet intersect(Object[] artObjects) {
+		return intersect(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void intersect(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
-		intersect(artObjects.toArray(), precision, removePoints, extractUnpainted);
+	public static ArtSet intersect(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
+		return intersect(artObjects.toArray(), precision, removePoints, extractUnpainted);
 	}
 
-	public static void intersect(ExtendedList artObjects, float precision, boolean removePoints) {
-		intersect(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet intersect(ExtendedList artObjects, float precision, boolean removePoints) {
+		return intersect(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void intersect(ExtendedList artObjects, float precision) {
-		intersect(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet intersect(ExtendedList artObjects, float precision) {
+		return intersect(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void intersect(ExtendedList artObjects) {
-		intersect(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet intersect(ExtendedList artObjects) {
+		return intersect(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
 	// exclude
 
-	public static native void exclude(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
+	public static native ArtSet exclude(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
 
-	public static void exclude(Object[] artObjects, float precision, boolean removePoints) {
-		exclude(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet exclude(Object[] artObjects, float precision, boolean removePoints) {
+		return exclude(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void exclude(Object[] artObjects, float precision) {
-		exclude(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet exclude(Object[] artObjects, float precision) {
+		return exclude(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void exclude(Object[] artObjects) {
-		exclude(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet exclude(Object[] artObjects) {
+		return exclude(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void exclude(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
-		exclude(artObjects.toArray(), precision, removePoints, extractUnpainted);
+	public static ArtSet exclude(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
+		return exclude(artObjects.toArray(), precision, removePoints, extractUnpainted);
 	}
 
-	public static void exclude(ExtendedList artObjects, float precision, boolean removePoints) {
-		exclude(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet exclude(ExtendedList artObjects, float precision, boolean removePoints) {
+		return exclude(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void exclude(ExtendedList artObjects, float precision) {
-		exclude(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet exclude(ExtendedList artObjects, float precision) {
+		return exclude(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void exclude(ExtendedList artObjects) {
-		exclude(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet exclude(ExtendedList artObjects) {
+		return exclude(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
 	// backMinusFront
 
-	public static native void backMinusFront(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
+	public static native ArtSet backMinusFront(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
 
-	public static void backMinusFront(Object[] artObjects, float precision, boolean removePoints) {
-		backMinusFront(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet backMinusFront(Object[] artObjects, float precision, boolean removePoints) {
+		return backMinusFront(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void backMinusFront(Object[] artObjects, float precision) {
-		backMinusFront(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet backMinusFront(Object[] artObjects, float precision) {
+		return backMinusFront(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void backMinusFront(Object[] artObjects) {
-		backMinusFront(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet backMinusFront(Object[] artObjects) {
+		return backMinusFront(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void backMinusFront(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
-		backMinusFront(artObjects.toArray(), precision, removePoints, extractUnpainted);
+	public static ArtSet backMinusFront(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
+		return backMinusFront(artObjects.toArray(), precision, removePoints, extractUnpainted);
 	}
 
-	public static void backMinusFront(ExtendedList artObjects, float precision, boolean removePoints) {
-		backMinusFront(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet backMinusFront(ExtendedList artObjects, float precision, boolean removePoints) {
+		return backMinusFront(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void backMinusFront(ExtendedList artObjects, float precision) {
-		backMinusFront(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet backMinusFront(ExtendedList artObjects, float precision) {
+		return backMinusFront(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void backMinusFront(ExtendedList artObjects) {
-		backMinusFront(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet backMinusFront(ExtendedList artObjects) {
+		return backMinusFront(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
 	// frontMinusBack
 
-	public static native void frontMinusBack(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
+	public static native ArtSet frontMinusBack(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
 
-	public static void frontMinusBack(Object[] artObjects, float precision, boolean removePoints) {
-		frontMinusBack(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet frontMinusBack(Object[] artObjects, float precision, boolean removePoints) {
+		return frontMinusBack(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void frontMinusBack(Object[] artObjects, float precision) {
-		frontMinusBack(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet frontMinusBack(Object[] artObjects, float precision) {
+		return frontMinusBack(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void frontMinusBack(Object[] artObjects) {
-		frontMinusBack(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet frontMinusBack(Object[] artObjects) {
+		return frontMinusBack(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void frontMinusBack(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
-		frontMinusBack(artObjects.toArray(), precision, removePoints, extractUnpainted);
+	public static ArtSet frontMinusBack(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
+		return frontMinusBack(artObjects.toArray(), precision, removePoints, extractUnpainted);
 	}
 
-	public static void frontMinusBack(ExtendedList artObjects, float precision, boolean removePoints) {
-		frontMinusBack(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet frontMinusBack(ExtendedList artObjects, float precision, boolean removePoints) {
+		return frontMinusBack(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void frontMinusBack(ExtendedList artObjects, float precision) {
-		frontMinusBack(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet frontMinusBack(ExtendedList artObjects, float precision) {
+		return frontMinusBack(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void frontMinusBack(ExtendedList artObjects) {
-		frontMinusBack(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet frontMinusBack(ExtendedList artObjects) {
+		return frontMinusBack(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
 	// divide
 
-	public static native void divide(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
+	public static native ArtSet divide(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
 
-	public static void divide(Object[] artObjects, float precision, boolean removePoints) {
-		divide(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet divide(Object[] artObjects, float precision, boolean removePoints) {
+		return divide(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void divide(Object[] artObjects, float precision) {
-		divide(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet divide(Object[] artObjects, float precision) {
+		return divide(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void divide(Object[] artObjects) {
-		divide(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet divide(Object[] artObjects) {
+		return divide(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void divide(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
-		divide(artObjects.toArray(), precision, removePoints, extractUnpainted);
+	public static ArtSet divide(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
+		return divide(artObjects.toArray(), precision, removePoints, extractUnpainted);
 	}
 
-	public static void divide(ExtendedList artObjects, float precision, boolean removePoints) {
-		divide(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet divide(ExtendedList artObjects, float precision, boolean removePoints) {
+		return divide(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void divide(ExtendedList artObjects, float precision) {
-		divide(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet divide(ExtendedList artObjects, float precision) {
+		return divide(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void divide(ExtendedList artObjects) {
-		divide(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet divide(ExtendedList artObjects) {
+		return divide(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
 	// outline
 
-	public static native void outline(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
+	public static native ArtSet outline(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
 
-	public static void outline(Object[] artObjects, float precision, boolean removePoints) {
-		outline(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet outline(Object[] artObjects, float precision, boolean removePoints) {
+		return outline(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void outline(Object[] artObjects, float precision) {
-		outline(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet outline(Object[] artObjects, float precision) {
+		return outline(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void outline(Object[] artObjects) {
-		outline(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet outline(Object[] artObjects) {
+		return outline(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void outline(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
-		outline(artObjects.toArray(), precision, removePoints, extractUnpainted);
+	public static ArtSet outline(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
+		return outline(artObjects.toArray(), precision, removePoints, extractUnpainted);
 	}
 
-	public static void outline(ExtendedList artObjects, float precision, boolean removePoints) {
-		outline(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet outline(ExtendedList artObjects, float precision, boolean removePoints) {
+		return outline(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void outline(ExtendedList artObjects, float precision) {
-		outline(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet outline(ExtendedList artObjects, float precision) {
+		return outline(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void outline(ExtendedList artObjects) {
-		outline(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet outline(ExtendedList artObjects) {
+		return outline(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
 	// trim
 
-	public static native void trim(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
+	public static native ArtSet trim(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
 
-	public static void trim(Object[] artObjects, float precision, boolean removePoints) {
-		trim(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet trim(Object[] artObjects, float precision, boolean removePoints) {
+		return trim(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void trim(Object[] artObjects, float precision) {
-		trim(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet trim(Object[] artObjects, float precision) {
+		return trim(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void trim(Object[] artObjects) {
-		trim(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet trim(Object[] artObjects) {
+		return trim(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void trim(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
-		trim(artObjects.toArray(), precision, removePoints, extractUnpainted);
+	public static ArtSet trim(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
+		return trim(artObjects.toArray(), precision, removePoints, extractUnpainted);
 	}
 
-	public static void trim(ExtendedList artObjects, float precision, boolean removePoints) {
-		trim(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet trim(ExtendedList artObjects, float precision, boolean removePoints) {
+		return trim(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void trim(ExtendedList artObjects, float precision) {
-		trim(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet trim(ExtendedList artObjects, float precision) {
+		return trim(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void trim(ExtendedList artObjects) {
-		trim(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet trim(ExtendedList artObjects) {
+		return trim(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
 	// merge
 
-	public static native void merge(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
+	public static native ArtSet merge(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
 
-	public static void merge(Object[] artObjects, float precision, boolean removePoints) {
-		merge(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet merge(Object[] artObjects, float precision, boolean removePoints) {
+		return merge(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void merge(Object[] artObjects, float precision) {
-		merge(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet merge(Object[] artObjects, float precision) {
+		return merge(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void merge(Object[] artObjects) {
-		merge(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet merge(Object[] artObjects) {
+		return merge(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void merge(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
-		merge(artObjects.toArray(), precision, removePoints, extractUnpainted);
+	public static ArtSet merge(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
+		return merge(artObjects.toArray(), precision, removePoints, extractUnpainted);
 	}
 
-	public static void merge(ExtendedList artObjects, float precision, boolean removePoints) {
-		merge(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet merge(ExtendedList artObjects, float precision, boolean removePoints) {
+		return merge(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void merge(ExtendedList artObjects, float precision) {
-		merge(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet merge(ExtendedList artObjects, float precision) {
+		return merge(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void merge(ExtendedList artObjects) {
-		merge(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet merge(ExtendedList artObjects) {
+		return merge(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
 	// crop
 
-	public static native void crop(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
+	public static native ArtSet crop(Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted);
 
-	public static void crop(Object[] artObjects, float precision, boolean removePoints) {
-		crop(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet crop(Object[] artObjects, float precision, boolean removePoints) {
+		return crop(artObjects, precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void crop(Object[] artObjects, float precision) {
-		crop(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet crop(Object[] artObjects, float precision) {
+		return crop(artObjects, precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void crop(Object[] artObjects) {
-		crop(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet crop(Object[] artObjects) {
+		return crop(artObjects, DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void crop(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
-		crop(artObjects.toArray(), precision, removePoints, extractUnpainted);
+	public static ArtSet crop(ExtendedList artObjects, float precision, boolean removePoints, boolean extractUnpainted) {
+		return crop(artObjects.toArray(), precision, removePoints, extractUnpainted);
 	}
 
-	public static void crop(ExtendedList artObjects, float precision, boolean removePoints) {
-		crop(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet crop(ExtendedList artObjects, float precision, boolean removePoints) {
+		return crop(artObjects.toArray(), precision, removePoints, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void crop(ExtendedList artObjects, float precision) {
-		crop(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet crop(ExtendedList artObjects, float precision) {
+		return crop(artObjects.toArray(), precision, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 
-	public static void crop(ExtendedList artObjects) {
-		crop(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
+	public static ArtSet crop(ExtendedList artObjects) {
+		return crop(artObjects.toArray(), DEFAULT_PRECISION, DEFAULT_REMOVE_POINTS, DEFAULT_EXTRACT_UNPAINTED);
 	}
 }
