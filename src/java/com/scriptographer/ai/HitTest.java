@@ -28,8 +28,8 @@
  *
  * $RCSfile: HitTest.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/06/16 16:18:30 $
+ * $Revision: 1.6 $
+ * $Date: 2006/09/29 22:35:55 $
  */
 
 package com.scriptographer.ai;
@@ -141,7 +141,7 @@ public class HitTest extends WrappableObject {
 	 */
 	public final static int HIT_GUIDE_INTERSECTION = 6;
 	
-	// fake HIT values for Text, added from AITextPart + 6
+	// fake HIT values for Text, added from AITextPart + 10
 	
 	/**
 	 * right on text
@@ -173,6 +173,11 @@ public class HitTest extends WrappableObject {
 	 **/
 	public final static int HIT_TEXT_END = 12;
 
+	/**
+	 * 
+	 */
+	public static final float DEFAULT_TOLERANCE = 2.0f;
+	
 	private int type;
 	private Curve curve;
 	private Art art;
@@ -210,7 +215,10 @@ public class HitTest extends WrappableObject {
 	protected HitTest(int type, Art art, int index, float parameter, Point point) {
 		this.type = type;
 		this.art = art;
-		if (art instanceof Path) {
+		this.parameter = parameter;
+		this.point = point;
+		this.curve = null;
+		if (art instanceof Path && type < HIT_FILL) {
 			Path path = (Path) art;
 			CurveList curves = path.getCurves();
 			// calculate the curve index in the curve list according to the segment index:
@@ -218,13 +226,15 @@ public class HitTest extends WrappableObject {
 			index--;
 			if (index < 0)
 				index += curves.getLength();
-			this.curve = (Curve) curves.get(index);
-			this.parameter = parameter;
-		} else {
-			this.curve = null;
-			this.parameter = -1;
+			if (index < curves.getLength()) {
+				this.curve = (Curve) curves.get(index);
+				// if parameter == -1 and index is valid, we're hitting
+				// a segment point. just set parameter to 0 and the
+				// curve / parameter pair is valid
+				if (parameter == -1)
+					this.parameter = 0;
+			}
 		}
-		this.point = point;
 	}
 
 	/**
