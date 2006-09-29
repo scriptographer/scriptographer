@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.18 $
- * $Date: 2006/04/30 14:37:49 $
+ * $Revision: 1.19 $
+ * $Date: 2006/09/29 22:32:25 $
  */
 
 package com.scriptographer;
@@ -51,6 +51,9 @@ public class ScriptographerEngine {
 	protected Context context;
 	private HashMap scriptCache = new HashMap();
 	private GlobalObject global;
+	private static long progressCurrent;
+	private static long progressMax;
+	private static boolean progressAutomatic;
 	private static final boolean isWindows, isMacintosh;
 	private static ConsoleDialog consoleDialog;
 	private static MainDialog mainDialog;
@@ -59,7 +62,7 @@ public class ScriptographerEngine {
 
 	static {
 		// immediatelly redirect system streams.
-		ConsoleOutputStream.getInstance().enableRedirection(true);
+		ConsoleOutputStream.enableRedirection(true);
 		// getSystem variables
 		String os = System.getProperty("os.name").toLowerCase();
 		isWindows = (os.indexOf("windows") != -1);
@@ -92,6 +95,9 @@ public class ScriptographerEngine {
 
 		consoleDialog = new ConsoleDialog();
 		mainDialog = new MainDialog(consoleDialog);
+		// turn on again, just in case the static block above was not called
+		// happens when for some reason no new ScriptographerEngine class was loaded 
+		ConsoleOutputStream.enableRedirection(true);
 		ConsoleOutputStream.enableOutput(true);
 
 		// execute all scripts in startup folder:
@@ -105,7 +111,7 @@ public class ScriptographerEngine {
 		MenuItem.removeAll();
 		Timer.disposeAll();
 		Annotator.disposeAll();
-		ConsoleOutputStream.getInstance().enableRedirection(false);
+		ConsoleOutputStream.enableRedirection(false);
 	}
 
 	public static boolean chooseScriptDirectory() {
@@ -250,8 +256,6 @@ public class ScriptographerEngine {
 			// ConsoleOutputStream.enableOutput(false);
 			CommitManager.begin();
 			script.exec(context, scope);
-			// now commit all the changes:
-			CommitManager.end();
 			ret = scope;
 			closeProgress();
 		} catch (WrappedException e) {
@@ -261,10 +265,13 @@ public class ScriptographerEngine {
 			reportRhinoException(e);
 		} catch (ScriptCanceledException e) {
 			System.out.println(scriptFile.getName() + " Canceled");
-		} /* finally {
+		} finally {
+			// commit all the changes, even when script has crashed (to synch with 
+			// direct changes such as creation of paths, etc
+			CommitManager.end();
 			// now reenable the console, this also writes out all the things that were printed in the meantime:
-			ConsoleOutputStream.enableOutput(true);
-		} */
+			// ConsoleOutputStream.enableOutput(true);
+		}
 		return ret;
 	}
 
@@ -336,7 +343,33 @@ public class ScriptographerEngine {
 
 	public static native Point getMousePoint();
 
-	protected static native void showProgress(String text);
-	static public native boolean updateProgress();
+	private static native void nativeShowProgress(String text);
+	
+	public static void showProgress(String text) {
+		progressAutomatic = true;
+		progressCurrent = 0;
+		progressMax = 1 << 8;
+		nativeShowProgress(text);
+		nativeUpdateProgress(progressCurrent, progressMax);
+	}
+	
+	private static native boolean nativeUpdateProgress(long current, long max);
+
+	public static boolean updateProgress(long current, long max) {
+		progressCurrent = current;
+		progressMax = max;
+		progressAutomatic = false;
+		return nativeUpdateProgress(current, max);
+	}
+	
+	public static boolean updateProgress() {
+		boolean ret = nativeUpdateProgress(progressCurrent, progressMax);
+		if (progressAutomatic) {
+			progressCurrent++;
+			progressMax++;
+		}
+		return ret;
+	}
+	
 	protected static native boolean closeProgress();
 }
