@@ -28,8 +28,8 @@
  * 
  * $RCSfile: PromptItem.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.2 $
+ * $Date: 2006/09/29 22:33:38 $
  */
 
 package com.scriptographer.adm;
@@ -59,27 +59,140 @@ public class PromptItem {
 	String description;
 	int type;
 	Object value;
+	Object values[];
 	float min;
 	float max;
-	float step;
-	com.scriptographer.adm.Item item;
+	float increment;
+	int precision;
+	Item item;
 	int width;
 	
-	public PromptItem(int type, String description, Object value, int width, float min, float max, float step) {
+	public PromptItem(int type, String description, Object value) {
 		this.description = description;
 		this.type = type;
 		this.value = value;
-		this.width = width;
-		this.min = min;
-		this.max = max;
-		this.step = step;
+		this.values = null;
+		this.width = -1;
+		this.setRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
+		this.increment = 0;
+		this.precision = 3;
 	}
 
-	public PromptItem(int type, String description, Object value) {
-		this(type, description, value, -1, Float.MIN_VALUE, Float.MAX_VALUE, 0);
+	/**
+	 * Creates a TYPE_STRING Item
+	 */
+	public PromptItem(String description, String value) {
+		this(TYPE_STRING, description, value);
+	}
+
+	/**
+	 * Creates a TYPE_NUMBER Item
+	 */
+	public PromptItem(String description, Number value) {
+		this(TYPE_NUMBER, description, value);
+	}
+
+	public PromptItem(String description, float value) {
+		this(TYPE_NUMBER, description, new Float(value));
+	}
+
+	/**
+	 * Creates a TYPE_BOOLEAN Item
+	 */
+	public PromptItem(String description, Boolean value) {
+		this(TYPE_CHECKBOX, description, value);
+	}
+
+	public PromptItem(String description, boolean value) {
+		this(description, new Boolean(value));
+	}
+	/**
+	 * Creates a TYPE_RANGE Item
+	 */
+	public PromptItem(String description, Number value, float min, float max, float step) {
+		this(TYPE_RANGE, description, value);
+		this.setRange(min, max);
+		this.increment = step;
 	}
 	
-	protected com.scriptographer.adm.Item createItem(Dialog dialog) {
+	/**
+	 * Creates a TYPE_LIST Item
+	 */
+	public PromptItem(String description, Object value, Object[] values) {
+		this(TYPE_LIST, description, value);
+		this.values = values;
+	}
+	
+	// TODO: make constructor for TYPE_UNIT
+	
+	/*
+	 * Setters
+	 */
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public float[] getRange() {
+		return new float[] {
+			min, max
+		};
+	}
+
+	public void setRange(float min, float max) {
+		this.min = min;
+		this.max = max;
+	}
+
+	public void setRange(float[] range) {
+		setRange(range[0], range[1]);
+	}
+
+	public float getIncrement() {
+		return increment;
+	}
+
+	public void setStep(float step) {
+		this.increment = step;
+	}
+
+	public Object[] getValues() {
+		return values;
+	}
+
+	public void setValues(Object[] values) {
+		this.values = values;
+	}
+
+	public Object getValue() {
+		return value;
+	}
+
+	public void setValue(Object value) {
+		this.value = value;
+	}
+	
+
+	public int getPrecision() {
+		return precision;
+	}
+
+	public void setPrecision(int precision) {
+		this.precision = precision;
+	}
+
+	protected Item createItem(Dialog dialog) {
 		// Item:
 		item = null;
 		switch (type) {
@@ -88,6 +201,9 @@ public class PromptItem {
 				break;
 			case TYPE_CHECKBOX:
 				item = new CheckBox(dialog);
+				break;
+			case TYPE_LIST:
+				item = new PopupList(dialog);
 				break;
 			default:
 				item = new TextEdit(dialog);
@@ -105,15 +221,25 @@ public class PromptItem {
 					((TextEdit) item).setAllowMath(true);
 					((TextEdit) item).setAllowUnits(true);
 					((TextEdit) item).setShowUnits(type == TYPE_UNIT);
+					((TextEdit) item).setPrecision(precision);
 				}
 				if (type == TYPE_RANGE) {
-					((Slider) item).setIncrements(step, 8 * step);
+					((Slider) item).setIncrements(increment, 8 * increment);
 				}
 				((ValueItem) item).setRange(min, max);
 				((ValueItem) item).setValue((float) ScriptRuntime.toNumber(value));
 				break;
 			case TYPE_CHECKBOX:
 				((CheckBox) item).setChecked(ScriptRuntime.toBoolean(value));
+				break;
+			case TYPE_LIST: {
+					PopupList list = (PopupList) item;
+					for (int i = 0; i < values.length; i++) {
+						ListEntry entry = (ListEntry) list.add(values[i]);
+						if (value != null && value.equals(values[i]))
+							entry.setSelected(true);
+					}
+				}
 				break;
 				
 		}
@@ -125,7 +251,7 @@ public class PromptItem {
 		return item;
 	}
 	
-	protected Object getValue() {
+	protected Object getResult() {
 		switch(type) {
 			case TYPE_STRING:
 				return ((TextValueItem) item).getText();
@@ -135,6 +261,10 @@ public class PromptItem {
 				return new Float(((ValueItem) item).getValue());
 			case TYPE_CHECKBOX:
 				return new Boolean(((ToggleItem) item).isChecked());
+			case TYPE_LIST:
+				ListEntry active = ((PopupList) item).getActiveEntry();
+				if (active != null)
+					return active.getText();
 		}
 		return null;
 	}

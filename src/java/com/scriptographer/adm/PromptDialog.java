@@ -28,8 +28,8 @@
  * 
  * $RCSfile: PromptDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/04/30 14:37:49 $
+ * $Revision: 1.8 $
+ * $Date: 2006/09/29 22:33:38 $
  */
 
 package com.scriptographer.adm;
@@ -103,7 +103,7 @@ public class PromptDialog extends ModalDialog {
 			for (int i = 0; i < items.length; i++) {
 				PromptItem item = items[i];
 				if (item != null)
-					values[i] = item.getValue();
+					values[i] = item.getResult();
 			}
 		} else {
 			values = null;
@@ -117,6 +117,14 @@ public class PromptDialog extends ModalDialog {
 	public Object[] getValues() {
 		return values;
 	}
+	
+	private static double getValue(Map map, String name) {
+		Object obj = map.get(name);
+		if (obj != null)
+			return ScriptRuntime.toNumber(obj);
+		else
+			return ScriptRuntime.NaN;
+	}
 
 	private static PromptItem[] getItems(Object[] items) {
 		PromptItem[] promptItems = new PromptItem[items.length];
@@ -126,9 +134,10 @@ public class PromptDialog extends ModalDialog {
 				promptItems[i] = (PromptItem) itemObj;
 			} else if (itemObj instanceof Map) {
 				Map map = (Map) itemObj;
-				Object valueObj = map.get("value");
 				Object typeObj = map.get("type");
-				Object stepObj = map.get("step");
+				Object valueObj = map.get("value");
+				double increment = 0;
+				Object[] values = null;
 				int type = -1;
 				if (typeObj != null) {
 					if (typeObj instanceof String) {
@@ -137,42 +146,49 @@ public class PromptDialog extends ModalDialog {
 						type = ((Number) typeObj).intValue();
 					}
 				} else { // determine type from value and step:
-					if (stepObj != null) {
+					Object incrementObj = map.get("increment");
+					if (incrementObj != null) {
 						type = PromptItem.TYPE_RANGE;
+						increment = ScriptRuntime.toNumber(incrementObj);
+						if (Double.isNaN(increment))
+							increment = 0;
 					} else {
-						if (valueObj instanceof Number)
+						Object valuesObj = map.get("values");
+						if (valuesObj != null && valuesObj instanceof Object[])
+							values = (Object[]) valuesObj;
+						if (values != null)
+							type = PromptItem.TYPE_LIST;
+						else if (valueObj instanceof Number)
 							type = PromptItem.TYPE_NUMBER;
+						else if (valueObj instanceof Boolean)
+							type = PromptItem.TYPE_CHECKBOX;
 						else if (valueObj instanceof String) 
 							type = PromptItem.TYPE_STRING;
-						else if (valueObj instanceof Object[])
-							type = PromptItem.TYPE_LIST;
 					}
 				}
 				
 				if (type != -1) {
-					Object descObj = map.get("description");
-					String desc = descObj != null ? descObj.toString() : null;
+					Object obj = map.get("description");
+					String desc = obj != null ? obj.toString() : null;
+					PromptItem item = new PromptItem(type, desc, valueObj);
+
+					double width = getValue(map, "width");
+					if (!Double.isNaN(width))
+						item.setWidth((int) width);
+	
+					double precision = getValue(map, "precision");
+					if (!Double.isNaN(precision))
+						item.setPrecision((int) precision);
+
+					double min = getValue(map, "min");
+					double max = getValue(map, "max");
+					if (!Double.isNaN(min) || !Double.isNaN(max))
+						item.setRange((float) min, (float) max);
 					
-					Object widthObj = map.get("width");
-					double width = ScriptRuntime.toNumber(widthObj);
-					if (widthObj == null || width == ScriptRuntime.NaN)
-						width = -1;
+					if (values != null)
+						item.setValues(values);
 	
-					Object minObj = map.get("min");
-					double min = ScriptRuntime.toNumber(minObj);
-					if (minObj == null || min == ScriptRuntime.NaN)
-						min = Float.MIN_VALUE;
-	
-					Object maxObj = map.get("max");
-					double max = ScriptRuntime.toNumber(maxObj);
-					if (maxObj == null || max == ScriptRuntime.NaN)
-						max = Float.MAX_VALUE;
-	
-					double step = ScriptRuntime.toNumber(stepObj);
-					if (step == ScriptRuntime.NaN)
-						step = 0;
-	
-					promptItems[i] = new PromptItem(type, desc, valueObj, (int) width, (float) min, (float) max, (float) step);				
+					promptItems[i] = item;
 				} else {
 					promptItems[i] = null;
 				}
