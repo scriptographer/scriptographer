@@ -28,8 +28,8 @@
  * 
  * $RCSfile: AreaText.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/01/03 05:38:03 $
+ * $Revision: 1.4 $
+ * $Date: 2006/09/29 22:35:26 $
  */
 
 package com.scriptographer.ai;
@@ -40,19 +40,19 @@ public class AreaText extends TextFrame {
 		super(handle, document);
 	}
 	
-	/**
-	 * Creates an area text object
-	 */
-	
 	native private static long nativeCreate(int docHandle, int orient, int artHandle);
 
-	public AreaText(Document document, Path area, int orient) {
+	protected AreaText(Document document, Path area, int orient) {
 		this(nativeCreate(document != null ? document.handle : 0, orient, area != null ? area.handle : 0), document);
 	}
 
-	public AreaText(Document document, Path area) {
+	protected AreaText(Document document, Path area) {
 		this(document, area, ORIENTATION_HORIZONTAL);
 	}
+	
+	/**
+	 * Creates an area text object
+	 */
 
 	public AreaText(Path area, int orient) {
 		this(null, area, orient);

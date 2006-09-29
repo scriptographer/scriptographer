@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Tracing.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/06/29 15:24:48 $
+ * $Revision: 1.2 $
+ * $Date: 2006/09/29 22:35:26 $
  */
 
 package com.scriptographer.ai;
@@ -81,13 +81,13 @@ public class Tracing extends Art implements Commitable {
 	protected int optionsHandle = 0;
 	protected int statisticsHandle = 0;
 
-	protected Tracing(long handle, Document document) {
-		super(handle, document);
-	}
-
 	public Tracing(Art art) {
 		super(nativeCreate(art.handle), art.document);
 		markDirty(); // force a first update
+	}
+
+	protected Tracing(long handle, Document document) {
+		super(handle, document);
 	}
 
 	protected native static boolean isTracing(int artHandle);

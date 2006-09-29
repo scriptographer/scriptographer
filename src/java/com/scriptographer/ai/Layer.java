@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Layer.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/01/03 05:38:03 $
+ * $Revision: 1.9 $
+ * $Date: 2006/09/29 22:35:26 $
  */
 
 package com.scriptographer.ai;
@@ -41,7 +41,7 @@ public class Layer extends Art {
 		super(handle, document);
 	}
 
-	public Layer(Document document) {
+	protected Layer(Document document) {
 		super(TYPE_LAYER, document);
 	}
 
@@ -49,14 +49,13 @@ public class Layer extends Art {
 		super(TYPE_LAYER, null);
 	}
 
+	public native void setLocked(boolean locked);
+
 	public native void setVisible(boolean visible);
 	public native boolean isVisible();
 
 	public native void setPreview(boolean preview);
 	public native boolean getPreview();
-
-	public native void setEditable(boolean editable);
-	public native boolean isEditable();
 
 	public native void setPrinted(boolean printed);
 	public native boolean isPrinted();

@@ -28,8 +28,8 @@
  *
  * $RCSfile: Raster.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/01/03 05:38:03 $
+ * $Revision: 1.7 $
+ * $Date: 2006/09/29 22:35:26 $
  */
 
 package com.scriptographer.ai;
@@ -55,6 +55,32 @@ public class Raster extends Art {
 		super(handle, document);
 	}
 
+	private native int nativeConvert(int type, int width, int height);
+
+	protected Raster(Document document, int type, int width, int height) {
+		super(TYPE_RASTER, document);
+		nativeConvert(type, width, height);
+	}
+	
+	protected Raster(Document document, int type) {
+		this(document, type, -1, -1);
+	}
+	
+	protected Raster(Document document, java.awt.Image image) {
+		this(document, getCompatibleType(image), image.getWidth(null), image.getHeight(null));
+		drawImage(image, 0, 0);
+	}
+	
+	protected Raster(Document document, com.scriptographer.adm.Image image) {
+		// TODO: handle this case directly, without converting back and from
+		// a java BufferedImage, through native code!
+		this(document, image.getImage());
+	}
+
+	protected Raster(Document document) {
+		this(document, -1, -1, -1);
+	}
+
 	/**
 	 * Creates a raster object
 	 * 
@@ -63,30 +89,6 @@ public class Raster extends Art {
 	 * @param height
 	 * @param type Color.TYPE_*
 	 */
-	public Raster(Document document, int type, int width, int height) {
-		super(TYPE_RASTER, document);
-		nativeConvert(type, width, height);
-	}
-	
-	public Raster(Document document, int type) {
-		this(document, type, -1, -1);
-	}
-	
-	public Raster(Document document, java.awt.Image image) {
-		this(document, getCompatibleType(image), image.getWidth(null), image.getHeight(null));
-		drawImage(image, 0, 0);
-	}
-	
-	public Raster(Document document, com.scriptographer.adm.Image image) {
-		// TODO: handle this case directly, without converting back and from
-		// a java BufferedImage, through native code!
-		this(document, image.getImage());
-	}
-
-	public Raster(Document document) {
-		this(document, -1, -1, -1);
-	}
-
 	public Raster(int type, int width, int height) {
 		this(null, type, width, height);
 	}
@@ -106,8 +108,6 @@ public class Raster extends Art {
 	public Raster() {
 		this(null, -1, -1, -1);
 	}
-
-	private native int nativeConvert(int type, int width, int height);
 	
 	public native Matrix getMatrix();
 	

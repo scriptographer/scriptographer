@@ -28,12 +28,13 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.19 $
- * $Date: 2006/04/30 14:37:49 $
+ * $Revision: 1.20 $
+ * $Date: 2006/09/29 22:35:26 $
  */
 
 package com.scriptographer.ai;
 
+import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
@@ -269,14 +270,6 @@ public class Document extends DictionaryObject {
 		return new Path(this, segments);
 	}
 	
-	public Layer createLayer() {
-		return new Layer(this);
-	}
-	
-	public Group createGroup() {
-		return new Group(this);
-	}
-	
 	public Raster createRaster(int type, int width, int height) {
 		return new Raster(this, type, width, height);
 	}
@@ -289,21 +282,83 @@ public class Document extends DictionaryObject {
 		return new Raster(this);
 	}
 	
+	public CompoundPath createCompoundPath() {
+		return new CompoundPath(this);
+	}
+	
+	public CompoundPath createCompoundPath(ExtendedList children) {
+		return new CompoundPath(this, children);
+	}
+	
+	public CompoundPath createCompoundPath(Art[] children) {
+		return new CompoundPath(this, children);
+	}
+	
+	public CompoundPath createCompoundPath(Shape shape) {
+		return new CompoundPath(this, shape);
+	}
+	
+	public Group createGroup() {
+		return new Group(this);
+	}
+	
+	public Group createGroup(ExtendedList children) {
+		return new Group(this, children);
+	}
+	
+	public Group createGroup(Art[] children) {
+		return new Group(this, children);
+	}
+	
+	public AreaText createAreaText(Path area, int orient) {
+		return new AreaText(this, area, orient);
+	}
+
+	public AreaText createAreaText(Path area) {
+		return new AreaText(this, area);
+	}
+	
+	public PointText createPointText(Point2D point, int orient) {
+		return new PointText(this, point, orient);
+	}
+
+	public PointText createPointText(Point2D point) {
+		return new PointText(this, point);
+	}
+	
+	public PathText createPathText(Path path, int orient) {
+		return new PathText(this, path, orient);
+	}
+
+	public PathText createPathText(Path path) {
+		return new PathText(this, path);
+	}
+	
+	public Layer createLayer() {
+		return new Layer(this);
+	}
+	
+	protected native HitTest nativeHitTest(Point point, int type, float tolerance, Art art); 
+
+	
 	/**
-	 * 
 	 * @param point
 	 * @param type HitTest.TEST_*
-	 * @param art
+	 * @param tolerance specified in view coordinates (i.e pixels at the current
+		zoom factor). The default value is 2. The algorithm is not guaranteed to produce
+		correct results for large values.
 	 * @return
 	 */
-	public native HitTest hitTest(Point point, int type, Art art); 
+	public HitTest hitTest(Point point, int type, float tolerance) {
+		return this.nativeHitTest(point, type, tolerance, null);
+	}
 
 	public HitTest hitTest(Point point, int type) {
-		return this.hitTest(point, type, null);
+		return this.hitTest(point, type, HitTest.DEFAULT_TOLERANCE);
 	}
 
 	public HitTest hitTest(Point point) {
-		return this.hitTest(point, HitTest.TEST_ALL, null);
+		return this.hitTest(point, HitTest.TEST_ALL, HitTest.DEFAULT_TOLERANCE);
 	}
 	
 	private native int nativeGetStories();

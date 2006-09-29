@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.21 $
- * $Date: 2006/06/29 15:26:57 $
+ * $Revision: 1.22 $
+ * $Date: 2006/09/29 22:35:26 $
  */
 
 package com.scriptographer.ai;
@@ -661,6 +661,18 @@ public abstract class Art extends DictionaryObject {
 	
 	public Raster rasterize() {
 		return rasterize(-1, 0, 4, -1, -1);
+	}
+
+	public HitTest hitTest(Point point, int type, float tolerance) {
+		return document.nativeHitTest(point, type, tolerance, this);
+	}
+
+	public HitTest hitTest(Point point, int type) {
+		return document.nativeHitTest(point, type, HitTest.DEFAULT_TOLERANCE, this);
+	}
+
+	public HitTest hitTest(Point point) {
+		return document.nativeHitTest(point, HitTest.TEST_ALL, HitTest.DEFAULT_TOLERANCE, this);
 	}
 	
 	/**

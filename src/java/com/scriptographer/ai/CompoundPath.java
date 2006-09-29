@@ -28,8 +28,8 @@
  * 
  * $RCSfile: CompoundPath.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/06/16 16:18:30 $
+ * $Revision: 1.8 $
+ * $Date: 2006/09/29 22:35:26 $
  */
 
 package com.scriptographer.ai;
@@ -37,6 +37,9 @@ package com.scriptographer.ai;
 import java.awt.Shape;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
+
+import com.scriptographer.util.ExtendedList;
+import com.scriptographer.util.Lists;
 
 public class CompoundPath extends Art {
 	/**
@@ -46,20 +49,41 @@ public class CompoundPath extends Art {
 		super(handle, document);
 	}
 
-	/**
-	 * Creates a compound path object
-	 */
-	public CompoundPath(Document document) {
+	protected CompoundPath(Document document) {
 		super(TYPE_COMPOUNDPATH, document);
 	}
 	
+	protected CompoundPath(Document document, ExtendedList children) {
+		this(document);
+		for (int i = 0; i < children.getLength(); i++) {
+			Object obj = children.get(i);
+			if (obj instanceof Art)
+				this.appendChild((Art) obj);
+		}
+	}
+	
+	protected CompoundPath(Document document, Art[] children) {
+		this(document, Lists.asList(children));
+	}
+	
+	protected CompoundPath(Document document, Shape shape) {
+		this(document);
+		append(shape);
+	}
+
+	/**
+	 * Creates a compound path object
+	 */
 	public CompoundPath() {
 		super(TYPE_COMPOUNDPATH, null);
 	}
-	
-	public CompoundPath(Document document, Shape shape) {
-		this(document);
-		append(shape);
+
+	public CompoundPath(ExtendedList children) {
+		this(null, children);
+	}
+
+	public CompoundPath(Art[] children) {
+		this(null, children);
 	}
 	
 	public CompoundPath(Shape shape) {

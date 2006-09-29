@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.20 $
- * $Date: 2006/01/03 05:38:03 $
+ * $Revision: 1.21 $
+ * $Date: 2006/09/29 22:35:26 $
  */
 
 package com.scriptographer.ai;
@@ -59,45 +59,45 @@ public class Path extends Art {
 		super(handle, document);
 	}
 
-	/**
-	 * Creates a path object
-	 */
-	public Path(Document document) {
+	protected Path(Document document) {
 		super(TYPE_PATH, document);
 	}
 
-	public Path(Document document, ExtendedList segments) {
+	protected Path(Document document, ExtendedList segments) {
 		this(document);
 		setSegments(segments);
 	}
 
-	public Path(Document document, Object[] segments) {
+	protected Path(Document document, Object[] segments) {
 		this(document, Lists.asList(segments));
 	}
 	
-	public Path(Document document, Shape shape) {
+	protected Path(Document document, Shape shape) {
 		this(document);
 		append(shape);
 	}
+
+	/**
+	 * Creates a path object
+	 */
 	
 	public Path() {
 		super(TYPE_PATH, null);
 	}
 
 	public Path(ExtendedList segments) {
-		this();
-		setSegments(segments);
+		this(null, segments);
 	}
 
 	public Path(Object[] segments) {
-		this(Lists.asList(segments));
+		this(null, segments);
 	}
 	
 	public Path(Shape shape) {
 		this(null, shape);
 	}
 
-    public boolean remove() {
+	public boolean remove() {
         boolean ret = super.remove();
         // dereference from path if they're used somewhere else!
         if (segments != null)
