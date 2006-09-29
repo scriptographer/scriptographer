@@ -28,8 +28,8 @@
  *
  * $RCSfile: StrokeStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.5 $
+ * $Date: 2006/09/29 22:36:38 $
  */
 
 package com.scriptographer.ai;
@@ -174,6 +174,9 @@ public class StrokeStyle extends WrappableObject implements WrapperCreator {
 			style.update();
 			style.markDirty();
 		}
+		// setting with to 0 equals to setting color to null!
+		if (width.floatValue() == 0)
+			this.color = null;
 		this.width = width;
 	}
 	
@@ -273,6 +276,7 @@ public class StrokeStyle extends WrappableObject implements WrapperCreator {
 	}
 	
 	public void setWidth(float width) {
+		setWidth(new Float(width));
 	}
 	
 	public void setDashOffset(float offset) {
