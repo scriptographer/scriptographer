@@ -26,12 +26,13 @@
  *
  * $RCSfile: com_scriptographer_ai_Pathfinder.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/09/29 22:37:12 $
+ * $Revision: 1.5 $
+ * $Date: 2006/09/29 23:25:35 $
  */
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
+#include "aiGlobals.h"
 #include "com_scriptographer_ai_Pathfinder.h"
 
 /*
@@ -67,30 +68,17 @@ ASBoolean Pathfinder_begin(JNIEnv *env, jobjectArray artObjects, jfloat precisio
 	if (!sAIArtSet->NewArtSet(&selected))
 		sAIArtSet->SelectedArtSet(selected);
 	*prevSelected = selected;
-	// and deselect it:
-	sAIArtSet->CountArtSet(selected, &count);
-	AIArtHandle art;
-	for (i = 0; i < count; i++) {
-		if (!sAIArtSet->IndexArtSet(selected, i, &art)) sAIArt->SetArtUserAttr(art, kArtSelected, 0);
-	}
+	Document_deselectAll();
 	return true;
 }
 
 jobject Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelected) {
 	// get the now selected objects (= result) and change the artset:
-	AIArtSet selected = NULL;
 	long count;
 	AIArtHandle art;
-	if (!sAIArtSet->NewArtSet(&selected)) {
-		// get the result set:
-		sAIArtSet->SelectedArtSet(selected);
-		// and deselect it:
-		sAIArtSet->CountArtSet(selected, &count);
-		for (long i = 0; i < count; i++) {
-			if (!sAIArtSet->IndexArtSet(selected, i, &art))
-				sAIArt->SetArtUserAttr(art, kArtSelected, 0);
-		}
-	}
+	// get the selected results in a set:
+	jobject artSet = ArtSet_getSelected(env);
+	Document_deselectAll();
 	// select the previously selected objects:
 	sAIArtSet->CountArtSet(*prevSelected, &count);
 	for (long i = 0; i < count; i++) {
@@ -103,13 +91,10 @@ jobject Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelect
 			)
 			sAIArt->SetArtUserAttr(art, kArtSelected, kArtSelected);
 	}
-
 	// clean up
 	sAIArtSet->DisposeArtSet(prevSelected);
 	delete data->fSelectedArt;
 	
-	jobject artSet = gEngine->convertArtSet(env, selected);
-	sAIArtSet->DisposeArtSet(&selected);
 	return artSet;
 }
 

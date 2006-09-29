@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.19 $
- * $Date: 2006/09/29 22:37:12 $
+ * $Revision: 1.20 $
+ * $Date: 2006/09/29 23:25:35 $
  */
  
 #include "stdHeaders.h"
@@ -40,6 +40,20 @@
 /*
  * com.scriptographer.ai.Document
  */
+
+void Document_deselectAll() {
+#if kPluginInterfaceVersion >= kAI11
+	sAIMatchingArt->DeselectAll();
+#else
+	AIArtHandle **matches;
+	long numMatches;
+	if (!sAIMatchingArt->GetSelectedArt(&matches, &numMatches)) {
+		for (int i = 0; i < numMatches; i++)
+			sAIArt->SetArtUserAttr((*matches)[i], kArtSelected, 0);
+		sAIMDMemory->MdMemoryDisposeHandle((void **)matches);
+	}
+#endif
+}
 
 // DOCUMENT_BEGIN and DOCUMENT_END are necessary because only the active document
 // can be accessed and modified throught sAIDocument. it seems like adobe forgot
@@ -473,14 +487,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(J
 
 	DOCUMENT_BEGIN
 
-	// TODO: consider using Matching Art Suite instead!!! (faster, direct array access)
-	AIArtSet set;
-	if (!sAIArtSet->NewArtSet(&set)) {
-		if (!sAIArtSet->SelectedArtSet(set)) {
-			artSet = gEngine->convertArtSet(env, set);
-			sAIArtSet->DisposeArtSet(&set);
-		}
-	}
+	artSet = ArtSet_getSelected(env);
 
 	DOCUMENT_END
 
@@ -492,18 +499,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(J
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_deselectAll(JNIEnv *env, jobject obj) {
 	DOCUMENT_BEGIN
-
-#if kPluginInterfaceVersion >= kAI11
-	sAIMatchingArt->DeselectAll();
-#else
-	AIArtHandle **matches;
-	long numMatches;
-	if (!sAIMatchingArt->GetSelectedArt(&matches, &numMatches)) {
-		for (int i = 0; i < numMatches; i++)
-			sAIArt->SetArtUserAttr((*matches)[i], kArtSelected, 0);
-		sAIMDMemory->MdMemoryDisposeHandle((void **)matches);
-	}
-#endif
+	
+	Document_deselectAll();
 
 	DOCUMENT_END
 }

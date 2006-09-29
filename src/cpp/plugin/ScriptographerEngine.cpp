@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.36 $
- * $Date: 2006/09/29 22:37:22 $
+ * $Revision: 1.37 $
+ * $Date: 2006/09/29 23:25:51 $
  */
 
 #include "stdHeaders.h"
@@ -1066,9 +1066,11 @@ jobject ScriptographerEngine::convertArtSet(JNIEnv *env, AIArtSet set, bool laye
 		jobject obj;
 		AIArtHandle art;
 		if (!sAIArtSet->IndexArtSet(set, i, &art)) {
-			obj = wrapArtHandle(env, art);
-			if (obj != NULL)
-				callBooleanMethod(env, artSet, mid_ArtSet_add, obj);
+			if (art != NULL) {
+				obj = wrapArtHandle(env, art);
+				if (obj != NULL)
+					callBooleanMethod(env, artSet, mid_ArtSet_add, obj);
+			}
 		}
 	}
 	EXCEPTION_CHECK(env);

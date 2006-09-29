@@ -26,8 +26,8 @@
  *
  * $RCSfile: aiGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2006/09/29 22:37:12 $
+ * $Revision: 1.12 $
+ * $Date: 2006/09/29 23:25:35 $
  */
 
 short Art_getType(AIArtHandle handle);
@@ -39,7 +39,10 @@ AIArtHandle Art_rasterize(AIArtHandle handle, AIRasterizeType type, float resolu
 AIArtHandle Layer_beginCreateArt();
 
 void ArtSet_filter(AIArtSet set, bool layerOnly = false);
+jobject ArtSet_getSelected(JNIEnv *env);
 AIArtHandle ArtSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
+
+void Document_deselectAll();
 
 short Path_getBezierCount(AIArtHandle art);
 

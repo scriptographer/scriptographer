@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.20 $
- * $Date: 2006/09/29 22:37:12 $
+ * $Revision: 1.21 $
+ * $Date: 2006/09/29 23:25:35 $
  */
  
 #include "stdHeaders.h"
@@ -338,11 +338,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getParent(JNIEnv *env, 
 	jobject res = NULL;
 	try {
 	    AIArtHandle art = gEngine->getArtHandle(env, obj);
-		AIArtHandle child = NULL;
-		sAIArt->GetArtParent(art, &child);
-		if (child != NULL) {
-			res = gEngine->wrapArtHandle(env, child);
-		}
+		AIArtHandle parent = NULL;
+		sAIArt->GetArtParent(art, &parent);
+		if (parent != NULL)
+			res = gEngine->wrapArtHandle(env, parent);
 	} EXCEPTION_CONVERT(env)
 	return res;
 }

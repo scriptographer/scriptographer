@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_ArtSet.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.6 $
+ * $Date: 2006/09/29 23:25:35 $
  */
  
 #include "stdHeaders.h"
@@ -59,6 +59,37 @@ void ArtSet_filter(AIArtSet set, bool layerOnly) {
 			}
 		}
 	}
+}
+
+jobject ArtSet_getSelected(JNIEnv *env) {
+	AIArtSet set = NULL;
+	if (!sAIArtSet->NewArtSet(&set)) {
+		if (!sAIArtSet->SelectedArtSet(set)) {
+			// now filter out objects of which the parents are selected too
+			long count;
+			sAIArtSet->CountArtSet(set, &count);
+			for (long i = count - 1; i >= 0; i--) {
+				AIArtHandle art;
+				if (!sAIArtSet->IndexArtSet(set, i, &art)) {
+					AIArtHandle parent = NULL;
+					long values;
+					if (!sAIArt->GetArtUserAttr(art, kArtFullySelected, &values) && !(values & kArtFullySelected)) {
+						sAIArtSet->RemoveArtFromArtSet(set, art);
+					} else {
+						sAIArt->GetArtParent(art, &parent);
+						if (!Art_isLayer(parent)) {
+							if (!sAIArt->GetArtUserAttr(parent, kArtFullySelected, &values) && (values & kArtFullySelected))
+								sAIArtSet->RemoveArtFromArtSet(set, art);
+						}
+					}
+				}
+			}
+			jobject artSet = gEngine->convertArtSet(env, set);
+			sAIArtSet->DisposeArtSet(&set);
+			return artSet;
+		}
+	}
+	return NULL;
 }
 
 AIArtHandle ArtSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
