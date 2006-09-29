@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.17 $
- * $Date: 2006/06/29 15:24:48 $
+ * $Revision: 1.18 $
+ * $Date: 2006/09/29 22:32:44 $
  */
 
 package com.scriptographer;
@@ -114,6 +114,9 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, Raster.class);
 		new ExtendedJavaClass(this, Layer.class);
 		new ExtendedJavaClass(this, CompoundPath.class);
+		new ExtendedJavaClass(this, PathStyle.class);
+		new ExtendedJavaClass(this, FillStyle.class);
+		new ExtendedJavaClass(this, StrokeStyle.class);
 
 		new ExtendedJavaClass(this, Segment.class);
 		new ExtendedJavaClass(this, Curve.class);
@@ -145,7 +148,7 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, File.class);
 
 		// define some global functions and objects:
-		String[] names = { "print", "include", "execute", "evaluate", "commit", "getNanoTime", "getMousePoint" };
+		String[] names = { "print", "include", "execute", "evaluate", "commit", "getNanoTime", "getMousePoint", "updateProgress" };
 		defineFunctionProperties(names, GlobalObject.class, ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 
 		// properties:
@@ -286,5 +289,10 @@ public class GlobalObject extends ImporterTopLevel {
 	public static Point getMousePoint(Context cx, Scriptable thisObj, Object[] args,
 		Function funObj) {
 		return ScriptographerEngine.getMousePoint();
+	}
+	
+	public static boolean updateProgress(Context cx, Scriptable thisObj, Object[] args,
+		Function funObj) {
+		return ScriptographerEngine.updateProgress((long) Context.toNumber(args[0]), (long) Context.toNumber(args[1]));
 	}
 }
