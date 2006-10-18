@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: stdHeaders.h,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2006/06/16 18:37:35 $
+ * $Revision: 1.12 $
+ * $Date: 2006/10/18 14:18:09 $
  */
  
 #if !defined(__STDHEADERS_H_INCLUDED__)
@@ -71,6 +71,8 @@
 using namespace std;
 
 #include "Suites.h"
+
+#include "Array.h"
 
 #define PI 3.14159265358979323846
 

@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: DictionaryObject.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.4 $
+ * $Date: 2006/10/18 14:17:44 $
  */
 
 package com.scriptographer.ai;
@@ -41,7 +41,7 @@ import org.mozilla.javascript.NativeObject;
 import com.scriptographer.js.FunctionHelper;
 
 public abstract class DictionaryObject extends AIObject {
-	
+
 	protected DictionaryObject(int handle) {
 		super(handle);
 	}

@@ -1,3 +1,35 @@
+/*
+ * Scriptographer
+ *
+ * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
+ *
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * All rights reserved.
+ *
+ * Please visit http://scriptographer.com/ for updates and contact.
+ *
+ * -- GPL LICENSE NOTICE --
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * -- GPL LICENSE NOTICE --
+ *
+ * $RCSfile: com_scriptographer_ai_TextFrame.cpp,v $
+ * $Author: lehni $
+ * $Revision: 1.3 $
+ * $Date: 2006/10/18 14:17:17 $
+ */
+
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "aiGlobals.h"
@@ -9,6 +41,10 @@
  
 using namespace ATE;
 
+// TextFrame AIDocumenHandle activation:
+// TextFrames seemd to need the document be active for getting and setting story related states.
+// Everything else seems to be not depending on the documents at all (ATE related)
+
 /*
  * int getOrientation()
  */
@@ -18,8 +54,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_getOrientation(JNIEn
 		AITextOrientation orient;
 		if (!sAITextFrame->GetOrientation(text, &orient))
 			return (jint) orient;
-	} EXCEPTION_CONVERT(env)
-	return 0;
+	} EXCEPTION_CONVERT(env);
+	return -1;
 }
 
 /*
@@ -27,9 +63,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_getOrientation(JNIEn
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOrientation(JNIEnv *env, jobject obj, jint orient) {
 	try {
-		AIArtHandle text = gEngine->getArtHandle(env, obj);
+		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
 		sAITextFrame->SetOrientation(text, (AITextOrientation) orient);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -37,11 +73,11 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOrientation(JNIEn
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_nativeCreateOutline(JNIEnv *env, jobject obj) {
 	try {
-		AIArtHandle text = gEngine->getArtHandle(env, obj);
+		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
 		AIArtHandle outline;
 		if (!sAITextFrame->CreateOutline(text, &outline))
 			return gEngine->wrapArtHandle(env, outline);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -51,36 +87,24 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_nativeCreateOutli
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_link(JNIEnv *env, jobject obj, jobject text) {
 	try {
-		AIArtHandle text1 = gEngine->getArtHandle(env, obj);
+		AIArtHandle text1 = gEngine->getArtHandle(env, obj, true);
 		AIArtHandle text2 = gEngine->getArtHandle(env, text);
 		if (text2 != NULL && !sAITextFrame->Link(text1, text2))
 			return true;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
- * boolean unlinkBefore()
+ * boolean nativeUnlink(boolean before, boolean after)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_unlinkBefore(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_nativeUnlink(JNIEnv *env, jobject obj, jboolean before, jboolean after) {
 	try {
-		AIArtHandle text = gEngine->getArtHandle(env, obj);
-		if (!sAITextFrame->Unlink(text, true, false))
+		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
+		if (!sAITextFrame->Unlink(text, before, after))
 			return true;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
-}
-
-/*
- * boolean unlinkAfter()
- */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_unlinkAfter(JNIEnv *env, jobject obj) {
-	try {
-		AIArtHandle text = gEngine->getArtHandle(env, obj);
-		if (!sAITextFrame->Unlink(text, false, true))
-			return true;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -88,12 +112,13 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_unlinkAfter(JNIE
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_isLinked(JNIEnv *env, jobject obj) {
 	try {
-		AIArtHandle text = gEngine->getArtHandle(env, obj);
+		// TextFrames need document be active for getting story related states too
+		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
 		bool linked;
 		if (!sAITextFrame->PartOfLinkedText(text, &linked))
 			return linked;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -101,11 +126,12 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_isLinked(JNIEnv 
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_getStoryIndex(JNIEnv *env, jobject obj) {
 	try {
-		AIArtHandle text = gEngine->getArtHandle(env, obj);
+		// TextFrames need document be active for getting story related states too
+		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
 		long index;
 		if (!sAITextFrame->GetStoryIndex(text, &index))
 			return index;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return -1;
 }
 
@@ -114,11 +140,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_getStoryIndex(JNIEnv
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_getIndex(JNIEnv *env, jobject obj) {
 	try {
-		AIArtHandle text = gEngine->getArtHandle(env, obj);
+		// TextFrames need document be active for getting too
+		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
 		long index;
 		if (!sAITextFrame->GetFrameIndex(text, &index))
 			return index;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return -1;
 }
 
@@ -131,7 +158,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_getSelection(JNIE
 		TextRangesRef ranges;
 		if (!sAITextFrame->GetATETextSelection(text, &ranges))
 			return TextRange_convertTextRanges(env, ranges);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -140,11 +167,12 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_getSelection(JNIE
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_nativeGetRange(JNIEnv *env, jobject obj, jboolean bIncludeOverflow) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		// activate document so that text flow gets suspended as soon as the first range is accessed
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		TextRangeRef range;
 		if (!sTextFrame->GetTextRange(frame, bIncludeOverflow, &range))
-			return gEngine->wrapTextRangeRef(env, range);
-	} EXCEPTION_CONVERT(env)
+			return gEngine->wrapTextRangeHandle(env, range);
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -153,11 +181,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_nativeGetRange(JN
  */
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextFrame_getSpacing(JNIEnv *env, jobject obj) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
 		ASReal spacing;
 		if (!sTextFrame->GetSpacing(frame, &spacing))
 			return spacing;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0.0;
 }
 
@@ -166,9 +194,9 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextFrame_getSpacing(JNIEnv 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setSpacing(JNIEnv *env, jobject obj, jfloat spacing) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		sTextFrame->SetSpacing(frame, spacing);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -176,12 +204,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setSpacing(JNIEnv *e
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_getOpticalAlignment(JNIEnv *env, jobject obj) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
 		bool active;
 		if (!sTextFrame->GetOpticalAlignment(frame, &active))
 			return active;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -189,9 +217,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_getOpticalAlignm
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOpticalAlignment(JNIEnv *env, jobject obj, jboolean active) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		sTextFrame->SetOpticalAlignment(frame, active);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -200,14 +228,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOpticalAlignment(
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_equals(JNIEnv *env, jobject obj, jobject text) {
 	try {
 		if (env->IsInstanceOf(text, gEngine->cls_TextFrame)) {
-			TextFrameRef frame1 = gEngine->getTextFrameRef(env, obj);
-			TextFrameRef frame2 = gEngine->getTextFrameRef(env, text);
+			TextFrameRef frame1 = gEngine->getTextFrameHandle(env, obj);
+			TextFrameRef frame2 = gEngine->getTextFrameHandle(env, text);
 			if (frame2 != NULL) {
 				bool ret;
 				if (!sTextFrame->IsEqual(frame1, frame2, &ret))
 					return ret;
 			}
 		}
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }

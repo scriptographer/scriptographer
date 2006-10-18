@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2004-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  * 
  * $RCSfile: CompoundPath.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/09/29 22:35:26 $
+ * $Revision: 1.9 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -45,16 +45,19 @@ public class CompoundPath extends Art {
 	/**
 	 * Wraps an AIArtHandle in a Path object
 	 */
-	protected CompoundPath(long handle, Document document) {
-		super(handle, document);
+	protected CompoundPath(int handle) {
+		super(handle);
 	}
 
-	protected CompoundPath(Document document) {
-		super(TYPE_COMPOUNDPATH, document);
+	/**
+	 * Creates a compound path object
+	 */
+	public CompoundPath() {
+		super(TYPE_COMPOUNDPATH);
 	}
 	
-	protected CompoundPath(Document document, ExtendedList children) {
-		this(document);
+	public CompoundPath(ExtendedList children) {
+		this();
 		for (int i = 0; i < children.getLength(); i++) {
 			Object obj = children.get(i);
 			if (obj instanceof Art)
@@ -62,34 +65,15 @@ public class CompoundPath extends Art {
 		}
 	}
 	
-	protected CompoundPath(Document document, Art[] children) {
-		this(document, Lists.asList(children));
-	}
-	
-	protected CompoundPath(Document document, Shape shape) {
-		this(document);
-		append(shape);
-	}
-
-	/**
-	 * Creates a compound path object
-	 */
-	public CompoundPath() {
-		super(TYPE_COMPOUNDPATH, null);
-	}
-
-	public CompoundPath(ExtendedList children) {
-		this(null, children);
-	}
-
 	public CompoundPath(Art[] children) {
-		this(null, children);
+		this(Lists.asList(children));
 	}
 	
 	public CompoundPath(Shape shape) {
-		this(null, shape);
+		this();
+		append(shape);
 	}
-	
+
 	/*
 	 *  postscript-like interface: moveTo, lineTo, curveTo, arcTo
 	 */	

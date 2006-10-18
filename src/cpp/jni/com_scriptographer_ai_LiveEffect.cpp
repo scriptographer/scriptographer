@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_LiveEffect.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/06/16 16:18:26 $
+ * $Revision: 1.8 $
+ * $Date: 2006/10/18 14:17:17 $
  */
 
 #include "StdHeaders.h"
@@ -64,7 +64,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_LiveEffect_nativeCreate(JNIEnv
 		delete shortName;
 		delete longName;
 		delete effectInfo.title;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return (jint) liveEffectHandle;
 }
 
@@ -105,7 +105,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeAddMenuIte
 	error
 #endif
 		*/
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -119,8 +119,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_LiveEffect_updateParameter
 			if (!sAILiveEffect->UpdateParameters(context))
 				return true;
 		}
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -133,7 +133,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_getMenuItem(JNIE
 		if (menuItem != NULL) {
 			return gEngine->wrapMenuItemHandle(env, menuItem);	
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -173,6 +173,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeGetEffects
 			}
 		}
 		return array;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

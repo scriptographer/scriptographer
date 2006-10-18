@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ModalDialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.4 $
+ * $Date: 2006/10/18 14:17:18 $
  */
 
 #include "StdHeaders.h"
@@ -53,11 +53,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ModalDialog_doModal(JNIEnv
 			res = gEngine->getItemObject(item);
 		}
 		sADMDialog->Show(dialog, false);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	// finally set back the doesModal variable to false:
 	try {
 		gEngine->setBooleanField(env, obj, gEngine->fid_ModalDialog_doesModal, false);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return res;
 }
 
@@ -74,7 +74,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ModalDialog_endModal(JNIEnv *
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 	    endModal(env, obj, dialog);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -87,5 +87,5 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ModalDialog_setVisible(JNIEnv
 		    endModal(env, obj, dialog);
 		}
 		sADMDialog->Show(dialog, visible);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }

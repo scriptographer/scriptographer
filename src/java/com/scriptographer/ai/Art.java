@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.23 $
- * $Date: 2006/09/29 23:26:19 $
+ * $Revision: 1.24 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -54,11 +54,14 @@ public abstract class Art extends DictionaryObject {
 	protected int dictionaryRef = 0;
 	
 	// internal hash map that keeps track of already wrapped objects. defined
-	// as weak.
-	private static SoftIntMap artWrappers = new SoftIntMap();
+	// as soft.
+	private static SoftIntMap artItems = new SoftIntMap();
+	
+	/* TODO: needed?
 	// The same, but for the children of one object, and not weak,
 	// so they're kept alive as long as the parent lives:
 	private ArrayList childrenWrappers = new ArrayList();
+	*/
 
 	private PathStyle style = null;
 	
@@ -67,7 +70,7 @@ public abstract class Art extends DictionaryObject {
 	// from AIArt.h
 	
 	// AIArtType
-	protected final static int
+	protected final static short
 		// The special type kAnyArt is never returned as an art object type, but
 		// is used as a parameter to the Matching Art suite function
 		// GetMatchingArt.
@@ -121,7 +124,8 @@ public abstract class Art extends DictionaryObject {
 		TYPE_LEGACYTEXT = 15,
 
 		// Lehni: self defined type for layer groups:
-		TYPE_LAYER = 100;
+		TYPE_LAYER = 100,
+		TYPE_TRACING = 101;
 
 	// AIArtUserAttr:
 	// used in Document.getMatchingArt:
@@ -243,10 +247,7 @@ public abstract class Art extends DictionaryObject {
 		EXPAND_SHOWPROGRESS	    = 0x8000,
 		// By default objects that are locked such as those on a locked layer
 		// cannot be expanded. Setting this flag allows them to be expanded.
-		EXPAND_LOCKEDOBJECTS    = 0x10000,
-		// self defined
-		// TODO: add EXPAND_GRADIENTTOMESH or EXPAND_GRADIENTTOPATHS
-		EXPAND_ALL = EXPAND_PLUGINART | EXPAND_TEXT | EXPAND_STROKE | EXPAND_PATTERN | EXPAND_SYMBOLINSTANCES;
+		EXPAND_LOCKEDOBJECTS    = 0x10000;
 
 	/**
 	 * Creates an Art object that wraps an existing AIArtHandle. Make sure the
@@ -257,28 +258,30 @@ public abstract class Art extends DictionaryObject {
 	 * the Art(Integer handle) constructor
 	 * @param handle
 	 */
-	protected Art(long handle, Document document) {
-		super((int) handle);
+	protected Art(int handle) {
+		super(handle);
 		// keep track of this object from now on, see wrapArtHandle
-		artWrappers.put(this.handle, this);
+		artItems.put(this.handle, this);
+		/*
 		// store the wrapper also in the paren'ts childrenWrappers segmentList, so
 		// it becomes permanent as long the object itself exists.
-		// see definitions of artWrappers and childrenWrappers.
+		// see definitions of artItems and childrenWrappers.
 		Art parent = getParent();
 		if (parent != null)
 			parent.childrenWrappers.add(this);
-		// store reference to the art's document
-		this.document = document != null ? document : DocumentList.getActiveDocument();
+		*/
+		// store reference to the active document
+		this.document = Document.getActiveDocument();
 	}
+
+	private native static int nativeCreate(short type);
 
 	/**
 	 * Creates a new AIArtHandle of the specified type and wraps it in a Art object
-	 * Do not call it from Art object, call the 0 parameter constructor of the anchestor
-	 * classes which then call this constructor here.
-	 * @param type
+	 * @param type Art.TYPE_*
 	 */
-	protected Art(int type, Document document) {
-		this(nativeCreate(document != null ? document.handle : 0, type), document);
+	protected Art(short type) {
+		this(nativeCreate(type));
 	}
 
 	/**
@@ -290,49 +293,53 @@ public abstract class Art extends DictionaryObject {
 	 */
 	protected static Art wrapHandle(int artHandle, int type, int textType, int documentHandle, int dictionaryRef) {
 		// first see wether the object was already wrapped before:
-		Art art = (Art) artWrappers.get(artHandle);
+		Art art = (Art) artItems.get(artHandle);
 		// if it wasn't wrapped yet, do it now:
 		// TODO: don't forget to add all types also to the native
-		// artGetType function in com_scriptographer_ai_Art.cpp!
+		// Art_getType function in com_scriptographer_ai_Art.cpp!
 		if (art == null) {
-			Document document = Document.wrapHandle(documentHandle);
 			switch (type) {
 				case TYPE_PATH:
-					art = new Path((long) artHandle, document);
+					art = new Path(artHandle);
 					break;
 				case TYPE_GROUP:
-					art = new Group((long) artHandle, document);
+					art = new Group(artHandle);
 					break;
 				case TYPE_RASTER:
-					art = new Raster((long) artHandle, document);
+					art = new Raster(artHandle);
+					break;
+				case TYPE_PLACED:
+					art = new PlacedItem(artHandle);
 					break;
 				case TYPE_LAYER:
-					art = new Layer((long) artHandle, document);
+					art = new Layer(artHandle);
 					break;
 				case TYPE_COMPOUNDPATH:
-					art = new CompoundPath((long) artHandle, document);
+					art = new CompoundPath(artHandle);
 					break;
 				case TYPE_TEXTFRAME:
 					switch (textType) {
 						case TextFrame.TEXTTYPE_POINT:
-							art = new PointText((long) artHandle, document);
+							art = new PointText(artHandle);
 							break;
 						case TextFrame.TEXTTYPE_AREA:
-							art = new AreaText((long) artHandle, document);
+							art = new AreaText(artHandle);
 							break;
 						case TextFrame.TEXTTYPE_PATH:
-							art = new PathText((long) artHandle, document);
+							art = new PathText(artHandle);
 							break;
 					}
 					break;
-				case TYPE_PLUGIN:
-					if (Tracing.isTracing(artHandle))
-						art = new Tracing((long) artHandle, document);
+				case TYPE_TRACING:
+					art = new Tracing(artHandle);
 					break;
+				case TYPE_SYMBOL:
+					art = new SymbolItem(artHandle);
 				}
 		}
 		if (art != null) {
 			art.dictionaryRef = dictionaryRef;
+			art.document = Document.wrapHandle(documentHandle);
 		}
 		return art;
 	}
@@ -344,7 +351,7 @@ public abstract class Art extends DictionaryObject {
 	 * @return the wrapper for the artHandle
 	 */
 	protected static Art getIfWrapped(int artHandle) {
-		return (Art) artWrappers.get(artHandle);
+		return (Art) artItems.get(artHandle);
 	}
 
 	/**
@@ -370,19 +377,19 @@ public abstract class Art extends DictionaryObject {
 			if (prevHandle != 0) {
 				// in case there was already a art object with the initial handle
 				// before, udpate it now:
-				art = (Art) artWrappers.get(prevHandle);
+				art = (Art) artItems.get(prevHandle);
 				// System.out.println("prev " + art);
 				if (art != null) {
 					// remove the old reference
-					artWrappers.remove(prevHandle);
+					artItems.remove(prevHandle);
 					// update object
 					art.handle = curHandle;
 					// and store the new reference
-					artWrappers.put(curHandle, art);
+					artItems.put(curHandle, art);
 				}
 			}
 			if (art == null) {
-				art = (Art) artWrappers.get(curHandle);
+				art = (Art) artItems.get(curHandle);
 			}
 			// now update it if it was found
 			if (art != null) {
@@ -392,25 +399,33 @@ public abstract class Art extends DictionaryObject {
 		CommitManager.version++;
 	}
 	
-	protected void changeHandle(int newHandle, int newDictionaryRef) {
+	protected void changeHandle(int newHandle, int newDictionaryRef, int docHandle) {
 		// remove the object at the old handle
 		if (handle != newHandle) {
-			artWrappers.remove(handle);
+			artItems.remove(handle);
 			// change the handles
 			handle = newHandle;
 			// and insert it again
-			artWrappers.put(newHandle, this);
+			artItems.put(newHandle, this);
 		}
 		dictionaryRef = newDictionaryRef;
+		if (docHandle != 0)
+			document = Document.wrapHandle(docHandle);
 		// udpate
 		version++;
 	}
+	
+	public Document getDocument() {
+		return document;
+	}
+
+	private native boolean nativeRemove(int docHandle, int handle, int dictionaryRef);
 
 	public boolean remove() {
 		boolean ret = false;
 		if (handle != 0) {
-			ret = nativeRemove(handle, dictionaryRef);
-			artWrappers.remove(handle);
+			ret = nativeRemove(document.handle, handle, dictionaryRef);
+			artItems.remove(handle);
 			handle = 0;			
 		}
 		return ret;
@@ -418,15 +433,23 @@ public abstract class Art extends DictionaryObject {
 	
 	protected native void finalize();
 
-	public native Object clone();
+	/**
+	 * Copy art object to another document, or duplicate within the same document.
+	 * @param document
+	 * @return
+	 */
+	public native Art copyTo(Document document);
 
 	/**
-	 * Creates an AIArtHandle of the given type. Used in the Art constructor
-	 * @param type
-	 * @return the handle for the art object
+	 * Copy art object into another art object
+	 * @param art
+	 * @return
 	 */
-	private native static long nativeCreate(int docHandle, int type);
-	private native boolean nativeRemove(int handle, int dictionaryRef);
+	public native Art copyTo(Art art);
+
+	public Object clone() {
+		return copyTo(document);
+	}
 
 	public native Art getParent();
 
@@ -463,7 +486,7 @@ public abstract class Art extends DictionaryObject {
 	
 	public native String getName();
 	
-	public native boolean hasDefaultName();
+	public native boolean isDefaultName();
 
 	public PathStyle getStyle() {
 		if (style == null)
@@ -475,10 +498,6 @@ public abstract class Art extends DictionaryObject {
 		getStyle(); // make sure it's created
 		this.style.init(style);
 		this.style.markDirty();
-	}
-	
-	public Document getDocument() {
-		return document;
 	}
 
 	public native boolean isCenterVisible();
@@ -557,7 +576,7 @@ public abstract class Art extends DictionaryObject {
 	public native void setAlphaIsShape(boolean isShape);
 
 	public native boolean isValid();
-
+	
 	public native boolean appendChild(Art art);
 	
 	/**
@@ -648,7 +667,7 @@ public abstract class Art extends DictionaryObject {
 		StringBuffer str = new StringBuffer();
 		str.append(name.substring(name.lastIndexOf('.') + 1));
 		str.append(" (");
-		if (hasDefaultName()) {
+		if (isDefaultName()) {
 			str.append("@").append(Integer.toHexString(handle));
 		} else {
 			str.append(getName());
@@ -689,13 +708,23 @@ public abstract class Art extends DictionaryObject {
 	 * 
 	 * It outlines stroked lines, text objects, gradients, patterns, etc.
 	 * 
+	 * The art item itself is removed, and the newly created item containing
+	 * the expanded artwork is returned.
+	 * 
 	 * @param flags #EXPAND_*
 	 * @param steps the amount of steps for gradient, when the #EXPAND_GRADIENTTOPATHS flag is set
+	 * @return the newly created item containing the expanded artwork
 	 */
-	public native void expand(int flags, int steps);
+	public native Art expand(int flags, int steps);
 
-	public void expand() {
-		expand(EXPAND_ALL, 0);
+	/**
+	 * Calls {@link #expand(int, int)} with these flags set: #EXPAND_PLUGINART, #EXPAND_TEXT,
+	 * #EXPAND_STROKE, #EXPAND_PATTERN, #EXPAND_SYMBOLINSTANCES
+	 * @return the newly created item containing the expanded artwork
+	 */
+	public Art expand() {
+		return expand(EXPAND_PLUGINART | EXPAND_TEXT | EXPAND_STROKE |
+			EXPAND_PATTERN | EXPAND_SYMBOLINSTANCES, 0);
 	}
 	
 	public native int getOrder(Art art);

@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,13 +26,14 @@
  *
  * $RCSfile: com_scriptographer_ai_LayerList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.10 $
+ * $Date: 2006/10/18 14:17:16 $
  */
  
 #include "stdHeaders.h"
 #include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
+#include "aiGlobals.h"
 #include "com_scriptographer_ai_LayerList.h"
 
 /*
@@ -43,33 +44,15 @@
 // active document can be accessed throught sAILayer. it seems like adobe forgot
 // tu use the AIDocumentHandle parameter there...
 
-#define LAYERLIST_BEGIN \
-	AIDocumentHandle activeDoc = NULL; \
-	AIDocumentHandle prevDoc = NULL; \
-	try { \
-		sAIDocument->GetDocument(&activeDoc); \
-		if (activeDoc != (AIDocumentHandle) docHandle) { \
-			prevDoc = activeDoc; \
-			sAIDocumentList->Activate((AIDocumentHandle) docHandle, false); \
-		} \
-
-#define LAYERLIST_END \
-	} EXCEPTION_CONVERT(env) \
-	if (prevDoc != NULL) \
-		sAIDocumentList->Activate(prevDoc, false);
-
 /*
  * int nativeGetLength(int docHandle)
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_LayerList_nativeGetLength(JNIEnv *env, jclass cls, jint docHandle) {
 	long count = 0;
-	
-	LAYERLIST_BEGIN
-		
-	sAILayer->CountLayers(&count);
-
-	LAYERLIST_END
-	
+	try {
+		Document_activate((AIDocumentHandle) docHandle);
+		sAILayer->CountLayers(&count);
+	} EXCEPTION_CONVERT(env);
 	return count;
 }
 
@@ -78,16 +61,13 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_LayerList_nativeGetLength(JNIE
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LayerList_nativeGet__II(JNIEnv *env, jclass cls, jint docHandle, jint index) {
 	jobject layerObj = NULL;
-
-	LAYERLIST_BEGIN
-
-	AILayerHandle layer = NULL;
-	sAILayer->GetNthLayer(index, &layer);
-	if (layer != NULL)
-		layerObj = gEngine->wrapLayerHandle(env, layer);
-
-	LAYERLIST_END
-	
+	try {
+		Document_activate((AIDocumentHandle) docHandle);
+		AILayerHandle layer = NULL;
+		sAILayer->GetNthLayer(index, &layer);
+		if (layer != NULL)
+			layerObj = gEngine->wrapLayerHandle(env, layer);
+	} EXCEPTION_CONVERT(env);
 	return layerObj;
 }
 
@@ -96,40 +76,19 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LayerList_nativeGet__II(JNI
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LayerList_nativeGet__ILjava_lang_String_2(JNIEnv *env, jclass cls, jint docHandle, jstring name) {
 	jobject layerObj = NULL;
-
-	LAYERLIST_BEGIN
-
-	AILayerHandle layer = NULL;
+	try {
+		Document_activate((AIDocumentHandle) docHandle);
+		AILayerHandle layer = NULL;
 #if kPluginInterfaceVersion < kAI12
-	char *str = gEngine->convertString(env, name);
-	sAILayer->GetLayerByTitle(&layer, gPlugin->toPascal(str, (unsigned char *) str));
-	delete str;
+		char *str = gEngine->convertString(env, name);
+		sAILayer->GetLayerByTitle(&layer, gPlugin->toPascal(str, (unsigned char *) str));
+		delete str;
 #else
-	ai::UnicodeString str = gEngine->convertString_UnicodeString(env, name);
-	sAILayer->GetLayerByTitle(&layer, str);
+		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, name);
+		sAILayer->GetLayerByTitle(&layer, str);
 #endif
-	if (layer != NULL)
-		layerObj = gEngine->wrapLayerHandle(env, layer);
-	
-	LAYERLIST_END
-	
-	return layerObj;
-}
-
-/*
- * com.scriptographer.ai.Layer nativeGetActiveLayer(int docHandle)
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LayerList_nativeGetActiveLayer(JNIEnv *env, jclass cls, jint docHandle) {
-	jobject layerObj = NULL;
-
-	LAYERLIST_BEGIN
-	
-	AILayerHandle layer = NULL;
-	sAILayer->GetCurrentLayer(&layer); 
-	if (layer != NULL)
-		layerObj = gEngine->wrapLayerHandle(env, layer);
-	
-	LAYERLIST_END
-	
+		if (layer != NULL)
+			layerObj = gEngine->wrapLayerHandle(env, layer);
+	} EXCEPTION_CONVERT(env);
 	return layerObj;
 }

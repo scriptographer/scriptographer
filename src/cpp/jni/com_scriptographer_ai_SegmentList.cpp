@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_SegmentList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/06/07 16:44:19 $
+ * $Revision: 1.6 $
+ * $Date: 2006/10/18 14:17:16 $
  */
  
 #include "stdHeaders.h"
@@ -45,10 +45,10 @@
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SegmentList_nativeGetSize(JNIEnv *env, jclass cls, jint handle) {
 	try {
 		short count;
-		if (sAIPath->GetPathSegmentCount((AIArtHandle)handle, &count))
+		if (sAIPath->GetPathSegmentCount((AIArtHandle) handle, &count))
 			throw new StringException("Cannot get path segments count");
 		return count;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -64,7 +64,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeFetch(JNIEnv
 		// the first byte of the 7th represents the boolean value. if this float is set
 		// to 0 before fetching, it will be == 0 if false, and != 0 if true, so that's 
 		// all we want in the java environment!
-		
 		if (count == 1) {
 			// for only one segment, this seems to be faster than the GetPrimitiveArrayCritical way.
 			jfloat data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
@@ -84,25 +83,27 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeFetch(JNIEnv
 				throw new StringException("Cannot get path segments");
 		}
 		EXCEPTION_CHECK(env);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
- * void nativeCommit(int handle, int index, float ptx, float pty, float inx, float iny, float outx, float outy, boolean corner)
+ * void nativeCommit(int docHandle, int handle, int index, float ptx, float pty, float inx, float iny, float outx, float outy, boolean corner)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeCommit__IIFFFFFFZ(JNIEnv *env, jclass cls, jint handle, jint index, jfloat ptx, jfloat pty, jfloat inx, jfloat iny, jfloat outx, jfloat outy, jboolean corner) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeCommit__IIIFFFFFFZ(JNIEnv *env, jclass cls, jint docHandle, jint handle, jint index, jfloat ptx, jfloat pty, jfloat inx, jfloat iny, jfloat outx, jfloat outy, jboolean corner) {
 	try {
+		Document_activate((AIDocumentHandle) docHandle);
 		DEFINE_SEGMENT(segment, ptx, pty, inx, iny, outx, outy, corner);
-		if (sAIPath->SetPathSegments((AIArtHandle)handle, index, 1, &segment))
+		if (sAIPath->SetPathSegments((AIArtHandle) handle, index, 1, &segment))
 			throw new StringException("Cannot set path segments");
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
- * void nativeCommit(int  handle, int index, int count, float[] values)
+ * void nativeCommit(int docHandle, int  handle, int index, int count, float[] values)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeCommit__III_3F(JNIEnv *env, jclass cls, jint handle, jint index, jint count, jfloatArray values) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeCommit__IIII_3F(JNIEnv *env, jclass cls, jint docHandle, jint handle, jint index, jint count, jfloatArray values) {
 	try {
+		Document_activate((AIDocumentHandle) docHandle);
 		if (count == 1) {
 			// for only one segment, this seems to be faster than the GetPrimitiveArrayCritical way.
 			jfloat data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
@@ -117,25 +118,27 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeCommit__III_
 				throw new StringException("Cannot get path segments");
 		}
 		EXCEPTION_CHECK(env);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
- * void nativeInsert(int handle, int index, float ptx, float pty, float inx, float iny, float outx, float outy, boolean corner)
+ * void nativeInsert(int docHandle, int handle, int index, float ptx, float pty, float inx, float iny, float outx, float outy, boolean corner)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIFFFFFFZ(JNIEnv *env, jclass cls, jint handle, jint index, jfloat ptx, jfloat pty, jfloat inx, jfloat iny, jfloat outx, jfloat outy, jboolean corner) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIIFFFFFFZ(JNIEnv *env, jclass cls, jint docHandle, jint handle, jint index, jfloat ptx, jfloat pty, jfloat inx, jfloat iny, jfloat outx, jfloat outy, jboolean corner) {
 	try {
+		Document_activate((AIDocumentHandle) docHandle);
 		DEFINE_SEGMENT(segment, ptx, pty, inx, iny, outx, outy, corner);
-		if (sAIPath->InsertPathSegments((AIArtHandle)handle, index, 1, &segment))
+		if (sAIPath->InsertPathSegments((AIArtHandle) handle, index, 1, &segment))
 			throw new StringException("Cannot insert path segments");
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
- * void nativeInsert(int handle, int index, int count, float[] values)
+ * void nativeInsert(int docHandle, int handle, int index, int count, float[] values)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__III_3F(JNIEnv *env, jclass cls, jint handle, jint index, jint count, jfloatArray values) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIII_3F(JNIEnv *env, jclass cls, jint docHandle, jint handle, jint index, jint count, jfloatArray values) {
 	try {
+		Document_activate((AIDocumentHandle) docHandle);
 		if (count == 1) {
 			// for only one segment, this seems to be faster than the GetPrimitiveArrayCritical way.
 			jfloat data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
@@ -150,31 +153,55 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__III_
 				throw new StringException("Cannot get path segments");
 		}
 		EXCEPTION_CHECK(env);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
- * int nativeRemove(int handle, int index, int count)
+ * int nativeRemove(int docHandle, int handle, int index, int count)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SegmentList_nativeRemove(JNIEnv *env, jclass cls, jint handle, jint index, jint count) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SegmentList_nativeRemove(JNIEnv *env, jclass cls, jint docHandle, jint handle, jint index, jint count) {
 	try {
-		if (sAIPath->DeletePathSegments((AIArtHandle)handle, index, count))
+		Document_activate((AIDocumentHandle) docHandle);
+		if (sAIPath->DeletePathSegments((AIArtHandle) handle, index, count))
 			throw new StringException("Cannot delete path segments");
 		short count;
-		if (sAIPath->GetPathSegmentCount((AIArtHandle)handle, &count))
+		if (sAIPath->GetPathSegmentCount((AIArtHandle) handle, &count))
 			throw new StringException("Cannot get path segments count");
 		return count;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
  
 /*
- * void nativeReverse(int handle)
+ * void nativeReverse(int docHandle, int handle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeReverse(JNIEnv *env, jclass cls, jint handle) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeReverse(JNIEnv *env, jclass cls, jint docHandle, jint handle) {
 	try {
-		if (sAIPath->ReversePathSegments((AIArtHandle)handle))
+		Document_activate((AIDocumentHandle) docHandle);
+		if (sAIPath->ReversePathSegments((AIArtHandle) handle))
 			throw new StringException("Cannot reverse path segments");
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * short nativeFetchSelectionState(int handle, int index)
+ */
+JNIEXPORT jshort JNICALL Java_com_scriptographer_ai_SegmentList_nativeFetchSelectionState(JNIEnv *env, jclass cls, jint handle, jint index) {
+	try {
+		short selected = 0;
+		sAIPath->GetPathSegmentSelected((AIArtHandle) handle, index, &selected);
+		return selected;
+	} EXCEPTION_CONVERT(env);
+	return 0;
+}
+
+/*
+ * void nativeCommitSelectionState(int docHandle, int handle, int index, short state)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeCommitSelectionState(JNIEnv *env, jclass cls, jint docHandle, jint handle, jint index, jshort state) {
+	try {
+		Document_activate((AIDocumentHandle) docHandle);
+		sAIPath->SetPathSegmentSelected((AIArtHandle) handle, index, state);
+	} EXCEPTION_CONVERT(env);
 }

@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Color.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/07/22 17:30:56 $
+ * $Revision: 1.4 $
+ * $Date: 2006/10/18 14:17:16 $
  */
  
 #include "stdHeaders.h"
@@ -39,9 +39,9 @@
  */
 
 /*
- * com.scriptographer.ai.Color convert(int conversion)
+ * com.scriptographer.ai.Color convert(short type)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_convert(JNIEnv *env, jobject obj, jint type) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_convert(JNIEnv *env, jobject obj, jshort type) {
 	try {
 		AIColor col;
 		AIReal alpha;
@@ -60,14 +60,14 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_convert(JNIEnv *env, 
 		if (gEngine->convertColor(&col, conversionTypes[type], &col, alpha, &alpha) != NULL) {
 			return gEngine->convertColor(env, &col, alpha);
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
 /*
- * java.awt.color.ICC_Profile getWSProfile(int whichSpace)
+ * java.awt.color.ICC_Profile getWSProfile(short whichSpace)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_getWSProfile(JNIEnv *env, jclass cls, jint whichSpace) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_getWSProfile(JNIEnv *env, jclass cls, jshort whichSpace) {
 	jobject ret = NULL;
 	try {
 		AIColorProfile profile;
@@ -88,6 +88,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_getWSProfile(JNIEnv *
 			}
 			sAIOverrideColorConversion->FreeProfile(profile);
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return ret;
 }

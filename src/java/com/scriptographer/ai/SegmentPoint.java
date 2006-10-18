@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentPoint.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.5 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -67,40 +67,40 @@ public class SegmentPoint extends Point implements WrapperCreator {
 		segment.update();
 		this.x = x;
 		this.y = y;
-		segment.markDirty();
+		segment.markDirty(Segment.DIRTY_POINTS);
 	}
 
 	public void setLocation(double x, double y) {
 		segment.update();
 		this.x = (float) x;
 		this.y = (float) y;
-		segment.markDirty();
+		segment.markDirty(Segment.DIRTY_POINTS);
 	}
 
 	public void setLocation(Point pt) {
 		segment.update();
 		this.x = pt.x;
 		this.y = pt.y;
-		segment.markDirty();
+		segment.markDirty(Segment.DIRTY_POINTS);
 	}
 
 	public void setLocation(Point2D pt) {
 		segment.update();
 		this.x = (float) pt.getX();
 		this.y = (float) pt.getY();
-		segment.markDirty();
+		segment.markDirty(Segment.DIRTY_POINTS);
 	}
 
 	public void setX(float x) {
 		segment.update();
 		this.x = x;
-		segment.markDirty();
+		segment.markDirty(Segment.DIRTY_POINTS);
 	}
 
 	public void setY(float y) {
 		segment.update();
 		this.y = y;
-		segment.markDirty();
+		segment.markDirty(Segment.DIRTY_POINTS);
 	}
 	
 	public double getX() {
@@ -111,6 +111,14 @@ public class SegmentPoint extends Point implements WrapperCreator {
 	public double getY() {
 		segment.update();
 		return y;
+	}
+	
+	public boolean isSelected() {
+		return segment.isSelected(this);
+	}
+	
+	public void setSelected(boolean selected) {
+		segment.setSelected(this, selected);
 	}
 	
 	// wrappable interface

@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2004-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,15 +28,13 @@
  * 
  * $RCSfile: FontWeight.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/11/05 00:50:41 $
+ * $Revision: 1.2 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
 
-import com.scriptographer.util.SoftIntMap;
-
-public class FontWeight extends AIObject {
+public class FontWeight extends AIWrapper {
 	
 	public static final FontWeight NONE = new FontWeight(0);
 	
@@ -54,18 +52,9 @@ public class FontWeight extends AIObject {
 	
 	public native int getIndex();
 	
-	// use a SoftIntMap to keep track of already wrapped weights:
-	private static SoftIntMap weights = new SoftIntMap();
 	
 	protected static FontWeight wrapHandle(int handle) {
-		if (handle == 0)
-			return null;
-		FontWeight weight = (FontWeight) weights.get(handle);
-		if (weight == null) {
-			weight = new FontWeight(handle);
-			weights.put(handle, weight);
-		}
-		return weight;
+		return (FontWeight) wrapHandle(FontWeight.class, handle, null, false);
 	}
 	
 	public native boolean isValid();

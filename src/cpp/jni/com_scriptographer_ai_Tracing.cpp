@@ -1,5 +1,38 @@
+/*
+ * Scriptographer
+ *
+ * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
+ *
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * All rights reserved.
+ *
+ * Please visit http://scriptographer.com/ for updates and contact.
+ *
+ * -- GPL LICENSE NOTICE --
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * -- GPL LICENSE NOTICE --
+ *
+ * $RCSfile: com_scriptographer_ai_Tracing.cpp,v $
+ * $Author: lehni $
+ * $Revision: 1.2 $
+ * $Date: 2006/10/18 14:17:18 $
+ */
+
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
+#include "aiGlobals.h"
 #include "com_scriptographer_ai_Tracing.h"
 
 /*
@@ -45,34 +78,21 @@ inline AIDictionaryRef Tracing_getStatistics(AIArtHandle art) {
 	gEngine->callVoidMethod(env, obj, gEngine->mid_Tracing_markDirty);
 
 /*
- * long nativeCreate(int handle)
+ * int nativeCreate(int docHandle, int artHandle)
  */
-JNIEXPORT jlong JNICALL Java_com_scriptographer_ai_Tracing_nativeCreate(JNIEnv *env, jclass cls, jint handle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeCreate(JNIEnv *env, jclass cls, jint docHandle, jint artHandle) {
 	try {
 #if kPluginInterfaceVersion >= kAI12
 		AIArtHandle tracing = NULL;
+		Document_activate((AIDocumentHandle) docHandle);
 		// we just pass the image itself for prep. TODO: find out what we're supposed to pass here!
-		sAITracing->CreateTracing(kPlaceAbove, (AIArtHandle) handle, (AIArtHandle) handle, &tracing);
-		return (jlong) tracing;
+		sAITracing->CreateTracing(kPlaceAbove, (AIArtHandle) artHandle, (AIArtHandle) artHandle, &tracing);
+		return (jint) tracing;
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
-}
-
-/*
- * boolean isTracing(int handle)
- */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_isTracing(JNIEnv *env, jclass cls, jint handle) {
-	try {
-#if kPluginInterfaceVersion >= kAI12
-		return sAITracing->IsTracing((AIArtHandle) handle);
-#else
-		TRACING_EXCEPTION
-#endif
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
 }
 
 /*
@@ -81,12 +101,12 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_isTracing(JNIEnv *
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_update(JNIEnv *env, jobject obj) {
 	try {
 #if kPluginInterfaceVersion >= kAI12
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAITracing->Update(art);
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -100,7 +120,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_getResample(JNIEnv
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return value;
 }
 
@@ -114,7 +134,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setResample(JNIEnv *en
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -128,7 +148,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getResampleResolutio
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return resolution;
 }
 
@@ -142,7 +162,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setResampleResolution(
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -156,7 +176,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getMode(JNIEnv *env, j
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return mode;
 }
 
@@ -170,7 +190,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMode(JNIEnv *env, j
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -184,7 +204,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getBlur(JNIEnv *env,
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return blur;
 }
 
@@ -198,7 +218,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setBlur(JNIEnv *env, j
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -212,7 +232,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getThreshold(JNIEnv *e
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return threshold;
 }
 
@@ -226,7 +246,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setThreshold(JNIEnv *e
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -240,7 +260,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getMaxColors(JNIEnv *e
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return maxColors;
 }
 
@@ -254,7 +274,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMaxColors(JNIEnv *e
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -268,7 +288,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_getFills(JNIEnv *e
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return fills;
 }
 
@@ -282,7 +302,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setFills(JNIEnv *env, 
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -296,7 +316,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_getStrokes(JNIEnv 
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return strokes;
 }
 
@@ -310,7 +330,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setStrokes(JNIEnv *env
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -324,7 +344,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getMaxStrokeWeight(J
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return maxWeight;
 }
 
@@ -338,7 +358,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMaxStrokeWeight(JNI
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -352,7 +372,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getMinStrokeLength(J
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return minLength;
 }
 
@@ -366,7 +386,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMinStrokeLength(JNI
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -380,7 +400,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getPathTightness(JNI
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return tightness;
 }
 
@@ -394,7 +414,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setPathTightness(JNIEn
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -408,7 +428,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Tracing_getCornerAngle(JNIEn
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return angle;
 }
 
@@ -422,7 +442,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setCornerAngle(JNIEnv 
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -436,7 +456,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getMinArea(JNIEnv *env
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return minArea;
 }
 
@@ -450,7 +470,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMinArea(JNIEnv *env
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -464,7 +484,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getVectorDisplay(JNIEn
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return display;
 }
 
@@ -478,7 +498,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setVectorDisplay(JNIEn
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -492,7 +512,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getRasterDisplay(JNIEn
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return display;
 }
 
@@ -506,7 +526,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setRasterDisplay(JNIEn
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -520,7 +540,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tracing_getLivePaint(JNIEn
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return livePaint;
 }
 
@@ -534,5 +554,5 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setLivePaint(JNIEnv *e
 #else
 		TRACING_EXCEPTION
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }

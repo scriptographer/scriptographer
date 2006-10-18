@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: Group.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/09/29 22:35:26 $
+ * $Revision: 1.8 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -38,16 +38,20 @@ import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 
 public class Group extends Art {
-	protected Group(long handle, Document document) {
-		super(handle, document);
+	
+	protected Group(int handle) {
+		super(handle);
 	}
 
-	protected Group(Document document) {
-		super(TYPE_GROUP, document);
+	/**
+	 * Creates a group object
+	 */
+	public Group() {
+		super(TYPE_GROUP);
 	}
 	
-	protected Group(Document document, ExtendedList children) {
-		this(document);
+	public Group(ExtendedList children) {
+		this();
 		for (int i = 0; i < children.getLength(); i++) {
 			Object obj = children.get(i);
 			if (obj instanceof Art)
@@ -55,23 +59,8 @@ public class Group extends Art {
 		}
 	}
 	
-	protected Group(Document document, Art[] children) {
-		this(document, Lists.asList(children));
-	}
-
-	/**
-	 * Creates a group object
-	 */
-	public Group() {
-		super(TYPE_GROUP, null);
-	}
-	
-	public Group(ExtendedList children) {
-		this(null, children);
-	}
-
 	public Group(Art[] children) {
-		this(null, children);
+		this(Lists.asList(children));
 	}
 	
 	public native boolean isClipped();

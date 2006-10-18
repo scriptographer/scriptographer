@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Tool.cpp,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.13 $
+ * $Date: 2006/10/18 14:17:18 $
  */
 
 #include "stdHeaders.h"
@@ -47,8 +47,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tool_hasPressure(JNIEnv *e
 		ASBoolean hasPressure = false;
 		if (!sAITool->SystemHasPressure(&hasPressure))
 			return hasPressure;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -60,7 +60,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_getIdleEventInterval(JNIE
 		AIToolTime interval;
 		if (!sAITool->GetToolNullEventInterval(tool, &interval))
 			return interval >= 0 ? (jint) interval * 1000 : -1;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return -1;
 }
 
@@ -71,7 +71,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setIdleEventInterval(JNIE
 	try {
 		AIToolHandle tool = gEngine->getToolHandle(env, obj);
 		sAITool->SetToolNullEventInterval(tool,  (AIToolTime) (interval >= 0 ? double(interval) / 1000.0 : -1));
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -88,6 +88,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Tool_nativeGetTools(JNIEnv 
 			gEngine->callObjectMethod(env, map, gEngine->mid_IntMap_put, (jint) handle, toolObj);
 		}
 		return map;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

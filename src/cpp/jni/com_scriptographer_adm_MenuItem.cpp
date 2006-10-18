@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_MenuItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/06/16 16:18:25 $
+ * $Revision: 1.2 $
+ * $Date: 2006/10/18 14:17:16 $
  */
 
 #include "StdHeaders.h"
@@ -68,7 +68,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_MenuItem_nativeCreate(JNIEnv 
 		delete groupStr;
 		return (jint) menuItem;
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -78,7 +78,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_MenuItem_nativeCreate(JNIEnv 
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_MenuItem_nativeRemove(JNIEnv *env, jclass cls, jint itemHandle) {
 	try {
 		sAIMenu->RemoveMenuItem((AIMenuItemHandle) itemHandle);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -96,7 +96,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_MenuItem_nativeSetText(JNIEnv
 		ai::UnicodeString textStr = gEngine->convertString_UnicodeString(env, text);
 		sAIMenu->SetItemText(item, textStr);
 #endif
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -106,7 +106,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_MenuItem_setOption(JNIEnv *en
 	try {
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 		sAIMenu->SetMenuItemOptions(item, options);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -118,7 +118,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_MenuItem_getOptions(JNIEnv *e
 		long options = 0;
 		sAIMenu->GetMenuItemOptions(item, &options);
 		return options;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -133,7 +133,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_MenuItem_setEnabled(JNIEnv *e
 		} else {
 			sAIMenu->DisableItem(item);
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -145,8 +145,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_MenuItem_isEnabled(JNIEnv
 		ASBoolean enabled = false;
 		sAIMenu->IsItemEnabled(item, &enabled);
 		return enabled;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -156,7 +156,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_MenuItem_setChecked(JNIEnv *e
 	try {
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 		sAIMenu->CheckItem(item, checked);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -168,6 +168,6 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_MenuItem_isChecked(JNIEnv
 		ASBoolean checked = false;
 		sAIMenu->IsItemChecked(item, &checked);
 		return checked;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }

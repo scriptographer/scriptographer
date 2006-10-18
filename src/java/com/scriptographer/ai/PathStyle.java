@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: PathStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2006/06/16 16:18:30 $
+ * $Revision: 1.11 $
+ * $Date: 2006/10/18 14:17:42 $
  */
 
 package com.scriptographer.ai;
@@ -91,13 +91,20 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 	}
 
 	protected PathStyle(Art art) {
-		this(0); // PathStyle doesn't use the handle
+		this(0); // PathStyle doesn't use the handle, but CharacterStyle does
 		this.art = art;
 	}
 
 	protected PathStyle(PathStyle style) {
-		this(0); // PathStyle doesn't use the handle
+		this(0); // PathStyle doesn't use the handle, but CharacterStyle does
 		init(style);
+	}
+
+	public boolean equals(Object obj) {
+		if (obj instanceof PathStyle) {
+			// TODO: Implement!
+		}
+		return false;
 	}
 	
 	public Object clone() {
@@ -145,7 +152,7 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 
 	protected native void nativeFetch(int handle);
 	
-	protected native void nativeCommit(int handle,
+	protected native void nativeCommit(int docHandle, int handle,
 			float[] fillColor, boolean hasFillColor, short fillOverprint,
 			float[] strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
 			float dashOffset, float[] dashArray,
@@ -161,8 +168,8 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 	 * just a wrapper around nativeCommit, which can be used in CharacterStyle as well
 	 * (CharacterStyle has an own implementation of nativeCommit, but the calling is the same...)
 	 */
-	protected void nativeCommit(int handle) {
-		nativeCommit(handle,
+	protected void nativeCommit(int docHandle, int handle) {
+		nativeCommit(docHandle, handle,
 			fill.color != null && fill.color != Color.NONE ? fill.color.getComponents() : null, fill.color != null, 
 			fill.overprint != null ? (short) (fill.overprint.booleanValue() ? 1 : 0) : -1,
 			stroke.color != null && stroke.color != Color.NONE ? stroke.color.getComponents() : null, stroke.color != null,
@@ -188,7 +195,7 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 
 	public void commit() {
 		if (dirty && art != null) {
-			nativeCommit(art.handle);
+			nativeCommit(art.document.handle, art.handle);
 			version = art.version;
 			dirty = false;
 		}

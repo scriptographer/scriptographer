@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_TextValueItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.3 $
+ * $Date: 2006/10/18 14:17:17 $
  */
 
 #include "StdHeaders.h"
@@ -47,7 +47,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextValueItem_setText(JNIEnv 
 		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		sADMItem->SetTextW(item, chars);
 		delete chars;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -62,7 +62,7 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_TextValueItem_getText(JNIE
 		jstring res = gEngine->convertString(env, chars, len);
 		delete chars;
 		return res;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -73,7 +73,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextValueItem_setJustify(JNIE
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetJustify(item, (ADMJustify)justify);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -83,7 +83,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextValueItem_getJustify(JNIE
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetJustify(item);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -94,7 +94,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextValueItem_setUnits(JNIEnv
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetUnits(item, (ADMUnits)units);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -104,7 +104,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextValueItem_getUnits(JNIEnv
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetUnits(item);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -115,7 +115,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextValueItem_setShowUnits(JN
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->ShowUnits(item, showUnits);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -125,6 +125,6 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_TextValueItem_getShowUnit
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetShowUnits(item);
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }

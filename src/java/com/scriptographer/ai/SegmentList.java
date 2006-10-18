@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.15 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -119,10 +119,14 @@ public class SegmentList extends AbstractFetchList {
 	}
 
 	protected static native void nativeFetch(int handle, int index, int count, float[] values);
-	protected static native void nativeCommit(int handle, int index, float pointX, float pointY, float inX, float inY, float outX, float outY, boolean corner);
-	protected static native void nativeCommit(int handle,int index, int count, float[] values);
-	protected static native void nativeInsert(int handle, int index, float pointX, float pointY, float inX, float inY, float outX, float outY, boolean corner);
-	protected static native void nativeInsert(int handle,int index, int count, float[] values);
+	// docHandle seems to be only needed for modifying code!
+	protected static native void nativeCommit(int docHandle, int handle, int index, float pointX, float pointY, float inX, float inY, float outX, float outY, boolean corner);
+	protected static native void nativeCommit(int docHandle, int handle,int index, int count, float[] values);
+	protected static native void nativeInsert(int docHandle, int handle, int index, float pointX, float pointY, float inX, float inY, float outX, float outY, boolean corner);
+	protected static native void nativeInsert(int docHandle, int handle,int index, int count, float[] values);
+	// for point selections
+	protected static native short nativeFetchSelectionState(int handle, int index);
+	protected static native void nativeCommitSelectionState(int docHandle, int handle, int index, short state);
 
 	/**
 	 * Fetches a series of segments from the underlying Adobe Illustrator Path.
@@ -185,7 +189,7 @@ public class SegmentList extends AbstractFetchList {
 					fetchCount -= count;
 					if (values == null || values.length < count)
 						values = new float[count * VALUES_PER_SEGMENT];
-	//				System.out.println("nativeFetch " + start + " " + count);
+					// System.out.println("nativeFetch " + start + " " + count);
 					nativeFetch(path.handle, start, count, values);
 					int valueIndex = 0;
 					for (int i = start; i < end; i++) {
@@ -322,7 +326,7 @@ public class SegmentList extends AbstractFetchList {
 
 		// and add the segments to illustrator as well
 		if (values != null && addCount > 0) {
-			SegmentList.nativeInsert(path.handle, index, addCount, values);
+			SegmentList.nativeInsert(path.document.handle, path.handle, index, addCount, values);
 
 			// update size
 			size += addCount;
@@ -348,7 +352,7 @@ public class SegmentList extends AbstractFetchList {
 			Segment ret = (Segment) list.set(index, segment);
 			segment.segments = this;
 			segment.index = index;
-			segment.markDirty();
+			segment.markDirty(Segment.DIRTY_POINTS);
 			if (ret != null)
 				ret.segments = null;
 			return ret;
@@ -365,7 +369,7 @@ public class SegmentList extends AbstractFetchList {
 		return size == 0;
 	}
 
-	private static native int nativeRemove(int handle, int index, int count);
+	private static native int nativeRemove(int docHandle, int handle, int index, int count);
 
 	public void remove(int fromIndex, int toIndex) {
 		if (fromIndex < toIndex) {
@@ -378,7 +382,7 @@ public class SegmentList extends AbstractFetchList {
 			}
 
 			if (path != null) {
-				size = nativeRemove(path.handle, fromIndex, toIndex - fromIndex);
+				size = nativeRemove(path.document.handle, path.handle, fromIndex, toIndex - fromIndex);
 			}
 
 			list.remove(fromIndex, toIndex);
@@ -397,14 +401,14 @@ public class SegmentList extends AbstractFetchList {
 		return obj;
 	}
 
-	private static native void nativeReverse(int handle);
+	private static native void nativeReverse(int docHandle, int handle);
 
 	public void reverse() {
 		if (path != null) {
 			// first save all changes:
 			CommitManager.commit(path);
 			// reverse underlying ai structures:
-			nativeReverse(path.handle);
+			nativeReverse(path.document.handle, path.handle);
 		}
 		// reverse internal arrays:
 		Object[] objs = list.toArray();

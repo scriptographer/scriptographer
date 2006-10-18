@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_PathStyle.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/01/03 05:37:06 $
+ * $Revision: 1.6 $
+ * $Date: 2006/10/18 14:17:17 $
  */
  
 #include "stdHeaders.h"
@@ -222,19 +222,20 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeFetch(JNIEnv *
 		sAIPathStyle->GetPathStyle((AIArtHandle) handle, &style);
 		
 		PathStyle_init(env, obj, &style, NULL);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
- * void nativeCommit(int handle,
+ * void nativeCommit(int docHandle, int handle,
 			float[] fillColor, boolean hasFillColor, short fillOverprint,
 			float[] strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
 			float dashOffset, float[] dashArray,
 			short cap, short join, float miterLimit,
 			short clip, short lockClip, short evenOdd, float resolution)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeCommit(JNIEnv *env, jobject obj, jint handle, jfloatArray fillColor, jboolean hasFillColor, jshort fillOverprint, jfloatArray strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit, jshort clip, jshort lockClip, jshort evenOdd, jfloat resolution) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeCommit(JNIEnv *env, jobject obj, jint docHandle, jint handle, jfloatArray fillColor, jboolean hasFillColor, jshort fillOverprint, jfloatArray strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit, jshort clip, jshort lockClip, jshort evenOdd, jfloat resolution) {
 	try {
+		Document_activate((AIDocumentHandle) docHandle);
 		AIPathStyle style;
 		AIPathStyleMap map; // is not needed here but we need to pass it
 		// fill with current values as not everything might be set
@@ -243,7 +244,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeCommit(JNIEnv 
 		sAIPathStyle->GetPathStyle((AIArtHandle) handle, &style);
 		PathStyle_convertPathStyle(env, &style, &map, fillColor, hasFillColor, fillOverprint, strokeColor, hasStrokeColor, strokeOverprint, strokeWidth, dashOffset, dashArray, cap, join, miterLimit, clip, lockClip, evenOdd, resolution);
 		sAIPathStyle->SetPathStyle((AIArtHandle) handle, &style);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -253,7 +254,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeInitStrokeStyl
 	try {
 		AIStrokeStyleMap map; // unused
 		PathStyle_convertStrokeStyle(env, (AIStrokeStyle *) handle, &map, strokeColor, hasStrokeColor, strokeOverprint, strokeWidth, dashOffset, dashArray, cap, join, miterLimit);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -263,5 +264,5 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeInitFillStyle(
 	try {
 		AIFillStyleMap map; // unused
 		PathStyle_convertFillStyle(env, (AIFillStyle *) handle, &map, fillColor, hasFillColor, fillOverprint);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }

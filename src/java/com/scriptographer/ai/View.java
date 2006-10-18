@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: View.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.6 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -37,9 +37,7 @@ package com.scriptographer.ai;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import com.scriptographer.util.SoftIntMap;
-
-public class View extends AIObject {
+public class View extends AIWrapper {
 	public static final int 
 		/** Only when there is no visibile document */
 		MODE_NOSCREEN = 0,
@@ -62,24 +60,12 @@ public class View extends AIObject {
 		/** OPP preview mode. */
 		STYLE_INK = 0x0100;
 	
-	private Document document = null;
-	
 	protected View(int handle) {
 		super(handle);
 	}
 	
-	// use a WeakHashMap to keep track of already wrapped documents:
-	private static SoftIntMap views = new SoftIntMap();
-	
 	protected static View wrapHandle(int handle) {
-		if (handle == 0)
-			return null;
-		View view = (View) views.get(handle);
-		if (view == null) {
-			view = new View(handle);
-			views.put(handle, view);
-		}
-		return view;
+		return (View) wrapHandle(View.class, handle, null, true);
 	}
 
 	/**
@@ -245,10 +231,6 @@ public class View extends AIObject {
 	 * Get the document displayed in the view.
 	 */
 	public Document getDocument() {
-		if (document == null)
-			document = Document.wrapHandle(nativeGetDocument());
 		return document;
 	}
-	
-	private native int nativeGetDocument();
 }

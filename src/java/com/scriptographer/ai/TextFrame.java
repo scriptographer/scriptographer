@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2004-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextFrame.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/01/03 05:38:03 $
+ * $Revision: 1.4 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -44,16 +44,16 @@ public abstract class TextFrame extends Art {
 
 	// AITextType
 	protected static final int
-		TEXTTYPE_UNKNOWN	= -1,
-		TEXTTYPE_POINT	= 0,
-		TEXTTYPE_AREA	= 1,
-		TEXTTYPE_PATH	= 2;
+		TEXTTYPE_UNKNOWN = -1,
+		TEXTTYPE_POINT = 0,
+		TEXTTYPE_AREA = 1,
+		TEXTTYPE_PATH = 2;
 
 	TextRange range = null;
 	TextRange visibleRange = null;
 
-	protected TextFrame(long handle, Document document) {
-		super(handle, document);
+	protected TextFrame(int handle) {
+		super(handle);
 	}
 
 	// orientation
@@ -67,18 +67,28 @@ public abstract class TextFrame extends Art {
 
 	public Art createOutline() {
 		// apply changes and reflow the layout before creating outlines
-		// TODO: find a way to commit only changes regarding this text frame
-		// especially CharacterStyle is a problem, because it uses TextRange
-		CommitManager.commit();
+		// All styles regarding this story need to be commited, as CharacterStyle
+		// uses Story as the commit key.
+		CommitManager.commit(this.getStory());
 		document.reflowText();
 		return nativeCreateOutline();
 	}
 
 	public native boolean link(TextFrame next);
 
-	public native boolean unlinkBefore();
+	private native boolean nativeUnlink(boolean before, boolean after);
+	
+	public boolean unlink() {
+		return nativeUnlink(true, true);
+	}
 
-	public native boolean unlinkAfter();
+	public boolean unlinkBefore() {
+		return nativeUnlink(true, false);
+	}
+
+	public boolean unlinkAfter() {
+		return nativeUnlink(false, true);
+	}
 
 	public native boolean isLinked();
 
@@ -99,16 +109,21 @@ public abstract class TextFrame extends Art {
 		// don't wrap directly. allways go through StoryList
 		// to make sure we're not getting more than one reference
 		// to the sam Story, so things can be cached there:
-		return (TextStory) document.getStories().get(getStoryIndex());
+		int index = getStoryIndex();
+		ReadOnlyList list = document.getStories();
+		if (index >= 0 && index < list.getLength())
+			return (TextStory) list.get(index);
+		return null;
 	}
 
 	private TextFrame getFrame(int index) {
-		ReadOnlyList list = getStory().getTextFrames();
-		if (index >= 0 && index < list.getLength()) {
-			return (TextFrame) list.get(index);
-		} else {
-			return null;
+		TextStory story = getStory();
+		if (story != null) {
+			ReadOnlyList list = story.getTextFrames();
+			if (index >= 0 && index < list.getLength())
+				return (TextFrame) list.get(index);
 		}
+		return null;
 	}
 
 	/**

@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Layer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/09/29 22:37:12 $
+ * $Revision: 1.7 $
+ * $Date: 2006/10/18 14:17:17 $
  */
  
 #include "stdHeaders.h"
@@ -40,38 +40,16 @@
  * com.scriptographer.ai.Layer
  */
 
-// the creation of layers is handled in nativeCreateArt!
-
-
-/*
- * Layer_beginCreateArt checks the current layer if it is not locked and returns the layer art object to insert
- * new objects into (kPlaceInsideOnTop)
- */
-AIArtHandle Layer_beginCreateArt() {
-	AILayerHandle currentLayer = NULL;
-	AIBoolean editable = false, visible = false;
-	if (!sAILayer->GetCurrentLayer(&currentLayer) &&
-		!sAILayer->GetLayerEditable(currentLayer, &editable) && 
-		!sAILayer->GetLayerVisible(currentLayer, &visible)) {
-		if (!editable)
-			throw new StringException("Cannot create art object. The active layer is locked.");
-		if (!visible)
-			throw new StringException("Cannot create art object. The active layer is hidden.");
-	}
-	AIArtHandle artLayer = NULL;
-	if (currentLayer != NULL)
-		sAIArt->GetFirstArtOfLayer(currentLayer, &artLayer);
-	return artLayer;
-}
+// the creation of layers is handled in Art.nativeCreate!
 
 /*
  * void setVisible(boolean visible)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setVisible(JNIEnv *env, jobject obj, jboolean visible) {
 	try {
-		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
+		AILayerHandle layer = gEngine->getLayerHandle(env, obj, true);
 		sAILayer->SetLayerVisible(layer, visible);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -84,8 +62,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_isVisible(JNIEnv *en
 		if (!sAILayer->GetLayerVisible(layer, &visible)) {
 			return visible;	
 		}
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -93,9 +71,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_isVisible(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setPreview(JNIEnv *env, jobject obj, jboolean preview) {
 	try {
-		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
+		AILayerHandle layer = gEngine->getLayerHandle(env, obj, true);
 		sAILayer->SetLayerPreview(layer, preview);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -108,8 +86,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_getPreview(JNIEnv *e
 		if (!sAILayer->GetLayerPreview(layer, &preview)) {
 			return preview;	
 		}
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -117,9 +95,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_getPreview(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setLocked(JNIEnv *env, jobject obj, jboolean locked) {
 	try {
-		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
+		AILayerHandle layer = gEngine->getLayerHandle(env, obj, true);
 		sAILayer->SetLayerEditable(layer, locked);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 // void getLocked is not needed as the one from Art works! but setLocked did not do the trick, so SetLayerEditable
@@ -130,9 +108,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setLocked(JNIEnv *env, j
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setPrinted(JNIEnv *env, jobject obj, jboolean printed) {
 	try {
-		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
+		AILayerHandle layer = gEngine->getLayerHandle(env, obj, true);
 		sAILayer->SetLayerPrinted(layer, printed);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -145,8 +123,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_isPrinted(JNIEnv *en
 		if (!sAILayer->GetLayerPrinted(layer, &printed)) {
 			return printed;	
 		}
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -154,9 +132,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_isPrinted(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setSelected(JNIEnv *env, jobject obj, jboolean selected) {
 	try {
-		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
+		AILayerHandle layer = gEngine->getLayerHandle(env, obj, true);
 		sAILayer->SetLayerSelected(layer, selected);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -169,8 +147,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_isSelected(JNIEnv *e
 		if (!sAILayer->GetLayerSelected(layer, &selected)) {
 			return selected;	
 		}
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -178,13 +156,13 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_isSelected(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setColor(JNIEnv *env, jobject obj, jobject color) {
 	try {
-		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
+		AILayerHandle layer = gEngine->getLayerHandle(env, obj, true);
 		AIColor aiColor;
 		gEngine->convertColor(env, color, &aiColor);
 		AIRGBColor rgbColor;
 		gEngine->convertColor(&aiColor, &rgbColor);
 		sAILayer->SetLayerColor(layer, rgbColor);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -199,7 +177,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getColor(JNIEnv *env,
 			gEngine->convertColor(&rgbColor, &aiColor);
 			return gEngine->convertColor(env, &aiColor);
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -217,7 +195,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getItems(JNIEnv *env,
 				return artSet;
 			}
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -230,8 +208,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_isActive(JNIEnv *env
 		AILayerHandle curLayer = NULL;
 		if (!sAILayer->GetCurrentLayer(&curLayer) && layer == curLayer)
 			return true;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -239,7 +217,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_isActive(JNIEnv *env
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_activate(JNIEnv *env, jobject obj) {
 	try {
-		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
+		AILayerHandle layer = gEngine->getLayerHandle(env, obj, true);
 		sAILayer->SetCurrentLayer(layer);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }

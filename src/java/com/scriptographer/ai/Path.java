@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.21 $
- * $Date: 2006/09/29 22:35:26 $
+ * $Revision: 1.22 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -55,46 +55,30 @@ public class Path extends Art {
 	/**
 	 * Wraps an AIArtHandle in a Path object
 	 */
-	protected Path(long handle, Document document) {
-		super(handle, document);
-	}
-
-	protected Path(Document document) {
-		super(TYPE_PATH, document);
-	}
-
-	protected Path(Document document, ExtendedList segments) {
-		this(document);
-		setSegments(segments);
-	}
-
-	protected Path(Document document, Object[] segments) {
-		this(document, Lists.asList(segments));
-	}
-	
-	protected Path(Document document, Shape shape) {
-		this(document);
-		append(shape);
+	protected Path(int handle) {
+		super(handle);
 	}
 
 	/**
 	 * Creates a path object
 	 */
-	
+
 	public Path() {
-		super(TYPE_PATH, null);
+		super(TYPE_PATH);
 	}
 
-	public Path(ExtendedList segments) {
-		this(null, segments);
+	protected Path(ExtendedList segments) {
+		this();
+		setSegments(segments);
 	}
 
-	public Path(Object[] segments) {
-		this(null, segments);
+	protected Path(Object[] segments) {
+		this(Lists.asList(segments));
 	}
 	
-	public Path(Shape shape) {
-		this(null, shape);
+	protected Path(Shape shape) {
+		this();
+		append(shape);
 	}
 
 	public boolean remove() {

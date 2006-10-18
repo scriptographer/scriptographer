@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ToggleItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/04/07 20:12:54 $
+ * $Revision: 1.3 $
+ * $Date: 2006/10/18 14:17:18 $
  */
 
 #include "StdHeaders.h"
@@ -45,8 +45,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_ToggleItem_isChecked(JNIE
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetBooleanValue(item);
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -56,5 +56,5 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ToggleItem_setChecked(JNIEnv 
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetBooleanValue(item, checked);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }

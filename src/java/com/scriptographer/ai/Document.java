@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.20 $
- * $Date: 2006/09/29 22:35:26 $
+ * $Revision: 1.21 $
+ * $Date: 2006/10/18 14:17:44 $
  */
 
 package com.scriptographer.ai;
@@ -62,6 +62,9 @@ public class Document extends DictionaryObject {
 
 	protected LayerList layers = null;
 	protected ViewList views = null;
+	protected SymbolList symbols = null;
+	protected SwatchList swatches = null;
+	protected GradientList gradients = null;
 
 	/**
 	 * Opens an existing document.
@@ -109,15 +112,60 @@ public class Document extends DictionaryObject {
 		return doc;
 	}
 	
+	private static native int getActiveDocumentHandle();
+	
+	public static Document getActiveDocument() {
+		return Document.wrapHandle(getActiveDocumentHandle());
+	}
+
+	/**
+	 * called before ai functions are executed
+	 */
+	
+	public static native void beginExecution();
+	
+	/**
+	 * called after ai functions are executed
+	 */
+	public static native void endExecution();
+
+	/**
+	 * Activates this document, so all newly created art objects will
+	 * be placed in it. 
+	 * 
+	 * @param focus When set to true, the document window is brought to
+	 * the front, otherwise the window sequence  remains the same.
+	 * @param forCreation if set to true, the internal pointer gWorkingDoc
+	 * will not be modified, but gCreationDoc will be set, which then
+	 * is only used once in the next call to Document_activate() (native stuff).
+	 */
+	private native void activate(boolean focus, boolean forCreation);
+
+	/**
+	 * Activates this document, so all newly created art objects will
+	 * be placed in it. 
+	 * 
+	 * @param focus When set to true, the document window is brought to
+	 * the front, otherwise the window sequence  remains the same.
+	 */
+	public void activate(boolean focus) {
+		activate(focus, false);
+	}
+	
+	/**
+	 * Activates this document and brings its window to the front
+	 */
+	public void activate() {
+		activate(true, false);
+	}
+	
 	public LayerList getLayers() {
 		if (layers == null)
 			layers = new LayerList(this);
 		return layers;
 	}
-	
-	public Layer getActiveLayer() {
-		return getLayers().getActiveLayer();
-	}
+
+	public native Layer getActiveLayer();
 	
 	public ViewList getViews() {
 		if (views == null)
@@ -125,10 +173,43 @@ public class Document extends DictionaryObject {
 		return views;
 	}
 	
+	// getActiveView can not be native as there is no wrapViewHandle defined
+	// nativeGetActiveView returns the handle, that still needs to be wrapped
+	// here. as this is only used once, that's the prefered way (just like
+	// DocumentList.getActiveDocument
+	
+	private native int getActiveViewHandle(); 
+
 	public View getActiveView() {
-		return getViews().getActiveView();
+		return View.wrapHandle(getActiveViewHandle());
+	}
+	
+	public SymbolList getSymbols() {
+		if (symbols == null)
+			symbols = new SymbolList(this);
+		return symbols;
+	}
+	
+	private native int getActiveSymbolHandle(); 
+
+	public Symbol getActiveSymbol() {
+		return (Symbol) Symbol.wrapHandle(getActiveSymbolHandle(), this);
 	}
 
+	public SwatchList getSwatches() {
+		if (swatches == null)
+			swatches = new SwatchList(this);
+		return swatches;
+	}
+
+	public GradientList getGradients() {
+		if (gradients == null)
+			gradients = new GradientList(this);
+		return gradients;
+	}
+
+	// TODO: getActiveSwatch, getActiveGradient
+	
 	public native Point getPageOrigin();
 	
 	public native void setPageOrigin(Point pt);
@@ -170,8 +251,6 @@ public class Document extends DictionaryObject {
 			formats = nativeGetFormats();
 		return (String[]) formats.clone();
 	}
-
-	public native void activate();
 	
 	/**
 	 * @param dialogStatus <tt>Document.DIALOG_*</tt>
@@ -189,6 +268,12 @@ public class Document extends DictionaryObject {
 	public native void cut();
 	
 	public native void paste();
+
+	public native Art place(File file, boolean linked);
+	
+	public Art place(File file) {
+		return place(file, true);
+	}
 
 	/**
 	 * Invalidates the rectangle in artwork coordinates. This will cause all views of the
@@ -241,6 +326,12 @@ public class Document extends DictionaryObject {
 	public ArtSet getRasterItems() {
 		return getMatchingItems(Raster.class, (Map) null);
 	}
+	
+	/* TODO: make these
+	public Art getInsertionItem();
+	public int getInsertionOrder();
+	public boolean isInsertionEditable();
+	*/
 
 	public native Path createRectangle(Rectangle rect);
 
@@ -259,83 +350,103 @@ public class Document extends DictionaryObject {
 	}
 	
 	public Path createPath() {
-		return new Path(this);
+		activate(false, true);
+		return new Path();
 	}
 	
 	public Path createPath(ExtendedList segments) {
-		return new Path(this, segments);
+		activate(false, true);
+		return new Path(segments);
 	}
 	
 	public Path createPath(Object[] segments) {
-		return new Path(this, segments);
+		activate(false, true);
+		return new Path(segments);
 	}
 	
-	public Raster createRaster(int type, int width, int height) {
-		return new Raster(this, type, width, height);
+	public Raster createRaster(short type, int width, int height) {
+		activate(false, true);
+		return new Raster(type, width, height);
 	}
 	
 	public Raster createRaster(int type) {
-		return new Raster(this, type);
+		activate(false, true);
+		return new Raster(type);
 	}
 	
 	public Raster createRaster() {
-		return new Raster(this);
+		activate(false, true);
+		return new Raster();
 	}
 	
 	public CompoundPath createCompoundPath() {
-		return new CompoundPath(this);
+		activate(false, true);
+		return new CompoundPath();
 	}
 	
 	public CompoundPath createCompoundPath(ExtendedList children) {
-		return new CompoundPath(this, children);
+		activate(false, true);
+		return new CompoundPath(children);
 	}
 	
 	public CompoundPath createCompoundPath(Art[] children) {
-		return new CompoundPath(this, children);
+		activate(false, true);
+		return new CompoundPath(children);
 	}
 	
 	public CompoundPath createCompoundPath(Shape shape) {
-		return new CompoundPath(this, shape);
+		activate(false, true);
+		return new CompoundPath(shape);
 	}
 	
 	public Group createGroup() {
-		return new Group(this);
+		activate(false, true);
+		return new Group();
 	}
 	
 	public Group createGroup(ExtendedList children) {
-		return new Group(this, children);
+		activate(false, true);
+		return new Group(children);
 	}
 	
 	public Group createGroup(Art[] children) {
-		return new Group(this, children);
+		activate(false, true);
+		return new Group(children);
 	}
 	
 	public AreaText createAreaText(Path area, int orient) {
-		return new AreaText(this, area, orient);
+		activate(false, true);
+		return new AreaText(area, orient);
 	}
 
 	public AreaText createAreaText(Path area) {
-		return new AreaText(this, area);
+		activate(false, true);
+		return new AreaText(area);
 	}
 	
 	public PointText createPointText(Point2D point, int orient) {
-		return new PointText(this, point, orient);
+		activate(false, true);
+		return new PointText(point, orient);
 	}
 
 	public PointText createPointText(Point2D point) {
-		return new PointText(this, point);
+		activate(false, true);
+		return new PointText(point);
 	}
 	
 	public PathText createPathText(Path path, int orient) {
-		return new PathText(this, path, orient);
+		activate(false, true);
+		return new PathText(path, orient);
 	}
 
 	public PathText createPathText(Path path) {
-		return new PathText(this, path);
+		activate(false, true);
+		return new PathText(path);
 	}
 	
 	public Layer createLayer() {
-		return new Layer(this);
+		activate(false, true);
+		return new Layer();
 	}
 	
 	protected native HitTest nativeHitTest(Point point, int type, float tolerance, Art art); 
@@ -363,21 +474,12 @@ public class Document extends DictionaryObject {
 	
 	private native int nativeGetStories();
 	
-	public static native void suspendTextReflow();
-	
-	public static native void resumeTextReflow();
-	
 	/**
-	 * reflow is suspended during script execution.
-	 * when reflow() is called, it's quickly turned on and off again
-	 * immediatelly afterwards.
+	 * Text reflow is suspended during script execution.
+	 * when reflowText() is called, the reflow of text is forced.
 	 */
-	public void reflowText() {
-		// TODO: test if this does the trick? does resumeTextReflow immediatelly reflow the text?
-		resumeTextReflow();
-		suspendTextReflow();
-	}
-	
+	public native void reflowText();
+
 	private TextStoryList stories = null;
 	
 	public ReadOnlyList getStories() {

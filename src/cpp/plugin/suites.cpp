@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: suites.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/06/29 15:27:29 $
+ * $Revision: 1.5 $
+ * $Date: 2006/10/18 14:18:09 $
  */
  
 #include "stdHeaders.h"
@@ -49,6 +49,7 @@ extern "C" {
 
 	AIAnnotatorSuite				*sAIAnnotator;
 	AIArraySuite					*sAIArray;
+	AIArtStyleSuite					*sAIArtStyle;
 	AIArtSuite						*sAIArt;
 	AIArtSetSuite					*sAIArtSet;
 	AIATEPaintSuite					*sAIATEPaint;
@@ -63,15 +64,19 @@ extern "C" {
 	AIDocumentListSuite				*sAIDocumentList;
 	AIDocumentViewSuite				*sAIDocumentView;
 	AIEntrySuite					*sAIEntry;
+	AIEnvelopeSuite					*sAIEnvelope;
 	AIExpandSuite					*sAIExpand;
 	AIFileFormatSuite				*sAIFileFormat;
 	AIFilterSuite					*sAIFilter;
 	AIFontSuite						*sAIFont;
+	AIGradientSuite					*sAIGradient;
 	AIGroupSuite					*sAIGroup;
 	AIHitTestSuite					*sAIHitTest;
+	AIHardSoftSuite					*sAIHardSoft;
 	AILayerSuite					*sAILayer;
 	AILiveEffectSuite				*sAILiveEffect;
 	AIMatchingArtSuite				*sAIMatchingArt;
+	AIMeshSuite						*sAIMesh;
 	AIMenuSuite						*sAIMenu;
 	AINotifierSuite					*sAINotifier;
 	AIPaintStyleSuite				*sAIPaintStyle;
@@ -81,12 +86,17 @@ extern "C" {
 	AIPathStyleSuite				*sAIPathStyle;
 	AIPathSuite						*sAIPath;
 	AIPluginGroupSuite				*sAIPluginGroup;
+	AIPatternSuite					*sAIPattern;
+	AIPlacedSuite					*sAIPlaced;
 	AIPreferenceSuite				*sAIPreference;
 	AIRasterSuite					*sAIRaster;
 	AIRasterizeSuite				*sAIRasterize;
 	AIRealBezierSuite				*sAIRealBezier;
 	AIRealMathSuite					*sAIRealMath;
 	AIShapeConstructionSuite		*sAIShapeConstruction;
+	AISwatchListSuite				*sAISwatchList;
+	AISymbolSuite					*sAISymbol;
+	AISymbolPaletteSuite			*sAISymbolPalette;
 	AITabletDataSuite				*sAITabletData;
 	AITagSuite						*sAITag;
 	AITextFrameHitSuite				*sAITextFrameHit;
@@ -180,6 +190,7 @@ ImportSuite startup[] = {
 ImportSuite postStartup[] = {
 	kAIAnnotatorSuite, kAIAnnotatorVersion,	&sAIAnnotator, sizeof(AIAnnotatorSuite),
 	kAIArraySuite, kAIArraySuiteVersion, &sAIArray, sizeof(AIArraySuite),
+	kAIArtStyleSuite, kAIArtStyleVersion, &sAIArtStyle, sizeof(AIArtStyleSuite),
 	kAIArtSuite, kAIArtVersion, &sAIArt, sizeof(AIArtSuite),
 	kAIArtSetSuite, kAIArtSetVersion, &sAIArtSet, sizeof(AIArtSetSuite),
 	kAIATEPaintSuite, kAIATEPaintSuiteVersion, &sAIATEPaint, sizeof(AIATEPaintSuite),
@@ -193,15 +204,19 @@ ImportSuite postStartup[] = {
 	kAIDocumentListSuite, kAIDocumentListSuiteVersion, &sAIDocumentList, sizeof(AIDocumentListSuite),
 	kAIDocumentViewSuite, kAIDocumentViewSuiteVersion, &sAIDocumentView, sizeof(AIDocumentViewSuite),
 	kAIEntrySuite, kAIEntryVersion, &sAIEntry, sizeof(AIEntrySuite),
+	kAIEnvelopeSuite, kAIEnvelopeSuiteVersion, &sAIEnvelope, sizeof(AIEnvelopeSuite),
 	kAIExpandSuite, kAIExpandSuiteVersion, &sAIExpand, sizeof(AIExpandSuite),
 	kAIFileFormatSuite, kAIFileFormatSuiteVersion, &sAIFileFormat, sizeof(AIFileFormatSuite),
 	kAIFilterSuite, kAIFilterVersion, &sAIFilter, sizeof(AIFilterSuite),
 	kAIFontSuite, kAIFontVersion, &sAIFont, sizeof(AIFontSuite),
+	kAIGradientSuite, kAIGradientVersion, &sAIGradient, sizeof(AIGradientSuite),
 	kAIGroupSuite, kAIGroupVersion, &sAIGroup, sizeof(AIGroupSuite),
 	kAIHitTestSuite, kAIHitTestSuiteVersion, &sAIHitTest, sizeof(AIHitTestSuite),
+	kAIHardSoftSuite, kAIHardSoftSuiteVersion, &sAIHardSoft, sizeof(AIHardSoftSuite),
 	kAILayerSuite, kAILayerVersion, &sAILayer, sizeof(AILayerSuite),
 	kAILiveEffectSuite, kAILiveEffectVersion, &sAILiveEffect, sizeof(AILiveEffectSuite),
 	kAIMatchingArtSuite, kAIMatchingArtVersion, &sAIMatchingArt, sizeof(AIMatchingArtSuite),
+	kAIMeshSuite, kAIMeshVersion, &sAIMesh, sizeof(AIMeshSuite),
 	kAIMenuSuite, kAIMenuVersion, &sAIMenu, sizeof(AIMenuSuite),
 	kAIPaintStyleSuite, kAIPaintStyleSuiteVersion, &sAIPaintStyle, sizeof(AIPaintStyleSuite),
 	kAIPathConstructionSuite, kAIPathConstructionSuiteVersion, &sAIPathConstruction, sizeof(AIPathConstructionSuite),
@@ -209,13 +224,18 @@ ImportSuite postStartup[] = {
 	kAIPathInterpolateSuite, kAIPathInterpolateSuiteVersion, &sAIPathInterpolate, sizeof(AIPathInterpolateSuite),
 	kAIPathStyleSuite, kAIPathStyleVersion, &sAIPathStyle, sizeof(AIPathStyleSuite),
 	kAIPathSuite, kAIPathSuiteVersion, &sAIPath, sizeof(AIPathSuite),
+	kAIPatternSuite, kAIPatternVersion, &sAIPattern, sizeof(AIPatternSuite),
 	kAIPluginGroupSuite, kAIPluginGroupVersion, &sAIPluginGroup, sizeof(AIPluginGroupSuite),
+	kAIPlacedSuite, kAIPlacedVersion, &sAIPlaced, sizeof(AIPlacedSuite),
 	kAIPreferenceSuite, kAIPreferenceSuiteVersion, &sAIPreference, sizeof(AIPreferenceSuite),
 	kAIRasterSuite, kAIRasterSuiteVersion, &sAIRaster, sizeof(AIRasterSuite),
 	kAIRasterizeSuite, kAIRasterizeSuiteVersion, &sAIRasterize, sizeof(AIRasterizeSuite),
 	kAIRealBezierSuite, kAIRealBezierSuiteVersion, &sAIRealBezier, sizeof(AIRealBezierSuite),
 	kAIRealMathSuite, kAIRealMathVersion, &sAIRealMath, sizeof(AIRealMathSuite),
 	kAIShapeConstructionSuite, kAIShapeConstructionSuiteVersion, &sAIShapeConstruction, sizeof(AIShapeConstructionSuite),
+	kAISwatchListSuite, kAISwatchListSuiteVersion, &sAISwatchList, sizeof(AISwatchListSuite),
+	kAISymbolSuite, kAISymbolSuiteVersion, &sAISymbol, sizeof(AISymbolSuite),
+	kAISymbolPaletteSuite, kAISymbolPaletteSuiteVersion, &sAISymbolPalette, sizeof(AISymbolPaletteSuite),
 	kAITabletDataSuite, kAITabletDataVersion, &sAITabletData, sizeof(AITabletDataSuite),
 	kAITagSuite, kAITagVersion, &sAITag, sizeof(AITagSuite),
 	kAITextFrameHitSuite, kAITextFrameHitVersion, &sAITextFrameHit, sizeof(AITextFrameHitSuite),

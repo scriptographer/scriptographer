@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_View.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/04/08 21:56:40 $
+ * $Revision: 1.4 $
+ * $Date: 2006/10/18 14:17:16 $
  */
 
 #include "StdHeaders.h"
@@ -49,7 +49,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_getBounds(JNIEnv *env,
 		AIRealRect rect;
 		sAIDocumentView->GetDocumentViewBounds(view, &rect);
 		return gEngine->convertRectangle(env, &rect);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -62,7 +62,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_getCenter(JNIEnv *env,
 		AIRealPoint point;
 		sAIDocumentView->GetDocumentViewCenter(view, &point);
 		return gEngine->convertPoint(env, &point);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -74,7 +74,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setCenter(JNIEnv *env, jo
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		DEFINE_POINT(point, x, y);
 		sAIDocumentView->SetDocumentViewCenter(view, &point);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -86,7 +86,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_View_getZoom(JNIEnv *env, jo
 		AIReal zoom = 0;
 		sAIDocumentView->GetDocumentViewZoom(view, &zoom);
 		return zoom;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0.0;
 }
 
@@ -97,7 +97,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setZoom(JNIEnv *env, jobj
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		sAIDocumentView->SetDocumentViewZoom(view, zoom);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 
@@ -111,7 +111,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_artworkToView__FF(JNIE
 		AIRealPoint pointOut;
 		sAIDocumentView->FixedArtworkPointToViewPoint(view, &pointIn, &pointOut);
 		return gEngine->convertPoint(env, &pointOut);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -127,7 +127,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_artworkToView__FFFF(JN
 		sAIDocumentView->FixedArtworkPointToViewPoint(view, &bottomLeftIn, &bottomLeftOut);
 		sAIDocumentView->FixedArtworkPointToViewPoint(view, &topRightIn, &topRightOut);
 		return gEngine->convertRectangle(env, bottomLeftOut.h, topRightOut.v, topRightOut.h, bottomLeftOut.v);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -141,7 +141,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_viewToArtwork__FF(JNIE
 		AIRealPoint pointOut;
 		sAIDocumentView->FixedViewPointToArtworkPoint(view, &pointIn, &pointOut);
 		return gEngine->convertPoint(env, &pointOut);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -157,7 +157,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_viewToArtwork__FFFF(JN
 		sAIDocumentView->FixedViewPointToArtworkPoint(view, &bottomLeftIn, &bottomLeftOut);
 		sAIDocumentView->FixedViewPointToArtworkPoint(view, &topRightIn, &topRightOut);
 		return gEngine->convertRectangle(env, bottomLeftOut.h, topRightOut.v, topRightOut.h, bottomLeftOut.v);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -169,7 +169,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setScreenMode(JNIEnv *env
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		sAIDocumentView->SetScreenMode(view, (AIScreenMode) mode);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -181,7 +181,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_View_getScreenMode(JNIEnv *env
 		AIScreenMode mode = kNoScreenMode;
 		sAIDocumentView->GetScreenMode(view, &mode);
 		return (jint) mode;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -194,8 +194,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_isTemplateVisible(JNI
 		AIBoolean visible = false;
 		sAIDocumentView->GetTemplateVisible(view, &visible);
 		return visible;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -206,7 +206,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_scrollBy(JNIEnv *env, job
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		DEFINE_POINT(point, x, y);
 		sAIDocumentView->DocumentViewScrollDelta(view, &point);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -218,7 +218,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_getUpdateRect(JNIEnv *
 		AIRealRect rect;
 		sAIDocumentView->GetDocumentViewInvalidRect(view, &rect);
 		return gEngine->convertRectangle(env, &rect);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -230,7 +230,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_invalidate(JNIEnv *env, j
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		DEFINE_RECT(rect, x, y, width, height);
 		sAIDocumentView->SetDocumentViewInvalidRect(view, &rect);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -242,7 +242,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_View_getStyle(JNIEnv *env, job
 		short style;
 		sAIDocumentView->GetDocumentViewStyle(view, &style);
 		return style;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -254,8 +254,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_getShowPageTiling(JNI
 		ASBoolean show = false;
 		sAIDocumentView->GetShowPageTiling(&show);
 		return show;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -274,8 +274,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_getShowGrid(JNIEnv *e
 		ASBoolean show, snap;
 		sAIDocumentView->GetGridOptions(view, &show, &snap);
 		return show;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -287,8 +287,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_getSnapGrid(JNIEnv *e
 		ASBoolean show, snap;
 		sAIDocumentView->GetGridOptions(view, &show, &snap);
 		return snap;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -300,7 +300,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setShowGrid(JNIEnv *env, 
 		ASBoolean curShow, curSnap;
 		sAIDocumentView->GetGridOptions(view, &curShow, &curSnap);
 		sAIDocumentView->SetGridOptions(view, show, curSnap);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -312,7 +312,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setSnapGrid(JNIEnv *env, 
 		ASBoolean curShow, curSnap;
 		sAIDocumentView->GetGridOptions(view, &curShow, &curSnap);
 		sAIDocumentView->SetGridOptions(view, curShow, snap);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -324,8 +324,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_getShowTransparencyGr
 		ASBoolean show = false;
 		sAIDocumentView->GetShowTransparencyGrid(view, &show);
 		return show;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -335,7 +335,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setShowTransparencyGrid(J
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		sAIDocumentView->SetShowTransparencyGrid(view, show);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -347,6 +347,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_View_nativeGetDocument(JNIEnv 
 		AIDocumentHandle doc = NULL;
 		sAIDocumentView->GetDocumentViewDocument(view, &doc);
 		return (jint) doc;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }

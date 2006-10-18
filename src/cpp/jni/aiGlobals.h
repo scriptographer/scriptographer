@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,23 +26,30 @@
  *
  * $RCSfile: aiGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2006/09/29 23:25:35 $
+ * $Revision: 1.13 $
+ * $Date: 2006/10/18 14:17:17 $
  */
 
+extern AIDocumentHandle gActiveDoc;
+extern AIDocumentHandle gWorkingDoc;
+extern AIDocumentHandle gCreationDoc;
+
+bool Art_isValid(AIArtHandle art);
 short Art_getType(AIArtHandle handle);
 short Art_getType(JNIEnv *env, jclass cls);
 jboolean Art_hasChildren(AIArtHandle handle);
 jboolean Art_isLayer(AIArtHandle handle);
 AIArtHandle Art_rasterize(AIArtHandle handle, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
-
-AIArtHandle Layer_beginCreateArt();
+AIArtHandle Art_getInsertionPoint(short *paintOrder, AIDocumentHandle doc = NULL);
 
 void ArtSet_filter(AIArtSet set, bool layerOnly = false);
 jobject ArtSet_getSelected(JNIEnv *env);
 AIArtHandle ArtSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 
-void Document_deselectAll();
+AIArtHandle JNICALL PlacedItem_place(JNIEnv *env, AIDocumentHandle doc, jobject file, jboolean linked);
+
+void Document_activate(AIDocumentHandle doc = NULL);
+void Document_deselectAll(bool force = false);
 
 short Path_getBezierCount(AIArtHandle art);
 
@@ -86,38 +93,20 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 	RT.right =  X + WIDTH; \
 	RT.bottom = Y + HEIGHT;
 
-// switch to the specified document first if it differs from the current one:
-#define CREATEART_BEGIN \
-	AIDocumentHandle activeDoc = NULL; \
-	AIDocumentHandle prevDoc = NULL; \
-	try { \
-		AIDocumentHandle doc = (AIDocumentHandle) docHandle; \
-		sAIDocument->GetDocument(&activeDoc); \
-		if (activeDoc != doc) { \
-			prevDoc = activeDoc; \
-			sAIDocumentList->Activate(doc, false); \
-		}
-		
-// switch back to the previously active document:
-#define CREATEART_END \
-	} EXCEPTION_CONVERT(env) \
-	if (prevDoc != NULL) \
-		sAIDocumentList->Activate(prevDoc, false);
-
 // macros for style getters and setters (CharacterStyle, ParagraphStyle)
 #define CHARACTERSTYLE_GET(NAME, TYPE, CLASS, JTYPE) \
 	try { \
-		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj); \
+		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj); \
 		bool isAssigned; \
 		TYPE value; \
 		if (!sCharFeatures->Get##NAME(features, &isAssigned, &value) && isAssigned) \
 			return gEngine->newObject(env, gEngine->cls_##CLASS, gEngine->cid_##CLASS, (JTYPE) value); \
-	} EXCEPTION_CONVERT(env) \
+	} EXCEPTION_CONVERT(env); \
 	return NULL;
 
 #define CHARACTERSTYLE_SET(NAME, TYPE, METHOD_TYPE, METHOD_NAME) \
 	try { \
-		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj); \
+		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj); \
 		ASErr err; \
 		if (value == NULL) \
 			err = sCharFeatures->Clear##NAME(features); \
@@ -125,7 +114,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 			err = sCharFeatures->Set##NAME(features, (TYPE) gEngine->call##METHOD_TYPE##Method(env, value, gEngine->METHOD_NAME)); \
 		if (!err) \
 			gEngine->callVoidMethod(env, obj, gEngine->mid_CharacterStyle_markSetStyle); \
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 
 #define CHARACTERSTYLE_GET_FLOAT(NAME) \
 	CHARACTERSTYLE_GET(NAME, ASReal, Float, jfloat)
@@ -153,17 +142,17 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 
 #define PARAGRAPHSTYLE_GET(NAME, TYPE, CLASS, JTYPE) \
 	try { \
-		ParaFeaturesRef features = gEngine->getParaFeaturesRef(env, obj); \
+		ParaFeaturesRef features = gEngine->getParaFeaturesHandle(env, obj); \
 		bool isAssigned; \
 		TYPE value; \
 		if (!sParaFeatures->Get##NAME(features, &isAssigned, &value) && isAssigned) \
 			return gEngine->newObject(env, gEngine->cls_##CLASS, gEngine->cid_##CLASS, (JTYPE) value); \
-	} EXCEPTION_CONVERT(env) \
+	} EXCEPTION_CONVERT(env); \
 	return NULL;
 
 #define PARAGRAPHSTYLE_SET_CLEAR(NAME, CLEAR, TYPE, METHOD_TYPE, METHOD_NAME) \
 	try { \
-		ParaFeaturesRef features = gEngine->getParaFeaturesRef(env, obj); \
+		ParaFeaturesRef features = gEngine->getParaFeaturesHandle(env, obj); \
 		ASErr err; \
 		if (value == NULL) \
 			err = sParaFeatures->Clear##CLEAR(features); \
@@ -171,7 +160,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 			err = sParaFeatures->Set##NAME(features, (TYPE) gEngine->call##METHOD_TYPE##Method(env, value, gEngine->METHOD_NAME)); \
 		if (!err) \
 			gEngine->callVoidMethod(env, obj, gEngine->mid_ParagraphStyle_markSetStyle); \
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 
 #define PARAGRAPHSTYLE_SET(NAME, TYPE, METHOD_TYPE, METHOD_NAME) \
 	PARAGRAPHSTYLE_SET_CLEAR(NAME, NAME, TYPE, METHOD_TYPE, METHOD_NAME)

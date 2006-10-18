@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Curve.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/18 15:35:46 $
+ * $Revision: 1.5 $
+ * $Date: 2006/10/18 14:17:17 $
  */
  
 #include "stdHeaders.h"
@@ -46,7 +46,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Curve_nativeGetLength(JNIEnv
 	try {
 		DEFINE_BEZIER(bezier, p1x, p1y, h1x, h1y, h2x, h2y, p2x, p2y);
 		return sAIRealBezier->Length(&bezier, flatness);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0.0;
 }
 
@@ -68,5 +68,5 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Curve_nativeAdjustThroughPoint
 		segments[1].in = bezier.p2;
 		segments[1].p = bezier.p3;
 		env->ReleaseFloatArrayElements(values, (jfloat *) segments, 0);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }

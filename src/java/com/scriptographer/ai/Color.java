@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: Color.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/11/04 01:34:14 $
+ * $Revision: 1.5 $
+ * $Date: 2006/10/18 14:17:44 $
  */
 
 package com.scriptographer.ai;
@@ -45,7 +45,7 @@ public abstract class Color extends WrappableObject {
 	// Used in Color.convert() and Raster
 	// the conversion to the right AIColorConversionSpaceValue values is done
 	// in native code. 
-	public final static int
+	public final static short
 		TYPE_RGB = 0, // RGB no alpha
 		TYPE_CMYK = 1, // CMYK no alpha
 		TYPE_GRAY = 2, // Grayscale no alpha
@@ -56,7 +56,7 @@ public abstract class Color extends WrappableObject {
 		TYPE_ABITMAP = 8; // bitmap with transparent 0-pixels
 
 	// AIWorkingColorSpace, AIColorModel,
-	public final static int
+	public final static short
 		MODEL_GRAY = 0,
 		MODEL_RGB = 1,
 		MODEL_CMYK = 2;
@@ -107,7 +107,7 @@ public abstract class Color extends WrappableObject {
 	 * @param type the conversion color space, Color.TYPE_*
 	 * @return the converted color.
 	 */
-	public native Color convert(int type);
+	public native Color convert(short type);
 
 	/**
 	 * returns the native profile for the above MODEL_ constants, wrapped in an ICC_Profile
@@ -118,7 +118,7 @@ public abstract class Color extends WrappableObject {
 	 * @param space the profile for Illustrator's ColorSpace, Color.MODEL_*
 	 * @return the ICC_Profile that wraps Illustrator's ColorSpace profile
 	 */
-	private static native ICC_Profile getWSProfile(int space);
+	private static native ICC_Profile getWSProfile(short space);
 
 	/**
 	 * Call first getWSProfile in order to get the illustrator's profile, and if this doesn't work,
@@ -127,7 +127,7 @@ public abstract class Color extends WrappableObject {
 	 * @param space
 	 * @return
 	 */
-	protected static ICC_Profile getProfile(int space) {
+	protected static ICC_Profile getProfile(short space) {
 		// first try the illustrator internal WS profiles:
 		ICC_Profile profile = getWSProfile(space);
 		if (profile == null) {

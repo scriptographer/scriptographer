@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: suites.h,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/06/29 15:27:29 $
+ * $Revision: 1.5 $
+ * $Date: 2006/10/18 14:18:08 $
  */
 
 // Define versions so they can even be used when compiling for 10 or CS1:
@@ -85,16 +85,20 @@
 #include "AIDocument.h"
 #include "AIDocumentList.h"
 #include "AIDocumentView.h"
+#include "AIEnvelope.h"
 #include "AIExpand.h"
 #include "AIFileFormat.h"
 #include "AIFilter.h"
+#include "AIGradient.h"
 #include "AIGroup.h"
+#include "AIHardSoft.h"
 #include "AIHitTest.h"
 #include "AILayer.h"
 #include "AILiveEffect.h"
 #include "AIMask.h"
 #include "AIMatchingArt.h"
 #include "AIMenu.h"
+#include "AIMesh.h"
 #include "AIMenuGroups.h"
 #include "AINotifier.h"
 #include "AIPaintStyle.h"
@@ -103,6 +107,8 @@
 #include "AIPathConstruction.h"
 #include "AIPathfinder.h"
 #include "AIPathInterpolate.h"
+#include "AIPattern.h"
+#include "AIPlaced.h"
 #include "AIPluginGroup.h"
 #include "AIRandom.h"
 #include "AIRaster.h"
@@ -110,6 +116,8 @@
 #include "AIRealMath.h"
 #include "AIRuntime.h"
 #include "AIShapeConstruction.h"
+#include "AISwatchList.h"
+#include "AISymbol.h"
 #include "AITabletData.h"
 #include "AITag.h"
 #include "AITimer.h"
@@ -220,6 +228,7 @@ extern "C" SPPluginsSuite 					*sSPPlugins;
 
 extern "C" AIAnnotatorSuite					*sAIAnnotator;
 extern "C" AIArraySuite						*sAIArray;
+extern "C" AIArtStyleSuite					*sAIArtStyle;
 extern "C" AIArtSuite						*sAIArt;
 extern "C" AIArtSetSuite					*sAIArtSet;
 extern "C" AIATEPaintSuite					*sAIATEPaint;
@@ -234,15 +243,19 @@ extern "C" AIDocumentSuite					*sAIDocument;
 extern "C" AIDocumentListSuite				*sAIDocumentList;
 extern "C" AIDocumentViewSuite				*sAIDocumentView;
 extern "C" AIEntrySuite						*sAIEntry;
+extern "C" AIEnvelopeSuite					*sAIEnvelope;
 extern "C" AIExpandSuite					*sAIExpand;
 extern "C" AIFileFormatSuite				*sAIFileFormat;
 extern "C" AIFilterSuite					*sAIFilter;
 extern "C" AIFontSuite						*sAIFont;
+extern "C" AIGradientSuite					*sAIGradient;
 extern "C" AIGroupSuite						*sAIGroup;
 extern "C" AIHitTestSuite					*sAIHitTest;
+extern "C" AIHardSoftSuite					*sAIHardSoft;
 extern "C" AILayerSuite						*sAILayer;
 extern "C" AILiveEffectSuite				*sAILiveEffect;
 extern "C" AIMatchingArtSuite				*sAIMatchingArt;
+extern "C" AIMeshSuite						*sAIMesh;
 extern "C" AIMenuSuite						*sAIMenu;
 extern "C" AINotifierSuite					*sAINotifier;
 extern "C" AIPaintStyleSuite				*sAIPaintStyle;
@@ -251,6 +264,8 @@ extern "C" AIPathfinderSuite				*sAIPathfinder;
 extern "C" AIPathInterpolateSuite			*sAIPathInterpolate;
 extern "C" AIPathStyleSuite					*sAIPathStyle;
 extern "C" AIPathSuite						*sAIPath;
+extern "C" AIPatternSuite					*sAIPattern;
+extern "C" AIPlacedSuite					*sAIPlaced;
 extern "C" AIPluginGroupSuite				*sAIPluginGroup;
 extern "C" AIPreferenceSuite				*sAIPreference;
 extern "C" AIRasterSuite					*sAIRaster;
@@ -258,6 +273,9 @@ extern "C" AIRasterizeSuite					*sAIRasterize;
 extern "C" AIRealBezierSuite				*sAIRealBezier;
 extern "C" AIRealMathSuite					*sAIRealMath;
 extern "C" AIShapeConstructionSuite			*sAIShapeConstruction;
+extern "C" AISwatchListSuite				*sAISwatchList;
+extern "C" AISymbolSuite					*sAISymbol;
+extern "C" AISymbolPaletteSuite				*sAISymbolPalette;
 extern "C" AITabletDataSuite				*sAITabletData;
 extern "C" AITagSuite						*sAITag;
 extern "C" AITextFrameHitSuite				*sAITextFrameHit;

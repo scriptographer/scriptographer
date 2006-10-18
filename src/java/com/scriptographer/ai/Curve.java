@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: Curve.java,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2006/07/21 16:49:15 $
+ * $Revision: 1.12 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -296,8 +296,10 @@ public class Curve extends WrappableObject {
 		segment1.setValues(values, 0);
 		segment2.setValues(values, 1);
 		// don't mark dirty, commit immediatelly both as all the values have been modified:
-		if (segments.path != null)
-			SegmentList.nativeCommit(segments.path.handle, index1, 2, values);
+		if (segments.path != null) {
+			Path path = segments.path;
+			SegmentList.nativeCommit(path.document.handle, path.handle, index1, 2, values);
+		}
 	}
 
 	public void transform(AffineTransform at) {

@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2004-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  * 
  * $RCSfile: FontFamily.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.3 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -37,10 +37,9 @@ package com.scriptographer.ai;
 import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 import com.scriptographer.util.ReadOnlyList;
-import com.scriptographer.util.SoftIntMap;
 import com.scriptographer.util.StringIndexList;
 
-public class FontFamily extends AIObject implements ReadOnlyList, StringIndexList {
+public class FontFamily extends AIWrapper implements ReadOnlyList, StringIndexList {
 	
 	protected FontFamily(int handle) {
 		super(handle);
@@ -101,17 +100,7 @@ public class FontFamily extends AIObject implements ReadOnlyList, StringIndexLis
 		return Lists.createSubList(this, fromIndex, toIndex);
 	}
 	
-	// use a SoftIntMap to keep track of already wrapped families:
-	private static SoftIntMap families = new SoftIntMap();
-	
 	protected static FontFamily wrapHandle(int handle) {
-		if (handle == 0)
-			return null;
-		FontFamily family = (FontFamily) families.get(handle);
-		if (family == null) {
-			family = new FontFamily(handle);
-			families.put(handle, family);
-		}
-		return family;
+		return (FontFamily) wrapHandle(FontFamily.class, handle, null, false);
 	}
 }

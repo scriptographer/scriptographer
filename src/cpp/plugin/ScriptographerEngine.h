@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.25 $
- * $Date: 2006/06/29 15:27:59 $
+ * $Revision: 1.26 $
+ * $Date: 2006/10/18 14:18:08 $
  */
 
 #include "jniMacros.h"
@@ -40,6 +40,8 @@ private:
 	char *m_homeDir;
 	bool m_initialized;
 	AIDictKey m_artHandleKey;
+	AIDictKey m_docReflowKey;
+	Array<AIDocumentHandle> m_suspendedDocuments;
 
 #ifdef MAC_ENV
 	// used for the javaThread workaround:
@@ -91,8 +93,6 @@ public:
 	
 	jclass cls_Collection;
 	jmethodID mid_Collection_add;
-	jmethodID mid_Collection_iterator;
-	jmethodID mid_Collection_size;
 
 	jclass cls_Map;
 	jmethodID mid_Map_keySet;
@@ -178,11 +178,18 @@ public:
 	jclass cls_IntMap;
 	jmethodID cid_IntMap;
 	jmethodID mid_IntMap_put;
+
+	jclass cls_SimpleList;
+	jmethodID mid_SimpleList_getLength;
+	jmethodID mid_SimpleList_get;
 	
 // AI:
 	jclass cls_AIObject;
 	jfieldID fid_AIObject_handle;
 
+	jclass cls_AIWrapper;
+	jfieldID fid_AIWrapper_document;
+	
 	jclass cls_Tool;
 	jmethodID cid_Tool;
 	jmethodID mid_Tool_onEditOptions;
@@ -210,8 +217,8 @@ public:
 	jclass cls_Color;
 	jmethodID mid_Color_getComponents;
 
-	jclass cls_Grayscale;
-	jmethodID cid_Grayscale;
+	jclass cls_GrayColor;
+	jmethodID cid_GrayColor;
 	
 	jclass cls_RGBColor;
 	jmethodID cid_RGBColor;
@@ -221,6 +228,7 @@ public:
 
 	jclass cls_Art;
 	jfieldID fid_Art_version;
+	jfieldID fid_Art_document;
 	jfieldID fid_Art_dictionaryRef;
 	jmethodID mid_Art_wrapHandle;
 	jmethodID mid_Art_getIfWrapped;
@@ -267,8 +275,10 @@ public:
 	jclass cls_Raster;
 	jfieldID fid_Raster_rasterData;
 	
+	jclass cls_PlacedItem;
+	
 	jclass cls_Layer;
-
+	
 	jclass cls_Segment;
 	jclass cls_Curve;
 	
@@ -307,7 +317,7 @@ public:
 	
 	jclass cls_Tracing;
 	jmethodID mid_Tracing_markDirty;
-
+	
 // ADM:
 	jclass cls_ADMObject;
 	jfieldID fid_ADMObject_handle;
@@ -461,34 +471,44 @@ public:
 	jobject convertDictionary(JNIEnv *env, AIDictionaryRef dictionary, jobject map = NULL, bool dontOverwrite = false, bool removeOld = false);
 	AIDictionaryRef convertDictionary(JNIEnv *env, jobject map, AIDictionaryRef dictionary = NULL, bool dontOverwrite = false, bool removeOld = false);
 
+	// java.io.File <-> SPPlatformFileSpecification
+	char *getFilePath(JNIEnv *env, jobject file);
+	jobject convertFile(JNIEnv *env, SPPlatformFileSpecification *fileSpec);
+	SPPlatformFileSpecification *convertFile(JNIEnv *env, jobject file, SPPlatformFileSpecification *res = NULL);
+	
 	// AI Handles
-	AIArtHandle getArtHandle(JNIEnv *env, jobject obj);
-	AILayerHandle getLayerHandle(JNIEnv *env, jobject obj);
-	ATE::TextFrameRef getTextFrameRef(JNIEnv *env, jobject obj);
-	ATE::TextRangeRef getTextRangeRef(JNIEnv *env, jobject obj);
-	ATE::StoryRef getStoryRef(JNIEnv *env, jobject obj);
-	ATE::CharFeaturesRef getCharFeaturesRef(JNIEnv *env, jobject obj);
-	ATE::ParaFeaturesRef getParaFeaturesRef(JNIEnv *env, jobject obj);
-	AIFontKey getFontKey(JNIEnv *env, jobject obj);
-	AIDocumentHandle getDocumentHandle(JNIEnv *env, jobject obj);
+	AIArtHandle getArtHandle(JNIEnv *env, jobject obj, bool activateDoc = false, AIDocumentHandle *doc = NULL);
+	AILayerHandle getLayerHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
+	void *getWrapperHandle(JNIEnv *env, jobject obj, bool activateDoc, const char *name);
+	AIPatternHandle getPatternHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
+	AISwatchRef getSwatchHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
+	AIGradientHandle getGradientHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
+	ATE::TextFrameRef getTextFrameHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
+	ATE::TextRangeRef getTextRangeHandle(JNIEnv *env, jobject obj);
+	ATE::StoryRef getStoryHandle(JNIEnv *env, jobject obj);
+	ATE::CharFeaturesRef getCharFeaturesHandle(JNIEnv *env, jobject obj);
+	ATE::ParaFeaturesRef getParaFeaturesHandle(JNIEnv *env, jobject obj);
+	AIFontKey getFontHandle(JNIEnv *env, jobject obj);
+	AIDocumentHandle getDocumentHandle(JNIEnv *env, jobject obj, bool activate = false);
 	AIDocumentViewHandle getDocumentViewHandle(JNIEnv *env, jobject obj);
 	AIToolHandle getToolHandle(JNIEnv *env, jobject obj);
 	AILiveEffectHandle getLiveEffectHandle(JNIEnv *env, jobject obj);
 	AIMenuItemHandle getMenuItemHandle(JNIEnv *env, jobject obj);
 	AIMenuGroup getMenuGroupHandle(JNIEnv *env, jobject obj);
-	AIDictionaryRef getArtDictionaryRef(JNIEnv *env, jobject obj);
+	AIDictionaryRef getArtDictionaryHandle(JNIEnv *env, jobject obj);
 	
 	// AI Wrap Handles
 	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDictionaryRef dictionary = NULL);
 	bool updateArtIfWrapped(JNIEnv *env, AIArtHandle art);
-	void changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary = NULL);
+	void changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary = NULL, AIDocumentHandle doc = NULL);
 	jobject getIfWrapped(JNIEnv *env, AIArtHandle handle);
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer);
-	jobject wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range);
-	jobject wrapStoryRef(JNIEnv *env, ATE::StoryRef story);
-	jobject wrapCharFeaturesRef(JNIEnv *env, ATE::CharFeaturesRef features, jobject range = NULL);
+	jobject wrapTextRangeHandle(JNIEnv *env, ATE::TextRangeRef range);
+	jobject wrapStoryHandle(JNIEnv *env, ATE::StoryRef story);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
 
+	void resumeSuspendedDocuments();
+	
 	ASErr selectionChanged();
 	
 	// AI Tool
@@ -552,7 +572,7 @@ public:
 	JNIEnv *getEnv();
 	
 	jstring convertString(JNIEnv *env, const char *str);
-	char *convertString(JNIEnv *env, jstring jstr);
+	char *convertString(JNIEnv *env, jstring jstr, int minLength = 0);
 	jstring convertString(JNIEnv *env, const ASUnicode *str, int length = -1);
 	ASUnicode *convertString_ASUnicode(JNIEnv *env, jstring jstr);
 #if kPluginInterfaceVersion >= kAI12

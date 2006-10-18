@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_TextEdit.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/18 15:35:46 $
+ * $Revision: 1.4 $
+ * $Date: 2006/10/18 14:17:17 $
  */
  
 #include "stdHeaders.h"
@@ -45,7 +45,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEdit_getPrecision(JNIEnv 
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetPrecision(item);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -56,7 +56,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setPrecision(JNIEnv 
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetPrecision(item, precision);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -66,7 +66,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setMaxLength(JNIEnv 
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetMaxTextLength(item, length);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -76,7 +76,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEdit_getMaxLength(JNIEnv 
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetMaxTextLength(item);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -87,7 +87,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setSelection(JNIEnv 
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetSelectionRange(item, start, end);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -105,7 +105,7 @@ JNIEXPORT jintArray JNICALL Java_com_scriptographer_adm_TextEdit_getSelection(JN
 		};
 		env->SetIntArrayRegion(res, 0, 2, range);
 		return res;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -116,7 +116,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_selectAll(JNIEnv *en
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SelectAll(item);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -126,7 +126,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setAllowMath(JNIEnv 
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetAllowUnits(item, allowMath);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -136,8 +136,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_TextEdit_getAllowMath(JNI
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetAllowMath(item);
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -147,7 +147,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setAllowUnits(JNIEnv
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetAllowUnits(item, allowUnits);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -157,6 +157,6 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_TextEdit_getAllowUnits(JN
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetAllowUnits(item);
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }

@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,14 +28,15 @@
  *
  * $RCSfile: Raster.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/09/29 22:35:26 $
+ * $Revision: 1.8 $
+ * $Date: 2006/10/18 14:17:44 $
  */
 
 package com.scriptographer.ai;
 
 import java.awt.Dimension;
 import java.awt.Transparency;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -45,79 +46,65 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.awt.color.ColorSpace;
+import java.io.File;
 
 public class Raster extends Art {
 
 	// native pointer to an attached data struct:
 	private int rasterData = 0;
 
-	protected Raster(long handle, Document document) {
-		super(handle, document);
+	protected Raster(int handle) {
+		super(handle);
 	}
 
-	private native int nativeConvert(int type, int width, int height);
-
-	protected Raster(Document document, int type, int width, int height) {
-		super(TYPE_RASTER, document);
-		nativeConvert(type, width, height);
-	}
-	
-	protected Raster(Document document, int type) {
-		this(document, type, -1, -1);
-	}
-	
-	protected Raster(Document document, java.awt.Image image) {
-		this(document, getCompatibleType(image), image.getWidth(null), image.getHeight(null));
-		drawImage(image, 0, 0);
-	}
-	
-	protected Raster(Document document, com.scriptographer.adm.Image image) {
-		// TODO: handle this case directly, without converting back and from
-		// a java BufferedImage, through native code!
-		this(document, image.getImage());
-	}
-
-	protected Raster(Document document) {
-		this(document, -1, -1, -1);
-	}
+	private native int nativeConvert(short type, int width, int height);
 
 	/**
 	 * Creates a raster object
 	 * 
-	 * @param document
 	 * @param width
 	 * @param height
 	 * @param type Color.TYPE_*
 	 */
-	public Raster(int type, int width, int height) {
-		this(null, type, width, height);
+	public Raster(short type, int width, int height) {
+		super(TYPE_RASTER);
+		nativeConvert(type, width, height);
 	}
-
-	public Raster(int type) {
-		this(null, type, -1, -1);
+	
+	public Raster(short type) {
+		this(type, -1, -1);
 	}
-
+	
 	public Raster(java.awt.Image image) {
-		this(null, image);
+		this(getCompatibleType(image), image.getWidth(null), image.getHeight(null));
+		drawImage(image, 0, 0);
 	}
-
+	
 	public Raster(com.scriptographer.adm.Image image) {
-		this(null, image);
+		// TODO: handle this case directly, without converting back and from
+		// a java BufferedImage, through native code!
+		this(image.getImage());
 	}
 
 	public Raster() {
-		this(null, -1, -1, -1);
+		this((short) -1, -1, -1);
+	}
+
+	native private static int nativeCreate(File file);
+	
+	public Raster(File file) {
+		super(nativeCreate(file));
 	}
 	
 	public native Matrix getMatrix();
 	
-	public native void setMatrix(Matrix matrix);
+	public native void setMatrix(AffineTransform at);
 
 	public native Dimension getSize();
 	
 	public void setSize(int width, int height) {
 		// changing the size creates a new art handle internally
-		handle = nativeConvert(-1, width, height);
+		handle = nativeConvert((short) -1, width, height);
 	}
 
 	public void setSize(Dimension size) {
@@ -136,9 +123,9 @@ public class Raster extends Art {
 		return getSize().height;
 	}
 	
-	public native int getType();
+	public native short getType();
 	
-	public void setType(int type) {
+	public void setType(short type) {
 		// changing the type creates a new art handle internally
 		handle = nativeConvert(type, -1, -1);
 	}
@@ -183,7 +170,7 @@ public class Raster extends Art {
 			case Color.TYPE_GRAY:
 			case Color.TYPE_AGRAY: {
 				boolean alpha = type == Color.TYPE_AGRAY;
-				cm = new ComponentColorModel(Grayscale.getColorSpace(),
+				cm = new ComponentColorModel(GrayColor.getColorSpace(),
 					alpha ? new int[] { 8, 8 } : new int [] { 8 },
 					alpha, false,
 					alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
@@ -208,7 +195,7 @@ public class Raster extends Art {
 		return cm;
 	}
 	
-	public static int getCompatibleType(java.awt.Image image) {
+	public static short getCompatibleType(java.awt.Image image) {
 		if (image instanceof BufferedImage) {
 			ColorModel cm = ((BufferedImage) image).getColorModel();
 			int type = cm.getColorSpace().getType();
@@ -240,7 +227,7 @@ public class Raster extends Art {
 		}
 		BufferedImage img = createCompatibleImage(width, height);
 		WritableRaster raster = img.getRaster();
-		byte[] data = data = ((DataBufferByte) raster.getDataBuffer()).getData();
+		byte[] data = ((DataBufferByte) raster.getDataBuffer()).getData();
 		nativeGetPixels(data, raster.getNumBands(), x, y, width, height);
 		return img;
 	}
@@ -261,13 +248,17 @@ public class Raster extends Art {
 			buf.createGraphics().drawImage(image, x, y, null);
 		}
 		WritableRaster raster = buf.getRaster();
-		byte[] data = data = ((DataBufferByte) raster.getDataBuffer()).getData();
+		byte[] data = ((DataBufferByte) raster.getDataBuffer()).getData();
 		nativeSetPixels(data, raster.getNumBands(), x, y, buf.getWidth(), buf.getHeight());
 	}
 	
 	public void setImage(java.awt.Image image) {
 		setSize(image.getWidth(null), image.getHeight(null));
 		drawImage(image, 0, 0);
+	}
+	
+	public Tracing trace() {
+		return new Tracing(this);
 	}
 
 	private native void nativeSetPixels(byte[] data, int numComponents, int x, int y, int width, int height);

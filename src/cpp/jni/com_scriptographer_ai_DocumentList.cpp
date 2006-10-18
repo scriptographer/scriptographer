@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_DocumentList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/03/06 15:32:46 $
+ * $Revision: 1.9 $
+ * $Date: 2006/10/18 14:17:18 $
  */
  
 #include "stdHeaders.h"
@@ -47,7 +47,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentList_getLength(JNIEnv 
 		long count;
 		sAIDocumentList->Count(&count);
 		return count;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -59,17 +59,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentList_nativeGet(JNIEnv 
 		AIDocumentHandle doc = NULL;
 		sAIDocumentList->GetNthDocument(&doc, index);
 		return (jint) doc;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
-}
-
-/*
- * int nativeGetActiveDocument()
- */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentList_nativeGetActiveDocument(JNIEnv *env, jclass cls) {
-	AIDocumentHandle doc = NULL;
-	try {
-		sAIDocument->GetDocument(&doc);
-	} EXCEPTION_CONVERT(env)
-	return (jint) doc;
 }

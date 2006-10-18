@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ImageStatic.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/10/23 00:28:48 $
+ * $Revision: 1.2 $
+ * $Date: 2006/10/18 14:17:17 $
  */
 
 #include "StdHeaders.h"
@@ -45,5 +45,5 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ImageStatic_nativeSetImage(JN
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetPicture(item, (ADMIconRef)iconRef);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }

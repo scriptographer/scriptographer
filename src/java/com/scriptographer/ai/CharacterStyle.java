@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2004-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  * 
  * $RCSfile: CharacterStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/01/03 05:38:03 $
+ * $Revision: 1.6 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -141,14 +141,14 @@ public class CharacterStyle extends PathStyle {
 	
 	protected native void nativeFetch(int handle);
 	
-	protected native void nativeCommit(int handle,
+	protected native void nativeCommit(int docHandle, int handle,
 		float[] fillColor, boolean hasFillColor, short fillOverprint,
 		float[] strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
 		float dashOffset, float[] dashArray,
 		short cap, short join, float miterLimit,
 		short clip, short lockClip, short evenOdd, float resolution);
 	
-	protected native void nativeSetStyle(int handle, int rangeHandle);
+	protected native void nativeSetStyle(int docHandle, int handle, int rangeHandle);
 
 	protected void fetch() {
 		nativeFetch(handle);
@@ -158,9 +158,9 @@ public class CharacterStyle extends PathStyle {
 	public void commit() {
 		if (dirty) {
 			if (pathStyleChanged)
-				nativeCommit(handle);
+				nativeCommit(0, handle);
 			if (range != null) {
-				nativeSetStyle(handle, range.handle);
+				nativeSetStyle(range.document.handle, handle, range.handle);
 			}
 			dirty = false;
 		}

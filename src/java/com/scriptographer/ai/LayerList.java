@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: LayerList.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/04/30 14:37:49 $
+ * $Revision: 1.7 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -45,24 +45,21 @@ public class LayerList extends AbstractReadOnlyList implements StringIndexList {
 	}
 	
 	private static native int nativeGetLength(int docHandle);
-	private static native Object nativeGet(int docHandle, int index);
-	private static native Object nativeGet(int docHandle, String name);
-	private static native Layer nativeGetActiveLayer(int docHandle);
 
 	public int getLength() {
 		return nativeGetLength(document.handle);
 	}
 
+	private static native Object nativeGet(int docHandle, int index);
+
 	public Object get(int index) {
 		return nativeGet(document.handle, index);
 	}
 
+	private static native Object nativeGet(int docHandle, String name);
+
 	public Object get(String name) {
 		return nativeGet(document.handle, name);
-	}
-
-	public Layer getActiveLayer() {
-		return nativeGetActiveLayer(document.handle);
 	}
 
 	public Layer getLayer(int index) {

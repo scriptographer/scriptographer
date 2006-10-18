@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Raster.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/06/07 16:44:19 $
+ * $Revision: 1.9 $
+ * $Date: 2006/10/18 14:17:17 $
  */
  
 #include "stdHeaders.h"
@@ -167,7 +167,7 @@ void Raster_copyPixels(JNIEnv *env, jobject obj, jbyteArray data, jint numCompon
 		else sAIRaster->SetRasterTile(art, &sliceFrom, &tile, &sliceTo);
 
 		env->ReleasePrimitiveArrayCritical(data, dst, 0);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 int Raster_getType(AIRasterRecord *info) {
@@ -194,11 +194,11 @@ int Raster_getType(AIRasterRecord *info) {
 }
 
 /*
- * int nativeConvert(int type, int width, int height)
+ * int nativeConvert(short type, int width, int height)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *env, jobject obj, jint type, jint width, jint height) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *env, jobject obj, jshort type, jint width, jint height) {
 	try {
-		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		Raster_Data *data = Raster_getData(env, obj, art);
 
 		if (type == -1) {
@@ -298,7 +298,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *e
 		// set the old matrix after rendering:
 		sAIRaster->SetRasterMatrix(art, &prevMatrix);
 		return (jint) art;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -308,7 +308,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *e
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_finalize(JNIEnv *env, jobject obj) {
 	try {
 		Raster_finalize(env, obj);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -319,19 +319,19 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getSize(JNIEnv *env,
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		Raster_Data *data = Raster_getData(env, obj, art);
 		return gEngine->convertDimension(env, data->info.bounds.right - data->info.bounds.left, data->info.bounds.bottom - data->info.bounds.top);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
 /*
- * int getType()
+ * short getType()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_getType(JNIEnv *env, jobject obj) {
+JNIEXPORT jshort JNICALL Java_com_scriptographer_ai_Raster_getType(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		Raster_Data *data = Raster_getData(env, obj, art);
 		return Raster_getType(&data->info);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return kRasterizeRGB;
 }
 
@@ -387,7 +387,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getPixel(JNIEnv *env
 			break;
 		}
 		return gEngine->convertColor(env, &col, alpha);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -396,7 +396,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getPixel(JNIEnv *env
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setPixel(JNIEnv *env, jobject obj, jint x, jint y, jobject color) {
 	try {
-		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		Raster_Data *data = Raster_getData(env, obj, art);
 		AIColor col;
 		AIReal alpha;
@@ -446,7 +446,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setPixel(JNIEnv *env, j
 		slice.back = data->numComponents;
 
 		sAIRaster->SetRasterTile(art, &slice, &data->pixelTile, &data->pixelSlice);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -472,18 +472,53 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getMatrix(JNIEnv *en
 		AIRealMatrix m;
 		sAIRaster->GetRasterMatrix(art, &m);
 		return gEngine->convertMatrix(env, &m);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
 /*
- * void setMatrix(com.scriptographer.ai.Matrix matrix)
+ * void setMatrix(java.awt.geom.AffineTransform at)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setMatrix(JNIEnv *env, jobject obj, jobject matrix) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setMatrix(JNIEnv *env, jobject obj, jobject at) {
 	try {
-		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealMatrix m;
-		gEngine->convertMatrix(env, matrix, &m);
+		gEngine->convertMatrix(env, at, &m);
 		sAIRaster->SetRasterMatrix(art, &m);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * int nativeCreate(java.io.File file)
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeCreate(JNIEnv *env, jclass cls, jobject file) {
+	AIArtHandle art = NULL;
+	char *path = NULL;
+	try {
+		path = gEngine->getFilePath(env, file);
+		char *ext = strrchr(path, '.');
+		if (ext) {
+			ext++;
+			// filter the path extension first to make sure we only import raster objects
+			if (strcasecmp(ext, "jpg") == 0 ||
+				strcasecmp(ext, "jpeg") == 0 ||
+				strcasecmp(ext, "tif") == 0 ||
+				strcasecmp(ext, "tiff") == 0 ||
+				strcasecmp(ext, "psd") == 0 ||
+				strcasecmp(ext, "gif") == 0 ||
+				strcasecmp(ext, "tga") == 0) {
+				art = PlacedItem_place(env, NULL, file, false);
+				// in case the newly created object is not a raster, remove it again
+				short type = Art_getType(art);
+				if (type != kRasterArt) {
+					sAIArt->DisposeArt(art);
+					art = NULL;
+				}
+			}
+		}
+		if (art == NULL)
+			throw new StringException("Cannot create raster from file %s.", path);
+	} EXCEPTION_CONVERT(env);
+	delete path;
+	return (jint) art;				
 }

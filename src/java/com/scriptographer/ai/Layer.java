@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Layer.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/09/29 22:35:26 $
+ * $Revision: 1.10 $
+ * $Date: 2006/10/18 14:17:44 $
  */
 
 package com.scriptographer.ai;
@@ -37,16 +37,12 @@ package com.scriptographer.ai;
 // TODO: subclass Group instead!
 public class Layer extends Art {
 
-	protected Layer(long handle, Document document) {
-		super(handle, document);
-	}
-
-	protected Layer(Document document) {
-		super(TYPE_LAYER, document);
+	protected Layer(int handle) {
+		super(handle);
 	}
 
 	public Layer() {
-		super(TYPE_LAYER, null);
+		super(TYPE_LAYER);
 	}
 
 	public native void setLocked(boolean locked);

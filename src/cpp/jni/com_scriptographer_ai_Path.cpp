@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Path.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/05/30 16:03:40 $
+ * $Revision: 1.9 $
+ * $Date: 2006/10/18 14:17:16 $
  */
  
 #include "stdHeaders.h"
@@ -58,8 +58,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Path_isClosed(JNIEnv *env,
 		AIBoolean closed;
 		if (!sAIPath->GetPathClosed(handle, &closed))
 			return closed;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -67,9 +67,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Path_isClosed(JNIEnv *env,
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setClosed(JNIEnv *env, jobject obj, jboolean closed) {
 	try {
-		AIArtHandle handle = gEngine->getArtHandle(env, obj);
+		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
 		sAIPath->SetPathClosed(handle, closed);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -81,8 +81,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Path_isGuide(JNIEnv *env, 
 		AIBoolean guide;
 		if (!sAIPath->GetPathGuide(handle, &guide))
 			return guide;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -90,9 +90,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Path_isGuide(JNIEnv *env, 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setGuide(JNIEnv *env, jobject obj, jboolean guide) {
 	try {
-		AIArtHandle handle = gEngine->getArtHandle(env, obj);
+		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
 		sAIPath->SetPathGuide(handle, guide);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -124,7 +124,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Path_getTabletData(JNI
 			delete profiles;
 			return array;
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -133,7 +133,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Path_getTabletData(JNI
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setTabletData(JNIEnv *env, jobject obj, jobjectArray data) {
 	try {
-		AIArtHandle handle = gEngine->getArtHandle(env, obj);
+		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
 		// get the tabletData:
 		// first get the number of data:
 		if (data != NULL) {
@@ -167,7 +167,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setTabletData(JNIEnv *env
 		sAIPath->GetPathClosed(handle, &closed);
 		sAIPath->SetPathClosed(handle, !closed);
 		sAIPath->SetPathClosed(handle, closed);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -175,11 +175,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setTabletData(JNIEnv *env
  */
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Path_getLength(JNIEnv *env, jobject obj, jfloat flatness) {
 	try {
+		// no need to activate document for this
 		AIArtHandle handle = gEngine->getArtHandle(env, obj);
 		AIReal length;
 		sAIPath->GetPathLength(handle, &length, flatness);
 		return length;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0.0;
 }
 
@@ -188,11 +189,12 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Path_getLength(JNIEnv *env, 
  */
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Path_getArea(JNIEnv *env, jobject obj) {
 	try {
+		// no need to activate document for this
 		AIArtHandle handle = gEngine->getArtHandle(env, obj);
 		AIReal area;
 		sAIPath->GetPathArea(handle, &area);
 		return area;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0.0;
 }
 
@@ -249,7 +251,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativePointsToCurves(JNIE
 				pathDispose(points);
 			}
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return res;
 }
 
@@ -291,7 +293,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativeCurvesToPoints(JNIE
 				}
 			}
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return res;
 }
 
@@ -301,5 +303,5 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativeCurvesToPoints(JNIE
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_nativeReduceSegments(JNIEnv *env, jclass cls, jint handle, jfloat flatness) {
 	try {
 		sAIPathConstruction->ReducePathSegments((AIArtHandle) handle, flatness, &pathMemoryObject);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }

@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ListItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2006/06/07 16:44:18 $
+ * $Revision: 1.11 $
+ * $Date: 2006/10/18 14:17:16 $
  */
  
 #include "stdHeaders.h"
@@ -96,7 +96,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_nativeInit(JNIEnv *e
 				return (jint) hierarchyList;
 			}
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -114,7 +114,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_nativeSetTrackEntryC
 			DEFINE_CALLBACK_PROC(ListEntry_onTrack);
 			sADMList->SetTrackProc(list, enabled ? (ADMEntryTrackProc) CALLBACK_PROC(ListEntry_onTrack) : NULL);
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -131,7 +131,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_nativeSetDrawEntryCa
 			DEFINE_CALLBACK_PROC(ListEntry_onDraw);
 			sADMList->SetDrawProc(list, enabled ? (ADMEntryDrawProc) CALLBACK_PROC(ListEntry_onDraw) : NULL);
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -144,7 +144,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_setEntrySize(JNIEnv 
 			LIST_SUITE->SetEntryHeight(list, height);
 
 		DEFINE_METHOD(SET_ENTRY_SIZE)
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -156,7 +156,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_setTrackMask(JNIEnv 
 			LIST_SUITE->SetMask(list, mask);
 
 		DEFINE_METHOD(SET_TRACK_MASK)
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -168,7 +168,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_getTrackMask(JNIEnv 
 			return (jint)LIST_SUITE->GetMask(list);
 
 		DEFINE_METHOD(GET_TRACK_MASK)
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -186,7 +186,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntrySize(JNIE
 		DEFINE_METHOD(GET_ENTRY_SIZE)
 		
 		return gEngine->convertPoint(env, &pt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -205,7 +205,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_setEntryTextRect(JNI
 			LIST_SUITE->SetEntryTextRect(list, &rt);
 
 		DEFINE_METHOD(SET_ENTRY_TEXT_RECT)
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -221,7 +221,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntryTextRect(
 		DEFINE_METHOD(GET_ENTRY_TEXT_RECT)
 
 		return gEngine->convertRectangle(env, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -234,7 +234,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_getLength(JNIEnv *en
 			return LIST_SUITE->NumberOfEntries(list);
 
 		DEFINE_METHOD(SIZE)
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -255,7 +255,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_remove(JNIEnv *en
 			}
 
 		DEFINE_METHOD(REMOVE_ENTRY)
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -269,7 +269,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_get__I(JNIEnv *en
 			return gEngine->getListEntryObject(ent);
 
 		DEFINE_METHOD(GET_ENTRY)
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -287,7 +287,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_get__Ljava_lang_S
 			return gEngine->getListEntryObject(ent);
 
 		DEFINE_METHOD(FIND_ENTRY)
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	if (chars != NULL)
 		delete chars;
 	return NULL;
@@ -308,7 +308,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getAt(JNIEnv *env
 
 		DEFINE_METHOD(PICK_ENTRY)
 
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -322,7 +322,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getActiveEntry(JN
 			return gEngine->getListEntryObject(ent);
 
 		DEFINE_METHOD(GET_ACTIVE_ENTRY)
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -343,7 +343,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_ListItem_getSelected(
 			return res;
 
 		DEFINE_METHOD(GET_SELECTED_ENTRIES)
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -356,7 +356,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_nativeSetBackgroundC
 			LIST_SUITE->SetBackgroundColor(list, (ADMColor) color);
 
 		DEFINE_METHOD(SET_BG_COLOR)
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -372,5 +372,5 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_selectByText(JNIEnv 
 			sADMList->SelectByTextW(list, chars);
 			delete chars;
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }

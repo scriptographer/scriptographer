@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2004-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,41 +28,33 @@
  * 
  * $RCSfile: PathText.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/09/29 22:35:26 $
+ * $Revision: 1.5 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
 
 public class PathText extends TextFrame {
 
-	protected PathText(long handle, Document document) {
-		super(handle, document);
+	protected PathText(int handle) {
+		super(handle);
 	}
 
-	native private static long nativeCreate(int docHandle, int orient, int artHandle);
+	native private static int nativeCreate(int orient, int artHandle);
 	// TODO: not used?
-	native private static long nativeCreate(int docHandle, int orient, int artHandle, float x, float y);
-
-	protected PathText(Document document, Path path, int orient) {
-		this(nativeCreate(document != null ? document.handle : 0, orient, path != null ? path.handle : 0), document);
-		// TODO: check what exactly do startT endT vs start anchor!
-	}
-
-	protected PathText(Document document, Path path) {
-		this(document, path, ORIENTATION_HORIZONTAL);
-	}
+	native private static int nativeCreate(int orient, int artHandle, float x, float y);
 	
 	/**
 	 * Creates a path text object
 	 */
 
 	public PathText(Path path, int orient) {
-		this(null, path, orient);
+		this(nativeCreate(orient, path != null ? path.handle : 0));
+		// TODO: check what exactly do startT endT vs start anchor!
 	}
 
 	public PathText(Path path) {
-		this(null, path, ORIENTATION_HORIZONTAL);
+		this(path, ORIENTATION_HORIZONTAL);
 	}
 
 	public Path getTextPath() {
@@ -70,5 +62,10 @@ public class PathText extends TextFrame {
 	}
 	
 	public native float[] getPathRange();
+	
 	public native void setPathRange(float start, float end);
+	
+	public void setPathRange(float[] range) {
+		setPathRange(range[0], range[1]);
+	}
 }

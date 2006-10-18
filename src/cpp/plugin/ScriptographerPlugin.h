@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerPlugin.h,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/06/16 19:41:07 $
+ * $Revision: 1.4 $
+ * $Date: 2006/10/18 14:18:08 $
  */
 
 #define kMaxStringLength 256

@@ -12,6 +12,6 @@
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Key_isDown(JNIEnv *env, jclass cls, jshort keycode) {
 	try {
 		return gEngine->isKeyDown(keycode);
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }

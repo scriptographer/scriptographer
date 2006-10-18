@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2004-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Tracing.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/09/29 22:35:26 $
+ * $Revision: 1.3 $
+ * $Date: 2006/10/18 14:17:44 $
  */
 
 package com.scriptographer.ai;
@@ -81,18 +81,24 @@ public class Tracing extends Art implements Commitable {
 	protected int optionsHandle = 0;
 	protected int statisticsHandle = 0;
 
-	public Tracing(Art art) {
-		super(nativeCreate(art.handle), art.document);
+	protected Tracing(int handle) {
+		super(handle);
+	}
+
+	private native static int nativeCreate(int docHandle, int artHandle);
+
+	protected Tracing(Art art) {
+		super(nativeCreate(art.document.handle, art.handle));
 		markDirty(); // force a first update
 	}
-
-	protected Tracing(long handle, Document document) {
-		super(handle, document);
+	
+	public Tracing(Raster raster) {
+		this((Art) raster);
 	}
-
-	protected native static boolean isTracing(int artHandle);
-
-	private native static long nativeCreate(int handle);
+	
+	public Tracing(PlacedItem raster) {
+		this((Art) raster);
+	}
 	
 	private boolean dirty = false;
 

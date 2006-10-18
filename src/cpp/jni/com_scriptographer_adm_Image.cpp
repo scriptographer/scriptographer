@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Image.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/06/07 16:44:18 $
+ * $Revision: 1.6 $
+ * $Date: 2006/10/18 14:17:16 $
  */
  
 #include "stdHeaders.h"
@@ -61,7 +61,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Image_nativeCreate(JNIEnv *en
 		gEngine->setIntField(env, obj, gEngine->fid_Image_byteWidth, sADMImage->GetByteWidth(image));
 		gEngine->setIntField(env, obj, gEngine->fid_Image_bitsPerPixel, sADMImage->GetBitsPerPixel(image));
 		return (jint)image;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -72,7 +72,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeDestroy(JNIEnv *e
 	try {
 		if (handle != 0) sADMImage->Destroy((ADMImageRef) handle);
 		if (iconHandle != 0) sADMIcon->Destroy((ADMIconRef) iconHandle);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -96,7 +96,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels___3IIII
 		
 		env->ReleasePrimitiveArrayCritical(data, src, 0);
 		sADMImage->EndBaseAddressAccess(image); 
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -113,7 +113,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels__II(JNI
 		
 		sADMImage->EndBaseAddressAccess(srcImage); 
 		sADMImage->EndBaseAddressAccess(dstImage); 
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -137,7 +137,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeGetPixels(JNIEnv 
 		
 		env->ReleasePrimitiveArrayCritical(data, dst, 0);
 		sADMImage->EndBaseAddressAccess(image); 
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -147,7 +147,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Image_nativeCreateIcon(JNIEnv
 	try {
 		ADMImageRef image = gEngine->getImageRef(env, obj);
 		return (jint)sADMIcon->CreateFromImage(image);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -158,7 +158,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Image_nativeBeginDrawer(JNIEn
 	try {
 		ADMImageRef image = gEngine->getImageRef(env, obj);
 		return (jint)sADMImage->BeginADMDrawer(image);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -169,5 +169,5 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeEndDrawer(JNIEnv 
 	try {
 		ADMImageRef image = gEngine->getImageRef(env, obj);
 		sADMImage->EndADMDrawer(image);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }

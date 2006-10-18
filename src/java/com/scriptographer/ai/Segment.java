@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: Segment.java,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2006/07/21 16:49:15 $
+ * $Revision: 1.14 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -49,9 +49,26 @@ public class Segment extends WrappableObject implements Commitable {
 	protected SegmentPoint handleOut;
 	// corner
 	protected boolean corner;
+	// the selection state is fetched the first time it's used
+	protected short selectionState = SELECTION_FETCH;
 	//
 	protected int version = -1;
-	protected boolean dirty = false;
+	protected short dirty = DIRTY_NONE;
+
+	// dirty flags, to be combined bitwise
+	protected final static short
+		DIRTY_NONE = 0,
+		DIRTY_POINTS = 1,
+		DIRTY_SELECTION = 2;
+
+	// for selectionState
+	protected final static short
+		SELECTION_FETCH = -1,
+		SELECTION_NONE = 0,
+		SELECTION_POINT = 1,
+		SELECTION_HANDLE_IN = 2,
+		SELECTION_HANDLE_OUT = 3,
+		SELECTION_HANDLE_BOTH = 4;
 
 	public Segment() {
 		point = new SegmentPoint(this, 0);
@@ -130,12 +147,17 @@ public class Segment extends WrappableObject implements Commitable {
 	}
 
 	public void commit() {
-		if (dirty && segments != null && segments.path != null) {
-			SegmentList.nativeCommit(segments.path.handle, index, point.x, point.y, handleIn.x + point.x, handleIn.y + point.y, handleOut.x + point.x, handleOut.y + point.y, corner);
-			// System.out.println("nativeCommit " + index + " " + 1);
+		if (dirty != DIRTY_NONE && segments != null && segments.path != null) {
+			Path path = segments.path;
+			if ((dirty & DIRTY_POINTS) != 0) {
+				SegmentList.nativeCommit(path.document.handle, path.handle, index, point.x, point.y, handleIn.x + point.x, handleIn.y + point.y, handleOut.x + point.x, handleOut.y + point.y, corner);
+			}
+			if ((dirty & DIRTY_SELECTION) != 0) {
+				SegmentList.nativeCommitSelectionState(path.document.handle, path.handle, index, selectionState);
+			}
+			dirty = DIRTY_NONE;
 			// update to current maxVersion after commit.
 			version = segments.path.version;
-			dirty = false;
 		}
 	}
 
@@ -145,25 +167,30 @@ public class Segment extends WrappableObject implements Commitable {
 	 */
 	protected void insert() {
 		if (segments != null && segments.path != null) {
-			SegmentList.nativeInsert(segments.path.handle, index, point.x, point.y, handleIn.x + point.x, handleIn.y + point.y, handleOut.x + point.x, handleOut.y + point.y, corner);
+			Path path = segments.path;
+			SegmentList.nativeInsert(path.document.handle, path.handle, index, point.x, point.y, handleIn.x + point.x, handleIn.y + point.y, handleOut.x + point.x, handleOut.y + point.y, corner);
 			// update to current maxVersion after commit.
 			version = segments.path.version;
-			dirty = false;
+			dirty = DIRTY_NONE;
 		}
 	}
 
-	protected void markDirty() {
-		// only mark it as dirty if it's attached to a path already:
-		if (!dirty && segments != null && segments.path != null) {
+	protected void markDirty(int dirty) {
+		// only mark it as dirty if it's attached to a path already and
+		// if the given dirty flag is not already set
+		if ((this.dirty & dirty) != dirty &&
+			segments != null && segments.path != null) {
 			CommitManager.markDirty(segments.path, this);
-			dirty = true;
+			this.dirty |= dirty;
 		}
 	}
 	
 	protected void update() {
-		if (!dirty && segments != null && segments.path != null && version != segments.path.version) {
+		if ((dirty & DIRTY_POINTS) == 0 && segments != null && segments.path != null && version != segments.path.version) {
 			// this handles all the updating automatically:
 			segments.get(index);
+			// version has changed, force regetting of selection state:
+			selectionState = SELECTION_FETCH;
 		}
 	}
 
@@ -243,7 +270,65 @@ public class Segment extends WrappableObject implements Commitable {
 	public void setCorner(boolean corner) {
 		update();
 		this.corner = corner;
-		markDirty();
+		markDirty(DIRTY_POINTS);
+	}
+
+	protected boolean isSelected(SegmentPoint pt) {
+		update();
+		if (selectionState == SELECTION_FETCH) {
+			if (segments != null && segments.path != null)
+				selectionState = SegmentList.nativeFetchSelectionState(segments.path.handle, index);
+			else
+				selectionState = SELECTION_NONE;
+		}
+		if (pt == point) {
+			return selectionState == SELECTION_POINT;
+		} else if (pt == handleIn) {
+			return selectionState == SELECTION_HANDLE_IN || 
+				selectionState == SELECTION_HANDLE_BOTH;
+		} else if (pt == handleOut) {
+			return selectionState == SELECTION_HANDLE_OUT || 
+				selectionState == SELECTION_HANDLE_BOTH;
+		}
+		return false;
+	}
+
+	protected void setSelected(SegmentPoint pt, boolean selected) {
+		update();
+		// find the right combination of selection states (SELECTION_*)
+		boolean pointSelected = selectionState == SELECTION_POINT;
+		boolean handleInSelected = selectionState == SELECTION_HANDLE_IN || 
+			selectionState == SELECTION_HANDLE_BOTH;
+		boolean handleOutSelected = selectionState == SELECTION_HANDLE_OUT || 
+			selectionState == SELECTION_HANDLE_BOTH;
+		if (pt == point) {
+			pointSelected = selected;
+		} else if (pt == handleIn) {
+			pointSelected = false;
+			handleInSelected = selected;
+		} else if (pt == handleOut) {
+			pointSelected = false;
+			handleOutSelected = selected;
+		}
+		short state;
+		if (pointSelected) {
+			state = SELECTION_POINT;
+		} else if (handleInSelected) {
+			if (handleOutSelected) {
+				state = SELECTION_HANDLE_BOTH;
+			} else {
+				state = SELECTION_HANDLE_IN;
+			}
+		} else if (handleOutSelected) {
+			state = SELECTION_HANDLE_OUT;
+		} else {
+			state = SELECTION_NONE;
+		}
+		// only update if it changed
+		if (selectionState != state) {
+			selectionState = state;
+			markDirty(DIRTY_SELECTION);
+		}
 	}
 
 	public Segment divide(float parameter) {

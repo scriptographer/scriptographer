@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2004-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextRange.java,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2006/06/16 16:18:30 $
+ * $Revision: 1.12 $
+ * $Date: 2006/10/18 14:17:43 $
  */
 
 package com.scriptographer.ai;
@@ -70,8 +70,8 @@ public class TextRange extends AIObject {
 	private int glyphRunRef;
 	private int glyphRunPos;
 	
-	private Document document;
-	private TextStory story = null;
+	protected Document document;
+	protected TextStory story = null;
 	
 	protected TextRange(int handle, int documentHandle) {
 		super(handle);
@@ -157,12 +157,12 @@ public class TextRange extends AIObject {
 	}
 
 	private void adjustEnd(int oldLength) {
-	if (characters != null)
-		characters.adjustEnd(oldLength);
-	if (words != null)
-		words.adjustEnd(oldLength);
-	if (paragraphs != null)
-		paragraphs.adjustEnd(oldLength);
+		if (characters != null)
+			characters.adjustEnd(oldLength);
+		if (words != null)
+			words.adjustEnd(oldLength);
+		if (paragraphs != null)
+			paragraphs.adjustEnd(oldLength);
 	}
 
 	public void prepend(String text) {
@@ -181,10 +181,20 @@ public class TextRange extends AIObject {
 		adjustEnd(nativeAppend(handle, range.handle));
 	}
 	
+	private native void nativeRemove(int handle);
+	
 	/**
 	 *  This method will delete all the characters in that range.
 	 */
-	public native void remove();
+	public void remove() {
+		if (characters != null)
+			characters.removeAll();
+		if (words != null)
+			words.removeAll();
+		if (paragraphs != null)
+			paragraphs.removeAll();
+		nativeRemove(handle);
+	}
 	
 	public native String getContent();
 	
@@ -387,6 +397,10 @@ public class TextRange extends AIObject {
 		public boolean isEmpty() {
 			return list.isEmpty();
 		}
+		
+		public void removeAll() {
+			list.clear();
+		}
 
 		public ExtendedList getSubList(int fromIndex, int toIndex) {
 			return Lists.createSubList(this, fromIndex, toIndex);
@@ -538,25 +552,6 @@ public class TextRange extends AIObject {
 		void update() {
 			list.setSize(TextRange.this.getLength());
 		}
-
-		/**
-		 * adjustEnd is called when TextRange.appendChild changes the end point of the ranges
-		 * update here accordingly
-		 * 
-		 * @param oldLength
-		 */
-		void adjustEnd(int oldLength) {
-			int index = oldLength - 1;
-			if (index >= 0 && index < list.size()) {
-				TextRange range = (TextRange) list.get(index);
-				// the end point of the range needs to be moved so it
-				// has length 1 again. it can stay in the list
-				if (range != null) {
-					int end = getStart() + oldLength;
-					range.setRange(end - 1, end);
-				}
-			}
-		}
 		
 		/**
 		 * adjustStart is called when TextRange.prepend changes the start point of the ranges
@@ -571,6 +566,25 @@ public class TextRange extends AIObject {
 				int start = getStart() + (getLength() - oldLength);
 				range.setRange(start, start + 1);
 				list.set(0, null);
+			}
+		}
+
+		/**
+		 * adjustEnd is called when TextRange.append changes the end point of the ranges
+		 * update here accordingly
+		 * 
+		 * @param oldLength
+		 */
+		void adjustEnd(int oldLength) {
+			int index = oldLength - 1;
+			if (index >= 0 && index < list.size()) {
+				TextRange range = (TextRange) list.get(index);
+				// the end point of the range needs to be moved so it
+				// has length 1 again. it can stay in the list
+				if (range != null) {
+					int end = getStart() + oldLength;
+					range.setRange(end - 1, end);
+				}
 			}
 		}
 

@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ValueItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/18 15:35:46 $
+ * $Revision: 1.4 $
+ * $Date: 2006/10/18 14:17:17 $
  */
  
 #include "stdHeaders.h"
@@ -51,7 +51,7 @@ JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_adm_ValueItem_getRange(JNI
 		};
 		env->SetFloatArrayRegion(res, 0, 2, range);
 		return res;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -63,7 +63,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setRange(JNIEnv *en
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetMinFloatValue(item, min);
 		sADMItem->SetMaxFloatValue(item, max);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -79,7 +79,7 @@ JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_adm_ValueItem_getIncrement
 		};
 		env->SetFloatArrayRegion(res, 0, 2, range);
 		return res;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -91,7 +91,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setIncrements(JNIEn
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetSmallIncrement(item, smallInc);
 		sADMItem->SetLargeIncrement(item, largeInc);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -101,7 +101,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_adm_ValueItem_getValue(JNIEnv *
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetFloatValue(item);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0.0;
 }
 
@@ -112,5 +112,5 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setValue(JNIEnv *en
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetFloatValue(item, value);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }

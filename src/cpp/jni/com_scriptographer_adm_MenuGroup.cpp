@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_MenuGroup.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/06/16 16:18:25 $
+ * $Revision: 1.2 $
+ * $Date: 2006/10/18 14:17:17 $
  */
 
 #include "StdHeaders.h"
@@ -54,7 +54,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_MenuGroup_nativeCreate(JNIEnv
 		}
 		delete nameStr;
 		return (jint) group;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -65,7 +65,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_MenuGroup_setOption(JNIEnv *e
 	try {
 		AIMenuGroup group = gEngine->getMenuGroupHandle(env, obj);
 		sAIMenu->SetMenuGroupOptions(group, options);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -77,6 +77,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_MenuGroup_getOptions(JNIEnv *
 		long options = 0;
 		sAIMenu->GetMenuGroupOptions(group, &options);
 		return options;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }

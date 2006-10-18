@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Group.cpp,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2005/02/23 22:00:59 $
+ * $Revision: 1.2 $
+ * $Date: 2006/10/18 14:17:17 $
  */
  
 #include "stdHeaders.h"
@@ -47,8 +47,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Group_isClipped(JNIEnv *en
 		AIBoolean clipped;
 		if (!sAIGroup->GetGroupClipped(handle, &clipped))
 			return clipped;
-	} EXCEPTION_CONVERT(env)
-	return JNI_FALSE;
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -56,7 +56,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Group_isClipped(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Group_setClipped(JNIEnv *env, jobject obj, jboolean clipped) {
 	try {
-		AIArtHandle handle = gEngine->getArtHandle(env, obj);
+		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
 		sAIGroup->SetGroupClipped(handle, clipped);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }

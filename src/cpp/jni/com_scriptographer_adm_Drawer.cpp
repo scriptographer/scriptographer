@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Drawer.cpp,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/06/29 15:28:18 $
+ * $Revision: 1.10 $
+ * $Date: 2006/10/18 14:17:16 $
  */
  
 #include "stdHeaders.h"
@@ -53,7 +53,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_clear(JNIEnv *env, job
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		sADMDrawer->Clear(drawer);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -65,7 +65,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Drawer_getBoundsRect(JNIEn
 		ADMRect rt;
 		sADMDrawer->GetBoundsRect(drawer, &rt);
 		return gEngine->convertRectangle(env, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -78,7 +78,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Drawer_getClipRect(JNIEnv 
 		ADMRect rt;
 		sADMDrawer->GetClipRect(drawer, &rt);
 		return gEngine->convertRectangle(env, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -90,7 +90,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setClipRect(JNIEnv *en
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->SetClipRect(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -101,7 +101,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_intersectClipRect(JNIE
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->IntersectClipRect(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -112,7 +112,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_unionClipRect(JNIEnv *
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->UnionClipRect(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -123,7 +123,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_subtractClipRect(JNIEn
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->SubtractClipRect(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 inline ADMPoint *drawerGetPoints(JNIEnv *env, jobjectArray points, jint &length) {
@@ -146,7 +146,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setClipPolygon(JNIEnv 
 		ADMPoint *pts = drawerGetPoints(env, points, length);
 		sADMDrawer->SetClipPolygon(drawer, pts, length);
 		delete pts;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -159,7 +159,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_intersectClipPolygon(J
 		ADMPoint *pts = drawerGetPoints(env, points, length);
 		sADMDrawer->IntersectClipPolygon(drawer, pts, length);
 		delete pts;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -172,7 +172,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_unionClipPolygon(JNIEn
 		ADMPoint *pts = drawerGetPoints(env, points, length);
 		sADMDrawer->UnionClipPolygon(drawer, pts, length);
 		delete pts;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -185,7 +185,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_subtractClipPolygon(JN
 		ADMPoint *pts = drawerGetPoints(env, points, length);
 		sADMDrawer->SubtractClipPolygon(drawer, pts, length);
 		delete pts;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -197,7 +197,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Drawer_getOrigin(JNIEnv *e
 		ADMPoint pt;
 		sADMDrawer->GetOrigin(drawer, &pt);
 		return gEngine->convertPoint(env, &pt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -209,7 +209,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setOrigin(JNIEnv *env,
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
 		sADMDrawer->SetOrigin(drawer, &pt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -221,7 +221,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Drawer_getColor(JNIEnv *en
 		ADMRGBColor col;
 		sADMDrawer->GetRGBColor(drawer, &col);
 		jobject res = gEngine->convertColor(env, &col);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -234,7 +234,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setColor__Ljava_awt_Co
 		ADMRGBColor col;
 		gEngine->convertColor(env, color, &col);
 		sADMDrawer->SetRGBColor(drawer, &col);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -244,7 +244,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setColor__I(JNIEnv *en
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		sADMDrawer->SetADMColor(drawer, (ADMColor)colorType);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -254,7 +254,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Drawer_getDrawMode(JNIEnv *en
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		return sADMDrawer->GetDrawMode(drawer);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -265,7 +265,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setDrawMode(JNIEnv *en
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		sADMDrawer->SetDrawMode(drawer, (ADMDrawMode)mode);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -275,7 +275,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Drawer_getFont(JNIEnv *env, j
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		return sADMDrawer->GetFont(drawer);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -286,7 +286,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setFont(JNIEnv *env, j
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		sADMDrawer->SetFont(drawer, (ADMFont)font);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -301,7 +301,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawLine(JNIEnv *env, 
 		pt2.h = x2;
 		pt2.v = y2;
 		sADMDrawer->DrawLine(drawer, &pt1, &pt2);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -314,7 +314,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawPolygon(JNIEnv *en
 		ADMPoint *pts = drawerGetPoints(env, points, length);
 		sADMDrawer->DrawPolygon(drawer, pts, length);
 		delete pts;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -327,7 +327,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_fillPolygon(JNIEnv *en
 		ADMPoint *pts = drawerGetPoints(env, points, length);
 		sADMDrawer->FillPolygon(drawer, pts, length);
 		delete pts;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -338,7 +338,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawRect(JNIEnv *env, 
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawRect(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -349,7 +349,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_fillRect(JNIEnv *env, 
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->FillRect(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -360,7 +360,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_clearRect(JNIEnv *env,
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->ClearRect(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -371,7 +371,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawSunkenRect(JNIEnv 
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawSunkenRect(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -382,7 +382,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawRaisedRect(JNIEnv 
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawRaisedRect(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -393,7 +393,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_invertRect(JNIEnv *env
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->InvertRect(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -404,7 +404,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawOval(JNIEnv *env, 
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawOval(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -415,7 +415,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_fillOval(JNIEnv *env, 
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->FillOval(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -427,7 +427,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_script
 		ADMImageRef img = gEngine->getImageRef(env, image);
 		DEFINE_ADM_POINT(pt, x, y);
 		sADMDrawer->DrawADMImage(drawer, img, &pt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -442,7 +442,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_script
 			throw new StringException("Cannot create icon from image.");
 		DEFINE_ADM_POINT(pt, x, y);
 		sADMDrawer->DrawRecoloredIcon(drawer, icn, &pt, (ADMRecolorStyle)style);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -454,7 +454,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_script
 		ADMImageRef img = gEngine->getImageRef(env, image);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawADMImageCentered(drawer, img, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -469,7 +469,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_script
 			throw new StringException("Cannot create icon from image.");
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawRecoloredIconCentered(drawer, icn, &rt, (ADMRecolorStyle)style);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -482,7 +482,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Drawer_getTextWidth(JNIEnv *e
 		int width = sADMDrawer->GetTextWidthW(drawer, chars);
 		delete chars;
 		return width;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
@@ -496,7 +496,7 @@ jobject drawerGetFontInfo(JNIEnv *env, jobject obj, int font = -1) {
 			sADMDrawer->GetThisFontInfo((ADMFont) font, &info);
 		
 		return gEngine->newObject(env, gEngine->cls_FontInfo, gEngine->cid_FontInfo, info.height, info.ascent, info.descent, info.leading, info.maxWidth);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -524,7 +524,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawText(JNIEnv *env, 
 		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		sADMDrawer->DrawTextW(drawer, chars, &pt);
 		delete chars;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -537,7 +537,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextLeft(JNIEnv *e
 		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		sADMDrawer->DrawTextLeftW(drawer, chars, &rt);
 		delete chars;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -550,7 +550,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextCentered(JNIEn
 		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		sADMDrawer->DrawTextCenteredW(drawer, chars, &rt);
 		delete chars;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -563,7 +563,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextRight(JNIEnv *
 		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		sADMDrawer->DrawTextRightW(drawer, chars, &rt);
 		delete chars;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -576,7 +576,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawTextInABox(JNIEnv 
 		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		sADMDrawer->DrawTextInABoxW(drawer, &rt, chars);
 		delete chars;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -587,7 +587,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawUpArrow(JNIEnv *en
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawUpArrow(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -598,7 +598,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawDownArrow(JNIEnv *
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawDownArrow(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -609,7 +609,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawLeftArrow(JNIEnv *
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawLeftArrow(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -620,7 +620,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawRightArrow(JNIEnv 
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawRightArrow(drawer, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -632,7 +632,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Drawer_getUpdateRect(JNIEn
 		ADMRect rt;
 		sADMDrawer->GetUpdateRect(drawer, &rt);
 		return gEngine->convertRectangle(env, &rt);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -646,6 +646,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Drawer_getTextRectHeight(JNIE
 		height = sADMDrawer->GetTextRectHeightW(drawer, height, chars);
 		delete chars;
 		return height;
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return 0;
 }

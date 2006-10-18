@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2004-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  * 
  * $RCSfile: PointText.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/09/29 22:35:26 $
+ * $Revision: 1.5 $
+ * $Date: 2006/10/18 14:17:42 $
  */
 
 package com.scriptographer.ai;
@@ -38,30 +38,22 @@ import java.awt.geom.Point2D;
 
 public class PointText extends TextFrame {
 
-	protected PointText(long handle, Document document) {
-		super(handle, document);
+	protected PointText(int handle) {
+		super(handle);
 	}
 
-	native private static long nativeCreate(int docHandle, int orient, float x, float y);
-
-	protected PointText(Document document, Point2D point, int orient) {
-		this(nativeCreate(document != null ? document.handle : 0, orient, (float) point.getX(), (float) point.getY()), document);
-	}
-
-	protected PointText(Document document, Point2D point) {
-		this(document, point, ORIENTATION_HORIZONTAL);
-	}
+	native private static int nativeCreate(int orient, float x, float y);
 	
 	/**
 	 * Creates a point text object
 	 */
 
 	public PointText(Point2D point, int orient) {
-		this(null, point, orient);
+		this(nativeCreate(orient, (float) point.getX(), (float) point.getY()));
 	}
 
 	public PointText(Point2D point) {
-		this(null, point, ORIENTATION_HORIZONTAL);
+		this(point, ORIENTATION_HORIZONTAL);
 	}
 
 	// read only. AITransformArt suite can be used to change a kPointTextType's anchor.

@@ -1,3 +1,35 @@
+/*
+ * Scriptographer
+ *
+ * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
+ *
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * All rights reserved.
+ *
+ * Please visit http://scriptographer.com/ for updates and contact.
+ *
+ * -- GPL LICENSE NOTICE --
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * -- GPL LICENSE NOTICE --
+ *
+ * $RCSfile: com_scriptographer_ai_PathText.cpp,v $
+ * $Author: lehni $
+ * $Revision: 1.5 $
+ * $Date: 2006/10/18 14:17:17 $
+ */
+
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "aiGlobals.h"
@@ -8,38 +40,32 @@
  */
 
 /*
- * long nativeCreate(int docHandle, int orient, int artHandle)
+ * int nativeCreate(int orient, int artHandle)
  */
-JNIEXPORT jlong JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__III(JNIEnv *env, jclass cls, jint docHandle, jint orient, jint artHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__II(JNIEnv *env, jclass cls, jint orient, jint artHandle) {
 	AIArtHandle art = NULL;
 
-	CREATEART_BEGIN
-
-	AIArtHandle artLayer = Layer_beginCreateArt();
-	sAITextFrame->NewOnPathText(artLayer != NULL ? kPlaceInsideOnTop : kPlaceAboveAll, artLayer, (AITextOrientation) orient, (AIArtHandle) artHandle, 0, -1, NULL, false, &art);
+	short paintOrder;
+	AIArtHandle artInsert = Art_getInsertionPoint(&paintOrder);
+	sAITextFrame->NewOnPathText(paintOrder, artInsert, (AITextOrientation) orient, (AIArtHandle) artHandle, 0, -1, NULL, false, &art);
 	if (art == NULL)
 		throw new StringException("Cannot create text object. Please make sure there is an open document.");
-
-	CREATEART_END
 
 	return (jlong) art;
 }
 
 /*
- * jlong nativeCreate(int docHandle, int orient, int artHandle, float x, float y)
+ * int nativeCreate(int orient, int artHandle, float x, float y)
  */
-JNIEXPORT jlong JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__IIIFF(JNIEnv *env, jclass cls, jint docHandle, jint orient, jint artHandle, jfloat x, jfloat y) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__IIFF(JNIEnv *env, jclass cls, jint orient, jint artHandle, jfloat x, jfloat y) {
 	AIArtHandle art = NULL;
 
-	CREATEART_BEGIN
-	
-	AIArtHandle artLayer = Layer_beginCreateArt();
+	short paintOrder;
+	AIArtHandle artInsert = Art_getInsertionPoint(&paintOrder);
 	DEFINE_POINT(pt, x, y);
-	sAITextFrame->NewOnPathText2(artLayer != NULL ? kPlaceInsideOnTop : kPlaceAboveAll, artLayer, (AITextOrientation) orient, (AIArtHandle) artHandle, pt, NULL, false, &art);
+	sAITextFrame->NewOnPathText2(paintOrder, artInsert, (AITextOrientation) orient, (AIArtHandle) artHandle, pt, NULL, false, &art);
 	if (art == NULL)
 		throw new StringException("Cannot create text object. Please make sure there is an open document.");
-
-	CREATEART_END
 
 	return (jlong) art;
 }
@@ -60,7 +86,7 @@ JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_ai_PathText_getPathRange(J
 			env->SetFloatArrayRegion(res, 0, 2, range);
 			return res;
 		}
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
@@ -69,7 +95,8 @@ JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_ai_PathText_getPathRange(J
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathText_setPathRange(JNIEnv *env, jobject obj, jfloat start, jfloat end) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		// suspend reflow by passing true here
+	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAITextFrame->SetOnPathTextTRange(art, start, end);
-	} EXCEPTION_CONVERT(env)
+	} EXCEPTION_CONVERT(env);
 }
