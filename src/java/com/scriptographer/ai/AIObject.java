@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: AIObject.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/19 02:48:17 $
+ * $Revision: 1.5 $
+ * $Date: 2006/10/18 14:09:17 $
  */
 
 package com.scriptographer.ai;
@@ -40,16 +40,20 @@ abstract class AIObject extends WrappableObject {
 	// used for storing the native handle for this object
 	protected int handle;
 	
-	public AIObject() {
+	protected AIObject() {
 		handle = 0;
 	}
 	
-	public AIObject(int handle) {
+	protected AIObject(int handle) {
 		this.handle = handle;
 	}
 	
 	public boolean equals(Object obj) {
-		if (obj instanceof AIObject) {
+		// Some objects subclass AIObject and do not use handle,
+		// use a fallback scenario for these!
+		if (handle == 0) {
+			return this == obj;
+		} else if (obj instanceof AIObject) {
 			return handle == ((AIObject) obj).handle;
 		}
 		return false;
