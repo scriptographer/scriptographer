@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2006/06/29 15:30:47 $
+ * $Revision: 1.12 $
+ * $Date: 2006/10/18 14:08:29 $
  */
 
 package com.scriptographer.adm;
@@ -699,9 +699,9 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	public native void setForcedOnScreen(boolean forcedOnScreen);
 
 	/*
-		 * dialog group functions
-		 *
-		 */
+	 * dialog group functions
+	 *
+	 */
 
 	public native DialogGroupInfo getGroupInfo();
 	public native void setGroupInfo(String group, int positionCode);
@@ -710,8 +710,10 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	}
 
 	/*
-		 * Support for various standard dialogs:
-		 */
+	 * Support for various standard dialogs:
+	 */
+
+	private static native File nativeFileDialog(String message, String filter, File directory, String filename, boolean open);
 
 	private static File fileDialog(String message, String[] filters, File selectedFile, boolean open) {
 		String filter;
@@ -728,21 +730,20 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 			buf.append('\0');
 			filter = buf.toString();
 		}
-		String directory, filename;
+		File directory;
+		String filename;
 		if (selectedFile == null) {
-			directory = filename = null;
+			directory = null;
+			filename = null;
 		} else if (selectedFile.isDirectory()) {
-			directory = selectedFile.getPath();
+			directory = selectedFile;
 			filename = "";
 		} else {
-			directory = selectedFile.getParent();
+			directory = selectedFile.getParentFile();
 			filename = selectedFile.getName();
 		}
-		String path = nativeFileDialog(message, filter, directory, filename, open);
-		return path != null ? new File(path) : null;
+		return nativeFileDialog(message, filter, directory, filename, open);
 	}
-
-	private static native String nativeFileDialog(String message, String filter, String directory, String filename, boolean open);
 
 	/**
 	 * 

@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,15 +28,15 @@
  *
  * $RCSfile: FunctionHelper.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2005/11/08 21:38:21 $
+ * $Revision: 1.7 $
+ * $Date: 2006/10/18 14:12:51 $
  */
 
 package com.scriptographer.js;
 
 import org.mozilla.javascript.*;
 
-import com.scriptographer.CommitManager;
+import com.scriptographer.ScriptographerEngine;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,10 +57,10 @@ public class FunctionHelper {
 	}
 	
 	public static Object callFunction(Scriptable scope, Function func, Object args[]) throws Exception {
-		CommitManager.begin();
+		ScriptographerEngine.beginExecution();
 		Object ret = func.call(Context.getCurrentContext(), scope, scope, args);
 		// commit all changed objects after a scripting function has been called!
-		CommitManager.end();
+		ScriptographerEngine.endExecution();
 		// unwrap if the return value is a native java object:
 		if (ret != null && ret instanceof NativeJavaObject) {
 			ret = ((NativeJavaObject) ret).unwrap();

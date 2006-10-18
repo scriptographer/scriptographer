@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,25 +28,18 @@
  *
  * $RCSfile: Static.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.5 $
+ * $Date: 2006/10/18 14:08:29 $
  */
 
 package com.scriptographer.adm;
 
-/**
- * A Static is by default text based.
- * Only if it is created with an image passed to the constructor,
- * It is picture based.
- * Picture based items (CheckBox, Static, PushButton, RadioButton),
- * this policy has been chosen to avoid 4 more classes.
- */
 public class Static extends TextValueItem {
 
 	//  Text static styles
 	public final static int
 		STYLE_CLIPPEDTEXT 					= 1 << 0,
-		STYLE_DISABLE_AUTO_ACTIVATE_TEXT 		= 1 << 1,
+		STYLE_DISABLE_AUTO_ACTIVATE_TEXT 	= 1 << 1,
 		STYLE_TRUNCATE_ENDTEXT 				= 1 << 2, // clipped style has priority
 		STYLE_TRUNCATE_MIDDLETEXT 			= 1 << 3; // truncate end has priority
 
