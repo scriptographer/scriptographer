@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,15 +28,14 @@
  *
  * $RCSfile: CommitManager.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/06/07 16:44:21 $
+ * $Revision: 1.10 $
+ * $Date: 2006/10/18 14:06:36 $
  */
 
 package com.scriptographer;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.TextFrame;
@@ -82,29 +81,11 @@ public class CommitManager {
 	}
 	
 	/**
-	 * commit all changes
+	 * commit all changes and increases the internal commit version
 	 */
 	public static void commit() {
-		commit(null);
-	}
-
-	/**
-	 * to be called before ai scripts are executed
-	 *
-	 */
-	public static void begin() {
-		// supsend text reflow until commit
-		Document.suspendTextReflow();
-	}
-
-	/**
-	 * to be called before ai scripts are executed
-	 *
-	 */
-	public static void end() {
-		commit();
 		version++;
-		Document.resumeTextReflow();
+		commit(null);
 	}
 
 	public static void markDirty(Object key, Commitable commitable) {
@@ -114,10 +95,11 @@ public class CommitManager {
 	/**
 	 * a hash map that overrides put so that it creates a CommitableList
 	 * in case there was one object under a key already
+	 * Uses IdentityHashMaps internally, to avoid calling of equals on objects
 	 */
-	static class CommitableMap extends HashMap {
+	static class CommitableMap extends IdentityHashMap {
 		// keep track of values that have been added already, maybe under another key
-		HashMap values = new HashMap();
+		IdentityHashMap values = new IdentityHashMap();
 		
 		/**
 		 * A helper class that's needed when there are more than on object for one key.
@@ -127,7 +109,7 @@ public class CommitManager {
 		 * 
 		 * Use a LinkedHashMap in order to preserve sequence of commits
 		 */
-		class CommitableList extends LinkedHashMap implements Commitable {
+		class CommitableList extends IdentityHashMap implements Commitable {
 			public void commit() {
 				for (Iterator iterator = values().iterator(); iterator.hasNext();)
 					((Commitable) iterator.next()).commit();
