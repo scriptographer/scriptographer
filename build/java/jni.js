@@ -327,7 +327,7 @@ function createJniBodies(srcDir, endsWithMask) {
 					// custom function definition
 					out.println('\ttry {');
 					out.println('\t\t// TODO: define ' + func.javaName);
-					out.println('\t} EXCEPTION_CONVERT(env)');
+					out.println('\t} EXCEPTION_CONVERT(env);');
 					// custom end
 					
 					switch (ret.charAt(0)) {
@@ -335,7 +335,7 @@ function createJniBodies(srcDir, endsWithMask) {
 							// do nothing
 							break;
 						case 'Z': // boolean
-							out.println('\treturn JNI_FALSE;');
+							out.println('\treturn false;');
 							break;
 						case 'C': //
 							out.println('\treturn \' \';');
