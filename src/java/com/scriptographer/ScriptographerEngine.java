@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.19 $
- * $Date: 2006/09/29 22:32:25 $
+ * $Revision: 1.20 $
+ * $Date: 2006/10/18 14:07:59 $
  */
 
 package com.scriptographer;
@@ -169,6 +169,22 @@ public class ScriptographerEngine {
 	}
 
 	/**
+	 * to be called before ai functions are executed
+	 */
+	public static void beginExecution() {
+		Document.beginExecution();
+		
+	}
+
+	/**
+	 * to be called before ai functions are executed
+	 */
+	public static void endExecution() {
+		CommitManager.commit();
+		Document.endExecution();
+	}
+
+	/**
 	 * Internal Class used for caching compiled scripts
 	 */
 	class ScriptCacheEntry {
@@ -254,7 +270,7 @@ public class ScriptographerEngine {
 				scope = global.createScope(scriptFile);
 			// disable output to the console while the script is executed as it won't get updated anyway
 			// ConsoleOutputStream.enableOutput(false);
-			CommitManager.begin();
+			beginExecution();
 			script.exec(context, scope);
 			ret = scope;
 			closeProgress();
@@ -268,7 +284,7 @@ public class ScriptographerEngine {
 		} finally {
 			// commit all the changes, even when script has crashed (to synch with 
 			// direct changes such as creation of paths, etc
-			CommitManager.end();
+			endExecution();
 			// now reenable the console, this also writes out all the things that were printed in the meantime:
 			// ConsoleOutputStream.enableOutput(true);
 		}

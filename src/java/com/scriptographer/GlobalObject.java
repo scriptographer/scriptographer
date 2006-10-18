@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.18 $
- * $Date: 2006/09/29 22:32:44 $
+ * $Revision: 1.19 $
+ * $Date: 2006/10/18 14:07:59 $
  */
 
 package com.scriptographer;
@@ -104,7 +104,7 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, Matrix.class);
 
 		new ExtendedJavaClass(this, Color.class);
-		new ExtendedJavaClass(this, Grayscale.class);
+		new ExtendedJavaClass(this, GrayColor.class);
 		new ExtendedJavaClass(this, RGBColor.class);
 		new ExtendedJavaClass(this, CMYKColor.class);
 
@@ -112,12 +112,17 @@ public class GlobalObject extends ImporterTopLevel {
 		new ExtendedJavaClass(this, Path.class);
 		new ExtendedJavaClass(this, Group.class);
 		new ExtendedJavaClass(this, Raster.class);
+		new ExtendedJavaClass(this, PlacedItem.class);
 		new ExtendedJavaClass(this, Layer.class);
 		new ExtendedJavaClass(this, CompoundPath.class);
+		new ExtendedJavaClass(this, SymbolItem.class);
+		
 		new ExtendedJavaClass(this, PathStyle.class);
 		new ExtendedJavaClass(this, FillStyle.class);
 		new ExtendedJavaClass(this, StrokeStyle.class);
 
+		new ExtendedJavaClass(this, Pattern.class);
+		new ExtendedJavaClass(this, Symbol.class);
 		new ExtendedJavaClass(this, Segment.class);
 		new ExtendedJavaClass(this, Curve.class);
 		new ExtendedJavaClass(this, HitTest.class);
@@ -203,7 +208,7 @@ public class GlobalObject extends ImporterTopLevel {
 	 */
 
 	static Object getActiveDocument(ScriptableObject obj) {
-		return DocumentList.getActiveDocument();
+		return Document.getActiveDocument();
 	}
 
 	static Object getScriptDirectory(ScriptableObject obj) {
@@ -278,7 +283,9 @@ public class GlobalObject extends ImporterTopLevel {
 	 */
 	public static void commit(Context cx, Scriptable thisObj, Object[] args,
 		Function funObj) {
-		CommitManager.commit();
+		// call with key set to null so the commit version is not increased
+		// (see CommitManager.commit()
+		CommitManager.commit(null);
 	}
 	
 	public static long getNanoTime(Context cx, Scriptable thisObj, Object[] args,
