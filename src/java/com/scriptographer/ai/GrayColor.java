@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2005 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,10 @@
  *
  * File created on 23.01.2005.
  *
- * $RCSfile: Grayscale.java,v $
+ * $RCSfile: GrayColor.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2005/10/23 00:33:04 $
+ * $Revision: 1.1 $
+ * $Date: 2006/10/18 14:10:47 $
  */
 
 package com.scriptographer.ai;
@@ -37,15 +37,15 @@ package com.scriptographer.ai;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 
-public class Grayscale extends Color {
+public class GrayColor extends Color {
 	protected float gray;
 
-	public Grayscale(float g, float a) {
+	public GrayColor(float g, float a) {
 		gray = g;
 		alpha = a;
 	}
 
-	public Grayscale(float g) {
+	public GrayColor(float g) {
 		this(g, 1f);
 	}
 
@@ -69,8 +69,8 @@ public class Grayscale extends Color {
 	}
 
 	public boolean equals(Object obj) {
-		if (obj instanceof Grayscale) {
-			Grayscale col = (Grayscale) obj;
+		if (obj instanceof GrayColor) {
+			GrayColor col = (GrayColor) obj;
 			return  gray == col.gray &&
 					alpha == col.alpha;
 		}
