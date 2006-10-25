@@ -28,8 +28,8 @@
  *
  * $RCSfile: PathStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.11 $
- * $Date: 2006/10/18 14:17:42 $
+ * $Revision: 1.12 $
+ * $Date: 2006/10/25 02:12:50 $
  */
 
 package com.scriptographer.ai;
@@ -131,7 +131,8 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 			short clip, short lockClip, short evenOdd, float resolution) {
 		
 		fill.init(fillColor, hasFillColor, fillOverprint);
-		stroke.init(strokeColor, hasStrokeColor, strokeOverprint, strokeWidth, dashOffset, dashArray, cap, join, miterLimit);
+		stroke.init(strokeColor, hasStrokeColor, strokeOverprint, strokeWidth,
+			dashOffset, dashArray, cap, join, miterLimit);
 
 		this.clip = clip >= 0 ? new Boolean(clip != 0) : null;
 		this.lockClip = lockClip >= 0 ? new Boolean(lockClip != 0) : null;
@@ -143,36 +144,45 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 		FillStyle fillStyle = style.fill;
 		StrokeStyle strokeStyle = style.stroke;
 		fill.init(fillStyle.color, fillStyle.overprint);
-		stroke.init(strokeStyle.color, strokeStyle.overprint, strokeStyle.width, strokeStyle.dashOffset, strokeStyle.dashArray, strokeStyle.cap, strokeStyle.join, strokeStyle.miterLimit);
+		stroke.init(strokeStyle.color, strokeStyle.overprint, strokeStyle.width,
+			strokeStyle.dashOffset, strokeStyle.dashArray, strokeStyle.cap,
+			strokeStyle.join, strokeStyle.miterLimit);
 		this.clip = style.clip;
 		this.lockClip = style.lockClip;
 		this.evenOdd = style.evenOdd;
 		this.resolution = style.resolution;
 	}
 
-	protected native void nativeFetch(int handle);
+	protected native void nativeGet(int handle);
 	
-	protected native void nativeCommit(int docHandle, int handle,
-			float[] fillColor, boolean hasFillColor, short fillOverprint,
-			float[] strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
+	protected native void nativeSet(int handle, int docHandle, 
+			Color fillColor, boolean hasFillColor,
+			short fillOverprint,
+			Color strokeColor, boolean hasStrokeColor,
+			short strokeOverprint, float strokeWidth,
 			float dashOffset, float[] dashArray,
 			short cap, short join, float miterLimit,
 			short clip, short lockClip, short evenOdd, float resolution);
 
 	// These would belong to FillStyle and StrokeStyle, but in order to safe 4 new native files, they're here:
-	protected static native void nativeInitStrokeStyle(int handle, float[] color, boolean hasColor, short overprint, float width, float dashOffset, float[] dashArray, short cap, short join, float miterLimit);
+	protected static native void nativeInitStrokeStyle(int handle, Color color,
+		boolean hasColor, short overprint, float width, float dashOffset,
+		float[] dashArray, short cap, short join, float miterLimit);
 
-	protected static native void nativeInitFillStyle(int handle, float[] color, boolean hasColor, short overprint);
+	protected static native void nativeInitFillStyle(int handle, Color color,
+		boolean hasColor, short overprint);
 	
 	/**
 	 * just a wrapper around nativeCommit, which can be used in CharacterStyle as well
 	 * (CharacterStyle has an own implementation of nativeCommit, but the calling is the same...)
 	 */
-	protected void nativeCommit(int docHandle, int handle) {
-		nativeCommit(docHandle, handle,
-			fill.color != null && fill.color != Color.NONE ? fill.color.getComponents() : null, fill.color != null, 
+	protected void commit(int handle, int docHandle) {
+		nativeSet(handle, docHandle,
+			fill.color != null && fill.color != Color.NONE ? fill.color : null,
+			fill.color != null, 
 			fill.overprint != null ? (short) (fill.overprint.booleanValue() ? 1 : 0) : -1,
-			stroke.color != null && stroke.color != Color.NONE ? stroke.color.getComponents() : null, stroke.color != null,
+			stroke.color != null && stroke.color != Color.NONE ? stroke.color : null,
+			stroke.color != null,
 			stroke.overprint != null ? (short) (stroke.overprint.booleanValue() ? 1 : 0) : -1,
 			stroke.width != null ? stroke.width.floatValue() : -1,
 			stroke.dashOffset != null ? stroke.dashOffset.floatValue() : -1,
@@ -188,14 +198,14 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 	}
 
 	protected void fetch() {
-		nativeFetch(art.handle);
+		nativeGet(art.handle);
 		version = art.version;
 		fetched = true;
 	}
 
 	public void commit() {
 		if (dirty && art != null) {
-			nativeCommit(art.document.handle, art.handle);
+			commit(art.handle, art.document.handle);
 			version = art.version;
 			dirty = false;
 		}

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_MenuItem.cpp,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/10/18 14:17:16 $
+ * $Revision: 1.3 $
+ * $Date: 2006/10/25 02:13:31 $
  */
 
 #include "StdHeaders.h"
@@ -48,13 +48,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_MenuItem_nativeCreate(JNIEnv 
 		char *nameStr = gEngine->convertString(env, name);
 		AIPlatformAddMenuItemData data;
 		data.groupName = gEngine->convertString(env, group);
-		char *textStr = gEngine->convertString(env, text);
-		data.itemText = gPlugin->toPascal(textStr, (unsigned char*) textStr);
+		data.itemText = gEngine->convertString_Pascal(env, text);
 		AIMenuItemHandle menuItem = NULL;
 		sAIMenu->AddMenuItem(gPlugin->getPluginRef(), nameStr, &data, options, &menuItem);
 		delete nameStr;
 		delete data.groupName;
-		delete textStr;
+		delete data.itemText;
 		return (jint) menuItem;
 #else
 		char *nameStr = gEngine->convertString(env, name);

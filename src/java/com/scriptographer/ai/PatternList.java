@@ -24,52 +24,49 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on 23.10.2005.
+ * File created on Oct 20, 2006.
  * 
- * $RCSfile: AreaText.java,v $
+ * $RCSfile: PatternList.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/25 02:12:50 $
+ * $Revision: 1.1 $
+ * $Date: 2006/10/25 02:12:51 $
  */
 
 package com.scriptographer.ai;
 
-public class AreaText extends TextFrame {
+import com.scriptographer.util.AbstractReadOnlyList;
+import com.scriptographer.util.StringIndexList;
 
-	protected AreaText(int handle) {
-		super(handle);
+public class PatternList extends AbstractReadOnlyList implements StringIndexList {
+	Document document;
+
+	protected PatternList(Document document) {
+		this.document = document;
 	}
 	
-	native private static int nativeCreate(short orient, int artHandle);
-	
-	/**
-	 * Creates an area text object
-	 */
+	private static native int nativeGetLength(int docHandle);
 
-	public AreaText(Path area, short orient) {
-		this(nativeCreate(orient, area != null ? area.handle : 0));
+	public int getLength() {
+		return nativeGetLength(document.handle);
 	}
 
-	public AreaText(Path area) {
-		this(area, ORIENTATION_HORIZONTAL);
+	private static native int nativeGet(int docHandle, int index);
+
+	public Object get(int index) {
+		return Pattern.wrapHandle(nativeGet(document.handle, index), document);
 	}
 
-	public Path getTextPath() {
-		return (Path) getFirstChild();
+	private static native int nativeGet(int docHandle, String name);
+
+	public Object get(String name) {
+		return Pattern.wrapHandle(nativeGet(document.handle, name), document);
 	}
-	
-	public native int getRowCount();
-	public native void setRowCount(int count);
-	
-	public native int getColumnCount();
-	public native void setColumnCount(int count);
 
-	public native boolean getRowMajorOrder();
-	public native void setRowMajorOrder(boolean isRowMajor);
-	
-	public native float getRowGutter();
-	public native void setRowGutter(float gutter);
+	public Pattern getPattern(int index) {
+		return (Pattern) get(index);
+	}
 
-	public native float getColumnGutter();
-	public native void setColumnGutter(float gutter);
+	public Pattern getPattern(String name) {
+		return (Pattern) get(name);
+	}
 }

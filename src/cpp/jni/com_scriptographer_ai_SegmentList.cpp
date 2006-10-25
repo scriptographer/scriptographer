@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_SegmentList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/18 14:17:16 $
+ * $Revision: 1.7 $
+ * $Date: 2006/10/25 02:13:31 $
  */
  
 #include "stdHeaders.h"
@@ -53,9 +53,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SegmentList_nativeGetSize(JNIE
 }
 
 /*
- * void nativeFetch(int handle, int index, int count, float[] values)
+ * void nativeGet(int handle, int index, int count, float[] values)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeFetch(JNIEnv *env, jclass cls, jint handle, jint index, jint count, jfloatArray values) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeGet(JNIEnv *env, jclass cls, jint handle, jint index, jint count, jfloatArray values) {
 	try {
 		// use this ugly but fast hack: the AIPathSegment represents roughly an array 
 		// of 6 floats (for the 3 AIRealPoints p, in, out) + a char (boolean corner)
@@ -87,9 +87,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeFetch(JNIEnv
 }
 
 /*
- * void nativeCommit(int docHandle, int handle, int index, float ptx, float pty, float inx, float iny, float outx, float outy, boolean corner)
+ * void nativeSet(int handle, int docHandle, int index, float ptx, float pty, float inx, float iny, float outx, float outy, boolean corner)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeCommit__IIIFFFFFFZ(JNIEnv *env, jclass cls, jint docHandle, jint handle, jint index, jfloat ptx, jfloat pty, jfloat inx, jfloat iny, jfloat outx, jfloat outy, jboolean corner) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeSet__IIIFFFFFFZ(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jfloat ptx, jfloat pty, jfloat inx, jfloat iny, jfloat outx, jfloat outy, jboolean corner) {
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		DEFINE_SEGMENT(segment, ptx, pty, inx, iny, outx, outy, corner);
@@ -99,9 +99,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeCommit__IIIF
 }
 
 /*
- * void nativeCommit(int docHandle, int  handle, int index, int count, float[] values)
+ * void nativeSet(int handle, int docHandle, int index, int count, float[] values)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeCommit__IIII_3F(JNIEnv *env, jclass cls, jint docHandle, jint handle, jint index, jint count, jfloatArray values) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeSet__IIII_3F(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jint count, jfloatArray values) {
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		if (count == 1) {
@@ -122,9 +122,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeCommit__IIII
 }
 
 /*
- * void nativeInsert(int docHandle, int handle, int index, float ptx, float pty, float inx, float iny, float outx, float outy, boolean corner)
+ * void nativeInsert(int handle, int docHandle, int index, float ptx, float pty, float inx, float iny, float outx, float outy, boolean corner)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIIFFFFFFZ(JNIEnv *env, jclass cls, jint docHandle, jint handle, jint index, jfloat ptx, jfloat pty, jfloat inx, jfloat iny, jfloat outx, jfloat outy, jboolean corner) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIIFFFFFFZ(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jfloat ptx, jfloat pty, jfloat inx, jfloat iny, jfloat outx, jfloat outy, jboolean corner) {
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		DEFINE_SEGMENT(segment, ptx, pty, inx, iny, outx, outy, corner);
@@ -134,9 +134,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIIF
 }
 
 /*
- * void nativeInsert(int docHandle, int handle, int index, int count, float[] values)
+ * void nativeInsert(int handle, int docHandle, int index, int count, float[] values)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIII_3F(JNIEnv *env, jclass cls, jint docHandle, jint handle, jint index, jint count, jfloatArray values) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIII_3F(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jint count, jfloatArray values) {
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		if (count == 1) {
@@ -157,9 +157,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIII
 }
 
 /*
- * int nativeRemove(int docHandle, int handle, int index, int count)
+ * int nativeRemove(int handle, int docHandle, int index, int count)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SegmentList_nativeRemove(JNIEnv *env, jclass cls, jint docHandle, jint handle, jint index, jint count) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SegmentList_nativeRemove(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jint count) {
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		if (sAIPath->DeletePathSegments((AIArtHandle) handle, index, count))
@@ -174,9 +174,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SegmentList_nativeRemove(JNIEn
 
  
 /*
- * void nativeReverse(int docHandle, int handle)
+ * void nativeReverse(int handle, int docHandle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeReverse(JNIEnv *env, jclass cls, jint docHandle, jint handle) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeReverse(JNIEnv *env, jclass cls, jint handle, jint docHandle) {
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		if (sAIPath->ReversePathSegments((AIArtHandle) handle))
@@ -185,9 +185,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeReverse(JNIE
 }
 
 /*
- * short nativeFetchSelectionState(int handle, int index)
+ * short nativeGetSelectionState(int handle, int index)
  */
-JNIEXPORT jshort JNICALL Java_com_scriptographer_ai_SegmentList_nativeFetchSelectionState(JNIEnv *env, jclass cls, jint handle, jint index) {
+JNIEXPORT jshort JNICALL Java_com_scriptographer_ai_SegmentList_nativeGetSelectionState(JNIEnv *env, jclass cls, jint handle, jint index) {
 	try {
 		short selected = 0;
 		sAIPath->GetPathSegmentSelected((AIArtHandle) handle, index, &selected);
@@ -197,9 +197,9 @@ JNIEXPORT jshort JNICALL Java_com_scriptographer_ai_SegmentList_nativeFetchSelec
 }
 
 /*
- * void nativeCommitSelectionState(int docHandle, int handle, int index, short state)
+ * void nativeSetSelectionState(int handle, int docHandle, int index, short state)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeCommitSelectionState(JNIEnv *env, jclass cls, jint docHandle, jint handle, jint index, jshort state) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeSetSelectionState(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jshort state) {
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		sAIPath->SetPathSegmentSelected((AIArtHandle) handle, index, state);

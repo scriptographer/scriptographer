@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.15 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.16 $
+ * $Date: 2006/10/25 02:12:50 $
  */
 
 package com.scriptographer.ai;
@@ -76,10 +76,6 @@ public class SegmentList extends AbstractFetchList {
 		return path;
 	}
 
-	public int hashCode() {
-		return path != null ? path.hashCode() : super.hashCode();
-	}
-
 	private static native int nativeGetSize(int handle);
 
 	/**
@@ -90,6 +86,9 @@ public class SegmentList extends AbstractFetchList {
 	 */
 	protected void updateSize(int newSize) {
 		if (path != null) {
+			/*
+			// TODO: check if this is really needed.
+			   -> with the version checking in place can segments not be reused?
 			// updateLength is called in the beginning of a SegmentList and whenever the list completely changes,
 			// e.g. when Path.reduceSegments is called. In these cases, the existing segments are not valid anymore:
 			for (int i = 0; i < size; i++) {
@@ -100,6 +99,7 @@ public class SegmentList extends AbstractFetchList {
 					list.set(i, null);
 				}
 			}
+			*/
 			if (newSize == -1)
 				newSize = nativeGetSize(path.handle);
 			list.setSize(newSize);
@@ -112,21 +112,26 @@ public class SegmentList extends AbstractFetchList {
 		}
 	}
 
+	/**
+	 * updates the synchronization between the cached segments in java
+	 * and the underlying Illustrator object.
+	 * Only called from Path.getSegmentList()
+	 */
 	protected void update() {
 		if (path != null && lengthVersion != path.version) {
 			updateSize(-1);
 		}
 	}
 
-	protected static native void nativeFetch(int handle, int index, int count, float[] values);
+	protected static native void nativeGet(int handle, int index, int count, float[] values);
 	// docHandle seems to be only needed for modifying code!
-	protected static native void nativeCommit(int docHandle, int handle, int index, float pointX, float pointY, float inX, float inY, float outX, float outY, boolean corner);
-	protected static native void nativeCommit(int docHandle, int handle,int index, int count, float[] values);
-	protected static native void nativeInsert(int docHandle, int handle, int index, float pointX, float pointY, float inX, float inY, float outX, float outY, boolean corner);
-	protected static native void nativeInsert(int docHandle, int handle,int index, int count, float[] values);
+	protected static native void nativeSet(int handle, int docHandle, int index, float pointX, float pointY, float inX, float inY, float outX, float outY, boolean corner);
+	protected static native void nativeSet(int handle, int docHandle, int index, int count, float[] values);
+	protected static native void nativeInsert(int handle, int docHandle, int index, float pointX, float pointY, float inX, float inY, float outX, float outY, boolean corner);
+	protected static native void nativeInsert(int handle, int docHandle, int index, int count, float[] values);
 	// for point selections
-	protected static native short nativeFetchSelectionState(int handle, int index);
-	protected static native void nativeCommitSelectionState(int docHandle, int handle, int index, short state);
+	protected static native short nativeGetSelectionState(int handle, int index);
+	protected static native void nativeSetSelectionState(int handle, int docHandle, int index, short state);
 
 	/**
 	 * Fetches a series of segments from the underlying Adobe Illustrator Path.
@@ -189,8 +194,7 @@ public class SegmentList extends AbstractFetchList {
 					fetchCount -= count;
 					if (values == null || values.length < count)
 						values = new float[count * VALUES_PER_SEGMENT];
-					// System.out.println("nativeFetch " + start + " " + count);
-					nativeFetch(path.handle, start, count, values);
+					nativeGet(path.handle, start, count, values);
 					int valueIndex = 0;
 					for (int i = start; i < end; i++) {
 						Segment segment = (Segment) list.get(i);
@@ -237,6 +241,12 @@ public class SegmentList extends AbstractFetchList {
 		return (Segment) get(index);
 	}
 
+	/**
+	 * Adds a segment to the SegmentList.
+	 * @param index the index where to add the segment
+	 * @param obj either a Segment or a Point2D
+	 * @return the new segment
+	 */
 	public Object add(int index, Object obj) {
 		Segment segment;
 		if (obj instanceof Segment) {
@@ -265,9 +275,9 @@ public class SegmentList extends AbstractFetchList {
 		segment.insert();
 		// update Segment indices
 		for (int i = index + 1; i < size; i++) {
-			segment = (Segment) list.get(i);
-			if (segment != null)
-				segment.index = i;
+			Segment seg = (Segment) list.get(i);
+			if (seg != null)
+				seg.index = i;
 		}
 		return segment;
 	}
@@ -326,7 +336,7 @@ public class SegmentList extends AbstractFetchList {
 
 		// and add the segments to illustrator as well
 		if (values != null && addCount > 0) {
-			SegmentList.nativeInsert(path.document.handle, path.handle, index, addCount, values);
+			SegmentList.nativeInsert(path.handle, path.document.handle, index, addCount, values);
 
 			// update size
 			size += addCount;
@@ -353,8 +363,10 @@ public class SegmentList extends AbstractFetchList {
 			segment.segments = this;
 			segment.index = index;
 			segment.markDirty(Segment.DIRTY_POINTS);
-			if (ret != null)
+			if (ret != null) {
 				ret.segments = null;
+				ret.index = -1;
+			}
 			return ret;
 
 		}
@@ -369,26 +381,23 @@ public class SegmentList extends AbstractFetchList {
 		return size == 0;
 	}
 
-	private static native int nativeRemove(int docHandle, int handle, int index, int count);
+	private static native int nativeRemove(int handle, int docHandle, int index, int count);
 
 	public void remove(int fromIndex, int toIndex) {
 		if (fromIndex < toIndex) {
 			int newSize = size + fromIndex - toIndex;
-
 			for (int i = fromIndex; i < toIndex; i++) {
-				Segment obj = (Segment) list.get(i);
-				if (obj != null)
-					obj.segments = null;
+				Segment seg = (Segment) list.get(i);
+				if (seg != null) {
+					seg.segments = null;
+					seg.index = -1;
+				}
 			}
-
 			if (path != null) {
-				size = nativeRemove(path.document.handle, path.handle, fromIndex, toIndex - fromIndex);
+				size = nativeRemove(path.handle, path.document.handle, fromIndex, toIndex - fromIndex);
 			}
-
 			list.remove(fromIndex, toIndex);
-
 			size = newSize;
-
 			if (curves != null)
 				curves.updateSize();
 		}
@@ -401,14 +410,14 @@ public class SegmentList extends AbstractFetchList {
 		return obj;
 	}
 
-	private static native void nativeReverse(int docHandle, int handle);
+	private static native void nativeReverse(int handle, int docHandle);
 
 	public void reverse() {
 		if (path != null) {
 			// first save all changes:
 			CommitManager.commit(path);
 			// reverse underlying ai structures:
-			nativeReverse(path.document.handle, path.handle);
+			nativeReverse(path.handle, path.document.handle);
 		}
 		// reverse internal arrays:
 		Object[] objs = list.toArray();
@@ -571,18 +580,5 @@ public class SegmentList extends AbstractFetchList {
 
 	public void arcTo(Point2D center, Point2D endPoint, int ccw) {
 		arcTo((float) center.getX(), (float) center.getY(), (float) endPoint.getX(), (float) endPoint.getY(), ccw);
-	}
-	
-	public String toString() {
-		fetch();
-		StringBuffer buf = new StringBuffer(256);
-		buf.append("[ ");
-		for (int i = 0; i < size; i++) {
-			Object obj = get(i);
-			if (i > 0) buf.append(", ");
-			buf.append(obj.toString());
-		}
-		buf.append(" ]");
-		return buf.toString();
 	}
 }

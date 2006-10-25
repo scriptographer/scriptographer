@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Path.cpp,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/10/18 14:17:16 $
+ * $Revision: 1.10 $
+ * $Date: 2006/10/25 02:13:31 $
  */
  
 #include "stdHeaders.h"
@@ -63,9 +63,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Path_isClosed(JNIEnv *env,
 }
 
 /*
- * void setClosed(boolean closed)
+ * void nativeSetClosed(boolean closed)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setClosed(JNIEnv *env, jobject obj, jboolean closed) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_nativeSetClosed(JNIEnv *env, jobject obj, jboolean closed) {
 	try {
 		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
 		sAIPath->SetPathClosed(handle, closed);
@@ -219,19 +219,20 @@ static AIPathConstructionMemoryObject pathMemoryObject = {
 };
 
 /*
- * int nativePointsToCurves(int handle, float tolerance, float threshold, int cornerRadius, float scale)
+ * int nativePointsToCurves(float tolerance, float threshold, int cornerRadius, float scale)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativePointsToCurves(JNIEnv *env, jclass cls, jint handle, jfloat tolerance, jfloat threshold, jint cornerRadius, jfloat scale) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativePointsToCurves(JNIEnv *env, jobject obj, jfloat tolerance, jfloat threshold, jint cornerRadius, jfloat scale) {
 	int res = 0;
 	try {
+		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
 		short count;
-		sAIPath->GetPathSegmentCount((AIArtHandle) handle, &count);
+		sAIPath->GetPathSegmentCount(handle, &count);
 		if (count > 0) {
 			// convert the segments to points first:
 			AIPathSegment *segments = (AIPathSegment *) pathAllocate(count * sizeof(AIPathSegment));
 			AIPathConstructionPoint *points = (AIPathConstructionPoint *) pathAllocate(count * sizeof(AIPathConstructionPoint));
 			if (segments != NULL && points != NULL) {
-				sAIPath->GetPathSegments((AIArtHandle) handle, 0, count, segments);
+				sAIPath->GetPathSegments(handle, 0, count, segments);
 				for (int i = 0; i < count; i++) {
 					points[i].point = segments[i].p;
 					points[i].corner = segments[i].corner;
@@ -243,8 +244,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativePointsToCurves(JNIE
 				short radius = cornerRadius;
 				AIPathSegment *segments = NULL;
 				if (!sAIPathConstruction->PointsToCurves(&pointCount, points, &segCount, &segments, &tolerance, &threshold, &radius, &scale, &pathMemoryObject) && segments != NULL) {
-					sAIPath->SetPathSegmentCount((AIArtHandle) handle, segCount);	
-					sAIPath->SetPathSegments((AIArtHandle) handle, 0, segCount, segments);	
+					sAIPath->SetPathSegmentCount(handle, segCount);	
+					sAIPath->SetPathSegments(handle, 0, segCount, segments);	
 					res = segCount;
 					pathDispose(segments);
 				}
@@ -256,21 +257,22 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativePointsToCurves(JNIE
 }
 
 /*
- * int nativeCurvesToPoints(int handle, float maxPointDistance, float flatness)
+ * int nativeCurvesToPoints(float maxPointDistance, float flatness)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativeCurvesToPoints(JNIEnv *env, jclass cls, jint handle, jfloat maxPointDistance, jfloat flatness) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativeCurvesToPoints(JNIEnv *env, jobject obj, jfloat maxPointDistance, jfloat flatness) {
 	int res = 0;
 	try {
+		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
 		short count;
-		sAIPath->GetPathSegmentCount((AIArtHandle) handle, &count);
+		sAIPath->GetPathSegmentCount(handle, &count);
 		if (count > 0) {
 			// if the path is closed, we have to reuse the first point at the end (curvesToPoints can't handle closed paths directly...)
 			AIBoolean closed;
-			sAIPath->GetPathClosed((AIArtHandle) handle, &closed);
+			sAIPath->GetPathClosed(handle, &closed);
 			AIPathSegment *segments = (AIPathSegment *)pathAllocate((closed ? count + 1 : count) * sizeof(AIPathSegment));
 			if (segments != NULL) {
 				AIPathConstructionPoint *points = NULL;
-				sAIPath->GetPathSegments((AIArtHandle) handle, 0, count, segments);
+				sAIPath->GetPathSegments(handle, 0, count, segments);
 				if (closed) {
 					memcpy(&segments[count], &segments[0], sizeof(AIPathSegment));
 					count++;
@@ -284,8 +286,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativeCurvesToPoints(JNIE
 							segments[i].p = segments[i].in = segments[i].out = points[i].point;
 							segments[i].corner = points[i].corner;
 						}
-						sAIPath->SetPathSegmentCount((AIArtHandle) handle, pointCount);	
-						sAIPath->SetPathSegments((AIArtHandle) handle, 0, pointCount, segments);	
+						sAIPath->SetPathSegmentCount(handle, pointCount);	
+						sAIPath->SetPathSegments(handle, 0, pointCount, segments);	
 						res = pointCount;
 					}
 					pathDispose(segments);
@@ -298,10 +300,11 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativeCurvesToPoints(JNIE
 }
 
 /*
- * void nativeReduceSegments(int handle, float flatness)
+ * void nativeReduceSegments(float flatness)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_nativeReduceSegments(JNIEnv *env, jclass cls, jint handle, jfloat flatness) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_nativeReduceSegments(JNIEnv *env, jobject obj, jfloat flatness) {
 	try {
-		sAIPathConstruction->ReducePathSegments((AIArtHandle) handle, flatness, &pathMemoryObject);
+		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
+		sAIPathConstruction->ReducePathSegments(handle, flatness, &pathMemoryObject);
 	} EXCEPTION_CONVERT(env);
 }

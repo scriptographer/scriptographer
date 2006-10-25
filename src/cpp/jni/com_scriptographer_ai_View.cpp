@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_View.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/10/18 14:17:16 $
+ * $Revision: 1.5 $
+ * $Date: 2006/10/25 02:13:31 $
  */
 
 #include "StdHeaders.h"
@@ -338,15 +338,3 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setShowTransparencyGrid(J
 	} EXCEPTION_CONVERT(env);
 }
 
-/*
- * int nativeGetDocument()
- */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_View_nativeGetDocument(JNIEnv *env, jobject obj) {
-	try {
-		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
-		AIDocumentHandle doc = NULL;
-		sAIDocumentView->GetDocumentViewDocument(view, &doc);
-		return (jint) doc;
-	} EXCEPTION_CONVERT(env);
-	return 0;
-}

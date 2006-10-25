@@ -28,8 +28,8 @@
  *
  * $RCSfile: CurveList.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.10 $
+ * $Date: 2006/10/25 02:12:50 $
  */
 
 package com.scriptographer.ai;
@@ -54,14 +54,9 @@ public class CurveList extends AbstractFetchList {
 	public Path getPath() {
 		return path;
 	}
-	
-	public int hashCode() {
-		return path != null ? path.hashCode() : super.hashCode();
-	}
 
 	/**
-	 * This is called from the linked CurveList, when this changes.
-	 * TODO: also call it from setClosed, as this changes the number of curves as well!
+	 * This is called from the linked SegmentList, when this path changes.
 	 */
 	protected void updateSize() {
 		int newSize = segments.size;
@@ -78,9 +73,13 @@ public class CurveList extends AbstractFetchList {
 	protected void fetch(int fromIndex, int toIndex) {
 		// prefetch all the needed segments now:
 		segments.fetch(fromIndex, Math.min(segments.size - 1, toIndex + 1));
-
+		/*
+		 TODO: Verify if tihis is really not be needed
+		 It seems not, as it will be called anyway when
+		 accessing the objects after calling fetch. 
 		for (int i = fromIndex; i < toIndex; i++)
 			get(i);
+		*/
 	}
 
 	protected void fetch() {
@@ -122,18 +121,5 @@ public class CurveList extends AbstractFetchList {
 
 	public boolean isEmpty() {
 		return size == 0;
-	}
-
-	public String toString() {
-		fetch();
-		StringBuffer buf = new StringBuffer(256);
-		buf.append("[ ");
-		for (int i = 0; i < size; i++) {
-			Object obj = list.get(i);
-			if (i > 0) buf.append(", ");
-			buf.append(obj.toString());
-		}
-		buf.append(" ]");
-		return buf.toString();
 	}
 }

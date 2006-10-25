@@ -28,8 +28,8 @@
  *
  * $RCSfile: Curve.java,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.13 $
+ * $Date: 2006/10/25 02:12:51 $
  */
 
 package com.scriptographer.ai;
@@ -298,7 +298,7 @@ public class Curve extends WrappableObject {
 		// don't mark dirty, commit immediatelly both as all the values have been modified:
 		if (segments.path != null) {
 			Path path = segments.path;
-			SegmentList.nativeCommit(path.document.handle, path.handle, index1, 2, values);
+			SegmentList.nativeSet(path.handle, path.document.handle, index1, 2, values);
 		}
 	}
 

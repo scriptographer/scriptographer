@@ -28,8 +28,8 @@
  * 
  * $RCSfile: PathText.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.6 $
+ * $Date: 2006/10/25 02:12:51 $
  */
 
 package com.scriptographer.ai;
@@ -40,15 +40,15 @@ public class PathText extends TextFrame {
 		super(handle);
 	}
 
-	native private static int nativeCreate(int orient, int artHandle);
+	native private static int nativeCreate(short orient, int artHandle);
 	// TODO: not used?
-	native private static int nativeCreate(int orient, int artHandle, float x, float y);
+	native private static int nativeCreate(short orient, int artHandle, float x, float y);
 	
 	/**
 	 * Creates a path text object
 	 */
 
-	public PathText(Path path, int orient) {
+	public PathText(Path path, short orient) {
 		this(nativeCreate(orient, path != null ? path.handle : 0));
 		// TODO: check what exactly do startT endT vs start anchor!
 	}

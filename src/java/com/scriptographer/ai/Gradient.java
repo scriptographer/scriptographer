@@ -28,21 +28,23 @@
  * 
  * $RCSfile: Gradient.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/10/18 14:10:26 $
+ * $Revision: 1.2 $
+ * $Date: 2006/10/25 02:12:51 $
  */
 
 package com.scriptographer.ai;
 
 public class Gradient extends AIWrapper {
-
-	protected Gradient(int handle) {
-		super(handle);
-	}
 	
 	public final static short
 		TYPE_LINEAR = 0,
 		TYPE_RADIAL = 1;
+
+	GradientStopList stops = null;
+
+	protected Gradient(int handle) {
+		super(handle);
+	}
 
 	private static native int nativeCreate();
 	
@@ -54,12 +56,27 @@ public class Gradient extends AIWrapper {
 		return (Gradient) wrapHandle(Gradient.class, handle, document, true);
 	}
 	
+	public GradientStopList getStops() {
+		if (stops == null)
+			stops = new GradientStopList(this);
+		else
+			stops.update();
+		return stops;
+	}
+	
 	public native String getName();
 	
 	public native void setName(String name);
 	
+	/**
+	 * 
+	 * @return #TYPE_*
+	 */
 	public native short getType();
 	
+	/**
+	 * @param type #TYPE_*
+	 */
 	public native void setType(short type);
 
 	public native boolean isValid();
@@ -67,7 +84,7 @@ public class Gradient extends AIWrapper {
 	protected native boolean nativeRemove();
 	
 	public boolean remove() {
-		// make it public
+		// make super.remove() public
 		return super.remove();
 	}
 }

@@ -28,8 +28,11 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Swatch_getName(JNIEnv *env,
 	try {
 		AISwatchRef swatch = gEngine->getSwatchHandle(env, obj);
 #if kPluginInterfaceVersion < kAI12
+		// TODO: handle proberly. check is passing NULL for name returns the buffersize
+		// to allocate the buffer first...?
 		char name[256];
-		if (!sAISwatchList->GetSwatchName(swatch, name, 256)) {
+		short bufferSize = 256;
+		if (!sAISwatchList->GetSwatchName(swatch, name, &bufferSize)) {
 #else
 		ai::UnicodeString name;
 		if (!sAISwatchList->GetSwatchName(swatch, name)) {

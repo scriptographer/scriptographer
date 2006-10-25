@@ -28,8 +28,8 @@
  * 
  * $RCSfile: PointText.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:17:42 $
+ * $Revision: 1.6 $
+ * $Date: 2006/10/25 02:12:50 $
  */
 
 package com.scriptographer.ai;
@@ -42,13 +42,13 @@ public class PointText extends TextFrame {
 		super(handle);
 	}
 
-	native private static int nativeCreate(int orient, float x, float y);
+	native private static int nativeCreate(short orient, float x, float y);
 	
 	/**
 	 * Creates a point text object
 	 */
 
-	public PointText(Point2D point, int orient) {
+	public PointText(Point2D point, short orient) {
 		this(nativeCreate(orient, (float) point.getX(), (float) point.getY()));
 	}
 

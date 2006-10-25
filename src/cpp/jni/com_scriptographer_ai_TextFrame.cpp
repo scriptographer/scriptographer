@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_TextFrame.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/10/18 14:17:17 $
+ * $Revision: 1.4 $
+ * $Date: 2006/10/25 02:13:31 $
  */
 
 #include "StdHeaders.h"
@@ -46,9 +46,9 @@ using namespace ATE;
 // Everything else seems to be not depending on the documents at all (ATE related)
 
 /*
- * int getOrientation()
+ * short getOrientation()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_getOrientation(JNIEnv *env, jobject obj) {
+JNIEXPORT jshort JNICALL Java_com_scriptographer_ai_TextFrame_getOrientation(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle text = gEngine->getArtHandle(env, obj);
 		AITextOrientation orient;
@@ -59,9 +59,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_getOrientation(JNIEn
 }
 
 /*
- * void setOrientation(int orient)
+ * void setOrientation(short orient)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOrientation(JNIEnv *env, jobject obj, jint orient) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOrientation(JNIEnv *env, jobject obj, jshort orient) {
 	try {
 		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
 		sAITextFrame->SetOrientation(text, (AITextOrientation) orient);

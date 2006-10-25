@@ -1,5 +1,6 @@
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
+#include "ScriptographerPlugin.h"
 #include "aiGlobals.h"
 #include "com_scriptographer_ai_GradientList.h"
 
@@ -42,7 +43,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_GradientList_nativeGet__ILjava
 		Document_activate((AIDocumentHandle) docHandle);
 #if kPluginInterfaceVersion < kAI12
 		char *str = gEngine->convertString(env, name);
-		sAIGradient->GetGradientByName(str, &ret);
+		sAIGradient->GetGradientByName(gPlugin->toPascal(str, (unsigned char *) str), &ret);
 		delete str;
 #else
 		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, name);

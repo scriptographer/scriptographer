@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_PointText.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:17:17 $
+ * $Revision: 1.6 $
+ * $Date: 2006/10/25 02:13:31 $
  */
 
 #include "StdHeaders.h"
@@ -40,9 +40,9 @@
  */
 
 /*
- * int nativeCreate(int orient, float x, float y)
+ * int nativeCreate(short orient, float x, float y)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PointText_nativeCreate(JNIEnv *env, jclass cls, jint orient, jfloat x, jfloat y) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PointText_nativeCreate(JNIEnv *env, jclass cls, jshort orient, jfloat x, jfloat y) {
 	AIArtHandle art = NULL;
 
 	DEFINE_POINT(pt, x, y);

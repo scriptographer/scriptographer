@@ -28,8 +28,8 @@
  *
  * $RCSfile: AbstractExtendedList.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:12:36 $
+ * $Revision: 1.6 $
+ * $Date: 2006/10/25 02:12:52 $
  */
 
 package com.scriptographer.util;
@@ -179,5 +179,18 @@ public abstract class AbstractExtendedList extends WrappableObject implements Ex
 
 	public final boolean containsAll(Object[] elements) {
 		return removeAll(elements);
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer(256);
+		buf.append("[ ");
+		int size = getLength();
+		for (int i = 0; i < size; i++) {
+			Object obj = get(i);
+			if (i > 0) buf.append(", ");
+			buf.append(obj.toString());
+		}
+		buf.append(" ]");
+		return buf.toString();
 	}
 }

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: SymbolItem.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/10/18 14:11:55 $
+ * $Revision: 1.2 $
+ * $Date: 2006/10/25 02:12:50 $
  */
 
 package com.scriptographer.ai;
@@ -59,7 +59,7 @@ public class SymbolItem extends Art {
 	private native int nativeGetSymbol();
 	
 	public Symbol getSymbol() {
-		return (Symbol) Symbol.wrapHandle(nativeGetSymbol(), document);
+		return Symbol.wrapHandle(nativeGetSymbol(), document);
 	}
 	
 	public native void setSymbol(Symbol symbol);

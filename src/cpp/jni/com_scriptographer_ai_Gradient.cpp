@@ -25,8 +25,8 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Gradient_getName(JNIEnv *en
 	try {
 		AIGradientHandle gradient = gEngine->getGradientHandle(env, obj);
 #if kPluginInterfaceVersion < kAI12
-		char name[256];
-		if (!sAIGradient->GetGradientName(gradient, name, 256)) {
+		unsigned char name[256];
+		if (!sAIGradient->GetGradientName(gradient, name)) {
 #else
 		ai::UnicodeString name;
 		if (!sAIGradient->GetGradientName(gradient, name)) {
@@ -44,7 +44,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Gradient_setName(JNIEnv *env, 
 	try {
 		AIGradientHandle gradient = gEngine->getGradientHandle(env, obj, true);
 #if kPluginInterfaceVersion < kAI12
-		char *str = gEngine->convertString(env, name);
+		unsigned char *str = gEngine->convertString_Pascal(env, name);
 		sAIGradient->SetGradientName(gradient, str);
 		delete str;
 #else

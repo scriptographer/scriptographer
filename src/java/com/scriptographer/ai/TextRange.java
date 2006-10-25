@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextRange.java,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.13 $
+ * $Date: 2006/10/25 02:12:50 $
  */
 
 package com.scriptographer.ai;
@@ -73,9 +73,9 @@ public class TextRange extends AIObject {
 	protected Document document;
 	protected TextStory story = null;
 	
-	protected TextRange(int handle, int documentHandle) {
+	protected TextRange(int handle, int docHandle) {
 		super(handle);
-		document = Document.wrapHandle(documentHandle);
+		document = Document.wrapHandle(docHandle);
 	}
 
 	public void assignHandle(TextRange range) {
@@ -309,13 +309,19 @@ public class TextRange extends AIObject {
 	
 	/**
 	 * clones the range.
-	 * TODO: When the original range is changed in size, the copied one seems to change as well.
-	 * so maybe, use getRange(0, getLength()) internally instead of the native clone...
 	 */
-	public native Object clone();
+	public Object clone() {
+		/*
+		 * Cannot use the native code, because when the original range is changed
+		 * in size, the copied one seems to change as well.
+		 * Use getRange(0, getLength()) instead of the native clone...
+		 */
+		return getSubRange(0, getLength());
+	}
 	
 	/**
-	 * Returns a Range relative to the index within the story returned by getStart()
+	 * Returns a Range from the story given in indices relative to the current
+	 * range's start index.
 	 * 
 	 * @param start
 	 * @param end

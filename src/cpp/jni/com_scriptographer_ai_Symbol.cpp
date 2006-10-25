@@ -44,8 +44,7 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Symbol_getName(JNIEnv *env,
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Symbol_setName(JNIEnv *env, jobject obj, jstring name) {
 	try {
-		// intersting: setting name does not need document to be active
-		AIPatternHandle symbol = gEngine->getPatternHandle(env, obj);
+		AIPatternHandle symbol = gEngine->getPatternHandle(env, obj, true);
 #if kPluginInterfaceVersion < kAI12
 		char *str = gEngine->convertString(env, name, kMaxSymbolNameLength);
 		sAISymbol->GetSymbolPatternDisplayName(str);
@@ -57,17 +56,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Symbol_setName(JNIEnv *env, jo
 		sAISymbol->SetSymbolPatternName(symbol, str);
 #endif
 	} EXCEPTION_CONVERT(env);
-}
-
-/*
- * boolean isValid()
- */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Symbol_isValid(JNIEnv *env, jobject obj) {
-	try {
-		AIPatternHandle symbol = gEngine->getPatternHandle(env, obj);
-		return sAISymbol->ValidateSymbolPattern(symbol);
-	} EXCEPTION_CONVERT(env);
-	return false;
 }
 
 /*
@@ -94,6 +82,17 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Symbol_setDefinition(JNIEnv *e
 		// consider adding a special case where this could work if it does not already (Using Art_copyTo?)
 		sAISymbol->SetSymbolPatternArt(symbol, art);
 	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * boolean isValid()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Symbol_isValid(JNIEnv *env, jobject obj) {
+	try {
+		AIPatternHandle symbol = gEngine->getPatternHandle(env, obj);
+		return sAISymbol->ValidateSymbolPattern(symbol);
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*

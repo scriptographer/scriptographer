@@ -179,6 +179,18 @@
 		91193B6A0A2DF3C600B0E3A7 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91CA8A6F0A22703F005E0C1A /* Carbon.framework */; };
 		91193C420A2DF7CD00B0E3A7 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91168EAB0A2B86790023EB84 /* JavaVM.framework */; };
 		91193C430A2DF7D100B0E3A7 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91168EAB0A2B86790023EB84 /* JavaVM.framework */; };
+		912A21210AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */; };
+		912A21220AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */; };
+		912A21230AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */; };
+		912A21240AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */; };
+		912A22D20AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */; };
+		912A22D30AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D10AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp */; };
+		912A22D40AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */; };
+		912A22D50AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D10AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp */; };
+		912A22D60AE83B7F00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */; };
+		912A22D70AE83B7F00B0ADD6 /* com_scriptographer_ai_PatternList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D10AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp */; };
+		912A22D80AE83B7F00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */; };
+		912A22D90AE83B7F00B0ADD6 /* com_scriptographer_ai_PatternList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D10AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp */; };
 		915C032D0A435D0E0027685A /* Info.plist in Copy CFM Bundle Resources */ = {isa = PBXBuildFile; fileRef = 919823D40A37257700D57E4C /* Info.plist */; };
 		915C03360A435D860027685A /* Info.plist in Copy CFM Bundle Resources */ = {isa = PBXBuildFile; fileRef = 919823D40A37257700D57E4C /* Info.plist */; };
 		916E65030A8ACD5400C3508D /* libjvm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 916E65020A8ACD5400C3508D /* libjvm.dylib */; };
@@ -408,6 +420,9 @@
 		911690380A2BC5940023EB84 /* libswt-webkit-carbon-3139.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libswt-webkit-carbon-3139.dylib"; path = "../../../banteng-0.1.1/libswt-webkit-carbon-3139.dylib"; sourceTree = SOURCE_ROOT; };
 		91193B1F0A2DF3B100B0E3A7 /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
 		91193B760A2DF3C600B0E3A7 /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
+		912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_GradientStopList.cpp; path = jni/com_scriptographer_ai_GradientStopList.cpp; sourceTree = "<group>"; };
+		912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Pattern.cpp; path = jni/com_scriptographer_ai_Pattern.cpp; sourceTree = "<group>"; };
+		912A22D10AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_PatternList.cpp; path = jni/com_scriptographer_ai_PatternList.cpp; sourceTree = "<group>"; };
 		916E65020A8ACD5400C3508D /* libjvm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjvm.dylib; path = "/usr/local/lib/gcj-4.2.0/libjvm.dylib"; sourceTree = "<absolute>"; };
 		916E65A20A8ACE7A00C3508D /* com */ = {isa = PBXFileReference; lastKnownFileType = folder; name = com; path = ../../src/java/com; sourceTree = SOURCE_ROOT; };
 		916E65A30A8ACE7A00C3508D /* info */ = {isa = PBXFileReference; lastKnownFileType = folder; name = info; path = ../../src/java/info; sourceTree = SOURCE_ROOT; };
@@ -702,8 +717,11 @@
 		91EF0B4E0A20A4B900F0EF9A /* AI */ = {
 			isa = PBXGroup;
 			children = (
+				912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */,
+				912A22D10AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp */,
 				9109E7C60AE6296300D4837B /* com_scriptographer_ai_Gradient.cpp */,
 				9109E7C70AE6296300D4837B /* com_scriptographer_ai_GradientList.cpp */,
+				912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */,
 				9109E5440AE5AE8800D4837B /* com_scriptographer_ai_Swatch.cpp */,
 				9109E5450AE5AE8800D4837B /* com_scriptographer_ai_SwatchList.cpp */,
 				9109DF1C0AE4C56F00D4837B /* com_scriptographer_ai_Symbol.cpp */,
@@ -1038,6 +1056,9 @@
 				9109E6D20AE5B64700D4837B /* AppContext.cpp in Sources */,
 				9109E7C80AE6296300D4837B /* com_scriptographer_ai_Gradient.cpp in Sources */,
 				9109E7C90AE6296300D4837B /* com_scriptographer_ai_GradientList.cpp in Sources */,
+				912A21210AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */,
+				912A22D20AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */,
+				912A22D30AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1118,6 +1139,9 @@
 				9109E6D70AE5B64700D4837B /* AppContext.cpp in Sources */,
 				9109E7CE0AE6296300D4837B /* com_scriptographer_ai_Gradient.cpp in Sources */,
 				9109E7CF0AE6296300D4837B /* com_scriptographer_ai_GradientList.cpp in Sources */,
+				912A21240AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */,
+				912A22D80AE83B7F00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */,
+				912A22D90AE83B7F00B0ADD6 /* com_scriptographer_ai_PatternList.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1197,6 +1221,9 @@
 				9109E6D50AE5B64700D4837B /* AppContext.cpp in Sources */,
 				9109E7CC0AE6296300D4837B /* com_scriptographer_ai_Gradient.cpp in Sources */,
 				9109E7CD0AE6296300D4837B /* com_scriptographer_ai_GradientList.cpp in Sources */,
+				912A21230AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */,
+				912A22D60AE83B7F00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */,
+				912A22D70AE83B7F00B0ADD6 /* com_scriptographer_ai_PatternList.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1276,6 +1303,9 @@
 				9109E6D30AE5B64700D4837B /* AppContext.cpp in Sources */,
 				9109E7CA0AE6296300D4837B /* com_scriptographer_ai_Gradient.cpp in Sources */,
 				9109E7CB0AE6296300D4837B /* com_scriptographer_ai_GradientList.cpp in Sources */,
+				912A21220AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */,
+				912A22D40AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */,
+				912A22D50AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

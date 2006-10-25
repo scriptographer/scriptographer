@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.38 $
- * $Date: 2006/10/18 14:18:08 $
+ * $Revision: 1.39 $
+ * $Date: 2006/10/25 02:13:31 $
  */
 
 #include "stdHeaders.h"
@@ -319,14 +319,14 @@ jstring ScriptographerEngine::reloadEngine() {
  * Returns true on success, false on failure.
  */
 void ScriptographerEngine::initReflection(JNIEnv *env) {
-	cls_Object = env->FindClass("java/lang/Object");
-	mid_Object_toString = env->GetMethodID(cls_Object, "toString", "()Ljava/lang/String;");
+	cls_Object = loadClass(env, "java/lang/Object");
+	mid_Object_toString = getMethodID(env, cls_Object, "toString", "()Ljava/lang/String;");
 
-	cls_System = env->FindClass("java/lang/System");
-	fid_System_out = env->GetStaticFieldID(cls_System, "out", "Ljava/io/PrintStream;");
+	cls_System = loadClass(env, "java/lang/System");
+	fid_System_out = getStaticFieldID(env, cls_System, "out", "Ljava/io/PrintStream;");
 
-	cls_PrintStream = env->FindClass("java/io/PrintStream");
-	mid_PrintStream_println = env->GetMethodID(cls_PrintStream, "println", "(Ljava/lang/String;)V");
+	cls_PrintStream = loadClass(env, "java/io/PrintStream");
+	mid_PrintStream_println = getMethodID(env, cls_PrintStream, "println", "(Ljava/lang/String;)V");
 
 	cls_Class = loadClass(env, "java/lang/Class");
 	mid_Class_getName = getMethodID(env, cls_Class, "getName", "()Ljava/lang/String;");
@@ -477,6 +477,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_Color = loadClass(env, "com/scriptographer/ai/Color");
 	mid_Color_getComponents = getMethodID(env, cls_Color, "getComponents", "()[F");
+	obj_Color_NONE = getStaticObjectField(env, cls_Color, "NONE", "Lcom/scriptographer/ai/Color;");
 
 	cls_GrayColor = loadClass(env, "com/scriptographer/ai/GrayColor");
 	cid_GrayColor = getConstructorID(env, cls_GrayColor, "(FF)V");
@@ -486,12 +487,20 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_CMYKColor = loadClass(env, "com/scriptographer/ai/CMYKColor");
 	cid_CMYKColor = getConstructorID(env, cls_CMYKColor, "(FFFFF)V");
+	
+	cls_GradientColor = loadClass(env, "com/scriptographer/ai/GradientColor");
+	cid_GradientColor = getConstructorID(env, cls_GradientColor, "(ILcom/scriptographer/ai/Point;FFLcom/scriptographer/ai/Matrix;FF)V");
+	mid_GradientColor_set = getMethodID(env, cls_GradientColor, "set", "(I)V");
 
+	cls_PatternColor = loadClass(env, "com/scriptographer/ai/PatternColor");
+	cid_PatternColor = getConstructorID(env, cls_PatternColor, "(IFFLcom/scriptographer/ai/Point;FZFFFLcom/scriptographer/ai/Matrix;)V");
+	mid_PatternColor_set = getMethodID(env, cls_PatternColor, "set", "(I)V");
+	
 	cls_Art = loadClass(env, "com/scriptographer/ai/Art");
 	fid_Art_version = getFieldID(env, cls_Art, "version", "I");
 	fid_Art_document = getFieldID(env, cls_Art, "document", "Lcom/scriptographer/ai/Document;");
 	fid_Art_dictionaryRef = getFieldID(env, cls_Art, "dictionaryRef", "I");
-	mid_Art_wrapHandle = getStaticMethodID(env, cls_Art, "wrapHandle", "(IIIII)Lcom/scriptographer/ai/Art;");
+	mid_Art_wrapHandle = getStaticMethodID(env, cls_Art, "wrapHandle", "(ISIIIZ)Lcom/scriptographer/ai/Art;");
 	mid_Art_getIfWrapped = getStaticMethodID(env, cls_Art, "getIfWrapped", "(I)Lcom/scriptographer/ai/Art;");
 	mid_Art_updateIfWrapped = getStaticMethodID(env, cls_Art, "updateIfWrapped", "([I)V");
 	mid_Art_changeHandle = getMethodID(env, cls_Art, "changeHandle", "(III)V");
@@ -540,6 +549,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_PlacedItem = loadClass(env, "com/scriptographer/ai/PlacedItem");
 	
+	cls_Tracing = loadClass(env, "com/scriptographer/ai/Tracing");
+	mid_Tracing_markDirty = getMethodID(env, cls_Tracing, "markDirty", "()V");
+	
 	cls_Layer = loadClass(env, "com/scriptographer/ai/Layer");
 
 	cls_Segment = loadClass(env, "com/scriptographer/ai/Segment");
@@ -549,6 +561,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cid_TabletValue = getConstructorID(env, cls_TabletValue, "(FF)V");
 	fid_TabletValue_offset = getFieldID(env, cls_TabletValue, "offset", "F");
 	fid_TabletValue_value = getFieldID(env, cls_TabletValue, "value", "F");
+	
+	cls_GradientStop = loadClass(env, "com/scriptographer/ai/GradientStop");
+	mid_GradientStop_init = getMethodID(env, cls_GradientStop, "init", "(FFLcom/scriptographer/ai/Color;)V");
 	
 	cls_Document = loadClass(env, "com/scriptographer/ai/Document");
 
@@ -569,9 +584,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_HitTest = loadClass(env, "com/scriptographer/ai/HitTest");
 	cid_HitTest = getConstructorID(env, cls_HitTest, "(ILcom/scriptographer/ai/Art;IFLcom/scriptographer/ai/Point;)V");
-
-	cls_Tracing = loadClass(env, "com/scriptographer/ai/Tracing");
-	mid_Tracing_markDirty = getMethodID(env, cls_Tracing, "markDirty", "()V");
 
 // ADM:
 
@@ -846,7 +858,8 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env, ADMRGBColor *srcCol) {
 }
 
 ADMRGBColor *ScriptographerEngine::convertColor(JNIEnv *env, jobject srcCol, ADMRGBColor *dstCol) {
-	if (dstCol == NULL) dstCol = new ADMRGBColor;
+	if (dstCol == NULL)
+		dstCol = new ADMRGBColor;
 	jfloatArray array = (jfloatArray) env->CallObjectMethod(srcCol, mid_awt_Color_getColorComponents, NULL);
 	int length = env->GetArrayLength(array);
 	// TODO: add handling for different values of length!!!
@@ -864,22 +877,69 @@ ADMRGBColor *ScriptographerEngine::convertColor(JNIEnv *env, jobject srcCol, ADM
 // com.scriptoggrapher.ai.Color <-> AIColor
 jobject ScriptographerEngine::convertColor(JNIEnv *env, AIColor *srcCol, AIReal alpha) {
 	switch (srcCol->kind) {
-		case kGrayColor:
-			return newObject(env, cls_GrayColor, cid_GrayColor, (jfloat) srcCol->c.g.gray, (jfloat) alpha);
-		case kThreeColor:
-			return newObject(env, cls_RGBColor, cid_RGBColor, (jfloat) srcCol->c.rgb.red, (jfloat) srcCol->c.rgb.green, (jfloat) srcCol->c.rgb.blue, (jfloat) alpha);
-		case kFourColor:
-			return newObject(env, cls_CMYKColor, cid_CMYKColor, (jfloat) srcCol->c.f.cyan, (jfloat) srcCol->c.f.magenta, (jfloat) srcCol->c.f.yellow, (jfloat) srcCol->c.f.black, (jfloat) alpha);
+		case kGrayColor: {
+			return newObject(env, cls_GrayColor, cid_GrayColor,
+				(jfloat) srcCol->c.g.gray, (jfloat) alpha);
+		}
+		case kThreeColor: {
+			AIThreeColorStyle *rgb = &srcCol->c.rgb;
+			return newObject(env, cls_RGBColor, cid_RGBColor, (jfloat) rgb->red,
+				(jfloat) rgb->green, (jfloat) rgb->blue, (jfloat) alpha);
+		}
+		case kFourColor: {
+			AIFourColorStyle *f = &srcCol->c.f;
+			return newObject(env, cls_CMYKColor, cid_CMYKColor, (jfloat) f->cyan,
+				(jfloat) f->magenta, (jfloat) f->yellow, (jfloat) f->black, (jfloat) alpha);
+		}
+		case kGradient: {
+			AIGradientStyle *b = &srcCol->c.b;
+			return newObject(env, cls_GradientColor, cid_GradientColor,
+				(jint) b->gradient, gEngine->convertPoint(env, &b->gradientOrigin),
+				(jfloat) b->gradientAngle, (jfloat) b->gradientLength,
+				gEngine->convertMatrix(env, &b->matrix),
+				(jfloat) b->hiliteAngle, (jfloat) b->hiliteLength);
+		}
+		case kPattern: {
+			AIPatternStyle *p = &srcCol->c.p;
+			return newObject(env, cls_PatternColor, cid_PatternColor,
+				 (jint) p->pattern, (jfloat) p->shiftDist, (jfloat) p->shiftAngle,
+				 gEngine->convertPoint(env, &p->scale), (jfloat) p->rotate,
+				 (jboolean) p->reflect, (jfloat) p->reflectAngle,
+				 (jfloat) p->shearAngle, (jfloat) p->shearAxis, 
+				 gEngine->convertMatrix(env, &p->transform));
+		}
+		case kNoneColor: {
+			return obj_Color_NONE;
+		}
+		// TODO: add kCustomColor
 	}
 	return NULL;
 }
 
 AIColor *ScriptographerEngine::convertColor(JNIEnv *env, jobject srcCol, AIColor *dstCol, AIReal *alpha) {
-	return convertColor(env, (jfloatArray) env->CallObjectMethod(srcCol, mid_Color_getComponents), dstCol, alpha);
+	if (dstCol == NULL)
+		dstCol = new AIColor;
+	// TODO: add kCustomColor
+	if (env->IsInstanceOf(srcCol, cls_GradientColor)) {
+		dstCol->kind = kGradient;
+		AIGradientStyle *b = &dstCol->c.b;
+		// call mid_GradientColor_set, which sets the AIGradientStyle by calling 
+		// Java_com_scriptographer_ai_Color_nativeSetGradient with the right arguments
+		callVoidMethod(env, cls_GradientColor, mid_GradientColor_set, (jint) b);
+	} else if (env->IsInstanceOf(srcCol, cls_PatternColor)) {
+		dstCol->kind = kPattern;
+		AIPatternStyle *p = &dstCol->c.p;
+		// call mid_PatternColor_set, which sets the AIPatternStyle by calling 
+		// Java_com_scriptographer_ai_Color_nativeSetPattern with the right arguments
+		callVoidMethod(env, cls_PatternColor, mid_PatternColor_set, (jint) p);
+	} else {
+		return convertColor(env, (jfloatArray) env->CallObjectMethod(srcCol, mid_Color_getComponents), dstCol, alpha);
+	}
 }
 
 AIColor *ScriptographerEngine::convertColor(JNIEnv *env, jfloatArray srcCol, AIColor *dstCol, AIReal *alpha) {
-	if (dstCol == NULL) dstCol = new AIColor;
+	if (dstCol == NULL)
+		dstCol = new AIColor;
 	int length = env->GetArrayLength(srcCol);
 	jfloat *values = new jfloat[length];
 	env->GetFloatArrayRegion(srcCol, 0, length, values);
@@ -915,7 +975,8 @@ AIColor *ScriptographerEngine::convertColor(JNIEnv *env, jfloatArray srcCol, AIC
 // AIColor <-> ADMRGBColor
 
 AIColor *ScriptographerEngine::convertColor(ADMRGBColor *srcCol, AIColor *dstCol) {
-	if (dstCol == NULL) dstCol = new AIColor;
+	if (dstCol == NULL)
+		dstCol = new AIColor;
 	dstCol->kind = kThreeColor;
 	dstCol->c.rgb.red = (float) srcCol->red / 65535.0;
 	dstCol->c.rgb.green = (float) srcCol->green / 65535.0;
@@ -924,7 +985,8 @@ AIColor *ScriptographerEngine::convertColor(ADMRGBColor *srcCol, AIColor *dstCol
 }
 
 ADMRGBColor *ScriptographerEngine::convertColor(AIColor *srcCol, ADMRGBColor *dstCol) {
-	if (dstCol == NULL) dstCol = new ADMRGBColor;
+	if (dstCol == NULL)
+		dstCol = new ADMRGBColor;
 	// convert to RGB if it isn't already:
 	if (srcCol->kind != kThreeColor && !convertColor(srcCol, kAIRGBColorSpace, srcCol))
 		return NULL;
@@ -960,7 +1022,9 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSp
 			return NULL;
 	}
 
-	bool dstHasAlpha = dstSpace == kAIACMYKColorSpace || dstSpace == kAIARGBColorSpace || dstSpace == kAIAGrayColorSpace;
+	bool dstHasAlpha = dstSpace == kAIACMYKColorSpace ||
+		dstSpace == kAIARGBColorSpace ||
+		dstSpace == kAIAGrayColorSpace;
 
 	if (srcSpace >= 0 && dstSpace >= 0) {
 		AISampleComponent src[5];
@@ -1016,7 +1080,10 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSp
 
 // java.awt.AffineTransform <-> AIRealMatrix
 jobject ScriptographerEngine::convertMatrix(JNIEnv *env, AIRealMatrix *mt, jobject res) {
-	return newObject(env, cls_awt_AffineTransform, cid_awt_AffineTransform, (jdouble) mt->a, (jdouble) mt->b, (jdouble) mt->c, (jdouble) mt->d, (jdouble) mt->tx, (jdouble) mt->ty);
+	return newObject(env, cls_awt_AffineTransform, cid_awt_AffineTransform,
+		(jdouble) mt->a, (jdouble) mt->b,
+		(jdouble) mt->c, (jdouble) mt->d,
+		(jdouble) mt->tx, (jdouble) mt->ty);
 }
 
 AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env, jobject mt, AIRealMatrix *res) {
@@ -1061,9 +1128,13 @@ jobject ScriptographerEngine::convertStrokeStyle(JNIEnv *env, AIStrokeStyle *sty
 	jfloatArray dashArray = env->NewFloatArray(count);
 	env->SetFloatArrayRegion(dashArray, 0, count, style->dash.array);
 	if (res == NULL) {
-		res = newObject(env, cls_StrokeStyle, cid_StrokeStyle, color, true, style->overprint, style->width, style->dash.offset, dashArray, style->cap, style->join, style->miterLimit);
+		res = newObject(env, cls_StrokeStyle, cid_StrokeStyle, color, true,
+			style->overprint, style->width, style->dash.offset, dashArray,
+			style->cap, style->join, style->miterLimit);
 	} else {
-		callVoidMethod(env, res, mid_StrokeStyle_init, color, true, style->overprint, style->width, style->dash.offset, dashArray, style->cap, style->join, style->miterLimit);
+		callVoidMethod(env, res, mid_StrokeStyle_init, color, true,
+			style->overprint, style->width, style->dash.offset, dashArray,
+			style->cap, style->join, style->miterLimit);
 	}
 	return res;
 }
@@ -1797,16 +1868,6 @@ AIMenuGroup ScriptographerEngine::getMenuGroupHandle(JNIEnv *env, jobject obj) {
 }
 
 /**
- * A little helper used a few times bellow... not so elegant to have it here
- */
-AIDocumentHandle getActiveDocumentHandle() {
-	AIDocumentHandle document;
-	if (sAIDocument->GetDocument(&document))
-		throw new StringException("Cannot determine active document");
-	return document;
-}
-
-/**
  * Wraps the handle in a java object. see the Java function Art.wrapArtHandle to see how 
  * the cashing of already wrapped objects is handled.
  *
@@ -1839,12 +1900,14 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 		sAIDictionary->AddRef(dictionary);
 	
 	// store the art object's initial handle value in its own dictionary. see selectionChanged for more explanations
+	bool wrapped = false;
 	AIDictionaryRef artDict;
 	if (!sAIArt->GetDictionary(art, &artDict)) {
+		wrapped = sAIDictionary->IsKnown(artDict, m_artHandleKey);
 		sAIDictionary->SetIntegerEntry(artDict, m_artHandleKey, (ASInt32) art);
 		sAIDictionary->Release(artDict);
 	}
-	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) type, (jint) textType, (jint) getActiveDocumentHandle(), (jint) dictionary);
+	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jshort) type, (jint) textType, (jint) gActiveDoc, (jint) dictionary, (jboolean) wrapped);
 }
 
 void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary, AIDocumentHandle doc) {
@@ -1862,21 +1925,19 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) 
 	AIArtHandle art;
 	if (sAIArt->GetFirstArtOfLayer(layer, &art))
 		throw new StringException("Cannot get layer art");
-	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER, (jint) kUnknownTextType, (jint) getActiveDocumentHandle(), 0);
+	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER, (jint) kUnknownTextType, (jint) gActiveDoc, 0);
 }
 
 jobject ScriptographerEngine::wrapTextRangeHandle(JNIEnv *env, ATE::TextRangeRef range) {
 	// we need to increase the ref count here. this is decreased again in TextRange.finalize
-	AIDocumentHandle document = getActiveDocumentHandle(); // this might throw an exception, so do it before AddRef
 	ATE::sTextRange->AddRef(range);
-	return newObject(env, cls_TextRange, cid_TextRange, (jint) range, (jint) document);
+	return newObject(env, cls_TextRange, cid_TextRange, (jint) range, (jint) gActiveDoc);
 }
 
 jobject ScriptographerEngine::wrapStoryHandle(JNIEnv *env, ATE::StoryRef story) {
 	// we need to increase the ref count here. this is decreased again in Story.finalize
-	AIDocumentHandle document = getActiveDocumentHandle(); // this might throw an exception, so do it before AddRef
 	ATE::sStory->AddRef(story);
-	return newObject(env, cls_TextStory, cid_TextStory, (jint) story, (jint) document);
+	return newObject(env, cls_TextStory, cid_TextStory, (jint) story, (jint) gActiveDoc);
 }
 
 /**
@@ -2094,7 +2155,8 @@ ASErr ScriptographerEngine::liveEffectEditParameters(AILiveEffectEditParamMessag
 	JNIEnv *env = getEnv();
 	try {
 		jobject map = getLiveEffectParameters(env, message->parameters);
-		callStaticVoidMethod(env, cls_LiveEffect, mid_LiveEffect_onEditParameters, (jint) message->effect, map, (jint) message->context, (jboolean) message->allowPreview);
+		callStaticVoidMethod(env, cls_LiveEffect, mid_LiveEffect_onEditParameters,
+				(jint) message->effect, map, (jint) message->context, (jboolean) message->allowPreview);
 		sAILiveEffect->UpdateParameters(message->context);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env)
@@ -2106,7 +2168,8 @@ ASErr ScriptographerEngine::liveEffectCalculate(AILiveEffectGoMessage *message) 
 	try {
 		jobject map = getLiveEffectParameters(env, message->parameters);
 		// TODO: setting art to something else seems to crash!
-		message->art = (AIArtHandle) callStaticIntMethod(env, cls_LiveEffect, mid_LiveEffect_onCalculate, (jint) message->effect, map, wrapArtHandle(env, message->art));
+		message->art = (AIArtHandle) callStaticIntMethod(env, cls_LiveEffect, mid_LiveEffect_onCalculate,
+				(jint) message->effect, map, wrapArtHandle(env, message->art));
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env)
 	return kExceptionErr;
@@ -2121,7 +2184,8 @@ ASErr ScriptographerEngine::liveEffectGetInputType(AILiveEffectInputTypeMessage 
 	JNIEnv *env = getEnv();
 	try {
 		jobject map = getLiveEffectParameters(env, message->parameters);
-		message->typeMask = callStaticIntMethod(env, cls_LiveEffect, mid_LiveEffect_onGetInputType, (jint) message->effect, map, wrapArtHandle(env, message->inputArt));
+		message->typeMask = callStaticIntMethod(env, cls_LiveEffect, mid_LiveEffect_onGetInputType,
+				(jint) message->effect, map, wrapArtHandle(env, message->inputArt));
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env)
 	return kExceptionErr;
@@ -2145,7 +2209,8 @@ ASErr ScriptographerEngine::menuItemExecute(AIMenuMessage *message) {
 ASErr ScriptographerEngine::menuItemUpdate(AIMenuMessage *message, long inArtwork, long isSelected, long isTrue) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_MenuItem, mid_MenuItem_onUpdate, (jint) message->menuItem, (jint) inArtwork, (jint) isSelected, (jint) isTrue);
+		callStaticVoidMethod(env, cls_MenuItem, mid_MenuItem_onUpdate,
+				(jint) message->menuItem, (jint) inArtwork, (jint) isSelected, (jint) isTrue);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env)
 	return kExceptionErr;
@@ -2173,7 +2238,8 @@ ASErr ScriptographerEngine::timerExecute(AITimerMessage *message) {
 ASErr ScriptographerEngine::annotatorDraw(AIAnnotatorMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_Annotator, mid_Annotator_onDraw, (jint) message->annotator, (jint) message->port, (jint) message->view);
+		callStaticVoidMethod(env, cls_Annotator, mid_Annotator_onDraw,
+				(jint) message->annotator, (jint) message->port, (jint) message->view);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env)
 	return kExceptionErr;
@@ -2201,7 +2267,8 @@ void ScriptographerEngine::callOnNotify(jobject handler, ADMNotifierRef notifier
 }
 
 void ScriptographerEngine::callOnDestroy(jobject handler) {
-	callVoidMethodReport(NULL, handler, mid_NotificationHandler_onNotify_int, (jint) com_scriptographer_adm_Notifier_NOTIFIER_DESTROY);
+	callVoidMethodReport(NULL, handler, mid_NotificationHandler_onNotify_int,
+				(jint) com_scriptographer_adm_Notifier_NOTIFIER_DESTROY);
 }
 
 /**
@@ -2214,9 +2281,13 @@ bool ScriptographerEngine::callOnTrack(jobject handler, ADMTrackerRef tracker) {
 		jobject trackerObj = getObjectField(env, handler, fid_NotificationHandler_tracker);
 		ADMPoint pt;
 		sADMTracker->GetPoint(tracker, &pt);
-		return callBooleanMethod(env, trackerObj, mid_Tracker_onTrack, handler, (jint)tracker, (jint)sADMTracker->GetAction(tracker),
-			(jint)sADMTracker->GetModifiers(tracker), pt.h, pt.v, (int)sADMTracker->GetMouseState(tracker),
-			(jchar)sADMTracker->GetVirtualKey(tracker), (int)sADMTracker->GetCharacter(tracker), (long)sADMTracker->GetTime(tracker));
+		return callBooleanMethod(env, trackerObj, mid_Tracker_onTrack, handler,
+				(jint) tracker, (jint) sADMTracker->GetAction(tracker),
+				(jint) sADMTracker->GetModifiers(tracker), pt.h, pt.v,
+				(jint) sADMTracker->GetMouseState(tracker),
+				(jchar) sADMTracker->GetVirtualKey(tracker),
+				(jint) sADMTracker->GetCharacter(tracker),
+				(jlong) sADMTracker->GetTime(tracker));
 	} EXCEPTION_CATCH_REPORT(env)
 	return true;
 }
@@ -2486,6 +2557,16 @@ jstring ScriptographerEngine::convertString(JNIEnv *env, const char *str) {
 }
 
 /**
+ * Creates a Java String from a given Pascal-String.
+ * Caution: modifies str!
+ *
+ * throws exceptions
+ */
+jstring ScriptographerEngine::convertString(JNIEnv *env, unsigned char *str) {
+	return convertString(env, gPlugin->fromPascal(str, (char *) str));
+}
+
+/**
 * Creates a C-String from a given Java String. 
  * TODO: The non depreceated version that takes an encoding parameter should be used in the future.
  *
@@ -2534,7 +2615,18 @@ ASUnicode *ScriptographerEngine::convertString_ASUnicode(JNIEnv *env, jstring js
 	return chars;
 }
 
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion < kAI12
+
+/**
+ * Creates a Java String from a given Pascal-String.
+ * Only supported in CS and bellow
+ */
+unsigned char *ScriptographerEngine::convertString_Pascal(JNIEnv *env, jstring jstr, int minLength) {
+	char *str = convertString(env, jstr, minLength);
+	return gPlugin->toPascal(str, (unsigned char*) str);
+}
+
+#else
 
 /**
  * Creates a Java String from a given UTF-16-String.

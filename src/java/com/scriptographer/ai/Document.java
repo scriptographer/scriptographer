@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.21 $
- * $Date: 2006/10/18 14:17:44 $
+ * $Revision: 1.22 $
+ * $Date: 2006/10/25 02:12:51 $
  */
 
 package com.scriptographer.ai;
@@ -414,7 +414,7 @@ public class Document extends DictionaryObject {
 		return new Group(children);
 	}
 	
-	public AreaText createAreaText(Path area, int orient) {
+	public AreaText createAreaText(Path area, short orient) {
 		activate(false, true);
 		return new AreaText(area, orient);
 	}
@@ -424,7 +424,7 @@ public class Document extends DictionaryObject {
 		return new AreaText(area);
 	}
 	
-	public PointText createPointText(Point2D point, int orient) {
+	public PointText createPointText(Point2D point, short orient) {
 		activate(false, true);
 		return new PointText(point, orient);
 	}
@@ -434,7 +434,7 @@ public class Document extends DictionaryObject {
 		return new PointText(point);
 	}
 	
-	public PathText createPathText(Path path, int orient) {
+	public PathText createPathText(Path path, short orient) {
 		activate(false, true);
 		return new PathText(path, orient);
 	}

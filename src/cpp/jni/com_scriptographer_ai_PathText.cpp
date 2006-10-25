@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_PathText.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:17:17 $
+ * $Revision: 1.6 $
+ * $Date: 2006/10/25 02:13:30 $
  */
 
 #include "StdHeaders.h"
@@ -40,9 +40,9 @@
  */
 
 /*
- * int nativeCreate(int orient, int artHandle)
+ * int nativeCreate(short orient, int artHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__II(JNIEnv *env, jclass cls, jint orient, jint artHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__SI(JNIEnv *env, jclass cls, jshort orient, jint artHandle) {
 	AIArtHandle art = NULL;
 
 	short paintOrder;
@@ -55,9 +55,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__II(JNIE
 }
 
 /*
- * int nativeCreate(int orient, int artHandle, float x, float y)
+ * int nativeCreate(short orient, int artHandle, float x, float y)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__IIFF(JNIEnv *env, jclass cls, jint orient, jint artHandle, jfloat x, jfloat y) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__SIFF(JNIEnv *env, jclass cls, jshort orient, jint artHandle, jfloat x, jfloat y) {
 	AIArtHandle art = NULL;
 
 	short paintOrder;

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: CharacterStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.7 $
+ * $Date: 2006/10/25 02:12:50 $
  */
 
 package com.scriptographer.ai;
@@ -49,8 +49,6 @@ import com.scriptographer.CommitManager;
  * All the additional type related fields are not mirrored but directly
  * changed on the underlying CharfeaturesRef
  * markDirty needs to be called for any of the changes
- * TODO: nativeCommit doesn't need to commit the path style if there weren't
- * any changes on it 
  */
 public class CharacterStyle extends PathStyle {
 	
@@ -139,28 +137,30 @@ public class CharacterStyle extends PathStyle {
 			fetch();
 	}
 	
-	protected native void nativeFetch(int handle);
+	protected native void nativeGet(int handle);
 	
-	protected native void nativeCommit(int docHandle, int handle,
-		float[] fillColor, boolean hasFillColor, short fillOverprint,
-		float[] strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
+	protected native void nativeSet(int handle, int docHandle,
+		float[] fillColor, boolean hasFillColor,
+		short fillOverprint,
+		float[] strokeColor, boolean hasStrokeColor,
+		short strokeOverprint, float strokeWidth,
 		float dashOffset, float[] dashArray,
 		short cap, short join, float miterLimit,
 		short clip, short lockClip, short evenOdd, float resolution);
 	
-	protected native void nativeSetStyle(int docHandle, int handle, int rangeHandle);
+	protected native void nativeSetStyle(int handle, int docHandle, int rangeHandle);
 
 	protected void fetch() {
-		nativeFetch(handle);
+		nativeGet(handle);
 		fetched = true;
 	}
 
 	public void commit() {
 		if (dirty) {
 			if (pathStyleChanged)
-				nativeCommit(0, handle);
+				commit(handle, 0);
 			if (range != null) {
-				nativeSetStyle(range.document.handle, handle, range.handle);
+				nativeSetStyle(handle, range.document.handle, range.handle);
 			}
 			dirty = false;
 		}

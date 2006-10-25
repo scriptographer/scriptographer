@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Color.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/10/18 14:17:16 $
+ * $Revision: 1.5 $
+ * $Date: 2006/10/25 02:13:30 $
  */
  
 #include "stdHeaders.h"
@@ -90,4 +90,39 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_getWSProfile(JNIEnv *
 		}
 	} EXCEPTION_CONVERT(env);
 	return ret;
+}
+
+/*
+ * void nativeSetGradient(int pointer, int gradientHandle, com.scriptographer.ai.Point origin, float angle, float length, com.scriptographer.ai.Matrix matrix, float hiliteAngle, float hiliteLength)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Color_nativeSetGradient(JNIEnv *env, jclass cls, jint pointer, jint gradientHandle, jobject origin, jfloat angle, jfloat length, jobject matrix, jfloat hiliteAngle, jfloat hiliteLength) {
+	try {
+		AIGradientStyle *style = (AIGradientStyle *) pointer;
+		style->gradient = (AIGradientHandle) gradientHandle;
+		gEngine->convertPoint(env, origin, &style->gradientOrigin);
+		style->gradientAngle = angle;
+		style->gradientLength = length; 
+		gEngine->convertMatrix(env, matrix, &style->matrix);
+		style->hiliteAngle = hiliteAngle;
+		style->hiliteLength = hiliteLength;
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * void nativeSetPattern(int pointer, int patternHandle, float shiftDistance, float shiftAngle, com.scriptographer.ai.Point scaleFactor, float rotationAngle, boolean reflect, float reflectAngle, float shearAngle, float shearAxis, com.scriptographer.ai.Matrix matrix)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Color_nativeSetPattern(JNIEnv *env, jclass cls, jint pointer, jint patternHandle, jfloat shiftDistance, jfloat shiftAngle, jobject scaleFactor, jfloat rotationAngle, jboolean reflect, jfloat reflectAngle, jfloat shearAngle, jfloat shearAxis, jobject matrix) {
+	try {
+		AIPatternStyle *style = (AIPatternStyle *) pointer;
+		style->pattern = (AIPatternHandle) patternHandle;
+		style->shiftDist = shiftDistance;
+		style->shiftAngle = shiftAngle;
+		gEngine->convertPoint(env, scaleFactor, &style->scale);
+		style->rotate = rotationAngle;
+		style->reflect = reflect;
+		style->reflectAngle = reflectAngle;
+		style->shearAngle = shearAngle;
+		style->shearAxis = shearAxis;
+		gEngine->convertMatrix(env, matrix, &style->transform);
+	} EXCEPTION_CONVERT(env);
 }

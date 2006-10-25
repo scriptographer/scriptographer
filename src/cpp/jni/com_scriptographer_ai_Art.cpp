@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Art.cpp,v $
  * $Author: lehni $
- * $Revision: 1.22 $
- * $Date: 2006/10/18 14:17:16 $
+ * $Revision: 1.23 $
+ * $Date: 2006/10/25 02:13:31 $
  */
  
 #include "stdHeaders.h"
@@ -257,9 +257,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_finalize(JNIEnv *env, jobj
 }
 
 /*
- * boolean nativeRemove(int docHandle, int handle, jint dictionaryRef)
+ * boolean nativeRemove(int handle, int docHandle, jint dictionaryRef)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_nativeRemove(JNIEnv *env, jobject obj, jint docHandle, jint handle, jint dictionaryRef) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_nativeRemove(JNIEnv *env, jobject obj, jint handle, jint docHandle, jint dictionaryRef) {
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		AIArtHandle art = (AIArtHandle) handle;
@@ -625,8 +625,8 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Art_getName(JNIEnv *env, jo
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 #if kPluginInterfaceVersion < kAI12
-		char name[256];
-		if (!sAIArt->GetArtName(art, name, 256, NULL)) {
+		char name[1024];
+		if (!sAIArt->GetArtName(art, name, 1024, NULL)) {
 #else
 		ai::UnicodeString name;
 		if (!sAIArt->GetArtName(art, name, NULL)) {

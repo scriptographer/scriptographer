@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.26 $
- * $Date: 2006/10/18 14:18:08 $
+ * $Revision: 1.27 $
+ * $Date: 2006/10/25 02:13:31 $
  */
 
 #include "jniMacros.h"
@@ -216,6 +216,7 @@ public:
 	
 	jclass cls_Color;
 	jmethodID mid_Color_getComponents;
+	jobject obj_Color_NONE;
 
 	jclass cls_GrayColor;
 	jmethodID cid_GrayColor;
@@ -225,7 +226,15 @@ public:
 	
 	jclass cls_CMYKColor;
 	jmethodID cid_CMYKColor;
-
+	
+	jclass cls_GradientColor;
+	jmethodID cid_GradientColor;
+	jmethodID mid_GradientColor_set;
+	
+	jclass cls_PatternColor;
+	jmethodID cid_PatternColor;
+	jmethodID mid_PatternColor_set;
+	
 	jclass cls_Art;
 	jfieldID fid_Art_version;
 	jfieldID fid_Art_document;
@@ -276,6 +285,9 @@ public:
 	jfieldID fid_Raster_rasterData;
 	
 	jclass cls_PlacedItem;
+
+	jclass cls_Tracing;
+	jmethodID mid_Tracing_markDirty;
 	
 	jclass cls_Layer;
 	
@@ -286,6 +298,9 @@ public:
 	jmethodID cid_TabletValue;
 	jfieldID fid_TabletValue_offset;
 	jfieldID fid_TabletValue_value;
+
+	jclass cls_GradientStop;
+	jmethodID mid_GradientStop_init;
 	
 	jclass cls_Document;
 	
@@ -314,9 +329,6 @@ public:
 	
 	jclass cls_HitTest;
 	jmethodID cid_HitTest;
-	
-	jclass cls_Tracing;
-	jmethodID mid_Tracing_markDirty;
 	
 // ADM:
 	jclass cls_ADMObject;
@@ -572,10 +584,13 @@ public:
 	JNIEnv *getEnv();
 	
 	jstring convertString(JNIEnv *env, const char *str);
+	jstring convertString(JNIEnv *env, unsigned char *str);
 	char *convertString(JNIEnv *env, jstring jstr, int minLength = 0);
 	jstring convertString(JNIEnv *env, const ASUnicode *str, int length = -1);
 	ASUnicode *convertString_ASUnicode(JNIEnv *env, jstring jstr);
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion < kAI12
+	unsigned char *convertString_Pascal(JNIEnv *env, jstring jstr, int minLength = 0);
+#else
 	jstring convertString(JNIEnv *env, ai::UnicodeString &str);
 	ai::UnicodeString convertString_UnicodeString(JNIEnv *env, jstring jstr);
 #endif

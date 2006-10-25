@@ -10,9 +10,9 @@ public class TextStory extends AIObject {
 	private Document document;
 	private TextRange range = null;
 	
-	protected TextStory(int handle, int documentHandle) {
+	protected TextStory(int handle, int docHandle) {
 		super(handle);
-		document = Document.wrapHandle(documentHandle);
+		document = Document.wrapHandle(docHandle);
 	}
 	
 	public native int getLength();

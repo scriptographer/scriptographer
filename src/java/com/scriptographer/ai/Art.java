@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.24 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.25 $
+ * $Date: 2006/10/25 02:12:51 $
  */
 
 package com.scriptographer.ai;
@@ -81,8 +81,8 @@ public abstract class Art extends DictionaryObject {
 		// and ignore them gracefully. For example graph objects return
 		// kUnkownType.
 		//
-		// If a plug-in written for an earlier maxVersion of the plug-in API calls
-		// GetArt- Type with an art object of a type unknown in its maxVersion,
+		// If a plug-in written for an earlier version of the plug-in API calls
+		// GetArt- Type with an art object of a type unknown in its version,
 		// this function will map the art type to either an appropriate type or
 		// to kUnknownArt.
 		TYPE_UNKNOWN = 0,
@@ -291,9 +291,13 @@ public abstract class Art extends DictionaryObject {
 	 * @param type
 	 * @return the wrapped art object
 	 */
-	protected static Art wrapHandle(int artHandle, int type, int textType, int documentHandle, int dictionaryRef) {
+	protected static Art wrapHandle(int artHandle, short type, int textType, int docHandle, int dictionaryRef, boolean wrapped) {
 		// first see wether the object was already wrapped before:
-		Art art = (Art) artItems.get(artHandle);
+		Art art = null;
+		// only try to use the previous wrapper for this adress if the object was marked wrapped
+		// otherwise we might get wrong wrappers for objects that reuse a previous address
+		if (wrapped)
+			art = (Art) artItems.get(artHandle);
 		// if it wasn't wrapped yet, do it now:
 		// TODO: don't forget to add all types also to the native
 		// Art_getType function in com_scriptographer_ai_Art.cpp!
@@ -339,7 +343,8 @@ public abstract class Art extends DictionaryObject {
 		}
 		if (art != null) {
 			art.dictionaryRef = dictionaryRef;
-			art.document = Document.wrapHandle(documentHandle);
+			art.document = Document.wrapHandle(docHandle);
+			art.millis = System.currentTimeMillis();
 		}
 		return art;
 	}
@@ -419,12 +424,12 @@ public abstract class Art extends DictionaryObject {
 		return document;
 	}
 
-	private native boolean nativeRemove(int docHandle, int handle, int dictionaryRef);
+	private native boolean nativeRemove(int handle, int docHandle, int dictionaryRef);
 
 	public boolean remove() {
 		boolean ret = false;
 		if (handle != 0) {
-			ret = nativeRemove(document.handle, handle, dictionaryRef);
+			ret = nativeRemove(handle, document.handle, dictionaryRef);
 			artItems.remove(handle);
 			handle = 0;			
 		}
@@ -758,5 +763,11 @@ public abstract class Art extends DictionaryObject {
 	
 	protected int getVersion() {
 		return version;
+	}
+	
+	private long millis = 0;
+	
+	public long getMillis() {
+		return millis;
 	}
 }

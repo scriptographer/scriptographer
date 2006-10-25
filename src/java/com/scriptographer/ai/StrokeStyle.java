@@ -28,8 +28,8 @@
  *
  * $RCSfile: StrokeStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/18 14:17:44 $
+ * $Revision: 1.7 $
+ * $Date: 2006/10/25 02:12:51 $
  */
 
 package com.scriptographer.ai;
@@ -118,7 +118,7 @@ public class StrokeStyle extends WrappableObject implements WrapperCreator {
 	
 	protected void initNative(int handle) {
 		PathStyle.nativeInitStrokeStyle(handle, 
-				color != null && color != Color.NONE ? color.getComponents() : null, color != null, 
+				color != null && color != Color.NONE ? color : null, color != null, 
 				overprint != null ? (short) (overprint.booleanValue() ? 1 : 0) : -1,
 				width != null ? width.floatValue() : -1,
 				dashOffset != null ? dashOffset.floatValue() : -1,

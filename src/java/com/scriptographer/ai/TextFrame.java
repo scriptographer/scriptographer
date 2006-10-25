@@ -28,8 +28,8 @@
  * 
  * $RCSfile: TextFrame.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.5 $
+ * $Date: 2006/10/25 02:12:51 $
  */
 
 package com.scriptographer.ai;
@@ -39,11 +39,12 @@ import com.scriptographer.CommitManager;
 
 public abstract class TextFrame extends Art {
 	// AITextOrientation
-	public static final int ORIENTATION_HORIZONTAL = 0;
-	public static final int ORIENTATION_VERTICAL = 1;
+	public static final short
+		ORIENTATION_HORIZONTAL = 0,
+		ORIENTATION_VERTICAL = 1;
 
 	// AITextType
-	protected static final int
+	protected static final short
 		TEXTTYPE_UNKNOWN = -1,
 		TEXTTYPE_POINT = 0,
 		TEXTTYPE_AREA = 1,
@@ -57,8 +58,8 @@ public abstract class TextFrame extends Art {
 	}
 
 	// orientation
-	public native int getOrientation();
-	public native void setOrientation(int orientation);
+	public native short getOrientation();
+	public native void setOrientation(short orientation);
 
 	// TODO:
 	 // AIAPI AIErr (*DoTextFrameHit)	( const AIHitRef hitRef, TextRangeRef*	textRange );

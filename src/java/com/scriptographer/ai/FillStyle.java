@@ -28,8 +28,8 @@
  *
  * $RCSfile: FillStyle.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.6 $
+ * $Date: 2006/10/25 02:12:51 $
  */
 
 package com.scriptographer.ai;
@@ -89,7 +89,7 @@ public class FillStyle extends WrappableObject implements WrapperCreator {
 
 	protected void initNative(int handle) {
 		PathStyle.nativeInitFillStyle(handle, 
-				color != null && color != Color.NONE ? color.getComponents() : null, color != null, 
+				color != null && color != Color.NONE ? color : null, color != null, 
 				overprint != null ? (short) (overprint.booleanValue() ? 1 : 0) : -1
 		);
 	}

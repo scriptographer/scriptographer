@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_CharacterStyle.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/10/18 14:17:17 $
+ * $Revision: 1.4 $
+ * $Date: 2006/10/25 02:13:31 $
  */
 
 #include "StdHeaders.h"
@@ -73,9 +73,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeClone(JNI
 }
 
 /*
- * void nativeFetch(int handle)
+ * void nativeGet(int handle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeFetch(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGet(JNIEnv *env, jobject obj, jint handle) {
 	try {
 		AIPathStyle style;
 		AIPathStyleMap map;
@@ -83,19 +83,18 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeFetch(JNI
 		if (!sAIATEPaint->GetAIPathStyleAndMap((CharFeaturesRef) handle, &style, &map))
 			PathStyle_init(env, obj, &style, &map);
 		
-		// TODO: define nativeFetch
 	} EXCEPTION_CONVERT(env);
 }
 
 /*
- * void nativeCommit(jint docHandle, int handle,
+ * void nativeSet(jint handle, int docHandle,
 			float[] fillColor, boolean hasFillColor, short fillOverprint,
 			float[] strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
 			float dashOffset, float[] dashArray,
 			short cap, short join, float miterLimit,
 			short clip, short lockClip, short evenOdd, float resolution)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeCommit(JNIEnv *env, jobject obj, jint docHandle, jint handle, jfloatArray fillColor, jboolean hasFillColor, jshort fillOverprint, jfloatArray strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit, jshort clip, jshort lockClip, jshort evenOdd, jfloat resolution) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSet(JNIEnv *env, jobject obj, jint handle, jint docHandle, jfloatArray fillColor, jboolean hasFillColor, jshort fillOverprint, jfloatArray strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit, jshort clip, jshort lockClip, jshort evenOdd, jfloat resolution) {
 	try {
 		AIPathStyle style;
 		AIPathStyleMap map;
@@ -105,9 +104,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeCommit(JN
 }
 
 /*
- * void nativeSetStyle(int docHandle, int handle, int rangeHandle)
+ * void nativeSetStyle(int handle, int docHandle, int rangeHandle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetStyle(JNIEnv *env, jobject obj, jint docHandle, jint handle, jint rangeHandle) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetStyle(JNIEnv *env, jobject obj, jint handle, jint docHandle, jint rangeHandle) {
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		sTextRange->SetLocalCharFeatures((TextRangeRef) rangeHandle, (CharFeaturesRef) handle);

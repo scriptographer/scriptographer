@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_PathStyle.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/18 14:17:17 $
+ * $Revision: 1.7 $
+ * $Date: 2006/10/25 02:13:31 $
  */
  
 #include "stdHeaders.h"
@@ -97,7 +97,11 @@ void PathStyle_init(JNIEnv *env, jobject obj, AIPathStyle *style, AIPathStyleMap
 /**
  * functions that take all the passed parameters to the various init functions and fills a style and a map structure.
  */
-void PathStyle_convertPathStyle(JNIEnv *env, AIPathStyle *style, AIPathStyleMap *map, jfloatArray fillColor, jboolean hasFillColor, jshort fillOverprint, jfloatArray strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit, jshort clip, jshort lockClip, jshort evenOdd, jfloat resolution) {
+void PathStyle_convertPathStyle(JNIEnv *env, AIPathStyle *style, AIPathStyleMap *map,
+		jobject fillColor, jboolean hasFillColor, jshort fillOverprint, jobject strokeColor,
+		jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset,
+		jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit, jshort clip,
+		jshort lockClip, jshort evenOdd, jfloat resolution) {
 	// Fill
 	int fillPaint = PathStyle_convertFillStyle(env, &style->fill, &map->fill, fillColor, hasFillColor, fillOverprint);
 	if (fillPaint != UNDEFINED) {
@@ -106,7 +110,9 @@ void PathStyle_convertPathStyle(JNIEnv *env, AIPathStyle *style, AIPathStyleMap 
 	}
 
 	// Stroke
-	int strokePaint = PathStyle_convertStrokeStyle(env, &style->stroke, &map->stroke, strokeColor, hasStrokeColor, strokeOverprint, strokeWidth, dashOffset, dashArray, cap, join, miterLimit);
+	int strokePaint = PathStyle_convertStrokeStyle(env, &style->stroke, &map->stroke,
+			strokeColor, hasStrokeColor, strokeOverprint, strokeWidth, dashOffset,
+			dashArray, cap, join, miterLimit);
 	if (strokePaint != UNDEFINED) {
 		style->strokePaint = strokePaint;
 		map->strokePaint = true;
@@ -131,7 +137,8 @@ void PathStyle_convertPathStyle(JNIEnv *env, AIPathStyle *style, AIPathStyleMap 
 	}
 }
 
-int PathStyle_convertFillStyle(JNIEnv *env, AIFillStyle *style, AIFillStyleMap *map, jfloatArray fillColor, jboolean hasFillColor, jshort fillOverprint) {
+int PathStyle_convertFillStyle(JNIEnv *env, AIFillStyle *style, AIFillStyleMap *map,
+		jobject fillColor, jboolean hasFillColor, jshort fillOverprint) {
 	int fillPaint = UNDEFINED;
 	// set all to false:
 	memset(map, 0, sizeof(AIFillStyleMap));
@@ -155,7 +162,9 @@ int PathStyle_convertFillStyle(JNIEnv *env, AIFillStyle *style, AIFillStyleMap *
 	return fillPaint;
 }
  
-int PathStyle_convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, AIStrokeStyleMap *map, jfloatArray strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit) {
+int PathStyle_convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, AIStrokeStyleMap *map,
+		jobject strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth,
+		jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit) {
 	int strokePaint = UNDEFINED;
 	// set all to false:
 	memset(map, 0, sizeof(AIStrokeStyleMap));
@@ -212,9 +221,9 @@ int PathStyle_convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, AIStrokeStyl
 }
 
 /*
- * void nativeFetch(int handle)
+ * void nativeGet(int handle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeFetch(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeGet(JNIEnv *env, jobject obj, jint handle) {
 	try {
 		// don't use pathStyleInitPathStyle here as there's no map:
 		
@@ -226,14 +235,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeFetch(JNIEnv *
 }
 
 /*
- * void nativeCommit(int docHandle, int handle,
-			float[] fillColor, boolean hasFillColor, short fillOverprint,
-			float[] strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
+ * void nativeSet(int handle, int docHandle,
+			com.scriptographer.ai.Color fillColor, boolean hasFillColor, short fillOverprint,
+			com.scriptographer.ai.Color strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
 			float dashOffset, float[] dashArray,
 			short cap, short join, float miterLimit,
 			short clip, short lockClip, short evenOdd, float resolution)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeCommit(JNIEnv *env, jobject obj, jint docHandle, jint handle, jfloatArray fillColor, jboolean hasFillColor, jshort fillOverprint, jfloatArray strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit, jshort clip, jshort lockClip, jshort evenOdd, jfloat resolution) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeSet(JNIEnv *env, jobject obj, jint handle, jint docHandle, jobject fillColor, jboolean hasFillColor, jshort fillOverprint, jobject strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit, jshort clip, jshort lockClip, jshort evenOdd, jfloat resolution) {
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		AIPathStyle style;
@@ -248,9 +257,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeCommit(JNIEnv 
 }
 
 /*
- * void nativeInitStrokeStyle(int handle, float[] strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth, float dashOffset, float[] dashArray, short cap, short join, float miterLimit)
+ * void nativeInitStrokeStyle(int handle, com.scriptographer.ai.Color strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth, float dashOffset, float[] dashArray, short cap, short join, float miterLimit)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeInitStrokeStyle(JNIEnv *env, jclass cls, jint handle, jfloatArray strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeInitStrokeStyle(JNIEnv *env, jclass cls, jint handle, jobject strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit) {
 	try {
 		AIStrokeStyleMap map; // unused
 		PathStyle_convertStrokeStyle(env, (AIStrokeStyle *) handle, &map, strokeColor, hasStrokeColor, strokeOverprint, strokeWidth, dashOffset, dashArray, cap, join, miterLimit);
@@ -258,9 +267,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeInitStrokeStyl
 }
 
 /*
- * void nativeInitFillStyle(int handle, float[] fillColor, boolean hasFillColor, short fillOverprint)
+ * void nativeInitFillStyle(int handle, com.scriptographer.ai.Color fillColor, boolean hasFillColor, short fillOverprint)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeInitFillStyle(JNIEnv *env, jclass cls, jint handle, jfloatArray fillColor, jboolean hasFillColor, jshort fillOverprint) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeInitFillStyle(JNIEnv *env, jclass cls, jint handle, jobject fillColor, jboolean hasFillColor, jshort fillOverprint) {
 	try {
 		AIFillStyleMap map; // unused
 		PathStyle_convertFillStyle(env, (AIFillStyle *) handle, &map, fillColor, hasFillColor, fillOverprint);

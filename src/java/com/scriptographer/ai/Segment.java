@@ -28,8 +28,8 @@
  *
  * $RCSfile: Segment.java,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.15 $
+ * $Date: 2006/10/25 02:12:50 $
  */
 
 package com.scriptographer.ai;
@@ -150,13 +150,13 @@ public class Segment extends WrappableObject implements Commitable {
 		if (dirty != DIRTY_NONE && segments != null && segments.path != null) {
 			Path path = segments.path;
 			if ((dirty & DIRTY_POINTS) != 0) {
-				SegmentList.nativeCommit(path.document.handle, path.handle, index, point.x, point.y, handleIn.x + point.x, handleIn.y + point.y, handleOut.x + point.x, handleOut.y + point.y, corner);
+				SegmentList.nativeSet(path.handle, path.document.handle, index, point.x, point.y, handleIn.x + point.x, handleIn.y + point.y, handleOut.x + point.x, handleOut.y + point.y, corner);
 			}
 			if ((dirty & DIRTY_SELECTION) != 0) {
-				SegmentList.nativeCommitSelectionState(path.document.handle, path.handle, index, selectionState);
+				SegmentList.nativeSetSelectionState(path.handle, path.document.handle, index, selectionState);
 			}
 			dirty = DIRTY_NONE;
-			// update to current maxVersion after commit.
+			// update to current path version after commit.
 			version = segments.path.version;
 		}
 	}
@@ -168,8 +168,8 @@ public class Segment extends WrappableObject implements Commitable {
 	protected void insert() {
 		if (segments != null && segments.path != null) {
 			Path path = segments.path;
-			SegmentList.nativeInsert(path.document.handle, path.handle, index, point.x, point.y, handleIn.x + point.x, handleIn.y + point.y, handleOut.x + point.x, handleOut.y + point.y, corner);
-			// update to current maxVersion after commit.
+			SegmentList.nativeInsert(path.handle, path.document.handle, index, point.x, point.y, handleIn.x + point.x, handleIn.y + point.y, handleOut.x + point.x, handleOut.y + point.y, corner);
+			// update to current version after commit.
 			version = segments.path.version;
 			dirty = DIRTY_NONE;
 		}
@@ -186,7 +186,9 @@ public class Segment extends WrappableObject implements Commitable {
 	}
 	
 	protected void update() {
-		if ((dirty & DIRTY_POINTS) == 0 && segments != null && segments.path != null && version != segments.path.version) {
+		if ((dirty & DIRTY_POINTS) == 0 &&
+			segments != null && segments.path != null &&
+			version != segments.path.version) {
 			// this handles all the updating automatically:
 			segments.get(index);
 			// version has changed, force regetting of selection state:
@@ -277,7 +279,7 @@ public class Segment extends WrappableObject implements Commitable {
 		update();
 		if (selectionState == SELECTION_FETCH) {
 			if (segments != null && segments.path != null)
-				selectionState = SegmentList.nativeFetchSelectionState(segments.path.handle, index);
+				selectionState = SegmentList.nativeGetSelectionState(segments.path.handle, index);
 			else
 				selectionState = SELECTION_NONE;
 		}

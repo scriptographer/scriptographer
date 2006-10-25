@@ -28,8 +28,8 @@
  *
  * $RCSfile: Color.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:17:44 $
+ * $Revision: 1.6 $
+ * $Date: 2006/10/25 02:12:51 $
  */
 
 package com.scriptographer.ai;
@@ -150,4 +150,16 @@ public abstract class Color extends WrappableObject {
 		}
 		return profile;
 	}
+	
+	/*
+	 * Used in GradientColor, but here to reduce amount of native cpp files
+	 */
+	protected static native void nativeSetGradient(int pointer, int gradientHandle,
+		Point origin, float angle, float length, Matrix matrix,
+		float hiliteAngle, float hiliteLength);
+	
+	protected static native void nativeSetPattern(int pointer, int patternHandle,
+		float shiftDistance, float shiftAngle, Point scaleFactor,
+		float rotationAngle, boolean reflect, float reflectAngle,
+		float shearAngle, float shearAxis, Matrix matrix);
 }

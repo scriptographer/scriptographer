@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_AreaText.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:17:18 $
+ * $Revision: 1.6 $
+ * $Date: 2006/10/25 02:13:31 $
  */
 
 #include "StdHeaders.h"
@@ -40,9 +40,9 @@
  */
 
 /*
- * int nativeCreate(int orient, int artHandle)
+ * int nativeCreate(short orient, int artHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_nativeCreate(JNIEnv *env, jclass cls, jint orient, jint artHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_nativeCreate(JNIEnv *env, jclass cls, jshort orient, jint artHandle) {
 	AIArtHandle art = NULL;
 	short paintOrder;
 	AIArtHandle artInsert = Art_getInsertionPoint(&paintOrder);

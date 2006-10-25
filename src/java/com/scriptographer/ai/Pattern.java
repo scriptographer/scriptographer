@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Pattern.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/10/18 14:11:19 $
+ * $Revision: 1.2 $
+ * $Date: 2006/10/25 02:12:51 $
  */
 
 package com.scriptographer.ai;
@@ -39,8 +39,37 @@ public class Pattern extends AIWrapper {
 	protected Pattern(int handle) {
 		super(handle);
 	}
+	
+	private static native int nativeCreate();
+	
+	public Pattern() {
+		super(nativeCreate());
+	}
+	
+	public Pattern(Art item) {
+		this();
+		setDefinition(item);
+	}
 
 	protected static Pattern wrapHandle(int handle, Document document) {
 		return (Pattern) wrapHandle(Pattern.class, handle, document, true);
 	}
+	
+	public native String getName();
+	
+	public native void setName(String name);
+
+	/**
+	 * Returns the pattern definition.
+	 * @return
+	 */
+	public native Art getDefinition();
+
+	/**
+	 * Copy the item as the new symbol definition
+	 * @param item
+	 */
+	public native void setDefinition(Art item);
+
+	public native boolean isValid();
 }

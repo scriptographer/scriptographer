@@ -43,5 +43,5 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SymbolList_nativeGet__ILjava_l
 		sAISymbol->GetSymbolByNameFromDocument(str, &symbol, (AIDocumentHandle) docHandle);
 #endif
 	} EXCEPTION_CONVERT(env);
-		return (jint) symbol;
+	return (jint) symbol;
 }

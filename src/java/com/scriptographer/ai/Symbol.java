@@ -28,13 +28,13 @@
  * 
  * $RCSfile: Symbol.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/10/18 14:11:55 $
+ * $Revision: 1.2 $
+ * $Date: 2006/10/25 02:12:51 $
  */
 
 package com.scriptographer.ai;
 
-public class Symbol extends Pattern {
+public class Symbol extends AIWrapper {
 	
 	protected Symbol(int handle) {
 		super(handle);
@@ -54,8 +54,8 @@ public class Symbol extends Pattern {
 		this(null, true);
 	}
 	
-	protected static Pattern wrapHandle(int handle, Document document) {
-		return (Pattern) wrapHandle(Symbol.class, handle, document, true);
+	protected static Symbol wrapHandle(int handle, Document document) {
+		return (Symbol) wrapHandle(Symbol.class, handle, document, true);
 	}
 	
 	public native String getName();

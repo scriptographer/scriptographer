@@ -28,8 +28,8 @@
  * 
  * $RCSfile: LiveEffect.java,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.13 $
+ * $Date: 2006/10/25 02:12:51 $
  */
 
 package com.scriptographer.ai;
@@ -203,7 +203,8 @@ public class LiveEffect extends AIObject implements Unsealed {
 
 		ArrayList unusedEffects = getUnusedEffects();
 
-		// now see first wether there is an unusedEffect already:
+		// now see first wether there is an unusedEffect already that fits this
+		// description
 		int index = unusedEffects.indexOf(this);
 		if (index >= 0) {
 			// found one, let's reuse it's handle and remove the old effect from the list:
@@ -276,6 +277,9 @@ public class LiveEffect extends AIObject implements Unsealed {
 		return menuItem;
 	}
 
+	/*
+	 * used for unusedEffects.indexOf in the constructor above
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof LiveEffect) {
 			LiveEffect effect = (LiveEffect) obj;

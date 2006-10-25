@@ -262,6 +262,8 @@
 			<class name="com.scriptographer.ai.FontFamily" />
 			<class name="com.scriptographer.ai.FontWeight" />
 			<class name="com.scriptographer.ai.Tracing" />
+			<class name="com.scriptographer.ai.Pattern" />
+			<class name="com.scriptographer.ai.PatternList" />
 			<class name="com.scriptographer.ai.Symbol" />
 			<class name="com.scriptographer.ai.SymbolList" />
 			<class name="com.scriptographer.ai.SymbolItem" />
@@ -269,6 +271,7 @@
 			<class name="com.scriptographer.ai.SwatchList" />
 			<class name="com.scriptographer.ai.Gradient" />
 			<class name="com.scriptographer.ai.GradientList" />
+			<class name="com.scriptographer.ai.GradientStopList" />
 
 			<class name="com.scriptographer.adm.Notifier" />
 			<class name="com.scriptographer.adm.Dialog" />
