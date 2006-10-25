@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.20 $
- * $Date: 2006/10/18 14:07:59 $
+ * $Revision: 1.21 $
+ * $Date: 2006/10/25 02:13:06 $
  */
 
 package com.scriptographer;
@@ -365,8 +365,8 @@ public class ScriptographerEngine {
 		progressAutomatic = true;
 		progressCurrent = 0;
 		progressMax = 1 << 8;
-		nativeShowProgress(text);
 		nativeUpdateProgress(progressCurrent, progressMax);
+		nativeShowProgress(text);
 	}
 	
 	private static native boolean nativeUpdateProgress(long current, long max);

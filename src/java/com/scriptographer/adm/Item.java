@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2006/10/18 14:08:29 $
+ * $Revision: 1.14 $
+ * $Date: 2006/10/25 02:13:06 $
  */
 
 package com.scriptographer.adm;
@@ -658,7 +658,7 @@ public abstract class Item extends CallbackHandler {
 		}
 
 		public void updateBounds(Rectangle bounds) {
-			// call the setBounds maxVersion in super that directly sets the internal segmentValues.
+			// call the setBounds version in super that directly sets the internal segmentValues.
 			// setBounds(Rectangle) would call the overriden setBounds(int, int, int, int)
 			super.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 		}
