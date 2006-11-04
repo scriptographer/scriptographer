@@ -3,8 +3,10 @@ Point
 Rectangle
 Color
 	CMYKColor
-	Grayscale
+	GrayColor
 	RGBColor
+	GradientColor
+	PatternColor
 Matrix
 Art
 	Path
@@ -16,6 +18,8 @@ Art
 		PointText
 	Group
 	Layer
+	PlacedItem
+	SymbolItem
 Segment
 SegmentList
 Curve
@@ -36,6 +40,16 @@ HitTest
 Document
 DocumentList
 LayerList
+Swatch
+SwatchList
+Gradient
+GradientList
+GradientStop
+GradientStopList
+Symbol
+SymbolList
+Pattern
+PatternList
 View
 ViewList
 FileFormat
