@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Item.cpp,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2006/10/18 14:17:18 $
+ * $Revision: 1.15 $
+ * $Date: 2006/11/04 11:52:56 $
  */
 
 #include "stdHeaders.h"
@@ -641,12 +641,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getBackgroundColor(JNIEn
 }
 
 /*
- * long getChildItemHandle(int itemID)
+ * int getChildItemHandle(int itemID)
  */
-JNIEXPORT jlong JNICALL Java_com_scriptographer_adm_Item_getChildItemHandle(JNIEnv *env, jobject obj, jint itemID) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getChildItemHandle(JNIEnv *env, jobject obj, jint itemID) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
-		return (jlong) sADMItem->GetChildItem(item, itemID);
+		return (jint) sADMItem->GetChildItem(item, itemID);
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }

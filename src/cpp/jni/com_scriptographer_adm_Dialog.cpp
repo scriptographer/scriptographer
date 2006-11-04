@@ -26,13 +26,14 @@
  *
  * $RCSfile: com_scriptographer_adm_Dialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2006/10/18 14:17:16 $
+ * $Revision: 1.17 $
+ * $Date: 2006/11/04 11:52:56 $
  */
 
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
+#include "AppContext.h"
 #include "admGlobals.h"
 #include "com_scriptographer_adm_Dialog.h"
 #include "resourceIds.h"
@@ -42,6 +43,7 @@
  */
 
 ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
+	AppContext context;
 	// hide the dialog by default:
 	sADMDialog->Show(dialog, false);
 	jobject obj = gEngine->getDialogObject(dialog);
@@ -347,12 +349,25 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setIncrement(JNIEnv *e
 }
 
 /*
- * long getItemHandle(int itemID)
+ * int getItemHandle(int itemID)
  */
-JNIEXPORT jlong JNICALL Java_com_scriptographer_adm_Dialog_getItemHandle(JNIEnv *env, jobject obj, jint itemID) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_getItemHandle(JNIEnv *env, jobject obj, jint itemID) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
-		return (jlong) sADMDialog->GetItem(dialog, itemID);
+		ADMItemRef item = sADMDialog->GetItem(dialog, itemID);
+#if kPluginInterfaceVersion >= kAI13
+		// Workaround for CS3 problem, where popup menu only appears if it's
+		// associated with a menu resource containing one entry on Mac
+		// TODO: how about PC?
+		if (itemID == kADMMenuItemID) {
+			ADMListRef list = sADMItem->GetList(item);
+			if (list) {
+				sADMList->SetMenuID(list, gPlugin->getPluginRef(), kEmptyMenuID, NULL);
+				sADMList->RemoveEntry(list, 0);
+			}
+		}
+#endif
+		return (jint) item;
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }
@@ -473,7 +488,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Dialog_isActive(JNIEnv *e
 }
 
 /*
- * void setActive(boolean arg1)
+ * void setActive(boolean active)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setActive(JNIEnv *env, jobject obj, jboolean active) {
 	try {
@@ -494,7 +509,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Dialog_isEnabled(JNIEnv *
 }
 
 /*
- * void seEnabled(boolean arg1)
+ * void seEnabled(boolean enabled)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setEnabled(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
@@ -515,7 +530,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Dialog_isUpdateEnabled(JN
 }
 
 /*
- * void seUpdateEnabled(boolean arg1)
+ * void seUpdateEnabled(boolean updateEnabled)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setUpdateEnabled(JNIEnv *env, jobject obj, jboolean updateEnabled) {
 	try {

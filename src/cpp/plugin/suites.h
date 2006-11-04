@@ -26,14 +26,15 @@
  *
  * $RCSfile: suites.h,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:18:08 $
+ * $Revision: 1.6 $
+ * $Date: 2006/11/04 11:52:57 $
  */
 
 // Define versions so they can even be used when compiling for 10 or CS1:
 #define kAI10	0x10000001	// AI 10.0
 #define kAI11	0x11000001	// AI 11.0
 #define kAI12	0x12000001	// AI 12.0
+#define kAI13	0x13000001	// AI 13.0
 
 // Sweet Pea Headers
 #include "SPConfig.h"
@@ -189,31 +190,51 @@ extern ImportSuites gPostStartupSuites;
 // Define symbols that point to the newest here und use these bellow:
 
 #define _kADMBasicSuiteVersion kADMBasicSuiteVersion8
-#define _kADMDialogSuiteVersion kADMDialogSuiteVersion8
-#define _kADMItemSuiteVersion kADMItemSuiteVersion8
-#define _kADMIconSuiteVersion kADMIconSuiteVersion2
-#define _kADMImageSuiteVersion kADMImageSuiteVersion2
-#define _kADMListSuiteVersion kADMListSuiteVersion4
-#define _kADMHierarchyListSuiteVersion kADMHierarchyListSuiteVersion5
-#define _kADMDialogGroupSuiteVersion kADMDialogGroupSuiteVersion3
-#define _kADMNotifierSuiteVersion kADMNotifierSuiteVersion1
-#define _kADMEntrySuiteVersion kADMEntrySuiteVersion5
-#define _kADMListEntrySuiteVersion kADMListEntrySuiteVersion4
-#define _kADMTrackerSuiteVersion kADMTrackerSuiteVersion1
-#define _kADMDrawerSuiteVersion kADMDrawerSuiteVersion5
+#define _ADMBasicSuite ADMBasicSuite8
 
-#define _ADMBasicSuite ADMBasicSuite8			
+#define _kADMDialogSuiteVersion kADMDialogSuiteVersion8
 #define _ADMDialogSuite ADMDialogSuite8
+
+#define _kADMItemSuiteVersion kADMItemSuiteVersion8
 #define _ADMItemSuite ADMItemSuite8
+
+#define _kADMIconSuiteVersion kADMIconSuiteVersion2
 #define _ADMIconSuite ADMIconSuite2
+
+#define _kADMImageSuiteVersion kADMImageSuiteVersion2
 #define _ADMImageSuite ADMImageSuite2
+
+#define _kADMListSuiteVersion kADMListSuiteVersion4
 #define _ADMListSuite ADMListSuite4
+
+#define _kADMHierarchyListSuiteVersion kADMHierarchyListSuiteVersion5
 #define _ADMHierarchyListSuite ADMHierarchyListSuite5
+
+#define _kADMDialogGroupSuiteVersion kADMDialogGroupSuiteVersion3
 #define _ADMDialogGroupSuite ADMDialogGroupSuite3
+
+#define _kADMNotifierSuiteVersion kADMNotifierSuiteVersion1
 #define _ADMNotifierSuite ADMNotifierSuite1
+
+#define _kADMEntrySuiteVersion kADMEntrySuiteVersion5
 #define _ADMEntrySuite ADMEntrySuite5
+
+#define _kADMListEntrySuiteVersion kADMListEntrySuiteVersion4
 #define _ADMListEntrySuite ADMListEntrySuite4
+
+#if kPluginInterfaceVersion < kAI13
+
+#define _kADMTrackerSuiteVersion kADMTrackerSuiteVersion1
 #define _ADMTrackerSuite ADMTrackerSuite1
+
+#else
+
+#define _kADMTrackerSuiteVersion kADMTrackerSuiteVersion2
+#define _ADMTrackerSuite ADMTrackerSuite2
+
+#endif
+
+#define _kADMDrawerSuiteVersion kADMDrawerSuiteVersion5
 #define _ADMDrawerSuite ADMDrawerSuite5
 
 // the basic suite doesn't need to be loaded:

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.21 $
- * $Date: 2006/10/18 14:17:17 $
+ * $Revision: 1.22 $
+ * $Date: 2006/11/04 11:52:56 $
  */
 
 #include "stdHeaders.h"
@@ -140,9 +140,13 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_i
 			sAIDocumentList->Open(&fileSpec, (AIColorModel) colorModel, (ActionDialogStatus) dialogStatus, &doc);
 #else
 			ai::FilePath filePath(fileSpec);
+	#if kPluginInterfaceVersion < kAI13
 			sAIDocumentList->Open(filePath, (AIColorModel) colorModel, (ActionDialogStatus) dialogStatus, &doc);
+	#else
+			sAIDocumentList->Open(filePath, (AIColorModel) colorModel, (ActionDialogStatus) dialogStatus, true, &doc);
+	#endif
 #endif
-		}	
+	}	
 	} EXCEPTION_CONVERT(env);
 	return (jint) doc;
 }
@@ -155,20 +159,33 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_l
 	AIColorModel model = (AIColorModel) colorModel;
 	// FIXME: As long as Art objects need to be modified in the active document (see Bug #001) commit it first:
 	gEngine->callStaticObjectMethod(env, gEngine->cls_CommitManager, gEngine->mid_CommitManager_commit, NULL);
-#if kPluginInterfaceVersion < kAI12
 	char *str = NULL;
 	try {
+#if kPluginInterfaceVersion < kAI12
 		str = gEngine->convertString(env, title);
 		sAIDocumentList->New(str, &model, &width, &height, (ActionDialogStatus) dialogStatus, &doc);
+#else
+		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, title);
+	#if kPluginInterfaceVersion < kAI13
+		sAIDocumentList->New(str, &model, &width, &height, (ActionDialogStatus) dialogStatus, &doc);
+	#else
+		AINewDocumentPreset params;
+		params.docTitle = str;
+		params.docWidth = width;
+		params.docHeight = height;
+		params.docColorMode = model;
+		sAIDocument->GetDocumentRulerUnits((short *) &params.docUnits);
+		params.docPixelPreview = kAIPreviewModeDefault;
+		// TODO: What to do with these two?
+		params.docTransparencyGrid = kAITransparencyGridNone;
+		params.docRasterResolution = kAIRasterResolutionScreen;
+		ai::UnicodeString preset("");
+		sAIDocumentList->New(preset, &params, (ActionDialogStatus) dialogStatus, &doc);
+	#endif
+#endif
 	} EXCEPTION_CONVERT(env);
 	if (str != NULL)
 		delete str;
-#else
-	try {
-		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, title);
-		sAIDocumentList->New(str, &model, &width, &height, (ActionDialogStatus) dialogStatus, &doc);
-	} EXCEPTION_CONVERT(env);
-#endif
 	return (jint) doc;
 }
 

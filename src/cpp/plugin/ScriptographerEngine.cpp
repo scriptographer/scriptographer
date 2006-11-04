@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.39 $
- * $Date: 2006/10/25 02:13:31 $
+ * $Revision: 1.40 $
+ * $Date: 2006/11/04 11:52:57 $
  */
 
 #include "stdHeaders.h"
@@ -258,6 +258,8 @@ void ScriptographerEngine::init() {
 
 #ifndef GCJ
 	cls_Loader = env->FindClass("com/scriptographer/loader/Loader");
+	if (cls_Loader == NULL)
+		throw new StringException("Cannot load loader.jar. Please make sure that the java folder was copied together with the Scriptographer plugin.");
 	mid_Loader_init = getStaticMethodID(env, cls_Loader, "init", "(Ljava/lang/String;)V");
 	mid_Loader_reload = getStaticMethodID(env, cls_Loader, "reload", "()Ljava/lang/String;");
 	mid_Loader_loadClass = getStaticMethodID(env, cls_Loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");

@@ -24,20 +24,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: resourceIds.h,v $
+ * $RCSfile: CS3_Release.pch,v $
  * $Author: lehni $
- * $Revision: 1.6 $
+ * $Revision: 1.1 $
  * $Date: 2006/11/04 11:52:57 $
  */
 
-#define kTool1CursorID					128
-#define kTool2CursorID					129
-
-#define kTool1IconID					130
-#define kTool2IconID					131
-
-#define kEmptyMenuID					800
-
-#define kEmptyDialogID                  16000
-
-#define kErrorStrings					16050
+#define MakingPreCompiledHeader 1
+#include "MachO_Release.h"
+#include "stdHeaders.h"
+#pragma precompile_target "CS3_Release.ch"
+#undef MakingPreCompiledHeader
