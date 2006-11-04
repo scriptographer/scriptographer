@@ -28,8 +28,8 @@
  *
  * $RCSfile: HierarchyList.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/18 14:08:29 $
+ * $Revision: 1.7 $
+ * $Date: 2006/11/04 11:47:26 $
  */
 
 package com.scriptographer.adm;
@@ -44,14 +44,14 @@ public class HierarchyList extends List {
 	public final static int
 	// hathaway : 8/22/02 : Added to support creation of hierarchical palette popups for Pangea
 	// Popup menu creation options
-	OPTION_HIERARCHY_POPUP = (1 << 0);
+		OPTION_HIERARCHY_POPUP = (1 << 0);
 	
 	public HierarchyList(Dialog dialog, int options) {
 		super(dialog, TYPE_HIERARCHY_LISTBOX, options);
 	}
 	
 	public HierarchyList(Dialog dialog) {
-		this(dialog, 0);
+		this(dialog, OPTION_NONE);
 	}
 
 	private HierarchyListEntry parentEntry = null;

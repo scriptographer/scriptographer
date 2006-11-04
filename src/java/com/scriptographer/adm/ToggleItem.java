@@ -28,14 +28,14 @@
  *
  * $RCSfile: ToggleItem.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/10/18 14:08:29 $
+ * $Revision: 1.4 $
+ * $Date: 2006/11/04 11:47:26 $
  */
 
 package com.scriptographer.adm;
 
 public abstract class ToggleItem extends Button {
-	public ToggleItem(Dialog dialog, int type) {
+	protected ToggleItem(Dialog dialog, int type) {
 		super(dialog, type);
 	}
 

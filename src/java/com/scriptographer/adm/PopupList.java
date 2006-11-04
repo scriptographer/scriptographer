@@ -28,8 +28,8 @@
  *
  * $RCSfile: PopupList.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/10/18 14:08:30 $
+ * $Revision: 1.4 $
+ * $Date: 2006/11/04 11:47:26 $
  */
 
 package com.scriptographer.adm;
@@ -40,8 +40,8 @@ public class PopupList extends ListItem {
 	// self defined pseudo options, for creation of the right TYPE:
 		OPTION_SCROLLING = 1 << 1;
 	
-	protected PopupList(Dialog dialog, long itemHandle) {
-		super(dialog, itemHandle);
+	protected PopupList(Dialog dialog, long handle) {
+		super(dialog, handle);
 	}
 
 	public PopupList(Dialog dialog, int options) {

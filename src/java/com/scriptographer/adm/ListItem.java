@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListItem.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/10/18 14:08:29 $
+ * $Revision: 1.10 $
+ * $Date: 2006/11/04 11:47:25 $
  */
 
 package com.scriptographer.adm;
@@ -73,9 +73,9 @@ public abstract class ListItem extends Item implements SimpleList {
 		listHandle = nativeInit(handle);
 	}
 	
-	protected ListItem(Dialog dialog, long itemHandle) {
-		super(dialog, itemHandle);
-		listHandle = nativeInit((int) itemHandle);
+	protected ListItem(Dialog dialog, long handle) {
+		super(dialog, handle);
+		listHandle = nativeInit((int) handle);
 	}
 	
 	protected ListItem() {

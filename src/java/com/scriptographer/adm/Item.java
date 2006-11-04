@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2006/10/25 02:13:06 $
+ * $Revision: 1.15 $
+ * $Date: 2006/11/04 11:47:26 $
  */
 
 package com.scriptographer.adm;
@@ -309,7 +309,7 @@ public abstract class Item extends CallbackHandler {
 	public native void setStyle(int style);
 	public native int getStyle();
 	
-	protected native long getChildItemHandle(int itemID);
+	protected native int getChildItemHandle(int itemID);
 
 	/* 
 	 * item state accessors

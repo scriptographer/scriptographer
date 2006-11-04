@@ -28,8 +28,8 @@
  * 
  * $RCSfile: MenuGroup.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/10/18 14:08:29 $
+ * $Revision: 1.3 $
+ * $Date: 2006/11/04 11:47:26 $
  */
 
 package com.scriptographer.adm;
@@ -230,7 +230,7 @@ public class MenuGroup extends ADMObject {
 	 * @param name
 	 */
 	protected MenuGroup(int handle, String name) {
-		this.handle = handle;
+		super(handle);
 		this.name = name;
 		putGroup(this);
 	}

@@ -28,15 +28,15 @@
  *
  * $RCSfile: TextEdit.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/10/18 14:08:28 $
+ * $Revision: 1.9 $
+ * $Date: 2006/11/04 11:47:26 $
  */
 
 package com.scriptographer.adm;
 
 public class TextEdit extends TextValueItem {
 	// Options
-	public final static int
+	public final static short
 		OPTION_PASSWORD = 1 << 1,
 		OPTION_UNICODE = 1 << 2, // [cpaduan] 6/18/02 - Creates a Unicode based edit box (if possible). Currently has no effect on Windows.
 		OPTION_DISABLE_DRAG_DROP = 1 << 3, // Disables drag & drop from or to text edits. Currently mac-only.
@@ -56,8 +56,8 @@ public class TextEdit extends TextValueItem {
 		STYLE_TRACK_RAW_KEYS = 4, // Mac-only; ignores default Carbon event processing; not compatible with kADMUnicodeEditCreateOption
 		STYLE_PASSWORD = 32;      // Win32 value for ES_PADMSWORD
 	
-	protected TextEdit(Dialog dialog, long itemHandle) {
-		super(dialog, itemHandle);
+	protected TextEdit(Dialog dialog, long handle) {
+		super(dialog, handle);
 	}
 	
 	/**
@@ -257,7 +257,7 @@ public class TextEdit extends TextValueItem {
 	
 	public TextEdit getTextEdit() {
 		if (textEdit == null) {
-			long handle = getChildItemHandle(ITEM_TEXTEDIT);
+			int handle = getChildItemHandle(ITEM_TEXTEDIT);
 			textEdit = handle != 0 ? new TextEdit(dialog, handle) : null;
 		}
 		return textEdit;
@@ -265,7 +265,7 @@ public class TextEdit extends TextValueItem {
 	
 	public PopupList getPopupList() {
 		if (popupList == null) {
-			long handle = getChildItemHandle(ITEM_POPUP);
+			int handle = getChildItemHandle(ITEM_POPUP);
 			popupList = handle != 0 ? new PopupList(dialog, handle) : null;
 		}
 		return popupList;

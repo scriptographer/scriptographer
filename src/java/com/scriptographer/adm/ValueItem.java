@@ -28,8 +28,8 @@
  *
  * $RCSfile: ValueItem.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/10/18 14:08:30 $
+ * $Revision: 1.9 $
+ * $Date: 2006/11/04 11:47:26 $
  */
 
 package com.scriptographer.adm;
@@ -38,8 +38,8 @@ import com.scriptographer.js.Unsealed;
 
 public abstract class ValueItem extends Item implements Unsealed {
 
-	protected ValueItem(Dialog dialog, long itemHandle) {
-		super(dialog, itemHandle);
+	protected ValueItem(Dialog dialog, long handle) {
+		super(dialog, handle);
 	}
 
 	protected ValueItem(Dialog dialog, int type, int options) {

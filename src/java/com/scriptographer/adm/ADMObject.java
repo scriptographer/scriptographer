@@ -28,8 +28,8 @@
  *
  * $RCSfile: ADMObject.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/10/18 14:08:30 $
+ * $Revision: 1.5 $
+ * $Date: 2006/11/04 11:47:26 $
  */
 
 package com.scriptographer.adm;
@@ -40,12 +40,12 @@ abstract class ADMObject extends WrappableObject {
 	// used for storing the native handle for this object
 	protected int handle;
 	
-	public ADMObject() {
+	protected ADMObject() {
 		handle = 0;
 	}
 	
-	public ADMObject(long handle) {
-		this.handle = (int) handle;
+	protected ADMObject(int handle) {
+		this.handle = handle;
 	}
 	
 	public int hashCode() {

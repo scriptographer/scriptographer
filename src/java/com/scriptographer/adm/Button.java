@@ -28,8 +28,8 @@
  *
  * $RCSfile: Button.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:08:29 $
+ * $Revision: 1.6 $
+ * $Date: 2006/11/04 11:47:26 $
  */
 
 package com.scriptographer.adm;
@@ -52,8 +52,8 @@ public class Button extends TextItem {
 		super(dialog, type);
 	}
 
-	protected Button(Dialog dialog, long itemHandle) {
-		super(dialog, itemHandle);
+	protected Button(Dialog dialog, long handle) {
+		super(dialog, handle);
 	}
 	
 	public Button(Dialog dialog) {

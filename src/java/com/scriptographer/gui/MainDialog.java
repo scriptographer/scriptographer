@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2006/10/18 14:12:21 $
+ * $Revision: 1.14 $
+ * $Date: 2006/11/04 11:47:27 $
  */
 
 package com.scriptographer.gui;
@@ -89,11 +89,11 @@ public class MainDialog extends FloatingDialog {
 			}
 		};
 
-//		new MenuItem(scriptographerItem, "Reload") {
-//			public void onClick() {
-//				ScriptographerEngine.reload();
-//			}
-//		};
+		new MenuItem(scriptographerItem, "Reload") {
+			public void onClick() {
+				ScriptographerEngine.reload();
+			}
+		};
 
 		// add the popup menu
 		PopupMenu menu = getPopupMenu();

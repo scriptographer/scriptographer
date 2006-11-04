@@ -28,8 +28,8 @@
  *
  * $RCSfile: PopupDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/10/18 14:08:28 $
+ * $Revision: 1.3 $
+ * $Date: 2006/11/04 11:47:26 $
  */
 
 package com.scriptographer.adm;
@@ -38,14 +38,14 @@ public class PopupDialog extends ModalDialog {
 	public final static int
 	// standard options from ADM:
 	
-	OPTION_AS_FLOATING = 1 << 8,
+		OPTION_AS_FLOATING = 1 << 8,
 	//	 If this option is set for a dialog of style kADMPopupControldialogStyle
 	//	 then ADM will create the dialog of kFloatingwindowclass. This option
 	//	 is currently used only on MacOSX.
 
 	// pseudo options, to simulate the various window styles (above 1 << 8)
 
-	OPTION_CONTROL = 1 << 11;
+		OPTION_CONTROL = 1 << 11;
 	//   create a STYLE_POPUP_CONTROL instead of STYLE_POPUP
 
 	public PopupDialog(int options) {

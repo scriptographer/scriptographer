@@ -28,8 +28,8 @@
  *
  * $RCSfile: PopupMenu.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/10/18 14:08:28 $
+ * $Revision: 1.4 $
+ * $Date: 2006/11/04 11:47:26 $
  */
 
 package com.scriptographer.adm;
@@ -38,12 +38,12 @@ public class PopupMenu extends ListItem {
 	
 	// ADMPopupMenuStyle
 	public final static int
-		POPUP_MENU_RIGHT = 0,
-		POPUP_MENU_BOTTOM = 1,
-		POPUP_MENU_ROUND = 2,
-		POPUP_MENU_ROUND_HIERARCHY = 4;
+		STYLE_MENU_RIGHT = 0,
+		STYLE_MENU_BOTTOM = 1,
+		STYLE_MENU_ROUND = 2,
+		STYLE_MENU_ROUND_HIERARCHY = 4;
 
-	protected PopupMenu(Dialog dialog, long itemHandle) {
-		super(dialog, itemHandle);
+	protected PopupMenu(Dialog dialog, long handle) {
+		super(dialog, handle);
 	}
 }

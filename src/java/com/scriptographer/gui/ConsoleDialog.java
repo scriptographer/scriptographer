@@ -28,8 +28,8 @@
  *
  * $RCSfile: ConsoleDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2006/10/18 14:12:21 $
+ * $Revision: 1.11 $
+ * $Date: 2006/11/04 11:47:27 $
  */
 
 package com.scriptographer.gui;
@@ -72,7 +72,7 @@ public class ConsoleDialog extends FloatingDialog implements ConsoleOutputWriter
 						while (start >= 0 && ((ch = text.charAt(start)) != '\n' && ch != '\r'))
 							start--;
 						start++;
-						text = text.substring(start, end);
+						text = text.substring(start, end + 1);
 					}
 					ScriptographerEngine.getInstance().executeString(text, consoleScope);
 				}
