@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Image.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/18 14:17:16 $
+ * $Revision: 1.7 $
+ * $Date: 2006/11/24 23:42:58 $
  */
  
 #include "stdHeaders.h"
@@ -82,18 +82,27 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels___3IIII
 	try {
 		ADMImageRef image = gEngine->getImageRef(env, obj);
 		jint len = env->GetArrayLength(data);
-		char *src = (char *)env->GetPrimitiveArrayCritical(data, 0);
+		char *src = (char *) env->GetPrimitiveArrayCritical(data, 0);
 		if (data == NULL) EXCEPTION_CHECK(env);
-		char *dst = (char *)sADMImage->BeginBaseAddressAccess(image); 
-		
+		char *dst = (char *) sADMImage->BeginBaseAddressAccess(image); 
+	
 		// we're copying int rgb(a) values, so *4:
 		width *= 4;
 		for (int y = 0; y < height; y++) {
+#ifdef __i386__ // TODO: figure out when ARGB to RGBA switch is needed and when not
+			for (int x = 0; x < width; x += 4) {
+				dst[x + 0] = src[x + 3]; // A
+				dst[x + 1] = src[x + 0]; // R
+				dst[x + 2] = src[x + 1]; // G
+				dst[x + 3] = src[x + 2]; // B
+			}
+#else
 			memcpy(dst, src, width);
+#endif
 			src += width;
 			dst += byteWidth;
 		}
-		
+
 		env->ReleasePrimitiveArrayCritical(data, src, 0);
 		sADMImage->EndBaseAddressAccess(image); 
 	} EXCEPTION_CONVERT(env);
@@ -106,8 +115,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels__II(JNI
 	try {
 		ADMImageRef dstImage = gEngine->getImageRef(env, obj);
 		ADMImageRef srcImage = (ADMImageRef) handle;
-		char *src = (char *)sADMImage->BeginBaseAddressAccess(srcImage); 
-		char *dst = (char *)sADMImage->BeginBaseAddressAccess(dstImage); 
+		char *src = (char *) sADMImage->BeginBaseAddressAccess(srcImage); 
+		char *dst = (char *) sADMImage->BeginBaseAddressAccess(dstImage); 
 		
 		memcpy(dst, src, numBytes);
 		
@@ -130,7 +139,16 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeGetPixels(JNIEnv 
 		// we're copying int rgb(a) values, so *4:
 		width *= 4;
 		for (int y = 0; y < height; y++) {
+#ifdef __i386__ // TODO: figure out when ARGB to RGBA switch is needed and when not
+			for (int x = 0; x < width; x += 4) {
+				dst[x + 0] = src[x + 1]; // R
+				dst[x + 1] = src[x + 2]; // G
+				dst[x + 2] = src[x + 3]; // B
+				dst[x + 3] = src[x + 0]; // A
+			}
+#else
 			memcpy(dst, src, width);
+#endif
 			src += byteWidth;
 			dst += width;
 		}

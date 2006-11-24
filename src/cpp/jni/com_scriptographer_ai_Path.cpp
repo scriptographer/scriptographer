@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Path.cpp,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2006/10/25 02:13:31 $
+ * $Revision: 1.11 $
+ * $Date: 2006/11/24 23:42:58 $
  */
  
 #include "stdHeaders.h"
@@ -48,6 +48,26 @@ short Path_getBezierCount(AIArtHandle art) {
 	if (!closed) count--; // number of beziers = number of segments - 1
 	return count;
 }
+
+static void *Path_allocate(long size) {
+	void *p;
+	if (sSPBlocks->AllocateBlock(size, "com.scriptographer.ai.Path", &p) != 0) {
+		throw new StringException("Out of memory.");
+	}
+	return p;
+}
+
+static void Path_dispose(void *p) {
+	sSPBlocks->FreeBlock(p);
+}
+
+DEFINE_CALLBACK_PROC(Path_allocate);
+DEFINE_CALLBACK_PROC(Path_dispose);
+
+static AIPathConstructionMemoryObject Path_memoryObject = {
+	(void * (*)(long int)) CALLBACK_PROC(Path_allocate),
+	(void (*)(void *)) CALLBACK_PROC(Path_dispose)
+};
 
 /*
  * boolean isClosed()
@@ -198,26 +218,6 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Path_getArea(JNIEnv *env, jo
 	return 0.0;
 }
 
-static void *pathAllocate(long size) {
-	void *p;
-	if (sSPBlocks->AllocateBlock(size * 2, "com.scriptographer.ai.Path", &p) != 0) {
-		throw new StringException("Out of memory.");
-	}
-	return p;
-}
-
-static void pathDispose(void *p) {
-	sSPBlocks->FreeBlock(p);
-}
-
-DEFINE_CALLBACK_PROC(pathAllocate);
-DEFINE_CALLBACK_PROC(pathDispose);
-
-static AIPathConstructionMemoryObject pathMemoryObject = {
-	(void * (*)(long int)) CALLBACK_PROC(pathAllocate),
-	(void (*)(void *)) CALLBACK_PROC(pathDispose)
-};
-
 /*
  * int nativePointsToCurves(float tolerance, float threshold, int cornerRadius, float scale)
  */
@@ -229,27 +229,27 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativePointsToCurves(JNIE
 		sAIPath->GetPathSegmentCount(handle, &count);
 		if (count > 0) {
 			// convert the segments to points first:
-			AIPathSegment *segments = (AIPathSegment *) pathAllocate(count * sizeof(AIPathSegment));
-			AIPathConstructionPoint *points = (AIPathConstructionPoint *) pathAllocate(count * sizeof(AIPathConstructionPoint));
+			AIPathSegment *segments = new AIPathSegment[count];
+			AIPathConstructionPoint *points = new AIPathConstructionPoint[count];
 			if (segments != NULL && points != NULL) {
 				sAIPath->GetPathSegments(handle, 0, count, segments);
 				for (int i = 0; i < count; i++) {
 					points[i].point = segments[i].p;
 					points[i].corner = segments[i].corner;
 				}
-				pathDispose(segments);
+				delete[] segments;
 				long pointCount;
 				pointCount = count;
 				long segCount = 0;
 				short radius = cornerRadius;
-				AIPathSegment *segments = NULL;
-				if (!sAIPathConstruction->PointsToCurves(&pointCount, points, &segCount, &segments, &tolerance, &threshold, &radius, &scale, &pathMemoryObject) && segments != NULL) {
+				segments = NULL;
+				if (!sAIPathConstruction->PointsToCurves(&pointCount, points, &segCount, &segments, &tolerance, &threshold, &radius, &scale, &Path_memoryObject) && segments != NULL) {
 					sAIPath->SetPathSegmentCount(handle, segCount);	
 					sAIPath->SetPathSegments(handle, 0, segCount, segments);	
 					res = segCount;
-					pathDispose(segments);
+					Path_dispose(segments);
 				}
-				pathDispose(points);
+				delete[] points;
 			}
 		}
 	} EXCEPTION_CONVERT(env);
@@ -269,29 +269,29 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativeCurvesToPoints(JNIE
 			// if the path is closed, we have to reuse the first point at the end (curvesToPoints can't handle closed paths directly...)
 			AIBoolean closed;
 			sAIPath->GetPathClosed(handle, &closed);
-			AIPathSegment *segments = (AIPathSegment *)pathAllocate((closed ? count + 1 : count) * sizeof(AIPathSegment));
+			AIPathSegment *segments = new AIPathSegment[closed ? count + 1 : count];
 			if (segments != NULL) {
-				AIPathConstructionPoint *points = NULL;
 				sAIPath->GetPathSegments(handle, 0, count, segments);
 				if (closed) {
 					memcpy(&segments[count], &segments[0], sizeof(AIPathSegment));
 					count++;
 				}
 				long pointCount = 0;
-				if (!sAIPathConstruction->CurvesToPoints(count, segments, &pointCount, &points, maxPointDistance, flatness, &pathMemoryObject) && points != NULL) {
+				AIPathConstructionPoint *points = NULL;
+				if (!sAIPathConstruction->CurvesToPoints(count, segments, &pointCount, &points, maxPointDistance, flatness, &Path_memoryObject) && points != NULL) {
 					// convert points to segments:
-					AIPathSegment *segments = (AIPathSegment *)pathAllocate(pointCount * sizeof(AIPathSegment));
+					AIPathSegment *segments = new AIPathSegment[pointCount];
 					if (segments != NULL) {
 						for (int i = 0; i < pointCount; i++) {
 							segments[i].p = segments[i].in = segments[i].out = points[i].point;
 							segments[i].corner = points[i].corner;
 						}
+						Path_dispose(points);
 						sAIPath->SetPathSegmentCount(handle, pointCount);	
 						sAIPath->SetPathSegments(handle, 0, pointCount, segments);	
 						res = pointCount;
+						delete[] segments;
 					}
-					pathDispose(segments);
-					pathDispose(points);
 				}
 			}
 		}
@@ -305,6 +305,17 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Path_nativeCurvesToPoints(JNIE
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_nativeReduceSegments(JNIEnv *env, jobject obj, jfloat flatness) {
 	try {
 		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
-		sAIPathConstruction->ReducePathSegments(handle, flatness, &pathMemoryObject);
+		sAIPathConstruction->ReducePathSegments(handle, flatness, &Path_memoryObject);
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * void nativeReverse()
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_nativeReverse(JNIEnv *env, jobject obj) {
+	try {
+		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
+		if (sAIPath->ReversePathSegments(handle))
+			throw new StringException("Cannot reverse path segments");
 	} EXCEPTION_CONVERT(env);
 }

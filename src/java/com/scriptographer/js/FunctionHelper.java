@@ -28,8 +28,8 @@
  *
  * $RCSfile: FunctionHelper.java,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/10/18 14:12:51 $
+ * $Revision: 1.8 $
+ * $Date: 2006/11/24 23:39:39 $
  */
 
 package com.scriptographer.js;
@@ -56,7 +56,7 @@ public class FunctionHelper {
 		return obj instanceof Function ? (Function)obj : null;
 	}
 	
-	public static Object callFunction(Scriptable scope, Function func, Object args[]) throws Exception {
+	public static Object callFunction(Scriptable scope, Function func, Object args[]) {
 		ScriptographerEngine.beginExecution();
 		Object ret = func.call(Context.getCurrentContext(), scope, scope, args);
 		// commit all changed objects after a scripting function has been called!
@@ -68,18 +68,18 @@ public class FunctionHelper {
 		return ret;
 	}
 
-	public static Object callFunction(Scriptable scope, Function func) throws Exception {
+	public static Object callFunction(Scriptable scope, Function func) {
 		return callFunction(scope, func, emptyArgs);
 	}
 
-	public static Object callFunction(Scriptable scope, String name, Object args[]) throws Exception {
+	public static Object callFunction(Scriptable scope, String name, Object args[]) {
 		Function func = getFunction(scope, name);
 		if (func != null)
 			return callFunction(scope, func, args);
 		return null;
 	}
 
-	public static Object callFunction(Scriptable scope, String name) throws Exception {
+	public static Object callFunction(Scriptable scope, String name) {
 		return callFunction(scope, name, emptyArgs);
 	}
 

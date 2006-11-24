@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.40 $
- * $Date: 2006/11/04 11:52:57 $
+ * $Revision: 1.41 $
+ * $Date: 2006/11/24 23:42:58 $
  */
 
 #include "stdHeaders.h"
@@ -240,7 +240,7 @@ void ScriptographerEngine::init() {
 	options.add("-Xdebug");
 	options.add("-Xnoagent");
 	options.add("-Djava.compiler=NONE");
-//	options.add("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n");
+	options.add("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n");
 #endif
 
 	options.fillArgs(&args);
@@ -616,8 +616,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_Image_getIconHandle = getMethodID(env, cls_Image, "getIconHandle", "()I");
 
 	cls_Item = loadClass(env, "com/scriptographer/adm/Item");
-	fid_Item_nativeSize = getFieldID(env, cls_Item, "nativeSize", "Ljava/awt/Dimension;");
 	fid_Item_nativeBounds = getFieldID(env, cls_Item, "nativeBounds", "Ljava/awt/Rectangle;");
+	mid_Item_updateBounds = getMethodID(env, cls_Item, "updateBounds", "(Ljava/awt/Rectangle;)V");
 	
 	cls_ListItem = loadClass(env, "com/scriptographer/adm/ListItem");
 	fid_ListItem_listHandle = getFieldID(env, cls_ListItem, "listHandle", "I");	

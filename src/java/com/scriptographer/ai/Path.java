@@ -28,8 +28,8 @@
  *
  * $RCSfile: Path.java,v $
  * $Author: lehni $
- * $Revision: 1.23 $
- * $Date: 2006/10/25 02:12:51 $
+ * $Revision: 1.24 $
+ * $Date: 2006/11/24 23:39:40 $
  */
 
 package com.scriptographer.ai;
@@ -67,16 +67,16 @@ public class Path extends Art {
 		super(TYPE_PATH);
 	}
 
-	protected Path(ExtendedList segments) {
+	public Path(ExtendedList segments) {
 		this();
 		setSegments(segments);
 	}
 
-	protected Path(Object[] segments) {
+	public Path(Object[] segments) {
 		this(Lists.asList(segments));
 	}
 	
-	protected Path(Shape shape) {
+	public Path(Shape shape) {
 		this();
 		append(shape);
 	}
@@ -170,54 +170,68 @@ public class Path extends Art {
 
 	public native float getArea();
 
+	private native void nativeReverse();
+
+	public void reverse() {
+		// first save all changes:
+		CommitManager.commit(this);
+		// reverse underlying ai structures:
+		nativeReverse();
+		// increase version as all segments have changed
+		this.version++;
+	}
+	
+	private void updateSize(int size) {
+		// increase version as all segments have changed
+		this.version++;
+		if (segments != null)
+			segments.updateSize(size);
+		
+	}
+
 	private native int nativePointsToCurves(float tolerance, float threshold, int cornerRadius, float scale);
 
-	public int pointsToCurves(float tolerance, float threshold, int cornerRadius, float scale) {
-		int length = nativePointsToCurves(tolerance, threshold, cornerRadius, scale);
-		if (segments != null)
-			segments.updateSize(length);
-		return length;
+	public void pointsToCurves(float tolerance, float threshold, int cornerRadius, float scale) {
+		int size = nativePointsToCurves(tolerance, threshold, cornerRadius, scale);
+		updateSize(size);
 	}
 
-	public int pointsToCurves(float tolerance, float threshold, int cornerRadius) {
-		return pointsToCurves(tolerance, threshold, cornerRadius, 1f);
+	public void pointsToCurves(float tolerance, float threshold, int cornerRadius) {
+		pointsToCurves(tolerance, threshold, cornerRadius, 1f);
 	}
 
-	public int pointsToCurves(float tolerance, float threshold) {
-		return pointsToCurves(tolerance, threshold, 1, 1f);
+	public void pointsToCurves(float tolerance, float threshold) {
+		pointsToCurves(tolerance, threshold, 1, 1f);
 	}
 
-	public int pointsToCurves(float tolerance) {
-		return pointsToCurves(tolerance, 1f, 1, 1f);
+	public void pointsToCurves(float tolerance) {
+		pointsToCurves(tolerance, 1f, 1, 1f);
 	}
 
-	public int pointsToCurves() {
-		return pointsToCurves(2.5f, 1f, 1, 1f);
+	public void pointsToCurves() {
+		pointsToCurves(2.5f, 1f, 1, 1f);
 	}
 
 	private native int nativeCurvesToPoints(float maxPointDistance, float flatness);
 
-	public int curvesToPoints(float maxPointDistance, float flatness) {
-		int length = nativeCurvesToPoints(maxPointDistance, flatness);
-		if (segments != null)
-			segments.updateSize(length);
-		return length;
+	public void curvesToPoints(float maxPointDistance, float flatness) {
+		int size = nativeCurvesToPoints(maxPointDistance, flatness);
+		updateSize(size);
 	}
 
-	public int curvesToPoints(float maxPointDistance) {
-		return curvesToPoints(maxPointDistance, Curve.FLATNESS);
+	public void curvesToPoints(float maxPointDistance) {
+		curvesToPoints(maxPointDistance, Curve.FLATNESS);
 	}
 
-	public int curvesToPoints() {
-		return curvesToPoints(1000f, Curve.FLATNESS);
+	public void curvesToPoints() {
+		curvesToPoints(1000f, Curve.FLATNESS);
 	}
 
 	private native void nativeReduceSegments(float flatness);
 
 	public void reduceSegments(float flatness) {
 		nativeReduceSegments(flatness);
-		if (segments != null)
-			segments.updateSize(-1);
+		updateSize(-1);
 	}
 
 	public void reduceSegments() {

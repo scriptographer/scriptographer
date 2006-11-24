@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.21 $
- * $Date: 2006/10/25 02:13:06 $
+ * $Revision: 1.22 $
+ * $Date: 2006/11/24 23:39:40 $
  */
 
 package com.scriptographer;
@@ -69,7 +69,7 @@ public class ScriptographerEngine {
 		isMacintosh = (os.indexOf("mac os x") != -1);
 	}
 
-	public ScriptographerEngine() throws Exception {
+	public ScriptographerEngine() {
 		ContextFactory.initGlobal(new ScriptographerContextFactory());
 		context = Context.enter();
 		global = new GlobalObject(context);
@@ -82,7 +82,7 @@ public class ScriptographerEngine {
 		// ClassLoader from there is save:
 		Thread.currentThread().setContextClassLoader(ScriptographerEngine.class.getClassLoader());
 		// get the baseDir setting, if it's not set, ask the user
-		Preferences prefs = Preferences.userNodeForPackage(ScriptographerEngine.class);
+		Preferences prefs = Preferences.userNodeForPackage(Dialog.class);
 		String dir = prefs.get("scriptDir", null);
 		// If nothing is defined, try the default place for Scripts: In the plugin's folder
 		if (dir == null)
@@ -117,7 +117,7 @@ public class ScriptographerEngine {
 	public static boolean chooseScriptDirectory() {
 		scriptDir = Dialog.chooseDirectory("Please choose the Scriptographer Script directory:", scriptDir);
 		if (scriptDir != null && scriptDir.isDirectory()) {
-			Preferences prefs = Preferences.userNodeForPackage(ScriptographerEngine.class);
+			Preferences prefs = Preferences.userNodeForPackage(Dialog.class);
 			prefs.put("scriptDir", scriptDir.getPath());
 			try {
 				prefs.flush();
@@ -158,7 +158,7 @@ public class ScriptographerEngine {
 
 	public static native String nativeReload();
 
-	public static ScriptographerEngine getInstance() throws Exception {
+	public static ScriptographerEngine getInstance() {
 		if (engine == null)
 			engine = new ScriptographerEngine();
 		return engine;

@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.27 $
- * $Date: 2006/10/25 02:13:31 $
+ * $Revision: 1.28 $
+ * $Date: 2006/11/24 23:42:58 $
  */
 
 #include "jniMacros.h"
@@ -358,8 +358,8 @@ public:
 	jmethodID mid_Image_getIconHandle;
 
 	jclass cls_Item;
-	jfieldID fid_Item_nativeSize;
 	jfieldID fid_Item_nativeBounds;
+	jmethodID mid_Item_updateBounds;
 
 	jclass cls_ListItem;
 	jfieldID fid_ListItem_listHandle;

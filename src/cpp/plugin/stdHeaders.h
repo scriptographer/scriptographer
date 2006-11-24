@@ -26,29 +26,12 @@
  *
  * $RCSfile: stdHeaders.h,v $
  * $Author: lehni $
- * $Revision: 1.12 $
- * $Date: 2006/10/18 14:18:09 $
+ * $Revision: 1.13 $
+ * $Date: 2006/11/24 23:42:59 $
  */
- 
-#if !defined(__STDHEADERS_H_INCLUDED__)
-#define __STDHEADERS_H_INCLUDED__
 
-// Derective for Codewarrior to use the pre-compiled header file
-#if (defined(__PIMWCWMacPPC__) && !(defined(MakingPreCompiledHeader)))
-	#if TARGET_BUILD_MACHO
-		#if _DEBUG
-			#include "MachO_Debug.ch"
-		#else
-			#include "MachO_Release.ch"
-		#endif
-	#else
-		#if _DEBUG
-			#include "CFM_Debug.ch"
-		#else
-			#include "CFM_Release.ch"
-		#endif
-	#endif
-#else
+#ifndef __stdHeaders__
+#define __stdHeaders__
 
 #ifdef MAC_ENV
 	#include <Carbon.h>
@@ -70,11 +53,10 @@
 #include <algorithm>
 using namespace std;
 
-#include "Suites.h"
+#include "suites.h"
 
 #include "Array.h"
 
 #define PI 3.14159265358979323846
 
-#endif // #if (defined(__PIMWCWMacPPC__) && !(defined(MakingPreCompiledHeader)))
-#endif //  !defined(__STDHEADERS_H_INCLUDED__)
+#endif // __stdHeaders__

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Art.java,v $
  * $Author: lehni $
- * $Revision: 1.25 $
- * $Date: 2006/10/25 02:12:51 $
+ * $Revision: 1.26 $
+ * $Date: 2006/11/24 23:39:40 $
  */
 
 package com.scriptographer.ai;
@@ -420,6 +420,10 @@ public abstract class Art extends DictionaryObject {
 		version++;
 	}
 	
+	/**
+	 * Returns the document of the art item.
+	 * @return the art item's document.
+	 */
 	public Document getDocument() {
 		return document;
 	}

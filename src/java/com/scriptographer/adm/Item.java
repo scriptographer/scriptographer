@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.15 $
- * $Date: 2006/11/04 11:47:26 $
+ * $Revision: 1.16 $
+ * $Date: 2006/11/24 23:39:39 $
  */
 
 package com.scriptographer.adm;
@@ -162,9 +162,7 @@ public abstract class Item extends CallbackHandler {
 
 	protected Dialog dialog;
 
-	private Dimension nativeSize = null;
 	private Rectangle nativeBounds = null;
-	protected Dimension size;
 	protected Rectangle bounds;
 	protected Insets insets;
 
@@ -181,7 +179,6 @@ public abstract class Item extends CallbackHandler {
 	 */
 	protected Item() {
 		setInsets(0, 0, 0, 0);
-		size = new Dimension();
 		bounds = new Rectangle();
 	}
 
@@ -198,7 +195,6 @@ public abstract class Item extends CallbackHandler {
 		this.type = type;
 		this.options = options;
 		handle = nativeCreate(dialog.handle, convertType(type), options);
-		updateBounds();
 	}
 	
 	/**
@@ -213,7 +209,6 @@ public abstract class Item extends CallbackHandler {
 		this.dialog = dialog;
 		this.handle = (int) handle;
 		this.type = convertType(nativeInit(this.handle));
-		updateBounds();
 	}
 
 	public void destroy() {
@@ -233,13 +228,6 @@ public abstract class Item extends CallbackHandler {
 		if (component == null)
 			component = new AWTComponent();
 		return component;
-	}
-	
-	protected void onResize(int dx, int dy) throws Exception {
-		if (component != null) {
-			component.updateBounds(getBounds());
-		}
-		super.onResize(dx, dy);
 	}
 	
 	/*
@@ -340,25 +328,61 @@ public abstract class Item extends CallbackHandler {
 	 * item bounds accessors
 	 * 
 	 */
-	
-	protected void updateBounds() {
-		// nativeSize and nativeBounds are set by the native environment
-		// size and bounds need to be updated depending on insets and internalInsets
-		int dx = insets.left + insets.right;
-		int dy = insets.top + insets.bottom;
-		size.width = nativeSize.width + dx;
-		size.height = nativeSize.height + dy;
-		bounds.x = nativeBounds.x - insets.left;
-		bounds.y =  nativeBounds.y - insets.top;
-		bounds.width = nativeBounds.width + dx;
-		bounds.height = nativeBounds.height + dy;
-	}
-
-	private native Dimension nativeGetSize();
-	private native void nativeSetSize(int width, int height);
 
 	private native Rectangle nativeGetBounds();
 	private native void nativeSetBounds(int x, int y, int width, int height);
+
+	public Rectangle getBounds() {
+		return new Rectangle(bounds);
+	}
+
+	public void setBounds(int x, int y, int width, int height) {
+		// calculate native values
+		int nx = x + insets.left;
+		int ny = y + insets.top;
+		int nw = width - insets.left - insets.right;
+		int nh = height - insets.top - insets.bottom;
+		int dx = nw - nativeBounds.width;
+		int dy = nh - nativeBounds.height;
+
+		boolean sizeChanged = dx != 0 || dy != 0;
+		if (sizeChanged || nativeBounds.x != nx || nativeBounds.y != ny) {
+			nativeSetBounds(nx, ny, nw, nh);
+			// TextEdit items do not seem to call onResize!
+			nativeBounds.setBounds(nx, ny, nw, nh);
+		}
+
+		// update bounds
+		bounds.setBounds(x, y, width, height);
+		if (component != null)
+			component.updateBounds(bounds);
+
+		// Set prefSize so getPreferredSize does not return results from getBestSize()
+		prefSize = new Dimension(width, height);
+
+		if (sizeChanged) {
+			// TODO: get rid of Exception...
+			try {
+				onResize(dx, dy);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	public final void setBounds(Rectangle2D bounds) {
+		setBounds((int) bounds.getX(), (int) bounds.getY(), (int) bounds.getWidth(), (int) bounds.getHeight());
+	}
+	
+	protected void updateBounds(Rectangle nativeBounds) {
+		this.nativeBounds = nativeBounds;
+		// nativeSize and nativeBounds are set by the native environment
+		// size and bounds need to be updated depending on insets and internalInsets
+		bounds.x = nativeBounds.x - insets.left;
+		bounds.y =  nativeBounds.y - insets.top;
+		bounds.width = nativeBounds.width + insets.left + insets.right;
+		bounds.height = nativeBounds.height + insets.top + insets.bottom;
+	}
 
 	public void setLocation(int x, int y) {
 		setBounds(x, y, bounds.width, bounds.height);
@@ -373,37 +397,19 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	public Dimension getSize() {
-		return new Dimension(size);
+		return bounds.getSize();
 	}
 
 	public void setSize(int width, int height) {
-		// calculate native values
-		int nw = width - insets.left - insets.right;
-		int nh = height - insets.top - insets.bottom;
-
-		if (nativeSize.width != nw || nativeSize.height != nh) {
-			nativeSize.setSize(nw, nh);
-			nativeSetSize(nw, nh);
-			// also updatePoint the internal bounds field:
-			nativeBounds = nativeGetBounds();
-		}
-
-		// update size and bounds
-		bounds.setSize(width, height);
-		size.setSize(width, height);
-		if (component != null)
-			component.updateBounds(bounds);
-		
-		// Set prefSize so getPreferredSize does not return results from getBestSize()
-		prefSize = size;
+		setBounds(bounds.x, bounds.y, width, height);
 	}
 
 	public final void setSize(Dimension size) {
-		setSize(size.width, size.height);
+		setBounds(bounds.x, bounds.y, size.width, size.height);
 	}
 
 	public final void setSize(Point2D size) {
-		setSize((int) size.getX(), (int) size.getY());
+		setBounds(bounds.x, bounds.y, (int) size.getX(), (int) size.getY());
 	}
 
 	private native Dimension nativeGetTextSize(String text, int maxWidth);
@@ -525,41 +531,10 @@ public abstract class Item extends CallbackHandler {
 	public Dimension getMaximumSize() {
 		return maxSize != null ? maxSize : getSize();
 	}
-
-	public Rectangle getBounds() {
-		return new Rectangle(bounds);
-	}
-
-	public void setBounds(int x, int y, int width, int height) {
-		// calculate native values
-		int nx = x + insets.left;
-		int ny = y + insets.top;
-		int nw = width - insets.left - insets.right;
-		int nh = height - insets.top - insets.bottom;
-				
-		boolean sizeChanged = (nativeBounds.width != nw || nativeBounds.height != nh);
-		if (sizeChanged || nativeBounds.x != nx || nativeBounds.y != ny) {
-			nativeBounds.setBounds(nx, ny, nw, nh);
-			nativeSetBounds(nx, ny, nw, nh);
-			if (sizeChanged) {
-				// also updatePoint the internal length field:
-				nativeSize = nativeGetSize();
-			}
-		}
-
-		// update bounds
-		bounds.setBounds(x, y, width, height);
-		if (component != null)
-			component.updateBounds(bounds);
-	}
-
-	public final void setBounds(Rectangle2D bounds) {
-		setBounds((int) bounds.getX(), (int) bounds.getY(), (int) bounds.getWidth(), (int) bounds.getHeight());
-	}
 	
 	public void setInsets(int left, int top, int right, int bottom) {
 		insets = new Insets(top, left, bottom, right);
-		if (nativeSize != null)
+		if (nativeBounds != null)
 			setBounds(bounds);
 	}
 

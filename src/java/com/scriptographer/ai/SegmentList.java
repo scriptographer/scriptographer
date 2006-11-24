@@ -28,18 +28,17 @@
  *
  * $RCSfile: SegmentList.java,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2006/10/25 02:12:50 $
+ * $Revision: 1.17 $
+ * $Date: 2006/11/24 23:39:40 $
  */
 
 package com.scriptographer.ai;
 
-import java.util.*;
 import java.awt.geom.Point2D;
 
-import com.scriptographer.CommitManager;
 import com.scriptographer.util.ExtendedArrayList;
 import com.scriptographer.util.AbstractFetchList;
+import com.scriptographer.util.ExtendedList;
 
 public class SegmentList extends AbstractFetchList {
 	protected Path path;
@@ -48,7 +47,6 @@ public class SegmentList extends AbstractFetchList {
 
 	private ExtendedArrayList.List list;
 
-	private int maxVersion = -1; // the latest version of segments, even if there's only one of this version
 	private int lengthVersion = -1;
 
 	// how many float values are stored in a segment:
@@ -86,28 +84,14 @@ public class SegmentList extends AbstractFetchList {
 	 */
 	protected void updateSize(int newSize) {
 		if (path != null) {
-			/*
-			// TODO: check if this is really needed.
-			   -> with the version checking in place can segments not be reused?
-			// updateLength is called in the beginning of a SegmentList and whenever the list completely changes,
-			// e.g. when Path.reduceSegments is called. In these cases, the existing segments are not valid anymore:
-			for (int i = 0; i < size; i++) {
-				Segment segment = (Segment) list.get(i);
-				if (segment != null) {
-					// detach from SegmentList and set null
-					segment.segments = null;
-					list.set(i, null);
-				}
+			if (newSize != size) {
+				if (newSize == -1)
+					newSize = nativeGetSize(path.handle);
+				list.setSize(newSize);
+				size = newSize;
+				if (curves != null)
+					curves.updateSize();
 			}
-			*/
-			if (newSize == -1)
-				newSize = nativeGetSize(path.handle);
-			list.setSize(newSize);
-			size = newSize;
-			if (curves != null)
-				curves.updateSize();
-			// decrease maxVersion so elements gets refetched, see fetch:
-			maxVersion--;
 			lengthVersion = path.version;
 		}
 	}
@@ -144,60 +128,42 @@ public class SegmentList extends AbstractFetchList {
 			int pathVersion = path.version;
 			// if all are out of maxVersion or only one segment is fetched, no scanning for valid segments is needed:
 			int fetchCount = toIndex - fromIndex;
-			boolean fetchAll = maxVersion != pathVersion || fetchCount <= 1;
-
-			// even if not everything is fetched, update the maxVersion as
-			// this field just signifies that some elements are up to date.
-			maxVersion = pathVersion;
 
 			int start = fromIndex, end;
 
 			float []values = null;
 			while (true) {
-				if (fetchAll) {
-					end = toIndex;
-				} else {
-					// skip the ones that are alreay fetched:
-					Segment segment;
-					while (start < toIndex &&
-							((segment = (Segment) list.get(start)) != null) &&
-							segment.version == pathVersion) {
-						start++;
-					}
+				// skip the ones that are alreay fetched:
+				Segment segment;
+				while (start < toIndex &&
+						((segment = (Segment) list.get(start)) != null) &&
+						segment.version == pathVersion) {
+					start++;
+				}
 
-					if (start == toIndex) // all fetched, jump out
-						break;
+				if (start == toIndex) // all fetched, jump out
+					break;
 
-					// now determine the length of the block that needs to be fetched:
-					end = start + 1;
+				// now determine the length of the block that needs to be fetched:
+				end = start + 1;
 
-					/*
-					// if keepCount is set, try to fetch fetchCount items:
-					if (keepCount && toIndex - start < fetchCount) {
-						toIndex = start + fetchCount;
-						if (toIndex > length)
-							toIndex = length;
-					}
-					*/
-
-					while (end < toIndex && (
-								((segment = (Segment) list.get(start)) == null) ||
-								(segment != null && segment.version != pathVersion)
-							)
-						)
-						end++;
+				while (end < toIndex &&
+						((segment = (Segment) list.get(start)) == null ||
+						segment != null && segment.version != pathVersion)) {
+					end++;
 				}
 
 				// fetch these segmentValues and set the segments:
 				int count = end - start;
 				if (count > 0) {
 					fetchCount -= count;
-					if (values == null || values.length < count)
-						values = new float[count * VALUES_PER_SEGMENT];
+					int length =  count * VALUES_PER_SEGMENT;
+					if (values == null || values.length < length)
+						values = new float[length];
 					nativeGet(path.handle, start, count, values);
 					int valueIndex = 0;
 					for (int i = start; i < end; i++) {
-						Segment segment = (Segment) list.get(i);
+						segment = (Segment) list.get(i);
 						if (segment == null) {
 							segment = new Segment(this, i);
 							list.set(i, segment);
@@ -282,11 +248,11 @@ public class SegmentList extends AbstractFetchList {
 		return segment;
 	}
 
-	public boolean addAll(int index, Collection c) {
+	public boolean addAll(int index, ExtendedList elements) {
 		if (index < 0 || index > size)
 			throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
 
-		int count = c.size();
+		int count = elements.getLength();
 		if (count == 0)
 			return false;
 
@@ -304,9 +270,8 @@ public class SegmentList extends AbstractFetchList {
 		int addCount = 0;
 		int addIndex = index;
 
-		Iterator e = c.iterator();
-		while (e.hasNext()) {
-			Object obj = e.next();
+		for (int i = 0; i < count; i++) {
+			Object obj = elements.get(i);
 			Segment segment = null;
 			if (obj instanceof Segment) {
 				segment = (Segment) obj;
@@ -408,27 +373,6 @@ public class SegmentList extends AbstractFetchList {
 		Object obj = get(index);
 		remove(index, index + 1);
 		return obj;
-	}
-
-	private static native void nativeReverse(int handle, int docHandle);
-
-	public void reverse() {
-		if (path != null) {
-			// first save all changes:
-			CommitManager.commit(path);
-			// reverse underlying ai structures:
-			nativeReverse(path.handle, path.document.handle);
-		}
-		// reverse internal arrays:
-		Object[] objs = list.toArray();
-
-		for (int i = 0; i < size; i++) {
-			int ri = size - i - 1;
-			Segment obj = (Segment)objs[ri];
-			if (obj != null)
-				obj.index = i;
-			list.set(i, obj);
-		}
 	}
 	
 	/*

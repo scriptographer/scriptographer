@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Item.cpp,v $
  * $Author: lehni $
- * $Revision: 1.15 $
- * $Date: 2006/11/04 11:52:56 $
+ * $Revision: 1.16 $
+ * $Date: 2006/11/24 23:42:58 $
  */
 
 #include "stdHeaders.h"
@@ -46,24 +46,34 @@
  */
 
 ASErr ASAPI Item_onInit(ADMItemRef item) {
-	jobject obj = gEngine->getItemObject(item);
-	// Set the java's reflections of size and bounds.
-	// if the item's bounds are set to -1, set them to best size now:
 	JNIEnv *env = gEngine->getEnv();
-	// set size and bounds:
-	ADMRect rect;
-	sADMItem->GetLocalRect(item, &rect);
-	gEngine->setObjectField(env, obj, gEngine->fid_Item_nativeSize, gEngine->convertDimension(env, rect.right, rect.bottom));
-	sADMItem->GetBoundsRect(item, &rect);
-	gEngine->setObjectField(env, obj, gEngine->fid_Item_nativeBounds, gEngine->convertRectangle(env, &rect));
+	try {
+		jobject obj = gEngine->getItemObject(item);
+		// set size and bounds:
+		ADMRect rect;
+		sADMItem->GetBoundsRect(item, &rect);
 
-	// Attach the item-level callbacks
-	DEFINE_CALLBACK_PROC(Item_onDestroy);
-	sADMItem->SetDestroyProc(item, (ADMItemDestroyProc) CALLBACK_PROC(Item_onDestroy));
-	
-	DEFINE_CALLBACK_PROC(Item_onNotify);
-	sADMItem->SetNotifyProc(item, (ADMItemNotifyProc) CALLBACK_PROC(Item_onNotify));
+		ADMRect size;
+		sADMItem->GetLocalRect(item, &size);
+		int x = (size.right - size.left) - (rect.right - rect.left);
+		int y = (size.bottom - size.top) - (rect.bottom - rect.top); 
+		if (x || y) gEngine->println(env, "SIZE: %i %i", x, y);
+		/*
+		sADMItem->GetLocalRect(item, &rect);
+		gEngine->setObjectField(env, obj, gEngine->fid_Item_nativeSize, gEngine->convertDimension(env, rect.right, rect.bottom));
+		sADMItem->GetBoundsRect(item, &rect);
+		gEngine->setObjectField(env, obj, gEngine->fid_Item_nativeBounds, gEngine->convertRectangle(env, &rect));
+		*/
+		gEngine->callVoidMethod(env, obj, gEngine->mid_Item_updateBounds, gEngine->convertRectangle(env, &rect));
 
+		// Attach the item-level callbacks
+		DEFINE_CALLBACK_PROC(Item_onDestroy);
+		sADMItem->SetDestroyProc(item, (ADMItemDestroyProc) CALLBACK_PROC(Item_onDestroy));
+		
+		DEFINE_CALLBACK_PROC(Item_onNotify);
+		sADMItem->SetNotifyProc(item, (ADMItemNotifyProc) CALLBACK_PROC(Item_onNotify));
+
+	} EXCEPTION_CATCH_REPORT(env)
 	return kNoErr;
 }
 
@@ -99,29 +109,7 @@ void ASAPI Item_onDestroy(ADMItemRef item) {
 void ASAPI Item_onNotify(ADMItemRef item, ADMNotifierRef notifier) {
 	sADMItem->DefaultNotify(item, notifier);
 	jobject obj = gEngine->getItemObject(item);
-	if (sADMNotifier->IsNotifierType(notifier, kADMBoundsChangedNotifier)) {
-		JNIEnv *env = gEngine->getEnv();
-		try {
-			jobject size = gEngine->getObjectField(env, obj, gEngine->fid_Item_nativeSize);
-			if (size != NULL) {
-				ADMPoint pt;
-				gEngine->convertDimension(env, size, &pt);
-				// calculate differnce:
-				ADMRect rt;
-				sADMItem->GetLocalRect(item, &rt);
-				int dx = rt.right - pt.h;
-				int dy = rt.bottom - pt.v;
-				if (dx != 0 || dy != 0) {
-					// write size back:
-					gEngine->convertDimension(env, rt.right, rt.bottom, size);
-					// and call handler:
-					gEngine->callVoidMethod(env, obj, gEngine->mid_CallbackHandler_onResize, dx, dy);
-				}
-			}
-		} EXCEPTION_CATCH_REPORT(env)
-	} else {
-		gEngine->callOnNotify(obj, notifier);
-	}
+	gEngine->callOnNotify(obj, notifier);
 }
 
 ASBoolean ASAPI Item_onTrack(ADMItemRef item, ADMTrackerRef tracker) {

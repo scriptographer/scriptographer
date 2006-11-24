@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Dialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.17 $
- * $Date: 2006/11/04 11:52:56 $
+ * $Revision: 1.18 $
+ * $Date: 2006/11/24 23:42:58 $
  */
 
 #include "stdHeaders.h"
@@ -44,31 +44,33 @@
 
 ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 	AppContext context;
-	// hide the dialog by default:
-	sADMDialog->Show(dialog, false);
-	jobject obj = gEngine->getDialogObject(dialog);
 	JNIEnv *env = gEngine->getEnv();
-	// set size and bounds:
-	ADMRect rect;
-	sADMDialog->GetLocalRect(dialog, &rect);
-	DEFINE_ADM_POINT(size, rect.right, rect.bottom);
-	gEngine->setObjectField(env, obj, gEngine->fid_Dialog_size, gEngine->convertDimension(env, &size));
-	sADMDialog->GetBoundsRect(dialog, &rect);
-	gEngine->setObjectField(env, obj, gEngine->fid_Dialog_bounds, gEngine->convertRectangle(env, &rect));
-	
-	// Attach the dialog-level callbacks
-	DEFINE_CALLBACK_PROC(Dialog_onDestroy);
-	sADMDialog->SetDestroyProc(dialog, (ADMDialogDestroyProc) CALLBACK_PROC(Dialog_onDestroy));
-	
-	DEFINE_CALLBACK_PROC(Dialog_onNotify);
-	sADMDialog->SetNotifyProc(dialog, (ADMDialogNotifyProc) CALLBACK_PROC(Dialog_onNotify));
-	
-	// resize handler:
-	ADMItemRef resizeItemRef = sADMDialog->GetItem(dialog, kADMResizeItemID);
-	if (resizeItemRef) {
-		DEFINE_CALLBACK_PROC(Dialog_onResize);
-		sADMItem->SetNotifyProc(resizeItemRef, (ADMItemNotifyProc) CALLBACK_PROC(Dialog_onResize));
-	}
+	try {
+		// hide the dialog by default:
+		sADMDialog->Show(dialog, false);
+		jobject obj = gEngine->getDialogObject(dialog);
+		// set size and bounds:
+		ADMRect rect;
+		sADMDialog->GetLocalRect(dialog, &rect);
+		DEFINE_ADM_POINT(size, rect.right, rect.bottom);
+		gEngine->setObjectField(env, obj, gEngine->fid_Dialog_size, gEngine->convertDimension(env, &size));
+		sADMDialog->GetBoundsRect(dialog, &rect);
+		gEngine->setObjectField(env, obj, gEngine->fid_Dialog_bounds, gEngine->convertRectangle(env, &rect));
+		
+		// Attach the dialog-level callbacks
+		DEFINE_CALLBACK_PROC(Dialog_onDestroy);
+		sADMDialog->SetDestroyProc(dialog, (ADMDialogDestroyProc) CALLBACK_PROC(Dialog_onDestroy));
+		
+		DEFINE_CALLBACK_PROC(Dialog_onNotify);
+		sADMDialog->SetNotifyProc(dialog, (ADMDialogNotifyProc) CALLBACK_PROC(Dialog_onNotify));
+		
+		// resize handler:
+		ADMItemRef resizeItemRef = sADMDialog->GetItem(dialog, kADMResizeItemID);
+		if (resizeItemRef) {
+			DEFINE_CALLBACK_PROC(Dialog_onResize);
+			sADMItem->SetNotifyProc(resizeItemRef, (ADMItemNotifyProc) CALLBACK_PROC(Dialog_onResize));
+		}
+	} EXCEPTION_CATCH_REPORT(env)
 	return kNoErr;
 }
 
@@ -355,7 +357,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_getItemHandle(JNIEnv *
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		ADMItemRef item = sADMDialog->GetItem(dialog, itemID);
-#if kPluginInterfaceVersion >= kAI13
 		// Workaround for CS3 problem, where popup menu only appears if it's
 		// associated with a menu resource containing one entry on Mac
 		// TODO: how about PC?
@@ -366,7 +367,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_getItemHandle(JNIEnv *
 				sADMList->RemoveEntry(list, 0);
 			}
 		}
-#endif
 		return (jint) item;
 	} EXCEPTION_CONVERT(env);
 	return 0;

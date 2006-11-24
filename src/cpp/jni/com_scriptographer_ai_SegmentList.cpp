@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_SegmentList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/10/25 02:13:31 $
+ * $Revision: 1.8 $
+ * $Date: 2006/11/24 23:42:58 $
  */
  
 #include "stdHeaders.h"
@@ -67,8 +67,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeGet(JNIEnv *
 		if (count == 1) {
 			// for only one segment, this seems to be faster than the GetPrimitiveArrayCritical way.
 			jfloat data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
-			int i = com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT * sizeof(float);
-			int j = sizeof(AIPathSegment);
 			data[6] = 0; // make shure the upper 3 bytes are not set to arbitrary values
 			if (sAIPath->GetPathSegments((AIArtHandle) handle, index, 1, (AIPathSegment *) data))
 				throw new StringException("Cannot get path segment");
@@ -77,6 +75,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeGet(JNIEnv *
 			env->SetFloatArrayRegion(values, 0, com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT, data); 
 		} else {
 			jfloat *data = (jfloat *) env->GetPrimitiveArrayCritical(values, NULL); 
+			AIPathSegment *segments = (AIPathSegment *) data;
 			ASErr error = sAIPath->GetPathSegments((AIArtHandle) handle, index, count, (AIPathSegment *) data);
 			env->ReleasePrimitiveArrayCritical(values, data, 0);
 			if (error)
@@ -146,7 +145,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIII
 			if (sAIPath->InsertPathSegments((AIArtHandle) handle, index, 1, (AIPathSegment *) data))
 				throw new StringException("Cannot get path segment");
 		} else {
-			jfloat *data = (jfloat *) env->GetPrimitiveArrayCritical(values, NULL); 
+			jfloat *data = (jfloat *) env->GetPrimitiveArrayCritical(values, NULL);
+			AIPathSegment *segments = (AIPathSegment *) data;
 			ASErr error = sAIPath->InsertPathSegments((AIArtHandle) handle, index, count, (AIPathSegment *) data);
 			env->ReleasePrimitiveArrayCritical(values, data, 0);
 			if (error)
@@ -170,18 +170,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SegmentList_nativeRemove(JNIEn
 		return count;
 	} EXCEPTION_CONVERT(env);
 	return 0;
-}
-
- 
-/*
- * void nativeReverse(int handle, int docHandle)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeReverse(JNIEnv *env, jclass cls, jint handle, jint docHandle) {
-	try {
-		Document_activate((AIDocumentHandle) docHandle);
-		if (sAIPath->ReversePathSegments((AIArtHandle) handle))
-			throw new StringException("Cannot reverse path segments");
-	} EXCEPTION_CONVERT(env);
 }
 
 /*

@@ -28,14 +28,15 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2006/11/04 11:47:25 $
+ * $Revision: 1.14 $
+ * $Date: 2006/11/24 23:39:39 $
  */
 
 package com.scriptographer.adm;
 
 import org.mozilla.javascript.NativeArray;
 
+import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.js.Unsealed;
 
@@ -211,9 +212,6 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 			if (prefs.nodeExists(name)) {
 				prefs = prefs.node(name);
 
-				String group = prefs.get("group", "");
-				int positionCode = prefs.getInt("positionCode", DialogGroupInfo.POSITION_DEFAULT);
-
 				Rectangle bounds = getBounds();
 				String locStr = prefs.get("location", null);
 				Point location;
@@ -247,6 +245,9 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 
 				// restore the size and location of the dialog
 				setBounds(new Rectangle(location, size));
+
+				String group = prefs.get("group", "");
+				int positionCode = prefs.getInt("positionCode", DialogGroupInfo.POSITION_DEFAULT);
 				// restore the position code of the dialog
 				setGroupInfo(group, positionCode);
 				return true;
@@ -258,8 +259,8 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	}
 
 	/*
-		 * Callback functions
-		 */
+	 * Callback functions
+	 */
 
 	protected void onResize(int dx, int dy) throws Exception {
 		// if a contianer was created, the layout needs to be recalculated now:
@@ -398,8 +399,12 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 *
 	 */
 	public void doLayout() {
-		if (container != null)
-			container.doLayout();
+		if (container != null) {
+			AWTContainer cont = container;
+			container = null;
+			cont.doLayout();
+			container = cont;
+		}
 	}
 
 	/**
@@ -409,11 +414,14 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 */
 	public void autoLayout() {
 		if (container != null) {
-			setMinimumSize(container.getMinimumSize());
-			setSize(container.getPreferredSize());
+			AWTContainer cont = container;
+			container = null;
+			setMinimumSize(cont.getMinimumSize());
+			setSize(cont.getPreferredSize());
 			// TODO: This seems to crash the whole thing:
 			// setMaximumSize(container.getMaximumSize());
-			container.doLayout();
+			cont.doLayout();
+			container = cont;
 		}
 	}
 
@@ -901,7 +909,8 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 			super.doLayout();
 			// now walk through all the items and do their layout as well:
 			Component[] components = getComponents();
-			for (int i = 0; i < components.length; i++)
+//			for (int i = 0; i < components.length; i++)
+			for (int i = components.length - 1; i >= 0; i--)
 				components[i].doLayout();
 		}
 

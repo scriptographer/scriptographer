@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Spacer.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:08:28 $
+ * $Revision: 1.6 $
+ * $Date: 2006/11/24 23:39:39 $
  */
 
 package com.scriptographer.adm;
@@ -41,7 +41,6 @@ import com.scriptographer.js.Unsealed;
 public class Spacer extends Item implements Unsealed {
 
 	public Spacer(int width, int height) {
-		size = new Dimension(width, height);
 		bounds = new Rectangle(0, 0, width, height);
 	}
 
@@ -50,30 +49,10 @@ public class Spacer extends Item implements Unsealed {
 	}
 
 	public Dimension getPreferredSize() {
-		return size;
+		return bounds.getSize();
 	}
-
-	public Dimension getSize() {
-		return size;
-	}
-
-	public void setSize(int width, int height) {
-		size.setSize(width, height);
-	}
-
-	public Rectangle getBounds() {
-		return bounds;
-	}
-
+	
 	public void setBounds(int x, int y, int width, int height) {
 		bounds.setBounds(x, y, width, height);
-	}
-
-	public void setLocation(int x, int y) {
-		bounds.setBounds(x, y, size.width, size.height);
-	}
-
-	public Point getLocation() {
-		return new Point(bounds.x, bounds.y);
 	}
 }

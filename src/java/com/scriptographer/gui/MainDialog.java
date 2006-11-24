@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2006/11/04 11:47:27 $
+ * $Revision: 1.15 $
+ * $Date: 2006/11/24 23:39:40 $
  */
 
 package com.scriptographer.gui;
@@ -46,8 +46,6 @@ import java.util.Iterator;
 
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.*;
-import com.scriptographer.adm.MenuGroup;
-import com.scriptographer.adm.MenuItem;
 import com.scriptographer.ai.Timer;
 import com.scriptographer.ai.Tool;
 
@@ -65,7 +63,7 @@ public class MainDialog extends FloatingDialog {
 
 	ConsoleDialog consoleDialog;
 
-	public MainDialog(ConsoleDialog consoleDlg) throws Exception {
+	public MainDialog(ConsoleDialog consoleDlg) throws IOException {
 		super(FloatingDialog.OPTION_TABBED | FloatingDialog.OPTION_SHOW_CYCLE | Dialog.OPTION_RESIZING);
 
 		this.consoleDialog = consoleDlg;
@@ -426,9 +424,5 @@ public class MainDialog extends FloatingDialog {
 				new ScriptEntry(list, file);
 			}
 		}
-	}
-
-	protected void onClose() {
-//		this.destroy();
 	}
 }

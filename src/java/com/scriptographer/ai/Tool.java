@@ -28,8 +28,8 @@
  *
  * $RCSfile: Tool.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.9 $
+ * $Date: 2006/11/24 23:39:40 $
  */
 
 package com.scriptographer.ai;
@@ -61,7 +61,7 @@ public class Tool extends AIObject {
 	private Event event = new Event();
 	private Object[] eventArgs = new Object[] { event };
 	
-	public void setScript(File file) throws Exception {
+	public void setScript(File file) {
 		ScriptographerEngine engine = ScriptographerEngine.getInstance();
 		scope = engine.executeFile(file, null);
 		// execute in the tool's scope so setIdleInterval can be called
