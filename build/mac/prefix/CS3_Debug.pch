@@ -26,13 +26,9 @@
  *
  * $RCSfile: CS3_Debug.pch,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/11/04 11:52:57 $
+ * $Revision: 1.2 $
+ * $Date: 2006/11/24 23:56:28 $
  */
 
-#define MakingPreCompiledHeader 1
-#define LOGFILE
-#include "MachO_Debug.h"
-#include "stdHeaders.h"
-#pragma precompile_target "CS3_Debug.ch"
-#undef MakingPreCompiledHeader
+#define DEBUG 1
+#include "stdPrefix.h"

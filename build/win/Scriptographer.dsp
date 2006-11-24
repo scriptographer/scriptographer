@@ -367,6 +367,18 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_FontWeight.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Gradient.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_GradientList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_GradientStopList.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Group.cpp
 # End Source File
 # Begin Source File
@@ -403,6 +415,18 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_PathText.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Pattern.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_PatternList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_PlacedItem.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_PointText.cpp
 # End Source File
 # Begin Source File
@@ -412,6 +436,26 @@ SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Raster.cpp
 # Begin Source File
 
 SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_SegmentList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Swatch.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_SwatchList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_Symbol.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_SymbolItem.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\jni\com_scriptographer_ai_SymbolList.cpp
 # End Source File
 # Begin Source File
 
@@ -635,6 +679,10 @@ SOURCE=..\..\src\cpp\win\loadJava.cpp
 # Begin Source File
 
 SOURCE=..\..\src\cpp\win\loadJava.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\src\cpp\win\platform.h
 # End Source File
 # Begin Source File
 

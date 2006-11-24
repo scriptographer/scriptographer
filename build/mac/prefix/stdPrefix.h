@@ -24,15 +24,23 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: CS1_Release.pch,v $
+ * $RCSfile: stdPrefix.h,v $
  * $Author: lehni $
  * $Revision: 1.2 $
  * $Date: 2006/10/18 14:18:41 $
  */
 
-#define MakingPreCompiledHeader 1
-#define MACHO_CFM_GLUE
-#include "MachO_Release.h"
+#ifdef DEBUG
+#define _DEBUG 1
+#define LOGFILE
+#endif
+
+#define MAC_ENV 1
+
+#ifndef macintosh
+#define macintosh 1
+#endif
+
+#define Platform_Carbon 1
+
 #include "stdHeaders.h"
-#pragma precompile_target "CS1_Release.ch"
-#undef MakingPreCompiledHeader

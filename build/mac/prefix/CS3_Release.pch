@@ -26,12 +26,8 @@
  *
  * $RCSfile: CS3_Release.pch,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/11/04 11:52:57 $
+ * $Revision: 1.2 $
+ * $Date: 2006/11/24 23:56:28 $
  */
 
-#define MakingPreCompiledHeader 1
-#include "MachO_Release.h"
-#include "stdHeaders.h"
-#pragma precompile_target "CS3_Release.ch"
-#undef MakingPreCompiledHeader
+#include "stdPrefix.h"
