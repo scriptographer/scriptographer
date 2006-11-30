@@ -1,9 +1,6 @@
-Scriptographer.exp
-Scriptographer.lib
 Scriptographer.ncb
-Scriptographer.opt
-Scriptographer.plg
-Scriptographer.ilk
-Scriptographer_*
-hs_err_*.log
-*Tmp*
+* Debug
+* Release
+*.suo
+*.sln
+*.vcproj.*
