@@ -26,8 +26,8 @@
  *
  * $RCSfile: stdHeaders.h,v $
  * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2006/11/24 23:42:59 $
+ * $Revision: 1.14 $
+ * $Date: 2006/11/30 02:58:22 $
  */
 
 #ifndef __stdHeaders__
@@ -37,8 +37,13 @@
 	#include <Carbon.h>
 #endif
 #ifdef WIN_ENV
+	#pragma once
+	#define _CRT_NONSTDC_NO_DEPRECATE 1
+	#define _CRT_SECURE_NO_DEPRECATE 1
+	#define _SECURE_SCL_DEPRECATE 0
 	#include "windows.h"
 	#include <time.h>
+	#define strcasecmp stricmp
 #endif
 
 // JNI

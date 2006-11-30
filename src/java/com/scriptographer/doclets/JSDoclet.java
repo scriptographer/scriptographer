@@ -191,6 +191,36 @@ public class JSDoclet extends Doclet {
 		public String toString() {
 			return str;
 		}
+
+		public AnnotationTypeDoc asAnnotationTypeDoc() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public ParameterizedType asParameterizedType() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public TypeVariable asTypeVariable() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public WildcardType asWildcardType() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public boolean isPrimitive() {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public String simpleTypeName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 	
 	static class JSTag implements Tag {

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Pathfinder.cpp,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/18 14:17:18 $
+ * $Revision: 1.7 $
+ * $Date: 2006/11/30 02:59:28 $
  */
  
 #include "stdHeaders.h"
@@ -105,6 +105,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_unite(JNIEnv *en
 			return Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env);
+	return NULL;
 }
 
 /*
@@ -119,6 +120,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_intersect(JNIEnv
 			return Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env);
+	return NULL;
 }
 
 /*
@@ -133,6 +135,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_exclude(JNIEnv *
 			return Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env);
+	return NULL;
 }
 
 /*
@@ -147,6 +150,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_backMinusFront(J
 			return Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env);
+	return NULL;
 }
 
 /*
@@ -161,6 +165,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_frontMinusBack(J
 			return Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env);
+	return NULL;
 }
 
 /*
@@ -175,6 +180,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_divide(JNIEnv *e
 			return Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env);
+	return NULL;
 }
 
 /*
@@ -189,6 +195,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_outline(JNIEnv *
 			return Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env);
+	return NULL;
 }
 
 /*
@@ -203,6 +210,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_trim(JNIEnv *env
 			return Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env);
+	return NULL;
 }
 
 /*
@@ -217,6 +225,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_merge(JNIEnv *en
 			return Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env);
+	return NULL;
 }
 
 /*
@@ -231,4 +240,5 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_crop(JNIEnv *env
 			return Pathfinder_end(env, &data, &prevSelected);
 		}
 	} EXCEPTION_CONVERT(env);
+	return NULL;
 }

@@ -28,15 +28,14 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2006/11/24 23:39:39 $
+ * $Revision: 1.15 $
+ * $Date: 2006/11/30 02:59:56 $
  */
 
 package com.scriptographer.adm;
 
 import org.mozilla.javascript.NativeArray;
 
-import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.js.Unsealed;
 
