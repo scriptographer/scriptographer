@@ -38,6 +38,23 @@ hdiutil create -fs HFS+ -srcfolder root -volname Scriptographer $DMG
 
 rm -r root/Scriptographer/Scriptographer.aip
 
+
+# CS3
+ditto "$1/CS3/JVM/Release/Scriptographer.aip" root/Scriptographer/Scriptographer.aip
+
+# Create a DMG file containing the folder
+DMG=Scriptographer_Mac_CS3_$2.dmg
+
+# Remove it if it exists already
+if [ -e $DMG ]
+then
+	rm $DMG
+fi
+
+hdiutil create -fs HFS+ -srcfolder root -volname Scriptographer $DMG
+
+rm -r root/Scriptographer/Scriptographer.aip
+
 # Remove root again
 mv root/Scriptographer .
 rmdir root
