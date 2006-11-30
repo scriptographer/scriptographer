@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.41 $
- * $Date: 2006/11/24 23:42:58 $
+ * $Revision: 1.42 $
+ * $Date: 2006/11/30 04:31:45 $
  */
 
 #include "stdHeaders.h"
@@ -934,9 +934,8 @@ AIColor *ScriptographerEngine::convertColor(JNIEnv *env, jobject srcCol, AIColor
 		// call mid_PatternColor_set, which sets the AIPatternStyle by calling 
 		// Java_com_scriptographer_ai_Color_nativeSetPattern with the right arguments
 		callVoidMethod(env, cls_PatternColor, mid_PatternColor_set, (jint) p);
-	} else {
-		return convertColor(env, (jfloatArray) env->CallObjectMethod(srcCol, mid_Color_getComponents), dstCol, alpha);
 	}
+	return convertColor(env, (jfloatArray) env->CallObjectMethod(srcCol, mid_Color_getComponents), dstCol, alpha);
 }
 
 AIColor *ScriptographerEngine::convertColor(JNIEnv *env, jfloatArray srcCol, AIColor *dstCol, AIReal *alpha) {

@@ -24,46 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: stdHeaders.h,v $
+ * $RCSfile: stdHeaders.cpp,v $
  * $Author: lehni $
- * $Revision: 1.15 $
+ * $Revision: 1.1 $
  * $Date: 2006/11/30 04:32:05 $
  */
 
-#ifndef __stdHeaders__
-#define __stdHeaders__
-
-#ifdef MAC_ENV
-	#include <Carbon.h>
-#endif
-#ifdef WIN_ENV
-	#define _CRT_NONSTDC_NO_DEPRECATE 1
-	#define _CRT_SECURE_NO_DEPRECATE 1
-	#define _SECURE_SCL_DEPRECATE 0
-	#pragma warning (disable: 4290)		// C++ exception specification ignored except
-										// to indicate a function is not __declspec(nothrow)
-	#define strcasecmp stricmp
-
-	#include "windows.h"
-	#include <time.h>
-#endif
-
-// JNI
-#include <jni.h>
-
-// STD Library 
-#include <stdio.h>
-#include <string.h>
-#include <vector>
-#include <sstream>
-#include <fstream>
-#include <algorithm>
-using namespace std;
-
-#include "suites.h"
-
-#include "Array.h"
-
-#define PI 3.14159265358979323846
-
-#endif // __stdHeaders__
+#include "stdHeaders.h"
