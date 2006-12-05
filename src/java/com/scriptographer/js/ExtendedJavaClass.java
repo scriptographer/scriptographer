@@ -28,8 +28,8 @@
  *
  * $RCSfile: ExtendedJavaClass.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/10/18 14:12:51 $
+ * $Revision: 1.4 $
+ * $Date: 2006/12/05 08:35:22 $
  */
 
 package com.scriptographer.js;
@@ -71,19 +71,47 @@ public class ExtendedJavaClass extends NativeJavaClass {
 	}
 
 	public Scriptable construct(Context cx, Scriptable scope, Object[] args) {
+		// If the last object passed to the constructor is a NativeObject,
+		// use it as a hashtable containing methods to be added to the class:
+		Scriptable obj = null;
+		NativeObject methods = null;
+        Class classObject = getClassObject();
+        int modifiers = classObject.getModifiers();
+        if (args.length > 0 && args[args.length - 1] instanceof NativeObject &&
+            	//	Unsealed.class.isAssignableFrom(classObject) &&
+        		!Modifier.isInterface(modifiers) && !Modifier.isAbstract(modifiers)) {
+			methods = (NativeObject) args[args.length - 1];
+			// remove the last argument from the list, so the right constructor will be found:
+			Object[] newArgs = new Object[args.length - 1];
+			for (int i = 0; i < newArgs.length; i++)
+				newArgs[i] = args[i];
+			args = newArgs;
+		}
 		// see wether the class overrides the constructor with a static jsConstructor
 		// method:
 		if (constructor != null) {
 			try {
-				return (Scriptable) constructor.invoke(null, new Object[] {
+				obj = (Scriptable) constructor.invoke(null, new Object[] {
 					cx, args, this, Boolean.TRUE
 				});
 			} catch (Exception e) {
 				throw new RuntimeException(e.getCause());
 			}
 		} else { // otherwise use the default behavior
-			return super.construct(cx, scope, args);
+			obj = super.construct(cx, scope, args);
 		}
+		// if methods are to be added, do it now:
+		if (methods != null) {
+			Object[] ids = methods.getIds();
+			for (int i = 0; i < ids.length; i++) {
+				Object id = ids[i];
+				if (id instanceof String) {
+					obj.put((String) id, obj, methods.get((String) id, methods));
+				}
+			}
+			FunctionHelper.callFunction(obj, "$constructor");
+		}
+		return obj;
 	}
 	
 	public Class getClassObject() {
