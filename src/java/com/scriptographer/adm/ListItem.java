@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListItem.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2006/11/04 11:47:25 $
+ * $Revision: 1.11 $
+ * $Date: 2006/12/11 18:50:24 $
  */
 
 package com.scriptographer.adm;
@@ -59,11 +59,9 @@ The following item types have valid list objects:
 #define kADMPopupMenuType "ADM Popup Menu Type"
 #define kADMScrollingPopupListType "ADM Scrolling Popup List Type"
 #define kADMSpinEditPopupType "ADM Spin Edit Popup Type"
-#define kADMSpinEditScrollingPopupType
-"ADM Spin Edit Scrolling Popup Type"
+#define kADMSpinEditScrollingPopupType "ADM Spin Edit Scrolling Popup Type"
 #define kADMTextEditPopupType "ADM Text Edit Popup Type"
-#define kADMTextEditScrollingPopupType
-"ADM Text Edit Scrolling Popup Type"
+#define kADMTextEditScrollingPopupType "ADM Text Edit Scrolling Popup Type"
 */
 
 public abstract class ListItem extends Item implements SimpleList {
@@ -78,6 +76,9 @@ public abstract class ListItem extends Item implements SimpleList {
 		listHandle = nativeInit((int) handle);
 	}
 	
+	/**
+	 * Empty constructor used for nested HierarchyLists 
+	 */
 	protected ListItem() {
 	}
 

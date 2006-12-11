@@ -28,8 +28,8 @@
  *
  * $RCSfile: NotificationHandler.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:08:29 $
+ * $Revision: 1.6 $
+ * $Date: 2006/12/11 18:50:24 $
  */
 
 package com.scriptographer.adm;
@@ -42,55 +42,30 @@ abstract class NotificationHandler extends ADMObject {
 	private Tracker tracker = new Tracker();
  	private Drawer drawer = new Drawer();
 
- 	protected static Object[] zeroArgs = new Object[0];
-	protected Object[] oneArg = new Object[1];
-	protected Object[] twoArgs = new Object[2];
-	
 	protected abstract void onNotify(int notifier) throws Exception;
 	protected abstract boolean onTrack(Tracker tracker) throws Exception;
 	protected abstract void onDraw(Drawer drawer) throws Exception;
 
 	protected final void onNotify(String notifier) throws Exception {
-		// System.out.println(this + " " + notifier);
 		onNotify(Notifier.lookup(notifier));
 	}
 	
-	protected Object callFunction(String name) throws Exception {
+	protected Object callFunction(String name) {
 		if (wrapper != null)
-			return FunctionHelper.callFunction(wrapper, name, zeroArgs);
+			return FunctionHelper.callFunction(wrapper, name);
 		return null;
 	}
 	
-	protected Object callFunction(String name, Object param1) throws Exception {
+	protected Object callFunction(String name, Object[] args) {
 		if (wrapper != null) {
-			oneArg[0] = param1;
-			return FunctionHelper.callFunction(wrapper, name, oneArg);
+			return FunctionHelper.callFunction(wrapper, name, args);
 		}
 		return null;
 	}
 	
-	protected Object callFunction(String name, Object param1, Object param2) throws Exception {
+	protected Object callFunction(Function function, Object[] args) {
 		if (wrapper != null) {
-			twoArgs[0] = param1;
-			twoArgs[1] = param2;
-			return FunctionHelper.callFunction(wrapper, name, twoArgs);
-		}
-		return null;
-	}
-	
-	protected Object callFunction(Function function, Object param1) throws Exception {
-		if (wrapper != null) {
-			oneArg[0] = param1;
-			return FunctionHelper.callFunction(wrapper, function, oneArg);
-		}
-		return null;
-	}
-	
-	protected Object callFunction(Function function, Object param1, Object param2) throws Exception {
-		if (wrapper != null) {
-			twoArgs[0] = param1;
-			twoArgs[1] = param2;
-			return FunctionHelper.callFunction(wrapper, function, twoArgs);
+			return FunctionHelper.callFunction(wrapper, function, args);
 		}
 		return null;
 	}

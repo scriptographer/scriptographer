@@ -28,8 +28,8 @@
  *
  * $RCSfile: List.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/18 14:08:30 $
+ * $Revision: 1.7 $
+ * $Date: 2006/12/11 18:50:24 $
  */
 
 package com.scriptographer.adm;
@@ -54,6 +54,9 @@ public class List extends ListItem {
 		this(dialog, TYPE_LISTBOX, OPTION_NONE);
 	}
 	
+	/**
+	 * Empty constructor used for nested HierarchyLists 
+	 */
 	protected List() {
 	}
 }

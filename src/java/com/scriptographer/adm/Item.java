@@ -28,8 +28,8 @@
  *
  * $RCSfile: Item.java,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2006/11/24 23:39:39 $
+ * $Revision: 1.17 $
+ * $Date: 2006/12/11 18:50:24 $
  */
 
 package com.scriptographer.adm;
@@ -162,7 +162,7 @@ public abstract class Item extends CallbackHandler {
 
 	protected Dialog dialog;
 
-	private Rectangle nativeBounds = null;
+	protected Rectangle nativeBounds = null;
 	protected Rectangle bounds;
 	protected Insets insets;
 
@@ -173,15 +173,10 @@ public abstract class Item extends CallbackHandler {
 	private Dimension maxSize = null;
 	private Dimension prefSize = null;
 
-	/**
-	 * 
-	 *
-	 */
 	protected Item() {
-		setInsets(0, 0, 0, 0);
-		bounds = new Rectangle();
+		insets = new Insets(0, 0, 0 ,0);
 	}
-
+	
 	/**
 	 * Constructor for newly created Items
 	 * 
@@ -191,10 +186,11 @@ public abstract class Item extends CallbackHandler {
 	 */
 	protected Item(Dialog dialog, int type, int options) {
 		this();
+		this.handle = nativeCreate(dialog.handle, convertType(type), options);
 		this.dialog = dialog;
 		this.type = type;
 		this.options = options;
-		handle = nativeCreate(dialog.handle, convertType(type), options);
+		initBounds();
 	}
 	
 	/**
@@ -206,9 +202,23 @@ public abstract class Item extends CallbackHandler {
 	 */
 	protected Item(Dialog dialog, long handle) {
 		this();
-		this.dialog = dialog;
 		this.handle = (int) handle;
+		this.dialog = dialog;
 		this.type = convertType(nativeInit(this.handle));
+		this.options = 0;
+		initBounds();
+	}
+	
+	protected void initBounds() {
+		nativeBounds = nativeGetBounds();
+		// nativeSize and nativeBounds are set by the native environment
+		// size and bounds need to be updated depending on insets and internalInsets
+		bounds = new Rectangle(
+			nativeBounds.x - insets.left,
+			nativeBounds.y - insets.top,
+			nativeBounds.width + insets.left + insets.right,
+			nativeBounds.height + insets.top + insets.bottom
+		);
 	}
 
 	public void destroy() {
@@ -335,21 +345,29 @@ public abstract class Item extends CallbackHandler {
 	public Rectangle getBounds() {
 		return new Rectangle(bounds);
 	}
+	
+	protected String desc() {
+		String name = this.getClass().getName();
+		if (name.indexOf('$') != -1)
+			name = this.getClass().getSuperclass().getName();
+		name = name.substring(name.lastIndexOf('.') + 1);
+		return Integer.toHexString(this.hashCode())  + ", " + Integer.toHexString(this.getDialog().hashCode()) + " " + name;
+	}
 
 	public void setBounds(int x, int y, int width, int height) {
+//		System.out.println("Item.setBounds " + desc() + " (" + x + ", " + y + ", "+ width + ", "+ height + ")");
 		// calculate native values
-		int nx = x + insets.left;
-		int ny = y + insets.top;
-		int nw = width - insets.left - insets.right;
-		int nh = height - insets.top - insets.bottom;
-		int dx = nw - nativeBounds.width;
-		int dy = nh - nativeBounds.height;
+		int nativeX = x + insets.left;
+		int nativeY = y + insets.top;
+		int nativeWidth = width - insets.left - insets.right;
+		int nativeHeight = height - insets.top - insets.bottom;
+		int deltaX = nativeWidth - nativeBounds.width;
+		int deltaY = nativeHeight - nativeBounds.height;
 
-		boolean sizeChanged = dx != 0 || dy != 0;
-		if (sizeChanged || nativeBounds.x != nx || nativeBounds.y != ny) {
-			nativeSetBounds(nx, ny, nw, nh);
-			// TextEdit items do not seem to call onResize!
-			nativeBounds.setBounds(nx, ny, nw, nh);
+		boolean sizeChanged = deltaX != 0 || deltaY != 0;
+		if (sizeChanged || nativeBounds.x != nativeX || nativeBounds.y != nativeY) {
+			nativeSetBounds(nativeX, nativeY, nativeWidth, nativeHeight);
+			nativeBounds.setBounds(nativeX, nativeY, nativeWidth, nativeHeight);
 		}
 
 		// update bounds
@@ -361,9 +379,9 @@ public abstract class Item extends CallbackHandler {
 		prefSize = new Dimension(width, height);
 
 		if (sizeChanged) {
-			// TODO: get rid of Exception...
+			// TODO: deal with Exception...
 			try {
-				onResize(dx, dy);
+				onResize(deltaX, deltaY);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -372,16 +390,6 @@ public abstract class Item extends CallbackHandler {
 
 	public final void setBounds(Rectangle2D bounds) {
 		setBounds((int) bounds.getX(), (int) bounds.getY(), (int) bounds.getWidth(), (int) bounds.getHeight());
-	}
-	
-	protected void updateBounds(Rectangle nativeBounds) {
-		this.nativeBounds = nativeBounds;
-		// nativeSize and nativeBounds are set by the native environment
-		// size and bounds need to be updated depending on insets and internalInsets
-		bounds.x = nativeBounds.x - insets.left;
-		bounds.y =  nativeBounds.y - insets.top;
-		bounds.width = nativeBounds.width + insets.left + insets.right;
-		bounds.height = nativeBounds.height + insets.top + insets.bottom;
 	}
 
 	public void setLocation(int x, int y) {
@@ -493,7 +501,10 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	public Dimension getPreferredSize() {
-		return prefSize != null ? prefSize : getBestSize();
+		// return prefSize != null ? prefSize : getBestSize();
+		Dimension size = prefSize != null ? prefSize : getBestSize();
+// 		System.out.println("Item.getPreferredSize " + desc() + " " + size);
+		return size;
 	}
 
 	public void setMinimumSize(int width, int height) {
@@ -635,6 +646,7 @@ public abstract class Item extends CallbackHandler {
 		public void updateBounds(Rectangle bounds) {
 			// call the setBounds version in super that directly sets the internal segmentValues.
 			// setBounds(Rectangle) would call the overriden setBounds(int, int, int, int)
+			// which would change the underlying Item.
 			super.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 		}
 
@@ -677,9 +689,7 @@ public abstract class Item extends CallbackHandler {
 
 		public void setSize(int width, int height) {
 			super.setSize(width, height);
-			Rectangle bounds = getBounds();
-			bounds.setSize(width, height);
-			Item.this.setBounds(bounds);
+			Item.this.setBounds(getBounds());
 		}
 
 		public void setSize(Dimension d) {

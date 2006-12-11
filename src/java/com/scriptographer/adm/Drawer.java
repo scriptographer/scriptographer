@@ -1,10 +1,10 @@
 package com.scriptographer.adm;
 
 import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-
-import com.scriptographer.ai.*;
 
 public class Drawer extends ADMObject {
 	// if this drawer draws into an image:

@@ -28,8 +28,8 @@
  * 
  * $RCSfile: PromptDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/10/18 14:08:28 $
+ * $Revision: 1.10 $
+ * $Date: 2006/12/11 18:50:24 $
  */
 
 package com.scriptographer.adm;
@@ -91,8 +91,6 @@ public class PromptDialog extends ModalDialog {
 		buttons.add(okButton);
 
 		this.addToLayout(buttons, "0, " + items.length + ", 1, " + items.length);
-		
-		this.autoLayout();
 		
 		this.setDefaultItem(okButton);
 		this.setCancelItem(cancelButton);

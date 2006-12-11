@@ -45,11 +45,11 @@ public class ListEntry extends NotificationHandler implements Unsealed {
 	 */
 
 	protected void onDraw(Drawer drawer) throws Exception {
-		list.callFunction(list.onDrawEntry, drawer, this);
+		list.callFunction(list.onDrawEntry, new Object[] { drawer, this });
 	}
 
 	protected boolean onTrack(Tracker tracker) throws Exception {
-		Object result = list.callFunction(list.onTrackEntry, tracker, this);
+		Object result = list.callFunction(list.onTrackEntry, new Object[] { tracker, this });
 		if (result != null)
 			return ScriptRuntime.toBoolean(result);
 		return true;
@@ -58,19 +58,19 @@ public class ListEntry extends NotificationHandler implements Unsealed {
 	protected void onDestroy() throws Exception {
 		if (wrapper != null)
 			FunctionHelper.callFunction(wrapper, "onDestroy");
-		list.callFunction("onDestroyEntry", this);
+		list.callFunction("onDestroyEntry", new Object[] { this });
 	}
 
 	protected void onClick() throws Exception {
 		if (wrapper != null)
 			FunctionHelper.callFunction(wrapper, "onClick");
-		list.callFunction("onClickEntry", this);
+		list.callFunction("onClickEntry", new Object[] { this });
 	}
 	
 	protected void onChangeText() throws Exception {
 		if (wrapper != null)
 			FunctionHelper.callFunction(wrapper, "onChangeText");
-		list.callFunction("onChangeEntryText", this);
+		list.callFunction("onChangeEntryText", new Object[] { this });
 	}
 	
 	protected void onNotify(int notifier) throws Exception {

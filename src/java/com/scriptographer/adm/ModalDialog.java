@@ -28,32 +28,40 @@
  *
  * $RCSfile: ModalDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/10/18 14:08:29 $
+ * $Revision: 1.4 $
+ * $Date: 2006/12/11 18:50:24 $
  */
 
 package com.scriptographer.adm;
 
 public class ModalDialog extends Dialog {
-	public final static int
-		// standard options from ADM:
-		OPTION_PASS_MOUSEDOWN_EVENT = 1 << 1,
-		//	 To allow modal dialogs pass mouse down events through to
-		//	 the user dialog tracker on the application side.
+	// standard options from ADM:
+	/**
+	 * To allow modal dialogs pass mouse down events through to
+	 * the user dialog tracker on the application side.
+	 */
+	public final static int OPTION_PASS_MOUSEDOWN_EVENT = 1 << 1;
 		
-		OPTION_HAS_SYSTEM_CONTROLS = 1 << 7,
-		//	 0 by default. If set, ADM Modal dialogs on Windows will have a 
-		//	 close box on the top right hand corner. Also there is a host
-		//	 option that a user can use if all dialogs in the application
-		//	 need that behavior. 
-		//	 dagashe:09/29/00:added for Acrobat 5.0 bug #382265
+	/**
+	 * 0 by default. If set, ADM Modal dialogs on Windows will have a 
+	 * close box on the top right hand corner. Also there is a host
+	 * option that a user can use if all dialogs in the application
+	 * need that behavior. 
+	 */
+	public final static int OPTION_HAS_SYSTEM_CONTROLS = 1 << 7;
 	
-		// pseudo options, to simulate the various window styles (above 1 << 8)
+	// pseudo options, to simulate the various window styles
+	public final static int OPTION_RESIZING = 1 << 20;
 
-		OPTION_ALERT = 1 << 11,
-		//   Modal Alert, cannot be combined with OPTION_RESIZING
-		OPTION_SYSTEM_ALERT = 1 << 12;
-		//   Modal System Alert, cannot be combined with OPTION_RESIZING
+	/**
+	 * Modal Alert, cannot be combined with OPTION_RESIZING
+	 */
+	public final static int OPTION_ALERT = 1 << 21;
+
+	/**
+	 * 	Modal System Alert, cannot be combined with OPTION_RESIZING
+	 */
+	public final static int OPTION_SYSTEM_ALERT = 1 << 22;
 	
 	private boolean doesModal = false;
 	
@@ -62,9 +70,7 @@ public class ModalDialog extends Dialog {
 	}
 
 	public ModalDialog(int options) {
-		// filter out the pseudo styles from the options:
-		// (max. real bitis 8, and the mask is (1 << (max + 1)) - 1
-		super(getStyle(options), options & ((1 << 9) - 1));		
+		super(getStyle(options), options);		
 	}
 
 	public ModalDialog() {
@@ -88,5 +94,9 @@ public class ModalDialog extends Dialog {
 	public native Item doModal();
 	public native void endModal();
 	
-	public native void setVisible(boolean visible);
+	protected void onHide() throws Exception {
+		if (doesModal)
+			this.endModal();
+		super.onHide();
+	}
 }

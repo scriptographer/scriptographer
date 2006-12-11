@@ -28,33 +28,33 @@
  *
  * $RCSfile: FloatingDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/10/18 14:08:30 $
+ * $Revision: 1.3 $
+ * $Date: 2006/12/11 18:50:24 $
  */
 
 package com.scriptographer.adm;
 
 public class FloatingDialog extends Dialog {
-	public final static int
-		// standard options from ADM:
+	// standard options from ADM:
 
-		OPTION_SHOW_CYCLE = 1 << 0,
-		//	 When creating tabbed dialog with a cycle button on the tab.
+	/**
+	 * When creating tabbed dialog with a cycle button on the tab.
+	 */
+	public final static int OPTION_SHOW_CYCLE = 1 << 0;
+
+	// pseudo options, to simulate the various window styles
+	public final static int OPTION_RESIZING = 1 << 20;
+
+	public final static int OPTION_TABBED = 1 << 21;
+
+	public final static int OPTION_LEFTSIDED = 1 << 22;
+
+	public final static int OPTION_NOCLOSE = 1 << 23;
 	
-		// pseudo options, to simulate the various window styles (above 1 << 8)
-
-		OPTION_TABBED = 1 << 11,
-		//   Modal Alert, cannot be combined with OPTION_RESIZING
-
-		OPTION_LEFTSIDED = 1 << 12,
-
-		OPTION_NOCLOSE = 1 << 13;
-		//   Modal System Alert, cannot be combined with OPTION_RESIZING
+	// TODO: define kADMDocumentWindowLayerDialogOption, kADMPaletteLayerDialogOption
 
 	public FloatingDialog(int options) {
-		// filter out the pseudo styles from the options:
-		// (max. real bitis 8, and the mask is (1 << (max + 1)) - 1
-		super(getStyle(options), options & ((1 << 9) - 1));		
+		super(getStyle(options), options);		
 	}
 
 	public FloatingDialog() {

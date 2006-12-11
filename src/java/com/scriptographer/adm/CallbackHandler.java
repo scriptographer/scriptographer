@@ -28,8 +28,8 @@
  *
  * $RCSfile: CallbackHandler.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/10/18 14:08:29 $
+ * $Revision: 1.9 $
+ * $Date: 2006/12/11 18:50:24 $
  */
 
 package com.scriptographer.adm;
@@ -106,8 +106,7 @@ abstract class CallbackHandler extends NotificationHandler {
 
 	protected boolean onTrack(Tracker tracker) throws Exception {
 		if (wrapper != null && onTrack != null) {
-			oneArg[0] = tracker;
-			Object result = FunctionHelper.callFunction(wrapper, onTrack, oneArg);
+			Object result = FunctionHelper.callFunction(wrapper, onTrack, new Object[] { tracker });
 			if (result != null)
 				return ScriptRuntime.toBoolean(result);
 		}
@@ -125,8 +124,7 @@ abstract class CallbackHandler extends NotificationHandler {
 
 	protected void onDraw(Drawer drawer) throws Exception {
 		if (wrapper != null && onDraw != null) {
-			oneArg[0] = drawer;
-			FunctionHelper.callFunction(wrapper, onDraw, oneArg);
+			FunctionHelper.callFunction(wrapper, onDraw, new Object[] { drawer });
 		}
 	}
 	
@@ -142,9 +140,7 @@ abstract class CallbackHandler extends NotificationHandler {
 
 	protected void onResize(int dx, int dy) throws Exception {
 		if (wrapper != null && onResize != null) {
-			twoArgs[0] = new Integer(dx);
-			twoArgs[1] = new Integer(dy);
-			FunctionHelper.callFunction(wrapper, onResize, twoArgs);
+			FunctionHelper.callFunction(wrapper, onResize, new Object[] { new Integer(dx), new Integer(dy) });
 		}
 	}
 }

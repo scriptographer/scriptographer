@@ -28,14 +28,15 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.15 $
- * $Date: 2006/11/30 02:59:56 $
+ * $Revision: 1.16 $
+ * $Date: 2006/12/11 18:50:24 $
  */
 
 package com.scriptographer.adm;
 
 import org.mozilla.javascript.NativeArray;
 
+import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.js.Unsealed;
 
@@ -49,31 +50,50 @@ import java.util.prefs.BackingStoreException;
 
 public abstract class Dialog extends CallbackHandler implements Unsealed {
 	// Dialog options (for Create() call)
-	public final static int
-		OPTION_NONE = 0,
+	public final static int OPTION_NONE = 0;
 
-		// Default ADM options:
+	// Default ADM options:
 
-		OPTION_IGNORE_KEYPAD_ENTER = 1 << 3,
-		//	 Keypad 'enter' key does not activate default item.
+	/**
+	 * Keypad 'enter' key does not activate default item.
+	 */
+	public final static int OPTION_IGNORE_KEYPAD_ENTER = 1 << 3;
 
-		OPTION_ITEMS_HIDDEN = 1 << 4,
-		//	 Reduce flicker by creating items hidden.
+	/**
+	 * Reduce flicker by creating items hidden.
+	 */
+	public final static int OPTION_ITEMS_HIDDEN = 1 << 4;
 
-		OPTION_FORCE_ROMAN = 1 << 5,
-		//	 Forces for all items within dialog, except as overridden.
+	/**
+	 * Forces for all items within dialog, except as overridden.
+	 */
+	public final static int OPTION_FORCE_ROMAN = 1 << 5;
 
-		OPTION_ENTER_BEFORE_OK = 1 << 6,
-		//	 Track the enter keys carriage return and keypad enter before the
-		//	 dialog treats the event as equivalent to pressing the OK button --
-		//	 and prevent that behavior if the tracker returns true. Note that by
-		//	 default, the enter keys cause text item trackers to commit their text
-		//	 and return true, so this option normally prevents the "OK" behavior
-		//	 when enter is pressed within a text item.
-		//	 This option currently relevant only on Mac platform.
+	/**
+	 * Track the enter keys carriage return and keypad enter before the
+	 * dialog treats the event as equivalent to pressing the OK button --
+	 * and prevent that behavior if the tracker returns true. Note that by
+	 * default, the enter keys cause text item trackers to commit their text
+	 * and return true, so this option normally prevents the "OK" behavior
+	 * when enter is pressed within a text item.
+	 * This option currently relevant only on Mac platform.
+	 */
+	public final static int OPTION_ENTER_BEFORE_OK = 1 << 6;
 
-		// Pseudo options, to simulate window styles:
-		OPTION_RESIZING = 1 << 10;
+	// pseudo options, to simulate the various window styles (above 1 << 16)
+
+	/**
+	 * Create the dialog hidden
+	 */
+	public final static int OPTION_HIDDEN = 1 << 17;
+
+	/**
+	 * Remember placing of the dialog by automatically storing its state in
+	 * the preference file. For each script, a sub-node is created in the
+	 * preferences. The dialog's title needs to be unique within one such node,
+	 * as it is used to store the dialog's state.
+	 */
+	public final static int OPTION_REMEMBER_PLACING = 1 << 18;
 
 	//	Dialog styles (for Create() call).
 	protected final static int
@@ -138,27 +158,113 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 
 	private ArrayList items;
 
-	// reflections of native fields:
-	private int style;
 	private int options;
-	private Dimension size = null;
-	private Rectangle bounds = null;
+	// the outside dimensions of the dialog, including borders and titlebars
+	private Rectangle bounds;
+	// the inside dimensions of the dialog, as used by layout managers and such
+	private Dimension size;
+	private Dimension minSize;
+	private Dimension maxSize;
 	private String title = "";
+	private boolean visible = true;
+	private boolean active = false;
 
 	protected AWTContainer container = null;
+
+	/**
+	 * ignoreSizeChange tells onSizeChanged to ignore the event. 
+	 * this is set and unset around calls to setBounds and setGroupInfo.
+	 * 
+	 * As of CS3, setting size and or bounds is not immediatelly effective.
+	 * When natively retrieving size through GetLocalRect / GetBoundsRect, the old
+	 * size is returned for a while. So do not rely on them being set here.
+	 * This was the reason for introducing ignoreSizeChange, as even in the bounds
+	 * change event in this case, still the old dimensions are returned (!)
+	 */
+	private boolean ignoreSizeChange = false;
+	// use two boolean values to monitor the initalized state,
+	// to make the distinction between completely initialized (initialized == true) and 
+	// somwhere during the call of initialize() (unitialized == false)
+	private boolean unitialized = true;
+	private boolean initialized = false;
+	// used to see wether the size where specified before the dialog is initialized
+	private boolean sizeSet = false;
+	// used to check if the boundaries (min / max size) are to bet set after initialization
+	private boolean boundariesSet = true;
+
+	// for scripts, we cannot allways access ScriptRuntime.getTopCallScope(cx)
+	// store a reference to the script's preferences object so we can allways use it
+	// this happens completely transparently, the dialog class does not need to know
+	// anything about the fact if it's a script or a java class.
+	private Preferences preferences;
 
 	private static ArrayList dialogs = new ArrayList();
 
 	protected Dialog(int style, int options) {
-		this.style = style;
-		this.options = options;
+		preferences = ScriptographerEngine.getPreferences(true);
 		items = new ArrayList();
 		// create a unique name for this session:
 		String name = "Scriptographer Dialog " + dialogs.size();
-		handle = nativeCreate(name, style, options);
-
+		// filter out the pseudo styles from the options:
+		// (max. real bitis 16, and the mask is (1 << (max + 1)) - 1
+		handle = nativeCreate(name, style, options & ((1 << 17) - 1));
+		bounds = nativeGetBounds();
+		size = nativeGetSize();
+		minSize = nativeGetMinimumSize();
+		maxSize = nativeGetMaximumSize();
+		this.options = options;
 		if (handle != 0)
 			dialogs.add(this);
+		// allways set dialogs hidden first. 
+		// if the OPTION_HIDDEN pseudo flag is not set, the dialog is then
+		// displayed in initialize
+		setVisible(false);
+	}
+
+	/**
+	 * This is called when the dialog is displayed the first time.
+	 * It's usually fired a bit after the constructor exits, or
+	 * when setVisible / doModal / setGroupInfo is called.
+	 * We fake this through onActivate and a native dialog timer.
+	 * Whatevery fires first, triggers initialize
+	 * @throws Exception 
+	 */
+	private void initialize(boolean setBoundaries) throws Exception {
+		// initialize can also be triggered e.g. by setGroupInfo, which needs to be ignored
+		if (!ignoreSizeChange) {
+			if (unitialized) {
+				unitialized = false;
+				// if setVisible was called before proper initialization, visible
+				// is set but it was not nativelly executed yet. handle this here
+				boolean show = (options & OPTION_HIDDEN) == 0 || visible;
+				if ((options & OPTION_REMEMBER_PLACING) != 0)
+					show = !loadPreferences(title);
+				if (container != null) {
+					setMinimumSize(container.getMinimumSize());
+					setMaximumSize(container.getMaximumSize());
+					// if no bounds where specified yet, set the preferred size as defined
+					// by the layout
+					if (!sizeSet)
+						setSize(container.getPreferredSize());
+				}
+				initialized = true;
+				if (show)
+					setVisible(true);
+				// execute callback handler
+				onInitialize();
+			}
+			// setBoundaries is set to false when calling from initializeAll, because it would
+			// be to early to set it there. At least on Mac CS3 this causes problems
+			if (setBoundaries && !boundariesSet) {
+				nativeSetMinimumSize(minSize.width, minSize.height);
+				nativeSetMaximumSize(maxSize.width, maxSize.height);
+				boundariesSet = true;
+			}
+		}
+	}
+	
+	public boolean isInitialized() {
+		return initialized;
 	}
 
 	public void destroy() {
@@ -166,16 +272,31 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		handle = 0;
 		dialogs.remove(this);
 	}
-
+	
 	public void finalize() {
 		if (handle != 0)
 			this.destroy();
 	}
-
+	
 	public static void destroyAll() {
 		for (int i = dialogs.size() - 1; i >= 0; i--) {
-			Dialog dialog = (Dialog)dialogs.get(i);
+			Dialog dialog = (Dialog) dialogs.get(i);
 			dialog.destroy();
+		}
+	}
+
+	/**
+	 * Initalize all is needed on startup, as in that particular case, the
+	 * initalize event would not be fired fast enough, resulting in conflicts
+	 * with positioning of floating palettes. initalizeAll prevents that
+	 * problem. It is fired from {@link ScriptographerEngine.init}
+	 * 
+	 * @throws Exception
+	 */
+	public static void initializeAll() throws Exception {
+		for (int i = 0; i < dialogs.size(); i++) {
+			Dialog dialog = (Dialog) dialogs.get(i);
+			dialog.initialize(false);
 		}
 	}
 
@@ -187,72 +308,41 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		return false;
 	}
 
-	public void savePreferences(String name) {
-		Preferences prefs = Preferences.userNodeForPackage(Dialog.class).node(name);
+	public void savePreferences(String name) throws BackingStoreException {
+		Preferences prefs = preferences.node(name);
 		// saving the palette position, tab/dock preference.
 		DialogGroupInfo groupInfo = getGroupInfo();
 		Rectangle bounds = getBounds();
-		prefs.put("group", groupInfo.group);
+		prefs.put("group", groupInfo.group != null ? groupInfo.group : "");
 		prefs.putInt("positionCode", groupInfo.positionCode);
-		prefs.put("location", bounds.x + " " + bounds.y);
-		prefs.put("size", bounds.width + " " + bounds.height);
-		try {
-			// This is needed on Mac CS, as the JVM seems to not shoot down properly,
-			//and the prefs would then not be flushed to file otherwise.
-			prefs.flush();
-		} catch (BackingStoreException e) {
-			e.printStackTrace();
-		}
+		prefs.put("bounds", bounds.x + " " + bounds.y + " " + bounds.width + " " + bounds.height);
 	}
 
-	public boolean loadPreferences(String name) {
-		Preferences prefs = Preferences.userNodeForPackage(Dialog.class);
-		try {
-			if (prefs.nodeExists(name)) {
-				prefs = prefs.node(name);
+	public boolean loadPreferences(String name) throws BackingStoreException {
+		if (preferences.nodeExists(name)) {
+			Preferences prefs = preferences.node(name);
 
-				Rectangle bounds = getBounds();
-				String locStr = prefs.get("location", null);
-				Point location;
-				if (locStr == null) {
-					// Pick a default location in case it has never come up before on this machine
-					Rectangle dimensions = Dialog.getPaletteLayoutBounds();
-					location = new Point(
-						dimensions.x + dimensions.width - bounds.width,
-						dimensions.y + dimensions.height - bounds.height
-					);
-				} else {
-					int pos = locStr.indexOf(" ");
-					location = new Point(
-						Integer.parseInt(locStr.substring(0, pos)),
-						Integer.parseInt(locStr.substring(pos + 1))
-					);
-				}
-
-				// Get the last known location out of the Prefs file
-				String sizeStr = prefs.get("size", null);
-				Dimension size;
-				if (sizeStr == null) {
-					size = bounds.getSize();
-				} else {
-					int pos = sizeStr.indexOf(" ");
-					size = new Dimension(
-						Integer.parseInt(sizeStr.substring(0, pos)),
-						Integer.parseInt(sizeStr.substring(pos + 1))
-					);
-				}
-
-				// restore the size and location of the dialog
-				setBounds(new Rectangle(location, size));
-
-				String group = prefs.get("group", "");
-				int positionCode = prefs.getInt("positionCode", DialogGroupInfo.POSITION_DEFAULT);
-				// restore the position code of the dialog
-				setGroupInfo(group, positionCode);
-				return true;
+			// restore the size and location of the dialog
+			String[] parts = prefs.get("bounds", "").split("\\s");
+			Rectangle bounds;
+			if (parts.length == 4) {
+				bounds = new Rectangle(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]),
+						Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
+			} else {
+				// Pick a default location in case it has never come up before on this machine
+				Rectangle defaultBounds = Dialog.getPaletteLayoutBounds();
+				bounds = getBounds();
+				bounds.setLocation(defaultBounds.x, defaultBounds.y);
 			}
-		} catch (BackingStoreException e) {
-			e.printStackTrace();
+			setBounds(bounds);
+
+			String group = prefs.get("group", "");
+			int positionCode = prefs.getInt("positionCode", DialogGroupInfo.POSITION_DEFAULT);
+			// restore the position code of the dialog
+			ignoreSizeChange = true;
+			setGroupInfo(group, positionCode);
+			ignoreSizeChange = false;
+			return true;
 		}
 		return false;
 	}
@@ -261,17 +351,32 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 * Callback functions
 	 */
 
-	protected void onResize(int dx, int dy) throws Exception {
-		// if a contianer was created, the layout needs to be recalculated now:
-		if (container != null) {
-			container.updateSize(size);
-			container.doLayout();
-		}
-		super.onResize(dx, dy);
-	}
-
 	protected void onDestroy() throws Exception {
 		callFunction("onDestroy");
+	}
+
+	protected void onInitialize() throws Exception {
+		callFunction("onInitialize");
+	}
+
+	protected void onActivate() throws Exception {
+		callFunction("onActivate");
+	}
+
+	protected void onDeactivate() throws Exception {
+		callFunction("onDeactivate");
+	}
+
+	protected void onShow() throws Exception {
+		callFunction("onShow");
+	}
+
+	protected void onHide() throws Exception {
+		callFunction("onHide");
+	}
+
+	protected void onMove() throws Exception {
+		callFunction("onMove");
 	}
 
 	protected void onClose() throws Exception {
@@ -298,65 +403,67 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		callFunction("onContextMenuChange");
 	}
 
-	protected void onShow() throws Exception {
-		callFunction("onShow");
-	}
-
-	protected void onHide() throws Exception {
-		callFunction("onHide");
-	}
-
-	protected void onMove() throws Exception {
-		callFunction("onMove");
-	}
-
-	protected void onActivate() throws Exception {
-		callFunction("onActivate");
-	}
-
-	protected void onDeactivate() throws Exception {
-		callFunction("onDeactivate");
-	}
-
 	protected void onNotify(int notifier) throws Exception {
 		switch (notifier) {
-			case Notifier.NOTIFIER_DESTROY:
-				onDestroy();
-				break;
-			case Notifier.NOTIFIER_CLOSE_HIT:
-				onClose();
-				break;
-			case Notifier.NOTIFIER_ZOOM_HIT:
-				onZoom();
-				break;
-			case Notifier.NOTIFIER_CYCLE:
-				onCycle();
-				break;
-			case Notifier.NOTIFIER_COLLAPSE:
-				onCollapse();
-				break;
-			case Notifier.NOTIFIER_EXPAND:
-				onExpand();
-				break;
-			case Notifier.NOTIFIER_CONTEXT_MENU_CHANGED:
-				onContextMenuChange();
-				break;
-			case Notifier.NOTIFIER_WINDOW_SHOW:
-				onShow();
-				break;
-			case Notifier.NOTIFIER_WINDOW_HIDE:
-				onHide();
-				break;
-			case Notifier.NOTIFIER_WINDOW_DRAG_MOVED:
-				onMove();
-				break;
-			case Notifier.NOTIFIER_WINDOW_ACTIVATE:
-				onActivate();
-				break;
-			case Notifier.NOTIFIER_WINDOW_DEACTIVATE:
-				onDeactivate();
-				break;
+		case Notifier.NOTIFIER_WINDOW_INITIALIZE:
+			initialize(true);
+			break;
+		case Notifier.NOTIFIER_DESTROY:
+			if ((options & OPTION_REMEMBER_PLACING) != 0)
+				savePreferences(title);
+			onDestroy();
+			break;
+		case Notifier.NOTIFIER_WINDOW_ACTIVATE:
+			// see comment for initialize to unerstand why this is fired here too
+			initialize(true);
+			active = true;
+			onActivate();
+			break;
+		case Notifier.NOTIFIER_WINDOW_DEACTIVATE:
+			active = false;
+			onDeactivate();
+			break;
+		case Notifier.NOTIFIER_WINDOW_SHOW:
+			// see comment for initialize to unerstand why this is fired here too
+			initialize(true);
+			visible = true;
+			onShow();
+			break;
+		case Notifier.NOTIFIER_WINDOW_HIDE:
+			visible = false;
+			onHide();
+			break;
+		case Notifier.NOTIFIER_WINDOW_DRAG_MOVED:
+			onMove();
+			break;
+		case Notifier.NOTIFIER_CLOSE_HIT:
+			onClose();
+			break;
+		case Notifier.NOTIFIER_ZOOM_HIT:
+			onZoom();
+			break;
+		case Notifier.NOTIFIER_CYCLE:
+			onCycle();
+			break;
+		case Notifier.NOTIFIER_COLLAPSE:
+			onCollapse();
+			break;
+		case Notifier.NOTIFIER_EXPAND:
+			onExpand();
+			break;
+		case Notifier.NOTIFIER_CONTEXT_MENU_CHANGED:
+			onContextMenuChange();
+			break;
 		}
+	}
+
+	/**
+	 * private callback method, to be called from the native environemnt
+	 * It calls onResize
+	 */
+	private void onSizeChanged(int width, int height) {
+		if (!ignoreSizeChange)
+			updateSize(width - size.width, height - size.height);
 	}
 
 	/*
@@ -398,30 +505,8 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 *
 	 */
 	public void doLayout() {
-		if (container != null) {
-			AWTContainer cont = container;
-			container = null;
-			cont.doLayout();
-			container = cont;
-		}
-	}
-
-	/**
-	 * autoLayout is supposed to be called only once per dialog, after the initialization
-	 * if layout managers are involved. It set's the window's minimum- and preferred size
-	 * and calls doLayout.
-	 */
-	public void autoLayout() {
-		if (container != null) {
-			AWTContainer cont = container;
-			container = null;
-			setMinimumSize(cont.getMinimumSize());
-			setSize(cont.getPreferredSize());
-			// TODO: This seems to crash the whole thing:
-			// setMaximumSize(container.getMaximumSize());
-			cont.doLayout();
-			container = cont;
-		}
+		if (container != null)
+			container.doLayout();
 	}
 
 	/*
@@ -443,15 +528,18 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 * sets size and bounds
 	 */
 	private native int nativeCreate(String name, int dialogStyle, int options);
+	
 	private native void nativeDestroy(int dialogRef);
 
 	/*
 	 * Handler activation / deactivation
 	 */
 	protected native void nativeSetTrackCallback(boolean enabled);
+	
 	protected native void nativeSetDrawCallback(boolean enabled);
 
 	public native int getTrackMask();
+	
 	public native void setTrackMask(int mask);
 
 	/* 
@@ -470,44 +558,79 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 * dialog state accessors
 	 *  
 	 */
+	
+	public boolean isVisible() {
+		return visible;
+	}
 
-	public native boolean isVisible();
-	public native void setVisible(boolean visible);
+	private native void nativeSetVisible(boolean visible);
+	
+	public void setVisible(boolean visible) {
+		// do not set visibility natively before the dialog was properly initialized
+		// otherwise we get a crash.
+		if (initialized)
+			nativeSetVisible(visible);
+		this.visible = visible;
+	}
 
 	public native boolean isEnabled();
+	
 	public native void setEnabled(boolean enabled);
 
-	public native boolean isActive();
-	public native void setActive(boolean active);
-
+	public boolean isActive() {
+		return active;
+	}
+	
+	public native void nativeSetActive(boolean active);
+	
+	public void setActive(boolean active) {
+		nativeSetActive(active);
+		this.active = active;
+	}
 	/* 
-		 * dialog bounds accessors
-		 *
-		 */
+	 * dialog bounds accessors
+	 *
+	 */
 
 	private native Dimension nativeGetSize();
+	
 	private native void nativeSetSize(int width, int height);
 
 	private native Rectangle nativeGetBounds();
+
 	private native void nativeSetBounds(int x, int y, int width, int height);
 
-	public native void setLocation(int x, int y);
-	public native Point getLocation();
+	public Rectangle getBounds() {
+		// As kADMWindowDragMovedNotifier does not seem to work, allways 
+		// fetch bounds natively.
+		// If kADMWindowDragMovedNotifier was working, the reflected value could be
+		// kept up to date...
+		bounds = nativeGetBounds();
+		return bounds;
+	}
+
+	public void setBounds(int x, int y, int width, int height) {
+		ignoreSizeChange = true;
+		nativeSetBounds(x, y, width, height);
+		updateSize(width - bounds.width, height - bounds.height);
+		ignoreSizeChange = false;
+		sizeSet = true;
+	}
+
+	public void setBounds(Rectangle2D bounds) {
+		setBounds((int) bounds.getX(), (int) bounds.getY(), (int) bounds.getWidth(), (int) bounds.getHeight());
+	}
 
 	public Dimension getSize() {
-		return new Dimension(size);
+		return size.getSize();
 	}
 
 	public void setSize(int width, int height) {
-		if (size.width != width || size.height != height) {
-			size.setSize(width, height);
-			nativeSetSize(width, height);
-			// also updatePoint the internal bounds field:
-			bounds = nativeGetBounds();
-			if (container != null) {
-				container.updateSize(size);
-			}
-		}
+		ignoreSizeChange = true;
+		nativeSetSize( width, height);
+		updateSize(width - size.width, height - size.height);
+		ignoreSizeChange = false;
+		sizeSet = true;
 	}
 
 	public void setSize(Dimension size) {
@@ -517,29 +640,38 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	public void setSize(Point2D size) {
 		setSize((int) size.getX(), (int) size.getY());
 	}
-
-	public Rectangle getBounds() {
-		// TODO: until kADMWindowDragMovedNotifier is not resolved, allways fetch it here
-		// if kADMWindowDragMovedNotifier is working, it could be set there...
-		bounds = nativeGetBounds();
-		return new Rectangle(bounds);
-	}
-
-	public void setBounds(int x, int y, int width, int height) {
-		bounds.setRect(x, y, width, height);
-		nativeSetBounds(x, y, width, height);
-		Dimension oldSize = size;
-		size = nativeGetSize();
-		if (container != null && !size.equals(oldSize)) {
-			container.updateSize(size);
+	
+	/**
+	 * Changes the internal size fields (size / bounds) relatively to their previous
+	 * values. As bounds and size do not represent the same dimensions (outer / inner),
+	 * it has to be done relatively.
+	 * Change of layout and calling of onResize is handled here too
+	 * 
+	 * @param deltaX
+	 * @param deltaY
+	 */
+	protected void updateSize(int deltaX, int deltaY) {
+		if (deltaX != 0 || deltaY != 0) {
+			size.setSize(size.width + deltaX, size.height + deltaY);
+			bounds.setSize(bounds.width + deltaX, bounds.height + deltaY);
+			// if a contianer was created, the layout needs to be recalculated now:
+			if (container != null)
+				container.updateSize(size);
+			// calll onResize
+			// TODO: deal with Exception...
+			try {
+				onResize(deltaX, deltaY);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 
-	public void setBounds(Rectangle2D bounds) {
-		setBounds((int) bounds.getX(), (int) bounds.getY(), (int) bounds.getWidth(), (int) bounds.getHeight());
-	}
+	public native Point getLocation();
 
-	public void setLocation(Point2D loc) {
+	public native void setLocation(int x, int y);
+
+	public final void setLocation(Point2D loc) {
 		setLocation((int) loc.getX(), (int) loc.getY());
 	}
 
@@ -549,9 +681,11 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 */
 
 	public native Point localToScreen(int x, int y);
+	
 	public native Point screenToLocal(int x, int y);
 
 	public native Rectangle localToScreen(int x, int y, int width, int height);
+	
 	public native Rectangle screenToLocal(int x, int y, int width, int height);
 
 	public Point localToScreen(Point2D pt) {
@@ -576,7 +710,9 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 */
 
 	public native void invalidate();
+	
 	public native void invalidate(int x, int y, int width, int height);
+	
 	public native void update();
 
 	public void invalidate(Rectangle2D rt) {
@@ -589,6 +725,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 */
 
 	public native int getCursor();
+	
 	public native void setCursor(int cursor);
 
 	/* 
@@ -599,6 +736,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	private native void nativeSetTitle(String title);
 
 	public native int getFont();
+	
 	public native void setFont(int font);
 
 	public String getTitle() {
@@ -615,37 +753,69 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 * 
 	 */
 
-	public native Dimension getMinimumSize();
-	public native void setMinimumSize(int width, int height);
+	/*
+	 * There seems to be a problem on CS3 with setting minimum / maximum size before all
+	 * layout is initialized. The workaround is to reflect these properties in the wrapper
+	 * and then only set them natively when the dialog is activate.
+	 */
+	private native Dimension nativeGetMinimumSize();
+	
+	private native void nativeSetMinimumSize(int width, int height);
 
-	public native Dimension getMaximumSize();
-	public native void setMaximumSize(int width, int height);
+	private native Dimension nativeGetMaximumSize();
+	
+	private native void nativeSetMaximumSize(int width, int height);
 
-	public native Dimension getIncrement();
-	public native void setIncrement(int hor, int ver);
-
+	public void setMinimumSize(int width, int height) {
+		minSize = new Dimension(width, height);
+		if (initialized) {
+			nativeSetMinimumSize(width, height);
+		} else {
+			boundariesSet = false;
+		}
+	}
+	
 	public void setMinimumSize(Dimension size) {
-		setMinimumSize(size.width, size.height);
+		if (size != null)
+			setMinimumSize(size.width, size.height);
 	}
 
 	public void setMinimumSize(Point2D size) {
-		setMinimumSize((int) size.getX(), (int) size.getY());
+		if (size != null)
+			setMinimumSize((int) size.getX(), (int) size.getY());
+	}
+
+	public void setMaximumSize(int width, int height) {
+		maxSize = new Dimension(width, height);
+		if (initialized) {
+			nativeSetMaximumSize(width, height);
+		} else {
+			boundariesSet = false;
+		}
 	}
 
 	public void setMaximumSize(Dimension size) {
-		setMaximumSize(size.width, size.height);
+		if (size != null)
+			setMaximumSize(size.width, size.height);
 	}
 
 	public void setMaximumSize(Point2D size) {
-		setMaximumSize((int) size.getX(), (int) size.getY());
+		if (size != null)
+			setMaximumSize((int) size.getX(), (int) size.getY());
 	}
 
+	public native Dimension getIncrement();
+	
+	public native void setIncrement(int hor, int ver);
+
 	public void setIncrement(Dimension increment) {
-		setIncrement(increment.width, increment.height);
+		if (increment != null)
+			setIncrement(increment.width, increment.height);
 	}
 
 	public void setIncrement(Point2D increment) {
-		setIncrement((int) increment.getX(), (int) increment.getY());
+		if (increment != null)
+			setIncrement((int) increment.getX(), (int) increment.getY());
 	}
 
 	public Dimension getPreferredSize() {
@@ -687,9 +857,11 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 */
 
 	public native Item getDefaultItem();
+	
 	public native void setDefaultItem(Item item);
 
 	public native Item getCancelItem();
+	
 	public native void setCancelItem(Item item);
 
 	/* 
@@ -700,9 +872,11 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	public native boolean isCollapsed();
 
 	public native boolean isUpdateEnabled();
+	
 	public native void setUpdateEnabled(boolean updateEnabled);
 
 	public native boolean isForcedOnScreen();
+	
 	public native void setForcedOnScreen(boolean forcedOnScreen);
 
 	/*
@@ -711,7 +885,9 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 */
 
 	public native DialogGroupInfo getGroupInfo();
+	
 	public native void setGroupInfo(String group, int positionCode);
+	
 	public void setGroupInfo(DialogGroupInfo info) {
 		setGroupInfo(info.group, info.positionCode);
 	}
@@ -859,12 +1035,12 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 * component.
 	 *
 	 * Unfortunatelly, some LayoutManagers access fields in Container not visible
-	 * from the outside, so length information has to be passed up by super. calls.
+	 * from the outside, so size information has to be passed up by super calls.
 	 *
-	 * Attention: the ADM bounds are the outside of the window, while here we treat
-	 * the length of the AWT bounds for the inside!
+	 * Attention: the ADM bounds are the outside of the window, while here we use
+	 * the size of the AWT bounds for the inside!
 	 * Also, for layout the location of the dialog doesn't matter, so let's only
-	 * work with length for simplicity
+	 * work with size for simplicity
 	 */
 	class AWTContainer extends Container {
 		Insets insets;
@@ -875,7 +1051,11 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		}
 
 		public void updateSize(Dimension size) {
-			super.setSize(size.width, size.height);
+			// call setBounds instead of setSize
+			// otherwise the call would loop back to the overridden
+			// setBounds here, as internally, setSize calls setBounds anyway
+			super.setBounds(0, 0, size.width, size.height);
+			doLayout();
 		}
 
 		public void setInsets(int left, int top, int right, int bottom) {
@@ -884,15 +1064,6 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 
 		public Insets getInsets() {
 			return insets;
-		}
-
-		public void setBounds(int x, int y, int width, int height) {
-			super.setBounds(x, y, width, height);
-			Dialog.this.setSize(width, height);
-		}
-
-		public void setBounds(Rectangle r) {
-			setBounds(r.x, r.y, r.width, r.height);
 		}
 
 		public void setSize(int width, int height) {
@@ -904,12 +1075,19 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 			setSize(d.width, d.height);
 		}
 
+		public void setBounds(int x, int y, int width, int height) {
+			setSize(width, height);
+		}
+
+		public void setBounds(Rectangle r) {
+			setSize(r.width, r.height);
+		}
+
 		public void doLayout() {
 			super.doLayout();
 			// now walk through all the items and do their layout as well:
 			Component[] components = getComponents();
-//			for (int i = 0; i < components.length; i++)
-			for (int i = components.length - 1; i >= 0; i--)
+			for (int i = 0; i < components.length; i++)
 				components[i].doLayout();
 		}
 
