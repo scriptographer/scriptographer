@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ModalDialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/10/18 14:17:18 $
+ * $Revision: 1.5 $
+ * $Date: 2006/12/11 19:01:26 $
  */
 
 #include "StdHeaders.h"
@@ -65,27 +65,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ModalDialog_doModal(JNIEnv
  * void endModal()
  */
 
-void endModal(JNIEnv *env, jobject obj, ADMDialogRef dialog) {
-	sADMDialog->EndModal(dialog, sADMDialog->GetCancelItemID(dialog), true);
-	gEngine->setBooleanField(env, obj, gEngine->fid_ModalDialog_doesModal, false);
-}
-
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ModalDialog_endModal(JNIEnv *env, jobject obj) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
-	    endModal(env, obj, dialog);
-	} EXCEPTION_CONVERT(env);
-}
-
-/*
- * void setVisible(boolean visible)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_ModalDialog_setVisible(JNIEnv *env, jobject obj, jboolean visible) {
-	try {
-	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
-		if (!visible && gEngine->getBooleanField(env, obj, gEngine->fid_ModalDialog_doesModal)) {
-		    endModal(env, obj, dialog);
-		}
-		sADMDialog->Show(dialog, visible);
+		sADMDialog->EndModal(dialog, sADMDialog->GetCancelItemID(dialog), true);
+		gEngine->setBooleanField(env, obj, gEngine->fid_ModalDialog_doesModal, false);
 	} EXCEPTION_CONVERT(env);
 }

@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.18 $
- * $Date: 2006/10/18 14:17:17 $
+ * $Revision: 1.19 $
+ * $Date: 2006/12/11 19:01:27 $
  */
 
 #include "StdHeaders.h"
@@ -164,4 +164,29 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_closePro
 		sAIUser->CloseProgress();
 	} EXCEPTION_CONVERT(env);
 	return false;
+}
+
+/*
+ * void dispatchNextEvent()
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_dispatchNextEvent(JNIEnv *env, jclass cls) {
+	try {
+		// Manually process event loop events:
+#ifdef MAC_ENV
+		// http://developer.apple.com/documentation/Carbon/Conceptual/Carbon_Event_Manager/Tasks/chapter_3_section_12.html
+		EventRef event;
+		if (ReceiveNextEvent(0, NULL, kEventDurationForever, true, &event) == noErr) {
+			SendEventToEventTarget (event, GetEventDispatcherTarget());
+            ReleaseEvent(event);
+		}
+#endif
+#ifdef WIN_ENV
+		// http://msdn2.microsoft.com/en-US/library/aa452701.aspx
+		MSG message;
+		if (GetMessage(&message, NULL, 0, 0)) {
+			TranslateMessage(&message);
+			DispatchMessage(&message);
+		}
+#endif
+	} EXCEPTION_CONVERT(env);
 }

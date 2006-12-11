@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_HierarchyListEntry.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/10/18 14:17:18 $
+ * $Revision: 1.9 $
+ * $Date: 2006/12/11 19:01:26 $
  */
  
 #include "stdHeaders.h"
@@ -62,7 +62,7 @@ void ASAPI HierarchyListEntry_onDestroy(ADMListEntryRef entry) {
 			if (sADMHierarchyList->NumberOfEntries(list) == 0 && sADMHierarchyList->GetParentEntry(list) != NULL) {
 				HierarchyList_onDestroy(list);
 			}
-		} EXCEPTION_CATCH_REPORT(env)
+		} EXCEPTION_CATCH_REPORT(env);
 	}
 }
 

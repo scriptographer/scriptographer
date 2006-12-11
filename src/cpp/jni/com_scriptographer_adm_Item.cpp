@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Item.cpp,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2006/11/24 23:42:58 $
+ * $Revision: 1.17 $
+ * $Date: 2006/12/11 19:01:27 $
  */
 
 #include "stdHeaders.h"
@@ -46,34 +46,13 @@
  */
 
 ASErr ASAPI Item_onInit(ADMItemRef item) {
-	JNIEnv *env = gEngine->getEnv();
-	try {
-		jobject obj = gEngine->getItemObject(item);
-		// set size and bounds:
-		ADMRect rect;
-		sADMItem->GetBoundsRect(item, &rect);
+	// Attach the item-level callbacks
+	DEFINE_CALLBACK_PROC(Item_onDestroy);
+	sADMItem->SetDestroyProc(item, (ADMItemDestroyProc) CALLBACK_PROC(Item_onDestroy));
+	
+	DEFINE_CALLBACK_PROC(Item_onNotify);
+	sADMItem->SetNotifyProc(item, (ADMItemNotifyProc) CALLBACK_PROC(Item_onNotify));
 
-		ADMRect size;
-		sADMItem->GetLocalRect(item, &size);
-		int x = (size.right - size.left) - (rect.right - rect.left);
-		int y = (size.bottom - size.top) - (rect.bottom - rect.top); 
-		if (x || y) gEngine->println(env, "SIZE: %i %i", x, y);
-		/*
-		sADMItem->GetLocalRect(item, &rect);
-		gEngine->setObjectField(env, obj, gEngine->fid_Item_nativeSize, gEngine->convertDimension(env, rect.right, rect.bottom));
-		sADMItem->GetBoundsRect(item, &rect);
-		gEngine->setObjectField(env, obj, gEngine->fid_Item_nativeBounds, gEngine->convertRectangle(env, &rect));
-		*/
-		gEngine->callVoidMethod(env, obj, gEngine->mid_Item_updateBounds, gEngine->convertRectangle(env, &rect));
-
-		// Attach the item-level callbacks
-		DEFINE_CALLBACK_PROC(Item_onDestroy);
-		sADMItem->SetDestroyProc(item, (ADMItemDestroyProc) CALLBACK_PROC(Item_onDestroy));
-		
-		DEFINE_CALLBACK_PROC(Item_onNotify);
-		sADMItem->SetNotifyProc(item, (ADMItemNotifyProc) CALLBACK_PROC(Item_onNotify));
-
-	} EXCEPTION_CATCH_REPORT(env)
 	return kNoErr;
 }
 
@@ -102,7 +81,7 @@ void ASAPI Item_onDestroy(ADMItemRef item) {
 				}
 			}
 			env->DeleteGlobalRef(obj);
-		} EXCEPTION_CATCH_REPORT(env)
+		} EXCEPTION_CATCH_REPORT(env);
 	}
 }
 

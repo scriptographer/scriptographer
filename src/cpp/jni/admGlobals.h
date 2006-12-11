@@ -26,13 +26,14 @@
  *
  * $RCSfile: admGlobals.h,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/18 14:17:18 $
+ * $Revision: 1.7 $
+ * $Date: 2006/12/11 19:01:27 $
  */
 
 ASErr ASAPI Dialog_onInit(ADMDialogRef dialog);
+ADMBoolean ADMAPI Dialog_onInitialize(ADMDialogRef dialog, ADMTimerRef timerID);
 void ASAPI Dialog_onDestroy(ADMDialogRef dialog);
-void ASAPI Dialog_onResize(ADMItemRef item, ADMNotifierRef notifier); 
+void ASAPI Dialog_onSizeChanged(ADMItemRef item, ADMNotifierRef notifier); 
 void ASAPI Dialog_onNotify(ADMDialogRef dialog, ADMNotifierRef notifier);
 ASBoolean ASAPI Dialog_onTrack(ADMDialogRef dialog, ADMTrackerRef tracker);
 void ASAPI Dialog_onDraw(ADMDialogRef dialog, ADMDrawerRef drawer);

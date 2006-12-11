@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_ListEntry.cpp,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2006/10/18 14:17:16 $
+ * $Revision: 1.11 $
+ * $Date: 2006/12/11 19:01:26 $
  */
  
 #include "stdHeaders.h"
@@ -55,7 +55,7 @@ void ASAPI ListEntry_onDestroy(ADMEntryRef entry) {
 			// clear the handle
 			gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
 			env->DeleteGlobalRef(obj);
-		} EXCEPTION_CATCH_REPORT(env)
+		} EXCEPTION_CATCH_REPORT(env);
 	}
 }
 
