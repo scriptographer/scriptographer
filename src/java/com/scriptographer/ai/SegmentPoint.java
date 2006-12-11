@@ -28,8 +28,8 @@
  *
  * $RCSfile: SegmentPoint.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.6 $
+ * $Date: 2006/12/11 18:53:17 $
  */
 
 package com.scriptographer.ai;
@@ -42,7 +42,7 @@ import org.mozilla.javascript.Scriptable;
 
 import com.scriptographer.js.WrapperCreator;
 
-public class SegmentPoint extends Point implements WrapperCreator {
+class SegmentPoint extends Point implements WrapperCreator {
 	protected Segment segment;
 	protected int index;
 

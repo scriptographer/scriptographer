@@ -28,14 +28,15 @@
  * 
  * $RCSfile: CMYKColor.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.6 $
+ * $Date: 2006/12/11 18:53:17 $
  */
 
 package com.scriptographer.ai;
 
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
+import java.io.IOException;
 
 public class CMYKColor extends Color {
 	protected float cyan;

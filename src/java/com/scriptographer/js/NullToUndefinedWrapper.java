@@ -28,8 +28,8 @@
  * 
  * $RCSfile: NullToUndefinedWrapper.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/10/18 14:12:51 $
+ * $Revision: 1.5 $
+ * $Date: 2006/12/11 18:55:02 $
  */
 
 package com.scriptographer.js;
@@ -42,12 +42,11 @@ import org.mozilla.javascript.Wrapper;
 import com.scriptographer.ai.Color;
 import com.scriptographer.ai.FontWeight;
 
-
 // wrappable interface
 
 /**
- * Create a simple wrapper that converts null to Undefined in both ways,
- * and null to Color.NONE in case of color
+ * Create a simple wrapper that converts null to Undefined in both ways, and
+ * null to Color.NONE in case of color
  * 
  * In Java, null means undefined, while in javascript null is e.g. Color.NONE
  * This is more intuitive...
@@ -55,7 +54,8 @@ import com.scriptographer.ai.FontWeight;
  * This wrapper is used by PathSTyle, FillStyle, StrokeStyle
  */
 public class NullToUndefinedWrapper extends NativeJavaObject {
-	public NullToUndefinedWrapper(Scriptable scope, Object javaObject, Class staticType) {
+	public NullToUndefinedWrapper(Scriptable scope, Object javaObject,
+			Class staticType) {
 		super(scope, javaObject, staticType);
 	}
 
@@ -70,7 +70,7 @@ public class NullToUndefinedWrapper extends NativeJavaObject {
 		}
 		super.put(name, start, value);
 	}
-	
+
 	public Object get(String name, Scriptable start) {
 		Object value = super.get(name, start);
 		// convert back

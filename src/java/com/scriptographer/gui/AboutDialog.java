@@ -28,8 +28,8 @@
  *
  * $RCSfile: AboutDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/10/18 14:12:21 $
+ * $Revision: 1.10 $
+ * $Date: 2006/12/11 18:54:44 $
  */
 
 package com.scriptographer.gui;
@@ -46,12 +46,12 @@ import com.scriptographer.adm.Static;
 import com.scriptographer.adm.TableLayout;
 import com.scriptographer.adm.Tracker;
 
-public 	class AboutDialog extends ModalDialog {
+public class AboutDialog extends ModalDialog {
 	static AboutDialog dialog = null;
-	
+
 	AboutDialog() {
 		setTitle("About Scriptographer");
-		
+
 		Static text = new Static(this) {
 			protected boolean onTrack(Tracker tracker) {
 				if (tracker.getModifiers() == Tracker.MODIFIER_CLICK) {
@@ -76,13 +76,12 @@ public 	class AboutDialog extends ModalDialog {
 		};
 		text.setTrackCallback(true);
 		String newLine = System.getProperty("line.separator");
-		text.setText(
-			"Scriptographer 2.0" + newLine + 
-			"http://www.scriptographer.com" +  newLine +
-			newLine +
-			"\u00a9 2001-2006 J\u00fcrg Lehni" + newLine + 
-			"http://www.scratchdisk.com. All rights reserved.");
-		
+		text.setText("Scriptographer 2.0" + newLine
+			+ "http://www.scriptographer.com" + newLine + newLine
+			+ "\u00a9 2001-2006 J\u00fcrg Lehni" + newLine
+			+ "http://www.scratchdisk.com" + newLine + newLine
+			+ "All rights reserved.");
+
 		Button okButton = new Button(this);
 		okButton.setFont(Dialog.FONT_PALETTE);
 		okButton.setText("OK");
@@ -90,16 +89,15 @@ public 	class AboutDialog extends ModalDialog {
 
 		TableLayout layout = new TableLayout(new double[][] {
 			{ TableLayoutConstants.FILL, TableLayoutConstants.PREFERRED },
-			{ TableLayoutConstants.FILL, TableLayoutConstants.PREFERRED }}, 4, 4);
+			{ TableLayoutConstants.FILL, TableLayoutConstants.PREFERRED } },
+			4, 4);
 		setLayout(layout);
 		setInsets(10, 10, 10, 10);
-		
+
 		addToLayout(text, "0, 0, 1, 0");
 		addToLayout(okButton, "1, 1");
-		
-		autoLayout();
 	}
-	
+
 	public static void show() {
 		if (dialog == null)
 			dialog = new AboutDialog();

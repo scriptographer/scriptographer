@@ -28,8 +28,8 @@
  *
  * $RCSfile: FunctionHelper.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/11/24 23:39:39 $
+ * $Revision: 1.9 $
+ * $Date: 2006/12/11 18:55:02 $
  */
 
 package com.scriptographer.js;
@@ -47,19 +47,23 @@ public class FunctionHelper {
 	}
 
 	private static Object[] emptyArgs = new Object[0];
+
 	/*
-	 * Some static helper functions for getting and calling javascript functions.
+	 * Some static helper functions for getting and calling javascript
+	 * functions.
 	 * 
 	 */
 	public static Function getFunction(Scriptable scope, String name) {
 		Object obj = scope.get(name, scope);
-		return obj instanceof Function ? (Function)obj : null;
+		return obj instanceof Function ? (Function) obj : null;
 	}
-	
-	public static Object callFunction(Scriptable scope, Function func, Object args[]) {
+
+	public static Object callFunction(Scriptable scope, Function func,
+			Object args[]) {
 		ScriptographerEngine.beginExecution();
 		Object ret = func.call(Context.getCurrentContext(), scope, scope, args);
-		// commit all changed objects after a scripting function has been called!
+		// commit all changed objects after a scripting function has been
+		// called!
 		ScriptographerEngine.endExecution();
 		// unwrap if the return value is a native java object:
 		if (ret != null && ret instanceof NativeJavaObject) {
@@ -72,7 +76,8 @@ public class FunctionHelper {
 		return callFunction(scope, func, emptyArgs);
 	}
 
-	public static Object callFunction(Scriptable scope, String name, Object args[]) {
+	public static Object callFunction(Scriptable scope, String name,
+			Object args[]) {
 		Function func = getFunction(scope, name);
 		if (func != null)
 			return callFunction(scope, func, args);
@@ -88,12 +93,13 @@ public class FunctionHelper {
 		Object[] ids = object.getIds();
 		for (int i = 0; i < ids.length; i++) {
 			Object id = ids[i];
-			Object obj = id instanceof String ? object.get((String) id, object) : object.get(((Number) id).intValue(), object);
+			Object obj = id instanceof String ? object.get((String) id, object)
+				: object.get(((Number) id).intValue(), object);
 			map.put(id, convertObject(obj));
 		}
 		return map;
 	}
-	
+
 	public static Object[] convertToArray(NativeArray array) {
 		Object[] objects = new Object[(int) array.getLength()];
 		for (int i = 0; i < objects.length; i++) {
@@ -101,7 +107,7 @@ public class FunctionHelper {
 		}
 		return objects;
 	}
-	
+
 	public static Object convertObject(Object obj) {
 		if (obj instanceof NativeArray) {
 			obj = convertToArray((NativeArray) obj);

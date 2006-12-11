@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Timer.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.9 $
+ * $Date: 2006/12/11 18:53:17 $
  */
 
 package com.scriptographer.ai;
@@ -58,7 +58,8 @@ public class Timer extends AIObject implements Unsealed {
 	/**
 	 * Creates a timer object.
 	 * 
-	 * @param period the timer's period in ticks. Multiply with {@link #TICKS_PER_SECONDS } to convert from seconds to ticks
+	 * @param period the timer's period in ticks. Multiply with
+	 * {@link #TICKS_PER_SECONDS } to convert from seconds to ticks
 	 * @param periodic
 	 */
 	public Timer(int period, boolean periodic) {
@@ -68,7 +69,8 @@ public class Timer extends AIObject implements Unsealed {
 		int index = unusedTimers.size() - 1;
 		if (index >= 0) {
 			Timer timer = (Timer) unusedTimers.get(index);
-			// found one, let's reuse it's handle and remove the old timer from the list:
+			// found one, let's reuse it's handle and remove the old timer
+			// from the list:
 			handle = timer.handle;
 			timer.handle = 0;
 			unusedTimers.remove(index);
@@ -97,25 +99,19 @@ public class Timer extends AIObject implements Unsealed {
 	private native int nativeCreate(String name, int period);
 	
 	public boolean start() {
-		if (!active) {
-			setActive(true);
-			return active;
-		}
-		return false;
+		return setActive(true);
 	}
 	
 	public boolean stop() {
-		if (active) {
-			setActive(false);
-			return !active;
-		}
-		return false;
+		return setActive(false);
 	}
 	 
-	public void setActive(boolean active) {
-		if (nativeSetActive(handle, active)) {
+	public boolean setActive(boolean active) {
+		if (active != this.active && nativeSetActive(handle, active)) {
 			this.active = active;
+			return true;
 		}
+		return false;
 	}
 
 	public boolean isActive() {
@@ -125,9 +121,9 @@ public class Timer extends AIObject implements Unsealed {
 	public void dispose() {
 		// see wether we're still linked:
 		if (timers.get(handle) == this) {
-			if (active)
-				stop();
-			// if so remove it and put it to the list of unsed timers, for later recycling
+			setActive(false);
+			// if so remove it and put it to the list of unsed timers,
+			// for later recycling
 			timers.remove(handle);
 			getUnusedTimers().add(this);
 		}
@@ -151,6 +147,7 @@ public class Timer extends AIObject implements Unsealed {
 	}
 	
 	public static void disposeAll() {
+		// then dispose
 		for (Iterator it = timers.values().iterator(); it.hasNext();)
 			((Timer) it.next()).dispose();
 	}

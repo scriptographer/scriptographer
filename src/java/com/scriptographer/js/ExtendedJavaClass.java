@@ -28,8 +28,8 @@
  *
  * $RCSfile: ExtendedJavaClass.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/12/05 08:35:22 $
+ * $Revision: 1.5 $
+ * $Date: 2006/12/11 18:55:02 $
  */
 
 package com.scriptographer.js;
@@ -41,6 +41,7 @@ import org.mozilla.javascript.*;
 
 public class ExtendedJavaClass extends NativeJavaClass {
 	String className;
+
 	Method constructor;
 
 	public ExtendedJavaClass(Scriptable scope, Class cls) {
@@ -58,13 +59,11 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		// jsConstructor override?
 		try {
 			constructor = cls.getDeclaredMethod("jsConstructor", new Class[] {
-				Context.class, Object[].class, Function.class, Boolean.TYPE
-			});
+				Context.class, Object[].class, Function.class, Boolean.TYPE });
 			// constructor needs to be public static:
 			int mods = constructor.getModifiers();
-			if (!Modifier.isStatic(mods) ||
-				!Modifier.isPublic(mods) ||
-				constructor.getReturnType() != Scriptable.class)
+			if (!Modifier.isStatic(mods) || !Modifier.isPublic(mods)
+				|| constructor.getReturnType() != Scriptable.class)
 				constructor = null;
 		} catch (Exception e) {
 		}
@@ -75,25 +74,25 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		// use it as a hashtable containing methods to be added to the class:
 		Scriptable obj = null;
 		NativeObject methods = null;
-        Class classObject = getClassObject();
-        int modifiers = classObject.getModifiers();
-        if (args.length > 0 && args[args.length - 1] instanceof NativeObject &&
-            	//	Unsealed.class.isAssignableFrom(classObject) &&
-        		!Modifier.isInterface(modifiers) && !Modifier.isAbstract(modifiers)) {
+		Class classObject = getClassObject();
+		int modifiers = classObject.getModifiers();
+		if (args.length > 0 && args[args.length - 1] instanceof NativeObject &&
+		// Unsealed.class.isAssignableFrom(classObject) &&
+			!Modifier.isInterface(modifiers) && !Modifier.isAbstract(modifiers)) {
 			methods = (NativeObject) args[args.length - 1];
-			// remove the last argument from the list, so the right constructor will be found:
+			// remove the last argument from the list, so the right constructor
+			// will be found:
 			Object[] newArgs = new Object[args.length - 1];
 			for (int i = 0; i < newArgs.length; i++)
 				newArgs[i] = args[i];
 			args = newArgs;
 		}
-		// see wether the class overrides the constructor with a static jsConstructor
-		// method:
+		// see wether the class overrides the constructor with a static
+		// jsConstructor method:
 		if (constructor != null) {
 			try {
-				obj = (Scriptable) constructor.invoke(null, new Object[] {
-					cx, args, this, Boolean.TRUE
-				});
+				obj = (Scriptable) constructor.invoke(null, new Object[] { cx,
+					args, this, Boolean.TRUE });
 			} catch (Exception e) {
 				throw new RuntimeException(e.getCause());
 			}
@@ -106,18 +105,19 @@ public class ExtendedJavaClass extends NativeJavaClass {
 			for (int i = 0; i < ids.length; i++) {
 				Object id = ids[i];
 				if (id instanceof String) {
-					obj.put((String) id, obj, methods.get((String) id, methods));
+					obj
+						.put((String) id, obj, methods
+							.get((String) id, methods));
 				}
 			}
 			FunctionHelper.callFunction(obj, "$constructor");
 		}
 		return obj;
 	}
-	
+
 	public Class getClassObject() {
 		// Why calling super.unwrap() when all it does is returning the internal
-		// javaObject?
-		// That's how it's done in NativeJavaClass...
+		// javaObject? That's how it's done in NativeJavaClass...
 		return (Class) javaObject;
 	}
 

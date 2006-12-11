@@ -28,8 +28,8 @@
  * 
  * $RCSfile: AIWrapper.java,v $
  * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/10/18 14:09:53 $
+ * $Revision: 1.2 $
+ * $Date: 2006/12/11 18:53:17 $
  */
 
 package com.scriptographer.ai;
@@ -40,14 +40,15 @@ import java.util.HashMap;
 import com.scriptographer.util.SoftIntMap;
 
 abstract class AIWrapper extends AIObject {
-	
+
 	protected Document document = null;
-	
+
 	protected AIWrapper(int handle) {
 		this.handle = handle;
 	}
 
-	protected static AIWrapper wrapHandle(Class cls, int handle, Document document, boolean useDocument) {
+	protected static AIWrapper wrapHandle(Class cls, int handle,
+			Document document, boolean useDocument) {
 		if (handle == 0)
 			return null;
 		WrapperFactory factory = (WrapperFactory) factories.get(cls);
@@ -63,9 +64,9 @@ abstract class AIWrapper extends AIObject {
 	}
 
 	/**
-	 * protected scafold function for removing.
-	 * subclasses that want to use it need to override nativeRemove
-	 * and make remove public
+	 * protected scafold function for removing. subclasses that want to use it
+	 * need to override nativeRemove and make remove public
+	 * 
 	 * @return
 	 */
 	protected boolean remove() {
@@ -73,7 +74,8 @@ abstract class AIWrapper extends AIObject {
 		if (handle != 0) {
 			ret = nativeRemove();
 			if (ret) {
-				WrapperFactory factory = (WrapperFactory) factories.get(getClass());
+				WrapperFactory factory = (WrapperFactory) factories
+						.get(getClass());
 				if (factory != null)
 					factory.wrappers.remove(handle);
 				handle = 0;
@@ -81,7 +83,7 @@ abstract class AIWrapper extends AIObject {
 		}
 		return ret;
 	}
-	
+
 	// cash the factories for the various wrapper classes
 	// that use this base class
 	private static HashMap factories = new HashMap();
@@ -89,16 +91,15 @@ abstract class AIWrapper extends AIObject {
 	private static class WrapperFactory {
 		// use a SoftIntMap to keep track of already wrapped objects:
 		SoftIntMap wrappers = new SoftIntMap();
+
 		Constructor ctor;
-		
+
 		WrapperFactory(Class cls) {
 			// get the constructor for this class
 			try {
-				ctor = cls.getDeclaredConstructor(new Class[] {
-					Integer.TYPE
-				});
+				ctor = cls.getDeclaredConstructor(new Class[] { Integer.TYPE });
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		}
 
@@ -108,16 +109,17 @@ abstract class AIWrapper extends AIObject {
 			AIWrapper wrapper = (AIWrapper) wrappers.get(handle);
 			if (wrapper == null) {
 				try {
-					// now create a new instance, passing the handle as a parameter
-					wrapper = (AIWrapper) ctor.newInstance(new Object[] {
-						new Integer(handle)
-					});
+					// now create a new instance, passing the handle as a
+					// parameter
+					wrapper = (AIWrapper) ctor
+							.newInstance(new Object[] { new Integer(handle) });
 					// store reference to the object's document
 					if (useDocument)
-						wrapper.document = document != null ? document : Document.getActiveDocument();
+						wrapper.document = document != null ? document
+								: Document.getActiveDocument();
 					wrappers.put(handle, wrapper);
 				} catch (Exception e) {
-					e.printStackTrace();
+					throw new RuntimeException(e);
 				}
 			}
 			return wrapper;

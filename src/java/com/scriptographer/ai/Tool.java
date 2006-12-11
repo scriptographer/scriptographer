@@ -28,8 +28,8 @@
  *
  * $RCSfile: Tool.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/11/24 23:39:40 $
+ * $Revision: 1.10 $
+ * $Date: 2006/12/11 18:53:17 $
  */
 
 package com.scriptographer.ai;
@@ -62,10 +62,9 @@ public class Tool extends AIObject {
 	private Object[] eventArgs = new Object[] { event };
 	
 	public void setScript(File file) {
-		ScriptographerEngine engine = ScriptographerEngine.getInstance();
-		scope = engine.executeFile(file, null);
+		scope = ScriptographerEngine.executeFile(file, null);
 		// execute in the tool's scope so setIdleInterval can be called
-		scope.setParentScope((Scriptable) engine.javaToJS(this));
+		scope.setParentScope((Scriptable) ScriptographerEngine.javaToJS(this));
 		if (scope != null) {
 			setIdleEventInterval(-1);
 			mouseUpFunc = FunctionHelper.getFunction(scope, "onMouseUp");

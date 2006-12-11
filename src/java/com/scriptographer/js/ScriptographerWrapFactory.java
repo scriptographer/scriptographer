@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerWrapFactory.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/10/18 14:12:51 $
+ * $Revision: 1.5 $
+ * $Date: 2006/12/11 18:55:02 $
  */
 
 package com.scriptographer.js;
@@ -44,30 +44,29 @@ import com.scriptographer.util.ReadOnlyList;
 
 public class ScriptographerWrapFactory extends WrapFactory {
 	private WeakHashMap wrappers = new WeakHashMap();
-	
+
 	public Object wrap(Context cx, Scriptable scope, Object obj,
-		Class staticType) {
-		try {
-			// these are not wrappers, the java return types are simply converted to these
-			// scriptographer types and wrapped afterwards:
-			if (obj instanceof java.awt.geom.Rectangle2D && !(obj instanceof Rectangle)) {
-				obj = new Rectangle((java.awt.geom.Rectangle2D) obj);
-			} else if (obj instanceof java.awt.geom.Point2D && !(obj instanceof Point)) {
-				obj = new Point((java.awt.geom.Point2D) obj);
-			} else if (obj instanceof java.awt.geom.AffineTransform && !(obj instanceof Matrix)) {
-				obj = new Matrix((java.awt.geom.AffineTransform) obj);
-			} else if (obj instanceof java.awt.Dimension) {
-				// TODO: expose Dimension to JS?
-				obj = new Point((java.awt.Dimension) obj);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			Class staticType) {
+		// these are not wrappers, the java return types are simply converted to
+		// these scriptographer types and wrapped afterwards:
+		if (obj instanceof java.awt.geom.Rectangle2D
+			&& !(obj instanceof Rectangle)) {
+			obj = new Rectangle((java.awt.geom.Rectangle2D) obj);
+		} else if (obj instanceof java.awt.geom.Point2D
+			&& !(obj instanceof Point)) {
+			obj = new Point((java.awt.geom.Point2D) obj);
+		} else if (obj instanceof java.awt.geom.AffineTransform
+			&& !(obj instanceof Matrix)) {
+			obj = new Matrix((java.awt.geom.AffineTransform) obj);
+		} else if (obj instanceof java.awt.Dimension) {
+			// TODO: expose Dimension to JS?
+			obj = new Point((java.awt.Dimension) obj);
 		}
 		return super.wrap(cx, scope, obj, staticType);
 	}
 
 	public Scriptable wrapAsJavaObject(Context cx, Scriptable scope,
-		Object javaObj, Class staticType) {
+			Object javaObj, Class staticType) {
 		Scriptable obj;
 		// Wrappables know about their wrapper, so ask them:
 		if (javaObj instanceof Wrappable) {
@@ -75,7 +74,8 @@ public class ScriptographerWrapFactory extends WrapFactory {
 			if (obj == null) { // object is not yet wrapped, do it now:
 				if (javaObj instanceof WrapperCreator) {
 					// the object wants to provide its own wrapper:
-					obj = ((WrapperCreator) javaObj).createWrapper(scope, staticType);
+					obj = ((WrapperCreator) javaObj).createWrapper(scope,
+						staticType);
 				} else {
 					// create a default wrapper and set it
 					obj = createJavaObject(scope, javaObj, staticType);
@@ -86,7 +86,8 @@ public class ScriptographerWrapFactory extends WrapFactory {
 		} else {
 			// keep track of wrappers so that if a given object needs to be
 			// wrapped again, take the wrapper from the pool...
-			// TODO: see wether this really makes sense or wether rewrapping every time is the way to go
+			// TODO: see wether this really makes sense or wether rewrapping
+			// every time is the way to go
 			obj = (Scriptable) wrappers.get(javaObj);
 			if (obj == null) {
 				obj = createJavaObject(scope, javaObj, staticType);
@@ -95,16 +96,16 @@ public class ScriptographerWrapFactory extends WrapFactory {
 		}
 		return obj;
 	}
-	
+
 	private Scriptable createJavaObject(Scriptable scope, Object javaObj,
-		Class staticType) {
+			Class staticType) {
 		if (javaObj instanceof Unsealed) {
 			return new UnsealedJavaObject(scope, javaObj, staticType);
 		} else if (javaObj instanceof ReadOnlyList) {
 			return new ListObject(scope, (ReadOnlyList) javaObj, staticType);
 		} else if (javaObj instanceof Map) {
 			return new MapObject(scope, (Map) javaObj, staticType);
-		} else  {
+		} else {
 			return new NativeJavaObject(scope, javaObj, staticType);
 		}
 	}

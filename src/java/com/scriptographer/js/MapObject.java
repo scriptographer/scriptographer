@@ -28,8 +28,8 @@
  * 
  * $RCSfile: MapObject.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/18 14:12:51 $
+ * $Revision: 1.7 $
+ * $Date: 2006/12/11 18:55:02 $
  */
 
 package com.scriptographer.js;
@@ -42,13 +42,14 @@ import org.mozilla.javascript.Wrapper;
 import java.util.Map;
 
 /**
- * Wrapper class for java.util.Map objects
- * It adds js object-like properties, so it is possible to access lists like this: map["value"], or map[10]
- * It also defines getIds(), so enumeration is possible too: for (var i in list) ...
- * But it does not allow to access by anything else than Integer or String, so not the whole functionality
- * Of maps is provided. For scriptographer it is enough, though. And the real functions can still be accessed,
- * as the class extends a NativeJavaObject
- *
+ * Wrapper class for java.util.Map objects It adds js object-like properties, so
+ * it is possible to access lists like this: map["value"], or map[10] It also
+ * defines getIds(), so enumeration is possible too: for (var i in list) ... But
+ * it does not allow to access by anything else than Integer or String, so not
+ * the whole functionality Of maps is provided. For scriptographer it is enough,
+ * though. And the real functions can still be accessed, as the class extends a
+ * NativeJavaObject
+ * 
  */
 public class MapObject extends NativeJavaObject {
 	public MapObject() {
@@ -67,7 +68,8 @@ public class MapObject extends NativeJavaObject {
 	}
 
 	public boolean has(int index, Scriptable start) {
-		return javaObject != null && ((Map) javaObject).get(Integer.toString(index)) != null;
+		return javaObject != null
+			&& ((Map) javaObject).get(Integer.toString(index)) != null;
 	}
 
 	public Object get(int index, Scriptable scriptable) {
@@ -88,8 +90,8 @@ public class MapObject extends NativeJavaObject {
 	}
 
 	public boolean has(String name, Scriptable start) {
-		return super.has(name, start) ||
-			javaObject != null && ((Map) javaObject).get(name) != null;
+		return super.has(name, start) || javaObject != null
+			&& ((Map) javaObject).get(name) != null;
 	}
 
 	public Object get(String name, Scriptable scriptable) {

@@ -28,8 +28,8 @@
  *
  * $RCSfile: MainDialog.java,v $
  * $Author: lehni $
- * $Revision: 1.15 $
- * $Date: 2006/11/24 23:39:40 $
+ * $Revision: 1.16 $
+ * $Date: 2006/12/11 18:54:44 $
  */
 
 package com.scriptographer.gui;
@@ -46,7 +46,6 @@ import java.util.Iterator;
 
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.*;
-import com.scriptographer.ai.Timer;
 import com.scriptographer.ai.Tool;
 
 public class MainDialog extends FloatingDialog {
@@ -64,7 +63,8 @@ public class MainDialog extends FloatingDialog {
 	ConsoleDialog consoleDialog;
 
 	public MainDialog(ConsoleDialog consoleDlg) throws IOException {
-		super(FloatingDialog.OPTION_TABBED | FloatingDialog.OPTION_SHOW_CYCLE | Dialog.OPTION_RESIZING);
+		super(FloatingDialog.OPTION_TABBED | FloatingDialog.OPTION_SHOW_CYCLE |
+				FloatingDialog.OPTION_RESIZING | Dialog.OPTION_REMEMBER_PLACING);
 
 		this.consoleDialog = consoleDlg;
 		
@@ -185,7 +185,7 @@ public class MainDialog extends FloatingDialog {
 
 		ImageButton stopButton = new ImageButton(this) {
 			protected void onClick() {
-				Timer.stopAll();
+				ScriptographerEngine.stopAll();
 			}
 		};
 		stopButton.setImage(getImage("stop.png"));
@@ -238,9 +238,6 @@ public class MainDialog extends FloatingDialog {
 		buttons.add(tool1Button);
 		buttons.add(tool2Button);
 		this.addToLayout(buttons, BorderLayout.SOUTH);
-
-		autoLayout();
-		loadPreferences(title);
 	}
 
 	public static Image getImage(String filename) {
@@ -251,15 +248,11 @@ public class MainDialog extends FloatingDialog {
 			return new Image(1, 1, Image.TYPE_RGB);
 		}
 	}
-	
-	protected void onDestroy() {
-		savePreferences(title);
-	}
 
 	void execute() throws Exception {
 		ScriptEntry entry = (ScriptEntry) scriptList.getActiveLeaf();
 		if (entry != null && entry.file != null) {
-			ScriptographerEngine.getInstance().executeFile(entry.file, null);
+			ScriptographerEngine.executeFile(entry.file, null);
 		}
 	}
 	

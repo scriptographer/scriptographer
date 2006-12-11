@@ -28,8 +28,8 @@
  *
  * $RCSfile: Color.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/25 02:12:51 $
+ * $Revision: 1.7 $
+ * $Date: 2006/12/11 18:53:17 $
  */
 
 package com.scriptographer.ai;
@@ -144,7 +144,7 @@ public abstract class Color extends WrappableObject {
 						Color.class.getClassLoader().getResourceAsStream("com/scriptographer/cmm/" + filename)
 					);
 				} catch (IOException e) {
-					e.printStackTrace();
+					throw new RuntimeException(e);
 				}
 			}
 		}

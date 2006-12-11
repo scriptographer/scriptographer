@@ -28,8 +28,8 @@
  *
  * $RCSfile: Loader.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/10/18 14:13:05 $
+ * $Revision: 1.5 $
+ * $Date: 2006/12/11 18:55:14 $
  */
 
 package com.scriptographer.loader;
@@ -71,8 +71,9 @@ public class Loader {
 	}
 
 	/**
-	 *
-	 * @return a string, representing any errors that happened, or null if all went well
+	 * Reloads the Scriptographer Engine from a new class loader
+	 * @return a string, representing any errors that happened during reload,
+	 * or null if all went well
 	 */
 	public static String reload() {
 		StringWriter stringWriter = new StringWriter();

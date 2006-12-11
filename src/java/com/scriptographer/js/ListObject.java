@@ -28,8 +28,8 @@
  *
  * $RCSfile: ListObject.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/10/18 14:12:51 $
+ * $Revision: 1.10 $
+ * $Date: 2006/12/11 18:55:02 $
  */
 
 package com.scriptographer.js;
@@ -44,9 +44,9 @@ import com.scriptographer.util.SimpleList;
 import com.scriptographer.util.StringIndexList;
 
 /**
- * Wrapper class for com.scriptographer.util.List objects
- * It adds array-like properties, so it is possible to access lists like this: list[i]
- * It also defines getIds(), so enumeration is possible too: for (var i in list) ...
+ * Wrapper class for com.scriptographer.util.List objects It adds array-like
+ * properties, so it is possible to access lists like this: list[i] It also
+ * defines getIds(), so enumeration is possible too: for (var i in list) ...
  */
 public class ListObject extends NativeJavaObject {
 	public ListObject() {
@@ -65,12 +65,13 @@ public class ListObject extends NativeJavaObject {
 			}
 			return ids;
 		} else {
-			return new Object[]{};
+			return new Object[] {};
 		}
 	}
 
 	public boolean has(int index, Scriptable start) {
-		return javaObject != null && index < ((ReadOnlyList) javaObject).getLength();
+		return javaObject != null
+			&& index < ((ReadOnlyList) javaObject).getLength();
 	}
 
 	public Object get(int index, Scriptable scriptable) {
@@ -83,17 +84,20 @@ public class ListObject extends NativeJavaObject {
 	}
 
 	public boolean has(String name, Scriptable start) {
-		return super.has(name, start) ||
+		return super.has(name, start)
+			||
 			// name.equals("length") ||
-			javaObject instanceof StringIndexList && javaObject != null && ((StringIndexList) javaObject).get(name) != null;
+			javaObject instanceof StringIndexList && javaObject != null
+			&& ((StringIndexList) javaObject).get(name) != null;
 	}
 
 	public Object get(String name, Scriptable scriptable) {
 		Object obj = super.get(name, scriptable);
 		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
-			/* if (name.equals("length")) {
-				return new Integer(((ReadOnlyList) javaObject).getLength());
-			} else*/ if (javaObject instanceof StringIndexList) {
+			/*
+			 * if (name.equals("length")) { return new Integer(((ReadOnlyList)
+			 * javaObject).getLength()); } else
+			 */if (javaObject instanceof StringIndexList) {
 				obj = ((StringIndexList) javaObject).get(name);
 				if (obj != null)
 					obj = Context.toObject(obj, scriptable);
@@ -120,4 +124,3 @@ public class ListObject extends NativeJavaObject {
 		}
 	}
 }
-
