@@ -28,8 +28,8 @@
  *
  * $RCSfile: ConsoleOutputStream.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:07:28 $
+ * $Revision: 1.6 $
+ * $Date: 2006/12/11 18:52:31 $
  */
 
 package com.scriptographer;
@@ -39,10 +39,18 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 public class ConsoleOutputStream extends OutputStream {
-	private static ConsoleOutputStream console;
-	private boolean enabled = false;
+	/**
+	 * the singleton object
+	 */
+	private static ConsoleOutputStream console = new ConsoleOutputStream();
+	
+	/**
+	 * some constants
+	 */
 	private static final String lineSeparator = System.getProperty("line.separator");
     private static final char newLine = lineSeparator.charAt(lineSeparator.length() - 1);
+
+    private boolean enabled;
 
 	private StringBuffer buffer;
 	private PrintStream stream;
@@ -50,22 +58,12 @@ public class ConsoleOutputStream extends OutputStream {
 	private PrintStream stdErr;
 	private ConsoleOutputWriter writer;
 
-	public ConsoleOutputStream() {
+	private ConsoleOutputStream() {
 		buffer = new StringBuffer();
 		stream = new PrintStream(this);
 		stdOut = System.out;
 		stdErr = System.err;
-	}
-	
-	public static ConsoleOutputStream getInstance() {
-		if (console == null)
-			console = new ConsoleOutputStream();
-		
-		return console;
-	}
-
-	public void setWriter(ConsoleOutputWriter writer) {
-		this.writer = writer;
+		enabled = false;
 	}
 
 	/**
@@ -79,13 +77,12 @@ public class ConsoleOutputStream extends OutputStream {
 		char c = (char) b;
 		if (c == newLine) {
 			if (enabled) {
+				// if there is already a newline at the end of this line, remove it
+				// as writer.println adds it again...
 				int pos = buffer.lastIndexOf(lineSeparator);
 				int sepLength = lineSeparator.length();
-				// if there is already a newline at the end of this line, remove it
-				// as writeLine adds it again...
 				if (pos > 0 && pos == buffer.length() - sepLength)
 					buffer.delete(pos, pos + sepLength);
-				// writeLine(buffer.toString());
 				writer.println(buffer.toString());
 				buffer.setLength(0);
 			} else {
@@ -97,7 +94,6 @@ public class ConsoleOutputStream extends OutputStream {
 	}
 	
 	public static void enableOutput(boolean enabled) {
-		ConsoleOutputStream console = getInstance();
 		console.enabled = enabled && console.writer != null;
 		if (console.enabled && console.buffer.length() > 0) {
 			try {
@@ -110,7 +106,6 @@ public class ConsoleOutputStream extends OutputStream {
 	}
 	
 	public static void enableRedirection(boolean enable) {
-		ConsoleOutputStream console = getInstance();
 		if (enable) {
 			System.setOut(console.stream);
 			System.setErr(console.stream);
@@ -118,5 +113,11 @@ public class ConsoleOutputStream extends OutputStream {
 			System.setOut(console.stdOut);
 			System.setErr(console.stdErr);
 		}
+	}
+	
+
+	public static void setWriter(ConsoleOutputWriter writer) {
+		console.writer = writer;
+		enableOutput(true);
 	}
 }

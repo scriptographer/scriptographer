@@ -28,17 +28,20 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.22 $
- * $Date: 2006/11/24 23:39:40 $
+ * $Revision: 1.23 $
+ * $Date: 2006/12/11 18:52:31 $
  */
 
 package com.scriptographer;
 
 import com.scriptographer.adm.*;
 import com.scriptographer.ai.*;
+import com.scriptographer.debug.ScriptographerDebugger;
 import com.scriptographer.gui.*;
+import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.js.ScriptographerContextFactory;
 import com.scriptographer.js.ScriptographerContextFactory.ScriptCanceledException;
+import com.scriptographer.util.StringUtils;
 
 import org.mozilla.javascript.*;
 
@@ -47,10 +50,9 @@ import java.util.HashMap;
 import java.util.prefs.Preferences;
 
 public class ScriptographerEngine {
-	private static ScriptographerEngine engine = null;
-	protected Context context;
-	private HashMap scriptCache = new HashMap();
-	private GlobalObject global;
+	private static Context context;
+	private static HashMap scriptCache = new HashMap();
+	private static GlobalObject global;
 	private static long progressCurrent;
 	private static long progressMax;
 	private static boolean progressAutomatic;
@@ -59,50 +61,73 @@ public class ScriptographerEngine {
 	private static MainDialog mainDialog;
 	private static File scriptDir = null;
 	private static File pluginDir = null;
+	private static PrintStream logger = null;
+	private static ScriptographerDebugger debugger = null;
 
 	static {
-		// immediatelly redirect system streams.
-		ConsoleOutputStream.enableRedirection(true);
 		// getSystem variables
 		String os = System.getProperty("os.name").toLowerCase();
 		isWindows = (os.indexOf("windows") != -1);
 		isMacintosh = (os.indexOf("mac os x") != -1);
 	}
 
-	public ScriptographerEngine() {
-		ContextFactory.initGlobal(new ScriptographerContextFactory());
-		context = Context.enter();
-		global = new GlobalObject(context);
+	/**
+     * Don't let anyone instantiate this class.
+     */
+    private ScriptographerEngine() {
 	}
 
 	public static void init(String javaPath) throws Exception {
+		// Redirect system streams to the console.
+		ConsoleOutputStream.enableRedirection(true);
+
+		logger = new PrintStream(new FileOutputStream(new File(javaPath,
+			"error.log")), true);
+		
 		pluginDir = new File(javaPath).getParentFile();
-		// This is needed on mac, where there is more than one thread and the Loader is initiated on startup
-		// in the second thread. The ScriptographerEngine get loaded through the Loader, so getting the
-		// ClassLoader from there is save:
-		Thread.currentThread().setContextClassLoader(ScriptographerEngine.class.getClassLoader());
+
+		// initialize the JS stuff
+		ContextFactory factory = new ScriptographerContextFactory();
+		ContextFactory.initGlobal(factory);
+
+		// The debugger needs to be created before the context, otherwise
+		// notification won't work
+		debugger = new ScriptographerDebugger();
+		debugger.attachTo(factory);
+		
+		context = Context.enter();
+		global = new GlobalObject(context);
+
+		// now define the scope provider. Things are a bit intertwingled here...
+		debugger.setScopeProvider(global);
+
+        // This is needed on mac, where there is more than one thread and the
+		// Loader is initiated on startup
+		// in the second thread. The ScriptographerEngine get loaded through the
+		// Loader, so getting the ClassLoader from there is save:
+		Thread.currentThread().setContextClassLoader(
+			ScriptographerEngine.class.getClassLoader());
 		// get the baseDir setting, if it's not set, ask the user
-		Preferences prefs = Preferences.userNodeForPackage(Dialog.class);
-		String dir = prefs.get("scriptDir", null);
-		// If nothing is defined, try the default place for Scripts: In the plugin's folder
-		if (dir == null)
-			scriptDir = new File(pluginDir, "scripts");
-		else
-			scriptDir = new File(dir);
-		if (!scriptDir.exists() || !scriptDir.isDirectory()) {
+		String dir = ScriptographerEngine.getPreferences(false).get(
+			"scriptDir", null);
+		// If nothing is defined, try the default place for Scripts: In the
+		// plugin's folder
+		scriptDir = dir != null ? new File(dir)
+			: new File(pluginDir, "scripts");
+		// If the specified folder does not exist, ask the user
+		if (!scriptDir.exists() || !scriptDir.isDirectory())
 			chooseScriptDirectory();
-		}
 
 		consoleDialog = new ConsoleDialog();
 		mainDialog = new MainDialog(consoleDialog);
-		// turn on again, just in case the static block above was not called
-		// happens when for some reason no new ScriptographerEngine class was loaded 
-		ConsoleOutputStream.enableRedirection(true);
-		ConsoleOutputStream.enableOutput(true);
 
-		// execute all scripts in startup folder:
+		// Execute all scripts in startup folder:
 		if (scriptDir != null)
-			getInstance().executeAll(new File(scriptDir, "startup"));
+			executeAll(new File(scriptDir, "startup"));
+
+		// Explicitly initialize all dialogs on startup, as otherwise
+		// funny things will happen on CS3 -> see comment in initializeAll
+		Dialog.initializeAll();
 	}
 
 	public static void destroy() {
@@ -112,18 +137,22 @@ public class ScriptographerEngine {
 		Timer.disposeAll();
 		Annotator.disposeAll();
 		ConsoleOutputStream.enableRedirection(false);
+		try {
+			// This is needed on some versions on Mac CS (CFM?)
+			// as the JVM seems to not shoot down properly,
+			//and the prefs would then not be flushed to file otherwise.
+			ScriptographerEngine.getPreferences(false).flush();
+		} catch (java.util.prefs.BackingStoreException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static boolean chooseScriptDirectory() {
-		scriptDir = Dialog.chooseDirectory("Please choose the Scriptographer Script directory:", scriptDir);
+		scriptDir = Dialog.chooseDirectory(
+			"Please choose the Scriptographer Script directory:", scriptDir);
 		if (scriptDir != null && scriptDir.isDirectory()) {
-			Preferences prefs = Preferences.userNodeForPackage(Dialog.class);
-			prefs.put("scriptDir", scriptDir.getPath());
-			try {
-				prefs.flush();
-			} catch (java.util.prefs.BackingStoreException e) {
-				e.printStackTrace();
-			}
+			ScriptographerEngine.getPreferences(false).put("scriptDir",
+				scriptDir.getPath());
 			return true;
 		}
 		return false;
@@ -144,6 +173,23 @@ public class ScriptographerEngine {
 	public static boolean isMacintosh() {
 		return isMacintosh;
 	}
+	
+	public static Preferences getPreferences(boolean checkScope) {
+		if (checkScope) {
+			Context cx = Context.getCurrentContext();
+			if (cx != null && ScriptRuntime.hasTopCall(cx)) {
+				Scriptable scope = ScriptRuntime.getTopCallScope(cx);
+				return (Preferences) ScriptableObject.getProperty(scope,
+					"preferences");
+			}
+		}
+		// the base prefs for Scriptographer are:
+		// com.scriptographer.scriptographer
+		// on mac, three nodes seem to be necessary, otherwise things get mixed
+		// up
+		return Preferences.userNodeForPackage(ScriptographerEngine.class).node(
+			"scriptographer");
+	}
 
 	static int reloadCount = 0;
 
@@ -152,17 +198,12 @@ public class ScriptographerEngine {
 	}
 
 	public static String reload() {
+		stopAll();
 		reloadCount++;
 		return nativeReload();
 	}
 
 	public static native String nativeReload();
-
-	public static ScriptographerEngine getInstance() {
-		if (engine == null)
-			engine = new ScriptographerEngine();
-		return engine;
-	}
 
 	public static void onAbout() {
 		AboutDialog.show();
@@ -187,7 +228,7 @@ public class ScriptographerEngine {
 	/**
 	 * Internal Class used for caching compiled scripts
 	 */
-	class ScriptCacheEntry {
+	static class ScriptCacheEntry {
 		File file;
 		long lastModified;
 		Script script;
@@ -208,11 +249,13 @@ public class ScriptographerEngine {
 					script = context.compileReader(in, file.getPath(), 1, null);
 					lastModified = modified;
 				} catch (RhinoException re) {
-					reportRhinoException(re);
+					reportError(re);
 				} catch (FileNotFoundException ex) {
 					Context.reportError("File does not exist: " + file);
 				} catch (IOException ioe) {
-					System.err.println(ioe.toString());
+					Context.reportError(
+						"A error occured while reading the file: " + file + 
+						": " + ioe.toString());
 				} finally {
 					if (in != null) {
 						try {
@@ -226,14 +269,42 @@ public class ScriptographerEngine {
 			return script;
 		}
 	}
+	
+	public static String formatError(Throwable t) {
+		RhinoException re = t instanceof RhinoException ? (RhinoException) t
+			: new WrappedException(t);
 
-	protected void reportRhinoException(RhinoException re) {
+		String basePath = scriptDir.getAbsolutePath();
+
+		StringWriter buf = new StringWriter();
+		PrintWriter writer = new PrintWriter(buf);
+
+		/*
 		String source = re.sourceName();
-		if (source != null) {
-			System.err.print(source);
-			System.err.print(":");
-		}
-		System.err.println(re.lineNumber() + "," + re.columnNumber() + ": " + re.getMessage());
+		if (source.startsWith(basePath))
+			source = source.substring(basePath.length());
+		writer.print("Error at ");
+		writer.print(source);
+		writer.print(":" + re.lineNumber());
+		if (re.columnNumber() > 0)
+			writer.print("," + re.columnNumber());
+		writer.println();
+		writer.println("    " + re.details());
+		*/
+		writer.println(re.details());
+		writer.print(StringUtils.replace(StringUtils.replace(
+			re.getScriptStackTrace(), basePath, ""), "\t", "    "));
+		
+		String error = buf.toString();
+		logger.print(error);
+		logger.print("Stacktrace: ");
+		re.printStackTrace(logger);
+		logger.println();
+		return error;
+	}
+
+	public static void reportError(Throwable t) {
+		System.err.print(formatError(t));
 	}
 
 	/**
@@ -243,7 +314,7 @@ public class ScriptographerEngine {
 	 * @param file
 	 * @return
 	 */
-	public Script compileFile(File file) {
+	public static Script compileFile(File file) {
 		String path = file.getPath();
 		ScriptCacheEntry entry = (ScriptCacheEntry) scriptCache.get(path);
 		if (entry == null) {
@@ -253,39 +324,51 @@ public class ScriptographerEngine {
 		return entry.compile();
 	}
 
-	public Script compileString(String string) {
+	public static Script compileString(String string) {
 		try {
 			return context.compileString(string, null, 1, null);
 		} catch (RhinoException re) {
-			reportRhinoException(re);
+			reportError(re);
 		}
 		return null;
 	}
 
-	public Scriptable executeScript(Script script, File scriptFile, Scriptable scope) {
+	public static Scriptable executeScript(Script script, File scriptFile,
+			Scriptable scope) {
 		Scriptable ret = null;
 		try {
-			showProgress("Executing " + (scriptFile != null ? scriptFile.getName() : "Console Input") + "...");
+			showProgress("Executing " + (scriptFile != null ?
+					scriptFile.getName() : "Console Input") + "...");
+
 			if (scope == null)
 				scope = global.createScope(scriptFile);
-			// disable output to the console while the script is executed as it won't get updated anyway
+			// disable output to the console while the script is executed as it
+			// won't get updated anyway
 			// ConsoleOutputStream.enableOutput(false);
+			
 			beginExecution();
 			script.exec(context, scope);
+			// handle onStart / onStop
+			FunctionHelper.callFunction(scope, "onStart");
+			Object onStop = scope.get("onStop", scope);
+			if (onStop instanceof Function) {
+				// add this scope to the scopes that want onStop to be called
+				// when the stop button is hit by the user
+
+			}
 			ret = scope;
 			closeProgress();
-		} catch (WrappedException e) {
-			System.err.println(e.getMessage());
-			e.getWrappedException().printStackTrace();
 		} catch (RhinoException e) {
-			reportRhinoException(e);
+			reportError(e);
 		} catch (ScriptCanceledException e) {
 			System.out.println(scriptFile.getName() + " Canceled");
 		} finally {
-			// commit all the changes, even when script has crashed (to synch with 
+			// commit all the changes, even when script has crashed (to synch
+			// with
 			// direct changes such as creation of paths, etc
 			endExecution();
-			// now reenable the console, this also writes out all the things that were printed in the meantime:
+			// now reenable the console, this also writes out all the things
+			// that were printed in the meantime:
 			// ConsoleOutputStream.enableOutput(true);
 		}
 		return ret;
@@ -296,7 +379,7 @@ public class ScriptographerEngine {
 	 *
 	 * @param dir
 	 */
-	private void executeAll(File dir) {
+	private static void executeAll(File dir) {
 		File []files = dir.listFiles();
 		if (files != null) {
 			for (int i = 0; i < files.length; i++) {
@@ -309,6 +392,10 @@ public class ScriptographerEngine {
 			}
 		}
 	}
+	
+	public static void stopAll() {
+		Timer.stopAll();
+	}
 
 	/**
 	 * evaluates the specified file.
@@ -316,29 +403,29 @@ public class ScriptographerEngine {
 	 * @param file
 	 * @return
 	 */
-	public Scriptable executeFile(File file, Scriptable scope) {
+	public static Scriptable executeFile(File file, Scriptable scope) {
 		Script script = compileFile(file);
 		if (script != null)
 			return executeScript(script, file, scope);
 		return null;
 	}
 
-	public Scriptable executeFile(String path, Scriptable scope) {
+	public static Scriptable executeFile(String path, Scriptable scope) {
 		return executeFile(new File(path), scope);
 	}
 
-	public Scriptable executeString(String string, Scriptable scope) {
+	public static Scriptable executeString(String string, Scriptable scope) {
 		Script script = compileString(string);
 		if (script != null)
 			return executeScript(script, null, scope);
 		return null;
 	}
 
-	public Scriptable createScope(File scriptFile) {
+	public static Scriptable createScope(File scriptFile) {
 		return global.createScope(scriptFile);
 	}
 
-	public Object javaToJS(Object value) {
+	public static Object javaToJS(Object value) {
 		return Context.javaToJS(value, global);
 	}
 
@@ -370,6 +457,10 @@ public class ScriptographerEngine {
 	}
 	
 	private static native boolean nativeUpdateProgress(long current, long max);
+	
+	public static void initDebugger() {
+		debugger.setVisible(true);
+	}
 
 	public static boolean updateProgress(long current, long max) {
 		progressCurrent = current;
@@ -386,6 +477,8 @@ public class ScriptographerEngine {
 		}
 		return ret;
 	}
+	
+	public static native void dispatchNextEvent();
 	
 	protected static native boolean closeProgress();
 }
