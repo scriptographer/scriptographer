@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.28 $
- * $Date: 2006/11/24 23:42:58 $
+ * $Revision: 1.29 $
+ * $Date: 2006/12/11 19:02:54 $
  */
 
 #include "jniMacros.h"
@@ -36,7 +36,6 @@
 class ScriptographerEngine {
 private:
     JavaVM* m_javaVM;
-	jobject m_javaEngine; // returned by ScriptographerEngine.getInstance
 	char *m_homeDir;
 	bool m_initialized;
 	AIDictKey m_artHandleKey;
@@ -163,11 +162,10 @@ public:
 	
 // Scriptographer:
 	jclass cls_ScriptographerEngine;
-	jmethodID mid_ScriptographerEngine_getInstance;
-	jmethodID mid_ScriptographerEngine_executeString;
-	jmethodID mid_ScriptographerEngine_executeFile;
 	jmethodID mid_ScriptographerEngine_init;
 	jmethodID mid_ScriptographerEngine_destroy;
+	jmethodID mid_ScriptographerEngine_formatError;
+	jmethodID mid_ScriptographerEngine_reportError;
 	jmethodID mid_ScriptographerEngine_onAbout;
 
 	jclass cls_ScriptographerException;
@@ -335,8 +333,7 @@ public:
 	jfieldID fid_ADMObject_handle;
 
 	jclass cls_Dialog;
-	jfieldID fid_Dialog_size;
-	jfieldID fid_Dialog_bounds;
+	jmethodID mid_Dialog_onSizeChanged;
 
 	jclass cls_ModalDialog;
 	jfieldID fid_ModalDialog_doesModal;
@@ -356,10 +353,6 @@ public:
 	jfieldID fid_Image_byteWidth;
 	jfieldID fid_Image_bitsPerPixel;
 	jmethodID mid_Image_getIconHandle;
-
-	jclass cls_Item;
-	jfieldID fid_Item_nativeBounds;
-	jmethodID mid_Item_updateBounds;
 
 	jclass cls_ListItem;
 	jfieldID fid_ListItem_listHandle;
@@ -401,7 +394,6 @@ public:
 
 	void initEngine();
 	jstring reloadEngine();
-	jobject getJavaEngine();
 	
 	bool isInitialized() {
 		return m_initialized;
@@ -411,6 +403,8 @@ public:
 	bool isKeyDown(short keycode);
 	
 	void println(JNIEnv *env, const char *str, ...);
+	char *formatError(JNIEnv *env, jthrowable throwable);
+	void reportError(JNIEnv *env);
 
 	// com.scriptographer.awt.Point <-> AIRealPoint
 	jobject convertPoint(JNIEnv *env, AIReal x, AIReal y, jobject res = NULL);	
@@ -426,7 +420,7 @@ public:
 	}
 	ADMPoint *convertPoint(JNIEnv *env, jobject pt, ADMPoint *res = NULL);
 
-	// com.scriptographer.awt.Rectangle <-> AIRealRect
+	// com.scriptographer.ai.Rectangle <-> AIRealRect
 	jobject convertRectangle(JNIEnv *env, AIReal left, AIReal top, AIReal right, AIReal bottom, jobject res = NULL);
 	jobject convertRectangle(JNIEnv *env, AIRealRect *rt, jobject res = NULL) {
 		return convertRectangle(env, rt->left, rt->top, rt->right, rt->bottom, res);

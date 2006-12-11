@@ -26,8 +26,8 @@
  *
  * $RCSfile: jniMacros.h,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/18 14:18:08 $
+ * $Revision: 1.7 $
+ * $Date: 2006/12/11 19:02:54 $
  */
 
 /*
@@ -231,8 +231,10 @@
 	}
 
 #define EXCEPTION_REPORT(env) \
-	if (env->ExceptionCheck()) \
-		env->ExceptionDescribe();
+	if (env->ExceptionCheck()) { \
+		if (gEngine != NULL) gEngine->reportError(env); \
+		else env->ExceptionDescribe(); \
+	}
 	
 #define EXCEPTION_CATCH_REPORT(env) \
 	catch (ScriptographerException *e) { \

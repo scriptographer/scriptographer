@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.42 $
- * $Date: 2006/11/30 04:31:45 $
+ * $Revision: 1.43 $
+ * $Date: 2006/12/11 19:02:55 $
  */
 
 #include "stdHeaders.h"
@@ -45,7 +45,7 @@
 #endif
 
 #if defined(MAC_ENV) && !defined(GCJ)
-#define MAC_THREAD
+// #define MAC_THREAD
 #endif
 
 #include "aiGlobals.h"
@@ -129,6 +129,7 @@ ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 }
 
 ScriptographerEngine::~ScriptographerEngine() {
+	gEngine = NULL;
 	delete m_homeDir;
 	callStaticVoidMethodReport(NULL, cls_ScriptographerEngine, mid_ScriptographerEngine_destroy);
 #ifdef MAC_THREAD
@@ -143,9 +144,8 @@ ScriptographerEngine::~ScriptographerEngine() {
 	} else 
 #endif
 	{ // clean up:
-		exit();
+//		exit();
 	}
-	gEngine = NULL;
 }
 
 class JVMOptions {
@@ -204,20 +204,14 @@ void ScriptographerEngine::init() {
 	// only add the loader to the classpath, the rest is done in java:
 	options.add("-Djava.class.path=%s" PATH_SEP_STR "loader.jar", m_homeDir);
 #endif
+	options.add("-Djava.library.path=%s" PATH_SEP_STR "lib", m_homeDir);
 
 	// start headless, in order to avoid conflicts with AWT and Illustrator
-	options.add("-Djava.awt.headless=true");
+//	options.add("-Djava.awt.headless=true");
 #ifdef MAC_ENV
+	options.add("-Dapple.awt.usingSWT=true");
 	// use the carbon line separator instead of the unix one on mac:
 	options.add("-Dline.separator=\r");
-	/*
-	// pja
-	// only add the loader to the classpath, the rest is done in java:
-	options.add("-Xbootclasspath/a:%s" PATH_SEP_STR "lib" PATH_SEP_STR "pja.jar", m_homeDir);
-	options.add("-Dawt.toolkit=com.eteks.awt.PJAToolkit");
-	options.add("-Djava.awt.graphicsenv=com.eteks.java2d.PJAGraphicsEnvironment");
-	options.add("-Djava.awt.fonts=/Library/Fonts");
-	*/
 #endif
 	// read ini file and add the options here
 	char str[512];
@@ -253,8 +247,6 @@ void ScriptographerEngine::init() {
 		gPlugin->log("Error creataing Java VM: %i", res);
 		throw new StringException("Cannot create Java VM.");
 	}
-
-	m_javaEngine = NULL;
 
 #ifndef GCJ
 	cls_Loader = env->FindClass("com/scriptographer/loader/Loader");
@@ -298,7 +290,7 @@ void ScriptographerEngine::initEngine() {
 		
 		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_init, env->NewStringUTF(m_homeDir));
 		m_initialized = true;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 }
 
 /**
@@ -311,7 +303,6 @@ jstring ScriptographerEngine::reloadEngine() {
 	m_initialized = false;
 	registerNatives(env);
 	initReflection(env);
-	m_javaEngine = NULL;
 	initEngine();
 	return errors;
 }
@@ -425,11 +416,10 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 // Scriptographer:
 
 	cls_ScriptographerEngine = loadClass(env, "com/scriptographer/ScriptographerEngine");
-	mid_ScriptographerEngine_getInstance = getStaticMethodID(env, cls_ScriptographerEngine, "getInstance", "()Lcom/scriptographer/ScriptographerEngine;");
-	mid_ScriptographerEngine_executeString = getMethodID(env, cls_ScriptographerEngine, "executeString", "(Ljava/lang/String;Lorg/mozilla/javascript/Scriptable;)Lorg/mozilla/javascript/Scriptable;");
-	mid_ScriptographerEngine_executeFile = getMethodID(env, cls_ScriptographerEngine, "executeFile", "(Ljava/lang/String;Lorg/mozilla/javascript/Scriptable;)Lorg/mozilla/javascript/Scriptable;");
 	mid_ScriptographerEngine_init = getStaticMethodID(env, cls_ScriptographerEngine, "init", "(Ljava/lang/String;)V");
 	mid_ScriptographerEngine_destroy = getStaticMethodID(env, cls_ScriptographerEngine, "destroy", "()V");
+	mid_ScriptographerEngine_formatError = getStaticMethodID(env, cls_ScriptographerEngine, "formatError", "(Ljava/lang/Throwable;)Ljava/lang/String;");
+	mid_ScriptographerEngine_reportError = getStaticMethodID(env, cls_ScriptographerEngine, "reportError", "(Ljava/lang/Throwable;)V");
 	mid_ScriptographerEngine_onAbout = getStaticMethodID(env, cls_ScriptographerEngine, "onAbout", "()V");
 
 	cls_ScriptographerException = loadClass(env, "com/scriptographer/ScriptographerException");
@@ -593,8 +583,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_ADMObject_handle = getFieldID(env, cls_ADMObject, "handle", "I");
 
 	cls_Dialog = loadClass(env, "com/scriptographer/adm/Dialog");
-	fid_Dialog_size = getFieldID(env, cls_Dialog, "size", "Ljava/awt/Dimension;");
-	fid_Dialog_bounds = getFieldID(env, cls_Dialog, "bounds", "Ljava/awt/Rectangle;");
+	mid_Dialog_onSizeChanged = getMethodID(env, cls_Dialog, "onSizeChanged", "(II)V");
 
 	cls_ModalDialog = loadClass(env, "com/scriptographer/adm/ModalDialog");
 	fid_ModalDialog_doesModal = getFieldID(env, cls_ModalDialog, "doesModal", "Z");
@@ -614,10 +603,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_Image_byteWidth = getFieldID(env, cls_Image, "byteWidth", "I");
 	fid_Image_bitsPerPixel = getFieldID(env, cls_Image, "bitsPerPixel", "I");
 	mid_Image_getIconHandle = getMethodID(env, cls_Image, "getIconHandle", "()I");
-
-	cls_Item = loadClass(env, "com/scriptographer/adm/Item");
-	fid_Item_nativeBounds = getFieldID(env, cls_Item, "nativeBounds", "Ljava/awt/Rectangle;");
-	mid_Item_updateBounds = getMethodID(env, cls_Item, "updateBounds", "(Ljava/awt/Rectangle;)V");
 	
 	cls_ListItem = loadClass(env, "com/scriptographer/adm/ListItem");
 	fid_ListItem_listHandle = getFieldID(env, cls_ListItem, "listHandle", "I");	
@@ -647,19 +632,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_MenuItem_onUpdate = getStaticMethodID(env, cls_MenuItem, "onUpdate", "(IIII)V");
 	
 	cls_MenuGroup = loadClass(env, "com/scriptographer/adm/MenuGroup");
-}
-
-/**
- * Cashes the javaScriptEngine, returned by ScriptographerEngine.getInstance()
- *
- * throws exceptions
- */
-jobject ScriptographerEngine::getJavaEngine() {
-	if (m_javaEngine == NULL) {
-		JNIEnv *env = getEnv();
-		m_javaEngine = env->NewWeakGlobalRef(callStaticObjectMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_getInstance));
-	}
-	return m_javaEngine;
 }
 
 long ScriptographerEngine::getNanoTime() {
@@ -721,15 +693,29 @@ void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
 	char *text = new char[size];
 	va_list args;
 	va_start(args, str);
-#ifdef MAC_ENV
 	vsnprintf(text, size, str, args);
-#endif
-#ifdef WIN_ENV
-	_vsnprintf(text, size, str, args);
-#endif
 	va_end(args);
 	callVoidMethodReport(env, env->GetStaticObjectField(cls_System, fid_System_out), mid_PrintStream_println, env->NewStringUTF(text));
 	delete text;
+}
+
+char *ScriptographerEngine::formatError(JNIEnv *env, jthrowable throwable) {
+	JNI_CHECK_ENV
+	jstring str = (jstring) callStaticObjectMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_formatError, throwable);
+	return gEngine->convertString(env, str);
+}
+
+void ScriptographerEngine::reportError(JNIEnv *env) {
+	JNI_CHECK_ENV
+	if (isInitialized()) {
+		jthrowable throwable = env->ExceptionOccurred();
+		if (throwable != NULL) {
+			env->ExceptionClear();
+			callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_reportError, throwable);
+		}
+	} else {
+		env->ExceptionDescribe();
+	}
 }
 
 // com.scriptographer.ai.Point <-> AIRealPoint
@@ -789,7 +775,7 @@ ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, ADMPoint *
 	return res;
 }
 
-// com.scriptographer.awt.Rectangle <-> AIRealRect
+// com.scriptographer.ai.Rectangle <-> AIRealRect
 
 jobject ScriptographerEngine::convertRectangle(JNIEnv *env, AIReal left, AIReal top, AIReal right, AIReal bottom, jobject res) {
 	// AIRealRects are upside down, top and bottom are switched!
@@ -2044,7 +2030,7 @@ ASErr ScriptographerEngine::selectionChanged() {
 		}
 //		println(env, "%i", (getNanoTime() - t) / 1000000);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2058,7 +2044,7 @@ ASErr ScriptographerEngine::toolEditOptions(AIToolMessage *message) {
 	try {
 		callStaticVoidMethod(env, cls_Tool, mid_Tool_onEditOptions, (jint) message->tool);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2067,7 +2053,7 @@ ASErr ScriptographerEngine::toolSelect(AIToolMessage *message) {
 	try {
 		callStaticVoidMethod(env, cls_Tool, mid_Tool_onSelect, (jint) message->tool);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2076,7 +2062,7 @@ ASErr ScriptographerEngine::toolDeselect(AIToolMessage *message) {
 	try {
 		callStaticVoidMethod(env, cls_Tool, mid_Tool_onDeselect, (jint) message->tool);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2085,7 +2071,7 @@ ASErr ScriptographerEngine::toolReselect(AIToolMessage *message) {
 	try {
 		callStaticVoidMethod(env, cls_Tool, mid_Tool_onReselect, (jint) message->tool);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2094,7 +2080,7 @@ ASErr ScriptographerEngine::toolMouseDrag(AIToolMessage *message) {
 	try {
 		callStaticVoidMethod(env, cls_Tool, mid_Tool_onMouseDrag, (jint) message->tool, (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2103,7 +2089,7 @@ ASErr ScriptographerEngine::toolMouseDown(AIToolMessage *message) {
 	try {
 		callStaticVoidMethod(env, cls_Tool, mid_Tool_onMouseDown, (jint) message->tool, (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2112,7 +2098,7 @@ ASErr ScriptographerEngine::toolMouseUp(AIToolMessage *message) {
 	try {
 		callStaticVoidMethod(env, cls_Tool, mid_Tool_onMouseUp, (jint) message->tool, (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2160,7 +2146,7 @@ ASErr ScriptographerEngine::liveEffectEditParameters(AILiveEffectEditParamMessag
 				(jint) message->effect, map, (jint) message->context, (jboolean) message->allowPreview);
 		sAILiveEffect->UpdateParameters(message->context);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2172,7 +2158,7 @@ ASErr ScriptographerEngine::liveEffectCalculate(AILiveEffectGoMessage *message) 
 		message->art = (AIArtHandle) callStaticIntMethod(env, cls_LiveEffect, mid_LiveEffect_onCalculate,
 				(jint) message->effect, map, wrapArtHandle(env, message->art));
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2188,7 +2174,7 @@ ASErr ScriptographerEngine::liveEffectGetInputType(AILiveEffectInputTypeMessage 
 		message->typeMask = callStaticIntMethod(env, cls_LiveEffect, mid_LiveEffect_onGetInputType,
 				(jint) message->effect, map, wrapArtHandle(env, message->inputArt));
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2203,7 +2189,7 @@ ASErr ScriptographerEngine::menuItemExecute(AIMenuMessage *message) {
 	try {
 		callStaticVoidMethod(env, cls_MenuItem, mid_MenuItem_onClick, (jint) message->menuItem);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2213,7 +2199,7 @@ ASErr ScriptographerEngine::menuItemUpdate(AIMenuMessage *message, long inArtwor
 		callStaticVoidMethod(env, cls_MenuItem, mid_MenuItem_onUpdate,
 				(jint) message->menuItem, (jint) inArtwork, (jint) isSelected, (jint) isTrue);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2227,7 +2213,7 @@ ASErr ScriptographerEngine::timerExecute(AITimerMessage *message) {
 	try {
 		callStaticVoidMethod(env, cls_Timer, mid_Timer_onExecute, (jint) message->timer);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2242,7 +2228,7 @@ ASErr ScriptographerEngine::annotatorDraw(AIAnnotatorMessage *message) {
 		callStaticVoidMethod(env, cls_Annotator, mid_Annotator_onDraw,
 				(jint) message->annotator, (jint) message->port, (jint) message->view);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2251,7 +2237,7 @@ ASErr ScriptographerEngine::annotatorInvalidate(AIAnnotatorMessage *message) {
 	try {
 		callStaticVoidMethod(env, cls_Annotator, mid_Annotator_onInvalidate, (jint) message->annotator);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 
@@ -2289,7 +2275,7 @@ bool ScriptographerEngine::callOnTrack(jobject handler, ADMTrackerRef tracker) {
 				(jchar) sADMTracker->GetVirtualKey(tracker),
 				(jint) sADMTracker->GetCharacter(tracker),
 				(jlong) sADMTracker->GetTime(tracker));
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return true;
 }
 
@@ -2303,7 +2289,7 @@ void ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 		jobject drawerObj = getObjectField(env, handler, fid_NotificationHandler_drawer);
 		setIntField(env, drawerObj, fid_ADMObject_handle, (jint)drawer);
 		callVoidMethod(env, handler, mid_NotificationHandler_onDraw, drawerObj);
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 }
 
 ASErr ScriptographerEngine::displayAbout() {
@@ -2311,7 +2297,7 @@ ASErr ScriptographerEngine::displayAbout() {
 	try {
 		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_onAbout);
 		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env)
+	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
 }
 

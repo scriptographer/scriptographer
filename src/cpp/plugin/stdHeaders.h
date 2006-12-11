@@ -26,8 +26,8 @@
  *
  * $RCSfile: stdHeaders.h,v $
  * $Author: lehni $
- * $Revision: 1.15 $
- * $Date: 2006/11/30 04:32:05 $
+ * $Revision: 1.16 $
+ * $Date: 2006/12/11 19:02:55 $
  */
 
 #ifndef __stdHeaders__
@@ -40,9 +40,11 @@
 	#define _CRT_NONSTDC_NO_DEPRECATE 1
 	#define _CRT_SECURE_NO_DEPRECATE 1
 	#define _SECURE_SCL_DEPRECATE 0
-	#pragma warning (disable: 4290)		// C++ exception specification ignored except
-										// to indicate a function is not __declspec(nothrow)
+	// C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+	#pragma warning (disable: 4290)	
+
 	#define strcasecmp stricmp
+	#define vsnprintf _vsnprintf
 
 	#include "windows.h"
 	#include <time.h>

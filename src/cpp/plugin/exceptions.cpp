@@ -26,8 +26,8 @@
  *
  * $RCSfile: exceptions.cpp,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/10/18 14:18:08 $
+ * $Revision: 1.9 $
+ * $Date: 2006/12/11 19:02:53 $
  */
  
 #include "stdHeaders.h"
@@ -102,50 +102,56 @@ void JThrowableException::convert(JNIEnv *env) {
 }
 
 char *JThrowableException::toString(JNIEnv *env) {
-	// we don't depend on any underlaying structures like gEngine here, so all the classes need
-	// to be loaded first:
-	jclass cls_StringWriter = env->FindClass("java/io/StringWriter");
-	jmethodID ctr_StringWriter = env->GetMethodID(cls_StringWriter, "<init>", "()V");
-	jmethodID mid_toString = env->GetMethodID(cls_StringWriter, "toString", "()Ljava/lang/String;");
-
-	jclass cls_PrintWriter = env->FindClass("java/io/PrintWriter");
-	jmethodID ctr_PrintWriter = env->GetMethodID(cls_PrintWriter, "<init>", "(Ljava/io/Writer;)V");
-	jmethodID mid_println = env->GetMethodID(cls_PrintWriter, "println", "(Ljava/lang/String;)V");
-
-	jclass cls_Throwable = env->FindClass("java/lang/Throwable");
-	jmethodID mid_getMessage = env->GetMethodID(cls_Throwable, "getMessage", "()Ljava/lang/String;");
-	jmethodID mid_printStackTrace = env->GetMethodID(cls_Throwable, "printStackTrace", "(Ljava/io/PrintWriter;)V");
-
-	jclass cls_String = env->FindClass("java/lang/String");
-	jmethodID mid_getBytes = env->GetMethodID(cls_String, "getBytes", "()[B");
-	if (env->ExceptionCheck()) {
-		env->ExceptionDescribe();
+	// first, try to use a static helper to nicely print errors. If that does not work, do it the dirty
+	// way by calling printStackTrace from C through JNI:
+	if (gEngine != NULL && gEngine->isInitialized()) {
+		return gEngine->formatError(env, m_throwable);
 	} else {
-		// create the string writer...
-		jobject writer = env->NewObject(cls_StringWriter, ctr_StringWriter);
-		// ... and wrap it in a PrintWriter.
-		jobject printer = env->NewObject(cls_PrintWriter, ctr_PrintWriter, writer);
-		// now print the message...
-		jobject message = env->CallObjectMethod(m_throwable, mid_getMessage);
-		env->CallVoidMethod(printer, mid_println, message);
-		// ... and stacktrace to it.
-		env->CallVoidMethod(m_throwable, mid_printStackTrace, printer);
-		// now fetch the string:
-		jstring jstr = (jstring)env->CallObjectMethod(writer, mid_toString);
-		// create a c-string from it:
-		jbyteArray bytes = (jbyteArray)env->CallObjectMethod(jstr, mid_getBytes);
-		jint len = env->GetArrayLength(bytes);
-		char *str = new char[len + 1];
-		if (str == NULL) {
-			env->DeleteLocalRef(bytes);
+		// we don't depend on any underlaying structures like gEngine here, so all the classes need
+		// to be loaded first:
+		jclass cls_StringWriter = env->FindClass("java/io/StringWriter");
+		jmethodID ctr_StringWriter = env->GetMethodID(cls_StringWriter, "<init>", "()V");
+		jmethodID mid_toString = env->GetMethodID(cls_StringWriter, "toString", "()Ljava/lang/String;");
+		
+		jclass cls_PrintWriter = env->FindClass("java/io/PrintWriter");
+		jmethodID ctr_PrintWriter = env->GetMethodID(cls_PrintWriter, "<init>", "(Ljava/io/Writer;)V");
+		jmethodID mid_println = env->GetMethodID(cls_PrintWriter, "println", "(Ljava/lang/String;)V");
+		
+		jclass cls_Throwable = env->FindClass("java/lang/Throwable");
+		jmethodID mid_getMessage = env->GetMethodID(cls_Throwable, "getMessage", "()Ljava/lang/String;");
+		jmethodID mid_printStackTrace = env->GetMethodID(cls_Throwable, "printStackTrace", "(Ljava/io/PrintWriter;)V");
+		
+		jclass cls_String = env->FindClass("java/lang/String");
+		jmethodID mid_getBytes = env->GetMethodID(cls_String, "getBytes", "()[B");
+		if (env->ExceptionCheck()) {
+			env->ExceptionDescribe();
 		} else {
-			env->GetByteArrayRegion(bytes, 0, len, (jbyte *)str);
-			str[len] = 0; // NULL-terminate
-			env->DeleteLocalRef(bytes);
-			return str;
+			// create the string writer...
+			jobject writer = env->NewObject(cls_StringWriter, ctr_StringWriter);
+			// ... and wrap it in a PrintWriter.
+			jobject printer = env->NewObject(cls_PrintWriter, ctr_PrintWriter, writer);
+			// now print the message...
+			jobject message = env->CallObjectMethod(m_throwable, mid_getMessage);
+			env->CallVoidMethod(printer, mid_println, message);
+			// ... and stacktrace to it.
+			env->CallVoidMethod(m_throwable, mid_printStackTrace, printer);
+			// now fetch the string:
+			jstring jstr = (jstring) env->CallObjectMethod(writer, mid_toString);
+			// create a c-string from it:
+			jbyteArray bytes = (jbyteArray) env->CallObjectMethod(jstr, mid_getBytes);
+			jint len = env->GetArrayLength(bytes);
+			char *str = new char[len + 1];
+			if (str == NULL) {
+				env->DeleteLocalRef(bytes);
+			} else {
+				env->GetByteArrayRegion(bytes, 0, len, (jbyte *) str);
+				str[len] = 0; // NULL-terminate
+				env->DeleteLocalRef(bytes);
+				return str;
+			}
 		}
+		return strdup("Unable to generate the Throwable's Stacktrace");
 	}
-	return strdup("Unable to generate the Throwable's Stacktrace");
 }
 
 JThrowableClassException::JThrowableClassException(jclass cls) {
