@@ -70,21 +70,11 @@ END
 // Menu
 //
 
-KMAINPULLDOWNMENUID MENU DISCARDABLE 
+kEmptyMenuID MENU 
 BEGIN
     POPUP "Dialog List"
     BEGIN
-        MENUITEM "Execute Script",              1
-        MENUITEM "Stop All Scripts",            2
         MENUITEM SEPARATOR
-        MENUITEM "Refresh List",                4
-        MENUITEM SEPARATOR
-        MENUITEM "Editor",                      6
-        MENUITEM "Console",                     7
-        MENUITEM SEPARATOR
-        MENUITEM "Set Base Directory...",       9
-        MENUITEM SEPARATOR
-        MENUITEM "About Scriptographer...",     11
     END
 END
 
