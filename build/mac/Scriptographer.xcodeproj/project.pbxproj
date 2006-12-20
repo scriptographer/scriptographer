@@ -349,6 +349,8 @@
 		91DEF0DA0A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */; };
 		91DEF0DB0A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */; };
 		91DEF0DC0A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */; };
+		91E56BF30B396D3C004AED6E /* NSView.m in Sources */ = {isa = PBXBuildFile; fileRef = 91E56B9A0B3965F3004AED6E /* NSView.m */; };
+		91E56C2B0B396EE0004AED6E /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91E56C2A0B396EE0004AED6E /* AppKit.framework */; };
 		91E9C52C0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91E9C52A0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp */; };
 		91E9C52D0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91E9C52B0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp */; };
 		91E9C52E0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91E9C52A0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp */; };
@@ -430,15 +432,6 @@
 			script = /usr/local/lib/gcj;
 		};
 		91193B1B0A2DF3B100B0E3A7 /* PBXBuildRule */ = {
-			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.proxy.script;
-			fileType = sourcecode.java;
-			isEditable = 1;
-			outputFiles = (
-			);
-			script = /usr/local/lib/gcj;
-		};
-		914569D50AF7CADF000FD468 /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
 			fileType = sourcecode.java;
@@ -534,6 +527,11 @@
 		91D4E9580A252070002888A3 /* stdPrefix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = stdPrefix.h; path = prefix/stdPrefix.h; sourceTree = "<group>"; };
 		91D4EDA40A255937002888A3 /* Scriptographer.rsrc */ = {isa = PBXFileReference; lastKnownFileType = archive.rsrc; name = Scriptographer.rsrc; path = resources/Scriptographer.rsrc; sourceTree = "<group>"; };
 		91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_Key.cpp; path = jni/com_scriptographer_adm_Key.cpp; sourceTree = "<group>"; };
+		91E56B990B3965F3004AED6E /* NSView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = NSView.h; path = ../../src/cpp/mac/NSView.h; sourceTree = SOURCE_ROOT; };
+		91E56B9A0B3965F3004AED6E /* NSView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = NSView.m; path = ../../src/cpp/mac/NSView.m; sourceTree = SOURCE_ROOT; };
+		91E56BF20B396CF4004AED6E /* Test.o */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = Test.o; sourceTree = BUILT_PRODUCTS_DIR; };
+		91E56C2A0B396EE0004AED6E /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
+		91E56CE00B396F7D004AED6E /* Test.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; name = Test.o; path = build/Debug/Test.o; sourceTree = "<group>"; };
 		91E9C52A0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_MenuGroup.cpp; path = jni/com_scriptographer_adm_MenuGroup.cpp; sourceTree = "<group>"; };
 		91E9C52B0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_MenuItem.cpp; path = jni/com_scriptographer_adm_MenuItem.cpp; sourceTree = "<group>"; };
 		91EF09BF0A20A2CD00F0EF9A /* admGlobals.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = admGlobals.h; path = jni/admGlobals.h; sourceTree = "<group>"; };
@@ -648,6 +646,7 @@
 			files = (
 				914569D00AF7CADF000FD468 /* Carbon.framework in Frameworks */,
 				914569D10AF7CADF000FD468 /* JavaVM.framework in Frameworks */,
+				91E56C2B0B396EE0004AED6E /* AppKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -663,6 +662,13 @@
 				916E65040A8ACD5400C3508D /* libjvm.dylib in Frameworks */,
 				918F887F0ADE1E8600F0C100 /* libgcj.dylib in Frameworks */,
 				918F88CA0ADE4DA400F0C100 /* libstdc++.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		91E56BF00B396CF4004AED6E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -712,6 +718,7 @@
 				91193B1F0A2DF3B100B0E3A7 /* Scriptographer.aip */,
 				91193B760A2DF3C600B0E3A7 /* Scriptographer.aip */,
 				914569D90AF7CADF000FD468 /* Scriptographer.aip */,
+				91E56BF20B396CF4004AED6E /* Test.o */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -763,10 +770,12 @@
 				91168DF70A2B62130023EB84 /* RhinoToolsMessages.o */,
 				918921E50A88B58000B241AF /* swt.o */,
 				918921E60A88B58000B241AF /* SWTMessages.o */,
+				91E56CE00B396F7D004AED6E /* Test.o */,
 				918F88C80ADE4DA400F0C100 /* libstdc++.dylib */,
 				911690360A2BC5940023EB84 /* libswt-carbon-3139.dylib */,
 				911690370A2BC5940023EB84 /* libswt-pi-carbon-3139.dylib */,
 				911690380A2BC5940023EB84 /* libswt-webkit-carbon-3139.dylib */,
+				91E56C2A0B396EE0004AED6E /* AppKit.framework */,
 			);
 			name = "Frameworks and Libraries";
 			sourceTree = "<group>";
@@ -774,6 +783,8 @@
 		91EF0A450A20A2CD00F0EF9A /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
+				91E56B990B3965F3004AED6E /* NSView.h */,
+				91E56B9A0B3965F3004AED6E /* NSView.m */,
 				91EF0AC60A20A3C200F0EF9A /* CS */,
 				91EF0AC80A20A3D200F0EF9A /* CS2 */,
 				91456A8D0AF7E85D000FD468 /* CS3 */,
@@ -986,7 +997,6 @@
 				914569D20AF7CADF000FD468 /* Rez */,
 			);
 			buildRules = (
-				914569D50AF7CADF000FD468 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);
@@ -1016,6 +1026,22 @@
 			productReference = 91D4E9330A251CFA002888A3 /* Scriptographer.aip */;
 			productType = "com.apple.product-type.bundle";
 		};
+		91E56BF10B396CF4004AED6E /* Test */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 91E56BFF0B396D69004AED6E /* Build configuration list for PBXNativeTarget "Test" */;
+			buildPhases = (
+				91E56BEF0B396CF4004AED6E /* Sources */,
+				91E56BF00B396CF4004AED6E /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Test;
+			productName = Test;
+			productReference = 91E56BF20B396CF4004AED6E /* Test.o */;
+			productType = "com.apple.product-type.objfile";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1031,6 +1057,7 @@
 				91193B230A2DF3C600B0E3A7 /* Scriptographer CS JVM */,
 				91193ACC0A2DF3B100B0E3A7 /* Scriptographer CS2 JVM */,
 				914569800AF7CADF000FD468 /* Scriptographer CS3 JVM */,
+				91E56BF10B396CF4004AED6E /* Test */,
 			);
 		};
 /* End PBXProject section */
@@ -1533,6 +1560,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		91E56BEF0B396CF4004AED6E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				91E56BF30B396D3C004AED6E /* NSView.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
@@ -1872,6 +1907,7 @@
 				DEPLOYMENT_POSTPROCESSING = NO;
 				DSTROOT = "/tmp/$(PROJECT_NAME).dst";
 				GCC_ENABLE_PASCAL_STRINGS = YES;
+				GCC_INCREASE_PRECOMPILED_HEADER_SHARING = NO;
 				GCC_ONE_BYTE_BOOL = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -2082,6 +2118,57 @@
 			};
 			name = Release;
 		};
+		91E56C000B396D69004AED6E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(NATIVE_ARCH)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Test;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+			};
+			name = Debug;
+		};
+		91E56C010B396D69004AED6E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				COPY_PHASE_STRIP = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/lib;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = Test;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2135,6 +2222,15 @@
 			buildConfigurations = (
 				91D4E9310A251CFA002888A3 /* Debug */,
 				91D4E9320A251CFA002888A3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		91E56BFF0B396D69004AED6E /* Build configuration list for PBXNativeTarget "Test" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				91E56C000B396D69004AED6E /* Debug */,
+				91E56C010B396D69004AED6E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

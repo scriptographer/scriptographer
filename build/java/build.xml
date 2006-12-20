@@ -142,14 +142,14 @@
 	<!-- Increases the build.number by one. Execute only before publishing   -->
 	<!-- a new version.                                                      -->
 	<!-- =================================================================== -->
-	<target name="buildnumber">
+	<target name="buildnumber" depends="init">
 		<propertyfile file="build.number" comment="Build Number for Scriptographer Plugin.">
 			  <entry  key="build.number" type="int" default="000" operation="+" pattern="000" />
 		</propertyfile>
 		<antcall target="resources" />
 	</target>
 	
-	<target name="resources" depends="init">
+	<target name="resources">
 		<property name="mac.resources" value="${home.dir}/build/mac/resources" />
 		<property name="win.resources" value="${home.dir}/build/win/resources" />
 		<copy file="${mac.resources}/Info.plist.in" tofile="${mac.resources}/Info.plist" overwrite="true" />
