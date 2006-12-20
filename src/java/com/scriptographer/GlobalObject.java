@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.20 $
- * $Date: 2006/12/11 18:52:15 $
+ * $Revision: 1.21 $
+ * $Date: 2006/12/20 13:33:19 $
  */
 
 package com.scriptographer;
@@ -216,7 +216,7 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 	protected Scriptable createScope(File scriptFile) {
 		ScriptableObject scope = new org.mozilla.javascript.NativeObject();
 		scope.setPrototype(this);
-		scope.setParentScope(this);
+		scope.setParentScope(null);
 		scope.defineProperty("scriptFile", scriptFile,
 			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 		defineProperty(scope, "preferences", "getPreferences", null);
