@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Dialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.19 $
- * $Date: 2006/12/11 19:01:26 $
+ * $Revision: 1.20 $
+ * $Date: 2006/12/20 13:35:15 $
  */
 
 #include "stdHeaders.h"
@@ -64,7 +64,7 @@ ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 	
 	// Execute a one-shot timer right after creation of the dialog, to run initialize()
 	DEFINE_CALLBACK_PROC(Dialog_onInitialize);
-	sADMDialog->CreateTimer(dialog, 0, 0, CALLBACK_PROC(Dialog_onInitialize), NULL, 0);
+	sADMDialog->CreateTimer(dialog, 0, 0, (ADMDialogTimerProc) CALLBACK_PROC(Dialog_onInitialize), NULL, 0);
 	return kNoErr;
 }
 
@@ -110,7 +110,8 @@ void ASAPI Dialog_onSizeChanged(ADMItemRef item, ADMNotifierRef notifier) {
 void ASAPI Dialog_onNotify(ADMDialogRef dialog, ADMNotifierRef notifier) {
 	sADMDialog->DefaultNotify(dialog, notifier);
 	jobject obj = gEngine->getDialogObject(dialog);
-	gEngine->callOnNotify(obj, notifier);
+	if (gEngine != NULL)
+		gEngine->callOnNotify(obj, notifier);
 }
 
 ASBoolean ASAPI Dialog_onTrack(ADMDialogRef dialog, ADMTrackerRef tracker) {
@@ -227,12 +228,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetBounds(JNI
 		ADMRect rect;
 		sADMDialog->GetBoundsRect(dialog, &rect);
 		return gEngine->convertRectangle(env, &rect);
-		/*
-		ADMRect rect, size;
-		sADMDialog->GetBoundsRect(dialog, &rect);
-		sADMDialog->GetLocalRect(dialog, &size);
-		return gEngine->convertRectangle(env, rect.left, rect.top, rect.left + size.right, rect.top + size.bottom);
-		 */
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -245,10 +240,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetBounds(JNIEnv
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDialog->SetBoundsRect(dialog, &rt);
-		/*
-		sADMDialog->Move(dialog, x, y);
-		sADMDialog->Size(dialog, width, height);
-		 */
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -811,4 +802,64 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Dialog_confirm(JNIEnv *en
 		return ret == kADMYesAnswer;
 	} EXCEPTION_CONVERT(env);
 	return false;
+}
+
+// ControlRef ctrl = NULL;
+// WindowRef window = NULL;
+
+/*
+ * int createPlatformControl()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_createPlatformControl(JNIEnv *env, jobject obj) {
+	try {
+	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
+		/*
+		ADMRect rect = {0, 0, 100, 100};
+		ADMItemRef item = sADMItem->Create(dialog, kADMUniqueItemID, kADMItemGroupType, &rect, NULL, NULL, 0);
+		item = sADMItem->Create(dialog, kADMUniqueItemID, kADMItemGroupType, &rect, NULL, NULL, 0);
+		int id = sADMItem->GetID(item);
+		*/
+		ADMWindowRef window = sADMDialog->GetWindowRef(dialog);
+		ControlRef ctrl = NULL, root = NULL;
+
+		/*
+		Rect rt = { 100, 100, 500, 500 };
+		CreateNewWindow(kDocumentWindowClass, kWindowStandardHandlerAttribute | kWindowCompositingAttribute, &rt, &window);
+//		CreateRootControl(window, &root);
+		HIViewFindByID ((HIViewRef) window, kHIViewWindowContentID, (HIViewRef *) &root);
+		ShowWindow(window);
+		SelectWindow(window);
+		*/
+		GetRootControl(window, &root);
+		Rect rect = { 0, 0, 400, 400 };
+		OSStatus err = CreateUserPaneControl(window, &rect, kControlSupportsEmbedding | kControlSupportsFocus | kControlGetsFocusOnClick, &ctrl);
+		err = AutoEmbedControl(ctrl, window);
+		return (jint) ctrl;
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * void dumpControlHierarchy(java.io.File file)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_dumpControlHierarchy(JNIEnv *env, jobject obj, jobject file) {
+	try {
+	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
+		ADMWindowRef window = sADMDialog->GetWindowRef(dialog);
+
+		/*
+		ControlRef sub = NULL;
+		GetIndexedSubControl(ctrl, 1, &sub);
+		Rect rect = { 0, 0, 400, 400 };
+		SetControlBounds(sub, &rect);
+		 HIViewSetNeedsDisplay (ctrl, true);
+		 */
+
+		SPPlatformFileSpecification fsSpec;
+		gEngine->convertFile(env, file, &fsSpec);
+		FSSpec fileSpec;
+		fileSpec.vRefNum = fsSpec.vRefNum;
+		fileSpec.parID = fsSpec.parID;
+		memcpy(fileSpec.name, fsSpec.name, 64);
+		DumpControlHierarchy(window, (FSSpec*) &fileSpec);
+	} EXCEPTION_CONVERT(env);
 }
