@@ -28,8 +28,8 @@
  *
  * $RCSfile: Dialog.java,v $
  * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2006/12/11 18:50:24 $
+ * $Revision: 1.17 $
+ * $Date: 2006/12/20 13:34:04 $
  */
 
 package com.scriptographer.adm;
@@ -49,6 +49,10 @@ import java.util.prefs.Preferences;
 import java.util.prefs.BackingStoreException;
 
 public abstract class Dialog extends CallbackHandler implements Unsealed {
+	
+	public native int createPlatformControl();
+	public native void dumpControlHierarchy(File file);
+
 	// Dialog options (for Create() call)
 	public final static int OPTION_NONE = 0;
 
@@ -786,6 +790,10 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	}
 
 	public void setMaximumSize(int width, int height) {
+		if (width > Short.MAX_VALUE)
+			width = Short.MAX_VALUE;
+		if (height > Short.MAX_VALUE)
+			height = Short.MAX_VALUE;
 		maxSize = new Dimension(width, height);
 		if (initialized) {
 			nativeSetMaximumSize(width, height);
