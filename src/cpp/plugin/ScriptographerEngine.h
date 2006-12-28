@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.29 $
- * $Date: 2006/12/11 19:02:54 $
+ * $Revision: 1.30 $
+ * $Date: 2006/12/28 19:15:32 $
  */
 
 #include "jniMacros.h"
@@ -83,8 +83,6 @@ public:
 	jclass cls_Boolean;
 	jmethodID cid_Boolean;
 	jmethodID mid_Boolean_booleanValue;
-
-	jclass cls_ObjectArray;
 	
 	jclass cls_File;
 	jmethodID cid_File;

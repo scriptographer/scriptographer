@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.43 $
- * $Date: 2006/12/11 19:02:55 $
+ * $Revision: 1.44 $
+ * $Date: 2006/12/28 19:15:32 $
  */
 
 #include "stdHeaders.h"
@@ -341,8 +341,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_Boolean = loadClass(env, "java/lang/Boolean");
 	cid_Boolean = getConstructorID(env, cls_Boolean, "(Z)V");
 	mid_Boolean_booleanValue = getMethodID(env, cls_Boolean, "booleanValue", "()Z");
-	
-	cls_ObjectArray = loadClass(env, "[Ljava/lang/Object;");
 	
 	cls_File = loadClass(env, "java/io/File");
 	cid_File = getConstructorID(env, cls_File, "(Ljava/lang/String;)V");
