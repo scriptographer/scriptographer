@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_adm_Dialog.cpp,v $
  * $Author: lehni $
- * $Revision: 1.20 $
- * $Date: 2006/12/20 13:35:15 $
+ * $Revision: 1.21 $
+ * $Date: 2006/12/28 19:19:38 $
  */
 
 #include "stdHeaders.h"
@@ -78,6 +78,7 @@ ADMBoolean ADMAPI Dialog_onInitialize(ADMDialogRef dialog, ADMTimerRef timerID) 
 		gEngine->callVoidMethodReport(env, obj, gEngine->mid_NotificationHandler_onNotify_int,
 									  (jint) com_scriptographer_adm_Notifier_NOTIFIER_WINDOW_INITIALIZE);
 	} EXCEPTION_CATCH_REPORT(env);
+	return true;
 }
 
 void ASAPI Dialog_onDestroy(ADMDialogRef dialog) {
@@ -804,24 +805,14 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Dialog_confirm(JNIEnv *en
 	return false;
 }
 
-// ControlRef ctrl = NULL;
-// WindowRef window = NULL;
-
 /*
  * int createPlatformControl()
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_createPlatformControl(JNIEnv *env, jobject obj) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
-		/*
-		ADMRect rect = {0, 0, 100, 100};
-		ADMItemRef item = sADMItem->Create(dialog, kADMUniqueItemID, kADMItemGroupType, &rect, NULL, NULL, 0);
-		item = sADMItem->Create(dialog, kADMUniqueItemID, kADMItemGroupType, &rect, NULL, NULL, 0);
-		int id = sADMItem->GetID(item);
-		*/
 		ADMWindowRef window = sADMDialog->GetWindowRef(dialog);
-		ControlRef ctrl = NULL, root = NULL;
-
+#ifdef MAC_ENV
 		/*
 		Rect rt = { 100, 100, 500, 500 };
 		CreateNewWindow(kDocumentWindowClass, kWindowStandardHandlerAttribute | kWindowCompositingAttribute, &rt, &window);
@@ -829,12 +820,49 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_createPlatformControl(
 		HIViewFindByID ((HIViewRef) window, kHIViewWindowContentID, (HIViewRef *) &root);
 		ShowWindow(window);
 		SelectWindow(window);
-		*/
+		 */
+		ControlRef ctrl = NULL, root = NULL;
 		GetRootControl(window, &root);
 		Rect rect = { 0, 0, 400, 400 };
 		OSStatus err = CreateUserPaneControl(window, &rect, kControlSupportsEmbedding | kControlSupportsFocus | kControlGetsFocusOnClick, &ctrl);
 		err = AutoEmbedControl(ctrl, window);
 		return (jint) ctrl;
+#endif
+#ifdef WIN_ENV
+		return (jint) window;
+		/*
+		ADMRect rect = {50, 50, 400, 400};
+		ADMItemRef item = sADMItem->Create(dialog, kADMUniqueItemID, kADMItemGroupType, &rect, NULL, NULL, 0);
+		item = sADMItem->Create(dialog, kADMUniqueItemID, kADMItemGroupType, &rect, NULL, NULL, 0);
+		ADMWindowRef itemWnd = sADMItem->GetWindowRef(item);
+		return (jint) itemWnd;
+		/*
+		int hHeap = GetProcessHeap();
+		int hInstance = GetModuleHandle(NULL);
+		WNDCLASS wWndClass;
+		wndClass.hInstance = hInstance;
+		wndClass.lpfnWndProc = windowProc;
+		wndClass.style = OS.CS_BYTEALIGNWINDOW | OS.CS_DBLCLKS;
+		wndClass.hCursor = OS.LoadCursor (0, OS.IDC_ARROW);
+		int byteCount = windowClass.length () * TCHAR.sizeof;
+		lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (lpWndClass.lpszClassName, windowClass, byteCount);
+		OS.RegisterClass (lpWndClass);
+		*/
+		/*
+		HWND wnd = CreateWindowEx(
+			0, ("Test"), NULL,
+			WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 
+			0, 0,
+			400, 400, 
+			(HWND) window, 
+			0, 
+			GetModuleHandle(NULL),
+			NULL);
+		// SetWindowPos (wnd, (HWND) window, 0, 0, 400, 400, SWP_NOZORDER | SWP_DRAWFRAME | SWP_NOACTIVATE);
+		// ShowWindow(wnd, true);
+		*/
+#endif
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -845,15 +873,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_dumpControlHierarchy(J
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		ADMWindowRef window = sADMDialog->GetWindowRef(dialog);
-
+#ifdef MAC_ENV
 		/*
 		ControlRef sub = NULL;
 		GetIndexedSubControl(ctrl, 1, &sub);
 		Rect rect = { 0, 0, 400, 400 };
 		SetControlBounds(sub, &rect);
-		 HIViewSetNeedsDisplay (ctrl, true);
-		 */
-
+		HIViewSetNeedsDisplay (ctrl, true);
+		*/
 		SPPlatformFileSpecification fsSpec;
 		gEngine->convertFile(env, file, &fsSpec);
 		FSSpec fileSpec;
@@ -861,5 +888,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_dumpControlHierarchy(J
 		fileSpec.parID = fsSpec.parID;
 		memcpy(fileSpec.name, fsSpec.name, 64);
 		DumpControlHierarchy(window, (FSSpec*) &fileSpec);
+#endif
 	} EXCEPTION_CONVERT(env);
 }
