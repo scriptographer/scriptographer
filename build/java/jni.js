@@ -209,24 +209,22 @@ function registerNatives(srcDir, output) {
 	}
 	// and now the register methods:
 
-	out.println('/* Registers natives for a given class an methods array */');
+	out.println('/* Registers native methods for a given class */');
 	out.println('void ScriptographerEngine::registerClassNatives(JNIEnv *env, const char *className, const JNINativeMethod *methods, int count) {');
 	// use the internal ScriptographerEngine::findClass instead of JNI's because this one loads with the Scriptographer loader!
 	out.println('\tjclass cls = findClass(env, className);');
-	out.println('\tif (cls == NULL) {');
-	out.println('\t\tchar msg[64];');
-	out.println('\t\tsprintf(msg, "Cannot register natives for class %s: Class not found.", className);');
-	out.println('\t\tthrow new StringException(msg);');
-	out.println('\t}');
+	out.println('\tif (cls == NULL)');
+	out.println('\t\tthrow new StringException("Cannot register native methods for class %s: Class not found.", className);');
+	out.println('\t// Call getConstructors on each class to fix a bug in JSE 1.6.');
+	out.println('\t// Only by doing so, the registered natives do not get lost!');
+	out.println('\tcallObjectMethod(env, cls, mid_Class_getConstructors);');
+	out.println('\t// Now we can register the native methods.');
 	out.println('\tjint err = env->RegisterNatives(cls, methods, count);');
-	out.println('\tif (err != 0) {');
-	out.println('\t\tchar msg[64];');
-	out.println('\t\tsprintf(msg, "Cannot register natives for class %s.", className);');
-	out.println('\t\tthrow new StringException(msg);');
-	out.println('\t}');
+	out.println('\tif (err != 0)');
+	out.println('\t\tthrow new StringException("Cannot register native methods for class %s.", className);');
 	out.println('}');
 	out.println();
-	out.println('/* Registers natives for all classes, to be called from outside */');
+	out.println('/* Registers native methods for all classes, to be called from outside */');
 	out.println('void ScriptographerEngine::registerNatives(JNIEnv *env) {');
 	for (var cls in classes) {
 		out.println('\tregisterClassNatives(env, "' + cls.replace(/_/gi, '/') + '", ' + cls + '_methods,');
