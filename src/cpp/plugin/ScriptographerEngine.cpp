@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.44 $
- * $Date: 2006/12/28 19:15:32 $
+ * $Revision: 1.45 $
+ * $Date: 2006/12/28 21:23:41 $
  */
 
 #include "stdHeaders.h"
@@ -260,10 +260,17 @@ void ScriptographerEngine::init() {
 	cls_Loader = NULL;
 #endif
 	
+	// Initialize reflection. This retrieves references to all the classes, fields and methods
+	// that are accessed from native code. Since JSE 1.6, this cannot be called after 
+	// registerNatives, since this would somehow clear the internal native link tables.
+	// Also, registerNatives needs yet another workaround to get 1.6 to work: By calling
+	// a reflection method, e.g. getConstructors, the classes are pulled in fully,
+	// avoiding yet another clearing of the link tables at a later point.
+	// (e.g. for classes that are not loaded in initReflection)
+	initReflection(env);
 	// link the native functions to the java functions. The code for this is in registerNatives.cpp,
 	// which is automatically generated from the JNI header files by jni.js
 	registerNatives(env);
-	initReflection(env);
 }
 
 void ScriptographerEngine::exit() {
@@ -301,8 +308,8 @@ jstring ScriptographerEngine::reloadEngine() {
 	JNIEnv *env = getEnv();
 	jstring errors = (jstring) callStaticObjectMethodReport(env, cls_Loader, mid_Loader_reload);
 	m_initialized = false;
-	registerNatives(env);
 	initReflection(env);
+	registerNatives(env);
 	initEngine();
 	return errors;
 }
@@ -323,6 +330,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_Class = loadClass(env, "java/lang/Class");
 	mid_Class_getName = getMethodID(env, cls_Class, "getName", "()Ljava/lang/String;");
+	mid_Class_getConstructors = getMethodID(env, cls_Class, "getConstructors", "()[Ljava/lang/reflect/Constructor;");
 
 	cls_String = loadClass(env, "java/lang/String");
 	cid_String = getConstructorID(env, cls_String, "([B)V");

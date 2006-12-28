@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.30 $
- * $Date: 2006/12/28 19:15:32 $
+ * $Revision: 1.31 $
+ * $Date: 2006/12/28 21:23:41 $
  */
 
 #include "jniMacros.h"
@@ -65,6 +65,7 @@ public:
 
 	jclass cls_Class;
 	jmethodID mid_Class_getName;
+	jmethodID mid_Class_getConstructors;
 
 	jclass cls_String;
 	jmethodID cid_String;
