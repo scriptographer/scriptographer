@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Spacer.java,v $
  * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/11/24 23:39:39 $
+ * $Revision: 1.7 $
+ * $Date: 2006/12/28 21:05:26 $
  */
 
 package com.scriptographer.adm;
@@ -40,8 +40,11 @@ import com.scriptographer.js.Unsealed;
 
 public class Spacer extends Item implements Unsealed {
 
+	private boolean visible;
+
 	public Spacer(int width, int height) {
 		bounds = new Rectangle(0, 0, width, height);
+		visible = true;
 	}
 
 	public Spacer(Dimension size) {
@@ -55,4 +58,14 @@ public class Spacer extends Item implements Unsealed {
 	public void setBounds(int x, int y, int width, int height) {
 		bounds.setBounds(x, y, width, height);
 	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+	
+	
 }
