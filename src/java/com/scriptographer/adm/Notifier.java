@@ -28,8 +28,8 @@
  *
  * $RCSfile: Notifier.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/12/11 18:50:24 $
+ * $Revision: 1.5 $
+ * $Date: 2007/01/03 15:08:28 $
  */
 
 package com.scriptographer.adm;
@@ -114,13 +114,13 @@ public class Notifier {
 		"ADM Destroy Notifier"
 	};
 
-	// hashmap for conversation to unique ids that can be compared with == instead of .equals
+	// hashmap for conversation to unique ids that can be compared with ==
+	// instead of .equals
 	private static HashMap notifiers = new HashMap();
 
 	static {
-		for (int i = 0; i < notifierTypes.length; i++) {
+		for (int i = 0; i < notifierTypes.length; i++)
 			notifiers.put(notifierTypes[i], new Integer(i));
-		}
 	}
 	
 	public static int lookup(String notifier) {
