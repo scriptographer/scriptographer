@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ai_Document.cpp,v $
  * $Author: lehni $
- * $Revision: 1.22 $
- * $Date: 2006/11/04 11:52:56 $
+ * $Revision: 1.23 $
+ * $Date: 2007/01/03 15:11:47 $
  */
 
 #include "stdHeaders.h"
@@ -105,6 +105,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_beginExecution(JNIEnv
 		// This is needed as any code that relies on the right document
 		// to be set may switch any time (in fact, the native getArtHandle
 		// function switches all the time.
+		gActiveDoc = NULL;
 		sAIDocument->GetDocument(&gActiveDoc);
 		gWorkingDoc = gActiveDoc;
 		gCreationDoc = NULL;
@@ -175,7 +176,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_l
 		params.docHeight = height;
 		params.docColorMode = model;
 		sAIDocument->GetDocumentRulerUnits((short *) &params.docUnits);
-		params.docPixelPreview = kAIPreviewModeDefault;
+		params.docPreviewMode = kAIPreviewModeDefault;
 		// TODO: What to do with these two?
 		params.docTransparencyGrid = kAITransparencyGridNone;
 		params.docRasterResolution = kAIRasterResolutionScreen;
