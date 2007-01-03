@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerPlugin.cpp,v $
  * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/10/18 14:18:08 $
+ * $Revision: 1.4 $
+ * $Date: 2007/01/03 15:18:54 $
  */
  
 #include "stdHeaders.h"
@@ -436,9 +436,10 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 			error = checkFileFormat((AIFileFormatMessage *) message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAITool)) {
-		if (sSPBasic->IsEqual(selector, kSelectorAIToolMouseDrag)) {
-			error = gEngine->toolMouseDrag((AIToolMessage *) message);
-		} else if (sSPBasic->IsEqual(selector, kSelectorAITrackToolCursor)) {
+		error = gEngine->toolHandleEvent(selector, (AIToolMessage *) message);
+		/*
+			TODO: Add cursor handling
+			if (sSPBasic->IsEqual(selector, kSelectorAITrackToolCursor)) {
 			// the plugin keeps track of the tool cursorIds, so set it directly here
 			AIToolHandle handle = ((AIToolMessage* ) message)->tool;
 			for (int i = 0; i < sizeof(m_tools) / sizeof(Tool); i++) {
@@ -447,19 +448,7 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 					break;
 				}
 			}
-		} else if (sSPBasic->IsEqual(selector, kSelectorAIToolMouseDown)) {
-			error = gEngine->toolMouseDown((AIToolMessage *) message);
-		} else if (sSPBasic->IsEqual(selector, kSelectorAIToolMouseUp)) {
-			error = gEngine->toolMouseUp((AIToolMessage *) message);
-		} else if (sSPBasic->IsEqual(selector, kSelectorAISelectTool)) {
-			error = gEngine->toolSelect((AIToolMessage *) message);
-		} else if (sSPBasic->IsEqual(selector, kSelectorAIDeselectTool)) {
-			error = gEngine->toolDeselect((AIToolMessage *) message);
-		} else if (sSPBasic->IsEqual(selector, kSelectorAIReselectTool)) {
-			error = gEngine->toolReselect((AIToolMessage *) message);
-		} else if (sSPBasic->IsEqual(selector, kSelectorAIEditToolOptions)) {
-			error = gEngine->toolEditOptions((AIToolMessage *) message);
-		}
+		*/
 	} else if (sSPBasic->IsEqual(caller, kCallerAILiveEffect)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIEditLiveEffectParameters)) {
 			error = gEngine->liveEffectEditParameters((AILiveEffectEditParamMessage *) message);

@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.45 $
- * $Date: 2006/12/28 21:23:41 $
+ * $Revision: 1.46 $
+ * $Date: 2007/01/03 15:18:05 $
  */
 
 #include "stdHeaders.h"
@@ -451,13 +451,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_Tool = loadClass(env, "com/scriptographer/ai/Tool");
 	cid_Tool = getConstructorID(env, cls_Tool, "(II)V");
-	mid_Tool_onEditOptions = getStaticMethodID(env, cls_Tool, "onEditOptions", "(I)V");
-	mid_Tool_onSelect = getStaticMethodID(env, cls_Tool, "onSelect", "(I)V");
-	mid_Tool_onDeselect = getStaticMethodID(env, cls_Tool, "onDeselect", "(I)V");
-	mid_Tool_onReselect = getStaticMethodID(env, cls_Tool, "onReselect", "(I)V");
-	mid_Tool_onMouseDrag = getStaticMethodID(env, cls_Tool, "onMouseDrag", "(IFFI)V");
-	mid_Tool_onMouseDown = getStaticMethodID(env, cls_Tool, "onMouseDown", "(IFFI)V");
-	mid_Tool_onMouseUp = getStaticMethodID(env, cls_Tool, "onMouseUp", "(IFFI)V");
+	mid_Tool_onHandleEvent = getStaticMethodID(env, cls_Tool, "onHandleEvent", "(ILjava/lang/String;FFI)V");
 
 	cls_Point = loadClass(env, "com/scriptographer/ai/Point");
 	cid_Point = getConstructorID(env, cls_Point, "(FF)V");
@@ -2045,64 +2039,10 @@ ASErr ScriptographerEngine::selectionChanged() {
  *
  */
 
-ASErr ScriptographerEngine::toolEditOptions(AIToolMessage *message) {
+ASErr ScriptographerEngine::toolHandleEvent(const char * selector, AIToolMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_Tool, mid_Tool_onEditOptions, (jint) message->tool);
-		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env);
-	return kExceptionErr;
-}
-
-ASErr ScriptographerEngine::toolSelect(AIToolMessage *message) {
-	JNIEnv *env = getEnv();
-	try {
-		callStaticVoidMethod(env, cls_Tool, mid_Tool_onSelect, (jint) message->tool);
-		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env);
-	return kExceptionErr;
-}
-
-ASErr ScriptographerEngine::toolDeselect(AIToolMessage *message) {
-	JNIEnv *env = getEnv();
-	try {
-		callStaticVoidMethod(env, cls_Tool, mid_Tool_onDeselect, (jint) message->tool);
-		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env);
-	return kExceptionErr;
-}
-
-ASErr ScriptographerEngine::toolReselect(AIToolMessage *message) {
-	JNIEnv *env = getEnv();
-	try {
-		callStaticVoidMethod(env, cls_Tool, mid_Tool_onReselect, (jint) message->tool);
-		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env);
-	return kExceptionErr;
-}
-
-ASErr ScriptographerEngine::toolMouseDrag(AIToolMessage *message) {
-	JNIEnv *env = getEnv();
-	try {
-		callStaticVoidMethod(env, cls_Tool, mid_Tool_onMouseDrag, (jint) message->tool, (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
-		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env);
-	return kExceptionErr;
-}
-
-ASErr ScriptographerEngine::toolMouseDown(AIToolMessage *message) {
-	JNIEnv *env = getEnv();
-	try {
-		callStaticVoidMethod(env, cls_Tool, mid_Tool_onMouseDown, (jint) message->tool, (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
-		return kNoErr;
-	} EXCEPTION_CATCH_REPORT(env);
-	return kExceptionErr;
-}
-
-ASErr ScriptographerEngine::toolMouseUp(AIToolMessage *message) {
-	JNIEnv *env = getEnv();
-	try {
-		callStaticVoidMethod(env, cls_Tool, mid_Tool_onMouseUp, (jint) message->tool, (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
+		callStaticVoidMethod(env, cls_Tool, mid_Tool_onHandleEvent, (jint) message->tool, convertString(env, selector), (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;

@@ -26,8 +26,8 @@
  *
  * $RCSfile: ScriptographerEngine.h,v $
  * $Author: lehni $
- * $Revision: 1.31 $
- * $Date: 2006/12/28 21:23:41 $
+ * $Revision: 1.32 $
+ * $Date: 2007/01/03 15:18:05 $
  */
 
 #include "jniMacros.h"
@@ -189,13 +189,7 @@ public:
 	
 	jclass cls_Tool;
 	jmethodID cid_Tool;
-	jmethodID mid_Tool_onEditOptions;
-	jmethodID mid_Tool_onSelect;
-	jmethodID mid_Tool_onDeselect;
-	jmethodID mid_Tool_onReselect;
-	jmethodID mid_Tool_onMouseDrag;
-	jmethodID mid_Tool_onMouseDown;
-	jmethodID mid_Tool_onMouseUp;
+	jmethodID mid_Tool_onHandleEvent;
 
 	jclass cls_Point;
 	jmethodID cid_Point;
@@ -517,14 +511,7 @@ public:
 	ASErr selectionChanged();
 	
 	// AI Tool
-	ASErr toolEditOptions(AIToolMessage *message);
-	ASErr toolTrackCursor(AIToolMessage *message);
-	ASErr toolSelect(AIToolMessage *message);
-	ASErr toolDeselect(AIToolMessage *message);
-	ASErr toolReselect(AIToolMessage *message);
-	ASErr toolMouseDrag(AIToolMessage *message);
-	ASErr toolMouseDown(AIToolMessage *message);
-	ASErr toolMouseUp(AIToolMessage *message);
+	ASErr toolHandleEvent(const char * selector, AIToolMessage *message);
 
 	// AI LiveEffect
 	jobject getLiveEffectParameters(JNIEnv *env, AILiveEffectParameters parameters);
