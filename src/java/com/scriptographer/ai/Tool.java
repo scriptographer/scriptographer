@@ -28,8 +28,8 @@
  *
  * $RCSfile: Tool.java,v $
  * $Author: lehni $
- * $Revision: 1.10 $
- * $Date: 2006/12/11 18:53:17 $
+ * $Revision: 1.11 $
+ * $Date: 2007/01/03 15:09:41 $
  */
 
 package com.scriptographer.ai;
@@ -41,6 +41,7 @@ import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.util.IntMap;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class Tool extends AIObject {
@@ -52,10 +53,11 @@ public class Tool extends AIObject {
 		super(handle);
 		this.index = index;
 	}
-
+	
 	private Scriptable scope;
 	private Function mouseUpFunc;
 	private Function mouseDragFunc;
+	private Function mouseMoveFunc;
 	private Function mouseDownFunc;
 	
 	private Event event = new Event();
@@ -69,6 +71,7 @@ public class Tool extends AIObject {
 			setIdleEventInterval(-1);
 			mouseUpFunc = FunctionHelper.getFunction(scope, "onMouseUp");
 			mouseDragFunc = FunctionHelper.getFunction(scope, "onMouseDrag");
+			mouseMoveFunc = FunctionHelper.getFunction(scope, "onMouseMove");
 			mouseDownFunc = FunctionHelper.getFunction(scope, "onMouseDown");
 			FunctionHelper.callFunction(scope, "onInit");
 		}
@@ -135,6 +138,13 @@ public class Tool extends AIObject {
 		}
 	}
 	
+	protected void onMouseMove(float x, float y, int pressure) throws Exception {
+		if (scope != null && mouseDragFunc != null) {
+			event.setValues(x, y, pressure);
+			FunctionHelper.callFunction(scope, mouseMoveFunc, eventArgs);
+		}
+	}
+	
 	protected void onMouseUp(float x, float y, int pressure) throws Exception {
 		if (scope != null && mouseUpFunc != null) {
 			event.setValues(x, y, pressure);
@@ -142,53 +152,76 @@ public class Tool extends AIObject {
 		}
 	}
 
+	private static final int EVENT_EDIT_OPTIONS = 0;
+	private static final int EVENT_TRACK_CURSOR = 1;
+	private static final int EVENT_MOUSE_DOWN = 2;
+	private static final int EVENT_MOUSE_DRAG = 3;
+	private static final int EVENT_MOUSE_UP = 4;
+	private static final int EVENT_SELECT = 5;
+	private static final int EVENT_DESELECT = 6;
+	private static final int EVENT_RESELECT = 7;
+
+	private final static String[] eventTypes = {
+		"AI Edit Options",
+		"AI Track Cursor",
+		"AI Mouse Down",
+		"AI Mouse Drag",
+		"AI Mouse Up",
+		"AI Select",
+		"AI Deselect",
+		"AI Reselect"
+	};
+	// hashmap for conversation to unique ids that can be compared with ==
+	// instead of .equals
+	private static HashMap events = new HashMap();
+
+	static {
+		for (int i = 0; i < eventTypes.length; i++)
+			events.put(eventTypes[i], new Integer(i));
+	}
+
 	/**
 	 * To be called from the native environment:
 	 */
-	private static void onEditOptions(int handle) throws Exception {
+	private static void onHandleEvent(int handle, String selector, float x,
+			float y, int pressure) throws Exception {
 		Tool tool = getToolByHandle(handle);
-		if (tool != null)
-			tool.onEditOptions();
-	}
-
-	private static void onSelect(int handle) throws Exception {
-		Tool tool = getToolByHandle(handle);
-		if (tool != null)
-			tool.onSelect();
-	}
-
-	private static void onDeselect(int handle) throws Exception {
-		Tool tool = getToolByHandle(handle);
-		if (tool != null)
-			tool.onDeselect();
-	}
-
-	private static void onReselect(int handle) throws Exception {
-		Tool tool = getToolByHandle(handle);
-		if (tool != null)
-			tool.onReselect();
-	}
-
-	private static void onMouseDown(int handle, float x, float y, int pressure) throws Exception {
-		Tool tool = getToolByHandle(handle);
-		if (tool != null)
-			tool.onMouseDown(x, y, pressure);
-	}
-
-	private static void onMouseDrag(int handle, float x, float y, int pressure) throws Exception {
-		Tool tool = getToolByHandle(handle);
-		if (tool != null)
-			tool.onMouseDrag(x, y, pressure);
-	}
-
-	private static void onMouseUp(int handle, float x, float y, int pressure) throws Exception {
-		Tool tool = getToolByHandle(handle);
-		if (tool != null)
-			tool.onMouseUp(x, y, pressure);
+		if (tool != null) {
+			Integer event = (Integer) events.get(selector); 
+			if (event != null) {
+				switch(event.intValue()) {
+					case EVENT_EDIT_OPTIONS:
+						tool.onEditOptions();
+						break;
+					case EVENT_TRACK_CURSOR:
+						tool.onMouseMove(x, y, pressure);
+						break;
+					case EVENT_MOUSE_DOWN:
+						tool.onMouseDown(x, y, pressure);
+						break;
+					case EVENT_MOUSE_DRAG:
+						tool.onMouseDrag(x, y, pressure);
+						break;
+					case EVENT_MOUSE_UP:
+						tool.onMouseUp(x, y, pressure);
+						break;
+					case EVENT_SELECT:
+						tool.onSelect();
+						break;
+					case EVENT_DESELECT:
+						tool.onDeselect();
+						break;
+					case EVENT_RESELECT:
+						tool.onReselect();
+						break;
+				}
+			}
+		}
 	}
 
 	public static Tool getTool(int index) {
-		for (Iterator iterator = getTools().values().iterator(); iterator.hasNext();) {
+		for (Iterator iterator = getTools().values().iterator();
+			iterator.hasNext();) {
 			Tool tool = (Tool) iterator.next();
 			if (tool.index == index)
 				return tool;
