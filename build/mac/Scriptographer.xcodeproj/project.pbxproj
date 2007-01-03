@@ -85,8 +85,8 @@
 		91193AF20A2DF3B100B0E3A7 /* com_scriptographer_ai_TextRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */; };
 		91193AF30A2DF3B100B0E3A7 /* com_scriptographer_ai_TextFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFC0A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp */; };
 		91193AF40A2DF3B100B0E3A7 /* com_scriptographer_adm_ImageStatic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFD0A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp */; };
-		91193AF50A2DF3B100B0E3A7 /* com_scriptographer_ai_ViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_ViewList.cpp */; };
-		91193AF60A2DF3B100B0E3A7 /* com_scriptographer_ai_View.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_View.cpp */; };
+		91193AF50A2DF3B100B0E3A7 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp */; };
+		91193AF60A2DF3B100B0E3A7 /* com_scriptographer_ai_DocumentView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp */; };
 		91193AF70A2DF3B100B0E3A7 /* com_scriptographer_ai_Tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B000A20A4B200F0EF9A /* com_scriptographer_ai_Tool.cpp */; };
 		91193AF80A2DF3B100B0E3A7 /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B010A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp */; };
 		91193AF90A2DF3B100B0E3A7 /* com_scriptographer_ai_TextStoryList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B020A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp */; };
@@ -145,8 +145,8 @@
 		91193B470A2DF3C600B0E3A7 /* com_scriptographer_ai_TextRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */; };
 		91193B480A2DF3C600B0E3A7 /* com_scriptographer_ai_TextFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFC0A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp */; };
 		91193B490A2DF3C600B0E3A7 /* com_scriptographer_adm_ImageStatic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFD0A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp */; };
-		91193B4A0A2DF3C600B0E3A7 /* com_scriptographer_ai_ViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_ViewList.cpp */; };
-		91193B4B0A2DF3C600B0E3A7 /* com_scriptographer_ai_View.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_View.cpp */; };
+		91193B4A0A2DF3C600B0E3A7 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp */; };
+		91193B4B0A2DF3C600B0E3A7 /* com_scriptographer_ai_DocumentView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp */; };
 		91193B4C0A2DF3C600B0E3A7 /* com_scriptographer_ai_Tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B000A20A4B200F0EF9A /* com_scriptographer_ai_Tool.cpp */; };
 		91193B4D0A2DF3C600B0E3A7 /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B010A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp */; };
 		91193B4E0A2DF3C600B0E3A7 /* com_scriptographer_ai_TextStoryList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B020A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp */; };
@@ -222,8 +222,8 @@
 		914569A30AF7CADF000FD468 /* com_scriptographer_ai_TextRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */; };
 		914569A40AF7CADF000FD468 /* com_scriptographer_ai_TextFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFC0A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp */; };
 		914569A50AF7CADF000FD468 /* com_scriptographer_adm_ImageStatic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFD0A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp */; };
-		914569A60AF7CADF000FD468 /* com_scriptographer_ai_ViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_ViewList.cpp */; };
-		914569A70AF7CADF000FD468 /* com_scriptographer_ai_View.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_View.cpp */; };
+		914569A60AF7CADF000FD468 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp */; };
+		914569A70AF7CADF000FD468 /* com_scriptographer_ai_DocumentView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp */; };
 		914569A80AF7CADF000FD468 /* com_scriptographer_ai_Tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B000A20A4B200F0EF9A /* com_scriptographer_ai_Tool.cpp */; };
 		914569A90AF7CADF000FD468 /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B010A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp */; };
 		914569AA0AF7CADF000FD468 /* com_scriptographer_ai_TextStoryList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B020A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp */; };
@@ -316,8 +316,8 @@
 		91D4E90D0A251CFA002888A3 /* com_scriptographer_ai_TextRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */; };
 		91D4E90E0A251CFA002888A3 /* com_scriptographer_ai_TextFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFC0A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp */; };
 		91D4E90F0A251CFA002888A3 /* com_scriptographer_adm_ImageStatic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFD0A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp */; };
-		91D4E9100A251CFA002888A3 /* com_scriptographer_ai_ViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_ViewList.cpp */; };
-		91D4E9110A251CFA002888A3 /* com_scriptographer_ai_View.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_View.cpp */; };
+		91D4E9100A251CFA002888A3 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp */; };
+		91D4E9110A251CFA002888A3 /* com_scriptographer_ai_DocumentView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp */; };
 		91D4E9120A251CFA002888A3 /* com_scriptographer_ai_Tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B000A20A4B200F0EF9A /* com_scriptographer_ai_Tool.cpp */; };
 		91D4E9130A251CFA002888A3 /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B010A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp */; };
 		91D4E9140A251CFA002888A3 /* com_scriptographer_ai_TextStoryList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B020A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp */; };
@@ -349,7 +349,6 @@
 		91DEF0DA0A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */; };
 		91DEF0DB0A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */; };
 		91DEF0DC0A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */; };
-		91E56BF30B396D3C004AED6E /* NSView.m in Sources */ = {isa = PBXBuildFile; fileRef = 91E56B9A0B3965F3004AED6E /* NSView.m */; };
 		91E56C2B0B396EE0004AED6E /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91E56C2A0B396EE0004AED6E /* AppKit.framework */; };
 		91E9C52C0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91E9C52A0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp */; };
 		91E9C52D0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91E9C52B0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp */; };
@@ -395,8 +394,8 @@
 		91EF0B320A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */; };
 		91EF0B330A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFC0A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp */; };
 		91EF0B340A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFD0A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp */; };
-		91EF0B350A20A4B200F0EF9A /* com_scriptographer_ai_ViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_ViewList.cpp */; };
-		91EF0B360A20A4B200F0EF9A /* com_scriptographer_ai_View.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_View.cpp */; };
+		91EF0B350A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp */; };
+		91EF0B360A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp */; };
 		91EF0B370A20A4B200F0EF9A /* com_scriptographer_ai_Tool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B000A20A4B200F0EF9A /* com_scriptographer_ai_Tool.cpp */; };
 		91EF0B380A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B010A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp */; };
 		91EF0B390A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0B020A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp */; };
@@ -529,9 +528,7 @@
 		91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_Key.cpp; path = jni/com_scriptographer_adm_Key.cpp; sourceTree = "<group>"; };
 		91E56B990B3965F3004AED6E /* NSView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = NSView.h; path = ../../src/cpp/mac/NSView.h; sourceTree = SOURCE_ROOT; };
 		91E56B9A0B3965F3004AED6E /* NSView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = NSView.m; path = ../../src/cpp/mac/NSView.m; sourceTree = SOURCE_ROOT; };
-		91E56BF20B396CF4004AED6E /* Test.o */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.objfile"; includeInIndex = 0; path = Test.o; sourceTree = BUILT_PRODUCTS_DIR; };
 		91E56C2A0B396EE0004AED6E /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
-		91E56CE00B396F7D004AED6E /* Test.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; name = Test.o; path = build/Debug/Test.o; sourceTree = "<group>"; };
 		91E9C52A0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_MenuGroup.cpp; path = jni/com_scriptographer_adm_MenuGroup.cpp; sourceTree = "<group>"; };
 		91E9C52B0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_MenuItem.cpp; path = jni/com_scriptographer_adm_MenuItem.cpp; sourceTree = "<group>"; };
 		91EF09BF0A20A2CD00F0EF9A /* admGlobals.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = admGlobals.h; path = jni/admGlobals.h; sourceTree = "<group>"; };
@@ -580,8 +577,8 @@
 		91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_TextRange.cpp; path = jni/com_scriptographer_ai_TextRange.cpp; sourceTree = "<group>"; };
 		91EF0AFC0A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_TextFrame.cpp; path = jni/com_scriptographer_ai_TextFrame.cpp; sourceTree = "<group>"; };
 		91EF0AFD0A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_ImageStatic.cpp; path = jni/com_scriptographer_adm_ImageStatic.cpp; sourceTree = "<group>"; };
-		91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_ViewList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_ViewList.cpp; path = jni/com_scriptographer_ai_ViewList.cpp; sourceTree = "<group>"; };
-		91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_View.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_View.cpp; path = jni/com_scriptographer_ai_View.cpp; sourceTree = "<group>"; };
+		91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_DocumentViewList.cpp; path = jni/com_scriptographer_ai_DocumentViewList.cpp; sourceTree = "<group>"; };
+		91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_DocumentView.cpp; path = jni/com_scriptographer_ai_DocumentView.cpp; sourceTree = "<group>"; };
 		91EF0B000A20A4B200F0EF9A /* com_scriptographer_ai_Tool.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Tool.cpp; path = jni/com_scriptographer_ai_Tool.cpp; sourceTree = "<group>"; };
 		91EF0B010A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Timer.cpp; path = jni/com_scriptographer_ai_Timer.cpp; sourceTree = "<group>"; };
 		91EF0B020A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_TextStoryList.cpp; path = jni/com_scriptographer_ai_TextStoryList.cpp; sourceTree = "<group>"; };
@@ -665,13 +662,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		91E56BF00B396CF4004AED6E /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -718,7 +708,6 @@
 				91193B1F0A2DF3B100B0E3A7 /* Scriptographer.aip */,
 				91193B760A2DF3C600B0E3A7 /* Scriptographer.aip */,
 				914569D90AF7CADF000FD468 /* Scriptographer.aip */,
-				91E56BF20B396CF4004AED6E /* Test.o */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -770,7 +759,6 @@
 				91168DF70A2B62130023EB84 /* RhinoToolsMessages.o */,
 				918921E50A88B58000B241AF /* swt.o */,
 				918921E60A88B58000B241AF /* SWTMessages.o */,
-				91E56CE00B396F7D004AED6E /* Test.o */,
 				918F88C80ADE4DA400F0C100 /* libstdc++.dylib */,
 				911690360A2BC5940023EB84 /* libswt-carbon-3139.dylib */,
 				911690370A2BC5940023EB84 /* libswt-pi-carbon-3139.dylib */,
@@ -857,14 +845,15 @@
 				91EF0AF90A20A4B200F0EF9A /* com_scriptographer_ai_Art.cpp */,
 				91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */,
 				91EF0AFC0A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp */,
-				91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_ViewList.cpp */,
-				91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_View.cpp */,
 				91EF0B000A20A4B200F0EF9A /* com_scriptographer_ai_Tool.cpp */,
 				91EF0B010A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp */,
 				91EF0B020A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp */,
 				91EF0AF30A20A4B200F0EF9A /* com_scriptographer_ai_Color.cpp */,
 				91EF0AF40A20A4B200F0EF9A /* com_scriptographer_ai_CharacterStyle.cpp */,
 				91EF0AF00A20A4B200F0EF9A /* com_scriptographer_ai_Document.cpp */,
+				91EF0AE80A20A4B200F0EF9A /* com_scriptographer_ai_DocumentList.cpp */,
+				91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp */,
+				91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp */,
 				91EF0AF10A20A4B200F0EF9A /* com_scriptographer_ai_Curve.cpp */,
 				91EF0AE20A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp */,
 				91EF0AE30A20A4B200F0EF9A /* com_scriptographer_ai_LayerList.cpp */,
@@ -872,7 +861,6 @@
 				91EF0AE50A20A4B200F0EF9A /* com_scriptographer_ai_FontWeight.cpp */,
 				91EF0AE60A20A4B200F0EF9A /* com_scriptographer_ai_FontList.cpp */,
 				91EF0AE70A20A4B200F0EF9A /* com_scriptographer_ai_FontFamily.cpp */,
-				91EF0AE80A20A4B200F0EF9A /* com_scriptographer_ai_DocumentList.cpp */,
 				91EF0AE90A20A4B200F0EF9A /* com_scriptographer_ai_Pathfinder.cpp */,
 				91EF0AEA0A20A4B200F0EF9A /* com_scriptographer_ai_Path.cpp */,
 				91EF0AEB0A20A4B200F0EF9A /* com_scriptographer_ai_ParagraphStyle.cpp */,
@@ -1026,22 +1014,6 @@
 			productReference = 91D4E9330A251CFA002888A3 /* Scriptographer.aip */;
 			productType = "com.apple.product-type.bundle";
 		};
-		91E56BF10B396CF4004AED6E /* Test */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 91E56BFF0B396D69004AED6E /* Build configuration list for PBXNativeTarget "Test" */;
-			buildPhases = (
-				91E56BEF0B396CF4004AED6E /* Sources */,
-				91E56BF00B396CF4004AED6E /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = Test;
-			productName = Test;
-			productReference = 91E56BF20B396CF4004AED6E /* Test.o */;
-			productType = "com.apple.product-type.objfile";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -1057,7 +1029,6 @@
 				91193B230A2DF3C600B0E3A7 /* Scriptographer CS JVM */,
 				91193ACC0A2DF3B100B0E3A7 /* Scriptographer CS2 JVM */,
 				914569800AF7CADF000FD468 /* Scriptographer CS3 JVM */,
-				91E56BF10B396CF4004AED6E /* Test */,
 			);
 		};
 /* End PBXProject section */
@@ -1186,8 +1157,8 @@
 				91EF0B320A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp in Sources */,
 				91EF0B330A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp in Sources */,
 				91EF0B340A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp in Sources */,
-				91EF0B350A20A4B200F0EF9A /* com_scriptographer_ai_ViewList.cpp in Sources */,
-				91EF0B360A20A4B200F0EF9A /* com_scriptographer_ai_View.cpp in Sources */,
+				91EF0B350A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp in Sources */,
+				91EF0B360A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp in Sources */,
 				91EF0B370A20A4B200F0EF9A /* com_scriptographer_ai_Tool.cpp in Sources */,
 				91EF0B380A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp in Sources */,
 				91EF0B390A20A4B200F0EF9A /* com_scriptographer_ai_TextStoryList.cpp in Sources */,
@@ -1269,8 +1240,8 @@
 				91193AF20A2DF3B100B0E3A7 /* com_scriptographer_ai_TextRange.cpp in Sources */,
 				91193AF30A2DF3B100B0E3A7 /* com_scriptographer_ai_TextFrame.cpp in Sources */,
 				91193AF40A2DF3B100B0E3A7 /* com_scriptographer_adm_ImageStatic.cpp in Sources */,
-				91193AF50A2DF3B100B0E3A7 /* com_scriptographer_ai_ViewList.cpp in Sources */,
-				91193AF60A2DF3B100B0E3A7 /* com_scriptographer_ai_View.cpp in Sources */,
+				91193AF50A2DF3B100B0E3A7 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */,
+				91193AF60A2DF3B100B0E3A7 /* com_scriptographer_ai_DocumentView.cpp in Sources */,
 				91193AF70A2DF3B100B0E3A7 /* com_scriptographer_ai_Tool.cpp in Sources */,
 				91193AF80A2DF3B100B0E3A7 /* com_scriptographer_ai_Timer.cpp in Sources */,
 				91193AF90A2DF3B100B0E3A7 /* com_scriptographer_ai_TextStoryList.cpp in Sources */,
@@ -1350,8 +1321,8 @@
 				91193B470A2DF3C600B0E3A7 /* com_scriptographer_ai_TextRange.cpp in Sources */,
 				91193B480A2DF3C600B0E3A7 /* com_scriptographer_ai_TextFrame.cpp in Sources */,
 				91193B490A2DF3C600B0E3A7 /* com_scriptographer_adm_ImageStatic.cpp in Sources */,
-				91193B4A0A2DF3C600B0E3A7 /* com_scriptographer_ai_ViewList.cpp in Sources */,
-				91193B4B0A2DF3C600B0E3A7 /* com_scriptographer_ai_View.cpp in Sources */,
+				91193B4A0A2DF3C600B0E3A7 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */,
+				91193B4B0A2DF3C600B0E3A7 /* com_scriptographer_ai_DocumentView.cpp in Sources */,
 				91193B4C0A2DF3C600B0E3A7 /* com_scriptographer_ai_Tool.cpp in Sources */,
 				91193B4D0A2DF3C600B0E3A7 /* com_scriptographer_ai_Timer.cpp in Sources */,
 				91193B4E0A2DF3C600B0E3A7 /* com_scriptographer_ai_TextStoryList.cpp in Sources */,
@@ -1434,8 +1405,8 @@
 				914569A30AF7CADF000FD468 /* com_scriptographer_ai_TextRange.cpp in Sources */,
 				914569A40AF7CADF000FD468 /* com_scriptographer_ai_TextFrame.cpp in Sources */,
 				914569A50AF7CADF000FD468 /* com_scriptographer_adm_ImageStatic.cpp in Sources */,
-				914569A60AF7CADF000FD468 /* com_scriptographer_ai_ViewList.cpp in Sources */,
-				914569A70AF7CADF000FD468 /* com_scriptographer_ai_View.cpp in Sources */,
+				914569A60AF7CADF000FD468 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */,
+				914569A70AF7CADF000FD468 /* com_scriptographer_ai_DocumentView.cpp in Sources */,
 				914569A80AF7CADF000FD468 /* com_scriptographer_ai_Tool.cpp in Sources */,
 				914569A90AF7CADF000FD468 /* com_scriptographer_ai_Timer.cpp in Sources */,
 				914569AA0AF7CADF000FD468 /* com_scriptographer_ai_TextStoryList.cpp in Sources */,
@@ -1515,8 +1486,8 @@
 				91D4E90D0A251CFA002888A3 /* com_scriptographer_ai_TextRange.cpp in Sources */,
 				91D4E90E0A251CFA002888A3 /* com_scriptographer_ai_TextFrame.cpp in Sources */,
 				91D4E90F0A251CFA002888A3 /* com_scriptographer_adm_ImageStatic.cpp in Sources */,
-				91D4E9100A251CFA002888A3 /* com_scriptographer_ai_ViewList.cpp in Sources */,
-				91D4E9110A251CFA002888A3 /* com_scriptographer_ai_View.cpp in Sources */,
+				91D4E9100A251CFA002888A3 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */,
+				91D4E9110A251CFA002888A3 /* com_scriptographer_ai_DocumentView.cpp in Sources */,
 				91D4E9120A251CFA002888A3 /* com_scriptographer_ai_Tool.cpp in Sources */,
 				91D4E9130A251CFA002888A3 /* com_scriptographer_ai_Timer.cpp in Sources */,
 				91D4E9140A251CFA002888A3 /* com_scriptographer_ai_TextStoryList.cpp in Sources */,
@@ -1557,14 +1528,6 @@
 				912A21220AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */,
 				912A22D40AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */,
 				912A22D50AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		91E56BEF0B396CF4004AED6E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				91E56BF30B396D3C004AED6E /* NSView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2118,57 +2081,6 @@
 			};
 			name = Release;
 		};
-		91E56C000B396D69004AED6E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = "$(NATIVE_ARCH)";
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				INSTALL_PATH = /usr/local/lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = Test;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
-			};
-			name = Debug;
-		};
-		91E56C010B396D69004AED6E /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
-				INSTALL_PATH = /usr/local/lib;
-				OTHER_LDFLAGS = (
-					"-framework",
-					Foundation,
-					"-framework",
-					AppKit,
-				);
-				PREBINDING = NO;
-				PRODUCT_NAME = Test;
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -2222,15 +2134,6 @@
 			buildConfigurations = (
 				91D4E9310A251CFA002888A3 /* Debug */,
 				91D4E9320A251CFA002888A3 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		91E56BFF0B396D69004AED6E /* Build configuration list for PBXNativeTarget "Test" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				91E56C000B396D69004AED6E /* Debug */,
-				91E56C010B396D69004AED6E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
