@@ -28,8 +28,8 @@
  *
  * $RCSfile: ScriptographerEngine.java,v $
  * $Author: lehni $
- * $Revision: 1.23 $
- * $Date: 2006/12/11 18:52:31 $
+ * $Revision: 1.24 $
+ * $Date: 2007/01/03 15:06:04 $
  */
 
 package com.scriptographer;
@@ -179,14 +179,14 @@ public class ScriptographerEngine {
 			Context cx = Context.getCurrentContext();
 			if (cx != null && ScriptRuntime.hasTopCall(cx)) {
 				Scriptable scope = ScriptRuntime.getTopCallScope(cx);
-				return (Preferences) ScriptableObject.getProperty(scope,
-					"preferences");
+				return (Preferences) ((Wrapper) ScriptableObject.getProperty(
+					scope, "preferences")).unwrap();
 			}
 		}
 		// the base prefs for Scriptographer are:
 		// com.scriptographer.scriptographer
-		// on mac, three nodes seem to be necessary, otherwise things get mixed
-		// up
+		// on mac, three nodes seem to be necessary,
+		// otherwise things get mixed up
 		return Preferences.userNodeForPackage(ScriptographerEngine.class).node(
 			"scriptographer");
 	}
@@ -443,8 +443,6 @@ public class ScriptographerEngine {
 	}
 
 	public static native long getNanoTime();
-
-	public static native Point getMousePoint();
 
 	private static native void nativeShowProgress(String text);
 	
