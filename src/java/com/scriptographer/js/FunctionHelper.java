@@ -28,8 +28,8 @@
  *
  * $RCSfile: FunctionHelper.java,v $
  * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/12/11 18:55:02 $
+ * $Revision: 1.10 $
+ * $Date: 2007/01/03 15:10:40 $
  */
 
 package com.scriptographer.js;
@@ -60,16 +60,19 @@ public class FunctionHelper {
 
 	public static Object callFunction(Scriptable scope, Function func,
 			Object args[]) {
-		ScriptographerEngine.beginExecution();
-		Object ret = func.call(Context.getCurrentContext(), scope, scope, args);
-		// commit all changed objects after a scripting function has been
-		// called!
-		ScriptographerEngine.endExecution();
-		// unwrap if the return value is a native java object:
-		if (ret != null && ret instanceof NativeJavaObject) {
-			ret = ((NativeJavaObject) ret).unwrap();
+		if (func != null) {
+			ScriptographerEngine.beginExecution();
+			Object ret = func.call(Context.getCurrentContext(), scope, scope, args);
+			// commit all changed objects after a scripting function has been
+			// called!
+			ScriptographerEngine.endExecution();
+			// unwrap if the return value is a native java object:
+			if (ret != null && ret instanceof Wrapper) {
+				ret = ((Wrapper) ret).unwrap();
+			}
+			return ret;
 		}
-		return ret;
+		return null;
 	}
 
 	public static Object callFunction(Scriptable scope, Function func) {
@@ -79,9 +82,7 @@ public class FunctionHelper {
 	public static Object callFunction(Scriptable scope, String name,
 			Object args[]) {
 		Function func = getFunction(scope, name);
-		if (func != null)
-			return callFunction(scope, func, args);
-		return null;
+		return func != null ? callFunction(scope, func, args) : null;
 	}
 
 	public static Object callFunction(Scriptable scope, String name) {
