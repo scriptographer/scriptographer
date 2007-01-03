@@ -26,8 +26,8 @@
  *
  * $RCSfile: com_scriptographer_ScriptographerEngine.cpp,v $
  * $Author: lehni $
- * $Revision: 1.19 $
- * $Date: 2006/12/11 19:01:27 $
+ * $Revision: 1.20 $
+ * $Date: 2007/01/03 15:14:31 $
  */
 
 #include "StdHeaders.h"
@@ -91,40 +91,6 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_launch(J
 
 JNIEXPORT jlong JNICALL Java_com_scriptographer_ScriptographerEngine_getNanoTime(JNIEnv *env, jclass cls) {
 	return gEngine->getNanoTime();
-}
-
-/*
- * com.scriptographer.Point getMousePoint()
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ScriptographerEngine_getMousePoint(JNIEnv *env, jclass cls) {
-	try {
-		// get the mousepoint in screencoordinates from the ADMTracker:
-		ADMPoint pt;
-		sADMTracker->GetPoint(NULL, &pt);
-		// now we need to convert the point to a artworkPoint.
-		// this is tricky: first we need to find the point in the window
-		AIDocumentViewHandle view;
-		if (!sAIDocumentView->GetNthDocumentView(0, &view)) {
-#ifdef MAC_ENV
-			GrafPtr port;
-			GetPort(&port);
-			SetPort(GetWindowPort(ActiveNonFloatingWindow()));
-			GlobalToLocal((Point *) &pt);
-			SetPort(port);
-#endif
-#ifdef WIN_ENV
-			HWND wndApp = (HWND) sADMWinHost->GetPlatformAppWindow();
-			HWND wndMdi = FindWindowEx(wndApp, NULL, "MDIClient", NULL);
-			HWND wnd = FindWindowEx(wndMdi, NULL, "MDIClass", NULL);
-			ScreenToClient(wnd, (LPPOINT) &pt);
-#endif
-			// the rest of the conversion is easy: 
-			AIRealPoint point;
-			sAIDocumentView->ViewPointToArtworkPoint(view, &pt, &point);
-			return gEngine->convertPoint(env, &point);
-		}
-	} EXCEPTION_CONVERT(env);
-	return NULL;
 }
 
 /*
