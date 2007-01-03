@@ -24,25 +24,25 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: com_scriptographer_ai_ViewList.cpp,v $
+ * $RCSfile: com_scriptographer_ai_DocumentViewList.cpp,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/10/18 14:17:16 $
+ * $Revision: 1.1 $
+ * $Date: 2007/01/03 15:15:21 $
  */
 
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "aiGlobals.h"
-#include "com_scriptographer_ai_ViewList.h"
+#include "com_scriptographer_ai_DocumentViewList.h"
 
 /*
- * com.scriptographer.ai.ViewList
+ * com.scriptographer.ai.DocumentViewList
  */
 
 /*
  * int nativeGetLength(int docHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeGetLength(JNIEnv *env, jclass cls, jint docHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentViewList_nativeGetLength(JNIEnv *env, jclass cls, jint docHandle) {
 	long count = 0;
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
@@ -54,7 +54,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeGetLength(JNIEn
 /*
  * int nativeGetView(int docHandle, int index)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ViewList_nativeGet(JNIEnv *env, jclass cls, jint docHandle, jint index) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentViewList_nativeGet(JNIEnv *env, jclass cls, jint docHandle, jint index) {
 	AIDocumentViewHandle view = NULL;
 	try {
 		Document_activate((AIDocumentHandle) docHandle);

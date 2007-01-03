@@ -24,26 +24,26 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: com_scriptographer_ai_View.cpp,v $
+ * $RCSfile: com_scriptographer_ai_DocumentView.cpp,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/25 02:13:31 $
+ * $Revision: 1.1 $
+ * $Date: 2007/01/03 15:15:21 $
  */
 
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "aiGlobals.h"
 #include "admGlobals.h"
-#include "com_scriptographer_ai_View.h"
+#include "com_scriptographer_ai_DocumentView.h"
 
 /*
- * com.scriptographer.ai.View
+ * com.scriptographer.ai.DocumentView
  */
 
 /*
  * com.scriptographer.ai.Rectangle getBounds()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_getBounds(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getBounds(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		AIRealRect rect;
@@ -56,7 +56,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_getBounds(JNIEnv *env,
 /*
  * com.scriptographer.ai.Point getCenter()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_getCenter(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getCenter(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		AIRealPoint point;
@@ -69,7 +69,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_getCenter(JNIEnv *env,
 /*
  * void setCenter(float x, float y)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setCenter(JNIEnv *env, jobject obj, jfloat x, jfloat y) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_setCenter(JNIEnv *env, jobject obj, jfloat x, jfloat y) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		DEFINE_POINT(point, x, y);
@@ -80,7 +80,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setCenter(JNIEnv *env, jo
 /*
  * float getZoom()
  */
-JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_View_getZoom(JNIEnv *env, jobject obj) {
+JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_DocumentView_getZoom(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		AIReal zoom = 0;
@@ -93,7 +93,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_View_getZoom(JNIEnv *env, jo
 /*
  * void setZoom(float zoom)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setZoom(JNIEnv *env, jobject obj, jfloat zoom) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_setZoom(JNIEnv *env, jobject obj, jfloat zoom) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		sAIDocumentView->SetDocumentViewZoom(view, zoom);
@@ -104,7 +104,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setZoom(JNIEnv *env, jobj
 /*
  * Point artworkToView(float x, float y)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_artworkToView__FF(JNIEnv *env, jobject obj, jfloat x, jfloat y) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_artworkToView__FF(JNIEnv *env, jobject obj, jfloat x, jfloat y) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		DEFINE_POINT(pointIn, x, y);
@@ -118,7 +118,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_artworkToView__FF(JNIE
 /*
  * Rectangle artworkToView(float x, float y, float width, float height)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_artworkToView__FFFF(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_artworkToView__FFFF(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		DEFINE_POINT(bottomLeftIn, x, y);
@@ -134,7 +134,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_artworkToView__FFFF(JN
 /*
  * com.scriptographer.ai.Point viewToArtwork(float x, float y)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_viewToArtwork__FF(JNIEnv *env, jobject obj, jfloat x, jfloat y) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_viewToArtwork__FF(JNIEnv *env, jobject obj, jfloat x, jfloat y) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		DEFINE_POINT(pointIn, x, y);
@@ -148,7 +148,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_viewToArtwork__FF(JNIE
 /*
  * com.scriptographer.ai.Rectangle viewToArtwork(float x, float y, float width, float height)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_viewToArtwork__FFFF(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_viewToArtwork__FFFF(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		DEFINE_POINT(bottomLeftIn, x, y);
@@ -165,7 +165,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_viewToArtwork__FFFF(JN
 /*
  * void setScreenMode(int mode)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setScreenMode(JNIEnv *env, jobject obj, jint mode) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_setScreenMode(JNIEnv *env, jobject obj, jint mode) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		sAIDocumentView->SetScreenMode(view, (AIScreenMode) mode);
@@ -175,7 +175,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setScreenMode(JNIEnv *env
 /*
  * int getScreenMode()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_View_getScreenMode(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentView_getScreenMode(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		AIScreenMode mode = kNoScreenMode;
@@ -188,7 +188,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_View_getScreenMode(JNIEnv *env
 /*
  * boolean isTemplateVisible()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_isTemplateVisible(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_DocumentView_isTemplateVisible(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		AIBoolean visible = false;
@@ -201,7 +201,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_isTemplateVisible(JNI
 /*
  * void scrollBy(float x, float y)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_scrollBy(JNIEnv *env, jobject obj, jfloat x, jfloat y) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_scrollBy(JNIEnv *env, jobject obj, jfloat x, jfloat y) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		DEFINE_POINT(point, x, y);
@@ -212,7 +212,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_scrollBy(JNIEnv *env, job
 /*
  * com.scriptographer.ai.Rectangle getUpdateRect()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_getUpdateRect(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getUpdateRect(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		AIRealRect rect;
@@ -225,7 +225,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_View_getUpdateRect(JNIEnv *
 /*
  * void invalidate(float x, float y, float width, float height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_invalidate(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_invalidate(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		DEFINE_RECT(rect, x, y, width, height);
@@ -236,7 +236,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_invalidate(JNIEnv *env, j
 /*
  * int getStyle()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_View_getStyle(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentView_getStyle(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		short style;
@@ -249,7 +249,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_View_getStyle(JNIEnv *env, job
 /*
  * boolean getShowPageTiling()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_getShowPageTiling(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_DocumentView_getShowPageTiling(JNIEnv *env, jobject obj) {
 	try {
 		ASBoolean show = false;
 		sAIDocumentView->GetShowPageTiling(&show);
@@ -261,14 +261,14 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_getShowPageTiling(JNI
 /*
  * void setShowPageTiling(boolean show)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setShowPageTiling(JNIEnv *env, jobject obj, jboolean show) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_setShowPageTiling(JNIEnv *env, jobject obj, jboolean show) {
 	sAIDocumentView->SetShowPageTiling(show);
 }
 
 /*
  * boolean getShowGrid()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_getShowGrid(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_DocumentView_getShowGrid(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		ASBoolean show, snap;
@@ -281,7 +281,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_getShowGrid(JNIEnv *e
 /*
  * boolean getSnapGrid()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_getSnapGrid(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_DocumentView_getSnapGrid(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		ASBoolean show, snap;
@@ -294,7 +294,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_getSnapGrid(JNIEnv *e
 /*
  * void setShowGrid(boolean show)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setShowGrid(JNIEnv *env, jobject obj, jboolean show) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_setShowGrid(JNIEnv *env, jobject obj, jboolean show) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		ASBoolean curShow, curSnap;
@@ -306,7 +306,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setShowGrid(JNIEnv *env, 
 /*
  * void setSnapGrid(boolean snap)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setSnapGrid(JNIEnv *env, jobject obj, jboolean snap) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_setSnapGrid(JNIEnv *env, jobject obj, jboolean snap) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		ASBoolean curShow, curSnap;
@@ -318,7 +318,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setSnapGrid(JNIEnv *env, 
 /*
  * boolean getShowTransparencyGrid()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_getShowTransparencyGrid(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_DocumentView_getShowTransparencyGrid(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		ASBoolean show = false;
@@ -331,10 +331,43 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_View_getShowTransparencyGr
 /*
  * void setShowTransparencyGrid(boolean show)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_View_setShowTransparencyGrid(JNIEnv *env, jobject obj, jboolean show) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_setShowTransparencyGrid(JNIEnv *env, jobject obj, jboolean show) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		sAIDocumentView->SetShowTransparencyGrid(view, show);
 	} EXCEPTION_CONVERT(env);
 }
 
+
+/*
+ * com.scriptographer.ai.Point getMousePoint()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getMousePoint(JNIEnv *env, jobject obj) {
+	try {
+		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
+		// get the mousepoint in screencoordinates from the ADMTracker:
+		ADMPoint pt;
+		sADMTracker->GetPoint(NULL, &pt);
+		// now we need to convert the point to a artworkPoint.
+		// this is tricky: first we need to find the point in the window
+		// TODO: At the moment this only works when the window is the front one!
+#ifdef MAC_ENV
+		GrafPtr port;
+		GetPort(&port);
+		SetPort(GetWindowPort(ActiveNonFloatingWindow()));
+		GlobalToLocal((Point *) &pt);
+		SetPort(port);
+#endif
+#ifdef WIN_ENV
+		HWND wndApp = (HWND) sADMWinHost->GetPlatformAppWindow();
+		HWND wndMdi = FindWindowEx(wndApp, NULL, "MDIClient", NULL);
+		HWND wnd = FindWindowEx(wndMdi, NULL, "MDIClass", NULL);
+		ScreenToClient(wnd, (LPPOINT) &pt);
+#endif
+		// the rest of the conversion is easy: 
+		AIRealPoint point;
+		sAIDocumentView->ViewPointToArtworkPoint(view, &pt, &point);
+		return gEngine->convertPoint(env, &point);
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
