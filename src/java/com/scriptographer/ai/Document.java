@@ -28,8 +28,8 @@
  *
  * $RCSfile: Document.java,v $
  * $Author: lehni $
- * $Revision: 1.22 $
- * $Date: 2006/10/25 02:12:51 $
+ * $Revision: 1.23 $
+ * $Date: 2007/01/03 15:10:16 $
  */
 
 package com.scriptographer.ai;
@@ -61,7 +61,7 @@ public class Document extends DictionaryObject {
 		DIALOG_OFF = 3;
 
 	protected LayerList layers = null;
-	protected ViewList views = null;
+	protected DocumentViewList views = null;
 	protected SymbolList symbols = null;
 	protected SwatchList swatches = null;
 	protected GradientList gradients = null;
@@ -167,9 +167,9 @@ public class Document extends DictionaryObject {
 
 	public native Layer getActiveLayer();
 	
-	public ViewList getViews() {
+	public DocumentViewList getViews() {
 		if (views == null)
-			views = new ViewList(this);
+			views = new DocumentViewList(this);
 		return views;
 	}
 	
@@ -180,8 +180,8 @@ public class Document extends DictionaryObject {
 	
 	private native int getActiveViewHandle(); 
 
-	public View getActiveView() {
-		return View.wrapHandle(getActiveViewHandle());
+	public DocumentView getActiveView() {
+		return DocumentView.wrapHandle(getActiveViewHandle());
 	}
 	
 	public SymbolList getSymbols() {

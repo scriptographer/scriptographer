@@ -28,8 +28,8 @@
  * 
  * $RCSfile: Annotator.java,v $
  * $Author: lehni $
- * $Revision: 1.8 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.9 $
+ * $Date: 2007/01/03 15:10:16 $
  */
 
 package com.scriptographer.ai;
@@ -151,7 +151,7 @@ public class Annotator extends AIObject {
 		return onDraw;
 	}
 
-	protected void onDraw(Drawer drawer, View view) throws Exception {
+	protected void onDraw(Drawer drawer, DocumentView view) throws Exception {
 		if (wrapper != null && onDraw != null) {
 			twoArgs[0] = drawer;
 			twoArgs[1] = view;
@@ -179,7 +179,7 @@ public class Annotator extends AIObject {
 	private static void onDraw(int handle, int portHandle, int viewHandle) throws Exception {
 		Annotator annotator = getAnnotator(handle);
 		if (annotator != null) {
-			annotator.onDraw(createDrawer(portHandle), View.wrapHandle(viewHandle));
+			annotator.onDraw(createDrawer(portHandle), DocumentView.wrapHandle(viewHandle));
 		}
 	}
 	

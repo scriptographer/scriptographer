@@ -28,8 +28,8 @@
  * 
  * $RCSfile: GlobalObject.java,v $
  * $Author: lehni $
- * $Revision: 1.21 $
- * $Date: 2006/12/20 13:33:19 $
+ * $Revision: 1.22 $
+ * $Date: 2007/01/03 15:10:16 $
  */
 
 package com.scriptographer;
@@ -114,6 +114,8 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 		CurveList.class,
 		Document.class,
 		DocumentList.class,
+		DocumentView.class,
+		DocumentViewList.class,
 		Event.class,
 		FileFormat.class,
 		FillStyle.class,
@@ -160,8 +162,6 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 		Timer.class,
 		Tool.class,
 		Tracing.class,
-		View.class,
-		ViewList.class,
 
 		// Java
 		File.class
@@ -180,7 +180,7 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 
 		// define some global functions and objects:
 		String[] names = { "print", "include", "execute", "evaluate", "commit",
-			"getNanoTime", "getMousePoint", "updateProgress" };
+			"getNanoTime", "updateProgress" };
 		defineFunctionProperties(names, GlobalObject.class,
 			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 
@@ -196,11 +196,11 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 	protected static void defineProperty(ScriptableObject obj, String name,
 			String getter, String setter) {
 		try {
-			Method getterMethod = getter != null ? GlobalObject.class
-				.getDeclaredMethod(getter,
+			Method getterMethod = getter != null ?
+				GlobalObject.class.getDeclaredMethod(getter,
 					new Class[] { ScriptableObject.class }) : null;
-			Method setterMethod = setter != null ? GlobalObject.class
-				.getDeclaredMethod(setter, new Class[] {
+			Method setterMethod = setter != null ?
+				GlobalObject.class.getDeclaredMethod(setter, new Class[] {
 					ScriptableObject.class, Object.class }) : null;
 			obj.defineProperty(name, null, getterMethod, setterMethod,
 				ScriptableObject.DONTENUM);
@@ -245,15 +245,17 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 	 * 
 	 */
 
-	static Object getActiveDocument(ScriptableObject obj) {
-		return Document.getActiveDocument();
+	protected static Object getActiveDocument(ScriptableObject obj) {
+		return ScriptographerEngine.javaToJS(Document.getActiveDocument());
 	}
 
-	static Object getScriptDirectory(ScriptableObject obj) {
-		return ScriptographerEngine.getScriptDirectory();
+	protected static Object getScriptDirectory(ScriptableObject obj) {
+		return ScriptographerEngine.javaToJS(
+			ScriptographerEngine.getScriptDirectory());
 	}
 
-	static Object getPreferences(ScriptableObject obj) throws IOException {
+	protected static Object getPreferences(ScriptableObject obj)
+			throws IOException {
 		// determine preferences for the current executing script
 		// by walking up the file path to the script directory and using each
 		// folder
@@ -275,7 +277,8 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 		// now replace it with the result so getPreferences is only called once:
 		obj.defineProperty("preferences", prefs, ScriptableObject.READONLY
 			| ScriptableObject.DONTENUM);
-		return prefs;
+
+		return ScriptographerEngine.javaToJS(prefs);
 	}
 
 	/**
@@ -306,8 +309,8 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 			Function funObj) throws Exception {
 		File baseDir = getDirectory(thisObj);
 		for (int i = 0; i < args.length; i++) {
-			ScriptographerEngine.executeFile(new File(baseDir, Context
-				.toString(args[i])), thisObj);
+			ScriptographerEngine.executeFile(new File(baseDir,
+				Context.toString(args[i])), thisObj);
 		}
 	}
 
@@ -319,8 +322,8 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 			Function funObj) throws Exception {
 		File baseDir = getDirectory(thisObj);
 		for (int i = 0; i < args.length; i++) {
-			ScriptographerEngine.executeFile(new File(baseDir, Context
-				.toString(args[i])), null);
+			ScriptographerEngine.executeFile(new File(baseDir,
+				Context.toString(args[i])), null);
 		}
 	}
 
@@ -356,7 +359,7 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 
 	public static Point getMousePoint(Context cx, Scriptable thisObj,
 			Object[] args, Function funObj) {
-		return ScriptographerEngine.getMousePoint();
+		return null;
 	}
 
 	public static boolean updateProgress(Context cx, Scriptable thisObj,

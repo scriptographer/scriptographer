@@ -28,8 +28,8 @@
  *
  * $RCSfile: Event.java,v $
  * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:17:43 $
+ * $Revision: 1.6 $
+ * $Date: 2007/01/03 15:10:16 $
  */
 
 package com.scriptographer.ai;
@@ -64,4 +64,25 @@ public class Event extends WrappableObject {
 	public double getPressure() {
 		return pressure;
 	}
+	
+	// TODO: Consider adding these, present since CS2
+	/**
+	 * For graphic tablets, tangential pressure on the finger wheel of the
+	 * airbrush tool.
+	 */
+	// AIToolPressure stylusWheel;
+	/*
+	 * How the tool is angled, also called altitude or elevation.
+	 */
+	// AIToolAngle tilt;
+	/*
+	 * The direction of tilt, measured clockwise in degrees around the Z axis,
+	 * also called azimuth,
+	 */
+	// AIToolAngle bearing;
+	/*
+	 * Rotation of the tool, measured clockwise in degrees around the tool's
+	 * barrel.
+	 */
+	// AIToolAngle rotation;
 }

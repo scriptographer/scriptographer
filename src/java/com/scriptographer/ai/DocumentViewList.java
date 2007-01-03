@@ -26,21 +26,21 @@
  *
  * File created on 07.04.2005.
  *
- * $RCSfile: ViewList.java,v $
+ * $RCSfile: DocumentViewList.java,v $
  * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/10/18 14:17:44 $
+ * $Revision: 1.1 $
+ * $Date: 2007/01/03 15:10:16 $
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.util.AbstractReadOnlyList;
 
-public class ViewList extends AbstractReadOnlyList {
+public class DocumentViewList extends AbstractReadOnlyList {
 	
 	private Document document;
 	
-	protected ViewList(Document document) {
+	protected DocumentViewList(Document document) {
 		this.document = document;
 	}
 
@@ -53,10 +53,10 @@ public class ViewList extends AbstractReadOnlyList {
 	private static native int nativeGet(int docHandle, int index);
 
 	public Object get(int index) {
-		return View.wrapHandle(nativeGet(document.handle, index));
+		return DocumentView.wrapHandle(nativeGet(document.handle, index));
 	}
 
-	public View getView(int index) {
-		return (View) get(index);
+	public DocumentView getView(int index) {
+		return (DocumentView) get(index);
 	}
 }
