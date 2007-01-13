@@ -26,10 +26,10 @@
  *
  * File created on 03.01.2005.
  *
- * $RCSfile: Notifier.java,v $
- * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2007/01/03 15:08:28 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.adm;

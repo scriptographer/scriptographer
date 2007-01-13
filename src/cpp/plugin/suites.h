@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: suites.h,v $
- * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/11/04 11:52:57 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 // Define versions so they can even be used when compiling for 10 or CS1:

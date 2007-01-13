@@ -26,10 +26,10 @@
  * 
  * File created on 19.02.2005.
  * 
- * $RCSfile: MapObject.java,v $
- * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/12/11 18:55:02 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.js;

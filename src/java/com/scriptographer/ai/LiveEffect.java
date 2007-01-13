@@ -26,10 +26,10 @@
  * 
  * File created on 18.02.2005.
  * 
- * $RCSfile: LiveEffect.java,v $
- * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2006/10/25 02:12:51 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

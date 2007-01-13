@@ -26,10 +26,10 @@
  * 
  * File created on 02.12.2004.
  * 
- * $RCSfile: Art.java,v $
- * $Author: lehni $
- * $Revision: 1.26 $
- * $Date: 2006/11/24 23:39:40 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;
@@ -636,13 +636,17 @@ public abstract class Art extends DictionaryObject {
 		transform(AffineTransform.getTranslateInstance(tx, ty));
 	}
 
+	/**
+	 * translates (moves) the object by the given offset point
+	 * @param t
+	 */
 	public void translate(Point2D t) {
 		translate(t.getX(), t.getY());
 	}
 
 	/**
-	 * rotates the object arond a anchor point by a given angle
-	 * @param theta
+	 * rotates the object around an anchor point by a given angle
+	 * @param theta the rotation angle in radians
 	 * @see Matrix#rotate(double, double, double)
 	 */
 	public void rotate(double theta, float x, float y) {

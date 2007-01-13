@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: stdHeaders.h,v $
- * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2006/12/11 19:02:55 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 #ifndef __stdHeaders__

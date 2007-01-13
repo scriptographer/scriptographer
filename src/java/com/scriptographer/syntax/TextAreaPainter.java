@@ -24,7 +24,7 @@ import java.awt.print.*;
  * of text.
  * 
  * @author Slava Pestov
- * @version $Id: TextAreaPainter.java,v 1.1 2006/12/11 18:56:37 lehni Exp $
+ * @version $Id$
  */
 public class TextAreaPainter extends JComponent implements TabExpander,
 		Printable {

@@ -8,10 +8,10 @@
  *
  * Copyright 1998-2003 Helma Software. All Rights Reserved.
  *
- * $RCSfile: ScriptographerDebugger.java,v $
- * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/12/11 18:53:54 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.debug;

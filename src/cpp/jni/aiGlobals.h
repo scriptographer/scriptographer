@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: aiGlobals.h,v $
- * $Author: lehni $
- * $Revision: 1.14 $
- * $Date: 2006/10/25 02:13:30 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 extern AIDocumentHandle gActiveDoc;

@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: exceptions.h,v $
- * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/10/18 14:18:08 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
  
 #define kExceptionErr 'EXPT';

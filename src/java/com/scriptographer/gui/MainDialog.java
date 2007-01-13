@@ -26,10 +26,10 @@
  *
  * File created on 08.03.2005.
  *
- * $RCSfile: MainDialog.java,v $
- * $Author: lehni $
- * $Revision: 1.16 $
- * $Date: 2006/12/11 18:54:44 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.gui;

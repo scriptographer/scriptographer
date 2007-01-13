@@ -26,10 +26,10 @@
  *
  * File created on 07.04.2005.
  *
- * $RCSfile: DocumentView.java,v $
- * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2007/01/03 15:10:16 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

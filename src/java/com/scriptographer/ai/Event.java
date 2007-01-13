@@ -26,10 +26,10 @@
  *
  * File created on 21.12.2004.
  *
- * $RCSfile: Event.java,v $
- * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2007/01/03 15:10:16 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

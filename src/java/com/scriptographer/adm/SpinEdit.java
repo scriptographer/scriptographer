@@ -26,10 +26,10 @@
  * 
  * File created on 20.10.2005.
  * 
- * $RCSfile: SpinEdit.java,v $
- * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/10/18 14:08:29 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.adm;

@@ -26,10 +26,10 @@
  *
  * File created on 23.01.2005.
  *
- * $RCSfile: GrayColor.java,v $
- * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/10/18 14:10:47 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

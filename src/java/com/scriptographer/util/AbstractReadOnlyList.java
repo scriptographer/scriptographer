@@ -26,10 +26,10 @@
  *
  * File created on 16.02.2005.
  *
- * $RCSfile: AbstractReadOnlyList.java,v $
- * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/18 14:12:36 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.util;

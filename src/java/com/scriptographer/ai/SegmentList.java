@@ -26,10 +26,10 @@
  *
  * File created on 14.12.2004.
  *
- * $RCSfile: SegmentList.java,v $
- * $Author: lehni $
- * $Revision: 1.17 $
- * $Date: 2006/11/24 23:39:40 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

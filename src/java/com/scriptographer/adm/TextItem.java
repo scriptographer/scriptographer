@@ -26,10 +26,10 @@
  *
  * File created on 18.10.2005.
  *
- * $RCSfile: TextItem.java,v $
- * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/11/04 11:47:26 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.adm;

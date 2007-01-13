@@ -26,10 +26,10 @@
  *
  * File created on 31.12.2004.
  *
- * $RCSfile: HierarchyListEntry.java,v $
- * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:08:30 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.adm;

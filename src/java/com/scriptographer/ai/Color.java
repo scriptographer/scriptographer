@@ -26,10 +26,10 @@
  *
  * File created on 30.12.2004.
  *
- * $RCSfile: Color.java,v $
- * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/12/11 18:53:17 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

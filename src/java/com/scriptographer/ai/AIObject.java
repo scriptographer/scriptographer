@@ -26,10 +26,10 @@
  *
  * File created on 24.03.2005.
  *
- * $RCSfile: AIObject.java,v $
- * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:09:17 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

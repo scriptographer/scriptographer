@@ -26,10 +26,10 @@
  *
  * File created on 14.01.2005.
  *
- * $RCSfile: SegmentPoint.java,v $
- * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/12/11 18:53:17 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

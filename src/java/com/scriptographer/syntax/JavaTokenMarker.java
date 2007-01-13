@@ -13,7 +13,7 @@ package com.scriptographer.syntax;
  * Java token marker.
  * 
  * @author Slava Pestov
- * @version $Id: JavaTokenMarker.java,v 1.1 2006/12/11 18:56:38 lehni Exp $
+ * @version $Id$
  */
 public class JavaTokenMarker extends CTokenMarker {
 	public JavaTokenMarker() {

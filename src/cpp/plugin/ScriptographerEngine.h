@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: ScriptographerEngine.h,v $
- * $Author: lehni $
- * $Revision: 1.32 $
- * $Date: 2007/01/03 15:18:05 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 #include "jniMacros.h"

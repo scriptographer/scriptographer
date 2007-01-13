@@ -15,7 +15,7 @@ import javax.swing.text.Segment;
  * Java properties/DOS INI token marker.
  * 
  * @author Slava Pestov
- * @version $Id: PropsTokenMarker.java,v 1.1 2006/12/11 18:56:37 lehni Exp $
+ * @version $Id$
  */
 public class PropsTokenMarker extends TokenMarker {
 	public static final byte VALUE = Token.INTERNAL_FIRST;

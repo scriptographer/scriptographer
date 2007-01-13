@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: com_scriptographer_adm_Dialog.cpp,v $
- * $Author: lehni $
- * $Revision: 1.21 $
- * $Date: 2006/12/28 19:19:38 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 #include "stdHeaders.h"

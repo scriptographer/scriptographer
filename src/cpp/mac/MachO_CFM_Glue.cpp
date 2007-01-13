@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: MachO_CFM_Glue.cpp,v $
- * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/10/18 14:18:20 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 #include "MachO_CFM_Glue.h"

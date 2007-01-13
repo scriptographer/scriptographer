@@ -26,10 +26,10 @@
  * 
  * File created on 26.07.2005.
  * 
- * $RCSfile: CompoundPath.java,v $
- * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/10/18 14:17:43 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

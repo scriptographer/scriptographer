@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: admGlobals.h,v $
- * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/12/11 19:01:27 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 ASErr ASAPI Dialog_onInit(ADMDialogRef dialog);

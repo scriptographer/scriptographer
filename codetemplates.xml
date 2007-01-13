@@ -43,10 +43,10 @@
  * 
  * File created on ${date}.
  * 
- * $$RCSfile: codetemplates.xml,v ${file_name},v $$
- * $$Author: lehni ${user} $$
- * $$Revision: 1.1 $$
- * $$Date: 2006/12/20 13:37:20 ${date} $$
+ * $$RCSfile${file_name},v $$
+ * $$Author${user} $$
+ * $$Revision$$
+ * $$Date${date} $$
  */
 
 ${package_declaration}

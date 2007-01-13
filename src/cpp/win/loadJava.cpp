@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: loadJava.cpp,v $
- * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2005/07/31 12:09:53 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
  
  #include "stdHeaders.h"

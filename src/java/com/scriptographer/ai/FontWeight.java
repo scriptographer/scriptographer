@@ -26,10 +26,10 @@
  * 
  * File created on 04.11.2005.
  * 
- * $RCSfile: FontWeight.java,v $
- * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/10/18 14:17:43 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

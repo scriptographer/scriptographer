@@ -26,10 +26,10 @@
  *
  * File created on 23.05.2006.
  *
- * $RCSfile: CFM_Stub.cpp,v $
- * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/06/12 22:16:07 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 #ifndef ACCESSOR_CALLS_ARE_FUNCTIONS

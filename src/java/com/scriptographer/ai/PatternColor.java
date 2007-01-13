@@ -26,10 +26,10 @@
  * 
  * File created on Oct 19, 2006.
  * 
- * $RCSfile: PatternColor.java,v $
- * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/10/25 02:12:50 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

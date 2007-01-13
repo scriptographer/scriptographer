@@ -13,7 +13,7 @@ package com.scriptographer.syntax;
  * JavaScript token marker.
  * 
  * @author Slava Pestov
- * @version $Id: JavaScriptTokenMarker.java,v 1.1 2006/12/11 18:56:36 lehni Exp $
+ * @version $Id$
  */
 public class JavaScriptTokenMarker extends CTokenMarker {
 	public JavaScriptTokenMarker() {

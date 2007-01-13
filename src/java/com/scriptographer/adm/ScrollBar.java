@@ -26,10 +26,10 @@
  *
  * File created on 03.01.2005.
  *
- * $RCSfile: ScrollBar.java,v $
- * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:08:29 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.adm;

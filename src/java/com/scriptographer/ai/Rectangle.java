@@ -26,10 +26,10 @@
  *
  * File created on 19.12.2004.
  *
- * $RCSfile: Rectangle.java,v $
- * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/10/18 14:17:43 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

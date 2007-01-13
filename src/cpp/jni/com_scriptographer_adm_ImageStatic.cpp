@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: com_scriptographer_adm_ImageStatic.cpp,v $
- * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/10/18 14:17:17 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 #include "StdHeaders.h"

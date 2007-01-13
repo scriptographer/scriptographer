@@ -26,10 +26,10 @@
  *
  * File created on 14.03.2005.
  *
- * $RCSfile: ModalDialog.java,v $
- * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/12/11 18:50:24 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.adm;

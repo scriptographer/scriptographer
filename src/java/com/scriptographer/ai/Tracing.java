@@ -26,10 +26,10 @@
  * 
  * File created on 21.06.2006.
  * 
- * $RCSfile: Tracing.java,v $
- * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/10/18 14:17:44 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

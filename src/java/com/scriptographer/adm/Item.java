@@ -26,10 +26,10 @@
  *
  * File created on 22.12.2004.
  *
- * $RCSfile: Item.java,v $
- * $Author: lehni $
- * $Revision: 1.17 $
- * $Date: 2006/12/11 18:50:24 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.adm;

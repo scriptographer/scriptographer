@@ -26,10 +26,10 @@
  * 
  * File created on Oct 18, 2006.
  * 
- * $RCSfile: Swatch.java,v $
- * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/10/18 14:11:36 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

@@ -26,10 +26,10 @@
  *
  * File created on 08.12.2004.
  *
- * $RCSfile: ScriptographerException.java,v $
- * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/10/18 14:07:28 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer;

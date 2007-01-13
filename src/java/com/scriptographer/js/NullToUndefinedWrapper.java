@@ -26,10 +26,10 @@
  * 
  * File created on 03.11.2005.
  * 
- * $RCSfile: NullToUndefinedWrapper.java,v $
- * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/12/11 18:55:02 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.js;

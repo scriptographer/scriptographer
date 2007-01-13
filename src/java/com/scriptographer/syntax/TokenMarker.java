@@ -22,7 +22,7 @@ import javax.swing.text.Segment;
  * only be used for immediate painting. Notably, it cannot be cached.
  * 
  * @author Slava Pestov
- * @version $Id: TokenMarker.java,v 1.1 2006/12/11 18:56:39 lehni Exp $
+ * @version $Id$
  * 
  * @see org.gjt.sp.jedit.syntax.Token
  */

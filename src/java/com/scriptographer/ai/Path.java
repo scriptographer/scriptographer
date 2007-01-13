@@ -26,10 +26,10 @@
  *
  * File created on 03.12.2004.
  *
- * $RCSfile: Path.java,v $
- * $Author: lehni $
- * $Revision: 1.24 $
- * $Date: 2006/11/24 23:39:40 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

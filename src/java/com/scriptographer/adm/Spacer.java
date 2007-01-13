@@ -26,10 +26,10 @@
  * 
  * File created on 06.03.2005.
  * 
- * $RCSfile: Spacer.java,v $
- * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/12/28 21:05:26 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.adm;

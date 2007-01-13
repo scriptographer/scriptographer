@@ -16,7 +16,7 @@ import javax.swing.text.Segment;
  * Python token marker.
  * 
  * @author Jonathan Revusky
- * @version $Id: PythonTokenMarker.java,v 1.1 2006/12/11 18:56:39 lehni Exp $
+ * @version $Id$
  */
 public class PythonTokenMarker extends TokenMarker {
 	private static final byte TRIPLEQUOTE1 = Token.INTERNAL_FIRST;

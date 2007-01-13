@@ -26,10 +26,10 @@
  * 
  * File created on 28.10.2005.
  * 
- * $RCSfile: TextRange.java,v $
- * $Author: lehni $
- * $Revision: 1.13 $
- * $Date: 2006/10/25 02:12:50 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

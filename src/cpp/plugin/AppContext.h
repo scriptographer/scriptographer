@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: AppContext.h,v $
- * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/10/18 14:14:13 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 class AppContext {

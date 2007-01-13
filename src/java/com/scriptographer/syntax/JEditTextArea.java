@@ -48,7 +48,7 @@ import java.util.Vector;
  *     + "}");</pre>
  *
  * @author Slava Pestov
- * @version $Id: JEditTextArea.java,v 1.1 2006/12/11 18:56:43 lehni Exp $
+ * @version $Id$
  */
 public class JEditTextArea extends JComponent {
 	/**

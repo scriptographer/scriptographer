@@ -26,10 +26,10 @@
  *
  * File created on 03.01.2005.
  *
- * $RCSfile: Slider.java,v $
- * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/11/04 11:47:26 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.adm;

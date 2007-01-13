@@ -26,10 +26,10 @@
  * 
  * File created on 06.03.2005.
  * 
- * $RCSfile: GlobalObject.java,v $
- * $Author: lehni $
- * $Revision: 1.22 $
- * $Date: 2007/01/03 15:10:16 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer;

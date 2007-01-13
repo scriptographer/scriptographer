@@ -15,7 +15,7 @@ import javax.swing.text.Segment;
  * Makefile token marker.
  * 
  * @author Slava Pestov
- * @version $Id: MakefileTokenMarker.java,v 1.1 2006/12/11 18:56:38 lehni Exp $
+ * @version $Id$
  */
 public class MakefileTokenMarker extends TokenMarker {
 	// public members

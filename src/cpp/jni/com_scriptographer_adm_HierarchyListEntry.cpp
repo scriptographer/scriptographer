@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: com_scriptographer_adm_HierarchyListEntry.cpp,v $
- * $Author: lehni $
- * $Revision: 1.9 $
- * $Date: 2006/12/11 19:01:26 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
  
 #include "stdHeaders.h"

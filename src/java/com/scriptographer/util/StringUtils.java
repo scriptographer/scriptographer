@@ -26,10 +26,10 @@
  * 
  * File created on 08.12.2006.
  * 
- * $RCSfile: StringUtils.java,v $
- * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/12/11 18:55:44 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.util;

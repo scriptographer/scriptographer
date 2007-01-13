@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: resourceIds.h,v $
- * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/11/04 11:52:57 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 #define kTool1CursorID					128

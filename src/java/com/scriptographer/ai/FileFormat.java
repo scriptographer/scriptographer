@@ -26,10 +26,10 @@
  *
  * File created on 16.02.2005.
  *
- * $RCSfile: FileFormat.java,v $
- * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/10/18 14:17:43 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

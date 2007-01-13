@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: suites.cpp,v $
- * $Author: lehni $
- * $Revision: 1.5 $
- * $Date: 2006/10/18 14:18:09 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
  
 #include "stdHeaders.h"

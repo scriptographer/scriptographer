@@ -26,10 +26,10 @@
  *
  * File created on 07.12.2004.
  *
- * $RCSfile: ConsoleOutputStream.java,v $
- * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/12/11 18:52:31 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer;

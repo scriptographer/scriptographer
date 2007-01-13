@@ -15,7 +15,7 @@ import javax.swing.text.Segment;
  * SQL token marker.
  * 
  * @author mike dillon
- * @version $Id: SQLTokenMarker.java,v 1.1 2006/12/11 18:56:38 lehni Exp $
+ * @version $Id$
  */
 public class SQLTokenMarker extends TokenMarker {
 	private int offset, lastOffset, lastKeyword, length;

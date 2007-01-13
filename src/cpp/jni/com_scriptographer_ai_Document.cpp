@@ -24,10 +24,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $RCSfile: com_scriptographer_ai_Document.cpp,v $
- * $Author: lehni $
- * $Revision: 1.23 $
- * $Date: 2007/01/03 15:11:47 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 #include "stdHeaders.h"

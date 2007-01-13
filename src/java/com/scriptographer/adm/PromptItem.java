@@ -26,10 +26,10 @@
  * 
  * File created on 23.10.2005.
  * 
- * $RCSfile: PromptItem.java,v $
- * $Author: lehni $
- * $Revision: 1.3 $
- * $Date: 2006/10/18 14:08:28 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.adm;

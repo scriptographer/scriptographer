@@ -26,10 +26,10 @@
  * 
  * File created on Oct 16, 2006.
  * 
- * $RCSfile: PlacedItem.java,v $
- * $Author: lehni $
- * $Revision: 1.1 $
- * $Date: 2006/10/18 14:11:19 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

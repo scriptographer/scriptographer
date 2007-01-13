@@ -26,10 +26,10 @@
  * 
  * File created on 19.10.2005.
  * 
- * $RCSfile: SoftIntMap.java,v $
- * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/10/18 14:12:36 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.util;

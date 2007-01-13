@@ -26,10 +26,10 @@
  * 
  * File created on 21.10.2005.
  * 
- * $RCSfile: Lists.java,v $
- * $Author: lehni $
- * $Revision: 1.4 $
- * $Date: 2006/10/18 14:12:36 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.util;

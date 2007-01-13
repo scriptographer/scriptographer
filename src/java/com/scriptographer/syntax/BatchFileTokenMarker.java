@@ -15,7 +15,7 @@ import javax.swing.text.Segment;
  * Batch file token marker.
  * 
  * @author Slava Pestov
- * @version $Id: BatchFileTokenMarker.java,v 1.1 2006/12/11 18:56:39 lehni Exp $
+ * @version $Id$
  */
 public class BatchFileTokenMarker extends TokenMarker {
 	public byte markTokensImpl(byte token, Segment line, int lineIndex) {

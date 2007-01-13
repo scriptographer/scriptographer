@@ -15,7 +15,7 @@ import javax.swing.text.Segment;
  * HTML token marker.
  * 
  * @author Slava Pestov
- * @version $Id: HTMLTokenMarker.java,v 1.1 2006/12/11 18:56:36 lehni Exp $
+ * @version $Id$
  */
 public class HTMLTokenMarker extends TokenMarker {
 	public static final byte JAVASCRIPT = Token.INTERNAL_FIRST;

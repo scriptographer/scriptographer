@@ -26,10 +26,10 @@
  *
  * File created on 14.02.2005.
  *
- * $RCSfile: StrokeStyle.java,v $
- * $Author: lehni $
- * $Revision: 1.7 $
- * $Date: 2006/10/25 02:12:51 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.ai;

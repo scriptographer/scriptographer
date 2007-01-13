@@ -26,10 +26,10 @@
  *
  * File created on 16.02.2005.
  *
- * $RCSfile: AbstractExtendedList.java,v $
- * $Author: lehni $
- * $Revision: 1.6 $
- * $Date: 2006/10/25 02:12:52 $
+ * $RCSfile$
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 package com.scriptographer.util;
