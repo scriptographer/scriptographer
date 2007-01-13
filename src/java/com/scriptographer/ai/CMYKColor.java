@@ -44,6 +44,14 @@ public class CMYKColor extends Color {
 	protected float yellow;
 	protected float black;
 
+	/**
+	 * The color components have values between 0 and 1
+	 * @param c Cyan
+	 * @param m Magenta
+	 * @param y Yellow
+	 * @param k Black
+	 * @param a Alpha
+	 */
 	public CMYKColor(float c, float m, float y, float k) {
 		this(c, m, y, k, -1f);
 	}

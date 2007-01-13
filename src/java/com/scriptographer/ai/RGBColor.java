@@ -42,6 +42,13 @@ public class RGBColor extends Color {
 	protected float green;
 	protected float blue;
 
+	/**
+	 * The color components have values between 0 and 1
+	 * @param r Red
+	 * @param g Green
+	 * @param b Blue
+	 * @param a Alpha
+	 */
 	public RGBColor(float r, float g, float b) {
 		this(r, g, b, -1f);
 	}

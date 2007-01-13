@@ -253,22 +253,48 @@ public class Document extends DictionaryObject {
 	}
 	
 	/**
+	 * Prints the document
 	 * @param dialogStatus <tt>Document.DIALOG_*</tt>
 	 */
 	public native void print(int dialogStatus);
 	
+	/**
+	 * Saves the document
+	 */
+	
 	public native void save();
 	
+	/**
+	 * Closes the document
+	 */
 	public native void close();
 	
+	/**
+	 * Forces the document to be redrawn
+	 */
 	public native void redraw();
 	
+	/**
+	 * Copies the selected items to the clipboard
+	 */
 	public native void copy();
 	
+	/**
+	 * Cuts the selected items to the clipboard
+	 */
 	public native void cut();
 	
+	/**
+	 * Pastes the selected items to the clipboard
+	 */
 	public native void paste();
 
+	/**
+	 * Places a file in the document
+	 *
+	 * @param file the file to place
+	 * @param linked When set to true, the placed object is a link to the file, otherwise it is embedded within the document
+	 */
 	public native Art place(File file, boolean linked);
 	
 	public Art place(File file) {
@@ -294,11 +320,19 @@ public class Document extends DictionaryObject {
 	public boolean write(File file) {
 		return write(file, null, false);
 	}
-	
+
+	/**
+	 * Checks wether the document contains any selected items.
+	 *
+	 * @return true if the document contains selected items, false otherwise.
+	 */	
 	public native boolean hasSelectedItems();
 
 	public native ArtSet getSelectedItems();
 	
+	/**
+	 * Deselects all the selected items in the document.
+	 */
 	public native void deselectAll();
 	
 	public native ArtSet getMatchingItems(Class type, Map attributes);

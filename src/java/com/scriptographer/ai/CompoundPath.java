@@ -41,6 +41,10 @@ import java.awt.geom.Point2D;
 import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 
+/**
+ * A compound path contains two or more paths, holes are drawn where the paths overlap. All the paths in a compound path take on the style of the backmost path.
+ **/
+
 public class CompoundPath extends Art {
 	/**
 	 * Wraps an AIArtHandle in a Path object

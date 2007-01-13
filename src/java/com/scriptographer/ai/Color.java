@@ -79,7 +79,7 @@ public abstract class Color extends WrappableObject {
 	/**
 	 * Returns the color's alpha value.
 	 * All colors of the different subclasses support alpha values.
-	 * A value of 1f is sometimes treaded as a color without alpha channel.
+	 * A value of 1f is sometimes treated as a color without alpha channel.
 	 *
 	 * @return the color's alpha value
 	 */
