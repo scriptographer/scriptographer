@@ -430,6 +430,10 @@ public abstract class Art extends DictionaryObject {
 
 	private native boolean nativeRemove(int handle, int docHandle, int dictionaryRef);
 
+	/**
+	 * Removes the Art object from the document. If the Art object has children, they are also removed.
+	 * @return true if the Art object was removed, false otherwise
+	 */
 	public boolean remove() {
 		boolean ret = false;
 		if (handle != 0) {
@@ -456,6 +460,10 @@ public abstract class Art extends DictionaryObject {
 	 */
 	public native Art copyTo(Art art);
 
+	/**
+	 * Clone art object within the same document.
+	 * @return the newly cloned art object
+	 */
 	public Object clone() {
 		return copyTo(document);
 	}
@@ -481,6 +489,10 @@ public abstract class Art extends DictionaryObject {
 		return children;
 	}
 
+	/**
+	 * Checks if the Art object has children.
+	 * @return true if it has one or more children, false otherwise
+	 */
 	public boolean hasChildren() {
 		return getFirstChild() != null;
 	}
@@ -495,6 +507,10 @@ public abstract class Art extends DictionaryObject {
 	
 	public native String getName();
 	
+	/**
+	 * Checks if the Art object's name as it appears in the layers palette is a default descriptive name, rather then a user-assigned name.
+	 * @return true if it's name is default, false otherwise.
+	 */
 	public native boolean isDefaultName();
 
 	public PathStyle getStyle() {
@@ -515,6 +531,10 @@ public abstract class Art extends DictionaryObject {
 	protected native void setAttribute(int attribute, boolean value);
 	protected native boolean getAttribute(int attribute);
 
+	/**
+	 * Checks if the Art object is selected or partially selected (groups with some selected objects/partially selected paths)
+	 * @return true if it is selected or partially selected, false otherwise
+	 */
 	public boolean isSelected() {
 		return getAttribute(ATTR_SELECTED.intValue());
 	}
@@ -523,6 +543,10 @@ public abstract class Art extends DictionaryObject {
 		setAttribute(ATTR_SELECTED.intValue(), selected);
 	}
 
+	/**
+	 * Checks if the Art object is fully selected. For paths this means that all segments are selected, for container objects all children are selected
+	 * @return true if it is fully selected, false otherwise
+	 */
 	public boolean isFullySelected() {
 		return getAttribute(ATTR_FULLY_SELECTED.intValue());
 	}
@@ -531,6 +555,10 @@ public abstract class Art extends DictionaryObject {
 		setAttribute(ATTR_FULLY_SELECTED.intValue(), selected);
 	}
 
+	/**
+	 * Checks if the Art object is locked
+	 * @return true if it is locked, false otherwise
+	 */
 	public boolean isLocked() {
 		return getAttribute(ATTR_LOCKED.intValue());
 	}
@@ -539,6 +567,10 @@ public abstract class Art extends DictionaryObject {
 		setAttribute(ATTR_LOCKED.intValue(), locked);
 	}
 
+	/**
+	 * Checks if the Art object is hidden
+	 * @return true if it is hidden, false otherwise
+	 */
 	public boolean isHidden() {
 		return getAttribute(ATTR_HIDDEN.intValue());
 	}
@@ -589,11 +621,17 @@ public abstract class Art extends DictionaryObject {
 	public native boolean appendChild(Art art);
 	
 	/**
-	 * 
-	 * @param art
+	 * Moves the art object above the specified art object
+	 * @param art The art object above which it should be moved
 	 * @return true if it was moved, false otherwise
 	 */
 	public native boolean moveAbove(Art art);
+	
+	/**
+	 * Moves the art object below the specified art object
+	 * @param art The art object below which it should be moved
+	 * @return true if it was moved, false otherwise
+	 */
 	public native boolean moveBelow(Art art);
 
 	/**
@@ -669,7 +707,7 @@ public abstract class Art extends DictionaryObject {
 
 	/**
 	 * rotates the object by a given angle
-	 * @param theta
+	 * @param theta the rotation angle in radians
 	 */
 	public void rotate(double theta) {
 		transform(AffineTransform.getRotateInstance(theta));
@@ -742,14 +780,29 @@ public abstract class Art extends DictionaryObject {
 	
 	public native int getOrder(Art art);
 	
+	/**
+	 * Checks if the Art object is before the specified Art object
+	 * @param art The Art object to check against
+	 * @return true if it is before the specified Art object, false otherwise
+	 */
 	public boolean isBefore(Art art) {
 		return getOrder(art) == ORDER_BEFORE;		
 	}
 	
+	/**
+	 * Checks if the Art object is after the specified Art object
+	 * @param art The Art object to check against
+	 * @return true if it is after the specified Art object, false otherwise
+	 */
 	public boolean isAfter(Art art) {
 		return getOrder(art) == ORDER_AFTER;		
 	}
 	
+	/**
+	 * Checks if the Art object is inside the specified Art object
+	 * @param art The Art object to check against
+	 * @return true if it is inside the specified Art object, false otherwise
+	 */
 	public boolean isInside(Art art) {
 		return getOrder(art) == ORDER_INSIDE;		
 	}
