@@ -69,9 +69,11 @@ public class Document extends DictionaryObject {
 	/**
 	 * Opens an existing document.
 	 *
-	 * @param file the file to read from
-	 * @param colorModel the document's desired color model, Color.MODEL_* values
-	 * @param dialogStatus how dialogs should be handled, Document.DIALOG_* values
+	 * @param file          the file to read from
+	 * @param colorModel    the document's desired color model,
+	                        Color.MODEL_* values
+	 * @param dialogStatus  how dialogs should be handled,
+	                        Document.DIALOG_* values
 	 */
 	public Document(File file, int colorModel, int dialogStatus) {
 		super(nativeCreate(file, colorModel, dialogStatus));
@@ -80,11 +82,13 @@ public class Document extends DictionaryObject {
 	/**
 	 * Creates a new document.
 	 *
-	 * @param title the title of the document
-	 * @param width the width of the document
-	 * @param height the height of the document
-	 * @param colorModel the document's desired color model, Color.MODEL_* values
-	 * @param dialogStatus how dialogs should be handled, Document.DIALOG_* values
+	 * @param title         the title of the document
+	 * @param width         the width of the document
+	 * @param height        the height of the document
+	 * @param colorModel    the document's desired color model,
+	                        Color.MODEL_* values
+	 * @param dialogStatus  how dialogs should be handled,
+	                        Document.DIALOG_* values
 	 */
 	public Document(String title, float width, float height, int colorModel, int dialogStatus) {
 		super(nativeCreate(title, width, height, colorModel, dialogStatus));
@@ -133,11 +137,13 @@ public class Document extends DictionaryObject {
 	 * Activates this document, so all newly created art objects will
 	 * be placed in it. 
 	 * 
-	 * @param focus When set to true, the document window is brought to
-	 * the front, otherwise the window sequence  remains the same.
-	 * @param forCreation if set to true, the internal pointer gWorkingDoc
-	 * will not be modified, but gCreationDoc will be set, which then
-	 * is only used once in the next call to Document_activate() (native stuff).
+	 * @param focus        When set to true, the document window is brought to
+	 *                     the front, otherwise the window sequence remains
+	 *                     the same.
+	 * @param forCreation  if set to true, the internal pointer gWorkingDoc
+	 *                     will not be modified, but gCreationDoc will be set, 
+	 *                     which then is only used once in the next call to
+	 *                     Document_activate() (native stuff).
 	 */
 	private native void activate(boolean focus, boolean forCreation);
 
@@ -145,8 +151,9 @@ public class Document extends DictionaryObject {
 	 * Activates this document, so all newly created art objects will
 	 * be placed in it. 
 	 * 
-	 * @param focus When set to true, the document window is brought to
-	 * the front, otherwise the window sequence  remains the same.
+	 * @param focus  When set to <code>true</code>,
+	 *               the document window is brought to the front,
+	 *               otherwise the window sequence remains the same.
 	 */
 	public void activate(boolean focus) {
 		activate(focus, false);
@@ -254,7 +261,7 @@ public class Document extends DictionaryObject {
 	
 	/**
 	 * Prints the document
-	 * @param dialogStatus <tt>Document.DIALOG_*</tt>
+	 * @param dialogStatus  <tt>Document.DIALOG_*</tt>
 	 */
 	public native void print(int dialogStatus);
 	
@@ -292,8 +299,10 @@ public class Document extends DictionaryObject {
 	/**
 	 * Places a file in the document
 	 *
-	 * @param file the file to place
-	 * @param linked When set to true, the placed object is a link to the file, otherwise it is embedded within the document
+	 * @param file    the file to place
+	 * @param linked  when set to <code>true</code>,
+	 *                the placed object is a link to the file, 
+     *                otherwise it is embedded within the document
 	 */
 	public native Art place(File file, boolean linked);
 	
@@ -302,8 +311,9 @@ public class Document extends DictionaryObject {
 	}
 
 	/**
-	 * Invalidates the rectangle in artwork coordinates. This will cause all views of the
-	 * document that contain the given rectangle to update at the next opportunity.
+	 * Invalidates the rectangle in artwork coordinates.
+	 * This will cause all views of the document that contain
+	 * the given rectangle to update at the next opportunity.
 	 */
 	public native void redraw(float x, float y, float width, float height);
 	
@@ -324,7 +334,8 @@ public class Document extends DictionaryObject {
 	/**
 	 * Checks wether the document contains any selected items.
 	 *
-	 * @return true if the document contains selected items, false otherwise.
+	 * @return  <code>true</code> if the document contains selected items,
+	 *          false otherwise.
 	 */	
 	public native boolean hasSelectedItems();
 
@@ -488,10 +499,11 @@ public class Document extends DictionaryObject {
 	
 	/**
 	 * @param point
-	 * @param type HitTest.TEST_*
-	 * @param tolerance specified in view coordinates (i.e pixels at the current
-		zoom factor). The default value is 2. The algorithm is not guaranteed to produce
-		correct results for large values.
+	 * @param type       HitTest.TEST_*
+	 * @param tolerance  specified in view coordinates
+	                     (i.e pixels at the current zoom factor).
+	                     The default value is 2. The algorithm is not guaranteed 
+	                     to produce correct results for large values.
 	 * @return
 	 */
 	public HitTest hitTest(Point point, int type, float tolerance) {

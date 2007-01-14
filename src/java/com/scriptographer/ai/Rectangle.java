@@ -42,9 +42,10 @@ import org.mozilla.javascript.Scriptable;
 import com.scriptographer.js.Wrappable;
 
 /**
- * A Rectangle specifies an area that is enclosed by it's top-left point (x, y), its width, and its height.
+ * A Rectangle specifies an area that is enclosed by it's top-left point (x, y), 
+ * its width, and its height.
  * It should not be confused with a rectangular path, it is not an art object.
- **/
+ */
 
 public class Rectangle extends Rectangle2D.Float implements Wrappable {
 

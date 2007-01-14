@@ -42,8 +42,8 @@ public class GrayColor extends Color {
 
 	/**
 	 * The color components have values between 0 and 1
-	 * @param g Gray
-	 * @param a Alpha
+	 * @param g  Gray
+	 * @param a  Alpha
 	 */
 	public GrayColor(float g, float a) {
 		gray = g;

@@ -45,6 +45,11 @@ import com.scriptographer.js.Wrappable;
 /*
  * Extend java.awt.geom.Point2D and adds other usefull functions
  */
+
+/**
+ * The Point object represents a point in the two dimensional space of the Illustrator document. Some functions also use it as a two dimensional vector object.
+ **/
+
 public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 	public Point() {
 	}
@@ -108,9 +113,30 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 		return buf.toString();
 	}
 
+	/**
+	 * Returns a copy of the point.
+	 * This is useful as the following code only generates a flat copy:
+	 * 
+	 * <code>var point1 = new Point();
+	 * var point2 = point1;
+	 * point2.x = 1; // also changes point1.x
+	 * 
+	 * var point2 = pt1.clone();
+	 * point2.x = 1; // doesn't change point1.x</code>
+	 *
+	 * @return  the cloned point
+	 */
+
 	public Object clone() {
 		return new Point(this);
 	}
+
+	/**
+	 * Returns the addition of the supplied point to the point object
+	 * as a new point. The object itself is not modified!
+	 * @param pt  the point to add
+	 * @return    the addition of the two points as a new point
+	 */
 
 	public Point add(Point2D pt) {
 		return new Point(x + pt.getX(), y + pt.getY());
@@ -120,6 +146,14 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 		return new Point(x + pt.x, y + pt.y);
 	}
 
+	/**
+	 * Returns the addition of the supplied x and y values to the point object
+	 * as a new point. The object itself is not modified!
+	 * @param x  the x value to add
+	 * @param y  the y value to add
+	 * @return   the addition of the two points as a new point
+	 */
+
 	public Point add(float x, float y) {
 		return new Point(this.x + x, this.y + y);
 	}
@@ -127,6 +161,13 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 	public Point add(double x, double y) {
 		return new Point(this.x + x, this.y + y);
 	}
+
+	/**
+	 * Returns the subtraction of the supplied point to the point object
+	 * as a new point. The object itself is not modified!
+	 * @param pt  the point to subtract
+	 * @return    the subtraction of the two points as a new point
+	 */
 
 	public Point subtract(Point2D pt) {
 		return new Point(x - pt.getX(), y - pt.getY());
@@ -136,6 +177,15 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 		return new Point(x - pt.x, y - pt.y);
 	}
 
+	/**
+	 * Returns the subtraction of the supplied x and y values
+	 * to the point object as a new point.
+	 * The object itself is not modified!
+	 * @param x  The x value to subtract
+	 * @param y  The y value to subtract
+	 * @return   the subtraction of the two points as a new point
+	 */
+
 	public Point subtract(float x, float y) {
 		return new Point(this.x - x, this.y - y);
 	}
@@ -144,6 +194,14 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 		return new Point(this.x - x, this.y - y);
 	}
 
+	/**
+	 * Returns the multiplication of the point object
+	 * by the supplied point as a new point.
+	 * The object itself is not modified!
+	 * @param pt  the point to multiply with
+	 * @return    the multiplication of the two points as a new point
+	 */
+
 	public Point multiply(Point2D pt) {
 		return new Point(x * pt.getX(), y * pt.getY());
 	}
@@ -151,6 +209,17 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 	public Point multiply(Point pt) {
 		return new Point(x * pt.x, y * pt.y);
 	}
+
+	/**
+	 * Returns the multiplication of the point object
+	 * by the supplied x and y values as a new point.
+	 * When no y value is supplied, the point's x and y values
+	 * are multiplied by scale (x).
+	 * The object itself is not modified!
+	 * @param x  the x (or scale) value to multiply with
+	 * @param y  the y value to multiply with
+	 * @return   the multiplication of the two points as a new point
+	 */
 
 	public Point multiply(float x, float y) {
 		return new Point(this.x * x, this.y * y);
@@ -167,6 +236,14 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 	public Point multiply(double scale) {
 		return new Point(x * scale, y * scale);
 	}
+
+	/**
+	 * Checks if the point is within a given distance of another point
+	 * @param pt         the point to check against
+	 * @param tolerance  the maximum distance allowed
+	 * @return           <code>true</code> if it is within the given distance,
+	 *                   false otherwise
+	 */
 
 	public boolean isClose(Point pt, float tolerance) {
 		return distance(pt) < tolerance;
@@ -208,12 +285,27 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 		}
 	}
 
+	/**
+	 * Returns the interpolation point between the point and another point.
+	 * The object itself is not modified!
+	 * @param pt  
+	 * @param t   the position between the two points as a value between 0 and 1
+	 * @return    the interpolation point
+	 */
+
 	public Point interpolate(Point2D pt, float t) {
 		return new Point(
 			x * (1f - t) + (float) pt.getX() * t,
 			y * (1f - t) + (float) pt.getY() * t
 		);
 	}
+
+	/**
+	 * Checks wether the point is inside the rectangle
+	 * @param rect  the rectangle to check against
+	 * @return      <code>true</code> if the point is inside the rectangle,
+	 *              false otherwise
+	 */
 
 	public boolean isInside(Rectangle2D rect) {
 		return rect.contains(this);
@@ -237,6 +329,12 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 		return normalize(1f);
 	}
 
+	/**
+	 * Rotates a point. The object itself is not modified!
+	 * @param theta  the rotation angle in radians
+	 * @return       the rotated point
+	 */
+
 	public Point rotate(float theta) {
 		double s = Math.sin(theta);
 		double c = Math.cos(theta);
@@ -250,9 +348,22 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 		return rotate((float) theta);
 	}
 
+	/**
+	 * Returns the dot product of the point and another point.
+	 * @param pt
+	 * @return    the dot product of the two points
+	 */
+
 	public float dotProduct(Point2D pt) {
 		return x * (float) pt.getX() + y * (float) pt.getY();
 	}
+
+	/**
+	 * Returns the projection of the point on another point.
+	 * Both points are interpreted as vectors.
+	 * @param pt
+	 * @return    the project of the point on another point
+	 */
 
 	public Point project(Point pt) {
 		if (pt.x == 0 && pt.y == 0) {
