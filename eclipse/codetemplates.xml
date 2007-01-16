@@ -20,7 +20,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -43,7 +43,7 @@
  * 
  * File created on ${date}.
  * 
- * $$RCSfile${file_name},v $$
+ * $$Id${file_name},v $$
  * $$Author${user} $$
  * $$Revision$$
  * $$Date${date} $$
