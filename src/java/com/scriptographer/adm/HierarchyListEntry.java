@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,16 +26,16 @@
  *
  * File created on 31.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
 
 import com.scriptographer.ai.Rectangle;
 
+/**
+ * @author lehni
+ */
 public class HierarchyListEntry extends ListEntry {
 	private int font = Dialog.FONT_DEFAULT;
 	private int bgColor = Drawer.COLOR_BACKGROUND;

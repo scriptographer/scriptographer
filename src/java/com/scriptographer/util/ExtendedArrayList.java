@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 16.02.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.util;
@@ -39,6 +36,8 @@ import java.util.Arrays;
 
 /**
  * Wrapps an extended java.util.ArrayList in a com.scriptographer.util.ExtendedList interface
+ * 
+ * @author lehni
  */
 public class ExtendedArrayList extends AbstractExtendedList {
 	List list;

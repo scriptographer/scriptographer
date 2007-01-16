@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,16 +26,16 @@
  *
  * File created on 24.03.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.js.WrappableObject;
 
+/**
+ * @author lehni
+ */
 abstract class AIObject extends WrappableObject {
 	// used for storing the native handle for this object
 	protected int handle;

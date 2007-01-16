@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 22.01.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -38,6 +35,9 @@ import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.io.IOException;
 
+/**
+ * @author lehni
+ */
 public class CMYKColor extends Color {
 	protected float cyan;
 	protected float magenta;
@@ -46,11 +46,12 @@ public class CMYKColor extends Color {
 
 	/**
 	 * The color components have values between 0 and 1
-	 * @param c  Cyan
-	 * @param m  Magenta
-	 * @param y  Yellow
-	 * @param k  Black
-	 * @param a  Alpha
+	 * 
+	 * @param c Cyan
+	 * @param m Magenta
+	 * @param y Yellow
+	 * @param k Black
+	 * @param a Alpha
 	 */
 	public CMYKColor(float c, float m, float y, float k) {
 		this(c, m, y, k, -1f);
@@ -65,10 +66,12 @@ public class CMYKColor extends Color {
 	}
 
 	public java.awt.Color toAWTColor() {
-		// workaround, as there seems to be a problem with the color profiles and cmyk:
+		// workaround, as there seems to be a problem with the color profiles
+		// and cmyk:
 		return convert(Color.TYPE_ARGB).toAWTColor();
 		// this doesn't seem to work:
-		// return new java.awt.Color(getColorSpace(), new float[] { cyan, yellow, magenta, black }, alpha);
+		// return new java.awt.Color(getColorSpace(), new float[] { cyan,
+		// yellow, magenta, black }, alpha);
 	}
 
 	public float[] getComponents() {

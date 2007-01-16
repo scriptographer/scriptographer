@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 16.03.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
@@ -38,6 +35,15 @@ import org.mozilla.javascript.Function;
 
 import com.scriptographer.js.FunctionHelper;
 
+/**
+ * The NotificationListener just recieves notifictaions from native code.
+ * It can be a Dialog, Item or ListEntry
+ * 
+ * It implements Wrappable and Unsealed in order to provide the JS environment
+ * a means of setting callback functions and calling these from Java.
+ * 
+ * @author lehni
+ */
 abstract class NotificationHandler extends ADMObject {
 	private Tracker tracker = new Tracker();
  	private Drawer drawer = new Drawer();

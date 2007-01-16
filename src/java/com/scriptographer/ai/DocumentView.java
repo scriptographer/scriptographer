@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 07.04.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -37,6 +34,9 @@ package com.scriptographer.ai;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+/**
+ * @author lehni
+ */
 public class DocumentView extends AIWrapper {
 	public static final int
 	/** Only when there is no visibile document */
@@ -101,7 +101,6 @@ public class DocumentView extends AIWrapper {
 	 * values supported (currently between 1/32 and 64). After adjusting the
 	 * zoom factor the document view center is unchanged.
 	 */
-
 	public native void setZoom(float zoom);
 
 	/**
@@ -144,8 +143,7 @@ public class DocumentView extends AIWrapper {
 	 * is selected via the three screen mode icons on the bottom of the tool
 	 * palette.
 	 * 
-	 * @param mode
-	 *            View.MODE_*
+	 * @param mode View.MODE_*
 	 */
 	public native void setScreenMode(int mode);
 
@@ -162,6 +160,7 @@ public class DocumentView extends AIWrapper {
 	 * Get the page tiling information that describes how the artwork will be
 	 * printed onto one or more pages.
 	 */
+
 	// public native PageTiling getPageTiling(); // TODO: implement
 	/**
 	 * True if there is a visible template layer.
@@ -183,7 +182,6 @@ public class DocumentView extends AIWrapper {
 	 * redrawn. This rectangle is reset to be empty each time the
 	 * #kAIDocumentViewInvalidRectChangedNotifier is sent.
 	 */
-
 	public native Rectangle getUpdateRect();
 
 	public native void invalidate(float x, float y, float width, float height);

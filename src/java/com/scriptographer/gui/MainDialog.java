@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 08.03.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.gui;
@@ -48,6 +45,9 @@ import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.*;
 import com.scriptographer.ai.Tool;
 
+/**
+ * @author lehni
+ */
 public class MainDialog extends FloatingDialog {
 	static final String title = "Scriptographer";
 	static final int lineHeight = 16;
@@ -71,9 +71,10 @@ public class MainDialog extends FloatingDialog {
 		setTitle(title);
 		setIncrement(1, lineHeight);
 
-		// add the menus:
-		// use a space in the beginning of the name so it appears on top of all entries :)
-		MenuItem scriptographerItem = new MenuItem(MenuGroup.GROUP_TOOL_PALETTES, " Scriptographer");
+		// add the menus: use a space in the beginning of the name so it appears
+		// on top of all entries :)
+		MenuItem scriptographerItem =
+				new MenuItem(MenuGroup.GROUP_TOOL_PALETTES, " Scriptographer");
 
 		new MenuItem(scriptographerItem, "Main") {
 			public void onClick() {
@@ -134,7 +135,9 @@ public class MainDialog extends FloatingDialog {
 		
 		ListEntry helpEntry = new ListEntry(menu) {
 			protected void onClick() {
-				ScriptographerEngine.launch("file://" + new File(ScriptographerEngine.getPluginDirectory(), "doc/index.html"));
+				ScriptographerEngine.launch("file://" +
+						new File(ScriptographerEngine.getPluginDirectory(),
+								"doc/index.html"));
 			}
 		};
 		helpEntry.setText("Help...");
@@ -166,7 +169,8 @@ public class MainDialog extends FloatingDialog {
 		scriptFilter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return !name.equals("CVS") && !name.startsWith(".") &&
-						(name.endsWith(".js") || new File(dir, name).isDirectory());
+						(name.endsWith(".js") ||
+						new File(dir, name).isDirectory());
 			}
 		};
 
@@ -224,7 +228,8 @@ public class MainDialog extends FloatingDialog {
 		
 		this.addToLayout(scriptList, BorderLayout.CENTER);
 		
-		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1));
+		ItemContainer buttons =
+				new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1));
 		// ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, 0, 0));
 		
 		buttons.add(playButton);
@@ -242,7 +247,8 @@ public class MainDialog extends FloatingDialog {
 
 	public static Image getImage(String filename) {
 		try {
-			return new Image(MainDialog.class.getClassLoader().getResource("com/scriptographer/gui/resources/" + filename));
+			return new Image(MainDialog.class.getClassLoader().getResource(
+					"com/scriptographer/gui/resources/" + filename));
 		} catch (IOException e) {
 			System.err.println(e);
 			return new Image(1, 1, Image.TYPE_RGB);
@@ -321,7 +327,8 @@ public class MainDialog extends FloatingDialog {
 		boolean isDirectory;
 
 		protected boolean onTrack(Tracker tracker) throws Exception {
-			if (tracker.getAction() == Tracker.ACTION_BUTTON_UP && (tracker.getModifiers() & Tracker.MODIFIER_DOUBLE_CLICK) != 0) {
+			if (tracker.getAction() == Tracker.ACTION_BUTTON_UP &&
+					(tracker.getModifiers() & Tracker.MODIFIER_DOUBLE_CLICK) != 0) {
 				if (tracker.getPoint().x > this.getExpandArrowRect().getMaxX()) {
 					if (isDirectory) {
 						setExpanded(!isExpanded());

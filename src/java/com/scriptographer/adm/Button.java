@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 03.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
@@ -45,6 +42,8 @@ import com.scriptographer.ScriptographerEngine;
  * It is picture based.
  * Picture based items (CheckBox, Static, Button, RadioButton),
  * this policy has been chosen to avoid 4 more classes.
+ * 
+ * @author lehni
  */
 public class Button extends TextItem {
 
@@ -97,10 +96,10 @@ public class Button extends TextItem {
 	private native void nativeSetDisabledImage(int iconHandle);
 	
 	/*
-	 * These are all protected so they can be made public in the Image* subclasses
-	 * This is the only way to share this code among ImageCheckBox, ImageButton and ImageRadioButton
+	 * These are all protected so they can be made public in the Image*
+	 * subclasses This is the only way to share this code among ImageCheckBox,
+	 * ImageButton and ImageRadioButton
 	 */
-
 	protected Image getImage() {
 		return image;
 	}
@@ -116,7 +115,8 @@ public class Button extends TextItem {
 	
 	protected void setRolloverImage(Object obj) throws IOException {
 		rolloverImage = Image.getImage(obj);
-		nativeSetRolloverImage(rolloverImage != null ? rolloverImage.createIconHandle() : 0);
+		nativeSetRolloverImage(rolloverImage != null ?
+				rolloverImage.createIconHandle() : 0);
 	}
 	
 	protected Image getSelectedImage() {
@@ -125,7 +125,8 @@ public class Button extends TextItem {
 	
 	protected void setSelectedImage(Object obj) throws IOException {
 		selectedImage = Image.getImage(obj);
-		nativeSetSelectedImage(selectedImage != null ? selectedImage.createIconHandle() : 0);
+		nativeSetSelectedImage(selectedImage != null ?
+				selectedImage.createIconHandle() : 0);
 	}
 
 	protected Image getDisabledImage() {
@@ -134,12 +135,14 @@ public class Button extends TextItem {
 
 	protected void setDisabledImage(Object obj) throws IOException {
 		disabledImage = Image.getImage(obj);
-		nativeSetDisabledImage(disabledImage != null ? disabledImage.createIconHandle() : 0);
+		nativeSetDisabledImage(disabledImage != null ?
+				disabledImage.createIconHandle() : 0);
 	}
 	
 	// int top, int left, int bottom, int right
 	protected static final Insets INSETS_IMAGE = new Insets(0, 0, 0, 0);
-	protected static final Insets INSETS_TEXT = ScriptographerEngine.isMacintosh() ? new Insets(1, 2, 3, 3) : INSETS_IMAGE;
+	protected static final Insets INSETS_TEXT = ScriptographerEngine.isMacintosh() ?
+			new Insets(1, 2, 3, 3) : INSETS_IMAGE;
 	
 	protected Insets getButtonInsets() {
 		return INSETS_TEXT;
@@ -147,11 +150,13 @@ public class Button extends TextItem {
 
 	public void setInsets(int left, int top, int right, int bottom) {
 		Insets in = getButtonInsets();
-		super.setInsets(left + in.left, top + in.top, right + in.right, bottom + in.bottom);
+		super.setInsets(left + in.left, top + in.top,
+				right + in.right, bottom + in.bottom);
 	}
 	
 	public Insets getInsets() {
 		Insets in = getButtonInsets();
-		return new Insets(insets.top - in.top, insets.left - in.left, insets.bottom - in.bottom, insets.right - in.right);
+		return new Insets(insets.top - in.top, insets.left - in.left,
+				insets.bottom - in.bottom, insets.right - in.right);
 	}
 }

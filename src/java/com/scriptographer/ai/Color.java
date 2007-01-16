@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 30.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -39,6 +36,9 @@ import java.io.IOException;
 
 import com.scriptographer.js.WrappableObject;
 
+/**
+ * @author lehni
+ */
 public abstract class Color extends WrappableObject {
 
 	// AIRasterizeType, AIColorConversionSpaceValue
@@ -84,8 +84,8 @@ public abstract class Color extends WrappableObject {
 	 * @return the color's alpha value
 	 */
 	public float getAlpha() {
-		// an alpha value of -1 means no alpha channel. return 1 here as no alpha means
-		// 100% alpha
+		// an alpha value of -1 means no alpha channel. return 1 here as no
+		// alpha means 100% alpha
 		return alpha == -1f ? 1f : alpha;
 	}
 
@@ -110,20 +110,21 @@ public abstract class Color extends WrappableObject {
 	public native Color convert(short type);
 
 	/**
-	 * returns the native profile for the above MODEL_ constants, wrapped in an ICC_Profile
-	 * this is pretty nice: the native ICC profile data from Adobe Illustrator really seems to be
-	 * compatible with ICC_Profile, so the whole ColorSpaces from Illustrator can be used in Java
-	 * as well.
-	 *
+	 * Returns the native profile for the above MODEL_ constants, wrapped in an
+	 * ICC_Profile this is pretty nice: the native ICC profile data from Adobe
+	 * Illustrator really seems to be compatible with ICC_Profile, so the whole
+	 * ColorSpaces from Illustrator can be used in Java as well.
+	 * 
 	 * @param space the profile for Illustrator's ColorSpace, Color.MODEL_*
 	 * @return the ICC_Profile that wraps Illustrator's ColorSpace profile
 	 */
 	private static native ICC_Profile getWSProfile(short space);
 
 	/**
-	 * Call first getWSProfile in order to get the illustrator's profile, and if this doesn't work,
-	 * it falls back to the scriptographer's internal profiles.
-	 *
+	 * Call first getWSProfile in order to get the illustrator's profile, and if
+	 * this doesn't work, it falls back to the scriptographer's internal
+	 * profiles.
+	 * 
 	 * @param space
 	 * @return
 	 */
@@ -141,8 +142,8 @@ public abstract class Color extends WrappableObject {
 			if (filename != null) {
 				try {
 					profile = ICC_Profile.getInstance(
-						Color.class.getClassLoader().getResourceAsStream("com/scriptographer/cmm/" + filename)
-					);
+							Color.class.getClassLoader().getResourceAsStream(
+									"com/scriptographer/cmm/" + filename));
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}

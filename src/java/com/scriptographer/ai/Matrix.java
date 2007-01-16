@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 20.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -56,6 +53,8 @@ import com.scriptographer.js.Wrappable;
  * The bottom row of the matrix is constant, so a transform can be uniquely
  * represented (as in {@link #toString()}) by 
  * "[[m00, m01, m02], [m10, m11, m12]]".
+ * 
+ * @author lehni
  */
 public class Matrix extends AffineTransform implements Wrappable {
 
@@ -88,7 +87,8 @@ public class Matrix extends AffineTransform implements Wrappable {
 	 * @param translateX the x translation component
 	 * @param translateY the y translation component
 	 */
-	public Matrix(double scaleX, double shearY, double shearX, double scaleY, double translateX, double translateY) {
+	public Matrix(double scaleX, double shearY, double shearX, double scaleY,
+			double translateX, double translateY) {
 		super(scaleX, shearY, shearX, scaleY, translateX, translateY);
 	}
 
@@ -114,52 +114,54 @@ public class Matrix extends AffineTransform implements Wrappable {
 		return new Matrix((AffineTransform) this);
 	}
 
-	public AffineTransform createInverse() throws NoninvertibleTransformException {
+	public AffineTransform createInverse()
+			throws NoninvertibleTransformException {
 		return new Matrix(super.createInverse());
 	}
 
-	  /**
-	   * Returns a rotation transform. A positive angle (in radians) rotates
-	   * the positive x-axis to the positive y-axis:
-	   * <pre>
-	   * [ cos(theta) -sin(theta) 0 ]
-	   * [ sin(theta)  cos(theta) 0 ]
-	   * [     0           0      1 ]
-	   * </pre>
-	   *
-	   * @param theta the rotation angle
-	   * @return the rotating transform
-	   */
+	/**
+	 * Returns a rotation transform. A positive angle (in radians) rotates
+	 * the positive x-axis to the positive y-axis:
+	 * <pre>
+	 * [ cos(theta) -sin(theta) 0 ]
+	 * [ sin(theta)  cos(theta) 0 ]
+	 * [     0           0      1 ]
+	 * </pre>
+	 *
+	 * @param theta the rotation angle
+	 * @return the rotating transform
+	 */
 	public static AffineTransform getRotateInstance(double theta) {
 		Matrix m = new Matrix();
 		m.setToRotation(theta);
 		return m;
 	}
 
-	  /**
-	   * Returns a rotation transform about a point. A positive angle (in radians)
-	   * rotates the positive x-axis to the positive y-axis. This is the same
-	   * as calling:
-	   * <pre>
-	   * AffineTransform tx = new AffineTransform();
-	   * tx.setToTranslation(x, y);
-	   * tx.rotate(theta);
-	   * tx.translate(-x, -y);
-	   * </pre>
-	   *
-	   * <p>The resulting matrix is: 
-	   * <pre>
-	   * [ cos(theta) -sin(theta) x-x*cos+y*sin ]
-	   * [ sin(theta)  cos(theta) y-x*sin-y*cos ]
-	   * [     0           0            1       ]
-	   * </pre>
-	   *
-	   * @param theta the rotation angle
-	   * @param x the x coordinate of the pivot point
-	   * @param y the y coordinate of the pivot point
-	   * @return the rotating transform
-	   */
-	public static AffineTransform getRotateInstance(double theta, double x, double y) {
+	/**
+	 * Returns a rotation transform about a point. A positive angle (in radians)
+	 * rotates the positive x-axis to the positive y-axis. This is the same
+	 * as calling:
+	 * <pre>
+	 * AffineTransform tx = new AffineTransform();
+	 * tx.setToTranslation(x, y);
+	 * tx.rotate(theta);
+	 * tx.translate(-x, -y);
+	 * </pre>
+	 *
+	 * <p>The resulting matrix is: 
+	 * <pre>
+	 * [ cos(theta) -sin(theta) x-x*cos+y*sin ]
+	 * [ sin(theta)  cos(theta) y-x*sin-y*cos ]
+	 * [     0           0            1       ]
+	 * </pre>
+	 *
+	 * @param theta the rotation angle
+	 * @param x the x coordinate of the pivot point
+	 * @param y the y coordinate of the pivot point
+	 * @return the rotating transform
+	 */
+	public static AffineTransform getRotateInstance(double theta,
+			double x, double y) {
 		Matrix m = new Matrix();
 		m.setToRotation(theta, x, y);
 		return m;
@@ -171,18 +173,18 @@ public class Matrix extends AffineTransform implements Wrappable {
 		return m;
 	}
 
-	  /**
-	   * Returns a scaling transform:
-	   * <pre>
-	   * [ sx 0  0 ]
-	   * [ 0  sy 0 ]
-	   * [ 0  0  1 ]
-	   * </pre>
-	   *
-	   * @param sx the x scaling factor
-	   * @param sy the y scaling factor
-	   * @return the scaling transform
-	   */
+	/**
+	 * Returns a scaling transform:
+	 * <pre>
+	 * [ sx 0  0 ]
+	 * [ 0  sy 0 ]
+	 * [ 0  0  1 ]
+	 * </pre>
+	 *
+	 * @param sx the x scaling factor
+	 * @param sy the y scaling factor
+	 * @return the scaling transform
+	 */
 	public static AffineTransform getScaleInstance(double sx, double sy) {
 		Matrix m = new Matrix();
 		m.setToScale(sx, sy);
@@ -195,38 +197,38 @@ public class Matrix extends AffineTransform implements Wrappable {
 		return m;
 	}
 
-	  /**
-	   * Returns a shearing transform (points are shifted in the x direction based
-	   * on a factor of their y coordinate, and in the y direction as a factor of
-	   * their x coordinate):
-	   * <pre>
-	   * [  1  shx 0 ]
-	   * [ shy  1  0 ]
-	   * [  0   0  1 ]
-	   * </pre>
-	   *
-	   * @param shx the x shearing factor
-	   * @param shy the y shearing factor
-	   * @return the shearing transform
-	   */
+	/**
+	 * Returns a shearing transform (points are shifted in the x direction based
+	 * on a factor of their y coordinate, and in the y direction as a factor of
+	 * their x coordinate):
+	 * <pre>
+	 * [  1  shx 0 ]
+	 * [ shy  1  0 ]
+	 * [  0   0  1 ]
+	 * </pre>
+	 *
+	 * @param shx the x shearing factor
+	 * @param shy the y shearing factor
+	 * @return the shearing transform
+	 */
 	public static AffineTransform getShearInstance(double shx, double shy) {
 		Matrix m = new Matrix();
 		m.setToShear(shx, shx);
 		return m;
 	}
 
-	  /**
-	   * Returns a translation transform:
-	   * <pre>
-	   * [ 1 0 tx ]
-	   * [ 0 1 ty ]
-	   * [ 0 0 1  ]
-	   * </pre>
-	   *
-	   * @param tx the x translation distance
-	   * @param ty the y translation distance
-	   * @return the translating transform
-	   */
+	/**
+	 * Returns a translation transform:
+	 * <pre>
+	 * [ 1 0 tx ]
+	 * [ 0 1 ty ]
+	 * [ 0 0 1  ]
+	 * </pre>
+	 *
+	 * @param tx the x translation distance
+	 * @param ty the y translation distance
+	 * @return the translating transform
+	 */
 	public static AffineTransform getTranslateInstance(double tx, double ty) {
 		Matrix m = new Matrix();
 		m.setToTranslation(tx, tx);
@@ -240,34 +242,41 @@ public class Matrix extends AffineTransform implements Wrappable {
 	}
 
 	public void setScaleX(double scaleX) {
-		setTransform(scaleX, getShearY(), getShearX(), getScaleY(), getTranslateX(), getTranslateY());
+		setTransform(scaleX, getShearY(), getShearX(), getScaleY(),
+				getTranslateX(), getTranslateY());
 	}
 
 	public void setScaleY(double scaleY) {
-		setTransform(getScaleX(), getShearY(), getShearX(), scaleY, getTranslateX(), getTranslateY());
+		setTransform(getScaleX(), getShearY(), getShearX(), scaleY,
+				getTranslateX(), getTranslateY());
 	}
 
 	public void setShearX(double shearX) {
-		setTransform(getScaleX(), getShearY(), shearX, getScaleY(), getTranslateX(), getTranslateY());
+		setTransform(getScaleX(), getShearY(), shearX, getScaleY(),
+				getTranslateX(), getTranslateY());
 	}
 
 	public void setShearY(double shearY) {
-		setTransform(getScaleX(), shearY, getShearX(), getScaleY(), getTranslateX(), getTranslateY());
+		setTransform(getScaleX(), shearY, getShearX(), getScaleY(),
+				getTranslateX(), getTranslateY());
 	}
 
 	public void setTranslateX(double translateX) {
-		setTransform(getScaleX(), getShearY(), getShearX(), getScaleY(), translateX, getTranslateY());
+		setTransform(getScaleX(), getShearY(), getShearX(), getScaleY(),
+				translateX, getTranslateY());
 	}
 
 	public void setTranslateY(double translateY) {
-		setTransform(getScaleX(), getShearY(), getShearX(), getScaleY(), getTranslateX(), translateY);
+		setTransform(getScaleX(), getShearY(), getShearX(), getScaleY(),
+				getTranslateX(), translateY);
 	}
 
 	public Point deltaTransform(Point2D src) {
 		return (Point) deltaTransform(src, new Point());
 	}
 
-	public Point inverseTransform(Point2D src) throws NoninvertibleTransformException {
+	public Point inverseTransform(Point2D src)
+			throws NoninvertibleTransformException {
 		return (Point) inverseTransform(src, new Point());
 	}
 

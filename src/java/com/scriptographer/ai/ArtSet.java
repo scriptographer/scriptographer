@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 18.01.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -40,6 +37,9 @@ import com.scriptographer.util.ExtendedArrayList;
 import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 
+/**
+ * @author lehni
+ */
 public class ArtSet extends ExtendedArrayList {
 	HashMap map;
 
@@ -92,7 +92,6 @@ public class ArtSet extends ExtendedArrayList {
 	public native ArtSet invert();
 	
 	/**
-	 * 
 	 * @param type Color.TYPE_*
 	 * @param resolution
 	 * @param antialiasing
@@ -100,7 +99,8 @@ public class ArtSet extends ExtendedArrayList {
 	 * @param height
 	 * @return
 	 */
-	public native Raster rasterize(int type, float resolution, int antialiasing, float width, float height);
+	public native Raster rasterize(int type, float resolution,
+			int antialiasing, float width, float height);
 	
 	public Raster rasterize(int type, float resolution, int antialiasing) {
 		return rasterize(type, resolution, antialiasing, -1, -1);

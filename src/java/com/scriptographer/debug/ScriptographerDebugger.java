@@ -8,10 +8,7 @@
  *
  * Copyright 1998-2003 Helma Software. All Rights Reserved.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.debug;
@@ -34,6 +31,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.*;
 import java.io.File;
 
+/**
+ * @author lehni
+ */
 public class ScriptographerDebugger extends Dim implements
 		TreeSelectionListener {
 

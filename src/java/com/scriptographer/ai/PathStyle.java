@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 14.02.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -42,18 +39,23 @@ import com.scriptographer.js.NullToUndefinedWrapper;
 import com.scriptographer.js.WrapperCreator;
 
 /*
- * PathStyle, FillStyle and StrokeStyle are used for Art, CharacaterAttributes, and others
- * In some places, not all of the values may be defined.
- * Setting any value to null means the value is not defined. It doesn't mean the value
+ * PathStyle, FillStyle and StrokeStyle are used for Art, CharacaterAttributes,
+ * and others In some places, not all of the values may be defined.
+ * Setting any value to null means the value is not defined.
  * 
  * Setting fillColor or StrokeColor to Color.NONE means no fill / stroke
- * Setting it to null undefines the value, it doesn't have the same effect as seting it to Color.NONE
+ * Setting it to null undefines the value, it doesn't have the same effect as
+ * seting it to Color.NONE
  * 
- * Since Java 1.5 omes with auto boxing / unboxing, I don't think it's a big deal
- * that we're not returning native values but boxed ones here (or null, in case
- * the value isn't defined)
+ * Since Java 1.5 omes with auto boxing / unboxing, I don't think it's a big
+ * deal that we're not returning native values but boxed ones here (or null,
+ * in case the value isn't defined)
  * 
  * PathStyle derives AIObject so CharacterStyle has a handle.
+ */
+
+/**
+ * @author lehni
  */
 public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 	protected FillStyle fill;
@@ -120,15 +122,18 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 	/*
 	 * This is complicated: for undefined values:
 	 * - color needs an additional boolean value
-	 * - boolean values are passed as short: -1 = undefined, 0 = false, 1 = true
+	 * - boolean values are passed as short: -1 = undefined, 0 = false,
+	 *   1 = true
 	 * - float are passed as float: < 0 = undefined, >= 0 = defined
 	 */
 	protected void init(
 			Color fillColor, boolean hasFillColor, short fillOverprint,
-			Color strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
-			float dashOffset, float[] dashArray,// doesn't need the boolean, as it's {} when set but empty
+			Color strokeColor, boolean hasStrokeColor, short strokeOverprint,
+			float strokeWidth,
+			float dashOffset, float[] dashArray,
 			short cap, short join, float miterLimit,
 			short clip, short lockClip, short evenOdd, float resolution) {
+		//  dashArray doesn't need the boolean, as it's {} when set but empty
 		
 		fill.init(fillColor, hasFillColor, fillOverprint);
 		stroke.init(strokeColor, hasStrokeColor, strokeOverprint, strokeWidth,
@@ -164,7 +169,8 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 			short cap, short join, float miterLimit,
 			short clip, short lockClip, short evenOdd, float resolution);
 
-	// These would belong to FillStyle and StrokeStyle, but in order to safe 4 new native files, they're here:
+	// These would belong to FillStyle and StrokeStyle, but in order to safe 4
+	// new native files, they're here:
 	protected static native void nativeInitStrokeStyle(int handle, Color color,
 		boolean hasColor, short overprint, float width, float dashOffset,
 		float[] dashArray, short cap, short join, float miterLimit);
@@ -173,17 +179,21 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 		boolean hasColor, short overprint);
 	
 	/**
-	 * just a wrapper around nativeCommit, which can be used in CharacterStyle as well
-	 * (CharacterStyle has an own implementation of nativeCommit, but the calling is the same...)
+	 * just a wrapper around nativeCommit, which can be used in CharacterStyle
+	 * as well (CharacterStyle has an own implementation of nativeCommit, but
+	 * the calling is the same...)
 	 */
 	protected void commit(int handle, int docHandle) {
 		nativeSet(handle, docHandle,
 			fill.color != null && fill.color != Color.NONE ? fill.color : null,
 			fill.color != null, 
-			fill.overprint != null ? (short) (fill.overprint.booleanValue() ? 1 : 0) : -1,
-			stroke.color != null && stroke.color != Color.NONE ? stroke.color : null,
+			fill.overprint != null ?
+					(short) (fill.overprint.booleanValue() ? 1 : 0) : -1,
+			stroke.color != null && stroke.color != Color.NONE ?
+					stroke.color : null,
 			stroke.color != null,
-			stroke.overprint != null ? (short) (stroke.overprint.booleanValue() ? 1 : 0) : -1,
+			stroke.overprint != null ?
+					(short) (stroke.overprint.booleanValue() ? 1 : 0) : -1,
 			stroke.width != null ? stroke.width.floatValue() : -1,
 			stroke.dashOffset != null ? stroke.dashOffset.floatValue() : -1,
 			stroke.dashArray,

@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 14.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -40,6 +37,9 @@ import com.scriptographer.js.WrappableObject;
 
 import java.awt.geom.Point2D;
 
+/**
+ * @author lehni
+ */
 public class Segment extends WrappableObject implements Commitable {
 	protected SegmentList segments;
 	protected int index;
@@ -91,14 +91,16 @@ public class Segment extends WrappableObject implements Commitable {
 		this(pt, in, out, false);
 	}
 
-	public Segment(float x, float y, float inX, float inY, float outX, float outY, boolean corner) {
+	public Segment(float x, float y, float inX, float inY, float outX,
+			float outY, boolean corner) {
 		point = new SegmentPoint(this, 0, x, y);
 		handleIn = new SegmentPoint(this, 2, inX, inY);
 		handleOut = new SegmentPoint(this, 4, outX, outY);
 		this.corner = corner;
 	}
 
-	public Segment(float x, float y, float inX, float inY, float outX, float outY) {
+	public Segment(float x, float y, float inX, float inY, float outX,
+			float outY) {
 		this(x, y, inX, inY, outX, outY, false);
 	}
 
@@ -121,7 +123,9 @@ public class Segment extends WrappableObject implements Commitable {
 	}
 
 	/**
-	 * Warning: This does not call markDirty(). This needs to be taken care of after.
+	 * Warning: This does not call markDirty(). This needs to be taken care of
+	 * after.
+	 * 
 	 * @param values
 	 * @param valueIndex
 	 */
@@ -142,7 +146,8 @@ public class Segment extends WrappableObject implements Commitable {
 		values[valueIndex + 3] = handleIn.y + point.y;
 		values[valueIndex + 4] = handleOut.x + point.x;
 		values[valueIndex + 5] = handleOut.y + point.y;
-		// don't care about the exact value for true, as long as it's != 0 it works:
+		// don't care about the exact value for true, as long as it's != 0 it
+		// works:
 		values[valueIndex + 6] = corner ? 1f : 0f;
 	}
 
@@ -150,10 +155,14 @@ public class Segment extends WrappableObject implements Commitable {
 		if (dirty != DIRTY_NONE && segments != null && segments.path != null) {
 			Path path = segments.path;
 			if ((dirty & DIRTY_POINTS) != 0) {
-				SegmentList.nativeSet(path.handle, path.document.handle, index, point.x, point.y, handleIn.x + point.x, handleIn.y + point.y, handleOut.x + point.x, handleOut.y + point.y, corner);
+				SegmentList.nativeSet(path.handle, path.document.handle, index,
+						point.x, point.y,
+						handleIn.x + point.x, handleIn.y + point.y,
+						handleOut.x + point.x, handleOut.y + point.y, corner);
 			}
 			if ((dirty & DIRTY_SELECTION) != 0) {
-				SegmentList.nativeSetSelectionState(path.handle, path.document.handle, index, selectionState);
+				SegmentList.nativeSetSelectionState(path.handle,
+						path.document.handle, index, selectionState);
 			}
 			dirty = DIRTY_NONE;
 			// update to current path version after commit.
@@ -168,7 +177,10 @@ public class Segment extends WrappableObject implements Commitable {
 	protected void insert() {
 		if (segments != null && segments.path != null) {
 			Path path = segments.path;
-			SegmentList.nativeInsert(path.handle, path.document.handle, index, point.x, point.y, handleIn.x + point.x, handleIn.y + point.y, handleOut.x + point.x, handleOut.y + point.y, corner);
+			SegmentList.nativeInsert(path.handle, path.document.handle, index,
+					point.x, point.y,
+					handleIn.x + point.x, handleIn.y + point.y,
+					handleOut.x + point.x, handleOut.y + point.y, corner);
 			// update to current version after commit.
 			version = segments.path.version;
 			dirty = DIRTY_NONE;
@@ -279,7 +291,8 @@ public class Segment extends WrappableObject implements Commitable {
 		update();
 		if (selectionState == SELECTION_FETCH) {
 			if (segments != null && segments.path != null)
-				selectionState = SegmentList.nativeGetSelectionState(segments.path.handle, index);
+				selectionState = SegmentList.nativeGetSelectionState(
+						segments.path.handle, index);
 			else
 				selectionState = SELECTION_NONE;
 		}

@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 29.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
@@ -49,6 +46,9 @@ import javax.imageio.ImageIO;
 
 import com.scriptographer.ai.Raster;
 
+/**
+ * @author lehni
+ */
 public class Image extends ADMObject {
 	// an image can wrap its representation as an icon as well...
 	private int iconHandle = 0;
@@ -116,14 +116,16 @@ public class Image extends ADMObject {
 				case BufferedImage.TYPE_4BYTE_ABGR:
 				case BufferedImage.TYPE_4BYTE_ABGR_PRE:
 				case BufferedImage.TYPE_BYTE_INDEXED: {
-					BufferedImage tmp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+					BufferedImage tmp = new BufferedImage(width, height,
+							BufferedImage.TYPE_INT_ARGB);
 					tmp.createGraphics().drawImage(buf, null, 0, 0);
 					image = tmp;
 					type = TYPE_ARGB;
 				}
 				break;
 				default: {
-					BufferedImage tmp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+					BufferedImage tmp = new BufferedImage(width, height,
+							BufferedImage.TYPE_INT_ARGB);
 					tmp.createGraphics().drawImage(buf, null, 0, 0);
 					buf = tmp;
 					type = TYPE_ARGB;
@@ -156,16 +158,19 @@ public class Image extends ADMObject {
 	// too:
 	public Image(File file) throws IOException {
 //		this(checkImage(ImageIO.read(file), file));
-		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(file.getPath())), file));
+		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(
+				file.getPath())), file));
 	}
 
 	public Image(ImageProducer producer) throws IOException {
-		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(producer)), producer));
+		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(
+				producer)), producer));
 	}
 
 	public Image(URL url) throws IOException {
 //		this(checkImage(ImageIO.read(url), url));
-		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(url)), url));
+		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(
+				url)), url));
 	}
 
 	public Image(String str) throws IOException {
@@ -174,12 +179,15 @@ public class Image extends ADMObject {
 	
 	public Image(InputStream in) throws IOException {
 //		this(checkImage(ImageIO.read(in), in));
-		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(getBytes(in))), in));
+		this(checkImage(waitForImage(Toolkit.getDefaultToolkit().createImage(
+				getBytes(in))), in));
 	}
 
-	private static java.awt.Image checkImage(java.awt.Image image, Object srcObj) throws IOException {
+	private static java.awt.Image checkImage(java.awt.Image image, Object srcObj)
+			throws IOException {
 		if (image == null)
-			throw new IOException("The specified image could not be read: " + srcObj);
+			throw new IOException("The specified image could not be read: "
+					+ srcObj);
 		return image;
 	}
 
@@ -205,7 +213,8 @@ public class Image extends ADMObject {
 	}
 
 	private static URL getURL(String str) throws IOException {
-		// the string could either be an url or a local filename, let's try both:
+		// the string could either be an url or a local filename, let's try
+		// both:
 		URL url = null;
 		try {
 	        url = new URL(str);
@@ -231,8 +240,9 @@ public class Image extends ADMObject {
 	 * fetches the pixels from the image and creates a BufferedImage from it
 	 */
 	public BufferedImage getImage() {
-		BufferedImage img = new BufferedImage(width, height, getCompatibleType());
-		DataBufferInt buffer = (DataBufferInt)img.getRaster().getDataBuffer();
+		BufferedImage img =
+				new BufferedImage(width, height, getCompatibleType());
+		DataBufferInt buffer = (DataBufferInt) img.getRaster().getDataBuffer();
 		int data[] = buffer.getData();
 		nativeGetPixels(data, width, height, byteWidth);
 		return img;
@@ -240,12 +250,14 @@ public class Image extends ADMObject {
 	
 	public void setImage(BufferedImage image) {
 		int imgType = getCompatibleType();
-		if (image.getType() != imgType || image.getWidth() != width || image.getHeight() != height) {
+		if (image.getType() != imgType || image.getWidth() != width ||
+				image.getHeight() != height) {
 			BufferedImage tmp = new BufferedImage(width, height, imgType);
 			tmp.createGraphics().drawImage(image, 0, 0, null);
 			image = tmp;
 		}
-		DataBufferInt buffer = (DataBufferInt)image.getRaster().getDataBuffer();
+		DataBufferInt buffer =
+				(DataBufferInt) image.getRaster().getDataBuffer();
 		int data[] = buffer.getData();
 		nativeSetPixels(data, width, height, byteWidth);
 	}
@@ -273,17 +285,19 @@ public class Image extends ADMObject {
 	}
 	
 	/*
-	 * This is pretty stupid: ADM seems to take care of destruction of attached pictures
-	 * itself (for bezierList entries and dialog items). Therefore one image cannot be attached
-	 * to more than on item or entry, otherwise it would be deleted several times.
-	 * so in order to create an image to attach it somewhere, a new instance of the 
-	 * image needs to be created everytime, and an icon needs to be created as well.
-	 * We don't have to take care of the disposal, as the item or entry seems to do so.
+	 * This is pretty stupid: ADM seems to take care of destruction of attached
+	 * pictures itself (for bezierList entries and dialog items). Therefore one
+	 * image cannot be attached to more than on item or entry, otherwise it
+	 * would be deleted several times. so in order to create an image to attach
+	 * it somewhere, a new instance of the image needs to be created everytime,
+	 * and an icon needs to be created as well. We don't have to take care of
+	 * the disposal, as the item or entry seems to do so.
 	 * 
-	 * TODO: workaround: handle images in the DrawProc, adjust entryTextRects accordingly
-	 * and don't use the native setImage methods at all... some more work with the
-	 * Tracker would be needed in order to emulate rollover behavior. But it may be worth
-	 * geting around the memory consumption of this dirty hack here...
+	 * TODO: workaround: handle images in the DrawProc, adjust entryTextRects
+	 * accordingly and don't use the native setImage methods at all... some more
+	 * work with the Tracker would be needed in order to emulate rollover
+	 * behavior. But it may be worth geting around the memory consumption of
+	 * this dirty hack here...
 	 */
 	public int createIconHandle() {
 		Image img = ((Image) clone());
@@ -327,14 +341,20 @@ public class Image extends ADMObject {
 	}
 
 	private native int nativeCreate(int width, int height, int type);
+
 	private native void nativeDestroy(int handle, int iconHandle);
 
-	private native void nativeSetPixels(int[] data, int width, int height, int byteWidth);
-	private native void nativeGetPixels(int[] data, int width, int height, int byteWidth);
+	private native void nativeSetPixels(int[] data, int width, int height,
+			int byteWidth);
+
+	private native void nativeGetPixels(int[] data, int width, int height,
+			int byteWidth);
+
 	private native void nativeSetPixels(int handle, int numBytes);
-	
+
 	private native int nativeCreateIcon();
 
 	private native int nativeBeginDrawer();
+
 	private native void nativeEndDrawer();
 }

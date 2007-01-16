@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 15.02.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer;
@@ -40,46 +37,51 @@ import java.util.Iterator;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.TextFrame;
 
+/**
+ * @author lehni
+ */
 public class CommitManager {
-	
+
 	private CommitManager() {
 		// Don't let anyone instantiate this class.
 	}
-	
+
 	private static CommitableMap commitables = new CommitableMap();
 
 	/**
-	 * The version that gets increased by one on each commit.
-	 * This can be used to keep track of values that need synching only
-	 * once on each execution of a script, or when things are changed
+	 * The version that gets increased by one on each commit. This can be used
+	 * to keep track of values that need synching only once on each execution of
+	 * a script, or when things are changed
 	 * 
 	 * It also gets increased in Art.updateIfWrapped
 	 */
 	public static int version = 0;
 
 	/**
-	 * Commits  changes to objects that are associated with the given key
-	 * this is usually a art object, where path styles and segment lists use
-	 * the art object as a key when calling markDirty.
-	 * If key is null, all changes are commited.
+	 * Commits changes to objects that are associated with the given key this is
+	 * usually a art object, where path styles and segment lists use the art
+	 * object as a key when calling markDirty. If key is null, all changes are
+	 * commited.
 	 */
 	public static void commit(Object key) {
 		if (key != null) {
 			Commitable obj = (Commitable) commitables.get(key);
 			if (obj != null) {
 				obj.commit();
-				// case it's a text, use the story as a key as well. it's used like
+				// case it's a text, use the story as a key as well. it's used
+				// like
 				// that in CharacterAttributes
 				if (obj instanceof TextFrame)
 					commit(((TextFrame) obj).getStory());
 			}
 		} else if (commitables.size() > 0) {
-			for (Iterator iterator = commitables.values().iterator(); iterator.hasNext();)
+			for (Iterator iterator = commitables.values().iterator();
+					iterator.hasNext();)
 				((Commitable) iterator.next()).commit();
 			commitables.clear();
 		}
 	}
-	
+
 	/**
 	 * commit all changes and increases the internal commit version
 	 */
@@ -91,30 +93,32 @@ public class CommitManager {
 	public static void markDirty(Object key, Commitable commitable) {
 		commitables.put(key, commitable);
 	}
-	
+
 	/**
-	 * a hash map that overrides put so that it creates a CommitableList
-	 * in case there was one object under a key already
-	 * Uses IdentityHashMaps internally, to avoid calling of equals on objects
+	 * a hash map that overrides put so that it creates a CommitableList in case
+	 * there was one object under a key already Uses IdentityHashMaps
+	 * internally, to avoid calling of equals on objects
 	 */
 	static class CommitableMap extends IdentityHashMap {
-		// keep track of values that have been added already, maybe under another key
+		// keep track of values that have been added already, maybe under
+		// another key
 		IdentityHashMap values = new IdentityHashMap();
-		
+
 		/**
-		 * A helper class that's needed when there are more than on object for one key.
-		 * It forwards calls to commit()
-		 * It actually uses a map so that every object can only be added once in order
-		 * to void more than one call to commit at a time 
+		 * A helper class that's needed when there are more than on object for
+		 * one key. It forwards calls to commit() It actually uses a map so that
+		 * every object can only be added once in order to void more than one
+		 * call to commit at a time
 		 * 
 		 * Use a LinkedHashMap in order to preserve sequence of commits
 		 */
 		class CommitableList extends IdentityHashMap implements Commitable {
 			public void commit() {
-				for (Iterator iterator = values().iterator(); iterator.hasNext();)
+				for (Iterator iterator = values().iterator();
+						iterator.hasNext();)
 					((Commitable) iterator.next()).commit();
 			}
-			
+
 			public void add(Object obj) {
 				this.put(obj, obj);
 			}
@@ -144,7 +148,7 @@ public class CommitManager {
 				}
 			}
 		}
-		
+
 		public void clear() {
 			super.clear();
 			values.clear();

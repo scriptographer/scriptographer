@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 08.04.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -42,6 +39,9 @@ import com.scriptographer.CommitManager;
 import com.scriptographer.Commitable;
 import com.scriptographer.js.Wrappable;
 
+/**
+ * @author lehni
+ */
 public class Dictionary extends HashMap implements Commitable, Wrappable {
 
 	protected DictionaryObject object;

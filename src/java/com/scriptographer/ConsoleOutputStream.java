@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 07.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer;
@@ -38,6 +35,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+/**
+ * @author lehni
+ */
 public class ConsoleOutputStream extends OutputStream {
 	/**
 	 * the singleton object
@@ -47,8 +47,10 @@ public class ConsoleOutputStream extends OutputStream {
 	/**
 	 * some constants
 	 */
-	private static final String lineSeparator = System.getProperty("line.separator");
-    private static final char newLine = lineSeparator.charAt(lineSeparator.length() - 1);
+	private static final String lineSeparator = 
+		System.getProperty("line.separator");
+    private static final char newLine =
+    	lineSeparator.charAt(lineSeparator.length() - 1);
 
     private boolean enabled;
 
@@ -77,8 +79,8 @@ public class ConsoleOutputStream extends OutputStream {
 		char c = (char) b;
 		if (c == newLine) {
 			if (enabled) {
-				// if there is already a newline at the end of this line, remove it
-				// as writer.println adds it again...
+				// if there is already a newline at the end of this line, remove
+				// it as writer.println adds it again...
 				int pos = buffer.lastIndexOf(lineSeparator);
 				int sepLength = lineSeparator.length();
 				if (pos > 0 && pos == buffer.length() - sepLength)
@@ -97,7 +99,8 @@ public class ConsoleOutputStream extends OutputStream {
 		console.enabled = enabled && console.writer != null;
 		if (console.enabled && console.buffer.length() > 0) {
 			try {
-				// write a newline character so the buffer is flushed to the console
+				// write a newline character so the buffer is flushed to the
+				// console
 				console.write(newLine);
 			} catch (IOException e) {
 				// never happens!

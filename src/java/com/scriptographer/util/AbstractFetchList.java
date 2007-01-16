@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 16.02.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.util;
@@ -38,6 +35,8 @@ package com.scriptographer.util;
  * AbstractFetchList defines fetch and fetch(fromIndex, toIndex), which are called
  * everytime the a range of elements needs to be available immediatelly.
  * Subclassed by SegmentList and CurveList
+ * 
+ * @author lehni
  */
 public abstract class AbstractFetchList extends AbstractExtendedList {
 	protected abstract void fetch(int fromIndex, int toIndex);

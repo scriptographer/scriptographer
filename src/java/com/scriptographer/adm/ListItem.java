@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 31.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
@@ -49,6 +46,8 @@ import com.scriptographer.util.SimpleList;
  * ListItem is a ADM list item (e.g. ListBox, PopupMenu, ...) and a
  * ADM list object (e.g. List, HierarchyList) in one. It melts the
  * two objects to one and makes handling much easier.
+ * 
+ * @author lehni
  */
 /*
 The GetList() function returns a reference to inItem's ADM List object.
@@ -209,7 +208,8 @@ public abstract class ListItem extends Item implements SimpleList {
 	public native Rectangle getEntryTextRect();
 	
 	public void setEntryTextRect(Rectangle2D rect) {
-		setEntryTextRect((int)rect.getX(), (int)rect.getY(), (int)rect.getWidth(), (int)rect.getHeight());
+		setEntryTextRect((int)rect.getX(), (int)rect.getY(),
+				(int)rect.getWidth(), (int)rect.getHeight());
 	}
 	
 	public void setEntryTextRect(int[] rect) {

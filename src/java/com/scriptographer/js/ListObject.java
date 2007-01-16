@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 11.02.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.js;
@@ -47,6 +44,8 @@ import com.scriptographer.util.StringIndexList;
  * Wrapper class for com.scriptographer.util.List objects It adds array-like
  * properties, so it is possible to access lists like this: list[i] It also
  * defines getIds(), so enumeration is possible too: for (var i in list) ...
+ * 
+ * @author lehni
  */
 public class ListObject extends NativeJavaObject {
 	public ListObject() {

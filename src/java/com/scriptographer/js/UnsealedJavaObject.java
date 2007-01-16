@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 02.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.js;
@@ -38,6 +35,9 @@ import java.util.*;
 
 import org.mozilla.javascript.*;
 
+/**
+ * @author lehni
+ */
 public class UnsealedJavaObject extends NativeJavaObject {
 	HashMap properties = new HashMap();
 	
@@ -55,9 +55,6 @@ public class UnsealedJavaObject extends NativeJavaObject {
 		properties.remove(name);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.mozilla.javascript.Scriptable#get(java.lang.String, org.mozilla.javascript.Scriptable)
-	 */
 	public Object get(String name, Scriptable start) {
 		Object obj = super.get(name, start);
 		if (obj == Scriptable.NOT_FOUND) {
@@ -76,11 +73,9 @@ public class UnsealedJavaObject extends NativeJavaObject {
 		return obj;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.mozilla.javascript.Scriptable#getIds()
-	 */
 	public Object[] getIds() {
-		// concatenate the super classes ids array with the keySet from properties HashMap:
+		// concatenate the super classes ids array with the keySet from
+		// properties HashMap:
 		Object[] javaIds = super.getIds();
 		int numProps = properties.size();
 		if (numProps == 0)
@@ -92,9 +87,6 @@ public class UnsealedJavaObject extends NativeJavaObject {
 		return ids;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.mozilla.javascript.Scriptable#has(java.lang.String, org.mozilla.javascript.Scriptable)
-	 */
 	public boolean has(String name, Scriptable start) {
 		boolean has = super.has(name, start);
 		if (!has)
@@ -102,9 +94,6 @@ public class UnsealedJavaObject extends NativeJavaObject {
 		return has;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.mozilla.javascript.Scriptable#put(java.lang.String, org.mozilla.javascript.Scriptable, java.lang.Object)
-	 */
 	public void put(String name, Scriptable start, Object value) {
 		if (super.has(name, start))
 			super.put(name, start, value);

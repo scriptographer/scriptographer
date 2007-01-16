@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 03.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.js;
@@ -55,7 +52,7 @@ import org.mozilla.javascript.Scriptable;
  * access not only the same Java object but also the same wrapper, with
  * eventually additionally set properties (e.g. an Unsealed object).
  * 
- * @author Lehni
+ * @author lehni
  */
 public interface Wrappable {
 	/**

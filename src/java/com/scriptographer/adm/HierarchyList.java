@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 31.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
@@ -40,10 +37,13 @@ import java.awt.*;
 
 import org.mozilla.javascript.Scriptable;
 
+/**
+ * @author lehni
+ */
 public class HierarchyList extends List {
 	public final static int
-	// hathaway : 8/22/02 : Added to support creation of hierarchical palette popups for Pangea
-	// Popup menu creation options
+	// hathaway : 8/22/02 : Added to support creation of hierarchical palette
+	// popups for Pangea Popup menu creation options
 		OPTION_HIERARCHY_POPUP = (1 << 0);
 	
 	public HierarchyList(Dialog dialog, int options) {
@@ -96,7 +96,8 @@ public class HierarchyList extends List {
 		if (parentEntry != null) {
 			Scriptable parentWrapper = parentEntry.getList().getWrapper();
 			if (parentWrapper != null) {
-				// simply set parentWrapper as the prototype of this object so the handler calls will be delegated:
+				// simply set parentWrapper as the prototype of this object so
+				// the handler calls will be delegated:
 				wrapper.setPrototype(parentWrapper);
 			}
 		}
@@ -144,7 +145,9 @@ public class HierarchyList extends List {
 	 */
 
 	public native void setEntrySize(int width, int height, boolean recursive);
-	public native void setEntryTextRect(int x, int y, int width, int height, boolean recursive);
+
+	public native void setEntryTextRect(int x, int y, int width, int height,
+			boolean recursive);
 
 	public void setEntrySize(Dimension size, boolean recursive) {
 		setEntrySize(size.width, size.height, recursive);
@@ -159,7 +162,8 @@ public class HierarchyList extends List {
 	}
 
 	public void setEntryTextRect(Rectangle2D rect, boolean recursive) {
-		setEntryTextRect((int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight(), recursive);
+		setEntryTextRect((int) rect.getX(), (int) rect.getY(),
+				(int) rect.getWidth(), (int) rect.getHeight(), recursive);
 	}
 	
 	public void setEntryTextRect(int[] rect, boolean recursive) {
@@ -167,11 +171,15 @@ public class HierarchyList extends List {
 	}
 
 	public native int getNonLeafEntryWidth();
-	public native void setNonLeafEntryTextRect(int x, int y, int width, int height, boolean recursive);
+
+	public native void setNonLeafEntryTextRect(int x, int y, int width,
+			int height, boolean recursive);
+
 	public native Rectangle getNonLeafEntryTextRect();
 
 	public void setNonLeafEntryTextRect(Rectangle2D rect, boolean recursive) {
-		setNonLeafEntryTextRect((int)rect.getX(), (int)rect.getY(), (int)rect.getWidth(), (int)rect.getHeight(), recursive);
+		setNonLeafEntryTextRect((int)rect.getX(), (int)rect.getY(),
+				(int)rect.getWidth(), (int)rect.getHeight(), recursive);
 	}
 
 	public void setNonLeafEntryTextRect(int[] rect, boolean recursive) {
@@ -228,11 +236,13 @@ public class HierarchyList extends List {
 	}
 
 	public Rectangle localToGlobal(Rectangle2D rt) {
-		return localToGlobal((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
+		return localToGlobal((int) rt.getX(), (int) rt.getY(),
+				(int) rt.getWidth(), (int) rt.getHeight());
 	}
 
 	public Rectangle globalToLocal(Rectangle2D rt) {
-		return globalToLocal((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
+		return globalToLocal((int) rt.getX(), (int) rt.getY(),
+				(int) rt.getWidth(), (int) rt.getHeight());
 	}
 
 	/*
@@ -241,16 +251,21 @@ public class HierarchyList extends List {
 	 */
 
 	public native void setIndentationWidth(int width, boolean recursive);
+
 	public native int getIndentationWidth();
 
 	public native void setLocalLeftMargin(int width);
+
 	public native int getLocalLeftMargin();
+
 	public native int getGlobalLeftMargin();
 
 	public native void setDivided(boolean divided, boolean recursive);
+
 	public native boolean isDivided();
 
 	public native void setFlags(int flags, boolean recursive);
+
 	public native int getFlags();
 
 	public void setIndentationWidth(int width) {
@@ -278,6 +293,7 @@ public class HierarchyList extends List {
 	 */
 
 	public native HierarchyListEntry[] getLeafs();
+
 	public native int getLeafIndex(HierarchyListEntry entry);
 
 	/*
@@ -288,12 +304,13 @@ public class HierarchyList extends List {
 	protected ListEntry createEntry(int index) {
 		return new HierarchyListEntry(this, index);
 	}
-	
+
 	public native HierarchyListEntry getLeafAt(int x, int y);
+
 	public native HierarchyListEntry getActiveLeaf();
 
 	public void getLeafAt(Point2D point) {
-		getLeafAt((int)point.getX(), (int)point.getY());
+		getLeafAt((int) point.getX(), (int) point.getY());
 	}
 
 	/*
@@ -302,6 +319,7 @@ public class HierarchyList extends List {
 	 */
 
 	public native HierarchyListEntry[] getAllSelected();
+
 	public native HierarchyListEntry[] getAllUnnestedSelected();
 
 	/*
@@ -324,6 +342,7 @@ public class HierarchyList extends List {
 	 */
 
 	public native HierarchyListEntry[] getExpanded();
+
 	public native int getExpandedIndex(HierarchyListEntry entry);
 
 	/*

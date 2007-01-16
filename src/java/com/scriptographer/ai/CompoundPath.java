@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 26.07.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -42,9 +39,12 @@ import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 
 /**
- * A compound path contains two or more paths, holes are drawn where the paths overlap. All the paths in a compound path take on the style of the backmost path.
- **/
-
+ * A compound path contains two or more paths, holes are drawn where the paths
+ * overlap. All the paths in a compound path take on the style of the backmost
+ * path.
+ * 
+ * @author lehni
+ */
 public class CompoundPath extends Art {
 	/**
 	 * Wraps an AIArtHandle in a Path object
@@ -116,7 +116,8 @@ public class CompoundPath extends Art {
 		getPreviousPath().lineTo(pt);
 	}
 	
-	public void curveTo(float c1x, float c1y, float c2x, float c2y, float x, float y) {
+	public void curveTo(float c1x, float c1y, float c2x, float c2y,
+			float x, float y) {
 		getPreviousPath().curveTo(c1x, c1y, c2x, c2y, x, y);
 	}
 	
@@ -140,7 +141,8 @@ public class CompoundPath extends Art {
 		getPreviousPath().quadTo(c, pt);
 	}
 
-	public void arcTo(float centerX, float centerY, float endX, float endY, int ccw) {
+	public void arcTo(float centerX, float centerY, float endX, float endY,
+			int ccw) {
 		getPreviousPath().arcTo(centerX, centerY, endX, endY, ccw);
 	}
 
@@ -163,13 +165,12 @@ public class CompoundPath extends Art {
 	 * is changed into a {@link PathIterator#SEG_LINETO}segment.
 	 * 
 	 * @param iter the PathIterator specifying which segments shall be appended.
-	 * 
 	 * @param connect <code>true</code> for substituting the initial
-	 * {@link PathIterator#SEG_MOVETO}segment by a {@link
-	 * PathIterator#SEG_LINETO}, or <code>false</code> for not performing any
-	 * substitution. If this GeneralPath is currently empty,
-	 * <code>connect</code> is assumed to be <code>false</code>, thus
-	 * leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
+	 *        {@link PathIterator#SEG_MOVETO}segment by a {@link
+	 *        PathIterator#SEG_LINETO}, or <code>false</code> for not
+	 *        performing any substitution. If this GeneralPath is currently
+	 *        empty, <code>connect</code> is assumed to be <code>false</code>,
+	 *        thus leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
 	 */
 	public void append(PathIterator iter, boolean connect) {
 		float[] f = new float[6];
@@ -177,7 +178,8 @@ public class CompoundPath extends Art {
 			switch (iter.currentSegment(f)) {
 				case PathIterator.SEG_MOVETO: {
 					Path prevPath = (Path) getFirstChild();
-					int size = prevPath != null ? prevPath.getSegments().getLength() : -1;
+					int size = prevPath != null ?
+							prevPath.getSegments().getLength() : -1;
 				    if (!connect || size  <= 0) {
 						moveTo(f[0], f[1]);
 						break;
@@ -212,9 +214,9 @@ public class CompoundPath extends Art {
 	}
 
 	/**
-	 * Appends the segments of a Shape to the path. If <code>connect</code> is 
-	 * true, the new path segments are connected to the existing one with a line.
-	 * The winding rule of the Shape is ignored.
+	 * Appends the segments of a Shape to the path. If <code>connect</code> is
+	 * true, the new path segments are connected to the existing one with a
+	 * line. The winding rule of the Shape is ignored.
 	 */
 	public void append(Shape shape, boolean connect) {
 		append(shape.getPathIterator(null), connect);

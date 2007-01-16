@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 08.03.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.gui;
@@ -47,6 +44,9 @@ import com.scriptographer.ConsoleOutputWriter;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.*;
 
+/**
+ * @author lehni
+ */
 public class ConsoleDialog extends FloatingDialog implements
 		ConsoleOutputWriter {
 	static final String title = "Scriptographer Console";

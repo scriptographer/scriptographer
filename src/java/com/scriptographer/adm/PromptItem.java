@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 23.10.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
@@ -38,6 +35,9 @@ import java.awt.Dimension;
 
 import org.mozilla.javascript.ScriptRuntime;
 
+/**
+ * @author lehni
+ */
 public class PromptItem {
 	public static final int
 		TYPE_STRING = 0,
@@ -109,7 +109,8 @@ public class PromptItem {
 	/**
 	 * Creates a TYPE_RANGE Item
 	 */
-	public PromptItem(String description, Number value, float min, float max, float step) {
+	public PromptItem(String description, Number value, float min, float max,
+			float step) {
 		this(TYPE_RANGE, description, value);
 		this.setRange(min, max);
 		this.increment = step;

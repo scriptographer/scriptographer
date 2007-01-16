@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 22.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -37,6 +34,9 @@ package com.scriptographer.ai;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 
+/**
+ * @author lehni
+ */
 public class RGBColor extends Color {
 	protected float red;
 	protected float green;
@@ -44,10 +44,11 @@ public class RGBColor extends Color {
 
 	/**
 	 * The color components have values between 0 and 1
-	 * @param r  Red
-	 * @param g  Green
-	 * @param b  Blue
-	 * @param a  Alpha
+	 * 
+	 * @param r Red
+	 * @param g Green
+	 * @param b Blue
+	 * @param a Alpha
 	 */
 	public RGBColor(float r, float g, float b) {
 		this(r, g, b, -1f);
@@ -61,11 +62,13 @@ public class RGBColor extends Color {
 	}
 
 	public RGBColor(java.awt.Color col) {
-		this(col.getRed() / 255.0f, col.getGreen() / 255.0f, col.getBlue() / 255.0f, col.getAlpha() / 255.0f);
+		this(col.getRed() / 255.0f, col.getGreen() / 255.0f,
+				col.getBlue() / 255.0f, col.getAlpha() / 255.0f);
 	}
 
 	public java.awt.Color toAWTColor() {
-		return new java.awt.Color(getColorSpace(), new float[] { red, green, blue }, alpha);
+		return new java.awt.Color(getColorSpace(),
+				new float[] { red, green, blue }, alpha);
 	}
 
 	public float[] getComponents() {

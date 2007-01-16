@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,16 +26,16 @@
  *
  * File created on 03.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
 
 import com.scriptographer.js.FunctionHelper;
 
+/**
+ * @author lehni
+ */
 public class ScrollBar extends ValueItem {
 
 	public ScrollBar(Dialog dialog) {
@@ -48,7 +48,8 @@ public class ScrollBar extends ValueItem {
 	
 	protected void onNotify(int notifier, ListEntry entry) throws Exception {
 		if (wrapper != null) {
-			// override the default behavior and give onChange for both notifiers:
+			// override the default behavior and give onChange for both
+			// notifiers:
 			switch(notifier) {
 				case Notifier.NOTIFIER_USER_CHANGED:
 				case Notifier.NOTIFIER_INTERMEDIATE_CHANGED:

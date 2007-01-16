@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 14.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -40,6 +37,9 @@ import com.scriptographer.util.ExtendedArrayList;
 import com.scriptographer.util.AbstractFetchList;
 import com.scriptographer.util.ExtendedList;
 
+/**
+ * @author lehni
+ */
 public class SegmentList extends AbstractFetchList {
 	protected Path path;
 	protected int size;
@@ -50,13 +50,15 @@ public class SegmentList extends AbstractFetchList {
 	private int lengthVersion = -1;
 
 	// how many float values are stored in a segment:
-	// use this ugly but fast hack: the AIPathSegment represents roughly an array
-	// of 6 floats (for the 3 AIRealPoints p, in, out) + a char (boolean corner)
+	// use this ugly but fast hack: the AIPathSegment represents roughly an
+	// array of 6 floats (for the 3 AIRealPoints p, in, out)
+	// + a char (boolean corner)
 	// due to the data alignment, there are 3 empty bytes after the char.
-	// when using a float array with seven elements, the first 6 are set correctly.
-	// the first byte of the 7th represents the boolean value. if this float is set
-	// to 0 before fetching, it will be == 0 if false, and != 0 if true, so that's
-	// all we want in the java environment:
+	// when using a float array with seven elements, the first 6 are set
+	// correctly.
+	// the first byte of the 7th represents the boolean value. if this float is
+	// set to 0 before fetching, it will be == 0 if false, and != 0 if true, so
+	// that's all we want in the java environment:
 	protected static final int VALUES_PER_SEGMENT = 7;
 
 	public SegmentList() {
@@ -77,10 +79,11 @@ public class SegmentList extends AbstractFetchList {
 	private static native int nativeGetSize(int handle);
 
 	/**
-	 * Fetches the length from the underlying AI structure and puts the internal reflection
-	 * in the right state and length.
-	 *
-	 * @param newSize If specified, nativeGetLength doesn't need to be called in order to speed things up.
+	 * Fetches the length from the underlying AI structure and puts the internal
+	 * reflection in the right state and length.
+	 * 
+	 * @param newSize If specified, nativeGetLength doesn't need to be called in
+	 *        order to speed things up.
 	 */
 	protected void updateSize(int newSize) {
 		if (path != null) {
@@ -107,26 +110,41 @@ public class SegmentList extends AbstractFetchList {
 		}
 	}
 
-	protected static native void nativeGet(int handle, int index, int count, float[] values);
+	protected static native void nativeGet(int handle, int index, int count,
+			float[] values);
+
 	// docHandle seems to be only needed for modifying code!
-	protected static native void nativeSet(int handle, int docHandle, int index, float pointX, float pointY, float inX, float inY, float outX, float outY, boolean corner);
-	protected static native void nativeSet(int handle, int docHandle, int index, int count, float[] values);
-	protected static native void nativeInsert(int handle, int docHandle, int index, float pointX, float pointY, float inX, float inY, float outX, float outY, boolean corner);
-	protected static native void nativeInsert(int handle, int docHandle, int index, int count, float[] values);
+	protected static native void nativeSet(int handle, int docHandle,
+			int index, float pointX, float pointY, float inX, float inY,
+			float outX, float outY, boolean corner);
+
+	protected static native void nativeSet(int handle, int docHandle,
+			int index, int count, float[] values);
+
+	protected static native void nativeInsert(int handle, int docHandle,
+			int index, float pointX, float pointY, float inX, float inY,
+			float outX, float outY, boolean corner);
+
+	protected static native void nativeInsert(int handle, int docHandle,
+			int index, int count, float[] values);
+
 	// for point selections
 	protected static native short nativeGetSelectionState(int handle, int index);
-	protected static native void nativeSetSelectionState(int handle, int docHandle, int index, short state);
+
+	protected static native void nativeSetSelectionState(int handle,
+			int docHandle, int index, short state);
 
 	/**
 	 * Fetches a series of segments from the underlying Adobe Illustrator Path.
-	 *
+	 * 
 	 * @param fromIndex
 	 * @param toIndex
 	 */
 	protected void fetch(int fromIndex, int toIndex) {
 		if (path != null) {
 			int pathVersion = path.version;
-			// if all are out of maxVersion or only one segment is fetched, no scanning for valid segments is needed:
+			// if all are out of maxVersion or only one segment is fetched, no
+			// scanning for valid segments is needed:
 			int fetchCount = toIndex - fromIndex;
 
 			int start = fromIndex, end;
@@ -144,7 +162,8 @@ public class SegmentList extends AbstractFetchList {
 				if (start == toIndex) // all fetched, jump out
 					break;
 
-				// now determine the length of the block that needs to be fetched:
+				// now determine the length of the block that needs to be
+				// fetched:
 				end = start + 1;
 
 				while (end < toIndex &&
@@ -190,8 +209,8 @@ public class SegmentList extends AbstractFetchList {
 	}
 
 	public Object get(int index) {
-		// as fetching doesn't cost so much but calling JNI functions does, fetch a few elements in the neighborhood
-		// at a time:
+		// as fetching doesn't cost so much but calling JNI functions does,
+		// fetch a few elements in the neighborhood at a time:
 		int fromIndex = index - 2;
 		if (fromIndex < 0)
 			fromIndex = 0;
@@ -301,7 +320,8 @@ public class SegmentList extends AbstractFetchList {
 
 		// and add the segments to illustrator as well
 		if (values != null && addCount > 0) {
-			SegmentList.nativeInsert(path.handle, path.document.handle, index, addCount, values);
+			SegmentList.nativeInsert(path.handle, path.document.handle, index,
+					addCount, values);
 
 			// update size
 			size += addCount;
@@ -346,7 +366,8 @@ public class SegmentList extends AbstractFetchList {
 		return size == 0;
 	}
 
-	private static native int nativeRemove(int handle, int docHandle, int index, int count);
+	private static native int nativeRemove(int handle, int docHandle,
+			int index, int count);
 
 	public void remove(int fromIndex, int toIndex) {
 		if (fromIndex < toIndex) {
@@ -359,7 +380,8 @@ public class SegmentList extends AbstractFetchList {
 				}
 			}
 			if (path != null) {
-				size = nativeRemove(path.handle, path.document.handle, fromIndex, toIndex - fromIndex);
+				size = nativeRemove(path.handle, path.document.handle,
+						fromIndex, toIndex - fromIndex);
 			}
 			list.remove(fromIndex, toIndex);
 			size = newSize;
@@ -380,7 +402,8 @@ public class SegmentList extends AbstractFetchList {
 	 */	
 	public void moveTo(float x, float y) {
 		if (size > 0)
-			throw new UnsupportedOperationException("moveTo can only be called at the beginning of a SegmentList");
+			throw new UnsupportedOperationException(
+					"moveTo can only be called at the beginning of a SegmentList");
 		add(new Segment(x, y));
 	}
 	
@@ -406,13 +429,15 @@ public class SegmentList extends AbstractFetchList {
 		lineTo((float) pt.getX(), (float) pt.getY());
 	}
 	
-	public void curveTo(float c1x, float c1y, float c2x, float c2y, float x, float y) {
+	public void curveTo(float c1x, float c1y, float c2x, float c2y, float x,
+			float y) {
 		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		// first modify the current segment:
 		Segment lastSegment = getSegment(size - 1);
 		// convert to relative values:
-		lastSegment.handleOut.setLocation(c1x - lastSegment.point.x, c1y - lastSegment.point.y);
+		lastSegment.handleOut.setLocation(c1x - lastSegment.point.x, c1y
+				- lastSegment.point.y);
 		lastSegment.setCorner(false);
 		// and add the new segment, with handleIn set to c2
 		add(new Segment(x, y, c2x - x, c2y - y, 0, 0, false));
@@ -423,7 +448,9 @@ public class SegmentList extends AbstractFetchList {
 	}
 	
 	public void curveTo(Point2D c1, Point2D c2, Point2D pt) {
-		curveTo((float) c1.getX(), (float) c1.getY(), (float) c2.getX(), (float) c2.getY(), (float) pt.getX(), (float) pt.getY());
+		curveTo((float) c1.getX(), (float) c1.getY(),
+				(float) c2.getX(), (float) c2.getY(),
+				(float) pt.getX(), (float) pt.getY());
 	}
 	
 	public void quadTo(float cx, float cy, float x, float y) {
@@ -445,10 +472,12 @@ public class SegmentList extends AbstractFetchList {
 	}
 	
 	public void quadTo(Point2D c, Point2D pt) {
-		quadTo((float) c.getX(), (float) c.getY(), (float) pt.getX(), (float) pt.getY());
+		quadTo((float) c.getX(), (float) c.getY(),
+				(float) pt.getX(), (float) pt.getY());
 	}
 
-	public void arcTo(float centerX, float centerY, float endX, float endY, int ccw) {
+	public void arcTo(float centerX, float centerY, float endX, float endY,
+			int ccw) {
 		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		
@@ -475,7 +504,10 @@ public class SegmentList extends AbstractFetchList {
 		
 		double h = Math.sqrt(x1 * x1 + y1 * y1);
 		if (s == 0 || Double.isNaN(s) || h == 0)
-			throw new UnsupportedOperationException("Cannot create an arc with the given center and starting point: " + centerX +", " + centerY + "; " + startX +", " + startY);
+			throw new UnsupportedOperationException(
+					"Cannot create an arc with the given center and starting point: "
+							+ centerX + ", " + centerY + "; " +
+							startX + ", " + startY);
 		double w = h / s;
 		
 		// Note: reversing the Y equations negates the angle to adjust
@@ -509,13 +541,15 @@ public class SegmentList extends AbstractFetchList {
 			Point pt = new Point(centerX + relx * w, centerY + rely * h);
 			Point out;
 			if (i == arcSegs) out = null;
-			else out = new Point(centerX + (relx - z * rely) * w - pt.x, centerY + (rely + z * relx) * h - pt.y);
+			else out = new Point(centerX + (relx - z * rely) * w - pt.x,
+					centerY + (rely + z * relx) * h - pt.y);
 			if (i == 0) {
 				// modify startSegment
 				startSegment.handleOut.setLocation(out);
 			} else {
 				// add new Segment
-				Point in = new Point(centerX + (relx + z * rely) * w - pt.x, centerY + (rely - z * relx) * h - pt.y);
+				Point in = new Point(centerX + (relx + z * rely) * w - pt.x,
+						centerY + (rely - z * relx) * h - pt.y);
 				add(new Segment(pt, in, out, false));
 			}
 			angle += inc;
@@ -523,6 +557,7 @@ public class SegmentList extends AbstractFetchList {
 	}
 
 	public void arcTo(Point2D center, Point2D endPoint, int ccw) {
-		arcTo((float) center.getX(), (float) center.getY(), (float) endPoint.getX(), (float) endPoint.getY(), ccw);
+		arcTo((float) center.getX(), (float) center.getY(),
+				(float) endPoint.getX(), (float) endPoint.getY(), ccw);
 	}
 }

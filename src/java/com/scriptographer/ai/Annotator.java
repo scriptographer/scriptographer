@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 23.02.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -45,6 +42,9 @@ import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.util.IntMap;
 import com.scriptographer.util.SoftIntMap;
 
+/**
+ * @author lehni
+ */
 public class Annotator extends AIObject {
 	private boolean active;
 
@@ -61,7 +61,8 @@ public class Annotator extends AIObject {
 		int index = unusedAnnotators.size() - 1;
 		if (index >= 0) {
 			Annotator annotator = (Annotator) unusedAnnotators.get(index);
-			// found one, let's reuse it's handle and remove the old timer from the list:
+			// found one, let's reuse it's handle and remove the old timer from
+			// the list:
 			handle = annotator.handle;
 			annotator.handle = 0;
 			unusedAnnotators.remove(index);
@@ -87,8 +88,8 @@ public class Annotator extends AIObject {
 	private native int nativeCreate(String name);
 	
 	/**
-	 * 
-	 * @param active if <code>true</code>, activates the annotator, otherwise deactivates it
+	 * @param active if <code>true</code>, activates the annotator, otherwise
+	 *        deactivates it
 	 */
 	public void setActive(boolean active) {
 		if (nativeSetActive(handle, active)) {
@@ -108,15 +109,18 @@ public class Annotator extends AIObject {
 	
 	public void invalidate(Rectangle2D rect) {
 		// TODO: implement DocumentView and pass handle to it!
-		// nativeInvalidate(handle, (int) rect.getX(), (int) rect.getY(), (int) rect.getWidth(), (int) rect.getHeight());
+		// nativeInvalidate(handle, (int) rect.getX(), (int) rect.getY(), (int)
+		// rect.getWidth(), (int) rect.getHeight());
 	}
 	
-	private native void nativeInvalidate(int viewHandle, float x, float y, float width, float height);
+	private native void nativeInvalidate(int viewHandle, float x, float y,
+			float width, float height);
 	
 	public void dispose() {
 		// see wether we're still linked:
 		if (annotators.get(handle) == this) {
-			// if so remove it and put it to the list of unsed timers, for later recycling
+			// if so remove it and put it to the list of unsed timers, for later
+			// recycling
 			annotators.remove(handle);
 			getUnusedAnnotators().add(this);
 		}
@@ -176,10 +180,12 @@ public class Annotator extends AIObject {
 	/**
 	 * To be called from the native environment:
 	 */
-	private static void onDraw(int handle, int portHandle, int viewHandle) throws Exception {
+	private static void onDraw(int handle, int portHandle, int viewHandle)
+			throws Exception {
 		Annotator annotator = getAnnotator(handle);
 		if (annotator != null) {
-			annotator.onDraw(createDrawer(portHandle), DocumentView.wrapHandle(viewHandle));
+			annotator.onDraw(createDrawer(portHandle),
+					DocumentView.wrapHandle(viewHandle));
 		}
 	}
 	

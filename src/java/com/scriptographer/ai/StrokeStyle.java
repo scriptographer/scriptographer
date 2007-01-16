@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 14.02.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -40,6 +37,9 @@ import com.scriptographer.js.NullToUndefinedWrapper;
 import com.scriptographer.js.WrappableObject;
 import com.scriptographer.js.WrapperCreator;
 
+/**
+ * @author lehni
+ */
 public class StrokeStyle extends WrappableObject implements WrapperCreator {
 	protected Color color;				/* Stroke color */
 	protected Boolean overprint;			/* Overprint - not meaningful if ColorTag is pattern */
@@ -72,22 +72,30 @@ public class StrokeStyle extends WrappableObject implements WrapperCreator {
 	}
 
 	public StrokeStyle(StrokeStyle stroke) {
-		init(stroke.color, stroke.overprint, stroke.width, stroke.dashOffset, stroke.dashArray, stroke.cap, stroke.join, stroke.miterLimit);
+		init(stroke.color, stroke.overprint, stroke.width, stroke.dashOffset,
+				stroke.dashArray, stroke.cap, stroke.join, stroke.miterLimit);
 	}
 
-	public StrokeStyle(Color color, Boolean overprint, Float width, Float dashOffset, float[] dashArray, Integer cap, Integer join, Float miterLimit) {
-		init(color, overprint, width, dashOffset, dashArray, cap, join, miterLimit);
+	public StrokeStyle(Color color, Boolean overprint, Float width,
+			Float dashOffset, float[] dashArray, Integer cap, Integer join,
+			Float miterLimit) {
+		init(color, overprint, width, dashOffset, dashArray, cap, join,
+				miterLimit);
 	}
 	
 	/**
 	 * called from the native environment
 	 */
-	protected StrokeStyle(Color color, boolean hasColor, short overprint, float width, float dashOffset, float[] dashArray, short cap, short join, float miterLimit) {
-		init(color, hasColor, overprint, width, dashOffset, dashArray, cap, join, miterLimit);
+	protected StrokeStyle(Color color, boolean hasColor, short overprint,
+			float width, float dashOffset, float[] dashArray, short cap,
+			short join, float miterLimit) {
+		init(color, hasColor, overprint, width, dashOffset, dashArray, cap,
+				join, miterLimit);
 	}
 
-
-	protected void init(Color color, Boolean overprint, Float width, Float dashOffset, float[] dashArray, Integer cap, Integer join, Float miterLimit) {
+	protected void init(Color color, Boolean overprint, Float width,
+			Float dashOffset, float[] dashArray, Integer cap, Integer join,
+			Float miterLimit) {
 		this.color = color;
 		this.overprint = overprint;
 		this.width = width;
@@ -101,7 +109,9 @@ public class StrokeStyle extends WrappableObject implements WrapperCreator {
 	/**
 	 * called from the native environment
 	 */
-	protected void init(Color color, boolean hasColor, short overprint, float width, float dashOffset, float[] dashArray, short cap, short join, float miterLimit) {
+	protected void init(Color color, boolean hasColor, short overprint,
+			float width, float dashOffset, float[] dashArray, short cap,
+			short join, float miterLimit) {
 		this.color = hasColor && color == null ? Color.NONE : color;
 		this.overprint = overprint >= 0 ? new Boolean(overprint != 0) : null;
 		this.width = width >= 0 ? new Float(width) : null;

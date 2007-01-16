@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 21.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -44,6 +41,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 
+/**
+ * @author lehni
+ */
 public class Tool extends AIObject {
 	private int index;
 
@@ -84,11 +84,11 @@ public class Tool extends AIObject {
 	}
 
 	/**
-	 * Returns all tools that have been created by this plugin.
-	 * This is necessary because the java part of the plugin may be reloaded.
-	 * The plugin needs to be capable of reestablish the connections between the wrappers
+	 * Returns all tools that have been created by this plugin. This is
+	 * necessary because the java part of the plugin may be reloaded. The plugin
+	 * needs to be capable of reestablish the connections between the wrappers
 	 * and the real objects.
-	 *
+	 * 
 	 * @return
 	 */
 	private static native IntMap nativeGetTools();

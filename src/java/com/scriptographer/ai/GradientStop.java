@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on Oct 18, 2006.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -38,6 +35,9 @@ import com.scriptographer.CommitManager;
 import com.scriptographer.Commitable;
 import com.scriptographer.ScriptographerException;
 
+/**
+ * @author lehni
+ */
 public class GradientStop implements Commitable {
 	protected float midPoint;
 	protected float rampPoint;
@@ -80,8 +80,8 @@ public class GradientStop implements Commitable {
 	}
 
 	/**
-	 * inserts this gradient stop in the underlying AI gradient at position index
-	 * Only call once, when adding this stop to the GradientStopList!
+	 * inserts this gradient stop in the underlying AI gradient at position
+	 * index Only call once, when adding this stop to the GradientStopList!
 	 */
 	protected void insert() {
 		if (list != null && list.gradient != null) {

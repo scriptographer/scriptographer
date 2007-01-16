@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 23.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -47,11 +44,14 @@ import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.ReadOnlyList;
 import com.scriptographer.util.SoftIntMap;
 
+/**
+ * @author lehni
+ */
 public class Document extends DictionaryObject {
 
-	// TODO: move this to app.DIALOG_* and have a global function set / getDialogStatus,
-	// that controls the general handling of dialogs on a global setting level.
-	// remove the parameter from  the constructors.
+	// TODO: move this to app.DIALOG_* and have a global function set /
+	// getDialogStatus, that controls the general handling of dialogs on a
+	// global setting level. remove the parameter from the constructors.
 	
 	// ActionDialogStatus
 	public static final int
@@ -68,12 +68,12 @@ public class Document extends DictionaryObject {
 
 	/**
 	 * Opens an existing document.
-	 *
-	 * @param file          the file to read from
-	 * @param colorModel    the document's desired color model,
-	                        Color.MODEL_* values
-	 * @param dialogStatus  how dialogs should be handled,
-	                        Document.DIALOG_* values
+	 * 
+	 * @param file the file to read from
+	 * @param colorModel the document's desired color model, Color.MODEL_*
+	 *        values
+	 * @param dialogStatus how dialogs should be handled, Document.DIALOG_*
+	 *        values
 	 */
 	public Document(File file, int colorModel, int dialogStatus) {
 		super(nativeCreate(file, colorModel, dialogStatus));
@@ -81,16 +81,17 @@ public class Document extends DictionaryObject {
 
 	/**
 	 * Creates a new document.
-	 *
-	 * @param title         the title of the document
-	 * @param width         the width of the document
-	 * @param height        the height of the document
-	 * @param colorModel    the document's desired color model,
-	                        Color.MODEL_* values
-	 * @param dialogStatus  how dialogs should be handled,
-	                        Document.DIALOG_* values
+	 * 
+	 * @param title the title of the document
+	 * @param width the width of the document
+	 * @param height the height of the document
+	 * @param colorModel the document's desired color model, Color.MODEL_*
+	 *        values
+	 * @param dialogStatus how dialogs should be handled, Document.DIALOG_*
+	 *        values
 	 */
-	public Document(String title, float width, float height, int colorModel, int dialogStatus) {
+	public Document(String title, float width, float height, int colorModel,
+			int dialogStatus) {
 		super(nativeCreate(title, width, height, colorModel, dialogStatus));
 	}
 
@@ -98,9 +99,11 @@ public class Document extends DictionaryObject {
 		super(handle);
 	}
 
-	private static native int nativeCreate(File file, int colorModel, int dialogStatus);
-	
-	private static native int nativeCreate(String title, float width, float height, int colorModel, int dialogStatus);
+	private static native int nativeCreate(File file, int colorModel,
+			int dialogStatus);
+
+	private static native int nativeCreate(String title, float width,
+			float height, int colorModel, int dialogStatus);
 	
 	// use a SoftIntMap to keep track of already wrapped documents:
 	private static SoftIntMap documents = new SoftIntMap();
@@ -125,7 +128,6 @@ public class Document extends DictionaryObject {
 	/**
 	 * called before ai functions are executed
 	 */
-	
 	public static native void beginExecution();
 	
 	/**
@@ -134,26 +136,24 @@ public class Document extends DictionaryObject {
 	public static native void endExecution();
 
 	/**
-	 * Activates this document, so all newly created art objects will
-	 * be placed in it. 
+	 * Activates this document, so all newly created art objects will be placed
+	 * in it.
 	 * 
-	 * @param focus        When set to true, the document window is brought to
-	 *                     the front, otherwise the window sequence remains
-	 *                     the same.
-	 * @param forCreation  if set to true, the internal pointer gWorkingDoc
-	 *                     will not be modified, but gCreationDoc will be set, 
-	 *                     which then is only used once in the next call to
-	 *                     Document_activate() (native stuff).
+	 * @param focus When set to true, the document window is brought to the
+	 *        front, otherwise the window sequence remains the same.
+	 * @param forCreation if set to true, the internal pointer gWorkingDoc will
+	 *        not be modified, but gCreationDoc will be set, which then is only
+	 *        used once in the next call to Document_activate() (native stuff).
 	 */
 	private native void activate(boolean focus, boolean forCreation);
 
 	/**
-	 * Activates this document, so all newly created art objects will
-	 * be placed in it. 
+	 * Activates this document, so all newly created art objects will be placed
+	 * in it.
 	 * 
-	 * @param focus  When set to <code>true</code>,
-	 *               the document window is brought to the front,
-	 *               otherwise the window sequence remains the same.
+	 * @param focus When set to <code>true</code>, the document window is
+	 *        brought to the front, otherwise the window sequence remains the
+	 *        same.
 	 */
 	public void activate(boolean focus) {
 		activate(focus, false);
@@ -228,8 +228,8 @@ public class Document extends DictionaryObject {
 	public native Point getSize();
 
 	/**
-	 * SetSize only works while reading a document!
-	 *
+	 * setSize only works while reading a document!
+	 * 
 	 * @param width
 	 * @param height
 	 */
@@ -261,14 +261,14 @@ public class Document extends DictionaryObject {
 	
 	/**
 	 * Prints the document
-	 * @param dialogStatus  <tt>Document.DIALOG_*</tt>
+	 * 
+	 * @param dialogStatus <tt>Document.DIALOG_*</tt>
 	 */
 	public native void print(int dialogStatus);
 	
 	/**
 	 * Saves the document
 	 */
-	
 	public native void save();
 	
 	/**
@@ -298,11 +298,10 @@ public class Document extends DictionaryObject {
 
 	/**
 	 * Places a file in the document
-	 *
-	 * @param file    the file to place
-	 * @param linked  when set to <code>true</code>,
-	 *                the placed object is a link to the file, 
-     *                otherwise it is embedded within the document
+	 * 
+	 * @param file the file to place
+	 * @param linked when set to <code>true</code>, the placed object is a
+	 *        link to the file, otherwise it is embedded within the document
 	 */
 	public native Art place(File file, boolean linked);
 	
@@ -311,14 +310,15 @@ public class Document extends DictionaryObject {
 	}
 
 	/**
-	 * Invalidates the rectangle in artwork coordinates.
-	 * This will cause all views of the document that contain
-	 * the given rectangle to update at the next opportunity.
+	 * Invalidates the rectangle in artwork coordinates. This will cause all
+	 * views of the document that contain the given rectangle to update at the
+	 * next opportunity.
 	 */
 	public native void redraw(float x, float y, float width, float height);
 	
 	public void redraw(Rectangle2D rect) {
-		redraw((float) rect.getX(), (float) rect.getY(), (float) rect.getWidth(), (float) rect.getHeight());
+		redraw((float) rect.getX(), (float) rect.getY(),
+				(float) rect.getWidth(), (float) rect.getHeight());
 	}
 	
 	public native boolean write(File file, String format, boolean ask);
@@ -333,9 +333,9 @@ public class Document extends DictionaryObject {
 
 	/**
 	 * Checks wether the document contains any selected items.
-	 *
-	 * @return  <code>true</code> if the document contains selected items,
-	 *          false otherwise.
+	 * 
+	 * @return <code>true</code> if the document contains selected items,
+	 *         false otherwise.
 	 */	
 	public native boolean hasSelectedItems();
 
@@ -381,14 +381,18 @@ public class Document extends DictionaryObject {
 	public native Path createRectangle(Rectangle rect);
 
 	public native Path createRoundRectangle(Rectangle rect, float hor, float ver);
-	
+
 	public native Path createOval(Rectangle rect, boolean circumscribed);
-	
-	public native Path createRegularPolygon(int numSides, Point center, float radius);
-	
-	public native Path createStar(int numPoints, Point center, float radius1, float radius2);
-	
-	public native Path createSpiral(Point firstArcCenter, Point start, float decayPercent, int numQuarterTurns, boolean clockwiseFromOutside);
+
+	public native Path createRegularPolygon(int numSides, Point center,
+			float radius);
+
+	public native Path createStar(int numPoints, Point center, float radius1,
+			float radius2);
+
+	public native Path createSpiral(Point firstArcCenter, Point start,
+			float decayPercent, int numQuarterTurns,
+			boolean clockwiseFromOutside);
 
 	public Path createOval(Rectangle rect) {
 		return createOval(rect, false);
@@ -494,16 +498,16 @@ public class Document extends DictionaryObject {
 		return new Layer();
 	}
 	
-	protected native HitTest nativeHitTest(Point point, int type, float tolerance, Art art); 
+	protected native HitTest nativeHitTest(Point point, int type,
+			float tolerance, Art art); 
 
 	
 	/**
 	 * @param point
-	 * @param type       HitTest.TEST_*
-	 * @param tolerance  specified in view coordinates
-	                     (i.e pixels at the current zoom factor).
-	                     The default value is 2. The algorithm is not guaranteed 
-	                     to produce correct results for large values.
+	 * @param type HitTest.TEST_*
+	 * @param tolerance specified in view coordinates (i.e pixels at the current
+	 *        zoom factor). The default value is 2. The algorithm is not
+	 *        guaranteed to produce correct results for large values.
 	 * @return
 	 */
 	public HitTest hitTest(Point point, int type, float tolerance) {
@@ -521,8 +525,8 @@ public class Document extends DictionaryObject {
 	private native int nativeGetStories();
 	
 	/**
-	 * Text reflow is suspended during script execution.
-	 * when reflowText() is called, the reflow of text is forced.
+	 * Text reflow is suspended during script execution. when reflowText() is
+	 * called, the reflow of text is forced.
 	 */
 	public native void reflowText();
 

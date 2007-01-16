@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 19.10.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.js;
@@ -37,11 +34,12 @@ package com.scriptographer.js;
 import org.mozilla.javascript.Scriptable;
 
 /**
- * WrapperCreator extends Wrappable in order to provide a mechanism
- * to create custom wrappers. A object that implements WrapperCreator
- * needs to set its internal reference to the wrapper in createWrapper,
- * so it can be returned by getWrapper.
- * For such objects, setWrapper isn't called after createWrapper.
+ * WrapperCreator extends Wrappable in order to provide a mechanism to create
+ * custom wrappers. A object that implements WrapperCreator needs to set its
+ * internal reference to the wrapper in createWrapper, so it can be returned by
+ * getWrapper. For such objects, setWrapper isn't called after createWrapper.
+ * 
+ * @author lehni
  */
 public interface WrapperCreator extends Wrappable {
 	

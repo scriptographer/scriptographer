@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 23.10.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -37,6 +34,9 @@ package com.scriptographer.ai;
 import com.scriptographer.util.ReadOnlyList;
 import com.scriptographer.CommitManager;
 
+/**
+ * @author lehni
+ */
 public abstract class TextFrame extends Art {
 	// AITextOrientation
 	public static final short
@@ -68,8 +68,8 @@ public abstract class TextFrame extends Art {
 
 	public Art createOutline() {
 		// apply changes and reflow the layout before creating outlines
-		// All styles regarding this story need to be commited, as CharacterStyle
-		// uses Story as the commit key.
+		// All styles regarding this story need to be commited, as
+		// CharacterStyle uses Story as the commit key.
 		CommitManager.commit(this.getStory());
 		document.reflowText();
 		return nativeCreateOutline();

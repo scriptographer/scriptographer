@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,16 +26,16 @@
  *
  * File created on 02.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
 
 import java.awt.Point;
 
+/**
+ * @author lehni
+ */
 public class Tracker extends ADMObject {
 	// ADMMouseState
 	public final static int 
@@ -251,10 +251,12 @@ public class Tracker extends ADMObject {
 	 * creation of new Tracker objects on each notification, and nevertheless a
 	 * clean interface on the TrackerListener side. The disadvantage maybe no
 	 * thread safety, but that's not an issue with ADM right now.
+	 * 
 	 * @throws Exception
 	 */
-	protected boolean onTrack(NotificationHandler handler, int handle, int action, int modifiers,
-		int px, int py, int mouseState, char virtualKey, char character, long time) throws Exception {
+	protected boolean onTrack(NotificationHandler handler, int handle,
+			int action, int modifiers, int px, int py, int mouseState,
+			char virtualKey, char character, long time) throws Exception {
 		this.handle = handle;
 		this.action = action;
 		this.modifiers = modifiers;

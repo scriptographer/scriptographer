@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 02.12.2004.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -41,6 +38,9 @@ import java.awt.geom.Point2D;
 import com.scriptographer.CommitManager;
 import com.scriptographer.util.SoftIntMap;
 
+/**
+ * @author lehni
+ */
 public abstract class Art extends DictionaryObject {
 	
 	// the internal version. this is used for internally reflected data,
@@ -135,8 +135,8 @@ public abstract class Art extends DictionaryObject {
 		ATTR_HIDDEN = new Integer(0x00000004),
 		ATTR_FULLY_SELECTED = new Integer(0x00000008),
 
-		// Valid only for groups and plugin groups. Indicates whether the contents
-		// of the object are expanded in the layers palette.
+		// Valid only for groups and plugin groups. Indicates whether the
+		// contents of the object are expanded in the layers palette.
 		ATTR_EXPANDED = new Integer(0x00000010),
 		ATTR_TARGETED = new Integer(0x00000020),
 
@@ -252,10 +252,10 @@ public abstract class Art extends DictionaryObject {
 	/**
 	 * Creates an Art object that wraps an existing AIArtHandle. Make sure the
 	 * right constructor is used (Path, Raster). Use wrapArtHandle instead of
-	 * directly calling this constructor (it is called from the anchestor's 
-	 * constructors).
-	 * Integer is used instead of int so Art(int handle) can be distinguised from
-	 * the Art(Integer handle) constructor
+	 * directly calling this constructor (it is called from the anchestor's
+	 * constructors). Integer is used instead of int so Art(int handle) can be
+	 * distinguised from the Art(Integer handle) constructor
+	 * 
 	 * @param handle
 	 */
 	protected Art(int handle) {
@@ -263,8 +263,8 @@ public abstract class Art extends DictionaryObject {
 		// keep track of this object from now on, see wrapArtHandle
 		artItems.put(this.handle, this);
 		/*
-		// store the wrapper also in the paren'ts childrenWrappers segmentList, so
-		// it becomes permanent as long the object itself exists.
+		// store the wrapper also in the paren'ts childrenWrappers segmentList,
+		// so it becomes permanent as long the object itself exists.
 		// see definitions of artItems and childrenWrappers.
 		Art parent = getParent();
 		if (parent != null)
@@ -277,7 +277,9 @@ public abstract class Art extends DictionaryObject {
 	private native static int nativeCreate(short type);
 
 	/**
-	 * Creates a new AIArtHandle of the specified type and wraps it in a Art object
+	 * Creates a new AIArtHandle of the specified type and wraps it in a Art
+	 * object
+	 * 
 	 * @param type Art.TYPE_*
 	 */
 	protected Art(short type) {
@@ -285,17 +287,20 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Wraps an AIArtHandle of given type (determined by sAIArt->GetType(artHandle)) by
-	 * the correct Art anchestor class:
+	 * Wraps an AIArtHandle of given type (determined by
+	 * sAIArt->GetType(artHandle)) by the correct Art anchestor class:
+	 * 
 	 * @param artHandle
 	 * @param type
 	 * @return the wrapped art object
 	 */
-	protected static Art wrapHandle(int artHandle, short type, int textType, int docHandle, int dictionaryRef, boolean wrapped) {
+	protected static Art wrapHandle(int artHandle, short type, int textType,
+			int docHandle, int dictionaryRef, boolean wrapped) {
 		// first see wether the object was already wrapped before:
 		Art art = null;
-		// only try to use the previous wrapper for this adress if the object was marked wrapped
-		// otherwise we might get wrong wrappers for objects that reuse a previous address
+		// only try to use the previous wrapper for this adress if the object
+		// was marked wrapped otherwise we might get wrong wrappers for objects
+		// that reuse a previous address
 		if (wrapped)
 			art = (Art) artItems.get(artHandle);
 		// if it wasn't wrapped yet, do it now:
@@ -351,7 +356,7 @@ public abstract class Art extends DictionaryObject {
 
 	/**
 	 * returns the wrapper, if the object has one
-	 *
+	 * 
 	 * @param artHandle
 	 * @return the wrapper for the artHandle
 	 */
@@ -360,9 +365,8 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Increases the version of the art objects associated with artHandles,
-	 * if there are any. It does not wrap the artHandles if they weren't
-	 * already.
+	 * Increases the version of the art objects associated with artHandles, if
+	 * there are any. It does not wrap the artHandles if they weren't already.
 	 * 
 	 * @param artHandles
 	 */
@@ -374,11 +378,13 @@ public abstract class Art extends DictionaryObject {
 			// the current handle, and the initial handle that was stored
 			// in the art object's dictionary when it was wrapped. 
 			// see the native side for more explanations
-			// (ScriptographerEngine::wrapArtHandle, ScriptographerEngine::selectionChanged)
+			// (ScriptographerEngine::wrapArtHandle,
+			// ScriptographerEngine::selectionChanged)
 			int curHandle = artHandles[i];
 			int prevHandle = artHandles[i + 1];
 			Art art = null;
-			// System.out.println(Integer.toHexString(prevHandle) + " " + Integer.toHexString(curHandle));
+			// System.out.println(Integer.toHexString(prevHandle) + " " +
+			// Integer.toHexString(curHandle));
 			if (prevHandle != 0) {
 				// in case there was already a art object with the initial handle
 				// before, udpate it now:
@@ -404,7 +410,8 @@ public abstract class Art extends DictionaryObject {
 		CommitManager.version++;
 	}
 	
-	protected void changeHandle(int newHandle, int newDictionaryRef, int docHandle) {
+	protected void changeHandle(int newHandle, int newDictionaryRef,
+			int docHandle) {
 		// remove the object at the old handle
 		if (handle != newHandle) {
 			artItems.remove(handle);
@@ -422,18 +429,22 @@ public abstract class Art extends DictionaryObject {
 	
 	/**
 	 * Returns the document of the art item.
-	 * @return  the art item's document.
+	 * 
+	 * @return the art item's document.
 	 */
 	public Document getDocument() {
 		return document;
 	}
 
-	private native boolean nativeRemove(int handle, int docHandle, int dictionaryRef);
+	private native boolean nativeRemove(int handle, int docHandle,
+			int dictionaryRef);
 
 	/**
-	 * Removes the Art object from the document.
-	 * If the Art object has children, they are also removed.
-	 * @return  <code>true</code> if the Art object was removed, false otherwise
+	 * Removes the Art object from the document. If the Art object has children,
+	 * they are also removed.
+	 * 
+	 * @return <code>true</code> if the Art object was removed, false
+	 *         otherwise
 	 */
 	public boolean remove() {
 		boolean ret = false;
@@ -448,22 +459,25 @@ public abstract class Art extends DictionaryObject {
 	protected native void finalize();
 
 	/**
-	 * Copy art object to another document,
-	 * or duplicate within the same document.
-	 * @param document  the document to copy to
-	 * @return
+	 * Copies the art object to another document, or duplicates it within the
+	 * same document.
+	 * 
+	 * @param document the document to copy the new art to
+	 * @return the new copy
 	 */
 	public native Art copyTo(Document document);
 
 	/**
 	 * Copy art object into another art object
+	 * 
 	 * @param art
 	 * @return
 	 */
 	public native Art copyTo(Art art);
 
 	/**
-	 * Clone art object within the same document.
+	 * Clones art object within the same document.
+	 * 
 	 * @return the newly cloned art object
 	 */
 	public Object clone() {
@@ -477,8 +491,8 @@ public abstract class Art extends DictionaryObject {
 	public native Art getNextSibling();
 	public native Art getPreviousSibling();
 
-	// don't implement this in native as the number of Art objects is not known in advance
-	// and like this, a java ArrayList can be used:
+	// don't implement this in native as the number of Art objects is not known
+	// in advance and like this, a java ArrayList can be used:
 	public Art[] getChildren() {
 		ArrayList list = new ArrayList();
 		Art child = getFirstChild();
@@ -493,8 +507,8 @@ public abstract class Art extends DictionaryObject {
 
 	/**
 	 * Checks if the Art object has children.
-	 * @return  <code>true</code> if it has one or more children,
-	            false otherwise
+	 * 
+	 * @return true if it has one or more children, false otherwise
 	 */
 	public boolean hasChildren() {
 		return getFirstChild() != null;
@@ -511,9 +525,10 @@ public abstract class Art extends DictionaryObject {
 	public native String getName();
 	
 	/**
-	 * Checks if the Art object's name as it appears in the layers palette
-	 * is a default descriptive name, rather then a user-assigned name.
-	 * @return  <code>true</code> if it's name is default, false otherwise.
+	 * Checks if the Art object's name as it appears in the layers palette is a
+	 * default descriptive name, rather then a user-assigned name.
+	 * 
+	 * @return <code>true</code> if it's name is default, false otherwise.
 	 */
 	public native boolean isDefaultName();
 
@@ -536,10 +551,11 @@ public abstract class Art extends DictionaryObject {
 	protected native boolean getAttribute(int attribute);
 
 	/**
-	 * Checks if the Art object is selected or partially selected
-	 * (groups with some selected objects/partially selected paths)
-	 * @return  <code>true</code> if it is selected or partially selected,
-	            false otherwise
+	 * Checks if the Art object is selected or partially selected (groups with
+	 * some selected objects/partially selected paths)
+	 * 
+	 * @return <code>true</code> if it is selected or partially selected,
+	 *         false otherwise
 	 */
 	public boolean isSelected() {
 		return getAttribute(ATTR_SELECTED.intValue());
@@ -550,9 +566,10 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Checks if the Art object is fully selected. For paths this means that all 
+	 * Checks if the Art object is fully selected. For paths this means that all
 	 * segments are selected, for container objects all children are selected
-	 * @return  true if it is fully selected, false otherwise
+	 * 
+	 * @return <code>true</code> if it is fully selected, false otherwise
 	 */
 	public boolean isFullySelected() {
 		return getAttribute(ATTR_FULLY_SELECTED.intValue());
@@ -564,7 +581,8 @@ public abstract class Art extends DictionaryObject {
 
 	/**
 	 * Checks if the Art object is locked
-	 * @return  true if it is locked, false otherwise
+	 * 
+	 * @return <code>true</code> if it is locked, false otherwise
 	 */
 	public boolean isLocked() {
 		return getAttribute(ATTR_LOCKED.intValue());
@@ -576,7 +594,8 @@ public abstract class Art extends DictionaryObject {
 
 	/**
 	 * Checks if the Art object is hidden
-	 * @return  true if it is hidden, false otherwise
+	 * 
+	 * @return <code>true</code> if it is hidden, false otherwise
 	 */
 	public boolean isHidden() {
 		return getAttribute(ATTR_HIDDEN.intValue());
@@ -588,13 +607,15 @@ public abstract class Art extends DictionaryObject {
 
 	/**
 	 * Returns the art object's blend mode.
-	 * @return  any of Art.BLEND_*
+	 * 
+	 * @return any of Art.BLEND_*
 	 */
 	public native int getBlendMode();
 
 	/**
 	 * Set the art object's blend mode:
-	 * @param mode  Art.BLEND_*
+	 * 
+	 * @param mode Art.BLEND_*
 	 */
 	public native void setBlendMode(int mode);
 
@@ -605,7 +626,8 @@ public abstract class Art extends DictionaryObject {
 
 	/**
 	 * Sets the art object's opacity.
-	 * @param opacity  the opacity of the art object as a value between 0 and 1.
+	 * 
+	 * @param opacity the opacity of the art object as a value between 0 and 1.
 	 */
 	public native void setOpacity(float opacity);
 
@@ -629,29 +651,32 @@ public abstract class Art extends DictionaryObject {
 	
 	/**
 	 * Moves the art object above the specified art object
-	 * @param art  the art object above which it should be moved
-	 * @return     true if it was moved, false otherwise
+	 * 
+	 * @param art The art object above which it should be moved
+	 * @return true if it was moved, false otherwise
 	 */
 	public native boolean moveAbove(Art art);
 	
 	/**
 	 * Moves the art object below the specified art object
-	 * @param art  the art object below which it should be moved
-	 * @return     true if it was moved, false otherwise
+	 * 
+	 * @param art the art object below which it should be moved
+	 * @return true if it was moved, false otherwise
 	 */
 	public native boolean moveBelow(Art art);
 
 	/**
 	 * Transforms the art object with custom flags to be set.
-	 *
+	 * 
 	 * @param at
 	 * @param flags Art. TRANSFORM_*
 	 */
 	public native void transform(AffineTransform at, int flags);
 
 	/**
-	 * Transforms the art object with the flags Art.TRANSFORM_OBJECTS
-	 * and Art.TRANSFORM_DEEP set
+	 * Transforms the art object with the flags Art.TRANSFORM_OBJECTS and
+	 * Art.TRANSFORM_DEEP set
+	 * 
 	 * @param at
 	 */
 	public void transform(AffineTransform at) {
@@ -660,6 +685,7 @@ public abstract class Art extends DictionaryObject {
 
 	/**
 	 * scales the object by creating a scale Matrix and executing transform()
+	 * 
 	 * @param sx
 	 * @param sy
 	 * @see Matrix#scale(double, double)
@@ -673,7 +699,8 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * translates (moves) the object by the given offsets
+	 * Translates (moves) the object by the given offsets
+	 * 
 	 * @param tx
 	 * @param ty
 	 * @see Matrix#translate(double, double)
@@ -683,7 +710,8 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * translates (moves) the object by the given offset point
+	 * Translates (moves) the object by the given offset point
+	 * 
 	 * @param t
 	 */
 	public void translate(Point2D t) {
@@ -691,8 +719,9 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * rotates the object around an anchor point by a given angle
-	 * @param theta  the rotation angle in radians
+	 * Rotates the object around an anchor point by a given angle
+	 * 
+	 * @param theta the rotation angle in radians
 	 * @see Matrix#rotate(double, double, double)
 	 */
 	public void rotate(double theta, float x, float y) {
@@ -704,7 +733,6 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 *
 	 * @param shx
 	 * @param shy
 	 * @see Matrix#shear(double, double)
@@ -714,8 +742,9 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * rotates the object by a given angle
-	 * @param theta  the rotation angle in radians
+	 * Rotates the object by a given angle
+	 * 
+	 * @param theta the rotation angle in radians
 	 */
 	public void rotate(double theta) {
 		transform(AffineTransform.getRotateInstance(theta));
@@ -735,7 +764,8 @@ public abstract class Art extends DictionaryObject {
 		return str.toString();
 	}
 		
-	public native Raster rasterize(int type, float resolution, int antialiasing, float width, float height);
+	public native Raster rasterize(int type, float resolution,
+			int antialiasing, float width, float height);
 	
 	public Raster rasterize(int type, float resolution, int antialiasing) {
 		return rasterize(type, resolution, antialiasing, -1, -1);
@@ -754,11 +784,13 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	public HitTest hitTest(Point point, int type) {
-		return document.nativeHitTest(point, type, HitTest.DEFAULT_TOLERANCE, this);
+		return document.nativeHitTest(point, type,
+				HitTest.DEFAULT_TOLERANCE, this);
 	}
 
 	public HitTest hitTest(Point point) {
-		return document.nativeHitTest(point, HitTest.TEST_ALL, HitTest.DEFAULT_TOLERANCE, this);
+		return document.nativeHitTest(point, HitTest.TEST_ALL,
+				HitTest.DEFAULT_TOLERANCE, this);
 	}
 	
 	/**
@@ -767,34 +799,35 @@ public abstract class Art extends DictionaryObject {
 	 * 
 	 * It outlines stroked lines, text objects, gradients, patterns, etc.
 	 * 
-	 * The art item itself is removed, and the newly created item containing
-	 * the expanded artwork is returned.
+	 * The art item itself is removed, and the newly created item containing the
+	 * expanded artwork is returned.
 	 * 
-	 * @param flags  #EXPAND_*
-	 * @param steps  the amount of steps for gradient,
-	                 when the #EXPAND_GRADIENTTOPATHS flag is set
-	 * @return       the newly created item containing the expanded artwork
+	 * @param flags #EXPAND_*
+	 * @param steps the amount of steps for gradient, when the
+	 *        #EXPAND_GRADIENTTOPATHS flag is set
+	 * @return the newly created item containing the expanded artwork
 	 */
 	public native Art expand(int flags, int steps);
 
 	/**
-	 * Calls {@link #expand(int, int)} with these flags set:
-	   #EXPAND_PLUGINART, #EXPAND_TEXT, #EXPAND_STROKE,
-	   #EXPAND_PATTERN, #EXPAND_SYMBOLINSTANCES
-	 * @return  the newly created item containing the expanded artwork
+	 * Calls {@link #expand(int, int)} with these flags set: #EXPAND_PLUGINART,
+	 * #EXPAND_TEXT, #EXPAND_STROKE, #EXPAND_PATTERN, #EXPAND_SYMBOLINSTANCES
+	 * 
+	 * @return the newly created item containing the expanded artwork
 	 */
 	public Art expand() {
 		return expand(EXPAND_PLUGINART | EXPAND_TEXT | EXPAND_STROKE |
-			EXPAND_PATTERN | EXPAND_SYMBOLINSTANCES, 0);
+				EXPAND_PATTERN | EXPAND_SYMBOLINSTANCES, 0);
 	}
 	
 	public native int getOrder(Art art);
 	
 	/**
 	 * Checks if the Art object is before the specified Art object
-	 * @param art  The Art object to check against
-	 * @return     <code>true</code> if it is before the specified Art object,
-	               false otherwise
+	 * 
+	 * @param art The Art object to check against
+	 * @return <code>true</code> if it is before the specified Art object,
+	 *         false otherwise
 	 */
 	public boolean isBefore(Art art) {
 		return getOrder(art) == ORDER_BEFORE;		
@@ -802,9 +835,10 @@ public abstract class Art extends DictionaryObject {
 	
 	/**
 	 * Checks if the Art object is after the specified Art object
-	 * @param art  The Art object to check against
-	 * @return     <code>true</code> if it is after the specified Art object,
-	               false otherwise
+	 * 
+	 * @param art The Art object to check against
+	 * @return <code>true</code> if it is after the specified Art object,
+	 *         false otherwise
 	 */
 	public boolean isAfter(Art art) {
 		return getOrder(art) == ORDER_AFTER;		
@@ -812,9 +846,10 @@ public abstract class Art extends DictionaryObject {
 	
 	/**
 	 * Checks if the Art object is inside the specified Art object
-	 * @param art  The Art object to check against
-	 * @return     <code>true</code> if it is inside the specified Art object,
-	               false otherwise
+	 * 
+	 * @param art The Art object to check against
+	 * @return <code>true</code> if it is inside the specified Art object,
+	 *         false otherwise
 	 */
 	public boolean isInside(Art art) {
 		return getOrder(art) == ORDER_INSIDE;		

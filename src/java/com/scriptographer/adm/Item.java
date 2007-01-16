@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 22.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
@@ -42,6 +39,9 @@ import java.util.StringTokenizer;
 
 import com.scriptographer.ScriptographerEngine;
 
+/**
+ * @author lehni
+ */
 public abstract class Item extends CallbackHandler {
 
 	// options
@@ -134,7 +134,8 @@ public abstract class Item extends CallbackHandler {
 		"ADM Tab Group Type"
 	};
 
-	// hashmap for conversation to unique ids that can be compared with == instead of .equals
+	// hashmap for conversation to unique ids that can be compared with ==
+	// instead of .equals
 	private static HashMap types = new HashMap();
 	
 	static {
@@ -212,7 +213,8 @@ public abstract class Item extends CallbackHandler {
 	protected void initBounds() {
 		nativeBounds = nativeGetBounds();
 		// nativeSize and nativeBounds are set by the native environment
-		// size and bounds need to be updated depending on insets and internalInsets
+		// size and bounds need to be updated depending on insets and
+		// internalInsets
 		bounds = new Rectangle(
 			nativeBounds.x - insets.left,
 			nativeBounds.y - insets.top,
@@ -345,17 +347,8 @@ public abstract class Item extends CallbackHandler {
 	public Rectangle getBounds() {
 		return new Rectangle(bounds);
 	}
-	
-	protected String desc() {
-		String name = this.getClass().getName();
-		if (name.indexOf('$') != -1)
-			name = this.getClass().getSuperclass().getName();
-		name = name.substring(name.lastIndexOf('.') + 1);
-		return Integer.toHexString(this.hashCode())  + ", " + Integer.toHexString(this.getDialog().hashCode()) + " " + name;
-	}
 
 	public void setBounds(int x, int y, int width, int height) {
-//		System.out.println("Item.setBounds " + desc() + " (" + x + ", " + y + ", "+ width + ", "+ height + ")");
 		// calculate native values
 		int nativeX = x + insets.left;
 		int nativeY = y + insets.top;
@@ -365,7 +358,8 @@ public abstract class Item extends CallbackHandler {
 		int deltaY = nativeHeight - nativeBounds.height;
 
 		boolean sizeChanged = deltaX != 0 || deltaY != 0;
-		if (sizeChanged || nativeBounds.x != nativeX || nativeBounds.y != nativeY) {
+		if (sizeChanged || nativeBounds.x != nativeX ||
+				nativeBounds.y != nativeY) {
 			nativeSetBounds(nativeX, nativeY, nativeWidth, nativeHeight);
 			nativeBounds.setBounds(nativeX, nativeY, nativeWidth, nativeHeight);
 		}
@@ -375,7 +369,8 @@ public abstract class Item extends CallbackHandler {
 		if (component != null)
 			component.updateBounds(bounds);
 
-		// Set prefSize so getPreferredSize does not return results from getBestSize()
+		// Set prefSize so getPreferredSize does not return results from
+		// getBestSize()
 		prefSize = new Dimension(width, height);
 
 		if (sizeChanged) {
@@ -389,7 +384,8 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	public final void setBounds(Rectangle2D bounds) {
-		setBounds((int) bounds.getX(), (int) bounds.getY(), (int) bounds.getWidth(), (int) bounds.getHeight());
+		setBounds((int) bounds.getX(), (int) bounds.getY(),
+				(int) bounds.getWidth(), (int) bounds.getHeight());
 	}
 
 	public void setLocation(int x, int y) {
@@ -474,7 +470,8 @@ public abstract class Item extends CallbackHandler {
 						} else if (this instanceof ToggleItem) {
 							size.width += 32;
 						} else {
-							size.width += ScriptographerEngine.isMacintosh() ? 12 : 6;
+							size.width +=
+								ScriptographerEngine.isMacintosh() ? 12 : 6;
 						}
 					}
 				}
@@ -572,11 +569,13 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	public Rectangle localToScreen(Rectangle2D rt) {
-		return localToScreen((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
+		return localToScreen((int) rt.getX(), (int) rt.getY(),
+				(int) rt.getWidth(), (int) rt.getHeight());
 	}
 
 	public Rectangle screenToLocal(Rectangle2D rt) {
-		return screenToLocal((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
+		return screenToLocal((int) rt.getX(), (int) rt.getY(),
+				(int) rt.getWidth(), (int) rt.getHeight());
 	}
 
 	/* 
@@ -589,7 +588,8 @@ public abstract class Item extends CallbackHandler {
 	public native void update();
 
 	public final void invalidate(Rectangle2D rt) {
-		invalidate((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
+		invalidate((int) rt.getX(), (int) rt.getY(),
+				(int) rt.getWidth(), (int) rt.getHeight());
 	}
 
 	public native int getFont();
@@ -644,9 +644,10 @@ public abstract class Item extends CallbackHandler {
 		}
 
 		public void updateBounds(Rectangle bounds) {
-			// call the setBounds version in super that directly sets the internal segmentValues.
-			// setBounds(Rectangle) would call the overriden setBounds(int, int, int, int)
-			// which would change the underlying Item.
+			// call the setBounds version in super that directly sets the
+			// internal segmentValues.setBounds(Rectangle) would call the
+			// overriden setBounds(int, int, int, int) which would change the
+			// underlying Item.
 			super.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 		}
 

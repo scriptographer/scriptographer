@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 08.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -48,6 +45,9 @@ import java.awt.image.WritableRaster;
 import java.awt.color.ColorSpace;
 import java.io.File;
 
+/**
+ * @author lehni
+ */
 public class Raster extends Art {
 
 	// native pointer to an attached data struct:
@@ -76,7 +76,8 @@ public class Raster extends Art {
 	}
 	
 	public Raster(java.awt.Image image) {
-		this(getCompatibleType(image), image.getWidth(null), image.getHeight(null));
+		this(getCompatibleType(image), image.getWidth(null),
+				image.getHeight(null));
 		drawImage(image, 0, 0);
 	}
 	
@@ -161,7 +162,8 @@ public class Raster extends Art {
 			case Color.TYPE_ACMYK: {
 				boolean alpha = type == Color.TYPE_ACMYK;
 				cm = new ComponentColorModel(CMYKColor.getColorSpace(),
-					alpha ? new int[] { 8, 8, 8, 8, 8 } : new int [] { 8, 8, 8, 8 },
+					alpha ? new int[] { 8, 8, 8, 8, 8 } :
+						new int [] { 8, 8, 8, 8 },
 					alpha, false,
 					alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
 					DataBuffer.TYPE_BYTE
@@ -241,15 +243,18 @@ public class Raster extends Art {
 		// if image is already a compatible BufferedImage, use it. Otherwise create
 		// a new one:
 		if (image instanceof BufferedImage && 
-			getColorModel().isCompatibleSampleModel(((BufferedImage) image).getSampleModel())) {
+			getColorModel().isCompatibleSampleModel(
+					((BufferedImage) image).getSampleModel())) {
 			buf = (BufferedImage) image;
 		} else {
-			buf = createCompatibleImage(image.getWidth(null), image.getHeight(null));
+			buf = createCompatibleImage(image.getWidth(null),
+					image.getHeight(null));
 			buf.createGraphics().drawImage(image, x, y, null);
 		}
 		WritableRaster raster = buf.getRaster();
 		byte[] data = ((DataBufferByte) raster.getDataBuffer()).getData();
-		nativeSetPixels(data, raster.getNumBands(), x, y, buf.getWidth(), buf.getHeight());
+		nativeSetPixels(data, raster.getNumBands(), x, y, buf.getWidth(),
+				buf.getHeight());
 	}
 	
 	public void setImage(java.awt.Image image) {
@@ -261,9 +266,11 @@ public class Raster extends Art {
 		return new Tracing(this);
 	}
 
-	private native void nativeSetPixels(byte[] data, int numComponents, int x, int y, int width, int height);
-	
-	private native void nativeGetPixels(byte[] data, int numComponents, int x, int y, int width, int height);
+	private native void nativeSetPixels(byte[] data, int numComponents, int x,
+			int y, int width, int height);
+
+	private native void nativeGetPixels(byte[] data, int numComponents, int x,
+			int y, int width, int height);
 
 	native protected void finalize();
 }

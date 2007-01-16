@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,14 +26,14 @@
  * 
  * File created on 23.10.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
 
+/**
+ * @author lehni
+ */
 public class FontInfo {
 	public int height;
 	public int ascent;
@@ -41,7 +41,8 @@ public class FontInfo {
 	public int leading;
 	public int maxWidth;
 	
-	protected FontInfo(int height, int ascent, int descent, int leading, int maxWidth) {
+	protected FontInfo(int height, int ascent, int descent, int leading,
+			int maxWidth) {
 		this.height = height;
 		this.ascent = ascent;
 		this.descent = descent;

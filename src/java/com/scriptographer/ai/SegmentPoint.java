@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 14.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -42,6 +39,9 @@ import org.mozilla.javascript.Scriptable;
 
 import com.scriptographer.js.WrapperCreator;
 
+/**
+ * @author lehni
+ */
 class SegmentPoint extends Point implements WrapperCreator {
 	protected Segment segment;
 	protected int index;
@@ -124,8 +124,9 @@ class SegmentPoint extends Point implements WrapperCreator {
 	// wrappable interface
 
 	/**
-	 * Wrapper is neeeded so the public fields Point2D.Float.x and Point2D.Float.y are overriden
-	 * with the setX and setY setters, in order to reflect the changes in the underlying AI points
+	 * Wrapper is neeeded so the public fields Point2D.Float.x and
+	 * Point2D.Float.y are overriden with the setX and setY setters, in order to
+	 * reflect the changes in the underlying AI points
 	 */
 	class Wrapper extends NativeJavaObject {
 		Wrapper(Scriptable scope, SegmentPoint point, Class staticType) {

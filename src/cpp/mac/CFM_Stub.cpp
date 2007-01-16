@@ -26,10 +26,7 @@
  *
  * File created on 23.05.2006.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 #ifndef ACCESSOR_CALLS_ARE_FUNCTIONS

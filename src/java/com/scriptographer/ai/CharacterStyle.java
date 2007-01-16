@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 03.11.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -38,6 +35,8 @@ import com.scriptographer.CommitManager;
 
 /**
  * CharacterStyle is built on top of PathStyle and adds the text related fields
+ * 
+ * @author lehni
  **/
 
 /*
@@ -113,7 +112,8 @@ public class CharacterStyle extends PathStyle {
 	protected CharacterStyle(int handle, TextRange range) {
 		this(handle);
 		this.range = range;
-		this.commitKey = range != null ? (Object) range.getStory() : (Object) this;
+		this.commitKey = range != null ?
+				(Object) range.getStory() : (Object) this;
 	}
 	
 	protected void changeHandle(int newHandle) {
@@ -133,7 +133,8 @@ public class CharacterStyle extends PathStyle {
 	
 	protected void update() {
 		// only update if it didn't change in the meantime:
-		if (!fetched || !dirty && range != null && version != CommitManager.version)
+		if (!fetched || !dirty && range != null &&
+				version != CommitManager.version)
 			fetch();
 	}
 	
@@ -148,7 +149,8 @@ public class CharacterStyle extends PathStyle {
 		short cap, short join, float miterLimit,
 		short clip, short lockClip, short evenOdd, float resolution);
 	
-	protected native void nativeSetStyle(int handle, int docHandle, int rangeHandle);
+	protected native void nativeSetStyle(int handle, int docHandle,
+			int rangeHandle);
 
 	protected void fetch() {
 		nativeGet(handle);
@@ -173,14 +175,16 @@ public class CharacterStyle extends PathStyle {
 		if (!dirty) {
 			CommitManager.markDirty(commitKey, this);
 			dirty = true;
-			// markDirty is only called if PathStyle changes are made and they need to be
+			// markDirty is only called if PathStyle changes are made and they
+			// need to be
 			pathStyleChanged = true;
 		}
 	}
 	
 	/**
-	 * markSetStyle is called from the native environemnt. it marks dirty but doesn't set 
-	 * pathStyleChanged, as it's only used for character style features 
+	 * markSetStyle is called from the native environemnt. it marks dirty but
+	 * doesn't set pathStyleChanged, as it's only used for character style
+	 * features
 	 */
 	protected void markSetStyle() {
 		if (!dirty) {
@@ -214,7 +218,8 @@ public class CharacterStyle extends PathStyle {
 	}
 	
 	public void setFont(FontFamily font) {
-		setFont(font != null && font.getLength() > 0 ? (FontWeight) font.get(0) : null);
+		setFont(font != null && font.getLength() > 0 ?
+				(FontWeight) font.get(0) : null);
 	}
 	
 	public native Float getFontSize();

@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 19.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -42,11 +39,12 @@ import org.mozilla.javascript.Scriptable;
 import com.scriptographer.js.Wrappable;
 
 /**
- * A Rectangle specifies an area that is enclosed by it's top-left point (x, y), 
- * its width, and its height.
- * It should not be confused with a rectangular path, it is not an art object.
+ * A Rectangle specifies an area that is enclosed by it's top-left point (x, y),
+ * its width, and its height. It should not be confused with a rectangular path,
+ * it is not an art object.
+ * 
+ * @author lehni
  */
-
 public class Rectangle extends Rectangle2D.Float implements Wrappable {
 
 	public Rectangle() {
@@ -57,7 +55,8 @@ public class Rectangle extends Rectangle2D.Float implements Wrappable {
 	}
 
 	public Rectangle(Rectangle2D rt) {
-		super((float)rt.getX(), (float)rt.getY(), (float)rt.getWidth(), (float)rt.getHeight());
+		super((float)rt.getX(), (float)rt.getY(), (float)rt.getWidth(),
+				(float)rt.getHeight());
 	}
 	
 	public Rectangle(float x, float y, float w, float h) {
@@ -69,7 +68,9 @@ public class Rectangle extends Rectangle2D.Float implements Wrappable {
 	}
 	
 	public Rectangle(Point2D bottomLeft, Point2D topRight) {
-		super((float)bottomLeft.getX(), (float)bottomLeft.getY(), (float)topRight.getX() - (float)bottomLeft.getX(), (float)topRight.getY() - (float)bottomLeft.getY());
+		super((float)bottomLeft.getX(), (float)bottomLeft.getY(),
+				(float)topRight.getX() - (float)bottomLeft.getX(),
+				(float)topRight.getY() - (float)bottomLeft.getY());
 	}
 	
 	public void setX(float x) {

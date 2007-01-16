@@ -1,3 +1,32 @@
+/*
+ * Scriptographer
+ *
+ * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
+ *
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
+ * All rights reserved.
+ *
+ * Please visit http://scriptographer.com/ for updates and contact.
+ *
+ * -- GPL LICENSE NOTICE --
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * -- GPL LICENSE NOTICE --
+ *
+ * $Id$
+ */
+
 package com.scriptographer.doclets;
 
 import com.sun.javadoc.*;
@@ -7,11 +36,12 @@ import java.util.*;
 
 /**
  * This class provides a Java 2,<code>javadoc</code> Doclet which generates
- * the HTML documents for the Scriptographer JS Help files and the
- * templates for the interactive version on the website.
- *
- * According to the rules with which Scriptogrpaher turns Java classes into JS Prototypes
- * This doclet performs similar conversions on the javadoc structure....
+ * the HTML documents for the Scriptographer JS Help files and the templates for
+ * the interactive version on the website. According to the rules with which
+ * Scriptogrpaher turns Java classes into JS Prototypes This doclet performs
+ * similar conversions on the javadoc structure....
+ * 
+ * @author lehni
  */
 public class JSDoclet extends Doclet {
 	static boolean debug = false;
@@ -57,8 +87,9 @@ public class JSDoclet extends Doclet {
 				return true;
 			ClassDoc[] faces = cd.interfaces();
 			for (int i = 0; i < faces.length; i++) {
-				// if an interface extends another one, its superclass is not set here, but the
-				// super interface is simply in the interfaces() list. strange...
+				// if an interface extends another one, its superclass is not
+				// set here, but the super interface is simply in the
+				// interfaces() list.  strange...
 				if (hasInterface(faces[i], face))
 					return true;
 			}

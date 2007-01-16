@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on Oct 18, 2006.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -38,6 +35,9 @@ import com.scriptographer.CommitManager;
 import com.scriptographer.util.AbstractExtendedList;
 import com.scriptographer.util.ExtendedArrayList;
 
+/**
+ * @author lehni
+ */
 public class GradientStopList extends AbstractExtendedList {
 	protected Gradient gradient;
 	protected int size;
@@ -55,13 +55,14 @@ public class GradientStopList extends AbstractExtendedList {
 		return gradient;
 	}
 
-	protected static native void nativeGet(int handle, int index, GradientStop stop);
+	protected static native void nativeGet(int handle, int index,
+			GradientStop stop);
 
 	protected static native void nativeSet(int handle, int docHandle,
-		int index, float midPoint, float rampPoint, float[] color);
+			int index, float midPoint, float rampPoint, float[] color);
 
 	protected static native void nativeInsert(int handle, int docHandle,
-		int index, float midPoint, float rampPoint, float[] color);
+			int index, float midPoint, float rampPoint, float[] color);
 
 	private static native int nativeGetSize(int handle);
 
@@ -121,13 +122,15 @@ public class GradientStopList extends AbstractExtendedList {
 		return null;
 	}
 
-	private static native int nativeRemove(int handle, int docHandle, int fromIndex, int toIndex);
+	private static native int nativeRemove(int handle, int docHandle,
+			int fromIndex, int toIndex);
 
 	public void remove(int fromIndex, int toIndex) {
 		if (fromIndex < toIndex) {
 			int newSize = size + fromIndex - toIndex;
 			if (newSize < 2)
-				throw new RuntimeException("There need to be at least two gradient stops");
+				throw new RuntimeException(
+						"There need to be at least two gradient stops");
 			for (int i = fromIndex; i < toIndex; i++) {
 				GradientStop obj = (GradientStop) list.get(i);
 				if (obj != null) {
@@ -136,7 +139,8 @@ public class GradientStopList extends AbstractExtendedList {
 				}
 			}
 			if (gradient != null) {
-				size = nativeRemove(gradient.handle, gradient.document.handle, fromIndex, toIndex);
+				size = nativeRemove(gradient.handle, gradient.document.handle,
+						fromIndex, toIndex);
 			}
 			list.remove(fromIndex, toIndex);
 			size = newSize;

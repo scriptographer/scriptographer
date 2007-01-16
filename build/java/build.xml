@@ -15,8 +15,6 @@
 			<format property="date" pattern="yyyy_MM_dd"/>
 		</tstamp>
 		<property name="year" value="2001-${now}"/>
-		<property name="scriptographer" value=":pserver:anonymous@cvs.sourceforge.net:/cvsroot/scriptographer"/>
-		<property name="cvs.apps.tag" value="HEAD"/>
 
 		<property name="home.dir" value="../.."/>
 		<property name="build.dir" value="${home.dir}/build/java/build"/>
@@ -149,7 +147,7 @@
 		<antcall target="resources" />
 	</target>
 	
-	<target name="resources">
+	<target name="resources" depends="init">
 		<property name="mac.resources" value="${home.dir}/build/mac/resources" />
 		<property name="win.resources" value="${home.dir}/build/win/resources" />
 		<copy file="${mac.resources}/Info.plist.in" tofile="${mac.resources}/Info.plist" overwrite="true" />

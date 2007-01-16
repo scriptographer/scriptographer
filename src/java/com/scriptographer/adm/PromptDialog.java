@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 28.03.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
@@ -42,6 +39,9 @@ import java.util.Map;
 
 import org.mozilla.javascript.ScriptRuntime;
 
+/**
+ * @author lehni
+ */
 public class PromptDialog extends ModalDialog {
 
 	private Object[] values = null;
@@ -49,7 +49,8 @@ public class PromptDialog extends ModalDialog {
 	public PromptDialog(String title, PromptItem[] items) {
 		this.setTitle(title);
 		
-		double[] columns = { TableLayoutConstants.PREFERRED, TableLayoutConstants.PREFERRED };
+		double[] columns = { TableLayoutConstants.PREFERRED,
+				TableLayoutConstants.PREFERRED };
 		double[] rows = new double[items.length + 1];
 		for (int i = 0; i < rows.length; i++)
 			rows[i] = TableLayoutConstants.PREFERRED;
@@ -69,12 +70,14 @@ public class PromptDialog extends ModalDialog {
 					this.addToLayout(descItem, "0, " + i);
 				}
 				
-				com.scriptographer.adm.Item valueItem = promptItem.createItem(this);
+				com.scriptographer.adm.Item valueItem =
+						promptItem.createItem(this);
 				this.addToLayout(valueItem, "1, " + i);
 			}
 		}			
 		
-		ItemContainer buttons = new ItemContainer(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+		ItemContainer buttons = new ItemContainer(
+				new FlowLayout(FlowLayout.RIGHT, 0, 0));
 		
 		Button cancelButton = new Button(this);
 		cancelButton.setFont(Dialog.FONT_PALETTE);
@@ -200,8 +203,9 @@ public class PromptDialog extends ModalDialog {
 	public static Object[] prompt(String title, PromptItem[] items) {
 		PromptDialog dialog = new PromptDialog(title, items);
 		// destroy the dialog again after prompting values. If this is not done
-		// a problem seems to occur where the modal dialog interfers with the progress dialog,
-		// and locks the mouse interface, for example when rendering a raster.
+		// a problem seems to occur where the modal dialog interfers with the
+		// progress dialog, and locks the mouse interface, for example when
+		// rendering a raster.
 		dialog.destroy();
 		return dialog.values;
 	}
@@ -209,8 +213,9 @@ public class PromptDialog extends ModalDialog {
 	public static Object[] prompt(String title, Object[] items) {
 		PromptDialog dialog = new PromptDialog(title, items);
 		// destroy the dialog again after prompting values. If this is not done
-		// a problem seems to occur where the modal dialog interfers with the progress dialog,
-		// and locks the mouse interface, for example when rendering a raster.
+		// a problem seems to occur where the modal dialog interfers with the
+		// progress dialog, and locks the mouse interface, for example when
+		// rendering a raster.
 		dialog.destroy();
 		return dialog.values;
 	}

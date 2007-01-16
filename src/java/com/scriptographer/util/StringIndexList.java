@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 12.02.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.util;
@@ -38,6 +35,9 @@ package com.scriptographer.util;
  * Adds getting objects by name to Lists (an extension needed for some list objects like LayerList)
  */
 
+/**
+ * @author lehni 
+ */
 public interface StringIndexList {
 	public Object get(String index);
 }

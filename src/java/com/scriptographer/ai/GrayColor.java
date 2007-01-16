@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 23.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -37,13 +34,17 @@ package com.scriptographer.ai;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 
+/**
+ * @author lehni
+ */
 public class GrayColor extends Color {
 	protected float gray;
 
 	/**
 	 * The color components have values between 0 and 1
-	 * @param g  Gray
-	 * @param a  Alpha
+	 * 
+	 * @param g Gray
+	 * @param a Alpha
 	 */
 	public GrayColor(float g, float a) {
 		gray = g;

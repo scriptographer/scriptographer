@@ -1,3 +1,32 @@
+/*
+ * Scriptographer
+ *
+ * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
+ *
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
+ * All rights reserved.
+ *
+ * Please visit http://scriptographer.com/ for updates and contact.
+ *
+ * -- GPL LICENSE NOTICE --
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * -- GPL LICENSE NOTICE --
+ *
+ * $Id$
+ */
+
 package com.scriptographer.adm;
 
 import java.io.IOException;
@@ -10,6 +39,9 @@ import org.mozilla.javascript.ScriptRuntime;
 import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.js.Unsealed;
 
+/**
+ * @author lehni
+ */
 public class ListEntry extends NotificationHandler implements Unsealed {
 	private Image image;
 	private Image selectedImage;
@@ -18,8 +50,10 @@ public class ListEntry extends NotificationHandler implements Unsealed {
 	protected ListItem list;
 	
 	public ListEntry(ListItem list, int index) {
-		if (!(this instanceof HierarchyListEntry) && list instanceof HierarchyList)
-			throw new RuntimeException("Use HierarchyListEntry objects for HierarchyList");
+		if (!(this instanceof HierarchyListEntry)
+				&& list instanceof HierarchyList)
+			throw new RuntimeException(
+					"Use HierarchyListEntry objects for HierarchyList");
 		handle = nativeCreate(list, index, list.getUniqueId());
 		if (handle == 0)
 			throw new RuntimeException("Cannot create list entry");
@@ -49,7 +83,8 @@ public class ListEntry extends NotificationHandler implements Unsealed {
 	}
 
 	protected boolean onTrack(Tracker tracker) throws Exception {
-		Object result = list.callFunction(list.onTrackEntry, new Object[] { tracker, this });
+		Object result = list.callFunction(list.onTrackEntry,
+				new Object[] { tracker, this });
 		if (result != null)
 			return ScriptRuntime.toBoolean(result);
 		return true;
@@ -175,11 +210,13 @@ public class ListEntry extends NotificationHandler implements Unsealed {
 	}
 
 	public Rectangle localToScreen(Rectangle2D rt) {
-		return localToScreen((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
+		return localToScreen((int) rt.getX(), (int) rt.getY(),
+				(int) rt.getWidth(), (int) rt.getHeight());
 	}
 
 	public Rectangle screenToLocal(Rectangle2D rt) {
-		return screenToLocal((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
+		return screenToLocal((int) rt.getX(), (int) rt.getY(),
+				(int) rt.getWidth(), (int) rt.getHeight());
 	}
 
 	/* 
@@ -192,7 +229,8 @@ public class ListEntry extends NotificationHandler implements Unsealed {
 	public native void update();
 
 	public void invalidate(Rectangle2D rt) {
-		invalidate((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
+		invalidate((int) rt.getX(), (int) rt.getY(),
+				(int) rt.getWidth(), (int) rt.getHeight());
 	}
 
 	/* 
@@ -219,7 +257,8 @@ public class ListEntry extends NotificationHandler implements Unsealed {
 	
 	public void setSelectedImage(Object obj) throws IOException {
 		selectedImage = Image.getImage(obj);
-		nativeSetSelectedImage(selectedImage != null ? selectedImage.createIconHandle() : 0);
+		nativeSetSelectedImage(selectedImage != null ?
+				selectedImage.createIconHandle() : 0);
 	}
 
 	public Image getDisabledImage() {
@@ -228,7 +267,8 @@ public class ListEntry extends NotificationHandler implements Unsealed {
 
 	public void setDisabledImage(Object obj) throws IOException {
 		disabledImage = Image.getImage(obj);
-		nativeSetDisabledImage(disabledImage != null ? disabledImage.createIconHandle() : 0);
+		nativeSetDisabledImage(disabledImage != null ?
+				disabledImage.createIconHandle() : 0);
 	}
 
 	/* 

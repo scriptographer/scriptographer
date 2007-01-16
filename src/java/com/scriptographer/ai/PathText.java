@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,14 +26,14 @@
  * 
  * File created on 23.10.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
 
+/**
+ * @author lehni
+ */
 public class PathText extends TextFrame {
 
 	protected PathText(int handle) {
@@ -41,8 +41,10 @@ public class PathText extends TextFrame {
 	}
 
 	native private static int nativeCreate(short orient, int artHandle);
+
 	// TODO: not used?
-	native private static int nativeCreate(short orient, int artHandle, float x, float y);
+	native private static int nativeCreate(short orient, int artHandle,
+			float x, float y);
 	
 	/**
 	 * Creates a path text object

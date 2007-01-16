@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 22.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
@@ -48,6 +45,9 @@ import java.util.ArrayList;
 import java.util.prefs.Preferences;
 import java.util.prefs.BackingStoreException;
 
+/**
+ * @author lehni
+ */
 public abstract class Dialog extends CallbackHandler implements Unsealed {
 	
 	public native int createPlatformControl();
@@ -176,30 +176,32 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	protected AWTContainer container = null;
 
 	/**
-	 * ignoreSizeChange tells onSizeChanged to ignore the event. 
-	 * this is set and unset around calls to setBounds and setGroupInfo.
+	 * ignoreSizeChange tells onSizeChanged to ignore the event. this is set and
+	 * unset around calls to setBounds and setGroupInfo.
 	 * 
-	 * As of CS3, setting size and or bounds is not immediatelly effective.
-	 * When natively retrieving size through GetLocalRect / GetBoundsRect, the old
-	 * size is returned for a while. So do not rely on them being set here.
-	 * This was the reason for introducing ignoreSizeChange, as even in the bounds
+	 * As of CS3, setting size and or bounds is not immediatelly effective. When
+	 * natively retrieving size through GetLocalRect / GetBoundsRect, the old
+	 * size is returned for a while. So do not rely on them being set here. This
+	 * was the reason for introducing ignoreSizeChange, as even in the bounds
 	 * change event in this case, still the old dimensions are returned (!)
 	 */
 	private boolean ignoreSizeChange = false;
 	// use two boolean values to monitor the initalized state,
-	// to make the distinction between completely initialized (initialized == true) and 
-	// somwhere during the call of initialize() (unitialized == false)
+	// to make the distinction between completely initialized (initialized ==
+	// true) and somwhere during the call of initialize() (unitialized == false)
 	private boolean unitialized = true;
 	private boolean initialized = false;
-	// used to see wether the size where specified before the dialog is initialized
+	// used to see wether the size where specified before the dialog is
+	// initialized
 	private boolean sizeSet = false;
-	// used to check if the boundaries (min / max size) are to bet set after initialization
+	// used to check if the boundaries (min / max size) are to bet set after
+	// initialization
 	private boolean boundariesSet = true;
 
 	// for scripts, we cannot allways access ScriptRuntime.getTopCallScope(cx)
-	// store a reference to the script's preferences object so we can allways use it
-	// this happens completely transparently, the dialog class does not need to know
-	// anything about the fact if it's a script or a java class.
+	// store a reference to the script's preferences object so we can allways
+	// use it this happens completely transparently, the dialog class does not
+	// need to know anything about the fact if it's a script or a java class.
 	private Preferences preferences;
 
 	private static ArrayList dialogs = new ArrayList();
@@ -234,7 +236,8 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 * @throws Exception 
 	 */
 	private void initialize(boolean setBoundaries) throws Exception {
-		// initialize can also be triggered e.g. by setGroupInfo, which needs to be ignored
+		// initialize can also be triggered e.g. by setGroupInfo, which needs to
+		// be ignored
 		if (!ignoreSizeChange) {
 			if (unitialized) {
 				unitialized = false;
@@ -246,8 +249,8 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 				if (container != null) {
 					setMinimumSize(container.getMinimumSize());
 					setMaximumSize(container.getMaximumSize());
-					// if no bounds where specified yet, set the preferred size as defined
-					// by the layout
+					// if no bounds where specified yet, set the preferred size
+					// as defined by the layout
 					if (!sizeSet)
 						setSize(container.getPreferredSize());
 				}
@@ -257,8 +260,9 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 				// execute callback handler
 				onInitialize();
 			}
-			// setBoundaries is set to false when calling from initializeAll, because it would
-			// be to early to set it there. At least on Mac CS3 this causes problems
+			// setBoundaries is set to false when calling from initializeAll,
+			// because it would be to early to set it there. At least on Mac CS3
+			// this causes problems
 			if (setBoundaries && !boundariesSet) {
 				nativeSetMinimumSize(minSize.width, minSize.height);
 				nativeSetMaximumSize(maxSize.width, maxSize.height);
@@ -319,7 +323,8 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		Rectangle bounds = getBounds();
 		prefs.put("group", groupInfo.group != null ? groupInfo.group : "");
 		prefs.putInt("positionCode", groupInfo.positionCode);
-		prefs.put("bounds", bounds.x + " " + bounds.y + " " + bounds.width + " " + bounds.height);
+		prefs.put("bounds", bounds.x + " " + bounds.y + " " +
+				bounds.width + " " + bounds.height);
 	}
 
 	public boolean loadPreferences(String name) throws BackingStoreException {
@@ -330,10 +335,13 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 			String[] parts = prefs.get("bounds", "").split("\\s");
 			Rectangle bounds;
 			if (parts.length == 4) {
-				bounds = new Rectangle(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]),
-						Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
+				bounds = new Rectangle(Integer.parseInt(parts[0]),
+						Integer.parseInt(parts[1]),
+						Integer.parseInt(parts[2]),
+						Integer.parseInt(parts[3]));
 			} else {
-				// Pick a default location in case it has never come up before on this machine
+				// Pick a default location in case it has never come up before
+				// on this machine
 				Rectangle defaultBounds = Dialog.getPaletteLayoutBounds();
 				bounds = getBounds();
 				bounds.setLocation(defaultBounds.x, defaultBounds.y);
@@ -341,7 +349,8 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 			setBounds(bounds);
 
 			String group = prefs.get("group", "");
-			int positionCode = prefs.getInt("positionCode", DialogGroupInfo.POSITION_DEFAULT);
+			int positionCode = prefs.getInt("positionCode",
+					DialogGroupInfo.POSITION_DEFAULT);
 			// restore the position code of the dialog
 			ignoreSizeChange = true;
 			setGroupInfo(group, positionCode);
@@ -428,7 +437,8 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 			onDeactivate();
 			break;
 		case Notifier.NOTIFIER_WINDOW_SHOW:
-			// see comment for initialize to unerstand why this is fired here too
+			// see comment for initialize to unerstand why this is fired here
+			// as well
 			initialize(true);
 			visible = true;
 			onShow();
@@ -570,8 +580,8 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	private native void nativeSetVisible(boolean visible);
 	
 	public void setVisible(boolean visible) {
-		// do not set visibility natively before the dialog was properly initialized
-		// otherwise we get a crash.
+		// do not set visibility natively before the dialog was properly
+		// initialized. otherwise we get a crash.
 		if (initialized)
 			nativeSetVisible(visible);
 		this.visible = visible;
@@ -605,10 +615,10 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	private native void nativeSetBounds(int x, int y, int width, int height);
 
 	public Rectangle getBounds() {
-		// As kADMWindowDragMovedNotifier does not seem to work, allways 
+		// As kADMWindowDragMovedNotifier does not seem to work, allways
 		// fetch bounds natively.
-		// If kADMWindowDragMovedNotifier was working, the reflected value could be
-		// kept up to date...
+		// If kADMWindowDragMovedNotifier was working, the reflected value could
+		// be kept up to date...
 		bounds = nativeGetBounds();
 		return bounds;
 	}
@@ -622,7 +632,8 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	}
 
 	public void setBounds(Rectangle2D bounds) {
-		setBounds((int) bounds.getX(), (int) bounds.getY(), (int) bounds.getWidth(), (int) bounds.getHeight());
+		setBounds((int) bounds.getX(), (int) bounds.getY(),
+				(int) bounds.getWidth(), (int) bounds.getHeight());
 	}
 
 	public Dimension getSize() {
@@ -646,10 +657,10 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	}
 	
 	/**
-	 * Changes the internal size fields (size / bounds) relatively to their previous
-	 * values. As bounds and size do not represent the same dimensions (outer / inner),
-	 * it has to be done relatively.
-	 * Change of layout and calling of onResize is handled here too
+	 * Changes the internal size fields (size / bounds) relatively to their
+	 * previous values. As bounds and size do not represent the same dimensions
+	 * (outer / inner), it has to be done relatively. Change of layout and
+	 * calling of onResize is handled here too
 	 * 
 	 * @param deltaX
 	 * @param deltaY
@@ -701,11 +712,13 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	}
 
 	public Rectangle localToScreen(Rectangle2D rt) {
-		return localToScreen((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
+		return localToScreen((int) rt.getX(), (int) rt.getY(),
+				(int) rt.getWidth(), (int) rt.getHeight());
 	}
 
 	public Rectangle screenToLocal(Rectangle2D rt) {
-		return screenToLocal((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
+		return screenToLocal((int) rt.getX(), (int) rt.getY(),
+				(int) rt.getWidth(), (int) rt.getHeight());
 	}
 
 	/*
@@ -720,7 +733,8 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	public native void update();
 
 	public void invalidate(Rectangle2D rt) {
-		invalidate((int) rt.getX(), (int) rt.getY(), (int) rt.getWidth(), (int) rt.getHeight());
+		invalidate((int) rt.getX(), (int) rt.getY(),
+				(int) rt.getWidth(), (int) rt.getHeight());
 	}
 
 	/*
@@ -758,9 +772,10 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 */
 
 	/*
-	 * There seems to be a problem on CS3 with setting minimum / maximum size before all
-	 * layout is initialized. The workaround is to reflect these properties in the wrapper
-	 * and then only set them natively when the dialog is activate.
+	 * There seems to be a problem on CS3 with setting minimum / maximum size
+	 * before all layout is initialized. The workaround is to reflect these
+	 * properties in the wrapper and then only set them natively when the dialog
+	 * is activate.
 	 */
 	private native Dimension nativeGetMinimumSize();
 	
@@ -904,9 +919,11 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 * Support for various standard dialogs:
 	 */
 
-	private static native File nativeFileDialog(String message, String filter, File directory, String filename, boolean open);
+	private static native File nativeFileDialog(String message, String filter,
+			File directory, String filename, boolean open);
 
-	private static File fileDialog(String message, String[] filters, File selectedFile, boolean open) {
+	private static File fileDialog(String message, String[] filters,
+			File selectedFile, boolean open) {
 		String filter;
 		// Converts the filters to one long string, seperated by \0
 		// as needed by the native function.
@@ -936,14 +953,8 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		return nativeFileDialog(message, filter, directory, filename, open);
 	}
 
-	/**
-	 * 
-	 * @param message
-	 * @param filters
-	 * @param selectedFile
-	 * @return
-	 */
-	public static File fileOpen(String message, String[] filters, File selectedFile) {
+	public static File fileOpen(String message, String[] filters,
+			File selectedFile) {
 		return fileDialog(message, filters, selectedFile, true);
 	}
 
@@ -959,13 +970,6 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		return fileOpen(null, null, null);
 	}
 
-	/**
-	 * 
-	 * @param message
-	 * @param filters
-	 * @param selectedFile
-	 * @return
-	 */
 	public static File fileSave(String message, String[] filters, File selectedFile) {
 		return fileDialog(message, filters, selectedFile, false);
 	}
@@ -982,12 +986,6 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		return fileSave(null, null, null);
 	}
 
-	/**
-	 * 
-	 * @param message
-	 * @param selectedDir
-	 * @return
-	 */
 	public static native File chooseDirectory(String message, File selectedDir);
 
 	public static File chooseDirectory(String message) {
@@ -998,12 +996,6 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		return chooseDirectory(null, null);
 	}
 
-	/**
-	 * 
-	 * @param where
-	 * @param color
-	 * @return
-	 */
 	public static native Color chooseColor(Point where, Color color);
 
 	public static Color chooseColor(Color color) {
@@ -1036,19 +1028,20 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		return PromptDialog.prompt(title, FunctionHelper.convertToArray(items));
 	}
 	/**
-	 * AWTContainer wrapps an ADM Dialog and prentends it is an AWT Container, in
-	 * order to take advantage of all the nice LayoutManagers in AWT.
-	 *
+	 * AWTContainer wrapps an ADM Dialog and prentends it is an AWT Container,
+	 * in order to take advantage of all the nice LayoutManagers in AWT.
+	 * 
 	 * This goes hand in hand with the AWTComponent that wrapps an IDM Item in a
 	 * component.
-	 *
-	 * Unfortunatelly, some LayoutManagers access fields in Container not visible
-	 * from the outside, so size information has to be passed up by super calls.
-	 *
-	 * Attention: the ADM bounds are the outside of the window, while here we use
-	 * the size of the AWT bounds for the inside!
-	 * Also, for layout the location of the dialog doesn't matter, so let's only
-	 * work with size for simplicity
+	 * 
+	 * Unfortunatelly, some LayoutManagers access fields in Container not
+	 * visible from the outside, so size information has to be passed up by
+	 * super calls.
+	 * 
+	 * Attention: the ADM bounds are the outside of the window, while here we
+	 * use the size of the AWT bounds for the inside! Also, for layout the
+	 * location of the dialog doesn't matter, so let's only work with size for
+	 * simplicity
 	 */
 	class AWTContainer extends Container {
 		Insets insets;

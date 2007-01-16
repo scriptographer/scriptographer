@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,16 +26,16 @@
  * 
  * File created on 23.10.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
 
 import java.awt.geom.Point2D;
 
+/**
+ * @author lehni
+ */
 public class PointText extends TextFrame {
 
 	protected PointText(int handle) {
@@ -56,6 +56,7 @@ public class PointText extends TextFrame {
 		this(point, ORIENTATION_HORIZONTAL);
 	}
 
-	// read only. AITransformArt suite can be used to change a kPointTextType's anchor.
+	// read only. AITransformArt suite can be used to change a kPointTextType's
+	// anchor.
 	public native Point getAnchor();
 }

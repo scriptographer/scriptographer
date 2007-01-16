@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 04.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
@@ -38,11 +35,12 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 
 /**
- * ItemContainer acts as container of ADM Items that share a layout and can be added to a parent container, e.g. another
- * ItemContainer or a Dialog. This is part of the AWT Layout wrapper code. ItemContainer itself wrapps a AWTItemContainer
- * that does the actuall layout work.
- *
- * @author Lehni
+ * ItemContainer acts as container of ADM Items that share a layout and can be
+ * added to a parent container, e.g. another ItemContainer or a Dialog. This is
+ * part of the AWT Layout wrapper code. ItemContainer itself wrapps a
+ * AWTItemContainer that does the actuall layout work.
+ * 
+ * @author lehni
  */
 public class ItemContainer {
 	protected AWTItemContainer container;
@@ -114,8 +112,11 @@ public class ItemContainer {
 	}
 
 	/**
-	 * The actualy AWT class for ItemContainer that does the work of collecting wrap items or other ItemContainers
-	 * and redirecting doLayout calls to its children.
+	 * The actualy AWT class for ItemContainer that does the work of collecting
+	 * wrap items or other ItemContainers and redirecting doLayout calls to its
+	 * children.
+	 * 
+	 * @author lehni
 	 */
 	class AWTItemContainer extends Container {
 		Insets insets;

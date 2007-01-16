@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on Oct 19, 2006.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -37,6 +34,9 @@ package com.scriptographer.ai;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
+/**
+ * @author lehni
+ */
 public class PatternColor extends Color {
 	/** Reference to the AIPattern which describes instance independent
 	parameters for the paint (the prototype artwork). */
@@ -62,9 +62,10 @@ public class PatternColor extends Color {
 	/**
 	 * Called from the native environment
 	 */
-	protected PatternColor(int patternHandle, float shiftDistance, float shiftAngle,
-		Point scaleFactor, float rotationAngle, boolean reflect, float reflectAngle,
-		float shearAngle, float shearAxis, Matrix matrix) {
+	protected PatternColor(int patternHandle, float shiftDistance,
+			float shiftAngle, Point scaleFactor, float rotationAngle,
+			boolean reflect, float reflectAngle, float shearAngle,
+			float shearAxis, Matrix matrix) {
 		// do not use constructor bellow as we do not need to copy origin and matrix here
 		this.pattern = Pattern.wrapHandle(patternHandle, null);
 		this.shiftDistance = shiftDistance;
@@ -79,8 +80,9 @@ public class PatternColor extends Color {
 	}
 	
 	public PatternColor(Pattern pattern, float shiftDistance, float shiftAngle,
-		Point2D scaleFactor, float rotationAngle, boolean reflect, float reflectAngle,
-		float shearAngle, float shearAxis, AffineTransform matrix) {
+			Point2D scaleFactor, float rotationAngle, boolean reflect,
+			float reflectAngle, float shearAngle, float shearAxis,
+			AffineTransform matrix) {
 		// use the above constructor, but copy origin and matrix
 		// let's not care about the call to wrapHandle above,
 		// as this is not used often
@@ -95,8 +97,8 @@ public class PatternColor extends Color {
 	 */
 	protected void set(int pointer) {
 		nativeSetPattern(pointer, pattern.handle, shiftDistance, shiftAngle,
-			scaleFactor, rotationAngle, reflect, reflectAngle, shearAngle,
-			shearAxis, matrix);
+				scaleFactor, rotationAngle, reflect, reflectAngle, shearAngle,
+				shearAxis, matrix);
 	}
 
 	public boolean equals(Object obj) {

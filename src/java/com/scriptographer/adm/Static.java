@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,14 +26,14 @@
  *
  * File created on 03.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
 
+/**
+ * @author lehni
+ */
 public class Static extends TextValueItem {
 
 	//  Text static styles
@@ -44,7 +44,8 @@ public class Static extends TextValueItem {
 		STYLE_TRUNCATE_MIDDLETEXT 			= 1 << 3; // truncate end has priority
 
 	public final static int
-		// a fake option that tells the constructor to construct a MULTILINE static item.
+		// a fake option that tells the constructor to construct a MULTILINE
+		// static item.
 		OPTION_MULTILINE = 1 << 1;
 
 	/**

@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 28.10.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -43,6 +40,9 @@ import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 import com.scriptographer.util.ReadOnlyList;
 
+/**
+ * @author lehni
+ */
 public class TextRange extends AIObject {
 	
 	// CaseChangeType
@@ -115,16 +115,18 @@ public class TextRange extends AIObject {
 		}
 		return null;
 	}
-	
+
 	/**
-	 * returns the absolute starting point of the range inside the story in numbers of characters
+	 * returns the absolute starting point of the range inside the story in
+	 * numbers of characters
 	 * 
 	 * @return start
 	 */
 	public native int getStart();
 	
 	/**
-	 * returns the absolute end point of the range inside the story in numbers of characters
+	 * returns the absolute end point of the range inside the story in numbers
+	 * of characters
 	 * 
 	 * @return end
 	 */
@@ -296,25 +298,28 @@ public class TextRange extends AIObject {
 	public native int getSingleGlyph();
 	
 	public native void select(boolean addToSelection);
-	/// if addToSelection is true, it will add this range to the current document selection.
-	/// if addToSelection is false, it will clear the selection from the document and only select this range.
+	// if addToSelection is true, it will add this range to the current document
+	// selection.
+	// if addToSelection is false, it will clear the selection from the document
+	// and only select this range.
 	
 	public void select() {
 		select(false);
 	}
 
 	public native void deselect();
-	/// This method will remove this range from the selection.
-	/// Note, deselecting a range can cause defregmented selection, if this range is a sub range of the current selection.
+	// This method will remove this range from the selection.
+	// Note, deselecting a range can cause defregmented selection, if this range
+	// is a sub range of the current selection.
 	
 	/**
 	 * clones the range.
 	 */
 	public Object clone() {
 		/*
-		 * Cannot use the native code, because when the original range is changed
-		 * in size, the copied one seems to change as well.
-		 * Use getRange(0, getLength()) instead of the native clone...
+		 * Cannot use the native code, because when the original range is
+		 * changed in size, the copied one seems to change as well. Use
+		 * getRange(0, getLength()) instead of the native clone...
 		 */
 		return getSubRange(0, getLength());
 	}
@@ -327,7 +332,6 @@ public class TextRange extends AIObject {
 	 * @param end
 	 * @return sub range
 	 */
-	
 	public TextRange getSubRange(int start, int end) {
 		int index = getStart();
 		return getStory().getRange(index + start, index + end);
@@ -342,8 +346,10 @@ public class TextRange extends AIObject {
 	public native void fitHeadlines();
 	
 	/**
-	 *  This Range has to be of size equal to 1, any other size will throw error (kBadParameter)
-	 *  @return TextRange.CHAR_*
+	 * This Range has to be of size equal to 1, any other size will throw error
+	 * (kBadParameter)
+	 * 
+	 * @return TextRange.CHAR_*
 	 */
 	public native int getCharacterType();
 	
@@ -415,8 +421,8 @@ public class TextRange extends AIObject {
 
 	/**
 	 * A list that applies a StringTokenizer to the internal text and adds each
-	 * token to the list as a TextRange. The Ranges are only created when needed,
-	 * The delimiter chars are included in the tokens at the end.
+	 * token to the list as a TextRange. The Ranges are only created when
+	 * needed, The delimiter chars are included in the tokens at the end.
 	 */
 	class TokenizerList extends TextRangeList {
 
@@ -460,7 +466,9 @@ public class TextRange extends AIObject {
 			long oldChecksum = checksum.getValue();
 			checksum.reset();
 			checksum.update(content.getBytes());
-			int position = 0; // positions in tokens are relative to the start of the containing range
+			// positions in tokens are relative to the start of the containing
+			// range
+			int position = 0;
 			int index = 0;
 			// this loop reuses tokens
 			if (checksum.getValue() != oldChecksum) {
@@ -469,7 +477,8 @@ public class TextRange extends AIObject {
 				while (st.hasMoreTokens()) {
 					String token = st.nextToken();
 					// delimiter char?
-					if (part.length() > 0 && (token.length() > 1 || delimiter.indexOf(token.charAt(0)) == -1)) {
+					if (part.length() > 0 && (token.length() > 1 ||
+							delimiter.indexOf(token.charAt(0)) == -1)) {
 						position = setToken(index++, position, part.toString());
 						part.setLength(0);
 					}
@@ -482,7 +491,8 @@ public class TextRange extends AIObject {
 		}
 		
 		public void adjustStart(int oldLength) {
-			// get text of first token that has changed. split it again and adjust list accordingly
+			// get text of first token that has changed. split it again and
+			// adjust list accordingly
 			if (list.size() > 0) {
 				TextRange range = (TextRange) get(0);
 				String content = range.getContent();
@@ -493,9 +503,11 @@ public class TextRange extends AIObject {
 					count++;
 				}
 				// in case the added text causes a new split or even several,
-				// add the amount of empty tokens so the offset is right again (in case some ranges where already
+				// add the amount of empty tokens so the offset is right again
+				// (in case some ranges where already
 				// referenced they need to shift properly. then update list
-				// TODO: consider optimization: only the new tokens should be parsed, the rest could be simply offset...
+				// TODO: consider optimization: only the new tokens should be
+				// parsed, the rest could be simply offset...
 				if (count > 1) {
 					for (int i = 1; i < count; i++)
 						list.add(0, null);
@@ -505,20 +517,24 @@ public class TextRange extends AIObject {
 		}
 
 		public void adjustEnd(int oldLength) {
-			// get text of last token that has changed. split it again and adjust list accordingly
+			// get text of last token that has changed. split it again and
+			// adjust list accordingly
 			int size = list.size();
 			if (size > 0) {
 				TextRange range = (TextRange) get(size - 1);
 				String content = range.getContent();
-				StringTokenizer st = new StringTokenizer(content, delimiter, false);
+				StringTokenizer st = new StringTokenizer(content, delimiter,
+						false);
 				int count = 0;
 				while (st.hasMoreTokens()) {
 					st.nextToken();
 					count++;
 				}
 				// in case the added text causes a new split or even several,
-				// add the amount of empty tokens so the offset is right again. then fix range
-				// TODO: consider optimization: only the new tokens should be parsed, the rest could be simply offset...
+				// add the amount of empty tokens so the offset is right again.
+				// then fix range
+				// TODO: consider optimization: only the new tokens should be
+				// parsed, the rest could be simply offset...
 				if (count > 1) {
 					for (int i = 1; i < count; i++)
 						list.add(null);
@@ -560,8 +576,8 @@ public class TextRange extends AIObject {
 		}
 		
 		/**
-		 * adjustStart is called when TextRange.prepend changes the start point of the ranges
-		 * update here accordingly
+		 * adjustStart is called when TextRange.prepend changes the start point
+		 * of the ranges update here accordingly
 		 */
 		void adjustStart(int oldLength) {
 			TextRange range = (TextRange) list.get(0);
@@ -576,8 +592,8 @@ public class TextRange extends AIObject {
 		}
 
 		/**
-		 * adjustEnd is called when TextRange.append changes the end point of the ranges
-		 * update here accordingly
+		 * adjustEnd is called when TextRange.append changes the end point of
+		 * the ranges update here accordingly
 		 * 
 		 * @param oldLength
 		 */

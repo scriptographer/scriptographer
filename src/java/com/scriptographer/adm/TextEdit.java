@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,14 +26,14 @@
  *
  * File created on 03.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
 
+/**
+ * @author lehni
+ */
 public class TextEdit extends TextValueItem {
 	// Options
 	public final static short
@@ -87,15 +87,14 @@ public class TextEdit extends TextValueItem {
 			return TYPE_TEXT_EDIT_PASSWORD;
 		} else if ((options & OPTION_POPUP) != 0) {
 			return (options & OPTION_SCROLLING) != 0 ? TYPE_TEXT_EDIT_SCROLLING_POPUP
-				: TYPE_TEXT_EDIT_POPUP;
+					: TYPE_TEXT_EDIT_POPUP;
 		} else {
 			boolean multiline = ((options & OPTION_MULTILINE) != 0);
 			if ((options & OPTION_READONLY) != 0) {
 				return multiline ? TYPE_TEXT_EDIT_MULTILINE_READONLY
-					: TYPE_TEXT_EDIT_READONLY;
+						: TYPE_TEXT_EDIT_READONLY;
 			} else {
-				return multiline ? TYPE_TEXT_EDIT_MULTILINE
-					: TYPE_TEXT_EDIT;
+				return multiline ? TYPE_TEXT_EDIT_MULTILINE : TYPE_TEXT_EDIT;
 			}
 		}
 	}

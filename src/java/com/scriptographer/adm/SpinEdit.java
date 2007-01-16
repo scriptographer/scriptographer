@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,14 +26,14 @@
  * 
  * File created on 20.10.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
 
+/**
+ * @author lehni
+ */
 public class SpinEdit extends TextEdit {
 
 	public final static int
@@ -45,9 +45,10 @@ public class SpinEdit extends TextEdit {
 		STYLE_POPUP_HORIZONTAL = 4;
 
 	/**
-	 * 
 	 * @param dialog
-	 * @param options only TextEdit.OPTION_POPUP and TextEdit.OPTION_SCROLLING are valid for SpinEdit
+	 * @param options
+	 *            only TextEdit.OPTION_POPUP and TextEdit.OPTION_SCROLLING are
+	 *            valid for SpinEdit
 	 */
 	public SpinEdit(Dialog dialog, int options) {
 		super(dialog, getType(options), OPTION_NONE);
@@ -61,7 +62,7 @@ public class SpinEdit extends TextEdit {
 		// abuse the ADM's password style for creating it as a type...
 		if ((options & OPTION_POPUP) != 0) {
 			return (options & OPTION_SCROLLING) != 0 ? TYPE_SPINEDIT_SCROLLING_POPUP
-				: TYPE_SPINEDIT_POPUP;
+					: TYPE_SPINEDIT_POPUP;
 		} else {
 			return TYPE_SPINEDIT;
 		}

@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on Oct 18, 2006.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -37,6 +34,9 @@ package com.scriptographer.ai;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
+/**
+ * @author lehni
+ */
 public class GradientColor extends Color {
 	Gradient gradient;
 	Point origin;
@@ -61,7 +61,8 @@ public class GradientColor extends Color {
 	}
 	
 	public GradientColor(Gradient gradient, Point2D origin, float angle,
-		float length, AffineTransform matrix, float hiliteAngle, float hiliteLength) {
+			float length, AffineTransform matrix, float hiliteAngle,
+			float hiliteLength) {
 		// use the above constructor, but copy origin and matrix
 		// let's not care about the call to wrapHandle above,
 		// as this is not used often
@@ -74,8 +75,8 @@ public class GradientColor extends Color {
 	 * @param struct
 	 */
 	protected void set(int pointer) {
-		nativeSetGradient(pointer, gradient.handle, origin, angle, length, matrix,
-			hiliteAngle, hiliteLength);
+		nativeSetGradient(pointer, gradient.handle, origin, angle, length,
+				matrix, hiliteAngle, hiliteLength);
 	}
 
 	public boolean equals(Object obj) {

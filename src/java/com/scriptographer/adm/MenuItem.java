@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 19.02.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
@@ -46,6 +43,9 @@ import java.util.Iterator;
  * moved here instead, where they make more sense.
  */
 
+/**
+ * @author lehni
+ */
 public class MenuItem extends ADMObject implements Unsealed {
 	public final static int
 		OPTION_NONE 			= 0,
@@ -65,7 +65,8 @@ public class MenuItem extends ADMObject implements Unsealed {
 		this.group = group;
 
 		synchronized(items) {
-			for (Iterator iterator = items.values().iterator(); iterator.hasNext();) {
+			for (Iterator iterator = items.values().iterator();
+					iterator.hasNext();) {
 				MenuItem item = (MenuItem) iterator.next();
 				if (this.equals(item)) {
 					// take over this item:
@@ -104,19 +105,21 @@ public class MenuItem extends ADMObject implements Unsealed {
 	}
 
 	/**
-	 * Creates the MenuItem as a subitem of parentItem. If parentItem does not have a sub group already,
-	 * one with default parameters is created. If a group with other options is needed, use createSubGroup
-	 * and pass the resulting group to the constructor that takes a group as third parameter.
-	 *
+	 * Creates the MenuItem as a subitem of parentItem. If parentItem does not
+	 * have a sub group already, one with default parameters is created. If a
+	 * group with other options is needed, use createSubGroup and pass the
+	 * resulting group to the constructor that takes a group as third parameter.
+	 * 
 	 * @param name
 	 * @param text
 	 * @param parentItem
 	 * @param options
-	 *
+	 * 
 	 * @see MenuItem(MenuGroup, String, String, int)
 	 */
 	public MenuItem(MenuItem parentItem, String name, String text, int options) {
-		// if a subGroup as created earlier, createSubGroup does not create a new one
+		// if a subGroup as created earlier, createSubGroup does not create a
+		// new one
 		this(parentItem.createSubGroup(), name, text, options);
 	}
 
@@ -182,10 +185,12 @@ public class MenuItem extends ADMObject implements Unsealed {
 	 * @param groupName
 	 * @return
 	 */
-	protected static MenuItem wrapHandle(int handle, String name, String text, int groupHandle, String groupName) {
+	protected static MenuItem wrapHandle(int handle, String name, String text,
+			int groupHandle, String groupName) {
 		MenuItem item = getItem(handle);
 		if (item == null)
-			item = new MenuItem(handle, name, text, MenuGroup.wrapGroupHandle(groupHandle, groupName));
+			item = new MenuItem(handle, name, text, MenuGroup.wrapGroupHandle(
+					groupHandle, groupName));
 		return item;
 	}
 
@@ -204,7 +209,9 @@ public class MenuItem extends ADMObject implements Unsealed {
 		}
 	}
 
-	private static native int nativeCreate(String name, String text, String group, int options);
+	private static native int nativeCreate(String name, String text,
+			String group, int options);
+
 	private static native int nativeRemove(int handle);
 
 	public boolean equals(Object obj) {
@@ -241,7 +248,8 @@ public class MenuItem extends ADMObject implements Unsealed {
 	public native void setChecked(boolean checked);
 	public native boolean isChecked();
 
-	// TODO: add support for UpdateMenuItemAutomatically and all the parameters needed for it
+	// TODO: add support for UpdateMenuItemAutomatically and all the parameters
+	// needed for it
 
 	// Callback functions:
 
@@ -250,7 +258,8 @@ public class MenuItem extends ADMObject implements Unsealed {
 			FunctionHelper.callFunction(wrapper, "onClick");
 	}
 
-	protected void onUpdate(int inArtwork, int isSelected, int isTrue) throws Exception {
+	protected void onUpdate(int inArtwork, int isSelected, int isTrue)
+			throws Exception {
 		if (wrapper != null)
 			FunctionHelper.callFunction(wrapper, "onUpdate");
 	}
@@ -267,7 +276,8 @@ public class MenuItem extends ADMObject implements Unsealed {
 	/**
 	 * To be called from the native environment:
 	 */
-	private static void onUpdate(int handle, int inArtwork, int isSelected, int isTrue) throws Exception {
+	private static void onUpdate(int handle, int inArtwork, int isSelected,
+			int isTrue) throws Exception {
 		MenuItem item = getItem(handle);
 		if (item != null)
 			item.onUpdate(inArtwork, isSelected, isTrue);

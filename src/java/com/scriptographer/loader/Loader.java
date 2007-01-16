@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 05.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.loader;
@@ -40,6 +37,9 @@ import java.net.MalformedURLException;
 import java.lang.reflect.Method;
 import java.io.*;
 
+/**
+ * @author lehni
+ */
 public class Loader {
 	static URLClassLoader loader = null;
 	static String homeDir;
@@ -47,8 +47,8 @@ public class Loader {
 	public static void init(String dir) throws MalformedURLException {
 		homeDir = dir;
 		File home = new File(dir);
-		// filter out all the files in lib that are not jar or zip files and create a
-		// URL array of it:
+		// filter out all the files in lib that are not jar or zip files and
+		// create a URL array of it:
 		File libDir = new File(home, "lib");
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
@@ -72,8 +72,9 @@ public class Loader {
 
 	/**
 	 * Reloads the Scriptographer Engine from a new class loader
-	 * @return a string, representing any errors that happened during reload,
-	 * or null if all went well
+	 * 
+	 * @return a string, representing any errors that happened during reload, or
+	 *         null if all went well
 	 */
 	public static String reload() {
 		StringWriter stringWriter = new StringWriter();
@@ -97,10 +98,10 @@ public class Loader {
 	}
 
 	/**
-	 * To be called from the native environment. This replaces the static JNI_LoadClass, that allways
-	 * depends on the initial loader. This one allows reloading classes from a realoaded classpath
-	 * for reflection.
-	 *
+	 * To be called from the native environment. This replaces the static
+	 * JNI_LoadClass, that allways depends on the initial loader. This one
+	 * allows reloading classes from a realoaded classpath for reflection.
+	 * 
 	 * @param name in the slash-format (e.g. "java/lang/Object")
 	 * @return the loaded class
 	 * @throws ClassNotFoundException

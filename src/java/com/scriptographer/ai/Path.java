@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 03.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -47,6 +44,9 @@ import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 
+/**
+ * @author lehni
+ */
 public class Path extends Art {
 
 	private SegmentList segments = null;
@@ -104,8 +104,9 @@ public class Path extends Art {
 
 	public void setSegments(ExtendedList list) {
 		SegmentList segments = getSegments();
-		// TODO: implement SegmentList.setAll so clear is not necesssary and nativeCommit is used instead of nativeInsert
-		// removeRange would still be needed in cases the new list is smaller than the old one...
+		// TODO: implement SegmentList.setAll so clear is not necesssary and
+		// nativeCommit is used instead of nativeInsert removeRange would still
+		// be needed in cases the new list is smaller than the old one...
 		segments.removeAll();
 		segments.addAll(list);
 	}
@@ -189,14 +190,17 @@ public class Path extends Art {
 		
 	}
 
-	private native int nativePointsToCurves(float tolerance, float threshold, int cornerRadius, float scale);
+	private native int nativePointsToCurves(float tolerance, float threshold,
+			int cornerRadius, float scale);
 
-	public void pointsToCurves(float tolerance, float threshold, int cornerRadius, float scale) {
-		int size = nativePointsToCurves(tolerance, threshold, cornerRadius, scale);
-		updateSize(size);
+	public void pointsToCurves(float tolerance, float threshold,
+			int cornerRadius, float scale) {
+		updateSize(nativePointsToCurves(tolerance, threshold, cornerRadius,
+				scale));
 	}
 
-	public void pointsToCurves(float tolerance, float threshold, int cornerRadius) {
+	public void pointsToCurves(float tolerance, float threshold,
+			int cornerRadius) {
 		pointsToCurves(tolerance, threshold, cornerRadius, 1f);
 	}
 
@@ -212,7 +216,8 @@ public class Path extends Art {
 		pointsToCurves(2.5f, 1f, 1, 1f);
 	}
 
-	private native int nativeCurvesToPoints(float maxPointDistance, float flatness);
+	private native int nativeCurvesToPoints(float maxPointDistance,
+			float flatness);
 
 	public void curvesToPoints(float maxPointDistance, float flatness) {
 		int size = nativeCurvesToPoints(maxPointDistance, flatness);
@@ -268,7 +273,8 @@ public class Path extends Art {
 					segment.divide(parameter);
 					// create the new path with the segments to the right of t
 					newSegments = segments.getSubList(index + 1, segments.size);
-					// and delete these segments from the current path, not including the divided point
+					// and delete these segments from the current path, not
+					// including the divided point
 					segments.remove(index + 2, segments.size);
 				}
 			}
@@ -307,12 +313,15 @@ public class Path extends Art {
 			float startLength = currentLength;
 			Curve curve = (Curve) curves.get(i);
 			currentLength += curve.getLength(flatness);
-			if (currentLength >= length) { // found the segment within which the length lies
-				float t = curve.getParameterWithLength(length - startLength, flatness);
+			if (currentLength >= length) {
+				// found the segment within which the length lies
+				float t = curve.getParameterWithLength(length - startLength,
+						flatness);
 				return new HitTest(curve, t);
 			}
 		}
-		// it may be that through unpreciseness of getLength, that the end of the curves was missed:
+		// it may be that through unpreciseness of getLength, that the end of
+		// the curves was missed:
 		if (length <= getLength(flatness)) {
 			Curve curve = (Curve) curves.get(curves.size - 1);
 			return new HitTest(HitTest.HIT_ANCHOR, curve, 1, curve.getPoint2());
@@ -352,7 +361,8 @@ public class Path extends Art {
 		getSegments().lineTo(pt);
 	}
 	
-	public void curveTo(float c1x, float c1y, float c2x, float c2y, float x, float y) {
+	public void curveTo(float c1x, float c1y, float c2x, float c2y, float x,
+			float y) {
 		getSegments().curveTo(c1x, c1y, c2x, c2y, x, y);
 	}
 	
@@ -376,7 +386,8 @@ public class Path extends Art {
 		getSegments().quadTo(c, pt);
 	}
 
-	public void arcTo(float centerX, float centerY, float endX, float endY, int ccw) {
+	public void arcTo(float centerX, float centerY, float endX, float endY,
+			int ccw) {
 		getSegments().arcTo(centerX, centerY, endX, endY, ccw);
 	}
 
@@ -389,18 +400,17 @@ public class Path extends Art {
 	}
 		
 	/**
-	 * Appends the segments of a PathIterator to this Path. Optionally,
-	 * the initial {@link PathIterator#SEG_MOVETO}segment of the appended path
-	 * is changed into a {@link PathIterator#SEG_LINETO}segment.
+	 * Appends the segments of a PathIterator to this Path. Optionally, the
+	 * initial {@link PathIterator#SEG_MOVETO}segment of the appended path is
+	 * changed into a {@link PathIterator#SEG_LINETO}segment.
 	 * 
 	 * @param iter the PathIterator specifying which segments shall be appended.
-	 * 
 	 * @param connect <code>true</code> for substituting the initial
-	 * {@link PathIterator#SEG_MOVETO}segment by a {@link
-	 * PathIterator#SEG_LINETO}, or <code>false</code> for not performing any
-	 * substitution. If this GeneralPath is currently empty,
-	 * <code>connect</code> is assumed to be <code>false</code>, thus
-	 * leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
+	 *        {@link PathIterator#SEG_MOVETO}segment by a {@link
+	 *        PathIterator#SEG_LINETO}, or <code>false</code> for not
+	 *        performing any substitution. If this GeneralPath is currently
+	 *        empty, <code>connect</code> is assumed to be <code>false</code>,
+	 *        thus leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
 	 */
 	public void append(PathIterator iter, boolean connect) {
 		float[] f = new float[6];
@@ -445,9 +455,9 @@ public class Path extends Art {
 	}
 	
 	/**
-	 * Appends the segments of a Shape to the path. If <code>connect</code> is 
-	 * true, the new path segments are connected to the existing one with a line.
-	 * The winding rule of the Shape is ignored.
+	 * Appends the segments of a Shape to the path. If <code>connect</code> is
+	 * true, the new path segments are connected to the existing one with a
+	 * line. The winding rule of the Shape is ignored.
 	 */
 	public void append(Shape shape, boolean connect) {
 		append(shape.getPathIterator(null), connect);

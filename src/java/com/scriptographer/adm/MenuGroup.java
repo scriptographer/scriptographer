@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 19.02.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.adm;
@@ -42,6 +39,9 @@ import com.scriptographer.util.IntMap;
  * moved here instead, where they make more sense.
  */
 
+/**
+ * @author lehni
+ */
 public class MenuGroup extends ADMObject {
 	// AIMenuGroups.h:
 	public static final MenuGroup
@@ -246,7 +246,8 @@ public class MenuGroup extends ADMObject {
 		return group;
 	}
 
-	private static native int nativeCreate(String name, String nearGroup, int parentItemHandle, int options);
+	private static native int nativeCreate(String name, String nearGroup,
+			int parentItemHandle, int options);
 
 	public boolean equals(Object obj) {
 		if (obj instanceof MenuGroup) {

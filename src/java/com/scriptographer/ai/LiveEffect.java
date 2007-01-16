@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 18.02.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -45,18 +42,19 @@ import java.util.ArrayList;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.ScriptRuntime;
 
-/*
- * Wrapper for Illustrator's LiveEffects.
- *
- * Unfortunatelly, Illustrator is not able to remove once created effects again until the next restart.
- * They can be removed from the menu but not from memory. So In order to recycle effects with the
- * same settings, e.g. during development, where the code often changes but the initial settings
- * maybe not, keep track of all existing effects and match against those first before creating a new one.
- *
- * Also, when Scriptographer is (re)loaded, the list of existing effects needs to be walked through and
- * added to the list of unusedEffects. This is done by calling getUnusedEffects.
+/**
+ * Wrapper for Illustrator's LiveEffects. Unfortunatelly, Illustrator is not
+ * able to remove once created effects again until the next restart. They can be
+ * removed from the menu but not from memory. So In order to recycle effects
+ * with the same settings, e.g. during development, where the code often changes
+ * but the initial settings maybe not, keep track of all existing effects and
+ * match against those first before creating a new one. Also, when
+ * Scriptographer is (re)loaded, the list of existing effects needs to be walked
+ * through and added to the list of unusedEffects. This is done by calling
+ * getUnusedEffects.
+ * 
+ * @author lehni
  */
-
 
 /*
 Re: sdk: Illustrator AILiveEffect questions
@@ -177,7 +175,9 @@ public class LiveEffect extends AIObject implements Unsealed {
 	/**
 	 * Called from the native environment.
 	 */
-	protected LiveEffect(int effectHandle, String name, String title, int preferedInput, int type, int flags, int majorVersion, int minorVersion) {
+	protected LiveEffect(int effectHandle, String name, String title,
+			int preferedInput, int type, int flags, int majorVersion,
+			int minorVersion) {
 		super(effectHandle);
 		this.name = name;
 		this.title = title;
@@ -189,7 +189,6 @@ public class LiveEffect extends AIObject implements Unsealed {
 	}
 
 	/**
-	 *
 	 * @param name
 	 * @param title
 	 * @param preferedInput a combination of LiveEffect.INPUT_*
@@ -198,8 +197,10 @@ public class LiveEffect extends AIObject implements Unsealed {
 	 * @param majorVersion
 	 * @param minorVersion
 	 */
-	public LiveEffect(String name, String title, int preferedInput, int type, int flags, int majorVersion, int minorVersion) {
-		this(0, name, title, preferedInput, type, flags, majorVersion, minorVersion);
+	public LiveEffect(String name, String title, int preferedInput, int type,
+			int flags, int majorVersion, int minorVersion) {
+		this(0, name, title, preferedInput, type, flags, majorVersion,
+				minorVersion);
 
 		ArrayList unusedEffects = getUnusedEffects();
 
@@ -207,14 +208,16 @@ public class LiveEffect extends AIObject implements Unsealed {
 		// description
 		int index = unusedEffects.indexOf(this);
 		if (index >= 0) {
-			// found one, let's reuse it's handle and remove the old effect from the list:
+			// found one, let's reuse it's handle and remove the old effect from
+			// the list:
 			LiveEffect effect = (LiveEffect) unusedEffects.get(index);
 			handle = effect.handle;
 			effect.handle = 0;
 			unusedEffects.remove(index);
 		} else {
 			// no previously existing effect found, create a new one:
-			handle = nativeCreate(name, title, preferedInput, type, flags, majorVersion, minorVersion);
+			handle = nativeCreate(name, title, preferedInput, type, flags,
+					majorVersion, minorVersion);
 		}
 
 		if (handle == 0)
@@ -233,15 +236,20 @@ public class LiveEffect extends AIObject implements Unsealed {
 	 * @param majorVersion
 	 * @param minorVersion
 	 */
-	public LiveEffect(String name, int preferedInput, int type, int flags, int majorVersion, int minorVersion) {
+	public LiveEffect(String name, int preferedInput, int type, int flags,
+			int majorVersion, int minorVersion) {
 		this(name, name, preferedInput, type, flags, majorVersion, minorVersion);
 	}
 
-	private native int nativeCreate(String name, String title, int preferedInput, int type, int flags, int majorVersion, int minorVersion);
+	private native int nativeCreate(String name, String title,
+			int preferedInput, int type, int flags, int majorVersion,
+			int minorVersion);
 
 	/**
-	 * "remove's" the effect. there is no real destroy for LiveEffects in Illustrator, so all it really does is remove
-	 * the effect's menu item, if there is one. It keeps the effectHandle and puts itself in the list of unused effects
+	 * "Removes" the effect. there is no real destroy for LiveEffects in
+	 * Illustrator, so all it really does is remove the effect's menu item, if
+	 * there is one. It keeps the effectHandle and puts itself in the list of
+	 * unused effects
 	 */
 	public void remove() {
 		// see wether we're still linked:
@@ -263,7 +271,8 @@ public class LiveEffect extends AIObject implements Unsealed {
 		}
 	}
 
-	private native MenuItem nativeAddMenuItem(String name, String category, String title);
+	private native MenuItem nativeAddMenuItem(String name, String category,
+			String title);
 
 	public MenuItem addMenuItem(String cateogry, String title) {
 		if (menuItem == null) {
@@ -317,7 +326,8 @@ public class LiveEffect extends AIObject implements Unsealed {
 
 	protected void onEditParameters(Map parameters) throws Exception {
 		if (wrapper != null)
-			FunctionHelper.callFunction(wrapper, "onEditParameters", new Object[] { parameters });
+			FunctionHelper.callFunction(wrapper, "onEditParameters",
+					new Object[] { parameters });
 	}
 
 	private Function onCalculate = null;
@@ -332,17 +342,21 @@ public class LiveEffect extends AIObject implements Unsealed {
 
 	protected Art onCalculate(Map parameters, Art art) throws Exception {
 		if (wrapper != null && onCalculate != null) {
-			Object ret = FunctionHelper.callFunction(wrapper, onCalculate, new Object[] { parameters, art });
-			// it is only possible to either return the art itself or set the art to null!
+			Object ret = FunctionHelper.callFunction(wrapper, onCalculate,
+					new Object[] { parameters, art });
+			// it is only possible to either return the art itself or set the
+			// art to null!
 			// everything else semse to cause a illustrator crash
 
 			// TODO: This is not correct handling:
 			// Am 23.02.2005 um 18:53 schrieb Frank Stokes-Guinan:
-			// When creating output art for the go message, the output art must be a child of the same parent as
-			// the input art. It also must be the only child of this parent, so if you create a copy of the input
-			// art, work on it and attempt to return the copy as the output art, you must make sure to dispose the
-			// original input art first. It is not legal to create an art object in an arbitrary place and return
-			// that as the output art.
+			// When creating output art for the go message, the output art must
+			// be a child of the same parent as the input art. It also must be
+			// the only child of this parent, so if you create a copy of the
+			// input art, work on it and attempt to return the copy as the
+			// output art, you must make sure to dispose the original input art
+			// first. It is not legal to create an art object in an arbitrary
+			// place and return that as the output art.
 
 			return ret == art ? art : null;
 		}
@@ -351,9 +365,8 @@ public class LiveEffect extends AIObject implements Unsealed {
 
 	protected int onGetInputType(Map parameters, Art art) throws Exception {
 		if (wrapper != null) {
-			return ScriptRuntime.toInt32(
-				FunctionHelper.callFunction(wrapper, "onGetInputType", new Object[] { parameters, art })
-			);
+			return ScriptRuntime.toInt32(FunctionHelper.callFunction(wrapper,
+					"onGetInputType", new Object[] { parameters, art }));
 		}
 		return 0;
 	}
@@ -361,12 +374,13 @@ public class LiveEffect extends AIObject implements Unsealed {
 	/**
 	 * To be called from the native environment:
 	 */
-	private static void onEditParameters(int handle, Map parameters, int effectContext, boolean allowPreview)
-			throws Exception {
+	private static void onEditParameters(int handle, Map parameters,
+			int effectContext, boolean allowPreview) throws Exception {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
-			// put these special values to the parameters for the duration of the handler
-			// the parameter map then needs to be passed to functions like updateParameters
+			// put these special values to the parameters for the duration of
+			// the handler the parameter map then needs to be passed to
+			// functions like updateParameters
 			parameters.put("context", new Integer(effectContext));
 			parameters.put("allowPreview", new Boolean(allowPreview));
 			effect.onEditParameters(parameters);
@@ -378,21 +392,24 @@ public class LiveEffect extends AIObject implements Unsealed {
 	/**
 	 * To be called from the native environment:
 	 */
-	private static int onCalculate(int handle, Map parameters, Art art) throws Exception {
+	private static int onCalculate(int handle, Map parameters, Art art)
+			throws Exception {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
 			Art newArt = effect.onCalculate(parameters, art);
 			if (newArt != null)
 				art = newArt;
 		}
-		// already return the handle to the native environment so it doesn't need to access it there...
+		// already return the handle to the native environment so it doesn't
+		// need to access it there...
 		return art.handle;
 	}
 
 	/**
 	 * To be called from the native environment:
 	 */
-	private static int onGetInputType(int handle, Map parameters, Art art) throws Exception {
+	private static int onGetInputType(int handle, Map parameters, Art art)
+			throws Exception {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null)
 			return effect.onGetInputType(parameters, art);

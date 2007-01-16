@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 25.03.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.gui;
@@ -46,6 +43,9 @@ import com.scriptographer.adm.Static;
 import com.scriptographer.adm.TableLayout;
 import com.scriptographer.adm.Tracker;
 
+/**
+ * @author lehni
+ */
 public class AboutDialog extends ModalDialog {
 	static AboutDialog dialog = null;
 

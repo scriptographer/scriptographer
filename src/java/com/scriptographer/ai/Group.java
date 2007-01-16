@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  *
  * File created on 03.12.2004.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -38,13 +35,13 @@ import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 
 /**
+ * A Group is a collection of Art objects. When you transform a Group, it's
+ * children are treated as a single unit without changing their relative
+ * positions. The Group's style or transparency blending attributes affect the
+ * rendering of it's children without changing their style/attributes.
  * 
- * A Group is a collection of Art objects.
- * When you transform a Group, it's children are treated as a single unit without changing their relative positions.
- * The Group's style or transparency blending attributes affect the rendering of it's children without changing their style/attributes.
- *
+ * @author lehni
  */
-
 public class Group extends Art {
 	
 	protected Group(int handle) {

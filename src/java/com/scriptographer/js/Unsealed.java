@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,20 +26,18 @@
  *
  * File created on 03.01.2005.
  *
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.js;
 
 /**
  * An empty interface that lets the ScriptographerWrapFactory know about which
- * Wrapper Class should be used. Unsealed objects will be wrapped in a UnsealedJavaObject,
- * while for all the others, the normal NativeJavaObject class is used.
+ * Wrapper Class should be used. Unsealed objects will be wrapped in a
+ * UnsealedJavaObject, while for all the others, the normal NativeJavaObject
+ * class is used.
  * 
- * @author Lehni
+ * @author lehni
  */
 public interface Unsealed {
 	// this interface is merely a flag

@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,10 +26,7 @@
  * 
  * File created on 04.11.2005.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
@@ -41,7 +38,11 @@ import com.scriptographer.Commitable;
 import com.scriptographer.js.NullToUndefinedWrapper;
 import com.scriptographer.js.WrapperCreator;
 
-public class ParagraphStyle extends AIObject implements Commitable, WrapperCreator {
+/**
+ * @author lehni
+ */
+public class ParagraphStyle extends AIObject implements Commitable,
+		WrapperCreator {
 
 	private TextRange range;
 	private Object commitKey;
@@ -64,7 +65,8 @@ public class ParagraphStyle extends AIObject implements Commitable, WrapperCreat
 	protected ParagraphStyle(int handle, TextRange range) {
 		this(handle);
 		this.range = range;
-		this.commitKey = range != null ? (Object) range.getStory() : (Object) this;
+		this.commitKey = range != null ?
+				(Object) range.getStory() : (Object) this;
 	}
 	
 	protected void changeHandle(int newHandle) {
@@ -91,8 +93,9 @@ public class ParagraphStyle extends AIObject implements Commitable, WrapperCreat
 	}
 	
 	/**
-	 * markSetStyle is called from the native environemnt. it marks dirty but doesn't set 
-	 * pathStyleChanged, as it's only used for character style features 
+	 * markSetStyle is called from the native environemnt. it marks dirty but
+	 * doesn't set pathStyleChanged, as it's only used for character style
+	 * features
 	 */
 	protected void markSetStyle() {
 		if (!dirty) {

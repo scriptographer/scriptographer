@@ -3,7 +3,7 @@
  * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  * 
- * Copyright (c) 2002-2006 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -26,23 +26,23 @@
  * 
  * File created on 10.06.2006.
  * 
- * $RCSfile$
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scriptographer.ai;
 
 import java.io.File;
 
-/**
- * Objects and functions present in the global scope. These can be used anywhere in scripts.
- */
-
 /*
  * This class is just a dummy to get Javadoc to generate documentation for
  * the global scope
+ */
+
+/**
+ * Objects and functions present in the global scope. These can be used anywhere
+ * in scripts.
+ * 
+ * @author lehni
  */
 public class global {
 	private global() {
