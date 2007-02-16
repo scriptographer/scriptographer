@@ -40,7 +40,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Scriptographer_CS2_Release/Scriptographer.tlb"
+				TypeLibraryName=".\CS2 Release/Scriptographer.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -129,7 +129,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Scriptographer_CS_Debug/Scriptographer.tlb"
+				TypeLibraryName=".\CS Debug/Scriptographer.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -143,9 +143,7 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdHeaders.h"
-				AssemblerListingLocation=".\Scriptographer_CS_Debug/"
-				ObjectFile=".\Scriptographer_CS_Debug/"
-				ProgramDataBaseFileName=".\Scriptographer_CS_Debug/"
+				AssemblerListingLocation="$(IntDir)\"
 				BrowseInformation="1"
 				DebugInformationFormat="3"
 			/>
@@ -220,7 +218,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Scriptographer_CS2_Debug/Scriptographer.tlb"
+				TypeLibraryName=".\CS2 Debug/Scriptographer.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -234,9 +232,7 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough="stdHeaders.h"
-				AssemblerListingLocation=".\Scriptographer_CS2_Debug/"
-				ObjectFile=".\Scriptographer_CS2_Debug/"
-				ProgramDataBaseFileName=".\Scriptographer_CS2_Debug/"
+				AssemblerListingLocation="$(IntDir)\"
 				BrowseInformation="1"
 				DebugInformationFormat="3"
 			/>
@@ -310,7 +306,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Scriptographer_CS_Release/Scriptographer.tlb"
+				TypeLibraryName=".\CS Release/Scriptographer.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -399,7 +395,7 @@
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Scriptographer___Win32_CS3_Debug/Scriptographer.tlb"
+				TypeLibraryName=".\CS3 Debug/Scriptographer.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -484,11 +480,10 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
 				MkTypLibCompatible="true"
 				SuppressStartupBanner="true"
 				TargetEnvironment="1"
-				TypeLibraryName=".\Scriptographer___Win32_CS3_Debug/Scriptographer.tlb"
+				TypeLibraryName=".\CS3 Release/Scriptographer.tlb"
 				HeaderFileName=""
 			/>
 			<Tool
@@ -5499,6 +5494,10 @@
 			Name="Resources"
 			>
 			<File
+				RelativePath="resources\PiPL.bin"
+				>
+			</File>
+			<File
 				RelativePath="resources\plugin.rc"
 				>
 				<FileConfiguration
@@ -5575,10 +5574,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="resources\PiPL.bin"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

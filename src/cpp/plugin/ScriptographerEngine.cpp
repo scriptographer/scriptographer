@@ -428,7 +428,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ScriptographerException = loadClass(env, "com/scriptographer/ScriptographerException");
 	
 	cls_CommitManager = loadClass(env, "com/scriptographer/CommitManager");
-//	mid_CommitManager_markDirty =  getStaticMethodID(env, cls_CommitManager, "markDirty", "(Ljava/lang/Object;Lcom/scriptographer/Commitable;)V");
 	mid_CommitManager_commit =  getStaticMethodID(env, cls_CommitManager, "commit", "(Ljava/lang/Object;)V");
 	
 	cls_IntMap = loadClass(env, "com/scriptographer/util/IntMap");
