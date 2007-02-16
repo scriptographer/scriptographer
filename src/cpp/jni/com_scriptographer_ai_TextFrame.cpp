@@ -111,7 +111,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_isLinked(JNIEnv 
 	try {
 		// TextFrames need document be active for getting story related states too
 		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
-		bool linked;
+		ATEBool8 linked;
 		if (!sAITextFrame->PartOfLinkedText(text, &linked))
 			return linked;
 	} EXCEPTION_CONVERT(env);
@@ -202,7 +202,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setSpacing(JNIEnv *e
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_getOpticalAlignment(JNIEnv *env, jobject obj) {
 	try {
 		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
-		bool active;
+		ATEBool8 active;
 		if (!sTextFrame->GetOpticalAlignment(frame, &active))
 			return active;
 	} EXCEPTION_CONVERT(env);
@@ -228,7 +228,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_equals(JNIEnv *e
 			TextFrameRef frame1 = gEngine->getTextFrameHandle(env, obj);
 			TextFrameRef frame2 = gEngine->getTextFrameHandle(env, text);
 			if (frame2 != NULL) {
-				bool ret;
+				ATEBool8 ret;
 				if (!sTextFrame->IsEqual(frame1, frame2, &ret))
 					return ret;
 			}

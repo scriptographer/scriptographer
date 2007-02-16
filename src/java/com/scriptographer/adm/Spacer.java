@@ -55,7 +55,11 @@ public class Spacer extends Item implements Unsealed {
 		return bounds.getSize();
 	}
 	
-	public void setBounds(int x, int y, int width, int height) {
+	protected void updateBounds(int x, int y, int width, int height) {
+		// override this as we are not using all the native stuff internally in
+		// spacers.
+		// setBounds does not need to be touched, as it relies on updateBounds
+		// for the heavy lifting.
 		bounds.setBounds(x, y, width, height);
 	}
 

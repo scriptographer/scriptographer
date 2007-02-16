@@ -31,21 +31,22 @@
 #define __stdHeaders__
 
 #ifdef MAC_ENV
-	#include <Carbon.h>
-#endif
+#include <Carbon.h>
+#endif // MAC_ENV
+
 #ifdef WIN_ENV
-	#define _CRT_NONSTDC_NO_DEPRECATE 1
-	#define _CRT_SECURE_NO_DEPRECATE 1
-	#define _SECURE_SCL_DEPRECATE 0
-	// C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
-	#pragma warning (disable: 4290)	
+#define _CRT_NONSTDC_NO_DEPRECATE 1
+#define _CRT_SECURE_NO_DEPRECATE 1
+#define _SECURE_SCL_DEPRECATE 0
+// C++ exception specification ignored except to indicate a function is not __declspec(nothrow)
+#pragma warning (disable: 4290)	
 
-	#define strcasecmp stricmp
-	#define vsnprintf _vsnprintf
+#define strcasecmp stricmp
+#define vsnprintf _vsnprintf
 
-	#include "windows.h"
-	#include <time.h>
-#endif
+#include "windows.h"
+#include <time.h>
+#endif // WIN_ENV
 
 // JNI
 #include <jni.h>

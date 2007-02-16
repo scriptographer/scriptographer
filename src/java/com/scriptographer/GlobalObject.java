@@ -214,7 +214,7 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 	}
 
 	protected Scriptable createScope(File scriptFile) {
-		ScriptableObject scope = new org.mozilla.javascript.NativeObject();
+		ScriptableObject scope = new NativeObject();
 		scope.setPrototype(this);
 		scope.setParentScope(null);
 		scope.defineProperty("scriptFile", scriptFile,

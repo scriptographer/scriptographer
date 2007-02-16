@@ -532,7 +532,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getSingleGlyph(JNIEn
 	try {
 		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		ATEGlyphID id;
-		bool ret;
+		ATEBool8 ret;
 		if (!sTextRange->GetSingleGlyphInRange(range, &id, &ret) && ret) {
 			return id;
 		}
@@ -617,7 +617,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextRange_equals(JNIEnv *e
 			TextRangeRef range1 = gEngine->getTextRangeHandle(env, obj);
 			TextRangeRef range2 = gEngine->getTextRangeHandle(env, range);
 			if (range2 != NULL) {
-				bool ret;
+				ATEBool8 ret;
 				if (!sTextRange->IsEqual(range1, range2, &ret))
 					return ret;
 			}

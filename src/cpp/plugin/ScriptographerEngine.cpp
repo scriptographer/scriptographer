@@ -600,7 +600,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_Image_byteWidth = getFieldID(env, cls_Image, "byteWidth", "I");
 	fid_Image_bitsPerPixel = getFieldID(env, cls_Image, "bitsPerPixel", "I");
 	mid_Image_getIconHandle = getMethodID(env, cls_Image, "getIconHandle", "()I");
-	
+
 	cls_ListItem = loadClass(env, "com/scriptographer/adm/ListItem");
 	fid_ListItem_listHandle = getFieldID(env, cls_ListItem, "listHandle", "I");	
 	

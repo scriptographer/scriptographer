@@ -127,7 +127,7 @@
 
 #if kPluginInterfaceVersion >= kAI12
 #include "AITracing.h"
-#endif
+#endif// >= kAI12
 
 #include "AIContext.h"
 #include "AIPreference.h"
@@ -136,14 +136,15 @@
 #include "AITextFrame.h"
 #include "IText.h"
 #include "AIATEPaint.h"
-#else
+#include "ATETextSuitesExtern.h"
+#else // < kAI11
 #include "AIText.h"
 #include "AITextFaceStyle.h"
 #include "AITextLine.h"
 #include "AITextPath.h"
 #include "AITextRun.h"
 #include "AITextStream.h"
-#endif
+#endif // < kAI11
 
 typedef struct {
 	char *name;
@@ -160,28 +161,31 @@ typedef struct {
 extern ImportSuites gStartupSuites;
 extern ImportSuites gPostStartupSuites;
 
-#if kPluginInterfaceVersion >= kAI11
-	#include "ATETextSuitesExtern.h"
-#endif
-
 #if kPluginInterfaceVersion < kAI11
-	// Compatibility for Illustrator version before CS:
-	// ASRect, ASPoint, ASRGBColor, etc. have been deprecated in favor of ADM types with the same
-	// name, ADMRect, ADMPoint, etc. The switch to ADMxxx types is painless and makes for a more
-	// uniform use of standard Adobe types. If for some reason you cannot switch you can uncomment
-	// the old ASxxx types in ASTypes.h.
-	#define ADMRect ASRect
-	#define ADMPoint ASPoint
-#endif
+// Compatibility for Illustrator version before CS:
+// ASRect, ASPoint, ASRGBColor, etc. have been deprecated in favor of ADM types with the same
+// name, ADMRect, ADMPoint, etc. The switch to ADMxxx types is painless and makes for a more
+// uniform use of standard Adobe types. If for some reason you cannot switch you can uncomment
+// the old ASxxx types in ASTypes.h.
+#define ADMRect ASRect
+#define ADMPoint ASPoint
+#endif // < kAI11
 
 #if kPluginInterfaceVersion < kAI12
-	// GetWSProfile in AIOverrideColorConversion.h takes AIColorProfile instead of ASUInt32 since AI12
-	#define AIColorProfile ASUInt32
-	// was renamed in AI12:
-	namespace ATE {
-		typedef ATE::GlyphID ATEGlyphID;
-	}
-#endif
+// GetWSProfile in AIOverrideColorConversion.h takes AIColorProfile instead of ASUInt32 since AI12
+#define AIColorProfile ASUInt32
+// was renamed in AI12:
+namespace ATE {
+	typedef ATE::GlyphID ATEGlyphID;
+}
+#endif // < kAI12
+
+#if kPluginInterfaceVersion < kAI13
+// AI13 Introduced ATEBool8 for ATE, before it simply was bool:
+namespace ATE {
+	typedef bool ATEBool8;
+}
+#endif // < kAI13
 
 // ADM Suites default to the oldest versions.
 // Define symbols that point to the newest here und use these bellow:

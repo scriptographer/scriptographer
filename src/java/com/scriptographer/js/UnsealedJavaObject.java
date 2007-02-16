@@ -50,14 +50,16 @@ public class UnsealedJavaObject extends NativeJavaObject {
 		Class staticType) {
 		super(scope, javaObject, staticType);
 	}
+
 	public void delete(String name) {
-		super.delete(name);
 		properties.remove(name);
 	}
 	
 	public Object get(String name, Scriptable start) {
-		Object obj = super.get(name, start);
-		if (obj == Scriptable.NOT_FOUND) {
+		Object obj;
+		if (super.has(name, start)) {
+			obj = super.get(name, start);
+		} else {
 			// see wether this object defines the property.
 			obj = properties.get(name);
 			if (obj == null) {

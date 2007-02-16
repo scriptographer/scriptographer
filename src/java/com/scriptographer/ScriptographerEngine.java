@@ -65,7 +65,6 @@ public class ScriptographerEngine {
 	private static ScriptographerDebugger debugger = null;
 
 	static {
-		// getSystem variables
 		String os = System.getProperty("os.name").toLowerCase();
 		isWindows = (os.indexOf("windows") != -1);
 		isMacintosh = (os.indexOf("mac os x") != -1);
@@ -92,14 +91,14 @@ public class ScriptographerEngine {
 
 		// The debugger needs to be created before the context, otherwise
 		// notification won't work
-		debugger = new ScriptographerDebugger();
-		debugger.attachTo(factory);
+		// debugger = new ScriptographerDebugger();
+		// debugger.attachTo(factory);
 		
 		context = Context.enter();
 		global = new GlobalObject(context);
 
 		// now define the scope provider. Things are a bit intertwingled here...
-		debugger.setScopeProvider(global);
+		// debugger.setScopeProvider(global);
 
         // This is needed on mac, where there is more than one thread and the
 		// Loader is initiated on startup
@@ -457,7 +456,7 @@ public class ScriptographerEngine {
 	private static native boolean nativeUpdateProgress(long current, long max);
 	
 	public static void initDebugger() {
-		debugger.setVisible(true);
+		// debugger.setVisible(true);
 	}
 
 	public static boolean updateProgress(long current, long max) {

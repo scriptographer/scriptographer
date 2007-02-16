@@ -82,15 +82,12 @@ public class PromptDialog extends ModalDialog {
 		Button cancelButton = new Button(this);
 		cancelButton.setFont(Dialog.FONT_PALETTE);
 		cancelButton.setText("Cancel");
-		Dimension buttonSize = cancelButton.getBestSize();
-		cancelButton.setSize(buttonSize);
-		cancelButton.setInsets(0, 0, 3, 0);
+		cancelButton.setInsets(0, 0, 4, 0);
 		buttons.add(cancelButton);
 		
 		Button okButton = new Button(this);
 		okButton.setFont(Dialog.FONT_PALETTE);
 		okButton.setText("OK");
-		okButton.setSize(buttonSize);
 		buttons.add(okButton);
 
 		this.addToLayout(buttons, "0, " + items.length + ", 1, " + items.length);

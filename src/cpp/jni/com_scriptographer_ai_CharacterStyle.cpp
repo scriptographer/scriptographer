@@ -127,7 +127,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_finalize(JNIEnv
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetFont(JNIEnv *env, jobject obj) {
 	try {
 		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj);
-		bool isAssigned;
+		ATEBool8 isAssigned;
 		FontRef value;
 		AIFontKey font;
 		if (!sCharFeatures->GetFont(features, &isAssigned, &value) && isAssigned &&

@@ -216,28 +216,28 @@ bool Art_move(JNIEnv *env, jobject obj, jobject art, short paintOrder) {
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_nativeCreate(JNIEnv *env, jclass cls, jshort type) {
 	AIArtHandle art = NULL;
-
-	// if type is set to the self defined TYPE_LAYER, create a layer and return the wrapped art group object instead:
-	if (type == com_scriptographer_ai_Art_TYPE_LAYER) { // create a layer
-		Document_activate();
-		// place it above the active layer, or all others if none is active:
-		AILayerHandle currentLayer = NULL;
-		sAILayer->GetCurrentLayer(&currentLayer);
-		AILayerHandle layer = NULL;
-		sAILayer->InsertLayer(currentLayer, currentLayer != NULL ? kPlaceAbove : kPlaceAboveAll, &layer);
-		if (layer != NULL)
-			sAIArt->GetFirstArtOfLayer(layer, &art);
-		if (art == NULL)
-			throw new StringException("Cannot create layer. Please make sure there is an open document.");
-	} else { // create a normal art object
-		short paintOrder;
-		AIArtHandle artInsert = Art_getInsertionPoint(&paintOrder);
-		// try to create in the active layer
-		sAIArt->NewArt(type, paintOrder, artInsert, &art);
-		if (art == NULL)
-			throw new StringException("Cannot create art object. Please make sure there is an open document.");
-	}
-
+	try {
+		// if type is set to the self defined TYPE_LAYER, create a layer and return the wrapped art group object instead:
+		if (type == com_scriptographer_ai_Art_TYPE_LAYER) { // create a layer
+			Document_activate();
+			// place it above the active layer, or all others if none is active:
+			AILayerHandle currentLayer = NULL;
+			sAILayer->GetCurrentLayer(&currentLayer);
+			AILayerHandle layer = NULL;
+			sAILayer->InsertLayer(currentLayer, currentLayer != NULL ? kPlaceAbove : kPlaceAboveAll, &layer);
+			if (layer != NULL)
+				sAIArt->GetFirstArtOfLayer(layer, &art);
+			if (art == NULL)
+				throw new StringException("Cannot create layer. Please make sure there is an open document.");
+		} else { // create a normal art object
+			short paintOrder;
+			AIArtHandle artInsert = Art_getInsertionPoint(&paintOrder);
+			// try to create in the active layer
+			sAIArt->NewArt(type, paintOrder, artInsert, &art);
+			if (art == NULL)
+				throw new StringException("Cannot create art object. Please make sure there is an open document.");
+		}
+	} EXCEPTION_CONVERT(env);
 	return (jint) art;
 }
 

@@ -94,7 +94,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 #define CHARACTERSTYLE_GET(NAME, TYPE, CLASS, JTYPE) \
 	try { \
 		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj); \
-		bool isAssigned; \
+		ATEBool8 isAssigned; \
 		TYPE value; \
 		if (!sCharFeatures->Get##NAME(features, &isAssigned, &value) && isAssigned) \
 			return gEngine->newObject(env, gEngine->cls_##CLASS, gEngine->cid_##CLASS, (JTYPE) value); \
@@ -120,10 +120,10 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 	CHARACTERSTYLE_SET(NAME, ASReal, Float, mid_Number_floatValue)
 
 #define CHARACTERSTYLE_GET_BOOLEAN(NAME) \
-	CHARACTERSTYLE_GET(NAME, bool, Boolean, jboolean)
+	CHARACTERSTYLE_GET(NAME, ATEBool8, Boolean, jboolean)
 
 #define CHARACTERSTYLE_SET_BOOLEAN(NAME) \
-	CHARACTERSTYLE_SET(NAME, bool, Boolean, mid_Boolean_booleanValue)
+	CHARACTERSTYLE_SET(NAME, ATEBool8, Boolean, mid_Boolean_booleanValue)
 
 #define CHARACTERSTYLE_GET_INTEGER(NAME) \
 	CHARACTERSTYLE_GET(NAME, ASInt32, Integer, jint)
@@ -140,7 +140,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 #define PARAGRAPHSTYLE_GET(NAME, TYPE, CLASS, JTYPE) \
 	try { \
 		ParaFeaturesRef features = gEngine->getParaFeaturesHandle(env, obj); \
-		bool isAssigned; \
+		ATEBool8 isAssigned; \
 		TYPE value; \
 		if (!sParaFeatures->Get##NAME(features, &isAssigned, &value) && isAssigned) \
 			return gEngine->newObject(env, gEngine->cls_##CLASS, gEngine->cid_##CLASS, (JTYPE) value); \
@@ -172,10 +172,10 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 	PARAGRAPHSTYLE_SET_CLEAR(NAME, CLEAR, ASReal, Float, mid_Number_floatValue)
 
 #define PARAGRAPHSTYLE_GET_BOOLEAN(NAME) \
-	PARAGRAPHSTYLE_GET(NAME, bool, Boolean, jboolean)
+	PARAGRAPHSTYLE_GET(NAME, ATEBool8, Boolean, jboolean)
 
 #define PARAGRAPHSTYLE_SET_BOOLEAN(NAME) \
-	PARAGRAPHSTYLE_SET(NAME, bool, Boolean, mid_Boolean_booleanValue)
+	PARAGRAPHSTYLE_SET(NAME, ATEBool8, Boolean, mid_Boolean_booleanValue)
 
 #define PARAGRAPHSTYLE_GET_INTEGER(NAME) \
 	PARAGRAPHSTYLE_GET(NAME, ASInt32, Integer, jint)

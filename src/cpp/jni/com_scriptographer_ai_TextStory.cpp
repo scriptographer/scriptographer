@@ -110,7 +110,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextStory_equals(JNIEnv *e
 			StoryRef story1 = gEngine->getStoryHandle(env, obj);
 			StoryRef story2 = gEngine->getStoryHandle(env, story);
 			if (story2 != NULL) {
-				bool ret;
+				ATEBool8 ret;
 				if (!sStory->IsEqual(story1, story2, &ret))
 					return ret;
 			}

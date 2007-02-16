@@ -36,6 +36,8 @@
  * com.scriptographer.ai.AreaText
  */
 
+using namespace ATE;
+
 /*
  * int nativeCreate(short orient, int artHandle)
  */
@@ -102,7 +104,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setColumnCount(JNIEnv
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_AreaText_getRowMajorOrder(JNIEnv *env, jobject obj) {
 	try {
 		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
-		bool rowMajorOrder;
+		ATEBool8 rowMajorOrder;
 		if (!ATE::sTextFrame->GetRowMajorOrder(frame, &rowMajorOrder))
 			return rowMajorOrder;
 	} EXCEPTION_CONVERT(env);

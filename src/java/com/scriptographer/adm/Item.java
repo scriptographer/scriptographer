@@ -175,7 +175,9 @@ public abstract class Item extends CallbackHandler {
 	private Dimension prefSize = null;
 
 	protected Item() {
-		insets = new Insets(0, 0, 0 ,0);
+		// Call function as it is overriden by Button, where it sets 
+		// insets according to platform
+		setInsets(0, 0, 0, 0);
 	}
 	
 	/**
@@ -348,7 +350,7 @@ public abstract class Item extends CallbackHandler {
 		return new Rectangle(bounds);
 	}
 
-	public void setBounds(int x, int y, int width, int height) {
+	protected void updateBounds(int x, int y, int width, int height) {
 		// calculate native values
 		int nativeX = x + insets.left;
 		int nativeY = y + insets.top;
@@ -369,10 +371,6 @@ public abstract class Item extends CallbackHandler {
 		if (component != null)
 			component.updateBounds(bounds);
 
-		// Set prefSize so getPreferredSize does not return results from
-		// getBestSize()
-		prefSize = new Dimension(width, height);
-
 		if (sizeChanged) {
 			// TODO: deal with Exception...
 			try {
@@ -383,13 +381,22 @@ public abstract class Item extends CallbackHandler {
 		}
 	}
 
+	public void setBounds(int x, int y, int width, int height) {
+		// Set prefSize so getPreferredSize does not return results from
+		// getBestSize()
+		prefSize = new Dimension(width, height);
+		// updateBounds does all the heavy lifting, except for setting
+		// prefSize, which shouldnt be set when changing location or insets.
+		updateBounds(x, y, width, height);
+	}
+
 	public final void setBounds(Rectangle2D bounds) {
 		setBounds((int) bounds.getX(), (int) bounds.getY(),
 				(int) bounds.getWidth(), (int) bounds.getHeight());
 	}
 
 	public void setLocation(int x, int y) {
-		setBounds(x, y, bounds.width, bounds.height);
+		updateBounds(x, y, bounds.width, bounds.height);
 	}
 
 	public final void setLocation(Point2D loc) {
@@ -409,11 +416,11 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	public final void setSize(Dimension size) {
-		setBounds(bounds.x, bounds.y, size.width, size.height);
+		setSize(size.width, size.height);
 	}
 
 	public final void setSize(Point2D size) {
-		setBounds(bounds.x, bounds.y, (int) size.getX(), (int) size.getY());
+		setSize((int) size.getX(), (int) size.getY());
 	}
 
 	private native Dimension nativeGetTextSize(String text, int maxWidth);
@@ -466,7 +473,7 @@ public abstract class Item extends CallbackHandler {
 					if (size != null) {
 						size.height += 6;
 						if (this instanceof Button) {
-							size.width += 20;
+							size.width += 32;
 						} else if (this instanceof ToggleItem) {
 							size.width += 32;
 						} else {
@@ -543,7 +550,7 @@ public abstract class Item extends CallbackHandler {
 	public void setInsets(int left, int top, int right, int bottom) {
 		insets = new Insets(top, left, bottom, right);
 		if (nativeBounds != null)
-			setBounds(bounds);
+			updateBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
 	public Insets getInsets() {

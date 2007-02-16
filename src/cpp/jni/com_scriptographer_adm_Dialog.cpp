@@ -134,6 +134,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_nativeCreate(JNIEnv *e
 		char *str = gEngine->convertString(env, name);
 		DEFINE_CALLBACK_PROC(Dialog_onInit);
 		ADMDialogRef dialog = sADMDialog->Create(gPlugin->getPluginRef(), str, kEmptyDialogID, (ADMDialogStyle) style, (ADMDialogInitProc) CALLBACK_PROC(Dialog_onInit), env->NewGlobalRef(obj), options);
+		sADMDialog->Size(dialog, 200, 200);
 		delete str;
 		if (dialog == NULL)
 			throw new StringException("Cannot create dialog.");
@@ -811,18 +812,15 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_createPlatformControl(
 		ADMWindowRef window = sADMDialog->GetWindowRef(dialog);
 #ifdef MAC_ENV
 		/*
-		Rect rt = { 100, 100, 500, 500 };
-		CreateNewWindow(kDocumentWindowClass, kWindowStandardHandlerAttribute | kWindowCompositingAttribute, &rt, &window);
-//		CreateRootControl(window, &root);
-		HIViewFindByID ((HIViewRef) window, kHIViewWindowContentID, (HIViewRef *) &root);
-		ShowWindow(window);
-		SelectWindow(window);
-		 */
 		ControlRef ctrl = NULL, root = NULL;
-		GetRootControl(window, &root);
 		Rect rect = { 0, 0, 400, 400 };
 		OSStatus err = CreateUserPaneControl(window, &rect, kControlSupportsEmbedding | kControlSupportsFocus | kControlGetsFocusOnClick, &ctrl);
 		err = AutoEmbedControl(ctrl, window);
+		return (jint) ctrl;
+		*/
+		ControlRef ctrl = NULL, root = NULL;
+		GetRootControl(window, &root);
+		GetIndexedSubControl(root, 1, &ctrl);
 		return (jint) ctrl;
 #endif
 #ifdef WIN_ENV
@@ -830,7 +828,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_createPlatformControl(
 		/*
 		ADMRect rect = {50, 50, 400, 400};
 		ADMItemRef item = sADMItem->Create(dialog, kADMUniqueItemID, kADMItemGroupType, &rect, NULL, NULL, 0);
-		item = sADMItem->Create(dialog, kADMUniqueItemID, kADMItemGroupType, &rect, NULL, NULL, 0);
 		ADMWindowRef itemWnd = sADMItem->GetWindowRef(item);
 		return (jint) itemWnd;
 		/*
@@ -868,16 +865,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_createPlatformControl(
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_dumpControlHierarchy(JNIEnv *env, jobject obj, jobject file) {
 	try {
+#ifdef MAC_ENV
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		ADMWindowRef window = sADMDialog->GetWindowRef(dialog);
-#ifdef MAC_ENV
-		/*
-		ControlRef sub = NULL;
-		GetIndexedSubControl(ctrl, 1, &sub);
-		Rect rect = { 0, 0, 400, 400 };
-		SetControlBounds(sub, &rect);
-		HIViewSetNeedsDisplay (ctrl, true);
-		*/
 		SPPlatformFileSpecification fsSpec;
 		gEngine->convertFile(env, file, &fsSpec);
 		FSSpec fileSpec;

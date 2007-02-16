@@ -50,8 +50,8 @@ import java.util.prefs.BackingStoreException;
  */
 public abstract class Dialog extends CallbackHandler implements Unsealed {
 	
-	public native int createPlatformControl();
-	public native void dumpControlHierarchy(File file);
+//	public native int createPlatformControl();
+//	public native void dumpControlHierarchy(File file);
 
 	// Dialog options (for Create() call)
 	public final static int OPTION_NONE = 0;
@@ -476,7 +476,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 * It calls onResize
 	 */
 	private void onSizeChanged(int width, int height) {
-		if (!ignoreSizeChange)
+		if (!ignoreSizeChange && size != null)
 			updateSize(width - size.width, height - size.height);
 	}
 
@@ -642,7 +642,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 
 	public void setSize(int width, int height) {
 		ignoreSizeChange = true;
-		nativeSetSize( width, height);
+		nativeSetSize(width, height);
 		updateSize(width - size.width, height - size.height);
 		ignoreSizeChange = false;
 		sizeSet = true;
