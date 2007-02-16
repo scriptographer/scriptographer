@@ -526,8 +526,6 @@
 		91D4E9580A252070002888A3 /* stdPrefix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = stdPrefix.h; path = prefix/stdPrefix.h; sourceTree = "<group>"; };
 		91D4EDA40A255937002888A3 /* Scriptographer.rsrc */ = {isa = PBXFileReference; lastKnownFileType = archive.rsrc; name = Scriptographer.rsrc; path = resources/Scriptographer.rsrc; sourceTree = "<group>"; };
 		91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_Key.cpp; path = jni/com_scriptographer_adm_Key.cpp; sourceTree = "<group>"; };
-		91E56B990B3965F3004AED6E /* NSView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = NSView.h; path = ../../src/cpp/mac/NSView.h; sourceTree = SOURCE_ROOT; };
-		91E56B9A0B3965F3004AED6E /* NSView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = NSView.m; path = ../../src/cpp/mac/NSView.m; sourceTree = SOURCE_ROOT; };
 		91E56C2A0B396EE0004AED6E /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		91E9C52A0A40D7AA0077A542 /* com_scriptographer_adm_MenuGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_MenuGroup.cpp; path = jni/com_scriptographer_adm_MenuGroup.cpp; sourceTree = "<group>"; };
 		91E9C52B0A40D7AA0077A542 /* com_scriptographer_adm_MenuItem.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_MenuItem.cpp; path = jni/com_scriptographer_adm_MenuItem.cpp; sourceTree = "<group>"; };
@@ -771,8 +769,6 @@
 		91EF0A450A20A2CD00F0EF9A /* Plugin */ = {
 			isa = PBXGroup;
 			children = (
-				91E56B990B3965F3004AED6E /* NSView.h */,
-				91E56B9A0B3965F3004AED6E /* NSView.m */,
 				91EF0AC60A20A3C200F0EF9A /* CS */,
 				91EF0AC80A20A3D200F0EF9A /* CS2 */,
 				91456A8D0AF7E85D000FD468 /* CS3 */,
