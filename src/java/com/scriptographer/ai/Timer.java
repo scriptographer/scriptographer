@@ -36,14 +36,12 @@ import java.util.Iterator;
 
 import org.mozilla.javascript.Function;
 
-import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.js.Unsealed;
 import com.scriptographer.util.IntMap;
 
 /**
  * @author lehni
  */
-public class Timer extends AIObject implements Unsealed {
+public class Timer extends AIObject {
 	public static final int TICKS_PER_SECONDS = 60;
 	
 	private boolean active;
@@ -174,9 +172,11 @@ public class Timer extends AIObject implements Unsealed {
 	}
 
 	protected void onExecute() throws Exception {
+		/* TODO: Wrapper:
 		if (wrapper != null && onExecute != null) {
 			FunctionHelper.callFunction(wrapper, onExecute);
 		}
+		*/
 	}
 
 	/**

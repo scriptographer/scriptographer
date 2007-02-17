@@ -31,8 +31,6 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.js.FunctionHelper;
-
 /**
  * @author lehni
  */
@@ -41,7 +39,7 @@ public class ScrollBar extends ValueItem {
 	public ScrollBar(Dialog dialog) {
 		super(dialog, TYPE_SCROLLBAR, OPTION_NONE);
 	}
-
+/* TODO: Wrapper
 	protected void onChange() throws Exception {
 		FunctionHelper.callFunction(wrapper, "onChange");
 	}
@@ -58,4 +56,5 @@ public class ScrollBar extends ValueItem {
 			}
 		}
 	}
+*/
 }

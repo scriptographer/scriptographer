@@ -34,12 +34,10 @@ package com.scriptographer.ai;
 import java.awt.geom.Point2D;
 import java.awt.geom.AffineTransform;
 
-import com.scriptographer.js.WrappableObject;
-
 /**
  * @author lehni
  */
-public class Curve extends WrappableObject {
+public class Curve {
 	protected SegmentList segments = null;
 	protected int index1;
 	protected int index2;

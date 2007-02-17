@@ -31,8 +31,7 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.js.Unsealed;
-import com.scriptographer.js.FunctionHelper;
+import com.scriptographer.script.rhino.FunctionHelper;
 import com.scriptographer.util.IntMap;
 
 import java.util.Iterator;
@@ -46,7 +45,7 @@ import java.util.Iterator;
 /**
  * @author lehni
  */
-public class MenuItem extends ADMObject implements Unsealed {
+public class MenuItem extends ADMObject{
 	public final static int
 		OPTION_NONE 			= 0,
 		OPTION_WANTS_UPDATE 	= 1 << 0,
@@ -254,14 +253,18 @@ public class MenuItem extends ADMObject implements Unsealed {
 	// Callback functions:
 
 	protected void onClick() throws Exception {
+		/* TODO: Wrapper: 
 		if (wrapper != null)
 			FunctionHelper.callFunction(wrapper, "onClick");
+		*/
 	}
 
 	protected void onUpdate(int inArtwork, int isSelected, int isTrue)
 			throws Exception {
+		/* TODO: Wrapper: 
 		if (wrapper != null)
 			FunctionHelper.callFunction(wrapper, "onUpdate");
+		*/
 	}
 
 	/**

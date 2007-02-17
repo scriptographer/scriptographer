@@ -33,12 +33,10 @@ package com.scriptographer.adm;
 
 import java.io.IOException;
 
-import com.scriptographer.js.Unsealed;
-
 /**
  * @author lehni
  */
-public class ImageStatic extends Item implements Unsealed {
+public class ImageStatic extends Item {
 
 	/**
 	 * Creates a ImageStatic Item.

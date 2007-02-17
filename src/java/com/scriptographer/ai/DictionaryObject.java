@@ -33,10 +33,6 @@ package com.scriptographer.ai;
 
 import java.util.Map;
 
-import org.mozilla.javascript.NativeObject;
-
-import com.scriptographer.js.FunctionHelper;
-
 /**
  * @author lehni
  */
@@ -61,10 +57,6 @@ public abstract class DictionaryObject extends AIObject {
 		Dictionary dictionary = getDictionary();
 		dictionary.clear();
 		dictionary.putAll(map);
-	}
-	
-	public void setDictionary(NativeObject obj) {
-		setDictionary(FunctionHelper.convertToMap(obj));	
 	}
 	
 	protected abstract int getVersion();

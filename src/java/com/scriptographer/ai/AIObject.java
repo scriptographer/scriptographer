@@ -31,12 +31,10 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.js.WrappableObject;
-
 /**
  * @author lehni
  */
-abstract class AIObject extends WrappableObject {
+abstract class AIObject {
 	// used for storing the native handle for this object
 	protected int handle;
 	

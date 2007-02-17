@@ -33,16 +33,13 @@ package com.scriptographer.ai;
 
 import java.util.HashMap;
 
-import org.mozilla.javascript.Scriptable;
-
 import com.scriptographer.CommitManager;
 import com.scriptographer.Commitable;
-import com.scriptographer.js.Wrappable;
 
 /**
  * @author lehni
  */
-public class Dictionary extends HashMap implements Commitable, Wrappable {
+public class Dictionary extends HashMap implements Commitable {
 
 	protected DictionaryObject object;
 	protected boolean dirty = false;
@@ -99,15 +96,5 @@ public class Dictionary extends HashMap implements Commitable, Wrappable {
 		if (obj != null)
 			markDirty();
 		return obj;
-	}
-
-	protected Scriptable wrapper;
-	
-	public void setWrapper(Scriptable wrapper) {
-		this.wrapper = wrapper;
-	}
-	
-	public Scriptable getWrapper() {
-		return wrapper;
 	}
 }

@@ -31,10 +31,6 @@
 
 package com.scriptographer.adm;
 
-import org.mozilla.javascript.Function;
-
-import com.scriptographer.js.FunctionHelper;
-
 /**
  * The NotificationListener just recieves notifictaions from native code.
  * It can be a Dialog, Item or ListEntry
@@ -56,6 +52,7 @@ abstract class NotificationHandler extends ADMObject {
 		onNotify(Notifier.lookup(notifier));
 	}
 	
+	/* TODO: Wrapper
 	protected Object callFunction(String name) {
 		if (wrapper != null)
 			return FunctionHelper.callFunction(wrapper, name);
@@ -75,4 +72,5 @@ abstract class NotificationHandler extends ADMObject {
 		}
 		return null;
 	}
+	*/
 }

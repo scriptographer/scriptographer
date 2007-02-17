@@ -36,11 +36,7 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
-import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.ScriptRuntime;
-
 import com.scriptographer.CommitManager;
-import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 
@@ -140,23 +136,13 @@ public class Path extends Art {
 	
 	public native void setTabletData(TabletValue[] data);
 	
-	public void setTabletData(NativeArray data) {
-		Object[] array = FunctionHelper.convertToArray(data);
+	public void setTabletData(float[][] data) {
+		// convert to a TabletValue[] data array:
 		ArrayList values = new ArrayList();
-		for (int i = 0; i < array.length; i++) {
-			Object obj = array[i];
-			TabletValue value = null;
-			if (obj instanceof Object[]) {
-				Object[] objArray = (Object[]) obj;
-				value = new TabletValue(
-					(float) ScriptRuntime.toNumber(objArray[0]),
-					(float) ScriptRuntime.toNumber(objArray[1])
-				);
-			} else if (obj instanceof TabletValue) {
-				value = (TabletValue) obj;
-			}
-			if (value != null)
-				values.add(value);
+		for (int i = 0; i < data.length; i++) {
+			float[] pair = data[i];
+			if (pair != null && pair.length >= 2)
+				values.add(new TabletValue(pair[0], pair[1]));
 		}
 		TabletValue[] tabletData = new TabletValue[values.size()];
 		values.toArray(tabletData);

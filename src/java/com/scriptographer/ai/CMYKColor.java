@@ -33,7 +33,6 @@ package com.scriptographer.ai;
 
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
-import java.io.IOException;
 
 /**
  * @author lehni

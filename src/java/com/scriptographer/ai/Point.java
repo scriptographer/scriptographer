@@ -35,10 +35,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.AffineTransform;
 
-import org.mozilla.javascript.*;
-
-import com.scriptographer.js.Wrappable;
-
 /*
  * Extend java.awt.geom.Point2D and adds other usefull functions
  */
@@ -49,7 +45,7 @@ import com.scriptographer.js.Wrappable;
  * 
  * @author lehni
  */
-public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
+public class Point extends java.awt.geom.Point2D.Float {
 	public Point() {
 	}
 
@@ -373,17 +369,5 @@ public class Point extends java.awt.geom.Point2D.Float implements Wrappable {
 
 	public Point transform(AffineTransform at) {
 		return (Point) at.transform(this, new Point());
-	}
-
-	// wrappable interface
-
-	protected Scriptable wrapper;
-
-	public void setWrapper(Scriptable wrapper) {
-		this.wrapper = wrapper;
-	}
-	
-	public Scriptable getWrapper() {
-		return wrapper;
 	}
 }

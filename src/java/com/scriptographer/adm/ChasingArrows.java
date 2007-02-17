@@ -31,12 +31,10 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.js.Unsealed;
-
 /**
  * @author lehni
  */
-public class ChasingArrows extends Item implements Unsealed {
+public class ChasingArrows extends Item {
 
 	public ChasingArrows(Dialog dialog) {
 		super(dialog, TYPE_CHASING_ARROWS, OPTION_NONE);

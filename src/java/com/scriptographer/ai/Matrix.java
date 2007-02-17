@@ -35,8 +35,6 @@ import java.awt.geom.*;
 
 import org.mozilla.javascript.Scriptable;
 
-import com.scriptographer.js.Wrappable;
-
 /**
  * This class represents an affine transformation between two coordinate
  * spaces in 2 dimensions. Such a transform preserves the "straightness"
@@ -56,7 +54,7 @@ import com.scriptographer.js.Wrappable;
  * 
  * @author lehni
  */
-public class Matrix extends AffineTransform implements Wrappable {
+public class Matrix extends AffineTransform {
 
 	public Matrix() {
 	}
@@ -294,17 +292,5 @@ public class Matrix extends AffineTransform implements Wrappable {
 
 	public void scale(double scale) {
 		super.scale(scale, scale);
-	}
-
-	// wrappable interface
-	
- 	protected Scriptable wrapper;
-	
-	public void setWrapper(Scriptable wrapper) {
-		this.wrapper = wrapper;
-	}
-	
-	public Scriptable getWrapper() {
-		return wrapper;
 	}
 }

@@ -31,12 +31,10 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.js.WrappableObject;
-
 /**
  * @author lehni
  */
-public class TabletValue extends WrappableObject {
+public class TabletValue {
 	public float offset;
 	public float value;
 

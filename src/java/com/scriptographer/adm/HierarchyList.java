@@ -91,6 +91,7 @@ public class HierarchyList extends List {
 	private native int nativeCreateChildList(int entryHandle);
 	private native HierarchyListEntry nativeRemoveList(int listHandle);
 
+	/* TODO: Wrapper: TRICKY! delegation! maybe setEventListener???
 	public void setWrapper(Scriptable wrapper) {
 		super.setWrapper(wrapper);
 		if (parentEntry != null) {
@@ -102,6 +103,7 @@ public class HierarchyList extends List {
 			}
 		}
 	}
+	*/
 
 	/*
 	 * item draw proc

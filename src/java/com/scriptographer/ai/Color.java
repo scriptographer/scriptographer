@@ -34,12 +34,10 @@ package com.scriptographer.ai;
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
 
-import com.scriptographer.js.WrappableObject;
-
 /**
  * @author lehni
  */
-public abstract class Color extends WrappableObject {
+public abstract class Color {
 
 	// AIRasterizeType, AIColorConversionSpaceValue
 	// Used in Color.convert() and Raster

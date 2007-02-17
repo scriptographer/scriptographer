@@ -37,12 +37,10 @@ import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 
-import com.scriptographer.js.WrapperCreator;
-
 /**
  * @author lehni
  */
-class SegmentPoint extends Point implements WrapperCreator {
+public class SegmentPoint extends Point {
 	protected Segment segment;
 	protected int index;
 
@@ -119,34 +117,5 @@ class SegmentPoint extends Point implements WrapperCreator {
 	
 	public void setSelected(boolean selected) {
 		segment.setSelected(this, selected);
-	}
-	
-	// wrappable interface
-
-	/**
-	 * Wrapper is neeeded so the public fields Point2D.Float.x and
-	 * Point2D.Float.y are overriden with the setX and setY setters, in order to
-	 * reflect the changes in the underlying AI points
-	 */
-	class Wrapper extends NativeJavaObject {
-		Wrapper(Scriptable scope, SegmentPoint point, Class staticType) {
-			super(scope, point, staticType);
-		}
-
-		public void put(String name, Scriptable start, Object value) {
-			if (javaObject != null) {
-				if (name.equals("x"))
-					SegmentPoint.this.setX((float) ScriptRuntime.toNumber(value));
-				else if (name.equals("y"))
-					SegmentPoint.this.setY((float) ScriptRuntime.toNumber(value));
-				else
-					super.put(name, start, value);
-			}
-		}
-	}
-
-	public Scriptable createWrapper(Scriptable scope, Class staticType) {
-		wrapper = new Wrapper(scope, this, staticType);
-		return wrapper;
 	}
 }

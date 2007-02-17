@@ -31,18 +31,13 @@
 
 package com.scriptographer.ai;
 
-import org.mozilla.javascript.Scriptable;
-
 import com.scriptographer.CommitManager;
 import com.scriptographer.Commitable;
-import com.scriptographer.js.NullToUndefinedWrapper;
-import com.scriptographer.js.WrapperCreator;
 
 /**
  * @author lehni
  */
-public class ParagraphStyle extends AIObject implements Commitable,
-		WrapperCreator {
+public class ParagraphStyle extends AIObject implements Commitable {
 
 	private TextRange range;
 	private Object commitKey;
@@ -222,11 +217,4 @@ public class ParagraphStyle extends AIObject implements Commitable,
 	*/
 
 	protected native void finalize();
-
-	// wrappable interface
-
-	public Scriptable createWrapper(Scriptable scope, Class staticType) {
-		wrapper = new NullToUndefinedWrapper(scope, this, staticType);
-		return wrapper;
-	}
 }

@@ -31,12 +31,10 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.js.WrappableObject;
-
 /**
  * @author lehni
  */
-public class Event extends WrappableObject {
+public class Event {
 	private Point point;
 	private double pressure;
 	

@@ -31,12 +31,10 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.js.Unsealed;
-
 /**
  * @author lehni
  */
-public abstract class ValueItem extends Item implements Unsealed {
+public abstract class ValueItem extends Item {
 
 	protected ValueItem(Dialog dialog, long handle) {
 		super(dialog, handle);
@@ -51,7 +49,9 @@ public abstract class ValueItem extends Item implements Unsealed {
 	 */
 	
 	protected void onChange() throws Exception {
+		/* TODO: Wrapper: 
 		callFunction("onChange");
+		*/
 	}
 	
 	/**
@@ -59,11 +59,15 @@ public abstract class ValueItem extends Item implements Unsealed {
 	 * @throws Exception
 	 */
 	protected void onPreChange() throws Exception {
+		/* TODO: Wrapper: 
 		callFunction("onPreChange");
+		*/
 	}
 	
 	protected void onNumberOutOfBounds() throws Exception {
+		/* TODO: Wrapper: 
 		callFunction("onNumberOutOfBounds");
+		*/
 	}
 
 	protected void onNotify(int notifier) throws Exception {

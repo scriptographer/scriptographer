@@ -31,16 +31,10 @@
 
 package com.scriptographer.ai;
 
-import org.mozilla.javascript.Scriptable;
-
-import com.scriptographer.js.NullToUndefinedWrapper;
-import com.scriptographer.js.WrappableObject;
-import com.scriptographer.js.WrapperCreator;
-
 /**
  * @author lehni
  */
-public class FillStyle extends WrappableObject implements WrapperCreator {
+public class FillStyle {
 	protected Color color; 				/* Fill color */
 	protected Boolean overprint;			/* Overprint */
 
@@ -132,15 +126,5 @@ public class FillStyle extends WrappableObject implements WrapperCreator {
 	 */
 	public void setOverprint(boolean overprint) {
 		setOverprint(new Boolean(overprint));
-	}
-	
-	// wrappable interface
-
-
-	// wrappable interface
-
-	public Scriptable createWrapper(Scriptable scope, Class staticType) {
-		wrapper = new NullToUndefinedWrapper(scope, this, staticType);
-		return wrapper;
 	}
 }

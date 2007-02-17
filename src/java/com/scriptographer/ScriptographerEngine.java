@@ -33,18 +33,27 @@ package com.scriptographer;
 
 import com.scriptographer.adm.*;
 import com.scriptographer.ai.*;
-import com.scriptographer.debug.ScriptographerDebugger;
 import com.scriptographer.gui.*;
-import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.js.ScriptographerContextFactory;
-import com.scriptographer.js.ScriptographerContextFactory.ScriptCanceledException;
+import com.scriptographer.script.ScriptCanceledException;
+import com.scriptographer.script.rhino.ContextFactory;
+import com.scriptographer.script.rhino.Debugger;
+import com.scriptographer.script.rhino.FunctionHelper;
+import com.scriptographer.script.rhino.GlobalObject;
 import com.scriptographer.util.StringUtils;
-
-import org.mozilla.javascript.*;
 
 import java.io.*;
 import java.util.HashMap;
 import java.util.prefs.Preferences;
+
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.Script;
+import org.mozilla.javascript.ScriptRuntime;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.WrappedException;
+import org.mozilla.javascript.Wrapper;
 
 /**
  * @author lehni
@@ -62,7 +71,7 @@ public class ScriptographerEngine {
 	private static File scriptDir = null;
 	private static File pluginDir = null;
 	private static PrintStream logger = null;
-	private static ScriptographerDebugger debugger = null;
+	private static Debugger debugger = null;
 
 	static {
 		String os = System.getProperty("os.name").toLowerCase();
@@ -86,7 +95,7 @@ public class ScriptographerEngine {
 		pluginDir = new File(javaPath).getParentFile();
 
 		// initialize the JS stuff
-		ContextFactory factory = new ScriptographerContextFactory();
+		ContextFactory factory = new ContextFactory();
 		ContextFactory.initGlobal(factory);
 
 		// The debugger needs to be created before the context, otherwise
@@ -104,8 +113,10 @@ public class ScriptographerEngine {
 		// Loader is initiated on startup
 		// in the second thread. The ScriptographerEngine get loaded through the
 		// Loader, so getting the ClassLoader from there is save:
+		/* TODO: still needed??
 		Thread.currentThread().setContextClassLoader(
 			ScriptographerEngine.class.getClassLoader());
+		*/
 		// get the baseDir setting, if it's not set, ask the user
 		String dir = ScriptographerEngine.getPreferences(false).get(
 			"scriptDir", null);
@@ -174,6 +185,7 @@ public class ScriptographerEngine {
 	}
 	
 	public static Preferences getPreferences(boolean checkScope) {
+		// TODO: move code from GlobalScope to ScriptographerEngine
 		if (checkScope) {
 			Context cx = Context.getCurrentContext();
 			if (cx != null && ScriptRuntime.hasTopCall(cx)) {
@@ -270,6 +282,7 @@ public class ScriptographerEngine {
 	}
 	
 	public static String formatError(Throwable t) {
+		// TODO: move to ScriptEngine!
 		RhinoException re = t instanceof RhinoException ? (RhinoException) t
 			: new WrappedException(t);
 
@@ -353,7 +366,7 @@ public class ScriptographerEngine {
 			if (onStop instanceof Function) {
 				// add this scope to the scopes that want onStop to be called
 				// when the stop button is hit by the user
-
+				// TODO: finish this
 			}
 			ret = scope;
 			closeProgress();

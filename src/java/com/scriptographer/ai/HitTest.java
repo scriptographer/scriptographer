@@ -31,8 +31,6 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.js.WrappableObject;
-
 /**
  * HitTest objects are returned by {@link Document#hitTest} and
  * {@link Path#hitTest}. They represent the result of a hit test, which is
@@ -40,7 +38,7 @@ import com.scriptographer.js.WrappableObject;
  * 
  * @author lehni
  */
-public class HitTest extends WrappableObject {
+public class HitTest {
 	// AIHitRequest
 	
 	/**

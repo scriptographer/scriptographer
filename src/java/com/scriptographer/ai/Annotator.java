@@ -38,7 +38,7 @@ import java.util.Iterator;
 import org.mozilla.javascript.Function;
 
 import com.scriptographer.adm.Drawer;
-import com.scriptographer.js.FunctionHelper;
+import com.scriptographer.script.rhino.FunctionHelper;
 import com.scriptographer.util.IntMap;
 import com.scriptographer.util.SoftIntMap;
 
@@ -143,9 +143,9 @@ public class Annotator extends AIObject {
 
 	private static native ArrayList nativeGetAnnotators();
 
+	/* TODO: Wrapper: 
 	private Function onDraw = null;
 	private Function onInvalidate = null;
-	private Object[] twoArgs = new Object[2];
 
 	public void setOnDraw(Function onDraw) {
 		this.onDraw = onDraw;
@@ -154,15 +154,17 @@ public class Annotator extends AIObject {
 	public Function getOnDraw() {
 		return onDraw;
 	}
+	*/
 
 	protected void onDraw(Drawer drawer, DocumentView view) throws Exception {
-		if (wrapper != null && onDraw != null) {
-			twoArgs[0] = drawer;
-			twoArgs[1] = view;
-			FunctionHelper.callFunction(wrapper, onDraw, twoArgs);
-		}
+		/* TODO: Wrapper: 
+		if (wrapper != null && onDraw != null)
+			FunctionHelper.callFunction(wrapper, onDraw,
+					new Object[] { drawer, view });
+		*/
 	}
 
+	/* TODO: Wrapper: 
 	public void setOnInvalidate(Function onInvalidate) {
 		this.onInvalidate = onInvalidate;
 	}
@@ -170,11 +172,14 @@ public class Annotator extends AIObject {
 	public Function getOnInvalidate() {
 		return onInvalidate;
 	}
+	*/
 
 	protected void onInvalidate() throws Exception {
+		/* TODO: Wrapper: 
 		if (wrapper != null && onInvalidate != null) {
 			FunctionHelper.callFunction(wrapper, onInvalidate);
 		}
+		*/
 	}
 
 	/**

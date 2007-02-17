@@ -34,7 +34,7 @@ package com.scriptographer.adm;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.ScriptRuntime;
 
-import com.scriptographer.js.FunctionHelper;
+import com.scriptographer.script.rhino.FunctionHelper;
 
 /**
  * Subclasses the NotificationHandler and adds functionality for
@@ -94,12 +94,14 @@ abstract class CallbackHandler extends NotificationHandler {
 	}
 
 	protected boolean onTrack(Tracker tracker) throws Exception {
+		/* TODO: Wrapper
 		if (wrapper != null && onTrack != null) {
 			Object result = FunctionHelper.callFunction(wrapper,
 					onTrack, new Object[] { tracker });
 			if (result != null)
 				return ScriptRuntime.toBoolean(result);
 		}
+		*/
 		return true;
 	}
 
@@ -113,8 +115,10 @@ abstract class CallbackHandler extends NotificationHandler {
 	}
 
 	protected void onDraw(Drawer drawer) throws Exception {
+		/* TODO: Wrapper
 		if (wrapper != null && onDraw != null)
 			FunctionHelper.callFunction(wrapper, onDraw, new Object[] { drawer });
+		 */
 	}
 	
 	protected Function onResize = null;
@@ -128,8 +132,10 @@ abstract class CallbackHandler extends NotificationHandler {
 	}
 
 	protected void onResize(int dx, int dy) throws Exception {
+		/* TODO: Wrapper
 		if (wrapper != null && onResize != null)
 			FunctionHelper.callFunction(wrapper, onResize,
 					new Object[] { new Integer(dx), new Integer(dy) });
+		 */
 	}
 }

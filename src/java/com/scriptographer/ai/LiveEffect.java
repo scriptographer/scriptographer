@@ -31,8 +31,6 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.js.Unsealed;
 import com.scriptographer.util.IntMap;
 import com.scriptographer.adm.MenuItem;
 
@@ -100,7 +98,7 @@ picture of the live effect architecture.
 Hope that helps,
 -Frank
 */
-public class LiveEffect extends AIObject implements Unsealed {
+public class LiveEffect extends AIObject {
 	// AIStyleFilterPreferredInputArtType
 	public final static int
 		INPUT_DYNAMIC	 		= 0,
@@ -325,9 +323,11 @@ public class LiveEffect extends AIObject implements Unsealed {
 	// Callback functions:
 
 	protected void onEditParameters(Map parameters) throws Exception {
+		/* TODO: Wrapper: 
 		if (wrapper != null)
 			FunctionHelper.callFunction(wrapper, "onEditParameters",
 					new Object[] { parameters });
+		*/
 	}
 
 	private Function onCalculate = null;
@@ -341,6 +341,7 @@ public class LiveEffect extends AIObject implements Unsealed {
 	}
 
 	protected Art onCalculate(Map parameters, Art art) throws Exception {
+		/* TODO: Wrapper: 
 		if (wrapper != null && onCalculate != null) {
 			Object ret = FunctionHelper.callFunction(wrapper, onCalculate,
 					new Object[] { parameters, art });
@@ -360,14 +361,17 @@ public class LiveEffect extends AIObject implements Unsealed {
 
 			return ret == art ? art : null;
 		}
+		*/
 		return null;
 	}
 
 	protected int onGetInputType(Map parameters, Art art) throws Exception {
+		/* TODO: Wrapper: 
 		if (wrapper != null) {
 			return ScriptRuntime.toInt32(FunctionHelper.callFunction(wrapper,
 					"onGetInputType", new Object[] { parameters, art }));
 		}
+		*/
 		return 0;
 	}
 

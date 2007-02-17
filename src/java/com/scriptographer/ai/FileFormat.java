@@ -31,13 +31,11 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.js.WrappableObject;
-
 // TODO: unfinished!
 /**
  * @author lehni
  */
-public class FileFormat extends WrappableObject {
+public class FileFormat {
 	private String title;
 	private String name;
 	private String extension;

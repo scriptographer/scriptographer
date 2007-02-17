@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 import org.mozilla.javascript.*;
 
 import com.scriptographer.*;
-import com.scriptographer.js.FunctionHelper;
+import com.scriptographer.script.rhino.FunctionHelper;
 import com.scriptographer.util.IntMap;
 
 import java.io.File;

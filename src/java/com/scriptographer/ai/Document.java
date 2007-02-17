@@ -37,9 +37,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.Map;
 
-import org.mozilla.javascript.NativeObject;
-
-import com.scriptographer.js.FunctionHelper;
 import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.ReadOnlyList;
 import com.scriptographer.util.SoftIntMap;
@@ -347,10 +344,6 @@ public class Document extends DictionaryObject {
 	public native void deselectAll();
 	
 	public native ArtSet getMatchingItems(Class type, Map attributes);
-
-	public ArtSet getMatchingItems(Class type, NativeObject attributes) {
-		return getMatchingItems(type, FunctionHelper.convertToMap(attributes));
-	}
 
 	public ArtSet getPathItems() {
 		return getMatchingItems(Path.class, (Map) null);

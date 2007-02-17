@@ -31,27 +31,24 @@
 
 package com.scriptographer.adm;
 
-import org.mozilla.javascript.NativeArray;
-
 import com.scriptographer.ScriptographerEngine;
-import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.js.Unsealed;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.prefs.Preferences;
 import java.util.prefs.BackingStoreException;
 
 /**
  * @author lehni
  */
-public abstract class Dialog extends CallbackHandler implements Unsealed {
+public abstract class Dialog extends CallbackHandler {
 	
-//	public native int createPlatformControl();
-//	public native void dumpControlHierarchy(File file);
+	public native int createPlatformControl();
+	public native void dumpControlHierarchy(File file);
 
 	// Dialog options (for Create() call)
 	public final static int OPTION_NONE = 0;
@@ -365,55 +362,55 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 */
 
 	protected void onDestroy() throws Exception {
-		callFunction("onDestroy");
+//		 TODO: Wrapper: callFunction("onDestroy");
 	}
 
 	protected void onInitialize() throws Exception {
-		callFunction("onInitialize");
+//		 TODO: Wrapper: callFunction("onInitialize");
 	}
 
 	protected void onActivate() throws Exception {
-		callFunction("onActivate");
+//		 TODO: Wrapper: callFunction("onActivate");
 	}
 
 	protected void onDeactivate() throws Exception {
-		callFunction("onDeactivate");
+//		 TODO: Wrapper: callFunction("onDeactivate");
 	}
 
 	protected void onShow() throws Exception {
-		callFunction("onShow");
+//		 TODO: Wrapper: callFunction("onShow");
 	}
 
 	protected void onHide() throws Exception {
-		callFunction("onHide");
+//		 TODO: Wrapper: callFunction("onHide");
 	}
 
 	protected void onMove() throws Exception {
-		callFunction("onMove");
+//		 TODO: Wrapper: callFunction("onMove");
 	}
 
 	protected void onClose() throws Exception {
-		callFunction("onClose");
+//		 TODO: Wrapper: callFunction("onClose");
 	}
 
 	protected void onZoom() throws Exception {
-		callFunction("onZoom");
+//		 TODO: Wrapper: callFunction("onZoom");
 	}
 
 	protected void onCycle() throws Exception {
-		callFunction("onCycle");
+//		 TODO: Wrapper: callFunction("onCycle");
 	}
 
 	protected void onCollapse() throws Exception {
-		callFunction("onCollapse");
+//		 TODO: Wrapper: callFunction("onCollapse");
 	}
 
 	protected void onExpand() throws Exception {
-		callFunction("onExpand");
+//		 TODO: Wrapper: callFunction("onExpand");
 	}
 
 	protected void onContextMenuChange() throws Exception {
-		callFunction("onContextMenuChange");
+//		 TODO: Wrapper: callFunction("onContextMenuChange");
 	}
 
 	protected void onNotify(int notifier) throws Exception {
@@ -1016,7 +1013,7 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 		return PromptDialog.prompt(title, items);
 	}
 
-	public static Object[] prompt(String title, Object[] items) {
+	public static Object[] prompt(String title, Map[] items) {
 		return PromptDialog.prompt(title, items);
 	}
 
@@ -1024,9 +1021,11 @@ public abstract class Dialog extends CallbackHandler implements Unsealed {
 	 * This function is only here for the JS environment. From java, use
 	 * PromptDialog.prompt directly!
 	 */
+	/*
 	public static Object[] prompt(String title, NativeArray items) {
 		return PromptDialog.prompt(title, FunctionHelper.convertToArray(items));
 	}
+	*/
 	/**
 	 * AWTContainer wrapps an ADM Dialog and prentends it is an AWT Container,
 	 * in order to take advantage of all the nice LayoutManagers in AWT.

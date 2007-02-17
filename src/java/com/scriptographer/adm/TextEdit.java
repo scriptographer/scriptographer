@@ -104,59 +104,59 @@ public class TextEdit extends TextValueItem {
 	 */
 	
 	protected void onPreCut() throws Exception {
-		callFunction("onPreCut");
+		// TODO: Wrapper: callFunction("onPreCut");
 	}
 	
 	protected void onCut() throws Exception {
-		callFunction("onCut");
+		// TODO: Wrapper: callFunction("onCut");
 	}
 	
 	protected void onPreCopy() throws Exception {
-		callFunction("onPreCopy");
+//		 TODO: Wrapper: callFunction("onPreCopy");
 	}
 	
 	protected void onCopy() throws Exception {
-		callFunction("onCopy");
+//		 TODO: Wrapper: callFunction("onCopy");
 	}
 	
 	protected void onPrePaste() throws Exception {
-		callFunction("onPrePaste");
+//		 TODO: Wrapper: callFunction("onPrePaste");
 	}
 	
 	protected void onPaste() throws Exception {
-		callFunction("onPaste");
+//		 TODO: Wrapper: callFunction("onPaste");
 	}
 	
 	protected void onPreClear() throws Exception {
-		callFunction("onPreClear");
+//		 TODO: Wrapper: callFunction("onPreClear");
 	}
 	
 	protected void onClear() throws Exception {
-		callFunction("onClear");
+//		 TODO: Wrapper: callFunction("onClear");
 	}
 	
 	protected void onPreSelectionChange() throws Exception {
-		callFunction("onPreSelectionChange");
+//		 TODO: Wrapper: callFunction("onPreSelectionChange");
 	}
 	
 	protected void onSelectionChange() throws Exception {
-		callFunction("onSelectionChange");
+//		 TODO: Wrapper: callFunction("onSelectionChange");
 	}
 	
 	protected void onPreRedo() throws Exception {
-		callFunction("onPreRedo");
+//		 TODO: Wrapper: callFunction("onPreRedo");
 	}
 	
 	protected void onRedo() throws Exception {
-		callFunction("onRedo");
+//		 TODO: Wrapper: callFunction("onRedo");
 	}
 	
 	protected void onPreUndo() throws Exception {
-		callFunction("onPreUndo");
+//		 TODO: Wrapper: callFunction("onPreUndo");
 	}
 	
 	protected void onUndo() throws Exception {
-		callFunction("onUndo");
+//		 TODO: Wrapper: callFunction("onUndo");
 	}
 	
 	protected void onNotify(int notifier, ListEntry entry) throws Exception {

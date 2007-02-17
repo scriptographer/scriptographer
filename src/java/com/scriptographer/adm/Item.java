@@ -249,7 +249,7 @@ public abstract class Item extends CallbackHandler {
 	 */
 
 	protected void onDestroy() throws Exception {
-		callFunction("onDestroy");
+		// TODO: Wrapper: callFunction("onDestroy");
 	}
 
 	protected void onNotify(int notifier) throws Exception {

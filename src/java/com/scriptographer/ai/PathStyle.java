@@ -35,8 +35,6 @@ import org.mozilla.javascript.Scriptable;
 
 import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
-import com.scriptographer.js.NullToUndefinedWrapper;
-import com.scriptographer.js.WrapperCreator;
 
 /*
  * PathStyle, FillStyle and StrokeStyle are used for Art, CharacaterAttributes,
@@ -57,7 +55,7 @@ import com.scriptographer.js.WrapperCreator;
 /**
  * @author lehni
  */
-public class PathStyle extends AIObject implements Commitable, WrapperCreator {
+public class PathStyle extends AIObject implements Commitable {
 	protected FillStyle fill;
 
 	protected StrokeStyle stroke;
@@ -310,12 +308,5 @@ public class PathStyle extends AIObject implements Commitable, WrapperCreator {
 
 	public void setResolution(float resolution) {
 		setResolution(new Float(resolution));
-	}
-
-	// wrappable interface
-
-	public Scriptable createWrapper(Scriptable scope, Class staticType) {
-		wrapper = new NullToUndefinedWrapper(scope, this, staticType);
-		return wrapper;
 	}
 }

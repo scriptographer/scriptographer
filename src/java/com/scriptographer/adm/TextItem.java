@@ -31,12 +31,10 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.js.Unsealed;
-
 /**
  * @author lehni
  */
-public abstract class TextItem extends Item implements Unsealed {
+public abstract class TextItem extends Item {
 
 	protected TextItem(Dialog dialog, long handle) {
 		super(dialog, handle);

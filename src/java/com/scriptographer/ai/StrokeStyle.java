@@ -33,14 +33,10 @@ package com.scriptographer.ai;
 
 import org.mozilla.javascript.Scriptable;
 
-import com.scriptographer.js.NullToUndefinedWrapper;
-import com.scriptographer.js.WrappableObject;
-import com.scriptographer.js.WrapperCreator;
-
 /**
  * @author lehni
  */
-public class StrokeStyle extends WrappableObject implements WrapperCreator {
+public class StrokeStyle {
 	protected Color color;				/* Stroke color */
 	protected Boolean overprint;			/* Overprint - not meaningful if ColorTag is pattern */
 	protected Float width;				/* Line width */
@@ -303,12 +299,5 @@ public class StrokeStyle extends WrappableObject implements WrapperCreator {
 
 	public void setMiterLimit(float miterLimit) {
 		setMiterLimit(new Float(miterLimit));
-	}
-
-	// wrappable interface
-
-	public Scriptable createWrapper(Scriptable scope, Class staticType) {
-		wrapper = new NullToUndefinedWrapper(scope, this, staticType);
-		return wrapper;
 	}
 }

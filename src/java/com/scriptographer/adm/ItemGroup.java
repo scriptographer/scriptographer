@@ -31,12 +31,10 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.js.Unsealed;
-
 /**
  * @author lehni
  */
-public class ItemGroup extends Item implements Unsealed {
+public class ItemGroup extends Item {
 
 	public ItemGroup(Dialog dialog) {
 		super(dialog, TYPE_ITEMGROUP, OPTION_NONE);

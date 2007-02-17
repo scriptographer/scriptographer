@@ -33,14 +33,13 @@ package com.scriptographer.ai;
 
 import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
-import com.scriptographer.js.WrappableObject;
 
 import java.awt.geom.Point2D;
 
 /**
  * @author lehni
  */
-public class Segment extends WrappableObject implements Commitable {
+public class Segment implements Commitable {
 	protected SegmentList segments;
 	protected int index;
 	// the internal points

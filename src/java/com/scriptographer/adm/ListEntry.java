@@ -36,13 +36,12 @@ import java.awt.geom.Rectangle2D;
 
 import org.mozilla.javascript.ScriptRuntime;
 
-import com.scriptographer.js.FunctionHelper;
-import com.scriptographer.js.Unsealed;
+import com.scriptographer.script.rhino.FunctionHelper;
 
 /**
  * @author lehni
  */
-public class ListEntry extends NotificationHandler implements Unsealed {
+public class ListEntry extends NotificationHandler {
 	private Image image;
 	private Image selectedImage;
 	private Image disabledImage;
@@ -79,33 +78,41 @@ public class ListEntry extends NotificationHandler implements Unsealed {
 	 */
 
 	protected void onDraw(Drawer drawer) throws Exception {
-		list.callFunction(list.onDrawEntry, new Object[] { drawer, this });
+		// TODO: Wrapper: list.callFunction(list.onDrawEntry, new Object[] { drawer, this });
 	}
 
 	protected boolean onTrack(Tracker tracker) throws Exception {
+		/* TODO: Wrapper: 
 		Object result = list.callFunction(list.onTrackEntry,
 				new Object[] { tracker, this });
 		if (result != null)
 			return ScriptRuntime.toBoolean(result);
+		*/
 		return true;
 	}
 
 	protected void onDestroy() throws Exception {
+		/* TODO: Wrapper: 
 		if (wrapper != null)
 			FunctionHelper.callFunction(wrapper, "onDestroy");
 		list.callFunction("onDestroyEntry", new Object[] { this });
+		*/
 	}
 
 	protected void onClick() throws Exception {
+		/* TODO: Wrapper: 
 		if (wrapper != null)
 			FunctionHelper.callFunction(wrapper, "onClick");
 		list.callFunction("onClickEntry", new Object[] { this });
+		*/
 	}
 	
 	protected void onChangeText() throws Exception {
+		/* TODO: Wrapper: 
 		if (wrapper != null)
 			FunctionHelper.callFunction(wrapper, "onChangeText");
 		list.callFunction("onChangeEntryText", new Object[] { this });
+		*/
 	}
 	
 	protected void onNotify(int notifier) throws Exception {

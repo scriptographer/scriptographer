@@ -33,12 +33,10 @@ package com.scriptographer.adm;
 
 import java.awt.*;
 
-import com.scriptographer.js.Unsealed;
-
 /**
  * @author lehni
  */
-public class Spacer extends Item implements Unsealed {
+public class Spacer extends Item {
 
 	private boolean visible;
 

@@ -31,12 +31,10 @@
 
 package com.scriptographer.util;
 
-import com.scriptographer.js.WrappableObject;
-
 /**
  * @author lehni
  */
-public abstract class AbstractExtendedList extends WrappableObject implements ExtendedList {
+public abstract class AbstractExtendedList implements ExtendedList {
 
 	public Object add(Object element) {
 		return add(getLength(), element);

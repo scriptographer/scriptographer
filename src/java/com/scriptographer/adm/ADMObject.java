@@ -31,12 +31,10 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.js.WrappableObject;
-
 /**
  * @author lehni
  */
-abstract class ADMObject extends WrappableObject {
+abstract class ADMObject {
 	// used for storing the native handle for this object
 	protected int handle;
 	

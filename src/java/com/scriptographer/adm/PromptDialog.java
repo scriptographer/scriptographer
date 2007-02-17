@@ -33,7 +33,6 @@ package com.scriptographer.adm;
 
 import info.clearthought.layout.TableLayoutConstants;
 
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.Map;
 
@@ -108,7 +107,7 @@ public class PromptDialog extends ModalDialog {
 		}
 	}
 	
-	public PromptDialog(String title, Object[] items) {
+	public PromptDialog(String title, Map[] items) {
 		this(title, getItems(items));
 	}
 	
@@ -124,72 +123,65 @@ public class PromptDialog extends ModalDialog {
 			return ScriptRuntime.NaN;
 	}
 
-	private static PromptItem[] getItems(Object[] items) {
+	private static PromptItem[] getItems(Map[] items) {
 		PromptItem[] promptItems = new PromptItem[items.length];
 		for (int i = 0; i < items.length; i++) {
-			Object itemObj = items[i];
-			if (itemObj instanceof PromptItem) {
-				promptItems[i] = (PromptItem) itemObj;
-			} else if (itemObj instanceof Map) {
-				Map map = (Map) itemObj;
-				Object typeObj = map.get("type");
-				Object valueObj = map.get("value");
-				double increment = 0;
-				Object[] values = null;
-				int type = -1;
-				if (typeObj != null) {
-					if (typeObj instanceof String) {
-						type = PromptItem.getType((String) typeObj);
-					} else if (typeObj instanceof Number) {
-						type = ((Number) typeObj).intValue();
-					}
-				} else { // determine type from value and step:
-					Object incrementObj = map.get("increment");
-					if (incrementObj != null) {
-						type = PromptItem.TYPE_RANGE;
-						increment = ScriptRuntime.toNumber(incrementObj);
-						if (Double.isNaN(increment))
-							increment = 0;
-					} else {
-						Object valuesObj = map.get("values");
-						if (valuesObj != null && valuesObj instanceof Object[])
-							values = (Object[]) valuesObj;
-						if (values != null)
-							type = PromptItem.TYPE_LIST;
-						else if (valueObj instanceof Number)
-							type = PromptItem.TYPE_NUMBER;
-						else if (valueObj instanceof Boolean)
-							type = PromptItem.TYPE_CHECKBOX;
-						else if (valueObj instanceof String) 
-							type = PromptItem.TYPE_STRING;
-					}
+			Map map = items[i];
+			Object typeObj = map.get("type");
+			Object valueObj = map.get("value");
+			double increment = 0;
+			Object[] values = null;
+			int type = -1;
+			if (typeObj != null) {
+				if (typeObj instanceof String) {
+					type = PromptItem.getType((String) typeObj);
+				} else if (typeObj instanceof Number) {
+					type = ((Number) typeObj).intValue();
 				}
-				
-				if (type != -1) {
-					Object obj = map.get("description");
-					String desc = obj != null ? obj.toString() : null;
-					PromptItem item = new PromptItem(type, desc, valueObj);
-
-					double width = getValue(map, "width");
-					if (!Double.isNaN(width))
-						item.setWidth((int) width);
-	
-					double precision = getValue(map, "precision");
-					if (!Double.isNaN(precision))
-						item.setPrecision((int) precision);
-
-					double min = getValue(map, "min");
-					double max = getValue(map, "max");
-					if (!Double.isNaN(min) || !Double.isNaN(max))
-						item.setRange((float) min, (float) max);
-					
-					if (values != null)
-						item.setValues(values);
-	
-					promptItems[i] = item;
+			} else { // determine type from value and step:
+				Object incrementObj = map.get("increment");
+				if (incrementObj != null) {
+					type = PromptItem.TYPE_RANGE;
+					increment = ScriptRuntime.toNumber(incrementObj);
+					if (Double.isNaN(increment))
+						increment = 0;
 				} else {
-					promptItems[i] = null;
+					Object valuesObj = map.get("values");
+					if (valuesObj != null && valuesObj instanceof Object[])
+						values = (Object[]) valuesObj;
+					if (values != null)
+						type = PromptItem.TYPE_LIST;
+					else if (valueObj instanceof Number)
+						type = PromptItem.TYPE_NUMBER;
+					else if (valueObj instanceof Boolean)
+						type = PromptItem.TYPE_CHECKBOX;
+					else if (valueObj instanceof String) 
+						type = PromptItem.TYPE_STRING;
 				}
+			}
+			
+			if (type != -1) {
+				Object obj = map.get("description");
+				String desc = obj != null ? obj.toString() : null;
+				PromptItem item = new PromptItem(type, desc, valueObj);
+
+				double width = getValue(map, "width");
+				if (!Double.isNaN(width))
+					item.setWidth((int) width);
+
+				double precision = getValue(map, "precision");
+				if (!Double.isNaN(precision))
+					item.setPrecision((int) precision);
+
+				double min = getValue(map, "min");
+				double max = getValue(map, "max");
+				if (!Double.isNaN(min) || !Double.isNaN(max))
+					item.setRange((float) min, (float) max);
+				
+				if (values != null)
+					item.setValues(values);
+
+				promptItems[i] = item;
 			} else {
 				promptItems[i] = null;
 			}
@@ -197,17 +189,7 @@ public class PromptDialog extends ModalDialog {
 		return promptItems;
 	}
 
-	public static Object[] prompt(String title, PromptItem[] items) {
-		PromptDialog dialog = new PromptDialog(title, items);
-		// destroy the dialog again after prompting values. If this is not done
-		// a problem seems to occur where the modal dialog interfers with the
-		// progress dialog, and locks the mouse interface, for example when
-		// rendering a raster.
-		dialog.destroy();
-		return dialog.values;
-	}
-
-	public static Object[] prompt(String title, Object[] items) {
+	public static Object[] prompt(String title, Map[] items) {
 		PromptDialog dialog = new PromptDialog(title, items);
 		// destroy the dialog again after prompting values. If this is not done
 		// a problem seems to occur where the modal dialog interfers with the

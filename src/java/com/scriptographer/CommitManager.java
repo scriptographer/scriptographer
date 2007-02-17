@@ -34,7 +34,6 @@ package com.scriptographer;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 
-import com.scriptographer.ai.Document;
 import com.scriptographer.ai.TextFrame;
 
 /**

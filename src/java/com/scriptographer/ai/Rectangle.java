@@ -36,8 +36,6 @@ import java.awt.geom.Rectangle2D;
 
 import org.mozilla.javascript.Scriptable;
 
-import com.scriptographer.js.Wrappable;
-
 /**
  * A Rectangle specifies an area that is enclosed by it's top-left point (x, y),
  * its width, and its height. It should not be confused with a rectangular path,
@@ -45,7 +43,7 @@ import com.scriptographer.js.Wrappable;
  * 
  * @author lehni
  */
-public class Rectangle extends Rectangle2D.Float implements Wrappable {
+public class Rectangle extends Rectangle2D.Float {
 
 	public Rectangle() {
 	}
@@ -185,17 +183,5 @@ public class Rectangle extends Rectangle2D.Float implements Wrappable {
 	
 	public Object clone() {
 		return new Rectangle(this);
-	}
-
-	// wrappable interface
-
-	private Scriptable wrapper;
-
-	public void setWrapper(Scriptable wrapper) {
-		this.wrapper = wrapper;
-	}
-
-	public Scriptable getWrapper() {
-		return wrapper;
 	}
 }

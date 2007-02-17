@@ -31,12 +31,10 @@
 
 package com.scriptographer.util;
 
-import com.scriptographer.js.WrappableObject;
-
 /**
  * @author lehni
  */
-public abstract class AbstractReadOnlyList extends WrappableObject implements ReadOnlyList {
+public abstract class AbstractReadOnlyList implements ReadOnlyList {
 
 	public boolean isEmpty() {
 		return getLength() == 0;

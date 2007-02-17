@@ -64,7 +64,9 @@ public class Button extends TextItem {
 	 */
 	
 	protected void onClick() throws Exception {
+		/* TODO: Wrapper: 
 		callFunction("onClick");
+		*/
 	}
 	
 	protected void onNotify(int notifier) throws Exception {
