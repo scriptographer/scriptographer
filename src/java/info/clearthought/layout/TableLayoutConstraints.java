@@ -73,7 +73,7 @@ public int vAlign;
 
 public TableLayoutConstraints ()
 {
-    col1 = row1 = col2 = col2 = 0;
+    col1 = row1 = col2 = row2 = 0;
     hAlign = vAlign = FULL;
 }
 
