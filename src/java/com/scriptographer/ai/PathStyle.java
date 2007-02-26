@@ -31,8 +31,6 @@
 
 package com.scriptographer.ai;
 
-import org.mozilla.javascript.Scriptable;
-
 import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
 

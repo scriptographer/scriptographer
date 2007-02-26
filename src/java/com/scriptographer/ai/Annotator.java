@@ -35,10 +35,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.mozilla.javascript.Function;
-
 import com.scriptographer.adm.Drawer;
-import com.scriptographer.script.rhino.FunctionHelper;
+import com.scriptographer.script.ScriptMethod;
 import com.scriptographer.util.IntMap;
 import com.scriptographer.util.SoftIntMap;
 
@@ -143,43 +141,34 @@ public class Annotator extends AIObject {
 
 	private static native ArrayList nativeGetAnnotators();
 
-	/* TODO: Wrapper: 
-	private Function onDraw = null;
-	private Function onInvalidate = null;
+	private ScriptMethod onDraw = null;
 
-	public void setOnDraw(Function onDraw) {
+	public void setOnDraw(ScriptMethod onDraw) {
 		this.onDraw = onDraw;
 	}
 	
-	public Function getOnDraw() {
+	public ScriptMethod getOnDraw() {
 		return onDraw;
 	}
-	*/
 
 	protected void onDraw(Drawer drawer, DocumentView view) throws Exception {
-		/* TODO: Wrapper: 
-		if (wrapper != null && onDraw != null)
-			FunctionHelper.callFunction(wrapper, onDraw,
-					new Object[] { drawer, view });
-		*/
+		if (onDraw != null)
+			onDraw.execute(this, new Object[] { drawer, view });
 	}
 
-	/* TODO: Wrapper: 
-	public void setOnInvalidate(Function onInvalidate) {
+	private ScriptMethod onInvalidate = null;
+
+	public void setOnInvalidate(ScriptMethod onInvalidate) {
 		this.onInvalidate = onInvalidate;
 	}
 	
-	public Function getOnInvalidate() {
+	public ScriptMethod getOnInvalidate() {
 		return onInvalidate;
 	}
-	*/
 
 	protected void onInvalidate() throws Exception {
-		/* TODO: Wrapper: 
-		if (wrapper != null && onInvalidate != null) {
-			FunctionHelper.callFunction(wrapper, onInvalidate);
-		}
-		*/
+		if (onInvalidate != null)
+			onInvalidate.execute(this);
 	}
 
 	/**

@@ -35,7 +35,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.*;
 
-import org.mozilla.javascript.Scriptable;
+import com.scriptographer.script.ScriptMethod;
 
 /**
  * @author lehni
@@ -60,13 +60,13 @@ public class HierarchyList extends List {
 		listHandle = nativeCreateChildList(entry.handle);
 		// determine the parent hierarchyList:
 		parentEntry = entry;
+		parentEntry.childList = this;
 		HierarchyList parentList = (HierarchyList) entry.getList();
-		// pass through the handlers automatically.
-		// if desired otherwise, they need to be written over aftewards:
+		// Pass through track / draw callback settings
+		// This requires the callback to be set before child lists are created
+		// as otherwise only the parent list would recieve callbacks!
 		this.setTrackEntryCallback(parentList.getTrackEntryCallback());
 		this.setDrawEntryCallback(parentList.getDrawEntryCallback());
-		this.onDrawEntry = parentList.onDrawEntry;
-		this.onTrackEntry = parentList.onTrackEntry;
 	}
 	
 	public boolean remove() {
@@ -91,19 +91,64 @@ public class HierarchyList extends List {
 	private native int nativeCreateChildList(int entryHandle);
 	private native HierarchyListEntry nativeRemoveList(int listHandle);
 
-	/* TODO: Wrapper: TRICKY! delegation! maybe setEventListener???
-	public void setWrapper(Scriptable wrapper) {
-		super.setWrapper(wrapper);
-		if (parentEntry != null) {
-			Scriptable parentWrapper = parentEntry.getList().getWrapper();
-			if (parentWrapper != null) {
-				// simply set parentWrapper as the prototype of this object so
-				// the handler calls will be delegated:
-				wrapper.setPrototype(parentWrapper);
-			}
-		}
+	/*
+	 * Override all getters for ScriptFunctions in HierarchyLists, so they
+	 * walk up the list chain on find a function in the parent if they
+	 * do not define one locally.
+	 */
+	public ScriptMethod getOnChangeEntryText() {
+		ScriptMethod func = super.getOnChangeEntryText();
+		return func == null && parentEntry != null ?
+				parentEntry.getList().getOnChangeEntryText() : func;
 	}
-	*/
+
+	public ScriptMethod getOnClickEntry() {
+		ScriptMethod func = super.getOnClickEntry();
+		return func == null && parentEntry != null ?
+				parentEntry.getList().getOnClickEntry() : func;
+	}
+
+	public ScriptMethod getOnDestroyEntry() {
+		ScriptMethod func = super.getOnDestroyEntry();
+		return func == null && parentEntry != null ?
+				parentEntry.getList().getOnDestroyEntry() : func;
+	}
+
+	public ScriptMethod getOnDrawEntry() {
+		ScriptMethod func = super.getOnDrawEntry();
+		return func == null && parentEntry != null ?
+				parentEntry.getList().getOnDrawEntry() : func;
+	}
+
+	public ScriptMethod getOnTrackEntry() {
+		ScriptMethod func = super.getOnTrackEntry();
+		return func == null && parentEntry != null ?
+				parentEntry.getList().getOnTrackEntry() : func;
+	}
+
+	public ScriptMethod getOnDestroy() {
+		ScriptMethod func = super.getOnDestroy();
+		return func == null && parentEntry != null ?
+				parentEntry.getList().getOnDestroy() : func;
+	}
+
+	public ScriptMethod getOnDraw() {
+		ScriptMethod func = super.getOnDraw();
+		return func == null && parentEntry != null ?
+				parentEntry.getList().getOnDraw() : func;
+	}
+
+	public ScriptMethod getOnResize() {
+		ScriptMethod func = super.getOnResize();
+		return func == null && parentEntry != null ?
+				parentEntry.getList().getOnResize() : func;
+	}
+
+	public ScriptMethod getOnTrack() {
+		ScriptMethod func = super.getOnTrack();
+		return func == null && parentEntry != null ?
+				parentEntry.getList().getOnTrack() : func;
+	}
 
 	/*
 	 * item draw proc

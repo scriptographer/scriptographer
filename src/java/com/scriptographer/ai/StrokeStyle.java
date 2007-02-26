@@ -31,8 +31,6 @@
 
 package com.scriptographer.ai;
 
-import org.mozilla.javascript.Scriptable;
-
 /**
  * @author lehni
  */

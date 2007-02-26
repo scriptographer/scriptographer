@@ -36,6 +36,7 @@ import java.util.Iterator;
 
 import org.mozilla.javascript.Function;
 
+import com.scriptographer.script.ScriptMethod;
 import com.scriptographer.util.IntMap;
 
 /**
@@ -85,6 +86,12 @@ public class Timer extends AIObject {
 		
 		timers.put(handle, this);
 	}
+
+	/* TODO: add this, change "int handle" constructor to "long handle"
+	public Timer(int period) {
+		this(period, true);
+	}
+	*/
 	
 	/**
 	 * Called from the native environment.
@@ -161,22 +168,19 @@ public class Timer extends AIObject {
 
 	private static native ArrayList nativeGetTimers();
 
-	private Function onExecute = null;
+	private ScriptMethod onExecute = null;
 
-	public void setOnExecute(Function onExecute) {
+	public void setOnExecute(ScriptMethod onExecute) {
 		this.onExecute = onExecute;
 	}
 	
-	public Function getOnExecute() {
+	public ScriptMethod getOnExecute() {
 		return onExecute;
 	}
 
 	protected void onExecute() throws Exception {
-		/* TODO: Wrapper:
-		if (wrapper != null && onExecute != null) {
-			FunctionHelper.callFunction(wrapper, onExecute);
-		}
-		*/
+		if (onExecute != null)
+			onExecute.call(this);
 	}
 
 	/**

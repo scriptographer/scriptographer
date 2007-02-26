@@ -190,70 +190,6 @@ public class JSDoclet extends Doclet {
 		}
 	}
 
-	/**
-	 * ParamType fixes a bug in the Type returned by Parameter.type(), where toString does not return []
-	 * for arrays and there does not seem to be another way to ¶find out if it's an array or not...
-	 */
-	static class ParamType implements Type {
-		Type type;
-		String str;
-		
-		ParamType(Parameter param) {
-			this.type = param.type();
-			this.str = param.typeName();
-		}
-
-		public String typeName() {
-			return type.typeName();
-		}
-
-		public String qualifiedTypeName() {
-			return type.qualifiedTypeName();
-		}
-
-		public String dimension() {
-			return type.dimension();
-		}
-
-		public ClassDoc asClassDoc() {
-			return type.asClassDoc();
-		}
-		
-		public String toString() {
-			return str;
-		}
-
-		public AnnotationTypeDoc asAnnotationTypeDoc() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public ParameterizedType asParameterizedType() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public TypeVariable asTypeVariable() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public WildcardType asWildcardType() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		public boolean isPrimitive() {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		public String simpleTypeName() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-	}
-	
 	static class JSTag implements Tag {
 		String text;
 		
@@ -290,7 +226,7 @@ public class JSDoclet extends Doclet {
 		}
 		
 	}
-
+	
 	static class JSSeeTag extends JSTag implements SeeTag {
 		MemberInfo member;
 		

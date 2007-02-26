@@ -33,8 +33,6 @@ package com.scriptographer.ai;
 
 import java.awt.geom.*;
 
-import org.mozilla.javascript.Scriptable;
-
 /**
  * This class represents an affine transformation between two coordinate
  * spaces in 2 dimensions. Such a transform preserves the "straightness"

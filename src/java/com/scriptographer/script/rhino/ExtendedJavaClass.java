@@ -35,8 +35,6 @@ import java.lang.reflect.Modifier;
 
 import org.mozilla.javascript.*;
 
-import com.scriptographer.adm.Item;
-
 /**
  * @author lehni
  */
@@ -83,7 +81,9 @@ public class ExtendedJavaClass extends NativeJavaClass {
 				if (id instanceof String)
 					obj.put((String) id, obj, properties.get((String) id, properties));
 			}
-			FunctionHelper.callFunction(obj, "$constructor");
+			Object ctor = obj.get("$constructor", obj);
+			if (ctor instanceof Function)
+				((Function) ctor).call(cx, scope, obj, new Object[] {});
 		}
 		return obj;
 	}

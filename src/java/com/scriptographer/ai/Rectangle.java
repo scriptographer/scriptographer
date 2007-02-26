@@ -34,8 +34,6 @@ package com.scriptographer.ai;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.mozilla.javascript.Scriptable;
-
 /**
  * A Rectangle specifies an area that is enclosed by it's top-left point (x, y),
  * its width, and its height. It should not be confused with a rectangular path,

@@ -31,6 +31,8 @@
 
 package com.scriptographer.adm;
 
+import com.scriptographer.script.ScriptMethod;
+
 /**
  * @author lehni
  */
@@ -39,22 +41,29 @@ public class ScrollBar extends ValueItem {
 	public ScrollBar(Dialog dialog) {
 		super(dialog, TYPE_SCROLLBAR, OPTION_NONE);
 	}
-/* TODO: Wrapper
+	
+	private ScriptMethod onChange = null;
+
+	public ScriptMethod getOnChange() {
+		return onChange;
+	}
+
+	public void setOnChange(ScriptMethod onChange) {
+		this.onChange = onChange;
+	}
+
 	protected void onChange() throws Exception {
-		FunctionHelper.callFunction(wrapper, "onChange");
+		onChange.execute(this);
 	}
 	
 	protected void onNotify(int notifier, ListEntry entry) throws Exception {
-		if (wrapper != null) {
-			// override the default behavior and give onChange for both
-			// notifiers:
-			switch(notifier) {
-				case Notifier.NOTIFIER_USER_CHANGED:
-				case Notifier.NOTIFIER_INTERMEDIATE_CHANGED:
-					onChange();
-					break;
-			}
+		// override the default behavior and give onChange for both
+		// notifiers:
+		switch(notifier) {
+			case Notifier.NOTIFIER_USER_CHANGED:
+			case Notifier.NOTIFIER_INTERMEDIATE_CHANGED:
+				onChange();
+				break;
 		}
 	}
-*/
 }

@@ -31,6 +31,8 @@
 
 package com.scriptographer.adm;
 
+import com.scriptographer.script.ScriptMethod;
+
 /**
  * @author lehni
  */
@@ -48,26 +50,49 @@ public abstract class ValueItem extends Item {
 	 * Callback functions
 	 */
 	
-	protected void onChange() throws Exception {
-		/* TODO: Wrapper: 
-		callFunction("onChange");
-		*/
+	private ScriptMethod onPreChange = null;
+
+	public ScriptMethod getOnPreChange() {
+		return onPreChange;
+	}
+
+	public void setOnPreChange(ScriptMethod onPreChange) {
+		this.onPreChange = onPreChange;
 	}
 	
-	/**
-	 * TODO: Change that name. It's not suitable!
-	 * @throws Exception
-	 */
 	protected void onPreChange() throws Exception {
-		/* TODO: Wrapper: 
-		callFunction("onPreChange");
-		*/
+		if (onPreChange != null)
+			onPreChange.execute(this);
+	}
+	
+	private ScriptMethod onChange = null;
+	
+	protected void onChange() throws Exception {
+		if (onChange != null)
+			onChange.execute(this);
+	}
+
+	public ScriptMethod getOnChange() {
+		return onChange;
+	}
+
+	public void setOnChange(ScriptMethod onChange) {
+		this.onChange = onChange;
+	}
+	
+	private ScriptMethod onNumberOutOfBounds = null;
+
+	public ScriptMethod getOnNumberOutOfBounds() {
+		return onNumberOutOfBounds;
+	}
+
+	public void setOnNumberOutOfBounds(ScriptMethod onNumberOutOfBounds) {
+		this.onNumberOutOfBounds = onNumberOutOfBounds;
 	}
 	
 	protected void onNumberOutOfBounds() throws Exception {
-		/* TODO: Wrapper: 
-		callFunction("onNumberOutOfBounds");
-		*/
+		if (onNumberOutOfBounds != null)
+			onNumberOutOfBounds.execute(this);
 	}
 
 	protected void onNotify(int notifier) throws Exception {

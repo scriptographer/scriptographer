@@ -32,15 +32,11 @@
 package com.scriptographer.script.rhino;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.prefs.Preferences;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.tools.debugger.ScopeProvider;
@@ -49,6 +45,8 @@ import com.scriptographer.CommitManager;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.*;
 import com.scriptographer.ai.*;
+import com.scriptographer.script.Script;
+import com.scriptographer.script.ScriptEngine;
 /**
  * @author lehni
  */
@@ -218,16 +216,6 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 		return "global";
 	}
 
-	public Scriptable createScope(File scriptFile) {
-		ScriptableObject scope = new NativeObject();
-		scope.setPrototype(this);
-		scope.setParentScope(null);
-		scope.defineProperty("scriptFile", scriptFile,
-			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
-		defineProperty(scope, "preferences", "getPreferences", null);
-		return scope;
-	}
-
 	/**
 	 * Determines the directory of a script by reading it's scriptFile property
 	 * in the main scope. If script file is empty (e.g. for console),
@@ -251,39 +239,11 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 	 */
 
 	protected static Object getActiveDocument(ScriptableObject obj) {
-		return ScriptographerEngine.javaToJS(Document.getActiveDocument());
+		return Context.javaToJS(Document.getActiveDocument(), obj);
 	}
 
 	protected static Object getScriptDirectory(ScriptableObject obj) {
-		return ScriptographerEngine.javaToJS(
-			ScriptographerEngine.getScriptDirectory());
-	}
-
-	protected static Object getPreferences(ScriptableObject obj)
-			throws IOException {
-		// determine preferences for the current executing script
-		// by walking up the file path to the script directory and using each
-		// folder
-		// as a preference node.
-		File file = (File) obj.get("scriptFile", obj);
-		Preferences prefs = ScriptographerEngine.getPreferences(false).node(
-			"scripts");
-		ArrayList parts = new ArrayList();
-		File root = ScriptographerEngine.getScriptDirectory();
-		// collect the directory parts up to root
-		do {
-			parts.add(file.getName());
-			file = file.getParentFile();
-		} while (file != null && !file.equals(root));
-
-		for (int i = parts.size() - 1; i >= 0; i--) {
-			prefs = prefs.node((String) parts.get(i));
-		}
-		// now replace it with the result so getPreferences is only called once:
-		obj.defineProperty("preferences", prefs, ScriptableObject.READONLY
-			| ScriptableObject.DONTENUM);
-
-		return ScriptographerEngine.javaToJS(prefs);
+		return Context.javaToJS(ScriptographerEngine.getScriptDirectory(), obj);
 	}
 
 	/**
@@ -313,9 +273,12 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 	public static void include(Context cx, Scriptable thisObj, Object[] args,
 			Function funObj) throws Exception {
 		File baseDir = getDirectory(thisObj);
+		ScriptEngine engine = ScriptEngine.getInstanceByName("JavaScript");
 		for (int i = 0; i < args.length; i++) {
-			ScriptographerEngine.executeFile(new File(baseDir,
-				Context.toString(args[i])), thisObj);
+			File file = new File(baseDir, Context.toString(args[i]));
+			Script script = engine.compile(file);
+			if (script != null)
+				script.execute(engine.getScope(thisObj));
 		}
 	}
 
@@ -326,9 +289,12 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 	public static void execute(Context cx, Scriptable thisObj, Object[] args,
 			Function funObj) throws Exception {
 		File baseDir = getDirectory(thisObj);
+		ScriptEngine engine = ScriptEngine.getInstanceByName("JavaScript");
 		for (int i = 0; i < args.length; i++) {
-			ScriptographerEngine.executeFile(new File(baseDir,
-				Context.toString(args[i])), null);
+			File file = new File(baseDir, Context.toString(args[i]));
+			Script script = engine.compile(file);
+			if (script != null)
+				script.execute(engine.createScope());
 		}
 	}
 
@@ -344,7 +310,8 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 	 */
 	public static void evaluate(Context cx, Scriptable thisObj, Object[] args,
 			Function funObj) throws Exception {
-		ScriptographerEngine.executeString(Context.toString(args[0]), thisObj);
+		ScriptEngine engine = ScriptEngine.getInstanceByName("JavaScript");
+		engine.evaluate(Context.toString(args[0]), engine.getScope(thisObj));
 	}
 
 	/**

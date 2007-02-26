@@ -36,8 +36,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.*;
 import java.io.IOException;
 
-import org.mozilla.javascript.Function;
-
+import com.scriptographer.script.ScriptMethod;
 import com.scriptographer.util.ExtendedList;
 import com.scriptographer.util.Lists;
 import com.scriptographer.util.SimpleList;
@@ -128,25 +127,56 @@ public abstract class ListItem extends Item implements SimpleList {
 		return drawEntryCallback;
 	}
 	
-	protected Function onTrackEntry = null;
-	protected Function onDrawEntry = null;
+	private ScriptMethod onTrackEntry = null;
 
-	public void setOnTrackEntry(Function func) {
+	public ScriptMethod getOnTrackEntry() {
+		return onTrackEntry;
+	}
+
+	public void setOnTrackEntry(ScriptMethod func) {
 		setTrackEntryCallback(func != null);
 		onTrackEntry = func;
 	}
 
-	public Function getOnTrackEntry() {
-		return onTrackEntry;
+	private ScriptMethod onDrawEntry = null;
+
+	public ScriptMethod getOnDrawEntry() {
+		return onDrawEntry;
 	}
 	
-	public void setOnDrawEntry(Function func) {
+	public void setOnDrawEntry(ScriptMethod func) {
 		setDrawEntryCallback(func != null);
 		onDrawEntry = func;
 	}
 
-	public Function getOnDrawEntry() {
-		return onDrawEntry;
+	private ScriptMethod onDestroyEntry = null;
+
+	public ScriptMethod getOnDestroyEntry() {
+		return onDestroyEntry;
+	}
+
+	public void setOnDestroyEntry(ScriptMethod func) {
+		onDestroyEntry = func;
+	}
+
+	private ScriptMethod onClickEntry = null;
+
+	public ScriptMethod getOnClickEntry() {
+		return onClickEntry;
+	}
+
+	public void setOnClickEntry(ScriptMethod func) {
+		onClickEntry = func;
+	}
+	
+	private ScriptMethod onChangeEntryText = null;
+
+	public ScriptMethod getOnChangeEntryText() {
+		return onChangeEntryText;
+	}
+
+	public void setOnChangeEntryText(ScriptMethod onChangeEntryText) {
+		this.onChangeEntryText = onChangeEntryText;
 	}
 
 	protected void onNotify(int notifier, ListEntry entry) throws Exception {

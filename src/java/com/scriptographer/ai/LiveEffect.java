@@ -31,14 +31,12 @@
 
 package com.scriptographer.ai;
 
+import com.scriptographer.script.ScriptMethod;
 import com.scriptographer.util.IntMap;
 import com.scriptographer.adm.MenuItem;
 
 import java.util.Map;
 import java.util.ArrayList;
-
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.ScriptRuntime;
 
 /**
  * Wrapper for Illustrator's LiveEffects. Unfortunatelly, Illustrator is not
@@ -322,29 +320,34 @@ public class LiveEffect extends AIObject {
 
 	// Callback functions:
 
-	protected void onEditParameters(Map parameters) throws Exception {
-		/* TODO: Wrapper: 
-		if (wrapper != null)
-			FunctionHelper.callFunction(wrapper, "onEditParameters",
-					new Object[] { parameters });
-		*/
+	private ScriptMethod onEditParameters = null;
+	
+	public ScriptMethod getOnEditParameters() {
+		return onEditParameters;
 	}
 
-	private Function onCalculate = null;
+	public void setOnEditParameters(ScriptMethod onEditParameters) {
+		this.onEditParameters = onEditParameters;
+	}
+
+	protected void onEditParameters(Map parameters) throws Exception {
+		if (onEditParameters != null)
+			onEditParameters.execute(this, new Object[] { parameters });
+	}
+
+	private ScriptMethod onCalculate = null;
 	
-	public void setOnCalculate(Function onCalculate) {
-		this.onCalculate = onCalculate;
+	public ScriptMethod getOnCalculate() {
+		return onCalculate;
 	}
 	
-	public Function getOnCalculate() {
-		return onCalculate;
+	public void setOnCalculate(ScriptMethod onCalculate) {
+		this.onCalculate = onCalculate;
 	}
 
 	protected Art onCalculate(Map parameters, Art art) throws Exception {
-		/* TODO: Wrapper: 
-		if (wrapper != null && onCalculate != null) {
-			Object ret = FunctionHelper.callFunction(wrapper, onCalculate,
-					new Object[] { parameters, art });
+		if (onCalculate != null) {
+			Object ret = onCalculate.execute(this, new Object[] { parameters, art });
 			// it is only possible to either return the art itself or set the
 			// art to null!
 			// everything else semse to cause a illustrator crash
@@ -361,17 +364,24 @@ public class LiveEffect extends AIObject {
 
 			return ret == art ? art : null;
 		}
-		*/
 		return null;
 	}
 
+	private ScriptMethod onGetInputType = null;
+
+	public ScriptMethod getOnGetInputType() {
+		return onGetInputType;
+	}
+
+	public void setOnGetInputType(ScriptMethod onGetInputType) {
+		this.onGetInputType = onGetInputType;
+	}
+
 	protected int onGetInputType(Map parameters, Art art) throws Exception {
-		/* TODO: Wrapper: 
-		if (wrapper != null) {
-			return ScriptRuntime.toInt32(FunctionHelper.callFunction(wrapper,
-					"onGetInputType", new Object[] { parameters, art }));
+		if (onGetInputType != null) {
+			return onGetInputType.toInt(onGetInputType.execute(
+					new Object[] { parameters, art }));
 		}
-		*/
 		return 0;
 	}
 

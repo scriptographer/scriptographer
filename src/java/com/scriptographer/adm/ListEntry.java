@@ -34,9 +34,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.mozilla.javascript.ScriptRuntime;
-
-import com.scriptographer.script.rhino.FunctionHelper;
+import com.scriptographer.script.ScriptMethod;
 
 /**
  * @author lehni
@@ -78,41 +76,74 @@ public class ListEntry extends NotificationHandler {
 	 */
 
 	protected void onDraw(Drawer drawer) throws Exception {
-		// TODO: Wrapper: list.callFunction(list.onDrawEntry, new Object[] { drawer, this });
+		ScriptMethod onDrawEntry = list.getOnDrawEntry();
+		if (onDrawEntry != null)
+			onDrawEntry.execute(list, new Object[] { drawer, this });
 	}
 
 	protected boolean onTrack(Tracker tracker) throws Exception {
-		/* TODO: Wrapper: 
-		Object result = list.callFunction(list.onTrackEntry,
-				new Object[] { tracker, this });
-		if (result != null)
-			return ScriptRuntime.toBoolean(result);
-		*/
+		ScriptMethod onTrackEntry = list.getOnTrackEntry();
+		if (onTrackEntry != null) {
+			Object res = onTrackEntry.execute(list, new Object[] { tracker, this });
+			if (res != null)
+				return onTrackEntry.toBoolean(res);
+		}
 		return true;
+	}
+	
+	ScriptMethod onDestroy = null;
+
+	public ScriptMethod getOnDestroy() {
+		return onDestroy;
+	}
+
+	public void setOnDestroy(ScriptMethod onDestroy) {
+		this.onDestroy = onDestroy;
 	}
 
 	protected void onDestroy() throws Exception {
-		/* TODO: Wrapper: 
-		if (wrapper != null)
-			FunctionHelper.callFunction(wrapper, "onDestroy");
-		list.callFunction("onDestroyEntry", new Object[] { this });
-		*/
+		if (onDestroy != null)
+			onDestroy.execute(this);
+		
+		ScriptMethod onDestroyEntry = list.getOnDestroyEntry();
+		if (onDestroyEntry != null)
+			onDestroyEntry.execute(list, new Object[] { this });
+	}
+	
+	ScriptMethod onClick = null;
+
+	public ScriptMethod getOnClick() {
+		return onClick;
+	}
+
+	public void setOnClick(ScriptMethod onClick) {
+		this.onClick = onClick;
 	}
 
 	protected void onClick() throws Exception {
-		/* TODO: Wrapper: 
-		if (wrapper != null)
-			FunctionHelper.callFunction(wrapper, "onClick");
-		list.callFunction("onClickEntry", new Object[] { this });
-		*/
+		if (onClick != null)
+			onClick.execute(this);
+		ScriptMethod onClickEntry = list.getOnClickEntry();
+		if (onClickEntry != null)
+			onClickEntry.execute(list, new Object[] { this });
+	}
+	
+	ScriptMethod onChangeText = null;
+
+	public ScriptMethod getOnChangeText() {
+		return onChangeText;
+	}
+
+	public void setOnChangeText(ScriptMethod onChangeText) {
+		this.onChangeText = onChangeText;
 	}
 	
 	protected void onChangeText() throws Exception {
-		/* TODO: Wrapper: 
-		if (wrapper != null)
-			FunctionHelper.callFunction(wrapper, "onChangeText");
-		list.callFunction("onChangeEntryText", new Object[] { this });
-		*/
+		if (onChangeText != null)
+			onChangeText.execute(this);
+		ScriptMethod onChangeEntryText = list.getOnChangeEntryText();
+		if (onChangeEntryText != null)
+			onChangeEntryText.execute(list, new Object[] { this });
 	}
 	
 	protected void onNotify(int notifier) throws Exception {

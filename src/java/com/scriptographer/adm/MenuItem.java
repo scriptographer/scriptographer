@@ -31,7 +31,7 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.script.rhino.FunctionHelper;
+import com.scriptographer.script.ScriptMethod;
 import com.scriptographer.util.IntMap;
 
 import java.util.Iterator;
@@ -251,20 +251,36 @@ public class MenuItem extends ADMObject{
 	// needed for it
 
 	// Callback functions:
+	
+	private ScriptMethod onClick = null;
 
-	protected void onClick() throws Exception {
-		/* TODO: Wrapper: 
-		if (wrapper != null)
-			FunctionHelper.callFunction(wrapper, "onClick");
-		*/
+	public ScriptMethod getOnClick() {
+		return onClick;
 	}
 
+	public void setOnClick(ScriptMethod onClick) {
+		this.onClick = onClick;
+	}
+
+	protected void onClick() throws Exception {
+		if (onClick != null)
+			onClick.execute(this);
+	}
+	
+	private ScriptMethod onUpdate = null;
+
+	public ScriptMethod getOnUpdate() {
+		return onUpdate;
+	}
+
+	public void setOnUpdate(ScriptMethod onUpdate) {
+		this.onUpdate = onUpdate;
+	}
+	
 	protected void onUpdate(int inArtwork, int isSelected, int isTrue)
 			throws Exception {
-		/* TODO: Wrapper: 
-		if (wrapper != null)
-			FunctionHelper.callFunction(wrapper, "onUpdate");
-		*/
+		if (onUpdate != null)
+			onUpdate.execute(this);
 	}
 
 	/**

@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.script.ScriptMethod;
 
 /**
  * @author lehni
@@ -248,8 +249,22 @@ public abstract class Item extends CallbackHandler {
 	 * Callback functions:
 	 */
 
+	private ScriptMethod onDestroy = null;
+	
+	public ScriptMethod getOnDestroy() {
+		return onDestroy;
+	}
+
+	public void setOnDestroy(ScriptMethod onDestroy) {
+		this.onDestroy = onDestroy;
+	}
+
 	protected void onDestroy() throws Exception {
-		// TODO: Wrapper: callFunction("onDestroy");
+		// retrieve through getter so it can be overriden by subclasses,
+		// e.g. HierarchyList
+		ScriptMethod onDestroy = this.getOnDestroy();
+		if (onDestroy != null)
+			onDestroy.execute(this);
 	}
 
 	protected void onNotify(int notifier) throws Exception {

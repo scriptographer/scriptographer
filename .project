@@ -3,6 +3,7 @@
 	<name>Scriptographer</name>
 	<comment></comment>
 	<projects>
+		<project>Rhino</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

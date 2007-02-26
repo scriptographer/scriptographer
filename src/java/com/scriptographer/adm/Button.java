@@ -35,6 +35,7 @@ import java.awt.Insets;
 import java.io.IOException;
 
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.script.ScriptMethod;
 
 /**
  * A Button is by default text based.
@@ -63,10 +64,19 @@ public class Button extends TextItem {
 	 * Callback functions
 	 */
 	
+	private ScriptMethod onClick = null;
+	
+	public ScriptMethod getOnClick() {
+		return onClick;
+	}
+
+	public void setOnClick(ScriptMethod onClick) {
+		this.onClick = onClick;
+	}
+
 	protected void onClick() throws Exception {
-		/* TODO: Wrapper: 
-		callFunction("onClick");
-		*/
+		if (onClick != null)
+			onClick.execute(this);
 	}
 	
 	protected void onNotify(int notifier) throws Exception {

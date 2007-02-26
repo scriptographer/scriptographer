@@ -66,11 +66,13 @@ public class ModalDialog extends Dialog {
 	private boolean doesModal = false;
 	
 	protected ModalDialog(int style, int options) {
-		super(style, options);
+		// Allways create ModalDialogs hidden, as they need to be shown
+		// explicitely
+		super(style, options | OPTION_HIDDEN);
 	}
 
 	public ModalDialog(int options) {
-		super(getStyle(options), options);		
+		this(getStyle(options), options);		
 	}
 
 	public ModalDialog() {

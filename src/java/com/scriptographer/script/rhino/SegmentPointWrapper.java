@@ -46,7 +46,7 @@ import com.scriptographer.ai.SegmentPoint;
  * reflect the changes in the underlying AI points
  */
 public class SegmentPointWrapper extends NativeJavaObject {
-	SegmentPointWrapper(Scriptable scope, Object javaObject, Class staticType) {
+	SegmentPointWrapper(Scriptable scope, SegmentPoint javaObject, Class staticType) {
 		super(scope, javaObject, staticType);
 	}
 

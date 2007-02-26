@@ -31,10 +31,7 @@
 
 package com.scriptographer.adm;
 
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.ScriptRuntime;
-
-import com.scriptographer.script.rhino.FunctionHelper;
+import com.scriptographer.script.ScriptMethod;
 
 /**
  * Subclasses the NotificationHandler and adds functionality for
@@ -81,61 +78,62 @@ abstract class CallbackHandler extends NotificationHandler {
 	abstract public void setTrackMask(int mask);
 	abstract public int getTrackMask();
 
- 	protected Function onTrack = null;
-	protected Function onDraw = null;
+ 	protected ScriptMethod onTrack = null;
+	protected ScriptMethod onDraw = null;
 
-	public void setOnTrack(Function func) {
+	public void setOnTrack(ScriptMethod func) {
 		setTrackCallback(func != null);
 		onTrack = func;
 	}
 
-	public Function getOnTrack() {
+	public ScriptMethod getOnTrack() {
 		return onTrack;
 	}
 
 	protected boolean onTrack(Tracker tracker) throws Exception {
-		/* TODO: Wrapper
-		if (wrapper != null && onTrack != null) {
-			Object result = FunctionHelper.callFunction(wrapper,
-					onTrack, new Object[] { tracker });
+		// Retrieve through getter so it can be overriden by subclasses,
+		// e.g. HierarchyList
+		ScriptMethod onTrack = this.getOnTrack();
+		if (onTrack != null) {
+			Object result = onTrack.execute(this, new Object[] { tracker });
 			if (result != null)
-				return ScriptRuntime.toBoolean(result);
+				return onTrack.toBoolean(result);
 		}
-		*/
 		return true;
 	}
 
-	public void setOnDraw(Function func) {
+	public void setOnDraw(ScriptMethod func) {
 		setDrawCallback(func != null);
 		onDraw = func;
 	}
 
-	public Function getOnDraw() {
+	public ScriptMethod getOnDraw() {
 		return onTrack;
 	}
 
 	protected void onDraw(Drawer drawer) throws Exception {
-		/* TODO: Wrapper
-		if (wrapper != null && onDraw != null)
-			FunctionHelper.callFunction(wrapper, onDraw, new Object[] { drawer });
-		 */
+		// Retrieve through getter so it can be overriden by subclasses,
+		// e.g. HierarchyList
+		ScriptMethod onDraw = this.getOnDraw();
+		if (onDraw != null)
+			onDraw.execute(this, new Object[] { drawer });
 	}
 	
-	protected Function onResize = null;
+	protected ScriptMethod onResize = null;
 
-	public void setOnResize(Function func) {
+	public void setOnResize(ScriptMethod func) {
 		onResize = func;
 	}
 
-	public Function getOnResize() {
+	public ScriptMethod getOnResize() {
 		return onResize;
 	}
 
 	protected void onResize(int dx, int dy) throws Exception {
-		/* TODO: Wrapper
-		if (wrapper != null && onResize != null)
-			FunctionHelper.callFunction(wrapper, onResize,
-					new Object[] { new Integer(dx), new Integer(dy) });
-		 */
+		// Retrieve through getter so it can be overriden by subclasses,
+		// e.g. HierarchyList
+		ScriptMethod onResize = this.getOnResize();
+		if (onResize != null)
+			onResize.execute(this, new Object[] { new Integer(dx), new Integer(dy) });
 	}
 }

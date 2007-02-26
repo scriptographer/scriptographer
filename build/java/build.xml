@@ -26,26 +26,33 @@
 		<loadproperties srcfile="build.number"/>
 
 		<path id="build.classpath">
-			<fileset dir="${build.dir}/lib">
-				<exclude name="**/scriptographer*.jar" />
+			<fileset dir="${build.lib}">
 				<include name="**/*.jar" />
+				<exclude name="**/scriptographer*.jar" />
 			</fileset>
-		</path>
-		
-		<path id="build.sourcepath" >
-			<pathelement location="${build.src}" />
-			<pathelement location="${build.src.jdk}" />
 		</path>
 
 		<property name="docs.dir" value="${home.dir}/docs"/>
 		<property name="docs.api.dir" value="${docs.dir}/api"/>
 		<property name="docs.js.dir" value="${docs.dir}/js"/>
 		<property name="docs.templates.dir" value="${docs.dir}/templates"/>
+		<!-- this is used for importing comments from the gnu classpath file into the js documentation -->
+		<property name="docs.src.jdk" value="${docs.dir}/src"/>
+		
+		<path id="docs.sourcepath" >
+			<pathelement location="${build.src}" />
+			<pathelement location="${docs.src.jdk}" />
+		</path>
+
+		<path id="docs.classpath">
+			<pathelement path="${build.classes}"/>
+			<fileset dir="${build.lib}">
+				<include name="**/*.jar" />
+				<exclude name="**/scriptographer*.jar" />
+			</fileset>
+		</path>
 
 		<property name="scripts.dir" value="${home.dir}/scripts"/>
-
-		<!-- this is used for importing comments from the gnu classpath file into the js documentation -->
-		<property name="build.src.jdk" value="${docs.dir}/src"/>
 
 		<property name="jar.name" value="${project}"/>
 		<property name="package.name" value="${project}-${version}"/>
@@ -54,7 +61,6 @@
 		<property name="optimize" value="on"/>
 		<property name="target" value="1.4"/>
 		<property name="deprecation" value="off"/>
-		
 	</target>
 
 
@@ -327,7 +333,7 @@
 	<target name="javadocs" depends="init">
 		<mkdir dir="${docs.api.dir}"/>
 		<javadoc packagenames="com.scriptographer.*"
-  				sourcepathref="build.sourcepath"
+  				sourcepathref="docs.sourcepath"
 				destdir="${docs.api.dir}"
 				author="false"
 				version="false"
@@ -341,10 +347,11 @@
 
 
 	<!-- "java.awt.geom.*,com.scriptographer,com.scriptographer.ai.*,com.scriptographer.adm.*" -->
+	<!--
 	<target name="jsdoclet">
 		<mkdir dir="${destdir}"/>
 		<javadoc packagenames="com.scriptographer,com.scriptographer.ai,com.scriptographer.adm,com.scriptographer.util,java.*"
-				sourcepathref="build.sourcepath"
+				sourcepathref="docs.sourcepath"
 				destdir="${destdir}"
 				author="false"
 				version="false"
@@ -397,7 +404,67 @@
 			</doclet>
 		</javadoc>
 	</target>
-
+	-->
+	<target name="jsdoclet" depends="init">
+		<mkdir dir="${destdir}"/>
+		<javadoc packagenames="com.scriptographer,com.scriptographer.ai,com.scriptographer.adm,com.scriptographer.util,java.*"
+				sourcepathref="docs.sourcepath"
+				destdir="${destdir}"
+				author="false"
+				version="false"
+				public="true"
+				windowtitle="${Name} ${version} API"
+				classpathref="build.classpath">
+			<!--
+				classpath="/lib/js.jar">
+			-->
+		    <doctitle><![CDATA[${Name} ${version}]]></doctitle>
+			<bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, <a href="http://www.scratchdisk.com" target="_blank">Scratchdisk.com</a>. All Rights Reserved.]]></bottom>
+			<doclet name="com.scriptographer.doclets.RhinoDoclet" pathref="docs.classpath">
+				<param name="-script" value="doclet.js"/>
+				<param name="-basepackage" value="com.scriptographer"/>
+				<param name="-filterclasses" value="
+					com.scriptographer.Commitable
+					com.scriptographer.CommitManager
+					com.scriptographer.ConsoleOutputStream
+					com.scriptographer.ConsoleOutputWriter
+					com.scriptographer.GlobalObject
+					com.scriptographer.ScriptographerEngine
+					com.scriptographer.ScriptographerException
+					com.scriptographer.ai.DictionaryObject
+					com.scriptographer.ai.SegmentPoint
+					com.scriptographer.ai.Dictionary
+					com.scriptographer.ai.Event
+					com.scriptographer.ai.TabletValue
+					com.scriptographer.ai.Tool
+					com.scriptographer.aicw.FileFormat
+					com.scriptographer.adm.Notifier
+					com.scriptographer.adm.DialogGroupInfo
+					com.scriptographer.js.*
+					com.scriptographer.util.*
+					com.scriptographer.test.*
+					java.*
+				"/>
+				<param name="-packagesequence" value="
+					com.scriptographer.ai
+					com.scriptographer.adm
+				"/>
+				<param name="-methodfilter" value="
+					setWrapper
+					getWrapper
+					createWrapper
+					iterator
+					hashCode
+					destroyAll
+					disposeAll
+					removeAll
+					getInstance
+				"/>
+				<param name="-classorder" value="${home.dir}/build/java/classorder.txt"/>
+				<param name="-templates" value="${templates}"/>
+			</doclet>
+		</javadoc>
+	</target>
 
 	<!-- =================================================================== -->
 	<!-- Creates the JS API documentation                                    -->

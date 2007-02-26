@@ -33,10 +33,6 @@ package com.scriptographer.ai;
 
 import java.awt.geom.Point2D;
 
-import org.mozilla.javascript.NativeJavaObject;
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Scriptable;
-
 /**
  * @author lehni
  */

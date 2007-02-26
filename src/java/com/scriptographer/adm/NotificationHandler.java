@@ -51,26 +51,4 @@ abstract class NotificationHandler extends ADMObject {
 	protected final void onNotify(String notifier) throws Exception {
 		onNotify(Notifier.lookup(notifier));
 	}
-	
-	/* TODO: Wrapper
-	protected Object callFunction(String name) {
-		if (wrapper != null)
-			return FunctionHelper.callFunction(wrapper, name);
-		return null;
-	}
-	
-	protected Object callFunction(String name, Object[] args) {
-		if (wrapper != null) {
-			return FunctionHelper.callFunction(wrapper, name, args);
-		}
-		return null;
-	}
-	
-	protected Object callFunction(Function function, Object[] args) {
-		if (wrapper != null) {
-			return FunctionHelper.callFunction(wrapper, function, args);
-		}
-		return null;
-	}
-	*/
 }

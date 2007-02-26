@@ -32,6 +32,7 @@
 package com.scriptographer.adm;
 
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.script.ScriptMethod;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -360,57 +361,200 @@ public abstract class Dialog extends CallbackHandler {
 	/*
 	 * Callback functions
 	 */
+	private ScriptMethod onDestroy = null;
+
+	public ScriptMethod getOnDestroy() {
+		return onDestroy;
+	}
+
+	public void setOnDestroy(ScriptMethod onDestroy) {
+		this.onDestroy = onDestroy;
+	}
 
 	protected void onDestroy() throws Exception {
-//		 TODO: Wrapper: callFunction("onDestroy");
+		if (onDestroy != null)
+			onDestroy.execute(this);
+	}
+
+	private ScriptMethod onInitialize = null;
+
+	public ScriptMethod getOnInitialize() {
+		return onInitialize;
+	}
+
+	public void setOnInitialize(ScriptMethod onInitialize) {
+		this.onInitialize = onInitialize;
 	}
 
 	protected void onInitialize() throws Exception {
-//		 TODO: Wrapper: callFunction("onInitialize");
+		if (onInitialize != null)
+			onInitialize.execute(this);
+	}
+
+	private ScriptMethod onActivate = null;
+
+	public ScriptMethod getOnActivate() {
+		return onActivate;
+	}
+
+	public void setOnActivate(ScriptMethod onActivate) {
+		this.onActivate = onActivate;
 	}
 
 	protected void onActivate() throws Exception {
-//		 TODO: Wrapper: callFunction("onActivate");
+		if (onActivate != null)
+			onActivate.execute(this);
+	}
+
+	private ScriptMethod onDeactivate = null;
+
+	public ScriptMethod getOnDeactivate() {
+		return onDeactivate;
+	}
+
+	public void setOnDeactivate(ScriptMethod onDeactivate) {
+		this.onDeactivate = onDeactivate;
 	}
 
 	protected void onDeactivate() throws Exception {
-//		 TODO: Wrapper: callFunction("onDeactivate");
+		if (onDeactivate != null)
+			onDeactivate.execute(this);
+	}
+
+	private ScriptMethod onShow = null;
+
+	public ScriptMethod getOnShow() {
+		return onShow;
+	}
+
+	public void setOnShow(ScriptMethod onShow) {
+		this.onShow = onShow;
 	}
 
 	protected void onShow() throws Exception {
-//		 TODO: Wrapper: callFunction("onShow");
+		if (onShow != null)
+			onShow.execute(this);
+	}
+
+	private ScriptMethod onHide = null;
+
+	public ScriptMethod getOnHide() {
+		return onHide;
+	}
+
+	public void setOnHide(ScriptMethod onHide) {
+		this.onHide = onHide;
 	}
 
 	protected void onHide() throws Exception {
-//		 TODO: Wrapper: callFunction("onHide");
+		if (onHide != null)
+			onHide.execute(this);
+	}
+
+	private ScriptMethod onMove = null;
+
+	public ScriptMethod getOnMove() {
+		return onMove;
+	}
+
+	public void setOnMove(ScriptMethod onMove) {
+		this.onMove = onMove;
 	}
 
 	protected void onMove() throws Exception {
-//		 TODO: Wrapper: callFunction("onMove");
+		if (onMove != null)
+			onMove.execute(this);
+	}
+
+	private ScriptMethod onClose = null;
+
+	public ScriptMethod getOnClose() {
+		return onClose;
+	}
+
+	public void setOnClose(ScriptMethod onClose) {
+		this.onClose = onClose;
 	}
 
 	protected void onClose() throws Exception {
-//		 TODO: Wrapper: callFunction("onClose");
+		if (onClose != null)
+			onClose.execute(this);
+	}
+
+	private ScriptMethod onZoom = null;
+
+	public ScriptMethod getOnZoom() {
+		return onZoom;
+	}
+
+	public void setOnZoom(ScriptMethod onZoom) {
+		this.onZoom = onZoom;
 	}
 
 	protected void onZoom() throws Exception {
-//		 TODO: Wrapper: callFunction("onZoom");
+		if (onZoom != null)
+			onZoom.execute(this);
+	}
+
+	private ScriptMethod onCycle = null;
+
+	public ScriptMethod getOnCycle() {
+		return onCycle;
+	}
+
+	public void setOnCycle(ScriptMethod onCycle) {
+		this.onCycle = onCycle;
 	}
 
 	protected void onCycle() throws Exception {
-//		 TODO: Wrapper: callFunction("onCycle");
+		if (onCycle != null)
+			onCycle.execute(this);
+	}
+
+	private ScriptMethod onCollapse = null;
+
+	public ScriptMethod getOnCollapse() {
+		return onCollapse;
+	}
+
+	public void setOnCollapse(ScriptMethod onCollapse) {
+		this.onCollapse = onCollapse;
 	}
 
 	protected void onCollapse() throws Exception {
-//		 TODO: Wrapper: callFunction("onCollapse");
+		if (onCollapse != null)
+			onCollapse.execute(this);
+	}
+
+	private ScriptMethod onExpand = null;
+
+	public ScriptMethod getOnExpand() {
+		return onExpand;
+	}
+
+	public void setOnExpand(ScriptMethod onExpand) {
+		this.onExpand = onExpand;
 	}
 
 	protected void onExpand() throws Exception {
-//		 TODO: Wrapper: callFunction("onExpand");
+		if (onExpand != null)
+			onExpand.execute(this);
+	}
+
+	// TODO: consider better name!
+	private ScriptMethod onContextMenuChange = null;
+
+	public ScriptMethod getOnContextMenuChange() {
+		return onContextMenuChange;
+	}
+
+	public void setOnContextMenuChange(ScriptMethod onContextMenuChange) {
+		this.onContextMenuChange = onContextMenuChange;
 	}
 
 	protected void onContextMenuChange() throws Exception {
-//		 TODO: Wrapper: callFunction("onContextMenuChange");
+		if (onContextMenuChange != null)
+			onContextMenuChange.execute(this);
 	}
 
 	protected void onNotify(int notifier) throws Exception {

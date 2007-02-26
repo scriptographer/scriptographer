@@ -37,12 +37,12 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Rectangle;
 
-import org.mozilla.javascript.Scriptable;
-
 import com.scriptographer.ConsoleOutputStream;
 import com.scriptographer.ConsoleOutputWriter;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.*;
+import com.scriptographer.script.ScriptScope;
+import com.scriptographer.script.ScriptEngine;
 
 /**
  * @author lehni
@@ -54,6 +54,8 @@ public class ConsoleDialog extends FloatingDialog implements
 	public ConsoleDialog() throws Exception {
 		super(FloatingDialog.OPTION_TABBED | FloatingDialog.OPTION_SHOW_CYCLE
 			| FloatingDialog.OPTION_RESIZING | Dialog.OPTION_REMEMBER_PLACING);
+
+		engine = ScriptEngine.getInstanceByName("JavaScript");
 
 		setTitle(title);
 
@@ -81,7 +83,7 @@ public class ConsoleDialog extends FloatingDialog implements
 						start++;
 						text = text.substring(start, end + 1);
 					}
-					ScriptographerEngine.executeString(text, consoleScope);
+					engine.evaluate(text, consoleScope);
 				}
 				return true;
 			}
@@ -118,7 +120,7 @@ public class ConsoleDialog extends FloatingDialog implements
 		textOut.setBackgroundColor(Drawer.COLOR_INACTIVE_TAB);
 
 		consoleText = new StringBuffer();
-		consoleScope = ScriptographerEngine.createScope(null);
+		consoleScope = engine.createScope();
 
 		// buttons:
 		clearButton = new ImageButton(this) {
@@ -162,7 +164,8 @@ public class ConsoleDialog extends FloatingDialog implements
 
 	StringBuffer consoleText;
 
-	Scriptable consoleScope;
+	ScriptEngine engine;
+	ScriptScope consoleScope;
 
 	protected void onInitialize() {
 		showText();

@@ -31,13 +31,14 @@
 
 package com.scriptographer.ai;
 
-import org.mozilla.javascript.*;
-
-import com.scriptographer.*;
-import com.scriptographer.script.rhino.FunctionHelper;
+import com.scriptographer.script.ScriptScope;
+import com.scriptographer.script.ScriptEngine;
+import com.scriptographer.script.ScriptException;
+import com.scriptographer.script.ScriptMethod;
 import com.scriptographer.util.IntMap;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -54,26 +55,35 @@ public class Tool extends AIObject {
 		this.index = index;
 	}
 	
-	private Scriptable scope;
-	private Function mouseUpFunc;
-	private Function mouseDragFunc;
-	private Function mouseMoveFunc;
-	private Function mouseDownFunc;
-	
+	private ScriptScope scope;
+
 	private Event event = new Event();
 	private Object[] eventArgs = new Object[] { event };
 	
-	public void setScript(File file) {
-		scope = ScriptographerEngine.executeFile(file, null);
-		// execute in the tool's scope so setIdleInterval can be called
-		scope.setParentScope((Scriptable) ScriptographerEngine.javaToJS(this));
+	public void setScript(File file) throws ScriptException, IOException {
+		onInit = null;
+		onOptions = null;
+		onSelect = null;
+		onDeselect = null;
+		onReselect = null;
+		onMouseDown = null;
+		onMouseUp = null;
+		onMouseDrag = null;
+		onMouseMove = null;
+		ScriptEngine engine = ScriptEngine.getInstanceByFile(file);
+		// Execute in the tool's scope so setIdleInterval can be called
+		scope = engine.getScope(this);
+		ScriptEngine.executeFile(file, scope);
 		if (scope != null) {
 			setIdleEventInterval(-1);
-			mouseUpFunc = FunctionHelper.getFunction(scope, "onMouseUp");
-			mouseDragFunc = FunctionHelper.getFunction(scope, "onMouseDrag");
-			mouseMoveFunc = FunctionHelper.getFunction(scope, "onMouseMove");
-			mouseDownFunc = FunctionHelper.getFunction(scope, "onMouseDown");
-			FunctionHelper.callFunction(scope, "onInit");
+			try {
+				onInit();
+			} catch (ScriptException e) {
+				// rethrow
+				throw e;
+			} catch (Exception e) {
+				// cannot happen with scripts
+			}
 		}
 	}
 
@@ -100,55 +110,150 @@ public class Tool extends AIObject {
 	
 	public native void setIdleEventInterval(int interval);
 
-	protected void onEditOptions() throws Exception {
-		if (scope != null) {
-			FunctionHelper.callFunction(scope, "onOptions");
-		}
+	private ScriptMethod onInit;
+
+	public ScriptMethod getOnInit() {
+		return onInit;
+	}
+
+	public void setOnInit(ScriptMethod onInit) {
+		this.onInit = onInit;
+	}
+	
+	protected void onInit() throws Exception {
+		if (scope != null && onInit != null)
+			onInit.call(this);
+	}
+
+	/*
+	 * TODO: onOptions should be called onEditOptions, or both onOptions,
+	 * but at least the same.
+	 */
+	private ScriptMethod onOptions;
+
+	public ScriptMethod getOnOptions() {
+		return onOptions;
+	}
+
+	public void setOnOptions(ScriptMethod onOptions) {
+		this.onOptions = onOptions;
+	}
+
+	protected void onOptions() throws Exception {
+		if (scope != null && onOptions != null)
+			onOptions.call(this);
+	}
+
+	private ScriptMethod onSelect;
+
+	public ScriptMethod getOnSelect() {
+		return onSelect;
+	}
+
+	public void setOnSelect(ScriptMethod onSelect) {
+		this.onSelect = onSelect;
 	}
 
 	protected void onSelect() throws Exception {
-		if (scope != null) {
-			FunctionHelper.callFunction(scope, "onSelect");
-		}
+		if (scope != null && onSelect != null)
+			onSelect.call(this);
+	}
+	
+	private ScriptMethod onDeselect;
+
+	public ScriptMethod getOnDeselect() {
+		return onDeselect;
+	}
+
+	public void setOnDeselect(ScriptMethod onDeselect) {
+		this.onDeselect = onDeselect;
 	}
 	
 	protected void onDeselect() throws Exception {
-		if (scope != null) {
-			FunctionHelper.callFunction(scope, "onDeselect");
-		}
+		if (scope != null && onDeselect != null)
+			onDeselect.call(this);
+	}
+
+	private ScriptMethod onReselect;
+
+	public ScriptMethod getOnReselect() {
+		return onReselect;
+	}
+
+	public void setOnReselect(ScriptMethod onReselect) {
+		this.onReselect = onReselect;
 	}
 	
 	protected void onReselect() throws Exception {
-		if (scope != null) {
-			FunctionHelper.callFunction(scope, "onReselect");
-		}
+		if (scope != null && onReselect != null)
+			onReselect.call(this);
+	}
+
+	private ScriptMethod onMouseDown;
+
+	public ScriptMethod getOnMouseDown() {
+		return onMouseDown;
+	}
+
+	public void setOnMouseDown(ScriptMethod onMouseDown) {
+		this.onMouseDown = onMouseDown;
 	}
 	
 	protected void onMouseDown(float x, float y, int pressure) throws Exception {
-		if (scope != null && mouseDownFunc != null) {
+		if (scope != null && onMouseDown != null) {
 			event.setValues(x, y, pressure);
-			FunctionHelper.callFunction(scope, mouseDownFunc, eventArgs);
+			onMouseDown.call(this, eventArgs);
 		}
+	}
+
+	private ScriptMethod onMouseDrag;
+
+	public ScriptMethod getOnMouseDrag() {
+		return onMouseDrag;
+	}
+
+	public void setOnMouseDrag(ScriptMethod onMouseDrag) {
+		this.onMouseDrag = onMouseDrag;
 	}
 	
 	protected void onMouseDrag(float x, float y, int pressure) throws Exception {
-		if (scope != null && mouseDragFunc != null) {
+		if (scope != null && onMouseDrag != null) {
 			event.setValues(x, y, pressure);
-			FunctionHelper.callFunction(scope, mouseDragFunc, eventArgs);
+			onMouseDrag.call(this, eventArgs);
 		}
+	}
+
+	private ScriptMethod onMouseMove;
+
+	public ScriptMethod getOnMouseMove() {
+		return onMouseMove;
+	}
+
+	public void setOnMouseMove(ScriptMethod onMouseMove) {
+		this.onMouseMove = onMouseMove;
 	}
 	
 	protected void onMouseMove(float x, float y, int pressure) throws Exception {
-		if (scope != null && mouseDragFunc != null) {
+		if (scope != null && onMouseMove != null) {
 			event.setValues(x, y, pressure);
-			FunctionHelper.callFunction(scope, mouseMoveFunc, eventArgs);
+			onMouseMove.call(this, eventArgs);
 		}
 	}
-	
+
+	private ScriptMethod onMouseUp;
+
+	public ScriptMethod getOnMouseUp() {
+		return onMouseUp;
+	}
+
+	public void setOnMouseUp(ScriptMethod onMouseUp) {
+		this.onMouseUp = onMouseUp;
+	}
+		
 	protected void onMouseUp(float x, float y, int pressure) throws Exception {
-		if (scope != null && mouseUpFunc != null) {
+		if (scope != null && onMouseUp != null) {
 			event.setValues(x, y, pressure);
-			FunctionHelper.callFunction(scope, mouseUpFunc, eventArgs);
+			onMouseUp.call(this, eventArgs);
 		}
 	}
 
@@ -191,7 +296,7 @@ public class Tool extends AIObject {
 			if (event != null) {
 				switch(event.intValue()) {
 					case EVENT_EDIT_OPTIONS:
-						tool.onEditOptions();
+						tool.onOptions();
 						break;
 					case EVENT_TRACK_CURSOR:
 						tool.onMouseMove(x, y, pressure);

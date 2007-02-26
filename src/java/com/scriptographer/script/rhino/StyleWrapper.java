@@ -38,6 +38,7 @@ import org.mozilla.javascript.Wrapper;
 
 import com.scriptographer.ai.Color;
 import com.scriptographer.ai.FontWeight;
+import com.scriptographer.ai.Style;
 
 // wrappable interface
 
@@ -53,7 +54,7 @@ import com.scriptographer.ai.FontWeight;
  * @author lehni
  */
 public class StyleWrapper extends NativeJavaObject {
-	StyleWrapper(Scriptable scope, Object javaObject,
+	StyleWrapper(Scriptable scope, Style javaObject,
 			Class staticType) {
 		super(scope, javaObject, staticType);
 	}

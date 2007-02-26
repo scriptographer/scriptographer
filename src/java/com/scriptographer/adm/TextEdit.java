@@ -31,6 +31,8 @@
 
 package com.scriptographer.adm;
 
+import com.scriptographer.script.ScriptMethod;
+
 /**
  * @author lehni
  */
@@ -103,60 +105,215 @@ public class TextEdit extends TextValueItem {
 	 * Callback functions
 	 */
 	
+	// TODO: are all these really needed?
+	
+	private ScriptMethod onPreCut = null;
+
+	public ScriptMethod getOnPreCut() {
+		return onPreCut;
+	}
+
+	public void setOnPreCut(ScriptMethod onPreCut) {
+		this.onPreCut = onPreCut;
+	}
+
 	protected void onPreCut() throws Exception {
-		// TODO: Wrapper: callFunction("onPreCut");
+		if (onPreCut != null)
+			onPreCut.execute(this);
 	}
 	
+	private ScriptMethod onCut = null;
+
+	public ScriptMethod getOnCut() {
+		return onCut;
+	}
+
+	public void setOnCut(ScriptMethod onCut) {
+		this.onCut = onCut;
+	}
+
 	protected void onCut() throws Exception {
-		// TODO: Wrapper: callFunction("onCut");
+		if (onCut != null)
+			onCut.execute(this);
 	}
-	
+
+	private ScriptMethod onPreCopy = null;
+
+	public ScriptMethod getOnPreCopy() {
+		return onPreCopy;
+	}
+
+	public void setOnPreCopy(ScriptMethod onPreCopy) {
+		this.onPreCopy = onPreCopy;
+	}
+
 	protected void onPreCopy() throws Exception {
-//		 TODO: Wrapper: callFunction("onPreCopy");
+		if (onPreCopy != null)
+			onPreCopy.execute(this);
 	}
-	
+
+	private ScriptMethod onCopy = null;
+
+	public ScriptMethod getOnCopy() {
+		return onCopy;
+	}
+
+	public void setOnCopy(ScriptMethod onCopy) {
+		this.onCopy = onCopy;
+	}
+
 	protected void onCopy() throws Exception {
-//		 TODO: Wrapper: callFunction("onCopy");
+		if (onCopy != null)
+			onCopy.execute(this);
 	}
-	
+
+	private ScriptMethod onPrePaste = null;
+
+	public ScriptMethod getOnPrePaste() {
+		return onPrePaste;
+	}
+
+	public void setOnPrePaste(ScriptMethod onPrePaste) {
+		this.onPrePaste = onPrePaste;
+	}
+
 	protected void onPrePaste() throws Exception {
-//		 TODO: Wrapper: callFunction("onPrePaste");
+		if (onPrePaste != null)
+			onPrePaste.execute(this);
 	}
-	
+
+	private ScriptMethod onPaste = null;
+
+	public ScriptMethod getOnPaste() {
+		return onPaste;
+	}
+
+	public void setOnPaste(ScriptMethod onPaste) {
+		this.onPaste = onPaste;
+	}
+
 	protected void onPaste() throws Exception {
-//		 TODO: Wrapper: callFunction("onPaste");
+		if (onPaste != null)
+			onPaste.execute(this);
 	}
-	
+
+	private ScriptMethod onPreClear = null;
+
+	public ScriptMethod getOnPreClear() {
+		return onPreClear;
+	}
+
+	public void setOnPreClear(ScriptMethod onPreClear) {
+		this.onPreClear = onPreClear;
+	}
+
 	protected void onPreClear() throws Exception {
-//		 TODO: Wrapper: callFunction("onPreClear");
+		if (onPreClear != null)
+			onPreClear.execute(this);
 	}
-	
+
+	private ScriptMethod onClear = null;
+
+	public ScriptMethod getOnClear() {
+		return onClear;
+	}
+
+	public void setOnClear(ScriptMethod onClear) {
+		this.onClear = onClear;
+	}
+
 	protected void onClear() throws Exception {
-//		 TODO: Wrapper: callFunction("onClear");
+		if (onClear != null)
+			onClear.execute(this);
 	}
 	
+	private ScriptMethod onPreSelectionChange = null;
+
+	public ScriptMethod getOnPreSelectionChange() {
+		return onPreSelectionChange;
+	}
+
+	public void setOnPreSelectionChange(ScriptMethod onPreSelectionChange) {
+		this.onPreSelectionChange = onPreSelectionChange;
+	}
+
 	protected void onPreSelectionChange() throws Exception {
-//		 TODO: Wrapper: callFunction("onPreSelectionChange");
+		if (onPreSelectionChange != null)
+			onPreSelectionChange.execute(this);
 	}
-	
+
+	private ScriptMethod onSelectionChange = null;
+
+	public ScriptMethod getOnSelectionChange() {
+		return onSelectionChange;
+	}
+
+	public void setOnSelectionChange(ScriptMethod onSelectionChange) {
+		this.onSelectionChange = onSelectionChange;
+	}
+
 	protected void onSelectionChange() throws Exception {
-//		 TODO: Wrapper: callFunction("onSelectionChange");
+		if (onSelectionChange != null)
+			onSelectionChange.execute(this);
 	}
-	
+	private ScriptMethod onPreRedo = null;
+
+	public ScriptMethod getOnPreRedo() {
+		return onPreRedo;
+	}
+
+	public void setOnPreRedo(ScriptMethod onPreRedo) {
+		this.onPreRedo = onPreRedo;
+	}
+
 	protected void onPreRedo() throws Exception {
-//		 TODO: Wrapper: callFunction("onPreRedo");
+		if (onPreRedo != null)
+			onPreRedo.execute(this);
 	}
-	
+
+	private ScriptMethod onRedo = null;
+
+	public ScriptMethod getOnRedo() {
+		return onRedo;
+	}
+
+	public void setOnRedo(ScriptMethod onRedo) {
+		this.onRedo = onRedo;
+	}
+
 	protected void onRedo() throws Exception {
-//		 TODO: Wrapper: callFunction("onRedo");
+		if (onRedo != null)
+			onRedo.execute(this);
 	}
-	
+
+	private ScriptMethod onPreUndo = null;
+
+	public ScriptMethod getOnPreUndo() {
+		return onPreUndo;
+	}
+
+	public void setOnPreUndo(ScriptMethod onPreUndo) {
+		this.onPreUndo = onPreUndo;
+	}
+
 	protected void onPreUndo() throws Exception {
-//		 TODO: Wrapper: callFunction("onPreUndo");
+		if (onPreUndo != null)
+			onPreUndo.execute(this);
 	}
-	
+
+	private ScriptMethod onUndo = null;
+
+	public ScriptMethod getOnUndo() {
+		return onUndo;
+	}
+
+	public void setOnUndo(ScriptMethod onUndo) {
+		this.onUndo = onUndo;
+	}
+
 	protected void onUndo() throws Exception {
-//		 TODO: Wrapper: callFunction("onUndo");
+		if (onUndo != null)
+			onUndo.execute(this);
 	}
 	
 	protected void onNotify(int notifier, ListEntry entry) throws Exception {

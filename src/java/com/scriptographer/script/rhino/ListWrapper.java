@@ -82,7 +82,7 @@ public class ListWrapper extends NativeJavaObject {
 	public boolean has(String name, Scriptable start) {
 		return super.has(name, start)
 			||
-			// name.equals("length") ||
+			// TODO: change back from getLength to size, activate this again! name.equals("length") ||
 			javaObject instanceof StringIndexList && javaObject != null
 			&& ((StringIndexList) javaObject).get(name) != null;
 	}
