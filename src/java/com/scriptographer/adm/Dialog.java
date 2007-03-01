@@ -259,7 +259,7 @@ public abstract class Dialog extends CallbackHandler {
 				onInitialize();
 			}
 			// setBoundaries is set to false when calling from initializeAll,
-			// because it would be to early to set it there. At least on Mac CS3
+			// because it would be too early to set it there. At least on Mac CS3
 			// this causes problems
 			if (setBoundaries && !boundariesSet) {
 				nativeSetMinimumSize(minSize.width, minSize.height);
@@ -477,6 +477,7 @@ public abstract class Dialog extends CallbackHandler {
 	}
 
 	protected void onClose() throws Exception {
+		System.out.println("close");
 		if (onClose != null)
 			onClose.execute(this);
 	}
@@ -492,6 +493,7 @@ public abstract class Dialog extends CallbackHandler {
 	}
 
 	protected void onZoom() throws Exception {
+		System.out.println("zoom");
 		if (onZoom != null)
 			onZoom.execute(this);
 	}
@@ -522,6 +524,7 @@ public abstract class Dialog extends CallbackHandler {
 	}
 
 	protected void onCollapse() throws Exception {
+		System.out.println("collapse");
 		if (onCollapse != null)
 			onCollapse.execute(this);
 	}
@@ -537,12 +540,15 @@ public abstract class Dialog extends CallbackHandler {
 	}
 
 	protected void onExpand() throws Exception {
+		System.out.println("expand");
 		if (onExpand != null)
 			onExpand.execute(this);
 	}
 
 	// TODO: consider better name!
 	private ScriptMethod onContextMenuChange = null;
+
+	private boolean fireOnClose = true;
 
 	public ScriptMethod getOnContextMenuChange() {
 		return onContextMenuChange;
@@ -582,9 +588,22 @@ public abstract class Dialog extends CallbackHandler {
 			// as well
 			initialize(true);
 			visible = true;
+			fireOnClose = true;
 			onShow();
 			break;
 		case Notifier.NOTIFIER_WINDOW_HIDE:
+			if (fireOnClose) {
+				// Workaround for missing onClose on CS3. This bug was 
+				// reported to Adobe too late, hopefully it will be back
+				// again in CS4...
+				int code = this.getGroupInfo().positionCode;
+				if ((code & DialogGroupInfo.MASK_DOCK_VISIBLE) == 0 ||
+					((code & DialogGroupInfo.MASK_FRONTAB) != 0 &&
+					 (code & DialogGroupInfo.MASK_DOCK_VISIBLE) != 0)) {
+					fireOnClose = false;
+					onClose();
+				}
+			}
 			visible = false;
 			onHide();
 			break;
@@ -592,7 +611,9 @@ public abstract class Dialog extends CallbackHandler {
 			onMove();
 			break;
 		case Notifier.NOTIFIER_CLOSE_HIT:
-			onClose();
+			// prevent onClose from being called twice...
+			if (fireOnClose)
+				onClose();
 			break;
 		case Notifier.NOTIFIER_ZOOM_HIT:
 			onZoom();
@@ -723,8 +744,11 @@ public abstract class Dialog extends CallbackHandler {
 	public void setVisible(boolean visible) {
 		// do not set visibility natively before the dialog was properly
 		// initialized. otherwise we get a crash.
-		if (initialized)
+		if (initialized) {
+			fireOnClose  = false;
 			nativeSetVisible(visible);
+			fireOnClose  = true;
+		}
 		this.visible = visible;
 	}
 

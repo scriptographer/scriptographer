@@ -44,6 +44,35 @@ public class DialogGroupInfo {
 		POSITION_DOCKVISIBLE		= 0x00040000,
 		POSITION_DEFAULT			= POSITION_FRONTTAB | POSITION_ZOOM;
 
+	// dialog position code masks
+	public final static int
+		/** Dialog group position mask. Provides access to the dock position byte. */
+		MASK_DOCK 					= 0x000000ff,
+
+		/** Dialog group position mask. Provides access to the tab position byte. */
+		MASK_TAB					= 0x0000ff00,
+
+		/** Dialog group position mask. Provides access to the front-tab position bit flag. */
+		MASK_FRONTAB				= 0x00010000,
+
+		/** Dialog group position mask. Provides access to the zoom position bit flag. */
+		MASK_ZOOM					= 0x00020000,
+
+		/** Dialog group position mask. Provides access to the dock-visible position bit flag. */
+		MASK_DOCK_VISIBLE			= 0x00040000,
+	
+		/** Dialog group position mask. Provides access to the frame-docked window pane index byte. */
+		MASK_FRAMEDOCK_INDEX		= 0x00780000,
+
+		/** Dialog group position mask. Provides access to the frame-docked window pane location byte. */
+		MASK_FRAMEDOCK_LOCATION		= 0x01800000,
+
+		/** Dialog group position mask. Provides access to the frame-docked window pane state. */
+		MASK_FRAMEDOCK_PANESTATE	= 0x06000000,
+
+		/** Dialog group position mask. Provides access to the frame-docked open drawer. */
+		MASK_DRAWER					= 0x08000000;
+
 	protected String group;
 	protected int positionCode;
 	
