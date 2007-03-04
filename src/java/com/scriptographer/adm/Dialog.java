@@ -477,7 +477,6 @@ public abstract class Dialog extends CallbackHandler {
 	}
 
 	protected void onClose() throws Exception {
-		System.out.println("close");
 		if (onClose != null)
 			onClose.execute(this);
 	}
@@ -493,7 +492,6 @@ public abstract class Dialog extends CallbackHandler {
 	}
 
 	protected void onZoom() throws Exception {
-		System.out.println("zoom");
 		if (onZoom != null)
 			onZoom.execute(this);
 	}
@@ -524,7 +522,6 @@ public abstract class Dialog extends CallbackHandler {
 	}
 
 	protected void onCollapse() throws Exception {
-		System.out.println("collapse");
 		if (onCollapse != null)
 			onCollapse.execute(this);
 	}
@@ -540,7 +537,6 @@ public abstract class Dialog extends CallbackHandler {
 	}
 
 	protected void onExpand() throws Exception {
-		System.out.println("expand");
 		if (onExpand != null)
 			onExpand.execute(this);
 	}

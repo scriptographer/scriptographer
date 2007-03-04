@@ -383,13 +383,10 @@ public abstract class Art extends DictionaryObject {
 			int curHandle = artHandles[i];
 			int prevHandle = artHandles[i + 1];
 			Art art = null;
-			// System.out.println(Integer.toHexString(prevHandle) + " " +
-			// Integer.toHexString(curHandle));
 			if (prevHandle != 0) {
 				// in case there was already a art object with the initial handle
 				// before, udpate it now:
 				art = (Art) artItems.get(prevHandle);
-				// System.out.println("prev " + art);
 				if (art != null) {
 					// remove the old reference
 					artItems.remove(prevHandle);

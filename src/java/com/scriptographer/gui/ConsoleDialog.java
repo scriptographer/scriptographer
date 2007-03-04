@@ -179,10 +179,9 @@ public class ConsoleDialog extends FloatingDialog implements
 		textOut.setText(consoleText.toString());
 		int end = consoleText.length();
 		textOut.setSelection(end);
-		/*
-		 * textOut.update(); textOut.invalidate();
-		 */
-		this.setVisible(true);
+		// textOut.update();
+		// textOut.invalidate();
+		setVisible(true);
 	}
 
 	public void println(String str) {
