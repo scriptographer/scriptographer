@@ -33,7 +33,7 @@
 #include "com_scriptographer_ai_Art.h" // for com_scriptographer_ai_Art_TYPE_LAYER
 #include "com_scriptographer_adm_Notifier.h"
 
-#ifdef WIN_ENV 
+#ifdef WIN_ENV
 #include "loadJava.h"
 #endif
 
@@ -42,7 +42,7 @@
 #endif
 
 #if defined(MAC_ENV) && !defined(GCJ)
-// #define MAC_THREAD
+#define MAC_THREAD
 #endif
 
 #include "aiGlobals.h"
@@ -203,10 +203,13 @@ void ScriptographerEngine::init() {
 #endif
 	options.add("-Djava.library.path=%s" PATH_SEP_STR "lib", m_homeDir);
 
-	// start headless, in order to avoid conflicts with AWT and Illustrator
-//	options.add("-Djava.awt.headless=true");
 #ifdef MAC_ENV
+#ifdef MAC_THREAD
+	// start headless, in order to avoid conflicts with AWT and Illustrator
+	options.add("-Djava.awt.headless=true");
+#else
 	options.add("-Dapple.awt.usingSWT=true");
+#endif
 	// use the carbon line separator instead of the unix one on mac:
 	options.add("-Dline.separator=\r");
 #endif
