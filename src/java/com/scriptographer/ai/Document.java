@@ -371,26 +371,93 @@ public class Document extends DictionaryObject {
 	public boolean isInsertionEditable();
 	*/
 
+	/**
+	 * Creates a rectangular path
+	 * 
+	 * @param rect
+	 * @return the newly created path
+	 */
 	public native Path createRectangle(Rectangle rect);
 
+	/**
+	 * Creates a rectangular path with rounded corners
+	 * 
+	 * @param rect
+	 * @param hor the horizontal size of the rounded corners
+	 * @param ver the vertical size of the rounded corners
+	 * @return the newly created path
+	 */
 	public native Path createRoundRectangle(Rectangle rect, float hor, float ver);
 
+	/**
+	 * Creates an oval shaped path
+	 * 
+	 * @param rect
+	 * @param circumscribed if this is set to true the oval shaped path will be
+	 *        created so the rectangle fits into it. If it's set to false the
+	 *        oval path will fit within the rectangle.
+	 * @return the newly created path
+	 */
 	public native Path createOval(Rectangle rect, boolean circumscribed);
 
+	/**
+	 * Creates a regular polygon shaped path
+	 * 
+	 * @param numSides the number of sides of the polygon
+	 * @param center
+	 * @param radius
+	 * @return the newly created path
+	 */
 	public native Path createRegularPolygon(int numSides, Point center,
 			float radius);
 
+	/**
+	 * Created a star shaped path
+	 * 
+	 * The largest of <code>radius1</code> and <code>radius2</code> will be
+	 * the outer radius of the star. The smallest of radius1 and radius2 will be
+	 * the inner radius.
+	 * 
+	 * @param numPoints the number of points of the star
+	 * @param center
+	 * @param radius1
+	 * @param radius2
+	 * @return the newly created path
+	 */
 	public native Path createStar(int numPoints, Point center, float radius1,
 			float radius2);
 
+	/**
+	 * Creates a spiral shaped path
+	 * 
+	 * @param firstArcCenter the center point of the first arc
+	 * @param start the starting point of the spiral
+	 * @param decayPercent the percentage by which each succeeding arc will be
+	 *        scaled
+	 * @param numQuarterTurns the number of quarter turns (arcs)
+	 * @param clockwiseFromOutside if this is set to <code>true</code> the
+	 *        spiral will spiral in a clockwise direction from the first point.
+	 *        If it's set to <code>false</code> it will spiral in a counter
+	 *        clockwise direction
+	 * @return the newly created path
+	 */
 	public native Path createSpiral(Point firstArcCenter, Point start,
 			float decayPercent, int numQuarterTurns,
 			boolean clockwiseFromOutside);
 
+	/**
+	 * Creates an oval shaped path
+	 * @param rect
+	 * @return the newly created path
+	 */
 	public Path createOval(Rectangle rect) {
 		return createOval(rect, false);
 	}
 	
+	/**
+	 * Creates a new path
+	 * @return the newly created path
+	 */
 	public Path createPath() {
 		activate(false, true);
 		return new Path();

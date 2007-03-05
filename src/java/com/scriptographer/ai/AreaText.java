@@ -44,8 +44,10 @@ public class AreaText extends TextFrame {
 	
 	/**
 	 * Creates an area text object
+	 * 
+	 * @param area the path in which the text will appear
+	 * @param orient the text orientation, TextFrame.ORIENTATION_*
 	 */
-
 	public AreaText(Path area, short orient) {
 		this(nativeCreate(orient, area != null ? area.handle : 0));
 	}

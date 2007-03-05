@@ -47,9 +47,11 @@ public class PathText extends TextFrame {
 			float x, float y);
 	
 	/**
-	 * Creates a path text object
+	 * Creates a path text item
+	 * 
+	 * @param path the path that the text will run along
+	 * @param orient the text orientation, TextFrame.ORIENTATION_*
 	 */
-
 	public PathText(Path path, short orient) {
 		this(nativeCreate(orient, path != null ? path.handle : 0));
 		// TODO: check what exactly do startT endT vs start anchor!

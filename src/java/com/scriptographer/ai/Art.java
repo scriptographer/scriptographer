@@ -643,7 +643,13 @@ public abstract class Art extends DictionaryObject {
 	public native void setAlphaIsShape(boolean isShape);
 
 	public native boolean isValid();
-	
+
+	/**
+	 * Appends the specified art object as a child of the art object.
+	 * You can use this function for groups, compound paths and layers.
+	 * 
+	 * @param art The art object that will be appended as a child
+	 */
 	public native boolean appendChild(Art art);
 	
 	/**
@@ -851,7 +857,13 @@ public abstract class Art extends DictionaryObject {
 	public boolean isInside(Art art) {
 		return getOrder(art) == ORDER_INSIDE;		
 	}
-	
+
+	/**
+	 * Checks if the art item is an ancestor of the specified art item.
+	 * i.e. it checks if the specified art item is a child of the art item.
+	 * @param art
+	 * @return
+	 */
 	public boolean isAnchestor(Art art) {
 		return getOrder(art) == ORDER_ANCHESTOR;		
 	}
