@@ -347,7 +347,6 @@
 
 
 	<!-- "java.awt.geom.*,com.scriptographer,com.scriptographer.ai.*,com.scriptographer.adm.*" -->
-	<!--
 	<target name="jsdoclet">
 		<mkdir dir="${destdir}"/>
 		<javadoc packagenames="com.scriptographer,com.scriptographer.ai,com.scriptographer.adm,com.scriptographer.util,java.*"
@@ -404,7 +403,7 @@
 			</doclet>
 		</javadoc>
 	</target>
-	-->
+	<!--
 	<target name="jsdoclet" depends="init">
 		<mkdir dir="${destdir}"/>
 		<javadoc packagenames="com.scriptographer,com.scriptographer.ai,com.scriptographer.adm,com.scriptographer.util,java.*"
@@ -415,9 +414,6 @@
 				public="true"
 				windowtitle="${Name} ${version} API"
 				classpathref="build.classpath">
-			<!--
-				classpath="/lib/js.jar">
-			-->
 		    <doctitle><![CDATA[${Name} ${version}]]></doctitle>
 			<bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, <a href="http://www.scratchdisk.com" target="_blank">Scratchdisk.com</a>. All Rights Reserved.]]></bottom>
 			<doclet name="com.scriptographer.doclets.RhinoDoclet" pathref="docs.classpath">
@@ -465,6 +461,7 @@
 			</doclet>
 		</javadoc>
 	</target>
+	-->
 
 	<!-- =================================================================== -->
 	<!-- Creates the JS API documentation                                    -->
