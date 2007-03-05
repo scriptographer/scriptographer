@@ -1431,7 +1431,7 @@ public class JSDoclet extends Doclet {
 		for (int i = classes.length - 1;  i >= 0; i--) {
 			ClassDoc cd = classes[i];
 			ClassNode node = (ClassNode) nodes.get(cd);
-			if (node != null) {
+			if (node != null && cd.superclass() != null) {
 				ClassNode superclass = (ClassNode) nodes.get(cd.superclass());
 				if (superclass != null) {
 					root.remove(node);
