@@ -858,6 +858,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_createPlatformControl(
 		*/
 #endif
 	} EXCEPTION_CONVERT(env);
+	return 0;
 }
 
 /*

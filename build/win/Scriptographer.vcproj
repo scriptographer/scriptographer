@@ -47,7 +47,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="..\..\src\cpp\win,..\..\src\cpp\jni,..\..\src\cpp\plugin,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\ADM,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\General,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\PICA_SP,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator\Legacy"
+				AdditionalIncludeDirectories="..\..\src\native\win,..\..\src\native\jni,..\..\src\native\plugin,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\ADM,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\General,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\PICA_SP,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator\Legacy"
 				PreprocessorDefinitions="WIN32;_WINDOWS;WIN_ENV"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -135,7 +135,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\cpp\win,..\..\src\cpp\jni,..\..\src\cpp\plugin,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\ADM,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\General,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\PICA_SP,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator\Legacy"
+				AdditionalIncludeDirectories="..\..\src\native\win,..\..\src\native\jni,..\..\src\native\plugin,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\ADM,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\General,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\PICA_SP,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator\Legacy"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;WIN_ENV;LOGFILE"
 				MinimalRebuild="true"
 				ExceptionHandling="2"
@@ -224,7 +224,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\cpp\win,..\..\src\cpp\jni,..\..\src\cpp\plugin,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\ADM,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\General,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\PICA_SP,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator\Legacy"
+				AdditionalIncludeDirectories="..\..\src\native\win,..\..\src\native\jni,..\..\src\native\plugin,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\ADM,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\General,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\PICA_SP,..\..\..\Adobe Illustrator CS2 SDK\IllustratorAPI\Illustrator\Legacy"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;WIN_ENV;LOGFILE"
 				MinimalRebuild="true"
 				ExceptionHandling="2"
@@ -313,7 +313,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="..\..\src\cpp\win,..\..\src\cpp\jni,..\..\src\cpp\plugin,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\ADM,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\General,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\PICA_SP,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator\Legacy"
+				AdditionalIncludeDirectories="..\..\src\native\win,..\..\src\native\jni,..\..\src\native\plugin,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\ADM,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\General,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\PICA_SP,..\..\..\Adobe Illustrator CS SDK\IllustratorAPI\Illustrator\Legacy"
 				PreprocessorDefinitions="WIN32;_WINDOWS;WIN_ENV"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -401,7 +401,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\cpp\win;..\..\src\cpp\jni;..\..\src\cpp\plugin;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\adm&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\ate&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\illustrator&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\general&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\pica_sp&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\illustrator\legacy&quot;"
+				AdditionalIncludeDirectories="..\..\src\native\win;..\..\src\native\jni;..\..\src\native\plugin;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\adm&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\ate&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\illustrator&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\general&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\pica_sp&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\illustrator\legacy&quot;"
 				PreprocessorDefinitions="_DEBUG;WIN32;_WINDOWS;WIN_ENV;LOGFILE"
 				MinimalRebuild="true"
 				ExceptionHandling="2"
@@ -490,7 +490,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				InlineFunctionExpansion="0"
-				AdditionalIncludeDirectories="..\..\src\cpp\win;..\..\src\cpp\jni;..\..\src\cpp\plugin;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\adm&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\ate&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\illustrator&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\general&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\pica_sp&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\illustrator\legacy&quot;"
+				AdditionalIncludeDirectories="..\..\src\native\win;..\..\src\native\jni;..\..\src\native\plugin;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\adm&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\ate&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\illustrator&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\general&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\pica_sp&quot;;&quot;..\..\..\Adobe Illustrator CS3 SDK\illustratorapi\illustrator\legacy&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;WIN_ENV"
 				StringPooling="true"
 				MinimalRebuild="false"
@@ -559,15 +559,15 @@
 				Name="JNI"
 				>
 				<File
-					RelativePath="..\..\src\cpp\jni\admGlobals.h"
+					RelativePath="..\..\src\native\jni\admGlobals.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\jni\aiGlobals.h"
+					RelativePath="..\..\src\native\jni\aiGlobals.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\jni\com_scriptographer_ScriptographerEngine.cpp"
+					RelativePath="..\..\src\native\jni\com_scriptographer_ScriptographerEngine.cpp"
 					>
 					<FileConfiguration
 						Name="CS2 Release|Win32"
@@ -625,7 +625,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\jni\registerNatives.cpp"
+					RelativePath="..\..\src\native\jni\registerNatives.cpp"
 					>
 					<FileConfiguration
 						Name="CS2 Release|Win32"
@@ -686,7 +686,7 @@
 					Name="ADM"
 					>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_Button.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_Button.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -744,7 +744,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_Dialog.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_Dialog.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -802,7 +802,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_Drawer.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_Drawer.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -860,7 +860,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_HierarchyList.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_HierarchyList.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -918,7 +918,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_HierarchyListEntry.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_HierarchyListEntry.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -976,7 +976,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_Image.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_Image.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1034,7 +1034,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_ImageStatic.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ImageStatic.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1092,7 +1092,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_Item.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_Item.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1150,7 +1150,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_ItemGroup.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ItemGroup.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1208,7 +1208,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_Key.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_Key.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1266,7 +1266,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_ListEntry.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ListEntry.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1324,7 +1324,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_ListItem.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ListItem.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1382,7 +1382,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_MenuGroup.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_MenuGroup.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1440,7 +1440,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_MenuItem.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_MenuItem.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1498,7 +1498,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_ModalDialog.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ModalDialog.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1556,7 +1556,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_TextEdit.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_TextEdit.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1614,7 +1614,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_TextItem.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_TextItem.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1672,7 +1672,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_TextValueItem.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_TextValueItem.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1730,7 +1730,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_ToggleItem.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ToggleItem.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1788,7 +1788,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_Tracker.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_Tracker.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1846,7 +1846,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_adm_ValueItem.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_adm_ValueItem.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1908,7 +1908,7 @@
 					Name="AI"
 					>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Annotator.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Annotator.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -1966,7 +1966,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_AreaText.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_AreaText.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2024,7 +2024,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Art.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Art.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2082,7 +2082,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_ArtSet.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_ArtSet.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2140,7 +2140,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_CharacterStyle.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_CharacterStyle.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2198,7 +2198,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Color.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Color.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2256,7 +2256,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Curve.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Curve.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2314,7 +2314,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Document.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Document.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2372,7 +2372,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_DocumentList.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_DocumentList.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2430,73 +2430,15 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_DocumentView.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_DocumentView.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_DocumentViewList.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_DocumentViewList.cpp"
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_FontFamily.cpp"
-						>
-						<FileConfiguration
-							Name="CS2 Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="CS Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="CS2 Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="CS Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="CS3 Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="CS3 Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions=""
-							/>
-						</FileConfiguration>
-					</File>
-					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_FontList.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_FontFamily.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2554,7 +2496,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_FontWeight.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_FontList.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2612,7 +2554,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Gradient.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_FontWeight.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2670,7 +2612,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_GradientList.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Gradient.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2728,7 +2670,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_GradientStopList.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_GradientList.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2786,7 +2728,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Group.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_GradientStopList.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2844,7 +2786,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Layer.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Group.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2902,7 +2844,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_LayerList.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Layer.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -2960,7 +2902,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_LiveEffect.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_LayerList.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3018,7 +2960,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_ParagraphStyle.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_LiveEffect.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3076,7 +3018,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Path.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_ParagraphStyle.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3134,7 +3076,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Pathfinder.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Path.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3192,7 +3134,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_PathStyle.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Pathfinder.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3250,7 +3192,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_PathText.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_PathStyle.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3308,7 +3250,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Pattern.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_PathText.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3366,7 +3308,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_PatternList.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Pattern.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3424,7 +3366,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_PlacedItem.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_PatternList.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3482,7 +3424,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_PointText.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_PlacedItem.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3540,7 +3482,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Raster.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_PointText.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3598,7 +3540,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_SegmentList.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Raster.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3656,7 +3598,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Swatch.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_SegmentList.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3714,7 +3656,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_SwatchList.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Swatch.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3772,7 +3714,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Symbol.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_SwatchList.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3830,7 +3772,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_SymbolItem.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Symbol.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3888,7 +3830,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_SymbolList.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_SymbolItem.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -3946,7 +3888,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_TextFrame.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_SymbolList.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -4004,7 +3946,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_TextRange.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_TextFrame.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -4062,7 +4004,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_TextStory.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_TextRange.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -4120,7 +4062,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_TextStoryList.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_TextStory.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -4178,7 +4120,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Timer.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_TextStoryList.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -4236,7 +4178,7 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Tool.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Timer.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -4294,7 +4236,65 @@
 						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\..\src\cpp\jni\com_scriptographer_ai_Tracing.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Tool.cpp"
+						>
+						<FileConfiguration
+							Name="CS2 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="CS Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="CS2 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="CS Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="CS3 Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="CS3 Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								AdditionalIncludeDirectories=""
+								PreprocessorDefinitions=""
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Tracing.cpp"
 						>
 						<FileConfiguration
 							Name="CS2 Release|Win32"
@@ -4357,7 +4357,7 @@
 				Name="Plugin"
 				>
 				<File
-					RelativePath="..\..\src\cpp\plugin\AppContext.cpp"
+					RelativePath="..\..\src\native\plugin\AppContext.cpp"
 					>
 					<FileConfiguration
 						Name="CS2 Release|Win32"
@@ -4415,77 +4415,11 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\plugin\AppContext.h"
+					RelativePath="..\..\src\native\plugin\AppContext.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\plugin\exceptions.cpp"
-					>
-					<FileConfiguration
-						Name="CS2 Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="CS Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="CS2 Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="CS Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="CS3 Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="CS3 Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\src\cpp\plugin\exceptions.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\cpp\plugin\jniMacros.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\cpp\win\loadJava.cpp"
+					RelativePath="..\..\src\native\plugin\exceptions.cpp"
 					>
 					<FileConfiguration
 						Name="CS2 Release|Win32"
@@ -4543,19 +4477,15 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\win\loadJava.h"
+					RelativePath="..\..\src\native\plugin\exceptions.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\win\platform.h"
+					RelativePath="..\..\src\native\plugin\jniMacros.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\plugin\resourceIds.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\src\cpp\plugin\ScriptographerEngine.cpp"
+					RelativePath="..\..\src\native\win\loadJava.cpp"
 					>
 					<FileConfiguration
 						Name="CS2 Release|Win32"
@@ -4613,11 +4543,19 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\plugin\ScriptographerEngine.h"
+					RelativePath="..\..\src\native\win\loadJava.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\plugin\ScriptographerPlugin.cpp"
+					RelativePath="..\..\src\native\win\platform.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\native\plugin\resourceIds.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\native\plugin\ScriptographerEngine.cpp"
 					>
 					<FileConfiguration
 						Name="CS2 Release|Win32"
@@ -4675,11 +4613,73 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\plugin\ScriptographerPlugin.h"
+					RelativePath="..\..\src\native\plugin\ScriptographerEngine.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\plugin\stdHeaders.cpp"
+					RelativePath="..\..\src\native\plugin\ScriptographerPlugin.cpp"
+					>
+					<FileConfiguration
+						Name="CS2 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="CS Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="CS2 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="CS Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="CS3 Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="CS3 Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							AdditionalIncludeDirectories=""
+							PreprocessorDefinitions=""
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\..\src\native\plugin\ScriptographerPlugin.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\src\native\plugin\stdHeaders.cpp"
 					>
 					<FileConfiguration
 						Name="CS2 Release|Win32"
@@ -4731,11 +4731,11 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\plugin\stdHeaders.h"
+					RelativePath="..\..\src\native\plugin\stdHeaders.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\plugin\suites.cpp"
+					RelativePath="..\..\src\native\plugin\suites.cpp"
 					>
 					<FileConfiguration
 						Name="CS2 Release|Win32"
@@ -4793,7 +4793,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\src\cpp\plugin\Suites.h"
+					RelativePath="..\..\src\native\plugin\Suites.h"
 					>
 				</File>
 				<Filter
