@@ -20,7 +20,7 @@
 		<property name="build.dir" value="${home.dir}/build/java/build"/>
 		<property name="build.src" value="${home.dir}/src/java"/>
 		<property name="build.lib" value="${build.dir}/lib"/>
-		<property name="build.jni" value="${home.dir}/src/cpp/jni"/>
+		<property name="build.jni" value="${home.dir}/src/native/jni"/>
 		<property name="build.classes" value="${build.dir}/classes"/>
 		<property name="build.packages" value="${home.dir}/build/packages"/>
 		<loadproperties srcfile="build.number"/>

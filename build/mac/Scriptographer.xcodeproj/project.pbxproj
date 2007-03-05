@@ -507,8 +507,8 @@
 		916E65020A8ACD5400C3508D /* libjvm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjvm.dylib; path = "/usr/local/lib/gcj-4.2.0/libjvm.dylib"; sourceTree = "<absolute>"; };
 		916E65A20A8ACE7A00C3508D /* com */ = {isa = PBXFileReference; lastKnownFileType = folder; name = com; path = ../../src/java/com; sourceTree = SOURCE_ROOT; };
 		916E65A30A8ACE7A00C3508D /* info */ = {isa = PBXFileReference; lastKnownFileType = folder; name = info; path = ../../src/java/info; sourceTree = SOURCE_ROOT; };
-		916FC1420A25BFCC00BF8DE4 /* MachO_CFM_Glue.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MachO_CFM_Glue.cpp; path = ../../src/cpp/mac/MachO_CFM_Glue.cpp; sourceTree = SOURCE_ROOT; };
-		916FC1430A25BFCC00BF8DE4 /* MachO_CFM_Glue.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MachO_CFM_Glue.h; path = ../../src/cpp/mac/MachO_CFM_Glue.h; sourceTree = SOURCE_ROOT; };
+		916FC1420A25BFCC00BF8DE4 /* MachO_CFM_Glue.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MachO_CFM_Glue.cpp; path = ../../src/native/mac/MachO_CFM_Glue.cpp; sourceTree = SOURCE_ROOT; };
+		916FC1430A25BFCC00BF8DE4 /* MachO_CFM_Glue.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MachO_CFM_Glue.h; path = ../../src/native/mac/MachO_CFM_Glue.h; sourceTree = SOURCE_ROOT; };
 		916FC6FD0A264F2800BF8DE4 /* jniMacros.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = jniMacros.h; sourceTree = "<group>"; };
 		916FC7A60A26676D00BF8DE4 /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
 		918921E10A88B52E00B241AF /* scriptographer.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = scriptographer.o; sourceTree = "<group>"; };
@@ -788,7 +788,7 @@
 				91EF0A500A20A2CD00F0EF9A /* suites.cpp */,
 			);
 			name = Plugin;
-			path = ../../src/cpp/plugin;
+			path = ../../src/native/plugin;
 			sourceTree = "<group>";
 		};
 		91EF0AC60A20A3C200F0EF9A /* CS */ = {
@@ -905,7 +905,7 @@
 				91EF0B030A20A4B200F0EF9A /* registerNatives.cpp */,
 			);
 			name = JNI;
-			path = ../../src/cpp;
+			path = ../../src/native;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1561,7 +1561,7 @@
 				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS2 SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
-				JNI_HEADERS = ../../src/cpp/jni/;
+				JNI_HEADERS = ../../src/native/jni/;
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT_QUOTED)",
 					"$(GCJ_LIBRARIES)",
@@ -1613,7 +1613,7 @@
 				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS2 SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
-				JNI_HEADERS = ../../src/cpp/jni/;
+				JNI_HEADERS = ../../src/native/jni/;
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT_QUOTED)",
 					"$(GCJ_LIBRARIES)",
@@ -1680,7 +1680,7 @@
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
-				JNI_HEADERS = ../../src/cpp/jni/;
+				JNI_HEADERS = ../../src/native/jni/;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT_QUOTED)";
 				OBJROOT = build;
 				ONLY_LINK_ESSENTIAL_SYMBOLS = YES;
@@ -1731,7 +1731,7 @@
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
-				JNI_HEADERS = ../../src/cpp/jni/;
+				JNI_HEADERS = ../../src/native/jni/;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT_QUOTED)";
 				OBJROOT = build;
 				OTHER_CFLAGS = "";
@@ -1780,7 +1780,7 @@
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
-				JNI_HEADERS = ../../src/cpp/jni/;
+				JNI_HEADERS = ../../src/native/jni/;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT_QUOTED)";
 				OBJROOT = build;
 				ONLY_LINK_ESSENTIAL_SYMBOLS = YES;
@@ -1833,7 +1833,7 @@
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
-				JNI_HEADERS = ../../src/cpp/jni/;
+				JNI_HEADERS = ../../src/native/jni/;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT_QUOTED)";
 				OBJROOT = build;
 				OTHER_CFLAGS = "";
@@ -1885,7 +1885,7 @@
 				INFOPLIST_FILE = "/Users/Lehni/Development/C & C++/Scriptographer/build/mac/resources/Info.plist";
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
-				JNI_HEADERS = ../../src/cpp/jni/;
+				JNI_HEADERS = ../../src/native/jni/;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT_QUOTED)";
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = build;
@@ -1944,7 +1944,7 @@
 				INFOPLIST_FILE = "/Users/Lehni/Development/C & C++/Scriptographer/build/mac/resources/Info.plist";
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
-				JNI_HEADERS = ../../src/cpp/jni/;
+				JNI_HEADERS = ../../src/native/jni/;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT_QUOTED)";
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
 				OBJROOT = build;
@@ -1996,7 +1996,7 @@
 				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
-				JNI_HEADERS = ../../src/cpp/jni/;
+				JNI_HEADERS = ../../src/native/jni/;
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT_QUOTED)",
 					"$(GCJ_LIBRARIES)",
@@ -2054,7 +2054,7 @@
 				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS SDK/IllustratorAPI//**\"";
 				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
-				JNI_HEADERS = ../../src/cpp/jni/;
+				JNI_HEADERS = ../../src/native/jni/;
 				LIBRARY_SEARCH_PATHS = (
 					"$(SRCROOT_QUOTED)",
 					"$(GCJ_LIBRARIES)",
