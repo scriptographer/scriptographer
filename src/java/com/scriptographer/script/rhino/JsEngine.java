@@ -85,14 +85,14 @@ public class JsEngine extends ScriptEngine {
 
 		// The debugger needs to be created before the context, otherwise
 		// notification won't work
-		debugger = new Debugger();
-		debugger.attachTo(factory);
+//		debugger = new Debugger();
+//		debugger.attachTo(factory);
 		
 		context = Context.enter();
 		global = new GlobalObject(context);
 
 		// now define the scope provider. Things are a bit intertwingled here...
-		debugger.setScopeProvider(global);
+//		debugger.setScopeProvider(global);
 	}
 	
 	protected Script compileScript(File file)

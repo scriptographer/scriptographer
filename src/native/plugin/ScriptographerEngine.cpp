@@ -73,19 +73,19 @@ OSStatus javaThread(ScriptographerEngine *engine) {
 void ScriptographerEngine::javaThread() {
 	try {
 		init();
-		// tell the constructor that the initialization is done:
+		// Tell the constructor that the initialization is done:
 		MPNotifyQueue(m_responseQueue, NULL, NULL, NULL);
 	} catch (ScriptographerException *e) {
-		// let the user know about this error:
+		// Let the user know about this error:
 		MPNotifyQueue(m_responseQueue, e, NULL, NULL);
 	}
-	// keep this thread alive until the JVM is to be destroyed. This needs
+	// Keep this thread alive until the JVM is to be destroyed. This needs
 	// to happen from the creation thread as well, otherwise JNI hangs endlessly:
 	MPWaitOnQueue(m_requestQueue, NULL, NULL, NULL, kDurationForever);
-	// now tell the caller that the engine can be deleted, before DestroyJavaVM is called,
+	// Now tell the caller that the engine can be deleted, before DestroyJavaVM is called,
 	// which may block the current thread until the end of the app.
 	MPNotifyQueue(m_responseQueue, NULL, NULL, NULL);
-	// now exit, and destroy the JavaVM. 
+	// Now exit, and destroy the JavaVM. 
 	exit();
 }
 
@@ -103,12 +103,12 @@ ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 		MPCreateQueue(&m_requestQueue);
 		MPCreateQueue(&m_responseQueue);
 		MPCreateTask((TaskProc)::javaThread, this, 0, NULL, NULL, NULL, 0, NULL); 
-		// now wait for the javaThread to finish initialization
+		// Now wait for the javaThread to finish initialization
 		// exceptions that happen in the javaThread are passed through to this thread in order to display the error code:
 		MPWaitOnQueue(m_responseQueue, (void **) &exc, NULL, NULL, kDurationForever);
 	} else 
 #endif
-	{	// on windows, we can directly call the initialize function:
+	{	// On windows, we can directly call the initialize function:
 		try {
 			init();
 		} catch (ScriptographerException *e) {
@@ -140,13 +140,14 @@ ScriptographerEngine::~ScriptographerEngine() {
 		MPDeleteQueue(m_responseQueue);
 	} else 
 #endif
-	{ // clean up:
+	{ // Clean up:
 //		exit();
 	}
 }
 
 class JVMOptions {
-	JavaVMOption fOptions[128]; // make sure we have plenty
+	// Make sure we have plenty...
+	JavaVMOption fOptions[128];
 	int fNumOptions;
 	
 public:
@@ -161,19 +162,64 @@ public:
 		}
 	}
 	
-	void add(const char *str, ...) {
+	char *add(const char *str, ...) {
 		char *text = new char[2048];
 		va_list args;
 		va_start(args, str);
 		vsprintf(text, str, args);
 		va_end(args);
 		fOptions[fNumOptions++].optionString = text;
-		gPlugin->log("JVM Option: %s", text);
+		if (strlen(text) > 0)
+			gPlugin->log("JVM Option: %s", text);
+		return text;
 	}
 	
 	void fillArgs(JavaVMInitArgs *args) {
 		args->options = fOptions;
 		args->nOptions = fNumOptions;
+	}
+};
+
+class MemoryOption {
+	int fSize;
+	bool fInitial;
+	char *fString;
+	
+public:
+	MemoryOption(const char *str) {
+		// Parse the -Xms / -Xmx setting:
+		fString = NULL;
+		fInitial = str[3] == 's';
+		const char *start = &str[4], *end = start;
+		fSize =  atoi(start);
+		while (*end != '\0' && isdigit(*end)) end++;
+		char unit = tolower(*end);
+		// Size is in M
+		if (unit == 'k') fSize /= 1024; // KB -> M
+		else if (unit != 'm') fSize /= 1024 * 1024;  // B -> M
+	}
+	
+	void set(JVMOptions *options) {
+		if (fString == NULL) fString = options->add("");
+		sprintf(fString, "-Xm%c%im", fInitial ? 's' : 'x', fSize);
+	}
+	
+	bool isInitial() {
+		return fInitial;
+	}
+	
+	int getSize() {
+		return fSize;
+	}
+	
+	bool decrease(int minSize, MemoryOption *initSize = NULL) {
+		// minSize is in M
+		fSize = fSize * 8 / 10;
+		if (fSize < minSize)
+			return false;
+		if (initSize != NULL && initSize->fSize > fSize && !initSize->decrease(minSize))
+			return false;
+		return true;
 	}
 };
 
@@ -184,12 +230,12 @@ void ScriptographerEngine::init() {
     GetDefaultJavaVMInitArgsProc getDefaultJavaVMInitArgs = NULL;
 #ifdef WIN_ENV
 	loadJavaVM("client", &createJavaVM, &getDefaultJavaVMInitArgs);
-#else
+#else // !WIN_ENV
 	createJavaVM = JNI_CreateJavaVM;
 	getDefaultJavaVMInitArgs = JNI_GetDefaultJavaVMInitArgs;
 #endif // !WIN_ENV
 
-	// init args
+	// Initialize args
 	JavaVMInitArgs args;
 	args.version = JNI_VERSION_1_4;
 	if (args.version < JNI_VERSION_1_4)
@@ -198,51 +244,82 @@ void ScriptographerEngine::init() {
 	JVMOptions options;
 
 #ifndef GCJ
-	// only add the loader to the classpath, the rest is done in java:
+	// Only add the loader to the classpath, the rest is done in java:
 	options.add("-Djava.class.path=%s" PATH_SEP_STR "loader.jar", m_homeDir);
 #endif
 	options.add("-Djava.library.path=%s" PATH_SEP_STR "lib", m_homeDir);
 
 #ifdef MAC_ENV
 #ifdef MAC_THREAD
-	// start headless, in order to avoid conflicts with AWT and Illustrator
+	// Start headless, in order to avoid conflicts with AWT and Illustrator
 	options.add("-Djava.awt.headless=true");
 #else
 	options.add("-Dapple.awt.usingSWT=true");
 #endif
-	// use the carbon line separator instead of the unix one on mac:
+	// Use the carbon line separator instead of the unix one on mac:
 	options.add("-Dline.separator=\r");
 #endif
-	// read ini file and add the options here
+	// Read ini file and add the options here
+	MemoryOption *initSize = NULL, *maxSize = NULL;
 	char str[512];
 	sprintf(str, "%s" PATH_SEP_STR "jvm.ini", m_homeDir);
 	FILE *file = fopen(str, "rt");
 	if (file != NULL) {
 		while (fgets(str, sizeof(str), file)) {
-			// trim new line and white space at the end of the line:
+			// Trim new line and white space at the end of the line:
 			int pos = strlen(str) - 1;
 			while (pos >= 0 && isspace(str[pos])) {
 				str[pos] = '\0';
 				pos--;
 			}
-			options.add(str);
+			// Deal with memory settings specially, so we can iterate bellow
+			// until the JavaVM can actually be created.
+			if (strncmp("-Xm", str, 3) == 0) {
+				MemoryOption *size = new MemoryOption(str);
+				if (size->isInitial()) {
+					if (initSize != NULL) delete initSize;
+					initSize = size;
+				} else {
+					if (maxSize != NULL) delete maxSize;
+					maxSize = size;
+				}
+			} else {
+				options.add(str);
+			}
 		}
 	}
-
 #if defined(_DEBUG) && !defined(GCJ)
-	// start JVM in debug mode, for remote debuggin on port 8000
+	// Start JVM in debug mode, for remote debuggin on port 8000
 	options.add("-Xdebug");
 	options.add("-Xnoagent");
 	options.add("-Djava.compiler=NONE");
 	options.add("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n");
 #endif
-
+	
 	options.fillArgs(&args);
 	args.ignoreUnrecognized = true;
-
-	// create the JVM
-	JNIEnv *env;
-	jint res = createJavaVM(&m_javaVM, (void **) &env, (void *) &args);
+	
+	JNIEnv *env = NULL;
+	jint res = 0;
+	
+	do {
+		if (initSize != NULL) {
+			initSize->set(&options);
+			gPlugin->log("JVM Initial Heap Size: %im", initSize->getSize());
+		}
+		if (maxSize != NULL) {
+			maxSize->set(&options);
+			gPlugin->log("JVM Maximum Heap Size: %im", maxSize->getSize());
+		}
+		// Create the JVM
+		jint res = createJavaVM(&m_javaVM, (void **) &env, (void *) &args);
+		if (res < 0) {
+			// We need at least 16mb for Scripto to do seomthing nice...
+			if (!maxSize->decrease(16, initSize))
+				break;
+		}
+	} while(res < 0);
+	
 	if (res < 0) {
 		gPlugin->log("Error creataing Java VM: %i", res);
 		throw new StringException("Cannot create Java VM.");
@@ -268,7 +345,7 @@ void ScriptographerEngine::init() {
 	// avoiding yet another clearing of the link tables at a later point.
 	// (e.g. for classes that are not loaded in initReflection)
 	initReflection(env);
-	// link the native functions to the java functions. The code for this is in registerNatives.cpp,
+	// Link the native functions to the java functions. The code for this is in registerNatives.cpp,
 	// which is automatically generated from the JNI header files by jni.js
 	registerNatives(env);
 }
