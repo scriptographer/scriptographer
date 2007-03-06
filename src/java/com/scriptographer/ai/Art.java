@@ -228,8 +228,8 @@ public abstract class Art extends DictionaryObject {
 	// AIArtOrder:
 	public final static int
 		ORDER_UNKNOWN = 0,
-		ORDER_BEFORE = 1,
-		ORDER_AFTER = 2,
+		ORDER_ABOVE = 1,
+		ORDER_BELOW = 2,
 		ORDER_INSIDE = 3,
 		ORDER_ANCHESTOR = 4;
 	
@@ -839,35 +839,35 @@ public abstract class Art extends DictionaryObject {
 	 *         false otherwise
 	 */
 	public boolean isAbove(Art art) {
-		return getOrder(art) == ORDER_BEFORE;		
+		return getOrder(art) == ORDER_ABOVE;		
 	}
 	
 	/**
 	 * Checks if the Art Item is below the specified Art Item
 	 * Sample code:
 	 * <code>
-	 var firstPath = new Path();
-	 var secondPath = new Path();
-	 print(firstPath.isBelow(secondPath)) // returns true
-	 </code>
+	 * var firstPath = new Path();
+	 * var secondPath = new Path();
+	 * print(firstPath.isBelow(secondPath)) // returns true
+	 * </code>
 	 * 
 	 * @param art The Art Item to check against
 	 * @return <code>true</code> if it is below the specified Art Item,
 	 *         false otherwise
 	 */
 	public boolean isBelow(Art art) {
-		return getOrder(art) == ORDER_AFTER;		
+		return getOrder(art) == ORDER_BELOW;		
 	}
 	
 	/**
 	 * Checks if the Art Item is inside the specified Art Item
 	 * Sample code:
 	 * <code>
-	 var group = new Group();
-	 var path = new Path();
-	 group.appendChild(path);
-	 print(path.isInside(group)) // returns true
-	 </code>
+	 * var group = new Group();
+	 * var path = new Path();
+	 * group.appendChild(path);
+	 * print(path.isInside(group)) // returns true
+	 * </code>
 	 *
 	 * @param art The Art Item to check against
 	 * @return <code>true</code> if it is inside the specified Art Item,
@@ -881,11 +881,11 @@ public abstract class Art extends DictionaryObject {
 	 * Checks if the art item is an ancestor of the specified Art Item.
 	 * Sample code:
 	 * <code>
-	 var group = new Group();
-	 var path = new Path();
-	 group.appendChild(path);
-	 print(group.isAnchestor(path)) // returns true
-	 </code>
+	 * var group = new Group();
+	 * var path = new Path();
+	 * group.appendChild(path);
+	 * print(group.isAnchestor(path)) // returns true
+	 * </code>
 	 * 
 	 * @param art the Art Item to check against
 	 * @return <code>true</code> if it is an ancestor of the specified Art
