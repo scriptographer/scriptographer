@@ -548,7 +548,7 @@ public abstract class Art extends DictionaryObject {
 	protected native boolean getAttribute(int attribute);
 
 	/**
-	 * Checks if the Art object is selected or partially selected (groups with
+	 * Checks if the Art Item is selected or partially selected (groups with
 	 * some selected objects/partially selected paths)
 	 * 
 	 * @return <code>true</code> if it is selected or partially selected,
@@ -563,7 +563,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Checks if the Art object is fully selected. For paths this means that all
+	 * Checks if the Art Item is fully selected. For paths this means that all
 	 * segments are selected, for container objects all children are selected
 	 * 
 	 * @return <code>true</code> if it is fully selected, false otherwise
@@ -577,7 +577,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Checks if the Art object is locked
+	 * Checks if the Art Item is locked
 	 * 
 	 * @return <code>true</code> if it is locked, false otherwise
 	 */
@@ -590,7 +590,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Checks if the Art object is hidden
+	 * Checks if the Art Item is hidden
 	 * 
 	 * @return <code>true</code> if it is hidden, false otherwise
 	 */
@@ -603,28 +603,28 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Returns the art object's blend mode.
+	 * Returns the Art Item's blend mode.
 	 * 
 	 * @return any of Art.BLEND_*
 	 */
 	public native int getBlendMode();
 
 	/**
-	 * Set the art object's blend mode:
+	 * Set the Art Item's blend mode:
 	 * 
 	 * @param mode Art.BLEND_*
 	 */
 	public native void setBlendMode(int mode);
 
 	/**
-	 * @return the opacity of the art object as a value between 0 and 1.
+	 * @return the opacity of the Art Item as a value between 0 and 1.
 	 */
 	public native float getOpacity();
 
 	/**
-	 * Sets the art object's opacity.
+	 * Sets the Art Item's opacity.
 	 * 
-	 * @param opacity the opacity of the art object as a value between 0 and 1.
+	 * @param opacity the opacity of the Art Item as a value between 0 and 1.
 	 */
 	public native void setOpacity(float opacity);
 
@@ -645,31 +645,31 @@ public abstract class Art extends DictionaryObject {
 	public native boolean isValid();
 
 	/**
-	 * Appends the specified art object as a child of the art object.
+	 * Appends the specified Art Item as a child of the art object.
 	 * You can use this function for groups, compound paths and layers.
 	 * 
-	 * @param art The art object that will be appended as a child
+	 * @param art The Art Item that will be appended as a child
 	 */
 	public native boolean appendChild(Art art);
 	
 	/**
-	 * Moves the art object above the specified art object
+	 * Moves the Art Item above the specified art object
 	 * 
-	 * @param art The art object above which it should be moved
+	 * @param art The Art Item above which it should be moved
 	 * @return true if it was moved, false otherwise
 	 */
 	public native boolean moveAbove(Art art);
 	
 	/**
-	 * Moves the art object below the specified art object
+	 * Moves the Art Item below the specified art object
 	 * 
-	 * @param art the art object below which it should be moved
+	 * @param art the Art Item below which it should be moved
 	 * @return true if it was moved, false otherwise
 	 */
 	public native boolean moveBelow(Art art);
 
 	/**
-	 * Transforms the art object with custom flags to be set.
+	 * Transforms the Art Item with custom flags to be set.
 	 * 
 	 * @param at
 	 * @param flags Art. TRANSFORM_*
@@ -677,7 +677,7 @@ public abstract class Art extends DictionaryObject {
 	public native void transform(AffineTransform at, int flags);
 
 	/**
-	 * Transforms the art object with the flags Art.TRANSFORM_OBJECTS and
+	 * Transforms the Art Item with the flags Art.TRANSFORM_OBJECTS and
 	 * Art.TRANSFORM_DEEP set
 	 * 
 	 * @param at
@@ -687,7 +687,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * scales the object by creating a scale Matrix and executing transform()
+	 * scales the Art Item by creating a scale Matrix and executing transform()
 	 * 
 	 * @param sx
 	 * @param sy
@@ -702,7 +702,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Translates (moves) the object by the given offsets
+	 * Translates (moves) the Art Item by the given offsets
 	 * 
 	 * @param tx
 	 * @param ty
@@ -713,7 +713,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Translates (moves) the object by the given offset point
+	 * Translates (moves) the Art Item by the given offset point
 	 * 
 	 * @param t
 	 */
@@ -722,7 +722,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Rotates the object around an anchor point by a given angle
+	 * Rotates the Art Item around an anchor point by a given angle
 	 * 
 	 * @param theta the rotation angle in radians
 	 * @see Matrix#rotate(double, double, double)
@@ -745,7 +745,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Rotates the object by a given angle
+	 * Rotates the Art Item by a given angle
 	 * 
 	 * @param theta the rotation angle in radians
 	 */
@@ -826,32 +826,51 @@ public abstract class Art extends DictionaryObject {
 	public native int getOrder(Art art);
 	
 	/**
-	 * Checks if the Art object is before the specified Art object
+	 * Checks if the Art Item is above the specified Art Item
+	 * Sample code:
+	 * <code>
+	 var firstPath = new Path();
+	 var secondPath = new Path();
+	 print(secondPath.isAbove(firstPath)) // returns true
+	 </code>
 	 * 
-	 * @param art The Art object to check against
-	 * @return <code>true</code> if it is before the specified Art object,
+	 * @param art The Art Item to check against
+	 * @return <code>true</code> if it is above the specified Art Item,
 	 *         false otherwise
 	 */
-	public boolean isBefore(Art art) {
+	public boolean isAbove(Art art) {
 		return getOrder(art) == ORDER_BEFORE;		
 	}
 	
 	/**
-	 * Checks if the Art object is after the specified Art object
+	 * Checks if the Art Item is below the specified Art Item
+	 * Sample code:
+	 * <code>
+	 var firstPath = new Path();
+	 var secondPath = new Path();
+	 print(firstPath.isBelow(secondPath)) // returns true
+	 </code>
 	 * 
-	 * @param art The Art object to check against
-	 * @return <code>true</code> if it is after the specified Art object,
+	 * @param art The Art Item to check against
+	 * @return <code>true</code> if it is below the specified Art Item,
 	 *         false otherwise
 	 */
-	public boolean isAfter(Art art) {
+	public boolean isBelow(Art art) {
 		return getOrder(art) == ORDER_AFTER;		
 	}
 	
 	/**
-	 * Checks if the Art object is inside the specified Art object
-	 * 
-	 * @param art The Art object to check against
-	 * @return <code>true</code> if it is inside the specified Art object,
+	 * Checks if the Art Item is inside the specified Art Item
+	 * Sample code:
+	 * <code>
+	 var group = new Group();
+	 var path = new Path();
+	 group.appendChild(path);
+	 print(path.isInside(group)) // returns true
+	 </code>
+	 *
+	 * @param art The Art Item to check against
+	 * @return <code>true</code> if it is inside the specified Art Item,
 	 *         false otherwise
 	 */
 	public boolean isInside(Art art) {
@@ -859,10 +878,18 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Checks if the art item is an ancestor of the specified art item.
-	 * i.e. it checks if the specified art item is a child of the art item.
-	 * @param art
-	 * @return
+	 * Checks if the art item is an ancestor of the specified Art Item.
+	 * Sample code:
+	 * <code>
+	 var group = new Group();
+	 var path = new Path();
+	 group.appendChild(path);
+	 print(group.isAnchestor(path)) // returns true
+	 </code>
+	 * 
+	 * @param art the Art Item to check against
+	 * @return <code>true</code> if it is an ancestor of the specified Art
+	 *         Item, false otherwise
 	 */
 	public boolean isAnchestor(Art art) {
 		return getOrder(art) == ORDER_ANCHESTOR;		
