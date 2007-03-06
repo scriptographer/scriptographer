@@ -437,10 +437,10 @@ public abstract class Art extends DictionaryObject {
 			int dictionaryRef);
 
 	/**
-	 * Removes the Art object from the document. If the Art object has children,
+	 * Removes the Art Item from the document. If the Art Item has children,
 	 * they are also removed.
 	 * 
-	 * @return <code>true</code> if the Art object was removed, false
+	 * @return <code>true</code> if the Art Item was removed, false
 	 *         otherwise
 	 */
 	public boolean remove() {
@@ -456,16 +456,16 @@ public abstract class Art extends DictionaryObject {
 	protected native void finalize();
 
 	/**
-	 * Copies the art object to another document, or duplicates it within the
+	 * Copies the Art Item to another document, or duplicates it within the
 	 * same document.
 	 * 
-	 * @param document the document to copy the new art to
-	 * @return the new copy
+	 * @param document the document to copy the Art Item to
+	 * @return the new copy of the Art Item
 	 */
 	public native Art copyTo(Document document);
 
 	/**
-	 * Copy art object into another art object
+	 * Copies the Art Item into the specified Art Item
 	 * 
 	 * @param art
 	 * @return
@@ -473,7 +473,7 @@ public abstract class Art extends DictionaryObject {
 	public native Art copyTo(Art art);
 
 	/**
-	 * Clones art object within the same document.
+	 * Clones the Art Item within the same document.
 	 * 
 	 * @return the newly cloned art object
 	 */
@@ -647,6 +647,13 @@ public abstract class Art extends DictionaryObject {
 	/**
 	 * Appends the specified Art Item as a child of the art object.
 	 * You can use this function for groups, compound paths and layers.
+	 * Sample code:
+	 * <code>
+	 * var group = new Group();
+	 * var path = new Path();
+	 * group.appendChild(path);
+	 * print(path.isInside(group)) // returns true
+	 * </code>
 	 * 
 	 * @param art The Art Item that will be appended as a child
 	 */
@@ -654,6 +661,13 @@ public abstract class Art extends DictionaryObject {
 	
 	/**
 	 * Moves the Art Item above the specified art object
+	 * <code>
+	 * var firstPath = new Path();
+	 * var secondPath = new Path();
+	 * print(firstPath.isAbove(secondPath)) // returns false
+	 * firstPath.moveAbove(secondPath);
+	 * print(firstPath.isAbove(secondPath)) // returns true
+	 * </code>
 	 * 
 	 * @param art The Art Item above which it should be moved
 	 * @return true if it was moved, false otherwise
@@ -662,6 +676,13 @@ public abstract class Art extends DictionaryObject {
 	
 	/**
 	 * Moves the Art Item below the specified art object
+	 * <code>
+	 * var firstPath = new Path();
+	 * var secondPath = new Path();
+	 * print(secondPath.isBelow(firstPath)) // returns false
+	 * secondPath.moveBelow(firstPath);
+	 * print(secondPath.isBelow(firstPath)) // returns true
+	 * </code>
 	 * 
 	 * @param art the Art Item below which it should be moved
 	 * @return true if it was moved, false otherwise
