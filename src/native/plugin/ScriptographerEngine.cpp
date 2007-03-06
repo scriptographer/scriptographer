@@ -162,7 +162,7 @@ public:
 		}
 	}
 	
-	char *add(const char *str, ...) {
+	void add(const char *str, ...) {
 		char *text = new char[2048];
 		va_list args;
 		va_start(args, str);
@@ -171,55 +171,11 @@ public:
 		fOptions[fNumOptions++].optionString = text;
 		if (strlen(text) > 0)
 			gPlugin->log("JVM Option: %s", text);
-		return text;
 	}
 	
 	void fillArgs(JavaVMInitArgs *args) {
 		args->options = fOptions;
 		args->nOptions = fNumOptions;
-	}
-};
-
-class MemoryOption {
-	int fSize;
-	bool fInitial;
-	char *fString;
-	
-public:
-	MemoryOption(const char *str) {
-		// Parse the -Xms / -Xmx setting:
-		fString = NULL;
-		fInitial = str[3] == 's';
-		const char *start = &str[4], *end = start;
-		fSize =  atoi(start);
-		while (*end != '\0' && isdigit(*end)) end++;
-		char unit = tolower(*end);
-		// Size is in M
-		if (unit == 'k') fSize /= 1024; // KB -> M
-		else if (unit != 'm') fSize /= 1024 * 1024;  // B -> M
-	}
-	
-	void set(JVMOptions *options) {
-		if (fString == NULL) fString = options->add("");
-		sprintf(fString, "-Xm%c%im", fInitial ? 's' : 'x', fSize);
-	}
-	
-	bool isInitial() {
-		return fInitial;
-	}
-	
-	int getSize() {
-		return fSize;
-	}
-	
-	bool decrease(int minSize, MemoryOption *initSize = NULL) {
-		// minSize is in M
-		fSize = fSize * 8 / 10;
-		if (fSize < minSize)
-			return false;
-		if (initSize != NULL && initSize->fSize > fSize && !initSize->decrease(minSize))
-			return false;
-		return true;
 	}
 };
 
@@ -241,8 +197,8 @@ void ScriptographerEngine::init() {
 	if (args.version < JNI_VERSION_1_4)
 		getDefaultJavaVMInitArgs(&args);
 
+	// Define options
 	JVMOptions options;
-
 #ifndef GCJ
 	// Only add the loader to the classpath, the rest is done in java:
 	options.add("-Djava.class.path=%s" PATH_SEP_STR "loader.jar", m_homeDir);
@@ -260,34 +216,21 @@ void ScriptographerEngine::init() {
 	options.add("-Dline.separator=\r");
 #endif
 	// Read ini file and add the options here
-	MemoryOption *initSize = NULL, *maxSize = NULL;
-	char str[512];
-	sprintf(str, "%s" PATH_SEP_STR "jvm.ini", m_homeDir);
-	FILE *file = fopen(str, "rt");
+	char buffer[512];
+	sprintf(buffer, "%s" PATH_SEP_STR "jvm.ini", m_homeDir);
+	FILE *file = fopen(buffer, "rt");
 	if (file != NULL) {
-		while (fgets(str, sizeof(str), file)) {
-			// Trim new line and white space at the end of the line:
+		while (fgets(buffer, sizeof(buffer), file)) {
+			char *str = buffer;
+			// Trim new line and white space at beginning and the end of the line:
+			while (isspace(*str) && str != '\0') str++;
+			if (*str == '#') continue; // skip comments
 			int pos = strlen(str) - 1;
-			while (pos >= 0 && isspace(str[pos])) {
-				str[pos] = '\0';
-				pos--;
-			}
-			// Deal with memory settings specially, so we can iterate bellow
-			// until the JavaVM can actually be created.
-			if (strncmp("-Xm", str, 3) == 0) {
-				MemoryOption *size = new MemoryOption(str);
-				if (size->isInitial()) {
-					if (initSize != NULL) delete initSize;
-					initSize = size;
-				} else {
-					if (maxSize != NULL) delete maxSize;
-					maxSize = size;
-				}
-			} else {
-				options.add(str);
-			}
+			while (pos >= 0 && isspace(str[pos])) str[pos--] = '\0';
+			options.add(str);
 		}
 	}
+
 #if defined(_DEBUG) && !defined(GCJ)
 	// Start JVM in debug mode, for remote debuggin on port 8000
 	options.add("-Xdebug");
@@ -295,36 +238,16 @@ void ScriptographerEngine::init() {
 	options.add("-Djava.compiler=NONE");
 	options.add("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n");
 #endif
-	
+
 	options.fillArgs(&args);
 	args.ignoreUnrecognized = true;
-	
 	JNIEnv *env = NULL;
-	jint res = 0;
-	
-	do {
-		if (initSize != NULL) {
-			initSize->set(&options);
-			gPlugin->log("JVM Initial Heap Size: %im", initSize->getSize());
-		}
-		if (maxSize != NULL) {
-			maxSize->set(&options);
-			gPlugin->log("JVM Maximum Heap Size: %im", maxSize->getSize());
-		}
-		// Create the JVM
-		jint res = createJavaVM(&m_javaVM, (void **) &env, (void *) &args);
-		if (res < 0) {
-			// We need at least 16mb for Scripto to do seomthing nice...
-			if (!maxSize->decrease(16, initSize))
-				break;
-		}
-	} while(res < 0);
-	
+	// Create the JVM
+	jint res = createJavaVM(&m_javaVM, (void **) &env, (void *) &args);
 	if (res < 0) {
 		gPlugin->log("Error creataing Java VM: %i", res);
 		throw new StringException("Cannot create Java VM.");
 	}
-
 #ifndef GCJ
 	cls_Loader = env->FindClass("com/scriptographer/loader/Loader");
 	if (cls_Loader == NULL)
