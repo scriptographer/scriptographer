@@ -40,24 +40,24 @@ import com.scriptographer.ScriptographerEngine;
  *
  */
 public abstract class Script {
-	protected ScriptEngine engine;
 	protected File file;
 	private long lastModified;
 	
-	public Script(File file, ScriptEngine engine) {
+	public Script(File file) {
 		this.file = file;
-		this.engine = engine;
 		lastModified = -1;
 	}
 
 	protected abstract Object executeScript(ScriptScope scope) throws ScriptException;
+
+	public abstract ScriptEngine getEngine();
 
 	public Object execute(ScriptScope scope) {
 		boolean started = false;
 		Object ret = null;
 		try {
 			if (scope == null)
-				scope = engine.createScope();
+				scope = getEngine().createScope();
 			started = ScriptographerEngine.beginExecution(file);
 			if (started) {
 				ScriptographerEngine.showProgress("Executing " + (file != null ?
@@ -106,10 +106,6 @@ public abstract class Script {
 
 	public File getFile() {
 		return file;
-	}
-
-	public ScriptEngine getEngine() {
-		return engine;
 	}
 
 	public boolean hasChanged() {

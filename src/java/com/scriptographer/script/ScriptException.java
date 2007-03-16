@@ -36,6 +36,10 @@ package com.scriptographer.script;
  *
  */
 public class ScriptException extends Exception {
+    public ScriptException(Throwable cause) {
+        super(cause);
+    }
+
     public ScriptException(String message, Throwable cause) {
         super(message, cause);
     }

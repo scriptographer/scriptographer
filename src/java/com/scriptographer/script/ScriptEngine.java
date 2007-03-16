@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.util.HashMap;
 
 import com.scriptographer.ai.Timer;
-import com.scriptographer.script.rhino.JsEngine;
 
 /**
  * @author lehni
@@ -48,11 +47,19 @@ public abstract class ScriptEngine {
 	private static HashMap enginesByExtension = new HashMap();
 
 	private HashMap scriptCache = new HashMap();
-
+	
 	static {
-		// create a JsEngine instance
-		// TODO: find elegant solution for engine registration!
-		new JsEngine();
+		// Try finding the Scripting engines for Scriptographer...
+		String[] engines = {
+			"com.scriptographer.script.rhino.RhinoEngine"
+		};
+		for (int i = 0; i < engines.length; i++) {
+			try {
+				Class.forName(engines[i]).newInstance();
+			} catch (Exception e) {
+			}
+		}
+			
 	}
 
 	public ScriptEngine(String name, String[] extensions) {
