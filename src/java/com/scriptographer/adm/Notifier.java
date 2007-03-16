@@ -86,7 +86,7 @@ public class Notifier {
 		"ADM Cycle Notifier",
 		"ADM Collapse Notifier",
 		"ADM Expand Notifier",
-		"ADM Context MenuItem Changed Notifier",
+		"ADM Context Menu Changed Notifier",
 		"ADM Show Window Notifier",
 		"ADM Hide Window Notifier",
 		"ADM Show Group Notifier",
