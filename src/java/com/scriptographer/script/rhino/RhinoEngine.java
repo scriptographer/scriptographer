@@ -72,16 +72,16 @@ import com.scriptographer.util.WeakIdentityHashMap;
  * @author lehni
  *
  */
-public class JsEngine extends ScriptEngine {
+public class RhinoEngine extends ScriptEngine {
 	protected Context context;
 	protected GlobalObject global;
 	protected Debugger debugger = null;
 
-	public JsEngine() {
+	public RhinoEngine() {
 		super("JavaScript", new String[] { "js" });
 		// initialize the JS stuff
-		JsContextFactory factory = new JsContextFactory();
-		JsContextFactory.initGlobal(factory);
+		RhinoContextFactory factory = new RhinoContextFactory();
+		RhinoContextFactory.initGlobal(factory);
 
 		// The debugger needs to be created before the context, otherwise
 		// notification won't work
@@ -96,90 +96,97 @@ public class JsEngine extends ScriptEngine {
 	}
 	
 	protected Script compileScript(File file)
-			throws JsException, IOException {
+			throws RhinoScriptException, IOException {
 		FileReader in = null;
 		try {
 			in = new FileReader(file);
-			return new JsScript(context.compileReader(
+			return new RhinoScript(context.compileReader(
 					in, file.getPath(), 1, null), file);
 		} catch (RhinoException e) {
-			throw new JsException(e);
+			throw new RhinoScriptException(e);
 		} finally {
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-				}
-			}
+			if (in != null)
+				in.close();
 		}
 	}
 
-	public void evaluate(String string, ScriptScope scope) throws JsException {
+	public void evaluate(String string, ScriptScope scope) throws RhinoScriptException {
 		try {
 			// TODO: typecast to JsContext can be wrong, e.g. when calling
 			// from another language
-			this.context.evaluateString(((JsScope) scope).getScope(), string,
+			this.context.evaluateString(((RhinoScope) scope).getScope(), string,
 					null, 1, null);
 		} catch (RhinoException e) {
-			throw new JsException(e);
+			throw new RhinoScriptException(e);
 		}
 	}
 
 	public ScriptScope createScope() {
-		return new JsScope();
+		return new RhinoScope();
 	}
 	
-	private Scriptable getScriptableScope(Object obj) {
-		return obj instanceof Scriptable ? (Scriptable) obj :
-			context.getWrapFactory().wrapAsJavaObject(
-					context, global, obj, obj.getClass());
+	private Scriptable getScriptable(Object obj) {
+		if (obj instanceof Scriptable) {
+			return (Scriptable) obj;
+		} else {
+			return context.getWrapFactory().wrapAsJavaObject(context, global, obj, obj.getClass());
+		}
 	}
 
 	public ScriptScope getScope(Object obj) {
-		return new JsScope(getScriptableScope(obj));
+		// Set global as the parent scope, so Tool buttons work.
+		// TODO: this might not work for Jython or JRuby. Find a better 
+		// way to handle this
+		Scriptable scriptable = getScriptable(obj);
+		scriptable.setParentScope(global);
+		return new RhinoScope(scriptable);
 	}
 
-	private class JsScript extends Script {
+	private class RhinoScript extends Script {
 		private org.mozilla.javascript.Script script;
 
-		public JsScript(org.mozilla.javascript.Script script, File file) {
-			super(file, JsEngine.this);
+		public RhinoScript(org.mozilla.javascript.Script script, File file) {
+			super(file);
 			this.script = script;
+		}
+		
+		public ScriptEngine getEngine() {
+			return RhinoEngine.this;
 		}
 
 		public Object executeScript(ScriptScope scope) throws ScriptException {
 			try {
 				// TODO: typecast to JsContext can be wrong, e.g. when calling
 				// from another language
-				Object ret = script.exec(context, ((JsScope) scope).getScope());
+				Object ret = script.exec(context, ((RhinoScope) scope).getScope());
 				if (ret instanceof Wrapper)
 					ret = ((Wrapper) ret).unwrap();
 				return ret;
 			} catch (RhinoException re) {
-				throw new JsException(re);
+				throw new RhinoScriptException(re);
 			}
 		}
 	}
 	
-	private class JsMethod extends ScriptMethod {
+	private class RhinoMethod extends ScriptMethod {
 		Function function;
 		
-		JsMethod(Function function) {
+		RhinoMethod(Function function) {
 			this.function = function;
 		}
 		
-		public Object call(Object obj, Object[] args) throws JsException {
+		public Object call(Object obj, Object[] args) throws RhinoScriptException {
 			// Retrieve wrapper object for the native java object, and call the
 			// function on it.
 			try {
-				Scriptable scope = getScriptableScope(obj);
+				Scriptable scope = getScriptable(obj);
 				Object ret = function.call(context, global, scope, args);
 				// unwrap if the return value is a native java object:
 				if (ret instanceof Wrapper)
 					ret = ((Wrapper) ret).unwrap();
 				return ret;
 			} catch (RhinoException re) {
-				throw new JsException(re);
+				throw new RhinoScriptException(re);
 			}
 		}
 
@@ -196,7 +203,7 @@ public class JsEngine extends ScriptEngine {
 		}
 	}
 
-	private class JsScope extends ScriptScope {
+	private class RhinoScope extends ScriptScope {
 		private Scriptable scope;
 
 		/**
@@ -204,11 +211,11 @@ public class JsEngine extends ScriptEngine {
 		 * 
 		 * @param scope
 		 */
-		public JsScope(Scriptable scope) {
+		public RhinoScope(Scriptable scope) {
 			this.scope = scope;
 		}
 		
-		public JsScope() {
+		public RhinoScope() {
 			scope = new NativeObject();
 			scope.setPrototype(global);
 			scope.setParentScope(null);
@@ -221,7 +228,7 @@ public class JsEngine extends ScriptEngine {
 		public Object get(String name) {
 			Object obj = scope.get(name, scope);
 			if (obj == Scriptable.NOT_FOUND) return null;
-			else if (obj instanceof Function) return new JsMethod((Function) obj);
+			else if (obj instanceof Function) return new RhinoMethod((Function) obj);
 			else if (obj instanceof Wrapper) return ((Wrapper) obj).unwrap();
 			else return obj;
 		}
@@ -237,7 +244,11 @@ public class JsEngine extends ScriptEngine {
 		}
 	}
 
-	private static class JsException extends ScriptException {
+	/**
+	 * ScriptException for Rhino, preferably called RhinoException, but
+	 * that's already used by Rhino (org.mozilla.javascript.RhinoException).
+	 */
+	private static class RhinoScriptException extends ScriptException {
 
 		private static String formatMessage(Throwable t) {
 			RhinoException re = t instanceof RhinoException ? (RhinoException) t
@@ -256,12 +267,12 @@ public class JsEngine extends ScriptEngine {
 				return buf.toString();
 		}
 
-		public JsException(Throwable cause) {
+		public RhinoScriptException(Throwable cause) {
 			super(formatMessage(cause), cause);
 		}
 	}
 	
-	private class JsContextFactory extends ContextFactory {
+	private class RhinoContextFactory extends ContextFactory {
 		
 		protected boolean hasFeature(Context cx, int featureIndex) {
 			switch (featureIndex) {
@@ -270,7 +281,7 @@ public class JsEngine extends ScriptEngine {
 				case Context.FEATURE_MEMBER_EXPR_AS_FUNCTION_NAME:
 					return true;
 				case Context.FEATURE_DYNAMIC_SCOPE:
-					return true;
+					return false;
 			}
 			return super.hasFeature(cx, featureIndex);
 		}
@@ -278,7 +289,7 @@ public class JsEngine extends ScriptEngine {
 	    protected Context makeContext() {
 	        Context context = new Context();
 
-			JsWrapFactory wrapper = new JsWrapFactory();
+			RhinoWrapFactory wrapper = new RhinoWrapFactory();
 			wrapper.setJavaPrimitiveWrap(false);
 			context.setApplicationClassLoader(getClass().getClassLoader());
 			context.setWrapFactory(wrapper);
@@ -300,7 +311,7 @@ public class JsEngine extends ScriptEngine {
 		}
 	}
 
-	private class JsWrapFactory extends WrapFactory {
+	private class RhinoWrapFactory extends WrapFactory {
 		private WeakIdentityHashMap wrappers = new WeakIdentityHashMap();
 
 		public Object wrap(Context cx, Scriptable scope, Object obj,
@@ -319,10 +330,10 @@ public class JsEngine extends ScriptEngine {
 			} else if (obj instanceof java.awt.Dimension) {
 				// TODO: expose Dimension to JS?
 				obj = new Point((java.awt.Dimension) obj);
-			} else if (obj instanceof JsMethod) {
+			} else if (obj instanceof RhinoMethod) {
 				// Handle the ScriptFunction special case, return the unboxed
 				// function value.
-				obj = ((JsMethod) obj).getFunction();
+				obj = ((RhinoMethod) obj).getFunction();
 			}
 			return super.wrap(cx, scope, obj, staticType);
 		}
@@ -357,7 +368,7 @@ public class JsEngine extends ScriptEngine {
 			if (value instanceof NativeObject && Map.class.isAssignableFrom(type)) {
 				return convertToMap((NativeObject) value);
 			} else if (value instanceof Function && type == ScriptMethod.class) {
-				return new JsMethod((Function) value);
+				return new RhinoMethod((Function) value);
 			}
 			return null;
 		}

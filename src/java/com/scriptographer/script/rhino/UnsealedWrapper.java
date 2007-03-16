@@ -59,17 +59,16 @@ public class UnsealedWrapper extends NativeJavaObject {
 		Object obj;
 		if (super.has(name, start)) {
 			obj = super.get(name, start);
-		} else {
+		} else if (properties.containsKey(name)) {
 			// see wether this object defines the property.
 			obj = properties.get(name);
-			if (obj == null) {
-				// if not, see wether the prototype maybe defines it.
-				// NativeJavaObject misses to do so:
-				if (prototype != null) {
-					obj = prototype.get(name, start);
-				} else {
-					obj = Scriptable.NOT_FOUND;
-				}
+		} else {
+			// if not, see wether the prototype maybe defines it.
+			// NativeJavaObject misses to do so:
+			if (prototype != null) {
+				obj = prototype.get(name, start);
+			} else {
+				obj = Scriptable.NOT_FOUND;
 			}
 		}
 		return obj;
