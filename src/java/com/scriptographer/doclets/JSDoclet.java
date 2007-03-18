@@ -1300,16 +1300,16 @@ public class JSDoclet extends Doclet {
 					String name = pkg.name();
 					base = "";
 					String rel = getRelativeIdentifier(name);
+					String pkgName = rel.toUpperCase();
 					if (!templates) {
-						String pkgName = rel.toUpperCase();
 						writer.println("<li><a href=\"#\" onClick=\"return togglePackage('" + pkgName + "', false);\"><img name=\"arrow-" +  pkgName + "\" src=\"../resources/arrow-close.gif\" width=\"8\" height=\"8\" border=\"0\"></a><img src=\"../resources/spacer.gif\" width=\"6\" height=\"1\"><b>" + stripCodeTags(createLink(name, rel, null, pkgName)) + "</b>");
 						writer.println("<ul id=\"package-" + pkgName + "\" class=\"hidden\">");
 					} else {
-						String pkgName = rel.toUpperCase();
 						writer.print("createPackage(\"" + pkgName + "\", ");
 					}
+					System.out.println(pkgName);
 
-					processClasses(writer, pkg.interfaces());
+					// Do not show interfaces at all: processClasses(writer, pkg.interfaces());
 					processClasses(writer, pkg.allClasses(true));
 					processClasses(writer, pkg.exceptions());
 					processClasses(writer, pkg.errors());
