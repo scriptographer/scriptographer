@@ -278,7 +278,7 @@ public class MainDialog extends FloatingDialog {
 			setSize(buttonSize);
 		}
 
-		protected void onSelect() throws Exception {
+		protected void onClick() throws Exception {
 			ScriptEntry entry = (ScriptEntry) scriptList.getActiveLeaf();
 			if (entry != null && entry.file != null) {
 				Tool.getTool(toolIndex).setScript(entry.file);
