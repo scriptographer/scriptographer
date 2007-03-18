@@ -78,19 +78,19 @@ public class MainDialog extends FloatingDialog {
 				new MenuItem(MenuGroup.GROUP_TOOL_PALETTES, " Scriptographer");
 
 		new MenuItem(scriptographerItem, "Main") {
-			public void onClick() {
+			public void onSelect() {
 				MainDialog.this.setVisible(true);
 			}
 		};
 
 		new MenuItem(scriptographerItem, "Console") {
-			public void onClick() {
+			public void onSelect() {
 				consoleDialog.setVisible(true);
 			}
 		};
 
 		new MenuItem(scriptographerItem, "Reload") {
-			public void onClick() {
+			public void onSelect() {
 				ScriptographerEngine.reload();
 			}
 		};
@@ -99,28 +99,28 @@ public class MainDialog extends FloatingDialog {
 		PopupMenu menu = getPopupMenu();
 
 		ListEntry executeEntry = new ListEntry(menu) {
-			protected void onClick() throws Exception {
+			protected void onSelect() throws Exception {
 				execute();
 			}
 		};
 		executeEntry.setText("Execute Script");
 
 		ListEntry refreshEntry = new ListEntry(menu) {
-			protected void onClick() throws IOException {
+			protected void onSelect() throws IOException {
 				refreshFiles();
 			}
 		};
 		refreshEntry.setText("Refresh List");
 
 		ListEntry consoleEntry = new ListEntry(menu) {
-			protected void onClick() {
+			protected void onSelect() {
 				consoleDialog.setVisible(!consoleDialog.isVisible());
 			}
 		};
 		consoleEntry.setText("Show / Hide Console");
 
 		ListEntry scriptDirEntry = new ListEntry(menu) {
-			protected void onClick() throws Exception {
+			protected void onSelect() throws Exception {
 				if (ScriptographerEngine.chooseScriptDirectory())
 					refreshFiles();
 			}
@@ -128,14 +128,14 @@ public class MainDialog extends FloatingDialog {
 		scriptDirEntry.setText("Set Script Directory...");
 		
 		ListEntry aboutEntry = new ListEntry(menu) {
-			protected void onClick() {
+			protected void onSelect() {
 				AboutDialog.show();
 			}
 		};
 		aboutEntry.setText("About Scriptographer...");
 		
 		ListEntry helpEntry = new ListEntry(menu) {
-			protected void onClick() {
+			protected void onSelect() {
 				ScriptographerEngine.launch("file://" +
 						new File(ScriptographerEngine.getPluginDirectory(),
 								"doc/index.html"));
@@ -147,7 +147,7 @@ public class MainDialog extends FloatingDialog {
 		separatorEntry.setSeparator(true);
 		
 		ListEntry reloadEntry = new ListEntry(menu) {
-			protected void onClick() {
+			protected void onSelect() {
 				ScriptographerEngine.reload();
 			}
 		};
@@ -278,7 +278,7 @@ public class MainDialog extends FloatingDialog {
 			setSize(buttonSize);
 		}
 
-		protected void onClick() throws Exception {
+		protected void onSelect() throws Exception {
 			ScriptEntry entry = (ScriptEntry) scriptList.getActiveLeaf();
 			if (entry != null && entry.file != null) {
 				Tool.getTool(toolIndex).setScript(entry.file);

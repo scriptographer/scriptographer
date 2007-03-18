@@ -108,7 +108,7 @@ abstract class CallbackHandler extends NotificationHandler {
 	}
 
 	public ScriptMethod getOnDraw() {
-		return onTrack;
+		return onDraw;
 	}
 
 	protected void onDraw(Drawer drawer) throws Exception {

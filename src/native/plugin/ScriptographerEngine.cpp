@@ -627,7 +627,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_MenuItem = loadClass(env, "com/scriptographer/adm/MenuItem");
 	mid_MenuItem_wrapHandle = getStaticMethodID(env, cls_MenuItem, "wrapHandle", "(ILjava/lang/String;Ljava/lang/String;ILjava/lang/String;)Lcom/scriptographer/adm/MenuItem;");
-	mid_MenuItem_onClick = getStaticMethodID(env, cls_MenuItem, "onClick", "(I)V");
+	mid_MenuItem_onSelect = getStaticMethodID(env, cls_MenuItem, "onSelect", "(I)V");
 	mid_MenuItem_onUpdate = getStaticMethodID(env, cls_MenuItem, "onUpdate", "(IIII)V");
 	
 	cls_MenuGroup = loadClass(env, "com/scriptographer/adm/MenuGroup");
@@ -2132,7 +2132,7 @@ ASErr ScriptographerEngine::liveEffectGetInputType(AILiveEffectInputTypeMessage 
 ASErr ScriptographerEngine::menuItemExecute(AIMenuMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_MenuItem, mid_MenuItem_onClick, (jint) message->menuItem);
+		callStaticVoidMethod(env, cls_MenuItem, mid_MenuItem_onSelect, (jint) message->menuItem);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;

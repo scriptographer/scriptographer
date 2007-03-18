@@ -102,10 +102,10 @@ public class HierarchyList extends List {
 				parentEntry.getList().getOnChangeEntryText() : func;
 	}
 
-	public ScriptMethod getOnClickEntry() {
-		ScriptMethod func = super.getOnClickEntry();
+	public ScriptMethod getOnSelectEntry() {
+		ScriptMethod func = super.getOnSelectEntry();
 		return func == null && parentEntry != null ?
-				parentEntry.getList().getOnClickEntry() : func;
+				parentEntry.getList().getOnSelectEntry() : func;
 	}
 
 	public ScriptMethod getOnDestroyEntry() {

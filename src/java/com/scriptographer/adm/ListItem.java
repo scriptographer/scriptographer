@@ -79,15 +79,50 @@ public abstract class ListItem extends Item implements SimpleList {
 	 */
 	protected ListItem() {
 	}
+	
+	private ScriptMethod onPreChange = null;
+
+	public ScriptMethod getOnPreChange() {
+		return onPreChange;
+	}
+
+	public void setOnPreChange(ScriptMethod onPreChange) {
+		this.onPreChange = onPreChange;
+	}
+	
+	protected void onPreChange() throws Exception {
+		if (onPreChange != null)
+			onPreChange.execute(this);
+	}
+	
+	private ScriptMethod onChange = null;
+	
+	protected void onChange() throws Exception {
+		if (onChange != null)
+			onChange.execute(this);
+	}
+
+	public ScriptMethod getOnChange() {
+		return onChange;
+	}
+
+	public void setOnChange(ScriptMethod onChange) {
+		this.onChange = onChange;
+	}
 
 	protected void onNotify(int notifier) throws Exception {
 		super.onNotify(notifier);
-		if (notifier == Notifier.NOTIFIER_USER_CHANGED) {
-			// redirect to entry:
+		switch(notifier) {
+			case Notifier.NOTIFIER_USER_CHANGED:
+			onChange();
+			// Notify entry too:
 			ListEntry entry = getActiveEntry();
-			if (entry != null) {
+			if (entry != null)
 				entry.onNotify(notifier);
-			}
+			break;
+		case Notifier.NOTIFIER_INTERMEDIATE_CHANGED:
+			onPreChange();
+			break;
 		}
 	}
 	
@@ -159,14 +194,14 @@ public abstract class ListItem extends Item implements SimpleList {
 		onDestroyEntry = func;
 	}
 
-	private ScriptMethod onClickEntry = null;
+	private ScriptMethod onSelectEntry = null;
 
-	public ScriptMethod getOnClickEntry() {
-		return onClickEntry;
+	public ScriptMethod getOnSelectEntry() {
+		return onSelectEntry;
 	}
 
-	public void setOnClickEntry(ScriptMethod func) {
-		onClickEntry = func;
+	public void setOnSelectEntry(ScriptMethod func) {
+		onSelectEntry = func;
 	}
 	
 	private ScriptMethod onChangeEntryText = null;

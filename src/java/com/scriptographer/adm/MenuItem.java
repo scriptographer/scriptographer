@@ -252,19 +252,19 @@ public class MenuItem extends ADMObject{
 
 	// Callback functions:
 	
-	private ScriptMethod onClick = null;
+	private ScriptMethod onSelect = null;
 
-	public ScriptMethod getOnClick() {
-		return onClick;
+	public ScriptMethod getOnSelect() {
+		return onSelect;
 	}
 
-	public void setOnClick(ScriptMethod onClick) {
-		this.onClick = onClick;
+	public void setOnSelect(ScriptMethod onSelect) {
+		this.onSelect = onSelect;
 	}
 
-	protected void onClick() throws Exception {
-		if (onClick != null)
-			onClick.execute(this);
+	protected void onSelect() throws Exception {
+		if (onSelect != null)
+			onSelect.execute(this);
 	}
 	
 	private ScriptMethod onUpdate = null;
@@ -286,10 +286,10 @@ public class MenuItem extends ADMObject{
 	/**
 	 * To be called from the native environment:
 	 */
-	private static void onClick(int handle) throws Exception {
+	private static void onSelect(int handle) throws Exception {
 		MenuItem item = getItem(handle);
 		if (item != null)
-			item.onClick();
+			item.onSelect();
 	}
 
 	/**

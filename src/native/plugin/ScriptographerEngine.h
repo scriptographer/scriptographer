@@ -301,7 +301,7 @@ public:
 	
 	jclass cls_MenuItem;
 	jmethodID mid_MenuItem_wrapHandle;
-	jmethodID mid_MenuItem_onClick;
+	jmethodID mid_MenuItem_onSelect;
 	jmethodID mid_MenuItem_onUpdate;
 
 	jclass cls_MenuGroup;

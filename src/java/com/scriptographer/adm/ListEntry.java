@@ -110,22 +110,22 @@ public class ListEntry extends NotificationHandler {
 			onDestroyEntry.execute(list, new Object[] { this });
 	}
 	
-	ScriptMethod onClick = null;
+	ScriptMethod onSelect = null;
 
-	public ScriptMethod getOnClick() {
-		return onClick;
+	public ScriptMethod getOnSelect() {
+		return onSelect;
 	}
 
-	public void setOnClick(ScriptMethod onClick) {
-		this.onClick = onClick;
+	public void setOnSelect(ScriptMethod onSelect) {
+		this.onSelect = onSelect;
 	}
 
-	protected void onClick() throws Exception {
-		if (onClick != null)
-			onClick.execute(this);
-		ScriptMethod onClickEntry = list.getOnClickEntry();
-		if (onClickEntry != null)
-			onClickEntry.execute(list, new Object[] { this });
+	protected void onSelect() throws Exception {
+		if (onSelect != null)
+			onSelect.execute(this);
+		ScriptMethod onSelectEntry = list.getOnSelectEntry();
+		if (onSelectEntry != null)
+			onSelectEntry.execute(list, new Object[] { this });
 	}
 	
 	ScriptMethod onChangeText = null;
@@ -148,15 +148,15 @@ public class ListEntry extends NotificationHandler {
 	
 	protected void onNotify(int notifier) throws Exception {
 		switch (notifier) {
-			case Notifier.NOTIFIER_DESTROY:
-				onDestroy();
+		case Notifier.NOTIFIER_USER_CHANGED:
+			onSelect();
 			break;
-			case Notifier.NOTIFIER_USER_CHANGED:
-				onClick();
-				break;
-			case Notifier.NOTIFIER_ENTRY_TEXT_CHANGED:
-				onChangeText();
-				break;
+		case Notifier.NOTIFIER_DESTROY:
+			onDestroy();
+			break;
+		case Notifier.NOTIFIER_ENTRY_TEXT_CHANGED:
+			onChangeText();
+			break;
 		}
 	}
 
