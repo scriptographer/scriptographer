@@ -34,8 +34,6 @@ package com.scriptographer.ai;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.mozilla.javascript.Function;
-
 import com.scriptographer.script.ScriptMethod;
 import com.scriptographer.util.IntMap;
 
@@ -180,7 +178,7 @@ public class Timer extends AIObject {
 
 	protected void onExecute() throws Exception {
 		if (onExecute != null)
-			onExecute.call(this);
+			onExecute.execute(this);
 	}
 
 	/**

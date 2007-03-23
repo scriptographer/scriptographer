@@ -122,7 +122,7 @@ public class Tool extends AIObject {
 	
 	protected void onInit() throws Exception {
 		if (scope != null && onInit != null)
-			onInit.call(this);
+			onInit.execute(this);
 	}
 
 	/*
@@ -141,7 +141,7 @@ public class Tool extends AIObject {
 
 	protected void onOptions() throws Exception {
 		if (scope != null && onOptions != null)
-			onOptions.call(this);
+			onOptions.execute(this);
 	}
 
 	private ScriptMethod onSelect;
@@ -156,7 +156,7 @@ public class Tool extends AIObject {
 
 	protected void onSelect() throws Exception {
 		if (scope != null && onSelect != null)
-			onSelect.call(this);
+			onSelect.execute(this);
 	}
 	
 	private ScriptMethod onDeselect;
@@ -171,7 +171,7 @@ public class Tool extends AIObject {
 	
 	protected void onDeselect() throws Exception {
 		if (scope != null && onDeselect != null)
-			onDeselect.call(this);
+			onDeselect.execute(this);
 	}
 
 	private ScriptMethod onReselect;
@@ -186,7 +186,7 @@ public class Tool extends AIObject {
 	
 	protected void onReselect() throws Exception {
 		if (scope != null && onReselect != null)
-			onReselect.call(this);
+			onReselect.execute(this);
 	}
 
 	private ScriptMethod onMouseDown;
