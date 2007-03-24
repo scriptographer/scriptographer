@@ -202,7 +202,7 @@ public class Tool extends AIObject {
 	protected void onMouseDown(float x, float y, int pressure) throws Exception {
 		if (scope != null && onMouseDown != null) {
 			event.setValues(x, y, pressure);
-			onMouseDown.call(this, eventArgs);
+			onMouseDown.execute(this, eventArgs);
 		}
 	}
 
@@ -219,7 +219,7 @@ public class Tool extends AIObject {
 	protected void onMouseDrag(float x, float y, int pressure) throws Exception {
 		if (scope != null && onMouseDrag != null) {
 			event.setValues(x, y, pressure);
-			onMouseDrag.call(this, eventArgs);
+			onMouseDrag.execute(this, eventArgs);
 		}
 	}
 
@@ -236,7 +236,7 @@ public class Tool extends AIObject {
 	protected void onMouseMove(float x, float y, int pressure) throws Exception {
 		if (scope != null && onMouseMove != null) {
 			event.setValues(x, y, pressure);
-			onMouseMove.call(this, eventArgs);
+			onMouseMove.execute(this, eventArgs);
 		}
 	}
 
@@ -253,7 +253,7 @@ public class Tool extends AIObject {
 	protected void onMouseUp(float x, float y, int pressure) throws Exception {
 		if (scope != null && onMouseUp != null) {
 			event.setValues(x, y, pressure);
-			onMouseUp.call(this, eventArgs);
+			onMouseUp.execute(this, eventArgs);
 		}
 	}
 
