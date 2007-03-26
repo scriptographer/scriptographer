@@ -151,9 +151,9 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Path_getTabletData(JNI
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setTabletData(JNIEnv *env, jobject obj, jobjectArray data) {
 	try {
 		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
-		// get the tabletData:
-		// first get the number of data:
+		// Get the tabletData:
 		if (data != NULL) {
+			// First convert the passed array to a AITabletProfile array:
 			int count = env->GetArrayLength(data);
 			AITabletProfile *profiles = new AITabletProfile[count];
 			for (int i = 0; i < count; i++) {
@@ -162,22 +162,29 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setTabletData(JNIEnv *env
 				profile->offset = env->GetFloatField(obj, gEngine->fid_TabletValue_offset);
 				profile->value = env->GetFloatField(obj, gEngine->fid_TabletValue_value);
 			}
-			// set the new values:
+			// Now set the new values:
+			// At least on CS2, setting the size to 0 first seems to be necessary, when
+			// tabletData was already in use before. Otherwise Illustrator crashes (#6).
+			ASBoolean inUse = false;
+			sAITabletData->GetTabletDataInUse(handle, &inUse);
+			if (inUse)
+				sAITabletData->SetTabletData(handle, NULL, 0, kTabletPressure);
 			sAITabletData->SetTabletData(handle, profiles, count, kTabletPressure);
 			sAITabletData->SetTabletDataInUse(handle, count > 0);
 			delete profiles;
 		} else {
-			// just setting to 0 doesn't seem to work. first set to a straight envelope, then to 0
+			// Just setting to 0 doesn't seem to do the trick.
+			// First set to a straight envelope, then to 0
 			AITabletProfile profiles[] = {
-				{ 0, 1 },
-				{ 1, 1 }
+			{ 0, 1 },
+			{ 1, 1 }
 			};
 			sAITabletData->SetTabletData(handle, profiles, 2, kTabletPressure);
-			// now set to 0
+			// Now set to 0
 			sAITabletData->SetTabletData(handle, profiles, 0, kTabletPressure);
 			sAITabletData->SetTabletDataInUse(handle, false);
 		}
-		// simply swap the closed flag of this path in order to get the 
+		// Simply swap the closed flag of this path in order to get  
 		// Illustrator to recognize the change in the object, because
 		// SetTabletData seems be ignored as a change:
 		AIBoolean closed = false;
