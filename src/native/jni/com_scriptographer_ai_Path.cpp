@@ -176,8 +176,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setTabletData(JNIEnv *env
 			// Just setting to 0 doesn't seem to do the trick.
 			// First set to a straight envelope, then to 0
 			AITabletProfile profiles[] = {
-			{ 0, 1 },
-			{ 1, 1 }
+				{ 0, 1 },
+				{ 1, 1 }
 			};
 			sAITabletData->SetTabletData(handle, profiles, 2, kTabletPressure);
 			// Now set to 0
