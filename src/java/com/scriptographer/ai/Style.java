@@ -32,8 +32,12 @@
 package com.scriptographer.ai;
 
 /**
- * @author lehni
+ * The only purpose for this interface is to give a hint to the scripting layer
+ * as to how to deal with instances of this interface. Basically it means that
+ * they need to convert null to and from Color.NONE / FontWeight.NONE, when
+ * settings colors / fonts.
  * 
+ * @author lehni
  */
 public interface Style {
 	

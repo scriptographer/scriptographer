@@ -53,7 +53,7 @@ import com.scriptographer.CommitManager;
 /**
  * @author lehni
  */
-public class PathStyle extends AIObject implements Commitable {
+public class PathStyle extends AIObject implements Style, Commitable {
 	protected FillStyle fill;
 
 	protected StrokeStyle stroke;
@@ -183,13 +183,10 @@ public class PathStyle extends AIObject implements Commitable {
 		nativeSet(handle, docHandle,
 			fill.color != null && fill.color != Color.NONE ? fill.color : null,
 			fill.color != null, 
-			fill.overprint != null ?
-					(short) (fill.overprint.booleanValue() ? 1 : 0) : -1,
-			stroke.color != null && stroke.color != Color.NONE ?
-					stroke.color : null,
+			fill.overprint != null ? (short) (fill.overprint.booleanValue() ? 1 : 0) : -1,
+			stroke.color != null && stroke.color != Color.NONE ? stroke.color : null,
 			stroke.color != null,
-			stroke.overprint != null ?
-					(short) (stroke.overprint.booleanValue() ? 1 : 0) : -1,
+			stroke.overprint != null ? (short) (stroke.overprint.booleanValue() ? 1 : 0) : -1,
 			stroke.width != null ? stroke.width.floatValue() : -1,
 			stroke.dashOffset != null ? stroke.dashOffset.floatValue() : -1,
 			stroke.dashArray,

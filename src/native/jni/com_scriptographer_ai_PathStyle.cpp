@@ -222,8 +222,7 @@ int PathStyle_convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, AIStrokeStyl
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeGet(JNIEnv *env, jobject obj, jint handle) {
 	try {
-		// don't use pathStyleInitPathStyle here as there's no map:
-		
+		// don't use PathStyle_init here as there's no map:
 		AIPathStyle style;
 		sAIPathStyle->GetPathStyle((AIArtHandle) handle, &style);
 		

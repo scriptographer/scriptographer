@@ -37,7 +37,7 @@ import com.scriptographer.Commitable;
 /**
  * @author lehni
  */
-public class ParagraphStyle extends AIObject implements Commitable {
+public class ParagraphStyle extends AIObject implements Style, Commitable {
 
 	private TextRange range;
 	private Object commitKey;

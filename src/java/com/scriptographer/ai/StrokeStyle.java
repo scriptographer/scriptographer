@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class StrokeStyle {
+public class StrokeStyle implements Style {
 	protected Color color;				/* Stroke color */
 	protected Boolean overprint;			/* Overprint - not meaningful if ColorTag is pattern */
 	protected Float width;				/* Line width */

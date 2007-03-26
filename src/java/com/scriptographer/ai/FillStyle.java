@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class FillStyle {
+public class FillStyle implements Style {
 	protected Color color; 				/* Fill color */
 	protected Boolean overprint;			/* Overprint */
 
