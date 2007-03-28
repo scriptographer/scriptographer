@@ -264,9 +264,32 @@ bool ScriptographerPlugin::fileSpecToPath(SPPlatformFileSpecification *fileSpec,
 	strcat(path, name);
 	delete name;
 #else
-	// on windows, things are easier because we don't have to convert to a posix path:
-	if (sAIUser->SPPlatformFileSpecification2Path(fileSpec, path))
-		return false;
+	// On windows, things are easier because we don't have to convert to a posix path.
+	// Actually not, because sAIUser->SPPlatformFileSpecification2Path does not handle Unicode
+	// properly
+	// if (sAIUser->SPPlatformFileSpecification2Path(fileSpec, path))
+	//	return false;
+//	sAIUser->SPPlatformFileSpecification2Path(fileSpec, path);
+	strcpy(path, fileSpec->path);
+	return true;
+	/*
+	If Unicode full paths would be needed, this would be the way to go:
+	// Convert ANSI 8.3 path to Unicode 8.3 path.
+	int lenA = lstrlenA(fileSpec->path);
+	int lenW = ::MultiByteToWideChar(CP_ACP, 0, fileSpec->path, lenA, NULL, 0);
+	if (lenW > 0) {
+		BSTR path = ::SysAllocStringLen(0, lenW);
+		::MultiByteToWideChar(CP_ACP, 0, fileSpec->path, lenA, path, lenW);
+		// now get Unicode full path from 8.3 path:
+		int len = GetLongPathNameW(path, NULL, 0);
+		if (len > 0) {
+			BSTR fullPath = ::SysAllocStringLen(0, len);
+			GetLongPathNameW(path, fullPath, len);
+			::SysFreeString(fullPath);
+		}
+		::SysFreeString(path);
+	}
+	*/
 #endif
 	return true;
 }
