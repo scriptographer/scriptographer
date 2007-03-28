@@ -135,7 +135,7 @@
 		</copy>
 		<jar jarfile="${build.lib}/${jar.name}.jar"
 			basedir="${build.classes}"
-			excludes="**/loader/**,**/test/**"/>
+			excludes="**/loader/**,**/test/**,**/jython/**"/>
 		<jar jarfile="${build.dir}/loader.jar"
 			basedir="${build.classes}"
 			includes="**/loader/**"/>
@@ -182,7 +182,7 @@
 		<copy todir="${build.packages}/Scriptographer/java">
 			<fileset dir="${build.dir}">
 				<include name="**/loader.jar"/>
-				<include name="**/jvm.ini"/>
+<!--			<include name="**/jvm.ini"/> -->
 				<include name="**/${jar.name}.jar"/>
 				<include name="**/js.jar"/>
 			</fileset>
