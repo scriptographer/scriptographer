@@ -171,6 +171,8 @@ public class MainDialog extends FloatingDialog {
 			public boolean accept(File dir, String name) {
 				return !name.equals("CVS") && !name.startsWith(".") &&
 						(name.endsWith(".js") ||
+//						name.endsWith(".py") ||
+//						name.endsWith(".rb") ||
 						new File(dir, name).isDirectory());
 			}
 		};

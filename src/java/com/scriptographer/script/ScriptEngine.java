@@ -51,7 +51,8 @@ public abstract class ScriptEngine {
 	static {
 		// Try finding the Scripting engines for Scriptographer...
 		String[] engines = {
-			"com.scriptographer.script.rhino.RhinoEngine"
+				"com.scriptographer.script.rhino.RhinoEngine",
+//				"com.scriptographer.script.jython.JythonEngine"
 		};
 		for (int i = 0; i < engines.length; i++) {
 			try {
