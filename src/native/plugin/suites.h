@@ -136,6 +136,7 @@
 #include "AITextFrame.h"
 #include "IText.h"
 #include "AIATEPaint.h"
+#include "AIATECurrTextFeatures.h"
 #include "ATETextSuitesExtern.h"
 #else // < kAI11
 #include "AIText.h"
@@ -328,6 +329,7 @@ extern "C" ADMWinHostSuite					*sADMWinHost;
 
 #if kPluginInterfaceVersion >= kAI11
 extern "C" AITextFrameSuite					*sAITextFrame;
+extern "C" AIATECurrentTextFeaturesSuite	*sAIATECurrentTextFeatures;
 #else
 extern "C" AITextSuite						*sAIText;
 extern "C" AITextFaceStyleSuite				*sAITextFaceStyle;

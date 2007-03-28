@@ -124,6 +124,7 @@ extern "C" {
 
 #if kPluginInterfaceVersion >= kAI11
 	AITextFrameSuite				*sAITextFrame;
+	AIATECurrentTextFeaturesSuite	*sAIATECurrentTextFeatures;
 	EXTERN_TEXT_SUITES
 #else
 	AITextSuite						*sAIText;
@@ -243,6 +244,7 @@ ImportSuite postStartup[] = {
 
 #if kPluginInterfaceVersion >= kAI11
 	kAITextFrameSuite, kAITextFrameSuiteVersion, &sAITextFrame, sizeof(AITextFrameSuite),
+	kAIATECurrentTextFeaturesSuite, kAIATECurrentTextFeaturesSuiteVersion, &sAIATECurrentTextFeatures, sizeof(AIATECurrentTextFeaturesSuite),
 	// Content of IMPORT_TEXT_SUITES, with added sizeof fields:
 	kApplicationPaintSuite, kApplicationPaintSuiteVersion, &sApplicationPaint, sizeof(ATE::ApplicationPaintSuite),
 	kCompFontSuite, kCompFontSuiteVersion, &sCompFont, sizeof(ATE::CompFontSuite),
