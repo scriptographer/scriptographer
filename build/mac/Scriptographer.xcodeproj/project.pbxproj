@@ -1315,7 +1315,7 @@
 					"$(JNI_HEADERS)",
 				);
 				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS3 SDK/IllustratorAPI//**\"";
-				INFOPLIST_FILE = "/Users/Lehni/Development/C & C++/Scriptographer/build/mac/resources/Info.plist";
+				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
 				JNI_HEADERS = ../../src/native/jni/;
@@ -1374,7 +1374,7 @@
 					"$(JNI_HEADERS)",
 				);
 				ILLUSTRATOR_HEADERS = "\"../../../Adobe Illustrator CS3 SDK/IllustratorAPI//**\"";
-				INFOPLIST_FILE = "/Users/Lehni/Development/C & C++/Scriptographer/build/mac/resources/Info.plist";
+				INFOPLIST_FILE = resources/Info.plist;
 				INIT_ROUTINE = "";
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
 				JNI_HEADERS = ../../src/native/jni/;
