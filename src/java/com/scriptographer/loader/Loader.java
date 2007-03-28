@@ -106,7 +106,7 @@ public class Loader {
 	 * @return the loaded class
 	 * @throws ClassNotFoundException
 	 */
-	private static Class loadClass(String name) throws ClassNotFoundException {
+	protected static Class loadClass(String name) throws ClassNotFoundException {
 		return loader.loadClass(name.replace('/', '.'));
 	}
 }

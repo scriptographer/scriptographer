@@ -35,7 +35,6 @@ import com.scriptographer.adm.*;
 import com.scriptographer.ai.*;
 import com.scriptographer.gui.*;
 import com.scriptographer.script.ScriptEngine;
-import com.scriptographer.script.ScriptScope;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -80,10 +79,8 @@ public class ScriptographerEngine {
 		// Loader is initiated on startup
 		// in the second thread. The ScriptographerEngine get loaded through the
 		// Loader, so getting the ClassLoader from there is save:
-		/* TODO: still needed??
 		Thread.currentThread().setContextClassLoader(
-			ScriptographerEngine.class.getClassLoader());
-		*/
+				ScriptographerEngine.class.getClassLoader());
 		// get the baseDir setting, if it's not set, ask the user
 		String dir = ScriptographerEngine.getPreferences(false).get(
 			"scriptDir", null);
