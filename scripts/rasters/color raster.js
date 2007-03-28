@@ -1,10 +1,7 @@
-var raster = null;
-var dot = null;
-var sel = null;
-
 var size = 10;
+var raster = null, dot = null;
+var sel = activeDocument.selectedItems;
 
-sel = activeDocument.getSelectedItems();
 for (var i = 0; i < sel.length; i++) {
 	obj = sel[i];
 	if (raster == null && obj instanceof Raster) raster = obj;
@@ -14,11 +11,11 @@ for (var i = 0; i < sel.length; i++) {
 
 function setColor(art, color) {
 	if (art instanceof Path) {
-		if (art.style.stroke.color != null) art.style.stroke.color = color;
-		if (art.style.fill.color != null) art.style.fill.color = color;
+		if (art.style.stroke.color) art.style.stroke.color = color;
+		if (art.style.fill.color) art.style.fill.color = color;
 	}
 	var child = art.firstChild;
-	while (child != null) {
+	while (child) {
 		setColor(child, color);
 		child = child.nextSibling;
 	}
@@ -43,7 +40,7 @@ if (raster != null && dot != null) {
 		size = values[0];
 
 		var group = new Group();
-		var white = new Grayscale(0);
+		var white = new GrayColor(0);
 
 		for (var y = 0; y < raster.height; y++) {
 			for (var x = 0; x < raster.width; x++) {
