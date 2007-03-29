@@ -260,7 +260,7 @@ public class LiveEffect extends AIObject {
 	}
 
 	public static void removeAll() {
-		// as remove() modifies the map, using an iterator is not possible here:
+		// As remove() modifies the map, using an iterator is not possible here:
 		Object[] effects = LiveEffect.effects.values().toArray();
 		for (int i = 0; i < effects.length; i++) {
 			((LiveEffect) effects[i]).remove();

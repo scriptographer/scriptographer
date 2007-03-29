@@ -201,7 +201,7 @@ public class MenuItem extends ADMObject{
 	}
 
 	public static void removeAll() {
-		// as remove() modifies the map, using an iterator is not possible here:
+		// As remove() modifies the map, using an iterator is not possible here:
 		Object[] items = MenuItem.items.values().toArray();
 		for (int i = 0; i < items.length; i++) {
 			((MenuItem) items[i]).remove();

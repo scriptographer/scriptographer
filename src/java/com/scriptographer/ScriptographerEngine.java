@@ -105,12 +105,13 @@ public class ScriptographerEngine {
 	}
 
 	public static void destroy() {
+		// We're shuting down, so do not display console stuff any more
+		ConsoleOutputStream.enableRedirection(false);
 		Dialog.destroyAll();
 		LiveEffect.removeAll();
 		MenuItem.removeAll();
 		Timer.disposeAll();
 		Annotator.disposeAll();
-		ConsoleOutputStream.enableRedirection(false);
 		try {
 			// This is needed on some versions on Mac CS (CFM?)
 			// as the JVM seems to not shoot down properly,

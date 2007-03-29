@@ -33,7 +33,6 @@ package com.scriptographer.ai;
 
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import com.scriptographer.adm.Drawer;
 import com.scriptographer.script.ScriptMethod;
@@ -125,12 +124,15 @@ public class Annotator extends AIObject {
 	}
 	
 	public static void disposeAll() {
-		for (Iterator it = annotators.values().iterator(); it.hasNext();)
-			((Annotator) it.next()).dispose();
+		// As remove() modifies the map, using an iterator is not possible here:
+		Object[] annotators = Annotator.annotators.values().toArray();
+		for (int i = 0; i < annotators.length; i++)
+			((Annotator) annotators[i]).dispose();
 		
 		// also clean up the port drawers:
-		for (Iterator it = drawers.values().iterator(); it.hasNext();)
-			((Drawer) it.next()).dispose();
+		Object[] drawers = Annotator.drawers.values().toArray();
+		for (int i = 0; i < drawers.length; i++)
+			((Drawer) drawers[i]).dispose();
 	}
 	
 	private static ArrayList getUnusedAnnotators() {

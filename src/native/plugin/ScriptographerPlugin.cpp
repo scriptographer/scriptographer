@@ -242,6 +242,7 @@ char *ScriptographerPlugin::fromPascal(const unsigned char *src, char *dst) {
  * Similar to sAIUser->SPPlatformFileSpecification2Path, but creates a posix path on Mac OS X, because that's what's needed for java
  */
 bool ScriptographerPlugin::fileSpecToPath(SPPlatformFileSpecification *fileSpec, char *path) {
+	// TODO: consider using AIFilePath.h instead of the hacks bellow!
 #ifdef MAC_ENV
 	// java needs a posix path on mac, not a Carbon one, as used by Illustrator:
 	// Then transform this into a real FSSpec
@@ -265,13 +266,12 @@ bool ScriptographerPlugin::fileSpecToPath(SPPlatformFileSpecification *fileSpec,
 	delete name;
 #else
 	// On windows, things are easier because we don't have to convert to a posix path.
-	// Actually not, because sAIUser->SPPlatformFileSpecification2Path does not handle Unicode
-	// properly
 	// if (sAIUser->SPPlatformFileSpecification2Path(fileSpec, path))
 	//	return false;
-//	sAIUser->SPPlatformFileSpecification2Path(fileSpec, path);
+	// Actually not, because sAIUser->SPPlatformFileSpecification2Path does not handle Unicode
+	// properly. But fileSpec->path seems to contain the short path already, which allways
+	// seems to point to the right file, so for the time being, just copy:
 	strcpy(path, fileSpec->path);
-	return true;
 	/*
 	If Unicode full paths would be needed, this would be the way to go:
 	// Convert ANSI 8.3 path to Unicode 8.3 path.
@@ -353,9 +353,7 @@ bool ScriptographerPlugin::pathToFileSpec(const char *path, SPPlatformFileSpecif
 void ScriptographerPlugin::setCursor(int cursorID) {
 	ASErr error = kNoErr;
 #ifdef MAC_ENV
-	CursHandle cursor; 
-
-	cursor = GetCursor(cursorID);
+	CursHandle cursor = GetCursor(cursorID);
 	if (cursor)
 		SetCursor(*cursor);
 #else ifdef WIN_ENV

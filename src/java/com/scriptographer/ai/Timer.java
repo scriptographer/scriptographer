@@ -141,7 +141,7 @@ public class Timer extends AIObject {
 	}
 	
 	public static void stopAll() {
-		// stop both used and unused timers:
+		// Stop both used and unused timers:
 		for (Iterator it = timers.values().iterator(); it.hasNext();)
 			((Timer) it.next()).stop();
 		for (Iterator it = getUnusedTimers().iterator(); it.hasNext();)
@@ -149,9 +149,10 @@ public class Timer extends AIObject {
 	}
 	
 	public static void disposeAll() {
-		// then dispose
-		for (Iterator it = timers.values().iterator(); it.hasNext();)
-			((Timer) it.next()).dispose();
+		// As remove() modifies the map, using an iterator is not possible here:
+		Object[] timers = Timer.timers.values().toArray();
+		for (int i = 0; i < timers.length; i++)
+			((Timer) timers[i]).dispose();
 	}
 	
 	private native boolean nativeSetActive(int handle, boolean active);
