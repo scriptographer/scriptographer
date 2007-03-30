@@ -46,7 +46,7 @@ public class UnsealedWrapper extends NativeJavaObject {
 	 * @param javaObject
 	 * @param staticType
 	 */
-	UnsealedWrapper(Scriptable scope, Object javaObject,
+	public UnsealedWrapper(Scriptable scope, Object javaObject,
 		Class staticType) {
 		super(scope, javaObject, staticType);
 	}

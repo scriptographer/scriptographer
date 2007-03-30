@@ -288,11 +288,8 @@ public class RhinoEngine extends ScriptEngine {
 
 	    protected Context makeContext() {
 	        Context context = new Context();
-
-			RhinoWrapFactory wrapper = new RhinoWrapFactory();
-			wrapper.setJavaPrimitiveWrap(false);
 			context.setApplicationClassLoader(getClass().getClassLoader());
-			context.setWrapFactory(wrapper);
+			context.setWrapFactory(new RhinoWrapFactory());
 
 //			context.setOptimizationLevel(9);
 	        // Use pure interpreter mode to allow for
@@ -313,6 +310,10 @@ public class RhinoEngine extends ScriptEngine {
 
 	private class RhinoWrapFactory extends WrapFactory {
 		private WeakIdentityHashMap wrappers = new WeakIdentityHashMap();
+		
+		public RhinoWrapFactory() {
+			this.setJavaPrimitiveWrap(true);
+		}
 
 		public Object wrap(Context cx, Scriptable scope, Object obj,
 				Class staticType) {
