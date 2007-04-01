@@ -47,8 +47,8 @@ import com.scriptographer.util.StringIndexList;
  * 
  * @author lehni
  */
-public class ListWrapper extends NativeJavaObject {
-	ListWrapper(Scriptable scope, ReadOnlyList list, Class staticType) {
+public class ListObject extends NativeJavaObject {
+	ListObject(Scriptable scope, ReadOnlyList list, Class staticType) {
 		super(scope, list, staticType);
 	}
 

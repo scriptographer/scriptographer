@@ -178,8 +178,13 @@ public class GlobalObject extends ImporterTopLevel implements ScopeProvider {
 		// is created as prototype or as real object through
 		// isCreatingPrototypes()
 
-		for (int i = 0; i < classes.length; i++)
-			new ExtendedJavaClass(this, classes[i]);
+		for (int i = 0; i < classes.length; i++) {
+			ExtendedJavaClass cls = new ExtendedJavaClass(this, classes[i]);
+			// Put it in the global scope:
+			ScriptableObject.defineProperty(this, cls.getClassName(), this,
+				ScriptableObject.PERMANENT | ScriptableObject.READONLY
+					| ScriptableObject.DONTENUM);
+		}
 
 		// define some global functions and objects:
 		String[] names = { "print", "include", "execute", "evaluate", "commit",

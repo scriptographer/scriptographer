@@ -40,6 +40,9 @@ import java.io.IOException;
 
 import org.mozilla.javascript.*;
 
+import com.scriptographer.script.rhino.ExtendedJavaArray;
+import com.scriptographer.script.rhino.ExtendedJavaObject;
+import com.scriptographer.util.WeakIdentityHashMap;
 import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.Doclet;
 import com.sun.javadoc.RootDoc;
@@ -49,24 +52,10 @@ public class RhinoDoclet extends Doclet {
 	static File file;
 	
 	public static boolean start(RootDoc root) {
-		ContextFactory.initGlobal(new DocletContextFactory());
-		Context cx = Context.enter();
-		try {
-		    Scriptable scope = new GlobalObject(cx);
-		    scope.put("root", scope, root);
-		    scope.put("options", scope, options);
-		    FileReader in = new FileReader(file);
-		    cx.evaluateReader(scope, in, file.getName(), 1, null);
-		} catch (RhinoException e) {
-			System.err.println(e.details());
-			System.err.print(e.getScriptStackTrace());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		} finally {
-		    Context.exit();
-		}
-		return true;
+		RhinoDocletEngine engine = new RhinoDocletEngine();
+		engine.put("root", root);
+		engine.put("options", options);
+		return engine.evaluate(file);
 	}
 
 	public static int optionLength(String option) {
@@ -94,5 +83,138 @@ public class RhinoDoclet extends Doclet {
 			return false;
 		}
 		return true;
+	}
+	
+	public static class RhinoDocletEngine extends ImporterTopLevel {
+		static {
+			ContextFactory.initGlobal(new ContextFactory());
+		}
+
+		public RhinoDocletEngine() {
+			super(Context.enter(), false);
+			// Override the class loading objects with our own extended classes
+			new LazilyLoadedCtor(this, "Packages", "com.scriptographer.script.rhino.ExtendedJavaTopPackage", false);
+			new LazilyLoadedCtor(this, "java", "com.scriptographer.script.rhino.ExtendedJavaTopPackage", false);
+			// new LazilyLoadedCtor(this, "getClass", "com.scriptographer.script.rhino.ExtendedJavaTopPackage", false);
+			
+			// define some global functions and objects:
+			defineFunctionProperties(new String[] { "print", "include" },
+					RhinoDocletEngine.class, ScriptableObject.READONLY
+							| ScriptableObject.DONTENUM);
+		}
+		
+		public static void main(String[] args) {
+			(new RhinoDocletEngine()).evaluate(new File(args[0]));
+		}
+
+		public void put(String name, Object value) {
+			this.put(name, this, value);
+		}
+
+		public Object get(String name) {
+			return this.get(name, this);
+		}
+
+		/**
+		 * @param file
+		 * @throws IOException 
+		 */
+		public boolean evaluate(File file) {
+			try {
+				FileReader in = new FileReader(file);
+				Context.getCurrentContext().evaluateReader(this, in,
+						file.getName(), 1, null);
+				return true;
+			} catch (RhinoException e) {
+				System.err.println(e.details());
+				System.err.print(e.getScriptStackTrace());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return false;
+		}
+
+		public String getClassName() {
+			return "global";
+		}
+
+		/**
+		 * Print the string segmentValues of its arguments.
+		 * 
+		 * This method is defined as a JavaScript function. Note that its arguments
+		 * are of the "varargs" form, which allows it to handle an arbitrary number
+		 * of arguments supplied to the JavaScript function.
+		 * 
+		 */
+		public static void print(Context cx, Scriptable thisObj, Object[] args,
+				Function funObj) {
+			for (int i = 0; i < args.length; i++) {
+				if (i > 0)
+					System.out.print(", ");
+				// Convert the arbitrary JavaScript value into a string form.
+				String s = Context.toString(args[i]);
+				System.out.print(s);
+			}
+			System.out.println();
+		}
+
+		/**
+		 * Loads and executes a set of JavaScript source files in the current scope.
+		 */
+		public static void include(Context cx, Scriptable thisObj, Object[] args,
+				Function funObj) throws Exception {
+			for (int i = 0; i < args.length; i++) {
+				File file = new File((String) args[i]);
+				FileReader in = new FileReader(file);
+				cx.evaluateReader(thisObj, in, file.getName(), 1, null);
+			}
+		}
+
+		static class ContextFactory extends org.mozilla.javascript.ContextFactory {
+			protected Context makeContext() {
+				Context context = new Context();
+				context.setWrapFactory(new WrapFactory());
+				context.setOptimizationLevel(-1);
+				return context;
+			}
+		}
+
+		static class WrapFactory extends org.mozilla.javascript.WrapFactory {
+			private WeakIdentityHashMap wrappers = new WeakIdentityHashMap();
+
+			public WrapFactory() {
+				this.setJavaPrimitiveWrap(true);
+			}
+
+			public Object wrap(Context cx, Scriptable scope, Object obj, Class staticType) {
+				if (obj != null) System.out.println("Wrap " + obj);
+				return staticType != null && staticType.isArray() ? new ExtendedJavaArray(scope, obj, staticType, true) :
+						super.wrap(cx, scope, obj, staticType);
+			}
+
+			public Scriptable wrapNewObject(Context cx, Scriptable scope, Object obj) {
+				return (Scriptable) (obj instanceof Scriptable ? obj :
+						wrapAsJavaObject(cx, scope, obj, obj.getClass()));
+			}
+
+			public Scriptable wrapAsJavaObject(Context cx, Scriptable scope,
+					Object javaObj, Class staticType) {
+				// As we are using unsealed wrapper, keep track of them here
+				// so added fields are not lost. As an alternative, 
+				// The UnsealdObject classes could add themselves only to wrappers
+				// once additional information is actually stored in them. Not sure
+				// what would be the better balance between memory consumption and
+				// speed.
+				Scriptable obj = (Scriptable) wrappers.get(javaObj);
+				if (obj == null) {
+					if (staticType != null && staticType.isArray())
+						obj = new ExtendedJavaArray(scope, javaObj, staticType, true);
+					else
+						obj = new ExtendedJavaObject(scope, javaObj, staticType, true);
+					wrappers.put(javaObj, obj);
+				}
+				return obj;
+			}
+		}
 	}
 }

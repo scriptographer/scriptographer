@@ -348,16 +348,16 @@ public class RhinoEngine extends ScriptEngine {
 			Scriptable obj = (Scriptable) wrappers.get(javaObj);
 			if (obj == null) {
 				if (javaObj instanceof ReadOnlyList) {
-					obj = new ListWrapper(scope, (ReadOnlyList) javaObj, staticType);
+					obj = new ListObject(scope, (ReadOnlyList) javaObj, staticType);
 				} else if (javaObj instanceof Map) {
-					obj = new MapWrapper(scope, (Map) javaObj, staticType);
+					obj = new MapObject(scope, (Map) javaObj, staticType);
 				} else if (javaObj instanceof Style) {
-					obj = new StyleWrapper(scope, (Style) javaObj, staticType);
+					obj = new StyleObject(scope, (Style) javaObj, staticType);
 				} else if (javaObj instanceof SegmentPoint) {
 					obj = new SegmentPointWrapper(scope, (SegmentPoint) javaObj, staticType);
 				} else {
 					// The default for Scriptographer is unsealed
-					obj = new UnsealedWrapper(scope, javaObj, staticType);
+					obj = new ExtendedJavaObject(scope, javaObj, staticType, true);
 				}
 				wrappers.put(javaObj, obj);
 			}

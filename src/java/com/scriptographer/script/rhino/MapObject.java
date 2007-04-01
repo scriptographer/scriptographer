@@ -49,8 +49,8 @@ import java.util.Map;
  * 
  * @author lehni
  */
-public class MapWrapper extends NativeJavaObject {
-	MapWrapper(Scriptable scope, Map map, Class staticType) {
+public class MapObject extends NativeJavaObject {
+	MapObject(Scriptable scope, Map map, Class staticType) {
 		super(scope, map, staticType);
 	}
 

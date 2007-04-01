@@ -40,18 +40,20 @@ import org.mozilla.javascript.*;
  */
 public class ExtendedJavaClass extends NativeJavaClass {
 	String className;
+	Scriptable instanceProto = null;
 
 	public ExtendedJavaClass(Scriptable scope, Class cls) {
 		super(scope, cls);
+		// Set the function prototype, as basically Java constructors
+		// behave like JS constructor functions. Like this, all properties
+		// from Function.prototype are inherited.
+		setPrototype(((Scriptable) scope.get("Function", scope)).getPrototype());
+		// Determine short className:
 		className = cls.getName();
-		// use simple class name instead of the full name with all packages:
+		// Use simple class name instead of the full name with all packages:
 		int pos = className.lastIndexOf('.');
 		if (pos > 0)
 			className = className.substring(pos + 1);
-		// define it in the global scope:
-		ScriptableObject.defineProperty(scope, className, this,
-			ScriptableObject.PERMANENT | ScriptableObject.READONLY
-				| ScriptableObject.DONTENUM);
 	}
 
 	public Scriptable construct(Context cx, Scriptable scope, Object[] args) {
@@ -62,7 +64,6 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		Class classObject = getClassObject();
 		int modifiers = classObject.getModifiers();
 		if (args.length > 0 && args[args.length - 1] instanceof NativeObject &&
-		// Unsealed.class.isAssignableFrom(classObject) &&
 			!Modifier.isInterface(modifiers) && !Modifier.isAbstract(modifiers)) {
 			properties = (NativeObject) args[args.length - 1];
 			// remove the last argument from the list, so the right constructor
@@ -81,9 +82,16 @@ public class ExtendedJavaClass extends NativeJavaClass {
 				if (id instanceof String)
 					obj.put((String) id, obj, properties.get((String) id, properties));
 			}
-			Object ctor = obj.get("$constructor", obj);
-			if (ctor instanceof Function)
-				((Function) ctor).call(cx, scope, obj, new Object[] {});
+		}
+		// Add on: If a prototype defines a $constructor function, call it after
+		// creation. This can even return another object than the real ctor!
+		Object ctor = obj.get("$constructor", obj);
+		if (ctor instanceof Function) {
+			Object ret = ((Function) ctor).call(cx, scope, obj, new Object[] {});
+			if (ret != null && ret != Undefined.instance)
+				obj = cx.getWrapFactory().wrapNewObject(cx,
+						ScriptableObject.getTopLevelScope(scope),
+						ret);
 		}
 		return obj;
 	}
@@ -92,6 +100,59 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		// Why calling super.unwrap() when all it does is returning the internal
 		// javaObject? That's how it's done in NativeJavaClass...
 		return (Class) javaObject;
+	}
+
+	public Object get(String name, Scriptable start) {
+		Object result = Scriptable.NOT_FOUND;
+		// TODO: In NativeJavaClass, first staticFieldAndMethods are checked
+		// why not members? Shouldn't it be the other way round, as this is
+		// the more common case?
+		// TODO: "prototype" is checked there, and null is returned. And here
+		// we have to check for "prototype" again. Ideally, these things would
+		// happen only once.
+		// TODO: Remove nasty exc work-around! 
+		// The goal will be to merge everything into NativeJavaClass
+		RuntimeException exc = null;
+		try {
+			result = super.get(name, start);
+			if (result == null)
+				result = Scriptable.NOT_FOUND;
+		} catch (RuntimeException e) {
+			exc = e;
+		}
+		if (result == Scriptable.NOT_FOUND) {
+			if (name.equals("prototype")) {
+				//getPrototype creates prototype Objects on the fly:
+				result = getInstancePrototype();
+			} else {
+				Scriptable proto = getPrototype();
+				if (proto != null)
+					result = proto.get(name, start);
+			}
+		}
+		// Throw exception again, if nothing was found.
+		if (result == ScriptableObject.NOT_FOUND && exc != null)
+			throw exc;
+		return result;
+	}
+
+	public Scriptable getInstancePrototype() {
+		if (instanceProto == null) {
+			instanceProto = new NativeObject();
+			// Set the prototype chain correctly for this prototype object, 
+			// so properties in the prototype of parent classes are found too:
+			Scriptable top = ScriptableObject.getTopLevelScope(this);
+			Class sup = getClassObject().getSuperclass();
+			Scriptable parent;
+			if (sup != null) {
+				parent = ExtendedJavaTopPackage.getClassWrapper(top, sup).getInstancePrototype();
+			} else {
+				// At the end of the chain, there is allways the Object prototype.
+				parent = ((Scriptable) top.get("Object", top)).getPrototype(); 
+			}
+			instanceProto.setPrototype(parent);
+		}
+		return instanceProto;
 	}
 
 	public String getClassName() {

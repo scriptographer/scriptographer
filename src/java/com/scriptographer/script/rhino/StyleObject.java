@@ -53,8 +53,8 @@ import com.scriptographer.ai.Style;
  * 
  * @author lehni
  */
-public class StyleWrapper extends NativeJavaObject {
-	StyleWrapper(Scriptable scope, Style javaObject,
+public class StyleObject extends NativeJavaObject {
+	StyleObject(Scriptable scope, Style javaObject,
 			Class staticType) {
 		super(scope, javaObject, staticType);
 	}
