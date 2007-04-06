@@ -35,6 +35,11 @@ import com.scriptographer.util.AbstractReadOnlyList;
 import com.scriptographer.util.StringIndexList;
 
 /**
+ * The SwatchList object represents a list of swatches in an Illustrator
+ * document as shown in the Swatches palette. SwatchLists are not created through
+ * a constructor, they're always accessed through the {@link Document#swatches}
+ * property.
+ * 
  * @author lehni
  */
 public class SwatchList extends AbstractReadOnlyList implements StringIndexList {
@@ -62,10 +67,20 @@ public class SwatchList extends AbstractReadOnlyList implements StringIndexList 
 		return Swatch.wrapHandle(nativeGet(document.handle, name), document);
 	}
 
+	/**
+	 * Retrieves a swatch 
+	 * @param index the index of the swatch
+	 * @return
+	 */
 	public Swatch getSwatch(int index) {
 		return (Swatch) get(index);
 	}
 
+	/**
+	 * Retrieves a swatch 
+	 * @param name the name of the swatch
+	 * @return
+	 */
 	public Swatch getSwatch(String name) {
 		return (Swatch) get(name);
 	}

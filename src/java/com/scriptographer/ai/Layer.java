@@ -33,6 +33,7 @@ package com.scriptographer.ai;
 
 // TODO: subclass Group instead!
 /**
+ * The Layer item represents a layer in an Illustrator document.
  * @author lehni
  */
 public class Layer extends Art {
@@ -68,6 +69,16 @@ public class Layer extends Art {
 
 	public native ArtSet getItems();
 	
+	/**
+	 * Checks wether the layer is active.
+	 * 
+	 * @return <code>true</code> if the layer is active, <code>false</code>
+	 *         otherwise.
+	 */
 	public native boolean isActive();
+	
+	/**
+	 * Activates the layer
+	 */
 	public native void activate();
 }

@@ -56,9 +56,8 @@ public class Path extends Art {
 	}
 
 	/**
-	 * Creates a path object
+	 * Creates a path item
 	 */
-
 	public Path() {
 		super(TYPE_PATH);
 	}
@@ -77,6 +76,9 @@ public class Path extends Art {
 		append(shape);
 	}
 
+	/**
+	 * Removes the path item
+	 */
 	public boolean remove() {
         boolean ret = super.remove();
         // dereference from path if they're used somewhere else!
@@ -159,6 +161,11 @@ public class Path extends Art {
 
 	private native void nativeReverse();
 
+	/**
+	 * Reverses the segments of a path. This is only important for sub paths of
+	 * compound paths, since the winding order controls the insideness of the
+	 * compound path.
+	 */
 	public void reverse() {
 		// first save all changes:
 		CommitManager.commit(this);

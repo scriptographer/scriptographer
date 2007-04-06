@@ -37,6 +37,11 @@ import com.scriptographer.CommitManager;
 import java.awt.geom.Point2D;
 
 /**
+ * The Segment object represents a part of a path which is described by the
+ * {@link Art#segments} property. Every segment of path corresponds to an
+ * anchor point (anchor points are the path handles that are visible when the
+ * path is selected).
+ * 
  * @author lehni
  */
 public class Segment implements Commitable {

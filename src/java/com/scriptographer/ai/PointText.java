@@ -45,9 +45,11 @@ public class PointText extends TextFrame {
 	native private static int nativeCreate(short orient, float x, float y);
 	
 	/**
-	 * Creates a point text object
+	 * Creates a point text item
+	 * 
+	 * @param point the point where the text will begin
+	 * @param orient the text orientation, TextFrame.ORIENTATION_*
 	 */
-
 	public PointText(Point2D point, short orient) {
 		this(nativeCreate(orient, (float) point.getX(), (float) point.getY()));
 	}

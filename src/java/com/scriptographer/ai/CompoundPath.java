@@ -54,7 +54,7 @@ public class CompoundPath extends Art {
 	}
 
 	/**
-	 * Creates a compound path object
+	 * Creates a compound path item
 	 */
 	public CompoundPath() {
 		super(TYPE_COMPOUNDPATH);

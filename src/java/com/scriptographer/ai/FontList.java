@@ -39,6 +39,10 @@ import com.scriptographer.util.ReadOnlyList;
 import com.scriptographer.util.StringIndexList;
 
 /**
+ * The FontList object represents a list of {@link FontFamily} objects. FontLists are
+ * not created through a constructor, they're always accessed through the
+ * {@link global#fonts} property.
+ * 
  * @author lehni
  */
 public class FontList implements ReadOnlyList, StringIndexList {

@@ -128,6 +128,13 @@ public class Point extends java.awt.geom.Point2D.Float {
 	/**
 	 * Returns the addition of the supplied point to the point object as a new
 	 * point. The object itself is not modified!
+	 * Sample code:
+	 * <code>
+	 * var firstPoint = new Point(5,10);
+	 * var secondPoint = new Point(10,20);
+	 * var thirdPoint = firstPoint.add(secondPoint);
+	 * print(thirdPoint); // returns { x: 15.0, y: 30.0 }
+	 * </code>
 	 * 
 	 * @param pt the point to add
 	 * @return the addition of the two points as a new point
@@ -143,6 +150,12 @@ public class Point extends java.awt.geom.Point2D.Float {
 	/**
 	 * Returns the addition of the supplied x and y values to the point object
 	 * as a new point. The object itself is not modified!
+	 * Sample code:
+	 * <code>
+	 * var firstPoint = new Point(5,10);
+	 * var secondPoint = firstPoint.add(10,20);
+	 * print(secondPoint); // returns { x: 15.0, y: 30.0 }
+	 * </code>
 	 * 
 	 * @param x the x value to add
 	 * @param y the y value to add
@@ -159,6 +172,13 @@ public class Point extends java.awt.geom.Point2D.Float {
 	/**
 	 * Returns the subtraction of the supplied point to the point object as a
 	 * new point. The object itself is not modified!
+	 * Sample code:
+	 * <code>
+	 * var firstPoint = new Point(10,20);
+	 * var secondPoint = new Point(5,5);
+	 * var thirdPoint = firstPoint.subtract(secondPoint);
+	 * print(thirdPoint); // returns { x: 5.0, y: 15.0 }
+	 * </code>
 	 * 
 	 * @param pt the point to subtract
 	 * @return the subtraction of the two points as a new point
@@ -174,6 +194,12 @@ public class Point extends java.awt.geom.Point2D.Float {
 	/**
 	 * Returns the subtraction of the supplied x and y values to the point
 	 * object as a new point. The object itself is not modified!
+	 * Sample code:
+	 * <code>
+	 * var firstPoint = new Point(10,20);
+	 * var secondPoint = firstPoint.subtract(5,5);
+	 * print(secondPoint); // returns { x: 5.0, y: 15.0 }
+	 * </code>
 	 * 
 	 * @param x The x value to subtract
 	 * @param y The y value to subtract
@@ -190,6 +216,13 @@ public class Point extends java.awt.geom.Point2D.Float {
 	/**
 	 * Returns the multiplication of the point object by the supplied point as a
 	 * new point. The object itself is not modified!
+	 * Sample code:
+	 * <code>
+	 * var firstPoint = new Point(5,10);
+	 * var secondPoint = new Point(4,2);
+	 * var thirdPoint = firstPoint.multiply(secondPoint);
+	 * print(thirdPoint); // returns { x: 20.0, y: 20.0 }
+	 * </code>
 	 * 
 	 * @param pt the point to multiply with
 	 * @return the multiplication of the two points as a new point
@@ -206,6 +239,16 @@ public class Point extends java.awt.geom.Point2D.Float {
 	 * Returns the multiplication of the point object by the supplied x and y
 	 * values as a new point. When no y value is supplied, the point's x and y
 	 * values are multiplied by scale (x). The object itself is not modified!
+	 * Sample code:
+	 * <code>
+	 * var firstPoint = new Point(5,10);
+	 * 
+	 * var secondPoint = firstPoint.multiply(4,2);
+	 * print(secondPoint); // returns { x: 20.0, y: 20.0 }
+	 * 
+	 * var secondPoint = firstPoint.multiply(2);
+	 * print(secondPoint); // returns { x: 10.0, y: 20.0 }
+	 * </code>
 	 * 
 	 * @param x the x (or scale) value to multiply with
 	 * @param y the y value to multiply with

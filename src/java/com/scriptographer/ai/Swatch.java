@@ -32,6 +32,9 @@
 package com.scriptographer.ai;
 
 /**
+ * A Swatch represents a named color, tint, gradient or pattern contained within
+ * an Illustrator document.
+ * 
  * @author lehni
  */
 public class Swatch extends AIWrapper {
@@ -60,6 +63,9 @@ public class Swatch extends AIWrapper {
 	
 	protected native boolean nativeRemove();
 	
+	/**
+	 * Removes the swatch
+	 */
 	public boolean remove() {
 		// make it public
 		return super.remove();

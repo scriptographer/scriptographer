@@ -35,7 +35,7 @@ import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
 
 /*
- * PathStyle, FillStyle and StrokeStyle are used for Art, CharacaterAttributes,
+ * PathStyle, FillStyle and StrokeStyle are used for Art, CharacterAttributes,
  * and others In some places, not all of the values may be defined.
  * Setting any value to null means the value is not defined.
  * 
@@ -43,7 +43,7 @@ import com.scriptographer.CommitManager;
  * Setting it to null undefines the value, it doesn't have the same effect as
  * seting it to Color.NONE
  * 
- * Since Java 1.5 omes with auto boxing / unboxing, I don't think it's a big
+ * Since Java 1.5 comes with auto boxing / unboxing, I don't think it's a big
  * deal that we're not returning native values but boxed ones here (or null,
  * in case the value isn't defined)
  * 

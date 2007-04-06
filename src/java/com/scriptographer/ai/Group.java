@@ -49,12 +49,16 @@ public class Group extends Art {
 	}
 
 	/**
-	 * Creates a group object
+	 * Creates a group item
 	 */
 	public Group() {
 		super(TYPE_GROUP);
 	}
 	
+	/**
+	 * Creates a group item from the supplied list of art items
+	 * @param children either an {@link ArtSet} or an array
+	 */
 	public Group(ExtendedList children) {
 		this();
 		for (int i = 0; i < children.getLength(); i++) {

@@ -35,6 +35,10 @@ import com.scriptographer.util.StringIndexList;
 import com.scriptographer.util.AbstractReadOnlyList;
 
 /**
+ * The LayerList object represents a list of layers in an Illustrator document.
+ * LayerLists are not created through a constructor, they're always accessed
+ * through the {@link Document#layers} property.
+ * 
  * @author lehni
  */
 public class LayerList extends AbstractReadOnlyList implements StringIndexList {
@@ -62,10 +66,20 @@ public class LayerList extends AbstractReadOnlyList implements StringIndexList {
 		return nativeGet(document.handle, name);
 	}
 
+	/**
+	 * Retrieves a layer 
+	 * @param index the index of the layer
+	 * @return
+	 */
 	public Layer getLayer(int index) {
 		return (Layer) get(index);
 	}
 
+	/**
+	 * Retrieves a layer 
+	 * @param name the name of the layer
+	 * @return
+	 */
 	public Layer getLayer(String name) {
 		return (Layer) get(name);
 	}
