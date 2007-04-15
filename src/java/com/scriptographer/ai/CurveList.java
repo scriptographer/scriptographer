@@ -31,7 +31,7 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.util.ExtendedArrayList;
+import com.scratchdisk.util.ExtendedArrayList;
 import com.scriptographer.util.AbstractFetchList;
 
 /**
@@ -73,13 +73,6 @@ public class CurveList extends AbstractFetchList {
 	protected void fetch(int fromIndex, int toIndex) {
 		// prefetch all the needed segments now:
 		segments.fetch(fromIndex, Math.min(segments.size - 1, toIndex + 1));
-		/*
-		 TODO: Verify if tihis is really not be needed
-		 It seems not, as it will be called anyway when
-		 accessing the objects after calling fetch. 
-		for (int i = fromIndex; i < toIndex; i++)
-			get(i);
-		*/
 	}
 
 	protected void fetch() {
@@ -115,7 +108,7 @@ public class CurveList extends AbstractFetchList {
 		return (Curve) get(index);
 	}
 
-	public int getLength() {
+	public int size() {
 		return size;
 	}
 

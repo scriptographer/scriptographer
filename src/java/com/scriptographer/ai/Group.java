@@ -31,8 +31,8 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.util.ExtendedList;
-import com.scriptographer.util.Lists;
+import com.scratchdisk.util.ExtendedList;
+import com.scratchdisk.util.Lists;
 
 /**
  * A Group is a collection of Art objects. When you transform a Group, it's
@@ -61,7 +61,7 @@ public class Group extends Art {
 	 */
 	public Group(ExtendedList children) {
 		this();
-		for (int i = 0; i < children.getLength(); i++) {
+		for (int i = 0; i < children.size(); i++) {
 			Object obj = children.get(i);
 			if (obj instanceof Art)
 				this.appendChild((Art) obj);

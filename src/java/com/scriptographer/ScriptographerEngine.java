@@ -31,14 +31,28 @@
 
 package com.scriptographer;
 
-import com.scriptographer.adm.*;
-import com.scriptographer.ai.*;
-import com.scriptographer.gui.*;
-import com.scriptographer.script.ScriptEngine;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.prefs.Preferences;
+
+import com.scriptographer.adm.Dialog;
+import com.scriptographer.adm.MenuItem;
+import com.scriptographer.ai.Annotator;
+import com.scriptographer.ai.Document;
+import com.scriptographer.ai.LiveEffect;
+import com.scriptographer.ai.Timer;
+import com.scriptographer.gui.AboutDialog;
+import com.scriptographer.gui.ConsoleDialog;
+import com.scriptographer.gui.MainDialog;
+import com.scratchdisk.script.Script;
+import com.scratchdisk.script.ScriptCanceledException;
+import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.script.ScriptException;
+import com.scratchdisk.script.Callable;
+import com.scratchdisk.script.Scope;
 
 /**
  * @author lehni
@@ -97,7 +111,7 @@ public class ScriptographerEngine {
 
 		// Execute all scripts in startup folder:
 		if (scriptDir != null)
-			ScriptEngine.executeAll(new File(scriptDir, "startup"));
+			executeAll(new File(scriptDir, "startup"));
 
 		// Explicitly initialize all dialogs on startup, as otherwise
 		// funny things will happen on CS3 -> see comment in initializeAll
@@ -153,7 +167,7 @@ public class ScriptographerEngine {
 		if (checkFile && currentFile != null)
 			return getPreferences(currentFile);
 		// the base prefs for Scriptographer are:
-		// com.scriptographer.scriptographer on mac, three nodes seem to be
+		// com.scratchdisk.scriptographer on mac, three nodes seem to be
 		// necessary, otherwise things get mixed up...
 		return Preferences.userNodeForPackage(ScriptographerEngine.class).node("scriptographer");
 	}
@@ -180,19 +194,15 @@ public class ScriptographerEngine {
 	public static PrintStream getLogger() {
 		return logger;
 	}
-	
-	public static String formatError(Throwable t) {
+
+	public static void reportError(Throwable t) {
 		String error = t.getMessage();
 		PrintStream logger = ScriptographerEngine.getLogger();
 		logger.print(error);
 		logger.print("Stacktrace: ");
 		t.printStackTrace(logger);
 		logger.println();
-		return error;
-	}
-
-	public static void reportError(Throwable t) {
-		System.err.print(formatError(t));
+		System.err.print(error);
 	}
 
 	static int reloadCount = 0;
@@ -202,7 +212,7 @@ public class ScriptographerEngine {
 	}
 
 	public static String reload() {
-		ScriptEngine.stopAll();
+		stopAll();
 		reloadCount++;
 		return nativeReload();
 	}
@@ -223,20 +233,26 @@ public class ScriptographerEngine {
 	/**
 	 * to be called before ai functions are executed
 	 */
-	public static boolean beginExecution(File file) {
+	public static boolean beginExecution(Scope scope, File file) {
 		if (!executing) {
 			executing = true;
 			Document.beginExecution();
 			currentFile = file;
-			return true;
+			if (file != null) {
+				ScriptographerEngine.showProgress("Executing " + (file != null ?
+						file.getName() : "Console Input") + "...");
+				// disable output to the console while the script is executed as it
+				// won't get updated anyway
+				// ConsoleOutputStream.enableOutput(false);
+				if (scope.get("scriptFile") == null)
+					scope.put("scriptFile", file, true);
+				if (scope.get("preferences") == null)
+					scope.put("preferences", ScriptographerEngine.getPreferences(file), true);
+			}
 		}
 		return false;
 	}
 
-	public static boolean beginExecution() {
-		return beginExecution(null);
-	}
-		
 	/**
 	 * to be called before ai functions are executed
 	 */
@@ -247,6 +263,114 @@ public class ScriptographerEngine {
 			currentFile = null;
 			executing = false;
 		}
+	}
+
+	/**
+	 * Invokes the method on the object, passing the arguments to it and calling
+	 * beginExecution before and endExecution after it, which commits all
+	 * changes after execution.
+	 * 
+	 * @param onDraw
+	 * @param annotator
+	 * @param objects
+	 * @throws ScriptException 
+	 */
+	public static Object invoke(Callable method, Object obj, Object[] args)
+			throws ScriptException {
+		boolean started = beginExecution(null, null);
+		// Retrieve wrapper object for the native java object, and call the
+		// function on it.
+		Object ret = method.call(obj, args);
+		// commit all changed objects after a scripting function has been
+		// called!
+		if (started)
+			endExecution();
+		return ret;
+	}
+
+	public static Object invoke(Callable method, Object obj)
+			throws ScriptException {
+		return invoke(method, obj, new Object[0]);
+	}
+
+	/**
+	 * executes the specified script file.
+	 *
+	 * @param file
+	 * @return
+	 * @throws IOException 
+	 * @throws ScriptException 
+	 */
+	public static Object execute(File file, Scope scope)
+			throws ScriptException, IOException {
+		ScriptEngine engine = ScriptEngine.getEngineByFile(file);
+		if (engine == null)
+			throw new ScriptException("Unable to find script engine for " + file);
+		Script script = engine.compile(file);
+		if (script == null)
+			throw new ScriptException("Unable to compile script " + file);
+		boolean started = false;
+		Object ret = null;
+		try {
+			if (scope == null)
+				scope = script.getEngine().createScope();
+			started = ScriptographerEngine.beginExecution(scope, file);
+			ret = script.execute(scope);
+			if (started) {
+				// handle onStart / onStop
+				Callable onStart = scope.getMethod("onStart");
+				if (onStart != null)
+					onStart.call(scope);
+				Callable onStop = scope.getMethod("onStop");
+				if (onStop != null) {
+					// add this scope to the scopes that want onStop to be called
+					// when the stop button is hit by the user
+					// TODO: finish this
+				}
+				ScriptographerEngine.closeProgress();
+			}
+		} catch (ScriptException e) {
+			ScriptographerEngine.reportError(e);
+		} catch (ScriptCanceledException e) {
+			System.out.println(file != null ? file.getName() + " canceled" :
+				"Execution canceled");
+		} finally {
+			// commit all the changes, even when script has crashed (to synch
+			// with
+			// direct changes such as creation of paths, etc
+			if (started) {
+				ScriptographerEngine.endExecution();
+				// now reenable the console, this also writes out all the things
+				// that were printed in the meantime:
+				// ConsoleOutputStream.enableOutput(true);
+			}
+		}
+		return ret;
+	}
+
+	/**
+	 * executes all scripts in the given folder
+	 *
+	 * @param dir
+	 * @throws IOException 
+	 * @throws ScriptException 
+	 */
+	public static void executeAll(File dir) throws ScriptException, IOException {
+		File []files = dir.listFiles();
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				File file = files[i];
+				if (file.isDirectory()) {
+					executeAll(file);
+				} else if (file.getName().endsWith(".js")) {
+					execute(file, null);
+				}
+			}
+		}
+	}
+	
+	public static void stopAll() {
+		Timer.stopAll();
 	}
 
 	/**

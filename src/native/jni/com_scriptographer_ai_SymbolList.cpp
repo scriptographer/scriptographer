@@ -36,9 +36,9 @@
  */
 
 /*
- * int nativeGetLength(int docHandle)
+ * int nativeSize(int docHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SymbolList_nativeGetLength(JNIEnv *env, jclass cls, jint docHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SymbolList_nativeSize(JNIEnv *env, jclass cls, jint docHandle) {
 	long count = 0;
 	try {
 		sAISymbol->CountSymbolPatternsFromDocument(&count, (AIDocumentHandle) docHandle);

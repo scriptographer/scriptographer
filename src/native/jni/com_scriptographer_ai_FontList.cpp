@@ -36,9 +36,9 @@
  */
 
 /*
- * int getLength()
+ * int size()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_FontList_getLength(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_FontList_size(JNIEnv *env, jobject obj) {
 	try {
 		long length;
 		if (!sAIFont->CountTypefaces(&length))

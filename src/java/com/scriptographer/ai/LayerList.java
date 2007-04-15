@@ -31,8 +31,8 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.util.StringIndexList;
-import com.scriptographer.util.AbstractReadOnlyList;
+import com.scratchdisk.util.StringIndexList;
+import com.scratchdisk.util.AbstractReadOnlyList;
 
 /**
  * The LayerList object represents a list of layers in an Illustrator document.
@@ -48,10 +48,10 @@ public class LayerList extends AbstractReadOnlyList implements StringIndexList {
 		this.document = document;
 	}
 	
-	private static native int nativeGetLength(int docHandle);
+	private static native int nativeSize(int docHandle);
 
-	public int getLength() {
-		return nativeGetLength(document.handle);
+	public int size() {
+		return nativeSize(document.handle);
 	}
 
 	private static native Object nativeGet(int docHandle, int index);

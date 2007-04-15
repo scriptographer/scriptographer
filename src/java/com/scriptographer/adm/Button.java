@@ -34,8 +34,8 @@ package com.scriptographer.adm;
 import java.awt.Insets;
 import java.io.IOException;
 
-import com.scriptographer.ScriptographerEngine;
-import com.scriptographer.script.ScriptMethod;
+import com.scratchdisk.script.Callable;
+import com.scriptographer.ScriptographerEngine; 
 
 /**
  * A Button is by default text based.
@@ -64,19 +64,19 @@ public class Button extends TextItem {
 	 * Callback functions
 	 */
 	
-	private ScriptMethod onClick = null;
+	private Callable onClick = null;
 	
-	public ScriptMethod getOnClick() {
+	public Callable getOnClick() {
 		return onClick;
 	}
 
-	public void setOnClick(ScriptMethod onClick) {
+	public void setOnClick(Callable onClick) {
 		this.onClick = onClick;
 	}
 
 	protected void onClick() throws Exception {
 		if (onClick != null)
-			onClick.execute(this);
+			ScriptographerEngine.invoke(onClick, this);
 	}
 	
 	protected void onNotify(int notifier) throws Exception {

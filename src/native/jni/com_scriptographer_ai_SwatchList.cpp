@@ -36,9 +36,9 @@
  */
 
 /*
- * int nativeGetLength(int docHandle)
+ * int nativeSize(int docHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SwatchList_nativeGetLength(JNIEnv *env, jclass cls, jint docHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SwatchList_nativeSize(JNIEnv *env, jclass cls, jint docHandle) {
 	try {
 		AISwatchListRef list = NULL;
 		if (!sAISwatchList->GetSwatchList((AIDocumentHandle) docHandle, &list))

@@ -30,9 +30,9 @@
 package com.scriptographer.ai;
 
 import com.scriptographer.CommitManager;
-import com.scriptographer.util.ExtendedList;
-import com.scriptographer.util.Lists;
-import com.scriptographer.util.ReadOnlyList;
+import com.scratchdisk.util.ExtendedList;
+import com.scratchdisk.util.Lists;
+import com.scratchdisk.util.ReadOnlyList;
 
 /**
  * @author lehni
@@ -129,7 +129,7 @@ public class TextStory extends AIObject {
 			}
 		}
 
-		public int getLength() {
+		public int size() {
 			this.update();
 			return length;
 		}
@@ -139,7 +139,7 @@ public class TextStory extends AIObject {
 		}
 
 		public boolean isEmpty() {
-			return getLength() == 0;
+			return size() == 0;
 		}
 
 		public ExtendedList getSubList(int fromIndex, int toIndex) {

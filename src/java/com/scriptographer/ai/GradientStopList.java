@@ -31,9 +31,9 @@
 
 package com.scriptographer.ai;
 
+import com.scratchdisk.util.AbstractExtendedList;
+import com.scratchdisk.util.ExtendedArrayList;
 import com.scriptographer.CommitManager;
-import com.scriptographer.util.AbstractExtendedList;
-import com.scriptographer.util.ExtendedArrayList;
 
 /**
  * @author lehni
@@ -165,7 +165,7 @@ public class GradientStopList extends AbstractExtendedList {
 		return stop;
 	}
 
-	public int getLength() {
+	public int size() {
 		return size;
 	}
 

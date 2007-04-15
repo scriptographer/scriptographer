@@ -31,7 +31,7 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.util.AbstractReadOnlyList;
+import com.scratchdisk.util.AbstractReadOnlyList;
 
 /**
  * @author lehni
@@ -44,11 +44,11 @@ public class DocumentViewList extends AbstractReadOnlyList {
 		this.document = document;
 	}
 
-	public int getLength() {
-		return nativeGetLength(document.handle);
+	public int size() {
+		return nativeSize(document.handle);
 	}
 	
-	private static native int nativeGetLength(int docHandle);
+	private static native int nativeSize(int docHandle);
 		
 	private static native int nativeGet(int docHandle, int index);
 

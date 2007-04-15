@@ -31,7 +31,8 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.script.ScriptMethod;
+import com.scriptographer.ScriptographerEngine; 
+import com.scratchdisk.script.Callable;
 
 /**
  * @author lehni
@@ -50,49 +51,49 @@ public abstract class ValueItem extends Item {
 	 * Callback functions
 	 */
 	
-	private ScriptMethod onPreChange = null;
+	private Callable onPreChange = null;
 
-	public ScriptMethod getOnPreChange() {
+	public Callable getOnPreChange() {
 		return onPreChange;
 	}
 
-	public void setOnPreChange(ScriptMethod onPreChange) {
+	public void setOnPreChange(Callable onPreChange) {
 		this.onPreChange = onPreChange;
 	}
 	
 	protected void onPreChange() throws Exception {
 		if (onPreChange != null)
-			onPreChange.execute(this);
+			ScriptographerEngine.invoke(onPreChange, this);
 	}
 	
-	private ScriptMethod onChange = null;
+	private Callable onChange = null;
 	
 	protected void onChange() throws Exception {
 		if (onChange != null)
-			onChange.execute(this);
+			ScriptographerEngine.invoke(onChange, this);
 	}
 
-	public ScriptMethod getOnChange() {
+	public Callable getOnChange() {
 		return onChange;
 	}
 
-	public void setOnChange(ScriptMethod onChange) {
+	public void setOnChange(Callable onChange) {
 		this.onChange = onChange;
 	}
 	
-	private ScriptMethod onNumberOutOfBounds = null;
+	private Callable onNumberOutOfBounds = null;
 
-	public ScriptMethod getOnNumberOutOfBounds() {
+	public Callable getOnNumberOutOfBounds() {
 		return onNumberOutOfBounds;
 	}
 
-	public void setOnNumberOutOfBounds(ScriptMethod onNumberOutOfBounds) {
+	public void setOnNumberOutOfBounds(Callable onNumberOutOfBounds) {
 		this.onNumberOutOfBounds = onNumberOutOfBounds;
 	}
 	
 	protected void onNumberOutOfBounds() throws Exception {
 		if (onNumberOutOfBounds != null)
-			onNumberOutOfBounds.execute(this);
+			ScriptographerEngine.invoke(onNumberOutOfBounds, this);
 	}
 
 	protected void onNotify(int notifier) throws Exception {

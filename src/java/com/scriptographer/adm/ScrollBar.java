@@ -31,7 +31,8 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.script.ScriptMethod;
+import com.scriptographer.ScriptographerEngine; 
+import com.scratchdisk.script.Callable;
 
 /**
  * @author lehni
@@ -42,18 +43,18 @@ public class ScrollBar extends ValueItem {
 		super(dialog, TYPE_SCROLLBAR, OPTION_NONE);
 	}
 	
-	private ScriptMethod onChange = null;
+	private Callable onChange = null;
 
-	public ScriptMethod getOnChange() {
+	public Callable getOnChange() {
 		return onChange;
 	}
 
-	public void setOnChange(ScriptMethod onChange) {
+	public void setOnChange(Callable onChange) {
 		this.onChange = onChange;
 	}
 
 	protected void onChange() throws Exception {
-		onChange.execute(this);
+		ScriptographerEngine.invoke(onChange, this);
 	}
 	
 	protected void onNotify(int notifier, ListEntry entry) throws Exception {

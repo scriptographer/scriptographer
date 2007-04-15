@@ -36,9 +36,9 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
+import com.scratchdisk.util.ExtendedList;
+import com.scratchdisk.util.Lists;
 import com.scriptographer.CommitManager;
-import com.scriptographer.util.ExtendedList;
-import com.scriptographer.util.Lists;
 
 /**
  * @author lehni
@@ -284,7 +284,7 @@ public class Path extends Art {
 
 	public HitTest hitTest(Point point, float epsilon) {
 		CurveList curves = getCurves();
-		int length = curves.getLength();
+		int length = curves.size();
 		
 		for (int i = 0; i < length; i++) {
 			Curve curve = (Curve) curves.get(i);
@@ -408,7 +408,7 @@ public class Path extends Art {
 	public void append(PathIterator iter, boolean connect) {
 		float[] f = new float[6];
 		SegmentList segments = getSegments();
-		int size = segments.getLength();
+		int size = segments.size();
 		boolean open = true;
 		while (!iter.isDone() && open) {
 			switch (iter.currentSegment(f)) {

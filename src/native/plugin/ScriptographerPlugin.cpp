@@ -97,13 +97,13 @@ ASErr ScriptographerPlugin::createTool(int index, char *title, int iconID, int c
 		data.sameToolsetAs = kNoTool;
 	}
 
-	error = sAITool->AddTool(m_pluginRef, title, &data, options, &tool->handle);
+	error = sAITool->AddTool(m_pluginRef, title, &data, options, &tool->m_handle);
 	if (error) return error;
 
-	error = sAITool->SetToolOptions(tool->handle, options);
+	error = sAITool->SetToolOptions(tool->m_handle, options);
 	if (error) return error;
 	
-	tool->cursorID = cursorID;
+	tool->m_cursorID = cursorID;
 	
 	return kNoErr;
 }

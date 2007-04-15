@@ -13,7 +13,7 @@ import javax.swing.ToolTipManager;
 import javax.swing.text.*;
 import javax.swing.JComponent;
 
-import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ScriptographerEngine; 
 
 import java.awt.event.MouseEvent;
 import java.awt.*;

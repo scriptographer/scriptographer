@@ -37,25 +37,34 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Rectangle;
 
+import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.script.Scope;
 import com.scriptographer.ConsoleOutputStream;
 import com.scriptographer.ConsoleOutputWriter;
-import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ScriptographerEngine; 
 import com.scriptographer.adm.*;
-import com.scriptographer.script.ScriptScope;
-import com.scriptographer.script.ScriptEngine;
 
 /**
  * @author lehni
  */
 public class ConsoleDialog extends FloatingDialog implements
 		ConsoleOutputWriter {
+
 	static final String title = "Scriptographer Console";
+	static final Dimension buttonSize = new Dimension(27, 17);
+	static final String newLine = java.lang.System.getProperty("line.separator");
+	TextEdit textIn;
+	TextEdit textOut;
+	ImageButton clearButton;
+	StringBuffer consoleText;
+	ScriptEngine engine;
+	Scope consoleScope;
 
 	public ConsoleDialog() throws Exception {
 		super(FloatingDialog.OPTION_TABBED | FloatingDialog.OPTION_SHOW_CYCLE
 			| FloatingDialog.OPTION_RESIZING | Dialog.OPTION_REMEMBER_PLACING);
 
-		engine = ScriptEngine.getInstanceByName("JavaScript");
+		engine = ScriptEngine.getEngineByName("JavaScript");
 
 		setTitle(title);
 
@@ -120,7 +129,7 @@ public class ConsoleDialog extends FloatingDialog implements
 		textOut.setBackgroundColor(Drawer.COLOR_INACTIVE_TAB);
 
 		consoleText = new StringBuffer();
-		consoleScope = engine.createScope();
+		consoleScope = engine != null ? engine.createScope() : null;
 
 		// buttons:
 		clearButton = new ImageButton(this) {
@@ -151,22 +160,6 @@ public class ConsoleDialog extends FloatingDialog implements
 		ConsoleOutputStream.setWriter(this);
 	}
 
-	static final Dimension buttonSize = new Dimension(27, 17);
-
-	static final String newLine = java.lang.System
-		.getProperty("line.separator");
-
-	TextEdit textIn;
-
-	TextEdit textOut;
-
-	ImageButton clearButton;
-
-	StringBuffer consoleText;
-
-	ScriptEngine engine;
-	ScriptScope consoleScope;
-
 	protected void onInitialize() {
 		showText();
 	}
@@ -176,12 +169,14 @@ public class ConsoleDialog extends FloatingDialog implements
 	}
 
 	protected void showText() {
-		textOut.setText(consoleText.toString());
-		int end = consoleText.length();
-		textOut.setSelection(end);
-		// textOut.update();
-		// textOut.invalidate();
-		setVisible(true);
+		if (textOut != null) {
+			textOut.setText(consoleText.toString());
+			int end = consoleText.length();
+			textOut.setSelection(end);
+			// textOut.update();
+			// textOut.invalidate();
+			setVisible(true);
+		}
 	}
 
 	public void println(String str) {

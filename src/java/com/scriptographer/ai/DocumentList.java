@@ -31,7 +31,7 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.util.AbstractReadOnlyList;
+import com.scratchdisk.util.AbstractReadOnlyList;
 
 /**
  * @author lehni
@@ -44,7 +44,7 @@ public class DocumentList extends AbstractReadOnlyList {
 	private DocumentList() {
 	}
 
-	public native int getLength();
+	public native int size();
 	
 	private static native int nativeGet(int index);
 

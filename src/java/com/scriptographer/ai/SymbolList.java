@@ -31,8 +31,8 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.util.AbstractReadOnlyList;
-import com.scriptographer.util.StringIndexList;
+import com.scratchdisk.util.AbstractReadOnlyList;
+import com.scratchdisk.util.StringIndexList;
 
 /**
  * @author lehni
@@ -44,10 +44,10 @@ public class SymbolList extends AbstractReadOnlyList implements StringIndexList 
 		this.document = document;
 	}
 	
-	private static native int nativeGetLength(int docHandle);
+	private static native int nativeSize(int docHandle);
 
-	public int getLength() {
-		return nativeGetLength(document.handle);
+	public int size() {
+		return nativeSize(document.handle);
 	}
 
 	private static native int nativeGet(int docHandle, int index);

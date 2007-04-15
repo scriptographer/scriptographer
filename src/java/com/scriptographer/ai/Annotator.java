@@ -34,10 +34,11 @@ package com.scriptographer.ai;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
+import com.scriptographer.ScriptographerEngine; 
+import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.IntMap;
+import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.adm.Drawer;
-import com.scriptographer.script.ScriptMethod;
-import com.scriptographer.util.IntMap;
-import com.scriptographer.util.SoftIntMap;
 
 /**
  * @author lehni
@@ -143,34 +144,34 @@ public class Annotator extends AIObject {
 
 	private static native ArrayList nativeGetAnnotators();
 
-	private ScriptMethod onDraw = null;
+	private Callable onDraw = null;
 
-	public void setOnDraw(ScriptMethod onDraw) {
+	public void setOnDraw(Callable onDraw) {
 		this.onDraw = onDraw;
 	}
 	
-	public ScriptMethod getOnDraw() {
+	public Callable getOnDraw() {
 		return onDraw;
 	}
 
 	protected void onDraw(Drawer drawer, DocumentView view) throws Exception {
 		if (onDraw != null)
-			onDraw.execute(this, new Object[] { drawer, view });
+			ScriptographerEngine.invoke(onDraw, this, new Object[] { drawer, view });
 	}
 
-	private ScriptMethod onInvalidate = null;
+	private Callable onInvalidate = null;
 
-	public void setOnInvalidate(ScriptMethod onInvalidate) {
+	public void setOnInvalidate(Callable onInvalidate) {
 		this.onInvalidate = onInvalidate;
 	}
 	
-	public ScriptMethod getOnInvalidate() {
+	public Callable getOnInvalidate() {
 		return onInvalidate;
 	}
 
 	protected void onInvalidate() throws Exception {
 		if (onInvalidate != null)
-			onInvalidate.execute(this);
+			ScriptographerEngine.invoke(onInvalidate, this);
 	}
 
 	/**

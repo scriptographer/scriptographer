@@ -35,8 +35,8 @@ import java.util.ArrayList;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
+import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
-import com.scriptographer.util.SoftIntMap;
 
 /**
  * @author lehni

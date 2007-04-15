@@ -218,7 +218,7 @@ public class CharacterStyle extends PathStyle {
 	}
 	
 	public void setFont(FontFamily font) {
-		setFont(font != null && font.getLength() > 0 ?
+		setFont(font != null && font.size() > 0 ?
 				(FontWeight) font.get(0) : null);
 	}
 	

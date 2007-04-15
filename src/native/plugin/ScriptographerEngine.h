@@ -155,12 +155,20 @@ public:
 	jmethodID mid_Loader_init;
 	jmethodID mid_Loader_reload;
 	jmethodID mid_Loader_loadClass;
+
+// Scratchdisk:
+	jclass cls_IntMap;
+	jmethodID cid_IntMap;
+	jmethodID mid_IntMap_put;
+	
+	jclass cls_SimpleList;
+	jmethodID mid_SimpleList_size;
+	jmethodID mid_SimpleList_get;
 	
 // Scriptographer:
 	jclass cls_ScriptographerEngine;
 	jmethodID mid_ScriptographerEngine_init;
 	jmethodID mid_ScriptographerEngine_destroy;
-	jmethodID mid_ScriptographerEngine_formatError;
 	jmethodID mid_ScriptographerEngine_reportError;
 	jmethodID mid_ScriptographerEngine_onAbout;
 
@@ -168,14 +176,6 @@ public:
 	
 	jclass cls_CommitManager;
 	jmethodID mid_CommitManager_commit;
-
-	jclass cls_IntMap;
-	jmethodID cid_IntMap;
-	jmethodID mid_IntMap_put;
-
-	jclass cls_SimpleList;
-	jmethodID mid_SimpleList_getLength;
-	jmethodID mid_SimpleList_get;
 	
 // AI:
 	jclass cls_AIObject;
@@ -393,7 +393,6 @@ public:
 	bool isKeyDown(short keycode);
 	
 	void println(JNIEnv *env, const char *str, ...);
-	char *formatError(JNIEnv *env, jthrowable throwable);
 	void reportError(JNIEnv *env);
 
 	// com.scriptographer.awt.Point <-> AIRealPoint

@@ -36,10 +36,11 @@ import java.awt.geom.Rectangle2D;
 import java.awt.*;
 import java.io.IOException;
 
-import com.scriptographer.script.ScriptMethod;
-import com.scriptographer.util.ExtendedList;
-import com.scriptographer.util.Lists;
-import com.scriptographer.util.SimpleList;
+import com.scriptographer.ScriptographerEngine; 
+import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.ExtendedList;
+import com.scratchdisk.util.Lists;
+import com.scratchdisk.util.SimpleList;
 
 /**
  * ListItem is a ADM list item (e.g. ListBox, PopupMenu, ...) and a
@@ -80,33 +81,33 @@ public abstract class ListItem extends Item implements SimpleList {
 	protected ListItem() {
 	}
 	
-	private ScriptMethod onPreChange = null;
+	private Callable onPreChange = null;
 
-	public ScriptMethod getOnPreChange() {
+	public Callable getOnPreChange() {
 		return onPreChange;
 	}
 
-	public void setOnPreChange(ScriptMethod onPreChange) {
+	public void setOnPreChange(Callable onPreChange) {
 		this.onPreChange = onPreChange;
 	}
 	
 	protected void onPreChange() throws Exception {
 		if (onPreChange != null)
-			onPreChange.execute(this);
+			ScriptographerEngine.invoke(onPreChange, this);
 	}
 	
-	private ScriptMethod onChange = null;
+	private Callable onChange = null;
 	
 	protected void onChange() throws Exception {
 		if (onChange != null)
-			onChange.execute(this);
+			ScriptographerEngine.invoke(onChange, this);
 	}
 
-	public ScriptMethod getOnChange() {
+	public Callable getOnChange() {
 		return onChange;
 	}
 
-	public void setOnChange(ScriptMethod onChange) {
+	public void setOnChange(Callable onChange) {
 		this.onChange = onChange;
 	}
 
@@ -162,55 +163,55 @@ public abstract class ListItem extends Item implements SimpleList {
 		return drawEntryCallback;
 	}
 	
-	private ScriptMethod onTrackEntry = null;
+	private Callable onTrackEntry = null;
 
-	public ScriptMethod getOnTrackEntry() {
+	public Callable getOnTrackEntry() {
 		return onTrackEntry;
 	}
 
-	public void setOnTrackEntry(ScriptMethod func) {
+	public void setOnTrackEntry(Callable func) {
 		setTrackEntryCallback(func != null);
 		onTrackEntry = func;
 	}
 
-	private ScriptMethod onDrawEntry = null;
+	private Callable onDrawEntry = null;
 
-	public ScriptMethod getOnDrawEntry() {
+	public Callable getOnDrawEntry() {
 		return onDrawEntry;
 	}
 	
-	public void setOnDrawEntry(ScriptMethod func) {
+	public void setOnDrawEntry(Callable func) {
 		setDrawEntryCallback(func != null);
 		onDrawEntry = func;
 	}
 
-	private ScriptMethod onDestroyEntry = null;
+	private Callable onDestroyEntry = null;
 
-	public ScriptMethod getOnDestroyEntry() {
+	public Callable getOnDestroyEntry() {
 		return onDestroyEntry;
 	}
 
-	public void setOnDestroyEntry(ScriptMethod func) {
+	public void setOnDestroyEntry(Callable func) {
 		onDestroyEntry = func;
 	}
 
-	private ScriptMethod onSelectEntry = null;
+	private Callable onSelectEntry = null;
 
-	public ScriptMethod getOnSelectEntry() {
+	public Callable getOnSelectEntry() {
 		return onSelectEntry;
 	}
 
-	public void setOnSelectEntry(ScriptMethod func) {
+	public void setOnSelectEntry(Callable func) {
 		onSelectEntry = func;
 	}
 	
-	private ScriptMethod onChangeEntryText = null;
+	private Callable onChangeEntryText = null;
 
-	public ScriptMethod getOnChangeEntryText() {
+	public Callable getOnChangeEntryText() {
 		return onChangeEntryText;
 	}
 
-	public void setOnChangeEntryText(ScriptMethod onChangeEntryText) {
+	public void setOnChangeEntryText(Callable onChangeEntryText) {
 		this.onChangeEntryText = onChangeEntryText;
 	}
 
@@ -337,7 +338,7 @@ public abstract class ListItem extends Item implements SimpleList {
 	 * 
 	 */
 
-	public native int getLength();
+	public native int size();
 
 	public native Object get(int index);
 
@@ -393,13 +394,13 @@ public abstract class ListItem extends Item implements SimpleList {
 	}
 
 	public final void removeAll() {
-		remove(0, getLength());
+		remove(0, size());
 	}
 
 	public boolean addAll(ExtendedList elements) {
 		boolean modified = false;
-		int size = elements.getLength();
-		int index = getLength();
+		int size = elements.size();
+		int index = size();
 		for (int i = 0; i < size; i++) {
 			if (add(index++, elements.get(i)) != null)
 				modified = true;
@@ -416,6 +417,6 @@ public abstract class ListItem extends Item implements SimpleList {
 	}
 
 	public boolean isEmpty() {
-		return getLength() == 0;
+		return size() == 0;
 	}
 }

@@ -33,9 +33,9 @@ package com.scriptographer.ai;
 
 import java.util.HashMap;
 
-import com.scriptographer.util.ExtendedArrayList;
-import com.scriptographer.util.ExtendedList;
-import com.scriptographer.util.Lists;
+import com.scratchdisk.util.ExtendedArrayList;
+import com.scratchdisk.util.ExtendedList;
+import com.scratchdisk.util.Lists;
 
 /**
  * @author lehni
@@ -117,7 +117,7 @@ public class ArtSet extends ExtendedArrayList {
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();
 		buffer.append("[");
-		for (int i = 0; i < getLength(); i++) {
+		for (int i = 0; i < size(); i++) {
 			if (i > 0)
 				buffer.append(", ");
 			buffer.append(get(i).toString());

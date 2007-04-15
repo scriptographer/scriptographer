@@ -31,11 +31,12 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.script.ScriptScope;
-import com.scriptographer.script.ScriptEngine;
-import com.scriptographer.script.ScriptException;
-import com.scriptographer.script.ScriptMethod;
-import com.scriptographer.util.IntMap;
+import com.scriptographer.ScriptographerEngine; 
+import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.script.ScriptException;
+import com.scratchdisk.script.Callable;
+import com.scratchdisk.script.Scope;
+import com.scratchdisk.util.IntMap;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class Tool extends AIObject {
 		this.index = index;
 	}
 	
-	private ScriptScope scope;
+	private Scope scope;
 
 	private Event event = new Event();
 	private Object[] eventArgs = new Object[] { event };
@@ -70,10 +71,10 @@ public class Tool extends AIObject {
 		onMouseUp = null;
 		onMouseDrag = null;
 		onMouseMove = null;
-		ScriptEngine engine = ScriptEngine.getInstanceByFile(file);
+		ScriptEngine engine = ScriptEngine.getEngineByFile(file);
 		// Execute in the tool's scope so setIdleInterval can be called
 		scope = engine.getScope(this);
-		ScriptEngine.executeFile(file, scope);
+		ScriptographerEngine.execute(file, scope);
 		if (scope != null) {
 			setIdleEventInterval(-1);
 			try {
@@ -110,150 +111,150 @@ public class Tool extends AIObject {
 	
 	public native void setIdleEventInterval(int interval);
 
-	private ScriptMethod onInit;
+	private Callable onInit;
 
-	public ScriptMethod getOnInit() {
+	public Callable getOnInit() {
 		return onInit;
 	}
 
-	public void setOnInit(ScriptMethod onInit) {
+	public void setOnInit(Callable onInit) {
 		this.onInit = onInit;
 	}
 	
 	protected void onInit() throws Exception {
 		if (scope != null && onInit != null)
-			onInit.execute(this);
+			ScriptographerEngine.invoke(onInit, this);
 	}
 
 	/*
 	 * TODO: onOptions should be called onEditOptions, or both onOptions,
 	 * but at least the same.
 	 */
-	private ScriptMethod onOptions;
+	private Callable onOptions;
 
-	public ScriptMethod getOnOptions() {
+	public Callable getOnOptions() {
 		return onOptions;
 	}
 
-	public void setOnOptions(ScriptMethod onOptions) {
+	public void setOnOptions(Callable onOptions) {
 		this.onOptions = onOptions;
 	}
 
 	protected void onOptions() throws Exception {
 		if (scope != null && onOptions != null)
-			onOptions.execute(this);
+			ScriptographerEngine.invoke(onOptions, this);
 	}
 
-	private ScriptMethod onSelect;
+	private Callable onSelect;
 
-	public ScriptMethod getOnSelect() {
+	public Callable getOnSelect() {
 		return onSelect;
 	}
 
-	public void setOnSelect(ScriptMethod onSelect) {
+	public void setOnSelect(Callable onSelect) {
 		this.onSelect = onSelect;
 	}
 
 	protected void onSelect() throws Exception {
 		if (scope != null && onSelect != null)
-			onSelect.execute(this);
+			ScriptographerEngine.invoke(onSelect, this);
 	}
 	
-	private ScriptMethod onDeselect;
+	private Callable onDeselect;
 
-	public ScriptMethod getOnDeselect() {
+	public Callable getOnDeselect() {
 		return onDeselect;
 	}
 
-	public void setOnDeselect(ScriptMethod onDeselect) {
+	public void setOnDeselect(Callable onDeselect) {
 		this.onDeselect = onDeselect;
 	}
 	
 	protected void onDeselect() throws Exception {
 		if (scope != null && onDeselect != null)
-			onDeselect.execute(this);
+			ScriptographerEngine.invoke(onDeselect, this);
 	}
 
-	private ScriptMethod onReselect;
+	private Callable onReselect;
 
-	public ScriptMethod getOnReselect() {
+	public Callable getOnReselect() {
 		return onReselect;
 	}
 
-	public void setOnReselect(ScriptMethod onReselect) {
+	public void setOnReselect(Callable onReselect) {
 		this.onReselect = onReselect;
 	}
 	
 	protected void onReselect() throws Exception {
 		if (scope != null && onReselect != null)
-			onReselect.execute(this);
+			ScriptographerEngine.invoke(onReselect, this);
 	}
 
-	private ScriptMethod onMouseDown;
+	private Callable onMouseDown;
 
-	public ScriptMethod getOnMouseDown() {
+	public Callable getOnMouseDown() {
 		return onMouseDown;
 	}
 
-	public void setOnMouseDown(ScriptMethod onMouseDown) {
+	public void setOnMouseDown(Callable onMouseDown) {
 		this.onMouseDown = onMouseDown;
 	}
 	
 	protected void onMouseDown(float x, float y, int pressure) throws Exception {
 		if (scope != null && onMouseDown != null) {
 			event.setValues(x, y, pressure);
-			onMouseDown.execute(this, eventArgs);
+			ScriptographerEngine.invoke(onMouseDown, this, eventArgs);
 		}
 	}
 
-	private ScriptMethod onMouseDrag;
+	private Callable onMouseDrag;
 
-	public ScriptMethod getOnMouseDrag() {
+	public Callable getOnMouseDrag() {
 		return onMouseDrag;
 	}
 
-	public void setOnMouseDrag(ScriptMethod onMouseDrag) {
+	public void setOnMouseDrag(Callable onMouseDrag) {
 		this.onMouseDrag = onMouseDrag;
 	}
 	
 	protected void onMouseDrag(float x, float y, int pressure) throws Exception {
 		if (scope != null && onMouseDrag != null) {
 			event.setValues(x, y, pressure);
-			onMouseDrag.execute(this, eventArgs);
+			ScriptographerEngine.invoke(onMouseDrag, this, eventArgs);
 		}
 	}
 
-	private ScriptMethod onMouseMove;
+	private Callable onMouseMove;
 
-	public ScriptMethod getOnMouseMove() {
+	public Callable getOnMouseMove() {
 		return onMouseMove;
 	}
 
-	public void setOnMouseMove(ScriptMethod onMouseMove) {
+	public void setOnMouseMove(Callable onMouseMove) {
 		this.onMouseMove = onMouseMove;
 	}
 	
 	protected void onMouseMove(float x, float y, int pressure) throws Exception {
 		if (scope != null && onMouseMove != null) {
 			event.setValues(x, y, pressure);
-			onMouseMove.execute(this, eventArgs);
+			ScriptographerEngine.invoke(onMouseMove, this, eventArgs);
 		}
 	}
 
-	private ScriptMethod onMouseUp;
+	private Callable onMouseUp;
 
-	public ScriptMethod getOnMouseUp() {
+	public Callable getOnMouseUp() {
 		return onMouseUp;
 	}
 
-	public void setOnMouseUp(ScriptMethod onMouseUp) {
+	public void setOnMouseUp(Callable onMouseUp) {
 		this.onMouseUp = onMouseUp;
 	}
 		
 	protected void onMouseUp(float x, float y, int pressure) throws Exception {
 		if (scope != null && onMouseUp != null) {
 			event.setValues(x, y, pressure);
-			onMouseUp.execute(this, eventArgs);
+			ScriptographerEngine.invoke(onMouseUp, this, eventArgs);
 		}
 	}
 

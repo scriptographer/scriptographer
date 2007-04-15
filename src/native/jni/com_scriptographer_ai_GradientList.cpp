@@ -38,9 +38,9 @@
  */
 
 /*
- * int nativeGetLength(int docHandle)
+ * int nativeSize(int docHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_GradientList_nativeGetLength(JNIEnv *env, jclass cls, jint docHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_GradientList_nativeSize(JNIEnv *env, jclass cls, jint docHandle) {
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		long count = 0;

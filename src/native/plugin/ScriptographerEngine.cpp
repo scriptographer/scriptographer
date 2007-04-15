@@ -319,6 +319,7 @@ jstring ScriptographerEngine::reloadEngine() {
  * Returns true on success, false on failure.
  */
 void ScriptographerEngine::initReflection(JNIEnv *env) {
+// JSE:
 	cls_Object = loadClass(env, "java/lang/Object");
 	mid_Object_toString = getMethodID(env, cls_Object, "toString", "()Ljava/lang/String;");
 
@@ -419,12 +420,19 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_awt_ICC_Profile = loadClass(env, "java/awt/color/ICC_Profile");
 	mid_awt_ICC_Profile_getInstance = getStaticMethodID(env, cls_awt_ICC_Profile, "getInstance", "([B)Ljava/awt/color/ICC_Profile;");
 
+// Scratchdisk:
+	cls_IntMap = loadClass(env, "com/scratchdisk/util/IntMap");
+	cid_IntMap = getConstructorID(env, cls_IntMap, "()V");
+	mid_IntMap_put = getMethodID(env, cls_IntMap, "put", "(ILjava/lang/Object;)Ljava/lang/Object;");
+	
+	cls_SimpleList = loadClass(env, "com/scratchdisk/util/SimpleList");
+	mid_SimpleList_size = getMethodID(env, cls_SimpleList, "size", "()I");
+	mid_SimpleList_get = getMethodID(env, cls_SimpleList, "get", "(I)Ljava/lang/Object;");
+	
 // Scriptographer:
-
 	cls_ScriptographerEngine = loadClass(env, "com/scriptographer/ScriptographerEngine");
 	mid_ScriptographerEngine_init = getStaticMethodID(env, cls_ScriptographerEngine, "init", "(Ljava/lang/String;)V");
 	mid_ScriptographerEngine_destroy = getStaticMethodID(env, cls_ScriptographerEngine, "destroy", "()V");
-	mid_ScriptographerEngine_formatError = getStaticMethodID(env, cls_ScriptographerEngine, "formatError", "(Ljava/lang/Throwable;)Ljava/lang/String;");
 	mid_ScriptographerEngine_reportError = getStaticMethodID(env, cls_ScriptographerEngine, "reportError", "(Ljava/lang/Throwable;)V");
 	mid_ScriptographerEngine_onAbout = getStaticMethodID(env, cls_ScriptographerEngine, "onAbout", "()V");
 
@@ -432,16 +440,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_CommitManager = loadClass(env, "com/scriptographer/CommitManager");
 	mid_CommitManager_commit =  getStaticMethodID(env, cls_CommitManager, "commit", "(Ljava/lang/Object;)V");
-	
-	cls_IntMap = loadClass(env, "com/scriptographer/util/IntMap");
-	cid_IntMap = getConstructorID(env, cls_IntMap, "()V");
-	mid_IntMap_put = getMethodID(env, cls_IntMap, "put", "(ILjava/lang/Object;)Ljava/lang/Object;");
-	
-	cls_SimpleList = loadClass(env, "com/scriptographer/util/SimpleList");
-	mid_SimpleList_getLength = getMethodID(env, cls_SimpleList, "getLength", "()I");
-	mid_SimpleList_get = getMethodID(env, cls_SimpleList, "get", "(I)Ljava/lang/Object;");
-// AI:
 
+// AI:
 	cls_AIObject = loadClass(env, "com/scriptographer/ai/AIObject");
 	fid_AIObject_handle = getFieldID(env, cls_AIObject, "handle", "I");
 	
@@ -577,7 +577,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cid_HitTest = getConstructorID(env, cls_HitTest, "(ILcom/scriptographer/ai/Art;IFLcom/scriptographer/ai/Point;)V");
 
 // ADM:
-
 	cls_ADMObject = loadClass(env, "com/scriptographer/adm/ADMObject");
 	fid_ADMObject_handle = getFieldID(env, cls_ADMObject, "handle", "I");
 
@@ -696,12 +695,6 @@ void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
 	va_end(args);
 	callVoidMethodReport(env, env->GetStaticObjectField(cls_System, fid_System_out), mid_PrintStream_println, env->NewStringUTF(text));
 	delete text;
-}
-
-char *ScriptographerEngine::formatError(JNIEnv *env, jthrowable throwable) {
-	JNI_CHECK_ENV
-	jstring str = (jstring) callStaticObjectMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_formatError, throwable);
-	return gEngine->convertString(env, str);
 }
 
 void ScriptographerEngine::reportError(JNIEnv *env) {
@@ -1159,8 +1152,8 @@ AIArtSet ScriptographerEngine::convertArtSet(JNIEnv *env, jobject artSet) {
 	AIArtSet set = NULL;
 	if (!sAIArtSet->NewArtSet(&set)) {
 		// use a for loop with size instead of hasNext, because that saves us many calls...
-		jint length = callIntMethod(env, artSet, mid_SimpleList_getLength);
-		for (int i = 0; i < length; i++) {
+		jint size = callIntMethod(env, artSet, mid_SimpleList_size);
+		for (int i = 0; i < size; i++) {
 			jobject obj = callObjectMethod(env, artSet, mid_SimpleList_get, i);
 			if (obj != NULL)
 				sAIArtSet->AddArtToArtSet(set, getArtHandle(env, obj));

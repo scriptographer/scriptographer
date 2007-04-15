@@ -37,8 +37,8 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
-import com.scriptographer.ScriptographerEngine;
-import com.scriptographer.script.ScriptMethod;
+import com.scratchdisk.script.Callable;
+import com.scriptographer.ScriptographerEngine; 
 
 /**
  * @author lehni
@@ -249,22 +249,22 @@ public abstract class Item extends CallbackHandler {
 	 * Callback functions:
 	 */
 
-	private ScriptMethod onDestroy = null;
+	private Callable onDestroy = null;
 	
-	public ScriptMethod getOnDestroy() {
+	public Callable getOnDestroy() {
 		return onDestroy;
 	}
 
-	public void setOnDestroy(ScriptMethod onDestroy) {
+	public void setOnDestroy(Callable onDestroy) {
 		this.onDestroy = onDestroy;
 	}
 
 	protected void onDestroy() throws Exception {
 		// retrieve through getter so it can be overriden by subclasses,
 		// e.g. HierarchyList
-		ScriptMethod onDestroy = this.getOnDestroy();
+		Callable onDestroy = this.getOnDestroy();
 		if (onDestroy != null)
-			onDestroy.execute(this);
+			ScriptographerEngine.invoke(onDestroy, this);
 	}
 
 	protected void onNotify(int notifier) throws Exception {
@@ -387,10 +387,10 @@ public abstract class Item extends CallbackHandler {
 			component.updateBounds(bounds);
 
 		if (sizeChanged) {
-			// TODO: deal with Exception...
 			try {
 				onResize(deltaX, deltaY);
 			} catch (Exception e) {
+				// TODO: deal with Exception...
 				throw new RuntimeException(e);
 			}
 		}

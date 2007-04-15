@@ -223,9 +223,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListItem_getEntryTextRect(
 }
 
 /*
- * int getLength()
+ * int size()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_getLength(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_size(JNIEnv *env, jobject obj) {
 	try {
 		#define SIZE(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			return LIST_SUITE->NumberOfEntries(list);

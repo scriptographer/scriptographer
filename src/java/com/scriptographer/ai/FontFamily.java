@@ -31,10 +31,10 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.util.ExtendedList;
-import com.scriptographer.util.Lists;
-import com.scriptographer.util.ReadOnlyList;
-import com.scriptographer.util.StringIndexList;
+import com.scratchdisk.util.ExtendedList;
+import com.scratchdisk.util.Lists;
+import com.scratchdisk.util.ReadOnlyList;
+import com.scratchdisk.util.StringIndexList;
 
 /**
  * @author lehni
@@ -52,7 +52,7 @@ public class FontFamily extends AIWrapper implements ReadOnlyList, StringIndexLi
 	}
 	
 	public boolean isValid() {
-		return getLength() > 0;
+		return size() > 0;
 	}
 
 	/* TODO: check AIFont.h for many more features (OpenType, glyph bounds, etc)
@@ -69,10 +69,10 @@ public class FontFamily extends AIWrapper implements ReadOnlyList, StringIndexLi
 	AIAPI AIErr (*GetFontStyleUINameUnicode)( AIFontKey fontKey, ASUnicode* styleName, long maxName );
 	*/
 
-	private native int nativeGetLength(int handle);
+	private native int nativeSize(int handle);
 	
-	public int getLength() {
-		return nativeGetLength(handle);
+	public int size() {
+		return nativeSize(handle);
 	}
 	
 	private static native int nativeGet(int handle, int index);
@@ -83,7 +83,7 @@ public class FontFamily extends AIWrapper implements ReadOnlyList, StringIndexLi
 
 	public Object get(String name) {
 		if (name != null) {
-			for (int i = getLength() - 1; i >= 0; i--) {
+			for (int i = size() - 1; i >= 0; i--) {
 				FontWeight weight = (FontWeight) get(i);
 				if (name.equals(weight.getName()))
 					return weight;
@@ -93,7 +93,7 @@ public class FontFamily extends AIWrapper implements ReadOnlyList, StringIndexLi
 	}
 
 	public boolean isEmpty() {
-		return getLength() == 0;
+		return size() == 0;
 	}
 
 	public ExtendedList getSubList(int fromIndex, int toIndex) {

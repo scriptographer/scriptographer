@@ -33,10 +33,10 @@ package com.scriptographer.ai;
 
 import java.util.WeakHashMap;
 
-import com.scriptographer.util.ExtendedList;
-import com.scriptographer.util.Lists;
-import com.scriptographer.util.ReadOnlyList;
-import com.scriptographer.util.StringIndexList;
+import com.scratchdisk.util.ExtendedList;
+import com.scratchdisk.util.Lists;
+import com.scratchdisk.util.ReadOnlyList;
+import com.scratchdisk.util.StringIndexList;
 
 /**
  * The FontList object represents a list of {@link FontFamily} objects. FontLists are
@@ -53,7 +53,7 @@ public class FontList implements ReadOnlyList, StringIndexList {
 	private FontList() {
 	}
 
-	public native int getLength();
+	public native int size();
 	
 	private static native int nativeGet(int index);
 
@@ -75,7 +75,7 @@ public class FontList implements ReadOnlyList, StringIndexList {
 			}
 			// not found, scan:
 			if (family == null) {
-				int len = getLength();
+				int len = size();
 				for (int i = 0; i < len; i++) {
 					FontFamily f = (FontFamily) get(i);
 					String n = f.getName().toLowerCase();
@@ -91,7 +91,7 @@ public class FontList implements ReadOnlyList, StringIndexList {
 	}
 
 	public boolean isEmpty() {
-		return getLength() == 0;
+		return size() == 0;
 	}
 
 	public ExtendedList getSubList(int fromIndex, int toIndex) {

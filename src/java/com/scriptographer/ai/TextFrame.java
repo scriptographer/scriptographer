@@ -31,7 +31,7 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.util.ReadOnlyList;
+import com.scratchdisk.util.ReadOnlyList;
 import com.scriptographer.CommitManager;
 
 /**
@@ -112,7 +112,7 @@ public abstract class TextFrame extends Art {
 		// to the sam Story, so things can be cached there:
 		int index = getStoryIndex();
 		ReadOnlyList list = document.getStories();
-		if (index >= 0 && index < list.getLength())
+		if (index >= 0 && index < list.size())
 			return (TextStory) list.get(index);
 		return null;
 	}
@@ -121,7 +121,7 @@ public abstract class TextFrame extends Art {
 		TextStory story = getStory();
 		if (story != null) {
 			ReadOnlyList list = story.getTextFrames();
-			if (index >= 0 && index < list.getLength())
+			if (index >= 0 && index < list.size())
 				return (TextFrame) list.get(index);
 		}
 		return null;

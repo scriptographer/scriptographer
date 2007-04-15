@@ -222,8 +222,8 @@ public class HitTest {
 			// curve = segment - 1, if curve < 0, curve += segmentCount
 			index--;
 			if (index < 0)
-				index += curves.getLength();
-			if (index < curves.getLength()) {
+				index += curves.size();
+			if (index < curves.size()) {
 				this.curve = (Curve) curves.get(index);
 				// if parameter == -1 and index is valid, we're hitting
 				// a segment point. just set parameter to 0 and the

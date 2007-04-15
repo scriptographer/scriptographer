@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
-import com.scriptographer.util.SoftIntMap;
+import com.scratchdisk.util.SoftIntMap;
 
 /**
  * @author lehni

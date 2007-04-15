@@ -34,8 +34,9 @@ package com.scriptographer.ai;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import com.scriptographer.script.ScriptMethod;
-import com.scriptographer.util.IntMap;
+import com.scriptographer.ScriptographerEngine; 
+import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.IntMap;
 
 /**
  * @author lehni
@@ -167,19 +168,19 @@ public class Timer extends AIObject {
 
 	private static native ArrayList nativeGetTimers();
 
-	private ScriptMethod onExecute = null;
+	private Callable onExecute = null;
 
-	public void setOnExecute(ScriptMethod onExecute) {
+	public void setOnExecute(Callable onExecute) {
 		this.onExecute = onExecute;
 	}
 	
-	public ScriptMethod getOnExecute() {
+	public Callable getOnExecute() {
 		return onExecute;
 	}
 
 	protected void onExecute() throws Exception {
 		if (onExecute != null)
-			onExecute.execute(this);
+			ScriptographerEngine.invoke(onExecute, this);
 	}
 
 	/**

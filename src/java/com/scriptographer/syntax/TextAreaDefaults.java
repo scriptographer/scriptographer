@@ -11,7 +11,7 @@ package com.scriptographer.syntax;
 
 import java.awt.*;
 
-import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ScriptographerEngine; 
 
 /**
  * Encapsulates default settings for a text area. This can be passed to the

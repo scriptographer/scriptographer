@@ -31,8 +31,9 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.script.ScriptMethod;
-import com.scriptographer.util.IntMap;
+import com.scriptographer.ScriptographerEngine; 
+import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.IntMap;
 
 import java.util.Iterator;
 
@@ -252,35 +253,35 @@ public class MenuItem extends ADMObject{
 
 	// Callback functions:
 	
-	private ScriptMethod onSelect = null;
+	private Callable onSelect = null;
 
-	public ScriptMethod getOnSelect() {
+	public Callable getOnSelect() {
 		return onSelect;
 	}
 
-	public void setOnSelect(ScriptMethod onSelect) {
+	public void setOnSelect(Callable onSelect) {
 		this.onSelect = onSelect;
 	}
 
 	protected void onSelect() throws Exception {
 		if (onSelect != null)
-			onSelect.execute(this);
+			ScriptographerEngine.invoke(onSelect, this);
 	}
 	
-	private ScriptMethod onUpdate = null;
+	private Callable onUpdate = null;
 
-	public ScriptMethod getOnUpdate() {
+	public Callable getOnUpdate() {
 		return onUpdate;
 	}
 
-	public void setOnUpdate(ScriptMethod onUpdate) {
+	public void setOnUpdate(Callable onUpdate) {
 		this.onUpdate = onUpdate;
 	}
 	
 	protected void onUpdate(int inArtwork, int isSelected, int isTrue)
 			throws Exception {
 		if (onUpdate != null)
-			onUpdate.execute(this);
+			ScriptographerEngine.invoke(onUpdate, this);
 	}
 
 	/**

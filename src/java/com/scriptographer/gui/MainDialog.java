@@ -41,10 +41,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Iterator;
 
-import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ScriptographerEngine; 
 import com.scriptographer.adm.*;
 import com.scriptographer.ai.Tool;
-import com.scriptographer.script.ScriptEngine;
 
 /**
  * @author lehni
@@ -171,8 +170,8 @@ public class MainDialog extends FloatingDialog {
 			public boolean accept(File dir, String name) {
 				return !name.equals("CVS") && !name.startsWith(".") &&
 						(name.endsWith(".js") ||
-//						name.endsWith(".py") ||
-//						name.endsWith(".rb") ||
+						name.endsWith(".py") ||
+						name.endsWith(".rb") ||
 						new File(dir, name).isDirectory());
 			}
 		};
@@ -192,7 +191,7 @@ public class MainDialog extends FloatingDialog {
 
 		ImageButton stopButton = new ImageButton(this) {
 			protected void onClick() {
-				ScriptEngine.stopAll();
+				ScriptographerEngine.stopAll();
 			}
 		};
 		stopButton.setImage(getImage("stop.png"));
@@ -261,7 +260,7 @@ public class MainDialog extends FloatingDialog {
 	void execute() throws Exception {
 		ScriptEntry entry = (ScriptEntry) scriptList.getActiveLeaf();
 		if (entry != null && entry.file != null) {
-			ScriptEngine.executeFile(entry.file, null);
+			ScriptographerEngine.execute(entry.file, null);
 		}
 	}
 	
@@ -383,7 +382,6 @@ public class MainDialog extends FloatingDialog {
 			if (entry != null)
 				entry.setExpanded(true);
 		}
-
 		tool1Button.updatePicture();
 		tool2Button.updatePicture();
 	}

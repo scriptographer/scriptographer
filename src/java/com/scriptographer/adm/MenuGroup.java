@@ -31,7 +31,7 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.util.IntMap;
+import com.scratchdisk.util.IntMap;
 
 /*
  * Theoretically MenuItem and MenuGroup would belong to the AI package, not ADM

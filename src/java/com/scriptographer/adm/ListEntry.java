@@ -34,7 +34,9 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import com.scriptographer.script.ScriptMethod;
+import com.scriptographer.ScriptographerEngine; 
+import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.script.Callable;
 
 /**
  * @author lehni
@@ -76,74 +78,79 @@ public class ListEntry extends NotificationHandler {
 	 */
 
 	protected void onDraw(Drawer drawer) throws Exception {
-		ScriptMethod onDrawEntry = list.getOnDrawEntry();
+		Callable onDrawEntry = list.getOnDrawEntry();
 		if (onDrawEntry != null)
-			onDrawEntry.execute(list, new Object[] { drawer, this });
+			ScriptographerEngine.invoke(onDrawEntry, list,
+					new Object[] { drawer, this });
 	}
 
 	protected boolean onTrack(Tracker tracker) throws Exception {
-		ScriptMethod onTrackEntry = list.getOnTrackEntry();
+		Callable onTrackEntry = list.getOnTrackEntry();
 		if (onTrackEntry != null) {
-			Object res = onTrackEntry.execute(list, new Object[] { tracker, this });
+			Object res = ScriptographerEngine.invoke(onTrackEntry, list,
+					new Object[] { tracker, this });
 			if (res != null)
-				return onTrackEntry.toBoolean(res);
+				return ScriptEngine.toBoolean(res);
 		}
 		return true;
 	}
 	
-	ScriptMethod onDestroy = null;
+	Callable onDestroy = null;
 
-	public ScriptMethod getOnDestroy() {
+	public Callable getOnDestroy() {
 		return onDestroy;
 	}
 
-	public void setOnDestroy(ScriptMethod onDestroy) {
+	public void setOnDestroy(Callable onDestroy) {
 		this.onDestroy = onDestroy;
 	}
 
 	protected void onDestroy() throws Exception {
 		if (onDestroy != null)
-			onDestroy.execute(this);
+			ScriptographerEngine.invoke(onDestroy, this);
 		
-		ScriptMethod onDestroyEntry = list.getOnDestroyEntry();
+		Callable onDestroyEntry = list.getOnDestroyEntry();
 		if (onDestroyEntry != null)
-			onDestroyEntry.execute(list, new Object[] { this });
+			ScriptographerEngine.invoke(onDestroyEntry, list,
+					new Object[] { this });
 	}
 	
-	ScriptMethod onSelect = null;
+	Callable onSelect = null;
 
-	public ScriptMethod getOnSelect() {
+	public Callable getOnSelect() {
 		return onSelect;
 	}
 
-	public void setOnSelect(ScriptMethod onSelect) {
+	public void setOnSelect(Callable onSelect) {
 		this.onSelect = onSelect;
 	}
 
 	protected void onSelect() throws Exception {
 		if (onSelect != null)
-			onSelect.execute(this);
-		ScriptMethod onSelectEntry = list.getOnSelectEntry();
+			ScriptographerEngine.invoke(onSelect, this);
+		Callable onSelectEntry = list.getOnSelectEntry();
 		if (onSelectEntry != null)
-			onSelectEntry.execute(list, new Object[] { this });
+			ScriptographerEngine.invoke(onSelectEntry, list,
+					new Object[] { this });
 	}
 	
-	ScriptMethod onChangeText = null;
+	Callable onChangeText = null;
 
-	public ScriptMethod getOnChangeText() {
+	public Callable getOnChangeText() {
 		return onChangeText;
 	}
 
-	public void setOnChangeText(ScriptMethod onChangeText) {
+	public void setOnChangeText(Callable onChangeText) {
 		this.onChangeText = onChangeText;
 	}
 	
 	protected void onChangeText() throws Exception {
 		if (onChangeText != null)
-			onChangeText.execute(this);
-		ScriptMethod onChangeEntryText = list.getOnChangeEntryText();
+			ScriptographerEngine.invoke(onChangeText, this);
+		Callable onChangeEntryText = list.getOnChangeEntryText();
 		if (onChangeEntryText != null)
-			onChangeEntryText.execute(list, new Object[] { this });
+			ScriptographerEngine.invoke(onChangeEntryText, list,
+					new Object[] { this });
 	}
 	
 	protected void onNotify(int notifier) throws Exception {

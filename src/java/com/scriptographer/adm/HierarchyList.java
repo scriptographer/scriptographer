@@ -35,7 +35,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.*;
 
-import com.scriptographer.script.ScriptMethod;
+import com.scratchdisk.script.Callable;
 
 /**
  * @author lehni
@@ -96,56 +96,56 @@ public class HierarchyList extends List {
 	 * walk up the list chain on find a function in the parent if they
 	 * do not define one locally.
 	 */
-	public ScriptMethod getOnChangeEntryText() {
-		ScriptMethod func = super.getOnChangeEntryText();
+	public Callable getOnChangeEntryText() {
+		Callable func = super.getOnChangeEntryText();
 		return func == null && parentEntry != null ?
 				parentEntry.getList().getOnChangeEntryText() : func;
 	}
 
-	public ScriptMethod getOnSelectEntry() {
-		ScriptMethod func = super.getOnSelectEntry();
+	public Callable getOnSelectEntry() {
+		Callable func = super.getOnSelectEntry();
 		return func == null && parentEntry != null ?
 				parentEntry.getList().getOnSelectEntry() : func;
 	}
 
-	public ScriptMethod getOnDestroyEntry() {
-		ScriptMethod func = super.getOnDestroyEntry();
+	public Callable getOnDestroyEntry() {
+		Callable func = super.getOnDestroyEntry();
 		return func == null && parentEntry != null ?
 				parentEntry.getList().getOnDestroyEntry() : func;
 	}
 
-	public ScriptMethod getOnDrawEntry() {
-		ScriptMethod func = super.getOnDrawEntry();
+	public Callable getOnDrawEntry() {
+		Callable func = super.getOnDrawEntry();
 		return func == null && parentEntry != null ?
 				parentEntry.getList().getOnDrawEntry() : func;
 	}
 
-	public ScriptMethod getOnTrackEntry() {
-		ScriptMethod func = super.getOnTrackEntry();
+	public Callable getOnTrackEntry() {
+		Callable func = super.getOnTrackEntry();
 		return func == null && parentEntry != null ?
 				parentEntry.getList().getOnTrackEntry() : func;
 	}
 
-	public ScriptMethod getOnDestroy() {
-		ScriptMethod func = super.getOnDestroy();
+	public Callable getOnDestroy() {
+		Callable func = super.getOnDestroy();
 		return func == null && parentEntry != null ?
 				parentEntry.getList().getOnDestroy() : func;
 	}
 
-	public ScriptMethod getOnDraw() {
-		ScriptMethod func = super.getOnDraw();
+	public Callable getOnDraw() {
+		Callable func = super.getOnDraw();
 		return func == null && parentEntry != null ?
 				parentEntry.getList().getOnDraw() : func;
 	}
 
-	public ScriptMethod getOnResize() {
-		ScriptMethod func = super.getOnResize();
+	public Callable getOnResize() {
+		Callable func = super.getOnResize();
 		return func == null && parentEntry != null ?
 				parentEntry.getList().getOnResize() : func;
 	}
 
-	public ScriptMethod getOnTrack() {
-		ScriptMethod func = super.getOnTrack();
+	public Callable getOnTrack() {
+		Callable func = super.getOnTrack();
 		return func == null && parentEntry != null ?
 				parentEntry.getList().getOnTrack() : func;
 	}

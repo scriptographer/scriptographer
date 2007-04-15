@@ -65,8 +65,8 @@ DLLExport SPAPI int main(char *caller, char *selector, void *message);
 class ScriptographerEngine;
 
 struct Tool {
-	AIToolHandle handle;
-	int cursorID;	
+	AIToolHandle m_handle;
+	int m_cursorID;	
 };
 
 class ScriptographerPlugin {

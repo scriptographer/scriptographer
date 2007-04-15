@@ -31,7 +31,7 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.util.ExtendedList;
+import com.scratchdisk.util.ExtendedList;
 
 /**
  * @author lehni

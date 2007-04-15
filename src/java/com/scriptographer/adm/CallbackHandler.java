@@ -31,7 +31,9 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.script.ScriptMethod;
+import com.scriptographer.ScriptographerEngine; 
+import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.script.Callable;
 
 /**
  * Subclasses the NotificationHandler and adds functionality for
@@ -78,62 +80,65 @@ abstract class CallbackHandler extends NotificationHandler {
 	abstract public void setTrackMask(int mask);
 	abstract public int getTrackMask();
 
- 	protected ScriptMethod onTrack = null;
-	protected ScriptMethod onDraw = null;
+ 	protected Callable onTrack = null;
+	protected Callable onDraw = null;
 
-	public void setOnTrack(ScriptMethod func) {
+	public void setOnTrack(Callable func) {
 		setTrackCallback(func != null);
 		onTrack = func;
 	}
 
-	public ScriptMethod getOnTrack() {
+	public Callable getOnTrack() {
 		return onTrack;
 	}
 
 	protected boolean onTrack(Tracker tracker) throws Exception {
 		// Retrieve through getter so it can be overriden by subclasses,
 		// e.g. HierarchyList
-		ScriptMethod onTrack = this.getOnTrack();
+		Callable onTrack = this.getOnTrack();
 		if (onTrack != null) {
-			Object result = onTrack.execute(this, new Object[] { tracker });
+			Object result = ScriptographerEngine.invoke(onTrack, this,
+					new Object[] { tracker });
 			if (result != null)
-				return onTrack.toBoolean(result);
+				return ScriptEngine.toBoolean(result);
 		}
 		return true;
 	}
 
-	public void setOnDraw(ScriptMethod func) {
+	public void setOnDraw(Callable func) {
 		setDrawCallback(func != null);
 		onDraw = func;
 	}
 
-	public ScriptMethod getOnDraw() {
+	public Callable getOnDraw() {
 		return onDraw;
 	}
 
 	protected void onDraw(Drawer drawer) throws Exception {
 		// Retrieve through getter so it can be overriden by subclasses,
 		// e.g. HierarchyList
-		ScriptMethod onDraw = this.getOnDraw();
+		Callable onDraw = this.getOnDraw();
 		if (onDraw != null)
-			onDraw.execute(this, new Object[] { drawer });
+			ScriptographerEngine.invoke(onDraw, this,
+					new Object[] { drawer });
 	}
 	
-	protected ScriptMethod onResize = null;
+	protected Callable onResize = null;
 
-	public void setOnResize(ScriptMethod func) {
+	public void setOnResize(Callable func) {
 		onResize = func;
 	}
 
-	public ScriptMethod getOnResize() {
+	public Callable getOnResize() {
 		return onResize;
 	}
 
 	protected void onResize(int dx, int dy) throws Exception {
 		// Retrieve through getter so it can be overriden by subclasses,
 		// e.g. HierarchyList
-		ScriptMethod onResize = this.getOnResize();
+		Callable onResize = this.getOnResize();
 		if (onResize != null)
-			onResize.execute(this, new Object[] { new Integer(dx), new Integer(dy) });
+			ScriptographerEngine.invoke(onResize, this,
+					new Object[] { new Integer(dx), new Integer(dy) });
 	}
 }

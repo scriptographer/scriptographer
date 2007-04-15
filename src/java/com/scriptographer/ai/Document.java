@@ -37,9 +37,9 @@ import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.Map;
 
-import com.scriptographer.util.ExtendedList;
-import com.scriptographer.util.ReadOnlyList;
-import com.scriptographer.util.SoftIntMap;
+import com.scratchdisk.util.SoftIntMap;
+import com.scratchdisk.util.ExtendedList;
+import com.scratchdisk.util.ReadOnlyList;
 
 /**
  * @author lehni

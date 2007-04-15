@@ -35,10 +35,10 @@ import java.util.StringTokenizer;
 import java.util.zip.Adler32;
 
 import com.scriptographer.CommitManager;
-import com.scriptographer.util.ExtendedArrayList;
-import com.scriptographer.util.ExtendedList;
-import com.scriptographer.util.Lists;
-import com.scriptographer.util.ReadOnlyList;
+import com.scratchdisk.util.ExtendedArrayList;
+import com.scratchdisk.util.ExtendedList;
+import com.scratchdisk.util.Lists;
+import com.scratchdisk.util.ReadOnlyList;
 
 /**
  * @author lehni
@@ -207,7 +207,7 @@ public class TextRange extends AIObject {
 	
 	/**
 	 * Returns the kerning between two chars in thousands of em.
-	 * TODO: mvoe to CharacterStyle
+	 * TODO: move to CharacterStyle
 	 */
 	public native int getKerning();
 	
@@ -402,7 +402,7 @@ public class TextRange extends AIObject {
 			list = new ExtendedArrayList.List();
 		}
 
-		public int getLength() {
+		public int size() {
 			return list.size();
 		}
 
@@ -585,7 +585,7 @@ public class TextRange extends AIObject {
 			// list so a new one is return for this index
 			if (range != null) {
 				// move the range by the amount of change in the range
-				int start = getStart() + (getLength() - oldLength);
+				int start = getStart() + (size() - oldLength);
 				range.setRange(start, start + 1);
 				list.set(0, null);
 			}

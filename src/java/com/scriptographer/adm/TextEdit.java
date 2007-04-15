@@ -31,7 +31,8 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.script.ScriptMethod;
+import com.scriptographer.ScriptographerEngine; 
+import com.scratchdisk.script.Callable;
 
 /**
  * @author lehni
@@ -107,213 +108,213 @@ public class TextEdit extends TextValueItem {
 	
 	// TODO: are all these really needed?
 	
-	private ScriptMethod onPreCut = null;
+	private Callable onPreCut = null;
 
-	public ScriptMethod getOnPreCut() {
+	public Callable getOnPreCut() {
 		return onPreCut;
 	}
 
-	public void setOnPreCut(ScriptMethod onPreCut) {
+	public void setOnPreCut(Callable onPreCut) {
 		this.onPreCut = onPreCut;
 	}
 
 	protected void onPreCut() throws Exception {
 		if (onPreCut != null)
-			onPreCut.execute(this);
+			ScriptographerEngine.invoke(onPreCut, this);
 	}
 	
-	private ScriptMethod onCut = null;
+	private Callable onCut = null;
 
-	public ScriptMethod getOnCut() {
+	public Callable getOnCut() {
 		return onCut;
 	}
 
-	public void setOnCut(ScriptMethod onCut) {
+	public void setOnCut(Callable onCut) {
 		this.onCut = onCut;
 	}
 
 	protected void onCut() throws Exception {
 		if (onCut != null)
-			onCut.execute(this);
+			ScriptographerEngine.invoke(onCut, this);
 	}
 
-	private ScriptMethod onPreCopy = null;
+	private Callable onPreCopy = null;
 
-	public ScriptMethod getOnPreCopy() {
+	public Callable getOnPreCopy() {
 		return onPreCopy;
 	}
 
-	public void setOnPreCopy(ScriptMethod onPreCopy) {
+	public void setOnPreCopy(Callable onPreCopy) {
 		this.onPreCopy = onPreCopy;
 	}
 
 	protected void onPreCopy() throws Exception {
 		if (onPreCopy != null)
-			onPreCopy.execute(this);
+			ScriptographerEngine.invoke(onPreCopy, this);
 	}
 
-	private ScriptMethod onCopy = null;
+	private Callable onCopy = null;
 
-	public ScriptMethod getOnCopy() {
+	public Callable getOnCopy() {
 		return onCopy;
 	}
 
-	public void setOnCopy(ScriptMethod onCopy) {
+	public void setOnCopy(Callable onCopy) {
 		this.onCopy = onCopy;
 	}
 
 	protected void onCopy() throws Exception {
 		if (onCopy != null)
-			onCopy.execute(this);
+			ScriptographerEngine.invoke(onCopy, this);
 	}
 
-	private ScriptMethod onPrePaste = null;
+	private Callable onPrePaste = null;
 
-	public ScriptMethod getOnPrePaste() {
+	public Callable getOnPrePaste() {
 		return onPrePaste;
 	}
 
-	public void setOnPrePaste(ScriptMethod onPrePaste) {
+	public void setOnPrePaste(Callable onPrePaste) {
 		this.onPrePaste = onPrePaste;
 	}
 
 	protected void onPrePaste() throws Exception {
 		if (onPrePaste != null)
-			onPrePaste.execute(this);
+			ScriptographerEngine.invoke(onPrePaste, this);
 	}
 
-	private ScriptMethod onPaste = null;
+	private Callable onPaste = null;
 
-	public ScriptMethod getOnPaste() {
+	public Callable getOnPaste() {
 		return onPaste;
 	}
 
-	public void setOnPaste(ScriptMethod onPaste) {
+	public void setOnPaste(Callable onPaste) {
 		this.onPaste = onPaste;
 	}
 
 	protected void onPaste() throws Exception {
 		if (onPaste != null)
-			onPaste.execute(this);
+			ScriptographerEngine.invoke(onPaste, this);
 	}
 
-	private ScriptMethod onPreClear = null;
+	private Callable onPreClear = null;
 
-	public ScriptMethod getOnPreClear() {
+	public Callable getOnPreClear() {
 		return onPreClear;
 	}
 
-	public void setOnPreClear(ScriptMethod onPreClear) {
+	public void setOnPreClear(Callable onPreClear) {
 		this.onPreClear = onPreClear;
 	}
 
 	protected void onPreClear() throws Exception {
 		if (onPreClear != null)
-			onPreClear.execute(this);
+			ScriptographerEngine.invoke(onPreClear, this);
 	}
 
-	private ScriptMethod onClear = null;
+	private Callable onClear = null;
 
-	public ScriptMethod getOnClear() {
+	public Callable getOnClear() {
 		return onClear;
 	}
 
-	public void setOnClear(ScriptMethod onClear) {
+	public void setOnClear(Callable onClear) {
 		this.onClear = onClear;
 	}
 
 	protected void onClear() throws Exception {
 		if (onClear != null)
-			onClear.execute(this);
+			ScriptographerEngine.invoke(onClear, this);
 	}
 	
-	private ScriptMethod onPreSelectionChange = null;
+	private Callable onPreSelectionChange = null;
 
-	public ScriptMethod getOnPreSelectionChange() {
+	public Callable getOnPreSelectionChange() {
 		return onPreSelectionChange;
 	}
 
-	public void setOnPreSelectionChange(ScriptMethod onPreSelectionChange) {
+	public void setOnPreSelectionChange(Callable onPreSelectionChange) {
 		this.onPreSelectionChange = onPreSelectionChange;
 	}
 
 	protected void onPreSelectionChange() throws Exception {
 		if (onPreSelectionChange != null)
-			onPreSelectionChange.execute(this);
+			ScriptographerEngine.invoke(onPreSelectionChange, this);
 	}
 
-	private ScriptMethod onSelectionChange = null;
+	private Callable onSelectionChange = null;
 
-	public ScriptMethod getOnSelectionChange() {
+	public Callable getOnSelectionChange() {
 		return onSelectionChange;
 	}
 
-	public void setOnSelectionChange(ScriptMethod onSelectionChange) {
+	public void setOnSelectionChange(Callable onSelectionChange) {
 		this.onSelectionChange = onSelectionChange;
 	}
 
 	protected void onSelectionChange() throws Exception {
 		if (onSelectionChange != null)
-			onSelectionChange.execute(this);
+			ScriptographerEngine.invoke(onSelectionChange, this);
 	}
-	private ScriptMethod onPreRedo = null;
+	private Callable onPreRedo = null;
 
-	public ScriptMethod getOnPreRedo() {
+	public Callable getOnPreRedo() {
 		return onPreRedo;
 	}
 
-	public void setOnPreRedo(ScriptMethod onPreRedo) {
+	public void setOnPreRedo(Callable onPreRedo) {
 		this.onPreRedo = onPreRedo;
 	}
 
 	protected void onPreRedo() throws Exception {
 		if (onPreRedo != null)
-			onPreRedo.execute(this);
+			ScriptographerEngine.invoke(onPreRedo, this);
 	}
 
-	private ScriptMethod onRedo = null;
+	private Callable onRedo = null;
 
-	public ScriptMethod getOnRedo() {
+	public Callable getOnRedo() {
 		return onRedo;
 	}
 
-	public void setOnRedo(ScriptMethod onRedo) {
+	public void setOnRedo(Callable onRedo) {
 		this.onRedo = onRedo;
 	}
 
 	protected void onRedo() throws Exception {
 		if (onRedo != null)
-			onRedo.execute(this);
+			ScriptographerEngine.invoke(onRedo, this);
 	}
 
-	private ScriptMethod onPreUndo = null;
+	private Callable onPreUndo = null;
 
-	public ScriptMethod getOnPreUndo() {
+	public Callable getOnPreUndo() {
 		return onPreUndo;
 	}
 
-	public void setOnPreUndo(ScriptMethod onPreUndo) {
+	public void setOnPreUndo(Callable onPreUndo) {
 		this.onPreUndo = onPreUndo;
 	}
 
 	protected void onPreUndo() throws Exception {
 		if (onPreUndo != null)
-			onPreUndo.execute(this);
+			ScriptographerEngine.invoke(onPreUndo, this);
 	}
 
-	private ScriptMethod onUndo = null;
+	private Callable onUndo = null;
 
-	public ScriptMethod getOnUndo() {
+	public Callable getOnUndo() {
 		return onUndo;
 	}
 
-	public void setOnUndo(ScriptMethod onUndo) {
+	public void setOnUndo(Callable onUndo) {
 		this.onUndo = onUndo;
 	}
 
 	protected void onUndo() throws Exception {
 		if (onUndo != null)
-			onUndo.execute(this);
+			ScriptographerEngine.invoke(onUndo, this);
 	}
 	
 	protected void onNotify(int notifier, ListEntry entry) throws Exception {

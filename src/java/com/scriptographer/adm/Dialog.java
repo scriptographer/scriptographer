@@ -31,8 +31,8 @@
 
 package com.scriptographer.adm;
 
-import com.scriptographer.ScriptographerEngine;
-import com.scriptographer.script.ScriptMethod;
+import com.scratchdisk.script.Callable;
+import com.scriptographer.ScriptographerEngine; 
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -361,202 +361,202 @@ public abstract class Dialog extends CallbackHandler {
 	/*
 	 * Callback functions
 	 */
-	private ScriptMethod onDestroy = null;
+	private Callable onDestroy = null;
 
-	public ScriptMethod getOnDestroy() {
+	public Callable getOnDestroy() {
 		return onDestroy;
 	}
 
-	public void setOnDestroy(ScriptMethod onDestroy) {
+	public void setOnDestroy(Callable onDestroy) {
 		this.onDestroy = onDestroy;
 	}
 
 	protected void onDestroy() throws Exception {
 		if (onDestroy != null)
-			onDestroy.execute(this);
+			ScriptographerEngine.invoke(onDestroy, this);
 	}
 
-	private ScriptMethod onInitialize = null;
+	private Callable onInitialize = null;
 
-	public ScriptMethod getOnInitialize() {
+	public Callable getOnInitialize() {
 		return onInitialize;
 	}
 
-	public void setOnInitialize(ScriptMethod onInitialize) {
+	public void setOnInitialize(Callable onInitialize) {
 		this.onInitialize = onInitialize;
 	}
 
 	protected void onInitialize() throws Exception {
 		if (onInitialize != null)
-			onInitialize.execute(this);
+			ScriptographerEngine.invoke(onInitialize, this);
 	}
 
-	private ScriptMethod onActivate = null;
+	private Callable onActivate = null;
 
-	public ScriptMethod getOnActivate() {
+	public Callable getOnActivate() {
 		return onActivate;
 	}
 
-	public void setOnActivate(ScriptMethod onActivate) {
+	public void setOnActivate(Callable onActivate) {
 		this.onActivate = onActivate;
 	}
 
 	protected void onActivate() throws Exception {
 		if (onActivate != null)
-			onActivate.execute(this);
+			ScriptographerEngine.invoke(onActivate, this);
 	}
 
-	private ScriptMethod onDeactivate = null;
+	private Callable onDeactivate = null;
 
-	public ScriptMethod getOnDeactivate() {
+	public Callable getOnDeactivate() {
 		return onDeactivate;
 	}
 
-	public void setOnDeactivate(ScriptMethod onDeactivate) {
+	public void setOnDeactivate(Callable onDeactivate) {
 		this.onDeactivate = onDeactivate;
 	}
 
 	protected void onDeactivate() throws Exception {
 		if (onDeactivate != null)
-			onDeactivate.execute(this);
+			ScriptographerEngine.invoke(onDeactivate, this);
 	}
 
-	private ScriptMethod onShow = null;
+	private Callable onShow = null;
 
-	public ScriptMethod getOnShow() {
+	public Callable getOnShow() {
 		return onShow;
 	}
 
-	public void setOnShow(ScriptMethod onShow) {
+	public void setOnShow(Callable onShow) {
 		this.onShow = onShow;
 	}
 
 	protected void onShow() throws Exception {
 		if (onShow != null)
-			onShow.execute(this);
+			ScriptographerEngine.invoke(onShow, this);
 	}
 
-	private ScriptMethod onHide = null;
+	private Callable onHide = null;
 
-	public ScriptMethod getOnHide() {
+	public Callable getOnHide() {
 		return onHide;
 	}
 
-	public void setOnHide(ScriptMethod onHide) {
+	public void setOnHide(Callable onHide) {
 		this.onHide = onHide;
 	}
 
 	protected void onHide() throws Exception {
 		if (onHide != null)
-			onHide.execute(this);
+			ScriptographerEngine.invoke(onHide, this);
 	}
 
-	private ScriptMethod onMove = null;
+	private Callable onMove = null;
 
-	public ScriptMethod getOnMove() {
+	public Callable getOnMove() {
 		return onMove;
 	}
 
-	public void setOnMove(ScriptMethod onMove) {
+	public void setOnMove(Callable onMove) {
 		this.onMove = onMove;
 	}
 
 	protected void onMove() throws Exception {
 		if (onMove != null)
-			onMove.execute(this);
+			ScriptographerEngine.invoke(onMove, this);
 	}
 
-	private ScriptMethod onClose = null;
+	private Callable onClose = null;
 
-	public ScriptMethod getOnClose() {
+	public Callable getOnClose() {
 		return onClose;
 	}
 
-	public void setOnClose(ScriptMethod onClose) {
+	public void setOnClose(Callable onClose) {
 		this.onClose = onClose;
 	}
 
 	protected void onClose() throws Exception {
 		if (onClose != null)
-			onClose.execute(this);
+			ScriptographerEngine.invoke(onClose, this);
 	}
 
-	private ScriptMethod onZoom = null;
+	private Callable onZoom = null;
 
-	public ScriptMethod getOnZoom() {
+	public Callable getOnZoom() {
 		return onZoom;
 	}
 
-	public void setOnZoom(ScriptMethod onZoom) {
+	public void setOnZoom(Callable onZoom) {
 		this.onZoom = onZoom;
 	}
 
 	protected void onZoom() throws Exception {
 		if (onZoom != null)
-			onZoom.execute(this);
+			ScriptographerEngine.invoke(onZoom, this);
 	}
 
-	private ScriptMethod onCycle = null;
+	private Callable onCycle = null;
 
-	public ScriptMethod getOnCycle() {
+	public Callable getOnCycle() {
 		return onCycle;
 	}
 
-	public void setOnCycle(ScriptMethod onCycle) {
+	public void setOnCycle(Callable onCycle) {
 		this.onCycle = onCycle;
 	}
 
 	protected void onCycle() throws Exception {
 		if (onCycle != null)
-			onCycle.execute(this);
+			ScriptographerEngine.invoke(onCycle, this);
 	}
 
-	private ScriptMethod onCollapse = null;
+	private Callable onCollapse = null;
 
-	public ScriptMethod getOnCollapse() {
+	public Callable getOnCollapse() {
 		return onCollapse;
 	}
 
-	public void setOnCollapse(ScriptMethod onCollapse) {
+	public void setOnCollapse(Callable onCollapse) {
 		this.onCollapse = onCollapse;
 	}
 
 	protected void onCollapse() throws Exception {
 		if (onCollapse != null)
-			onCollapse.execute(this);
+			ScriptographerEngine.invoke(onCollapse, this);
 	}
 
-	private ScriptMethod onExpand = null;
+	private Callable onExpand = null;
 
-	public ScriptMethod getOnExpand() {
+	public Callable getOnExpand() {
 		return onExpand;
 	}
 
-	public void setOnExpand(ScriptMethod onExpand) {
+	public void setOnExpand(Callable onExpand) {
 		this.onExpand = onExpand;
 	}
 
 	protected void onExpand() throws Exception {
 		if (onExpand != null)
-			onExpand.execute(this);
+			ScriptographerEngine.invoke(onExpand, this);
 	}
 
 	// TODO: consider better name!
-	private ScriptMethod onContextMenuChange = null;
+	private Callable onContextMenuChange = null;
 
 	private boolean fireOnClose = true;
 
-	public ScriptMethod getOnContextMenuChange() {
+	public Callable getOnContextMenuChange() {
 		return onContextMenuChange;
 	}
 
-	public void setOnContextMenuChange(ScriptMethod onContextMenuChange) {
+	public void setOnContextMenuChange(Callable onContextMenuChange) {
 		this.onContextMenuChange = onContextMenuChange;
 	}
 
 	protected void onContextMenuChange() throws Exception {
 		if (onContextMenuChange != null)
-			onContextMenuChange.execute(this);
+			ScriptographerEngine.invoke(onContextMenuChange, this);
 	}
 
 	protected void onNotify(int notifier) throws Exception {
@@ -834,10 +834,10 @@ public abstract class Dialog extends CallbackHandler {
 			if (container != null)
 				container.updateSize(size);
 			// calll onResize
-			// TODO: deal with Exception...
 			try {
 				onResize(deltaX, deltaY);
 			} catch (Exception e) {
+				// TODO: deal with Exception...
 				throw new RuntimeException(e);
 			}
 		}

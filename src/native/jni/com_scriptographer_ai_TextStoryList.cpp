@@ -38,9 +38,9 @@
 using namespace ATE;
 
 /*
- * int nativeGetLength(int handle)
+ * int nativeSize(int handle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStoryList_nativeGetLength(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStoryList_nativeSize(JNIEnv *env, jobject obj, jint handle) {
 	try {
 		ASInt32 size;
 		if (!sStories->GetSize((StoriesRef) handle, &size))

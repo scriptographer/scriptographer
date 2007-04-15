@@ -35,8 +35,8 @@ import java.awt.Shape;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 
-import com.scriptographer.util.ExtendedList;
-import com.scriptographer.util.Lists;
+import com.scratchdisk.util.ExtendedList;
+import com.scratchdisk.util.Lists;
 
 /**
  * A compound path contains two or more paths, holes are drawn where the paths
@@ -62,7 +62,7 @@ public class CompoundPath extends Art {
 	
 	public CompoundPath(ExtendedList children) {
 		this();
-		for (int i = 0; i < children.getLength(); i++) {
+		for (int i = 0; i < children.size(); i++) {
 			Object obj = children.get(i);
 			if (obj instanceof Art)
 				this.appendChild((Art) obj);
@@ -179,7 +179,7 @@ public class CompoundPath extends Art {
 				case PathIterator.SEG_MOVETO: {
 					Path prevPath = (Path) getFirstChild();
 					int size = prevPath != null ?
-							prevPath.getSegments().getLength() : -1;
+							prevPath.getSegments().size() : -1;
 				    if (!connect || size  <= 0) {
 						moveTo(f[0], f[1]);
 						break;

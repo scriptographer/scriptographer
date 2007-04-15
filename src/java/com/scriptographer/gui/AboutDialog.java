@@ -35,7 +35,7 @@ import info.clearthought.layout.TableLayoutConstants;
 
 import java.awt.Point;
 
-import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ScriptographerEngine; 
 import com.scriptographer.adm.Dialog;
 import com.scriptographer.adm.ModalDialog;
 import com.scriptographer.adm.Button;

@@ -37,9 +37,9 @@
  */
 
 /*
- * int getLength()
+ * int size()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentList_getLength(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentList_size(JNIEnv *env, jobject obj) {
 	try {
 		long count;
 		sAIDocumentList->Count(&count);

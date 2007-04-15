@@ -31,8 +31,10 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.script.ScriptMethod;
-import com.scriptographer.util.IntMap;
+import com.scriptographer.ScriptographerEngine; 
+import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.IntMap;
 import com.scriptographer.adm.MenuItem;
 
 import java.util.Map;
@@ -320,34 +322,36 @@ public class LiveEffect extends AIObject {
 
 	// Callback functions:
 
-	private ScriptMethod onEditParameters = null;
+	private Callable onEditParameters = null;
 	
-	public ScriptMethod getOnEditParameters() {
+	public Callable getOnEditParameters() {
 		return onEditParameters;
 	}
 
-	public void setOnEditParameters(ScriptMethod onEditParameters) {
+	public void setOnEditParameters(Callable onEditParameters) {
 		this.onEditParameters = onEditParameters;
 	}
 
 	protected void onEditParameters(Map parameters) throws Exception {
 		if (onEditParameters != null)
-			onEditParameters.execute(this, new Object[] { parameters });
+			ScriptographerEngine.invoke(onEditParameters, this,
+					new Object[] { parameters });
 	}
 
-	private ScriptMethod onCalculate = null;
+	private Callable onCalculate = null;
 	
-	public ScriptMethod getOnCalculate() {
+	public Callable getOnCalculate() {
 		return onCalculate;
 	}
 	
-	public void setOnCalculate(ScriptMethod onCalculate) {
+	public void setOnCalculate(Callable onCalculate) {
 		this.onCalculate = onCalculate;
 	}
 
 	protected Art onCalculate(Map parameters, Art art) throws Exception {
 		if (onCalculate != null) {
-			Object ret = onCalculate.execute(this, new Object[] { parameters, art });
+			Object ret = ScriptographerEngine.invoke(onCalculate, this,
+					new Object[] { parameters, art });
 			// it is only possible to either return the art itself or set the
 			// art to null!
 			// everything else semse to cause a illustrator crash
@@ -367,20 +371,21 @@ public class LiveEffect extends AIObject {
 		return null;
 	}
 
-	private ScriptMethod onGetInputType = null;
+	private Callable onGetInputType = null;
 
-	public ScriptMethod getOnGetInputType() {
+	public Callable getOnGetInputType() {
 		return onGetInputType;
 	}
 
-	public void setOnGetInputType(ScriptMethod onGetInputType) {
+	public void setOnGetInputType(Callable onGetInputType) {
 		this.onGetInputType = onGetInputType;
 	}
 
 	protected int onGetInputType(Map parameters, Art art) throws Exception {
 		if (onGetInputType != null) {
-			return onGetInputType.toInt(onGetInputType.execute(
+			return ScriptEngine.toInt(ScriptographerEngine.invoke(onGetInputType,
 					new Object[] { parameters, art }));
+			
 		}
 		return 0;
 	}

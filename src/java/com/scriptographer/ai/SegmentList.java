@@ -33,9 +33,9 @@ package com.scriptographer.ai;
 
 import java.awt.geom.Point2D;
 
-import com.scriptographer.util.ExtendedArrayList;
+import com.scratchdisk.util.ExtendedArrayList;
+import com.scratchdisk.util.ExtendedList;
 import com.scriptographer.util.AbstractFetchList;
-import com.scriptographer.util.ExtendedList;
 
 /**
  * @author lehni
@@ -82,7 +82,7 @@ public class SegmentList extends AbstractFetchList {
 	 * Fetches the length from the underlying AI structure and puts the internal
 	 * reflection in the right state and length.
 	 * 
-	 * @param newSize If specified, nativeGetLength doesn't need to be called in
+	 * @param newSize If specified, nativeSize doesn't need to be called in
 	 *        order to speed things up.
 	 */
 	protected void updateSize(int newSize) {
@@ -271,7 +271,7 @@ public class SegmentList extends AbstractFetchList {
 		if (index < 0 || index > size)
 			throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
 
-		int count = elements.getLength();
+		int count = elements.size();
 		if (count == 0)
 			return false;
 
@@ -358,7 +358,7 @@ public class SegmentList extends AbstractFetchList {
 		return null;
 	}
 
-	public int getLength() {
+	public int size() {
 		return size;
 	}
 
