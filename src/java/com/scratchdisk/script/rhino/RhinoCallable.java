@@ -29,40 +29,47 @@
  * $Id: $
  */
 
-package com.scriptographer.script.rhino;
+package com.scratchdisk.script.rhino;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Wrapper;
 
-import com.scratchdisk.script.ScriptCanceledException;
-import com.scriptographer.ScriptographerEngine;
+import com.scratchdisk.script.Callable;
 
 /**
  * @author lehni
  *
  */
-public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
-
-	public RhinoEngine() {
-		super(new RhinoWrapFactory());
+public class RhinoCallable extends Callable {
+	Function function;
+	
+	RhinoCallable(Function function) {
+		this.function = function;
+	}
+	
+	public Object call(Object obj, Object[] args) throws RhinoScriptException {
+		// Retrieve wrapper object for the native java object, and call the
+		// function on it.
+		try {
+			Scriptable scope = RhinoEngine.getWrapper(
+					ScriptableObject.getTopLevelScope(function), obj);
+			Object ret = function.call(Context.getCurrentContext(),
+					scope.getParentScope(), scope, args);
+			// unwrap if the return value is a native java object:
+			if (ret instanceof Wrapper)
+				ret = ((Wrapper) ret).unwrap();
+			return ret;
+		} catch (RhinoException re) {
+			throw new RhinoScriptException(re);
+		}
 	}
 
-	protected com.scratchdisk.script.rhino.TopLevel makeTopLevel(Context context) {
-		return new TopLevel(context);
-	}
-
-	protected Context makeContext() {
-		context = super.makeContext();
-		// Use pure interpreter mode to allow for
-		// observeInstructionCount(Context, int) to work
-		context.setOptimizationLevel(-1);
-		// Make Rhino runtime to call observeInstructionCount
-		// each 20000 bytecode instructions
-		context.setInstructionObserverThreshold(20000);
-		return context;
-	}
-
-	protected void observeInstructinCount(Context cx, int instructionCount) {
-		if (!ScriptographerEngine.updateProgress())
-			throw new ScriptCanceledException();
+	public Function getFunction() {
+		return function;
 	}
 }
+

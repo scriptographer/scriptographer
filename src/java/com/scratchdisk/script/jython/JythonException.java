@@ -24,45 +24,22 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Apr 10, 2007.
+ * File created on Apr 14, 2007.
  *
  * $Id: $
  */
 
-package com.scriptographer.script.rhino;
+package com.scratchdisk.script.jython;
 
-import org.mozilla.javascript.Context;
-
-import com.scratchdisk.script.ScriptCanceledException;
-import com.scriptographer.ScriptographerEngine;
+import com.scratchdisk.script.ScriptException;
 
 /**
  * @author lehni
  *
  */
-public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
-
-	public RhinoEngine() {
-		super(new RhinoWrapFactory());
-	}
-
-	protected com.scratchdisk.script.rhino.TopLevel makeTopLevel(Context context) {
-		return new TopLevel(context);
-	}
-
-	protected Context makeContext() {
-		context = super.makeContext();
-		// Use pure interpreter mode to allow for
-		// observeInstructionCount(Context, int) to work
-		context.setOptimizationLevel(-1);
-		// Make Rhino runtime to call observeInstructionCount
-		// each 20000 bytecode instructions
-		context.setInstructionObserverThreshold(20000);
-		return context;
-	}
-
-	protected void observeInstructinCount(Context cx, int instructionCount) {
-		if (!ScriptographerEngine.updateProgress())
-			throw new ScriptCanceledException();
+public class JythonException extends ScriptException {
+	public JythonException(Throwable cause) {
+		// TODO: format a message
+		super(cause);
 	}
 }

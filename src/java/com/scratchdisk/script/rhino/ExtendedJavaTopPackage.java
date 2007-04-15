@@ -29,7 +29,7 @@
  * $Id: $
  */
 
-package com.scriptographer.script.rhino;
+package com.scratchdisk.script.rhino;
 
 import java.util.HashMap;
 
@@ -58,12 +58,17 @@ public class ExtendedJavaTopPackage extends ExtendedJavaPackage {
 			// separated by '.', and walk up the Packages chain:
 			String[] path = javaClass.getName().split("\\.");
 			Scriptable global = ScriptableObject.getTopLevelScope(scope);
-			Scriptable current = (Scriptable) global.get("Packages", global);
-			for (int i = 0; i < path.length; i++)
-				current = (Scriptable) current.get(path[i], current);
-			// now obj needs to be an instance of ExtendedJavaClass
-			cls = (ExtendedJavaClass) current;
-			classes.put(javaClass, cls);
+			// Use ScriptableObject.getProperty so it also looks in the prototypes
+			// of shared scopes.
+			Object packages = ScriptableObject.getProperty(global, "Packages");
+			if (packages != Scriptable.NOT_FOUND) {
+				Scriptable current = (Scriptable) packages;
+				for (int i = 0; i < path.length; i++)
+					current = (Scriptable) current.get(path[i], current);
+				// now obj needs to be an instance of ExtendedJavaClass
+				cls = (ExtendedJavaClass) current;
+				classes.put(javaClass, cls);
+			}
 		}
 		return cls;
 	}

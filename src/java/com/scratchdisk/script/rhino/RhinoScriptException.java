@@ -29,40 +29,42 @@
  * $Id: $
  */
 
-package com.scriptographer.script.rhino;
+package com.scratchdisk.script.rhino;
 
-import org.mozilla.javascript.Context;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
-import com.scratchdisk.script.ScriptCanceledException;
+import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.WrappedException;
+
+import com.scratchdisk.script.ScriptException;
+import com.scratchdisk.util.StringUtils;
 import com.scriptographer.ScriptographerEngine;
 
 /**
- * @author lehni
- *
+ * ScriptException for Rhino, preferably called RhinoException, but
+ * that's already used by Rhino (org.mozilla.javascript.RhinoException).
  */
-public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
+public class RhinoScriptException extends ScriptException {
 
-	public RhinoEngine() {
-		super(new RhinoWrapFactory());
+	private static String formatMessage(Throwable t) {
+		RhinoException re = t instanceof RhinoException ? (RhinoException) t
+				: new WrappedException(t);
+
+			String basePath =
+				ScriptographerEngine.getScriptDirectory().getAbsolutePath();
+
+			StringWriter buf = new StringWriter();
+			PrintWriter writer = new PrintWriter(buf);
+
+			writer.println(re.details());
+			writer.print(StringUtils.replace(StringUtils.replace(
+				re.getScriptStackTrace(), basePath, ""), "\t", "    "));
+			
+			return buf.toString();
 	}
 
-	protected com.scratchdisk.script.rhino.TopLevel makeTopLevel(Context context) {
-		return new TopLevel(context);
-	}
-
-	protected Context makeContext() {
-		context = super.makeContext();
-		// Use pure interpreter mode to allow for
-		// observeInstructionCount(Context, int) to work
-		context.setOptimizationLevel(-1);
-		// Make Rhino runtime to call observeInstructionCount
-		// each 20000 bytecode instructions
-		context.setInstructionObserverThreshold(20000);
-		return context;
-	}
-
-	protected void observeInstructinCount(Context cx, int instructionCount) {
-		if (!ScriptographerEngine.updateProgress())
-			throw new ScriptCanceledException();
+	public RhinoScriptException(Throwable cause) {
+		super(formatMessage(cause), cause);
 	}
 }

@@ -29,40 +29,45 @@
  * $Id: $
  */
 
-package com.scriptographer.script.rhino;
+package com.scratchdisk.script.rhino;
 
-import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Wrapper;
 
-import com.scratchdisk.script.ScriptCanceledException;
-import com.scriptographer.ScriptographerEngine;
+import com.scratchdisk.script.Scope;
 
 /**
  * @author lehni
  *
  */
-public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
+public class RhinoScope extends Scope {
+	private Scriptable scope;
 
-	public RhinoEngine() {
-		super(new RhinoWrapFactory());
+	public RhinoScope(Scriptable scope) {
+		this.scope = scope;
 	}
 
-	protected com.scratchdisk.script.rhino.TopLevel makeTopLevel(Context context) {
-		return new TopLevel(context);
+	public Scriptable getScope() {
+		return scope;
 	}
 
-	protected Context makeContext() {
-		context = super.makeContext();
-		// Use pure interpreter mode to allow for
-		// observeInstructionCount(Context, int) to work
-		context.setOptimizationLevel(-1);
-		// Make Rhino runtime to call observeInstructionCount
-		// each 20000 bytecode instructions
-		context.setInstructionObserverThreshold(20000);
-		return context;
+	public Object get(String name) {
+		Object obj = scope.get(name, scope);
+		if (obj == Scriptable.NOT_FOUND) return null;
+		else if (obj instanceof Function) return new RhinoCallable((Function) obj);
+		else if (obj instanceof Wrapper) return ((Wrapper) obj).unwrap();
+		else return obj;
 	}
 
-	protected void observeInstructinCount(Context cx, int instructionCount) {
-		if (!ScriptographerEngine.updateProgress())
-			throw new ScriptCanceledException();
+	public Object put(String name, Object value, boolean readOnly) {
+		Object prev = this.get(name);
+		if (readOnly && scope instanceof ScriptableObject)
+			((ScriptableObject) scope).defineProperty(name, value,
+			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+		else
+			scope.put(name, scope, value);
+		return prev;
 	}
 }

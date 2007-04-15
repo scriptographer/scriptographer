@@ -29,17 +29,15 @@
  * $Id: $
  */
 
-package com.scriptographer.script;
-
-import com.scriptographer.ScriptographerEngine;
+package com.scratchdisk.script;
 
 /**
  * @author lehni
  * 
- * ScriptFunction cannot be an interface, as Rhino tries to convert
+ * Callable cannot be an interface, as Rhino tries to convert
  * functions to interfaces...
  */
-public abstract class ScriptMethod {
+public abstract class Callable {
 
 	private static Object[] emptyArgs = new Object[0];
 
@@ -49,32 +47,4 @@ public abstract class ScriptMethod {
 	public Object call(Object obj) throws ScriptException {
 		return this.call(obj, emptyArgs);
 	}
-
-	/**
-	 * Exexute performs a call and commits all changes after execution.
-	 * 
-	 * @param obj
-	 * @param args
-	 * @return
-	 * @throws ScriptException 
-	 */
-	public Object execute(Object obj, Object[] args) throws ScriptException {
-		boolean started = ScriptographerEngine.beginExecution(null);
-		// Retrieve wrapper object for the native java object, and call the
-		// function on it.
-		Object ret = this.call(obj, args);
-		// commit all changed objects after a scripting function has been
-		// called!
-		if (started)
-			ScriptographerEngine.endExecution();
-		return ret;
-	}
-
-	public Object execute(Object obj) throws ScriptException {
-		return this.execute(obj, emptyArgs);
-	}
-
-	public abstract boolean toBoolean(Object object);
-
-	public abstract int toInt(Object object);
 }

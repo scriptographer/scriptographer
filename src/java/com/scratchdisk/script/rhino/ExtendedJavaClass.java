@@ -29,9 +29,10 @@
  * $Id: ExtendedJavaClass.java 230 2007-01-16 20:36:33Z lehni $
  */
 
-package com.scriptographer.script.rhino;
+package com.scratchdisk.script.rhino;
 
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 
 import org.mozilla.javascript.*;
 
@@ -40,13 +41,21 @@ import org.mozilla.javascript.*;
  */
 public class ExtendedJavaClass extends NativeJavaClass {
 	String className;
+	HashMap properties;
 	Scriptable instanceProto = null;
 
-	public ExtendedJavaClass(Scriptable scope, Class cls) {
+	public ExtendedJavaClass(Scriptable scope, Class cls, boolean unsealed) {
 		super(scope, cls);
 		// Set the function prototype, as basically Java constructors
 		// behave like JS constructor functions. Like this, all properties
 		// from Function.prototype are inherited.
+		setParentScope(scope);
+		// FIXME: The following should work, but since we use a hack in Bootstrap.js
+		// to make new Function(...) not an interpretated one, but a
+		// compiled one, it does not, due to the way
+		// ScriptableObject.getClassPrototype currently handles BaseFunction
+		// especially. Consider fixing this in Rhino!
+		// setPrototype(ScriptableObject.getFunctionPrototype(scope));
 		setPrototype(((Scriptable) scope.get("Function", scope)).getPrototype());
 		// Determine short className:
 		className = cls.getName();
@@ -54,6 +63,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		int pos = className.lastIndexOf('.');
 		if (pos > 0)
 			className = className.substring(pos + 1);
+		properties = unsealed ? new HashMap() : null;
 	}
 
 	public Scriptable construct(Context cx, Scriptable scope, Object[] args) {
@@ -83,7 +93,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 					obj.put((String) id, obj, properties.get((String) id, properties));
 			}
 		}
-		// Add on: If a prototype defines a $constructor function, call it after
+		// Add-on: If a prototype defines a $constructor function, call it after
 		// creation. This can even return another object than the real ctor!
 		Object ctor = obj.get("$constructor", obj);
 		if (ctor instanceof Function) {
@@ -121,7 +131,10 @@ public class ExtendedJavaClass extends NativeJavaClass {
 			exc = e;
 		}
 		if (result == Scriptable.NOT_FOUND) {
-			if (name.equals("prototype")) {
+			if (properties != null && properties.containsKey(name)) {
+				// see wether this object defines the property.
+				result = properties.get(name);
+			} else if (name.equals("prototype")) {
 				//getPrototype creates prototype Objects on the fly:
 				result = getInstancePrototype();
 			} else {
@@ -136,21 +149,46 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		return result;
 	}
 
+	public void put(String name, Scriptable start, Object value) {
+		if (super.has(name, start)) {
+			super.put(name, start, value);
+		} else if (name.equals("prototype")) {
+			if (value instanceof Scriptable)
+				this.setPrototype((Scriptable) value);
+		} else if (properties != null) {
+			properties.put(name, value);
+		}
+	}
+
+	public boolean has(String name, Scriptable start) {
+		boolean has = super.has(name, start);
+		if (!has && properties != null)
+			has = properties.get(name) != null;
+		return has;
+	}
+
+	public void delete(String name) {
+		if (properties != null)
+			properties.remove(name);
+	}
+
 	public Scriptable getInstancePrototype() {
 		if (instanceProto == null) {
 			instanceProto = new NativeObject();
 			// Set the prototype chain correctly for this prototype object, 
 			// so properties in the prototype of parent classes are found too:
-			Scriptable top = ScriptableObject.getTopLevelScope(this);
 			Class sup = getClassObject().getSuperclass();
 			Scriptable parent;
 			if (sup != null) {
-				parent = ExtendedJavaTopPackage.getClassWrapper(top, sup).getInstancePrototype();
+				ExtendedJavaClass classWrapper = ExtendedJavaTopPackage.getClassWrapper(
+						ScriptableObject.getTopLevelScope(this), sup);
+				parent = classWrapper.getInstancePrototype();
 			} else {
 				// At the end of the chain, there is allways the Object prototype.
-				parent = ((Scriptable) top.get("Object", top)).getPrototype(); 
+				parent = ScriptableObject.getObjectPrototype(this);
 			}
 			instanceProto.setPrototype(parent);
+			instanceProto.put("clazz", instanceProto, getClassObject());
 		}
 		return instanceProto;
 	}

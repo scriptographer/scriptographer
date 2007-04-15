@@ -29,7 +29,7 @@
  * $Id: $
  */
 
-package com.scriptographer.script.rhino;
+package com.scratchdisk.script.rhino;
 
 import java.util.HashMap;
 
@@ -49,19 +49,13 @@ public class ExtendedJavaArray extends NativeJavaArray {
 		properties = unsealed ? new HashMap() : null;
 	}
 
-
-	public void delete(String name) {
-		if (properties != null)
-			properties.remove(name);
-	}
-	
 	public Object get(String name, Scriptable start) {
-		Object obj;
+		Object result;
 		if (super.has(name, start)) {
-			obj = super.get(name, start);
+			result = super.get(name, start);
 		} else if (properties != null && properties.containsKey(name)) {
 			// see wether this object defines the property.
-			obj = properties.get(name);
+			result = properties.get(name);
 		} else {
 			Scriptable prototype = this.getPrototype();
 			if (name.equals("prototype")) {
@@ -70,18 +64,18 @@ public class ExtendedJavaArray extends NativeJavaArray {
 					prototype = new NativeObject();
 					this.setPrototype(prototype);
 				}
-				obj = prototype;
+				result = prototype;
 			} else if (prototype != null) {
 				// if not, see wether the prototype maybe defines it.
 				// NativeJavaObject misses to do so:
-				obj = prototype.get(name, start);
+				result = prototype.get(name, start);
 			} else {
-				obj = Scriptable.NOT_FOUND;
+				result = Scriptable.NOT_FOUND;
 			}
 		}
-		return obj;
+		return result;
 	}
-	
+
 	public void put(String name, Scriptable start, Object value) {
 		if (super.has(name, start)) {
 			super.put(name, start, value);
@@ -92,11 +86,16 @@ public class ExtendedJavaArray extends NativeJavaArray {
 			properties.put(name, value);
 		}
 	}
-	
+
 	public boolean has(String name, Scriptable start) {
 		boolean has = super.has(name, start);
 		if (!has && properties != null)
 			has = properties.get(name) != null;
 		return has;
+	}
+
+	public void delete(String name) {
+		if (properties != null)
+			properties.remove(name);
 	}
 }

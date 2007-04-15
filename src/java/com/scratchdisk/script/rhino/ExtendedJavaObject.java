@@ -29,7 +29,7 @@
  * $Id: UnsealedJavaObject.java 238 2007-02-16 01:09:06Z lehni $
  */
 
-package com.scriptographer.script.rhino;
+package com.scratchdisk.script.rhino;
 
 import java.util.*;
 
@@ -51,64 +51,81 @@ public class ExtendedJavaObject extends NativeJavaObject {
 		Class staticType, boolean unsealed) {
 		super(scope, javaObject, staticType);
 		properties = unsealed ? new HashMap() : null;
-		classWrapper = ExtendedJavaTopPackage.getClassWrapper(scope, staticType);
+		classWrapper = staticType != null ?
+				ExtendedJavaTopPackage.getClassWrapper(scope, staticType) : null;
 	}
 
-    public Scriptable getPrototype() {
-    	Scriptable prototype = super.getPrototype();
-        if (prototype == null)
-        	prototype = classWrapper.getInstancePrototype();
-        return prototype;
-    }
-
-	public void delete(String name) {
-		if (properties != null)
-			properties.remove(name);
+	public Scriptable getPrototype() {
+		Scriptable prototype = super.getPrototype();
+	    if (prototype == null && classWrapper != null) {
+	    	prototype = classWrapper.getInstancePrototype();
+	    }
+	    return prototype;
 	}
-	
+
 	public Object get(String name, Scriptable start) {
-		Object obj;
-		if (super.has(name, start)) {
-			obj = super.get(name, start);
-		} else if (properties != null && properties.containsKey(name)) {
+		Object result;
+		// Properties need to come first, as they might override something
+		// defined in the underlying Java object
+		if (properties != null && properties.containsKey(name)) {
 			// see wether this object defines the property.
-			obj = properties.get(name);
+			result = properties.get(name);
+		} else if (members.has(name, false)) {
+			result = members.get(this, name, javaObject, false);
 		} else {
-			Scriptable prototype = this.getPrototype();
+			Scriptable prototype = getPrototype();
 			if (name.equals("prototype")) {
 				if (prototype == null) {
 					// If no prototype object was created it, produce it on the fly.
 					prototype = new NativeObject();
-					this.setPrototype(prototype);
+					setPrototype(prototype);
 				}
-				obj = prototype;
+				result = prototype;
 			} else if (prototype != null) {
 				// if not, see wether the prototype maybe defines it.
 				// NativeJavaObject misses to do so:
-				obj = prototype.get(name, start);
+				result = prototype.get(name, start);
 			} else {
-				obj = Scriptable.NOT_FOUND;
+				result = Scriptable.NOT_FOUND;
 			}
 		}
-		return obj;
+		return result;
 	}
 	
 	public void put(String name, Scriptable start, Object value) {
-		if (super.has(name, start)) {
-			super.put(name, start, value);
-		} else if (name.equals("prototype")) {
+		RuntimeException exc = null;
+        if (members.has(name, false)) {
+			try {
+		        // We could be asked to modify the value of a property in the
+		        // prototype. Since we can't add a property to a Java object,
+		        // we modify it in the prototype rather than copy it down.
+	            members.put(this, name, javaObject, value, false);
+				return; // done
+			} catch (RuntimeException e) {
+				exc = e;
+			}
+		}
+		// still here? let's try oter things
+		if (name.equals("prototype")) {
 			if (value instanceof Scriptable)
-				this.setPrototype((Scriptable) value);
+				setPrototype((Scriptable) value);
 		} else if (properties != null) {
 			properties.put(name, value);
+		} else {
+			// if nothing worked, throw the error again
+			if (exc != null)
+				throw exc;
 		}
 	}
 	
 	public boolean has(String name, Scriptable start) {
-		boolean has = super.has(name, start);
-		if (!has && properties != null)
-			has = properties.get(name) != null;
-		return has;
+		return members.has(name, false) ||
+				properties != null && properties.containsKey(name);
+	}
+
+	public void delete(String name) {
+		if (properties != null)
+			properties.remove(name);
 	}
 	
 	public Object[] getIds() {

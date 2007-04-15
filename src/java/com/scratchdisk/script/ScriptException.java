@@ -29,24 +29,24 @@
  * $Id: $
  */
 
-package com.scriptographer.script;
+package com.scratchdisk.script;
 
 /**
  * @author lehni
  *
  */
-public abstract class ScriptScope {
+public class ScriptException extends Exception {
+	public String text;
 
-	public abstract Object get(String name);
+    public ScriptException(Throwable cause) {
+        super(cause);
+    }
 
-	public abstract Object put(String name, Object value, boolean readOnly);
+    public ScriptException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public Object put(String name, Object value) {
-		return put(name, value, false);
-	}
-
-	ScriptMethod getMethod(String name) {
-		Object obj = get(name);
-		return obj instanceof ScriptMethod ? (ScriptMethod) obj : null;
-	}
+	public ScriptException(String message) {
+    	super(message);
+    }
 }

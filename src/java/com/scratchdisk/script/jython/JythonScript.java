@@ -1,13 +1,13 @@
 /*
  * Scriptographer
- * 
+ *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
- * 
+ *
  * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
- * 
+ *
  * -- GPL LICENSE NOTICE --
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,15 +24,49 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Feb 16, 2007.
- * 
- * $IdScriptCanceledException.java,v $
- * $Author: lehni lehni $
- * $Revision: 209 $
- * $Date: 2006-12-20 14:37:20 +0100 (Wed, 20 Dec 2006) Feb 16, 2007 $
+ * File created on Apr 14, 2007.
+ *
+ * $Id: $
  */
 
-package com.scriptographer.script;
+package com.scratchdisk.script.jython;
 
-public class ScriptCanceledException extends RuntimeException {
+import java.io.File;
+
+import org.python.core.Py;
+import org.python.core.PyCode;
+import org.python.core.PyException;
+
+import com.scratchdisk.script.Scope;
+import com.scratchdisk.script.Script;
+import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.script.ScriptException;
+
+/**
+ * @author lehni
+ *
+ */
+public class JythonScript extends Script {
+	PyCode code;
+	JythonEngine engine;
+
+	public JythonScript(JythonEngine engine, PyCode code, File file) {
+		super(file);
+		this.engine = engine;
+		this.code = code;
+	}
+
+	public ScriptEngine getEngine() {
+		return engine;
+	}
+
+	public Object execute(Scope scope) throws ScriptException {
+		try {
+			// TODO: typecast to JythonScope can be wrong, e.g. when calling
+			// from another language
+			return Py.tojava(Py.runCode(code, ((JythonScope) scope).getScope(), engine.globals), Object.class);
+		} catch (PyException re) {
+			throw new JythonException(re);
+		}
+	}
 }

@@ -29,7 +29,7 @@
  * $Id: MapObject.java 230 2007-01-16 20:36:33Z lehni $
  */
 
-package com.scriptographer.script.rhino;
+package com.scratchdisk.script.rhino;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeJavaObject;
@@ -49,8 +49,8 @@ import java.util.Map;
  * 
  * @author lehni
  */
-public class MapObject extends NativeJavaObject {
-	MapObject(Scriptable scope, Map map, Class staticType) {
+public class MapWrapper extends NativeJavaObject {
+	public MapWrapper(Scriptable scope, Map map, Class staticType) {
 		super(scope, map, staticType);
 	}
 

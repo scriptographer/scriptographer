@@ -29,7 +29,7 @@
  * $Id: $
  */
 
-package com.scriptographer.script.rhino;
+package com.scratchdisk.script.rhino;
 
 import java.util.HashMap;
 
@@ -54,23 +54,24 @@ public class ExtendedJavaPackage extends NativeJavaPackage {
 		this.classLoader = classLoader;
 	}
 
-	public Object get(String id, Scriptable start) {
+	public synchronized Object getPkgProperty(String name, Scriptable start,
+			boolean createPkg) {
 		// Do not rely on the cache in NativeJavaPackage, as the only
-		// way to access it is super.get, which creates instances of 
+		// way to access it is super.get, which creates instances of
 		// NativeJavaPackage / NativeJavaClass, which we want to override here.
-		Object cached = cache.get(id);
+		Object cached = cache.get(name);
 		if (cached != null)
 			return cached;
-		String className = (packageName.length() == 0) ? id
-				: packageName + '.' + id;
+		String className =
+				(packageName.length() == 0) ? name : packageName + '.' + name;
 		Scriptable newValue = null;
 		Class cl = classLoader != null ? Kit.classOrNull(classLoader, className)
 				: Kit.classOrNull(className);
 		if (cl != null) {
-			newValue = new ExtendedJavaClass(getTopLevelScope(this), cl);
+			newValue = new ExtendedJavaClass(getTopLevelScope(this), cl, true);
 			// ExtendedJavaClass sets its own Prototype... newValue.setPrototype(getPrototype());
 		}
-		if (newValue == null) {
+		if (newValue == null && createPkg) {
 			ExtendedJavaPackage pkg =
 					new ExtendedJavaPackage(className, classLoader);
 			ScriptRuntime.setObjectProtoAndParent(pkg, getParentScope());
@@ -79,7 +80,7 @@ public class ExtendedJavaPackage extends NativeJavaPackage {
 		if (newValue != null) {
 			// Make it available for fast lookup and sharing of
 			// lazily-reflected constructors and static members.
-			cache.put(id, newValue);
+			cache.put(name, newValue);
 		}
 		return newValue;
 	}

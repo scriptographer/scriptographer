@@ -29,40 +29,50 @@
  * $Id: $
  */
 
-package com.scriptographer.script.rhino;
+package com.scratchdisk.script.rhino;
+
+import java.io.File;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.Wrapper;
 
-import com.scratchdisk.script.ScriptCanceledException;
-import com.scriptographer.ScriptographerEngine;
+import com.scratchdisk.script.Script;
+import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.script.ScriptException;
+import com.scratchdisk.script.Scope;
 
 /**
  * @author lehni
  *
  */
-public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
+public class RhinoScript extends Script {
+	private org.mozilla.javascript.Script script;
+	private RhinoEngine engine;
 
-	public RhinoEngine() {
-		super(new RhinoWrapFactory());
+	public RhinoScript(RhinoEngine engine,
+			org.mozilla.javascript.Script script, File file) {
+		super(file);
+		this.engine = engine;
+		this.script = script;
+	}
+	
+	public ScriptEngine getEngine() {
+		return engine;
 	}
 
-	protected com.scratchdisk.script.rhino.TopLevel makeTopLevel(Context context) {
-		return new TopLevel(context);
-	}
-
-	protected Context makeContext() {
-		context = super.makeContext();
-		// Use pure interpreter mode to allow for
-		// observeInstructionCount(Context, int) to work
-		context.setOptimizationLevel(-1);
-		// Make Rhino runtime to call observeInstructionCount
-		// each 20000 bytecode instructions
-		context.setInstructionObserverThreshold(20000);
-		return context;
-	}
-
-	protected void observeInstructinCount(Context cx, int instructionCount) {
-		if (!ScriptographerEngine.updateProgress())
-			throw new ScriptCanceledException();
+	public Object execute(Scope scope) throws ScriptException {
+		try {
+			Context cx = Context.getCurrentContext();
+			// TODO: typecast to JsContext can be wrong, e.g. when calling
+			// from another language
+			Object ret = script.exec(cx, ((RhinoScope) scope).getScope());
+			if (ret instanceof Wrapper)
+				ret = ((Wrapper) ret).unwrap();
+			return ret;
+		} catch (RhinoException re) {
+			throw new RhinoScriptException(re);
+		}
 	}
 }
+

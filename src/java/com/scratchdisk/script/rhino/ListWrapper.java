@@ -29,16 +29,16 @@
  * $Id: ListObject.java 230 2007-01-16 20:36:33Z lehni $
  */
 
-package com.scriptographer.script.rhino;
+package com.scratchdisk.script.rhino;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
 
-import com.scriptographer.util.ReadOnlyList;
-import com.scriptographer.util.SimpleList;
-import com.scriptographer.util.StringIndexList;
+import com.scratchdisk.util.ReadOnlyList;
+import com.scratchdisk.util.SimpleList;
+import com.scratchdisk.util.StringIndexList;
 
 /**
  * Wrapper class for com.scriptographer.util.List objects It adds array-like
@@ -47,15 +47,15 @@ import com.scriptographer.util.StringIndexList;
  * 
  * @author lehni
  */
-public class ListObject extends NativeJavaObject {
-	ListObject(Scriptable scope, ReadOnlyList list, Class staticType) {
+public class ListWrapper extends NativeJavaObject {
+	public ListWrapper(Scriptable scope, ReadOnlyList list, Class staticType) {
 		super(scope, list, staticType);
 	}
 
 	public Object[] getIds() {
 		if (javaObject != null) {
 			// act like a JS javaObject:
-			Integer[] ids = new Integer[((ReadOnlyList) javaObject).getLength()];
+			Integer[] ids = new Integer[((ReadOnlyList) javaObject).size()];
 			for (int i = 0; i < ids.length; i++) {
 				ids[i] = new Integer(i);
 			}
@@ -66,8 +66,7 @@ public class ListObject extends NativeJavaObject {
 	}
 
 	public boolean has(int index, Scriptable start) {
-		return javaObject != null
-			&& index < ((ReadOnlyList) javaObject).getLength();
+		return javaObject != null && index < ((ReadOnlyList) javaObject).size();
 	}
 
 	public Object get(int index, Scriptable scriptable) {
@@ -80,20 +79,17 @@ public class ListObject extends NativeJavaObject {
 	}
 
 	public boolean has(String name, Scriptable start) {
-		return super.has(name, start)
-			||
-			// TODO: change back from getLength to size, activate this again! name.equals("length") ||
-			javaObject instanceof StringIndexList && javaObject != null
-			&& ((StringIndexList) javaObject).get(name) != null;
+		return super.has(name, start) || // TODO: needed? name.equals("length") ||
+			javaObject instanceof StringIndexList && javaObject != null && 
+				((StringIndexList) javaObject).get(name) != null;
 	}
 
 	public Object get(String name, Scriptable scriptable) {
 		Object obj = super.get(name, scriptable);
 		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
-			/*
-			 * if (name.equals("length")) { return new Integer(((ReadOnlyList)
-			 * javaObject).getLength()); } else
-			 */if (javaObject instanceof StringIndexList) {
+			 if (name.equals("length")) {
+				 return new Integer(((ReadOnlyList) javaObject).size());
+			 } else if (javaObject instanceof StringIndexList) {
 				obj = ((StringIndexList) javaObject).get(name);
 				if (obj != null)
 					obj = Context.toObject(obj, scriptable);
@@ -109,7 +105,7 @@ public class ListObject extends NativeJavaObject {
 			SimpleList list = ((SimpleList) javaObject);
 			if (value instanceof Wrapper)
 				value = ((Wrapper) value).unwrap();
-			int size = list.getLength();
+			int size = list.size();
 			if (index > size) {
 				for (int i = size; i < index; i++)
 					list.add(i, null);

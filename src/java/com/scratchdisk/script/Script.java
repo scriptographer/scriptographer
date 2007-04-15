@@ -24,45 +24,37 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Apr 10, 2007.
+ * File created on Feb 19, 2007.
  *
  * $Id: $
  */
 
-package com.scriptographer.script.rhino;
+package com.scratchdisk.script;
 
-import org.mozilla.javascript.Context;
-
-import com.scratchdisk.script.ScriptCanceledException;
-import com.scriptographer.ScriptographerEngine;
+import java.io.File;
 
 /**
  * @author lehni
  *
  */
-public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
+public abstract class Script {
+	protected File file;
+	private long lastModified;
 
-	public RhinoEngine() {
-		super(new RhinoWrapFactory());
+	public Script(File file) {
+		this.file = file;
+		lastModified = file.lastModified();
 	}
 
-	protected com.scratchdisk.script.rhino.TopLevel makeTopLevel(Context context) {
-		return new TopLevel(context);
+	public abstract Object execute(Scope scope) throws ScriptException;
+
+	public abstract ScriptEngine getEngine();
+
+	public File getFile() {
+		return file;
 	}
 
-	protected Context makeContext() {
-		context = super.makeContext();
-		// Use pure interpreter mode to allow for
-		// observeInstructionCount(Context, int) to work
-		context.setOptimizationLevel(-1);
-		// Make Rhino runtime to call observeInstructionCount
-		// each 20000 bytecode instructions
-		context.setInstructionObserverThreshold(20000);
-		return context;
-	}
-
-	protected void observeInstructinCount(Context cx, int instructionCount) {
-		if (!ScriptographerEngine.updateProgress())
-			throw new ScriptCanceledException();
+	public boolean hasChanged() {
+		return file != null && lastModified != file.lastModified();
 	}
 }

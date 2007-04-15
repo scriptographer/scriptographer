@@ -24,45 +24,29 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Apr 10, 2007.
+ * File created on Feb 19, 2007.
  *
  * $Id: $
  */
 
-package com.scriptographer.script.rhino;
-
-import org.mozilla.javascript.Context;
-
-import com.scratchdisk.script.ScriptCanceledException;
-import com.scriptographer.ScriptographerEngine;
+package com.scratchdisk.script;
 
 /**
  * @author lehni
  *
  */
-public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
+public abstract class Scope {
 
-	public RhinoEngine() {
-		super(new RhinoWrapFactory());
+	public abstract Object get(String name);
+
+	public abstract Object put(String name, Object value, boolean readOnly);
+
+	public Object put(String name, Object value) {
+		return put(name, value, false);
 	}
 
-	protected com.scratchdisk.script.rhino.TopLevel makeTopLevel(Context context) {
-		return new TopLevel(context);
-	}
-
-	protected Context makeContext() {
-		context = super.makeContext();
-		// Use pure interpreter mode to allow for
-		// observeInstructionCount(Context, int) to work
-		context.setOptimizationLevel(-1);
-		// Make Rhino runtime to call observeInstructionCount
-		// each 20000 bytecode instructions
-		context.setInstructionObserverThreshold(20000);
-		return context;
-	}
-
-	protected void observeInstructinCount(Context cx, int instructionCount) {
-		if (!ScriptographerEngine.updateProgress())
-			throw new ScriptCanceledException();
+	public Callable getMethod(String name) {
+		Object obj = get(name);
+		return obj instanceof Callable ? (Callable) obj : null;
 	}
 }
