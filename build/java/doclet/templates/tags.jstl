@@ -1,0 +1,3 @@
+<% foreach $tag in param.tags param %> <%--prefix=param.prefix suffix=param.suffix separator=param.separator --%>
+	<% $tag.text param %>
+<% end %>

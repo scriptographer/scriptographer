@@ -1,0 +1,11 @@
+<div class="member-paragraph"><b>Returns:</b>
+<div>
+<%= param.link %>
+<%= $description prefix=" - " %>
+</div>
+</div>
+
+<% $description %>
+<% foreach ($tag in param.tags) %>
+	<%= getTags(param.classDoc, $tag.inlineTags()) %>
+<% end %>
