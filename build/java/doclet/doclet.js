@@ -9,52 +9,6 @@ function error() {
 	java.lang.System.err.println($A(arguments).join(', '));
 }
 
-Function.inject({
-	toRender: function() {
-		var that = this;
-		return function() {
-			// look at the last argument. if it's null,
-			// render into a string.
-			var last = arguments.length - 1;
-			var asString = !arguments[last];
-			if (asString) {
-				res.push();
-				// wee need to add res as the last argument to the call bellow:
-				if (last < 0) { // empty argument list
-					// this seems to execute faster than the creation
-					// of a new array, and at least in Rhino, it works!
-					arguments[0] = res;
-					arguments.length = 1;
-				} else { // just set the last item
-					arguments[last] = res;
-				}
-			}
-			that.apply(this, arguments);
-			// return the string if required
-			if (asString)
-				return res.pop();
-		}
-	}
-});
-
-String.inject({
-	endsWith: function(end) {
-		return this.length >= end.length && this.substring(this.length - end.length) == end;
-	},
-
-	startsWith: function(start) {
-		return this.length >= start.length && this.substring(0, start.length) == start;
-	},
-
-	isLowerCase: function() {
-		return this.toLowerCase() == this;
-	},
-
-	isUpperCase: function() {
-		return this.toUpperCase() == this;
-	}
-});
-
 // add renderTemplate function with caching to all objects
 Object.inject(function() {
 	var templates = new Hash();
@@ -78,6 +32,24 @@ Object.inject(function() {
 function renderTemplate(name, param) {
 	return Object.prototype.renderTemplate.call(global, name, param);
 }
+
+String.inject({
+	endsWith: function(end) {
+		return this.length >= end.length && this.substring(this.length - end.length) == end;
+	},
+
+	startsWith: function(start) {
+		return this.length >= start.length && this.substring(0, start.length) == start;
+	},
+
+	isLowerCase: function() {
+		return this.toLowerCase() == this;
+	},
+
+	isUpperCase: function() {
+		return this.toUpperCase() == this;
+	}
+});
 
 // Define settings from passed options:
 var settings = {
