@@ -26,16 +26,16 @@
  * 
  * File created on 21.10.2005.
  * 
- * $Id$
+ * $Id: ReadOnlyList.java 230 2007-01-16 20:36:33Z lehni $
  */
 
-package com.scriptographer.util;
+package com.scratchdisk.util;
 
 /**
  * @author lehni 
  */
 public interface ReadOnlyList {
-	int getLength();
+	int size();
 	boolean isEmpty();
 	Object get(int index);
 	ExtendedList getSubList(int fromIndex, int toIndex);

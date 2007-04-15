@@ -26,10 +26,10 @@
  * 
  * File created on 19.10.2005.
  * 
- * $Id$
+ * $Id: SoftIntMap.java 230 2007-01-16 20:36:33Z lehni $
  */
 
-package com.scriptographer.util;
+package com.scratchdisk.util;
 
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;

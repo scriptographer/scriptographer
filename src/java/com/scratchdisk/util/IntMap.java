@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.scriptographer.util;
+package com.scratchdisk.util;
 
 import java.util.AbstractCollection;
 import java.util.AbstractMap;

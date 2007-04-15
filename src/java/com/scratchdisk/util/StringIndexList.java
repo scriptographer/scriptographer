@@ -26,16 +26,15 @@
  *
  * File created on 12.02.2005.
  *
- * $Id$
+ * $Id: StringIndexList.java 230 2007-01-16 20:36:33Z lehni $
  */
 
-package com.scriptographer.util;
-
-/*
- * Adds getting objects by name to Lists (an extension needed for some list objects like LayerList)
- */
+package com.scratchdisk.util;
 
 /**
+ * Adds getting objects by name to Lists (an extension needed for some list
+ * objects like LayerList)
+ *
  * @author lehni 
  */
 public interface StringIndexList {

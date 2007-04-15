@@ -36,7 +36,7 @@
  obligated to do so.  If you do not wish to do so, delete this
  exception statement from your version. */
 
-package com.scriptographer.util;
+package com.scratchdisk.util;
 
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.WeakReference;

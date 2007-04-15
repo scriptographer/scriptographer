@@ -26,39 +26,21 @@
  *
  * File created on 16.02.2005.
  *
- * $Id$
+ * $Id: AbstractReadOnlyList.java 240 2007-02-17 15:14:26Z lehni $
  */
 
-package com.scriptographer.util;
+package com.scratchdisk.util;
 
 /**
  * @author lehni
  */
-public interface ExtendedList extends SimpleList {
+public abstract class AbstractReadOnlyList implements ReadOnlyList {
 
-	int indexOf(Object element);
-	int lastIndexOf(Object element);
-	
-	boolean contains(Object o);
+	public boolean isEmpty() {
+		return size() == 0;
+	}
 
-	boolean addAll(int index, ExtendedList elements);
-	boolean addAll(int index, Object[] elements);
-	
-	boolean containsAll(ExtendedList c);
-	boolean containsAll(Object[] element);
-	
-	boolean removeAll(ExtendedList c);
-	boolean removeAll(Object[] element);
-	
-	boolean retainAll(ExtendedList c);
-	boolean retainAll(Object[] element);
-	
-	Object[] toArray();
-	Object[] toArray(Object a[]);
-	
-	Object getFirst();
-	Object getLast();
-	
-	Object removeFirst();
-	Object removeLast();
+	public ExtendedList getSubList(int fromIndex, int toIndex) {
+		return Lists.createSubList(this, fromIndex, toIndex);
+	}
 }

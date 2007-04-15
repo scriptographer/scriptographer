@@ -26,10 +26,10 @@
  * 
  * File created on 21.10.2005.
  * 
- * $Id$
+ * $Id: Lists.java 230 2007-01-16 20:36:33Z lehni $
  */
 
-package com.scriptographer.util;
+package com.scratchdisk.util;
 
 /**
  * @author lehni 
@@ -42,7 +42,7 @@ public class Lists {
 	public static ExtendedList createSubList(ReadOnlyList list, int fromIndex, int toIndex) {
 		if (fromIndex < 0)
 			throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);
-		if (toIndex > list.getLength())
+		if (toIndex > list.size())
 			throw new IndexOutOfBoundsException("toIndex = " + toIndex);
 		if (fromIndex > toIndex)
 			throw new IllegalArgumentException("fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
@@ -64,7 +64,7 @@ public class Lists {
 			this.array = array;
 		}
 
-		public int getLength() {
+		public int size() {
 			return array.length;
 		}
 

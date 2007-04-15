@@ -1,13 +1,13 @@
 /*
  * Scriptographer
- * 
+ *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
- * 
+ *
  * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
- * 
+ *
  * -- GPL LICENSE NOTICE --
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,37 +23,42 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- * 
- * File created on 08.12.2006.
- * 
- * $Id$
+ *
+ * File created on 16.02.2005.
+ *
+ * $Id: ExtendedList.java 230 2007-01-16 20:36:33Z lehni $
  */
 
-package com.scriptographer.util;
+package com.scratchdisk.util;
 
 /**
- * @author lehni 
+ * @author lehni
  */
-public class StringUtils {
-	private StringUtils() {
-	}
+public interface ExtendedList extends SimpleList {
 
-	public static String replace(String str, String find, String replace) {
-		int pos = str.indexOf(find);
-		if (pos == -1)
-			return str;
+	int indexOf(Object element);
+	int lastIndexOf(Object element);
+	
+	boolean contains(Object o);
 
-		int next = 0;
-		StringBuffer buf = new StringBuffer(str.length() + replace.length());
-		do {
-			buf.append(str.substring(next, pos));
-			buf.append(replace);
-			next = pos + find.length();
-		} while ((pos = str.indexOf(find, next)) != -1);
-
-		if (next < str.length())
-			buf.append(str.substring(next, str.length()));
-
-		return buf.toString();
-	}
+	boolean addAll(int index, ExtendedList elements);
+	boolean addAll(int index, Object[] elements);
+	
+	boolean containsAll(ExtendedList c);
+	boolean containsAll(Object[] element);
+	
+	boolean removeAll(ExtendedList c);
+	boolean removeAll(Object[] element);
+	
+	boolean retainAll(ExtendedList c);
+	boolean retainAll(Object[] element);
+	
+	Object[] toArray();
+	Object[] toArray(Object a[]);
+	
+	Object getFirst();
+	Object getLast();
+	
+	Object removeFirst();
+	Object removeLast();
 }

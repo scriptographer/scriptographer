@@ -26,22 +26,25 @@
  * 
  * File created on 21.10.2005.
  * 
- * $Id$
+ * $Id: SimpleList.java 230 2007-01-16 20:36:33Z lehni $
  */
 
-package com.scriptographer.util;
+package com.scratchdisk.util;
 
 /**
- * This is similar to java.util.List, but has a few changes that make it much easier to use in
- * Scirptographer. SegmentList, CurveList, LayerList and ArtSet subclass the AbstractList that implements this
- * interface.
- *
+ * This is similar to java.util.List, but has a few changes that make it much
+ * easier to use in Scirptographer. SegmentList, CurveList, LayerList and ArtSet
+ * subclass the AbstractList that implements this interface.
+ * 
  * Reason to implement this:
- * - add(element) returns the final element. this might be different from the parameter that
- *   was passed. usefull for segment lists, where add(point) create a segment and returns it
- *   or lists, where add(String) creates a list entry and returns it.
- * - add(int, element) returns a element as well, which makes it easier to implement both adds.
- * - defines less functions and makes it therefore easier to implement (no ListIterator, no SubLists)
+ * - add(element) returns the final element. this might be different from the
+ *   parameter that was passed. usefull for segment lists, where add(point)
+ *   create a segment and returns it or lists, where add(String) creates a list
+ *   entry and returns it.
+ * - add(int, element) returns a element as well, which makes it easier to
+ *   implement both adds.
+ * - defines less functions and makes it therefore easier to implement
+ *   (no ListIterator, no SubLists)
  * - defines other often needed functions, e.g. remove(fromIndex, toIndex)
  * - gives complete control over behavior of lists
  * - allows read only lists

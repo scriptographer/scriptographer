@@ -26,16 +26,16 @@
  *
  * File created on 16.02.2005.
  *
- * $Id$
+ * $Id: ExtendedArrayList.java 230 2007-01-16 20:36:33Z lehni $
  */
 
-package com.scriptographer.util;
+package com.scratchdisk.util;
 
 import java.util.Collection;
 import java.util.Arrays;
 
 /**
- * Wrapps an extended java.util.ArrayList in a com.scriptographer.util.ExtendedList interface
+ * Wrapps an extended java.util.ArrayList in a ExtendedList interface
  * 
  * @author lehni
  */
@@ -59,7 +59,7 @@ public class ExtendedArrayList extends AbstractExtendedList {
 		this(list.toArray());
 	}
 
-	public int getLength() {
+	public int size() {
 		return list.size();
 	}
 
