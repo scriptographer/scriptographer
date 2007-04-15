@@ -172,11 +172,11 @@ ClassDocImpl.inject({
 	},
 
 	getListType: function() {
-		if (this.hasInterface("com.scriptographer.util.SimpleList"))
+		if (this.hasInterface("com.scratchdisk.util.SimpleList"))
 			return "Normal List";
-		else if (this.hasInterface("com.scriptographer.util.StringIndexList"))
+		else if (this.hasInterface("com.scratchdisk.util.StringIndexList"))
 			return "String-index List";
-		else if (this.hasInterface("com.scriptographer.util.ReadOnlyList"))
+		else if (this.hasInterface("com.scratchdisk.util.ReadOnlyList"))
 			return "Read-only List";
 	},
 
