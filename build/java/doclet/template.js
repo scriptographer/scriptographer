@@ -507,24 +507,6 @@ Template.prototype = {
 		return macro;
 	},
 
-	parseLoopVariables: function(str, stack) {
-		return str.replace(/(\$[\w_]+)\#(\w+)/, function(part, variable, suffix) {
-			// Use the last loop.
-			var loopStack = stack.loop[variable], loop = loopStack && loopStack[loopStack.length - 1];
-			if (loop) {
-				switch (suffix) {
-					case "index": return loop.index;
-					case "length": return loop.length;
-					case "isFirst": return "(" + loop.index + " == 0)";
-					case "isLast": return "(" + loop.index + " == " + loop.length + " - 1)";
-					case "even": return "((" + loop.index + " & 1) == 0)";
-					case "odd": return "((" + loop.index + " & 1) == 1)";
-				}
-			}
-			return part;
-		});
-	},
-
 	/**
 	 * Parses the tag and reports possible syntax errors.
 	 * This is the core of the template parser
@@ -597,11 +579,12 @@ Template.prototype = {
 						if (loopStack) loopStack.pop();
 						// If the loop defines a separator, process it now.
 						// The first part of this (out.push()) happen in "foreach"
-						if (prevControl.postProcess.separator)
+						var separator = prevControl.postProcess && prevControl.postProcess.separator;
+						if (separator)
 							code.push(				"	var val = out.pop();",
 													"	if (val != null && val !== '') {",
 													"		if (first) first = false;",
-													"		else out.write(" + prevControl.postProcess.separator + ");",
+													"		else out.write(" + separator + ");",
 													"		out.write(val)",
 													"	}");
 					}
@@ -692,6 +675,28 @@ Template.prototype = {
 	},
 
 	/**
+	 * Parses the passed string for loop variable related calls (e.g. $entry#isFirst)
+	 * and replaces them with the proper code.
+	 */
+	parseLoopVariables: function(str, stack) {
+		return str.replace(/(\$[\w_]+)\#(\w+)/, function(part, variable, suffix) {
+			// Use the last loop.
+			var loopStack = stack.loop[variable], loop = loopStack && loopStack[loopStack.length - 1];
+			if (loop) {
+				switch (suffix) {
+				case "index": return loop.index;
+				case "length": return loop.length;
+				case "isFirst": return "(" + loop.index + " == 0)";
+				case "isLast": return "(" + loop.index + " == " + loop.length + " - 1)";
+				case "even": return "((" + loop.index + " & 1) == 0)";
+				case "odd": return "((" + loop.index + " & 1) == 1)";
+				}
+			}
+			return part;
+		});
+	},
+
+	/**
 	 * Parses a tempate tag and creates a new sub tempalte in the subTemplates
 	 * array. Also handles the case where a template needs to directly be rendered
 	 * to a varible.
@@ -713,6 +718,10 @@ Template.prototype = {
 			throw "Syntax error in template";
 	},
 
+	/**
+	 * Writes out the value and handles prefix, suffix, default, and filter chains.
+	 * This is called at rendering time, not parsing time.
+	 */
 	write: function(value, filters, prefix, suffix, deflt, out) {
 		if (value != null && value !== '') {
 			if (filters) {
@@ -741,6 +750,10 @@ Template.prototype = {
 		}
 	},
 
+	/**
+	 * Renders the macro with the given name on object, passing it the arguments.
+	 * This is called at rendering time, not parsing time.
+	 */
 	renderMacro: function(command, object, name, param, args, out) {
 		var unhandled = false, value;
 		if (object) {
@@ -814,28 +827,22 @@ Template.prototype = {
 			// rendered into variable names (as defined by <% $name %> tags...)
 			this.renderTemplates = [];
 			var code = this.parse(lines);
-			print(code);
 			// Now evalute the template code.
 			// This sets this.__render__ to the generated function
-			this.evaluate(this, code);
+			// don't use eval() but Rhino's evaluateString instead, because this
+			// throws propper traceable exceptions if something goes wrong.
+			// switch optimization level for the compilation of this routine,
+			// as java bytecode methods have a maximum size that is too small
+			// for templates.
+			var cx = Packages.org.mozilla.javascript.Context.getCurrentContext();
+			var level = cx.getOptimizationLevel();
+			cx.setOptimizationLevel(-1);
+			cx.evaluateString(this, code, this.pathName, 0, null);
+			cx.setOptimizationLevel(level);
 		} catch (e) {
 			this.throwError(e);
 		}
 		this.lastChecked = new Date().getTime();
-	},
-
-	evaluate: function(scope, code) {
-		// don't use eval() but Rhino's evaluateString instead, because this
-		// throws propper traceable exceptions if something goes wrong.
-		// switch optimization level for the compilation of this routine,
-		// as java bytecode methods have a maximum size that is too small
-		// for templates.
-		var ctx = Packages.org.mozilla.javascript.Context.getCurrentContext();
-		var level = ctx.getOptimizationLevel();
-		ctx.setOptimizationLevel(-1);
-		var ret = ctx.evaluateString(scope, code, this.pathName, 0, null);
-		ctx.setOptimizationLevel(level);
-		return ret;
 	},
 
 	/**
