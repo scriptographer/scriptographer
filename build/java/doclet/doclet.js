@@ -427,26 +427,33 @@ Member = Object.extend({
 		// nothing here, but in the extended classes
 	},
 
+	isVisible: function() {
+		var hide = this.tags("jshide")[0];
+		return this.bean && hide == 'false' || !this.bean && (hide == undefined || hide == 'false');
+	},
+
 	renderMember: function(classDoc, index, member, containingClass) {
-		if (!member)
-			member = this;
+		if (this.isVisible()) {
+			if (!member)
+				member = this;
 
-		if (!containingClass)
-			containingClass = this.classDoc;
+			if (!containingClass)
+				containingClass = this.classDoc;
 
-		if (index)
-			index.push('"' + member.getId() + '": { title: "' + this.name() + '", text: "' + encodeJs(renderTags({ classDoc: this.classDoc, tags: member.inlineTags() })) + '" }');
+			if (index)
+				index.push('"' + member.getId() + '": { title: "' + this.name() + '", text: "' + encodeJs(renderTags({ classDoc: this.classDoc, tags: member.inlineTags() })) + '" }');
 
-		// Thrown exceptions
-		// if (this.member.thrownExceptions)
-		//	renderTemplate("exceptions", { exceptions: this.member.thrownExceptions() }, out);
-		// Description
-		var returnType = this.returnType();
-		return this.renderTemplate("member", {
-			member: member, containingClass: containingClass,
-			throwsTags: this.member && this.member.throwsTags ? this.member.throwsTags() : null,
-			returnType: returnType && !returnType.typeName().equals("void") ? returnType : null
-		});
+			// Thrown exceptions
+			// if (this.member.thrownExceptions)
+			//	renderTemplate("exceptions", { exceptions: this.member.thrownExceptions() }, out);
+			// Description
+			var returnType = this.returnType();
+			return this.renderTemplate("member", {
+				member: member, containingClass: containingClass,
+				throwsTags: this.member && this.member.throwsTags ? this.member.throwsTags() : null,
+				returnType: returnType && !returnType.typeName().equals("void") ? returnType : null
+			});
+		}
 	},
 
 	name: function() {
@@ -755,34 +762,18 @@ BeanProperty = Member.extend({
 		this.property = name;
 		this.getter = getter;
 		this.setter = setter;
-		var str = "";
-		if (!setter)
-			str += "Read-only ";
-		if (settings.templates)
-			str += "<% this.beanProperty %>";
-		else
-			str += "Bean Property";
-		str += ", defined by " + getter.renderLink(classObject.classDoc);
+		getter.bean = this;
 		if (setter)
-			str += " and " + setter.renderLink(classObject.classDoc);
+			setter.bean = this;
+
+		var tags = getter.tags("jsbean");
+		if (!tags.length && setter)
+			tags = setter.tags("jsbean");
+		
 		this.inlineTagList = [];
-		this.inlineTagList.append(getter.inlineTags());
-		if (this.inlineTagList.length)
-			str = "<br />" + str;
-		this.inlineTagList.push(new Tag(str));
-		this.seeTagList = [];
-		/*
-		if (setter) {
-			seeTags = [
-				new SeeTag(getter),
-				new SeeTag(setter)
-			];
-		} else {
-			seeTags = [
-				new SeeTag(getter)
-			]
-		}
-		*/
+		if (!setter)
+			this.inlineTagList.push(new Tag("Read-only."))
+		this.inlineTagList.append(tags);
 	},
 
 	name: function() {
@@ -1415,51 +1406,54 @@ function stripTags_fitler(str) {
 	return str.replace(/<.*?>|<\/.*?>/g, " ").replace(/\\s+/g, " ");
 }
 
-ClassObject.put(root);
+function main() {
+	ClassObject.put(root);
 
-var packages = new Hash();
-var packageSequence = settings.packageSequence;
-var createSequence = !packageSequence;
-if (createSequence)
-	packageSequence = [];
-
-root.specifiedPackages().each(function(pkg) {
-	var name = pkg.name();
-	packages[name] = pkg;
+	var packages = new Hash();
+	var packageSequence = settings.packageSequence;
+	var createSequence = !packageSequence;
 	if (createSequence)
-		packageSequence[i] = name;
-});
+		packageSequence = [];
 
-// now start rendering:
-var doc = new Document("", settings.templates ? "packages.js" : "packages.html", "packages");
+	root.specifiedPackages().each(function(pkg) {
+		var name = pkg.name();
+		packages[name] = pkg;
+		if (createSequence)
+			packageSequence[i] = name;
+	});
 
-packageSequence.each(function(name) {
-	var pkg = packages[name];
-	if (pkg) {
-		var path = getRelativeIdentifier(name);
-		var text = renderTags({ tags: pkg.inlineTags() });
-		var first = renderTags({ tags: pkg.firstSentenceTags() });
-		// remove the first sentence from the main text
-		if (first && text.startsWith(first)) {
-			text = text.substring(first.length);
-			first = first.substring(0, first.length - 1); // cut away dot
+	// now start rendering:
+	var doc = new Document("", settings.templates ? "packages.js" : "packages.html", "packages");
+
+	packageSequence.each(function(name) {
+		var pkg = packages[name];
+		if (pkg) {
+			var path = getRelativeIdentifier(name);
+			var text = renderTags({ tags: pkg.inlineTags() });
+			var first = renderTags({ tags: pkg.firstSentenceTags() });
+			// remove the first sentence from the main text
+			if (first && text.startsWith(first)) {
+				text = text.substring(first.length);
+				first = first.substring(0, first.length - 1); // cut away dot
+			}
+
+			out.push();
+			processClasses(pkg.interfaces());
+			processClasses(pkg.allClasses(true));
+			processClasses(pkg.exceptions());
+			processClasses(pkg.errors());
+
+			renderTemplate("packages#package", { content: out.pop(), name: name, path: path }, out);
+
+			if (!settings.templates) {
+				// write package file:
+				var doc = new Document(path, 'index', 'document');
+				renderTemplate("package", { title: first, text: text });
+				doc.close();
+			}
 		}
-		
-		out.push();
-		processClasses(pkg.interfaces());
-		processClasses(pkg.allClasses(true));
-		processClasses(pkg.exceptions());
-		processClasses(pkg.errors());
+	});
+	doc.close();
+}
 
-		renderTemplate("packages#package", { content: out.pop(), name: name, path: path }, out);
-
-		if (!settings.templates) {
-			// write package file:
-			var doc = new Document(path, 'index', 'document');
-			renderTemplate("package", { title: first, text: text });
-			doc.close();
-		}
-	}
-});
-
-doc.close();
+main();
