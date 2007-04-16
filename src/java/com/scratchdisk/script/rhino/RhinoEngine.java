@@ -37,7 +37,6 @@ import java.io.IOException;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Kit;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
@@ -56,27 +55,6 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 	protected Context context;
 	protected RhinoWrapFactory wrapFactory;
 //	protected Debugger debugger = null;
-	private static boolean hasE4X;
-
-	static {
-		hasE4X = false;
-		// hasE4X is needed as Rhino turns FEATURE_E4X on even when these
-		// two classes are not on the classpath, which causes problems.
-		try {
-			// Check to see whether DOM3 is present;
-			// Uuse a new method defined in DOM3 that is vital to our implementation
-			Class.forName("org.w3c.dom.Node").getMethod("getUserData",
-					new Class[] { String.class });
-			hasE4X = true;
-		} catch (Exception e) {
-			try {
-				// Now check for XMLBeans
-				Class.forName("org.apache.xmlbeans.XmlCursor");
-				hasE4X = true;
-			} catch (Exception f) {
-			}
-		}
-	}
 
 	public RhinoEngine(RhinoWrapFactory wrapFactory) {
 		super("JavaScript", "js");
@@ -121,7 +99,6 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		this(new RhinoWrapFactory());
 	}
 
-
 	protected TopLevel makeTopLevel(Context context) {
 		return new TopLevel(context);
 	}
@@ -136,7 +113,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 	protected boolean hasFeature(Context cx, int feature, boolean defaultValue) {
 		switch (feature) {
 		case Context.FEATURE_E4X:
-			return hasE4X;
+			return cx.getE4xImplementationFactory() != null;
 		}
 		return defaultValue;
 	}
