@@ -27,7 +27,7 @@
 <% $title -%>
 <tt><b><%-%>
 <% if this.isStatic() %>
-<%= this.classDoc.name() %>.<%-%>
+<%= param.classDoc.name() %>.<%-%>
 <% end %>
 <%= this.name() %></b><%-%>
 <% if this.renderParameters %>
@@ -38,7 +38,7 @@
 <% $text -%>
 <% tags tags=param.member.inlineTags() classDoc=param.containingClass prefix='<div class="member-paragraph">' suffix='</div>' %>
 <% if this.getParameters %>
-<% this.template "#parameters" parameters=this.getParameters() classDoc=this.classDoc %>
+<% this.template "#parameters" parameters=this.getParameters() classDoc=param.classDoc %>
 <% end %>
 <% if param.returnType %>
 <% this.template "#return" returnType=param.returnType tags=this.tags("return") classDoc=param.containingClass %>

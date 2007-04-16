@@ -449,7 +449,7 @@ Member = Object.extend({
 			// Description
 			var returnType = this.returnType();
 			return this.renderTemplate("member", {
-				member: member, containingClass: containingClass,
+				classDoc: classDoc, member: member, containingClass: containingClass,
 				throwsTags: this.member && this.member.throwsTags ? this.member.throwsTags() : null,
 				returnType: returnType && !returnType.typeName().equals("void") ? returnType : null
 			});
