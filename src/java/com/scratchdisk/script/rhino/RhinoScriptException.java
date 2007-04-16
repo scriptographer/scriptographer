@@ -31,6 +31,7 @@
 
 package com.scratchdisk.script.rhino;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -39,7 +40,6 @@ import org.mozilla.javascript.WrappedException;
 
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.util.StringUtils;
-import com.scriptographer.ScriptographerEngine;
 
 /**
  * ScriptException for Rhino, preferably called RhinoException, but
@@ -47,24 +47,23 @@ import com.scriptographer.ScriptographerEngine;
  */
 public class RhinoScriptException extends ScriptException {
 
-	private static String formatMessage(Throwable t) {
+	private static String formatMessage(RhinoEngine engine, Throwable t) {
 		RhinoException re = t instanceof RhinoException ? (RhinoException) t
 				: new WrappedException(t);
-
-			String basePath =
-				ScriptographerEngine.getScriptDirectory().getAbsolutePath();
-
 			StringWriter buf = new StringWriter();
 			PrintWriter writer = new PrintWriter(buf);
-
+			String stackTrace = re.getScriptStackTrace();
+			// Strip away base directory from all paths, if defined:
+			File baseDir = engine.getBaseDirectory();
+			if (baseDir != null)
+				stackTrace = StringUtils.replace(stackTrace, baseDir.getAbsolutePath(), "");
 			writer.println(re.details());
-			writer.print(StringUtils.replace(StringUtils.replace(
-				re.getScriptStackTrace(), basePath, ""), "\t", "    "));
-			
+			// Replace tabs with 4 whitespaces
+			writer.print(StringUtils.replace(stackTrace, "\t", "    "));
 			return buf.toString();
 	}
 
-	public RhinoScriptException(Throwable cause) {
-		super(formatMessage(cause), cause);
+	public RhinoScriptException(RhinoEngine engine, Throwable cause) {
+		super(formatMessage(engine, cause), cause);
 	}
 }

@@ -135,6 +135,19 @@ public abstract class ScriptEngine {
 	public abstract void evaluate(String string, Scope scope)
 			throws ScriptException;
 
+	/**
+	 * Returns the base of all paths, to be cut away from Error messages,
+	 * if desired.
+	 * TODO: This should be changed to a more script oriented approach,
+	 * Where the base directy is determined from a variable in the current
+	 * scope...
+	 * Think about a convention for naming baseDirectroies, scriptFiles, etc.
+	 * in the scope. e.g. app.directory, script.file, ...
+	 */
+	public File getBaseDirectory() {
+		return null;
+	}
+
 	public static double toDouble(Object val) {
 		if (val instanceof Number)
 			return ((Number) val).doubleValue();

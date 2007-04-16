@@ -31,6 +31,8 @@
 
 package com.scriptographer.script.rhino;
 
+import java.io.File;
+
 import org.mozilla.javascript.Context;
 
 import com.scratchdisk.script.ScriptCanceledException;
@@ -61,8 +63,12 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
 		return context;
 	}
 
-	protected void observeInstructinCount(Context cx, int instructionCount) {
+	protected void observeInstructionCount(Context cx, int instructionCount) {
 		if (!ScriptographerEngine.updateProgress())
 			throw new ScriptCanceledException();
+	}
+
+	public File getBaseDirectory() {
+		return ScriptographerEngine.getScriptDirectory();
 	}
 }

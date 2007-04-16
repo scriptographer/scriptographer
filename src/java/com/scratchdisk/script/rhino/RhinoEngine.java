@@ -37,10 +37,10 @@ import java.io.IOException;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
+import org.mozilla.javascript.Kit;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.WrapFactory;
 import org.mozilla.javascript.tools.debugger.ScopeProvider;
 
 import com.scratchdisk.script.Script;
@@ -54,20 +54,33 @@ import com.scratchdisk.script.Scope;
 public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 	protected TopLevel topLevel;
 	protected Context context;
-	protected WrapFactory wrapFactory;
+	protected RhinoWrapFactory wrapFactory;
 //	protected Debugger debugger = null;
+	private static boolean hasE4X;
 
-	public RhinoEngine(WrapFactory wrapFactory) {
+	static {
+		// hasE4X is needed as Rhino turns FEATURE_E4X on even when these
+		// two classes are not on the classpath, which causes problems.
+		hasE4X = Kit.classOrNull("org.apache.xmlbeans.XmlCursor") != null ||
+		Kit.classOrNull("org.w3c.dom.Node") != null;
+	}
+
+	public RhinoEngine(RhinoWrapFactory wrapFactory) {
 		super("JavaScript", "js");
-		this.wrapFactory = wrapFactory;
 
+		this.wrapFactory = wrapFactory;
+		// Set the engine pointer by hand here, as otherwise
+		// RhinoWrapFactory would take an argument, and could not be created
+		// in the super constructor call, which would be annoying...
+		// TODO: consider a cleaner solution
+		wrapFactory.engine = this;
+
+		// Produce a ContextFactory that only redirects calls to RhinoEngine,
+		// so they can be overridden easily in inherited classes.
 		ContextFactory contextFactory = new ContextFactory() {
-			protected boolean hasFeature(Context cx, int featureIndex) {
-				switch (featureIndex) {
-					case Context.FEATURE_E4X:
-						return false;
-				}
-				return super.hasFeature(cx, featureIndex);
+			protected boolean hasFeature(Context cx, int feature) {
+				return RhinoEngine.this.hasFeature(cx,
+						feature, super.hasFeature(cx, feature));
 			}
 
 			protected Context makeContext() {
@@ -75,7 +88,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 			}
 
 			protected void observeInstructionCount(Context cx, int instructionCount) {
-				RhinoEngine.this.observeInstructinCount(cx, instructionCount);
+				RhinoEngine.this.observeInstructionCount(cx, instructionCount);
 			}
 		};
 
@@ -95,15 +108,24 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		this(new RhinoWrapFactory());
 	}
 
+
+	protected TopLevel makeTopLevel(Context context) {
+		return new TopLevel(context);
+	}
+
 	/**
 	 * @param cx
 	 * @param instructionCount
 	 */
-	protected void observeInstructinCount(Context cx, int instructionCount) {
+	protected void observeInstructionCount(Context cx, int instructionCount) {
 	}
 
-	protected TopLevel makeTopLevel(Context context) {
-		return new TopLevel(context);
+	protected boolean hasFeature(Context cx, int feature, boolean defaultValue) {
+		switch (feature) {
+		case Context.FEATURE_E4X:
+			return hasE4X;
+		}
+		return defaultValue;
 	}
 
 	protected Context makeContext() {
@@ -121,7 +143,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 			return new RhinoScript(this, context.compileReader(
 					in, file.getPath(), 1, null), file);
 		} catch (RhinoException e) {
-			throw new RhinoScriptException(e);
+			throw new RhinoScriptException(this, e);
 		} finally {
 			if (in != null)
 				in.close();
@@ -136,7 +158,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 			context.evaluateString(((RhinoScope) scope).getScope(), string,
 					null, 1, null);
 		} catch (RhinoException e) {
-			throw new RhinoScriptException(e);
+			throw new RhinoScriptException(this, e);
 		}
 	}
 
@@ -146,7 +168,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		// http://www.mozilla.org/rhino/scopes.html
 		scope.setPrototype(topLevel);
 		scope.setParentScope(null);
-		return new RhinoScope(scope);
+		return new RhinoScope(this, scope);
 	}
 	
 	protected static Scriptable getWrapper(Scriptable scope, Object obj) {
@@ -165,7 +187,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		// way to handle this
 		Scriptable scope = getWrapper(topLevel, obj);
 		scope.setParentScope(topLevel);
-		return new RhinoScope(scope);
+		return new RhinoScope(this, scope);
 	}
 
 	public Scriptable getScope() {

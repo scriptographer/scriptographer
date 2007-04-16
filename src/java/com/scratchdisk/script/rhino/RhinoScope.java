@@ -44,9 +44,11 @@ import com.scratchdisk.script.Scope;
  */
 public class RhinoScope extends Scope {
 	private Scriptable scope;
+	private RhinoEngine engine;
 
-	public RhinoScope(Scriptable scope) {
+	public RhinoScope(RhinoEngine engine, Scriptable scope) {
 		this.scope = scope;
+		this.engine = engine;
 	}
 
 	public Scriptable getScope() {
@@ -56,7 +58,7 @@ public class RhinoScope extends Scope {
 	public Object get(String name) {
 		Object obj = scope.get(name, scope);
 		if (obj == Scriptable.NOT_FOUND) return null;
-		else if (obj instanceof Function) return new RhinoCallable((Function) obj);
+		else if (obj instanceof Function) return new RhinoCallable(engine, (Function) obj);
 		else if (obj instanceof Wrapper) return ((Wrapper) obj).unwrap();
 		else return obj;
 	}

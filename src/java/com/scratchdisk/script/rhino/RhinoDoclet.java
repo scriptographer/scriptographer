@@ -40,6 +40,8 @@ import java.io.IOException;
 
 import org.mozilla.javascript.*;
 
+import com.scratchdisk.script.Script;
+import com.scratchdisk.script.ScriptException;
 import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.Doclet;
 import com.sun.javadoc.RootDoc;
@@ -84,50 +86,44 @@ public class RhinoDoclet extends Doclet {
 		return true;
 	}
 	
-	public static class RhinoDocletEngine extends TopLevel {
+	public static class RhinoDocletEngine extends RhinoEngine {
 
-		public RhinoDocletEngine() {
-			ContextFactory.initGlobal(new ContextFactory() {
-				protected Context makeContext() {
-					Context context = new Context();
-					context.setWrapFactory(new RhinoWrapFactory());
-					context.setOptimizationLevel(-1);
-					return context;
-				}
-			});
-	        initStandardObjects(Context.enter(), false);
-			// define some global functions and objects:
-			defineFunctionProperties(new String[] { "include" },
-					RhinoDocletEngine.class, ScriptableObject.READONLY
-							| ScriptableObject.DONTENUM);
+		protected Context makeContext() {
+			Context context = super.makeContext();
+			context.setOptimizationLevel(-1);
+			return context;
 		}
 
-		public static void main(String[] args) {
-			(new RhinoDocletEngine()).evaluate(new File(args[0]));
+		protected TopLevel makeTopLevel(Context context) {
+			TopLevel topLevel = new TopLevel(context, false);
+			// define some global functions and objects:
+			topLevel.defineFunctionProperties(new String[] { "include" },
+					RhinoDocletEngine.class, ScriptableObject.READONLY
+							| ScriptableObject.DONTENUM);
+			return topLevel;
 		}
 
 		public void put(String name, Object value) {
-			this.put(name, this, value);
+			topLevel.put(name, topLevel, value);
 		}
 
 		public Object get(String name) {
-			return this.get(name, this);
+			return topLevel.get(name, topLevel);
 		}
 
 		/**
 		 * @param file
+		 * @throws  
 		 * @throws IOException 
 		 */
 		public boolean evaluate(File file) {
 			try {
-				FileReader in = new FileReader(file);
-				Context.getCurrentContext().evaluateReader(this, in,
-						file.getName(), 1, null);
+				Script script = compileScript(file);
+				script.execute(createScope());
 				return true;
-			} catch (RhinoException re) {
-				System.err.println(re.details());
-				System.err.print(re.getScriptStackTrace());
-				re.printStackTrace();
+			} catch (ScriptException e) {
+				System.err.println(e.getMessage());
+				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -140,7 +136,8 @@ public class RhinoDoclet extends Doclet {
 		public static void include(Context cx, Scriptable thisObj, Object[] args,
 				Function funObj) throws Exception {
 			for (int i = 0; i < args.length; i++) {
-				File file = new File((File) thisObj.get("baseDir", thisObj),
+				File file = new File(
+						(File) ScriptableObject.getProperty(thisObj, "baseDir"),
 						(String) args[i]);
 				FileReader in = new FileReader(file);
 				cx.evaluateReader(thisObj, in, file.getName(), 1, null);

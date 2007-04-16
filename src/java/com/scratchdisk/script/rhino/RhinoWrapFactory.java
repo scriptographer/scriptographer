@@ -49,7 +49,8 @@ import com.scratchdisk.util.WeakIdentityHashMap;
  */
 public class RhinoWrapFactory extends WrapFactory {
 	private WeakIdentityHashMap wrappers = new WeakIdentityHashMap();
-	
+	protected RhinoEngine engine;
+
 	public RhinoWrapFactory() {
 		this.setJavaPrimitiveWrap(false);
 	}
@@ -114,7 +115,7 @@ public class RhinoWrapFactory extends WrapFactory {
 			// return convertToMap((NativeObject) value);
 			return new MapAdapter((NativeObject) value);
 		} else if (value instanceof Function && type == Callable.class) {
-			return new RhinoCallable((Function) value);
+			return new RhinoCallable(engine, (Function) value);
 		}
 		return null;
 	}

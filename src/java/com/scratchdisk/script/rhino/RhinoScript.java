@@ -71,7 +71,7 @@ public class RhinoScript extends Script {
 				ret = ((Wrapper) ret).unwrap();
 			return ret;
 		} catch (RhinoException re) {
-			throw new RhinoScriptException(re);
+			throw new RhinoScriptException(engine, re);
 		}
 	}
 }

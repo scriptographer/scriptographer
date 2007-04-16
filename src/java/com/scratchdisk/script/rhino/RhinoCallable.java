@@ -46,8 +46,9 @@ import com.scratchdisk.script.Callable;
  */
 public class RhinoCallable extends Callable {
 	Function function;
+	RhinoEngine engine;
 	
-	RhinoCallable(Function function) {
+	RhinoCallable(RhinoEngine engine, Function function) {
 		this.function = function;
 	}
 	
@@ -64,7 +65,7 @@ public class RhinoCallable extends Callable {
 				ret = ((Wrapper) ret).unwrap();
 			return ret;
 		} catch (RhinoException re) {
-			throw new RhinoScriptException(re);
+			throw new RhinoScriptException(engine, re);
 		}
 	}
 
