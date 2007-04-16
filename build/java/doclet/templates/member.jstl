@@ -1,0 +1,76 @@
+<% $id = this.getId() %>
+<% if (settings.templates) %>
+<%= $id prefix='<% this.memberLink id="' suffix='" %>' %>
+<% else %>
+<div id="<%= $id %>-link" class="member-link">
+<% end %>
+<a name="<%= $id %>" href="#" onClick="return toggleMember('<%= $id %>', false);">
+<%= $title %>
+</a>
+</div>
+<% if (settings.templates) %>
+<%= $id prefix='<% this.memberDescription id="' suffix='" %>' %>
+<% else %>
+<div id="<%= $id %>-description" class="member-description">
+<% end %>
+<div class="member-header">
+<div class="member-title"><a href="#" onClick="return toggleMember('<%= $id %>', false);"><%= $title %></a></div>
+<div class="member-close"><input type="button" value="Close" onClick="toggleMember('<%= $id %>', false);"></div>
+<div class="clear"></div>
+</div>
+<%= $text prefix='<div class="member-text">' suffix='</div>' %>
+</div>
+<% if (settings.templates) %>
+<%= $id prefix='<% this.memberPosts id="' suffix='" %>' %>
+<% end %>
+
+<% $title -%>
+<tt><b><%-%>
+<% if this.isStatic() %>
+<%= this.classDoc.name() %>.<%-%>
+<% end %>
+<%= this.name() %></b><%-%>
+<% if this.renderParameters %>
+<%= this.renderParameters() -%>
+<% end %>
+</tt>
+
+<% $text -%>
+<% tags tags=param.member.inlineTags() classDoc=param.containingClass prefix='<div class="member-paragraph">' suffix='</div>' %>
+<% if this.getParameters %>
+<% this.template "#parameters" parameters=this.getParameters() classDoc=this.classDoc %>
+<% end %>
+<% if param.returnType %>
+<% this.template "#return" returnType=param.returnType tags=this.tags("return") classDoc=param.containingClass %>
+<% end %>
+<% if param.throwsTags %>
+<% this.template "#throws" exceptions=param.throwsTags %>
+<% end %>
+<% tags tags=param.member.seeTags() classDoc=param.containingClass prefix='<div class="member-paragraph"><b>See also:</b>' suffix='</div>' separator=', ' %>
+
+<% #parameters %>
+<% foreach $param in param.parameters prefix='<div class="member-paragraph"><b>Parameters:</b>' suffix='</div>' %>
+	<div><tt><%= $param.name() %>:</tt><%= $param.paramType().renderLink() %>
+	<% if $param.tag %>
+		<% tags tags=$param.tag.inlineTags() classDoc=param.classDoc prefix=" - " %>
+	<% end %>
+	</div>
+<% end %>
+
+<% #throws %>
+<% foreach $ex in param.exceptions prefix='<div class="member-paragraph"><b>Throws:</b>' suffix='</div>' %>
+	<% $cd = $ex.exception() %>
+	<div>
+		<%= $cd ? $cd.renderLink() : $ex.exceptionName() %> - <% tags classDoc=$cd tags=$ex.inlineTags() %>
+	</div>
+<% end %>
+
+<% #return %>
+<div class="member-paragraph"><b>Returns:</b>
+<div> 
+<%= param.returnType.renderLink() %>
+<% foreach $tag in param.tags prefix=" - " %>
+	<% tags classDoc=param.classDoc tags=$tag.inlineTags() %>
+<% end %>
+</div> 
+</div>

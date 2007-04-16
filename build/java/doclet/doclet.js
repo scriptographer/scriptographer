@@ -1,6 +1,5 @@
 importPackage(Packages.com.sun.javadoc);
 importPackage(Packages.com.sun.tools.javadoc);
-importPackage(Packages.com.scriptographer.doclets);
 
 include("bootstrap.js");
 include("template.js");
@@ -9,30 +8,53 @@ function error() {
 	java.lang.System.err.println($A(arguments).join(', '));
 }
 
-// add renderTemplate function with caching to all objects
+// A global template writer
+var out = new TemplateWriter();
+
+// Add renderTemplate function with caching to all objects
 Object.inject(function() {
 	var templates = new Hash();
 
 	return {
-		renderTemplate: function(name, param) {
-			var template;
-			if (name instanceof Template) {
-				template = name;
-			} else {
+		getTemplate: function(template) {
+			var name = template;
+			if (!(template instanceof Template)) {
+				// Handle sub templates:
+				var pos = name.indexOf('#');
+				if (pos != -1) {
+					template = this.getTemplate(name.substring(0, pos));
+					if (template)
+						return template.getSubTemplate(name.substring(pos + 1));
+				}
 				template = templates[name];
-				if (!template)
-					template = templates[name] = new Template(
-						new java.io.File(baseDir + "/templates/" + name + ".jstl"));
 			}
-			return template.render(this, param);
+			if (!template)
+				template = templates[name] = new Template(
+					new java.io.File(baseDir + "/templates/" + name + ".jstl"));
+			return template;
+		},
+
+		renderTemplate: function(template, param, out) {
+			try {
+				template = this.getTemplate(template);
+				if (template)
+					return template.render(this, param, out);
+			} catch (e) {
+				error(e);
+			}
+		},
+
+		template_macro: function(param, name) {
+			if (name[0] == '#') {
+				return param.__template__.renderSubTemplate(this, name.substring(1), param);
+			} else {
+				return this.renderTemplate(name, param);
+			}
 		}
 	}
 }, true);
 
-function renderTemplate(name, param) {
-	return Object.prototype.renderTemplate.call(global, name, param);
-}
-
+// Enhance String a bit:
 String.inject({
 	endsWith: function(end) {
 		return this.length >= end.length && this.substring(this.length - end.length) == end;
@@ -54,7 +76,7 @@ String.inject({
 // Define settings from passed options:
 var settings = {
 	basePackage:  options.basepackage || "",
-	destDir: options.d || "",
+	destDir: (options.d + (options.d && !/\/^/.test(options.d) ? "/" : "")) || "",
 	docTitle: options.doctitle || "",
 	bottom: options.bottom || "",
 	author: options.author || "",
@@ -81,15 +103,12 @@ var settings = {
 	constructorSummary: options.noconstructorsummary != "true",
 	hyperref: options.nohyperref != "true",
 	versionInfo: options.version == "true",
-	shortInherited: options.shortinherited == "true",
 	debug: options.shortinherited == "true",
 	section1Open: options.section1open || "<h1>",
 	section1Close: options.section1close || "</h1>",
 	section2Open: options.section2open || "<h2>",
 	section2Close: options.section2close || "</h2>"
 };
-
-if (!/\/^/.test(settings.destDir)) settings.destDir += "/";
 
 // Ehnance some of the javatool classes with usefull methods:
 
@@ -152,16 +171,38 @@ ClassDocImpl.inject({
 			return "Read-only List";
 	},
 
-	// This is defined outside createLink so that even when a Type
+	getType: function() {
+		var type;
+		if (this.isInterface()) type = "Interface";
+		else if (this.isException()) type = "Exception";
+		else type = "Prototype";
+		if (this.isAbstract()) type = "Abstract " + type;
+		return type;
+	},
+
+	getSuperclass: function() {
+		var sc = this.superclass();
+		if (sc && sc.isVisible())
+			return sc;
+	},
+
+	getSubclasses: function() {
+		return root.classes().each(function(cls) {
+			if (cls.isVisible() && cls.superclass() == this && !cls.equals(this))
+				this.push(cls);
+		}, []);
+	},
+
+	// This is defined outside renderLink so that even when a Type
 	// happens to be its own ClassDoc (as returned by asClassDoc), and therefore
-	// overrides createLink, it can still call the base version.
-	createClassLink: function(name) {
+	// overrides renderLink, it can still call the base version.
+	renderClassLink: function(name) {
 		if (!name) name = this.name();
 		var str = "";
 		if (this.isVisible()) {
 			if (this.isAbstract())
 				str += "<i>";
-			str += createLink(this.qualifiedName(), this.name(), "", name);
+			str += renderLink(this.qualifiedName(), this.name(), "", name);
 			if (this.isAbstract())
 				str += "</i>";
 		} else {
@@ -170,8 +211,8 @@ ClassDocImpl.inject({
 		return str;
 	},
 
-	createLink: function(name) {
-		return this.createClassLink(name);
+	renderLink: function(name) {
+		return this.renderClassLink(name);
 	}
 });
 
@@ -243,7 +284,7 @@ Type = Object.extend({
 			this.isMatrix() && type.isMatrix();
 	},
 
-	createLink: function() {
+	renderLink: function() {
 		if (this.isNumber())
 			return "<tt>Number</tt>";
 		else if (this.isBoolean())
@@ -253,16 +294,16 @@ Type = Object.extend({
 		else if (this.isMap())
 			return "<tt>Object</tt>";
 		else if (this.isPoint())
-			return ClassObject.createLink("Point", "com.scriptographer.ai.Point");
+			return ClassObject.renderLink("Point", "com.scriptographer.ai.Point");
 		else if (this.isRectangle())
-			return ClassObject.createLink("Rectangle", "com.scriptographer.ai.Rectangle");
+			return ClassObject.renderLink("Rectangle", "com.scriptographer.ai.Rectangle");
 		else if (this.isMatrix())
-			return ClassObject.createLink("Matrix", "com.scriptographer.ai.Matrix");
+			return ClassObject.renderLink("Matrix", "com.scriptographer.ai.Matrix");
 		else {
 			var cls = this.asClassDoc();
 			if (cls) {
 				if (cls.isVisible())
-					return cls.createClassLink();
+					return cls.renderClassLink();
 				else
 					return "<tt>" + cls.name() + "</tt>";
 			} else {
@@ -296,18 +337,20 @@ SeeTagImpl.inject({
 		var ref = this.referencedMember() || this.referencedClass();
 		if (ref) {
 			/*
-			if (!mem.createLink) {
+			if (!mem.renderLink) {
 				var cls = mem.getClass();
 				while (cls)
 					cls = cls.getSuperclass();
 			}
 			*/
-			return ref.createLink(param.classDoc);
+			return ref.renderLink(param.classDoc);
 		} else {
 			error(this.position() + ": warning - @link contains undefined reference: " + this);
 		}
 	}
 });
+
+// A fake tag, to define own tag lists. Used for bean properties
 
 Tag = Object.extend({
 	$constructor: function(str) {
@@ -365,9 +408,9 @@ MemberDocImpl.inject({
 		return Member.get(this.qualifiedName()) != null;
 	},
 
-	createLink: function(current) {
+	renderLink: function(current) {
 		var mem = Member.get(this);
-		return mem ? mem.createLink(current) : "";
+		return mem ? mem.renderLink(current) : "";
 	}
 
 });
@@ -375,8 +418,8 @@ MemberDocImpl.inject({
 // Member
 
 Member = Object.extend({
-	$constructor: function(classProxy, member) {
-		this.classProxy = classProxy;
+	$constructor: function(classObject, member) {
+		this.classObject = classObject;
 		this.member = member;
 	},
 
@@ -384,50 +427,26 @@ Member = Object.extend({
 		// nothing here, but in the extended classes
 	},
 
-	renderReturnType: function(out) {
-		var retType = this.returnType();
-		if (retType && !retType.typeName().equals("void")) {
-			return this.renderTemplate("returnType", {
-				classDoc: this.classProxy.classDoc,
-				link: retType.createLink(),
-				tags: this.tags("return")
-			}, out);
-		}
-		// TODO: remove
-		return "";
-	},
+	renderMember: function(classDoc, index, member, containingClass) {
+		if (!member)
+			member = this;
 
-	// TODO: rename!
-	// TODO: change to passing params in param-object
-	printMemberBase: function(writer, indexWriter, cd, id, title, text, tags) {
-		writer.print(this.renderTemplate("memberBase", {
-			id: id,
-			title: title,
-			text: text
-		}));
-		if (settings.templates)
-			indexWriter.print(", \"" + id + "\": { title: \"" + this.name() + "\", text: \"" + encodeJs(getTags({ classDoc: cd, tags: tags })) + "\" }");
-	},
+		if (!containingClass)
+			containingClass = this.classDoc;
 
-	printMember: function(writer, indexWriter, cd) {
-		var title = "<tt><b>";
-		// Static = PROTOTYPE.NAME
-		if (this.isStatic())
-			title += cd.name() + ".";
-		title += this.name() + "</b></tt>";
+		if (index)
+			index.push('"' + member.getId() + '": { title: "' + this.name() + '", text: "' + encodeJs(renderTags({ classDoc: this.classDoc, tags: member.inlineTags() })) + '" }');
 
-		var text = new java.io.StringWriter();
-		var strWriter = new java.io.PrintWriter(text);
-
+		// Thrown exceptions
+		// if (this.member.thrownExceptions)
+		//	renderTemplate("exceptions", { exceptions: this.member.thrownExceptions() }, out);
 		// Description
-		printTags({ classDoc: cd, tags: this.inlineTags(), prefix: "<div class=\"member-paragraph\">", suffix: "</div>" }, strWriter);
-		// Return tag
-		// TODO:
-		strWriter.print(this.renderReturnType());
-		// See tags
-		printTags({ classDoc: cd, tags: this.seeTags(), prefix: "<div class=\"member-paragraph\"><b>See also:</b>", suffix: "</div>", separator: ", " }, strWriter);
-
-		this.printMemberBase(writer, indexWriter, cd, this.getId(), title.toString(), text.toString(), this.inlineTags());
+		var returnType = this.returnType();
+		return this.renderTemplate("member", {
+			member: member, containingClass: containingClass,
+			throwsTags: this.member && this.member.throwsTags ? this.member.throwsTags() : null,
+			returnType: returnType && !returnType.typeName().equals("void") ? returnType : null
+		});
 	},
 
 	name: function() {
@@ -478,11 +497,8 @@ Member = Object.extend({
 		return this.member.tags(tagname);
 	},
 
-	printSummary: function(writer, cd) {
-		writer.println("<li class=\"summary\">");
-		writer.print(this.createLink());
-//		printTags({ classDoc: cd, tags: firstSentenceTags(), prefix: "<ul><li>", suffix: "</li></ul>" }, writer);
-		writer.println("</li>");
+	renderSummary: function(classDoc) {
+		return this.renderTemplate("summary", { classDoc: classDoc });
 	},
 
 	getId: function() {
@@ -495,12 +511,12 @@ Member = Object.extend({
 		return (containing.isVisible() || current.superclass() != containing) ? containing : current;
 	},
 
-	createLink: function(current) {
+	renderLink: function(current) {
 		var cd = this.getClass(current);
 		// dont use mem.qualifiedName(). use cd.qualifiedName() + "." + mem.name()
 		// instead in order to catch the case where functions are moved from invisible
 		// classes to visible ones (e.g. AffineTransform -> Matrix)
-		return createLink(cd.qualifiedName(), cd.name(), this.getId(), this.name() + this.getNameSuffix());
+		return renderLink(cd.qualifiedName(), cd.name(), this.getId(), this.name() + this.getNameSuffix());
 	},
 
 	isSimilar: function(mem) {
@@ -529,13 +545,13 @@ Member = Object.extend({
  * all com.scriptogrpaher.ai.Pathfinder functions
  */
 Method = Member.extend({
-	$constructor: function(classProxy, param) {
-		this.$super(classProxy);
+	$constructor: function(classObject, param) {
+		this.$super(classObject);
 		this.isGrouped = false;
 		this.members = [];
 		this.map = new Hash();
 		if (param instanceof MethodDoc) {
-			// used only in printMember for overriding tags
+			// used only in renderMember for overriding tags
 			this.methodName = param.name();
 			this.member = param;
 			this.add(param);
@@ -616,89 +632,48 @@ Method = Member.extend({
 				if (overridden) {
 					var mem = Member.get(overridden);
 					// prevent endless loops:
-					// if this method is not wrapped, quickly wrap it just to call printMember
+					// if this method is not wrapped, quickly wrap it just to call renderMember
 					// prevent endless loops that happen when overriden functions from inivisble classes
 					// where moved to the derived class and Member.get lookup points there instead of
 					// the overridden version:
 					if (mem && mem.member.containingClass() != this.member.overriddenClass())
 						mem = null;
 					if (!mem)
-						mem = new Method(this.classProxy, overridden);
+						mem = new Method(this.classObject, overridden);
 					return mem;
 				}
 			}
 		}
 	},
 
-	printSummary: function(writer, cd) {
+	renderSummary: function(classDoc) {
 		var overridden = this.getOverriddenMethodToUse();
 		if (overridden)
-			overridden.printSummary(writer, cd);
+			overridden.renderSummary(classDoc);
 		else
-			this.$super(writer, cd);
+			this.$super(classDoc);
 	},
 
-	printMember: function(writer, indexWriter, cd, copiedTo) {
+	renderMember: function(cd, index, member) {
 		var overridden = this.getOverriddenMethodToUse();
-		if (overridden) {
-			overridden.printMember(writer, indexWriter, cd, copiedTo || this);
-		} else {
-			var mbr = copiedTo || this;
-			var title = "<tt><b>";
-			// Static = PROTOTYPE.NAME
-			if (this.isStatic())
-				title += cd.name() + ".";
-			title += this.name() + "</b>" + this.renderParameters() + "</tt>";
+		if (overridden)
+			overridden.renderMember(cd, index, member);
+		else
+			return this.$super(cd, index, member, this.containingClass());
+	},
 
-			// Thrown exceptions
-			/*
-			ClassDoc[] thrownExceptions = member.thrownExceptions();
-			if (thrownExceptions != null && thrownExceptions.length) {
-				writer.print(" throws <tt>");
-				for (int e = 0; e < thrownExceptions.length; e++) {
-					if (e)
-						writer.print(", ");
-					writer.print(thrownExceptions[e].qualifiedName());
-				}
-				writer.print("</tt>");
-			}
-			writer.println();
-			*/
-			
-			var text = new java.io.StringWriter();
-			var strWriter = new java.io.PrintWriter(text);
-
-			// Description
-			var descriptionTags = mbr.inlineTags();
-			printTags({ classDoc: this.classProxy.classDoc, tags: descriptionTags, prefix: "<div class=\"member-paragraph\">", suffix: "</div>" }, strWriter);
-
-			// Parameter tags
-			this.printParameterTags(strWriter, cd);
-
-			// Return tag
-			// TODO:
-			strWriter.print(mbr.renderReturnType());
-
-			// Throws or Exceptions tag
-			var excp = this.member.throwsTags();
-			if (excp.length) {
-				strWriter.println("<div class=\"member-paragraph\"><b>Throws:</b>");
-				excp.each(function(ex) {
-					var str = ex.exceptionName();
-					var cd = ex.exception();
-					if (cd)
-						str = cd.createLink();
-					strWriter.print("<div>" + str + " - ");
-					printTags({ classDoc: cd, tags: ex.inlineTags() }, strWriter);
-					strWriter.print("</div>");
-				});
-				strWriter.println("</div>");
-			}
-
-			// See tags
-			printTags({ classDoc: cd, tags: mbr.seeTags(), prefix: "<div class=\"member-paragraph\"><b>See also:</b>", suffix: "</div>", separator: ", " }, strWriter);
-
-			this.printMemberBase(writer, indexWriter, cd, mbr.getId(), title.toString(), text.toString(), descriptionTags);
+	getParameters: function() {
+		var params = this.member.parameters();
+		if (params.length) {
+			// Link parameters to original parameter tags:
+			var lookup = this.member.paramTags().each(function(tag) {
+				this[tag.parameterName()] = tag;
+			}, {});
+			// Set the links
+			params.each(function(param) {
+				param.tag = lookup[param.name()];
+			});
+			return params;
 		}
 	},
 
@@ -738,39 +713,16 @@ Method = Member.extend({
 		return this.renderedParams;
 	},
 	
-	printParameterTags: function(writer, cd) {
-		var params = this.member.parameters();
-		if (params.length) {
-			var origTags = this.member.paramTags();
-			var lookup = origTags.each(function(tag) {
-				this[tag.parameterName()] = tag;
-			}, {});
-			writer.println("<div class=\"member-paragraph\"><b>Parameters:</b>");
-			params.each(function(param) {
-				var name = param.name();
-				writer.print("<div><tt>" + name + ":</tt>" + param.paramType().createLink());
-				var origTag = lookup[name];
-				if (origTag) {
-					var inlineTags = origTag.inlineTags();
-					printTags({ classDoc: cd, tags: inlineTags, prefix: " - " }, writer);
-				}
-				writer.println("</div>");
-			});
-			writer.println("</div>");
-		}
-		return params.length;
-	},
-	
 	name: function() {
 		return this.methodName;
 	},
 	
 	containingClass: function() {
-		return this.classProxy.classDoc;
+		return this.classObject.classDoc;
 	},
 
 	containingPackage: function() {
-		return this.classProxy.classDoc.containingPackage();
+		return this.classObject.classDoc.containingPackage();
 	},
 
 	signature: function() {
@@ -798,10 +750,9 @@ Method = Member.extend({
  * A virtual field that unifies getter and setter functions, just like Rhino does
  */
 BeanProperty = Member.extend({
-
-	$constructor: function(classProxy, name, getter, setter) {
-		this.$super(classProxy);
-		this.propertyName = name;
+	$constructor: function(classObject, name, getter, setter) {
+		this.$super(classObject);
+		this.property = name;
 		this.getter = getter;
 		this.setter = setter;
 		var str = "";
@@ -811,9 +762,9 @@ BeanProperty = Member.extend({
 			str += "<% this.beanProperty %>";
 		else
 			str += "Bean Property";
-		str += ", defined by " + getter.createLink(classProxy.classDoc);
+		str += ", defined by " + getter.renderLink(classObject.classDoc);
 		if (setter)
-			str += " and " + setter.createLink(classProxy.classDoc);
+			str += " and " + setter.renderLink(classObject.classDoc);
 		this.inlineTagList = [];
 		this.inlineTagList.append(getter.inlineTags());
 		if (this.inlineTagList.length)
@@ -835,7 +786,7 @@ BeanProperty = Member.extend({
 	},
 
 	name: function() {
-		return this.propertyName;
+		return this.property;
 	},
 
 	firstSentenceTags: function() {
@@ -879,9 +830,8 @@ BeanProperty = Member.extend({
  * A list of members that are unified under the same name 
  */
 MemberList = Object.extend({
-
-	$constructor: function(classProxy, name) {
-		this.classProxy = classProxy;
+	$constructor: function(classObject, name) {
+		this.classObject = classObject;
 		this.lists = [];
 		// used in scanBeanProperties:
 		this.name = name;
@@ -908,7 +858,7 @@ MemberList = Object.extend({
 			});
 			// couldn't add to an existing Member, create a new one:
 			if (!mem) {
-				mem = new Method(this.classProxy, name);
+				mem = new Method(this.classObject, name);
 				if (mem.add(member))
 					this.lists.push(mem);
 			}
@@ -916,7 +866,7 @@ MemberList = Object.extend({
 			if (member instanceof Member)
 				mem = member;
 			else
-				mem = new Member(this.classProxy, member);
+				mem = new Member(this.classObject, member);
 			this.lists.push(mem);
 		}
 		if (mem) {
@@ -986,8 +936,8 @@ MemberList = Object.extend({
  * A list of member lists, accessible by member name:
  */
 MemberListGroup = Object.extend({
-	$constructor: function(classProxy) {
-		this.classProxy = classProxy;
+	$constructor: function(classObject) {
+		this.classObject = classObject;
 		this.groups = new Hash();
 		this.methodLookup = new Hash();
 	},
@@ -1002,14 +952,14 @@ MemberListGroup = Object.extend({
 
 			group = this.groups[key]; 
 			if (!group) {
-				group = new MemberList(this.classProxy, name); 
+				group = new MemberList(this.classObject, name); 
 				this.methodLookup[name] = group;
 			}
 		} else {
 			// fields won't be grouped, but for simplicty,
 			// greate groups of one element for each field,
 			// so it can be treated the same as functions:
-			group = new MemberList(this.classProxy, key); 
+			group = new MemberList(this.classObject, key); 
 		}
 		group.add(member);
 		this.groups[key] = group;
@@ -1056,18 +1006,12 @@ MemberListGroup = Object.extend({
 			var m = name.match(/^(get|is)(.*)$/), kind = m && m[1], component = m && m[2];
 			if (component && kind == "get" || kind == "is") {
 				// Find the bean property name.
-				var propertyName = component;
-				// TODO: optimize with regexps:
-				var ch0 = component.charAt(0);
-				if (ch0.isUpperCase()) {
-					if (component.length == 1)
-						propertyName = component.toLowerCase();
-					else if (!component.charAt(1).isUpperCase())
-						propertyName = ch0.toLowerCase() + component.substring(1);
-				}
+				var property = component;
+				var match = component.match(/^([A-Z])([a-z]+.*|$)/);
+				if (match) property = match[1].toLowerCase() + match[2];
 				// If we already have a member by this name, don't do this
 				// property.
-				if (!fields.contains(propertyName)) {
+				if (!fields.contains(property)) {
 					var getter = member.extractGetMethod(), setter = null;
 					if (getter) {
 						// We have a getter. Now, do we have a setter?
@@ -1076,7 +1020,7 @@ MemberListGroup = Object.extend({
 						if (setters)
 							setter = setters.extractSetMethod(getter.returnType());
 						// Make the property.
-						fields.add(new BeanProperty(this.classProxy, propertyName, getter, setter));
+						fields.add(new BeanProperty(this.classObject, property, getter, setter));
 					}
 				}
 			}
@@ -1146,17 +1090,21 @@ ClassObject = Object.extend({
 		return this.classDoc.qualifiedName();
 	},
 
-	hasSimilar: function(member, method) {
-		(method ? this.methods() : this.fields()).each(function(other) {
+	hasSimilar: function(member) {
+		(member instanceof ExecutableMemberDoc ? this.methods() : this.fields()).each(function(other) {
 			if (member.isSimilar(other))
 				return true;
 		});
 		return false;
 	},
 
-	printClass: function(indexWriter) {
-		var cd = this.classDoc;
-		// determine folder + filename for class file:
+	renderClass: function() {
+		var cd = this.classDoc, index = null;
+		if (settings.templates)
+			index = [ '"prototype": { title: "' + cd.name() + '", text: "' +
+					encodeJs(renderTags({ classDoc: cd, tags: cd.inlineTags() })) + '" }' ];
+
+		// Determine folder + filename for class file:
 		var name = this.name();
 		var className = cd.name();
 		// name and className might differ, e.g. for global -> Global Scope!
@@ -1164,79 +1112,21 @@ ClassObject = Object.extend({
 		// cut away name:
 		path = path.substring(0, path.length - className.length);
 		path = getRelativeIdentifier(path);
-		var writer = beginDocument(path, className);
+		var doc = new Document(path, className, 'document');
+		// from now on, the global out writes to doc
 
-		var subclasses = root.classes().each(function(cls) {
-			if (cls.isVisible() && cls.superclass() == cd && !cls.equals(cd))
-				this.push(cls.createLink());
-		}, []).join(', ');
-
-		var type = "Prototype";
-		if (cd.isInterface())
-			type = "Interface";
-		else if (cd.isException())
-			type = "Exception";
-
-		if (cd.isAbstract())
-			type = "Abstract " + type;
-
-		var superType = null;
-		var sc = cd.superclass();
-		if (sc && sc.isVisible())
-			superType = sc.createLink();
-
-		if (!settings.templates)
-			writer.println(settings.section1Open + name + settings.section1Close);
-
-		var listType = cd.getListType();
-
-		if (cd.isAbstract() || superType || listType || subclasses) {
-			writer.print("<p>" + type + " " + cd.createLink());
-			if (superType)
-				writer.print(" extends " + superType);
-			if (listType) {
-				if (settings.templates)
-					listType = "<% this.listType type=\"" + listType + "\" %>";
-				if (superType)
-					writer.print(",");
-				writer.print(" acts as " + listType);
-			}
-			if (subclasses)
-				writer.print("<br />Inherited by " + subclasses);
-			writer.println("</p>");
-		}
-
-		printTags({ classDoc: cd, tags: cd.inlineTags(), prefix: "<p>", suffix: "</p>" }, writer);
-		if (settings.templates)
-			indexWriter.print("\"prototype\": { title: \"" + cd.name() + "\", text: \"" +
-					encodeJs(getTags({ classDoc: cd, tags: cd.inlineTags() })) + "\" }");
-
-		printTags({ classDoc: cd, tags: cd.seeTags(), prefix: "<p><b>See also:</b> ", suffix: "</p>", separator: ", " }, writer);
-
-		var verTags = cd.tags("version");
-		if (settings.versionInfo && verTags.length)
-			writer.println(settings.section2Open + "Version" + settings.section2Close + verTags[0].text());
+		this.renderTemplate("class", {}, out);
 
 		if (cd.isInterface()) {
-			var subintf = "";
-			var implclasses = "";
+			var subInterfaces = [];
+			var implementingClasses = [];
 			root.classes().each(function(cls) {
-				if (cls.interfaces().find(function(intf) {
-					return (intf.equals(cd))
-				})) {
-					if (cls.isInterface()) {
-						if (subintf) subintf += ", ";
-						subintf += cls.createLink();
-					} else {
-						if (implclasses) implclasses += ", ";
-						implclasses += cls.createLink();
-					}
-				}
+				if (cls.interfaces().find(function(inter) {
+					return (inter.equals(cd))
+				})) 
+					(cls.isInterface() ? subInterfaces : implementingClasses).push(cls);
 			});
-			if (implclasses)
-				writer.println(settings.section2Open +
-						"All classes known to implement interface" +
-						settings.section2Close + implclasses);
+			this.renderTemplate("class#interface", { subInterfaces: subInterfaces, implementingClasses: implementingClasses }, out);
 		}
 
 		var fields = this.fields();
@@ -1245,97 +1135,73 @@ ClassObject = Object.extend({
 
 		if (settings.summaries) {
 			if (settings.fieldSummary)
-				this.printSummaries(writer, cd, fields, "Field summary");
+				this.renderSummaries(cd, fields, "Field summary");
 
 			if (settings.constructorSummary)
-				this.printSummaries(writer, cd, constructors, "Constructor summary");
+				this.renderSummaries(cd, constructors, "Constructor summary");
 
-			this.printSummaries(writer, cd, methods, "Method summary");
+			this.renderSummaries(cd, methods, "Method summary");
 		}
 
-		this.printMembers(writer, indexWriter, cd, constructors, "Constructors", false);
+		// Filter members into static and non-static ones:
+		function separateStatic(members) {
+			return members.each(function(member) {
+				this[member.isStatic() ? 1 : 0].push(member);
+			}, [[], []]);
+		}
 
-		this.printMembers(writer, indexWriter, cd, fields, "Properties", false);
-		this.printMembers(writer, indexWriter, cd, fields, "Static Properties", true);
+		this.renderMembers({ classDoc: cd, members: constructors, title: "Constructors", index: index });
 
-		this.printMembers(writer, indexWriter, cd, methods, "Functions", false);
-		this.printMembers(writer, indexWriter, cd, methods, "Static Functions", true);
-	
+		fields = separateStatic(fields);
+		this.renderMembers({ classDoc: cd, members: fields[0], title: "Properties", index: index });
+		this.renderMembers({ classDoc: cd, members: fields[1], title: "Static Properties", index: index });
+
+		methods = separateStatic(methods);
+		this.renderMembers({ classDoc: cd, members: methods[0], title: "Functions", index: index });
+		this.renderMembers({ classDoc: cd, members: methods[1], title: "Static Functions", index: index });
 
 		if (settings.inherited) {
 			var first = true;
 			var superclass = cd.superclass();
 
+			var classes = [];
 			while (superclass && !superclass.qualifiedName().equals("java.lang.Object")) {
 				if (superclass.isVisible()) {
 					var superProxy = ClassObject.get(superclass);
-					fields = superProxy.fields();
-					methods = superProxy.methods();
-					var inheritedMembers = [];
-					// first non-static, then static:
-					fields.each(function(field) {
-						if (!field.isStatic() && !this.hasSimilar(field, false))
-						inheritedMembers.push(field);
-					}, this);
-					fields.each(function(field) {
-						if (field.isStatic() && !this.hasSimilar(field, false))
-						inheritedMembers.push(field);
-					}, this);
-					methods.each(function(method) {
-						if (!method.isStatic() && !this.hasSimilar(method, true))
-						inheritedMembers.push(method);
-					}, this);
-					methods.each(function(method) {
-						if (method.isStatic() && !this.hasSimilar(method, true))
-						inheritedMembers.push(method);
-					}, this);
-					// print only if members available
-					// (if class not found because classpath not
-					// correctly set, they would be missed)
-					if (inheritedMembers.length) {
-						if (first)
-							writer.print(settings.section2Open + "Inheritance" + settings.section2Close);
-						else
-							writer.println("<br/>");
-						first = false;
-						writer.println("<ul class=\"documentation-inherited\">");
-						writer.println("<li>");
-						writer.print(superclass.createLink());
-						writer.println("</li>");
-						writer.println("<li>");
-						this.printInheritedMembers(writer, superclass, inheritedMembers);
-						writer.println("</li>");
-						writer.println("</ul>");
+					fields = separateStatic(superProxy.fields());
+					methods = separateStatic(superProxy.methods());
+					var inherited = [], that = this;
+
+					function addNonSimilar(members) {
+						members.each(function(member) {
+							if (!that.hasSimilar(member))
+								inherited.push(member);
+						});
 					}
+
+					// First non-static, then static:
+					addNonSimilar(fields[1]);
+					addNonSimilar(fields[0]);
+					addNonSimilar(methods[1]);
+					addNonSimilar(methods[0]);
+
+					if (inherited.length)
+						classes.push({ classDoc: superclass, members: inherited });
 				}
 				superclass = superclass.superclass();
 			}
-			if (settings.shortInherited && !first)
-				writer.println("<br/><br/>");
+			this.renderTemplate("class#inheritance", { classes: classes }, out);
 		}
-		endDocument(writer);
+		doc.close();
+		return index;
 	},
 
 	/**
 	 * Enumerates the members of a section of the document and formats them
 	 * using Tex statements.
 	 */
-	printMembers: function(writer, indexWriter, cd, members, title, showStatic) {
-		if (members.length) {
-			var strBuffer = new java.io.StringWriter();
-			var strWriter = new java.io.PrintWriter(strBuffer);
-			members.each(function(mem) {
-				if (mem && mem.isStatic() == showStatic)
-					mem.printMember(strWriter, indexWriter, cd);
-			});
-			var str = strBuffer.toString();
-			if (str.length) {
-				writer.println(settings.section2Open + "" + title + "" + settings.section2Close);
-				writer.println("<div class=\"documentation-paragraph\">");
-				writer.print(str);
-				writer.println("</div>");
-			}
-		}
+	renderMembers: function(param) {
+		this.renderTemplate("members", param, out);
 	},
 
 	/**
@@ -1344,37 +1210,8 @@ ClassObject = Object.extend({
 	 * @param members The fields to be summarized.
 	 * @param title The title of the section.
 	 */
-	printSummaries: function(writer, cd, members, title) {
-		if (members.length) {
-			writer.println(settings.section2Open + title + settings.section2Close);
-			writer.println("<ul>");
-			var prevName;
-			members.each(function(mem) {
-				var name = mem.name();
-				if (name != prevName)
-					mem.printSummary(writer, cd);
-				prevName = name;
-			});
-			writer.println("</ul>");
-		}
-	},
-
-	/**
-	 * Enumerates the members of a section of the document and formats them
-	 * using Tex statements.
-	 */
-	printInheritedMembers: function(writer, cd, members) {
-		if (members.length && members[0]) {
-			writer.println("<ul>");
-			members.each(function(mem) {
-				if (mem) {
-					writer.println("<li>");
-					writer.print(mem.createLink(cd));
-					writer.println("</li>");
-				}
-			});
-			writer.println("</ul>");
-		}
+	renderSummaries: function(cd, members, title) {
+		this.renderTemplate("summaries", { members: members, title: title, classDoc: cd }, out);
 	},
 
 	$static: {
@@ -1403,11 +1240,11 @@ ClassObject = Object.extend({
 			return this.classes[param]
 		},
 
-		createLink: function(name, qualifiedName) {
+		renderLink: function(name, qualifiedName) {
 			var mem = this.get(qualifiedName);
-			// use createClassLink, as createLink might have been overridden
+			// use renderClassLink, as renderLink might have been overridden
 			// by new Type(...)
-			return mem ? mem.classDoc.createClassLink() : "<tt>" + name + "</tt>";
+			return mem ? mem.classDoc.renderClassLink() : "<tt>" + name + "</tt>";
 		},
 
 		classes: new Hash()
@@ -1421,28 +1258,75 @@ ClassObject = Object.extend({
 		delete this.children[mem.qualifiedName()];
 	},
 
-	printHierarchy: function(writer, prepend) {
+	renderHierarchy: function(prepend) {
 		var sorted = this.children.sortBy(function(mem) {
 			return settings.classOrder[mem.name()] || Number.MAX_VALUE;
 		});
-		if (sorted.length) {
-			writer.println(prepend + (settings.templates ? "[" : "<ul>"));
-			sorted.each(function(mem) {
-				var cd = mem.classDoc;
-				if (settings.templates)
-					writer.println(prepend + "\t{ name: \"" + mem.name() +
-							"\", isAbstract: " + cd.isAbstract() + ", index: { ");
-				mem.printClass(writer);
-				setBase("");
-				if (settings.templates) {
-					writer.println(" }},");
-				} else {
-					writer.println(prepend + "\t<li>" +
-							stripCodeTags(cd.createLink(mem.name())) + "</li>");
-				}
-				mem.printHierarchy(writer, prepend + "\t");
-			});
-			writer.println(prepend + (settings.templates ? "]," : "</ul>"));
+		out.push();
+		sorted.each(function(cls) {
+			var cd = cls.classDoc;
+			var index = cls.renderClass();
+			this.renderTemplate("packages#class", { index: index ? index.join(', ') : null, cls: cls }, out);
+			cls.renderHierarchy();
+		});
+		this.renderTemplate("packages#classes", { classes: out.pop() }, out);
+	}
+});
+
+Document = Object.extend({
+	$constructor: function(path, name, template) {
+		this.name = name;
+		this.template = template;
+
+		// Split into packages and create subdirs:
+		var parts = path.split(/\./);
+		if (!settings.templates)
+			parts.unshift("packages");
+		path = "";
+		var levels = 0;
+		parts.each(function(part) {
+			if (part == name || !part)
+				throw $break;
+
+			path += part + "/";
+			levels++;
+			var dir = new java.io.File(settings.destDir + path);
+			if (!dir.exists())
+				dir.mkdir();
+		});
+
+		this.base = '';
+		for (var j = 1; j < levels; j++)
+			this.base += '../';
+
+		// Store the previous base
+		this.previousBase = Document.base;
+		// And set the current base
+		Document.base = this.base;
+
+		// Push out so the content for the document can be written to it.
+		out.push();
+
+		// Only add extension if it wasn't already
+		var fileName = name.indexOf(".") != -1 ? name :
+				name + (settings.templates ? ".jstl" : ".html");
+
+		this.writer = new java.io.PrintWriter(new java.io.FileWriter(settings.destDir + path + fileName));
+	},
+
+	close: function() {
+		this.content = out.pop();
+		this.writer.print(this.renderTemplate(this.template));
+		this.writer.close();
+		// Restore previous base
+		Document.base = this.previousBase;
+	},
+
+	$static: {
+		base: '',
+
+		getBase: function() {
+			return this.base;
 		}
 	}
 });
@@ -1450,7 +1334,7 @@ ClassObject = Object.extend({
 /**
  * Produces a table-of-contents for classes and calls layoutClass on each class.
  */
-function processClasses(writer, classes) {
+function processClasses(classes) {
 	var root = new ClassObject();
 
 	// loop twice, as in the second loop, superclasses are picked from nodes which is filled in the firs loop
@@ -1472,65 +1356,17 @@ function processClasses(writer, classes) {
 			}
 		}
 	});
-	root.printHierarchy(writer, "");
-}
-
-function beginDocument(path, name) {
-	// now split into packages and create subdirs:
-	if (!settings.templates)
-		path = "packages." + path;
-	var parts = path.split(/\./);
-	path = "";
-	var levels = 0;
-	parts.each(function(part) {
-		if (part == name || !part)
-			throw $break;
-
-		path += part + "/";
-		levels++;
-		var dir = new java.io.File(settings.destDir + path);
-		if (!dir.exists())
-			dir.mkdir();
-	});
-	var writer = new java.io.PrintWriter(new java.io.FileWriter(settings.destDir + path + name +
-			(settings.templates ? ".jstl" : ".html")));
-
-	if (!settings.templates) {
-		var base = "";
-		for (var j = 1; j < levels; j++)
-			base += "../";
-		setBase(base);
-		writer.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-		writer.println("<html>");
-		writer.println("<head>");
-		writer.println("<title>" + name + "</title>");
-		writer.println("<base target=\"classFrame\">");
-		writer.println("<link rel=\"stylesheet\" href=\"../" + base + "resources/style.css\" type=\"text/css\">");
-		writer.println("<script src=\"../" + base + "resources/scripts.js\" type=\"text/javascript\"></script>");
-		writer.println("</head>");
-		writer.println("<body class=\"documentation\">");
-	}
-	return writer;
-}
-
-function endDocument(writer) {
-	if (!settings.templates) {
-		if (settings.bottom)
-			writer.println("<p class=\"footer\">" + settings.bottom + "</p>");
-		writer.println("</body>");
-		writer.println("</html>");
-	}
-	writer.close();
+	root.renderHierarchy("");
 }
 
 /**
  * Prints a sequence of tags obtained from e.g. com.sun.javadoc.Doc.tags().
  */
-function printTags(param, writer) {
-	writer.print(renderTemplate("tags", param));
+function renderTags(param) {
+	return renderTemplate("tags", param);
 }
 
-function getTags(param) {
+function tags_macro(param) {
 	return renderTemplate("tags", param);
 }
 
@@ -1539,83 +1375,47 @@ function getRelativeIdentifier(str) {
 			str.substring(settings.basePackage.length + 1) : str;
 }
 
-// TODO: fix this uggly hack (setBase)
-
-var base = "";
-
-function setBase(b) {
-	base = b;
-}
-
-function getBase() {
-	return base;
-}
-
-function createLink(qualifiedName, name, anchor, title) {
-	var str = "<tt>";
+function renderLink(qualifiedName, name, anchor, title) {
+	var str = '<tt>';
 	if (settings.hyperref) {
-		str += "<a href=\"";
+		str += '<a href="';
 		if (qualifiedName) {
 			var path = getRelativeIdentifier(qualifiedName).replace('.', '/');
 			// link to the index file for packages
 			if (name.charAt(0).isLowerCase() && !name.equals("global"))
-				path += "/index";
+				path += '/index';
 			if (settings.templates)
-				path = "/Reference/" + path + "/";
+				path = '/Reference/' + path + '/';
 			else
-				path = getBase() + path + ".html";
+				path = Document.getBase() + path + '.html';
 			str += path;
 		}
 		if (anchor) {
-			if (settings.templates) str += anchor + "/";
-			str += "#" + anchor;
-			str += "\" onClick=\"return toggleMember('" + anchor + "', true);";
+			if (settings.templates) str += anchor + '/';
+			str += '#' + anchor;
+			str += '" onClick="return toggleMember(\'' + anchor + '\', true);';
 		}
-		str += "\">" + title + "</a>";
+		str += '">' + title + '</a>';
 	} else {
 		str += title;
 	}
-	str += "</tt>";
+	str += '</tt>';
 	return str;
 }
 
 function encodeJs(str) {
-	str = uneval(str);
-	return str.substring(1, str.length - 1); 
+	return str ? (str = uneval(str)).substring(1, str.length - 1) : str;
 }
 
-function stripCodeTags(str) {
+function stripCodeTags_filter(str) {
 	return str.replace(/<tt>|<\/tt>/g, "");
 }
 
-function stripTags(str) {
+function stripTags_fitler(str) {
 	return str.replace(/<.*?>|<\/.*?>/g, " ").replace(/\\s+/g, " ");
 }
 
 ClassObject.put(root);
-
-var writer = new java.io.PrintWriter(new java.io.FileWriter(
-		settings.destDir + (settings.templates ? "packages.js" : "packages/packages.html")));
-
-if (!settings.templates) {
-	writer.println("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">");
-	writer.println("<html>");
-	writer.println("<head>");
-	if (settings.docTitle)
-		writer.println("<title>" + settings.docTitle + "</title>");
-	writer.println("<base target=\"classFrame\">");
-	writer.println("<link rel=\"stylesheet\" href=\"../resources/style.css\" type=\"text/css\">");
-	writer.println("<script src=\"../resources/scripts.js\" type=\"text/javascript\"></script>");
-	writer.println("</head>");
-	writer.println("<html>");
-	writer.println("<body class=\"documentation\">");
-	writer.println("<div class=\"documentation-packages\">");
-	if (settings.docTitle)
-		writer.println(settings.section1Open + settings.docTitle + settings.section1Close);
-	if (settings.author)
-		writer.println(settings.author);
-	writer.println("<ul class=\"documentation-list\">");
-}
 
 var packages = new Hash();
 var packageSequence = settings.packageSequence;
@@ -1630,56 +1430,36 @@ root.specifiedPackages().each(function(pkg) {
 		packageSequence[i] = name;
 });
 
+// now start rendering:
+var doc = new Document("", settings.templates ? "packages.js" : "packages.html", "packages");
+
 packageSequence.each(function(name) {
 	var pkg = packages[name];
 	if (pkg) {
-		var name = pkg.name();
-		setBase("");
-		var rel = getRelativeIdentifier(name);
-		if (settings.templates) {
-			var pkgName = rel.toUpperCase();
-			writer.print("createPackage(\"" + pkgName + "\", ");
-		} else {
-			var pkgName = rel.toUpperCase();
-			writer.println("<li><a href=\"#\" onClick=\"return togglePackage('" + pkgName + "', false);\"><img name=\"arrow-" +  pkgName +
-					"\" src=\"../resources/arrow-close.gif\" width=\"8\" height=\"8\" border=\"0\"></a><img src=\"../resources/spacer.gif\" width=\"6\" height=\"1\"><b>" +
-					stripCodeTags(createLink(name, rel, null, pkgName)) + "</b>");
-			writer.println("<ul id=\"package-" + pkgName + "\" class=\"hidden\">");
-		}
-
-		processClasses(writer, pkg.interfaces());
-		processClasses(writer, pkg.allClasses(true));
-		processClasses(writer, pkg.exceptions());
-		processClasses(writer, pkg.errors());
-
-		var text = getTags({ tags: pkg.inlineTags() });
-		var first = getTags({ tags: pkg.firstSentenceTags() });
-
+		var path = getRelativeIdentifier(name);
+		var text = renderTags({ tags: pkg.inlineTags() });
+		var first = renderTags({ tags: pkg.firstSentenceTags() });
 		// remove the first sentence from the main text
 		if (first && text.startsWith(first)) {
 			text = text.substring(first.length);
 			first = first.substring(0, first.length - 1); // cut away dot
 		}
+		
+		out.push();
+		processClasses(pkg.interfaces());
+		processClasses(pkg.allClasses(true));
+		processClasses(pkg.exceptions());
+		processClasses(pkg.errors());
 
-		if (settings.templates) {
-			writer.print("\"");
-			writer.print(encodeJs(text.trim()));
-			writer.println("\");");
-		} else {
-			writer.println("</li></ul>");
+		renderTemplate("packages#package", { content: out.pop(), name: name, path: path }, out);
+
+		if (!settings.templates) {
 			// write package file:
-			var pkgWriter = beginDocument(rel, "index");
-			pkgWriter.println(settings.section1Open + first + settings.section1Close);
-			pkgWriter.println(text);
-			endDocument(pkgWriter);
+			var doc = new Document(path, 'index', 'document');
+			renderTemplate("package", { title: first, text: text });
+			doc.close();
 		}
 	}
 });
 
-if (!settings.templates) {
-	writer.println("</ul>");
-	writer.println("</div>");
-	writer.println("</body>");
-	writer.println("</html>");
-}
-writer.close();
+doc.close();

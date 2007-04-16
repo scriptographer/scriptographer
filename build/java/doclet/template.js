@@ -197,8 +197,7 @@ Template.prototype = {
 		// the finding of closing tags counts nested tags, to make sub templates
 		// work
 		var buffer = []; // line buffer
-		var newLine = java.lang.System.getProperty("line.separator");
-		var tagOpenLine; // the line number of the last open tag
+		var lineBreak = java.lang.System.getProperty("line.separator");
 		var skipLineBreak = false;
 		var tagCounter = 0;
 		var templateTag = null;
@@ -206,17 +205,45 @@ Template.prototype = {
 		var code = [ "this.__render__ = function(param, template, out) {" ];
 		// Stack for control tags and loops
 		var stack = { control: [], loop: {} };
+		var last = null;
 		try {
+			function append() {
+				if (buffer.length > 0) {
+					// Write out text lines
+					var part = buffer.join('');
+					if (templateTag)
+						templateTag.buffer.push(part);
+					else
+						code.push('out.write("' + this.encodeJs(part) + '");');
+					buffer.length = 0;
+				}
+			}
 			for (var i = 0; i < lines.length; i++) {
 				var line = lines[i];
 				var start = 0, end = 0;
 				while (true) {
 					// Search start and end of macro tag, keep lines:
-					if (tagCounter > 0) {
+					if (tagCounter == 0) {
+						start = line.indexOf("<%", end);
+						if (start != -1) { // Found the begining of a macro
+							if (start > end) // There was some text before it
+								buffer.push(line.substring(end, start));
+							// Skip <, the % is skiped bellow in line.indexOf("%", end + 1);
+							end = start + 1;
+							tagCounter++;
+							append();
+							// Now buffer collects tag lines
+						} else {
+							if (skipLineBreak)
+								skipLineBreak = false;
+							else
+								buffer.push(line.substring(end), lineBreak);
+							break;
+						}
+					} else {
 						while (tagCounter != 0) {
 							end = line.indexOf("%", end + 1); // skip %
-							if (end == -1)
-								break;
+							if (end == -1) break;
 							if (line[end - 1] == '<') tagCounter++;
 							if (line[end + 1] == '>') tagCounter--;
 						}
@@ -225,65 +252,27 @@ Template.prototype = {
 							buffer.push(line.substring(start, end));
 							// parse it:
 							var tag = buffer.join('');
+							// Keep track of line numbers. this.tags links code line numbers
+							// to template line numbers
 							this.tags[code.length] = { lineNumber: i, content: tag };
 							// If this is a template tag, change the state to
 							// finding the end of the template. Do a thourough check
 							// as this tag might also be the setting of a variable
 							// or the call of a mcro on a scope variable.
-							if (/^<%\s*[#$][\w_]+\s*\+?%>$/.test(tag)) {
-								templateTag = tag;
+							if (/^<%\s*[#$][\w_]+\s*[+-]?%>$/.test(tag)) {
+								if (templateTag)
+									this.parseTemplateTag(templateTag, code);
+								templateTag = { tag: tag, buffer: [] };
 							} else {
-								// Keep track of line numbers. this.tags links code line numbers
-								// to template line numbers
-								if (this.parseMacro(tag, code, stack, true) && end == line.length)
+								if (templateTag)
+									templateTag.buffer.push(tag);
+								else if (this.parseMacro(tag, code, stack, true) && end == line.length)
 									skipLineBreak = true;
 							}
 							// Now buffer collects lines between tags
 							buffer.length = 0;
 						} else {
-							buffer.push(line.substring(start), newLine);
-							break;
-						}
-					} else {
-						start = line.indexOf("<%", end);
-						if (start != -1) { // Found the begining of a macro
-							tagOpenLine = i;
-							if (start > end) // There was some text before it
-								buffer.push(line.substring(end, start));
-							// Skip <, the % is skiped above in line.indexOf("%", end + 1);
-							end = start + 1;
-							// Now buffer collects tag lines
-							if (templateTag) {
-								// find the end of the template tag = the start of a new tag
-								// Avoid calling substring, but this might actually be
-								// slowler? TODO: find out.
-								// var templateStart = /<%\s*[$#]/g;
-								// templateStart.lastIndex = start;
-								// var end = templateStart.exec(line);
-								// if (end && end.index == start) {
-								// 10 chars should be enough for <% $, even with a lot of whitespace
-								if (/^<%\s*[$#]/.test(line.substring(start, 10))) {
-									this.parseTemplateTag(templateTag, code, buffer.join(''));
-									buffer.length = 0;
-									tagCounter++;
-								} else {
-									// Just a normal tag. add it to the template buffer
-									// and continue with the next line
-									buffer.push(line.substring(start), newLine);
-									break;
-								};
-							} else {
-								tagCounter++;
-								if (buffer.length > 0) { // Write out text lines
-									code.push('out.write("' + this.encodeJs(buffer.join('')) + '");');
-									buffer.length = 0;
-								}
-							}
-						} else {
-							if (skipLineBreak)
-								skipLineBreak = false;
-							else
-								buffer.push(line.substring(end), newLine);
+							buffer.push(line.substring(start), lineBreak);
 							break;
 						}
 					}
@@ -296,21 +285,23 @@ Template.prototype = {
 				// the right line in the catch block bellow.
 				code.length = stack.control.pop().lineNumber;
 				throw "Control tag is not closed";
-			} else { // Write out the rest
-				if (templateTag) // Parse the last template tag
-					this.parseTemplateTag(templateTag, code, buffer.join(''));
-				else
-					code.push('out.write("' + this.encodeJs(buffer.join('')) + '");');
+			} else {
+				// Write out the rest
+				append();
+				if (templateTag)
+					this.parseTemplateTag(templateTag, code);
 			}
 			// Render the sub templates that were defined with $ into variables.
 			for (var i = 0; i < this.renderTemplates.length; i++) {
-				var name = this.renderTemplates[i];
-				code.splice(1, 0, "var $" + name + " = template.renderSubTemplate(this, '" + name + "', param);");
+				var template = this.renderTemplates[i];
+				// Trim at render-time, if required:
+				code.splice(1, 0, "var $" + template.name + " = template.renderSubTemplate(this, '" +
+					template.name + "', param)" + (template.trim ? ".trim()" : ""));
 				// Shift tags as well, so line numbers are still right
 				this.tags.unshift(null);
 			}
 			code.push('}');
-			return code.join(newLine);
+			return code.join(lineBreak);
 		} catch (e) {
 			this.throwError(e, code.length);
 		}
@@ -349,7 +340,9 @@ Template.prototype = {
 					pos = (end = nonWhite.exec(content)) ? end.index : content.length;
 					start = pos;
 					continue;
-				} else if (/[=|]/.test(ch)) { // Named parameter / filter
+				} else if (ch == '=' || (ch == '|' && content[pos + 1] != '|')) { // Named parameter / filter
+					// The check above discovers || as a logical parameter and does not 
+					// count the first | as a single item.
 					// Named parameters and start of filters can be handled the same
 					// as the sign itself is included, and nothing else needs to be done
 					// = is included as a clue that this is going to be a named param.
@@ -404,8 +397,8 @@ Template.prototype = {
 					throw "Syntax error";
 				macro.opcode = macro.opcode.join(' ');
 				if (macro.isControl) {
-					// strip away () if there.
-					macro.opcode = macro.opcode.match(/^\(?(.*?)\)?$/)[1];
+					// Strip away ()
+					if (macro.opcode[0] == '(') macro.opcode = macro.opcode.substring(1, macro.opcode.length - 1);
 				} else {
 					// Finish previous macro and push it onto list
 					// convert param and unnamed to a arguments array that can directly be used
@@ -450,8 +443,6 @@ Template.prototype = {
 				// Appending is allowed as long as no named or unnamed parameter
 				// is specified.
 				append = true;
-			} else if (part == '|') { // start a filter
-				isFirst = true;
 			} else if (/.=$/.test(part)) { // named param
 				// TODO: Calling nextPart here should only return values, nothing else!
 				// add error handling...
@@ -468,6 +459,8 @@ Template.prototype = {
 					macro.values[key] = value;
 				// Appending to macro command not allowed after first parameter
 				append = false;
+			} else if (part == '|' && !macro.isControl) { // start a filter
+				isFirst = true;
 			} else { // unnamed param
 				// Unnamed parameters are not allowed in <%= tags
 				// allowed groups for unnamed params: '' "" [] {}
@@ -523,7 +516,7 @@ Template.prototype = {
 		var postProcess = values.prefix || values.suffix || macro.filters;
 		var codeIndexBefore = code.length;
 		if (macro.isData) { // param, response, request, session, or a <%= %> tag
-			result = this.parseLoopVariables(macro.command + macro.opcode, stack);
+			result = this.parseLoopVariables(macro.command + " " + macro.opcode, stack);
 		} else if (macro.isControl) {
 			var open = false, close = false;
 			var prevControl = stack.control[stack.control.length - 1];
@@ -539,20 +532,43 @@ Template.prototype = {
 					var variable = match[1], value = match[2];
 					// separator means post processing too:
 					postProcess = postProcess || values.separator;
-					var list = "list_" + this.listId;
-					var length = "length_" + this.listId;
-					var index = "i_" + (this.listId++);
+					var suffix = '_' + (this.listId++);
+					var list = "list" + suffix, length = "length" + suffix;
+					var index = "i" + suffix, first = "first" + suffix;
 					// Use stacks per variable name, in case two loops use the same variable name
 					var loopStack = stack.loop[variable] = stack.loop[variable] || [];
-					loopStack.push({ list: list, index: index, length: length });
+					loopStack.push({ list: list, index: index, length: length, first: first });
 					// Store variable in macro, so it can be retrieved from
 					// the control stack in "end".
 					macro.variable = variable;
 					code.push(						"var " + list + " = " + value + "; ",
-													"var " + length + " = " + list + ".length" + (values.separator ? ", first = true" : "") + ";",
-													"for (var " + index + " = 0; " + index + " < " + length + "; " + index + "++) {",
-													"	var " + variable + " = " + list + "[" + index + "];",
-						values.separator		?	"	out.push();" : null);
+													"if (" + list + ") {",
+													"	var " + length + " = " + list + ".length" + (values.separator ? ", " + first + " = true" : "") + ";",
+													"	for (var " + index + " = 0; " + index + " < " + length + "; " + index + "++) {",
+													"		var " + variable + " = " + list + "[" + index + "];",
+						values.separator		?	"		out.push();" : null);
+					break;
+				case "end":
+					if (macro.opcode) throw "Syntax error";
+					if (!prevControl || !/^else|^if$|^foreach$/.test(prevControl.macro.command))
+						throw "Syntax error: 'end' requiers 'if', 'else', 'elseif' or 'foreach'";
+					close = true;
+					if (prevControl.macro.command == 'foreach') {
+						// Pop the current loop from the stack.
+						var loop = stack.loop[prevControl.macro.variable].pop();
+						// If the loop defines a separator, process it now.
+						// The first part of this (out.push()) happen in "foreach"
+						var separator = prevControl.postProcess && prevControl.postProcess.separator;
+						if (separator)
+							code.push(				"		var val = out.pop();",
+													"		if (val != null && val !== '') {",
+													"			if (" + loop.first + ") " + loop.first + " = false;",
+													"			else out.write(" + separator + ");",
+													"			out.write(val);",
+													"		}");
+						code.push(						"}");
+					}
+					code.push(						"}");
 					break;
 				case "elseif":
 					close = true;
@@ -567,28 +583,6 @@ Template.prototype = {
 					close = true;
 					open = true;
 					code.push(						"} else {");
-					break;
-				case "end":
-					if (macro.opcode) throw "Syntax error";
-					if (!prevControl || !/^else|^if$|^foreach$/.test(prevControl.macro.command))
-						throw "Syntax error: 'end' requiers 'if', 'else', 'elseif' or 'foreach'";
-					close = true;
-					if (prevControl.macro.command == 'foreach') {
-						// Pop the current loop from the stack.
-						var loopStack = stack.loop[prevControl.macro.variable];
-						if (loopStack) loopStack.pop();
-						// If the loop defines a separator, process it now.
-						// The first part of this (out.push()) happen in "foreach"
-						var separator = prevControl.postProcess && prevControl.postProcess.separator;
-						if (separator)
-							code.push(				"	var val = out.pop();",
-													"	if (val != null && val !== '') {",
-													"		if (first) first = false;",
-													"		else out.write(" + separator + ");",
-													"		out.write(val)",
-													"	}");
-					}
-					code.push(						"}");
 					break;
 				}
 				if (close) {
@@ -611,24 +605,21 @@ Template.prototype = {
 				}
 			}
 		} else { // A normal <% %> macro
-			// TODO: finish / remove "param" stuff
-			if (macro.opcode && macro.opcode != "param") {
+			if (macro.opcode) {
 				// Setting a value? If not, this is a syntax error.
 				if (macro.command[0] == '$' && macro.opcode[0] == '=')
-					code.push(						"var " + macro.command + this.parseLoopVariables(macro.opcode, stack) + ";");
+					code.push(						"var " + macro.command + " " + this.parseLoopVariables(macro.opcode, stack) + ";");
 				else
 					throw "Syntax error"; // No opcodes allowed in macros
 			} else {
 				var object = macro.object;
-				// If the macro should recieve the param object unmodified, pass it in an argument array:
-				var args = macro.opcode == "param" ? "[ param ]" : macro.arguments;
 				// Macros can both write to res and return a value. prefix / suffix / filter applies to both,
 				// encoding / default only to the value returned.
 				// TODO: Compare with Helma, to see if that is really true. E.g. what happens when default is set
 				// and the macro returns no value, but does write to res?
 				code.push(		postProcess		?	"out.push();" : null,
 													"var val = template.renderMacro('" + macro.command + "', " + object + ", '" +
-															macro.name + "', param, " + args + ", out);",
+															macro.name + "', param, " + macro.arguments + ", out);",
 								postProcess		?	"template.write(out.pop(), " + macro.filters + ", " + values.prefix + ", " +
 															values.suffix + ", null, out);" : null);
 				result = "val";
@@ -701,19 +692,21 @@ Template.prototype = {
 	 * array. Also handles the case where a template needs to directly be rendered
 	 * to a varible.
 	 */
-	parseTemplateTag: function(tag, code, content) {
-		var match = tag.match(/^<%\s*([$#])(\S*)\s*(\+?)%>$/);
+	parseTemplateTag: function(tag, code) {
+		var match = tag.tag.match(/^<%\s*([$#])(\S*)\s*([+-]?)%>$/);
 		if (match) {
-			var name = match[2];
-			// if the tag does not end with +%>, cut away first and last empty line:
-			// this is not exactly the opposite of swallow line above, but makes
-			// sense that way.
-			if (!match[3]) content = content.match(/^\s*[\n\r]?([\s\S]*)[\n\r]\s*?$/)[1];
-			this.subTemplates[name] = new Template(content, name);
+			var name = match[2], content = tag.buffer.join(''), end = match[3];
+			// If the tag ends with -%>, trim the whole content.
+			// If it does not end with +%>, cut away first and last empty line:
+			// If it ends with +%>, keep the whitespaces.
+			if (!end) content = content.match(/^\s*[\n\r]?([\s\S]*)[\n\r]?\s*$/)[1];
+			else if (end == '-') content = content.trim();
+			var template = this.subTemplates[name] = new Template(content, name);
+			template.parent = this;
 			// If it is a variable, push it onto renderTemplates, so it is
 			// rendered at the beginning of the generated render function.
 			if (match[1] == '$')
-				this.renderTemplates.push(name);
+				this.renderTemplates.push({ name: name, trim: end == '-' });
 		} else
 			throw "Syntax error in template";
 	},
@@ -764,7 +757,7 @@ Template.prototype = {
 				try {
 					// Add a reference to this template and the param
 					// object of the template as the parent to inherit from.
-					args[0].__template__ = this;
+					args[0].__template__ = this.parent || this;
 					args[0].__param__ = param;
 					value = macro.apply(object, args);
 				} catch (e) {
@@ -846,27 +839,13 @@ Template.prototype = {
 	},
 
 	/**
-	 * Checks the resource's lastModified value and compiles again
-	 * in case it has changed. Only checks every second.
-	 */
-	checkResource: function() {
-		var now = new Date().getTime();
-		// only check for modifications every second.
-		if (now - this.lastChecked > 1000) {
-			this.lastChecked = now;
-			if  (this.lastModified != this.resource.lastModified())
-				this.compile();
-		}
-	},
-
-	/**
 	 * Reports a template error and prints the line causing the error
 	 */
 	throwError: function(error, line) {
 		var tag = line ? this.getTagFromCodeLine(line) : this.getTagFromException(error);
 		var message = "Template error in " + this.pathName;
 		// if this error already comes from throwError, do not generate message again
-		if (message.indexOf(error) == 0)
+		if (typeof error == "string" && error.indexOf(message) == 0)
 			throw error;
 		if (tag) {
 		 	message += ", line: " + (tag.lineNumber + 1) + ', in ' +

@@ -1,0 +1,2 @@
+<%= settings.section1Open %><%= param.first %><%= settings.section1Close %>
+<%= param.text %>

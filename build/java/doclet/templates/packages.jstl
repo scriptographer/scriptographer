@@ -1,0 +1,50 @@
+<% if settings.templates %>
+<%= this.content %>
+<% else %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<%= settings.docTitle prefix="<title>" suffix="</title>" %>
+<base target="classFrame">
+<link rel="stylesheet" href="../resources/style.css" type="text/css">
+<script src="../resources/scripts.js" type="text/javascript"></script>
+</head>
+<html>
+<body class="documentation">
+<div class="documentation-packages">
+<%= settings.docTitle prefix=settings.section1Open suffix=settings.section1Close %>
+<%= settings.author %>
+<ul class="documentation-list">
+<%= this.content %>
+</ul>
+</div>
+</body>
+</html>
+<% end %>
+
+<% #package -%>
+<% $packageName = param.path.toUpperCase() %>
+<% if settings.templates %>
+createPackage("<%= $packageName %>",
+<%= param.content %>, "<%= param.text encoding="js" %>");
+<% else %>
+<li><a href="#" onClick="return togglePackage('<%= $packageName %>', false);"><img name="arrow-<%= $packageName %>" src="../resources/arrow-close.gif" width="8" height="8" border="0"></a><img src="../resources/spacer.gif" width="6" height="1">
+<b><%= renderLink(param.name, $packageName, null, $packageName) | stripCodeTags %></b>
+<ul id="package-<%= $packageName %>" class="hidden">
+<%= param.content %>
+</li></ul>
+<% end %>
+
+<% #class -%>
+<% if settings.templates %>
+{ name: "<%= param.cls.name() %>", isAbstract: <%= param.cls.classDoc.isAbstract() %>, index: { <%= param.index %> }},
+<% else %>
+<li><%= param.cls.classDoc.renderLink(param.cls.name()) | stripCodeTags %></li>
+<% end %>
+
+<% #classes -%>
+<% if settings.templates %>
+<%= param.classes prefix="[ " suffix="]"%><%-%>
+<% else %>
+<%= param.classes prefix="<ul>" suffix="</ul>" %>
+<% end %>

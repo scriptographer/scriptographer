@@ -1,0 +1,51 @@
+<% if !settings.templates %>
+<%= settings.section1Open %><%= this.name() %><%= settings.section1Close %>
+<% end %>
+<% $superclass = this.classDoc.getSuperclass() %>
+<% $listType = this.classDoc.getListType() %>
+<% $superclass = this.classDoc.getSuperclass() %>
+<% if this.classDoc.isAbstract() || $superclass || $listType || $subclasses  %>
+<p><%= param.type %> <%= this.classDoc.renderLink() -%>
+<% if $superclass %>
+ extends <%= $superclass.renderLink() -%>
+<% end %>
+<% if $listType %>
+<% if $superclass %>, <% end %> act as <%= settings.templates ? '<% this.listType type="' + $listType + '" %>' : $listType %>
+<% end %>
+<% if $subclasses %>
+<br />Inherited by <%= $subclasses %>
+<% end %>
+</p>
+<% end %>
+<% tags classDoc=this.classDoc tags=this.classDoc.inlineTags() prefix="<p>" suffix="</p>" %>
+<% tags classDoc=this.classDoc tags=this.classDoc.seeTags() prefix="<p><b>See also:</b>" suffix="</p>" separator=", " %>
+<% if settings.versionInfo %>
+	<% tags classDoc=this.classDoc tags=this.classDoc.tags("version") prefix=<%= "Version" prefix=settings.section2Open suffix=settings.section2Close %> suffix="</p>" separator=", " %>
+<% end %>
+
+<% $subclasses -%>
+<% foreach $class in this.classDoc.getSubclasses() separator=", " %><%= $class.renderLink() %><% end -%>
+
+<% #interface %>
+<%-- empty --%>
+
+<% #inheritance %>
+<% foreach $class in param.classes %>
+	<% if $class#isFirst %>
+<%= settings.section2Open %>Inheritance<%= settings.section2Close %>
+	<% else %>
+<br />
+	<% end %>
+<ul class="documentation-inherited">
+	<li><%= $class.classDoc.renderLink() %></li>
+	<li>
+		<ul>
+	<% foreach $member in $class.members %>
+		<% if $member %>
+			<li><%= $member.renderLink($class.classDoc) %></li>
+		<% end %>
+	<% end %>
+		</ul>
+	</li>
+</ul>
+<% end %>
