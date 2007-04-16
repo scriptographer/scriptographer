@@ -74,9 +74,10 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 	public Scriptable wrapCustom(Context cx, Scriptable scope,
 			Object javaObj, Class staticType) {
 		if (javaObj instanceof Style)
-			return new StyleWrapper(scope, (Style) javaObj, staticType);
+			return new StyleWrapper(scope, (Style) javaObj, staticType, true);
 		if (javaObj instanceof SegmentPoint)
-			return new SegmentPointWrapper(scope, (SegmentPoint) javaObj, staticType);
+			return new SegmentPointWrapper(scope, (SegmentPoint) javaObj,
+					staticType, true);
 		return null;
 	}
 }

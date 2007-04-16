@@ -32,7 +32,6 @@
 package com.scratchdisk.script.rhino;
 
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
 
@@ -47,9 +46,10 @@ import com.scratchdisk.util.StringIndexList;
  * 
  * @author lehni
  */
-public class ListWrapper extends NativeJavaObject {
-	public ListWrapper(Scriptable scope, ReadOnlyList list, Class staticType) {
-		super(scope, list, staticType);
+public class ListWrapper extends ExtendedJavaObject {
+	public ListWrapper(Scriptable scope, ReadOnlyList list,
+			Class staticType, boolean unsealed) {
+		super(scope, list, staticType, unsealed);
 	}
 
 	public Object[] getIds() {

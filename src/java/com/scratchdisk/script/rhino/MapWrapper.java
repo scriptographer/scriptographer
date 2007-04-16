@@ -32,7 +32,6 @@
 package com.scratchdisk.script.rhino;
 
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
 
@@ -49,9 +48,10 @@ import java.util.Map;
  * 
  * @author lehni
  */
-public class MapWrapper extends NativeJavaObject {
+public class MapWrapper extends ExtendedJavaObject {
 	public MapWrapper(Scriptable scope, Map map, Class staticType) {
-		super(scope, map, staticType);
+		// make it sealed, as we're implementing a map anyhow
+		super(scope, map, staticType, false);
 	}
 
 	public Object[] getIds() {

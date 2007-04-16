@@ -34,10 +34,10 @@
 
 package com.scriptographer.script.rhino;
 
-import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 
+import com.scratchdisk.script.rhino.ExtendedJavaObject;
 import com.scriptographer.ai.SegmentPoint;
 
 /**
@@ -45,9 +45,10 @@ import com.scriptographer.ai.SegmentPoint;
  * Point2D.Float.y are overriden with the setX and setY setters, in order to
  * reflect the changes in the underlying AI points
  */
-public class SegmentPointWrapper extends NativeJavaObject {
-	SegmentPointWrapper(Scriptable scope, SegmentPoint javaObject, Class staticType) {
-		super(scope, javaObject, staticType);
+public class SegmentPointWrapper extends ExtendedJavaObject {
+	SegmentPointWrapper(Scriptable scope, SegmentPoint javaObject,
+			Class staticType, boolean sealed) {
+		super(scope, javaObject, staticType, sealed);
 	}
 
 	public void put(String name, Scriptable start, Object value) {

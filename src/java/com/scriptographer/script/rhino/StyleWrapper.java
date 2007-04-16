@@ -31,11 +31,11 @@
 
 package com.scriptographer.script.rhino;
 
-import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.Wrapper;
 
+import com.scratchdisk.script.rhino.ExtendedJavaObject;
 import com.scriptographer.ai.Color;
 import com.scriptographer.ai.FontWeight;
 import com.scriptographer.ai.Style;
@@ -53,10 +53,10 @@ import com.scriptographer.ai.Style;
  * 
  * @author lehni
  */
-public class StyleWrapper extends NativeJavaObject {
+public class StyleWrapper extends ExtendedJavaObject {
 	StyleWrapper(Scriptable scope, Style javaObject,
-			Class staticType) {
-		super(scope, javaObject, staticType);
+			Class staticType, boolean sealed) {
+		super(scope, javaObject, staticType, sealed);
 	}
 
 	public void put(String name, Scriptable start, Object value) {

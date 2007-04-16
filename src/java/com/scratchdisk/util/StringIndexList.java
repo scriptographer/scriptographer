@@ -34,6 +34,8 @@ package com.scratchdisk.util;
 /**
  * Adds getting objects by name to Lists (an extension needed for some list
  * objects like LayerList)
+ * TODO: In a more general use, this might need to be both read and write.
+ * Also, ListWrapper would need to be addapted then.
  *
  * @author lehni 
  */

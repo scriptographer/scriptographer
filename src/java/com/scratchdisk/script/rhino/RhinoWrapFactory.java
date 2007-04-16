@@ -95,7 +95,7 @@ public class RhinoWrapFactory extends WrapFactory {
 				obj = new ExtendedJavaArray(scope, javaObj, staticType, true);
 			else {
 				if (javaObj instanceof ReadOnlyList)
-					obj = new ListWrapper(scope, (ReadOnlyList) javaObj, staticType);
+					obj = new ListWrapper(scope, (ReadOnlyList) javaObj, staticType, true);
 				else if (javaObj instanceof Map)
 					obj = new MapWrapper(scope, (Map) javaObj, staticType);
 				else {
