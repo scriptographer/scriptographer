@@ -49,7 +49,7 @@ import com.sun.javadoc.RootDoc;
 public class RhinoDoclet extends Doclet {
 	static NativeObject options;
 	static File file;
-	
+
 	public static boolean start(RootDoc root) {
 		RhinoDocletEngine engine = new RhinoDocletEngine();
 		engine.put("root", root);
@@ -88,12 +88,6 @@ public class RhinoDoclet extends Doclet {
 	
 	public static class RhinoDocletEngine extends RhinoEngine {
 
-		protected Context makeContext() {
-			Context context = super.makeContext();
-			context.setOptimizationLevel(-1);
-			return context;
-		}
-
 		protected TopLevel makeTopLevel(Context context) {
 			TopLevel topLevel = new TopLevel(context, false);
 			// define some global functions and objects:
@@ -109,6 +103,13 @@ public class RhinoDoclet extends Doclet {
 
 		public Object get(String name) {
 			return topLevel.get(name, topLevel);
+		}
+
+		/**
+		 * For simple Rhino debugging
+		 */
+		public static void main(String[] args) {
+			(new RhinoDocletEngine()).evaluate(new File(args[0]));
 		}
 
 		/**

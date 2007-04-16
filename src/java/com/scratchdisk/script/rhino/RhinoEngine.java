@@ -59,10 +59,23 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 	private static boolean hasE4X;
 
 	static {
+		hasE4X = false;
 		// hasE4X is needed as Rhino turns FEATURE_E4X on even when these
 		// two classes are not on the classpath, which causes problems.
-		hasE4X = Kit.classOrNull("org.apache.xmlbeans.XmlCursor") != null ||
-		Kit.classOrNull("org.w3c.dom.Node") != null;
+		try {
+			// Check to see whether DOM3 is present;
+			// Uuse a new method defined in DOM3 that is vital to our implementation
+			Class.forName("org.w3c.dom.Node").getMethod("getUserData",
+					new Class[] { String.class });
+			hasE4X = true;
+		} catch (Exception e) {
+			try {
+				// Now check for XMLBeans
+				Class.forName("org.apache.xmlbeans.XmlCursor");
+				hasE4X = true;
+			} catch (Exception f) {
+			}
+		}
 	}
 
 	public RhinoEngine(RhinoWrapFactory wrapFactory) {
