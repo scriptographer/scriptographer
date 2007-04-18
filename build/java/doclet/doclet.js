@@ -1,3 +1,11 @@
+/**
+ * JavaScript Doclet
+ * (c) 2005 - 2007, Juerg Lehni, http://www.scratchdisk.com
+ *
+ * Doclet.js is released under the MIT license
+ * http://dev.scriptographer.com/ 
+ */
+
 importPackage(Packages.com.sun.javadoc);
 importPackage(Packages.com.sun.tools.javadoc);
 

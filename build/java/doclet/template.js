@@ -1,81 +1,10 @@
 /**
- * JavaScript Template Engine for Helma
+ * JavaScript Template Engine
  * (c) 2005 - 2007, Juerg Lehni, http://www.scratchdisk.com
  *
+ * Template.js is released under the MIT license
  * http://dev.helma.org/Wiki/JavaScript+Template+Engine/
- * 
- * Revisions:
- * 
- * 0.22  More clean-ups in macro parsing code, distinction between control tags
- *       and macro tags is now only on the handling level, not parsing level.
- *       This adds feature like prefix / suffix to foreach and if / elseif, and
- *       resulted in cleaner code. 
- *       Additionally, the separator parameter can now be set in foreach.
- *
- * 0.21  Major rewrite and refactoring of most parts, adaption of Hannes' latest
- *       additions to Helma skins (sub templates, nested macros, filters),
- *       varios design changes (e.g. only allow to define and set $-variables for
- *       inside templates).
- *
- * 0.20  Refactored the code rendering code to be more readibly and smaller.
- *       Removed Helma dependency, by using preprocessing macros.
- *
- * 0.19  Added support for sub templates and a special macro
- *       for both rendering sub templates and external templates.
- * 
- * 0.18  Added support for encoding parameter, fixed a bug in <% else %>
- * 
- * 0.17  Many clean-ups and simplifications of regular expressions and parsing.
- *       At parsing time, no code is evaluated any longer, except the final
- *       result. This leads to further speed improvements by about 1.5.
- * 
- * 0.16  Fixed issues with the display of errors. The correct line numbers
- *       should be reported now. If a macro call results in an exception
- *       The exception is caught and repported just like in Helma skins now.
- * 
- * 0.15  Added the possibility for macro tags to swallow the following line
- *       separator, if there is any, by adding a minus at the end: <% macro -%>.
- *       Control tags like if, else, elseif, end, foreach, set and comments 
- *       (<%-- --%>) automatically swallow the following line seperator.
- *
- * 0.14  Added support for res.handlers.
- *       Switched to java.util.regex for the tag parser.
- *       Fixed a bug with escaped quotes in macro parameters.
- *       Reformated template generating code to be more readable.
- * 
- * 0.13  Added support for properties in <% %>-tags (not only macros)
- *       and fixed an incompatibility with the Rhino Debugger and jstl templates.
- * 
- * 0.12  Fixed various bugs that were introduced in the 0.11 rewrite.
- * 
- * 0.11  Replaced all the dirty hacks for keeping track of template line numbers 
- *       and linking them to code line numbers by a clean implementation of the
- *       same functionality.
- *       The result is a faster and less resource hungry parser.
- *       Cleaned up the code, seperated tag parser form line parser.
- * 
- * 0.10  More speed improvements, parsing is now around 6-7 times faster
- *       than in 0.8
- * 
- * 0.9   Various speed improvements, leading to an overall decrease of parsing
- *       time by more than factor 3.
- * 
- * 0.8   Added support for HopObject collections in foreach
- *       Removed regexp filter for if() expressions that sometimes seemed
- *       to deadlock
- *       Fixed a bug with finding the right template in the inheritance chain
- *       if it was overriden by another one.
- * 
- * 0.7   Fixed problems with error reports. Full stacktraces are now printed,
- *       and errors caused in macros called from the template are now properly
- *       detected and reported.
- *       Switched to using Context.evaluateString() instead of eval(),
- *       for improve of speed and reception of proper exceptions.
- * 
- * 0.6   fixed a bug that caused macros in  objects other than 'this' and
- *       'root' to fail.
- * 
- * 0.5   first public release.
+ * http://bootstrap-js.net/ 
  */
 
 // Retrieve a reference to the global scope.
