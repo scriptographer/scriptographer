@@ -7,10 +7,19 @@
  * http://bootstrap-js.net/ 
  */
 
+/**
+ * IMPORTANT:
+ *
+ * Template.js is designed to be mostly independent of Bootstrap.js,
+ * but uses two of its functions: trim() and capitalize() from String.prototype.
+ * These are present in other frameworks as well. If not, they need to be
+ * added manually, or Template.js need to be changed.
+ */
+
 // Retrieve a reference to the global scope.
 global = (function() { return this })();
 
-// Define TemplateWriter that copies Helma's ResponseTrans
+// Define TemplateWriter that mimics Helma's ResponseTrans
 function TemplateWriter() {
 	this.buffers = [];
 	this.current = [];
@@ -20,12 +29,6 @@ TemplateWriter.prototype = {
 	write: function(what) {
 		if (what != null)
 			this.current.push(what);
-	},
-
-	writeln: function(what) {
-		if (what != null)
-			this.current.push(what);
-		this.current.push('\n');
 	},
 
 	push: function() {
@@ -125,28 +128,30 @@ Template.prototype = {
 		// this supports multiline tags, such as <% ...>...\n...</%>
 		// the finding of closing tags counts nested tags, to make sub templates
 		// work
-		var buffer = []; // line buffer
-		var lineBreak = java.lang.System.getProperty("line.separator");
 		var skipLineBreak = false;
 		var tagCounter = 0;
 		var templateTag = null;
-		// Container for the generated code lines.
-		var code = [ "this.__render__ = function(param, template, out) {" ];
 		// Stack for control tags and loops
 		var stack = { control: [], loop: {} };
-		var last = null;
-		try {
-			function append() {
-				if (buffer.length > 0) {
-					// Write out text lines
-					var part = buffer.join('');
-					if (templateTag)
-						templateTag.buffer.push(part);
-					else
-						code.push('out.write("' + this.encodeJs(part) + '");');
-					buffer.length = 0;
-				}
+		// String buffer, joined with '' to retrieve the concatenated string
+		var buffer = [];
+		// Container for the generated code lines.
+		var code = [ "this.__render__ = function(param, template, out) {" ];
+		var lineBreak = java.lang.System.getProperty('line.separator');
+		// Append strings in buffer either to templateTag or to code, depending
+		// on the mode we're in.
+		function append() {
+			if (buffer.length) {
+				// Write out text lines
+				var part = buffer.join('');
+				if (templateTag)
+					templateTag.buffer.push(part);
+				else // Encodes by escaping ",',\n,\r
+					code.push('out.write(' + uneval(part) + ');');
+				buffer.length = 0;
 			}
+		}
+		try {
 			for (var i = 0; i < lines.length; i++) {
 				var line = lines[i];
 				var start = 0, end = 0;
@@ -269,7 +274,7 @@ Template.prototype = {
 					pos = (end = nonWhite.exec(content)) ? end.index : content.length;
 					start = pos;
 					continue;
-				} else if (ch == '=' || (ch == '|' && content[pos + 1] != '|')) { // Named parameter / filter
+				} else if ((ch == '=' || ch == '|') && content[pos + 1] != ch) {  // Named parameter / filter
 					// The check above discovers || as a logical parameter and does not 
 					// count the first | as a single item.
 					// Named parameters and start of filters can be handled the same
@@ -332,7 +337,8 @@ Template.prototype = {
 					// Finish previous macro and push it onto list
 					// convert param and unnamed to a arguments array that can directly be used
 					// when calling the macro. param comes first, unnamed after.
-					macro.arguments = '[ { ' + macro.param.join(', ') + ' }, ' + macro.unnamed.join(', ') + ' ]';
+					var unnamed = macro.unnamed.join(', ');
+					macro.arguments = '[ { ' + macro.param.join(', ') + ' } ' + (unnamed ? ', ' + unnamed : '') + ' ]';
 					// Split object and property / macro name
 					var match = macro.command.match(/^([^.]*)\.(.*)$/);
 					if (match) {
@@ -372,7 +378,7 @@ Template.prototype = {
 				// Appending is allowed as long as no named or unnamed parameter
 				// is specified.
 				append = true;
-			} else if (/.=$/.test(part)) { // named param
+			} else if (/\w=$/.test(part)) { // Named param, but not double ==
 				// TODO: Calling nextPart here should only return values, nothing else!
 				// add error handling...
 				var key = part.substring(0, part.length - 1), value = nextPart();
@@ -388,7 +394,7 @@ Template.prototype = {
 					macro.values[key] = value;
 				// Appending to macro command not allowed after first parameter
 				append = false;
-			} else if (part == '|' && !macro.isControl) { // start a filter
+			} else if (part == '|') { // start a filter
 				isFirst = true;
 			} else { // unnamed param
 				// Unnamed parameters are not allowed in <%= tags
@@ -412,16 +418,20 @@ Template.prototype = {
 		// Convert other macros to filter strings:
 		for (var i = 0; i < macros.length; i++) {
 			var m = macros[i];
-			macros[i] = '{ command: "' + m.command + '", name: "' + m.name + '", object: ' + m.object + ', arguments: ' + m.arguments + ' }';
+			macros[i] = '{ command: "' + m.command + '", name: "' + m.name +
+				'", object: ' + m.object + ', arguments: ' + m.arguments + ' }';
 		}
-		macro.filters = macros.length > 0 ? '[ ' + macros.join(', ') + ' ]' : null;
 		var values = macro.values, encoding = values.encoding;
+		values.filters = macros.length > 0 ? '[ ' + macros.join(', ') + ' ]' : null;
 		if (encoding) {
 			// Convert encoding to encoder function:
+			// TODO: capitalize() is defined in Bootstrap!
 			values.encoder = 'encode' + encoding.substring(1, encoding.length - 1).capitalize();
-			// If default is set, encode it now:
-			if (values['default'])
-				values['default'] = global[values.encoder](values['default']);
+			// If default is, encode it now if it is a string literal, create the encoding call otherwise.
+			var def = values['default'];
+			if (def)
+				values['default'] = /^'"/.test(def) ? '"' + global[values.encoder](def.substring(1, def.length - 1)) + '"'
+					: values.encoder + '(' + def + ')';
 		}
 		// All control macros swallow line breaks:
 		macro.swallow = swallow || macro.isControl;
@@ -442,7 +452,7 @@ Template.prototype = {
 		if (!macro)
 			throw "Invalid tag";
 		var values = macro.values, result;
-		var postProcess = values.prefix || values.suffix || macro.filters;
+		var postProcess = values.prefix || values.suffix || values.filters;
 		var codeIndexBefore = code.length;
 		if (macro.isData) { // param, response, request, session, or a <%= %> tag
 			result = this.parseLoopVariables(macro.command + " " + macro.opcode, stack);
@@ -472,6 +482,10 @@ Template.prototype = {
 					macro.variable = variable;
 					code.push(						"var " + list + " = " + value + "; ",
 													"if (" + list + ") {",
+						// TODO: finish toList support!
+						// Problem: There is currently no easy way to retrieve the key for values...
+						// Possibilities: Store pairs as { key: , value: } in toList...
+													"	if (" + list + ".length == undefined) " + list + " = template.toList(" + list + ");",
 													"	var " + length + " = " + list + ".length" + (values.separator ? ", " + first + " = true" : "") + ";",
 													"	for (var " + index + " = 0; " + index + " < " + length + "; " + index + "++) {",
 													"		var " + variable + " = " + list + "[" + index + "];",
@@ -495,7 +509,7 @@ Template.prototype = {
 													"			else out.write(" + separator + ");",
 													"			out.write(val);",
 													"		}");
-						code.push(						"}");
+						code.push(					"	}");
 					}
 					code.push(						"}");
 					break;
@@ -549,7 +563,7 @@ Template.prototype = {
 				code.push(		postProcess		?	"out.push();" : null,
 													"var val = template.renderMacro('" + macro.command + "', " + object + ", '" +
 															macro.name + "', param, " + macro.arguments + ", out);",
-								postProcess		?	"template.write(out.pop(), " + macro.filters + ", " + values.prefix + ", " +
+								postProcess		?	"template.write(out.pop(), " + values.filters + ", " + values.prefix + ", " +
 															values.suffix + ", null, out);" : null);
 				result = "val";
 			}
@@ -559,9 +573,10 @@ Template.prototype = {
 			result = result.match(/^(.*?);?$/)[1];
 			if (values.encoder)
 				result = values.encoder + "(" + result + ")";
-			// Optimizations: only call template.write if necessary:
+			// Optimizations: Only call template.write if post processing is necessary.
+			// Write out directly if it's all easy.
 			if (postProcess)
-				code.push(							"template.write(" + result + ", " + macro.filters + ", " + values.prefix + ", " +
+				code.push(							"template.write(" + result + ", " + values.filters + ", " + values.prefix + ", " +
 															values.suffix + ", " + values['default']  + ", out);");
 			else {
 				if (toString) {
@@ -608,8 +623,8 @@ Template.prototype = {
 				case "length": return loop.length;
 				case "isFirst": return "(" + loop.index + " == 0)";
 				case "isLast": return "(" + loop.index + " == " + loop.length + " - 1)";
-				case "even": return "((" + loop.index + " & 1) == 0)";
-				case "odd": return "((" + loop.index + " & 1) == 1)";
+				case "isEven": return "((" + loop.index + " & 1) == 0)";
+				case "isOdd": return "((" + loop.index + " & 1) == 1)";
 				}
 			}
 			return part;
@@ -646,8 +661,8 @@ Template.prototype = {
 	 */
 	write: function(value, filters, prefix, suffix, deflt, out) {
 		if (value != null && value !== '') {
+			// Walk through the filters and apply them, if defined.
 			if (filters) {
-				// Walk through the filters, if defined.
 				for (var i = 0; i < filters.length; i++) {
 					var filter = filters[i];
 					var func = filter.object && filter.object[filter.name + "_filter"];
@@ -657,6 +672,8 @@ Template.prototype = {
 						else if (func.exec) // filter regexp
 							value = func.exec(value)[0];
 					} else {
+						// TODO: How to handle encode on server / client side?
+						// see renderMacro()
 						out.write('[Filter unhandled: "' + filter.command + '"]');
 					}
 				}
@@ -679,21 +696,26 @@ Template.prototype = {
 	renderMacro: function(command, object, name, param, args, out) {
 		var unhandled = false, value;
 		if (object) {
-			// see  if there's a macro with that name,
-			// and if not, assume a property
+			// See  if there's a macro with that name, and if not, assume a property
 			var macro = object[name + "_macro"];
 			if (macro) {
 				try {
 					// Add a reference to this template and the param
 					// object of the template as the parent to inherit from.
-					args[0].__template__ = this.parent || this;
-					args[0].__param__ = param;
+					var prm = args[0];
+					prm.__template__ = this.parent || this;
+					prm.__param__ = param;
+					// Also pass __out__, so if a macro wants to directly render
+					// there and does not want to rely on res to be around (e.g.)
+					// compatibility with browser and server), it can:
+					prm.__out__ = out;
 					value = macro.apply(object, args);
 				} catch (e) {
 					var tag = this.getTagFromException(e);
 					var message = e.message || e;
 					if (tag && tag.content) {
 						message += ' (' + e.fileName + '; line ' + tag.lineNumber + ': ' +
+							// TODO: How to handle encode on server / client side?
 							tag.content + ')';
 					} else if (e.fileName) {
 						message += ' (' + e.fileName + '; line ' + e.lineNumber + ')';
@@ -714,11 +736,21 @@ Template.prototype = {
 	},
 
 	/**
-	 * Encodes the passed string by escaping ",',\n,\r so it can be used
-	 * within a JS String.
+	 * Converts the passed object to an iteration list. This is needed in foreach,
+	 * as requested by users on the Helma-user list.
+	 * This adds weight though, is it really needed?
+	 * TODO: consider creating a MICRO version with less features for browser.
 	 */
-	encodeJs: function(str) {
-		return str ? (str = uneval(str)).substring(1, str.length - 1) : str;
+	toList: function(obj) {
+		var ret = [];
+		// Support for .each, where Bootstrap is loaded and a plain for-in loop
+		// not supported any longer.
+		// TODO: consider moving to Bootstrap completely!
+		if (obj.each)
+			obj.each(function(v) { ret.push(v); });
+		else
+			for (var i in obj) { ret.push(obj[i]); }
+		return ret;
 	},
 
 	/**
@@ -726,10 +758,10 @@ Template.prototype = {
 	 * and stores it in the template object.
 	 */
 	compile: function() {
-		var lines;
 		try {
+			var lines;
 			if  (this.resource) {
-				// use java.io.BufferedReader for reading the lines into a line array,
+				// Use java.io.BufferedReader for reading the lines into a line array,
 				// as this is much faster than the regexp above
 				var reader = new java.io.BufferedReader(
 					new java.io.InputStreamReader(this.resource.getInputStream()));
@@ -764,7 +796,6 @@ Template.prototype = {
 		} catch (e) {
 			this.throwError(e);
 		}
-		this.lastChecked = new Date().getTime();
 	},
 
 	/**
@@ -815,17 +846,59 @@ Template.prototype = {
 	}
 }
 
-/*
-Object.prototype.renderTemplate = function(template, param) {
-	if (!(template instanceof Template)) {
-		if (/\.jstl$/.test(template))
-			template = new Template(new java.io.File(template));
-		else
-			template = new Template(template);
-	}
-	return template.render(this, param);
-}
+/**
+ * A dictionary with methods that can be injected into any prototype to 
+ * get templating functionality.
+ */
+Template.methods = (function() {
+	var templates = {};
 
-Object.prototype.dontEnum("renderTemplate");
-*/
+	return {
+		/*
+		 * On Rhino, template can either be a template object or a file name
+		 * to be loaded from the disk.
+		 * On browsers, there is no file access, so the string is taken as
+		 * the full template source, which is also used for lookups of cached
+		 * template objects...
+		 * TODO: Use browser embedded hidden textareas instead?
+		 * TODO: On browser, subtemplates do not work, as name is actually
+		 * the full code right now...
+		 */
+		getTemplate: function(template) {
+			var name = template;
+			if (!(template instanceof Template)) {
+				// Handle sub templates:
+				var pos = name.indexOf('#');
+				if (pos != -1) {
+					template = this.getTemplate(name.substring(0, pos));
+					if (template)
+						return template.getSubTemplate(name.substring(pos + 1));
+				}
+				template = templates[name];
+			}
+			if (!template)
+				template = templates[name] = new Template(
+					new java.io.File(baseDir + "/templates/" + name + ".jstl"));
+			return template;
+		},
+
+		renderTemplate: function(template, param, out) {
+			try {
+				template = this.getTemplate(template);
+				if (template)
+					return template.render(this, param, out);
+			} catch (e) {
+				error(e);
+			}
+		},
+
+		template_macro: function(param, name) {
+			if (name[0] == '#') {
+				return param.__template__.renderSubTemplate(this, name.substring(1), param);
+			} else {
+				return this.renderTemplate(name, param);
+			}
+		}
+	};
+})();
 

@@ -1,11 +1,6 @@
 <%= param.title prefix=settings.section2Open suffix=settings.section2Close %>
 <ul>
-<% $prevName = null %>
 <% foreach $member in param.members %>
-	<% $name = $member.name() %>
-	<% if name != prevName %>
-		<% $member.renderSummary(param.classDoc) %>
-	<% end %>
-	<% $prevName = $name %>
+	<% $member.renderSummary(param.classDoc) %>
 <% end %>
 </ul>

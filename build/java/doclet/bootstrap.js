@@ -36,15 +36,15 @@
 		// for $super to detect calls.
 		// dest[name] then is set to either src[name] or the wrapped function.
 		if (src) for (var name in src)
-			if (!src.has || src.has(name)) (function(val, name) {
+			if (has(src, name)) (function(val, name) {
 				/* TODO: decide what to do with this!
 				if (typeof val == 'function' && /\$super\./.test(val)) {
 					val = new Function(val.parameters(), val.body().replace(/\$super\./, 'this.__proto__.__proto__.'));
 				}
 				*/
 				var res = val, baseVal = base && base[name];
-				if (typeof val == 'function' && baseVal && val !== baseVal &&
-					/\$super\b/.test(val)) {
+				var func = typeof val == 'function', match;
+				if (func && baseVal && val !== baseVal && /\$super\b/.test(val)) {
 					res = function() {
 						var prev = this.$super;
 						// Look up the $super function each time if we can,
@@ -61,7 +61,12 @@
 						return val.toString();
 					};
 				}
-				dest[name] = res;
+				// Check if the function defines a getter or setter by looking
+				// at its name. TODO: measure speed decrease of inject due to this!
+				if (func && (match = name.match(/([^$]*)\$(g|s)et$/)))
+					dest['__define' + match[2].toUpperCase() + 'etter__'](match[1], res);
+				else
+					dest[name] = res;
 				// Parameter hide was named dontEnum, but this caused 
 				// problems on Opera, where it then seems to point to
 				// Object.prototype.dontEnum, which must be a bug in Opera.
@@ -71,17 +76,41 @@
 		return dest;
 	}
 
+	/**
+	 * Private function that creates a constructor to extend the given object.
+	 * When this constructor is called through new, a new object is craeted
+	 * that inherits all from obj.
+	 */
 	function extend(obj) {
-		// create the constructor for the new prototype that calls $constructor
+		// Create the constructor for the new prototype that calls $constructor
 		// if it is defined.
 		var ctor = function() {
-			// call the constructor function, if defined and we're not inheriting
+			// Call the constructor function, if defined and we're not inheriting
 			// in which case ctor.dont would be set, see further bellow.
 			if (this.$constructor && arguments[0] !== ctor.dont)
 				return this.$constructor.apply(this, arguments);
 		};
 		ctor.prototype = obj;
 		return ctor;
+	}
+
+	/**
+	 * Private function that checks if an object contains a given property.
+	 */
+	function has(obj, name) {
+		// This is tricky: as described in Object.prototype.dontEnum, the
+		// _dontEnum  objects form a inheritance sequence between prototypes.
+		// So if we check  obj._dontEnum[name], we're not sure that the
+		// value returned is actually from the current object. It might be
+		// from a parent in the inheritance chain. This is why dontEnum
+		// stores a reference to the object on which dontEnum was called for
+		// that object. If the value there differs from the one in obj, 
+		// it means it was modified somewhere between obj and there.
+		// If the entry allows overriding, we return true although _dontEnum
+		// lists it.
+		var entry;
+		return name in obj && (!(entry = obj._dontEnum[name]) ||
+				entry.allow && entry.object[name] !== obj[name]);
 	}
 
 	Function.prototype.inject = function(src, hide, base) {
@@ -168,38 +197,28 @@
 
 	// First dontEnum the fields that cannot be overridden (wether they change
 	// value or not, they're allways hidden, by setting the first argument to true)
-	Object.prototype.dontEnum(true, "dontEnum", "_dontEnum", "__proto__",
-		"constructor", "$static");
+	Object.prototype.dontEnum(true, 'dontEnum', '_dontEnum', '__proto__',
+			'prototype', 'constructor', '$static');
 
-	// From now on Function inject can be used to enhance any prototype, for example
-	// Object:
+	// From now on Function inject can be used to enhance any prototype,
+	// for example Object:
 	Object.inject({
 		/**
 		 * Returns true if the object contains a property with the given name,
 		 * false otherwise.
-		 * Just like in .each, objects only contained in the prototype(s) are filtered.
+		 * Just like in .each, objects only contained in the prototype(s) are
+		 * filtered.
 		 */
 		has: function(name) {
-			// This is tricky: as described in Object.prototype.dontEnum, the
-			// _dontEnum  objects form a inheritance sequence between prototypes.
-			// So if we check  this._dontEnum[name], we're not sure that the
-			// value returned is actually from the current object. It might be
-			// from a parent in the inheritance chain. This is why dontEnum
-			// stores a reference to the object on which dontEnum was called for
-			// that object. If the value there differs from the one in "this", 
-			// it means it was modified somewhere between "this" and there.
-			// If the entry allows overriding, we return true although _dontEnum
-			// lists it.
-			var entry;
-			return name in this && (!(entry = this._dontEnum[name]) ||
-				entry.allow && entry.object[name] !== this[name])
+			return has(this, name);
 		},
 
 		/**
 		 * Injects the fields from the given object, adding $super functionality
 		 */
 		inject: function(src, hide) {
-			return inject(this, src, this, hide);
+			// src can either be a function to be called, or an object literal.
+			return inject(this, typeof src == 'function' ? src() : src, this, hide);
 		},
 
 		/**
@@ -221,6 +240,9 @@
 	}, true);
 })();
 
+// Retrieve a reference to the global scope, usually window.
+global = (function() { return this })();
+
 function $typeof(obj) {
 	return obj && (obj._type || typeof obj) || undefined;
 }
@@ -230,23 +252,15 @@ function $random(min, max) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
 }
 
+Object.inject({
+	debug: function() {
+		return /^(string|number|function|regexp)$/.test($typeof(this)) ? this
+			: this.each(function(val, key) { this.push(key + ': ' + val); }, []).join(', ');
+	}
+}, true);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Function
-
-if (!Function.prototype.$constructor) {
-	// Override the function object with an implementation of a more efficient
-	// Consctructor that creates properly generated functions instead of
-	// interpretated ones. These are faster.
-	// This does not seem to break anything, as afterward
-	// Object.toString instanceof Function still returns true.
-	Function = Function.extend({
-		$constructor: function() {
-			var params = $A(arguments), body = params.pop();
-			return Packages.org.mozilla.javascript.Context.getCurrentContext().compileFunction(
-				{}, "function (" + params + ") {" + body + "}", "Function", 0, null);
-		}
-	});
-}
 
 Function.inject(function() {
 
@@ -284,6 +298,8 @@ Function.inject(function() {
 // dontEnum these properties, as we iterate through Function.prototype in
 // Function.prototype.inject
 
+//#include "lang/Enumerable_apply.js"
+
 ////////////////////////////////////////////////////////////////////////////////
 // Enumerable
 
@@ -303,10 +319,12 @@ function $each(obj, iter, bind) {
 };
 
 /**
- * The enumerable interface, defining various functions that only rely on
- * $each() to be implemented in an prototype that the interface is injected into.
+ * The Enumerable interface. To add enumerable functionality to any prototype,
+ * just use Constructor.inject(Enumerable);
+ * This adds the function .each() that can handle both arrays (detected through
+ * .length) and dictionaries (if it's not an array, enumerating with for-in).
  *
- * Inspired by Prototype.js and unfinished, but with various optimizations.
+ * Inspired by Prototype.js.
  */
 Enumerable = (function() {
 	/**
@@ -317,26 +335,42 @@ Enumerable = (function() {
 	 * Wherever this private function is used in the Enumerable functions
 	 * bellow, a RegExp object, a Function or null may be passed.
 	 */
-
 	function iterator(iter) {
 		if (!iter) return function(val) { return val };
 		switch ($typeof(iter)) {
-			case 'function': return iter;
-			case 'regexp': return function(val) { return iter.test(val) };
+		case 'function': return iter;
+		case 'regexp': return function(val) { return iter.test(val) };
 		}
 		return function(val) { return val == iter };
 	}
 
-	function iterate(fn, name, convert, start) {
+	/**
+	 * Converts the passed function to an iterate-function.
+	 * This is part of an optimization that is based on the observation that
+	 * calling the iterator through bind.__iterate is faster than using iter.apply()
+	 * each time.
+	 * So iterate wraps the passed function in a closure that sets the __iterate
+	 * function (defined by name) on the bind object and then calls the original
+	 * function, restoring the original state after it returns.
+	 * This is used in many places in Enumerable, each place defining its own 
+	 * name for the iterate function, so there are no clashes if calls are nested.
+	 */
+	function iterate(fn, name) {
 		// dontEnum all iterators once and for all on browsers:
 		Object.prototype.dontEnum(true, name);
 		return function(iter, bind) {
-			if (convert) iter = iterator(iter);
+			iter = iterator(iter);
 			if (!bind) bind = this;
-			// Calling the iterator through bind.__each is faster than
-			// using .apply each time.
 			var prev = bind[name];
 			bind[name] = iter;
+			// HACK: If the object does not allow setting of values,
+			// create a new unsealed object that inherits from it.
+			/*
+			if (bind[name] != iter) {
+				bind = bind.extend();
+				bind[name] = iter;
+			}
+			*/
 			// Interesting benchmark observation: The loops seem execute 
 			// faster when called on the object (this), so outsource to
 			// the above functions each_Array / each_Object here.
@@ -351,7 +385,6 @@ Enumerable = (function() {
 	var each_Array = Array.prototype.forEach || function(iter, bind) {
 		for (var i = 0; i < this.length; i++)
 			bind.__each(this[i], i, this);
-			//iter.call(bind, this[i], i, this);
 	};
 
 	var each_Object = function(iter, bind) {
@@ -366,15 +399,12 @@ Enumerable = (function() {
 			// added properties. This line here is the same as Object.prototype.has
 			if (!entry || entry.allow && entry.object[i] !== this[i])
 				bind.__each(val, i, this);
-				//iter.call(bind, val, i, this);
 		}
 	};
 
 	return {
 		/**
-		 * The core of all Enumerable functions. It simply wrapps __TODO__ that is 
-		 * to be defined by the prototype implementing Enumerable and adds
-		 * handling of $break to it.
+		 * The core of all Enumerable functions. TODO: document
 		 */
 		each: iterate(function(iter, bind) {
 			try { (this.length != null ? each_Array : each_Object).call(this, iter, bind); }
@@ -383,17 +413,27 @@ Enumerable = (function() {
 		}, "__each"),
 
 		/**
-		 * Searches the elements for the first where the condition of the passed
-		 * iterator is true and returns its value.
+		 * Searches the list for the first element where the condition of the
+		 * passed iterator is met and returns its key / value pair as an object:
+		 * { key: ... , value: ... }
 		 */
-		find: iterate(function(iter, bind, that) {
+		findEntry: iterate(function(iter, bind, that) {
 			return this.each(function(val, key) {
 				if (bind.__find(val, key, that)) {
-					this.value = val;
+					this.found = { key: key, value: val };
 					throw $break;
 				}
-			}, {}).value;
-		}, "__find", true),
+			}, {}).found;
+		}, "__find"),
+
+		/**
+		 * Searches the list for the first element where the condition of the
+		 * passed iterator is met and returns its value.
+		 */
+		find: function(iter, bind) {
+			var entry = this.findEntry(iter, bind);
+			return entry && entry.value;
+		},
 
 		/**
 		 * Returns true if the condition defined by the passed iterator is true
@@ -403,15 +443,16 @@ Enumerable = (function() {
 		 * regarding iterators (as defined in iterator())
 		 */
 		some: function(iter, bind) {
-			// when injecting into Array, there might already be a definition of .some
-			// (Firefox JS 1.5+), so use it as it's faster and does the same, except
-			// for the iterator conversion which is handled by iterator() here:
+			// when injecting into Array, there might already be a definition of
+			// .some() (Firefox JS 1.5+), so use it as it's faster and does the
+			// same, except for the iterator conversion which is handled by
+			// iterator() here:
 			return this.$super ? this.$super(iterator(iter), bind) :
-				this.find(iter, bind) !== undefined;
+				this.findEntry(iter, bind) !== undefined;
 		},
 
 		/**
-		 * Returns true if the condition defined by the passed iterator is true¨
+		 * Returns true if the condition defined by the passed iterator is true
 		 * for	all elements, false otherwise.
 		 * If no iterator is passed, the value is used directly.
 		 * This is compatible with JS 1.5's .every, but adds more flexibility
@@ -419,13 +460,13 @@ Enumerable = (function() {
 		 */
 		every: iterate(function(iter, bind, that) {
 			// Just like in .some, use .every if it's there
-			return this.$super ? this.$super(iter, bind) : this.find(function(val, i) {
+			return this.$super ? this.$super(iter, bind) : this.findEntry(function(val, i) {
 				// as "this" is not used for anything else, use it for bind,
 				// so that lookups on the object are faster (according to 
 				// benchmarking)
 				return this.__every(val, i, that);
 			}, bind) === undefined;
-		}, "__every", true),
+		}, "__every"),
 
 		/**
 		 * Collects the result of the given iterator applied to each of the
@@ -439,7 +480,7 @@ Enumerable = (function() {
 			return this.$super ? this.$super(iter, bind) : this.each(function(val, i) {
 				this.push(bind.__map(val, i, that));
 			}, []);
-		}, "__map", true),
+		}, "__map"),
 
 		/**
 		 * Collects all elements for which the condition of the passed iterator
@@ -452,16 +493,7 @@ Enumerable = (function() {
 			return this.$super ? this.$super(iter, bind) : this.each(function(val, i) {
 				if (bind.__filter(val, i, that)) this.push(val);
 			}, []);
-		}, "__filter", true),
-
-		/**
-		 * Returns true if the given object is part of this collection,
-		 * false otherwise. Does not support iterators, even if a function
-		 * is passed, that functions is searched for.
-		 */
-		contains: function(obj) {
-			return this.find(function(val) { return obj == val }) !== undefined;
-		},
+		}, "__filter"),
 
 		/**
 		 * Returns the maximum value of the result of the passed iterator
@@ -473,7 +505,7 @@ Enumerable = (function() {
 				val = bind.__max(val, i, that);
 				if (val >= (this.max || val)) this.max = val;
 			}, {}).max;
-		}, "__max", true),
+		}, "__max"),
 
 		/**
 		 * Returns the minimum value of the result of the passed iterator
@@ -485,7 +517,7 @@ Enumerable = (function() {
 				val = bind.__min(val, i, that);
 				if (val <= (this.min || val)) this.min = val;
 			}, {}).min;
-		}, "__min", true),
+		}, "__min"),
 
 		/**
 		 * Collects the values of the given property of each of the elements
@@ -509,15 +541,17 @@ Enumerable = (function() {
 				var a = left.compare, b = right.compare;
 				return a < b ? -1 : a > b ? 1 : 0;
 			}).pluck('value');
-		}, "__sortBy", true),
+		}, "__sortBy"),
 
 		/**
-		 * Swaps two elements of the object at the given indices
+		 * Swaps two elements of the object at the given indices, and returns
+		 * the value that is placed at the first index.
 		 */
 		swap: function(i, j) {
-			var tmp = this[i];
-			this[i] = this[j];
-			this[j] = tmp;
+			var tmp = this[j];
+			this[j] = this[i];
+			this[i] = tmp;
+			return tmp;
 		},
 
 		/**
@@ -560,10 +594,11 @@ Object.inject({
  */
 function $A(list, start, end) {
 	if (!list) return [];
-	else if (list.toArray && !start && end == null) return list.toArray();
-	var res = [];
-	if (!start) start = 0;
 	if (end == null) end = list.length;
+	if (list.toArray && !start && end == list.length)
+		return list.toArray();
+	if (!start) start = 0;
+	var res = [];
 	for (var i = start; i < end; i++)
 		res[i - start] = list[i];
 	return res;
@@ -601,15 +636,18 @@ Array.methods.inject({
 		return -1;
 	},
 
-	find: function(iter) {
+	findEntry: function(iter) {
 		// use the faster indexOf in case we're not using iterator functions.
-		if (iter && !/^(function|regexp)$/.test($typeof(iter))) return this[this.indexOf(iter)];
-		else return Enumerable.find.call(this, iter);
+		if (iter && !/^(function|regexp)$/.test($typeof(iter))) {
+			var i = this.indexOf(iter);
+			return { key: i, value: this[i] };
+		}
+		return Enumerable.findEntry.call(this, iter);
 	},
 
-	remove: function(obj) {
-		var i = this.indexOf(obj);
-		if (i != -1) return this.splice(i, 1);
+	remove: function(iter) {
+		var entry = this.findEntry(iter);
+		if (entry) return this.splice(entry.key, 1)[0];
 	},
 
 	/**
@@ -662,7 +700,7 @@ Array.methods.inject({
 	 * Appends the elments of the given enumerable object.
 	 */
 	append: function(obj) {
-		// do not rely on obj to have .each set, as it might come from another
+		// Do not rely on obj to have .each set, as it might come from another
 		// frame.
 		return $each(obj, function(val) {
 			this.push(val);
@@ -673,11 +711,13 @@ Array.methods.inject({
 	 * adds all elements in the passed array, if they are not contained
 	 * in the array already.
 	 */
+	/* TODO: needed?
 	include: function(obj) {
 		return $each(obj, function(val) {
 			if (this.indexOf(val) == -1) this.push(val);
 		}, this);
 	},
+	*/
 
 	/**
 	 * Flattens multi-dimensional array structures by breaking down each
@@ -708,6 +748,8 @@ Array.inject(Array.methods, true);
 // String
 
 String.inject({
+	_type: 'string',
+
 	test: function(exp, param) {
 		return new RegExp(exp, param || '').test(this);
 	},
@@ -728,22 +770,25 @@ String.inject({
 		return parseFloat(this);
 	},
 
-	toCamelCase: function() {
-		return this.replace(/-\D/g, function(match) {
+	camelize: function(separator) {
+		return this.replace(new RegExp(separator || '-', 'g'), function(match) {
 			return match.charAt(1).toUpperCase();
 		});
 	},
 
-	// TODO: find more JS like name?
-	hyphenate: function() {
-		return this.replace(/\w[A-Z]/g, function(match) {
-			return (match.charAt(0) + '-' + match.charAt(1).toLowerCase());
+	uncamelize: function(separator) {
+		separator = separator || '-';
+		return this.replace(/[a-zA-Z][A-Z0-9]|[0-9][a-zA-Z]/g, function(match) {
+			return match.charAt(0) + separator + match.charAt(1);
 		});
 	},
 
-	// TODO: find more JS like name?
+	hyphenate: function() {
+		return this.uncamelize().toLowerCase();
+	},
+
 	capitalize: function() {
-		return this.toLowerCase().replace(/\b[a-z]/g, function(match) {
+		return this.replace(/\b[a-z]/g, function(match) {
 			return match.toUpperCase();
 		});
 	},
@@ -760,22 +805,10 @@ String.inject({
 ////////////////////////////////////////////////////////////////////////////////
 // Number
 
-// an example how other prototypes could be improved.
 Number.inject({
 	// tell $typeof that number objects are numbers too.
 	_type: 'number',
-
-	/**
-	 * Executes the passed iterator as many times as specified by the
-	 * numerical value.
-	 */
-	times: function(iter) {
-		for (var i = 0; i < this; i++) iter();
-		return this;
-	},
-
 	toInt: String.prototype.toInt,
-
 	toFloat: String.prototype.toFloat
 });
 
@@ -831,10 +864,9 @@ Hash = Object.extend({
 	 * Calls merge on value pairs if they are dictionaries.
 	 */
 	merge: function(obj) {
-		return obj.each(function(val, i) {
-			//this[i] = val;
+		return obj ? obj.each(function(val, i) {
 			this[i] = $typeof(this[i]) != 'object' ? val : arguments.callee.call(this[i], val);
-		}, this);
+		}, this) : this;
 	},
 
 	/**

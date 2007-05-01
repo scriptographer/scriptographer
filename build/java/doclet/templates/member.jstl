@@ -50,7 +50,7 @@
 
 <% #parameters %>
 <% foreach $param in param.parameters prefix='<div class="member-paragraph"><b>Parameters:</b>' suffix='</div>' %>
-	<div><tt><%= $param.name() %>:</tt><%= $param.paramType().renderLink() %>
+	<div><tt><%= $param.name() %>: </tt><%= $param.paramType().renderLink() %>
 	<% if $param.tag %>
 		<% tags tags=$param.tag.inlineTags() classDoc=param.classDoc prefix=" - " %>
 	<% end %>
@@ -70,7 +70,7 @@
 <div> 
 <%= param.returnType.renderLink() %>
 <% foreach $tag in param.tags prefix=" - " %>
-	<% tags classDoc=param.classDoc tags=$tag.inlineTags() %>
+<% tags classDoc=param.classDoc tags=$tag.inlineTags() -%>
 <% end %>
 </div> 
 </div>

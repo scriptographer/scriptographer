@@ -41,9 +41,7 @@
 	<li>
 		<ul>
 	<% foreach $member in $class.members %>
-		<% if $member %>
-			<li><%= $member.renderLink($class.classDoc) %></li>
-		<% end %>
+		<li><%= $member.renderLink($class.classDoc) %></li>
 	<% end %>
 		</ul>
 	</li>

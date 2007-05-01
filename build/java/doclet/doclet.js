@@ -16,51 +16,11 @@ function error() {
 	java.lang.System.err.println($A(arguments).join(', '));
 }
 
+// Add renderTemplate function with caching to all objects
+Object.inject(Template.methods, true);
+
 // A global template writer
 var out = new TemplateWriter();
-
-// Add renderTemplate function with caching to all objects
-Object.inject(function() {
-	var templates = new Hash();
-
-	return {
-		getTemplate: function(template) {
-			var name = template;
-			if (!(template instanceof Template)) {
-				// Handle sub templates:
-				var pos = name.indexOf('#');
-				if (pos != -1) {
-					template = this.getTemplate(name.substring(0, pos));
-					if (template)
-						return template.getSubTemplate(name.substring(pos + 1));
-				}
-				template = templates[name];
-			}
-			if (!template)
-				template = templates[name] = new Template(
-					new java.io.File(baseDir + "/templates/" + name + ".jstl"));
-			return template;
-		},
-
-		renderTemplate: function(template, param, out) {
-			try {
-				template = this.getTemplate(template);
-				if (template)
-					return template.render(this, param, out);
-			} catch (e) {
-				error(e);
-			}
-		},
-
-		template_macro: function(param, name) {
-			if (name[0] == '#') {
-				return param.__template__.renderSubTemplate(this, name.substring(1), param);
-			} else {
-				return this.renderTemplate(name, param);
-			}
-		}
-	}
-}, true);
 
 // Enhance String a bit:
 String.inject({
@@ -241,7 +201,7 @@ Type = Object.extend({
 	isNumber: function() {
 		var cd = this.asClassDoc();
 		return cd && cd.hasSuperclass("java.lang.Number") ||
-			/^(short|int|double|float)$/.test(this.typeName());
+			/^(short|int|long|double|float)$/.test(this.typeName());
 	},
 	
 	isBoolean: function() {
@@ -252,7 +212,7 @@ Type = Object.extend({
 
 	isArray: function() {
 		var cd = this.asClassDoc();
-		return /\[.*\]/.test(this.typeName()) || cd &&
+		return this.dimension() == '[]' || cd &&
 			(cd.hasInterface("java.util.Collection") ||
 			cd.hasSuperclass("org.mozilla.javascript.NativeArray"));
 	},
@@ -298,7 +258,7 @@ Type = Object.extend({
 		else if (this.isBoolean())
 			return "<tt>Boolean</tt>";
 		else if (this.isArray())
-			return "<tt>Array</tt>";
+			return "<tt>Array:" + stripCodeTags(this.asClassDoc().renderLink()) + "</tt>";
 		else if (this.isMap())
 			return "<tt>Object</tt>";
 		else if (this.isPoint())
@@ -372,8 +332,9 @@ Tag = Object.extend({
 
 // Parameter helpers
 
-// Fix a bug in the Type returned by Parameter.type(), where toString does not return []
-// for arrays and there does not seem to be another way to find out if it's an array or not...
+// Fix a bug in the Type returned by Parameter.type(), where toString
+// does not return [] for arrays and there does not seem to be another way
+// to find out if it's an array or not...
 
 ParameterImpl.inject({
 	paramType: function() {
@@ -436,8 +397,10 @@ Member = Object.extend({
 	},
 
 	isVisible: function() {
-		var hide = this.tags("jshide")[0];
-		return this.bean && hide == 'false' || !this.bean && (hide == undefined || hide == 'false');
+		var hide = this.tags('jshide')[0];
+		if (hide) hide == hide.text();
+		return this.bean && (!this.bean.isVisible() || hide == 'false') || !this.bean &&
+				(hide == undefined || hide == 'false');
 	},
 
 	renderMember: function(classDoc, index, member, containingClass) {
@@ -449,7 +412,10 @@ Member = Object.extend({
 				containingClass = this.classDoc;
 
 			if (index)
-				index.push('"' + member.getId() + '": { title: "' + this.name() + '", text: "' + encodeJs(renderTags({ classDoc: this.classDoc, tags: member.inlineTags() })) + '" }');
+				index.push('"' + member.getId() + '": { title: "' + this.name() +
+						'", text: "' + encodeJs(renderTags({
+							classDoc: this.classDoc, tags: member.inlineTags()
+						})) + '" }');
 
 			// Thrown exceptions
 			// if (this.member.thrownExceptions)
@@ -473,7 +439,15 @@ Member = Object.extend({
 	},
 
 	isStatic: function() {
-		return this.member.isStatic();
+		if (this._static == undefined) {
+			this._static = this.member.isStatic();
+			// A class can define if it does not want to show static methods as static
+			var noStatics = this.member.containingClass().tags('jsnostatics')[0];
+			if (noStatics) noStatics = noStatics.text();
+			if (noStatics == 'true' || noStatics == undefined)
+				this._static = false;
+		}
+		return this._static;
 	},
 
 	containingClass: function() {
@@ -521,17 +495,19 @@ Member = Object.extend({
 	},
 
 	getClass: function(current) {
-		// in case the class is invisible, the current class needs to be used instead
+		// In case the class is invisible, the current class needs to be used instead
 		var containing = this.containingClass();
-		return (containing.isVisible() || current.superclass() != containing) ? containing : current;
+		return containing.isVisible() || current.superclass() != containing ?
+				containing : current;
 	},
 
 	renderLink: function(current) {
 		var cd = this.getClass(current);
-		// dont use mem.qualifiedName(). use cd.qualifiedName() + "." + mem.name()
-		// instead in order to catch the case where functions are moved from invisible
-		// classes to visible ones (e.g. AffineTransform -> Matrix)
-		return renderLink(cd.qualifiedName(), cd.name(), this.getId(), this.name() + this.getNameSuffix());
+		// Dont use mem.qualifiedName(). use cd.qualifiedName() + "." + mem.name()
+		// instead in order to catch the case where functions are moved from
+		// invisible classes to visible ones (e.g. AffineTransform -> Matrix)
+		return renderLink(cd.qualifiedName(), cd.name(), this.getId(),
+				this.name() + this.getNameSuffix());
 	},
 
 	isSimilar: function(mem) {
@@ -646,11 +622,12 @@ Method = Member.extend({
 				var overridden = this.member.overriddenMethod();
 				if (overridden) {
 					var mem = Member.get(overridden);
-					// prevent endless loops:
-					// if this method is not wrapped, quickly wrap it just to call renderMember
-					// prevent endless loops that happen when overriden functions from inivisble classes
-					// where moved to the derived class and Member.get lookup points there instead of
-					// the overridden version:
+					// If this method is not wrapped, quickly wrap it just to
+					// call renderMember.
+					// Prevent endless loops that happen when overriden
+					// functions from inivisble classes where moved to the
+					// derived class and Member.get lookup points there
+					// instead of the overridden version:
 					if (mem && mem.member.containingClass() != this.member.overriddenClass())
 						mem = null;
 					if (!mem)
@@ -749,7 +726,8 @@ Method = Member.extend({
 	},
 
 	returnType: function() {
-		return this.member instanceof MethodDoc ? new Type(this.member.returnType()) : null;
+		return this.member instanceof MethodDoc ?
+				new Type(this.member.returnType()) : null;
 	},
 
 	isSimilar: function(obj) {
@@ -774,13 +752,13 @@ BeanProperty = Member.extend({
 		if (setter)
 			setter.bean = this;
 
-		var tags = getter.tags("jsbean");
+		var tags = getter.tags('jsbean');
 		if (!tags.length && setter)
-			tags = setter.tags("jsbean");
-		
+			tags = setter.tags('jsbean');
+
 		this.inlineTagList = [];
 		if (!setter)
-			this.inlineTagList.push(new Tag("Read-only."))
+			this.inlineTagList.push(new Tag('Read-only.'))
 		this.inlineTagList.append(tags);
 	},
 
@@ -790,6 +768,14 @@ BeanProperty = Member.extend({
 
 	firstSentenceTags: function() {
 		return this.inlineTags;
+	},
+
+	isVisible: function() {
+		var getterHide = this.getter.tags('jshide')[0];
+		var setterHide = this.setter && this.setter.tags('jshide')[0];
+		if (getterHide) getterHide = getterHide.text();
+		if (setterHide) setterHide = setterHide.text();
+		return getterHide != 'bean' && setterHide != 'bean';
 	},
 
 	isStatic: function() {
@@ -898,8 +884,10 @@ MemberList = Object.extend({
 			// Does getter method have an empty parameter list with a return
 			// value (eg. a getSomething() or isSomething())?
 
-			// as a convention, only add non static bean properties to the documentation.
-			// static properties are all supposed to be uppercae and constants
+			// As a convention, only add non static bean properties to
+			// the documentation. static properties are all supposed to
+			// be uppercae and constants.
+			// TODO: Control this through a tag instead!
 			return method.parameters().length == 0 && !method.isStatic() && 
 					method.returnType().typeName() != "void"
 		});
@@ -917,8 +905,9 @@ MemberList = Object.extend({
 		for (var pass = 1; pass <= 2; ++pass) {
 			var found = this.lists.find(function(method) {
 				var params = method.parameters();
-				// as a convention, only add non static bean properties to the documentation.
-				// static properties are all supposed to be uppercae and constants
+				// As a convention, only add non static bean properties to
+				// the documentation.
+				// Static properties are all supposed to be uppercae and constants
 				return !method.isStatic() &&
 					method.returnType().typeName() == "void" && params.length == 1 &&
 					pass == 1 && params[0].typeName() == type.typeName() ||
@@ -946,7 +935,7 @@ MemberListGroup = Object.extend({
 		if (member instanceof ExecutableMemberDoc) {
 			name = key;
 			if (member instanceof MethodDoc)
-				// for methods, use the return type for grouping as well!
+				// For methods, use the return type for grouping as well!
 				key = member.returnType().typeName() + " " + name;
 
 			group = this.groups[key]; 
@@ -955,7 +944,7 @@ MemberListGroup = Object.extend({
 				this.methodLookup[name] = group;
 			}
 		} else {
-			// fields won't be grouped, but for simplicty,
+			// Fields won't be grouped, but for simplicty,
 			// greate groups of one element for each field,
 			// so it can be treated the same as functions:
 			group = new MemberList(this.classObject, key); 
@@ -985,7 +974,8 @@ MemberListGroup = Object.extend({
 			// now sort the lists alphabetically
 			var sorted = this.groups.sortBy(function(group) {
 				var name = group.name, ch = name[0];
-				// swap the case of the first char so the sorting shows lowercase members first
+				// Swap the case of the first char so the sorting shows
+				// lowercase members first
 				if (ch.isLowerCase()) ch = ch.toUpperCase();
 				else ch = ch.toLowerCase();
 				return ch + name.substring(1);
@@ -1019,7 +1009,9 @@ MemberListGroup = Object.extend({
 						if (setters)
 							setter = setters.extractSetMethod(getter.returnType());
 						// Make the property.
-						fields.add(new BeanProperty(this.classObject, property, getter, setter));
+						var bean = new BeanProperty(this.classObject, property, getter, setter);
+						if (bean.isVisible())
+							fields.add(bean);
 					}
 				}
 			}
@@ -1047,7 +1039,8 @@ ClassObject = Object.extend({
 		this.constructorLists = new MemberListGroup(this);
 		this.add(this.classDoc, true);
 		var superclass = this.classDoc.superclass();
-		// add the members of direct invisible superclasses to this class for JS documentation:
+		// Add the members of direct invisible superclasses to
+		// this class for JS documentation:
 		while (superclass && !superclass.isVisible() &&
 				!superclass.qualifiedName().equals("java.lang.Object")) {
 			this.add(superclass, false);
@@ -1090,7 +1083,8 @@ ClassObject = Object.extend({
 	},
 
 	hasSimilar: function(member) {
-		(member instanceof ExecutableMemberDoc ? this.methods() : this.fields()).each(function(other) {
+		(member instanceof ExecutableMemberDoc ? this.methods()
+				: this.fields()).each(function(other) {
 			if (member.isSimilar(other))
 				return true;
 		});
@@ -1125,7 +1119,10 @@ ClassObject = Object.extend({
 				})) 
 					(cls.isInterface() ? subInterfaces : implementingClasses).push(cls);
 			});
-			this.renderTemplate("class#interface", { subInterfaces: subInterfaces, implementingClasses: implementingClasses }, out);
+			this.renderTemplate("class#interface", {
+				subInterfaces: subInterfaces,
+				implementingClasses: implementingClasses
+			}, out);
 		}
 
 		var fields = this.fields();
@@ -1173,7 +1170,7 @@ ClassObject = Object.extend({
 
 					function addNonSimilar(members) {
 						members.each(function(member) {
-							if (!that.hasSimilar(member))
+							if (member.isVisible() && !that.hasSimilar(member))
 								inherited.push(member);
 						});
 					}
@@ -1210,7 +1207,19 @@ ClassObject = Object.extend({
 	 * @param title The title of the section.
 	 */
 	renderSummaries: function(cd, members, title) {
-		this.renderTemplate("summaries", { members: members, title: title, classDoc: cd }, out);
+		// Only show each name once, and only if the member is visible:
+		var prevName;
+		members = members.select(function(member) {
+			var name = member.name();
+			if (member.isVisible()) {
+				var sel = name != prevName;
+				prevName = name;
+				return sel;
+			}
+		});
+		this.renderTemplate("summaries", {
+			members: members, title: title, classDoc: cd
+		}, out);
 	},
 
 	$static: {
@@ -1265,7 +1274,9 @@ ClassObject = Object.extend({
 		sorted.each(function(cls) {
 			var cd = cls.classDoc;
 			var index = cls.renderClass();
-			this.renderTemplate("packages#class", { index: index ? index.join(', ') : null, cls: cls }, out);
+			this.renderTemplate("packages#class", {
+				index: index ? index.join(', ') : null, cls: cls
+			}, out);
 			cls.renderHierarchy();
 		});
 		this.renderTemplate("packages#classes", { classes: out.pop() }, out);
@@ -1310,7 +1321,8 @@ Document = Object.extend({
 		var fileName = name.indexOf(".") != -1 ? name :
 				name + (settings.templates ? ".jstl" : ".html");
 
-		this.writer = new java.io.PrintWriter(new java.io.FileWriter(settings.destDir + path + fileName));
+		this.writer = new java.io.PrintWriter(
+				new java.io.FileWriter(settings.destDir + path + fileName));
 	},
 
 	close: function() {
@@ -1336,7 +1348,8 @@ Document = Object.extend({
 function processClasses(classes) {
 	var root = new ClassObject();
 
-	// loop twice, as in the second loop, superclasses are picked from nodes which is filled in the firs loop
+	// Loop twice, as in the second loop, superclasses are picked from nodes
+	// which is filled in the firs loop
 	classes.each(function(cd) {
 		var cls = ClassObject.get(cd);
 		if (cls) {
@@ -1356,17 +1369,6 @@ function processClasses(classes) {
 		}
 	});
 	root.renderHierarchy("");
-}
-
-/**
- * Prints a sequence of tags obtained from e.g. com.sun.javadoc.Doc.tags().
- */
-function renderTags(param) {
-	return renderTemplate("tags", param);
-}
-
-function tags_macro(param) {
-	return renderTemplate("tags", param);
 }
 
 function getRelativeIdentifier(str) {
@@ -1406,8 +1408,37 @@ function encodeJs(str) {
 	return str ? (str = uneval(str)).substring(1, str.length - 1) : str;
 }
 
-function stripCodeTags_filter(str) {
+function encodeHtml(str) {
+	// encode everything
+	str = Packages.org.htmlparser.util.Translate.encode(str);
+	var tags = { code: true, br: true, p: true, b: true, a: true, i: true, tt: true };
+	// now replace allowed tags again.
+	return str.replace(/&lt;(\/?)(\w*)(\s*\/?)&gt;/g, function(match, open, tag, close) {
+		return tags[tag] ? '<' + open + tag + close + '>' : match;
+	});
+}
+
+/**
+ * Prints a sequence of tags obtained from e.g. com.sun.javadoc.Doc.tags().
+ */
+renderTags = tags_macro = function(param) {
+	return renderTemplate("tags", param);
+}
+
+stripCodeTags = stripCodeTags_filter = function(str) {
 	return str.replace(/<tt>|<\/tt>/g, "");
+}
+
+function tags_filter(str) {
+	// Put code tags on the same line as the content, as white-space: pre is set:
+	str = str.replace(/<code>\s*([\s\S]*?)\s*<\/code>/g, function(match, part) {
+		return '<code>' + part + '</code>';
+	});
+	// Automatically put <br /> at the end of sentences.
+	str = str.replace(/([.:])\s*(\n|\r\n)/g, function(match, before, lineBreak) {
+		return before + '<br />' + lineBreak;
+	});
+	return str;
 }
 
 function stripTags_fitler(str) {
@@ -1430,8 +1461,9 @@ function main() {
 			packageSequence[i] = name;
 	});
 
-	// now start rendering:
-	var doc = new Document("", settings.templates ? "packages.js" : "packages.html", "packages");
+	// Now start rendering:
+	var doc = new Document("", settings.templates ? "packages.js"
+			: "packages.html", "packages");
 
 	packageSequence.each(function(name) {
 		var pkg = packages[name];
@@ -1451,7 +1483,9 @@ function main() {
 			processClasses(pkg.exceptions());
 			processClasses(pkg.errors());
 
-			renderTemplate("packages#package", { content: out.pop(), name: name, path: path }, out);
+			renderTemplate("packages#package", {
+				content: out.pop(), name: name, path: path
+			}, out);
 
 			if (!settings.templates) {
 				// write package file:
