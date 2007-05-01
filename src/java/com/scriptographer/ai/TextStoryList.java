@@ -39,9 +39,11 @@ import com.scratchdisk.util.ReadOnlyList;
  */
 class TextStoryList extends AIObject implements ReadOnlyList {
 	ExtendedArrayList.List list;
+	Document document;
 	
-	TextStoryList(int handle) {
+	TextStoryList(int handle, Document document) {
 		super(handle);
+		this.document = document;
 		list = new ExtendedArrayList.List();
 	}
 
@@ -51,7 +53,7 @@ class TextStoryList extends AIObject implements ReadOnlyList {
 		return nativeSize(handle);
 	}
 
-	private native TextStory nativeGet(int handle, int index, TextStory curStory);
+	private native int nativeGet(int handle, int index, int curStoryHandle);
 
 	public Object get(int index) {
 		// update buffer length
@@ -59,11 +61,13 @@ class TextStoryList extends AIObject implements ReadOnlyList {
 		// native get returns the old cached value in case it's
 		// referencing the same object, otherwise it wraps the new
 		// story and returns it
-		TextStory curStory = (TextStory) list.get(index);
-		TextStory story = nativeGet(handle, index, curStory);
+		TextStory story = (TextStory) list.get(index);
+		int newHandle = nativeGet(handle, index, story.handle);
 		// update cache if story has changed
-		if (story != curStory)
+		if (newHandle != story.handle) {
+			story = new TextStory(newHandle, document);
 			list.set(index, story);
+		}
 		return story;
 	}
 
@@ -73,5 +77,11 @@ class TextStoryList extends AIObject implements ReadOnlyList {
 
 	public ExtendedList getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
+	}
+
+	protected void changeStoryHandle(TextStory story, int index) {
+		int newHandle = nativeGet(handle, index, story.handle);
+		if (story.handle != newHandle)
+			story.changeHandle(newHandle);
 	}
 }

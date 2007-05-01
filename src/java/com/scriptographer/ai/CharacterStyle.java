@@ -50,7 +50,7 @@ import com.scriptographer.CommitManager;
  * markDirty needs to be called for any of the changes
  */
 public class CharacterStyle extends PathStyle {
-	
+
 	// AutoKernType
 	public final Integer KERNING_MANUAL = new Integer(0);
 	public final Integer KERNING_METRIC = new Integer(1);
@@ -117,10 +117,11 @@ public class CharacterStyle extends PathStyle {
 	}
 	
 	protected void changeHandle(int newHandle) {
-		finalize(); // release old handle
+		release(); // release old handle
 		handle = newHandle;
 		pathStyleChanged = false;
 		fetched = false; // force refetch of PathStyle
+		version = CommitManager.version;
 	}
 	
 	private native int nativeClone();
@@ -351,5 +352,9 @@ akiRight
 	ATEErr (*GetRightAki) ( CharFeaturesRef charfeatures, bool* isAssigned, ASReal* ret);
 */
 	
-	protected native void finalize();
+	protected native void release();
+	
+	protected void finalize() {
+		release();
+	}
 }

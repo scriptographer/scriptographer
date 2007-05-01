@@ -50,21 +50,20 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStoryList_nativeSize(JNIEn
 }
 
 /*
- * com.scriptographer.ai.Story nativeGet(int handle, int index, com.scriptographer.ai.Story curStory)
+ * int nativeGet(int handle, int index, int curStoryHandle)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStoryList_nativeGet(JNIEnv *env, jobject obj, jint handle, jint index, jobject curStory) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStoryList_nativeGet(JNIEnv *env, jobject obj, jint handle, jint index, jint curStoryHandle) {
 	try {
-		StoryRef storyRef;
+		StoryRef storyRef, ret = 0;
 		if (!sStories->Item((StoriesRef) handle, index, &storyRef)) {
-			StoryRef curStoryRef = gEngine->getStoryHandle(env, curStory);
 			ATEBool8 equal;
 			// check if it's the same story as before, in that case return the old wrapped story
 			// this is needed as in ATE, reference handles allways change their values
-			if (curStoryRef != NULL && !sStory->IsEqual(storyRef, curStoryRef, &equal) && equal) {
-				return curStory;
-			}
-			// if we're still here, we need to wrap the story:
-			return gEngine->wrapStoryHandle(env, storyRef);
+			ret = (curStoryHandle && !sStory->IsEqual(storyRef, (StoryRef) curStoryHandle, &equal) && equal)
+					? (StoryRef) curStoryHandle
+					: storyRef;
+			sStory->Release(storyRef);
+			return (jint) ret;
 		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;

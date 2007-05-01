@@ -160,17 +160,18 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_getSelection(JNIE
 }
 
 /*
- * com.scriptographer.ai.TextRange nativeGetRange(boolean bIncludeOverflow)
+ * int nativeGetRange(boolean bIncludeOverflow)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_nativeGetRange(JNIEnv *env, jobject obj, jboolean bIncludeOverflow) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_nativeGetRange(JNIEnv *env, jobject obj, jboolean bIncludeOverflow) {
 	try {
 		// activate document so that text flow gets suspended as soon as the first range is accessed
-		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
-		TextRangeRef range;
-		if (!sTextFrame->GetTextRange(frame, bIncludeOverflow, &range))
-			return gEngine->wrapTextRangeHandle(env, range);
+		TextFrameRef frame = gEngine->getTextFrameRef(env, obj, true);
+		TextRangeRef range = NULL;
+		sTextFrame->GetTextRange(frame, bIncludeOverflow, &range);
+		sTextFrame->Release(frame);
+		return (jint) range;
 	} EXCEPTION_CONVERT(env);
-	return NULL;
+	return 0;
 }
 
 /*
@@ -178,12 +179,12 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_nativeGetRange(JN
  */
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextFrame_getSpacing(JNIEnv *env, jobject obj) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
-		ASReal spacing;
-		if (!sTextFrame->GetSpacing(frame, &spacing))
-			return spacing;
+		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		ASReal spacing = 0;
+		sTextFrame->GetSpacing(frame, &spacing);
+		sTextFrame->Release(frame);
+		return spacing;
 	} EXCEPTION_CONVERT(env);
-	return 0.0;
 }
 
 /*
@@ -191,8 +192,9 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextFrame_getSpacing(JNIEnv 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setSpacing(JNIEnv *env, jobject obj, jfloat spacing) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
+		TextFrameRef frame = gEngine->getTextFrameRef(env, obj, true);
 		sTextFrame->SetSpacing(frame, spacing);
+		sTextFrame->Release(frame);
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -201,12 +203,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setSpacing(JNIEnv *e
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_getOpticalAlignment(JNIEnv *env, jobject obj) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
-		ATEBool8 active;
-		if (!sTextFrame->GetOpticalAlignment(frame, &active))
-			return active;
+		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		ATEBool8 active = false;
+		sTextFrame->GetOpticalAlignment(frame, &active);
+		sTextFrame->Release(frame);
+		return active;
 	} EXCEPTION_CONVERT(env);
-	return false;
 }
 
 /*
@@ -214,8 +216,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_getOpticalAlignm
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOpticalAlignment(JNIEnv *env, jobject obj, jboolean active) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
+		TextFrameRef frame = gEngine->getTextFrameRef(env, obj, true);
 		sTextFrame->SetOpticalAlignment(frame, active);
+		sTextFrame->Release(frame);
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -224,15 +227,16 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOpticalAlignment(
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_equals(JNIEnv *env, jobject obj, jobject text) {
 	try {
+		ATEBool8 ret = false;
 		if (env->IsInstanceOf(text, gEngine->cls_TextFrame)) {
-			TextFrameRef frame1 = gEngine->getTextFrameHandle(env, obj);
-			TextFrameRef frame2 = gEngine->getTextFrameHandle(env, text);
+			TextFrameRef frame1 = gEngine->getTextFrameRef(env, obj);
+			TextFrameRef frame2 = gEngine->getTextFrameRef(env, text);
 			if (frame2 != NULL) {
-				ATEBool8 ret;
-				if (!sTextFrame->IsEqual(frame1, frame2, &ret))
-					return ret;
+				sTextFrame->IsEqual(frame1, frame2, &ret);
+				sTextFrame->Release(frame2);
 			}
+			sTextFrame->Release(frame1);
 		}
+		return ret;
 	} EXCEPTION_CONVERT(env);
-	return false;
 }

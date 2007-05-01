@@ -145,8 +145,7 @@ public abstract class TextFrame extends Art {
 
 	// ATE
 
-	// TODO: add cashing for getRange, updating with CommitManager.version
-	public native TextRange nativeGetRange(boolean includeOverflow);
+	public native int nativeGetRange(boolean includeOverflow);
 
 	/**
 	 * In case there's an overflow in the text, this only returns a range
@@ -157,13 +156,10 @@ public abstract class TextFrame extends Art {
 	public TextRange getVisibleRange() {
 		// once a range object is created, allways return the same reference
 		// and swap handles instead. like this references in JS remain...
-		// as visible range or story flow might change, we need to refetch here..
-		// TODO: check if its necessary
-		TextRange newRange = nativeGetRange(false);
-		if (visibleRange != null) {
-			visibleRange.assignHandle(newRange);
-		} else {
-			visibleRange = newRange;
+		if (visibleRange == null) {
+			visibleRange = new TextRange(nativeGetRange(false), document);
+		} else if (visibleRange.version != CommitManager.version) {
+			visibleRange.changeHandle(nativeGetRange(false));
 		}
 		return visibleRange;
 	}
@@ -177,41 +173,28 @@ public abstract class TextFrame extends Art {
 	public TextRange getRange() {
 		// once a range object is created, allways return the same reference
 		// and swap handles instead. like this references in JS remain...
-		// as story flow might change, we need to refetch here..
-		// TODO: check if its necessary
-		TextRange newRange = nativeGetRange(true);
-		if (range != null) {
-			range.assignHandle(newRange);
-		} else {
-			range = newRange;
+		if (range == null) {
+			range = new TextRange(nativeGetRange(true), document);
+		} else if (range.version != CommitManager.version) {
+			range.changeHandle(nativeGetRange(true));
 		}
 		return range;
 	}
 
 	/**
-	 * return the same as getVisibleRange().getStart()
+	 * Returns getVisibleRange().getStart()
 	 * @return
 	 */
 	public int getStart() {
-		// don't create a cached version if it's not there already,
-		// to avoid cache updating overhead
-		if (visibleRange != null)
-			return visibleRange.getStart();
-		else
-			return nativeGetRange(false).getStart();
+		return getVisibleRange().getStart();
 	}
 
 	/**
-	 * return the same as getVisibleRange().getEnd()
+	 * Returns getVisibleRange().getEnd()
 	 * @return
 	 */
 	public int getEnd() {
-		// don't create a cached version if it's not there already,
-		// to avoid cache updating overhead
-		if (visibleRange != null)
-			return visibleRange.getEnd();
-		else
-			return nativeGetRange(false).getEnd();
+		return getVisibleRange().getEnd();
 	}
 
 	public String getContent() {
@@ -252,7 +235,6 @@ public abstract class TextFrame extends Art {
 	API for that.  In Illustrator case, you can use AIArtSuite to set the selection.
 	*/
 	//	ATEErr (*GetSelected) ( TextFrameRef textframe, bool* ret);
-	//	ATEErr (*GetMatrix) ( TextFrameRef textframe, ASRealMatrix* ret);
 
 	public native float getSpacing();
 	public native void setSpacing(float spacing);

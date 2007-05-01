@@ -592,11 +592,11 @@ public class Document extends DictionaryObject {
 
 	private TextStoryList stories = null;
 	
-	public ReadOnlyList getStories() {
+	public TextStoryList getStories() {
 		if (stories == null) {
 			int handle = nativeGetStories();
 			if (handle != 0)
-				stories = new TextStoryList(handle);
+				stories = new TextStoryList(handle, this);
 		}
 		return stories;
 	}

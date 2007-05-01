@@ -65,7 +65,7 @@ public class ParagraphStyle extends AIObject implements Style, Commitable {
 	}
 	
 	protected void changeHandle(int newHandle) {
-		finalize(); // release old handle
+		release(); // release old handle
 		handle = newHandle;
 	}
 	
@@ -215,6 +215,10 @@ public class ParagraphStyle extends AIObject implements Style, Commitable {
 	ATEErr (*GetEveryLineComposer) ( ParaFeaturesRef parafeatures, bool* isAssigned, bool* ret);
 	ATEErr (*GetDefaultCharFeatures) ( ParaFeaturesRef parafeatures, bool* isAssigned, CharFeaturesRef* ret);
 	*/
-
-	protected native void finalize();
+	
+	protected native void release();
+	
+	protected void finalize() {
+		release();
+	}
 }

@@ -39,13 +39,15 @@
 using namespace ATE;
 
 /*
- * void finailze()
+ * void release()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextStory_finailze(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextStory_release(JNIEnv *env, jobject obj) {
 	try {
 		StoryRef story = (StoryRef) gEngine->getIntField(env, obj, gEngine->fid_AIObject_handle);
-		if (story != NULL)
+		if (story != NULL) {
 			sStory->Release(story);
+			gEngine->setIntField(env, obj, gEngine->fid_AIObject_handle, 0);
+		}
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -54,7 +56,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextStory_finailze(JNIEnv *env
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStory_getIndex(JNIEnv *env, jobject obj) {
 	try {
-		StoryRef story = gEngine->getStoryHandle(env, obj);
+		StoryRef story = gEngine->getStoryRef(env, obj);
 		ASInt32 index;
 		if (!sStory->GetIndex(story, &index))
 			return index;
@@ -63,16 +65,16 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStory_getIndex(JNIEnv *env
 }
 
 /*
- * com.scriptographer.ai.TextRange nativeGetRange()
+ * int nativeGetRange()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_nativeGetRange(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStory_nativeGetRange(JNIEnv *env, jobject obj) {
 	try {
-		StoryRef story = gEngine->getStoryHandle(env, obj);
+		StoryRef story = gEngine->getStoryRef(env, obj);
 		TextRangeRef range;
 		if (!sStory->GetTextRange_ForThisStory(story, &range))
-			return gEngine->wrapTextRangeHandle(env, range);
+			return (jint) range;
 	} EXCEPTION_CONVERT(env);
-	return NULL;
+	return 0;
 }
 
 /*
@@ -80,10 +82,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_nativeGetRange(JN
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_getRange(JNIEnv *env, jobject obj, jint start, jint end) {
 	try {
-		StoryRef story = gEngine->getStoryHandle(env, obj);
+		StoryRef story = gEngine->getStoryRef(env, obj);
 		TextRangeRef range;
 		if (!sStory->GetTextRange(story, start, end, &range))
-			return gEngine->wrapTextRangeHandle(env, range);
+			return gEngine->wrapTextRangeRef(env, range);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -93,7 +95,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_getRange(JNIEnv *
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_getSelection(JNIEnv *env, jobject obj) {
 	try {
-		StoryRef story = gEngine->getStoryHandle(env, obj);
+		StoryRef story = gEngine->getStoryRef(env, obj);
 		TextRangesRef ranges;
 		if (!sStory->GetTextSelection(story, &ranges))
 			return TextRange_convertTextRanges(env, ranges);
@@ -107,8 +109,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_getSelection(JNIE
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextStory_equals(JNIEnv *env, jobject obj, jobject story) {
 	try {
 		if (env->IsInstanceOf(story, gEngine->cls_TextStory)) {
-			StoryRef story1 = gEngine->getStoryHandle(env, obj);
-			StoryRef story2 = gEngine->getStoryHandle(env, story);
+			StoryRef story1 = gEngine->getStoryRef(env, obj);
+			StoryRef story2 = gEngine->getStoryRef(env, story);
 			if (story2 != NULL) {
 				ATEBool8 ret;
 				if (!sStory->IsEqual(story1, story2, &ret))
@@ -146,7 +148,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_nativeGetTextFram
 	try {
 		TextFrameRef textRef;
 		AIArtHandle textHandle;
-		if (!sStory->GetFrame((StoryRef) handle, index, &textRef) && !sAITextFrame->GetAITextFrame(textRef, &textHandle))
+		if (!sStory->GetFrame((StoryRef) handle, index, &textRef) &&
+			!sAITextFrame->GetAITextFrame(textRef, &textHandle))
 			return gEngine->wrapArtHandle(env, textHandle);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
@@ -157,7 +160,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_nativeGetTextFram
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStory_getLength(JNIEnv *env, jobject obj) {
 	try {
-		StoryRef story = gEngine->getStoryHandle(env, obj);
+		StoryRef story = gEngine->getStoryRef(env, obj);
 		ASInt32 length;
 		if (!sStory->GetSize(story, &length))
 			return length;

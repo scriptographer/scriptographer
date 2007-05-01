@@ -42,23 +42,22 @@ public class TextStory extends AIObject {
 	private Document document;
 	private TextRange range = null;
 	
-	protected TextStory(int handle, int docHandle) {
+	protected TextStory(int handle, Document document) {
 		super(handle);
-		document = Document.wrapHandle(docHandle);
+		this.document = document;
 	}
 	
 	public native int getLength();
 	
-	public native TextRange nativeGetRange();
+	public native int nativeGetRange();
 
 	public TextRange getRange() {
 		// once a range object is created, allways return the same reference
 		// and swap handles instead. like this references in JS remain...
-		TextRange newRange = nativeGetRange();
-		if (range != null) {
-			range.assignHandle(newRange);
-		} else {
-			range = newRange;
+		if (range == null) {
+			range = new TextRange(nativeGetRange(), document);
+		} else if (range.version != CommitManager.version) {
+			range.changeHandle(nativeGetRange());
 		}
 		return range;
 	}
@@ -112,7 +111,16 @@ public class TextStory extends AIObject {
 	
 	public native boolean equals(Object obj);
 	
-	protected native void finailze();
+	protected native void release();
+	
+	protected void finalize() {
+		release();
+	}
+	
+	protected void changeHandle(int newHandle) {
+		release(); // release old handle
+		handle = newHandle;
+	}
 	
 	protected native int nativeGetTexListLength(int handle);
 	
@@ -123,7 +131,7 @@ public class TextStory extends AIObject {
 		int version = -1;
 		
 		void update() {
-			if (CommitManager.version != version) {
+			if (version != CommitManager.version) {
 				length = nativeGetTexListLength(handle);
 				version = CommitManager.version;
 			}

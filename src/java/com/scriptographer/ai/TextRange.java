@@ -44,7 +44,7 @@ import com.scratchdisk.util.ReadOnlyList;
  * @author lehni
  */
 public class TextRange extends AIObject {
-	
+
 	// CaseChangeType
 	public static final int CASE_UPPER = 0;
 	public static final int CASE_LOWER = 1;
@@ -67,21 +67,40 @@ public class TextRange extends AIObject {
 	// to cash glyph run refrences, once their
 	// found. these values need to be cleared in
 	// setStart, setEnd ,setRange and finalize
-	private int glyphRunRef;
-	private int glyphRunPos;
+	private int glyphRuns;
 	
 	protected Document document;
 	protected TextStory story = null;
+	protected int version = -1;
 	
-	protected TextRange(int handle, int docHandle) {
+	// Sub Range lists:
+	TokenizerList words = null;
+	TokenizerList paragraphs = null;
+	CharacterList characters = null;
+
+	protected TextRange(int handle, Document document) {
 		super(handle);
-		document = Document.wrapHandle(docHandle);
+		this.document = document;
 	}
 
-	public void assignHandle(TextRange range) {
-		finalize(); // release old handle
-		handle = range.handle;
-		range.handle = 0;
+	protected TextRange(int handle, int docHandle) {
+		this(handle, Document.wrapHandle(docHandle));
+	}
+
+	// Once a range object is created, allways return the same reference
+	// and swap handles instead. like this references in JS remain...
+	public void changeHandle(int newHandle) {
+		release(); // release old handle
+		handle = newHandle;
+		version = CommitManager.version;
+		// Clear the sub ranges, as the items in them are not valid anymore
+		words = null;
+		paragraphs = null;
+		characters = null;
+		// Story needs to be updated too, otherwise the old textFrame
+		// (e.g. before moving) keeps being referenced...
+		if (story != null)
+			document.getStories().changeStoryHandle(story, nativeGetStoryIndex());
 	}
 	
 	public Document getDocument() {
@@ -235,7 +254,6 @@ public class TextRange extends AIObject {
 				characterStyle = new CharacterStyle(styleHandle, this);
 		} else if (characterStyle.version != CommitManager.version) {
 			characterStyle.changeHandle(nativeGetCharacterStyle(handle));
-			characterStyle.version = CommitManager.version;
 		}
 		return characterStyle;
 	}
@@ -246,9 +264,8 @@ public class TextRange extends AIObject {
 			// create a new handle and set it here
 			style = (CharacterStyle) style.clone();
 			characterStyle.changeHandle(style.handle);
-			characterStyle.version = CommitManager.version;
 			characterStyle.markSetStyle();
-			style.handle = 0; // make sure finalize doesn't mess up things...
+			style.handle = 0; // make sure release doesn't mess up things...
 		}
 	}
 	
@@ -272,7 +289,7 @@ public class TextRange extends AIObject {
 			paragraphStyle.changeHandle(style.handle);
 			paragraphStyle.version = CommitManager.version;
 			paragraphStyle.markSetStyle();
-			style.handle = 0; // make sure finalize doesn't mess up things...
+			style.handle = 0; // make sure release doesn't mess up things...
 		}
 	}
 	
@@ -283,9 +300,10 @@ public class TextRange extends AIObject {
 			paragraphStyle.commit();
 	}
 	
-	// TODO: ...
 	public native Point[] getOrigins();
+	public native Matrix[] getTransformations();
 	/*
+	TODO: ...
 	public native int[] getGlyphIds();
 	public native int getGlyphId();
 	public native int getCharCount();
@@ -363,10 +381,12 @@ public class TextRange extends AIObject {
 	
 	public native boolean equals(Object obj);
 	
-	protected native void finalize();
+	protected native void release();
 	
-	TokenizerList words = null;
-	
+	protected void finalize() {
+		release();
+	}
+
 	public ReadOnlyList getWords() {
 		if (words == null)
 			words = new TokenizerList(" \t\n\r\f");
@@ -374,16 +394,12 @@ public class TextRange extends AIObject {
 		return words;
 	}
 	
-	TokenizerList paragraphs = null;
-	
 	public ReadOnlyList getParagraphs() {
 		if (paragraphs == null)
 			paragraphs = new TokenizerList("\r");
 		paragraphs.update();
 		return paragraphs;
 	}
-	
-	CharacterList characters = null;
 	
 	public ReadOnlyList getCharacters() {
 		if (characters == null)

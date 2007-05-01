@@ -59,7 +59,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeCreate(JN
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeClone(JNIEnv *env, jobject obj) {
 	try {
-		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj);
+		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj);
 		CharFeaturesRef clone;
 		if (!sCharFeatures->Clone(features, &clone)) {
 			// add reference to the handle, which will be released in CharacterStyle.finalize
@@ -114,11 +114,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetStyle(
 /*
  * void finalize()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_finalize(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_release(JNIEnv *env, jobject obj) {
 	try {
 		CharFeaturesRef features = (CharFeaturesRef) gEngine->getIntField(env, obj, gEngine->fid_AIObject_handle);
-		if (features != NULL)
+		if (features != NULL) {
 			sCharFeatures->Release(features);
+			gEngine->setIntField(env, obj, gEngine->fid_AIObject_handle, 0);
+		}
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -127,7 +129,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_finalize(JNIEnv
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetFont(JNIEnv *env, jobject obj) {
 	try {
-		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj);
+		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj);
 		ATEBool8 isAssigned;
 		FontRef value;
 		AIFontKey font;
@@ -144,7 +146,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetFont(J
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetFont(JNIEnv *env, jobject obj, jint value) {
 	try {
-		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj);
+		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj);
 		ASErr err;
 		FontRef font;
 		if (value == -1)

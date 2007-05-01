@@ -58,7 +58,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ParagraphStyle_nativeCreate(JN
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_ParagraphStyle_nativeClone(JNIEnv *env, jobject obj) {
 	try {
-		ParaFeaturesRef features = gEngine->getParaFeaturesHandle(env, obj);
+		ParaFeaturesRef features = gEngine->getParaFeaturesRef(env, obj);
 		ParaFeaturesRef clone;
 		if (!sParaFeatures->Clone(features, &clone)) {
 			// add reference to the handle, which will be released in ParagraphStyle.finalize
@@ -79,13 +79,15 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_nativeSetStyle(
 }
 
 /*
- * void finalize()
+ * void release()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_finalize(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_release(JNIEnv *env, jobject obj) {
 	try {
 		ParaFeaturesRef features = (ParaFeaturesRef) gEngine->getIntField(env, obj, gEngine->fid_AIObject_handle);
-		if (features != NULL)
+		if (features != NULL) {
 			sParaFeatures->Release(features);
+			gEngine->setIntField(env, obj, gEngine->fid_AIObject_handle, 0);
+		}
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -466,7 +468,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getDefaultTa
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setDefaultTabWidth(JNIEnv *env, jobject obj, jobject value) {
 	try {
 		// no macro here as clearing is not possible for this value
-		ParaFeaturesRef features = gEngine->getParaFeaturesHandle(env, obj);
+		ParaFeaturesRef features = gEngine->getParaFeaturesRef(env, obj);
 		if (value != NULL && !sParaFeatures->SetDefaultTabWidth(features, (ASReal) gEngine->callFloatMethod(env, value, gEngine->mid_Number_floatValue)))
 			gEngine->callVoidMethod(env, obj, gEngine->mid_ParagraphStyle_markSetStyle);
 	} EXCEPTION_CONVERT(env);
