@@ -33,6 +33,7 @@ import org.mozilla.javascript.tools.debugger.SwingGui;
 import org.mozilla.javascript.tools.debugger.Dim;
 
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ai.Application;
 
 import javax.swing.tree.*;
 import javax.swing.*;
@@ -177,7 +178,7 @@ public class Debugger extends Dim implements
 		}
 
 		public void dispatchNextGuiEvent() throws InterruptedException {
-			ScriptographerEngine.dispatchNextEvent();
+			Application.dispatchNextEvent();
 		}
 
 		public DebugGui(Dim dim, String title) {

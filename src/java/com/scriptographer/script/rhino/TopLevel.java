@@ -41,7 +41,6 @@ import org.mozilla.javascript.ScriptableObject;
 import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.rhino.ExtendedJavaClass;
-import com.scriptographer.CommitManager;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.*;
 import com.scriptographer.ai.*;
@@ -185,18 +184,12 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		}
 
 		// define some global functions and objects:
-		String[] names = { "include", "execute", "evaluate", "commit",
-			"getNanoTime", "updateProgress" };
+		String[] names = { "include", "execute", "evaluate" };
 		defineFunctionProperties(names, TopLevel.class,
 			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 
-		// properties:
-		defineProperty("documents", DocumentList.getInstance(),
-			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
-		defineProperty("fonts", FontList.getInstance(),
-			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
-		defineProperty(this, "activeDocument", "getActiveDocument", null);
-		defineProperty(this, "scriptDir", "getScriptDirectory", null);
+		defineProperty("app", Application.getInstance(),
+				ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 	}
 
 	/**
@@ -208,23 +201,11 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 	 * @return
 	 */
 	protected static File getDirectory(Scriptable scope) {
-		File file = (File) scope.get("scriptFile", scope);
-		if (file != null)
-			file = file.getParentFile();
+		com.scriptographer.ai.Script script = (com.scriptographer.ai.Script) scope.get("script", scope);
+		if (script != null)
+			return script.getFile().getParentFile();
 		else
-			file = ScriptographerEngine.getScriptDirectory();
-		return file;
-	}
-
-	/*
-	 * JavaScript functions
-	 */
-	protected static Object getActiveDocument(ScriptableObject obj) {
-		return Context.javaToJS(Document.getActiveDocument(), obj);
-	}
-
-	protected static Object getScriptDirectory(ScriptableObject obj) {
-		return Context.javaToJS(ScriptographerEngine.getScriptDirectory(), obj);
+			return ScriptographerEngine.getScriptDirectory();
 	}
 
 	/**
@@ -272,28 +253,5 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 			Function funObj) throws Exception {
 		ScriptEngine engine = ScriptEngine.getEngineByName("JavaScript");
 		engine.evaluate(Context.toString(args[0]), engine.getScope(thisObj));
-	}
-
-	/**
-	 * 
-	 */
-	public static void commit(Context cx, Scriptable thisObj, Object[] args,
-			Function funObj) {
-		// call with key set to null so the commit version is not increased
-		// (see CommitManager.commit()
-		CommitManager.commit(null);
-	}
-
-	public static long getNanoTime(Context cx, Scriptable thisObj,
-			Object[] args, Function funObj) {
-		return ScriptographerEngine.getNanoTime();
-	}
-
-	public static boolean updateProgress(Context cx, Scriptable thisObj,
-			Object[] args, Function funObj) {
-		return ScriptographerEngine.updateProgress(
-			(long) Context.toNumber(args[0]),
-			(long) Context.toNumber(args[1])
-		);
 	}
 }

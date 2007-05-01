@@ -37,6 +37,7 @@ import org.mozilla.javascript.Context;
 
 import com.scratchdisk.script.ScriptCanceledException;
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ai.Application;
 
 /**
  * @author lehni
@@ -64,7 +65,7 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
 	}
 
 	protected void observeInstructionCount(Context cx, int instructionCount) {
-		if (!ScriptographerEngine.updateProgress())
+		if (!Application.updateProgress())
 			throw new ScriptCanceledException();
 	}
 

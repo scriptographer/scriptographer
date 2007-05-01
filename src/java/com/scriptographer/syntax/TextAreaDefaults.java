@@ -12,6 +12,7 @@ package com.scriptographer.syntax;
 import java.awt.*;
 
 import com.scriptographer.ScriptographerEngine; 
+import com.scriptographer.ai.Application;
 
 /**
  * Encapsulates default settings for a text area. This can be passed to the
@@ -80,7 +81,7 @@ public class TextAreaDefaults {
 			DEFAULTS.eolMarkers = true;
 			DEFAULTS.paintInvalid = true;
 			
-			DEFAULTS.font = ScriptographerEngine.isMacintosh() ?
+			DEFAULTS.font = Application.isMacintosh() ?
 				new Font("Monaco", Font.PLAIN, 10) :
 				new Font("Monospaced", Font.PLAIN, 11);
 			DEFAULTS.fgColor = Color.black;

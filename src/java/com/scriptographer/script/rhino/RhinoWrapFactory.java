@@ -66,7 +66,8 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 		} else if (obj instanceof RhinoCallable) {
 			// Handle the ScriptFunction special case, return the unboxed
 			// function value.
-			obj = ((RhinoCallable) obj).getFunction();
+			// TODO: move to com.scratchdisk
+			obj = ((RhinoCallable) obj).getCallable();
 		}
 		return super.wrap(cx, scope, obj, staticType);
 	}

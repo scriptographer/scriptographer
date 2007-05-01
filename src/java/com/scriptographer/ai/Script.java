@@ -1,13 +1,13 @@
 /*
  * Scriptographer
- * 
+ *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
- * 
+ *
  * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
- * 
+ *
  * -- GPL LICENSE NOTICE --
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,55 +24,41 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on 10.06.2006.
- * 
- * $Id$
+ * File created on Apr 22, 2007.
+ *
+ * $Id: $
  */
 
 package com.scriptographer.ai;
 
 import java.io.File;
+import java.util.prefs.Preferences;
 
-/*
- * This class is just a dummy to get Javadoc to generate documentation for
- * the global scope
- */
+import com.scriptographer.ScriptographerEngine;
 
 /**
- * Objects and functions present in the global scope. These can be used anywhere
- * in scripts.
- * 
  * @author lehni
+ *
  */
-public class global {
-	private global() {
-		// do not initiate
+public class Script {
+	private File file;
+	private Preferences preferences = null;
+
+	public Script(File file) {
+		this.file = file;
 	}
 
-	/**
-	 * Prints one or more passed parameters to the console.
-	 */
-	public void print() {
-		// dummy
+	public Preferences getPreferences() {
+		if (preferences == null)
+			preferences = ScriptographerEngine.getPreferences(file);
+		return preferences;
 	}
 
-	/**
-	 * Includes and evaluates one or more other javascripts.
-	 * <p>e.g:
-	 * <pre>include("raster.js", "mysql.js");</pre>
-	 */
-	public void include() {
-		// dummy
+	public File getFile() {
+		return file;
 	}
 
-	// TODO: commit, evaluate
-	/**
-	 * The Scriptographer base directory where all the scripts are stored.
-	 */
-	public File scriptDir;
-
-	/**
-	 * The file of the current script.
-	 */
-	public File scriptFile;
+	public File getDirectory() {
+		return file.getParentFile();
+	}
 }

@@ -14,6 +14,7 @@ import javax.swing.text.*;
 import javax.swing.JComponent;
 
 import com.scriptographer.ScriptographerEngine; 
+import com.scriptographer.ai.Application;
 
 import java.awt.event.MouseEvent;
 import java.awt.*;
@@ -373,7 +374,7 @@ public class TextAreaPainter extends JComponent implements TabExpander,
 	 *            The graphics context
 	 */
 	public void paint(Graphics gfx) {
-		if (ScriptographerEngine.isMacintosh()) {
+		if (Application.isMacintosh()) {
 			Graphics2D g2 = (Graphics2D) gfx;
 			g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 				RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
