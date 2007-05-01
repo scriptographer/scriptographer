@@ -46,17 +46,24 @@ public class ItemContainer {
 	protected AWTItemContainer container;
 	protected Frame frame;
 
-	public ItemContainer(LayoutManager mgr, Frame frame) {
+	public ItemContainer(LayoutManager mgr, Item[] items, Frame frame) {
 		this.container = new AWTItemContainer(mgr);
 		this.frame = frame;
+		if (items != null)
+			for (int i = 0; i < items.length; i++)
+				add(items[i]);
 	}
-	
+
+	public ItemContainer(LayoutManager mgr, Item[] items) {
+		this(mgr, items, null);
+	}
+
 	public ItemContainer(LayoutManager mgr) {
-		this(mgr, null);
+		this(mgr, null, null);
 	}
 
 	public ItemContainer() {
-		this(null, null);
+		this(null, null, null);
 	}
 
 	protected Component getComponent() {

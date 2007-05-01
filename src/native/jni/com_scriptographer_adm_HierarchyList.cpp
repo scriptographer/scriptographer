@@ -211,16 +211,16 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getActiveLea
 	return NULL;
 
 /*
- * com.scriptographer.adm.HierarchyListEntry[] getAllSelected()
+ * com.scriptographer.adm.HierarchyListEntry[] getSelectedEntries()
  */
-JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_HierarchyList_getAllSelected(JNIEnv *env, jobject obj) {
+JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_HierarchyList_getSelectedEntries(JNIEnv *env, jobject obj) {
 	GET_ENTRIES(NumberOfAllSelectedEntriesInHierarchy, IndexAllSelectedEntriesInHierarchy)
 }
 
 /*
- * com.scriptographer.adm.HierarchyListEntry[] getAllUnnestedSelected()
+ * com.scriptographer.adm.HierarchyListEntry[] getUnnestedSelectedEntries()
  */
-JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_HierarchyList_getAllUnnestedSelected(JNIEnv *env, jobject obj) {
+JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_HierarchyList_getUnnestedSelectedEntries(JNIEnv *env, jobject obj) {
 	GET_ENTRIES(NumberOfUnNestedSelectedEntriesInHierarchy, IndexUnNestedSelectedEntriesInHierarchy)
 }
 

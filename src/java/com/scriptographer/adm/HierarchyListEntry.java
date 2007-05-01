@@ -95,6 +95,7 @@ public class HierarchyListEntry extends ListEntry {
 	
 	// for the automatic bean detection in rhino, so it becomes exposes
 	// as a read-only property named .childrenSelected
+	// TODO: find better name!
 	public boolean getChildrenSelected() {
 		return areChildrenSelected();
 	}

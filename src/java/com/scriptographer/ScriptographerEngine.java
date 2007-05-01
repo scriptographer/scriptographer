@@ -36,17 +36,16 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.prefs.Preferences;
 
 import com.scriptographer.adm.Dialog;
 import com.scriptographer.adm.MenuItem;
 import com.scriptographer.ai.Annotator;
+import com.scriptographer.ai.Application;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.LiveEffect;
 import com.scriptographer.ai.Timer;
-import com.scriptographer.gui.AboutDialog;
-import com.scriptographer.gui.ConsoleDialog;
-import com.scriptographer.gui.MainDialog;
 import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptCanceledException;
 import com.scratchdisk.script.ScriptEngine;
@@ -58,21 +57,9 @@ import com.scratchdisk.script.Scope;
  * @author lehni
  */
 public class ScriptographerEngine {
-	private static long progressCurrent;
-	private static long progressMax;
-	private static boolean progressAutomatic;
-	private static final boolean isWindows, isMacintosh;
-	private static ConsoleDialog consoleDialog;
-	private static MainDialog mainDialog;
 	private static File scriptDir = null;
 	private static File pluginDir = null;
 	private static PrintStream logger = null;
-
-	static {
-		String os = System.getProperty("os.name").toLowerCase();
-		isWindows = (os.indexOf("windows") != -1);
-		isMacintosh = (os.indexOf("mac os x") != -1);
-	}
 
 	/**
      * Don't let anyone instantiate this class.
@@ -106,9 +93,6 @@ public class ScriptographerEngine {
 		if (!scriptDir.exists() || !scriptDir.isDirectory())
 			chooseScriptDirectory();
 
-		consoleDialog = new ConsoleDialog();
-		mainDialog = new MainDialog(consoleDialog);
-
 		// Execute all scripts in startup folder:
 		if (scriptDir != null)
 			executeAll(new File(scriptDir, "startup"));
@@ -121,6 +105,7 @@ public class ScriptographerEngine {
 	public static void destroy() {
 		// We're shuting down, so do not display console stuff any more
 		ConsoleOutputStream.enableRedirection(false);
+		stopAll();
 		Dialog.destroyAll();
 		LiveEffect.removeAll();
 		MenuItem.removeAll();
@@ -154,22 +139,15 @@ public class ScriptographerEngine {
 	public static File getScriptDirectory() {
 		return scriptDir;
 	}
-
-	public static boolean isWindows() {
-		return isWindows;
-	}
-
-	public static boolean isMacintosh() {
-		return isMacintosh;
-	}
 	
-	public static Preferences getPreferences(boolean checkFile) {
-		if (checkFile && currentFile != null)
+	public static Preferences getPreferences(boolean fromScript) {
+		if (fromScript && currentFile != null)
 			return getPreferences(currentFile);
 		// the base prefs for Scriptographer are:
-		// com.scratchdisk.scriptographer on mac, three nodes seem to be
+		// com.scriptographer.preferences on mac, three nodes seem to be
 		// necessary, otherwise things get mixed up...
-		return Preferences.userNodeForPackage(ScriptographerEngine.class).node("scriptographer");
+		return Preferences.userNodeForPackage(
+				ScriptographerEngine.class).node("preferences");
 	}
 
 	public static Preferences getPreferences(File file) {
@@ -219,44 +197,53 @@ public class ScriptographerEngine {
 
 	public static native String nativeReload();
 
+	static ScriptographerCallback callback;
+
+	public static void setCallback(ScriptographerCallback cback) {
+		callback = cback;
+		ConsoleOutputStream.setCallback(cback);
+	}
+
 	public static void onAbout() {
-		AboutDialog.show();
+		callback.onAbout();
 	}
 	
 	private static boolean executing = false;
 	private static File currentFile = null;
-	
-	public static boolean isExecuting() {
-		return executing;
-	}
+	private static ArrayList stopScopes = new ArrayList();
 
 	/**
-	 * to be called before ai functions are executed
+	 * To be called before AI functions are executed
 	 */
-	public static boolean beginExecution(Scope scope, File file) {
-		if (!executing) {
+	private static boolean beginExecution(File file, Scope scope) {
+		// Since the interface is done in scripts too, we need to cheat
+		// a bit here. When file is set, we ignore the current state
+		// of "executing", as we're about to to execute a new script...
+		if (!executing || file != null) {
 			executing = true;
 			Document.beginExecution();
 			currentFile = file;
 			if (file != null) {
-				ScriptographerEngine.showProgress("Executing " + (file != null ?
+				Application.showProgress("Executing " + (file != null ?
 						file.getName() : "Console Input") + "...");
-				// disable output to the console while the script is executed as it
+				// Disable output to the console while the script is executed as it
 				// won't get updated anyway
 				// ConsoleOutputStream.enableOutput(false);
-				if (scope.get("scriptFile") == null)
-					scope.put("scriptFile", file, true);
-				if (scope.get("preferences") == null)
-					scope.put("preferences", ScriptographerEngine.getPreferences(file), true);
+
+				// Put a script object in the scope to offer the user
+				// access to information about it.
+				if (scope.get("script") == null)
+					scope.put("script", new com.scriptographer.ai.Script(file), true);
 			}
+			return true;
 		}
 		return false;
 	}
 
 	/**
-	 * to be called before ai functions are executed
+	 * To be called after AI functions were executed
 	 */
-	public static void endExecution() {
+	private static void endExecution() {
 		if (executing) {
 			CommitManager.commit();
 			Document.endExecution();
@@ -275,22 +262,24 @@ public class ScriptographerEngine {
 	 * @param objects
 	 * @throws ScriptException 
 	 */
-	public static Object invoke(Callable method, Object obj, Object[] args)
+	public static Object invoke(Callable callable, Object obj, Object[] args)
 			throws ScriptException {
 		boolean started = beginExecution(null, null);
 		// Retrieve wrapper object for the native java object, and call the
 		// function on it.
-		Object ret = method.call(obj, args);
-		// commit all changed objects after a scripting function has been
-		// called!
-		if (started)
-			endExecution();
-		return ret;
+		try {
+			return callable.call(obj, args);
+		} finally {
+			// commit all changed objects after a scripting function has been
+			// called!
+			if (started)
+				endExecution();
+		}
 	}
 
-	public static Object invoke(Callable method, Object obj)
+	public static Object invoke(Callable callable, Object obj)
 			throws ScriptException {
-		return invoke(method, obj, new Object[0]);
+		return invoke(callable, obj, new Object[0]);
 	}
 
 	/**
@@ -314,20 +303,19 @@ public class ScriptographerEngine {
 		try {
 			if (scope == null)
 				scope = script.getEngine().createScope();
-			started = ScriptographerEngine.beginExecution(scope, file);
+			started = ScriptographerEngine.beginExecution(file, scope);
 			ret = script.execute(scope);
 			if (started) {
 				// handle onStart / onStop
-				Callable onStart = scope.getMethod("onStart");
+				Callable onStart = scope.getCallable("onStart");
 				if (onStart != null)
 					onStart.call(scope);
-				Callable onStop = scope.getMethod("onStop");
-				if (onStop != null) {
+				if (scope.getCallable("onStop") != null) {
 					// add this scope to the scopes that want onStop to be called
 					// when the stop button is hit by the user
-					// TODO: finish this
+					stopScopes.add(scope);
 				}
-				ScriptographerEngine.closeProgress();
+				Application.closeProgress();
 			}
 		} catch (ScriptException e) {
 			ScriptographerEngine.reportError(e);
@@ -368,55 +356,21 @@ public class ScriptographerEngine {
 			}
 		}
 	}
-	
+
 	public static void stopAll() {
 		Timer.stopAll();
-	}
-
-	/**
-	 * Launches the filename with the default associated editor.
-	 * 
-	 * @param filename
-	 * @return
-	 */
-
-	public static native boolean launch(String filename);
-
-	public static boolean launch(File file) {
-		return launch(file.getPath());
-	}
-
-	public static native long getNanoTime();
-
-	private static native void nativeShowProgress(String text);
-	
-	public static void showProgress(String text) {
-		progressAutomatic = true;
-		progressCurrent = 0;
-		progressMax = 1 << 8;
-		nativeUpdateProgress(progressCurrent, progressMax);
-		nativeShowProgress(text);
-	}
-	
-	private static native boolean nativeUpdateProgress(long current, long max);
-
-	public static boolean updateProgress(long current, long max) {
-		progressCurrent = current;
-		progressMax = max;
-		progressAutomatic = false;
-		return nativeUpdateProgress(current, max);
-	}
-	
-	public static boolean updateProgress() {
-		boolean ret = nativeUpdateProgress(progressCurrent, progressMax);
-		if (progressAutomatic) {
-			progressCurrent++;
-			progressMax++;
+		// Walk through all the stop scopes and call onStop on them:
+		for (Iterator it = stopScopes.iterator(); it.hasNext();) {
+			Scope scope = (Scope) it.next();
+			Callable onStop = scope.getCallable("onStop");
+			if (onStop != null) {
+				try {
+					onStop.call(scope);
+				} catch (ScriptException e) {
+					ScriptographerEngine.reportError(e);
+				}
+			}
 		}
-		return ret;
+		stopScopes.clear();
 	}
-	
-	public static native void dispatchNextEvent();
-	
-	public static native boolean closeProgress();
 }

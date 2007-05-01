@@ -365,9 +365,15 @@ public class HierarchyList extends List {
 	 *
 	 */
 
-	public native HierarchyListEntry[] getAllSelected();
+	/**
+	 * Returns all selected entries.
+	 */
+	public native HierarchyListEntry[] getSelectedEntries();
 
-	public native HierarchyListEntry[] getAllUnnestedSelected();
+	/**
+	 * Returns all unnested selected entries.
+	 */
+	public native HierarchyListEntry[] getUnnestedSelectedEntries();
 
 	/*
 	 * item sequence manipulation

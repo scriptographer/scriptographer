@@ -43,7 +43,7 @@ public class ConsoleOutputStream extends OutputStream {
 	 * the singleton object
 	 */
 	private static ConsoleOutputStream console = new ConsoleOutputStream();
-	
+
 	/**
 	 * some constants
 	 */
@@ -58,7 +58,7 @@ public class ConsoleOutputStream extends OutputStream {
 	private PrintStream stream;
 	private PrintStream stdOut;
 	private PrintStream stdErr;
-	private ConsoleOutputWriter writer;
+	private ScriptographerCallback callback;
 
 	private ConsoleOutputStream() {
 		buffer = new StringBuffer();
@@ -85,7 +85,7 @@ public class ConsoleOutputStream extends OutputStream {
 				int sepLength = lineSeparator.length();
 				if (pos > 0 && pos == buffer.length() - sepLength)
 					buffer.delete(pos, pos + sepLength);
-				writer.println(buffer.toString());
+				callback.println(buffer.toString());
 				buffer.setLength(0);
 			} else {
 				buffer.append(lineSeparator);
@@ -96,7 +96,7 @@ public class ConsoleOutputStream extends OutputStream {
 	}
 	
 	public static void enableOutput(boolean enabled) {
-		console.enabled = enabled && console.writer != null;
+		console.enabled = enabled && console.callback != null;
 		if (console.enabled && console.buffer.length() > 0) {
 			try {
 				// write a newline character so the buffer is flushed to the
@@ -117,10 +117,9 @@ public class ConsoleOutputStream extends OutputStream {
 			System.setErr(console.stdErr);
 		}
 	}
-	
 
-	public static void setWriter(ConsoleOutputWriter writer) {
-		console.writer = writer;
-		enableOutput(true);
+	protected static void setCallback(ScriptographerCallback callback) {
+		console.callback = callback;
+		enableOutput(callback != null);
 	}
 }
