@@ -17,16 +17,19 @@
 		<property name="year" value="2001-${now}"/>
 
 		<property name="home.dir" value="../.."/>
+		<!-- build.lib contains libraries for building, not built libs. -->
+		<!-- build.libraries contains the products. TODO: find better names. -->
+		<property name="build.lib" value="${home.dir}/build/java/lib"/>
 		<property name="build.dir" value="${home.dir}/build/java/build"/>
 		<property name="build.src" value="${home.dir}/src/java"/>
-		<property name="build.lib" value="${build.dir}/lib"/>
 		<property name="build.jni" value="${home.dir}/src/native/jni"/>
 		<property name="build.classes" value="${build.dir}/classes"/>
+		<property name="build.libraries" value="${build.dir}/lib"/>
 		<property name="build.packages" value="${home.dir}/build/packages"/>
 		<loadproperties srcfile="build.number"/>
 
 		<path id="build.classpath">
-			<fileset dir="${build.lib}">
+			<fileset dir="${build.libraries}">
 				<include name="**/*.jar" />
 				<exclude name="**/scriptographer*.jar" />
 			</fileset>
@@ -47,6 +50,9 @@
 		<path id="docs.classpath">
 			<pathelement path="${build.classes}"/>
 			<fileset dir="${build.lib}">
+				<include name="**/*.jar" />
+			</fileset>
+			<fileset dir="${build.libraries}">
 				<include name="**/*.jar" />
 				<exclude name="**/scriptographer*.jar" />
 			</fileset>
@@ -105,10 +111,10 @@
 				<include name="**/*.icc" />
 			</fileset>
 		</copy>
-		<!-- copy the gui resources -->
-		<copy todir="${build.classes}/com/scriptographer/gui/resources">
-			<fileset dir="${build.src}/com/scriptographer/gui/resources">
-				<include name="**/*.png" />
+		<!-- copy the meta resources -->
+		<copy todir="${build.classes}/META-INF">
+			<fileset dir="${build.src}/META-INF">
+				<exclude name="**/*.in" />
 			</fileset>
 		</copy>
 		<javac srcdir="${build.src}"
@@ -133,7 +139,7 @@
 				<include name="**/*.icc" />
 			</fileset>
 		</copy>
-		<jar jarfile="${build.lib}/${jar.name}.jar"
+		<jar jarfile="${build.libraries}/${jar.name}.jar"
 			basedir="${build.classes}"
 			excludes="**/loader/**,**/test/**,**/jython/**"/>
 		<jar jarfile="${build.dir}/loader.jar"
@@ -154,20 +160,25 @@
 	</target>
 	
 	<target name="resources" depends="init">
-		<property name="mac.resources" value="${home.dir}/build/mac/resources" />
-		<property name="win.resources" value="${home.dir}/build/win/resources" />
-		<copy file="${mac.resources}/Info.plist.in" tofile="${mac.resources}/Info.plist" overwrite="true" />
-		<replace file="${mac.resources}/Info.plist">
+		<property name="resources.mac" value="${home.dir}/build/mac/resources" />
+		<property name="resources.win" value="${home.dir}/build/win/resources" />
+		<property name="resources.meta" value="${build.src}/META-INF/" />
+		<copy file="${resources.mac}/Info.plist.in" tofile="${resources.mac}/Info.plist" overwrite="true" />
+		<replace file="${resources.mac}/Info.plist">
 			<replacefilter token="@version@" value="${version}" />
 			<replacefilter token="@build.number@" value="${build.number}" />
 			<replacefilter token="@year@" value="${year}" />
 		</replace>
-		<copy file="${win.resources}/plugin.rc.in" tofile="${win.resources}/plugin.rc" overwrite="true" />
-		<replace file="${win.resources}/plugin.rc">
+		<copy file="${resources.win}/plugin.rc.in" tofile="${resources.win}/plugin.rc" overwrite="true" />
+		<replace file="${resources.win}/plugin.rc">
 			<replacefilter token="@version.major@" value="${version.major}" />
 			<replacefilter token="@version.minor@" value="${version.minor}" />
 			<replacefilter token="@build.number@" value="${build.number}" />
 			<replacefilter token="@year@" value="${year}" />
+		</replace>
+		<copy file="${resources.meta}/version.in" tofile="${resources.meta}/version" overwrite="true" />
+		<replace file="${resources.meta}/version">
+			<replacefilter token="@build.number@" value="${build.number}" />
 		</replace>
 	</target>
 
@@ -232,6 +243,7 @@
 
 			<class name="com.scriptographer.ScriptographerEngine" />
 
+			<class name="com.scriptographer.ai.Application" />
 			<class name="com.scriptographer.ai.Tool" />
 			<class name="com.scriptographer.ai.Art" />
 			<class name="com.scriptographer.ai.Path" />
@@ -361,7 +373,7 @@
 				version="false"
 				public="true"
 				windowtitle="${Name} ${version} API"
-				classpathref="build.classpath">
+				classpathref="docs.classpath">
 		    <doctitle><![CDATA[${Name} ${version}]]></doctitle>
 			<bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, <a href="http://www.scratchdisk.com" target="_blank">Scratchdisk.com</a>. All Rights Reserved.]]></bottom>
 			<doclet name="com.scratchdisk.script.rhino.RhinoDoclet" pathref="docs.classpath">
