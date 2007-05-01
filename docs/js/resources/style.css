@@ -61,8 +61,10 @@ p {
 	padding-bottom: 1px;
 }
 
-.documentation pre {
-	background-image: url(paper.gif)
+.documentation code {
+	background-image: url(paper.gif);
+	white-space: pre;
+	display: block;
 }
 
 .documentation-inherited {
