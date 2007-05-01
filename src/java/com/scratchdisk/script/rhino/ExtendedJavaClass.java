@@ -228,9 +228,10 @@ public class ExtendedJavaClass extends NativeJavaClass {
 				Scriptable current = (Scriptable) packages;
 				for (int i = 0; i < path.length; i++)
 					current = (Scriptable) current.get(path[i], current);
-				// now obj needs to be an instance of ExtendedJavaClass
+				// Now obj needs to be an instance of ExtendedJavaClass.
+				// Note that we do not need to put it into classes, as the constructor
+				// does this for us.
 				cls = (ExtendedJavaClass) current;
-				classes.put(javaClass, cls);
 			}
 		}
 		return cls;

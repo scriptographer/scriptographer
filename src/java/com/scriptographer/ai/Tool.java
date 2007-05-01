@@ -72,18 +72,20 @@ public class Tool extends AIObject {
 		onMouseDrag = null;
 		onMouseMove = null;
 		ScriptEngine engine = ScriptEngine.getEngineByFile(file);
-		// Execute in the tool's scope so setIdleInterval can be called
-		scope = engine.getScope(this);
-		ScriptographerEngine.execute(file, scope);
-		if (scope != null) {
-			setIdleEventInterval(-1);
-			try {
-				onInit();
-			} catch (ScriptException e) {
-				// rethrow
-				throw e;
-			} catch (Exception e) {
-				// cannot happen with scripts
+		if (engine != null) {
+			// Execute in the tool's scope so setIdleInterval can be called
+			scope = engine.getScope(this);
+			ScriptographerEngine.execute(file, scope);
+			if (scope != null) {
+				setIdleEventInterval(-1);
+				try {
+					onInit();
+				} catch (ScriptException e) {
+					// rethrow
+					throw e;
+				} catch (Exception e) {
+					// cannot happen with scripts
+				}
 			}
 		}
 	}

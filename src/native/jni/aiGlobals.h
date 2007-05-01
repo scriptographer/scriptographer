@@ -93,7 +93,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 // macros for style getters and setters (CharacterStyle, ParagraphStyle)
 #define CHARACTERSTYLE_GET(NAME, TYPE, CLASS, JTYPE) \
 	try { \
-		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj); \
+		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj); \
 		ATEBool8 isAssigned; \
 		TYPE value; \
 		if (!sCharFeatures->Get##NAME(features, &isAssigned, &value) && isAssigned) \
@@ -103,7 +103,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 
 #define CHARACTERSTYLE_SET(NAME, TYPE, METHOD_TYPE, METHOD_NAME) \
 	try { \
-		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj); \
+		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj); \
 		ASErr err; \
 		if (value == NULL) \
 			err = sCharFeatures->Clear##NAME(features); \
@@ -113,7 +113,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 			gEngine->callVoidMethod(env, obj, gEngine->mid_CharacterStyle_markSetStyle); \
 	} EXCEPTION_CONVERT(env);
 
-#define CHARACTERSTYLE_GET_FLOAT(NAME) \
+#define	CHARACTERSTYLE_GET_FLOAT(NAME) \
 	CHARACTERSTYLE_GET(NAME, ASReal, Float, jfloat)
 
 #define CHARACTERSTYLE_SET_FLOAT(NAME) \
@@ -139,7 +139,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 
 #define PARAGRAPHSTYLE_GET(NAME, TYPE, CLASS, JTYPE) \
 	try { \
-		ParaFeaturesRef features = gEngine->getParaFeaturesHandle(env, obj); \
+		ParaFeaturesRef features = gEngine->getParaFeaturesRef(env, obj); \
 		ATEBool8 isAssigned; \
 		TYPE value; \
 		if (!sParaFeatures->Get##NAME(features, &isAssigned, &value) && isAssigned) \
@@ -149,7 +149,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 
 #define PARAGRAPHSTYLE_SET_CLEAR(NAME, CLEAR, TYPE, METHOD_TYPE, METHOD_NAME) \
 	try { \
-		ParaFeaturesRef features = gEngine->getParaFeaturesHandle(env, obj); \
+		ParaFeaturesRef features = gEngine->getParaFeaturesRef(env, obj); \
 		ASErr err; \
 		if (value == NULL) \
 			err = sParaFeatures->Clear##CLEAR(features); \

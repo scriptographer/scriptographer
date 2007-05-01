@@ -544,12 +544,11 @@ public abstract class Art extends DictionaryObject {
 	 * @jsbean The bounds of the Art Item excluding stroke width
 	 */
 	public native Rectangle getGeometricBounds();
-
-	public native void setName(String name);
 	
 	/**
-	 * @jsbean The name of the Art Item as it appears in the layers palette
+	 * @jsbean The name of the Art Item as it appears in the layers palette.
 	 * @jsbean Sample code:
+	 * @jsbean
 	 * @jsbean <code>
 	 * @jsbean var layer = new Layer(); // a Layer is an Art Item
 	 * @jsbean print(layer.name); // returns '<Layer 2>'
@@ -558,12 +557,15 @@ public abstract class Art extends DictionaryObject {
 	 * @jsbean </code>
 	 */
 	public native String getName();
+
+	public native void setName(String name);
 	
 	/**
 	 * Checks if the Art object's name as it appears in the layers palette is a
 	 * default descriptive name, rather then a user-assigned name.
 	 * 
-	 * @return <code>true</code> if it's name is default, false otherwise.
+	 * @return <tt>true</tt> if it's name is default, <tt>false</tt> otherwise.
+	 * @jshide bean
 	 */
 	public native boolean isDefaultName();
 
@@ -639,6 +641,7 @@ public abstract class Art extends DictionaryObject {
 	/**
 	 * @jsbean A boolean value that specifies whether the Art Item is hidden.
 	 * @jsbean Sample code:
+	 * @jsbean
 	 * @jsbean <code>
 	 * @jsbean var path = new Path();
 	 * @jsbean print(path.hidden) // returns false
@@ -957,14 +960,14 @@ public abstract class Art extends DictionaryObject {
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendChild(path);
-	 * print(group.isAnchestor(path)) // returns true
+	 * print(group.isAncestor(path)) // returns true
 	 * </code>
 	 * 
 	 * @param art the Art Item to check against
 	 * @return <code>true</code> if it is an ancestor of the specified Art
 	 *         Item, false otherwise
 	 */
-	public boolean isAnchestor(Art art) {
+	public boolean isAncestor(Art art) {
 		return getOrder(art) == ORDER_ANCHESTOR;		
 	}
 
@@ -985,6 +988,11 @@ public abstract class Art extends DictionaryObject {
 	
 	private long millis = 0;
 	
+	/**
+	 * This is only thre for hunting one of the dreaded bugs.
+	 * @jshide true
+	 * @jshide bean
+	 */
 	public long getMillis() {
 		return millis;
 	}

@@ -70,23 +70,25 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Timer_nativeSetPeriod(JNIE
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Timer_nativeGetTimers(JNIEnv *env, jclass cls) {
 	try {
-		jobject array = gEngine->newObject(env, gEngine->cls_ArrayList, gEngine->cid_ArrayList);
-		long count;
-		sAITimer->CountTimers(&count);
-		SPPluginRef plugin = gPlugin->getPluginRef();
-		for (int i = 0; i < count; i++) {
-			AITimerHandle timer;
-			SPPluginRef timerPlugin;
-			if (!sAITimer->GetNthTimer(i, &timer) &&
-				!sAITimer->GetTimerPlugin(timer, &timerPlugin) &&
-				plugin == timerPlugin) {
-				// create the wrapper
-				jobject timerObj = gEngine->newObject(env, gEngine->cls_Timer, gEngine->cid_Timer, (jint) timer);
-				// and add it to the array
-				gEngine->callObjectMethod(env, array, gEngine->mid_Collection_add, timerObj);
+		if (gEngine != NULL) {
+			jobject array = gEngine->newObject(env, gEngine->cls_ArrayList, gEngine->cid_ArrayList);
+			long count;
+			sAITimer->CountTimers(&count);
+			SPPluginRef plugin = gPlugin->getPluginRef();
+			for (int i = 0; i < count; i++) {
+				AITimerHandle timer;
+				SPPluginRef timerPlugin;
+				if (!sAITimer->GetNthTimer(i, &timer) &&
+					!sAITimer->GetTimerPlugin(timer, &timerPlugin) &&
+					plugin == timerPlugin) {
+					// create the wrapper
+					jobject timerObj = gEngine->newObject(env, gEngine->cls_Timer, gEngine->cid_Timer, (jint) timer);
+					// and add it to the array
+					gEngine->callObjectMethod(env, array, gEngine->mid_Collection_add, timerObj);
+				}
 			}
+			return array;
 		}
-		return array;
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

@@ -40,7 +40,7 @@ public:
 	
 	void add(TYPE element);
 	void reset();
-	unsigned int getSize();
+	unsigned int size();
 	TYPE get(unsigned int index) const;
 	
 private:
@@ -87,7 +87,7 @@ inline TYPE Array<TYPE>::get(unsigned int index) const {
 }
 
 template<class TYPE>
-inline unsigned int Array<TYPE>::getSize() {
+inline unsigned int Array<TYPE>::size() {
 	return m_size;
 }
 

@@ -145,8 +145,10 @@ public class Timer extends AIObject {
 		// Stop both used and unused timers:
 		for (Iterator it = timers.values().iterator(); it.hasNext();)
 			((Timer) it.next()).stop();
-		for (Iterator it = getUnusedTimers().iterator(); it.hasNext();)
-			((Timer) it.next()).stop();
+		ArrayList unused = getUnusedTimers();
+		if (unused != null)
+			for (Iterator it = unused.iterator(); it.hasNext();)
+				((Timer) it.next()).stop();
 	}
 	
 	public static void disposeAll() {

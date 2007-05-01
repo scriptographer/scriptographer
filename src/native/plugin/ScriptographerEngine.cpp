@@ -409,7 +409,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_awt_Dimension_setSize = getMethodID(env, cls_awt_Dimension, "setSize", "(II)V");
 
 	cls_awt_AffineTransform = loadClass(env, "java/awt/geom/AffineTransform");
-	cid_awt_AffineTransform = getConstructorID(env, cls_awt_AffineTransform, "(DDDDDD)V");;
 	mid_awt_AffineTransform_getScaleX = getMethodID(env, cls_awt_AffineTransform, "getScaleX", "()D");
 	mid_awt_AffineTransform_getShearY = getMethodID(env, cls_awt_AffineTransform, "getShearY", "()D");
 	mid_awt_AffineTransform_getShearX = getMethodID(env, cls_awt_AffineTransform, "getShearX", "()D");
@@ -466,6 +465,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_Rectangle_height = getFieldID(env, cls_Rectangle, "height", "F");
 	mid_Rectangle_setRect = getMethodID(env, cls_Rectangle, "setRect", "(FFFF)V");
 	
+	cls_Matrix = loadClass(env, "com/scriptographer/ai/Matrix");
+	cid_Matrix = getConstructorID(env, cls_Matrix, "(DDDDDD)V");;
+
 	cls_Color = loadClass(env, "com/scriptographer/ai/Color");
 	mid_Color_getComponents = getMethodID(env, cls_Color, "getComponents", "()[F");
 	obj_Color_NONE = getStaticObjectField(env, cls_Color, "NONE", "Lcom/scriptographer/ai/Color;");
@@ -506,11 +508,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_TextRange = loadClass(env, "com/scriptographer/ai/TextRange");
 	cid_TextRange = getConstructorID(env, cls_TextRange, "(II)V");
-	fid_TextRange_glyphRunRef = getFieldID(env, cls_TextRange, "glyphRunRef", "I");
-	fid_TextRange_glyphRunPos = getFieldID(env, cls_TextRange, "glyphRunPos", "I");
+	fid_TextRange_glyphRuns = getFieldID(env, cls_TextRange, "glyphRuns", "I");
 	
 	cls_TextStory = loadClass(env, "com/scriptographer/ai/TextStory");
-	cid_TextStory = getConstructorID(env, cls_TextStory, "(II)V");
 
 	cls_PathStyle = loadClass(env, "com/scriptographer/ai/PathStyle");
 	
@@ -706,6 +706,7 @@ void ScriptographerEngine::reportError(JNIEnv *env) {
 			callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_reportError, throwable);
 		}
 	} else {
+		// TODO: ????
 		env->ExceptionDescribe();
 	}
 }
@@ -1051,15 +1052,14 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSp
 		// get back alpha:
 		if (dstAlpha != NULL)
 			*dstAlpha = dstHasAlpha ? dst[dstSize] : 1;
-		
 		return dstCol;
 	}
 	return NULL;
 }
 
-// java.awt.AffineTransform <-> AIRealMatrix
+// com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
 jobject ScriptographerEngine::convertMatrix(JNIEnv *env, AIRealMatrix *mt, jobject res) {
-	return newObject(env, cls_awt_AffineTransform, cid_awt_AffineTransform,
+	return newObject(env, cls_Matrix, cid_Matrix,
 		(jdouble) mt->a, (jdouble) mt->b,
 		(jdouble) mt->c, (jdouble) mt->d,
 		(jdouble) mt->tx, (jdouble) mt->ty);
@@ -1335,7 +1335,6 @@ jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dic
 
 AIDictionaryRef ScriptographerEngine::convertDictionary(JNIEnv *env, jobject map, AIDictionaryRef dictionary, bool dontOverwrite, bool removeOld) {
 	JNI_CHECK_ENV
-
 	if (dictionary == NULL) {
 		sAIDictionary->CreateDictionary(&dictionary);
 		if (dictionary == NULL)
@@ -1577,7 +1576,7 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 }
 
 void ScriptographerEngine::resumeSuspendedDocuments() {
-	for (int i = m_suspendedDocuments.getSize() - 1; i >= 0; i--) {
+	for (int i = m_suspendedDocuments.size() - 1; i >= 0; i--) {
 		AIDocumentHandle doc = m_suspendedDocuments.get(i);
 		if (doc != gActiveDoc) {
 			sAIDocumentList->Activate(doc, false);
@@ -1611,7 +1610,7 @@ void *ScriptographerEngine::getWrapperHandle(JNIEnv *env, jobject obj, bool acti
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-		void *wrapper = (void *) getIntField(env, obj, fid_AIObject_handle);
+	void *wrapper = (void *) getIntField(env, obj, fid_AIObject_handle);
 	if (wrapper == NULL)
 		throw new StringException("Object is not wrapping a %s handle.", name);
 	if (activateDoc) {
@@ -1639,83 +1638,6 @@ AISwatchRef ScriptographerEngine::getSwatchHandle(JNIEnv *env, jobject obj, bool
 
 AIGradientHandle ScriptographerEngine::getGradientHandle(JNIEnv *env, jobject obj, bool activateDoc) {
 	return (AIGradientHandle) ScriptographerEngine::getWrapperHandle(env, obj, activateDoc, "gradient");
-}
-
-/**
- * Returns the wrapped TextFrameRef of an object by assuming that it is an anchestor of Class Art and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ATE::TextFrameRef ScriptographerEngine::getTextFrameHandle(JNIEnv *env, jobject obj, bool activateDoc) {
-	AIArtHandle art = getArtHandle(env, obj, activateDoc);
-	ATE::TextFrameRef frame = NULL;
-	sAITextFrame->GetATETextFrame(art, &frame);
-	return frame;
-}
-
-/**
- * Returns the wrapped TextRangeRef of an object by assuming that it is an anchestor of Class TextRange and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ATE::TextRangeRef ScriptographerEngine::getTextRangeHandle(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ATE::TextRangeRef range = (ATE::TextRangeRef) getIntField(env, obj, fid_AIObject_handle);
-	if (range == NULL)
-		throw new StringException("Object is not wrapping a text range handle.");
-	return range;
-}
-
-/**
- * Returns the wrapped StoryRef of an object by assuming that it is an anchestor of Class Textstory and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ATE::StoryRef ScriptographerEngine::getStoryHandle(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ATE::StoryRef story = (ATE::StoryRef) getIntField(env, obj, fid_AIObject_handle);
-	if (story == NULL)
-		throw new StringException("Object is not wrapping a text story handle.");
-	return story;
-}
-
-/**
- * Returns the wrapped CharFeaturesRef of an object by assuming that it is an anchestor of Class CharacterStyle and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ATE::CharFeaturesRef ScriptographerEngine::getCharFeaturesHandle(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ATE::CharFeaturesRef features = (ATE::CharFeaturesRef) getIntField(env, obj, fid_AIObject_handle);
-	if (features == NULL)
-		throw new StringException("Object is not wrapping a character style handle.");
-	return features;
-}
-
-/**
- * Returns the wrapped ParaFeaturesRef of an object by assuming that it is an anchestor of Class ParagraphStyle and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ATE::ParaFeaturesRef ScriptographerEngine::getParaFeaturesHandle(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ATE::ParaFeaturesRef features = (ATE::ParaFeaturesRef) getIntField(env, obj, fid_AIObject_handle);
-	if (features == NULL)
-		throw new StringException("Object is not wrapping a paragraph style handle.");
-	return features;
 }
 
 /**
@@ -1847,6 +1769,89 @@ AIMenuGroup ScriptographerEngine::getMenuGroupHandle(JNIEnv *env, jobject obj) {
 }
 
 /**
+ * Returns the wrapped TextFrameRef of an object by assuming that it is an anchestor of Class TextFrame and
+ * accessing its field 'handle':
+ *
+ * throws exceptions
+ */
+ATE::TextFrameRef ScriptographerEngine::getTextFrameRef(JNIEnv *env, jobject obj, bool activateDoc) {
+	AIArtHandle art = getArtHandle(env, obj, activateDoc);
+	ATE::TextFrameRef frame = NULL;
+	sAITextFrame->GetATETextFrame(art, &frame);
+	return frame;
+}
+
+/**
+ * Returns the wrapped TextRangeRef of an object by assuming that it is an anchestor of Class TextRange and
+ * accessing its field 'handle':
+ *
+ * throws exceptions
+ */
+ATE::TextRangeRef ScriptographerEngine::getTextRangeRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	ATE::TextRangeRef range = (ATE::TextRangeRef) getIntField(env, obj, fid_AIObject_handle);
+	if (range == NULL)
+		throw new StringException("Object is not wrapping a text range handle.");
+	return range;
+}
+
+/**
+ * Returns the wrapped StoryRef of an object by assuming that it is an anchestor of Class Textstory and
+ * accessing its field 'handle':
+ *
+ * throws exceptions
+ */
+ATE::StoryRef ScriptographerEngine::getStoryRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	ATE::StoryRef story = (ATE::StoryRef) getIntField(env, obj, fid_AIObject_handle);
+	if (story == NULL)
+		throw new StringException("Object is not wrapping a text story handle.");
+	return story;
+}
+
+/**
+ * Returns the wrapped CharFeaturesRef of an object by assuming that it is an anchestor of Class CharacterStyle and
+ * accessing its field 'handle':
+ *
+ * throws exceptions
+ */
+ATE::CharFeaturesRef ScriptographerEngine::getCharFeaturesRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	ATE::CharFeaturesRef features = (ATE::CharFeaturesRef) getIntField(env, obj, fid_AIObject_handle);
+	if (features == NULL)
+		throw new StringException("Object is not wrapping a character style handle.");
+	return features;
+}
+
+/**
+ * Returns the wrapped ParaFeaturesRef of an object by assuming that it is an anchestor of Class ParagraphStyle and
+ * accessing its field 'handle':
+ *
+ * throws exceptions
+ */
+ATE::ParaFeaturesRef ScriptographerEngine::getParaFeaturesRef(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	ATE::ParaFeaturesRef features = (ATE::ParaFeaturesRef) getIntField(env, obj, fid_AIObject_handle);
+	if (features == NULL)
+		throw new StringException("Object is not wrapping a paragraph style handle.");
+	return features;
+}
+
+jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range) {
+	// we need to increase the ref count here. this is decreased again in TextRange.finalize
+	ATE::sTextRange->AddRef(range);
+	return newObject(env, cls_TextRange, cid_TextRange, (jint) range, (jint) gActiveDoc);
+}
+
+/**
  * Wraps the handle in a java object. see the Java function Art.wrapArtHandle to see how 
  * the cashing of already wrapped objects is handled.
  *
@@ -1905,18 +1910,6 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) 
 	if (sAIArt->GetFirstArtOfLayer(layer, &art))
 		throw new StringException("Cannot get layer art");
 	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER, (jint) kUnknownTextType, (jint) gActiveDoc, 0);
-}
-
-jobject ScriptographerEngine::wrapTextRangeHandle(JNIEnv *env, ATE::TextRangeRef range) {
-	// we need to increase the ref count here. this is decreased again in TextRange.finalize
-	ATE::sTextRange->AddRef(range);
-	return newObject(env, cls_TextRange, cid_TextRange, (jint) range, (jint) gActiveDoc);
-}
-
-jobject ScriptographerEngine::wrapStoryHandle(JNIEnv *env, ATE::StoryRef story) {
-	// we need to increase the ref count here. this is decreased again in Story.finalize
-	ATE::sStory->AddRef(story);
-	return newObject(env, cls_TextStory, cid_TextStory, (jint) story, (jint) gActiveDoc);
 }
 
 /**
@@ -2492,7 +2485,7 @@ jstring ScriptographerEngine::convertString(JNIEnv *env, unsigned char *str) {
 }
 
 /**
-* Creates a C-String from a given Java String. 
+ * Creates a C-String from a given Java String. 
  * TODO: The non depreceated version that takes an encoding parameter should be used in the future.
  *
  * throws exceptions

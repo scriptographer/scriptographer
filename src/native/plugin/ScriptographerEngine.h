@@ -139,7 +139,6 @@ public:
 	jmethodID mid_awt_Dimension_setSize;
 	
 	jclass cls_awt_AffineTransform;
-	jmethodID cid_awt_AffineTransform;
 	jmethodID mid_awt_AffineTransform_getScaleX;
 	jmethodID mid_awt_AffineTransform_getShearY;
 	jmethodID mid_awt_AffineTransform_getShearX;
@@ -202,6 +201,9 @@ public:
 	jfieldID fid_Rectangle_height;
 	jmethodID mid_Rectangle_setRect;
 	
+	jclass cls_Matrix;
+	jmethodID cid_Matrix;
+
 	jclass cls_Color;
 	jmethodID mid_Color_getComponents;
 	jobject obj_Color_NONE;
@@ -242,11 +244,9 @@ public:
 	
 	jclass cls_TextRange;
 	jmethodID cid_TextRange;
-	jfieldID fid_TextRange_glyphRunRef;
-	jfieldID fid_TextRange_glyphRunPos;
+	jfieldID fid_TextRange_glyphRuns;
 
 	jclass cls_TextStory;
-	jmethodID cid_TextStory;
 	
 	jclass cls_PathStyle;
 	jmethodID mid_PathStyle_init;
@@ -478,11 +478,6 @@ public:
 	AIPatternHandle getPatternHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
 	AISwatchRef getSwatchHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
 	AIGradientHandle getGradientHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
-	ATE::TextFrameRef getTextFrameHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
-	ATE::TextRangeRef getTextRangeHandle(JNIEnv *env, jobject obj);
-	ATE::StoryRef getStoryHandle(JNIEnv *env, jobject obj);
-	ATE::CharFeaturesRef getCharFeaturesHandle(JNIEnv *env, jobject obj);
-	ATE::ParaFeaturesRef getParaFeaturesHandle(JNIEnv *env, jobject obj);
 	AIFontKey getFontHandle(JNIEnv *env, jobject obj);
 	AIDocumentHandle getDocumentHandle(JNIEnv *env, jobject obj, bool activate = false);
 	AIDocumentViewHandle getDocumentViewHandle(JNIEnv *env, jobject obj);
@@ -491,6 +486,14 @@ public:
 	AIMenuItemHandle getMenuItemHandle(JNIEnv *env, jobject obj);
 	AIMenuGroup getMenuGroupHandle(JNIEnv *env, jobject obj);
 	AIDictionaryRef getArtDictionaryHandle(JNIEnv *env, jobject obj);
+
+	// ATE Refs
+	ATE::TextFrameRef getTextFrameRef(JNIEnv *env, jobject obj, bool activateDoc = false);
+	ATE::TextRangeRef getTextRangeRef(JNIEnv *env, jobject obj);
+	ATE::StoryRef getStoryRef(JNIEnv *env, jobject obj);
+	ATE::CharFeaturesRef getCharFeaturesRef(JNIEnv *env, jobject obj);
+	ATE::ParaFeaturesRef getParaFeaturesRef(JNIEnv *env, jobject obj);
+	jobject wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range);
 	
 	// AI Wrap Handles
 	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDictionaryRef dictionary = NULL);
@@ -498,8 +501,6 @@ public:
 	void changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary = NULL, AIDocumentHandle doc = NULL);
 	jobject getIfWrapped(JNIEnv *env, AIArtHandle handle);
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer);
-	jobject wrapTextRangeHandle(JNIEnv *env, ATE::TextRangeRef range);
-	jobject wrapStoryHandle(JNIEnv *env, ATE::StoryRef story);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
 
 	void resumeSuspendedDocuments();
