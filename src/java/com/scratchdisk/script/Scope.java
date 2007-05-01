@@ -45,7 +45,7 @@ public abstract class Scope {
 		return put(name, value, false);
 	}
 
-	public Callable getMethod(String name) {
+	public Callable getCallable(String name) {
 		Object obj = get(name);
 		return obj instanceof Callable ? (Callable) obj : null;
 	}

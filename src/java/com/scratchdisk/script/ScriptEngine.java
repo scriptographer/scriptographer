@@ -34,8 +34,8 @@ package com.scratchdisk.script;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.HashMap;
 
 /**
@@ -54,12 +54,11 @@ public abstract class ScriptEngine {
 		// to be instanciated in the same thread as from where they are used...
 		// TODO: Move to a multi threaded scenario, where RhinoEngine creates
 		// Contexts for reach script call...
-		URL url = ScriptEngine.class.getResource("/META-INF/services/" +
-					ScriptEngine.class.getName());
-		if (url != null) {
+		InputStream in = ScriptEngine.class.getResourceAsStream(
+				"/META-INF/services/" + ScriptEngine.class.getName());
+		if (in != null) {
 			try {
-				BufferedReader buffer = new BufferedReader(
-						new InputStreamReader(url.openStream()));
+				BufferedReader buffer = new BufferedReader(new InputStreamReader(in));
 				for (String str = buffer.readLine(); str != null;
 						str = buffer.readLine()) {
 					try {
@@ -68,6 +67,7 @@ public abstract class ScriptEngine {
 						e.printStackTrace();
 					}
 				}
+				in.close();
 			} catch (IOException ioe) {
 				ioe.printStackTrace();
 			}

@@ -52,7 +52,7 @@ public class ExtendedJavaObject extends NativeJavaObject {
 		super(scope, javaObject, staticType);
 		properties = unsealed ? new HashMap() : null;
 		classWrapper = staticType != null ?
-				ExtendedJavaTopPackage.getClassWrapper(scope, staticType) : null;
+				ExtendedJavaClass.getClassWrapper(scope, staticType) : null;
 	}
 
 	public Scriptable getPrototype() {
@@ -64,15 +64,19 @@ public class ExtendedJavaObject extends NativeJavaObject {
 	}
 
 	public Object get(String name, Scriptable start) {
-		Object result;
 		// Properties need to come first, as they might override something
 		// defined in the underlying Java object
 		if (properties != null && properties.containsKey(name)) {
-			// see wether this object defines the property.
-			result = properties.get(name);
-		} else if (members.has(name, false)) {
-			result = members.get(this, name, javaObject, false);
+			// See wether this object defines the property.
+			return properties.get(name);
 		} else {
+			// Careful: We cannot on members.has, as this does not
+			// check static fields the way members.get does...
+			Object res = members.get(this, name, javaObject, false);
+			if (name.equals("test")) {
+				int i = 0;
+			}
+			if (res != null && res != Scriptable.NOT_FOUND) return res;
 			Scriptable prototype = getPrototype();
 			if (name.equals("prototype")) {
 				if (prototype == null) {
@@ -80,16 +84,21 @@ public class ExtendedJavaObject extends NativeJavaObject {
 					prototype = new NativeObject();
 					setPrototype(prototype);
 				}
-				result = prototype;
-			} else if (prototype != null) {
-				// if not, see wether the prototype maybe defines it.
+				return prototype;
+			} else if (prototype != null && prototype.has(name, start)) {
+				// If not, see wether the prototype maybe defines it.
 				// NativeJavaObject misses to do so:
-				result = prototype.get(name, start);
-			} else {
-				result = Scriptable.NOT_FOUND;
+				return prototype.get(name, start);
 			}
+			return null;
+			/*
+			// TODO: What does fieldAndMethods do? Is it needed?
+			else if (fieldAndMethods != null && fieldAndMethods.containsKey(name)) {
+				// Static field or method?
+				return fieldAndMethods.get(name);
+			}
+			*/
 		}
-		return result;
 	}
 	
 	public void put(String name, Scriptable start, Object value) {

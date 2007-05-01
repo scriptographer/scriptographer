@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.WrappedException;
 
@@ -48,19 +49,24 @@ import com.scratchdisk.util.StringUtils;
 public class RhinoScriptException extends ScriptException {
 
 	private static String formatMessage(RhinoEngine engine, Throwable t) {
-		RhinoException re = t instanceof RhinoException ? (RhinoException) t
-				: new WrappedException(t);
-			StringWriter buf = new StringWriter();
-			PrintWriter writer = new PrintWriter(buf);
-			String stackTrace = re.getScriptStackTrace();
-			// Strip away base directory from all paths, if defined:
-			File baseDir = engine.getBaseDirectory();
-			if (baseDir != null)
-				stackTrace = StringUtils.replace(stackTrace, baseDir.getAbsolutePath(), "");
-			writer.println(re.details());
-			// Replace tabs with 4 whitespaces
-			writer.print(StringUtils.replace(stackTrace, "\t", "    "));
-			return buf.toString();
+		if (t instanceof EvaluatorException) {
+			EvaluatorException ee = (EvaluatorException) t;
+			return ee.getMessage();
+		} else {
+			RhinoException re = t instanceof RhinoException ? (RhinoException) t
+					: new WrappedException(t);
+				StringWriter buf = new StringWriter();
+				PrintWriter writer = new PrintWriter(buf);
+				String stackTrace = re.getScriptStackTrace();
+				// Strip away base directory from all paths, if defined:
+				File baseDir = engine.getBaseDirectory();
+				if (baseDir != null)
+					stackTrace = StringUtils.replace(stackTrace, baseDir.getAbsolutePath(), "");
+				writer.println(re.details());
+				// Replace tabs with 4 whitespaces
+				writer.print(StringUtils.replace(stackTrace, "\t", "    "));
+				return buf.toString();
+		}
 	}
 
 	public RhinoScriptException(RhinoEngine engine, Throwable cause) {

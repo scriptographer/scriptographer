@@ -40,9 +40,11 @@ import org.mozilla.javascript.*;
  * @author lehni
  */
 public class ExtendedJavaClass extends NativeJavaClass {
-	String className;
-	HashMap properties;
-	Scriptable instanceProto = null;
+	private String className;
+	private HashMap properties;
+	private Scriptable instanceProto = null;
+	// A lookup for the associated ExtendedJavaClass wrappers
+	private static HashMap classes = new HashMap();
 
 	public ExtendedJavaClass(Scriptable scope, Class cls, boolean unsealed) {
 		super(scope, cls);
@@ -64,6 +66,8 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		if (pos > 0)
 			className = className.substring(pos + 1);
 		properties = unsealed ? new HashMap() : null;
+		// put it in the class wrapper table
+		classes.put(cls, this);
 	}
 
 	public Scriptable construct(Context cx, Scriptable scope, Object[] args) {
@@ -71,20 +75,39 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		// use it as a hashtable containing methods to be added to the class:
 		Scriptable obj = null;
 		NativeObject properties = null;
+		Callable initialize = null;
 		Class classObject = getClassObject();
 		int modifiers = classObject.getModifiers();
-		if (args.length > 0 && args[args.length - 1] instanceof NativeObject &&
-			!Modifier.isInterface(modifiers) && !Modifier.isAbstract(modifiers)) {
-			properties = (NativeObject) args[args.length - 1];
+		if (args.length > 0 && !Modifier.isInterface(modifiers) &&
+				!Modifier.isAbstract(modifiers)) {
+			// Look at the last argument to find out if we need to do something
+			// special. Possibilities: a object literal that defines fields to
+			// be set, or a function that is executed on the object and of which
+			// the result can be fields to be set.
+			Object last = args[args.length - 1];
+			if (last instanceof NativeObject)
+				properties = (NativeObject) last;
+			else if (last instanceof Callable)
+				initialize = (Callable) last;
 			// remove the last argument from the list, so the right constructor
 			// will be found:
-			Object[] newArgs = new Object[args.length - 1];
-			for (int i = 0; i < newArgs.length; i++)
-				newArgs[i] = args[i];
-			args = newArgs;
+			if (initialize != null || properties != null) {
+				Object[] newArgs = new Object[args.length - 1];
+				for (int i = 0; i < newArgs.length; i++)
+					newArgs[i] = args[i];
+				args = newArgs;
+			}
 		}
 		obj = super.construct(cx, scope, args);
-		// if properties are to be added, do it now:
+		// If an initialize function was passed as the last argument, execute
+		// it now. The fields of the result of the function are then injected
+		// into the object, if it is a NativeObject.
+		if (initialize != null) {
+			Object res = initialize.call(cx, scope, obj, args);
+			if (res instanceof NativeObject)
+				properties = (NativeObject) res;
+		}
+		// If properties are to be added, do it now:
 		if (properties != null) {
 			Object[] ids = properties.getIds();
 			for (int i = 0; i < ids.length; i++) {
@@ -92,16 +115,6 @@ public class ExtendedJavaClass extends NativeJavaClass {
 				if (id instanceof String)
 					obj.put((String) id, obj, properties.get((String) id, properties));
 			}
-		}
-		// Add-on: If a prototype defines a $constructor function, call it after
-		// creation. This can even return another object than the real ctor!
-		Object ctor = obj.get("$constructor", obj);
-		if (ctor instanceof Function) {
-			Object ret = ((Function) ctor).call(cx, scope, obj, new Object[] {});
-			if (ret != null && ret != Undefined.instance)
-				obj = cx.getWrapFactory().wrapNewObject(cx,
-						ScriptableObject.getTopLevelScope(scope),
-						ret);
 		}
 		return obj;
 	}
@@ -180,7 +193,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 			Class sup = getClassObject().getSuperclass();
 			Scriptable parent;
 			if (sup != null) {
-				ExtendedJavaClass classWrapper = ExtendedJavaTopPackage.getClassWrapper(
+				ExtendedJavaClass classWrapper = getClassWrapper(
 						ScriptableObject.getTopLevelScope(this), sup);
 				parent = classWrapper.getInstancePrototype();
 			} else {
@@ -199,5 +212,27 @@ public class ExtendedJavaClass extends NativeJavaClass {
 
 	public String toString() {
 		return "[" + className + "]";
+	}
+	
+	protected static ExtendedJavaClass getClassWrapper(Scriptable scope, Class javaClass) {
+		ExtendedJavaClass cls = (ExtendedJavaClass) classes.get(javaClass);
+		if (cls == null) {
+			// Search for the ExtendedJavaClass by splitting the full name into bits
+			// separated by '.', and walk up the Packages chain:
+			String[] path = javaClass.getName().split("\\.");
+			Scriptable global = ScriptableObject.getTopLevelScope(scope);
+			// Use ScriptableObject.getProperty so it also looks in the prototypes
+			// of shared scopes.
+			Object packages = ScriptableObject.getProperty(global, "Packages");
+			if (packages != Scriptable.NOT_FOUND) {
+				Scriptable current = (Scriptable) packages;
+				for (int i = 0; i < path.length; i++)
+					current = (Scriptable) current.get(path[i], current);
+				// now obj needs to be an instance of ExtendedJavaClass
+				cls = (ExtendedJavaClass) current;
+				classes.put(javaClass, cls);
+			}
+		}
+		return cls;
 	}
 }

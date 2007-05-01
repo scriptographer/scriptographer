@@ -48,31 +48,6 @@ public class ExtendedJavaTopPackage extends ExtendedJavaPackage {
         super("", loader);
 	}
 
-	// A lookup for the associated ExtendedJavaClass instances
-	static HashMap classes = new HashMap();
-	
-	public static ExtendedJavaClass getClassWrapper(Scriptable scope, Class javaClass) {
-		ExtendedJavaClass cls = (ExtendedJavaClass) classes.get(javaClass);
-		if (cls == null) {
-			// Search for the ExtendedJavaClass by splitting the full name into bits
-			// separated by '.', and walk up the Packages chain:
-			String[] path = javaClass.getName().split("\\.");
-			Scriptable global = ScriptableObject.getTopLevelScope(scope);
-			// Use ScriptableObject.getProperty so it also looks in the prototypes
-			// of shared scopes.
-			Object packages = ScriptableObject.getProperty(global, "Packages");
-			if (packages != Scriptable.NOT_FOUND) {
-				Scriptable current = (Scriptable) packages;
-				for (int i = 0; i < path.length; i++)
-					current = (Scriptable) current.get(path[i], current);
-				// now obj needs to be an instance of ExtendedJavaClass
-				cls = (ExtendedJavaClass) current;
-				classes.put(javaClass, cls);
-			}
-		}
-		return cls;
-	}
-
     public Object call(Context cx, Scriptable scope, Scriptable thisObj,
 			Object[] args) {
 		return construct(cx, scope, args);

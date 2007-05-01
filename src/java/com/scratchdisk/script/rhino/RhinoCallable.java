@@ -49,6 +49,7 @@ public class RhinoCallable extends Callable {
 	RhinoEngine engine;
 	
 	RhinoCallable(RhinoEngine engine, Function function) {
+		this.engine = engine;
 		this.function = function;
 	}
 	
@@ -69,7 +70,7 @@ public class RhinoCallable extends Callable {
 		}
 	}
 
-	public Function getFunction() {
+	public Function getCallable() {
 		return function;
 	}
 }
