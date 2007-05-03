@@ -52,13 +52,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		// behave like JS constructor functions. Like this, all properties
 		// from Function.prototype are inherited.
 		setParentScope(scope);
-		// FIXME: The following should work, but since we use a hack in Bootstrap.js
-		// to make new Function(...) not an interpretated one, but a
-		// compiled one, it does not, due to the way
-		// ScriptableObject.getClassPrototype currently handles BaseFunction
-		// especially. Consider fixing this in Rhino!
-		// setPrototype(ScriptableObject.getFunctionPrototype(scope));
-		setPrototype(((Scriptable) scope.get("Function", scope)).getPrototype());
+		setPrototype(ScriptableObject.getFunctionPrototype(scope));
 		// Determine short className:
 		className = cls.getName();
 		// Use simple class name instead of the full name with all packages:
