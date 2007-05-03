@@ -897,7 +897,7 @@ public abstract class Art extends DictionaryObject {
 				EXPAND_PATTERN | EXPAND_SYMBOLINSTANCES, 0);
 	}
 	
-	public native int getOrder(Art art);
+	protected native int getOrder(Art art);
 	
 	/**
 	 * Checks if the Art Item is above the specified Art Item in the stacking
