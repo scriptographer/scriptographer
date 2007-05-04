@@ -48,20 +48,39 @@ public class Layer extends Art {
 
 	public native void setLocked(boolean locked);
 
-	public native void setVisible(boolean visible);
+	/**
+	 * @jsbean A boolean value that specifies wether the Layer is visible.
+	 */
 	public native boolean isVisible();
+	public native void setVisible(boolean visible);
 
-	public native void setPreview(boolean preview);
+	/**
+	 * @jsbean A boolean value that sets the layer to preview (true) or outline
+	 * @jsbean mode (false).
+	 * @jsbean If a layer is set to outline mode, art in all it's child
+	 * @jsbean layers is rendered in outline mode, regardless of their preview settings.
+	 */
 	public native boolean getPreview();
-
-	public native void setPrinted(boolean printed);
+	public native void setPreview(boolean preview);
+	
+	/**
+	 * @jsbean A boolean value that specifies wether the Layer is considered printable
+	 * @jsbean when printing the document.
+	 */
 	public native boolean isPrinted();
+	public native void setPrinted(boolean printed);
 
-	public native void setSelected(boolean selected);
+	/**
+	 * @jsbean A boolean value that specifies wether the Layer is selected.
+	 */
 	public native boolean isSelected();
-
-	public native void setColor(Color color);
+	public native void setSelected(boolean selected);
+	
+	/**
+	 * @jsbean Specifies the color used for outlining Art items when they are selected.
+	 */
 	public native RGBColor getColor();
+	public native void setColor(Color color);
 
 	public void setColor(java.awt.Color color) {
 		setColor(new RGBColor(color));
@@ -70,10 +89,7 @@ public class Layer extends Art {
 	public native ArtSet getItems();
 	
 	/**
-	 * Checks wether the layer is active.
-	 * 
-	 * @return <code>true</code> if the layer is active, <code>false</code>
-	 *         otherwise.
+	 * @jsbean Returns a boolean value that specifies wether the Layer is active.
 	 */
 	public native boolean isActive();
 	

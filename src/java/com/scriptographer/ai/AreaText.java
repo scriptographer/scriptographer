@@ -56,22 +56,42 @@ public class AreaText extends TextFrame {
 		this(area, ORIENTATION_HORIZONTAL);
 	}
 
+	/**
+	 * Returns the path of the AreaText
+     */
 	public Path getTextPath() {
 		return (Path) getFirstChild();
 	}
 	
+	/**
+	 * @jsbean A number value that specifies the number of rows for the text frame.
+	 */
 	public native int getRowCount();
 	public native void setRowCount(int count);
 	
+	/**
+	 * @jsbean A number value that specifies the number of columns for the text
+	 * @jsbean frame.
+	 */
 	public native int getColumnCount();
 	public native void setColumnCount(int count);
 
+	/**
+	 * @jsbean A boolean value that specifies wether the text area uses
+	 * @jsbean row major order.
+	 */
 	public native boolean getRowMajorOrder();
 	public native void setRowMajorOrder(boolean isRowMajor);
 	
+	/**
+	 * A number value that specifies the row gutter in the text frame.
+	 */
 	public native float getRowGutter();
 	public native void setRowGutter(float gutter);
 
+	/**
+	 * A number value that specifies the column gutter in the text frame.
+	 */	
 	public native float getColumnGutter();
 	public native void setColumnGutter(float gutter);
 }

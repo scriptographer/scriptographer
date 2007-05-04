@@ -75,11 +75,9 @@ public abstract class Color {
 	public abstract float[] getComponents();
 
 	/**
-	 * Returns the color's alpha value.
-	 * All colors of the different subclasses support alpha values.
-	 * A value of 1f is sometimes treated as a color without alpha channel.
-	 *
-	 * @return the color's alpha value
+	 * @jsbean A value between 0 and 1 that specifies the color's alpha value.
+	 * @jsbean All colors of the different subclasses support alpha values.
+	 * @jsbean A value of 1f is sometimes treated as a color without alpha channel.
 	 */
 	public float getAlpha() {
 		// an alpha value of -1 means no alpha channel. return 1 here as no

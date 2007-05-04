@@ -91,6 +91,12 @@ public class CMYKColor extends Color {
 		return space;
 	}
 
+	/**
+	 * Checks if the supplied CMYKColor is the same as this one.
+	 * 
+	 * @param obj The CMYKColor to compare with
+	 * @return True if the CMYKColor is the same, false otherwise
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof CMYKColor) {
 			CMYKColor col = (CMYKColor) obj;
@@ -103,6 +109,9 @@ public class CMYKColor extends Color {
 		return false;
 	}
 
+	/**
+	 * @jsbean A value between 0 and 1 that specifies the amount of cyan in the CMYK color.
+	 */
 	public float getCyan() {
 		return cyan;
 	}
@@ -111,6 +120,9 @@ public class CMYKColor extends Color {
 		this.cyan = cyan;
 	}
 
+	/**
+	 * @jsbean A value between 0 and 1 that specifies the amount of magenta in the CMYK color.
+	 */
 	public float getMagenta() {
 		return magenta;
 	}
@@ -119,6 +131,9 @@ public class CMYKColor extends Color {
 		this.magenta = magenta;
 	}
 
+	/**
+	 * @jsbean A value between 0 and 1 that specifies the amount of yellow in the CMYK color.
+	 */
 	public float getYellow() {
 		return yellow;
 	}
@@ -127,6 +142,9 @@ public class CMYKColor extends Color {
 		this.yellow = yellow;
 	}
 
+	/**
+	 * @jsbean A value between 0 and 1 that specifies the amount of black in the CMYK color.
+	 */
 	public float getBlack() {
 		return black;
 	}
