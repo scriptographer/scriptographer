@@ -42,7 +42,6 @@ import java.util.prefs.Preferences;
 import com.scriptographer.adm.Dialog;
 import com.scriptographer.adm.MenuItem;
 import com.scriptographer.ai.Annotator;
-import com.scriptographer.ai.Application;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.LiveEffect;
 import com.scriptographer.ai.Timer;
@@ -83,7 +82,7 @@ public class ScriptographerEngine {
 		Thread.currentThread().setContextClassLoader(
 				ScriptographerEngine.class.getClassLoader());
 		// get the baseDir setting, if it's not set, ask the user
-		String dir = ScriptographerEngine.getPreferences(false).get(
+		String dir = getPreferences(false).get(
 			"scriptDir", null);
 		// If nothing is defined, try the default place for Scripts: In the
 		// plugin's folder
@@ -115,7 +114,7 @@ public class ScriptographerEngine {
 			// This is needed on some versions on Mac CS (CFM?)
 			// as the JVM seems to not shoot down properly,
 			//and the prefs would then not be flushed to file otherwise.
-			ScriptographerEngine.getPreferences(false).flush();
+			getPreferences(false).flush();
 		} catch (java.util.prefs.BackingStoreException e) {
 			throw new RuntimeException(e);
 		}
@@ -125,7 +124,7 @@ public class ScriptographerEngine {
 		scriptDir = Dialog.chooseDirectory(
 			"Please choose the Scriptographer Script directory:", scriptDir);
 		if (scriptDir != null && scriptDir.isDirectory()) {
-			ScriptographerEngine.getPreferences(false).put("scriptDir",
+			getPreferences(false).put("scriptDir",
 				scriptDir.getPath());
 			return true;
 		}
@@ -156,7 +155,7 @@ public class ScriptographerEngine {
 		// folder as a preference node.
 		Preferences prefs = getPreferences(false).node("scripts");
 		ArrayList parts = new ArrayList();
-		File root = ScriptographerEngine.getScriptDirectory();
+		File root = getScriptDirectory();
 		// collect the directory parts up to root
 		do {
 			parts.add(file.getName());
@@ -175,7 +174,7 @@ public class ScriptographerEngine {
 
 	public static void reportError(Throwable t) {
 		String error = t.getMessage();
-		PrintStream logger = ScriptographerEngine.getLogger();
+		PrintStream logger = getLogger();
 		logger.print(error);
 		logger.print("Stacktrace: ");
 		t.printStackTrace(logger);
@@ -224,8 +223,10 @@ public class ScriptographerEngine {
 			Document.beginExecution();
 			currentFile = file;
 			if (file != null) {
-				Application.showProgress("Executing " + (file != null ?
+				if (file.getName().equals("object raster.js")) {
+				showProgress("Executing " + (file != null ?
 						file.getName() : "Console Input") + "...");
+				}
 				// Disable output to the console while the script is executed as it
 				// won't get updated anyway
 				// ConsoleOutputStream.enableOutput(false);
@@ -233,7 +234,7 @@ public class ScriptographerEngine {
 				// Put a script object in the scope to offer the user
 				// access to information about it.
 				if (scope.get("script") == null)
-					scope.put("script", new com.scriptographer.ai.Script(file), true);
+					scope.put("script", new com.scriptographer.sg.Script(file), true);
 			}
 			return true;
 		}
@@ -247,6 +248,8 @@ public class ScriptographerEngine {
 		if (executing) {
 			CommitManager.commit();
 			Document.endExecution();
+			if (currentFile != null)
+				closeProgress();
 			currentFile = null;
 			executing = false;
 		}
@@ -303,7 +306,7 @@ public class ScriptographerEngine {
 		try {
 			if (scope == null)
 				scope = script.getEngine().createScope();
-			started = ScriptographerEngine.beginExecution(file, scope);
+			started = beginExecution(file, scope);
 			ret = script.execute(scope);
 			if (started) {
 				// handle onStart / onStop
@@ -315,10 +318,9 @@ public class ScriptographerEngine {
 					// when the stop button is hit by the user
 					stopScopes.add(scope);
 				}
-				Application.closeProgress();
 			}
 		} catch (ScriptException e) {
-			ScriptographerEngine.reportError(e);
+			reportError(e);
 		} catch (ScriptCanceledException e) {
 			System.out.println(file != null ? file.getName() + " canceled" :
 				"Execution canceled");
@@ -327,7 +329,7 @@ public class ScriptographerEngine {
 			// with
 			// direct changes such as creation of paths, etc
 			if (started) {
-				ScriptographerEngine.endExecution();
+				endExecution();
 				// now reenable the console, this also writes out all the things
 				// that were printed in the meantime:
 				// ConsoleOutputStream.enableOutput(true);
@@ -367,10 +369,97 @@ public class ScriptographerEngine {
 				try {
 					onStop.call(scope);
 				} catch (ScriptException e) {
-					ScriptographerEngine.reportError(e);
+					reportError(e);
 				}
 			}
 		}
 		stopScopes.clear();
 	}
+
+
+	/**
+	 * Launches the filename with the default associated editor.
+	 * 
+	 * @param filename
+	 */
+	public static native boolean launch(String filename);
+
+	public static boolean launch(File file) {
+		return launch(file.getPath());
+	}
+
+	/**
+	 * Returns the current system time in nano seconds.
+	 * This is very useful for high resolution time measurements.
+	 * @return the current system time.
+	 */
+	public static native long getNanoTime();
+
+	private static long progressCurrent;
+	private static long progressMax;
+	private static boolean progressAutomatic;
+
+	private static native void nativeSetProgressText(String text);
+
+	public static void showProgress(String text) {
+		progressAutomatic = true;
+		progressCurrent = 0;
+		progressMax = 1 << 8;
+		nativeUpdateProgress(progressCurrent, progressMax);
+		nativeSetProgressText(text);
+	}
+	
+	private static native boolean nativeUpdateProgress(long current, long max);
+
+	public static  boolean updateProgress(long current, long max) {
+		progressCurrent = current;
+		progressMax = max;
+		progressAutomatic = false;
+		return nativeUpdateProgress(current, max);
+	}
+
+	public static boolean updateProgress() {
+		boolean ret = nativeUpdateProgress(progressCurrent, progressMax);
+		if (progressAutomatic) {
+			progressCurrent++;
+			progressMax++;
+		}
+		return ret;
+	}
+
+	private static native void nativeCloseProgress();
+
+	public static void closeProgress() {
+		nativeCloseProgress();
+		// BUGFIX: After display of progress dialog, the next modal 
+		// dialog seems to be become active, even when it is invisible
+		// The workaround is to walk through all dialogs and deactivate
+		// the modal ones.
+		Dialog.updateModalDialogs();
+	}
+
+	/**
+	 * @jshide
+	 */
+	public static native void dispatchNextEvent();
+
+	private static final boolean isWindows, isMacintosh;
+
+	static {
+		String os = System.getProperty("os.name").toLowerCase();
+		isWindows = (os.indexOf("windows") != -1);
+		isMacintosh = (os.indexOf("mac os x") != -1);
+	}
+
+	public static boolean isWindows() {
+		return isWindows;
+	}
+
+	public static boolean isMacintosh() {
+		return isMacintosh;
+	}
+
+	public static native double getApplicationVersion();
+
+	public static native int getApplicationRevision();
 }

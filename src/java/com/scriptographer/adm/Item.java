@@ -39,7 +39,6 @@ import java.util.StringTokenizer;
 
 import com.scratchdisk.script.Callable;
 import com.scriptographer.ScriptographerEngine; 
-import com.scriptographer.ai.Application;
 
 /**
  * @author lehni
@@ -494,7 +493,7 @@ public abstract class Item extends CallbackHandler {
 							size.width += 32;
 						} else {
 							size.width +=
-								Application.isMacintosh() ? 12 : 6;
+								ScriptographerEngine.isMacintosh() ? 12 : 6;
 						}
 					}
 				}

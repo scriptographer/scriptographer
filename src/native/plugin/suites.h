@@ -295,6 +295,7 @@ extern "C" AIRasterSuite					*sAIRaster;
 extern "C" AIRasterizeSuite					*sAIRasterize;
 extern "C" AIRealBezierSuite				*sAIRealBezier;
 extern "C" AIRealMathSuite					*sAIRealMath;
+extern "C" AIRuntimeSuite					*sAIRuntime;
 extern "C" AIShapeConstructionSuite			*sAIShapeConstruction;
 extern "C" AISwatchListSuite				*sAISwatchList;
 extern "C" AISymbolSuite					*sAISymbol;

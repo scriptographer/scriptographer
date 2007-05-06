@@ -44,6 +44,8 @@ import com.scratchdisk.script.rhino.ExtendedJavaClass;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.*;
 import com.scriptographer.ai.*;
+import com.scriptographer.sg.Application;
+import com.scriptographer.sg.Scriptographer;
 /**
  * @author lehni
  */
@@ -190,7 +192,10 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 
 		defineProperty("app", Application.getInstance(),
 				ScriptableObject.READONLY | ScriptableObject.DONTENUM);
-	}
+
+		defineProperty("scriptographer", Scriptographer.getInstance(),
+				ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+}
 
 	/**
 	 * Determines the directory of a script by reading it's scriptFile property
@@ -201,7 +206,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 	 * @return
 	 */
 	protected static File getDirectory(Scriptable scope) {
-		com.scriptographer.ai.Script script = (com.scriptographer.ai.Script) scope.get("script", scope);
+		com.scriptographer.sg.Script script = (com.scriptographer.sg.Script) scope.get("script", scope);
 		if (script != null)
 			return script.getFile().getParentFile();
 		else

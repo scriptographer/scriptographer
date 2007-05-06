@@ -29,10 +29,9 @@
  * $Id: $
  */
 
-package com.scriptographer.ai;
+package com.scriptographer.sg;
 
 import java.io.File;
-import java.util.prefs.Preferences;
 
 import com.scriptographer.ScriptographerEngine;
 
@@ -42,16 +41,16 @@ import com.scriptographer.ScriptographerEngine;
  */
 public class Script {
 	private File file;
-	private Preferences preferences = null;
+	private Preferences prefs = null;
 
 	public Script(File file) {
 		this.file = file;
 	}
 
 	public Preferences getPreferences() {
-		if (preferences == null)
-			preferences = ScriptographerEngine.getPreferences(file);
-		return preferences;
+		if (prefs == null)
+			prefs = new Preferences(ScriptographerEngine.getPreferences(file));
+		return prefs;
 	}
 
 	public File getFile() {

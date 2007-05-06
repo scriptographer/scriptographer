@@ -26,12 +26,10 @@
  * 
  * File created on 10.06.2006.
  * 
- * $Id$
+ * $Id: global.java 317 2007-05-01 17:21:24Z lehni $
  */
 
-package com.scriptographer.ai;
-
-import java.io.File;
+package com.scriptographer.sg;
 
 /*
  * This class is just a dummy to get Javadoc to generate documentation for
@@ -64,15 +62,4 @@ public class global {
 	public void include() {
 		// dummy
 	}
-
-	// TODO: commit, evaluate
-	/**
-	 * The Scriptographer base directory where all the scripts are stored.
-	 */
-	public File scriptDir;
-
-	/**
-	 * The file of the current script.
-	 */
-	public File scriptFile;
 }

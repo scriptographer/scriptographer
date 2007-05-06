@@ -90,6 +90,7 @@ extern "C" {
 	AIRasterizeSuite				*sAIRasterize;
 	AIRealBezierSuite				*sAIRealBezier;
 	AIRealMathSuite					*sAIRealMath;
+	AIRuntimeSuite					*sAIRuntime;
 	AIShapeConstructionSuite		*sAIShapeConstruction;
 	AISwatchListSuite				*sAISwatchList;
 	AISymbolSuite					*sAISymbol;
@@ -230,6 +231,7 @@ ImportSuite postStartup[] = {
 	kAIRasterizeSuite, kAIRasterizeSuiteVersion, &sAIRasterize, sizeof(AIRasterizeSuite),
 	kAIRealBezierSuite, kAIRealBezierSuiteVersion, &sAIRealBezier, sizeof(AIRealBezierSuite),
 	kAIRealMathSuite, kAIRealMathVersion, &sAIRealMath, sizeof(AIRealMathSuite),
+	kAIRuntimeSuite, kAIRuntimeVersion, &sAIRuntime, sizeof(AIRuntimeSuite),
 	kAIShapeConstructionSuite, kAIShapeConstructionSuiteVersion, &sAIShapeConstruction, sizeof(AIShapeConstructionSuite),
 	kAISwatchListSuite, kAISwatchListSuiteVersion, &sAISwatchList, sizeof(AISwatchListSuite),
 	kAISymbolSuite, kAISymbolSuiteVersion, &sAISymbol, sizeof(AISymbolSuite),

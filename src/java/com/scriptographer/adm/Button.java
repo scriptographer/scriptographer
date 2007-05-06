@@ -36,7 +36,6 @@ import java.io.IOException;
 
 import com.scratchdisk.script.Callable;
 import com.scriptographer.ScriptographerEngine; 
-import com.scriptographer.ai.Application;
 
 /**
  * A Button is by default text based.
@@ -154,7 +153,7 @@ public class Button extends TextItem {
 	
 	// int top, int left, int bottom, int right
 	protected static final Insets INSETS_IMAGE = new Insets(0, 0, 0, 0);
-	protected static final Insets INSETS_TEXT = Application.isMacintosh() ?
+	protected static final Insets INSETS_TEXT = ScriptographerEngine.isMacintosh() ?
 			new Insets(1, 2, 3, 3) : INSETS_IMAGE;
 	
 	protected Insets getButtonInsets() {
