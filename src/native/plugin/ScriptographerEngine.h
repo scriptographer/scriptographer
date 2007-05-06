@@ -325,9 +325,6 @@ public:
 	jclass cls_Dialog;
 	jmethodID mid_Dialog_onSizeChanged;
 
-	jclass cls_ModalDialog;
-	jfieldID fid_ModalDialog_doesModal;
-
 	jclass cls_PopupDialog;
 
 	jclass cls_DialogGroupInfo;

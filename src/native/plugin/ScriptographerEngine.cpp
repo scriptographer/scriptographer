@@ -583,9 +583,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_Dialog = loadClass(env, "com/scriptographer/adm/Dialog");
 	mid_Dialog_onSizeChanged = getMethodID(env, cls_Dialog, "onSizeChanged", "(II)V");
 
-	cls_ModalDialog = loadClass(env, "com/scriptographer/adm/ModalDialog");
-	fid_ModalDialog_doesModal = getFieldID(env, cls_ModalDialog, "doesModal", "Z");
-
 	cls_PopupDialog = loadClass(env, "com/scriptographer/adm/PopupDialog");
 
 	cls_DialogGroupInfo = loadClass(env, "com/scriptographer/adm/DialogGroupInfo");

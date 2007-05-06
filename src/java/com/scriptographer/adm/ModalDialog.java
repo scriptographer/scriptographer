@@ -63,8 +63,6 @@ public class ModalDialog extends Dialog {
 	 */
 	public final static int OPTION_SYSTEM_ALERT = 1 << 22;
 	
-	private boolean doesModal = false;
-	
 	protected ModalDialog(int style, int options) {
 		// Allways create ModalDialogs hidden, as they need to be shown
 		// explicitely
@@ -94,11 +92,11 @@ public class ModalDialog extends Dialog {
 	}
 
 	public native Item doModal();
+
 	public native void endModal();
-	
+
 	protected void onHide() throws Exception {
-		if (doesModal)
-			this.endModal();
+		this.endModal();
 		super.onHide();
 	}
 }

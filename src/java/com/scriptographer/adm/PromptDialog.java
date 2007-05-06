@@ -43,10 +43,12 @@ import org.mozilla.javascript.ScriptRuntime;
  */
 public class PromptDialog extends ModalDialog {
 
+	private PromptItem[] items = null;
 	private Object[] values = null;
 	
 	public PromptDialog(String title, PromptItem[] items) {
 		this.setTitle(title);
+		this.items = items;
 		
 		double[] columns = { TableLayoutConstants.PREFERRED,
 				TableLayoutConstants.PREFERRED };
@@ -93,18 +95,6 @@ public class PromptDialog extends ModalDialog {
 		
 		this.setDefaultItem(okButton);
 		this.setCancelItem(cancelButton);
-		
-		if (doModal() == okButton) {
-			values = new Object[items.length];
-			
-			for (int i = 0; i < items.length; i++) {
-				PromptItem item = items[i];
-				if (item != null)
-					values[i] = item.getResult();
-			}
-		} else {
-			values = null;
-		}
 	}
 	
 	public PromptDialog(String title, Map[] items) {
@@ -112,6 +102,15 @@ public class PromptDialog extends ModalDialog {
 	}
 	
 	public Object[] getValues() {
+		if (values == null) {
+			values = new Object[items.length];
+			
+			for (int i = 0; i < items.length; i++) {
+				PromptItem item = items[i];
+				if (item != null)
+					values[i] = item.getResult();
+			}
+		}
 		return values;
 	}
 	
@@ -191,11 +190,8 @@ public class PromptDialog extends ModalDialog {
 
 	public static Object[] prompt(String title, Map[] items) {
 		PromptDialog dialog = new PromptDialog(title, items);
-		// destroy the dialog again after prompting values. If this is not done
-		// a problem seems to occur where the modal dialog interfers with the
-		// progress dialog, and locks the mouse interface, for example when
-		// rendering a raster.
-		dialog.destroy();
-		return dialog.values;
+		return dialog.doModal() == dialog.getDefaultItem()
+			? dialog.getValues()
+			: null;
 	}
 }

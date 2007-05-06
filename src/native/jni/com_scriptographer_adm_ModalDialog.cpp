@@ -39,23 +39,16 @@
  * com.scriptographer.adm.Item doModal()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ModalDialog_doModal(JNIEnv *env, jobject obj) {
-	jobject res = NULL;
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
-		gEngine->setBooleanField(env, obj, gEngine->fid_ModalDialog_doesModal, true);
 		sADMDialog->Show(dialog, true);
 		int id = env->IsInstanceOf(obj, gEngine->cls_PopupDialog) ? sADMDialog->DisplayAsPopupModal(dialog) : sADMDialog->DisplayAsModal(dialog);
 		ADMItemRef item = sADMDialog->GetItem(dialog, id);
-		if (item != NULL) {
-			res = gEngine->getItemObject(item);
-		}
 		sADMDialog->Show(dialog, false);
+		if (item != NULL)
+			return gEngine->getItemObject(item);
 	} EXCEPTION_CONVERT(env);
-	// finally set back the doesModal variable to false:
-	try {
-		gEngine->setBooleanField(env, obj, gEngine->fid_ModalDialog_doesModal, false);
-	} EXCEPTION_CONVERT(env);
-	return res;
+	return NULL;
 }
 
 /*
@@ -66,6 +59,5 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ModalDialog_endModal(JNIEnv *
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		sADMDialog->EndModal(dialog, sADMDialog->GetCancelItemID(dialog), true);
-		gEngine->setBooleanField(env, obj, gEngine->fid_ModalDialog_doesModal, false);
 	} EXCEPTION_CONVERT(env);
 }

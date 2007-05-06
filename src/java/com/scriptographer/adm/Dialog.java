@@ -275,19 +275,38 @@ public abstract class Dialog extends CallbackHandler {
 
 	public void destroy() {
 		nativeDestroy(handle);
-		handle = 0;
 		dialogs.remove(this);
+		handle = 0;
 	}
 	
+	/**
+	 * @jshide
+	 */
 	public void finalize() {
 		if (handle != 0)
 			this.destroy();
 	}
 	
+	/**
+	 * @jshide
+	 */
 	public static void destroyAll() {
 		for (int i = dialogs.size() - 1; i >= 0; i--) {
 			Dialog dialog = (Dialog) dialogs.get(i);
 			dialog.destroy();
+		}
+	}
+	
+	/**
+	 * This is needed for a workaround in Application.closeProgress()
+	 * 
+	 * @jshide
+	 */
+	public static void updateModalDialogs() {
+		for (int i = 0; i < dialogs.size(); i++) {
+			Dialog dialog = (Dialog) dialogs.get(i);
+			if (dialog instanceof ModalDialog && !dialog.isVisible())
+				dialog.setActive(false);
 		}
 	}
 
@@ -298,6 +317,7 @@ public abstract class Dialog extends CallbackHandler {
 	 * problem. It is fired from {@link ScriptographerEngine.init}
 	 * 
 	 * @throws Exception
+	 * @jshide
 	 */
 	public static void initializeAll() throws Exception {
 		for (int i = 0; i < dialogs.size(); i++) {
@@ -735,7 +755,7 @@ public abstract class Dialog extends CallbackHandler {
 		return visible;
 	}
 
-	private native void nativeSetVisible(boolean visible);
+	protected native void nativeSetVisible(boolean visible);
 	
 	public void setVisible(boolean visible) {
 		// do not set visibility natively before the dialog was properly
@@ -1181,6 +1201,14 @@ public abstract class Dialog extends CallbackHandler {
 		return PromptDialog.prompt(title, items);
 	}
 
+	public static void test() {
+		for (int i = dialogs.size() - 1; i >= 0; i--) {
+			Dialog dialog = (Dialog) dialogs.get(i);
+			if (dialog instanceof PromptDialog)
+				dialog.destroy();
+		}
+	}
+	
 	/*
 	 * This function is only here for the JS environment. From java, use
 	 * PromptDialog.prompt directly!
