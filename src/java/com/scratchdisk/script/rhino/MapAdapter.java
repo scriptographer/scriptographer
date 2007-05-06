@@ -41,6 +41,7 @@ import java.util.Set;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Wrapper;
 
 /**
@@ -77,47 +78,62 @@ public class MapAdapter implements Map {
 	}
 
 	public Object get(Object key) {
-		Object value = key instanceof Integer ?
-				object.get(((Integer) key).intValue(), object) :
-				object.get((String) key, object);
+		Object value;
+		if (key instanceof Integer)
+			value = ScriptableObject.getProperty(object, ((Integer) key).intValue());
+		else if (key instanceof String)
+			value = ScriptableObject.getProperty(object, (String) key);
+		else
+			value = null;
 		if (value instanceof Wrapper)
 			value = ((Wrapper) value).unwrap();
+		else if (value == ScriptableObject.NOT_FOUND)
+			value = null;
 		return value;
 	}
 
 	public Object put(Object key, Object value) {
+		// Wrap the value if it is not already
 		if (value != null && !(value instanceof Scriptable)) {
 			Context cx = Context.getCurrentContext();
 			value = cx.getWrapFactory().wrap(cx, object, value, value.getClass());
 		}
-		Object prev = this.get(key);
+		Object prev = get(key);
 		if (key instanceof Integer)
 			object.put(((Integer) key).intValue(), object, value);
+		else if (key instanceof String)
+			object.put((String) key, object, value);
 		else
-			object.put(((Integer) key).intValue(), object, value);
+			prev = null;
 		return prev;
 	}
 
 	public Object remove(Object key) {
-		Object prev = this.get(key);
-		if (key instanceof Integer)
-			object.delete(((Integer) key).intValue());
-		else
-			object.delete(((Integer) key).intValue());
-		return prev;
+		if (containsKey(key)) {
+			Object prev = get(key);
+			if (key instanceof Integer)
+				object.delete(((Integer) key).intValue());
+			else if (key instanceof String)
+				object.delete((String) key);
+			return prev;
+		}
+		return null;
 	}
 
 	public boolean containsKey(Object key) {
-		return key instanceof Integer ?
-				object.has(((Integer) key).intValue(), object) :
-				object.has((String) key, object);
+		if (key instanceof Integer)
+			return object.has(((Integer) key).intValue(), object);
+		else if (key instanceof String)
+			return object.has((String) key, object);
+		else
+			return false;
 	}
 
 	public boolean containsValue(Object value) {
 		Object[] ids = object.getIds();
 		// Search for it the slow way...
 		for (int i = 0; i < ids.length; i++) {
-			Object obj = this.get(ids[i]);
+			Object obj = get(ids[i]);
 			if (value == obj || value != null && value.equals(obj))
 				return true;
 		}
@@ -136,7 +152,7 @@ public class MapAdapter implements Map {
 		Object[] ids = object.getIds();
 		ArrayList values = new ArrayList();
 		for (int i = 0; i < ids.length; i++) {
-			values.add(this.get(ids[i]));
+			values.add(get(ids[i]));
 		}
 		return values;
 	}
