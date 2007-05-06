@@ -86,7 +86,7 @@ public class RhinoWrapFactory extends WrapFactory {
 		// wrapped again, take the wrapper from the pool...
 		Scriptable obj = (Scriptable) wrappers.get(javaObj);
 		if (obj == null) {
-	        // Allways override staticType and set itto the native type
+	        // Allways override staticType and set it to the native type
 			// of the class. Sometimes the interface used to acces an
 			// object of a certain class is passed. But why should it
 			// be wrapped that way?

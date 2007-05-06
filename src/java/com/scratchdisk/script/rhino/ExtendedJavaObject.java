@@ -73,9 +73,6 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			// Careful: We cannot on members.has, as this does not
 			// check static fields the way members.get does...
 			Object res = members.get(this, name, javaObject, false);
-			if (name.equals("test")) {
-				int i = 0;
-			}
 			if (res != null && res != Scriptable.NOT_FOUND) return res;
 			Scriptable prototype = getPrototype();
 			if (name.equals("prototype")) {
@@ -90,7 +87,7 @@ public class ExtendedJavaObject extends NativeJavaObject {
 				// NativeJavaObject misses to do so:
 				return prototype.get(name, start);
 			}
-			return null;
+			return Scriptable.NOT_FOUND;
 			/*
 			// TODO: What does fieldAndMethods do? Is it needed?
 			else if (fieldAndMethods != null && fieldAndMethods.containsKey(name)) {

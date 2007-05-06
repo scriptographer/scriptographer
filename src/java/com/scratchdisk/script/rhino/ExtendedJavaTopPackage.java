@@ -31,8 +31,6 @@
 
 package com.scratchdisk.script.rhino;
 
-import java.util.HashMap;
-
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
