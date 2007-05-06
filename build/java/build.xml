@@ -178,6 +178,7 @@
 		</replace>
 		<copy file="${resources.meta}/version.in" tofile="${resources.meta}/version" overwrite="true" />
 		<replace file="${resources.meta}/version">
+			<replacefilter token="@version@" value="${version}" />
 			<replacefilter token="@build.number@" value="${build.number}" />
 		</replace>
 	</target>
@@ -243,7 +244,6 @@
 
 			<class name="com.scriptographer.ScriptographerEngine" />
 
-			<class name="com.scriptographer.ai.Application" />
 			<class name="com.scriptographer.ai.Tool" />
 			<class name="com.scriptographer.ai.Art" />
 			<class name="com.scriptographer.ai.Path" />
