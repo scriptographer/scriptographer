@@ -5,21 +5,20 @@
 // function
 var raster = null;
 var dot = null;
-var sel = null;
 
 function initRaster() {
-	sel = activeDocument.getSelectedItems();
+	var sel = app.activeDocument.selectedItems;
 	for (var i = 0; i < sel.length; i++) {
-		obj = sel[i];
-		if (raster == null && obj instanceof Raster) raster = obj;
-		else if (dot == null) dot = obj;
-		if (raster != null && dot != null) break;
+		var obj = sel[i];
+		if (!raster && obj instanceof Raster) raster = obj;
+		else if (!dot) dot = obj;
+		if (raster && dot) break;
 	}
-	return (raster != null && dot != null);
+	return raster && dot;
 }
 
 function executeRaster(createDot) {
-	activeDocument.deselectAll();
+	app.activeDocument.deselectAll();
 	var group = new Group();
 	// create a copy of the dot that is moved to the origin so 
 	// rasters that scale the dot are simple to realize:
@@ -38,7 +37,7 @@ function executeRaster(createDot) {
 				group.appendChild(obj);
 			}
 		}
-		activeDocument.redraw();
+		app.activeDocument.redraw();
 	}
 	dot.remove();
 	return group;

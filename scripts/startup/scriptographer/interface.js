@@ -90,7 +90,7 @@ var consoleDialog = new FloatingDialog (
 		minimumSize: new Dimension(200, 18),
 		backgroundColor: Drawer.COLOR_INACTIVE_TAB,
 		// the onDraw workaround for display problems is only needed on mac
-		onDraw: app.macintosh ? function(drawer) {
+		onDraw: app.macintosh && false ? function(drawer) {
 			// Workaround for mac, where TextEdit fields with a background
 			// color
 			// do not get completely filled
@@ -301,7 +301,7 @@ var mainDialog = new FloatingDialog(
             }
         } else list = scriptList;
         // if we're at root, entry is null:
-        var dir = entry ? entry.file : app.scriptDirectory;
+        var dir = entry ? entry.file : scriptographer.scriptDirectory;
         if (dir) {
             // create a non existing filename:
             var file;
@@ -334,7 +334,7 @@ var mainDialog = new FloatingDialog(
 		for (var i = 0; i < sel.length; i++)
 			selected[sel[i].file] = true;
 		removeFiles();
-		addFiles(scriptList, app.getScriptDirectory(), selected);
+		addFiles(scriptList, scriptographer.scriptDirectory, selected);
 		// now restore the expanded state:
 		for (file in expandedDirs) {
 			var entry = directoryEntries[file];
@@ -416,7 +416,7 @@ var mainDialog = new FloatingDialog(
 	var helpEntry = new ListEntry(menu) {
 		text: "Help...",
 		onSelect: function() {
-			app.launch("file://" + new File(app.pluginDirectory, "doc/index.html"));
+			app.launch("file://" + new File(scriptographer.pluginDirectory, "doc/index.html"));
 		}
 	};
 
@@ -523,7 +523,7 @@ var mainDialog = new FloatingDialog(
 	this.addToLayout(scriptList, BorderLayout.CENTER);
 	this.addToLayout(buttons, BorderLayout.SOUTH);
 
-	addFiles(scriptList, app.getScriptDirectory());
+	addFiles(scriptList, scriptographer.scriptDirectory);
 });
 
 

@@ -9,7 +9,6 @@ function createDot(x, y, dot, radius) {
 		art.transform(m); 
 		return art;
 	}
-	return null;
 }
 
 if (initRaster()) {
