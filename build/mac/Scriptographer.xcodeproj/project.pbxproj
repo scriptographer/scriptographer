@@ -240,9 +240,6 @@
 		91456A940AF7E8F3000FD468 /* IText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91456A920AF7E8F3000FD468 /* IText.cpp */; };
 		91456A950AF7E8F3000FD468 /* IThrowException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91456A930AF7E8F3000FD468 /* IThrowException.cpp */; };
 		915C032D0A435D0E0027685A /* Info.plist in Copy CFM Bundle Resources */ = {isa = PBXBuildFile; fileRef = 919823D40A37257700D57E4C /* Info.plist */; };
-		916452390BDC68F900A39A9F /* com_scriptographer_ai_Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 916452380BDC68F900A39A9F /* com_scriptographer_ai_Application.cpp */; };
-		9164523A0BDC68F900A39A9F /* com_scriptographer_ai_Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 916452380BDC68F900A39A9F /* com_scriptographer_ai_Application.cpp */; };
-		9164523B0BDC68F900A39A9F /* com_scriptographer_ai_Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 916452380BDC68F900A39A9F /* com_scriptographer_ai_Application.cpp */; };
 		91DEF0D90A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */; };
 		91DEF0DC0A3B515B0044F62A /* com_scriptographer_adm_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91DEF0D80A3B515B0044F62A /* com_scriptographer_adm_Key.cpp */; };
 		91E56C2B0B396EE0004AED6E /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91E56C2A0B396EE0004AED6E /* AppKit.framework */; };
@@ -315,7 +312,6 @@
 		91456A8F0AF7E8D8000FD468 /* IAIUnicodeString.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IAIUnicodeString.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/illustrator/IAIUnicodeString.cpp"; sourceTree = SOURCE_ROOT; };
 		91456A920AF7E8F3000FD468 /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/ate/IText.cpp"; sourceTree = SOURCE_ROOT; };
 		91456A930AF7E8F3000FD468 /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/ate/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
-		916452380BDC68F900A39A9F /* com_scriptographer_ai_Application.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Application.cpp; path = jni/com_scriptographer_ai_Application.cpp; sourceTree = "<group>"; };
 		916E65020A8ACD5400C3508D /* libjvm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjvm.dylib; path = "/usr/local/lib/gcj-4.2.0/libjvm.dylib"; sourceTree = "<absolute>"; };
 		916E65A20A8ACE7A00C3508D /* com */ = {isa = PBXFileReference; lastKnownFileType = folder; name = com; path = ../../src/java/com; sourceTree = SOURCE_ROOT; };
 		916E65A30A8ACE7A00C3508D /* info */ = {isa = PBXFileReference; lastKnownFileType = folder; name = info; path = ../../src/java/info; sourceTree = SOURCE_ROOT; };
@@ -596,7 +592,6 @@
 		91EF0B4E0A20A4B900F0EF9A /* AI */ = {
 			isa = PBXGroup;
 			children = (
-				916452380BDC68F900A39A9F /* com_scriptographer_ai_Application.cpp */,
 				912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */,
 				912A22D10AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp */,
 				9109E7C60AE6296300D4837B /* com_scriptographer_ai_Gradient.cpp */,
@@ -900,7 +895,6 @@
 				912A21240AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */,
 				912A22D80AE83B7F00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */,
 				912A22D90AE83B7F00B0ADD6 /* com_scriptographer_ai_PatternList.cpp in Sources */,
-				9164523A0BDC68F900A39A9F /* com_scriptographer_ai_Application.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -983,7 +977,6 @@
 				912A21230AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */,
 				912A22D60AE83B7F00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */,
 				912A22D70AE83B7F00B0ADD6 /* com_scriptographer_ai_PatternList.cpp in Sources */,
-				9164523B0BDC68F900A39A9F /* com_scriptographer_ai_Application.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1067,7 +1060,6 @@
 				914569CC0AF7CADF000FD468 /* com_scriptographer_ai_GradientStopList.cpp in Sources */,
 				914569CD0AF7CADF000FD468 /* com_scriptographer_ai_Pattern.cpp in Sources */,
 				914569CE0AF7CADF000FD468 /* com_scriptographer_ai_PatternList.cpp in Sources */,
-				916452390BDC68F900A39A9F /* com_scriptographer_ai_Application.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
