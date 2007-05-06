@@ -657,6 +657,8 @@ public abstract class Art extends DictionaryObject {
 		setAttribute(ATTR_HIDDEN.intValue(), hidden);
 	}
 
+	public native boolean isEditable();
+
 	/**
 	 * @jsbean The Art item's blend mode as specified by the Art.BLEND_* static
 	 * @jsbean properties.

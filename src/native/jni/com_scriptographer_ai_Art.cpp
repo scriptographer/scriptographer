@@ -500,6 +500,41 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_getAttribute(JNIEnv *e
 }
 
 /*
+ * boolean isEditable()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_isEditable(JNIEnv *env, jobject obj) {
+	ASBoolean res = false;
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		long values;
+		// First check that the art is not hidden or locked
+		if (!sAIArt->GetArtUserAttr(art, kArtHidden | kArtLocked, &values) &&
+			!values) {
+			AIArtHandle prevArt;
+			short order;
+			ASBoolean editable;
+			// Use Get / SetInsertionPoint to find out if object's parent is editable or not
+			if (!sAIArt->GetInsertionPoint(&prevArt, &order, &editable)) {
+				AIArtHandle checkArt;
+				if (!sAIArt->GetArtParent(art, &checkArt)) {
+					// Layers do not have parents
+					if (checkArt == NULL)
+						checkArt = art;
+					AIArtHandle curArt;
+					if (!sAIArt->SetInsertionPoint(checkArt) &&
+						!sAIArt->GetInsertionPoint(&curArt, &order, &editable)) {
+						res = editable;
+					}
+					// Set old insertion point again
+					sAIArt->SetInsertionPoint(prevArt);
+				}
+			}
+		}
+	} EXCEPTION_CONVERT(env);
+	return res;
+}
+
+/*
  * int getBlendMode()
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Art_getBlendMode(JNIEnv *env, jobject obj) {
