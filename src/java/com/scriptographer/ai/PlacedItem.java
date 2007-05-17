@@ -49,7 +49,7 @@ public class PlacedItem extends Art {
 	private static native int nativeCreate(File file);
 
 	public PlacedItem(URL url) throws IOException {
-		this(NetUtils.loadFile(url));
+		this(NetUtils.loadFile(url, "sg_"));
 	}
 
 

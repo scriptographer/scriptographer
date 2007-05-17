@@ -126,7 +126,7 @@ public class Raster extends Art {
 	public Raster(URL url) throws IOException {
 		// this(NetUtils.loadImage(url));
 		// Immediatelly delete the downloaded file afterwards
-		this(NetUtils.loadFile(url), true);
+		this(NetUtils.loadFile(url, "sg_"), true);
 	}
 
 	native private static int nativeCreate(File file);
