@@ -31,6 +31,9 @@
 
 package com.scriptographer.script.rhino;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.io.File;
 
 import org.mozilla.javascript.Context;
@@ -96,12 +99,13 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		TextValueItem.class,
 		ToggleItem.class,
 		Tracker.class,
+		Margins.class,
+		Size.class,
 
 		// AWT Layout classes
-		java.awt.BorderLayout.class,
-		java.awt.Dimension.class,
-		java.awt.FlowLayout.class,
-		java.awt.Insets.class,
+		BorderLayout.class,
+		Dimension.class,
+		FlowLayout.class,
 
 		// AI, alphabetically
 		Annotator.class,
@@ -144,10 +148,11 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Pattern.class,
 		PatternColor.class,
 		PatternList.class,
-		Point.class,
+		PlacedItem.class,
+		com.scriptographer.ai.Point.class,
 		PointText.class,
 		Raster.class,
-		Rectangle.class,
+		com.scriptographer.ai.Rectangle.class,
 		RGBColor.class,
 		Segment.class,
 		SegmentList.class,
@@ -247,12 +252,13 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 	/**
 	 * Evaluates the given javascript string in the current scope. Similar to
 	 * eval(), but it allows the use of another object than the global scope:
-	 * e.g.: <code>
+	 * e.g.:
+	 * <pre>
 	 * var obj = {
 	 *     eval: evaluate
 	 * };
 	 * obj.eval("print(this);");
-	 * </code>
+	 * </pre>
 	 */
 	public static void evaluate(Context cx, Scriptable thisObj, Object[] args,
 			Function funObj) throws Exception {

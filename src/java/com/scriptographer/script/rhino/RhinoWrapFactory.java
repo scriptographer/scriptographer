@@ -35,10 +35,6 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
 import com.scratchdisk.script.rhino.RhinoCallable;
-import com.scriptographer.ai.Matrix;
-import com.scriptographer.ai.Point;
-import com.scriptographer.ai.Rectangle;
-import com.scriptographer.ai.SegmentPoint;
 import com.scriptographer.ai.Style;
 
 /**
@@ -51,11 +47,10 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 			Class staticType) {
 		// these are not wrappers, the java return types are simply converted to
 		// these scriptographer types and wrapped afterwards:
-		if (obj instanceof java.awt.geom.Rectangle2D
-			&& !(obj instanceof Rectangle)) {
+		/*
+		if (obj instanceof java.awt.geom.Rectangle2D) {
 			obj = new Rectangle((java.awt.geom.Rectangle2D) obj);
-		} else if (obj instanceof java.awt.geom.Point2D
-			&& !(obj instanceof Point)) {
+		} else if (obj instanceof java.awt.geom.Point2D) {
 			obj = new Point((java.awt.geom.Point2D) obj);
 		} else if (obj instanceof java.awt.geom.AffineTransform
 			&& !(obj instanceof Matrix)) {
@@ -63,7 +58,9 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 		} else if (obj instanceof java.awt.Dimension) {
 			// TODO: expose Dimension to JS?
 			obj = new Point((java.awt.Dimension) obj);
-		} else if (obj instanceof RhinoCallable) {
+		} else
+		*/
+		if (obj instanceof RhinoCallable) {
 			// Handle the ScriptFunction special case, return the unboxed
 			// function value.
 			// TODO: move to com.scratchdisk
@@ -76,9 +73,6 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 			Object javaObj, Class staticType) {
 		if (javaObj instanceof Style)
 			return new StyleWrapper(scope, (Style) javaObj, staticType, true);
-		if (javaObj instanceof SegmentPoint)
-			return new SegmentPointWrapper(scope, (SegmentPoint) javaObj,
-					staticType, true);
 		return null;
 	}
 }

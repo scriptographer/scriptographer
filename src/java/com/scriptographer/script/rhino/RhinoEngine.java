@@ -63,6 +63,14 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
 		return context;
 	}
 
+	protected boolean hasFeature(Context cx, int feature, boolean defaultValue) {
+		switch (feature) {
+		case Context.FEATURE_DYNAMIC_SCOPE:
+			return true;
+		}
+		return super.hasFeature(cx, feature, defaultValue);
+	}
+
 	protected void observeInstructionCount(Context cx, int instructionCount) {
 		if (!ScriptographerEngine.updateProgress())
 			throw new ScriptCanceledException();
