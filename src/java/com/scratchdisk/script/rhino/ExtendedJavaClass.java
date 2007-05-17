@@ -33,6 +33,7 @@ package com.scratchdisk.script.rhino;
 
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 
 import org.mozilla.javascript.*;
 
@@ -44,7 +45,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 	private HashMap properties;
 	private Scriptable instanceProto = null;
 	// A lookup for the associated ExtendedJavaClass wrappers
-	private static HashMap classes = new HashMap();
+	private static IdentityHashMap classes = new IdentityHashMap();
 
 	public ExtendedJavaClass(Scriptable scope, Class cls, boolean unsealed) {
 		super(scope, cls);
@@ -65,7 +66,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 	}
 
 	public Scriptable construct(Context cx, Scriptable scope, Object[] args) {
-		// If the last object passed to the constructor is a NativeObject,
+		// If the last object passed to the constructor is a Scriptable,
 		// use it as a hashtable containing methods to be added to the class:
 		Scriptable obj = null;
 		NativeObject properties = null;
@@ -79,10 +80,10 @@ public class ExtendedJavaClass extends NativeJavaClass {
 			// be set, or a function that is executed on the object and of which
 			// the result can be fields to be set.
 			Object last = args[args.length - 1];
-			if (last instanceof NativeObject)
-				properties = (NativeObject) last;
-			else if (last instanceof Callable)
+			if (last instanceof Callable)
 				initialize = (Callable) last;
+			else if (last instanceof NativeObject)
+				properties = (NativeObject) last;
 			// remove the last argument from the list, so the right constructor
 			// will be found:
 			if (initialize != null || properties != null) {
@@ -95,7 +96,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		obj = super.construct(cx, scope, args);
 		// If an initialize function was passed as the last argument, execute
 		// it now. The fields of the result of the function are then injected
-		// into the object, if it is a NativeObject.
+		// into the object, if it is a Scriptable.
 		if (initialize != null) {
 			Object res = initialize.call(cx, scope, obj, args);
 			if (res instanceof NativeObject)

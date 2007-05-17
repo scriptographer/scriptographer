@@ -31,6 +31,8 @@
 
 package com.scratchdisk.script.rhino;
 
+import java.lang.reflect.Constructor;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 import org.mozilla.javascript.Context;
@@ -39,6 +41,7 @@ import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.WrapFactory;
+import org.mozilla.javascript.Wrapper;
 
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.ReadOnlyList;
@@ -109,15 +112,121 @@ public class RhinoWrapFactory extends WrapFactory {
 		return obj;
 	}
 
-	public Object coerceType(Class type, Object value) {
-		// coerce native objects to maps when needed
-		if (value instanceof NativeObject && Map.class.isAssignableFrom(type)) {
-			// return convertToMap((NativeObject) value);
-			return new MapAdapter((NativeObject) value);
-		} else if (value instanceof Function && type == Callable.class) {
-			return new RhinoCallable(engine, (Function) value);
+	public boolean canConvert(Object from, Class to) {
+		return from instanceof Scriptable
+				&& (getMapConstructor(to) != null || from instanceof NativeObject
+						&& getZeroArgumentConstructor(to) != null);
+	}
+
+	public Object convert(Object from, Class to) {
+		// Coerce native objects to maps when needed
+		if (from instanceof Function && to == Callable.class) {
+			return new RhinoCallable(engine, (Function) from);
+		} else if (from instanceof Scriptable) {
+			if (Map.class.isAssignableFrom(to)) {
+				return toMap((Scriptable) from);
+			} else {
+				Constructor ctor = getMapConstructor(to);
+				if (ctor != null) {
+					try {
+						return ctor.newInstance(new Object[] { toMap((Scriptable) from) });
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+				} else if (from instanceof NativeObject
+						&& getZeroArgumentConstructor(to) != null) {
+					// Try constructing an object of class type, through
+					// the JS ExtendedJavaClass constructor that takes 
+					// a last optional argument: A NativeObject of which
+					// the fields define the fields to be set in the native type.
+					Scriptable scope = ((RhinoEngine) this.engine).getScope();
+					ExtendedJavaClass cls =
+							ExtendedJavaClass.getClassWrapper(scope, to);
+					if (cls != null) {
+						Object obj = cls.construct(Context.getCurrentContext(),
+								scope, new Object[] { from });
+						if (obj instanceof Wrapper)
+							obj = ((Wrapper) obj).unwrap();
+						return obj;
+					}
+				}
+			}
+		} 
+		return null;
+	}
+
+	/**
+	 * Takes a scriptable and either wraps it in a MapAdapter or unwrapps a map
+	 * within it if it is a MapWrapper. This avoids multiple wrapping of
+	 * MapWrappers and MapAdapters
+	 * 
+	 * @param scriptable
+	 * @return a map object representing the passed scriptable.
+	 */
+	private Map toMap(Scriptable scriptable) {
+		if (scriptable instanceof MapWrapper)
+			return (Map) ((MapWrapper) scriptable).unwrap();
+		return new MapAdapter(scriptable);
+	}
+
+	/**
+	 * Constructs an object of the given java class through its java
+	 * script constructor.
+	 * @param javaClass
+	 * @param args
+	 * @return
+	 */
+	private Object construct(Class javaClass, Object[] args) {
+		Scriptable scope = ((RhinoEngine) this.engine).getScope();
+		ExtendedJavaClass cls =
+				ExtendedJavaClass.getClassWrapper(scope, javaClass);
+		if (cls != null) {
+			Object obj = cls.construct(Context.getCurrentContext(), scope, args);
+			if (obj instanceof Wrapper)
+				obj = ((Wrapper) obj).unwrap();
+			return obj;
 		}
 		return null;
+	}
+
+	private static IdentityHashMap zeroArgConstructors = new IdentityHashMap();
+	private static IdentityHashMap mapConstructors = new IdentityHashMap();
+
+	/**
+	 * Determines wether the class has a zero argument constructor or not.
+	 * A cache is used to speed up lookup.
+	 * 
+	 * @param cls
+	 * @return true if the class has a zero argument constructor, false
+	 *         otherwise.
+	 */
+	private static Constructor getZeroArgumentConstructor(Class cls) {
+		return getConstructor(zeroArgConstructors, cls, new Class[] { });
+	}
+
+
+	/**
+	 * Determines wether the class has a constructor taking a single map as
+	 * argument or not.
+	 * A cache is used to speed up lookup.
+	 * 
+	 * @param cls
+	 * @return true if the class has a map constructor, false otherwise.
+	 */
+	private static Constructor getMapConstructor(Class cls) {
+		return getConstructor(mapConstructors, cls, new Class[] { Map.class });
+	}
+
+	private static Constructor getConstructor(IdentityHashMap cache, Class cls, Class[] args) {
+		Constructor ctor = (Constructor) cache.get(cls);
+		if (ctor == null) {
+			try {
+				ctor = cls.getConstructor(args);
+				cache.put(cls, ctor);
+			} catch (Exception e) {
+			}
+		}
+		return ctor;
 	}
 }
 

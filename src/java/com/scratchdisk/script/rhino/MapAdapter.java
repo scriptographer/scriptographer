@@ -39,22 +39,21 @@ import java.util.Map;
 import java.util.Set;
 
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Wrapper;
 
 /**
- * MapAdapter wraps a Rhino NativeObject instance in a Map interface.
+ * MapAdapter wraps a Rhino ScriptableObject instance in a Map interface.
  * All methods are implemented, even entrySet() / keySet()
  * This is the opposite of {@link MapWrapper}.
  * 
  * @author lehni
  */
 public class MapAdapter implements Map {
-	NativeObject object;
+	Scriptable object;
 	
-	public MapAdapter(NativeObject object) {
+	public MapAdapter(Scriptable object) {
 		this.object = object;
 	}
 

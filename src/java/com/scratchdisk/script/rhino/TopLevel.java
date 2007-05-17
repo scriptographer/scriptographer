@@ -116,12 +116,13 @@ public class TopLevel extends ImporterTopLevel {
 	/**
 	 * Evaluates the given JavaScript string in the current scope. Similar to
 	 * eval(), but it allows the use of another object than the global scope:
-	 * e.g.: <code>
+	 * e.g.:
+	 * <pre>
 	 * var obj = {
 	 *     eval: evaluate
 	 * };
 	 * obj.eval("print(this);");
-	 * </code>
+	 * </pre>
 	 */
 	public static void evaluate(Context cx, Scriptable thisObj, Object[] args,
 			Function funObj) throws Exception {

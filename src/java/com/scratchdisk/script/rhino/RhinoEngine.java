@@ -175,8 +175,15 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		// Set global as the parent scope, so Tool buttons work.
 		// TODO: this might not work for Jython or JRuby. Find a better 
 		// way to handle this
-		Scriptable scope = getWrapper(topLevel, obj);
-		scope.setParentScope(topLevel);
+
+		// Only wrap object if it's not a Scriptable already
+		Scriptable scope;
+		if (obj instanceof Scriptable) {
+			scope = (Scriptable) obj;
+		} else {
+			scope = getWrapper(topLevel, obj);
+			scope.setParentScope(topLevel);
+		}
 		return new RhinoScope(this, scope);
 	}
 

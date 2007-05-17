@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author lehni
@@ -148,6 +149,11 @@ public abstract class ScriptEngine {
 		return null;
 	}
 
+	/*
+	 * Helpers, similar to rhino's ScriptRuntime.to* methods,
+	 * but language independent. Used mostly for handling values
+	 * returned by callables.
+	 */
 	public static double toDouble(Object val) {
 		if (val instanceof Number)
 			return ((Number) val).doubleValue();
@@ -178,5 +184,30 @@ public abstract class ScriptEngine {
             return (d == d && d != 0.0);
         }
         return true;
+	}
+
+	public static String toString(Object val) {
+		return val != null ? val.toString() : null;
+	}
+	
+	/*
+	 * Helpers to retrieve values from maps. Used by native
+	 * constructors that take a map argument.
+	 * TODO: move to a helper?
+	 */
+	public static double getDouble(Map map, Object key) {
+		return toDouble(map.get(key));
+	}
+
+	public static int getInt(Map map, Object key) {
+		return toInt(map.get(key));
+	}
+
+	public static boolean getBoolean(Map map, Object key) {
+		return toBoolean(map.get(key));
+	}
+
+	public static String getString(Map map, Object key) {
+		return toString(map.get(key));
 	}
 }
