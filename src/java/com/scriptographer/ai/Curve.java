@@ -31,9 +31,6 @@
 
 package com.scriptographer.ai;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.AffineTransform;
-
 /**
  * @author lehni
  */
@@ -68,7 +65,7 @@ public class Curve {
 		this(curve.segment1, curve.segment2);
 	}
 
-	public Curve(Point2D pt1, Point2D h1, Point2D h2, Point2D pt2) {
+	public Curve(Point pt1, Point h1, Point h2, Point pt2) {
 		segment1 = new Segment(pt1, null, h1, false);
 		segment2 = new Segment(pt2, h2, null, false);
 	}
@@ -127,7 +124,7 @@ public class Curve {
 		return segment1.point;
 	}
 
-	public void setPoint1(Point2D pt) {
+	public void setPoint1(Point pt) {
 		updateSegments();
 		segment1.point.setLocation(pt);
 	}
@@ -142,7 +139,7 @@ public class Curve {
 		return segment1.handleOut;
 	}
 
-	public void setHandle1(Point2D pt) {
+	public void setHandle1(Point pt) {
 		updateSegments();
 		segment1.handleOut.setLocation(pt);
 	}
@@ -157,7 +154,7 @@ public class Curve {
 		return segment2.handleIn;
 	}
 
-	public void setHandle2(Point2D pt) {
+	public void setHandle2(Point pt) {
 		updateSegments();
 		segment2.handleIn.setLocation(pt);
 	}
@@ -172,7 +169,7 @@ public class Curve {
 		return segment2.point;
 	}
 
-	public void setPoint2(Point2D pt) {
+	public void setPoint2(Point pt) {
 		updateSegments();
 		segment2.point.setLocation(pt);
 	}
@@ -295,14 +292,13 @@ public class Curve {
 	private native static void nativeAdjustThroughPoint(float[] values,
 			float x, float y, float parameter);
 
-	public void adjustThroughPoint(Point2D pt, float parameter) {
+	public void adjustThroughPoint(Point pt, float parameter) {
 		updateSegments();
 
 		float[] values = new float[2 * SegmentList.VALUES_PER_SEGMENT];
 		segment1.getValues(values, 0);
 		segment2.getValues(values, 1);
-		nativeAdjustThroughPoint(values, (float) pt.getX(),
-				(float) pt.getY(), parameter);
+		nativeAdjustThroughPoint(values, pt.x, pt.y, parameter);
 		segment1.setValues(values, 0);
 		segment2.setValues(values, 1);
 		// don't mark dirty, commit immediatelly both as all the values have
@@ -314,9 +310,10 @@ public class Curve {
 		}
 	}
 
-	public void transform(AffineTransform at) {
-		// TODO: implement ?
+	/* TODO: implement ?
+	public void transform(Matrix matrix) {
 	}
+	*/
 	
 	public Curve divide(double t) {
 		if (t > 0 && t < 1f) {

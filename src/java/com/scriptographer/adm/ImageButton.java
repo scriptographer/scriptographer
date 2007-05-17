@@ -31,7 +31,6 @@
 
 package com.scriptographer.adm;
 
-import java.awt.Insets;
 import java.io.IOException;
 
 /**
@@ -80,7 +79,7 @@ public class ImageButton extends Button {
 		super.setDisabledImage(obj);
 	}
 
-	protected Insets getButtonInsets() {
+	protected Margins getButtonMargins() {
 		return INSETS_IMAGE;
 	}
 }

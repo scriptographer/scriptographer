@@ -46,7 +46,7 @@ import java.util.Iterator;
 /**
  * @author lehni
  */
-public class Tool extends AIObject {
+public class Tool extends NativeObject {
 	private int index;
 
 	private static IntMap tools = null;

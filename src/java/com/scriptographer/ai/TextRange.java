@@ -43,7 +43,7 @@ import com.scratchdisk.util.ReadOnlyList;
 /**
  * @author lehni
  */
-public class TextRange extends AIObject {
+public class TextRange extends NativeObject {
 
 	// CaseChangeType
 	public static final int CASE_UPPER = 0;

@@ -23,37 +23,60 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
+ * 
+ * File created on May 11, 2007.
  *
- * File created on 24.03.2005.
- *
- * $Id$
+ * $Id: $
  */
 
-package com.scriptographer.ai;
+package com.scriptographer.adm;
+
+import java.awt.Insets;
+import java.util.Map;
+
+import com.scratchdisk.script.ScriptEngine;
 
 /**
  * @author lehni
+ *
  */
-abstract class AIObject {
-	// used for storing the native handle for this object
-	protected int handle;
-	
-	protected AIObject() {
-		handle = 0;
+public class Margins {
+	public int left;
+	public int top;
+	public int right;
+	public int bottom;
+
+	public Margins() {
+		left = top = right = bottom = 0;
+	}
+
+	public Margins(int left, int top, int right, int bottom) {
+		set(left, top, right, bottom);
 	}
 	
-	protected AIObject(int handle) {
-		this.handle = handle;
+	public Margins(Margins margins) {
+		set(margins.left, margins.top, margins.right, margins.bottom);
 	}
-	
-	public boolean equals(Object obj) {
-		// Some objects subclass AIObject and do not use handle,
-		// use a fallback scenario for these!
-		if (handle == 0) {
-			return this == obj;
-		} else if (obj instanceof AIObject) {
-			return handle == ((AIObject) obj).handle;
-		}
-		return false;
+
+	public Margins(Map map) {
+		this(ScriptEngine.getInt(map, "left"),
+				ScriptEngine.getInt(map, "top"),
+				ScriptEngine.getInt(map, "right"),
+				ScriptEngine.getInt(map, "bottom"));
+	}
+
+	public void set(int left, int top, int right, int bottom) {
+		this.left = left;
+		this.top = top;
+		this.right = right;
+		this.bottom = bottom;
+	}
+
+	public Insets toInsets() {
+		return new Insets(top, left, bottom, right);
+	}
+
+	public Object clone() {
+		return new Margins(this);
 	}
 }

@@ -31,8 +31,6 @@
 
 package com.scriptographer.ai;
 
-import java.awt.geom.AffineTransform;
-
 /**
  * @author lehni
  */
@@ -42,14 +40,14 @@ public class SymbolItem extends Art {
 		super(handle);
 	}
 
-	private static native int nativeCreate(int symbolHandle, AffineTransform at);
+	private static native int nativeCreate(int symbolHandle, Matrix matrix);
 
-	public SymbolItem(Symbol symbol, AffineTransform at) {
-		super(nativeCreate(symbol.handle, at));
+	public SymbolItem(Symbol symbol, Matrix matrix) {
+		super(nativeCreate(symbol.handle, matrix));
 	}
 	
 	public SymbolItem(Symbol symbol, Point pt) {
-		this(symbol, Matrix.getTranslateInstance(pt));
+		this(symbol, new Matrix().translate(pt));
 	}
 	
 	public SymbolItem(Symbol symbol) {
@@ -66,5 +64,5 @@ public class SymbolItem extends Art {
 	
 	public native Matrix getMatrix();
 	
-	public native void setMatrix(AffineTransform at);
+	public native void setMatrix(Matrix matrix);
 }

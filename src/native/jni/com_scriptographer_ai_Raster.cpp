@@ -47,9 +47,9 @@ struct Raster_Data {
 };
 
 Raster_Data *Raster_getData(JNIEnv *env, jobject raster, AIArtHandle art) {
-	Raster_Data *data = (Raster_Data *) gEngine->getIntField(env, raster, gEngine->fid_Raster_rasterData);
+	Raster_Data *data = (Raster_Data *) gEngine->getIntField(env, raster, gEngine->fid_ai_Raster_data);
 	// match against version
-	int version = gEngine->getIntField(env, raster, gEngine->fid_Art_version);
+	int version = gEngine->getIntField(env, raster, gEngine->fid_ai_Art_version);
 	if ( data == NULL || data->version != version) {
 		// init a new data struct now:
 		if ( data == NULL) {
@@ -112,31 +112,31 @@ Raster_Data *Raster_getData(JNIEnv *env, jobject raster, AIArtHandle art) {
 		data->pixelTile.colBytes = numComponents;
 		data->pixelTile.rowBytes = numComponents;
 
-		gEngine->setIntField(env, raster, gEngine->fid_Raster_rasterData, (jint) data);
+		gEngine->setIntField(env, raster, gEngine->fid_ai_Raster_data, (jint) data);
 	}
 	return data;
 }
 
 void Raster_finalize(JNIEnv *env, jobject obj) {
-	Raster_Data *data = (Raster_Data *) gEngine->getIntField(env, obj, gEngine->fid_Raster_rasterData);
+	Raster_Data *data = (Raster_Data *) gEngine->getIntField(env, obj, gEngine->fid_ai_Raster_data);
 	if (data != NULL) {
 		delete data;
 		// set to null:
-		gEngine->setIntField(env, obj, gEngine->fid_Raster_rasterData, (jint) NULL);
+		gEngine->setIntField(env, obj, gEngine->fid_ai_Raster_data, (jint) NULL);
 	}
 }
 
-void Raster_copyPixels(JNIEnv *env, jobject obj, jbyteArray data, jint numComponents, jint x, jint y, jint width, jint height, bool get) {
+void Raster_copyPixels(JNIEnv *env, jobject obj, jbyteArray bytes, jint numComponents, jint x, jint y, jint width, jint height, bool get) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		Raster_Data *rasterData = Raster_getData(env, obj, art);
+		Raster_Data *data = Raster_getData(env, obj, art);
 		AISlice sliceFrom, sliceTo;
-		sliceFrom.left = rasterData->info.bounds.left + x;
-		sliceFrom.top = rasterData->info.bounds.top + y;
+		sliceFrom.left = data->info.bounds.left + x;
+		sliceFrom.top = data->info.bounds.top + y;
 		sliceFrom.right = x + width;
 		sliceFrom.bottom = y + height;
 		sliceFrom.front = 0;
-		sliceFrom.back = rasterData->numComponents;
+		sliceFrom.back = data->numComponents;
 
 		sliceTo.left = 0;
 		sliceTo.top = 0;
@@ -152,18 +152,18 @@ void Raster_copyPixels(JNIEnv *env, jobject obj, jbyteArray data, jint numCompon
 			tile.channelInterleave[i] = i;
 
 		tile.colBytes = numComponents;
-		tile.rowBytes = width * numComponents; // rasterData->info.byteWidth
+		tile.rowBytes = width * numComponents; // data->info.byteWidth
 		tile.planeBytes = 0;
 		tile.bounds = sliceTo;
 		
-		char *dst = (char *)env->GetPrimitiveArrayCritical(data, 0);
+		char *dst = (char *)env->GetPrimitiveArrayCritical(bytes, 0);
 		if (dst == NULL) EXCEPTION_CHECK(env);
 		tile.data = dst;
 		
 		if (get) sAIRaster->GetRasterTile(art, &sliceFrom, &tile, &sliceTo);
 		else sAIRaster->SetRasterTile(art, &sliceFrom, &tile, &sliceTo);
 
-		env->ReleasePrimitiveArrayCritical(data, dst, 0);
+		env->ReleasePrimitiveArrayCritical(bytes, dst, 0);
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -309,13 +309,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_finalize(JNIEnv *env, j
 }
 
 /*
- * java.awt.Dimension getSize()
+ * com.scriptographer.adm.Size getSize()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getSize(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		Raster_Data *data = Raster_getData(env, obj, art);
-		return gEngine->convertDimension(env, data->info.bounds.right - data->info.bounds.left, data->info.bounds.bottom - data->info.bounds.top);
+		return gEngine->convertSize(env, data->info.bounds.right - data->info.bounds.left, data->info.bounds.bottom - data->info.bounds.top);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -474,14 +474,14 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getMatrix(JNIEnv *en
 }
 
 /*
- * void setMatrix(java.awt.geom.AffineTransform at)
+ * void setMatrix(com.scriptographer.ai.Matrix matrix)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setMatrix(JNIEnv *env, jobject obj, jobject at) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_setMatrix(JNIEnv *env, jobject obj, jobject matrix) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
-		AIRealMatrix m;
-		gEngine->convertMatrix(env, at, &m);
-		sAIRaster->SetRasterMatrix(art, &m);
+		AIRealMatrix mx;
+		gEngine->convertMatrix(env, matrix, &mx);
+		sAIRaster->SetRasterMatrix(art, &mx);
 	} EXCEPTION_CONVERT(env);
 }
 

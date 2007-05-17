@@ -37,7 +37,7 @@ import com.scratchdisk.util.ReadOnlyList;
 /**
  * @author lehni
  */
-public class TextStory extends AIObject {
+public class TextStory extends NativeObject {
 	
 	private Document document;
 	private TextRange range = null;

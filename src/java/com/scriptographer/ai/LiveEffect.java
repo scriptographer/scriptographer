@@ -98,7 +98,7 @@ picture of the live effect architecture.
 Hope that helps,
 -Frank
 */
-public class LiveEffect extends AIObject {
+public class LiveEffect extends NativeObject {
 	// AIStyleFilterPreferredInputArtType
 	public final static int
 		INPUT_DYNAMIC	 		= 0,

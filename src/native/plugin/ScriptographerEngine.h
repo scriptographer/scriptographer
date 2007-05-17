@@ -113,38 +113,6 @@ public:
 	jclass cls_awt_Color;
 	jmethodID cid_awt_Color;
 	jmethodID mid_awt_Color_getColorComponents;
-
-	jclass cls_awt_Rectangle;
-	jmethodID cid_awt_Rectangle;
-	jfieldID fid_awt_Rectangle_x;
-	jfieldID fid_awt_Rectangle_y;
-	jfieldID fid_awt_Rectangle_width;
-	jfieldID fid_awt_Rectangle_height;
-	jmethodID mid_awt_Rectangle_setBounds;
-
-	jclass cls_awt_Point;
-	jmethodID cid_awt_Point;
-	jfieldID fid_awt_Point_x;
-	jfieldID fid_awt_Point_y;
-	jmethodID mid_awt_Point_setLocation;
-
-	jclass cls_awt_Point2D;
-	jmethodID mid_awt_Point2D_getX;
-	jmethodID mid_awt_Point2D_getY;
-	
-	jclass cls_awt_Dimension;
-	jmethodID cid_awt_Dimension;
-	jfieldID fid_awt_Dimension_width;
-	jfieldID fid_awt_Dimension_height;
-	jmethodID mid_awt_Dimension_setSize;
-	
-	jclass cls_awt_AffineTransform;
-	jmethodID mid_awt_AffineTransform_getScaleX;
-	jmethodID mid_awt_AffineTransform_getShearY;
-	jmethodID mid_awt_AffineTransform_getShearX;
-	jmethodID mid_awt_AffineTransform_getScaleY;
-	jmethodID mid_awt_AffineTransform_getTranslateX;
-	jmethodID mid_awt_AffineTransform_getTranslateY;
 	
 	jclass cls_awt_ICC_Profile;
 	jmethodID mid_awt_ICC_Profile_getInstance;
@@ -177,192 +145,218 @@ public:
 	jmethodID mid_CommitManager_commit;
 	
 // AI:
-	jclass cls_AIObject;
-	jfieldID fid_AIObject_handle;
+	jclass cls_ai_NativeObject;
+	jfieldID fid_ai_NativeObject_handle;
 
-	jclass cls_AIWrapper;
-	jfieldID fid_AIWrapper_document;
+	jclass cls_ai_NativeWrapper;
+	jfieldID fid_ai_NativeWrapper_document;
 	
-	jclass cls_Tool;
-	jmethodID cid_Tool;
-	jmethodID mid_Tool_onHandleEvent;
+	jclass cls_ai_Tool;
+	jmethodID cid_ai_Tool;
+	jmethodID mid_ai_Tool_onHandleEvent;
 
-	jclass cls_Point;
-	jmethodID cid_Point;
-	jfieldID fid_Point_x;
-	jfieldID fid_Point_y;
-	jmethodID mid_Point_setLocation;
+	jclass cls_ai_Point;
+	jmethodID cid_ai_Point;
+	jfieldID fid_ai_Point_x;
+	jfieldID fid_ai_Point_y;
+	jmethodID mid_ai_Point_set;
 
-	jclass cls_Rectangle;
-	jmethodID cid_Rectangle;
-	jfieldID fid_Rectangle_x;
-	jfieldID fid_Rectangle_y;
-	jfieldID fid_Rectangle_width;
-	jfieldID fid_Rectangle_height;
-	jmethodID mid_Rectangle_setRect;
+	jclass cls_ai_Rectangle;
+	jmethodID cid_ai_Rectangle;
+	jfieldID fid_ai_Rectangle_x;
+	jfieldID fid_ai_Rectangle_y;
+	jfieldID fid_ai_Rectangle_width;
+	jfieldID fid_ai_Rectangle_height;
+	jmethodID mid_ai_Rectangle_set;
 	
-	jclass cls_Matrix;
-	jmethodID cid_Matrix;
+	jclass cls_ai_Matrix;
+	jmethodID cid_ai_Matrix;
+	jmethodID mid_ai_Matrix_getScaleX;
+	jmethodID mid_ai_Matrix_getShearY;
+	jmethodID mid_ai_Matrix_getShearX;
+	jmethodID mid_ai_Matrix_getScaleY;
+	jmethodID mid_ai_Matrix_getTranslateX;
+	jmethodID mid_ai_Matrix_getTranslateY;
+	
+	jclass cls_ai_Color;
+	jmethodID mid_ai_Color_getComponents;
+	jobject obj_ai_Color_NONE;
 
-	jclass cls_Color;
-	jmethodID mid_Color_getComponents;
-	jobject obj_Color_NONE;
+	jclass cls_ai_GrayColor;
+	jmethodID cid_ai_GrayColor;
+	
+	jclass cls_ai_RGBColor;
+	jmethodID cid_ai_RGBColor;
+	
+	jclass cls_ai_CMYKColor;
+	jmethodID cid_ai_CMYKColor;
+	
+	jclass cls_ai_GradientColor;
+	jmethodID cid_ai_GradientColor;
+	jmethodID mid_ai_GradientColor_set;
+	
+	jclass cls_ai_PatternColor;
+	jmethodID cid_ai_PatternColor;
+	jmethodID mid_ai_PatternColor_set;
+	
+	jclass cls_ai_Art;
+	jfieldID fid_ai_Art_version;
+	jfieldID fid_ai_Art_document;
+	jfieldID fid_ai_Art_dictionaryRef;
+	jmethodID mid_ai_Art_wrapHandle;
+	jmethodID mid_ai_Art_getIfWrapped;
+	jmethodID mid_ai_Art_updateIfWrapped;
+	jmethodID mid_ai_Art_changeHandle;
 
-	jclass cls_GrayColor;
-	jmethodID cid_GrayColor;
-	
-	jclass cls_RGBColor;
-	jmethodID cid_RGBColor;
-	
-	jclass cls_CMYKColor;
-	jmethodID cid_CMYKColor;
-	
-	jclass cls_GradientColor;
-	jmethodID cid_GradientColor;
-	jmethodID mid_GradientColor_set;
-	
-	jclass cls_PatternColor;
-	jmethodID cid_PatternColor;
-	jmethodID mid_PatternColor_set;
-	
-	jclass cls_Art;
-	jfieldID fid_Art_version;
-	jfieldID fid_Art_document;
-	jfieldID fid_Art_dictionaryRef;
-	jmethodID mid_Art_wrapHandle;
-	jmethodID mid_Art_getIfWrapped;
-	jmethodID mid_Art_updateIfWrapped;
-	jmethodID mid_Art_changeHandle;
-
-	jclass cls_ArtSet;
+	jclass cls_ai_ArtSet;
 	jmethodID cid_ArtSet;
-	jmethodID mid_ArtSet_add;
+	jmethodID mid_ai_ArtSet_add;
 
-	jclass cls_Path;
-	jclass cls_CompoundPath;
-	jclass cls_TextFrame;
+	jclass cls_ai_Path;
+	jclass cls_ai_CompoundPath;
+	jclass cls_ai_TextFrame;
 	
-	jclass cls_TextRange;
-	jmethodID cid_TextRange;
-	jfieldID fid_TextRange_glyphRuns;
+	jclass cls_ai_TextRange;
+	jmethodID cid_ai_TextRange;
+	jfieldID fid_ai_TextRange_glyphRuns;
 
-	jclass cls_TextStory;
+	jclass cls_ai_TextStory;
 	
-	jclass cls_PathStyle;
+	jclass cls_ai_PathStyle;
 	jmethodID mid_PathStyle_init;
 	
-	jclass cls_FillStyle;
-	jmethodID cid_FillStyle;
-	jmethodID mid_FillStyle_init;
-	jmethodID mid_FillStyle_initNative;
+	jclass cls_ai_FillStyle;
+	jmethodID cid_ai_FillStyle;
+	jmethodID mid_ai_FillStyle_init;
+	jmethodID mid_ai_FillStyle_initNative;
 	
-	jclass cls_StrokeStyle;
-	jmethodID cid_StrokeStyle;
-	jmethodID mid_StrokeStyle_init;
-	jmethodID mid_StrokeStyle_initNative;
+	jclass cls_ai_StrokeStyle;
+	jmethodID cid_ai_StrokeStyle;
+	jmethodID mid_ai_StrokeStyle_init;
+	jmethodID mid_ai_StrokeStyle_initNative;
 	
-	jclass cls_CharacterStyle;
-	jmethodID mid_CharacterStyle_markSetStyle;
+	jclass cls_ai_CharacterStyle;
+	jmethodID mid_ai_CharacterStyle_markSetStyle;
 
-	jclass cls_ParagraphStyle;
-	jmethodID mid_ParagraphStyle_markSetStyle;
+	jclass cls_ai_ParagraphStyle;
+	jmethodID mid_ai_ParagraphStyle_markSetStyle;
 	
-	jclass cls_Group;
+	jclass cls_ai_Group;
 	
-	jclass cls_Raster;
-	jfieldID fid_Raster_rasterData;
+	jclass cls_ai_Raster;
+	jfieldID fid_ai_Raster_data;
 	
-	jclass cls_PlacedItem;
+	jclass cls_ai_PlacedItem;
 
-	jclass cls_Tracing;
-	jmethodID mid_Tracing_markDirty;
+	jclass cls_ai_Tracing;
+	jmethodID mid_ai_Tracing_markDirty;
 	
-	jclass cls_Layer;
+	jclass cls_ai_Layer;
 	
-	jclass cls_Segment;
-	jclass cls_Curve;
+	jclass cls_ai_Segment;
+	jclass cls_ai_Curve;
 	
-	jclass cls_TabletValue;
-	jmethodID cid_TabletValue;
-	jfieldID fid_TabletValue_offset;
-	jfieldID fid_TabletValue_value;
+	jclass cls_ai_TabletValue;
+	jmethodID cid_ai_TabletValue;
+	jfieldID fid_ai_TabletValue_offset;
+	jfieldID fid_ai_TabletValue_value;
 
-	jclass cls_GradientStop;
-	jmethodID mid_GradientStop_init;
+	jclass cls_ai_GradientStop;
+	jmethodID mid_ai_GradientStop_init;
 	
-	jclass cls_Document;
+	jclass cls_ai_Document;
 	
-	jclass cls_LiveEffect;
-	jmethodID cid_LiveEffect;
-	jmethodID mid_LiveEffect_onEditParameters;
-	jmethodID mid_LiveEffect_onCalculate;
-	jmethodID mid_LiveEffect_onInterpolate;
-	jmethodID mid_LiveEffect_onGetInputType;
+	jclass cls_ai_LiveEffect;
+	jmethodID cid_ai_LiveEffect;
+	jmethodID mid_ai_LiveEffect_onEditParameters;
+	jmethodID mid_ai_LiveEffect_onCalculate;
+	jmethodID mid_ai_LiveEffect_onInterpolate;
+	jmethodID mid_ai_LiveEffect_onGetInputType;
 	
-	jclass cls_MenuItem;
-	jmethodID mid_MenuItem_wrapHandle;
-	jmethodID mid_MenuItem_onSelect;
-	jmethodID mid_MenuItem_onUpdate;
-
-	jclass cls_MenuGroup;
+	jclass cls_ai_Timer;
+	jmethodID cid_ai_Timer;
+	jmethodID mid_ai_Timer_onExecute;
 	
-	jclass cls_Timer;
-	jmethodID cid_Timer;
-	jmethodID mid_Timer_onExecute;
+	jclass cls_ai_Annotator;
+	jmethodID cid_ai_Annotator;
+	jmethodID mid_ai_Annotator_onDraw;
+	jmethodID mid_ai_Annotator_onInvalidate;
 	
-	jclass cls_Annotator;
-	jmethodID cid_Annotator;
-	jmethodID mid_Annotator_onDraw;
-	jmethodID mid_Annotator_onInvalidate;
-	
-	jclass cls_HitTest;
-	jmethodID cid_HitTest;
+	jclass cls_ai_HitTest;
+	jmethodID cid_ai_HitTest;
 	
 // ADM:
-	jclass cls_ADMObject;
-	jfieldID fid_ADMObject_handle;
+	jclass cls_adm_NativeObject;
+	jfieldID fid_adm_NativeObject_handle;
 
-	jclass cls_Dialog;
-	jmethodID mid_Dialog_onSizeChanged;
-
-	jclass cls_PopupDialog;
-
-	jclass cls_DialogGroupInfo;
-	jmethodID cid_DialogGroupInfo;
+	jclass cls_adm_Rectangle;
+	jmethodID cid_adm_Rectangle;
+	jfieldID fid_adm_Rectangle_x;
+	jfieldID fid_adm_Rectangle_y;
+	jfieldID fid_adm_Rectangle_width;
+	jfieldID fid_adm_Rectangle_height;
+	jmethodID mid_adm_Rectangle_set;
 	
-	jclass cls_Drawer;
-	jmethodID cid_Drawer;
-
-	jclass cls_FontInfo;
-	jmethodID cid_FontInfo;
+	jclass cls_adm_Point;
+	jmethodID cid_adm_Point;
+	jfieldID fid_adm_Point_x;
+	jfieldID fid_adm_Point_y;
+	jmethodID mid_adm_Point_set;
 	
-	jclass cls_Image;
-	jfieldID fid_Image_byteWidth;
-	jfieldID fid_Image_bitsPerPixel;
-	jmethodID mid_Image_getIconHandle;
+	jclass cls_adm_Size;
+	jmethodID cid_adm_Size;
+	jfieldID fid_adm_Size_width;
+	jfieldID fid_adm_Size_height;
+	jmethodID mid_adm_Size_set;
 
-	jclass cls_ListItem;
-	jfieldID fid_ListItem_listHandle;
+	jclass cls_adm_Dialog;
+	jmethodID mid_adm_Dialog_onSizeChanged;
 
-	jclass cls_HierarchyList;
+	jclass cls_adm_PopupDialog;
+
+	jclass cls_adm_DialogGroupInfo;
+	jmethodID cid_adm_DialogGroupInfo;
 	
-	jclass cls_ListEntry;
+	jclass cls_adm_Drawer;
+	jmethodID cid_adm_Drawer;
+
+	jclass cls_adm_FontInfo;
+	jmethodID cid_adm_FontInfo;
 	
-	jclass cls_HierarchyListEntry;
+	jclass cls_adm_Image;
+	jfieldID fid_adm_Image_byteWidth;
+	jfieldID fid_adm_Image_bitsPerPixel;
+	jmethodID mid_adm_Image_getIconHandle;
 
-	jclass cls_NotificationHandler;
-	jfieldID fid_NotificationHandler_tracker;
-	jfieldID fid_NotificationHandler_drawer;
-	jmethodID mid_NotificationHandler_onNotify_String;
-	jmethodID mid_NotificationHandler_onNotify_int;
-	jmethodID mid_NotificationHandler_onDraw;
+	jclass cls_adm_ListItem;
+	jfieldID fid_adm_ListItem_listHandle;
 
-	jclass cls_CallbackHandler;
-	jmethodID mid_CallbackHandler_onResize;
+	jclass cls_adm_HierarchyList;
+	
+	jclass cls_adm_ListEntry;
+	
+	jclass cls_adm_HierarchyListEntry;
+
+	jclass cls_adm_NotificationHandler;
+	jfieldID fid_adm_NotificationHandler_tracker;
+	jfieldID fid_adm_NotificationHandler_drawer;
+	jmethodID mid_adm_NotificationHandler_onNotify_String;
+	jmethodID mid_adm_NotificationHandler_onNotify_int;
+	jmethodID mid_adm_NotificationHandler_onDraw;
+
+	jclass cls_adm_CallbackHandler;
+	jmethodID mid_adm_CallbackHandler_onResize;
 		
-	jclass cls_Tracker;
-	jmethodID mid_Tracker_onTrack;
-
+	jclass cls_adm_Tracker;
+	jmethodID mid_adm_Tracker_onTrack;
+	
+	jclass cls_adm_MenuItem;
+	jmethodID mid_adm_MenuItem_wrapHandle;
+	jmethodID mid_adm_MenuItem_onSelect;
+	jmethodID mid_adm_MenuItem_onUpdate;
+	
+	jclass cls_adm_MenuGroup;
+	
 public:
 	ScriptographerEngine(const char *homeDir);
 	~ScriptographerEngine();
@@ -399,7 +393,7 @@ public:
 	}
 	AIRealPoint *convertPoint(JNIEnv *env, jobject pt, AIRealPoint *res = NULL);
 
-	// java.awt.Point <-> ADMPoint
+	// com.scriptographer.adm.Point <-> ADMPoint
 	jobject convertPoint(JNIEnv *env, int x, int y, jobject res = NULL);
 	jobject convertPoint(JNIEnv *env, ADMPoint *pt, jobject res = NULL) {
 		return convertPoint(env, pt->h, pt->v, res);
@@ -420,12 +414,12 @@ public:
 	}
 	ADMRect *convertRectangle(JNIEnv *env, jobject rt, ADMRect *res = NULL);	
 
-	// java.awt.Dimension <-> ADMPoint
-	jobject convertDimension(JNIEnv *env, int width, int height, jobject res = NULL);
-	jobject convertDimension(JNIEnv *env, ADMPoint *dim, jobject res = NULL) {
-		return convertDimension(env, dim->h, dim->v, res);
+	// com.scriptographer.adm.Size <-> ADMPoint
+	jobject convertSize(JNIEnv *env, int width, int height, jobject res = NULL);
+	jobject convertSize(JNIEnv *env, ADMPoint *dim, jobject res = NULL) {
+		return convertSize(env, dim->h, dim->v, res);
 	}
-	ADMPoint *convertDimension(JNIEnv *env, jobject dim, ADMPoint *res = NULL);
+	ADMPoint *convertSize(JNIEnv *env, jobject dim, ADMPoint *res = NULL);
 
 	// java.awt.Color <-> ADMRGBColor
 	jobject convertColor(JNIEnv *env, ADMRGBColor *srcCol);	
@@ -443,7 +437,7 @@ public:
 	// AIColor <-> AIColor
 	AIColor *convertColor(AIColor *srcCol, AIColorConversionSpaceValue dstSpace, AIColor *dstCol = NULL, AIReal srcAlpha = 1.0f, AIReal *dstAlpha = NULL);
 
-	// java.awt.AffineTransform <-> AIRealMatrix
+	// AIRealMatrix <-> com.scriptoggrapher.ai.Matrix
 	jobject convertMatrix(JNIEnv *env, AIRealMatrix *mt, jobject res = NULL);
 	AIRealMatrix *convertMatrix(JNIEnv *env, jobject mt, AIRealMatrix *res = NULL);
 

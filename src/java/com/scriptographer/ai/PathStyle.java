@@ -53,7 +53,7 @@ import com.scriptographer.CommitManager;
 /**
  * @author lehni
  */
-public class PathStyle extends AIObject implements Style, Commitable {
+public class PathStyle extends NativeObject implements Style, Commitable {
 	protected FillStyle fill;
 
 	protected StrokeStyle stroke;

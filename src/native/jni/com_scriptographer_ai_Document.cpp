@@ -895,7 +895,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 				if (hitType >= 0) {
 					jobject art = gEngine->wrapArtHandle(env, toolHit.object);
 					jobject point = gEngine->convertPoint(env, &toolHit.point);
-					hitTest = gEngine->newObject(env, gEngine->cls_HitTest, gEngine->cid_HitTest, hitType, art,
+					hitTest = gEngine->newObject(env, gEngine->cls_ai_HitTest, gEngine->cid_ai_HitTest, hitType, art,
 												 (jint) toolHit.segment, (jfloat) toolHit.t, point);
 				}
 			}

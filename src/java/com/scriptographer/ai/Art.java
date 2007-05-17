@@ -32,8 +32,6 @@
 package com.scriptographer.ai;
 
 import java.util.ArrayList;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
@@ -549,12 +547,12 @@ public abstract class Art extends DictionaryObject {
 	 * @jsbean The name of the Art item as it appears in the layers palette.
 	 * @jsbean Sample code:
 	 * @jsbean
-	 * @jsbean <code>
+	 * @jsbean <pre>
 	 * @jsbean var layer = new Layer(); // a Layer is an Art item
 	 * @jsbean print(layer.name); // returns '<Layer 2>'
 	 * @jsbean layer.name = "A nice name";
 	 * @jsbean print(layer.name); // returns 'A nice name'
-	 * @jsbean </code>
+	 * @jsbean </pre>
 	 */
 	public native String getName();
 
@@ -592,12 +590,12 @@ public abstract class Art extends DictionaryObject {
 	 * @jsbean Returns true if the Art item is selected or partially selected (groups with
 	 * @jsbean some selected objects/partially selected paths), false otherwise.
 	 * @jsbean Sample code:
-	 * @jsbean <code>
+	 * @jsbean <pre>
 	 * @jsbean print(activeDocument.selectedItems.length) // returns 0
 	 * @jsbean var path = new Path(); // new Art items are always created in the active layer
 	 * @jsbean path.selected = true; // select the path
 	 * @jsbean print(activeDocument.selectedItems.length) // returns 1
-	 * @jsbean </code>
+	 * @jsbean </pre>
 	 */
 	public boolean isSelected() {
 		return getAttribute(ATTR_SELECTED.intValue());
@@ -623,12 +621,12 @@ public abstract class Art extends DictionaryObject {
 	/**
 	 * @jsbean A boolean value that specifies whether the Art item is locked.
 	 * @jsbean Sample code:
-	 * @jsbean <code>
+	 * @jsbean <pre>
 	 * @jsbean var path = new Path();
 	 * @jsbean print(path.locked) // returns false
 	 * @jsbean path.locked = true; // locks the path
 	 * @jsbean print(path.locked) // returns true
-	 * @jsbean </code>
+	 * @jsbean </pre>
 	 */
 	public boolean isLocked() {
 		return getAttribute(ATTR_LOCKED.intValue());
@@ -642,12 +640,12 @@ public abstract class Art extends DictionaryObject {
 	 * @jsbean A boolean value that specifies whether the Art item is hidden.
 	 * @jsbean Sample code:
 	 * @jsbean
-	 * @jsbean <code>
+	 * @jsbean <pre>
 	 * @jsbean var path = new Path();
 	 * @jsbean print(path.hidden) // returns false
 	 * @jsbean path.hidden = true; // hides the path
 	 * @jsbean print(path.hidden) // returns true
-	 * @jsbean </code>
+	 * @jsbean </pre>
 	 */
 	public boolean isHidden() {
 		return getAttribute(ATTR_HIDDEN.intValue());
@@ -701,12 +699,12 @@ public abstract class Art extends DictionaryObject {
 	 * Appends the specified Art item as a child of the art object.
 	 * You can use this function for groups, compound paths and layers.
 	 * Sample code:
-	 * <code>
+	 * <pre>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendChild(path);
 	 * print(path.isInside(group)) // returns true
-	 * </code>
+	 * </pre>
 	 * 
 	 * @param art The Art item that will be appended as a child
 	 */
@@ -715,13 +713,13 @@ public abstract class Art extends DictionaryObject {
 	/**
 	 * Moves the Art item above the specified art object
 	 * Sample code:
-	 * <code>
+	 * <pre>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(firstPath.isAbove(secondPath)) // returns false
 	 * firstPath.moveAbove(secondPath);
 	 * print(firstPath.isAbove(secondPath)) // returns true
-	 * </code>
+	 * </pre>
 	 * 
 	 * @param art The Art item above which it should be moved
 	 * @return true if it was moved, false otherwise
@@ -730,13 +728,13 @@ public abstract class Art extends DictionaryObject {
 	
 	/**
 	 * Moves the Art item below the specified art object
-	 * <code>
+	 * <pre>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(secondPath.isBelow(firstPath)) // returns false
 	 * secondPath.moveBelow(firstPath);
 	 * print(secondPath.isBelow(firstPath)) // returns true
-	 * </code>
+	 * </pre>
 	 * 
 	 * @param art the Art item below which it should be moved
 	 * @return true if it was moved, false otherwise
@@ -749,16 +747,16 @@ public abstract class Art extends DictionaryObject {
 	 * @param at
 	 * @param flags Art. TRANSFORM_*
 	 */
-	public native void transform(AffineTransform at, int flags);
+	public native void transform(Matrix matrix, int flags);
 
 	/**
 	 * Transforms the Art item with the flags Art.TRANSFORM_OBJECTS and
 	 * Art.TRANSFORM_DEEP set
 	 * 
-	 * @param at
+	 * @param matrix
 	 */
-	public void transform(AffineTransform at) {
-		transform(at, TRANSFORM_OBJECTS | TRANSFORM_DEEP);
+	public void transform(Matrix matrix) {
+		transform(matrix, TRANSFORM_OBJECTS | TRANSFORM_DEEP);
 	}
 
 	/**
@@ -769,7 +767,7 @@ public abstract class Art extends DictionaryObject {
 	 * @see Matrix#scale(double, double)
 	 */
 	public void scale(double sx, double sy) {
-		transform(AffineTransform.getScaleInstance(sx, sy));
+		transform(new Matrix().scale(sx, sy));
 	}
 
 	public void scale(double scale) {
@@ -784,7 +782,7 @@ public abstract class Art extends DictionaryObject {
 	 * @see Matrix#translate(double, double)
 	 */
 	public void translate(double tx, double ty) {
-		transform(AffineTransform.getTranslateInstance(tx, ty));
+		transform(new Matrix().translate(tx, ty));
 	}
 
 	/**
@@ -792,8 +790,8 @@ public abstract class Art extends DictionaryObject {
 	 * 
 	 * @param t
 	 */
-	public void translate(Point2D t) {
-		translate(t.getX(), t.getY());
+	public void translate(Point t) {
+		translate(t.x, t.y);
 	}
 
 	/**
@@ -803,11 +801,11 @@ public abstract class Art extends DictionaryObject {
 	 * @see Matrix#rotate(double, double, double)
 	 */
 	public void rotate(double theta, float x, float y) {
-		transform(AffineTransform.getRotateInstance(theta, x, y));
+		transform(new Matrix().rotate(theta, x, y));
 	}
 
-	public void rotate(double theta, Point2D anchor) {
-		transform(AffineTransform.getRotateInstance(theta, anchor.getX(), anchor.getY()));
+	public void rotate(double theta, Point anchor) {
+		transform(new Matrix().rotate(theta, anchor));
 	}
 
 	/**
@@ -817,7 +815,7 @@ public abstract class Art extends DictionaryObject {
 	 * @see Matrix#shear(double, double)
 	 */
 	public void shear(double shx, double shy) {
-		transform(AffineTransform.getShearInstance(shx, shy));
+		transform(new Matrix().shear(shx, shy));
 	}
 
 	/**
@@ -826,7 +824,7 @@ public abstract class Art extends DictionaryObject {
 	 * @param theta the rotation angle in radians
 	 */
 	public void rotate(double theta) {
-		transform(AffineTransform.getRotateInstance(theta));
+		transform(new Matrix().rotate(theta));
 	}
 
 	public String toString() {
@@ -905,11 +903,11 @@ public abstract class Art extends DictionaryObject {
 	 * Checks if the Art item is above the specified Art item in the stacking
 	 * order of the document
 	 * Sample code:
-	 * <code>
+	 * <pre>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(secondPath.isAbove(firstPath)) // returns true
-	 * </code>
+	 * </pre>
 	 * 
 	 * @param art The Art item to check against
 	 * @return <code>true</code> if it is above the specified Art item, false
@@ -923,11 +921,11 @@ public abstract class Art extends DictionaryObject {
 	 * Checks if the Art item is below the specified Art item in the stacking
 	 * order of the document
 	 * Sample code:
-	 * <code>
+	 * <pre>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(firstPath.isBelow(secondPath)) // returns true
-	 * </code>
+	 * </pre>
 	 * 
 	 * @param art The Art item to check against
 	 * @return <code>true</code> if it is below the specified Art item, false
@@ -940,12 +938,12 @@ public abstract class Art extends DictionaryObject {
 	/**
 	 * Checks if the Art item is contained within the specified Art item
 	 * Sample code:
-	 * <code>
+	 * <pre>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendChild(path);
 	 * print(path.isInside(group)) // returns true
-	 * </code>
+	 * </pre>
 	 *
 	 * @param art The Art item to check against
 	 * @return <code>true</code> if it is inside the specified Art item,
@@ -958,12 +956,12 @@ public abstract class Art extends DictionaryObject {
 	/**
 	 * Checks if the art item is an ancestor of the specified Art item.
 	 * Sample code:
-	 * <code>
+	 * <pre>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendChild(path);
 	 * print(group.isAncestor(path)) // returns true
-	 * </code>
+	 * </pre>
 	 * 
 	 * @param art the Art item to check against
 	 * @return <code>true</code> if it is an ancestor of the specified Art

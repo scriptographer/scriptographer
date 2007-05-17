@@ -31,8 +31,6 @@
 
 package com.scriptographer.ai;
 
-import java.awt.geom.Point2D;
-
 import com.scratchdisk.util.ExtendedArrayList;
 import com.scratchdisk.util.ExtendedList;
 import com.scriptographer.util.AbstractFetchList;
@@ -229,7 +227,7 @@ public class SegmentList extends AbstractFetchList {
 	/**
 	 * Adds a segment to the SegmentList.
 	 * @param index the index where to add the segment
-	 * @param obj either a Segment or a Point2D
+	 * @param obj either a Segment or a Point
 	 * @return the new segment
 	 */
 	public Object add(int index, Object obj) {
@@ -239,9 +237,9 @@ public class SegmentList extends AbstractFetchList {
 			// copy it if it comes from another list:
 			if (segment.segments != null)
 				segment = new Segment(segment);
-		} else if (obj instanceof Point2D) {
+		} else if (obj instanceof Point) {
 			// convert single points to a segment
-			segment = new Segment((Point2D) obj);
+			segment = new Segment((Point) obj);
 		} else return null;
 		// add to internal structure
 		list.add(index, segment);
@@ -297,9 +295,9 @@ public class SegmentList extends AbstractFetchList {
 				// copy it if it comes from another list:
 				if (segment.segments != null)
 					segment = new Segment(segment);
-			} else if (obj instanceof Point2D) {
+			} else if (obj instanceof Point) {
 				// convert single points to a segment
-				segment = new Segment((Point2D) obj);
+				segment = new Segment((Point) obj);
 			}
 			if (segment != null) {
 				// add to internal structure
@@ -416,10 +414,6 @@ public class SegmentList extends AbstractFetchList {
 		moveTo(pt.x, pt.y);
 	}
 	
-	public void moveTo(Point2D pt) {
-		moveTo((float) pt.getX(), (float) pt.getY());
-	}
-	
 	public void lineTo(float x, float y) {
 		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
@@ -428,10 +422,6 @@ public class SegmentList extends AbstractFetchList {
 	
 	public void lineTo(Point pt) {
 		lineTo(pt.x, pt.y);
-	}
-	
-	public void lineTo(Point2D pt) {
-		lineTo((float) pt.getX(), (float) pt.getY());
 	}
 	
 	public void curveTo(float c1x, float c1y, float c2x, float c2y, float x,
@@ -452,12 +442,6 @@ public class SegmentList extends AbstractFetchList {
 		curveTo(c1.x, c1.y, c2.x, c2.y, pt.x, pt.y);
 	}
 	
-	public void curveTo(Point2D c1, Point2D c2, Point2D pt) {
-		curveTo((float) c1.getX(), (float) c1.getY(),
-				(float) c2.getX(), (float) c2.getY(),
-				(float) pt.getX(), (float) pt.getY());
-	}
-	
 	public void quadTo(float cx, float cy, float x, float y) {
 		// this is exact:
 		// if whe have the three quad poits: A E D,
@@ -474,11 +458,6 @@ public class SegmentList extends AbstractFetchList {
 	
 	public void quadTo(Point c, Point pt) {
 		quadTo(c.x, c.y, pt.x, pt.y);		
-	}
-	
-	public void quadTo(Point2D c, Point2D pt) {
-		quadTo((float) c.getX(), (float) c.getY(),
-				(float) pt.getX(), (float) pt.getY());
 	}
 
 	public void arcTo(float centerX, float centerY, float endX, float endY,
@@ -561,8 +540,7 @@ public class SegmentList extends AbstractFetchList {
 		}
 	}
 
-	public void arcTo(Point2D center, Point2D endPoint, int ccw) {
-		arcTo((float) center.getX(), (float) center.getY(),
-				(float) endPoint.getX(), (float) endPoint.getY(), ccw);
+	public void arcTo(Point center, Point endPoint, int ccw) {
+		arcTo(center.x, center.y, endPoint.x, endPoint.y, ccw);
 	}
 }

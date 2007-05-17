@@ -31,8 +31,6 @@
 
 package com.scriptographer.adm;
 
-import java.awt.*;
-
 /**
  * @author lehni
  */
@@ -45,11 +43,11 @@ public class Spacer extends Item {
 		visible = true;
 	}
 
-	public Spacer(Dimension size) {
+	public Spacer(Size size) {
 		this(size.width, size.height);
 	}
 
-	public Dimension getPreferredSize() {
+	public Size getPreferredSize() {
 		return bounds.getSize();
 	}
 	
@@ -58,7 +56,7 @@ public class Spacer extends Item {
 		// spacers.
 		// setBounds does not need to be touched, as it relies on updateBounds
 		// for the heavy lifting.
-		bounds.setBounds(x, y, width, height);
+		bounds.set(x, y, width, height);
 	}
 
 	public boolean isVisible() {

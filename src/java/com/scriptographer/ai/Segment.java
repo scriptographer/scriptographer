@@ -34,8 +34,6 @@ package com.scriptographer.ai;
 import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
 
-import java.awt.geom.Point2D;
-
 /**
  * The Segment object represents a part of a path which is described by the
  * {@link Art#segments} property. Every segment of path corresponds to an
@@ -80,7 +78,7 @@ public class Segment implements Commitable {
 		handleOut = new SegmentPoint(this, 4);
 	}
 
-	public Segment(Point2D pt, Point2D in, Point2D out, boolean corner) {
+	public Segment(Point pt, Point in, Point out, boolean corner) {
 		point = new SegmentPoint(this, 0, pt);
 		handleIn = in != null ?
 			new SegmentPoint(this, 2, in) :
@@ -91,7 +89,7 @@ public class Segment implements Commitable {
 		this.corner = corner;
 	}
 
-	public Segment(Point2D pt, Point2D in, Point2D out) {
+	public Segment(Point pt, Point in, Point out) {
 		this(pt, in, out, false);
 	}
 
@@ -112,8 +110,8 @@ public class Segment implements Commitable {
 		this(x, y, 0, 0, 0, 0, false);
 	}
 	
-	public Segment(Point2D pt) {
-		this((float) pt.getX(), (float) pt.getY());
+	public Segment(Point pt) {
+		this(pt.x, pt.y);
 	}
 	
 	public Segment(Segment segment) {
@@ -234,7 +232,7 @@ public class Segment implements Commitable {
 		return point;
 	}
 
-	public void setPoint(Point2D pt) {
+	public void setPoint(Point pt) {
 		point.setLocation(pt);
 	}
 
@@ -251,7 +249,7 @@ public class Segment implements Commitable {
 		return handleIn;
 	}
 
-	public void setHandleIn(Point2D pt) {
+	public void setHandleIn(Point pt) {
 		handleIn.setLocation(pt);
 	}
 
@@ -268,7 +266,7 @@ public class Segment implements Commitable {
 		return handleOut;
 	}
 
-	public void setHandleOut(Point2D pt) {
+	public void setHandleOut(Point pt) {
 		handleOut.setLocation(pt);
 	}
 

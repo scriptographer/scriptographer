@@ -37,19 +37,19 @@
  */
 
 /*
- * int nativeCreate(int symbolHandle, java.awt.geom.AffineTransform at)
+ * int nativeCreate(int symbolHandle, com.scriptographer.ai.Matrix matrix)
  */
 
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SymbolItem_nativeCreate(JNIEnv *env, jclass cls, jint symbolHandle, jobject at) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SymbolItem_nativeCreate(JNIEnv *env, jclass cls, jint symbolHandle, jobject matrix) {
 	try {
 		short paintOrder;
 		AIArtHandle artInsert = Art_getInsertionPoint(&paintOrder);
-		AIRealMatrix m;
-		gEngine->convertMatrix(env, at, &m);
+		AIRealMatrix mx;
+		gEngine->convertMatrix(env, matrix, &mx);
 		// harden the matrix as symbols use hard matrixes internaly
-		sAIHardSoft->AIRealMatrixHarden(&m);
+		sAIHardSoft->AIRealMatrixHarden(&mx);
 		AIArtHandle res = NULL;
-		sAISymbol->NewInstanceWithTransform((AIPatternHandle) symbolHandle, &m, paintOrder, artInsert, &res);
+		sAISymbol->NewInstanceWithTransform((AIPatternHandle) symbolHandle, &mx, paintOrder, artInsert, &res);
 		return (jint) res;
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -93,13 +93,13 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_SymbolItem_getMatrix(JNIEnv
 }
 
 /*
- * void setMatrix(java.awt.geom.AffineTransform at)
+ * void setMatrix(com.scriptographer.ai.Matrix matrix)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SymbolItem_setMatrix(JNIEnv *env, jobject obj, jobject at) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_SymbolItem_setMatrix(JNIEnv *env, jobject obj, jobject matrix) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
-		AIRealMatrix m;
-		gEngine->convertMatrix(env, at, &m);
-		sAISymbol->SetSoftTransformOfSymbolArt(art, &m);
+		AIRealMatrix mx;
+		gEngine->convertMatrix(env, matrix, &mx);
+		sAISymbol->SetSoftTransformOfSymbolArt(art, &mx);
 	} EXCEPTION_CONVERT(env);
 }

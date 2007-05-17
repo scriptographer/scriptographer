@@ -31,7 +31,6 @@
 
 package com.scriptographer.adm;
 
-import java.awt.Insets;
 import java.io.IOException;
 
 import com.scratchdisk.script.Callable;
@@ -152,23 +151,23 @@ public class Button extends TextItem {
 	}
 	
 	// int top, int left, int bottom, int right
-	protected static final Insets INSETS_IMAGE = new Insets(0, 0, 0, 0);
-	protected static final Insets INSETS_TEXT = ScriptographerEngine.isMacintosh() ?
-			new Insets(1, 2, 3, 3) : INSETS_IMAGE;
+	protected static final Margins INSETS_IMAGE = new Margins(0, 0, 0, 0);
+	protected static final Margins INSETS_TEXT = ScriptographerEngine.isMacintosh() ?
+			new Margins(2, 1, 3, 3) : INSETS_IMAGE;
 	
-	protected Insets getButtonInsets() {
+	protected Margins getButtonMargins() {
 		return INSETS_TEXT;
 	}
 
-	public void setInsets(int left, int top, int right, int bottom) {
-		Insets in = getButtonInsets();
-		super.setInsets(left + in.left, top + in.top,
-				right + in.right, bottom + in.bottom);
+	public void setMargins(int left, int top, int right, int bottom) {
+		Margins m = getButtonMargins();
+		super.setMargins(left + m.left, top + m.top,
+				right + m.right, bottom + m.bottom);
 	}
 	
-	public Insets getInsets() {
-		Insets in = getButtonInsets();
-		return new Insets(insets.top - in.top, insets.left - in.left,
-				insets.bottom - in.bottom, insets.right - in.right);
+	public Margins getMargins() {
+		Margins m = getButtonMargins();
+		return new Margins(margins.left - m.left, margins.top - m.top, 
+				margins.right - m.right, margins.bottom - m.bottom);
 	}
 }

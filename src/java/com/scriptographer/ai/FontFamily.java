@@ -39,7 +39,7 @@ import com.scratchdisk.util.StringIndexList;
 /**
  * @author lehni
  */
-public class FontFamily extends AIWrapper implements ReadOnlyList, StringIndexList {
+public class FontFamily extends NativeWrapper implements ReadOnlyList, StringIndexList {
 	
 	protected FontFamily(int handle) {
 		super(handle);

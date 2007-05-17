@@ -34,9 +34,12 @@ package com.scriptographer.adm;
 import com.scratchdisk.script.Callable;
 import com.scriptographer.ScriptographerEngine; 
 
-import java.awt.*;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.LayoutManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Map;
@@ -164,9 +167,9 @@ public abstract class Dialog extends CallbackHandler {
 	// the outside dimensions of the dialog, including borders and titlebars
 	private Rectangle bounds;
 	// the inside dimensions of the dialog, as used by layout managers and such
-	private Dimension size;
-	private Dimension minSize;
-	private Dimension maxSize;
+	private Size size;
+	private Size minSize;
+	private Size maxSize;
 	private String title = "";
 	private boolean visible = true;
 	private boolean active = false;
@@ -245,12 +248,12 @@ public abstract class Dialog extends CallbackHandler {
 				if ((options & OPTION_REMEMBER_PLACING) != 0)
 					show = !loadPreferences(title);
 				if (container != null) {
-					setMinimumSize(container.getMinimumSize());
-					setMaximumSize(container.getMaximumSize());
+					setMinimumSize(new Size(container.getMinimumSize()));
+					setMaximumSize(new Size(container.getMaximumSize()));
 					// if no bounds where specified yet, set the preferred size
 					// as defined by the layout
 					if (!sizeSet)
-						setSize(container.getPreferredSize());
+						setSize(new Size(container.getPreferredSize()));
 				}
 				initialized = true;
 				if (show)
@@ -362,7 +365,7 @@ public abstract class Dialog extends CallbackHandler {
 				// on this machine
 				Rectangle defaultBounds = Dialog.getPaletteLayoutBounds();
 				bounds = getBounds();
-				bounds.setLocation(defaultBounds.x, defaultBounds.y);
+				bounds.setPoint(defaultBounds.x, defaultBounds.y);
 			}
 			setBounds(bounds);
 
@@ -672,8 +675,16 @@ public abstract class Dialog extends CallbackHandler {
 		getContainer().setLayout(mgr);
 	}
 
-	public void setInsets(int left, int top, int right, int bottom) {
-		getContainer().setInsets(left, top, right, bottom);
+	public void setMargins(int left, int top, int right, int bottom) {
+		getContainer().setInsets(top, left, bottom, right);
+	}
+
+	public void setMargins(int margins) {
+		setMargins(margins, margins, margins, margins);
+	}
+
+	public void setMargins(int []margins) {
+		setMargins(margins[0], margins[1], margins[2], margins[3]);
 	}
 
 	public void addToLayout(Item item, Object constraints) {
@@ -787,7 +798,7 @@ public abstract class Dialog extends CallbackHandler {
 	 *
 	 */
 
-	private native Dimension nativeGetSize();
+	private native Size nativeGetSize();
 	
 	private native void nativeSetSize(int width, int height);
 
@@ -812,13 +823,12 @@ public abstract class Dialog extends CallbackHandler {
 		sizeSet = true;
 	}
 
-	public void setBounds(Rectangle2D bounds) {
-		setBounds((int) bounds.getX(), (int) bounds.getY(),
-				(int) bounds.getWidth(), (int) bounds.getHeight());
+	public void setBounds(Rectangle bounds) {
+		setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
-	public Dimension getSize() {
-		return size.getSize();
+	public Size getSize() {
+		return (Size) size.clone();
 	}
 
 	public void setSize(int width, int height) {
@@ -829,17 +839,17 @@ public abstract class Dialog extends CallbackHandler {
 		sizeSet = true;
 	}
 
-	public void setSize(Dimension size) {
+	public void setSize(Size size) {
 		setSize(size.width, size.height);
 	}
 
-	public void setSize(Point2D size) {
-		setSize((int) size.getX(), (int) size.getY());
+	public void setSize(Point size) {
+		setSize(size.x, size.y);
 	}
 	
 	/**
 	 * Changes the internal size fields (size / bounds) relatively to their
-	 * previous values. As bounds and size do not represent the same dimensions
+	 * previous values. As bounds and size do not represent the same Dimensions
 	 * (outer / inner), it has to be done relatively. Change of layout and
 	 * calling of onResize is handled here too
 	 * 
@@ -848,7 +858,7 @@ public abstract class Dialog extends CallbackHandler {
 	 */
 	protected void updateSize(int deltaX, int deltaY) {
 		if (deltaX != 0 || deltaY != 0) {
-			size.setSize(size.width + deltaX, size.height + deltaY);
+			size.set(size.width + deltaX, size.height + deltaY);
 			bounds.setSize(bounds.width + deltaX, bounds.height + deltaY);
 			// if a contianer was created, the layout needs to be recalculated now:
 			if (container != null)
@@ -863,12 +873,12 @@ public abstract class Dialog extends CallbackHandler {
 		}
 	}
 
-	public native Point getLocation();
+	public native Point getPosition();
 
-	public native void setLocation(int x, int y);
+	public native void setPosition(int x, int y);
 
-	public final void setLocation(Point2D loc) {
-		setLocation((int) loc.getX(), (int) loc.getY());
+	public final void setPosition(Point pt) {
+		setPosition(pt.x, pt.y);
 	}
 
 	/*
@@ -884,22 +894,20 @@ public abstract class Dialog extends CallbackHandler {
 	
 	public native Rectangle screenToLocal(int x, int y, int width, int height);
 
-	public Point localToScreen(Point2D pt) {
-		return localToScreen((int) pt.getX(), (int) pt.getY());
+	public Point localToScreen(Point pt) {
+		return localToScreen(pt.x, pt.y);
 	}
 
-	public Point screenToLocal(Point2D pt) {
-		return screenToLocal((int) pt.getX(), (int) pt.getY());
+	public Point screenToLocal(Point pt) {
+		return screenToLocal(pt.x, pt.y);
 	}
 
-	public Rectangle localToScreen(Rectangle2D rt) {
-		return localToScreen((int) rt.getX(), (int) rt.getY(),
-				(int) rt.getWidth(), (int) rt.getHeight());
+	public Rectangle localToScreen(Rectangle rt) {
+		return localToScreen(rt.x, rt.y, rt.width, rt.height);
 	}
 
-	public Rectangle screenToLocal(Rectangle2D rt) {
-		return screenToLocal((int) rt.getX(), (int) rt.getY(),
-				(int) rt.getWidth(), (int) rt.getHeight());
+	public Rectangle screenToLocal(Rectangle rt) {
+		return screenToLocal(rt.x, rt.y, rt.width, rt.height);
 	}
 
 	/*
@@ -913,9 +921,8 @@ public abstract class Dialog extends CallbackHandler {
 	
 	public native void update();
 
-	public void invalidate(Rectangle2D rt) {
-		invalidate((int) rt.getX(), (int) rt.getY(),
-				(int) rt.getWidth(), (int) rt.getHeight());
+	public void invalidate(Rectangle rt) {
+		invalidate(rt.x, rt.y, rt.width, rt.height);
 	}
 
 	/*
@@ -958,16 +965,16 @@ public abstract class Dialog extends CallbackHandler {
 	 * properties in the wrapper and then only set them natively when the dialog
 	 * is activate.
 	 */
-	private native Dimension nativeGetMinimumSize();
+	private native Size nativeGetMinimumSize();
 	
 	private native void nativeSetMinimumSize(int width, int height);
 
-	private native Dimension nativeGetMaximumSize();
+	private native Size nativeGetMaximumSize();
 	
 	private native void nativeSetMaximumSize(int width, int height);
 
 	public void setMinimumSize(int width, int height) {
-		minSize = new Dimension(width, height);
+		minSize = new Size(width, height);
 		if (initialized) {
 			nativeSetMinimumSize(width, height);
 		} else {
@@ -975,14 +982,14 @@ public abstract class Dialog extends CallbackHandler {
 		}
 	}
 	
-	public void setMinimumSize(Dimension size) {
+	public void setMinimumSize(Size size) {
 		if (size != null)
 			setMinimumSize(size.width, size.height);
 	}
 
-	public void setMinimumSize(Point2D size) {
+	public void setMinimumSize(Point size) {
 		if (size != null)
-			setMinimumSize((int) size.getX(), (int) size.getY());
+			setMinimumSize(size.x, size.y);
 	}
 
 	public void setMaximumSize(int width, int height) {
@@ -990,7 +997,7 @@ public abstract class Dialog extends CallbackHandler {
 			width = Short.MAX_VALUE;
 		if (height > Short.MAX_VALUE)
 			height = Short.MAX_VALUE;
-		maxSize = new Dimension(width, height);
+		maxSize = new Size(width, height);
 		if (initialized) {
 			nativeSetMaximumSize(width, height);
 		} else {
@@ -998,33 +1005,33 @@ public abstract class Dialog extends CallbackHandler {
 		}
 	}
 
-	public void setMaximumSize(Dimension size) {
+	public void setMaximumSize(Size size) {
 		if (size != null)
 			setMaximumSize(size.width, size.height);
 	}
 
-	public void setMaximumSize(Point2D size) {
+	public void setMaximumSize(Point size) {
 		if (size != null)
-			setMaximumSize((int) size.getX(), (int) size.getY());
+			setMaximumSize(size.x, size.y);
 	}
 
-	public native Dimension getIncrement();
+	public native Size getIncrement();
 	
 	public native void setIncrement(int hor, int ver);
 
-	public void setIncrement(Dimension increment) {
+	public void setIncrement(Size increment) {
 		if (increment != null)
 			setIncrement(increment.width, increment.height);
 	}
 
-	public void setIncrement(Point2D increment) {
+	public void setIncrement(Point increment) {
 		if (increment != null)
-			setIncrement((int) increment.getX(), (int) increment.getY());
+			setIncrement(increment.x, increment.y);
 	}
 
-	public Dimension getPreferredSize() {
+	public Size getPreferredSize() {
 		if (container != null)
-			return container.getPreferredSize();
+			return new Size(container.getPreferredSize());
 		return null;
 	}
 
@@ -1242,7 +1249,7 @@ public abstract class Dialog extends CallbackHandler {
 			setInsets(0, 0, 0, 0);
 		}
 
-		public void updateSize(Dimension size) {
+		public void updateSize(Size size) {
 			// call setBounds instead of setSize
 			// otherwise the call would loop back to the overridden
 			// setBounds here, as internally, setSize calls setBounds anyway

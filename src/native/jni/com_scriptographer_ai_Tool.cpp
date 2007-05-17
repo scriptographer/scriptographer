@@ -81,7 +81,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Tool_nativeGetTools(JNIEnv 
 		Tool *tools = gPlugin->getTools(&count);
 		for (int i = 0; i < count; i++) {
 			AIToolHandle handle = tools[i].m_handle;
-			jobject toolObj = gEngine->newObject(env, gEngine->cls_Tool, gEngine->cid_Tool, (jint) handle, i);
+			jobject toolObj = gEngine->newObject(env, gEngine->cls_ai_Tool, gEngine->cid_ai_Tool, (jint) handle, i);
 			gEngine->callObjectMethod(env, map, gEngine->mid_IntMap_put, (jint) handle, toolObj);
 		}
 		return map;

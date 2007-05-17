@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class Pattern extends AIWrapper {
+public class Pattern extends NativeWrapper {
 	
 	protected Pattern(int handle) {
 		super(handle);

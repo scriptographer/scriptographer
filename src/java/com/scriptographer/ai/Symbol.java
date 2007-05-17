@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class Symbol extends AIWrapper {
+public class Symbol extends NativeWrapper {
 	
 	protected Symbol(int handle) {
 		super(handle);

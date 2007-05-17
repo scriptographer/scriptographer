@@ -54,25 +54,25 @@ short Art_getType(AIArtHandle art) {
 }
 
 short Art_getType(JNIEnv *env, jclass cls) {
-	if (env->IsSameObject(cls, gEngine->cls_Art)) {
+	if (env->IsSameObject(cls, gEngine->cls_ai_Art)) {
 		return kAnyArt;
-	} else if (env->IsSameObject(cls, gEngine->cls_Path)) {
+	} else if (env->IsSameObject(cls, gEngine->cls_ai_Path)) {
 		return kPathArt;
-	} else if (env->IsSameObject(cls, gEngine->cls_CompoundPath)) {
+	} else if (env->IsSameObject(cls, gEngine->cls_ai_CompoundPath)) {
 		return kCompoundPathArt;
-	} else if (env->IsSameObject(cls, gEngine->cls_Raster)) {
+	} else if (env->IsSameObject(cls, gEngine->cls_ai_Raster)) {
 		return kRasterArt;
-	} else if (env->IsSameObject(cls, gEngine->cls_PlacedItem)) {
+	} else if (env->IsSameObject(cls, gEngine->cls_ai_PlacedItem)) {
 		return kPlacedArt;
-	} else if (env->IsAssignableFrom(cls, gEngine->cls_TextFrame)) {
+	} else if (env->IsAssignableFrom(cls, gEngine->cls_ai_TextFrame)) {
 		return kTextFrameArt;
-	} else if (env->IsAssignableFrom(cls, gEngine->cls_Tracing)) {
+	} else if (env->IsAssignableFrom(cls, gEngine->cls_ai_Tracing)) {
 		// special defined type for tracings, needs handling!
 		return com_scriptographer_ai_Art_TYPE_TRACING;
-	} else if (env->IsSameObject(cls, gEngine->cls_Layer)) {
+	} else if (env->IsSameObject(cls, gEngine->cls_ai_Layer)) {
 		// special defined type for layers, needs handling!
 		return com_scriptographer_ai_Art_TYPE_LAYER;
-	} else if (env->IsSameObject(cls, gEngine->cls_Group)) {
+	} else if (env->IsSameObject(cls, gEngine->cls_ai_Group)) {
 		return kGroupArt;
 	}
 	return kUnknownArt;
@@ -742,7 +742,7 @@ void artTransform(JNIEnv *env, AIArtHandle art, AIRealMatrix *matrix, AIReal lin
 	if (obj != NULL) {
 		// only call this if it's wrapped!
 		// increasing version by one causes refetching of cached data:
-		gEngine->setIntField(env, obj, gEngine->fid_Art_version, gEngine->getIntField(env, obj, gEngine->fid_Art_version) + 1);
+		gEngine->setIntField(env, obj, gEngine->fid_ai_Art_version, gEngine->getIntField(env, obj, gEngine->fid_ai_Art_version) + 1);
 	}
 
 	if (flags & com_scriptographer_ai_Art_TRANSFORM_DEEP) {
@@ -756,18 +756,18 @@ void artTransform(JNIEnv *env, AIArtHandle art, AIRealMatrix *matrix, AIReal lin
 }
 
 /*
- * void transform(java.awt.geom.AffineTransform at, int scaleFlags)
+ * void transform(com.scriptographer.ai.Matrix matrix, int scaleFlags)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_transform(JNIEnv *env, jobject obj, jobject at, jint flags) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_transform(JNIEnv *env, jobject obj, jobject matrix, jint flags) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
-		AIRealMatrix matrix;
-		gEngine->convertMatrix(env, at, &matrix);
+		AIRealMatrix mx;
+		gEngine->convertMatrix(env, matrix, &mx);
 		// according to adobe sdk manual: linescale = sqrt(scaleX) * sqrt(scaleY)
 		AIReal sx, sy;
-		sAIRealMath->AIRealMatrixGetScale(&matrix, &sx, &sy);
+		sAIRealMath->AIRealMatrixGetScale(&mx, &sx, &sy);
 		AIReal lineScale = sAIRealMath->AIRealSqrt(sx) * sAIRealMath->AIRealSqrt(sy);
-		artTransform(env, art, &matrix, lineScale, flags);
+		artTransform(env, art, &mx, lineScale, flags);
 	} EXCEPTION_CONVERT(env);
 }
 

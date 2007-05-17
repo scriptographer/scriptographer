@@ -31,8 +31,6 @@
 
 package com.scriptographer.ai;
 
-import java.awt.geom.Point2D;
-
 /**
  * @author lehni
  */
@@ -45,7 +43,7 @@ public class SegmentPoint extends Point {
 		this.index = index;
 	}
 
-	protected SegmentPoint(Segment listener, int index, Point2D pt) {
+	protected SegmentPoint(Segment listener, int index, Point pt) {
 		super(pt);
 		this.segment = listener;
 		this.index = index;
@@ -78,13 +76,6 @@ public class SegmentPoint extends Point {
 		segment.markDirty(Segment.DIRTY_POINTS);
 	}
 
-	public void setLocation(Point2D pt) {
-		segment.update();
-		this.x = (float) pt.getX();
-		this.y = (float) pt.getY();
-		segment.markDirty(Segment.DIRTY_POINTS);
-	}
-
 	public void setX(float x) {
 		segment.update();
 		this.x = x;
@@ -97,12 +88,12 @@ public class SegmentPoint extends Point {
 		segment.markDirty(Segment.DIRTY_POINTS);
 	}
 	
-	public double getX() {
+	public float getX() {
 		segment.update();
 		return x;
 	}
 	
-	public double getY() {
+	public float getY() {
 		segment.update();
 		return y;
 	}

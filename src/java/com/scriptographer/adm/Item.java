@@ -31,9 +31,9 @@
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 
@@ -166,19 +166,19 @@ public abstract class Item extends CallbackHandler {
 
 	protected Rectangle nativeBounds = null;
 	protected Rectangle bounds;
-	protected Insets insets;
+	protected Margins margins;
 
 	private String toolTip;
 
 	protected AWTComponent component = null;
-	private Dimension minSize = null;
-	private Dimension maxSize = null;
-	private Dimension prefSize = null;
+	private Size minSize = null;
+	private Size maxSize = null;
+	private Size prefSize = null;
 
 	protected Item() {
 		// Call function as it is overriden by Button, where it sets 
-		// insets according to platform
-		setInsets(0, 0, 0, 0);
+		// margins according to platform
+		setMargins(0, 0, 0, 0);
 	}
 	
 	/**
@@ -219,10 +219,10 @@ public abstract class Item extends CallbackHandler {
 		// size and bounds need to be updated depending on insets and
 		// internalInsets
 		bounds = new Rectangle(
-			nativeBounds.x - insets.left,
-			nativeBounds.y - insets.top,
-			nativeBounds.width + insets.left + insets.right,
-			nativeBounds.height + insets.top + insets.bottom
+			nativeBounds.x - margins.left,
+			nativeBounds.y - margins.top,
+			nativeBounds.width + margins.left + margins.right,
+			nativeBounds.height + margins.top + margins.bottom
 		);
 	}
 
@@ -367,10 +367,10 @@ public abstract class Item extends CallbackHandler {
 
 	protected void updateBounds(int x, int y, int width, int height) {
 		// calculate native values
-		int nativeX = x + insets.left;
-		int nativeY = y + insets.top;
-		int nativeWidth = width - insets.left - insets.right;
-		int nativeHeight = height - insets.top - insets.bottom;
+		int nativeX = x + margins.left;
+		int nativeY = y + margins.top;
+		int nativeWidth = width - margins.left - margins.right;
+		int nativeHeight = height - margins.top - margins.bottom;
 		int deltaX = nativeWidth - nativeBounds.width;
 		int deltaY = nativeHeight - nativeBounds.height;
 
@@ -378,11 +378,11 @@ public abstract class Item extends CallbackHandler {
 		if (sizeChanged || nativeBounds.x != nativeX ||
 				nativeBounds.y != nativeY) {
 			nativeSetBounds(nativeX, nativeY, nativeWidth, nativeHeight);
-			nativeBounds.setBounds(nativeX, nativeY, nativeWidth, nativeHeight);
+			nativeBounds.set(nativeX, nativeY, nativeWidth, nativeHeight);
 		}
 
 		// update bounds
-		bounds.setBounds(x, y, width, height);
+		bounds.set(x, y, width, height);
 		if (component != null)
 			component.updateBounds(bounds);
 
@@ -399,30 +399,29 @@ public abstract class Item extends CallbackHandler {
 	public void setBounds(int x, int y, int width, int height) {
 		// Set prefSize so getPreferredSize does not return results from
 		// getBestSize()
-		prefSize = new Dimension(width, height);
+		prefSize = new Size(width, height);
 		// updateBounds does all the heavy lifting, except for setting
 		// prefSize, which shouldnt be set when changing location or insets.
 		updateBounds(x, y, width, height);
 	}
 
-	public final void setBounds(Rectangle2D bounds) {
-		setBounds((int) bounds.getX(), (int) bounds.getY(),
-				(int) bounds.getWidth(), (int) bounds.getHeight());
+	public final void setBounds(Rectangle bounds) {
+		setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
-	public void setLocation(int x, int y) {
+	public void setPosition(int x, int y) {
 		updateBounds(x, y, bounds.width, bounds.height);
 	}
 
-	public final void setLocation(Point2D loc) {
-		setLocation((int) loc.getX(), (int) loc.getY());
+	public final void setPosition(Point loc) {
+		setPosition(loc.x, loc.y);
 	}
 	
-	public Point getLocation() {
+	public Point getPosition() {
 		return new Point(bounds.x, bounds.y);
 	}
 
-	public Dimension getSize() {
+	public Size getSize() {
 		return bounds.getSize();
 	}
 
@@ -430,20 +429,20 @@ public abstract class Item extends CallbackHandler {
 		setBounds(bounds.x, bounds.y, width, height);
 	}
 
-	public final void setSize(Dimension size) {
+	public final void setSize(Size size) {
 		setSize(size.width, size.height);
 	}
 
-	public final void setSize(Point2D size) {
-		setSize((int) size.getX(), (int) size.getY());
+	public final void setSize(Point size) {
+		setSize(size.x, size.y);
 	}
 
-	private native Dimension nativeGetTextSize(String text, int maxWidth);
+	private native Size nativeGetTextSize(String text, int maxWidth);
 	
-	public Dimension getTextSize(String text, int maxWidth) {
+	public Size getTextSize(String text, int maxWidth) {
 		String delim = System.getProperty("line.separator");
 		StringTokenizer st = new StringTokenizer(text, delim, true);
-		Dimension size = new Dimension(0, 0);
+		Size size = new Size(0, 0);
 		boolean isDelim = false;
 		while (st.hasMoreTokens()) {
 			// detect several newlines in a row, and use a " " instead, so
@@ -457,7 +456,7 @@ public abstract class Item extends CallbackHandler {
 					else continue;
 				} else continue;
 			}
-			Dimension partSize = nativeGetTextSize(text, maxWidth);
+			Size partSize = nativeGetTextSize(text, maxWidth);
 			if (partSize.width > size.width)
 				size.width = partSize.width;
 			size.height += partSize.height;
@@ -465,11 +464,11 @@ public abstract class Item extends CallbackHandler {
 		return size;
 	}
 
-	private native Dimension nativeGetBestSize();
+	private native Size nativeGetBestSize();
 
-	public Dimension getBestSize() {
+	public Size getBestSize() {
 		// TODO: verify for which items getBestSize really works!
-		Dimension size = null;
+		Size size = null;
 		switch (type) {
 			case TYPE_PICTURE_STATIC:
 			case TYPE_PICTURE_CHECKBOX:
@@ -498,78 +497,78 @@ public abstract class Item extends CallbackHandler {
 					}
 				}
 		}
-		if (size == null) size = new Dimension(120, 20);
+		if (size == null) size = new Size(120, 20);
 		// add insets
-		size.width += insets.left + insets.right;
-		size.height += insets.top + insets.bottom;
+		size.width += margins.left + margins.right;
+		size.height += margins.top + margins.bottom;
 		return size;
 	}
 
 	public void setPreferredSize(int width, int height) {
-		prefSize = new Dimension(width, height);
+		prefSize = new Size(width, height);
 	}
 
-	public void setPreferredSize(Dimension size) {
+	public void setPreferredSize(Size size) {
 		if (size == null) prefSize = null;
 		else setPreferredSize(size.width, size.height);
 	}
 
-	public final void setPreferredSize(Point2D size) {
+	public final void setPreferredSize(Point size) {
 		if (size == null) prefSize = null;
-		else setPreferredSize((int) size.getX(), (int) size.getY());
+		else setPreferredSize(size.x, size.y);
 	}
 
-	public Dimension getPreferredSize() {
+	public Size getPreferredSize() {
 		// return prefSize != null ? prefSize : getBestSize();
-		Dimension size = prefSize != null ? prefSize : getBestSize();
+		Size size = prefSize != null ? prefSize : getBestSize();
 // 		System.out.println("Item.getPreferredSize " + desc() + " " + size);
 		return size;
 	}
 
 	public void setMinimumSize(int width, int height) {
-		minSize = new Dimension(width, height);
+		minSize = new Size(width, height);
 	}
 
-	public void setMinimumSize(Dimension size) {
+	public void setMinimumSize(Size size) {
 		if (size == null) minSize = null;
 		else setMinimumSize(size.width, size.height);
 	}
 
-	public final void setMinimumSize(Point2D size) {
+	public final void setMinimumSize(Point size) {
 		if (size == null) minSize = null;
-		else setMinimumSize((int) size.getX(), (int) size.getY());
+		else setMinimumSize(size.x, size.y);
 	}
 
-	public Dimension getMinimumSize() {
+	public Size getMinimumSize() {
 		return minSize != null ? minSize : getSize();
 	}
 
 	public void setMaximumSize(int width, int height) {
-		maxSize = new Dimension(width, height);
+		maxSize = new Size(width, height);
 	}
 
-	public void setMaximumSize(Dimension size) {
+	public void setMaximumSize(Size size) {
 		if (size == null) maxSize = null;
 		else setMaximumSize(size.width, size.height);
 	}
 
-	public final void setMaximumSize(Point2D size) {
+	public final void setMaximumSize(Point size) {
 		if (size == null) maxSize = null;
-		else setMaximumSize((int) size.getX(), (int) size.getY());
+		else setMaximumSize(size.x, size.y);
 	}
 
-	public Dimension getMaximumSize() {
+	public Size getMaximumSize() {
 		return maxSize != null ? maxSize : getSize();
 	}
 	
-	public void setInsets(int left, int top, int right, int bottom) {
-		insets = new Insets(top, left, bottom, right);
+	public void setMargins(int left, int top, int right, int bottom) {
+		margins = new Margins(left, top, right, bottom);
 		if (nativeBounds != null)
 			updateBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
-	public Insets getInsets() {
-		return new Insets(insets.top, insets.left, insets.bottom, insets.right);
+	public Margins getMargins() {
+		return (Margins) margins.clone();
 	}
 	/* 
 	 * coordinate system transformations
@@ -582,22 +581,20 @@ public abstract class Item extends CallbackHandler {
 	public native Rectangle localToScreen(int x, int y, int width, int height);
 	public native Rectangle screenToLocal(int x, int y, int width, int height);
 
-	public Point localToScreen(Point2D pt) {
-		return localToScreen((int) pt.getX(), (int) pt.getY());
+	public Point localToScreen(Point pt) {
+		return localToScreen(pt.x, pt.y);
 	}
 
-	public Point screenToLocal(Point2D pt) {
-		return screenToLocal((int) pt.getX(), (int) pt.getY());
+	public Point screenToLocal(Point pt) {
+		return screenToLocal(pt.x, pt.y);
 	}
 
-	public Rectangle localToScreen(Rectangle2D rt) {
-		return localToScreen((int) rt.getX(), (int) rt.getY(),
-				(int) rt.getWidth(), (int) rt.getHeight());
+	public Rectangle localToScreen(Rectangle rt) {
+		return localToScreen(rt.x, rt.y, rt.width, rt.height);
 	}
 
-	public Rectangle screenToLocal(Rectangle2D rt) {
-		return screenToLocal((int) rt.getX(), (int) rt.getY(),
-				(int) rt.getWidth(), (int) rt.getHeight());
+	public Rectangle screenToLocal(Rectangle rt) {
+		return screenToLocal(rt.x, rt.y, rt.width, rt.height);
 	}
 
 	/* 
@@ -609,9 +606,8 @@ public abstract class Item extends CallbackHandler {
 	public native void invalidate(int x, int y, int width, int height);
 	public native void update();
 
-	public final void invalidate(Rectangle2D rt) {
-		invalidate((int) rt.getX(), (int) rt.getY(),
-				(int) rt.getWidth(), (int) rt.getHeight());
+	public final void invalidate(Rectangle rt) {
+		invalidate(rt.x, rt.y, rt.width, rt.height);
 	}
 
 	public native int getFont();
@@ -639,8 +635,8 @@ public abstract class Item extends CallbackHandler {
 	public native void showToolTip(int x, int y);
 	public native void hideToolTip();
 
-	public final void showToolTip(Point2D point) {
-		showToolTip((int) point.getX(), (int) point.getY());
+	public final void showToolTip(Point pt) {
+		showToolTip(pt.x, pt.y);
 	}
 
 	public String getToolTip() {
@@ -674,20 +670,23 @@ public abstract class Item extends CallbackHandler {
 		}
 
 		public Dimension getMaximumSize() {
-			return Item.this.getMaximumSize();
+			Size size = Item.this.getMaximumSize();
+			return new Dimension(size.width, size.height);
 		}
 
 		public Dimension getMinimumSize() {
-			return Item.this.getMinimumSize();
+			Size size = Item.this.getMinimumSize();
+			return new Dimension(size.width, size.height);
 		}
 
 		public Dimension getPreferredSize() {
-			return Item.this.getPreferredSize();
+			Size size = Item.this.getPreferredSize();
+			return new Dimension(size.width, size.height);
 		}
 
 		public void setBounds(int x, int y, int width, int height) {
 			super.setBounds(x, y, width, height);
-			Point origin = getOrigin();
+			java.awt.Point origin = getOrigin();
 			Item.this.setBounds(x + origin.x, y + origin.y, width, height);
 		}
 
@@ -695,14 +694,14 @@ public abstract class Item extends CallbackHandler {
 			setBounds(r.x, r.y, r.width, r.height);
 		}
 
-		protected Point getOrigin() {
-			Point delta = new Point();
+		protected java.awt.Point getOrigin() {
+			java.awt.Point delta = new java.awt.Point();
 			Container parent = getParent();
 			while (true) {
 				Container next = parent.getParent();
 				if (next == null)
 					break;
-				Point loc = parent.getLocation();
+				java.awt.Point loc = parent.getLocation();
 				delta.x += loc.x;
 				delta.y += loc.y;
 				parent = next;
@@ -712,7 +711,8 @@ public abstract class Item extends CallbackHandler {
 
 		public void setSize(int width, int height) {
 			super.setSize(width, height);
-			Item.this.setBounds(getBounds());
+			java.awt.Rectangle rect = getBounds();
+			Item.this.setBounds(rect.x, rect.y, rect.width, rect.height);
 		}
 
 		public void setSize(Dimension d) {
@@ -721,8 +721,8 @@ public abstract class Item extends CallbackHandler {
 
 		public void setLocation(int x, int y) {
 			super.setLocation(x, y);
-			Point origin = getOrigin();
-			Item.this.setLocation(x + origin.x, y + origin.y);
+			java.awt.Point origin = getOrigin();
+			Item.this.setPosition(x + origin.x, y + origin.y);
 		}
 
 		public void setLocation(Point p) {

@@ -31,9 +31,6 @@
 
 package com.scriptographer.ai;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-
 /**
  * @author lehni
  */
@@ -80,9 +77,9 @@ public class PatternColor extends Color {
 	}
 	
 	public PatternColor(Pattern pattern, float shiftDistance, float shiftAngle,
-			Point2D scaleFactor, float rotationAngle, boolean reflect,
+			Point scaleFactor, float rotationAngle, boolean reflect,
 			float reflectAngle, float shearAngle, float shearAxis,
-			AffineTransform matrix) {
+			Matrix matrix) {
 		// use the above constructor, but copy origin and matrix
 		// let's not care about the call to wrapHandle above,
 		// as this is not used often
@@ -122,7 +119,7 @@ public class PatternColor extends Color {
 		return matrix;
 	}
 
-	public void setMatrix(AffineTransform matrix) {
+	public void setMatrix(Matrix matrix) {
 		this.matrix = new Matrix(matrix);
 	}
 
@@ -162,7 +159,7 @@ public class PatternColor extends Color {
 		return scaleFactor;
 	}
 
-	public void setScaleFactor(Point2D scaleFactor) {
+	public void setScaleFactor(Point scaleFactor) {
 		this.scaleFactor = new Point(scaleFactor);
 	}
 

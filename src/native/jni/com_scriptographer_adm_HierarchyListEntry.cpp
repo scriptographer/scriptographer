@@ -50,7 +50,7 @@ void ASAPI HierarchyListEntry_onDestroy(ADMListEntryRef entry) {
 			// call onDestry on the entry object
 			gEngine->callOnDestroy(obj);
 			// clear the handle
-			gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
+			gEngine->setIntField(env, obj, gEngine->fid_adm_NativeObject_handle, 0);
 			env->DeleteGlobalRef(obj);
 			// if the object is the last of its parent list, remove the parent as well. do like that so that
 			// all the itmes destory proc get called before the parent's!

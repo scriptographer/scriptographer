@@ -32,7 +32,6 @@
 package com.scriptographer.adm;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 
 /**
  * ItemContainer acts as container of ADM Items that share a layout and can be
@@ -94,8 +93,8 @@ public class ItemContainer {
 		container.setSize(d);
 	}
 
-	public void setSize(Point2D size) {
-		setSize((int) size.getX(), (int) size.getY());
+	public void setSize(Point size) {
+		setSize(size.x, size.y);
 	}
 
 	public Dimension getSize() {
@@ -153,7 +152,7 @@ public class ItemContainer {
 		public void setBounds(int x, int y, int width, int height) {
 			super.setBounds(x, y, width, height);
 			if (frame != null) {
-				Point origin = getOrigin();
+				java.awt.Point origin = getOrigin();
 				frame.setBounds(x + origin.x, y + origin.y, width, height);
 			}
 		}
@@ -162,14 +161,14 @@ public class ItemContainer {
 			setBounds(r.x, r.y, r.width, r.height);
 		}
 
-		protected Point getOrigin() {
-			Point delta = new Point();
+		protected java.awt.Point getOrigin() {
+			java.awt.Point delta = new java.awt.Point();
 			Container parent = getParent();
 			while (true) {
 				Container next = parent.getParent();
 				if (next == null)
 					break;
-				Point loc = parent.getLocation();
+				java.awt.Point loc = parent.getLocation();
 				delta.x += loc.x;
 				delta.y += loc.y;
 				parent = next;
@@ -180,9 +179,8 @@ public class ItemContainer {
 		public void setSize(int width, int height) {
 			super.setSize(width, height);
 			if (frame != null) {
-				Rectangle bounds = getBounds();
-				bounds.setSize(width, height);
-				frame.setBounds(bounds);
+				java.awt.Point loc = getLocation();
+				frame.setBounds(loc.x, loc.y, width, height);
 			}
 		}
 
@@ -193,8 +191,8 @@ public class ItemContainer {
 		public void setLocation(int x, int y) {
 			super.setLocation(x, y);
 			if (frame != null) {
-				Point origin = getOrigin();
-				frame.setLocation(x + origin.x, y + origin.y);
+				java.awt.Point origin = getOrigin();
+				frame.setPosition(x + origin.x, y + origin.y);
 			}
 		}
 

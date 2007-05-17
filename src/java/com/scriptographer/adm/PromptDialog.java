@@ -58,7 +58,7 @@ public class PromptDialog extends ModalDialog {
 		
 		TableLayout layout = new TableLayout(columns, rows, 4, 4);
 		this.setLayout(layout);
-		this.setInsets(4, 4, 4, 4);
+		this.setMargins(4, 4, 4, 4);
 		
 		for (int i = 0; i < items.length; i++) {
 			PromptItem promptItem = items[i];
@@ -67,7 +67,7 @@ public class PromptDialog extends ModalDialog {
 					Static descItem = new Static(this);
 					descItem.setFont(Dialog.FONT_PALETTE);
 					descItem.setText(promptItem.description + ":");
-					descItem.setInsets(0, 2, 0, 0);
+					descItem.setMargins(0, 2, 0, 0);
 					this.addToLayout(descItem, "0, " + i);
 				}
 				
@@ -83,7 +83,7 @@ public class PromptDialog extends ModalDialog {
 		Button cancelButton = new Button(this);
 		cancelButton.setFont(Dialog.FONT_PALETTE);
 		cancelButton.setText("Cancel");
-		cancelButton.setInsets(0, 0, 4, 0);
+		cancelButton.setMargins(0, 0, 4, 0);
 		buttons.add(cancelButton);
 		
 		Button okButton = new Button(this);

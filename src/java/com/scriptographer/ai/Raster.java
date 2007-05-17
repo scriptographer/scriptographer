@@ -31,10 +31,8 @@
 
 package com.scriptographer.ai;
 
-import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Transparency;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
@@ -44,6 +42,11 @@ import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.awt.color.ColorSpace;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import com.scratchdisk.util.NetUtils;
+import com.scriptographer.adm.Size;
 
 /**
  * @author lehni
@@ -51,7 +54,7 @@ import java.io.File;
 public class Raster extends Art {
 
 	// native pointer to an attached data struct:
-	private int rasterData = 0;
+	private int data = 0;
 
 	protected Raster(int handle) {
 		super(handle);
@@ -70,79 +73,116 @@ public class Raster extends Art {
 		super(TYPE_RASTER);
 		nativeConvert(type, width, height);
 	}
-	
+
+	/**
+	 * An empty Raster image of the given color type
+	 * @param type Color.TYPE_*
+	 */
 	public Raster(short type) {
 		this(type, -1, -1);
 	}
-	
-	public Raster(java.awt.Image image) {
+
+	/**
+	 * Creeates a raster item from an AWT image.
+	 * @param image the AWT image to be converted to a raster item.
+	 */
+	public Raster(Image image) {
 		this(getCompatibleType(image), image.getWidth(null),
 				image.getHeight(null));
 		drawImage(image, 0, 0);
 	}
-	
+
+	/**
+	 * Creeates a raster item from an ADM image.
+	 * @param image the ADM image to be converted to a raster item.
+	 */
 	public Raster(com.scriptographer.adm.Image image) {
 		// TODO: handle this case directly, without converting back and from
-		// a java BufferedImage, through native code!
+		// a java BufferedImage, through native code?
 		this(image.getImage());
 	}
 
+	/**
+	 * Creates an empty raster item.
+	 */
 	public Raster() {
 		this((short) -1, -1, -1);
 	}
 
-	native private static int nativeCreate(File file);
-	
+	/**
+	 * Creates a raster item from a local image file.
+	 * @param file the image file to be loaded.
+	 */
 	public Raster(File file) {
-		super(nativeCreate(file));
+		this(file, false);
 	}
-	
-	public native Matrix getMatrix();
-	
-	public native void setMatrix(AffineTransform at);
 
-	public native Dimension getSize();
-	
+	/**
+	 * Creates a raster image from an URL.
+	 * This blocks until the image is loaded or an error occured.
+	 * @param url the URL of the image to load.
+	 * @throws IOException
+	 */
+	public Raster(URL url) throws IOException {
+		// this(NetUtils.loadImage(url));
+		// Immediatelly delete the downloaded file afterwards
+		this(NetUtils.loadFile(url), true);
+	}
+
+	native private static int nativeCreate(File file);
+
+	private Raster(File file, boolean deleteFile) {
+		super(nativeCreate(file));
+		if (deleteFile)
+			file.delete();
+	}
+
+	public native Matrix getMatrix();
+
+	public native void setMatrix(Matrix matrix);
+
+	public native Size getSize();
+
 	public void setSize(int width, int height) {
 		// changing the size creates a new art handle internally
 		handle = nativeConvert((short) -1, width, height);
 	}
 
-	public void setSize(Dimension size) {
+	public void setSize(Size size) {
 		setSize(size.width, size.height);
 	}
 
-	public void setSize(Point2D size) {
-		setSize((int) size.getX(), (int) size.getY());
+	public void setSize(Point size) {
+		setSize((int) size.x, (int) size.y);
 	}
-	
+
 	public int getWidth() {
 		return getSize().width;
 	}
-	
+
 	public int getHeight() {
 		return getSize().height;
 	}
-	
+
 	public native short getType();
-	
+
 	public void setType(short type) {
 		// changing the type creates a new art handle internally
 		handle = nativeConvert(type, -1, -1);
 	}
 
 	public native Color getPixel(int x, int y);
-	
+
 	public native void setPixel(int x, int y, Color color);
-	
-	public Color getPixel(Point2D pt) {
-		return getPixel((int) pt.getX(), (int) pt.getY());
+
+	public Color getPixel(Point point) {
+		return getPixel((int) point.x, (int) point.y);
 	}
-	
-	public void setPixel(Point2D pt, Color color) {
-		setPixel((int) pt.getX(), (int) pt.getY(), color);
+
+	public void setPixel(Point point, Color color) {
+		setPixel((int) point.x, (int) point.y, color);
 	}
-	
+
 	public ColorModel getColorModel() {
 		int type = getType();
 		ColorModel cm = null;
@@ -197,7 +237,7 @@ public class Raster extends Art {
 		return cm;
 	}
 	
-	public static short getCompatibleType(java.awt.Image image) {
+	public static short getCompatibleType(Image image) {
 		if (image instanceof BufferedImage) {
 			ColorModel cm = ((BufferedImage) image).getColorModel();
 			int type = cm.getColorSpace().getType();
@@ -221,7 +261,7 @@ public class Raster extends Art {
 	
 	public BufferedImage getSubImage(int x, int y, int width, int height) {
 		if (width == -1 || height == -1) {
-			Dimension size = getSize();
+			Size size = getSize();
 			if (width == -1)
 				width = size.width;
 			if (height == -1)
@@ -238,7 +278,7 @@ public class Raster extends Art {
 		return getSubImage(0, 0, -1, -1);
 	}
 	
-	public void drawImage(java.awt.Image image, int x, int y) {
+	public void drawImage(Image image, int x, int y) {
 		BufferedImage buf;
 		// if image is already a compatible BufferedImage, use it. Otherwise create
 		// a new one:
@@ -257,7 +297,7 @@ public class Raster extends Art {
 				buf.getHeight());
 	}
 	
-	public void setImage(java.awt.Image image) {
+	public void setImage(Image image) {
 		setSize(image.getWidth(null), image.getHeight(null));
 		drawImage(image, 0, 0);
 	}

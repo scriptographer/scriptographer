@@ -31,7 +31,6 @@
 
 package com.scriptographer.adm;
 
-import java.awt.Insets;
 import java.io.IOException;
 
 /**
@@ -75,7 +74,7 @@ public class ImageRadioButton extends RadioButton {
 		super.setDisabledImage(obj);
 	}
 
-	protected Insets getButtonInsets() {
+	protected Margins getButtonMargins() {
 		return INSETS_IMAGE;
 	}
 }

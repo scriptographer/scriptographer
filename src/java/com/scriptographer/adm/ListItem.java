@@ -31,9 +31,6 @@
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.*;
 import java.io.IOException;
 
 import com.scriptographer.ScriptographerEngine; 
@@ -256,14 +253,14 @@ public abstract class ListItem extends Item implements SimpleList {
 	 */
 	
 	public native void setEntrySize(int width, int height);
-	public native Dimension getEntrySize();
+	public native Size getEntrySize();
 	
-	public void setEntrySize(Dimension size) {
+	public void setEntrySize(Size size) {
 		setEntrySize(size.width, size.height);
 	}
 
-	public void setEntrySize(Point2D size) {
-		setEntrySize((int)size.getX(), (int)size.getY());
+	public void setEntrySize(Point size) {
+		setEntrySize(size.x, (int)size.y);
 	}
 	
 	public void setEntrySize(int[] size) {
@@ -273,9 +270,8 @@ public abstract class ListItem extends Item implements SimpleList {
 	public native void setEntryTextRect(int x, int y, int width, int height);
 	public native Rectangle getEntryTextRect();
 	
-	public void setEntryTextRect(Rectangle2D rect) {
-		setEntryTextRect((int)rect.getX(), (int)rect.getY(),
-				(int)rect.getWidth(), (int)rect.getHeight());
+	public void setEntryTextRect(Rectangle rect) {
+		setEntryTextRect(rect.x, rect.y, rect.width, rect.height);
 	}
 	
 	public void setEntryTextRect(int[] rect) {
@@ -326,8 +322,8 @@ public abstract class ListItem extends Item implements SimpleList {
 	public native ListEntry get(String text);
 	public native ListEntry getAt(int x, int y);
 	
-	public void getAt(Point2D point) {
-		getAt((int)point.getX(), (int)point.getY());
+	public void getAt(Point point) {
+		getAt(point.x, point.y);
 	}
 
 	public native ListEntry getActiveEntry();

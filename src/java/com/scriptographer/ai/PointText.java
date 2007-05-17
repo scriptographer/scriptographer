@@ -31,8 +31,6 @@
 
 package com.scriptographer.ai;
 
-import java.awt.geom.Point2D;
-
 /**
  * @author lehni
  */
@@ -50,11 +48,11 @@ public class PointText extends TextFrame {
 	 * @param point the point where the text will begin
 	 * @param orient the text orientation, TextFrame.ORIENTATION_*
 	 */
-	public PointText(Point2D point, short orient) {
-		this(nativeCreate(orient, (float) point.getX(), (float) point.getY()));
+	public PointText(Point point, short orient) {
+		this(nativeCreate(orient, point.x, point.y));
 	}
 
-	public PointText(Point2D point) {
+	public PointText(Point point) {
 		this(point, ORIENTATION_HORIZONTAL);
 	}
 

@@ -37,7 +37,7 @@ package com.scriptographer.ai;
  * 
  * @author lehni
  */
-public class Swatch extends AIWrapper {
+public class Swatch extends NativeWrapper {
 	
 	protected Swatch(int handle) {
 		super(handle);

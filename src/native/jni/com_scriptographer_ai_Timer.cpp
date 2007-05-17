@@ -82,7 +82,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Timer_nativeGetTimers(JNIEn
 					!sAITimer->GetTimerPlugin(timer, &timerPlugin) &&
 					plugin == timerPlugin) {
 					// create the wrapper
-					jobject timerObj = gEngine->newObject(env, gEngine->cls_Timer, gEngine->cid_Timer, (jint) timer);
+					jobject timerObj = gEngine->newObject(env, gEngine->cls_ai_Timer, gEngine->cid_ai_Timer, (jint) timer);
 					// and add it to the array
 					gEngine->callObjectMethod(env, array, gEngine->mid_Collection_add, timerObj);
 				}

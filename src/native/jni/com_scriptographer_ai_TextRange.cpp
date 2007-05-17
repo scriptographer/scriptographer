@@ -131,7 +131,7 @@ public:
 
 	jobjectArray getOrigins(JNIEnv *env) {
 		int count = m_end - m_start, index = 0;
-		jobjectArray array = env->NewObjectArray(count, gEngine->cls_Point, NULL);
+		jobjectArray array = env->NewObjectArray(count, gEngine->cls_ai_Point, NULL);
 		for (int i = 0; i < m_runs.size(); i++) {
 			GlyphRun *run = get(i);
 			ASRealPoint *origins = run->getOrigins();
@@ -147,7 +147,7 @@ public:
 
 	jobjectArray getTransformations(JNIEnv *env) {
 		int count = m_end - m_start, index = 0;
-		jobjectArray array = env->NewObjectArray(count, gEngine->cls_Matrix, NULL);
+		jobjectArray array = env->NewObjectArray(count, gEngine->cls_ai_Matrix, NULL);
 		for (int i = 0; i < m_runs.size(); i++) {
 			GlyphRun *run = get(i);
 			ASRealPoint *origins = run->getOrigins();
@@ -210,7 +210,7 @@ public:
 	}
 
 	static GlyphRuns *get(JNIEnv *env, jobject obj, TextRangeRef rangeRef) {
-		GlyphRuns *glyphRuns = (GlyphRuns *) gEngine->getIntField(env, obj, gEngine->fid_TextRange_glyphRuns);
+		GlyphRuns *glyphRuns = (GlyphRuns *) gEngine->getIntField(env, obj, gEngine->fid_ai_TextRange_glyphRuns);
 		// Use the cached result from last glyphRuns search:
 		if (glyphRuns != NULL)
 			return glyphRuns;
@@ -247,7 +247,7 @@ public:
 						runs.Next();
 						while (runs.IsNotDone() && glyphRuns->add(runs.Item()))
 							runs.Next();
-						gEngine->setIntField(env, obj, gEngine->fid_TextRange_glyphRuns, (jint) glyphRuns);
+						gEngine->setIntField(env, obj, gEngine->fid_ai_TextRange_glyphRuns, (jint) glyphRuns);
 						// gEngine->println(env, "%i", gEngine->getNanoTime() - t);
 						// increase ref counter for returned IGlyphRun
 						return glyphRuns;
@@ -262,10 +262,10 @@ public:
 	}
 	
 	static void release(JNIEnv *env, jobject obj) {
-		GlyphRuns * glyphRuns = (GlyphRuns *) gEngine->getIntField(env, obj, gEngine->fid_TextRange_glyphRuns);
+		GlyphRuns * glyphRuns = (GlyphRuns *) gEngine->getIntField(env, obj, gEngine->fid_ai_TextRange_glyphRuns);
 		if (glyphRuns != NULL) {
 			delete glyphRuns;
-			gEngine->setIntField(env, obj, gEngine->fid_TextRange_glyphRuns, 0);	
+			gEngine->setIntField(env, obj, gEngine->fid_ai_TextRange_glyphRuns, 0);	
 		}
 	}
 };
@@ -657,10 +657,10 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getCharacterType(JNI
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_release(JNIEnv *env, jobject obj) {
 	try {
 		GlyphRuns::release(env, obj);
-		TextRangeRef range = (TextRangeRef) gEngine->getIntField(env, obj, gEngine->fid_AIObject_handle);
+		TextRangeRef range = (TextRangeRef) gEngine->getIntField(env, obj, gEngine->fid_ai_NativeObject_handle);
 		if (range != NULL) {
 			sTextRange->Release(range);
-			gEngine->setIntField(env, obj, gEngine->fid_AIObject_handle, 0);
+			gEngine->setIntField(env, obj, gEngine->fid_ai_NativeObject_handle, 0);
 		}
 	} EXCEPTION_CONVERT(env);
 }
@@ -670,7 +670,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_release(JNIEnv *env,
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextRange_equals(JNIEnv *env, jobject obj, jobject range) {
 	try {
-		if (env->IsInstanceOf(range, gEngine->cls_TextRange)) {
+		if (env->IsInstanceOf(range, gEngine->cls_ai_TextRange)) {
 			TextRangeRef range1 = gEngine->getTextRangeRef(env, obj);
 			TextRangeRef range2 = gEngine->getTextRangeRef(env, range);
 			if (range2 != NULL) {

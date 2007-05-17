@@ -31,9 +31,6 @@
 
 package com.scriptographer.ai;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-
 /**
  * @author lehni
  */
@@ -60,8 +57,8 @@ public class GradientColor extends Color {
 		this.hiliteLength = hiliteLength;
 	}
 	
-	public GradientColor(Gradient gradient, Point2D origin, float angle,
-			float length, AffineTransform matrix, float hiliteAngle,
+	public GradientColor(Gradient gradient, Point origin, float angle,
+			float length, Matrix matrix, float hiliteAngle,
 			float hiliteLength) {
 		// use the above constructor, but copy origin and matrix
 		// let's not care about the call to wrapHandle above,
@@ -140,7 +137,7 @@ public class GradientColor extends Color {
 		return matrix;
 	}
 
-	public void setMatrix(AffineTransform matrix) {
+	public void setMatrix(Matrix matrix) {
 		this.matrix = new Matrix(matrix);
 	}
 
@@ -148,7 +145,7 @@ public class GradientColor extends Color {
 		return origin;
 	}
 
-	public void setOrigin(Point2D origin) {
+	public void setOrigin(Point origin) {
 		this.origin = new Point(origin);
 	}
 }

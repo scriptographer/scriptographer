@@ -37,7 +37,7 @@ import com.scratchdisk.util.ReadOnlyList;
 /**
  * @author lehni
  */
-class TextStoryList extends AIObject implements ReadOnlyList {
+class TextStoryList extends NativeObject implements ReadOnlyList {
 	ExtendedArrayList.List list;
 	Document document;
 	

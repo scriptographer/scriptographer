@@ -48,7 +48,7 @@ ASBoolean Pathfinder_begin(JNIEnv *env, jobjectArray artObjects, jfloat precisio
 	bool first = true;
 	for (i = 0; i < length; i++) {
 		jobject obj = env->GetObjectArrayElement(artObjects, i);
-		if (env->IsInstanceOf(obj, gEngine->cls_Art)) {
+		if (env->IsInstanceOf(obj, gEngine->cls_ai_Art)) {
 			// only activate document of the first object
 			// then ose IsValid to see if the others are valid (= in the same doc)
 			AIArtHandle art = gEngine->getArtHandle(env, obj, first);

@@ -33,7 +33,6 @@ package com.scriptographer.ai;
 
 import java.awt.Shape;
 import java.awt.geom.PathIterator;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import com.scratchdisk.util.ExtendedList;
@@ -338,19 +337,11 @@ public class Path extends Art {
 		getSegments().moveTo(pt);
 	}
 	
-	public void moveTo(Point2D pt) {
-		getSegments().moveTo(pt);
-	}
-	
 	public void lineTo(float x, float y) {
 		getSegments().lineTo(x, y);
 	}
 	
 	public void lineTo(Point pt) {
-		getSegments().lineTo(pt);
-	}
-	
-	public void lineTo(Point2D pt) {
 		getSegments().lineTo(pt);
 	}
 	
@@ -363,19 +354,12 @@ public class Path extends Art {
 		getSegments().curveTo(c1, c2, pt);
 	}
 	
-	public void curveTo(Point2D c1, Point2D c2, Point2D pt) {
-		getSegments().curveTo(c1, c2, pt);
-	}
-	
 	public void quadTo(float cx, float cy, float x, float y) {
 		getSegments().quadTo(cx, cy, x, y);
 	}
 	
+	// TODO: remove?
 	public void quadTo(Point c, Point pt) {
-		getSegments().quadTo(c, pt);
-	}
-	
-	public void quadTo(Point2D c, Point2D pt) {
 		getSegments().quadTo(c, pt);
 	}
 
@@ -385,10 +369,6 @@ public class Path extends Art {
 	}
 
 	public void arcTo(Point center, Point endPoint, int ccw) {
-		getSegments().arcTo(center, endPoint, ccw);
-	}
-
-	public void arcTo(Point2D center, Point2D endPoint, int ccw) {
 		getSegments().arcTo(center, endPoint, ccw);
 	}
 		

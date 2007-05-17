@@ -67,7 +67,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeGetAnnotato
 				!sAIAnnotator->GetAnnotatorPlugin(annotator, &annotatorPlugin) &&
 				plugin == annotatorPlugin) {
 				// create the wrapper
-				jobject annotatorObj = gEngine->newObject(env, gEngine->cls_Annotator, gEngine->cid_Annotator, (jint) annotator);
+				jobject annotatorObj = gEngine->newObject(env, gEngine->cls_ai_Annotator, gEngine->cid_ai_Annotator, (jint) annotator);
 				// and add it to the array
 				gEngine->callObjectMethod(env, array, gEngine->mid_Collection_add, annotatorObj);
 			}
@@ -112,7 +112,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeCreateDrawe
 		// must be actually the same thing...
 	
 		ADMDrawerRef drawer = sADMDrawer->Create((ADMPortRef) portHandle, &rect, kADMDefaultFont, false);
-		return gEngine->newObject(env, gEngine->cls_Drawer, gEngine->cid_Drawer, (jint) drawer);
+		return gEngine->newObject(env, gEngine->cls_adm_Drawer, gEngine->cid_adm_Drawer, (jint) drawer);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

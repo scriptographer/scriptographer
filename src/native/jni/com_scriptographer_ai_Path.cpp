@@ -133,9 +133,9 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Path_getTabletData(JNI
 			sAITabletData->GetTabletData(handle, &profiles, &count, kTabletPressure);
 			
 			// create an array with the tabletProfiles:
-			jobjectArray array = env->NewObjectArray(count, gEngine->cls_TabletValue, NULL); 
+			jobjectArray array = env->NewObjectArray(count, gEngine->cls_ai_TabletValue, NULL); 
 			for (int i = 0; i < count; i++) {
-				jobject value = env->NewObject(gEngine->cls_TabletValue, gEngine->cid_TabletValue, (jfloat) profiles[i].offset, (jfloat) profiles[i].value);
+				jobject value = env->NewObject(gEngine->cls_ai_TabletValue, gEngine->cid_ai_TabletValue, (jfloat) profiles[i].offset, (jfloat) profiles[i].value);
 				env->SetObjectArrayElement(array, i, value); 
 			}
 			delete profiles;
@@ -159,8 +159,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setTabletData(JNIEnv *env
 			for (int i = 0; i < count; i++) {
 				jobject obj = env->GetObjectArrayElement(data, i);
 				AITabletProfile *profile = &profiles[i];
-				profile->offset = env->GetFloatField(obj, gEngine->fid_TabletValue_offset);
-				profile->value = env->GetFloatField(obj, gEngine->fid_TabletValue_value);
+				profile->offset = env->GetFloatField(obj, gEngine->fid_ai_TabletValue_offset);
+				profile->value = env->GetFloatField(obj, gEngine->fid_ai_TabletValue_value);
 			}
 			// Now set the new values:
 			// At least on CS2, setting the size to 0 first seems to be necessary, when

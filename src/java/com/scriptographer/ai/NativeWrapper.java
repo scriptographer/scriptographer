@@ -26,7 +26,7 @@
  * 
  * File created on Oct 18, 2006.
  * 
- * $Id$
+ * $Id: AIWrapper.java 294 2007-04-15 19:20:29Z lehni $
  */
 
 package com.scriptographer.ai;
@@ -39,15 +39,15 @@ import com.scratchdisk.util.SoftIntMap;
 /**
  * @author lehni
  */
-abstract class AIWrapper extends AIObject {
+abstract class NativeWrapper extends NativeObject {
 
 	protected Document document = null;
 
-	protected AIWrapper(int handle) {
+	protected NativeWrapper(int handle) {
 		this.handle = handle;
 	}
 
-	protected static AIWrapper wrapHandle(Class cls, int handle,
+	protected static NativeWrapper wrapHandle(Class cls, int handle,
 			Document document, boolean useDocument) {
 		if (handle == 0)
 			return null;
@@ -103,15 +103,15 @@ abstract class AIWrapper extends AIObject {
 			}
 		}
 
-		AIWrapper wrapHandle(int handle, Document document, boolean useDocument) {
+		NativeWrapper wrapHandle(int handle, Document document, boolean useDocument) {
 			if (handle == 0)
 				return null;
-			AIWrapper wrapper = (AIWrapper) wrappers.get(handle);
+			NativeWrapper wrapper = (NativeWrapper) wrappers.get(handle);
 			if (wrapper == null) {
 				try {
 					// now create a new instance, passing the handle as a
 					// parameter
-					wrapper = (AIWrapper) ctor
+					wrapper = (NativeWrapper) ctor
 							.newInstance(new Object[] { new Integer(handle) });
 					// store reference to the object's document
 					if (useDocument)

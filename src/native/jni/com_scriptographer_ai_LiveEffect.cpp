@@ -162,7 +162,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeGetEffects
 				jint type = styleFilterFlags & kFilterTypeMask;
 				jint flags = styleFilterFlags & ~kFilterTypeMask;
 				// create the wrapper
-				jobject effectObj = gEngine->newObject(env, gEngine->cls_LiveEffect, gEngine->cid_LiveEffect,
+				jobject effectObj = gEngine->newObject(env, gEngine->cls_ai_LiveEffect, gEngine->cid_ai_LiveEffect,
 						(jint) effect, gEngine->convertString(env, realname), gEngine->convertString(env, title),
 						(jint) inputPreference, type, flags, (jint) major, (jint) minor);
 				// and add it to the array

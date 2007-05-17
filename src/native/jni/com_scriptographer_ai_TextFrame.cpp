@@ -228,7 +228,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOpticalAlignment(
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_equals(JNIEnv *env, jobject obj, jobject text) {
 	try {
 		ATEBool8 ret = false;
-		if (env->IsInstanceOf(text, gEngine->cls_TextFrame)) {
+		if (env->IsInstanceOf(text, gEngine->cls_ai_TextFrame)) {
 			TextFrameRef frame1 = gEngine->getTextFrameRef(env, obj);
 			TextFrameRef frame2 = gEngine->getTextFrameRef(env, text);
 			if (frame2 != NULL) {

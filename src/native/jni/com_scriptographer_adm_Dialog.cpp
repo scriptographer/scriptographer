@@ -72,7 +72,7 @@ ADMBoolean ADMAPI Dialog_onInitialize(ADMDialogRef dialog, ADMTimerRef timerID) 
 	JNIEnv *env = gEngine->getEnv();
 	try {
 		jobject obj = gEngine->getDialogObject(dialog);
-		gEngine->callVoidMethodReport(env, obj, gEngine->mid_NotificationHandler_onNotify_int,
+		gEngine->callVoidMethodReport(env, obj, gEngine->mid_adm_NotificationHandler_onNotify_int,
 									  (jint) com_scriptographer_adm_Notifier_NOTIFIER_WINDOW_INITIALIZE);
 	} EXCEPTION_CATCH_REPORT(env);
 	return true;
@@ -85,7 +85,7 @@ void ASAPI Dialog_onDestroy(ADMDialogRef dialog) {
 			jobject obj = gEngine->getDialogObject(dialog);
 			gEngine->callOnDestroy(obj);
 			// clear the handle:
-			gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
+			gEngine->setIntField(env, obj, gEngine->fid_adm_NativeObject_handle, 0);
 			env->DeleteGlobalRef(obj);
 		} EXCEPTION_CATCH_REPORT(env);
 	}
@@ -100,7 +100,7 @@ void ASAPI Dialog_onSizeChanged(ADMItemRef item, ADMNotifierRef notifier) {
 			jobject obj = gEngine->getDialogObject(dialog);
 			ADMRect size;
 			sADMDialog->GetLocalRect(dialog, &size);
-			gEngine->callVoidMethod(env, obj, gEngine->mid_Dialog_onSizeChanged, size.right, size.bottom);
+			gEngine->callVoidMethod(env, obj, gEngine->mid_adm_Dialog_onSizeChanged, size.right, size.bottom);
 		} EXCEPTION_CATCH_REPORT(env);
 	}
 }
@@ -196,14 +196,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetDrawCallback(
 }
 
 /*
- * java.awt.Dimension nativeGetSize()
+ * com.scriptographer.adm.Size nativeGetSize()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetSize(JNIEnv *env, jobject obj) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		ADMRect size;
 		sADMDialog->GetLocalRect(dialog, &size);
-		return gEngine->convertDimension(env, size.right, size.bottom);
+		return gEngine->convertSize(env, size.right, size.bottom);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -243,9 +243,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetBounds(JNIEnv
 }
 
 /*
- * java.awt.Point getLocation()
+ * com.scriptographer.adm.Point getPosition()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_getLocation(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_getPosition(JNIEnv *env, jobject obj) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		ADMRect rect;
@@ -256,9 +256,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_getLocation(JNIEnv 
 }
 
 /*
- * void setLocation(int x, int y)
+ * void setPosition(int x, int y)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setLocation(JNIEnv *env, jobject obj, jint x, jint y) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setPosition(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		sADMDialog->Move(dialog, x, y);
@@ -266,7 +266,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setLocation(JNIEnv *en
 }
 
 /*
- * java.awt.Dimension nativeGetMinimumSize()
+ * com.scriptographer.adm.Size nativeGetMinimumSize()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetMinimumSize(JNIEnv *env, jobject obj) {
 	try {
@@ -274,7 +274,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetMinimumSiz
 		ADMPoint pt;
 		pt.h = sADMDialog->GetMinWidth(dialog);
 		pt.v = sADMDialog->GetMinHeight(dialog);
-		return gEngine->convertDimension(env, &pt);
+		return gEngine->convertSize(env, &pt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -291,13 +291,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetMinimumSize(J
 }
 
 /*
- * java.awt.Dimension nativeGetMaximumSize()
+ * com.scriptographer.adm.Size nativeGetMaximumSize()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetMaximumSize(JNIEnv *env, jobject obj) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		DEFINE_ADM_POINT(pt, sADMDialog->GetMaxWidth(dialog), sADMDialog->GetMaxHeight(dialog));
-		return gEngine->convertDimension(env, &pt);
+		return gEngine->convertSize(env, &pt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -314,7 +314,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetMaximumSize(J
 }
 
 /*
- * java.awt.Dimension getIncrement()
+ * com.scriptographer.adm.Size getIncrement()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_getIncrement(JNIEnv *env, jobject obj) {
 	try {
@@ -322,7 +322,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_getIncrement(JNIEnv
 		ADMPoint pt;
 		pt.h = sADMDialog->GetHorizontalIncrement(dialog);
 		pt.v = sADMDialog->GetVerticalIncrement(dialog);
-		return gEngine->convertDimension(env, &pt);
+		return gEngine->convertSize(env, &pt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -361,7 +361,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_getItemHandle(JNIEnv *
 }
 
 /*
- * java.awt.Point localToScreen(int x, int y)
+ * com.scriptographer.adm.Point localToScreen(int x, int y)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_localToScreen__II(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
@@ -374,7 +374,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_localToScreen__II(J
 }
 
 /*
- * java.awt.Point screenToLocal(int x, int y)
+ * com.scriptographer.adm.Point screenToLocal(int x, int y)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_screenToLocal__II(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
@@ -660,7 +660,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_getGroupInfo(JNIEnv
 		const char *group;
 		long positionCode;
 		sADMDialogGroup->GetDialogGroupInfo(dialog, &group, &positionCode);
-		return gEngine->newObject(env, gEngine->cls_DialogGroupInfo, gEngine->cid_DialogGroupInfo, env->NewStringUTF(group), (jint) positionCode);
+		return gEngine->newObject(env, gEngine->cls_adm_DialogGroupInfo, gEngine->cid_adm_DialogGroupInfo, env->NewStringUTF(group), (jint) positionCode);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -737,7 +737,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_chooseDirectory(JNI
 }
 
 /*
- * java.awt.Color chooseColor(java.awt.Point point, java.awt.Color color)
+ * java.awt.Color chooseColor(com.scriptographer.adm.Point point, java.awt.Color color)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_chooseColor(JNIEnv *env, jclass cls, jobject point, jobject color) {
 	try {

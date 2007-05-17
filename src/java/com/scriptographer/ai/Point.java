@@ -32,12 +32,10 @@
 package com.scriptographer.ai;
 
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.geom.AffineTransform;
+import java.util.Map;
 
-/*
- * Extend java.awt.geom.Point2D and adds other usefull functions
- */
+import com.scratchdisk.script.ScriptEngine;
+
 /**
  * The Point object represents a point in the two dimensional space of the
  * Illustrator document. Some functions also use it as a two dimensional vector
@@ -45,55 +43,57 @@ import java.awt.geom.AffineTransform;
  * 
  * @author lehni
  */
-public class Point extends java.awt.geom.Point2D.Float {
+public class Point {
+
+	protected float x;
+	protected float y;
+	
 	public Point() {
-	}
-
-	public Point(java.awt.Point p) {
-		super(p.x, p.y);
-	}
-
-	public Point(Point2D pt) {
-		super((float) pt.getX(), (float) pt.getY());
-	}
-
-	public Point(java.awt.Dimension d) {
-		super(d.width, d.height);
+		x = y = 0;
 	}
 
 	public Point(float x, float y) {
-		super(x, y);
-	}
-	
-	public Point(double x, double y) {
-		super((float) x, (float) y);
-	}
-
-	/*
-	 * called from native code:
-	 */
-	public void setLocation(float x, float y) {
 		this.x = x;
 		this.y = y;
 	}
-
-	public void setLocation(double x, double y) {
+	
+	public Point(double x, double y) {
 		this.x = (float) x;
 		this.y = (float) y;
 	}
 
-	public void setLocation(Point pt) {
-		this.x = pt.x;
-		this.y = pt.y;
+	public Point(Point pt) {
+		this(pt.x, pt.y);
 	}
 
-	public void setLocation(Point2D pt) {
-		this.x = (float) pt.getX();
-		this.y = (float) pt.getY();
+	public Point(Point2D p) {
+		this(p.getX(), p.getY());
+	}
+
+	public Point(java.awt.Dimension d) {
+		this(d.width, d.height);
+	}
+
+	public Point(Map map) {
+		this(ScriptEngine.getDouble(map, "x"),
+				ScriptEngine.getDouble(map, "y"));
+	}
+
+	public void set(float x, float y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	public float getX() {
+		return x;
 	}
 
 	public void setX(float x) {
 		this.x = x;
+	}
+
+	public float getY() {
+		return y;
 	}
 
 	public void setY(float y) {
@@ -112,12 +112,14 @@ public class Point extends java.awt.geom.Point2D.Float {
 	 * Returns a copy of the point. This is useful as the following code only
 	 * generates a flat copy:
 	 * 
-	 * <code>var point1 = new Point();
+	 * <pre>
+	 * var point1 = new Point();
 	 * var point2 = point1;
 	 * point2.x = 1; // also changes point1.x
 	 * 
 	 * var point2 = pt1.clone();
-	 * point2.x = 1; // doesn't change point1.x</code>
+	 * point2.x = 1; // doesn't change point1.x
+	 * </pre>
 	 * 
 	 * @return the cloned point
 	 */
@@ -129,20 +131,16 @@ public class Point extends java.awt.geom.Point2D.Float {
 	 * Returns the addition of the supplied point to the point object as a new
 	 * point. The object itself is not modified!
 	 * Sample code:
-	 * <code>
+	 * <pre>
 	 * var firstPoint = new Point(5,10);
 	 * var secondPoint = new Point(10,20);
 	 * var thirdPoint = firstPoint.add(secondPoint);
 	 * print(thirdPoint); // returns { x: 15.0, y: 30.0 }
-	 * </code>
+	 * </pre>
 	 * 
 	 * @param pt the point to add
 	 * @return the addition of the two points as a new point
 	 */
-	public Point add(Point2D pt) {
-		return new Point(x + pt.getX(), y + pt.getY());
-	}
-
 	public Point add(Point pt) {
 		return new Point(x + pt.x, y + pt.y);
 	}
@@ -151,11 +149,11 @@ public class Point extends java.awt.geom.Point2D.Float {
 	 * Returns the addition of the supplied x and y values to the point object
 	 * as a new point. The object itself is not modified!
 	 * Sample code:
-	 * <code>
+	 * <pre>
 	 * var firstPoint = new Point(5,10);
 	 * var secondPoint = firstPoint.add(10,20);
 	 * print(secondPoint); // returns { x: 15.0, y: 30.0 }
-	 * </code>
+	 * </pre>
 	 * 
 	 * @param x the x value to add
 	 * @param y the y value to add
@@ -165,28 +163,20 @@ public class Point extends java.awt.geom.Point2D.Float {
 		return new Point(this.x + x, this.y + y);
 	}
 
-	public Point add(double x, double y) {
-		return new Point(this.x + x, this.y + y);
-	}
-
 	/**
 	 * Returns the subtraction of the supplied point to the point object as a
 	 * new point. The object itself is not modified!
 	 * Sample code:
-	 * <code>
+	 * <pre>
 	 * var firstPoint = new Point(10,20);
 	 * var secondPoint = new Point(5,5);
 	 * var thirdPoint = firstPoint.subtract(secondPoint);
 	 * print(thirdPoint); // returns { x: 5.0, y: 15.0 }
-	 * </code>
+	 * </pre>
 	 * 
 	 * @param pt the point to subtract
 	 * @return the subtraction of the two points as a new point
 	 */
-	public Point subtract(Point2D pt) {
-		return new Point(x - pt.getX(), y - pt.getY());
-	}
-
 	public Point subtract(Point pt) {
 		return new Point(x - pt.x, y - pt.y);
 	}
@@ -195,11 +185,11 @@ public class Point extends java.awt.geom.Point2D.Float {
 	 * Returns the subtraction of the supplied x and y values to the point
 	 * object as a new point. The object itself is not modified!
 	 * Sample code:
-	 * <code>
+	 * <pre>
 	 * var firstPoint = new Point(10,20);
 	 * var secondPoint = firstPoint.subtract(5,5);
 	 * print(secondPoint); // returns { x: 5.0, y: 15.0 }
-	 * </code>
+	 * </pre>
 	 * 
 	 * @param x The x value to subtract
 	 * @param y The y value to subtract
@@ -209,28 +199,20 @@ public class Point extends java.awt.geom.Point2D.Float {
 		return new Point(this.x - x, this.y - y);
 	}
 
-	public Point subtract(double x, double y) {
-		return new Point(this.x - x, this.y - y);
-	}
-
 	/**
 	 * Returns the multiplication of the point object by the supplied point as a
 	 * new point. The object itself is not modified!
 	 * Sample code:
-	 * <code>
+	 * <pre>
 	 * var firstPoint = new Point(5,10);
 	 * var secondPoint = new Point(4,2);
 	 * var thirdPoint = firstPoint.multiply(secondPoint);
 	 * print(thirdPoint); // returns { x: 20.0, y: 20.0 }
-	 * </code>
+	 * </pre>
 	 * 
 	 * @param pt the point to multiply with
 	 * @return the multiplication of the two points as a new point
 	 */
-	public Point multiply(Point2D pt) {
-		return new Point(x * pt.getX(), y * pt.getY());
-	}
-
 	public Point multiply(Point pt) {
 		return new Point(x * pt.x, y * pt.y);
 	}
@@ -240,7 +222,7 @@ public class Point extends java.awt.geom.Point2D.Float {
 	 * values as a new point. When no y value is supplied, the point's x and y
 	 * values are multiplied by scale (x). The object itself is not modified!
 	 * Sample code:
-	 * <code>
+	 * <pre>
 	 * var firstPoint = new Point(5,10);
 	 * 
 	 * var secondPoint = firstPoint.multiply(4,2);
@@ -248,7 +230,7 @@ public class Point extends java.awt.geom.Point2D.Float {
 	 * 
 	 * var secondPoint = firstPoint.multiply(2);
 	 * print(secondPoint); // returns { x: 10.0, y: 20.0 }
-	 * </code>
+	 * </pre>
 	 * 
 	 * @param x the x (or scale) value to multiply with
 	 * @param y the y value to multiply with
@@ -258,15 +240,7 @@ public class Point extends java.awt.geom.Point2D.Float {
 		return new Point(this.x * x, this.y * y);
 	}
 
-	public Point multiply(double x, double y) {
-		return new Point(this.x * x, this.y * y);
-	}
-
 	public Point multiply(float scale) {
-		return new Point(x * scale, y * scale);
-	}
-
-	public Point multiply(double scale) {
 		return new Point(x * scale, y * scale);
 	}
 
@@ -282,22 +256,32 @@ public class Point extends java.awt.geom.Point2D.Float {
 		return distance(pt) < tolerance;
 	}
 	
-	public float getDistance(float px, float py) {
+	public float distance(float px, float py) {
 		px -= x;
 		py -= y;
 		return (float) Math.sqrt(px * px + py * py);
 	}
 
-	public float getDistance(Point2D pt) {
-		return getDistance((float) pt.getX(), (float) pt.getY());
+	public float distance(Point pt) {
+		return distance(pt.x, (float) pt.y);
 	}
 
-	public float getLength() {
+	public float distanceSquared(float px, float py) {
+		px -= x;
+		py -= y;
+		return px * px + py * py;
+	}
+
+	public float distanceSquared(Point pt) {
+		return distanceSquared(pt.x, (float) pt.y);
+	}
+
+	public float length() {
 		return (float) Math.sqrt(x * x + y * y);
 	}
 
-	public float getAngle(Point pt) {
-		float div = getLength() * pt.getLength();
+	public float angle(Point pt) {
+		float div = length() * pt.length();
 		if (div == 0) return 0;
 		else {
 			double v = (x * pt.y - y * pt.x) / div;
@@ -307,7 +291,7 @@ public class Point extends java.awt.geom.Point2D.Float {
 		}
 	}
 
-	public float getAngle() {
+	public float angle() {
 		if (x > 0) return (float) Math.atan(y / x);
 		else if (x < 0) {
 			if (y >= 0) return (float) (Math.atan(y / x) + Math.PI);
@@ -326,10 +310,10 @@ public class Point extends java.awt.geom.Point2D.Float {
 	 * @param t the position between the two points as a value between 0 and 1
 	 * @return the interpolation point
 	 */
-	public Point interpolate(Point2D pt, float t) {
+	public Point interpolate(Point pt, float t) {
 		return new Point(
-			x * (1f - t) + (float) pt.getX() * t,
-			y * (1f - t) + (float) pt.getY() * t
+			x * (1f - t) + pt.x * t,
+			y * (1f - t) + pt.y * t
 		);
 	}
 
@@ -340,12 +324,12 @@ public class Point extends java.awt.geom.Point2D.Float {
 	 * @return <code>true</code> if the point is inside the rectangle, false
 	 *         otherwise
 	 */
-	public boolean isInside(Rectangle2D rect) {
+	public boolean isInside(Rectangle rect) {
 		return rect.contains(this);
 	}
 
 	public Point normalize(float length) {
-		float len = getLength();
+		float len = length();
 		if (len != 0) {
 			float scale = length / len;
 			return new Point(x * scale, y * scale);
@@ -387,8 +371,8 @@ public class Point extends java.awt.geom.Point2D.Float {
 	 * @return    the dot product of the two points
 	 */
 
-	public float dotProduct(Point2D pt) {
-		return x * (float) pt.getX() + y * (float) pt.getY();
+	public float dot(Point pt) {
+		return x * pt.x + y * pt.y;
 	}
 
 	/**
@@ -402,7 +386,7 @@ public class Point extends java.awt.geom.Point2D.Float {
 		if (pt.x == 0 && pt.y == 0) {
 			return new Point(0, 0);
 		} else {
-			float scale = dotProduct(pt) / pt.dotProduct(pt);
+			float scale = dot(pt) / pt.dot(pt);
 			return new Point(
 				pt.x * scale,
 				pt.y * scale
@@ -410,7 +394,7 @@ public class Point extends java.awt.geom.Point2D.Float {
 		}
 	}
 
-	public Point transform(AffineTransform at) {
-		return (Point) at.transform(this, new Point());
+	public Point transform(Matrix m) {
+		return m.transform(this);
 	}
 }

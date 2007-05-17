@@ -26,33 +26,33 @@
  *
  * File created on 24.03.2005.
  *
- * $Id$
+ * $Id: AIObject.java 240 2007-02-17 15:14:26Z lehni $
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.ai;
 
 /**
  * @author lehni
  */
-abstract class ADMObject {
+abstract class NativeObject {
 	// used for storing the native handle for this object
 	protected int handle;
 	
-	protected ADMObject() {
+	protected NativeObject() {
 		handle = 0;
 	}
 	
-	protected ADMObject(int handle) {
+	protected NativeObject(int handle) {
 		this.handle = handle;
 	}
 	
-	public int hashCode() {
-		return handle;
-	}
-	
 	public boolean equals(Object obj) {
-		if (obj instanceof ADMObject) {
-			return handle == ((ADMObject) obj).handle;
+		// Some objects subclass AIObject and do not use handle,
+		// use a fallback scenario for these!
+		if (handle == 0) {
+			return this == obj;
+		} else if (obj instanceof NativeObject) {
+			return handle == ((NativeObject) obj).handle;
 		}
 		return false;
 	}

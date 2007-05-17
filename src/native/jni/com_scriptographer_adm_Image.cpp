@@ -55,8 +55,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Image_nativeCreate(JNIEnv *en
 				image = sADMImage->CreateOffscreen(width, height, kADMImageHasAlphaChannelOption);
 				break;
 		}
-		gEngine->setIntField(env, obj, gEngine->fid_Image_byteWidth, sADMImage->GetByteWidth(image));
-		gEngine->setIntField(env, obj, gEngine->fid_Image_bitsPerPixel, sADMImage->GetBitsPerPixel(image));
+		gEngine->setIntField(env, obj, gEngine->fid_adm_Image_byteWidth, sADMImage->GetByteWidth(image));
+		gEngine->setIntField(env, obj, gEngine->fid_adm_Image_bitsPerPixel, sADMImage->GetBitsPerPixel(image));
 		return (jint)image;
 	} EXCEPTION_CONVERT(env);
 	return 0;

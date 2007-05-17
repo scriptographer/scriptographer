@@ -36,7 +36,7 @@ import java.awt.Point;
 /**
  * @author lehni
  */
-public class Tracker extends ADMObject {
+public class Tracker extends NativeObject {
 	// ADMMouseState
 	public final static int 
 		MOUSE_NORMAL = 0,

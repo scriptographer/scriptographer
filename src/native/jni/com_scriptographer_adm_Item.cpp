@@ -60,14 +60,14 @@ void ASAPI Item_onDestroy(ADMItemRef item) {
 			jobject obj = gEngine->getItemObject(item);
 			gEngine->callOnDestroy(obj);
 			// clear the handle:
-			gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
+			gEngine->setIntField(env, obj, gEngine->fid_adm_NativeObject_handle, 0);
 
 			// is this a list or hierarchy list?
 			// if so, call its destroy function, as this is not automatically done:
 			// SetUserData needs to be called again as the user data is not valid anymore here:
 
-			if (env->IsInstanceOf(obj, gEngine->cls_ListItem)) {
-				if (env->IsInstanceOf(obj, gEngine->cls_HierarchyList)) {
+			if (env->IsInstanceOf(obj, gEngine->cls_adm_ListItem)) {
+				if (env->IsInstanceOf(obj, gEngine->cls_adm_HierarchyList)) {
 					ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
 					sADMHierarchyList->SetUserData(list, obj);
 					HierarchyList_onDestroy(list);
@@ -208,14 +208,14 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getStyle(JNIEnv *env, jo
 }
 
 /*
- * java.awt.Dimension nativeGetSize()
+ * com.scriptographer.adm.Size nativeGetSize()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetSize(JNIEnv *env, jobject obj) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		ADMRect size;
 		sADMItem->GetLocalRect(item, &size);
-		return gEngine->convertDimension(env, size.right, size.bottom);
+		return gEngine->convertSize(env, size.right, size.bottom);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -232,20 +232,20 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetSize(JNIEnv *en
 }
 
 /*
- * java.awt.Dimension nativeGetBestSize()
+ * com.scriptographer.adm.Size nativeGetBestSize()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetBestSize(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		ADMPoint size;
 		sADMItem->GetBestSize(item, &size);
-		return gEngine->convertDimension(env, &size);
+		return gEngine->convertSize(env, &size);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
 /*
- * java.awt.Dimension nativeGetTextSize(java.lang.String text, int maxWidth)
+ * com.scriptographer.adm.Size nativeGetTextSize(java.lang.String text, int maxWidth)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetTextSize(JNIEnv *env, jobject obj, jstring text, jint maxWidth) {
 	if (text != NULL) {
@@ -262,7 +262,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetTextSize(JNI
 			size.v = sADMDrawer->GetTextRectHeightW(drawer, size.h + 1, chars);
 			sADMImage->EndADMDrawer(image);
 			delete chars;
-			return gEngine->convertDimension(env, &size);
+			return gEngine->convertSize(env, &size);
 		} EXCEPTION_CONVERT(env);
 	}
 	return NULL;
@@ -293,7 +293,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetBounds(JNIEnv *
 }
 
 /*
- * java.awt.Point localToScreen(int x, int y)
+ * com.scriptographer.adm.Point localToScreen(int x, int y)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_localToScreen__II(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
@@ -306,7 +306,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_localToScreen__II(JNI
 }
 
 /*
- * java.awt.Point screenToLocal(int x, int y)
+ * com.scriptographer.adm.Point screenToLocal(int x, int y)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_screenToLocal__II(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {

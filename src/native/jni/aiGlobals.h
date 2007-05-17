@@ -110,7 +110,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 		else \
 			err = sCharFeatures->Set##NAME(features, (TYPE) gEngine->call##METHOD_TYPE##Method(env, value, gEngine->METHOD_NAME)); \
 		if (!err) \
-			gEngine->callVoidMethod(env, obj, gEngine->mid_CharacterStyle_markSetStyle); \
+			gEngine->callVoidMethod(env, obj, gEngine->mid_ai_CharacterStyle_markSetStyle); \
 	} EXCEPTION_CONVERT(env);
 
 #define	CHARACTERSTYLE_GET_FLOAT(NAME) \
@@ -156,7 +156,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 		else \
 			err = sParaFeatures->Set##NAME(features, (TYPE) gEngine->call##METHOD_TYPE##Method(env, value, gEngine->METHOD_NAME)); \
 		if (!err) \
-			gEngine->callVoidMethod(env, obj, gEngine->mid_ParagraphStyle_markSetStyle); \
+			gEngine->callVoidMethod(env, obj, gEngine->mid_ai_ParagraphStyle_markSetStyle); \
 	} EXCEPTION_CONVERT(env);
 
 #define PARAGRAPHSTYLE_SET(NAME, TYPE, METHOD_TYPE, METHOD_NAME) \

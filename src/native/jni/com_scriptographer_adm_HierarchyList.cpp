@@ -56,7 +56,7 @@ void ASAPI HierarchyList_onDestroy(ADMHierarchyListRef list) {
 		JNIEnv *env = gEngine->getEnv();
 		sADMHierarchyList->SetUserData(list, NULL);
 		// clear the handle
-		gEngine->setIntField(env, listObj, gEngine->fid_ListItem_listHandle, 0);
+		gEngine->setIntField(env, listObj, gEngine->fid_adm_ListItem_listHandle, 0);
 		// and remove global ref
 		env->DeleteGlobalRef(listObj);
 	}
@@ -199,7 +199,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getActiveLea
 	try { \
 		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj); \
 		int length = sADMHierarchyList->GET_NUMBER(list); \
-		jobjectArray res = env->NewObjectArray(length, gEngine->cls_ListEntry, NULL); \
+		jobjectArray res = env->NewObjectArray(length, gEngine->cls_adm_ListEntry, NULL); \
 		if (res == NULL) EXCEPTION_CHECK(env); \
 		for (int i = 0; i < length; i++) { \
 			ADMListEntryRef ent = sADMHierarchyList->INDEX_ENTRY(list, i); \
@@ -239,7 +239,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getLocalRect
 
 
 /*
- * java.awt.Point localToScreen(int x, int y)
+ * com.scriptographer.adm.Point localToScreen(int x, int y)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_localToScreen(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
@@ -252,7 +252,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_localToScree
 }
 
 /*
- * java.awt.Point screenToLocal(int x, int y)
+ * com.scriptographer.adm.Point screenToLocal(int x, int y)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_screenToLocal(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
@@ -265,7 +265,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_screenToLoca
 }
 
 /*
- * java.awt.Point localToGlobal(int x, int y)
+ * com.scriptographer.adm.Point localToGlobal(int x, int y)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_localToGlobal__II(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
@@ -278,7 +278,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_localToGloba
 }
 
 /*
- * java.awt.Point globalToLocal(int arg1, int arg2)
+ * com.scriptographer.adm.Point globalToLocal(int arg1, int arg2)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_globalToLocal__II(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {

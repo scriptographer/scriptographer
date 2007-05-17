@@ -50,7 +50,7 @@ void ASAPI ListEntry_onDestroy(ADMEntryRef entry) {
 			// call onDestory on the entry object
 			gEngine->callOnDestroy(obj);
 			// clear the handle
-			gEngine->setIntField(env, obj, gEngine->fid_ADMObject_handle, 0);
+			gEngine->setIntField(env, obj, gEngine->fid_adm_NativeObject_handle, 0);
 			env->DeleteGlobalRef(obj);
 		} EXCEPTION_CATCH_REPORT(env);
 	}
@@ -80,7 +80,7 @@ void ASAPI ListEntry_onDraw(ADMEntryRef entry, ADMDrawerRef drawer) {
 }
 
 #define DEFINE_METHOD(METHOD) \
-		if (env->IsInstanceOf(obj, gEngine->cls_HierarchyListEntry)) { \
+		if (env->IsInstanceOf(obj, gEngine->cls_adm_HierarchyListEntry)) { \
 			ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj); \
 			METHOD(sADMListEntry) \
 		} else { \
@@ -94,7 +94,7 @@ void ASAPI ListEntry_onDraw(ADMEntryRef entry, ADMDrawerRef drawer) {
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListEntry_nativeCreate(JNIEnv *env, jobject obj, jobject list, jint index, jint id) {
 	try {
 		// if index is bellow 0, insert at the end:
-		if (env->IsInstanceOf(obj, gEngine->cls_HierarchyListEntry)) {
+		if (env->IsInstanceOf(obj, gEngine->cls_adm_HierarchyListEntry)) {
 			ADMHierarchyListRef lst = gEngine->getHierarchyListRef(env, list);
 			ADMListEntryRef entry = index < 0 ? sADMListEntry->Create(lst) :
 				sADMHierarchyList->InsertEntry(lst, index);
@@ -328,7 +328,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListEntry_getBounds(JNIEnv
 
 
 /*
- * java.awt.Point localToScreen(int x, int y)
+ * com.scriptographer.adm.Point localToScreen(int x, int y)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListEntry_localToScreen__II(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
@@ -346,7 +346,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListEntry_localToScreen__I
 }
 
 /*
- * java.awt.Point screenToLocal(int x, int y)
+ * com.scriptographer.adm.Point screenToLocal(int x, int y)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_ListEntry_screenToLocal__II(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
@@ -416,7 +416,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_invalidate__(JNIEnv
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_invalidate__IIII(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
-		if (env->IsInstanceOf(obj, gEngine->cls_HierarchyListEntry)) {
+		if (env->IsInstanceOf(obj, gEngine->cls_adm_HierarchyListEntry)) {
 			throw new StringException("invalidate(Rectangle) is not supported in hierarchy list entries.");
 		} else {
 			ADMEntryRef entry = gEngine->getListEntryRef(env, obj);

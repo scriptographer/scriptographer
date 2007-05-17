@@ -31,8 +31,11 @@
 
 package com.scriptographer.ai;
 
-import java.awt.geom.AffineTransform;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import com.scratchdisk.util.NetUtils;
 
 /**
  * @author lehni
@@ -44,7 +47,12 @@ public class PlacedItem extends Art {
 	}
 
 	private static native int nativeCreate(File file);
-	
+
+	public PlacedItem(URL url) throws IOException {
+		this(NetUtils.loadFile(url));
+	}
+
+
 	public PlacedItem(File file) {
 		super(nativeCreate(file));
 	}
@@ -53,7 +61,7 @@ public class PlacedItem extends Art {
 	
 	public native Matrix getMatrix();
 	
-	public native void setMatrix(AffineTransform at);
+	public native void setMatrix(Matrix matrix);
 	
 	public native File getFile();
 	

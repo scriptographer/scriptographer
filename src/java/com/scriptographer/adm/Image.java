@@ -42,14 +42,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import javax.imageio.ImageIO;
 
 import com.scriptographer.ai.Raster;
 
 /**
  * @author lehni
  */
-public class Image extends ADMObject {
+public class Image extends NativeObject {
 	// an image can wrap its representation as an icon as well...
 	private int iconHandle = 0;
 	

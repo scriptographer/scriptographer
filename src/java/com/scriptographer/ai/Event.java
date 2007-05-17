@@ -43,7 +43,7 @@ public class Event {
 	}
 	
 	protected void setValues(float x, float y, int pressure) {
-		point.setLocation(x, y);
+		point.set(x, y);
 		this.pressure = pressure / 255.0;
 	}
 

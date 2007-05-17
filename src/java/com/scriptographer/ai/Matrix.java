@@ -31,49 +31,71 @@
 
 package com.scriptographer.ai;
 
-import java.awt.geom.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 
 /**
- * This class represents an affine transformation between two coordinate
- * spaces in 2 dimensions. Such a transform preserves the "straightness"
- * and "parallelness" of lines. The transform is built from a sequence of
- * translations, scales, flips, rotations, and shears.
- *
- * <p>The transformation can be represented using matrix math on a 3x3 array.
- * Given (x,y), the transformation (x',y') can be found by:
+ * Matrix represents an affine transformation between two coordinate spaces in 2
+ * dimensions. Such a transform preserves the "straightness" and "parallelness"
+ * of lines. The transform is built from a sequence of translations, scales,
+ * flips, rotations, and shears.
+ * 
+ * The transformation can be represented using matrix math on a 3x3 array. Given
+ * <code>(x, y)</code>, the transformation <code>(x', y')</code> can be
+ * found by:
+ * 
  * <pre>
- * [ x']   [ m00 m01 m02 ] [ x ]   [ m00*x + m01*y + m02 ]
- * [ y'] = [ m10 m11 m12 ] [ y ] = [ m10*x + m11*y + m12 ]
- * [ 1 ]   [  0   0   1  ] [ 1 ]   [          1          ]
+ * [ x']   [ scaleX shearX translateX ] [ x ]   [ scaleX * x + shearX * y + translateX ]
+ * [ y'] = [ shearY scaleY translateY ] [ y ] = [ shearY * x + scaleY * y + translateY ]
+ * [ 1 ]   [ 0      0      1          ] [ 1 ]   [ 1                                    ]
  * </pre>
+ * 
  * The bottom row of the matrix is constant, so a transform can be uniquely
- * represented (as in {@link #toString()}) by 
- * "[[m00, m01, m02], [m10, m11, m12]]".
+ * represented (as in {@link #toString()}) by
+ * <code>"[[scaleX, shearX, translateX], [shearY, scaleY, translateY]]"</code>.
  * 
  * @author lehni
  */
-public class Matrix extends AffineTransform {
+public class Matrix {
 
+	private AffineTransform at;
+	
 	public Matrix() {
+		at = new AffineTransform();
 	}
 
 	/**
-	 * Create a new transform which copies the given one.
+	 * Create a new matrix which copies the given one.
+	 *
+	 * @param m the matrix to copy
+	 * @throws NullPointerException if m is null
+	 */
+	public Matrix(Matrix m) {
+		at = m.toAffineTransform();
+	}
+
+	public AffineTransform toAffineTransform() {
+		return (AffineTransform) at.clone();
+	}
+
+	/**
+	 * Create a new matrix from the given AWT AffineTransform.
 	 *
 	 * @param at the transform to copy
 	 * @throws NullPointerException if at is null
 	 */
 	public Matrix(AffineTransform at) {
-		super(at);
+		at = new AffineTransform(at);
 	}
 
 	/**
 	 * Construct a transform with the given matrix entries:
 	 * 
 	 * <pre>
-	 *  [ m00 m01 m02 ]
-	 *  [ m10 m11 m12 ]
-	 *  [  0   0   1  ]
+	 *  [ scaleX shearX translateX ]
+	 *  [ shearY scaleY translateY ]
+	 *  [ 0      0      1          ]
 	 * </pre>
 	 * 
 	 * @param scaleX the x scaling component
@@ -85,17 +107,18 @@ public class Matrix extends AffineTransform {
 	 */
 	public Matrix(double scaleX, double shearY, double shearX, double scaleY,
 			double translateX, double translateY) {
-		super(scaleX, shearY, shearX, scaleY, translateX, translateY);
+		at = new AffineTransform(scaleX, shearY, shearX, scaleY,
+				translateX, translateY);
 	}
 
 	/**
-	 * Construct a transform from a sequence of float entries. The array must
+	 * Construct a matrix from a sequence of numbers. The array must
 	 * have at least 4 entries, which has a translation factor of 0; or 6
 	 * entries, for specifying all parameters:
 	 * <pre>
-	 * [ f[0] f[2] (f[4]) ]
-	 * [ f[1] f[3] (f[5]) ]
-	 * [  0     0    1    ]
+	 * [ values[0] values[2] (values[4]) ]
+	 * [ values[1] values[3] (values[5]) ]
+	 * [ 0         0         1           ]
 	 * </pre>
 	 *
 	 * @param values the matrix to copy from, with at least 4 (6) entries
@@ -103,192 +126,174 @@ public class Matrix extends AffineTransform {
 	 * @throws ArrayIndexOutOfBoundsException if values is too small
 	 */
 	public Matrix(double[] values) {
-		super(values);
+		at = new AffineTransform(values);
 	}
 
+   /**
+	 * Returns a copy of this <code>Matrix</code> object.
+	 * 
+	 * @return an copy of this <code>Matrix</code> object.
+	 */
 	public Object clone() {
-		return new Matrix((AffineTransform) this);
-	}
-
-	public AffineTransform createInverse()
-			throws NoninvertibleTransformException {
-		return new Matrix(super.createInverse());
+		return new Matrix(this);
 	}
 
 	/**
-	 * Returns a rotation transform. A positive angle (in radians) rotates
-	 * the positive x-axis to the positive y-axis:
-	 * <pre>
-	 * [ cos(theta) -sin(theta) 0 ]
-	 * [ sin(theta)  cos(theta) 0 ]
-	 * [     0           0      1 ]
-	 * </pre>
-	 *
-	 * @param theta the rotation angle
-	 * @return the rotating transform
+	 * Creates the inverse transformation of the object. If the object is not
+	 * invertible (in which case {@link #isSingular()} returns true), invert() returns
+	 * null, otherwise the object itself is modified and a reference to it is
+	 * returned.
+	 * 
+	 * @return the inversed matrix, or null, if the matrix is singular
 	 */
-	public static AffineTransform getRotateInstance(double theta) {
-		Matrix m = new Matrix();
-		m.setToRotation(theta);
-		return m;
+	public Matrix invert() {
+		try {
+			return new Matrix(at.createInverse());
+		} catch (NoninvertibleTransformException e) {
+			return null;
+		}
+	}
+
+	public boolean equals(Object obj) {
+		
+		return at.equals(((Matrix) obj).at);
+	}
+	
+	/**
+	 * Checks wether the matrix is an identity. Identity matrices are equal to
+	 * their inversion.
+	 * 
+	 * @return true if the matrix is an identity, false otherwise
+	 */
+	public boolean isIdentity() {
+		return at.isIdentity();
 	}
 
 	/**
-	 * Returns a rotation transform about a point. A positive angle (in radians)
-	 * rotates the positive x-axis to the positive y-axis. This is the same
-	 * as calling:
-	 * <pre>
-	 * AffineTransform tx = new AffineTransform();
-	 * tx.setToTranslation(x, y);
-	 * tx.rotate(theta);
-	 * tx.translate(-x, -y);
-	 * </pre>
-	 *
-	 * <p>The resulting matrix is: 
-	 * <pre>
-	 * [ cos(theta) -sin(theta) x-x*cos+y*sin ]
-	 * [ sin(theta)  cos(theta) y-x*sin-y*cos ]
-	 * [     0           0            1       ]
-	 * </pre>
-	 *
-	 * @param theta the rotation angle
-	 * @param x the x coordinate of the pivot point
-	 * @param y the y coordinate of the pivot point
-	 * @return the rotating transform
+	 * Checks wether the matrix is singular or not. Singular matrices cannot be
+	 * inverted.
+	 * 
+	 * @return true if the matrix is singular, false otherwise
 	 */
-	public static AffineTransform getRotateInstance(double theta,
-			double x, double y) {
-		Matrix m = new Matrix();
-		m.setToRotation(theta, x, y);
-		return m;
+	public boolean isSingular() {
+		// There seems to be no other way to find out if we can 
+		// invert than actually trying:
+		return invert() == null;
 	}
 
-	public static AffineTransform getRotateInstance(double theta, Point2D center) {
-		Matrix m = new Matrix();
-		m.setToRotation(theta, center.getX(), center.getY());
-		return m;
-	}
-
-	/**
-	 * Returns a scaling transform:
-	 * <pre>
-	 * [ sx 0  0 ]
-	 * [ 0  sy 0 ]
-	 * [ 0  0  1 ]
-	 * </pre>
-	 *
-	 * @param sx the x scaling factor
-	 * @param sy the y scaling factor
-	 * @return the scaling transform
-	 */
-	public static AffineTransform getScaleInstance(double sx, double sy) {
-		Matrix m = new Matrix();
-		m.setToScale(sx, sy);
-		return m;
-	}
-
-	public static AffineTransform getScaleInstance(double scale) {
-		Matrix m = new Matrix();
-		m.setToScale(scale, scale);
-		return m;
-	}
-
-	/**
-	 * Returns a shearing transform (points are shifted in the x direction based
-	 * on a factor of their y coordinate, and in the y direction as a factor of
-	 * their x coordinate):
-	 * <pre>
-	 * [  1  shx 0 ]
-	 * [ shy  1  0 ]
-	 * [  0   0  1 ]
-	 * </pre>
-	 *
-	 * @param shx the x shearing factor
-	 * @param shy the y shearing factor
-	 * @return the shearing transform
-	 */
-	public static AffineTransform getShearInstance(double shx, double shy) {
-		Matrix m = new Matrix();
-		m.setToShear(shx, shx);
-		return m;
-	}
-
-	/**
-	 * Returns a translation transform:
-	 * <pre>
-	 * [ 1 0 tx ]
-	 * [ 0 1 ty ]
-	 * [ 0 0 1  ]
-	 * </pre>
-	 *
-	 * @param tx the x translation distance
-	 * @param ty the y translation distance
-	 * @return the translating transform
-	 */
-	public static AffineTransform getTranslateInstance(double tx, double ty) {
-		Matrix m = new Matrix();
-		m.setToTranslation(tx, tx);
-		return m;
-	}
-
-	public static AffineTransform getTranslateInstance(Point2D pt) {
-		Matrix m = new Matrix();
-		m.setToTranslation(pt.getX(), pt.getY());
-		return m;
+	public double getScaleX() {
+		return at.getScaleX();
 	}
 
 	public void setScaleX(double scaleX) {
-		setTransform(scaleX, getShearY(), getShearX(), getScaleY(),
-				getTranslateX(), getTranslateY());
+		at.setTransform(scaleX, at.getShearY(), at.getShearX(), at.getScaleY(),
+				at.getTranslateX(), at.getTranslateY());
+	}
+	
+	public double getScaleY() {
+		return at.getScaleY();
 	}
 
 	public void setScaleY(double scaleY) {
-		setTransform(getScaleX(), getShearY(), getShearX(), scaleY,
-				getTranslateX(), getTranslateY());
+		at.setTransform(at.getScaleX(), at.getShearY(), at.getShearX(), scaleY,
+				at.getTranslateX(), at.getTranslateY());
+	}
+	
+	public double getShearX() {
+		return at.getShearX();
 	}
 
 	public void setShearX(double shearX) {
-		setTransform(getScaleX(), getShearY(), shearX, getScaleY(),
-				getTranslateX(), getTranslateY());
+		at.setTransform(at.getScaleX(), at.getShearY(), shearX, at.getScaleY(),
+				at.getTranslateX(), at.getTranslateY());
+	}
+
+	public double getShearY() {
+		return at.getShearY();
 	}
 
 	public void setShearY(double shearY) {
-		setTransform(getScaleX(), shearY, getShearX(), getScaleY(),
-				getTranslateX(), getTranslateY());
+		at.setTransform(at.getScaleX(), at.getShearY(), at.getShearX(), shearY,
+				at.getTranslateX(), at.getTranslateY());
+	}
+
+	public double getTranslateX() {
+		return at.getTranslateX();
 	}
 
 	public void setTranslateX(double translateX) {
-		setTransform(getScaleX(), getShearY(), getShearX(), getScaleY(),
-				translateX, getTranslateY());
+		at.setTransform(at.getScaleX(), at.getShearY(), at.getShearX(),
+				at.getScaleY(), translateX, at.getTranslateY());
+	}
+
+	public double getTranslateY() {
+		return at.getTranslateY();
 	}
 
 	public void setTranslateY(double translateY) {
-		setTransform(getScaleX(), getShearY(), getShearX(), getScaleY(),
-				getTranslateX(), translateY);
+		at.setTransform(at.getScaleX(), at.getShearY(), at.getShearX(),
+				at.getScaleY(), at.getTranslateX(), translateY);
 	}
 
-	public Point deltaTransform(Point2D src) {
-		return (Point) deltaTransform(src, new Point());
+	/**
+	 * Concatenates the matrix with a translation matrix that translates by
+	 * <code>(x, y)</code>. The object itself is modified and a reference to
+	 * it is returned.
+	 * 
+	 * @param x,&nbsp;y the coordinates of the translation
+	 * @return the translated matrix
+	 */
+	public Matrix translate(double x, double y) {
+		at.translate(x, y);
+		return this;
 	}
 
-	public Point inverseTransform(Point2D src)
-			throws NoninvertibleTransformException {
-		return (Point) inverseTransform(src, new Point());
+	public Matrix translate(Point pt) {
+		at.translate(pt.getX(), pt.getY());
+		return this;
 	}
 
-	public Point transform(Point2D src) {
-		return (Point) transform(src, new Point());
+	public Matrix scale(double scale) {
+		at.scale(scale, scale);
+		return this;
 	}
 
-	public void rotate(double theta, Point2D center) {
-		super.rotate(theta, center.getX(), center.getY());
+	public Matrix scale(double scaleX, double scaleY) {
+		at.scale(scaleX, scaleY);
+		return this;
 	}
 
-	public void translate(Point2D pt) {
-		super.translate(pt.getX(), pt.getY());
+	public Matrix scale(Point scale) {
+		at.scale(scale.getX(), scale.getY());
+		return this;
 	}
 
-	public void scale(double scale) {
-		super.scale(scale, scale);
+	public Matrix rotate(double theta) {
+		at.rotate(theta);
+		return this;
+	}
+
+	public Matrix rotate(double theta, float centerX, float centerY) {
+		at.rotate(theta, centerX, centerY);
+		return this;
+	}
+
+	public Matrix rotate(double theta, Point center) {
+		at.rotate(theta, center.getX(), center.getY());
+		return this;
+	}
+
+	public Matrix shear(double shearX, double shearY) {
+		at.shear(shearX, shearY);
+		return this;
+	}
+
+	public Point transform(float x, float y) {
+		// A bit of converting from Point2D <-> Point
+		return new Point(at.transform(new Point2D.Float(x, y), new Point2D.Float()));
+	}
+
+	public Point transform(Point src) {
+		return transform(src.x, src.y);
 	}
 }

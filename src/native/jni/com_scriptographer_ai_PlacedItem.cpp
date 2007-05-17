@@ -83,14 +83,14 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedItem_getMatrix(JNIEnv
 }
 
 /*
- * void setMatrix(java.awt.geom.AffineTransform at)
+ * void setMatrix(com.scriptographer.ai.Matrix matrix)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedItem_setMatrix(JNIEnv *env, jobject obj, jobject at) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedItem_setMatrix(JNIEnv *env, jobject obj, jobject matrix) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
-		AIRealMatrix m;
-		gEngine->convertMatrix(env, at, &m);
-		sAIPlaced->SetPlacedMatrix(art, &m);
+		AIRealMatrix mx;
+		gEngine->convertMatrix(env, matrix, &mx);
+		sAIPlaced->SetPlacedMatrix(art, &mx);
 	} EXCEPTION_CONVERT(env);
 }
 

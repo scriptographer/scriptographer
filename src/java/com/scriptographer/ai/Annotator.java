@@ -31,7 +31,6 @@
 
 package com.scriptographer.ai;
 
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import com.scriptographer.ScriptographerEngine; 
@@ -43,7 +42,7 @@ import com.scriptographer.adm.Drawer;
 /**
  * @author lehni
  */
-public class Annotator extends AIObject {
+public class Annotator extends NativeObject {
 	private boolean active;
 
 	private static IntMap annotators = new IntMap();
@@ -105,10 +104,9 @@ public class Annotator extends AIObject {
 		nativeInvalidate(handle, x, y, width, height);
 	}
 	
-	public void invalidate(Rectangle2D rect) {
+	public void invalidate(Rectangle rect) {
 		// TODO: implement DocumentView and pass handle to it!
-		// nativeInvalidate(handle, (int) rect.getX(), (int) rect.getY(), (int)
-		// rect.getWidth(), (int) rect.getHeight());
+		nativeInvalidate(handle, rect.x, rect.y, rect.width, rect.height);
 	}
 	
 	private native void nativeInvalidate(int viewHandle, float x, float y,

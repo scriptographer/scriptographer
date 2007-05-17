@@ -116,10 +116,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetStyle(
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_release(JNIEnv *env, jobject obj) {
 	try {
-		CharFeaturesRef features = (CharFeaturesRef) gEngine->getIntField(env, obj, gEngine->fid_AIObject_handle);
+		CharFeaturesRef features = (CharFeaturesRef) gEngine->getIntField(env, obj, gEngine->fid_ai_NativeObject_handle);
 		if (features != NULL) {
 			sCharFeatures->Release(features);
-			gEngine->setIntField(env, obj, gEngine->fid_AIObject_handle, 0);
+			gEngine->setIntField(env, obj, gEngine->fid_ai_NativeObject_handle, 0);
 		}
 	} EXCEPTION_CONVERT(env);
 }
@@ -154,7 +154,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetFont(J
 		else if (!sAIFont->FontFromFontKey((AIFontKey) value, &font))
 			err = sCharFeatures->SetFont(features, font);
 		if (!err)
-			gEngine->callVoidMethod(env, obj, gEngine->mid_CharacterStyle_markSetStyle);
+			gEngine->callVoidMethod(env, obj, gEngine->mid_ai_CharacterStyle_markSetStyle);
 	} EXCEPTION_CONVERT(env);
 }
 

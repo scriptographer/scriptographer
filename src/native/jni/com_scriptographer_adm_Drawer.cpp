@@ -434,7 +434,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_script
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		ADMImageRef img = gEngine->getImageRef(env, image);
-		ADMIconRef icn = (ADMIconRef)gEngine->callIntMethod(env, obj, gEngine->mid_Image_getIconHandle);
+		ADMIconRef icn = (ADMIconRef)gEngine->callIntMethod(env, obj, gEngine->mid_adm_Image_getIconHandle);
 		if (icn == NULL)
 			throw new StringException("Cannot create icon from image.");
 		DEFINE_ADM_POINT(pt, x, y);
@@ -461,7 +461,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_script
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		ADMImageRef img = gEngine->getImageRef(env, image);
-		ADMIconRef icn = (ADMIconRef)gEngine->callIntMethod(env, obj, gEngine->mid_Image_getIconHandle);
+		ADMIconRef icn = (ADMIconRef)gEngine->callIntMethod(env, obj, gEngine->mid_adm_Image_getIconHandle);
 		if (icn == NULL)
 			throw new StringException("Cannot create icon from image.");
 		DEFINE_ADM_RECT(rt, x, y, width, height);
@@ -492,7 +492,7 @@ jobject drawerGetFontInfo(JNIEnv *env, jobject obj, int font = -1) {
 		else
 			sADMDrawer->GetThisFontInfo((ADMFont) font, &info);
 		
-		return gEngine->newObject(env, gEngine->cls_FontInfo, gEngine->cid_FontInfo, info.height, info.ascent, info.descent, info.leading, info.maxWidth);
+		return gEngine->newObject(env, gEngine->cls_adm_FontInfo, gEngine->cid_adm_FontInfo, info.height, info.ascent, info.descent, info.leading, info.maxWidth);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

@@ -46,7 +46,7 @@ import java.util.Iterator;
 /**
  * @author lehni
  */
-public class MenuItem extends ADMObject{
+public class MenuItem extends NativeObject{
 	public final static int
 		OPTION_NONE 			= 0,
 		OPTION_WANTS_UPDATE 	= 1 << 0,

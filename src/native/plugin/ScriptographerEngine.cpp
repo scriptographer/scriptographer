@@ -383,38 +383,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_awt_Color = loadClass(env, "java/awt/Color");
 	cid_awt_Color = getConstructorID(env, cls_awt_Color, "(FFF)V");
 	mid_awt_Color_getColorComponents = getMethodID(env, cls_awt_Color, "getColorComponents", "([F)[F");
-	
-	cls_awt_Rectangle = loadClass(env, "java/awt/Rectangle");
-	cid_awt_Rectangle = getConstructorID(env, cls_awt_Rectangle, "(IIII)V");
-	fid_awt_Rectangle_x = getFieldID(env, cls_awt_Rectangle, "x", "I");
-	fid_awt_Rectangle_y = getFieldID(env, cls_awt_Rectangle, "y", "I");
-	fid_awt_Rectangle_width = getFieldID(env, cls_awt_Rectangle, "width", "I");
-	fid_awt_Rectangle_height = getFieldID(env, cls_awt_Rectangle, "height", "I");
-	mid_awt_Rectangle_setBounds = getMethodID(env, cls_awt_Rectangle, "setBounds", "(IIII)V");
-
-	cls_awt_Point = loadClass(env, "java/awt/Point");
-	cid_awt_Point = getConstructorID(env, cls_awt_Point, "(II)V");
-	fid_awt_Point_x = getFieldID(env, cls_awt_Point, "x", "I");
-	fid_awt_Point_y = getFieldID(env, cls_awt_Point, "y", "I");
-	mid_awt_Point_setLocation = getMethodID(env, cls_awt_Point, "setLocation", "(II)V");
-
-	cls_awt_Point2D = loadClass(env, "java/awt/geom/Point2D");
-	mid_awt_Point2D_getX = getMethodID(env, cls_awt_Point2D, "getX", "()D");
-	mid_awt_Point2D_getY = getMethodID(env, cls_awt_Point2D, "getY", "()D");
-
-	cls_awt_Dimension = loadClass(env, "java/awt/Dimension");
-	cid_awt_Dimension = getConstructorID(env, cls_awt_Dimension, "(II)V");
-	fid_awt_Dimension_width = getFieldID(env, cls_awt_Dimension, "width", "I");
-	fid_awt_Dimension_height = getFieldID(env, cls_awt_Dimension, "height", "I");
-	mid_awt_Dimension_setSize = getMethodID(env, cls_awt_Dimension, "setSize", "(II)V");
-
-	cls_awt_AffineTransform = loadClass(env, "java/awt/geom/AffineTransform");
-	mid_awt_AffineTransform_getScaleX = getMethodID(env, cls_awt_AffineTransform, "getScaleX", "()D");
-	mid_awt_AffineTransform_getShearY = getMethodID(env, cls_awt_AffineTransform, "getShearY", "()D");
-	mid_awt_AffineTransform_getShearX = getMethodID(env, cls_awt_AffineTransform, "getShearX", "()D");
-	mid_awt_AffineTransform_getScaleY = getMethodID(env, cls_awt_AffineTransform, "getScaleY", "()D");
-	mid_awt_AffineTransform_getTranslateX = getMethodID(env, cls_awt_AffineTransform, "getTranslateX", "()D");
-	mid_awt_AffineTransform_getTranslateY = getMethodID(env, cls_awt_AffineTransform, "getTranslateY", "()D");
 
 	cls_awt_ICC_Profile = loadClass(env, "java/awt/color/ICC_Profile");
 	mid_awt_ICC_Profile_getInstance = getStaticMethodID(env, cls_awt_ICC_Profile, "getInstance", "([B)Ljava/awt/color/ICC_Profile;");
@@ -427,7 +395,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_SimpleList = loadClass(env, "com/scratchdisk/util/SimpleList");
 	mid_SimpleList_size = getMethodID(env, cls_SimpleList, "size", "()I");
 	mid_SimpleList_get = getMethodID(env, cls_SimpleList, "get", "(I)Ljava/lang/Object;");
-	
+
 // Scriptographer:
 	cls_ScriptographerEngine = loadClass(env, "com/scriptographer/ScriptographerEngine");
 	mid_ScriptographerEngine_init = getStaticMethodID(env, cls_ScriptographerEngine, "init", "(Ljava/lang/String;)V");
@@ -441,192 +409,218 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_CommitManager_commit =  getStaticMethodID(env, cls_CommitManager, "commit", "(Ljava/lang/Object;)V");
 
 // AI:
-	cls_AIObject = loadClass(env, "com/scriptographer/ai/AIObject");
-	fid_AIObject_handle = getFieldID(env, cls_AIObject, "handle", "I");
+	cls_ai_NativeObject = loadClass(env, "com/scriptographer/ai/NativeObject");
+	fid_ai_NativeObject_handle = getFieldID(env, cls_ai_NativeObject, "handle", "I");
 	
-	cls_AIWrapper = loadClass(env, "com/scriptographer/ai/AIWrapper");
-	fid_AIWrapper_document = getFieldID(env, cls_AIWrapper, "document", "Lcom/scriptographer/ai/Document;");
+	cls_ai_NativeWrapper = loadClass(env, "com/scriptographer/ai/NativeWrapper");
+	fid_ai_NativeWrapper_document = getFieldID(env, cls_ai_NativeWrapper, "document", "Lcom/scriptographer/ai/Document;");
 	
-	cls_Tool = loadClass(env, "com/scriptographer/ai/Tool");
-	cid_Tool = getConstructorID(env, cls_Tool, "(II)V");
-	mid_Tool_onHandleEvent = getStaticMethodID(env, cls_Tool, "onHandleEvent", "(ILjava/lang/String;FFI)V");
+	cls_ai_Tool = loadClass(env, "com/scriptographer/ai/Tool");
+	cid_ai_Tool = getConstructorID(env, cls_ai_Tool, "(II)V");
+	mid_ai_Tool_onHandleEvent = getStaticMethodID(env, cls_ai_Tool, "onHandleEvent", "(ILjava/lang/String;FFI)V");
 
-	cls_Point = loadClass(env, "com/scriptographer/ai/Point");
-	cid_Point = getConstructorID(env, cls_Point, "(FF)V");
-	fid_Point_x = getFieldID(env, cls_Point, "x", "F");
-	fid_Point_y = getFieldID(env, cls_Point, "y", "F");
-	mid_Point_setLocation = getMethodID(env, cls_Point, "setLocation", "(FF)V");
+	cls_ai_Point = loadClass(env, "com/scriptographer/ai/Point");
+	cid_ai_Point = getConstructorID(env, cls_ai_Point, "(FF)V");
+	fid_ai_Point_x = getFieldID(env, cls_ai_Point, "x", "F");
+	fid_ai_Point_y = getFieldID(env, cls_ai_Point, "y", "F");
+	mid_ai_Point_set = getMethodID(env, cls_ai_Point, "set", "(FF)V");
 
-	cls_Rectangle = loadClass(env, "com/scriptographer/ai/Rectangle");
-	cid_Rectangle = getConstructorID(env, cls_Rectangle, "(FFFF)V");
-	fid_Rectangle_x = getFieldID(env, cls_Rectangle, "x", "F");
-	fid_Rectangle_y = getFieldID(env, cls_Rectangle, "y", "F");
-	fid_Rectangle_width = getFieldID(env, cls_Rectangle, "width", "F");
-	fid_Rectangle_height = getFieldID(env, cls_Rectangle, "height", "F");
-	mid_Rectangle_setRect = getMethodID(env, cls_Rectangle, "setRect", "(FFFF)V");
+	cls_ai_Rectangle = loadClass(env, "com/scriptographer/ai/Rectangle");
+	cid_ai_Rectangle = getConstructorID(env, cls_ai_Rectangle, "(FFFF)V");
+	fid_ai_Rectangle_x = getFieldID(env, cls_ai_Rectangle, "x", "F");
+	fid_ai_Rectangle_y = getFieldID(env, cls_ai_Rectangle, "y", "F");
+	fid_ai_Rectangle_width = getFieldID(env, cls_ai_Rectangle, "width", "F");
+	fid_ai_Rectangle_height = getFieldID(env, cls_ai_Rectangle, "height", "F");
+	mid_ai_Rectangle_set = getMethodID(env, cls_ai_Rectangle, "set", "(FFFF)V");
 	
-	cls_Matrix = loadClass(env, "com/scriptographer/ai/Matrix");
-	cid_Matrix = getConstructorID(env, cls_Matrix, "(DDDDDD)V");;
+	cls_ai_Matrix = loadClass(env, "com/scriptographer/ai/Matrix");
+	cid_ai_Matrix = getConstructorID(env, cls_ai_Matrix, "(DDDDDD)V");
+	mid_ai_Matrix_getScaleX = getMethodID(env, cls_ai_Matrix, "getScaleX", "()D");
+	mid_ai_Matrix_getShearY = getMethodID(env, cls_ai_Matrix, "getShearY", "()D");
+	mid_ai_Matrix_getShearX = getMethodID(env, cls_ai_Matrix, "getShearX", "()D");
+	mid_ai_Matrix_getScaleY = getMethodID(env, cls_ai_Matrix, "getScaleY", "()D");
+	mid_ai_Matrix_getTranslateX = getMethodID(env, cls_ai_Matrix, "getTranslateX", "()D");
+	mid_ai_Matrix_getTranslateY = getMethodID(env, cls_ai_Matrix, "getTranslateY", "()D");
 
-	cls_Color = loadClass(env, "com/scriptographer/ai/Color");
-	mid_Color_getComponents = getMethodID(env, cls_Color, "getComponents", "()[F");
-	obj_Color_NONE = getStaticObjectField(env, cls_Color, "NONE", "Lcom/scriptographer/ai/Color;");
+	cls_ai_Color = loadClass(env, "com/scriptographer/ai/Color");
+	mid_ai_Color_getComponents = getMethodID(env, cls_ai_Color, "getComponents", "()[F");
+	obj_ai_Color_NONE = getStaticObjectField(env, cls_ai_Color, "NONE", "Lcom/scriptographer/ai/Color;");
 
-	cls_GrayColor = loadClass(env, "com/scriptographer/ai/GrayColor");
-	cid_GrayColor = getConstructorID(env, cls_GrayColor, "(FF)V");
+	cls_ai_GrayColor = loadClass(env, "com/scriptographer/ai/GrayColor");
+	cid_ai_GrayColor = getConstructorID(env, cls_ai_GrayColor, "(FF)V");
 
-	cls_RGBColor = loadClass(env, "com/scriptographer/ai/RGBColor");
-	cid_RGBColor = getConstructorID(env, cls_RGBColor, "(FFFF)V");
+	cls_ai_RGBColor = loadClass(env, "com/scriptographer/ai/RGBColor");
+	cid_ai_RGBColor = getConstructorID(env, cls_ai_RGBColor, "(FFFF)V");
 
-	cls_CMYKColor = loadClass(env, "com/scriptographer/ai/CMYKColor");
-	cid_CMYKColor = getConstructorID(env, cls_CMYKColor, "(FFFFF)V");
+	cls_ai_CMYKColor = loadClass(env, "com/scriptographer/ai/CMYKColor");
+	cid_ai_CMYKColor = getConstructorID(env, cls_ai_CMYKColor, "(FFFFF)V");
 	
-	cls_GradientColor = loadClass(env, "com/scriptographer/ai/GradientColor");
-	cid_GradientColor = getConstructorID(env, cls_GradientColor, "(ILcom/scriptographer/ai/Point;FFLcom/scriptographer/ai/Matrix;FF)V");
-	mid_GradientColor_set = getMethodID(env, cls_GradientColor, "set", "(I)V");
+	cls_ai_GradientColor = loadClass(env, "com/scriptographer/ai/GradientColor");
+	cid_ai_GradientColor = getConstructorID(env, cls_ai_GradientColor, "(ILcom/scriptographer/ai/Point;FFLcom/scriptographer/ai/Matrix;FF)V");
+	mid_ai_GradientColor_set = getMethodID(env, cls_ai_GradientColor, "set", "(I)V");
 
-	cls_PatternColor = loadClass(env, "com/scriptographer/ai/PatternColor");
-	cid_PatternColor = getConstructorID(env, cls_PatternColor, "(IFFLcom/scriptographer/ai/Point;FZFFFLcom/scriptographer/ai/Matrix;)V");
-	mid_PatternColor_set = getMethodID(env, cls_PatternColor, "set", "(I)V");
+	cls_ai_PatternColor = loadClass(env, "com/scriptographer/ai/PatternColor");
+	cid_ai_PatternColor = getConstructorID(env, cls_ai_PatternColor, "(IFFLcom/scriptographer/ai/Point;FZFFFLcom/scriptographer/ai/Matrix;)V");
+	mid_ai_PatternColor_set = getMethodID(env, cls_ai_PatternColor, "set", "(I)V");
 	
-	cls_Art = loadClass(env, "com/scriptographer/ai/Art");
-	fid_Art_version = getFieldID(env, cls_Art, "version", "I");
-	fid_Art_document = getFieldID(env, cls_Art, "document", "Lcom/scriptographer/ai/Document;");
-	fid_Art_dictionaryRef = getFieldID(env, cls_Art, "dictionaryRef", "I");
-	mid_Art_wrapHandle = getStaticMethodID(env, cls_Art, "wrapHandle", "(ISIIIZ)Lcom/scriptographer/ai/Art;");
-	mid_Art_getIfWrapped = getStaticMethodID(env, cls_Art, "getIfWrapped", "(I)Lcom/scriptographer/ai/Art;");
-	mid_Art_updateIfWrapped = getStaticMethodID(env, cls_Art, "updateIfWrapped", "([I)V");
-	mid_Art_changeHandle = getMethodID(env, cls_Art, "changeHandle", "(III)V");
+	cls_ai_Art = loadClass(env, "com/scriptographer/ai/Art");
+	fid_ai_Art_version = getFieldID(env, cls_ai_Art, "version", "I");
+	fid_ai_Art_document = getFieldID(env, cls_ai_Art, "document", "Lcom/scriptographer/ai/Document;");
+	fid_ai_Art_dictionaryRef = getFieldID(env, cls_ai_Art, "dictionaryRef", "I");
+	mid_ai_Art_wrapHandle = getStaticMethodID(env, cls_ai_Art, "wrapHandle", "(ISIIIZ)Lcom/scriptographer/ai/Art;");
+	mid_ai_Art_getIfWrapped = getStaticMethodID(env, cls_ai_Art, "getIfWrapped", "(I)Lcom/scriptographer/ai/Art;");
+	mid_ai_Art_updateIfWrapped = getStaticMethodID(env, cls_ai_Art, "updateIfWrapped", "([I)V");
+	mid_ai_Art_changeHandle = getMethodID(env, cls_ai_Art, "changeHandle", "(III)V");
 
-	cls_ArtSet = loadClass(env, "com/scriptographer/ai/ArtSet");
-	cid_ArtSet = getConstructorID(env, cls_ArtSet, "()V");
-	mid_ArtSet_add = getMethodID(env, cls_ArtSet, "add", "(Ljava/lang/Object;)Ljava/lang/Object;");
+	cls_ai_ArtSet = loadClass(env, "com/scriptographer/ai/ArtSet");
+	cid_ArtSet = getConstructorID(env, cls_ai_ArtSet, "()V");
+	mid_ai_ArtSet_add = getMethodID(env, cls_ai_ArtSet, "add", "(Ljava/lang/Object;)Ljava/lang/Object;");
 
-	cls_Path = loadClass(env, "com/scriptographer/ai/Path");
-	cls_CompoundPath = loadClass(env, "com/scriptographer/ai/CompoundPath");
-	cls_TextFrame = loadClass(env, "com/scriptographer/ai/TextFrame");
+	cls_ai_Path = loadClass(env, "com/scriptographer/ai/Path");
+	cls_ai_CompoundPath = loadClass(env, "com/scriptographer/ai/CompoundPath");
+	cls_ai_TextFrame = loadClass(env, "com/scriptographer/ai/TextFrame");
 
-	cls_TextRange = loadClass(env, "com/scriptographer/ai/TextRange");
-	cid_TextRange = getConstructorID(env, cls_TextRange, "(II)V");
-	fid_TextRange_glyphRuns = getFieldID(env, cls_TextRange, "glyphRuns", "I");
+	cls_ai_TextRange = loadClass(env, "com/scriptographer/ai/TextRange");
+	cid_ai_TextRange = getConstructorID(env, cls_ai_TextRange, "(II)V");
+	fid_ai_TextRange_glyphRuns = getFieldID(env, cls_ai_TextRange, "glyphRuns", "I");
 	
-	cls_TextStory = loadClass(env, "com/scriptographer/ai/TextStory");
+	cls_ai_TextStory = loadClass(env, "com/scriptographer/ai/TextStory");
 
-	cls_PathStyle = loadClass(env, "com/scriptographer/ai/PathStyle");
+	cls_ai_PathStyle = loadClass(env, "com/scriptographer/ai/PathStyle");
 	
-	mid_PathStyle_init = getMethodID(env, cls_PathStyle, "init", "(Lcom/scriptographer/ai/Color;ZSLcom/scriptographer/ai/Color;ZSFF[FSSFSSSF)V");
+	mid_PathStyle_init = getMethodID(env, cls_ai_PathStyle, "init", "(Lcom/scriptographer/ai/Color;ZSLcom/scriptographer/ai/Color;ZSFF[FSSFSSSF)V");
 
-	cls_FillStyle = loadClass(env, "com/scriptographer/ai/FillStyle");
+	cls_ai_FillStyle = loadClass(env, "com/scriptographer/ai/FillStyle");
 
-	cid_FillStyle = getConstructorID(env, cls_FillStyle, "(Lcom/scriptographer/ai/Color;ZS)V");
-	mid_FillStyle_init = getMethodID(env, cls_FillStyle, "init", "(Lcom/scriptographer/ai/Color;ZS)V");
-	mid_FillStyle_initNative = getMethodID(env, cls_FillStyle, "initNative", "(I)V");
+	cid_ai_FillStyle = getConstructorID(env, cls_ai_FillStyle, "(Lcom/scriptographer/ai/Color;ZS)V");
+	mid_ai_FillStyle_init = getMethodID(env, cls_ai_FillStyle, "init", "(Lcom/scriptographer/ai/Color;ZS)V");
+	mid_ai_FillStyle_initNative = getMethodID(env, cls_ai_FillStyle, "initNative", "(I)V");
 	
-	cls_StrokeStyle = loadClass(env, "com/scriptographer/ai/StrokeStyle");
-	cid_StrokeStyle = getConstructorID(env, cls_StrokeStyle, "(Lcom/scriptographer/ai/Color;ZSFF[FSSF)V");
-	mid_StrokeStyle_init = getMethodID(env, cls_StrokeStyle, "init", "(Lcom/scriptographer/ai/Color;ZSFF[FSSF)V");
-	mid_StrokeStyle_initNative = getMethodID(env, cls_StrokeStyle, "initNative", "(I)V");
+	cls_ai_StrokeStyle = loadClass(env, "com/scriptographer/ai/StrokeStyle");
+	cid_ai_StrokeStyle = getConstructorID(env, cls_ai_StrokeStyle, "(Lcom/scriptographer/ai/Color;ZSFF[FSSF)V");
+	mid_ai_StrokeStyle_init = getMethodID(env, cls_ai_StrokeStyle, "init", "(Lcom/scriptographer/ai/Color;ZSFF[FSSF)V");
+	mid_ai_StrokeStyle_initNative = getMethodID(env, cls_ai_StrokeStyle, "initNative", "(I)V");
 	
-	cls_CharacterStyle = loadClass(env, "com/scriptographer/ai/CharacterStyle");
-	mid_CharacterStyle_markSetStyle = getMethodID(env, cls_CharacterStyle, "markSetStyle", "()V");
+	cls_ai_CharacterStyle = loadClass(env, "com/scriptographer/ai/CharacterStyle");
+	mid_ai_CharacterStyle_markSetStyle = getMethodID(env, cls_ai_CharacterStyle, "markSetStyle", "()V");
 
-	cls_ParagraphStyle = loadClass(env, "com/scriptographer/ai/ParagraphStyle");
-	mid_ParagraphStyle_markSetStyle = getMethodID(env, cls_ParagraphStyle, "markSetStyle", "()V");
+	cls_ai_ParagraphStyle = loadClass(env, "com/scriptographer/ai/ParagraphStyle");
+	mid_ai_ParagraphStyle_markSetStyle = getMethodID(env, cls_ai_ParagraphStyle, "markSetStyle", "()V");
 	
-	cls_Group = loadClass(env, "com/scriptographer/ai/Group");
+	cls_ai_Group = loadClass(env, "com/scriptographer/ai/Group");
 	
-	cls_Raster = loadClass(env, "com/scriptographer/ai/Raster");
-	fid_Raster_rasterData = getFieldID(env, cls_Raster, "rasterData", "I");
+	cls_ai_Raster = loadClass(env, "com/scriptographer/ai/Raster");
+	fid_ai_Raster_data = getFieldID(env, cls_ai_Raster, "data", "I");
 	
-	cls_PlacedItem = loadClass(env, "com/scriptographer/ai/PlacedItem");
+	cls_ai_PlacedItem = loadClass(env, "com/scriptographer/ai/PlacedItem");
 	
-	cls_Tracing = loadClass(env, "com/scriptographer/ai/Tracing");
-	mid_Tracing_markDirty = getMethodID(env, cls_Tracing, "markDirty", "()V");
+	cls_ai_Tracing = loadClass(env, "com/scriptographer/ai/Tracing");
+	mid_ai_Tracing_markDirty = getMethodID(env, cls_ai_Tracing, "markDirty", "()V");
 	
-	cls_Layer = loadClass(env, "com/scriptographer/ai/Layer");
+	cls_ai_Layer = loadClass(env, "com/scriptographer/ai/Layer");
 
-	cls_Segment = loadClass(env, "com/scriptographer/ai/Segment");
-	cls_Curve = loadClass(env, "com/scriptographer/ai/Curve");
+	cls_ai_Segment = loadClass(env, "com/scriptographer/ai/Segment");
+	cls_ai_Curve = loadClass(env, "com/scriptographer/ai/Curve");
 
-	cls_TabletValue = loadClass(env, "com/scriptographer/ai/TabletValue");
-	cid_TabletValue = getConstructorID(env, cls_TabletValue, "(FF)V");
-	fid_TabletValue_offset = getFieldID(env, cls_TabletValue, "offset", "F");
-	fid_TabletValue_value = getFieldID(env, cls_TabletValue, "value", "F");
+	cls_ai_TabletValue = loadClass(env, "com/scriptographer/ai/TabletValue");
+	cid_ai_TabletValue = getConstructorID(env, cls_ai_TabletValue, "(FF)V");
+	fid_ai_TabletValue_offset = getFieldID(env, cls_ai_TabletValue, "offset", "F");
+	fid_ai_TabletValue_value = getFieldID(env, cls_ai_TabletValue, "value", "F");
 	
-	cls_GradientStop = loadClass(env, "com/scriptographer/ai/GradientStop");
-	mid_GradientStop_init = getMethodID(env, cls_GradientStop, "init", "(FFLcom/scriptographer/ai/Color;)V");
+	cls_ai_GradientStop = loadClass(env, "com/scriptographer/ai/GradientStop");
+	mid_ai_GradientStop_init = getMethodID(env, cls_ai_GradientStop, "init", "(FFLcom/scriptographer/ai/Color;)V");
 	
-	cls_Document = loadClass(env, "com/scriptographer/ai/Document");
+	cls_ai_Document = loadClass(env, "com/scriptographer/ai/Document");
 
-	cls_LiveEffect = loadClass(env, "com/scriptographer/ai/LiveEffect");
-	cid_LiveEffect = getConstructorID(env, cls_LiveEffect, "(ILjava/lang/String;Ljava/lang/String;IIIII)V");
-	mid_LiveEffect_onEditParameters = getStaticMethodID(env, cls_LiveEffect, "onEditParameters", "(ILjava/util/Map;IZ)V");
-	mid_LiveEffect_onCalculate = getStaticMethodID(env, cls_LiveEffect, "onCalculate", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
-	mid_LiveEffect_onGetInputType = getStaticMethodID(env, cls_LiveEffect, "onGetInputType", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
+	cls_ai_LiveEffect = loadClass(env, "com/scriptographer/ai/LiveEffect");
+	cid_ai_LiveEffect = getConstructorID(env, cls_ai_LiveEffect, "(ILjava/lang/String;Ljava/lang/String;IIIII)V");
+	mid_ai_LiveEffect_onEditParameters = getStaticMethodID(env, cls_ai_LiveEffect, "onEditParameters", "(ILjava/util/Map;IZ)V");
+	mid_ai_LiveEffect_onCalculate = getStaticMethodID(env, cls_ai_LiveEffect, "onCalculate", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
+	mid_ai_LiveEffect_onGetInputType = getStaticMethodID(env, cls_ai_LiveEffect, "onGetInputType", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
 	
-	cls_Timer = loadClass(env, "com/scriptographer/ai/Timer");
-	cid_Timer = getConstructorID(env, cls_Timer, "(I)V");
-	mid_Timer_onExecute = getStaticMethodID(env, cls_Timer, "onExecute", "(I)V");
+	cls_ai_Timer = loadClass(env, "com/scriptographer/ai/Timer");
+	cid_ai_Timer = getConstructorID(env, cls_ai_Timer, "(I)V");
+	mid_ai_Timer_onExecute = getStaticMethodID(env, cls_ai_Timer, "onExecute", "(I)V");
 
-	cls_Annotator = loadClass(env, "com/scriptographer/ai/Annotator");
-	cid_Annotator = getConstructorID(env, cls_Annotator, "(I)V");
-	mid_Annotator_onDraw = getStaticMethodID(env, cls_Annotator, "onDraw", "(III)V");
-	mid_Annotator_onInvalidate = getStaticMethodID(env, cls_Annotator, "onInvalidate", "(I)V");
+	cls_ai_Annotator = loadClass(env, "com/scriptographer/ai/Annotator");
+	cid_ai_Annotator = getConstructorID(env, cls_ai_Annotator, "(I)V");
+	mid_ai_Annotator_onDraw = getStaticMethodID(env, cls_ai_Annotator, "onDraw", "(III)V");
+	mid_ai_Annotator_onInvalidate = getStaticMethodID(env, cls_ai_Annotator, "onInvalidate", "(I)V");
 	
-	cls_HitTest = loadClass(env, "com/scriptographer/ai/HitTest");
-	cid_HitTest = getConstructorID(env, cls_HitTest, "(ILcom/scriptographer/ai/Art;IFLcom/scriptographer/ai/Point;)V");
+	cls_ai_HitTest = loadClass(env, "com/scriptographer/ai/HitTest");
+	cid_ai_HitTest = getConstructorID(env, cls_ai_HitTest, "(ILcom/scriptographer/ai/Art;IFLcom/scriptographer/ai/Point;)V");
 
 // ADM:
-	cls_ADMObject = loadClass(env, "com/scriptographer/adm/ADMObject");
-	fid_ADMObject_handle = getFieldID(env, cls_ADMObject, "handle", "I");
+	cls_adm_NativeObject = loadClass(env, "com/scriptographer/adm/NativeObject");
+	fid_adm_NativeObject_handle = getFieldID(env, cls_adm_NativeObject, "handle", "I");
 
-	cls_Dialog = loadClass(env, "com/scriptographer/adm/Dialog");
-	mid_Dialog_onSizeChanged = getMethodID(env, cls_Dialog, "onSizeChanged", "(II)V");
-
-	cls_PopupDialog = loadClass(env, "com/scriptographer/adm/PopupDialog");
-
-	cls_DialogGroupInfo = loadClass(env, "com/scriptographer/adm/DialogGroupInfo");
-	cid_DialogGroupInfo = getConstructorID(env, cls_DialogGroupInfo, "(Ljava/lang/String;I)V");
-
-	cls_Drawer = loadClass(env, "com/scriptographer/adm/Drawer");
-	cid_Drawer = getConstructorID(env, cls_Drawer, "(I)V");
-
-	cls_FontInfo = loadClass(env, "com/scriptographer/adm/FontInfo");
-	cid_FontInfo = getConstructorID(env, cls_FontInfo, "(IIIII)V");
-
-	cls_Image = loadClass(env, "com/scriptographer/adm/Image");
-	fid_Image_byteWidth = getFieldID(env, cls_Image, "byteWidth", "I");
-	fid_Image_bitsPerPixel = getFieldID(env, cls_Image, "bitsPerPixel", "I");
-	mid_Image_getIconHandle = getMethodID(env, cls_Image, "getIconHandle", "()I");
-
-	cls_ListItem = loadClass(env, "com/scriptographer/adm/ListItem");
-	fid_ListItem_listHandle = getFieldID(env, cls_ListItem, "listHandle", "I");	
+	cls_adm_Rectangle = loadClass(env, "com/scriptographer/adm/Rectangle");
+	cid_adm_Rectangle = getConstructorID(env, cls_adm_Rectangle, "(IIII)V");
+	fid_adm_Rectangle_x = getFieldID(env, cls_adm_Rectangle, "x", "I");
+	fid_adm_Rectangle_y = getFieldID(env, cls_adm_Rectangle, "y", "I");
+	fid_adm_Rectangle_width = getFieldID(env, cls_adm_Rectangle, "width", "I");
+	fid_adm_Rectangle_height = getFieldID(env, cls_adm_Rectangle, "height", "I");
+	mid_adm_Rectangle_set = getMethodID(env, cls_adm_Rectangle, "set", "(IIII)V");
 	
-	cls_HierarchyList = loadClass(env, "com/scriptographer/adm/HierarchyList");
-
-	cls_ListEntry = loadClass(env, "com/scriptographer/adm/ListEntry");
-
-	cls_HierarchyListEntry = loadClass(env, "com/scriptographer/adm/HierarchyListEntry");
-
-	cls_NotificationHandler = loadClass(env, "com/scriptographer/adm/NotificationHandler");
-	fid_NotificationHandler_tracker = getFieldID(env, cls_NotificationHandler, "tracker", "Lcom/scriptographer/adm/Tracker;");
-	fid_NotificationHandler_drawer = getFieldID(env, cls_NotificationHandler, "drawer", "Lcom/scriptographer/adm/Drawer;");
-	mid_NotificationHandler_onNotify_String = getMethodID(env, cls_NotificationHandler, "onNotify", "(Ljava/lang/String;)V");
-	mid_NotificationHandler_onNotify_int = getMethodID(env, cls_NotificationHandler, "onNotify", "(I)V");
-	mid_NotificationHandler_onDraw = getMethodID(env, cls_NotificationHandler, "onDraw", "(Lcom/scriptographer/adm/Drawer;)V");
-
-	cls_CallbackHandler = loadClass(env, "com/scriptographer/adm/CallbackHandler");
-	mid_CallbackHandler_onResize = getMethodID(env, cls_CallbackHandler, "onResize", "(II)V");
+	cls_adm_Point = loadClass(env, "com/scriptographer/adm/Point");
+	cid_adm_Point = getConstructorID(env, cls_adm_Point, "(II)V");
+	fid_adm_Point_x = getFieldID(env, cls_adm_Point, "x", "I");
+	fid_adm_Point_y = getFieldID(env, cls_adm_Point, "y", "I");
+	mid_adm_Point_set = getMethodID(env, cls_adm_Point, "set", "(II)V");
 	
-	cls_Tracker = loadClass(env, "com/scriptographer/adm/Tracker");
-	mid_Tracker_onTrack = getMethodID(env, cls_Tracker, "onTrack", "(Lcom/scriptographer/adm/NotificationHandler;IIIIIICCJ)Z");
+	cls_adm_Size = loadClass(env, "com/scriptographer/adm/Size");
+	cid_adm_Size = getConstructorID(env, cls_adm_Size, "(II)V");
+	fid_adm_Size_width = getFieldID(env, cls_adm_Size, "width", "I");
+	fid_adm_Size_height = getFieldID(env, cls_adm_Size, "height", "I");
+	mid_adm_Size_set = getMethodID(env, cls_adm_Size, "set", "(II)V");
+
+	cls_adm_Dialog = loadClass(env, "com/scriptographer/adm/Dialog");
+	mid_adm_Dialog_onSizeChanged = getMethodID(env, cls_adm_Dialog, "onSizeChanged", "(II)V");
+
+	cls_adm_PopupDialog = loadClass(env, "com/scriptographer/adm/PopupDialog");
+
+	cls_adm_DialogGroupInfo = loadClass(env, "com/scriptographer/adm/DialogGroupInfo");
+	cid_adm_DialogGroupInfo = getConstructorID(env, cls_adm_DialogGroupInfo, "(Ljava/lang/String;I)V");
+
+	cls_adm_Drawer = loadClass(env, "com/scriptographer/adm/Drawer");
+	cid_adm_Drawer = getConstructorID(env, cls_adm_Drawer, "(I)V");
+
+	cls_adm_FontInfo = loadClass(env, "com/scriptographer/adm/FontInfo");
+	cid_adm_FontInfo = getConstructorID(env, cls_adm_FontInfo, "(IIIII)V");
+
+	cls_adm_Image = loadClass(env, "com/scriptographer/adm/Image");
+	fid_adm_Image_byteWidth = getFieldID(env, cls_adm_Image, "byteWidth", "I");
+	fid_adm_Image_bitsPerPixel = getFieldID(env, cls_adm_Image, "bitsPerPixel", "I");
+	mid_adm_Image_getIconHandle = getMethodID(env, cls_adm_Image, "getIconHandle", "()I");
+
+	cls_adm_ListItem = loadClass(env, "com/scriptographer/adm/ListItem");
+	fid_adm_ListItem_listHandle = getFieldID(env, cls_adm_ListItem, "listHandle", "I");	
 	
-	cls_MenuItem = loadClass(env, "com/scriptographer/adm/MenuItem");
-	mid_MenuItem_wrapHandle = getStaticMethodID(env, cls_MenuItem, "wrapHandle", "(ILjava/lang/String;Ljava/lang/String;ILjava/lang/String;)Lcom/scriptographer/adm/MenuItem;");
-	mid_MenuItem_onSelect = getStaticMethodID(env, cls_MenuItem, "onSelect", "(I)V");
-	mid_MenuItem_onUpdate = getStaticMethodID(env, cls_MenuItem, "onUpdate", "(IIII)V");
+	cls_adm_HierarchyList = loadClass(env, "com/scriptographer/adm/HierarchyList");
+
+	cls_adm_ListEntry = loadClass(env, "com/scriptographer/adm/ListEntry");
+
+	cls_adm_HierarchyListEntry = loadClass(env, "com/scriptographer/adm/HierarchyListEntry");
+
+	cls_adm_NotificationHandler = loadClass(env, "com/scriptographer/adm/NotificationHandler");
+	fid_adm_NotificationHandler_tracker = getFieldID(env, cls_adm_NotificationHandler, "tracker", "Lcom/scriptographer/adm/Tracker;");
+	fid_adm_NotificationHandler_drawer = getFieldID(env, cls_adm_NotificationHandler, "drawer", "Lcom/scriptographer/adm/Drawer;");
+	mid_adm_NotificationHandler_onNotify_String = getMethodID(env, cls_adm_NotificationHandler, "onNotify", "(Ljava/lang/String;)V");
+	mid_adm_NotificationHandler_onNotify_int = getMethodID(env, cls_adm_NotificationHandler, "onNotify", "(I)V");
+	mid_adm_NotificationHandler_onDraw = getMethodID(env, cls_adm_NotificationHandler, "onDraw", "(Lcom/scriptographer/adm/Drawer;)V");
+
+	cls_adm_CallbackHandler = loadClass(env, "com/scriptographer/adm/CallbackHandler");
+	mid_adm_CallbackHandler_onResize = getMethodID(env, cls_adm_CallbackHandler, "onResize", "(II)V");
 	
-	cls_MenuGroup = loadClass(env, "com/scriptographer/adm/MenuGroup");
+	cls_adm_Tracker = loadClass(env, "com/scriptographer/adm/Tracker");
+	mid_adm_Tracker_onTrack = getMethodID(env, cls_adm_Tracker, "onTrack", "(Lcom/scriptographer/adm/NotificationHandler;IIIIIICCJ)Z");
+	
+	cls_adm_MenuItem = loadClass(env, "com/scriptographer/adm/MenuItem");
+	mid_adm_MenuItem_wrapHandle = getStaticMethodID(env, cls_adm_MenuItem, "wrapHandle", "(ILjava/lang/String;Ljava/lang/String;ILjava/lang/String;)Lcom/scriptographer/adm/MenuItem;");
+	mid_adm_MenuItem_onSelect = getStaticMethodID(env, cls_adm_MenuItem, "onSelect", "(I)V");
+	mid_adm_MenuItem_onUpdate = getStaticMethodID(env, cls_adm_MenuItem, "onUpdate", "(IIII)V");
+	
+	cls_adm_MenuGroup = loadClass(env, "com/scriptographer/adm/MenuGroup");
 }
 
 long ScriptographerEngine::getNanoTime() {
@@ -712,54 +706,48 @@ void ScriptographerEngine::reportError(JNIEnv *env) {
 
 jobject ScriptographerEngine::convertPoint(JNIEnv *env, AIReal x, AIReal y, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_Point, cid_Point, (jfloat) x, (jfloat) y);
+		return newObject(env, cls_ai_Point, cid_ai_Point, (jfloat) x, (jfloat) y);
 	} else {
-		callVoidMethod(env, res, mid_Point_setLocation, (jfloat) x, (jfloat) y);
+		callVoidMethod(env, res, mid_ai_Point_set, (jfloat) x, (jfloat) y);
 		return res;
 	}
 }
 
-// This handles 3 types of points: com.scriptographer.ai.Point, java.awt.geom.Point2D, java.awt.Point
+// This handles 3 types of points: com.scriptographer.ai.Point, java.awt.geom.Point2D, com.scriptographer.adm.Point
 AIRealPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, AIRealPoint *res) {
 	if (res == NULL)
 		res = new AIRealPoint;
-	if (env->IsInstanceOf(pt, cls_Point)) {
-		res->h = env->GetFloatField(pt, fid_Point_x);
-		res->v = env->GetFloatField(pt, fid_Point_y);
-	} else if (env->IsInstanceOf(pt, cls_awt_Point2D)) {
-		res->h = env->CallFloatMethod(pt, mid_awt_Point2D_getX);
-		res->v = env->CallFloatMethod(pt, mid_awt_Point2D_getY);
-	} else if (env->IsInstanceOf(pt, cls_awt_Point)) {
-		res->h = env->GetIntField(pt, fid_awt_Point_x);
-		res->v = env->GetIntField(pt, fid_awt_Point_y);
+	if (env->IsInstanceOf(pt, cls_ai_Point)) {
+		res->h = env->GetFloatField(pt, fid_ai_Point_x);
+		res->v = env->GetFloatField(pt, fid_ai_Point_y);
+	} else if (env->IsInstanceOf(pt, cls_adm_Point)) {
+		res->h = env->GetIntField(pt, fid_adm_Point_x);
+		res->v = env->GetIntField(pt, fid_adm_Point_y);
 	}
 	EXCEPTION_CHECK(env);
 	return res;
 }
 
-// java.awt.Point <-> ADMPoint
+// com.scriptographer.adm.Point <-> ADMPoint
 jobject ScriptographerEngine::convertPoint(JNIEnv *env, int x, int y, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_awt_Point, cid_awt_Point, x, y);
+		return newObject(env, cls_adm_Point, cid_adm_Point, x, y);
 	} else {
-		callVoidMethod(env, res, mid_awt_Point_setLocation, x, y);
+		callVoidMethod(env, res, mid_adm_Point_set, x, y);
 		return res;
 	}
 }
 
-// This handles 3 types of points: java.awt.Point,com.scriptographer.ai.Point, java.awt.geom.Point2D
+// This handles 3 types of points: com.scriptographer.adm.Point,com.scriptographer.ai.Point, java.awt.geom.Point2D
 ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, ADMPoint *res) {
 	if (res == NULL)
 		res = new ADMPoint;
-	if (env->IsInstanceOf(pt, cls_awt_Point)) {
-		res->h = env->GetIntField(pt, fid_awt_Point_x);
-		res->v = env->GetIntField(pt, fid_awt_Point_y);
-	} else if (env->IsInstanceOf(pt, cls_Point)) {
-		res->h = (short) env->GetFloatField(pt, fid_Point_x);
-		res->v = (short) env->GetFloatField(pt, fid_Point_y);
-	} else if (env->IsInstanceOf(pt, cls_awt_Point2D)) {
-		res->h = (short) env->CallFloatMethod(pt, mid_awt_Point2D_getX);
-		res->v = (short) env->CallFloatMethod(pt, mid_awt_Point2D_getY);
+	if (env->IsInstanceOf(pt, cls_adm_Point)) {
+		res->h = env->GetIntField(pt, fid_adm_Point_x);
+		res->v = env->GetIntField(pt, fid_adm_Point_y);
+	} else if (env->IsInstanceOf(pt, cls_ai_Point)) {
+		res->h = (short) env->GetFloatField(pt, fid_ai_Point_x);
+		res->v = (short) env->GetFloatField(pt, fid_ai_Point_y);
 	}
 	EXCEPTION_CHECK(env);
 	return res;
@@ -770,9 +758,9 @@ ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, ADMPoint *
 jobject ScriptographerEngine::convertRectangle(JNIEnv *env, AIReal left, AIReal top, AIReal right, AIReal bottom, jobject res) {
 	// AIRealRects are upside down, top and bottom are switched!
 	if (res == NULL) {
-		return newObject(env, cls_Rectangle, cid_Rectangle, (jfloat) left, (jfloat) bottom, (jfloat) (right - left), (jfloat) (top - bottom));
+		return newObject(env, cls_ai_Rectangle, cid_ai_Rectangle, (jfloat) left, (jfloat) bottom, (jfloat) (right - left), (jfloat) (top - bottom));
 	} else {
-		callVoidMethod(env, res, mid_Rectangle_setRect, (jfloat) left, (jfloat) bottom, (jfloat) (right - left), (jfloat) (top - bottom));
+		callVoidMethod(env, res, mid_ai_Rectangle_set, (jfloat) left, (jfloat) bottom, (jfloat) (right - left), (jfloat) (top - bottom));
 		return res;
 	}
 }
@@ -781,10 +769,10 @@ AIRealRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rt, AIRe
 	// AIRealRects are upside down, top and bottom are switched!
 	if (res == NULL)
 		res = new AIRealRect;
-	res->left =  env->GetFloatField(rt, fid_Rectangle_x);
-	res->bottom =  env->GetFloatField(rt, fid_Rectangle_y);
-	res->right = res->left + env->GetFloatField(rt, fid_Rectangle_width);
-	res->top = res->bottom + env->GetFloatField(rt, fid_Rectangle_height);
+	res->left =  env->GetFloatField(rt, fid_ai_Rectangle_x);
+	res->bottom =  env->GetFloatField(rt, fid_ai_Rectangle_y);
+	res->right = res->left + env->GetFloatField(rt, fid_ai_Rectangle_width);
+	res->top = res->bottom + env->GetFloatField(rt, fid_ai_Rectangle_height);
 	EXCEPTION_CHECK(env);
 	return res;
 }
@@ -793,9 +781,9 @@ AIRealRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rt, AIRe
 
 jobject ScriptographerEngine::convertRectangle(JNIEnv *env, int left, int top, int right, int bottom, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_awt_Rectangle, cid_awt_Rectangle, left, top, right - left, bottom - top);
+		return newObject(env, cls_adm_Rectangle, cid_adm_Rectangle, left, top, right - left, bottom - top);
 	} else {
-		callVoidMethod(env, res, mid_awt_Rectangle_setBounds, left, top, right - left, bottom - top);
+		callVoidMethod(env, res, mid_adm_Rectangle_set, left, top, right - left, bottom - top);
 		return res;
 	}
 }
@@ -803,29 +791,29 @@ jobject ScriptographerEngine::convertRectangle(JNIEnv *env, int left, int top, i
 ADMRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rt, ADMRect *res) {
 	if (res == NULL)
 		res = new ADMRect;
-	res->left = env->GetIntField(rt, fid_awt_Rectangle_x);
-	res->top = env->GetIntField(rt, fid_awt_Rectangle_y);
-	res->right = res->left + env->GetIntField(rt, fid_awt_Rectangle_width);
-	res->bottom = res->top + env->GetIntField(rt, fid_awt_Rectangle_height);
+	res->left = env->GetIntField(rt, fid_adm_Rectangle_x);
+	res->top = env->GetIntField(rt, fid_adm_Rectangle_y);
+	res->right = res->left + env->GetIntField(rt, fid_adm_Rectangle_width);
+	res->bottom = res->top + env->GetIntField(rt, fid_adm_Rectangle_height);
 	EXCEPTION_CHECK(env);
 	return res;
 }
 
-// java.awt.Dimension <-> ADMPoint
-jobject ScriptographerEngine::convertDimension(JNIEnv *env, int width, int height, jobject res) {
+// com.scriptographer.adm.Size <-> ADMPoint
+jobject ScriptographerEngine::convertSize(JNIEnv *env, int width, int height, jobject res) {
 	if (res == NULL) {
-		return newObject(env, cls_awt_Dimension, cid_awt_Dimension, (jint) width, (jint) height);
+		return newObject(env, cls_adm_Size, cid_adm_Size, (jint) width, (jint) height);
 	} else {
-		callVoidMethod(env, res, mid_awt_Dimension_setSize, (jint) width, (jint) height);
+		callVoidMethod(env, res, mid_adm_Size_set, (jint) width, (jint) height);
 		return res;
 	}
 }
 
-ADMPoint *ScriptographerEngine::convertDimension(JNIEnv *env, jobject dim, ADMPoint *res) {
+ADMPoint *ScriptographerEngine::convertSize(JNIEnv *env, jobject dim, ADMPoint *res) {
 	if (res == NULL)
 		res = new ADMPoint;
-	res->h = env->GetIntField(dim, fid_awt_Dimension_width);
-	res->v = env->GetIntField(dim, fid_awt_Dimension_height);
+	res->h = env->GetIntField(dim, fid_adm_Size_width);
+	res->v = env->GetIntField(dim, fid_adm_Size_height);
 	EXCEPTION_CHECK(env);
 	return res;
 }
@@ -856,22 +844,22 @@ ADMRGBColor *ScriptographerEngine::convertColor(JNIEnv *env, jobject srcCol, ADM
 jobject ScriptographerEngine::convertColor(JNIEnv *env, AIColor *srcCol, AIReal alpha) {
 	switch (srcCol->kind) {
 		case kGrayColor: {
-			return newObject(env, cls_GrayColor, cid_GrayColor,
+			return newObject(env, cls_ai_GrayColor, cid_ai_GrayColor,
 				(jfloat) srcCol->c.g.gray, (jfloat) alpha);
 		}
 		case kThreeColor: {
 			AIThreeColorStyle *rgb = &srcCol->c.rgb;
-			return newObject(env, cls_RGBColor, cid_RGBColor, (jfloat) rgb->red,
+			return newObject(env, cls_ai_RGBColor, cid_ai_RGBColor, (jfloat) rgb->red,
 				(jfloat) rgb->green, (jfloat) rgb->blue, (jfloat) alpha);
 		}
 		case kFourColor: {
 			AIFourColorStyle *f = &srcCol->c.f;
-			return newObject(env, cls_CMYKColor, cid_CMYKColor, (jfloat) f->cyan,
+			return newObject(env, cls_ai_CMYKColor, cid_ai_CMYKColor, (jfloat) f->cyan,
 				(jfloat) f->magenta, (jfloat) f->yellow, (jfloat) f->black, (jfloat) alpha);
 		}
 		case kGradient: {
 			AIGradientStyle *b = &srcCol->c.b;
-			return newObject(env, cls_GradientColor, cid_GradientColor,
+			return newObject(env, cls_ai_GradientColor, cid_ai_GradientColor,
 				(jint) b->gradient, gEngine->convertPoint(env, &b->gradientOrigin),
 				(jfloat) b->gradientAngle, (jfloat) b->gradientLength,
 				gEngine->convertMatrix(env, &b->matrix),
@@ -879,7 +867,7 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env, AIColor *srcCol, AIReal 
 		}
 		case kPattern: {
 			AIPatternStyle *p = &srcCol->c.p;
-			return newObject(env, cls_PatternColor, cid_PatternColor,
+			return newObject(env, cls_ai_PatternColor, cid_ai_PatternColor,
 				 (jint) p->pattern, (jfloat) p->shiftDist, (jfloat) p->shiftAngle,
 				 gEngine->convertPoint(env, &p->scale), (jfloat) p->rotate,
 				 (jboolean) p->reflect, (jfloat) p->reflectAngle,
@@ -887,7 +875,7 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env, AIColor *srcCol, AIReal 
 				 gEngine->convertMatrix(env, &p->transform));
 		}
 		case kNoneColor: {
-			return obj_Color_NONE;
+			return obj_ai_Color_NONE;
 		}
 		// TODO: add kCustomColor
 	}
@@ -898,20 +886,20 @@ AIColor *ScriptographerEngine::convertColor(JNIEnv *env, jobject srcCol, AIColor
 	if (dstCol == NULL)
 		dstCol = new AIColor;
 	// TODO: add kCustomColor
-	if (env->IsInstanceOf(srcCol, cls_GradientColor)) {
+	if (env->IsInstanceOf(srcCol, cls_ai_GradientColor)) {
 		dstCol->kind = kGradient;
 		AIGradientStyle *b = &dstCol->c.b;
-		// call mid_GradientColor_set, which sets the AIGradientStyle by calling 
+		// call mid_ai_GradientColor_set, which sets the AIGradientStyle by calling 
 		// Java_com_scriptographer_ai_Color_nativeSetGradient with the right arguments
-		callVoidMethod(env, cls_GradientColor, mid_GradientColor_set, (jint) b);
-	} else if (env->IsInstanceOf(srcCol, cls_PatternColor)) {
+		callVoidMethod(env, cls_ai_GradientColor, mid_ai_GradientColor_set, (jint) b);
+	} else if (env->IsInstanceOf(srcCol, cls_ai_PatternColor)) {
 		dstCol->kind = kPattern;
 		AIPatternStyle *p = &dstCol->c.p;
-		// call mid_PatternColor_set, which sets the AIPatternStyle by calling 
+		// call mid_ai_PatternColor_set, which sets the AIPatternStyle by calling 
 		// Java_com_scriptographer_ai_Color_nativeSetPattern with the right arguments
-		callVoidMethod(env, cls_PatternColor, mid_PatternColor_set, (jint) p);
+		callVoidMethod(env, cls_ai_PatternColor, mid_ai_PatternColor_set, (jint) p);
 	}
-	return convertColor(env, (jfloatArray) env->CallObjectMethod(srcCol, mid_Color_getComponents), dstCol, alpha);
+	return convertColor(env, (jfloatArray) env->CallObjectMethod(srcCol, mid_ai_Color_getComponents), dstCol, alpha);
 }
 
 AIColor *ScriptographerEngine::convertColor(JNIEnv *env, jfloatArray srcCol, AIColor *dstCol, AIReal *alpha) {
@@ -1054,9 +1042,9 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSp
 	return NULL;
 }
 
-// com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
+// AIRealMatrix <-> com.scriptoggrapher.ai.Matrix
 jobject ScriptographerEngine::convertMatrix(JNIEnv *env, AIRealMatrix *mt, jobject res) {
-	return newObject(env, cls_Matrix, cid_Matrix,
+	return newObject(env, cls_ai_Matrix, cid_ai_Matrix,
 		(jdouble) mt->a, (jdouble) mt->b,
 		(jdouble) mt->c, (jdouble) mt->d,
 		(jdouble) mt->tx, (jdouble) mt->ty);
@@ -1065,12 +1053,12 @@ jobject ScriptographerEngine::convertMatrix(JNIEnv *env, AIRealMatrix *mt, jobje
 AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env, jobject mt, AIRealMatrix *res) {
 	if (res == NULL)
 		res = new AIRealMatrix;
-	res->a = env->CallDoubleMethod(mt, mid_awt_AffineTransform_getScaleX);
-	res->b = env->CallDoubleMethod(mt, mid_awt_AffineTransform_getShearY);
-	res->c = env->CallDoubleMethod(mt, mid_awt_AffineTransform_getShearX);
-	res->d = env->CallDoubleMethod(mt, mid_awt_AffineTransform_getScaleY);
-	res->tx = env->CallDoubleMethod(mt, mid_awt_AffineTransform_getTranslateX);
-	res->ty = env->CallDoubleMethod(mt, mid_awt_AffineTransform_getTranslateY);
+	res->a = env->CallDoubleMethod(mt, mid_ai_Matrix_getScaleX);
+	res->b = env->CallDoubleMethod(mt, mid_ai_Matrix_getShearY);
+	res->c = env->CallDoubleMethod(mt, mid_ai_Matrix_getShearX);
+	res->d = env->CallDoubleMethod(mt, mid_ai_Matrix_getScaleY);
+	res->tx = env->CallDoubleMethod(mt, mid_ai_Matrix_getTranslateX);
+	res->ty = env->CallDoubleMethod(mt, mid_ai_Matrix_getTranslateY);
 	EXCEPTION_CHECK(env);
 	return res;
 }
@@ -1081,9 +1069,9 @@ jobject ScriptographerEngine::convertFillStyle(JNIEnv *env, AIFillStyle *style, 
 	// TODO: add additional AIFillStyleMap
 	jobject color = convertColor(env, &style->color);
 	if (res == NULL) {
-		res = newObject(env, cls_FillStyle, cid_FillStyle, color, true, style->overprint);
+		res = newObject(env, cls_ai_FillStyle, cid_ai_FillStyle, color, true, style->overprint);
 	} else {
-		callVoidMethod(env, res, mid_FillStyle_init, color, true, style->overprint);
+		callVoidMethod(env, res, mid_ai_FillStyle_init, color, true, style->overprint);
 	}
 	return res;
 }
@@ -1091,7 +1079,7 @@ jobject ScriptographerEngine::convertFillStyle(JNIEnv *env, AIFillStyle *style, 
 AIFillStyle *ScriptographerEngine::convertFillStyle(JNIEnv *env, jobject style, AIFillStyle *res) {
 	if (res == NULL)
 		res = new AIFillStyle;
-	callVoidMethod(env, style, mid_FillStyle_initNative, res);
+	callVoidMethod(env, style, mid_ai_FillStyle_initNative, res);
 	return res;
 }
 
@@ -1104,11 +1092,11 @@ jobject ScriptographerEngine::convertStrokeStyle(JNIEnv *env, AIStrokeStyle *sty
 	jfloatArray dashArray = env->NewFloatArray(count);
 	env->SetFloatArrayRegion(dashArray, 0, count, style->dash.array);
 	if (res == NULL) {
-		res = newObject(env, cls_StrokeStyle, cid_StrokeStyle, color, true,
+		res = newObject(env, cls_ai_StrokeStyle, cid_ai_StrokeStyle, color, true,
 			style->overprint, style->width, style->dash.offset, dashArray,
 			style->cap, style->join, style->miterLimit);
 	} else {
-		callVoidMethod(env, res, mid_StrokeStyle_init, color, true,
+		callVoidMethod(env, res, mid_ai_StrokeStyle_init, color, true,
 			style->overprint, style->width, style->dash.offset, dashArray,
 			style->cap, style->join, style->miterLimit);
 	}
@@ -1118,7 +1106,7 @@ jobject ScriptographerEngine::convertStrokeStyle(JNIEnv *env, AIStrokeStyle *sty
 AIStrokeStyle *ScriptographerEngine::convertStrokeStyle(JNIEnv *env, jobject style, AIStrokeStyle *res) {
 	if (res == NULL)
 		res = new AIStrokeStyle;
-	callVoidMethod(env, style, mid_StrokeStyle_initNative, res);
+	callVoidMethod(env, style, mid_ai_StrokeStyle_initNative, res);
 	return res;
 }
 
@@ -1129,7 +1117,7 @@ jobject ScriptographerEngine::convertArtSet(JNIEnv *env, AIArtSet set, bool laye
 	ArtSet_filter(set, layerOnly);
 	long count;
 	sAIArtSet->CountArtSet(set, &count);
-	jobject artSet = newObject(env, cls_ArtSet, cid_ArtSet); 
+	jobject artSet = newObject(env, cls_ai_ArtSet, cid_ArtSet); 
 	for (long i = 0; i < count; i++) {
 		jobject obj;
 		AIArtHandle art;
@@ -1137,7 +1125,7 @@ jobject ScriptographerEngine::convertArtSet(JNIEnv *env, AIArtSet set, bool laye
 			if (art != NULL) {
 				obj = wrapArtHandle(env, art);
 				if (obj != NULL)
-					callBooleanMethod(env, artSet, mid_ArtSet_add, obj);
+					callBooleanMethod(env, artSet, mid_ai_ArtSet_add, obj);
 			}
 		}
 	}
@@ -1462,30 +1450,30 @@ AIDictionaryRef ScriptographerEngine::convertDictionary(JNIEnv *env, jobject map
 				char *string = convertString(env, (jstring) value);
 				entry = sAIEntry->FromString(string);
 				delete string;
-			} else if (env->IsInstanceOf(value, cls_Art)) {
+			} else if (env->IsInstanceOf(value, cls_ai_Art)) {
 				AIArtHandle art = getArtHandle(env, value);
 				sAIDictionary->MoveArtToEntry(dictionary, key, art);
 				// let the art object know it's part of a dictionary now:
-				setIntField(env, value, fid_Art_dictionaryRef, (jint) dictionary);
+				setIntField(env, value, fid_ai_Art_dictionaryRef, (jint) dictionary);
 			} else if (env->IsInstanceOf(value, cls_Map)) {
 				// add to the existing object, if there's any
 				AIDictionaryRef subDictionary = NULL;
 				sAIDictionary->GetDictEntry(dictionary, key, &subDictionary);
 				subDictionary = convertDictionary(env, value, subDictionary, dontOverwrite, removeOld);
 				entry = sAIEntry->FromDict(subDictionary);
-			} else if (env->IsInstanceOf(value, cls_awt_Point2D)) {
+			} else if (env->IsInstanceOf(value, cls_adm_Point)) {
 				AIRealPoint point;
 				convertPoint(env, value, &point);
 				entry = sAIEntry->FromRealPoint(&point);
-			} else if (env->IsInstanceOf(value, cls_awt_AffineTransform)) {
+			} else if (env->IsInstanceOf(value, cls_ai_Matrix)) {
 				AIRealMatrix matrix;
 				convertMatrix(env, value, &matrix);
 				entry = sAIEntry->FromRealMatrix(&matrix);
-			} else if (env->IsInstanceOf(value, cls_FillStyle)) {
+			} else if (env->IsInstanceOf(value, cls_ai_FillStyle)) {
 				AIFillStyle style;
 				convertFillStyle(env, value, &style);
 				entry = sAIEntry->FromFillStyle(&style);
-			} else if (env->IsInstanceOf(value, cls_StrokeStyle)) {
+			} else if (env->IsInstanceOf(value, cls_ai_StrokeStyle)) {
 				AIStrokeStyle style;
 				convertStrokeStyle(env, value, &style);
 				entry = sAIEntry->FromStrokeStyle(&style);
@@ -1536,14 +1524,14 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	AIArtHandle art = (AIArtHandle) getIntField(env, obj, fid_AIObject_handle);
+	AIArtHandle art = (AIArtHandle) getIntField(env, obj, fid_ai_NativeObject_handle);
 	if (art == NULL)
 		throw new StringException("Object is not wrapping an art handle.");
 	if (activateDoc || doc != NULL) {
 		// fetch docHandle and switch if necessary
-		jobject docObj = getObjectField(env, obj, fid_Art_document);
+		jobject docObj = getObjectField(env, obj, fid_ai_Art_document);
 		if (docObj != NULL) {
-			AIDocumentHandle docHandle = (AIDocumentHandle) getIntField(env, docObj, fid_AIObject_handle);
+			AIDocumentHandle docHandle = (AIDocumentHandle) getIntField(env, docObj, fid_ai_NativeObject_handle);
 			if (doc != NULL)
 				*doc = docHandle;
 			// switch to this document if necessary
@@ -1607,14 +1595,14 @@ void *ScriptographerEngine::getWrapperHandle(JNIEnv *env, jobject obj, bool acti
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	void *wrapper = (void *) getIntField(env, obj, fid_AIObject_handle);
+	void *wrapper = (void *) getIntField(env, obj, fid_ai_NativeObject_handle);
 	if (wrapper == NULL)
 		throw new StringException("Object is not wrapping a %s handle.", name);
 	if (activateDoc) {
 		// fetch docHandle and switch if necessary
-		jobject docObj = getObjectField(env, obj, fid_AIWrapper_document);
+		jobject docObj = getObjectField(env, obj, fid_ai_NativeWrapper_document);
 		if (docObj != NULL) {
-			AIDocumentHandle doc = (AIDocumentHandle) getIntField(env, docObj, fid_AIObject_handle);
+			AIDocumentHandle doc = (AIDocumentHandle) getIntField(env, docObj, fid_ai_NativeObject_handle);
 			// switch to this document if necessary
 			if (doc != gActiveDoc) {
 				sAIDocumentList->Activate(doc, false);
@@ -1647,7 +1635,7 @@ AIFontKey ScriptographerEngine::getFontHandle(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	AIFontKey font = (AIFontKey) getIntField(env, obj, fid_AIObject_handle);
+	AIFontKey font = (AIFontKey) getIntField(env, obj, fid_ai_NativeObject_handle);
 	if (font == NULL)
 		throw new StringException("Object is not wrapping a font key.");
 	return font;
@@ -1662,7 +1650,7 @@ AIDictionaryRef ScriptographerEngine::getArtDictionaryHandle(JNIEnv *env, jobjec
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	return (AIDictionaryRef) gEngine->getIntField(env, obj, gEngine->fid_Art_dictionaryRef);
+	return (AIDictionaryRef) gEngine->getIntField(env, obj, gEngine->fid_ai_Art_dictionaryRef);
 }
 
 /**
@@ -1675,7 +1663,7 @@ AIDocumentHandle ScriptographerEngine::getDocumentHandle(JNIEnv *env, jobject ob
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	AIDocumentHandle document = (AIDocumentHandle) getIntField(env, obj, fid_AIObject_handle);
+	AIDocumentHandle document = (AIDocumentHandle) getIntField(env, obj, fid_ai_NativeObject_handle);
 	if (document == NULL)
 		throw new StringException("Object is not wrapping a document handle.");
 	if (activate && document != gActiveDoc) {
@@ -1695,7 +1683,7 @@ AIDocumentViewHandle ScriptographerEngine::getDocumentViewHandle(JNIEnv *env, jo
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	AIDocumentViewHandle view = (AIDocumentViewHandle) getIntField(env, obj, fid_AIObject_handle);
+	AIDocumentViewHandle view = (AIDocumentViewHandle) getIntField(env, obj, fid_ai_NativeObject_handle);
 	if (view == NULL)
 		throw new StringException("Object is not wrapping a view handle.");
 	return view;
@@ -1711,7 +1699,7 @@ AIToolHandle ScriptographerEngine::getToolHandle(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	AIToolHandle tool = (AIToolHandle) getIntField(env, obj, fid_AIObject_handle);
+	AIToolHandle tool = (AIToolHandle) getIntField(env, obj, fid_ai_NativeObject_handle);
 	if (tool == NULL)
 		throw new StringException("Object is not wrapping an tool handle.");
 	return tool;
@@ -1727,7 +1715,7 @@ AILiveEffectHandle ScriptographerEngine::getLiveEffectHandle(JNIEnv *env, jobjec
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	AILiveEffectHandle effect = (AILiveEffectHandle) getIntField(env, obj, fid_AIObject_handle);
+	AILiveEffectHandle effect = (AILiveEffectHandle) getIntField(env, obj, fid_ai_NativeObject_handle);
 	if (effect == NULL)
 		throw new StringException("Object is not wrapping an effect handle.");
 	return effect;
@@ -1743,7 +1731,7 @@ AIMenuItemHandle ScriptographerEngine::getMenuItemHandle(JNIEnv *env, jobject ob
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	AIMenuItemHandle item = (AIMenuItemHandle) getIntField(env, obj, fid_ADMObject_handle);
+	AIMenuItemHandle item = (AIMenuItemHandle) getIntField(env, obj, fid_adm_NativeObject_handle);
 	if (item == NULL)
 		throw new StringException("Object is not wrapping a menu item handle.");
 	return item;
@@ -1759,7 +1747,7 @@ AIMenuGroup ScriptographerEngine::getMenuGroupHandle(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	AIMenuGroup group = (AIMenuGroup) getIntField(env, obj, fid_ADMObject_handle);
+	AIMenuGroup group = (AIMenuGroup) getIntField(env, obj, fid_adm_NativeObject_handle);
 	if (group == NULL)
 		throw new StringException("Object is not wrapping a menu group handle.");
 	return group;
@@ -1788,7 +1776,7 @@ ATE::TextRangeRef ScriptographerEngine::getTextRangeRef(JNIEnv *env, jobject obj
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ATE::TextRangeRef range = (ATE::TextRangeRef) getIntField(env, obj, fid_AIObject_handle);
+	ATE::TextRangeRef range = (ATE::TextRangeRef) getIntField(env, obj, fid_ai_NativeObject_handle);
 	if (range == NULL)
 		throw new StringException("Object is not wrapping a text range handle.");
 	return range;
@@ -1804,7 +1792,7 @@ ATE::StoryRef ScriptographerEngine::getStoryRef(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ATE::StoryRef story = (ATE::StoryRef) getIntField(env, obj, fid_AIObject_handle);
+	ATE::StoryRef story = (ATE::StoryRef) getIntField(env, obj, fid_ai_NativeObject_handle);
 	if (story == NULL)
 		throw new StringException("Object is not wrapping a text story handle.");
 	return story;
@@ -1820,7 +1808,7 @@ ATE::CharFeaturesRef ScriptographerEngine::getCharFeaturesRef(JNIEnv *env, jobje
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ATE::CharFeaturesRef features = (ATE::CharFeaturesRef) getIntField(env, obj, fid_AIObject_handle);
+	ATE::CharFeaturesRef features = (ATE::CharFeaturesRef) getIntField(env, obj, fid_ai_NativeObject_handle);
 	if (features == NULL)
 		throw new StringException("Object is not wrapping a character style handle.");
 	return features;
@@ -1836,7 +1824,7 @@ ATE::ParaFeaturesRef ScriptographerEngine::getParaFeaturesRef(JNIEnv *env, jobje
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ATE::ParaFeaturesRef features = (ATE::ParaFeaturesRef) getIntField(env, obj, fid_AIObject_handle);
+	ATE::ParaFeaturesRef features = (ATE::ParaFeaturesRef) getIntField(env, obj, fid_ai_NativeObject_handle);
 	if (features == NULL)
 		throw new StringException("Object is not wrapping a paragraph style handle.");
 	return features;
@@ -1845,7 +1833,7 @@ ATE::ParaFeaturesRef ScriptographerEngine::getParaFeaturesRef(JNIEnv *env, jobje
 jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range) {
 	// we need to increase the ref count here. this is decreased again in TextRange.finalize
 	ATE::sTextRange->AddRef(range);
-	return newObject(env, cls_TextRange, cid_TextRange, (jint) range, (jint) gActiveDoc);
+	return newObject(env, cls_ai_TextRange, cid_ai_TextRange, (jint) range, (jint) gActiveDoc);
 }
 
 /**
@@ -1888,15 +1876,15 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 		sAIDictionary->SetIntegerEntry(artDict, m_artHandleKey, (ASInt32) art);
 		sAIDictionary->Release(artDict);
 	}
-	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jshort) type, (jint) textType, (jint) gActiveDoc, (jint) dictionary, (jboolean) wrapped);
+	return callStaticObjectMethod(env, cls_ai_Art, mid_ai_Art_wrapHandle, (jint) art, (jshort) type, (jint) textType, (jint) gActiveDoc, (jint) dictionary, (jboolean) wrapped);
 }
 
 void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary, AIDocumentHandle doc) {
-	callVoidMethod(env, artObject, mid_Art_changeHandle, (jint) art, (jint) dictionary, (jint) doc);
+	callVoidMethod(env, artObject, mid_ai_Art_changeHandle, (jint) art, (jint) dictionary, (jint) doc);
 }
 
 jobject ScriptographerEngine::getIfWrapped(JNIEnv *env, AIArtHandle art) {
-	return callStaticObjectMethod(env, cls_Art, mid_Art_getIfWrapped, (jint) art);
+	return callStaticObjectMethod(env, cls_ai_Art, mid_ai_Art_getIfWrapped, (jint) art);
 }
 
 jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) {
@@ -1906,7 +1894,7 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) 
 	AIArtHandle art;
 	if (sAIArt->GetFirstArtOfLayer(layer, &art))
 		throw new StringException("Cannot get layer art");
-	return callStaticObjectMethod(env, cls_Art, mid_Art_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER, (jint) kUnknownTextType, (jint) gActiveDoc, 0);
+	return callStaticObjectMethod(env, cls_ai_Art, mid_ai_Art_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER, (jint) kUnknownTextType, (jint) gActiveDoc, 0);
 }
 
 /**
@@ -1925,7 +1913,7 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 		!sAIMenu->GetItemText(item, text) &&
 		!sAIMenu->GetItemMenuGroup(item, &group) &&
 		!sAIMenu->GetMenuGroupName(group, &groupName)) {
-		return callStaticObjectMethod(env, cls_MenuItem, mid_MenuItem_wrapHandle,
+		return callStaticObjectMethod(env, cls_adm_MenuItem, mid_adm_MenuItem_wrapHandle,
 			(jint) item, convertString(env, name), convertString(env, text),
 			(jint) group, convertString(env, groupName)
 		);
@@ -1938,7 +1926,7 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 		!sAIMenu->GetItemText(item, text) &&
 		!sAIMenu->GetItemMenuGroup(item, &group) &&
 		!sAIMenu->GetMenuGroupName(group, &groupName)) {
-		return callStaticObjectMethod(env, cls_MenuItem, mid_MenuItem_wrapHandle,
+		return callStaticObjectMethod(env, cls_adm_MenuItem, mid_adm_MenuItem_wrapHandle,
 			(jint) item, convertString(env, name), convertString(env, text),
 			(jint) group, convertString(env, groupName)
 		);
@@ -2008,7 +1996,7 @@ ASErr ScriptographerEngine::selectionChanged() {
 			env->SetIntArrayRegion(artHandles, 0, count, (jint *) handles);
 			delete handles;
 			
-			callStaticVoidMethod(env, cls_Art, mid_Art_updateIfWrapped, artHandles);
+			callStaticVoidMethod(env, cls_ai_Art, mid_ai_Art_updateIfWrapped, artHandles);
 		}
 //		println(env, "%i", (getNanoTime() - t) / 1000000);
 		return kNoErr;
@@ -2024,7 +2012,7 @@ ASErr ScriptographerEngine::selectionChanged() {
 ASErr ScriptographerEngine::toolHandleEvent(const char * selector, AIToolMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_Tool, mid_Tool_onHandleEvent, (jint) message->tool, convertString(env, selector), (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
+		callStaticVoidMethod(env, cls_ai_Tool, mid_ai_Tool_onHandleEvent, (jint) message->tool, convertString(env, selector), (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -2070,7 +2058,7 @@ ASErr ScriptographerEngine::liveEffectEditParameters(AILiveEffectEditParamMessag
 	JNIEnv *env = getEnv();
 	try {
 		jobject map = getLiveEffectParameters(env, message->parameters);
-		callStaticVoidMethod(env, cls_LiveEffect, mid_LiveEffect_onEditParameters,
+		callStaticVoidMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onEditParameters,
 				(jint) message->effect, map, (jint) message->context, (jboolean) message->allowPreview);
 		sAILiveEffect->UpdateParameters(message->context);
 		return kNoErr;
@@ -2083,7 +2071,7 @@ ASErr ScriptographerEngine::liveEffectCalculate(AILiveEffectGoMessage *message) 
 	try {
 		jobject map = getLiveEffectParameters(env, message->parameters);
 		// TODO: setting art to something else seems to crash!
-		message->art = (AIArtHandle) callStaticIntMethod(env, cls_LiveEffect, mid_LiveEffect_onCalculate,
+		message->art = (AIArtHandle) callStaticIntMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onCalculate,
 				(jint) message->effect, map, wrapArtHandle(env, message->art));
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
@@ -2099,7 +2087,7 @@ ASErr ScriptographerEngine::liveEffectGetInputType(AILiveEffectInputTypeMessage 
 	JNIEnv *env = getEnv();
 	try {
 		jobject map = getLiveEffectParameters(env, message->parameters);
-		message->typeMask = callStaticIntMethod(env, cls_LiveEffect, mid_LiveEffect_onGetInputType,
+		message->typeMask = callStaticIntMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onGetInputType,
 				(jint) message->effect, map, wrapArtHandle(env, message->inputArt));
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
@@ -2115,7 +2103,7 @@ ASErr ScriptographerEngine::liveEffectGetInputType(AILiveEffectInputTypeMessage 
 ASErr ScriptographerEngine::menuItemExecute(AIMenuMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_MenuItem, mid_MenuItem_onSelect, (jint) message->menuItem);
+		callStaticVoidMethod(env, cls_adm_MenuItem, mid_adm_MenuItem_onSelect, (jint) message->menuItem);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -2124,7 +2112,7 @@ ASErr ScriptographerEngine::menuItemExecute(AIMenuMessage *message) {
 ASErr ScriptographerEngine::menuItemUpdate(AIMenuMessage *message, long inArtwork, long isSelected, long isTrue) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_MenuItem, mid_MenuItem_onUpdate,
+		callStaticVoidMethod(env, cls_adm_MenuItem, mid_adm_MenuItem_onUpdate,
 				(jint) message->menuItem, (jint) inArtwork, (jint) isSelected, (jint) isTrue);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
@@ -2139,7 +2127,7 @@ ASErr ScriptographerEngine::menuItemUpdate(AIMenuMessage *message, long inArtwor
 ASErr ScriptographerEngine::timerExecute(AITimerMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_Timer, mid_Timer_onExecute, (jint) message->timer);
+		callStaticVoidMethod(env, cls_ai_Timer, mid_ai_Timer_onExecute, (jint) message->timer);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -2153,7 +2141,7 @@ ASErr ScriptographerEngine::timerExecute(AITimerMessage *message) {
 ASErr ScriptographerEngine::annotatorDraw(AIAnnotatorMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_Annotator, mid_Annotator_onDraw,
+		callStaticVoidMethod(env, cls_ai_Annotator, mid_ai_Annotator_onDraw,
 				(jint) message->annotator, (jint) message->port, (jint) message->view);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
@@ -2163,7 +2151,7 @@ ASErr ScriptographerEngine::annotatorDraw(AIAnnotatorMessage *message) {
 ASErr ScriptographerEngine::annotatorInvalidate(AIAnnotatorMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_Annotator, mid_Annotator_onInvalidate, (jint) message->annotator);
+		callStaticVoidMethod(env, cls_ai_Annotator, mid_ai_Annotator_onInvalidate, (jint) message->annotator);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -2178,11 +2166,11 @@ void ScriptographerEngine::callOnNotify(jobject handler, ADMNotifierRef notifier
 	char type[64];
 	sADMNotifier->GetNotifierType(notifier, type, 64);
 	JNIEnv *env = getEnv();
-	callVoidMethodReport(env, handler, mid_NotificationHandler_onNotify_String, env->NewStringUTF(type));
+	callVoidMethodReport(env, handler, mid_adm_NotificationHandler_onNotify_String, env->NewStringUTF(type));
 }
 
 void ScriptographerEngine::callOnDestroy(jobject handler) {
-	callVoidMethodReport(NULL, handler, mid_NotificationHandler_onNotify_int,
+	callVoidMethodReport(NULL, handler, mid_adm_NotificationHandler_onNotify_int,
 				(jint) com_scriptographer_adm_Notifier_NOTIFIER_DESTROY);
 }
 
@@ -2193,10 +2181,10 @@ void ScriptographerEngine::callOnDestroy(jobject handler) {
 bool ScriptographerEngine::callOnTrack(jobject handler, ADMTrackerRef tracker) {
 	JNIEnv *env = getEnv();
 	try {
-		jobject trackerObj = getObjectField(env, handler, fid_NotificationHandler_tracker);
+		jobject trackerObj = getObjectField(env, handler, fid_adm_NotificationHandler_tracker);
 		ADMPoint pt;
 		sADMTracker->GetPoint(tracker, &pt);
-		return callBooleanMethod(env, trackerObj, mid_Tracker_onTrack, handler,
+		return callBooleanMethod(env, trackerObj, mid_adm_Tracker_onTrack, handler,
 				(jint) tracker, (jint) sADMTracker->GetAction(tracker),
 				(jint) sADMTracker->GetModifiers(tracker), pt.h, pt.v,
 				(jint) sADMTracker->GetMouseState(tracker),
@@ -2214,9 +2202,9 @@ bool ScriptographerEngine::callOnTrack(jobject handler, ADMTrackerRef tracker) {
 void ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 	JNIEnv *env = getEnv();
 	try {
-		jobject drawerObj = getObjectField(env, handler, fid_NotificationHandler_drawer);
-		setIntField(env, drawerObj, fid_ADMObject_handle, (jint)drawer);
-		callVoidMethod(env, handler, mid_NotificationHandler_onDraw, drawerObj);
+		jobject drawerObj = getObjectField(env, handler, fid_adm_NotificationHandler_drawer);
+		setIntField(env, drawerObj, fid_adm_NativeObject_handle, (jint)drawer);
+		callVoidMethod(env, handler, mid_adm_NotificationHandler_onDraw, drawerObj);
 	} EXCEPTION_CATCH_REPORT(env);
 }
 
@@ -2239,7 +2227,7 @@ ADMDialogRef ScriptographerEngine::getDialogRef(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ADMDialogRef dlg = (ADMDialogRef) getIntField(env, obj, fid_ADMObject_handle);
+	ADMDialogRef dlg = (ADMDialogRef) getIntField(env, obj, fid_adm_NativeObject_handle);
 	if (dlg == NULL)
 		throw new StringException("Object is not wrapping a dialog ref.");
 	return dlg;
@@ -2255,7 +2243,7 @@ ADMDrawerRef ScriptographerEngine::getDrawerRef(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ADMDrawerRef drawer = (ADMDrawerRef) getIntField(env, obj, fid_ADMObject_handle);
+	ADMDrawerRef drawer = (ADMDrawerRef) getIntField(env, obj, fid_adm_NativeObject_handle);
 	if (drawer == NULL)
 		throw new StringException("Object is not wrapping a drawer ref.");
 	return drawer;
@@ -2271,7 +2259,7 @@ ADMTrackerRef ScriptographerEngine::getTrackerRef(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ADMTrackerRef tracker = (ADMTrackerRef) getIntField(env, obj, fid_ADMObject_handle);
+	ADMTrackerRef tracker = (ADMTrackerRef) getIntField(env, obj, fid_adm_NativeObject_handle);
 	if (tracker == NULL)
 		throw new StringException("Object is not wrapping a tracker ref.");
 	return tracker;
@@ -2287,7 +2275,7 @@ ADMImageRef ScriptographerEngine::getImageRef(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ADMImageRef image = (ADMImageRef) getIntField(env, obj, fid_ADMObject_handle);
+	ADMImageRef image = (ADMImageRef) getIntField(env, obj, fid_adm_NativeObject_handle);
 	if (image == NULL)
 		throw new StringException("Object is not wrapping an image ref.");
 	return image;
@@ -2303,11 +2291,11 @@ ADMItemRef ScriptographerEngine::getItemRef(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ADMItemRef item = (ADMItemRef) getIntField(env, obj, fid_ADMObject_handle);
+	ADMItemRef item = (ADMItemRef) getIntField(env, obj, fid_adm_NativeObject_handle);
 	if (item == NULL) {
 		// for HierarchyLists it could be that the user wants to call item functions
 		// on a child list. report that this can only be called on the root list:
-		if (env->IsInstanceOf(obj, cls_HierarchyList)) {
+		if (env->IsInstanceOf(obj, cls_adm_HierarchyList)) {
 			throw new StringException("This function can only be called on the root hierarchy list.");
 		} else {
 			throw new StringException("Object is not wrapping an item ref.");
@@ -2326,7 +2314,7 @@ ADMListRef ScriptographerEngine::getListRef(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ADMListRef list = (ADMListRef) getIntField(env, obj, fid_ListItem_listHandle);
+	ADMListRef list = (ADMListRef) getIntField(env, obj, fid_adm_ListItem_listHandle);
 	if (list == NULL) throw new StringException("Object is not wrapping a list ref.");
 	return list;
 }
@@ -2341,7 +2329,7 @@ ADMHierarchyListRef ScriptographerEngine::getHierarchyListRef(JNIEnv *env, jobje
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ADMHierarchyListRef list = (ADMHierarchyListRef) getIntField(env, obj, fid_ListItem_listHandle);
+	ADMHierarchyListRef list = (ADMHierarchyListRef) getIntField(env, obj, fid_adm_ListItem_listHandle);
 	if (list == NULL) throw new StringException("Object is not wrapping a hierarchy list ref.");
 	return list;
 }
@@ -2356,7 +2344,7 @@ ADMEntryRef ScriptographerEngine::getListEntryRef(JNIEnv *env, jobject obj) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ADMEntryRef entry = (ADMEntryRef) getIntField(env, obj, fid_ADMObject_handle);
+	ADMEntryRef entry = (ADMEntryRef) getIntField(env, obj, fid_adm_NativeObject_handle);
 	if (entry == NULL) throw new StringException("Object is not wrapping a list entry ref.");
 	return entry;
 }
@@ -2371,7 +2359,7 @@ ADMListEntryRef ScriptographerEngine::getHierarchyListEntryRef(JNIEnv *env, jobj
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ADMListEntryRef entry = (ADMListEntryRef) getIntField(env, obj, fid_ADMObject_handle);
+	ADMListEntryRef entry = (ADMListEntryRef) getIntField(env, obj, fid_adm_NativeObject_handle);
 	if (entry == NULL) throw new StringException("Object is not wrapping a hierarchy list entry ref.");
 	return entry;
 }

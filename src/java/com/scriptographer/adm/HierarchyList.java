@@ -31,10 +31,6 @@
 
 package com.scriptographer.adm;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.*;
-
 import com.scratchdisk.script.Callable;
 
 /**
@@ -196,21 +192,20 @@ public class HierarchyList extends List {
 	public native void setEntryTextRect(int x, int y, int width, int height,
 			boolean recursive);
 
-	public void setEntrySize(Dimension size, boolean recursive) {
+	public void setEntrySize(Size size, boolean recursive) {
 		setEntrySize(size.width, size.height, recursive);
 	}
 
-	public void setEntrySize(Point2D size, boolean recursive) {
-		setEntrySize((int) size.getX(), (int) size.getY(), recursive);
+	public void setEntrySize(Point size, boolean recursive) {
+		setEntrySize(size.x, size.y, recursive);
 	}
 	
 	public void setEntrySize(int[] size, boolean recursive) {
 		setEntrySize(size[0], size[1], recursive);
 	}
 
-	public void setEntryTextRect(Rectangle2D rect, boolean recursive) {
-		setEntryTextRect((int) rect.getX(), (int) rect.getY(),
-				(int) rect.getWidth(), (int) rect.getHeight(), recursive);
+	public void setEntryTextRect(Rectangle rect, boolean recursive) {
+		setEntryTextRect(rect.x, rect.y, rect.width, rect.height, recursive);
 	}
 	
 	public void setEntryTextRect(int[] rect, boolean recursive) {
@@ -224,16 +219,15 @@ public class HierarchyList extends List {
 
 	public native Rectangle getNonLeafEntryTextRect();
 
-	public void setNonLeafEntryTextRect(Rectangle2D rect, boolean recursive) {
-		setNonLeafEntryTextRect((int)rect.getX(), (int)rect.getY(),
-				(int)rect.getWidth(), (int)rect.getHeight(), recursive);
+	public void setNonLeafEntryTextRect(Rectangle rect, boolean recursive) {
+		setNonLeafEntryTextRect(rect.x, rect.y, rect.width, rect.height, recursive);
 	}
 
 	public void setNonLeafEntryTextRect(int[] rect, boolean recursive) {
 		setNonLeafEntryTextRect(rect[0], rect[1], rect[2], rect[3], recursive);
 	}
 
-	public void setNonLeafEntryTextRect(Rectangle2D rect) {
+	public void setNonLeafEntryTextRect(Rectangle rect) {
 		setNonLeafEntryTextRect(rect, false);
 	}
 
@@ -266,30 +260,28 @@ public class HierarchyList extends List {
 	public native Rectangle localToGlobal(int x, int y, int width, int height);
 	public native Rectangle globalToLocal(int x, int y, int width, int height);
 
-	public Point localToScreen(Point2D pt) {
-		return localToScreen((int) pt.getX(), (int) pt.getY());
+	public Point localToScreen(Point point) {
+		return localToScreen(point.x, point.y);
 	}
 
-	public Point screenToLocal(Point2D pt) {
-		return screenToLocal((int) pt.getX(), (int) pt.getY());
+	public Point screenToLocal(Point point) {
+		return screenToLocal(point.x, point.y);
 	}
 
-	public Point localToGlobal(Point2D pt) {
-		return localToScreen((int) pt.getX(), (int) pt.getY());
+	public Point localToGlobal(Point point) {
+		return localToScreen(point.x, point.y);
 	}
 
-	public Point globalToLocal(Point2D pt) {
-		return screenToLocal((int) pt.getX(), (int) pt.getY());
+	public Point globalToLocal(Point point) {
+		return screenToLocal(point.x, point.y);
 	}
 
-	public Rectangle localToGlobal(Rectangle2D rt) {
-		return localToGlobal((int) rt.getX(), (int) rt.getY(),
-				(int) rt.getWidth(), (int) rt.getHeight());
+	public Rectangle localToGlobal(Rectangle rect) {
+		return localToGlobal(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	public Rectangle globalToLocal(Rectangle2D rt) {
-		return globalToLocal((int) rt.getX(), (int) rt.getY(),
-				(int) rt.getWidth(), (int) rt.getHeight());
+	public Rectangle globalToLocal(Rectangle rect) {
+		return globalToLocal(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	/*
@@ -356,8 +348,8 @@ public class HierarchyList extends List {
 
 	public native HierarchyListEntry getActiveLeaf();
 
-	public void getLeafAt(Point2D point) {
-		getLeafAt((int) point.getX(), (int) point.getY());
+	public void getLeafAt(Point point) {
+		getLeafAt(point.x, point.y);
 	}
 
 	/*

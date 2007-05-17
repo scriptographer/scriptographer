@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class FontWeight extends AIWrapper {
+public class FontWeight extends NativeWrapper {
 	
 	public static final FontWeight NONE = new FontWeight(0);
 	

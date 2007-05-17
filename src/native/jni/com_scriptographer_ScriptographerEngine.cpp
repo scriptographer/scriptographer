@@ -154,9 +154,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_dispatchNext
 }
 
 /*
- * double getApplicationVersion()
+ * double nativeGetApplicationVersion()
  */
-JNIEXPORT jdouble JNICALL Java_com_scriptographer_ScriptographerEngine_getApplicationVersion(JNIEnv *env, jclass cls) {
+JNIEXPORT jdouble JNICALL Java_com_scriptographer_ScriptographerEngine_nativeGetApplicationVersion(JNIEnv *env, jclass cls) {
 	try {
 		double major = sAIRuntime->GetAppMajorVersion();
 		double minor = sAIRuntime->GetAppMinorVersion();
@@ -167,9 +167,9 @@ JNIEXPORT jdouble JNICALL Java_com_scriptographer_ScriptographerEngine_getApplic
 }
 
 /*
- * int getApplicationRevision()
+ * int nativeGetApplicationRevision()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ScriptographerEngine_getApplicationRevision(JNIEnv *env, jclass cls) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ScriptographerEngine_nativeGetApplicationRevision(JNIEnv *env, jclass cls) {
 	try {
 		return sAIRuntime->GetAppRevisionVersion();
 	} EXCEPTION_CONVERT(env);

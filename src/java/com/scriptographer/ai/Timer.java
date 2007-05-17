@@ -41,7 +41,7 @@ import com.scratchdisk.util.IntMap;
 /**
  * @author lehni
  */
-public class Timer extends AIObject {
+public class Timer extends NativeObject {
 	public static final int TICKS_PER_SECONDS = 60;
 	
 	private boolean active;

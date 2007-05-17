@@ -36,7 +36,7 @@ import java.util.Map;
 /**
  * @author lehni
  */
-public abstract class DictionaryObject extends AIObject {
+public abstract class DictionaryObject extends NativeObject {
 
 	protected DictionaryObject(int handle) {
 		super(handle);

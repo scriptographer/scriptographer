@@ -42,7 +42,7 @@ import com.scratchdisk.util.IntMap;
 /**
  * @author lehni
  */
-public class MenuGroup extends ADMObject {
+public class MenuGroup extends NativeObject {
 	// AIMenuGroups.h:
 	public static final MenuGroup
 		GROUP_ABOUT 							= new MenuGroup("About"),

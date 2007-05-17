@@ -32,14 +32,11 @@
 package com.scriptographer.ai;
 
 import java.awt.Shape;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.util.Map;
 
 import com.scratchdisk.util.SoftIntMap;
 import com.scratchdisk.util.ExtendedList;
-import com.scratchdisk.util.ReadOnlyList;
 
 /**
  * @author lehni
@@ -232,8 +229,8 @@ public class Document extends DictionaryObject {
 	 */
 	public native void setSize(float width, float height);
 	
-	public void setSize(Point2D size) {
-		setSize((float) size.getX(), (float) size.getY());
+	public void setSize(Point size) {
+		setSize(size.x, size.y);
 	}
 
 	public native Rectangle getCropBox();
@@ -313,9 +310,8 @@ public class Document extends DictionaryObject {
 	 */
 	public native void redraw(float x, float y, float width, float height);
 	
-	public void redraw(Rectangle2D rect) {
-		redraw((float) rect.getX(), (float) rect.getY(),
-				(float) rect.getWidth(), (float) rect.getHeight());
+	public void redraw(Rectangle rect) {
+		redraw(rect.x, rect.y, rect.width, rect.height);
 	}
 	
 	public native boolean write(File file, String format, boolean ask);
@@ -533,12 +529,12 @@ public class Document extends DictionaryObject {
 		return new AreaText(area);
 	}
 	
-	public PointText createPointText(Point2D point, short orient) {
+	public PointText createPointText(Point point, short orient) {
 		activate(false, true);
 		return new PointText(point, orient);
 	}
 
-	public PointText createPointText(Point2D point) {
+	public PointText createPointText(Point point) {
 		activate(false, true);
 		return new PointText(point);
 	}

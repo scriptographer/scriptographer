@@ -43,10 +43,10 @@ using namespace ATE;
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextStory_release(JNIEnv *env, jobject obj) {
 	try {
-		StoryRef story = (StoryRef) gEngine->getIntField(env, obj, gEngine->fid_AIObject_handle);
+		StoryRef story = (StoryRef) gEngine->getIntField(env, obj, gEngine->fid_ai_NativeObject_handle);
 		if (story != NULL) {
 			sStory->Release(story);
-			gEngine->setIntField(env, obj, gEngine->fid_AIObject_handle, 0);
+			gEngine->setIntField(env, obj, gEngine->fid_ai_NativeObject_handle, 0);
 		}
 	} EXCEPTION_CONVERT(env);
 }
@@ -108,7 +108,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_getSelection(JNIE
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextStory_equals(JNIEnv *env, jobject obj, jobject story) {
 	try {
-		if (env->IsInstanceOf(story, gEngine->cls_TextStory)) {
+		if (env->IsInstanceOf(story, gEngine->cls_ai_TextStory)) {
 			StoryRef story1 = gEngine->getStoryRef(env, obj);
 			StoryRef story2 = gEngine->getStoryRef(env, story);
 			if (story2 != NULL) {

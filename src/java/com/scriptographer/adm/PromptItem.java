@@ -31,8 +31,6 @@
 
 package com.scriptographer.adm;
 
-import java.awt.Dimension;
-
 import org.mozilla.javascript.ScriptRuntime;
 
 /**
@@ -245,7 +243,7 @@ public class PromptItem {
 				
 		}
 		item.setFont(Dialog.FONT_PALETTE);
-		Dimension size = item.getBestSize();
+		Size size = item.getBestSize();
 		if (width >= 0)
 			size.width = width;
 		item.setSize(size);

@@ -31,13 +31,10 @@
 
 package com.scriptographer.ai;
 
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-
 /**
  * @author lehni
  */
-public class DocumentView extends AIWrapper {
+public class DocumentView extends NativeWrapper {
 	public static final int
 	/** Only when there is no visibile document */
 	MODE_NOSCREEN = 0,
@@ -85,8 +82,8 @@ public class DocumentView extends AIWrapper {
 	 */
 	public native void setCenter(float x, float y);
 
-	public void setCenter(Point2D point) {
-		setCenter((float) point.getX(), (float) point.getY());
+	public void setCenter(Point point) {
+		setCenter(point.x, point.y);
 	}
 
 	/**
@@ -108,16 +105,15 @@ public class DocumentView extends AIWrapper {
 	 */
 	public native Point artworkToView(float x, float y);
 
-	public Point artworkToView(Point2D point) {
-		return artworkToView((float) point.getX(), (float) point.getY());
+	public Point artworkToView(Point point) {
+		return artworkToView(point.x, point.y);
 	}
 
 	public native Rectangle artworkToView(float x, float y, float width,
 			float height);
 
-	public Rectangle artworkToView(Rectangle2D rect) {
-		return artworkToView((float) rect.getX(), (float) rect.getY(),
-			(float) rect.getWidth(), (float) rect.getHeight());
+	public Rectangle artworkToView(Rectangle rect) {
+		return artworkToView(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	/**
@@ -126,16 +122,15 @@ public class DocumentView extends AIWrapper {
 	 */
 	public native Point viewToArtwork(float x, float y);
 
-	public Point viewToArtwork(Point2D point) {
-		return viewToArtwork((float) point.getX(), (float) point.getY());
+	public Point viewToArtwork(Point point) {
+		return viewToArtwork(point.x, point.y);
 	}
 
 	public native Rectangle viewToArtwork(float x, float y, float width,
 			float height);
 
-	public Rectangle viewToArtwork(Rectangle2D rect) {
-		return viewToArtwork((float) rect.getX(), (float) rect.getY(),
-			(float) rect.getWidth(), (float) rect.getHeight());
+	public Rectangle viewToArtwork(Rectangle rect) {
+		return viewToArtwork(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	/**
@@ -172,8 +167,8 @@ public class DocumentView extends AIWrapper {
 	 */
 	public native void scrollBy(float x, float y);
 
-	public void scrollBy(Point2D point) {
-		scrollBy((float) point.getX(), (float) point.getY());
+	public void scrollBy(Point point) {
+		scrollBy(point.x, point.y);
 	}
 
 	/**
@@ -186,9 +181,8 @@ public class DocumentView extends AIWrapper {
 
 	public native void invalidate(float x, float y, float width, float height);
 
-	public void invalidate(Rectangle2D rect) {
-		invalidate((float) rect.getX(), (float) rect.getY(),
-			(float) rect.getWidth(), (float) rect.getHeight());
+	public void invalidate(Rectangle rect) {
+		invalidate(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	/**

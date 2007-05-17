@@ -72,7 +72,7 @@ inline AIDictionaryRef Tracing_getStatistics(AIArtHandle art) {
 
 #define TRACING_SET_OPTION(KEY, TYPE, VALUE) \
 	TRACING_OPERATION(Options, Set, KEY, TYPE, VALUE); \
-	gEngine->callVoidMethod(env, obj, gEngine->mid_Tracing_markDirty);
+	gEngine->callVoidMethod(env, obj, gEngine->mid_ai_Tracing_markDirty);
 
 /*
  * int nativeCreate(int docHandle, int artHandle)

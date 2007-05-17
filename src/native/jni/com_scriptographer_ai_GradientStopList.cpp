@@ -44,7 +44,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeGet(JNI
 		if (sAIGradient->GetNthGradientStop((AIGradientHandle) handle, index, &s))
 			throw new StringException("Cannot get gradient stop");
 		jobject color = gEngine->convertColor(env, &s.color);
-		gEngine->callVoidMethod(env, stop, gEngine->mid_GradientStop_init, s.midPoint, s.rampPoint, color);
+		gEngine->callVoidMethod(env, stop, gEngine->mid_ai_GradientStop_init, s.midPoint, s.rampPoint, color);
 	} EXCEPTION_CONVERT(env);
 }
 

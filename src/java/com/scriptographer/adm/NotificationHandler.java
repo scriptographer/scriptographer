@@ -40,7 +40,7 @@ package com.scriptographer.adm;
  * 
  * @author lehni
  */
-abstract class NotificationHandler extends ADMObject {
+abstract class NotificationHandler extends NativeObject {
 	private Tracker tracker = new Tracker();
  	private Drawer drawer = new Drawer();
 

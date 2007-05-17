@@ -30,9 +30,6 @@
 package com.scriptographer.adm;
 
 import java.io.IOException;
-import java.awt.*;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 
 import com.scriptographer.ScriptographerEngine; 
 import com.scratchdisk.script.ScriptEngine;
@@ -246,22 +243,20 @@ public class ListEntry extends NotificationHandler {
 	public native Rectangle localToScreen(int x, int y, int width, int height);
 	public native Rectangle screenToLocal(int x, int y, int width, int height);
 
-	public Point localToScreen(Point2D pt) {
-		return localToScreen((int) pt.getX(), (int) pt.getY());
+	public Point localToScreen(Point point) {
+		return localToScreen(point.x, point.y);
 	}
 
-	public Point screenToLocal(Point2D pt) {
-		return screenToLocal((int) pt.getX(), (int) pt.getY());
+	public Point screenToLocal(Point point) {
+		return screenToLocal(point.x, point.y);
 	}
 
-	public Rectangle localToScreen(Rectangle2D rt) {
-		return localToScreen((int) rt.getX(), (int) rt.getY(),
-				(int) rt.getWidth(), (int) rt.getHeight());
+	public Rectangle localToScreen(Rectangle rect) {
+		return localToScreen(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	public Rectangle screenToLocal(Rectangle2D rt) {
-		return screenToLocal((int) rt.getX(), (int) rt.getY(),
-				(int) rt.getWidth(), (int) rt.getHeight());
+	public Rectangle screenToLocal(Rectangle rect) {
+		return screenToLocal(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	/* 
@@ -273,9 +268,8 @@ public class ListEntry extends NotificationHandler {
 	public native void invalidate(int x, int y, int width, int height);
 	public native void update();
 
-	public void invalidate(Rectangle2D rt) {
-		invalidate((int) rt.getX(), (int) rt.getY(),
-				(int) rt.getWidth(), (int) rt.getHeight());
+	public void invalidate(Rectangle rect) {
+		invalidate(rect.x, rect.y, rect.width, rect.height);
 	}
 
 	/* 

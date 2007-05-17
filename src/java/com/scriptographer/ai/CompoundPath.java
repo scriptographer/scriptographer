@@ -33,7 +33,6 @@ package com.scriptographer.ai;
 
 import java.awt.Shape;
 import java.awt.geom.PathIterator;
-import java.awt.geom.Point2D;
 
 import com.scratchdisk.util.ExtendedList;
 import com.scratchdisk.util.Lists;
@@ -93,10 +92,6 @@ public class CompoundPath extends Art {
 		moveTo(pt);
 	}
 	
-	public void moveTo(Point2D pt) {
-		moveTo(pt);
-	}
-	
 	private Path getPreviousPath() {
 		Path prevPath = (Path) getFirstChild();
 		if (prevPath == null)
@@ -112,20 +107,12 @@ public class CompoundPath extends Art {
 		getPreviousPath().lineTo(pt);
 	}
 	
-	public void lineTo(Point2D pt) {
-		getPreviousPath().lineTo(pt);
-	}
-	
 	public void curveTo(float c1x, float c1y, float c2x, float c2y,
 			float x, float y) {
 		getPreviousPath().curveTo(c1x, c1y, c2x, c2y, x, y);
 	}
 	
 	public void curveTo(Point c1, Point c2, Point pt) {
-		getPreviousPath().curveTo(c1, c2, pt);
-	}
-	
-	public void curveTo(Point2D c1, Point2D c2, Point2D pt) {
 		getPreviousPath().curveTo(c1, c2, pt);
 	}
 	
@@ -136,10 +123,6 @@ public class CompoundPath extends Art {
 	public void quadTo(Point c, Point pt) {
 		getPreviousPath().quadTo(c, pt);
 	}
-	
-	public void quadTo(Point2D c, Point2D pt) {
-		getPreviousPath().quadTo(c, pt);
-	}
 
 	public void arcTo(float centerX, float centerY, float endX, float endY,
 			int ccw) {
@@ -147,10 +130,6 @@ public class CompoundPath extends Art {
 	}
 
 	public void arcTo(Point center, Point endPoint, int ccw) {
-		getPreviousPath().arcTo(center, endPoint, ccw);
-	}
-
-	public void arcTo(Point2D center, Point2D endPoint, int ccw) {
 		getPreviousPath().arcTo(center, endPoint, ccw);
 	}
 	
