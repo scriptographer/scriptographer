@@ -50,10 +50,10 @@
 
 <% #parameters %>
 <% foreach $param in param.parameters prefix='<div class="member-paragraph"><b>Parameters:</b>' suffix='</div>' %>
-	<div><tt><%= $param.name() %>: </tt><%= $param.paramType().renderLink() %>
-	<% if $param.tag %>
-		<% tags tags=$param.tag.inlineTags() classDoc=param.classDoc prefix=" - " %>
-	<% end %>
+	<div><tt><%= $param.name() %>: </tt><%= $param.paramType().renderLink() | code -%>
+<% if $param.tag %>
+<% tags tags=$param.tag.inlineTags() classDoc=param.classDoc prefix=" - " %>
+<% end %>
 	</div>
 <% end %>
 
@@ -61,14 +61,14 @@
 <% foreach $ex in param.exceptions prefix='<div class="member-paragraph"><b>Throws:</b>' suffix='</div>' %>
 	<% $cd = $ex.exception() %>
 	<div>
-		<%= $cd ? $cd.renderLink() : $ex.exceptionName() %> - <% tags classDoc=$cd tags=$ex.inlineTags() %>
+		<%= $cd ? $cd.renderLink() : $ex.exceptionName() | code %><% tags classDoc=$cd tags=$ex.inlineTags() prefix=" - " %>
 	</div>
 <% end %>
 
 <% #return %>
 <div class="member-paragraph"><b>Returns:</b>
 <div> 
-<%= param.returnType.renderLink() %>
+<%= param.returnType.renderLink() | code %>
 <% foreach $tag in param.tags prefix=" - " %>
 <% tags classDoc=param.classDoc tags=$tag.inlineTags() -%>
 <% end %>

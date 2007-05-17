@@ -40,11 +40,11 @@
 		<property name="docs.js.dir" value="${docs.dir}/js"/>
 		<property name="docs.templates.dir" value="${docs.dir}/templates"/>
 		<!-- this is used for importing comments from the gnu classpath file into the js documentation -->
-		<property name="docs.src.jdk" value="${docs.dir}/src"/>
+		<property name="docs.src" value="${docs.dir}/src"/>
 		
 		<path id="docs.sourcepath" >
 			<pathelement location="${build.src}" />
-			<pathelement location="${docs.src.jdk}" />
+			<pathelement location="${docs.src}" />
 		</path>
 
 		<path id="docs.classpath">
@@ -364,9 +364,9 @@
 	<target name="rhinodoclet" depends="init">
 		<mkdir dir="${destdir}"/>
 		<!--
-		<javadoc packagenames="com.scriptographer.test"
+		<javadoc packagenames="com.scriptographer,com.scriptographer.sg,com.scriptographer.ai,com.scriptographer.adm,com.scriptographer.util,java.*"
 		-->
-		<javadoc packagenames="com.scriptographer,com.scriptographer.ai,com.scriptographer.adm,com.scriptographer.util,java.*"
+		<javadoc packagenames="com.scriptographer.sg"
 				sourcepathref="docs.sourcepath"
 				destdir="${destdir}"
 				author="false"
@@ -380,13 +380,6 @@
 				<param name="-script" value="doclet/doclet.js"/>
 				<param name="-basepackage" value="com.scriptographer"/>
 				<param name="-filterclasses" value="
-					com.scriptographer.Commitable
-					com.scriptographer.CommitManager
-					com.scriptographer.ConsoleOutputStream
-					com.scriptographer.ConsoleOutputWriter
-					com.scriptographer.GlobalObject
-					com.scriptographer.ScriptographerEngine
-					com.scriptographer.ScriptographerException
 					com.scriptographer.ai.DictionaryObject
 					com.scriptographer.ai.SegmentPoint
 					com.scriptographer.ai.Dictionary
@@ -397,25 +390,23 @@
 					com.scriptographer.ai.Tool
 					com.scriptographer.adm.Notifier
 					com.scriptographer.adm.DialogGroupInfo
+					com.scriptographer.sg.Preferences
 					com.scriptographer.js.*
 					com.scriptographer.util.*
 					java.*
 				"/>
 				<param name="-packagesequence" value="
+					com.scriptographer.sg
 					com.scriptographer.ai
 					com.scriptographer.adm
 					com.scriptographer.test
 					"/>
 				<param name="-methodfilter" value="
-					setWrapper
-					getWrapper
-					createWrapper
 					iterator
 					hashCode
 					destroyAll
 					disposeAll
 					removeAll
-					getInstance
 				"/>
 				<param name="-classorder" value="doclet/classorder.txt"/>
 				<param name="-templates" value="${templates}"/>

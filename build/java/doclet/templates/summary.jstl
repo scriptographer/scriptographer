@@ -1,4 +1,4 @@
 <li class="summary">
-<%= this.renderLink() %>
+<%= this.renderLink() | code %>
 <%-- tags classDoc=param.classDoc tags=firstSentenceTags() prefix="<ul><li>" suffix="</li></ul>" %>
 </li>

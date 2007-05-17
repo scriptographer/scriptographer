@@ -238,6 +238,11 @@ Type = Object.extend({
 		var cd = this.asClassDoc();
 		return cd && cd.hasSuperclass("java.awt.geom.AffineTransform");
 	},
+
+	isFile: function() {
+		var cd = this.asClassDoc();
+		return cd && (cd.hasSuperclass("java.io.File"));
+	},
 	
 	isCompatible: function(type) {
 		var cd1 = this.asClassDoc(), cd2 = type.asClassDoc();
@@ -249,33 +254,36 @@ Type = Object.extend({
 			this.isMap() && type.isMap() ||
 			this.isPoint() && type.isPoint() ||
 			this.isRectangle() && type.isRectangle() ||
-			this.isMatrix() && type.isMatrix();
+			this.isMatrix() && type.isMatrix() ||
+			this.isFile() && type.isFile();
 	},
 
 	renderLink: function() {
 		if (this.isNumber())
-			return "<tt>Number</tt>";
+			return "Number";
 		else if (this.isBoolean())
-			return "<tt>Boolean</tt>";
+			return "Boolean";
 		else if (this.isArray())
-			return "<tt>Array:" + stripCodeTags(this.asClassDoc().renderLink()) + "</tt>";
+			return "Array of " + this.asClassDoc().renderLink();
 		else if (this.isMap())
-			return "<tt>Object</tt>";
+			return "Object";
 		else if (this.isPoint())
 			return ClassObject.renderLink("Point", "com.scriptographer.ai.Point");
 		else if (this.isRectangle())
 			return ClassObject.renderLink("Rectangle", "com.scriptographer.ai.Rectangle");
 		else if (this.isMatrix())
 			return ClassObject.renderLink("Matrix", "com.scriptographer.ai.Matrix");
+		else if (this.isFile())
+			return ClassObject.renderLink("File", "com.scriptographer.sg.File");
 		else {
 			var cls = this.asClassDoc();
 			if (cls) {
 				if (cls.isVisible())
 					return cls.renderClassLink();
 				else
-					return "<tt>" + cls.name() + "</tt>";
+					return cls.name();
 			} else {
-				return "<tt>" + this.typeName() + "</tt>";
+				return this.typeName();
 			}
 		}
 	}
@@ -311,9 +319,10 @@ SeeTagImpl.inject({
 					cls = cls.getSuperclass();
 			}
 			*/
-			return ref.renderLink(param.classDoc);
+			return code_filter(ref.renderLink(param.classDoc));
 		} else {
 			error(this.position() + ": warning - @link contains undefined reference: " + this);
+			return code_filter(this);
 		}
 	}
 });
@@ -379,7 +388,7 @@ MemberDocImpl.inject({
 
 	renderLink: function(current) {
 		var mem = Member.get(this);
-		return mem ? mem.renderLink(current) : "";
+		return mem ? mem.renderLink(current) : this.toString();
 	}
 
 });
@@ -398,9 +407,8 @@ Member = Object.extend({
 
 	isVisible: function() {
 		var hide = this.tags('jshide')[0];
-		if (hide) hide == hide.text();
-		return this.bean && (!this.bean.isVisible() || hide == 'false') || !this.bean &&
-				(hide == undefined || hide == 'false');
+		if (hide) hide = hide.text();
+		return !/^(method|all|)$/.test(hide) && (!this.bean || !this.bean.isVisible());
 	},
 
 	renderMember: function(classDoc, index, member, containingClass) {
@@ -775,7 +783,7 @@ BeanProperty = Member.extend({
 		var setterHide = this.setter && this.setter.tags('jshide')[0];
 		if (getterHide) getterHide = getterHide.text();
 		if (setterHide) setterHide = setterHide.text();
-		return getterHide != 'bean' && setterHide != 'bean';
+		return !/^(bean|all|)$/.test(getterHide) && !/^(bean|all|)$/.test(setterHide);
 	},
 
 	isStatic: function() {
@@ -1252,7 +1260,7 @@ ClassObject = Object.extend({
 			var mem = this.get(qualifiedName);
 			// use renderClassLink, as renderLink might have been overridden
 			// by new Type(...)
-			return mem ? mem.classDoc.renderClassLink() : "<tt>" + name + "</tt>";
+			return mem ? mem.classDoc.renderClassLink() : name;
 		},
 
 		classes: new Hash()
@@ -1377,9 +1385,8 @@ function getRelativeIdentifier(str) {
 }
 
 function renderLink(qualifiedName, name, anchor, title) {
-	var str = '<tt>';
 	if (settings.hyperref) {
-		str += '<a href="';
+		var str = '<a href="';
 		if (qualifiedName) {
 			var path = getRelativeIdentifier(qualifiedName).replace('.', '/');
 			// link to the index file for packages
@@ -1396,12 +1403,10 @@ function renderLink(qualifiedName, name, anchor, title) {
 			str += '#' + anchor;
 			str += '" onClick="return toggleMember(\'' + anchor + '\', true);';
 		}
-		str += '">' + title + '</a>';
+		return str + '">' + title + '</a>';
 	} else {
-		str += title;
+	 	return title;
 	}
-	str += '</tt>';
-	return str;
 }
 
 function encodeJs(str) {
@@ -1411,28 +1416,43 @@ function encodeJs(str) {
 function encodeHtml(str) {
 	// encode everything
 	str = Packages.org.htmlparser.util.Translate.encode(str);
-	var tags = { code: true, br: true, p: true, b: true, a: true, i: true, tt: true };
+	var tags = {
+		code: true, br: true, p: true, b: true, a: true, i: true,
+		ol: true, li: true, ul: true, tt: true };
 	// now replace allowed tags again.
-	return str.replace(/&lt;(\/?)(\w*)(\s*\/?)&gt;/g, function(match, open, tag, close) {
-		return tags[tag] ? '<' + open + tag + close + '>' : match;
+	return str.replace(/&lt;(\/?)(\w*)(.*?)(\s*\/?)&gt;/g, function(match, open, tag, content, close) {
+		tag = tag.toLowerCase();
+		return tags[tag] ? '<' + open + tag + content + close + '>' : match;
 	});
 }
 
 /**
  * Prints a sequence of tags obtained from e.g. com.sun.javadoc.Doc.tags().
  */
-renderTags = tags_macro = function(param) {
+function renderTags(param) {
 	return renderTemplate("tags", param);
 }
 
-stripCodeTags = stripCodeTags_filter = function(str) {
-	return str.replace(/<tt>|<\/tt>/g, "");
+function tags_macro(param) {
+	// Do not use prefix / suffix for the tag loop here, as we're in a macro where
+	// these are already applied
+	delete param.prefix;
+	delete param.suffix;
+	return renderTags(param);
+}
+
+function code_filter(str) {
+	return '<tt>' + str + '</tt>';
 }
 
 function tags_filter(str) {
+	// Replace inline <code></code> with <tt></tt>
+	str = str.replace(/<code>[ \t]*([^\n\r]*?)[ \t]*<\/code>/g, function(match, content) {
+		return '<tt>' + content + '</tt>';
+	});
 	// Put code tags on the same line as the content, as white-space: pre is set:
-	str = str.replace(/<code>\s*([\s\S]*?)\s*<\/code>/g, function(match, part) {
-		return '<code>' + part + '</code>';
+	str = str.replace(/<code>\s*([\s\S]*?)\s*<\/code>/g, function(match, content) {
+		return '<code>' + content + '</code>';
 	});
 	// Automatically put <br /> at the end of sentences.
 	str = str.replace(/([.:])\s*(\n|\r\n)/g, function(match, before, lineBreak) {
