@@ -50,6 +50,9 @@ public class Preferences implements Map {
 
 	java.util.prefs.Preferences prefs;
 
+	/**
+	 * @jshide
+	 */
 	public Preferences(java.util.prefs.Preferences prefs) {
 		this.prefs = prefs;
 	}

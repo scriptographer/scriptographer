@@ -45,11 +45,14 @@ import com.scriptographer.ai.FontList;
  */
 public class Application {
 
-	public double getVersion() {
+	private Application() {
+	}
+
+	public String getVersion() {
 		return ScriptographerEngine.getApplicationVersion();
 	}
 
-	public int getRevision() {
+	public String getRevision() {
 		return ScriptographerEngine.getApplicationRevision();
 	}
 
@@ -103,6 +106,12 @@ public class Application {
 		return ScriptographerEngine.getNanoTime();
 	}
 
+	/**
+	 * 
+	 * @param current the current slider position
+	 * @param max the maximum slidper position
+	 * @return
+	 */
 	public boolean updateProgress(long current, long max) {
 		return ScriptographerEngine.updateProgress(current, max);
 	}
@@ -110,7 +119,7 @@ public class Application {
 	private static Application app = null;
 	
 	/**
-	 * @jshide
+	 * @jshide all
 	 */
 	public static Application getInstance() {
 		if (app == null)

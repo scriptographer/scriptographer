@@ -43,20 +43,39 @@ public class Script {
 	private File file;
 	private Preferences prefs = null;
 
+	/**
+	 * @jshide
+	 */
 	public Script(File file) {
 		this.file = file;
 	}
 
+	/**
+	 * Returns the script's preferences, as an object in which data
+	 * can be stored and retrieved from:
+	 * <pre>
+	 * script.preferences.value = 10;
+	 * </pre>
+	 * @return the script's preferences object.
+	 */
 	public Preferences getPreferences() {
 		if (prefs == null)
 			prefs = new Preferences(ScriptographerEngine.getPreferences(file));
 		return prefs;
 	}
 
+	/**
+	 * Returns the script file.
+	 * @return the script file.
+	 */
 	public File getFile() {
 		return file;
 	}
 
+	/**
+	 * Returns the directory in which the script is stored in.
+	 * @return the script's parent directory.
+	 */
 	public File getDirectory() {
 		return file.getParentFile();
 	}

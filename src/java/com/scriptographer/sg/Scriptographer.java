@@ -46,6 +46,9 @@ import com.scriptographer.ScriptographerEngine;
  */
 public class Scriptographer {
 
+	private Scriptographer() {
+	}
+
 	public File getPluginDirectory() {
 		return ScriptographerEngine.getPluginDirectory();
 	}
@@ -53,21 +56,21 @@ public class Scriptographer {
 	public File getScriptDirectory() {
 		return ScriptographerEngine.getScriptDirectory();
 	}
-	
-	public double getVersion() {
-		if (version < 0)
+
+	private String version = null;
+	private String revision = null;
+
+	public String getVersion() {
+		if (version == null)
 			readVersion();
 		return version;
 	}
 
-	public int getRevision() {
-		if (revision < 0)
+	public String getRevision() {
+		if (revision == null)
 			readVersion();
 		return revision;
 	}
-
-	private double version = -1;
-	private int revision = -1;
 
 	private void readVersion() {
 		// Read the version from the file...
@@ -77,8 +80,8 @@ public class Scriptographer {
 			try {
 				BufferedReader buffer = new BufferedReader(
 						new InputStreamReader(in));
-				version = Double.parseDouble(buffer.readLine());
-				revision = Integer.parseInt(buffer.readLine());
+				version = buffer.readLine();
+				revision = buffer.readLine();
 				in.close();
 			} catch (IOException ioe) {
 				ioe.printStackTrace();
@@ -89,7 +92,7 @@ public class Scriptographer {
 	private static Scriptographer scripto = null;
 
 	/**
-	 * @jshide
+	 * @jshide all
 	 */
 	public static Scriptographer getInstance() {
 		if (scripto == null)

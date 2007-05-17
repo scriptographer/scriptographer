@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.prefs.Preferences;
@@ -92,9 +93,9 @@ public class ScriptographerEngine {
 		if (!scriptDir.exists() || !scriptDir.isDirectory())
 			chooseScriptDirectory();
 
-		// Execute all scripts in startup folder:
+		// Execute all __init__ scripts in startup folder:
 		if (scriptDir != null)
-			executeAll(new File(scriptDir, "startup"));
+			callInitScripts(scriptDir);
 
 		// Explicitly initialize all dialogs on startup, as otherwise
 		// funny things will happen on CS3 -> see comment in initializeAll
@@ -180,6 +181,9 @@ public class ScriptographerEngine {
 		t.printStackTrace(logger);
 		logger.println();
 		System.err.print(error);
+		char last = error.charAt(error.length() - 1);
+		if (last != '\n' && last != '\r')
+			System.err.println();
 	}
 
 	static int reloadCount = 0;
@@ -223,10 +227,8 @@ public class ScriptographerEngine {
 			Document.beginExecution();
 			currentFile = file;
 			if (file != null) {
-				if (file.getName().equals("object raster.js")) {
 				showProgress("Executing " + (file != null ?
 						file.getName() : "Console Input") + "...");
-				}
 				// Disable output to the console while the script is executed as it
 				// won't get updated anyway
 				// ConsoleOutputStream.enableOutput(false);
@@ -265,19 +267,20 @@ public class ScriptographerEngine {
 	 * @param objects
 	 * @throws ScriptException 
 	 */
-	public static Object invoke(Callable callable, Object obj, Object[] args)
-			throws ScriptException {
+	public static Object invoke(Callable callable, Object obj, Object[] args) {
 		boolean started = beginExecution(null, null);
 		// Retrieve wrapper object for the native java object, and call the
 		// function on it.
 		try {
 			return callable.call(obj, args);
-		} finally {
-			// commit all changed objects after a scripting function has been
-			// called!
-			if (started)
-				endExecution();
+		} catch(ScriptException e) {
+			ScriptographerEngine.reportError(e);
 		}
+		// commit all changed objects after a scripting function has been
+		// called!
+		if (started)
+			endExecution();
+		return null;
 	}
 
 	public static Object invoke(Callable callable, Object obj)
@@ -339,20 +342,20 @@ public class ScriptographerEngine {
 	}
 
 	/**
-	 * executes all scripts in the given folder
+	 * Executes all scripts named __init__.* in the given folder
 	 *
 	 * @param dir
 	 * @throws IOException 
 	 * @throws ScriptException 
 	 */
-	public static void executeAll(File dir) throws ScriptException, IOException {
+	public static void callInitScripts(File dir) throws ScriptException, IOException {
 		File []files = dir.listFiles();
 		if (files != null) {
 			for (int i = 0; i < files.length; i++) {
 				File file = files[i];
 				if (file.isDirectory()) {
-					executeAll(file);
-				} else if (file.getName().endsWith(".js")) {
+					callInitScripts(file);
+				} else if (file.getName().startsWith("__init__")) {
 					execute(file, null);
 				}
 			}
@@ -459,7 +462,15 @@ public class ScriptographerEngine {
 		return isMacintosh;
 	}
 
-	public static native double getApplicationVersion();
+	private static native double nativeGetApplicationVersion();
 
-	public static native int getApplicationRevision();
+	public static String getApplicationVersion() {
+		return new DecimalFormat("#.0").format(nativeGetApplicationVersion());
+	}
+
+	private static native int nativeGetApplicationRevision();
+
+	public static String getApplicationRevision() {
+		return new DecimalFormat("000").format(nativeGetApplicationRevision());
+	}
 }
