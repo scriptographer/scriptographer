@@ -219,9 +219,7 @@ public abstract class Art extends DictionaryObject {
 		TRANSFORM_LINES				= 1 << 4,
 		TRANSFORM_LINKED_MASKS		= 1 << 5,
 		TRANSFORM_CHILDREN			= 1 << 6,
-		TRANSFORM_SELECTION_ONLY	= 1 << 7,
-		// self defined:
-		TRANSFORM_DEEP				= 1 << 10;
+		TRANSFORM_SELECTION_ONLY	= 1 << 7;
 	
 	// AIArtOrder:
 	public final static int
@@ -421,7 +419,22 @@ public abstract class Art extends DictionaryObject {
 		// udpate
 		version++;
 	}
-	
+
+	/**
+	 * Called by native methods that need all cached changes to be
+	 * commited before the objects are modified. The version is then
+	 * increased to invalidate the cached values, as they were just 
+	 * changed.
+	 */
+	protected void commit(boolean invalidate) {
+		CommitManager.commit(this);
+		// increasing version by one causes refetching of cached data:
+		// TODO: add all art objects that need invalidate to be called after transform!
+		// if (type == kPathArt)
+		if (invalidate)
+			version++;
+	}
+
 	/**
 	 * @jsbean Returns the document that the Art Item belongs to.
 	 */
@@ -756,7 +769,7 @@ public abstract class Art extends DictionaryObject {
 	 * @param matrix
 	 */
 	public void transform(Matrix matrix) {
-		transform(matrix, TRANSFORM_OBJECTS | TRANSFORM_DEEP);
+		transform(matrix, TRANSFORM_OBJECTS | TRANSFORM_CHILDREN);
 	}
 
 	/**

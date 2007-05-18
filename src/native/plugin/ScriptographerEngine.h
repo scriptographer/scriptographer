@@ -141,9 +141,6 @@ public:
 
 	jclass cls_ScriptographerException;
 	
-	jclass cls_CommitManager;
-	jmethodID mid_CommitManager_commit;
-	
 // AI:
 	jclass cls_ai_NativeObject;
 	jfieldID fid_ai_NativeObject_handle;
@@ -207,7 +204,8 @@ public:
 	jmethodID mid_ai_Art_getIfWrapped;
 	jmethodID mid_ai_Art_updateIfWrapped;
 	jmethodID mid_ai_Art_changeHandle;
-
+	jmethodID mid_ai_Art_commit;
+	
 	jclass cls_ai_ArtSet;
 	jmethodID cid_ArtSet;
 	jmethodID mid_ai_ArtSet_add;

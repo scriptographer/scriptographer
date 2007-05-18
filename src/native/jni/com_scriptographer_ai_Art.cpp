@@ -728,28 +728,21 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_moveBelow(JNIEnv *env,
 	return Art_move(env, obj, art, kPlaceBelow);
 }
 
-// if 'deep' is set, artTransform traverses the children recursively and transforms them: 
-void artTransform(JNIEnv *env, AIArtHandle art, AIRealMatrix *matrix, AIReal lineScale, long flags) {
+/*
+ * Commits and invalidates wrapped art objects.
+ * if 'children' is set, it traverses the children recursively and commits and
+ * invalidates them too.
+ */
+void Art_commit(JNIEnv *env, AIArtHandle art, bool invalidate, bool children) {
 	jobject obj = gEngine->getIfWrapped(env, art);
-	if (obj != NULL) {
-		// commit it first:
-		gEngine->callStaticObjectMethod(env, gEngine->cls_CommitManager, gEngine->mid_CommitManager_commit, obj);
-	}
-	sAITransformArt->TransformArt(art, matrix, lineScale, flags);
-	// TODO: add all art objects that need invalidate to be called after transform!
-	// short type = Art_getType(art);
-	// if (type == kPathArt)
-	if (obj != NULL) {
-		// only call this if it's wrapped!
-		// increasing version by one causes refetching of cached data:
-		gEngine->setIntField(env, obj, gEngine->fid_ai_Art_version, gEngine->getIntField(env, obj, gEngine->fid_ai_Art_version) + 1);
-	}
-
-	if (flags & com_scriptographer_ai_Art_TRANSFORM_DEEP) {
+	// only do this if it's wrapped!
+	if (obj != NULL)
+		gEngine->callVoidMethod(env, obj, gEngine->mid_ai_Art_commit, invalidate);
+	if (children) {
 		AIArtHandle child;
 		sAIArt->GetArtFirstChild(art, &child);
 		while (child != NULL) {
-			artTransform(env, child, matrix, lineScale, flags);
+			Art_commit(env, child, invalidate, true);
 			sAIArt->GetArtSibling(child, &child);
 		}
 	}
@@ -767,7 +760,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_transform(JNIEnv *env, job
 		AIReal sx, sy;
 		sAIRealMath->AIRealMatrixGetScale(&mx, &sx, &sy);
 		AIReal lineScale = sAIRealMath->AIRealSqrt(sx) * sAIRealMath->AIRealSqrt(sy);
-		artTransform(env, art, &mx, lineScale, flags);
+		Art_commit(env, art, true, flags & com_scriptographer_ai_Art_TRANSFORM_CHILDREN);
+		sAITransformArt->TransformArt(art, &mx, lineScale, flags);
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -789,9 +783,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_rasterize(JNIEnv *env, 
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_expand(JNIEnv *env, jobject obj, jint flags, jint steps) {
 	try {
-		// commit pending changes first, before native expand is called!
-		gEngine->callStaticObjectMethod(env, gEngine->cls_CommitManager, gEngine->mid_CommitManager_commit, obj);
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		// commit pending changes first, before native expand is called!
+		Art_commit(env, art, false, true);
 		// store old selected items:
 		AIArtHandle **selected = NULL;
 		long numSelected = 0;

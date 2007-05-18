@@ -404,9 +404,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ScriptographerEngine_onAbout = getStaticMethodID(env, cls_ScriptographerEngine, "onAbout", "()V");
 
 	cls_ScriptographerException = loadClass(env, "com/scriptographer/ScriptographerException");
-	
-	cls_CommitManager = loadClass(env, "com/scriptographer/CommitManager");
-	mid_CommitManager_commit =  getStaticMethodID(env, cls_CommitManager, "commit", "(Ljava/lang/Object;)V");
 
 // AI:
 	cls_ai_NativeObject = loadClass(env, "com/scriptographer/ai/NativeObject");
@@ -471,6 +468,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_Art_getIfWrapped = getStaticMethodID(env, cls_ai_Art, "getIfWrapped", "(I)Lcom/scriptographer/ai/Art;");
 	mid_ai_Art_updateIfWrapped = getStaticMethodID(env, cls_ai_Art, "updateIfWrapped", "([I)V");
 	mid_ai_Art_changeHandle = getMethodID(env, cls_ai_Art, "changeHandle", "(III)V");
+	mid_ai_Art_commit = getMethodID(env, cls_ai_Art, "commit", "(Z)V");
 
 	cls_ai_ArtSet = loadClass(env, "com/scriptographer/ai/ArtSet");
 	cid_ArtSet = getConstructorID(env, cls_ai_ArtSet, "()V");

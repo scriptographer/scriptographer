@@ -155,8 +155,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_i
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_lang_String_2FFII(JNIEnv *env, jclass cls, jstring title, jfloat width, jfloat height, jint colorModel, jint dialogStatus) {
 	AIDocumentHandle doc = NULL;
 	AIColorModel model = (AIColorModel) colorModel;
-	// FIXME: As long as Art objects need to be modified in the active document (see Bug #001) commit it first:
-	gEngine->callStaticObjectMethod(env, gEngine->cls_CommitManager, gEngine->mid_CommitManager_commit, NULL);
 	char *str = NULL;
 	try {
 #if kPluginInterfaceVersion < kAI12
