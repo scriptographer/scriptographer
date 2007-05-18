@@ -353,9 +353,11 @@ public class ScriptographerEngine {
 		if (files != null) {
 			for (int i = 0; i < files.length; i++) {
 				File file = files[i];
-				if (file.isDirectory()) {
+				String name = file.getName();
+				if (file.isDirectory() && !name.startsWith(".")
+						&& !name.equals("CVS")) {
 					callInitScripts(file);
-				} else if (file.getName().startsWith("__init__")) {
+				} else if (name.startsWith("__init__")) {
 					execute(file, null);
 				}
 			}
