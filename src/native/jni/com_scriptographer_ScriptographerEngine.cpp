@@ -154,25 +154,36 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_dispatchNext
 }
 
 /*
- * double nativeGetApplicationVersion()
+ * java.lang.String getApplicationVersion()
  */
-JNIEXPORT jdouble JNICALL Java_com_scriptographer_ScriptographerEngine_nativeGetApplicationVersion(JNIEnv *env, jclass cls) {
+JNIEXPORT jstring JNICALL Java_com_scriptographer_ScriptographerEngine_getApplicationVersion(JNIEnv *env, jclass cls) {
 	try {
-		double major = sAIRuntime->GetAppMajorVersion();
-		double minor = sAIRuntime->GetAppMinorVersion();
-		// TODO: this is wrong. use strings instead!
-		while (minor > 1) minor *= 0.1;
-		return major + minor;
+#if kPluginInterfaceVersion >= kAI12
+		ASInt32 major = sAIRuntime->GetAppMajorVersion();
+		ASInt32 minor = sAIRuntime->GetAppMinorVersion();
+#else
+		// TODO: how to find this out on CS?
+		ASInt32 major = 11;
+		ASInt32 minor = 0;
+#endif
+		char version[32];
+		sprintf(version, "%i.%i", major, minor);
+		return gEngine->convertString(env, version);
 	} EXCEPTION_CONVERT(env);
-	return 0.0;
+	return NULL;
 }
 
 /*
- * int nativeGetApplicationRevision()
+ * int getApplicationRevision()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ScriptographerEngine_nativeGetApplicationRevision(JNIEnv *env, jclass cls) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ScriptographerEngine_getApplicationRevision(JNIEnv *env, jclass cls) {
 	try {
+#if kPluginInterfaceVersion >= kAI12
 		return sAIRuntime->GetAppRevisionVersion();
+#else
+		// TODO: how to find this out on CS?
+		return 0;
+#endif
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }

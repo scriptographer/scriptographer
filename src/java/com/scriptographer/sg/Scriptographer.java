@@ -58,7 +58,7 @@ public class Scriptographer {
 	}
 
 	private String version = null;
-	private String revision = null;
+	private int revision = -1;
 
 	public String getVersion() {
 		if (version == null)
@@ -66,8 +66,8 @@ public class Scriptographer {
 		return version;
 	}
 
-	public String getRevision() {
-		if (revision == null)
+	public int getRevision() {
+		if (revision == -1)
 			readVersion();
 		return revision;
 	}
@@ -81,7 +81,7 @@ public class Scriptographer {
 				BufferedReader buffer = new BufferedReader(
 						new InputStreamReader(in));
 				version = buffer.readLine();
-				revision = buffer.readLine();
+				revision = Integer.parseInt(buffer.readLine());
 				in.close();
 			} catch (IOException ioe) {
 				ioe.printStackTrace();

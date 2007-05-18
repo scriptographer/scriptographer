@@ -52,7 +52,7 @@ public class Application {
 		return ScriptographerEngine.getApplicationVersion();
 	}
 
-	public String getRevision() {
+	public int getRevision() {
 		return ScriptographerEngine.getApplicationRevision();
 	}
 

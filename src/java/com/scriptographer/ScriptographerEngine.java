@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.prefs.Preferences;
@@ -464,15 +463,7 @@ public class ScriptographerEngine {
 		return isMacintosh;
 	}
 
-	private static native double nativeGetApplicationVersion();
+	public static native String getApplicationVersion();
 
-	public static String getApplicationVersion() {
-		return new DecimalFormat("#.0").format(nativeGetApplicationVersion());
-	}
-
-	private static native int nativeGetApplicationRevision();
-
-	public static String getApplicationRevision() {
-		return new DecimalFormat("000").format(nativeGetApplicationRevision());
-	}
+	public static native int getApplicationRevision();
 }
