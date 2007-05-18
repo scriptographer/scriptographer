@@ -178,13 +178,13 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_nativeGetRange(JNIEn
  * float getSpacing()
  */
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextFrame_getSpacing(JNIEnv *env, jobject obj) {
+	ASReal spacing = 0;
 	try {
 		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
-		ASReal spacing = 0;
 		sTextFrame->GetSpacing(frame, &spacing);
 		sTextFrame->Release(frame);
-		return spacing;
 	} EXCEPTION_CONVERT(env);
+	return spacing;
 }
 
 /*
@@ -202,13 +202,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setSpacing(JNIEnv *e
  * boolean getOpticalAlignment()
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_getOpticalAlignment(JNIEnv *env, jobject obj) {
+	ATEBool8 active = false;
 	try {
 		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
-		ATEBool8 active = false;
 		sTextFrame->GetOpticalAlignment(frame, &active);
 		sTextFrame->Release(frame);
-		return active;
 	} EXCEPTION_CONVERT(env);
+	return active;
 }
 
 /*
@@ -226,8 +226,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOpticalAlignment(
  * boolean equals(java.lang.Object text)
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_equals(JNIEnv *env, jobject obj, jobject text) {
+	ATEBool8 ret = false;
 	try {
-		ATEBool8 ret = false;
 		if (env->IsInstanceOf(text, gEngine->cls_ai_TextFrame)) {
 			TextFrameRef frame1 = gEngine->getTextFrameRef(env, obj);
 			TextFrameRef frame2 = gEngine->getTextFrameRef(env, text);
@@ -237,6 +237,6 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_equals(JNIEnv *e
 			}
 			sTextFrame->Release(frame1);
 		}
-		return ret;
 	} EXCEPTION_CONVERT(env);
+	return ret;
 }

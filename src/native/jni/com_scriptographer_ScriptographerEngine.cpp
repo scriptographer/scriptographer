@@ -160,6 +160,7 @@ JNIEXPORT jdouble JNICALL Java_com_scriptographer_ScriptographerEngine_nativeGet
 	try {
 		double major = sAIRuntime->GetAppMajorVersion();
 		double minor = sAIRuntime->GetAppMinorVersion();
+		// TODO: this is wrong. use strings instead!
 		while (minor > 1) minor *= 0.1;
 		return major + minor;
 	} EXCEPTION_CONVERT(env);

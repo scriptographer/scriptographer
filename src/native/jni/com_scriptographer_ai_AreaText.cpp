@@ -56,13 +56,13 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_nativeCreate(JNIEnv *
  * int getRowCount()
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_getRowCount(JNIEnv *env, jobject obj) {
+	ASInt32 count = 0;
 	try {
 		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
-		ASInt32 count = 0;
 		sTextFrame->GetRowCount(frame, &count);
 		sTextFrame->Release(frame);
-		return count;
 	} EXCEPTION_CONVERT(env);
+	return count;
 }
 
 /*
@@ -80,13 +80,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setRowCount(JNIEnv *e
  * int getColumnCount()
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_getColumnCount(JNIEnv *env, jobject obj) {
+	ASInt32 count = 0;
 	try {
 		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
-		ASInt32 count = 0;
 		sTextFrame->GetColumnCount(frame, &count);
 		sTextFrame->Release(frame);
-		return count;
 	} EXCEPTION_CONVERT(env);
+	return count;
 }
 
 /*
@@ -103,13 +103,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setColumnCount(JNIEnv
  * boolean getRowMajorOrder()
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_AreaText_getRowMajorOrder(JNIEnv *env, jobject obj) {
+	ATEBool8 rowMajorOrder = false;
 	try {
 		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
-		ATEBool8 rowMajorOrder = false;
 		sTextFrame->GetRowMajorOrder(frame, &rowMajorOrder);
 		sTextFrame->Release(frame);
-		return rowMajorOrder;
 	} EXCEPTION_CONVERT(env);
+	return rowMajorOrder;
 }
 
 /*
@@ -150,13 +150,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setRowGutter(JNIEnv *
  * float getColumnGutter()
  */
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_AreaText_getColumnGutter(JNIEnv *env, jobject obj) {
+	ASReal gutter = 0;
 	try {
 		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
-		ASReal gutter = 0;
-		!sTextFrame->GetColumnGutter(frame, &gutter);
+		sTextFrame->GetColumnGutter(frame, &gutter);
 		sTextFrame->Release(frame);
-		return gutter;
 	} EXCEPTION_CONVERT(env);
+	return gutter;
 }
 
 /*
