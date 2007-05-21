@@ -66,6 +66,12 @@ public abstract class TextFrame extends Art {
 
 	private native Art nativeCreateOutline();
 
+	/**
+	 * Converts the text in the text frame to outlines. Unlike the Illustrator
+	 * 'Create Outlines' action, this won't remove the text frame.
+	 * 
+	 * @return An Art item containing the outlined text.
+	 */
 	public Art createOutline() {
 		// apply changes and reflow the layout before creating outlines
 		// All styles regarding this story need to be commited, as
@@ -75,34 +81,57 @@ public abstract class TextFrame extends Art {
 		return nativeCreateOutline();
 	}
 
+	/**
+	 * Links the supplied text frame to this one.
+	 * @param next The text frame that will be linked.
+	 * @return True if the text frame was linked, false otherwise
+	 */
 	public native boolean link(TextFrame next);
 
 	private native boolean nativeUnlink(boolean before, boolean after);
 	
+	/**
+	 * Unlinks the text frame from its current story.
+	 * 
+	 * @return True if the operation was successful, false otherwise
+	 */
 	public boolean unlink() {
 		return nativeUnlink(true, true);
 	}
 
+	/**
+	 * Unlinks the text frame from its current story and breaks up the story
+	 * into two parts before the text frame.
+	 * 
+	 * @return True if the operation as successful, false otherwise
+	 */
 	public boolean unlinkBefore() {
 		return nativeUnlink(true, false);
 	}
 
+	/**
+	 * Unlinks the text frame from its current story and breaks up the story
+	 * into two parts after the text frame.
+	 * 
+	 * @return True if the operation as successful, false otherwise
+	 */
 	public boolean unlinkAfter() {
 		return nativeUnlink(false, true);
 	}
 
+	/**
+	 * @jsbean Returns a boolean value that specifies wether the text frame is
+	 *         linked.
+	 */
 	public native boolean isLinked();
 
 	/**
 	 * Returns the index of this text frame in the story's list of text frames
-	 * @return
 	 */
 	public native int getIndex();
 
 	/**
 	 * Returns this text frame's story's index in the document's stories array
-	 *
-	 * @return
 	 */
 	private native int getStoryIndex();
 
@@ -128,16 +157,14 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * Returns the next text object in a story of various linked text frames
-	 * @return
+	 * Returns the next text frame in a story of various linked text frames
 	 */
 	public TextFrame getNextFrame() {
 		return getFrame(getIndex() + 1);
 	}
 
 	/**
-	 * Returns the previous text object in a story of various linked text frames
-	 * @return
+	 * Returns the previous text frame in a story of various linked text frames
 	 */
 	public TextFrame getPreviousFrame() {
 		return getFrame(getIndex() - 1);
@@ -150,8 +177,7 @@ public abstract class TextFrame extends Art {
 	/**
 	 * In case there's an overflow in the text, this only returns a range
 	 * over the visible characters, while getRange() returns one over the
-	 * whole text
-	 * @return
+	 * whole text.
 	 */
 	public TextRange getVisibleRange() {
 		// once a range object is created, allways return the same reference
@@ -165,7 +191,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * Returns a range for all the characters, even the invisble ones outside
+	 * Returns a range for all the characters, even the invisible ones outside
 	 * the container.
 	 * 
 	 * @return
@@ -182,21 +208,24 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * Returns getVisibleRange().getStart()
-	 * @return
+	 * @jsbean Returns the index of the first visible character of the text frame.
+	 * @jsbean (this is the equivalent of calling TextFrame.visibleRange.start)
 	 */
 	public int getStart() {
 		return getVisibleRange().getStart();
 	}
 
 	/**
-	 * Returns getVisibleRange().getEnd()
-	 * @return
+	 * @jsbean Returns the index of the last visible character of the text frame.
+	 * @jsbean (this is the equivalent of calling TextFrame.visibleRange.end)
 	 */
 	public int getEnd() {
 		return getVisibleRange().getEnd();
 	}
 
+	/**
+	 * @jsbean A string value that specifies the contents of the text frame.
+	 */
 	public String getContent() {
 		return getRange().getContent();
 	}
@@ -205,6 +234,9 @@ public abstract class TextFrame extends Art {
 		getRange().setContent(text);
 	}
 
+	/**
+	 * Specifies the character style of the text frame.
+	 */
 	public CharacterStyle getCharacterStyle() {
 		return getRange().getCharacterStyle();
 	}
@@ -213,6 +245,9 @@ public abstract class TextFrame extends Art {
 		getRange().setCharacterStyle(style);
 	}
 
+	/**
+	 * Specifies the paragraph style of the text frame.
+	 */
 	public ParagraphStyle getParagraphStyle() {
 		return getRange().getParagraphStyle();
 	}
@@ -221,6 +256,9 @@ public abstract class TextFrame extends Art {
 		getRange().setParagraphStyle(style);
 	}
 
+	/**
+	 * @jsbean Returns the selected text as a TextRange
+	 */
 	public native TextRange getSelection();
 
 	public native boolean equals(Object obj);
@@ -231,14 +269,22 @@ public abstract class TextFrame extends Art {
 	//	ATEErr (*GetLineOrientation) ( TextFrameRef textframe, LineOrientation* ret);
 	//	ATEErr (*SetLineOrientation) ( TextFrameRef textframe, LineOrientation lineOrientation);
 
-	/** Check if this frame is selected.  To set the selection, you have to use application specific
+	/* Check if this frame is selected.  To set the selection, you have to use application specific
 	API for that.  In Illustrator case, you can use AIArtSuite to set the selection.
 	*/
 	//	ATEErr (*GetSelected) ( TextFrameRef textframe, bool* ret);
 
+	/**
+	 * @jsbean Specifies the line spacing value for the text frame in pixels.
+	 */
 	public native float getSpacing();
 	public native void setSpacing(float spacing);
 
+	/**
+	 * @jsbean A boolean value that specifies wether to use optical alignment
+	 * @jsbean within the text frame. Optical aligment hangs punctuation outside
+	 * @jsbean the edges of a text frame.
+	 */
 	public native boolean getOpticalAlignment();
 	public native void setOpticalAlignment(boolean active);
 }

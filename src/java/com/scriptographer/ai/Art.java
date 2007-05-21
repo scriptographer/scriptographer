@@ -436,7 +436,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * @jsbean Returns the document that the Art Item belongs to.
+	 * @jsbean Returns the document that the Art item belongs to.
 	 */
 	public Document getDocument() {
 		return document;

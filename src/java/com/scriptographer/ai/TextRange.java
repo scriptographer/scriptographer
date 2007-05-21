@@ -103,20 +103,32 @@ public class TextRange extends NativeObject {
 			document.getStories().changeStoryHandle(story, nativeGetStoryIndex());
 	}
 	
+	/**
+	 * @jsbean Returns the document that the TextRange belongs to.
+	 */
 	public Document getDocument() {
 		return document;
 	}
 	
 	private native int nativeGetStoryIndex();
 	
+	/**
+	 * @jsbean Returns the story that the TextRange belongs to.
+	 */
 	public TextStory getStory() {
 		if (story == null)
 			story = (TextStory) document.getStories().get(nativeGetStoryIndex());
 		return story;
 	}
 	
+	/**
+	 * @jsbean Returns the first text frame of the story that this TextRange belongs to.
+	 */
 	public native TextFrame getFirstFrame();
-	
+
+	/**
+	 * @jsbean Returns the last text frame of the story that this TextRange belongs to.
+	 */
 	public native TextFrame getLastFrame();
 	
 	public ReadOnlyList getFrames() {
@@ -136,25 +148,19 @@ public class TextRange extends NativeObject {
 	}
 
 	/**
-	 * returns the absolute starting point of the range inside the story in
-	 * numbers of characters
-	 * 
-	 * @return start
+	 * @jsbean Returns the index of the first character of the TextRange inside the
+	 * @jsbean story in numbers of characters.
 	 */
 	public native int getStart();
 	
 	/**
-	 * returns the absolute end point of the range inside the story in numbers
-	 * of characters
-	 * 
-	 * @return end
+	 * @jsbean Returns the index of the last character of the TextRange inside the
+	 * @jsbean story in numbers of characters.
 	 */
 	public native int getEnd();
 	
 	/**
-	 * returns the length of the story in number of characters
-	 * 
-	 * @return length
+	 * @jsbean Returns the length of the story in number of characters.
 	 */
 	public native int getLength();
 
@@ -186,18 +192,33 @@ public class TextRange extends NativeObject {
 			paragraphs.adjustEnd(oldLength);
 	}
 
+	/**
+	 * Prepends the supplied text to this TextRange.
+	 * @param text
+	 */
 	public void prepend(String text) {
 		adjustStart(nativePrepend(handle, text));
 	}
 	
+	/**
+	 * Appends the supplied text to this TextRange.
+	 * @param text
+	 */
 	public void append(String text) {
 		adjustEnd(nativeAppend(handle, text));
 	}
-	
+
+	/**
+	 * Prepends the supplied TextRange to this TextRange.
+	 */
 	public void prepend(TextRange range) {
 		adjustStart(nativePrepend(handle, range.handle));
 	}
-	
+
+	/**
+	 * Appends the supplied TextRange to this TextRange.
+	 * @param range
+	 */
 	public void append(TextRange range) {
 		adjustEnd(nativeAppend(handle, range.handle));
 	}
@@ -205,7 +226,7 @@ public class TextRange extends NativeObject {
 	private native void nativeRemove(int handle);
 	
 	/**
-	 *  This method will delete all the characters in that range.
+	 *  Deletes all the characters in the TextRange.
 	 */
 	public void remove() {
 		if (characters != null)
@@ -217,6 +238,9 @@ public class TextRange extends NativeObject {
 		nativeRemove(handle);
 	}
 	
+	/**
+	 * @jsbean A string value that specifies the content of the TextRange.
+	 */
 	public native String getContent();
 	
 	public void setContent(String text) {
@@ -246,7 +270,10 @@ public class TextRange extends NativeObject {
 	
 	CharacterStyle characterStyle = null;
 	ParagraphStyle paragraphStyle = null;
-	
+
+	/**
+	 * @jsbean Specifies the CharacterStyle of the TextRange.
+	 */
 	public CharacterStyle getCharacterStyle() {
 		if (characterStyle == null) {
 			int styleHandle = nativeGetCharacterStyle(handle);
@@ -257,7 +284,7 @@ public class TextRange extends NativeObject {
 		}
 		return characterStyle;
 	}
-	
+
 	public void setCharacterStyle(CharacterStyle style) {
 		if (style != null) {
 			getCharacterStyle(); // make sure it's created
@@ -269,6 +296,9 @@ public class TextRange extends NativeObject {
 		}
 	}
 	
+	/**
+	 * @jsbean Specifies the ParagraphStyle of the TextRange.
+	 */
 	public ParagraphStyle getParagraphStyle() {
 		if (paragraphStyle == null) {
 			int styleHandle = nativeGetParagraphStyle(handle);
@@ -300,6 +330,9 @@ public class TextRange extends NativeObject {
 			paragraphStyle.commit();
 	}
 	
+	/**
+	 * @jsbean Returns the Point location where the TextRange starts within the Illustrator document.
+	 */
 	public native Point[] getOrigins();
 	public native Matrix[] getTransformations();
 	/*
@@ -315,6 +348,14 @@ public class TextRange extends NativeObject {
 	// TODO: needed?
 	public native int getSingleGlyph();
 	
+	/**
+	 * Selects the TextRange.
+	 * 
+	 * @param addToSelection If set to <code>true</code>, the TextRange will
+	 *                       be added to the current selection in the document.
+	 *                       If set to false, it will clear the current selection
+	 *                       in the document and only select the TextRange.
+	 */
 	public native void select(boolean addToSelection);
 	// if addToSelection is true, it will add this range to the current document
 	// selection.
@@ -325,13 +366,16 @@ public class TextRange extends NativeObject {
 		select(false);
 	}
 
+	/**
+	 * Removes the TextRange from the selection in the document.
+	 */
 	public native void deselect();
 	// This method will remove this range from the selection.
 	// Note, deselecting a range can cause defregmented selection, if this range
 	// is a sub range of the current selection.
 	
 	/**
-	 * clones the range.
+	 * Clones the TextRange.
 	 */
 	public Object clone() {
 		/*
@@ -356,7 +400,7 @@ public class TextRange extends NativeObject {
 	}
 
 	/**
-	 * 
+	 * Changes the case of the text in the text frame.
 	 * @param type TextRange.CASE_*
 	 */
 	public native void changeCase(int type);
@@ -364,6 +408,7 @@ public class TextRange extends NativeObject {
 	public native void fitHeadlines();
 	
 	/**
+	 * Returns the character type of the TextRange.
 	 * This Range has to be of size equal to 1, any other size will throw error
 	 * (kBadParameter)
 	 * 
@@ -387,20 +432,58 @@ public class TextRange extends NativeObject {
 		release();
 	}
 
+	/**
+	 * @jsbean Returns a list of TextRanges of the words contained within the
+	 *         TextRange. Please note that the returned TextRange includes the
+	 *         trailing whitespace characters of the words.
+	 * @jsbean Sample code:
+	 * 
+	 * @jsbean <pre>
+	 * @jsbean var text = new PointText(new Point(0,0));
+	 * @jsbean text.content = "The contents of the point text.";
+	 * @jsbean var word = text.range.words[1];
+	 * @jsbean print(word.content) //returns 'contents ' - note the space after 'contents';
+	 * @jsbean </pre>
+	 */
 	public ReadOnlyList getWords() {
 		if (words == null)
 			words = new TokenizerList(" \t\n\r\f");
 		words.update();
 		return words;
 	}
-	
+
+	/**
+	 * @jsbean Returns a list of TextRanges of the paragraphs contained within
+	 * @jsbean the TextRange. Please note that the returned TextRange includes the
+	 *         trailing paragraph (\r) characters of the paragraphs.
+	 * 
+	 * @jsbean Sample code:
+	 * @jsbean <pre>
+	 * @jsbean var text = new PointText(new Point(0,0));
+	 * @jsbean text.content = "First paragraph\rSecond paragraph"; // "\r" is the escaped character that specifies a new paragraph.
+	 * @jsbean var paragraph = text.range.paragraphs[1];
+	 * @jsbean print(paragraph.content) //returns 'Second paragraph';
+	 * @jsbean </pre>
+	 */
 	public ReadOnlyList getParagraphs() {
 		if (paragraphs == null)
 			paragraphs = new TokenizerList("\r");
 		paragraphs.update();
 		return paragraphs;
 	}
-	
+
+	/**
+	 * @jsbean Returns a list of TextRanges of the characters contained within
+	 * @jsbean the TextRange.
+	 * 
+	 * @jsbean Sample code:
+	 * @jsbean <pre>
+	 * @jsbean var text = new PointText(new Point(0,0));
+	 * @jsbean text.content = "abc";
+	 * @jsbean var character = text.range.characters[1];
+	 * @jsbean print(character.content) //returns 'b';
+	 * @jsbean </pre>
+	 */	
 	public ReadOnlyList getCharacters() {
 		if (characters == null)
 			characters = new CharacterList();
@@ -584,7 +667,7 @@ public class TextRange extends NativeObject {
 	}
 
 	/**
-	 * A lis of TextRanges for each character in the TextRange
+	 * A list of TextRanges for each character in the TextRange
 	 */
 	class CharacterList extends TextRangeList {
 		void update() {
