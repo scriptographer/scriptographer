@@ -197,6 +197,22 @@ public class CharacterStyle extends PathStyle {
 	private native int nativeGetFont();
 	private native void nativeSetFont(int handle);
 	
+	/**
+	 * @jsbean Specifies which font to use in the character style.
+	 * @jsbean If you pass a font family, it will automatically pick the first
+	 * @jsbean of the family's weights.
+	 * @jsbean Sample code:
+	 * @jsbean <pre>
+	 * @jsbean var text = new PointText(new Point(0,0));
+	 * @jsbean text.content = "The content of the text field.";
+	 * @jsbean
+	 * @jsbean // Sets all the text to Verdana Regular.
+	 * @jsbean text.characterStyle.font = fonts["Verdana"];
+	 * @jsbean
+	 * @jsbean //sets the second word to Verdana Bold
+	 * @jsbean text.range.words[1].characterStyle.font = fonts["Verdana"]["Bold"];
+	 * @jsbean </pre>
+	 */
 	public FontWeight getFont() {
 		int handle = nativeGetFont();
 		if (handle == -1)
@@ -223,36 +239,103 @@ public class CharacterStyle extends PathStyle {
 				(FontWeight) font.get(0) : null);
 	}
 	
+	/**
+	 * @jsbean Specifies the font size in pixels.
+	 * @jsbean Sample code:
+	 * @jsbean <pre>
+	 * @jsbean var text = new PointText(new Point(0,0));
+	 * @jsbean text.content = "The content of the text field.";
+	 * @jsbean 
+	 * @jsbean // sets the font size to 10px
+	 * @jsbean text.characterStyle.fontSize = 10
+	 * @jsbean </pre>
+	 */
 	public native Float getFontSize();
 	public native void setFontSize(Float size);
 	
+	/**
+	 * @jsbean Specifies the horizontal scale of the character style.
+	 * @jsbean Sample code:
+	 * @jsbean <pre>
+	 * @jsbean var text = new PointText(new Point(0,0));
+	 * @jsbean text.content = "The content of the text field.";
+	 * @jsbean 
+	 * @jsbean // sets the horizontal scale to 200%
+	 * @jsbean text.characterStyle.horizontalScale = 2
+	 * @jsbean </pre>
+	 */
 	public native Float getHorizontalScale();
 	public native void setHorizontalScale(Float scale);
 
+	/**
+	 * @jsbean Specifies the vertical scale of the character style.
+	 * @jsbean Sample code:
+	 * @jsbean <pre>
+	 * @jsbean var text = new PointText(new Point(0,0));
+	 * @jsbean text.content = "The content of the text field.";
+	 * @jsbean 
+	 * @jsbean // sets the vertical scale to 200%
+	 * @jsbean text.characterStyle.verticalScale = 2
+	 * @jsbean </pre>
+	 */
 	public native Float getVerticalScale();
 	public native void setVerticalScale(Float scale);
 
+	/**
+	 * @jsbean A boolean value that specifies wether to use auto leading in the character style.
+	 */
 	public native Boolean getAutoLeading();
 	public native void setAutoLeading(Boolean leading);
 
+	/**
+	 * @jsbean Specifies the leading (vertical spacing) of the character style in pixels.
+	 */
 	public native Float getLeading();
 	public native void setLeading(Float leading);
 
 	public native Integer getTracking();
 	public native void setTracking(Integer tracking);
 
+	/**
+	 * @jsbean Specifies the baseline shift of the character style in pixels.
+	 * @jsbean Baseline shift moves text up or down relative to it's baseline.
+	 */
 	public native Float getBaselineShift();
 	public native void setBaselineShift(Float shift);
 
 	public native Float getRotation();
 	public native void setRotation(Float rotation);
 
+	/**
+	 * @jsbean The character style's kerning method as specified by the CharacterStyle.KERNING_*
+	 * @jsbean static properties.
+	 * @jsbean Sample code:
+	 * @jsbean <pre>
+	 * @jsbean var text = new PointText(new Point(0,0));
+	 * @jsbean text.content = "The content of the text field.";
+	 * @jsbean 
+	 * @jsbean // sets the kerning method to optical
+	 * @jsbean text.characterStyle.kerningMethod = CharacterStyle.KERNING_OPTICAL;
+	 * @jsbean </pre>
+	 */
 	public native Integer getKerningMethod();
 	public native void setKerningMethod(Integer method);
 	
+	/**
+	 * @jsbean The character style's capitalization as specified by the CharacterStyle.CAPS_*
+	 * @jsbean static properties.
+	 * @jsbean Sample code:
+	 * @jsbean <pre>
+	 * @jsbean var text = new PointText(new Point(0,0));
+	 * @jsbean text.content = "The content of the text field.";
+	 * @jsbean 
+	 * @jsbean // sets the capitalization to use only caps
+	 * @jsbean text.characterStyle.capitalization = CharacterStyle.CAPS_ALL;
+	 * @jsbean </pre>
+	 */
 	public native Integer getCapitalization();
 	public native void setCapitalization(Integer caps);
-	
+
 	public native Integer getBaselineOption();
 	public native void setBaselineOption(Integer option);
 	
