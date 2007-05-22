@@ -57,7 +57,11 @@ public abstract class TextFrame extends Art {
 		super(handle);
 	}
 
-	// orientation
+	/**
+	 * @jsbean Specifies the orientation of the text in the TextFrame as
+	 * @jsbean specified by the TextFrame.ORIENTATION_* static properties.
+	 * @return TextFrame.ORIENTATION_*
+	 */
 	public native short getOrientation();
 	public native void setOrientation(short orientation);
 
@@ -126,15 +130,18 @@ public abstract class TextFrame extends Art {
 	public native boolean isLinked();
 
 	/**
-	 * Returns the index of this TextFrame in the story's list of TextFrames
+	 * @jsbean Returns the index of this TextFrame in the story's list of TextFrames
 	 */
 	public native int getIndex();
 
 	/**
-	 * Returns this TextFrame's story's index in the document's stories array
+	 * @jsbean Returns this TextFrame's story's index in the document's stories array
 	 */
 	private native int getStoryIndex();
 
+	/**
+	 * @jsbean Returns the Story that the TextFrame belongs to.
+	 */
 	public TextStory getStory() {
 		// don't wrap directly. allways go through StoryList
 		// to make sure we're not getting more than one reference
@@ -157,27 +164,29 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * Returns the next TextFrame in a story of various linked TextFrames
+	 * @jsbean Returns the next TextFrame in a story of various linked TextFrames
 	 */
 	public TextFrame getNextFrame() {
 		return getFrame(getIndex() + 1);
 	}
 
 	/**
-	 * Returns the previous TextFrame in a story of various linked TextFrames
+	 * @jsbean Returns the previous TextFrame in a story of various linked TextFrames
 	 */
 	public TextFrame getPreviousFrame() {
 		return getFrame(getIndex() - 1);
 	}
 
 	// ATE
-
+	/**
+	 * @jshide true
+	 */
 	public native int nativeGetRange(boolean includeOverflow);
 
 	/**
-	 * In case there's an overflow in the text, this only returns a range
-	 * over the visible characters, while getRange() returns one over the
-	 * whole text.
+	 * @jsbean In case there's an overflow in the text, this only returns a range
+	 * @jsbean over the visible characters, while getRange() returns one over the
+	 * @jsbean whole text.
 	 */
 	public TextRange getVisibleRange() {
 		// once a range object is created, allways return the same reference
@@ -191,10 +200,8 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * Returns a range for all the characters, even the invisible ones outside
-	 * the container.
-	 * 
-	 * @return
+	 * @jsbean Returns a range for all the characters, even the invisible ones outside
+	 * @jsbean the container.
 	 */
 	public TextRange getRange() {
 		// once a range object is created, allways return the same reference
@@ -235,7 +242,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * Specifies the character style of the TextFrame.
+	 * @jsbean Specifies the character style of the TextFrame.
 	 */
 	public CharacterStyle getCharacterStyle() {
 		return getRange().getCharacterStyle();
@@ -246,7 +253,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * Specifies the paragraph style of the TextFrame.
+	 * @jsbean Specifies the paragraph style of the TextFrame.
 	 */
 	public ParagraphStyle getParagraphStyle() {
 		return getRange().getParagraphStyle();
@@ -257,7 +264,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Returns the selected text as a TextRange
+	 * @jsbean Returns the selected text of the TextFrame as a TextRange
 	 */
 	public native TextRange getSelection();
 

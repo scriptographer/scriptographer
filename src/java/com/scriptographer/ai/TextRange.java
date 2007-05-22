@@ -367,7 +367,9 @@ public class TextRange extends NativeObject {
 	}
 
 	/**
-	 * Removes the TextRange from the selection in the document.
+	 * Deselects the range in the document. Note that deselecting a range can
+	 * cause defragmented selection, if the range is a subrange of the current
+	 * selection.
 	 */
 	public native void deselect();
 	// This method will remove this range from the selection.
@@ -405,6 +407,10 @@ public class TextRange extends NativeObject {
 	 */
 	public native void changeCase(int type);
 	
+	/**
+	 * Adjusts the tracking of the text in this text range to fit on one line
+	 * spanning the width of the area text.
+	 */
 	public native void fitHeadlines();
 	
 	/**
@@ -455,8 +461,8 @@ public class TextRange extends NativeObject {
 	/**
 	 * @jsbean Returns a list of TextRanges of the paragraphs contained within
 	 * @jsbean the TextRange. Please note that the returned TextRange includes the
-	 *         trailing paragraph (\r) characters of the paragraphs.
-	 * 
+	 * @jsbean trailing paragraph (\r) characters of the paragraphs.
+	 * @jsbean 
 	 * @jsbean Sample code:
 	 * @jsbean <pre>
 	 * @jsbean var text = new PointText(new Point(0,0));

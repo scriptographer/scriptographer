@@ -474,7 +474,7 @@ public abstract class Art extends DictionaryObject {
 	public native Art copyTo(Document document);
 
 	/**
-	 * Copies the Art item into the specified Art item
+	 * Copies the Art item into the specified Art item.
 	 * 
 	 * @param art
 	 * @return
@@ -491,27 +491,27 @@ public abstract class Art extends DictionaryObject {
 	}
 	
 	/**
-	 * @jsbean Returns the Art item that this Art item is contained within
+	 * @jsbean Returns the Art item that this Art item is contained within.
 	 */
 	public native Art getParent();
 
 	/**
-	 * @jsbean Returns the first Art item contained within this Art item
+	 * @jsbean Returns the first Art item contained within this Art item.
 	 */
 	public native Art getFirstChild();
 
 	/**
-	 * @jsbean Returns the last Art item contained within this Art item
+	 * @jsbean Returns the last Art item contained within this Art item.
 	 */
 	public native Art getLastChild();
 	
 	/**
-	 * @jsbean Returns the next Art item on the same level as this Art item
+	 * @jsbean Returns the next Art item on the same level as this Art item.
 	 */
 	public native Art getNextSibling();
 
 	/**
-	 * @jsbean Returns the previous Art item on the same level as this Art item
+	 * @jsbean Returns the previous Art item on the same level as this Art item.
 	 */
 	public native Art getPreviousSibling();
 
@@ -542,17 +542,17 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * @jsbean The bounds of the Art item including stroke width
+	 * @jsbean The bounds of the Art item including stroke width.
 	 */
 	public native Rectangle getBounds();
 
 	/**
-	 * @jsbean The bounds of the Art item including stroke width and controls
+	 * @jsbean The bounds of the Art item including stroke width and controls.
 	 */
 	public native Rectangle getControlBounds();
 
 	/**
-	 * @jsbean The bounds of the Art item excluding stroke width
+	 * @jsbean The bounds of the Art item excluding stroke width.
 	 */
 	public native Rectangle getGeometricBounds();
 	
@@ -668,6 +668,9 @@ public abstract class Art extends DictionaryObject {
 		setAttribute(ATTR_HIDDEN.intValue(), hidden);
 	}
 
+	/**
+	 * Returns <code>true</code> when neither the Art item, nor it's parents are locked or hidden.
+	 */
 	public native boolean isEditable();
 
 	/**
@@ -686,7 +689,7 @@ public abstract class Art extends DictionaryObject {
 	public native void setBlendMode(int mode);
 
 	/**
-	 * @jsbean A value between 0 and 1 that specifies the opacity of the Art item .
+	 * @jsbean A value between 0 and 1 that specifies the opacity of the Art item.
 	 */
 	public native float getOpacity();
 
@@ -724,7 +727,7 @@ public abstract class Art extends DictionaryObject {
 	public native boolean appendChild(Art art);
 	
 	/**
-	 * Moves the Art item above the specified art object
+	 * Moves the Art item above the specified art object.
 	 * Sample code:
 	 * <pre>
 	 * var firstPath = new Path();
@@ -740,7 +743,7 @@ public abstract class Art extends DictionaryObject {
 	public native boolean moveAbove(Art art);
 	
 	/**
-	 * Moves the Art item below the specified art object
+	 * Moves the Art item below the specified art object.
 	 * <pre>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
@@ -788,7 +791,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Translates (moves) the Art item by the given offsets
+	 * Translates (moves) the Art item by the given offsets.
 	 * 
 	 * @param tx
 	 * @param ty
@@ -799,7 +802,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Translates (moves) the Art item by the given offset point
+	 * Translates (moves) the Art item by the given offset point.
 	 * 
 	 * @param t
 	 */
@@ -808,7 +811,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Rotates the Art item around an anchor point by a given angle
+	 * Rotates the Art item around an anchor point by a given angle.
 	 * 
 	 * @param theta the rotation angle in radians
 	 * @see Matrix#rotate(double, double, double)
@@ -832,7 +835,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Rotates the Art item by a given angle
+	 * Rotates the Art item by a given angle.
 	 * 
 	 * @param theta the rotation angle in radians
 	 */
@@ -914,7 +917,7 @@ public abstract class Art extends DictionaryObject {
 	
 	/**
 	 * Checks if the Art item is above the specified Art item in the stacking
-	 * order of the document
+	 * order of the document.
 	 * Sample code:
 	 * <pre>
 	 * var firstPath = new Path();
