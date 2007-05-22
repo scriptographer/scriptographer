@@ -364,9 +364,9 @@
 	<target name="rhinodoclet" depends="init">
 		<mkdir dir="${destdir}"/>
 		<!--
-		<javadoc packagenames="com.scriptographer,com.scriptographer.sg,com.scriptographer.ai,com.scriptographer.adm,com.scriptographer.util,java.*"
-		-->
 		<javadoc packagenames="com.scriptographer.sg"
+		-->
+		<javadoc packagenames="com.scriptographer,com.scriptographer.sg,com.scriptographer.ai,com.scriptographer.adm,com.scriptographer.util,java.*"
 				sourcepathref="docs.sourcepath"
 				destdir="${destdir}"
 				author="false"
