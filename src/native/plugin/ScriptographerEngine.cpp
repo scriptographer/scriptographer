@@ -366,7 +366,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_HashMap = loadClass(env, "java/util/HashMap");
 	cid_HashMap = getConstructorID(env, cls_HashMap, "()V");
 	
-	// TODO: replace with SimpleList?
 	cls_ArrayList = loadClass(env, "java/util/ArrayList");
 	cid_ArrayList = getConstructorID(env, cls_ArrayList, "()V");
 	
@@ -388,13 +387,13 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_awt_ICC_Profile_getInstance = getStaticMethodID(env, cls_awt_ICC_Profile, "getInstance", "([B)Ljava/awt/color/ICC_Profile;");
 
 // Scratchdisk:
+	cls_SimpleList = loadClass(env, "com/scratchdisk/list/SimpleList");
+	mid_SimpleList_size = getMethodID(env, cls_SimpleList, "size", "()I");
+	mid_SimpleList_get = getMethodID(env, cls_SimpleList, "get", "(I)Ljava/lang/Object;");
+
 	cls_IntMap = loadClass(env, "com/scratchdisk/util/IntMap");
 	cid_IntMap = getConstructorID(env, cls_IntMap, "()V");
 	mid_IntMap_put = getMethodID(env, cls_IntMap, "put", "(ILjava/lang/Object;)Ljava/lang/Object;");
-	
-	cls_SimpleList = loadClass(env, "com/scratchdisk/util/SimpleList");
-	mid_SimpleList_size = getMethodID(env, cls_SimpleList, "size", "()I");
-	mid_SimpleList_get = getMethodID(env, cls_SimpleList, "get", "(I)Ljava/lang/Object;");
 
 // Scriptographer:
 	cls_ScriptographerEngine = loadClass(env, "com/scriptographer/ScriptographerEngine");
@@ -1145,7 +1144,7 @@ AIArtSet ScriptographerEngine::convertArtSet(JNIEnv *env, jobject artSet) {
 	EXCEPTION_CHECK(env);
 	return set;
 }
-// java.util.Map <-> AIDictionary
+// java.util.Map <-> AIDictionaryRef
 jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dictionary, jobject map, bool dontOverwrite, bool removeOld) {
 	JNI_CHECK_ENV
 	AIDictionaryIterator iterator = NULL;

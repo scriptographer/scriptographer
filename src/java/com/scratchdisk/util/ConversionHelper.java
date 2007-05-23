@@ -85,7 +85,6 @@ public class ConversionHelper {
 	/*
 	 * Helpers to retrieve values from maps. Used by native
 	 * constructors that take a map argument.
-	 * TODO: move to a helper?
 	 */
 	public static double getDouble(Map map, Object key) {
 		return toDouble(map.get(key));

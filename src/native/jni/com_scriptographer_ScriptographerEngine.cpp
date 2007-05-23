@@ -60,10 +60,11 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_launch(J
 	try {
 		path = gEngine->convertString(env, filename);
 		if (strlen(path) >= 10 &&
-			strncmp(path, "file://", 7) == 0 ||
 			strncmp(path, "http://", 7) == 0 ||
 			strncmp(path, "https://", 8) == 0 ||
-			strncmp(path, "mailto://", 9) == 0) {
+			strncmp(path, "mailto://", 9) == 0 ||
+			strncmp(path, "ftp://", 6) == 0 ||
+			strncmp(path, "file://", 7) == 0) {
 			result = !sAIURL->OpenURL(path);
 		} else {
 			SPPlatformFileSpecification fileSpec;
