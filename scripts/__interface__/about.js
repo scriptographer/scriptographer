@@ -32,8 +32,16 @@
 var aboutDialog = new ModalDialog(function() {
 	this.title = "About Scriptographer";
 
+	// Add trailing zeros to revision
+	var revision = scriptographer.revision + '';
+	while (revision.length < 3)
+		revision = '0' + revision;
+
+	var logo = new ImageStatic(this);
+	logo.image = getImage("logo.png");
+
 	var text = new Static(this) {
-		text: "Scriptographer " + scriptographer.version + "." + scriptographer.revision + "\n"
+		text: "Scriptographer " + scriptographer.version + "." + revision + "\n"
 			+ "http://www.scriptographer.com\n\n"
 			+ "\u00a9 2001-" + (new Date().getFullYear()) + " J\u00fcrg Lehni\n"
 			+ "http://www.scratchdisk.com\n\n"
@@ -53,18 +61,20 @@ var aboutDialog = new ModalDialog(function() {
 			return true;
 		}
 	};
-
 	var okButton = new Button(this) {
 		font: Dialog.FONT_PALETTE,
-		text: "OK"
+		text: 'OK'
 	};
-	this.defaultItem = okButton;
 
-	this.setLayout(new TableLayout([
-			[ TableLayout.FILL, TableLayout.PREFERRED ],
-			[ TableLayout.FILL, TableLayout.PREFERRED ]
-		], 4, 4));
-	this.setMargins(10, 10, 10, 10);
-	this.addToLayout(text, "0, 0, 1, 0");
-	this.addToLayout(okButton, "1, 1");
+	this.defaultItem = okButton;
+	this.layout = new TableLayout([
+			[ 'prefered', 'fill', 'prefered' ],
+			[ 'prefered', 'fill', 'prefered' ]
+		], 4, 4);
+	this.margins = 10;
+	this.content = {
+		'0, 0': logo,
+		'1, 0, 2, 1': text,
+		 '2, 2': okButton
+	}
 });

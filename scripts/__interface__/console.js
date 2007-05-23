@@ -120,19 +120,19 @@ var consoleDialog = new FloatingDialog (
 		size: buttonSize
 	};
 
-	var buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1), [
-		clearButton
-	]);
-
 	// layout:
-	this.setMargins(-1, -1, -1, -1);
-	this.setLayout(new TableLayout([
-			[ TableLayout.FILL ],
-			[ 0.2, TableLayout.FILL, 15 ]
-		], -1, -1));
-	this.addToLayout(textIn, "0, 0");
-	this.addToLayout(textOut, "0, 1");
-	this.addToLayout(buttons, "0, 2");
+	this.margins = [-1, -1, -1, -1];
+	this.layout = new TableLayout([
+			[ 'fill' ],
+			[ 0.2, 'fill', 15 ]
+		], -1, -1);
+	this.content = {
+		'0, 0': textIn,
+		'0, 1': textOut,
+		'0, 2': new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1), [
+			clearButton
+		])
+	}
 
 	this.println = function(str) {
 		if (textOut) {

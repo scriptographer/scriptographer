@@ -333,28 +333,23 @@ var mainDialog = new FloatingDialog(
 	}
 
 	// Layout:
-	this.setMargins(-1, 0, -1, -1);
+	this.margins = [-1, 0, -1, -1];
 	this.layout = new BorderLayout();
-	var buttons = new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1), [
-		playButton,
-		stopButton,
-		new Spacer(4, 0),
-		refreshButton,
-		new Spacer(4, 0),
-		newButton,
-		consoleButton,
-		new Spacer(4, 0),
-		tool1Button,
-		tool2Button
-	]);
-	/*
 	this.content = {
 		center: scriptList,
-		south: buttons
+		south: new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1), [
+			playButton,
+			stopButton,
+			new Spacer(4, 0),
+			refreshButton,
+			new Spacer(4, 0),
+			newButton,
+			consoleButton,
+			new Spacer(4, 0),
+			tool1Button,
+			tool2Button
+		])
 	};
-	*/
-	this.addToLayout(scriptList, BorderLayout.CENTER);
-	this.addToLayout(buttons, BorderLayout.SOUTH);
 
 	addFiles(scriptList, scriptographer.scriptDirectory);
 });
