@@ -32,11 +32,12 @@
 package com.scriptographer.ai;
 
 import java.awt.Shape;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 
-import com.scratchdisk.util.ExtendedList;
-import com.scratchdisk.util.Lists;
+import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.Lists;
 import com.scriptographer.CommitManager;
 
 /**
@@ -438,5 +439,31 @@ public class Path extends Art {
 
 	public void append(Shape shape) {
 		append(shape.getPathIterator(null), false);
+	}
+
+	public GeneralPath toShape() {
+		GeneralPath path = new GeneralPath();
+		SegmentList segments = getSegments();
+		Segment first = (Segment) segments.getFirst();
+		path.moveTo(first.point.x, first.point.y);
+		Segment seg = first;
+		for (int i = 1; i < segments.size; i++) {
+			Segment next = (Segment) segments.get(i);
+			path.curveTo(seg.point.x + seg.handleOut.x, seg.point.y + seg.handleOut.y,
+					next.point.x + next.handleIn.x, next.point.y + next.handleIn.y,
+					next.point.x, next.point.y);
+			seg = next;
+		}
+		if (isClosed()) {
+			path.curveTo(seg.point.x + seg.handleOut.x, seg.point.y + seg.handleOut.y,
+					first.point.x + first.handleIn.x, first.point.y + first.handleIn.y,
+					first.point.x, first.point.y);
+			path.closePath();
+		}
+		Boolean evenOdd = getStyle().getEvenOdd();
+		path.setWindingRule(evenOdd != null && evenOdd.booleanValue()
+				? GeneralPath.WIND_EVEN_ODD
+				: GeneralPath.WIND_NON_ZERO);
+		return path;
 	}
 }

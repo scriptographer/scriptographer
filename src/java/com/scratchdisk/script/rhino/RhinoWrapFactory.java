@@ -43,8 +43,8 @@ import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.WrapFactory;
 import org.mozilla.javascript.Wrapper;
 
+import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.script.Callable;
-import com.scratchdisk.util.ReadOnlyList;
 import com.scratchdisk.util.WeakIdentityHashMap;
 
 /**

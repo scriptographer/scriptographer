@@ -31,7 +31,7 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.util.AbstractReadOnlyList;
+import com.scratchdisk.list.AbstractReadOnlyList;
 
 /**
  * @author lehni

@@ -45,7 +45,7 @@ public class ImageStatic extends Item {
 	 * @param image
 	 */
 	public ImageStatic(Dialog dialog) {
-		super(dialog, TYPE_PICTURE_STATIC);
+		super(dialog, TYPE_PICTURE_STATIC, OPTION_NONE);
 	}
 
 	private Image image = null;

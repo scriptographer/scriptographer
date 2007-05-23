@@ -31,7 +31,7 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.util.ExtendedArrayList;
+import com.scratchdisk.list.ExtendedArrayList;
 import com.scriptographer.util.AbstractFetchList;
 
 /**

@@ -55,6 +55,11 @@ public class GrayColor extends Color {
 		this(g, 1f);
 	}
 
+	public GrayColor(float components[]) {
+		gray = components[0];
+		alpha = (components.length > 1) ? components[1] : -1f;
+	}
+
 	public java.awt.Color toAWTColor() {
 		return new java.awt.Color(getColorSpace(), new float[] { gray }, alpha);
 	}

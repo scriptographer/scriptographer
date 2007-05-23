@@ -33,9 +33,9 @@ package com.scriptographer.ai;
 
 import java.util.HashMap;
 
-import com.scratchdisk.util.ExtendedArrayList;
-import com.scratchdisk.util.ExtendedList;
-import com.scratchdisk.util.Lists;
+import com.scratchdisk.list.ExtendedArrayList;
+import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.Lists;
 
 /**
  * @author lehni

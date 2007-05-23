@@ -76,7 +76,7 @@ public class Matrix {
 	}
 
 	public AffineTransform toAffineTransform() {
-		return (AffineTransform) at.clone();
+		return new AffineTransform(at);
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class Matrix {
 	 * @throws NullPointerException if at is null
 	 */
 	public Matrix(AffineTransform at) {
-		at = new AffineTransform(at);
+		this.at = new AffineTransform(at);
 	}
 
 	/**
@@ -148,7 +148,8 @@ public class Matrix {
 	 */
 	public Matrix invert() {
 		try {
-			return new Matrix(at.createInverse());
+			at = at.createInverse();
+			return this;
 		} catch (NoninvertibleTransformException e) {
 			return null;
 		}
@@ -296,4 +297,20 @@ public class Matrix {
 	public Point transform(Point src) {
 		return transform(src.x, src.y);
 	}
+
+	// Round values to sane precision for printing
+    // Note that Math.sin(Math.PI) has an error of about 10^-16
+    private static double round(double matval) {
+    	return Math.rint(matval * 1E15) / 1E15;
+    }
+
+    public String toString() {
+		return ("[["
+			+ round(at.getScaleX()) + ", "
+			+ round(at.getShearX()) + ", "
+			+ round(at.getTranslateX()) + "], ["
+			+ round(at.getShearY()) + ", "
+			+ round(at.getScaleY()) + ", "
+			+ round(at.getTranslateY()) + "]]");
+    }
 }

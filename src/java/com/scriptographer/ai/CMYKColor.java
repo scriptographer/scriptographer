@@ -64,6 +64,14 @@ public class CMYKColor extends Color {
 		alpha = a;
 	}
 
+	public CMYKColor(float components[]) {
+		cyan = components[0];
+		magenta = components[1];
+		yellow = components[2];
+		black = components[3];
+		alpha = (components.length > 4) ? components[4] : -1f;
+	}
+	
 	public java.awt.Color toAWTColor() {
 		// workaround, as there seems to be a problem with the color profiles
 		// and cmyk:

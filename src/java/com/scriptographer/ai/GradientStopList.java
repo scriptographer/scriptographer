@@ -31,8 +31,8 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.util.AbstractExtendedList;
-import com.scratchdisk.util.ExtendedArrayList;
+import com.scratchdisk.list.AbstractExtendedList;
+import com.scratchdisk.list.ExtendedArrayList;
 import com.scriptographer.CommitManager;
 
 /**

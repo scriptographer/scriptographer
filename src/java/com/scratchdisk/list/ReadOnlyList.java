@@ -1,13 +1,13 @@
 /*
  * Scriptographer
- *
+ * 
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
- *
+ * 
  * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
- *
+ * 
  * -- GPL LICENSE NOTICE --
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,22 +23,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 12.02.2005.
- *
- * $Id: StringIndexList.java 230 2007-01-16 20:36:33Z lehni $
+ * 
+ * File created on 21.10.2005.
+ * 
+ * $Id: ReadOnlyList.java 230 2007-01-16 20:36:33Z lehni $
  */
 
-package com.scratchdisk.util;
+package com.scratchdisk.list;
+
 
 /**
- * Adds getting objects by name to Lists (an extension needed for some list
- * objects like LayerList)
- * TODO: In a more general use, this might need to be both read and write.
- * Also, ListWrapper would need to be addapted then.
- *
  * @author lehni 
  */
-public interface StringIndexList {
-	public Object get(String index);
+public interface ReadOnlyList {
+	int size();
+	boolean isEmpty();
+	Object get(int index);
+	ExtendedList getSubList(int fromIndex, int toIndex);
 }

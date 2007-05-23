@@ -31,6 +31,7 @@
 
 package com.scriptographer.ai;
 
+import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.Map;
 
@@ -466,5 +467,12 @@ public class Rectangle {
 		height = Math.max(y + width, rect.y + rect.width) - ny;
 		x = nx;
 		y = ny;
+	}
+
+	/**
+	 * @return
+	 */
+	protected Rectangle2D toRectangle2D() {
+		return new Rectangle2D.Float(x, y, width, height);
 	}
 }

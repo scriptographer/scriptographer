@@ -35,8 +35,8 @@ import java.awt.Shape;
 import java.io.File;
 import java.util.Map;
 
+import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.util.SoftIntMap;
-import com.scratchdisk.util.ExtendedList;
 
 /**
  * @author lehni

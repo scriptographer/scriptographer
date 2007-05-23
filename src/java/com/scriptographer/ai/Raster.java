@@ -31,8 +31,13 @@
 
 package com.scriptographer.ai;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Shape;
 import java.awt.Transparency;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.PathIterator;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
@@ -268,6 +273,10 @@ public class Raster extends Art {
 				height = size.height;
 		}
 		BufferedImage img = createCompatibleImage(width, height);
+		Graphics2D g2d = img.createGraphics();
+		g2d.setColor(java.awt.Color.WHITE);
+		g2d.fillRect(0, 0, width, height);
+		g2d.dispose();
 		WritableRaster raster = img.getRaster();
 		byte[] data = ((DataBufferByte) raster.getDataBuffer()).getData();
 		nativeGetPixels(data, raster.getNumBands(), x, y, width, height);
@@ -304,6 +313,90 @@ public class Raster extends Art {
 	
 	public Tracing trace() {
 		return new Tracing(this);
+	}
+
+	private Matrix inverse;
+	private int inverseVersion = -1;
+
+	private Matrix getInverseMatrix() {
+		// Cache the inverse matrix as it might be used often for rastering images
+		if (inverseVersion != version) {
+			inverse = this.getMatrix().invert();
+			inverseVersion = version;
+		}
+		return inverse;
+	}
+	
+	/**
+	 * Calculate the average color of the image within the given shape. This can
+	 * be used for creating raster image effects.
+	 * 
+	 * @param shape
+	 * @return the average color contained in the area covered by the specified
+	 *         shape.
+	 */
+	public Color getAverageColor(Shape shape) {
+		GeneralPath path;
+		int width, height, startX, startY;
+		if (shape != null) {
+			Matrix inverse = getInverseMatrix();
+			if (inverse == null)
+				return null;
+			// Create a transformed path. This is faster than
+			// path.clone() / path.transform(at);
+			PathIterator pi = shape.getPathIterator(inverse.toAffineTransform());
+			path = new GeneralPath();
+			path.setWindingRule(pi.getWindingRule());
+			path.append(pi, false);
+			Rectangle2D bounds = path.getBounds2D();
+			// Fetch the sub image to iterate over and calculate average colors from
+			width = (int) Math.ceil(bounds.getWidth());
+			height = (int) Math.ceil(bounds.getHeight());
+			startX = (int) Math.floor(bounds.getMinX());
+			startY = (int) Math.floor(bounds.getMinY());
+		} else {
+			width = getWidth();
+			height = getHeight();
+			startX = 0;
+			startY = -height;
+			path = null;
+		}
+		BufferedImage img = getSubImage(startX, -startY - height, width, height);
+		WritableRaster raster = img.getRaster();
+		byte[] data = (byte[]) raster.getDataElements(0, 0, null);
+		float components[] = new float[data.length];
+		for (int i = 0; i < data.length; i++)
+			components[i] = data[i] & 0xff;
+		long total = 1;
+		for (int y = 0; y < height; y++) {
+			for (int x = (y == 0) ? 1 : 0; x < width; x++) {
+				if (path == null || path.contains(x + startX, y + startY)) {
+					data = (byte[]) raster.getDataElements(x, height - y, data);
+					for (int i = 0; i < data.length; i++)
+						components[i] += data[i] & 0xff;
+					total++;
+				}
+			}
+		}
+		total *= 255;
+		for (int i = 0; i < components.length; i++)
+			components[i] = components[i] / total;
+		// Return colors
+		if (components.length == 4) return new CMYKColor(components);
+		else if (components.length == 3) return new RGBColor(components);
+		else return new GrayColor(components);
+	}
+
+	public Color getAverageColor() {
+		return getAverageColor((Shape) null);
+	}
+
+	public Color getAverageColor(Path path) {
+		return getAverageColor(path.toShape());
+	}
+
+	public Color getAverageColor(Rectangle rect) {
+		return getAverageColor(rect.toRectangle2D());
 	}
 
 	private native void nativeSetPixels(byte[] data, int numComponents, int x,

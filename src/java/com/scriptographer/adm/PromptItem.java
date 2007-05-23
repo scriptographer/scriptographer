@@ -31,7 +31,7 @@
 
 package com.scriptographer.adm;
 
-import org.mozilla.javascript.ScriptRuntime;
+import com.scratchdisk.script.ScriptEngine;
 
 /**
  * @author lehni
@@ -226,10 +226,10 @@ public class PromptItem {
 					((Slider) item).setIncrements(increment, 8 * increment);
 				}
 				((ValueItem) item).setRange(min, max);
-				((ValueItem) item).setValue((float) ScriptRuntime.toNumber(value));
+				((ValueItem) item).setValue((float) ScriptEngine.toDouble(value));
 				break;
 			case TYPE_CHECKBOX:
-				((CheckBox) item).setChecked(ScriptRuntime.toBoolean(value));
+				((CheckBox) item).setChecked(ScriptEngine.toBoolean(value));
 				break;
 			case TYPE_LIST: {
 					PopupList list = (PopupList) item;

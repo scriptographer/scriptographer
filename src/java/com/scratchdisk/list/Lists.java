@@ -29,7 +29,8 @@
  * $Id: Lists.java 230 2007-01-16 20:36:33Z lehni $
  */
 
-package com.scratchdisk.util;
+package com.scratchdisk.list;
+
 
 /**
  * @author lehni 

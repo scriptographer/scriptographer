@@ -34,10 +34,10 @@ package com.scriptographer.adm;
 import java.io.IOException;
 
 import com.scriptographer.ScriptographerEngine; 
+import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.Lists;
+import com.scratchdisk.list.SimpleList;
 import com.scratchdisk.script.Callable;
-import com.scratchdisk.util.ExtendedList;
-import com.scratchdisk.util.Lists;
-import com.scratchdisk.util.SimpleList;
 
 /**
  * ListItem is a ADM list item (e.g. ListBox, PopupMenu, ...) and a

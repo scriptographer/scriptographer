@@ -33,10 +33,10 @@ package com.scriptographer.ai;
 
 import java.util.WeakHashMap;
 
-import com.scratchdisk.util.ExtendedList;
-import com.scratchdisk.util.Lists;
-import com.scratchdisk.util.ReadOnlyList;
-import com.scratchdisk.util.StringIndexList;
+import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.Lists;
+import com.scratchdisk.list.ReadOnlyList;
+import com.scratchdisk.list.StringIndexList;
 
 /**
  * The FontList object represents a list of {@link FontFamily} objects. Font

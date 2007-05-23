@@ -31,8 +31,8 @@
 
 package com.scriptographer.util;
 
-import com.scratchdisk.util.AbstractExtendedList;
-import com.scratchdisk.util.ExtendedList;
+import com.scratchdisk.list.AbstractExtendedList;
+import com.scratchdisk.list.ExtendedList;
 
 /**
  * AbstractFetchList defines fetch and fetch(fromIndex, toIndex), which are called

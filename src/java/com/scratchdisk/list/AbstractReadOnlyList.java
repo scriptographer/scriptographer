@@ -29,7 +29,8 @@
  * $Id: AbstractReadOnlyList.java 240 2007-02-17 15:14:26Z lehni $
  */
 
-package com.scratchdisk.util;
+package com.scratchdisk.list;
+
 
 /**
  * @author lehni

@@ -29,10 +29,10 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.util.ExtendedArrayList;
-import com.scratchdisk.util.ExtendedList;
-import com.scratchdisk.util.Lists;
-import com.scratchdisk.util.ReadOnlyList;
+import com.scratchdisk.list.ExtendedArrayList;
+import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.Lists;
+import com.scratchdisk.list.ReadOnlyList;
 
 /**
  * @author lehni

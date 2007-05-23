@@ -35,9 +35,9 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
 
-import com.scratchdisk.util.ReadOnlyList;
-import com.scratchdisk.util.SimpleList;
-import com.scratchdisk.util.StringIndexList;
+import com.scratchdisk.list.ReadOnlyList;
+import com.scratchdisk.list.SimpleList;
+import com.scratchdisk.list.StringIndexList;
 
 /**
  * Wrapper class for com.scriptographer.util.List objects It adds array-like

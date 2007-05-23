@@ -31,12 +31,10 @@
 
 package com.scriptographer.adm;
 
-import info.clearthought.layout.TableLayoutConstants;
-
 import java.awt.FlowLayout;
 import java.util.Map;
 
-import org.mozilla.javascript.ScriptRuntime;
+import com.scratchdisk.script.ScriptEngine;
 
 /**
  * @author lehni
@@ -50,13 +48,16 @@ public class PromptDialog extends ModalDialog {
 		this.setTitle(title);
 		this.items = items;
 		
-		double[] columns = { TableLayoutConstants.PREFERRED,
-				TableLayoutConstants.PREFERRED };
 		double[] rows = new double[items.length + 1];
 		for (int i = 0; i < rows.length; i++)
-			rows[i] = TableLayoutConstants.PREFERRED;
-		
-		TableLayout layout = new TableLayout(columns, rows, 4, 4);
+			rows[i] = TableLayout.PREFERRED;
+
+		double[][] sizes = {
+			{ TableLayout.PREFERRED, TableLayout.PREFERRED },
+			rows
+		};
+
+		TableLayout layout = new TableLayout(sizes, 4, 4);
 		this.setLayout(layout);
 		this.setMargins(4, 4, 4, 4);
 		
@@ -68,12 +69,12 @@ public class PromptDialog extends ModalDialog {
 					descItem.setFont(Dialog.FONT_PALETTE);
 					descItem.setText(promptItem.description + ":");
 					descItem.setMargins(0, 2, 0, 0);
-					this.addToLayout(descItem, "0, " + i);
+					this.addToContent(descItem, "0, " + i);
 				}
 				
 				com.scriptographer.adm.Item valueItem =
 						promptItem.createItem(this);
-				this.addToLayout(valueItem, "1, " + i);
+				this.addToContent(valueItem, "1, " + i);
 			}
 		}			
 		
@@ -91,7 +92,7 @@ public class PromptDialog extends ModalDialog {
 		okButton.setText("OK");
 		buttons.add(okButton);
 
-		this.addToLayout(buttons, "0, " + items.length + ", 1, " + items.length);
+		this.addToContent(buttons, "0, " + items.length + ", 1, " + items.length);
 		
 		this.setDefaultItem(okButton);
 		this.setCancelItem(cancelButton);
@@ -117,9 +118,9 @@ public class PromptDialog extends ModalDialog {
 	private static double getValue(Map map, String name) {
 		Object obj = map.get(name);
 		if (obj != null)
-			return ScriptRuntime.toNumber(obj);
+			return ScriptEngine.toDouble(obj);
 		else
-			return ScriptRuntime.NaN;
+			return Double.NaN;
 	}
 
 	private static PromptItem[] getItems(Map[] items) {
@@ -141,7 +142,7 @@ public class PromptDialog extends ModalDialog {
 				Object incrementObj = map.get("increment");
 				if (incrementObj != null) {
 					type = PromptItem.TYPE_RANGE;
-					increment = ScriptRuntime.toNumber(incrementObj);
+					increment = ScriptEngine.toDouble(incrementObj);
 					if (Double.isNaN(increment))
 						increment = 0;
 				} else {

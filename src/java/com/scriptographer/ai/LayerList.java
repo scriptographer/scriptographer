@@ -31,8 +31,8 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.util.StringIndexList;
-import com.scratchdisk.util.AbstractReadOnlyList;
+import com.scratchdisk.list.AbstractReadOnlyList;
+import com.scratchdisk.list.StringIndexList;
 
 /**
  * The LayerList object represents a list of layers in an Illustrator document.

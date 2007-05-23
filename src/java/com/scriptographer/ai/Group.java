@@ -31,8 +31,8 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.util.ExtendedList;
-import com.scratchdisk.util.Lists;
+import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.Lists;
 
 /**
  * A Group is a collection of Art objects. When you transform a Group, it's

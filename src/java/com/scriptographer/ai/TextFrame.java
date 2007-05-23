@@ -31,7 +31,7 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.util.ReadOnlyList;
+import com.scratchdisk.list.ReadOnlyList;
 import com.scriptographer.CommitManager;
 
 /**

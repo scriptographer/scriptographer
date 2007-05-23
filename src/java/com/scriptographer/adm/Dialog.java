@@ -42,6 +42,7 @@ import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.prefs.Preferences;
 import java.util.prefs.BackingStoreException;
@@ -683,26 +684,45 @@ public abstract class Dialog extends CallbackHandler {
 		setMargins(margins, margins, margins, margins);
 	}
 
-	public void setMargins(int []margins) {
+	public void setMargins(int[] margins) {
 		setMargins(margins[0], margins[1], margins[2], margins[3]);
 	}
 
-	public void addToLayout(Item item, Object constraints) {
+	public void addToContent(Item item, Object constraints) {
 		getContainer().add(item.getComponent(), constraints);
 	}
 
-	public void addToLayout(Item item) {
-		addToLayout(item, null);
+	public void addToContent(Item item) {
+		addToContent(item, null);
 	}
 
-	public void addToLayout(ItemContainer container, Object constraints) {
+	public void addToContent(ItemContainer container, Object constraints) {
 		getContainer().add(container.getComponent(), constraints);
 	}
 
-	public void addToLayout(ItemContainer layout) {
-		addToLayout(layout, null);
+	public void addToContent(ItemContainer layout) {
+		addToContent(layout, null);
 	}
 
+	public void setContent(Map items) {
+		for (Iterator it = items.entrySet().iterator(); it.hasNext();) {
+			Map.Entry entry = (Map.Entry) it.next();
+			Object constraints = entry.getKey();
+			if (constraints instanceof String) {
+				// capitalize
+				String str = (String) constraints;
+				if (str.length() > 0)
+					constraints = str.substring(0, 1).toUpperCase()
+							+ str.substring(1);
+			}
+			Object item = entry.getValue();
+			if (item instanceof Item)
+				addToContent((Item) item, constraints);
+			else if (item instanceof ItemContainer)
+				addToContent((ItemContainer) item, constraints);
+			else throw new IllegalArgumentException(item.toString());
+		}
+	}
 	/**
 	 * doLayout recalculates the layout, but does not change the dialog's size
 	 *
@@ -1257,7 +1277,7 @@ public abstract class Dialog extends CallbackHandler {
 			doLayout();
 		}
 
-		public void setInsets(int left, int top, int right, int bottom) {
+		public void setInsets(int top, int left, int bottom, int right) {
 			insets = new Insets(top, left, bottom, right);
 		}
 

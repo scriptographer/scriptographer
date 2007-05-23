@@ -29,7 +29,8 @@
  * $Id: SimpleList.java 230 2007-01-16 20:36:33Z lehni $
  */
 
-package com.scratchdisk.util;
+package com.scratchdisk.list;
+
 
 /**
  * This is similar to java.util.List, but has a few changes that make it much

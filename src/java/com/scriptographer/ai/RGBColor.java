@@ -61,6 +61,13 @@ public class RGBColor extends Color {
 		alpha = a;
 	}
 
+	public RGBColor(float components[]) {
+		red = components[0];
+		green = components[1];
+		blue = components[2];
+		alpha = (components.length > 3) ? components[3] : -1f;
+	}
+
 	public RGBColor(java.awt.Color col) {
 		this(col.getRed() / 255.0f, col.getGreen() / 255.0f,
 				col.getBlue() / 255.0f, col.getAlpha() / 255.0f);

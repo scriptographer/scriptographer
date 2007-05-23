@@ -31,26 +31,45 @@
 
 package com.scriptographer.adm;
 
+import com.scratchdisk.script.ScriptEngine;
+
 /**
  * @author lehni
  */
 public class TableLayout extends info.clearthought.layout.TableLayout {
-	public TableLayout(double[] col, double[] row, int hGap, int vGap) {
-		super(col, row);
+	
+	public TableLayout(double[][] size, int hGap, int vGap) {
+		super(size[0], size[1]);
 		this.hGap = hGap;
 		this.vGap = vGap;
-	}
-
-	public TableLayout(double[][] size, int hGap, int vGap) {
-		this(size[0], size[1], hGap, vGap);
-	}
-	
-	public TableLayout(double[] col, double[] row) {
-		this(col, row, 0, 0);
 	}
 	
 	public TableLayout(double[][] size) {
 		this(size, 0, 0);
+	}
+
+	public TableLayout(Object[][] size, int hGap, int vGap) {
+		super(getSize(size[0]), getSize(size[1]));
+		this.hGap = hGap;
+		this.vGap = vGap;
+	}
+
+	private static double[] getSize(Object[] objects) {
+		double[] size = new double[objects.length];
+		for (int i = 0; i < objects.length; i++) {
+			double value;
+			Object obj = objects[i];
+			if (obj instanceof String) {
+				if ("fill".equalsIgnoreCase((String) obj)) value = FILL;
+				else if ("prefered".equalsIgnoreCase((String) obj)) value = PREFERRED; 
+				else if ("minimum".equalsIgnoreCase((String) obj)) value = MINIMUM; 
+				else value = Double.NaN;
+			} else {
+				value = ScriptEngine.toDouble(obj);
+			}
+			size[i] = value;
+		}
+		return size;
 	}
 
 	/* overrides setHGap to allow negative gaps

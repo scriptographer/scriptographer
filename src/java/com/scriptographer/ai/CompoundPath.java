@@ -32,10 +32,11 @@
 package com.scriptographer.ai;
 
 import java.awt.Shape;
+import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 
-import com.scratchdisk.util.ExtendedList;
-import com.scratchdisk.util.Lists;
+import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.Lists;
 
 /**
  * A compound path contains two or more paths, holes are drawn where the paths
@@ -187,7 +188,7 @@ public class CompoundPath extends Art {
 			iter.next();
 		}
 	}
-	
+
 	public void append(PathIterator iter) {
 		append(iter, false);
 	}
@@ -203,5 +204,14 @@ public class CompoundPath extends Art {
 
 	public void append(Shape shape) {
 		append(shape.getPathIterator(null), false);
+	}
+
+	public GeneralPath toShape() {
+		Path path = (Path) getFirstChild();
+		GeneralPath shape = (GeneralPath) path.toShape();
+		while ((path = (Path) path.getNextSibling()) != null) {
+			shape.append(path.toShape(), false);
+		}
+		return shape;
 	}
 }
