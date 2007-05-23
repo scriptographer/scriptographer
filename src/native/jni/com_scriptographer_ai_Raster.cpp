@@ -104,7 +104,7 @@ Raster_Data *Raster_getData(JNIEnv *env, jobject raster, AIArtHandle art) {
 		}
 		
 		// determine the number of components from bitsPerPixel:
-		int numComponents = data->info.bitsPerPixel >= 8 ? data->info.bitsPerPixel >> 3 : 1;
+		int numComponents = data->info.bitsPerPixel > 8 ? data->info.bitsPerPixel >> 3 : 1;
 		
 		data->numComponents = numComponents;
 		data->pixelSlice.back = numComponents;
@@ -117,7 +117,7 @@ Raster_Data *Raster_getData(JNIEnv *env, jobject raster, AIArtHandle art) {
 	return data;
 }
 
-void Raster_finalize(JNIEnv *env, jobject obj) {
+void Raster_deleteData(JNIEnv *env, jobject obj) {
 	Raster_Data *data = (Raster_Data *) gEngine->getIntField(env, obj, gEngine->fid_ai_Raster_data);
 	if (data != NULL) {
 		delete data;
@@ -242,7 +242,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *e
 			// TODO: check wether the old art needs to be removed?
 			art = Art_rasterize(art, (AIRasterizeType) type, 0, 0, scaledWidth, scaledHeight);
 			// remove the raster info because it has changed now...
-			Raster_finalize(env, obj);
+			Raster_deleteData(env, obj);
 		} else {
 			// just set the raster info:
 			AIRasterRecord *info = &data->info;
@@ -292,6 +292,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *e
 			if (height > 0) info->bounds.bottom = info->bounds.top + height;
 			sAIRaster->SetRasterInfo(art, info);
 		}
+		// Delete the cached data after conversion so it gets recalculated the next time.
+		Raster_deleteData(env, obj);
 		// set the old matrix after rendering:
 		sAIRaster->SetRasterMatrix(art, &prevMatrix);
 		return (jint) art;
@@ -304,7 +306,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_finalize(JNIEnv *env, jobject obj) {
 	try {
-		Raster_finalize(env, obj);
+		Raster_deleteData(env, obj);
 	} EXCEPTION_CONVERT(env);
 }
 
