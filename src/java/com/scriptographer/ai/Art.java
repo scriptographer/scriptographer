@@ -436,7 +436,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * @jsbean Returns the document that the Art item belongs to.
+	 * @jsbean Returns the document that the art item belongs to.
 	 */
 	public Document getDocument() {
 		return document;
@@ -446,10 +446,10 @@ public abstract class Art extends DictionaryObject {
 			int dictionaryRef);
 
 	/**
-	 * Removes the Art item from the document. If the Art item has children,
+	 * Removes the art item from the document. If the art item has children,
 	 * they are also removed.
 	 * 
-	 * @return <code>true</code> if the Art item was removed, false
+	 * @return <code>true</code> if the art item was removed, false
 	 *         otherwise
 	 */
 	public boolean remove() {
@@ -465,16 +465,16 @@ public abstract class Art extends DictionaryObject {
 	protected native void finalize();
 
 	/**
-	 * Copies the Art item to another document, or duplicates it within the
+	 * Copies the art item to another document, or duplicates it within the
 	 * same document.
 	 * 
-	 * @param document the document to copy the Art item to
-	 * @return the new copy of the Art item
+	 * @param document the document to copy the art item to
+	 * @return the new copy of the art item
 	 */
 	public native Art copyTo(Document document);
 
 	/**
-	 * Copies the Art item into the specified Art item.
+	 * Copies the art item into the specified art item.
 	 * 
 	 * @param art
 	 * @return
@@ -482,7 +482,7 @@ public abstract class Art extends DictionaryObject {
 	public native Art copyTo(Art art);
 
 	/**
-	 * Clones the Art item within the same document.
+	 * Clones the art item within the same document.
 	 * 
 	 * @return the newly cloned art object
 	 */
@@ -491,34 +491,34 @@ public abstract class Art extends DictionaryObject {
 	}
 	
 	/**
-	 * @jsbean Returns the Art item that this Art item is contained within.
+	 * @jsbean Returns the art item that this art item is contained within.
 	 */
 	public native Art getParent();
 
 	/**
-	 * @jsbean Returns the first Art item contained within this Art item.
+	 * @jsbean Returns the first art item contained within this art item.
 	 */
 	public native Art getFirstChild();
 
 	/**
-	 * @jsbean Returns the last Art item contained within this Art item.
+	 * @jsbean Returns the last art item contained within this art item.
 	 */
 	public native Art getLastChild();
 	
 	/**
-	 * @jsbean Returns the next Art item on the same level as this Art item.
+	 * @jsbean Returns the next art item on the same level as this art item.
 	 */
 	public native Art getNextSibling();
 
 	/**
-	 * @jsbean Returns the previous Art item on the same level as this Art item.
+	 * @jsbean Returns the previous art item on the same level as this art item.
 	 */
 	public native Art getPreviousSibling();
 
-	// don't implement this in native as the number of Art objects is not known
+	// don't implement this in native as the number of art objects is not known
 	// in advance and like this, a java ArrayList can be used:
 	/**
-	 * @jsbean An array of Art items contained within this Art item
+	 * @jsbean An array of art items contained within this art item
 	 */
 	public Art[] getChildren() {
 		ArrayList list = new ArrayList();
@@ -533,7 +533,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Checks if the Art object has children.
+	 * Checks if the art object has children.
 	 * 
 	 * @return true if it has one or more children, false otherwise
 	 */
@@ -542,26 +542,26 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * @jsbean The bounds of the Art item including stroke width.
+	 * @jsbean The bounds of the art item including stroke width.
 	 */
 	public native Rectangle getBounds();
 
 	/**
-	 * @jsbean The bounds of the Art item including stroke width and controls.
+	 * @jsbean The bounds of the art item including stroke width and controls.
 	 */
 	public native Rectangle getControlBounds();
 
 	/**
-	 * @jsbean The bounds of the Art item excluding stroke width.
+	 * @jsbean The bounds of the art item excluding stroke width.
 	 */
 	public native Rectangle getGeometricBounds();
 	
 	/**
-	 * @jsbean The name of the Art item as it appears in the layers palette.
+	 * @jsbean The name of the art item as it appears in the layers palette.
 	 * @jsbean Sample code:
 	 * @jsbean
 	 * @jsbean <pre>
-	 * @jsbean var layer = new Layer(); // a Layer is an Art item
+	 * @jsbean var layer = new Layer(); // a layer is an art item
 	 * @jsbean print(layer.name); // returns '<Layer 2>'
 	 * @jsbean layer.name = "A nice name";
 	 * @jsbean print(layer.name); // returns 'A nice name'
@@ -572,7 +572,7 @@ public abstract class Art extends DictionaryObject {
 	public native void setName(String name);
 	
 	/**
-	 * Checks if the Art object's name as it appears in the layers palette is a
+	 * Checks if the art item's name as it appears in the layers palette is a
 	 * default descriptive name, rather then a user-assigned name.
 	 * 
 	 * @return <tt>true</tt> if it's name is default, <tt>false</tt> otherwise.
@@ -599,13 +599,13 @@ public abstract class Art extends DictionaryObject {
 	protected native boolean getAttribute(int attribute);
 
 	/**
-	 * @jsbean A boolean value that specifies whether an Art item is selected.
-	 * @jsbean Returns true if the Art item is selected or partially selected (groups with
+	 * @jsbean A boolean value that specifies whether an art item is selected.
+	 * @jsbean Returns true if the art item is selected or partially selected (groups with
 	 * @jsbean some selected objects/partially selected paths), false otherwise.
 	 * @jsbean Sample code:
 	 * @jsbean <pre>
 	 * @jsbean print(activeDocument.selectedItems.length) // returns 0
-	 * @jsbean var path = new Path(); // new Art items are always created in the active layer
+	 * @jsbean var path = new Path(); // new art items are always created in the active layer
 	 * @jsbean path.selected = true; // select the path
 	 * @jsbean print(activeDocument.selectedItems.length) // returns 1
 	 * @jsbean </pre>
@@ -619,7 +619,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * @jsbean A boolean value that specifies whether the Art item is fully
+	 * @jsbean A boolean value that specifies whether the art item is fully
 	 * @jsbean selected. For paths this means that all segments are selected,
 	 * @jsbean for container objects all children are selected.
 	 */
@@ -632,7 +632,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * @jsbean A boolean value that specifies whether the Art item is locked.
+	 * @jsbean A boolean value that specifies whether the art item is locked.
 	 * @jsbean Sample code:
 	 * @jsbean <pre>
 	 * @jsbean var path = new Path();
@@ -650,7 +650,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * @jsbean A boolean value that specifies whether the Art item is hidden.
+	 * @jsbean A boolean value that specifies whether the art item is hidden.
 	 * @jsbean Sample code:
 	 * @jsbean
 	 * @jsbean <pre>
@@ -669,12 +669,12 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Returns <code>true</code> when neither the Art item, nor it's parents are locked or hidden.
+	 * Returns <code>true</code> when neither the art item, nor it's parents are locked or hidden.
 	 */
 	public native boolean isEditable();
 
 	/**
-	 * @jsbean The Art item's blend mode as specified by the Art.BLEND_* static
+	 * @jsbean The art item's blend mode as specified by the <code>Art.BLEND_*</code> static
 	 * @jsbean properties.
 	 * 
 	 * @return any of Art.BLEND_*
@@ -682,14 +682,14 @@ public abstract class Art extends DictionaryObject {
 	public native int getBlendMode();
 
 	/**
-	 * Set the Art item's blend mode:
+	 * Set the art item's blend mode:
 	 * 
 	 * @param mode Art.BLEND_*
 	 */
 	public native void setBlendMode(int mode);
 
 	/**
-	 * @jsbean A value between 0 and 1 that specifies the opacity of the Art item.
+	 * @jsbean A value between 0 and 1 that specifies the opacity of the art item.
 	 */
 	public native float getOpacity();
 
@@ -712,7 +712,7 @@ public abstract class Art extends DictionaryObject {
 	public native boolean isValid();
 
 	/**
-	 * Appends the specified Art item as a child of the art object.
+	 * Appends the specified art item as a child of this art item.
 	 * You can use this function for groups, compound paths and layers.
 	 * Sample code:
 	 * <pre>
@@ -722,12 +722,12 @@ public abstract class Art extends DictionaryObject {
 	 * print(path.isInside(group)) // returns true
 	 * </pre>
 	 * 
-	 * @param art The Art item that will be appended as a child
+	 * @param art The art item that will be appended as a child
 	 */
 	public native boolean appendChild(Art art);
 	
 	/**
-	 * Moves the Art item above the specified art object.
+	 * Moves this art item above the specified art item.
 	 * Sample code:
 	 * <pre>
 	 * var firstPath = new Path();
@@ -737,13 +737,13 @@ public abstract class Art extends DictionaryObject {
 	 * print(firstPath.isAbove(secondPath)) // returns true
 	 * </pre>
 	 * 
-	 * @param art The Art item above which it should be moved
+	 * @param art The art item above which it should be moved
 	 * @return true if it was moved, false otherwise
 	 */
 	public native boolean moveAbove(Art art);
 	
 	/**
-	 * Moves the Art item below the specified art object.
+	 * Moves the art item below the specified art object.
 	 * <pre>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
@@ -752,13 +752,13 @@ public abstract class Art extends DictionaryObject {
 	 * print(secondPath.isBelow(firstPath)) // returns true
 	 * </pre>
 	 * 
-	 * @param art the Art item below which it should be moved
+	 * @param art the art item below which it should be moved
 	 * @return true if it was moved, false otherwise
 	 */
 	public native boolean moveBelow(Art art);
 
 	/**
-	 * Transforms the Art item with custom flags to be set.
+	 * Transforms the art item with custom flags to be set.
 	 * 
 	 * @param at
 	 * @param flags Art. TRANSFORM_*
@@ -766,7 +766,7 @@ public abstract class Art extends DictionaryObject {
 	public native void transform(Matrix matrix, int flags);
 
 	/**
-	 * Transforms the Art item with the flags Art.TRANSFORM_OBJECTS and
+	 * Transforms the art item with the flags Art.TRANSFORM_OBJECTS and
 	 * Art.TRANSFORM_DEEP set
 	 * 
 	 * @param matrix
@@ -776,7 +776,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * scales the Art item by creating a scale Matrix and executing transform()
+	 * Scales the art item by creating a scale Matrix and executing transform()
 	 * 
 	 * @param sx
 	 * @param sy
@@ -791,7 +791,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Translates (moves) the Art item by the given offsets.
+	 * Translates (moves) the art item by the given offsets.
 	 * 
 	 * @param tx
 	 * @param ty
@@ -802,7 +802,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Translates (moves) the Art item by the given offset point.
+	 * Translates (moves) the art item by the given offset point.
 	 * 
 	 * @param t
 	 */
@@ -811,7 +811,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Rotates the Art item around an anchor point by a given angle.
+	 * Rotates the art item around an anchor point by a given angle.
 	 * 
 	 * @param theta the rotation angle in radians
 	 * @see Matrix#rotate(double, double, double)
@@ -825,7 +825,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Shears the Art item with a given amount.
+	 * Shears the art item with a given amount.
 	 * @param shx
 	 * @param shy
 	 * @see Matrix#shear(double, double)
@@ -835,7 +835,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Rotates the Art item by a given angle.
+	 * Rotates the art item by a given angle.
 	 * 
 	 * @param theta the rotation angle in radians
 	 */
@@ -916,7 +916,7 @@ public abstract class Art extends DictionaryObject {
 	protected native int getOrder(Art art);
 	
 	/**
-	 * Checks if the Art item is above the specified Art item in the stacking
+	 * Checks if this art item is above the specified art item in the stacking
 	 * order of the document.
 	 * Sample code:
 	 * <pre>
@@ -925,8 +925,8 @@ public abstract class Art extends DictionaryObject {
 	 * print(secondPath.isAbove(firstPath)) // returns true
 	 * </pre>
 	 * 
-	 * @param art The Art item to check against
-	 * @return <code>true</code> if it is above the specified Art item, false
+	 * @param art The art item to check against
+	 * @return <code>true</code> if it is above the specified art item, false
 	 *         otherwise
 	 */
 	public boolean isAbove(Art art) {
@@ -934,7 +934,7 @@ public abstract class Art extends DictionaryObject {
 	}
 	
 	/**
-	 * Checks if the Art item is below the specified Art item in the stacking
+	 * Checks if the art item is below the specified art item in the stacking
 	 * order of the document
 	 * Sample code:
 	 * <pre>
@@ -943,8 +943,8 @@ public abstract class Art extends DictionaryObject {
 	 * print(firstPath.isBelow(secondPath)) // returns true
 	 * </pre>
 	 * 
-	 * @param art The Art item to check against
-	 * @return <code>true</code> if it is below the specified Art item, false
+	 * @param art The art item to check against
+	 * @return <code>true</code> if it is below the specified art item, false
 	 *         otherwise
 	 */
 	public boolean isBelow(Art art) {
@@ -952,7 +952,7 @@ public abstract class Art extends DictionaryObject {
 	}
 	
 	/**
-	 * Checks if the Art item is contained within the specified Art item
+	 * Checks if the art item is contained within the specified art item
 	 * Sample code:
 	 * <pre>
 	 * var group = new Group();
@@ -961,8 +961,8 @@ public abstract class Art extends DictionaryObject {
 	 * print(path.isInside(group)) // returns true
 	 * </pre>
 	 *
-	 * @param art The Art item to check against
-	 * @return <code>true</code> if it is inside the specified Art item,
+	 * @param art The art item to check against
+	 * @return <code>true</code> if it is inside the specified art item,
 	 *         false otherwise
 	 */
 	public boolean isInside(Art art) {
@@ -970,7 +970,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Checks if the art item is an ancestor of the specified Art item.
+	 * Checks if this art item is an ancestor of the specified art item.
 	 * Sample code:
 	 * <pre>
 	 * var group = new Group();
@@ -979,8 +979,8 @@ public abstract class Art extends DictionaryObject {
 	 * print(group.isAncestor(path)) // returns true
 	 * </pre>
 	 * 
-	 * @param art the Art item to check against
-	 * @return <code>true</code> if it is an ancestor of the specified Art
+	 * @param art the art item to check against
+	 * @return <code>true</code> if it is an ancestor of the specified art
 	 *         item, false otherwise
 	 */
 	public boolean isAncestor(Art art) {

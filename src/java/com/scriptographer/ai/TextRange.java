@@ -104,7 +104,7 @@ public class TextRange extends NativeObject {
 	}
 	
 	/**
-	 * @jsbean Returns the document that the TextRange belongs to.
+	 * @jsbean Returns the document that the text range belongs to.
 	 */
 	public Document getDocument() {
 		return document;
@@ -113,7 +113,7 @@ public class TextRange extends NativeObject {
 	private native int nativeGetStoryIndex();
 	
 	/**
-	 * @jsbean Returns the story that the TextRange belongs to.
+	 * @jsbean Returns the story that the text range belongs to.
 	 */
 	public TextStory getStory() {
 		if (story == null)
@@ -122,12 +122,12 @@ public class TextRange extends NativeObject {
 	}
 	
 	/**
-	 * @jsbean Returns the first text frame of the story that this TextRange belongs to.
+	 * @jsbean Returns the first text frame of the story that this text range belongs to.
 	 */
 	public native TextFrame getFirstFrame();
 
 	/**
-	 * @jsbean Returns the last text frame of the story that this TextRange belongs to.
+	 * @jsbean Returns the last text frame of the story that this text range belongs to.
 	 */
 	public native TextFrame getLastFrame();
 	
@@ -148,13 +148,13 @@ public class TextRange extends NativeObject {
 	}
 
 	/**
-	 * @jsbean Returns the index of the first character of the TextRange inside the
+	 * @jsbean Returns the index of the first character of the text range inside the
 	 * @jsbean story in numbers of characters.
 	 */
 	public native int getStart();
 	
 	/**
-	 * @jsbean Returns the index of the last character of the TextRange inside the
+	 * @jsbean Returns the index of the last character of the text range inside the
 	 * @jsbean story in numbers of characters.
 	 */
 	public native int getEnd();
@@ -193,7 +193,7 @@ public class TextRange extends NativeObject {
 	}
 
 	/**
-	 * Prepends the supplied text to this TextRange.
+	 * Prepends the supplied text to the text range.
 	 * @param text
 	 */
 	public void prepend(String text) {
@@ -201,7 +201,7 @@ public class TextRange extends NativeObject {
 	}
 	
 	/**
-	 * Appends the supplied text to this TextRange.
+	 * Appends the supplied text to this text range.
 	 * @param text
 	 */
 	public void append(String text) {
@@ -209,14 +209,14 @@ public class TextRange extends NativeObject {
 	}
 
 	/**
-	 * Prepends the supplied TextRange to this TextRange.
+	 * Prepends the supplied text range to the text range.
 	 */
 	public void prepend(TextRange range) {
 		adjustStart(nativePrepend(handle, range.handle));
 	}
 
 	/**
-	 * Appends the supplied TextRange to this TextRange.
+	 * Appends the supplied text range to this text range.
 	 * @param range
 	 */
 	public void append(TextRange range) {
@@ -226,7 +226,7 @@ public class TextRange extends NativeObject {
 	private native void nativeRemove(int handle);
 	
 	/**
-	 *  Deletes all the characters in the TextRange.
+	 *  Deletes all the characters in the text range.
 	 */
 	public void remove() {
 		if (characters != null)
@@ -239,7 +239,7 @@ public class TextRange extends NativeObject {
 	}
 	
 	/**
-	 * @jsbean A string value that specifies the content of the TextRange.
+	 * @jsbean A string value that specifies the content of the text range.
 	 */
 	public native String getContent();
 	
@@ -272,7 +272,7 @@ public class TextRange extends NativeObject {
 	ParagraphStyle paragraphStyle = null;
 
 	/**
-	 * @jsbean Specifies the CharacterStyle of the TextRange.
+	 * @jsbean Specifies the character style of the text range.
 	 */
 	public CharacterStyle getCharacterStyle() {
 		if (characterStyle == null) {
@@ -297,7 +297,7 @@ public class TextRange extends NativeObject {
 	}
 	
 	/**
-	 * @jsbean Specifies the ParagraphStyle of the TextRange.
+	 * @jsbean Specifies the paragraph style of the text range.
 	 */
 	public ParagraphStyle getParagraphStyle() {
 		if (paragraphStyle == null) {
@@ -331,7 +331,7 @@ public class TextRange extends NativeObject {
 	}
 	
 	/**
-	 * @jsbean Returns the Point location where the TextRange starts within the Illustrator document.
+	 * @jsbean Returns the point location where the text range starts within the Illustrator document.
 	 */
 	public native Point[] getOrigins();
 	public native Matrix[] getTransformations();
@@ -349,12 +349,12 @@ public class TextRange extends NativeObject {
 	public native int getSingleGlyph();
 	
 	/**
-	 * Selects the TextRange.
+	 * Selects the text range.
 	 * 
-	 * @param addToSelection If set to <code>true</code>, the TextRange will
+	 * @param addToSelection If set to <code>true</code>, the text range will
 	 *                       be added to the current selection in the document.
 	 *                       If set to false, it will clear the current selection
-	 *                       in the document and only select the TextRange.
+	 *                       in the document and only select the text range.
 	 */
 	public native void select(boolean addToSelection);
 	// if addToSelection is true, it will add this range to the current document
@@ -367,9 +367,9 @@ public class TextRange extends NativeObject {
 	}
 
 	/**
-	 * Deselects the range in the document. Note that deselecting a range can
-	 * cause defragmented selection, if the range is a subrange of the current
-	 * selection.
+	 * Deselects the text range in the document. Note that deselecting a text
+	 * range can cause defragmented selection, if the text range is a subrange
+	 * of the current selection.
 	 */
 	public native void deselect();
 	// This method will remove this range from the selection.
@@ -377,7 +377,7 @@ public class TextRange extends NativeObject {
 	// is a sub range of the current selection.
 	
 	/**
-	 * Clones the TextRange.
+	 * Clones the text range.
 	 */
 	public Object clone() {
 		/*
@@ -389,8 +389,8 @@ public class TextRange extends NativeObject {
 	}
 	
 	/**
-	 * Returns a Range from the story given in indices relative to the current
-	 * range's start index.
+	 * Returns a text range from the story given in indices relative to the current
+	 * text range's start index.
 	 * 
 	 * @param start
 	 * @param end
@@ -402,20 +402,20 @@ public class TextRange extends NativeObject {
 	}
 
 	/**
-	 * Changes the case of the text in the text frame.
+	 * Changes the case of the text in the text range.
 	 * @param type TextRange.CASE_*
 	 */
 	public native void changeCase(int type);
 	
 	/**
-	 * Adjusts the tracking of the text in this text range to fit on one line
+	 * Adjusts the tracking of the text in the text range to fit on one line
 	 * spanning the width of the area text.
 	 */
 	public native void fitHeadlines();
 	
 	/**
-	 * Returns the character type of the TextRange.
-	 * This Range has to be of size equal to 1, any other size will throw error
+	 * Returns the character type of the text range.
+	 * This range has to be of size equal to 1, any other size will throw error
 	 * (kBadParameter)
 	 * 
 	 * @return TextRange.CHAR_*
@@ -439,8 +439,8 @@ public class TextRange extends NativeObject {
 	}
 
 	/**
-	 * @jsbean Returns a list of TextRanges of the words contained within the
-	 *         TextRange. Please note that the returned TextRange includes the
+	 * @jsbean Returns a list of text ranges of the words contained within this
+	 *         text range. Note that the returned text range includes the
 	 *         trailing whitespace characters of the words.
 	 * @jsbean Sample code:
 	 * 
@@ -459,8 +459,8 @@ public class TextRange extends NativeObject {
 	}
 
 	/**
-	 * @jsbean Returns a list of TextRanges of the paragraphs contained within
-	 * @jsbean the TextRange. Please note that the returned TextRange includes the
+	 * @jsbean Returns a list of text ranges of the paragraphs contained within
+	 * @jsbean this text range. Note that the returned text range includes the
 	 * @jsbean trailing paragraph (\r) characters of the paragraphs.
 	 * @jsbean 
 	 * @jsbean Sample code:
@@ -479,8 +479,8 @@ public class TextRange extends NativeObject {
 	}
 
 	/**
-	 * @jsbean Returns a list of TextRanges of the characters contained within
-	 * @jsbean the TextRange.
+	 * @jsbean Returns a list of text ranges of the characters contained within
+	 * @jsbean this text range.
 	 * 
 	 * @jsbean Sample code:
 	 * @jsbean <pre>
@@ -673,7 +673,7 @@ public class TextRange extends NativeObject {
 	}
 
 	/**
-	 * A list of TextRanges for each character in the TextRange
+	 * A list of text ranges for each character in this text range.
 	 */
 	class CharacterList extends TextRangeList {
 		void update() {

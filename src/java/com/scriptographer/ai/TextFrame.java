@@ -58,7 +58,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Specifies the orientation of the text in the TextFrame as
+	 * @jsbean Specifies the orientation of the text in the text frame as
 	 * @jsbean specified by the TextFrame.ORIENTATION_* static properties.
 	 * @return TextFrame.ORIENTATION_*
 	 */
@@ -71,8 +71,8 @@ public abstract class TextFrame extends Art {
 	private native Art nativeCreateOutline();
 
 	/**
-	 * Converts the text in the TextFrame to outlines. Unlike the Illustrator
-	 * 'Create Outlines' action, this won't remove the TextFrame.
+	 * Converts the text in the text frame to outlines. Unlike the Illustrator
+	 * 'Create Outlines' action, this won't remove the text frame.
 	 * 
 	 * @return An Art item containing the outlined text.
 	 */
@@ -86,16 +86,16 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * Links the supplied TextFrame to this one.
-	 * @param next The TextFrame that will be linked.
-	 * @return True if the TextFrame was linked, false otherwise
+	 * Links the supplied text frame to this one.
+	 * @param next The text frame that will be linked.
+	 * @return True if the text frame was linked, false otherwise
 	 */
 	public native boolean link(TextFrame next);
 
 	private native boolean nativeUnlink(boolean before, boolean after);
 	
 	/**
-	 * Unlinks the TextFrame from its current story.
+	 * Unlinks the text frame from its current story.
 	 * 
 	 * @return True if the operation was successful, false otherwise
 	 */
@@ -104,8 +104,8 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * Unlinks the TextFrame from its current story and breaks up the story
-	 * into two parts before the TextFrame.
+	 * Unlinks the text frame from its current story and breaks up the story
+	 * into two parts before the text frame.
 	 * 
 	 * @return True if the operation as successful, false otherwise
 	 */
@@ -114,8 +114,8 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * Unlinks the TextFrame from its current story and breaks up the story
-	 * into two parts after the TextFrame.
+	 * Unlinks the text frame from its current story and breaks up the story
+	 * into two parts after the text frame.
 	 * 
 	 * @return True if the operation as successful, false otherwise
 	 */
@@ -124,23 +124,23 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Returns a boolean value that specifies wether the TextFrame is
+	 * @jsbean Returns a boolean value that specifies wether the text frame is
 	 *         linked.
 	 */
 	public native boolean isLinked();
 
 	/**
-	 * @jsbean Returns the index of this TextFrame in the story's list of TextFrames
+	 * @jsbean Returns the index of this text frame in the story's list of text frames.
 	 */
 	public native int getIndex();
 
 	/**
-	 * @jsbean Returns this TextFrame's story's index in the document's stories array
+	 * @jsbean Returns this text frame's story's index in the document's stories array.
 	 */
 	private native int getStoryIndex();
 
 	/**
-	 * @jsbean Returns the Story that the TextFrame belongs to.
+	 * @jsbean Returns the Story that the text frame belongs to.
 	 */
 	public TextStory getStory() {
 		// don't wrap directly. allways go through StoryList
@@ -164,14 +164,14 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Returns the next TextFrame in a story of various linked TextFrames
+	 * @jsbean Returns the next text frame in a story of various linked text frames
 	 */
 	public TextFrame getNextFrame() {
 		return getFrame(getIndex() + 1);
 	}
 
 	/**
-	 * @jsbean Returns the previous TextFrame in a story of various linked TextFrames
+	 * @jsbean Returns the previous text frame in a story of various linked text frames
 	 */
 	public TextFrame getPreviousFrame() {
 		return getFrame(getIndex() - 1);
@@ -180,6 +180,7 @@ public abstract class TextFrame extends Art {
 	// ATE
 	/**
 	 * @jshide true
+	 * @jshide bean
 	 */
 	public native int nativeGetRange(boolean includeOverflow);
 
@@ -215,7 +216,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Returns the index of the first visible character of the TextFrame.
+	 * @jsbean Returns the index of the first visible character of the text frame.
 	 * @jsbean (this is the equivalent of calling TextFrame.visibleRange.start)
 	 */
 	public int getStart() {
@@ -223,7 +224,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Returns the index of the last visible character of the TextFrame.
+	 * @jsbean Returns the index of the last visible character of the text frame.
 	 * @jsbean (this is the equivalent of calling TextFrame.visibleRange.end)
 	 */
 	public int getEnd() {
@@ -231,7 +232,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean A string value that specifies the contents of the TextFrame.
+	 * @jsbean A string value that specifies the contents of the text frame.
 	 */
 	public String getContent() {
 		return getRange().getContent();
@@ -242,7 +243,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Specifies the character style of the TextFrame.
+	 * @jsbean Specifies the character style of the text frame.
 	 */
 	public CharacterStyle getCharacterStyle() {
 		return getRange().getCharacterStyle();
@@ -253,7 +254,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Specifies the paragraph style of the TextFrame.
+	 * @jsbean Specifies the paragraph style of the text frame.
 	 */
 	public ParagraphStyle getParagraphStyle() {
 		return getRange().getParagraphStyle();
@@ -264,7 +265,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Returns the selected text of the TextFrame as a TextRange
+	 * @jsbean Returns the selected text of the text frame as a text range
 	 */
 	public native TextRange getSelection();
 
@@ -282,15 +283,15 @@ public abstract class TextFrame extends Art {
 	//	ATEErr (*GetSelected) ( TextFrameRef textframe, bool* ret);
 
 	/**
-	 * @jsbean Specifies the line spacing value for the TextFrame in pixels.
+	 * @jsbean Specifies the line spacing value for the text frame in pixels.
 	 */
 	public native float getSpacing();
 	public native void setSpacing(float spacing);
 
 	/**
 	 * @jsbean A boolean value that specifies wether to use optical alignment
-	 * @jsbean within the TextFrame. Optical aligment hangs punctuation outside
-	 * @jsbean the edges of a TextFrame.
+	 * @jsbean within the text frame. Optical aligment hangs punctuation outside
+	 * @jsbean the edges of a text frame.
 	 */
 	public native boolean getOpticalAlignment();
 	public native void setOpticalAlignment(boolean active);

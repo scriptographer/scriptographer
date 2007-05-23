@@ -54,6 +54,13 @@ public class Rectangle {
 		x = y = width = height = 0;
 	}
 
+	/**
+	 * Creates a new Rectangle.
+	 * @param x	The left coordinate.
+	 * @param y The top coordinate.
+	 * @param width
+	 * @param height
+	 */
 	public Rectangle(float x, float y, float width, float height) {
 		this.x = x;
 		this.y = y;
@@ -65,6 +72,10 @@ public class Rectangle {
 		this((float) x, (float) y, (float) w, (float) h);
 	}
 
+	/**
+	 * Creates a new rectangle from the passed rectangle.
+	 * @param rt
+	 */
 	public Rectangle(Rectangle rt) {
 		this(rt.x, rt.y, rt.width, rt.height);
 	}
@@ -73,11 +84,27 @@ public class Rectangle {
 		this(rt.getX(), rt.getY(), rt.getWidth(), rt.getHeight());
 	}
 	
+	/**
+	 * Creates a new rectangle from the passed points.
+	 * @param topLeft The top left point.
+	 * @param bottomRight The bottom right point.
+	 */
 	public Rectangle(Point topLeft, Point bottomRight) {
 		this(topLeft.x, bottomRight.y,
 				bottomRight.x - topLeft.x, topLeft.y - bottomRight.y);
 	}
 
+	/**
+	 * Creates a new rectangle from the passed object literal.
+	 * Sample code:
+	 * <pre>
+	 * var rect = new Rectangle({x:10,
+	 * 							y:10,
+	 * 							width:320,
+	 * 							height:240});
+	 * </pre>
+	 * @param map <code>{x, y, width, height}</code>
+	 */
 	public Rectangle(Map map) {
 		this(ScriptEngine.getDouble(map, "x"),
 				ScriptEngine.getDouble(map, "y"),
@@ -85,6 +112,13 @@ public class Rectangle {
 				ScriptEngine.getDouble(map, "height"));
 	}
 
+	/**
+	 * Changes the boundary properties of the rectangle.
+	 * @param x The left position.
+	 * @param y The top position.
+	 * @param width
+	 * @param height
+	 */
 	public void set(float x, float y, float width, float height) {
 		this.x = x;
 		this.y = y;
@@ -92,6 +126,9 @@ public class Rectangle {
 		this.height = height;
 	}
 	
+	/**
+	 * @jsbean The x position of the rectangle.
+	 */
 	public float getX() {
 		return x;
 	}
@@ -100,6 +137,10 @@ public class Rectangle {
 		this.x = x;
 	}
 
+	/**
+	 * @jsbean The y position of the rectangle. In the AI coordinate
+	 * @jsbean system, the y axis grows from bottom to top.
+	 */
 	public float getY() {
 		return y;
 	}
@@ -108,6 +149,9 @@ public class Rectangle {
 		this.y = y;
 	}
 
+	/**
+	 * @jsbean The width of the rectangle.
+	 */
 	public float getWidth() {
 		return width;
 	}
@@ -116,6 +160,9 @@ public class Rectangle {
 		this.width = width;
 	}
 
+	/**
+	 * @jsbean The height of the rectangle.
+	 */
 	public float getHeight() {
 		return height;
 	}
@@ -124,6 +171,10 @@ public class Rectangle {
 		this.height = height;
 	}
 
+	/**
+	 * @jsbean The position of the left hand side of the rectangle. Note that this
+	 * @jsbean doesn't move the whole rectangle; the right hand side stays where it was.
+	 */
 	public float getLeft() {
 		return x;
 	}
@@ -134,6 +185,10 @@ public class Rectangle {
 		x = left;
 	}
 
+	/**
+	 * @jsbean The position of the right hand side of the rectangle. Note that this
+	 * @jsbean doesn't move the whole rectangle; the left hand side stays where it was.
+	 */
 	public float getRight() {
 		return x + width;
 	}
@@ -143,10 +198,9 @@ public class Rectangle {
 	}
 
 	/**
-	 * Returns the bottom coordinate of the rectangle, in the AI coordinate
-	 * system, where the y axis has values that grow from bottom to top.
-	 * 
-	 * @return the bottom coordinate of the rectangle.
+	 * @jsbean Returns the bottom coordinate of the rectangle as a number. In the AI coordinate
+	 * @jsbean system, the y axis grows from bottom to top. Note that this doesn't move
+	 * @jsbean the whole rectangle: the top won't move.
 	 */
 	public float getBottom() {
 		return y;
@@ -159,10 +213,9 @@ public class Rectangle {
 	}
 
 	/**
-	 * Returns the top coordinate of the rectangle, in the AI coordinate
-	 * system, where the y axis has values that grow from bottom to top.
-	 * 
-	 * @return the top coordinate of the rectangle.
+	 * @jsbean Returns the top coordinate of the rectangle as a number. In the AI coordinate
+	 * @jsbean system, the y axis grows from bottom to top. Note that this doesn't move
+	 * @jsbean the whole rectangle: the bottom won't move.
 	 */
 	public float getTop() {
 		return y + height;
@@ -172,6 +225,9 @@ public class Rectangle {
 		height = top - y;
 	}
 	
+	/**
+	 * A point value that specifies the center point of the rectangle.
+	 */
 	public Point getCenter() {
 		return new Point(
 			x + width * 0.5f,
@@ -184,6 +240,9 @@ public class Rectangle {
 		y = center.y - height * 0.5f;
 	}
 
+	/**
+	 * A point value that specifies the top left point of the rectangle.
+	 */
 	public Point getTopLeft() {
 		return new Point(getLeft(), getTop());
 	}
@@ -193,6 +252,9 @@ public class Rectangle {
 		setTop(pt.y);
 	}
 
+	/**
+	 * A point value that specifies the top right point of the rectangle.
+	 */
 	public Point getTopRight() {
 		return new Point(getRight(), getTop());
 	}
@@ -202,6 +264,9 @@ public class Rectangle {
 		setTop(pt.y);
 	}
 
+	/**
+	 * A point value that specifies the bottom left point of the rectangle.
+	 */
 	public Point getBottomLeft() {
 		return new Point(getLeft(), getBottom());
 	}
@@ -211,6 +276,9 @@ public class Rectangle {
 		setBottom(pt.y);
 	}
 
+	/**
+	 * A point value that specifies the bottom right point of the rectangle.
+	 */
 	public Point getBottomRight() {
 		return new Point(getRight(), getBottom());
 	}
@@ -230,28 +298,26 @@ public class Rectangle {
 		return buf.toString();
 	}
 	
+	/**
+	 * Clones the rectangle.
+	 */
 	public Object clone() {
 		return new Rectangle(this);
 	}
 
 	/**
-	 * Determines whether or not this <code>Rectangle</code> is empty.
-	 * 
-	 * @return <code>true</code> if this <code>Rectangle</code> is empty, 
-	 *         <code>false</code> otherwise.
+	 * @jsbean A boolean value that specifies whether the rectangle is empty.
 	 */
 	public boolean isEmpty() {
 	    return width <= 0.0f || height <= 0.0f;
 	}
 
 	/**
-	 * Tests if a specified coordinate is inside the boundary of this
-	 * <code>Rectangle</code>.
+	 * Tests if specified coordinates are inside the boundary of the rectangle.
 	 * 
 	 * @param x, y the coordinates to test
 	 * @return <code>true</code> if the specified coordinates are inside the
-	 *         boundary of this <code>Rectangle</code>; <code>false</code>
-	 *         otherwise.
+	 *         boundary of the rectangle; <code>false</code> otherwise.
 	 */
 	public boolean contains(float x, float y) {
 		return x >= this.x &&
@@ -261,25 +327,23 @@ public class Rectangle {
 	}
 
     /**
-	 * Tests if a specified <code>Point</code> is inside the boundary 
-	 * of the <code>Shape</code>.
-	 * @param p the specified <code>Point</code>
-	 * @return <code>true</code> if the <code>Point</code> is inside the
-	 * 			<code>Shape</code> object's boundary;
-	 *			 <code>false</code> otherwise.
+	 * Tests if the specified point is inside the boundary of the rectangle.
+	 * 
+	 * @param p the specified point
+	 * @return <code>true</code> if the point is inside the rectangle's
+	 *         boundary; <code>false</code> otherwise.
 	 */
 	public boolean contains(Point p) {
 		return contains(p.x, p.y);
 	}
 
 	/**
-	 * Tests if the interior of the<code>Shape</code> intersects the interior
-	 * of a specified <code>Rectangle</code>.
+	 * Tests if the interior of this rectangle intersects the interior of
+	 * another rectangle.
 	 * 
-	 * @param r the specified <code>Rectangle</code>
-	 * @return <code>true</code> if the <code>Shape</code> and the specified
-	 *         <code>Rectangle</code> intersect each other;
-	 *         <code>false</code> otherwise.
+	 * @param r the specified rectangle
+	 * @return <code>true</code> if the rectangle and the specified rectangle
+	 *         intersect each other; <code>false</code> otherwise.
 	 */
 	public boolean intersects(Rectangle r) {
 		return !isEmpty() && r.width > 0 && r.height > 0 &&
@@ -290,13 +354,12 @@ public class Rectangle {
 	}
 	
     /**
-	 * Tests if the interior of the <code>Shape</code> entirely contains the
-	 * specified <code>Rectangle</code>.
+	 * Tests if the interior of the rectangle entirely contains the specified
+	 * rectangle.
 	 * 
-	 * @param rect the specified <code>Rectangle</code>
-	 * @return <code>true</code> if the <code>Shape</code> entirely contains
-	 *         the specified <code>Rectangle</code>; <code>false</code>
-	 *         otherwise.
+	 * @param rect The specified rectangle
+	 * @return <code>true</code> if the rectangle entirely contains the
+	 *         specified rectangle; <code>false</code> otherwise.
 	 */
 	public boolean contains(Rectangle rect) {
 	return !isEmpty() && rect.width > 0 && rect.height > 0 &&
@@ -307,14 +370,12 @@ public class Rectangle {
 	}
 
 	/**
-	 * Returns a new <code>Rectangle</code> object representing the
-	 * intersection of this <code>Rectangle</code> with the specified
-	 * <code>Rectangle</code>.
-	 * @param r the <code>Rectangle</code> to be intersected with
-	 * this <code>Rectangle</code>
-	 * @return the largest <code>Rectangle</code> contained in both 
-	 * 		the specified <code>Rectangle</code> and in this
-	 *		<code>Rectangle</code>.
+	 * Returns a new rectangle representing the intersection of this rectangle
+	 * with the specified rectangle.
+	 * 
+	 * @param r The rectangle to be intersected with this rectangle.
+	 * @return The largest rectangle contained in both the specified rectangle
+	 *         and in this rectangle.
 	 */
 	public Rectangle intersect(Rectangle r) {
 		float x1 = Math.max(x, r.x);
@@ -325,14 +386,12 @@ public class Rectangle {
     }
 
 	/**
-	 * Returns a new <code>Rectangle</code> object representing the
-	 * union of this <code>Rectangle</code> with the specified
-	 * <code>Rectangle</code>.
-	 * @param r the <code>Rectangle</code> to be combined with
-	 * this <code>Rectangle</code>
-	 * @return the smallest <code>Rectangle</code> containing both 
-	 * the specified <code>Rectangle</code> and this 
-	 * <code>Rectangle</code>.
+	 * Returns a new rectangle representing the union of this rectangle with the
+	 * specified rectangle.
+	 * 
+	 * @param r the rectangle to be combined with this rectangle
+	 * @return the smallest rectangle containing both the specified rectangle
+	 *         and this rectangle.
 	 */
 	public Rectangle union(Rectangle r) {
 		float x1 = Math.min(x, r.x);
@@ -353,21 +412,19 @@ public class Rectangle {
 	}
 
     /**
-	 * Adds a point, specified by the double precision arguments
-	 * <code>newx</code> and <code>newy</code>, to this 
-	 * <code>Rectangle</code>.  The resulting <code>Rectangle</code> 
-	 * is the smallest <code>Rectangle</code> that
-	 * contains both the original <code>Rectangle</code> and the
+	 * Adds a point, specified by the double precision arguments <code>px</code>
+	 * and <code>py</code>, to the rectangle. The resulting rectangle is the
+	 * smallest rectangle that contains both the original rectangle and the
 	 * specified point.
-	 * <p>
-	 * After adding a point, a call to <code>contains</code> with the 
-	 * added point as an argument does not necessarily return 
-	 * <code>true</code>. The <code>contains</code> method does not 
-	 * return <code>true</code> for points on the right or bottom 
-	 * edges of a rectangle. Therefore, if the added point falls on 
-	 * the left or bottom edge of the enlarged rectangle, 
+	 * 
+	 * After adding a point, a call to <code>contains</code> with the added
+	 * point as an argument does not necessarily return <code>true</code>.
+	 * The <code>contains</code> method does not return <code>true</code>
+	 * for points on the right or bottom edges of a rectangle. Therefore, if the
+	 * added point falls on the left or bottom edge of the enlarged rectangle,
 	 * <code>contains</code> returns <code>false</code> for that point.
-	 * @param px,&nbsp;py the coordinates of the point
+	 * 
+	 * @param px, py The coordinates of the point.
 	 */
 	public void include(float px, float py) {
 		float nx = Math.min(x, px);
@@ -378,16 +435,29 @@ public class Rectangle {
 		y = ny;
 	}
 
+    /**
+	 * Adds a point to this rectangle. The resulting rectangle is the
+	 * smallest rectangle that contains both the original rectangle and the
+	 * specified point.
+	 * 
+	 * After adding a point, a call to <code>contains</code> with the added
+	 * point as an argument does not necessarily return <code>true</code>.
+	 * The <code>contains</code> method does not return <code>true</code>
+	 * for points on the right or bottom edges of a rectangle. Therefore, if the
+	 * added point falls on the left or bottom edge of the enlarged rectangle,
+	 * <code>contains</code> returns <code>false</code> for that point.
+	 * 
+	 * @param pt
+	 */
 	public void include(Point pt) {
 		include(pt.x, pt.y);
 	}
 
 	/**
-	 * Adds a <code>Rectangle</code> object to this 
-	 * <code>Rectangle</code>.  The resulting <code>Rectangle</code>
-	 * is the union of the two <code>Rectangle</code> objects. 
-	 * @param rect the <code>Rectangle</code> to add to this
-	 * <code>Rectangle</code>.
+	 * Adds a rectangle to this rectangle. The resulting rectangle is the union
+	 * of the two rectangles.
+	 * 
+	 * @param rect the rectangle to add to this rectangle.
 	 */
 	public void include(Rectangle rect) {
 		float nx = Math.min(x, rect.x);

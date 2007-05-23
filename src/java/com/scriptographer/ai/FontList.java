@@ -39,9 +39,9 @@ import com.scratchdisk.util.ReadOnlyList;
 import com.scratchdisk.util.StringIndexList;
 
 /**
- * The FontList object represents a list of {@link FontFamily} objects. FontLists are
- * not created through a constructor, they're always accessed through the
- * {@link global#fonts} property.
+ * The FontList object represents a list of {@link FontFamily} objects. Font
+ * lists are not created through a constructor, they're always accessed through
+ * the Application.fonts property.
  * 
  * @author lehni
  */
@@ -53,16 +53,25 @@ public class FontList implements ReadOnlyList, StringIndexList {
 	private FontList() {
 	}
 
+	/**
+	 * The amount of font families in the font list.
+	 */
 	public native int size();
 	
 	private static native int nativeGet(int index);
 
+	/**
+	 * Gets a font family based on it's index in the font list.
+	 */
 	public Object get(int index) {
 		return FontFamily.wrapHandle(nativeGet(index));
 	}
 
 	public WeakHashMap fontsByName = new WeakHashMap();	
 	
+	/**
+	 * Gets a font family based on it's name in the font list.
+	 */
 	public Object get(String name) {
 		// fontsByName is a steadily growing lookup table
 		FontFamily family = null;
@@ -90,6 +99,9 @@ public class FontList implements ReadOnlyList, StringIndexList {
 		return family;
 	}
 
+	/**
+	 * Boolean value that specifies wether the font list is empty.
+	 */
 	public boolean isEmpty() {
 		return size() == 0;
 	}
