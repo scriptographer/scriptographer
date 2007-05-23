@@ -239,7 +239,7 @@ public class TextRange extends NativeObject {
 	}
 	
 	/**
-	 * @jsbean A string value that specifies the content of the text range.
+	 * @jsbean The text content of the text range.
 	 */
 	public native String getContent();
 	
@@ -249,7 +249,7 @@ public class TextRange extends NativeObject {
 	}
 	
 	/**
-	 * Returns the kerning between two chars in thousands of em.
+	 * @jsbean The kerning between two chars in thousands of em.
 	 * TODO: move to CharacterStyle
 	 */
 	public native int getKerning();
@@ -272,7 +272,7 @@ public class TextRange extends NativeObject {
 	ParagraphStyle paragraphStyle = null;
 
 	/**
-	 * @jsbean Specifies the character style of the text range.
+	 * @jsbean The character style of the text range.
 	 */
 	public CharacterStyle getCharacterStyle() {
 		if (characterStyle == null) {
@@ -297,7 +297,7 @@ public class TextRange extends NativeObject {
 	}
 	
 	/**
-	 * @jsbean Specifies the paragraph style of the text range.
+	 * @jsbean The paragraph style of the text range.
 	 */
 	public ParagraphStyle getParagraphStyle() {
 		if (paragraphStyle == null) {
@@ -331,7 +331,8 @@ public class TextRange extends NativeObject {
 	}
 	
 	/**
-	 * @jsbean Returns the point location where the text range starts within the Illustrator document.
+	 * @jsbean Returns the point location where the text range starts within the
+	 *         Illustrator document.
 	 */
 	public native Point[] getOrigins();
 	public native Matrix[] getTransformations();

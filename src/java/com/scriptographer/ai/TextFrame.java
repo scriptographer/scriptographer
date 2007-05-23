@@ -58,7 +58,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Specifies the orientation of the text in the text frame as
+	 * @jsbean The orientation of the text in the text frame as
 	 * @jsbean specified by the TextFrame.ORIENTATION_* static properties.
 	 * @return TextFrame.ORIENTATION_*
 	 */
@@ -124,8 +124,8 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Returns a boolean value that specifies wether the text frame is
-	 *         linked.
+	 * @jsbean Returns <code>true</code> if the text frame is
+	 *         linked, false otherwise.
 	 */
 	public native boolean isLinked();
 
@@ -201,7 +201,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Returns a range for all the characters, even the invisible ones outside
+	 * @jsbean Returns a text range for all the characters, even the invisible ones outside
 	 * @jsbean the container.
 	 */
 	public TextRange getRange() {
@@ -232,7 +232,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean A string value that specifies the contents of the text frame.
+	 * @jsbean The text contents of the text frame.
 	 */
 	public String getContent() {
 		return getRange().getContent();
@@ -243,7 +243,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Specifies the character style of the text frame.
+	 * @jsbean The character style of the text frame.
 	 */
 	public CharacterStyle getCharacterStyle() {
 		return getRange().getCharacterStyle();
@@ -254,7 +254,7 @@ public abstract class TextFrame extends Art {
 	}
 
 	/**
-	 * @jsbean Specifies the paragraph style of the text frame.
+	 * @jsbean The paragraph style of the text frame.
 	 */
 	public ParagraphStyle getParagraphStyle() {
 		return getRange().getParagraphStyle();
@@ -283,15 +283,15 @@ public abstract class TextFrame extends Art {
 	//	ATEErr (*GetSelected) ( TextFrameRef textframe, bool* ret);
 
 	/**
-	 * @jsbean Specifies the line spacing value for the text frame in pixels.
+	 * @jsbean The line spacing value for the text frame in points.
 	 */
 	public native float getSpacing();
 	public native void setSpacing(float spacing);
 
 	/**
-	 * @jsbean A boolean value that specifies wether to use optical alignment
-	 * @jsbean within the text frame. Optical aligment hangs punctuation outside
-	 * @jsbean the edges of a text frame.
+	 * @jsbean Specifies wether to use optical alignment within the text frame.
+	 *         Optical aligment hangs punctuation outside the edges of a text
+	 *         frame.
 	 */
 	public native boolean getOpticalAlignment();
 	public native void setOpticalAlignment(boolean active);

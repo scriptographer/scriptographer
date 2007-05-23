@@ -198,7 +198,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean Returns the bottom coordinate of the rectangle as a number. In the AI coordinate
+	 * @jsbean The bottom coordinate of the rectangle. In the AI coordinate
 	 * @jsbean system, the y axis grows from bottom to top. Note that this doesn't move
 	 * @jsbean the whole rectangle: the top won't move.
 	 */
@@ -213,9 +213,9 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean Returns the top coordinate of the rectangle as a number. In the AI coordinate
-	 * @jsbean system, the y axis grows from bottom to top. Note that this doesn't move
-	 * @jsbean the whole rectangle: the bottom won't move.
+	 * @jsbean The top coordinate of the rectangle. In the AI coordinate
+	 * @jsbean system, the y axis grows from bottom to top. Note that this
+	 * @jsbean doesn't move the whole rectangle: the bottom won't move.
 	 */
 	public float getTop() {
 		return y + height;
@@ -226,7 +226,7 @@ public class Rectangle {
 	}
 	
 	/**
-	 * A point value that specifies the center point of the rectangle.
+	 * The center point of the rectangle.
 	 */
 	public Point getCenter() {
 		return new Point(
@@ -241,7 +241,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * A point value that specifies the top left point of the rectangle.
+	 * The top left point of the rectangle.
 	 */
 	public Point getTopLeft() {
 		return new Point(getLeft(), getTop());
@@ -253,7 +253,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * A point value that specifies the top right point of the rectangle.
+	 * The top right point of the rectangle.
 	 */
 	public Point getTopRight() {
 		return new Point(getRight(), getTop());
@@ -265,7 +265,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * A point value that specifies the bottom left point of the rectangle.
+	 * The bottom left point of the rectangle.
 	 */
 	public Point getBottomLeft() {
 		return new Point(getLeft(), getBottom());
@@ -277,7 +277,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * A point value that specifies the bottom right point of the rectangle.
+	 * The bottom right point of the rectangle.
 	 */
 	public Point getBottomRight() {
 		return new Point(getRight(), getBottom());
@@ -306,7 +306,8 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean A boolean value that specifies whether the rectangle is empty.
+	 * @jsbean Returns <code>true</code> if the rectangle is empty,
+	 *         <code>false</code> otherwise.
 	 */
 	public boolean isEmpty() {
 	    return width <= 0.0f || height <= 0.0f;

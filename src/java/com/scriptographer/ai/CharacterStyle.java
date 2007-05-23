@@ -240,13 +240,13 @@ public class CharacterStyle extends PathStyle {
 	}
 	
 	/**
-	 * @jsbean Specifies the font size in pixels.
+	 * @jsbean The font size in points.
 	 * @jsbean Sample code:
 	 * @jsbean <pre>
 	 * @jsbean var text = new PointText(new Point(0,0));
 	 * @jsbean text.content = "The content of the text field.";
 	 * @jsbean 
-	 * @jsbean // sets the font size to 10px
+	 * @jsbean // sets the font size to 10pt
 	 * @jsbean text.characterStyle.fontSize = 10
 	 * @jsbean </pre>
 	 */
@@ -254,7 +254,7 @@ public class CharacterStyle extends PathStyle {
 	public native void setFontSize(Float size);
 	
 	/**
-	 * @jsbean Specifies the horizontal scale of the character style.
+	 * @jsbean The horizontal scale of the character style.
 	 * @jsbean Sample code:
 	 * @jsbean <pre>
 	 * @jsbean var text = new PointText(new Point(0,0));
@@ -268,7 +268,7 @@ public class CharacterStyle extends PathStyle {
 	public native void setHorizontalScale(Float scale);
 
 	/**
-	 * @jsbean Specifies the vertical scale of the character style.
+	 * @jsbean The vertical scale of the character style.
 	 * @jsbean Sample code:
 	 * @jsbean <pre>
 	 * @jsbean var text = new PointText(new Point(0,0));
@@ -282,13 +282,13 @@ public class CharacterStyle extends PathStyle {
 	public native void setVerticalScale(Float scale);
 
 	/**
-	 * @jsbean A boolean value that specifies wether to use auto leading in the character style.
+	 * @jsbean Specifies wether to use auto leading in the character style.
 	 */
 	public native Boolean getAutoLeading();
 	public native void setAutoLeading(Boolean leading);
 
 	/**
-	 * @jsbean Specifies the leading (vertical spacing) of the character style in pixels.
+	 * @jsbean The leading (vertical spacing) of the character style in points.
 	 */
 	public native Float getLeading();
 	public native void setLeading(Float leading);
@@ -297,7 +297,7 @@ public class CharacterStyle extends PathStyle {
 	public native void setTracking(Integer tracking);
 
 	/**
-	 * @jsbean Specifies the baseline shift of the character style in pixels.
+	 * @jsbean The baseline shift of the character style in points.
 	 * @jsbean Baseline shift moves text up or down relative to it's baseline.
 	 */
 	public native Float getBaselineShift();
