@@ -89,9 +89,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels___3IIII
 #ifdef __i386__ // TODO: figure out when ARGB to RGBA switch is needed and when not
 			for (int x = 0; x < width; x += 4) {
 				dst[x + 0] = src[x + 3]; // A
-				dst[x + 1] = src[x + 0]; // R
+				dst[x + 1] = src[x + 2]; // R
 				dst[x + 2] = src[x + 1]; // G
-				dst[x + 3] = src[x + 2]; // B
+				dst[x + 3] = src[x + 0]; // B
 			}
 #else
 			memcpy(dst, src, width);
@@ -138,9 +138,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeGetPixels(JNIEnv 
 		for (int y = 0; y < height; y++) {
 #ifdef __i386__ // TODO: figure out when ARGB to RGBA switch is needed and when not
 			for (int x = 0; x < width; x += 4) {
-				dst[x + 0] = src[x + 1]; // R
+				dst[x + 0] = src[x + 3]; // B
 				dst[x + 1] = src[x + 2]; // G
-				dst[x + 2] = src[x + 3]; // B
+				dst[x + 2] = src[x + 1]; // R
 				dst[x + 3] = src[x + 0]; // A
 			}
 #else
