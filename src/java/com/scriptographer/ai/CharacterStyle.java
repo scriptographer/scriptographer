@@ -52,44 +52,44 @@ import com.scriptographer.CommitManager;
 public class CharacterStyle extends PathStyle {
 
 	// AutoKernType
-	public final Integer KERNING_MANUAL = new Integer(0);
-	public final Integer KERNING_METRIC = new Integer(1);
-	public final Integer KERNING_OPTICAL = new Integer(2);
+	public final static Integer KERNING_MANUAL = new Integer(0);
+	public final static Integer KERNING_METRIC = new Integer(1);
+	public final static Integer KERNING_OPTICAL = new Integer(2);
 
 	// FontCapsOption
-	public final Integer CAPS_NORMAL = new Integer(0);
-	public final Integer CAPS_SMALL = new Integer(1);
-	public final Integer CAPS_ALL = new Integer(2);
-	public final Integer CAPS_ALL_SMALL = new Integer(3);
+	public final static Integer CAPS_NORMAL = new Integer(0);
+	public final static Integer CAPS_SMALL = new Integer(1);
+	public final static Integer CAPS_ALL = new Integer(2);
+	public final static Integer CAPS_ALL_SMALL = new Integer(3);
 
 	// FontBaselineOption
-	public final Integer BASELINE_NORMAL = new Integer(0);
-	public final Integer BASELINE_SUPERSCRIPT = new Integer(1);
-	public final Integer BASELINE_SUBSCRIPT = new Integer(2);
+	public final static Integer BASELINE_NORMAL = new Integer(0);
+	public final static Integer BASELINE_SUPERSCRIPT = new Integer(1);
+	public final static Integer BASELINE_SUBSCRIPT = new Integer(2);
 
 	// FontOpenTypePositionOption
-	public final Integer POSITION_NORMAL = new Integer(0);
-	public final Integer POSITION_SUPERSCRIPT = new Integer(1);
-	public final Integer POSITION_SUBSCRIPT = new Integer(2);
-	public final Integer POSITION_NUMERATOR = new Integer(3);
-	public final Integer POSITION_DENOMINATOR = new Integer(4);
+	public final static Integer POSITION_NORMAL = new Integer(0);
+	public final static Integer POSITION_SUPERSCRIPT = new Integer(1);
+	public final static Integer POSITION_SUBSCRIPT = new Integer(2);
+	public final static Integer POSITION_NUMERATOR = new Integer(3);
+	public final static Integer POSITION_DENOMINATOR = new Integer(4);
 
 	// StrikethroughPosition
-	public final Integer STRIKETHROUGH_OFF = new Integer(0);
-	public final Integer STRIKETHROUGH_XHEIGHT = new Integer(1);
-	public final Integer STRIKETHROUGH_EMBOX = new Integer(2);
+	public final static Integer STRIKETHROUGH_OFF = new Integer(0);
+	public final static Integer STRIKETHROUGH_XHEIGHT = new Integer(1);
+	public final static Integer STRIKETHROUGH_EMBOX = new Integer(2);
 
 	// UnderlinePosition
-	public final Integer UNDERLINE_OFF = new Integer(0);
-	public final Integer UNDERLINE_RIGHT_IN_VERTICAL = new Integer(1);
-	public final Integer UNDERLINE_LEFT_IN_VERTICAL = new Integer(2);
+	public final static Integer UNDERLINE_OFF = new Integer(0);
+	public final static Integer UNDERLINE_RIGHT_IN_VERTICAL = new Integer(1);
+	public final static Integer UNDERLINE_LEFT_IN_VERTICAL = new Integer(2);
 
 	// FigureStyle
-	public final Integer FIGURE_DEFAULT = new Integer(0);
-	public final Integer FIGURE_TABULAR = new Integer(1);
-	public final Integer FIGURE_PROPORTIONAL_OLDSTYLE = new Integer(2);
-	public final Integer FIGURE_PROPORTIONAL = new Integer(3);
-	public final Integer FIGURE_TABULAR_OLDSTYPE = new Integer(4);
+	public final static Integer FIGURE_DEFAULT = new Integer(0);
+	public final static Integer FIGURE_TABULAR = new Integer(1);
+	public final static Integer FIGURE_PROPORTIONAL_OLDSTYLE = new Integer(2);
+	public final static Integer FIGURE_PROPORTIONAL = new Integer(3);
+	public final static Integer FIGURE_TABULAR_OLDSTYPE = new Integer(4);
 
 	private TextRange range;
 	private Object commitKey;
