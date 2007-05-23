@@ -32,8 +32,8 @@ package com.scriptographer.adm;
 import java.io.IOException;
 
 import com.scriptographer.ScriptographerEngine; 
-import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.ConversionHelper;
 
 /**
  * @author lehni
@@ -87,7 +87,7 @@ public class ListEntry extends NotificationHandler {
 			Object res = ScriptographerEngine.invoke(onTrackEntry, list,
 					new Object[] { tracker, this });
 			if (res != null)
-				return ScriptEngine.toBoolean(res);
+				return ConversionHelper.toBoolean(res);
 		}
 		return true;
 	}

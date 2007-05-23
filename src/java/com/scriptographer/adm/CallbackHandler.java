@@ -32,8 +32,8 @@
 package com.scriptographer.adm;
 
 import com.scriptographer.ScriptographerEngine; 
-import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.ConversionHelper;
 
 /**
  * Subclasses the NotificationHandler and adds functionality for
@@ -100,7 +100,7 @@ abstract class CallbackHandler extends NotificationHandler {
 			Object result = ScriptographerEngine.invoke(onTrack, this,
 					new Object[] { tracker });
 			if (result != null)
-				return ScriptEngine.toBoolean(result);
+				return ConversionHelper.toBoolean(result);
 		}
 		return true;
 	}

@@ -34,7 +34,7 @@ package com.scriptographer.adm;
 import java.awt.Dimension;
 import java.util.Map;
 
-import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.util.ConversionHelper;
 
 /**
  * @author lehni
@@ -67,8 +67,8 @@ public class Size {
 	}
 
 	public Size(Map map) {
-		this(ScriptEngine.getInt(map, "width"),
-				ScriptEngine.getInt(map, "height"));
+		this(ConversionHelper.getInt(map, "width"),
+				ConversionHelper.getInt(map, "height"));
 	}
 
 	public void set(int width, int height) {

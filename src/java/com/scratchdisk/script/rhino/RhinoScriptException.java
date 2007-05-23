@@ -40,7 +40,7 @@ import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.WrappedException;
 
 import com.scratchdisk.script.ScriptException;
-import com.scratchdisk.util.StringUtils;
+import com.scratchdisk.util.StringHelper;
 
 /**
  * ScriptException for Rhino, preferably called RhinoException, but
@@ -61,10 +61,10 @@ public class RhinoScriptException extends ScriptException {
 				// Strip away base directory from all paths, if defined:
 				File baseDir = engine.getBaseDirectory();
 				if (baseDir != null)
-					stackTrace = StringUtils.replace(stackTrace, baseDir.getAbsolutePath(), "");
+					stackTrace = StringHelper.replace(stackTrace, baseDir.getAbsolutePath(), "");
 				writer.println(re.details());
 				// Replace tabs with 4 whitespaces
-				writer.print(StringUtils.replace(stackTrace, "\t", "    "));
+				writer.print(StringHelper.replace(stackTrace, "\t", "    "));
 				return buf.toString();
 		}
 	}

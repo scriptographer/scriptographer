@@ -50,7 +50,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import com.scratchdisk.util.NetUtils;
+import com.scratchdisk.util.NetHelper;
 import com.scriptographer.adm.Size;
 
 /**
@@ -131,7 +131,7 @@ public class Raster extends Art {
 	public Raster(URL url) throws IOException {
 		// this(NetUtils.loadImage(url));
 		// Immediatelly delete the downloaded file afterwards
-		this(NetUtils.loadFile(url, "sg_"), true);
+		this(NetHelper.loadFile(url, "sg_"), true);
 	}
 
 	native private static int nativeCreate(File file);

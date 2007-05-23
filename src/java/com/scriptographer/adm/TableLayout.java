@@ -31,7 +31,7 @@
 
 package com.scriptographer.adm;
 
-import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.util.ConversionHelper;
 
 /**
  * @author lehni
@@ -65,7 +65,7 @@ public class TableLayout extends info.clearthought.layout.TableLayout {
 				else if ("minimum".equalsIgnoreCase((String) obj)) value = MINIMUM; 
 				else value = Double.NaN;
 			} else {
-				value = ScriptEngine.toDouble(obj);
+				value = ConversionHelper.toDouble(obj);
 			}
 			size[i] = value;
 		}

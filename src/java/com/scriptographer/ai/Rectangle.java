@@ -31,11 +31,10 @@
 
 package com.scriptographer.ai;
 
-import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.util.Map;
 
-import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.util.ConversionHelper;
 
 /**
  * A Rectangle specifies an area that is enclosed by it's top-left point (x, y),
@@ -107,10 +106,10 @@ public class Rectangle {
 	 * @param map <code>{x, y, width, height}</code>
 	 */
 	public Rectangle(Map map) {
-		this(ScriptEngine.getDouble(map, "x"),
-				ScriptEngine.getDouble(map, "y"),
-				ScriptEngine.getDouble(map, "width"),
-				ScriptEngine.getDouble(map, "height"));
+		this(ConversionHelper.getDouble(map, "x"),
+				ConversionHelper.getDouble(map, "y"),
+				ConversionHelper.getDouble(map, "width"),
+				ConversionHelper.getDouble(map, "height"));
 	}
 
 	/**

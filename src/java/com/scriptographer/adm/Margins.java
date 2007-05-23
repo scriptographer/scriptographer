@@ -34,7 +34,7 @@ package com.scriptographer.adm;
 import java.awt.Insets;
 import java.util.Map;
 
-import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.util.ConversionHelper;
 
 /**
  * @author lehni
@@ -59,10 +59,10 @@ public class Margins {
 	}
 
 	public Margins(Map map) {
-		this(ScriptEngine.getInt(map, "left"),
-				ScriptEngine.getInt(map, "top"),
-				ScriptEngine.getInt(map, "right"),
-				ScriptEngine.getInt(map, "bottom"));
+		this(ConversionHelper.getInt(map, "left"),
+				ConversionHelper.getInt(map, "top"),
+				ConversionHelper.getInt(map, "right"),
+				ConversionHelper.getInt(map, "bottom"));
 	}
 
 	public void set(int left, int top, int right, int bottom) {

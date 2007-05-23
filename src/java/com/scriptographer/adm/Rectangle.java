@@ -33,7 +33,7 @@ package com.scriptographer.adm;
 
 import java.util.Map;
 
-import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.util.ConversionHelper;
 
 /**
  * @author lehni
@@ -58,10 +58,10 @@ public class Rectangle {
 	}
 
 	public Rectangle(Map map) {
-		this(ScriptEngine.getInt(map, "x"),
-				ScriptEngine.getInt(map, "y"),
-				ScriptEngine.getInt(map, "width"),
-				ScriptEngine.getInt(map, "height"));
+		this(ConversionHelper.getInt(map, "x"),
+				ConversionHelper.getInt(map, "y"),
+				ConversionHelper.getInt(map, "width"),
+				ConversionHelper.getInt(map, "height"));
 	}
 
 	public void set(int x, int y, int width, int height) {

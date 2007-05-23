@@ -31,7 +31,7 @@
 
 package com.scriptographer.adm;
 
-import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.util.ConversionHelper;
 
 /**
  * @author lehni
@@ -226,10 +226,10 @@ public class PromptItem {
 					((Slider) item).setIncrements(increment, 8 * increment);
 				}
 				((ValueItem) item).setRange(min, max);
-				((ValueItem) item).setValue((float) ScriptEngine.toDouble(value));
+				((ValueItem) item).setValue((float) ConversionHelper.toDouble(value));
 				break;
 			case TYPE_CHECKBOX:
-				((CheckBox) item).setChecked(ScriptEngine.toBoolean(value));
+				((CheckBox) item).setChecked(ConversionHelper.toBoolean(value));
 				break;
 			case TYPE_LIST: {
 					PopupList list = (PopupList) item;

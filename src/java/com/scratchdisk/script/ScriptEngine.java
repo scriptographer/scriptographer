@@ -37,7 +37,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @author lehni
@@ -147,67 +146,5 @@ public abstract class ScriptEngine {
 	 */
 	public File getBaseDirectory() {
 		return null;
-	}
-
-	/*
-	 * Helpers, similar to rhino's ScriptRuntime.to* methods,
-	 * but language independent. Used mostly for handling values
-	 * returned by callables.
-	 */
-	public static double toDouble(Object val) {
-		if (val instanceof Number)
-			return ((Number) val).doubleValue();
-		if (val == null)
-			return +0.0;
-		if (val instanceof String)
-            return Double.valueOf((String) val).doubleValue();
-		if (val instanceof Boolean)
-			return ((Boolean) val).booleanValue() ? 1 : +0.0;
-		return Double.NaN;
-	}
-
-	public static int toInt(Object val) {
-        if (val instanceof Integer)
-            return ((Integer) val).intValue();
-        else return (int) Math.round(toDouble(val));
-	}
-
-	public static boolean toBoolean(Object val) {
-        if (val instanceof Boolean)
-            return ((Boolean) val).booleanValue();
-        if (val == null)
-            return false;
-        if (val instanceof String)
-            return ((String) val).length() != 0;
-        if (val instanceof Number) {
-            double d = ((Number) val).doubleValue();
-            return (d == d && d != 0.0);
-        }
-        return true;
-	}
-
-	public static String toString(Object val) {
-		return val != null ? val.toString() : null;
-	}
-	
-	/*
-	 * Helpers to retrieve values from maps. Used by native
-	 * constructors that take a map argument.
-	 * TODO: move to a helper?
-	 */
-	public static double getDouble(Map map, Object key) {
-		return toDouble(map.get(key));
-	}
-
-	public static int getInt(Map map, Object key) {
-		return toInt(map.get(key));
-	}
-
-	public static boolean getBoolean(Map map, Object key) {
-		return toBoolean(map.get(key));
-	}
-
-	public static String getString(Map map, Object key) {
-		return toString(map.get(key));
 	}
 }

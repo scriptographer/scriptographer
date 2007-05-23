@@ -34,8 +34,8 @@ package com.scratchdisk.util;
 /**
  * @author lehni 
  */
-public class StringUtils {
-	private StringUtils() {
+public class StringHelper {
+	private StringHelper() {
 	}
 
 	public static String replace(String str, String find, String replace) {

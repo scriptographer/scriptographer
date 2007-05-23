@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 import java.awt.geom.Point2D;
 import java.util.Map;
 
-import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.util.ConversionHelper;
 
 /**
  * The Point object represents a point in the two dimensional space of the
@@ -75,8 +75,8 @@ public class Point {
 	}
 
 	public Point(Map map) {
-		this(ScriptEngine.getDouble(map, "x"),
-				ScriptEngine.getDouble(map, "y"));
+		this(ConversionHelper.getDouble(map, "x"),
+				ConversionHelper.getDouble(map, "y"));
 	}
 
 	public void set(float x, float y) {

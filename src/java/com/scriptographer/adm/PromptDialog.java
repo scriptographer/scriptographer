@@ -34,7 +34,7 @@ package com.scriptographer.adm;
 import java.awt.FlowLayout;
 import java.util.Map;
 
-import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.util.ConversionHelper;
 
 /**
  * @author lehni
@@ -118,7 +118,7 @@ public class PromptDialog extends ModalDialog {
 	private static double getValue(Map map, String name) {
 		Object obj = map.get(name);
 		if (obj != null)
-			return ScriptEngine.toDouble(obj);
+			return ConversionHelper.toDouble(obj);
 		else
 			return Double.NaN;
 	}
@@ -142,7 +142,7 @@ public class PromptDialog extends ModalDialog {
 				Object incrementObj = map.get("increment");
 				if (incrementObj != null) {
 					type = PromptItem.TYPE_RANGE;
-					increment = ScriptEngine.toDouble(incrementObj);
+					increment = ConversionHelper.toDouble(incrementObj);
 					if (Double.isNaN(increment))
 						increment = 0;
 				} else {

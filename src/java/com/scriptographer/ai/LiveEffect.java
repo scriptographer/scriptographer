@@ -32,8 +32,8 @@
 package com.scriptographer.ai;
 
 import com.scriptographer.ScriptographerEngine; 
-import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.ConversionHelper;
 import com.scratchdisk.util.IntMap;
 import com.scriptographer.adm.MenuItem;
 
@@ -383,8 +383,8 @@ public class LiveEffect extends NativeObject {
 
 	protected int onGetInputType(Map parameters, Art art) throws Exception {
 		if (onGetInputType != null) {
-			return ScriptEngine.toInt(ScriptographerEngine.invoke(onGetInputType,
-					new Object[] { parameters, art }));
+			return ConversionHelper.toInt(ScriptographerEngine.invoke(
+					onGetInputType, new Object[] { parameters, art }));
 			
 		}
 		return 0;
