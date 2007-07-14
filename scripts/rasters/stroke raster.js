@@ -4,9 +4,11 @@ var size = 10;
 var scale = 10;
 
 function createDot(x, y, dot, radius) {
-	var art = dot.clone();
-	art.style.stroke.width = radius * scale;
-	art.translate(x * size, y * size);
+	if (radius > 0) {
+		var art = dot.clone();
+		art.style.stroke.width = radius * scale;
+		art.translate(x * size, y * size);
+	}
 /*
 	if ((y % 2) == 0) {
 		art.translate(size / 2 , 0);

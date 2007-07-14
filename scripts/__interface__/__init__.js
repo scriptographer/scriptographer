@@ -29,9 +29,7 @@
  * $Id: interface.js 294 2007-04-15 19:20:29Z lehni $
  */
 
-var lineHeight = 17;
 var buttonSize = new Size(27, 17);
-var lineBreak = java.lang.System.getProperty('line.separator');
 
 function getImage(filename) {
 	return new Image(new File(script.directory, filename));

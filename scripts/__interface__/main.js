@@ -29,30 +29,23 @@
  * $Id: interface.js 294 2007-04-15 19:20:29Z lehni $
  */
 
-var lineHeight = 17;
-var buttonSize = new Size(27, 17);
-var lineBreak = java.lang.System.getProperty('line.separator');
-
-function getImage(filename) {
-	return new Image(new File(script.directory, filename));
-}
-
 var mainDialog = new FloatingDialog(
 		FloatingDialog.OPTION_TABBED |
 		FloatingDialog.OPTION_SHOW_CYCLE |
 		FloatingDialog.OPTION_RESIZING |
 		Dialog.OPTION_REMEMBER_PLACING, function() {
 
+	var lineHeight = 17;
 	this.title = "Scriptographer";
 	this.setIncrement(1, lineHeight);
 
 	// Script List:
 	scriptList = new HierarchyList(this) {
 		style: List.STYLE_BLACK_RECT,
-		size: new Size(208, 20 * lineHeight),
-		minimumSize: new Size(208, 8 * lineHeight),
-		entrySize: new Size(2000, lineHeight),
-		entryTextRect: new Rectangle(0, 0, 2000, lineHeight),
+		size: [208, 20 * lineHeight],
+		minimumSize: [208, 8 * lineHeight],
+		entrySize: [2000, lineHeight],
+		entryTextRect: [0, 0, 2000, lineHeight],
 		// TODO: consider adding onDoubleClick, instead of this nasty workaround here!
 		// Avoid onTrack as much as possible in scripts, and add what's needed behind
 		// the scenes
@@ -178,7 +171,7 @@ var mainDialog = new FloatingDialog(
 			ScriptographerEngine.execute(entry.file, null);
 	}
 
-	var self = this;
+	var that = this;
 
 	// Add the menus:
 	// use a space in the beginning of the name so it appears on top of all entries :)
@@ -186,7 +179,7 @@ var mainDialog = new FloatingDialog(
 
 	new MenuItem(scriptographerItem, "Main") {
 		onSelect: function() {
-			self.visible = true;
+			that.visible = true;
 		}
 	};
 
@@ -270,7 +263,7 @@ var mainDialog = new FloatingDialog(
 
 	var stopButton = new ImageButton(this) {
 		onClick: function() {
-			Timer.stopAll();
+			ScriptographerEngine.stopAll();
 		},
 		image: getImage("stop.png"),
 		size: buttonSize

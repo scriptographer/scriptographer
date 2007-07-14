@@ -67,11 +67,11 @@ var aboutDialog = new ModalDialog(function() {
 	};
 
 	this.defaultItem = okButton;
+	this.margins = 10;
 	this.layout = new TableLayout([
 			[ 'prefered', 'fill', 'prefered' ],
 			[ 'prefered', 'fill', 'prefered' ]
 		], 4, 4);
-	this.margins = 10;
 	this.content = {
 		'0, 0': logo,
 		'1, 0, 2, 1': text,

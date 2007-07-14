@@ -51,9 +51,9 @@ function onMouseUp(event) {
 						var scale = branch.scale * (Math.random() * (maxScale - minScale) + minScale);
 						var rotation = branch.rotation + (Math.random() - 0.5) * Math.PI * rotationValue;
 						
-						newPath.transform(Matrix.getScaleInstance(scale));
+						newPath.transform(new Matrix().scale(scale));
 						var curStartPoint = newPath.segments[0].point;
-						var matrix = Matrix.getTranslateInstance(prevEndPoint.subtract(curStartPoint));
+						var matrix = new Matrix().translate(prevEndPoint.subtract(curStartPoint));
 						matrix.rotate(rotation, curStartPoint);
 						newPath.transform(matrix);
 

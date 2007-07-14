@@ -36,14 +36,14 @@ var consoleDialog = new FloatingDialog (
 		FloatingDialog.OPTION_REMEMBER_PLACING, function() {
 
 	this.title = "Scriptographer Console";
-	this.bounds = new Rectangle(200, 200, 400, 300);
+	this.bounds = [200, 200, 400, 300];
 
 	var engine = ScriptEngine.getEngineByName("JavaScript");
 	var consoleScope = engine != null ? engine.createScope() : null;
 
 	var textIn = new TextEdit(this, TextEdit.OPTION_MULTILINE) {
-		size: new Size(300, 100),
-		minimumSize: new Size(200, 18),
+		size: [300, 100],
+		minimumSize: [200, 18],
 		onTrack: function(tracker) {
 			if (tracker.action == Tracker.ACTION_KEY_STROKE
 				&& tracker.virtualKey == Tracker.KEY_RETURN) {
@@ -74,8 +74,8 @@ var consoleDialog = new FloatingDialog (
 
 	var textOut = new TextEdit(this, TextEdit.OPTION_READONLY
 		| TextEdit.OPTION_MULTILINE) {
-		size: new Size(300, 100),
-		minimumSize: new Size(200, 18),
+		size: [300, 100],
+		minimumSize: [200, 18],
 		backgroundColor: Drawer.COLOR_INACTIVE_TAB,
 		// the onDraw workaround for display problems is only needed on mac
 		onDraw: app.macintosh && false ? function(drawer) {
@@ -97,7 +97,7 @@ var consoleDialog = new FloatingDialog (
 		} : null
 	};
 
-	var self = this;
+	var that = this;
 	var consoleText = new java.lang.StringBuffer();
 
 	function showText() {
@@ -106,7 +106,7 @@ var consoleDialog = new FloatingDialog (
 			textOut.setSelection(consoleText.length());
 			// textOut.update();
 			// textOut.invalidate();
-			self.setVisible(true);
+			that.setVisible(true);
 		}
 	}
 
@@ -134,6 +134,8 @@ var consoleDialog = new FloatingDialog (
 		])
 	}
 
+	var lineBreak = java.lang.System.getProperty('line.separator');
+
 	this.println = function(str) {
 		if (textOut) {
 			// If the text does not grow too long, remove old lines again:
@@ -145,7 +147,7 @@ var consoleDialog = new FloatingDialog (
 					pos = consoleText.length() - 1;
 				consoleText['delete'](0, pos + 1);
 			}
-			if (self.isInitialized())
+			if (that.isInitialized())
 				showText();
 		}
 	}
