@@ -35,7 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import com.scratchdisk.util.NetHelper;
+import com.scratchdisk.util.NetUtils;
 
 /**
  * @author lehni
@@ -49,7 +49,7 @@ public class PlacedItem extends Art {
 	private static native int nativeCreate(File file);
 
 	public PlacedItem(URL url) throws IOException {
-		this(NetHelper.loadFile(url, "sg_"));
+		this(NetUtils.loadFile(url, "sg_"));
 	}
 
 

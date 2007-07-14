@@ -35,7 +35,7 @@ import java.awt.FlowLayout;
 import java.util.Map;
 
 import com.scratchdisk.util.ConversionHelper;
-import com.scratchdisk.util.StringHelper;
+import com.scratchdisk.util.StringUtils;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.sg.Preferences;
 
@@ -198,7 +198,7 @@ public class PromptDialog extends ModalDialog {
 	public static Object[] prompt(String title, PromptItem[] items) {
 		Preferences preferences = 
 			new Preferences(ScriptographerEngine.getPreferences(true));
-		String itemTitle = "item" + StringHelper.capitalize(title);
+		String itemTitle = "item" + StringUtils.capitalize(title);
 		for (int i = 0; i < items.length; i++) {
 			PromptItem item = items[i];
 			if (item != null) {

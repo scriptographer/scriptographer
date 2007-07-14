@@ -32,7 +32,6 @@
 package com.scratchdisk.script.rhino;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -41,7 +40,7 @@ import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.WrappedException;
 
 import com.scratchdisk.script.ScriptException;
-import com.scratchdisk.util.StringHelper;
+import com.scratchdisk.util.StringUtils;
 
 /**
  * ScriptException for Rhino, preferably called RhinoException, but
@@ -67,9 +66,9 @@ public class RhinoScriptException extends ScriptException {
 					if (line.length() > 0 && line.indexOf("/__") == -1 && line.indexOf("evaluate:") == -1) {
 						// Strip away base directory from all paths, if defined:
 						if (baseDir != null)
-							line = StringHelper.replace(line, baseDir.getAbsolutePath(), "");
+							line = StringUtils.replace(line, baseDir.getAbsolutePath(), "");
 						// Replace tabs with 4 whitespaces
-						writer.print(StringHelper.replace(line, "\t", "    "));
+						writer.print(StringUtils.replace(line, "\t", "    "));
 					}
 				}
 				return buf.toString();

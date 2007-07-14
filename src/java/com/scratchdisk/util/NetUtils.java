@@ -43,8 +43,8 @@ import java.net.URL;
  * @author lehni
  *
  */
-public class NetHelper {
-	private NetHelper() {
+public class NetUtils {
+	private NetUtils() {
 	}
 
 	/**
