@@ -31,6 +31,7 @@
 
 package com.scratchdisk.script.rhino;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -87,7 +88,8 @@ public class RhinoWrapFactory extends WrapFactory {
 			Object javaObj, Class staticType) {
 		// Keep track of wrappers so that if a given object needs to be
 		// wrapped again, take the wrapper from the pool...
-		Scriptable obj = (Scriptable) wrappers.get(javaObj);
+        WeakReference ref = (WeakReference) wrappers.get(javaObj);
+		Scriptable obj = ref == null ? null : (Scriptable) ref.get();
 		if (obj == null) {
 	        // Allways override staticType and set it to the native type
 			// of the class. Sometimes the interface used to acces an
@@ -107,7 +109,7 @@ public class RhinoWrapFactory extends WrapFactory {
 						obj = new ExtendedJavaObject(scope, javaObj, staticType, true);
 				}
 			}
-			wrappers.put(javaObj, obj);
+			wrappers.put(javaObj, new WeakReference(obj));
 		}
 		return obj;
 	}
