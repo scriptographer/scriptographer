@@ -190,17 +190,32 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 					| ScriptableObject.DONTENUM);
 		}
 
-		// define some global functions and objects:
+		// Define some global functions and objects:
 		String[] names = { "include", "execute", "evaluate" };
 		defineFunctionProperties(names, TopLevel.class,
 			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+
+		// Properties:
+
+		defineProperty("documents", DocumentList.getInstance(),
+			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+
+		defineProperty("fonts", FontList.getInstance(),
+			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+
+		try {
+			defineProperty(this, "document", "getActiveDocument", null);
+			defineProperty(this, "activeDocument", "getActiveDocument", null);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		defineProperty("app", Application.getInstance(),
 				ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 
 		defineProperty("scriptographer", Scriptographer.getInstance(),
 				ScriptableObject.READONLY | ScriptableObject.DONTENUM);
-}
+	}
 
 	/**
 	 * Determines the directory of a script by reading it's scriptFile property
@@ -216,6 +231,13 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 			return script.getFile().getParentFile();
 		else
 			return ScriptographerEngine.getScriptDirectory();
+	}
+
+	/*
+	 * JavaScript functions
+	 */
+	protected static Object getActiveDocument(ScriptableObject obj) {
+		return Context.javaToJS(Document.getActiveDocument(), obj);
 	}
 
 	/**

@@ -115,17 +115,22 @@ public class Document extends DictionaryObject {
 	
 	private static native int getActiveDocumentHandle();
 	
+	/**
+	 * @jshide
+	 */
 	public static Document getActiveDocument() {
 		return Document.wrapHandle(getActiveDocumentHandle());
 	}
 
 	/**
-	 * called before ai functions are executed
+	 * Called before ai functions are executed
+	 * @jshide
 	 */
 	public static native void beginExecution();
 	
 	/**
-	 * called after ai functions are executed
+	 * Called after ai functions are executed
+	 * @jshide
 	 */
 	public static native void endExecution();
 
@@ -308,10 +313,10 @@ public class Document extends DictionaryObject {
 	 * views of the document that contain the given rectangle to update at the
 	 * next opportunity.
 	 */
-	public native void redraw(float x, float y, float width, float height);
+	public native void invalidate(float x, float y, float width, float height);
 	
-	public void redraw(Rectangle rect) {
-		redraw(rect.x, rect.y, rect.width, rect.height);
+	public void invalidate(Rectangle rect) {
+		invalidate(rect.x, rect.y, rect.width, rect.height);
 	}
 	
 	public native boolean write(File file, String format, boolean ask);
@@ -395,7 +400,7 @@ public class Document extends DictionaryObject {
 	 * @return the newly created path
 	 */
 	public native Path createOval(Rectangle rect, boolean circumscribed);
-
+	
 	/**
 	 * Creates a regular polygon shaped path
 	 * 
@@ -449,7 +454,17 @@ public class Document extends DictionaryObject {
 	public Path createOval(Rectangle rect) {
 		return createOval(rect, false);
 	}
-	
+
+	public Path createCircle(float x, float y, float radius) {
+		return createCircle(new Point(x, y), radius);
+	}
+
+	public Path createCircle(Point center, float radius) {
+		return createOval(new Rectangle(
+				center.subtract(radius, radius),
+				center.add(radius, radius)));
+	}
+
 	/**
 	 * Creates a new path
 	 * @return the newly created path

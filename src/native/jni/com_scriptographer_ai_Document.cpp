@@ -505,19 +505,19 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_close(JNIEnv *env, jo
 /*
  * void redraw()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw__(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw(JNIEnv *env, jobject obj) {
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		
+		gEngine->callStaticVoidMethod(env, gEngine->cls_CommitManager, gEngine->mid_CommitManager_commit);
 		sAIDocument->RedrawDocument();
 	} EXCEPTION_CONVERT(env);
 }
 
 /*
- * void redraw(float x, float y, float width, float height)
+ * void invalidate(float x, float y, float width, float height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw__FFFF(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_invalidate(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);

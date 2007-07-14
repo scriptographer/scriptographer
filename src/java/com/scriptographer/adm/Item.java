@@ -409,12 +409,20 @@ public abstract class Item extends CallbackHandler {
 		setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
+	public void setBounds(int[] bounds) {
+		setBounds(bounds[0], bounds[1], bounds[2], bounds[3]);
+	}
+
 	public void setPosition(int x, int y) {
 		updateBounds(x, y, bounds.width, bounds.height);
 	}
 
 	public final void setPosition(Point loc) {
 		setPosition(loc.x, loc.y);
+	}
+
+	public void setPosition(int[] point) {
+		setPosition(point[0], point[1]);
 	}
 	
 	public Point getPosition() {
@@ -435,6 +443,10 @@ public abstract class Item extends CallbackHandler {
 
 	public final void setSize(Point size) {
 		setSize(size.x, size.y);
+	}
+
+	public void setSize(int[] size) {
+		setSize(size[0], size[1]);
 	}
 
 	private native Size nativeGetTextSize(String text, int maxWidth);
@@ -539,6 +551,10 @@ public abstract class Item extends CallbackHandler {
 		else setMinimumSize(size.x, size.y);
 	}
 
+	public void setMinimumSize(int[] size) {
+		setMinimumSize(size[0], size[1]);
+	}
+
 	public Size getMinimumSize() {
 		return minSize != null ? minSize : getSize();
 	}
@@ -555,6 +571,10 @@ public abstract class Item extends CallbackHandler {
 	public final void setMaximumSize(Point size) {
 		if (size == null) maxSize = null;
 		else setMaximumSize(size.x, size.y);
+	}
+
+	public void setMaximumSize(int[] size) {
+		setMaximumSize(size[0], size[1]);
 	}
 
 	public Size getMaximumSize() {

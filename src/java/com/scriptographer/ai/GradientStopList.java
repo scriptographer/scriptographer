@@ -32,7 +32,7 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.list.AbstractExtendedList;
-import com.scratchdisk.list.ExtendedArrayList;
+import com.scratchdisk.list.ArrayList;
 import com.scriptographer.CommitManager;
 
 /**
@@ -41,13 +41,13 @@ import com.scriptographer.CommitManager;
 public class GradientStopList extends AbstractExtendedList {
 	protected Gradient gradient;
 	protected int size;
-	protected ExtendedArrayList.List list;
+	protected ArrayList.List list;
 
 	private int version = -1;
 
 	protected GradientStopList(Gradient gradient) {
 		this.gradient = gradient;
-		list = new ExtendedArrayList.List();
+		list = new ArrayList.List();
 		update();
 	}
 	

@@ -140,7 +140,10 @@ public:
 	jmethodID mid_ScriptographerEngine_onAbout;
 
 	jclass cls_ScriptographerException;
-	
+
+	jclass cls_CommitManager;
+	jmethodID mid_CommitManager_commit;
+
 // AI:
 	jclass cls_ai_NativeObject;
 	jfieldID fid_ai_NativeObject_handle;

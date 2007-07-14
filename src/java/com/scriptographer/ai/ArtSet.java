@@ -33,14 +33,14 @@ package com.scriptographer.ai;
 
 import java.util.HashMap;
 
-import com.scratchdisk.list.ExtendedArrayList;
+import com.scratchdisk.list.ArrayList;
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
 
 /**
  * @author lehni
  */
-public class ArtSet extends ExtendedArrayList {
+public class ArtSet extends ArrayList {
 	HashMap map;
 
 	public ArtSet() {

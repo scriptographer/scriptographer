@@ -186,4 +186,15 @@ public class Rectangle {
 	public Object clone() {
 		return new Rectangle(this);
 	}
+
+	public boolean equals(Object object) {
+		if (object instanceof Rectangle) {
+			Rectangle rt = (Rectangle) object;
+			return rt.x == x && rt.y == y &&
+					rt.width == width && rt.height == height;
+		} else {
+			// TODO: support other rect types?
+			return false;
+		}
+	}
 }

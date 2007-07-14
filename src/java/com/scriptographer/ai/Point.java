@@ -32,6 +32,7 @@
 package com.scriptographer.ai;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Map;
 
 import com.scratchdisk.util.ConversionHelper;
@@ -127,6 +128,16 @@ public class Point {
 		return new Point(this);
 	}
 
+	public boolean equals(Object object) {
+		if (object instanceof Point) {
+			Point pt = (Point) object;
+			return pt.x == x && pt.y == y;
+		} else {
+			// TODO: support other point types?
+			return false;
+		}
+	}
+	
 	/**
 	 * Returns the addition of the supplied point to the point object as a new
 	 * point. The object itself is not modified!
@@ -253,35 +264,35 @@ public class Point {
 	 *         otherwise
 	 */
 	public boolean isClose(Point pt, float tolerance) {
-		return distance(pt) < tolerance;
+		return getDistance(pt) < tolerance;
 	}
 	
-	public float distance(float px, float py) {
+	public float getDistance(float px, float py) {
 		px -= x;
 		py -= y;
 		return (float) Math.sqrt(px * px + py * py);
 	}
 
-	public float distance(Point pt) {
-		return distance(pt.x, (float) pt.y);
+	public float getDistance(Point pt) {
+		return getDistance(pt.x, (float) pt.y);
 	}
 
-	public float distanceSquared(float px, float py) {
+	public float getDistanceSquared(float px, float py) {
 		px -= x;
 		py -= y;
 		return px * px + py * py;
 	}
 
-	public float distanceSquared(Point pt) {
-		return distanceSquared(pt.x, (float) pt.y);
+	public float getDistanceSquared(Point pt) {
+		return getDistanceSquared(pt.x, (float) pt.y);
 	}
 
-	public float length() {
+	public float getLength() {
 		return (float) Math.sqrt(x * x + y * y);
 	}
 
-	public float angle(Point pt) {
-		float div = length() * pt.length();
+	public float getAngle(Point pt) {
+		float div = getLength() * pt.getLength();
 		if (div == 0) return 0;
 		else {
 			double v = (x * pt.y - y * pt.x) / div;
@@ -291,7 +302,7 @@ public class Point {
 		}
 	}
 
-	public float angle() {
+	public float getAngle() {
 		if (x > 0) return (float) Math.atan(y / x);
 		else if (x < 0) {
 			if (y >= 0) return (float) (Math.atan(y / x) + Math.PI);
@@ -329,7 +340,7 @@ public class Point {
 	}
 
 	public Point normalize(float length) {
-		float len = length();
+		float len = getLength();
 		if (len != 0) {
 			float scale = length / len;
 			return new Point(x * scale, y * scale);
@@ -396,5 +407,12 @@ public class Point {
 
 	public Point transform(Matrix m) {
 		return m.transform(this);
+	}
+
+	/**
+	 * @return
+	 */
+	protected Point2D toPoint2D() {
+		return new Point2D.Float(x, y);
 	}
 }

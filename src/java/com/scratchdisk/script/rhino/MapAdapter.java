@@ -31,17 +31,12 @@
 
 package com.scratchdisk.script.rhino;
 
-import java.util.AbstractSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Wrapper;
+
+import com.scratchdisk.list.AbstractMap;
 
 /**
  * MapAdapter wraps a Rhino ScriptableObject instance in a Map interface.
@@ -50,30 +45,15 @@ import org.mozilla.javascript.Wrapper;
  * 
  * @author lehni
  */
-public class MapAdapter implements Map {
+public class MapAdapter extends AbstractMap {
 	Scriptable object;
 	
 	public MapAdapter(Scriptable object) {
 		this.object = object;
 	}
 
-	public int size() {
-		return object.getIds().length;
-	}
-
-	public boolean isEmpty() {
-		return object.getIds().length == 0;
-	}
-
-	public void clear() {
-		Object[] ids = object.getIds();
-		for (int i = 0; i < ids.length; i++) {
-			Object id = ids[i];
-			if (id instanceof Integer)
-				object.delete(((Integer) id).intValue());
-			else
-				object.delete((String) id);
-		}
+	protected Object[] keys() {
+		return object.getIds();
 	}
 
 	public Object get(Object key) {
@@ -126,95 +106,5 @@ public class MapAdapter implements Map {
 			return object.has((String) key, object);
 		else
 			return false;
-	}
-
-	public boolean containsValue(Object value) {
-		Object[] ids = object.getIds();
-		// Search for it the slow way...
-		for (int i = 0; i < ids.length; i++) {
-			Object obj = get(ids[i]);
-			if (value == obj || value != null && value.equals(obj))
-				return true;
-		}
-		return false;
-	}
-
-	public void putAll(Map map) {
-		for (Iterator it = map.entrySet().iterator(); it.hasNext();) {
-			Map.Entry entry = (Map.Entry) it.next();
-			put(entry.getKey(), entry.getValue());
-		}
-	}
-
-	public Collection values() {
-		// Just create an ArrayList containing the values
-		Object[] ids = object.getIds();
-		ArrayList values = new ArrayList();
-		for (int i = 0; i < ids.length; i++) {
-			values.add(get(ids[i]));
-		}
-		return values;
-	}
-
-	public Set entrySet() {
-		return new MapSet(true);
-	}
-
-	public Set keySet() {
-		return new MapSet(false);
-	}
-
-	private class Entry implements Map.Entry {
-		private Object key;
-
-		Entry(Object key) {
-			this.key = key;
-		}
-
-		public Object getKey() {
-			return key;
-		}
-
-		public Object getValue() {
-			return MapAdapter.this.get(key);
-		}
-
-		public Object setValue(Object value) {
-			return MapAdapter.this.put(key, value);
-		}
-	}
-
-	private class MapSet extends AbstractSet {
-		Object[] ids;
-		boolean entries;
-
-		MapSet(boolean entries) {
-			this.ids = object.getIds();
-			this.entries = entries;
-		}
-
-		public Iterator iterator() {
-			return new Iterator() {
-				int index = 0;
-
-				public boolean hasNext() {
-					return index < ids.length;
-				}
-
-				public Object next() {
-					Object key = ids[index++];
-					return entries ? new Entry(key) : key;
-				}
-
-				public void remove() {
-					// TODO: is incrementing correct here?
-					MapAdapter.this.remove(ids[index++]);
-				}
-			};
-		}
-
-		public int size() {
-			return ids.length;
-		}
 	}
 }

@@ -31,8 +31,8 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.list.ExtendedArrayList;
-import com.scriptographer.util.AbstractFetchList;
+import com.scratchdisk.list.ArrayList;
+import com.scriptographer.list.AbstractFetchList;
 
 /**
  * @author lehni
@@ -41,13 +41,13 @@ public class CurveList extends AbstractFetchList {
 	protected Path path;
 	protected int size;
 	protected SegmentList segments;
-	protected ExtendedArrayList.List list;
+	protected ArrayList.List list;
 
 	protected CurveList(Path path, SegmentList segments) {
 		this.path = path;
 		this.segments = segments;
 		segments.curves = this;
-		list = new ExtendedArrayList.List();
+		list = new ArrayList.List();
 		updateSize();
 	}
 	

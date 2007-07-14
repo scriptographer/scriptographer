@@ -246,8 +246,6 @@ public abstract class Dialog extends CallbackHandler {
 				// if setVisible was called before proper initialization, visible
 				// is set but it was not nativelly executed yet. handle this here
 				boolean show = (options & OPTION_HIDDEN) == 0 || visible;
-				if ((options & OPTION_REMEMBER_PLACING) != 0)
-					show = !loadPreferences(title);
 				if (container != null) {
 					setMinimumSize(new Size(container.getMinimumSize()));
 					setMaximumSize(new Size(container.getMaximumSize()));
@@ -256,6 +254,8 @@ public abstract class Dialog extends CallbackHandler {
 					if (!sizeSet)
 						setSize(new Size(container.getPreferredSize()));
 				}
+				if ((options & OPTION_REMEMBER_PLACING) != 0)
+					show = !loadPreferences(title);
 				initialized = true;
 				if (show)
 					setVisible(true);
@@ -303,6 +303,10 @@ public abstract class Dialog extends CallbackHandler {
 	
 	/**
 	 * This is needed for a workaround in Application.closeProgress()
+	 * After display of progress dialog, the next modal 
+	 * dialog seems to be become active, even when it is invisible
+	 * The workaround is to walk through all dialogs and deactivate
+	 * the modal ones.
 	 * 
 	 * @jshide
 	 */
@@ -847,6 +851,10 @@ public abstract class Dialog extends CallbackHandler {
 		setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
+	public void setBounds(int[] bounds) {
+		setBounds(bounds[0], bounds[1], bounds[2], bounds[3]);
+	}
+
 	public Size getSize() {
 		return (Size) size.clone();
 	}
@@ -865,6 +873,10 @@ public abstract class Dialog extends CallbackHandler {
 
 	public void setSize(Point size) {
 		setSize(size.x, size.y);
+	}
+
+	public void setSize(int[] size) {
+		setSize(size[0], size[1]);
 	}
 	
 	/**
@@ -897,8 +909,12 @@ public abstract class Dialog extends CallbackHandler {
 
 	public native void setPosition(int x, int y);
 
-	public final void setPosition(Point pt) {
-		setPosition(pt.x, pt.y);
+	public final void setPosition(Point point) {
+		setPosition(point.x, point.y);
+	}
+
+	public void setPosition(int[] point) {
+		setPosition(point[0], point[1]);
 	}
 
 	/*
@@ -1012,6 +1028,10 @@ public abstract class Dialog extends CallbackHandler {
 			setMinimumSize(size.x, size.y);
 	}
 
+	public void setMinimumSize(int[] size) {
+		setMinimumSize(size[0], size[1]);
+	}
+
 	public void setMaximumSize(int width, int height) {
 		if (width > Short.MAX_VALUE)
 			width = Short.MAX_VALUE;
@@ -1033,6 +1053,10 @@ public abstract class Dialog extends CallbackHandler {
 	public void setMaximumSize(Point size) {
 		if (size != null)
 			setMaximumSize(size.x, size.y);
+	}
+
+	public void setMaximumSize(int[] size) {
+		setMaximumSize(size[0], size[1]);
 	}
 
 	public native Size getIncrement();
@@ -1235,16 +1259,7 @@ public abstract class Dialog extends CallbackHandler {
 				dialog.destroy();
 		}
 	}
-	
-	/*
-	 * This function is only here for the JS environment. From java, use
-	 * PromptDialog.prompt directly!
-	 */
-	/*
-	public static Object[] prompt(String title, NativeArray items) {
-		return PromptDialog.prompt(title, FunctionHelper.convertToArray(items));
-	}
-	*/
+
 	/**
 	 * AWTContainer wrapps an ADM Dialog and prentends it is an AWT Container,
 	 * in order to take advantage of all the nice LayoutManagers in AWT.

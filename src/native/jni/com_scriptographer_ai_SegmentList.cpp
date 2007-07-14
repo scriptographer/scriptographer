@@ -105,13 +105,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeSet__IIII_3F
 			jfloat data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
 			env->GetFloatArrayRegion(values, 0, com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT, data);
 			if (sAIPath->SetPathSegments((AIArtHandle) handle, index, 1, (AIPathSegment *) data))
-				throw new StringException("Cannot get path segment");
+				throw new StringException("Cannot set path segment");
 		} else {
 			jfloat *data = (jfloat *) env->GetPrimitiveArrayCritical(values, NULL); 
 			ASErr error = sAIPath->SetPathSegments((AIArtHandle) handle, index, count, (AIPathSegment *) data);
 			env->ReleasePrimitiveArrayCritical(values, data, 0);
 			if (error)
-				throw new StringException("Cannot get path segments");
+				throw new StringException("Cannot set path segments");
 		}
 		EXCEPTION_CHECK(env);
 	} EXCEPTION_CONVERT(env);
@@ -140,14 +140,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeInsert__IIII
 			jfloat data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];
 			env->GetFloatArrayRegion(values, 0, com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT, data);
 			if (sAIPath->InsertPathSegments((AIArtHandle) handle, index, 1, (AIPathSegment *) data))
-				throw new StringException("Cannot get path segment");
+				throw new StringException("Cannot insert path segment");
 		} else {
 			jfloat *data = (jfloat *) env->GetPrimitiveArrayCritical(values, NULL);
 			AIPathSegment *segments = (AIPathSegment *) data;
 			ASErr error = sAIPath->InsertPathSegments((AIArtHandle) handle, index, count, (AIPathSegment *) data);
 			env->ReleasePrimitiveArrayCritical(values, data, 0);
 			if (error)
-				throw new StringException("Cannot get path segments");
+				throw new StringException("Cannot insert path segments");
 		}
 		EXCEPTION_CHECK(env);
 	} EXCEPTION_CONVERT(env);

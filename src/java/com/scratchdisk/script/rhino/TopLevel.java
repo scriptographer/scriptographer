@@ -72,20 +72,16 @@ public class TopLevel extends ImporterTopLevel {
 	}
 
 	public static void defineProperty(ScriptableObject obj, String name,
-			String getter, String setter) {
-		try {
-			Class cls = obj.getClass();
-			Method getterMethod = getter != null ?
-				cls.getDeclaredMethod(getter,
-					new Class[] { ScriptableObject.class }) : null;
-			Method setterMethod = setter != null ?
-				cls.getDeclaredMethod(setter, new Class[] {
-					ScriptableObject.class, Object.class }) : null;
-			obj.defineProperty(name, null, getterMethod, setterMethod,
-				ScriptableObject.DONTENUM);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+			String getter, String setter) throws SecurityException, NoSuchMethodException {
+		Class cls = obj.getClass();
+		Method getterMethod = getter != null ?
+			cls.getDeclaredMethod(getter,
+				new Class[] { ScriptableObject.class }) : null;
+		Method setterMethod = setter != null ?
+			cls.getDeclaredMethod(setter, new Class[] {
+				ScriptableObject.class, Object.class }) : null;
+		obj.defineProperty(name, null, getterMethod, setterMethod,
+			ScriptableObject.DONTENUM);
 	}
 
 	public String getClassName() {

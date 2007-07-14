@@ -79,4 +79,15 @@ public class Margins {
 	public Object clone() {
 		return new Margins(this);
 	}
+
+	public boolean equals(Object object) {
+		if (object instanceof Margins) {
+			Margins margins = (Margins) object;
+			return margins.left == left && margins.top == top &&
+					margins.right == right && margins.bottom == bottom;
+		} else {
+			// TODO: support other margin types?
+			return false;
+		}
+	}
 }

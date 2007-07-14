@@ -79,4 +79,14 @@ public class Size {
 	public Object clone() {
 		return new Size(this);
 	}
+
+	public boolean equals(Object object) {
+		if (object instanceof Size) {
+			Size size = (Size) object;
+			return size.width == width && size.height == height;
+		} else {
+			// TODO: support other point types?
+			return false;
+		}
+	}
 }

@@ -191,10 +191,10 @@ public class Timer extends NativeObject {
 	private static void onExecute(int handle) throws Exception {
 		Timer timer = getTimer(handle);
 		if (timer != null) {
-			timer.onExecute();
 			// simulate one shot timers:
 			if (!timer.periodic)
 				timer.stop();
+			timer.onExecute();
 		}
 	}
 

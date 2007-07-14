@@ -32,6 +32,7 @@
 package com.scratchdisk.script.rhino;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -57,14 +58,20 @@ public class RhinoScriptException extends ScriptException {
 					: new WrappedException(t);
 				StringWriter buf = new StringWriter();
 				PrintWriter writer = new PrintWriter(buf);
-				String stackTrace = re.getScriptStackTrace();
-				// Strip away base directory from all paths, if defined:
-				File baseDir = engine.getBaseDirectory();
-				if (baseDir != null)
-					stackTrace = StringHelper.replace(stackTrace, baseDir.getAbsolutePath(), "");
 				writer.println(re.details());
-				// Replace tabs with 4 whitespaces
-				writer.print(StringHelper.replace(stackTrace, "\t", "    "));
+				String[] stackTrace = re.getScriptStackTrace().split("[\\n\\r]");
+				File baseDir = engine.getBaseDirectory();
+				for (int i = 0; i < stackTrace.length; i++) {
+					String line = stackTrace[i];
+					// Filter out hidden scripts and evaluate lines
+					if (line.length() > 0 && line.indexOf("/__") == -1 && line.indexOf("evaluate:") == -1) {
+						// Strip away base directory from all paths, if defined:
+						if (baseDir != null)
+							line = StringHelper.replace(line, baseDir.getAbsolutePath(), "");
+						// Replace tabs with 4 whitespaces
+						writer.print(StringHelper.replace(line, "\t", "    "));
+					}
+				}
 				return buf.toString();
 		}
 	}

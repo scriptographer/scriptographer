@@ -69,4 +69,14 @@ public class Point {
 	public Object clone() {
 		return new Point(this);
 	}
+
+	public boolean equals(Object object) {
+		if (object instanceof Point) {
+			Point pt = (Point) object;
+			return pt.x == x && pt.y == y;
+		} else {
+			// TODO: support other point types?
+			return false;
+		}
+	}
 }

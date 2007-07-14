@@ -35,9 +35,6 @@ import java.io.File;
 
 import com.scriptographer.CommitManager;
 import com.scriptographer.ScriptographerEngine;
-import com.scriptographer.ai.Document;
-import com.scriptographer.ai.DocumentList;
-import com.scriptographer.ai.FontList;
 
 /**
  * @author lehni
@@ -54,27 +51,6 @@ public class Application {
 
 	public int getRevision() {
 		return ScriptographerEngine.getApplicationRevision();
-	}
-
-	/**
-	 * Returns the active document.
-	 */
-	public Document getActiveDocument() {
-		return Document.getActiveDocument();
-	}
-
-	/**
-	 * Returns a list of open documents.
-	 */
-	public DocumentList getDocuments() {
-		return DocumentList.getInstance();
-	}
-
-	/**
-	 * Returns a list of available fonts in the system.
-	 */
-	public FontList getFonts() {
-		return FontList.getInstance();
 	}
 
 	public void commit() {

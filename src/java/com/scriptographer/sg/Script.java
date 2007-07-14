@@ -33,6 +33,7 @@ package com.scriptographer.sg;
 
 import java.io.File;
 
+import com.scratchdisk.script.Callable;
 import com.scriptographer.ScriptographerEngine;
 
 /**
@@ -42,6 +43,8 @@ import com.scriptographer.ScriptographerEngine;
 public class Script {
 	private File file;
 	private Preferences prefs = null;
+	private Callable onStart;
+	private Callable onStop;
 
 	/**
 	 * @jshide
@@ -78,5 +81,21 @@ public class Script {
 	 */
 	public File getDirectory() {
 		return file.getParentFile();
+	}
+
+	public Callable getOnStart() {
+		return onStart;
+	}
+
+	public void setOnStart(Callable onStart) {
+		this.onStart = onStart;
+	}
+
+	public Callable getOnStop() {
+		return onStop;
+	}
+
+	public void setOnStop(Callable onStop) {
+		this.onStop = onStop;
 	}
 }

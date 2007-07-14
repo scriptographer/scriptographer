@@ -35,6 +35,9 @@ import java.awt.FlowLayout;
 import java.util.Map;
 
 import com.scratchdisk.util.ConversionHelper;
+import com.scratchdisk.util.StringHelper;
+import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.sg.Preferences;
 
 /**
  * @author lehni
@@ -115,84 +118,111 @@ public class PromptDialog extends ModalDialog {
 		return values;
 	}
 	
-	private static double getValue(Map map, String name) {
+	private static double getDoubleValue(Map map, String name) {
 		Object obj = map.get(name);
-		if (obj != null)
-			return ConversionHelper.toDouble(obj);
-		else
-			return Double.NaN;
+		return obj != null ? ConversionHelper.toDouble(obj) : Double.NaN;
+	}
+	
+	private static String getStringValue(Map map, String name) {
+		Object obj = map.get(name);
+		return obj != null ? obj.toString() : null;
 	}
 
 	private static PromptItem[] getItems(Map[] items) {
 		PromptItem[] promptItems = new PromptItem[items.length];
 		for (int i = 0; i < items.length; i++) {
 			Map map = items[i];
-			Object typeObj = map.get("type");
-			Object valueObj = map.get("value");
-			double increment = 0;
-			Object[] values = null;
-			int type = -1;
-			if (typeObj != null) {
-				if (typeObj instanceof String) {
-					type = PromptItem.getType((String) typeObj);
-				} else if (typeObj instanceof Number) {
-					type = ((Number) typeObj).intValue();
+			if (map != null) {
+				Object typeObj = map.get("type");
+				Object valueObj = map.get("value");
+				double increment = 0;
+				Object[] values = null;
+				int type = -1;
+				if (typeObj != null) {
+					if (typeObj instanceof String) {
+						type = PromptItem.getType((String) typeObj);
+					} else if (typeObj instanceof Number) {
+						type = ((Number) typeObj).intValue();
+					}
+				} else { // determine type from value and step:
+					Object incrementObj = map.get("increment");
+					if (incrementObj != null) {
+						type = PromptItem.TYPE_RANGE;
+						increment = ConversionHelper.toDouble(incrementObj);
+						if (Double.isNaN(increment))
+							increment = 0;
+					} else {
+						Object valuesObj = map.get("values");
+						if (valuesObj != null && valuesObj instanceof Object[])
+							values = (Object[]) valuesObj;
+						if (values != null)
+							type = PromptItem.TYPE_LIST;
+						else if (valueObj instanceof Number)
+							type = PromptItem.TYPE_NUMBER;
+						else if (valueObj instanceof Boolean)
+							type = PromptItem.TYPE_CHECKBOX;
+						else if (valueObj instanceof String) 
+							type = PromptItem.TYPE_STRING;
+					}
 				}
-			} else { // determine type from value and step:
-				Object incrementObj = map.get("increment");
-				if (incrementObj != null) {
-					type = PromptItem.TYPE_RANGE;
-					increment = ConversionHelper.toDouble(incrementObj);
-					if (Double.isNaN(increment))
-						increment = 0;
-				} else {
-					Object valuesObj = map.get("values");
-					if (valuesObj != null && valuesObj instanceof Object[])
-						values = (Object[]) valuesObj;
-					if (values != null)
-						type = PromptItem.TYPE_LIST;
-					else if (valueObj instanceof Number)
-						type = PromptItem.TYPE_NUMBER;
-					else if (valueObj instanceof Boolean)
-						type = PromptItem.TYPE_CHECKBOX;
-					else if (valueObj instanceof String) 
-						type = PromptItem.TYPE_STRING;
-				}
-			}
-			
-			if (type != -1) {
-				Object obj = map.get("description");
-				String desc = obj != null ? obj.toString() : null;
-				PromptItem item = new PromptItem(type, desc, valueObj);
-
-				double width = getValue(map, "width");
-				if (!Double.isNaN(width))
-					item.setWidth((int) width);
-
-				double precision = getValue(map, "precision");
-				if (!Double.isNaN(precision))
-					item.setPrecision((int) precision);
-
-				double min = getValue(map, "min");
-				double max = getValue(map, "max");
-				if (!Double.isNaN(min) || !Double.isNaN(max))
-					item.setRange((float) min, (float) max);
 				
-				if (values != null)
-					item.setValues(values);
+				if (type != -1) {
+					PromptItem item = new PromptItem(type, getStringValue(map, "description"), valueObj);
+					item.setName(getStringValue(map, "name"));
 
-				promptItems[i] = item;
-			} else {
-				promptItems[i] = null;
+					double width = getDoubleValue(map, "width");
+					if (!Double.isNaN(width))
+						item.setWidth((int) width);
+
+					double precision = getDoubleValue(map, "precision");
+					if (!Double.isNaN(precision))
+						item.setPrecision((int) precision);
+
+					double min = getDoubleValue(map, "min");
+					double max = getDoubleValue(map, "max");
+					if (!Double.isNaN(min) || !Double.isNaN(max))
+						item.setRange((float) min, (float) max);
+					
+					if (values != null)
+						item.setValues(values);
+
+					promptItems[i] = item;
+				} else {
+					promptItems[i] = null;
+				}
 			}
 		}
 		return promptItems;
 	}
 
-	public static Object[] prompt(String title, Map[] items) {
+	public static Object[] prompt(String title, PromptItem[] items) {
+		Preferences preferences = 
+			new Preferences(ScriptographerEngine.getPreferences(true));
+		String itemTitle = "item" + StringHelper.capitalize(title);
+		for (int i = 0; i < items.length; i++) {
+			PromptItem item = items[i];
+			if (item != null) {
+				if (item.name == null)
+					item.name = itemTitle + item.description + i;
+				Object value = preferences.get(item.name);
+				if (value != null)
+					item.value = value;
+			}
+		}
 		PromptDialog dialog = new PromptDialog(title, items);
-		return dialog.doModal() == dialog.getDefaultItem()
-			? dialog.getValues()
-			: null;
+		if (dialog.doModal() == dialog.getDefaultItem()) {
+			Object[] values = dialog.getValues();
+			for (int i = 0; i < items.length; i++) {
+				PromptItem item = items[i];
+				if (item != null)
+					preferences.put(item.name, values[i]);
+			}
+			return values;
+		}
+		return null;
+	}
+
+	public static Object[] prompt(String title, Map[] items) {
+		return prompt(title, getItems(items));
 	}
 }

@@ -289,6 +289,11 @@ public class Curve {
 		return getLength(FLATNESS);
 	}
 
+	public boolean isLinear() {
+		return segment1.handleOut.x == 0 && segment1.handleOut.y == 0
+			&& segment2.handleIn.y == 0 && segment2.handleIn.y == 0;
+	}
+
 	private native static void nativeAdjustThroughPoint(float[] values,
 			float x, float y, float parameter);
 

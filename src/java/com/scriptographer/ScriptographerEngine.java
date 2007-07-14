@@ -168,21 +168,20 @@ public class ScriptographerEngine {
 		return prefs;
 	}
 	
-	public static PrintStream getLogger() {
-		return logger;
-	}
-
 	public static void reportError(Throwable t) {
 		String error = t.getMessage();
-		PrintStream logger = getLogger();
-		logger.print(error);
-		logger.print("Stacktrace: ");
+		if (error != null) {
+			logger.print(error);
+			logger.print("Stacktrace: ");
+		}
 		t.printStackTrace(logger);
 		logger.println();
-		System.err.print(error);
-		char last = error.charAt(error.length() - 1);
-		if (last != '\n' && last != '\r')
-			System.err.println();
+		if (error != null) {
+			System.err.print(error);
+			char last = error.charAt(error.length() - 1);
+			if (last != '\n' && last != '\r')
+				System.err.println();
+		}
 	}
 
 	static int reloadCount = 0;
@@ -212,7 +211,8 @@ public class ScriptographerEngine {
 	
 	private static boolean executing = false;
 	private static File currentFile = null;
-	private static ArrayList stopScopes = new ArrayList();
+	private static ArrayList stopScripts = new ArrayList();
+	private static boolean allowScriptCancelation = true;
 
 	/**
 	 * To be called before AI functions are executed
@@ -222,16 +222,15 @@ public class ScriptographerEngine {
 		// a bit here. When file is set, we ignore the current state
 		// of "executing", as we're about to to execute a new script...
 		if (!executing || file != null) {
+			if (!executing)
+				Document.beginExecution();
+			// Disable output to the console while the script is executed as it
+			// won't get updated anyway
+			// ConsoleOutputStream.enableOutput(false);
 			executing = true;
-			Document.beginExecution();
-			currentFile = file;
+			showProgress(file != null ? "Executing " + file.getName() + "..." : "Executing...");
 			if (file != null) {
-				showProgress("Executing " + (file != null ?
-						file.getName() : "Console Input") + "...");
-				// Disable output to the console while the script is executed as it
-				// won't get updated anyway
-				// ConsoleOutputStream.enableOutput(false);
-
+				currentFile = file;
 				// Put a script object in the scope to offer the user
 				// access to information about it.
 				if (scope.get("script") == null)
@@ -249,8 +248,7 @@ public class ScriptographerEngine {
 		if (executing) {
 			CommitManager.commit();
 			Document.endExecution();
-			if (currentFile != null)
-				closeProgress();
+			closeProgress();
 			currentFile = null;
 			executing = false;
 		}
@@ -270,15 +268,26 @@ public class ScriptographerEngine {
 		boolean started = beginExecution(null, null);
 		// Retrieve wrapper object for the native java object, and call the
 		// function on it.
+		Exception exc = null;
 		try {
 			return callable.call(obj, args);
-		} catch(ScriptException e) {
-			ScriptographerEngine.reportError(e);
+		} catch (Exception e) {
+			exc = e;
+		} finally {
+			// commit all changed objects after a scripting function has been
+			// called!
+			if (started)
+				endExecution();
 		}
-		// commit all changed objects after a scripting function has been
-		// called!
-		if (started)
-			endExecution();
+		// Do not allow script cancelation during error reporting,
+		// as this is now handled by scripts too
+		allowScriptCancelation = false;
+		if (exc instanceof ScriptException) {
+			ScriptographerEngine.reportError(exc);
+		} else if (exc instanceof ScriptCanceledException) {
+			System.out.println("Execution canceled");
+		}
+		allowScriptCancelation = true;
 		return null;
 	}
 
@@ -312,13 +321,15 @@ public class ScriptographerEngine {
 			ret = script.execute(scope);
 			if (started) {
 				// handle onStart / onStop
-				Callable onStart = scope.getCallable("onStart");
+				com.scriptographer.sg.Script scriptObj =
+					(com.scriptographer.sg.Script) scope.get("script");
+				Callable onStart = scriptObj.getOnStart();
 				if (onStart != null)
-					onStart.call(scope);
-				if (scope.getCallable("onStop") != null) {
+					onStart.call(scriptObj);
+				if (scriptObj.getOnStop() != null) {
 					// add this scope to the scopes that want onStop to be called
 					// when the stop button is hit by the user
-					stopScopes.add(scope);
+					stopScripts.add(scriptObj);
 				}
 			}
 		} catch (ScriptException e) {
@@ -366,18 +377,19 @@ public class ScriptographerEngine {
 	public static void stopAll() {
 		Timer.stopAll();
 		// Walk through all the stop scopes and call onStop on them:
-		for (Iterator it = stopScopes.iterator(); it.hasNext();) {
-			Scope scope = (Scope) it.next();
-			Callable onStop = scope.getCallable("onStop");
+		for (Iterator it = stopScripts.iterator(); it.hasNext();) {
+			com.scriptographer.sg.Script script =
+				(com.scriptographer.sg.Script) it.next();
+			Callable onStop = script.getOnStop();
 			if (onStop != null) {
 				try {
-					onStop.call(scope);
+					onStop.call(script);
 				} catch (ScriptException e) {
 					reportError(e);
 				}
 			}
 		}
-		stopScopes.clear();
+		stopScripts.clear();
 	}
 
 
@@ -419,7 +431,8 @@ public class ScriptographerEngine {
 		progressCurrent = current;
 		progressMax = max;
 		progressAutomatic = false;
-		return nativeUpdateProgress(current, max);
+		boolean ret = nativeUpdateProgress(current, max);
+		return !allowScriptCancelation || ret;
 	}
 
 	public static boolean updateProgress() {
@@ -428,7 +441,7 @@ public class ScriptographerEngine {
 			progressCurrent++;
 			progressMax++;
 		}
-		return ret;
+		return !allowScriptCancelation || ret;
 	}
 
 	private static native void nativeCloseProgress();

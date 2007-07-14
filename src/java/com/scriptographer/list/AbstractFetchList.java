@@ -29,7 +29,7 @@
  * $Id$
  */
 
-package com.scriptographer.util;
+package com.scriptographer.list;
 
 import com.scratchdisk.list.AbstractExtendedList;
 import com.scratchdisk.list.ExtendedList;

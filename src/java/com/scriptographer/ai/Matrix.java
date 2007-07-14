@@ -156,7 +156,6 @@ public class Matrix {
 	}
 
 	public boolean equals(Object obj) {
-		
 		return at.equals(((Matrix) obj).at);
 	}
 	

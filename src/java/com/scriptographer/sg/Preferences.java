@@ -31,22 +31,17 @@
 
 package com.scriptographer.sg;
 
-import java.util.AbstractSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 import java.util.prefs.BackingStoreException;
+
+import com.scratchdisk.list.AbstractMap;
 
 /**
  * Preferences wraps a java.util.prefs.Preferences instance in a
  * Map interface.
- * All methods are implemented, even entrySet() / keySet()
  * 
  * @author lehni
  */
-public class Preferences implements Map {
+public class Preferences extends AbstractMap {
 
 	java.util.prefs.Preferences prefs;
 
@@ -57,6 +52,14 @@ public class Preferences implements Map {
 		this.prefs = prefs;
 	}
 
+	protected Object[] keys() {
+		try {
+			return prefs.keys();
+		} catch (BackingStoreException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	public void clear() {
 		try {
 			prefs.clear();
@@ -65,34 +68,22 @@ public class Preferences implements Map {
 		}
 	}
 
-	public int size() {
-		try {
-			return prefs.keys().length;
-		} catch (BackingStoreException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public boolean isEmpty() {
-		try {
-			return prefs.keys().length == 0;
-		} catch (BackingStoreException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	public Object get(Object key) {
 		String value = prefs.get(key.toString(), null);
 		// Try converting to a long, if there is no decimal point
-		try {
-			if (value.indexOf('.') == -1)
-				return new Long(value);
-		} catch (NumberFormatException e) {
-		}
-		// Now try double
-		try {
-			return new Double(value);
-		} catch (NumberFormatException e) {
+		if (value != null) {
+			try {
+				if (value.indexOf('.') == -1)
+					return new Long(value);
+			} catch (NumberFormatException e) {
+			}
+			// Now try double
+			try {
+				return new Double(value);
+			} catch (NumberFormatException e) {
+			}
+			if (value.equals("true")) return Boolean.TRUE;
+			else if (value.equals("false")) return Boolean.FALSE;
 		}
 		// If nothing of that works, return string
 		return value;
@@ -102,26 +93,12 @@ public class Preferences implements Map {
 		return prefs.get(key.toString(), null) != null;
 	}
 
-	public boolean containsValue(Object value) {
-		try {
-			String[] keys = prefs.keys();
-			for (int i = 0; i < keys.length; i++) {
-				Object val = prefs.get(keys[i], null);
-				if (value != null && value.equals(val) || value == val)
-					return true;
-			}
-			return false;
-		} catch (BackingStoreException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
 	public Object put(Object key, Object value) {
 		Object prev = get(key);
 		if (value instanceof Boolean)
 			prefs.putBoolean(key.toString(), ((Boolean) value).booleanValue());
 		else if (value instanceof Double || value instanceof Float)
-			prefs.putDouble(key.toString(), ((Double) value).doubleValue());
+			prefs.putDouble(key.toString(), ((Number) value).doubleValue());
 		else if (value instanceof Number)
 			prefs.putLong(key.toString(), ((Number) value).longValue());
 		else // TODO: serialization to byte array?!
@@ -133,92 +110,5 @@ public class Preferences implements Map {
 		Object pre = get(key);
 		prefs.remove(key.toString());
 		return pre;
-	}
-
-	public void putAll(Map map) {
-		for (Iterator it = map.entrySet().iterator(); it.hasNext();) {
-			Map.Entry entry = (Map.Entry) it.next();
-			put(entry.getKey(), entry.getValue());
-		}
-	}
-
-	public Collection values() {
-		// Just create an ArrayList containing the values
-		try {
-			String[] keys = prefs.keys();
-			ArrayList values = new ArrayList();
-			for (int i = 0; i < keys.length; i++) {
-				values.add(get(keys[i]));
-			}
-			return values;
-		} catch (BackingStoreException e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public Set entrySet() {
-		return new MapSet(true);
-	}
-
-	public Set keySet() {
-		return new MapSet(false);
-	}
-
-	private class Entry implements Map.Entry {
-		private Object key;
-
-		Entry(Object key) {
-			this.key = key;
-		}
-
-		public Object getKey() {
-			return key;
-		}
-
-		public Object getValue() {
-			return get(key);
-		}
-
-		public Object setValue(Object value) {
-			return Preferences.this.put(key, value);
-		}
-	}
-
-	private class MapSet extends AbstractSet {
-		String[] keys;
-		boolean entries;
-
-		MapSet(boolean entries) {
-			try {
-				this.keys = prefs.keys();
-				this.entries = entries;
-			} catch (BackingStoreException e) {
-				throw new RuntimeException(e);
-			}
-		}
-
-		public Iterator iterator() {
-			return new Iterator() {
-				int index = 0;
-
-				public boolean hasNext() {
-					return index < keys.length;
-				}
-
-				public Object next() {
-					Object key = keys[index++];
-					return entries ? new Entry(key) : key;
-				}
-
-				public void remove() {
-					// TODO: is incrementing correct here?
-					Preferences.this.remove(keys[index++]);
-				}
-			};
-		}
-
-		public int size() {
-			return keys.length;
-		}
 	}
 }

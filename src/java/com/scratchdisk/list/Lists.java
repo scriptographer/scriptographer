@@ -48,43 +48,10 @@ public class Lists {
 		if (fromIndex > toIndex)
 			throw new IllegalArgumentException("fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
 		
-		ExtendedArrayList subList = new ExtendedArrayList(toIndex - fromIndex);
+		ArrayList subList = new ArrayList(toIndex - fromIndex);
 		for (int i = fromIndex; i < toIndex; i++)
 			subList.add(list.get(i));
 		
 		return subList;
-	}
-
-	private static class ArrayList extends AbstractExtendedList {
-
-		private Object[] array;
-
-		ArrayList(Object[] array) {
-			if (array == null)
-				throw new NullPointerException();
-			this.array = array;
-		}
-
-		public int size() {
-			return array.length;
-		}
-
-		public Object get(int index) {
-			return array[index];
-		}
-
-		public Object set(int index, Object element) {
-			Object prev = array[index];
-			array[index] = element;
-			return prev;
-		}
-
-		public Object add(int index, Object element) {
-			throw new UnsupportedOperationException();
-		}
-
-		public Object remove(int index) {
-			throw new UnsupportedOperationException();
-		}
 	}
 }

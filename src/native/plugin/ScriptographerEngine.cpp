@@ -404,6 +404,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ScriptographerException = loadClass(env, "com/scriptographer/ScriptographerException");
 
+	cls_CommitManager = loadClass(env, "com/scriptographer/CommitManager");
+	mid_CommitManager_commit = getStaticMethodID(env, cls_CommitManager, "commit", "()V");
+
 // AI:
 	cls_ai_NativeObject = loadClass(env, "com/scriptographer/ai/NativeObject");
 	fid_ai_NativeObject_handle = getFieldID(env, cls_ai_NativeObject, "handle", "I");

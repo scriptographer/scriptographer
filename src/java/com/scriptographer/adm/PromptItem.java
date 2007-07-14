@@ -55,6 +55,7 @@ public class PromptItem {
 	};
 	
 	String description;
+	String name; // for preferences
 	int type;
 	Object value;
 	Object values[];
@@ -191,6 +192,14 @@ public class PromptItem {
 		this.precision = precision;
 	}
 
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	protected Item createItem(Dialog dialog) {
 		// Item:
 		item = null;

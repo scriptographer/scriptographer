@@ -29,7 +29,7 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.list.ExtendedArrayList;
+import com.scratchdisk.list.ArrayList;
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
@@ -38,13 +38,13 @@ import com.scratchdisk.list.ReadOnlyList;
  * @author lehni
  */
 class TextStoryList extends NativeObject implements ReadOnlyList {
-	ExtendedArrayList.List list;
+	ArrayList.List list;
 	Document document;
 	
 	TextStoryList(int handle, Document document) {
 		super(handle);
 		this.document = document;
-		list = new ExtendedArrayList.List();
+		list = new ArrayList.List();
 	}
 
 	private native int nativeSize(int handle);

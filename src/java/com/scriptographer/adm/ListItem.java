@@ -296,7 +296,7 @@ public abstract class ListItem extends Item implements SimpleList {
 	 *
 	 */
 	
-	public native void nativeSetBackgroundColor(int color); // Drawer.COLOR_*
+	private native void nativeSetBackgroundColor(int color); // Drawer.COLOR_*
 
 	public void setBackgroundColor(int color) {
 		bgColor = color;

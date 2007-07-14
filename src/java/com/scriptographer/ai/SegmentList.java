@@ -31,9 +31,9 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.list.ExtendedArrayList;
+import com.scratchdisk.list.ArrayList;
 import com.scratchdisk.list.ExtendedList;
-import com.scriptographer.util.AbstractFetchList;
+import com.scriptographer.list.AbstractFetchList;
 
 /**
  * @author lehni
@@ -43,7 +43,7 @@ public class SegmentList extends AbstractFetchList {
 	protected int size;
 	protected CurveList curves = null;
 
-	private ExtendedArrayList.List list;
+	private ArrayList.List list;
 
 	private int lengthVersion = -1;
 
@@ -60,7 +60,7 @@ public class SegmentList extends AbstractFetchList {
 	protected static final int VALUES_PER_SEGMENT = 7;
 
 	public SegmentList() {
-		list = new ExtendedArrayList.List();
+		list = new ArrayList.List();
 		size = 0;
 	}
 
@@ -472,7 +472,7 @@ public class SegmentList extends AbstractFetchList {
 		
 		// determine the width and height of the ellipse by the 3 given points
 		// center, startPoint and endPoint:
-		// find the scaleFactor that scales this system horicontally so a circle
+		// find the scaleFactor that scales this system horizontally so a circle
 		// would fit. the resulting radius is the ellipse's height.
 		// Then apply the opposite factor to the radius in order to get the width.
 		

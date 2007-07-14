@@ -56,4 +56,20 @@ public class StringHelper {
 
 		return buf.toString();
 	}
+
+	public static String capitalize(String str, String delimiter) {
+		String[] parts = str.split("\\s");
+		StringBuffer res = new StringBuffer();
+		for (int i = 0; i < parts.length; i++) {
+			if (i > 0) res.append(delimiter);
+			String part = parts[i];
+			res.append(Character.toUpperCase(part.charAt(0)));
+			res.append(part, 1, part.length());
+		}
+		return res.toString();
+	}
+
+	public static String capitalize(String str) {
+		return capitalize(str, "");
+	}
 }

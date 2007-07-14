@@ -35,7 +35,7 @@ import java.util.StringTokenizer;
 import java.util.zip.Adler32;
 
 import com.scriptographer.CommitManager;
-import com.scratchdisk.list.ExtendedArrayList;
+import com.scratchdisk.list.ArrayList;
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
@@ -137,7 +137,7 @@ public class TextRange extends NativeObject {
 		if (frame != null) {
 			if (lastFrame == null)
 				lastFrame = frame;
-			ExtendedArrayList list = new ExtendedArrayList();
+			ArrayList list = new ArrayList();
 			do {
 				list.add(frame);
 				frame = frame.getNextFrame();
@@ -502,10 +502,10 @@ public class TextRange extends NativeObject {
 	 * The base class for all TextRangeList classes
 	 */
 	abstract class TextRangeList implements ReadOnlyList {
-		ExtendedArrayList.List list;
+		ArrayList.List list;
 		
 		TextRangeList() {
-			list = new ExtendedArrayList.List();
+			list = new ArrayList.List();
 		}
 
 		public int size() {
