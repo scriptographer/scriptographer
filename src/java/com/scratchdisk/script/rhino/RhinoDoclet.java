@@ -57,7 +57,7 @@ public class RhinoDoclet extends Doclet {
 			engine.put("options", options);
 			engine.put("baseDir", file.getParentFile());
 			return engine.evaluate(file);
-		} catch (RuntimeException e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 			return false;
 		}
