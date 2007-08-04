@@ -26,7 +26,7 @@
  *
  * $Id$
  */
- 
+
 #include "stdHeaders.h"
 #include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
