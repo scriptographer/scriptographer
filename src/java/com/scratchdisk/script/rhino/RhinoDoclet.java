@@ -51,11 +51,16 @@ public class RhinoDoclet extends Doclet {
 	static File file;
 
 	public static boolean start(RootDoc root) {
-		RhinoDocletEngine engine = new RhinoDocletEngine();
-		engine.put("root", root);
-		engine.put("options", options);
-		engine.put("baseDir", file.getParentFile());
-		return engine.evaluate(file);
+		try {
+			RhinoDocletEngine engine = new RhinoDocletEngine();
+			engine.put("root", root);
+			engine.put("options", options);
+			engine.put("baseDir", file.getParentFile());
+			return engine.evaluate(file);
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	public static int optionLength(String option) {
