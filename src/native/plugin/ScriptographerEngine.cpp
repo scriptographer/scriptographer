@@ -888,18 +888,18 @@ AIColor *ScriptographerEngine::convertColor(JNIEnv *env, jobject srcCol, AIColor
 	// TODO: add kCustomColor
 	if (env->IsInstanceOf(srcCol, cls_ai_GradientColor)) {
 		dstCol->kind = kGradient;
-		AIGradientStyle *b = &dstCol->c.b;
 		// call mid_ai_GradientColor_set, which sets the AIGradientStyle by calling 
 		// Java_com_scriptographer_ai_Color_nativeSetGradient with the right arguments
-		callVoidMethod(env, cls_ai_GradientColor, mid_ai_GradientColor_set, (jint) b);
+		callVoidMethod(env, srcCol, mid_ai_GradientColor_set, (jint) &dstCol->c.b);
 	} else if (env->IsInstanceOf(srcCol, cls_ai_PatternColor)) {
 		dstCol->kind = kPattern;
-		AIPatternStyle *p = &dstCol->c.p;
 		// call mid_ai_PatternColor_set, which sets the AIPatternStyle by calling 
 		// Java_com_scriptographer_ai_Color_nativeSetPattern with the right arguments
-		callVoidMethod(env, cls_ai_PatternColor, mid_ai_PatternColor_set, (jint) p);
+		callVoidMethod(env, srcCol, mid_ai_PatternColor_set, (jint) &dstCol->c.p);
+	} else {
+		convertColor(env, (jfloatArray) env->CallObjectMethod(srcCol, mid_ai_Color_getComponents), dstCol, alpha);
 	}
-	return convertColor(env, (jfloatArray) env->CallObjectMethod(srcCol, mid_ai_Color_getComponents), dstCol, alpha);
+	return dstCol;
 }
 
 AIColor *ScriptographerEngine::convertColor(JNIEnv *env, jfloatArray srcCol, AIColor *dstCol, AIReal *alpha) {
