@@ -48,12 +48,15 @@ import java.util.Iterator;
  */
 public class Tool extends NativeObject {
 	private int index;
+	private int cursor;
 
 	private static IntMap tools = null;
 
 	protected Tool(int handle, int index) {
 		super(handle);
 		this.index = index;
+		// see resourceIds.h:
+		this.cursor = index + 128;
 	}
 	
 	private Scope scope;
@@ -289,9 +292,10 @@ public class Tool extends NativeObject {
 	}
 
 	/**
-	 * To be called from the native environment:
+	 * To be called from the native environment. Returns the cursor
+	 * id to be set, if any.
 	 */
-	private static void onHandleEvent(int handle, String selector, float x,
+	private static int onHandleEvent(int handle, String selector, float x,
 			float y, int pressure) throws Exception {
 		Tool tool = getToolByHandle(handle);
 		if (tool != null) {
@@ -303,7 +307,8 @@ public class Tool extends NativeObject {
 						break;
 					case EVENT_TRACK_CURSOR:
 						tool.onMouseMove(x, y, pressure);
-						break;
+						// tell the native side to update the cursor
+						return tool.cursor;
 					case EVENT_MOUSE_DOWN:
 						tool.onMouseDown(x, y, pressure);
 						break;
@@ -325,6 +330,7 @@ public class Tool extends NativeObject {
 				}
 			}
 		}
+		return 0;
 	}
 
 	public static Tool getTool(int index) {

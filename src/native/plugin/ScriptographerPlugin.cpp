@@ -455,18 +455,6 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAITool)) {
 		error = gEngine->toolHandleEvent(selector, (AIToolMessage *) message);
-		/*
-			TODO: Add cursor handling
-			if (sSPBasic->IsEqual(selector, kSelectorAITrackToolCursor)) {
-			// the plugin keeps track of the tool cursorIds, so set it directly here
-			AIToolHandle handle = ((AIToolMessage* ) message)->tool;
-			for (int i = 0; i < sizeof(m_tools) / sizeof(Tool); i++) {
-				if (m_tools[i].handle == handle) {
-					setCursor(m_tools[i].cursorID);
-					break;
-				}
-			}
-		*/
 	} else if (sSPBasic->IsEqual(caller, kCallerAILiveEffect)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIEditLiveEffectParameters)) {
 			error = gEngine->liveEffectEditParameters((AILiveEffectEditParamMessage *) message);

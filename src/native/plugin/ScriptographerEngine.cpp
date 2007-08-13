@@ -416,7 +416,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_ai_Tool = loadClass(env, "com/scriptographer/ai/Tool");
 	cid_ai_Tool = getConstructorID(env, cls_ai_Tool, "(II)V");
-	mid_ai_Tool_onHandleEvent = getStaticMethodID(env, cls_ai_Tool, "onHandleEvent", "(ILjava/lang/String;FFI)V");
+	mid_ai_Tool_onHandleEvent = getStaticMethodID(env, cls_ai_Tool, "onHandleEvent", "(ILjava/lang/String;FFI)I");
 
 	cls_ai_Point = loadClass(env, "com/scriptographer/ai/Point");
 	cid_ai_Point = getConstructorID(env, cls_ai_Point, "(FF)V");
@@ -2012,7 +2012,9 @@ ASErr ScriptographerEngine::selectionChanged() {
 ASErr ScriptographerEngine::toolHandleEvent(const char * selector, AIToolMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_ai_Tool, mid_ai_Tool_onHandleEvent, (jint) message->tool, convertString(env, selector), (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
+		jint cursorId = callStaticIntMethod(env, cls_ai_Tool, mid_ai_Tool_onHandleEvent, (jint) message->tool, convertString(env, selector), (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
+		if (cursorId)
+			gPlugin->setCursor(cursorId);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
