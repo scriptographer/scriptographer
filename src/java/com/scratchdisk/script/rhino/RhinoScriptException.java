@@ -68,7 +68,7 @@ public class RhinoScriptException extends ScriptException {
 						if (baseDir != null)
 							line = StringUtils.replace(line, baseDir.getAbsolutePath(), "");
 						// Replace tabs with 4 whitespaces
-						writer.print(StringUtils.replace(line, "\t", "    "));
+						writer.println(StringUtils.replace(line, "\t", "    "));
 					}
 				}
 				return buf.toString();
