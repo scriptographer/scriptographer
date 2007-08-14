@@ -9,11 +9,6 @@ function createDot(x, y, dot, radius) {
 		art.style.stroke.width = radius * scale;
 		art.translate(x * size, y * size);
 	}
-/*
-	if ((y % 2) == 0) {
-		art.translate(size / 2 , 0);
-	}
-*/
 	return art;
 }
 

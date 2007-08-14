@@ -6,11 +6,11 @@ var scale = 100;
 function createDot(x, y, dot, radius) {
 	if (radius > 0) {
 		var art = dot.clone();
-		var m = new Matrix();
-		m.translate(x * size, y * size);
-		m.scale(radius * scale);
-		m.rotate(radius * Math.PI * 2);
-		art.transform(m); 
+		art.transform(new Matrix()
+			.translate(x * size, y * size)
+			.scale(radius * scale)
+			.rotate(radius * Math.PI * 2)
+		); 
 		return art;
 	}
 	return null;
