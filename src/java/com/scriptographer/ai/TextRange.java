@@ -35,6 +35,7 @@ import java.util.StringTokenizer;
 import java.util.zip.Adler32;
 
 import com.scriptographer.CommitManager;
+import com.scriptographer.Commitable;
 import com.scratchdisk.list.ArrayList;
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
@@ -43,7 +44,7 @@ import com.scratchdisk.list.ReadOnlyList;
 /**
  * @author lehni
  */
-public class TextRange extends NativeObject {
+public class TextRange extends NativeObject implements Commitable {
 
 	// CaseChangeType
 	public static final int CASE_UPPER = 0;
@@ -64,7 +65,7 @@ public class TextRange extends NativeObject {
 	public static final int CHAR_NORMAL = 3;
 	
 	// values for the native environment,
-	// to cash glyph run refrences, once their
+	// to cash glyph run references, once their
 	// found. these values need to be cleared in
 	// setStart, setEnd ,setRange and finalize
 	private int glyphRuns;
@@ -72,6 +73,7 @@ public class TextRange extends NativeObject {
 	protected Document document;
 	protected TextStory story = null;
 	protected int version = -1;
+	protected boolean dirty = false;
 	
 	// Sub Range lists:
 	TokenizerList words = null;
@@ -87,7 +89,7 @@ public class TextRange extends NativeObject {
 		this(handle, Document.wrapHandle(docHandle));
 	}
 
-	// Once a range object is created, allways return the same reference
+	// Once a range object is created, always return the same reference
 	// and swap handles instead. like this references in JS remain...
 	public void changeHandle(int newHandle) {
 		release(); // release old handle
@@ -103,6 +105,22 @@ public class TextRange extends NativeObject {
 			document.getStories().changeStoryHandle(story, nativeGetStoryIndex());
 	}
 	
+	/**
+	 * markDirty is called when content is changed
+	 */
+	protected void markDirty() {
+		if (!dirty ) {
+			CommitManager.markDirty(this.getStory(), this);
+			dirty = true;
+		}
+	}
+
+	public void commit() {
+		// Committing changes for TextRange does not need more than
+		// a reflow of the text layout in the document.
+		document.reflowText();
+	}
+
 	/**
 	 * @jsbean Returns the document that the text range belongs to.
 	 */
@@ -181,6 +199,7 @@ public class TextRange extends NativeObject {
 			words.adjustStart(oldLength);
 		if (paragraphs != null)
 			paragraphs.adjustStart(oldLength);
+		this.markDirty();
 	}
 
 	private void adjustEnd(int oldLength) {
@@ -190,6 +209,7 @@ public class TextRange extends NativeObject {
 			words.adjustEnd(oldLength);
 		if (paragraphs != null)
 			paragraphs.adjustEnd(oldLength);
+		this.markDirty();
 	}
 
 	/**
@@ -235,6 +255,7 @@ public class TextRange extends NativeObject {
 			words.removeAll();
 		if (paragraphs != null)
 			paragraphs.removeAll();
+		this.markDirty();
 		nativeRemove(handle);
 	}
 	

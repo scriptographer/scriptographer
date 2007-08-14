@@ -117,6 +117,26 @@ AIArtHandle Art_getInsertionPoint(short *paintOrder, AIDocumentHandle doc) {
 }
 
 /*
+ * Commits and invalidates wrapped art objects.
+ * if 'children' is set, it traverses the children recursively and commits and
+ * invalidates them too.
+ */
+void Art_commit(JNIEnv *env, AIArtHandle art, bool invalidate, bool children) {
+	jobject obj = gEngine->getIfWrapped(env, art);
+	// only do this if it's wrapped!
+	if (obj != NULL)
+		gEngine->callVoidMethod(env, obj, gEngine->mid_ai_Art_commit, invalidate);
+	if (children) {
+		AIArtHandle child;
+		sAIArt->GetArtFirstChild(art, &child);
+		while (child != NULL) {
+			Art_commit(env, child, invalidate, true);
+			sAIArt->GetArtSibling(child, &child);
+		}
+	}
+}
+
+/*
  * Walks through the given dictionary and finds the key for art :)
  */
 AIDictKey Art_getDictionaryKey(AIDictionaryRef dictionary, AIArtHandle art) {
@@ -421,6 +441,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getBounds(JNIEnv *env, 
 	try {
 		AIRealRect rt;
 	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		// Commit pending changes first, since they might influence the bounds
+		Art_commit(env, art, false, true);
 	    sAIArt->GetArtBounds(art, &rt);
 	    return gEngine->convertRectangle(env, &rt);
 	} EXCEPTION_CONVERT(env);
@@ -434,6 +456,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getControlBounds(JNIEnv
 	try {
 		AIRealRect rt;
 	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		// Commit pending changes first, since they might influence the bounds
+		Art_commit(env, art, false, true);
 	    sAIArt->GetArtTransformBounds(art, NULL, kControlBounds | kExcludeGuideBounds, &rt);
 	    return gEngine->convertRectangle(env, &rt);
 	} EXCEPTION_CONVERT(env);
@@ -447,6 +471,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getGeometricBounds(JNIE
 	try {
 		AIRealRect rt;
 	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		// Commit pending changes first, since they might influence the bounds
+		Art_commit(env, art, false, true);
 	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
 	    return gEngine->convertRectangle(env, &rt);
 	} EXCEPTION_CONVERT(env);
@@ -726,26 +752,6 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_moveAbove(JNIEnv *env,
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Art_moveBelow(JNIEnv *env, jobject obj, jobject art) {
 	return Art_move(env, obj, art, kPlaceBelow);
-}
-
-/*
- * Commits and invalidates wrapped art objects.
- * if 'children' is set, it traverses the children recursively and commits and
- * invalidates them too.
- */
-void Art_commit(JNIEnv *env, AIArtHandle art, bool invalidate, bool children) {
-	jobject obj = gEngine->getIfWrapped(env, art);
-	// only do this if it's wrapped!
-	if (obj != NULL)
-		gEngine->callVoidMethod(env, obj, gEngine->mid_ai_Art_commit, invalidate);
-	if (children) {
-		AIArtHandle child;
-		sAIArt->GetArtFirstChild(art, &child);
-		while (child != NULL) {
-			Art_commit(env, child, invalidate, true);
-			sAIArt->GetArtSibling(child, &child);
-		}
-	}
 }
 
 /*

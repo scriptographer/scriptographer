@@ -57,6 +57,14 @@ public abstract class TextFrame extends Art {
 		super(handle);
 	}
 
+	protected void commit(boolean invalidate) {
+		// The story is used as commit key for TextFrames instead of this.
+		CommitManager.commit(this.getStory());
+		// increasing version by one causes refetching of cached data:
+		if (invalidate)
+			version++;
+	}
+
 	/**
 	 * @jsbean The orientation of the text in the text frame as
 	 * @jsbean specified by the TextFrame.ORIENTATION_* static properties.

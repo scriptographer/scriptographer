@@ -62,9 +62,10 @@ class TextStoryList extends NativeObject implements ReadOnlyList {
 		// referencing the same object, otherwise it wraps the new
 		// story and returns it
 		TextStory story = (TextStory) list.get(index);
-		int newHandle = nativeGet(handle, index, story.handle);
+		int oldHandle = story != null ? story.handle : 0;
+		int newHandle = nativeGet(handle, index, oldHandle);
 		// update cache if story has changed
-		if (newHandle != story.handle) {
+		if (newHandle != oldHandle) {
 			story = new TextStory(newHandle, document);
 			list.set(index, story);
 		}

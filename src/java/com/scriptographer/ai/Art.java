@@ -429,8 +429,6 @@ public abstract class Art extends DictionaryObject {
 	protected void commit(boolean invalidate) {
 		CommitManager.commit(this);
 		// increasing version by one causes refetching of cached data:
-		// TODO: add all art objects that need invalidate to be called after transform!
-		// if (type == kPathArt)
 		if (invalidate)
 			version++;
 	}

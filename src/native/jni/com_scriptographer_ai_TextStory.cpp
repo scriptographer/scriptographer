@@ -169,19 +169,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStory_getLength(JNIEnv *en
 }
 
 /*
- * void nativeSuspendReflow(int handle)
+ * void reflow()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextStory_nativeSuspendReflow(JNIEnv *env, jclass cls, jint handle) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextStory_reflow(JNIEnv *env, jobject obj) {
 	try {
-		sStory->SuspendReflow((StoryRef) handle);
-	} EXCEPTION_CONVERT(env);
-}
-
-/*
- * void nativeResumeReflow(int handle)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextStory_nativeResumeReflow(JNIEnv *env, jclass cls, jint handle) {
-	try {
-		sStory->ResumeReflow((StoryRef) handle);
+		StoryRef story = gEngine->getStoryRef(env, obj);
+		sStory->SuspendReflow(story);
+		sStory->ResumeReflow(story);
 	} EXCEPTION_CONVERT(env);
 }

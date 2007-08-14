@@ -57,14 +57,16 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStoryList_nativeGet(JNIEnv
 		StoryRef storyRef, ret = 0;
 		if (!sStories->Item((StoriesRef) handle, index, &storyRef)) {
 			ATEBool8 equal;
-			// check if it's the same story as before, in that case return the old wrapped story
+			// Check if it's the same story as before, in that case return the old wrapped story
 			// this is needed as in ATE, reference handles allways change their values
-			ret = (curStoryHandle && !sStory->IsEqual(storyRef, (StoryRef) curStoryHandle, &equal) && equal)
-					? (StoryRef) curStoryHandle
-					: storyRef;
-			sStory->Release(storyRef);
+			if (curStoryHandle && !sStory->IsEqual(storyRef, (StoryRef) curStoryHandle, &equal) && equal) {
+				ret = (StoryRef) curStoryHandle;
+				sStory->Release(storyRef);
+			} else {
+				ret = storyRef;
+			}
 			return (jint) ret;
 		}
 	} EXCEPTION_CONVERT(env);
-	return NULL;
+	return 0;
 }

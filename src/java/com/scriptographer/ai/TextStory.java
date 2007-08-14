@@ -84,22 +84,11 @@ public class TextStory extends NativeObject {
 		getRange().setContent(text);
 	}
 	
-	private static native void nativeSuspendReflow(int handle);
-	
-	private static native void nativeResumeReflow(int handle);
-	
 	/**
-	 * reflow is suspended during script execution.
-	 * when reflow() is called, it's quickly turned on and off again
-	 * immediatelly afterwards.
+	 * Text reflow is suspended during script execution.
+	 * reflow forces the text story's layout to be reflown.
 	 */
-	public void reflow() {
-		// TODO: test if this does the trick? does resumeTextReflow immediatelly
-		// reflow the text? If so, make reflowText native and merge these
-		// functions on the native side
-		nativeResumeReflow(handle);
-		nativeSuspendReflow(handle);
-	}
+	public native void reflow();
 
 	TextFrameList textFrames = null;
 	
