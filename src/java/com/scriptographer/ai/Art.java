@@ -666,6 +666,29 @@ public abstract class Art extends DictionaryObject {
 		setAttribute(ATTR_HIDDEN.intValue(), hidden);
 	}
 
+	// Indicates that the object defines a clip mask. 
+
+	/**
+	 * @jsbean A boolean value that specifies whether the art item defines a clip mask.
+	 * @jsbean This can only be set on paths, compound paths, and text frame objects,
+	 * @jsbean and only if the item is already contained within a clip group.
+	 * @jsbean Sample code:
+	 * @jsbean
+	 * @jsbean <pre>
+	 * @jsbean var group = new Group();
+	 * @jsbean group.appendChild(path);
+	 * @jsbean group.clipped = true;
+	 * @jsbean path.clipMask = true;
+	 * @jsbean </pre>
+	 */
+	public boolean isClipMask() {
+		return getAttribute(ATTR_HIDDEN.intValue());
+	}
+
+	public void setClipMask(boolean clipMask) {
+		setAttribute(ATTR_IS_CLIPMASK.intValue(), clipMask);
+	}
+
 	/**
 	 * Returns <code>true</code> when neither the art item, nor it's parents are locked or hidden.
 	 */

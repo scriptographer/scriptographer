@@ -127,11 +127,13 @@ void Art_commit(JNIEnv *env, AIArtHandle art, bool invalidate, bool children) {
 	if (obj != NULL)
 		gEngine->callVoidMethod(env, obj, gEngine->mid_ai_Art_commit, invalidate);
 	if (children) {
-		AIArtHandle child;
+		AIArtHandle child = NULL;
 		sAIArt->GetArtFirstChild(art, &child);
 		while (child != NULL) {
 			Art_commit(env, child, invalidate, true);
-			sAIArt->GetArtSibling(child, &child);
+			// Catch errors
+			if (sAIArt->GetArtSibling(child, &child))
+				child = NULL;
 		}
 	}
 }
@@ -377,7 +379,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getLastChild(JNIEnv *en
 			if (curChild != NULL) {
 				do {
 					child = curChild;
-					sAIArt->GetArtSibling(child, &curChild);
+					// catch errors
+					if (sAIArt->GetArtSibling(child, &curChild))
+						curChild = NULL;
 				} while (curChild != NULL);
 			}
 #endif

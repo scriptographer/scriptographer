@@ -72,6 +72,19 @@ public class Group extends Art {
 		this(Lists.asList(children));
 	}
 	
+	/**
+	 * @jsbean A boolean value that specifies whether the group item is to be clipped.
+	 * @jsbean When setting to true, the first child in the group is automatically
+	 * @jsbean defined as a clipMask by setting its clipMask property to true.
+	 * @jsbean
+	 * @jsbean Sample code:
+	 * @jsbean
+	 * @jsbean <pre>
+	 * @jsbean var group = new Group();
+	 * @jsbean group.appendChild(path);
+	 * @jsbean group.clipped = true;
+	 * @jsbean </pre>
+	 */
 	public native boolean isClipped();
 	public native void setClipped(boolean clipped);
 }
