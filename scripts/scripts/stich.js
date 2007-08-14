@@ -1,27 +1,31 @@
-var sel = getMatching({type: "path", selected: true});
+var sel = document.getMatchingItems(Path, { selected: true });
 if (sel.length > 0) {
-    values = prompt("Stich:",
-        {type: "number", value: 1, title: "distance", width: 50},
-        {type: "number", value: 10, title: "size", width: 50}
-    );
-    for (var j = 0; j < sel.length; j++) {
-        var obj = sel[j];
-        var dist = values[0];
-        var size = values[1];
-        obj = obj.clone();
-        obj.curvesToPoints(dist, 100000);
-        var count = obj.beziers.length;
-        var mul = 1;
-        var res = new Art("path");
-        for (var i = 0; i < count; i++) {
-            var bezier = obj.beziers[i];
-            var pt = bezier.getPoint(0);
-            var n = bezier.getNormal(0).normalize(size);
-
-            res.segments.push(pt.add(n.mul(mul)));
-            pos += dist;
-            mul *= -1;
-        }
-        obj.remove();
-    }
+	values = Dialog.prompt("Stich:", [
+		{ value: 1, description: "Distance", width: 50 },
+		{ value: 10, description: "Size", width: 50 }
+	]);
+	if (values) {
+		var dist = values[0];
+		var size = values[1];
+		for (var j = 0; j < sel.length; j++) {
+			var art = sel[j];
+			art = art.clone();
+			art.curvesToPoints(dist, 10000);
+			var mul = 1;
+			var res = new Path();
+	        for (var i = 0, j = art.curves.length; i < j; i++) {
+				var curve = art.curves[i];
+				var pt = curve.getPoint(0);
+				var n = curve.getNormal(0);
+	            if (n.x != 0 || n.y != 0) {
+	                n = n.normalize(size);
+	                res.segments.add(pt.add(n.multiply(mul)));
+	                mul *= -1;
+	            }
+			}
+			art.remove();
+		}
+	}
+} else {
+	Dialog.alert("Please select a path.");
 }

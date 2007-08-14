@@ -46,7 +46,7 @@ function onMouseDrag(event) {
 
 function Branch(point, group) {
 	this.point = point;
-	this.vector = new Point(1, 0).transform(Matrix.getRotateInstance(Math.random() * 2 * Math.PI));
+	this.vector = new Point(1, 0).transform(new Matrix().rotate(Math.random() * 2 * Math.PI));
 	this.path = new Path();
 	this.path.moveTo(point);
 	this.path.style.stroke.width = minWidth + Math.random() * (maxWidth - minWidth);
@@ -58,7 +58,7 @@ function Branch(point, group) {
 
 Branch.prototype.grow = function() {
 	if (this.count++ < this.max) {
-		this.vector = this.vector.transform(Matrix.getRotateInstance(this.rotate));
+		this.vector = this.vector.transform(new Matrix().rotate(this.rotate));
 	} else {
 		this.vector = this.vector.normalize().multiply((1.0 - Math.random() * 0.5) * size);
 		this.max = Math.round(Math.random() * Math.PI * 2.0 / Math.abs(this.rotate));

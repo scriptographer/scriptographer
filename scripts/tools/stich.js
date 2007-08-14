@@ -23,8 +23,7 @@ function onMouseDrag(event) {
     if (art.getLength() > 10) {
         art.pointsToCurves();
         art.curvesToPoints(dist, 10000);
-        var count = art.curves.length;
-        for (var i = 0; i < count; i++) {
+        for (var i = 0, j = art.curves.length; i < j; i++) {
             var bezier = art.curves[i];
             var pt = bezier.getPoint(0);
             var n = bezier.getNormal(1);

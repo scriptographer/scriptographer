@@ -26,16 +26,14 @@ function onMouseUp(event) {
 		var p2 = lastB.getPoint(1);
 		var a2 = lastB.getTangent(1).getAngle();
 		var obj = path.clone();
-		obj.transform(Matrix.getScaleInstance(scale));
+		obj.scale(scale);
 		group.appendChild(obj);
 		if (obj.bounds.width < 1 && obj.bounds.height < 1)
 			break;
 		var firstB = obj.curves[0];
 		var p1 = firstB.getPoint(0);
 		var a1 = firstB.getTangent(0).getAngle();
-		var matrix = Matrix.getTranslateInstance(p2.subtract(p1));
-		matrix.rotate(a2 - a1, p1);
-		obj.transform(matrix);
+		obj.transform(new Matrix().translate(p2.subtract(p1)).rotate(a2 - a1, p1));
 		path = obj;
 	}
 }
