@@ -179,8 +179,7 @@ public abstract class TextFrame extends Art {
 
 	// ATE
 	/**
-	 * @jshide true
-	 * @jshide bean
+	 * @jshide all
 	 */
 	public native int nativeGetRange(boolean includeOverflow);
 

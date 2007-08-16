@@ -1026,9 +1026,8 @@ public abstract class Art extends DictionaryObject {
 	private long millis = 0;
 	
 	/**
-	 * This is only thre for hunting one of the dreaded bugs.
-	 * @jshide true
-	 * @jshide bean
+	 * This is only there for hunting one of the dreaded bugs.
+	 * @jshide all
 	 */
 	public long getMillis() {
 		return millis;
