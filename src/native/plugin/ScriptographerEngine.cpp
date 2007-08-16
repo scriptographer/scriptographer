@@ -1362,10 +1362,10 @@ AIDictionaryRef ScriptographerEngine::convertDictionary(JNIEnv *env, jobject map
 							GraphDesignRefType:
 							BlendStyleType:
 							GraphicObjectType:
-								// do nothing
-								break;
-							default:
-								sAIDictionary->DeleteEntry(dictionary, key);
+							// do nothing
+							break;
+						default:
+							sAIDictionary->DeleteEntry(dictionary, key);
 						}
 						
 					}
