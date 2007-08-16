@@ -43,14 +43,14 @@ String.inject({
 
 // Define settings from passed options:
 var settings = {
-	basePackage:  options.basepackage || "",
-	destDir: (options.d + (options.d && !/\/^/.test(options.d) ? "/" : "")) || "",
-	docTitle: options.doctitle || "",
-	bottom: options.bottom || "",
-	author: options.author || "",
-	filterClasses: (options.filterclasses || "").trim().split(/\s+/),
-	packageSequence: (options.packagesequence || "").trim().split(/\s+/),
-	methodFilter: (options.methodfilter || "").trim().split(/\s+/),
+	basePackage:  options.basepackage || '',
+	destDir: (options.d + (options.d && !/\/^/.test(options.d) ? "/" : '')) || '',
+	docTitle: options.doctitle || '',
+	bottom: options.bottom || '',
+	author: options.author || '',
+	filterClasses: (options.filterclasses || '').trim().split(/\s+/),
+	packageSequence: (options.packagesequence || '').trim().split(/\s+/),
+	methodFilter: (options.methodfilter || '').trim().split(/\s+/),
 	classOrder: (function() {
 		var classOrder = new Hash();
 		if (options.classorder) {
@@ -114,7 +114,8 @@ ClassDocImpl.inject({
 			// set here, but the super interface is simply in the
 			// interfaces() list.  strange...
 			val = this.interfaces().find(function(f) {
-				return f.hasInterface(face);
+				if (f.hasInterface(face))
+					return f;
 			});
 			if (!val) {
 				var cd = this.superclass();
@@ -166,11 +167,11 @@ ClassDocImpl.inject({
 	// overrides renderLink, it can still call the base version.
 	renderClassLink: function(name) {
 		if (!name) name = this.name();
-		var str = "";
+		var str = '';
 		if (this.isVisible()) {
 			if (this.isAbstract())
 				str += "<i>";
-			str += renderLink(this.qualifiedName(), this.name(), "", name);
+			str += renderLink(this.qualifiedName(), this.name(), '', name);
 			if (this.isAbstract())
 				str += "</i>";
 		} else {
@@ -189,7 +190,7 @@ ClassDocImpl.inject({
 Type = Object.extend({
 	_extended: true,
 
-	$constructor: function(type) {
+	initialize: function(type) {
 		// Enhance the prototype of the native object with Type.prototype, and return
 		// type instead of this!
 		// We need to do this because it is not possible to access the native
@@ -259,23 +260,29 @@ Type = Object.extend({
 	},
 
 	renderLink: function() {
-		if (this.isNumber())
+		if (this.isNumber()) {
 			return "Number";
-		else if (this.isBoolean())
+		} else if (this.isBoolean()) {
 			return "Boolean";
-		else if (this.isArray())
-			return "Array of " + this.asClassDoc().renderLink();
-		else if (this.isMap())
+		} else if (this.isArray()) {
+			var doc = this.asClassDoc();
+			return "Array of " + (doc
+				? doc.renderClassLink()
+				: /^(short|int|long|double|float)/.test(this.typeName())
+					? 'Numbers'
+					// Strip away [] at the end of the typeName()
+					: this.typeName().match(/^(\w*)/)[0].capitalize());
+		} else if (this.isMap()) {
 			return "Object";
-		else if (this.isPoint())
+		} else if (this.isPoint()) {
 			return ClassObject.renderLink("Point", "com.scriptographer.ai.Point");
-		else if (this.isRectangle())
+		} else if (this.isRectangle()) {
 			return ClassObject.renderLink("Rectangle", "com.scriptographer.ai.Rectangle");
-		else if (this.isMatrix())
+		} else if (this.isMatrix()) {
 			return ClassObject.renderLink("Matrix", "com.scriptographer.ai.Matrix");
-		else if (this.isFile())
+		} else if (this.isFile()) {
 			return ClassObject.renderLink("File", "com.scriptographer.sg.File");
-		else {
+		} else {
 			var cls = this.asClassDoc();
 			if (cls) {
 				if (cls.isVisible())
@@ -330,7 +337,7 @@ SeeTagImpl.inject({
 // A fake tag, to define own tag lists. Used for bean properties
 
 Tag = Object.extend({
-	$constructor: function(str) {
+	initialize: function(str) {
 		this.str = str;
 	},
 
@@ -396,7 +403,7 @@ MemberDocImpl.inject({
 // Member
 
 Member = Object.extend({
-	$constructor: function(classObject, member) {
+	initialize: function(classObject, member) {
 		this.classObject = classObject;
 		this.member = member;
 	},
@@ -475,11 +482,11 @@ Member = Object.extend({
 	},
 
 	signature: function() {
-		return "";
+		return '';
 	},
 
 	getNameSuffix: function() {
-		return "";
+		return '';
 	},
 
 	parameters: function() {
@@ -522,7 +529,7 @@ Member = Object.extend({
 		return this.isStatic() == mem.isStatic() && this.name().equals(mem.name());
 	},
 
-	$static: {
+	statics: {
 		put: function(name, member) {
 			this.members[name] = member;
 		},
@@ -544,8 +551,8 @@ Member = Object.extend({
  * all com.scriptogrpaher.ai.Pathfinder functions
  */
 Method = Member.extend({
-	$constructor: function(classObject, param) {
-		this.$super(classObject);
+	initialize: function(classObject, param) {
+		this.base(classObject);
 		this.isGrouped = false;
 		this.members = [];
 		this.map = new Hash();
@@ -651,7 +658,7 @@ Method = Member.extend({
 		if (overridden)
 			overridden.renderSummary(classDoc);
 		else
-			this.$super(classDoc);
+			this.base(classDoc);
 	},
 
 	renderMember: function(cd, index, member) {
@@ -659,7 +666,7 @@ Method = Member.extend({
 		if (overridden)
 			overridden.renderMember(cd, index, member);
 		else
-			return this.$super(cd, index, member, this.containingClass());
+			return this.base(cd, index, member, this.containingClass());
 	},
 
 	getParameters: function() {
@@ -751,8 +758,8 @@ Method = Member.extend({
  * A virtual field that unifies getter and setter functions, just like Rhino does
  */
 BeanProperty = Member.extend({
-	$constructor: function(classObject, name, getter, setter) {
-		this.$super(classObject);
+	initialize: function(classObject, name, getter, setter) {
+		this.base(classObject);
 		this.property = name;
 		this.getter = getter;
 		this.setter = setter;
@@ -807,7 +814,7 @@ BeanProperty = Member.extend({
 	},
 
 	modifiers: function() {
-		return "";
+		return '';
 	},
 
 	tags: function(tagname) {
@@ -823,7 +830,7 @@ BeanProperty = Member.extend({
  * A list of members that are unified under the same name 
  */
 MemberList = Object.extend({
-	$constructor: function(classObject, name) {
+	initialize: function(classObject, name) {
 		this.classObject = classObject;
 		this.lists = [];
 		// used in scanBeanProperties:
@@ -896,8 +903,9 @@ MemberList = Object.extend({
 			// the documentation. static properties are all supposed to
 			// be uppercae and constants.
 			// TODO: Control this through a tag instead!
-			return method.parameters().length == 0 && !method.isStatic() && 
-					method.returnType().typeName() != "void"
+			if (method.parameters().length == 0 && !method.isStatic() && 
+				method.returnType().typeName() != "void")
+					return method;
 		});
 	},
 
@@ -916,10 +924,11 @@ MemberList = Object.extend({
 				// As a convention, only add non static bean properties to
 				// the documentation.
 				// Static properties are all supposed to be uppercae and constants
-				return !method.isStatic() &&
+				if (!method.isStatic() &&
 					method.returnType().typeName() == "void" && params.length == 1 &&
 					pass == 1 && params[0].typeName() == type.typeName() ||
-					pass == 2 /* TODO: && params[0].isAssignableFrom(type) */;
+					pass == 2 /* TODO: && params[0].isAssignableFrom(type) */)
+						return method;
 			});
 			if (found)
 				return found;
@@ -932,7 +941,7 @@ MemberList = Object.extend({
  * A list of member lists, accessible by member name:
  */
 MemberListGroup = Object.extend({
-	$constructor: function(classObject) {
+	initialize: function(classObject) {
 		this.classObject = classObject;
 		this.groups = new Hash();
 		this.methodLookup = new Hash();
@@ -944,7 +953,7 @@ MemberListGroup = Object.extend({
 			name = key;
 			if (member instanceof MethodDoc)
 				// For methods, use the return type for grouping as well!
-				key = member.returnType().typeName() + " " + name;
+				key = member.returnType().typeName() + ' ' + name;
 
 			group = this.groups[key]; 
 			if (!group) {
@@ -1012,7 +1021,7 @@ MemberListGroup = Object.extend({
 					var getter = member.extractGetMethod(), setter = null;
 					if (getter) {
 						// We have a getter. Now, do we have a setter?
-						var setters = this.methodLookup["set" + component];
+						var setters = this.methodLookup['set' + component];
 						// Is this value a method?
 						if (setters)
 							setter = setters.extractSetMethod(getter.returnType());
@@ -1035,7 +1044,7 @@ MemberListGroup = Object.extend({
 // ClassObject
 
 ClassObject = Object.extend({
-	$constructor: function(cd) {
+	initialize: function(cd) {
 		this.classDoc = cd;
 		// for the hierarchy:
 		this.children = new Hash();
@@ -1123,9 +1132,8 @@ ClassObject = Object.extend({
 			var implementingClasses = [];
 			root.classes().each(function(cls) {
 				if (cls.interfaces().find(function(inter) {
-					return (inter.equals(cd))
-				})) 
-					(cls.isInterface() ? subInterfaces : implementingClasses).push(cls);
+					return inter.equals(cd);
+				})) (cls.isInterface() ? subInterfaces : implementingClasses).push(cls);
 			});
 			this.renderTemplate("class#interface", {
 				subInterfaces: subInterfaces,
@@ -1230,15 +1238,15 @@ ClassObject = Object.extend({
 		}, out);
 	},
 
-	$static: {
+	statics: {
 		put: function(root) {
 			root.classes().each(function(cd) {
 				var add = true;
 				var name = cd.qualifiedName();
 				if (settings.filterClasses)
 					add = !settings.filterClasses.find(function(filter) {
-						return (filter == name || filter.endsWith("*") &&
-							name.startsWith(filter.substring(0, filter.length - 1)));
+						return filter == name || filter.endsWith("*") &&
+							name.startsWith(filter.substring(0, filter.length - 1));
 					});
 				if (add)
 					this.classes[name] = new ClassObject(cd);
@@ -1260,7 +1268,7 @@ ClassObject = Object.extend({
 			var mem = this.get(qualifiedName);
 			// use renderClassLink, as renderLink might have been overridden
 			// by new Type(...)
-			return mem ? mem.classDoc.renderClassLink() : name;
+			return mem && mem.classDoc ? mem.classDoc.renderClassLink() : name;
 		},
 
 		classes: new Hash()
@@ -1292,7 +1300,7 @@ ClassObject = Object.extend({
 });
 
 Document = Object.extend({
-	$constructor: function(path, name, template) {
+	initialize: function(path, name, template) {
 		this.name = name;
 		this.template = template;
 
@@ -1300,7 +1308,7 @@ Document = Object.extend({
 		var parts = path.split(/\./);
 		if (!settings.templates)
 			parts.unshift("packages");
-		path = "";
+		path = '';
 		var levels = 0;
 		parts.each(function(part) {
 			if (part == name || !part)
@@ -1313,14 +1321,14 @@ Document = Object.extend({
 				dir.mkdir();
 		});
 
-		this.base = '';
+		this.basePath = '';
 		for (var j = 1; j < levels; j++)
-			this.base += '../';
+			this.basePath += '../';
 
 		// Store the previous base
-		this.previousBase = Document.base;
+		this.previousBase = Document.basePath;
 		// And set the current base
-		Document.base = this.base;
+		Document.basePath = this.basePath;
 
 		// Push out so the content for the document can be written to it.
 		out.push();
@@ -1338,14 +1346,14 @@ Document = Object.extend({
 		this.writer.print(this.renderTemplate(this.template));
 		this.writer.close();
 		// Restore previous base
-		Document.base = this.previousBase;
+		Document.basePath = this.previousBase;
 	},
 
-	$static: {
-		base: '',
+	statics: {
+		basePath: '',
 
-		getBase: function() {
-			return this.base;
+		getBasePath: function() {
+			return this.basePath;
 		}
 	}
 });
@@ -1376,7 +1384,7 @@ function processClasses(classes) {
 			}
 		}
 	});
-	root.renderHierarchy("");
+	root.renderHierarchy('');
 }
 
 function getRelativeIdentifier(str) {
@@ -1395,7 +1403,7 @@ function renderLink(qualifiedName, name, anchor, title) {
 			if (settings.templates)
 				path = '/Reference/' + path + '/';
 			else
-				path = Document.getBase() + path + '.html';
+				path = Document.getBasePath() + path + '.html';
 			str += path;
 		}
 		if (anchor) {
@@ -1462,7 +1470,7 @@ function tags_filter(str) {
 }
 
 function stripTags_fitler(str) {
-	return str.replace(/<.*?>|<\/.*?>/g, " ").replace(/\\s+/g, " ");
+	return str.replace(/<.*?>|<\/.*?>/g, ' ').replace(/\\s+/g, ' ');
 }
 
 function main() {
@@ -1482,7 +1490,7 @@ function main() {
 	});
 
 	// Now start rendering:
-	var doc = new Document("", settings.templates ? "packages.js"
+	var doc = new Document('', settings.templates ? "packages.js"
 			: "packages.html", "packages");
 
 	packageSequence.each(function(name) {
@@ -1491,7 +1499,7 @@ function main() {
 			var path = getRelativeIdentifier(name);
 			var text = renderTags({ tags: pkg.inlineTags() });
 			var first = renderTags({ tags: pkg.firstSentenceTags() });
-			// remove the first sentence from the main text
+			// Remove the first sentence from the main text, and use it as a title
 			if (first && text.startsWith(first)) {
 				text = text.substring(first.length);
 				first = first.substring(0, first.length - 1); // cut away dot
@@ -1504,13 +1512,13 @@ function main() {
 			processClasses(pkg.errors());
 
 			renderTemplate("packages#package", {
-				content: out.pop(), name: name, path: path
+				content: out.pop(), name: name, path: path, text: text
 			}, out);
 
 			if (!settings.templates) {
-				// write package file:
+				// Write package file:
 				var doc = new Document(path, 'index', 'document');
-				renderTemplate("package", { title: first, text: text });
+				renderTemplate("package", { title: first, text: text }, out);
 				doc.close();
 			}
 		}

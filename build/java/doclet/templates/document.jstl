@@ -6,8 +6,8 @@
 <head>
 <title><%=this.name %></title>
 <base target="classFrame">
-<link rel="stylesheet" href="../<%= this.base %>resources/style.css" type="text/css">
-<script src="../<%= this.base %>resources/scripts.js" type="text/javascript"></script>
+<link rel="stylesheet" href="../<%= this.basePath %>resources/style.css" type="text/css">
+<script src="../<%= this.basePath %>resources/scripts.js" type="text/javascript"></script>
 </head>
 <body class="documentation">
 <%= this.content %>
