@@ -1418,7 +1418,7 @@ function encodeHtml(str) {
 	str = Packages.org.htmlparser.util.Translate.encode(str);
 	var tags = {
 		code: true, br: true, p: true, b: true, a: true, i: true,
-		ol: true, li: true, ul: true, tt: true };
+		ol: true, li: true, ul: true, tt: true, pre: true };
 	// now replace allowed tags again.
 	return str.replace(/&lt;(\/?)(\w*)(.*?)(\s*\/?)&gt;/g, function(match, open, tag, content, close) {
 		tag = tag.toLowerCase();
