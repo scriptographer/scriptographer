@@ -181,6 +181,8 @@ public class ScriptographerEngine {
 			char last = error.charAt(error.length() - 1);
 			if (last != '\n' && last != '\r')
 				System.err.println();
+		} else {
+			System.err.println(t);
 		}
 	}
 
@@ -246,7 +248,11 @@ public class ScriptographerEngine {
 	 */
 	private static void endExecution() {
 		if (executing) {
-			CommitManager.commit();
+			try {
+				CommitManager.commit();
+			} catch(Throwable t) {
+				ScriptographerEngine.reportError(t);
+			}
 			Document.endExecution();
 			closeProgress();
 			currentFile = null;
@@ -268,11 +274,11 @@ public class ScriptographerEngine {
 		boolean started = beginExecution(null, null);
 		// Retrieve wrapper object for the native java object, and call the
 		// function on it.
-		Exception exc = null;
+		Throwable throwable = null;
 		try {
 			return callable.call(obj, args);
-		} catch (Exception e) {
-			exc = e;
+		} catch (Throwable t) {
+			throwable = t;
 		} finally {
 			// commit all changed objects after a scripting function has been
 			// called!
@@ -282,9 +288,9 @@ public class ScriptographerEngine {
 		// Do not allow script cancelation during error reporting,
 		// as this is now handled by scripts too
 		allowScriptCancelation = false;
-		if (exc instanceof ScriptException) {
-			ScriptographerEngine.reportError(exc);
-		} else if (exc instanceof ScriptCanceledException) {
+		if (throwable instanceof ScriptException) {
+			ScriptographerEngine.reportError(throwable);
+		} else if (throwable instanceof ScriptCanceledException) {
 			System.out.println("Execution canceled");
 		}
 		allowScriptCancelation = true;

@@ -48,34 +48,42 @@ import com.scratchdisk.util.StringUtils;
  */
 public class RhinoScriptException extends ScriptException {
 
+	private static Throwable getCause(Throwable cause) {
+		if (cause instanceof WrappedException) 
+			return ((WrappedException) cause).getWrappedException();
+		else
+			return cause;
+	}
+
 	private static String formatMessage(RhinoEngine engine, Throwable t) {
 		if (t instanceof EvaluatorException) {
 			EvaluatorException ee = (EvaluatorException) t;
 			return ee.getMessage();
-		} else {
-			RhinoException re = t instanceof RhinoException ? (RhinoException) t
-					: new WrappedException(t);
-				StringWriter buf = new StringWriter();
-				PrintWriter writer = new PrintWriter(buf);
-				writer.println(re.details());
-				String[] stackTrace = re.getScriptStackTrace().split("[\\n\\r]");
-				File baseDir = engine.getBaseDirectory();
-				for (int i = 0; i < stackTrace.length; i++) {
-					String line = stackTrace[i];
-					// Filter out hidden scripts and evaluate lines
-					if (line.length() > 0 && line.indexOf("/__") == -1 && line.indexOf("evaluate:") == -1) {
-						// Strip away base directory from all paths, if defined:
-						if (baseDir != null)
-							line = StringUtils.replace(line, baseDir.getAbsolutePath(), "");
-						// Replace tabs with 4 whitespaces
-						writer.println(StringUtils.replace(line, "\t", "    "));
-					}
+		} else if (t instanceof RhinoException) {
+			RhinoException re = (RhinoException) t;
+			StringWriter buf = new StringWriter();
+			PrintWriter writer = new PrintWriter(buf);
+			writer.println(re.details());
+			String[] stackTrace = re.getScriptStackTrace().split("[\\n\\r]");
+			File baseDir = engine.getBaseDirectory();
+			for (int i = 0; i < stackTrace.length; i++) {
+				String line = stackTrace[i];
+				// Filter out hidden scripts and evaluate lines
+				if (line.length() > 0 && line.indexOf("/__") == -1 && line.indexOf("evaluate:") == -1) {
+					// Strip away base directory from all paths, if defined:
+					if (baseDir != null)
+						line = StringUtils.replace(line, baseDir.getAbsolutePath(), "");
+					// Replace tabs with 4 whitespaces
+					writer.println(StringUtils.replace(line, "\t", "    "));
 				}
-				return buf.toString();
+			}
+			return buf.toString();
+		} else {
+			return t.getMessage();
 		}
 	}
 
 	public RhinoScriptException(RhinoEngine engine, Throwable cause) {
-		super(formatMessage(engine, cause), cause);
+		super(formatMessage(engine, getCause(cause)), getCause(cause));
 	}
 }
