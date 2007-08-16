@@ -36,14 +36,10 @@ package com.scriptographer.ai;
  */
 public class Pattern extends NativeWrapper {
 	
-	protected Pattern(int handle) {
-		super(handle);
-	}
-	
 	private static native int nativeCreate();
 	
 	public Pattern() {
-		super(nativeCreate());
+		super(nativeCreate(), true);
 	}
 	
 	public Pattern(Art item) {

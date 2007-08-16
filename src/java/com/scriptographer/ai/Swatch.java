@@ -39,14 +39,17 @@ package com.scriptographer.ai;
  */
 public class Swatch extends NativeWrapper {
 	
+	/*
+	 * Needed by wrapHandle mechanism
+	 */
 	protected Swatch(int handle) {
-		super(handle);
+		super(handle, true);
 	}
-	
+
 	private static native int nativeCreate();
 	
 	public Swatch() {
-		super(nativeCreate());
+		super(nativeCreate(), true);
 	}
 	
 	protected static Swatch wrapHandle(int handle, Document document) {

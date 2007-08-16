@@ -43,10 +43,16 @@ abstract class NativeWrapper extends NativeObject {
 
 	protected Document document = null;
 
-	protected NativeWrapper(int handle) {
+	protected NativeWrapper(int handle, boolean activeDocument) {
 		this.handle = handle;
+		if (activeDocument)
+			this.document = Document.getActiveDocument();
 	}
 
+	protected NativeWrapper(int handle) {
+		this(handle, false);
+	}
+	
 	protected static NativeWrapper wrapHandle(Class cls, int handle,
 			Document document, boolean useDocument) {
 		if (handle == 0)

@@ -35,15 +35,18 @@ package com.scriptographer.ai;
  * @author lehni
  */
 public class Symbol extends NativeWrapper {
-	
+
+	/*
+	 * Needed by wrapHandle mechanism
+	 */
 	protected Symbol(int handle) {
-		super(handle);
+		super(handle, true);
 	}
-	
+
 	private static native int nativeCreate(int artHandle, boolean listed);
 	
 	public Symbol(Art item, boolean listed) {
-		super(nativeCreate(item != null ? item.handle : 0, listed));
+		super(nativeCreate(item != null ? item.handle : 0, listed), true);
 	}
 	
 	public Symbol(Art item) {

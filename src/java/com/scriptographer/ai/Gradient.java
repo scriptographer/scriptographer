@@ -42,14 +42,17 @@ public class Gradient extends NativeWrapper {
 
 	GradientStopList stops = null;
 
+	/*
+	 * Needed by wrapHandle mechanism
+	 */
 	protected Gradient(int handle) {
-		super(handle);
+		super(handle, true);
 	}
 
 	private static native int nativeCreate();
-	
+
 	public Gradient() {
-		super(nativeCreate());
+		super(nativeCreate(), true);
 	}
 	
 	protected static Gradient wrapHandle(int handle, Document document) {
