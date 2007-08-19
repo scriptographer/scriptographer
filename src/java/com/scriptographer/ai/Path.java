@@ -77,7 +77,7 @@ public class Path extends Art {
 	}
 
 	/**
-	 * Removes the path item
+	 * Removes the path item from the document.
 	 */
 	public boolean remove() {
         boolean ret = super.remove();

@@ -267,12 +267,42 @@ public class Point {
 		return getDistance(pt) < tolerance;
 	}
 	
+	/**
+	 * Returns the distance between the point and another point.
+	 * Sample code:
+	 * <pre>
+	 * var firstPoint = new Point(5,10);
+	 * 
+	 * var distance = firstPoint.getDistance(5,20);
+	 * 
+	 * print(distance); // returns 10
+	 * </pre>
+	 * @param px
+	 * @param py
+	 * @return
+	 */
 	public float getDistance(float px, float py) {
 		px -= x;
 		py -= y;
 		return (float) Math.sqrt(px * px + py * py);
 	}
 
+	/**
+	 * Returns the distance between the point and another point.
+	 * Sample code:
+	 * <pre>
+	 * var firstPoint = new Point(5, 10);
+	 * var secondPoint = new Point(5, 20);
+	 * 
+	 * var distance = firstPoint.getDistance(secondPoint);
+	 * 
+	 * print(distance); // returns 10
+	 * </pre>
+	 * 
+	 * @param px
+	 * @param py
+	 * @return
+	 */
 	public float getDistance(Point pt) {
 		return getDistance(pt.x, (float) pt.y);
 	}
@@ -291,6 +321,12 @@ public class Point {
 		return (float) Math.sqrt(x * x + y * y);
 	}
 
+	/**
+	 * Returns the angle between the point and another point in radians.
+	 * 
+	 * @param pt
+	 * @return
+	 */
 	public float getAngle(Point pt) {
 		float div = getLength() * pt.getLength();
 		if (div == 0) return 0;
@@ -379,7 +415,7 @@ public class Point {
 	/**
 	 * Returns the dot product of the point and another point.
 	 * @param pt
-	 * @return    the dot product of the two points
+	 * @return the dot product of the two points
 	 */
 
 	public float dot(Point pt) {

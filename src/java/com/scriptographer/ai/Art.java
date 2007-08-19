@@ -578,6 +578,10 @@ public abstract class Art extends DictionaryObject {
 	 */
 	public native boolean isDefaultName();
 
+	/**
+	 * The path style of the art item.
+	 * @return
+	 */
 	public PathStyle getStyle() {
 		if (style == null)
 			style = new PathStyle(this);
@@ -690,7 +694,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Returns <code>true</code> when neither the art item, nor it's parents are locked or hidden.
+	 * @jsbean Returns <code>true</code> when neither the art item, nor it's parents are locked or hidden.
 	 */
 	public native boolean isEditable();
 

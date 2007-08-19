@@ -88,7 +88,7 @@ public class Raster extends Art {
 	}
 
 	/**
-	 * Creeates a raster item from an AWT image.
+	 * Creates a raster item from an AWT image.
 	 * @param image the AWT image to be converted to a raster item.
 	 */
 	public Raster(Image image) {
@@ -98,7 +98,7 @@ public class Raster extends Art {
 	}
 
 	/**
-	 * Creeates a raster item from an ADM image.
+	 * Creates a raster item from an ADM image.
 	 * @param image the ADM image to be converted to a raster item.
 	 */
 	public Raster(com.scriptographer.adm.Image image) {
@@ -116,6 +116,12 @@ public class Raster extends Art {
 
 	/**
 	 * Creates a raster item from a local image file.
+	 * 
+	 * Sample code:
+	 * <pre>
+	 * var file = new java.io.File("/folder/image.jpg");
+	 * var raster = new Raster(file);</pre>
+	 * 
 	 * @param file the image file to be loaded.
 	 */
 	public Raster(File file) {
@@ -125,6 +131,12 @@ public class Raster extends Art {
 	/**
 	 * Creates a raster image from an URL.
 	 * This blocks until the image is loaded or an error occured.
+	 * 
+	 * Sample code:
+	 * <pre>
+	 * var url = new java.net.URL("http://www.server.com/image.jpg");
+	 * var raster = new Raster(url);</pre>
+     *
 	 * @param url the URL of the image to load.
 	 * @throws IOException
 	 */
@@ -161,10 +173,18 @@ public class Raster extends Art {
 		setSize((int) size.x, (int) size.y);
 	}
 
+	/**
+	 * @jsbean The width of the raster
+	 * @return
+	 */
 	public int getWidth() {
 		return getSize().width;
 	}
 
+	/**
+	 * @jsbean The height of the raster
+	 * @return
+	 */
 	public int getHeight() {
 		return getSize().height;
 	}
@@ -176,18 +196,67 @@ public class Raster extends Art {
 		handle = nativeConvert(type, -1, -1);
 	}
 
+	/**
+	 * Gets the color of a pixel in the raster.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public native Color getPixel(int x, int y);
 
+	/**
+	 * Sets the color of a pixel in the raster.
+	 * Sample code:
+	 * <pre>
+	 * // Creates an RGB raster of 1px*1px
+	 * var raster = new Raster(Color.TYPE_RGB,1,1);
+	 * 
+	 * // Changes the color of the first pixel to red
+	 * var redColor = new RGBColor(1,0,0);
+	 * raster.setPixel(0,0,redColor)</pre>
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public native void setPixel(int x, int y, Color color);
 
+	/**
+	 * Gets the color of a pixel in the raster.
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public Color getPixel(Point point) {
 		return getPixel((int) point.x, (int) point.y);
 	}
 
+	/**
+	 * Sets the color of a pixel in the raster.
+	 * 
+	 * Sample code:
+	 * <pre>
+	 * // Creates an RGB raster of 1px*1px
+	 * var raster = new Raster(Color.TYPE_RGB,1,1);
+	 * 
+	 * // Changes the color of the first pixel to red
+	 * var redColor = new RGBColor(1,0,0);
+	 * var point = new Point(0,0);
+	 * raster.setPixel(point,redColor)</pre>
+	 * 
+	 * @param x
+	 * @param y
+	 * @return
+	 */
 	public void setPixel(Point point, Color color) {
 		setPixel((int) point.x, (int) point.y, color);
 	}
 
+	/**
+	 * @jsbean The color model of the raster as specified by the Color.MODEL_*
+	 *         static properties
+	 * @return
+	 */
 	public ColorModel getColorModel() {
 		int type = getType();
 		ColorModel cm = null;

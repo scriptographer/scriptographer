@@ -55,7 +55,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * Creates a new Rectangle.
+	 * Creates a new rectangle.
 	 * @param x	The left coordinate.
 	 * @param y The top coordinate.
 	 * @param width
@@ -99,9 +99,9 @@ public class Rectangle {
 	 * Sample code:
 	 * <pre>
 	 * var rect = new Rectangle({x:10,
-	 * 							y:10,
-	 * 							width:320,
-	 * 							height:240});
+	 *                           y:10,
+	 *                           width:320,
+	 *                           height:240});
 	 * </pre>
 	 * @param map <code>{x, y, width, height}</code>
 	 */
@@ -226,7 +226,7 @@ public class Rectangle {
 	}
 	
 	/**
-	 * The center point of the rectangle.
+	 * @jsbean The center point of the rectangle.
 	 */
 	public Point getCenter() {
 		return new Point(
@@ -241,7 +241,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * The top left point of the rectangle.
+	 * @jsbean The top left point of the rectangle.
 	 */
 	public Point getTopLeft() {
 		return new Point(getLeft(), getTop());
@@ -253,7 +253,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * The top right point of the rectangle.
+	 * @jsbean The top right point of the rectangle.
 	 */
 	public Point getTopRight() {
 		return new Point(getRight(), getTop());
@@ -265,7 +265,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * The bottom left point of the rectangle.
+	 * @jsbean The bottom left point of the rectangle.
 	 */
 	public Point getBottomLeft() {
 		return new Point(getLeft(), getBottom());
@@ -277,7 +277,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * The bottom right point of the rectangle.
+	 * @jsbean The bottom right point of the rectangle.
 	 */
 	public Point getBottomRight() {
 		return new Point(getRight(), getBottom());
