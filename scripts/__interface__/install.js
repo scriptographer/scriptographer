@@ -24,7 +24,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * File created on 25.03.2005.
+ * File created on 22.08.2007.
  *
  * $Id$
  */
@@ -111,8 +111,8 @@ if (app.macintosh) {
 				'0, 0': logo,
 				'1, 0, 3, 1': text,
 				'1, 2, 3, 2': this.passwordField,
-				 '2, 3': this.cancelItem,
-				 '3, 3': this.defaultItem
+				'2, 3': this.cancelItem,
+				'3, 3': this.defaultItem
 			}
 		});
 		var tryAgain = true;
