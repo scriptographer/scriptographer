@@ -26,10 +26,7 @@
  * 
  * File created on Jan 23, 2007.
  * 
- * $IdRhinoDoclet.java,v $
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scratchdisk.script.rhino;

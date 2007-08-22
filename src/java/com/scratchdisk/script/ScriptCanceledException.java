@@ -26,10 +26,7 @@
  * 
  * File created on Feb 16, 2007.
  * 
- * $IdScriptCanceledException.java,v $
- * $Author$
- * $Revision$
- * $Date$
+ * $Id$
  */
 
 package com.scratchdisk.script;
