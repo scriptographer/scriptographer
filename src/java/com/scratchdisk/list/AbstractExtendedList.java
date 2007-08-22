@@ -26,7 +26,7 @@
  *
  * File created on 16.02.2005.
  *
- * $Id: AbstractExtendedList.java 240 2007-02-17 15:14:26Z lehni $
+ * $Id$
  */
 
 package com.scratchdisk.list;

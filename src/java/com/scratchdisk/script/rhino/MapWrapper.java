@@ -26,7 +26,7 @@
  * 
  * File created on 19.02.2005.
  * 
- * $Id: MapObject.java 230 2007-01-16 20:36:33Z lehni $
+ * $Id$
  */
 
 package com.scratchdisk.script.rhino;

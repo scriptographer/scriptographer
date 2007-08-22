@@ -26,7 +26,7 @@
  * 
  * File created on 06.03.2005.
  * 
- * $Id: GlobalObject.java 238 2007-02-16 01:09:06Z lehni $
+ * $Id$
  */
 
 package com.scriptographer.script.rhino;

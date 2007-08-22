@@ -26,7 +26,7 @@
  *
  * File created on 01.01.2005.
  *
- * $Id: ExtendedJavaClass.java 230 2007-01-16 20:36:33Z lehni $
+ * $Id$
  */
 
 package com.scratchdisk.script.rhino;

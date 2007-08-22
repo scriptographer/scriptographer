@@ -26,7 +26,7 @@
  *
  * File created on 16.02.2005.
  *
- * $Id$
+ * $Id:AbstractFetchList.java 363 2007-07-14 15:54:06Z lehni $
  */
 
 package com.scriptographer.list;

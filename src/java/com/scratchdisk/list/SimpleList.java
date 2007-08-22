@@ -26,7 +26,7 @@
  * 
  * File created on 21.10.2005.
  * 
- * $Id: SimpleList.java 230 2007-01-16 20:36:33Z lehni $
+ * $Id$
  */
 
 package com.scratchdisk.list;

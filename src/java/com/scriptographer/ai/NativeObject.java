@@ -26,7 +26,7 @@
  *
  * File created on 24.03.2005.
  *
- * $Id: AIObject.java 240 2007-02-17 15:14:26Z lehni $
+ * $Id$
  */
 
 package com.scriptographer.ai;

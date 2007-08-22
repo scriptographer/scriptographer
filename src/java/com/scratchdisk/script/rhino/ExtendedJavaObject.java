@@ -26,7 +26,7 @@
  *
  * File created on 02.01.2005.
  *
- * $Id: UnsealedJavaObject.java 238 2007-02-16 01:09:06Z lehni $
+ * $Id$
  */
 
 package com.scratchdisk.script.rhino;

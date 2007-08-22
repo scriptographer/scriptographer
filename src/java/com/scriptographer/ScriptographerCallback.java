@@ -26,7 +26,7 @@
  * 
  * File created on 06.03.2005.
  * 
- * $Id: ConsoleOutputWriter.java 230 2007-01-16 20:36:33Z lehni $
+ * $Id$
  */
 
 package com.scriptographer;

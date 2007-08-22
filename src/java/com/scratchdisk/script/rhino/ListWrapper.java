@@ -26,7 +26,7 @@
  *
  * File created on 11.02.2005.
  *
- * $Id: ListObject.java 230 2007-01-16 20:36:33Z lehni $
+ * $Id$
  */
 
 package com.scratchdisk.script.rhino;

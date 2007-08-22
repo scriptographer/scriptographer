@@ -25,9 +25,9 @@
  * -- GPL LICENSE NOTICE --
  *
  * $RCSfile: stdPrefix.h,v $
- * $Author: lehni $
- * $Revision: 1.2 $
- * $Date: 2006/10/18 14:18:41 $
+ * $Author$
+ * $Revision$
+ * $Date$
  */
 
 #ifdef DEBUG

@@ -26,7 +26,7 @@
  * 
  * File created on 10.06.2006.
  * 
- * $Id: global.java 317 2007-05-01 17:21:24Z lehni $
+ * $Id$
  */
 
 package com.scriptographer.sg;

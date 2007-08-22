@@ -26,7 +26,7 @@
  *
  * File created on 25.03.2005.
  *
- * $Id: interface.js 294 2007-04-15 19:20:29Z lehni $
+ * $Id$
  */
 
 var buttonSize = new Size(27, 17);

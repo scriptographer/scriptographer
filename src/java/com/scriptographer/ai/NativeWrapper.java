@@ -26,7 +26,7 @@
  * 
  * File created on Oct 18, 2006.
  * 
- * $Id: AIWrapper.java 294 2007-04-15 19:20:29Z lehni $
+ * $Id$
  */
 
 package com.scriptographer.ai;

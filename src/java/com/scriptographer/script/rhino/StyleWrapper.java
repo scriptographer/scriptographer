@@ -26,7 +26,7 @@
  * 
  * File created on 03.11.2005.
  * 
- * $Id: NullToUndefinedWrapper.java 230 2007-01-16 20:36:33Z lehni $
+ * $Id$
  */
 
 package com.scriptographer.script.rhino;

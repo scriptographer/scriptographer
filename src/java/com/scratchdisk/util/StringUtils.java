@@ -26,7 +26,7 @@
  * 
  * File created on 08.12.2006.
  * 
- * $Id: StringUtils.java 230 2007-01-16 20:36:33Z lehni $
+ * $Id$
  */
 
 package com.scratchdisk.util;

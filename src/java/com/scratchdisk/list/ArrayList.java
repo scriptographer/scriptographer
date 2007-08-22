@@ -26,7 +26,7 @@
  *
  * File created on 16.02.2005.
  *
- * $Id: ExtendedArrayList.java 230 2007-01-16 20:36:33Z lehni $
+ * $Id$
  */
 
 package com.scratchdisk.list;
