@@ -85,6 +85,9 @@ public class GradientStop implements Commitable {
 	 */
 	protected void insert() {
 		if (list != null && list.gradient != null) {
+			// Make sure changes to the other stops get committed first,
+			// as otherwise this stop might not be added. Fixes #29
+			CommitManager.commit(list.gradient);
 			Gradient gradient = list.gradient;
 			GradientStopList.nativeInsert(
 				gradient.handle, gradient.document.handle, index,

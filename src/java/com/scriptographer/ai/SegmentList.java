@@ -267,7 +267,7 @@ public class SegmentList extends AbstractFetchList {
 
 	public boolean addAll(int index, ExtendedList elements) {
 		if (index < 0 || index > size)
-			throw new IndexOutOfBoundsException("Index: "+index+", Size: "+size);
+			throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
 
 		int count = elements.size();
 		if (count == 0)

@@ -68,9 +68,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeSet(JNI
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeInsert(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jfloat midPoint, jfloat rampPoint, jfloatArray color) {
 	try {
 		AIGradientStop s;
+		gEngine->convertColor(env, color, &s.color);
 		s.midPoint = midPoint;
 		s.rampPoint = rampPoint;
-		gEngine->convertColor(env, color, &s.color);
 		if (sAIGradient->InsertGradientStop((AIGradientHandle) handle, index, &s))
 			throw new StringException("Cannot insert gradient stop");
 	} EXCEPTION_CONVERT(env);
@@ -94,7 +94,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_GradientStopList_nativeGetSize
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_GradientStopList_nativeRemove(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint fromIndex, jint toIndex) {
 	try {
 		for (int i = toIndex - 1; i >= fromIndex; i--) {
-			// TODO: we might pass NULL instead of &s (verify)
 			AIGradientStop s;
 			sAIGradient->DeleteGradientStop((AIGradientHandle) handle, i, &s);
 		}
