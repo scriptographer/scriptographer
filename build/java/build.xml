@@ -241,7 +241,6 @@
 		<!-- Copy platform dependent RXTX stuff -->
 		<copy todir="${build.packages}/Scriptographer/java">
 			<fileset dir="${build.dir}">
-				<include name="**/rxtx_fixperm.sh"/>
 				<include name="**/librxtxSerial.jnilib"/>
 			</fileset>
 		</copy>
