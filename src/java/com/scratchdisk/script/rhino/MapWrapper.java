@@ -33,6 +33,7 @@ package com.scratchdisk.script.rhino;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Wrapper;
 
 import java.util.Map;
@@ -71,7 +72,7 @@ public class MapWrapper extends ExtendedJavaObject {
 		if (javaObject != null) {
 			Object obj = ((Map) javaObject).get(Integer.toString(index));
 			if (obj != null)
-				return Context.toObject(obj, scriptable);
+				return toObject(obj, scriptable);
 		}
 		return Scriptable.NOT_FOUND;
 	}
@@ -94,7 +95,7 @@ public class MapWrapper extends ExtendedJavaObject {
 		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
 			obj = ((Map) javaObject).get(name);
 			if (obj != null)
-				return Context.toObject(obj, scriptable);
+				return toObject(obj, scriptable);
 			else
 				obj = Scriptable.NOT_FOUND;
 		}

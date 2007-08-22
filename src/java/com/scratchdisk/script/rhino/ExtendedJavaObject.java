@@ -151,4 +151,12 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			return javaIds;
 		}
 	}
+
+	protected Object toObject(Object obj, Scriptable scope) {
+		// Use this instead of Context.toObject, since that one
+		// seems to handle Booleans wrongly (wrapping it in objects).
+		scope = ScriptableObject.getTopLevelScope(scope);
+		Context cx = Context.getCurrentContext();
+        return cx.getWrapFactory().wrap(cx, scope, obj, null);
+	}
 }

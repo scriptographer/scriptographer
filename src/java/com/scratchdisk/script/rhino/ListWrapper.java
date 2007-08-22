@@ -73,7 +73,7 @@ public class ListWrapper extends ExtendedJavaObject {
 		if (javaObject != null) {
 			Object obj = ((ReadOnlyList) javaObject).get(index);
 			if (obj != null)
-				return Context.toObject(obj, scriptable);
+				return toObject(obj, scriptable);
 		}
 		return Scriptable.NOT_FOUND;
 	}
@@ -92,7 +92,7 @@ public class ListWrapper extends ExtendedJavaObject {
 			 } else if (javaObject instanceof StringIndexList) {
 				obj = ((StringIndexList) javaObject).get(name);
 				if (obj != null)
-					obj = Context.toObject(obj, scriptable);
+					obj = toObject(obj, scriptable);
 				else
 					obj = Scriptable.NOT_FOUND;
 			}
