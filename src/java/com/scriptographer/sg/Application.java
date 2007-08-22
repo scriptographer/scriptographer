@@ -57,11 +57,11 @@ public class Application {
 		CommitManager.commit(null);
 	}
 
-	boolean isWindows() {
+	public boolean isWindows() {
 		return ScriptographerEngine.isWindows();
 	}
 
-	boolean isMacintosh() {
+	public boolean isMacintosh() {
 		return ScriptographerEngine.isMacintosh();
 	}
 	
@@ -90,6 +90,10 @@ public class Application {
 	 */
 	public boolean updateProgress(long current, long max) {
 		return ScriptographerEngine.updateProgress(current, max);
+	}
+
+	public void closeProgress() {
+		ScriptographerEngine.closeProgress();
 	}
 
 	private static Application app = null;

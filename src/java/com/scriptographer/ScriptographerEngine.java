@@ -450,7 +450,7 @@ public class ScriptographerEngine {
 		return !allowScriptCancelation || ret;
 	}
 
-	private static native void closeProgress();
+	public static native void closeProgress();
 
 	/**
 	 * @jshide
