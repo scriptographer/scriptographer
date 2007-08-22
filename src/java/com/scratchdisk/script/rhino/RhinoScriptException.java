@@ -79,7 +79,7 @@ public class RhinoScriptException extends ScriptException {
 			}
 			return buf.toString();
 		} else {
-			return t.getMessage();
+			return t.getClass().getSimpleName() + ": " + t.getMessage();
 		}
 	}
 
