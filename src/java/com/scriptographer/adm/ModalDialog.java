@@ -98,10 +98,12 @@ public class ModalDialog extends Dialog {
 	private native Item nativeDoModal();
 
 	public Item doModal() {
-		modal = true;
-		Item item = nativeDoModal();
-		modal = false;
-		return item;
+		try {
+			modal = true;
+			return nativeDoModal();
+		} finally {
+			modal = false;
+		}
 	}
 
 	public native void endModal();
