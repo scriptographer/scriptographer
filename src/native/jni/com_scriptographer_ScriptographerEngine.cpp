@@ -121,9 +121,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_nativeUp
 }
 
 /*
- * void nativeCloseProgress()
+ * void closeProgress()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_nativeCloseProgress(JNIEnv *env, jclass cls) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_closeProgress(JNIEnv *env, jclass cls) {
 	try {
 		sAIUser->CloseProgress();
 	} EXCEPTION_CONVERT(env);

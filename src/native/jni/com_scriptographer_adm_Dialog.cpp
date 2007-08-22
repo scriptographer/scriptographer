@@ -42,7 +42,7 @@
 
 ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 	AppContext context;
-	// hide the dialog by default:
+	// Hide the dialog by default:
 	sADMDialog->Show(dialog, false);
 	
 	// Attach the dialog-level callbacks
@@ -52,7 +52,7 @@ ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 	DEFINE_CALLBACK_PROC(Dialog_onNotify);
 	sADMDialog->SetNotifyProc(dialog, (ADMDialogNotifyProc) CALLBACK_PROC(Dialog_onNotify));
 	
-	// resize handler:
+	// Resize handler:
 	ADMItemRef resizeItemRef = sADMDialog->GetItem(dialog, kADMResizeItemID);
 	if (resizeItemRef) {
 		DEFINE_CALLBACK_PROC(Dialog_onSizeChanged);
@@ -66,9 +66,9 @@ ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 }
 
 ADMBoolean ADMAPI Dialog_onInitialize(ADMDialogRef dialog, ADMTimerRef timerID) {
-	// clear timer
+	// Clear timer
 	sADMDialog->AbortTimer(dialog, timerID);
-	// call onNotify with NOTIFIER_WINDOW_INITIALIZE
+	// Call onNotify with NOTIFIER_WINDOW_INITIALIZE
 	JNIEnv *env = gEngine->getEnv();
 	try {
 		jobject obj = gEngine->getDialogObject(dialog);
@@ -84,7 +84,7 @@ void ASAPI Dialog_onDestroy(ADMDialogRef dialog) {
 		try {
 			jobject obj = gEngine->getDialogObject(dialog);
 			gEngine->callOnDestroy(obj);
-			// clear the handle:
+			// Clear the handle:
 			gEngine->setIntField(env, obj, gEngine->fid_adm_NativeObject_handle, 0);
 			env->DeleteGlobalRef(obj);
 		} EXCEPTION_CATCH_REPORT(env);

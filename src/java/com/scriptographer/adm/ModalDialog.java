@@ -62,10 +62,14 @@ public class ModalDialog extends Dialog {
 	 * 	Modal System Alert, cannot be combined with OPTION_RESIZING
 	 */
 	public final static int OPTION_SYSTEM_ALERT = 1 << 22;
+
+	private boolean modal;
+
+	private boolean fixModal;
 	
 	protected ModalDialog(int style, int options) {
-		// Allways create ModalDialogs hidden, as they need to be shown
-		// explicitely
+		// Always create ModalDialogs hidden, as they need to be shown
+		// explicitly
 		super(style, options | OPTION_HIDDEN);
 	}
 
@@ -91,12 +95,46 @@ public class ModalDialog extends Dialog {
 		return STYLE_MODAL;
 	}
 
-	public native Item doModal();
+	private native Item nativeDoModal();
+
+	public Item doModal() {
+		modal = true;
+		Item item = nativeDoModal();
+		modal = false;
+		return item;
+	}
 
 	public native void endModal();
 
+	private native void fixModal();
+	
 	protected void onHide() throws Exception {
 		this.endModal();
 		super.onHide();
+	}
+
+	protected void onActivate() throws Exception {
+		// This is part of a workaround for a bug in Illustrator:
+		// invisible and inactive modal dialogs seem to get active
+		// but remain invisible after another modal dialog was 
+		// deactivated. So if we recieve an onActivate event but
+		// are not in a modal loop, execute fixModal, which uses
+		// a native timer to deactivate the dialog again right after
+		// activation. The fixModal field is used to let onDeactivate
+		// know about this, and filter out the event.
+		if (!modal) {
+			fixModal = true;
+			this.fixModal();
+		} else {
+			super.onActivate();
+		}
+	}
+
+	protected void onDeactivate() throws Exception {
+		if (fixModal) {
+			fixModal = false;
+		} else {
+			super.onDeactivate();
+		}
 	}
 }

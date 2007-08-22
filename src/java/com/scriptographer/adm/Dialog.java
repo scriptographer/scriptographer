@@ -300,23 +300,6 @@ public abstract class Dialog extends CallbackHandler {
 			dialog.destroy();
 		}
 	}
-	
-	/**
-	 * This is needed for a workaround in Application.closeProgress()
-	 * After display of progress dialog, the next modal 
-	 * dialog seems to be become active, even when it is invisible
-	 * The workaround is to walk through all dialogs and deactivate
-	 * the modal ones.
-	 * 
-	 * @jshide
-	 */
-	public static void updateModalDialogs() {
-		for (int i = 0; i < dialogs.size(); i++) {
-			Dialog dialog = (Dialog) dialogs.get(i);
-			if (dialog instanceof ModalDialog && !dialog.isVisible())
-				dialog.setActive(false);
-		}
-	}
 
 	/**
 	 * Initalize all is needed on startup, as in that particular case, the
@@ -598,7 +581,7 @@ public abstract class Dialog extends CallbackHandler {
 			onDestroy();
 			break;
 		case Notifier.NOTIFIER_WINDOW_ACTIVATE:
-			// see comment for initialize to unerstand why this is fired here too
+			// See comment for initialize to understand why this is fired here too
 			initialize(true);
 			active = true;
 			onActivate();
@@ -608,8 +591,7 @@ public abstract class Dialog extends CallbackHandler {
 			onDeactivate();
 			break;
 		case Notifier.NOTIFIER_WINDOW_SHOW:
-			// see comment for initialize to unerstand why this is fired here
-			// as well
+			// See comment for initialize to understand why this is fired here too
 			initialize(true);
 			visible = true;
 			fireOnClose = true;
@@ -1250,14 +1232,6 @@ public abstract class Dialog extends CallbackHandler {
 
 	public static Object[] prompt(String title, Map[] items) {
 		return PromptDialog.prompt(title, items);
-	}
-
-	public static void test() {
-		for (int i = dialogs.size() - 1; i >= 0; i--) {
-			Dialog dialog = (Dialog) dialogs.get(i);
-			if (dialog instanceof PromptDialog)
-				dialog.destroy();
-		}
 	}
 
 	/**

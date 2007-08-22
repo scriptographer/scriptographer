@@ -450,16 +450,7 @@ public class ScriptographerEngine {
 		return !allowScriptCancelation || ret;
 	}
 
-	private static native void nativeCloseProgress();
-
-	public static void closeProgress() {
-		nativeCloseProgress();
-		// BUGFIX: After display of progress dialog, the next modal 
-		// dialog seems to be become active, even when it is invisible
-		// The workaround is to walk through all dialogs and deactivate
-		// the modal ones.
-		Dialog.updateModalDialogs();
-	}
+	private static native void closeProgress();
 
 	/**
 	 * @jshide
