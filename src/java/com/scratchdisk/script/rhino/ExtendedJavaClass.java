@@ -41,7 +41,6 @@ import org.mozilla.javascript.*;
  * @author lehni
  */
 public class ExtendedJavaClass extends NativeJavaClass {
-	private String className;
 	private HashMap properties;
 	private Scriptable instanceProto = null;
 	// A lookup for the associated ExtendedJavaClass wrappers
@@ -54,12 +53,6 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		// from Function.prototype are inherited.
 		setParentScope(scope);
 		setPrototype(ScriptableObject.getFunctionPrototype(scope));
-		// Determine short className:
-		className = cls.getName();
-		// Use simple class name instead of the full name with all packages:
-		int pos = className.lastIndexOf('.');
-		if (pos > 0)
-			className = className.substring(pos + 1);
 		properties = unsealed ? new HashMap() : null;
 		// put it in the class wrapper table
 		classes.put(cls, this);
@@ -202,11 +195,11 @@ public class ExtendedJavaClass extends NativeJavaClass {
 	}
 
 	public String getClassName() {
-		return className;
+		return ((Class) javaObject).getSimpleName();
 	}
 
 	public String toString() {
-		return "[" + className + "]";
+		return "[" + this.getClassName() + "]";
 	}
 	
 	protected static ExtendedJavaClass getClassWrapper(Scriptable scope, Class javaClass) {
