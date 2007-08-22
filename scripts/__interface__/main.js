@@ -35,6 +35,41 @@ var mainDialog = new FloatingDialog(
 		FloatingDialog.OPTION_RESIZING |
 		Dialog.OPTION_REMEMBER_PLACING, function() {
 
+	if (app.macintosh) {
+		function executeProcess() {
+			if (arguments.length == 1) {
+				var command = arguments[0];
+			} else {
+				var command = [];
+				for (var i = 0; i < arguments.length; i++) {
+					command.push(arguments[i]);
+				}
+			}
+			var proccess = java.lang.Runtime.getRuntime().exec(command);
+			var exitValue = proccess.waitFor();
+
+			function readStream(stream) {
+				var reader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
+				var res = [], line, first = true;
+				while ((line = reader.readLine()) != null) {
+					if (first) first = false;
+					else res.push(lineBreak);
+					res.push(line);
+				}
+				return res.join('');
+			}
+
+			return {
+				command: command,
+				output: readStream(proccess.getInputStream()),
+				error: readStream(proccess.getErrorStream()),
+				exitValue: exitValue
+			};
+		}
+
+		
+	}
+
 	var lineHeight = 17;
 	this.title = "Scriptographer";
 	this.setIncrement(1, lineHeight);

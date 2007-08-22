@@ -132,9 +132,7 @@ var consoleDialog = new FloatingDialog (
 		'0, 2': new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1), [
 			clearButton
 		])
-	}
-
-	var lineBreak = java.lang.System.getProperty('line.separator');
+	};
 
 	this.println = function(str) {
 		if (textOut) {

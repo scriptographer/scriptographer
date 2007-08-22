@@ -30,6 +30,7 @@
  */
 
 var buttonSize = new Size(27, 17);
+var lineBreak = java.lang.System.getProperty('line.separator');
 
 function getImage(filename) {
 	return new Image(new File(script.directory, filename));
@@ -39,6 +40,13 @@ importPackage(Packages.com.scriptographer);
 importPackage(Packages.com.scratchdisk.script);
 importPackage(Packages.com.scriptographer.script);
 
+app.closeProgress();
+
 include("console.js");
 include("about.js");
 include("main.js");
+script.preferences.installed = false;
+if (!script.preferences.installed) {
+	include("install.js");
+	script.preferences.installed = true;
+}
