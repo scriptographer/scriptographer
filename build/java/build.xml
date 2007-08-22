@@ -27,7 +27,12 @@
 		<property name="build.libraries" value="${build.dir}/lib"/>
 		<property name="build.packages" value="${home.dir}/build/packages"/>
 		<loadproperties srcfile="build.number"/>
-
+		<condition property="build.platform.mac">
+	    	<os family="mac"/>
+		</condition>
+		<condition property="build.platform.win">
+	    	<os family="windows"/>
+		</condition>
 		<path id="build.classpath">
 			<fileset dir="${build.libraries}">
 				<include name="**/*.jar" />
@@ -182,11 +187,11 @@
 			<replacefilter token="@build.number@" value="${build.number}" />
 		</replace>
 	</target>
-
+	
 	<!-- =================================================================== -->
 	<!-- Creates install packages of Scriptographer for download             -->
 	<!-- =================================================================== -->
-	<target name="packages" depends="jar,jsdocs">
+	<target name="packages" depends="jar">
 		<mkdir dir="${build.packages}"/>
 
 		<mkdir dir="${build.packages}/Scriptographer"/>
@@ -194,37 +199,28 @@
 		<copy todir="${build.packages}/Scriptographer/java">
 			<fileset dir="${build.dir}">
 				<include name="**/loader.jar"/>
-<!--			<include name="**/jvm.ini"/> -->
 				<include name="**/${jar.name}.jar"/>
 				<include name="**/js.jar"/>
+				<!-- Copy the platform independent RXTX stuff here -->
+				<include name="**/rxtx.jar"/>
 			</fileset>
 		</copy>
+
 		<!-- js docs -->
 		<copy todir="${build.packages}/Scriptographer/doc">
 			<fileset dir="${docs.js.dir}"/>
 		</copy>
-		<!-- scripts -->
+
+		<!-- Scripts -->
 		<copy todir="${build.packages}/Scriptographer/scripts">
 			<fileset dir="${scripts.dir}">
 				<exclude name="**/*.ai"/>
 			</fileset>
 		</copy>
 
-		<!-- Macintosh -->
-		<exec executable="${home.dir}/build/mac/zipPackages.sh" os="Mac OS X" dir="${build.packages}">
-			<arg path="${home.dir}/build/mac/build"/>
-			<arg line="${version}.${build.number}"/>
-		</exec>
+		<antcall target="packages.platform" />
 
-		<!-- Windows -->
-		<exec executable="cmd.exe" os="Windows XP" dir="${build.packages}">
-			<arg line="/C"/>
-			<arg path="${home.dir}/build/win/zipPackages.bat"/>
-			<arg path="${home.dir}/build/win"/>
-			<arg line="${version}.${build.number}"/>
-		</exec>
-
-		<!-- remove everything except the archives -->
+		<!-- Remove everything except the archives -->
 		<delete includeEmptyDirs="true">
 			<fileset dir="${build.packages}">
 				<exclude name="**/Scriptographer*.zip"/>
@@ -233,6 +229,48 @@
 		</delete>
 	</target>
 
+	<!-- =================================================================== -->
+	<!-- Platform Specific Package related Tasks for Mac and Windows         -->
+	<!-- =================================================================== -->
+	<target name="packages.platform" depends="packages.platform.mac,packages.platform.win">
+	</target>
+
+	<target name="packages.platform.mac" depends="init" if="build.platform.mac">
+		<echo>Executing Mac specific tasks</echo>
+
+		<!-- Copy platform dependent RXTX stuff -->
+		<copy todir="${build.packages}/Scriptographer/java">
+			<fileset dir="${build.dir}">
+				<include name="**/rxtx_fixperm.sh"/>
+				<include name="**/librxtxSerial.jnilib"/>
+			</fileset>
+		</copy>
+
+		<!-- Make the packages -->
+		<exec executable="${home.dir}/build/mac/zipPackages.sh" dir="${build.packages}">
+			<arg path="${home.dir}/build/mac/build"/>
+			<arg line="${version}.${build.number}"/>
+		</exec>
+	</target>
+
+	<target name="packages.platform.win" depends="init" if="build.platform.win">
+		<echo>Executing Windows specific tasks</echo>
+
+		<!-- Copy platform dependent RXTX stuff -->
+		<copy todir="${build.packages}/Scriptographer/java">
+			<fileset dir="${build.dir}">
+				<include name="**/rxtxSerial.dll"/>
+			</fileset>
+		</copy>
+
+		<!-- Make the packages -->
+		<exec executable="cmd.exe" dir="${build.packages}">
+			<arg line="/C"/>
+			<arg path="${home.dir}/build/win/zipPackages.bat"/>
+			<arg path="${home.dir}/build/win"/>
+			<arg line="${version}.${build.number}"/>
+		</exec>
+	</target>
 
 	<!-- =================================================================== -->
 	<!-- Compiles the source directory                                       -->
