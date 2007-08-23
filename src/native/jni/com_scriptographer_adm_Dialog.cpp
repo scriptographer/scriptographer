@@ -24,7 +24,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $Id$
+ * $Id:com_scriptographer_adm_Dialog.cpp 402 2007-08-22 23:24:49Z lehni $
  */
 
 #include "stdHeaders.h"
@@ -801,6 +801,26 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Dialog_confirm(JNIEnv *en
 		return ret == kADMYesAnswer;
 	} EXCEPTION_CONVERT(env);
 	return false;
+}
+
+/*
+ * com.scriptographer.adm.Size getScreenSize()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_getScreenSize(JNIEnv *env, jclass cls) {
+	try {
+		// TODO: add mulit screen support and place where Illustrator resides?
+#ifdef MAC_ENV
+		GDHandle screen = DMGetFirstScreenDevice(true);  
+		Rect rect = (*screen)->gdRect;
+		return gEngine->convertSize(env, rect.right - rect.left, rect.bottom - rect.top);
+#endif
+#ifdef WIN_ENV
+		RECT rect;
+		GetWindowRect(GetDesktopWindow(), &rect);
+		return gEngine->convertSize(env, rect.right - rect.left, rect.bottom - rect.top);
+#endif
+	} EXCEPTION_CONVERT(env);
+	return NULL;
 }
 
 /*

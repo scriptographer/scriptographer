@@ -24,7 +24,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $Id$
+ * $Id:com_scriptographer_adm_TextItem.cpp 402 2007-08-22 23:24:49Z lehni $
  */
  
 #include "stdHeaders.h"
@@ -36,9 +36,9 @@
  */
 
 /*
- * void setText(java.lang.String text)
+ * void nativeSetText(java.lang.String text)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextItem_setText(JNIEnv *env, jobject obj, jstring text) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextItem_nativeSetText(JNIEnv *env, jobject obj, jstring text) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);

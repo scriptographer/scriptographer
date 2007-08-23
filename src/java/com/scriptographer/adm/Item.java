@@ -26,7 +26,7 @@
  *
  * File created on 22.12.2004.
  *
- * $Id$
+ * $Id:Item.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
@@ -587,6 +587,18 @@ public abstract class Item extends CallbackHandler {
 			updateBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
+	public void setMargins(Margins margins) {
+		setMargins(margins.left, margins.top, margins.right, margins.bottom);
+	}
+
+	public void setMargins(int[] margins) {
+		setMargins(margins[0], margins[1], margins[2], margins[3]);
+	}
+
+	public void setMargins(int margin) {
+		setMargins(margin, margin, margin, margin);
+	}
+	
 	public Margins getMargins() {
 		return (Margins) margins.clone();
 	}

@@ -26,7 +26,7 @@
  *
  * File created on 22.12.2004.
  *
- * $Id$
+ * $Id:Dialog.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
@@ -1233,6 +1233,12 @@ public abstract class Dialog extends CallbackHandler {
 	public static Object[] prompt(String title, Map[] items) {
 		return PromptDialog.prompt(title, items);
 	}
+
+	/**
+	 * Returns the screen size for centering of dialogs. Ideally
+	 * this should be public and somewhere where it makes sense.
+	 */
+	protected static native Size getScreenSize();
 
 	/**
 	 * AWTContainer wrapps an ADM Dialog and prentends it is an AWT Container,

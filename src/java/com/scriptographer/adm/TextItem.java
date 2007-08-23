@@ -26,7 +26,7 @@
  *
  * File created on 18.10.2005.
  *
- * $Id$
+ * $Id:TextItem.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
@@ -49,6 +49,20 @@ public abstract class TextItem extends Item {
 	 * 
 	 */
 
-	public native void setText(String text);
-	public native String getText();
+	private String text = "";
+
+	private native void nativeSetText(String text);
+
+	public void setText(String text) {
+		this.text = text;
+		// Text item often use space for centering text on bigger
+		// buttons, etc. Since the native elements center correctly
+		// trim the space here, but store it in the text field,
+		// so getBestSize takes it into account.
+		nativeSetText(text.trim());
+	}
+
+	public String getText() {
+		return text;
+	}
 }

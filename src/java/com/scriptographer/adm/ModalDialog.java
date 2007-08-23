@@ -26,7 +26,7 @@
  *
  * File created on 14.03.2005.
  *
- * $Id$
+ * $Id:ModalDialog.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
@@ -109,6 +109,17 @@ public class ModalDialog extends Dialog {
 	public native void endModal();
 
 	private native void fixModal();
+
+	protected void onInitialize() throws Exception {
+		super.onInitialize();
+		// Visually center dialog on Screen,
+		// bit higher up than mathematically centered
+		Size screen = Dialog.getScreenSize(), size = this.getSize();
+		this.setPosition(
+			(screen.width - size.width) / 2,
+			(8 * screen.height / 10 - size.height) / 2
+		);
+	}
 	
 	protected void onHide() throws Exception {
 		this.endModal();
@@ -119,7 +130,7 @@ public class ModalDialog extends Dialog {
 		// This is part of a workaround for a bug in Illustrator:
 		// invisible and inactive modal dialogs seem to get active
 		// but remain invisible after another modal dialog was 
-		// deactivated. So if we recieve an onActivate event but
+		// deactivated. So if we receive an onActivate event but
 		// are not in a modal loop, execute fixModal, which uses
 		// a native timer to deactivate the dialog again right after
 		// activation. The fixModal field is used to let onDeactivate
