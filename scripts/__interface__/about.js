@@ -62,8 +62,7 @@ var aboutDialog = new ModalDialog(function() {
 		}
 	};
 	var okButton = new Button(this) {
-		font: Dialog.FONT_PALETTE,
-		text: 'OK'
+		text: '  OK  ',
 	};
 
 	this.defaultItem = okButton;

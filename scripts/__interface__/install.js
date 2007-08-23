@@ -95,12 +95,10 @@ if (app.macintosh) {
 			this.passwordField = new TextEdit(this, TextEdit.OPTION_PASSWORD);
 
 			this.cancelItem = new Button(this) {
-				font: Dialog.FONT_PALETTE,
 				text: 'Cancel'
 			};
 			this.defaultItem = new Button(this) {
-				font: Dialog.FONT_PALETTE,
-				text: 'OK'
+				text: '  OK  '
 			};
 			this.margins = 10;
 			this.layout = new TableLayout([
