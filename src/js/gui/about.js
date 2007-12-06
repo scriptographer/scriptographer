@@ -26,7 +26,7 @@
  *
  * File created on 25.03.2005.
  *
- * $Id$
+ * $Id: about.js 406 2007-08-23 14:12:11Z lehni $
  */
 
 var aboutDialog = new ModalDialog(function() {
@@ -37,8 +37,10 @@ var aboutDialog = new ModalDialog(function() {
 	while (revision.length < 3)
 		revision = '0' + revision;
 
-	var logo = new ImageStatic(this);
-	logo.image = getImage("logo.png");
+	var logo = new ImageStatic(this) {
+		image: getImage("logo.png"),
+		rightMargin: 10
+	};
 
 	var text = new Static(this) {
 		text: "Scriptographer " + scriptographer.version + "." + revision + "\n"
@@ -48,6 +50,8 @@ var aboutDialog = new ModalDialog(function() {
 			+ "All rights reserved.\n\n"
 			+ "Illustrator " + app.version + "." + app.revision + "\n"
 			+ "Java " + java.lang.System.getProperty("java.version") + "\n",
+
+		bottomMargin: 10,
 
 		onTrack: function(tracker) {
 			if (tracker.modifiers & Tracker.MODIFIER_CLICK) {
@@ -68,11 +72,11 @@ var aboutDialog = new ModalDialog(function() {
 	this.defaultItem = okButton;
 	this.margins = 10;
 	this.layout = new TableLayout([
-			[ 'prefered', 'fill', 'prefered' ],
-			[ 'prefered', 'fill', 'prefered' ]
-		], 4, 4);
+		[ 'prefered', 'fill', 'prefered' ],
+		[ 'prefered', 'fill', 'prefered' ]
+	]);
 	this.content = {
-		'0, 0': logo,
+		'0, 0, L, T': logo,
 		'1, 0, 2, 1': text,
 		 '2, 2': okButton
 	}

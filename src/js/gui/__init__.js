@@ -26,7 +26,7 @@
  *
  * File created on 25.03.2005.
  *
- * $Id$
+ * $Id: __init__.js 402 2007-08-22 23:24:49Z lehni $
  */
 
 var buttonSize = new Size(27, 17);
@@ -45,7 +45,6 @@ app.closeProgress();
 include("console.js");
 include("about.js");
 include("main.js");
-script.preferences.installed = false;
 if (!script.preferences.installed) {
 	include("install.js");
 	script.preferences.installed = true;

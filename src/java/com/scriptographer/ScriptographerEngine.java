@@ -26,7 +26,7 @@
  *
  * File created on 04.12.2004.
  *
- * $Id$
+ * $Id:ScriptographerEngine.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer;
@@ -92,6 +92,11 @@ public class ScriptographerEngine {
 		if (!scriptDir.exists() || !scriptDir.isDirectory())
 			chooseScriptDirectory();
 
+		// Execute Gui code, if there
+		File guiDir = new File(pluginDir, "gui");
+		if (guiDir.isDirectory())
+			callInitScripts(guiDir);
+		
 		// Execute all __init__ scripts in startup folder:
 		if (scriptDir != null)
 			callInitScripts(scriptDir);
@@ -102,7 +107,7 @@ public class ScriptographerEngine {
 	}
 
 	public static void destroy() {
-		// We're shuting down, so do not display console stuff any more
+		// We're shutting down, so do not display console stuff any more
 		ConsoleOutputStream.enableRedirection(false);
 		stopAll();
 		Dialog.destroyAll();
@@ -122,7 +127,8 @@ public class ScriptographerEngine {
 
 	public static boolean chooseScriptDirectory() {
 		scriptDir = Dialog.chooseDirectory(
-			"Please choose the Scriptographer Script directory:", scriptDir);
+			"Please choose the Scriptographer Script directory:",
+			scriptDir != null ? scriptDir : new File(pluginDir, "scripts"));
 		if (scriptDir != null && scriptDir.isDirectory()) {
 			getPreferences(false).put("scriptDir",
 				scriptDir.getPath());
@@ -143,16 +149,16 @@ public class ScriptographerEngine {
 		if (fromScript && currentFile != null)
 			return getPreferences(currentFile);
 		// the base prefs for Scriptographer are:
-		// com.scriptographer.preferences on mac, three nodes seem to be
-		// necessary, otherwise things get mixed up...
+		// com.scriptographer.preferences on Mac, three nodes seem
+		// to be necessary, otherwise things get mixed up...
 		return Preferences.userNodeForPackage(
 				ScriptographerEngine.class).node("preferences");
 	}
 
 	public static Preferences getPreferences(File file) {
 		// determine preferences for the current executing script
-		// by walking up the file path to the script directory and using each
-		// folder as a preference node.
+		// by walking up the file path to the script directory and 
+		// using each folder as a preference node.
 		Preferences prefs = getPreferences(false).node("scripts");
 		ArrayList parts = new ArrayList();
 		File root = getScriptDirectory();
@@ -171,19 +177,20 @@ public class ScriptographerEngine {
 	public static void reportError(Throwable t) {
 		String error = t.getMessage();
 		if (error != null) {
-			logger.print(error);
-			logger.print("Stacktrace: ");
-		}
-		t.printStackTrace(logger);
-		logger.println();
-		if (error != null) {
-			System.err.print(error);
+			// Make sure the error contains the proper line breaks:
+			error = error.replaceAll("\\n\\r|\\n|\\r",
+					System.getProperty("line.separator"));
 			char last = error.charAt(error.length() - 1);
 			if (last != '\n' && last != '\r')
 				System.err.println();
+			logger.print(error);
+			logger.print("Stacktrace: ");
+			System.err.print(error);
 		} else {
 			System.err.println(t);
 		}
+		t.printStackTrace(logger);
+		logger.println();
 	}
 
 	static int reloadCount = 0;
@@ -226,8 +233,8 @@ public class ScriptographerEngine {
 		if (!executing || file != null) {
 			if (!executing)
 				Document.beginExecution();
-			// Disable output to the console while the script is executed as it
-			// won't get updated anyway
+			// Disable output to the console while the script is
+			// executed as it won't get updated anyway
 			// ConsoleOutputStream.enableOutput(false);
 			executing = true;
 			showProgress(file != null ? "Executing " + file.getName() + "..." : "Executing...");
@@ -272,16 +279,16 @@ public class ScriptographerEngine {
 	 */
 	public static Object invoke(Callable callable, Object obj, Object[] args) {
 		boolean started = beginExecution(null, null);
-		// Retrieve wrapper object for the native java object, and call the
-		// function on it.
+		// Retrieve wrapper object for the native java object, and
+		// call the function on it.
 		Throwable throwable = null;
 		try {
 			return callable.call(obj, args);
 		} catch (Throwable t) {
 			throwable = t;
 		} finally {
-			// commit all changed objects after a scripting function has been
-			// called!
+			// commit all changed objects after a scripting function
+			// has been called!
 			if (started)
 				endExecution();
 		}
@@ -344,13 +351,13 @@ public class ScriptographerEngine {
 			System.out.println(file != null ? file.getName() + " canceled" :
 				"Execution canceled");
 		} finally {
-			// commit all the changes, even when script has crashed (to synch
-			// with
-			// direct changes such as creation of paths, etc
+			// commit all the changes, even when script has crashed,
+			// to synch with direct changes such as creation of paths,
+			// etc
 			if (started) {
 				endExecution();
-				// now reenable the console, this also writes out all the things
-				// that were printed in the meantime:
+				// now re-enable the console, this also writes out all
+				// the things that were printed in the meantime:
 				// ConsoleOutputStream.enableOutput(true);
 			}
 		}

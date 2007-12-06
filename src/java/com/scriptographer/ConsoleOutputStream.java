@@ -26,7 +26,7 @@
  *
  * File created on 07.12.2004.
  *
- * $Id$
+ * $Id:ConsoleOutputStream.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer;
@@ -48,9 +48,9 @@ public class ConsoleOutputStream extends OutputStream {
 	 * some constants
 	 */
 	private static final String lineSeparator = 
-		System.getProperty("line.separator");
+			System.getProperty("line.separator");
     private static final char newLine =
-    	lineSeparator.charAt(lineSeparator.length() - 1);
+    		lineSeparator.charAt(lineSeparator.length() - 1);
 
     private boolean enabled;
 
