@@ -84,6 +84,7 @@ public class Preferences extends AbstractMap {
 			}
 			if (value.equals("true")) return Boolean.TRUE;
 			else if (value.equals("false")) return Boolean.FALSE;
+			else if (value.equals("null")) return null;
 		}
 		// If nothing of that works, return string
 		return value;
@@ -102,7 +103,7 @@ public class Preferences extends AbstractMap {
 		else if (value instanceof Number)
 			prefs.putLong(key.toString(), ((Number) value).longValue());
 		else // TODO: serialization to byte array?!
-			prefs.put(key.toString(), value  != null ? value.toString() : null);
+			prefs.put(key.toString(), value  != null ? value.toString() : "null");
 		return prev;
 	}
 

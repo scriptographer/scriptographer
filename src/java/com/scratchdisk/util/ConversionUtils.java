@@ -37,8 +37,8 @@ import java.util.Map;
  * @author lehni
  *
  */
-public class ConversionHelper {
-	private ConversionHelper() {
+public class ConversionUtils {
+	private ConversionUtils() {
 	}
 
 	/*

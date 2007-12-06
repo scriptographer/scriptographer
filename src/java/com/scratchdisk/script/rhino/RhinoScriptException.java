@@ -40,6 +40,7 @@ import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.WrappedException;
 
 import com.scratchdisk.script.ScriptException;
+import com.scratchdisk.util.ClassUtils;
 import com.scratchdisk.util.StringUtils;
 
 /**
@@ -79,7 +80,11 @@ public class RhinoScriptException extends ScriptException {
 			}
 			return buf.toString();
 		} else {
-			return t.getClass().getSimpleName() + ": " + t.getMessage();
+			String message = t.getMessage();
+			String error = ClassUtils.getSimpleName(t.getClass());
+			if (message != null && message.length() != 0)
+				error += ": " + message;
+			return error;
 		}
 	}
 

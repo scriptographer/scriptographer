@@ -26,12 +26,12 @@
  * 
  * File created on 23.10.2005.
  * 
- * $Id$
+ * $Id:PromptItem.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
 
-import com.scratchdisk.util.ConversionHelper;
+import com.scratchdisk.util.ConversionUtils;
 
 /**
  * @author lehni
@@ -235,10 +235,10 @@ public class PromptItem {
 					((Slider) item).setIncrements(increment, 8 * increment);
 				}
 				((ValueItem) item).setRange(min, max);
-				((ValueItem) item).setValue((float) ConversionHelper.toDouble(value));
+				((ValueItem) item).setValue((float) ConversionUtils.toDouble(value));
 				break;
 			case TYPE_CHECKBOX:
-				((CheckBox) item).setChecked(ConversionHelper.toBoolean(value));
+				((CheckBox) item).setChecked(ConversionUtils.toBoolean(value));
 				break;
 			case TYPE_LIST: {
 					PopupList list = (PopupList) item;
@@ -251,7 +251,6 @@ public class PromptItem {
 				break;
 				
 		}
-		item.setFont(Dialog.FONT_PALETTE);
 		Size size = item.getBestSize();
 		if (width >= 0)
 			size.width = width;

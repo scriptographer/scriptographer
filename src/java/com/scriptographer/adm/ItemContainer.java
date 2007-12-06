@@ -26,7 +26,7 @@
  *
  * File created on 04.01.2005.
  *
- * $Id$
+ * $Id:ItemContainer.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
@@ -36,8 +36,8 @@ import java.awt.*;
 /**
  * ItemContainer acts as container of ADM Items that share a layout and can be
  * added to a parent container, e.g. another ItemContainer or a Dialog. This is
- * part of the AWT Layout wrapper code. ItemContainer itself wrapps a
- * AWTItemContainer that does the actuall layout work.
+ * part of the AWT Layout wrapper code. ItemContainer itself wraps a
+ * AWTItemContainer that does the actual layout work.
  * 
  * @author lehni
  */
@@ -101,16 +101,67 @@ public class ItemContainer {
 		return container.getSize();
 	}
 
-	public void setInsets(int left, int top, int right, int bottom) {
+	public Margins getMargins() {
+		return new Margins(container.getInsets());
+	}
+
+	public void setMargins(int left, int top, int right, int bottom) {
 		container.setInsets(left, top, right, bottom);
 	}
 
-	public void setInsets(int hor, int ver) {
-		container.setInsets(hor, ver, hor, ver);
+	public void setMargins(Margins margins) {
+		setMargins(margins.left, margins.top, margins.right, margins.bottom);
 	}
 
-	public Insets getInsets() {
-		return container.getInsets();
+	public void setMargins(int[] margins) {
+		setMargins(margins[0], margins[1], margins[2], margins[3]);
+	}
+
+	public void setMargins(int margin) {
+		setMargins(margin, margin, margin, margin);
+	}
+
+	public void setMargins(int hor, int ver) {
+		setMargins(hor, ver, hor, ver);
+	}
+	public int getLeftMargin() {
+		return getMargins().left;
+	}
+
+	public void setLeftMargin(int left) {
+		Margins margins = getMargins();
+		margins.left = left;
+		setMargins(margins);
+	}
+
+	public int getTopMargin() {
+		return getMargins().top;
+	}
+
+	public void setTopMargin(int top) {
+		Margins margins = getMargins();
+		margins.top = top;
+		setMargins(margins);
+	}
+
+	public int getRightMargin() {
+		return getMargins().right;
+	}
+
+	public void setRightMargin(int right) {
+		Margins margins = getMargins();
+		margins.right = right;
+		setMargins(margins);
+	}
+
+	public int getBottomMargin() {
+		return getMargins().bottom;
+	}
+
+	public void setBottomMargin(int bottom) {
+		Margins margins = getMargins();
+		margins.bottom = bottom;
+		setMargins(margins);
 	}
 
 	public void doLayout() {

@@ -24,7 +24,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $Id$
+ * $Id:ListEntry.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
@@ -33,7 +33,7 @@ import java.io.IOException;
 
 import com.scriptographer.ScriptographerEngine; 
 import com.scratchdisk.script.Callable;
-import com.scratchdisk.util.ConversionHelper;
+import com.scratchdisk.util.ConversionUtils;
 
 /**
  * @author lehni
@@ -87,7 +87,7 @@ public class ListEntry extends NotificationHandler {
 			Object res = ScriptographerEngine.invoke(onTrackEntry, list,
 					new Object[] { tracker, this });
 			if (res != null)
-				return ConversionHelper.toBoolean(res);
+				return ConversionUtils.toBoolean(res);
 		}
 		return true;
 	}

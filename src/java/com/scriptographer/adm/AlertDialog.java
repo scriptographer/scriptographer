@@ -24,59 +24,49 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on May 14, 2007.
+ * File created on Aug 27, 2007.
  *
  * $Id: $
  */
 
 package com.scriptographer.adm;
 
-import java.util.Map;
-
-import com.scratchdisk.util.ConversionUtils;
-
 /**
  * @author lehni
  *
  */
-public class Point {
-	public int x;
-	public int y;
+public class AlertDialog extends ModalDialog {
+	public AlertDialog(String title, String message) {
+		this.setTitle(title);
+		
+		double[][] sizes = {
+			{ TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED },
+			{ TableLayout.FILL, TableLayout.PREFERRED }
+		};
 
-	public Point() {
-		x = y = 0;
+		TableLayout layout = new TableLayout(sizes);
+		this.setLayout(layout);
+		this.setMargins(10);
+
+		ImageStatic logo = new ImageStatic(this);
+		Image image = getImage("logo.png");
+		logo.setImage(image);
+		logo.setRightMargin(10);
+		this.addToContent(logo, "0, 0, 0, 1, L, T");
+
+		Static text = new Static(this);
+		text.setText(message);
+		text.setBottomMargin(10);
+		this.addToContent(text, "1, 0, 2, 0, L, C");
+				
+		Button okButton = new Button(this);
+		okButton.setText("  OK  ");
+		this.addToContent(okButton, "1, 1, R, T");
+
+		this.setDefaultItem(okButton);
 	}
 
-	public Point(int x, int y) {
-		set(x, y);
-	}
-
-	public Point(Point pt) {
-		set(pt.x, pt.y);
-	}
-
-
-	public Point(Map map) {
-		this(ConversionUtils.getInt(map, "x"),
-				ConversionUtils.getInt(map, "y"));
-	}
-
-	public void set(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	public Object clone() {
-		return new Point(this);
-	}
-
-	public boolean equals(Object object) {
-		if (object instanceof Point) {
-			Point pt = (Point) object;
-			return pt.x == x && pt.y == y;
-		} else {
-			// TODO: support other point types?
-			return false;
-		}
+	public static void alert(String title, String message) {
+		new AlertDialog(title, message).doModal();
 	}
 }

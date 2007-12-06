@@ -37,10 +37,13 @@ import java.util.IdentityHashMap;
 
 import org.mozilla.javascript.*;
 
+import com.scratchdisk.util.ClassUtils;
+
 /**
  * @author lehni
  */
 public class ExtendedJavaClass extends NativeJavaClass {
+	private String className;
 	private HashMap properties;
 	private Scriptable instanceProto = null;
 	// A lookup for the associated ExtendedJavaClass wrappers
@@ -53,6 +56,8 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		// from Function.prototype are inherited.
 		setParentScope(scope);
 		setPrototype(ScriptableObject.getFunctionPrototype(scope));
+		// Determine short className:
+		className = ClassUtils.getSimpleName(cls);
 		properties = unsealed ? new HashMap() : null;
 		// put it in the class wrapper table
 		classes.put(cls, this);
@@ -195,11 +200,11 @@ public class ExtendedJavaClass extends NativeJavaClass {
 	}
 
 	public String getClassName() {
-		return ((Class) javaObject).getSimpleName();
+		return className;
 	}
 
 	public String toString() {
-		return "[" + this.getClassName() + "]";
+		return "[" + className + "]";
 	}
 	
 	protected static ExtendedJavaClass getClassWrapper(Scriptable scope, Class javaClass) {

@@ -24,59 +24,27 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on May 14, 2007.
+ * File created on Aug 26, 2007.
  *
  * $Id: $
  */
 
-package com.scriptographer.adm;
-
-import java.util.Map;
-
-import com.scratchdisk.util.ConversionUtils;
+package com.scratchdisk.util;
 
 /**
  * @author lehni
  *
  */
-public class Point {
-	public int x;
-	public int y;
-
-	public Point() {
-		x = y = 0;
+public class ClassUtils {
+	private ClassUtils() {
 	}
 
-	public Point(int x, int y) {
-		set(x, y);
-	}
-
-	public Point(Point pt) {
-		set(pt.x, pt.y);
-	}
-
-
-	public Point(Map map) {
-		this(ConversionUtils.getInt(map, "x"),
-				ConversionUtils.getInt(map, "y"));
-	}
-
-	public void set(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	public Object clone() {
-		return new Point(this);
-	}
-
-	public boolean equals(Object object) {
-		if (object instanceof Point) {
-			Point pt = (Point) object;
-			return pt.x == x && pt.y == y;
-		} else {
-			// TODO: support other point types?
-			return false;
-		}
+	public static String getSimpleName(Class cls) {
+		// Class#getSimpleName only works on 1.5
+		String name = cls.getName();
+		int pos = name.lastIndexOf('.');
+		if (pos > 0)
+			name = name.substring(pos + 1);
+		return name;
 	}
 }

@@ -26,7 +26,7 @@
  * 
  * File created on 20.10.2005.
  * 
- * $Id$
+ * $Id:ImageCheckBox.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
@@ -46,12 +46,20 @@ public class ImageCheckBox extends CheckBox {
 		return super.getImage();
 	}
 
+	public void setImage(Image image) {
+		super.setImage(image);
+	}
+
 	public void setImage(Object obj) throws IOException {
 		super.setImage(obj);
 	}
 
 	public Image getRolloverImage() {
 		return super.getRolloverImage();
+	}
+
+	public void setRolloverImage(Image image) {
+		super.setRolloverImage(image);
 	}
 
 	public void setRolloverImage(Object obj) throws IOException {
@@ -62,12 +70,20 @@ public class ImageCheckBox extends CheckBox {
 		return super.getSelectedImage();
 	}
 
+	public void setSelectedImage(Image image) {
+		super.setSelectedImage(image);
+	}
+
 	public void setSelectedImage(Object obj) throws IOException {
 		super.setSelectedImage(obj);
 	}
 
 	public Image getDisabledImage() {
 		return super.getDisabledImage();
+	}
+
+	public void setDisabledImage(Image image) {
+		super.setDisabledImage(image);
 	}
 
 	public void setDisabledImage(Object obj) throws IOException {

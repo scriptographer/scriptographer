@@ -31,7 +31,6 @@
 
 package com.scratchdisk.script.rhino;
 
-import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
 

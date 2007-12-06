@@ -26,7 +26,7 @@
  * 
  * File created on 28.03.2005.
  * 
- * $Id$
+ * $Id:PromptDialog.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
@@ -34,7 +34,7 @@ package com.scriptographer.adm;
 import java.awt.FlowLayout;
 import java.util.Map;
 
-import com.scratchdisk.util.ConversionHelper;
+import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.StringUtils;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.sg.Preferences;
@@ -46,7 +46,7 @@ public class PromptDialog extends ModalDialog {
 
 	private PromptItem[] items = null;
 	private Object[] values = null;
-	
+
 	public PromptDialog(String title, PromptItem[] items) {
 		this.setTitle(title);
 		this.items = items;
@@ -56,47 +56,51 @@ public class PromptDialog extends ModalDialog {
 			rows[i] = TableLayout.PREFERRED;
 
 		double[][] sizes = {
-			{ TableLayout.PREFERRED, TableLayout.PREFERRED },
+			{ TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED },
 			rows
 		};
 
-		TableLayout layout = new TableLayout(sizes, 4, 4);
+		TableLayout layout = new TableLayout(sizes);
 		this.setLayout(layout);
-		this.setMargins(4, 4, 4, 4);
-		
+		this.setMargins(10);
+//		this.setFont(Dialog.FONT_PALETTE);
+
+		ImageStatic logo = new ImageStatic(this);
+		logo.setImage(getImage("logo.png"));
+		logo.setRightMargin(10);
+		this.addToContent(logo, "0, 0, 0, " + items.length + ", L, T");
+
 		for (int i = 0; i < items.length; i++) {
 			PromptItem promptItem = items[i];
 			if (promptItem != null) {
 				if (promptItem.description != null) {
 					Static descItem = new Static(this);
-					descItem.setFont(Dialog.FONT_PALETTE);
 					descItem.setText(promptItem.description + ":");
-					descItem.setMargins(0, 2, 0, 0);
-					this.addToContent(descItem, "0, " + i);
+					descItem.setMargins(0, 0, 10, 0);
+					this.addToContent(descItem, "1, " + i + ", L, C");
 				}
 				
 				com.scriptographer.adm.Item valueItem =
 						promptItem.createItem(this);
-				this.addToContent(valueItem, "1, " + i);
+				this.addToContent(valueItem, "2, " + i + ", L, C");
 			}
 		}			
 		
 		ItemContainer buttons = new ItemContainer(
 				new FlowLayout(FlowLayout.RIGHT, 0, 0));
-		
+		buttons.setTopMargin(10);
+
 		Button cancelButton = new Button(this);
-		cancelButton.setFont(Dialog.FONT_PALETTE);
 		cancelButton.setText("Cancel");
-		cancelButton.setMargins(0, 0, 4, 0);
+		cancelButton.setRightMargin(10);
 		buttons.add(cancelButton);
-		
+
 		Button okButton = new Button(this);
-		okButton.setFont(Dialog.FONT_PALETTE);
-		okButton.setText("OK");
+		okButton.setText("  OK  ");
 		buttons.add(okButton);
 
-		this.addToContent(buttons, "0, " + items.length + ", 1, " + items.length);
-		
+		this.addToContent(buttons, "0, " + items.length + ", 2, " + items.length + ", R, T");
+
 		this.setDefaultItem(okButton);
 		this.setCancelItem(cancelButton);
 	}
@@ -120,7 +124,7 @@ public class PromptDialog extends ModalDialog {
 	
 	private static double getDoubleValue(Map map, String name) {
 		Object obj = map.get(name);
-		return obj != null ? ConversionHelper.toDouble(obj) : Double.NaN;
+		return obj != null ? ConversionUtils.toDouble(obj) : Double.NaN;
 	}
 	
 	private static String getStringValue(Map map, String name) {
@@ -148,7 +152,7 @@ public class PromptDialog extends ModalDialog {
 					Object incrementObj = map.get("increment");
 					if (incrementObj != null) {
 						type = PromptItem.TYPE_RANGE;
-						increment = ConversionHelper.toDouble(incrementObj);
+						increment = ConversionUtils.toDouble(incrementObj);
 						if (Double.isNaN(increment))
 							increment = 0;
 					} else {

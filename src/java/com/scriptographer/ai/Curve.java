@@ -26,7 +26,7 @@
  *
  * File created on 14.12.2004.
  *
- * $Id$
+ * $Id:Curve.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.ai;
@@ -57,10 +57,10 @@ public class Curve {
 	}
 	
 	public Curve(Segment segment1, Segment segment2) {
-		segment1 = new Segment(segment1);
-		segment2 = new Segment(segment2);
+		this.segment1 = new Segment(segment1);
+		this.segment2 = new Segment(segment2);
 	}
-	
+
 	public Curve(Curve curve) {
 		this(curve.segment1, curve.segment2);
 	}
@@ -69,7 +69,15 @@ public class Curve {
 		segment1 = new Segment(pt1, null, h1, false);
 		segment2 = new Segment(pt2, h2, null, false);
 	}
-	
+
+	public Curve(Point pt1, Point pt2) {
+		this(pt1, null, null, pt2);
+	}
+
+	public Curve(Point pt) {
+		this(pt, pt);
+	}
+
 	public Curve(float p1x, float p1y, float h1x, float h1y,
 			float h2x, float h2y, float p2x, float p2y) {
 		segment1 = new Segment(p1x, p1y, 0, 0, h1x, h1y, false);
@@ -87,6 +95,11 @@ public class Curve {
 		buf.append(", point2: ").append(segment2.point.toString());
 		buf.append(" }");
 		return buf.toString();
+	}
+	
+	public Object clone() {
+		updateSegments();
+		return new Curve(segment1, segment2);
 	}
 	
 	public Path getPath() {
@@ -182,9 +195,21 @@ public class Curve {
 	public Segment getSegment1() {
 		return segment1;
 	}
-	
+
 	public Segment getSegment2() {
 		return segment2;
+	}
+
+	public void reverse() {
+		Segment tmp = (Segment) segment1.clone();
+		segment1.setHandleIn(segment2.getHandleOut());
+		segment1.setHandleOut(segment2.getHandleIn());
+		segment1.setPoint(segment2.getPoint());
+		segment1.setCorner(segment2.getCorner());
+		segment2.setHandleIn(tmp.getHandleOut());
+		segment2.setHandleOut(tmp.getHandleIn());
+		segment2.setPoint(tmp.getPoint());
+		segment2.setCorner(tmp.getCorner());
 	}
 
 	/*

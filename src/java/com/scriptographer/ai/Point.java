@@ -26,7 +26,7 @@
  *
  * File created on 20.12.2004.
  *
- * $Id$
+ * $Id:Point.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.ai;
@@ -35,7 +35,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Map;
 
-import com.scratchdisk.util.ConversionHelper;
+import com.scratchdisk.util.ConversionUtils;
 
 /**
  * The Point object represents a point in the two dimensional space of the
@@ -76,8 +76,8 @@ public class Point {
 	}
 
 	public Point(Map map) {
-		this(ConversionHelper.getDouble(map, "x"),
-				ConversionHelper.getDouble(map, "y"));
+		this(ConversionUtils.getDouble(map, "x"),
+				ConversionUtils.getDouble(map, "y"));
 	}
 
 	public void set(float x, float y) {

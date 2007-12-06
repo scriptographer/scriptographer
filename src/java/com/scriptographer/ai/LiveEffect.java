@@ -26,14 +26,14 @@
  * 
  * File created on 18.02.2005.
  * 
- * $Id$
+ * $Id:LiveEffect.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.ai;
 
 import com.scriptographer.ScriptographerEngine; 
 import com.scratchdisk.script.Callable;
-import com.scratchdisk.util.ConversionHelper;
+import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.IntMap;
 import com.scriptographer.adm.MenuItem;
 
@@ -383,7 +383,7 @@ public class LiveEffect extends NativeObject {
 
 	protected int onGetInputType(Map parameters, Art art) throws Exception {
 		if (onGetInputType != null) {
-			return ConversionHelper.toInt(ScriptographerEngine.invoke(
+			return ConversionUtils.toInt(ScriptographerEngine.invoke(
 					onGetInputType, new Object[] { parameters, art }));
 			
 		}

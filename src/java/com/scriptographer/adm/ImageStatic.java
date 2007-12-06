@@ -26,7 +26,7 @@
  * 
  * File created on 20.10.2005.
  * 
- * $Id$
+ * $Id:ImageStatic.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
@@ -55,9 +55,13 @@ public class ImageStatic extends Item {
 	public Image getImage() {
 		return image;
 	}
+
+	public void setImage(Image image) {
+		nativeSetImage(image != null ? image.createIconHandle() : 0);
+		this.image = image;
+	}
 	
 	public void setImage(Object obj) throws IOException {
-		image = Image.getImage(obj);
-		nativeSetImage(image != null ? image.createIconHandle() : 0);
+		setImage(Image.getImage(obj));
 	}
 }

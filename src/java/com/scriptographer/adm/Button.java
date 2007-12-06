@@ -26,7 +26,7 @@
  *
  * File created on 03.01.2005.
  *
- * $Id$
+ * $Id:Button.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
@@ -114,40 +114,53 @@ public class Button extends TextItem {
 	protected Image getImage() {
 		return image;
 	}
-	
-	protected void setImage(Object obj) throws IOException {
-		image = Image.getImage(obj);
+
+	protected void setImage(Image image) {
 		nativeSetImage(image != null ? image.createIconHandle() : 0);
+		this.image = image;
+	}
+
+	protected void setImage(Object obj) throws IOException {
+		setImage(Image.getImage(obj));
 	}
 	
 	protected Image getRolloverImage() {
 		return rolloverImage;
 	}
-	
+
+	protected void setRolloverImage(Image image) {
+		nativeSetRolloverImage(image != null ? image.createIconHandle() : 0);
+		this.rolloverImage = image;
+	}
+
 	protected void setRolloverImage(Object obj) throws IOException {
-		rolloverImage = Image.getImage(obj);
-		nativeSetRolloverImage(rolloverImage != null ?
-				rolloverImage.createIconHandle() : 0);
+		setRolloverImage(Image.getImage(obj));
 	}
 	
 	protected Image getSelectedImage() {
 		return selectedImage;
 	}
+
+	protected void setSelectedImage(Image image) {
+		nativeSetSelectedImage(image != null ? image.createIconHandle() : 0);
+		this.selectedImage = image;
+	}
 	
 	protected void setSelectedImage(Object obj) throws IOException {
-		selectedImage = Image.getImage(obj);
-		nativeSetSelectedImage(selectedImage != null ?
-				selectedImage.createIconHandle() : 0);
+		setSelectedImage(Image.getImage(obj));
 	}
 
 	protected Image getDisabledImage() {
 		return disabledImage;
 	}
 
+	protected void setDisabledImage(Image image) {
+		nativeSetDisabledImage(image != null ? image.createIconHandle() : 0);
+		this.disabledImage = image;
+	}
+
 	protected void setDisabledImage(Object obj) throws IOException {
-		disabledImage = Image.getImage(obj);
-		nativeSetDisabledImage(disabledImage != null ?
-				disabledImage.createIconHandle() : 0);
+		setDisabledImage(Image.getImage(obj));
 	}
 	
 	// int top, int left, int bottom, int right

@@ -26,7 +26,7 @@
  *
  * File created on 29.12.2004.
  *
- * $Id$
+ * $Id:Image.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
@@ -267,6 +267,10 @@ public class Image extends NativeObject {
 	
 	public int getHeight() {
 		return height;
+	}
+
+	public Size getSize() {
+		return new Size(width, height);
 	}
 	
 	public int getByteWidth() {

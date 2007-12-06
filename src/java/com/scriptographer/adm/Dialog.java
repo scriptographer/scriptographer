@@ -41,6 +41,7 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -228,6 +229,18 @@ public abstract class Dialog extends CallbackHandler {
 		// displayed in initialize
 		setVisible(false);
 	}
+
+	/*
+	 * Load image from resource with given name, used by PromtDialog
+	 */
+	protected static Image getImage(String filename) {
+		try {
+			return new Image(PromptDialog.class.getClassLoader().getResource("com/scriptographer/adm/resources/" + filename));
+		} catch (IOException e) {
+			System.err.println(e);
+			return new Image(1, 1, Image.TYPE_RGB);
+		}
+	}	
 
 	/**
 	 * This is called when the dialog is displayed the first time.
@@ -1222,9 +1235,23 @@ public abstract class Dialog extends CallbackHandler {
 
 	public static native Rectangle getPaletteLayoutBounds();
 
-	public static native void alert(String message);
+//	public static native void alert(String message);
+	public static void alert(String message) {
+		AlertDialog.alert("", message);
+	}
 
-	public static native boolean confirm(String message);
+	public static void alert(String title, String message) {
+		AlertDialog.alert(title, message);
+	}
+
+//	public static native boolean confirm(String message);
+	public static boolean confirm(String message) {
+		return ConfirmDialog.confirm("", message);
+	}
+
+	public static boolean confirm(String title, String message) {
+		return ConfirmDialog.confirm(title, message);
+	}
 
 	public static Object[] prompt(String title, PromptItem[] items) {
 		return PromptDialog.prompt(title, items);

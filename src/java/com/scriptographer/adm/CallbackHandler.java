@@ -26,14 +26,14 @@
  *
  * File created on 02.01.2005.
  *
- * $Id$
+ * $Id:CallbackHandler.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
 
 import com.scriptographer.ScriptographerEngine; 
 import com.scratchdisk.script.Callable;
-import com.scratchdisk.util.ConversionHelper;
+import com.scratchdisk.util.ConversionUtils;
 
 /**
  * Subclasses the NotificationHandler and adds functionality for
@@ -100,7 +100,7 @@ abstract class CallbackHandler extends NotificationHandler {
 			Object result = ScriptographerEngine.invoke(onTrack, this,
 					new Object[] { tracker });
 			if (result != null)
-				return ConversionHelper.toBoolean(result);
+				return ConversionUtils.toBoolean(result);
 		}
 		return true;
 	}

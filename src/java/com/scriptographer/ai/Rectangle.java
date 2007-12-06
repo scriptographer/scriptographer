@@ -26,7 +26,7 @@
  *
  * File created on 19.12.2004.
  *
- * $Id$
+ * $Id:Rectangle.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.ai;
@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 import java.awt.geom.Rectangle2D;
 import java.util.Map;
 
-import com.scratchdisk.util.ConversionHelper;
+import com.scratchdisk.util.ConversionUtils;
 
 /**
  * A Rectangle specifies an area that is enclosed by it's top-left point (x, y),
@@ -106,10 +106,10 @@ public class Rectangle {
 	 * @param map <code>{x, y, width, height}</code>
 	 */
 	public Rectangle(Map map) {
-		this(ConversionHelper.getDouble(map, "x"),
-				ConversionHelper.getDouble(map, "y"),
-				ConversionHelper.getDouble(map, "width"),
-				ConversionHelper.getDouble(map, "height"));
+		this(ConversionUtils.getDouble(map, "x"),
+				ConversionUtils.getDouble(map, "y"),
+				ConversionUtils.getDouble(map, "width"),
+				ConversionUtils.getDouble(map, "height"));
 	}
 
 	/**

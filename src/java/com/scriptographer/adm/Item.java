@@ -216,7 +216,7 @@ public abstract class Item extends CallbackHandler {
 	protected void initBounds() {
 		nativeBounds = nativeGetBounds();
 		// nativeSize and nativeBounds are set by the native environment
-		// size and bounds need to be updated depending on insets and
+		// size and bounds need to be updated depending on margins and
 		// internalInsets
 		bounds = new Rectangle(
 			nativeBounds.x - margins.left,
@@ -401,7 +401,7 @@ public abstract class Item extends CallbackHandler {
 		// getBestSize()
 		prefSize = new Size(width, height);
 		// updateBounds does all the heavy lifting, except for setting
-		// prefSize, which shouldnt be set when changing location or insets.
+		// prefSize, which shouldnt be set when changing location or margins.
 		updateBounds(x, y, width, height);
 	}
 
@@ -476,41 +476,49 @@ public abstract class Item extends CallbackHandler {
 		return size;
 	}
 
-	private native Size nativeGetBestSize();
-
 	public Size getBestSize() {
-		// TODO: verify for which items getBestSize really works!
+		// TODO: verify for which items nativeGetBestSize really works!
 		Size size = null;
 		switch (type) {
 			case TYPE_PICTURE_STATIC:
 			case TYPE_PICTURE_CHECKBOX:
 			case TYPE_PICTURE_PUSHBUTTON:
 			case TYPE_PICTURE_RADIOBUTTON:
-				size = nativeGetBestSize();
+				Image image = null;
+				if (this instanceof ImageStatic)
+					image = ((ImageStatic) this).getImage();
+				else if (this instanceof Button)
+					image = ((Button) this).getImage();
+				if (image != null)
+					size = image.getSize();
+				break;
 			default:
 				String text = null;
 				if (this instanceof TextValueItem)
 					text = ((TextValueItem) this).getText();
 				else if (this instanceof TextItem)
 					text = ((TextItem) this).getText();
-			
 				if (text != null && text.length() > 0) {
 					size = getTextSize(text, -1);
 					if (size != null) {
-						size.height += 6;
 						if (this instanceof Button) {
+							size.height += 6;
 							size.width += 32;
-						} else if (this instanceof ToggleItem) {
-							size.width += 32;
-						} else {
+						} else if (this instanceof TextEdit) {
+							size.height += 6;
+							size.width += 6;
+						}
+						/* else {
 							size.width +=
 								ScriptographerEngine.isMacintosh() ? 12 : 6;
 						}
+						*/
 					}
 				}
 		}
-		if (size == null) size = new Size(120, 20);
-		// add insets
+		if (size == null)
+			size = this instanceof Button ? new Size(120, 20) : new Size(100, 100);
+		// add margins
 		size.width += margins.left + margins.right;
 		size.height += margins.top + margins.bottom;
 		return size;
@@ -580,7 +588,11 @@ public abstract class Item extends CallbackHandler {
 	public Size getMaximumSize() {
 		return maxSize != null ? maxSize : getSize();
 	}
-	
+
+	public Margins getMargins() {
+		return (Margins) margins.clone();
+	}
+
 	public void setMargins(int left, int top, int right, int bottom) {
 		margins = new Margins(left, top, right, bottom);
 		if (nativeBounds != null)
@@ -598,10 +610,43 @@ public abstract class Item extends CallbackHandler {
 	public void setMargins(int margin) {
 		setMargins(margin, margin, margin, margin);
 	}
-	
-	public Margins getMargins() {
-		return (Margins) margins.clone();
+
+	public void setMargins(int hor, int ver) {
+		setMargins(hor, ver, hor, ver);
 	}
+
+	public int getLeftMargin() {
+		return margins.left;
+	}
+
+	public void setLeftMargin(int left) {
+		margins.left = left;
+	}
+
+	public int getTopMargin() {
+		return margins.top;
+	}
+
+	public void setTopMargin(int top) {
+		margins.top = top;
+	}
+
+	public int getRightMargin() {
+		return margins.right;
+	}
+
+	public void setRightMargin(int right) {
+		margins.right = right;
+	}
+
+	public int getBottomMargin() {
+		return margins.bottom;
+	}
+
+	public void setBottomMargin(int bottom) {
+		margins.bottom = bottom;
+	}
+
 	/* 
 	 * coordinate system transformations
 	 * 

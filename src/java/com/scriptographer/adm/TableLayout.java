@@ -26,12 +26,12 @@
  *
  * File created on 08.03.2005.
  *
- * $Id$
+ * $Id:TableLayout.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scriptographer.adm;
 
-import com.scratchdisk.util.ConversionHelper;
+import com.scratchdisk.util.ConversionUtils;
 
 /**
  * @author lehni
@@ -48,8 +48,12 @@ public class TableLayout extends info.clearthought.layout.TableLayout {
 		this(size, 0, 0);
 	}
 
-	public TableLayout(Object[][] size, int hGap, int vGap) {
+	public TableLayout(Object[][] size) {
 		super(getSize(size[0]), getSize(size[1]));
+	}
+
+	public TableLayout(Object[][] size, int hGap, int vGap) {
+		this(size);
 		this.hGap = hGap;
 		this.vGap = vGap;
 	}
@@ -65,7 +69,7 @@ public class TableLayout extends info.clearthought.layout.TableLayout {
 				else if ("minimum".equalsIgnoreCase((String) obj)) value = MINIMUM; 
 				else value = Double.NaN;
 			} else {
-				value = ConversionHelper.toDouble(obj);
+				value = ConversionUtils.toDouble(obj);
 			}
 			size[i] = value;
 		}
