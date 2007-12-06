@@ -144,6 +144,11 @@
 				<include name="**/*.icc" />
 			</fileset>
 		</copy>
+		<copy todir="${build.classes}/com/scriptographer/adm/resources">
+			<fileset dir="${build.src}/com/scriptographer/adm/resources">
+				<include name="**/*.png" />
+			</fileset>
+		</copy>
 		<jar jarfile="${build.libraries}/${jar.name}.jar"
 			basedir="${build.classes}"
 			excludes="**/loader/**,**/test/**,**/jython/**"/>
@@ -201,6 +206,7 @@
 				<include name="**/loader.jar"/>
 				<include name="**/${jar.name}.jar"/>
 				<include name="**/js.jar"/>
+				<include name="**/jython.jar"/>
 				<!-- Copy the platform independent RXTX stuff here -->
 				<include name="**/rxtx.jar"/>
 			</fileset>

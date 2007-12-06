@@ -26,7 +26,7 @@
  * 
  * File created on Jun 13, 2007.
  *
- * $Id: $
+ * $Id$
  */
 
 package com.scratchdisk.list;
