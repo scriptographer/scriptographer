@@ -26,7 +26,7 @@
  * 
  * File created on Feb 17, 2007.
  *
- * $Id: $
+ * $Id$
  */
 
 package com.scriptographer.ai;

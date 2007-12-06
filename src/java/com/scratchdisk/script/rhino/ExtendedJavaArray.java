@@ -26,7 +26,7 @@
  * 
  * File created on Mar 30, 2007.
  *
- * $Id: $
+ * $Id$
  */
 
 package com.scratchdisk.script.rhino;

@@ -26,7 +26,7 @@
  * 
  * File created on Apr 22, 2007.
  *
- * $Id: $
+ * $Id$
  */
 
 package com.scriptographer.sg;

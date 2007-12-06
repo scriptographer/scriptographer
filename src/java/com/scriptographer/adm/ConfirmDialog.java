@@ -26,7 +26,7 @@
  * 
  * File created on Aug 27, 2007.
  *
- * $Id: $
+ * $Id$
  */
 
 package com.scriptographer.adm;
