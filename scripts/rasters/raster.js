@@ -19,6 +19,10 @@ Art.prototype.getCompoundArea = function(area) {
 }
 
 function initRaster() {
+	if (!document) {
+		Dialog.alert("Please open a document first.");
+		return false;
+	}
 	var sel = document.selectedItems;
 	for (var i = 0; i < sel.length; i++) {
 		var obj = sel[i];
@@ -33,10 +37,11 @@ function initRaster() {
 		}
 		dots.push(obj);
 	}
-	if (!raster || !dots.length)
-		Dialog.alert("Please select both a raster item and a graphic item.");
-	else
-		return true;
+	if (!raster || !dots.length) {
+		Dialog.alert("Please select both a raster item\nand a graphic item.");
+		return false;
+	}
+	return true;
 }
 
 function executeRaster(createDot, multiple) {
