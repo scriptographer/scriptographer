@@ -42,4 +42,9 @@ public class JythonException extends ScriptException {
 		// TODO: format a message
 		super(cause);
 	}
+
+	public String getFullMessage() {
+		// TODO: stack traces?
+		return getMessage();
+	}
 }

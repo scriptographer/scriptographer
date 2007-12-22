@@ -34,7 +34,6 @@ package com.scratchdisk.script.rhino;
 import java.io.File;
 
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Wrapper;
 
 import com.scratchdisk.script.Script;
@@ -70,8 +69,8 @@ public class RhinoScript extends Script {
 			if (ret instanceof Wrapper)
 				ret = ((Wrapper) ret).unwrap();
 			return ret;
-		} catch (RhinoException re) {
-			throw new RhinoScriptException(engine, re);
+		} catch (Throwable t) {
+			throw new RhinoScriptException(engine, t);
 		}
 	}
 }

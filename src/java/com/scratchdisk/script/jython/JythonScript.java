@@ -35,7 +35,6 @@ import java.io.File;
 
 import org.python.core.Py;
 import org.python.core.PyCode;
-import org.python.core.PyException;
 
 import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.Script;
@@ -65,8 +64,8 @@ public class JythonScript extends Script {
 			// TODO: typecast to JythonScope can be wrong, e.g. when calling
 			// from another language
 			return Py.tojava(Py.runCode(code, ((JythonScope) scope).getScope(), engine.globals), Object.class);
-		} catch (PyException re) {
-			throw new JythonException(re);
+		} catch (Throwable t) {
+			throw new JythonException(t);
 		}
 	}
 }

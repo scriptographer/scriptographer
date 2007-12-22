@@ -51,6 +51,7 @@ import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.script.Scope;
+import com.scratchdisk.util.StringUtils;
 
 /**
  * @author lehni
@@ -175,22 +176,40 @@ public class ScriptographerEngine {
 	}
 	
 	public static void reportError(Throwable t) {
-		String error = t.getMessage();
-		if (error != null) {
-			// Make sure the error contains the proper line breaks:
-			error = error.replaceAll("\\n\\r|\\n|\\r",
-					System.getProperty("line.separator"));
-			char last = error.charAt(error.length() - 1);
-			if (last != '\n' && last != '\r')
-				System.err.println();
-			logger.print(error);
-			logger.print("Stacktrace: ");
-			System.err.print(error);
-		} else {
-			System.err.println(t);
+		try {
+			String error = t instanceof ScriptException ? 
+					((ScriptException) t).getFullMessage() : t.getMessage();
+			boolean report = true;
+			if (error != null) {
+				// Filter out weird java.lang.ClassCastExceptions on Mac OSX:
+				report = error.indexOf("sun.java2d.HeadlessGraphicsEnvironment") == -1;
+				if (report) {
+					String separator = System.getProperty("file.separator");
+					// Shorten file names by removing base form it
+					error = StringUtils.replace(error, scriptDir.getAbsolutePath() + separator, "");
+					// Make sure the error contains the proper line breaks:
+					String lineBreak = System.getProperty("line.separator");
+					error = error.replaceAll("\\n\\r|\\n|\\r", lineBreak);
+					// Add a line break at the end if the error does
+					// not contain one already.
+					if (!error.matches(lineBreak + '$'))
+						error += lineBreak;
+					logger.print(error);
+					logger.print("Stacktrace: ");
+					System.err.print(error);
+				}
+			} else {
+				System.err.println(t);
+			}
+			if (report) {
+				t.printStackTrace(logger);
+				logger.println();
+			}
+		} catch (Throwable e) {
+			// Report an error in reportError code...
+			// This should not happen!
+			e.printStackTrace();
 		}
-		t.printStackTrace(logger);
-		logger.println();
 	}
 
 	static int reloadCount = 0;
@@ -345,11 +364,11 @@ public class ScriptographerEngine {
 					stopScripts.add(scriptObj);
 				}
 			}
-		} catch (ScriptException e) {
-			reportError(e);
 		} catch (ScriptCanceledException e) {
 			System.out.println(file != null ? file.getName() + " canceled" :
 				"Execution canceled");
+		} catch (Throwable t) {
+			reportError(t);
 		} finally {
 			// commit all the changes, even when script has crashed,
 			// to synch with direct changes such as creation of paths,

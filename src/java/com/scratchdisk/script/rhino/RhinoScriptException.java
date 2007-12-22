@@ -34,8 +34,9 @@ package com.scratchdisk.script.rhino;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.WrappedException;
 
@@ -48,6 +49,7 @@ import com.scratchdisk.util.StringUtils;
  * that's already used by Rhino (org.mozilla.javascript.RhinoException).
  */
 public class RhinoScriptException extends ScriptException {
+	private RhinoEngine engine;
 
 	private static Throwable getCause(Throwable cause) {
 		if (cause instanceof WrappedException) 
@@ -56,32 +58,63 @@ public class RhinoScriptException extends ScriptException {
 			return cause;
 	}
 
-	private static String formatMessage(RhinoEngine engine, Throwable t) {
-		if (t instanceof EvaluatorException) {
-			EvaluatorException ee = (EvaluatorException) t;
-			return ee.getMessage();
-		} else if (t instanceof RhinoException) {
-			RhinoException re = (RhinoException) t;
+	private static String getMessage(Throwable cause) {
+		// Do not use RhinoException#getMessage for short messages
+		// since it adds line number information. Use #details instead.
+		if (cause instanceof RhinoException) {
+			return ((RhinoException) cause).details();
+		} else {
+			return cause.getMessage();
+		}
+	}
+
+	public String getFullMessage() {
+		Throwable cause = getCause();
+		String separator = System.getProperty("file.separator");
+		File baseDir = engine.getBaseDirectory();
+		String base = baseDir != null ?
+				baseDir.getAbsolutePath() + separator : null;
+		if (cause instanceof RhinoException) {
+			RhinoException re = (RhinoException) cause;
 			StringWriter buf = new StringWriter();
 			PrintWriter writer = new PrintWriter(buf);
 			writer.println(re.details());
 			String[] stackTrace = re.getScriptStackTrace().split("[\\n\\r]");
-			File baseDir = engine.getBaseDirectory();
+			String sourceName = re.sourceName();
+			int lineNumber = re.lineNumber();
+			// Report sourceName / lineNumber if it is not in the stack trace already.
+			// Why is this needed? Rhino bug?
+			if (stackTrace.length == 0 || stackTrace[0].indexOf(sourceName + ":" + lineNumber) == -1) {
+				if (base != null)
+					sourceName = sourceName.substring(base.length());
+				writer.println("    at " + sourceName + ":" + lineNumber);
+			}
+			// Parse the lines for filename:linenumber
+			Pattern pattern = Pattern.compile("\\s+at\\s+([^:]+):(\\d+)");
 			for (int i = 0; i < stackTrace.length; i++) {
 				String line = stackTrace[i];
-				// Filter out hidden scripts and evaluate lines
-				if (line.length() > 0 && line.indexOf("/__") == -1 && line.indexOf("evaluate:") == -1) {
-					// Strip away base directory from all paths, if defined:
-					if (baseDir != null)
-						line = StringUtils.replace(line, baseDir.getAbsolutePath(), "");
-					// Replace tabs with 4 whitespaces
-					writer.println(StringUtils.replace(line, "\t", "    "));
+				Matcher matcher = pattern.matcher(line);
+				if (matcher.find()) {
+					String file = matcher.group(1);
+					// Filter out hidden scripts. Only report scripts
+					// that are located in base:
+					if ((base == null || file.startsWith(base)) &&
+							file.indexOf(separator + "__") == -1) {
+						String number = matcher.group(2);
+						writer.println("    at " + file + ":" + number);
+					}
 				}
 			}
 			return buf.toString();
 		} else {
-			String message = t.getMessage();
-			String error = ClassUtils.getSimpleName(t.getClass());
+			/*
+			if (cause instanceof EvaluatorException) {
+				return cause.getMessage();
+			} else {
+			}
+			*/
+			String message = cause.getMessage();
+			String error = ClassUtils.getSimpleName(cause.getClass());
 			if (message != null && message.length() != 0)
 				error += ": " + message;
 			return error;
@@ -89,6 +122,7 @@ public class RhinoScriptException extends ScriptException {
 	}
 
 	public RhinoScriptException(RhinoEngine engine, Throwable cause) {
-		super(formatMessage(engine, getCause(cause)), getCause(cause));
+		super(getMessage(getCause(cause)), getCause(cause));
+		this.engine = engine;
 	}
 }
