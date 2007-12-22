@@ -244,7 +244,7 @@ public class PromptItem {
 					PopupList list = (PopupList) item;
 					for (int i = 0; i < values.length; i++) {
 						ListEntry entry = (ListEntry) list.add(values[i]);
-						if (value != null && value.equals(values[i]))
+						if (ConversionUtils.equals(value, values[i]))
 							entry.setSelected(true);
 					}
 				}

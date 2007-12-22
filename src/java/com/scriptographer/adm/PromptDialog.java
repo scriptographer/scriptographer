@@ -68,7 +68,7 @@ public class PromptDialog extends ModalDialog {
 		ImageStatic logo = new ImageStatic(this);
 		logo.setImage(getImage("logo.png"));
 		logo.setRightMargin(10);
-		this.addToContent(logo, "0, 0, 0, " + items.length + ", L, T");
+		this.addToContent(logo, "0, 0, 0, " + items.length + ", left, top");
 
 		for (int i = 0; i < items.length; i++) {
 			PromptItem promptItem = items[i];
@@ -77,12 +77,12 @@ public class PromptDialog extends ModalDialog {
 					Static descItem = new Static(this);
 					descItem.setText(promptItem.description + ":");
 					descItem.setMargins(0, 0, 10, 0);
-					this.addToContent(descItem, "1, " + i + ", L, C");
+					this.addToContent(descItem, "1, " + i + ", left, center");
 				}
 				
 				com.scriptographer.adm.Item valueItem =
 						promptItem.createItem(this);
-				this.addToContent(valueItem, "2, " + i + ", L, C");
+				this.addToContent(valueItem, "2, " + i + ", left, center");
 			}
 		}			
 		
@@ -99,7 +99,7 @@ public class PromptDialog extends ModalDialog {
 		okButton.setText("  OK  ");
 		buttons.add(okButton);
 
-		this.addToContent(buttons, "0, " + items.length + ", 2, " + items.length + ", R, T");
+		this.addToContent(buttons, "0, " + items.length + ", 2, " + items.length + ", right, top");
 
 		this.setDefaultItem(okButton);
 		this.setCancelItem(cancelButton);
@@ -169,7 +169,6 @@ public class PromptDialog extends ModalDialog {
 							type = PromptItem.TYPE_STRING;
 					}
 				}
-				
 				if (type != -1) {
 					PromptItem item = new PromptItem(type, getStringValue(map, "description"), valueObj);
 					item.setName(getStringValue(map, "name"));
