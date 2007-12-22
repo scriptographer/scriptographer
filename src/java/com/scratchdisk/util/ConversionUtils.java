@@ -81,7 +81,49 @@ public class ConversionUtils {
 	public static String toString(Object val) {
 		return val != null ? val.toString() : null;
 	}
-	
+
+    public static boolean equals(Object x, Object y) {
+        if (x == null) {
+            return y == null;
+        } else if (x instanceof Number) {
+            return equals(((Number)x).doubleValue(), y);
+        } else if (x instanceof String) {
+            return equals((String)x, y);
+        } else if (x instanceof Boolean) {
+            boolean b = ((Boolean)x).booleanValue();
+            if (y instanceof Boolean)
+                return b == ((Boolean)y).booleanValue();
+            return equals(b ? 1.0 : 0.0, y);
+        }
+        return false;
+    }
+
+    static boolean equals(double x, Object y) {
+        if (y == null) {
+            return false;
+        } else if (y instanceof Number) {
+            return x == ((Number)y).doubleValue();
+        } else if (y instanceof String) {
+            return x == toDouble(y);
+        } else if (y instanceof Boolean) {
+            return x == (((Boolean)y).booleanValue() ? 1.0 : +0.0);
+        }
+        return false;
+    }
+
+    private static boolean equals(String x, Object y) {
+        if (y == null) {
+            return false;
+        } else if (y instanceof String) {
+            return x.equals(y);
+        } else if (y instanceof Number) {
+            return toDouble(x) == ((Number)y).doubleValue();
+        } else if (y instanceof Boolean) {
+            return toDouble(x) == (((Boolean)y).booleanValue() ? 1.0 : 0.0);
+        }
+        return false;
+    }
+ 
 	/*
 	 * Helpers to retrieve values from maps. Used by native
 	 * constructors that take a map argument.
