@@ -110,17 +110,6 @@ public class ModalDialog extends Dialog {
 
 	private native void fixModal();
 
-	protected void onInitialize() throws Exception {
-		super.onInitialize();
-		// Visually center dialog on Screen,
-		// bit higher up than mathematically centered
-		Size screen = Dialog.getScreenSize(), size = this.getSize();
-		this.setPosition(
-			(screen.width - size.width) / 2,
-			(8 * screen.height / 10 - size.height) / 2
-		);
-	}
-	
 	protected void onHide() throws Exception {
 		this.endModal();
 		super.onHide();
