@@ -750,9 +750,11 @@
 		089C1669FE841209C02AAC07 /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 10ABD5FF098835E000A7EB07 /* Build configuration list for PBXProject "Scriptographer" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = 089C166AFE841209C02AAC07 /* TutorialCallMe */;
 			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				91193B230A2DF3C600B0E3A7 /* Scriptographer CS */,
 				91193ACC0A2DF3B100B0E3A7 /* Scriptographer CS2 */,
