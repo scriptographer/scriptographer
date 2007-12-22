@@ -60,7 +60,7 @@ public class RhinoCallable extends Callable {
 			Scriptable scope = RhinoEngine.getWrapper(
 					ScriptableObject.getTopLevelScope(function), obj);
 			Object ret = function.call(Context.getCurrentContext(),
-					scope.getParentScope(), scope, args);
+					scope, scope, args);
 			// unwrap if the return value is a native java object:
 			if (ret instanceof Wrapper)
 				ret = ((Wrapper) ret).unwrap();
