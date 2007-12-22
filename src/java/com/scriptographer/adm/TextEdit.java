@@ -76,7 +76,7 @@ public class TextEdit extends TextValueItem {
 	
 	public TextEdit(Dialog dialog, int options) {
 		// filter out the pseudo styles from the options:
-		// (max. real bitis 3, and the mask is (1 << (max + 1)) - 1
+		// (max. real bit is 3, and the mask is (1 << (max + 1)) - 1
 		super(dialog, getType(options), options & ((1 << 4) - 1));
 	}
 

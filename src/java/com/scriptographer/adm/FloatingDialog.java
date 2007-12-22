@@ -55,7 +55,7 @@ public class FloatingDialog extends Dialog {
 	// kADMPaletteLayerDialogOption
 
 	public FloatingDialog(int options) {
-		super(getStyle(options), options);		
+		super(getStyle(options), options);
 	}
 
 	public FloatingDialog() {

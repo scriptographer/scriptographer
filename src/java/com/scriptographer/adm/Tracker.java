@@ -51,32 +51,32 @@ public class Tracker extends NativeObject {
 	// -----------------------------------------	---------------------------------------	---------------------------------------------
 
 	public final static int 
-		ACTION_MOUSE_MOVE			= 1,			// It is better to use the specific move down and up cases
-		ACTION_MOUSE_MOVED_DOWN		= 1,
+		ACTION_MOUSE_MOVE				= 1,			// It is better to use the specific move down and up cases
+		ACTION_MOUSE_MOVED_DOWN			= 1,
 		
-		ACTION_BUTTON_DOWN			= 2,														ACTION_WIN_LEFT_BUTTON_DOWN				= 2,
-																								ACTION_WIN_MIDDLE_BUTTON_DOWN			= 3,
-																								ACTION_WIN_RIGHT_BUTTON_DOWN			= 4,
-		ACTION_SHIFT_KEY_DOWN		= 5,
-		ACTION_MENU_KEY_DOWN		= 6,			ACTION_MAC_COMMAND_KEY_DOWN	= 6,			ACTION_WIN_CONTROL_KEY_DOWN				= 6,
-		ACTION_MOD_KEY_DOWN			= 7,			ACTION_MAC_OPTION_KEY_DOWN	= 7,			ACTION_WIN_ALT_KEY_DOWN					= 7,
+		ACTION_BUTTON_DOWN				= 2,													ACTION_WIN_LEFT_BUTTON_DOWN		= 2,
+																								ACTION_WIN_MIDDLE_BUTTON_DOWN		= 3,
+																								ACTION_WIN_RIGHT_BUTTON_DOWN		= 4,
+		ACTION_SHIFT_KEY_DOWN			= 5,
+		ACTION_MENU_KEY_DOWN			= 6,		ACTION_MAC_COMMAND_KEY_DOWN	= 6,		ACTION_WIN_CONTROL_KEY_DOWN		= 6,
+		ACTION_MOD_KEY_DOWN				= 7,		ACTION_MAC_OPTION_KEY_DOWN		= 7,		ACTION_WIN_ALT_KEY_DOWN				= 7,
 													ACTION_MAC_CONTROL_KEY_DOWN	= 8,	
-		ACTION_SPACE_KEY_DOWN		= 9,	
-		ACTION_TAB_KEY_DOWN			= 10,
-		ACTION_ENTER				= 11,
+		ACTION_SPACE_KEY_DOWN			= 9,	
+		ACTION_TAB_KEY_DOWN				= 10,
+		ACTION_ENTER					= 11,
 
-		ACTION_MOUSE_MOVED_UP		= -1,
-		ACTION_BUTTON_UP			= -2,														ACTION_WIN_LEFT_BUTTON_UP				= -2,
-																								ACTION_WIN_MIDDLE_BUTTON_UP				= -3,
-																								ACTION_WIN_RIGHT_BUTTON_UP				= -4,
-		ACTION_SHIFT_KEY_UP			= -5,
-		ACTION_MENU_KEY_UP			= -6,			ACTION_MAC_COMMAND_KEY_UP	= -6,			ACTION_WIN_CONTROL_KEY_UP				= -6,
-		ACTION_MOD_KEY_UP			= -7,			ACTION_MAC_OPTION_KEY_UP	= -7,			ACTION_WIN_ALT_KEY_UP					= -7,
-													ACTION_MAC_CONTROL_KEY_U	= -8,	
-		ACTION_SPACE_KEY_UP			= -9,	
-		ACTION_TAB_KEY_UP			= -10,
-		ACTION_LEAVE				= -11,
-		ACTION_UNCAPTURED_BUTTON_UP	= -12,														ACTION_WIN_UNCAPTURED_LEFT_BUTTON_UP			= -12,
+		ACTION_MOUSE_MOVED_UP			= -1,
+		ACTION_BUTTON_UP				= -2,													ACTION_WIN_LEFT_BUTTON_UP			= -2,
+																								ACTION_WIN_MIDDLE_BUTTON_UP		= -3,
+																								ACTION_WIN_RIGHT_BUTTON_UP			= -4,
+		ACTION_SHIFT_KEY_UP				= -5,
+		ACTION_MENU_KEY_UP				= -6,		ACTION_MAC_COMMAND_KEY_UP		= -6,		ACTION_WIN_CONTROL_KEY_UP			= -6,
+		ACTION_MOD_KEY_UP				= -7,		ACTION_MAC_OPTION_KEY_UP		= -7,		ACTION_WIN_ALT_KEY_UP				= -7,
+													ACTION_MAC_CONTROL_KEY_U		= -8,
+		ACTION_SPACE_KEY_UP				= -9,	
+		ACTION_TAB_KEY_UP				= -10,
+		ACTION_LEAVE					= -11,
+		ACTION_UNCAPTURED_BUTTON_UP	= -12,													ACTION_WIN_UNCAPTURED_LEFT_BUTTON_UP			= -12,
 																								ACTION_WIN_UNCAPTURED_MIDDLE_BUTTON_UP	= -13,
 																								ACTION_WIN_UNCAPTURED_RIGHT_BUTTON_UP		= -14,
 		ACTION_KEY_STROKE			= -15,
@@ -88,7 +88,7 @@ public class Tracker extends NativeObject {
 	// Tracker event masks
 	
 	// ADM General									Macintosh Specific							Windows Specific	
-	// -----------------------------------------  	-----------------------------------------	-----------------------------------------
+	// -----------------------------------------	----------------------------------------	-----------------------------------------
 	
 	public final static int 
 		MASK_NULL					= 0x00000000,
@@ -97,24 +97,24 @@ public class Tracker extends NativeObject {
 	
 		MASK_MOUSE_MOVED_DOWN		= 0x00000002,
 		
-		MASK_BUTTON_DOWN			= 0x00000004,												MASK_WIN_LEFT_BUTTON_DOWN	= 0x00000004,
+		MASK_BUTTON_DOWN			= 0x00000004,												MASK_WIN_LEFT_BUTTON_DOWN		= 0x00000004,
 																								MASK_WIN_MIDDLE_BUTTON_DOWN	= 0x00000008,
-																								MASK_WIN_RIGHT_BUTTON_DOWN	= 0x00000010,
+																								MASK_WIN_RIGHT_BUTTON_DOWN		= 0x00000010,
 		MASK_SHIFT_KEY_DOWN			= 0x00000020,
-		MASK_MENU_KEY_DOWN			= 0x00000040,	MASK_MAC_COMMAND_KEY_DOWN	= 0x00000040,	MASK_WIN_CONTROL_KEY_DOWN	= 0x00000040,
-		MASK_MOD_KEY_DOWN			= 0x00000080,	MASK_MAC_OPTION_KEY_DOWN	= 0x00000080,	MASK_WIN_ALT_KEY_DOWN		= 0x00000080,
+		MASK_MENU_KEY_DOWN			= 0x00000040,	MASK_MAC_COMMAND_KEY_DOWN	= 0x00000040,	MASK_WIN_CONTROL_KEY_DOWN		= 0x00000040,
+		MASK_MOD_KEY_DOWN			= 0x00000080,	MASK_MAC_OPTION_KEY_DOWN	= 0x00000080,	MASK_WIN_ALT_KEY_DOWN			= 0x00000080,
 													MASK_MAC_CONTROL_KEY_DOWN	= 0x00000100,	
 		MASK_SPACE_KEY_DOWN			= 0x00000200,	
 		MASK_TAB_KEY_DOWN			= 0x00000400,
 		MASK_ENTER					= 0x00000800,
 	
 		MASK_MOUSE_MOVED_UP			= 0x00020000,
-		MASK_BUTTON_UP				= 0x00040000,												MASK_WIN_LEFT_BUTTON_UP		= 0x00040000,
-																								MASK_WIN_MIDDLE_BUTTON_UP	= 0x00080000,
-																								MASK_WIN_RIGHT_BUTTON_UP	= 0x00100000,
+		MASK_BUTTON_UP				= 0x00040000,												MASK_WIN_LEFT_BUTTON_UP			= 0x00040000,
+																								MASK_WIN_MIDDLE_BUTTON_UP		= 0x00080000,
+																								MASK_WIN_RIGHT_BUTTON_UP		= 0x00100000,
 		MASK_SHIFT_KEY_UP			= 0x00200000,
-		MASK_MENU_KEY_UP			= 0x00400000,	MASK_MAC_COMMAND_KEY_UP		= 0x00400000,	MASK_WIN_CONTROL_KEY_UP		= 0x00400000,
-		MASK_MOD_KEY_UP				= 0x00800000,	MASK_MAC_OPTION_KEY_UP		= 0x00800000,	MASK_WIN_ALT_KEY_UP			= 0x00800000,
+		MASK_MENU_KEY_UP			= 0x00400000,	MASK_MAC_COMMAND_KEY_UP		= 0x00400000,	MASK_WIN_CONTROL_KEY_UP			= 0x00400000,
+		MASK_MOD_KEY_UP				= 0x00800000,	MASK_MAC_OPTION_KEY_UP		= 0x00800000,	MASK_WIN_ALT_KEY_UP				= 0x00800000,
 													MASK_MAC_CONTROL_KEY_UP		= 0x01000000,	
 		MASK_SPACE_KEY_UP			= 0x02000000,	
 		MASK_TAB_KEY_UP				= 0x04000000,
@@ -130,29 +130,29 @@ public class Tracker extends NativeObject {
 	//	 Tracker modifier key masks
 	
 	//	 ADM General										Macintosh Specific								Windows Specific	
-	//	 -----------------------------------------		--------------------------------------------	------------------------------------------------
+	//	 -----------------------------------------		-------------------------------------------	------------------------------------------------
 
 	public final static int 
-		MODIFIER_NULL				= 0x00000000,
+		MODIFIER_NULL					= 0x00000000,
 		
-		MODIFIER_CLICK				= 0x00000004,													MODIFIER_WIN_LEFT_BUTTON_DOWN		= 0x00000004,
-																										MODIFIER_WIN_MIDDLE_BUTTON_DOWN		= 0x00000008,
+		MODIFIER_CLICK					= 0x00000004,													MODIFIER_WIN_LEFT_BUTTON_DOWN		= 0x00000004,
+																										MODIFIER_WIN_MIDDLE_BUTTON_DOWN	= 0x00000008,
 																										MODIFIER_WIN_RIGHT_BUTTON_DOWN		= 0x00000010,
-		MODIFIER_SHIFT_KEY_DOWN		= 0x00000020,
-		MODIFIER_MENU_KEY_DOWN		= 0x00000040,	MODIFIER_MAC_COMMAND_KEY_DOWN	= 0x00000040,	MODIFIER_WIN_CONTROL_KEY_DOWN		= 0x00000040,
-		MODIFIER_MOD_KEY_DOWN		= 0x00000080,	MODIFIER_MAC_OPTION_KEY_DOWN	= 0x00000080,	MODIFIER_WIN_ALT_KEY_DOWN			= 0x00000080,
-													MODIFIER_MAC_CONTROL_KEY_DOWN	= 0x00000100,	
-		MODIFIER_SPACE_KEY_DOWN		= 0x00000200,	
-		MODIFIER_TAB_KEY_DOWN		= 0x00000400,
-		MODIFIER_DOUBLE_CLICK		= 0x00000800,
+		MODIFIER_SHIFT_KEY_DOWN			= 0x00000020,
+		MODIFIER_MENU_KEY_DOWN			= 0x00000040,	MODIFIER_MAC_COMMAND_KEY_DOWN	= 0x00000040,	MODIFIER_WIN_CONTROL_KEY_DOWN		= 0x00000040,
+		MODIFIER_MOD_KEY_DOWN			= 0x00000080,	MODIFIER_MAC_OPTION_KEY_DOWN	= 0x00000080,	MODIFIER_WIN_ALT_KEY_DOWN			= 0x00000080,
+														MODIFIER_MAC_CONTROL_KEY_DOWN	= 0x00000100,	
+		MODIFIER_SPACE_KEY_DOWN			= 0x00000200,	
+		MODIFIER_TAB_KEY_DOWN			= 0x00000400,
+		MODIFIER_DOUBLE_CLICK			= 0x00000800,
 
-		MODIFIER_CAPS_LOCK_ON		= 0x00001000,
+		MODIFIER_CAPS_LOCK_ON			= 0x00001000,
 		
-		MODIFIER_TRIPLE_CLICK		= 0x00002000,
+		MODIFIER_TRIPLE_CLICK			= 0x00002000,
 	    
 	    MODIFIER_CONTEXT_MENU_CLICK	= 0x00004000,
 	    
-		MODIFIER_DUMMY				= 0xFFFFFFFF;
+		MODIFIER_DUMMY					= 0xFFFFFFFF;
 
 	// -----------------------------------------------------------------------------
 	// Virtual keys

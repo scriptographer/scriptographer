@@ -46,7 +46,7 @@ import com.scratchdisk.util.ConversionUtils;
  */
 abstract class CallbackHandler extends NotificationHandler {
 	/*
-	 * Use an actiavtion mechanism for the expensive callback routines (the ones
+	 * Use an activation mechanism for the expensive callback routines (the ones
 	 * that get called often). These are only activated if the user actually
 	 * sets a callback functions.
 	 * 
@@ -77,6 +77,9 @@ abstract class CallbackHandler extends NotificationHandler {
 		return drawCallback;
 	}
 	
+	/**
+	 * @param mask Tracker.MASK_*
+	 */
 	abstract public void setTrackMask(int mask);
 	abstract public int getTrackMask();
 

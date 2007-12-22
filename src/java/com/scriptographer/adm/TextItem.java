@@ -39,7 +39,7 @@ public abstract class TextItem extends Item {
 	protected TextItem(Dialog dialog, long handle) {
 		super(dialog, handle);
 	}
-	
+
 	protected TextItem(Dialog dialog, int type) {
 		super(dialog, type, OPTION_NONE);
 	}
