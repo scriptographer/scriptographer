@@ -65,7 +65,7 @@ public class TableLayout extends info.clearthought.layout.TableLayout {
 			Object obj = objects[i];
 			if (obj instanceof String) {
 				if ("fill".equalsIgnoreCase((String) obj)) value = FILL;
-				else if ("prefered".equalsIgnoreCase((String) obj)) value = PREFERRED; 
+				else if ("preferred".equalsIgnoreCase((String) obj)) value = PREFERRED; 
 				else if ("minimum".equalsIgnoreCase((String) obj)) value = MINIMUM; 
 				else value = Double.NaN;
 			} else {
