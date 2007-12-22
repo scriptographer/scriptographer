@@ -32,6 +32,7 @@
 package com.scriptographer.adm;
 
 import java.awt.*;
+import java.util.Map;
 
 /**
  * ItemContainer acts as container of ADM Items that share a layout and can be
@@ -41,9 +42,10 @@ import java.awt.*;
  * 
  * @author lehni
  */
-public class ItemContainer {
+public class ItemContainer implements ContainerProvider {
 	protected AWTItemContainer container;
 	protected Frame frame;
+	private LayoutHelper layoutHelper = new LayoutHelper(this);
 
 	public ItemContainer(LayoutManager mgr, Item[] items, Frame frame) {
 		this.container = new AWTItemContainer(mgr);
@@ -58,15 +60,21 @@ public class ItemContainer {
 	}
 
 	public ItemContainer(LayoutManager mgr) {
-		this(mgr, null, null);
+		this(mgr, (Item[]) null, null);
 	}
 
 	public ItemContainer() {
-		this(null, null, null);
+		this(null, (Item[]) null, null);
 	}
 
-	protected Component getComponent() {
-		return container;
+	public ItemContainer(LayoutManager mgr, Map items, Frame frame) {
+		this(mgr, (Item[]) null, frame);
+		if (items != null)
+			addToContent(items);
+	}
+
+	public ItemContainer(LayoutManager mgr, Map items) {
+		this(mgr, items, null);
 	}
 
 	public void setFrame(Frame frame) {
@@ -75,14 +83,6 @@ public class ItemContainer {
 
 	public Frame getFrame() {
 		return frame;
-	}
-
-	public void add(Item item, Object constraints) {
-		container.add(item.getComponent(), constraints);
-	}
-	
-	public void add(Item item) {
-		add(item, null);
 	}
 
 	public void setSize(int x, int y) {
@@ -101,67 +101,102 @@ public class ItemContainer {
 		return container.getSize();
 	}
 
-	public Margins getMargins() {
-		return new Margins(container.getInsets());
+	public Container getContainer() {
+		return container;
+	}
+
+	public void setLayout(LayoutManager mgr) {
+		layoutHelper.setLayout(mgr);
 	}
 
 	public void setMargins(int left, int top, int right, int bottom) {
-		container.setInsets(left, top, right, bottom);
+		layoutHelper.setMargins(left, top, right, bottom);
+	}
+
+	public Margins getMargins() {
+		return layoutHelper.getMargins();
 	}
 
 	public void setMargins(Margins margins) {
-		setMargins(margins.left, margins.top, margins.right, margins.bottom);
+		layoutHelper.setMargins(margins);
+	}
+
+	public void setMargins(int margins) {
+		layoutHelper.setMargins(margins);
 	}
 
 	public void setMargins(int[] margins) {
-		setMargins(margins[0], margins[1], margins[2], margins[3]);
-	}
-
-	public void setMargins(int margin) {
-		setMargins(margin, margin, margin, margin);
+		layoutHelper.setMargins(margins);
 	}
 
 	public void setMargins(int hor, int ver) {
-		setMargins(hor, ver, hor, ver);
+		layoutHelper.setMargins(hor, ver);
 	}
+
 	public int getLeftMargin() {
-		return getMargins().left;
+		return layoutHelper.getLeftMargin();
 	}
 
 	public void setLeftMargin(int left) {
-		Margins margins = getMargins();
-		margins.left = left;
-		setMargins(margins);
+		layoutHelper.setLeftMargin(left);
 	}
 
 	public int getTopMargin() {
-		return getMargins().top;
+		return layoutHelper.getTopMargin();
 	}
 
 	public void setTopMargin(int top) {
-		Margins margins = getMargins();
-		margins.top = top;
-		setMargins(margins);
+		layoutHelper.setTopMargin(top);
 	}
 
 	public int getRightMargin() {
-		return getMargins().right;
+		return layoutHelper.getRightMargin();
 	}
 
 	public void setRightMargin(int right) {
-		Margins margins = getMargins();
-		margins.right = right;
-		setMargins(margins);
+		layoutHelper.setRightMargin(right);
 	}
 
 	public int getBottomMargin() {
-		return getMargins().bottom;
+		return layoutHelper.getBottomMargin();
 	}
 
 	public void setBottomMargin(int bottom) {
-		Margins margins = getMargins();
-		margins.bottom = bottom;
-		setMargins(margins);
+		layoutHelper.setBottomMargin(bottom);
+	}
+
+	public void addToContent(Item item, Object constraints) {
+		layoutHelper.addToContent(item, constraints);
+	}
+
+	public void addToContent(Item item) {
+		layoutHelper.addToContent(item);
+	}
+
+	public void addToContent(ItemContainer container, Object constraints) {
+		layoutHelper.addToContent(container, constraints);
+	}
+
+	public void addToContent(ItemContainer layout) {
+		layoutHelper.addToContent(layout);
+	}
+
+	public void addToContent(Map items) {
+		layoutHelper.addToContent(items);
+	}
+
+	public void setContent(Map items) {
+		layoutHelper.setContent(items);
+	}
+
+	// Short-cut to addToContent
+	public void add(Item item, Object constraints) {
+		layoutHelper.addToContent(item, constraints);
+	}
+	
+	// Short-cut to addToContent
+	public void add(Item item) {
+		layoutHelper.addToContent(item);
 	}
 
 	public void doLayout() {
@@ -169,7 +204,7 @@ public class ItemContainer {
 	}
 
 	/**
-	 * The actualy AWT class for ItemContainer that does the work of collecting
+	 * The actually AWT class for ItemContainer that does the work of collecting
 	 * wrap items or other ItemContainers and redirecting doLayout calls to its
 	 * children.
 	 * 
@@ -184,7 +219,7 @@ public class ItemContainer {
 			setInsets(0, 0, 0, 0);
 		}
 
-		public void setInsets(int left, int top, int right, int bottom) {
+		public void setInsets(int top, int left, int bottom, int right) {
 			insets = new Insets(top, left, bottom, right);
 		}
 
@@ -214,9 +249,9 @@ public class ItemContainer {
 
 		protected java.awt.Point getOrigin() {
 			java.awt.Point delta = new java.awt.Point();
-			Container parent = getParent();
+			java.awt.Container parent = getParent();
 			while (true) {
-				Container next = parent.getParent();
+				java.awt.Container next = parent.getParent();
 				if (next == null)
 					break;
 				java.awt.Point loc = parent.getLocation();

@@ -36,14 +36,12 @@ import com.scriptographer.ScriptographerEngine;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.prefs.Preferences;
 import java.util.prefs.BackingStoreException;
@@ -51,7 +49,7 @@ import java.util.prefs.BackingStoreException;
 /**
  * @author lehni
  */
-public abstract class Dialog extends CallbackHandler {
+public abstract class Dialog extends CallbackHandler implements ContainerProvider {
 	
 	public native int createPlatformControl();
 	public native void dumpControlHierarchy(File file);
@@ -172,6 +170,7 @@ public abstract class Dialog extends CallbackHandler {
 	private Size size;
 	private Size minSize;
 	private Size maxSize;
+	private boolean isResizing = false;
 	private String title = "";
 	private boolean visible = true;
 	private boolean active = false;
@@ -207,6 +206,8 @@ public abstract class Dialog extends CallbackHandler {
 	// need to know anything about the fact if it's a script or a java class.
 	private Preferences preferences;
 
+	private LayoutHelper layoutHelper = new LayoutHelper(this);
+
 	private static ArrayList dialogs = new ArrayList();
 
 	protected Dialog(int style, int options) {
@@ -219,8 +220,14 @@ public abstract class Dialog extends CallbackHandler {
 		handle = nativeCreate(name, style, options & ((1 << 17) - 1));
 		bounds = nativeGetBounds();
 		size = nativeGetSize();
-		minSize = nativeGetMinimumSize();
-		maxSize = nativeGetMaximumSize();
+		isResizing = style == STYLE_RESIZING_FLOATING ||
+			style == STYLE_TABBED_RESIZING_FLOATING ||
+			style == STYLE_TABBED_RESIZING_HIERARCHY_FLOATING;
+
+		if (isResizing) {
+			minSize = nativeGetMinimumSize();
+			maxSize = nativeGetMaximumSize();
+		}
 		this.options = options;
 		if (handle != 0)
 			dialogs.add(this);
@@ -260,20 +267,27 @@ public abstract class Dialog extends CallbackHandler {
 				// is set but it was not nativelly executed yet. handle this here
 				boolean show = (options & OPTION_HIDDEN) == 0 || visible;
 				if (container != null) {
-					setMinimumSize(new Size(container.getMinimumSize()));
-					setMaximumSize(new Size(container.getMaximumSize()));
+					if (isResizing) {
+						setMinimumSize(new Size(container.getMinimumSize()));
+						setMaximumSize(new Size(container.getMaximumSize()));
+					}
 					// if no bounds where specified yet, set the preferred size
 					// as defined by the layout
 					if (!sizeSet)
 						setSize(new Size(container.getPreferredSize()));
 				}
+				// Center it on screen first
+				this.centerOnScreen();
 				if ((options & OPTION_REMEMBER_PLACING) != 0)
 					show = !loadPreferences(title);
 				initialized = true;
-				if (show)
-					setVisible(true);
 				// execute callback handler
 				onInitialize();
+				// TODO: Calling this after onInitialize might cause trouble?
+				// It was executed before first, but might make more sense
+				// after to avoid flickering in onInitialize(). Find out...
+				if (show)
+					setVisible(true);
 			}
 			// setBoundaries is set to false when calling from initializeAll,
 			// because it would be too early to set it there. At least on Mac CS3
@@ -617,8 +631,7 @@ public abstract class Dialog extends CallbackHandler {
 				// again in CS4...
 				int code = this.getGroupInfo().positionCode;
 				if ((code & DialogGroupInfo.MASK_DOCK_VISIBLE) == 0 ||
-					((code & DialogGroupInfo.MASK_FRONTAB) != 0 &&
-					 (code & DialogGroupInfo.MASK_DOCK_VISIBLE) != 0)) {
+					(code & DialogGroupInfo.MASK_TAB_HIDDEN) != 0) {
 					fireOnClose = false;
 					onClose();
 				}
@@ -665,63 +678,96 @@ public abstract class Dialog extends CallbackHandler {
 	 * AWT LayoutManager integration:
 	 */
 
-	protected AWTContainer getContainer() {
+	public Container getContainer() {
 		if (container == null)
 			container = new AWTContainer();
 		return container;
 	}
 
 	public void setLayout(LayoutManager mgr) {
-		getContainer().setLayout(mgr);
+		layoutHelper.setLayout(mgr);
 	}
 
 	public void setMargins(int left, int top, int right, int bottom) {
-		getContainer().setInsets(top, left, bottom, right);
+		layoutHelper.setMargins(left, top, right, bottom);
+	}
+
+	public Margins getMargins() {
+		return layoutHelper.getMargins();
+	}
+
+	public void setMargins(Margins margins) {
+		layoutHelper.setMargins(margins);
 	}
 
 	public void setMargins(int margins) {
-		setMargins(margins, margins, margins, margins);
+		layoutHelper.setMargins(margins);
 	}
 
 	public void setMargins(int[] margins) {
-		setMargins(margins[0], margins[1], margins[2], margins[3]);
+		layoutHelper.setMargins(margins);
+	}
+
+	public void setMargins(int hor, int ver) {
+		layoutHelper.setMargins(hor, ver);
+	}
+
+	public int getLeftMargin() {
+		return layoutHelper.getLeftMargin();
+	}
+
+	public void setLeftMargin(int left) {
+		layoutHelper.setLeftMargin(left);
+	}
+
+	public int getTopMargin() {
+		return layoutHelper.getTopMargin();
+	}
+
+	public void setTopMargin(int top) {
+		layoutHelper.setTopMargin(top);
+	}
+
+	public int getRightMargin() {
+		return layoutHelper.getRightMargin();
+	}
+
+	public void setRightMargin(int right) {
+		layoutHelper.setRightMargin(right);
+	}
+
+	public int getBottomMargin() {
+		return layoutHelper.getBottomMargin();
+	}
+
+	public void setBottomMargin(int bottom) {
+		layoutHelper.setBottomMargin(bottom);
 	}
 
 	public void addToContent(Item item, Object constraints) {
-		getContainer().add(item.getComponent(), constraints);
+		layoutHelper.addToContent(item, constraints);
 	}
 
 	public void addToContent(Item item) {
-		addToContent(item, null);
+		layoutHelper.addToContent(item);
 	}
 
 	public void addToContent(ItemContainer container, Object constraints) {
-		getContainer().add(container.getComponent(), constraints);
+		layoutHelper.addToContent(container, constraints);
 	}
 
 	public void addToContent(ItemContainer layout) {
-		addToContent(layout, null);
+		layoutHelper.addToContent(layout);
+	}
+
+	public void addToContent(Map items) {
+		layoutHelper.addToContent(items);
 	}
 
 	public void setContent(Map items) {
-		for (Iterator it = items.entrySet().iterator(); it.hasNext();) {
-			Map.Entry entry = (Map.Entry) it.next();
-			Object constraints = entry.getKey();
-			if (constraints instanceof String) {
-				// capitalize
-				String str = (String) constraints;
-				if (str.length() > 0)
-					constraints = str.substring(0, 1).toUpperCase()
-							+ str.substring(1);
-			}
-			Object item = entry.getValue();
-			if (item instanceof Item)
-				addToContent((Item) item, constraints);
-			else if (item instanceof ItemContainer)
-				addToContent((ItemContainer) item, constraints);
-			else throw new IllegalArgumentException(item.toString());
-		}
+		layoutHelper.setContent(items);
 	}
+
 	/**
 	 * doLayout recalculates the layout, but does not change the dialog's size
 	 *
@@ -736,13 +782,13 @@ public abstract class Dialog extends CallbackHandler {
 	 */
 
 	/* TODO: Check these:
-		 * - timer stuff
-		 * - createNestedItem(...);
-		 * - beginAdjustingFocusOrder, doneAdjustingFocusOrder
-		 */
+	 * - timer stuff
+	 * - createNestedItem(...);
+	 * - beginAdjustingFocusOrder, doneAdjustingFocusOrder
+	 */
 
 	/*
-	 * dialog creation/destruction
+	 * Dialog creation/destruction
 	 * 
 	 */
 
@@ -765,7 +811,7 @@ public abstract class Dialog extends CallbackHandler {
 	public native void setTrackMask(int mask);
 
 	/* 
-	 * dialog timer
+	 * Dialog timer
 	 * 
 	 */
 	/*
@@ -777,7 +823,7 @@ public abstract class Dialog extends CallbackHandler {
 	*/
 
 	/* 
-	 * dialog state accessors
+	 * Dialog state accessors
 	 *  
 	 */
 	
@@ -813,7 +859,7 @@ public abstract class Dialog extends CallbackHandler {
 		this.active = active;
 	}
 	/* 
-	 * dialog bounds accessors
+	 * Dialog bounds accessors
 	 *
 	 */
 
@@ -913,7 +959,7 @@ public abstract class Dialog extends CallbackHandler {
 	}
 
 	/*
-	 * coordinate system transformations
+	 * Coordinate system transformations
 	 * 
 	 */
 
@@ -942,7 +988,7 @@ public abstract class Dialog extends CallbackHandler {
 	}
 
 	/*
-	 * dialog redraw requests
+	 * Dialog redraw requests
 	 * 
 	 */
 
@@ -957,7 +1003,7 @@ public abstract class Dialog extends CallbackHandler {
 	}
 
 	/*
-	 * cursor ID accessors
+	 * Cursor ID accessors
 	 * 
 	 */
 
@@ -966,9 +1012,9 @@ public abstract class Dialog extends CallbackHandler {
 	public native void setCursor(int cursor);
 
 	/* 
-		 * dialog text accessors
-		 *
-		 */
+	 * Dialog text accessors
+	 *
+	 */
 
 	private native void nativeSetTitle(String title);
 
@@ -1004,12 +1050,18 @@ public abstract class Dialog extends CallbackHandler {
 	
 	private native void nativeSetMaximumSize(int width, int height);
 
+	public Size getMinimumSize() {
+		return isResizing ? minSize : this.getSize();
+	}
+
 	public void setMinimumSize(int width, int height) {
-		minSize = new Size(width, height);
-		if (initialized) {
-			nativeSetMinimumSize(width, height);
-		} else {
-			boundariesSet = false;
+		if (isResizing) {
+			minSize = new Size(width, height);
+			if (initialized) {
+				nativeSetMinimumSize(width, height);
+			} else {
+				boundariesSet = false;
+			}
 		}
 	}
 	
@@ -1027,16 +1079,22 @@ public abstract class Dialog extends CallbackHandler {
 		setMinimumSize(size[0], size[1]);
 	}
 
+	public Size getMaximumSize() {
+		return isResizing ? maxSize : this.getSize();
+	}
+
 	public void setMaximumSize(int width, int height) {
-		if (width > Short.MAX_VALUE)
-			width = Short.MAX_VALUE;
-		if (height > Short.MAX_VALUE)
-			height = Short.MAX_VALUE;
-		maxSize = new Size(width, height);
-		if (initialized) {
-			nativeSetMaximumSize(width, height);
-		} else {
-			boundariesSet = false;
+		if (isResizing) {
+			if (width > Short.MAX_VALUE)
+				width = Short.MAX_VALUE;
+			if (height > Short.MAX_VALUE)
+				height = Short.MAX_VALUE;
+			maxSize = new Size(width, height);
+			if (initialized) {
+				nativeSetMaximumSize(width, height);
+			} else {
+				boundariesSet = false;
+			}
 		}
 	}
 
@@ -1066,6 +1124,11 @@ public abstract class Dialog extends CallbackHandler {
 	public void setIncrement(Point increment) {
 		if (increment != null)
 			setIncrement(increment.x, increment.y);
+	}
+
+	public void setIncrement(int[] increment) {
+		if (increment != null)
+			setIncrement(increment[0], increment[1]);
 	}
 
 	public Size getPreferredSize() {
@@ -1267,6 +1330,16 @@ public abstract class Dialog extends CallbackHandler {
 	 */
 	protected static native Size getScreenSize();
 
+	public void centerOnScreen() {
+		// Visually center dialog on Screen,
+		// bit higher up than mathematically centered
+		Size screen = Dialog.getScreenSize(), size = this.getSize();
+		this.setPosition(
+			(screen.width - size.width) / 2,
+			(8 * screen.height / 10 - size.height) / 2
+		);
+	}
+	
 	/**
 	 * AWTContainer wrapps an ADM Dialog and prentends it is an AWT Container,
 	 * in order to take advantage of all the nice LayoutManagers in AWT.
