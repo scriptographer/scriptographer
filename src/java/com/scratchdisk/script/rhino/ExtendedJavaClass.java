@@ -64,52 +64,60 @@ public class ExtendedJavaClass extends NativeJavaClass {
 	}
 
 	public Scriptable construct(Context cx, Scriptable scope, Object[] args) {
-		// If the last object passed to the constructor is a Scriptable,
-		// use it as a hashtable containing methods to be added to the class:
-		Scriptable obj = null;
-		NativeObject properties = null;
-		Callable initialize = null;
-		Class classObject = getClassObject();
-		int modifiers = classObject.getModifiers();
-		if (args.length > 0 && !Modifier.isInterface(modifiers) &&
-				!Modifier.isAbstract(modifiers)) {
-			// Look at the last argument to find out if we need to do something
-			// special. Possibilities: a object literal that defines fields to
-			// be set, or a function that is executed on the object and of which
-			// the result can be fields to be set.
-			Object last = args[args.length - 1];
-			if (last instanceof Callable)
-				initialize = (Callable) last;
-			else if (last instanceof NativeObject)
-				properties = (NativeObject) last;
-			// remove the last argument from the list, so the right constructor
-			// will be found:
-			if (initialize != null || properties != null) {
-				Object[] newArgs = new Object[args.length - 1];
-				for (int i = 0; i < newArgs.length; i++)
-					newArgs[i] = args[i];
-				args = newArgs;
+		// First, just try the normal constructor.
+		try {
+			return super.construct(cx, scope, args);
+		} catch (EvaluatorException e) {
+			// If the normal constructor failed, try to see if the last
+			// argument is a Callable or a NativeObject object. 
+			// If it is a NativeObject, use it as a hashtable containing
+			// fields to be added to the object. If it is a Callable,
+			// call it on the object and again use its return value
+			// as a hashtable if it is a NativeObject.
+			NativeObject properties = null;
+			Callable initialize = null;
+			Class classObject = getClassObject();
+			int modifiers = classObject.getModifiers();
+			if (args.length > 0 && !Modifier.isInterface(modifiers) &&
+					!Modifier.isAbstract(modifiers)) {
+				// Look at the last argument to find out if we need to do something
+				// special. Possibilities: a object literal that defines fields to
+				// be set, or a function that is executed on the object and of which
+				// the result can be fields to be set.
+				Object last = args[args.length - 1];
+				if (last instanceof Callable)
+					initialize = (Callable) last;
+				else if (last instanceof NativeObject)
+					properties = (NativeObject) last;
+				// remove the last argument from the list, so the right constructor
+				// will be found:
+				if (initialize != null || properties != null) {
+					Object[] newArgs = new Object[args.length - 1];
+					for (int i = 0; i < newArgs.length; i++)
+						newArgs[i] = args[i];
+					args = newArgs;
+				}
 			}
-		}
-		obj = super.construct(cx, scope, args);
-		// If an initialize function was passed as the last argument, execute
-		// it now. The fields of the result of the function are then injected
-		// into the object, if it is a Scriptable.
-		if (initialize != null) {
-			Object res = initialize.call(cx, scope, obj, args);
-			if (res instanceof NativeObject)
-				properties = (NativeObject) res;
-		}
-		// If properties are to be added, do it now:
-		if (properties != null) {
-			Object[] ids = properties.getIds();
-			for (int i = 0; i < ids.length; i++) {
-				Object id = ids[i];
-				if (id instanceof String)
-					obj.put((String) id, obj, properties.get((String) id, properties));
+			Scriptable obj = super.construct(cx, scope, args);
+			// If an initialize function was passed as the last argument, execute
+			// it now. The fields of the result of the function are then injected
+			// into the object, if it is a Scriptable.
+			if (initialize != null) {
+				Object res = initialize.call(cx, scope, obj, args);
+				if (res instanceof NativeObject)
+					properties = (NativeObject) res;
 			}
+			// If properties are to be added, do it now:
+			if (properties != null) {
+				Object[] ids = properties.getIds();
+				for (int i = 0; i < ids.length; i++) {
+					Object id = ids[i];
+					if (id instanceof String)
+						obj.put((String) id, obj, properties.get((String) id, properties));
+				}
+			}
+			return obj;
 		}
-		return obj;
 	}
 
 	public Class getClassObject() {
