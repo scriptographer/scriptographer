@@ -71,7 +71,10 @@ public class DialogGroupInfo {
 		MASK_FRAMEDOCK_PANESTATE	= 0x06000000,
 
 		/** Dialog group position mask. Provides access to the frame-docked open drawer. */
-		MASK_DRAWER					= 0x08000000;
+		MASK_DRAWER					= 0x08000000,
+
+		/** Tab/iconic mode icon hidden bit mask. */
+		MASK_TAB_HIDDEN				= 0x10000000;
 
 	protected String group;
 	protected int positionCode;
