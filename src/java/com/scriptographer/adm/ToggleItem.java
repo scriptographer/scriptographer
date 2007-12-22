@@ -39,6 +39,12 @@ public abstract class ToggleItem extends Button {
 		super(dialog, type);
 	}
 
+	protected static final Margins INSETS = new Margins(0, 0, 0, 0);
+
+	protected Margins getButtonMargins() {
+		return INSETS;
+	}
+
 	/* 
 	 * item value accessors
 	 * 
