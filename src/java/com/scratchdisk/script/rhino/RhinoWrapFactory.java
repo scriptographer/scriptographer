@@ -171,26 +171,6 @@ public class RhinoWrapFactory extends WrapFactory {
 		return new MapAdapter(scriptable);
 	}
 
-	/**
-	 * Constructs an object of the given java class through its java
-	 * script constructor.
-	 * @param javaClass
-	 * @param args
-	 * @return
-	 */
-	private Object construct(Class javaClass, Object[] args) {
-		Scriptable scope = ((RhinoEngine) this.engine).getScope();
-		ExtendedJavaClass cls =
-				ExtendedJavaClass.getClassWrapper(scope, javaClass);
-		if (cls != null) {
-			Object obj = cls.construct(Context.getCurrentContext(), scope, args);
-			if (obj instanceof Wrapper)
-				obj = ((Wrapper) obj).unwrap();
-			return obj;
-		}
-		return null;
-	}
-
 	private static IdentityHashMap zeroArgConstructors = new IdentityHashMap();
 	private static IdentityHashMap mapConstructors = new IdentityHashMap();
 
