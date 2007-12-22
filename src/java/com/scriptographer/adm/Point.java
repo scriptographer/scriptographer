@@ -79,4 +79,8 @@ public class Point {
 			return false;
 		}
 	}
+
+	public String toString() {
+	   	return "{ x: " + x + ", y: " + y + " }";
+	}
 }

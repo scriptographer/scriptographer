@@ -129,7 +129,25 @@ public class Matrix {
 		at = new AffineTransform(values);
 	}
 
-   /**
+	/**
+	 * Construct a matrix from a two dimensional array:
+	 * <pre>
+	 * [ values[0][0] values[0][1] values[0][2] ]
+	 * [ values[1][0] values[1][1] values[1][2] ]
+	 * [ 0            0            1            ]
+	 * </pre>
+	 *
+	 * @param values the matrix to copy from
+	 * @throws NullPointerException if values is null
+	 * @throws ArrayIndexOutOfBoundsException if values is too small
+	 */
+	public Matrix(double[][] values) {
+		at = new AffineTransform(
+				values[0][0], values[0][1], values[0][2],
+				values[1][0], values[1][1], values[1][2]);
+	}
+
+	/**
 	 * Returns a copy of this <code>Matrix</code> object.
 	 * 
 	 * @return an copy of this <code>Matrix</code> object.
@@ -304,12 +322,12 @@ public class Matrix {
     }
 
     public String toString() {
-		return ("[["
+		return "[["
 			+ round(at.getScaleX()) + ", "
 			+ round(at.getShearX()) + ", "
 			+ round(at.getTranslateX()) + "], ["
 			+ round(at.getShearY()) + ", "
 			+ round(at.getScaleY()) + ", "
-			+ round(at.getTranslateY()) + "]]");
+			+ round(at.getTranslateY()) + "]]";
     }
 }

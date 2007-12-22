@@ -101,14 +101,6 @@ public class Point {
 		this.y = y;
 	}
 
-	public String toString() {
-		StringBuffer buf = new StringBuffer(64);
-		buf.append("{ x: ").append(x);
-		buf.append(", y: ").append(y);
-		buf.append(" }");
-		return buf.toString();
-	}
-
 	/**
 	 * Returns a copy of the point. This is useful as the following code only
 	 * generates a flat copy:
@@ -450,5 +442,9 @@ public class Point {
 	 */
 	protected Point2D toPoint2D() {
 		return new Point2D.Float(x, y);
+	}
+
+	public String toString() {
+	   	return "{ x: " + x + ", y: " + y + " }";
 	}
 }

@@ -89,4 +89,8 @@ public class Size {
 			return false;
 		}
 	}
+
+	public String toString() {
+	   	return "{ width: " + width + ", height: " + height + " }";
+	}
 }
