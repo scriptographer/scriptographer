@@ -93,7 +93,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_getPreview(JNIEnv *e
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setLocked(JNIEnv *env, jobject obj, jboolean locked) {
 	try {
 		AILayerHandle layer = gEngine->getLayerHandle(env, obj, true);
-		sAILayer->SetLayerEditable(layer, locked);
+		sAILayer->SetLayerEditable(layer, !locked);
 	} EXCEPTION_CONVERT(env);
 }
 
