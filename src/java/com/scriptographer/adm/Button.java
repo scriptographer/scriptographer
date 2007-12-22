@@ -166,8 +166,8 @@ public class Button extends TextItem {
 	// int top, int left, int bottom, int right
 	protected static final Margins INSETS_IMAGE = new Margins(0, 0, 0, 0);
 	protected static final Margins INSETS_TEXT = ScriptographerEngine.isMacintosh() ?
-			new Margins(2, 1, 3, 3) : INSETS_IMAGE;
-	
+			new Margins(4, 3, 4, 3) : new Margins(0, 0, 0, 0);
+
 	protected Margins getButtonMargins() {
 		return INSETS_TEXT;
 	}
