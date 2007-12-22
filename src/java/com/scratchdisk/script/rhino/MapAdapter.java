@@ -32,6 +32,7 @@
 package com.scratchdisk.script.rhino;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Wrapper;
@@ -68,6 +69,20 @@ public class MapAdapter extends AbstractMap {
 			value = ((Wrapper) value).unwrap();
 		else if (value == ScriptableObject.NOT_FOUND)
 			value = null;
+		else if (value instanceof NativeArray) {
+			// Convert to a normal array
+			// TODO: see if we need to convert the other way in put?
+			NativeArray array = (NativeArray) value;
+			int length = (int) array.getLength();
+			Object[] list = new Object[length];
+			for (int i = 0; i < length; i++) {
+				Object obj = array.get(i, array);
+				if (obj instanceof Wrapper)
+					obj = ((Wrapper) obj).unwrap();
+				list[i] = obj;
+			}
+			return list;
+		}
 		return value;
 	}
 
