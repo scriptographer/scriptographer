@@ -182,7 +182,9 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 			scope = (Scriptable) obj;
 		} else {
 			scope = getWrapper(topLevel, obj);
-			scope.setParentScope(topLevel);
+			// scope.setParentScope(topLevel);
+			scope.setPrototype(topLevel);
+			scope.setParentScope(null);
 		}
 		return new RhinoScope(this, scope);
 	}
