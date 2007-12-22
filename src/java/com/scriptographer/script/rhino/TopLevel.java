@@ -226,7 +226,9 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 	 * @return
 	 */
 	protected static File getDirectory(Scriptable scope) {
-		com.scriptographer.sg.Script script = (com.scriptographer.sg.Script) scope.get("script", scope);
+		Object obj = scope.get("script", scope);
+		if (obj == Scriptable.NOT_FOUND) obj = null;
+		com.scriptographer.sg.Script script = (com.scriptographer.sg.Script) obj;
 		if (script != null)
 			return script.getFile().getParentFile();
 		else
