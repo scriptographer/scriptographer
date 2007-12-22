@@ -239,7 +239,7 @@ public abstract class Item extends CallbackHandler {
 		return dialog;
 	}
 	
-	protected AWTComponent getComponent() {
+	protected Component getComponent() {
 		if (component == null)
 			component = new AWTComponent();
 		return component;
@@ -400,6 +400,10 @@ public abstract class Item extends CallbackHandler {
 		// Set prefSize so getPreferredSize does not return results from
 		// getBestSize()
 		prefSize = new Size(width, height);
+		// Set minSize if it is not set yet, so getBestSize() is not used
+		// anymore.
+		if (minSize == null)
+			minSize = prefSize;
 		// updateBounds does all the heavy lifting, except for setting
 		// prefSize, which shouldnt be set when changing location or margins.
 		updateBounds(x, y, width, height);
@@ -492,32 +496,52 @@ public abstract class Item extends CallbackHandler {
 				if (image != null)
 					size = image.getSize();
 				break;
+			case TYPE_POPUP_LIST:
+				PopupList list = (PopupList) this;
+				size = new Size(0, 0);
+				for (int i = 0, l = list.size(); i < l; i++) {
+					ListEntry entry = (ListEntry) list.get(i);
+					String text = entry.getText();
+					Size entrySize = getTextSize(text, -1);
+					size.width = Math.max(size.width, entrySize.width);
+					size.height = Math.max(size.height, entrySize.height);
+				}
+				// 38 is a mac specific value, defined by the size
+				// of pulldown menu interface elements.
+				// TODO: Check on windows!
+				size.width += size.height >= 16 ? 38 : 32;
+				size.height += 8;
+				break;
 			default:
 				String text = null;
 				if (this instanceof TextValueItem)
 					text = ((TextValueItem) this).getText();
 				else if (this instanceof TextItem)
 					text = ((TextItem) this).getText();
-				if (text != null && text.length() > 0) {
+				if (text != null) {
+					if (text.equals(""))
+						text = " ";
 					size = getTextSize(text, -1);
 					if (size != null) {
 						if (this instanceof Button) {
+							size.width += size.height * 2;
 							size.height += 6;
-							size.width += 32;
 						} else if (this instanceof TextEdit) {
+							// Ignore the text width for a TextEdit,
+							// just use the text height and use a
+							// default width across Scriptographer.
 							size.height += 6;
-							size.width += 6;
+							size.width = size.height * 3;
 						}
-						/* else {
-							size.width +=
-								ScriptographerEngine.isMacintosh() ? 12 : 6;
-						}
-						*/
 					}
 				}
 		}
-		if (size == null)
-			size = this instanceof Button ? new Size(120, 20) : new Size(100, 100);
+		if (size == null) {
+			// If it's not a button, use the current size of the object.
+			// This is needed e.g. for Spacers, where its current size
+			// is the preferred size too.
+			size = (this instanceof Button) ? new Size(120, 20) : getSize();
+		}
 		// add margins
 		size.width += margins.left + margins.right;
 		size.height += margins.top + margins.bottom;
@@ -539,10 +563,7 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	public Size getPreferredSize() {
-		// return prefSize != null ? prefSize : getBestSize();
-		Size size = prefSize != null ? prefSize : getBestSize();
-// 		System.out.println("Item.getPreferredSize " + desc() + " " + size);
-		return size;
+		return prefSize != null ? prefSize : getBestSize();
 	}
 
 	public void setMinimumSize(int width, int height) {
@@ -560,11 +581,12 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	public void setMinimumSize(int[] size) {
-		setMinimumSize(size[0], size[1]);
+		if (size == null) minSize = null;
+		else setMinimumSize(size[0], size[1]);
 	}
 
 	public Size getMinimumSize() {
-		return minSize != null ? minSize : getSize();
+		return minSize != null ? minSize : getBestSize();
 	}
 
 	public void setMaximumSize(int width, int height) {
@@ -582,7 +604,8 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	public void setMaximumSize(int[] size) {
-		setMaximumSize(size[0], size[1]);
+		if (size == null) maxSize = null;
+		else setMaximumSize(size[0], size[1]);
 	}
 
 	public Size getMaximumSize() {
@@ -741,7 +764,7 @@ public abstract class Item extends CallbackHandler {
 		public void updateBounds(Rectangle bounds) {
 			// call the setBounds version in super that directly sets the
 			// internal segmentValues.setBounds(Rectangle) would call the
-			// overriden setBounds(int, int, int, int) which would change the
+			// overridden setBounds(int, int, int, int) which would change the
 			// underlying Item.
 			super.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 		}
