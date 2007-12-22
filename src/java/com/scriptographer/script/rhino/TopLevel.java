@@ -171,7 +171,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Tracing.class,
 
 		// Java
-		File.class
+		com.scriptographer.sg.File.class
 	};
 
 	public TopLevel(Context context) {
