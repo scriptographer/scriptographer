@@ -71,10 +71,18 @@ if (app.macintosh) {
 
 	// Determine current user and see if it is part of the uucp group, as required by RXTX
 	var user = executeProcess('id -p').match(/uid.(\w*)/)[1];
-	var groups = executeProcess('niutil -readprop / /groups/uucp users').split(/\n/);
 	var found = false;
-	for (var i = 0; i < groups.length && !found; i++)
-		found = groups[i] == user;
+	var useDS = new File('/usr/bin/dscl').exists();
+	var useNS = !useDS && new File('/usr/bin/niutil').exists();
+	if (useDS) {
+		var res = executeProcess('dsmemberutil checkmembership -U ' + user + ' -G uucp');
+		found = res != 'user is not a member of the group';
+	} else if (useNS) {
+		var groups = executeProcess('niutil -readprop / /groups/uucp users').split(/\n/);
+		for (var i = 0; i < groups.length && !found; i++)
+			found = groups[i] == user;
+	}
+
 	// Also create /var/Lock if it does not exist yet.
 	var file = new java.io.File('/var/lock');
 	if (!file.exists() || !found) {
@@ -102,8 +110,8 @@ if (app.macintosh) {
 			};
 			this.margins = 10;
 			this.layout = new TableLayout([
-					[ 'prefered', 'fill', 'prefered', 'prefered' ],
-					[ 'prefered', 'fill', 'prefered', 'prefered' ]
+					[ 'preferred', 'fill', 'preferred', 'preferred' ],
+					[ 'preferred', 'fill', 'preferred', 'preferred' ]
 				], 4, 4);
 			this.content = {
 				'0, 0': logo,
@@ -115,17 +123,17 @@ if (app.macintosh) {
 		});
 		var tryAgain = true;
 		while (tryAgain && dialog.doModal() == dialog.defaultItem) {
-			var password = dialog.passwordField.text + '\n';
 			try {
 				executeProcess('sudo -K');
-				executeProcess('sudo -v', password);
+				executeProcess('sudo -v', dialog.passwordField.text + '\n');
 				if (!file.exists()) {
 					executeProcess('sudo mkdir /var/lock');
 					executeProcess('sudo chgrp uucp /var/lock');
 					executeProcess('sudo chmod 775 /var/lock');
 				}
 				if (!found) {
-					executeProcess('sudo niutil -mergeprop / /groups/uucp users ' + user);
+					if (useDS) executeProcess('sudo dscl . -append /Groups/uucp GroupMembership  ' + user);
+					else if (useNS) executeProcess('sudo niutil -mergeprop / /groups/uucp users ' + user);
 				}
 				executeProcess('sudo -K');
 		  		Dialog.alert("Finished making changes, you should be all set now.\n\nHave fun!");

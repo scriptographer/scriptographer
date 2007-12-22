@@ -66,13 +66,9 @@ var mainDialog = new FloatingDialog(
 				exitValue: exitValue
 			};
 		}
-
-		
 	}
 
 	var lineHeight = 17;
-	this.title = "Scriptographer";
-	this.setIncrement(1, lineHeight);
 
 	// Script List:
 	scriptList = new HierarchyList(this) {
@@ -102,14 +98,14 @@ var mainDialog = new FloatingDialog(
 	// Filter for hiding files:
 	var scriptFilter = new java.io.FilenameFilter() {
 		accept: function(dir, name) {
-			return name != "CVS" && !/^\./.test(name) &&
+			return name != 'CVS' && !/^\./.test(name) &&
 				(/\.(?:js|rb|py)$/.test(name)
 				|| !/^__/.test(name) && new File(dir, name).directory);
 		}
 	};
 
-	var scriptImage = getImage("script.png");
-	var folderImage = getImage("folder.png");
+	var scriptImage = getImage('script.png');
+	var folderImage = getImage('folder.png');
 
 	var directoryEntries = {};
 	var fileEntries = {};
@@ -162,13 +158,13 @@ var mainDialog = new FloatingDialog(
             // Find a non existing filename:
             var file;
             for (var i = 1;;i++) {
-                file = new File(dir, "Untitled " + i + ".js");
+                file = new File(dir, 'Untitled ' + i + '.js');
                 if (!file.exists())
                     break;
             }
-            file = Dialog.fileSave("Create A New Script:", [
-                "JavaScript Files (*.js)", "*.js",
-                "All Files", "*.*"
+            file = Dialog.fileSave('Create A New Script:', [
+                'JavaScript Files (*.js)', '*.js',
+                'All Files', '*.*'
 			], file);
                // Add it to the list as well:
             if (file && file.createNewFile())
@@ -210,21 +206,21 @@ var mainDialog = new FloatingDialog(
 
 	// Add the menus:
 	// use a space in the beginning of the name so it appears on top of all entries :)
-	var scriptographerItem = new MenuItem(MenuGroup.GROUP_TOOL_PALETTES, " Scriptographer");
+	var scriptographerItem = new MenuItem(MenuGroup.GROUP_TOOL_PALETTES, ' Scriptographer');
 
-	new MenuItem(scriptographerItem, "Main") {
+	new MenuItem(scriptographerItem, 'Main') {
 		onSelect: function() {
 			that.visible = true;
 		}
 	};
 
-	new MenuItem(scriptographerItem, "Console") {
+	new MenuItem(scriptographerItem, 'Console') {
 		onSelect: function() {
 			consoleDialog.visible = true;
 		}
 	};
 
-	new MenuItem(scriptographerItem, "Reload") {
+	new MenuItem(scriptographerItem, 'Reload') {
 		onSelect: function() {
 			ScriptographerEngine.reload();
 		}
@@ -234,28 +230,28 @@ var mainDialog = new FloatingDialog(
 	var menu = this.popupMenu;
 
 	var executeEntry = new ListEntry(menu) {
-		text: "Execute Script",
+		text: 'Execute Script',
 		onSelect: function() {
 			execute();
 		}
 	};
 
 	var refreshEntry = new ListEntry(menu) {
-		text: "Refresh List",
+		text: 'Refresh List',
 		onSelect: function() {
 			refreshFiles();
 		}
 	};
 
 	var consoleEntry = new ListEntry(menu) {
-		text: "Show / Hide Console",
+		text: 'Show / Hide Console',
 		onSelect: function() {
 			consoleDialog.visible = !consoleDialog.visible;
 		}
 	};
 
 	var scriptDirEntry = new ListEntry(menu) {
-		text: "Set Script Directory...",
+		text: 'Set Script Directory...',
 		onSelect: function() {
 			if (ScriptographerEngine.chooseScriptDirectory())
 				refreshFiles();
@@ -263,16 +259,16 @@ var mainDialog = new FloatingDialog(
 	};
 
 	var aboutEntry = new ListEntry(menu) {
-		text: "About Scriptographer...",
+		text: 'About Scriptographer...',
 		onSelect: function() {
 			aboutDialog.doModal();
 		}
 	};
 
 	var helpEntry = new ListEntry(menu) {
-		text: "Help...",
+		text: 'Help...',
 		onSelect: function() {
-			app.launch("file://" + new File(scriptographer.pluginDirectory, "doc/index.html"));
+			app.launch('file://' + new File(scriptographer.pluginDirectory, 'doc/index.html'));
 		}
 	};
 
@@ -281,7 +277,7 @@ var mainDialog = new FloatingDialog(
 	};
 
 	var reloadEntry = new ListEntry(menu) {
-		text: "Reload",
+		text: 'Reload',
 		onSelect: function() {
 			ScriptographerEngine.reload();
 		}
@@ -292,7 +288,7 @@ var mainDialog = new FloatingDialog(
 		onClick: function() {
 			execute();
 		},
-		image: getImage("play.png"),
+		image: getImage('play.png'),
 		size: buttonSize
 	};
 
@@ -300,7 +296,7 @@ var mainDialog = new FloatingDialog(
 		onClick: function() {
 			ScriptographerEngine.stopAll();
 		},
-		image: getImage("stop.png"),
+		image: getImage('stop.png'),
 		size: buttonSize
 	};
 
@@ -308,7 +304,7 @@ var mainDialog = new FloatingDialog(
 		onClick: function() {
 			refreshFiles();
 		},
-		image: getImage("refresh.png"),
+		image: getImage('refresh.png'),
 		size: buttonSize
 	};
 
@@ -316,7 +312,7 @@ var mainDialog = new FloatingDialog(
 		onClick: function() {
 			consoleDialog.setVisible(!consoleDialog.isVisible());
 		},
-		image: getImage("console.png"),
+		image: getImage('console.png'),
 		size: buttonSize
 	};
 
@@ -324,22 +320,22 @@ var mainDialog = new FloatingDialog(
 		onClick: function() {
 			createFile();
 		},
-		image: getImage("script.png"),
+		image: getImage('script.png'),
 		size: buttonSize
 	};
 
 	var tool1Button = new ImageButton(this) {
-		image: getImage("tool1.png"),
+		image: getImage('tool1.png'),
 		size: buttonSize,
 		toolIndex: 0,
-		entryImage: getImage("tool1script.png")
+		entryImage: getImage('tool1script.png')
 	};
 
 	var tool2Button = new ImageButton(this) {
-		image: getImage("tool2.png"),
+		image: getImage('tool2.png'),
 		size: buttonSize,
 		toolIndex: 1,
-		entryImage: getImage("tool2script.png")
+		entryImage: getImage('tool2script.png')
 	};
 
 	tool1Button.onClick = tool2Button.onClick = function() {
@@ -360,24 +356,44 @@ var mainDialog = new FloatingDialog(
 			curEntry.image = image ? image : this.entryImage;
 	}
 
-	// Layout:
-	this.margins = [-1, 0, -1, -1];
-	this.layout = new BorderLayout();
-	this.content = {
-		center: scriptList,
-		south: new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1), [
-			playButton,
-			stopButton,
-			new Spacer(4, 0),
-			refreshButton,
-			new Spacer(4, 0),
-			newButton,
-			consoleButton,
-			new Spacer(4, 0),
-			tool1Button,
-			tool2Button
-		])
-	};
-
 	addFiles(scriptList, scriptographer.scriptDirectory);
+
+	return {
+		title: 'Scriptographer',
+		margins: [-1, 0, -1, -1],
+		layout: new BorderLayout(),
+		content: {
+			center: scriptList,
+			south: new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1), [
+				playButton,
+				stopButton,
+				new Spacer(4, 0),
+				refreshButton,
+				new Spacer(4, 0),
+				newButton,
+				consoleButton,
+				new Spacer(4, 0),
+				tool1Button,
+				tool2Button
+			])
+		}
+	};
+		/*
+		south: new Frame(this) {
+			layout: new FlowLayout(FlowLayout.LEFT, -1, -1),
+			content: {
+				playButton,
+				stopButton,
+				new Spacer(4, 0),
+				refreshButton,
+				new Spacer(4, 0),
+				newButton,
+				consoleButton,
+				new Spacer(4, 0),
+				tool1Button,
+				tool2Button
+			}
+		}
+		*/
+
 });

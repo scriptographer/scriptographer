@@ -51,22 +51,27 @@ var consoleDialog = new FloatingDialog (
 				// current line:
 				var text = this.text;
 				var end = this.getSelection()[1] - 1;
-				var ch = text.charAt(end--);
-				if (ch == '\n' || ch == '\r') { // empty line?
+				if (/[\n\r]/.test(text.charAt(end--))) { // empty line?
 					text = "";
 				} else {
-					while (end >= 0
-						&& ((ch = text[end]) == '\n' || ch == '\r'))
+					while (end >= 0 && /[\n\r]/.test(text[end]))
 						end--;
 					var start = end;
 					end++;
-					while (start >= 0
-						&& ((ch = text[start]) != '\n' && ch != '\r'))
+					while (start >= 0 && !/[\n\r]/.test(text[start]))
 						start--;
 					start++;
 					text = text.substring(start, end + 1);
 				}
-				engine.evaluate(text, consoleScope);
+				try {
+					engine.evaluate(text, consoleScope);
+				} catch (e) {
+					if (e.javaException) {
+						print(e.javaException.message);
+					} else {
+						print(e);
+					}
+				}
 			}
 			return true;
 		}
@@ -78,7 +83,7 @@ var consoleDialog = new FloatingDialog (
 		minimumSize: [200, 18],
 		backgroundColor: Drawer.COLOR_INACTIVE_TAB,
 		// the onDraw workaround for display problems is only needed on mac
-		onDraw: app.macintosh && false ? function(drawer) {
+		onDraw: app.macintosh && function(drawer) {
 			// Workaround for mac, where TextEdit fields with a background
 			// color
 			// do not get completely filled
@@ -94,7 +99,7 @@ var consoleDialog = new FloatingDialog (
 			// versions!
 			drawer.fillRect(rect.width - 18, 0, 1, height);
 			drawer.fillRect(0, height, rect.width - 1, rect.height - height - 2);
-		} : null
+		}
 	};
 
 	var that = this;
@@ -120,18 +125,17 @@ var consoleDialog = new FloatingDialog (
 		size: buttonSize
 	};
 
-	// layout:
+	// Layout:
 	this.margins = [-1, -1, -1, -1];
 	this.layout = new TableLayout([
-			[ 'fill' ],
+			[ 'preferred', 'fill' ],
 			[ 0.2, 'fill', 15 ]
 		], -1, -1);
+
 	this.content = {
-		'0, 0': textIn,
-		'0, 1': textOut,
-		'0, 2': new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1), [
-			clearButton
-		])
+		'0, 0, 1, 0': textIn,
+		'0, 1, 1, 1': textOut,
+		'0, 2': clearButton
 	};
 
 	this.println = function(str) {

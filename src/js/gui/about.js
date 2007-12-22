@@ -72,12 +72,12 @@ var aboutDialog = new ModalDialog(function() {
 	this.defaultItem = okButton;
 	this.margins = 10;
 	this.layout = new TableLayout([
-		[ 'prefered', 'fill', 'prefered' ],
-		[ 'prefered', 'fill', 'prefered' ]
+		[ 'preferred', 'fill', 'preferred' ],
+		[ 'preferred', 'fill', 'preferred' ]
 	]);
 	this.content = {
 		'0, 0, L, T': logo,
 		'1, 0, 2, 1': text,
-		 '2, 2': okButton
+		'2, 2': okButton
 	}
 });
