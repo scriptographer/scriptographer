@@ -49,7 +49,7 @@ public class TextStory extends NativeObject {
 	
 	public native int getLength();
 	
-	public native int nativeGetRange();
+	private native int nativeGetRange();
 
 	public TextRange getRange() {
 		// once a range object is created, allways return the same reference
