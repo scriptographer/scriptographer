@@ -26,7 +26,7 @@
  *
  * File created on 25.03.2005.
  *
- * $Id: main.js 402 2007-08-22 23:24:49Z lehni $
+ * $Id$
  */
 
 var mainDialog = new FloatingDialog(

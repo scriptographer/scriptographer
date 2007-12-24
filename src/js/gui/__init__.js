@@ -26,7 +26,7 @@
  *
  * File created on 25.03.2005.
  *
- * $Id: __init__.js 402 2007-08-22 23:24:49Z lehni $
+ * $Id$
  */
 
 var buttonSize = new Size(27, 17);

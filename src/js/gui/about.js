@@ -26,7 +26,7 @@
  *
  * File created on 25.03.2005.
  *
- * $Id: about.js 406 2007-08-23 14:12:11Z lehni $
+ * $Id$
  */
 
 var aboutDialog = new ModalDialog(function() {

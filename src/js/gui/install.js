@@ -26,7 +26,7 @@
  *
  * File created on 22.08.2007.
  *
- * $Id: install.js 406 2007-08-23 14:12:11Z lehni $
+ * $Id$
  */
 
 if (app.macintosh) {
