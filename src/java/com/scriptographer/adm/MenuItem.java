@@ -62,7 +62,7 @@ public class MenuItem extends NativeObject{
 	private static int uniqueId = 0;
 
 	public MenuItem(MenuGroup group, int options) {
-		this.name = " Scriptographer Menu Item " + (++uniqueId);
+		this.name = "Scriptographer MenuItem " + (++uniqueId);
 
 		this.group = group;
 

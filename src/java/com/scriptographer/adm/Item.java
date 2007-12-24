@@ -187,7 +187,6 @@ public abstract class Item extends CallbackHandler {
 	 * @param dialog
 	 * @param type
 	 * @param options
-	 * @throws Exception
 	 */
 	protected Item(Dialog dialog, int type, int options) {
 		this();
@@ -204,7 +203,6 @@ public abstract class Item extends CallbackHandler {
 	 * 
 	 * @param dialog
 	 * @param handle
-	 * @throws Exception
 	 */
 	protected Item(Dialog dialog, long handle) {
 		this();

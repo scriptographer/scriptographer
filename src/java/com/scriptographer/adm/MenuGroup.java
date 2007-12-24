@@ -190,7 +190,7 @@ public class MenuGroup extends NativeObject {
 	 * @param name the group's name.
 	 */
 	private MenuGroup(String name) {
-		this.name = name != null ? name : " Scriptographer Menu Group " + (++uniqueId);
+		this.name = name != null ? name : "Scriptographer MenuGroup " + (++uniqueId);
 	}
 
 	/**
