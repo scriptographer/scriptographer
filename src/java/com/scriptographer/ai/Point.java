@@ -32,7 +32,6 @@
 package com.scriptographer.ai;
 
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.Map;
 
 import com.scratchdisk.util.ConversionUtils;
@@ -57,10 +56,9 @@ public class Point {
 		this.x = x;
 		this.y = y;
 	}
-	
+
 	public Point(double x, double y) {
-		this.x = (float) x;
-		this.y = (float) y;
+		this((float) x, (float) y);
 	}
 
 	public Point(Point pt) {
@@ -68,16 +66,12 @@ public class Point {
 	}
 
 	public Point(Point2D p) {
-		this(p.getX(), p.getY());
-	}
-
-	public Point(java.awt.Dimension d) {
-		this(d.width, d.height);
+		this((float) p.getX(), (float) p.getY());
 	}
 
 	public Point(Map map) {
-		this(ConversionUtils.getDouble(map, "x"),
-				ConversionUtils.getDouble(map, "y"));
+		this(ConversionUtils.getFloat(map, "x"),
+				ConversionUtils.getFloat(map, "y"));
 	}
 
 	public void set(float x, float y) {

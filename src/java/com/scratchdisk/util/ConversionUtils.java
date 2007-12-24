@@ -58,6 +58,10 @@ public class ConversionUtils {
 		return Double.NaN;
 	}
 
+	public static float toFloat(Object val) {
+		return (float) toDouble(val);
+	}
+	
 	public static int toInt(Object val) {
         if (val instanceof Integer)
             return ((Integer) val).intValue();
@@ -130,6 +134,10 @@ public class ConversionUtils {
 	 */
 	public static double getDouble(Map map, Object key) {
 		return toDouble(map.get(key));
+	}
+
+	public static float getFloat(Map map, Object key) {
+		return toFloat(map.get(key));
 	}
 
 	public static int getInt(Map map, Object key) {

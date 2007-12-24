@@ -56,9 +56,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_MenuGroup_nativeCreate(JNIEnv
 }
 
 /*
- * void setOption(int options)
+ * void setOptions(int options)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_MenuGroup_setOption(JNIEnv *env, jobject obj, jint options) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_MenuGroup_setOptions(JNIEnv *env, jobject obj, jint options) {
 	try {
 		AIMenuGroup group = gEngine->getMenuGroupHandle(env, obj);
 		sAIMenu->SetMenuGroupOptions(group, options);

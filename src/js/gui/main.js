@@ -201,26 +201,47 @@ var mainDialog = new FloatingDialog(
 		if (entry && entry.file)
 			ScriptographerEngine.execute(entry.file, null);
 	}
-
-	var that = this;
-
+	
 	// Add the menus:
-	// use a space in the beginning of the name so it appears on top of all entries :)
-	var scriptographerItem = new MenuItem(MenuGroup.GROUP_TOOL_PALETTES, ' Scriptographer');
+	var scriptographerGroup = new MenuGroup(MenuGroup.GROUP_TOOL_PALETTES, MenuGroup.OPTION_ADD_ABOVE | MenuGroup.OPTION_SEPARATOR_ABOVE);
 
-	new MenuItem(scriptographerItem, 'Main') {
+	var scriptographerItem = new MenuItem(scriptographerGroup) {
+		text: 'Scriptographer'
+	};
+
+// 	var separator = new MenuGroup(scriptographerGroup, MenuGroup.OPTION_ADD_ABOVE);
+
+	new MenuItem(scriptographerItem) {
 		onSelect: function() {
-			that.visible = true;
+			mainDialog.visible = !mainDialog.visible;
+		},
+		onUpdate: function() {
+			this.text = (mainDialog.visible ? 'Hide' : 'Show') + ' Main Palette';
 		}
 	};
 
-	new MenuItem(scriptographerItem, 'Console') {
+	new MenuItem(scriptographerItem) {
 		onSelect: function() {
-			consoleDialog.visible = true;
+			consoleDialog.visible = !consoleDialog.visible;
+		},
+		onUpdate: function() {
+			this.text = (consoleDialog.visible ? 'Hide' : 'Show') + ' Console Palette';
 		}
 	};
 
-	new MenuItem(scriptographerItem, 'Reload') {
+	new MenuItem(scriptographerItem) {
+		text: 'About...',
+		onSelect: function() {
+			aboutDialog.doModal();
+		}
+	};
+
+	new MenuItem(scriptographerItem) {
+		separator: true
+	};
+
+	new MenuItem(scriptographerItem) {
+		text: 'Reload',
 		onSelect: function() {
 			ScriptographerEngine.reload();
 		}
@@ -378,22 +399,21 @@ var mainDialog = new FloatingDialog(
 			])
 		}
 	};
-		/*
-		south: new Frame(this) {
-			layout: new FlowLayout(FlowLayout.LEFT, -1, -1),
-			content: {
-				playButton,
-				stopButton,
-				new Spacer(4, 0),
-				refreshButton,
-				new Spacer(4, 0),
-				newButton,
-				consoleButton,
-				new Spacer(4, 0),
-				tool1Button,
-				tool2Button
-			}
+	/*
+	south: new Frame(this) {
+		layout: new FlowLayout(FlowLayout.LEFT, -1, -1),
+		content: {
+			playButton,
+			stopButton,
+			new Spacer(4, 0),
+			refreshButton,
+			new Spacer(4, 0),
+			newButton,
+			consoleButton,
+			new Spacer(4, 0),
+			tool1Button,
+			tool2Button
 		}
-		*/
-
+	}
+	*/
 });

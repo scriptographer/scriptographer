@@ -46,6 +46,7 @@ import org.mozilla.javascript.Wrapper;
 
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.ClassUtils;
 import com.scratchdisk.util.WeakIdentityHashMap;
 
 /**
@@ -114,10 +115,25 @@ public class RhinoWrapFactory extends WrapFactory {
 		return obj;
 	}
 
-	public boolean canConvert(Object from, Class to) {
-		return from instanceof Scriptable
+	public int getConversionWeight(Object from, Class to) {
+		// See if object "from" can be converted to an instance of class "to"
+		// by the use of a map constructor or the setting of all the fields
+		// of a NativeObject on the instance after its creation,
+		// both added features of JS in Scriptographer:
+		if (from instanceof Scriptable
 				&& (getMapConstructor(to) != null || from instanceof NativeObject
-						&& getZeroArgumentConstructor(to) != null);
+						&& getZeroArgumentConstructor(to) != null)) {
+			if (from instanceof Wrapper)
+				from = ((Wrapper) from).unwrap();
+			// Now if there are more options here to convert from, e.g. Size and Point
+			// prefer the one that has the same simple name, to encourage conversion
+			// between ADM and AI Size, Rectangle, Point objects!
+			if (ClassUtils.getSimpleName(from.getClass()).equals(ClassUtils.getSimpleName(to)))
+				return CONVERSION_TRIVIAL + 1;
+			else
+				return CONVERSION_TRIVIAL + 2;
+		}
+		return CONVERSION_NONE;
 	}
 
 	public Object convert(Object from, Class to) {

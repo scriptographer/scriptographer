@@ -210,11 +210,13 @@ public abstract class Dialog extends CallbackHandler implements ContainerProvide
 
 	private static ArrayList dialogs = new ArrayList();
 
+	private static int uniqueId = 0;
+
 	protected Dialog(int style, int options) {
 		preferences = ScriptographerEngine.getPreferences(true);
 		items = new ArrayList();
 		// create a unique name for this session:
-		String name = "Scriptographer Dialog " + dialogs.size();
+		String name = "Scriptographer Dialog " + (++uniqueId);
 		// filter out the pseudo styles from the options:
 		// (max. real bitis 16, and the mask is (1 << (max + 1)) - 1
 		handle = nativeCreate(name, style, options & ((1 << 17) - 1));
@@ -599,7 +601,7 @@ public abstract class Dialog extends CallbackHandler implements ContainerProvide
 
 	protected void onNotify(int notifier) throws Exception {
 		switch (notifier) {
-		case Notifier.NOTIFIER_WINDOW_INITIALIZE:
+		case Notifier.NOTIFIER_INITIALIZE:
 			initialize(true);
 			break;
 		case Notifier.NOTIFIER_DESTROY:

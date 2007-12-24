@@ -44,7 +44,6 @@ import com.scratchdisk.util.ConversionUtils;
  * @author lehni
  */
 public class Rectangle {
-
 	protected float x;
 	protected float y;
 	protected float width;
@@ -106,10 +105,10 @@ public class Rectangle {
 	 * @param map <code>{x, y, width, height}</code>
 	 */
 	public Rectangle(Map map) {
-		this(ConversionUtils.getDouble(map, "x"),
-				ConversionUtils.getDouble(map, "y"),
-				ConversionUtils.getDouble(map, "width"),
-				ConversionUtils.getDouble(map, "height"));
+		this(ConversionUtils.getFloat(map, "x"),
+				ConversionUtils.getFloat(map, "y"),
+				ConversionUtils.getFloat(map, "width"),
+				ConversionUtils.getFloat(map, "height"));
 	}
 
 	/**
@@ -287,7 +286,7 @@ public class Rectangle {
 		setRight(x);
 		setBottom(y);
 	}
-	
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer(128);
 		buf.append("{ x: ").append(x);
@@ -297,7 +296,7 @@ public class Rectangle {
 		buf.append(" }");
 		return buf.toString();
 	}
-	
+
 	/**
 	 * Clones the rectangle.
 	 */

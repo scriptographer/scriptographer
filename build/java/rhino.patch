@@ -1,0 +1,322 @@
+Index: org/mozilla/javascript/NativeJavaTopPackage.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaTopPackage.java,v
+retrieving revision 1.18
+diff -r1.18 NativeJavaTopPackage.java
+77c77
+<     NativeJavaTopPackage(ClassLoader loader)
+---
+>     public NativeJavaTopPackage(ClassLoader loader)
+Index: org/mozilla/javascript/NativeJavaPackage.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaPackage.java,v
+retrieving revision 1.40
+diff -r1.40 NativeJavaPackage.java
+60c60
+<     NativeJavaPackage(boolean internalUsage,
+---
+>     public NativeJavaPackage(boolean internalUsage,
+139c139
+<     synchronized Object getPkgProperty(String name, Scriptable start,
+---
+>     public synchronized Object getPkgProperty(String name, Scriptable start,
+Index: org/mozilla/javascript/WrapFactory.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/WrapFactory.java,v
+retrieving revision 1.18
+diff -r1.18 WrapFactory.java
+153a154,169
+>      * Same as NativeJavaObject CONVERSION_*, but to be used
+>      * by WrapFactory#getConversionWeight
+>      */
+>     public static final byte CONVERSION_TRIVIAL      = 1;
+>     public static final byte CONVERSION_NONTRIVIAL   = 0;
+>     public static final byte CONVERSION_NONE         = 99;
+> 
+> 	public int getConversionWeight(Object from, Class to) {
+>         return CONVERSION_NONE; // CONVERSION_TRIVIAL + 1;
+> 	}
+> 
+>     public Object convert(Object from, Class to) {
+>     	return null;
+>     }
+> 
+>     /**
+182d197
+< 
+Index: org/mozilla/javascript/NativeJavaObject.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaObject.java,v
+retrieving revision 1.82
+diff -r1.82 NativeJavaObject.java
+367a368,369
+>             } else {
+>                 return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to);
+369d370
+<             break;
+380,382c381,392
+<                     // Array conversions are all equal, and preferable to object
+<                     // and string conversion, per LC3.
+<                     return 1;
+---
+> 					// Array conversions are all equal, and preferable to object
+> 					// and string conversion, per LC3.
+> 
+> 					// Look at the first element in the array to determine
+> 					// conversion weight further. While this approach is not
+> 					// perfect, it is certainly better than simply returning 1.
+> 					// The only case where this does not work is with arrays
+> 					// containing null at that position, and arrays containing
+> 					// different types.
+>                 	return getConversionWeight(
+>                 			((NativeArray) fromObj).get(0, (Scriptable) fromObj),
+>                 			to.getComponentType());
+606c616,617
+<         case JSTYPE_JAVA_ARRAY:              
+---
+>         case JSTYPE_JAVA_ARRAY:
+>             Object wrapped = value;
+625c636,642
+<                         reportConversionError(value, type);
+---
+>                         // We must be here because canConvert returned true
+>                         // Give it a try. pass the wrapped value, to let the
+>                         // wrap factory decide what to do with it.
+>                         Context cx = Context.getContext();
+>                         Object obj = cx.getWrapFactory().convert(wrapped, type);
+>                         if (obj != null) return obj;
+>                         else reportConversionError(value, type);
+701,702c718,723
+<             } else {
+<                 reportConversionError(value, type);
+---
+>             }
+>             else {
+>                 Context cx = Context.getContext();
+>                 Object obj = cx.getWrapFactory().convert(value, type);
+>                 if (obj != null) return obj;
+>                 else reportConversionError(value, type);
+Index: org/mozilla/javascript/JavaMembers.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/JavaMembers.java,v
+retrieving revision 1.71
+diff -r1.71 JavaMembers.java
+55c55
+< class JavaMembers
+---
+> public class JavaMembers
+57c57
+<     JavaMembers(Scriptable scope, Class cl)
+---
+>     public JavaMembers(Scriptable scope, Class cl)
+78c78
+<     boolean has(String name, boolean isStatic)
+---
+>     public boolean has(String name, boolean isStatic)
+88c88
+<     Object get(Scriptable scope, String name, Object javaObject,
+---
+>     public Object get(Scriptable scope, String name, Object javaObject,
+129c129
+<     void put(Scriptable scope, String name, Object javaObject,
+---
+>     public void put(Scriptable scope, String name, Object javaObject,
+194c194
+<     Object[] getIds(boolean isStatic)
+---
+>     public Object[] getIds(boolean isStatic)
+Index: org/mozilla/javascript/Token.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Token.java,v
+retrieving revision 1.43
+diff -r1.43 Token.java
+44a45,46
+> import java.io.IOException;
+> 
+433a436,472
+> 
+>     /**
+>      * The token type.
+>      */
+>     public final int type;
+> 
+>     /**
+>      * The string value for string tokens.
+>      */
+>     public final String string;
+> 
+>     /**
+>      * The line number of the token.
+>      */
+>     public final int lineno;
+> 
+>     /**
+>      * The line offset of the token.
+>      */
+>     public final int offset;
+> 
+>     /**
+>      * The Token class is usually not instanciated when parsing a JavaScript
+>      * resource. This constructor is only used by
+>      * {@link org.mozilla.javascript.Parser#parseTokens(java.io.Reader, String, int)}
+>      * to get information about lexical tokens.
+>      * @param type the token type
+>      * @param string the string value for string tokens
+>      * @param lineno the line number of the token
+>      * @param offset the line offset of the token
+>      */
+>     public Token(int type, String string, int lineno, int offset) {
+>         this.type = type;
+>         this.string = string;
+>         this.lineno = lineno;
+>         this.offset = offset;
+>     }
+Index: org/mozilla/javascript/MemberBox.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/MemberBox.java,v
+retrieving revision 1.16
+diff -r1.16 MemberBox.java
+55c55
+< final class MemberBox implements Serializable
+---
+> public final class MemberBox implements Serializable
+65c65
+<     MemberBox(Method method)
+---
+>     public MemberBox(Method method)
+70c70
+<     MemberBox(Constructor constructor)
+---
+>     public MemberBox(Constructor constructor)
+89c89
+<     Method method()
+---
+>     public Method method()
+94c94
+<     Constructor ctor()
+---
+>     public Constructor ctor()
+99c99
+<     Member member()
+---
+>     public Member member()
+104c104
+<     boolean isMethod()
+---
+>     public boolean isMethod()
+109c109
+<     boolean isCtor()
+---
+>     public boolean isCtor()
+114c114
+<     boolean isStatic()
+---
+>     public boolean isStatic()
+119c119
+<     String getName()
+---
+>     public String getName()
+124c124
+<     Class getDeclaringClass()
+---
+>     public Class getDeclaringClass()
+129c129
+<     String toJavaDeclaration()
+---
+>     public String toJavaDeclaration()
+155c155
+<     Object invoke(Object target, Object[] args)
+---
+>     public Object invoke(Object target, Object[] args)
+179c179
+<     Object newInstance(Object[] args)
+---
+>     public Object newInstance(Object[] args)
+Index: org/mozilla/javascript/Parser.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Parser.java,v
+retrieving revision 1.123
+diff -r1.123 Parser.java
+50a51
+> import java.io.StringReader;
+51a53,54
+> import java.util.List;
+> import java.util.ArrayList;
+323a327,376
+>     /**
+>      * Parse the given sourceReader into an array of {@link Token} objects.
+>      * This can be useful for inspecting a JavaScript resource for other goals
+>      * than compiling and evaluating it, as the tree generated by
+>      * {@link #parse(java.io.Reader, String, int)} is missing a
+>      * lot of information.
+>      * @param sourceString a JavaScript string
+>      * @param sourceURI the source name
+>      * @param lineno the line number of the first line
+>      * @return an array of {@link Token} objects
+>      * @throws IOException if an I/O error was encountered
+>      */
+>     public Token[] parseTokens(String sourceString,
+>                                String sourceURI, int lineno)
+>         throws IOException
+>     {
+>         return parseTokens(new StringReader(sourceString),
+>                            sourceURI, lineno);
+>     }
+> 
+>     /**
+>      * Parse the given sourceReader into an array of {@link Token} objects.
+>      * This can be useful for inspecting a JavaScript resource for other goals
+>      * than compiling and evaluating it, as the tree generated by
+>      * {@link #parse(java.io.Reader, String, int)} is missing a
+>      * lot of information.
+>      * @param sourceReader the reader
+>      * @param sourceURI the source name
+>      * @param lineno the line number of the first line
+>      * @return an array of {@link Token} objects
+>      * @throws IOException if an I/O error was encountered
+>      */
+>     public Token[] parseTokens(Reader sourceReader,
+>                                String sourceURI, int lineno)
+>         throws IOException
+>     {
+>         this.sourceURI = sourceURI;
+>         this.ts = new TokenStream(this, sourceReader, null, lineno);
+>         List list = new ArrayList();
+>         while (!ts.eof()) {
+>             try {
+>                 list.add(new Token(ts.getToken(), ts.getString(),
+>                                    ts.getLineno(), ts.getOffset()));
+>             } catch (EvaluatorException x) {
+>                 // Regular expressions need special treatment by the parser - ignore.
+>             }
+>         }
+>         return (Token[]) list.toArray(new Token[list.size()]);
+>     }
+> 
+346c399
+<      * Build a parse tree from the given sourceString.
+---
+>      * Build a parse tree from the given sourceReader.
+Index: org/mozilla/javascript/NativeJavaClass.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaClass.java,v
+retrieving revision 1.52
+diff -r1.52 NativeJavaClass.java
+176a177,182
+>     protected MemberBox findConstructor(Context cx, Object[] args)
+>     {
+>         int index = NativeJavaMethod.findFunction(cx, members.ctors, args);
+>         return index >= 0 ? members.ctors[index] : null;
+>     }
+> 
+184,186c190,191
+<             MemberBox[] ctors = members.ctors;
+<             int index = NativeJavaMethod.findFunction(cx, ctors, args);
+<             if (index < 0) {
+---
+>             MemberBox ctor = findConstructor(cx, args);
+>             if (ctor == null) {
+193c198
+<             return constructSpecific(cx, scope, args, ctors[index]);
+---
+>             return constructSpecific(cx, scope, args, ctor);

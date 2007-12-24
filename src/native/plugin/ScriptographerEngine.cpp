@@ -89,7 +89,7 @@ void ScriptographerEngine::javaThread() {
 	exit();
 }
 
-#endif
+#endif // MAC_THREAD
 
 ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 	m_initialized = false;
@@ -107,7 +107,7 @@ ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 		// exceptions that happen in the javaThread are passed through to this thread in order to display the error code:
 		MPWaitOnQueue(m_responseQueue, (void **) &exc, NULL, NULL, kDurationForever);
 	} else 
-#endif
+#endif // MAC_THREAD
 	{	// On windows, we can directly call the initialize function:
 		try {
 			init();
@@ -139,7 +139,7 @@ ScriptographerEngine::~ScriptographerEngine() {
 		MPDeleteQueue(m_requestQueue);
 		MPDeleteQueue(m_responseQueue);
 	} else 
-#endif
+#endif // MAC_THREAD
 	{ // Clean up:
 //		exit();
 	}
@@ -202,19 +202,19 @@ void ScriptographerEngine::init() {
 #ifndef GCJ
 	// Only add the loader to the classpath, the rest is done in java:
 	options.add("-Djava.class.path=%s" PATH_SEP_STR "loader.jar", m_homeDir);
-#endif
+#endif // GCJ
 	options.add("-Djava.library.path=%s" PATH_SEP_STR "lib", m_homeDir);
 
 #ifdef MAC_ENV
 #ifdef MAC_THREAD
 	// Start headless, in order to avoid conflicts with AWT and Illustrator
 	options.add("-Djava.awt.headless=true");
-#else
+#else // !MAC_THREAD
 	options.add("-Dapple.awt.usingSWT=true");
-#endif
+#endif // !MAC_THREAD
 	// Use the carbon line separator instead of the unix one on mac:
 	options.add("-Dline.separator=\r");
-#endif
+#endif // MAC_ENV
 	// Read ini file and add the options here
 	char buffer[512];
 	sprintf(buffer, "%s" PATH_SEP_STR "jvm.ini", m_homeDir);
@@ -237,7 +237,7 @@ void ScriptographerEngine::init() {
 	options.add("-Xnoagent");
 	options.add("-Djava.compiler=NONE");
 	options.add("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n");
-#endif
+#endif // _DEBUG && !GCJ
 
 	options.fillArgs(&args);
 	args.ignoreUnrecognized = true;
@@ -256,9 +256,9 @@ void ScriptographerEngine::init() {
 	mid_Loader_reload = getStaticMethodID(env, cls_Loader, "reload", "()Ljava/lang/String;");
 	mid_Loader_loadClass = getStaticMethodID(env, cls_Loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 	callStaticObjectMethodReport(env, cls_Loader, mid_Loader_init, env->NewStringUTF(m_homeDir));
-#else
+#else // !GCJ
 	cls_Loader = NULL;
-#endif
+#endif // !GCJ
 	
 	// Initialize reflection. This retrieves references to all the classes, fields and methods
 	// that are accessed from native code. Since JSE 1.6, this cannot be called after 
@@ -431,6 +431,12 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_ai_Rectangle_width = getFieldID(env, cls_ai_Rectangle, "width", "F");
 	fid_ai_Rectangle_height = getFieldID(env, cls_ai_Rectangle, "height", "F");
 	mid_ai_Rectangle_set = getMethodID(env, cls_ai_Rectangle, "set", "(FFFF)V");
+
+	cls_ai_Size = loadClass(env, "com/scriptographer/ai/Size");
+	cid_ai_Size = getConstructorID(env, cls_ai_Size, "(FF)V");
+	fid_ai_Size_width = getFieldID(env, cls_ai_Size, "width", "F");
+	fid_ai_Size_height = getFieldID(env, cls_ai_Size, "height", "F");
+	mid_ai_Size_set = getMethodID(env, cls_ai_Size, "set", "(FF)V");
 	
 	cls_ai_Matrix = loadClass(env, "com/scriptographer/ai/Matrix");
 	cid_ai_Matrix = getConstructorID(env, cls_ai_Matrix, "(DDDDDD)V");
@@ -616,7 +622,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_adm_Tracker_onTrack = getMethodID(env, cls_adm_Tracker, "onTrack", "(Lcom/scriptographer/adm/NotificationHandler;IIIIIICCJ)Z");
 	
 	cls_adm_MenuItem = loadClass(env, "com/scriptographer/adm/MenuItem");
-	mid_adm_MenuItem_wrapHandle = getStaticMethodID(env, cls_adm_MenuItem, "wrapHandle", "(ILjava/lang/String;Ljava/lang/String;ILjava/lang/String;)Lcom/scriptographer/adm/MenuItem;");
+	mid_adm_MenuItem_wrapHandle = getStaticMethodID(env, cls_adm_MenuItem, "wrapHandle", "(ILjava/lang/String;ILjava/lang/String;)Lcom/scriptographer/adm/MenuItem;");
 	mid_adm_MenuItem_onSelect = getStaticMethodID(env, cls_adm_MenuItem, "onSelect", "(I)V");
 	mid_adm_MenuItem_onUpdate = getStaticMethodID(env, cls_adm_MenuItem, "onUpdate", "(IIII)V");
 	
@@ -799,6 +805,25 @@ ADMRect *ScriptographerEngine::convertRectangle(JNIEnv *env, jobject rt, ADMRect
 	return res;
 }
 
+// com.scriptographer.ai.Size <-> AIRealPoint
+jobject ScriptographerEngine::convertSize(JNIEnv *env, float width, float height, jobject res) {
+	if (res == NULL) {
+		return newObject(env, cls_ai_Size, cid_ai_Size, (jfloat) width, (jfloat) height);
+	} else {
+		callVoidMethod(env, res, mid_ai_Size_set, (jfloat) width, (jfloat) height);
+		return res;
+	}
+}
+
+AIRealPoint *ScriptographerEngine::convertSize(JNIEnv *env, jobject size, AIRealPoint *res) {
+	if (res == NULL)
+		res = new AIRealPoint;
+	res->h = env->GetFloatField(size, fid_ai_Size_width);
+	res->v = env->GetFloatField(size, fid_ai_Size_height);
+	EXCEPTION_CHECK(env);
+	return res;
+}
+
 // com.scriptographer.adm.Size <-> ADMPoint
 jobject ScriptographerEngine::convertSize(JNIEnv *env, int width, int height, jobject res) {
 	if (res == NULL) {
@@ -809,11 +834,11 @@ jobject ScriptographerEngine::convertSize(JNIEnv *env, int width, int height, jo
 	}
 }
 
-ADMPoint *ScriptographerEngine::convertSize(JNIEnv *env, jobject dim, ADMPoint *res) {
+ADMPoint *ScriptographerEngine::convertSize(JNIEnv *env, jobject size, ADMPoint *res) {
 	if (res == NULL)
 		res = new ADMPoint;
-	res->h = env->GetIntField(dim, fid_adm_Size_width);
-	res->v = env->GetIntField(dim, fid_adm_Size_height);
+	res->h = env->GetIntField(size, fid_adm_Size_width);
+	res->v = env->GetIntField(size, fid_adm_Size_height);
 	EXCEPTION_CHECK(env);
 	return res;
 }
@@ -1905,33 +1930,21 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) 
  */
 jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item) {
 	JNI_CHECK_ENV
+	AIMenuGroup group;
 #if kPluginInterfaceVersion < kAI12
 	char *name, *groupName;
-	char text[256];
-	AIMenuGroup group;
 	if (!sAIMenu->GetMenuItemName(item, &name) &&
-		!sAIMenu->GetItemText(item, text) &&
-		!sAIMenu->GetItemMenuGroup(item, &group) &&
-		!sAIMenu->GetMenuGroupName(group, &groupName)) {
-		return callStaticObjectMethod(env, cls_adm_MenuItem, mid_adm_MenuItem_wrapHandle,
-			(jint) item, convertString(env, name), convertString(env, text),
-			(jint) group, convertString(env, groupName)
-		);
-	}
 #else
 	const char *name, *groupName;
-	ai::UnicodeString text;
-	AIMenuGroup group;
 	if (!sAIMenu->GetMenuItemKeyboardShortcutDictionaryKey(item, &name) &&
-		!sAIMenu->GetItemText(item, text) &&
+#endif
 		!sAIMenu->GetItemMenuGroup(item, &group) &&
 		!sAIMenu->GetMenuGroupName(group, &groupName)) {
 		return callStaticObjectMethod(env, cls_adm_MenuItem, mid_adm_MenuItem_wrapHandle,
-			(jint) item, convertString(env, name), convertString(env, text),
+			(jint) item, convertString(env, name),
 			(jint) group, convertString(env, groupName)
 		);
 	}
-#endif
 	return NULL;
 }
 

@@ -60,7 +60,7 @@ public class MenuGroup extends NativeObject {
 		GROUP_PRINT								= new MenuGroup("Print"),
 		GROUP_SEND								= new MenuGroup("Send Document"),
 
-		GROUP_APPLICATION_UTILITIES				= new MenuGroup("Application Utilities"),
+		GROUP_APPLICATION_UTILITIES			= new MenuGroup("Application Utilities"),
 		GROUP_QUIT								= new MenuGroup("Quit"),
 
 		GROUP_UNDO								= new MenuGroup("Undo"),
@@ -156,7 +156,7 @@ public class MenuGroup extends NativeObject {
 		GROUP_OBJECT_RASTER						= new MenuGroup("AIPlugin Object Raster"),
 
 		GROUP_ARRANGE_TRANSFORM_MULTIPLE		= new MenuGroup("Arrange Multiple Transform"),
-		GROUP_ARRANGE_TRANSFORM_MULTIPLE_NEAR	= GROUP_ARRANGE_TRANSFORM,
+		GROUP_ARRANGE_TRANSFORM_MULTIPLE_NEAR	= GROUP_ARRANGE_TRANSFORM_MULTIPLE,
 
 		GROUP_OBJECT_PATHS_POPOUT				= new MenuGroup("More Menus in the Object Path Popout"),
 		GROUP_OBJECT_PATHS_POPOUT_NEAR			= GROUP_OBJECT_PATHS_POPUP,
@@ -172,25 +172,33 @@ public class MenuGroup extends NativeObject {
 	public static final int
 		OPTION_NONE								= 0,
 		OPTION_SORTED_ALPHABETICALLY			= 1 << 0,
-		OPTION_SEPERATOR_ABOVE 					= 1 << 1,
-		OPTION_SEPARATOR_BELOW					= 1 << 2;
+		OPTION_SEPARATOR_ABOVE 					= 1 << 1,
+		OPTION_SEPARATOR_BELOW					= 1 << 2,
+		OPTION_ADD_ABOVE						= 1 << 4;
+
 
 	protected String name;
 
 	private static IntMap groups = new IntMap();
 
+	private static int uniqueId = 0;
+
+	/**
+	 * Used only internally. Pass null for name to have a unique
+	 * name produced for the group.
+	 * 
+	 * @param name the group's name.
+	 */
 	private MenuGroup(String name) {
-		this.name = name;
+		this.name = name != null ? name : " Scriptographer Menu Group " + (++uniqueId);
 	}
 
 	/**
-	 *
-	 * @param name
 	 * @param near
 	 * @param options MenuGroup.OPTION_*
 	 */
-	public MenuGroup(String name, MenuGroup near, int options) {
-		this(name);
+	public MenuGroup(MenuGroup near, int options) {
+		this(null);
 		// use this.name, instead of name, because it was modified
 		// in the constructor above
 		handle = nativeCreate(this.name, near.name, 0, options);
@@ -203,12 +211,11 @@ public class MenuGroup extends NativeObject {
 
 	/**
 	 * Creates a submenu group at parent
-	 * @param name
 	 * @param parent
 	 * @param options MenuGroup.OPTION_*
 	 */
-	public MenuGroup(String name, MenuItem parent, int options) {
-		this(name);
+	public MenuGroup(MenuItem parent, int options) {
+		this(null);
 		// if parent already has a subGroup, appendChild this one after:
 		MenuGroup subGroup = parent.getSubGroup();
 		if (subGroup != null) {
@@ -257,11 +264,7 @@ public class MenuGroup extends NativeObject {
 		return false;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public native void setOption(int options);
+	public native void setOptions(int options);
 	public native int getOptions();
 
 	private static void putGroup(MenuGroup group) {

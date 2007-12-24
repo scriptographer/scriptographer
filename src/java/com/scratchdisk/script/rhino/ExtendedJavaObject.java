@@ -99,7 +99,7 @@ public class ExtendedJavaObject extends NativeJavaObject {
 	}
 	
 	public void put(String name, Scriptable start, Object value) {
-		RuntimeException exc = null;
+		EvaluatorException error = null;
         if (members.has(name, false)) {
 			try {
 		        // We could be asked to modify the value of a property in the
@@ -107,20 +107,26 @@ public class ExtendedJavaObject extends NativeJavaObject {
 		        // we modify it in the prototype rather than copy it down.
 	            members.put(this, name, javaObject, value, false);
 				return; // done
-			} catch (RuntimeException e) {
-				exc = e;
+			} catch (EvaluatorException e) {
+				error = e;
 			}
 		}
-		// still here? let's try oter things
+		// Still here? Let's try other things
 		if (name.equals("prototype")) {
 			if (value instanceof Scriptable)
 				setPrototype((Scriptable) value);
 		} else if (properties != null) {
+			// Ignore EvaluatorException exceptions that might have happened in
+			// members.put above. These would happen if the user tries to
+			// override a Java method or field. We allow this on the level of
+			// the wrapper though, if the wrapper was created unsealed (meaning
+			// properties exist).
+			// TODO: Find out what other EvaluatorException might get thrown
+			// where this should not be done, and compare strings if needed...
 			properties.put(name, value);
-		} else {
-			// if nothing worked, throw the error again
-			if (exc != null)
-				throw exc;
+		} else if (error != null) {
+			// If nothing of the above worked, throw the error again.
+			throw error;
 		}
 	}
 	

@@ -224,7 +224,7 @@ public class Document extends DictionaryObject {
 	
 	public native void setRulerOrigin(Point pt);
 
-	public native Point getSize();
+	public native Size getSize();
 
 	/**
 	 * setSize only works while reading a document!

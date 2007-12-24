@@ -50,18 +50,20 @@ public class MenuItem extends NativeObject{
 	public final static int
 		OPTION_NONE 			= 0,
 		OPTION_WANTS_UPDATE 	= 1 << 0,
-		OPTION_ALWAYS_ENABLED	= 1 << 1;
-
+		OPTION_ALWAYS_ENABLED	= 1 << 1,
+		OPTION_SEPARATOR		= 1 << 2;
+	
 	protected String name;
-	protected String text;
 	protected MenuGroup group;
 	private MenuGroup subGroup;
 
 	private static IntMap items = new IntMap();
 
-	public MenuItem(MenuGroup group, String name, String text, int options) {
-		this.name = name;
-		this.text = text;
+	private static int uniqueId = 0;
+
+	public MenuItem(MenuGroup group, int options) {
+		this.name = " Scriptographer Menu Item " + (++uniqueId);
+
 		this.group = group;
 
 		synchronized(items) {
@@ -78,7 +80,7 @@ public class MenuItem extends NativeObject{
 		
 		// if no item has been taken over, create a new one:
 		if (handle == 0)
-			handle = nativeCreate(name, text, group.name, options);
+			handle = nativeCreate(this.name, this.name, group.name, options);
 
 		if (handle == 0)
 			throw new RuntimeException("Unable to create MenuItem");
@@ -86,22 +88,8 @@ public class MenuItem extends NativeObject{
 		putItem(this);
 	}
 
-	public MenuItem(MenuGroup group, String name, String text) {
-		this(group, name, text, OPTION_NONE);
-	}
-
-	/**
-	 * Uses text for the item's name as well.
-	 */
-	public MenuItem(MenuGroup group, String text, int options) {
-		this (group, text, text, options);
-	}
-
-	/**
-	 * Uses text for the item's name as well.
-	 */
-	public MenuItem(MenuGroup group, String text) {
-		this (group, text, text, OPTION_NONE);
+	public MenuItem(MenuGroup group) {
+		this (group, OPTION_NONE);
 	}
 
 	/**
@@ -117,28 +105,14 @@ public class MenuItem extends NativeObject{
 	 * 
 	 * @see MenuItem(MenuGroup, String, String, int)
 	 */
-	public MenuItem(MenuItem parentItem, String name, String text, int options) {
-		// if a subGroup as created earlier, createSubGroup does not create a
+	public MenuItem(MenuItem parentItem, int options) {
+		// If a subGroup as created earlier, createSubGroup does not create a
 		// new one
-		this(parentItem.createSubGroup(), name, text, options);
+		this(parentItem.createSubGroup(), options);
 	}
 
-	public MenuItem(MenuItem parentItem, String name, String text) {
-		this(parentItem, name, text, OPTION_NONE);
-	}
-
-	/**
-	 * Uses text for the item's name as well.
-	 */
-	public MenuItem(MenuItem parentItem, String text, int options) {
-		this(parentItem, text, text, options);
-	}
-
-	/**
-	 * Uses text for the item's name as well.
-	 */
-	public MenuItem(MenuItem parentItem, String text) {
-		this(parentItem, text, text, OPTION_NONE);
+	public MenuItem(MenuItem parentItem) {
+		this(parentItem, OPTION_NONE);
 	}
 
 	public MenuGroup getSubGroup() {
@@ -152,7 +126,7 @@ public class MenuItem extends NativeObject{
 	 */
 	public MenuGroup createSubGroup(int options) {
 		if (subGroup == null)
-			subGroup = new MenuGroup(name, this, options);
+			subGroup = new MenuGroup(this, options);
 		return subGroup;
 	}
 
@@ -167,10 +141,9 @@ public class MenuItem extends NativeObject{
 	 * @param name
 	 * @param text
 	 */
-	protected MenuItem(int handle, String name, String text, MenuGroup group) {
+	protected MenuItem(int handle, String name, MenuGroup group) {
 		super(handle);
 		this.name = name;
-		this.text = text;
 		this.group = group;
 		putItem(this);
 	}
@@ -185,11 +158,11 @@ public class MenuItem extends NativeObject{
 	 * @param groupName
 	 * @return
 	 */
-	protected static MenuItem wrapHandle(int handle, String name, String text,
+	protected static MenuItem wrapHandle(int handle, String name,
 			int groupHandle, String groupName) {
 		MenuItem item = getItem(handle);
 		if (item == null)
-			item = new MenuItem(handle, name, text, MenuGroup.wrapGroupHandle(
+			item = new MenuItem(handle, name, MenuGroup.wrapGroupHandle(
 					groupHandle, groupName));
 		return item;
 	}
@@ -218,28 +191,15 @@ public class MenuItem extends NativeObject{
 		if (obj instanceof MenuItem) {
 			MenuItem item = (MenuItem) obj;
 			return name.equals(item.name) &&
-					text.equals(item.text) &&
 					group.equals(item.group);
 		}
 		return false;
 	}
 
-	public String getName() {
-		return name;
-	}
+	public native String getText();
+	public native void setText(String text);
 
-	public String getText() {
-		return text;
-	}
-
-	public void setText(String text) {
-		this.text = text;
-		nativeSetText(text);
-	}
-
-	private native void nativeSetText(String text);
-
-	public native void setOption(int options);
+	public native void setOptions(int options);
 	public native int getOptions();
 
 	public native void setEnabled(boolean enabled);
@@ -247,6 +207,19 @@ public class MenuItem extends NativeObject{
 
 	public native void setChecked(boolean checked);
 	public native boolean isChecked();
+
+	public void setSeparator(boolean separator) {
+		int options = getOptions();
+		if (separator) options |= OPTION_SEPARATOR;
+		else options &= ~OPTION_SEPARATOR;
+		setOptions(options);
+		// This seems to do the trick really:
+		setText(separator ? "-" : "");
+	}
+	
+	public boolean getSeparator() {
+		return (getOptions() & OPTION_SEPARATOR) != 0;
+	}
 
 	// TODO: add support for UpdateMenuItemAutomatically and all the parameters
 	// needed for it
@@ -276,6 +249,10 @@ public class MenuItem extends NativeObject{
 
 	public void setOnUpdate(Callable onUpdate) {
 		this.onUpdate = onUpdate;
+		int options = this.getOptions();
+		if (onUpdate != null) options |= OPTION_WANTS_UPDATE;
+		else options &= ~OPTION_WANTS_UPDATE;
+		this.setOptions(options);
 	}
 	
 	protected void onUpdate(int inArtwork, int isSelected, int isTrue)

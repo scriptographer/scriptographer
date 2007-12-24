@@ -1,13 +1,14 @@
 Global Scope
 Point
 Rectangle
+Size
+Matrix
 Color
 	CMYKColor
 	GrayColor
 	RGBColor
 	GradientColor
 	PatternColor
-Matrix
 Art
 	Path
 	CompoundPath

@@ -32,6 +32,7 @@
 #include "ScriptographerEngine.h"
 #include "admGlobals.h"
 #include "com_scriptographer_adm_Item.h"
+#include "com_scriptographer_adm_Notifier.h"
 
 /*
  * com.scriptographer.awt.Item
@@ -50,8 +51,16 @@ ASErr ASAPI Item_onInit(ADMItemRef item) {
 	DEFINE_CALLBACK_PROC(Item_onNotify);
 	sADMItem->SetNotifyProc(item, (ADMItemNotifyProc) CALLBACK_PROC(Item_onNotify));
 
+	// Call onNotify with NOTIFIER_INITIALIZE
+	JNIEnv *env = gEngine->getEnv();
+	try {
+		jobject obj = gEngine->getItemObject(item);
+		gEngine->callVoidMethodReport(env, obj, gEngine->mid_adm_NotificationHandler_onNotify_int,
+									  (jint) com_scriptographer_adm_Notifier_NOTIFIER_INITIALIZE);
+	} EXCEPTION_CATCH_REPORT(env);
 	return kNoErr;
 }
+
 
 void ASAPI Item_onDestroy(ADMItemRef item) {
 	if (gEngine != NULL) {

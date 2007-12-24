@@ -308,7 +308,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setRulerOrigin(JNIEnv
 }
 
 /*
- * com.scriptographer.ai.Point getSize()
+ * com.scriptographer.ai.Size getSize()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSize(JNIEnv *env, jobject obj) {
 	jobject size = NULL;
@@ -319,7 +319,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSize(JNIEnv *en
 		AIDocumentSetup setup;
 		sAIDocument->GetDocumentSetup(&setup);
 		DEFINE_POINT(pt, setup.width, setup.height);
-		size = gEngine->convertPoint(env, &pt);
+		size = gEngine->convertSize(env, &pt);
 	} EXCEPTION_CONVERT(env);
 	return size;
 }

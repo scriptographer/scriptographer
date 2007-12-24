@@ -176,7 +176,7 @@ public abstract class Item extends CallbackHandler {
 	private Size prefSize = null;
 
 	protected Item() {
-		// Call function as it is overriden by Button, where it sets 
+		// Call function as it is overridden by Button, where it sets 
 		// margins according to platform
 		setMargins(0, 0, 0, 0);
 	}
@@ -187,6 +187,7 @@ public abstract class Item extends CallbackHandler {
 	 * @param dialog
 	 * @param type
 	 * @param options
+	 * @throws Exception
 	 */
 	protected Item(Dialog dialog, int type, int options) {
 		this();
@@ -203,6 +204,7 @@ public abstract class Item extends CallbackHandler {
 	 * 
 	 * @param dialog
 	 * @param handle
+	 * @throws Exception
 	 */
 	protected Item(Dialog dialog, long handle) {
 		this();
@@ -249,6 +251,21 @@ public abstract class Item extends CallbackHandler {
 	 * Callback functions:
 	 */
 
+	private Callable onInitialize = null;
+
+	public Callable getOnInitialize() {
+		return onInitialize;
+	}
+
+	public void setOnInitialize(Callable onInitialize) {
+		this.onInitialize = onInitialize;
+	}
+
+	protected void onInitialize() throws Exception {
+		if (onInitialize != null)
+			ScriptographerEngine.invoke(onInitialize, this);
+	}
+
 	private Callable onDestroy = null;
 	
 	public Callable getOnDestroy() {
@@ -268,10 +285,16 @@ public abstract class Item extends CallbackHandler {
 	}
 
 	protected void onNotify(int notifier) throws Exception {
-		if (notifier == Notifier.NOTIFIER_DESTROY)
+		switch (notifier) {
+		case Notifier.NOTIFIER_INITIALIZE:
+			onInitialize();
+			break;
+		case Notifier.NOTIFIER_DESTROY:
 			onDestroy();
+			break;
+		}
 	}
-	
+
 	/*
 	 * ADM stuff:
 	 */

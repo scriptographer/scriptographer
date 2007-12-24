@@ -31,6 +31,8 @@
 
 package com.scratchdisk.script.rhino;
 
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeJavaMethod;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
 
@@ -68,37 +70,6 @@ public class ListWrapper extends ExtendedJavaObject {
 		return javaObject != null && index < ((ReadOnlyList) javaObject).size();
 	}
 
-	public Object get(int index, Scriptable scriptable) {
-		if (javaObject != null) {
-			Object obj = ((ReadOnlyList) javaObject).get(index);
-			if (obj != null)
-				return toObject(obj, scriptable);
-		}
-		return Scriptable.NOT_FOUND;
-	}
-
-	public boolean has(String name, Scriptable start) {
-		return super.has(name, start) || // TODO: needed? name.equals("length") ||
-			javaObject instanceof StringIndexList && javaObject != null && 
-				((StringIndexList) javaObject).get(name) != null;
-	}
-
-	public Object get(String name, Scriptable scriptable) {
-		Object obj = super.get(name, scriptable);
-		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
-			 if (name.equals("length")) {
-				 return new Integer(((ReadOnlyList) javaObject).size());
-			 } else if (javaObject instanceof StringIndexList) {
-				obj = ((StringIndexList) javaObject).get(name);
-				if (obj != null)
-					obj = toObject(obj, scriptable);
-				else
-					obj = Scriptable.NOT_FOUND;
-			}
-		}
-		return obj;
-	}
-
 	public void put(int index, Scriptable start, Object value) {
 		if (javaObject != null && javaObject instanceof SimpleList) {
 			SimpleList list = ((SimpleList) javaObject);
@@ -113,5 +84,60 @@ public class ListWrapper extends ExtendedJavaObject {
 				list.set(index, value);
 			}
 		}
+	}
+
+	public Object get(int index, Scriptable start) {
+		if (javaObject != null) {
+			Object obj = ((ReadOnlyList) javaObject).get(index);
+			if (obj != null)
+				return toObject(obj, start);
+		}
+		return Scriptable.NOT_FOUND;
+	}
+
+	public boolean has(String name, Scriptable start) {
+		return super.has(name, start) || // TODO: needed? name.equals("length") ||
+			javaObject instanceof StringIndexList && javaObject != null && 
+				((StringIndexList) javaObject).get(name) != null;
+	}
+
+	public void put(String name, Scriptable start, Object value) {
+		// Since lists have the native size method that's alredy accessible
+		// through "length", offer access here to get/setSize if these are
+		// present, such as in Scriptographer's HierarchyList, where they
+		// get / set the item's dimensions.
+		if (name.equals("size") && members.has("setSize", false)) {
+			Object obj = members.get(this, "setSize", javaObject, false);
+			if (obj instanceof NativeJavaMethod) {
+				NativeJavaMethod setSize = (NativeJavaMethod) obj;
+				setSize.call(Context.getCurrentContext(), start.getParentScope(), this, new Object[] { value });
+				return;
+			}
+		}
+		super.put(name, start, value);
+	}
+
+	public Object get(String name, Scriptable start) {
+		// Again, allow access to getSize, if it's there. See #put
+		if (name.equals("size") && members.has("getSize", false)) {
+			Object obj = members.get(this, "getSize", javaObject, false);
+			if (obj instanceof NativeJavaMethod) {
+				NativeJavaMethod getSize = (NativeJavaMethod) obj;
+				return getSize.call(Context.getCurrentContext(), start.getParentScope(), this, new Object[] {});
+			}
+		}
+		Object obj = super.get(name, start);
+		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
+			 if (name.equals("length")) {
+				 return new Integer(((ReadOnlyList) javaObject).size());
+			 } else if (javaObject instanceof StringIndexList) {
+				obj = ((StringIndexList) javaObject).get(name);
+				if (obj != null)
+					obj = toObject(obj, start);
+				else
+					obj = Scriptable.NOT_FOUND;
+			}
+		}
+		return obj;
 	}
 }

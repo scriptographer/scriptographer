@@ -30,7 +30,7 @@
  */
 
 var aboutDialog = new ModalDialog(function() {
-	this.title = "About Scriptographer";
+	this.title = 'About Scriptographer';
 
 	// Add trailing zeros to revision
 	var revision = scriptographer.revision + '';
@@ -38,26 +38,26 @@ var aboutDialog = new ModalDialog(function() {
 		revision = '0' + revision;
 
 	var logo = new ImageStatic(this) {
-		image: getImage("logo.png"),
+		image: getImage('logo.png'),
 		rightMargin: 10
 	};
 
 	var text = new Static(this) {
-		text: "Scriptographer " + scriptographer.version + "." + revision + "\n"
-			+ "http://www.scriptographer.com\n\n"
-			+ "\u00a9 2001-" + (new Date().getFullYear()) + " J\u00fcrg Lehni\n"
-			+ "http://www.scratchdisk.com\n\n"
-			+ "All rights reserved.\n\n"
-			+ "Illustrator " + app.version + "." + app.revision + "\n"
-			+ "Java " + java.lang.System.getProperty("java.version") + "\n",
+		text: 'Scriptographer ' + scriptographer.version + '.' + revision + '\n'
+			+ 'http://www.scriptographer.com\n\n'
+			+ '\u00a9 2001-' + (new Date().getFullYear()) + ' J\u00fcrg Lehni\n'
+			+ 'http://www.scratchdisk.com\n\n'
+			+ 'All rights reserved.\n\n'
+			+ 'Illustrator ' + app.version + '.' + app.revision + '\n'
+			+ 'Java ' + java.lang.System.getProperty('java.version') + '\n',
 
 		bottomMargin: 10,
 
 		onTrack: function(tracker) {
 			if (tracker.modifiers & Tracker.MODIFIER_CLICK) {
-				var line = Math.floor(tracker.point.y / this.getTextSize(" ", -1).height);
-				var url = line == 1 ? "http://www.scriptographer.com"
-						: line == 4 ? "http://www.scratchdisk.com"
+				var line = Math.floor(tracker.point.y / this.getTextSize(' ', -1).height);
+				var url = line == 1 ? 'http://www.scriptographer.com'
+						: line == 4 ? 'http://www.scratchdisk.com'
 						: null;
 				if (url && tracker.point.x < this.getTextSize(url, -1).width)
 					app.launch(url);

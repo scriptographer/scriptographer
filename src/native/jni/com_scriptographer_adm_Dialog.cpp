@@ -68,12 +68,12 @@ ASErr ASAPI Dialog_onInit(ADMDialogRef dialog) {
 ADMBoolean ADMAPI Dialog_onInitialize(ADMDialogRef dialog, ADMTimerRef timerID) {
 	// Clear timer
 	sADMDialog->AbortTimer(dialog, timerID);
-	// Call onNotify with NOTIFIER_WINDOW_INITIALIZE
+	// Call onNotify with NOTIFIER_INITIALIZE
 	JNIEnv *env = gEngine->getEnv();
 	try {
 		jobject obj = gEngine->getDialogObject(dialog);
 		gEngine->callVoidMethodReport(env, obj, gEngine->mid_adm_NotificationHandler_onNotify_int,
-									  (jint) com_scriptographer_adm_Notifier_NOTIFIER_WINDOW_INITIALIZE);
+									  (jint) com_scriptographer_adm_Notifier_NOTIFIER_INITIALIZE);
 	} EXCEPTION_CATCH_REPORT(env);
 	return true;
 }

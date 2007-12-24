@@ -58,6 +58,8 @@ public class TextEdit extends TextValueItem {
 		STYLE_EXCLUSIVE = 5,      // only for TextEditPopup
 		STYLE_TRACK_RAW_KEYS = 4, // Mac-only; ignores default Carbon event processing; not compatible with kADMUnicodeEditCreateOption
 		STYLE_PASSWORD = 32;      // Win32 value for ES_PADMSWORD
+
+	private boolean unitInitialized = false;
 	
 	protected TextEdit(Dialog dialog, long handle) {
 		super(dialog, handle);
@@ -99,6 +101,18 @@ public class TextEdit extends TextValueItem {
 			} else {
 				return multiline ? TYPE_TEXT_EDIT_MULTILINE : TYPE_TEXT_EDIT;
 			}
+		}
+	}
+
+	public void setValue(float value) {
+		super.setValue(value);
+		// By default we don't want units to be shown, but this only
+		// works when the text edit is actually used for values,
+		// otherwise it would directly be forced into value mode...
+		// So only set it to false if it is for values, and only once.
+		if (!unitInitialized) {
+			this.setShowUnits(false);
+			unitInitialized = true;
 		}
 	}
 	
@@ -377,7 +391,7 @@ public class TextEdit extends TextValueItem {
 	public String getStringValue() {
 		return getText();
 	}
-	
+
 	public native int getPrecision();
 	public native void setPrecision(int precision);
 		

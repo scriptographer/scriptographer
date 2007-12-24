@@ -100,7 +100,6 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		ToggleItem.class,
 		Tracker.class,
 		Margins.class,
-		Size.class,
 
 		// AWT Layout classes
 		BorderLayout.class,
@@ -156,6 +155,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		RGBColor.class,
 		Segment.class,
 		SegmentList.class,
+		com.scriptographer.ai.Size.class,
 		StrokeStyle.class,
 		Swatch.class,
 		SwatchList.class,

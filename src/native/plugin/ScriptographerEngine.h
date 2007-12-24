@@ -168,6 +168,12 @@ public:
 	jfieldID fid_ai_Rectangle_width;
 	jfieldID fid_ai_Rectangle_height;
 	jmethodID mid_ai_Rectangle_set;
+
+	jclass cls_ai_Size;
+	jmethodID cid_ai_Size;
+	jfieldID fid_ai_Size_width;
+	jfieldID fid_ai_Size_height;
+	jmethodID mid_ai_Size_set;
 	
 	jclass cls_ai_Matrix;
 	jmethodID cid_ai_Matrix;
@@ -415,12 +421,19 @@ public:
 	}
 	ADMRect *convertRectangle(JNIEnv *env, jobject rt, ADMRect *res = NULL);	
 
+	// com.scriptographer.ai.Size <-> AIRealPoint
+	jobject convertSize(JNIEnv *env, float width, float height, jobject res = NULL);
+	jobject convertSize(JNIEnv *env, AIRealPoint *size, jobject res = NULL) {
+		return convertSize(env, size->h, size->v, res);
+	}
+	AIRealPoint *convertSize(JNIEnv *env, jobject size, AIRealPoint *res = NULL);
+
 	// com.scriptographer.adm.Size <-> ADMPoint
 	jobject convertSize(JNIEnv *env, int width, int height, jobject res = NULL);
-	jobject convertSize(JNIEnv *env, ADMPoint *dim, jobject res = NULL) {
-		return convertSize(env, dim->h, dim->v, res);
+	jobject convertSize(JNIEnv *env, ADMPoint *size, jobject res = NULL) {
+		return convertSize(env, size->h, size->v, res);
 	}
-	ADMPoint *convertSize(JNIEnv *env, jobject dim, ADMPoint *res = NULL);
+	ADMPoint *convertSize(JNIEnv *env, jobject size, ADMPoint *res = NULL);
 
 	// java.awt.Color <-> ADMRGBColor
 	jobject convertColor(JNIEnv *env, ADMRGBColor *srcCol);	

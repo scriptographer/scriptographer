@@ -41,29 +41,24 @@
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_MenuItem_nativeCreate(JNIEnv *env, jclass cls, jstring name, jstring text, jstring group, jint options) {
 	try {
-#if kPluginInterfaceVersion < kAI12
+		AIMenuItemHandle menuItem = NULL;
 		char *nameStr = gEngine->convertString(env, name);
+
+#if kPluginInterfaceVersion < kAI12
 		AIPlatformAddMenuItemData data;
 		data.groupName = gEngine->convertString(env, group);
 		data.itemText = gEngine->convertString_Pascal(env, text);
-		AIMenuItemHandle menuItem = NULL;
 		sAIMenu->AddMenuItem(gPlugin->getPluginRef(), nameStr, &data, options, &menuItem);
-		delete nameStr;
-		delete data.groupName;
 		delete data.itemText;
-		return (jint) menuItem;
 #else
-		char *nameStr = gEngine->convertString(env, name);
-		char *groupStr = gEngine->convertString(env, group);
 		AIPlatformAddMenuItemDataUS data;
-		data.groupName = groupStr;
+		data.groupName = gEngine->convertString(env, group);
 		data.itemText = gEngine->convertString_UnicodeString(env, text);
-		AIMenuItemHandle menuItem = NULL;
 		sAIMenu->AddMenuItem(gPlugin->getPluginRef(), nameStr, &data, options, &menuItem);
-		delete nameStr;
-		delete groupStr;
-		return (jint) menuItem;
 #endif
+		delete data.groupName;
+		delete nameStr;
+		return (jint) menuItem;
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }
@@ -79,9 +74,27 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_MenuItem_nativeRemove(JNIEnv 
 }
 
 /*
- * void nativeSetText(java.lang.String text)
+ * java.lang.String getText()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_MenuItem_nativeSetText(JNIEnv *env, jobject obj, jstring text) {
+JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_MenuItem_getText(JNIEnv *env, jobject obj) {
+	try {
+		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
+
+#if kPluginInterfaceVersion < kAI12
+		char text[256];
+#else
+		ai::UnicodeString text;
+#endif
+		if (!sAIMenu->GetItemText(item, text))
+			return gEngine->convertString(env, text);
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
+
+/*
+ * void setText(java.lang.String text)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_MenuItem_setText(JNIEnv *env, jobject obj, jstring text) {
 	try {
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 #if kPluginInterfaceVersion < kAI12
@@ -96,9 +109,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_MenuItem_nativeSetText(JNIEnv
 }
 
 /*
- * void setOption(int options)
+ * void setOptions(int options)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_MenuItem_setOption(JNIEnv *env, jobject obj, jint options) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_MenuItem_setOptions(JNIEnv *env, jobject obj, jint options) {
 	try {
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 		sAIMenu->SetMenuItemOptions(item, options);

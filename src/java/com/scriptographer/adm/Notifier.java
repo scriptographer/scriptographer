@@ -72,7 +72,7 @@ public class Notifier {
 		NOTIFIER_PRE_CLIPBOARD_UNDO = 31,
 		NOTIFIER_POST_CLIPBOARD_UNDO = 32,
 		// Pseudo notifiers:
-		NOTIFIER_WINDOW_INITIALIZE = 33,
+		NOTIFIER_INITIALIZE = 33,
 		NOTIFIER_DESTROY = 34;
 
 	private final static String[] notifierTypes = {

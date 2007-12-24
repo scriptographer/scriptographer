@@ -42,7 +42,6 @@ import org.mozilla.javascript.WrappedException;
 
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.util.ClassUtils;
-import com.scratchdisk.util.StringUtils;
 
 /**
  * ScriptException for Rhino, preferably called RhinoException, but
@@ -52,10 +51,16 @@ public class RhinoScriptException extends ScriptException {
 	private RhinoEngine engine;
 
 	private static Throwable getCause(Throwable cause) {
-		if (cause instanceof WrappedException) 
-			return ((WrappedException) cause).getWrappedException();
-		else
-			return cause;
+		if (cause instanceof WrappedException) {
+			Throwable wrapped = ((WrappedException) cause).getWrappedException();
+			// Unwrap wrapped RhinoScriptExceptions if wrapped more than once
+			if (wrapped instanceof RhinoScriptException)
+				cause = ((RhinoScriptException) wrapped).getCause();
+			// Unwrapped multiply wrapped Rhino Exceptions
+			if (wrapped instanceof RhinoException)
+				cause = wrapped;
+		}
+		return cause;
 	}
 
 	private static String getMessage(Throwable cause) {

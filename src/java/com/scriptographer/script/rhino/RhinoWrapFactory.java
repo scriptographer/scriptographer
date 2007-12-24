@@ -47,19 +47,6 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 			Class staticType) {
 		// these are not wrappers, the java return types are simply converted to
 		// these scriptographer types and wrapped afterwards:
-		/*
-		if (obj instanceof java.awt.geom.Rectangle2D) {
-			obj = new Rectangle((java.awt.geom.Rectangle2D) obj);
-		} else if (obj instanceof java.awt.geom.Point2D) {
-			obj = new Point((java.awt.geom.Point2D) obj);
-		} else if (obj instanceof java.awt.geom.AffineTransform
-			&& !(obj instanceof Matrix)) {
-			obj = new Matrix((java.awt.geom.AffineTransform) obj);
-		} else if (obj instanceof java.awt.Dimension) {
-			// TODO: expose Dimension to JS?
-			obj = new Point((java.awt.Dimension) obj);
-		} else
-		*/
 		if (obj instanceof RhinoCallable) {
 			// Handle the ScriptFunction special case, return the unboxed
 			// function value.
