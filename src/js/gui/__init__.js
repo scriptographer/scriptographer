@@ -42,10 +42,17 @@ importPackage(Packages.com.scriptographer.script);
 
 app.closeProgress();
 
-include("console.js");
-include("about.js");
-include("main.js");
-if (!script.preferences.installed) {
-	include("install.js");
-	script.preferences.installed = true;
+if (!script.preferences.accepted) {
+	include('license.js');
+	script.preferences.accepted = usageDialog.doModal() == usageDialog.defaultItem;
+}
+
+if (script.preferences.accepted) {
+	include('console.js');
+	include('about.js');
+	include('main.js');
+	if (!script.preferences.installed) {
+		include('install.js');
+		script.preferences.installed = true;
+	}
 }
