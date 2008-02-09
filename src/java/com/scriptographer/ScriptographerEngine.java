@@ -179,7 +179,6 @@ public class ScriptographerEngine {
 		try {
 			String error = t instanceof ScriptException ? 
 					((ScriptException) t).getFullMessage() : t.getMessage();
-			boolean report = true;
 			if (error != null) {
 				String separator = System.getProperty("file.separator");
 				// Shorten file names by removing base form it
@@ -192,16 +191,10 @@ public class ScriptographerEngine {
 				logger.print("Stacktrace: ");
 				System.err.print(error);
 			} else {
-				error = t.toString();
-				// Filter out weird java.lang.ClassCastExceptions on Mac OSX:
-				report = error.indexOf("sun.java2d.HeadlessGraphicsEnvironment") == -1;
-				if (report)
-					System.err.println(t);
+				System.err.println(t);
 			}
-			if (report) {
-				t.printStackTrace(logger);
-				logger.println();
-			}
+			t.printStackTrace(logger);
+			logger.println();
 		} catch (Throwable e) {
 			// Report an error in reportError code...
 			// This should not happen!

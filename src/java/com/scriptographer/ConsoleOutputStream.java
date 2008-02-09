@@ -34,7 +34,6 @@ package com.scriptographer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.regex.Pattern;
 
 /**
  * @author lehni
@@ -86,12 +85,15 @@ public class ConsoleOutputStream extends OutputStream {
 				int sepLength = lineSeparator.length();
 				if (pos > 0 && pos == buffer.length() - sepLength)
 					buffer.delete(pos, pos + sepLength);
-				String str = buffer.toString();
-				// Make sure we have the right line separators:
-				str = str.replaceAll("\\n|\\r\\n|\\r", lineSeparator);
-				// And convert tabs to 4 spaces
-				str = str.replaceAll("\\t", "    ");
-				callback.println(str);
+				// Filter out weird java.lang.ClassCastExceptions on Mac OSX:
+				if (!ScriptographerEngine.isMacintosh() || buffer.indexOf("java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment") == -1) {
+					String str = buffer.toString();
+					// Make sure we have the right line separators:
+					str = str.replaceAll("\\n|\\r\\n|\\r", lineSeparator);
+					// And convert tabs to 4 spaces
+					str = str.replaceAll("\\t", "    ");
+					callback.println(str);
+				}
 				buffer.setLength(0);
 			} else {
 				buffer.append(lineSeparator);
