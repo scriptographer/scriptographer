@@ -115,7 +115,7 @@ public class RhinoWrapFactory extends WrapFactory {
 		return obj;
 	}
 
-	public int getConversionWeight(Object from, Class to, int defaultValue) {
+	public int getConversionWeight(Object from, Class to, int defaultWeight) {
 		// See if object "from" can be converted to an instance of class "to"
 		// by the use of a map constructor or the setting of all the fields
 		// of a NativeObject on the instance after its creation,
@@ -133,7 +133,7 @@ public class RhinoWrapFactory extends WrapFactory {
 			else
 				return CONVERSION_TRIVIAL + 2;
 		}
-		return defaultValue;
+		return defaultWeight;
 	}
 
 	public Object convert(Object from, Class to) {
