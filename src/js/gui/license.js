@@ -29,7 +29,7 @@
  * $Id$
  */
 
-var usageDialog = new ModalDialog(function() {
+var licenseDialog = new ModalDialog(function() {
 	// this.font = Dialog.FONT_PALETTE;
 
 	// Add trailing zeros to revision

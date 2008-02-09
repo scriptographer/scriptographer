@@ -42,7 +42,7 @@ importPackage(Packages.com.scriptographer.script);
 
 if (!script.preferences.accepted) {
 	include('license.js');
-	script.preferences.accepted = usageDialog.doModal() == usageDialog.defaultItem;
+	script.preferences.accepted = licenseDialog.doModal() == licenseDialog.defaultItem;
 }
 
 if (script.preferences.accepted) {
