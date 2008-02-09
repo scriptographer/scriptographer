@@ -32,13 +32,61 @@
 package com.scriptographer.adm;
 
 /**
+ * A container that groups items logically, so that they can be
+ * enabled or disabled together. The group object does not have a
+ * visible representation, and does not affect the appearance or
+ * position of its members, if the AWT layouting layer is not used.
+ * It can however set a layout and add items to its content, in 
+ * which case the positioning is taken care of.
+ *
  * @author lehni
  */
-public class ItemGroup extends Item {
+public class ItemGroup extends Item implements ComponentGroup {
 
 	public ItemGroup(Dialog dialog) {
 		super(dialog, TYPE_ITEMGROUP, OPTION_NONE);
 	}
 
-	public native void addItem(Item item);
+	private native void nativeAdd(Item item);
+	private native void nativeRemove(Item item);
+
+	protected void addComponent(Component component) {
+		// Add natively only if it's not a fake item such as Spacer
+		if (component.handle != 0 && component instanceof Item)
+			nativeAdd((Item) component);
+	}
+
+	protected void removeComponent(Component component) {
+		// Remove natively only if it's not a fake item such as Spacer
+		if (component.handle != 0 && component instanceof Item)
+			nativeRemove((Item) component);
+	}
+
+	public void add(Item item, String constraints) {
+		if (constraints != null)
+			getContent().set(constraints, item);
+		else if (component != null)
+			getContent().add(item);
+		else
+			addComponent(item);
+	}
+
+	public void add(Item item) {
+		add(item, null);
+	}
+
+	public void remove(Item item) {
+		if (component != null)
+			getContent().remove(item);
+		else
+			removeComponent(item);
+	}
+	
+	public void setSize(int width, int height) {
+		super.setSize(width, height);
+	}
+
+	public void setBounds(int x, int y, int width, int height) {
+		super.setBounds(x, y, width, height);
+	}
 }

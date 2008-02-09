@@ -115,14 +115,14 @@ public class RhinoWrapFactory extends WrapFactory {
 		return obj;
 	}
 
-	public int getConversionWeight(Object from, Class to) {
+	public int getConversionWeight(Object from, Class to, int defaultValue) {
 		// See if object "from" can be converted to an instance of class "to"
 		// by the use of a map constructor or the setting of all the fields
 		// of a NativeObject on the instance after its creation,
-		// both added features of JS in Scriptographer:
+		// all added features of JS in Scriptographer:
 		if (from instanceof Scriptable
 				&& (getMapConstructor(to) != null || from instanceof NativeObject
-						&& getZeroArgumentConstructor(to) != null)) {
+						&& (Map.class.isAssignableFrom(to) || getZeroArgumentConstructor(to) != null))) {
 			if (from instanceof Wrapper)
 				from = ((Wrapper) from).unwrap();
 			// Now if there are more options here to convert from, e.g. Size and Point
@@ -133,7 +133,7 @@ public class RhinoWrapFactory extends WrapFactory {
 			else
 				return CONVERSION_TRIVIAL + 2;
 		}
-		return CONVERSION_NONE;
+		return defaultValue;
 	}
 
 	public Object convert(Object from, Class to) {
@@ -174,7 +174,7 @@ public class RhinoWrapFactory extends WrapFactory {
 	}
 
 	/**
-	 * Takes a scriptable and either wraps it in a MapAdapter or unwrapps a map
+	 * Takes a scriptable and either wraps it in a MapAdapter or unwraps a map
 	 * within it if it is a MapWrapper. This avoids multiple wrapping of
 	 * MapWrappers and MapAdapters
 	 * 

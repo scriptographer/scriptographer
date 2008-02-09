@@ -36,12 +36,23 @@
  */
 
 /*
- * void addItem(com.scriptographer.adm.Item item)
+ * void nativeAdd(com.scriptographer.adm.Item item)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_ItemGroup_addItem(JNIEnv *env, jobject obj, jobject item) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ItemGroup_nativeAdd(JNIEnv *env, jobject obj, jobject item) {
 	try {
 	    ADMItemRef itemRef = gEngine->getItemRef(env, obj);
 	    ADMItemRef subItemRef = gEngine->getItemRef(env, item);
 	    sADMItem->AddItem(itemRef, subItemRef);
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * void nativeRemove(com.scriptographer.adm.Item item)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_ItemGroup_nativeRemove(JNIEnv *env, jobject obj, jobject item) {
+	try {
+	    ADMItemRef itemRef = gEngine->getItemRef(env, obj);
+	    ADMItemRef subItemRef = gEngine->getItemRef(env, item);
+	    sADMItem->RemoveItem(itemRef, subItemRef);
 	} EXCEPTION_CONVERT(env);
 }

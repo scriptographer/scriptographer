@@ -46,7 +46,7 @@ public class JythonScope extends Scope {
 	private PyObject scope;
 
 	/**
-	 * Wrapps an existing scope
+	 * Wraps an existing scope
 	 * 
 	 * @param scope
 	 */

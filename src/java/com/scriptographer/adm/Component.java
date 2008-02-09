@@ -31,7 +31,12 @@
 
 package com.scriptographer.adm;
 
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.util.Map;
+
 import com.scriptographer.ScriptographerEngine; 
+import com.scratchdisk.list.List;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.ConversionUtils;
 
@@ -44,7 +49,7 @@ import com.scratchdisk.util.ConversionUtils;
  *
  * @author lehni
  */
-abstract class CallbackHandler extends NotificationHandler {
+abstract class Component extends NotificationHandler {
 	/*
 	 * Use an activation mechanism for the expensive callback routines (the ones
 	 * that get called often). These are only activated if the user actually
@@ -137,11 +142,180 @@ abstract class CallbackHandler extends NotificationHandler {
 	}
 
 	protected void onResize(int dx, int dy) throws Exception {
-		// Retrieve through getter so it can be overriden by subclasses,
+		// Retrieve through getter so it can be overridden by subclasses,
 		// e.g. HierarchyList
 		Callable onResize = this.getOnResize();
 		if (onResize != null)
 			ScriptographerEngine.invoke(onResize, this,
 					new Object[] { new Integer(dx), new Integer(dy) });
+	}
+
+	/*
+	 * AWT / Layout Bridge
+	 */
+
+	protected abstract java.awt.Component getAWTComponent();
+
+	protected AWTContainer getAWTContainer() {
+		java.awt.Component component = getAWTComponent();
+		if (!(component instanceof AWTContainer))
+			throw new RuntimeException("Component does not support sub components.");
+		return (AWTContainer) component;
+	}
+
+	public void setLayout(LayoutManager mgr) {
+		this.getAWTContainer().setLayout(mgr);
+	}
+
+	public void setMargin(int top, int right, int bottom, int left) {
+		this.getAWTContainer().setInsets(top, left, bottom, right);
+	}
+
+	public Border getMargin() {
+		return new Border(this.getAWTContainer().getInsets());
+	}
+
+	public void setMargin(Border margin) {
+		setMargin(margin.top, margin.right, margin.bottom, margin.left);
+	}
+
+	public void setMargin(int margin) {
+		setMargin(margin, margin, margin, margin);
+	}
+
+	public void setMargin(int[] margin) {
+		setMargin(margin[0], margin[1], margin[2], margin[3]);
+	}
+
+	public void setMargin(int ver, int hor) {
+		setMargin(ver, hor, ver, hor);
+	}
+
+	public int getLeftMargin() {
+		return getMargin().left;
+	}
+
+	public void setLeftMargin(int left) {
+		Border margin = getMargin();
+		margin.left = left;
+		setMargin(margin);
+	}
+
+	public int getTopMargin() {
+		return getMargin().top;
+	}
+
+	public void setTopMargin(int top) {
+		Border margin = getMargin();
+		margin.top = top;
+		setMargin(margin);
+	}
+
+	public int getRightMargin() {
+		return getMargin().right;
+	}
+
+	public void setRightMargin(int right) {
+		Border margin = getMargin();
+		margin.right = right;
+		setMargin(margin);
+	}
+
+	public int getBottomMargin() {
+		return getMargin().bottom;
+	}
+
+	public void setBottomMargin(int bottom) {
+		Border margin = getMargin();
+		margin.bottom = bottom;
+		setMargin(margin);
+	}
+
+	protected void addComponent(Component component) {
+		// Do nothing here, only ItemGroup uses it
+	}
+
+	protected void removeComponent(Component component) {
+		// Do nothing here, only ItemGroup uses it
+	}
+
+	private Content content = null;
+
+	public Content getContent() {
+		if (content == null)
+			content = new Content(this);
+		return content;
+	}
+
+	public void setContent(Object[] elements) {
+		Content content = getContent();
+		content.removeAll();
+		content.addAll(elements);
+	}
+
+	public void setContent(List elements) {
+		Content content = getContent();
+		content.removeAll();
+		content.addAll(elements);
+	}
+	
+	public void setContent(Map elements) {
+		Content content = getContent();
+		content.removeAll();
+		content.addAll(elements);
+	}
+
+	public void addToContent(Component component) {
+		getContent().add(component);
+	}
+
+	public void addToContent(Component component, String constraints) {
+		getContent().set(constraints, component);
+	}
+
+	public void addToContent(Component component, int index) {
+		getContent().add(index, component);
+	}
+
+	public void removeFromContent(Component component) {
+		getContent().remove(component);
+	}
+	
+	public void removeFromContent(int index) {
+		getContent().remove(index);
+	}
+
+	public void removeFromContent(String constraints) {
+		getContent().remove(constraints);
+	}
+
+	public void removeContent() {
+		getContent().removeAll();
+	}
+/**
+	 * An abstract class that adds some commonly used things like
+	 * setInsets to java.awt.Container.
+	 * 
+	 * @author lehni
+	 *
+	 */
+	abstract class AWTContainer extends java.awt.Container implements ComponentWrapper {
+		Insets insets;
+
+		public void setInsets(int top, int left, int bottom, int right) {
+			insets = new Insets(top, left, bottom, right);
+		}
+
+		public Insets getInsets() {
+			return insets;
+		}
+
+		public void doLayout() {
+			super.doLayout();
+			// now walk through all the items do their layout as well:
+			java.awt.Component[] components = getComponents();
+			for (int i = 0; i < components.length; i++)
+				components[i].doLayout();
+		}
 	}
 }

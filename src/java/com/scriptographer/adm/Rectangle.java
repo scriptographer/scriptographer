@@ -183,6 +183,29 @@ public class Rectangle {
 		setBottom(y);
 	}
 
+	/**
+	 * Adds the padding to the given rectangle and returns the modified rectangle
+	 * @param border
+	 */
+	public Rectangle add(Border border) {
+		x -= border.left;
+		y -= border.top;
+		width += border.left + border.right;
+		height += border.top + border.bottom;
+		return this;
+	}
+
+	/**
+	 * @param border
+	 */
+	public Rectangle subtract(Border border) {
+		x += border.left;
+		y += border.top;
+		width -= border.left + border.right;
+		height -= border.top + border.bottom;
+		return this;
+	}
+
 	public Object clone() {
 		return new Rectangle(this);
 	}

@@ -26,7 +26,7 @@
  *
  * File created on 16.02.2005.
  *
- * $Id$
+ * $Id: AbstractExtendedList.java 402 2007-08-22 23:24:49Z lehni $
  */
 
 package com.scratchdisk.list;
@@ -35,31 +35,46 @@ package com.scratchdisk.list;
 /**
  * @author lehni
  */
-public interface ExtendedList extends List {
+public abstract class AbstractList extends AbstractReadOnlyList implements List {
 
-	int indexOf(Object element);
-	int lastIndexOf(Object element);
+	public Object add(Object element) {
+		return add(size(), element);
+	}
 
-	boolean contains(Object o);
+	public void remove(int fromIndex, int toIndex) {
+		for (int i = toIndex - 1; i >= fromIndex; i--) {
+			remove(i);
+		}
+	}
 
-	boolean addAll(int index, List elements);
-	boolean addAll(int index, Object[] elements);
+	public void removeAll() {
+		remove(0, size());
+	}
 
-	boolean containsAll(List elementsc);
-	boolean containsAll(Object[] elements);
+	/*
+	 * Implement addAll with index too, although this is only
+	 * required by ExtendedList. It is easier to implement all
+	 * in one go like this though.
+	 */
+	public boolean addAll(int index, List elements) {
+		boolean modified = false;
+		int size = elements.size();
+		for (int i = 0; i < size; i++) {
+			if (add(index++, elements.get(i)) != null)
+				modified = true;
+		}
+		return modified;
+	}
 
-	boolean removeAll(ExtendedList elements);
-	boolean removeAll(Object[] elements);
+	public final boolean addAll(List elements) {
+		return addAll(size(), elements);
+	}
 
-	boolean retainAll(ExtendedList elements);
-	boolean retainAll(Object[] elements);
+	public final boolean addAll(int index, Object[] elements) {
+		return addAll(index, Lists.asList(elements));
+	}
 
-	Object[] toArray();
-	Object[] toArray(Object a[]);
-
-	Object getFirst();
-	Object getLast();
-
-	Object removeFirst();
-	Object removeLast();
+	public final boolean addAll(Object[] elements) {
+		return addAll(size(), elements);
+	}
 }

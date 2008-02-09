@@ -34,6 +34,7 @@ package com.scriptographer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.regex.Pattern;
 
 /**
  * @author lehni
@@ -79,13 +80,18 @@ public class ConsoleOutputStream extends OutputStream {
 		char c = (char) b;
 		if (c == newLine) {
 			if (enabled) {
-				// if there is already a newline at the end of this line, remove
+				// If there is already a newline at the end of this line, remove
 				// it as writer.println adds it again...
 				int pos = buffer.lastIndexOf(lineSeparator);
 				int sepLength = lineSeparator.length();
 				if (pos > 0 && pos == buffer.length() - sepLength)
 					buffer.delete(pos, pos + sepLength);
-				callback.println(buffer.toString());
+				String str = buffer.toString();
+				// Make sure we have the right line separators:
+				str = str.replaceAll("\\n|\\r\\n|\\r", lineSeparator);
+				// And convert tabs to 4 spaces
+				str = str.replaceAll("\\t", "    ");
+				callback.println(str);
 				buffer.setLength(0);
 			} else {
 				buffer.append(lineSeparator);

@@ -35,11 +35,8 @@ package com.scratchdisk.list;
 /**
  * @author lehni
  */
-public abstract class AbstractExtendedList implements ExtendedList {
-
-	public Object add(Object element) {
-		return add(size(), element);
-	}
+public abstract class AbstractExtendedList extends AbstractList
+	implements ExtendedList {
 
 	public Object getFirst() {
 		return get(0);
@@ -88,38 +85,6 @@ public abstract class AbstractExtendedList implements ExtendedList {
 		return false;
 	}
 
-	public void remove(int fromIndex, int toIndex) {
-		for (int i = toIndex - 1; i >= fromIndex; i--) {
-			remove(i);
-		}
-	}
-
-	public final void removeAll() {
-		remove(0, size());
-	}
-
-	public boolean addAll(int index, ExtendedList elements) {
-		boolean modified = false;
-		int size = elements.size();
-		for (int i = 0; i < size; i++) {
-			if (add(index++, elements.get(i)) != null)
-				modified = true;
-		}
-		return modified;
-	}
-
-	public final boolean addAll(ExtendedList elements) {
-		return addAll(size(), elements);
-	}
-
-	public final boolean addAll(int index, Object[] elements) {
-		return addAll(index, Lists.asList(elements));
-	}
-
-	public final boolean addAll(Object[] elements) {
-		return addAll(size(), elements);
-	}
-
 	public Object[] toArray(Object[] array) {
 		if (array == null)
 			array = new Object[size()];
@@ -130,14 +95,6 @@ public abstract class AbstractExtendedList implements ExtendedList {
 
 	public final Object[] toArray() {
 		return toArray(null);
-	}
-
-	public ExtendedList getSubList(int fromIndex, int toIndex) {
-		return Lists.createSubList(this, fromIndex, toIndex);
-	}
-
-	public boolean isEmpty() {
-		return size() == 0;
 	}
 
 	public boolean retainAll(ExtendedList elements) {
@@ -168,7 +125,7 @@ public abstract class AbstractExtendedList implements ExtendedList {
 		return removeAll(elements);
 	}
 
-	public boolean containsAll(ExtendedList elements) {
+	public boolean containsAll(List elements) {
 		for (int i = elements.size() - 1; i >= 0; i--) {
 			if (!contains(elements.get(i)))
 				return false;
@@ -178,18 +135,5 @@ public abstract class AbstractExtendedList implements ExtendedList {
 
 	public final boolean containsAll(Object[] elements) {
 		return removeAll(elements);
-	}
-
-	public String toString() {
-		StringBuffer buf = new StringBuffer(256);
-		buf.append("[ ");
-		int size = size();
-		for (int i = 0; i < size; i++) {
-			Object obj = get(i);
-			if (i > 0) buf.append(", ");
-			buf.append(obj.toString());
-		}
-		buf.append(" ]");
-		return buf.toString();
 	}
 }

@@ -31,8 +31,6 @@
 
 package com.scriptographer.adm;
 
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -43,7 +41,7 @@ import com.scriptographer.ScriptographerEngine;
 /**
  * @author lehni
  */
-public abstract class Item extends CallbackHandler {
+public abstract class Item extends Component {
 
 	// options
 	public final static int
@@ -166,21 +164,21 @@ public abstract class Item extends CallbackHandler {
 
 	protected Rectangle nativeBounds = null;
 	protected Rectangle bounds;
-	protected Margins margins;
+	protected Border margin;
 
 	private String toolTip;
 
-	protected AWTComponent component = null;
+	protected java.awt.Component component = null;
 	private Size minSize = null;
 	private Size maxSize = null;
 	private Size prefSize = null;
 
 	protected Item() {
 		// Call function as it is overridden by Button, where it sets 
-		// margins according to platform
-		setMargins(0, 0, 0, 0);
+		// margin according to platform
+		setMargin(0, 0, 0, 0);
 	}
-	
+
 	/**
 	 * Constructor for newly created Items
 	 * 
@@ -218,12 +216,7 @@ public abstract class Item extends CallbackHandler {
 		// nativeSize and nativeBounds are set by the native environment
 		// size and bounds need to be updated depending on margins and
 		// internalInsets
-		bounds = new Rectangle(
-			nativeBounds.x - margins.left,
-			nativeBounds.y - margins.top,
-			nativeBounds.width + margins.left + margins.right,
-			nativeBounds.height + margins.top + margins.bottom
-		);
+		bounds = new Rectangle(nativeBounds).add(margin);
 	}
 
 	public void destroy() {
@@ -237,12 +230,6 @@ public abstract class Item extends CallbackHandler {
 	
 	public Dialog getDialog() {
 		return dialog;
-	}
-	
-	protected Component getComponent() {
-		if (component == null)
-			component = new AWTComponent();
-		return component;
 	}
 	
 	/*
@@ -388,10 +375,10 @@ public abstract class Item extends CallbackHandler {
 
 	protected void updateBounds(int x, int y, int width, int height) {
 		// calculate native values
-		int nativeX = x + margins.left;
-		int nativeY = y + margins.top;
-		int nativeWidth = width - margins.left - margins.right;
-		int nativeHeight = height - margins.top - margins.bottom;
+		int nativeX = x + margin.left;
+		int nativeY = y + margin.top;
+		int nativeWidth = width - margin.left - margin.right;
+		int nativeHeight = height - margin.top - margin.bottom;
 		int deltaX = nativeWidth - nativeBounds.width;
 		int deltaY = nativeHeight - nativeBounds.height;
 
@@ -402,10 +389,11 @@ public abstract class Item extends CallbackHandler {
 			nativeBounds.set(nativeX, nativeY, nativeWidth, nativeHeight);
 		}
 
-		// update bounds
+		// Update bounds
 		bounds.set(x, y, width, height);
-		if (component != null)
-			component.updateBounds(bounds);
+
+		// Update bounds in AWT proxy:
+		updateAWTBounds(bounds);
 
 		if (sizeChanged) {
 			try {
@@ -417,6 +405,21 @@ public abstract class Item extends CallbackHandler {
 		}
 	}
 
+	protected void updateAWTBounds(Rectangle bounds) {
+		if (component != null) {
+			if (component instanceof AWTItemComponent)
+				((AWTItemComponent) component).updateBounds(bounds);
+			else if (component instanceof AWTItemContainer)
+				((AWTItemContainer) component).updateBounds(bounds);
+		}
+	}
+
+	protected void updateAWTMargin(Border margin) {
+		if (component != null && this instanceof ComponentGroup)
+			this.getAWTContainer().setInsets(margin.top, margin.left,
+					margin.bottom, margin.right);
+	}
+
 	public void setBounds(int x, int y, int width, int height) {
 		// Set prefSize so getPreferredSize does not return results from
 		// getBestSize()
@@ -426,7 +429,7 @@ public abstract class Item extends CallbackHandler {
 		if (minSize == null)
 			minSize = prefSize;
 		// updateBounds does all the heavy lifting, except for setting
-		// prefSize, which shouldnt be set when changing location or margins.
+		// prefSize, which shouldn't be set when changing location or margins.
 		updateBounds(x, y, width, height);
 	}
 
@@ -519,13 +522,18 @@ public abstract class Item extends CallbackHandler {
 				break;
 			case TYPE_POPUP_LIST:
 				PopupList list = (PopupList) this;
-				size = new Size(0, 0);
-				for (int i = 0, l = list.size(); i < l; i++) {
-					ListEntry entry = (ListEntry) list.get(i);
-					String text = entry.getText();
-					Size entrySize = getTextSize(text, -1);
-					size.width = Math.max(size.width, entrySize.width);
-					size.height = Math.max(size.height, entrySize.height);
+				if (list.size() > 0) {
+					size = new Size(0, 0);
+					for (int i = 0, l = list.size(); i < l; i++) {
+						ListEntry entry = (ListEntry) list.get(i);
+						String text = entry.getText();
+						Size entrySize = getTextSize(text, -1);
+						size.width = Math.max(size.width, entrySize.width);
+						size.height = Math.max(size.height, entrySize.height);
+					}
+				} else {
+					// Empty list, make sure height is at least set
+					size = getTextSize(" ", -1);
 				}
 				// 38 is a mac specific value, defined by the size
 				// of pulldown menu interface elements.
@@ -564,8 +572,8 @@ public abstract class Item extends CallbackHandler {
 			size = (this instanceof Button) ? new Size(120, 20) : getSize();
 		}
 		// add margins
-		size.width += margins.left + margins.right;
-		size.height += margins.top + margins.bottom;
+		size.width += margin.left + margin.right;
+		size.height += margin.top + margin.bottom;
 		return size;
 	}
 
@@ -633,62 +641,16 @@ public abstract class Item extends CallbackHandler {
 		return maxSize != null ? maxSize : getSize();
 	}
 
-	public Margins getMargins() {
-		return (Margins) margins.clone();
+	public Border getMargin() {
+		return (Border) margin.clone();
 	}
 
-	public void setMargins(int left, int top, int right, int bottom) {
-		margins = new Margins(left, top, right, bottom);
+	public void setMargin(int top, int right, int bottom, int left) {
+		margin = new Border(top, right, bottom, left);
 		if (nativeBounds != null)
 			updateBounds(bounds.x, bounds.y, bounds.width, bounds.height);
-	}
-
-	public void setMargins(Margins margins) {
-		setMargins(margins.left, margins.top, margins.right, margins.bottom);
-	}
-
-	public void setMargins(int[] margins) {
-		setMargins(margins[0], margins[1], margins[2], margins[3]);
-	}
-
-	public void setMargins(int margin) {
-		setMargins(margin, margin, margin, margin);
-	}
-
-	public void setMargins(int hor, int ver) {
-		setMargins(hor, ver, hor, ver);
-	}
-
-	public int getLeftMargin() {
-		return margins.left;
-	}
-
-	public void setLeftMargin(int left) {
-		margins.left = left;
-	}
-
-	public int getTopMargin() {
-		return margins.top;
-	}
-
-	public void setTopMargin(int top) {
-		margins.top = top;
-	}
-
-	public int getRightMargin() {
-		return margins.right;
-	}
-
-	public void setRightMargin(int right) {
-		margins.right = right;
-	}
-
-	public int getBottomMargin() {
-		return margins.bottom;
-	}
-
-	public void setBottomMargin(int bottom) {
-		margins.bottom = bottom;
+		// Update the margins int he AWT proxy as well
+		updateAWTMargin(margin);
 	}
 
 	/* 
@@ -769,13 +731,52 @@ public abstract class Item extends CallbackHandler {
 		nativeSetTooltip(tooltip);
 	}
 
-	/**
-	 * AWTComponent wrapps an ADM Item and prentends it is a AWT Component, in
-	 * order to take advantage of all the nice LayoutManagers in AWT.
+	/*
+	 * AWT LayoutManager integration:
 	 */
-	class AWTComponent extends Component {
-		public AWTComponent() {
-			updateBounds(Item.this.getBounds());
+
+	protected java.awt.Component getAWTComponent() {
+		if (component == null) {
+			if (this instanceof ComponentGroup) {
+				component = new AWTItemContainer();
+			} else {
+				component = new AWTItemComponent();
+			}
+			// Take over margin and bounds from the item.
+			updateAWTMargin(margin);
+			updateAWTBounds(bounds);
+		}
+		return component;
+	}
+
+	/*
+	 * Calculates the absolute origin of the AWT component.
+	 */
+	protected Point getOrigin(java.awt.Component component) {
+		Point delta = new Point();
+		java.awt.Container parent = component.getParent();
+		while (true) {
+			java.awt.Container next = parent.getParent();
+			if (next == null)
+				break;
+			java.awt.Point loc = parent.getLocation();
+			delta.x += loc.x;
+			delta.y += loc.y;
+			parent = next;
+		}
+		return delta;
+	}
+
+	/**
+	 * AWTComponent wraps an ADM Item and pretends it is a AWT Component, in
+	 * order to take advantage of all the nice LayoutManagers in AWT.
+	 * 
+	 * @author lehni
+	 */
+	class AWTItemComponent extends java.awt.Component implements ComponentWrapper {
+
+		public Component getComponent() {
+			return Item.this;
 		}
 
 		public void doLayout() {
@@ -784,7 +785,7 @@ public abstract class Item extends CallbackHandler {
 
 		public void updateBounds(Rectangle bounds) {
 			// call the setBounds version in super that directly sets the
-			// internal segmentValues.setBounds(Rectangle) would call the
+			// internal values. setBounds(Rectangle) would call the
 			// overridden setBounds(int, int, int, int) which would change the
 			// underlying Item.
 			super.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
@@ -807,27 +808,12 @@ public abstract class Item extends CallbackHandler {
 
 		public void setBounds(int x, int y, int width, int height) {
 			super.setBounds(x, y, width, height);
-			java.awt.Point origin = getOrigin();
+			Point origin = Item.this.getOrigin(this);
 			Item.this.setBounds(x + origin.x, y + origin.y, width, height);
 		}
 
-		public void setBounds(Rectangle r) {
+		public void setBounds(java.awt.Rectangle r) {
 			setBounds(r.x, r.y, r.width, r.height);
-		}
-
-		protected java.awt.Point getOrigin() {
-			java.awt.Point delta = new java.awt.Point();
-			Container parent = getParent();
-			while (true) {
-				Container next = parent.getParent();
-				if (next == null)
-					break;
-				java.awt.Point loc = parent.getLocation();
-				delta.x += loc.x;
-				delta.y += loc.y;
-				parent = next;
-			}
-			return delta;
 		}
 
 		public void setSize(int width, int height) {
@@ -842,11 +828,100 @@ public abstract class Item extends CallbackHandler {
 
 		public void setLocation(int x, int y) {
 			super.setLocation(x, y);
-			java.awt.Point origin = getOrigin();
+			Point origin = Item.this.getOrigin(this);
 			Item.this.setPosition(x + origin.x, y + origin.y);
 		}
 
-		public void setLocation(Point p) {
+		public void setLocation(java.awt.Point p) {
+			setLocation(p.x, p.y);
+		}
+
+		public boolean isVisible() {
+			return Item.this.isVisible();
+		}
+	}
+
+	/**
+	 * The actually AWT class for ItemContainer that does the work of collecting
+	 * wrap items or other ItemContainers and redirecting doLayout calls to its
+	 * children.
+	 * 
+	 * @author lehni
+	 */
+	class AWTItemContainer extends AWTContainer {
+
+		public Component getComponent() {
+			return Item.this;
+		}
+
+		public void updateBounds(Rectangle bounds) {
+			// call the setBounds version in super that directly sets the
+			// internal values. setBounds(Rectangle) would call the
+			// overridden setBounds(int, int, int, int) which would change the
+			// underlying Item.
+			super.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+		}
+
+		public Dimension getMinimumSize() {
+			// If this is a group item such as Frame or ItemGroup, do not
+			// use the native items's minimum size
+			if (Item.this instanceof ComponentGroup)
+				return super.getMinimumSize();
+			Size size = Item.this.getMinimumSize();
+			return new Dimension(size.width, size.height);
+		}
+
+		public Dimension getMaximumSize() {
+			// If this is a group item such as Frame or ItemGroup, do not
+			// use the native items's maximum size
+			if (Item.this instanceof ComponentGroup)
+				return super.getMaximumSize();
+			Size size = Item.this.getMaximumSize();
+			return new Dimension(size.width, size.height);
+		}
+
+		public Dimension getPreferredSize() {
+			// If this is a group item such as Frame or ItemGroup, do not
+			// use the native items's preferred size
+			if (Item.this instanceof ComponentGroup)
+				return super.getPreferredSize();
+			Size size = Item.this.getPreferredSize();
+			return new Dimension(size.width, size.height);
+		}
+
+		public void setBounds(int x, int y, int width, int height) {
+			super.setBounds(x, y, width, height);
+			Point origin = Item.this.getOrigin(this);
+			Item.this.setBounds(x + origin.x, y + origin.y, width, height);
+		}
+
+		public void setBounds(java.awt.Rectangle r) {
+			setBounds(r.x, r.y, r.width, r.height);
+		}
+
+		public void setSize(int width, int height) {
+			super.setSize(width, height);
+			java.awt.Rectangle rect = getBounds();
+			Item.this.setBounds(rect.x, rect.y, rect.width, rect.height);
+			/*
+			if (frame != null) {
+				java.awt.Point loc = getLocation();
+				frame.setBounds(loc.x, loc.y, width, height);
+			}
+			*/
+		}
+
+		public void setSize(Dimension d) {
+			setSize(d.width, d.height);
+		}
+
+		public void setLocation(int x, int y) {
+			super.setLocation(x, y);
+			Point origin = Item.this.getOrigin(this);
+			Item.this.setPosition(x + origin.x, y + origin.y);
+		}
+
+		public void setLocation(java.awt.Point p) {
 			setLocation(p.x, p.y);
 		}
 

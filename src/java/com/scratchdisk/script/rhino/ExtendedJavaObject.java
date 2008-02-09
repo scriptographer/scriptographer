@@ -100,6 +100,9 @@ public class ExtendedJavaObject extends NativeJavaObject {
 	
 	public void put(String name, Scriptable start, Object value) {
 		EvaluatorException error = null;
+		if (name.equals("content")) {
+			int i = 0;
+		}
         if (members.has(name, false)) {
 			try {
 		        // We could be asked to modify the value of a property in the

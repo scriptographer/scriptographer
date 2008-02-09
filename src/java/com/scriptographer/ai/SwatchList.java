@@ -32,7 +32,7 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.list.AbstractReadOnlyList;
-import com.scratchdisk.list.StringIndexList;
+import com.scratchdisk.list.StringIndexReadOnlyList;
 
 /**
  * The SwatchList object represents a list of swatches in an Illustrator
@@ -42,7 +42,7 @@ import com.scratchdisk.list.StringIndexList;
  * 
  * @author lehni
  */
-public class SwatchList extends AbstractReadOnlyList implements StringIndexList {
+public class SwatchList extends AbstractReadOnlyList implements StringIndexReadOnlyList {
 	Document document;
 
 	protected SwatchList(Document document) {

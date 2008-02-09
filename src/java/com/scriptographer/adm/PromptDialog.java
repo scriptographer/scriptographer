@@ -62,7 +62,7 @@ public class PromptDialog extends ModalDialog {
 
 		TableLayout layout = new TableLayout(sizes);
 		this.setLayout(layout);
-		this.setMargins(10);
+		this.setMargin(10);
 //		this.setFont(Dialog.FONT_PALETTE);
 
 		ImageStatic logo = new ImageStatic(this);
@@ -76,7 +76,7 @@ public class PromptDialog extends ModalDialog {
 				if (promptItem.description != null) {
 					Static descItem = new Static(this);
 					descItem.setText(promptItem.description + ":");
-					descItem.setMargins(0, 0, 10, 0);
+					descItem.setMargin(0, 0, 10, 0);
 					this.addToContent(descItem, "1, " + i + ", left, center");
 				}
 				
@@ -86,18 +86,18 @@ public class PromptDialog extends ModalDialog {
 			}
 		}			
 		
-		ItemContainer buttons = new ItemContainer(
-				new FlowLayout(FlowLayout.RIGHT, 0, 0));
+		ItemGroup buttons = new ItemGroup(this);
+		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 0));
 		buttons.setTopMargin(10);
 
 		Button cancelButton = new Button(this);
 		cancelButton.setText("Cancel");
 		cancelButton.setRightMargin(10);
-		buttons.add(cancelButton);
+		buttons.addToContent(cancelButton);
 
 		Button okButton = new Button(this);
 		okButton.setText("  OK  ");
-		buttons.add(okButton);
+		buttons.addToContent(okButton);
 
 		this.addToContent(buttons, "0, " + items.length + ", 2, " + items.length + ", right, top");
 

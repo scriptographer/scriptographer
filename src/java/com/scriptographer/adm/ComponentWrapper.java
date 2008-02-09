@@ -24,7 +24,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Dec 18, 2007.
+ * File created on Feb 9, 2008.
  *
  * $Id$
  */
@@ -32,11 +32,11 @@
 package com.scriptographer.adm;
 
 /**
- * Used by LayoutHelper
+ * An interface to allow the various component wrappers to return
+ * their component in a standardized way.
  * 
  * @author lehni
- *
  */
-interface ContainerProvider {
-	Container getContainer();
+interface ComponentWrapper {
+	Component getComponent();
 }

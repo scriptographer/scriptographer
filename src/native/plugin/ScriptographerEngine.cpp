@@ -42,7 +42,7 @@
 #endif
 
 #if defined(MAC_ENV) && !defined(GCJ)
-#define MAC_THREAD
+//#define MAC_THREAD
 #endif
 
 #include "aiGlobals.h"
@@ -210,6 +210,7 @@ void ScriptographerEngine::init() {
 	// Start headless, in order to avoid conflicts with AWT and Illustrator
 	options.add("-Djava.awt.headless=true");
 #else // !MAC_THREAD
+	options.add("-Djava.awt.headless=true");
 	options.add("-Dapple.awt.usingSWT=true");
 #endif // !MAC_THREAD
 	// Use the carbon line separator instead of the unix one on mac:
@@ -387,9 +388,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_awt_ICC_Profile_getInstance = getStaticMethodID(env, cls_awt_ICC_Profile, "getInstance", "([B)Ljava/awt/color/ICC_Profile;");
 
 // Scratchdisk:
-	cls_SimpleList = loadClass(env, "com/scratchdisk/list/SimpleList");
-	mid_SimpleList_size = getMethodID(env, cls_SimpleList, "size", "()I");
-	mid_SimpleList_get = getMethodID(env, cls_SimpleList, "get", "(I)Ljava/lang/Object;");
+	cls_List = loadClass(env, "com/scratchdisk/list/List");
+	mid_List_size = getMethodID(env, cls_List, "size", "()I");
+	mid_List_get = getMethodID(env, cls_List, "get", "(I)Ljava/lang/Object;");
 
 	cls_IntMap = loadClass(env, "com/scratchdisk/util/IntMap");
 	cid_IntMap = getConstructorID(env, cls_IntMap, "()V");
@@ -614,9 +615,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_adm_NotificationHandler_onNotify_String = getMethodID(env, cls_adm_NotificationHandler, "onNotify", "(Ljava/lang/String;)V");
 	mid_adm_NotificationHandler_onNotify_int = getMethodID(env, cls_adm_NotificationHandler, "onNotify", "(I)V");
 	mid_adm_NotificationHandler_onDraw = getMethodID(env, cls_adm_NotificationHandler, "onDraw", "(Lcom/scriptographer/adm/Drawer;)V");
-
-	cls_adm_CallbackHandler = loadClass(env, "com/scriptographer/adm/CallbackHandler");
-	mid_adm_CallbackHandler_onResize = getMethodID(env, cls_adm_CallbackHandler, "onResize", "(II)V");
 	
 	cls_adm_Tracker = loadClass(env, "com/scriptographer/adm/Tracker");
 	mid_adm_Tracker_onTrack = getMethodID(env, cls_adm_Tracker, "onTrack", "(Lcom/scriptographer/adm/NotificationHandler;IIIIIICCJ)Z");
@@ -1162,9 +1160,9 @@ AIArtSet ScriptographerEngine::convertArtSet(JNIEnv *env, jobject artSet) {
 	AIArtSet set = NULL;
 	if (!sAIArtSet->NewArtSet(&set)) {
 		// use a for loop with size instead of hasNext, because that saves us many calls...
-		jint size = callIntMethod(env, artSet, mid_SimpleList_size);
+		jint size = callIntMethod(env, artSet, mid_List_size);
 		for (int i = 0; i < size; i++) {
-			jobject obj = callObjectMethod(env, artSet, mid_SimpleList_get, i);
+			jobject obj = callObjectMethod(env, artSet, mid_List_get, i);
 			if (obj != NULL)
 				sAIArtSet->AddArtToArtSet(set, getArtHandle(env, obj));
 		}

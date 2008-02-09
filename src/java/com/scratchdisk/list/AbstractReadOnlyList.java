@@ -44,4 +44,17 @@ public abstract class AbstractReadOnlyList implements ReadOnlyList {
 	public ExtendedList getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
 	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer(256);
+		buf.append("[ ");
+		int size = size();
+		for (int i = 0; i < size; i++) {
+			Object obj = get(i);
+			if (i > 0) buf.append(", ");
+			buf.append(obj.toString());
+		}
+		buf.append(" ]");
+		return buf.toString();
+	}
 }

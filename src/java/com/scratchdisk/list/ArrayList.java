@@ -35,7 +35,7 @@ import java.util.Collection;
 import java.util.Arrays;
 
 /**
- * Wrapps an extended java.util.ArrayList in an ExtendedList interface
+ * Wraps an extended java.util.ArrayList in an ExtendedList interface
  * 
  * @author lehni
  */
@@ -55,7 +55,7 @@ public class ArrayList extends AbstractExtendedList {
 		list.addAll(Arrays.asList(objects));
 	}
 
-	public ArrayList(ExtendedList list) {
+	public ArrayList(List list) {
 		this(list.toArray());
 	}
 

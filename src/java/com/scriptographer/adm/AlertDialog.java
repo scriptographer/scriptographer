@@ -46,7 +46,7 @@ public class AlertDialog extends ModalDialog {
 
 		TableLayout layout = new TableLayout(sizes);
 		this.setLayout(layout);
-		this.setMargins(10);
+		this.setMargin(10);
 
 		ImageStatic logo = new ImageStatic(this);
 		Image image = getImage("logo.png");

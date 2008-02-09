@@ -381,39 +381,25 @@ var mainDialog = new FloatingDialog(
 
 	return {
 		title: 'Scriptographer',
-		margins: [-1, 0, -1, -1],
+		margin: [0, -1, -1, -1],
 		layout: new BorderLayout(),
 		content: {
 			center: scriptList,
-			south: new ItemContainer(new FlowLayout(FlowLayout.LEFT, -1, -1), [
-				playButton,
-				stopButton,
-				new Spacer(4, 0),
-				refreshButton,
-				new Spacer(4, 0),
-				newButton,
-				consoleButton,
-				new Spacer(4, 0),
-				tool1Button,
-				tool2Button
-			])
+			south: new ItemGroup(this) {
+				layout: new FlowLayout(FlowLayout.LEFT, -1, -1),
+				content: [
+					playButton,
+					stopButton,
+					new Spacer(4, 0),
+					refreshButton,
+					new Spacer(4, 0),
+					newButton,
+					consoleButton,
+					new Spacer(4, 0),
+					tool1Button,
+					tool2Button
+				]
+			}
 		}
 	};
-	/*
-	south: new Frame(this) {
-		layout: new FlowLayout(FlowLayout.LEFT, -1, -1),
-		content: {
-			playButton,
-			stopButton,
-			new Spacer(4, 0),
-			refreshButton,
-			new Spacer(4, 0),
-			newButton,
-			consoleButton,
-			new Spacer(4, 0),
-			tool1Button,
-			tool2Button
-		}
-	}
-	*/
 });

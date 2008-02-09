@@ -126,40 +126,41 @@ var consoleDialog = new FloatingDialog (
 	};
 
 	// Layout:
-	this.margins = [-1, -1, -1, -1];
-	this.layout = new TableLayout([
+	return {
+		margin: -1,
+		layout: new TableLayout([
 			[ 'preferred', 'fill' ],
 			[ 0.2, 'fill', 15 ]
-		], -1, -1);
+		], -1, -1),
+		content: {
+			'0, 0, 1, 0': textIn,
+			'0, 1, 1, 1': textOut,
+			'0, 2': clearButton
+		},
 
-	this.content = {
-		'0, 0, 1, 0': textIn,
-		'0, 1, 1, 1': textOut,
-		'0, 2': clearButton
-	};
-
-	this.println = function(str) {
-		if (textOut) {
-			// If the text does not grow too long, remove old lines again:
-			consoleText.append(str);
-			consoleText.append(lineBreak);
-			while (consoleText.length() >= 8192) {
-				var pos = consoleText.indexOf(lineBreak);
-				if (pos == -1)
-					pos = consoleText.length() - 1;
-				consoleText['delete'](0, pos + 1);
+		println: function(str) {
+			if (textOut) {
+				// If the text does not grow too long, remove old lines again:
+				consoleText.append(str);
+				consoleText.append(lineBreak);
+				while (consoleText.length() >= 8192) {
+					var pos = consoleText.indexOf(lineBreak);
+					if (pos == -1)
+						pos = consoleText.length() - 1;
+					consoleText['delete'](0, pos + 1);
+				}
+				if (that.isInitialized())
+					showText();
 			}
-			if (that.isInitialized())
-				showText();
+		},
+
+		onInitialize: function() {
+			showText();
+		},
+
+		onDestroy: function() {
+			textOut = null;
 		}
-	}
-
-	this.onInitialize = function() {
-		showText();
-	}
-
-	this.onDestroy = function() {
-		textOut = null;
 	}
 });
 

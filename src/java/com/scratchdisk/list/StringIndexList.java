@@ -31,14 +31,15 @@
 
 package com.scratchdisk.list;
 
+import java.util.Map;
+
 /**
- * Adds getting objects by name to Lists (an extension needed for some list
- * objects like LayerList)
- * TODO: In a more general use, this might need to be both read and write.
- * Also, ListWrapper would need to be addapted then.
+ * Adds setting objects by name to Lists.
  *
  * @author lehni 
  */
-public interface StringIndexList {
-	public Object get(String index);
+public interface StringIndexList extends StringIndexReadOnlyList {
+	public Object set(String name, Object element);
+	public Object remove(String name);
+	public void addAll(Map elements);
 }

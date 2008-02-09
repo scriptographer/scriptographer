@@ -34,12 +34,12 @@ package com.scriptographer.ai;
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
-import com.scratchdisk.list.StringIndexList;
+import com.scratchdisk.list.StringIndexReadOnlyList;
 
 /**
  * @author lehni
  */
-public class FontFamily extends NativeWrapper implements ReadOnlyList, StringIndexList {
+public class FontFamily extends NativeWrapper implements ReadOnlyList, StringIndexReadOnlyList {
 	
 	protected FontFamily(int handle) {
 		super(handle);

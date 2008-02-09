@@ -30,8 +30,6 @@
  */
 
 var aboutDialog = new ModalDialog(function() {
-	this.title = 'About Scriptographer';
-
 	// Add trailing zeros to revision
 	var revision = scriptographer.revision + '';
 	while (revision.length < 3)
@@ -65,19 +63,23 @@ var aboutDialog = new ModalDialog(function() {
 			return true;
 		}
 	};
+
 	var okButton = new Button(this) {
 		text: '  OK  ',
 	};
 
-	this.defaultItem = okButton;
-	this.margins = 10;
-	this.layout = new TableLayout([
-		[ 'preferred', 'fill', 'preferred' ],
-		[ 'preferred', 'fill', 'preferred' ]
-	]);
-	this.content = {
-		'0, 0, L, T': logo,
-		'1, 0, 2, 1': text,
-		'2, 2': okButton
-	}
+	return {
+		title: 'About Scriptographer',
+		defaultItem: okButton,
+		margin: 10,
+		layout: new TableLayout([
+			[ 'preferred', 'fill', 'preferred' ],
+			[ 'preferred', 'fill', 'preferred' ]
+		]),
+		content: {
+			'0, 0, L, T': logo,
+			'1, 0, 2, 1': text,
+			'2, 2': okButton
+		}
+	};
 });

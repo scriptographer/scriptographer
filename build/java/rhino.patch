@@ -33,8 +33,8 @@ diff -r1.18 WrapFactory.java
 >     public static final byte CONVERSION_NONTRIVIAL   = 0;
 >     public static final byte CONVERSION_NONE         = 99;
 > 
-> 	public int getConversionWeight(Object from, Class to) {
->         return CONVERSION_NONE; // CONVERSION_TRIVIAL + 1;
+> 	public int getConversionWeight(Object from, Class to, int defaultConversion) {
+>         return defaultConversion;
 > 	}
 > 
 >     public Object convert(Object from, Class to) {
@@ -51,7 +51,7 @@ retrieving revision 1.82
 diff -r1.82 NativeJavaObject.java
 367a368,369
 >             } else {
->                 return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to);
+>                 return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, CONVERSION_NONE);
 369d370
 <             break;
 380,382c381,392
@@ -71,6 +71,10 @@ diff -r1.82 NativeJavaObject.java
 >                 	return getConversionWeight(
 >                 			((NativeArray) fromObj).get(0, (Scriptable) fromObj),
 >                 			to.getComponentType());
+404c414
+<                 return 11;
+---
+>                 return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, 11);
 606c616,617
 <         case JSTYPE_JAVA_ARRAY:              
 ---
@@ -99,8 +103,8 @@ diff -r1.82 NativeJavaObject.java
 Index: org/mozilla/javascript/JavaMembers.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/JavaMembers.java,v
-retrieving revision 1.71
-diff -r1.71 JavaMembers.java
+retrieving revision 1.74
+diff -r1.74 JavaMembers.java
 55c55
 < class JavaMembers
 ---
@@ -109,19 +113,19 @@ diff -r1.71 JavaMembers.java
 <     JavaMembers(Scriptable scope, Class cl)
 ---
 >     public JavaMembers(Scriptable scope, Class cl)
-78c78
+82c82
 <     boolean has(String name, boolean isStatic)
 ---
 >     public boolean has(String name, boolean isStatic)
-88c88
+92c92
 <     Object get(Scriptable scope, String name, Object javaObject,
 ---
 >     public Object get(Scriptable scope, String name, Object javaObject,
-129c129
+133c133
 <     void put(Scriptable scope, String name, Object javaObject,
 ---
 >     public void put(Scriptable scope, String name, Object javaObject,
-194c194
+198c198
 <     Object[] getIds(boolean isStatic)
 ---
 >     public Object[] getIds(boolean isStatic)

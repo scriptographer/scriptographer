@@ -128,9 +128,9 @@ public:
 	jmethodID cid_IntMap;
 	jmethodID mid_IntMap_put;
 	
-	jclass cls_SimpleList;
-	jmethodID mid_SimpleList_size;
-	jmethodID mid_SimpleList_get;
+	jclass cls_List;
+	jmethodID mid_List_size;
+	jmethodID mid_List_get;
 	
 // Scriptographer:
 	jclass cls_ScriptographerEngine;
@@ -350,9 +350,6 @@ public:
 	jmethodID mid_adm_NotificationHandler_onNotify_String;
 	jmethodID mid_adm_NotificationHandler_onNotify_int;
 	jmethodID mid_adm_NotificationHandler_onDraw;
-
-	jclass cls_adm_CallbackHandler;
-	jmethodID mid_adm_CallbackHandler_onResize;
 		
 	jclass cls_adm_Tracker;
 	jmethodID mid_adm_Tracker_onTrack;

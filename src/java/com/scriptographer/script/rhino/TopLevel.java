@@ -74,7 +74,6 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		ImageRadioButton.class,
 		ImageStatic.class,
 		Item.class,
-		ItemContainer.class,
 		ItemGroup.class,
 		Key.class,
 		List.class,
@@ -99,7 +98,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		TextValueItem.class,
 		ToggleItem.class,
 		Tracker.class,
-		Margins.class,
+		Border.class,
 
 		// AWT Layout classes
 		BorderLayout.class,

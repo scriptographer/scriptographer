@@ -30,7 +30,6 @@
  */
 
 var usageDialog = new ModalDialog(function() {
-	this.title = 'Welcome To Scriptographer ' + scriptographer.version;
 	// this.font = Dialog.FONT_PALETTE;
 
 	// Add trailing zeros to revision
@@ -77,18 +76,20 @@ var usageDialog = new ModalDialog(function() {
 		text: 'Cancel',
 	};
 
-	this.defaultItem = acceptButton;
-	this.cancelItem = cancelButton;
-
-	this.margins = 10;
-	this.layout = new TableLayout([
-		[ 'preferred', 'fill', 'preferred', 'preferred' ],
-		[ 'preferred', 'fill', 'preferred' ]
-	]);
-	this.content = {
-		'0, 0, L, T': logo,
-		'1, 0, 3, 1': text,
-		'2, 2': cancelButton,
-		'3, 2': acceptButton
-	}
+	return {
+		title: 'Welcome To Scriptographer ' + scriptographer.version,
+		margin: 10,
+		layout: new TableLayout([
+			[ 'preferred', 'fill', 'preferred', 'preferred' ],
+			[ 'preferred', 'fill', 'preferred' ]
+		]),
+		content: {
+			'0, 0, L, T': logo,
+			'1, 0, 3, 1': text,
+			'2, 2': cancelButton,
+			'3, 2': acceptButton
+		},
+		defaultItem: acceptButton,
+		cancelItem: cancelButton
+	};
 });

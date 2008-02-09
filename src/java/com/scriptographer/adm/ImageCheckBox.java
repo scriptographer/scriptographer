@@ -90,7 +90,7 @@ public class ImageCheckBox extends CheckBox {
 		super.setDisabledImage(obj);
 	}
 
-	protected Margins getButtonMargins() {
-		return INSETS_IMAGE;
+	protected Border getButtonMargin() {
+		return MARGIN_IMAGE;
 	}
 }

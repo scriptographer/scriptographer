@@ -164,23 +164,22 @@ public class Button extends TextItem {
 	}
 	
 	// int top, int left, int bottom, int right
-	protected static final Margins INSETS_IMAGE = new Margins(0, 0, 0, 0);
-	protected static final Margins INSETS_TEXT = ScriptographerEngine.isMacintosh() ?
-			new Margins(4, 3, 4, 3) : new Margins(0, 0, 0, 0);
+	protected static final Border MARGIN_IMAGE = new Border(0, 0, 0, 0);
+	protected static final Border MARGIN_TEXT = ScriptographerEngine.isMacintosh() ?
+			new Border(3, 4, 3, 4) : new Border(0, 0, 0, 0);
 
-	protected Margins getButtonMargins() {
-		return INSETS_TEXT;
+	protected Border getButtonMargin() {
+		return MARGIN_TEXT;
 	}
 
-	public void setMargins(int left, int top, int right, int bottom) {
-		Margins m = getButtonMargins();
-		super.setMargins(left + m.left, top + m.top,
-				right + m.right, bottom + m.bottom);
+	public void setMargin(int top, int right, int bottom, int left) {
+		Border margin = new Border(top, right, bottom, left).add(getButtonMargin());
+		// We cannot call setMargin(Border margin) here, since that creates
+		// an endless recursion
+		super.setMargin(margin.top, margin.right, margin.bottom, margin.left);
 	}
 	
-	public Margins getMargins() {
-		Margins m = getButtonMargins();
-		return new Margins(margins.left - m.left, margins.top - m.top, 
-				margins.right - m.right, margins.bottom - m.bottom);
+	public Border getMargin() {
+		return new Border(margin).subtract(getButtonMargin());
 	}
 }

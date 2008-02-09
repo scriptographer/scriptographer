@@ -181,25 +181,22 @@ public class ScriptographerEngine {
 					((ScriptException) t).getFullMessage() : t.getMessage();
 			boolean report = true;
 			if (error != null) {
+				String separator = System.getProperty("file.separator");
+				// Shorten file names by removing base form it
+				error = StringUtils.replace(error, scriptDir.getAbsolutePath() + separator, "");
+				// Add a line break at the end if the error does
+				// not contain one already.
+				if (!error.matches("(?:\\n\\r|\\n|\\r)$"))
+					error += '\n';
+				logger.print(error);
+				logger.print("Stacktrace: ");
+				System.err.print(error);
+			} else {
+				error = t.toString();
 				// Filter out weird java.lang.ClassCastExceptions on Mac OSX:
 				report = error.indexOf("sun.java2d.HeadlessGraphicsEnvironment") == -1;
-				if (report) {
-					String separator = System.getProperty("file.separator");
-					// Shorten file names by removing base form it
-					error = StringUtils.replace(error, scriptDir.getAbsolutePath() + separator, "");
-					// Make sure the error contains the proper line breaks:
-					String lineBreak = System.getProperty("line.separator");
-					error = error.replaceAll("\\n\\r|\\n|\\r", lineBreak);
-					// Add a line break at the end if the error does
-					// not contain one already.
-					if (!error.matches(lineBreak + '$'))
-						error += lineBreak;
-					logger.print(error);
-					logger.print("Stacktrace: ");
-					System.err.print(error);
-				}
-			} else {
-				System.err.println(t);
+				if (report)
+					System.err.println(t);
 			}
 			if (report) {
 				t.printStackTrace(logger);
@@ -256,7 +253,9 @@ public class ScriptographerEngine {
 			// executed as it won't get updated anyway
 			// ConsoleOutputStream.enableOutput(false);
 			executing = true;
-			showProgress(file != null ? "Executing " + file.getName() + "..." : "Executing...");
+			// Do not show progress for hidden files such as __init__.js
+			if (file == null || !file.getName().startsWith("__"))
+				showProgress(file != null ? "Executing " + file.getName() + "..." : "Executing...");
 			if (file != null) {
 				currentFile = file;
 				// Put a script object in the scope to offer the user

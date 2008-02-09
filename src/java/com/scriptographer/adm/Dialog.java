@@ -35,10 +35,7 @@ import com.scratchdisk.script.Callable;
 import com.scriptographer.ScriptographerEngine; 
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.LayoutManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,7 +46,7 @@ import java.util.prefs.BackingStoreException;
 /**
  * @author lehni
  */
-public abstract class Dialog extends CallbackHandler implements ContainerProvider {
+public abstract class Dialog extends Component {
 	
 	public native int createPlatformControl();
 	public native void dumpControlHierarchy(File file);
@@ -175,7 +172,7 @@ public abstract class Dialog extends CallbackHandler implements ContainerProvide
 	private boolean visible = true;
 	private boolean active = false;
 
-	protected AWTContainer container = null;
+	protected AWTDialogContainer container = null;
 
 	/**
 	 * ignoreSizeChange tells onSizeChanged to ignore the event. this is set and
@@ -205,8 +202,6 @@ public abstract class Dialog extends CallbackHandler implements ContainerProvide
 	// use it this happens completely transparently, the dialog class does not
 	// need to know anything about the fact if it's a script or a java class.
 	private Preferences preferences;
-
-	private LayoutHelper layoutHelper = new LayoutHelper(this);
 
 	private static ArrayList dialogs = new ArrayList();
 
@@ -668,115 +663,12 @@ public abstract class Dialog extends CallbackHandler implements ContainerProvide
 	}
 
 	/**
-	 * private callback method, to be called from the native environemnt
+	 * private callback method, to be called from the native environment
 	 * It calls onResize
 	 */
 	private void onSizeChanged(int width, int height) {
 		if (!ignoreSizeChange && size != null)
 			updateSize(width - size.width, height - size.height);
-	}
-
-	/*
-	 * AWT LayoutManager integration:
-	 */
-
-	public Container getContainer() {
-		if (container == null)
-			container = new AWTContainer();
-		return container;
-	}
-
-	public void setLayout(LayoutManager mgr) {
-		layoutHelper.setLayout(mgr);
-	}
-
-	public void setMargins(int left, int top, int right, int bottom) {
-		layoutHelper.setMargins(left, top, right, bottom);
-	}
-
-	public Margins getMargins() {
-		return layoutHelper.getMargins();
-	}
-
-	public void setMargins(Margins margins) {
-		layoutHelper.setMargins(margins);
-	}
-
-	public void setMargins(int margins) {
-		layoutHelper.setMargins(margins);
-	}
-
-	public void setMargins(int[] margins) {
-		layoutHelper.setMargins(margins);
-	}
-
-	public void setMargins(int hor, int ver) {
-		layoutHelper.setMargins(hor, ver);
-	}
-
-	public int getLeftMargin() {
-		return layoutHelper.getLeftMargin();
-	}
-
-	public void setLeftMargin(int left) {
-		layoutHelper.setLeftMargin(left);
-	}
-
-	public int getTopMargin() {
-		return layoutHelper.getTopMargin();
-	}
-
-	public void setTopMargin(int top) {
-		layoutHelper.setTopMargin(top);
-	}
-
-	public int getRightMargin() {
-		return layoutHelper.getRightMargin();
-	}
-
-	public void setRightMargin(int right) {
-		layoutHelper.setRightMargin(right);
-	}
-
-	public int getBottomMargin() {
-		return layoutHelper.getBottomMargin();
-	}
-
-	public void setBottomMargin(int bottom) {
-		layoutHelper.setBottomMargin(bottom);
-	}
-
-	public void addToContent(Item item, Object constraints) {
-		layoutHelper.addToContent(item, constraints);
-	}
-
-	public void addToContent(Item item) {
-		layoutHelper.addToContent(item);
-	}
-
-	public void addToContent(ItemContainer container, Object constraints) {
-		layoutHelper.addToContent(container, constraints);
-	}
-
-	public void addToContent(ItemContainer layout) {
-		layoutHelper.addToContent(layout);
-	}
-
-	public void addToContent(Map items) {
-		layoutHelper.addToContent(items);
-	}
-
-	public void setContent(Map items) {
-		layoutHelper.setContent(items);
-	}
-
-	/**
-	 * doLayout recalculates the layout, but does not change the dialog's size
-	 *
-	 */
-	public void doLayout() {
-		if (container != null)
-			container.doLayout();
 	}
 
 	/*
@@ -935,10 +827,10 @@ public abstract class Dialog extends CallbackHandler implements ContainerProvide
 		if (deltaX != 0 || deltaY != 0) {
 			size.set(size.width + deltaX, size.height + deltaY);
 			bounds.setSize(bounds.width + deltaX, bounds.height + deltaY);
-			// if a contianer was created, the layout needs to be recalculated now:
+			// If a container was created, the layout needs to be recalculated now:
 			if (container != null)
 				container.updateSize(size);
-			// calll onResize
+			// Call onResize
 			try {
 				onResize(deltaX, deltaY);
 			} catch (Exception e) {
@@ -1341,15 +1233,34 @@ public abstract class Dialog extends CallbackHandler implements ContainerProvide
 			(8 * screen.height / 10 - size.height) / 2
 		);
 	}
-	
+
+	/*
+	 * AWT LayoutManager integration:
+	 */
+
+	public java.awt.Component getAWTComponent() {
+		if (container == null)
+			container = new AWTDialogContainer();
+		return container;
+	}
+
 	/**
-	 * AWTContainer wrapps an ADM Dialog and prentends it is an AWT Container,
+	 * doLayout recalculates the layout, but does not change the dialog's size
+	 *
+	 */
+	public void doLayout() {
+		if (container != null)
+			container.doLayout();
+	}
+
+	/**
+	 * AWTContainer wraps an ADM Dialog and pretends it is an AWT Container,
 	 * in order to take advantage of all the nice LayoutManagers in AWT.
 	 * 
-	 * This goes hand in hand with the AWTComponent that wrapps an IDM Item in a
+	 * This goes hand in hand with the AWTComponent that wraps an IDM Item in a
 	 * component.
 	 * 
-	 * Unfortunatelly, some LayoutManagers access fields in Container not
+	 * Unfortunately, some LayoutManagers access fields in Container not
 	 * visible from the outside, so size information has to be passed up by
 	 * super calls.
 	 * 
@@ -1357,13 +1268,17 @@ public abstract class Dialog extends CallbackHandler implements ContainerProvide
 	 * use the size of the AWT bounds for the inside! Also, for layout the
 	 * location of the dialog doesn't matter, so let's only work with size for
 	 * simplicity
+	 * 
+	 * @author lehni
 	 */
-	class AWTContainer extends Container {
-		Insets insets;
-
-		public AWTContainer() {
+	class AWTDialogContainer extends AWTContainer {
+		public AWTDialogContainer() {
 			updateSize(Dialog.this.getSize());
 			setInsets(0, 0, 0, 0);
+		}
+
+		public Component getComponent() {
+			return Dialog.this;
 		}
 
 		public void updateSize(Size size) {
@@ -1372,14 +1287,6 @@ public abstract class Dialog extends CallbackHandler implements ContainerProvide
 			// setBounds here, as internally, setSize calls setBounds anyway
 			super.setBounds(0, 0, size.width, size.height);
 			doLayout();
-		}
-
-		public void setInsets(int top, int left, int bottom, int right) {
-			insets = new Insets(top, left, bottom, right);
-		}
-
-		public Insets getInsets() {
-			return insets;
 		}
 
 		public void setSize(int width, int height) {
@@ -1395,16 +1302,8 @@ public abstract class Dialog extends CallbackHandler implements ContainerProvide
 			setSize(width, height);
 		}
 
-		public void setBounds(Rectangle r) {
+		public void setBounds(java.awt.Rectangle r) {
 			setSize(r.width, r.height);
-		}
-
-		public void doLayout() {
-			super.doLayout();
-			// now walk through all the items and do their layout as well:
-			Component[] components = getComponents();
-			for (int i = 0; i < components.length; i++)
-				components[i].doLayout();
 		}
 
 		public boolean isVisible() {

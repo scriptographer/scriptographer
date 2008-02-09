@@ -32,13 +32,13 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.list.AbstractReadOnlyList;
-import com.scratchdisk.list.StringIndexList;
+import com.scratchdisk.list.StringIndexReadOnlyList;
 
 /**
  * @author lehni
  */
 public class GradientList extends AbstractReadOnlyList implements
-		StringIndexList {
+		StringIndexReadOnlyList {
 	Document document;
 
 	protected GradientList(Document document) {

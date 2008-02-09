@@ -36,7 +36,7 @@ import java.util.WeakHashMap;
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
-import com.scratchdisk.list.StringIndexList;
+import com.scratchdisk.list.StringIndexReadOnlyList;
 
 /**
  * The FontList object represents a list of {@link FontFamily} objects. Font
@@ -45,7 +45,7 @@ import com.scratchdisk.list.StringIndexList;
  * 
  * @author lehni
  */
-public class FontList implements ReadOnlyList, StringIndexList {
+public class FontList implements ReadOnlyList, StringIndexReadOnlyList {
 
 	/**
      * Don't let anyone instantiate this class.

@@ -36,7 +36,7 @@ import java.io.IOException;
 import com.scriptographer.ScriptographerEngine; 
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
-import com.scratchdisk.list.SimpleList;
+import com.scratchdisk.list.List;
 import com.scratchdisk.script.Callable;
 
 /**
@@ -60,7 +60,7 @@ The following item types have valid list objects:
 #define kADMTextEditScrollingPopupType "ADM Text Edit Scrolling Popup Type"
 */
 
-public abstract class ListItem extends Item implements SimpleList {
+public abstract class ListItem extends Item implements List {
 
 	protected ListItem(Dialog dialog, int type, int options) {
 		super(dialog, type, options);
@@ -393,7 +393,7 @@ public abstract class ListItem extends Item implements SimpleList {
 		remove(0, size());
 	}
 
-	public boolean addAll(ExtendedList elements) {
+	public boolean addAll(List elements) {
 		boolean modified = false;
 		int size = elements.size();
 		int index = size();

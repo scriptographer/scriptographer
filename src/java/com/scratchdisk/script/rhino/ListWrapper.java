@@ -37,7 +37,8 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
 
 import com.scratchdisk.list.ReadOnlyList;
-import com.scratchdisk.list.SimpleList;
+import com.scratchdisk.list.List;
+import com.scratchdisk.list.StringIndexReadOnlyList;
 import com.scratchdisk.list.StringIndexList;
 
 /**
@@ -71,8 +72,8 @@ public class ListWrapper extends ExtendedJavaObject {
 	}
 
 	public void put(int index, Scriptable start, Object value) {
-		if (javaObject != null && javaObject instanceof SimpleList) {
-			SimpleList list = ((SimpleList) javaObject);
+		if (javaObject != null && javaObject instanceof List) {
+			List list = ((List) javaObject);
 			if (value instanceof Wrapper)
 				value = ((Wrapper) value).unwrap();
 			int size = list.size();
@@ -97,8 +98,8 @@ public class ListWrapper extends ExtendedJavaObject {
 
 	public boolean has(String name, Scriptable start) {
 		return super.has(name, start) || // TODO: needed? name.equals("length") ||
-			javaObject instanceof StringIndexList && javaObject != null && 
-				((StringIndexList) javaObject).get(name) != null;
+			javaObject instanceof StringIndexReadOnlyList && javaObject != null && 
+				((StringIndexReadOnlyList) javaObject).get(name) != null;
 	}
 
 	public void put(String name, Scriptable start, Object value) {
@@ -113,6 +114,9 @@ public class ListWrapper extends ExtendedJavaObject {
 				setSize.call(Context.getCurrentContext(), start.getParentScope(), this, new Object[] { value });
 				return;
 			}
+		} else if (javaObject instanceof StringIndexList && !members.has(name, false)) {
+			((StringIndexList) javaObject).set(name, value);
+			return;
 		}
 		super.put(name, start, value);
 	}
@@ -130,8 +134,8 @@ public class ListWrapper extends ExtendedJavaObject {
 		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
 			 if (name.equals("length")) {
 				 return new Integer(((ReadOnlyList) javaObject).size());
-			 } else if (javaObject instanceof StringIndexList) {
-				obj = ((StringIndexList) javaObject).get(name);
+			 } else if (javaObject instanceof StringIndexReadOnlyList) {
+				obj = ((StringIndexReadOnlyList) javaObject).get(name);
 				if (obj != null)
 					obj = toObject(obj, start);
 				else

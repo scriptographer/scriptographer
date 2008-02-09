@@ -87,10 +87,9 @@ if (app.macintosh) {
 	var file = new java.io.File('/var/lock');
 	if (!file.exists() || !found) {
 		var dialog = new ModalDialog(function() {
-			this.title = "Scriptographer Setup";
-
-			var logo = new ImageStatic(this);
-			logo.image = getImage("logo.png");
+			var logo = new ImageStatic(this) {
+				image: getImage('logo.png')
+			};
 
 			var text = new Static(this) {
 				text: 'You appear to be runing Scriptographer for the first time.\n\n' +
@@ -100,25 +99,33 @@ if (app.macintosh) {
 					'Please enter your password now:'
 			};
 
-			this.passwordField = new TextEdit(this, TextEdit.OPTION_PASSWORD);
+			var passwordField = new TextEdit(this, TextEdit.OPTION_PASSWORD);
 
-			this.cancelItem = new Button(this) {
+			var cancelButton = new Button(this) {
 				text: 'Cancel'
 			};
-			this.defaultItem = new Button(this) {
+
+			var okButton = new Button(this) {
 				text: '  OK  '
 			};
-			this.margins = 10;
-			this.layout = new TableLayout([
+
+			return {
+				title: 'Scriptographer Setup',
+				margin: 10,
+				layout: new TableLayout([
 					[ 'preferred', 'fill', 'preferred', 'preferred' ],
 					[ 'preferred', 'fill', 'preferred', 'preferred' ]
-				], 4, 4);
-			this.content = {
-				'0, 0': logo,
-				'1, 0, 3, 1': text,
-				'1, 2, 3, 2': this.passwordField,
-				'2, 3': this.cancelItem,
-				'3, 3': this.defaultItem
+				], 4, 4),
+				content: 	{
+					'0, 0': logo,
+					'1, 0, 3, 1': text,
+					'1, 2, 3, 2': passwordField,
+					'2, 3': cancelButton,
+					'3, 3': okButton
+				},
+				defaultItem: okButton,
+				cancelItem: cancelButton,
+				passwordField: passwordField
 			}
 		});
 		var tryAgain = true;
@@ -136,7 +143,7 @@ if (app.macintosh) {
 					else if (useNS) executeProcess('sudo niutil -mergeprop / /groups/uucp users ' + user);
 				}
 				executeProcess('sudo -K');
-		  		Dialog.alert("Finished making changes, you should be all set now.\n\nHave fun!");
+		  		Dialog.alert('Finished making changes, you should be all set now.\n\nHave fun!');
 				tryAgain = false;
 			} catch (e) {
 				tryAgain = Dialog.confirm('You do not seem to have the required permissions.\n' +

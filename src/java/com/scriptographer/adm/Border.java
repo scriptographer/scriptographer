@@ -26,7 +26,7 @@
  * 
  * File created on May 11, 2007.
  *
- * $Id$
+ * $Id: Border.java 410 2007-12-06 18:32:41Z lehni $
  */
 
 package com.scriptographer.adm;
@@ -40,40 +40,56 @@ import com.scratchdisk.util.ConversionUtils;
  * @author lehni
  *
  */
-public class Margins {
-	public int left;
+public class Border {
 	public int top;
 	public int right;
 	public int bottom;
+	public int left;
 
-	public Margins() {
-		left = top = right = bottom = 0;
+	public Border() {
+		top = right = bottom = left = 0;
 	}
 
-	public Margins(int left, int top, int right, int bottom) {
-		set(left, top, right, bottom);
+	public Border(int top, int right, int bottom, int left) {
+		set(top, right, bottom, left);
 	}
 	
-	public Margins(Margins margins) {
-		set(margins.left, margins.top, margins.right, margins.bottom);
+	public Border(Border margins) {
+		set(margins.top, margins.right, margins.bottom, margins.left);
 	}
 
-	public Margins(Insets insets) {
-		set(insets.left, insets.top, insets.right, insets.bottom);
+	public Border(Insets insets) {
+		set(insets.top, insets.right, insets.bottom, insets.left);
 	}
 
-	public Margins(Map map) {
-		this(ConversionUtils.getInt(map, "left"),
-				ConversionUtils.getInt(map, "top"),
+	public Border(Map map) {
+		this(ConversionUtils.getInt(map, "top"),
 				ConversionUtils.getInt(map, "right"),
-				ConversionUtils.getInt(map, "bottom"));
+				ConversionUtils.getInt(map, "bottom"),
+				ConversionUtils.getInt(map, "left"));
 	}
 
-	public void set(int left, int top, int right, int bottom) {
-		this.left = left;
+	public void set(int top, int right, int bottom, int left) {
 		this.top = top;
 		this.right = right;
 		this.bottom = bottom;
+		this.left = left;
+	}
+
+	public Border add(Border border) {
+		top += border.top;
+		right += border.right;
+		bottom += border.bottom;
+		left += border.left;
+		return this;
+	}
+
+	public Border subtract(Border border) {
+		top -= border.top;
+		right -= border.right;
+		bottom -= border.bottom;
+		left -= border.left;
+		return this;
 	}
 
 	public Insets toInsets() {
@@ -81,14 +97,14 @@ public class Margins {
 	}
 
 	public Object clone() {
-		return new Margins(this);
+		return new Border(this);
 	}
 
 	public boolean equals(Object object) {
-		if (object instanceof Margins) {
-			Margins margins = (Margins) object;
-			return margins.left == left && margins.top == top &&
-					margins.right == right && margins.bottom == bottom;
+		if (object instanceof Border) {
+			Border border = (Border) object;
+			return border.top == top && border.right == right
+				&& border.bottom == bottom && border.left == left;
 		} else {
 			// TODO: support other margin types?
 			return false;

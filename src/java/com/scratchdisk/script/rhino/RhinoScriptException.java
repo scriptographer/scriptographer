@@ -106,7 +106,7 @@ public class RhinoScriptException extends ScriptException {
 					if ((base == null || file.startsWith(base)) &&
 							file.indexOf(separator + "__") == -1) {
 						String number = matcher.group(2);
-						writer.println("    at " + file + ":" + number);
+						writer.println("\tat " + file + ":" + number);
 					}
 				}
 			}

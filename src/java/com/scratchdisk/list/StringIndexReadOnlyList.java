@@ -23,20 +23,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- * 
- * File created on Dec 18, 2007.
+ *
+ * File created on 12.02.2005.
  *
  * $Id$
  */
 
-package com.scriptographer.adm;
+package com.scratchdisk.list;
 
 /**
- * An abstract class that adds setInsets to java.awt.Container.
- * 
- * @author lehni
+ * Adds getting objects by name to Lists (an extension needed for some list
+ * objects like LayerList)
  *
+ * @author lehni 
  */
-abstract class Container extends java.awt.Container {
-	public abstract void setInsets(int top, int left, int bottom, int right);
+public interface StringIndexReadOnlyList {
+	public Object get(String name);
 }
