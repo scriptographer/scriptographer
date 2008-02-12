@@ -1,12 +1,3 @@
-Index: org/mozilla/javascript/NativeJavaTopPackage.java
-===================================================================
-RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaTopPackage.java,v
-retrieving revision 1.18
-diff -r1.18 NativeJavaTopPackage.java
-77c77
-<     NativeJavaTopPackage(ClassLoader loader)
----
->     public NativeJavaTopPackage(ClassLoader loader)
 Index: org/mozilla/javascript/NativeJavaPackage.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaPackage.java,v
@@ -20,6 +11,15 @@ diff -r1.40 NativeJavaPackage.java
 <     synchronized Object getPkgProperty(String name, Scriptable start,
 ---
 >     public synchronized Object getPkgProperty(String name, Scriptable start,
+Index: org/mozilla/javascript/NativeJavaTopPackage.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaTopPackage.java,v
+retrieving revision 1.18
+diff -r1.18 NativeJavaTopPackage.java
+77c77
+<     NativeJavaTopPackage(ClassLoader loader)
+---
+>     public NativeJavaTopPackage(ClassLoader loader)
 Index: org/mozilla/javascript/WrapFactory.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/WrapFactory.java,v
@@ -75,6 +75,10 @@ diff -r1.82 NativeJavaObject.java
 <                 return 11;
 ---
 >                 return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, 11);
+412c422
+<         return CONVERSION_NONE;
+---
+>         return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, CONVERSION_NONE);
 606c616,617
 <         case JSTYPE_JAVA_ARRAY:              
 ---
@@ -239,8 +243,8 @@ diff -r1.16 MemberBox.java
 Index: org/mozilla/javascript/Parser.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Parser.java,v
-retrieving revision 1.123
-diff -r1.123 Parser.java
+retrieving revision 1.124
+diff -r1.124 Parser.java
 50a51
 > import java.io.StringReader;
 51a53,54
