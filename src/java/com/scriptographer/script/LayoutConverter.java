@@ -31,6 +31,7 @@
 
 package com.scriptographer.script;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.util.HashMap;
 
@@ -43,11 +44,7 @@ import com.scriptographer.adm.TableLayout;
  *
  */
 public class LayoutConverter extends ArgumentConverter {
-/*
-	private static final Pattern borderLayoutPattern = Pattern.compile(
-			"^(north|south|east|west|center|first|last|before|after)$",
-			Pattern.CASE_INSENSITIVE);
-*/
+
 	private static HashMap flowLayoutAlignment = new HashMap();
 	static {
 		flowLayoutAlignment.put("left", new Integer(FlowLayout.LEFT));
@@ -87,7 +84,10 @@ public class LayoutConverter extends ArgumentConverter {
 							reader.readInteger(0));
 				} else {
 					reader.revert();
-					// TODO: what else?
+					// BorderLayout
+					return new BorderLayout(
+							reader.readInteger(0),
+							reader.readInteger(0));
 				}
 			}
 		} else if (reader.isHash()) {
@@ -103,23 +103,25 @@ public class LayoutConverter extends ArgumentConverter {
 					if (array != null) {
 						return new TableLayout(array,
 								(Object[]) reader.readObject("rows", Object[].class),
-								reader.readInteger(0),
-								reader.readInteger(0));
+								reader.readInteger("hgap", 0),
+								reader.readInteger("vgap", 0));
 					}
 				}
 			} else if (reader.has("alignment")) {
+				// FlowLayout
 				Integer alignment = reader.readInteger("alignment");
 				if (alignment == null)
 					alignment = (Integer) flowLayoutAlignment.get(reader.readString("alignment"));
 				if (alignment != null) {
 					return new FlowLayout(
 							alignment.intValue(),
-							reader.readInteger(0),
-							reader.readInteger(0));
+							reader.readInteger("hgap", 0),
+							reader.readInteger("vgap", 0));
 				}
-				// FlowLayout
 			} else {
-				// BorderLayout
+				return new BorderLayout(
+						reader.readInteger("hgap", 0),
+						reader.readInteger("vgap", 0));
 			}
 		}
 		return null;
