@@ -48,6 +48,14 @@ public class TableLayout extends info.clearthought.layout.TableLayout {
 		this(col, row, 0, 0);
 	}
 
+	public TableLayout(double[][] sizes, int hGap, int vGap) {
+		this(sizes[0], sizes[1], 0, 0);
+	}
+
+	public TableLayout(double[][] sizes) {
+		this(sizes[0], sizes[1], 0, 0);
+	}
+
 	public TableLayout(Object[] col, Object[] row, int hGap, int vGap) {
 		super(getSize(col), getSize(row));
 		this.hGap = hGap;
