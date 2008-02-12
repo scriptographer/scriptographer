@@ -1,3 +1,12 @@
+Index: org/mozilla/javascript/NativeJavaTopPackage.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaTopPackage.java,v
+retrieving revision 1.18
+diff -r1.18 NativeJavaTopPackage.java
+77c77
+<     NativeJavaTopPackage(ClassLoader loader)
+---
+>     public NativeJavaTopPackage(ClassLoader loader)
 Index: org/mozilla/javascript/NativeJavaPackage.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaPackage.java,v
@@ -11,15 +20,6 @@ diff -r1.40 NativeJavaPackage.java
 <     synchronized Object getPkgProperty(String name, Scriptable start,
 ---
 >     public synchronized Object getPkgProperty(String name, Scriptable start,
-Index: org/mozilla/javascript/NativeJavaTopPackage.java
-===================================================================
-RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaTopPackage.java,v
-retrieving revision 1.18
-diff -r1.18 NativeJavaTopPackage.java
-77c77
-<     NativeJavaTopPackage(ClassLoader loader)
----
->     public NativeJavaTopPackage(ClassLoader loader)
 Index: org/mozilla/javascript/WrapFactory.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/WrapFactory.java,v
@@ -79,31 +79,85 @@ diff -r1.82 NativeJavaObject.java
 <         return CONVERSION_NONE;
 ---
 >         return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, CONVERSION_NONE);
-606c616,617
+499a510,516
+>     static Object convert(Object from, Class to) {
+>         Object obj = Context.getContext().getWrapFactory().convert(from, to);
+>         if (obj == null)
+>             reportConversionError(from instanceof Wrapper ? ((Wrapper) from).unwrap() : from, to);
+>         return obj;
+>     }
+> 
+509a527,528
+>         Object original = value;
+> 
+540c559
+<                 reportConversionError(value, type);
+---
+>                 return convert(value, type);
+542d560
+<             break;
+556c574
+<                 reportConversionError(value, type);
+---
+>                 return convert(value, type);
+558d575
+<             break;
+584c601
+<                 reportConversionError(value, type);
+---
+>                 return convert(value, type);
+586d602
+<             break;
+601c617
+<                 reportConversionError(value, type);
+---
+>                 return convert(original, type);
+603d618
+<             break;
+606c621
 <         case JSTYPE_JAVA_ARRAY:              
 ---
 >         case JSTYPE_JAVA_ARRAY:
->             Object wrapped = value;
-625c636,642
+612c627
+<                     reportConversionError(value, type);
+---
+>                     return convert(original, type);
+625c640,643
 <                         reportConversionError(value, type);
 ---
 >                         // We must be here because canConvert returned true
 >                         // Give it a try. pass the wrapped value, to let the
 >                         // wrap factory decide what to do with it.
->                         Context cx = Context.getContext();
->                         Object obj = cx.getWrapFactory().convert(wrapped, type);
->                         if (obj != null) return obj;
->                         else reportConversionError(value, type);
-701,702c718,723
+>                         return convert(original, type);
+629d646
+<             break;
+637c654
+<                     reportConversionError(value, type);
+---
+>                     return convert(value, type);
+674c691
+<                 reportConversionError(value, type);
+---
+>                 return convert(original, type);
+679c696
+<                 // XXX: Curently only instances of ScriptableObject are
+---
+>                 // XXX: Currently only instances of ScriptableObject are
+696c713
+<                     // Store for later retrival
+---
+>                     // Store for later retrieval
+700,702c717,720
+<                 reportConversionError(value, type);
 <             } else {
 <                 reportConversionError(value, type);
 ---
+>                 return convert(value, type);
 >             }
 >             else {
->                 Context cx = Context.getContext();
->                 Object obj = cx.getWrapFactory().convert(value, type);
->                 if (obj != null) return obj;
->                 else reportConversionError(value, type);
+>                 return convert(value, type);
+704d721
+<             break;
 Index: org/mozilla/javascript/JavaMembers.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/JavaMembers.java,v
