@@ -147,8 +147,11 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListEntry_getIndex(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_setSelected(JNIEnv *env, jobject obj, jboolean selected) {
 	try {
+		// Only set selected state if it differs to what it was before.
+		// Otherwise, Illustrator messes up things in PopupLists.
 		#define SET_SELECTED(SUITE) \
-			SUITE->Select(entry, selected);
+			if (SUITE->IsSelected(entry) != selected) \
+				SUITE->Select(entry, selected);
 
 		DEFINE_METHOD(SET_SELECTED)
 	} EXCEPTION_CONVERT(env);
