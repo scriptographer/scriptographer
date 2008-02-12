@@ -183,10 +183,6 @@ abstract class Component extends NotificationHandler {
 		setMargin(margin, margin, margin, margin);
 	}
 
-	public void setMargin(int[] margin) {
-		setMargin(margin[0], margin[1], margin[2], margin[3]);
-	}
-
 	public void setMargin(int ver, int hor) {
 		setMargin(ver, hor, ver, hor);
 	}

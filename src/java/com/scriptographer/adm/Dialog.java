@@ -786,10 +786,6 @@ public abstract class Dialog extends Component {
 		setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
-	public void setBounds(int[] bounds) {
-		setBounds(bounds[0], bounds[1], bounds[2], bounds[3]);
-	}
-
 	public Size getSize() {
 		return (Size) size.clone();
 	}
@@ -804,14 +800,6 @@ public abstract class Dialog extends Component {
 
 	public void setSize(Size size) {
 		setSize(size.width, size.height);
-	}
-
-	public void setSize(Point size) {
-		setSize(size.x, size.y);
-	}
-
-	public void setSize(int[] size) {
-		setSize(size[0], size[1]);
 	}
 	
 	/**
@@ -846,10 +834,6 @@ public abstract class Dialog extends Component {
 
 	public final void setPosition(Point point) {
 		setPosition(point.x, point.y);
-	}
-
-	public void setPosition(int[] point) {
-		setPosition(point[0], point[1]);
 	}
 
 	/*
@@ -964,15 +948,6 @@ public abstract class Dialog extends Component {
 			setMinimumSize(size.width, size.height);
 	}
 
-	public void setMinimumSize(Point size) {
-		if (size != null)
-			setMinimumSize(size.x, size.y);
-	}
-
-	public void setMinimumSize(int[] size) {
-		setMinimumSize(size[0], size[1]);
-	}
-
 	public Size getMaximumSize() {
 		return isResizing ? maxSize : this.getSize();
 	}
@@ -997,15 +972,6 @@ public abstract class Dialog extends Component {
 			setMaximumSize(size.width, size.height);
 	}
 
-	public void setMaximumSize(Point size) {
-		if (size != null)
-			setMaximumSize(size.x, size.y);
-	}
-
-	public void setMaximumSize(int[] size) {
-		setMaximumSize(size[0], size[1]);
-	}
-
 	public native Size getIncrement();
 	
 	public native void setIncrement(int hor, int ver);
@@ -1018,11 +984,6 @@ public abstract class Dialog extends Component {
 	public void setIncrement(Point increment) {
 		if (increment != null)
 			setIncrement(increment.x, increment.y);
-	}
-
-	public void setIncrement(int[] increment) {
-		if (increment != null)
-			setIncrement(increment[0], increment[1]);
 	}
 
 	public Size getPreferredSize() {

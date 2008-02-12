@@ -258,24 +258,12 @@ public abstract class ListItem extends Item implements List {
 	public void setEntrySize(Size size) {
 		setEntrySize(size.width, size.height);
 	}
-
-	public void setEntrySize(Point size) {
-		setEntrySize(size.x, (int)size.y);
-	}
-	
-	public void setEntrySize(int[] size) {
-		setEntrySize(size[0], size[1]);
-	}
 	
 	public native void setEntryTextRect(int x, int y, int width, int height);
 	public native Rectangle getEntryTextRect();
 	
 	public void setEntryTextRect(Rectangle rect) {
 		setEntryTextRect(rect.x, rect.y, rect.width, rect.height);
-	}
-	
-	public void setEntryTextRect(int[] rect) {
-		setEntryTextRect(rect[0], rect[1], rect[2], rect[3]);
 	}
 
 	/*

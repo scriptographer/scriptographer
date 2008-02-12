@@ -31,9 +31,7 @@
 
 package com.scriptographer.adm;
 
-import java.util.Map;
-
-import com.scratchdisk.util.ConversionUtils;
+import com.scratchdisk.script.ArgumentReader;
 
 /**
  * @author lehni
@@ -55,10 +53,9 @@ public class Point {
 		set(pt.x, pt.y);
 	}
 
-
-	public Point(Map map) {
-		this(ConversionUtils.getInt(map, "x"),
-				ConversionUtils.getInt(map, "y"));
+	public Point(ArgumentReader reader) {
+		this(reader.readInt("x"),
+				reader.readInt("y"));
 	}
 
 	public void set(int x, int y) {

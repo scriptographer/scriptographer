@@ -24,14 +24,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on May 16, 2007.
+ * File created on Feb 11, 2008.
  *
  * $Id$
  */
 
-package com.scriptographer.adm;
+package com.scratchdisk.script.rhino;
 
-import java.awt.Dimension;
+import org.mozilla.javascript.NativeArray;
 
 import com.scratchdisk.script.ArgumentReader;
 
@@ -39,57 +39,17 @@ import com.scratchdisk.script.ArgumentReader;
  * @author lehni
  *
  */
-public class Size {
-	public int width;
-	public int height;
+public class ArgumentReaderArray extends ArgumentReader {
 
-	public Size() {
-		width = height = 0;
+	private NativeArray array;
+	private int index;
+
+	ArgumentReaderArray(NativeArray array) {
+		this.array = array;
+		index = 0;
 	}
 
-	public Size(int width, int height) {
-		set(width, height);
-	}
-
-	public Size(Size size) {
-		set(size.width, size.height);
-	}
-
-	public Size(Dimension size) {
-		this.width = size.width;
-		this.height = size.height;
-	}
-
-	public Size(Point size) {
-		this.width = size.x;
-		this.height = size.y;
-	}
-
-	public Size(ArgumentReader reader) {
-		this(reader.readInt("width"),
-				reader.readInt("height"));
-	}
-
-	public void set(int width, int height) {
-		this.width = width;
-		this.height = height;
-	}
-
-	public Object clone() {
-		return new Size(this);
-	}
-
-	public boolean equals(Object object) {
-		if (object instanceof Size) {
-			Size size = (Size) object;
-			return size.width == width && size.height == height;
-		} else {
-			// TODO: support other point types?
-			return false;
-		}
-	}
-
-	public String toString() {
-	   	return "{ width: " + width + ", height: " + height + " }";
+	protected Object readNext(String name) {
+		return index <array.getLength() ? array.get(index++, array) : null;
 	}
 }

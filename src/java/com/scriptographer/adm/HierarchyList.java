@@ -196,22 +196,10 @@ public class HierarchyList extends List {
 		setEntrySize(size.width, size.height, recursive);
 	}
 
-	public void setEntrySize(Point size, boolean recursive) {
-		setEntrySize(size.x, size.y, recursive);
-	}
-	
-	public void setEntrySize(int[] size, boolean recursive) {
-		setEntrySize(size[0], size[1], recursive);
-	}
-
 	public void setEntryTextRect(Rectangle rect, boolean recursive) {
 		setEntryTextRect(rect.x, rect.y, rect.width, rect.height, recursive);
 	}
 	
-	public void setEntryTextRect(int[] rect, boolean recursive) {
-		setEntryTextRect(rect[0], rect[1], rect[2], rect[3], recursive);
-	}
-
 	public native int getNonLeafEntryWidth();
 
 	public native void setNonLeafEntryTextRect(int x, int y, int width,
@@ -223,15 +211,7 @@ public class HierarchyList extends List {
 		setNonLeafEntryTextRect(rect.x, rect.y, rect.width, rect.height, recursive);
 	}
 
-	public void setNonLeafEntryTextRect(int[] rect, boolean recursive) {
-		setNonLeafEntryTextRect(rect[0], rect[1], rect[2], rect[3], recursive);
-	}
-
 	public void setNonLeafEntryTextRect(Rectangle rect) {
-		setNonLeafEntryTextRect(rect, false);
-	}
-
-	public void setNonLeafEntryTextRect(int[] rect) {
 		setNonLeafEntryTextRect(rect, false);
 	}
 		

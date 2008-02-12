@@ -32,9 +32,8 @@
 package com.scriptographer.ai;
 
 import java.awt.geom.Rectangle2D;
-import java.util.Map;
 
-import com.scratchdisk.util.ConversionUtils;
+import com.scratchdisk.script.ArgumentReader;
 
 /**
  * A Rectangle specifies an area that is enclosed by it's top-left point (x, y),
@@ -104,11 +103,11 @@ public class Rectangle {
 	 * </pre>
 	 * @param map <code>{x, y, width, height}</code>
 	 */
-	public Rectangle(Map map) {
-		this(ConversionUtils.getFloat(map, "x"),
-				ConversionUtils.getFloat(map, "y"),
-				ConversionUtils.getFloat(map, "width"),
-				ConversionUtils.getFloat(map, "height"));
+	public Rectangle(ArgumentReader reader) {
+		this(reader.readFloat("x"),
+				reader.readFloat("y"),
+				reader.readFloat("width"),
+				reader.readFloat("height"));
 	}
 
 	/**

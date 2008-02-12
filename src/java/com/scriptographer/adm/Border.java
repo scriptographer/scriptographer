@@ -32,9 +32,8 @@
 package com.scriptographer.adm;
 
 import java.awt.Insets;
-import java.util.Map;
 
-import com.scratchdisk.util.ConversionUtils;
+import com.scratchdisk.script.ArgumentReader;
 
 /**
  * @author lehni
@@ -62,11 +61,11 @@ public class Border {
 		set(insets.top, insets.right, insets.bottom, insets.left);
 	}
 
-	public Border(Map map) {
-		this(ConversionUtils.getInt(map, "top"),
-				ConversionUtils.getInt(map, "right"),
-				ConversionUtils.getInt(map, "bottom"),
-				ConversionUtils.getInt(map, "left"));
+	public Border(ArgumentReader reader) {
+		this(reader.readInt("top"),
+				reader.readInt("right"),
+				reader.readInt("bottom"),
+				reader.readInt("left"));
 	}
 
 	public void set(int top, int right, int bottom, int left) {

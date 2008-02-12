@@ -234,8 +234,8 @@ public class Document extends DictionaryObject {
 	 */
 	public native void setSize(float width, float height);
 	
-	public void setSize(Point size) {
-		setSize(size.x, size.y);
+	public void setSize(Size size) {
+		setSize(size.width, size.height);
 	}
 
 	public native Rectangle getCropBox();

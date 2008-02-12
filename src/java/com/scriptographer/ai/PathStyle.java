@@ -98,6 +98,11 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		init(style);
 	}
 
+	public PathStyle(FillStyle fill, StrokeStyle stroke) {
+		this.fill = new FillStyle(fill, this);
+		this.stroke = new StrokeStyle(stroke, this);
+	}
+	
 	public boolean equals(Object obj) {
 		if (obj instanceof PathStyle) {
 			// TODO: Implement!

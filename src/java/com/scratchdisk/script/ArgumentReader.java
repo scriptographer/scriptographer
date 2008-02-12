@@ -24,72 +24,44 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on May 16, 2007.
+ * File created on Feb 11, 2008.
  *
  * $Id$
  */
 
-package com.scriptographer.adm;
+package com.scratchdisk.script;
 
-import java.awt.Dimension;
-
-import com.scratchdisk.script.ArgumentReader;
+import com.scratchdisk.util.ConversionUtils;
 
 /**
  * @author lehni
  *
  */
-public class Size {
-	public int width;
-	public int height;
+public abstract class ArgumentReader {
 
-	public Size() {
-		width = height = 0;
+	protected abstract Object readNext(String name);
+	
+	public boolean readBoolean(String name) {
+		return ConversionUtils.toBoolean(readNext(name));
 	}
 
-	public Size(int width, int height) {
-		set(width, height);
+	public double readDouble(String name) {
+		return ConversionUtils.toDouble(readNext(name));
 	}
 
-	public Size(Size size) {
-		set(size.width, size.height);
+	public float readFloat(String name) {
+		return ConversionUtils.toFloat(readNext(name));
 	}
 
-	public Size(Dimension size) {
-		this.width = size.width;
-		this.height = size.height;
+	public int readInt(String name) {
+		return ConversionUtils.toInt(readNext(name));
 	}
 
-	public Size(Point size) {
-		this.width = size.x;
-		this.height = size.y;
+	public String readString(String name) {
+		return ConversionUtils.toString(readNext(name));
 	}
 
-	public Size(ArgumentReader reader) {
-		this(reader.readInt("width"),
-				reader.readInt("height"));
-	}
-
-	public void set(int width, int height) {
-		this.width = width;
-		this.height = height;
-	}
-
-	public Object clone() {
-		return new Size(this);
-	}
-
-	public boolean equals(Object object) {
-		if (object instanceof Size) {
-			Size size = (Size) object;
-			return size.width == width && size.height == height;
-		} else {
-			// TODO: support other point types?
-			return false;
-		}
-	}
-
-	public String toString() {
-	   	return "{ width: " + width + ", height: " + height + " }";
+	public Object readObject(String name) {
+		return readNext(name);
 	}
 }

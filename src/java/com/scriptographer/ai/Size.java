@@ -31,9 +31,7 @@
 
 package com.scriptographer.ai;
 
-import java.util.Map;
-
-import com.scratchdisk.util.ConversionUtils;
+import com.scratchdisk.script.ArgumentReader;
 
 /**
  * @author lehni
@@ -63,9 +61,9 @@ public class Size {
 		this(size.x, size.y);
 	}
 
-	public Size(Map map) {
-		this(ConversionUtils.getFloat(map, "width"),
-				ConversionUtils.getFloat(map, "height"));
+	public Size(ArgumentReader reader) {
+		this(reader.readFloat("width"),
+				reader.readFloat("height"));
 	}
 
 	public void set(float width, float height) {

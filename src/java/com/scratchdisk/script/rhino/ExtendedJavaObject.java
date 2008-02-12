@@ -100,9 +100,6 @@ public class ExtendedJavaObject extends NativeJavaObject {
 	
 	public void put(String name, Scriptable start, Object value) {
 		EvaluatorException error = null;
-		if (name.equals("content")) {
-			int i = 0;
-		}
         if (members.has(name, false)) {
 			try {
 		        // We could be asked to modify the value of a property in the
@@ -111,6 +108,8 @@ public class ExtendedJavaObject extends NativeJavaObject {
 	            members.put(this, name, javaObject, value, false);
 				return; // done
 			} catch (EvaluatorException e) {
+				if (e.getMessage().indexOf("Cannot convert") != -1)
+					throw e;
 				error = e;
 			}
 		}

@@ -437,20 +437,12 @@ public abstract class Item extends Component {
 		setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
-	public void setBounds(int[] bounds) {
-		setBounds(bounds[0], bounds[1], bounds[2], bounds[3]);
-	}
-
 	public void setPosition(int x, int y) {
 		updateBounds(x, y, bounds.width, bounds.height);
 	}
 
 	public final void setPosition(Point loc) {
 		setPosition(loc.x, loc.y);
-	}
-
-	public void setPosition(int[] point) {
-		setPosition(point[0], point[1]);
 	}
 	
 	public Point getPosition() {
@@ -467,14 +459,6 @@ public abstract class Item extends Component {
 
 	public final void setSize(Size size) {
 		setSize(size.width, size.height);
-	}
-
-	public final void setSize(Point size) {
-		setSize(size.x, size.y);
-	}
-
-	public void setSize(int[] size) {
-		setSize(size[0], size[1]);
 	}
 
 	private native Size nativeGetTextSize(String text, int maxWidth);
@@ -586,11 +570,6 @@ public abstract class Item extends Component {
 		else setPreferredSize(size.width, size.height);
 	}
 
-	public final void setPreferredSize(Point size) {
-		if (size == null) prefSize = null;
-		else setPreferredSize(size.x, size.y);
-	}
-
 	public Size getPreferredSize() {
 		return prefSize != null ? prefSize : getBestSize();
 	}
@@ -604,16 +583,6 @@ public abstract class Item extends Component {
 		else setMinimumSize(size.width, size.height);
 	}
 
-	public final void setMinimumSize(Point size) {
-		if (size == null) minSize = null;
-		else setMinimumSize(size.x, size.y);
-	}
-
-	public void setMinimumSize(int[] size) {
-		if (size == null) minSize = null;
-		else setMinimumSize(size[0], size[1]);
-	}
-
 	public Size getMinimumSize() {
 		return minSize != null ? minSize : getBestSize();
 	}
@@ -625,16 +594,6 @@ public abstract class Item extends Component {
 	public void setMaximumSize(Size size) {
 		if (size == null) maxSize = null;
 		else setMaximumSize(size.width, size.height);
-	}
-
-	public final void setMaximumSize(Point size) {
-		if (size == null) maxSize = null;
-		else setMaximumSize(size.x, size.y);
-	}
-
-	public void setMaximumSize(int[] size) {
-		if (size == null) maxSize = null;
-		else setMaximumSize(size[0], size[1]);
 	}
 
 	public Size getMaximumSize() {

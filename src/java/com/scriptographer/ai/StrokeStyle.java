@@ -31,18 +31,20 @@
 
 package com.scriptographer.ai;
 
+import com.scratchdisk.script.ArgumentReader;
+
 /**
  * @author lehni
  */
 public class StrokeStyle implements Style {
 	protected Color color;				/* Stroke color */
-	protected Boolean overprint;			/* Overprint - not meaningful if ColorTag is pattern */
+	protected Boolean overprint;		/* Overprint - not meaningful if ColorTag is pattern */
 	protected Float width;				/* Line width */
-	protected Float dashOffset;			/* Dash dashOffset */
-	protected float[] dashArray;			/* Dash array */
+	protected Float dashOffset;		/* Dash dashOffset */
+	protected float[] dashArray;		/* Dash array */
 	protected Integer cap;				/* Line cap */
 	protected Integer join;				/* Line join */
-	protected Float miterLimit;			/* Line miter limit */
+	protected Float miterLimit;		/* Line miter limit */
 
 	public static final int
 		CAP_BUTT = 0,
@@ -76,7 +78,11 @@ public class StrokeStyle implements Style {
 		init(color, overprint, width, dashOffset, dashArray, cap, join,
 				miterLimit);
 	}
-	
+
+	public StrokeStyle(ArgumentReader reader) {
+		System.out.println(reader.readObject("color"));
+	}
+
 	/**
 	 * called from the native environment
 	 */
@@ -114,10 +120,6 @@ public class StrokeStyle implements Style {
 		this.cap = cap >= 0 ? new Integer(cap) : null;
 		this.join = join >= 0 ? new Integer(join) : null;
 		this.miterLimit = miterLimit >= 0 ? new Float(miterLimit) : null;
-	}
-
-	protected void setStyle(PathStyle style) {
-		this.style = style;
 	}
 	
 	protected void initNative(int handle) {

@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
+import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Undefined;
@@ -45,6 +46,7 @@ import org.mozilla.javascript.WrapFactory;
 import org.mozilla.javascript.Wrapper;
 
 import com.scratchdisk.list.ReadOnlyList;
+import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.ClassUtils;
 import com.scratchdisk.util.WeakIdentityHashMap;
@@ -68,8 +70,8 @@ public class RhinoWrapFactory extends WrapFactory {
 	public Object wrap(Context cx, Scriptable scope, Object obj, Class staticType) {
         if (obj == null || obj == Undefined.instance || obj instanceof Scriptable)
             return obj;
-        // Allways override staticType and set itto the native type of
-		// the class. Sometimes the interface used to acces an object of
+        // Allays override staticType and set it to the native type of
+		// the class. Sometimes the interface used to access an object of
         // a certain class is passed.
 		// But why should it be wrapped that way?
         if (staticType == null || !staticType.isPrimitive())
@@ -92,8 +94,8 @@ public class RhinoWrapFactory extends WrapFactory {
         WeakReference ref = (WeakReference) wrappers.get(javaObj);
 		Scriptable obj = ref == null ? null : (Scriptable) ref.get();
 		if (obj == null) {
-	        // Allways override staticType and set it to the native type
-			// of the class. Sometimes the interface used to acces an
+	        // Allays override staticType and set it to the native type
+			// of the class. Sometimes the interface used to access an
 			// object of a certain class is passed. But why should it
 			// be wrapped that way?
 			staticType = javaObj.getClass();
@@ -120,20 +122,38 @@ public class RhinoWrapFactory extends WrapFactory {
 		// by the use of a map constructor or the setting of all the fields
 		// of a NativeObject on the instance after its creation,
 		// all added features of JS in Scriptographer:
-		if (from instanceof Scriptable
-				&& (getMapConstructor(to) != null || from instanceof NativeObject
-						&& (Map.class.isAssignableFrom(to) || getZeroArgumentConstructor(to) != null))) {
-			if (from instanceof Wrapper)
-				from = ((Wrapper) from).unwrap();
-			// Now if there are more options here to convert from, e.g. Size and Point
-			// prefer the one that has the same simple name, to encourage conversion
-			// between ADM and AI Size, Rectangle, Point objects!
-			if (ClassUtils.getSimpleName(from.getClass()).equals(ClassUtils.getSimpleName(to)))
-				return CONVERSION_TRIVIAL + 1;
-			else
-				return CONVERSION_TRIVIAL + 2;
+		if (from instanceof Scriptable) {
+			// The preferred conversion is from a native object / array to
+			// a class that supports an ArgumentReader constructor.
+			// Everything else is less preferred (even conversion using
+			// the same constructor and another Scriptable object, e.g.
+			// a wrapped Java object).
+			if (from instanceof NativeObject || from instanceof NativeArray) {
+				if (ArgumentReader.class.isAssignableFrom(to))
+					return CONVERSION_TRIVIAL + 1;
+				else if (getArgumentReaderConstructor(to) != null)
+					return CONVERSION_TRIVIAL + 2;
+			}
+			if (getArgumentReaderConstructor(to) != null || from instanceof NativeObject
+					&& (Map.class.isAssignableFrom(to) || getZeroArgumentConstructor(to) != null)) {
+				if (from instanceof Wrapper)
+					from = ((Wrapper) from).unwrap();
+				// Now if there are more options here to convert from, e.g. Size and Point
+				// prefer the one that has the same simple name, to encourage conversion
+				// between ADM and AI Size, Rectangle, Point objects!
+				if (ClassUtils.getSimpleName(from.getClass()).equals(ClassUtils.getSimpleName(to)))
+					return CONVERSION_TRIVIAL + 3;
+				else
+					return CONVERSION_TRIVIAL + 4;
+			}
 		}
 		return defaultWeight;
+	}
+
+	private ArgumentReader getArgumentReader(Object obj) {
+		if (obj instanceof NativeArray) return new ArgumentReaderArray((NativeArray) obj);
+		if (obj instanceof Scriptable) return new ArgumentReaderObject((Scriptable) obj);
+		return null;
 	}
 
 	public Object convert(Object from, Class to) {
@@ -144,15 +164,19 @@ public class RhinoWrapFactory extends WrapFactory {
 			if (Map.class.isAssignableFrom(to)) {
 				return toMap((Scriptable) from);
 			} else {
-				Constructor ctor = getMapConstructor(to);
-				if (ctor != null) {
+				ArgumentReader reader = null;
+				Constructor ctor = null;
+				if (ArgumentReader.class.isAssignableFrom(to) && (reader = getArgumentReader(from)) != null) {
+					return reader;
+				} else if ((ctor = getArgumentReaderConstructor(to)) != null && (reader = getArgumentReader(from)) != null) {
+					// Argument readers can either be created from
+					// a NativeArray or a Scriptable object
 					try {
-						return ctor.newInstance(new Object[] { toMap((Scriptable) from) });
+						return ctor.newInstance(new Object[] { reader });
 					} catch (Exception e) {
 						throw new RuntimeException(e);
 					}
-				} else if (from instanceof NativeObject
-						&& getZeroArgumentConstructor(to) != null) {
+				} else if (from instanceof NativeObject && getZeroArgumentConstructor(to) != null) {
 					// Try constructing an object of class type, through
 					// the JS ExtendedJavaClass constructor that takes 
 					// a last optional argument: A NativeObject of which
@@ -187,8 +211,8 @@ public class RhinoWrapFactory extends WrapFactory {
 		return new MapAdapter(scriptable);
 	}
 
-	private static IdentityHashMap zeroArgConstructors = new IdentityHashMap();
-	private static IdentityHashMap mapConstructors = new IdentityHashMap();
+	private static IdentityHashMap zeroArgumentConstructors = new IdentityHashMap();
+	private static IdentityHashMap argumentReaderConstructors = new IdentityHashMap();
 
 	/**
 	 * Determines wether the class has a zero argument constructor or not.
@@ -199,7 +223,7 @@ public class RhinoWrapFactory extends WrapFactory {
 	 *         otherwise.
 	 */
 	private static Constructor getZeroArgumentConstructor(Class cls) {
-		return getConstructor(zeroArgConstructors, cls, new Class[] { });
+		return getConstructor(zeroArgumentConstructors, cls, new Class[] { });
 	}
 
 
@@ -211,8 +235,8 @@ public class RhinoWrapFactory extends WrapFactory {
 	 * @param cls
 	 * @return true if the class has a map constructor, false otherwise.
 	 */
-	private static Constructor getMapConstructor(Class cls) {
-		return getConstructor(mapConstructors, cls, new Class[] { Map.class });
+	private static Constructor getArgumentReaderConstructor(Class cls) {
+		return getConstructor(argumentReaderConstructors, cls, new Class[] { ArgumentReader.class });
 	}
 
 	private static Constructor getConstructor(IdentityHashMap cache, Class cls, Class[] args) {

@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.mozilla.javascript.*;
 
+import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.util.ClassUtils;
 
 /**
@@ -93,7 +94,11 @@ public class ExtendedJavaClass extends NativeJavaClass {
 				MemberBox ctor = findConstructor(cx, args);
 	            if (ctor != null) {
 		            Class[] types = ctor.ctor().getParameterTypes();
-					if (!Map.class.isAssignableFrom(types[types.length - 1]))
+		            Class lastType = types[types.length - 1];
+		            // Only set the property object if the constructor does
+		            // not expect an ArgumentReader or a Map object, both
+		            // of which NativeObject's can be converted to.
+					if (!ArgumentReader.class.isAssignableFrom(lastType) && !Map.class.isAssignableFrom(lastType))
 						properties = (NativeObject) last;
 	            } else {
 	            	// There is no constructor that has to be checked, so it

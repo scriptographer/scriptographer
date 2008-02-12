@@ -96,10 +96,6 @@ public class Frame extends TextItem implements ComponentGroup {
 		setPadding(padding.top, padding.right, padding.bottom, padding.left);
 	}
 
-	public void setPadding(int[] padding) {
-		setPadding(padding[0], padding[1], padding[2], padding[3]);
-	}
-
 	public void setPadding(int margin) {
 		setPadding(margin, margin, margin, margin);
 	}

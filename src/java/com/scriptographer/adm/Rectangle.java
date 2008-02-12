@@ -31,9 +31,7 @@
 
 package com.scriptographer.adm;
 
-import java.util.Map;
-
-import com.scratchdisk.util.ConversionUtils;
+import com.scratchdisk.script.ArgumentReader;
 
 /**
  * @author lehni
@@ -57,11 +55,11 @@ public class Rectangle {
 		set(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	public Rectangle(Map map) {
-		this(ConversionUtils.getInt(map, "x"),
-				ConversionUtils.getInt(map, "y"),
-				ConversionUtils.getInt(map, "width"),
-				ConversionUtils.getInt(map, "height"));
+	public Rectangle(ArgumentReader reader) {
+		this(reader.readInt("x"),
+				reader.readInt("y"),
+				reader.readInt("width"),
+				reader.readInt("height"));
 	}
 
 	public void set(int x, int y, int width, int height) {

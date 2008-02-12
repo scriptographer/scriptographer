@@ -32,9 +32,8 @@
 package com.scriptographer.ai;
 
 import java.awt.geom.Point2D;
-import java.util.Map;
 
-import com.scratchdisk.util.ConversionUtils;
+import com.scratchdisk.script.ArgumentReader;
 
 /**
  * The Point object represents a point in the two dimensional space of the
@@ -69,9 +68,9 @@ public class Point {
 		this((float) p.getX(), (float) p.getY());
 	}
 
-	public Point(Map map) {
-		this(ConversionUtils.getFloat(map, "x"),
-				ConversionUtils.getFloat(map, "y"));
+	public Point(ArgumentReader reader) {
+		this(reader.readFloat("x"),
+				reader.readFloat("y"));
 	}
 
 	public void set(float x, float y) {

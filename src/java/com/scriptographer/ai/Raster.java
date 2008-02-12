@@ -169,10 +169,6 @@ public class Raster extends Art {
 		setSize(size.width, size.height);
 	}
 
-	public void setSize(Point size) {
-		setSize((int) size.x, (int) size.y);
-	}
-
 	/**
 	 * @jsbean The width of the raster
 	 * @return
