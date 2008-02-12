@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src/java"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Scriptographer Rhino"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="build/java/build/lib/js.jar" sourcepath="/Scriptographer Rhino"/>
 	<classpathentry kind="lib" path="build/java/build/lib/jython.jar"/>
 	<classpathentry kind="output" path="build/java/build/classes"/>
 </classpath>
