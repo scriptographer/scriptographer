@@ -69,8 +69,8 @@ public class Point {
 	}
 
 	public Point(ArgumentReader reader) {
-		this(reader.readFloat("x"),
-				reader.readFloat("y"));
+		this(reader.readFloat("x", 0),
+				reader.readFloat("y", 0));
 	}
 
 	public void set(float x, float y) {

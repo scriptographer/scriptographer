@@ -45,7 +45,7 @@ import com.scratchdisk.list.Lists;
  * 
  * @author lehni
  */
-public class CompoundPath extends Art {
+public class CompoundPath extends Path {
 	/**
 	 * Wraps an AIArtHandle in a Path object
 	 */
@@ -189,23 +189,6 @@ public class CompoundPath extends Art {
 		}
 	}
 
-	public void append(PathIterator iter) {
-		append(iter, false);
-	}
-
-	/**
-	 * Appends the segments of a Shape to the path. If <code>connect</code> is
-	 * true, the new path segments are connected to the existing one with a
-	 * line. The winding rule of the Shape is ignored.
-	 */
-	public void append(Shape shape, boolean connect) {
-		append(shape.getPathIterator(null), connect);
-	}
-
-	public void append(Shape shape) {
-		append(shape.getPathIterator(null), false);
-	}
-
 	public GeneralPath toShape() {
 		Path path = (Path) getFirstChild();
 		GeneralPath shape = (GeneralPath) path.toShape();
@@ -213,5 +196,22 @@ public class CompoundPath extends Art {
 			shape.append(path.toShape(), false);
 		}
 		return shape;
+	}
+
+	/**
+	 * If this is a compound path with only one path inside,
+	 * the path is moved outside and the compound path is erased.
+	 * Otherwise, the compound path is returned unmodified.
+	 *
+	 * @return the simplified compound path.
+	 */
+	public Path simplify() {
+		Path path = (Path) getFirstChild();
+		if (path.getNextSibling() == null) {
+			path.moveAbove(this);
+			this.remove();
+			return path;
+		}
+		return this;
 	}
 }

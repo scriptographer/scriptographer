@@ -75,7 +75,9 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 			}
 
 			protected Context makeContext() {
-				return RhinoEngine.this.makeContext();
+				Context context = super.makeContext();
+				RhinoEngine.this.enter(context);
+				return context;
 			}
 
 			protected void observeInstructionCount(Context cx, int instructionCount) {
@@ -91,7 +93,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 //		debugger.setScopeProvider(this);
 //		debugger.attachTo(contextFactory);
 
-		context = Context.enter();
+		context = contextFactory.enterContext();
 		topLevel = this.makeTopLevel(context);
 	}
 
@@ -118,11 +120,9 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		return defaultValue;
 	}
 
-	protected Context makeContext() {
-		Context context = new Context();
+	protected void enter(Context context) {
 		context.setApplicationClassLoader(getClass().getClassLoader());
 		context.setWrapFactory(wrapFactory);
-		return context;
 	}
 
 	protected Script compileScript(File file)

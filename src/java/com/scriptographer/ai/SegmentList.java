@@ -47,14 +47,14 @@ public class SegmentList extends AbstractFetchList {
 
 	private int lengthVersion = -1;
 
-	// how many float values are stored in a segment:
+	// How many float values are stored in a segment:
 	// use this ugly but fast hack: the AIPathSegment represents roughly an
 	// array of 6 floats (for the 3 AIRealPoints p, in, out)
 	// + a char (boolean corner)
-	// due to the data alignment, there are 3 empty bytes after the char.
+	// Due to the data alignment, there are 3 empty bytes after the char.
 	// when using a float array with seven elements, the first 6 are set
 	// correctly.
-	// the first byte of the 7th represents the boolean value. if this float is
+	// The first byte of the 7th represents the boolean value. if this float is
 	// set to 0 before fetching, it will be == 0 if false, and != 0 if true, so
 	// that's all we want in the java environment:
 	protected static final int VALUES_PER_SEGMENT = 7;
@@ -234,29 +234,29 @@ public class SegmentList extends AbstractFetchList {
 		Segment segment;
 		if (obj instanceof Segment) {
 			segment = (Segment) obj;
-			// copy it if it comes from another list:
+			// Copy it if it comes from another list:
 			if (segment.segments != null)
 				segment = new Segment(segment);
 		} else if (obj instanceof Point) {
-			// convert single points to a segment
+			// Convert single points to a segment
 			segment = new Segment((Point) obj);
 		} else return null;
-		// add to internal structure
+		// Add to internal structure
 		list.add(index, segment);
-		// update verion:
+		// Update version:
 		if (path != null)
 			segment.version = path.version;
 		
-		// and link segment to this list
+		// And link segment to this list
 		segment.segments = this;
 		segment.index = index;
-		// increase size
+		// Increase size
 		size++;
 		if (curves != null)
 			curves.updateSize();
-		// and add to illustrator as well
+		// And add to illustrator as well
 		segment.insert();
-		// update Segment indices
+		// Update Segment indices
 		for (int i = index + 1; i < size; i++) {
 			Segment seg = (Segment) list.get(i);
 			if (seg != null)
@@ -443,8 +443,8 @@ public class SegmentList extends AbstractFetchList {
 	}
 	
 	public void quadTo(float cx, float cy, float x, float y) {
-		// this is exact:
-		// if whe have the three quad poits: A E D,
+		// This is exact:
+		// If we have the three quad poits: A E D,
 		// and the cubic is A B C D,
 		// B = E + 1/3 (A - E)
 		// C = E + 1/3 (D - E)
@@ -465,14 +465,14 @@ public class SegmentList extends AbstractFetchList {
 		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		
-		// get the startPoint:
+		// Get the startPoint:
 		Segment startSegment = (Segment) getLast();
 		float startX = startSegment.point.x;
 		float startY = startSegment.point.y;
 		
-		// determine the width and height of the ellipse by the 3 given points
+		// Determine the width and height of the ellipse by the 3 given points
 		// center, startPoint and endPoint:
-		// find the scaleFactor that scales this system horizontally so a circle
+		// Find the scaleFactor that scales this system horizontally so a circle
 		// would fit. the resulting radius is the ellipse's height.
 		// Then apply the opposite factor to the radius in order to get the width.
 		
@@ -528,10 +528,10 @@ public class SegmentList extends AbstractFetchList {
 			else out = new Point(centerX + (relx - z * rely) * w - pt.x,
 					centerY + (rely + z * relx) * h - pt.y);
 			if (i == 0) {
-				// modify startSegment
+				// Modify startSegment
 				startSegment.handleOut.setLocation(out);
 			} else {
-				// add new Segment
+				// Add new Segment
 				Point in = new Point(centerX + (relx + z * rely) * w - pt.x,
 						centerY + (rely - z * relx) * h - pt.y);
 				add(new Segment(pt, in, out, false));

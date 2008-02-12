@@ -62,8 +62,8 @@ public class Size {
 	}
 
 	public Size(ArgumentReader reader) {
-		this(reader.readFloat("width"),
-				reader.readFloat("height"));
+		this(reader.readFloat("width", 0),
+				reader.readFloat("height", 0));
 	}
 
 	public void set(float width, float height) {

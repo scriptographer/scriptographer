@@ -31,9 +31,13 @@
 
 package com.scriptographer.adm;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.LayoutManager;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.scriptographer.ScriptographerEngine; 
 import com.scratchdisk.list.List;
@@ -167,6 +171,10 @@ abstract class Component extends NotificationHandler {
 		this.getAWTContainer().setLayout(mgr);
 	}
 
+	public LayoutManager getLayout() {
+		return this.getAWTContainer().getLayout();
+	}
+
 	public void setMargin(int top, int right, int bottom, int left) {
 		this.getAWTContainer().setInsets(top, left, bottom, right);
 	}
@@ -244,18 +252,47 @@ abstract class Component extends NotificationHandler {
 	}
 
 	public void setContent(Object[] elements) {
+		// The default for setting array elements is a flow layout
+		if (this.getLayout() == null)
+			this.setLayout(new FlowLayout());
+
 		Content content = getContent();
 		content.removeAll();
 		content.addAll(elements);
 	}
 
 	public void setContent(List elements) {
+		// The default for setting array elements is a flow layout
+		if (this.getLayout() == null)
+			this.setLayout(new FlowLayout());
+
 		Content content = getContent();
 		content.removeAll();
 		content.addAll(elements);
 	}
 	
+	private static final Pattern borderLayoutPattern = Pattern.compile(
+			"^(north|south|east|west|center|first|last|before|after)$",
+			Pattern.CASE_INSENSITIVE);
+
 	public void setContent(Map elements) {
+		// Find out what kind of layout we have by checking the keys
+		// in the map:
+		if (this.getLayout() == null) {
+			boolean borderLayout = true;
+			for (Iterator it = elements.keySet().iterator(); it.hasNext() && borderLayout;) {
+				Object key = it.next();
+				borderLayout = key instanceof CharSequence && borderLayoutPattern.matcher((CharSequence) key).matches();
+			}
+			if (borderLayout) {
+				this.setLayout(new BorderLayout());
+			} else {
+				// TODO: figure out amount of rows and columns by analizing the keys.
+				// for now we don't do that...
+				this.setLayout(new TableLayout("preferred", "preferred"));
+			}
+		}
+
 		Content content = getContent();
 		content.removeAll();
 		content.addAll(elements);

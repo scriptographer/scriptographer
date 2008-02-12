@@ -24,32 +24,39 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Feb 11, 2008.
+ * File created on Feb 12, 2008.
  *
  * $Id$
  */
 
-package com.scratchdisk.script.rhino;
-
-import org.mozilla.javascript.NativeArray;
-
-import com.scratchdisk.script.ArgumentReader;
+package com.scratchdisk.script;
 
 /**
  * @author lehni
  *
  */
-public class ArgumentReaderArray extends ArgumentReader {
+public class StringArgumentReader extends ArgumentReader {
 
-	private NativeArray array;
-	private int index;
+	protected String[] parts;
+	protected int index;
 
-	ArgumentReaderArray(NativeArray array) {
-		this.array = array;
+	public StringArgumentReader(Converter converter, String string) {
+		super(converter);
+		parts = string.split("\\s");
 		index = 0;
 	}
 
 	protected Object readNext(String name) {
-		return index <array.getLength() ? array.get(index++, array) : null;
+		return index < parts.length ? parts[index++] : null;
 	}
+
+	public void revert() {
+		if (index > 0)
+			index--;
+	}
+
+	public boolean isString() {
+		return true;
+	}
+
 }

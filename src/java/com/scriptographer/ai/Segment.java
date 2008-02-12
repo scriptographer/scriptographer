@@ -31,6 +31,7 @@
 
 package com.scriptographer.ai;
 
+import com.scratchdisk.script.ArgumentReader;
 import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
 
@@ -45,25 +46,25 @@ import com.scriptographer.CommitManager;
 public class Segment implements Commitable {
 	protected SegmentList segments;
 	protected int index;
-	// the internal points
+	// The internal points
 	protected SegmentPoint point;
 	protected SegmentPoint handleIn;
 	protected SegmentPoint handleOut;
-	// corner
+	// Corner
 	protected boolean corner;
-	// the selection state is fetched the first time it's used
+	// The selection state is fetched the first time it's used
 	protected short selectionState = SELECTION_FETCH;
 	//
 	protected int version = -1;
 	protected short dirty = DIRTY_NONE;
 
-	// dirty flags, to be combined bitwise
+	// Dirty flags, to be combined bitwise
 	protected final static short
 		DIRTY_NONE = 0,
 		DIRTY_POINTS = 1,
 		DIRTY_SELECTION = 2;
 
-	// for selectionState
+	// For selectionState
 	protected final static short
 		SELECTION_FETCH = -1,
 		SELECTION_NONE = 0,
@@ -73,27 +74,80 @@ public class Segment implements Commitable {
 		SELECTION_HANDLE_BOTH = 4;
 
 	public Segment() {
-		point = new SegmentPoint(this, 0);
-		handleIn = new SegmentPoint(this, 2);
-		handleOut = new SegmentPoint(this, 4);
-	}
-
-	public Segment(Point pt, Point in, Point out, boolean corner) {
-		point = new SegmentPoint(this, 0, pt);
-		handleIn = in != null ?
-			new SegmentPoint(this, 2, in) :
-			new SegmentPoint(this, 2);
-		handleOut = out != null ?
-			new SegmentPoint(this, 4, out) :
-			new SegmentPoint(this, 4);
-		this.corner = corner;
-	}
-
-	public Segment(Point pt, Point in, Point out) {
-		this(pt, in, out, false);
+		init(0, 0, 0, 0, 0, 0, false);
 	}
 
 	public Segment(float x, float y, float inX, float inY, float outX,
+			float outY, boolean corner) {
+		init(x, y, inX, inY, outX, outY, corner);
+	}
+
+	public Segment(float x, float y, float inX, float inY, float outX,
+			float outY) {
+		init(x, y, inX, inY, outX, outY, false);
+	}
+
+	public Segment(float x, float y) {
+		init(x, y, 0, 0, 0, 0, false);
+	}
+
+	public Segment(Point pt, Point in, Point out, boolean corner) {
+		init(pt.x, pt.y, in.x, in.y, out.x, out.y, corner);
+	}
+
+	public Segment(Point pt, Point in, Point out) {
+		init(pt, in, out, false);
+	}
+	
+	public Segment(Point pt) {
+		init(pt.x, pt.y, 0, 0, 0, 0, false);
+	}
+
+	public Segment(Segment segment) {
+		init(segment.point, segment.handleIn, segment.handleOut, segment.corner);
+	}
+
+	private static Point getPoint(ArgumentReader reader, String name) {
+		Point point = (Point) reader.readObject(name, Point.class);
+		return point != null ? point : new Point();
+	}
+
+	public Segment(ArgumentReader reader) {
+		if (reader.isHash()) {
+			if (reader.has("x")) {
+				init(
+					reader.readFloat("x", 0),
+					reader.readFloat("y", 0),
+					0, 0, 0, 0, false
+				);
+			} else {
+				init(
+					getPoint(reader, "point"),
+					getPoint(reader, "handleIn"),
+					getPoint(reader, "handleOut"),
+					reader.readBoolean("corner", false)
+				);
+			}
+		} else {
+			init(
+				reader.readFloat(0),
+				reader.readFloat(0),
+				reader.readFloat(0),
+				reader.readFloat(0),
+				reader.readFloat(0),
+				reader.readFloat(0),
+				reader.readBoolean(false)
+			);		
+		}
+	}
+
+	protected Segment(SegmentList segments, int index) {
+		this();
+		this.segments = segments;
+		this.index = index;
+	}
+
+	protected void init(float x, float y, float inX, float inY, float outX,
 			float outY, boolean corner) {
 		point = new SegmentPoint(this, 0, x, y);
 		handleIn = new SegmentPoint(this, 2, inX, inY);
@@ -101,27 +155,8 @@ public class Segment implements Commitable {
 		this.corner = corner;
 	}
 
-	public Segment(float x, float y, float inX, float inY, float outX,
-			float outY) {
-		this(x, y, inX, inY, outX, outY, false);
-	}
-
-	public Segment(float x, float y) {
-		this(x, y, 0, 0, 0, 0, false);
-	}
-	
-	public Segment(Point pt) {
-		this(pt.x, pt.y);
-	}
-	
-	public Segment(Segment segment) {
-		this(segment.point, segment.handleIn, segment.handleOut, segment.corner);
-	}
-	
-	protected Segment(SegmentList segments, int index) {
-		this();
-		this.segments = segments;
-		this.index = index;
+	protected void init(Point pt, Point in, Point out, boolean corner) {
+		init(pt.x, pt.y, in.x, in.y, out.x, out.y, corner);
 	}
 
 	/**

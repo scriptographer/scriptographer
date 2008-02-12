@@ -62,10 +62,10 @@ public class Border {
 	}
 
 	public Border(ArgumentReader reader) {
-		this(reader.readInt("top"),
-				reader.readInt("right"),
-				reader.readInt("bottom"),
-				reader.readInt("left"));
+		this(reader.readInteger("top", 0),
+				reader.readInteger("right", 0),
+				reader.readInteger("bottom", 0),
+				reader.readInteger("left", 0));
 	}
 
 	public void set(int top, int right, int bottom, int left) {

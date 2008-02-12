@@ -24,60 +24,17 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on May 14, 2007.
+ * File created on Feb 12, 2008.
  *
  * $Id$
  */
 
-package com.scriptographer.adm;
-
-import com.scratchdisk.script.ArgumentReader;
+package com.scratchdisk.script;
 
 /**
  * @author lehni
  *
  */
-public class Point {
-	public int x;
-	public int y;
-
-	public Point() {
-		x = y = 0;
-	}
-
-	public Point(int x, int y) {
-		set(x, y);
-	}
-
-	public Point(Point pt) {
-		set(pt.x, pt.y);
-	}
-
-	public Point(ArgumentReader reader) {
-		this(reader.readInteger("x", 0),
-				reader.readInteger("y", 0));
-	}
-
-	public void set(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	public Object clone() {
-		return new Point(this);
-	}
-
-	public boolean equals(Object object) {
-		if (object instanceof Point) {
-			Point pt = (Point) object;
-			return pt.x == x && pt.y == y;
-		} else {
-			// TODO: support other point types?
-			return false;
-		}
-	}
-
-	public String toString() {
-	   	return "{ x: " + x + ", y: " + y + " }";
-	}
+public interface Converter {
+	public Object convert(Object obj, Class type);
 }

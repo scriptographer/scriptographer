@@ -24,60 +24,42 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on May 14, 2007.
+ * File created on Feb 11, 2008.
  *
  * $Id$
  */
 
-package com.scriptographer.adm;
+package com.scratchdisk.script.rhino;
+
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
 import com.scratchdisk.script.ArgumentReader;
+import com.scratchdisk.script.Converter;
 
 /**
  * @author lehni
  *
  */
-public class Point {
-	public int x;
-	public int y;
+public class HashArgumentReader extends ArgumentReader {
 
-	public Point() {
-		x = y = 0;
+	protected Scriptable scriptable;
+
+	public HashArgumentReader(Converter converter, Scriptable scriptable) {
+		super(converter);
+		this.scriptable = scriptable;
 	}
 
-	public Point(int x, int y) {
-		set(x, y);
+	protected Object readNext(String name) {
+		Object obj = scriptable.get(name, scriptable);
+		return obj != ScriptableObject.NOT_FOUND ? obj : null;
 	}
 
-	public Point(Point pt) {
-		set(pt.x, pt.y);
+	public boolean has(String name) {
+		return scriptable.has(name, scriptable);
 	}
 
-	public Point(ArgumentReader reader) {
-		this(reader.readInteger("x", 0),
-				reader.readInteger("y", 0));
-	}
-
-	public void set(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	public Object clone() {
-		return new Point(this);
-	}
-
-	public boolean equals(Object object) {
-		if (object instanceof Point) {
-			Point pt = (Point) object;
-			return pt.x == x && pt.y == y;
-		} else {
-			// TODO: support other point types?
-			return false;
-		}
-	}
-
-	public String toString() {
-	   	return "{ x: " + x + ", y: " + y + " }";
+	public boolean isHash() {
+		return true;
 	}
 }

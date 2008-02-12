@@ -104,10 +104,10 @@ public class Rectangle {
 	 * @param map <code>{x, y, width, height}</code>
 	 */
 	public Rectangle(ArgumentReader reader) {
-		this(reader.readFloat("x"),
-				reader.readFloat("y"),
-				reader.readFloat("width"),
-				reader.readFloat("height"));
+		this(reader.readFloat("x", 0),
+				reader.readFloat("y", 0),
+				reader.readFloat("width", 0),
+				reader.readFloat("height", 0));
 	}
 
 	/**

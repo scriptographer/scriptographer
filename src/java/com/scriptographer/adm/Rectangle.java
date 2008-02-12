@@ -56,10 +56,10 @@ public class Rectangle {
 	}
 
 	public Rectangle(ArgumentReader reader) {
-		this(reader.readInt("x"),
-				reader.readInt("y"),
-				reader.readInt("width"),
-				reader.readInt("height"));
+		this(reader.readInteger("x", 0),
+				reader.readInteger("y", 0),
+				reader.readInteger("width", 0),
+				reader.readInteger("height", 0));
 	}
 
 	public void set(int x, int y, int width, int height) {

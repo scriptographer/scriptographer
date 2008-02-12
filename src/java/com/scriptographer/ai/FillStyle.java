@@ -31,6 +31,8 @@
 
 package com.scriptographer.ai;
 
+import com.scratchdisk.script.ArgumentReader;
+
 /**
  * @author lehni
  */
@@ -55,6 +57,13 @@ public class FillStyle implements Style {
 
 	public FillStyle(Color color, Boolean overprint) {
 		init(color, overprint);
+	}
+
+	public FillStyle(ArgumentReader reader) {
+		init(
+				(Color) reader.readObject("color", Color.class),
+				reader.readBoolean("overprint")
+		);
 	}
 
 	/**

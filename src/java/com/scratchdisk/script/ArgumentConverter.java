@@ -24,60 +24,36 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on May 14, 2007.
+ * File created on Feb 12, 2008.
  *
  * $Id$
  */
 
-package com.scriptographer.adm;
+package com.scratchdisk.script;
 
-import com.scratchdisk.script.ArgumentReader;
+import com.scratchdisk.util.ClassUtils;
 
 /**
  * @author lehni
  *
  */
-public class Point {
-	public int x;
-	public int y;
+public abstract class ArgumentConverter {
 
-	public Point() {
-		x = y = 0;
-	}
-
-	public Point(int x, int y) {
-		set(x, y);
-	}
-
-	public Point(Point pt) {
-		set(pt.x, pt.y);
-	}
-
-	public Point(ArgumentReader reader) {
-		this(reader.readInteger("x", 0),
-				reader.readInteger("y", 0));
-	}
-
-	public void set(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	public Object clone() {
-		return new Point(this);
-	}
-
-	public boolean equals(Object object) {
-		if (object instanceof Point) {
-			Point pt = (Point) object;
-			return pt.x == x && pt.y == y;
-		} else {
-			// TODO: support other point types?
-			return false;
+	public static void loadConverters() {
+		String[] converters = ClassUtils.getServiceInformation(ArgumentConverter.class);
+		if (converters != null) {
+			for (int i = 0; i < converters.length; i++) {
+				String[] parts = converters[i].split(":");
+				try {
+					ArgumentConverter converter = (ArgumentConverter) Class.forName(parts[0]).newInstance();
+					Class type = Class.forName(parts[1]);
+					ArgumentReader.registerConverter(type, converter);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
-	public String toString() {
-	   	return "{ x: " + x + ", y: " + y + " }";
-	}
+	public abstract Object convert(ArgumentReader reader);
 }

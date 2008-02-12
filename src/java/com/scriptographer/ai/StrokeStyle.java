@@ -80,7 +80,16 @@ public class StrokeStyle implements Style {
 	}
 
 	public StrokeStyle(ArgumentReader reader) {
-		System.out.println(reader.readObject("color"));
+		init(
+				(Color) reader.readObject("color", Color.class),
+				reader.readBoolean("overprint"),
+				reader.readFloat("width"),
+				reader.readFloat("dashOffset"),
+				(float[]) reader.readObject("dashArray", float[].class),
+				reader.readInteger("cap"),
+				reader.readInteger("join"),
+				reader.readFloat("miterLimit")
+		);
 	}
 
 	/**
@@ -104,6 +113,10 @@ public class StrokeStyle implements Style {
 		this.cap = cap;
 		this.join = join;
 		this.miterLimit = miterLimit;
+	}
+
+	protected void setStyle(PathStyle style) {
+		this.style = style;
 	}
 
 	/**

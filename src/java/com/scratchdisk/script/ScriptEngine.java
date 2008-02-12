@@ -31,12 +31,11 @@
 
 package com.scratchdisk.script;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
+
+import com.scratchdisk.util.ClassUtils;
 
 /**
  * @author lehni
@@ -50,29 +49,22 @@ public abstract class ScriptEngine {
 	private HashMap scriptCache = new HashMap();
 
 	public static void loadEngines() {
-		// Do not call loadEngines immediatelly, as we want the scripting engines
-		// to be instanciated in the same thread as from where they are used...
+		// Do not call loadEngines immediately, as we want the scripting engines
+		// to be instantiated in the same thread as from where they are used...
 		// TODO: Move to a multi threaded scenario, where RhinoEngine creates
 		// Contexts for reach script call...
-		InputStream in = ScriptEngine.class.getResourceAsStream(
-				"/META-INF/services/" + ScriptEngine.class.getName());
-		if (in != null) {
-			try {
-				BufferedReader buffer = new BufferedReader(new InputStreamReader(in));
-				for (String str = buffer.readLine(); str != null;
-						str = buffer.readLine()) {
-					try {
-						Class.forName(str).newInstance();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+		String[] lines = ClassUtils.getServiceInformation(ScriptEngine.class);
+		if (lines != null) {
+			for (int i = 0; i < lines.length; i++) {
+				try {
+					Class.forName(lines[i]).newInstance();
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				in.close();
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
 			}
 			loaded = true;
 		}
+		ArgumentConverter.loadConverters();
 	}
 
 	public ScriptEngine(String name, String extension) {

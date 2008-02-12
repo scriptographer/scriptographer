@@ -32,6 +32,7 @@
 package com.scriptographer.ai;
 
 import java.awt.Shape;
+import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
@@ -53,6 +54,13 @@ public class Path extends Art {
 	 */
 	protected Path(int handle) {
 		super(handle);
+	}
+
+	/**
+	 * Creates a path object of the given type. Used by CompoundPath
+	 */
+	protected Path(short type) {
+		super(type);
 	}
 
 	/**
@@ -81,7 +89,7 @@ public class Path extends Art {
 	 */
 	public boolean remove() {
         boolean ret = super.remove();
-        // dereference from path if they're used somewhere else!
+        // Dereference from path if they're used somewhere else!
         if (segments != null)
             segments.path = null;
         return ret;
@@ -102,14 +110,14 @@ public class Path extends Art {
 
 	public void setSegments(ExtendedList list) {
 		SegmentList segments = getSegments();
-		// TODO: implement SegmentList.setAll so clear is not necesssary and
+		// TODO: Implement SegmentList.setAll so clear is not necessary and
 		// nativeCommit is used instead of nativeInsert removeRange would still
 		// be needed in cases the new list is smaller than the old one...
 		segments.removeAll();
 		segments.addAll(list);
 	}
 
-	public void setSegments(Object[] segments) {
+	public void setSegments(Segment[] segments) {
 		setSegments(Lists.asList(segments));
 	}
 
@@ -124,7 +132,7 @@ public class Path extends Art {
 	private native void nativeSetClosed(boolean closed);
 	
 	public void setClosed(boolean closed) {
-		// amount of curves may change when closed is modified
+		// Amount of curves may change when closed is modified
 		nativeSetClosed(closed);
 		if (curves != null)
 			curves.updateSize();
@@ -139,7 +147,7 @@ public class Path extends Art {
 	public native void setTabletData(TabletValue[] data);
 	
 	public void setTabletData(float[][] data) {
-		// convert to a TabletValue[] data array:
+		// Convert to a TabletValue[] data array:
 		ArrayList values = new ArrayList();
 		for (int i = 0; i < data.length; i++) {
 			float[] pair = data[i];
@@ -167,11 +175,11 @@ public class Path extends Art {
 	 * compound path.
 	 */
 	public void reverse() {
-		// first save all changes:
+		// First save all changes:
 		CommitManager.commit(this);
-		// reverse underlying ai structures:
+		// Reverse underlying AI structures:
 		nativeReverse();
-		// increase version as all segments have changed
+		// Increase version as all segments have changed
 		this.version++;
 	}
 	
@@ -465,5 +473,45 @@ public class Path extends Art {
 				? GeneralPath.WIND_EVEN_ODD
 				: GeneralPath.WIND_NON_ZERO);
 		return path;
+	}
+
+	public boolean intersects(Path path) {
+		Area area = new Area(this.toShape());
+		area.intersect(new Area(path.toShape()));
+		return area.isEmpty();
+	}
+
+	public boolean contains(Path path) {
+		Area area = new Area(path.toShape());
+		area.subtract(new Area(this.toShape()));
+		return area.isEmpty();
+	}
+
+	public boolean contains(Point point) {
+		return new Area(this.toShape()).contains(point.toPoint2D());
+	}
+
+	public Path intersect(Path path) {
+		Area area = new Area(this.toShape());
+		area.intersect(new Area(path.toShape()));
+		CompoundPath compoundPath = new CompoundPath(area);
+		compoundPath.setStyle(this.getStyle());
+		return compoundPath.simplify();
+	}
+
+	public Path unite(Path path) {
+		Area area = new Area(this.toShape());
+		area.add(new Area(path.toShape()));
+		CompoundPath compoundPath = new CompoundPath(area);
+		compoundPath.setStyle(this.getStyle());
+		return compoundPath.simplify();
+	}
+
+	public Path exclude(Path path) {
+		Area area = new Area(this.toShape());
+		area.subtract(new Area(path.toShape()));
+		CompoundPath compoundPath = new CompoundPath(area);
+		compoundPath.setStyle(this.getStyle());
+		return compoundPath.simplify();
 	}
 }

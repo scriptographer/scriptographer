@@ -48,13 +48,15 @@ import org.mozilla.javascript.Wrapper;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.script.Converter;
+import com.scratchdisk.script.StringArgumentReader;
 import com.scratchdisk.util.ClassUtils;
 import com.scratchdisk.util.WeakIdentityHashMap;
 
 /**
  * @author lehni
  */
-public class RhinoWrapFactory extends WrapFactory {
+public class RhinoWrapFactory extends WrapFactory implements Converter {
 	private WeakIdentityHashMap wrappers = new WeakIdentityHashMap();
 	protected RhinoEngine engine;
 
@@ -122,19 +124,19 @@ public class RhinoWrapFactory extends WrapFactory {
 		// by the use of a map constructor or the setting of all the fields
 		// of a NativeObject on the instance after its creation,
 		// all added features of JS in Scriptographer:
-		if (from instanceof Scriptable) {
+		if (from instanceof Scriptable || from instanceof String) { // Let through string as well, for ArgumentReader
 			// The preferred conversion is from a native object / array to
 			// a class that supports an ArgumentReader constructor.
 			// Everything else is less preferred (even conversion using
 			// the same constructor and another Scriptable object, e.g.
 			// a wrapped Java object).
-			if (from instanceof NativeObject || from instanceof NativeArray) {
+			if (from instanceof NativeObject || from instanceof NativeArray || from instanceof String) {
 				if (ArgumentReader.class.isAssignableFrom(to))
 					return CONVERSION_TRIVIAL + 1;
-				else if (getArgumentReaderConstructor(to) != null)
+				else if (ArgumentReader.canConvert(to))
 					return CONVERSION_TRIVIAL + 2;
 			}
-			if (getArgumentReaderConstructor(to) != null || from instanceof NativeObject
+			if (ArgumentReader.canConvert(to) || from instanceof NativeObject
 					&& (Map.class.isAssignableFrom(to) || getZeroArgumentConstructor(to) != null)) {
 				if (from instanceof Wrapper)
 					from = ((Wrapper) from).unwrap();
@@ -151,8 +153,9 @@ public class RhinoWrapFactory extends WrapFactory {
 	}
 
 	private ArgumentReader getArgumentReader(Object obj) {
-		if (obj instanceof NativeArray) return new ArgumentReaderArray((NativeArray) obj);
-		if (obj instanceof Scriptable) return new ArgumentReaderObject((Scriptable) obj);
+		if (obj instanceof NativeArray) return new ArrayArgumentReader(this, (NativeArray) obj);
+		else if (obj instanceof Scriptable) return new HashArgumentReader(this, (Scriptable) obj);
+		else if (obj instanceof String) return new StringArgumentReader(this, (String) obj);
 		return null;
 	}
 
@@ -160,22 +163,13 @@ public class RhinoWrapFactory extends WrapFactory {
 		// Coerce native objects to maps when needed
 		if (from instanceof Function && to == Callable.class) {
 			return new RhinoCallable(engine, (Function) from);
-		} else if (from instanceof Scriptable) {
+		} else if (from instanceof Scriptable || from instanceof String) { // Let through string as well, for ArgumentReader
 			if (Map.class.isAssignableFrom(to)) {
 				return toMap((Scriptable) from);
 			} else {
 				ArgumentReader reader = null;
-				Constructor ctor = null;
-				if (ArgumentReader.class.isAssignableFrom(to) && (reader = getArgumentReader(from)) != null) {
-					return reader;
-				} else if ((ctor = getArgumentReaderConstructor(to)) != null && (reader = getArgumentReader(from)) != null) {
-					// Argument readers can either be created from
-					// a NativeArray or a Scriptable object
-					try {
-						return ctor.newInstance(new Object[] { reader });
-					} catch (Exception e) {
-						throw new RuntimeException(e);
-					}
+				if (ArgumentReader.canConvert(to) && (reader = getArgumentReader(from)) != null) {
+				    return ArgumentReader.convert(reader, to);
 				} else if (from instanceof NativeObject && getZeroArgumentConstructor(to) != null) {
 					// Try constructing an object of class type, through
 					// the JS ExtendedJavaClass constructor that takes 
@@ -211,11 +205,8 @@ public class RhinoWrapFactory extends WrapFactory {
 		return new MapAdapter(scriptable);
 	}
 
-	private static IdentityHashMap zeroArgumentConstructors = new IdentityHashMap();
-	private static IdentityHashMap argumentReaderConstructors = new IdentityHashMap();
-
 	/**
-	 * Determines wether the class has a zero argument constructor or not.
+	 * Determines weather the class has a zero argument constructor or not.
 	 * A cache is used to speed up lookup.
 	 * 
 	 * @param cls
@@ -223,32 +214,9 @@ public class RhinoWrapFactory extends WrapFactory {
 	 *         otherwise.
 	 */
 	private static Constructor getZeroArgumentConstructor(Class cls) {
-		return getConstructor(zeroArgumentConstructors, cls, new Class[] { });
+		return ClassUtils.getConstructor(cls, new Class[] { }, zeroArgumentConstructors);
 	}
 
-
-	/**
-	 * Determines wether the class has a constructor taking a single map as
-	 * argument or not.
-	 * A cache is used to speed up lookup.
-	 * 
-	 * @param cls
-	 * @return true if the class has a map constructor, false otherwise.
-	 */
-	private static Constructor getArgumentReaderConstructor(Class cls) {
-		return getConstructor(argumentReaderConstructors, cls, new Class[] { ArgumentReader.class });
-	}
-
-	private static Constructor getConstructor(IdentityHashMap cache, Class cls, Class[] args) {
-		Constructor ctor = (Constructor) cache.get(cls);
-		if (ctor == null) {
-			try {
-				ctor = cls.getConstructor(args);
-				cache.put(cls, ctor);
-			} catch (Exception e) {
-			}
-		}
-		return ctor;
-	}
+    private static IdentityHashMap zeroArgumentConstructors = new IdentityHashMap();
 }
 

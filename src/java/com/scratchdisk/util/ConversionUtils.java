@@ -58,14 +58,30 @@ public class ConversionUtils {
 		return Double.NaN;
 	}
 
+	public static double toDouble(Object val, double defaultValue) {
+		double value = toDouble(val);
+		return value == Double.NaN ? defaultValue : value;
+	}
+	
 	public static float toFloat(Object val) {
 		return (float) toDouble(val);
 	}
-	
+
+	public static float toFloat(Object val, float defaultValue) {
+		float value = toFloat(val);
+		return value == Float.NaN ? defaultValue : value;
+	}
+
 	public static int toInt(Object val) {
         if (val instanceof Integer)
             return ((Integer) val).intValue();
         else return (int) Math.round(toDouble(val));
+	}
+
+	public static int toInt(Object val, int defaultValue) {
+        if (val instanceof Integer)
+            return ((Integer) val).intValue();
+        else return (int) Math.round(toDouble(val, defaultValue));
 	}
 
 	public static boolean toBoolean(Object val) {
@@ -83,7 +99,11 @@ public class ConversionUtils {
 	}
 
 	public static String toString(Object val) {
-		return val != null ? val.toString() : null;
+		return toString(val, null);
+	}
+
+	public static String toString(Object val, String defaultValue) {
+		return val != null ? val.toString() : defaultValue;
 	}
 
     public static boolean equals(Object x, Object y) {

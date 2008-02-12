@@ -31,6 +31,7 @@
 
 package com.scriptographer.ai;
 
+import com.scratchdisk.script.ArgumentReader;
 import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
 
@@ -102,7 +103,18 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		this.fill = new FillStyle(fill, this);
 		this.stroke = new StrokeStyle(stroke, this);
 	}
-	
+
+	public PathStyle(ArgumentReader reader) {
+		fill = (FillStyle) reader.readObject("fill", FillStyle.class);
+		if (fill == null)
+			fill = new FillStyle(this);
+		stroke = (StrokeStyle) reader.readObject("stroke", StrokeStyle.class);
+		if (stroke == null)
+			stroke = new StrokeStyle(this);
+		fill.setStyle(this);
+		stroke.setStyle(this);
+	}
+
 	public boolean equals(Object obj) {
 		if (obj instanceof PathStyle) {
 			// TODO: Implement!

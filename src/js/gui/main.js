@@ -382,11 +382,10 @@ var mainDialog = new FloatingDialog(
 	return {
 		title: 'Scriptographer',
 		margin: [0, -1, -1, -1],
-		layout: new BorderLayout(),
 		content: {
 			center: scriptList,
 			south: new ItemGroup(this) {
-				layout: new FlowLayout(FlowLayout.LEFT, -1, -1),
+				layout: [ 'left' , -1, -1 ],
 				content: [
 					playButton,
 					stopButton,

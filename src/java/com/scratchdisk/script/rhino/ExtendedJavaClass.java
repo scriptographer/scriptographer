@@ -91,7 +91,12 @@ public class ExtendedJavaClass extends NativeJavaClass {
 				// If so, the NativeObject will be converted to it thought
 				// RhinoWrapFactory. Otherwise, the NativeObject is used
 				// as the properties to be set on the instance after creation.
-				MemberBox ctor = findConstructor(cx, args);
+				MemberBox ctor = null;
+				try {
+					ctor = findConstructor(cx, args);
+				} catch (EvaluatorException e) {
+					// TODO: ambiguous parameters, what to do? report?
+				}
 	            if (ctor != null) {
 		            Class[] types = ctor.ctor().getParameterTypes();
 		            Class lastType = types[types.length - 1];

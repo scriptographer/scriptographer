@@ -31,23 +31,40 @@
 
 package com.scratchdisk.script.rhino;
 
-import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.NativeArray;
 
 import com.scratchdisk.script.ArgumentReader;
+import com.scratchdisk.script.Converter;
 
 /**
  * @author lehni
  *
  */
-public class ArgumentReaderObject extends ArgumentReader {
+public class ArrayArgumentReader extends ArgumentReader {
 
-	private Scriptable scriptable;
+	protected NativeArray array;
+	protected int index;
 
-	public ArgumentReaderObject(Scriptable scriptable) {
-		this.scriptable = scriptable;
+	public ArrayArgumentReader(Converter converter, NativeArray array) {
+		super(converter);
+		this.array = array;
+		index = 0;
 	}
 
 	protected Object readNext(String name) {
-		return scriptable.get(name, scriptable);
+		return index < array.getLength() ? array.get(index++, array) : null;
+	}
+
+	public void revert() {
+		if (index > 0)
+			index--;
+	}
+
+	public int size() {
+		return (int) array.getLength();
+	}
+
+	public boolean isArray() {
+		return true;
 	}
 }

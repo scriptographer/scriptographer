@@ -72,10 +72,10 @@ var aboutDialog = new ModalDialog(function() {
 		title: 'About Scriptographer',
 		defaultItem: okButton,
 		margin: 10,
-		layout: new TableLayout(
-			[ 'preferred', 'fill', 'preferred' ],
-			[ 'preferred', 'fill', 'preferred' ]
-		),
+		layout: [
+			'preferred fill preferred',
+			'preferred fill preferred'
+		],
 		content: {
 			'0, 0, L, T': logo,
 			'1, 0, 2, 1': text,

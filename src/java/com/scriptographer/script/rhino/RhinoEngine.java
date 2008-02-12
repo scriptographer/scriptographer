@@ -52,15 +52,14 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
 		return new TopLevel(context);
 	}
 
-	protected Context makeContext() {
-		context = super.makeContext();
+	protected void enter(Context context) {
+		super.enter(context);
 		// Use pure interpreter mode to allow for
 		// observeInstructionCount(Context, int) to work
 		context.setOptimizationLevel(-1);
 		// Make Rhino runtime to call observeInstructionCount
 		// each 20000 bytecode instructions
 		context.setInstructionObserverThreshold(20000);
-		return context;
 	}
 
 	protected void observeInstructionCount(Context cx, int instructionCount) {
