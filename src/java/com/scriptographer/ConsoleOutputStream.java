@@ -31,6 +31,7 @@
 
 package com.scriptographer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -54,14 +55,17 @@ public class ConsoleOutputStream extends OutputStream {
 
     private boolean enabled;
 
-	private StringBuffer buffer;
+    // Use a ByteArrayOutputStream instead of a StringBuffer,
+    // since we receive print(int) with bytes in the platform
+    // encoding, not chars.
+    private ByteArrayOutputStream buffer;
 	private PrintStream stream;
 	private PrintStream stdOut;
 	private PrintStream stdErr;
 	private ScriptographerCallback callback;
 
 	private ConsoleOutputStream() {
-		buffer = new StringBuffer();
+		buffer = new ByteArrayOutputStream();
 		stream = new PrintStream(this);
 		stdOut = System.out;
 		stdErr = System.err;
@@ -79,33 +83,32 @@ public class ConsoleOutputStream extends OutputStream {
 		char c = (char) b;
 		if (c == newLine) {
 			if (enabled) {
-				// If there is already a newline at the end of this line, remove
-				// it as writer.println adds it again...
-				int pos = buffer.lastIndexOf(lineSeparator);
-				int sepLength = lineSeparator.length();
-				if (pos > 0 && pos == buffer.length() - sepLength)
-					buffer.delete(pos, pos + sepLength);
+				String str = buffer.toString();
 				// Filter out weird java.lang.ClassCastExceptions on Mac OSX:
-				if (!ScriptographerEngine.isMacintosh() || buffer.indexOf("java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment") == -1) {
-					String str = buffer.toString();
+				if (!ScriptographerEngine.isMacintosh() || str.indexOf("java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment") == -1) {
+					// If there  already isa newline at the end of this line,
+					// remove it as callback.println adds it again...
+					int pos = str.lastIndexOf(lineSeparator);
+					if (pos > 0 && pos == str.length() - lineSeparator.length())
+						str = str.substring(0, pos);
 					// Make sure we have the right line separators:
 					str = str.replaceAll("\\n|\\r\\n|\\r", lineSeparator);
 					// And convert tabs to 4 spaces
 					str = str.replaceAll("\\t", "    ");
 					callback.println(str);
 				}
-				buffer.setLength(0);
+				buffer.reset();
 			} else {
-				buffer.append(lineSeparator);
+				buffer.write(lineSeparator.getBytes());
 			}
 		} else {
-			buffer.append(c);
+			buffer.write(c);
 		}
 	}
-	
+
 	public static void enableOutput(boolean enabled) {
 		console.enabled = enabled && console.callback != null;
-		if (console.enabled && console.buffer.length() > 0) {
+		if (console.enabled && console.buffer.size() > 0) {
 			try {
 				// write a newline character so the buffer is flushed to the
 				// console
@@ -115,7 +118,7 @@ public class ConsoleOutputStream extends OutputStream {
 			}
 		}
 	}
-	
+
 	public static void enableRedirection(boolean enable) {
 		if (enable) {
 			System.setOut(console.stream);
