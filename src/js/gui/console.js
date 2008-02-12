@@ -128,10 +128,10 @@ var consoleDialog = new FloatingDialog (
 	// Layout:
 	return {
 		margin: -1,
-		layout: new TableLayout([
+		layout: new TableLayout(
 			[ 'preferred', 'fill' ],
-			[ 0.2, 'fill', 15 ]
-		], -1, -1),
+			[ 0.2, 'fill', 15 ],
+			-1, -1),
 		content: {
 			'0, 0, 1, 0': textIn,
 			'0, 1, 1, 1': textOut,

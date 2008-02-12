@@ -79,10 +79,10 @@ var licenseDialog = new ModalDialog(function() {
 	return {
 		title: 'Welcome To Scriptographer ' + scriptographer.version,
 		margin: 10,
-		layout: new TableLayout([
+		layout: new TableLayout(
 			[ 'preferred', 'fill', 'preferred', 'preferred' ],
 			[ 'preferred', 'fill', 'preferred' ]
-		]),
+		),
 		content: {
 			'0, 0, L, T': logo,
 			'1, 0, 3, 1': text,

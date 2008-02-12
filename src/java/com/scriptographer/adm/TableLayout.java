@@ -37,27 +37,27 @@ import com.scratchdisk.util.ConversionUtils;
  * @author lehni
  */
 public class TableLayout extends info.clearthought.layout.TableLayout {
-	
-	public TableLayout(double[][] size, int hGap, int vGap) {
-		super(size[0], size[1]);
-		this.hGap = hGap;
-		this.vGap = vGap;
-	}
-	
-	public TableLayout(double[][] size) {
-		this(size, 0, 0);
-	}
 
-	public TableLayout(Object[][] size) {
-		super(getSize(size[0]), getSize(size[1]));
-	}
-
-	public TableLayout(Object[][] size, int hGap, int vGap) {
-		this(size);
+	public TableLayout(double[] col, double[] row, int hGap, int vGap) {
+		super(col, row);
 		this.hGap = hGap;
 		this.vGap = vGap;
 	}
 
+	public TableLayout(double[] col, double[] row) {
+		this(col, row, 0, 0);
+	}
+
+	public TableLayout(Object[] col, Object[] row, int hGap, int vGap) {
+		super(getSize(col), getSize(row));
+		this.hGap = hGap;
+		this.vGap = vGap;
+	}
+
+	public TableLayout(Object[] col, Object[] row) {
+		this(col, row, 0, 0);
+	}
+	
 	private static double[] getSize(Object[] objects) {
 		double[] size = new double[objects.length];
 		for (int i = 0; i < objects.length; i++) {
