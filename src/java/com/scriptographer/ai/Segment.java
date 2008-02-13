@@ -114,20 +114,20 @@ public class Segment implements Commitable {
 
 	public Segment(ArgumentReader reader) {
 		if (reader.isHash()) {
-			if (reader.has("x")) {
-				init(
-					reader.readFloat("x", 0),
-					reader.readFloat("y", 0),
-					0, 0, 0, 0, false
-				);
-			} else {
+			if (reader.has("point")) {
 				init(
 					getPoint(reader, "point"),
 					getPoint(reader, "handleIn"),
 					getPoint(reader, "handleOut"),
 					reader.readBoolean("corner", false)
 				);
-			}
+			} else if (reader.has("x")) {
+				init(
+					reader.readFloat("x", 0),
+					reader.readFloat("y", 0),
+					0, 0, 0, 0, false
+				);
+			} 
 		} else {
 			init(
 				reader.readFloat(0),

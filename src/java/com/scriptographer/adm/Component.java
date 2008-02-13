@@ -282,12 +282,12 @@ abstract class Component extends NotificationHandler {
 			boolean borderLayout = true;
 			for (Iterator it = elements.keySet().iterator(); it.hasNext() && borderLayout;) {
 				Object key = it.next();
-				borderLayout = key instanceof CharSequence && borderLayoutPattern.matcher((CharSequence) key).matches();
+				borderLayout = borderLayoutPattern.matcher(key.toString()).matches();
 			}
 			if (borderLayout) {
 				this.setLayout(new BorderLayout());
 			} else {
-				// TODO: figure out amount of rows and columns by analizing the keys.
+				// TODO: Figure out amount of rows and columns by analyzing the keys.
 				// for now we don't do that...
 				this.setLayout(new TableLayout("preferred", "preferred"));
 			}
