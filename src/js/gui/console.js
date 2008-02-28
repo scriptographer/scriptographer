@@ -83,7 +83,7 @@ var consoleDialog = new FloatingDialog (
 		minimumSize: [200, 18],
 		backgroundColor: Drawer.COLOR_INACTIVE_TAB,
 		// the onDraw workaround for display problems is only needed on mac
-		onDraw: app.macintosh && function(drawer) {
+		onDraw: app.macintosh ? function(drawer) {
 			// Workaround for mac, where TextEdit fields with a background
 			// color
 			// do not get completely filled
@@ -99,7 +99,7 @@ var consoleDialog = new FloatingDialog (
 			// versions!
 			drawer.fillRect(rect.width - 18, 0, 1, height);
 			drawer.fillRect(0, height, rect.width - 1, rect.height - height - 2);
-		}
+		} : null
 	};
 
 	var that = this;
