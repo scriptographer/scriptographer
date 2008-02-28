@@ -464,23 +464,14 @@ public abstract class Item extends Component {
 	private native Size nativeGetTextSize(String text, int maxWidth);
 	
 	public Size getTextSize(String text, int maxWidth) {
-		String delim = System.getProperty("line.separator");
-		StringTokenizer st = new StringTokenizer(text, delim, true);
+		// Split at new lines chars, and measure each line seperately
+		String[] lines = text.split("\r\n|\n|\r");
 		Size size = new Size(0, 0);
-		boolean isDelim = false;
-		while (st.hasMoreTokens()) {
-			// detect several newlines in a row, and use a " " instead, so
-			// we get the height of the line:
-			boolean wasDelim = isDelim;
-			text = st.nextToken();
-			isDelim = delim.indexOf(text) != -1; 
-			if (isDelim) {
-				if (text.charAt(0) == delim.charAt(0)) {
-					if (wasDelim) text = " ";
-					else continue;
-				} else continue;
-			}
-			Size partSize = nativeGetTextSize(text, maxWidth);
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			if (line.length() == 0)
+				line = " "; // Make sure empty lines are measured too
+			Size partSize = nativeGetTextSize(line, maxWidth);
 			if (partSize.width > size.width)
 				size.width = partSize.width;
 			size.height += partSize.height;
