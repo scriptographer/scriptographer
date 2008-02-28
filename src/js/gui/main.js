@@ -286,8 +286,8 @@ var mainDialog = new FloatingDialog(
 		}
 	};
 
-	var helpEntry = new ListEntry(menu) {
-		text: 'Help...',
+	var referenceEntry = new ListEntry(menu) {
+		text: 'Reference...',
 		onSelect: function() {
 			app.launch('file://' + new File(scriptographer.pluginDirectory, 'doc/index.html'));
 		}
