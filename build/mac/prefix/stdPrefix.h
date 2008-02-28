@@ -3,7 +3,7 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2008 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
@@ -25,9 +25,9 @@
  * -- GPL LICENSE NOTICE --
  *
  * $RCSfile: stdPrefix.h,v $
- * $Author$
- * $Revision$
- * $Date$
+ * $Author:lehni $
+ * $Revision:438 $
+ * $Date:2007-12-24 02:21:47 +0100 (Mon, 24 Dec 2007) $
  */
 
 #ifdef DEBUG
