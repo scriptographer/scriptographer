@@ -206,7 +206,7 @@
 				<include name="**/loader.jar"/>
 				<include name="**/${jar.name}.jar"/>
 				<include name="**/js.jar"/>
-				<include name="**/jython.jar"/>
+				<exclude name="**/jython.jar"/>
 				<!-- Copy the platform independent RXTX stuff here -->
 				<include name="**/rxtx.jar"/>
 			</fileset>
