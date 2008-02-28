@@ -1,6 +1,6 @@
 <% $id = this.getId() %>
 <% if (settings.templates) %>
-<%= $id prefix='<% this.memberLink id="' suffix='" %>' %>
+<%= $id prefix='\<\% this.memberLink id="' suffix='" \%\>' %>
 <% else %>
 <div id="<%= $id %>-link" class="member-link">
 <% end %>
@@ -9,7 +9,7 @@
 </a>
 </div>
 <% if (settings.templates) %>
-<%= $id prefix='<% this.memberDescription id="' suffix='" %>' %>
+<%= $id prefix='\<\% this.memberDescription id="' suffix='" \%\>' %>
 <% else %>
 <div id="<%= $id %>-description" class="member-description">
 <% end %>
@@ -21,7 +21,7 @@
 <%= $text prefix='<div class="member-text">' suffix='</div>' %>
 </div>
 <% if (settings.templates) %>
-<%= $id prefix='<% this.memberPosts id="' suffix='" %>' %>
+<%= $id prefix='\<\% this.memberPosts id="' suffix='" \%\>' %>
 <% end %>
 
 <% $title -%>

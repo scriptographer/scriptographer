@@ -172,7 +172,7 @@ public class Curve {
 		return index1;
 	}
 
-	public Point getPoint1() {
+	public SegmentPoint getPoint1() {
 		updateSegments();
 		return segment1.point;
 	}
@@ -187,7 +187,7 @@ public class Curve {
 		segment1.point.set(x, y);
 	}
 
-	public Point getHandle1() {
+	public SegmentPoint getHandle1() {
 		updateSegments();
 		return segment1.handleOut;
 	}
@@ -202,7 +202,7 @@ public class Curve {
 		segment1.handleOut.set(x, y);
 	}
 
-	public Point getHandle2() {
+	public SegmentPoint getHandle2() {
 		updateSegments();
 		return segment2.handleIn;
 	}
@@ -217,7 +217,7 @@ public class Curve {
 		segment2.handleIn.set(x, y);
 	}
 
-	public Point getPoint2() {
+	public SegmentPoint getPoint2() {
 		updateSegments();
 		return segment2.point;
 	}
@@ -371,7 +371,7 @@ public class Curve {
 		nativeAdjustThroughPoint(values, pt.x, pt.y, parameter);
 		segment1.setValues(values, 0);
 		segment2.setValues(values, 1);
-		// don't mark dirty, commit immediatelly both as all the values have
+		// don't mark dirty, commit immediately both as all the values have
 		// been modified:
 		if (segments.path != null) {
 			Path path = segments.path;

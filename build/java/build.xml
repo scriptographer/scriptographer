@@ -96,7 +96,7 @@
 		<echo message=" docs       --> tries to retrieve the HTML documentation "/>
 		<echo message="                (may need proxy settings in startscript)"/>
 		<echo message=""/>
-		<echo message=" usage	      --> provides help on using the build tool (default)"/>
+		<echo message=" usage	    --> provides help on using the build tool (default)"/>
 		<echo message=""/>
 		<echo message=" See comments inside the build.xml file for more details."/>
 		<echo message="-------------------------------------------------------------"/>
@@ -424,13 +424,17 @@
 				<param name="-basepackage" value="com.scriptographer"/>
 				<param name="-filterclasses" value="
 					com.scriptographer.ai.DictionaryObject
-					com.scriptographer.ai.SegmentPoint
+					com.scriptographer.ai.ArtPoint
+					com.scriptographer.ai.ArtRectangle
 					com.scriptographer.ai.Dictionary
 					com.scriptographer.ai.Event
 					com.scriptographer.ai.FileFormat
 					com.scriptographer.ai.Style
 					com.scriptographer.ai.TabletValue
 					com.scriptographer.ai.Tool
+					com.scriptographer.adm.Point
+					com.scriptographer.adm.Rectangle
+					com.scriptographer.adm.Size
 					com.scriptographer.adm.Notifier
 					com.scriptographer.adm.DialogGroupInfo
 					com.scriptographer.sg.Preferences

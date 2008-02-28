@@ -265,7 +265,7 @@ public class Segment implements Commitable {
 		return index;
 	}
 
-	public Point getPoint() {
+	public SegmentPoint getPoint() {
 		update();
 		return point;
 	}
@@ -282,7 +282,7 @@ public class Segment implements Commitable {
 		point.set(x, y);
 	}
 
-	public Point getHandleIn() {
+	public SegmentPoint getHandleIn() {
 		update();
 		return handleIn;
 	}
@@ -299,7 +299,7 @@ public class Segment implements Commitable {
 		handleIn.set(x, y);
 	}
 
-	public Point getHandleOut() {
+	public SegmentPoint getHandleOut() {
 		update();
 		return handleOut;
 	}

@@ -9,8 +9,12 @@
 importPackage(Packages.com.sun.javadoc);
 importPackage(Packages.com.sun.tools.javadoc);
 
-include("bootstrap.js");
-include("template.js");
+include('bootstrap.js');
+include('template.js');
+
+function print() {
+	java.lang.System.out.println($A(arguments).join(', '));
+}
 
 function error() {
 	java.lang.System.err.println($A(arguments).join(', '));
@@ -44,7 +48,7 @@ String.inject({
 // Define settings from passed options:
 var settings = {
 	basePackage:  options.basepackage || '',
-	destDir: (options.d + (options.d && !/\/^/.test(options.d) ? "/" : '')) || '',
+	destDir: (options.d + (options.d && !/\/^/.test(options.d) ? '/' : '')) || '',
 	docTitle: options.doctitle || '',
 	bottom: options.bottom || '',
 	author: options.author || '',
@@ -64,18 +68,18 @@ var settings = {
 		}
 		return classOrder;
 	})(),
-	templates: options.templates == "true",
-	inherited: options.noinherited != "true",
-	summaries: options.nosummaries != "true",
-	fieldSummary: options.nofieldsummary != "true",
-	constructorSummary: options.noconstructorsummary != "true",
-	hyperref: options.nohyperref != "true",
-	versionInfo: options.version == "true",
-	debug: options.shortinherited == "true",
-	section1Open: options.section1open || "<h1>",
-	section1Close: options.section1close || "</h1>",
-	section2Open: options.section2open || "<h2>",
-	section2Close: options.section2close || "</h2>"
+	templates: options.templates == 'true',
+	inherited: options.noinherited != 'true',
+	summaries: options.nosummaries != 'true',
+	fieldSummary: options.nofieldsummary != 'true',
+	constructorSummary: options.noconstructorsummary != 'true',
+	hyperref: options.nohyperref != 'true',
+	versionInfo: options.version == 'true',
+	debug: options.shortinherited == 'true',
+	section1Open: options.section1open || '<h1>',
+	section1Close: options.section1close || '</h1>',
+	section2Open: options.section2open || '<h2>',
+	section2Close: options.section2close || '</h2>'
 };
 
 // Ehnance some of the javatool classes with usefull methods:
@@ -132,20 +136,20 @@ ClassDocImpl.inject({
 	},
 
 	getListType: function() {
-		if (this.hasInterface("com.scratchdisk.util.SimpleList"))
-			return "Normal List";
-		else if (this.hasInterface("com.scratchdisk.util.StringIndexList"))
-			return "String-index List";
-		else if (this.hasInterface("com.scratchdisk.util.ReadOnlyList"))
-			return "Read-only List";
+		if (this.hasInterface('com.scratchdisk.util.SimpleList'))
+			return 'Normal List';
+		else if (this.hasInterface('com.scratchdisk.util.StringIndexList'))
+			return 'String-index List';
+		else if (this.hasInterface('com.scratchdisk.util.ReadOnlyList'))
+			return 'Read-only List';
 	},
 
 	getType: function() {
 		var type;
-		if (this.isInterface()) type = "Interface";
-		else if (this.isException()) type = "Exception";
-		else type = "Prototype";
-		if (this.isAbstract()) type = "Abstract " + type;
+		if (this.isInterface()) type = 'Interface';
+		else if (this.isException()) type = 'Exception';
+		else type = 'Prototype';
+		if (this.isAbstract()) type = 'Abstract ' + type;
 		return type;
 	},
 
@@ -170,10 +174,10 @@ ClassDocImpl.inject({
 		var str = '';
 		if (this.isVisible()) {
 			if (this.isAbstract())
-				str += "<i>";
+				str += '<i>';
 			str += renderLink(this.qualifiedName(), this.name(), '', name);
 			if (this.isAbstract())
-				str += "</i>";
+				str += '</i>';
 		} else {
 			str = this.name();
 		}
@@ -201,48 +205,42 @@ Type = Object.extend({
 
 	isNumber: function() {
 		var cd = this.asClassDoc();
-		return cd && cd.hasSuperclass("java.lang.Number") ||
+		return cd && cd.hasSuperclass('java.lang.Number') ||
 			/^(short|int|long|double|float)$/.test(this.typeName());
 	},
 	
 	isBoolean: function() {
 		var cd = this.asClassDoc();
-		return cd && cd.hasSuperclass("java.lang.Boolean") ||
-			this.typeName() == "boolean";
+		return cd && cd.hasSuperclass('java.lang.Boolean') ||
+			this.typeName() == 'boolean';
 	},
 
 	isArray: function() {
 		var cd = this.asClassDoc();
 		return this.dimension() == '[]' || cd &&
-			(cd.hasInterface("java.util.Collection") ||
-			cd.hasSuperclass("org.mozilla.javascript.NativeArray"));
+			cd.hasInterface('java.util.Collection');
 	},
 	
 	isMap: function() {
 		var cd = this.asClassDoc();
-		return cd && (cd.hasInterface("java.util.Map") ||
-			cd.hasSuperclass("org.mozilla.javascript.NativeObject"));
+		return cd && cd.hasInterface('java.util.Map');
 	},
 	
 	isPoint: function() {
 		var cd = this.asClassDoc();
-		return cd && (cd.hasSuperclass("java.awt.geom.Point2D") ||
-			cd.hasSuperclass("java.awt.Dimension"));
+		return cd && (cd.hasSuperclass('com.scriptographer.ai.Point') ||
+			cd.hasSuperclass('com.scriptographer.adm.Point'));
 	},
 
 	isRectangle: function() {
 		var cd = this.asClassDoc();
-		return cd && cd.hasSuperclass("java.awt.geom.Rectangle2D");
-	},
-
-	isMatrix: function() {
-		var cd = this.asClassDoc();
-		return cd && cd.hasSuperclass("java.awt.geom.AffineTransform");
+		return cd && (cd.hasSuperclass('com.scriptographer.ai.Rectangle') ||
+			cd.hasSuperclass('com.scriptographer.adm.Rectangle'));
 	},
 
 	isFile: function() {
 		var cd = this.asClassDoc();
-		return cd && (cd.hasSuperclass("java.io.File"));
+		return cd && (cd.hasSuperclass('java.io.File'));
 	},
 	
 	isCompatible: function(type) {
@@ -255,42 +253,36 @@ Type = Object.extend({
 			this.isMap() && type.isMap() ||
 			this.isPoint() && type.isPoint() ||
 			this.isRectangle() && type.isRectangle() ||
-			this.isMatrix() && type.isMatrix() ||
 			this.isFile() && type.isFile();
 	},
 
 	renderLink: function() {
 		if (this.isNumber()) {
-			return "Number";
+			return 'Number';
 		} else if (this.isBoolean()) {
-			return "Boolean";
+			return 'Boolean';
 		} else if (this.isArray()) {
 			var doc = this.asClassDoc();
-			return "Array of " + (doc
+			return 'Array of ' + (doc
 				? doc.renderClassLink()
 				: /^(short|int|long|double|float)/.test(this.typeName())
 					? 'Numbers'
 					// Strip away [] at the end of the typeName()
 					: this.typeName().match(/^(\w*)/)[0].capitalize());
 		} else if (this.isMap()) {
-			return "Object";
-		} else if (this.isPoint()) {
-			return ClassObject.renderLink("Point", "com.scriptographer.ai.Point");
-		} else if (this.isRectangle()) {
-			return ClassObject.renderLink("Rectangle", "com.scriptographer.ai.Rectangle");
-		} else if (this.isMatrix()) {
-			return ClassObject.renderLink("Matrix", "com.scriptographer.ai.Matrix");
-		} else if (this.isFile()) {
-			return ClassObject.renderLink("File", "com.scriptographer.sg.File");
+			return 'Object';
 		} else {
 			var cls = this.asClassDoc();
-			if (cls) {
-				if (cls.isVisible())
-					return cls.renderClassLink();
-				else
-					return cls.name();
+			if (cls && cls.isVisible()) {
+				return cls.renderClassLink();
+			} else if (this.isPoint()) {
+				return ClassObject.renderLink('Point', 'com.scriptographer.ai.Point');
+			} else if (this.isRectangle()) {
+				return ClassObject.renderLink('Rectangle', 'com.scriptographer.ai.Rectangle');
+			} else if (this.isFile()) {
+				return ClassObject.renderLink('File', 'com.scriptographer.sg.File');
 			} else {
-				return this.typeName();
+				return cls ? cls.name() : this.typeName();
 			}
 		}
 	}
@@ -303,10 +295,10 @@ TagImpl.inject({
 		var text = this.text();
 		/*
 		if (filterFirstSentence) {
-			// cut away ":" and everything that follows:
+			// cut away ':' and everything that follows:
 			int pos = text.indexOf(':');
 			if (pos >= 0) {
-				text = text.substring(0, pos) + ".";
+				text = text.substring(0, pos) + '.';
 				more = false;
 			}
 		}
@@ -328,7 +320,7 @@ SeeTagImpl.inject({
 			*/
 			return code_filter(ref.renderLink(param.classDoc));
 		} else {
-			error(this.position() + ": warning - @link contains undefined reference: " + this);
+			error(this.position() + ': warning - @link contains undefined reference: ' + this);
 			return code_filter(this);
 		}
 	}
@@ -434,13 +426,13 @@ Member = Object.extend({
 
 			// Thrown exceptions
 			// if (this.member.thrownExceptions)
-			//	renderTemplate("exceptions", { exceptions: this.member.thrownExceptions() }, out);
+			//	renderTemplate('exceptions', { exceptions: this.member.thrownExceptions() }, out);
 			// Description
 			var returnType = this.returnType();
-			return this.renderTemplate("member", {
+			return this.renderTemplate('member', {
 				classDoc: classDoc, member: member, containingClass: containingClass,
 				throwsTags: this.member && this.member.throwsTags ? this.member.throwsTags() : null,
-				returnType: returnType && !returnType.typeName().equals("void") ? returnType : null
+				returnType: returnType && !returnType.typeName().equals('void') ? returnType : null
 			});
 		}
 	},
@@ -502,7 +494,7 @@ Member = Object.extend({
 	},
 
 	renderSummary: function(classDoc) {
-		return this.renderTemplate("summary", { classDoc: classDoc });
+		return this.renderTemplate('summary', { classDoc: classDoc });
 	},
 
 	getId: function() {
@@ -518,7 +510,7 @@ Member = Object.extend({
 
 	renderLink: function(current) {
 		var cd = this.getClass(current);
-		// Dont use mem.qualifiedName(). use cd.qualifiedName() + "." + mem.name()
+		// Dont use mem.qualifiedName(). use cd.qualifiedName() + '.' + mem.name()
 		// instead in order to catch the case where functions are moved from
 		// invisible classes to visible ones (e.g. AffineTransform -> Matrix)
 		return renderLink(cd.qualifiedName(), cd.name(), this.getId(),
@@ -545,7 +537,7 @@ Member = Object.extend({
 });
 
 /**
- * A group of members that are all "compatible" in a JS way, e.g. have the same
+ * A group of members that are all 'compatible' in a JS way, e.g. have the same
  * amount of parameter with different types each (e.g. setters)
  * or various amount of parameters with default parameter versions, e.g.
  * all com.scriptogrpaher.ai.Pathfinder functions
@@ -687,7 +679,7 @@ Method = Member.extend({
 	renderParameters: function() {
 		if (!this.renderedParams) {
 			var buf = [];
-			buf.push("(");
+			buf.push('(');
 			if (this.isGrouped) {
 				var prevCount = 0;
 				var closeCount = 0;
@@ -696,9 +688,9 @@ Method = Member.extend({
 					var count = params.length;
 					if (count > prevCount) {
 						if (prevCount)
-							buf.push("[");
+							buf.push('[');
 						for (var i = prevCount; i < count; i++) {
-							if (i) buf.push(", ");
+							if (i) buf.push(', ');
 							buf.push(params[i].name());
 						}
 						closeCount++;
@@ -706,15 +698,15 @@ Method = Member.extend({
 					}
 				});
 				for (var i = 1; i < closeCount; i++)
-					buf.push("]");
+					buf.push(']');
 			} else {
 				var params = this.member.parameters();
 				for (var i = 0; i < params.length; i++) {
-					if (i) buf.push(", ");
+					if (i) buf.push(', ');
 					buf.push(params[i].name());
 				}
 			}
-			buf.push(")");
+			buf.push(')');
 			this.renderedParams = buf.join('');
 		}
 		return this.renderedParams;
@@ -904,7 +896,7 @@ MemberList = Object.extend({
 			// be uppercae and constants.
 			// TODO: Control this through a tag instead!
 			if (method.parameters().length == 0 && !method.isStatic() && 
-				method.returnType().typeName() != "void")
+				method.returnType().typeName() != 'void')
 					return method;
 		});
 	},
@@ -925,7 +917,7 @@ MemberList = Object.extend({
 				// the documentation.
 				// Static properties are all supposed to be uppercae and constants
 				if (!method.isStatic() &&
-					method.returnType().typeName() == "void" && params.length == 1 &&
+					method.returnType().typeName() == 'void' && params.length == 1 &&
 					pass == 1 && params[0].typeName() == type.typeName() ||
 					pass == 2 /* TODO: && params[0].isAssignableFrom(type) */)
 						return method;
@@ -1010,7 +1002,7 @@ MemberListGroup = Object.extend({
 			var name = member.name;
 			// Is this a getter?
 			var m = name.match(/^(get|is)(.*)$/), kind = m && m[1], component = m && m[2];
-			if (component && kind == "get" || kind == "is") {
+			if (component && kind == 'get' || kind == 'is') {
 				// Find the bean property name.
 				var property = component;
 				var match = component.match(/^([A-Z])([a-z]+.*|$)/);
@@ -1059,7 +1051,7 @@ ClassObject = Object.extend({
 		// Add the members of direct invisible superclasses to
 		// this class for JS documentation:
 		while (superclass && !superclass.isVisible() &&
-				!superclass.qualifiedName().equals("java.lang.Object")) {
+				!superclass.qualifiedName().equals('java.lang.Object')) {
 			this.add(superclass, false);
 			superclass = superclass.superclass();
 		}
@@ -1067,7 +1059,7 @@ ClassObject = Object.extend({
 		this.methodLists.init();
 		this.constructorLists.init();
 
-		if (this.classDoc.name() != "global")
+		if (this.classDoc.name() != 'global')
 			this.methodLists.scanBeanProperties(this.fieldLists);
 	},
 
@@ -1092,7 +1084,7 @@ ClassObject = Object.extend({
 
 	name: function() {
 		var name = this.classDoc.name();
-		return name == "global" ? "Global Scope" : name;
+		return name == 'global' ? 'Global Scope' : name;
 	},
 
 	qualifiedName: function() {
@@ -1125,7 +1117,7 @@ ClassObject = Object.extend({
 		var doc = new Document(path, className, 'document');
 		// from now on, the global out writes to doc
 
-		this.renderTemplate("class", {}, out);
+		this.renderTemplate('class', {}, out);
 
 		if (cd.isInterface()) {
 			var subInterfaces = [];
@@ -1135,7 +1127,7 @@ ClassObject = Object.extend({
 					return inter.equals(cd);
 				})) (cls.isInterface() ? subInterfaces : implementingClasses).push(cls);
 			});
-			this.renderTemplate("class#interface", {
+			this.renderTemplate('class#interface', {
 				subInterfaces: subInterfaces,
 				implementingClasses: implementingClasses
 			}, out);
@@ -1147,12 +1139,12 @@ ClassObject = Object.extend({
 
 		if (settings.summaries) {
 			if (settings.fieldSummary)
-				this.renderSummaries(cd, fields, "Field summary");
+				this.renderSummaries(cd, fields, 'Field summary');
 
 			if (settings.constructorSummary)
-				this.renderSummaries(cd, constructors, "Constructor summary");
+				this.renderSummaries(cd, constructors, 'Constructor summary');
 
-			this.renderSummaries(cd, methods, "Method summary");
+			this.renderSummaries(cd, methods, 'Method summary');
 		}
 
 		// Filter members into static and non-static ones:
@@ -1162,22 +1154,22 @@ ClassObject = Object.extend({
 			}, [[], []]);
 		}
 
-		this.renderMembers({ classDoc: cd, members: constructors, title: "Constructors", index: index });
+		this.renderMembers({ classDoc: cd, members: constructors, title: 'Constructors', index: index });
 
 		fields = separateStatic(fields);
-		this.renderMembers({ classDoc: cd, members: fields[0], title: "Properties", index: index });
-		this.renderMembers({ classDoc: cd, members: fields[1], title: "Static Properties", index: index });
+		this.renderMembers({ classDoc: cd, members: fields[0], title: 'Properties', index: index });
+		this.renderMembers({ classDoc: cd, members: fields[1], title: 'Static Properties', index: index });
 
 		methods = separateStatic(methods);
-		this.renderMembers({ classDoc: cd, members: methods[0], title: "Functions", index: index });
-		this.renderMembers({ classDoc: cd, members: methods[1], title: "Static Functions", index: index });
+		this.renderMembers({ classDoc: cd, members: methods[0], title: 'Functions', index: index });
+		this.renderMembers({ classDoc: cd, members: methods[1], title: 'Static Functions', index: index });
 
 		if (settings.inherited) {
 			var first = true;
 			var superclass = cd.superclass();
 
 			var classes = [];
-			while (superclass && !superclass.qualifiedName().equals("java.lang.Object")) {
+			while (superclass && !superclass.qualifiedName().equals('java.lang.Object')) {
 				if (superclass.isVisible()) {
 					var superProxy = ClassObject.get(superclass);
 					fields = separateStatic(superProxy.fields());
@@ -1202,7 +1194,7 @@ ClassObject = Object.extend({
 				}
 				superclass = superclass.superclass();
 			}
-			this.renderTemplate("class#inheritance", { classes: classes }, out);
+			this.renderTemplate('class#inheritance', { classes: classes }, out);
 		}
 		doc.close();
 		return index;
@@ -1213,7 +1205,7 @@ ClassObject = Object.extend({
 	 * using Tex statements.
 	 */
 	renderMembers: function(param) {
-		this.renderTemplate("members", param, out);
+		this.renderTemplate('members', param, out);
 	},
 
 	/**
@@ -1233,7 +1225,7 @@ ClassObject = Object.extend({
 				return sel;
 			}
 		});
-		this.renderTemplate("summaries", {
+		this.renderTemplate('summaries', {
 			members: members, title: title, classDoc: cd
 		}, out);
 	},
@@ -1245,7 +1237,7 @@ ClassObject = Object.extend({
 				var name = cd.qualifiedName();
 				if (settings.filterClasses)
 					add = !settings.filterClasses.find(function(filter) {
-						return filter == name || filter.endsWith("*") &&
+						return filter == name || filter.endsWith('*') &&
 							name.startsWith(filter.substring(0, filter.length - 1));
 					});
 				if (add)
@@ -1290,16 +1282,16 @@ ClassObject = Object.extend({
 		sorted.each(function(cls) {
 			var cd = cls.classDoc;
 			var index = cls.renderClass();
-			this.renderTemplate("packages#class", {
+			this.renderTemplate('packages#class', {
 				index: index ? index.join(', ') : null, cls: cls
 			}, out);
 			cls.renderHierarchy();
 		});
-		this.renderTemplate("packages#classes", { classes: out.pop() }, out);
+		this.renderTemplate('packages#classes', { classes: out.pop() }, out);
 	}
 });
 
-Document = Object.extend({
+Test = Document = Object.extend({
 	initialize: function(path, name, template) {
 		this.name = name;
 		this.template = template;
@@ -1307,14 +1299,14 @@ Document = Object.extend({
 		// Split into packages and create subdirs:
 		var parts = path.split(/\./);
 		if (!settings.templates)
-			parts.unshift("packages");
+			parts.unshift('packages');
 		path = '';
 		var levels = 0;
 		parts.each(function(part) {
 			if (part == name || !part)
 				throw $break;
 
-			path += part + "/";
+			path += part + '/';
 			levels++;
 			var dir = new java.io.File(settings.destDir + path);
 			if (!dir.exists())
@@ -1334,8 +1326,8 @@ Document = Object.extend({
 		out.push();
 
 		// Only add extension if it wasn't already
-		var fileName = name.indexOf(".") != -1 ? name :
-				name + (settings.templates ? ".jstl" : ".html");
+		var fileName = name.indexOf('.') != -1 ? name :
+				name + (settings.templates ? '.jstl' : '.html');
 
 		this.writer = new java.io.PrintWriter(
 				new java.io.FileWriter(settings.destDir + path + fileName));
@@ -1343,8 +1335,10 @@ Document = Object.extend({
 
 	close: function() {
 		this.content = out.pop();
-		this.writer.print(this.renderTemplate(this.template));
-		this.writer.close();
+		if (this.writer) {
+			this.writer.print(this.renderTemplate(this.template));
+			this.writer.close();
+		}
 		// Restore previous base
 		Document.basePath = this.previousBase;
 	},
@@ -1388,7 +1382,7 @@ function processClasses(classes) {
 }
 
 function getRelativeIdentifier(str) {
-	return str.startsWith(settings.basePackage + ".") ?
+	return str.startsWith(settings.basePackage + '.') ?
 			str.substring(settings.basePackage.length + 1) : str;
 }
 
@@ -1398,7 +1392,7 @@ function renderLink(qualifiedName, name, anchor, title) {
 		if (qualifiedName) {
 			var path = getRelativeIdentifier(qualifiedName).replace('.', '/');
 			// link to the index file for packages
-			if (name.charAt(0).isLowerCase() && !name.equals("global"))
+			if (name.charAt(0).isLowerCase() && !name.equals('global'))
 				path += '/index';
 			if (settings.templates)
 				path = '/Reference/' + path + '/';
@@ -1438,7 +1432,7 @@ function encodeHtml(str) {
  * Prints a sequence of tags obtained from e.g. com.sun.javadoc.Doc.tags().
  */
 function renderTags(param) {
-	return renderTemplate("tags", param);
+	return renderTemplate('tags', param);
 }
 
 function tags_macro(param) {
@@ -1490,8 +1484,8 @@ function main() {
 	});
 
 	// Now start rendering:
-	var doc = new Document('', settings.templates ? "packages.js"
-			: "packages.html", "packages");
+	var doc = new Document('', settings.templates ? 'packages.js'
+			: 'packages.html', 'packages');
 
 	packageSequence.each(function(name) {
 		var pkg = packages[name];
@@ -1511,15 +1505,15 @@ function main() {
 			processClasses(pkg.exceptions());
 			processClasses(pkg.errors());
 
-			renderTemplate("packages#package", {
+			renderTemplate('packages#package', {
 				content: out.pop(), name: name, path: path, text: text
 			}, out);
 
 			if (!settings.templates) {
 				// Write package file:
-				var doc = new Document(path, 'index', 'document');
-				renderTemplate("package", { title: first, text: text }, out);
-				doc.close();
+				var index = new Document(path, 'index', 'document');
+				renderTemplate('package', { title: first, text: text }, out);
+				index.close();
 			}
 		}
 	});
