@@ -212,7 +212,12 @@
 			</fileset>
 		</copy>
 
-		<!-- js docs -->
+		<!-- GUI -->
+		<copy todir="${build.packages}/Scriptographer/gui">
+			<fileset dir="${home.dir}/src/js/gui"/>
+		</copy>
+
+		<!-- JS Docs -->
 		<copy todir="${build.packages}/Scriptographer/doc">
 			<fileset dir="${docs.js.dir}"/>
 		</copy>
