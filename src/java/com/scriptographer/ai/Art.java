@@ -405,18 +405,18 @@ public abstract class Art extends DictionaryObject {
 	
 	protected void changeHandle(int newHandle, int newDictionaryRef,
 			int docHandle) {
-		// remove the object at the old handle
+		// Remove the object at the old handle
 		if (handle != newHandle) {
 			artItems.remove(handle);
-			// change the handles
+			// Change the handles...
 			handle = newHandle;
-			// and insert it again
+			// ...and insert it again
 			artItems.put(newHandle, this);
 		}
 		dictionaryRef = newDictionaryRef;
 		if (docHandle != 0)
 			document = Document.wrapHandle(docHandle);
-		// udpate
+		// Update
 		version++;
 	}
 
@@ -428,7 +428,7 @@ public abstract class Art extends DictionaryObject {
 	 */
 	protected void commit(boolean invalidate) {
 		CommitManager.commit(this);
-		// increasing version by one causes refetching of cached data:
+		// Increasing version by one causes refetching of cached data:
 		if (invalidate)
 			version++;
 	}
@@ -539,21 +539,68 @@ public abstract class Art extends DictionaryObject {
 		return getFirstChild() != null;
 	}
 
+	protected native Rectangle nativeGetBounds();
+
+	private ArtRectangle bounds = null;
+
+	/**
+	 * @jsbean The bounds of the art item excluding stroke width.
+	 */
+	public Rectangle getBounds() {
+		if (bounds == null)
+			bounds = new ArtRectangle(this);
+		else
+			bounds.update();
+		return bounds;
+	}
+
+	public void setBounds(float x, float y, float width, float height) {
+		Rectangle rect = getBounds();
+		Matrix matrix = new Matrix();
+		matrix.scale(width / rect.width, height / rect.height);
+		matrix.translate(x - rect.x, y - rect.y);
+		transform(matrix);
+		// Always defined now since we're using getBounds above
+		bounds.update();
+	}
+
+	public void setBounds(Rectangle rect) {
+		setBounds(rect.x, rect.y, rect.width, rect.height);
+	}
+
 	/**
 	 * @jsbean The bounds of the art item including stroke width.
 	 */
-	public native Rectangle getBounds();
+	public native Rectangle getStrokeBounds();
 
 	/**
 	 * @jsbean The bounds of the art item including stroke width and controls.
 	 */
 	public native Rectangle getControlBounds();
 
-	/**
-	 * @jsbean The bounds of the art item excluding stroke width.
-	 */
-	public native Rectangle getGeometricBounds();
-	
+	protected native Point nativeGetPosition();
+
+	private ArtPoint position = null;
+
+	public Point getPosition() {
+		if (position == null)
+			position = new ArtPoint(this);
+		else
+			position.update();
+		return position;
+	}
+
+	public void setPosition(float x, float y) {
+		Point point = getPosition();
+		translate(x - point.x, y - point.y);
+		// Always defined now since we're using getPosition above
+		position.update();
+	}
+
+	public void setPosition(Point pt) {
+		setPosition(pt.x, pt.y);
+	}
+
 	/**
 	 * @jsbean The name of the art item as it appears in the layers palette.
 	 * @jsbean Sample code:

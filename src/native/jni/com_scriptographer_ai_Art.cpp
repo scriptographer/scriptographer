@@ -439,15 +439,30 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getParent(JNIEnv *env, 
 }
 
 /*
- * com.scriptographer.ai.Rectangle getBounds()
+ * com.scriptographer.ai.Rectangle nativeGetBounds()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getBounds(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_nativeGetBounds(JNIEnv *env, jobject obj) {
 	try {
 		AIRealRect rt;
 	    AIArtHandle art = gEngine->getArtHandle(env, obj);
 		// Commit pending changes first, since they might influence the bounds
 		Art_commit(env, art, false, true);
-	    sAIArt->GetArtBounds(art, &rt);
+	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
+	    return gEngine->convertRectangle(env, &rt);
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
+
+/*
+ * com.scriptographer.ai.Rectangle getStrokeBounds()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getStrokeBounds(JNIEnv *env, jobject obj) {
+	try {
+		AIRealRect rt;
+	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		// Commit pending changes first, since they might influence the bounds
+		Art_commit(env, art, false, true);
+	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kExcludeGuideBounds, &rt);
 	    return gEngine->convertRectangle(env, &rt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
@@ -462,23 +477,26 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getControlBounds(JNIEnv
 	    AIArtHandle art = gEngine->getArtHandle(env, obj);
 		// Commit pending changes first, since they might influence the bounds
 		Art_commit(env, art, false, true);
-	    sAIArt->GetArtTransformBounds(art, NULL, kControlBounds | kExcludeGuideBounds, &rt);
+	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kControlBounds | kExcludeGuideBounds, &rt);
 	    return gEngine->convertRectangle(env, &rt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
 /*
- * com.scriptographer.ai.Rectangle getGeometricBounds()
+ * com.scriptographer.ai.Point nativeGetPosition()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_getGeometricBounds(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Art_nativeGetPosition(JNIEnv *env, jobject obj) {
 	try {
 		AIRealRect rt;
 	    AIArtHandle art = gEngine->getArtHandle(env, obj);
 		// Commit pending changes first, since they might influence the bounds
 		Art_commit(env, art, false, true);
-	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
-	    return gEngine->convertRectangle(env, &rt);
+		// Return the center point of the bounds
+		// TODO: maybe find a way to define and store reg points per art objects?
+	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
+		DEFINE_POINT(pt, (rt.left + rt.right) / 2.0, (rt.top + rt.bottom) / 2.0);
+	    return gEngine->convertPoint(env, &pt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

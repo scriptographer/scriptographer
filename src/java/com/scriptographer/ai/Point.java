@@ -78,6 +78,14 @@ public class Point {
 		this.y = y;
 	}
 
+	public void set(double x, double y) {
+		set((float) x, (float) y);
+	}
+
+	public void set(Point pt) {
+		set(pt.x, pt.y);
+	}
+
 	public float getX() {
 		return x;
 	}

@@ -44,6 +44,7 @@ public class ConsoleOutputStream extends OutputStream {
 	 * the singleton object
 	 */
 	private static ConsoleOutputStream console = new ConsoleOutputStream();
+	private static Thread mainThread = Thread.currentThread();
 
 	/**
 	 * some constants
@@ -74,8 +75,8 @@ public class ConsoleOutputStream extends OutputStream {
 
 	/**
 	 * Adds chars to the internal StringBuffer until a new line char is
-	 * detected, in which case the collected line is written to the
-	 * native console window through writeLine.
+	 * detected, in which case the collected line is written to the native
+	 * console window through writeLine.
 	 * 
 	 * @see java.io.OutputStream#write(int)
 	 */
@@ -84,9 +85,11 @@ public class ConsoleOutputStream extends OutputStream {
 		if (c == newLine) {
 			if (enabled) {
 				String str = buffer.toString();
-				// Filter out weird java.lang.ClassCastExceptions on Mac OSX:
-				if (!ScriptographerEngine.isMacintosh() || str.indexOf("java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment") == -1) {
-					// If there  already isa newline at the end of this line,
+				// Only print to the console if we're in the right thread.
+				// This prevents crashes and filters out weird
+				// java.lang.ClassCastExceptions on Mac OSX:
+				if (Thread.currentThread().equals(mainThread)) {
+					// If there already is a newline at the end of this line,
 					// remove it as callback.println adds it again...
 					int pos = str.lastIndexOf(lineSeparator);
 					if (pos > 0 && pos == str.length() - lineSeparator.length())

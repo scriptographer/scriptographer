@@ -123,7 +123,11 @@ public class Rectangle {
 		this.width = width;
 		this.height = height;
 	}
-	
+
+	public void set(double x, double y, double width, double height) {
+		set((float) x, (float) y, (float) width, (float) height);
+	}
+
 	/**
 	 * @jsbean The x position of the rectangle.
 	 */
@@ -282,8 +286,8 @@ public class Rectangle {
 	}
 
 	public void setBottomRight(Point pt) {
-		setRight(x);
-		setBottom(y);
+		setRight(pt.x);
+		setBottom(pt.y);
 	}
 
 	public String toString() {

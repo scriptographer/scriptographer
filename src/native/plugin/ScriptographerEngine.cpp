@@ -42,7 +42,7 @@
 #endif
 
 #if defined(MAC_ENV) && !defined(GCJ)
-//#define MAC_THREAD
+#define MAC_THREAD
 #endif
 
 #include "aiGlobals.h"
@@ -210,7 +210,6 @@ void ScriptographerEngine::init() {
 	// Start headless, in order to avoid conflicts with AWT and Illustrator
 	options.add("-Djava.awt.headless=true");
 #else // !MAC_THREAD
-	options.add("-Djava.awt.headless=true");
 	options.add("-Dapple.awt.usingSWT=true");
 #endif // !MAC_THREAD
 	// Use the carbon line separator instead of the unix one on mac:

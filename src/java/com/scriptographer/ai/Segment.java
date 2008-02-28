@@ -92,7 +92,7 @@ public class Segment implements Commitable {
 	}
 
 	public Segment(Point pt, Point in, Point out, boolean corner) {
-		init(pt.x, pt.y, in.x, in.y, out.x, out.y, corner);
+		init(pt, in, out, corner);
 	}
 
 	public Segment(Point pt, Point in, Point out) {
@@ -105,11 +105,6 @@ public class Segment implements Commitable {
 
 	public Segment(Segment segment) {
 		init(segment.point, segment.handleIn, segment.handleOut, segment.corner);
-	}
-
-	private static Point getPoint(ArgumentReader reader, String name) {
-		Point point = (Point) reader.readObject(name, Point.class);
-		return point != null ? point : new Point();
 	}
 
 	public Segment(ArgumentReader reader) {
@@ -147,6 +142,11 @@ public class Segment implements Commitable {
 		this.index = index;
 	}
 
+	private static Point getPoint(ArgumentReader reader, String name) {
+		Point point = (Point) reader.readObject(name, Point.class);
+		return point != null ? point : new Point();
+	}
+
 	protected void init(float x, float y, float inX, float inY, float outX,
 			float outY, boolean corner) {
 		point = new SegmentPoint(this, 0, x, y);
@@ -156,7 +156,10 @@ public class Segment implements Commitable {
 	}
 
 	protected void init(Point pt, Point in, Point out, boolean corner) {
-		init(pt.x, pt.y, in.x, in.y, out.x, out.y, corner);
+		point = new SegmentPoint(this, 0, pt);
+		handleIn = new SegmentPoint(this, 2, in);
+		handleOut = new SegmentPoint(this, 4, out);
+		this.corner = corner;
 	}
 
 	/**
@@ -268,15 +271,15 @@ public class Segment implements Commitable {
 	}
 
 	public void setPoint(Point pt) {
-		point.setLocation(pt);
+		point.set(pt);
 	}
 
 	public void setPoint(float x, float y) {
-		point.setLocation(x, y);
+		point.set(x, y);
 	}
 
 	public void setPoint(double x, double y) {
-		point.setLocation(x, y);
+		point.set(x, y);
 	}
 
 	public Point getHandleIn() {
@@ -285,15 +288,15 @@ public class Segment implements Commitable {
 	}
 
 	public void setHandleIn(Point pt) {
-		handleIn.setLocation(pt);
+		handleIn.set(pt);
 	}
 
 	public void setHandleIn(float x, float y) {
-		handleIn.setLocation(x, y);
+		handleIn.set(x, y);
 	}
 
 	public void setHandleIn(double x, double y) {
-		handleIn.setLocation(x, y);
+		handleIn.set(x, y);
 	}
 
 	public Point getHandleOut() {
@@ -302,15 +305,15 @@ public class Segment implements Commitable {
 	}
 
 	public void setHandleOut(Point pt) {
-		handleOut.setLocation(pt);
+		handleOut.set(pt);
 	}
 
 	public void setHandleOut(float x, float y) {
-		handleOut.setLocation(x, y);
+		handleOut.set(x, y);
 	}
 
 	public void setHandleOut(double x, double y) {
-		handleOut.setLocation(x, y);
+		handleOut.set(x, y);
 	}
 
 	public boolean getCorner() {

@@ -362,7 +362,7 @@ var mainDialog = new FloatingDialog(
 	tool1Button.onClick = tool2Button.onClick = function() {
 		var entry = scriptList.activeLeaf;
 		if (entry && entry.file) {
-			Tool.getTool(this.toolIndex).setScript(entry.file);
+			Tool.getTool(this.toolIndex).compileScript(entry.file);
 			if (entry.file != this.curFile) {
 				this.setCurrentImage(scriptImage);
 				entry.image = this.entryImage;

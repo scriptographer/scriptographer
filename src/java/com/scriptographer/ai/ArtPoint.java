@@ -23,8 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 14.01.2005.
+ * 
+ * File created on Feb 27, 2008.
  *
  * $Id$
  */
@@ -32,59 +32,51 @@
 package com.scriptographer.ai;
 
 /**
+ * A Point class to wrap an art object and control its position.
+ *
  * @author lehni
+ *
  */
-public class SegmentPoint extends Point {
-	protected Segment segment;
-	protected int index;
+public class ArtPoint extends Point {
+	protected Art art;
+	protected int version = -1;
 
-	protected SegmentPoint(Segment segment, int index) {
-		this.segment = segment;
-		this.index = index;
+	protected ArtPoint(Art art) {
+		this.art = art;
+		update();
 	}
 
-	protected SegmentPoint(Segment segment, int index, Point pt) {
-		super(pt != null ? pt : new Point());
-		this.segment = segment;
-		this.index = index;
-	}
-
-	protected SegmentPoint(Segment segment, int index, float x, float y) {
-		super(x, y);
-		this.segment = segment;
-		this.index = index;
+	protected void update() {
+		if (version != art.version) {
+			Point position = art.nativeGetPosition();
+			x = position.x;
+			y = position.y;
+			version = art.version;
+		}
 	}
 
 	public void set(float x, float y) {
-		segment.update();
-		this.x = x;
-		this.y = y;
-		segment.markDirty(Segment.DIRTY_POINTS);
+		// This updates the point object itself too:
+		art.setPosition(x, y);
 	}
 
 	public void setX(float x) {
+		update();
 		set(x, y);
 	}
 
 	public void setY(float y) {
+		update();
 		set(x, y);
 	}
 	
 	public float getX() {
-		segment.update();
+		update();
 		return x;
 	}
 	
 	public float getY() {
-		segment.update();
+		update();
 		return y;
-	}
-	
-	public boolean isSelected() {
-		return segment.isSelected(this);
-	}
-	
-	public void setSelected(boolean selected) {
-		segment.setSelected(this, selected);
 	}
 }

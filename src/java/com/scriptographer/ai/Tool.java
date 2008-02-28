@@ -55,7 +55,7 @@ public class Tool extends NativeObject {
 	protected Tool(int handle, int index) {
 		super(handle);
 		this.index = index;
-		// see resourceIds.h:
+		// See resourceIds.h:
 		this.cursor = index + 128;
 	}
 	
@@ -64,7 +64,7 @@ public class Tool extends NativeObject {
 	private Event event = new Event();
 	private Object[] eventArgs = new Object[] { event };
 	
-	public void setScript(File file) throws ScriptException, IOException {
+	public void compileScript(File file) throws ScriptException, IOException {
 		onInit = null;
 		onOptions = null;
 		onSelect = null;
@@ -76,7 +76,7 @@ public class Tool extends NativeObject {
 		onMouseMove = null;
 		ScriptEngine engine = ScriptEngine.getEngineByFile(file);
 		if (engine != null) {
-			// Execute in the tool's scope so setIdleInterval can be called
+			// Execute in the tool's scope so setIdleEventInterval can be called
 			scope = engine.getScope(this);
 			ScriptographerEngine.execute(file, scope);
 			if (scope != null) {
@@ -84,7 +84,7 @@ public class Tool extends NativeObject {
 				try {
 					onInit();
 				} catch (ScriptException e) {
-					// rethrow
+					// Rethrow
 					throw e;
 				} catch (Exception e) {
 					// cannot happen with scripts
@@ -189,7 +189,7 @@ public class Tool extends NativeObject {
 	public void setOnReselect(Callable onReselect) {
 		this.onReselect = onReselect;
 	}
-	
+
 	protected void onReselect() throws Exception {
 		if (scope != null && onReselect != null)
 			ScriptographerEngine.invoke(onReselect, this);

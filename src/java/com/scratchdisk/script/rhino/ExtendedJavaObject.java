@@ -67,7 +67,7 @@ public class ExtendedJavaObject extends NativeJavaObject {
 		// Properties need to come first, as they might override something
 		// defined in the underlying Java object
 		if (properties != null && properties.containsKey(name)) {
-			// See wether this object defines the property.
+			// See whether this object defines the property.
 			return properties.get(name);
 		} else {
 			// Careful: We cannot on members.has, as this does not
@@ -83,7 +83,7 @@ public class ExtendedJavaObject extends NativeJavaObject {
 				}
 				return prototype;
 			} else if (prototype != null && prototype.has(name, start)) {
-				// If not, see wether the prototype maybe defines it.
+				// If not, see whether the prototype maybe defines it.
 				// NativeJavaObject misses to do so:
 				return prototype.get(name, start);
 			}

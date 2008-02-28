@@ -180,13 +180,12 @@ public class ScriptographerEngine {
 			String error = t instanceof ScriptException ? 
 					((ScriptException) t).getFullMessage() : t.getMessage();
 			if (error != null) {
-				String separator = System.getProperty("file.separator");
 				// Shorten file names by removing base form it
-				error = StringUtils.replace(error, scriptDir.getAbsolutePath() + separator, "");
+				error = StringUtils.replace(error, scriptDir.getAbsolutePath() + System.getProperty("file.separator"), "");
 				// Add a line break at the end if the error does
 				// not contain one already.
 				if (!error.matches("(?:\\n\\r|\\n|\\r)$"))
-					error += '\n';
+					error +=  System.getProperty("line.separator");
 				logger.print(error);
 				logger.print("Stacktrace: ");
 				System.err.print(error);

@@ -76,8 +76,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	protected boolean dirty = false;
 	protected int version = -1;
 	
-	// don't fetch immediatelly.
-	// only fetch once values are requested
+	// Don't fetch immediately. Only fetch once values are requested
 	protected boolean fetched = false;
 	
 	/**

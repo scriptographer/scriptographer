@@ -31,6 +31,8 @@
 
 package com.scriptographer.ai;
 
+import com.scratchdisk.script.ArgumentReader;
+
 /**
  * @author lehni
  */
@@ -48,12 +50,6 @@ public class Curve {
 	public Curve() {
 		segment1 = new Segment();
 		segment2 = new Segment();
-	}
-
-	public Curve(SegmentList segmentList, int index) {
-		this.segments = segmentList;
-		this.index1 = index;
-		updateSegments();
 	}
 	
 	public Curve(Segment segment1, Segment segment2) {
@@ -79,6 +75,50 @@ public class Curve {
 	}
 
 	public Curve(float p1x, float p1y, float h1x, float h1y,
+			float h2x, float h2y, float p2x, float p2y) {
+		segment1 = new Segment(p1x, p1y, 0, 0, h1x, h1y, false);
+		segment2 = new Segment(p2x, p2y, h2x, h2y, 0, 0, false);
+	}
+
+	public Curve(ArgumentReader reader) {
+		if (reader.isHash()) {
+			init(
+				getPoint(reader, "point1"),
+				getPoint(reader, "handle1"),
+				getPoint(reader, "handle2"),
+				getPoint(reader, "point2")
+			);
+		} else {
+			init(
+				reader.readFloat(0),
+				reader.readFloat(0),
+				reader.readFloat(0),
+				reader.readFloat(0),
+				reader.readFloat(0),
+				reader.readFloat(0),
+				reader.readFloat(0),
+				reader.readFloat(0)
+			);		
+		}
+	}
+
+	protected Curve(SegmentList segmentList, int index) {
+		this.segments = segmentList;
+		this.index1 = index;
+		updateSegments();
+	}
+
+	private static Point getPoint(ArgumentReader reader, String name) {
+		Point point = (Point) reader.readObject(name, Point.class);
+		return point != null ? point : new Point();
+	}
+
+	protected void init(Point pt1, Point h1, Point h2, Point pt2) {
+		segment1 = new Segment(pt1, null, h1, false);
+		segment2 = new Segment(pt2, h2, null, false);
+	}
+
+	protected void init(float p1x, float p1y, float h1x, float h1y,
 			float h2x, float h2y, float p2x, float p2y) {
 		segment1 = new Segment(p1x, p1y, 0, 0, h1x, h1y, false);
 		segment2 = new Segment(p2x, p2y, h2x, h2y, 0, 0, false);
@@ -139,12 +179,12 @@ public class Curve {
 
 	public void setPoint1(Point pt) {
 		updateSegments();
-		segment1.point.setLocation(pt);
+		segment1.point.set(pt);
 	}
 
 	public void setPoint1(float x, float y) {
 		updateSegments();
-		segment1.point.setLocation(x, y);
+		segment1.point.set(x, y);
 	}
 
 	public Point getHandle1() {
@@ -154,12 +194,12 @@ public class Curve {
 
 	public void setHandle1(Point pt) {
 		updateSegments();
-		segment1.handleOut.setLocation(pt);
+		segment1.handleOut.set(pt);
 	}
 
 	public void setHandle1(float x, float y) {
 		updateSegments();
-		segment1.handleOut.setLocation(x, y);
+		segment1.handleOut.set(x, y);
 	}
 
 	public Point getHandle2() {
@@ -169,12 +209,12 @@ public class Curve {
 
 	public void setHandle2(Point pt) {
 		updateSegments();
-		segment2.handleIn.setLocation(pt);
+		segment2.handleIn.set(pt);
 	}
 
 	public void setHandle2(float x, float y) {
 		updateSegments();
-		segment2.handleIn.setLocation(x, y);
+		segment2.handleIn.set(x, y);
 	}
 
 	public Point getPoint2() {
@@ -184,12 +224,12 @@ public class Curve {
 
 	public void setPoint2(Point pt) {
 		updateSegments();
-		segment2.point.setLocation(pt);
+		segment2.point.set(pt);
 	}
 
 	public void setPoint2(float x, float y) {
 		updateSegments();
-		segment2.point.setLocation(x, y);
+		segment2.point.set(x, y);
 	}
 	
 	public Segment getSegment1() {
@@ -354,7 +394,7 @@ public class Curve {
 			divide(left, t, left, right);
 		
 			// write back the results:
-			segment1.handleOut.setLocation(left[1][0] - segment1.point.x,
+			segment1.handleOut.set(left[1][0] - segment1.point.x,
 					left[1][1] - segment1.point.y);
 	
 			// create the new segment, absolute -> relative:
@@ -369,7 +409,7 @@ public class Curve {
 				segments.add(index2, newSegment);
 	
 			// absolute->relative
-			segment2.handleIn.setLocation(right[2][0] - segment2.point.x,
+			segment2.handleIn.set(right[2][0] - segment2.point.x,
 					right[2][1] - segment2.point.y);
 	
 			if (segments != null && segments.path != null) {

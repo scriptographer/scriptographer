@@ -431,7 +431,7 @@ public class SegmentList extends AbstractFetchList {
 		// first modify the current segment:
 		Segment lastSegment = getSegment(size - 1);
 		// convert to relative values:
-		lastSegment.handleOut.setLocation(c1x - lastSegment.point.x, c1y
+		lastSegment.handleOut.set(c1x - lastSegment.point.x, c1y
 				- lastSegment.point.y);
 		lastSegment.setCorner(false);
 		// and add the new segment, with handleIn set to c2
@@ -529,7 +529,7 @@ public class SegmentList extends AbstractFetchList {
 					centerY + (rely + z * relx) * h - pt.y);
 			if (i == 0) {
 				// Modify startSegment
-				startSegment.handleOut.setLocation(out);
+				startSegment.handleOut.set(out);
 			} else {
 				// Add new Segment
 				Point in = new Point(centerX + (relx + z * rely) * w - pt.x,
