@@ -35,10 +35,7 @@ var consoleDialog = new FloatingDialog (
 		FloatingDialog.OPTION_RESIZING |
 		FloatingDialog.OPTION_REMEMBER_PLACING, function() {
 
-	this.title = "Scriptographer Console";
-	this.bounds = [200, 200, 400, 300];
-
-	var engine = ScriptEngine.getEngineByName("JavaScript");
+	var engine = ScriptEngine.getEngineByName('JavaScript');
 	var consoleScope = engine != null ? engine.createScope() : null;
 
 	var textIn = new TextEdit(this, TextEdit.OPTION_MULTILINE) {
@@ -52,7 +49,7 @@ var consoleDialog = new FloatingDialog (
 				var text = this.text;
 				var end = this.getSelection()[1] - 1;
 				if (/[\n\r]/.test(text.charAt(end--))) { // empty line?
-					text = "";
+					text = '';
 				} else {
 					while (end >= 0 && /[\n\r]/.test(text[end]))
 						end--;
@@ -118,20 +115,23 @@ var consoleDialog = new FloatingDialog (
 	// Buttons:
 	var clearButton = new ImageButton(this) {
 		onClick: function() {
-			textOut.text = "";
+			textOut.text = '';
 			consoleText.setLength(0);
 		},
-		image: getImage("refresh.png"),
+		image: getImage('refresh.png'),
 		size: buttonSize
 	};
 
 	// Layout:
 	return {
+		title: 'Scriptographer Console',
+		bounds: [200, 200, 400, 300],
 		margin: -1,
 		layout: [
 			'preferred fill',
 			'0.2 fill 15',
-			-1, -1 ],
+			-1, -1
+		],
 		content: {
 			'0, 0, 1, 0': textIn,
 			'0, 1, 1, 1': textOut,

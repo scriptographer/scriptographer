@@ -48,7 +48,6 @@ var aboutDialog = new ModalDialog(function() {
 			+ 'All rights reserved.\n\n'
 			+ 'Illustrator ' + app.version + '.' + app.revision + '\n'
 			+ 'Java ' + java.lang.System.getProperty('java.version') + '\n',
-
 		bottomMargin: 10,
 
 		onTrack: function(tracker) {

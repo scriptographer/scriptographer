@@ -385,7 +385,7 @@ var mainDialog = new FloatingDialog(
 		content: {
 			center: scriptList,
 			south: new ItemGroup(this) {
-				layout: [ 'left' , -1, -1 ],
+				layout: [ 'left', -1, -1 ],
 				content: [
 					playButton,
 					stopButton,

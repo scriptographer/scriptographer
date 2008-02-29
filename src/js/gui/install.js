@@ -115,7 +115,8 @@ if (app.macintosh) {
 				layout: [
 					'preferred fill preferred preferred',
 					'preferred fill preferred preferred',
-					4, 4 ],
+					4, 4
+				],
 				content: 	{
 					'0, 0': logo,
 					'1, 0, 3, 1': text,
