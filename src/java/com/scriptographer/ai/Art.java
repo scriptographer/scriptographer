@@ -33,6 +33,8 @@ package com.scriptographer.ai;
 
 import java.util.ArrayList;
 
+import com.scratchdisk.list.List;
+import com.scratchdisk.list.Lists;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
 
@@ -42,7 +44,7 @@ import com.scriptographer.CommitManager;
 public abstract class Art extends DictionaryObject {
 	
 	// the internal version. this is used for internally reflected data,
-	// such as segmentList, pathStyle, and so on. Everytime an object gets
+	// such as segmentList, pathStyle, and so on. Every time an object gets
 	// modified, ScriptographerEngine.selectionChanged() gets fired that
 	// increases the version of all involved art objects.
 	// update-commit related code needs to check against this variable
@@ -528,6 +530,31 @@ public abstract class Art extends DictionaryObject {
 		Art[] children = new Art[list.size()];
 		list.toArray(children);
 		return children;
+	}
+
+	public void setChildren(List elements) {
+		removeChildren();
+		for (int i = 0, size = elements.size(); i < size; i++) {
+			Object obj = elements.get(i);
+			if (obj instanceof Art)
+				appendChild((Art) obj);
+		}
+	}
+
+	public void setChildren(Art[] children) {
+		setChildren(Lists.asList(children));
+	}
+
+	public boolean removeChildren() {
+		Art child = getFirstChild();
+		boolean removed = false;
+		while (child != null) {
+			Art next = child.getNextSibling();
+			child.remove();
+			child = next;
+			removed = true;
+		}
+		return removed;
 	}
 
 	/**
