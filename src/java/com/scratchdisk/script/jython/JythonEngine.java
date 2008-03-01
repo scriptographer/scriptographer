@@ -85,4 +85,8 @@ public class JythonEngine extends ScriptEngine {
 	public Scope getScope(Object obj) {
 		return new JythonScope(Py.java2py(obj));
 	}
+
+	public Scope getGlobalScope() {
+		return getScope(globals);
+	}
 }

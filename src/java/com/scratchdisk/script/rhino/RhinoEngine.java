@@ -189,6 +189,10 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		return new RhinoScope(this, scope);
 	}
 
+	public Scope getGlobalScope() {
+		return getScope(topLevel);
+	}
+
 	public Scriptable getScope() {
 		return topLevel;
 	}

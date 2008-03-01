@@ -102,6 +102,8 @@ public abstract class ScriptEngine {
 
 	public abstract Scope getScope(Object obj);
 
+	public abstract Scope getGlobalScope();
+	
 	protected abstract Script compileScript(File file)
 			throws ScriptException, IOException;
 
