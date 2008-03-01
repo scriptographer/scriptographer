@@ -32,13 +32,19 @@
 package com.scratchdisk.script.rhino;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.ImporterTopLevel;
 import org.mozilla.javascript.LazilyLoadedCtor;
+import org.mozilla.javascript.NativeJavaObject;
+import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Undefined;
+import org.mozilla.javascript.Wrapper;
 
 import com.scratchdisk.script.ScriptEngine;
 /**
@@ -69,7 +75,11 @@ public class TopLevel extends ImporterTopLevel {
 		String[] names = { "print", "evaluate" };
 		defineFunctionProperties(names, TopLevel.class,
 			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
-	}
+
+		ScriptableObject objProto = (ScriptableObject) getObjectPrototype(this);
+		objProto.defineFunctionProperties(new String[] { "dontEnum", "toJava" }, TopLevel.class,
+                    DONTENUM | READONLY | PERMANENT);
+}
 
 	public static void defineProperty(ScriptableObject obj, String name,
 			String getter, String setter) throws SecurityException, NoSuchMethodException {
@@ -83,6 +93,61 @@ public class TopLevel extends ImporterTopLevel {
 		obj.defineProperty(name, null, getterMethod, setterMethod,
 			ScriptableObject.DONTENUM);
 	}
+
+	/**
+	 * Set DONTENUM attributes on the given properties in this object.
+	 * This is set on the JavaScript Object prototype.
+	 */
+	public static Object dontEnum(Context cx, Scriptable thisObj,
+			Object[] args, Function funObj) {
+		if (!(thisObj instanceof ScriptableObject)) {
+			throw new EvaluatorException(
+					"dontEnum() called on non-ScriptableObject");
+		}
+		ScriptableObject obj = (ScriptableObject) thisObj;
+		for (int i = 0; i < args.length; i++) {
+			if (!(args[i] instanceof String)) {
+				throw new EvaluatorException(
+						"dontEnum() called with non-String argument");
+			}
+			String str = (String) args[i];
+			if (obj.has(str, obj)) {
+				int attr = obj.getAttributes(str);
+				if ((attr & PERMANENT) == 0)
+					obj.setAttributes(str, attr | DONTENUM);
+			}
+		}
+		return null;
+	}
+
+    /**
+     * Convert an object into a wrapper that exposes the java
+     * methods of the object to JavaScript. This is useful for
+     * treating native numbers, strings, etc as their java
+     * counterpart such as java.lang.Double, java.lang.String etc.
+     * @param thisObj a java object that is wrapped in a special way
+     * Rhino
+     * @return the object wrapped as NativeJavaObject, exposing
+     * the public methods of the underlying class.
+     */
+    public static Object toJava(Context cx, Scriptable thisObj,
+			Object[] args, Function funObj) {
+        if (thisObj == null || thisObj instanceof NativeJavaObject
+                || thisObj == Undefined.instance) {
+            return thisObj;
+        }
+        Scriptable topLevel = ScriptRuntime.getTopCallScope(cx);
+        Object obj = thisObj;
+        if (thisObj instanceof Wrapper) {
+        	obj = ((Wrapper) thisObj).unwrap();
+        } else if (thisObj instanceof Scriptable) {
+            if ("Date".equals(((Scriptable) thisObj).getClassName())) {
+                return new NativeJavaObject(topLevel,
+                        new Date((long) ScriptRuntime.toNumber(thisObj)), null);
+            }
+        }
+        return new NativeJavaObject(topLevel, obj, null);
+    }
 
 	public String getClassName() {
 		return "global";
