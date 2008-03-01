@@ -58,8 +58,7 @@ public abstract class AbstractList extends AbstractReadOnlyList implements List 
 	 */
 	public boolean addAll(int index, List elements) {
 		boolean modified = false;
-		int size = elements.size();
-		for (int i = 0; i < size; i++) {
+		for (int i = 0, size = elements.size(); i < size; i++) {
 			if (add(index++, elements.get(i)) != null)
 				modified = true;
 		}

@@ -38,6 +38,7 @@ import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 
 import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.List;
 import com.scratchdisk.list.Lists;
 import com.scriptographer.CommitManager;
 
@@ -70,7 +71,7 @@ public class Path extends Art {
 		super(TYPE_PATH);
 	}
 
-	public Path(ExtendedList segments) {
+	public Path(List segments) {
 		this();
 		setSegments(segments);
 	}
@@ -108,7 +109,7 @@ public class Path extends Art {
 		return segments;
 	}
 
-	public void setSegments(ExtendedList list) {
+	public void setSegments(List list) {
 		SegmentList segments = getSegments();
 		// TODO: Implement SegmentList.setAll so clear is not necessary and
 		// nativeCommit is used instead of nativeInsert removeRange would still
