@@ -372,6 +372,13 @@ public class Document extends DictionaryObject {
 	public boolean isInsertionEditable();
 	*/
 
+	public Path createLine(Point pt1, Point pt2) {
+		Path path = this.createPath();
+		path.moveTo(pt1);
+		path.lineTo(pt2);
+		return path;
+	}
+
 	/**
 	 * Creates a rectangular path
 	 * 
