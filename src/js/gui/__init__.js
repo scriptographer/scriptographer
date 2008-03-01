@@ -29,6 +29,10 @@
  * $Id$
  */
 
+importPackage(Packages.com.scriptographer);
+importPackage(Packages.com.scratchdisk.script);
+importPackage(Packages.com.scriptographer.script);
+
 var buttonSize = new Size(27, 17);
 var lineBreak = java.lang.System.getProperty('line.separator');
 
@@ -36,9 +40,46 @@ function getImage(filename) {
 	return new Image(new File(script.directory, 'resources/' + filename));
 }
 
-importPackage(Packages.com.scriptographer);
-importPackage(Packages.com.scratchdisk.script);
-importPackage(Packages.com.scriptographer.script);
+function chooseScriptDirectory(dir) {
+	dir = Dialog.chooseDirectory(
+		'Please choose the Scriptographer script directory', dir || scriptographer.pluginDirectory);
+	if (dir && dir.isDirectory()) {
+		script.preferences.scriptDirectory = dir.path;
+		setScriptDirectory(dir);
+		return true;
+	}
+}
+
+function setScriptDirectory(dir) {
+	// Tell Scriptographer about where to look for scripts.
+	ScriptographerEngine.setScriptDirectory(dir);
+	loadLibraries();
+}
+
+function loadLibraries(dir) {
+	if (!dir)
+		dir = new File(scriptographer.scriptDirectory, 'libraries');
+	var files = dir.listFiles();
+	if (files) {
+		for (var i = 0; i < files.length; i++) {
+			var file = files[i];
+			if (file.isDirectory() && !/^\.|^CVS$/.test(file.name)) {
+				loadLibraries(file);
+			} else {
+				try {
+					var engine = ScriptEngine.getEngineByFile(file);
+					if (engine) {
+						var script = engine.compile(file);
+						if (script)
+							script.execute(engine.getGlobalScope());
+					}
+				} catch (e) {
+					print(e);
+				}
+			}
+		}
+	}
+}
 
 if (!script.preferences.accepted) {
 	include('license.js');
@@ -46,6 +87,20 @@ if (!script.preferences.accepted) {
 }
 
 if (script.preferences.accepted) {
+	// Read the script directory first, or ask for it if its not defined:
+	var dir = script.preferences.scriptDirectory;
+	// If no script directory is defined, try the default place for Scripts:
+	// The subdirectory 'scripts' in the plugin directory:
+	dir = dir
+		? new File(dir)
+		: new File(scriptographer.pluginDirectory, 'scripts');
+	if (!dir.exists() || !dir.isDirectory()) {
+		if (!chooseScriptDirectory(dir))
+			Dialog.alert('Could not find Scriptographer script directory.');
+	} else {
+		setScriptDirectory(dir);
+	}
+
 	include('console.js');
 	include('about.js');
 	include('main.js');

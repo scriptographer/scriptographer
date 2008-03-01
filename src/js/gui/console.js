@@ -106,8 +106,6 @@ var consoleDialog = new FloatingDialog (
 		if (textOut != null) {
 			textOut.text = consoleText;
 			textOut.setSelection(consoleText.length());
-			// textOut.update();
-			// textOut.invalidate();
 			that.setVisible(true);
 		}
 	}
@@ -125,7 +123,7 @@ var consoleDialog = new FloatingDialog (
 	// Layout:
 	return {
 		title: 'Scriptographer Console',
-		bounds: [200, 200, 400, 300],
+		size: [400, 300],
 		margin: -1,
 		layout: [
 			'preferred fill',

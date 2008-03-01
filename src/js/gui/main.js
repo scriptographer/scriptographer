@@ -98,9 +98,8 @@ var mainDialog = new FloatingDialog(
 	// Filter for hiding files:
 	var scriptFilter = new java.io.FilenameFilter() {
 		accept: function(dir, name) {
-			return name != 'CVS' && !/^\./.test(name) &&
-				(/\.(?:js|rb|py)$/.test(name)
-				|| !/^__/.test(name) && new File(dir, name).directory);
+			return !/^__|^\.|^libraries$|^CVS$/.test(name) && 
+				(/\.(?:js|rb|py)$/.test(name) || new File(dir, name).isDirectory());
 		}
 	};
 
@@ -116,7 +115,7 @@ var mainDialog = new FloatingDialog(
 			selected: selected && selected[file] || selected == true,
 			// backgroundColor: Drawer.COLOR_BACKGROUND,
 			file: file,
-			directory: file.directory
+			directory: file.isDirectory()
 		};
 		if (entry.directory) {
 			addFiles(entry.createChildList(), file, selected);
@@ -132,8 +131,9 @@ var mainDialog = new FloatingDialog(
 
 	function addFiles(list, dir, selected) {
 		var files = dir.listFiles(scriptFilter);
-		for (var i in files)
+		for (var i = 0; i < files.length; i++) {
 			addFile(list, files[i], selected);
+		}
 	}
 
 	function removeFiles() {
@@ -146,8 +146,9 @@ var mainDialog = new FloatingDialog(
         var entry = scriptList.activeLeaf;
         var list;
         if (entry) {
-            if (entry.directory) list = entry.childList;
-            else {
+            if (entry.directory) {
+				list = entry.childList;
+            } else {
                 list = entry.list;
                 entry = list.parentEntry;
             }
@@ -274,7 +275,7 @@ var mainDialog = new FloatingDialog(
 	var scriptDirEntry = new ListEntry(menu) {
 		text: 'Set Script Directory...',
 		onSelect: function() {
-			if (ScriptographerEngine.chooseScriptDirectory())
+			if (chooseScriptDirectory())
 				refreshFiles();
 		}
 	};
@@ -377,7 +378,8 @@ var mainDialog = new FloatingDialog(
 			curEntry.image = image ? image : this.entryImage;
 	}
 
-	addFiles(scriptList, scriptographer.scriptDirectory);
+	if (scriptographer.scriptDirectory)
+		addFiles(scriptList, scriptographer.scriptDirectory);
 
 	return {
 		title: 'Scriptographer',
