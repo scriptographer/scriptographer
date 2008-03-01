@@ -76,29 +76,19 @@ public class ScriptographerEngine {
 		
 		pluginDir = new File(javaPath).getParentFile();
 
-		// This is needed on mac, where there is more than one thread and the
+		// This is needed on Mac, where there is more than one thread and the
 		// Loader is initiated on startup
 		// in the second thread. The ScriptographerEngine get loaded through the
 		// Loader, so getting the ClassLoader from there is save:
 		Thread.currentThread().setContextClassLoader(
 				ScriptographerEngine.class.getClassLoader());
-		// get the baseDir setting, if it's not set, ask the user
-		String dir = getPreferences(false).get(
-			"scriptDir", null);
-		// If nothing is defined, try the default place for Scripts: In the
-		// plugin's folder
-		scriptDir = dir != null ? new File(dir)
-			: new File(pluginDir, "scripts");
-		// If the specified folder does not exist, ask the user
-		if (!scriptDir.exists() || !scriptDir.isDirectory())
-			chooseScriptDirectory();
 
-		// Execute Gui code, if there
+		// Execute GUI code, if it exists
 		File guiDir = new File(pluginDir, "gui");
 		if (guiDir.isDirectory())
 			callInitScripts(guiDir);
-		
-		// Execute all __init__ scripts in startup folder:
+
+		// Execute all __init__ scripts in the Script folder:
 		if (scriptDir != null)
 			callInitScripts(scriptDir);
 
@@ -118,24 +108,12 @@ public class ScriptographerEngine {
 		Annotator.disposeAll();
 		try {
 			// This is needed on some versions on Mac CS (CFM?)
-			// as the JVM seems to not shoot down properly,
-			//and the prefs would then not be flushed to file otherwise.
+			// as the JVM seems to not shoot down properly, and the
+			// preferences would then not be flushed to file otherwise.
 			getPreferences(false).flush();
 		} catch (java.util.prefs.BackingStoreException e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	public static boolean chooseScriptDirectory() {
-		scriptDir = Dialog.chooseDirectory(
-			"Please choose the Scriptographer Script directory:",
-			scriptDir != null ? scriptDir : new File(pluginDir, "scripts"));
-		if (scriptDir != null && scriptDir.isDirectory()) {
-			getPreferences(false).put("scriptDir",
-				scriptDir.getPath());
-			return true;
-		}
-		return false;
 	}
 
 	public static File getPluginDirectory() {
@@ -145,11 +123,15 @@ public class ScriptographerEngine {
 	public static File getScriptDirectory() {
 		return scriptDir;
 	}
-	
+
+	public static void setScriptDirectory(File dir) {
+		scriptDir = dir;
+	}
+
 	public static Preferences getPreferences(boolean fromScript) {
 		if (fromScript && currentFile != null)
 			return getPreferences(currentFile);
-		// the base prefs for Scriptographer are:
+		// the base preferences for Scriptographer are:
 		// com.scriptographer.preferences on Mac, three nodes seem
 		// to be necessary, otherwise things get mixed up...
 		return Preferences.userNodeForPackage(
@@ -160,18 +142,24 @@ public class ScriptographerEngine {
 		// determine preferences for the current executing script
 		// by walking up the file path to the script directory and 
 		// using each folder as a preference node.
-		Preferences prefs = getPreferences(false).node("scripts");
 		ArrayList parts = new ArrayList();
-		File root = getScriptDirectory();
-		// collect the directory parts up to root
-		do {
+		Preferences prefs = getPreferences(false);
+		// Collect the directory parts up to either scriptDir or pluginDir
+		while (true) {
 			parts.add(file.getName());
 			file = file.getParentFile();
-		} while (file != null && !file.equals(root));
-
-		for (int i = parts.size() - 1; i >= 0; i--) {
-			prefs = prefs.node((String) parts.get(i));
+			if (file == null || file.equals(pluginDir)) {
+				break;
+			} else if (file.equals(scriptDir)) {
+				// Script files use the scripts preference node,
+				// all others (including GUI scripts) use the main node.
+				prefs = prefs.node("scripts");
+				break;
+			}
 		}
+		// Now walk backwards per added folder element and produce sub nodes
+		for (int i = parts.size() - 1; i >= 0; i--)
+			prefs = prefs.node((String) parts.get(i));
 		return prefs;
 	}
 	
@@ -179,19 +167,18 @@ public class ScriptographerEngine {
 		try {
 			String error = t instanceof ScriptException ? 
 					((ScriptException) t).getFullMessage() : t.getMessage();
-			if (error != null) {
-				// Shorten file names by removing base form it
+			if (error == null)
+				error = t.toString();
+			// Shorten file names by removing the script directory form it
+			if (scriptDir != null)
 				error = StringUtils.replace(error, scriptDir.getAbsolutePath() + System.getProperty("file.separator"), "");
-				// Add a line break at the end if the error does
-				// not contain one already.
-				if (!error.matches("(?:\\n\\r|\\n|\\r)$"))
-					error +=  System.getProperty("line.separator");
-				logger.print(error);
-				logger.print("Stacktrace: ");
-				System.err.print(error);
-			} else {
-				System.err.println(t);
-			}
+			// Add a line break at the end if the error does
+			// not contain one already.
+			if (!error.matches("(?:\\n\\r|\\n|\\r)$"))
+				error +=  System.getProperty("line.separator");
+			logger.print(error);
+			logger.print("Stacktrace: ");
+			System.err.print(error);
 			t.printStackTrace(logger);
 			logger.println();
 		} catch (Throwable e) {
