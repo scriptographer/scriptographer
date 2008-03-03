@@ -874,15 +874,24 @@ public abstract class Art extends DictionaryObject {
 		transform(matrix, TRANSFORM_OBJECTS | TRANSFORM_CHILDREN);
 	}
 
+	protected Matrix centered(Matrix matrix) {
+		Matrix centered = new Matrix();
+		Point pos = getPosition();
+		centered.translate(pos.x, pos.y);
+		centered.concatenate(matrix);
+		centered.translate(-pos.x, -pos.y);
+		return centered;
+	}
+	
 	/**
-	 * Scales the art item by creating a scale Matrix and executing transform()
+	 * Scales the art item by the given values from its center point.
 	 * 
 	 * @param sx
 	 * @param sy
 	 * @see Matrix#scale(double, double)
 	 */
 	public void scale(double sx, double sy) {
-		transform(new Matrix().scale(sx, sy));
+		transform(centered(new Matrix().scale(sx, sy)));
 	}
 
 	public void scale(double scale) {
@@ -910,7 +919,17 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Rotates the art item around an anchor point by a given angle.
+	 * Rotates the art item by a given angle around its center point.
+	 * 
+	 * @param theta the rotation angle in radians
+	 */
+	public void rotate(double theta) {
+		transform(new Matrix().rotate(theta, getPosition()));
+	}
+
+	/**
+	 * Rotates the art item around an anchor point by a given angle around
+	 * the given point.
 	 * 
 	 * @param theta the rotation angle in radians
 	 * @see Matrix#rotate(double, double, double)
@@ -924,22 +943,13 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Shears the art item with a given amount.
+	 * Shears the art item with a given amount around its center point.
 	 * @param shx
 	 * @param shy
 	 * @see Matrix#shear(double, double)
 	 */
 	public void shear(double shx, double shy) {
-		transform(new Matrix().shear(shx, shy));
-	}
-
-	/**
-	 * Rotates the art item by a given angle.
-	 * 
-	 * @param theta the rotation angle in radians
-	 */
-	public void rotate(double theta) {
-		transform(new Matrix().rotate(theta));
+		transform(centered(new Matrix().shear(shx, shy)));
 	}
 
 	public String toString() {
