@@ -65,7 +65,21 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_launch(J
 			strncmp(path, "mailto://", 9) == 0 ||
 			strncmp(path, "ftp://", 6) == 0 ||
 			strncmp(path, "file://", 7) == 0) {
+/*
+#ifdef WIN_ENV
+			// sAIURL->OpenURL does not seem to work on Windows, or often fail?
+			AIWindowRef handle = NULL;
+			sAIAppContext->GetPlatformAppWindow(&handle);
+			char test[1024];
+			sprintf(test, "url.dll,FileProtocolHandler %s", path);
+			HINSTANCE res = ShellExecute(NULL, "open", "rundll32.exe", test, NULL, SW_SHOWNORMAL);
+			result = !res;
+#else
+*/
 			result = !sAIURL->OpenURL(path);
+/*
+#endif
+*/
 		} else {
 			SPPlatformFileSpecification fileSpec;
 			if (gPlugin->pathToFileSpec(path, &fileSpec)) {
