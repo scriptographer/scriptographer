@@ -54,7 +54,7 @@ public class LayoutConverter extends ArgumentConverter {
 		flowLayoutAlignment.put("trailing", new Integer(FlowLayout.TRAILING));
 	}
 
-	public Object convert(ArgumentReader reader) {
+	public Object convert(ArgumentReader reader, Object from) {
 		if (reader.isArray()) {
 			String str = reader.readString();
 			if (str != null) {

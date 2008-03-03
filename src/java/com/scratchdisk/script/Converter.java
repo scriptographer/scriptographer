@@ -37,4 +37,6 @@ package com.scratchdisk.script;
  */
 public interface Converter {
 	public Object convert(Object obj, Class type);
+
+	public Object unwrap(Object obj);
 }

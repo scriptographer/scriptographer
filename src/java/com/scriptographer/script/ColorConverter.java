@@ -43,7 +43,7 @@ import com.scriptographer.ai.RGBColor;
  */
 public class ColorConverter extends ArgumentConverter {
 
-	public Object convert(ArgumentReader reader) {
+	public Object convert(ArgumentReader reader, Object from) {
 		if (reader.isArray()) {
 			int size = reader.size();
 			if (size == 4) {

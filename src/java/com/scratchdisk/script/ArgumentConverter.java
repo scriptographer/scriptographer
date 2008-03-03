@@ -55,5 +55,5 @@ public abstract class ArgumentConverter {
 		}
 	}
 
-	public abstract Object convert(ArgumentReader reader);
+	public abstract Object convert(ArgumentReader reader, Object from);
 }

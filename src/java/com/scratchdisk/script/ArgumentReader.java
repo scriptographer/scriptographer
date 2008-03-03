@@ -165,7 +165,7 @@ public abstract class ArgumentReader {
 				ArgumentReader reader = (ArgumentReader) this.converter.convert(obj, ArgumentReader.class);
 				if (reader == null)
 					throw new IllegalArgumentException("Cannot read from " + obj);
-				res = converter.convert(reader);
+				res = converter.convert(reader, this.converter.unwrap(obj));
 			} else {
 				res = this.converter.convert(obj, type);
 			}
@@ -188,13 +188,13 @@ public abstract class ArgumentReader {
 			|| converters.get(to) != null;
 	}
 
-	public static Object convert(ArgumentReader from, Class to) {
+	public static Object convert(ArgumentReader reader, Object from, Class to) {
 		if (ArgumentReader.class.isAssignableFrom(to)) {
-			return from;
+			return reader;
 		} else {
 			ArgumentConverter converter = (ArgumentConverter) converters.get(to);
 			if (converter != null) {
-				return converter.convert(from);
+				return converter.convert(reader, from);
 			} else {
 				Constructor ctor = getArgumentReaderConstructor(to);
 				if (ctor != null) {
@@ -202,9 +202,9 @@ public abstract class ArgumentReader {
 					// Argument readers can either be created from
 					// a NativeArray or a Scriptable object
 					try {
-						return ctor.newInstance(new Object[] { from });
+						return ctor.newInstance(new Object[] { reader });
 					} catch (Exception e) {
-						throw new RuntimeException(e);
+						e.printStackTrace();
 					}
 				}
 			}
