@@ -237,7 +237,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 	/*
 	 * JavaScript functions
 	 */
-	protected static Object getActiveDocument(ScriptableObject obj) {
+	protected static Object getActiveDocument(Scriptable obj) {
 		return Context.javaToJS(Document.getActiveDocument(), obj);
 	}
 
