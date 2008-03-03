@@ -72,6 +72,11 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 	public Object wrap(Context cx, Scriptable scope, Object obj, Class staticType) {
         if (obj == null || obj == Undefined.instance || obj instanceof Scriptable)
             return obj;
+		if (obj instanceof RhinoCallable) {
+			// Handle the ScriptFunction special case, return the unboxed
+			// function value.
+			obj = ((RhinoCallable) obj).getCallable();
+		}
         // Allays override staticType and set it to the native type of
 		// the class. Sometimes the interface used to access an object of
         // a certain class is passed.
@@ -161,15 +166,25 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 
 	public Object convert(Object from, Class to) {
 		// Coerce native objects to maps when needed
-		if (from instanceof Function && to == Callable.class) {
-			return new RhinoCallable(engine, (Function) from);
+		if (from instanceof Function) {
+			if (to == Callable.class)
+				return new RhinoCallable(engine, (Function) from);
 		} else if (from instanceof Scriptable || from instanceof String) { // Let through string as well, for ArgumentReader
 			if (Map.class.isAssignableFrom(to)) {
 				return toMap((Scriptable) from);
 			} else {
+				/* try constructing from this prototype first
+				try {
+					Scriptable scope = engine.getScope();
+					ExtendedJavaClass cls = ExtendedJavaClass.getClassWrapper(scope, to);
+					return cls.construct(Context.getCurrentContext(), scope, new Object[] { from });
+				} catch(Throwable e) {
+					int i = 0;
+				}
+				*/
 				ArgumentReader reader = null;
 				if (ArgumentReader.canConvert(to) && (reader = getArgumentReader(from)) != null) {
-				    return ArgumentReader.convert(reader, to);
+				    return ArgumentReader.convert(reader, unwrap(from), to);
 				} else if (from instanceof NativeObject && getZeroArgumentConstructor(to) != null) {
 					// Try constructing an object of class type, through
 					// the JS ExtendedJavaClass constructor that takes 
@@ -187,8 +202,22 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 					}
 				}
 			}
-		} 
+		} else if (from == Undefined.instance) {
+			// Convert undefined ot false if destination is boolean
+			if (to == Boolean.TYPE)
+				return Boolean.FALSE;
+		} else if (from instanceof Boolean) {
+			// Convert false to null / undefined for non primitive destination classes.
+			if (from == Boolean.FALSE && !to.isPrimitive())
+				return Undefined.instance;
+		}
 		return null;
+	}
+
+	public Object unwrap(Object obj) {
+		if (obj instanceof Wrapper)
+			return ((Wrapper) obj).unwrap();
+		return obj;
 	}
 
 	/**

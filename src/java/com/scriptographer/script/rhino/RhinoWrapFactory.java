@@ -34,7 +34,6 @@ package com.scriptographer.script.rhino;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
-import com.scratchdisk.script.rhino.RhinoCallable;
 import com.scriptographer.ai.Style;
 
 /**
@@ -42,19 +41,6 @@ import com.scriptographer.ai.Style;
  *
  */
 public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFactory {
-
-	public Object wrap(Context cx, Scriptable scope, Object obj,
-			Class staticType) {
-		// these are not wrappers, the java return types are simply converted to
-		// these scriptographer types and wrapped afterwards:
-		if (obj instanceof RhinoCallable) {
-			// Handle the ScriptFunction special case, return the unboxed
-			// function value.
-			// TODO: move to com.scratchdisk
-			obj = ((RhinoCallable) obj).getCallable();
-		}
-		return super.wrap(cx, scope, obj, staticType);
-	}
 
 	public Scriptable wrapCustom(Context cx, Scriptable scope,
 			Object javaObj, Class staticType) {
