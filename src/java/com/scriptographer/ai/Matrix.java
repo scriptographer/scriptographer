@@ -306,6 +306,16 @@ public class Matrix {
 		return this;
 	}
 
+	public Matrix concatenate(Matrix mx) {
+		at.concatenate(mx.toAffineTransform());
+		return this;
+	}
+
+	public Matrix preConcatenate(Matrix mx) {
+		at.preConcatenate(mx.toAffineTransform());
+		return this;
+	}
+
 	public Point transform(float x, float y) {
 		// A bit of converting from Point2D <-> Point
 		return new Point(at.transform(new Point2D.Float(x, y), new Point2D.Float()));
