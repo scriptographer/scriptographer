@@ -72,13 +72,16 @@ if (app.macintosh) {
 	// Determine current user and see if it is part of the uucp group, as required by RXTX
 	var user = executeProcess('id -p').match(/uid.(\w*)/)[1];
 	var found = false;
-	var useDS = new File('/usr/bin/dscl').exists();
-	var useNS = !useDS && new File('/usr/bin/niutil').exists();
+	var useNS = new File('/usr/bin/niutil').exists();
+	var useDS = !useNS && new File('/usr/bin/dscl').exists();
 	if (useDS) {
 		var res = executeProcess('dsmemberutil checkmembership -U ' + user + ' -G uucp');
 		found = res != 'user is not a member of the group';
 	} else if (useNS) {
-		var groups = executeProcess('niutil -readprop / /groups/uucp users').split(/\n/);
+		var groups = []
+		try {
+			groups = executeProcess('niutil -readprop / /groups/uucp users').split(/\n/);
+		} catch(e) {}
 		for (var i = 0; i < groups.length && !found; i++)
 			found = groups[i] == user;
 	}
