@@ -163,16 +163,16 @@ public class PromptDialog extends ModalDialog {
 					PromptItem item = new PromptItem(type, ConversionUtils.getString(map, "description"), valueObj);
 					item.setName(ConversionUtils.getString(map, "name"));
 
-					double width = ConversionUtils.getDouble(map, "width");
+					double width = getDouble(map, "width");
 					if (!Double.isNaN(width))
 						item.setWidth((int) width);
 
-					double precision = ConversionUtils.getDouble(map, "precision");
+					double precision = getDouble(map, "precision");
 					if (!Double.isNaN(precision))
 						item.setPrecision((int) precision);
 
-					double min = ConversionUtils.getDouble(map, "min");
-					double max = ConversionUtils.getDouble(map, "max");
+					double min = getDouble(map, "min");
+					double max = getDouble(map, "max");
 					if (!Double.isNaN(min) || !Double.isNaN(max))
 						item.setRange((float) min, (float) max);
 					
@@ -186,6 +186,11 @@ public class PromptDialog extends ModalDialog {
 			}
 		}
 		return promptItems;
+	}
+
+	private static double getDouble(Map map, String key) {
+		Object obj = map.get(key);
+		return obj == null ? Double.NaN : ConversionUtils.toDouble(obj);
 	}
 
 	public static Object[] prompt(String title, PromptItem[] items) {
