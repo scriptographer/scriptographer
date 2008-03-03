@@ -89,9 +89,13 @@ public class ListWrapper extends ExtendedJavaObject {
 
 	public Object get(int index, Scriptable start) {
 		if (javaObject != null) {
-			Object obj = ((ReadOnlyList) javaObject).get(index);
-			if (obj != null)
-				return toObject(obj, start);
+			try {
+				Object obj = ((ReadOnlyList) javaObject).get(index);
+				if (obj != null)
+					return toObject(obj, start);
+			} catch (IndexOutOfBoundsException e) {
+				// Don't report
+			}
 		}
 		return Scriptable.NOT_FOUND;
 	}
