@@ -1,7 +1,7 @@
 function onInit() {
 	size = 10;
 	max = 10;
-	setIdleEventInterval(1000 / 100); // 100 times a second
+	setEventInterval(1000 / 100); // 100 times a second
 }
 
 function onOptions() {

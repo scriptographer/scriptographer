@@ -4,7 +4,7 @@ function onInit() {
 	maxAmount = 15;
 	minWidth = 0.1;
 	maxWidth = 5;
-	setIdleEventInterval(1000 / 100); // 100 times a second
+	setEventInterval(1000 / 100); // 100 times a second
 }
 
 function onOptions() {

@@ -2,7 +2,7 @@ function onInit() {
 	accel = 10;
 	accelFriction = 0.8;
 	friction = 0.65;
-	setIdleEventInterval(1000 / 100); // 100 times a second
+	setEventInterval(1000 / 100); // 100 times a second
 }
 
 function onOptions() {
