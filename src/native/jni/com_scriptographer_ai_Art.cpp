@@ -180,9 +180,18 @@ AIArtHandle Art_copyTo(AIArtHandle artSrc, AIDocumentHandle docSrc, AIDictionary
 			if (key != NULL)
 				sAIDictionary->CopyEntryToArt(dictSrc, key, paintOrder, artDst, &res);
 		}
-
-		if (res == NULL)
+		if (res == NULL) {
 			sAIArt->DuplicateArt(artSrc, paintOrder, artDst, &res);
+		}
+	}
+	if (res != NULL) {
+		// Duplicate art also duplicated the dictionary. Remove the artHandleKey from it, since it's
+		// a new object that needs to be wrapped differently:
+		AIDictionaryRef dict;
+		if (!sAIArt->GetDictionary(res, &dict)) {
+			sAIDictionary->DeleteEntry(dict, gEngine->m_artHandleKey);
+			sAIDictionary->Release(dict);
+		}
 	}
 	return res;
 }

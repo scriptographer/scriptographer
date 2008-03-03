@@ -286,7 +286,7 @@ public abstract class Art extends DictionaryObject {
 
 	/**
 	 * Wraps an AIArtHandle of given type (determined by
-	 * sAIArt->GetType(artHandle)) by the correct Art anchestor class:
+	 * sAIArt->GetType(artHandle)) by the correct Art ancestor class:
 	 * 
 	 * @param artHandle
 	 * @param type
@@ -294,9 +294,9 @@ public abstract class Art extends DictionaryObject {
 	 */
 	protected static Art wrapHandle(int artHandle, short type, int textType,
 			int docHandle, int dictionaryRef, boolean wrapped) {
-		// first see wether the object was already wrapped before:
+		// first see weather the object was already wrapped before:
 		Art art = null;
-		// only try to use the previous wrapper for this adress if the object
+		// only try to use the previous wrapper for this address if the object
 		// was marked wrapped otherwise we might get wrong wrappers for objects
 		// that reuse a previous address
 		if (wrapped)
@@ -347,7 +347,8 @@ public abstract class Art extends DictionaryObject {
 		if (art != null) {
 			art.dictionaryRef = dictionaryRef;
 			art.document = Document.wrapHandle(docHandle);
-			art.millis = System.currentTimeMillis();
+			if (art.millis == 0)
+				art.millis = System.currentTimeMillis();
 		}
 		return art;
 	}

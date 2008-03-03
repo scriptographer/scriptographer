@@ -1870,7 +1870,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 		return NULL;
 	short type = -1;
 	AITextFrameType textType = kUnknownTextType;
-	ASBoolean isLayer;
+	ASBoolean isLayer = false;
 	if (sAIArt->GetArtType(art, &type) || sAIArt->IsArtLayerGroup(art, &isLayer))
 		throw new StringException("Cannot determine the art object's type");
 	if (isLayer) {

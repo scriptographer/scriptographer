@@ -35,8 +35,6 @@ private:
     JavaVM* m_javaVM;
 	char *m_homeDir;
 	bool m_initialized;
-	AIDictKey m_artHandleKey;
-	AIDictKey m_docReflowKey;
 	Array<AIDocumentHandle> m_suspendedDocuments;
 
 #ifdef MAC_ENV
@@ -44,6 +42,10 @@ private:
 	MPQueueID m_requestQueue;
 	MPQueueID m_responseQueue;
 #endif
+
+public:
+	AIDictKey m_artHandleKey;
+	AIDictKey m_docReflowKey;
 
 public:
 	/*
