@@ -34,6 +34,7 @@ package com.scriptographer.ai;
 import java.awt.geom.Point2D;
 
 import com.scratchdisk.script.ArgumentReader;
+import com.scriptographer.adm.Size;
 
 /**
  * The Point object represents a point in the two dimensional space of the
@@ -66,6 +67,11 @@ public class Point {
 
 	public Point(Point2D p) {
 		this((float) p.getX(), (float) p.getY());
+	}
+
+	public Point(Size size) {
+		x = size.width;
+		y = size.height;
 	}
 
 	public Point(ArgumentReader reader) {

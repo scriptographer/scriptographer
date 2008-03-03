@@ -61,8 +61,8 @@ public class Size {
 	}
 
 	public Size(Point size) {
-		this.width = size.x;
-		this.height = size.y;
+		width = size.x;
+		height = size.y;
 	}
 
 	public Size(ArgumentReader reader) {

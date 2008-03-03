@@ -44,13 +44,18 @@ public class Point {
 	public Point() {
 		x = y = 0;
 	}
-
+	
 	public Point(int x, int y) {
 		set(x, y);
 	}
 
 	public Point(Point pt) {
 		set(pt.x, pt.y);
+	}
+
+	public Point(Size size) {
+		x = size.width;
+		y = size.height;
 	}
 
 	public Point(ArgumentReader reader) {
