@@ -42,7 +42,7 @@ function getImage(filename) {
 
 function chooseScriptDirectory(dir) {
 	dir = Dialog.chooseDirectory(
-		'Please choose the Scriptographer script directory', dir || scriptographer.pluginDirectory);
+		'Please choose the Scriptographer script directory', dir || scriptographer.scriptDirectory || scriptographer.pluginDirectory);
 	if (dir && dir.isDirectory()) {
 		script.preferences.scriptDirectory = dir.path;
 		setScriptDirectory(dir);
