@@ -86,10 +86,10 @@ public class TopLevel extends ImporterTopLevel {
 		Class cls = obj.getClass();
 		Method getterMethod = getter != null ?
 			cls.getDeclaredMethod(getter,
-				new Class[] { ScriptableObject.class }) : null;
+				new Class[] { Scriptable.class }) : null;
 		Method setterMethod = setter != null ?
 			cls.getDeclaredMethod(setter, new Class[] {
-				ScriptableObject.class, Object.class }) : null;
+				Scriptable.class, Object.class }) : null;
 		obj.defineProperty(name, null, getterMethod, setterMethod,
 			ScriptableObject.DONTENUM);
 	}
