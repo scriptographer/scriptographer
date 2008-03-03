@@ -1,2 +1,4 @@
 com.scriptographer.script.ColorConverter:com.scriptographer.ai.Color
+com.scriptographer.script.FillStyleConverter:com.scriptographer.ai.FillStyle
+com.scriptographer.script.StrokeStyleConverter:com.scriptographer.ai.StrokeStyle
 com.scriptographer.script.LayoutConverter:java.awt.LayoutManager
