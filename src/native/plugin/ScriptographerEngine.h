@@ -47,7 +47,6 @@ public:
 	AIDictKey m_artHandleKey;
 	AIDictKey m_docReflowKey;
 
-public:
 	/*
 	 * Opaque JVM handles to Java classes, methods and objects required for
 	 * Java reflection.  These are computed and cached during initialization.
