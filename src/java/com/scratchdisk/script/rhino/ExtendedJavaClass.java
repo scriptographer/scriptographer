@@ -178,8 +178,8 @@ public class ExtendedJavaClass extends NativeJavaClass {
 					result = proto.get(name, start);
 			}
 		}
-		// Throw exception again, if nothing was found.
-		if (result == ScriptableObject.NOT_FOUND && exc != null)
+		// Throw exception again, if nothing was found and the class was sealed.
+		if (properties == null && result == ScriptableObject.NOT_FOUND && exc != null)
 			throw exc;
 		return result;
 	}
