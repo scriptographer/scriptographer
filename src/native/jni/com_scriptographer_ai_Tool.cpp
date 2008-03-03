@@ -49,9 +49,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tool_hasPressure(JNIEnv *e
 }
 
 /*
- * int getIdleEventInterval()
+ * int getEventInterval()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_getIdleEventInterval(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_getEventInterval(JNIEnv *env, jobject obj) {
 	try {
 		AIToolHandle tool = gEngine->getToolHandle(env, obj);
 		AIToolTime interval;
@@ -62,9 +62,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_getIdleEventInterval(JNIE
 }
 
 /*
- * void setIdleEventInterval(int interval)
+ * void setEventInterval(int interval)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setIdleEventInterval(JNIEnv *env, jobject obj, jint interval) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setEventInterval(JNIEnv *env, jobject obj, jint interval) {
 	try {
 		AIToolHandle tool = gEngine->getToolHandle(env, obj);
 		sAITool->SetToolNullEventInterval(tool,  (AIToolTime) (interval >= 0 ? double(interval) / 1000.0 : -1));
