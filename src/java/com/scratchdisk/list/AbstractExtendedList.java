@@ -39,11 +39,12 @@ public abstract class AbstractExtendedList extends AbstractList
 	implements ExtendedList {
 
 	public Object getFirst() {
-		return get(0);
+		return size() > 0 ? get(0) : null;
 	}
 	
 	public Object getLast() {
-		return get(size() - 1);
+		int size = size();
+		return size > 0 ? get(size - 1) : null;
 	}
 
 	public Object removeFirst() {
