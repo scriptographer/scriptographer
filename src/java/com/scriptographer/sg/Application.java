@@ -35,6 +35,7 @@ import java.io.File;
 
 import com.scriptographer.CommitManager;
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ai.FontList;
 
 /**
  * @author lehni
@@ -53,6 +54,10 @@ public class Application {
 		return ScriptographerEngine.getApplicationRevision();
 	}
 
+	public FontList getFonts() {
+		return FontList.getInstance();
+	}
+	
 	public void commit() {
 		CommitManager.commit(null);
 	}
@@ -85,7 +90,7 @@ public class Application {
 	/**
 	 * 
 	 * @param current the current slider position
-	 * @param max the maximum slidper position
+	 * @param max the maximum slider position
 	 * @return
 	 */
 	public boolean updateProgress(long current, long max) {
