@@ -60,8 +60,9 @@ public class FillStyle implements Style {
 	}
 
 	public FillStyle(ArgumentReader reader) {
+		Color color = (Color) reader.readObject("color", Color.class);
 		init(
-				(Color) reader.readObject("color", Color.class),
+				color != null ? color : Color.NONE,
 				reader.readBoolean("overprint")
 		);
 	}

@@ -80,8 +80,9 @@ public class StrokeStyle implements Style {
 	}
 
 	public StrokeStyle(ArgumentReader reader) {
+		Color color = (Color) reader.readObject("color", Color.class);
 		init(
-				(Color) reader.readObject("color", Color.class),
+				color != null ? color : Color.NONE,
 				reader.readBoolean("overprint"),
 				reader.readFloat("width"),
 				reader.readFloat("dashOffset"),
