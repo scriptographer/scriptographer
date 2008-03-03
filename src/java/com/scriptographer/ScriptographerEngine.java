@@ -423,38 +423,48 @@ public class ScriptographerEngine {
 
 	private static long progressCurrent;
 	private static long progressMax;
-	private static boolean progressAutomatic;
+	private static boolean progressAutomatic = false;
+	private static boolean progressVisible = false;
 
 	private static native void nativeSetProgressText(String text);
 
 	public static void showProgress(String text) {
+		progressVisible = true;
 		progressAutomatic = true;
 		progressCurrent = 0;
 		progressMax = 1 << 8;
-		nativeUpdateProgress(progressCurrent, progressMax);
+		nativeUpdateProgress(progressCurrent, progressMax, true);
 		nativeSetProgressText(text);
 	}
 	
-	private static native boolean nativeUpdateProgress(long current, long max);
+	private static native boolean nativeUpdateProgress(long current, long max, boolean visible);
 
 	public static  boolean updateProgress(long current, long max) {
-		progressCurrent = current;
-		progressMax = max;
-		progressAutomatic = false;
-		boolean ret = nativeUpdateProgress(current, max);
+		if (progressVisible) {
+			progressCurrent = current;
+			progressMax = max;
+			progressAutomatic = false;
+		}
+		boolean ret = nativeUpdateProgress(current, max, progressVisible);
 		return !allowScriptCancelation || ret;
 	}
 
 	public static boolean updateProgress() {
-		boolean ret = nativeUpdateProgress(progressCurrent, progressMax);
-		if (progressAutomatic) {
+		boolean ret = nativeUpdateProgress(progressCurrent, progressMax, progressVisible);
+		if (progressVisible && progressAutomatic) {
 			progressCurrent++;
 			progressMax++;
 		}
 		return !allowScriptCancelation || ret;
 	}
 
-	public static native void closeProgress();
+	private static native void nativeCloseProgress();
+
+	public static void closeProgress() {
+		progressVisible  = false;
+		nativeCloseProgress();
+	}
+	
 
 	/**
 	 * @jshide
