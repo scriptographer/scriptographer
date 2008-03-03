@@ -113,9 +113,9 @@ public class Annotator extends NativeObject {
 			float width, float height);
 	
 	public void dispose() {
-		// see wether we're still linked:
+		// see whether we're still linked:
 		if (annotators.get(handle) == this) {
-			// if so remove it and put it to the list of unsed timers, for later
+			// if so remove it and put it to the list of unused timers, for later
 			// recycling
 			annotators.remove(handle);
 			getUnusedAnnotators().add(this);
@@ -146,6 +146,7 @@ public class Annotator extends NativeObject {
 
 	public void setOnDraw(Callable onDraw) {
 		this.onDraw = onDraw;
+		this.setActive(onDraw != null);
 	}
 	
 	public Callable getOnDraw() {
