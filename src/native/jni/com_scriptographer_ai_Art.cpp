@@ -784,7 +784,22 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Art_transform(JNIEnv *env, job
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealMatrix mx;
 		gEngine->convertMatrix(env, matrix, &mx);
-		// according to adobe sdk manual: linescale = sqrt(scaleX) * sqrt(scaleY)
+
+/*
+		// Modify the matrix so that it 'acts' on the center of the selected object
+		// TODO: Introduce reg points?
+		AIRealRect bounds;
+	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &bounds);
+		DEFINE_POINT(center,
+			(bounds.left + bounds.right) / 2,
+			(bounds.top + bounds.bottom) / 2);
+
+		AIRealMatrix m;
+		sAIRealMath->AIRealMatrixSetTranslate(&m, -center.h, -center.v);
+		sAIRealMath->AIRealMatrixConcat(&m, &mx, &m);
+		sAIRealMath->AIRealMatrixConcatTranslate(&m, center.h, center.v);
+*/
+		// According to adobe sdk manual: linescale = sqrt(scaleX) * sqrt(scaleY)
 		AIReal sx, sy;
 		sAIRealMath->AIRealMatrixGetScale(&mx, &sx, &sy);
 		AIReal lineScale = sAIRealMath->AIRealSqrt(sx) * sAIRealMath->AIRealSqrt(sy);
