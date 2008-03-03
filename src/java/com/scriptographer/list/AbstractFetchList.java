@@ -36,7 +36,7 @@ import com.scratchdisk.list.ExtendedList;
 
 /**
  * AbstractFetchList defines fetch and fetch(fromIndex, toIndex), which are called
- * everytime the a range of elements needs to be available immediatelly.
+ * every time the a range of elements needs to be available immediately.
  * Subclassed by SegmentList and CurveList
  * 
  * @author lehni
