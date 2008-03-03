@@ -53,6 +53,11 @@ public class Tool extends NativeObject {
 	private static IntMap tools = null;
 
 	private float distanceThreshold;
+	
+	private Scope scope;
+	private Event event = new Event();
+
+	private boolean firstMove = true;
 
 	protected Tool(int handle, int index) {
 		super(handle);
@@ -60,11 +65,6 @@ public class Tool extends NativeObject {
 		// See resourceIds.h:
 		this.cursor = index + 128;
 	}
-	
-	private Scope scope;
-
-	private Event event = new Event();
-	private Object[] eventArgs = new Object[] { event };
 	
 	public void compileScript(File file) throws ScriptException, IOException {
 		onInit = null;
@@ -228,11 +228,9 @@ public class Tool extends NativeObject {
 		this.onMouseDown = onMouseDown;
 	}
 	
-	protected void onMouseDown(float x, float y, int pressure) throws Exception {
-		if (scope != null && onMouseDown != null) {
-			event.setValues(x, y, pressure, 0, true);
-			ScriptographerEngine.invoke(onMouseDown, this, eventArgs);
-		}
+	protected void onMouseDown(Event event) throws Exception {
+		if (scope != null && onMouseDown != null)
+			ScriptographerEngine.invoke(onMouseDown, this, new Object[] { event });
 	}
 
 	private Callable onMouseDrag;
@@ -245,15 +243,12 @@ public class Tool extends NativeObject {
 		this.onMouseDrag = onMouseDrag;
 	}
 	
-	protected void onMouseDrag(float x, float y, int pressure) throws Exception {
-		if (scope != null && onMouseDrag != null) {
-			if (event.setValues(x, y, pressure, distanceThreshold, false))
-				ScriptographerEngine.invoke(onMouseDrag, this, eventArgs);
-		}
+	protected void onMouseDrag(Event event) throws Exception {
+		if (scope != null && onMouseDrag != null)
+			ScriptographerEngine.invoke(onMouseDrag, this, new Object[] { event });
 	}
 
 	private Callable onMouseMove;
-	private boolean firstMove;
 
 	public Callable getOnMouseMove() {
 		return onMouseMove;
@@ -263,13 +258,10 @@ public class Tool extends NativeObject {
 		this.onMouseMove = onMouseMove;
 	}
 	
-	protected void onMouseMove(float x, float y, int pressure) throws Exception {
-		if (scope != null && onMouseMove != null) {
-			// Make sure the first move event initializes both delta and count.
-			if (event.setValues(x, y, pressure, distanceThreshold, firstMove))
-				ScriptographerEngine.invoke(onMouseMove, this, eventArgs);
-			firstMove = false;
-		}
+	protected void onMouseMove(Event event) throws Exception {
+		// Make sure the first move event initializes both delta and count.
+		if (scope != null && onMouseMove != null)
+			ScriptographerEngine.invoke(onMouseMove, this, new Object[] { event });
 	}
 
 	private Callable onMouseUp;
@@ -282,12 +274,9 @@ public class Tool extends NativeObject {
 		this.onMouseUp = onMouseUp;
 	}
 		
-	protected void onMouseUp(float x, float y, int pressure) throws Exception {
-		if (scope != null && onMouseUp != null) {
-			event.setValues(x, y, pressure, 0, true);
-			ScriptographerEngine.invoke(onMouseUp, this, eventArgs);
-			firstMove = true;
-		}
+	protected void onMouseUp(Event event) throws Exception {
+		if (scope != null && onMouseUp != null)
+			ScriptographerEngine.invoke(onMouseUp, this, new Object[] { event });
 	}
 
 	private static final int EVENT_EDIT_OPTIONS = 0;
@@ -332,19 +321,33 @@ public class Tool extends NativeObject {
 					case EVENT_EDIT_OPTIONS:
 						tool.onOptions();
 						break;
-					case EVENT_TRACK_CURSOR:
-						tool.onMouseMove(x, y, pressure);
-						// tell the native side to update the cursor
-						return tool.cursor;
 					case EVENT_MOUSE_DOWN:
-						tool.onMouseDown(x, y, pressure);
+						tool.event.setValues(x, y, pressure, 0, true);
+						tool.onMouseDown(tool.event);
 						break;
 					case EVENT_MOUSE_DRAG:
-						tool.onMouseDrag(x, y, pressure);
+						if (tool.event.setValues(x, y, pressure, tool.distanceThreshold, false))
+							tool.onMouseDrag(tool.event);
 						break;
 					case EVENT_MOUSE_UP:
-						tool.onMouseUp(x, y, pressure);
+						tool.event.setValues(x, y, pressure, 0, false);
+						try {
+							tool.onMouseUp(tool.event);
+						} finally {
+							// Start with new values for EVENT_TRACK_CURSOR
+							tool.event.setValues(x, y, pressure, 0, true);
+							tool.firstMove = true;
+						}
 						break;
+					case EVENT_TRACK_CURSOR:
+						try {
+							if (tool.event.setValues(x, y, pressure, tool.distanceThreshold, tool.firstMove))
+								tool.onMouseMove(tool.event);
+						} finally {
+							tool.firstMove = false;
+						}
+						// Tell the native side to update the cursor
+						return tool.cursor;
 					case EVENT_SELECT:
 						tool.onSelect();
 						break;
