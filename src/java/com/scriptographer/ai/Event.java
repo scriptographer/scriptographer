@@ -35,32 +35,68 @@ package com.scriptographer.ai;
  * @author lehni
  */
 public class Event {
-	private Point point;
+	private Point position;
+	private Point lastPosition;
+	private Point delta;
+	private int count;
+	
 	private double pressure;
 	
 	protected Event() {
-		point = new Point();
 	}
 	
-	protected void setValues(float x, float y, int pressure) {
-		point.set(x, y);
-		this.pressure = pressure / 255.0;
+	protected boolean setValues(float x, float y, int pressure,
+			float deltaThreshold, boolean start) {
+		if (deltaThreshold == 0 || position.getDistance(x, y) >= deltaThreshold) {
+			if (start) {
+				lastPosition = null;
+				delta = new Point(0, 0);
+				count = 0;
+			} else {
+				lastPosition = position;
+				delta.set(x - position.x, y - position.y);
+				count++;
+			}
+			position = new Point(x, y);
+			this.pressure = pressure / 255.0;
+			return true;
+		}
+		return false;
 	}
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer(16);
-		buf.append("{ point: ").append(point.toString());
+		buf.append("{ point: ").append(position.toString());
 		buf.append(", pressure: ").append(pressure);
 		buf.append(" }");
 		return buf.toString();
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public Point getPoint() {
-		return new Point(point);
+		return new Point(position);
+	}
+
+	public Point getPosition() {
+		return new Point(position);
+	}
+
+	public Point getLastPosition() {
+		return new Point(lastPosition);
+	}
+
+	public Point getDelta() {
+		return new Point(delta);
 	}
 
 	public double getPressure() {
 		return pressure;
+	}
+
+	public int getCount() {
+		return count;
 	}
 	
 	// TODO: Consider adding these, present since CS2

@@ -52,6 +52,8 @@ public class Tool extends NativeObject {
 
 	private static IntMap tools = null;
 
+	private float distanceThreshold;
+
 	protected Tool(int handle, int index) {
 		super(handle);
 		this.index = index;
@@ -74,13 +76,16 @@ public class Tool extends NativeObject {
 		onMouseUp = null;
 		onMouseDrag = null;
 		onMouseMove = null;
+		// Tell onMouseMove to initialize event.delta and event.count
+		firstMove = true;
+		setDistanceThreshold(0);
+		setEventInterval(-1);
 		ScriptEngine engine = ScriptEngine.getEngineByFile(file);
 		if (engine != null) {
 			// Execute in the tool's scope so setIdleEventInterval can be called
 			scope = engine.getScope(this);
 			ScriptographerEngine.execute(file, scope);
 			if (scope != null) {
-				setIdleEventInterval(-1);
 				try {
 					onInit();
 				} catch (ScriptException e) {
@@ -111,10 +116,28 @@ public class Tool extends NativeObject {
 
 	public native boolean hasPressure();
 	
-	// interval time in milliseconds
-	public native int getIdleEventInterval();
+	// Interval time in milliseconds
+	public native int getEventInterval();
 	
-	public native void setIdleEventInterval(int interval);
+	public native void setEventInterval(int interval);
+
+	/**
+	 * @deprecated use Tool#setEventInterval instead.
+	 */
+	public void setIdleEventInterval(int interval) {
+		setEventInterval(interval);
+	}
+
+	public float getDistanceThreshold() {
+		return distanceThreshold;
+	}
+
+	/**
+	 * @param threshold
+	 */
+	public void setDistanceThreshold(float threshold) {
+		distanceThreshold = threshold;
+	}
 
 	private Callable onInit;
 
@@ -207,7 +230,7 @@ public class Tool extends NativeObject {
 	
 	protected void onMouseDown(float x, float y, int pressure) throws Exception {
 		if (scope != null && onMouseDown != null) {
-			event.setValues(x, y, pressure);
+			event.setValues(x, y, pressure, 0, true);
 			ScriptographerEngine.invoke(onMouseDown, this, eventArgs);
 		}
 	}
@@ -224,12 +247,13 @@ public class Tool extends NativeObject {
 	
 	protected void onMouseDrag(float x, float y, int pressure) throws Exception {
 		if (scope != null && onMouseDrag != null) {
-			event.setValues(x, y, pressure);
-			ScriptographerEngine.invoke(onMouseDrag, this, eventArgs);
+			if (event.setValues(x, y, pressure, distanceThreshold, false))
+				ScriptographerEngine.invoke(onMouseDrag, this, eventArgs);
 		}
 	}
 
 	private Callable onMouseMove;
+	private boolean firstMove;
 
 	public Callable getOnMouseMove() {
 		return onMouseMove;
@@ -241,8 +265,10 @@ public class Tool extends NativeObject {
 	
 	protected void onMouseMove(float x, float y, int pressure) throws Exception {
 		if (scope != null && onMouseMove != null) {
-			event.setValues(x, y, pressure);
-			ScriptographerEngine.invoke(onMouseMove, this, eventArgs);
+			// Make sure the first move event initializes both delta and count.
+			if (event.setValues(x, y, pressure, distanceThreshold, firstMove))
+				ScriptographerEngine.invoke(onMouseMove, this, eventArgs);
+			firstMove = false;
 		}
 	}
 
@@ -258,8 +284,9 @@ public class Tool extends NativeObject {
 		
 	protected void onMouseUp(float x, float y, int pressure) throws Exception {
 		if (scope != null && onMouseUp != null) {
-			event.setValues(x, y, pressure);
+			event.setValues(x, y, pressure, 0, true);
 			ScriptographerEngine.invoke(onMouseUp, this, eventArgs);
+			firstMove = true;
 		}
 	}
 
@@ -282,7 +309,7 @@ public class Tool extends NativeObject {
 		"AI Deselect",
 		"AI Reselect"
 	};
-	// hashmap for conversation to unique ids that can be compared with ==
+	// Hashmap for conversation to unique ids that can be compared with ==
 	// instead of .equals
 	private static HashMap events = new HashMap();
 
