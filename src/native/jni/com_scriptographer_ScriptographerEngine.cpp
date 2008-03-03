@@ -108,22 +108,26 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_nativeSetPro
 
 
 /*
- * boolean nativeUpdateProgress(long current, long max)
+ * boolean nativeUpdateProgress(long current, long max, boolean visible)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_nativeUpdateProgress(JNIEnv *env, jclass cls, jlong current, jlong max) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_nativeUpdateProgress(JNIEnv *env, jclass cls, jlong current, jlong max, jboolean visible) {
 	try {
 		if (gEngine->isKeyDown(com_scriptographer_adm_Key_VK_ESCAPE))
 			return false;
-		sAIUser->UpdateProgress(current, max);
-		return !sAIUser->Cancel();
+		if (visible) {
+			sAIUser->UpdateProgress(current, max);
+			return !sAIUser->Cancel();
+		} else {
+			return true;
+		}
 	} EXCEPTION_CONVERT(env);
 	return false;
 }
 
 /*
- * void closeProgress()
+ * void nativeCloseProgress()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_closeProgress(JNIEnv *env, jclass cls) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_nativeCloseProgress(JNIEnv *env, jclass cls) {
 	try {
 		sAIUser->CloseProgress();
 	} EXCEPTION_CONVERT(env);
