@@ -208,7 +208,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 				return Boolean.FALSE;
 		} else if (from instanceof Boolean) {
 			// Convert false to null / undefined for non primitive destination classes.
-			if (from == Boolean.FALSE && !to.isPrimitive())
+			if (!((Boolean) from).booleanValue() && !to.isPrimitive())
 				return Undefined.instance;
 		}
 		return null;
