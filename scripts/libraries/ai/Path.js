@@ -14,7 +14,7 @@ Path.inject(new function() {
 			},
 
 			Rectangle: function(rect, properties) {
-				return set(document.createOval(rect), properties);
+				return set(document.createRectangle(rect), properties);
 			},
 
 			RoundRectangle: function(rect, hor, ver, properties) {
