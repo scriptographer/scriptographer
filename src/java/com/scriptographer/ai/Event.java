@@ -43,6 +43,8 @@ public class Event {
 	private double pressure;
 	
 	protected Event() {
+		// Start with valid values, for mouse move events before the first mouse up.
+		setValues(0, 0, 0, 0, true);
 	}
 	
 	protected boolean setValues(float x, float y, int pressure,
@@ -50,7 +52,7 @@ public class Event {
 		if (deltaThreshold == 0 || position.getDistance(x, y) >= deltaThreshold) {
 			if (start) {
 				lastPosition = null;
-				delta = new Point(0, 0);
+				delta.set(0, 0);
 				count = 0;
 			} else {
 				lastPosition = position;
