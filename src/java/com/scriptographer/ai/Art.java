@@ -294,7 +294,7 @@ public abstract class Art extends DictionaryObject {
 	 */
 	protected static Art wrapHandle(int artHandle, short type, int textType,
 			int docHandle, int dictionaryRef, boolean wrapped) {
-		// first see weather the object was already wrapped before:
+		// first see whether the object was already wrapped before:
 		Art art = null;
 		// only try to use the previous wrapper for this address if the object
 		// was marked wrapped otherwise we might get wrong wrappers for objects

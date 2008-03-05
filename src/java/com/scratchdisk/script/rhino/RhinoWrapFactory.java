@@ -235,7 +235,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 	}
 
 	/**
-	 * Determines weather the class has a zero argument constructor or not.
+	 * Determines whether the class has a zero argument constructor or not.
 	 * A cache is used to speed up lookup.
 	 * 
 	 * @param cls

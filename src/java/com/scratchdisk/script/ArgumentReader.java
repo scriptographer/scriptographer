@@ -213,7 +213,7 @@ public abstract class ArgumentReader {
 	}
 
 	/**
-	 * Determines weather the class has a constructor taking a single map as
+	 * Determines whether the class has a constructor taking a single map as
 	 * argument or not.
 	 * A cache is used to speed up lookup.
 	 * 

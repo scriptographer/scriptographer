@@ -54,7 +54,7 @@ public class ExtendedJavaArray extends NativeJavaArray {
 		if (super.has(name, start)) {
 			result = super.get(name, start);
 		} else if (properties != null && properties.containsKey(name)) {
-			// see wether this object defines the property.
+			// see whether this object defines the property.
 			result = properties.get(name);
 		} else {
 			Scriptable prototype = this.getPrototype();
@@ -66,7 +66,7 @@ public class ExtendedJavaArray extends NativeJavaArray {
 				}
 				result = prototype;
 			} else if (prototype != null) {
-				// if not, see wether the prototype maybe defines it.
+				// if not, see whether the prototype maybe defines it.
 				// NativeJavaObject misses to do so:
 				result = prototype.get(name, start);
 			} else {
