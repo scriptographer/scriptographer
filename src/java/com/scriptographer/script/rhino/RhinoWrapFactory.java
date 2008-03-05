@@ -41,6 +41,14 @@ import com.scriptographer.ai.Style;
  *
  */
 public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFactory {
+	
+	public Object wrap(Context cx, Scriptable scope, Object obj, Class staticType) {
+		// By default, Rhino converts chars to integers. In Scriptographer,
+		// we want a string of length 1:
+        if (staticType == Character.TYPE)
+            return obj.toString();
+		return super.wrap(cx, scope, obj, staticType);
+	}
 
 	public Scriptable wrapCustom(Context cx, Scriptable scope,
 			Object javaObj, Class staticType) {
