@@ -616,7 +616,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_adm_NotificationHandler_onDraw = getMethodID(env, cls_adm_NotificationHandler, "onDraw", "(Lcom/scriptographer/adm/Drawer;)V");
 	
 	cls_adm_Tracker = loadClass(env, "com/scriptographer/adm/Tracker");
-	mid_adm_Tracker_onTrack = getMethodID(env, cls_adm_Tracker, "onTrack", "(Lcom/scriptographer/adm/NotificationHandler;IIIIIICCJ)Z");
+	mid_adm_Tracker_onTrack = getMethodID(env, cls_adm_Tracker, "onTrack", "(Lcom/scriptographer/adm/NotificationHandler;IIIIIIICJ)Z");
 	
 	cls_adm_MenuItem = loadClass(env, "com/scriptographer/adm/MenuItem");
 	mid_adm_MenuItem_wrapHandle = getStaticMethodID(env, cls_adm_MenuItem, "wrapHandle", "(ILjava/lang/String;ILjava/lang/String;)Lcom/scriptographer/adm/MenuItem;");
@@ -2200,8 +2200,8 @@ bool ScriptographerEngine::callOnTrack(jobject handler, ADMTrackerRef tracker) {
 				(jint) tracker, (jint) sADMTracker->GetAction(tracker),
 				(jint) sADMTracker->GetModifiers(tracker), pt.h, pt.v,
 				(jint) sADMTracker->GetMouseState(tracker),
-				(jchar) sADMTracker->GetVirtualKey(tracker),
-				(jint) sADMTracker->GetCharacter(tracker),
+				(jint) sADMTracker->GetVirtualKey(tracker),
+				(jchar) sADMTracker->GetCharacter(tracker),
 				(jlong) sADMTracker->GetTime(tracker));
 	} EXCEPTION_CATCH_REPORT(env);
 	return true;

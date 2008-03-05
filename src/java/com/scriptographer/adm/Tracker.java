@@ -157,7 +157,7 @@ public class Tracker extends NativeObject {
 	// -----------------------------------------------------------------------------
 	// Virtual keys
 	
-	public final static char 
+	public final static int 
 		KEY_UNKNOWN				= 0x0000,
 		KEY_CANCEL				= 0x0001,
 		KEY_ENTER				= 0x0003,
@@ -238,7 +238,7 @@ public class Tracker extends NativeObject {
 	private int modifiers;
 	private Point point = new Point();
 	private int mouseState;
-	private char virtualKey;
+	private int virtualKey;
 	private char character;
 	private long time;
 	
@@ -256,7 +256,7 @@ public class Tracker extends NativeObject {
 	 */
 	protected boolean onTrack(NotificationHandler handler, int handle,
 			int action, int modifiers, int px, int py, int mouseState,
-			char virtualKey, char character, long time) throws Exception {
+			int virtualKey, char character, long time) throws Exception {
 		this.handle = handle;
 		this.action = action;
 		this.modifiers = modifiers;
@@ -293,7 +293,7 @@ public class Tracker extends NativeObject {
 	public static boolean testCurrentModifier(int modifier) {
 		return (getCurrentModifiers() & modifier) != 0;
 	}
-	
+
 	public long getTime() {
 		return time;
 	}
@@ -301,11 +301,11 @@ public class Tracker extends NativeObject {
 	public native void abort();
 
 	public native void releaseMouseCapture();
-	
-	public char getVirtualKey() {
+
+	public int getVirtualKey() {
 		return virtualKey;
 	}
-	
+
 	public char getCharacter() {
 		return character;
 	}
