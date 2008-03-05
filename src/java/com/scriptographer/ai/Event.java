@@ -52,7 +52,7 @@ public class Event {
 		if (deltaThreshold == 0 || position.getDistance(x, y) >= deltaThreshold) {
 			if (start) {
 				lastPosition = null;
-				delta.set(0, 0);
+				delta = new Point();
 				count = 0;
 			} else {
 				lastPosition = position;
