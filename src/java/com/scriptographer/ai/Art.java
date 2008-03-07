@@ -585,10 +585,22 @@ public abstract class Art extends DictionaryObject {
 	public void setBounds(float x, float y, float width, float height) {
 		Rectangle rect = getBounds();
 		Matrix matrix = new Matrix();
-		matrix.scale(width / rect.width, height / rect.height);
-		matrix.translate(x - rect.x, y - rect.y);
+		// Read this from bottom to top:
+		// Translate to new center:
+		matrix.translate(
+				x + width * 0.5f,
+				y + height * 0.5f);
+		// Scale to new Size:
+		matrix.scale(
+				width / rect.width,
+				height / rect.height);
+		// Translate to center:
+		matrix.translate(
+				-(rect.x + rect.width * 0.5f),
+				-(rect.y + rect.height * 0.5f));
+		// Now execute the transformation:
 		transform(matrix);
-		// Always defined now since we're using getBounds above
+		// This is always defined now since we're using getBounds above
 		bounds.update();
 	}
 
@@ -621,7 +633,7 @@ public abstract class Art extends DictionaryObject {
 	public void setPosition(float x, float y) {
 		Point point = getPosition();
 		translate(x - point.x, y - point.y);
-		// Always defined now since we're using getPosition above
+		// This is always defined now since we're using getPosition above
 		position.update();
 	}
 
