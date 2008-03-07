@@ -250,10 +250,21 @@ public class Point {
 		return new Point(this.x * x, this.y * y);
 	}
 
-	public Point multiply(float scale) {
-		return new Point(x * scale, y * scale);
+	public Point multiply(float value) {
+		return new Point(x * value, y * value);
 	}
 
+	public Point divide(Point pt) {
+		return new Point(x / pt.x, y / pt.y);
+	}
+
+	public Point divide(float x, float y) {
+		return new Point(this.x / x, this.y / y);
+	}
+
+	public Point divide(float value) {
+		return new Point(x / value, y / value);
+	}
 	/**
 	 * Checks if the point is within a given distance of another point
 	 * 
@@ -303,7 +314,7 @@ public class Point {
 	 * @return
 	 */
 	public float getDistance(Point pt) {
-		return getDistance(pt.x, (float) pt.y);
+		return getDistance(pt.x, pt.y);
 	}
 
 	public float getDistanceSquared(float px, float py) {
