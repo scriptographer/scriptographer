@@ -35,8 +35,8 @@ package com.scriptographer.ai;
  * @author lehni
  */
 public class Event {
-	private Point position;
-	private Point lastPosition;
+	private Point point;
+	private Point lastPoint;
 	private Point delta;
 	private int count;
 	
@@ -49,17 +49,17 @@ public class Event {
 	
 	protected boolean setValues(float x, float y, int pressure,
 			float deltaThreshold, boolean start) {
-		if (deltaThreshold == 0 || position.getDistance(x, y) >= deltaThreshold) {
+		if (deltaThreshold == 0 || point.getDistance(x, y) >= deltaThreshold) {
 			if (start) {
-				lastPosition = null;
+				lastPoint = null;
 				delta = new Point();
 				count = 0;
 			} else {
-				lastPosition = position;
-				delta.set(x - position.x, y - position.y);
+				lastPoint = point;
+				delta.set(x - point.x, y - point.y);
 				count++;
 			}
-			position = new Point(x, y);
+			point = new Point(x, y);
 			this.pressure = pressure / 255.0;
 			return true;
 		}
@@ -68,25 +68,18 @@ public class Event {
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer(16);
-		buf.append("{ point: ").append(position.toString());
+		buf.append("{ point: ").append(point.toString());
 		buf.append(", pressure: ").append(pressure);
 		buf.append(" }");
 		return buf.toString();
 	}
 
-	/**
-	 * @deprecated
-	 */
 	public Point getPoint() {
-		return new Point(position);
+		return new Point(point);
 	}
 
-	public Point getPosition() {
-		return new Point(position);
-	}
-
-	public Point getLastPosition() {
-		return new Point(lastPosition);
+	public Point getLastPoint() {
+		return new Point(lastPoint);
 	}
 
 	public Point getDelta() {
