@@ -44,6 +44,7 @@ import com.scriptographer.ai.RGBColor;
 public class ColorConverter extends ArgumentConverter {
 
 	public Object convert(ArgumentReader reader, Object from) {
+		// TODO: gradient & pattern color
 		if (reader.isArray()) {
 			int size = reader.size();
 			if (size == 4) {
