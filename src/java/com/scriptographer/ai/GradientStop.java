@@ -167,4 +167,9 @@ public class GradientStop implements Commitable {
 	public int getIndex() {
 		return index;
 	}
+
+	public boolean equals(Object obj) {
+		// TODO: Implement!
+		return obj == this;
+	}
 }

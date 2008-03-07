@@ -90,4 +90,9 @@ public class Gradient extends NativeWrapper {
 		// make super.remove() public
 		return super.remove();
 	}
+
+	public boolean equals(Object obj) {
+		// TODO: Implement!
+		return obj == this;
+	}
 }

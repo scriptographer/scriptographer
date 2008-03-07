@@ -77,8 +77,19 @@ public class GradientColor extends Color {
 	}
 
 	public boolean equals(Object obj) {
-		// TODO: Implement!
-		return obj == this;
+		if (obj == this)
+			return true;
+		if (obj instanceof GradientColor) {
+			GradientColor color = (GradientColor) obj;
+			return origin == color.origin
+				&& angle == color.angle
+				&& length == color.length
+				&& matrix.equals(color.matrix)
+				&& hiliteAngle == color.hiliteAngle
+				&& hiliteLength == color.hiliteLength
+				&& gradient.equals(color.gradient);
+		}
+		return false;
 	}
 
 	public float[] getComponents() {
