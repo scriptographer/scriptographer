@@ -33,10 +33,10 @@ package com.scriptographer.adm;
 
 import java.awt.Dimension;
 import java.util.HashMap;
-import java.util.StringTokenizer;
 
 import com.scratchdisk.script.Callable;
 import com.scriptographer.ScriptographerEngine; 
+import com.scriptographer.ScriptographerException;
 
 /**
  * @author lehni
@@ -400,7 +400,7 @@ public abstract class Item extends Component {
 				onResize(deltaX, deltaY);
 			} catch (Exception e) {
 				// TODO: deal with Exception...
-				throw new RuntimeException(e);
+				throw new ScriptographerException(e);
 			}
 		}
 	}

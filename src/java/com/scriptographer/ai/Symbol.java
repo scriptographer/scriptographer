@@ -45,11 +45,11 @@ public class Symbol extends NativeWrapper {
 
 	private static native int nativeCreate(int artHandle, boolean listed);
 	
-	public Symbol(Art item, boolean listed) {
+	public Symbol(Item item, boolean listed) {
 		super(nativeCreate(item != null ? item.handle : 0, listed), true);
 	}
 	
-	public Symbol(Art item) {
+	public Symbol(Item item) {
 		this(item, true);
 	}
 	
@@ -66,18 +66,18 @@ public class Symbol extends NativeWrapper {
 	public native void setName(String name);
 
 	/**
-	 * Returns the symbol definition. The art returned cannot be edited, just
+	 * Returns the symbol definition. The item returned cannot be edited, just
 	 * examined or duplicated
 	 * @return
 	 */
-	public native Art getDefinition();
+	public native Item getDefinition();
 
 	/**
 	 * Copy the item as the new symbol definition. Any existing
 	 * instances of the symbol will be updated
 	 * @param item
 	 */
-	public native void setDefinition(Art item);
+	public native void setDefinition(Item item);
 
 	public native boolean isValid();
 

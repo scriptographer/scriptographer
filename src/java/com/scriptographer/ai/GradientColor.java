@@ -93,15 +93,15 @@ public class GradientColor extends Color {
 	}
 
 	public float[] getComponents() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Cannot convert gradient to components");
 	}
 
 	public java.awt.Color toAWTColor() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Cannot convert gradient to AWT color");
 	}
 	
 	public void setAlpha(float alhpa) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Cannot set alpha on gradient");
 	}
 
 	public float getAngle() {

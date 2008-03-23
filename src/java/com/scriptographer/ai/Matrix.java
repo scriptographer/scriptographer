@@ -178,7 +178,7 @@ public class Matrix {
 	}
 	
 	/**
-	 * Checks wether the matrix is an identity. Identity matrices are equal to
+	 * Checks whether the matrix is an identity. Identity matrices are equal to
 	 * their inversion.
 	 * 
 	 * @return true if the matrix is an identity, false otherwise
@@ -188,7 +188,7 @@ public class Matrix {
 	}
 
 	/**
-	 * Checks wether the matrix is singular or not. Singular matrices cannot be
+	 * Checks whether the matrix is singular or not. Singular matrices cannot be
 	 * inverted.
 	 * 
 	 * @return true if the matrix is singular, false otherwise

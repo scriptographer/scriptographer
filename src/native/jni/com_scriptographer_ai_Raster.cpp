@@ -49,7 +49,7 @@ struct Raster_Data {
 Raster_Data *Raster_getData(JNIEnv *env, jobject raster, AIArtHandle art) {
 	Raster_Data *data = (Raster_Data *) gEngine->getIntField(env, raster, gEngine->fid_ai_Raster_data);
 	// match against version
-	int version = gEngine->getIntField(env, raster, gEngine->fid_ai_Art_version);
+	int version = gEngine->getIntField(env, raster, gEngine->fid_ai_Item_version);
 	if ( data == NULL || data->version != version) {
 		// init a new data struct now:
 		if ( data == NULL) {
@@ -240,7 +240,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *e
 			// convert the raster by rasterizing it again and then exchange the
 			// old art by the new one:
 			// TODO: check wether the old art needs to be removed?
-			art = Art_rasterize(art, (AIRasterizeType) type, 0, 0, scaledWidth, scaledHeight);
+			art = Item_rasterize(art, (AIRasterizeType) type, 0, 0, scaledWidth, scaledHeight);
 			// remove the raster info because it has changed now...
 			Raster_deleteData(env, obj);
 		} else {
@@ -508,7 +508,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeCreate(JNIEnv *en
 				strcasecmp(ext, "tga") == 0) {
 				art = PlacedItem_place(env, NULL, file, false);
 				// in case the newly created object is not a raster, remove it again
-				short type = Art_getType(art);
+				short type = Item_getType(art);
 				if (type != kRasterArt) {
 					sAIArt->DisposeArt(art);
 					art = NULL;

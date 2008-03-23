@@ -44,7 +44,7 @@ using namespace ATE;
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_nativeCreate(JNIEnv *env, jclass cls, jshort orient, jint artHandle) {
 	AIArtHandle art = NULL;
 	short paintOrder;
-	AIArtHandle artInsert = Art_getInsertionPoint(&paintOrder);
+	AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);
 	sAITextFrame->NewInPathText(paintOrder, artInsert, (AITextOrientation) orient, (AIArtHandle) artHandle, NULL, false, &art);
 	if (art == NULL)
 		throw new StringException("Cannot create text object. Please make sure there is an open document.");

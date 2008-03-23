@@ -43,7 +43,7 @@
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SymbolItem_nativeCreate(JNIEnv *env, jclass cls, jint symbolHandle, jobject matrix) {
 	try {
 		short paintOrder;
-		AIArtHandle artInsert = Art_getInsertionPoint(&paintOrder);
+		AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);
 		AIRealMatrix mx;
 		gEngine->convertMatrix(env, matrix, &mx);
 		// harden the matrix as symbols use hard matrixes internaly

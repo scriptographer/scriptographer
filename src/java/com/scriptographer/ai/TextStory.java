@@ -52,7 +52,7 @@ public class TextStory extends NativeObject {
 	private native int nativeGetRange();
 
 	public TextRange getRange() {
-		// once a range object is created, allways return the same reference
+		// once a range object is created, always return the same reference
 		// and swap handles instead. like this references in JS remain...
 		if (range == null) {
 			range = new TextRange(nativeGetRange(), document);

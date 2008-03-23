@@ -38,7 +38,7 @@ import com.scratchdisk.script.ArgumentReader;
 /**
  * A Rectangle specifies an area that is enclosed by it's top-left point (x, y),
  * its width, and its height. It should not be confused with a rectangular path,
- * it is not an art object.
+ * it is not an item.
  * 
  * @author lehni
  */

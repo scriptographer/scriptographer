@@ -91,7 +91,7 @@ public class TextRange extends NativeObject implements Commitable {
 
 	// Once a range object is created, always return the same reference
 	// and swap handles instead. like this references in JS remain...
-	public void changeHandle(int newHandle) {
+	protected void changeHandle(int newHandle) {
 		release(); // release old handle
 		handle = newHandle;
 		version = CommitManager.version;

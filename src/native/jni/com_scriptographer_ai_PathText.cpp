@@ -43,7 +43,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__SI(JNIE
 	AIArtHandle art = NULL;
 
 	short paintOrder;
-	AIArtHandle artInsert = Art_getInsertionPoint(&paintOrder);
+	AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);
 	sAITextFrame->NewOnPathText(paintOrder, artInsert, (AITextOrientation) orient, (AIArtHandle) artHandle, 0, -1, NULL, false, &art);
 	if (art == NULL)
 		throw new StringException("Cannot create text object. Please make sure there is an open document.");
@@ -58,7 +58,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__SIFF(JN
 	AIArtHandle art = NULL;
 
 	short paintOrder;
-	AIArtHandle artInsert = Art_getInsertionPoint(&paintOrder);
+	AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);
 	DEFINE_POINT(pt, x, y);
 	sAITextFrame->NewOnPathText2(paintOrder, artInsert, (AITextOrientation) orient, (AIArtHandle) artHandle, pt, NULL, false, &art);
 	if (art == NULL)

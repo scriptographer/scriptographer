@@ -32,6 +32,7 @@ package com.scriptographer.adm;
 import java.io.IOException;
 
 import com.scriptographer.ScriptographerEngine; 
+import com.scriptographer.ScriptographerException;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.ConversionUtils;
 
@@ -48,11 +49,11 @@ public class ListEntry extends NotificationHandler {
 	public ListEntry(ListItem list, int index) {
 		if (!(this instanceof HierarchyListEntry)
 				&& list instanceof HierarchyList)
-			throw new RuntimeException(
+			throw new ScriptographerException(
 					"Use HierarchyListEntry objects for HierarchyList");
 		handle = nativeCreate(list, index, list.getUniqueId());
 		if (handle == 0)
-			throw new RuntimeException("Cannot create list entry");
+			throw new ScriptographerException("Cannot create list entry");
 		this.list = list;
 	}
 

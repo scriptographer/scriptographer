@@ -32,32 +32,32 @@
 package com.scriptographer.ai;
 
 /**
- * A Point class to wrap an art object and control its position.
+ * A Point class to wrap an item and control its position.
  *
  * @author lehni
  *
  */
-public class ArtPoint extends Point {
-	protected Art art;
+public class ItemPoint extends Point {
+	protected Item item;
 	protected int version = -1;
 
-	protected ArtPoint(Art art) {
-		this.art = art;
+	protected ItemPoint(Item item) {
+		this.item = item;
 		update();
 	}
 
 	protected void update() {
-		if (version != art.version) {
-			Point position = art.nativeGetPosition();
+		if (version != item.version) {
+			Point position = item.nativeGetPosition();
 			x = position.x;
 			y = position.y;
-			version = art.version;
+			version = item.version;
 		}
 	}
 
 	public void set(float x, float y) {
 		// This updates the point object itself too:
-		art.setPosition(x, y);
+		item.setPosition(x, y);
 	}
 
 	public void setX(float x) {

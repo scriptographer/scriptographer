@@ -99,8 +99,8 @@ public class Loader {
 
 	/**
 	 * To be called from the native environment. This replaces the static
-	 * JNI_LoadClass, that allways depends on the initial loader. This one
-	 * allows reloading classes from a realoaded classpath for reflection.
+	 * JNI_LoadClass, that always depends on the initial loader. This one
+	 * allows reloading classes from a reloaded classpath for reflection.
 	 * 
 	 * @param name in the slash-format (e.g. "java/lang/Object")
 	 * @return the loaded class

@@ -33,10 +33,13 @@ package com.scriptographer.ai;
 
 import java.awt.Shape;
 import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.util.SoftIntMap;
+import com.scriptographer.ScriptographerException;
 
 /**
  * @author lehni
@@ -46,7 +49,7 @@ public class Document extends DictionaryObject {
 	// TODO: move this to app.DIALOG_* and have a global function set /
 	// getDialogStatus, that controls the general handling of dialogs on a
 	// global setting level. remove the parameter from the constructors.
-	
+
 	// ActionDialogStatus
 	public static final int
 		DIALOG_NONE = 0,
@@ -135,7 +138,7 @@ public class Document extends DictionaryObject {
 	public static native void endExecution();
 
 	/**
-	 * Activates this document, so all newly created art objects will be placed
+	 * Activates this document, so all newly created items will be placed
 	 * in it.
 	 * 
 	 * @param focus When set to true, the document window is brought to the
@@ -147,7 +150,7 @@ public class Document extends DictionaryObject {
 	private native void activate(boolean focus, boolean forCreation);
 
 	/**
-	 * Activates this document, so all newly created art objects will be placed
+	 * Activates this document, so all newly created items will be placed
 	 * in it.
 	 * 
 	 * @param focus When set to <code>true</code>, the document window is
@@ -302,9 +305,9 @@ public class Document extends DictionaryObject {
 	 * @param linked when set to <code>true</code>, the placed object is a
 	 *        link to the file, otherwise it is embedded within the document
 	 */
-	public native Art place(File file, boolean linked);
+	public native Item place(File file, boolean linked);
 	
-	public Art place(File file) {
+	public Item place(File file) {
 		return place(file, true);
 	}
 
@@ -330,44 +333,95 @@ public class Document extends DictionaryObject {
 	}
 
 	/**
-	 * Checks wether the document contains any selected items.
+	 * Checks whether the document contains any selected items.
 	 * 
 	 * @return <code>true</code> if the document contains selected items,
 	 *         false otherwise.
 	 */	
 	public native boolean hasSelectedItems();
 
-	public native ArtSet getSelectedItems();
+	public native ItemSet getSelectedItems();
 	
 	/**
 	 * Deselects all the selected items in the document.
 	 */
 	public native void deselectAll();
 	
-	public native ArtSet getMatchingItems(Class type, Map attributes);
+	private native ItemSet nativeGetMatchingItems(Class type, Map attributes);
 
-	public ArtSet getPathItems() {
-		return getMatchingItems(Path.class, (Map) null);
+	private static final HashMap attributeNames = new HashMap();
+
+	static {
+		attributeNames.put("selected", Item.ATTRIBUTE_SELECTED);
+		attributeNames.put("locked", Item.ATTRIBUTE_LOCKED);
+		attributeNames.put("hidden", Item.ATTRIBUTE_HIDDEN);
+		attributeNames.put("fullySelected", Item.ATTRIBUTE_FULLY_SELECTED);
+		attributeNames.put("expanded", Item.ATTRIBUTE_EXPANDED);
+		attributeNames.put("targeted", Item.ATTRIBUTE_TARGETED);
+		attributeNames.put("clipmask", Item.ATTRIBUTE_IS_CLIPMASK);
+		attributeNames.put("textwrap", Item.ATTRIBUTE_IS_TEXTWRAP);
+		attributeNames.put("selectedToplevelGroups", Item.ATTRIBUTE_SELECTED_TOPLEVEL_GROUPS);
+		attributeNames.put("selectedLayers", Item.ATTRIBUTE_SELECTED_LAYERS);
+		attributeNames.put("selectedToplevelWithPaint", Item.ATTRIBUTE_SELECTED_TOPLEVEL_WITH_PAINT);
+		attributeNames.put("simpleStyle", Item.ATTRIBUTE_HAS_SIMPLE_STYLE);
+		attributeNames.put("activeStyle", Item.ATTRIBUTE_HAS_ACTIVE_STYLE);
+		attributeNames.put("compoundPathChild", Item.ATTRIBUTE_PART_OF_COMPOUND);
+		attributeNames.put("dirtyStyle", Item.ATTRIBUTE_STYLE_IS_DIRTY);
 	}
 
-	public ArtSet getCompoundPathItems() {
-		return getMatchingItems(CompoundPath.class, (Map) null);
+	public ItemSet getMatchingItems(Class type, Map attributes) {
+		// Convert the attributes list to a new HashMap containing only
+		// integer -> boolean pairs.
+		HashMap converted = new HashMap();
+		for (Iterator it = attributes.entrySet().iterator(); it.hasNext();) {
+			Map.Entry entry = (Map.Entry) it.next();
+			Object key = entry.getKey();
+			Object value = entry.getValue();
+			if (value instanceof Number) {
+				value = new Boolean(((Number) value).intValue() != 0);
+			} else if (!(value instanceof Boolean)) {
+				value = Boolean.FALSE;
+			}
+			if (key instanceof String) {
+				Object attribute = attributeNames.get(key);
+				if (attribute != null) {
+					converted.put(attribute, value);
+				} else {
+					throw new ScriptographerException("Undefined attribute: " + key);
+				}
+			} else if (key instanceof Number) {
+				converted.put(key, value);
+			}
+		}
+		return nativeGetMatchingItems(type, converted);
 	}
 
-	public ArtSet getGroupItems() {
-		return getMatchingItems(Group.class, (Map) null);
+	public ItemSet getMatchingItems(Class type) {
+		return getMatchingItems(type, null);
+	}
+	
+	public ItemSet getPaths() throws ScriptographerException {
+		return getMatchingItems(Path.class);
 	}
 
-	public ArtSet getTextItems() {
-		return getMatchingItems(TextFrame.class, (Map) null);
+	public ItemSet getCompoundPaths() throws ScriptographerException {
+		return getMatchingItems(CompoundPath.class);
 	}
 
-	public ArtSet getRasterItems() {
-		return getMatchingItems(Raster.class, (Map) null);
+	public ItemSet getGroups() throws ScriptographerException {
+		return getMatchingItems(Group.class);
+	}
+
+	public ItemSet getTextFrames() throws ScriptographerException {
+		return getMatchingItems(TextFrame.class);
+	}
+
+	public ItemSet getRasters() throws ScriptographerException {
+		return getMatchingItems(Raster.class);
 	}
 	
 	/* TODO: make these
-	public Art getInsertionItem();
+	public Item getInsertionItem();
 	public int getInsertionOrder();
 	public boolean isInsertionEditable();
 	*/
@@ -516,7 +570,7 @@ public class Document extends DictionaryObject {
 		return new CompoundPath(children);
 	}
 	
-	public CompoundPath createCompoundPath(Art[] children) {
+	public CompoundPath createCompoundPath(Item[] children) {
 		activate(false, true);
 		return new CompoundPath(children);
 	}
@@ -536,7 +590,7 @@ public class Document extends DictionaryObject {
 		return new Group(children);
 	}
 	
-	public Group createGroup(Art[] children) {
+	public Group createGroup(Item[] children) {
 		activate(false, true);
 		return new Group(children);
 	}
@@ -577,7 +631,7 @@ public class Document extends DictionaryObject {
 	}
 	
 	protected native HitTest nativeHitTest(Point point, int type,
-			float tolerance, Art art); 
+			float tolerance, Item item); 
 
 	
 	/**

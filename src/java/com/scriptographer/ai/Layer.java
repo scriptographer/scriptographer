@@ -36,7 +36,7 @@ package com.scriptographer.ai;
  * The Layer item represents a layer in an Illustrator document.
  * @author lehni
  */
-public class Layer extends Art {
+public class Layer extends Item {
 
 	protected Layer(int handle) {
 		super(handle);
@@ -49,7 +49,7 @@ public class Layer extends Art {
 	public native void setLocked(boolean locked);
 
 	/**
-	 * @jsbean A boolean value that specifies wether the Layer is visible.
+	 * @jsbean A boolean value that specifies whether the Layer is visible.
 	 */
 	public native boolean isVisible();
 	public native void setVisible(boolean visible);
@@ -57,27 +57,27 @@ public class Layer extends Art {
 	/**
 	 * @jsbean A boolean value that sets the layer to preview (true) or outline
 	 * @jsbean mode (false).
-	 * @jsbean If a layer is set to outline mode, art in all it's child
-	 * @jsbean layers is rendered in outline mode, regardless of their preview settings.
+	 * @jsbean If a layer is set to outline mode, items in all it's child
+	 * @jsbean layers are rendered in outline mode, regardless of their preview settings.
 	 */
 	public native boolean getPreview();
 	public native void setPreview(boolean preview);
 	
 	/**
-	 * @jsbean A boolean value that specifies wether the Layer is considered printable
+	 * @jsbean A boolean value that specifies whether the Layer is considered printable
 	 * @jsbean when printing the document.
 	 */
 	public native boolean isPrinted();
 	public native void setPrinted(boolean printed);
 
 	/**
-	 * @jsbean A boolean value that specifies wether the Layer is selected.
+	 * @jsbean A boolean value that specifies whether the Layer is selected.
 	 */
 	public native boolean isSelected();
 	public native void setSelected(boolean selected);
 	
 	/**
-	 * @jsbean Specifies the color used for outlining Art items when they are selected.
+	 * @jsbean Specifies the color used for outlining items when they are selected.
 	 */
 	public native RGBColor getColor();
 	public native void setColor(Color color);
@@ -86,10 +86,10 @@ public class Layer extends Art {
 		setColor(new RGBColor(color));
 	}
 
-	public native ArtSet getItems();
+	public native ItemSet getItems();
 	
 	/**
-	 * @jsbean Returns a boolean value that specifies wether the Layer is active.
+	 * @jsbean Returns a boolean value that specifies whether the Layer is active.
 	 */
 	public native boolean isActive();
 	

@@ -37,6 +37,11 @@ import com.scratchdisk.script.ArgumentReader;
  * @author lehni
  */
 public class StrokeStyle implements Style {
+	/*
+	 * Setting these fields to null means undefined.
+	 * Setting color to Color.NONE means defined, but style is 
+	 * deactivated
+	 */
 	protected Color color;				/* Stroke color */
 	protected Boolean overprint;		/* Overprint - not meaningful if ColorTag is pattern */
 	protected Float width;				/* Line width */
@@ -80,9 +85,14 @@ public class StrokeStyle implements Style {
 	}
 
 	public StrokeStyle(ArgumentReader reader) {
+		// If color is null, handle it differently for hashes and arrays:
+		// For arrays, it can either be a color or Color.NONE. For hashes
+		// it can be both undefined -> null or null -> Color.NONE:
 		Color color = (Color) reader.readObject("color", Color.class);
+		if (color == null && (!reader.isHash() || reader.has("color")))
+			color = Color.NONE;
 		init(
-				color != null ? color : Color.NONE,
+				color,
 				reader.readBoolean("overprint"),
 				reader.readFloat("width"),
 				reader.readFloat("dashOffset"),

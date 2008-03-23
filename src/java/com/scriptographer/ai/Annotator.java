@@ -34,6 +34,7 @@ package com.scriptographer.ai;
 import java.util.ArrayList;
 
 import com.scriptographer.ScriptographerEngine; 
+import com.scriptographer.ScriptographerException;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.IntMap;
 import com.scratchdisk.util.SoftIntMap;
@@ -52,7 +53,7 @@ public class Annotator extends NativeObject {
 	private static int counter = 0;
 	
 	public Annotator() {
-		// now see first wether there is an unusedEffect already:
+		// now see first whether there is an unusedEffect already:
 		ArrayList unusedAnnotators = getUnusedAnnotators();
 		
 		int index = unusedAnnotators.size() - 1;
@@ -68,7 +69,7 @@ public class Annotator extends NativeObject {
 		}		
 
 		if (handle == 0)
-			throw new RuntimeException("Unable to create Annotator");
+			throw new ScriptographerException("Unable to create Annotator");
 		
 		active = false;
 		

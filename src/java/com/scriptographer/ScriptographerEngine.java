@@ -165,10 +165,22 @@ public class ScriptographerEngine {
 	
 	public static void reportError(Throwable t) {
 		try {
-			String error = t instanceof ScriptException ? 
-					((ScriptException) t).getFullMessage() : t.getMessage();
-			if (error == null)
-				error = t.toString();
+			String error;
+			Throwable cause;
+			if (t instanceof ScriptException) {
+				error = ((ScriptException) t).getFullMessage();
+				cause = ((ScriptException) t).getWrappedException();
+			} else {
+				error = t.getMessage();
+				if (error == null)
+					error = t.toString();
+				cause = t.getCause();
+			}
+			// Simplify error messages for Wrapped ScriptographerExceptions:
+			if (cause instanceof ScriptographerException)
+				error = "Error: " + error;
+			else if (cause instanceof UnsupportedOperationException)
+				error = "Unsupported Operation: " + error;
 			// Shorten file names by removing the script directory form it
 			if (scriptDir != null)
 				error = StringUtils.replace(error, scriptDir.getAbsolutePath() + System.getProperty("file.separator"), "");

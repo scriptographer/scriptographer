@@ -100,7 +100,7 @@ public class FontList implements ReadOnlyList, StringIndexReadOnlyList {
 	}
 
 	/**
-	 * Boolean value that specifies wether the font list is empty.
+	 * Boolean value that specifies whether the font list is empty.
 	 */
 	public boolean isEmpty() {
 		return size() == 0;

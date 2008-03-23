@@ -37,7 +37,7 @@
  * com.scriptographer.ai.Layer
  */
 
-// the creation of layers is handled in Art.nativeCreate!
+// the creation of layers is handled in Item.nativeCreate!
 
 /*
  * void setVisible(boolean visible)
@@ -97,7 +97,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setLocked(JNIEnv *env, j
 	} EXCEPTION_CONVERT(env);
 }
 
-// void getLocked is not needed as the one from Art works! but setLocked did not do the trick, so SetLayerEditable
+// void getLocked is not needed as the one from Item works! but setLocked did not do the trick, so SetLayerEditable
 // is needed here. weird...
 
 /*
@@ -179,7 +179,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getColor(JNIEnv *env,
 }
 
 /*
- * com.scriptographer.ai.ArtSet getItems()
+ * com.scriptographer.ai.ItemSet getItems()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getItems(JNIEnv *env, jobject obj) {
 	try {
@@ -187,9 +187,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getItems(JNIEnv *env,
 		AIArtSet set;
 		if (!sAIArtSet->NewArtSet(&set)) {
 			if (!sAIArtSet->LayerArtSet(layer, set)) {
-				jobject artSet = gEngine->convertArtSet(env, set);
+				jobject itemSet = gEngine->convertArtSet(env, set);
 				sAIArtSet->DisposeArtSet(&set);
-				return artSet;
+				return itemSet;
 			}
 		}
 	} EXCEPTION_CONVERT(env);

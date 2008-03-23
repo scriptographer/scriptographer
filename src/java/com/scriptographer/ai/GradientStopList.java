@@ -34,6 +34,7 @@ package com.scriptographer.ai;
 import com.scratchdisk.list.AbstractExtendedList;
 import com.scratchdisk.list.ArrayList;
 import com.scriptographer.CommitManager;
+import com.scriptographer.ScriptographerException;
 
 /**
  * @author lehni
@@ -129,7 +130,7 @@ public class GradientStopList extends AbstractExtendedList {
 		if (fromIndex < toIndex) {
 			int newSize = size + fromIndex - toIndex;
 			if (newSize < 2)
-				throw new RuntimeException(
+				throw new ScriptographerException(
 						"There need to be at least two gradient stops");
 			for (int i = fromIndex; i < toIndex; i++) {
 				GradientStop obj = (GradientStop) list.get(i);

@@ -37,7 +37,7 @@ import com.scriptographer.CommitManager;
 /**
  * @author lehni
  */
-public abstract class TextFrame extends Art {
+public abstract class TextFrame extends Item {
 	// AITextOrientation
 	public static final short
 		ORIENTATION_HORIZONTAL = 0,
@@ -68,15 +68,15 @@ public abstract class TextFrame extends Art {
 	// TODO:
 	 // AIAPI AIErr (*DoTextFrameHit)	( const AIHitRef hitRef, TextRangeRef*	textRange );
 
-	private native Art nativeCreateOutline();
+	private native Item nativeCreateOutline();
 
 	/**
 	 * Converts the text in the text frame to outlines. Unlike the Illustrator
 	 * 'Create Outlines' action, this won't remove the text frame.
 	 * 
-	 * @return An Art item containing the outlined text.
+	 * @return An item containing the outlined text.
 	 */
-	public Art createOutline() {
+	public Item createOutline() {
 		// apply changes and reflow the layout before creating outlines
 		// All styles regarding this story need to be commited, as
 		// CharacterStyle uses Story as the commit key.
@@ -143,9 +143,9 @@ public abstract class TextFrame extends Art {
 	 * @jsbean Returns the Story that the text frame belongs to.
 	 */
 	public TextStory getStory() {
-		// don't wrap directly. allways go through StoryList
+		// don't wrap directly. always go through StoryList
 		// to make sure we're not getting more than one reference
-		// to the sam Story, so things can be cached there:
+		// to the same Story, so things can be cached there:
 		int index = getStoryIndex();
 		ReadOnlyList list = document.getStories();
 		if (index >= 0 && index < list.size())
@@ -189,7 +189,7 @@ public abstract class TextFrame extends Art {
 	 * @jsbean whole text.
 	 */
 	public TextRange getVisibleRange() {
-		// once a range object is created, allways return the same reference
+		// once a range object is created, always return the same reference
 		// and swap handles instead. like this references in JS remain...
 		if (visibleRange == null) {
 			visibleRange = new TextRange(nativeGetRange(false), document);
@@ -204,7 +204,7 @@ public abstract class TextFrame extends Art {
 	 * @jsbean the container.
 	 */
 	public TextRange getRange() {
-		// once a range object is created, allways return the same reference
+		// once a range object is created, always return the same reference
 		// and swap handles instead. like this references in JS remain...
 		if (range == null) {
 			range = new TextRange(nativeGetRange(true), document);
@@ -288,8 +288,8 @@ public abstract class TextFrame extends Art {
 	public native void setSpacing(float spacing);
 
 	/**
-	 * @jsbean Specifies wether to use optical alignment within the text frame.
-	 *         Optical aligment hangs punctuation outside the edges of a text
+	 * @jsbean Specifies whether to use optical alignment within the text frame.
+	 *         Optical alignment hangs punctuation outside the edges of a text
 	 *         frame.
 	 */
 	public native boolean getOpticalAlignment();

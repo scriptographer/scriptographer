@@ -53,4 +53,8 @@ public class ScriptException extends Exception {
 	public String getFullMessage() {
 		return getMessage();
 	}
+
+	public Throwable getWrappedException() {
+		return getCause();
+	}
 }

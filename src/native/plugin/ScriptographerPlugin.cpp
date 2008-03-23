@@ -31,6 +31,7 @@
 #include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
 #include "resourceIds.h"
+#include "AppContext.h"
 
 ScriptographerPlugin *gPlugin = NULL;
 
@@ -625,7 +626,7 @@ ASBoolean ScriptographerPlugin::filterError(ASErr error) {
 #ifdef MACHO_CFM_GLUE
 
 void ScriptographerPlugin::createGluedSuite(void **suite, int size) {
-	// use UInt32 for representation of a pointer, as it has the same size on CFM
+	// Use UInt32 for representation of a pointer, as it has the same size on CFM
 	UInt32 *origSuite = (UInt32 *) *suite;
 	size /= 4;
 	UInt32 *gluedSuite = new UInt32[size];

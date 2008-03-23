@@ -33,38 +33,26 @@ package com.scratchdisk.script.rhino;
 
 import org.mozilla.javascript.NativeArray;
 
-import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.script.Converter;
 
 /**
  * @author lehni
  *
  */
-public class ArrayArgumentReader extends ArgumentReader {
+public class ArrayArgumentReader extends com.scratchdisk.script.ArrayArgumentReader {
 
 	protected NativeArray array;
-	protected int index;
 
 	public ArrayArgumentReader(Converter converter, NativeArray array) {
 		super(converter);
 		this.array = array;
-		index = 0;
 	}
 
 	protected Object readNext(String name) {
 		return index < array.getLength() ? array.get(index++, array) : null;
 	}
 
-	public void revert() {
-		if (index > 0)
-			index--;
-	}
-
 	public int size() {
 		return (int) array.getLength();
-	}
-
-	public boolean isArray() {
-		return true;
 	}
 }

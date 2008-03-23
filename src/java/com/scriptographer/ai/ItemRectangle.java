@@ -32,33 +32,33 @@
 package com.scriptographer.ai;
 
 /**
- * A Rectangle class to wrap an art object and control its bounds.
+ * A Rectangle class to wrap an item and control its bounds.
  * 
  * @author lehni
  */
-public class ArtRectangle extends Rectangle {
-	protected Art art;
+public class ItemRectangle extends Rectangle {
+	protected Item item;
 	protected int version = -1;
 
-	protected ArtRectangle(Art art) {
-		this.art = art;
+	protected ItemRectangle(Item item) {
+		this.item = item;
 		update();
 	}
 
 	protected void update() {
-		if (version != art.version) {
-			Rectangle bounds = art.nativeGetBounds();
+		if (version != item.version) {
+			Rectangle bounds = item.nativeGetBounds();
 			x = bounds.x;
 			y = bounds.y;
 			width = bounds.width;
 			height = bounds.height;
-			version = art.version;
+			version = item.version;
 		}
 	}
 
 	public void set(float x, float y, float width, float height) {
 		// This updates the rectangle object itself too:
-		art.setBounds(x, y, width, height);
+		item.setBounds(x, y, width, height);
 	}
 
 	public float getX() {

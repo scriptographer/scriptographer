@@ -60,7 +60,7 @@ public class CurveList extends AbstractFetchList {
 	 */
 	protected void updateSize() {
 		int newSize = segments.size;
-		// reduce length by one if it's an open path:
+		// Reduce length by one if it's an open path:
 		if (!path.isClosed() && newSize > 0)
 			newSize--;
 		
@@ -71,7 +71,7 @@ public class CurveList extends AbstractFetchList {
 	}
 
 	protected void fetch(int fromIndex, int toIndex) {
-		// prefetch all the needed segments now:
+		// Prefetch all the needed segments now:
 		segments.fetch(fromIndex, Math.min(segments.size - 1, toIndex + 1));
 	}
 
@@ -80,15 +80,24 @@ public class CurveList extends AbstractFetchList {
 			fetch(0, size);
 	}
 
-	// this list is read only:
+	// This list is read only:
+	/**
+	 * @jshide
+	 */
 	public Object add(int index, Object element) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Object set(int index, Object element) {
 		throw new UnsupportedOperationException();
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Object remove(int index) {
 		throw new UnsupportedOperationException();
 	}

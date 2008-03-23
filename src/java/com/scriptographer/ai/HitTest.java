@@ -177,7 +177,7 @@ public class HitTest {
 	
 	private int type;
 	private Curve curve;
-	private Art art;
+	private Item item;
 	private Point point;
 	private float parameter;
 
@@ -191,7 +191,7 @@ public class HitTest {
 	protected HitTest(int type, Curve curve, float parameter, Point point) {
 		this.type = type;
 		this.curve = curve;
-		this.art = curve.getPath();
+		this.item = curve.getPath();
 		this.parameter = parameter;
 		this.point = point;
 	}
@@ -209,14 +209,14 @@ public class HitTest {
 	/**
 	 * To be called from the native environment
 	 */
-	protected HitTest(int type, Art art, int index, float parameter, Point point) {
+	protected HitTest(int type, Item item, int index, float parameter, Point point) {
 		this.type = type;
-		this.art = art;
+		this.item = item;
 		this.parameter = parameter;
 		this.point = point;
 		this.curve = null;
-		if (art instanceof Path && type < HIT_FILL) {
-			Path path = (Path) art;
+		if (item instanceof Path && type < HIT_FILL) {
+			Path path = (Path) item;
 			CurveList curves = path.getCurves();
 			// calculate the curve index in the curve list according to the segment index:
 			// curve = segment - 1, if curve < 0, curve += segmentCount
@@ -235,11 +235,11 @@ public class HitTest {
 	}
 
 	/**
-	 * Returns the art object which was hit.
+	 * Returns the item which was hit.
 	 * @return
 	 */
-	public Art getArt() {
-		return art;
+	public Item getItem() {
+		return item;
 	}
 
 	public Curve getCurve() {
@@ -268,6 +268,6 @@ public class HitTest {
 	}
 	
 	public String toString() {
-		return " { type: " + this.type + ", art: " + art + ", index: " + getCurveIndex() + ", parameter: " + parameter + " }";
+		return " { type: " + this.type + ", item: " + item + ", index: " + getCurveIndex() + ", parameter: " + parameter + " }";
 	}
 }

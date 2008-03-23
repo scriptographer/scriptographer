@@ -35,6 +35,7 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 
 import com.scratchdisk.util.SoftIntMap;
+import com.scriptographer.ScriptographerException;
 
 /**
  * @author lehni
@@ -105,7 +106,7 @@ abstract class NativeWrapper extends NativeObject {
 			try {
 				ctor = cls.getDeclaredConstructor(new Class[] { Integer.TYPE });
 			} catch (Exception e) {
-				throw new RuntimeException(e);
+				throw new ScriptographerException(e);
 			}
 		}
 

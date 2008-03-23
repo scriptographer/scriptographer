@@ -45,8 +45,8 @@ public class Dictionary extends HashMap implements Commitable {
 	protected boolean dirty = false;
 	protected int version = -1;
 
-	protected Dictionary(DictionaryObject art) {
-		this.object = art;
+	protected Dictionary(DictionaryObject object) {
+		this.object = object;
 		fetch();
 	}
 	

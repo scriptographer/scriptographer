@@ -36,7 +36,7 @@ import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
 
 /*
- * PathStyle, FillStyle and StrokeStyle are used for Art, CharacterAttributes,
+ * PathStyle, FillStyle and StrokeStyle are used for Item, CharacterAttributes,
  * and others In some places, not all of the values may be defined.
  * Setting any value to null means the value is not defined.
  * 
@@ -71,7 +71,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	// Path's resolution
 	protected Float resolution;
 	
-	private Art art = null;
+	private Item item = null;
 
 	protected boolean dirty = false;
 	protected int version = -1;
@@ -88,9 +88,9 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		stroke = new StrokeStyle(this);
 	}
 
-	protected PathStyle(Art art) {
+	protected PathStyle(Item item) {
 		this(0); // PathStyle doesn't use the handle, but CharacterStyle does
-		this.art = art;
+		this.item = item;
 	}
 
 	protected PathStyle(PathStyle style) {
@@ -135,7 +135,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	
 	protected void update() {
 		// Only update if it didn't change in the meantime:
-		if (art != null && (!fetched || (!dirty && version != art.version)))
+		if (item != null && (!fetched || (!dirty && version != item.version)))
 			fetch();
 	}
 
@@ -225,23 +225,23 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	}
 
 	protected void fetch() {
-		nativeGet(art.handle);
-		version = art.version;
+		nativeGet(item.handle);
+		version = item.version;
 		fetched = true;
 	}
 
 	public void commit() {
-		if (dirty && art != null) {
-			commit(art.handle, art.document.handle);
-			version = art.version;
+		if (dirty && item != null) {
+			commit(item.handle, item.document.handle);
+			version = item.version;
 			dirty = false;
 		}
 	}
 
 	protected void markDirty() {
 		// only mark it as dirty if it's attached to a path already:
-		if (!dirty && art != null) {
-			CommitManager.markDirty(art, this);
+		if (!dirty && item != null) {
+			CommitManager.markDirty(item, this);
 			dirty = true;
 		}
 	}

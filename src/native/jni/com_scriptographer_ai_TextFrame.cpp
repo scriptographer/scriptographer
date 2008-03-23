@@ -66,7 +66,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOrientation(JNIEn
 }
 
 /*
- * com.scriptographer.ai.Art nativeCreateOutline()
+ * com.scriptographer.ai.Item nativeCreateOutline()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_nativeCreateOutline(JNIEnv *env, jobject obj) {
 	try {

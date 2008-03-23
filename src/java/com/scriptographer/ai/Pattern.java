@@ -42,7 +42,7 @@ public class Pattern extends NativeWrapper {
 		super(nativeCreate(), true);
 	}
 	
-	public Pattern(Art item) {
+	public Pattern(Item item) {
 		this();
 		setDefinition(item);
 	}
@@ -59,13 +59,13 @@ public class Pattern extends NativeWrapper {
 	 * Returns the pattern definition.
 	 * @return
 	 */
-	public native Art getDefinition();
+	public native Item getDefinition();
 
 	/**
 	 * Copy the item as the new symbol definition
 	 * @param item
 	 */
-	public native void setDefinition(Art item);
+	public native void setDefinition(Item item);
 
 	public native boolean isValid();
 }

@@ -37,7 +37,7 @@ import com.scriptographer.Commitable;
 /**
  * @author lehni
  */
-public class Tracing extends Art implements Commitable {
+public class Tracing extends Item implements Commitable {
 	
 	// AITracingMode
 	public final static int
@@ -87,17 +87,17 @@ public class Tracing extends Art implements Commitable {
 
 	private native static int nativeCreate(int docHandle, int artHandle);
 
-	protected Tracing(Art art) {
-		super(nativeCreate(art.document.handle, art.handle));
+	protected Tracing(Item item) {
+		super(nativeCreate(item.document.handle, item.handle));
 		markDirty(); // force a first update
 	}
 	
 	public Tracing(Raster raster) {
-		this((Art) raster);
+		this((Item) raster);
 	}
 	
 	public Tracing(PlacedItem raster) {
-		this((Art) raster);
+		this((Item) raster);
 	}
 	
 	private boolean dirty = false;

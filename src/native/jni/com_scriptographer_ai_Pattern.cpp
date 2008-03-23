@@ -87,7 +87,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pattern_setName(JNIEnv *env, j
 }
 
 /*
- * com.scriptographer.ai.Art getDefinition()
+ * com.scriptographer.ai.Item getDefinition()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pattern_getDefinition(JNIEnv *env, jobject obj) {
 	try {
@@ -100,14 +100,14 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pattern_getDefinition(JNIEn
 }
 
 /*
- * void setDefinition(com.scriptographer.ai.Art item)
+ * void setDefinition(com.scriptographer.ai.Item item)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pattern_setDefinition(JNIEnv *env, jobject obj, jobject item) {
 	try {
 		AIPatternHandle pattern = gEngine->getPatternHandle(env, obj, true);
 		AIArtHandle art = gEngine->getArtHandle(env, item);
 		// TODO: see what happens if pattern and art are not from the same document!
-		// consider adding a special case where this could work if it does not already (Using Art_copyTo?)
+		// consider adding a special case where this could work if it does not already (Using Item_copyTo?)
 		sAIPattern->SetPatternArt(pattern, art);
 	} EXCEPTION_CONVERT(env);
 }

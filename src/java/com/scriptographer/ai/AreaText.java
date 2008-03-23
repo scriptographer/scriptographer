@@ -76,7 +76,7 @@ public class AreaText extends TextFrame {
 	public native void setColumnCount(int count);
 
 	/**
-	 * @jsbean Specifies wether the text area uses row major order.
+	 * @jsbean Specifies whether the text area uses row major order.
 	 */
 	public native boolean getRowMajorOrder();
 	public native void setRowMajorOrder(boolean isRowMajor);

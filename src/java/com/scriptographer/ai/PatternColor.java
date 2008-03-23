@@ -104,15 +104,15 @@ public class PatternColor extends Color {
 	}
 
 	public float[] getComponents() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Cannot convert pattern to components");
 	}
 
 	public java.awt.Color toAWTColor() {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Cannot convert pattern to AWT color");
 	}
 	
 	public void setAlpha(float alhpa) {
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Cannot set alpha on pattern");
 	}
 
 	public Matrix getMatrix() {

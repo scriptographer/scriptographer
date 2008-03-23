@@ -37,7 +37,7 @@ diff -r1.18 WrapFactory.java
 >         return defaultWeight;
 > 	}
 > 
->     public Object convert(Object from, Class to) {
+>     public Object coerceType(Class type, Object value) {
 >     	return null;
 >     }
 > 
@@ -79,84 +79,93 @@ diff -r1.82 NativeJavaObject.java
 <         return CONVERSION_NONE;
 ---
 >         return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, CONVERSION_NONE);
-499a510,516
->     static Object convert(Object from, Class to) {
->         Object obj = Context.getContext().getWrapFactory().convert(from, to);
->         if (obj == null)
->             reportConversionError(from instanceof Wrapper ? ((Wrapper) from).unwrap() : from, to);
+499a510,519
+>     static Object coerce(Class type, Object value) {
+>         Object obj = Context.getContext().getWrapFactory().coerceType(type, value);
+>         if (obj == null) {
+>             if (value == Undefined.instance)
+>             	value = "undefined";
+>             reportConversionError(value instanceof Wrapper ? ((Wrapper) value).unwrap() : value, type);
+>         }
 >         return obj;
 >     }
 > 
-509a527,528
+509a530,531
 >         Object original = value;
 > 
-540c559
+525c547
+<                 reportConversionError("undefined", type);
+---
+>             	return coerce(type, value);
+527d548
+<             break;
+540c561
 <                 reportConversionError(value, type);
 ---
->                 return convert(value, type);
-542d560
+>                 return coerce(type, value);
+542d562
 <             break;
-556c574
+556c576
 <                 reportConversionError(value, type);
 ---
->                 return convert(value, type);
-558d575
+>                 return coerce(type, value);
+558d577
 <             break;
-584c601
+584c603
 <                 reportConversionError(value, type);
 ---
->                 return convert(value, type);
-586d602
+>                 return coerce(type, value);
+586d604
 <             break;
-601c617
+601c619
 <                 reportConversionError(value, type);
 ---
->                 return convert(original, type);
-603d618
+>                 return coerce(type, original);
+603d620
 <             break;
-606c621
+606c623
 <         case JSTYPE_JAVA_ARRAY:              
 ---
 >         case JSTYPE_JAVA_ARRAY:
-612c627
+612c629
 <                     reportConversionError(value, type);
 ---
->                     return convert(original, type);
-625c640,643
+>                     return coerce(type, original);
+625c642,645
 <                         reportConversionError(value, type);
 ---
 >                         // We must be here because canConvert returned true
 >                         // Give it a try. pass the wrapped value, to let the
 >                         // wrap factory decide what to do with it.
->                         return convert(original, type);
-629d646
+>                         return coerce(type, original);
+629d648
 <             break;
-637c654
+637c656
 <                     reportConversionError(value, type);
 ---
->                     return convert(value, type);
-674c691
+>                     return coerce(type, value);
+674c693
 <                 reportConversionError(value, type);
 ---
->                 return convert(original, type);
-679c696
+>                 return coerce(type, original);
+679c698
 <                 // XXX: Curently only instances of ScriptableObject are
 ---
 >                 // XXX: Currently only instances of ScriptableObject are
-696c713
+696c715
 <                     // Store for later retrival
 ---
 >                     // Store for later retrieval
-700,702c717,720
+700,702c719,722
 <                 reportConversionError(value, type);
 <             } else {
 <                 reportConversionError(value, type);
 ---
->                 return convert(value, type);
+>                 return coerce(type, value);
 >             }
 >             else {
->                 return convert(value, type);
-704d721
+>                 return coerce(type, value);
+704d723
 <             break;
 Index: org/mozilla/javascript/JavaMembers.java
 ===================================================================

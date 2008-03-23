@@ -206,19 +206,19 @@ public:
 	jmethodID cid_ai_PatternColor;
 	jmethodID mid_ai_PatternColor_set;
 	
-	jclass cls_ai_Art;
-	jfieldID fid_ai_Art_version;
-	jfieldID fid_ai_Art_document;
-	jfieldID fid_ai_Art_dictionaryRef;
-	jmethodID mid_ai_Art_wrapHandle;
-	jmethodID mid_ai_Art_getIfWrapped;
-	jmethodID mid_ai_Art_updateIfWrapped;
-	jmethodID mid_ai_Art_changeHandle;
-	jmethodID mid_ai_Art_commit;
+	jclass cls_ai_Item;
+	jfieldID fid_ai_Item_version;
+	jfieldID fid_ai_Item_document;
+	jfieldID fid_ai_Item_dictionaryRef;
+	jmethodID mid_ai_Item_wrapHandle;
+	jmethodID mid_ai_Item_getIfWrapped;
+	jmethodID mid_ai_Item_updateIfWrapped;
+	jmethodID mid_ai_Item_changeHandle;
+	jmethodID mid_ai_Item_commit;
 	
-	jclass cls_ai_ArtSet;
-	jmethodID cid_ArtSet;
-	jmethodID mid_ai_ArtSet_add;
+	jclass cls_ai_ItemSet;
+	jmethodID cid_ItemSet;
+	jmethodID mid_ai_ItemSet_add;
 
 	jclass cls_ai_Path;
 	jclass cls_ai_CompoundPath;
@@ -255,6 +255,8 @@ public:
 	jfieldID fid_ai_Raster_data;
 	
 	jclass cls_ai_PlacedItem;
+
+	jclass cls_ai_SymbolItem;
 
 	jclass cls_ai_Tracing;
 	jmethodID mid_ai_Tracing_markDirty;
@@ -461,9 +463,9 @@ public:
 	jobject convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, jobject res = NULL);
 	AIStrokeStyle *convertStrokeStyle(JNIEnv *env, jobject style, AIStrokeStyle *res = NULL);
 
-	// AIArtSet <-> com.scriptoggrapher.ai.ArtSet
+	// AIArtSet <-> com.scriptoggrapher.ai.ItemSet
 	jobject convertArtSet(JNIEnv *env, AIArtSet set, bool layerOnly = false);
-	AIArtSet convertArtSet(JNIEnv *env, jobject artSet);
+	AIArtSet convertArtSet(JNIEnv *env, jobject itemSet);
 	
 	// java.util.Map <-> AIDictionary
 	jobject convertDictionary(JNIEnv *env, AIDictionaryRef dictionary, jobject map = NULL, bool dontOverwrite = false, bool removeOld = false);
@@ -501,7 +503,7 @@ public:
 	// AI Wrap Handles
 	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDictionaryRef dictionary = NULL);
 	bool updateArtIfWrapped(JNIEnv *env, AIArtHandle art);
-	void changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary = NULL, AIDocumentHandle doc = NULL);
+	void changeArtHandle(JNIEnv *env, jobject itemObject, AIArtHandle art, AIDictionaryRef dictionary = NULL, AIDocumentHandle doc = NULL);
 	jobject getIfWrapped(JNIEnv *env, AIArtHandle handle);
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);

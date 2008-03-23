@@ -32,7 +32,7 @@
 #include "ScriptographerEngine.h"
 #include "aiGlobals.h"
 #include "com_scriptographer_ai_Document.h"
-#include "com_scriptographer_ai_Art.h"
+#include "com_scriptographer_ai_Item.h"
 
 /*
  * com.scriptographer.ai.Document
@@ -568,7 +568,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_paste(JNIEnv *env, jo
 }
 
 /*
- * com.scriptographer.ai.Art place(java.io.File file, boolean linked)
+ * com.scriptographer.ai.Item place(java.io.File file, boolean linked)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_place(JNIEnv *env, jobject obj, jobject file, jboolean linked) {
 	try {
@@ -579,7 +579,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_place(JNIEnv *env,
 	return NULL;
 }
 
-// ArtSet stuff:
+// ItemSet stuff:
 
 /*
  * boolean hasSelectedItems()
@@ -596,17 +596,17 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_hasSelectedItems(
 }
 
 /*
- * com.scriptographer.ai.ArtSet getSelectedItems()
+ * com.scriptographer.ai.ItemSet getSelectedItems()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(JNIEnv *env, jobject obj) {
-	jobject artSet = NULL;
+	jobject itemSet = NULL;
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
-		artSet = ArtSet_getSelected(env);
+		itemSet = ItemSet_getSelected(env);
 	} EXCEPTION_CONVERT(env);
-	return artSet;
+	return itemSet;
 }
 
 /*
@@ -621,19 +621,19 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_deselectAll(JNIEnv *e
 }
 
 /*
- * com.scriptographer.ai.ArtSet getMatchingItems(java.lang.Class typeClass, java.util.Map attributes)
+ * com.scriptographer.ai.ItemSet nativeGetMatchingItems(java.lang.Class typeClass, java.util.Map attributes)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingItems(JNIEnv *env, jobject obj, jclass typeClass, jobject attributes) {
-	jobject artSet = NULL;
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeGetMatchingItems(JNIEnv *env, jobject obj, jclass typeClass, jobject attributes) {
+	jobject itemSet = NULL;
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
 		AIArtSet set;
 		if (!sAIArtSet->NewArtSet(&set)) {
 			bool layerOnly = false;
-			short type = Art_getType(env, typeClass);
-			if (type == com_scriptographer_ai_Art_TYPE_LAYER) {
+			short type = Item_getType(env, typeClass);
+			if (type == com_scriptographer_ai_Item_TYPE_LAYER) {
 				type = kGroupArt;
 				layerOnly = true;
 			}
@@ -647,44 +647,20 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingItems(J
 			while (env->CallBooleanMethod(iterator, gEngine->mid_Iterator_hasNext)) {
 				jobject key = env->CallObjectMethod(iterator, gEngine->mid_Iterator_next);
 				jobject value = env->CallObjectMethod(attributes, gEngine->mid_Map_get, key);
-				jint set = -1;
-				if (env->IsInstanceOf(value, gEngine->cls_Boolean)) {
-					set = env->CallBooleanMethod(value, gEngine->mid_Boolean_booleanValue);
-				} else if (env->IsInstanceOf(value, gEngine->cls_Number)) {
-					set = env->CallIntMethod(value, gEngine->mid_Number_intValue) != 0;
-				}
-				if (set != -1) {
-					jint flag = -1;
-					// the flag can be specified both as a Art.ATTR_* Integer or a string. These strings are allowed:
-					// selected, locked, hidden.
-					// TODO: Implement full wrapping of ATTR_* values in Strings!
-					if (env->IsInstanceOf(key, gEngine->cls_Number)) {
-						flag = env->CallIntMethod(key, gEngine->mid_Number_intValue);
-					} else if (env->IsInstanceOf(key, gEngine->cls_String)) {
-						char *str = gEngine->convertString(env, (jstring) key);
-						if (strcmp(str, "selected") == 0) {
-							flag = kArtSelected;
-						} else if (strcmp(str, "locked") == 0) {
-							flag = kArtLocked;
-						} else if (strcmp(str, "hidden") == 0) {
-							flag = kArtHidden;
-						}
-						delete str;
-					}
-					if (flag != -1) {
-						spec.whichAttr |= flag;
-						if (set) spec.attr |=  flag;
-					}
-				}
+				jint flag = env->CallIntMethod(key, gEngine->mid_Number_intValue);
+				jint set = env->CallBooleanMethod(value, gEngine->mid_Boolean_booleanValue);
+				spec.whichAttr |= flag;
+				if (set)
+					spec.attr |= flag;
 				EXCEPTION_CHECK(env);
 			}
 			if (!sAIArtSet->MatchingArtSet(&spec, 1, set)) {
-				artSet = gEngine->convertArtSet(env, set);
+				itemSet = gEngine->convertArtSet(env, set);
 				sAIArtSet->DisposeArtSet(&set);
 			}
 		}
 	} EXCEPTION_CONVERT(env);
-	return artSet;
+	return itemSet;
 }
 
 /*
@@ -696,7 +672,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRectangle(JN
 		gEngine->getDocumentHandle(env, obj, true);
 		short paintOrder;
 		// simply call for the error message and the doc activation
-		Art_getInsertionPoint(&paintOrder);
+		Item_getInsertionPoint(&paintOrder);
 		AIRealRect rt;
 		gEngine->convertRectangle(env, rect, &rt);
 		AIArtHandle handle = NULL;
@@ -715,7 +691,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRoundRectang
 		gEngine->getDocumentHandle(env, obj, true);
 		short paintOrder;
 		// simply call for the error message and the doc activation
-		Art_getInsertionPoint(&paintOrder);
+		Item_getInsertionPoint(&paintOrder);
 		AIRealRect rt;
 		gEngine->convertRectangle(env, rect, &rt);
 		AIArtHandle handle = NULL;
@@ -734,7 +710,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createOval(JNIEnv 
 		gEngine->getDocumentHandle(env, obj, true);
 		short paintOrder;
 		// simply call for the error message and the doc activation
-		Art_getInsertionPoint(&paintOrder);
+		Item_getInsertionPoint(&paintOrder);
 		AIRealRect rt;
 		gEngine->convertRectangle(env, rect, &rt);
 		AIArtHandle handle = NULL;
@@ -756,7 +732,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRegularPolyg
 		gEngine->getDocumentHandle(env, obj, true);
 		short paintOrder;
 		// simply call for the error message and the doc activation
-		Art_getInsertionPoint(&paintOrder);
+		Item_getInsertionPoint(&paintOrder);
 		AIRealPoint pt;
 		gEngine->convertPoint(env, center, &pt);
 		AIArtHandle handle = NULL;
@@ -775,7 +751,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createStar(JNIEnv 
 		gEngine->getDocumentHandle(env, obj, true);
 		short paintOrder;
 		// simply call for the error message and the doc activation
-		Art_getInsertionPoint(&paintOrder);
+		Item_getInsertionPoint(&paintOrder);
 		AIRealPoint pt;
 		gEngine->convertPoint(env, center, &pt);
 		AIArtHandle handle;
@@ -794,7 +770,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createSpiral(JNIEn
 		gEngine->getDocumentHandle(env, obj, true);
 		short paintOrder;
 		// simply call for the error message and the doc activation
-		Art_getInsertionPoint(&paintOrder);
+		Item_getInsertionPoint(&paintOrder);
 		AIRealPoint ptCenter, ptStart;
 		gEngine->convertPoint(env, firstArcCenter, &ptCenter);
 		gEngine->convertPoint(env, start, &ptStart);
@@ -838,9 +814,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetDictionary(J
 }
 
 /*
- * com.scriptographer.ai.HitTest nativeHitTest(com.scriptographer.ai.Point point, int type, float tolerance, com.scriptographer.ai.Art art)
+ * com.scriptographer.ai.HitTest nativeHitTest(com.scriptographer.ai.Point point, int type, float tolerance, com.scriptographer.ai.Item art)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIEnv *env, jobject obj, jobject point, jint type, jfloat tolerance, jobject art) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIEnv *env, jobject obj, jobject point, jint type, jfloat tolerance, jobject item) {
 	jobject hitTest = NULL;
 	try {
 		// cause the doc switch if necessary
@@ -849,7 +825,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 		AIRealPoint pt;
 		gEngine->convertPoint(env, point, &pt);
 		
-		AIArtHandle handle = gEngine->getArtHandle(env, art);
+		AIArtHandle handle = gEngine->getArtHandle(env, item);
 		
 		AIHitRef hit;
 		AIHitRequest request = (AIHitRequest) type;
@@ -862,7 +838,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 			if (sAIHitTest->IsHit(hit) && !sAIHitTest->GetHitData(hit, &toolHit)) {
 				int hitType = toolHit.type;
 				// Support for hittest on text frames:
-				if (Art_getType(toolHit.object) == kTextFrameArt) {
+				if (Item_getType(toolHit.object) == kTextFrameArt) {
 					int textPart = sAITextFrameHit->GetPart(hit);
 					// fake HIT values for Text, added from AITextPart + 10
 					if (textPart != kAITextNowhere)
@@ -891,9 +867,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 					}
 				}
 				if (hitType >= 0) {
-					jobject art = gEngine->wrapArtHandle(env, toolHit.object);
+					jobject item = gEngine->wrapArtHandle(env, toolHit.object);
 					jobject point = gEngine->convertPoint(env, &toolHit.point);
-					hitTest = gEngine->newObject(env, gEngine->cls_ai_HitTest, gEngine->cid_ai_HitTest, hitType, art,
+					hitTest = gEngine->newObject(env, gEngine->cls_ai_HitTest, gEngine->cid_ai_HitTest, hitType, item,
 												 (jint) toolHit.segment, (jfloat) toolHit.t, point);
 				}
 			}

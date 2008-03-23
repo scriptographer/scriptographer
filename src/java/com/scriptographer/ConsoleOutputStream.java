@@ -63,7 +63,7 @@ public class ConsoleOutputStream extends OutputStream {
 	private PrintStream stream;
 	private PrintStream stdOut;
 	private PrintStream stdErr;
-	private ScriptographerCallback callback;
+	private ScriptographerCallback callback = null;
 
 	private ConsoleOutputStream() {
 		buffer = new ByteArrayOutputStream();
@@ -83,12 +83,13 @@ public class ConsoleOutputStream extends OutputStream {
 	public void write(int b) throws IOException {
 		char c = (char) b;
 		if (c == newLine) {
-			if (enabled) {
+			// Only print to the console if we're in the right thread.
+			// This prevents crashes and filters out weird
+			// java.lang.ClassCastExceptions on Mac OSX:
+			if (enabled && Thread.currentThread().equals(mainThread)) {
 				String str = buffer.toString();
-				// Only print to the console if we're in the right thread.
-				// This prevents crashes and filters out weird
-				// java.lang.ClassCastExceptions on Mac OSX:
-				if (Thread.currentThread().equals(mainThread)) {
+				// Filter out weird java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment on OSX 10.5
+				if (!ScriptographerEngine.isMacintosh() || str.indexOf("java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment") == -1) {
 					// If there already is a newline at the end of this line,
 					// remove it as callback.println adds it again...
 					int pos = str.lastIndexOf(lineSeparator);
@@ -99,8 +100,8 @@ public class ConsoleOutputStream extends OutputStream {
 					// And convert tabs to 4 spaces
 					str = str.replaceAll("\\t", "    ");
 					callback.println(str);
+					buffer.reset();
 				}
-				buffer.reset();
 			} else {
 				buffer.write(lineSeparator.getBytes());
 			}

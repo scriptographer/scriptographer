@@ -95,7 +95,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedItem_setMatrix(JNIEnv *e
 }
 
 /*
- * com.scriptographer.ai.Art embed(boolean askParams)
+ * com.scriptographer.ai.Item embed(boolean askParams)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedItem_embed(JNIEnv *env, jobject obj, jboolean askParams) {
 	try {

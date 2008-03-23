@@ -32,6 +32,7 @@
 package com.scriptographer.ai;
 
 import com.scriptographer.ScriptographerEngine; 
+import com.scriptographer.ScriptographerException;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.IntMap;
@@ -82,7 +83,7 @@ to "clean up" and remove any unnecessary nested groups and unpainted paths.
 When creating output art for the go message, the output art must be a child of the same parent as the input art. It
 also must be the only child of this parent, so if you create a copy of the input art, work on it and attempt to return
 the copy as the output art, you must make sure to dispose the original input art first. It is not legal to create an
-art object in an arbitrary place and return that as the output art.
+item in an arbitrary place and return that as the output art.
 
 Effects are limited in the kinds of attributes that they can attach to the output art. Effects must restrict themselves
 to using "simple" attributes, such as:
@@ -102,25 +103,25 @@ public class LiveEffect extends NativeObject {
 	// AIStyleFilterPreferredInputArtType
 	public final static int
 		INPUT_DYNAMIC	 		= 0,
-		INPUT_GROUP 				= 1 << (Art.TYPE_GROUP - 1),
-		INPUT_PATH 				= 1 << (Art.TYPE_PATH - 1),
-		INPUT_COMPOUNDPATH 		= 1 << (Art.TYPE_COMPOUNDPATH - 1),
+		INPUT_GROUP 				= 1 << (Item.TYPE_GROUP - 1),
+		INPUT_PATH 				= 1 << (Item.TYPE_PATH - 1),
+		INPUT_COMPOUNDPATH 		= 1 << (Item.TYPE_COMPOUNDPATH - 1),
 
-		INPUT_PLACED 			= 1 << (Art.TYPE_PLACED - 1),
-		INPUT_MYSTERYPATH 		= 1 << (Art.TYPE_MYSTERYPATH - 1),
-		INPUT_RASTER 			= 1 << (Art.TYPE_RASTER - 1),
+		INPUT_PLACED 			= 1 << (Item.TYPE_PLACED - 1),
+		INPUT_MYSTERYPATH 		= 1 << (Item.TYPE_MYSTERYPATH - 1),
+		INPUT_RASTER 			= 1 << (Item.TYPE_RASTER - 1),
 
 		// If INPUT_PLUGIN is not specified, the filter will receive the result group of a plugin
 		// group instead of the plugin group itself
-		INPUT_PLUGIN				= 1 << (Art.TYPE_PLUGIN - 1),
-		INPUT_MESH 				= 1 << (Art.TYPE_MESH - 1),
+		INPUT_PLUGIN				= 1 << (Item.TYPE_PLUGIN - 1),
+		INPUT_MESH 				= 1 << (Item.TYPE_MESH - 1),
 
-		INPUT_TEXTFRAME 			= 1 << (Art.TYPE_TEXTFRAME - 1),
+		INPUT_TEXTFRAME 			= 1 << (Item.TYPE_TEXTFRAME - 1),
 
-		INPUT_SYMBOL 			= 1 << (Art.TYPE_SYMBOL - 1),
+		INPUT_SYMBOL 			= 1 << (Item.TYPE_SYMBOL - 1),
 
-		INPUT_FOREIGN			= 1 << (Art.TYPE_FOREIGN - 1),
-		INPUT_LEGACYTEXT			= 1 << (Art.TYPE_LEGACYTEXT - 1),
+		INPUT_FOREIGN			= 1 << (Item.TYPE_FOREIGN - 1),
+		INPUT_LEGACYTEXT			= 1 << (Item.TYPE_LEGACYTEXT - 1),
 
 		// Indicates that the effect can operate on any input art. */
 		INPUT_ANY 				= 0xfff,
@@ -202,7 +203,7 @@ public class LiveEffect extends NativeObject {
 
 		ArrayList unusedEffects = getUnusedEffects();
 
-		// now see first wether there is an unusedEffect already that fits this
+		// now see first whether there is an unusedEffect already that fits this
 		// description
 		int index = unusedEffects.indexOf(this);
 		if (index >= 0) {
@@ -219,7 +220,7 @@ public class LiveEffect extends NativeObject {
 		}
 
 		if (handle == 0)
-			throw new RuntimeException("Unable to create LifeEffect");
+			throw new ScriptographerException("Unable to create LifeEffect");
 
 		effects.put(handle, this);
 	}
@@ -250,9 +251,9 @@ public class LiveEffect extends NativeObject {
 	 * unused effects
 	 */
 	public void remove() {
-		// see wether we're still linked:
+		// see whether we're still linked:
 		if (effects.get(handle) == this) {
-			// if so remove it and put it to the list of unsed effects, for later recycling
+			// if so remove it and put it to the list of unused effects, for later recycling
 			effects.remove(handle);
 			getUnusedEffects().add(this);
 			if (menuItem != null)
@@ -348,10 +349,10 @@ public class LiveEffect extends NativeObject {
 		this.onCalculate = onCalculate;
 	}
 
-	protected Art onCalculate(Map parameters, Art art) throws Exception {
+	protected Item onCalculate(Map parameters, Item item) throws Exception {
 		if (onCalculate != null) {
 			Object ret = ScriptographerEngine.invoke(onCalculate, this,
-					new Object[] { parameters, art });
+					new Object[] { parameters, item });
 			// it is only possible to either return the art itself or set the
 			// art to null!
 			// everything else semse to cause a illustrator crash
@@ -363,10 +364,10 @@ public class LiveEffect extends NativeObject {
 			// the only child of this parent, so if you create a copy of the
 			// input art, work on it and attempt to return the copy as the
 			// output art, you must make sure to dispose the original input art
-			// first. It is not legal to create an art object in an arbitrary
+			// first. It is not legal to create an item in an arbitrary
 			// place and return that as the output art.
 
-			return ret == art ? art : null;
+			return ret == item ? item : null;
 		}
 		return null;
 	}
@@ -381,10 +382,10 @@ public class LiveEffect extends NativeObject {
 		this.onGetInputType = onGetInputType;
 	}
 
-	protected int onGetInputType(Map parameters, Art art) throws Exception {
+	protected int onGetInputType(Map parameters, Item item) throws Exception {
 		if (onGetInputType != null) {
 			return ConversionUtils.toInt(ScriptographerEngine.invoke(
-					onGetInputType, new Object[] { parameters, art }));
+					onGetInputType, new Object[] { parameters, item }));
 			
 		}
 		return 0;
@@ -411,27 +412,27 @@ public class LiveEffect extends NativeObject {
 	/**
 	 * To be called from the native environment:
 	 */
-	private static int onCalculate(int handle, Map parameters, Art art)
+	private static int onCalculate(int handle, Map parameters, Item item)
 			throws Exception {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
-			Art newArt = effect.onCalculate(parameters, art);
+			Item newArt = effect.onCalculate(parameters, item);
 			if (newArt != null)
-				art = newArt;
+				item = newArt;
 		}
 		// already return the handle to the native environment so it doesn't
 		// need to access it there...
-		return art.handle;
+		return item.handle;
 	}
 
 	/**
 	 * To be called from the native environment:
 	 */
-	private static int onGetInputType(int handle, Map parameters, Art art)
+	private static int onGetInputType(int handle, Map parameters, Item item)
 			throws Exception {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null)
-			return effect.onGetInputType(parameters, art);
+			return effect.onGetInputType(parameters, item);
 		return 0;
 	}
 

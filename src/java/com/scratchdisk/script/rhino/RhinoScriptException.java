@@ -51,6 +51,8 @@ public class RhinoScriptException extends ScriptException {
 	private RhinoEngine engine;
 
 	private static Throwable getCause(Throwable cause) {
+		// Unwrap multiple wrapped exceptions, but make sure we have one
+		// WrappedException that contains information about script and line number.
 		if (cause instanceof WrappedException) {
 			Throwable wrapped = ((WrappedException) cause).getWrappedException();
 			// Unwrap wrapped RhinoScriptExceptions if wrapped more than once
@@ -83,7 +85,12 @@ public class RhinoScriptException extends ScriptException {
 			RhinoException re = (RhinoException) cause;
 			StringWriter buf = new StringWriter();
 			PrintWriter writer = new PrintWriter(buf);
-			writer.println(re.details());
+			if (re instanceof WrappedException) {
+				// Make sure we're not printing the "Wrapped ...Exception:" part
+				writer.println(((WrappedException) re).getWrappedException().getMessage());
+			} else {
+				writer.println(re.details());
+			}
 			String[] stackTrace = re.getScriptStackTrace().split("[\\n\\r]");
 			String sourceName = re.sourceName();
 			int lineNumber = re.lineNumber();
@@ -126,6 +133,13 @@ public class RhinoScriptException extends ScriptException {
 		}
 	}
 
+	public Throwable getWrappedException() {
+		Throwable cause = getCause();
+		if (cause instanceof WrappedException)
+			cause = ((WrappedException) cause).getWrappedException();
+		return cause;
+	}
+	
 	public RhinoScriptException(RhinoEngine engine, Throwable cause) {
 		super(getMessage(getCause(cause)), getCause(cause));
 		this.engine = engine;

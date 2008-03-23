@@ -32,7 +32,6 @@
 package com.scriptographer.ai;
 
 import java.awt.Shape;
-import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 import java.util.ArrayList;
@@ -45,7 +44,7 @@ import com.scriptographer.CommitManager;
 /**
  * @author lehni
  */
-public class Path extends Art {
+public class Path extends PathItem {
 
 	private SegmentList segments = null;
 	private CurveList curves = null;
@@ -337,22 +336,15 @@ public class Path extends Art {
 	}
 	
 	/*
-	 *  postscript-like interface: moveTo, lineTo, curveTo, arcTo
-	 */	
+	 *  PostScript-like interface: moveTo, lineTo, curveTo, arcTo
+	 */
+
 	public void moveTo(float x, float y) {
 		getSegments().moveTo(x, y);
 	}
 	
-	public void moveTo(Point pt) {
-		getSegments().moveTo(pt);
-	}
-	
 	public void lineTo(float x, float y) {
 		getSegments().lineTo(x, y);
-	}
-	
-	public void lineTo(Point pt) {
-		getSegments().lineTo(pt);
 	}
 	
 	public void curveTo(float c1x, float c1y, float c2x, float c2y, float x,
@@ -360,28 +352,23 @@ public class Path extends Art {
 		getSegments().curveTo(c1x, c1y, c2x, c2y, x, y);
 	}
 	
-	public void curveTo(Point c1, Point c2, Point pt) {
-		getSegments().curveTo(c1, c2, pt);
-	}
-	
 	public void quadTo(float cx, float cy, float x, float y) {
 		getSegments().quadTo(cx, cy, x, y);
 	}
 	
-	// TODO: remove?
-	public void quadTo(Point c, Point pt) {
-		getSegments().quadTo(c, pt);
-	}
-
 	public void arcTo(float centerX, float centerY, float endX, float endY,
 			int ccw) {
 		getSegments().arcTo(centerX, centerY, endX, endY, ccw);
 	}
 
-	public void arcTo(Point center, Point endPoint, int ccw) {
-		getSegments().arcTo(center, endPoint, ccw);
+	public void closePath() {
+		setClosed(true);
 	}
-		
+
+	/*
+	 * Convert to and from Java2D (java.awt.geom)
+	 */
+
 	/**
 	 * Appends the segments of a PathIterator to this Path. Optionally, the
 	 * initial {@link PathIterator#SEG_MOVETO}segment of the appended path is
@@ -432,23 +419,6 @@ public class Path extends Art {
 			iter.next();
 		}
 	}
-	
-	public void append(PathIterator iter) {
-		append(iter, false);
-	}
-	
-	/**
-	 * Appends the segments of a Shape to the path. If <code>connect</code> is
-	 * true, the new path segments are connected to the existing one with a
-	 * line. The winding rule of the Shape is ignored.
-	 */
-	public void append(Shape shape, boolean connect) {
-		append(shape.getPathIterator(null), connect);
-	}
-
-	public void append(Shape shape) {
-		append(shape.getPathIterator(null), false);
-	}
 
 	public GeneralPath toShape() {
 		GeneralPath path = new GeneralPath();
@@ -474,45 +444,5 @@ public class Path extends Art {
 				? GeneralPath.WIND_EVEN_ODD
 				: GeneralPath.WIND_NON_ZERO);
 		return path;
-	}
-
-	public boolean intersects(Path path) {
-		Area area = new Area(this.toShape());
-		area.intersect(new Area(path.toShape()));
-		return area.isEmpty();
-	}
-
-	public boolean contains(Path path) {
-		Area area = new Area(path.toShape());
-		area.subtract(new Area(this.toShape()));
-		return area.isEmpty();
-	}
-
-	public boolean contains(Point point) {
-		return new Area(this.toShape()).contains(point.toPoint2D());
-	}
-
-	public Path intersect(Path path) {
-		Area area = new Area(this.toShape());
-		area.intersect(new Area(path.toShape()));
-		CompoundPath compoundPath = new CompoundPath(area);
-		compoundPath.setStyle(this.getStyle());
-		return compoundPath.simplify();
-	}
-
-	public Path unite(Path path) {
-		Area area = new Area(this.toShape());
-		area.add(new Area(path.toShape()));
-		CompoundPath compoundPath = new CompoundPath(area);
-		compoundPath.setStyle(this.getStyle());
-		return compoundPath.simplify();
-	}
-
-	public Path exclude(Path path) {
-		Area area = new Area(this.toShape());
-		area.subtract(new Area(path.toShape()));
-		CompoundPath compoundPath = new CompoundPath(area);
-		compoundPath.setStyle(this.getStyle());
-		return compoundPath.simplify();
 	}
 }

@@ -52,15 +52,15 @@ public class CommitManager {
 	 * to keep track of values that need synching only once on each execution of
 	 * a script, or when things are changed
 	 * 
-	 * It also gets increased in Art.updateIfWrapped
+	 * It also gets increased in Item.updateIfWrapped
 	 */
 	public static int version = 0;
 
 	/**
 	 * Commits changes to objects that are associated with the given key this is
-	 * usually a art object, where path styles and segment lists use the art
-	 * object as a key when calling markDirty. If key is null, all changes are
-	 * commited.
+	 * usually a item, where path styles and segment lists use the item
+	 * as a key when calling markDirty. If key is null, all changes are
+	 * committed.
 	 */
 	public static void commit(Object key) {
 		if (key != null) {

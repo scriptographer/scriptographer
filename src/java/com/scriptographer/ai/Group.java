@@ -35,14 +35,14 @@ import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
 
 /**
- * A Group is a collection of Art objects. When you transform a Group, it's
+ * A Group is a collection of items. When you transform a Group, it's
  * children are treated as a single unit without changing their relative
  * positions. The Group's style or transparency blending attributes affect the
  * rendering of it's children without changing their style/attributes.
  * 
  * @author lehni
  */
-public class Group extends Art {
+public class Group extends Item {
 	
 	protected Group(int handle) {
 		super(handle);
@@ -56,19 +56,19 @@ public class Group extends Art {
 	}
 	
 	/**
-	 * Creates a group item from the supplied list of art items
-	 * @param children either an {@link ArtSet} or an array
+	 * Creates a group item from the supplied list of items
+	 * @param children either an {@link ItemSet} or an array
 	 */
 	public Group(ExtendedList children) {
 		this();
 		for (int i = 0; i < children.size(); i++) {
 			Object obj = children.get(i);
-			if (obj instanceof Art)
-				this.appendChild((Art) obj);
+			if (obj instanceof Item)
+				this.appendChild((Item) obj);
 		}
 	}
 	
-	public Group(Art[] children) {
+	public Group(Item[] children) {
 		this(Lists.asList(children));
 	}
 	

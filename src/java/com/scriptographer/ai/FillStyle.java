@@ -37,6 +37,11 @@ import com.scratchdisk.script.ArgumentReader;
  * @author lehni
  */
 public class FillStyle implements Style {
+	/*
+	 * Setting these fields to null means undefined.
+	 * Setting color to Color.NONE means defined, but style is 
+	 * deactivated
+	 */
 	protected Color color; 				/* Fill color */
 	protected Boolean overprint;			/* Overprint */
 
@@ -51,6 +56,11 @@ public class FillStyle implements Style {
 		this.style = style;
 	}
 
+	public FillStyle() {
+		color = null;
+		overprint = null;
+	}
+
 	public FillStyle(FillStyle fill) {
 		init(fill.color, fill.overprint);
 	}
@@ -60,9 +70,14 @@ public class FillStyle implements Style {
 	}
 
 	public FillStyle(ArgumentReader reader) {
+		// If color is null, handle it differently for hashes and arrays:
+		// For arrays, it can either be a color or Color.NONE. For hashes
+		// it can be both undefined -> null or null -> Color.NONE:
 		Color color = (Color) reader.readObject("color", Color.class);
+		if (color == null && (!reader.isHash() || reader.has("color")))
+			color = Color.NONE;
 		init(
-				color != null ? color : Color.NONE,
+				color,
 				reader.readBoolean("overprint")
 		);
 	}

@@ -375,7 +375,7 @@ public class Point {
 	}
 
 	/**
-	 * Checks wether the point is inside the rectangle
+	 * Checks whether the point is inside the rectangle
 	 * 
 	 * @param rect the rectangle to check against
 	 * @return <code>true</code> if the point is inside the rectangle, false

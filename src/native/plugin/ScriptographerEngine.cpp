@@ -30,7 +30,7 @@
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
-#include "com_scriptographer_ai_Art.h" // for com_scriptographer_ai_Art_TYPE_LAYER
+#include "com_scriptographer_ai_Item.h" // for com_scriptographer_ai_Item_TYPE_LAYER
 #include "com_scriptographer_adm_Notifier.h"
 
 #ifdef WIN_ENV
@@ -468,19 +468,19 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cid_ai_PatternColor = getConstructorID(env, cls_ai_PatternColor, "(IFFLcom/scriptographer/ai/Point;FZFFFLcom/scriptographer/ai/Matrix;)V");
 	mid_ai_PatternColor_set = getMethodID(env, cls_ai_PatternColor, "set", "(I)V");
 	
-	cls_ai_Art = loadClass(env, "com/scriptographer/ai/Art");
-	fid_ai_Art_version = getFieldID(env, cls_ai_Art, "version", "I");
-	fid_ai_Art_document = getFieldID(env, cls_ai_Art, "document", "Lcom/scriptographer/ai/Document;");
-	fid_ai_Art_dictionaryRef = getFieldID(env, cls_ai_Art, "dictionaryRef", "I");
-	mid_ai_Art_wrapHandle = getStaticMethodID(env, cls_ai_Art, "wrapHandle", "(ISIIIZ)Lcom/scriptographer/ai/Art;");
-	mid_ai_Art_getIfWrapped = getStaticMethodID(env, cls_ai_Art, "getIfWrapped", "(I)Lcom/scriptographer/ai/Art;");
-	mid_ai_Art_updateIfWrapped = getStaticMethodID(env, cls_ai_Art, "updateIfWrapped", "([I)V");
-	mid_ai_Art_changeHandle = getMethodID(env, cls_ai_Art, "changeHandle", "(III)V");
-	mid_ai_Art_commit = getMethodID(env, cls_ai_Art, "commit", "(Z)V");
+	cls_ai_Item = loadClass(env, "com/scriptographer/ai/Item");
+	fid_ai_Item_version = getFieldID(env, cls_ai_Item, "version", "I");
+	fid_ai_Item_document = getFieldID(env, cls_ai_Item, "document", "Lcom/scriptographer/ai/Document;");
+	fid_ai_Item_dictionaryRef = getFieldID(env, cls_ai_Item, "dictionaryRef", "I");
+	mid_ai_Item_wrapHandle = getStaticMethodID(env, cls_ai_Item, "wrapHandle", "(ISIIIZ)Lcom/scriptographer/ai/Item;");
+	mid_ai_Item_getIfWrapped = getStaticMethodID(env, cls_ai_Item, "getIfWrapped", "(I)Lcom/scriptographer/ai/Item;");
+	mid_ai_Item_updateIfWrapped = getStaticMethodID(env, cls_ai_Item, "updateIfWrapped", "([I)V");
+	mid_ai_Item_changeHandle = getMethodID(env, cls_ai_Item, "changeHandle", "(III)V");
+	mid_ai_Item_commit = getMethodID(env, cls_ai_Item, "commit", "(Z)V");
 
-	cls_ai_ArtSet = loadClass(env, "com/scriptographer/ai/ArtSet");
-	cid_ArtSet = getConstructorID(env, cls_ai_ArtSet, "()V");
-	mid_ai_ArtSet_add = getMethodID(env, cls_ai_ArtSet, "add", "(Ljava/lang/Object;)Ljava/lang/Object;");
+	cls_ai_ItemSet = loadClass(env, "com/scriptographer/ai/ItemSet");
+	cid_ItemSet = getConstructorID(env, cls_ai_ItemSet, "()V");
+	mid_ai_ItemSet_add = getMethodID(env, cls_ai_ItemSet, "add", "(Ljava/lang/Object;)Ljava/lang/Object;");
 
 	cls_ai_Path = loadClass(env, "com/scriptographer/ai/Path");
 	cls_ai_CompoundPath = loadClass(env, "com/scriptographer/ai/CompoundPath");
@@ -520,6 +520,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_ai_PlacedItem = loadClass(env, "com/scriptographer/ai/PlacedItem");
 	
+	cls_ai_SymbolItem = loadClass(env, "com/scriptographer/ai/SymbolItem");
+	
 	cls_ai_Tracing = loadClass(env, "com/scriptographer/ai/Tracing");
 	mid_ai_Tracing_markDirty = getMethodID(env, cls_ai_Tracing, "markDirty", "()V");
 	
@@ -541,8 +543,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ai_LiveEffect = loadClass(env, "com/scriptographer/ai/LiveEffect");
 	cid_ai_LiveEffect = getConstructorID(env, cls_ai_LiveEffect, "(ILjava/lang/String;Ljava/lang/String;IIIII)V");
 	mid_ai_LiveEffect_onEditParameters = getStaticMethodID(env, cls_ai_LiveEffect, "onEditParameters", "(ILjava/util/Map;IZ)V");
-	mid_ai_LiveEffect_onCalculate = getStaticMethodID(env, cls_ai_LiveEffect, "onCalculate", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
-	mid_ai_LiveEffect_onGetInputType = getStaticMethodID(env, cls_ai_LiveEffect, "onGetInputType", "(ILjava/util/Map;Lcom/scriptographer/ai/Art;)I");
+	mid_ai_LiveEffect_onCalculate = getStaticMethodID(env, cls_ai_LiveEffect, "onCalculate", "(ILjava/util/Map;Lcom/scriptographer/ai/Item;)I");
+	mid_ai_LiveEffect_onGetInputType = getStaticMethodID(env, cls_ai_LiveEffect, "onGetInputType", "(ILjava/util/Map;Lcom/scriptographer/ai/Item;)I");
 	
 	cls_ai_Timer = loadClass(env, "com/scriptographer/ai/Timer");
 	cid_ai_Timer = getConstructorID(env, cls_ai_Timer, "(I)V");
@@ -554,7 +556,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_Annotator_onInvalidate = getStaticMethodID(env, cls_ai_Annotator, "onInvalidate", "(I)V");
 	
 	cls_ai_HitTest = loadClass(env, "com/scriptographer/ai/HitTest");
-	cid_ai_HitTest = getConstructorID(env, cls_ai_HitTest, "(ILcom/scriptographer/ai/Art;IFLcom/scriptographer/ai/Point;)V");
+	cid_ai_HitTest = getConstructorID(env, cls_ai_HitTest, "(ILcom/scriptographer/ai/Item;IFLcom/scriptographer/ai/Point;)V");
 
 // ADM:
 	cls_adm_NativeObject = loadClass(env, "com/scriptographer/adm/NativeObject");
@@ -1133,13 +1135,13 @@ AIStrokeStyle *ScriptographerEngine::convertStrokeStyle(JNIEnv *env, jobject sty
 }
 
 
-// AIArtSet <-> ArtSet
+// AIArtSet <-> ItemSet
 
 jobject ScriptographerEngine::convertArtSet(JNIEnv *env, AIArtSet set, bool layerOnly) {
-	ArtSet_filter(set, layerOnly);
+	ItemSet_filter(set, layerOnly);
 	long count;
 	sAIArtSet->CountArtSet(set, &count);
-	jobject artSet = newObject(env, cls_ai_ArtSet, cid_ArtSet); 
+	jobject itemSet = newObject(env, cls_ai_ItemSet, cid_ItemSet); 
 	for (long i = 0; i < count; i++) {
 		jobject obj;
 		AIArtHandle art;
@@ -1147,21 +1149,21 @@ jobject ScriptographerEngine::convertArtSet(JNIEnv *env, AIArtSet set, bool laye
 			if (art != NULL) {
 				obj = wrapArtHandle(env, art);
 				if (obj != NULL)
-					callBooleanMethod(env, artSet, mid_ai_ArtSet_add, obj);
+					callBooleanMethod(env, itemSet, mid_ai_ItemSet_add, obj);
 			}
 		}
 	}
 	EXCEPTION_CHECK(env);
-	return artSet;
+	return itemSet;
 }
 
-AIArtSet ScriptographerEngine::convertArtSet(JNIEnv *env, jobject artSet) {
+AIArtSet ScriptographerEngine::convertArtSet(JNIEnv *env, jobject itemSet) {
 	AIArtSet set = NULL;
 	if (!sAIArtSet->NewArtSet(&set)) {
 		// use a for loop with size instead of hasNext, because that saves us many calls...
-		jint size = callIntMethod(env, artSet, mid_List_size);
+		jint size = callIntMethod(env, itemSet, mid_List_size);
 		for (int i = 0; i < size; i++) {
-			jobject obj = callObjectMethod(env, artSet, mid_List_get, i);
+			jobject obj = callObjectMethod(env, itemSet, mid_List_get, i);
 			if (obj != NULL)
 				sAIArtSet->AddArtToArtSet(set, getArtHandle(env, obj));
 		}
@@ -1472,11 +1474,11 @@ AIDictionaryRef ScriptographerEngine::convertDictionary(JNIEnv *env, jobject map
 				char *string = convertString(env, (jstring) value);
 				entry = sAIEntry->FromString(string);
 				delete string;
-			} else if (env->IsInstanceOf(value, cls_ai_Art)) {
+			} else if (env->IsInstanceOf(value, cls_ai_Item)) {
 				AIArtHandle art = getArtHandle(env, value);
 				sAIDictionary->MoveArtToEntry(dictionary, key, art);
 				// let the art object know it's part of a dictionary now:
-				setIntField(env, value, fid_ai_Art_dictionaryRef, (jint) dictionary);
+				setIntField(env, value, fid_ai_Item_dictionaryRef, (jint) dictionary);
 			} else if (env->IsInstanceOf(value, cls_Map)) {
 				// add to the existing object, if there's any
 				AIDictionaryRef subDictionary = NULL;
@@ -1537,7 +1539,7 @@ SPPlatformFileSpecification *ScriptographerEngine::convertFile(JNIEnv *env, jobj
 }
 
 /**
- * Returns the wrapped AIArtHandle of an object by assuming that it is an anchestor of Class Art and
+ * Returns the wrapped AIArtHandle of an object by assuming that it is an anchestor of Class Item and
  * accessing its field 'handle':
  *
  * throws exceptions
@@ -1551,7 +1553,7 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 		throw new StringException("Object is not wrapping an art handle.");
 	if (activateDoc || doc != NULL) {
 		// fetch docHandle and switch if necessary
-		jobject docObj = getObjectField(env, obj, fid_ai_Art_document);
+		jobject docObj = getObjectField(env, obj, fid_ai_Item_document);
 		if (docObj != NULL) {
 			AIDocumentHandle docHandle = (AIDocumentHandle) getIntField(env, docObj, fid_ai_NativeObject_handle);
 			if (doc != NULL)
@@ -1601,7 +1603,7 @@ void ScriptographerEngine::resumeSuspendedDocuments() {
 }
 
 /**
- * Returns the wrapped AILayerHandle of an object by assuming that it is an anchestor of Class Art and
+ * Returns the wrapped AILayerHandle of an object by assuming that it is an anchestor of Class Item and
  * accessing its field 'handle':
  *
  * throws exceptions
@@ -1672,7 +1674,7 @@ AIDictionaryRef ScriptographerEngine::getArtDictionaryHandle(JNIEnv *env, jobjec
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	return (AIDictionaryRef) gEngine->getIntField(env, obj, gEngine->fid_ai_Art_dictionaryRef);
+	return (AIDictionaryRef) gEngine->getIntField(env, obj, gEngine->fid_ai_Item_dictionaryRef);
 }
 
 /**
@@ -1859,7 +1861,7 @@ jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef ra
 }
 
 /**
- * Wraps the handle in a java object. see the Java function Art.wrapArtHandle to see how 
+ * Wraps the handle in a java object. see the Java function Item.wrapArtHandle to see how 
  * the cashing of already wrapped objects is handled.
  *
  * throws exceptions
@@ -1875,7 +1877,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 		throw new StringException("Cannot determine the art object's type");
 	if (isLayer) {
 		// self defined type for layer groups
-		type = com_scriptographer_ai_Art_TYPE_LAYER;
+		type = com_scriptographer_ai_Item_TYPE_LAYER;
 	} else if (type == kTextFrameArt) {
 		// determine text type as well
 		sAITextFrame->GetType(art, &textType);
@@ -1883,7 +1885,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 		// TODO: add handle of special types
 #if kPluginInterfaceVersion >= kAI12
 		if (sAITracing->IsTracing(art))
-			type = com_scriptographer_ai_Art_TYPE_TRACING;
+			type = com_scriptographer_ai_Item_TYPE_TRACING;
 #endif
 	}
 	
@@ -1898,25 +1900,25 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 		sAIDictionary->SetIntegerEntry(artDict, m_artHandleKey, (ASInt32) art);
 		sAIDictionary->Release(artDict);
 	}
-	return callStaticObjectMethod(env, cls_ai_Art, mid_ai_Art_wrapHandle, (jint) art, (jshort) type, (jint) textType, (jint) gActiveDoc, (jint) dictionary, (jboolean) wrapped);
+	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_wrapHandle, (jint) art, (jshort) type, (jint) textType, (jint) gActiveDoc, (jint) dictionary, (jboolean) wrapped);
 }
 
-void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject artObject, AIArtHandle art, AIDictionaryRef dictionary, AIDocumentHandle doc) {
-	callVoidMethod(env, artObject, mid_ai_Art_changeHandle, (jint) art, (jint) dictionary, (jint) doc);
+void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject item, AIArtHandle art, AIDictionaryRef dictionary, AIDocumentHandle doc) {
+	callVoidMethod(env, item, mid_ai_Item_changeHandle, (jint) art, (jint) dictionary, (jint) doc);
 }
 
 jobject ScriptographerEngine::getIfWrapped(JNIEnv *env, AIArtHandle art) {
-	return callStaticObjectMethod(env, cls_ai_Art, mid_ai_Art_getIfWrapped, (jint) art);
+	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_getIfWrapped, (jint) art);
 }
 
 jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) {
-	// layer handles are not used in java as Layer is derived from Art. Allways use the first invisible
-	// Art group in the layer that contains everything (even in AI, layer seems only be a wrapper around
+	// layer handles are not used in java as Layer is derived from Item. Allways use the first invisible
+	// Item group in the layer that contains everything (even in AI, layer seems only be a wrapper around
 	// an art group:
 	AIArtHandle art;
 	if (sAIArt->GetFirstArtOfLayer(layer, &art))
 		throw new StringException("Cannot get layer art");
-	return callStaticObjectMethod(env, cls_ai_Art, mid_ai_Art_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Art_TYPE_LAYER, (jint) kUnknownTextType, (jint) gActiveDoc, 0);
+	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Item_TYPE_LAYER, (jint) kUnknownTextType, (jint) gActiveDoc, 0);
 }
 
 /**
@@ -1951,7 +1953,7 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
  * such as moving a point on a path occurs. In other words EITHER something was selected
  * or deselected or targeted or untargeted, OR some aspect of the current selected
  * object(s) changed. 
- * It calls Art.onSelectionChanged with an array containing all the affected artHandles,
+ * It calls Item.onSelectionChanged with an array containing all the affected artHandles,
  * which then increases the version variable of already wrapped objects
  */
 ASErr ScriptographerEngine::selectionChanged() {
@@ -2006,7 +2008,7 @@ ASErr ScriptographerEngine::selectionChanged() {
 			env->SetIntArrayRegion(artHandles, 0, count, (jint *) handles);
 			delete handles;
 			
-			callStaticVoidMethod(env, cls_ai_Art, mid_ai_Art_updateIfWrapped, artHandles);
+			callStaticVoidMethod(env, cls_ai_Item, mid_ai_Item_updateIfWrapped, artHandles);
 		}
 //		println(env, "%i", (getNanoTime() - t) / 1000000);
 		return kNoErr;

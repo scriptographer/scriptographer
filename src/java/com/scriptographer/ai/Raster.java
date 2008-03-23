@@ -56,7 +56,7 @@ import com.scriptographer.adm.Size;
 /**
  * @author lehni
  */
-public class Raster extends Art {
+public class Raster extends Item {
 
 	// native pointer to an attached data struct:
 	private int data = 0;

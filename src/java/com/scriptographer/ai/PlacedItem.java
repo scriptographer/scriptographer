@@ -40,7 +40,7 @@ import com.scratchdisk.util.NetUtils;
 /**
  * @author lehni
  */
-public class PlacedItem extends Art {
+public class PlacedItem extends Item {
 
 	protected PlacedItem(int handle) {
 		super(handle);
@@ -71,9 +71,9 @@ public class PlacedItem extends Art {
 		return new Tracing(this);
 	}
 	
-	public native Art embed(boolean askParams);
+	public native Item embed(boolean askParams);
 	
-	public Art embed() {
+	public Item embed() {
 		return embed(false);
 	}
 	

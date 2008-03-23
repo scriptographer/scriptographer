@@ -41,21 +41,21 @@ import com.scriptographer.CommitManager;
 /**
  * @author lehni
  */
-public abstract class Art extends DictionaryObject {
+public abstract class Item extends DictionaryObject {
 	
 	// the internal version. this is used for internally reflected data,
 	// such as segmentList, pathStyle, and so on. Every time an object gets
 	// modified, ScriptographerEngine.selectionChanged() gets fired that
-	// increases the version of all involved art objects.
+	// increases the version of all involved items.
 	// update-commit related code needs to check against this variable
 	protected int version = 0;
 	
-	// the reference to the dictionary that contains this Art object, if any
+	// the reference to the dictionary that contains this item, if any
 	protected int dictionaryRef = 0;
 	
 	// internal hash map that keeps track of already wrapped objects. defined
 	// as soft.
-	private static SoftIntMap artItems = new SoftIntMap();
+	private static SoftIntMap items = new SoftIntMap();
 	
 	/* TODO: needed?
 	// The same, but for the children of one object, and not weak,
@@ -71,18 +71,18 @@ public abstract class Art extends DictionaryObject {
 	
 	// AIArtType
 	protected final static short
-		// The special type kAnyArt is never returned as an art object type, but
-		// is used as a parameter to the Matching Art suite function
+		// The special type kAnyArt is never returned as an item type, but
+		// is used as a parameter to the Matching Item suite function
 		// GetMatchingArt.
 		TYPE_ANY = -1,
 
 		// The type kUnknownArt is reserved for objects that are not supported
-		// in the plug-in interface. You should anticipate unknown art objects
+		// in the plug-in interface. You should anticipate unknown items
 		// and ignore them gracefully. For example graph objects return
 		// kUnkownType.
 		//
 		// If a plug-in written for an earlier version of the plug-in API calls
-		// GetArt- Type with an art object of a type unknown in its version,
+		// GetArt- Type with an item of a type unknown in its version,
 		// this function will map the art type to either an appropriate type or
 		// to kUnknownArt.
 		TYPE_UNKNOWN = 0,
@@ -103,7 +103,7 @@ public abstract class Art extends DictionaryObject {
 		TYPE_TEXTRUN = 6,
 		TYPE_PLACED = 7,
 
-		// The special type kMysteryPathArt is never returned as an art object
+		// The special type kMysteryPathArt is never returned as an item
 		// type, it is an obsolete parameter to GetMatchingArt. It used to match
 		// paths inside text objects without matching the text objects
 		// themselves. In AI11 and later the kMatchTextPaths flag is used to
@@ -129,62 +129,66 @@ public abstract class Art extends DictionaryObject {
 
 	// AIArtUserAttr:
 	// used in Document.getMatchingArt:
+	// USING Integer objects instead of int so that they can directly
+	// be put into the map.
+	// TODO: Consider switching to Java 1.5 and automatic boxing / unboxing
 	public final static Integer
-		ATTR_SELECTED = new Integer(0x00000001),
-		ATTR_LOCKED = new Integer(0x00000002),
-		ATTR_HIDDEN = new Integer(0x00000004),
-		ATTR_FULLY_SELECTED = new Integer(0x00000008),
+		ATTRIBUTE_SELECTED = new Integer(0x00000001),
+		ATTRIBUTE_LOCKED = new Integer(0x00000002),
+		ATTRIBUTE_HIDDEN = new Integer(0x00000004),
+		ATTRIBUTE_FULLY_SELECTED = new Integer(0x00000008),
 
 		// Valid only for groups and plugin groups. Indicates whether the
 		// contents of the object are expanded in the layers palette.
-		ATTR_EXPANDED = new Integer(0x00000010),
-		ATTR_TARGETED = new Integer(0x00000020),
+		ATTRIBUTE_EXPANDED = new Integer(0x00000010),
+		ATTRIBUTE_TARGETED = new Integer(0x00000020),
 
 		// Indicates that the object defines a clip mask. This can only be set on
 		// paths), compound paths), and text frame objects. This property can only be
 		// set on an object if the object is already contained within a clip group.
-		ATTR_IS_CLIPMASK = new Integer(0x00001000),
+		ATTRIBUTE_IS_CLIPMASK = new Integer(0x00001000),
 
 		// Indicates that text is to wrap around the object. This property cannot be
 		// set on an object that is part of compound group), it will return
 		// kBadParameterErr. private final int ATTR_IsTextWrap has to be set to the
 		// ancestor compound group in this case.
-		ATTR_IS_TEXTWRAP = new Integer(0x00010000),
+		ATTRIBUTE_IS_TEXTWRAP = new Integer(0x00010000),
 
 		// Meaningful only to GetMatchingArt passing to SetArtUserAttr will cause an error. Only one
 		// of kArtSelectedTopLevelGroups), kArtSelectedLeaves or kArtSelectedTopLevelWithPaint can
 		// be passed into GetMatchingArt), and they cannot be combined with anything else. When
 		// passed to GetMatchingArt causes only fully selected top level objects to be returned
 		// and not their children.
-		ATTR_SELECTED_TOPLEVEL_GROUPS = new Integer(0x00000040),
+		ATTRIBUTE_SELECTED_TOPLEVEL_GROUPS = new Integer(0x00000040),
 		// Meaningful only to GetMatchingArt passing to SetArtUserAttr will cause an error. When passed
 		// to GetMatchingArt causes only leaf selected objects to be returned and not their containers.
 		// See also kArtSelectedTopLevelGroups
-		ATTR_SELECTED_LAYERS = new Integer(0x00000080),
+		ATTRIBUTE_SELECTED_LAYERS = new Integer(0x00000080),
 		// Meaningful only to GetMatchingArt passing to SetArtUserAttr will cause an error. When passed
 		// to GetMatchingArt causes only top level selected objects that have a stroke or fill to be
 		// returned. See also kArtSelectedTopLevelGroups
-		ATTR_SELECTED_TOPLEVEL_WITH_PAINT = new Integer(0x00000100),	// Top level groups that have a stroke or fill), or leaves
+		ATTRIBUTE_SELECTED_TOPLEVEL_WITH_PAINT = new Integer(0x00000100),	// Top level groups that have a stroke or fill), or leaves
 
 		// Valid only for GetArtUserAttr and GetMatchingArt passing to
-		// SetArtUserAttr will cause an error. true if the art object has a simple
+		// SetArtUserAttr will cause an error. true if the item has a simple
 		// style.
-		ATTR_HAS_SIMPLE_STYLE = new Integer(0x00000200),
-
+		ATTRIBUTE_HAS_SIMPLE_STYLE = new Integer(0x00000200),
+	
 		// Valid only for GetArtUserAttr and GetMatchingArt passing to
-		// SetArtUserAttr will cause an error. true if the art object has an active
+		// SetArtUserAttr will cause an error. true if the item has an active
 		// style.
-		ATTR_HAS_ACTIVE_STYLE = new Integer(0x00000400),
+		ATTRIBUTE_HAS_ACTIVE_STYLE = new Integer(0x00000400),
 
 		// Valid only for GetArtUserAttr and GetMatchingArt passing to
-		// SetArtUserAttr will cause an error. true if the art object is a part of a
+		// SetArtUserAttr will cause an error. true if the item is a part of a
 		// compound path.
-		ATTR_PART_OF_COMPOUND = new Integer(0x00000800),
+		// TODO: Consider naming ATTRIBUTE_COMPOUND_PATH_CHILD
+		ATTRIBUTE_PART_OF_COMPOUND = new Integer(0x00000800),
 
-		// On GetArtUserAttr), reports whether the object has an art style that is
-		// pending re-execution. On SetArtUserAttr), marks the art style dirty
-		// without making any other changes to the art or to the style.
-		ATTR_STYLE_IS_DIRTY = new Integer(0x00040000);
+		// On GetArtUserAttr), reports whether the object has a style that is
+		// pending re-execution. On SetArtUserAttr), marks the style dirty
+		// without making any other changes to the item or to the style.
+		ATTRIBUTE_STYLE_IS_DIRTY = new Integer(0x00040000);
 
 	// AIBlendingModeValues:
 	public final static int
@@ -248,23 +252,23 @@ public abstract class Art extends DictionaryObject {
 		EXPAND_LOCKEDOBJECTS    = 0x10000;
 
 	/**
-	 * Creates an Art object that wraps an existing AIArtHandle. Make sure the
+	 * Creates an item that wraps an existing AIArtHandle. Make sure the
 	 * right constructor is used (Path, Raster). Use wrapArtHandle instead of
 	 * directly calling this constructor (it is called from the anchestor's
-	 * constructors). Integer is used instead of int so Art(int handle) can be
-	 * distinguised from the Art(Integer handle) constructor
+	 * constructors). Integer is used instead of int so Item(int handle) can be
+	 * distinguised from the Item(Integer handle) constructor
 	 * 
 	 * @param handle
 	 */
-	protected Art(int handle) {
+	protected Item(int handle) {
 		super(handle);
 		// keep track of this object from now on, see wrapArtHandle
-		artItems.put(this.handle, this);
+		items.put(this.handle, this);
 		/*
 		// store the wrapper also in the paren'ts childrenWrappers segmentList,
 		// so it becomes permanent as long the object itself exists.
-		// see definitions of artItems and childrenWrappers.
-		Art parent = getParent();
+		// see definitions of items and childrenWrappers.
+		Item parent = getParent();
 		if (parent != null)
 			parent.childrenWrappers.add(this);
 		*/
@@ -275,82 +279,81 @@ public abstract class Art extends DictionaryObject {
 	private native static int nativeCreate(short type);
 
 	/**
-	 * Creates a new AIArtHandle of the specified type and wraps it in a Art
-	 * object
+	 * Creates a new AIArtHandle of the specified type and wraps it in a item
 	 * 
-	 * @param type Art.TYPE_*
+	 * @param type Item.TYPE_*
 	 */
-	protected Art(short type) {
+	protected Item(short type) {
 		this(nativeCreate(type));
 	}
 
 	/**
 	 * Wraps an AIArtHandle of given type (determined by
-	 * sAIArt->GetType(artHandle)) by the correct Art ancestor class:
+	 * sAIArt->GetType(artHandle)) by the correct Item ancestor class:
 	 * 
 	 * @param artHandle
 	 * @param type
-	 * @return the wrapped art object
+	 * @return the wrapped item
 	 */
-	protected static Art wrapHandle(int artHandle, short type, int textType,
+	protected static Item wrapHandle(int artHandle, short type, int textType,
 			int docHandle, int dictionaryRef, boolean wrapped) {
 		// first see whether the object was already wrapped before:
-		Art art = null;
+		Item item = null;
 		// only try to use the previous wrapper for this address if the object
 		// was marked wrapped otherwise we might get wrong wrappers for objects
 		// that reuse a previous address
 		if (wrapped)
-			art = (Art) artItems.get(artHandle);
+			item = (Item) items.get(artHandle);
 		// if it wasn't wrapped yet, do it now:
 		// TODO: don't forget to add all types also to the native
-		// Art_getType function in com_scriptographer_ai_Art.cpp!
-		if (art == null) {
+		// Item_getType function in com_scriptographer_ai_Item.cpp!
+		if (item == null) {
 			switch (type) {
 				case TYPE_PATH:
-					art = new Path(artHandle);
+					item = new Path(artHandle);
 					break;
 				case TYPE_GROUP:
-					art = new Group(artHandle);
+					item = new Group(artHandle);
 					break;
 				case TYPE_RASTER:
-					art = new Raster(artHandle);
+					item = new Raster(artHandle);
 					break;
 				case TYPE_PLACED:
-					art = new PlacedItem(artHandle);
+					item = new PlacedItem(artHandle);
 					break;
 				case TYPE_LAYER:
-					art = new Layer(artHandle);
+					item = new Layer(artHandle);
 					break;
 				case TYPE_COMPOUNDPATH:
-					art = new CompoundPath(artHandle);
+					item = new CompoundPath(artHandle);
 					break;
 				case TYPE_TEXTFRAME:
 					switch (textType) {
 						case TextFrame.TEXTTYPE_POINT:
-							art = new PointText(artHandle);
+							item = new PointText(artHandle);
 							break;
 						case TextFrame.TEXTTYPE_AREA:
-							art = new AreaText(artHandle);
+							item = new AreaText(artHandle);
 							break;
 						case TextFrame.TEXTTYPE_PATH:
-							art = new PathText(artHandle);
+							item = new PathText(artHandle);
 							break;
 					}
 					break;
 				case TYPE_TRACING:
-					art = new Tracing(artHandle);
+					item = new Tracing(artHandle);
 					break;
 				case TYPE_SYMBOL:
-					art = new SymbolItem(artHandle);
+					item = new SymbolItem(artHandle);
 				}
 		}
-		if (art != null) {
-			art.dictionaryRef = dictionaryRef;
-			art.document = Document.wrapHandle(docHandle);
-			if (art.millis == 0)
-				art.millis = System.currentTimeMillis();
+		if (item != null) {
+			item.dictionaryRef = dictionaryRef;
+			item.document = Document.wrapHandle(docHandle);
+			if (item.millis == 0)
+				item.millis = System.currentTimeMillis();
 		}
-		return art;
+		return item;
 	}
 
 	/**
@@ -359,12 +362,12 @@ public abstract class Art extends DictionaryObject {
 	 * @param artHandle
 	 * @return the wrapper for the artHandle
 	 */
-	protected static Art getIfWrapped(int artHandle) {
-		return (Art) artItems.get(artHandle);
+	protected static Item getIfWrapped(int artHandle) {
+		return (Item) items.get(artHandle);
 	}
 
 	/**
-	 * Increases the version of the art objects associated with artHandles, if
+	 * Increases the version of the items associated with artHandles, if
 	 * there are any. It does not wrap the artHandles if they weren't already.
 	 * 
 	 * @param artHandles
@@ -375,32 +378,32 @@ public abstract class Art extends DictionaryObject {
 		for (int i = 0; i < artHandles.length; i+=2) {
 			// artHandles contains two entries for every object:
 			// the current handle, and the initial handle that was stored
-			// in the art object's dictionary when it was wrapped. 
+			// in the item's dictionary when it was wrapped. 
 			// see the native side for more explanations
 			// (ScriptographerEngine::wrapArtHandle,
 			// ScriptographerEngine::selectionChanged)
 			int curHandle = artHandles[i];
 			int prevHandle = artHandles[i + 1];
-			Art art = null;
+			Item item = null;
 			if (prevHandle != 0) {
-				// in case there was already a art object with the initial handle
+				// in case there was already a item with the initial handle
 				// before, udpate it now:
-				art = (Art) artItems.get(prevHandle);
-				if (art != null) {
+				item = (Item) items.get(prevHandle);
+				if (item != null) {
 					// remove the old reference
-					artItems.remove(prevHandle);
+					items.remove(prevHandle);
 					// update object
-					art.handle = curHandle;
+					item.handle = curHandle;
 					// and store the new reference
-					artItems.put(curHandle, art);
+					items.put(curHandle, item);
 				}
 			}
-			if (art == null) {
-				art = (Art) artItems.get(curHandle);
+			if (item == null) {
+				item = (Item) items.get(curHandle);
 			}
 			// now update it if it was found
-			if (art != null) {
-				art.version++;
+			if (item != null) {
+				item.version++;
 			}
 		}
 		CommitManager.version++;
@@ -410,11 +413,11 @@ public abstract class Art extends DictionaryObject {
 			int docHandle) {
 		// Remove the object at the old handle
 		if (handle != newHandle) {
-			artItems.remove(handle);
+			items.remove(handle);
 			// Change the handles...
 			handle = newHandle;
 			// ...and insert it again
-			artItems.put(newHandle, this);
+			items.put(newHandle, this);
 		}
 		dictionaryRef = newDictionaryRef;
 		if (docHandle != 0)
@@ -437,7 +440,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * @jsbean Returns the document that the art item belongs to.
+	 * @jsbean Returns the document that the item belongs to.
 	 */
 	public Document getDocument() {
 		return document;
@@ -447,17 +450,17 @@ public abstract class Art extends DictionaryObject {
 			int dictionaryRef);
 
 	/**
-	 * Removes the art item from the document. If the art item has children,
+	 * Removes the item from the document. If the item has children,
 	 * they are also removed.
 	 * 
-	 * @return <code>true</code> if the art item was removed, false
+	 * @return <code>true</code> if the item was removed, false
 	 *         otherwise
 	 */
 	public boolean remove() {
 		boolean ret = false;
 		if (handle != 0) {
 			ret = nativeRemove(handle, document.handle, dictionaryRef);
-			artItems.remove(handle);
+			items.remove(handle);
 			handle = 0;			
 		}
 		return ret;
@@ -466,69 +469,69 @@ public abstract class Art extends DictionaryObject {
 	protected native void finalize();
 
 	/**
-	 * Copies the art item to another document, or duplicates it within the
+	 * Copies the item to another document, or duplicates it within the
 	 * same document.
 	 * 
-	 * @param document the document to copy the art item to
-	 * @return the new copy of the art item
+	 * @param document the document to copy the item to
+	 * @return the new copy of the item
 	 */
-	public native Art copyTo(Document document);
+	public native Item copyTo(Document document);
 
 	/**
-	 * Copies the art item into the specified art item.
+	 * Copies the item into the specified item.
 	 * 
-	 * @param art
+	 * @param item
 	 * @return
 	 */
-	public native Art copyTo(Art art);
+	public native Item copyTo(Item item);
 
 	/**
-	 * Clones the art item within the same document.
+	 * Clones the item within the same document.
 	 * 
-	 * @return the newly cloned art object
+	 * @return the newly cloned item
 	 */
 	public Object clone() {
 		return copyTo(document);
 	}
 	
 	/**
-	 * @jsbean Returns the art item that this art item is contained within.
+	 * @jsbean Returns the item that this item is contained within.
 	 */
-	public native Art getParent();
+	public native Item getParent();
 
 	/**
-	 * @jsbean Returns the first art item contained within this art item.
+	 * @jsbean Returns the first item contained within this item.
 	 */
-	public native Art getFirstChild();
+	public native Item getFirstChild();
 
 	/**
-	 * @jsbean Returns the last art item contained within this art item.
+	 * @jsbean Returns the last item contained within this item.
 	 */
-	public native Art getLastChild();
+	public native Item getLastChild();
 	
 	/**
-	 * @jsbean Returns the next art item on the same level as this art item.
+	 * @jsbean Returns the next item on the same level as this item.
 	 */
-	public native Art getNextSibling();
+	public native Item getNextSibling();
 
 	/**
-	 * @jsbean Returns the previous art item on the same level as this art item.
+	 * @jsbean Returns the previous item on the same level as this item.
 	 */
-	public native Art getPreviousSibling();
+	public native Item getPreviousSibling();
 
-	// don't implement this in native as the number of art objects is not known
+	// don't implement this in native as the number of items is not known
 	// in advance and like this, a java ArrayList can be used:
 	/**
-	 * @jsbean An array of art items contained within this art item
+	 * @jsbean An array of items contained within this item
 	 */
-	public Art[] getChildren() {
+	public Item[] getChildren() {
 		ArrayList list = new ArrayList();
-		Art child = getFirstChild();
+		Item child = getFirstChild();
 		while (child != null) {
 			list.add(child);
 			child = child.getNextSibling();
 		}
-		Art[] children = new Art[list.size()];
+		Item[] children = new Item[list.size()];
 		list.toArray(children);
 		return children;
 	}
@@ -537,20 +540,20 @@ public abstract class Art extends DictionaryObject {
 		removeChildren();
 		for (int i = 0, size = elements.size(); i < size; i++) {
 			Object obj = elements.get(i);
-			if (obj instanceof Art)
-				appendChild((Art) obj);
+			if (obj instanceof Item)
+				appendChild((Item) obj);
 		}
 	}
 
-	public void setChildren(Art[] children) {
+	public void setChildren(Item[] children) {
 		setChildren(Lists.asList(children));
 	}
 
 	public boolean removeChildren() {
-		Art child = getFirstChild();
+		Item child = getFirstChild();
 		boolean removed = false;
 		while (child != null) {
-			Art next = child.getNextSibling();
+			Item next = child.getNextSibling();
 			child.remove();
 			child = next;
 			removed = true;
@@ -559,7 +562,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Checks if the art object has children.
+	 * Checks if the item has children.
 	 * 
 	 * @return true if it has one or more children, false otherwise
 	 */
@@ -569,14 +572,14 @@ public abstract class Art extends DictionaryObject {
 
 	protected native Rectangle nativeGetBounds();
 
-	private ArtRectangle bounds = null;
+	private ItemRectangle bounds = null;
 
 	/**
-	 * @jsbean The bounds of the art item excluding stroke width.
+	 * @jsbean The bounds of the item excluding stroke width.
 	 */
 	public Rectangle getBounds() {
 		if (bounds == null)
-			bounds = new ArtRectangle(this);
+			bounds = new ItemRectangle(this);
 		else
 			bounds.update();
 		return bounds;
@@ -609,22 +612,22 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * @jsbean The bounds of the art item including stroke width.
+	 * @jsbean The bounds of the item including stroke width.
 	 */
 	public native Rectangle getStrokeBounds();
 
 	/**
-	 * @jsbean The bounds of the art item including stroke width and controls.
+	 * @jsbean The bounds of the item including stroke width and controls.
 	 */
 	public native Rectangle getControlBounds();
 
 	protected native Point nativeGetPosition();
 
-	private ArtPoint position = null;
+	private ItemPoint position = null;
 
 	public Point getPosition() {
 		if (position == null)
-			position = new ArtPoint(this);
+			position = new ItemPoint(this);
 		else
 			position.update();
 		return position;
@@ -642,11 +645,11 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * @jsbean The name of the art item as it appears in the layers palette.
+	 * @jsbean The name of the item as it appears in the layers palette.
 	 * @jsbean Sample code:
 	 * @jsbean
 	 * @jsbean <pre>
-	 * @jsbean var layer = new Layer(); // a layer is an art item
+	 * @jsbean var layer = new Layer(); // a layer is an item
 	 * @jsbean print(layer.name); // returns '<Layer 2>'
 	 * @jsbean layer.name = "A nice name";
 	 * @jsbean print(layer.name); // returns 'A nice name'
@@ -657,7 +660,7 @@ public abstract class Art extends DictionaryObject {
 	public native void setName(String name);
 	
 	/**
-	 * Checks if the art item's name as it appears in the layers palette is a
+	 * Checks if the item's name as it appears in the layers palette is a
 	 * default descriptive name, rather then a user-assigned name.
 	 * 
 	 * @return <tt>true</tt> if it's name is default, <tt>false</tt> otherwise.
@@ -666,7 +669,7 @@ public abstract class Art extends DictionaryObject {
 	public native boolean isDefaultName();
 
 	/**
-	 * The path style of the art item.
+	 * The path style of the item.
 	 * @return
 	 */
 	public PathStyle getStyle() {
@@ -688,40 +691,40 @@ public abstract class Art extends DictionaryObject {
 	protected native boolean getAttribute(int attribute);
 
 	/**
-	 * @jsbean A boolean value that specifies whether an art item is selected.
-	 * @jsbean Returns true if the art item is selected or partially selected (groups with
+	 * @jsbean A boolean value that specifies whether an item is selected.
+	 * @jsbean Returns true if the item is selected or partially selected (groups with
 	 * @jsbean some selected objects/partially selected paths), false otherwise.
 	 * @jsbean Sample code:
 	 * @jsbean <pre>
 	 * @jsbean print(activeDocument.selectedItems.length) // returns 0
-	 * @jsbean var path = new Path(); // new art items are always created in the active layer
+	 * @jsbean var path = new Path(); // new items are always created in the active layer
 	 * @jsbean path.selected = true; // select the path
 	 * @jsbean print(activeDocument.selectedItems.length) // returns 1
 	 * @jsbean </pre>
 	 */
 	public boolean isSelected() {
-		return getAttribute(ATTR_SELECTED.intValue());
+		return getAttribute(ATTRIBUTE_SELECTED.intValue());
 	}
 
 	public void setSelected(boolean selected) {
-		setAttribute(ATTR_SELECTED.intValue(), selected);
+		setAttribute(ATTRIBUTE_SELECTED.intValue(), selected);
 	}
 
 	/**
-	 * @jsbean A boolean value that specifies whether the art item is fully
+	 * @jsbean A boolean value that specifies whether the item is fully
 	 * @jsbean selected. For paths this means that all segments are selected,
 	 * @jsbean for container objects all children are selected.
 	 */
 	public boolean isFullySelected() {
-		return getAttribute(ATTR_FULLY_SELECTED.intValue());
+		return getAttribute(ATTRIBUTE_FULLY_SELECTED.intValue());
 	}
 
 	public void setFullySelected(boolean selected) {
-		setAttribute(ATTR_FULLY_SELECTED.intValue(), selected);
+		setAttribute(ATTRIBUTE_FULLY_SELECTED.intValue(), selected);
 	}
 
 	/**
-	 * @jsbean A boolean value that specifies whether the art item is locked.
+	 * @jsbean A boolean value that specifies whether the item is locked.
 	 * @jsbean Sample code:
 	 * @jsbean <pre>
 	 * @jsbean var path = new Path();
@@ -731,15 +734,15 @@ public abstract class Art extends DictionaryObject {
 	 * @jsbean </pre>
 	 */
 	public boolean isLocked() {
-		return getAttribute(ATTR_LOCKED.intValue());
+		return getAttribute(ATTRIBUTE_LOCKED.intValue());
 	}
 
 	public void setLocked(boolean locked) {
-		setAttribute(ATTR_LOCKED.intValue(), locked);
+		setAttribute(ATTRIBUTE_LOCKED.intValue(), locked);
 	}
 
 	/**
-	 * @jsbean A boolean value that specifies whether the art item is hidden.
+	 * @jsbean A boolean value that specifies whether the item is hidden.
 	 * @jsbean Sample code:
 	 * @jsbean
 	 * @jsbean <pre>
@@ -750,17 +753,17 @@ public abstract class Art extends DictionaryObject {
 	 * @jsbean </pre>
 	 */
 	public boolean isHidden() {
-		return getAttribute(ATTR_HIDDEN.intValue());
+		return getAttribute(ATTRIBUTE_HIDDEN.intValue());
 	}
 
 	public void setHidden(boolean hidden) {
-		setAttribute(ATTR_HIDDEN.intValue(), hidden);
+		setAttribute(ATTRIBUTE_HIDDEN.intValue(), hidden);
 	}
 
 	// Indicates that the object defines a clip mask. 
 
 	/**
-	 * @jsbean A boolean value that specifies whether the art item defines a clip mask.
+	 * @jsbean A boolean value that specifies whether the item defines a clip mask.
 	 * @jsbean This can only be set on paths, compound paths, and text frame objects,
 	 * @jsbean and only if the item is already contained within a clip group.
 	 * @jsbean Sample code:
@@ -773,35 +776,35 @@ public abstract class Art extends DictionaryObject {
 	 * @jsbean </pre>
 	 */
 	public boolean isClipMask() {
-		return getAttribute(ATTR_HIDDEN.intValue());
+		return getAttribute(ATTRIBUTE_HIDDEN.intValue());
 	}
 
 	public void setClipMask(boolean clipMask) {
-		setAttribute(ATTR_IS_CLIPMASK.intValue(), clipMask);
+		setAttribute(ATTRIBUTE_IS_CLIPMASK.intValue(), clipMask);
 	}
 
 	/**
-	 * @jsbean Returns <code>true</code> when neither the art item, nor it's parents are locked or hidden.
+	 * @jsbean Returns <code>true</code> when neither the item, nor it's parents are locked or hidden.
 	 */
 	public native boolean isEditable();
 
 	/**
-	 * @jsbean The art item's blend mode as specified by the <code>Art.BLEND_*</code> static
+	 * @jsbean The item's blend mode as specified by the <code>Item.BLEND_*</code> static
 	 * @jsbean properties.
 	 * 
-	 * @return any of Art.BLEND_*
+	 * @return any of Item.BLEND_*
 	 */
 	public native int getBlendMode();
 
 	/**
-	 * Set the art item's blend mode:
+	 * Set the item's blend mode:
 	 * 
-	 * @param mode Art.BLEND_*
+	 * @param mode Item.BLEND_*
 	 */
 	public native void setBlendMode(int mode);
 
 	/**
-	 * @jsbean A value between 0 and 1 that specifies the opacity of the art item.
+	 * @jsbean A value between 0 and 1 that specifies the opacity of the item.
 	 */
 	public native float getOpacity();
 
@@ -824,7 +827,7 @@ public abstract class Art extends DictionaryObject {
 	public native boolean isValid();
 
 	/**
-	 * Appends the specified art item as a child of this art item.
+	 * Appends the specified item as a child of this item.
 	 * You can use this function for groups, compound paths and layers.
 	 * Sample code:
 	 * <pre>
@@ -834,12 +837,12 @@ public abstract class Art extends DictionaryObject {
 	 * print(path.isInside(group)) // returns true
 	 * </pre>
 	 * 
-	 * @param art The art item that will be appended as a child
+	 * @param item The item that will be appended as a child
 	 */
-	public native boolean appendChild(Art art);
+	public native boolean appendChild(Item item);
 	
 	/**
-	 * Moves this art item above the specified art item.
+	 * Moves this item above the specified item.
 	 * Sample code:
 	 * <pre>
 	 * var firstPath = new Path();
@@ -849,13 +852,13 @@ public abstract class Art extends DictionaryObject {
 	 * print(firstPath.isAbove(secondPath)) // returns true
 	 * </pre>
 	 * 
-	 * @param art The art item above which it should be moved
+	 * @param item The item above which it should be moved
 	 * @return true if it was moved, false otherwise
 	 */
-	public native boolean moveAbove(Art art);
+	public native boolean moveAbove(Item item);
 	
 	/**
-	 * Moves the art item below the specified art object.
+	 * Moves the item below the specified item.
 	 * <pre>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
@@ -864,22 +867,22 @@ public abstract class Art extends DictionaryObject {
 	 * print(secondPath.isBelow(firstPath)) // returns true
 	 * </pre>
 	 * 
-	 * @param art the art item below which it should be moved
+	 * @param item the item below which it should be moved
 	 * @return true if it was moved, false otherwise
 	 */
-	public native boolean moveBelow(Art art);
+	public native boolean moveBelow(Item item);
 
 	/**
-	 * Transforms the art item with custom flags to be set.
+	 * Transforms the item with custom flags to be set.
 	 * 
 	 * @param at
-	 * @param flags Art. TRANSFORM_*
+	 * @param flags Item.TRANSFORM_*
 	 */
 	public native void transform(Matrix matrix, int flags);
 
 	/**
-	 * Transforms the art item with the flags Art.TRANSFORM_OBJECTS and
-	 * Art.TRANSFORM_DEEP set
+	 * Transforms the item with the flags Item.TRANSFORM_OBJECTS and
+	 * Item.TRANSFORM_DEEP set
 	 * 
 	 * @param matrix
 	 */
@@ -897,7 +900,7 @@ public abstract class Art extends DictionaryObject {
 	}
 	
 	/**
-	 * Scales the art item by the given values from its center point.
+	 * Scales the item by the given values from its center point.
 	 * 
 	 * @param sx
 	 * @param sy
@@ -912,7 +915,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Translates (moves) the art item by the given offsets.
+	 * Translates (moves) the item by the given offsets.
 	 * 
 	 * @param tx
 	 * @param ty
@@ -923,7 +926,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Translates (moves) the art item by the given offset point.
+	 * Translates (moves) the item by the given offset point.
 	 * 
 	 * @param t
 	 */
@@ -932,7 +935,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Rotates the art item by a given angle around its center point.
+	 * Rotates the item by a given angle around its center point.
 	 * 
 	 * @param theta the rotation angle in radians
 	 */
@@ -941,7 +944,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Rotates the art item around an anchor point by a given angle around
+	 * Rotates the item around an anchor point by a given angle around
 	 * the given point.
 	 * 
 	 * @param theta the rotation angle in radians
@@ -956,7 +959,7 @@ public abstract class Art extends DictionaryObject {
 	}
 
 	/**
-	 * Shears the art item with a given amount around its center point.
+	 * Shears the item with a given amount around its center point.
 	 * @param shx
 	 * @param shy
 	 * @see Matrix#shear(double, double)
@@ -1014,7 +1017,7 @@ public abstract class Art extends DictionaryObject {
 	 * 
 	 * It outlines stroked lines, text objects, gradients, patterns, etc.
 	 * 
-	 * The art item itself is removed, and the newly created item containing the
+	 * The item itself is removed, and the newly created item containing the
 	 * expanded artwork is returned.
 	 * 
 	 * @param flags #EXPAND_*
@@ -1022,7 +1025,7 @@ public abstract class Art extends DictionaryObject {
 	 *        #EXPAND_GRADIENTTOPATHS flag is set
 	 * @return the newly created item containing the expanded artwork
 	 */
-	public native Art expand(int flags, int steps);
+	public native Item expand(int flags, int steps);
 
 	/**
 	 * Calls {@link #expand(int, int)} with these flags set: #EXPAND_PLUGINART,
@@ -1030,15 +1033,15 @@ public abstract class Art extends DictionaryObject {
 	 * 
 	 * @return the newly created item containing the expanded artwork
 	 */
-	public Art expand() {
+	public Item expand() {
 		return expand(EXPAND_PLUGINART | EXPAND_TEXT | EXPAND_STROKE |
 				EXPAND_PATTERN | EXPAND_SYMBOLINSTANCES, 0);
 	}
 	
-	protected native int getOrder(Art art);
+	protected native int getOrder(Item item);
 	
 	/**
-	 * Checks if this art item is above the specified art item in the stacking
+	 * Checks if this item is above the specified item in the stacking
 	 * order of the document.
 	 * Sample code:
 	 * <pre>
@@ -1047,16 +1050,16 @@ public abstract class Art extends DictionaryObject {
 	 * print(secondPath.isAbove(firstPath)) // returns true
 	 * </pre>
 	 * 
-	 * @param art The art item to check against
-	 * @return <code>true</code> if it is above the specified art item, false
+	 * @param item The item to check against
+	 * @return <code>true</code> if it is above the specified item, false
 	 *         otherwise
 	 */
-	public boolean isAbove(Art art) {
-		return getOrder(art) == ORDER_ABOVE;		
+	public boolean isAbove(Item item) {
+		return getOrder(item) == ORDER_ABOVE;		
 	}
 	
 	/**
-	 * Checks if the art item is below the specified art item in the stacking
+	 * Checks if the item is below the specified item in the stacking
 	 * order of the document
 	 * Sample code:
 	 * <pre>
@@ -1065,16 +1068,16 @@ public abstract class Art extends DictionaryObject {
 	 * print(firstPath.isBelow(secondPath)) // returns true
 	 * </pre>
 	 * 
-	 * @param art The art item to check against
-	 * @return <code>true</code> if it is below the specified art item, false
+	 * @param item The item to check against
+	 * @return <code>true</code> if it is below the specified item, false
 	 *         otherwise
 	 */
-	public boolean isBelow(Art art) {
-		return getOrder(art) == ORDER_BELOW;		
+	public boolean isBelow(Item item) {
+		return getOrder(item) == ORDER_BELOW;		
 	}
 	
 	/**
-	 * Checks if the art item is contained within the specified art item
+	 * Checks if the item is contained within the specified item
 	 * Sample code:
 	 * <pre>
 	 * var group = new Group();
@@ -1083,16 +1086,16 @@ public abstract class Art extends DictionaryObject {
 	 * print(path.isInside(group)) // returns true
 	 * </pre>
 	 *
-	 * @param art The art item to check against
-	 * @return <code>true</code> if it is inside the specified art item,
+	 * @param item The item to check against
+	 * @return <code>true</code> if it is inside the specified item,
 	 *         false otherwise
 	 */
-	public boolean isInside(Art art) {
-		return getOrder(art) == ORDER_INSIDE;		
+	public boolean isInside(Item item) {
+		return getOrder(item) == ORDER_INSIDE;		
 	}
 
 	/**
-	 * Checks if this art item is an ancestor of the specified art item.
+	 * Checks if this item is an ancestor of the specified item.
 	 * Sample code:
 	 * <pre>
 	 * var group = new Group();
@@ -1101,12 +1104,12 @@ public abstract class Art extends DictionaryObject {
 	 * print(group.isAncestor(path)) // returns true
 	 * </pre>
 	 * 
-	 * @param art the art item to check against
-	 * @return <code>true</code> if it is an ancestor of the specified art
+	 * @param item the item to check against
+	 * @return <code>true</code> if it is an ancestor of the specified 
 	 *         item, false otherwise
 	 */
-	public boolean isAncestor(Art art) {
-		return getOrder(art) == ORDER_ANCHESTOR;		
+	public boolean isAncestor(Item item) {
+		return getOrder(item) == ORDER_ANCHESTOR;		
 	}
 
 	protected native void nativeGetDictionary(Dictionary dictionary);

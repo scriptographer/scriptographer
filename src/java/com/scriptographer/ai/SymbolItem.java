@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class SymbolItem extends Art {
+public class SymbolItem extends Item {
 
 	protected SymbolItem(int handle) {
 		super(handle);

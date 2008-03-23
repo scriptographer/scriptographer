@@ -45,7 +45,14 @@ public class ColorConverter extends ArgumentConverter {
 
 	public Object convert(ArgumentReader reader, Object from) {
 		// TODO: gradient & pattern color
-		if (reader.isArray()) {
+		// Since StringArgumentReaders also return true for isArray (they
+		// can behave like arrays as well), always check for isString first!
+		if (reader.isString()) {
+			String str = reader.readString();
+			if (!str.startsWith("#"))
+				str = '#' + str;
+			return new RGBColor(java.awt.Color.decode(str));
+		} else if (reader.isArray()) {
 			int size = reader.size();
 			if (size == 4) {
 				// CMYK
@@ -90,11 +97,6 @@ public class ColorConverter extends ArgumentConverter {
 						reader.readFloat("alpha", 1)
 				);
 			}
-		} else if (reader.isString()) {
-			String str = reader.readString();
-			if (!str.startsWith("#"))
-				str = '#' + str;
-			return new RGBColor(java.awt.Color.decode(str));
 		}
 		return null;
 	}

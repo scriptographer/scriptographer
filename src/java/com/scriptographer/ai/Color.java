@@ -34,6 +34,8 @@ package com.scriptographer.ai;
 import java.awt.color.ICC_Profile;
 import java.io.IOException;
 
+import com.scriptographer.ScriptographerException;
+
 /**
  * @author lehni
  */
@@ -141,7 +143,7 @@ public abstract class Color {
 							Color.class.getClassLoader().getResourceAsStream(
 									"com/scriptographer/cmm/" + filename));
 				} catch (IOException e) {
-					throw new RuntimeException(e);
+					throw new ScriptographerException(e);
 				}
 			}
 		}

@@ -55,61 +55,11 @@ import com.scriptographer.sg.Scriptographer;
 public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 
 	final static Class classes[] = {
-		// ADM, alphabetically
-		Button.class,
-		ChasingArrows.class,
-		Dial.class,
-		CheckBox.class,
-		Dialog.class,
-		DialogGroupInfo.class,
-		Drawer.class,
-		FloatingDialog.class,
-		FontInfo.class,
-		Frame.class,
-		HierarchyList.class,
-		HierarchyListEntry.class,
-		Image.class,
-		ImageButton.class,
-		ImageCheckBox.class,
-		ImageRadioButton.class,
-		ImageStatic.class,
-		Item.class,
-		ItemGroup.class,
-		Key.class,
-		List.class,
-		ListEntry.class,
-		ListItem.class,
-		MenuGroup.class,
-		MenuItem.class,
-		ModalDialog.class,
-		PopupDialog.class,
-		PopupList.class,
-		PopupMenu.class,
-		ProgressBar.class,
-		RadioButton.class,
-		ScrollBar.class,
-		Slider.class,
-		Spacer.class,
-		SpinEdit.class,
-		Static.class,
-		TableLayout.class,
-		TextEdit.class,
-		TextItem.class,
-		TextValueItem.class,
-		ToggleItem.class,
-		Tracker.class,
-		Border.class,
-
-		// AWT Layout classes
-		BorderLayout.class,
-		Dimension.class,
-		FlowLayout.class,
-
 		// AI, alphabetically
 		Annotator.class,
 		AreaText.class,
-		Art.class,
-		ArtSet.class,
+		com.scriptographer.ai.Item.class,
+		ItemSet.class,
 		CharacterStyle.class,
 		CMYKColor.class,
 		Color.class,
@@ -169,7 +119,56 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Tool.class,
 		Tracing.class,
 
-		// Java
+		// ADM, alphabetically
+		Button.class,
+		ChasingArrows.class,
+		Dial.class,
+		CheckBox.class,
+		Dialog.class,
+		DialogGroupInfo.class,
+		Drawer.class,
+		FloatingDialog.class,
+		FontInfo.class,
+		Frame.class,
+		HierarchyList.class,
+		HierarchyListEntry.class,
+		Image.class,
+		ImageButton.class,
+		ImageCheckBox.class,
+		ImageRadioButton.class,
+		ImageStatic.class,
+		ItemGroup.class,
+		Key.class,
+		List.class,
+		ListEntry.class,
+		ListItem.class,
+		MenuGroup.class,
+		MenuItem.class,
+		ModalDialog.class,
+		PopupDialog.class,
+		PopupList.class,
+		PopupMenu.class,
+		ProgressBar.class,
+		RadioButton.class,
+		ScrollBar.class,
+		Slider.class,
+		Spacer.class,
+		SpinEdit.class,
+		Static.class,
+		TableLayout.class,
+		TextEdit.class,
+		TextItem.class,
+		TextValueItem.class,
+		ToggleItem.class,
+		Tracker.class,
+		Border.class,
+
+		// AWT Layout classes
+		BorderLayout.class,
+		Dimension.class,
+		FlowLayout.class,
+
+		// SG
 		com.scriptographer.sg.File.class
 	};
 
@@ -177,7 +176,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		super(context);
 
 		// define classes. the createPrototypes flag is set so
-		// the classes' constructors can now wether an object
+		// the classes' constructors can now whether an object
 		// is created as prototype or as real object through
 		// isCreatingPrototypes()
 

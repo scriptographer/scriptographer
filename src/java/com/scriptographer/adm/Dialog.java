@@ -33,6 +33,7 @@ package com.scriptographer.adm;
 
 import com.scratchdisk.script.Callable;
 import com.scriptographer.ScriptographerEngine; 
+import com.scriptographer.ScriptographerException;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -185,20 +186,20 @@ public abstract class Dialog extends Component {
 	 * change event in this case, still the old dimensions are returned (!)
 	 */
 	private boolean ignoreSizeChange = false;
-	// use two boolean values to monitor the initalized state,
+	// use two boolean values to monitor the initialized state,
 	// to make the distinction between completely initialized (initialized ==
-	// true) and somwhere during the call of initialize() (unitialized == false)
+	// true) and somewhere during the call of initialize() (uninitialized == false)
 	private boolean unitialized = true;
 	private boolean initialized = false;
-	// used to see wether the size where specified before the dialog is
+	// used to see whether the size where specified before the dialog is
 	// initialized
 	private boolean sizeSet = false;
 	// used to check if the boundaries (min / max size) are to bet set after
 	// initialization
 	private boolean boundariesSet = true;
 
-	// for scripts, we cannot allways access ScriptRuntime.getTopCallScope(cx)
-	// store a reference to the script's preferences object so we can allways
+	// for scripts, we cannot always access ScriptRuntime.getTopCallScope(cx)
+	// store a reference to the script's preferences object so we can always
 	// use it this happens completely transparently, the dialog class does not
 	// need to know anything about the fact if it's a script or a java class.
 	private Preferences preferences;
@@ -213,7 +214,7 @@ public abstract class Dialog extends Component {
 		// create a unique name for this session:
 		String name = "Scriptographer Dialog " + (++uniqueId);
 		// filter out the pseudo styles from the options:
-		// (max. real bitis 16, and the mask is (1 << (max + 1)) - 1
+		// (max. real bit is 16, and the mask is (1 << (max + 1)) - 1
 		handle = nativeCreate(name, style, options & ((1 << 17) - 1));
 		bounds = nativeGetBounds();
 		size = nativeGetSize();
@@ -228,7 +229,7 @@ public abstract class Dialog extends Component {
 		this.options = options;
 		if (handle != 0)
 			dialogs.add(this);
-		// allways set dialogs hidden first. 
+		// always set dialogs hidden first. 
 		// if the OPTION_HIDDEN pseudo flag is not set, the dialog is then
 		// displayed in initialize
 		setVisible(false);
@@ -766,7 +767,7 @@ public abstract class Dialog extends Component {
 	private native void nativeSetBounds(int x, int y, int width, int height);
 
 	public Rectangle getBounds() {
-		// As kADMWindowDragMovedNotifier does not seem to work, allways
+		// As kADMWindowDragMovedNotifier does not seem to work, always
 		// fetch bounds natively.
 		// If kADMWindowDragMovedNotifier was working, the reflected value could
 		// be kept up to date...
@@ -823,7 +824,7 @@ public abstract class Dialog extends Component {
 				onResize(deltaX, deltaY);
 			} catch (Exception e) {
 				// TODO: deal with Exception...
-				throw new RuntimeException(e);
+				throw new ScriptographerException(e);
 			}
 		}
 	}

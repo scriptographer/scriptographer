@@ -31,6 +31,7 @@
 
 package com.scriptographer.ai;
 
+import com.scratchdisk.script.ArgumentReader;
 import com.scriptographer.CommitManager;
 
 /**
@@ -109,6 +110,45 @@ public class CharacterStyle extends PathStyle {
 		commitKey = this;
 	}
 
+	public CharacterStyle(ArgumentReader reader) {
+		// Handler fill & stroke through PathStyle constructor
+		super(reader);
+		// See reading of color in StrokeStyle:
+		FontWeight weight = (FontWeight) reader.readObject("font", FontWeight.class);
+		if (weight == null && (!reader.isHash() || reader.has("font")))
+			weight = FontWeight.NONE;
+		setFont(weight);
+		setFontSize(reader.readFloat("fontSize"));
+		setHorizontalScale(reader.readFloat("horizontalScale"));
+		setVerticalScale(reader.readFloat("verticalScale"));
+		setAutoLeading(reader.readBoolean("autoLeading"));
+		setLeading(reader.readFloat("leading"));
+		setTracking(reader.readInteger("tracking"));
+		setBaselineShift(reader.readFloat("baselineShift"));
+		setRotation(reader.readFloat("Rotation"));
+		setKerningMethod(reader.readInteger("kerningMethod"));
+		setCapitalization(reader.readInteger("capitalization"));
+		setBaselineOption(reader.readInteger("baselineOption"));
+		setOpenTypePosition(reader.readInteger("openTypePosition"));
+		setStrikethroughPosition(reader.readInteger("strikethroughPosition"));
+		setUnderlinePosition(reader.readInteger("underlinePosition"));
+		setUnderlineOffset(reader.readFloat("underlineOffset"));
+		setLigature(reader.readBoolean("ligature"));
+		setDiscretionaryLigature(reader.readBoolean("discretionaryLigature"));
+		setContextualLigature(reader.readBoolean("contextLigature"));
+		setAlternateLigatures(reader.readBoolean("alternateLigature"));
+		setOldStyle(reader.readBoolean("oldStyle"));
+		setFractions(reader.readBoolean("fractions"));
+		setOrdinals(reader.readBoolean("ordinals"));
+		setSwash(reader.readBoolean("swash"));
+		setTitling(reader.readBoolean("titling"));
+		setConnectionForms(reader.readBoolean("forms"));
+		setStylisticAlternates(reader.readBoolean("stylisticAlternates"));
+		setOrnaments(reader.readBoolean("ornaments"));
+		setFigureStyle(reader.readInteger("figureStyle"));
+		setNoBreak(reader.readBoolean("noBreak"));
+	}
+
 	protected CharacterStyle(int handle, TextRange range) {
 		this(handle);
 		this.range = range;
@@ -127,7 +167,7 @@ public class CharacterStyle extends PathStyle {
 	private native int nativeClone();
 	
 	public Object clone() {
-		if (dirty) // make sur it's not dirty 
+		if (dirty) // make sure it's not dirty 
 			commit();
 		return new CharacterStyle(nativeClone());
 	}
@@ -207,10 +247,10 @@ public class CharacterStyle extends PathStyle {
 	 * @jsbean text.content = "The content of the text field.";
 	 * @jsbean
 	 * @jsbean // Sets all the text to Verdana Regular.
-	 * @jsbean text.characterStyle.font = fonts["Verdana"];
+	 * @jsbean text.characterStyle.font = app.fonts["Verdana"];
 	 * @jsbean
 	 * @jsbean //sets the second word to Verdana Bold
-	 * @jsbean text.range.words[1].characterStyle.font = fonts["Verdana"]["Bold"];
+	 * @jsbean text.range.words[1].characterStyle.font = app.fonts["Verdana"]["Bold"];
 	 * @jsbean </pre>
 	 */
 	public FontWeight getFont() {
@@ -282,7 +322,7 @@ public class CharacterStyle extends PathStyle {
 	public native void setVerticalScale(Float scale);
 
 	/**
-	 * @jsbean Specifies wether to use auto leading in the character style.
+	 * @jsbean Specifies whether to use auto leading in the character style.
 	 */
 	public native Boolean getAutoLeading();
 	public native void setAutoLeading(Boolean leading);

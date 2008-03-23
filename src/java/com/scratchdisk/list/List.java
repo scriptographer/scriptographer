@@ -34,7 +34,7 @@ package com.scratchdisk.list;
 
 /**
  * This is similar to java.util.List, but has a few changes that make it much
- * easier to use in Scirptographer. SegmentList, CurveList, LayerList and ArtSet
+ * easier to use in Scirptographer. SegmentList, CurveList, LayerList and ItemSet
  * subclass the AbstractList that implements this interface.
  * 
  * Reason to implement this:

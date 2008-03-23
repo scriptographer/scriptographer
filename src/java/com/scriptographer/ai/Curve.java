@@ -81,14 +81,17 @@ public class Curve {
 	}
 
 	public Curve(ArgumentReader reader) {
-		if (reader.isHash()) {
+		// First try reading a point, no matter if it is a hash or a array.
+		// If that does not work, fall back to other scenarios:
+		Point point1 = getPoint(reader, "point1", true);
+		if (point1 != null) {
 			init(
-				getPoint(reader, "point1"),
-				getPoint(reader, "handle1"),
-				getPoint(reader, "handle2"),
-				getPoint(reader, "point2")
+				point1,
+				getPoint(reader, "handle1", false),
+				getPoint(reader, "handle2", false),
+				getPoint(reader, "point2", false)
 			);
-		} else {
+		} else if (reader.isArray()) {
 			init(
 				reader.readFloat(0),
 				reader.readFloat(0),
@@ -108,7 +111,7 @@ public class Curve {
 		updateSegments();
 	}
 
-	private static Point getPoint(ArgumentReader reader, String name) {
+	private static Point getPoint(ArgumentReader reader, String name, boolean allowNull) {
 		Point point = (Point) reader.readObject(name, Point.class);
 		return point != null ? point : new Point();
 	}
@@ -153,7 +156,7 @@ public class Curve {
 			if (index2 >= segments.size)
 				index2 = 0;
 			
-			// check wether the segments were moved (others were deleted), the path wa supdated or the segments even moved to
+			// check whether the segments were moved (others were deleted), the path was updated or the segments even moved to
 			// another path. fetch again if they were:
 
 			if (segment1 == null || segment1.index != index1 ||

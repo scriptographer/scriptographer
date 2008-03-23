@@ -31,17 +31,17 @@ extern AIDocumentHandle gActiveDoc;
 extern AIDocumentHandle gWorkingDoc;
 extern AIDocumentHandle gCreationDoc;
 
-bool Art_isValid(AIArtHandle art);
-short Art_getType(AIArtHandle handle);
-short Art_getType(JNIEnv *env, jclass cls);
-jboolean Art_hasChildren(AIArtHandle handle);
-jboolean Art_isLayer(AIArtHandle handle);
-AIArtHandle Art_rasterize(AIArtHandle handle, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
-AIArtHandle Art_getInsertionPoint(short *paintOrder, AIDocumentHandle doc = NULL);
+bool Item_isValid(AIArtHandle art);
+short Item_getType(AIArtHandle handle);
+short Item_getType(JNIEnv *env, jclass cls);
+jboolean Item_hasChildren(AIArtHandle handle);
+jboolean Item_isLayer(AIArtHandle handle);
+AIArtHandle Item_rasterize(AIArtHandle handle, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
+AIArtHandle Item_getInsertionPoint(short *paintOrder, AIDocumentHandle doc = NULL);
 
-void ArtSet_filter(AIArtSet set, bool layerOnly = false);
-jobject ArtSet_getSelected(JNIEnv *env);
-AIArtHandle ArtSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
+void ItemSet_filter(AIArtSet set, bool layerOnly = false);
+jobject ItemSet_getSelected(JNIEnv *env);
+AIArtHandle ItemSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 
 AIArtHandle JNICALL PlacedItem_place(JNIEnv *env, AIDocumentHandle doc, jobject file, jboolean linked);
 

@@ -219,7 +219,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 						ScriptableObject.getTopLevelScope(this), sup);
 				parent = classWrapper.getInstancePrototype();
 			} else {
-				// At the end of the chain, there is allways the Object prototype.
+				// At the end of the chain, there is always the Object prototype.
 				parent = ScriptableObject.getObjectPrototype(this);
 			}
 			instanceProto.setPrototype(parent);

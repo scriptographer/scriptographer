@@ -34,8 +34,13 @@ package com.scriptographer;
 /**
  * @author lehni
  */
-public class ScriptographerException extends Exception {
+public class ScriptographerException extends RuntimeException {
+
 	public ScriptographerException(String msg) {
 		super(msg);
+	}
+
+	public ScriptographerException(Throwable t) {
+		super(t);
 	}
 }

@@ -32,31 +32,28 @@
 package com.scratchdisk.script;
 
 /**
+ * A StringArgumentReader can read from passed strings. It extends
+ * ArrayArgumentReader, therefore also return true for isArray.
+ * So make sure you check for isString first if that special case
+ * needs handling.
+ * 
  * @author lehni
  *
  */
-public class StringArgumentReader extends ArgumentReader {
+public class StringArgumentReader extends ArrayArgumentReader {
 
 	protected String[] parts;
-	protected int index;
 
 	public StringArgumentReader(Converter converter, String string) {
 		super(converter);
 		parts = string.split("\\s");
-		index = 0;
 	}
 
 	protected Object readNext(String name) {
 		return index < parts.length ? parts[index++] : null;
 	}
 
-	public void revert() {
-		if (index > 0)
-			index--;
-	}
-
 	public boolean isString() {
 		return true;
 	}
-
 }

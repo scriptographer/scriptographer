@@ -293,7 +293,7 @@
 			<class name="com.scriptographer.ScriptographerEngine" />
 
 			<class name="com.scriptographer.ai.Tool" />
-			<class name="com.scriptographer.ai.Art" />
+			<class name="com.scriptographer.ai.Item" />
 			<class name="com.scriptographer.ai.Path" />
 			<class name="com.scriptographer.ai.PathStyle" />
 			<class name="com.scriptographer.ai.Group" />
@@ -301,7 +301,7 @@
 			<class name="com.scriptographer.ai.PlacedItem" />
 			<class name="com.scriptographer.ai.SegmentList" />
 			<class name="com.scriptographer.ai.Curve" />
-			<class name="com.scriptographer.ai.ArtSet" />
+			<class name="com.scriptographer.ai.ItemSet" />
 			<class name="com.scriptographer.ai.Layer" />
 			<class name="com.scriptographer.ai.LayerList" />
 			<class name="com.scriptographer.ai.Document" />
@@ -429,8 +429,8 @@
 				<param name="-basepackage" value="com.scriptographer"/>
 				<param name="-filterclasses" value="
 					com.scriptographer.ai.DictionaryObject
-					com.scriptographer.ai.ArtPoint
-					com.scriptographer.ai.ArtRectangle
+					com.scriptographer.ai.ItemPoint
+					com.scriptographer.ai.ItemRectangle
 					com.scriptographer.ai.Dictionary
 					com.scriptographer.ai.Event
 					com.scriptographer.ai.FileFormat

@@ -37,7 +37,7 @@ import com.scriptographer.CommitManager;
 
 /**
  * The Segment object represents a part of a path which is described by the
- * {@link Art#segments} property. Every segment of path corresponds to an
+ * {@link Item#segments} property. Every segment of path corresponds to an
  * anchor point (anchor points are the path handles that are visible when the
  * path is selected).
  * 
@@ -108,31 +108,36 @@ public class Segment implements Commitable {
 	}
 
 	public Segment(ArgumentReader reader) {
-		if (reader.isHash()) {
-			if (reader.has("point")) {
-				init(
-					getPoint(reader, "point"),
-					getPoint(reader, "handleIn"),
-					getPoint(reader, "handleOut"),
+		// First try reading a point, no matter if it is a hash or a array.
+		// If that does not work, fall back to other scenarios:
+		Point point = getPoint(reader, "point", true);
+		if (point != null) {
+			init(
+					point,
+					getPoint(reader, "handleIn", false),
+					getPoint(reader, "handleOut", false),
 					reader.readBoolean("corner", false)
 				);
-			} else if (reader.has("x")) {
-				init(
-					reader.readFloat("x", 0),
-					reader.readFloat("y", 0),
-					0, 0, 0, 0, false
-				);
-			} 
 		} else {
-			init(
-				reader.readFloat(0),
-				reader.readFloat(0),
-				reader.readFloat(0),
-				reader.readFloat(0),
-				reader.readFloat(0),
-				reader.readFloat(0),
-				reader.readBoolean(false)
-			);		
+			if (reader.isHash()) {
+				if (reader.has("x")) {
+					init(
+						reader.readFloat("x", 0),
+						reader.readFloat("y", 0),
+						0, 0, 0, 0, false
+					);
+				} 
+			} else {
+				init(
+					reader.readFloat(0),
+					reader.readFloat(0),
+					reader.readFloat(0),
+					reader.readFloat(0),
+					reader.readFloat(0),
+					reader.readFloat(0),
+					reader.readBoolean(false)
+				);		
+			}
 		}
 	}
 
@@ -142,7 +147,7 @@ public class Segment implements Commitable {
 		this.index = index;
 	}
 
-	private static Point getPoint(ArgumentReader reader, String name) {
+	private static Point getPoint(ArgumentReader reader, String name, boolean allowNull) {
 		Point point = (Point) reader.readObject(name, Point.class);
 		return point != null ? point : new Point();
 	}

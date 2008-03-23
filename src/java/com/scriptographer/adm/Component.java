@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import com.scriptographer.ScriptographerEngine; 
+import com.scriptographer.ScriptographerException;
 import com.scratchdisk.list.List;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.ConversionUtils;
@@ -163,7 +164,7 @@ abstract class Component extends NotificationHandler {
 	protected AWTContainer getAWTContainer() {
 		java.awt.Component component = getAWTComponent();
 		if (!(component instanceof AWTContainer))
-			throw new RuntimeException("Component does not support sub components.");
+			throw new ScriptographerException("Component does not support sub components.");
 		return (AWTContainer) component;
 	}
 

@@ -37,6 +37,7 @@ import java.awt.geom.PathIterator;
 
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
+import com.scriptographer.ScriptographerException;
 
 /**
  * A compound path contains two or more paths, holes are drawn where the paths
@@ -45,7 +46,7 @@ import com.scratchdisk.list.Lists;
  * 
  * @author lehni
  */
-public class CompoundPath extends Path {
+public class CompoundPath extends PathItem {
 	/**
 	 * Wraps an AIArtHandle in a Path object
 	 */
@@ -64,12 +65,12 @@ public class CompoundPath extends Path {
 		this();
 		for (int i = 0; i < children.size(); i++) {
 			Object obj = children.get(i);
-			if (obj instanceof Art)
-				this.appendChild((Art) obj);
+			if (obj instanceof Item)
+				this.appendChild((Item) obj);
 		}
 	}
 	
-	public CompoundPath(Art[] children) {
+	public CompoundPath(Item[] children) {
 		this(Lists.asList(children));
 	}
 	
@@ -78,34 +79,25 @@ public class CompoundPath extends Path {
 		append(shape);
 	}
 
+	private Path getPreviousPath() {
+		Path prevPath = (Path) getFirstChild();
+		if (prevPath == null)
+			throw new ScriptographerException("Use a moveTo command first");
+		return prevPath;
+	}
+
 	/*
-	 *  postscript-like interface: moveTo, lineTo, curveTo, arcTo
-	 */	
-	
+	 *  PostScript-like interface: moveTo, lineTo, curveTo, arcTo
+	 */
 	public void moveTo(float x, float y) {
-		// moveTo allways creates a new path:
+		// moveTo always creates a new path:
 		Path path = new Path();
 		appendChild(path);
 		path.moveTo(x, y);
 	}
 	
-	public void moveTo(Point pt) {
-		moveTo(pt);
-	}
-	
-	private Path getPreviousPath() {
-		Path prevPath = (Path) getFirstChild();
-		if (prevPath == null)
-			throw new UnsupportedOperationException("Use a moveTo command first");
-		return prevPath;
-	}
-	
 	public void lineTo(float x, float y) {
 		getPreviousPath().lineTo(x, y);
-	}
-	
-	public void lineTo(Point pt) {
-		getPreviousPath().lineTo(pt);
 	}
 	
 	public void curveTo(float c1x, float c1y, float c2x, float c2y,
@@ -113,25 +105,13 @@ public class CompoundPath extends Path {
 		getPreviousPath().curveTo(c1x, c1y, c2x, c2y, x, y);
 	}
 	
-	public void curveTo(Point c1, Point c2, Point pt) {
-		getPreviousPath().curveTo(c1, c2, pt);
-	}
-	
 	public void quadTo(float cx, float cy, float x, float y) {
 		getPreviousPath().quadTo(cx, cy, x, y);
-	}
-	
-	public void quadTo(Point c, Point pt) {
-		getPreviousPath().quadTo(c, pt);
 	}
 
 	public void arcTo(float centerX, float centerY, float endX, float endY,
 			int ccw) {
 		getPreviousPath().arcTo(centerX, centerY, endX, endY, ccw);
-	}
-
-	public void arcTo(Point center, Point endPoint, int ccw) {
-		getPreviousPath().arcTo(center, endPoint, ccw);
 	}
 	
 	public void closePath() {
@@ -139,6 +119,10 @@ public class CompoundPath extends Path {
 		prevPath.setClosed(true);
 	}
 	
+	/*
+	 * Convert to and from Java2D (java.awt.geom)
+	 */
+
 	/**
 	 * Appends the segments of a PathIterator to this CompoundPath. Optionally,
 	 * the initial {@link PathIterator#SEG_MOVETO}segment of the appended path
@@ -205,7 +189,7 @@ public class CompoundPath extends Path {
 	 *
 	 * @return the simplified compound path.
 	 */
-	public Path simplify() {
+	public PathItem simplify() {
 		Path path = (Path) getFirstChild();
 		if (path.getNextSibling() == null) {
 			path.moveAbove(this);

@@ -40,38 +40,38 @@ import com.scratchdisk.list.Lists;
 /**
  * @author lehni
  */
-public class ArtSet extends ArrayList {
+public class ItemSet extends ArrayList {
 	HashMap map;
 
-	public ArtSet() {
+	public ItemSet() {
 		map = new HashMap();
 	}
 
-	public ArtSet(ExtendedList artObjects) {
+	public ItemSet(ExtendedList items) {
 		this();
-		addAll(artObjects);
+		addAll(items);
 	}
 
-	public ArtSet(Object[] artObjects) {
-		this(Lists.asList(artObjects));
+	public ItemSet(Object[] items) {
+		this(Lists.asList(items));
 	}
 
-	public Art getArt(int index) {
-		return (Art) get(index);
+	public Item getItem(int index) {
+		return (Item) get(index);
 	}
 
 	/**
-	 * Adds the art to the ArtSet, only if it does not already exist in it.
+	 * Adds the item to the ItemSet, only if it does not already exist in it.
 	 * @param index
-	 * @param art
-	 * @return true if the art was added to the set.
+	 * @param item
+	 * @return true if the item was added to the set.
 	 */
-	public Object add(int index, Object art) {
-		if (art instanceof Art) {
-			if (map.get(art) == null) {
-				if (super.add(index, art) != null) {
-					map.put(art, art);
-					return art;
+	public Object add(int index, Object item) {
+		if (item instanceof Item) {
+			if (map.get(item) == null) {
+				if (super.add(index, item) != null) {
+					map.put(item, item);
+					return item;
 				}
 			}
 		}
@@ -89,7 +89,7 @@ public class ArtSet extends ArrayList {
 		return map.get(element) != null;
 	}
 
-	public native ArtSet invert();
+	public native ItemSet invert();
 	
 	/**
 	 * @param type Color.TYPE_*

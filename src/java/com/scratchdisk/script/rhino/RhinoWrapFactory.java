@@ -164,14 +164,14 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		return null;
 	}
 
-	public Object convert(Object from, Class to) {
+	public Object coerceType(Class type, Object value) {
 		// Coerce native objects to maps when needed
-		if (from instanceof Function) {
-			if (to == Callable.class)
-				return new RhinoCallable(engine, (Function) from);
-		} else if (from instanceof Scriptable || from instanceof String) { // Let through string as well, for ArgumentReader
-			if (Map.class.isAssignableFrom(to)) {
-				return toMap((Scriptable) from);
+		if (value instanceof Function) {
+			if (type == Callable.class)
+				return new RhinoCallable(engine, (Function) value);
+		} else if (value instanceof Scriptable || value instanceof String) { // Let through string as well, for ArgumentReader
+			if (Map.class.isAssignableFrom(type)) {
+				return toMap((Scriptable) value);
 			} else {
 				/* try constructing from this prototype first
 				try {
@@ -183,35 +183,39 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 				}
 				*/
 				ArgumentReader reader = null;
-				if (ArgumentReader.canConvert(to) && (reader = getArgumentReader(from)) != null) {
-				    return ArgumentReader.convert(reader, unwrap(from), to);
-				} else if (from instanceof NativeObject && getZeroArgumentConstructor(to) != null) {
+				if (ArgumentReader.canConvert(type) && (reader = getArgumentReader(value)) != null) {
+				    return ArgumentReader.convert(reader, unwrap(value), type);
+				} else if (value instanceof NativeObject && getZeroArgumentConstructor(type) != null) {
 					// Try constructing an object of class type, through
 					// the JS ExtendedJavaClass constructor that takes 
 					// a last optional argument: A NativeObject of which
 					// the fields define the fields to be set in the native type.
 					Scriptable scope = ((RhinoEngine) this.engine).getScope();
 					ExtendedJavaClass cls =
-							ExtendedJavaClass.getClassWrapper(scope, to);
+							ExtendedJavaClass.getClassWrapper(scope, type);
 					if (cls != null) {
 						Object obj = cls.construct(Context.getCurrentContext(),
-								scope, new Object[] { from });
+								scope, new Object[] { value });
 						if (obj instanceof Wrapper)
 							obj = ((Wrapper) obj).unwrap();
 						return obj;
 					}
 				}
 			}
-		} else if (from == Undefined.instance) {
+		} else if (value == Undefined.instance) {
 			// Convert undefined ot false if destination is boolean
-			if (to == Boolean.TYPE)
+			if (type == Boolean.TYPE)
 				return Boolean.FALSE;
-		} else if (from instanceof Boolean) {
+		} else if (value instanceof Boolean) {
 			// Convert false to null / undefined for non primitive destination classes.
-			if (!((Boolean) from).booleanValue() && !to.isPrimitive())
+			if (!((Boolean) value).booleanValue() && !type.isPrimitive())
 				return Undefined.instance;
 		}
 		return null;
+	}
+
+	public Object convert(Object from, Class to) {
+		return Context.jsToJava(from, to);
 	}
 
 	public Object unwrap(Object obj) {

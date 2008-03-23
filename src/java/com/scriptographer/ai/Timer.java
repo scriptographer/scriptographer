@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.scriptographer.ScriptographerEngine; 
+import com.scriptographer.ScriptographerException;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.IntMap;
 
@@ -60,7 +61,7 @@ public class Timer extends NativeObject {
 	 * @param periodic
 	 */
 	public Timer(int period, boolean periodic) {
-		// now see first wether there is an unusedEffect already:
+		// now see first whether there is an unusedEffect already:
 		ArrayList unusedTimers = getUnusedTimers();
 		
 		int index = unusedTimers.size() - 1;
@@ -78,7 +79,7 @@ public class Timer extends NativeObject {
 		}		
 
 		if (handle == 0)
-			throw new RuntimeException("Unable to create Timer");
+			throw new ScriptographerException("Unable to create Timer");
 
 		active = false;
 		this.periodic = periodic;
@@ -122,10 +123,10 @@ public class Timer extends NativeObject {
 	}
 	
 	public void dispose() {
-		// see wether we're still linked:
+		// see whether we're still linked:
 		if (timers.get(handle) == this) {
 			setActive(false);
-			// if so remove it and put it to the list of unsed timers,
+			// if so remove it and put it to the list of unused timers,
 			// for later recycling
 			timers.remove(handle);
 			getUnusedTimers().add(this);
