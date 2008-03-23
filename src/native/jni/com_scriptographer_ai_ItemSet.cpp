@@ -24,20 +24,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $Id$
+ * $Id: com_scriptographer_ai_ItemSet.cpp 460 2008-02-28 17:06:09Z lehni $
  */
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "aiGlobals.h"
-#include "com_scriptographer_ai_Art.h"
-#include "com_scriptographer_ai_ArtSet.h"
+#include "com_scriptographer_ai_Item.h"
+#include "com_scriptographer_ai_ItemSet.h"
 
 /*
- * com.scriptographer.ai.ArtSet
+ * com.scriptographer.ai.ItemSet
  */
 
-void ArtSet_filter(AIArtSet set, bool layerOnly) {
+void ItemSet_filter(AIArtSet set, bool layerOnly) {
 	// takes out all kUnknownArt, kTextRunArt, ... objs
 	// removes layergroups as well
 	long count;
@@ -45,8 +45,8 @@ void ArtSet_filter(AIArtSet set, bool layerOnly) {
 	for (long i = count - 1; i >= 0; i--) {
 		AIArtHandle art = NULL;
 		if (!sAIArtSet->IndexArtSet(set, i, &art)) {
-			short type = Art_getType(art);
-			bool isLayer = Art_isLayer(art);
+			short type = Item_getType(art);
+			bool isLayer = Item_isLayer(art);
 			if (type == kUnknownArt ||
 #if kPluginInterfaceVersion < kAI11
 				type == kTextRunArt ||
@@ -58,7 +58,7 @@ void ArtSet_filter(AIArtSet set, bool layerOnly) {
 	}
 }
 
-jobject ArtSet_getSelected(JNIEnv *env) {
+jobject ItemSet_getSelected(JNIEnv *env) {
 	AIArtSet set = NULL;
 	if (!sAIArtSet->NewArtSet(&set)) {
 		if (!sAIArtSet->SelectedArtSet(set)) {
@@ -74,22 +74,22 @@ jobject ArtSet_getSelected(JNIEnv *env) {
 						sAIArtSet->RemoveArtFromArtSet(set, art);
 					} else {
 						sAIArt->GetArtParent(art, &parent);
-						if (!Art_isLayer(parent)) {
+						if (!Item_isLayer(parent)) {
 							if (!sAIArt->GetArtUserAttr(parent, kArtFullySelected, &values) && (values & kArtFullySelected))
 								sAIArtSet->RemoveArtFromArtSet(set, art);
 						}
 					}
 				}
 			}
-			jobject artSet = gEngine->convertArtSet(env, set);
+			jobject	itemSet = gEngine->convertArtSet(env, set);
 			sAIArtSet->DisposeArtSet(&set);
-			return artSet;
+			return itemSet;
 		}
 	}
 	return NULL;
 }
 
-AIArtHandle ArtSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
+AIArtHandle ItemSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
 	AIRasterizeSettings settings;
 	if (type == -1) {
 		// deterimine from document color model:
@@ -140,16 +140,16 @@ AIArtHandle ArtSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resolu
 }
 
 /*
- * com.scriptographer.ai.ArtSet invert()
+ * com.scriptographer.ai.ItemSet invert()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ArtSet_invert(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ItemSet_invert(JNIEnv *env, jobject obj) {
 	try {
 		AIArtSet setFrom = gEngine->convertArtSet(env, obj), setTo;
 		if (setFrom != NULL && !sAIArtSet->NewArtSet(&setTo) && !sAIArtSet->NotArtSet(setFrom, setTo)) {
-				jobject artSet = gEngine->convertArtSet(env, setTo);
+				jobject itemSet = gEngine->convertArtSet(env, setTo);
 				sAIArtSet->DisposeArtSet(&setFrom);
 				sAIArtSet->DisposeArtSet(&setTo);
-				return artSet;
+				return itemSet;
 		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;
@@ -159,10 +159,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ArtSet_invert(JNIEnv *env, 
  * com.scriptographer.ai.Raster rasterize(int type, float resolution, int antialiasing, float width, float height)
  */
 
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ArtSet_rasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ItemSet_rasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
 	try {
 		AIArtSet set = gEngine->convertArtSet(env, obj);
-		AIArtHandle raster = ArtSet_rasterize(set, (AIRasterizeType) type, resolution, antialiasing, width, height);
+		AIArtHandle raster = ItemSet_rasterize(set, (AIRasterizeType) type, resolution, antialiasing, width, height);
 		if (raster != NULL)
 			return gEngine->wrapArtHandle(env, raster);
 	} EXCEPTION_CONVERT(env);
