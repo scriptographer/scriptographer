@@ -111,8 +111,10 @@ public class CharacterStyle extends PathStyle {
 	}
 
 	public CharacterStyle(ArgumentReader reader) {
-		// Handler fill & stroke through PathStyle constructor
-		super(reader);
+		// Handler fill & stroke through PathStyle argument reader constructor
+		super(nativeCreate(), reader);
+		range = null;
+		commitKey = this;
 		// See reading of color in StrokeStyle:
 		FontWeight weight = (FontWeight) reader.readObject("font", FontWeight.class);
 		if (weight == null && (!reader.isHash() || reader.has("font")))

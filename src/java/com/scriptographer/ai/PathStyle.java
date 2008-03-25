@@ -79,7 +79,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	// Don't fetch immediately. Only fetch once values are requested
 	protected boolean fetched = false;
 	
-	/**
+	/*
 	 * for CharacterStyle
 	 */
 	protected PathStyle(int handle) {
@@ -88,22 +88,11 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		stroke = new StrokeStyle(this);
 	}
 
-	protected PathStyle(Item item) {
-		this(0); // PathStyle doesn't use the handle, but CharacterStyle does
-		this.item = item;
-	}
-
-	protected PathStyle(PathStyle style) {
-		this(0); // PathStyle doesn't use the handle, but CharacterStyle does
-		init(style);
-	}
-
-	public PathStyle(FillStyle fill, StrokeStyle stroke) {
-		this.fill = new FillStyle(fill, this);
-		this.stroke = new StrokeStyle(stroke, this);
-	}
-
-	public PathStyle(ArgumentReader reader) {
+	/*
+	 * for CharacterStyle
+	 */
+	protected PathStyle(int handle, ArgumentReader reader) {
+		super(handle);
 		fill = (FillStyle) reader.readObject("fill", FillStyle.class);
 		if (fill == null) {
 			fill = new FillStyle(this);
@@ -120,6 +109,29 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		}
 		fill.setStyle(this);
 		stroke.setStyle(this);
+	}
+
+	/*
+	 * For Item#getStyle
+	 */
+	protected PathStyle(Item item) {
+		this(0); // PathStyle doesn't use the handle, but CharacterStyle does
+		this.item = item;
+	}
+
+	protected PathStyle(PathStyle style) {
+		this(0); // PathStyle doesn't use the handle, but CharacterStyle does
+		init(style);
+	}
+
+	public PathStyle(FillStyle fill, StrokeStyle stroke) {
+		super();
+		this.fill = new FillStyle(fill, this);
+		this.stroke = new StrokeStyle(stroke, this);
+	}
+
+	public PathStyle(ArgumentReader reader) {
+		this(0, reader);
 	}
 
 	public boolean equals(Object obj) {

@@ -59,6 +59,7 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	}
 
 	public ParagraphStyle(ArgumentReader reader) {
+		this();
 		setJustification(reader.readInteger("justification"));
 		setFirstLineIndent(reader.readFloat("firstLineIndent"));
 		setStartIndent(reader.readFloat("startIndent"));

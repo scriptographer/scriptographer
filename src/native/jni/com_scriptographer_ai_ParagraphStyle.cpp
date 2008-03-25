@@ -302,30 +302,30 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setDesiredWordS
 }
 
 /*
- * java.lang.Float getMaxWordSpacing()
+ * java.lang.Float getMaximumWordSpacing()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getMaxWordSpacing(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getMaximumWordSpacing(JNIEnv *env, jobject obj) {
 	PARAGRAPHSTYLE_GET_FLOAT(MaxWordSpacing)
 }
 
 /*
- * void setMaxWordSpacing(java.lang.Float value)
+ * void setMaximumWordSpacing(java.lang.Float value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setMaxWordSpacing(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setMaximumWordSpacing(JNIEnv *env, jobject obj, jobject value) {
 	PARAGRAPHSTYLE_SET_FLOAT_CLEAR(MaxWordSpacing, WordSpacing)
 }
 
 /*
- * java.lang.Float getMinWordSpacing()
+ * java.lang.Float getMinimumWordSpacing()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getMinWordSpacing(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getMinimumWordSpacing(JNIEnv *env, jobject obj) {
 	PARAGRAPHSTYLE_GET_FLOAT(MinWordSpacing)
 }
 
 /*
- * void setMinWordSpacing(java.lang.Float value)
+ * void setMinimumWordSpacing(java.lang.Float value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setMinWordSpacing(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setMinimumWordSpacing(JNIEnv *env, jobject obj, jobject value) {
 	PARAGRAPHSTYLE_SET_FLOAT_CLEAR(MinWordSpacing, WordSpacing)
 }
 
@@ -344,30 +344,30 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setDesiredLette
 }
 
 /*
- * java.lang.Float getMaxLetterSpacing()
+ * java.lang.Float getMaximumLetterSpacing()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getMaxLetterSpacing(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getMaximumLetterSpacing(JNIEnv *env, jobject obj) {
 	PARAGRAPHSTYLE_GET_FLOAT(MaxLetterSpacing)
 }
 
 /*
- * void setMaxLetterSpacing(java.lang.Float value)
+ * void setMaximumLetterSpacing(java.lang.Float value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setMaxLetterSpacing(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setMaximumLetterSpacing(JNIEnv *env, jobject obj, jobject value) {
 	PARAGRAPHSTYLE_SET_FLOAT_CLEAR(MaxLetterSpacing, LetterSpacing)
 }
 
 /*
- * java.lang.Float getMinLetterSpacing()
+ * java.lang.Float getMinimumLetterSpacing()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getMinLetterSpacing(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getMinimumLetterSpacing(JNIEnv *env, jobject obj) {
 	PARAGRAPHSTYLE_GET_FLOAT(MinLetterSpacing)
 }
 
 /*
- * void setMinLetterSpacing(java.lang.Float value)
+ * void setMinimumLetterSpacing(java.lang.Float value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setMinLetterSpacing(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setMinimumLetterSpacing(JNIEnv *env, jobject obj, jobject value) {
 	PARAGRAPHSTYLE_SET_FLOAT_CLEAR(MinLetterSpacing, LetterSpacing)
 }
 
@@ -386,30 +386,30 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setDesiredGlyph
 }
 
 /*
- * java.lang.Float getMaxGlyphScaling()
+ * java.lang.Float getMaximumGlyphScaling()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getMaxGlyphScaling(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getMaximumGlyphScaling(JNIEnv *env, jobject obj) {
 	PARAGRAPHSTYLE_GET_FLOAT(MaxGlyphScaling)
 }
 
 /*
- * void setMaxGlyphScaling(java.lang.Float value)
+ * void setMaximumGlyphScaling(java.lang.Float value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setMaxGlyphScaling(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setMaximumGlyphScaling(JNIEnv *env, jobject obj, jobject value) {
 	PARAGRAPHSTYLE_SET_FLOAT_CLEAR(MaxGlyphScaling, GlyphScaling)
 }
 
 /*
- * java.lang.Float getMinGlyphScaling()
+ * java.lang.Float getMinimumGlyphScaling()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getMinGlyphScaling(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getMinimumGlyphScaling(JNIEnv *env, jobject obj) {
 	PARAGRAPHSTYLE_GET_FLOAT(MinGlyphScaling)
 }
 
 /*
- * void setMinGlyphScaling(java.lang.Float value)
+ * void setMinimumGlyphScaling(java.lang.Float value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setMinGlyphScaling(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setMinimumGlyphScaling(JNIEnv *env, jobject obj, jobject value) {
 	PARAGRAPHSTYLE_SET_FLOAT_CLEAR(MinGlyphScaling, GlyphScaling)
 }
 
