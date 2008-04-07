@@ -32,7 +32,9 @@
 package com.scratchdisk.script.rhino;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeJavaMethod;
+import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
 
@@ -147,5 +149,20 @@ public class ListWrapper extends ExtendedJavaObject {
 			}
 		}
 		return obj;
+	}
+
+	public Object getDefaultValue(Class hint) {
+		if (hint == null || hint == ScriptRuntime.StringClass) {
+			StringBuffer buffer = new StringBuffer();
+			ReadOnlyList list = (ReadOnlyList) javaObject;
+			for (int i = 0, l = list.size(); i < l; i++) {
+				if (i > 0)
+					buffer.append(", ");
+				buffer.append(list.get(i));
+			}
+			return buffer.toString();
+		} else {
+			return super.getDefaultValue(hint);
+		}
 	}
 }

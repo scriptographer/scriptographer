@@ -31,10 +31,12 @@
 
 package com.scratchdisk.script.rhino;
 
+import java.lang.reflect.Array;
 import java.util.HashMap;
 
 import org.mozilla.javascript.NativeJavaArray;
 import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 
 /**
@@ -97,5 +99,21 @@ public class ExtendedJavaArray extends NativeJavaArray {
 	public void delete(String name) {
 		if (properties != null)
 			properties.remove(name);
+	}
+
+	public Object getDefaultValue(Class hint) {
+		if (hint == null || hint == ScriptRuntime.StringClass) {
+			StringBuffer buffer = new StringBuffer();
+			Object array = unwrap();
+			int length = Array.getLength(array);
+			for (int i = 0; i < length; i++) {
+				if (i > 0)
+					buffer.append(", ");
+				buffer.append(Array.get(array, i));
+			}
+			return buffer.toString();
+		} else {
+			return super.getDefaultValue(hint);
+		}
 	}
 }
