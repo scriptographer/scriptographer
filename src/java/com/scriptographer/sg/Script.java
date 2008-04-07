@@ -45,6 +45,7 @@ public class Script {
 	private Preferences prefs = null;
 	private Callable onStart;
 	private Callable onStop;
+	private boolean showProgress = true;
 
 	/**
 	 * @jshide
@@ -97,5 +98,17 @@ public class Script {
 
 	public void setOnStop(Callable onStop) {
 		this.onStop = onStop;
+	}
+	
+	public boolean getShowProgress() {
+		return showProgress;
+	}
+
+	public void setShowProgress(boolean show) {
+		showProgress = show;
+		if (show)
+			ScriptographerEngine.showProgress();
+		else
+			ScriptographerEngine.closeProgress();
 	}
 }

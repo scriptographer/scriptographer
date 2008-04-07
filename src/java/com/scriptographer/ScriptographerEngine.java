@@ -45,7 +45,7 @@ import com.scriptographer.ai.Annotator;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.LiveEffect;
 import com.scriptographer.ai.Timer;
-import com.scratchdisk.script.Script;
+import com.scriptographer.sg.Script;
 import com.scratchdisk.script.ScriptCanceledException;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
@@ -244,16 +244,20 @@ public class ScriptographerEngine {
 			// executed as it won't get updated anyway
 			// ConsoleOutputStream.enableOutput(false);
 			executing = true;
-			// Do not show progress for hidden files such as __init__.js
-			if (file == null || !file.getName().startsWith("__"))
-				showProgress(file != null ? "Executing " + file.getName() + "..." : "Executing...");
+
+			Script script = null;
 			if (file != null) {
 				currentFile = file;
 				// Put a script object in the scope to offer the user
 				// access to information about it.
-				if (scope.get("script") == null)
-					scope.put("script", new com.scriptographer.sg.Script(file), true);
+				script = (Script) scope.get("script");
+				if (script == null) {
+					script = new Script(file);
+					scope.put("script", script, true);
+				}
 			}
+			if (file == null || script.getShowProgress())
+				showProgress(file != null ? "Executing " + file.getName() + "..." : "Executing...");
 			return true;
 		}
 		return false;
@@ -331,7 +335,7 @@ public class ScriptographerEngine {
 		ScriptEngine engine = ScriptEngine.getEngineByFile(file);
 		if (engine == null)
 			throw new ScriptException("Unable to find script engine for " + file);
-		Script script = engine.compile(file);
+		com.scratchdisk.script.Script script = engine.compile(file);
 		if (script == null)
 			throw new ScriptException("Unable to compile script " + file);
 		boolean started = false;
@@ -343,8 +347,7 @@ public class ScriptographerEngine {
 			ret = script.execute(scope);
 			if (started) {
 				// handle onStart / onStop
-				com.scriptographer.sg.Script scriptObj =
-					(com.scriptographer.sg.Script) scope.get("script");
+				Script scriptObj = (Script) scope.get("script");
 				Callable onStart = scriptObj.getOnStart();
 				if (onStart != null)
 					onStart.call(scriptObj);
@@ -400,8 +403,7 @@ public class ScriptographerEngine {
 		Timer.stopAll();
 		// Walk through all the stop scopes and call onStop on them:
 		for (Iterator it = stopScripts.iterator(); it.hasNext();) {
-			com.scriptographer.sg.Script script =
-				(com.scriptographer.sg.Script) it.next();
+			Script script = (Script) it.next();
 			Callable onStop = script.getOnStop();
 			if (onStop != null) {
 				try {
@@ -440,12 +442,16 @@ public class ScriptographerEngine {
 
 	private static native void nativeSetProgressText(String text);
 
-	public static void showProgress(String text) {
+	public static void showProgress() {
 		progressVisible = true;
 		progressAutomatic = true;
 		progressCurrent = 0;
 		progressMax = 1 << 8;
 		nativeUpdateProgress(progressCurrent, progressMax, true);
+	}
+
+	public static void showProgress(String text) {
+		showProgress();
 		nativeSetProgressText(text);
 	}
 	

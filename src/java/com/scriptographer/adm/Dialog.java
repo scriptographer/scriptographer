@@ -179,7 +179,7 @@ public abstract class Dialog extends Component {
 	 * ignoreSizeChange tells onSizeChanged to ignore the event. this is set and
 	 * unset around calls to setBounds and setGroupInfo.
 	 * 
-	 * As of CS3, setting size and or bounds is not immediatelly effective. When
+	 * As of CS3, setting size and or bounds is not immediately effective. When
 	 * natively retrieving size through GetLocalRect / GetBoundsRect, the old
 	 * size is returned for a while. So do not rely on them being set here. This
 	 * was the reason for introducing ignoreSizeChange, as even in the bounds

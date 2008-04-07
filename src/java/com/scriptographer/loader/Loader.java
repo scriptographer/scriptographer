@@ -47,7 +47,7 @@ public class Loader {
 	public static void init(String dir) throws MalformedURLException {
 		homeDir = dir;
 		File home = new File(dir);
-		// filter out all the files in lib that are not jar or zip files and
+		// fFlter out all the files in lib that are not jar or zip files and
 		// create a URL array of it:
 		File libDir = new File(home, "lib");
 		FilenameFilter filter = new FilenameFilter() {
@@ -56,17 +56,22 @@ public class Loader {
 			}
 		};
 		File[] libs = libDir.listFiles(filter);
-		// add one more for the classes diretory:
-		URL[] urls = new URL[libs.length + 1];
-		// now add the urls from above
-		for (int i = 0; i < libs.length; i++) {
-			urls[i] = libs[i].toURL();
-		}
-		// and the classes
-		urls[libs.length] = new File(home, "classes").toURL();
+		// Add two more, for the classes and rhino directories:
+		URL[] urls = new URL[libs.length + 2];
+		// And classes and rhino first, libraries after, to get the
+		// priorities right:
+		urls[0] = new File(home, "classes").toURL();
+		// Rhino is usually loaded from lib, but during development
+		// it can also be live compiled into the rhino folder, which
+		// makes debugging easier:
+		urls[1] = new File(home, "rhino").toURL();
+		
+		// Now add the urls from above
+		for (int i = 0; i < libs.length; i++)
+			urls[i + 2] = libs[i].toURL();
 
 		loader = new URLClassLoader(urls);
-		// set the new class loader as context class loader
+		// Set the new class loader as context class loader
 		Thread.currentThread().setContextClassLoader(loader);
 	}
 
@@ -80,7 +85,7 @@ public class Loader {
 		StringWriter stringWriter = new StringWriter();
 		PrintWriter writer = new PrintWriter(stringWriter);
 		try {
-			// first call destory in the currently loaded ScriptographerEngine class:
+			// First call destroy in the currently loaded ScriptographerEngine class:
 			Class cls = loader.loadClass("com.scriptographer.ScriptographerEngine");
 			Method destroy = cls.getDeclaredMethod("destroy", new Class[] {});
 			destroy.invoke(null, new Object[] {});
@@ -88,7 +93,7 @@ public class Loader {
 			e.printStackTrace(writer);
 		}
 		try {
-			// now (re)load all:
+			// Now (re)load all:
 			init(homeDir);
 		} catch (Exception e) {
 			e.printStackTrace(writer);

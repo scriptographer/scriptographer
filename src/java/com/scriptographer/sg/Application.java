@@ -97,6 +97,10 @@ public class Application {
 		return ScriptographerEngine.updateProgress(current, max);
 	}
 
+	public void showProgress() {
+		ScriptographerEngine.showProgress();
+	}
+	
 	public void closeProgress() {
 		ScriptographerEngine.closeProgress();
 	}
