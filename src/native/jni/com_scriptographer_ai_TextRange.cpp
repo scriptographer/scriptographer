@@ -40,39 +40,74 @@ using namespace ATE;
 class GlyphRun {
 
 private:
-	int m_size;
+	int m_glyphSize;
+	int m_charSize;
 	ASRealMatrix m_matrix;
 	ITextFrame m_textFrame;
-	ASRealPoint *m_origins;
-	ASUnicode *m_content;
+	ASRealPoint **m_origins;
 
 public:
-	GlyphRun(IGlyphRun run, int start, int end) {
+	GlyphRun(IGlyphRun run, int start, int end, Array<int> *glyphLengths, int glyphIndex) {
 		m_matrix = run.GetMatrix();
 		// Determine TextFrame through TextLine:
 		m_textFrame = run.GetTextLine().GetTextFrame();
 		IArrayRealPoint origins = run.GetOrigins();
-		m_size = end - start;
-		m_origins = new ASRealPoint[m_size];
-		for (int i = start; i < end; i++) {
-			m_origins[i - start] = origins.Item(i);
+		m_glyphSize = end - start;
+		// Determine char size from glyph lengths:
+		m_charSize = 0;
+		for (int i = glyphIndex, length = glyphIndex + m_glyphSize; i < length; i++) {
+			int glyphLength = glyphLengths->get(i);
+			if (glyphLength < 0) {
+				// Negative lenghts indicate paragraph end chars at the beginning. All other
+				// paragraph breaks are added to previous values, so glyphIndex can remain
+				// linked to glyphLengths entries
+				m_charSize -= glyphLength;
+				// Increase length, since these characters are not included in glyph indices
+				length++;
+			} else {
+				m_charSize += glyphLength;
+			}
 		}
-		// content
-		ASInt32 size = run.GetCharacterCount();
-		ASUnicode *text = new ASUnicode[size];
-		size = run.GetContents(text, size);
-		m_content = new ASUnicode[m_size];
-		memcpy(m_content, &text[start], m_size * sizeof(ASUnicode));
-		delete text;
+		m_origins = new ASRealPoint *[m_charSize];
+		int charIndex = 0;
+		for (int i = start; i < end; i++) {
+			int glyphLength = glyphLengths->get(glyphIndex);
+			// If it's a negative value, add null origins before the origin
+			// (see explanation in GlyphRuns::getIndex)
+			if (glyphLength < 0) {
+				// Remove this entry now, so the glyph length indices remain link to glyph indices
+				glyphLengths->remove(glyphIndex);
+				for (int j = -glyphLength; j > 0; j--)
+					m_origins[charIndex++] = NULL;
+			} else {
+				// A normal glyph, we can increase as usual
+				glyphIndex++;
+			}
+			ASRealPoint *point = new ASRealPoint;
+			*point = origins.Item(i);
+			m_origins[charIndex++] = point;
+			// Otherwise, add them now
+			if (glyphLength > 0)
+				for (int j = 1; j < glyphLength; j++)
+					m_origins[charIndex++] = NULL;
+		}
 	}
 
 	~GlyphRun() {
+		for (int i = 0; i < m_charSize; i++) {
+			ASRealPoint *point = m_origins[i];
+			if (point != NULL)
+				delete point;
+		}
 		delete m_origins;
-		delete m_content;
 	}
 
-	inline int size() {
-		return m_size;
+	inline int glyphSize() {
+		return m_glyphSize;
+	}
+
+	inline int charSize() {
+		return m_charSize;
 	}
 
 	ASRealMatrix getMatrix() {
@@ -90,12 +125,8 @@ public:
 		return matrix;
 	}
 
-	inline ASRealPoint *getOrigins() {
+	inline ASRealPoint **getOrigins() {
 		return m_origins;
-	}
-
-	inline ASUnicode *getContent() {
-		return m_content;
 	}
 };
 
@@ -104,22 +135,31 @@ class GlyphRuns {
 private:
 
 	Array<GlyphRun *> m_runs;
-	int m_size;
-	int m_start;
-	int m_end;
-	int m_index;
+	int m_glyphSize;
+	int m_glyphStart;
+	int m_glyphEnd;
+	int m_glyphIndex;
+	int m_charStart;
+	int m_charSize;
 
-	GlyphRuns(int start, int end) : m_start(start), m_end(end), m_index(0) {
-		m_size = end - start;
+	GlyphRuns(int glyphStart, int glyphEnd, int charStart, int charEnd) {
+		m_glyphStart = glyphStart;
+		m_glyphEnd = glyphEnd;
+		m_glyphIndex = m_glyphStart;
+		m_glyphSize = glyphEnd - glyphStart;
+		m_charStart = charStart;
+		m_charSize = charEnd - charStart;
 	}
 
-	bool add(IGlyphRun run) {
-		int size = run.GetSize();
-		int start = m_index == 0 ? m_start : 0;
-		bool last = m_index + size >= m_end;
-		int end = last ? m_end - m_start - m_index : size;
-		m_runs.add(new GlyphRun(run, start, end));
-		m_index += size;
+	bool add(IGlyphRun run, Array<int> *glyphLengths) {
+		int glyphSize = run.GetSize();
+		bool first = m_glyphIndex == m_glyphStart;
+		int nextGlyphIndex = m_glyphIndex + glyphSize;
+		bool last = nextGlyphIndex >= m_glyphEnd;
+		int glyphStart = first ? m_glyphStart : 0;
+		int glyphEnd = last ? m_glyphEnd - m_glyphIndex : glyphSize;
+		m_runs.add(new GlyphRun(run, glyphStart, glyphEnd, glyphLengths, m_glyphIndex));
+		m_glyphIndex = nextGlyphIndex;
 		return !last;
 	}
 
@@ -130,50 +170,70 @@ private:
 public:
 
 	jobjectArray getOrigins(JNIEnv *env) {
-		int count = m_end - m_start, index = 0;
-		jobjectArray array = env->NewObjectArray(count, gEngine->cls_ai_Point, NULL);
-		for (int i = 0; i < m_runs.size(); i++) {
+		int index = 0;
+		jobjectArray array = env->NewObjectArray(m_charSize, gEngine->cls_ai_Point, NULL);
+		for (int i = 0, l = m_runs.size(); i < l; i++) {
 			GlyphRun *run = get(i);
-			ASRealPoint *origins = run->getOrigins();
+			ASRealPoint **origins = run->getOrigins();
 			ASRealMatrix matrix = run->getMatrix();
-			for (int j = 0; j < run->size(); j++) {
-				ASRealPoint pt = origins[j];
-				sAIRealMath->AIRealMatrixXformPoint(&matrix, &pt, &pt);
-				env->SetObjectArrayElement(array, index++, gEngine->convertPoint(env, &pt));
+			for (int j = 0, m = run->charSize(); j < m; j++) {
+				ASRealPoint *origin = origins[j];
+				jobject point;
+				if (origin != NULL) {
+					AIRealPoint pt;
+					sAIRealMath->AIRealMatrixXformPoint(&matrix, origin, &pt);
+					point = gEngine->convertPoint(env, &pt);
+				} else {
+					point = NULL;
+				}
+				env->SetObjectArrayElement(array, index++, point);
 			}
 		}
 		return array;
 	}
 
 	jobjectArray getTransformations(JNIEnv *env) {
-		int count = m_end - m_start, index = 0;
-		jobjectArray array = env->NewObjectArray(count, gEngine->cls_ai_Matrix, NULL);
+		int index = 0;
+		jobjectArray array = env->NewObjectArray(m_charSize, gEngine->cls_ai_Matrix, NULL);
 		for (int i = 0; i < m_runs.size(); i++) {
 			GlyphRun *run = get(i);
-			ASRealPoint *origins = run->getOrigins();
-			ASRealMatrix matrix = run->getMatrix();
-			for (int j = 0; j < run->size(); j++) {
-				ASRealPoint pt = origins[j];
-				ASRealMatrix glyphMatrix = matrix;
-				sAIRealMath->AIRealMatrixConcatTranslate(&glyphMatrix, pt.h, pt.v);
-				env->SetObjectArrayElement(array, index++, gEngine->convertMatrix(env, &glyphMatrix));
+			ASRealPoint **origins = run->getOrigins();
+			ASRealMatrix runMatrix = run->getMatrix();
+			for (int j = 0; j < run->charSize(); j++) {
+				ASRealPoint *origin = origins[j];
+				jobject matrix;
+				if (origin != NULL) {
+					ASRealMatrix glyphMatrix = runMatrix;
+					sAIRealMath->AIRealMatrixConcatTranslate(&glyphMatrix, origin->h, origin->v);
+					matrix = gEngine->convertMatrix(env, &glyphMatrix);
+				} else {
+					matrix = NULL;
+				}
+				env->SetObjectArrayElement(array, index++, matrix);
 			}
 		}
 		return array;
 	}
 
-	jstring getContent(JNIEnv *env) {
-		ASUnicode *text = new ASUnicode[m_size];
-		int index = 0;
-		for (int i = 0; i < m_runs.size(); i++) {
-			GlyphRun *run = get(i);
-			memcpy(&text[index], run->getContent(), run->size() * sizeof(ASUnicode));
-			index += run->size();
+	static int getGlyphLength(ITextRange range, int index) {
+		// There is a way to discover ligatures: the TextRange's GetSingleGlyphInRange
+		// only returns if the length is set to the amount of chars that produce a ligature
+		// otherwise it fails. So we can test....
+		// TODO: determine maximum ligature size.
+		// Assumption is 16 for now.
+		// In most cases, 1 will return a result, so there won't be too much iteration here...
+		ATEGlyphID id;
+		int length = 1;
+		for (; length <= 16; length++) {
+			// First set the text range of the glpyhrun to test GetSingleGlyphInRange on
+			range.SetRange(index, index + length);
+			if (range.GetSingleGlyphInRange(&id)) // Found a full glyph?
+				break;
 		}
-		return env->NewString(text, index);
+		return length;
 	}
 
-	static int getIndex(ITextRange range, int charIndex) {
+	static int getIndex(ITextRange range, int charIndex, Array<int> *glyphLengths = NULL) {
 		// Count glyphs until pos. There is a bug in glyphRun.GetCharacterSize()
 		// and glyphRun.GetContents(), so we cannot count on these.
 		// They sometimes contain chars that are in the next run or contain chars
@@ -183,29 +243,35 @@ public:
 		// IDEA: cash it in the Story of the range, as a lookup table
 		// char-index -> glyph-index
 		int glyphPos = 0;
-		int scanPos = range.GetStart();
+		int start = range.GetStart();
+		int end = range.GetEnd();
+		int scanPos = start;
 		while (scanPos < charIndex) {
-			int step = 1;
-			// Now step through the glyphrun and find the position.
-			// There is a way to discover ligatures: the TextRange's GetSingleGlyphInRange
-			// only returns if the length is set to the amount of chars that produce a ligature
-			// otherwise it fails. So we can test....
-			// TODO: determine maximum ligature size. assumption is 3 for now...
-			ATEGlyphID id;
-			for (; step <= 3; step++) {
-				// First set the text range of the glpyhrun to test GetSingleGlyphInRange on
-				range.SetRange(scanPos, scanPos + step);
-				if (range.GetSingleGlyphInRange(&id)) // found a full glyph
-					break;
-			}
-			scanPos += step;
+			int length = getGlyphLength(range, scanPos);
+			scanPos += length;
 			// Glyph runs do not count paragraph end chars, so don't count them here either.
-			if (range.GetCharacterType() != kParagraphEndChar)
+			if (range.GetCharacterType() != kParagraphEndChar) {
 				glyphPos++;
-			
+				if (glyphLengths != NULL)
+					glyphLengths->add(length);
+			} else if (glyphLengths != NULL) {
+				int last = glyphLengths->size() - 1;
+				if (last >= 0) {
+					int value = glyphLengths->get(last);
+					// Add length to last one. If it's negative, subtract it, since the range starts with paragraph
+					// end chars (see bellow)
+					if (value < 0) value -= length;
+					else value += length;
+					glyphLengths->set(last, value);
+				} else {
+					// Add a negative value, to indicate that range starts with paragraph end chars
+					glyphLengths->add(-length);
+				}
+			}
 		}
 		if (scanPos > charIndex)
 			glyphPos--;
+		range.SetRange(start, end);
 		return glyphPos;
 	}
 
@@ -226,8 +292,16 @@ public:
 			ITextRange frameRange = frame.GetTextRange();
 			// Now see where the frame range starts. that's where glyph index 0 of the frame is
 			
-			int glyphStart = GlyphRuns::getIndex(frameRange, range.GetStart());
-			int glyphEnd = glyphStart + GlyphRuns::getIndex(range, range.GetEnd());
+			// Keep track of each glyph's length in characters, so we can track ligatures and paragraph end chars,
+			// which will produce null entries in the origin arrays. (e.g. if 3 chars lead to one glyph, only the
+			// first char has an origin, the others will be null, in order to link the indices between glyphs and
+			// content).
+			Array<int> glyphLengths;
+			int charStart = range.GetStart();
+			int charEnd = range.GetEnd();
+			int charPos = charStart;
+			int glyphStart = GlyphRuns::getIndex(frameRange, charStart);
+			int glyphEnd = glyphStart + GlyphRuns::getIndex(range, charEnd, &glyphLengths);
 			
 			ASInt32 runStart = 0;
 			ITextLinesIterator lines = frame.GetTextLinesIterator();
@@ -236,29 +310,36 @@ public:
 				while (runs.IsNotDone()) {
 					IGlyphRun run = runs.Item();
 					ASInt32 runEnd = runStart + run.GetSize();
-					if (runStart > glyphStart) {
-						return NULL; // Too far already...
+					if (run.GetSize() == 0) {
+						IArrayRealPoint origins = run.GetOrigins();
+						ASRealMatrix matrix = run.GetMatrix();
+						sAIHardSoft->AIRealMatrixSoften(&matrix);
+						int i = 0;
+					}
+					if (runStart >= glyphEnd) {
+						// Found it already
+						return glyphRuns;
 					} else if (runEnd > glyphStart) {
 						// Found it!
 						// Cache the value and return
 						// Make values relative to current glyphRun:
-						glyphRuns = new GlyphRuns(glyphStart - runStart, glyphEnd - runStart);
-						glyphRuns->add(run);
+						if (glyphRuns == NULL) {
+							glyphRuns = new GlyphRuns(glyphStart - runStart, glyphEnd - runStart, charStart, charEnd);
+							gEngine->setIntField(env, obj, gEngine->fid_ai_TextRange_glyphRuns, (jint) glyphRuns);
+						}
+						glyphRuns->add(run, &glyphLengths);
 						runs.Next();
-						while (runs.IsNotDone() && glyphRuns->add(runs.Item()))
+						while (runs.IsNotDone() && glyphRuns->add(runs.Item(), &glyphLengths))
 							runs.Next();
-						gEngine->setIntField(env, obj, gEngine->fid_ai_TextRange_glyphRuns, (jint) glyphRuns);
-						// gEngine->println(env, "%i", gEngine->getNanoTime() - t);
-						// increase ref counter for returned IGlyphRun
-						return glyphRuns;
 					}
-					runs.Next();
+					if (runs.IsNotDone())
+						runs.Next();
 					runStart = runEnd;
 				}
 				lines.Next();
 			}
 		}
-		return NULL;
+		return glyphRuns;
 	}
 	
 	static void release(JNIEnv *env, jobject obj) {
@@ -309,19 +390,6 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_TextRange_getTransform
 		GlyphRuns *glyphRuns = GlyphRuns::get(env, obj, range);
 		if (glyphRuns != NULL)
 			return glyphRuns->getTransformations(env);
-	} EXCEPTION_CONVERT(env);
-	return NULL;
-}
-
-/*
- * java.lang.String getGlyphRunContent()
- */
-JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_TextRange_getGlyphRunContent(JNIEnv *env, jobject obj) {
-	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
-		GlyphRuns *glyphRuns = GlyphRuns::get(env, obj, range);
-		if (glyphRuns != NULL)
-			return glyphRuns->getContent(env);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

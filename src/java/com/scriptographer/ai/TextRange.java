@@ -365,8 +365,6 @@ public class TextRange extends NativeObject implements Commitable {
 	public native int getCount();
 	*/
 	
-	public native String getGlyphRunContent();
-	
 	// TODO: needed?
 	public native int getSingleGlyph();
 	

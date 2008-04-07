@@ -39,10 +39,12 @@ public:
 	~Array();
 	
 	void add(TYPE element);
+	bool remove(unsigned int index);
 	void reset();
 	unsigned int size();
 	TYPE get(unsigned int index) const;
-	
+	void set(unsigned int index, TYPE element);
+
 private:
 	void ensureCapacity(unsigned int capacity);
 };
@@ -82,8 +84,24 @@ void Array<TYPE>::add(TYPE element) {
 }
 
 template<class TYPE>
+bool Array<TYPE>::remove(unsigned int index) {
+	if (index >= 0 && index < m_size) {
+		for (int i = index + 1; i < m_size; i++)
+			m_data[i - 1] = m_data[i];
+		m_size--;
+		return true;
+	}
+	return false;
+}
+
+template<class TYPE>
 inline TYPE Array<TYPE>::get(unsigned int index) const {
 	return m_data[index];
+}
+
+template<class TYPE>
+inline void Array<TYPE>::set(unsigned int index, TYPE element) {
+	m_data[index] = element;
 }
 
 template<class TYPE>
