@@ -56,22 +56,12 @@ public class ByteArrayBuffer {
 		this(length, true);
 	}
 
-	public int readInt() {
-		if (bigEndian) {
-			return ((int)(buffer[offset++] & 0xff) << 24) |
-				((int)(buffer[offset++] & 0xff) << 16) |
-				((int)(buffer[offset++] & 0xff) << 8) |
-				((int)(buffer[offset++] & 0xff) << 0);
-		} else {
-			return ((int)(buffer[offset++] & 0xff) << 0) |
-				((int)(buffer[offset++] & 0xff) << 8) |
-				((int)(buffer[offset++] & 0xff) << 16) |
-				((int)(buffer[offset++] & 0xff) << 24);
-		}
+	public byte readByte() {
+		return buffer[offset++];
 	}
 
-	public long readUnsignedInt() {
-		return readInt() & 0xffffffffl;
+	public int readUnsignedByte() {
+		return readByte() & 0xff;
 	}
 
 	public short readShort() {
@@ -88,12 +78,22 @@ public class ByteArrayBuffer {
 		return readShort() & 0xffff;
 	}
 
-	public byte readByte() {
-		return buffer[offset++];
+	public int readInt() {
+		if (bigEndian) {
+			return ((int)(buffer[offset++] & 0xff) << 24) |
+				((int)(buffer[offset++] & 0xff) << 16) |
+				((int)(buffer[offset++] & 0xff) << 8) |
+				((int)(buffer[offset++] & 0xff) << 0);
+		} else {
+			return ((int)(buffer[offset++] & 0xff) << 0) |
+				((int)(buffer[offset++] & 0xff) << 8) |
+				((int)(buffer[offset++] & 0xff) << 16) |
+				((int)(buffer[offset++] & 0xff) << 24);
+		}
 	}
 
-	public int readUnsignedByte() {
-		return readByte() & 0xff;
+	public long readUnsignedInt() {
+		return readInt() & 0xffffffffl;
 	}
 
 	public void writeByte(byte value) {
