@@ -43,11 +43,9 @@ import com.scratchdisk.util.IntMap;
  * @author lehni
  */
 public class Timer extends NativeObject {
-	public static final int TICKS_PER_SECONDS = 60;
-	
 	private boolean active;
 	private boolean periodic;
-	private int period;
+	private float period;
 
 	private static IntMap timers = new IntMap();
 	private static ArrayList unusedTimers = null;
@@ -56,11 +54,10 @@ public class Timer extends NativeObject {
 	/**
 	 * Creates a timer object.
 	 * 
-	 * @param period the timer's period in ticks. Multiply with
-	 * {@link #TICKS_PER_SECONDS } to convert from seconds to ticks
-	 * @param periodic
+	 * @param period The timer's period in milliseconds.
+	 * @param periodic Controls whether the timer is one-shop or periodic. 
 	 */
-	public Timer(int period, boolean periodic) {
+	public Timer(float period, boolean periodic) {
 		// now see first whether there is an unusedEffect already:
 		ArrayList unusedTimers = getUnusedTimers();
 		
@@ -74,8 +71,9 @@ public class Timer extends NativeObject {
 			unusedTimers.remove(index);
 			setPeriod(period);
 		} else {
-			handle = nativeCreate("Scriptographer Timer " + (counter++), period);
-			this.period = period;
+			int ticks = millisecondsToTicks(period);
+			this.period = ticksToMilliseconds(ticks);
+			handle = nativeCreate("Scriptographer Timer " + (counter++), ticks);
 		}		
 
 		if (handle == 0)
@@ -93,6 +91,14 @@ public class Timer extends NativeObject {
 	}
 	*/
 	
+	private float ticksToMilliseconds(int ticks) {
+		return ticks * 1000 / 60f;
+	}
+
+	private int millisecondsToTicks(float period) {
+		return (int)(period * 1000 / 60);
+	}
+
 	/**
 	 * Called from the native environment.
 	 */
@@ -133,13 +139,14 @@ public class Timer extends NativeObject {
 		}
 	}
 	
-	public int getPeriod() {
+	public float getPeriod() {
 		return period;
 	}
 	
-	public void setPeriod(int period) {
-		if (nativeSetPeriod(handle, period))
-			this.period = period;
+	public void setPeriod(float period) {
+		int ticks = millisecondsToTicks(period);
+		if (nativeSetPeriod(handle, ticks))
+			this.period = ticksToMilliseconds(ticks);
 	}
 	
 	public static void stopAll() {
