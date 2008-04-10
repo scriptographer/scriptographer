@@ -157,100 +157,17 @@ diff -r1.344 Interpreter.java
 >     case Token.NEG :
 >     case Token.POS : {
 >         do_sign_operator(op, stack, sDbl, stackTop, cx, frame.scope);
-4549a4467,4668
->     private static void do_equal_operator(int operator, Object[] stack, double[] sDbl,
->             int stackTop, Context cx, Scriptable scope) {
->         boolean valBln;
->         Object rhs = stack[stackTop + 1];
->         Object lhs = stack[stackTop];
->         if (rhs == UniqueTag.DOUBLE_MARK) {
->             if (lhs == UniqueTag.DOUBLE_MARK) {
->                 valBln = (sDbl[stackTop] == sDbl[stackTop + 1]);
->             } else {
->                 valBln = ScriptRuntime.eqNumber(sDbl[stackTop + 1], lhs);
->             }
->         } else {
->             if (lhs == UniqueTag.DOUBLE_MARK) {
->                 valBln = ScriptRuntime.eqNumber(sDbl[stackTop], rhs);
->             } else {
->                 valBln = ScriptRuntime.eq(lhs, rhs);
->             }
->         }
->         valBln ^= (operator == Token.NE);
->         stack[stackTop] = ScriptRuntime.wrapBoolean(valBln);
->     }
-> 
->     private static void do_shallow_equal_operator(int operator, Object[] stack, double[] sDbl,
->             int stackTop, Context cx, Scriptable scope) {
->         Object rhs = stack[stackTop + 1];
->         Object lhs = stack[stackTop];
->         boolean valBln;
->         shallow_compare: {
->             double rdbl, ldbl;
->             if (rhs == UniqueTag.DOUBLE_MARK) {
->                 rdbl = sDbl[stackTop + 1];
->                 if (lhs == UniqueTag.DOUBLE_MARK) {
->                     ldbl = sDbl[stackTop];
->                 } else if (lhs instanceof Number) {
->                     ldbl = ((Number) lhs).doubleValue();
->                 } else {
->                     valBln = false;
->                     break shallow_compare;
->                 }
->             } else if (lhs == UniqueTag.DOUBLE_MARK) {
->                 ldbl = sDbl[stackTop];
->                 if (rhs == UniqueTag.DOUBLE_MARK) {
->                     rdbl = sDbl[stackTop + 1];
->                 } else if (rhs instanceof Number) {
->                     rdbl = ((Number) rhs).doubleValue();
->                 } else {
->                     valBln = false;
->                     break shallow_compare;
->                 }
->             } else {
->                 valBln = ScriptRuntime.shallowEq(lhs, rhs);
->                 break shallow_compare;
->             }
->             valBln = (ldbl == rdbl);
->         }
->         valBln ^= (operator == Token.SHNE);
->         stack[stackTop] = ScriptRuntime.wrapBoolean(valBln);
->     }
-> 
->     private static void do_sign_operator(int operator, Object[] stack, double[] sDbl,
->             int stackTop, Context cx, Scriptable scope) {
->         Object rhs = stack[stackTop];
->         double rDbl;
->         if (rhs == UniqueTag.DOUBLE_MARK) {
->             rDbl = sDbl[stackTop];
->         } else {
->             OperatorHandler handler;
->             if (rhs instanceof Number || (handler = cx.getOperatorHandler()) == null) {
->                 rDbl = ScriptRuntime.toNumber(rhs); 
->             } else {
->                 Object result = handler.handleSignOperator(cx, scope, operator, rhs);
->                 if (result == null) {
->                     rDbl = ScriptRuntime.toNumber(rhs); 
->                 } else {
->                     if (result instanceof Double) {
->                         stack[stackTop] = UniqueTag.DOUBLE_MARK;
->                         sDbl[stackTop] = ((Double) result).doubleValue();
->                     } else {
->                         stack[stackTop] = result;
->                     }
->                     return;
->                 }
->             }
->         }
->         // If we're still here, perform  double sign operator
->         stack[stackTop] = UniqueTag.DOUBLE_MARK;
->         sDbl[stackTop] = operator == Token.NEG ? -rDbl : rDbl;
->     }
-> 
+4550,4552c4467,4468
+<     private static void do_add(Object[] stack, double[] sDbl, int stackTop,
+<                               Context cx)
+<     {
+---
 >     private static void do_operator(int operator, Object[] stack, double[] sDbl,
 >             int stackTop, Context cx, Scriptable scope) {
->         Object rhs = stack[stackTop + 1];
->         Object lhs = stack[stackTop];
+4555,4556c4471,4486
+<         double d;
+<         boolean leftRightOrder;
+---
 >         boolean lhsIsDouble, rhsIsDouble;
 >         double lhsDouble, rhsDouble;
 >         Number lhsNumber, rhsNumber;
@@ -267,7 +184,38 @@ diff -r1.344 Interpreter.java
 >             lhsNumber = null;
 >             lhsDouble = 0; // prevent compilation error
 >         }
->         if (rhs == UniqueTag.DOUBLE_MARK) {
+4558,4587c4488,4537
+<             d = sDbl[stackTop + 1];
+<             if (lhs == UniqueTag.DOUBLE_MARK) {
+<                 sDbl[stackTop] += d;
+<                 return;
+<             }
+<             leftRightOrder = true;
+<             // fallthrough to object + number code
+<         } else if (lhs == UniqueTag.DOUBLE_MARK) {
+<             d = sDbl[stackTop];
+<             lhs = rhs;
+<             leftRightOrder = false;
+<             // fallthrough to object + number code
+<         } else {
+<             if (lhs instanceof Scriptable || rhs instanceof Scriptable) {
+<                 stack[stackTop] = ScriptRuntime.add(lhs, rhs, cx);
+<             } else if (lhs instanceof String) {
+<                 String lstr = (String)lhs;
+<                 String rstr = ScriptRuntime.toString(rhs);
+<                 stack[stackTop] = lstr.concat(rstr);
+<             } else if (rhs instanceof String) {
+<                 String lstr = ScriptRuntime.toString(lhs);
+<                 String rstr = (String)rhs;
+<                 stack[stackTop] = lstr.concat(rstr);
+<             } else {
+<                 double lDbl = (lhs instanceof Number)
+<                     ? ((Number)lhs).doubleValue() : ScriptRuntime.toNumber(lhs);
+<                 double rDbl = (rhs instanceof Number)
+<                     ? ((Number)rhs).doubleValue() : ScriptRuntime.toNumber(rhs);
+<                 stack[stackTop] = UniqueTag.DOUBLE_MARK;
+<                 sDbl[stackTop] = lDbl + rDbl;
+---
 >             rhsIsDouble = true;
 >             rhsNumber = null;
 >             rhsDouble = sDbl[stackTop + 1];
@@ -318,8 +266,7 @@ diff -r1.344 Interpreter.java
 >                 case Token.SHNE:
 >                     stack[stackTop] = ScriptRuntime.wrapBoolean(lhsDouble != rhsDouble);
 >                     break;
->             }
->             return;
+4589a4540,4576
 >         } else {
 >             if (lhsIsDouble && lhsNumber == null)
 >                 lhs = ScriptRuntime.wrapNumber(lhsDouble);
@@ -357,9 +304,59 @@ diff -r1.344 Interpreter.java
 >             sDbl[stackTop] = ((Double) result).doubleValue();
 >         } else {
 >             stack[stackTop] = result;
->         }
+4590a4578
 >     }
-> 
+4592,4605c4580,4589
+<         // handle object(lhs) + number(d) code
+<         if (lhs instanceof Scriptable) {
+<             rhs = ScriptRuntime.wrapNumber(d);
+<             if (!leftRightOrder) {
+<                 Object tmp = lhs;
+<                 lhs = rhs;
+<                 rhs = tmp;
+<             }
+<             stack[stackTop] = ScriptRuntime.add(lhs, rhs, cx);
+<         } else if (lhs instanceof String) {
+<             String lstr = (String)lhs;
+<             String rstr = ScriptRuntime.toString(d);
+<             if (leftRightOrder) {
+<                 stack[stackTop] = lstr.concat(rstr);
+---
+>     private static void do_sign_operator(int operator, Object[] stack, double[] sDbl,
+>             int stackTop, Context cx, Scriptable scope) {
+>         Object rhs = stack[stackTop];
+>         double rDbl;
+>         if (rhs == UniqueTag.DOUBLE_MARK) {
+>             rDbl = sDbl[stackTop];
+>         } else {
+>             OperatorHandler handler;
+>             if (rhs instanceof Number || (handler = cx.getOperatorHandler()) == null) {
+>                 rDbl = ScriptRuntime.toNumber(rhs); 
+4607c4591,4602
+<                 stack[stackTop] = rstr.concat(lstr);
+---
+>                 Object result = handler.handleSignOperator(cx, scope, operator, rhs);
+>                 if (result == null) {
+>                     rDbl = ScriptRuntime.toNumber(rhs); 
+>                 } else {
+>                     if (result instanceof Double) {
+>                         stack[stackTop] = UniqueTag.DOUBLE_MARK;
+>                         sDbl[stackTop] = ((Double) result).doubleValue();
+>                     } else {
+>                         stack[stackTop] = result;
+>                     }
+>                     return;
+>                 }
+4609,4613d4603
+<         } else {
+<             double lDbl = (lhs instanceof Number)
+<                 ? ((Number)lhs).doubleValue() : ScriptRuntime.toNumber(lhs);
+<             stack[stackTop] = UniqueTag.DOUBLE_MARK;
+<             sDbl[stackTop] = lDbl + d;
+4614a4605,4607
+>         // If we're still here, perform  double sign operator
+>         stack[stackTop] = UniqueTag.DOUBLE_MARK;
+>         sDbl[stackTop] = operator == Token.NEG ? -rDbl : rDbl;
 Index: org/mozilla/javascript/WrapFactory.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/WrapFactory.java,v
