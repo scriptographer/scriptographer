@@ -35,7 +35,6 @@ import java.io.File;
 
 import org.mozilla.javascript.Callable;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.OperatorHandler;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
@@ -98,10 +97,9 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine implem
 		// Now perform the magic
 		if (lhs instanceof Scriptable) {
 			String name = null;
-			boolean negate = false;
-            switch (operator) {
-            case Token.ADD:
-            	name = "add";
+			switch (operator) {
+			case Token.ADD:
+				name = "add";
 				break;
 			case Token.SUB:
 				name = "subtract";
@@ -116,11 +114,8 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine implem
 				name = "modulo";
 				break;
 			case Token.EQ:
-				name = "equals";
-				break;
 			case Token.NE:
 				name = "equals";
-				negate = true;
 				break;
 			}
 			if (name != null) {
@@ -128,8 +123,11 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine implem
 				Object obj = ScriptableObject.getProperty(scriptable, name);
 				if (obj instanceof Callable) {
 					Object result = ((Callable) obj).call(cx, scope, scriptable, new Object[] { rhs });
-					if (negate) {
-						return ScriptRuntime.wrapBoolean(!ScriptRuntime.toBoolean(result));
+					if (operator == Token.EQ || operator == Token.NE) {
+						boolean value = ScriptRuntime.toBoolean(result);
+						if (operator == Token.NE)
+							value = !value;
+						return ScriptRuntime.wrapBoolean(value);
 					} else {
 						return result;
 					}
