@@ -86,7 +86,7 @@ void ScriptographerEngine::javaThread() {
 	// which may block the current thread until the end of the app.
 	MPNotifyQueue(m_responseQueue, NULL, NULL, NULL);
 	// Now exit, and destroy the JavaVM. 
-	exit();
+	// exit();
 }
 
 #endif // MAC_THREAD
