@@ -46,7 +46,67 @@ Index: org/mozilla/javascript/Interpreter.java
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Interpreter.java,v
 retrieving revision 1.344
 diff -r1.344 Interpreter.java
-2772,2832d2771
+2697,2755d2696
+<     case Token.GE :
+<     case Token.LE :
+<     case Token.GT :
+<     case Token.LT : {
+<         --stackTop;
+<         Object rhs = stack[stackTop + 1];
+<         Object lhs = stack[stackTop];
+<         boolean valBln;
+<       object_compare:
+<         {
+<           number_compare:
+<             {
+<                 double rDbl, lDbl;
+<                 if (rhs == DBL_MRK) {
+<                     rDbl = sDbl[stackTop + 1];
+<                     lDbl = stack_double(frame, stackTop);
+<                 } else if (lhs == DBL_MRK) {
+<                     rDbl = ScriptRuntime.toNumber(rhs);
+<                     lDbl = sDbl[stackTop];
+<                 } else {
+<                     break number_compare;
+<                 }
+<                 switch (op) {
+<                   case Token.GE:
+<                     valBln = (lDbl >= rDbl);
+<                     break object_compare;
+<                   case Token.LE:
+<                     valBln = (lDbl <= rDbl);
+<                     break object_compare;
+<                   case Token.GT:
+<                     valBln = (lDbl > rDbl);
+<                     break object_compare;
+<                   case Token.LT:
+<                     valBln = (lDbl < rDbl);
+<                     break object_compare;
+<                   default:
+<                     throw Kit.codeBug();
+<                 }
+<             }
+<             switch (op) {
+<               case Token.GE:
+<                 valBln = ScriptRuntime.cmp_LE(rhs, lhs);
+<                 break;
+<               case Token.LE:
+<                 valBln = ScriptRuntime.cmp_LE(lhs, rhs);
+<                 break;
+<               case Token.GT:
+<                 valBln = ScriptRuntime.cmp_LT(rhs, lhs);
+<                 break;
+<               case Token.LT:
+<                 valBln = ScriptRuntime.cmp_LT(lhs, rhs);
+<                 break;
+<               default:
+<                 throw Kit.codeBug();
+<             }
+<         }
+<         stack[stackTop] = ScriptRuntime.wrapBoolean(valBln);
+<         continue Loop;
+<     }
+2772,2832d2712
 <     case Token.EQ :
 <     case Token.NE : {
 <         --stackTop;
@@ -108,7 +168,7 @@ diff -r1.344 Interpreter.java
 <         stack[stackTop] = ScriptRuntime.wrapBoolean(valBln);
 <         continue Loop;
 <     }
-2973,2982c2912,2915
+2973,2982c2853,2860
 <     case Token.NEG :
 <     case Token.POS : {
 <         double rDbl = stack_double(frame, stackTop);
@@ -124,16 +184,20 @@ diff -r1.344 Interpreter.java
 >     case Token.NE :
 >     case Token.SHEQ :
 >     case Token.SHNE :
-2984,2986d2916
+>     case Token.GE :
+>     case Token.LE :
+>     case Token.GT :
+>     case Token.LT :
+2984,2986d2861
 <         --stackTop;
 <         do_add(stack, sDbl, stackTop, cx);
 <         continue Loop;
-2990,2991c2920
+2990,2991c2865
 <     case Token.MOD : {
 <         double rDbl = stack_double(frame, stackTop);
 ---
 >     case Token.MOD :
-2993,3009c2922,2926
+2993,3009c2867,2871
 <         double lDbl = stack_double(frame, stackTop);
 <         stack[stackTop] = DBL_MRK;
 <         switch (op) {
@@ -157,14 +221,14 @@ diff -r1.344 Interpreter.java
 >     case Token.NEG :
 >     case Token.POS : {
 >         do_sign_operator(op, stack, sDbl, stackTop, cx, frame.scope);
-4550,4552c4467,4468
+4550,4552c4412,4413
 <     private static void do_add(Object[] stack, double[] sDbl, int stackTop,
 <                               Context cx)
 <     {
 ---
 >     private static void do_operator(int operator, Object[] stack, double[] sDbl,
 >             int stackTop, Context cx, Scriptable scope) {
-4555,4556c4471,4486
+4555,4556c4416,4431
 <         double d;
 <         boolean leftRightOrder;
 ---
@@ -184,7 +248,7 @@ diff -r1.344 Interpreter.java
 >             lhsNumber = null;
 >             lhsDouble = 0; // prevent compilation error
 >         }
-4558,4587c4488,4537
+4558,4587c4433,4496
 <             d = sDbl[stackTop + 1];
 <             if (lhs == UniqueTag.DOUBLE_MARK) {
 <                 sDbl[stackTop] += d;
@@ -266,7 +330,21 @@ diff -r1.344 Interpreter.java
 >                 case Token.SHNE:
 >                     stack[stackTop] = ScriptRuntime.wrapBoolean(lhsDouble != rhsDouble);
 >                     break;
-4589a4540,4576
+>                 case Token.GE:
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(lhsDouble >= rhsDouble);
+>                     break;
+>                 case Token.LE:
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(lhsDouble <= rhsDouble);
+>                     break;
+>                 case Token.GT:
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(lhsDouble > rhsDouble);
+>                     break;
+>                 case Token.LT:
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(lhsDouble < rhsDouble);
+>                     break;
+>                 default:
+>                     throw Kit.codeBug();
+4589a4499,4543
 >         } else {
 >             if (lhsIsDouble && lhsNumber == null)
 >                 lhs = ScriptRuntime.wrapNumber(lhsDouble);
@@ -284,29 +362,36 @@ diff -r1.344 Interpreter.java
 >                     result = ScriptRuntime.add(lhs, rhs, cx);
 >                     break;
 >                 case Token.EQ:
->                     result = ScriptRuntime.wrapBoolean(ScriptRuntime.eq(lhs, rhs));
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(ScriptRuntime.eq(lhs, rhs));
 >                     break;
 >                 case Token.NE:
->                     result = ScriptRuntime.wrapBoolean(!ScriptRuntime.eq(lhs, rhs));
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(!ScriptRuntime.eq(lhs, rhs));
 >                     break;
 >                 case Token.SHEQ:
->                     result = ScriptRuntime.wrapBoolean(ScriptRuntime.shallowEq(lhs, rhs));
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(ScriptRuntime.shallowEq(lhs, rhs));
 >                     break;
 >                 case Token.SHNE:
->                     result = ScriptRuntime.wrapBoolean(!ScriptRuntime.shallowEq(lhs, rhs));
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(!ScriptRuntime.shallowEq(lhs, rhs));
+>                     break;
+>                 case Token.GE:
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(ScriptRuntime.cmp_LE(rhs, lhs));
+>                     break;
+>                 case Token.LE:
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(ScriptRuntime.cmp_LE(lhs, rhs));
+>                     break;
+>                 case Token.GT:
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(ScriptRuntime.cmp_LT(rhs, lhs));
+>                     break;
+>                 case Token.LT:
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(ScriptRuntime.cmp_LT(lhs, rhs));
 >                     break;
 >                 default:
->                     // TODO: This is unsupported! report error.
+>                     // Unsupported arithmetics -> NaN
+>                     stack[stackTop] = UniqueTag.DOUBLE_MARK;
+>                     sDbl[stackTop] = Double.NaN;
 >             }
->         }
->         if (result instanceof Double) {
->             stack[stackTop] = UniqueTag.DOUBLE_MARK;
->             sDbl[stackTop] = ((Double) result).doubleValue();
->         } else {
->             stack[stackTop] = result;
-4590a4578
->     }
-4592,4605c4580,4589
+4591,4605c4545,4548
+< 
 <         // handle object(lhs) + number(d) code
 <         if (lhs instanceof Scriptable) {
 <             rhs = ScriptRuntime.wrapNumber(d);
@@ -322,19 +407,34 @@ diff -r1.344 Interpreter.java
 <             if (leftRightOrder) {
 <                 stack[stackTop] = lstr.concat(rstr);
 ---
+>         if (result != null) {
+>             if (result instanceof Double) {
+>                 stack[stackTop] = UniqueTag.DOUBLE_MARK;
+>                 sDbl[stackTop] = ((Double) result).doubleValue();
+4607c4550
+<                 stack[stackTop] = rstr.concat(lstr);
+---
+>                 stack[stackTop] = result;
+4608a4552,4560
+>         }
+>     }
+> 
 >     private static void do_sign_operator(int operator, Object[] stack, double[] sDbl,
 >             int stackTop, Context cx, Scriptable scope) {
 >         Object rhs = stack[stackTop];
 >         double rDbl;
 >         if (rhs == UniqueTag.DOUBLE_MARK) {
 >             rDbl = sDbl[stackTop];
->         } else {
+4610,4613c4562,4578
+<             double lDbl = (lhs instanceof Number)
+<                 ? ((Number)lhs).doubleValue() : ScriptRuntime.toNumber(lhs);
+<             stack[stackTop] = UniqueTag.DOUBLE_MARK;
+<             sDbl[stackTop] = lDbl + d;
+---
 >             OperatorHandler handler;
 >             if (rhs instanceof Number || (handler = cx.getOperatorHandler()) == null) {
 >                 rDbl = ScriptRuntime.toNumber(rhs); 
-4607c4591,4602
-<                 stack[stackTop] = rstr.concat(lstr);
----
+>             } else {
 >                 Object result = handler.handleSignOperator(cx, scope, operator, rhs);
 >                 if (result == null) {
 >                     rDbl = ScriptRuntime.toNumber(rhs); 
@@ -347,13 +447,8 @@ diff -r1.344 Interpreter.java
 >                     }
 >                     return;
 >                 }
-4609,4613d4603
-<         } else {
-<             double lDbl = (lhs instanceof Number)
-<                 ? ((Number)lhs).doubleValue() : ScriptRuntime.toNumber(lhs);
-<             stack[stackTop] = UniqueTag.DOUBLE_MARK;
-<             sDbl[stackTop] = lDbl + d;
-4614a4605,4607
+>             }
+4614a4580,4582
 >         // If we're still here, perform  double sign operator
 >         stack[stackTop] = UniqueTag.DOUBLE_MARK;
 >         sDbl[stackTop] = operator == Token.NEG ? -rDbl : rDbl;
