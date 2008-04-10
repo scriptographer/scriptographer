@@ -2,7 +2,7 @@ new function() {
 	function inject(dest, src, base, generics) {
 		function field(name, generics) {
 			var val = src[name], res = val, prev = dest[name];
-			if (val !== Object.prototype[name]) {
+			if (val !== (src.__proto__ || Object.prototype)[name]) {
 				switch (typeof val) {
 					case 'function':
 						var match;
@@ -26,11 +26,6 @@ new function() {
 							}).pretend(val);
 						}
 						break;
-					case 'object':
-					case 'hash':
-						if (prev && prev != val && val instanceof Object)
-							res = Hash.merge({}, prev, val);
-						break;
 				}
 				dest[name] = res;
 			}
@@ -50,6 +45,9 @@ new function() {
 				return this.initialize.apply(this, arguments);
 		}
 		ctor.prototype = obj;
+		ctor.toString = function() {
+			return (this.prototype.initialize || function() {}).toString();
+		}
 		return ctor;
 	}
 
@@ -632,9 +630,9 @@ Number.inject({
 		return bind || this;
 	},
 
-	toPaddedString: function(length, base) {
+	toPaddedString: function(length, base, prefix) {
 		var str = this.toString(base || 10);
-		return '0'.times(length - str.length) + str;
+		return (prefix || '0').times(length - str.length) + str;
 	}
 });
 
