@@ -173,15 +173,6 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 			if (Map.class.isAssignableFrom(type)) {
 				return toMap((Scriptable) value);
 			} else {
-				/* try constructing from this prototype first
-				try {
-					Scriptable scope = engine.getScope();
-					ExtendedJavaClass cls = ExtendedJavaClass.getClassWrapper(scope, to);
-					return cls.construct(Context.getCurrentContext(), scope, new Object[] { from });
-				} catch(Throwable e) {
-					int i = 0;
-				}
-				*/
 				ArgumentReader reader = null;
 				if (ArgumentReader.canConvert(type) && (reader = getArgumentReader(value)) != null) {
 				    return ArgumentReader.convert(reader, unwrap(value), type);
@@ -203,7 +194,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 				}
 			}
 		} else if (value == Undefined.instance) {
-			// Convert undefined ot false if destination is boolean
+			// Convert undefined to false if destination is boolean
 			if (type == Boolean.TYPE)
 				return Boolean.FALSE;
 		} else if (value instanceof Boolean) {

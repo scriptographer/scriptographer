@@ -1,8 +1,29 @@
+Index: org/mozilla/javascript/Context.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Context.java,v
+retrieving revision 1.268
+diff -r1.268 Context.java
+1969a1970,1982
+>     public final void setOperatorHandler(OperatorHandler operatorHandler)
+>     {
+>         if (sealed) onSealedMutation();
+>         if (operatorHandler == null)
+>             throw new IllegalArgumentException();
+>         this.operatorHandler = operatorHandler;
+>     }
+> 
+>     public final OperatorHandler getOperatorHandler()
+>     {
+>         return operatorHandler;
+>     }
+> 
+2489a2503
+>     private OperatorHandler operatorHandler;
 Index: org/mozilla/javascript/NativeJavaTopPackage.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaTopPackage.java,v
-retrieving revision 1.18
-diff -r1.18 NativeJavaTopPackage.java
+retrieving revision 1.19
+diff -r1.19 NativeJavaTopPackage.java
 77c77
 <     NativeJavaTopPackage(ClassLoader loader)
 ---
@@ -10,21 +31,340 @@ diff -r1.18 NativeJavaTopPackage.java
 Index: org/mozilla/javascript/NativeJavaPackage.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaPackage.java,v
-retrieving revision 1.40
-diff -r1.40 NativeJavaPackage.java
-60c60
-<     NativeJavaPackage(boolean internalUsage,
+retrieving revision 1.43
+diff -r1.43 NativeJavaPackage.java
+63c63
+<     NativeJavaPackage(boolean internalUsage, String packageName,
 ---
->     public NativeJavaPackage(boolean internalUsage,
-139c139
+>     public NativeJavaPackage(boolean internalUsage, String packageName,
+149c149
 <     synchronized Object getPkgProperty(String name, Scriptable start,
 ---
 >     public synchronized Object getPkgProperty(String name, Scriptable start,
+Index: org/mozilla/javascript/Interpreter.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Interpreter.java,v
+retrieving revision 1.344
+diff -r1.344 Interpreter.java
+2772,2832d2771
+<     case Token.EQ :
+<     case Token.NE : {
+<         --stackTop;
+<         boolean valBln;
+<         Object rhs = stack[stackTop + 1];
+<         Object lhs = stack[stackTop];
+<         if (rhs == DBL_MRK) {
+<             if (lhs == DBL_MRK) {
+<                 valBln = (sDbl[stackTop] == sDbl[stackTop + 1]);
+<             } else {
+<                 valBln = ScriptRuntime.eqNumber(sDbl[stackTop + 1], lhs);
+<             }
+<         } else {
+<             if (lhs == DBL_MRK) {
+<                 valBln = ScriptRuntime.eqNumber(sDbl[stackTop], rhs);
+<             } else {
+<                 valBln = ScriptRuntime.eq(lhs, rhs);
+<             }
+<         }
+<         valBln ^= (op == Token.NE);
+<         stack[stackTop] = ScriptRuntime.wrapBoolean(valBln);
+<         continue Loop;
+<     }
+<     case Token.SHEQ :
+<     case Token.SHNE : {
+<         --stackTop;
+<         Object rhs = stack[stackTop + 1];
+<         Object lhs = stack[stackTop];
+<         boolean valBln;
+<       shallow_compare: {
+<             double rdbl, ldbl;
+<             if (rhs == DBL_MRK) {
+<                 rdbl = sDbl[stackTop + 1];
+<                 if (lhs == DBL_MRK) {
+<                     ldbl = sDbl[stackTop];
+<                 } else if (lhs instanceof Number) {
+<                     ldbl = ((Number)lhs).doubleValue();
+<                 } else {
+<                     valBln = false;
+<                     break shallow_compare;
+<                 }
+<             } else if (lhs == DBL_MRK) {
+<                 ldbl = sDbl[stackTop];
+<                 if (rhs == DBL_MRK) {
+<                     rdbl = sDbl[stackTop + 1];
+<                 } else if (rhs instanceof Number) {
+<                     rdbl = ((Number)rhs).doubleValue();
+<                 } else {
+<                     valBln = false;
+<                     break shallow_compare;
+<                 }
+<             } else {
+<                 valBln = ScriptRuntime.shallowEq(lhs, rhs);
+<                 break shallow_compare;
+<             }
+<             valBln = (ldbl == rdbl);
+<         }
+<         valBln ^= (op == Token.SHNE);
+<         stack[stackTop] = ScriptRuntime.wrapBoolean(valBln);
+<         continue Loop;
+<     }
+2973,2982c2912,2915
+<     case Token.NEG :
+<     case Token.POS : {
+<         double rDbl = stack_double(frame, stackTop);
+<         stack[stackTop] = DBL_MRK;
+<         if (op == Token.NEG) {
+<             rDbl = -rDbl;
+<         }
+<         sDbl[stackTop] = rDbl;
+<         continue Loop;
+<     }
+---
+>     case Token.EQ :
+>     case Token.NE :
+>     case Token.SHEQ :
+>     case Token.SHNE :
+2984,2986d2916
+<         --stackTop;
+<         do_add(stack, sDbl, stackTop, cx);
+<         continue Loop;
+2990,2991c2920
+<     case Token.MOD : {
+<         double rDbl = stack_double(frame, stackTop);
+---
+>     case Token.MOD :
+2993,3009c2922,2926
+<         double lDbl = stack_double(frame, stackTop);
+<         stack[stackTop] = DBL_MRK;
+<         switch (op) {
+<           case Token.SUB:
+<             lDbl -= rDbl;
+<             break;
+<           case Token.MUL:
+<             lDbl *= rDbl;
+<             break;
+<           case Token.DIV:
+<             lDbl /= rDbl;
+<             break;
+<           case Token.MOD:
+<             lDbl %= rDbl;
+<             break;
+<         }
+<         sDbl[stackTop] = lDbl;
+---
+>         do_operator(op, stack, sDbl, stackTop, cx, frame.scope);
+>         continue Loop;
+>     case Token.NEG :
+>     case Token.POS : {
+>         do_sign_operator(op, stack, sDbl, stackTop, cx, frame.scope);
+4549a4467,4668
+>     private static void do_equal_operator(int operator, Object[] stack, double[] sDbl,
+>             int stackTop, Context cx, Scriptable scope) {
+>         boolean valBln;
+>         Object rhs = stack[stackTop + 1];
+>         Object lhs = stack[stackTop];
+>         if (rhs == UniqueTag.DOUBLE_MARK) {
+>             if (lhs == UniqueTag.DOUBLE_MARK) {
+>                 valBln = (sDbl[stackTop] == sDbl[stackTop + 1]);
+>             } else {
+>                 valBln = ScriptRuntime.eqNumber(sDbl[stackTop + 1], lhs);
+>             }
+>         } else {
+>             if (lhs == UniqueTag.DOUBLE_MARK) {
+>                 valBln = ScriptRuntime.eqNumber(sDbl[stackTop], rhs);
+>             } else {
+>                 valBln = ScriptRuntime.eq(lhs, rhs);
+>             }
+>         }
+>         valBln ^= (operator == Token.NE);
+>         stack[stackTop] = ScriptRuntime.wrapBoolean(valBln);
+>     }
+> 
+>     private static void do_shallow_equal_operator(int operator, Object[] stack, double[] sDbl,
+>             int stackTop, Context cx, Scriptable scope) {
+>         Object rhs = stack[stackTop + 1];
+>         Object lhs = stack[stackTop];
+>         boolean valBln;
+>         shallow_compare: {
+>             double rdbl, ldbl;
+>             if (rhs == UniqueTag.DOUBLE_MARK) {
+>                 rdbl = sDbl[stackTop + 1];
+>                 if (lhs == UniqueTag.DOUBLE_MARK) {
+>                     ldbl = sDbl[stackTop];
+>                 } else if (lhs instanceof Number) {
+>                     ldbl = ((Number) lhs).doubleValue();
+>                 } else {
+>                     valBln = false;
+>                     break shallow_compare;
+>                 }
+>             } else if (lhs == UniqueTag.DOUBLE_MARK) {
+>                 ldbl = sDbl[stackTop];
+>                 if (rhs == UniqueTag.DOUBLE_MARK) {
+>                     rdbl = sDbl[stackTop + 1];
+>                 } else if (rhs instanceof Number) {
+>                     rdbl = ((Number) rhs).doubleValue();
+>                 } else {
+>                     valBln = false;
+>                     break shallow_compare;
+>                 }
+>             } else {
+>                 valBln = ScriptRuntime.shallowEq(lhs, rhs);
+>                 break shallow_compare;
+>             }
+>             valBln = (ldbl == rdbl);
+>         }
+>         valBln ^= (operator == Token.SHNE);
+>         stack[stackTop] = ScriptRuntime.wrapBoolean(valBln);
+>     }
+> 
+>     private static void do_sign_operator(int operator, Object[] stack, double[] sDbl,
+>             int stackTop, Context cx, Scriptable scope) {
+>         Object rhs = stack[stackTop];
+>         double rDbl;
+>         if (rhs == UniqueTag.DOUBLE_MARK) {
+>             rDbl = sDbl[stackTop];
+>         } else {
+>             OperatorHandler handler;
+>             if (rhs instanceof Number || (handler = cx.getOperatorHandler()) == null) {
+>                 rDbl = ScriptRuntime.toNumber(rhs); 
+>             } else {
+>                 Object result = handler.handleSignOperator(cx, scope, operator, rhs);
+>                 if (result == null) {
+>                     rDbl = ScriptRuntime.toNumber(rhs); 
+>                 } else {
+>                     if (result instanceof Double) {
+>                         stack[stackTop] = UniqueTag.DOUBLE_MARK;
+>                         sDbl[stackTop] = ((Double) result).doubleValue();
+>                     } else {
+>                         stack[stackTop] = result;
+>                     }
+>                     return;
+>                 }
+>             }
+>         }
+>         // If we're still here, perform  double sign operator
+>         stack[stackTop] = UniqueTag.DOUBLE_MARK;
+>         sDbl[stackTop] = operator == Token.NEG ? -rDbl : rDbl;
+>     }
+> 
+>     private static void do_operator(int operator, Object[] stack, double[] sDbl,
+>             int stackTop, Context cx, Scriptable scope) {
+>         Object rhs = stack[stackTop + 1];
+>         Object lhs = stack[stackTop];
+>         boolean lhsIsDouble, rhsIsDouble;
+>         double lhsDouble, rhsDouble;
+>         Number lhsNumber, rhsNumber;
+>         if (lhs == UniqueTag.DOUBLE_MARK) {
+>             lhsIsDouble = true;
+>             lhsNumber = null;
+>             lhsDouble = sDbl[stackTop];
+>         } else if (lhs instanceof Number) {
+>             lhsIsDouble = true;
+>             lhsNumber = (Number) lhs;
+>             lhsDouble = 0; // prevent compilation error
+>         } else {
+>             lhsIsDouble = false;
+>             lhsNumber = null;
+>             lhsDouble = 0; // prevent compilation error
+>         }
+>         if (rhs == UniqueTag.DOUBLE_MARK) {
+>             rhsIsDouble = true;
+>             rhsNumber = null;
+>             rhsDouble = sDbl[stackTop + 1];
+>         } else if (rhs instanceof Number) {
+>             rhsIsDouble = true;
+>             rhsNumber = (Number) rhs;
+>             rhsDouble = 0; // prevent compilation error
+>         } else {
+>             rhsIsDouble = false;
+>             rhsNumber = null;
+>             rhsDouble = 0; // prevent compilation error
+>         }
+>         if (lhsIsDouble && rhsIsDouble) {
+>             if (lhsNumber != null)
+>                 lhsDouble = lhsNumber.doubleValue();
+>             if (rhsNumber != null)
+>                 rhsDouble = rhsNumber.doubleValue();
+>             switch (operator) {
+>                 case Token.ADD:
+>                     stack[stackTop] = UniqueTag.DOUBLE_MARK;
+>                     sDbl[stackTop] = lhsDouble + rhsDouble;
+>                     break;
+>                 case Token.SUB:
+>                     stack[stackTop] = UniqueTag.DOUBLE_MARK;
+>                     sDbl[stackTop] = lhsDouble - rhsDouble;
+>                     break;
+>                 case Token.MUL:
+>                     stack[stackTop] = UniqueTag.DOUBLE_MARK;
+>                     sDbl[stackTop] = lhsDouble * rhsDouble;
+>                     break;
+>                 case Token.DIV:
+>                     stack[stackTop] = UniqueTag.DOUBLE_MARK;
+>                     sDbl[stackTop] = lhsDouble / rhsDouble;
+>                     break;
+>                 case Token.MOD:
+>                     stack[stackTop] = UniqueTag.DOUBLE_MARK;
+>                     sDbl[stackTop] = lhsDouble % rhsDouble;
+>                     break;
+>                 case Token.EQ:
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(ScriptRuntime.eqNumber(lhsDouble, rhsDouble));
+>                     break;
+>                 case Token.NE:
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(!ScriptRuntime.eqNumber(lhsDouble, rhsDouble));
+>                     break;
+>                 case Token.SHEQ:
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(lhsDouble == rhsDouble);
+>                     break;
+>                 case Token.SHNE:
+>                     stack[stackTop] = ScriptRuntime.wrapBoolean(lhsDouble != rhsDouble);
+>                     break;
+>             }
+>             return;
+>         } else {
+>             if (lhsIsDouble && lhsNumber == null)
+>                 lhs = ScriptRuntime.wrapNumber(lhsDouble);
+>             if (rhsIsDouble && rhsNumber == null)
+>                 rhs = ScriptRuntime.wrapNumber(rhsDouble);
+>         }
+>         // Try handler now, if set:
+>         OperatorHandler handler = cx.getOperatorHandler();
+>         Object result = handler != null
+>             ? handler.handleOperator(cx, scope, operator, lhs, rhs)
+>             : null;
+>         if (result == null) { // default handling:
+>             switch (operator) {
+>                 case Token.ADD:
+>                     result = ScriptRuntime.add(lhs, rhs, cx);
+>                     break;
+>                 case Token.EQ:
+>                     result = ScriptRuntime.wrapBoolean(ScriptRuntime.eq(lhs, rhs));
+>                     break;
+>                 case Token.NE:
+>                     result = ScriptRuntime.wrapBoolean(!ScriptRuntime.eq(lhs, rhs));
+>                     break;
+>                 case Token.SHEQ:
+>                     result = ScriptRuntime.wrapBoolean(ScriptRuntime.shallowEq(lhs, rhs));
+>                     break;
+>                 case Token.SHNE:
+>                     result = ScriptRuntime.wrapBoolean(!ScriptRuntime.shallowEq(lhs, rhs));
+>                     break;
+>                 default:
+>                     // TODO: This is unsupported! report error.
+>             }
+>         }
+>         if (result instanceof Double) {
+>             stack[stackTop] = UniqueTag.DOUBLE_MARK;
+>             sDbl[stackTop] = ((Double) result).doubleValue();
+>         } else {
+>             stack[stackTop] = result;
+>         }
+>     }
+> 
 Index: org/mozilla/javascript/WrapFactory.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/WrapFactory.java,v
-retrieving revision 1.18
-diff -r1.18 WrapFactory.java
+retrieving revision 1.19
+diff -r1.19 WrapFactory.java
 153a154,169
 >      * Same as NativeJavaObject CONVERSION_*, but to be used
 >      * by WrapFactory#getConversionWeight
@@ -47,8 +387,8 @@ diff -r1.18 WrapFactory.java
 Index: org/mozilla/javascript/NativeJavaObject.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaObject.java,v
-retrieving revision 1.82
-diff -r1.82 NativeJavaObject.java
+retrieving revision 1.84
+diff -r1.84 NativeJavaObject.java
 367a368,369
 >             } else {
 >                 return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, CONVERSION_NONE);
@@ -148,10 +488,6 @@ diff -r1.82 NativeJavaObject.java
 <                 reportConversionError(value, type);
 ---
 >                 return coerce(type, original);
-679c698
-<                 // XXX: Curently only instances of ScriptableObject are
----
->                 // XXX: Currently only instances of ScriptableObject are
 696c715
 <                     // Store for later retrival
 ---
@@ -170,16 +506,16 @@ diff -r1.82 NativeJavaObject.java
 Index: org/mozilla/javascript/JavaMembers.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/JavaMembers.java,v
-retrieving revision 1.74
-diff -r1.74 JavaMembers.java
+retrieving revision 1.76
+diff -r1.76 JavaMembers.java
 55c55
 < class JavaMembers
 ---
 > public class JavaMembers
 57c57
-<     JavaMembers(Scriptable scope, Class cl)
+<     JavaMembers(Scriptable scope, Class<?> cl)
 ---
->     public JavaMembers(Scriptable scope, Class cl)
+>     public JavaMembers(Scriptable scope, Class<?> cl)
 82c82
 <     boolean has(String name, boolean isStatic)
 ---
@@ -245,8 +581,8 @@ diff -r1.43 Token.java
 Index: org/mozilla/javascript/MemberBox.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/MemberBox.java,v
-retrieving revision 1.16
-diff -r1.16 MemberBox.java
+retrieving revision 1.18
+diff -r1.18 MemberBox.java
 55c55
 < final class MemberBox implements Serializable
 ---
@@ -256,17 +592,17 @@ diff -r1.16 MemberBox.java
 ---
 >     public MemberBox(Method method)
 70c70
-<     MemberBox(Constructor constructor)
+<     MemberBox(Constructor<?> constructor)
 ---
->     public MemberBox(Constructor constructor)
+>     public MemberBox(Constructor<?> constructor)
 89c89
 <     Method method()
 ---
 >     public Method method()
 94c94
-<     Constructor ctor()
+<     Constructor<?> ctor()
 ---
->     public Constructor ctor()
+>     public Constructor<?> ctor()
 99c99
 <     Member member()
 ---
@@ -288,32 +624,30 @@ diff -r1.16 MemberBox.java
 ---
 >     public String getName()
 124c124
-<     Class getDeclaringClass()
+<     Class<?> getDeclaringClass()
 ---
->     public Class getDeclaringClass()
+>     public Class<?> getDeclaringClass()
 129c129
 <     String toJavaDeclaration()
 ---
 >     public String toJavaDeclaration()
-155c155
+156c156
 <     Object invoke(Object target, Object[] args)
 ---
 >     public Object invoke(Object target, Object[] args)
-179c179
+180c180
 <     Object newInstance(Object[] args)
 ---
 >     public Object newInstance(Object[] args)
 Index: org/mozilla/javascript/Parser.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Parser.java,v
-retrieving revision 1.124
-diff -r1.124 Parser.java
-50a51
+retrieving revision 1.126
+diff -r1.126 Parser.java
+50a51,52
 > import java.io.StringReader;
-51a53,54
-> import java.util.List;
 > import java.util.ArrayList;
-323a327,376
+324a327,376
 >     /**
 >      * Parse the given sourceReader into an array of {@link Token} objects.
 >      * This can be useful for inspecting a JavaScript resource for other goals
@@ -352,7 +686,7 @@ diff -r1.124 Parser.java
 >     {
 >         this.sourceURI = sourceURI;
 >         this.ts = new TokenStream(this, sourceReader, null, lineno);
->         List list = new ArrayList();
+>         ArrayList<Token> list = new ArrayList<Token>();
 >         while (!ts.eof()) {
 >             try {
 >                 list.add(new Token(ts.getToken(), ts.getString(),
@@ -364,30 +698,41 @@ diff -r1.124 Parser.java
 >         return (Token[]) list.toArray(new Token[list.size()]);
 >     }
 > 
-346c399
+347c399
 <      * Build a parse tree from the given sourceString.
 ---
 >      * Build a parse tree from the given sourceReader.
 Index: org/mozilla/javascript/NativeJavaClass.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaClass.java,v
-retrieving revision 1.52
-diff -r1.52 NativeJavaClass.java
-176a177,182
+retrieving revision 1.54
+diff -r1.54 NativeJavaClass.java
+183a184,189
 >     protected MemberBox findConstructor(Context cx, Object[] args)
 >     {
 >         int index = NativeJavaMethod.findFunction(cx, members.ctors, args);
 >         return index >= 0 ? members.ctors[index] : null;
 >     }
 > 
-184,186c190,191
+191,193c197,198
 <             MemberBox[] ctors = members.ctors;
 <             int index = NativeJavaMethod.findFunction(cx, ctors, args);
 <             if (index < 0) {
 ---
 >             MemberBox ctor = findConstructor(cx, args);
 >             if (ctor == null) {
-193c198
+200c205
 <             return constructSpecific(cx, scope, args, ctors[index]);
 ---
 >             return constructSpecific(cx, scope, args, ctor);
+Index: org/mozilla/javascript/OperatorHandler.java
+===================================================================
+RCS file: org/mozilla/javascript/OperatorHandler.java
+diff -N org/mozilla/javascript/OperatorHandler.java
+0a1,6
+> package org.mozilla.javascript;
+> 
+> public interface OperatorHandler {
+>     public Object handleOperator(Context cx, Scriptable scope, int operator, Object lhs, Object rhs);
+>     public Object handleSignOperator(Context cx, Scriptable scope, int operator, Object rhs);
+> }

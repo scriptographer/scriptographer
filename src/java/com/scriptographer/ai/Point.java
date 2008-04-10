@@ -173,6 +173,10 @@ public class Point {
 		return new Point(this.x + x, this.y + y);
 	}
 
+	public Point add(float value) {
+		return new Point(this.x + value, this.y + value);
+	}
+
 	/**
 	 * Returns the subtraction of the supplied point to the point object as a
 	 * new point. The object itself is not modified!
@@ -207,6 +211,10 @@ public class Point {
 	 */
 	public Point subtract(float x, float y) {
 		return new Point(this.x - x, this.y - y);
+	}
+
+	public Point subtract(float value) {
+		return new Point(this.x - value, this.y - value);
 	}
 
 	/**
@@ -265,6 +273,11 @@ public class Point {
 	public Point divide(float value) {
 		return new Point(x / value, y / value);
 	}
+
+	public Point negate() {
+		return new Point(-x, -y);
+	}
+
 	/**
 	 * Checks if the point is within a given distance of another point
 	 * 

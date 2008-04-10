@@ -33,7 +33,14 @@ package com.scriptographer.script.rhino;
 
 import java.io.File;
 
+import org.mozilla.javascript.Callable;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.OperatorHandler;
+import org.mozilla.javascript.ScriptRuntime;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Token;
 
 import com.scratchdisk.script.ScriptCanceledException;
 import com.scriptographer.ScriptographerEngine;
@@ -42,7 +49,7 @@ import com.scriptographer.ScriptographerEngine;
  * @author lehni
  *
  */
-public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
+public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine implements OperatorHandler {
 
 	public RhinoEngine() {
 		super(new RhinoWrapFactory());
@@ -60,6 +67,7 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
 		// Make Rhino runtime to call observeInstructionCount
 		// each 20000 bytecode instructions
 		context.setInstructionObserverThreshold(20000);
+		context.setOperatorHandler(this);
 	}
 
 	protected void observeInstructionCount(Context cx, int instructionCount) {
@@ -69,5 +77,81 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine {
 
 	public File getBaseDirectory() {
 		return ScriptographerEngine.getScriptDirectory();
+	}
+
+	public Object handleOperator(Context cx, Scriptable scope, int operator, Object lhs, Object rhs) {
+		// There is a very simple convention for arithmetic operations on objects:
+		// Just try to get the according functions on scriptable objects,
+		// and perform the operation by executing these.
+		// Fall back on the default ScriptRuntime.add for adding,
+		// return null for everything else.
+
+		// Wrap String as Scriptable for some of the operators, so we can access
+		// its prototype easily too.
+		// Note that only the operators that are natively defined for JS can
+		// be overridden here!
+		if (lhs instanceof String && (
+				operator == Token.SUB ||
+				operator == Token.MUL ||
+				operator == Token.DIV))
+			lhs = ScriptRuntime.toObject(cx, scope, lhs);
+		// Now perform the magic
+		if (lhs instanceof Scriptable) {
+			String name = null;
+			boolean negate = false;
+            switch (operator) {
+            case Token.ADD:
+            	name = "add";
+				break;
+			case Token.SUB:
+				name = "subtract";
+				break;
+			case Token.MUL:
+				name = "multiply";
+				break;
+			case Token.DIV:
+				name = "divide";
+				break;
+			case Token.MOD:
+				name = "modulo";
+				break;
+			case Token.EQ:
+				name = "equals";
+				break;
+			case Token.NE:
+				name = "equals";
+				negate = true;
+				break;
+			}
+			if (name != null) {
+				Scriptable scriptable = (Scriptable) lhs;
+				Object obj = ScriptableObject.getProperty(scriptable, name);
+				if (obj instanceof Callable) {
+					Object result = ((Callable) obj).call(cx, scope, scriptable, new Object[] { rhs });
+					if (negate) {
+						return ScriptRuntime.wrapBoolean(!ScriptRuntime.toBoolean(result));
+					} else {
+						return result;
+					}
+				}
+		   }
+		}
+		return null;
+	}
+
+	public Object handleSignOperator(Context cx, Scriptable scope, int operator, Object rhs) {
+		if (operator == Token.NEG) {
+			// Wrap String as Scriptable, so we can access its prototype easily too.
+			if (rhs instanceof String)
+				rhs = ScriptRuntime.toObject(cx, scope, rhs);
+			// Now perform the magic
+			if (rhs instanceof Scriptable) {
+				Scriptable scriptable = (Scriptable) rhs;
+				Object obj = ScriptableObject.getProperty(scriptable, "negate");
+				if (obj instanceof Callable)
+					return ((Callable) obj).call(cx, scope, scriptable, new Object[] {});
+			}
+		}
+		return null;
 	}
 }
