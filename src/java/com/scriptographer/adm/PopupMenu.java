@@ -37,7 +37,7 @@ package com.scriptographer.adm;
 public class PopupMenu extends ListItem {
 	
 	// ADMPopupMenuStyle
-	public final static int
+	public static final int
 		STYLE_MENU_RIGHT = 0,
 		STYLE_MENU_BOTTOM = 1,
 		STYLE_MENU_ROUND = 2,

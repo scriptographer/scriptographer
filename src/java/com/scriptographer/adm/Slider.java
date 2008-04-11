@@ -37,7 +37,7 @@ package com.scriptographer.adm;
 public class Slider extends ValueItem {
 
 	// ADMSliderStyle
-	public final static int
+	public static final int
 		STYLE_NONE = 0,
 		STYLE_NONLINEAR = 1,
 		STYLE_SHOW_FRACTION = 2;

@@ -37,7 +37,7 @@ package com.scriptographer.adm;
 public class List extends ListItem {
 	
 	// SegmentList box styles
-	public final static int
+	public static final int
 		STYLE_MULTISELECT = (1 << 0),
 		STYLE_DIVIDED = (1 << 1),
 		STYLE_TILE = (1 << 2),

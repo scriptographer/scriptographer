@@ -156,10 +156,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ItemSet_invert(JNIEnv *env,
 }
 
 /*
- * com.scriptographer.ai.Raster rasterize(int type, float resolution, int antialiasing, float width, float height)
+ * com.scriptographer.ai.Raster nativeRasterize(int type, float resolution, int antialiasing, float width, float height)
  */
 
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ItemSet_rasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ItemSet_nativeRasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
 	try {
 		AIArtSet set = gEngine->convertArtSet(env, obj);
 		AIArtHandle raster = ItemSet_rasterize(set, (AIRasterizeType) type, resolution, antialiasing, width, height);

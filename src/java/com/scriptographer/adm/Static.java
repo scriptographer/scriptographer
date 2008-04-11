@@ -37,13 +37,13 @@ package com.scriptographer.adm;
 public class Static extends TextValueItem {
 
 	//  Text static styles
-	public final static int
+	public static final int
 		STYLE_CLIPPEDTEXT 					= 1 << 0,
 		STYLE_DISABLE_AUTO_ACTIVATE_TEXT 	= 1 << 1,
 		STYLE_TRUNCATE_ENDTEXT 				= 1 << 2, // clipped style has priority
 		STYLE_TRUNCATE_MIDDLETEXT 			= 1 << 3; // truncate end has priority
 
-	public final static int
+	public static final int
 		// a fake option that tells the constructor to construct a MULTILINE
 		// static item.
 		OPTION_MULTILINE = 1 << 1;

@@ -63,6 +63,8 @@ public class CommitManager {
 	 * committed.
 	 */
 	public static void commit(Object key) {
+		if (commitables.size() > 0)
+			System.out.println("commiting " + commitables.size());
 		if (key != null) {
 			Commitable obj = (Commitable) commitables.get(key);
 			if (obj != null) {

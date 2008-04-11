@@ -40,7 +40,7 @@ import com.scriptographer.Commitable;
 public class Tracing extends Item implements Commitable {
 	
 	// AITracingMode
-	public final static int
+	public static final int
 		/** Color.  Either RGB or CMYK depending on source image.  */
 		MODE_COLOR = 0,
 		
@@ -51,7 +51,7 @@ public class Tracing extends Item implements Commitable {
 		MODE_BITMAP = 2;
 	
 	// AITracingVisualizeVectorType
-	public final static int
+	public static final int
 		/** No Artwork.  */
 		VECTOR_NONE = 0,
 	
@@ -65,7 +65,7 @@ public class Tracing extends Item implements Commitable {
 		VECTOR_ARTWORK_AND_OUTLINES = 3;
 		
 	// AITracingVisualizeRasterType
-	public final static int
+	public static final int
 		/** None.  No raster is included in the visualization.  */
 		RASTER_NONE = 0,
 	

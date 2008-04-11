@@ -127,96 +127,6 @@ public abstract class Item extends DictionaryObject {
 		TYPE_LAYER = 100,
 		TYPE_TRACING = 101;
 
-	// AIArtUserAttr:
-	// used in Document.getMatchingArt:
-	// USING Integer objects instead of int so that they can directly
-	// be put into the map.
-	// TODO: Consider switching to Java 1.5 and automatic boxing / unboxing
-	public final static Integer
-		ATTRIBUTE_SELECTED = new Integer(0x00000001),
-		ATTRIBUTE_LOCKED = new Integer(0x00000002),
-		ATTRIBUTE_HIDDEN = new Integer(0x00000004),
-		ATTRIBUTE_FULLY_SELECTED = new Integer(0x00000008),
-
-		// Valid only for groups and plugin groups. Indicates whether the
-		// contents of the object are expanded in the layers palette.
-		ATTRIBUTE_EXPANDED = new Integer(0x00000010),
-		ATTRIBUTE_TARGETED = new Integer(0x00000020),
-
-		// Indicates that the object defines a clip mask. This can only be set on
-		// paths), compound paths), and text frame objects. This property can only be
-		// set on an object if the object is already contained within a clip group.
-		ATTRIBUTE_IS_CLIPMASK = new Integer(0x00001000),
-
-		// Indicates that text is to wrap around the object. This property cannot be
-		// set on an object that is part of compound group), it will return
-		// kBadParameterErr. private final int ATTR_IsTextWrap has to be set to the
-		// ancestor compound group in this case.
-		ATTRIBUTE_IS_TEXTWRAP = new Integer(0x00010000),
-
-		// Meaningful only to GetMatchingArt passing to SetArtUserAttr will cause an error. Only one
-		// of kArtSelectedTopLevelGroups), kArtSelectedLeaves or kArtSelectedTopLevelWithPaint can
-		// be passed into GetMatchingArt), and they cannot be combined with anything else. When
-		// passed to GetMatchingArt causes only fully selected top level objects to be returned
-		// and not their children.
-		ATTRIBUTE_SELECTED_TOPLEVEL_GROUPS = new Integer(0x00000040),
-		// Meaningful only to GetMatchingArt passing to SetArtUserAttr will cause an error. When passed
-		// to GetMatchingArt causes only leaf selected objects to be returned and not their containers.
-		// See also kArtSelectedTopLevelGroups
-		ATTRIBUTE_SELECTED_LAYERS = new Integer(0x00000080),
-		// Meaningful only to GetMatchingArt passing to SetArtUserAttr will cause an error. When passed
-		// to GetMatchingArt causes only top level selected objects that have a stroke or fill to be
-		// returned. See also kArtSelectedTopLevelGroups
-		ATTRIBUTE_SELECTED_TOPLEVEL_WITH_PAINT = new Integer(0x00000100),	// Top level groups that have a stroke or fill), or leaves
-
-		// Valid only for GetArtUserAttr and GetMatchingArt passing to
-		// SetArtUserAttr will cause an error. true if the item has a simple
-		// style.
-		ATTRIBUTE_HAS_SIMPLE_STYLE = new Integer(0x00000200),
-	
-		// Valid only for GetArtUserAttr and GetMatchingArt passing to
-		// SetArtUserAttr will cause an error. true if the item has an active
-		// style.
-		ATTRIBUTE_HAS_ACTIVE_STYLE = new Integer(0x00000400),
-
-		// Valid only for GetArtUserAttr and GetMatchingArt passing to
-		// SetArtUserAttr will cause an error. true if the item is a part of a
-		// compound path.
-		// TODO: Consider naming ATTRIBUTE_COMPOUND_PATH_CHILD
-		ATTRIBUTE_PART_OF_COMPOUND = new Integer(0x00000800),
-
-		// On GetArtUserAttr), reports whether the object has a style that is
-		// pending re-execution. On SetArtUserAttr), marks the style dirty
-		// without making any other changes to the item or to the style.
-		ATTRIBUTE_STYLE_IS_DIRTY = new Integer(0x00040000);
-
-	// AIBlendingModeValues:
-	public final static int
-		BLEND_NORMAL			= 0,
-		BLEND_MULTIPLY			= 1,
-		BLEND_SCREEN			= 2,
-		BLEND_OVERLAY			= 3,
-		BLEND_SOFTLIGHT			= 4,
-		BLEND_HARDLIGHT			= 5,
-		BLEND_COLORDODGE		= 6,
-		BLEND_COLORBURN			= 7,
-		BLEND_DARKEN			= 8,
-		BLEND_LIGHTEN			= 9,
-		BLEND_DIFFERENCE		= 10,
-		BLEND_EXCLUSION			= 11,
-		BLEND_HUE				= 12,
-		BLEND_SATURATION		= 13,
-		BLEND_COLOR				= 14,
-		BLEND_LUMINOSITY		= 15,
-		BLEND_NUMS				= 16;
-
-	// AIKnockout:
-	public final static int
-		KNOCKOUT_UNKNOWN	= -1,
-		KNOCKOUT_OFF		= 0,
-		KNOCKOUT_ON			= 1,
-		KNOCKOUT_INHERIT	= 2;
-
 	public static final int 
 		TRANSFORM_OBJECTS			= 1 << 0,
 		TRANSFORM_FILL_GRADIENTS	= 1 << 1,
@@ -227,16 +137,8 @@ public abstract class Item extends DictionaryObject {
 		TRANSFORM_CHILDREN			= 1 << 6,
 		TRANSFORM_SELECTION_ONLY	= 1 << 7;
 	
-	// AIArtOrder:
-	public final static int
-		ORDER_UNKNOWN = 0,
-		ORDER_ABOVE = 1,
-		ORDER_BELOW = 2,
-		ORDER_INSIDE = 3,
-		ORDER_ANCHESTOR = 4;
-	
 	// AIExpandFlagValue:
-	public final static int
+	public static final int
 		EXPAND_PLUGINART	    = 0x0001,
 		EXPAND_TEXT			    = 0x0002,
 		EXPAND_STROKE		    = 0x0004,
@@ -256,7 +158,7 @@ public abstract class Item extends DictionaryObject {
 	 * right constructor is used (Path, Raster). Use wrapArtHandle instead of
 	 * directly calling this constructor (it is called from the anchestor's
 	 * constructors). Integer is used instead of int so Item(int handle) can be
-	 * distinguised from the Item(Integer handle) constructor
+	 * distinguished from the Item(Integer handle) constructor
 	 * 
 	 * @param handle
 	 */
@@ -687,8 +589,16 @@ public abstract class Item extends DictionaryObject {
 	public native boolean isCenterVisible();
 	public native void setCenterVisible(boolean centerVisible);
 
-	protected native void setAttribute(int attribute, boolean value);
-	protected native boolean getAttribute(int attribute);
+	private native void nativeSetAttribute(int attribute, boolean value);
+	private native boolean nativeGetAttribute(int attribute);
+
+	public void setAttribute(ItemAttribute attribute, boolean value) {
+		nativeSetAttribute(attribute.value, value);
+	}
+
+	public boolean getAttribute(ItemAttribute attribute) {
+		return nativeGetAttribute(attribute.value);
+	}
 
 	/**
 	 * @jsbean A boolean value that specifies whether an item is selected.
@@ -703,11 +613,11 @@ public abstract class Item extends DictionaryObject {
 	 * @jsbean </pre>
 	 */
 	public boolean isSelected() {
-		return getAttribute(ATTRIBUTE_SELECTED.intValue());
+		return getAttribute(ItemAttribute.SELECTED);
 	}
 
 	public void setSelected(boolean selected) {
-		setAttribute(ATTRIBUTE_SELECTED.intValue(), selected);
+		setAttribute(ItemAttribute.SELECTED, selected);
 	}
 
 	/**
@@ -716,11 +626,11 @@ public abstract class Item extends DictionaryObject {
 	 * @jsbean for container objects all children are selected.
 	 */
 	public boolean isFullySelected() {
-		return getAttribute(ATTRIBUTE_FULLY_SELECTED.intValue());
+		return getAttribute(ItemAttribute.FULLY_SELECTED);
 	}
 
 	public void setFullySelected(boolean selected) {
-		setAttribute(ATTRIBUTE_FULLY_SELECTED.intValue(), selected);
+		setAttribute(ItemAttribute.FULLY_SELECTED, selected);
 	}
 
 	/**
@@ -734,11 +644,11 @@ public abstract class Item extends DictionaryObject {
 	 * @jsbean </pre>
 	 */
 	public boolean isLocked() {
-		return getAttribute(ATTRIBUTE_LOCKED.intValue());
+		return getAttribute(ItemAttribute.LOCKED);
 	}
 
 	public void setLocked(boolean locked) {
-		setAttribute(ATTRIBUTE_LOCKED.intValue(), locked);
+		setAttribute(ItemAttribute.LOCKED, locked);
 	}
 
 	/**
@@ -753,11 +663,11 @@ public abstract class Item extends DictionaryObject {
 	 * @jsbean </pre>
 	 */
 	public boolean isHidden() {
-		return getAttribute(ATTRIBUTE_HIDDEN.intValue());
+		return getAttribute(ItemAttribute.HIDDEN);
 	}
 
 	public void setHidden(boolean hidden) {
-		setAttribute(ATTRIBUTE_HIDDEN.intValue(), hidden);
+		setAttribute(ItemAttribute.HIDDEN, hidden);
 	}
 
 	// Indicates that the object defines a clip mask. 
@@ -776,11 +686,11 @@ public abstract class Item extends DictionaryObject {
 	 * @jsbean </pre>
 	 */
 	public boolean isClipMask() {
-		return getAttribute(ATTRIBUTE_HIDDEN.intValue());
+		return getAttribute(ItemAttribute.HIDDEN);
 	}
 
 	public void setClipMask(boolean clipMask) {
-		setAttribute(ATTRIBUTE_IS_CLIPMASK.intValue(), clipMask);
+		setAttribute(ItemAttribute.IS_CLIPMASK, clipMask);
 	}
 
 	/**
@@ -794,14 +704,22 @@ public abstract class Item extends DictionaryObject {
 	 * 
 	 * @return any of Item.BLEND_*
 	 */
-	public native int getBlendMode();
+	private native int nativeGetBlendMode();
 
 	/**
 	 * Set the item's blend mode:
 	 * 
 	 * @param mode Item.BLEND_*
 	 */
-	public native void setBlendMode(int mode);
+	private native void nativeSetBlendMode(int mode);
+
+	public BlendMode getBlendMode() {
+		return BlendMode.get(nativeGetBlendMode());
+	}
+
+	void setBlendMode(BlendMode blend) {
+		nativeSetBlendMode(blend.value);
+	}
 
 	/**
 	 * @jsbean A value between 0 and 1 that specifies the opacity of the item.
@@ -814,11 +732,21 @@ public abstract class Item extends DictionaryObject {
 
 	public native void setIsolated(boolean isolated);
 
-	public native boolean getKnockout();
+	private native int nativeGetKnockout(boolean inherited);
 
-	public native boolean getKnockoutInherited();
+	private native void nativeSetKnockout(int knockout);
 
-	public native void setKnockout(int knockout);
+	public Knockout getKnockout(boolean inherited) {
+		return Knockout.get(nativeGetKnockout(inherited));
+	}
+
+	public Knockout getKnockout() {
+		return getKnockout(false);
+	}
+
+	public void setKnockout(Knockout knockout) {
+		nativeSetKnockout(knockout.value);
+	}
 
 	public native boolean getAlphaIsShape();
 
@@ -1037,9 +965,13 @@ public abstract class Item extends DictionaryObject {
 		return expand(EXPAND_PLUGINART | EXPAND_TEXT | EXPAND_STROKE |
 				EXPAND_PATTERN | EXPAND_SYMBOLINSTANCES, 0);
 	}
-	
-	protected native int getOrder(Item item);
-	
+
+	protected native int nativeGetOrder(Item item);
+
+	public ItemOrder getOrder(Item item) {
+		return ItemOrder.get(nativeGetOrder(item));
+	}
+
 	/**
 	 * Checks if this item is above the specified item in the stacking
 	 * order of the document.
@@ -1055,7 +987,7 @@ public abstract class Item extends DictionaryObject {
 	 *         otherwise
 	 */
 	public boolean isAbove(Item item) {
-		return getOrder(item) == ORDER_ABOVE;		
+		return getOrder(item) == ItemOrder.ABOVE;		
 	}
 	
 	/**
@@ -1073,7 +1005,7 @@ public abstract class Item extends DictionaryObject {
 	 *         otherwise
 	 */
 	public boolean isBelow(Item item) {
-		return getOrder(item) == ORDER_BELOW;		
+		return getOrder(item) == ItemOrder.BELOW;		
 	}
 	
 	/**
@@ -1091,7 +1023,7 @@ public abstract class Item extends DictionaryObject {
 	 *         false otherwise
 	 */
 	public boolean isInside(Item item) {
-		return getOrder(item) == ORDER_INSIDE;		
+		return getOrder(item) == ItemOrder.INSIDE;		
 	}
 
 	/**
@@ -1109,7 +1041,7 @@ public abstract class Item extends DictionaryObject {
 	 *         item, false otherwise
 	 */
 	public boolean isAncestor(Item item) {
-		return getOrder(item) == ORDER_ANCHESTOR;		
+		return getOrder(item) == ItemOrder.ANCHESTOR;		
 	}
 
 	protected native void nativeGetDictionary(Dictionary dictionary);

@@ -73,7 +73,8 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			// Careful: We cannot on members.has, as this does not
 			// check static fields the way members.get does...
 			Object res = members.get(this, name, javaObject, false);
-			if (res != null && res != Scriptable.NOT_FOUND) return res;
+			if (res != null && res != Scriptable.NOT_FOUND)
+			    return res;
 			Scriptable prototype = getPrototype();
 			if (name.equals("prototype")) {
 				if (prototype == null) {

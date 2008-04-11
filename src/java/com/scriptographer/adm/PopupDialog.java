@@ -35,7 +35,7 @@ package com.scriptographer.adm;
  * @author lehni
  */
 public class PopupDialog extends ModalDialog {
-	public final static int
+	public static final int
 	// standard options from ADM:
 	
 		OPTION_AS_FLOATING = 1 << 8,

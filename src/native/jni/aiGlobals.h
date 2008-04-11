@@ -38,6 +38,7 @@ jboolean Item_hasChildren(AIArtHandle handle);
 jboolean Item_isLayer(AIArtHandle handle);
 AIArtHandle Item_rasterize(AIArtHandle handle, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 AIArtHandle Item_getInsertionPoint(short *paintOrder, AIDocumentHandle doc = NULL);
+void Item_commit(JNIEnv *env, AIArtHandle art, bool invalidate = false, bool children = true);
 
 void ItemSet_filter(AIArtSet set, bool layerOnly = false);
 jobject ItemSet_getSelected(JNIEnv *env);

@@ -36,7 +36,7 @@ package com.scriptographer.adm;
  */
 public class DialogGroupInfo {
 	// dialog position code masks
-	public final static int
+	public static final int
 		POSITION_DOCK				= 0x000000ff,
 		POSITION_TAB				= 0x0000ff00,
 		POSITION_FRONTTAB			= 0x00010000,
@@ -45,7 +45,7 @@ public class DialogGroupInfo {
 		POSITION_DEFAULT			= POSITION_FRONTTAB | POSITION_ZOOM;
 
 	// dialog position code masks
-	public final static int
+	public static final int
 		/** Dialog group position mask. Provides access to the dock position byte. */
 		MASK_DOCK 					= 0x000000ff,
 

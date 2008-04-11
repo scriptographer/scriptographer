@@ -37,7 +37,7 @@ import java.util.HashMap;
  * @author lehni
  */
 public class Notifier {
-	public final static int
+	public static final int
 		NOTIFIER_USER_CHANGED = 0,
 		NOTIFIER_INTERMEDIATE_CHANGED = 1,
 		NOTIFIER_BOUNDS_CHANGED = 2,

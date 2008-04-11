@@ -67,10 +67,8 @@ public class Document extends DictionaryObject {
 	 * Opens an existing document.
 	 * 
 	 * @param file the file to read from
-	 * @param colorModel the document's desired color model, Color.MODEL_*
-	 *        values
-	 * @param dialogStatus how dialogs should be handled, Document.DIALOG_*
-	 *        values
+	 * @param colorModel the document's desired color model
+	 * @param dialogStatus how dialogs should be handled
 	 */
 	public Document(File file, int colorModel, int dialogStatus) {
 		super(nativeCreate(file, colorModel, dialogStatus));
@@ -82,14 +80,16 @@ public class Document extends DictionaryObject {
 	 * @param title the title of the document
 	 * @param width the width of the document
 	 * @param height the height of the document
-	 * @param colorModel the document's desired color model, Color.MODEL_*
-	 *        values
-	 * @param dialogStatus how dialogs should be handled, Document.DIALOG_*
-	 *        values
+	 * @param colorModel the document's desired color model
+	 * @param dialogStatus how dialogs should be handled
 	 */
-	public Document(String title, float width, float height, int colorModel,
+	public Document(String title, float width, float height, ColorModel colorModel,
 			int dialogStatus) {
-		super(nativeCreate(title, width, height, colorModel, dialogStatus));
+		super(nativeCreate(title, width, height, colorModel.value, dialogStatus));
+	}
+
+	public Document(String title, float width, float height) {
+		this(title, width, height, ColorModel.CMYK, Document.DIALOG_NONE);
 	}
 
 	protected Document(int handle) {
@@ -251,16 +251,17 @@ public class Document extends DictionaryObject {
 
 	public native File getFile();
 
-	private static String[] formats = null;
+	private native int nativeGetFileFormat();
+
+	private native void nativeSetFileFormat(int handle);
 	
-	private static native String[] nativeGetFormats();
-	
-	public static String[] getFileFormats() {
-		if (formats == null)
-			formats = nativeGetFormats();
-		return (String[]) formats.clone();
+	public FileFormat getFileFormat() {
+		return FileFormat.getFormat(nativeGetFileFormat());
 	}
-	
+
+	public void setFileFormat(FileFormat format) {
+		nativeSetFileFormat(format != null ? format.handle : 0);
+	}
 	/**
 	 * Prints the document
 	 * 
@@ -321,10 +322,16 @@ public class Document extends DictionaryObject {
 	public void invalidate(Rectangle rect) {
 		invalidate(rect.x, rect.y, rect.width, rect.height);
 	}
-	
-	public native boolean write(File file, String format, boolean ask);
 
-	public boolean write(File file, String format) {
+	private native boolean nativeWrite(File file, int formatHandle, boolean ask);
+	
+	public boolean write(File file, FileFormat format, boolean ask) {
+		if (format == null)
+			format = this.getFileFormat();
+		return nativeWrite(file, format != null ? format.handle : 0, ask);
+	}
+
+	public boolean write(File file, FileFormat format) {
 		return write(file, format, false);
 	}
 
@@ -349,26 +356,6 @@ public class Document extends DictionaryObject {
 	
 	private native ItemSet nativeGetMatchingItems(Class type, Map attributes);
 
-	private static final HashMap attributeNames = new HashMap();
-
-	static {
-		attributeNames.put("selected", Item.ATTRIBUTE_SELECTED);
-		attributeNames.put("locked", Item.ATTRIBUTE_LOCKED);
-		attributeNames.put("hidden", Item.ATTRIBUTE_HIDDEN);
-		attributeNames.put("fullySelected", Item.ATTRIBUTE_FULLY_SELECTED);
-		attributeNames.put("expanded", Item.ATTRIBUTE_EXPANDED);
-		attributeNames.put("targeted", Item.ATTRIBUTE_TARGETED);
-		attributeNames.put("clipmask", Item.ATTRIBUTE_IS_CLIPMASK);
-		attributeNames.put("textwrap", Item.ATTRIBUTE_IS_TEXTWRAP);
-		attributeNames.put("selectedToplevelGroups", Item.ATTRIBUTE_SELECTED_TOPLEVEL_GROUPS);
-		attributeNames.put("selectedLayers", Item.ATTRIBUTE_SELECTED_LAYERS);
-		attributeNames.put("selectedToplevelWithPaint", Item.ATTRIBUTE_SELECTED_TOPLEVEL_WITH_PAINT);
-		attributeNames.put("simpleStyle", Item.ATTRIBUTE_HAS_SIMPLE_STYLE);
-		attributeNames.put("activeStyle", Item.ATTRIBUTE_HAS_ACTIVE_STYLE);
-		attributeNames.put("compoundPathChild", Item.ATTRIBUTE_PART_OF_COMPOUND);
-		attributeNames.put("dirtyStyle", Item.ATTRIBUTE_STYLE_IS_DIRTY);
-	}
-
 	public ItemSet getMatchingItems(Class type, Map attributes) {
 		// Convert the attributes list to a new HashMap containing only
 		// integer -> boolean pairs.
@@ -382,15 +369,13 @@ public class Document extends DictionaryObject {
 			} else if (!(value instanceof Boolean)) {
 				value = Boolean.FALSE;
 			}
-			if (key instanceof String) {
-				Object attribute = attributeNames.get(key);
-				if (attribute != null) {
-					converted.put(attribute, value);
-				} else {
+			if (key instanceof String || key instanceof Number) {
+				key = ItemAttribute.get(key);
+				if (key == null)
 					throw new ScriptographerException("Undefined attribute: " + key);
-				}
-			} else if (key instanceof Number) {
-				converted.put(key, value);
+			}
+			if (key instanceof ItemAttribute) {
+				converted.put(((ItemAttribute) key).toInteger(), value);
 			}
 		}
 		return nativeGetMatchingItems(type, converted);
@@ -545,7 +530,7 @@ public class Document extends DictionaryObject {
 		return new Path(segments);
 	}
 	
-	public Raster createRaster(short type, int width, int height) {
+	public Raster createRaster(ColorType type, int width, int height) {
 		activate(false, true);
 		return new Raster(type, width, height);
 	}
@@ -595,9 +580,9 @@ public class Document extends DictionaryObject {
 		return new Group(children);
 	}
 	
-	public AreaText createAreaText(Path area, short orient) {
+	public AreaText createAreaText(Path area, TextOrientation orientation) {
 		activate(false, true);
-		return new AreaText(area, orient);
+		return new AreaText(area, orientation);
 	}
 
 	public AreaText createAreaText(Path area) {
@@ -605,9 +590,9 @@ public class Document extends DictionaryObject {
 		return new AreaText(area);
 	}
 	
-	public PointText createPointText(Point point, short orient) {
+	public PointText createPointText(Point point, TextOrientation orientation) {
 		activate(false, true);
-		return new PointText(point, orient);
+		return new PointText(point, orientation);
 	}
 
 	public PointText createPointText(Point point) {
@@ -615,9 +600,9 @@ public class Document extends DictionaryObject {
 		return new PointText(point);
 	}
 	
-	public PathText createPathText(Path path, short orient) {
+	public PathText createPathText(Path path, TextOrientation orientation) {
 		activate(false, true);
-		return new PathText(path, orient);
+		return new PathText(path, orientation);
 	}
 
 	public PathText createPathText(Path path) {

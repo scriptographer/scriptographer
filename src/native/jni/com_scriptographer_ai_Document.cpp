@@ -144,7 +144,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_i
 			sAIDocumentList->Open(filePath, (AIColorModel) colorModel, (ActionDialogStatus) dialogStatus, true, &doc);
 	#endif
 #endif
-	}	
+		}
+		if (doc != NULL)
+			gActiveDoc = doc;
 	} EXCEPTION_CONVERT(env);
 	return (jint) doc;
 }
@@ -178,6 +180,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_l
 		ai::UnicodeString preset("");
 		sAIDocumentList->New(preset, &params, (ActionDialogStatus) dialogStatus, &doc);
 	#endif
+		if (doc != NULL)
+			gActiveDoc = doc;
 #endif
 	} EXCEPTION_CONVERT(env);
 	if (str != NULL)
@@ -190,12 +194,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_l
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_activate(JNIEnv *env, jobject obj, jboolean focus, jboolean forCreation) {
 	try {
-		// do not switch yet as we may want to focus the document too:
+		// Do not switch yet as we may want to focus the document too:
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
 		if (doc != gActiveDoc) {
 			sAIDocumentList->Activate(doc, focus);
 			gActiveDoc = doc;
-			// if forCreation is set, set gCreationDoc instead of gWorkingDoc
+			// If forCreation is set, set gCreationDoc instead of gWorkingDoc
 			if (forCreation) gCreationDoc = doc;
 			else gWorkingDoc = doc;
 		}
@@ -208,7 +212,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_activate(JNIEnv *env,
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getActiveLayer(JNIEnv *env, jobject obj) {
 	jobject layerObj = NULL;
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
 		AILayerHandle layer = NULL;
@@ -463,31 +467,44 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_save(JNIEnv *env, job
 }
 
 /*
- * boolean write(java.io.File file, Ljava.lang.String format, boolean ask)
+ * boolean nativeWrite(java.io.File file, int formatHandle, boolean ask)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_write(JNIEnv *env, jobject obj, jobject file, jstring format, jboolean ask) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_nativeWrite(JNIEnv *env, jobject obj, jobject file, jint formatHandle, jboolean ask) {
 	jboolean ret = false;
-	char *formatStr = NULL;
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
+		gEngine->commit(env);
 		
-		if (format == NULL) formatStr = "Adobe Illustrator Any Format Writer";
-		else formatStr = gEngine->convertString(env, format);
+		char *formatName = NULL;
+
+		long formatOptions;
+
+		if (formatHandle != 0) {
+			sAIFileFormat->GetFileFormatName((AIFileFormatHandle) formatHandle, &formatName);
+			sAIFileFormat->GetFileFormatOptions((AIFileFormatHandle) formatHandle, &formatOptions);
+		}
+
+		if (formatName == NULL) {
+			formatName = "Adobe Illustrator Any Format Writer";
+			formatOptions = kFileFormatWrite;
+		}
+
+		if (ask)
+			formatOptions &= ~kFileFormatSuppressUI;
+		else
+			formatOptions |= kFileFormatSuppressUI;
 
 		SPPlatformFileSpecification fileSpec;
 		if (gEngine->convertFile(env, file, &fileSpec) != NULL) {
 #if kPluginInterfaceVersion < kAI12
-			ret = !sAIDocument->WriteDocument(&fileSpec, formatStr, ask);
+			ret = !sAIDocument->WriteDocumentWithOptions(&fileSpec, formatName, formatOptions, ask);
 #else
 			ai::FilePath filePath(fileSpec);
-			ret = !sAIDocument->WriteDocument(filePath, formatStr, ask);
+			ret = !sAIDocument->WriteDocumentWithOptions(filePath, formatName, formatOptions, ask);
 #endif
 		}
 	} EXCEPTION_CONVERT(env);
-
-	if (formatStr != NULL && format != NULL)
-		delete formatStr;
 	
 	return ret;
 }
@@ -509,7 +526,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw(JNIEnv *env, j
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		gEngine->callStaticVoidMethod(env, gEngine->cls_CommitManager, gEngine->mid_CommitManager_commit);
+		gEngine->commit(env);
 		sAIDocument->RedrawDocument();
 	} EXCEPTION_CONVERT(env);
 }
@@ -538,7 +555,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_copy(JNIEnv *env, job
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		
+		gEngine->commit(env);
 		sAIDocument->Copy();
 	} EXCEPTION_CONVERT(env);
 }
@@ -550,7 +567,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_cut(JNIEnv *env, jobj
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		
+		gEngine->commit(env);
 		sAIDocument->Cut();
 	} EXCEPTION_CONVERT(env);
 }
@@ -562,7 +579,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_paste(JNIEnv *env, jo
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		
+		gEngine->commit(env);
 		sAIDocument->Paste();
 	} EXCEPTION_CONVERT(env);
 }
@@ -589,7 +606,6 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_hasSelectedItems(
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		
 		selected = sAIMatchingArt->IsSomeArtSelected();
 	} EXCEPTION_CONVERT(env);
 	return selected;
@@ -603,7 +619,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(J
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		
 		itemSet = ItemSet_getSelected(env);
 	} EXCEPTION_CONVERT(env);
 	return itemSet;
@@ -628,7 +643,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeGetMatchingI
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		
+		gEngine->commit(env);
 		AIArtSet set;
 		if (!sAIArtSet->NewArtSet(&set)) {
 			bool layerOnly = false;
@@ -821,11 +836,16 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		
+
 		AIRealPoint pt;
 		gEngine->convertPoint(env, point, &pt);
 		
 		AIArtHandle handle = gEngine->getArtHandle(env, item);
+		if (handle != NULL) {
+			Item_commit(env, handle);
+		} else {
+			gEngine->commit(env);
+		}
 		
 		AIHitRef hit;
 		AIHitRequest request = (AIHitRequest) type;
@@ -925,5 +945,31 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_reflowText(JNIEnv *en
 		gEngine->getDocumentHandle(env, obj, true);
 		sAIDocument->ResumeTextReflow();
 		sAIDocument->SuspendTextReflow();
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * int nativeGetFileFormat()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetFileFormat(JNIEnv *env, jobject obj) {
+	try {
+		// Cause the doc switch if necessary
+		gEngine->getDocumentHandle(env, obj, true);
+		AIFileFormatHandle handle;
+		if (!sAIDocument->GetDocumentFileFormat(&handle))
+			return (jint) handle;
+	} EXCEPTION_CONVERT(env);
+	return 0;
+}
+
+/*
+ * void nativeSetFileFormat(int handle)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetFileFormat(JNIEnv *env, jobject obj, jint handle) {
+	try {
+		gEngine->getDocumentHandle(env, obj, true);
+		// Cause the doc switch if necessary
+		if (sAIDocument->SetDocumentFileFormat((AIFileFormatHandle) handle))
+			throw new StringException("Cannot set file format on document");
 	} EXCEPTION_CONVERT(env);
 }

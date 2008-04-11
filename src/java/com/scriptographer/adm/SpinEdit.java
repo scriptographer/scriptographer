@@ -36,7 +36,7 @@ package com.scriptographer.adm;
  */
 public class SpinEdit extends TextEdit {
 
-	public final static int
+	public static final int
 	// ADMSpinEditStyle
 		STYLE_VERTICAL = 0,
 		STYLE_HORIZONTAL = 1,

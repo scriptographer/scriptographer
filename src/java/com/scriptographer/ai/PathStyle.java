@@ -198,14 +198,14 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 			Color strokeColor, boolean hasStrokeColor,
 			short strokeOverprint, float strokeWidth,
 			float dashOffset, float[] dashArray,
-			short cap, short join, float miterLimit,
+			int cap, int join, float miterLimit,
 			short clip, short lockClip, short evenOdd, float resolution);
 
 	// These would belong to FillStyle and StrokeStyle, but in order to safe 4
 	// new native files, they're here:
 	protected static native void nativeInitStrokeStyle(int handle, Color color,
 		boolean hasColor, short overprint, float width, float dashOffset,
-		float[] dashArray, short cap, short join, float miterLimit);
+		float[] dashArray, int cap, int join, float miterLimit);
 
 	protected static native void nativeInitFillStyle(int handle, Color color,
 		boolean hasColor, short overprint);
@@ -226,8 +226,8 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 			stroke.width != null ? stroke.width.floatValue() : -1,
 			stroke.dashOffset != null ? stroke.dashOffset.floatValue() : -1,
 			stroke.dashArray,
-			stroke.cap != null ? stroke.cap.shortValue() : -1,
-			stroke.join != null ? stroke.join.shortValue() : -1,
+			stroke.cap != null ? stroke.cap.value : -1,
+			stroke.join != null ? stroke.join.value : -1,
 			stroke.miterLimit != null ? stroke.miterLimit.floatValue() : -1,
 			clip != null ? (short) (clip.booleanValue() ? 1 : 0) : -1,
 			lockClip != null ? (short) (lockClip.booleanValue() ? 1 : 0) : -1,

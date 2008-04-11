@@ -47,19 +47,9 @@ public class StrokeStyle implements Style {
 	protected Float width;				/* Line width */
 	protected Float dashOffset;		/* Dash dashOffset */
 	protected float[] dashArray;		/* Dash array */
-	protected Integer cap;				/* Line cap */
-	protected Integer join;				/* Line join */
+	protected StrokeCap cap;			/* Line cap */
+	protected StrokeJoin join;			/* Line join */
 	protected Float miterLimit;		/* Line miter limit */
-
-	public static final int
-		CAP_BUTT = 0,
-		CAP_ROUND = 1,
-		CAP_SQUARE = 2;
-
-	public static final int
-		JOIN_MITER = 0,
-		JOIN_ROUND = 1,
-		JOIN_BEVEL = 2;
 
 	private PathStyle style = null;
 
@@ -78,7 +68,7 @@ public class StrokeStyle implements Style {
 	}
 
 	public StrokeStyle(Color color, Boolean overprint, Float width,
-			Float dashOffset, float[] dashArray, Integer cap, Integer join,
+			Float dashOffset, float[] dashArray, StrokeCap cap, StrokeJoin join,
 			Float miterLimit) {
 		init(color, overprint, width, dashOffset, dashArray, cap, join,
 				miterLimit);
@@ -97,8 +87,8 @@ public class StrokeStyle implements Style {
 				reader.readFloat("width"),
 				reader.readFloat("dashOffset"),
 				(float[]) reader.readObject("dashArray", float[].class),
-				reader.readInteger("cap"),
-				reader.readInteger("join"),
+				StrokeCap.get(reader.readString("cap")),
+				StrokeJoin.get(reader.readString("join")),
 				reader.readFloat("miterLimit")
 		);
 	}
@@ -107,14 +97,14 @@ public class StrokeStyle implements Style {
 	 * called from the native environment
 	 */
 	protected StrokeStyle(Color color, boolean hasColor, short overprint,
-			float width, float dashOffset, float[] dashArray, short cap,
-			short join, float miterLimit) {
+			float width, float dashOffset, float[] dashArray, int cap,
+			int join, float miterLimit) {
 		init(color, hasColor, overprint, width, dashOffset, dashArray, cap,
 				join, miterLimit);
 	}
 
 	protected void init(Color color, Boolean overprint, Float width,
-			Float dashOffset, float[] dashArray, Integer cap, Integer join,
+			Float dashOffset, float[] dashArray, StrokeCap cap, StrokeJoin join,
 			Float miterLimit) {
 		this.color = color;
 		this.overprint = overprint;
@@ -134,15 +124,15 @@ public class StrokeStyle implements Style {
 	 * called from the native environment
 	 */
 	protected void init(Color color, boolean hasColor, short overprint,
-			float width, float dashOffset, float[] dashArray, short cap,
-			short join, float miterLimit) {
+			float width, float dashOffset, float[] dashArray, int cap,
+			int join, float miterLimit) {
 		this.color = hasColor && color == null ? Color.NONE : color;
 		this.overprint = overprint >= 0 ? new Boolean(overprint != 0) : null;
 		this.width = width >= 0 ? new Float(width) : null;
 		this.dashOffset = dashOffset >= 0 ? new Float(dashOffset) : null;
 		this.setDashArray(dashArray, false);
-		this.cap = cap >= 0 ? new Integer(cap) : null;
-		this.join = join >= 0 ? new Integer(join) : null;
+		this.cap = StrokeCap.get(cap);
+		this.join = StrokeJoin.get(join);
 		this.miterLimit = miterLimit >= 0 ? new Float(miterLimit) : null;
 	}
 	
@@ -153,8 +143,8 @@ public class StrokeStyle implements Style {
 				width != null ? width.floatValue() : -1,
 				dashOffset != null ? dashOffset.floatValue() : -1,
 				dashArray,
-				cap != null ? cap.shortValue() : -1,
-				join != null ? join.shortValue() : -1,
+				cap != null ? cap.value : -1,
+				join != null ? join.value : -1,
 				miterLimit != null ? miterLimit.floatValue() : -1
 		);
 	}
@@ -256,13 +246,13 @@ public class StrokeStyle implements Style {
 		setDashArray(array, false);
 	}
 
-	public Integer getCap() {
+	public StrokeCap getCap() {
 		if (style != null)
 			style.update();
 		return cap;
 	}
 
-	public void setCap(Integer cap) {
+	public void setCap(StrokeCap cap) {
 		if (style != null) {
 			style.update();
 			style.markDirty();
@@ -270,13 +260,13 @@ public class StrokeStyle implements Style {
 		this.cap = cap;
 	}
 
-	public Integer getJoin() {
+	public StrokeJoin getJoin() {
 		if (style != null)
 			style.update();
 		return join;
 	}
 
-	public void setJoin(Integer join) {
+	public void setJoin(StrokeJoin join) {
 		if (style != null) {
 			style.update();
 			style.markDirty();
@@ -313,14 +303,6 @@ public class StrokeStyle implements Style {
 		setDashOffset(new Float(offset));
 	}
 	
-	public void setCap(int cap) {
-		setCap(new Integer(cap));
-	}
-
-	public void setJoin(int join) {
-		setJoin(new Integer(join));
-	}
-
 	public void setMiterLimit(float miterLimit) {
 		setMiterLimit(new Float(miterLimit));
 	}

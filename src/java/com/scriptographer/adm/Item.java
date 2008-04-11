@@ -44,7 +44,7 @@ import com.scriptographer.ScriptographerException;
 public abstract class Item extends Component {
 
 	// options
-	public final static int
+	public static final int
 		OPTION_NONE = 0;
 
 	// ADMItemType:

@@ -405,7 +405,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ScriptographerException = loadClass(env, "com/scriptographer/ScriptographerException");
 
 	cls_CommitManager = loadClass(env, "com/scriptographer/CommitManager");
-	mid_CommitManager_commit = getStaticMethodID(env, cls_CommitManager, "commit", "()V");
+	mid_CommitManager_commit = getStaticMethodID(env, cls_CommitManager, "commit", "(Ljava/lang/Object;)V");
 
 // AI:
 	cls_ai_NativeObject = loadClass(env, "com/scriptographer/ai/NativeObject");
@@ -503,8 +503,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_FillStyle_initNative = getMethodID(env, cls_ai_FillStyle, "initNative", "(I)V");
 	
 	cls_ai_StrokeStyle = loadClass(env, "com/scriptographer/ai/StrokeStyle");
-	cid_ai_StrokeStyle = getConstructorID(env, cls_ai_StrokeStyle, "(Lcom/scriptographer/ai/Color;ZSFF[FSSF)V");
-	mid_ai_StrokeStyle_init = getMethodID(env, cls_ai_StrokeStyle, "init", "(Lcom/scriptographer/ai/Color;ZSFF[FSSF)V");
+	cid_ai_StrokeStyle = getConstructorID(env, cls_ai_StrokeStyle, "(Lcom/scriptographer/ai/Color;ZSFF[FIIF)V");
+	mid_ai_StrokeStyle_init = getMethodID(env, cls_ai_StrokeStyle, "init", "(Lcom/scriptographer/ai/Color;ZSFF[FIIF)V");
 	mid_ai_StrokeStyle_initNative = getMethodID(env, cls_ai_StrokeStyle, "initNative", "(I)V");
 	
 	cls_ai_CharacterStyle = loadClass(env, "com/scriptographer/ai/CharacterStyle");
@@ -558,6 +558,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ai_HitTest = loadClass(env, "com/scriptographer/ai/HitTest");
 	cid_ai_HitTest = getConstructorID(env, cls_ai_HitTest, "(ILcom/scriptographer/ai/Item;IFLcom/scriptographer/ai/Point;)V");
 
+	cls_ai_FileFormat = loadClass(env, "com/scriptographer/ai/FileFormat");
+	cid_ai_FileFormat = getConstructorID(env, cls_ai_FileFormat, "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
 // ADM:
 	cls_adm_NativeObject = loadClass(env, "com/scriptographer/adm/NativeObject");
 	fid_adm_NativeObject_handle = getFieldID(env, cls_adm_NativeObject, "handle", "I");
@@ -1582,6 +1584,10 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 		}
 	}
 	return art;
+}
+
+void ScriptographerEngine::commit(JNIEnv *env) {
+	callStaticVoidMethod(env, cls_CommitManager, mid_CommitManager_commit, NULL);
 }
 
 void ScriptographerEngine::resumeSuspendedDocuments() {

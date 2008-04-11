@@ -75,7 +75,7 @@ public class CMYKColor extends Color {
 	public java.awt.Color toAWTColor() {
 		// workaround, as there seems to be a problem with the color profiles
 		// and cmyk:
-		return convert(Color.TYPE_ARGB).toAWTColor();
+		return convert(ColorType.ARGB).toAWTColor();
 		// this doesn't seem to work:
 		// return new java.awt.Color(getColorSpace(), new float[] { cyan,
 		// yellow, magenta, black }, alpha);
@@ -95,7 +95,7 @@ public class CMYKColor extends Color {
 
 	public static ColorSpace getColorSpace() {
 		if (space == null)
-			space = new ICC_ColorSpace(getProfile(MODEL_CMYK));
+			space = new ICC_ColorSpace(getProfile(ColorModel.CMYK));
 		return space;
 	}
 

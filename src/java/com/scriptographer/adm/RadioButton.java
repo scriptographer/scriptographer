@@ -43,7 +43,7 @@ package com.scriptographer.adm;
 public class RadioButton extends ToggleItem {
 
 	// ADMRadioButtonStyle
-	public final static int
+	public static final int
 		STYLE_ONE_ALWAYS_SET = 0,
 		STYLE_ALLOW_NONE_SET = 2;
 	

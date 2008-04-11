@@ -62,7 +62,7 @@ public class Image extends NativeObject {
 	private Drawer drawer;
 
 	// image types
-	public final static int
+	public static final int
 		TYPE_RGB = 0,
 		TYPE_ARGB = 1,
 		TYPE_SCREEN = 2,

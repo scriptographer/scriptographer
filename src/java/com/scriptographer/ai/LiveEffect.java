@@ -101,9 +101,9 @@ Hope that helps,
 */
 public class LiveEffect extends NativeObject {
 	// AIStyleFilterPreferredInputArtType
-	public final static int
+	public static final int
 		INPUT_DYNAMIC	 		= 0,
-		INPUT_GROUP 				= 1 << (Item.TYPE_GROUP - 1),
+		INPUT_GROUP 			= 1 << (Item.TYPE_GROUP - 1),
 		INPUT_PATH 				= 1 << (Item.TYPE_PATH - 1),
 		INPUT_COMPOUNDPATH 		= 1 << (Item.TYPE_COMPOUNDPATH - 1),
 
@@ -113,15 +113,15 @@ public class LiveEffect extends NativeObject {
 
 		// If INPUT_PLUGIN is not specified, the filter will receive the result group of a plugin
 		// group instead of the plugin group itself
-		INPUT_PLUGIN				= 1 << (Item.TYPE_PLUGIN - 1),
+		INPUT_PLUGIN			= 1 << (Item.TYPE_PLUGIN - 1),
 		INPUT_MESH 				= 1 << (Item.TYPE_MESH - 1),
 
-		INPUT_TEXTFRAME 			= 1 << (Item.TYPE_TEXTFRAME - 1),
+		INPUT_TEXTFRAME 		= 1 << (Item.TYPE_TEXTFRAME - 1),
 
 		INPUT_SYMBOL 			= 1 << (Item.TYPE_SYMBOL - 1),
 
 		INPUT_FOREIGN			= 1 << (Item.TYPE_FOREIGN - 1),
-		INPUT_LEGACYTEXT			= 1 << (Item.TYPE_LEGACYTEXT - 1),
+		INPUT_LEGACYTEXT		= 1 << (Item.TYPE_LEGACYTEXT - 1),
 
 		// Indicates that the effect can operate on any input art. */
 		INPUT_ANY 				= 0xfff,
@@ -132,7 +132,7 @@ public class LiveEffect extends NativeObject {
 		// Special values that don't correspond to regular art types should be in the high half word
 
 		// Wants strokes to be converted to outlines before being filtered (not currently implemented)
-		INPUT_OUTLINED_STROKE		= 0x10000,
+		INPUT_OUTLINED_STROKE	= 0x10000,
 		// Doesn't want to take objects that are clipping paths or clipping text (because it destroys them,
 		// e.g. by rasterizing, or by splitting a single path into multiple non-intersecting paths,
 		// or by turning it into a plugin group, like the brush filter).
@@ -142,15 +142,15 @@ public class LiveEffect extends NativeObject {
 		INPUT_NO_CLIPMASKS		= 0x20000;
 
 	//AIStyleFilterFlags
-	public final static int
-		TYPE_DEFAULT			= 0,
+	public static final int
+		TYPE_DEFAULT		= 0,
 		TYPE_PRE_EFFECT		= 1,
-		TYPE_POST_EFFECT		= 2,
+		TYPE_POST_EFFECT	= 2,
 		TYPE_STROKE			= 3,
 		TYPE_FILL			= 4;
 	
-	public final static int
-		FLAG_NONE					= 0,
+	public static final int
+		FLAG_NONE						= 0,
 		FLAG_SPECIAL_GROU_PRE_FILTER 	= 0x010000,
 		FLAG_HAS_SCALABLE_PARAMS 		= 0x020000,
 		FLAG_USE_AUTO_RASTARIZE 		= 0x040000,
@@ -174,10 +174,10 @@ public class LiveEffect extends NativeObject {
 	/**
 	 * Called from the native environment.
 	 */
-	protected LiveEffect(int effectHandle, String name, String title,
+	protected LiveEffect(int handle, String name, String title,
 			int preferedInput, int type, int flags, int majorVersion,
 			int minorVersion) {
-		super(effectHandle);
+		super(handle);
 		this.name = name;
 		this.title = title;
 		this.preferedInput = preferedInput;

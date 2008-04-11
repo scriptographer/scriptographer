@@ -75,7 +75,7 @@ public class GrayColor extends Color {
 
 	public static ColorSpace getColorSpace() {
 		if (space == null)
-			space = new ICC_ColorSpace(getProfile(MODEL_GRAY));
+			space = new ICC_ColorSpace(getProfile(ColorModel.GRAY));
 		return space;
 	}
 

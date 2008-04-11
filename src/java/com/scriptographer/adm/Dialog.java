@@ -53,24 +53,24 @@ public abstract class Dialog extends Component {
 	public native void dumpControlHierarchy(File file);
 
 	// Dialog options (for Create() call)
-	public final static int OPTION_NONE = 0;
+	public static final int OPTION_NONE = 0;
 
 	// Default ADM options:
 
 	/**
 	 * Keypad 'enter' key does not activate default item.
 	 */
-	public final static int OPTION_IGNORE_KEYPAD_ENTER = 1 << 3;
+	public static final int OPTION_IGNORE_KEYPAD_ENTER = 1 << 3;
 
 	/**
 	 * Reduce flicker by creating items hidden.
 	 */
-	public final static int OPTION_ITEMS_HIDDEN = 1 << 4;
+	public static final int OPTION_ITEMS_HIDDEN = 1 << 4;
 
 	/**
 	 * Forces for all items within dialog, except as overridden.
 	 */
-	public final static int OPTION_FORCE_ROMAN = 1 << 5;
+	public static final int OPTION_FORCE_ROMAN = 1 << 5;
 
 	/**
 	 * Track the enter keys carriage return and keypad enter before the
@@ -81,14 +81,14 @@ public abstract class Dialog extends Component {
 	 * when enter is pressed within a text item.
 	 * This option currently relevant only on Mac platform.
 	 */
-	public final static int OPTION_ENTER_BEFORE_OK = 1 << 6;
+	public static final int OPTION_ENTER_BEFORE_OK = 1 << 6;
 
 	// pseudo options, to simulate the various window styles (above 1 << 16)
 
 	/**
 	 * Create the dialog hidden
 	 */
-	public final static int OPTION_HIDDEN = 1 << 17;
+	public static final int OPTION_HIDDEN = 1 << 17;
 
 	/**
 	 * Remember placing of the dialog by automatically storing its state in
@@ -96,7 +96,7 @@ public abstract class Dialog extends Component {
 	 * preferences. The dialog's title needs to be unique within one such node,
 	 * as it is used to store the dialog's state.
 	 */
-	public final static int OPTION_REMEMBER_PLACING = 1 << 18;
+	public static final int OPTION_REMEMBER_PLACING = 1 << 18;
 
 	//	Dialog styles (for Create() call).
 	protected final static int
@@ -132,7 +132,7 @@ public abstract class Dialog extends Component {
 
 	// TODO: Think about where to move all the ADM constants
 	// (Dialog.CURSOR_, Dialog.FONT_, Drawer.COLOR_
-	public final static int
+	public static final int
 		CURSOR_IBEAM = -1,
 		CURSOR_CROSS = -2,
 		CURSOR_WAIT = -3,
@@ -144,7 +144,7 @@ public abstract class Dialog extends Component {
 		CURSOR_HOSTCONTROLS = -9;
 
 	// ADMFont
-	public final static int
+	public static final int
 		FONT_DEFAULT = 0,
 		FONT_DIALOG = 1,
 		FONT_PALETTE = 2,

@@ -271,86 +271,86 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setRotation(JNI
 }
 
 /*
- * java.lang.Integer getKerningMethod()
+ * java.lang.Integer nativeGetKerningType()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_getKerningMethod(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetKerningType(JNIEnv *env, jobject obj) {
 	CHARACTERSTYLE_GET_ENUM(AutoKernType)
 }
 
 /*
- * void setKerningMethod(java.lang.Integer value)
+ * void nativeSetKerningType(java.lang.Integer value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setKerningMethod(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetKerningType(JNIEnv *env, jobject obj, jobject value) {
 	CHARACTERSTYLE_SET_ENUM(AutoKernType)
 }
 
 /*
- * java.lang.Integer getCapitalization()
+ * java.lang.Integer nativeGetCapitalization()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_getCapitalization(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetCapitalization(JNIEnv *env, jobject obj) {
 	CHARACTERSTYLE_GET_ENUM(FontCapsOption)
 }
 
 /*
- * void setCapitalization(java.lang.Integer value)
+ * void nativeSetCapitalization(java.lang.Integer value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setCapitalization(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetCapitalization(JNIEnv *env, jobject obj, jobject value) {
 	CHARACTERSTYLE_SET_ENUM(FontCapsOption)
 }
 
 /*
- * java.lang.Integer getBaselineOption()
+ * java.lang.Integer nativeGetBaselineOption()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_getBaselineOption(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetBaselineOption(JNIEnv *env, jobject obj) {
 	CHARACTERSTYLE_GET_ENUM(FontBaselineOption)
 }
 
 /*
- * void setBaselineOption(java.lang.Integer value)
+ * void nativeSetBaselineOption(java.lang.Integer value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setBaselineOption(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetBaselineOption(JNIEnv *env, jobject obj, jobject value) {
 	CHARACTERSTYLE_SET_ENUM(FontBaselineOption)
 }
 
 /*
- * java.lang.Integer getOpenTypePosition()
+ * java.lang.Integer nativeGetOpenTypePosition()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_getOpenTypePosition(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetOpenTypePosition(JNIEnv *env, jobject obj) {
 	CHARACTERSTYLE_GET_ENUM(FontOpenTypePositionOption)
 }
 
 /*
- * void setOpenTypePosition(java.lang.Integer value)
+ * void nativeSetOpenTypePosition(java.lang.Integer value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setOpenTypePosition(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetOpenTypePosition(JNIEnv *env, jobject obj, jobject value) {
 	CHARACTERSTYLE_SET_ENUM(FontOpenTypePositionOption)
 }
 
 /*
- * java.lang.Integer getStrikethroughPosition()
+ * java.lang.Integer nativeGetStrikethroughPosition()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_getStrikethroughPosition(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetStrikethroughPosition(JNIEnv *env, jobject obj) {
 	CHARACTERSTYLE_GET_ENUM(StrikethroughPosition)
 }
 
 /*
- * void setStrikethroughPosition(java.lang.Integer value)
+ * void nativeSetStrikethroughPosition(java.lang.Integer value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setStrikethroughPosition(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetStrikethroughPosition(JNIEnv *env, jobject obj, jobject value) {
 	CHARACTERSTYLE_SET_ENUM(StrikethroughPosition)
 }
 
 /*
- * java.lang.Integer getUnderlinePosition()
+ * java.lang.Integer nativeGetUnderlinePosition()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_getUnderlinePosition(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetUnderlinePosition(JNIEnv *env, jobject obj) {
 	CHARACTERSTYLE_GET_ENUM(UnderlinePosition)
 }
 
 /*
- * void setUnderlinePosition(java.lang.Integer value)
+ * void nativeSetUnderlinePosition(java.lang.Integer value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setUnderlinePosition(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetUnderlinePosition(JNIEnv *env, jobject obj, jobject value) {
 	CHARACTERSTYLE_SET_ENUM(UnderlinePosition)
 }
 
@@ -537,16 +537,16 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setOrnaments(JN
 }
 
 /*
- * java.lang.Integer getFigureStyle()
+ * java.lang.Integer nativeGetFigureStyle()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_getFigureStyle(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetFigureStyle(JNIEnv *env, jobject obj) {
 	CHARACTERSTYLE_GET_ENUM(FigureStyle)
 }
 
 /*
- * void setFigureStyle(java.lang.Integer value)
+ * void nativeSetFigureStyle(java.lang.Integer value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setFigureStyle(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetFigureStyle(JNIEnv *env, jobject obj, jobject value) {
 	CHARACTERSTYLE_SET_ENUM(FigureStyle)
 }
 

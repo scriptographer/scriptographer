@@ -43,9 +43,9 @@ using namespace ATE;
 // Everything else seems to be not depending on the documents at all (ATE related)
 
 /*
- * short getOrientation()
+ * int nativeGetOrientation()
  */
-JNIEXPORT jshort JNICALL Java_com_scriptographer_ai_TextFrame_getOrientation(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_nativeGetOrientation(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle text = gEngine->getArtHandle(env, obj);
 		AITextOrientation orient;
@@ -56,9 +56,9 @@ JNIEXPORT jshort JNICALL Java_com_scriptographer_ai_TextFrame_getOrientation(JNI
 }
 
 /*
- * void setOrientation(short orient)
+ * void nativeSetOrientation(int orient)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOrientation(JNIEnv *env, jobject obj, jshort orient) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_nativeSetOrientation(JNIEnv *env, jobject obj, jint orient) {
 	try {
 		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
 		sAITextFrame->SetOrientation(text, (AITextOrientation) orient);

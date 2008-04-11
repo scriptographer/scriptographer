@@ -52,46 +52,6 @@ import com.scriptographer.CommitManager;
  */
 public class CharacterStyle extends PathStyle {
 
-	// AutoKernType
-	public final static Integer KERNING_MANUAL = new Integer(0);
-	public final static Integer KERNING_METRIC = new Integer(1);
-	public final static Integer KERNING_OPTICAL = new Integer(2);
-
-	// FontCapsOption
-	public final static Integer CAPS_NORMAL = new Integer(0);
-	public final static Integer CAPS_SMALL = new Integer(1);
-	public final static Integer CAPS_ALL = new Integer(2);
-	public final static Integer CAPS_ALL_SMALL = new Integer(3);
-
-	// FontBaselineOption
-	public final static Integer BASELINE_NORMAL = new Integer(0);
-	public final static Integer BASELINE_SUPERSCRIPT = new Integer(1);
-	public final static Integer BASELINE_SUBSCRIPT = new Integer(2);
-
-	// FontOpenTypePositionOption
-	public final static Integer POSITION_NORMAL = new Integer(0);
-	public final static Integer POSITION_SUPERSCRIPT = new Integer(1);
-	public final static Integer POSITION_SUBSCRIPT = new Integer(2);
-	public final static Integer POSITION_NUMERATOR = new Integer(3);
-	public final static Integer POSITION_DENOMINATOR = new Integer(4);
-
-	// StrikethroughPosition
-	public final static Integer STRIKETHROUGH_OFF = new Integer(0);
-	public final static Integer STRIKETHROUGH_XHEIGHT = new Integer(1);
-	public final static Integer STRIKETHROUGH_EMBOX = new Integer(2);
-
-	// UnderlinePosition
-	public final static Integer UNDERLINE_OFF = new Integer(0);
-	public final static Integer UNDERLINE_RIGHT_IN_VERTICAL = new Integer(1);
-	public final static Integer UNDERLINE_LEFT_IN_VERTICAL = new Integer(2);
-
-	// FigureStyle
-	public final static Integer FIGURE_DEFAULT = new Integer(0);
-	public final static Integer FIGURE_TABULAR = new Integer(1);
-	public final static Integer FIGURE_PROPORTIONAL_OLDSTYLE = new Integer(2);
-	public final static Integer FIGURE_PROPORTIONAL = new Integer(3);
-	public final static Integer FIGURE_TABULAR_OLDSTYPE = new Integer(4);
-
 	private TextRange range;
 	private Object commitKey;
 	private boolean pathStyleChanged;
@@ -128,12 +88,12 @@ public class CharacterStyle extends PathStyle {
 		setTracking(reader.readInteger("tracking"));
 		setBaselineShift(reader.readFloat("baselineShift"));
 		setRotation(reader.readFloat("Rotation"));
-		setKerningMethod(reader.readInteger("kerningMethod"));
-		setCapitalization(reader.readInteger("capitalization"));
-		setBaselineOption(reader.readInteger("baselineOption"));
-		setOpenTypePosition(reader.readInteger("openTypePosition"));
-		setStrikethroughPosition(reader.readInteger("strikethroughPosition"));
-		setUnderlinePosition(reader.readInteger("underlinePosition"));
+		setKerningType(KerningType.get(reader.readString("kerningType")));
+		setCapitalization(Capitalization.get(reader.readString("capitalization")));
+		setBaselineOption(BaselineOption.get(reader.readString("baselineOption")));
+		setOpenTypePosition(OpenTypePosition.get(reader.readString("openTypePosition")));
+		setStrikethroughPosition(StrikethroughPosition.get(reader.readInteger("strikethroughPosition")));
+		setUnderlinePosition(UnderlinePosition.get(reader.readInteger("underlinePosition")));
 		setUnderlineOffset(reader.readFloat("underlineOffset"));
 		setLigature(reader.readBoolean("ligature"));
 		setDiscretionaryLigature(reader.readBoolean("discretionaryLigature"));
@@ -147,7 +107,7 @@ public class CharacterStyle extends PathStyle {
 		setConnectionForms(reader.readBoolean("forms"));
 		setStylisticAlternates(reader.readBoolean("stylisticAlternates"));
 		setOrnaments(reader.readBoolean("ornaments"));
-		setFigureStyle(reader.readInteger("figureStyle"));
+		setFigureStyle(FigureStyle.get(reader.readString("figureStyle")));
 		setNoBreak(reader.readBoolean("noBreak"));
 	}
 
@@ -348,20 +308,27 @@ public class CharacterStyle extends PathStyle {
 	public native Float getRotation();
 	public native void setRotation(Float rotation);
 
+	private native Integer nativeGetKerningType();
+	private native void nativeSetKerningType(Integer method);
+
 	/**
-	 * @jsbean The character style's kerning method as specified by the CharacterStyle.KERNING_*
-	 * @jsbean static properties.
+	 * @jsbean The character style's kerning method.
 	 * @jsbean Sample code:
 	 * @jsbean <pre>
 	 * @jsbean var text = new PointText(new Point(0,0));
 	 * @jsbean text.content = "The content of the text field.";
 	 * @jsbean 
 	 * @jsbean // sets the kerning method to optical
-	 * @jsbean text.characterStyle.kerningMethod = CharacterStyle.KERNING_OPTICAL;
+	 * @jsbean text.characterStyle.kerningType = "optical";
 	 * @jsbean </pre>
 	 */
-	public native Integer getKerningMethod();
-	public native void setKerningMethod(Integer method);
+	public KerningType getKerningType() {
+		return KerningType.get(nativeGetKerningType());
+	}
+
+	public void setKerningType(KerningType type) {
+		nativeSetKerningType(type != null ? type.toInteger() : null);
+	}
 	
 	/**
 	 * @jsbean The character style's capitalization as specified by the CharacterStyle.CAPS_*
@@ -375,20 +342,60 @@ public class CharacterStyle extends PathStyle {
 	 * @jsbean text.characterStyle.capitalization = CharacterStyle.CAPS_ALL;
 	 * @jsbean </pre>
 	 */
-	public native Integer getCapitalization();
-	public native void setCapitalization(Integer caps);
+	private native Integer nativeGetCapitalization();
+	private native void nativeSetCapitalization(Integer caps);
 
-	public native Integer getBaselineOption();
-	public native void setBaselineOption(Integer option);
+	public Capitalization getCapitalization() {
+		return Capitalization.get(nativeGetCapitalization());
+	}
+
+	public void setCapitalization(Capitalization type) {
+		nativeSetCapitalization(type != null ? type.toInteger() : null);
+	}
+
+	private native Integer nativeGetBaselineOption();
+	private native void nativeSetBaselineOption(Integer option);
 	
-	public native Integer getOpenTypePosition();
-	public native void setOpenTypePosition(Integer position);
+	public BaselineOption getBaselineOption() {
+		return BaselineOption.get(nativeGetBaselineOption());
+	}
+
+	public void setBaselineOption(BaselineOption type) {
+		nativeSetBaselineOption(type != null ? type.toInteger() : null);
+	}
+
+	private native Integer nativeGetOpenTypePosition();
+	private native void nativeSetOpenTypePosition(Integer position);
+
+	public OpenTypePosition getOpenTypePosition() {
+		return OpenTypePosition.get(nativeGetOpenTypePosition());
+	}
+
+	public void setOpenTypePosition(OpenTypePosition type) {
+		nativeSetOpenTypePosition(type != null ? type.toInteger() : null);
+	}
+
+	private native Integer nativeGetStrikethroughPosition();
+	private native void nativeSetStrikethroughPosition(Integer position);
 	
-	public native Integer getStrikethroughPosition();
-	public native void setStrikethroughPosition(Integer position);
-	
-	public native Integer getUnderlinePosition();
-	public native void setUnderlinePosition(Integer position);
+	public StrikethroughPosition getStrikethroughPosition() {
+		return StrikethroughPosition.get(nativeGetStrikethroughPosition());
+	}
+
+	public void setStrikethroughPosition(StrikethroughPosition type) {
+		nativeSetStrikethroughPosition(type != null ? type.toInteger() : null);
+	}
+
+	private native Integer nativeGetUnderlinePosition();
+	private native void nativeSetUnderlinePosition(Integer position);
+
+	public UnderlinePosition getUnderlinePosition() {
+		return UnderlinePosition.get(nativeGetUnderlinePosition());
+	}
+
+	public void setUnderlinePosition(UnderlinePosition type) {
+		nativeSetUnderlinePosition(type != null ? type.toInteger() : null);
+	}
 	
 	public native Float getUnderlineOffset();
 	public native void setUnderlineOffset(Float offset);
@@ -433,8 +440,16 @@ public class CharacterStyle extends PathStyle {
 	public native Boolean getOrnaments();
 	public native void setOrnaments(Boolean ornaments);
 
-	public native Integer getFigureStyle();
-	public native void setFigureStyle(Integer figureStyle);
+	private native Integer nativeGetFigureStyle();
+	private native void nativeSetFigureStyle(Integer caps);
+
+	public FigureStyle getFigureStyle() {
+		return FigureStyle.get(nativeGetFigureStyle());
+	}
+
+	public void setFigureStyle(FigureStyle type) {
+		nativeSetFigureStyle(type != null ? type.toInteger() : null);
+	}
 
 	public native Boolean getNoBreak();
 	public native void setNoBreak(Boolean noBreak);

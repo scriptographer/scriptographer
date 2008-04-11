@@ -295,6 +295,8 @@ public:
 	jclass cls_ai_HitTest;
 	jmethodID cid_ai_HitTest;
 	
+	jclass cls_ai_FileFormat;
+	jmethodID cid_ai_FileFormat;
 // ADM:
 	jclass cls_adm_NativeObject;
 	jfieldID fid_adm_NativeObject_handle;
@@ -508,6 +510,7 @@ public:
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
 
+	void commit(JNIEnv *env);
 	void resumeSuspendedDocuments();
 	
 	ASErr selectionChanged();

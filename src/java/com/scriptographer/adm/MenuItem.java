@@ -48,7 +48,7 @@ import java.util.Iterator;
  * @author lehni
  */
 public class MenuItem extends NativeObject{
-	public final static int
+	public static final int
 		OPTION_NONE 			= 0,
 		OPTION_WANTS_UPDATE 	= 1 << 0,
 		OPTION_ALWAYS_ENABLED	= 1 << 1,
@@ -86,7 +86,7 @@ public class MenuItem extends NativeObject{
 		if (handle == 0)
 			throw new ScriptographerException("Unable to create MenuItem");
 
-		putItem(this);
+		items.put(this.handle, this);
 	}
 
 	public MenuItem(MenuGroup group) {
@@ -146,7 +146,7 @@ public class MenuItem extends NativeObject{
 		super(handle);
 		this.name = name;
 		this.group = group;
-		putItem(this);
+		items.put(this.handle, this);
 	}
 
 	/**
@@ -279,10 +279,6 @@ public class MenuItem extends NativeObject{
 		MenuItem item = getItem(handle);
 		if (item != null)
 			item.onUpdate(inArtwork, isSelected, isTrue);
-	}
-
-	private static void putItem(MenuItem item) {
-		items.put(item.handle, item);
 	}
 
 	private static MenuItem getItem(int handle) {

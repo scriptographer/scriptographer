@@ -35,6 +35,7 @@ import java.io.File;
 
 import com.scriptographer.CommitManager;
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ai.FileFormat;
 import com.scriptographer.ai.FontList;
 
 /**
@@ -57,7 +58,11 @@ public class Application {
 	public FontList getFonts() {
 		return FontList.getInstance();
 	}
-	
+
+	public FileFormat[] getFileFormats() {
+		return FileFormat.getFileFormats();
+	}
+
 	public void commit() {
 		CommitManager.commit(null);
 	}

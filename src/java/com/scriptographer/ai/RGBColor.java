@@ -91,7 +91,7 @@ public class RGBColor extends Color {
 
 	public static ColorSpace getColorSpace() {
 		if (space == null)
-			space = new ICC_ColorSpace(getProfile(MODEL_RGB));
+			space = new ICC_ColorSpace(getProfile(ColorModel.RGB));
 		return space;
 	}
 

@@ -37,16 +37,16 @@
  */
 
 /*
- * int nativeCreate(short orient, float x, float y)
+ * int nativeCreate(int orientation, float x, float y)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PointText_nativeCreate(JNIEnv *env, jclass cls, jshort orient, jfloat x, jfloat y) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PointText_nativeCreate(JNIEnv *env, jclass cls, jint orientation, jfloat x, jfloat y) {
 	AIArtHandle art = NULL;
 
 	DEFINE_POINT(pt, x, y);
 
 	short paintOrder;
 	AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);
-	sAITextFrame->NewPointText(paintOrder, artInsert, (AITextOrientation) orient, pt, &art);
+	sAITextFrame->NewPointText(paintOrder, artInsert, (AITextOrientation) orientation, pt, &art);
 	if (art == NULL)
 		throw new StringException("Cannot create text object. Please make sure there is an open document.");
 

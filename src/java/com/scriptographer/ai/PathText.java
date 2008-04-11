@@ -40,25 +40,27 @@ public class PathText extends TextFrame {
 		super(handle);
 	}
 
-	native private static int nativeCreate(short orient, int artHandle);
+	native private static int nativeCreate(int orientation, int artHandle);
 
 	// TODO: not used?
-	native private static int nativeCreate(short orient, int artHandle,
+	native private static int nativeCreate(int orientation, int artHandle,
 			float x, float y);
 	
 	/**
 	 * Creates a path text item
 	 * 
 	 * @param path the path that the text will run along
-	 * @param orient the text orientation, TextFrame.ORIENTATION_*
+	 * @param orient the text orientation
 	 */
-	public PathText(Path path, short orient) {
-		this(nativeCreate(orient, path != null ? path.handle : 0));
+	public PathText(Path path, TextOrientation orientation) {
+		this(nativeCreate(orientation != null
+				? orientation.value : TextOrientation.HORIZONTAL.value,
+				path != null ? path.handle : 0));
 		// TODO: check what exactly do startT endT vs start anchor!
 	}
 
 	public PathText(Path path) {
-		this(path, ORIENTATION_HORIZONTAL);
+		this(path, TextOrientation.HORIZONTAL);
 	}
 
 	public Path getTextPath() {

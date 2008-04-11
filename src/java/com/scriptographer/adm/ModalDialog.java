@@ -40,7 +40,7 @@ public class ModalDialog extends Dialog {
 	 * To allow modal dialogs pass mouse down events through to
 	 * the user dialog tracker on the application side.
 	 */
-	public final static int OPTION_PASS_MOUSEDOWN_EVENT = 1 << 1;
+	public static final int OPTION_PASS_MOUSEDOWN_EVENT = 1 << 1;
 		
 	/**
 	 * 0 by default. If set, ADM Modal dialogs on Windows will have a 
@@ -48,20 +48,20 @@ public class ModalDialog extends Dialog {
 	 * option that a user can use if all dialogs in the application
 	 * need that behavior. 
 	 */
-	public final static int OPTION_HAS_SYSTEM_CONTROLS = 1 << 7;
+	public static final int OPTION_HAS_SYSTEM_CONTROLS = 1 << 7;
 	
 	// pseudo options, to simulate the various window styles
-	public final static int OPTION_RESIZING = 1 << 20;
+	public static final int OPTION_RESIZING = 1 << 20;
 
 	/**
 	 * Modal Alert, cannot be combined with OPTION_RESIZING
 	 */
-	public final static int OPTION_ALERT = 1 << 21;
+	public static final int OPTION_ALERT = 1 << 21;
 
 	/**
 	 * 	Modal System Alert, cannot be combined with OPTION_RESIZING
 	 */
-	public final static int OPTION_SYSTEM_ALERT = 1 << 22;
+	public static final int OPTION_SYSTEM_ALERT = 1 << 22;
 
 	private boolean modal;
 

@@ -39,7 +39,7 @@ import java.io.IOException;
 public class ImageButton extends Button {
 
 	// ADMPictureButtonStyle
-	public final static int
+	public static final int
 		STYLE_BLACK_SUNKEN_RECT = 0,
 		STYLE_BLACK_RECT = 1;
 	

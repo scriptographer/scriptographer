@@ -65,25 +65,25 @@ public class Raster extends Item {
 		super(handle);
 	}
 
-	private native int nativeConvert(short type, int width, int height);
+	private native int nativeConvert(int type, int width, int height);
 
 	/**
 	 * Creates a raster object
 	 * 
 	 * @param width
 	 * @param height
-	 * @param type Color.TYPE_*
+	 * @param type
 	 */
-	public Raster(short type, int width, int height) {
+	public Raster(ColorType type, int width, int height) {
 		super(TYPE_RASTER);
-		nativeConvert(type, width, height);
+		nativeConvert(type != null ? type.value : -1, width, height);
 	}
 
 	/**
 	 * An empty Raster image of the given color type
-	 * @param type Color.TYPE_*
+	 * @param type
 	 */
-	public Raster(short type) {
+	public Raster(ColorType type) {
 		this(type, -1, -1);
 	}
 
@@ -111,7 +111,7 @@ public class Raster extends Item {
 	 * Creates an empty raster item.
 	 */
 	public Raster() {
-		this((short) -1, -1, -1);
+		this(null, -1, -1);
 	}
 
 	/**
@@ -185,11 +185,14 @@ public class Raster extends Item {
 		return getSize().height;
 	}
 
-	public native short getType();
+	private native int nativeGetType();
 
-	public void setType(short type) {
+	public ColorType getType() {
+		return ColorType.get(nativeGetType());
+	}
+	public void setType(ColorType type) {
 		// changing the type creates a new art handle internally
-		handle = nativeConvert(type, -1, -1);
+		handle = nativeConvert(type.value, -1, -1);
 	}
 
 	/**
@@ -249,78 +252,68 @@ public class Raster extends Item {
 	}
 
 	/**
-	 * @jsbean The color model of the raster as specified by the Color.MODEL_*
-	 *         static properties
+	 * @jsbean REturns the Java2D color model of the raster
 	 * @return
 	 */
 	public ColorModel getColorModel() {
-		int type = getType();
+		ColorType type = getType();
 		ColorModel cm = null;
-		switch (type) {
-			case Color.TYPE_RGB:
-			case Color.TYPE_ARGB: {
-				boolean alpha = type == Color.TYPE_ARGB;
-				cm = new ComponentColorModel(RGBColor.getColorSpace(),
-					alpha ? new int[] { 8, 8, 8, 8 } : new int [] { 8, 8, 8 },
-					alpha, false,
-					alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
-					DataBuffer.TYPE_BYTE
-				);
-			}
-			break;
-			case Color.TYPE_CMYK:
-			case Color.TYPE_ACMYK: {
-				boolean alpha = type == Color.TYPE_ACMYK;
-				cm = new ComponentColorModel(CMYKColor.getColorSpace(),
-					alpha ? new int[] { 8, 8, 8, 8, 8 } :
-						new int [] { 8, 8, 8, 8 },
-					alpha, false,
-					alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
-					DataBuffer.TYPE_BYTE
-				);
-			} break;
-			case Color.TYPE_GRAY:
-			case Color.TYPE_AGRAY: {
-				boolean alpha = type == Color.TYPE_AGRAY;
-				cm = new ComponentColorModel(GrayColor.getColorSpace(),
-					alpha ? new int[] { 8, 8 } : new int [] { 8 },
-					alpha, false,
-					alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
-					DataBuffer.TYPE_BYTE
-				);
-				
-			} break;
-			case Color.TYPE_BITMAP:
-			case Color.TYPE_ABITMAP: {
-				boolean alpha = type == Color.TYPE_ABITMAP;
-				// create an IndexColorModel with two colors, black and white:
-				// black is the transparent color in case of an alpha image
-				cm = new IndexColorModel(2,
-					2,
-					new byte[] { 0, (byte) 255 },
-					new byte[] { 0, (byte) 255 },
-					new byte[] { 0, (byte) 255 },
-					alpha ? 0 : -1
-				);
-			} break;
+		
+		if (type == ColorType.RGB || type == ColorType.ARGB) {
+			boolean alpha = type == ColorType.ARGB;
+			cm = new ComponentColorModel(RGBColor.getColorSpace(),
+				alpha ? new int[] { 8, 8, 8, 8 } : new int [] { 8, 8, 8 },
+				alpha, false,
+				alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
+				DataBuffer.TYPE_BYTE
+			);
+		} else if (type == ColorType.CMYK || type == ColorType.ACMYK) {
+			boolean alpha = type == ColorType.ACMYK;
+			cm = new ComponentColorModel(CMYKColor.getColorSpace(),
+				alpha ? new int[] { 8, 8, 8, 8, 8 } :
+					new int [] { 8, 8, 8, 8 },
+				alpha, false,
+				alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
+				DataBuffer.TYPE_BYTE
+			);
+		} else if (type == ColorType.GRAY || type == ColorType.AGRAY) {
+			boolean alpha = type == ColorType.AGRAY;
+			cm = new ComponentColorModel(GrayColor.getColorSpace(),
+				alpha ? new int[] { 8, 8 } : new int [] { 8 },
+				alpha, false,
+				alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
+				DataBuffer.TYPE_BYTE
+			);
+			
+		} else if (type ==  ColorType.BITMAP || type == ColorType.ABITMAP) {
+			boolean alpha = type == ColorType.ABITMAP;
+			// create an IndexColorModel with two colors, black and white:
+			// black is the transparent color in case of an alpha image
+			cm = new IndexColorModel(2,
+				2,
+				new byte[] { 0, (byte) 255 },
+				new byte[] { 0, (byte) 255 },
+				new byte[] { 0, (byte) 255 },
+				alpha ? 0 : -1
+			);
 		}
 		return cm;
 	}
 	
-	public static short getCompatibleType(Image image) {
+	public static ColorType getCompatibleType(Image image) {
 		if (image instanceof BufferedImage) {
 			ColorModel cm = ((BufferedImage) image).getColorModel();
 			int type = cm.getColorSpace().getType();
 			boolean alpha = cm.hasAlpha();
 			if (type == ColorSpace.TYPE_RGB) {
-				return alpha ? Color.TYPE_ARGB : Color.TYPE_RGB;
+				return alpha ? ColorType.ARGB : ColorType.RGB;
 			} else if (type == ColorSpace.TYPE_CMYK) {
-				return alpha ? Color.TYPE_ACMYK : Color.TYPE_CMYK;
+				return alpha ? ColorType.ACMYK : ColorType.CMYK;
 			} if (type == ColorSpace.TYPE_GRAY) {
-				return alpha ? Color.TYPE_AGRAY : Color.TYPE_GRAY;
+				return alpha ? ColorType.AGRAY : ColorType.GRAY;
 			}
 		}
-		return -1;
+		return null;
 	}
 
 	public BufferedImage createCompatibleImage(int width, int height) {

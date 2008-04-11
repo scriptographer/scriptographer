@@ -36,9 +36,9 @@
  */
 
 /*
- * com.scriptographer.ai.Color convert(short type)
+ * com.scriptographer.ai.Color nativeConvert(int type)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_convert(JNIEnv *env, jobject obj, jshort type) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_nativeConvert(JNIEnv *env, jobject obj, jint type) {
 	try {
 		AIColor col;
 		AIReal alpha;
@@ -62,9 +62,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_convert(JNIEnv *env, 
 }
 
 /*
- * java.awt.color.ICC_Profile getWSProfile(short whichSpace)
+ * java.awt.color.ICC_Profile nativeGetProfile(int whichSpace)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_getWSProfile(JNIEnv *env, jclass cls, jshort whichSpace) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_nativeGetProfile(JNIEnv *env, jclass cls, jint whichSpace) {
 	jobject ret = NULL;
 	try {
 		AIColorProfile profile;

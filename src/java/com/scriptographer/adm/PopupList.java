@@ -36,7 +36,7 @@ package com.scriptographer.adm;
  */
 public class PopupList extends ListItem {
 	// Options
-	public final static int
+	public static final int
 	// self defined pseudo options, for creation of the right TYPE:
 		OPTION_SCROLLING = 1 << 1;
 	

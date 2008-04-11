@@ -34,6 +34,7 @@ package com.scriptographer.script.rhino;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
+import com.scriptographer.NamedOption;
 import com.scriptographer.ai.Style;
 
 /**
@@ -47,6 +48,8 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 		// we want a string of length 1:
         if (staticType == Character.TYPE)
             return obj.toString();
+        else if (obj instanceof NamedOption)
+        	return ((NamedOption) obj).name;
 		return super.wrap(cx, scope, obj, staticType);
 	}
 
@@ -55,5 +58,29 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 		if (javaObj instanceof Style)
 			return new StyleWrapper(scope, (Style) javaObj, staticType, true);
 		return null;
+	}
+
+	public int getConversionWeight(Object from, Class to, int defaultWeight) {
+		int weight = super.getConversionWeight(from, to, defaultWeight);
+		if (weight == defaultWeight) {
+			// TODO: consider moving NamedOption to com.scratchdisk.util
+			// and this code here to the superclass, for improved
+			// performance due to less inheritance...
+			if (NamedOption.class.isAssignableFrom(to) &&
+				(from instanceof String || from instanceof Number))
+				return CONVERSION_TRIVIAL + 1;
+		}
+		return weight;
+	}
+
+	public Object coerceType(Class type, Object value) {
+		Object res = super.coerceType(type, value);
+		if (res == null) {
+			if (NamedOption.class.isAssignableFrom(type) &&
+				(value instanceof String || value instanceof Number)) {
+				return NamedOption.get(type, value);
+			}
+		}
+		return res;
 	}
 }

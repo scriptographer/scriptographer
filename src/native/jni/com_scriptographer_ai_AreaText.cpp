@@ -39,13 +39,13 @@
 using namespace ATE;
 
 /*
- * int nativeCreate(short orient, int artHandle)
+ * int nativeCreate(int orient, int artHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_nativeCreate(JNIEnv *env, jclass cls, jshort orient, jint artHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_nativeCreate(JNIEnv *env, jclass cls, jint orientation, jint artHandle) {
 	AIArtHandle art = NULL;
 	short paintOrder;
 	AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);
-	sAITextFrame->NewInPathText(paintOrder, artInsert, (AITextOrientation) orient, (AIArtHandle) artHandle, NULL, false, &art);
+	sAITextFrame->NewInPathText(paintOrder, artInsert, (AITextOrientation) orientation, (AIArtHandle) artHandle, NULL, false, &art);
 	if (art == NULL)
 		throw new StringException("Cannot create text object. Please make sure there is an open document.");
 

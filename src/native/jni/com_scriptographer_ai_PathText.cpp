@@ -37,14 +37,14 @@
  */
 
 /*
- * int nativeCreate(short orient, int artHandle)
+ * int nativeCreate(int orientation, int artHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__SI(JNIEnv *env, jclass cls, jshort orient, jint artHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__II(JNIEnv *env, jclass cls, jint orientation, jint artHandle) {
 	AIArtHandle art = NULL;
 
 	short paintOrder;
 	AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);
-	sAITextFrame->NewOnPathText(paintOrder, artInsert, (AITextOrientation) orient, (AIArtHandle) artHandle, 0, -1, NULL, false, &art);
+	sAITextFrame->NewOnPathText(paintOrder, artInsert, (AITextOrientation) orientation, (AIArtHandle) artHandle, 0, -1, NULL, false, &art);
 	if (art == NULL)
 		throw new StringException("Cannot create text object. Please make sure there is an open document.");
 
@@ -52,15 +52,15 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__SI(JNIE
 }
 
 /*
- * int nativeCreate(short orient, int artHandle, float x, float y)
+ * int nativeCreate(int orientation, int artHandle, float x, float y)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__SIFF(JNIEnv *env, jclass cls, jshort orient, jint artHandle, jfloat x, jfloat y) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__IIFF(JNIEnv *env, jclass cls, jint orientation, jint artHandle, jfloat x, jfloat y) {
 	AIArtHandle art = NULL;
 
 	short paintOrder;
 	AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);
 	DEFINE_POINT(pt, x, y);
-	sAITextFrame->NewOnPathText2(paintOrder, artInsert, (AITextOrientation) orient, (AIArtHandle) artHandle, pt, NULL, false, &art);
+	sAITextFrame->NewOnPathText2(paintOrder, artInsert, (AITextOrientation) orientation, (AIArtHandle) artHandle, pt, NULL, false, &art);
 	if (art == NULL)
 		throw new StringException("Cannot create text object. Please make sure there is an open document.");
 

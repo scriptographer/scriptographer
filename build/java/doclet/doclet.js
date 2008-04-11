@@ -1240,6 +1240,13 @@ ClassObject = Object.extend({
 						return filter == name || filter.endsWith('*') &&
 							name.startsWith(filter.substring(0, filter.length - 1));
 					});
+				// Do not add any of the named options, since they are represented
+				// as strings in the scripting environment.
+				// TODO: automatically render all the string options with each
+				// function where they are to be used, by instanciating the class
+				// in the doclet and looping trough its options (NamedOption.getAll()).
+				if (cd.hasSuperclass('com.scriptographer.NamedOption'))
+					add = false;
 				if (add)
 					this.classes[name] = new ClassObject(cd);
 			}, this);

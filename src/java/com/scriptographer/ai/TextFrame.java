@@ -38,10 +38,6 @@ import com.scriptographer.CommitManager;
  * @author lehni
  */
 public abstract class TextFrame extends Item {
-	// AITextOrientation
-	public static final short
-		ORIENTATION_HORIZONTAL = 0,
-		ORIENTATION_VERTICAL = 1;
 
 	// AITextType
 	protected static final short
@@ -57,13 +53,20 @@ public abstract class TextFrame extends Item {
 		super(handle);
 	}
 
+	private native int nativeGetOrientation();
+	private native void nativeSetOrientation(int orientation);
+
 	/**
-	 * @jsbean The orientation of the text in the text frame as
-	 * @jsbean specified by the TextFrame.ORIENTATION_* static properties.
-	 * @return TextFrame.ORIENTATION_*
+	 * @jsbean The orientation of the text in the text frame.
+	 * @return 
 	 */
-	public native short getOrientation();
-	public native void setOrientation(short orientation);
+	public TextOrientation getOrientation() {
+		return TextOrientation.get(nativeGetOrientation());
+	}
+
+	public void setOrientation(TextOrientation orientation) {
+		nativeSetOrientation(orientation.value);
+	}
 
 	// TODO:
 	 // AIAPI AIErr (*DoTextFrameHit)	( const AIHitRef hitRef, TextRangeRef*	textRange );

@@ -40,16 +40,16 @@ public class FloatingDialog extends Dialog {
 	/**
 	 * When creating tabbed dialog with a cycle button on the tab.
 	 */
-	public final static int OPTION_SHOW_CYCLE = 1 << 0;
+	public static final int OPTION_SHOW_CYCLE = 1 << 0;
 
 	// pseudo options, to simulate the various window styles
-	public final static int OPTION_RESIZING = 1 << 20;
+	public static final int OPTION_RESIZING = 1 << 20;
 
-	public final static int OPTION_TABBED = 1 << 21;
+	public static final int OPTION_TABBED = 1 << 21;
 
-	public final static int OPTION_LEFTSIDED = 1 << 22;
+	public static final int OPTION_LEFTSIDED = 1 << 22;
 
-	public final static int OPTION_NOCLOSE = 1 << 23;
+	public static final int OPTION_NOCLOSE = 1 << 23;
 	
 	// TODO: define kADMDocumentWindowLayerDialogOption,
 	// kADMPaletteLayerDialogOption

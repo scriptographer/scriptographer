@@ -39,7 +39,7 @@ import com.scriptographer.ScriptographerEngine;
 public class Frame extends TextItem implements ComponentGroup {
 
 	// ADMFrameStyle
-	public final static int
+	public static final int
 		STYLE_BLACK = 0,
 		STYLE_GRAY = 1,
 		STYLE_SUNKEN = 2,

@@ -38,7 +38,7 @@ import java.awt.Point;
  */
 public class Tracker extends NativeObject {
 	// ADMMouseState
-	public final static int 
+	public static final int 
 		MOUSE_NORMAL = 0,
 		MOUSE_CAPTURED = 1,
 		MOUSE_UNCAPTURED = 2;
@@ -50,7 +50,7 @@ public class Tracker extends NativeObject {
 	// ADM General									Macintosh Specific							Windows Specific	
 	// -----------------------------------------	---------------------------------------	---------------------------------------------
 
-	public final static int 
+	public static final int 
 		ACTION_MOUSE_MOVE				= 1,			// It is better to use the specific move down and up cases
 		ACTION_MOUSE_MOVED_DOWN			= 1,
 		
@@ -90,7 +90,7 @@ public class Tracker extends NativeObject {
 	// ADM General									Macintosh Specific							Windows Specific	
 	// -----------------------------------------	----------------------------------------	-----------------------------------------
 	
-	public final static int 
+	public static final int 
 		MASK_NULL					= 0x00000000,
 	
 		MASK_UNCAPTURED_ACTION		= 0x00000001,
@@ -132,7 +132,7 @@ public class Tracker extends NativeObject {
 	//	 ADM General										Macintosh Specific								Windows Specific	
 	//	 -----------------------------------------		-------------------------------------------	------------------------------------------------
 
-	public final static int 
+	public static final int 
 		MODIFIER_NULL					= 0x00000000,
 		
 		MODIFIER_CLICK					= 0x00000004,													MODIFIER_WIN_LEFT_BUTTON_DOWN		= 0x00000004,
@@ -157,7 +157,7 @@ public class Tracker extends NativeObject {
 	// -----------------------------------------------------------------------------
 	// Virtual keys
 	
-	public final static int 
+	public static final int 
 		KEY_UNKNOWN				= 0x0000,
 		KEY_CANCEL				= 0x0001,
 		KEY_ENTER				= 0x0003,

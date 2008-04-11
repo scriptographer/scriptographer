@@ -39,7 +39,7 @@ import com.scratchdisk.script.Callable;
  */
 public class TextEdit extends TextValueItem {
 	// Options
-	public final static short
+	public static final int
 		OPTION_PASSWORD = 1 << 1,
 		OPTION_UNICODE = 1 << 2, // [cpaduan] 6/18/02 - Creates a Unicode based edit box (if possible). Currently has no effect on Windows.
 		OPTION_DISABLE_DRAG_DROP = 1 << 3, // Disables drag & drop from or to text edits. Currently mac-only.
@@ -52,7 +52,7 @@ public class TextEdit extends TextValueItem {
 		OPTION_SCROLLING = 1 << 7;
 
 	// ADMTextEditStyle, ADMTextEditPopupStyle
-	public final static int
+	public static final int
 		STYLE_SINGLELINE = 0,
 		STYLE_NUMERIC = 2,        // 'Numeric' means float. Default.
 		STYLE_EXCLUSIVE = 5,      // only for TextEditPopup

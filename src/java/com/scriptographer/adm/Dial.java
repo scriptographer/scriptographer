@@ -37,7 +37,7 @@ package com.scriptographer.adm;
 public class Dial extends ValueItem {
 
 	// ADMDialStyle
-	public final static int
+	public static final int
 		STYLE_NO_ARROW = 0,
 		STYLE_ARROW_AT_END = 1,
 		STYLE_ARROW_AT_CENTER = 2;

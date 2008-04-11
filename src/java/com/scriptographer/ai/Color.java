@@ -41,27 +41,7 @@ import com.scriptographer.ScriptographerException;
  */
 public abstract class Color {
 
-	// AIRasterizeType, AIColorConversionSpaceValue
-	// Used in Color.convert() and Raster
-	// the conversion to the right AIColorConversionSpaceValue values is done
-	// in native code. 
-	public final static short
-		TYPE_RGB = 0, // RGB no alpha
-		TYPE_CMYK = 1, // CMYK no alpha
-		TYPE_GRAY = 2, // Grayscale no alpha
-		TYPE_BITMAP = 3, // opaque bitmap
-		TYPE_ARGB = 4, // RGB with alpha
-		TYPE_ACMYK = 5, // CMYK with alpha
-		TYPE_AGRAY = 6, // Grayscale with alpha
-		TYPE_ABITMAP = 8; // bitmap with transparent 0-pixels
-
-	// AIWorkingColorSpace, AIColorModel,
-	public final static short
-		MODEL_GRAY = 0,
-		MODEL_RGB = 1,
-		MODEL_CMYK = 2;
-	
-	public final static Color NONE = new RGBColor(-1, -1, -1, -1);
+	public static final Color NONE = new RGBColor(-1, -1, -1, -1);
 
 	protected float alpha;
 
@@ -99,52 +79,45 @@ public abstract class Color {
 		else this.alpha = alpha;
 	}
 
+	public native Color nativeConvert(int type);
+
 	/**
 	 * Converts the color into another color space.
 	 *
-	 * @param type the conversion color space, Color.TYPE_*
+	 * @param type the conversion color type
 	 * @return the converted color.
 	 */
-	public native Color convert(short type);
+	public Color convert(ColorType type) {
+		return nativeConvert(type.value);
+	}
 
 	/**
-	 * Returns the native profile for the above MODEL_ constants, wrapped in an
+	 * Returns the native profile for the given space, wrapped in an
 	 * ICC_Profile this is pretty nice: the native ICC profile data from Adobe
 	 * Illustrator really seems to be compatible with ICC_Profile, so the whole
 	 * ColorSpaces from Illustrator can be used in Java as well.
-	 * 
-	 * @param space the profile for Illustrator's ColorSpace, Color.MODEL_*
-	 * @return the ICC_Profile that wraps Illustrator's ColorSpace profile
 	 */
-	private static native ICC_Profile getWSProfile(short space);
+	private static native ICC_Profile nativeGetProfile(int space);
 
 	/**
-	 * Call first getWSProfile in order to get the illustrator's profile, and if
-	 * this doesn't work, it falls back to the scriptographer's internal
+	 * Call first nativeGetProfile in order to get the illustrator's profile,
+	 * and if this doesn't work, it falls back to the scriptographer's internal
 	 * profiles.
 	 * 
-	 * @param space
+	 * @param model
 	 * @return
 	 */
-	protected static ICC_Profile getProfile(short space) {
+	protected static ICC_Profile getProfile(ColorModel model) {
 		// first try the illustrator internal WS profiles:
-		ICC_Profile profile = getWSProfile(space);
+		ICC_Profile profile = nativeGetProfile(model.value);
 		if (profile == null) {
 			// if this didn't work, use scriptographer's internal profiles:
-			String filename = null;
-			switch (space) {
-				case MODEL_GRAY: filename = "gray.icc"; break;
-				case MODEL_RGB:	 filename = "rgb.icc";  break;
-				case MODEL_CMYK: filename = "cmyk.icc"; break;
-			}
-			if (filename != null) {
-				try {
-					profile = ICC_Profile.getInstance(
-							Color.class.getClassLoader().getResourceAsStream(
-									"com/scriptographer/cmm/" + filename));
-				} catch (IOException e) {
-					throw new ScriptographerException(e);
-				}
+			try {
+				profile = ICC_Profile.getInstance(
+						Color.class.getClassLoader().getResourceAsStream(
+								"com/scriptographer/cmm/" + model.name + ".icc"));
+			} catch (IOException e) {
+				throw new ScriptographerException(e);
 			}
 		}
 		return profile;

@@ -35,10 +35,6 @@ package com.scriptographer.ai;
  * @author lehni
  */
 public class Gradient extends NativeWrapper {
-	
-	public final static short
-		TYPE_LINEAR = 0,
-		TYPE_RADIAL = 1;
 
 	GradientStopList stops = null;
 
@@ -71,16 +67,17 @@ public class Gradient extends NativeWrapper {
 	
 	public native void setName(String name);
 	
-	/**
-	 * 
-	 * @return #TYPE_*
-	 */
-	public native short getType();
+	private native int nativeGetType();
 	
-	/**
-	 * @param type #TYPE_*
-	 */
-	public native void setType(short type);
+	private native void nativeSetType(int type);
+
+	public GradientType getType() {
+		return GradientType.get(nativeGetType());
+	}
+
+	public void setType(GradientType type) {
+		nativeSetType(type.value);
+	}
 
 	public native boolean isValid();
 	

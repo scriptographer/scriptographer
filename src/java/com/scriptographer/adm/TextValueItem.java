@@ -37,13 +37,13 @@ package com.scriptographer.adm;
 public abstract class TextValueItem extends ValueItem {
 
 	// ADMJustify
-	public final static int
+	public static final int
 		JUSTIFY_LEFT = 0,
 		JUSTIFY_CENTER = 1,
 		JUSTIFY_RIGHT = 2;
 	
 	// ADMUnits
-	public final static int
+	public static final int
 		UNITS_NO = 0,
 		UNITS_POINT = 1,
 		UNITS_INCH = 2,

@@ -84,9 +84,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Gradient_setName(JNIEnv *env, 
 }
 
 /*
- * short getType()
+ * int nativeGetType()
  */
-JNIEXPORT jshort JNICALL Java_com_scriptographer_ai_Gradient_getType(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Gradient_nativeGetType(JNIEnv *env, jobject obj) {
 	try {
 		AIGradientHandle gradient = gEngine->getGradientHandle(env, obj);
 		short type = 0;
@@ -97,9 +97,9 @@ JNIEXPORT jshort JNICALL Java_com_scriptographer_ai_Gradient_getType(JNIEnv *env
 }
 
 /*
- * void setType(short type)
+ * void setType(int type)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Gradient_setType(JNIEnv *env, jobject obj, jshort type) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Gradient_nativeSetType(JNIEnv *env, jobject obj, jint type) {
 	try {
 		AIGradientHandle gradient = gEngine->getGradientHandle(env, obj, true);
 		sAIGradient->SetGradientType(gradient, type);

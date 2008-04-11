@@ -184,7 +184,7 @@ Template.prototype = {
 	parseMacroParts: function(tag, code, stack, allowControls) {
 		var match = tag.match(/^<%(=?)\s*(.*?)\s*(-?)%>$/);
 		if (!match)	return null;
-		var isEqualTag = match[1] == '=', content = match[2], swallow = match[3];
+		var isEqualTag = match[1] == '=', content = match[2], swallow = !!match[3];
 
 		var start = 0, pos = 0, end;
 
@@ -358,7 +358,7 @@ Template.prototype = {
 		if (!macro)
 			throw 'Invalid tag';
 		var values = macro.values, result;
-		var postProcess = values.prefix || values.suffix || values.filters;
+		var postProcess = !!(values.prefix || values.suffix || values.filters);
 		var codeIndexBefore = code.length;
 		if (macro.isData) { 
 			result = this.parseLoopVariables(macro.command + ' ' + macro.opcode, stack);
@@ -374,7 +374,7 @@ Template.prototype = {
 					if (!match) throw 'Syntax error';
 					open = true;
 					var variable = match[1], value = match[2];
-					postProcess = postProcess || values.separator;
+					postProcess = postProcess || !!values.separator;
 					var suffix = '_' + (this.listId++);
 					var list = 'list' + suffix, length = 'length' + suffix;
 					var index = 'i' + suffix, first = 'first' + suffix;
@@ -445,10 +445,12 @@ Template.prototype = {
 					throw 'Syntax error'; 
 			} else {
 				var object = macro.object;
+				postProcess = postProcess | macro.swallow;
 				code.push(		postProcess		?	'out.push();' : null,
 													'var val = template.renderMacro("' + macro.command + '", ' + object + ', "' +
 															macro.name + '", param, ' + this.parseLoopVariables(macro.arguments, stack) + ', out);',
-								postProcess		?	'template.write(out.pop(), ' + values.filters + ', ' + values.prefix + ', ' +
+								macro.swallow	?	'if (val) val = val.toString().trim()' : null,
+								postProcess		?	'template.write(out.pop()' + (macro.swallow ? '.trim()' : '') + ', ' + values.filters + ', ' + values.prefix + ', ' +
 															values.suffix + ', null, out);' : null);
 				result = 'val';
 			}
@@ -599,7 +601,7 @@ Template.prototype = {
 				reader.close();
 				this.lastModified = this.resource.lastModified();
 			} else if (this.content) {
-				lines = this.content.split(/\n|\r\n|\r/mg);
+				lines = this.content.split(/\r\n|\n|\r/mg);
 			} else {
 				lines = [];
 			}

@@ -191,9 +191,9 @@ int Raster_getType(AIRasterRecord *info) {
 }
 
 /*
- * int nativeConvert(short type, int width, int height)
+ * int nativeConvert(int type, int width, int height)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *env, jobject obj, jshort type, jint width, jint height) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *env, jobject obj, jint type, jint width, jint height) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		Raster_Data *data = Raster_getData(env, obj, art);
@@ -323,9 +323,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getSize(JNIEnv *env,
 }
 
 /*
- * short getType()
+ * int nativeGetType()
  */
-JNIEXPORT jshort JNICALL Java_com_scriptographer_ai_Raster_getType(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeGetType(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		Raster_Data *data = Raster_getData(env, obj, art);

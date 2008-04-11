@@ -336,6 +336,7 @@
 			<class name="com.scriptographer.ai.Gradient" />
 			<class name="com.scriptographer.ai.GradientList" />
 			<class name="com.scriptographer.ai.GradientStopList" />
+			<class name="com.scriptographer.ai.FileFormat" />
 
 			<class name="com.scriptographer.adm.Notifier" />
 			<class name="com.scriptographer.adm.Dialog" />

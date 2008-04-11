@@ -40,7 +40,7 @@ public class Drawer extends NativeObject {
 	private boolean destroy;
 	
 	// ADMColor
-	public final static int
+	public static final int
 		COLOR_BLACK = 0,
 		COLOR_WHITE = 1,
 		COLOR_HILITE = 2,
@@ -63,12 +63,12 @@ public class Drawer extends NativeObject {
 		COLOR_INACTIVE_TAB = 19;
 
 	// ADMDrawMode
-	public final static int
+	public static final int
 		MODE_NORMAL = 0,
 		MODE_XOR = 1;
 
 	// ADMRecolorStyle
-	public final static int
+	public static final int
 		RECOLOR_NO = 0,
 		RECOLOR_ACTIVE = 1,
 		RECOLOR_INACTIVE = 2,
