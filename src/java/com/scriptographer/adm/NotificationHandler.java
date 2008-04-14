@@ -41,8 +41,10 @@ package com.scriptographer.adm;
  * @author lehni
  */
 abstract class NotificationHandler extends NativeObject {
+	@SuppressWarnings("unused")
 	private Tracker tracker = new Tracker();
- 	private Drawer drawer = new Drawer();
+ 	@SuppressWarnings("unused")
+	private Drawer drawer = new Drawer();
 
 	protected abstract void onNotify(int notifier) throws Exception;
 	protected abstract boolean onTrack(Tracker tracker) throws Exception;

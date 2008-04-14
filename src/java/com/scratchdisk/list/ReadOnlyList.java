@@ -35,9 +35,9 @@ package com.scratchdisk.list;
 /**
  * @author lehni 
  */
-public interface ReadOnlyList {
+public interface ReadOnlyList<E> {
 	int size();
 	boolean isEmpty();
-	Object get(int index);
-	ExtendedList getSubList(int fromIndex, int toIndex);
+	E get(int index);
+	ExtendedList<E> getSubList(int fromIndex, int toIndex);
 }

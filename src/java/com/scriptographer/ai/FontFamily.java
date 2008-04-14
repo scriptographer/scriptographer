@@ -39,7 +39,7 @@ import com.scratchdisk.list.StringIndexReadOnlyList;
 /**
  * @author lehni
  */
-public class FontFamily extends NativeWrapper implements ReadOnlyList, StringIndexReadOnlyList {
+public class FontFamily extends NativeWrapper implements ReadOnlyList<FontWeight>, StringIndexReadOnlyList<FontWeight> {
 	
 	protected FontFamily(int handle) {
 		super(handle);
@@ -77,11 +77,11 @@ public class FontFamily extends NativeWrapper implements ReadOnlyList, StringInd
 	
 	private static native int nativeGet(int handle, int index);
 
-	public Object get(int index) {
+	public FontWeight get(int index) {
 		return FontWeight.wrapHandle(nativeGet(handle, index));
 	}
 
-	public Object get(String name) {
+	public FontWeight get(String name) {
 		if (name != null) {
 			for (int i = size() - 1; i >= 0; i--) {
 				FontWeight weight = (FontWeight) get(i);
@@ -96,7 +96,7 @@ public class FontFamily extends NativeWrapper implements ReadOnlyList, StringInd
 		return size() == 0;
 	}
 
-	public ExtendedList getSubList(int fromIndex, int toIndex) {
+	public ExtendedList<FontWeight> getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
 	}
 	

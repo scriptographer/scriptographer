@@ -135,12 +135,11 @@ public abstract class Item extends Component {
 
 	// hashmap for conversation to unique ids that can be compared with ==
 	// instead of .equals
-	private static HashMap types = new HashMap();
+	private static HashMap<String, Integer> types = new HashMap<String, Integer>();
 	
 	static {
-		for (int i = 0; i < itemTypes.length; i++) {
-			types.put(itemTypes[i], new Integer(i));
-		}
+		for (int i = 0; i < itemTypes.length; i++)
+			types.put(itemTypes[i], i);
 	}
 	
 	protected static int convertType(String type) {

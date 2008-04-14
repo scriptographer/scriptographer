@@ -35,13 +35,13 @@ package com.scratchdisk.list;
 /**
  * @author lehni
  */
-public abstract class AbstractReadOnlyList implements ReadOnlyList {
+public abstract class AbstractReadOnlyList<E> implements ReadOnlyList<E> {
 
 	public boolean isEmpty() {
 		return size() == 0;
 	}
 
-	public ExtendedList getSubList(int fromIndex, int toIndex) {
+	public ExtendedList<E> getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
 	}
 

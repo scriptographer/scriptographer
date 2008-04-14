@@ -63,7 +63,8 @@ public class JythonScript extends Script {
 		try {
 			// TODO: typecast to JythonScope can be wrong, e.g. when calling
 			// from another language
-			return Py.tojava(Py.runCode(code, ((JythonScope) scope).getScope(), engine.globals), Object.class);
+			return Py.tojava(Py.runCode(code, ((JythonScope) scope).getScope(),
+					engine.globals), Object.class);
 		} catch (Throwable t) {
 			throw new JythonException(t);
 		}

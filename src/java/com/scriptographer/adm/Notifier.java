@@ -116,11 +116,11 @@ public class Notifier {
 
 	// hashmap for conversation to unique ids that can be compared with ==
 	// instead of .equals
-	private static HashMap notifiers = new HashMap();
+	private static HashMap<String, Integer> notifiers = new HashMap<String, Integer>();
 
 	static {
 		for (int i = 0; i < notifierTypes.length; i++)
-			notifiers.put(notifierTypes[i], new Integer(i));
+			notifiers.put(notifierTypes[i], i);
 	}
 	
 	public static int lookup(String notifier) {

@@ -31,32 +31,14 @@
 
 package com.scriptographer.ai;
 
+import java.util.EnumSet;
+
+import com.scratchdisk.util.IntegerEnumUtils;
+
 /**
  * @author lehni
  */
 public class DocumentView extends NativeWrapper {
-	public static final int
-		/** Only when there is no visibile document */
-		MODE_NOSCREEN = 0,
-		/** The normal display mode. Multiple windows are visible. */
-		MODE_MULTIWINDOW = 1,
-		/** A single view takes up the whole screen but the menu is visible. */
-		MODE_FULLSCREEN_MENU = 2,
-		/** A single view takes up the whole screen, the menu is not visible. */
-		MODE_FULLSCREEN = 3;
-
-	public static final int
-		/** Outline mode. */
-		STYLE_ARTWORK = 0x0001,
-		/** Preview mode. */
-		STYLE_PREVIEW = 0x0002,
-		/** Pixel preview mode. */
-		STYLE_RASTER = 0x0040,
-		/** Unimplemented. Transparency attributes and masks are ignored. */
-		STYLE_OPAQUE = 0x0040,
-		/** OPP preview mode. */
-		STYLE_INK = 0x0100;
-
 	protected DocumentView(int handle) {
 		super(handle);
 	}
@@ -133,23 +115,22 @@ public class DocumentView extends NativeWrapper {
 		return viewToArtwork(rect.x, rect.y, rect.width, rect.height);
 	}
 
-	/**
-	 * This function sets the screen mode of the specified view. The screen mode
-	 * is selected via the three screen mode icons on the bottom of the tool
-	 * palette.
-	 * 
-	 * @param mode View.MODE_*
-	 */
-	public native void setScreenMode(int mode);
+	private native void nativeSetScreenMode(int mode);
+	private native int nativeGetScreenMode();
 
 	/**
-	 * This function gets the screen mode of the specified view. The screen mode
-	 * is selected via the three screen mode icons on the bottom of the tool
-	 * palette.
-	 * 
-	 * @return View.MODE_*
+	 * @jsbean The screen mode of the specified view. The screen mode
+	 * @jsbean is selected via the three screen mode icons on the bottom of the tool
+	 * @jsbean palette.
 	 */
-	public native int getScreenMode();
+	public void setScreenMode(ScreenMode mode) {
+		nativeSetScreenMode((mode != null ? mode : ScreenMode.MULTI_WINDOW).value);
+	}
+
+	public ScreenMode getScreenMode() {
+		return IntegerEnumUtils.get(ScreenMode.class,
+				nativeGetScreenMode());
+	}
 
 	/**
 	 * Get the page tiling information that describes how the artwork will be
@@ -185,11 +166,19 @@ public class DocumentView extends NativeWrapper {
 		invalidate(rect.x, rect.y, rect.width, rect.height);
 	}
 
+	private native int nativeGetStyle();
+
 	/**
-	 * Get the display mode for the current view. This is a set of flags whose
-	 * values may be View.STYLE_*
+	 * Get the display mode for the current view. 
 	 */
-	public native int getStyle();
+	public EnumSet<ViewStyle> getStyle() {
+		int style = nativeGetStyle();
+		EnumSet<ViewStyle> set = EnumSet.noneOf(ViewStyle.class);
+		for (ViewStyle flag : ViewStyle.values())
+			if ((style & flag.value) != 0)
+				set.add(flag);
+		return set;
+	}
 
 	/**
 	 * Is page tiling being shown? This API operates on the current view though

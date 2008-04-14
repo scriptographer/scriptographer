@@ -14,7 +14,6 @@ import javax.swing.text.*;
 import javax.swing.JComponent;
 
 import com.scriptographer.ScriptographerEngine; 
-import com.scriptographer.sg.Application;
 
 import java.awt.event.MouseEvent;
 import java.awt.*;
@@ -27,6 +26,7 @@ import java.awt.print.*;
  * @author Slava Pestov
  * @version $Id$
  */
+@SuppressWarnings("unchecked")
 public class TextAreaPainter extends JComponent implements TabExpander,
 		Printable {
 	/** True if inside printing, will handle disabling the highlight */
@@ -361,6 +361,7 @@ public class TextAreaPainter extends JComponent implements TabExpander,
 	 * @param font
 	 *            The font
 	 */
+	@SuppressWarnings("deprecation")
 	public void setFont(Font font) {
 		super.setFont(font);
 		fm = Toolkit.getDefaultToolkit().getFontMetrics(font);

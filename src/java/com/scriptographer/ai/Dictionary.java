@@ -39,7 +39,7 @@ import com.scriptographer.Commitable;
 /**
  * @author lehni
  */
-public class Dictionary extends HashMap implements Commitable {
+public class Dictionary extends HashMap<Object, Object> implements Commitable {
 
 	protected DictionaryObject object;
 	protected boolean dirty = false;

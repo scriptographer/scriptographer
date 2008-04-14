@@ -37,8 +37,8 @@ import com.scratchdisk.list.StringIndexReadOnlyList;
 /**
  * @author lehni
  */
-public class PatternList extends AbstractReadOnlyList implements
-		StringIndexReadOnlyList {
+public class PatternList extends AbstractReadOnlyList<Pattern>
+		implements StringIndexReadOnlyList<Pattern> {
 	Document document;
 
 	protected PatternList(Document document) {
@@ -53,21 +53,13 @@ public class PatternList extends AbstractReadOnlyList implements
 
 	private static native int nativeGet(int docHandle, int index);
 
-	public Object get(int index) {
+	public Pattern get(int index) {
 		return Pattern.wrapHandle(nativeGet(document.handle, index), document);
 	}
 
 	private static native int nativeGet(int docHandle, String name);
 
-	public Object get(String name) {
+	public Pattern get(String name) {
 		return Pattern.wrapHandle(nativeGet(document.handle, name), document);
-	}
-
-	public Pattern getPattern(int index) {
-		return (Pattern) get(index);
-	}
-
-	public Pattern getPattern(String name) {
-		return (Pattern) get(name);
 	}
 }

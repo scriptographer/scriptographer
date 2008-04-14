@@ -42,10 +42,6 @@ public class PathText extends TextFrame {
 
 	native private static int nativeCreate(int orientation, int artHandle);
 
-	// TODO: not used?
-	native private static int nativeCreate(int orientation, int artHandle,
-			float x, float y);
-	
 	/**
 	 * Creates a path text item
 	 * 

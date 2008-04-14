@@ -20,7 +20,7 @@ import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 
-public class SoftIntMap extends IntMap {
+public class SoftIntMap<V> extends IntMap<V> {
 
 	public SoftIntMap() {
 		super();
@@ -33,23 +33,29 @@ public class SoftIntMap extends IntMap {
 	/**
 	 *  ReferenceQueue used to eliminate stale mappings.
 	 */
-	private transient ReferenceQueue queue = new ReferenceQueue();
+	private transient ReferenceQueue<V> queue = new ReferenceQueue<V>();
 	
 	/**
 	 * Entry with a soft reference
+	 * 
+	 * Dont use generics for the superclass, since it's storing the
+	 * value in a SoftReference<V> instead of V.
 	 */
-	private static class SoftEntry extends Entry {
-		public SoftEntry(int key, Object value, Entry next, ReferenceQueue q) {
-			super(key, new SoftReference(value, q), next);
+	
+	@SuppressWarnings("unchecked")
+	private static class SoftEntry<V> extends Entry {
+		public SoftEntry(int key, V value, Entry<V> next, ReferenceQueue<V> q) {
+			super(key, new SoftReference<V>(value, q), next);
 		}
 
-		public Object getValue() {
-			return ((SoftReference) value).get();
+		public V getValue() {
+			return ((SoftReference<V>) value).get();
 		}
 	}
 
-	protected Entry createEntry(int key, Object value, Entry next) {
-		return new SoftEntry(key, value, next, queue);
+	@SuppressWarnings("unchecked")
+	protected Entry<V> createEntry(int key, V value, Entry<V> next) {
+		return new SoftEntry<V>(key, value, next, queue);
 	}
 
 	/**

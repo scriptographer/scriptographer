@@ -47,8 +47,8 @@ public class Timer extends NativeObject {
 	private boolean periodic;
 	private float period;
 
-	private static IntMap timers = new IntMap();
-	private static ArrayList unusedTimers = null;
+	private static IntMap<Timer> timers = new IntMap<Timer>();
+	private static ArrayList<Timer> unusedTimers = null;
 	private static int counter = 0;
 	
 	/**
@@ -170,13 +170,13 @@ public class Timer extends NativeObject {
 	
 	private native boolean nativeSetPeriod(int handle, int period);
 
-	private static ArrayList getUnusedTimers() {
+	private static ArrayList<Timer> getUnusedTimers() {
 		if (unusedTimers == null)
 			unusedTimers = nativeGetTimers();
 		return unusedTimers;
 	}
 
-	private static native ArrayList nativeGetTimers();
+	private static native ArrayList<Timer> nativeGetTimers();
 
 	private Callable onExecute = null;
 
@@ -196,6 +196,7 @@ public class Timer extends NativeObject {
 	/**
 	 * To be called from the native environment:
 	 */
+	@SuppressWarnings("unused")
 	private static void onExecute(int handle) throws Exception {
 		Timer timer = getTimer(handle);
 		if (timer != null) {

@@ -35,30 +35,30 @@ package com.scratchdisk.list;
 /**
  * @author lehni
  */
-public abstract class AbstractExtendedList extends AbstractList
-	implements ExtendedList {
+public abstract class AbstractExtendedList<E> extends AbstractList<E>
+	implements ExtendedList<E> {
 
-	public Object getFirst() {
+	public E getFirst() {
 		return size() > 0 ? get(0) : null;
 	}
 	
-	public Object getLast() {
+	public E getLast() {
 		int size = size();
 		return size > 0 ? get(size - 1) : null;
 	}
 
-	public Object removeFirst() {
+	public E removeFirst() {
 		return this.remove(0);		
 	}
 	
-	public Object removeLast() {
+	public E removeLast() {
 		return this.remove(size() - 1);
 	}
 
 	public int indexOf(Object element) {
 		int size = size();
 		for (int i = 0; i < size; i++) {
-			Object obj = get(i);
+			E obj = get(i);
 			if (obj == null && element == null || obj.equals(element))
 				return i;
 		}
@@ -67,7 +67,7 @@ public abstract class AbstractExtendedList extends AbstractList
 
 	public int lastIndexOf(Object element) {
 		for (int i = size() - 1; i >= 0; i--) {
-			Object obj = get(i);
+			E obj = get(i);
 			if (obj == null && element == null || obj.equals(element))
 				return i;
 		}
@@ -78,7 +78,7 @@ public abstract class AbstractExtendedList extends AbstractList
 		return indexOf(element) != -1;
 	}
 
-	public boolean remove(Object element) {
+	public boolean remove(E element) {
 		int index = indexOf(element);
 		if (index >= 0) {
 			return remove(index) != null;
@@ -86,22 +86,24 @@ public abstract class AbstractExtendedList extends AbstractList
 		return false;
 	}
 
-	public Object[] toArray(Object[] array) {
+	@SuppressWarnings("unchecked")
+	public E[] toArray(E[] array) {
 		if (array == null)
-			array = new Object[size()];
+			array = (E[]) java.lang.reflect.Array.newInstance(
+					array.getClass().getComponentType(), size());
 		for (int i = 0; i < array.length; i++)
 			array[i] = get(i);
 		return array;
 	}
 
-	public final Object[] toArray() {
+	public final E[] toArray() {
 		return toArray(null);
 	}
 
-	public boolean retainAll(ExtendedList elements) {
+	public boolean retainAll(ExtendedList<?> elements) {
 		boolean modified = false;
 		for (int i = size() - 1; i >= 0; i--) {
-			Object obj = get(i);
+			E obj = get(i);
 			if(!elements.contains(obj) && remove(i) != null)
 				modified = true;
 		}
@@ -109,13 +111,13 @@ public abstract class AbstractExtendedList extends AbstractList
 	}
 
 	public final boolean retainAll(Object[] elements) {
-		return retainAll(elements);
+		return retainAll(Lists.asList(elements));
 	}
 
-	public boolean removeAll(ExtendedList elements) {
+	public boolean removeAll(ExtendedList<?> elements) {
 		boolean modified = false;
 		for (int i = size() - 1; i >= 0; i--) {
-			Object obj = get(i);
+			E obj = get(i);
 			if(elements.contains(obj) && remove(i) != null)
 				modified = true;
 		}
@@ -123,10 +125,10 @@ public abstract class AbstractExtendedList extends AbstractList
 	}
 
 	public final boolean removeAll(Object[] elements) {
-		return removeAll(elements);
+		return removeAll(Lists.asList(elements));
 	}
 
-	public boolean containsAll(List elements) {
+	public boolean containsAll(List<?> elements) {
 		for (int i = elements.size() - 1; i >= 0; i--) {
 			if (!contains(elements.get(i)))
 				return false;
@@ -135,6 +137,6 @@ public abstract class AbstractExtendedList extends AbstractList
 	}
 
 	public final boolean containsAll(Object[] elements) {
-		return removeAll(elements);
+		return containsAll(Lists.asList(elements));
 	}
 }

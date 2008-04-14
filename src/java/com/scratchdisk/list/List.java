@@ -54,13 +54,13 @@ package com.scratchdisk.list;
  * 
  * @author lehni
  */
-public interface List extends ReadOnlyList {
-	Object set(int index, Object element);
-	Object add(Object element);
-	Object add(int index, Object element);
-	boolean addAll(List list);
-	boolean addAll(Object[] elements);
-	Object remove(int index);
+public interface List<E> extends ReadOnlyList<E> {
+	E set(int index, E element);
+	E add(E element);
+	E add(int index, E element);
+	boolean addAll(List<? extends E> list);
+	boolean addAll(E[] elements);
+	E remove(int index);
 	void remove(int fromIndex, int toIndex);
 	void removeAll();
 }

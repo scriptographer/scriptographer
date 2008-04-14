@@ -33,29 +33,20 @@ package com.scriptographer.ai;
 
 import java.awt.Shape;
 import java.io.File;
+import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.ScriptographerException;
+import com.scriptographer.script.EnumUtils;
 
 /**
  * @author lehni
  */
 public class Document extends DictionaryObject {
-
-	// TODO: move this to app.DIALOG_* and have a global function set /
-	// getDialogStatus, that controls the general handling of dialogs on a
-	// global setting level. remove the parameter from the constructors.
-
-	// ActionDialogStatus
-	public static final int
-		DIALOG_NONE = 0,
-		DIALOG_ON = 1,
-		DIALOG_PARTIAL_ON = 2,
-		DIALOG_OFF = 3;
 
 	protected LayerList layers = null;
 	protected DocumentViewList views = null;
@@ -84,12 +75,13 @@ public class Document extends DictionaryObject {
 	 * @param dialogStatus how dialogs should be handled
 	 */
 	public Document(String title, float width, float height, ColorModel colorModel,
-			int dialogStatus) {
-		super(nativeCreate(title, width, height, colorModel.value, dialogStatus));
+			DialogStatus dialogStatus) {
+		super(nativeCreate(title, width, height, colorModel.value,
+				(dialogStatus != null ? dialogStatus : DialogStatus.NONE).value));
 	}
 
 	public Document(String title, float width, float height) {
-		this(title, width, height, ColorModel.CMYK, Document.DIALOG_NONE);
+		this(title, width, height, ColorModel.CMYK, DialogStatus.NONE);
 	}
 
 	protected Document(int handle) {
@@ -103,7 +95,7 @@ public class Document extends DictionaryObject {
 			float height, int colorModel, int dialogStatus);
 	
 	// use a SoftIntMap to keep track of already wrapped documents:
-	private static SoftIntMap documents = new SoftIntMap();
+	private static SoftIntMap<Document> documents = new SoftIntMap<Document>();
 	
 	protected static Document wrapHandle(int handle) {
 		if (handle == 0)
@@ -354,35 +346,50 @@ public class Document extends DictionaryObject {
 	 */
 	public native void deselectAll();
 	
-	private native ItemSet nativeGetMatchingItems(Class type, Map attributes);
+	private native ItemSet nativeGetMatchingItems(Class type, HashMap<Integer, Boolean> attributes);
 
-	public ItemSet getMatchingItems(Class type, Map attributes) {
+	/**
+	 * Returns all items of a given class that match a set of attributes, as specified by the
+	 * passed map. For each of the keys in the map, the demanded value can either be true or false.
+	 * 
+	 * @param type
+	 * @param attributes
+	 * @return
+	 * @jshide
+	 */
+	@SuppressWarnings("unchecked")
+	public ItemSet getMatchingItems(Class type, EnumMap<ItemAttribute, Boolean> attributes) {
+		return getMatchingItems(type, (Map) attributes);
+	}
+
+	/**
+	 * Returns all items of a given class that match a set of attributes, as specified by the
+	 * passed map. For each of the keys in the map, the demanded value can either be true or false.
+	 * 
+	 * @param type
+	 * @param attributes
+	 * @return
+	 */
+	public ItemSet getMatchingItems(Class type, Map<Object, Object> attributes) {
 		// Convert the attributes list to a new HashMap containing only
 		// integer -> boolean pairs.
-		HashMap converted = new HashMap();
-		for (Iterator it = attributes.entrySet().iterator(); it.hasNext();) {
-			Map.Entry entry = (Map.Entry) it.next();
+		HashMap<Integer, Boolean> converted = new HashMap<Integer, Boolean>();
+		for (Map.Entry entry : attributes.entrySet()) {
 			Object key = entry.getKey();
-			Object value = entry.getValue();
-			if (value instanceof Number) {
-				value = new Boolean(((Number) value).intValue() != 0);
-			} else if (!(value instanceof Boolean)) {
-				value = Boolean.FALSE;
-			}
-			if (key instanceof String || key instanceof Number) {
-				key = ItemAttribute.get(key);
+			if (!(key instanceof ItemAttribute)) {
+				key = (ItemAttribute) EnumUtils.get(ItemAttribute.class, key.toString());
 				if (key == null)
 					throw new ScriptographerException("Undefined attribute: " + key);
 			}
-			if (key instanceof ItemAttribute) {
-				converted.put(((ItemAttribute) key).toInteger(), value);
-			}
+			converted.put(((ItemAttribute) key).value,
+					ConversionUtils.toBoolean(entry.getValue()));
 		}
 		return nativeGetMatchingItems(type, converted);
 	}
 
+	@SuppressWarnings("unchecked")
 	public ItemSet getMatchingItems(Class type) {
-		return getMatchingItems(type, null);
+		return getMatchingItems(type, (Map) null);
 	}
 	
 	public ItemSet getPaths() throws ScriptographerException {
@@ -615,28 +622,28 @@ public class Document extends DictionaryObject {
 		return new Layer();
 	}
 	
-	protected native HitTest nativeHitTest(Point point, int type,
+	protected native HitTest nativeHitTest(Point point, int request,
 			float tolerance, Item item); 
 
 	
 	/**
 	 * @param point
-	 * @param type HitTest.TEST_*
+	 * @param request
 	 * @param tolerance specified in view coordinates (i.e pixels at the current
 	 *        zoom factor). The default value is 2. The algorithm is not
 	 *        guaranteed to produce correct results for large values.
 	 * @return
 	 */
-	public HitTest hitTest(Point point, int type, float tolerance) {
-		return this.nativeHitTest(point, type, tolerance, null);
+	public HitTest hitTest(Point point, HitRequest request, float tolerance) {
+		return this.nativeHitTest(point, (request != null ? request : HitRequest.ALL).value, tolerance, null);
 	}
 
-	public HitTest hitTest(Point point, int type) {
-		return this.hitTest(point, type, HitTest.DEFAULT_TOLERANCE);
+	public HitTest hitTest(Point point, HitRequest request) {
+		return this.hitTest(point, request, HitTest.DEFAULT_TOLERANCE);
 	}
 
 	public HitTest hitTest(Point point) {
-		return this.hitTest(point, HitTest.TEST_ALL, HitTest.DEFAULT_TOLERANCE);
+		return this.hitTest(point, HitRequest.ALL, HitTest.DEFAULT_TOLERANCE);
 	}
 	
 	private native int nativeGetStories();

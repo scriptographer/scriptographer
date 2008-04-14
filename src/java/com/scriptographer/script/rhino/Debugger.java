@@ -57,8 +57,10 @@ public class Debugger extends Dim implements
 	JList list;
 	DebuggerTreeNode treeRoot;
 	DefaultTreeModel treeModel;
-	HashMap treeNodes = new HashMap();
-	HashMap scriptNames = new HashMap();
+	HashMap<String, DebuggerTreeNode> treeNodes =
+		new HashMap<String, DebuggerTreeNode>();
+	HashMap<DebuggerTreeNode, String> scriptNames =
+		new HashMap<DebuggerTreeNode, String>();
 
 	public Debugger() {
 		gui = new DebugGui(this, "Debugger");
@@ -67,7 +69,7 @@ public class Debugger extends Dim implements
 	void createTreeNode(String sourceName, Dim.SourceInfo sourceInfo) {
 		File file = new File(sourceName);
 		File baseDir = ScriptographerEngine.getScriptDirectory();
-		ArrayList path = new ArrayList();
+		ArrayList<String> path = new ArrayList<String>();
 		do {
 			path.add(file.getName());
 			file = file.getParentFile();
@@ -75,7 +77,7 @@ public class Debugger extends Dim implements
 		DebuggerTreeNode node = treeRoot;
 		DebuggerTreeNode newNode = null;
 		for (int i = path.size() - 1; i >= 0; i--) {
-			String name = (String) path.get(i);
+			String name = path.get(i);
 			DebuggerTreeNode n = node.get(name);
 			if (n == null) {
 				n = new DebuggerTreeNode(name);
@@ -272,7 +274,7 @@ public class Debugger extends Dim implements
 		private void updateFunctionList(String sourceName) {
 			// display functions for opened script file
 			currentSourceUrl = sourceName;
-			Vector functions = new Vector();
+			Vector<FunctionItem> functions = new Vector<FunctionItem>();
 			SourceInfo si = sourceInfo(sourceName);
 			String[] lines = si.source().split("\\r\\n|\\r|\\n");
 			int length = si.functionSourcesTop();

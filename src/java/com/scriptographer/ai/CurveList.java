@@ -37,17 +37,17 @@ import com.scriptographer.list.AbstractFetchList;
 /**
  * @author lehni
  */
-public class CurveList extends AbstractFetchList {
+public class CurveList extends AbstractFetchList<Curve> {
 	protected Path path;
 	protected int size;
 	protected SegmentList segments;
-	protected ArrayList.List list;
+	protected ArrayList.List<Curve> list;
 
 	protected CurveList(Path path, SegmentList segments) {
 		this.path = path;
 		this.segments = segments;
 		segments.curves = this;
-		list = new ArrayList.List();
+		list = new ArrayList.List<Curve>();
 		updateSize();
 	}
 	
@@ -84,25 +84,25 @@ public class CurveList extends AbstractFetchList {
 	/**
 	 * @jshide
 	 */
-	public Object add(int index, Object element) {
+	public Curve add(int index, Curve element) {
 		throw new UnsupportedOperationException();
 	}
 
 	/**
 	 * @jshide
 	 */
-	public Object set(int index, Object element) {
+	public Curve set(int index, Curve element) {
 		throw new UnsupportedOperationException();
 	}
 
 	/**
 	 * @jshide
 	 */
-	public Object remove(int index) {
+	public Curve remove(int index) {
 		throw new UnsupportedOperationException();
 	}
 
-	public Object get(int index) {
+	public Curve get(int index) {
 		Curve curve = (Curve) list.get(index);
 		if (curve == null) {
 			curve = new Curve(segments, index);
@@ -111,10 +111,6 @@ public class CurveList extends AbstractFetchList {
 			curve.updateSegments();
 		}
 		return curve;
-	}
-
-	public Curve getCurve(int index) {
-		return (Curve) get(index);
 	}
 
 	public int size() {

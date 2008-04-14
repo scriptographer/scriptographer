@@ -31,7 +31,7 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * AIRasterizeType, AIColorConversionSpaceValue
@@ -41,24 +41,25 @@ import com.scriptographer.NamedOption;
  * 
  * @author lehni
  */
-public class ColorType extends NamedOption {
+public enum ColorType implements IntegerEnum {
+	RGB(0, false), // RGB no alpha
+	CMYK(1, false), // CMYK no alpha
+	GRAY(2, false), // Grayscale no alpha
+	BITMAP(3, false), // opaque bitmap
+	ARGB(4, true), // RGB with alpha
+	ACMYK(5, true), // CMYK with alpha
+	AGRAY(6, true), // Grayscale with alpha
+	ABITMAP(8, true); // bitmap with transparent 0-pixels
 
-	public static final ColorType
-		RGB 		= new ColorType("rgb",		0), // RGB no alpha
-		CMYK		= new ColorType("cmyk",		1), // CMYK no alpha
-		GRAY		= new ColorType("gray",		2), // Grayscale no alpha
-		BITMAP		= new ColorType("bitmap",	3), // opaque bitmap
-		ARGB		= new ColorType("argb",		4), // RGB with alpha
-		ACMYK		= new ColorType("acmyk",	5), // CMYK with alpha
-		AGRAY		= new ColorType("agray",	6), // Grayscale with alpha
-		ABITMAP		= new ColorType("abitmap", 8); // bitmap with transparent 0-pixels
+	protected int value;
+	protected boolean alpha;
 
-
-	private ColorType(String name, int value) {
-		super(name, value);
+	private ColorType(int value, boolean alpha) {
+		this.value = value;
+		this.alpha = alpha;
 	}
 
-	protected static ColorType get(int value) {
-		return (ColorType) get(ColorType.class, value);
+	public int value() {
+		return value;
 	}
 }

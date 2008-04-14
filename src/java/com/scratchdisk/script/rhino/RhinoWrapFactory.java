@@ -57,7 +57,8 @@ import com.scratchdisk.util.WeakIdentityHashMap;
  * @author lehni
  */
 public class RhinoWrapFactory extends WrapFactory implements Converter {
-	private WeakIdentityHashMap wrappers = new WeakIdentityHashMap();
+	private WeakIdentityHashMap<Object, WeakReference> wrappers =
+		new WeakIdentityHashMap<Object, WeakReference>();
 	protected RhinoEngine engine;
 
 	public RhinoWrapFactory() {
@@ -119,7 +120,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 						obj = new ExtendedJavaObject(scope, javaObj, staticType, true);
 				}
 			}
-			wrappers.put(javaObj, new WeakReference(obj));
+			wrappers.put(javaObj, new WeakReference<Scriptable>(obj));
 		}
 		return obj;
 	}
@@ -241,6 +242,6 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		return ClassUtils.getConstructor(cls, new Class[] { }, zeroArgumentConstructors);
 	}
 
-    private static IdentityHashMap zeroArgumentConstructors = new IdentityHashMap();
+    private static IdentityHashMap<Class, Constructor> zeroArgumentConstructors = new IdentityHashMap<Class, Constructor>();
 }
 

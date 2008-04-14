@@ -39,7 +39,7 @@ import org.mozilla.javascript.*;
  * @author lehni
  */
 public class ExtendedJavaObject extends NativeJavaObject {
-	HashMap properties;
+	HashMap<String, Object> properties;
 	ExtendedJavaClass classWrapper = null;
 	
 	/**
@@ -50,7 +50,7 @@ public class ExtendedJavaObject extends NativeJavaObject {
 	public ExtendedJavaObject(Scriptable scope, Object javaObject,
 		Class staticType, boolean unsealed) {
 		super(scope, javaObject, staticType);
-		properties = unsealed ? new HashMap() : null;
+		properties = unsealed ? new HashMap<String, Object>() : null;
 		classWrapper = staticType != null ?
 				ExtendedJavaClass.getClassWrapper(scope, staticType) : null;
 	}
@@ -152,8 +152,7 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			if (numProps == 0)
 				return javaIds;
 			Object[] ids = new Object[javaIds.length + numProps];
-			Collection propIds = properties.keySet();
-			propIds.toArray(ids);
+			properties.keySet().toArray(ids);
 			System.arraycopy(javaIds, 0, ids, numProps, javaIds.length);
 			return ids;
 		} else {

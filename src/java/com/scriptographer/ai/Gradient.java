@@ -31,6 +31,8 @@
 
 package com.scriptographer.ai;
 
+import com.scratchdisk.util.IntegerEnumUtils;
+
 /**
  * @author lehni
  */
@@ -72,7 +74,8 @@ public class Gradient extends NativeWrapper {
 	private native void nativeSetType(int type);
 
 	public GradientType getType() {
-		return GradientType.get(nativeGetType());
+		return (GradientType) IntegerEnumUtils.get(GradientType.class,
+				nativeGetType());
 	}
 
 	public void setType(GradientType type) {

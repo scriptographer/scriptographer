@@ -31,27 +31,27 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * FigureStyle
  * 
  * @author lehni
  */
-public class FigureStyle extends NamedOption {
-	
-	public static final FigureStyle
-		DEFAULT						= new FigureStyle("default",				0),
-		TABULAR						= new FigureStyle("tabular",				1),
-		PROPORTIONAL_OLDSTYLE		= new FigureStyle("proportionalOldstyle",	2),
-		PROPORTIONAL				= new FigureStyle("proportional",			3),
-		TABULAR_OLDSTYPE			= new FigureStyle("tabularOldstyle",		4);
+public enum FigureStyle implements IntegerEnum {
+	DEFAULT(0),
+	TABULAR(1),
+	PROPORTIONAL_OLDSTYLE(2),
+	PROPORTIONAL(3),
+	TABULAR_OLDSTYPE(4);
 
-	private FigureStyle(String name, int value) {
-		super(name, value);
+	protected int value;
+
+	private FigureStyle(int value) {
+		this.value = value;
 	}
 
-	protected static FigureStyle get(Object key) {
-		return (FigureStyle) get(FigureStyle.class, key);
+	public int value() {
+		return value;
 	}
 }

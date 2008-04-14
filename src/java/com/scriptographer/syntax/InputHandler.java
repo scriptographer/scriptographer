@@ -26,6 +26,7 @@ import java.util.*;
  * @author Slava Pestov
  * @version $Id$
  */
+@SuppressWarnings("unchecked")
 public abstract class InputHandler extends KeyAdapter {
 	/**
 	 * If this client property is set to Boolean.TRUE on the text area,

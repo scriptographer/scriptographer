@@ -31,25 +31,25 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * AIWorkingColorSpace, AIColorModel
  * 
  * @author lehni
  */
-public class ColorModel extends NamedOption {
+public enum ColorModel implements IntegerEnum {
+	GRAY(0),
+	RGB(1),
+	CMYK(2);
 
-	public static final ColorModel
-		GRAY =	new ColorModel("gray", 0),
-		RGB =	new ColorModel("rgb",	1),
-		CMYK =	new ColorModel("cmyk",	2);
+	protected int value;
 
-	private ColorModel(String name, int value) {
-		super(name, value);
+	private ColorModel(int value) {
+		this.value = value;
 	}
 
-	protected static ColorModel get(int value) {
-		return (ColorModel) get(ColorModel.class, value);
+	public int value() {
+		return value;
 	}
 }

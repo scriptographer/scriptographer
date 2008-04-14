@@ -31,29 +31,25 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * AutoKernType
  * 
  * @author lehni
  */
-public class StrokeJoin extends NamedOption {
+public enum StrokeJoin implements IntegerEnum {
+	MITER(0),
+	ROUND(1),
+	BEVEL(2);
 
-	public static final StrokeJoin
-		MITER		= new StrokeJoin("miter",	0),
-		ROUND		= new StrokeJoin("round",	1),
-		BEVEL		= new StrokeJoin("bevel",	2);
+	protected int value;
 
-	private StrokeJoin(String name, int value) {
-		super(name, value);
+	private StrokeJoin(int value) {
+		this.value = value;
 	}
 
-	protected static StrokeJoin get(Object key) {
-		return (StrokeJoin) get(StrokeJoin.class, key);
-	}
-
-	protected static StrokeJoin get(int key) {
-		return (StrokeJoin) get(StrokeJoin.class, key);
+	public int value() {
+		return value;
 	}
 }

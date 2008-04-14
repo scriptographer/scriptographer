@@ -32,18 +32,18 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.list.ArrayList;
-import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.List;
 import com.scriptographer.list.AbstractFetchList;
 
 /**
  * @author lehni
  */
-public class SegmentList extends AbstractFetchList {
+public class SegmentList extends AbstractFetchList<Segment> {
 	protected Path path;
 	protected int size;
 	protected CurveList curves = null;
 
-	private ArrayList.List list;
+	private ArrayList.List<Segment> list;
 
 	private int lengthVersion = -1;
 
@@ -60,7 +60,7 @@ public class SegmentList extends AbstractFetchList {
 	protected static final int VALUES_PER_SEGMENT = 7;
 
 	public SegmentList() {
-		list = new ArrayList.List();
+		list = new ArrayList.List<Segment>();
 		size = 0;
 	}
 
@@ -206,7 +206,7 @@ public class SegmentList extends AbstractFetchList {
 			fetch(0, size);
 	}
 
-	public Object get(int index) {
+	public Segment get(int index) {
 		// as fetching doesn't cost so much but calling JNI functions does,
 		// fetch a few elements in the neighborhood at a time:
 		int fromIndex = index - 2;
@@ -220,27 +220,10 @@ public class SegmentList extends AbstractFetchList {
 		return list.get(index);
 	}
 
-	public Segment getSegment(int index) {
-		return (Segment) get(index);
-	}
-
-	/**
-	 * Adds a segment to the SegmentList.
-	 * @param index the index where to add the segment
-	 * @param obj either a Segment or a Point
-	 * @return the new segment
-	 */
-	public Object add(int index, Object obj) {
-		Segment segment;
-		if (obj instanceof Segment) {
-			segment = (Segment) obj;
-			// Copy it if it comes from another list:
-			if (segment.segments != null)
-				segment = new Segment(segment);
-		} else if (obj instanceof Point) {
-			// Convert single points to a segment
-			segment = new Segment((Point) obj);
-		} else return null;
+	public Segment add(int index, Segment segment) {
+		// Copy it if it comes from another list:
+		if (segment.segments != null)
+			segment = new Segment(segment);
 		// Add to internal structure
 		list.add(index, segment);
 		// Update version:
@@ -264,8 +247,23 @@ public class SegmentList extends AbstractFetchList {
 		}
 		return segment;
 	}
+	
+	/**
+	 * Adds a segment to the SegmentList.
+	 * @param index the index where to add the segment
+	 * @param obj either a Segment or a Point
+	 * @return the new segment
+	 */
+	public Segment add(int index, Object obj) {
+		if (obj instanceof Segment) {
+			return add(index, (Segment) obj);
+		} else if (obj instanceof Point) {
+			return add(index, new Segment((Point) obj));
+		}
+		return null;
+	}
 
-	public boolean addAll(int index, ExtendedList elements) {
+	public boolean addAll(int index, List elements) {
 		if (index < 0 || index > size)
 			throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
 
@@ -339,19 +337,27 @@ public class SegmentList extends AbstractFetchList {
 		return false;
 	}
 
-	public Object set(int index, Object obj) {
-		if (obj instanceof Segment) {
-			Segment segment = (Segment) obj;
-			Segment ret = (Segment) list.set(index, segment);
-			segment.segments = this;
-			segment.index = index;
-			segment.markDirty(Segment.DIRTY_POINTS);
-			if (ret != null) {
-				ret.segments = null;
-				ret.index = -1;
-			}
-			return ret;
+	public boolean addAll(List elements) {
+		return addAll(size(), elements);
+	}
 
+	public Segment set(int index, Segment segment) {
+		Segment ret = list.set(index, segment);
+		segment.segments = this;
+		segment.index = index;
+		segment.markDirty(Segment.DIRTY_POINTS);
+		if (ret != null) {
+			ret.segments = null;
+			ret.index = -1;
+		}
+		return ret;
+	}
+
+	public Segment set(int index, Object obj) {
+		if (obj instanceof Segment) {
+			set(index, (Segment) obj);
+		} else if (obj instanceof Point) {
+			set(index, new Segment((Point) obj));
 		}
 		return null;
 	}
@@ -394,10 +400,10 @@ public class SegmentList extends AbstractFetchList {
 
 	}
 
-	public Object remove(int index) {
-		Object obj = get(index);
+	public Segment remove(int index) {
+		Segment segment = get(index);
 		remove(index, index + 1);
-		return obj;
+		return segment;
 	}
 	
 	/*
@@ -429,7 +435,7 @@ public class SegmentList extends AbstractFetchList {
 		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		// first modify the current segment:
-		Segment lastSegment = getSegment(size - 1);
+		Segment lastSegment = get(size - 1);
 		// convert to relative values:
 		lastSegment.handleOut.set(c1x - lastSegment.point.x, c1y
 				- lastSegment.point.y);
@@ -448,7 +454,7 @@ public class SegmentList extends AbstractFetchList {
 		// and the cubic is A B C D,
 		// B = E + 1/3 (A - E)
 		// C = E + 1/3 (D - E)
-		Segment segment = getSegment(size - 1);
+		Segment segment = get(size - 1);
 		float x1 = segment.point.x;
 		float y1 = segment.point.y;
 		curveTo(cx + (1f/3f) * (x1 - cx), cy + (1f/3f) * (y1 - cy), 

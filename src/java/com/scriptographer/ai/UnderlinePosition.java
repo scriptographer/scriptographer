@@ -31,25 +31,25 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * UnderlinePosition
  * 
  * @author lehni
  */
-public class UnderlinePosition extends NamedOption {
+public enum UnderlinePosition implements IntegerEnum {
+	OFF(0),
+	RIGHT_IN_VERTICAL(1),
+	LEFT_IN_VERTICAL(2);
 
-	public static final UnderlinePosition
-		OFF					= new UnderlinePosition("off",					0),
-		RIGHT_IN_VERTICAL	= new UnderlinePosition("rightInVertical",		1),
-		LEFT_IN_VERTICAL	= new UnderlinePosition("leftInVertical",		2);
+	protected int value;
 
-	private UnderlinePosition(String name, int value) {
-		super(name, value);
+	private UnderlinePosition(int value) {
+		this.value = value;
 	}
 
-	protected static UnderlinePosition get(Object key) {
-		return (UnderlinePosition) get(UnderlinePosition.class, key);
+	public int value() {
+		return value;
 	}
 }

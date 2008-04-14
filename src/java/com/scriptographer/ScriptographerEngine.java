@@ -142,7 +142,7 @@ public class ScriptographerEngine {
 		// determine preferences for the current executing script
 		// by walking up the file path to the script directory and 
 		// using each folder as a preference node.
-		ArrayList parts = new ArrayList();
+		ArrayList<String> parts = new ArrayList<String>();
 		Preferences prefs = getPreferences(false);
 		// Collect the directory parts up to either scriptDir or pluginDir
 		while (true) {
@@ -159,7 +159,7 @@ public class ScriptographerEngine {
 		}
 		// Now walk backwards per added folder element and produce sub nodes
 		for (int i = parts.size() - 1; i >= 0; i--)
-			prefs = prefs.node((String) parts.get(i));
+			prefs = prefs.node(parts.get(i));
 		return prefs;
 	}
 	
@@ -227,7 +227,7 @@ public class ScriptographerEngine {
 	
 	private static boolean executing = false;
 	private static File currentFile = null;
-	private static ArrayList stopScripts = new ArrayList();
+	private static ArrayList<Script> stopScripts = new ArrayList<Script>();
 	private static boolean allowScriptCancelation = true;
 
 	/**

@@ -46,7 +46,7 @@ public class ExtendedJavaPackage extends NativeJavaPackage {
 	// We need to store these here too, as they are private in NativeJavaPackage
 	private String packageName;
 	private ClassLoader classLoader;
-	private HashMap cache = new HashMap();
+	private HashMap<String, Scriptable> cache = new HashMap<String, Scriptable>();
 
 	public ExtendedJavaPackage(String packageName, ClassLoader classLoader) {
 		super(true, packageName, classLoader);

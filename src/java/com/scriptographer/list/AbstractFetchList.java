@@ -33,6 +33,7 @@ package com.scriptographer.list;
 
 import com.scratchdisk.list.AbstractExtendedList;
 import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.List;
 
 /**
  * AbstractFetchList defines fetch and fetch(fromIndex, toIndex), which are called
@@ -41,7 +42,7 @@ import com.scratchdisk.list.ExtendedList;
  * 
  * @author lehni
  */
-public abstract class AbstractFetchList extends AbstractExtendedList {
+public abstract class AbstractFetchList<E> extends AbstractExtendedList<E> {
 	protected abstract void fetch(int fromIndex, int toIndex);
 	protected abstract void fetch();
 
@@ -60,27 +61,27 @@ public abstract class AbstractFetchList extends AbstractExtendedList {
 		return super.lastIndexOf(element);
 	}
 
-	public Object[] toArray(Object[] array) {
+	public E[] toArray(E[] array) {
 		fetch();
 		return super.toArray(array);
 	}
 
-	public boolean retainAll(ExtendedList elements) {
+	public boolean retainAll(ExtendedList<?> elements) {
 		fetch();
 		return super.retainAll(elements);
 	}
 
-	public boolean removeAll(ExtendedList elements) {
+	public boolean removeAll(ExtendedList<?> elements) {
 		fetch();
 		return super.removeAll(elements);
 	}
 
-	public boolean containsAll(ExtendedList elements) {
+	public boolean containsAll(List<?> elements) {
 		fetch();
 		return super.containsAll(elements);
 	}
 	
-	public ExtendedList getSubList(int fromIndex, int toIndex) {
+	public ExtendedList<E> getSubList(int fromIndex, int toIndex) {
 		fetch();
 		return super.getSubList(fromIndex, toIndex);
 	}

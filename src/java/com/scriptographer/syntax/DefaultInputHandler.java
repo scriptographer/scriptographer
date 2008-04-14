@@ -21,6 +21,7 @@ import java.util.StringTokenizer;
  * @author Slava Pestov
  * @version $Id$
  */
+@SuppressWarnings("unchecked")
 public class DefaultInputHandler extends InputHandler {
 	/**
 	 * Creates a new input handler with no key bindings defined.

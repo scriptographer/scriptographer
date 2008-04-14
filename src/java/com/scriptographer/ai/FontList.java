@@ -45,7 +45,7 @@ import com.scratchdisk.list.StringIndexReadOnlyList;
  * 
  * @author lehni
  */
-public class FontList implements ReadOnlyList, StringIndexReadOnlyList {
+public class FontList implements ReadOnlyList<FontFamily>, StringIndexReadOnlyList<FontFamily> {
 
 	/**
      * Don't let anyone instantiate this class.
@@ -63,16 +63,17 @@ public class FontList implements ReadOnlyList, StringIndexReadOnlyList {
 	/**
 	 * Gets a font family based on it's index in the font list.
 	 */
-	public Object get(int index) {
+	public FontFamily get(int index) {
 		return FontFamily.wrapHandle(nativeGet(index));
 	}
 
-	public WeakHashMap fontsByName = new WeakHashMap();	
+	public WeakHashMap<String, FontFamily> fontsByName =
+		new WeakHashMap<String, FontFamily>();	
 	
 	/**
 	 * Gets a font family based on it's name in the font list.
 	 */
-	public Object get(String name) {
+	public FontFamily get(String name) {
 		// fontsByName is a steadily growing lookup table
 		FontFamily family = null;
 		if (name != null) {
@@ -106,7 +107,7 @@ public class FontList implements ReadOnlyList, StringIndexReadOnlyList {
 		return size() == 0;
 	}
 
-	public ExtendedList getSubList(int fromIndex, int toIndex) {
+	public ExtendedList<FontFamily> getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
 	}
 

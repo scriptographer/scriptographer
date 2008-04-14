@@ -53,7 +53,7 @@ public abstract class DictionaryObject extends NativeObject {
 		return dictionary;	
 	}
 
-	public void setDictionary(Map map) {
+	public void setDictionary(Map<?, ?> map) {
 		Dictionary dictionary = getDictionary();
 		dictionary.clear();
 		dictionary.putAll(map);

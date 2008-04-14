@@ -35,31 +35,30 @@ package com.scratchdisk.list;
 /**
  * @author lehni
  */
-public interface ExtendedList extends List {
+public interface ExtendedList<E> extends List<E> {
 
 	int indexOf(Object element);
 	int lastIndexOf(Object element);
-
 	boolean contains(Object o);
 
-	boolean addAll(int index, List elements);
-	boolean addAll(int index, Object[] elements);
+	boolean addAll(int index, List<? extends E> elements);
+	boolean addAll(int index, E[] elements);
 
-	boolean containsAll(List elementsc);
+	boolean containsAll(List<?> elementsc);
 	boolean containsAll(Object[] elements);
 
-	boolean removeAll(ExtendedList elements);
+	boolean removeAll(ExtendedList<?> elements);
 	boolean removeAll(Object[] elements);
 
-	boolean retainAll(ExtendedList elements);
+	boolean retainAll(ExtendedList<?> elements);
 	boolean retainAll(Object[] elements);
 
-	Object[] toArray();
-	Object[] toArray(Object a[]);
+	E[] toArray();
+	E[] toArray(E elements[]);
 
-	Object getFirst();
-	Object getLast();
+	E getFirst();
+	E getLast();
 
-	Object removeFirst();
-	Object removeLast();
+	E removeFirst();
+	E removeLast();
 }

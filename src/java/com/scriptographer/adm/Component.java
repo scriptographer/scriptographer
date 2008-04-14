@@ -35,7 +35,6 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.LayoutManager;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -252,7 +251,7 @@ abstract class Component extends NotificationHandler {
 		return content;
 	}
 
-	public void setContent(Object[] elements) {
+	public void setContent(Component[] elements) {
 		// The default for setting array elements is a flow layout
 		if (this.getLayout() == null)
 			this.setLayout(new FlowLayout());
@@ -262,7 +261,7 @@ abstract class Component extends NotificationHandler {
 		content.addAll(elements);
 	}
 
-	public void setContent(List elements) {
+	public void setContent(List<? extends Component> elements) {
 		// The default for setting array elements is a flow layout
 		if (this.getLayout() == null)
 			this.setLayout(new FlowLayout());
@@ -276,15 +275,13 @@ abstract class Component extends NotificationHandler {
 			"^(north|south|east|west|center|first|last|before|after)$",
 			Pattern.CASE_INSENSITIVE);
 
-	public void setContent(Map elements) {
+	public void setContent(Map<String,? extends Component> elements) {
 		// Find out what kind of layout we have by checking the keys
 		// in the map:
 		if (this.getLayout() == null) {
 			boolean borderLayout = true;
-			for (Iterator it = elements.keySet().iterator(); it.hasNext() && borderLayout;) {
-				Object key = it.next();
-				borderLayout = borderLayoutPattern.matcher(key.toString()).matches();
-			}
+			for (String key : elements.keySet())
+				borderLayout = borderLayoutPattern.matcher(key).matches();
 			if (borderLayout) {
 				this.setLayout(new BorderLayout());
 			} else {

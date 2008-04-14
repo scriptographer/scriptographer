@@ -46,10 +46,10 @@ import com.scratchdisk.util.ClassUtils;
  */
 public class ExtendedJavaClass extends NativeJavaClass {
 	private String className;
-	private HashMap properties;
+	private HashMap<String, Object> properties;
 	private Scriptable instanceProto = null;
 	// A lookup for the associated ExtendedJavaClass wrappers
-	private static IdentityHashMap classes = new IdentityHashMap();
+	private static IdentityHashMap<Class, ExtendedJavaClass> classes = new IdentityHashMap<Class, ExtendedJavaClass>();
 
 	public ExtendedJavaClass(Scriptable scope, Class cls, boolean unsealed) {
 		super(scope, cls);
@@ -60,7 +60,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		setPrototype(ScriptableObject.getFunctionPrototype(scope));
 		// Determine short className:
 		className = ClassUtils.getSimpleName(cls);
-		properties = unsealed ? new HashMap() : null;
+		properties = unsealed ? new HashMap<String, Object>() : null;
 		// put it in the class wrapper table
 		classes.put(cls, this);
 	}
@@ -141,10 +141,10 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		return obj;
 	}
 
-	public Class getClassObject() {
+	public Class<?> getClassObject() {
 		// Why calling super.unwrap() when all it does is returning the internal
 		// javaObject? That's how it's done in NativeJavaClass...
-		return (Class) javaObject;
+		return (Class<?>) javaObject;
 	}
 
 	public Object get(String name, Scriptable start) {

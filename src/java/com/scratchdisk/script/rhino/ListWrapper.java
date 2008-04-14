@@ -32,7 +32,6 @@
 package com.scratchdisk.script.rhino;
 
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeJavaMethod;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
@@ -73,6 +72,7 @@ public class ListWrapper extends ExtendedJavaObject {
 		return javaObject != null && index < ((ReadOnlyList) javaObject).size();
 	}
 
+	@SuppressWarnings("unchecked")
 	public void put(int index, Scriptable start, Object value) {
 		if (javaObject != null && javaObject instanceof List) {
 			List list = ((List) javaObject);
@@ -108,6 +108,7 @@ public class ListWrapper extends ExtendedJavaObject {
 				((StringIndexReadOnlyList) javaObject).get(name) != null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void put(String name, Scriptable start, Object value) {
 		// Since lists have the native size method that's alredy accessible
 		// through "length", offer access here to get/setSize if these are

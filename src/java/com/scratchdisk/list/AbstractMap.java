@@ -46,13 +46,13 @@ import java.util.Set;
  * 
  * @author lehni
  */
-public abstract class AbstractMap implements Map {
+public abstract class AbstractMap<K,V> implements Map<K,V> {
 
 	/**
-	 * This method needs to be defined by extending clases.
+	 * This method needs to be defined by extending classes.
 	 * It returns all the map-like object's keys in an array.
 	 */
-	protected abstract Object[] keys();
+	protected abstract K[] keys();
 
 	public int size() {
 		return keys().length;
@@ -68,10 +68,10 @@ public abstract class AbstractMap implements Map {
 			remove(keys[i]);
 	}
 
-	public Collection values() {
+	public Collection<V> values() {
 		// Just create an ArrayList containing the values
 		Object[] ids = keys();
-		ArrayList values = new ArrayList();
+		ArrayList<V> values = new ArrayList<V>();
 		for (int i = 0; i < ids.length; i++) {
 			values.add(get(ids[i]));
 		}
@@ -99,43 +99,41 @@ public abstract class AbstractMap implements Map {
 		return false;
 	}
 
-	public void putAll(Map map) {
-		for (Iterator it = map.entrySet().iterator(); it.hasNext();) {
-			Map.Entry entry = (Map.Entry) it.next();
+	public void putAll(Map<? extends K, ? extends V> map) {
+		for (Map.Entry<? extends K, ? extends V> entry : map.entrySet())
 			put(entry.getKey(), entry.getValue());
-		}
 	}
 
-	public Set entrySet() {
-		return new MapSet(true);
+	public Set<Map.Entry<K, V>> entrySet() {
+		return new MapSet<Map.Entry<K, V>>(true);
 	}
 
-	public Set keySet() {
-		return new MapSet(false);
+	public Set<K> keySet() {
+		return new MapSet<K>(false);
 	}
 
-	private class Entry implements Map.Entry {
-		private Object key;
+	private class Entry implements Map.Entry<K,V> {
+		private K key;
 
-		Entry(Object key) {
+		Entry(K key) {
 			this.key = key;
 		}
 
-		public Object getKey() {
+		public K getKey() {
 			return key;
 		}
 
-		public Object getValue() {
+		public V getValue() {
 			return AbstractMap.this.get(key);
 		}
 
-		public Object setValue(Object value) {
+		public V setValue(V value) {
 			return AbstractMap.this.put(key, value);
 		}
 	}
 
-	private class MapSet extends AbstractSet {
-		Object[] keys;
+	private class MapSet<E> extends AbstractSet<E> {
+		K[] keys;
 		boolean entries;
 
 		MapSet(boolean entries) {
@@ -143,17 +141,18 @@ public abstract class AbstractMap implements Map {
 			this.entries = entries;
 		}
 
-		public Iterator iterator() {
-			return new Iterator() {
+		public Iterator<E> iterator() {
+			return new Iterator<E>() {
 				int index = 0;
 
 				public boolean hasNext() {
 					return index < keys.length;
 				}
 
-				public Object next() {
-					Object key = keys[index++];
-					return entries ? new Entry(key) : key;
+				@SuppressWarnings("unchecked")
+				public E next() {
+					K key = keys[index++];
+					return (E) (entries ? new Entry(key) : key);
 				}
 
 				public void remove() {

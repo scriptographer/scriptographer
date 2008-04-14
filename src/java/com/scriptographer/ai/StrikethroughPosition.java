@@ -31,25 +31,25 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * StrikethroughPosition
  * 
  * @author lehni
  */
-public class StrikethroughPosition extends NamedOption {
+public enum StrikethroughPosition implements IntegerEnum {
+	OFF(0),
+	X_HEIGHT(1),
+	EM_BOX(2);
 
-	public static final StrikethroughPosition
-		OFF			= new StrikethroughPosition("off",			0),
-		XHEIGHT		= new StrikethroughPosition("x-height",	1),
-		EMBOX		= new StrikethroughPosition("em-box",		2);
+	protected int value;
 
-	private StrikethroughPosition(String name, int value) {
-		super(name, value);
+	private StrikethroughPosition(int value) {
+		this.value = value;
 	}
 
-	protected static StrikethroughPosition get(Object key) {
-		return (StrikethroughPosition) get(StrikethroughPosition.class, key);
+	public int value() {
+		return value;
 	}
 }

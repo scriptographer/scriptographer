@@ -37,14 +37,14 @@ import com.scratchdisk.list.ReadOnlyList;
 /**
  * @author lehni
  */
-class TextStoryList extends NativeObject implements ReadOnlyList {
-	ArrayList.List list;
+class TextStoryList extends NativeObject implements ReadOnlyList<TextStory> {
+	ArrayList.List<TextStory> list;
 	Document document;
 	
 	TextStoryList(int handle, Document document) {
 		super(handle);
 		this.document = document;
-		list = new ArrayList.List();
+		list = new ArrayList.List<TextStory>();
 	}
 
 	private native int nativeSize(int handle);
@@ -55,7 +55,7 @@ class TextStoryList extends NativeObject implements ReadOnlyList {
 
 	private native int nativeGet(int handle, int index, int curStoryHandle);
 
-	public Object get(int index) {
+	public TextStory get(int index) {
 		// update buffer length
 		list.setSize(nativeSize(handle));
 		// native get returns the old cached value in case it's
@@ -76,7 +76,7 @@ class TextStoryList extends NativeObject implements ReadOnlyList {
 		return nativeSize(handle) == 0;
 	}
 
-	public ExtendedList getSubList(int fromIndex, int toIndex) {
+	public ExtendedList<TextStory> getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
 	}
 

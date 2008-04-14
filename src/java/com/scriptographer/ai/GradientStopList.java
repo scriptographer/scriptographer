@@ -39,16 +39,16 @@ import com.scriptographer.ScriptographerException;
 /**
  * @author lehni
  */
-public class GradientStopList extends AbstractExtendedList {
+public class GradientStopList extends AbstractExtendedList<GradientStop> {
 	protected Gradient gradient;
 	protected int size;
-	protected ArrayList.List list;
+	protected ArrayList.List<GradientStop> list;
 
 	private int version = -1;
 
 	protected GradientStopList(Gradient gradient) {
 		this.gradient = gradient;
-		list = new ArrayList.List();
+		list = new ArrayList.List<GradientStop>();
 		update();
 	}
 	
@@ -80,47 +80,38 @@ public class GradientStopList extends AbstractExtendedList {
 		}
 	}
 
-	// this list is read only:
-	public Object add(int index, Object obj) {
-		if (obj instanceof GradientStop) {
-			GradientStop stop = (GradientStop) obj;
-			// add to internal structure
-			list.add(index, stop);
-			// update verion:
-			stop.version = CommitManager.version;
-			
-			// and link segment to this list
-			stop.list = this;
-			stop.index = index;
-			// increase size
-			size++;
-			// and add to illustrator as well
-			stop.insert();
-			// update stop indices
-			for (int i = index + 1; i < size; i++) {
-				GradientStop s = (GradientStop) list.get(i);
-				if (s != null)
-					s.index = i;
-			}
-			return stop;
+	public GradientStop add(int index, GradientStop stop) {
+		// add to internal structure
+		list.add(index, stop);
+		// update verion:
+		stop.version = CommitManager.version;
+		
+		// and link segment to this list
+		stop.list = this;
+		stop.index = index;
+		// increase size
+		size++;
+		// and add to illustrator as well
+		stop.insert();
+		// update stop indices
+		for (int i = index + 1; i < size; i++) {
+			GradientStop s = (GradientStop) list.get(i);
+			if (s != null)
+				s.index = i;
 		}
-		return null;
+		return stop;
 	}
 
-	public Object set(int index, Object obj) {
-		if (obj instanceof GradientStop) {
-			GradientStop stop = (GradientStop) obj;
-			GradientStop ret = (GradientStop) list.set(index, stop);
-			stop.list = this;
-			stop.index = index;
-			stop.markDirty();
-			if (ret != null) {
-				ret.list = null;
-				ret.index = -1;
-			}
-			return ret;
+	public GradientStop set(int index, GradientStop stop) {
+		GradientStop ret = (GradientStop) list.set(index, stop);
+		stop.list = this;
+		stop.index = index;
+		stop.markDirty();
+		if (ret != null) {
+			ret.list = null;
+			ret.index = -1;
 		}
-		return null;
+		return ret;
 	}
 
 	private static native int nativeRemove(int handle, int docHandle,
@@ -149,14 +140,14 @@ public class GradientStopList extends AbstractExtendedList {
 
 	}
 
-	public Object remove(int index) {
-		Object obj = get(index);
+	public GradientStop remove(int index) {
+		GradientStop stop = get(index);
 		remove(index, index + 1);
-		return obj;
+		return stop;
 	}
 
-	public Object get(int index) {
-		GradientStop stop = (GradientStop) list.get(index);
+	public GradientStop get(int index) {
+		GradientStop stop = list.get(index);
 		if (stop == null) {
 			stop = new GradientStop(this, index);
 			list.set(index, stop);

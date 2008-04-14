@@ -31,29 +31,25 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * AutoKernType
  * 
  * @author lehni
  */
-public class StrokeCap extends NamedOption {
-	
-	public static final StrokeCap
-		BUTT		= new StrokeCap("butt",		0),
-		ROUND		= new StrokeCap("round",	1),
-		SQUARE		= new StrokeCap("square",	2);
+public enum StrokeCap implements IntegerEnum {
+	BUTT(0),
+	ROUND(1),
+	SQUARE(2);
 
-	private StrokeCap(String name, int value) {
-		super(name, value);
+	protected int value;
+
+	private StrokeCap(int value) {
+		this.value = value;
 	}
 
-	protected static StrokeCap get(Object key) {
-		return (StrokeCap) get(StrokeCap.class, key);
-	}
-
-	protected static StrokeCap get(int value) {
-		return (StrokeCap) get(StrokeCap.class, value);
+	public int value() {
+		return value;
 	}
 }

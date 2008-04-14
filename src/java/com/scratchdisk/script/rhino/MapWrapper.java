@@ -75,6 +75,7 @@ public class MapWrapper extends ExtendedJavaObject {
 		return Scriptable.NOT_FOUND;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void put(int index, Scriptable start, Object value) {
 		if (javaObject != null) {
 			if (value instanceof Wrapper)
@@ -100,6 +101,7 @@ public class MapWrapper extends ExtendedJavaObject {
 		return obj;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void put(String name, Scriptable start, Object value) {
 		if (javaObject != null) {
 			if (value instanceof Wrapper)

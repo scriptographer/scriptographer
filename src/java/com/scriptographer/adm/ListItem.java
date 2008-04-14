@@ -60,7 +60,7 @@ The following item types have valid list objects:
 #define kADMTextEditScrollingPopupType "ADM Text Edit Scrolling Popup Type"
 */
 
-public abstract class ListItem extends Item implements List {
+public abstract class ListItem extends Item implements List<ListEntry> {
 
 	protected ListItem(Dialog dialog, int type, int options) {
 		super(dialog, type, options);
@@ -324,10 +324,10 @@ public abstract class ListItem extends Item implements List {
 
 	public native int size();
 
-	public native Object get(int index);
+	public native ListEntry get(int index);
 
-	public Object set(int index, Object element) {
-		Object old = remove(index);
+	public ListEntry set(int index, ListEntry element) {
+		ListEntry old = remove(index);
 		if (old != null && add(index, element) != null) {
 			return old;
 		}
@@ -338,37 +338,46 @@ public abstract class ListItem extends Item implements List {
 		return new ListEntry(this, index);
 	}
 
-	public Object add(int index, Object element) {
+	public ListEntry add(int index, ListEntry entry) {
 		ListEntry res = createEntry(index);
-		if (element instanceof ListEntry) {
-			ListEntry entry = (ListEntry) element;
-			res.setText(entry.getText());
-			res.setEnabled(entry.isEnabled());
-			res.setActive(entry.isActive());
-			res.setChecked(res.isChecked());
-			res.setSeparator(entry.isSeparator());
-			try {
-				res.setImage(entry.getImage());
-				res.setSelectedImage(entry.getSelectedImage());
-				res.setDisabledImage(entry.getDisabledImage());
-			} catch (IOException e) {
-				// will never happen with images
-			}
-		} else if (element != null) {
-			res.setText(element.toString());
+		res.setText(entry.getText());
+		res.setEnabled(entry.isEnabled());
+		res.setActive(entry.isActive());
+		res.setChecked(res.isChecked());
+		res.setSeparator(entry.isSeparator());
+		try {
+			res.setImage(entry.getImage());
+			res.setSelectedImage(entry.getSelectedImage());
+			res.setDisabledImage(entry.getDisabledImage());
+		} catch (IOException e) {
+			// will never happen with images
 		}
 		return res;
 	}
 
+	public ListEntry add(int index, Object element) {
+		if (element instanceof ListEntry) {
+			return add(index, (ListEntry) element);
+		} else if (element != null) {
+			ListEntry entry = createEntry(index);
+			entry.setText(element.toString());
+			return entry;
+		}
+		return null;
+	}
 	// TODO: think about some kind of field value cashing in ListEntry
 	// otherwise values returned by remove() are unusable and cannot 
 	// be added to the list again.
-	public native Object remove(int index);
+	public native ListEntry remove(int index);
 
 	// as there is no Polymorphism in Java, so all these need to be copied 
 	// over from AbstractList.
 	
-	public Object add(Object element) {
+	public ListEntry add(ListEntry element) {
+		return add(-1, element);
+	}
+
+	public ListEntry add(Object element) {
 		return add(-1, element);
 	}
 
@@ -381,7 +390,7 @@ public abstract class ListItem extends Item implements List {
 		remove(0, size());
 	}
 
-	public boolean addAll(List elements) {
+	public boolean addAll(List<? extends ListEntry> elements) {
 		boolean modified = false;
 		int size = elements.size();
 		int index = size();
@@ -392,11 +401,11 @@ public abstract class ListItem extends Item implements List {
 		return modified;
 	}
 
-	public final boolean addAll(Object[] elements) {
+	public final boolean addAll(ListEntry[] elements) {
 		return addAll(Lists.asList(elements));
 	}
 
-	public ExtendedList getSubList(int fromIndex, int toIndex) {
+	public ExtendedList<ListEntry> getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
 	}
 

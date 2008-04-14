@@ -41,7 +41,7 @@ import com.scratchdisk.list.StringIndexReadOnlyList;
  * 
  * @author lehni
  */
-public class LayerList extends AbstractReadOnlyList implements StringIndexReadOnlyList {
+public class LayerList extends AbstractReadOnlyList<Layer> implements StringIndexReadOnlyList<Layer> {
 	Document document;
 
 	protected LayerList(Document document) {
@@ -54,33 +54,25 @@ public class LayerList extends AbstractReadOnlyList implements StringIndexReadOn
 		return nativeSize(document.handle);
 	}
 
-	private static native Object nativeGet(int docHandle, int index);
-
-	public Object get(int index) {
-		return nativeGet(document.handle, index);
-	}
-
-	private static native Object nativeGet(int docHandle, String name);
-
-	public Object get(String name) {
-		return nativeGet(document.handle, name);
-	}
+	private static native Layer nativeGet(int docHandle, int index);
 
 	/**
 	 * Retrieves a layer 
 	 * @param index the index of the layer
 	 * @return
 	 */
-	public Layer getLayer(int index) {
-		return (Layer) get(index);
+	public Layer get(int index) {
+		return nativeGet(document.handle, index);
 	}
+
+	private static native Layer nativeGet(int docHandle, String name);
 
 	/**
 	 * Retrieves a layer 
 	 * @param name the name of the layer
 	 * @return
 	 */
-	public Layer getLayer(String name) {
-		return (Layer) get(name);
+	public Layer get(String name) {
+		return nativeGet(document.handle, name);
 	}
 }

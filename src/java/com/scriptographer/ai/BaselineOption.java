@@ -31,25 +31,25 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * FontBaselineOption
  * 
  * @author lehni
  */
-public class BaselineOption extends NamedOption {
-	
-	public static final BaselineOption
-		NORMAL			= new BaselineOption("normal",			0),
-		SUPERSCRIPT		= new BaselineOption("superscript",	1),
-		SUBSCRIPT		= new BaselineOption("subscript",		2);
+public enum BaselineOption implements IntegerEnum {
+	NORMAL(0),
+	SUPERSCRIPT(1),
+	SUBSCRIPT(2);
 
-	private BaselineOption(String name, int value) {
-		super(name, value);
+	protected int value;
+
+	private BaselineOption(int value) {
+		this.value = value;
 	}
 
-	protected static BaselineOption get(Object key) {
-		return (BaselineOption) get(BaselineOption.class, key);
+	public int value() {
+		return value;
 	}
 }

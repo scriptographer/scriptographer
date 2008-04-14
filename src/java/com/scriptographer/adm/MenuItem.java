@@ -36,8 +36,6 @@ import com.scriptographer.ScriptographerException;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.IntMap;
 
-import java.util.Iterator;
-
 /*
  * Theoretically MenuItem and MenuGroup would belong to the AI package, not ADM
  * But as these are the only classes dealing with the interface there, they were
@@ -58,7 +56,7 @@ public class MenuItem extends NativeObject{
 	protected MenuGroup group;
 	private MenuGroup subGroup;
 
-	private static IntMap items = new IntMap();
+	private static IntMap<MenuItem> items = new IntMap<MenuItem>();
 
 	private static int uniqueId = 0;
 
@@ -68,9 +66,7 @@ public class MenuItem extends NativeObject{
 		this.group = group;
 
 		synchronized(items) {
-			for (Iterator iterator = items.values().iterator();
-					iterator.hasNext();) {
-				MenuItem item = (MenuItem) iterator.next();
+			for (MenuItem item : items.values()) {
 				if (this.equals(item)) {
 					// take over this item:
 					handle = item.handle;
@@ -265,6 +261,7 @@ public class MenuItem extends NativeObject{
 	/**
 	 * To be called from the native environment:
 	 */
+	@SuppressWarnings("unused")
 	private static void onSelect(int handle) throws Exception {
 		MenuItem item = getItem(handle);
 		if (item != null)
@@ -274,6 +271,7 @@ public class MenuItem extends NativeObject{
 	/**
 	 * To be called from the native environment:
 	 */
+	@SuppressWarnings("unused")
 	private static void onUpdate(int handle, int inArtwork, int isSelected,
 			int isTrue) throws Exception {
 		MenuItem item = getItem(handle);

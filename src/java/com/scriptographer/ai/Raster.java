@@ -50,6 +50,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.NetUtils;
 import com.scriptographer.adm.Size;
 
@@ -59,6 +60,7 @@ import com.scriptographer.adm.Size;
 public class Raster extends Item {
 
 	// native pointer to an attached data struct:
+	@SuppressWarnings("unused")
 	private int data = 0;
 
 	protected Raster(int handle) {
@@ -188,8 +190,10 @@ public class Raster extends Item {
 	private native int nativeGetType();
 
 	public ColorType getType() {
-		return ColorType.get(nativeGetType());
+		return (ColorType) IntegerEnumUtils.get(ColorType.class,
+				nativeGetType());
 	}
+
 	public void setType(ColorType type) {
 		// changing the type creates a new art handle internally
 		handle = nativeConvert(type.value, -1, -1);
@@ -258,35 +262,37 @@ public class Raster extends Item {
 	public ColorModel getColorModel() {
 		ColorType type = getType();
 		ColorModel cm = null;
-		
-		if (type == ColorType.RGB || type == ColorType.ARGB) {
-			boolean alpha = type == ColorType.ARGB;
+		switch (type) {
+		case RGB:
+		case ARGB:
 			cm = new ComponentColorModel(RGBColor.getColorSpace(),
-				alpha ? new int[] { 8, 8, 8, 8 } : new int [] { 8, 8, 8 },
-				alpha, false,
-				alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
+				type.alpha ? new int[] { 8, 8, 8, 8 } : new int [] { 8, 8, 8 },
+				type.alpha, false,
+				type.alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
 				DataBuffer.TYPE_BYTE
 			);
-		} else if (type == ColorType.CMYK || type == ColorType.ACMYK) {
-			boolean alpha = type == ColorType.ACMYK;
+		break;
+		case CMYK:
+		case ACMYK:
 			cm = new ComponentColorModel(CMYKColor.getColorSpace(),
-				alpha ? new int[] { 8, 8, 8, 8, 8 } :
+				type.alpha ? new int[] { 8, 8, 8, 8, 8 } :
 					new int [] { 8, 8, 8, 8 },
-				alpha, false,
-				alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
+				type.alpha, false,
+				type.alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
 				DataBuffer.TYPE_BYTE
 			);
-		} else if (type == ColorType.GRAY || type == ColorType.AGRAY) {
-			boolean alpha = type == ColorType.AGRAY;
+		break;
+		case GRAY:
+		case AGRAY:
 			cm = new ComponentColorModel(GrayColor.getColorSpace(),
-				alpha ? new int[] { 8, 8 } : new int [] { 8 },
-				alpha, false,
-				alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
+				type.alpha ? new int[] { 8, 8 } : new int [] { 8 },
+				type.alpha, false,
+				type.alpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
 				DataBuffer.TYPE_BYTE
 			);
-			
-		} else if (type ==  ColorType.BITMAP || type == ColorType.ABITMAP) {
-			boolean alpha = type == ColorType.ABITMAP;
+		break;
+		case BITMAP:
+		case ABITMAP:
 			// create an IndexColorModel with two colors, black and white:
 			// black is the transparent color in case of an alpha image
 			cm = new IndexColorModel(2,
@@ -294,8 +300,9 @@ public class Raster extends Item {
 				new byte[] { 0, (byte) 255 },
 				new byte[] { 0, (byte) 255 },
 				new byte[] { 0, (byte) 255 },
-				alpha ? 0 : -1
+				type.alpha ? 0 : -1
 			);
+		break;
 		}
 		return cm;
 	}

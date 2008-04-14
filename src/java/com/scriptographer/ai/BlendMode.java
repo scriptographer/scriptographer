@@ -31,38 +31,38 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * AIBlendingModeValues
  * 
  * @author lehni
  */
-public class BlendMode extends NamedOption {
+public enum BlendMode implements IntegerEnum {
+	NORMAL(0),
+	MULTIPLY(1),
+	SCREEN(2),
+	OVERLAY	(3),
+	SOFT_LIGHT(4),
+	HARD_LIGHT(5),
+	COLOR_DODGE	(6),
+	COLOR_BURN(7),
+	DARKEN(8),
+	LIGHTEN	(9),
+	DIFFERENCE(10),
+	EXCLUSION(11),
+	HUE(12),
+	SATURATION(13),
+	COLOR(14),
+	LUMINOSITY(15);
 
-	public static final BlendMode
-		NORMAL				= new BlendMode("normal",		0),
-		MULTIPLY			= new BlendMode("multiply",	1),
-		SCREEN				= new BlendMode("screen",		2),
-		OVERLAY				= new BlendMode("overlay",		3),
-		SOFT_LIGHT			= new BlendMode("softLight",	4),
-		HARD_LIGHT			= new BlendMode("hardLight",	5),
-		COLOR_DODGE			= new BlendMode("colorDodge",	6),
-		COLOR_BURN			= new BlendMode("colorBurn",	7),
-		DARKEN				= new BlendMode("darken",		8),
-		LIGHTEN				= new BlendMode("lighten",		9),
-		DIFFERENCE			= new BlendMode("difference",	10),
-		EXCLUSION			= new BlendMode("exclusion",	11),
-		HUE					= new BlendMode("hue",			12),
-		SATURATION			= new BlendMode("saturation",	13),
-		COLOR				= new BlendMode("color",		14),
-		LUMINOSITY			= new BlendMode("luminosity",	15);
+	protected int value;
 
-	private BlendMode(String name, int value) {
-		super(name, value);
+	private BlendMode(int value) {
+		this.value = value;
 	}
 
-	protected static BlendMode get(int value) {
-		return (BlendMode) get(BlendMode.class, value);
+	public int value() {
+		return value;
 	}
 }

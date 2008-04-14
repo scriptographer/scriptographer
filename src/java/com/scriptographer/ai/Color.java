@@ -115,7 +115,7 @@ public abstract class Color {
 			try {
 				profile = ICC_Profile.getInstance(
 						Color.class.getClassLoader().getResourceAsStream(
-								"com/scriptographer/cmm/" + model.name + ".icc"));
+								"com/scriptographer/cmm/" + model.name().toLowerCase() + ".icc"));
 			} catch (IOException e) {
 				throw new ScriptographerException(e);
 			}

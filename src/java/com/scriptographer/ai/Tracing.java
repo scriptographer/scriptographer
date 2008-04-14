@@ -31,6 +31,7 @@
 
 package com.scriptographer.ai;
 
+import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
 import com.scriptographer.Commitable;
 
@@ -38,46 +39,7 @@ import com.scriptographer.Commitable;
  * @author lehni
  */
 public class Tracing extends Item implements Commitable {
-	
-	// AITracingMode
-	public static final int
-		/** Color.  Either RGB or CMYK depending on source image.  */
-		MODE_COLOR = 0,
 		
-		/** Gray. */
-		MODE_GRAY = 1,
-
-		/** Bitmap. */
-		MODE_BITMAP = 2;
-	
-	// AITracingVisualizeVectorType
-	public static final int
-		/** No Artwork.  */
-		VECTOR_NONE = 0,
-	
-		/** Artwork.  The full result, paths and fills, of the tracing.  */
-		VECTOR_ARTWORK = 1,
-	
-		/** Paths.  A paths only version of the "Artwork" mode with black stroked paths.  */
-		VECTOR_OUTLINES = 2,
-	
-		/** Paths and Transparency.  A "transparent" version of the "Artwork" mode with black stroked paths overlayed.  */
-		VECTOR_ARTWORK_AND_OUTLINES = 3;
-		
-	// AITracingVisualizeRasterType
-	public static final int
-		/** None.  No raster is included in the visualization.  */
-		RASTER_NONE = 0,
-	
-		/** Original.  The original raster input (before preprocessing).  */
-		RASTER_ORIGINAL = 1,
-	
-		/** Preprocessed.  The preprocessed image.  */
-		RASTER_ADJUSTED = 2,
-	
-		/** Transparency.  A "transparent" version of the "Original" mode.  */
-		RASTER_TRANSPARENT = 3;
-	
 	protected int optionsHandle = 0;
 	protected int statisticsHandle = 0;
 
@@ -141,18 +103,20 @@ public class Tracing extends Item implements Commitable {
 	 */
 	public native void setResampleResolution(float resolution);
 	
+	private native int nativeGetMode();
+	private native void nativeSetMode(int mode);
+
 	/**
-	 * Default: {@link #MODE_BITMAP}
-	 * @return
+	 * Default: {@link TracingMode#BITMAP}
 	 */
-	public native int getMode();
-	
-	/**
-	 * 
-	 * @param mode MODE_*
-	 */
-	public native void setMode(int mode);
-	
+	public TracingMode getMode() {
+		return IntegerEnumUtils.get(TracingMode.class, nativeGetMode());
+	}
+
+	public void setMode(TracingMode mode) {
+		nativeSetMode((mode != null ? mode : TracingMode.BITMAP).value);
+	}
+
 	/**
 	 * Default: 0.0
 	 * @return
@@ -273,29 +237,37 @@ public class Tracing extends Item implements Commitable {
 	 */
 	public native void setMinArea(int area);
 	
+	private native int nativeGetVectorDisplay();
+	private native void nativeSetVectorDisplay(int display);
+
 	/**
-	 * Default: {@link #VECTOR_ARTWORK}
-	 * @return
+	 * Default: {@link TracingVectorDisplay#ARTWORK}
 	 */
-	public native int getVectorDisplay();
+	public TracingVectorDisplay getVectorDisplay() {
+		return IntegerEnumUtils.get(TracingVectorDisplay.class,
+				nativeGetVectorDisplay());
+	}
 	
+	public void setVectorDisplay(TracingVectorDisplay vectorDisplay) {
+		nativeSetVectorDisplay((vectorDisplay != null ? vectorDisplay
+				: TracingVectorDisplay.ARTWORK).value);
+	}
+
+	public native int nativeGetRasterDisplay();
+	public native void nativeSetRasterDisplay(int display);
+
 	/**
-	 * 
-	 * @param display #VECTOR_*
+	 * Default: {@link TracingRasterDisplay#NONE}
 	 */
-	public native void setVectorDisplay(int display);
+	public TracingRasterDisplay getRasterDisplay() {
+		return IntegerEnumUtils.get(TracingRasterDisplay.class,
+				nativeGetRasterDisplay());
+	}
 	
-	/**
-	 * Default: {@link #RASTER_NONE}
-	 * @return
-	 */
-	public native int getRasterDisplay();
-	
-	/**
-	 * 
-	 * @param display {@link #RASTER_*}
-	 */
-	public native void setRasterDisplay(int display);
+	public void setRasterDisplay(TracingRasterDisplay rasterDisplay) {
+		nativeSetRasterDisplay((rasterDisplay != null ? rasterDisplay
+				: TracingRasterDisplay.NONE).value);
+	}
 	
 	/**
 	 * Default: false

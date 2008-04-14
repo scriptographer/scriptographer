@@ -32,7 +32,6 @@
 package com.scriptographer;
 
 import java.util.IdentityHashMap;
-import java.util.Iterator;
 
 import com.scriptographer.ai.TextFrame;
 
@@ -66,7 +65,7 @@ public class CommitManager {
 		if (commitables.size() > 0)
 			System.out.println("commiting " + commitables.size());
 		if (key != null) {
-			Commitable obj = (Commitable) commitables.get(key);
+			Commitable obj = commitables.get(key);
 			if (obj != null) {
 				obj.commit();
 				// case it's a text, use the story as a key as well. it's used
@@ -76,9 +75,8 @@ public class CommitManager {
 					commit(((TextFrame) obj).getStory());
 			}
 		} else if (commitables.size() > 0) {
-			for (Iterator iterator = commitables.values().iterator();
-					iterator.hasNext();)
-				((Commitable) iterator.next()).commit();
+			for (Commitable commitable : commitables.values())
+				commitable.commit();
 			commitables.clear();
 		}
 	}
@@ -100,10 +98,10 @@ public class CommitManager {
 	 * there was one object under a key already Uses IdentityHashMaps
 	 * internally, to avoid calling of equals on objects
 	 */
-	static class CommitableMap extends IdentityHashMap {
+	static class CommitableMap extends IdentityHashMap<Object, Commitable> {
 		// keep track of values that have been added already, maybe under
 		// another key
-		IdentityHashMap values = new IdentityHashMap();
+		IdentityHashMap<Object, Commitable> values = new IdentityHashMap<Object, Commitable>();
 
 		/**
 		 * A helper class that's needed when there are more than on object for
@@ -113,24 +111,23 @@ public class CommitManager {
 		 * 
 		 * Use a LinkedHashMap in order to preserve sequence of commits
 		 */
-		class CommitableList extends IdentityHashMap implements Commitable {
+		class CommitableList extends IdentityHashMap<Object, Commitable> implements Commitable {
 			public void commit() {
-				for (Iterator iterator = values().iterator();
-						iterator.hasNext();)
-					((Commitable) iterator.next()).commit();
+				for (Commitable commitable : values())
+					commitable.commit();
 			}
 
-			public void add(Object obj) {
+			public void add(Commitable obj) {
 				this.put(obj, obj);
 			}
 		}
 
-		public Object put(Object key, Object obj) {
+		public Commitable put(Object key, Commitable obj) {
 			if (values.containsKey(obj)) {
 				return null;
 			} else {
 				values.put(obj, obj);
-				Object prev = this.get(key);
+				Commitable prev = this.get(key);
 				if (prev != null) {
 					if (prev instanceof CommitableList) {
 						// add to existing list

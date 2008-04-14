@@ -180,7 +180,7 @@ public class MenuGroup extends NativeObject {
 
 	protected String name;
 
-	private static IntMap groups = new IntMap();
+	private static IntMap<MenuGroup> groups = new IntMap<MenuGroup>();
 
 	private static int uniqueId = 0;
 

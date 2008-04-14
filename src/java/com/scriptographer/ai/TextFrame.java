@@ -32,6 +32,7 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.list.ReadOnlyList;
+import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
 
 /**
@@ -61,7 +62,8 @@ public abstract class TextFrame extends Item {
 	 * @return 
 	 */
 	public TextOrientation getOrientation() {
-		return TextOrientation.get(nativeGetOrientation());
+		return (TextOrientation) IntegerEnumUtils.get(TextOrientation.class,
+				nativeGetOrientation());
 	}
 
 	public void setOrientation(TextOrientation orientation) {

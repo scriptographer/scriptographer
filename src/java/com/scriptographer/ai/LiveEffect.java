@@ -168,8 +168,8 @@ public class LiveEffect extends NativeObject {
 	/**
 	 * effects maps effectHandles to their wrappers.
 	 */
-	private static IntMap effects = new IntMap();
-	private static ArrayList unusedEffects = null;
+	private static IntMap<LiveEffect> effects = new IntMap<LiveEffect>();
+	private static ArrayList<LiveEffect> unusedEffects = null;
 
 	/**
 	 * Called from the native environment.
@@ -302,13 +302,13 @@ public class LiveEffect extends NativeObject {
 		return false;
 	}
 
-	private static ArrayList getUnusedEffects() {
+	private static ArrayList<LiveEffect> getUnusedEffects() {
 		if (unusedEffects == null)
 			unusedEffects = nativeGetEffects();
 		return unusedEffects;
 	}
 
-	private static native ArrayList nativeGetEffects();
+	private static native ArrayList<LiveEffect> nativeGetEffects();
 
 	/**
 	 * Call only from onEditParameters!
@@ -394,7 +394,8 @@ public class LiveEffect extends NativeObject {
 	/**
 	 * To be called from the native environment:
 	 */
-	private static void onEditParameters(int handle, Map parameters,
+	@SuppressWarnings("unused")
+	private static void onEditParameters(int handle, Map<String, Object> parameters,
 			int effectContext, boolean allowPreview) throws Exception {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
@@ -412,6 +413,7 @@ public class LiveEffect extends NativeObject {
 	/**
 	 * To be called from the native environment:
 	 */
+	@SuppressWarnings("unused")
 	private static int onCalculate(int handle, Map parameters, Item item)
 			throws Exception {
 		LiveEffect effect = getEffect(handle);
@@ -428,6 +430,7 @@ public class LiveEffect extends NativeObject {
 	/**
 	 * To be called from the native environment:
 	 */
+	@SuppressWarnings("unused")
 	private static int onGetInputType(int handle, Map parameters, Item item)
 			throws Exception {
 		LiveEffect effect = getEffect(handle);

@@ -45,13 +45,13 @@ import com.scriptographer.adm.TableLayout;
  */
 public class LayoutConverter extends ArgumentConverter {
 
-	private static HashMap flowLayoutAlignment = new HashMap();
+	private static HashMap<String, Integer> flowLayoutAlignment = new HashMap<String, Integer>();
 	static {
-		flowLayoutAlignment.put("left", new Integer(FlowLayout.LEFT));
-		flowLayoutAlignment.put("center", new Integer(FlowLayout.CENTER));
-		flowLayoutAlignment.put("right", new Integer(FlowLayout.RIGHT));
-		flowLayoutAlignment.put("leading", new Integer(FlowLayout.LEADING));
-		flowLayoutAlignment.put("trailing", new Integer(FlowLayout.TRAILING));
+		flowLayoutAlignment.put("left", FlowLayout.LEFT);
+		flowLayoutAlignment.put("center", FlowLayout.CENTER);
+		flowLayoutAlignment.put("right", FlowLayout.RIGHT);
+		flowLayoutAlignment.put("leading", FlowLayout.LEADING);
+		flowLayoutAlignment.put("trailing", FlowLayout.TRAILING);
 	}
 
 	public Object convert(ArgumentReader reader, Object from) {

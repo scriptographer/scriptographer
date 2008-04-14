@@ -93,11 +93,11 @@ abstract class NativeWrapper extends NativeObject {
 
 	// cash the factories for the various wrapper classes
 	// that use this base class
-	private static HashMap factories = new HashMap();
+	private static HashMap<Class, WrapperFactory> factories = new HashMap<Class, WrapperFactory>();
 
 	private static class WrapperFactory {
 		// use a SoftIntMap to keep track of already wrapped objects:
-		SoftIntMap wrappers = new SoftIntMap();
+		SoftIntMap<NativeWrapper> wrappers = new SoftIntMap<NativeWrapper>();
 
 		Constructor ctor;
 

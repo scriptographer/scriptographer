@@ -37,7 +37,8 @@ import com.scratchdisk.list.StringIndexReadOnlyList;
 /**
  * @author lehni
  */
-public class SymbolList extends AbstractReadOnlyList implements StringIndexReadOnlyList {
+public class SymbolList extends AbstractReadOnlyList<Symbol> implements
+		StringIndexReadOnlyList<Symbol> {
 	Document document;
 
 	protected SymbolList(Document document) {
@@ -52,21 +53,13 @@ public class SymbolList extends AbstractReadOnlyList implements StringIndexReadO
 
 	private static native int nativeGet(int docHandle, int index);
 
-	public Object get(int index) {
+	public Symbol get(int index) {
 		return Symbol.wrapHandle(nativeGet(document.handle, index), document);
 	}
 
 	private static native int nativeGet(int docHandle, String name);
 
-	public Object get(String name) {
+	public Symbol get(String name) {
 		return Symbol.wrapHandle(nativeGet(document.handle, name), document);
-	}
-
-	public Symbol getSymbol(int index) {
-		return (Symbol) get(index);
-	}
-
-	public Symbol getSymbol(String name) {
-		return (Symbol) get(name);
 	}
 }

@@ -36,11 +36,11 @@ package com.scratchdisk.list;
  * @author lehni 
  */
 public class Lists {
-	public static ExtendedList asList(Object[] array) {
-		return new ArrayList(array);
+	public static <T> ExtendedList<T> asList(T[] array) {
+		return new ArrayList<T>(array);
 	}
 
-	public static ExtendedList createSubList(ReadOnlyList list, int fromIndex, int toIndex) {
+	public static <T> ExtendedList<T> createSubList(ReadOnlyList<T> list, int fromIndex, int toIndex) {
 		if (fromIndex < 0)
 			throw new IndexOutOfBoundsException("fromIndex = " + fromIndex);
 		if (toIndex > list.size())
@@ -48,7 +48,7 @@ public class Lists {
 		if (fromIndex > toIndex)
 			throw new IllegalArgumentException("fromIndex(" + fromIndex + ") > toIndex(" + toIndex + ")");
 		
-		ArrayList subList = new ArrayList(toIndex - fromIndex);
+		ArrayList<T> subList = new ArrayList<T>(toIndex - fromIndex);
 		for (int i = fromIndex; i < toIndex; i++)
 			subList.add(list.get(i));
 		

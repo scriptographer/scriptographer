@@ -148,15 +148,13 @@ public class Path extends PathItem {
 	
 	public void setTabletData(float[][] data) {
 		// Convert to a TabletValue[] data array:
-		ArrayList values = new ArrayList();
+		ArrayList<TabletValue> values = new ArrayList<TabletValue>();
 		for (int i = 0; i < data.length; i++) {
 			float[] pair = data[i];
 			if (pair != null && pair.length >= 2)
 				values.add(new TabletValue(pair[0], pair[1]));
 		}
-		TabletValue[] tabletData = new TabletValue[values.size()];
-		values.toArray(tabletData);
-		setTabletData(tabletData);
+		setTabletData(values.toArray(new TabletValue[values.size()]));
 	}
 
 	public native float getLength(float flatness);
@@ -325,7 +323,7 @@ public class Path extends PathItem {
 		// the curves was missed:
 		if (length <= getLength(flatness)) {
 			Curve curve = (Curve) curves.get(curves.size - 1);
-			return new HitTest(HitTest.HIT_ANCHOR, curve, 1, curve.getPoint2());
+			return new HitTest(HitType.ANCHOR, curve, 1, curve.getPoint2());
 		} else {
 			return null;
 		}

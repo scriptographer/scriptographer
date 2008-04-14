@@ -44,11 +44,11 @@ import org.mozilla.javascript.Scriptable;
  *
  */
 public class ExtendedJavaArray extends NativeJavaArray {
-	HashMap properties;
+	HashMap<String, Object> properties;
 
 	public ExtendedJavaArray(Scriptable scope, Object array, Class staticType, boolean unsealed) {
 		super(scope, array);
-		properties = unsealed ? new HashMap() : null;
+		properties = unsealed ? new HashMap<String, Object>() : null;
 	}
 
 	public Object get(String name, Scriptable start) {

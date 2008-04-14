@@ -145,11 +145,4 @@ public class FillStyle implements Style {
 		}
 		this.overprint = overprint;
 	}
-
-	/*
-	 * For JDK 1.4
-	 */
-	public void setOverprint(boolean overprint) {
-		setOverprint(new Boolean(overprint));
-	}
 }

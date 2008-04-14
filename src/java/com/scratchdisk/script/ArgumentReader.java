@@ -153,7 +153,8 @@ public abstract class ArgumentReader {
 		return ConversionUtils.toString(readNext(name), defaultValue);
 	}
 
-	protected static IdentityHashMap converters = new IdentityHashMap(); 
+	protected static IdentityHashMap<Class, ArgumentConverter> converters =
+		new IdentityHashMap<Class, ArgumentConverter>(); 
 
 	public Object readObject(String name, Class type) {
 		Object obj = readNext(name);
@@ -221,8 +222,11 @@ public abstract class ArgumentReader {
 	 * @return true if the class has a map constructor, false otherwise.
 	 */
 	private static Constructor getArgumentReaderConstructor(Class type) {
-		return ClassUtils.getConstructor(type, new Class[] { ArgumentReader.class }, argumentReaderConstructors);
+		return ClassUtils.getConstructor(type,
+				new Class[] { ArgumentReader.class },
+				argumentReaderConstructors);
 	}
 
-    private static IdentityHashMap argumentReaderConstructors = new IdentityHashMap();
+    private static IdentityHashMap<Class, Constructor> argumentReaderConstructors =
+			new IdentityHashMap<Class, Constructor>();
 }

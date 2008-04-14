@@ -31,24 +31,24 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * AITextOrientation
  * 
  * @author lehni
  */
-public class TextOrientation extends NamedOption {
+public enum TextOrientation implements IntegerEnum {
+	HORIZONTAL(0),
+	VERTICAL(1);
 
-	public static final TextOrientation
-		HORIZONTAL	= new TextOrientation("horizontal", 	0),
-		VERTICAL 	= new TextOrientation("vertical", 		1);
+	protected int value;
 
-	private TextOrientation(String name, int value) {
-		super(name, value);
+	private TextOrientation(int value) {
+		this.value = value;
 	}
 
-	protected static TextOrientation get(int value) {
-		return (TextOrientation) get(TextOrientation.class, value);
+	public int value() {
+		return value;
 	}
 }

@@ -32,6 +32,8 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.script.ArgumentReader;
+import com.scratchdisk.util.IntegerEnumUtils;
+import com.scriptographer.script.EnumUtils;
 
 /**
  * @author lehni
@@ -87,8 +89,10 @@ public class StrokeStyle implements Style {
 				reader.readFloat("width"),
 				reader.readFloat("dashOffset"),
 				(float[]) reader.readObject("dashArray", float[].class),
-				StrokeCap.get(reader.readString("cap")),
-				StrokeJoin.get(reader.readString("join")),
+				(StrokeCap) EnumUtils.get(StrokeCap.class,
+						reader.readString("cap")),
+				(StrokeJoin) EnumUtils.get(StrokeJoin.class,
+						reader.readString("join")),
 				reader.readFloat("miterLimit")
 		);
 	}
@@ -131,8 +135,8 @@ public class StrokeStyle implements Style {
 		this.width = width >= 0 ? new Float(width) : null;
 		this.dashOffset = dashOffset >= 0 ? new Float(dashOffset) : null;
 		this.setDashArray(dashArray, false);
-		this.cap = StrokeCap.get(cap);
-		this.join = StrokeJoin.get(join);
+		this.cap = (StrokeCap) IntegerEnumUtils.get(StrokeCap.class, cap);
+		this.join = (StrokeJoin) IntegerEnumUtils.get(StrokeJoin.class, join);
 		this.miterLimit = miterLimit >= 0 ? new Float(miterLimit) : null;
 	}
 	
@@ -286,24 +290,5 @@ public class StrokeStyle implements Style {
 			style.markDirty();
 		}
 		this.miterLimit = miterLimit;
-	}
-
-	/*
-	 * For JDK 1.4
-	 */
-	public void setOverprint(boolean overprint) {
-		setOverprint(new Boolean(overprint));
-	}
-	
-	public void setWidth(float width) {
-		setWidth(new Float(width));
-	}
-	
-	public void setDashOffset(float offset) {
-		setDashOffset(new Float(offset));
-	}
-	
-	public void setMiterLimit(float miterLimit) {
-		setMiterLimit(new Float(miterLimit));
 	}
 }

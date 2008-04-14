@@ -31,25 +31,25 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * AutoKernType
  * 
  * @author lehni
  */
-public class KerningType extends NamedOption {
+public enum KerningType implements IntegerEnum {
+	MANUAL(0),
+	METRIC(1),
+	OPTICAL(2);
 
-	public static final KerningType
-		MANUAL		= new KerningType("manual",	0),
-		METRIC		= new KerningType("metric",	1),
-		OPTICAL		= new KerningType("optical",	2);
+	protected int value;
 
-	private KerningType(String name, int value) {
-		super(name, value);
+	private KerningType(int value) {
+		this.value = value;
 	}
 
-	protected static KerningType get(Object key) {
-		return (KerningType) get(KerningType.class, key);
+	public int value() {
+		return value;
 	}
 }

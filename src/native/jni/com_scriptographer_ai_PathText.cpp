@@ -39,7 +39,7 @@
 /*
  * int nativeCreate(int orientation, int artHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__II(JNIEnv *env, jclass cls, jint orientation, jint artHandle) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate(JNIEnv *env, jclass cls, jint orientation, jint artHandle) {
 	AIArtHandle art = NULL;
 
 	short paintOrder;
@@ -48,12 +48,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__II(JNIE
 	if (art == NULL)
 		throw new StringException("Cannot create text object. Please make sure there is an open document.");
 
-	return (jlong) art;
+	return (jint) art;
 }
 
 /*
  * int nativeCreate(int orientation, int artHandle, float x, float y)
- */
+ *
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__IIFF(JNIEnv *env, jclass cls, jint orientation, jint artHandle, jfloat x, jfloat y) {
 	AIArtHandle art = NULL;
 
@@ -64,8 +64,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__IIFF(JN
 	if (art == NULL)
 		throw new StringException("Cannot create text object. Please make sure there is an open document.");
 
-	return (jlong) art;
+	return (jint) art;
 }
+*/
 
 /*
  * float[] getPathRange()

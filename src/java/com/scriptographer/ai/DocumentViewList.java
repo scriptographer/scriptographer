@@ -36,7 +36,7 @@ import com.scratchdisk.list.AbstractReadOnlyList;
 /**
  * @author lehni
  */
-public class DocumentViewList extends AbstractReadOnlyList {
+public class DocumentViewList extends AbstractReadOnlyList<DocumentView> {
 	
 	private Document document;
 	
@@ -52,11 +52,7 @@ public class DocumentViewList extends AbstractReadOnlyList {
 		
 	private static native int nativeGet(int docHandle, int index);
 
-	public Object get(int index) {
+	public DocumentView get(int index) {
 		return DocumentView.wrapHandle(nativeGet(document.handle, index));
-	}
-
-	public DocumentView getView(int index) {
-		return (DocumentView) get(index);
 	}
 }

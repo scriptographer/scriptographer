@@ -50,7 +50,7 @@ public class Tool extends NativeObject {
 	private int index;
 	private int cursor;
 
-	private static IntMap tools = null;
+	private static IntMap<Tool> tools = null;
 
 	private float distanceThreshold;
 	
@@ -98,7 +98,7 @@ public class Tool extends NativeObject {
 		}
 	}
 
-	private static IntMap getTools() {
+	private static IntMap<Tool> getTools() {
 		if (tools == null)
 			tools = nativeGetTools();
 		return tools;
@@ -112,7 +112,7 @@ public class Tool extends NativeObject {
 	 * 
 	 * @return
 	 */
-	private static native IntMap nativeGetTools();
+	private static native IntMap<Tool> nativeGetTools();
 
 	public native boolean hasPressure();
 	
@@ -300,17 +300,18 @@ public class Tool extends NativeObject {
 	};
 	// Hashmap for conversation to unique ids that can be compared with ==
 	// instead of .equals
-	private static HashMap events = new HashMap();
+	private static HashMap<String, Integer> events = new HashMap<String, Integer>();
 
 	static {
 		for (int i = 0; i < eventTypes.length; i++)
-			events.put(eventTypes[i], new Integer(i));
+			events.put(eventTypes[i], i);
 	}
 
 	/**
 	 * To be called from the native environment. Returns the cursor
 	 * id to be set, if any.
 	 */
+	@SuppressWarnings("unused")
 	private static int onHandleEvent(int handle, String selector, float x,
 			float y, int pressure) throws Exception {
 		Tool tool = getToolByHandle(handle);

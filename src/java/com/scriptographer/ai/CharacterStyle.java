@@ -32,7 +32,9 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.script.ArgumentReader;
+import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
+import com.scriptographer.script.EnumUtils;
 
 /**
  * CharacterStyle is built on top of PathStyle and adds the text related fields
@@ -88,12 +90,18 @@ public class CharacterStyle extends PathStyle {
 		setTracking(reader.readInteger("tracking"));
 		setBaselineShift(reader.readFloat("baselineShift"));
 		setRotation(reader.readFloat("Rotation"));
-		setKerningType(KerningType.get(reader.readString("kerningType")));
-		setCapitalization(Capitalization.get(reader.readString("capitalization")));
-		setBaselineOption(BaselineOption.get(reader.readString("baselineOption")));
-		setOpenTypePosition(OpenTypePosition.get(reader.readString("openTypePosition")));
-		setStrikethroughPosition(StrikethroughPosition.get(reader.readInteger("strikethroughPosition")));
-		setUnderlinePosition(UnderlinePosition.get(reader.readInteger("underlinePosition")));
+		setKerningType((KerningType) EnumUtils.get(KerningType.class,
+				reader.readString("kerningType")));
+		setCapitalization((TextCapitalization) EnumUtils.get(TextCapitalization.class,
+				reader.readString("capitalization")));
+		setBaselineOption((BaselineOption) EnumUtils.get(BaselineOption.class,
+				reader.readString("baselineOption")));
+		setOpenTypePosition((OpenTypePosition) EnumUtils.get(OpenTypePosition.class,
+				reader.readString("openTypePosition")));
+		setStrikethroughPosition((StrikethroughPosition) EnumUtils.get(StrikethroughPosition.class,
+				reader.readString("strikethroughPosition")));
+		setUnderlinePosition((UnderlinePosition) EnumUtils.get(UnderlinePosition.class,
+				reader.readString("underlinePosition")));
 		setUnderlineOffset(reader.readFloat("underlineOffset"));
 		setLigature(reader.readBoolean("ligature"));
 		setDiscretionaryLigature(reader.readBoolean("discretionaryLigature"));
@@ -107,7 +115,8 @@ public class CharacterStyle extends PathStyle {
 		setConnectionForms(reader.readBoolean("forms"));
 		setStylisticAlternates(reader.readBoolean("stylisticAlternates"));
 		setOrnaments(reader.readBoolean("ornaments"));
-		setFigureStyle(FigureStyle.get(reader.readString("figureStyle")));
+		setFigureStyle((FigureStyle) EnumUtils.get(FigureStyle.class,
+				reader.readString("figureStyle")));
 		setNoBreak(reader.readBoolean("noBreak"));
 	}
 
@@ -323,11 +332,12 @@ public class CharacterStyle extends PathStyle {
 	 * @jsbean </pre>
 	 */
 	public KerningType getKerningType() {
-		return KerningType.get(nativeGetKerningType());
+		return (KerningType) IntegerEnumUtils.get(KerningType.class,
+				nativeGetKerningType());
 	}
 
 	public void setKerningType(KerningType type) {
-		nativeSetKerningType(type != null ? type.toInteger() : null);
+		nativeSetKerningType(type != null ? type.value : null);
 	}
 	
 	/**
@@ -345,56 +355,58 @@ public class CharacterStyle extends PathStyle {
 	private native Integer nativeGetCapitalization();
 	private native void nativeSetCapitalization(Integer caps);
 
-	public Capitalization getCapitalization() {
-		return Capitalization.get(nativeGetCapitalization());
+	public TextCapitalization getCapitalization() {
+		return IntegerEnumUtils.get(TextCapitalization.class, nativeGetCapitalization());
 	}
 
-	public void setCapitalization(Capitalization type) {
-		nativeSetCapitalization(type != null ? type.toInteger() : null);
+	public void setCapitalization(TextCapitalization type) {
+		nativeSetCapitalization(type != null ? type.value : null);
 	}
 
 	private native Integer nativeGetBaselineOption();
 	private native void nativeSetBaselineOption(Integer option);
 	
 	public BaselineOption getBaselineOption() {
-		return BaselineOption.get(nativeGetBaselineOption());
+		return IntegerEnumUtils.get(BaselineOption.class, nativeGetBaselineOption());
 	}
 
 	public void setBaselineOption(BaselineOption type) {
-		nativeSetBaselineOption(type != null ? type.toInteger() : null);
+		nativeSetBaselineOption(type != null ? type.value : null);
 	}
 
 	private native Integer nativeGetOpenTypePosition();
 	private native void nativeSetOpenTypePosition(Integer position);
 
 	public OpenTypePosition getOpenTypePosition() {
-		return OpenTypePosition.get(nativeGetOpenTypePosition());
+		return IntegerEnumUtils.get(OpenTypePosition.class, nativeGetOpenTypePosition());
 	}
 
 	public void setOpenTypePosition(OpenTypePosition type) {
-		nativeSetOpenTypePosition(type != null ? type.toInteger() : null);
+		nativeSetOpenTypePosition(type != null ? type.value : null);
 	}
 
 	private native Integer nativeGetStrikethroughPosition();
 	private native void nativeSetStrikethroughPosition(Integer position);
 	
 	public StrikethroughPosition getStrikethroughPosition() {
-		return StrikethroughPosition.get(nativeGetStrikethroughPosition());
+		return (StrikethroughPosition) IntegerEnumUtils.get(StrikethroughPosition.class,
+				nativeGetStrikethroughPosition());
 	}
 
 	public void setStrikethroughPosition(StrikethroughPosition type) {
-		nativeSetStrikethroughPosition(type != null ? type.toInteger() : null);
+		nativeSetStrikethroughPosition(type != null ? type.value : null);
 	}
 
 	private native Integer nativeGetUnderlinePosition();
 	private native void nativeSetUnderlinePosition(Integer position);
 
 	public UnderlinePosition getUnderlinePosition() {
-		return UnderlinePosition.get(nativeGetUnderlinePosition());
+		return (UnderlinePosition) IntegerEnumUtils.get(UnderlinePosition.class,
+				nativeGetUnderlinePosition());
 	}
 
 	public void setUnderlinePosition(UnderlinePosition type) {
-		nativeSetUnderlinePosition(type != null ? type.toInteger() : null);
+		nativeSetUnderlinePosition(type != null ? type.value : null);
 	}
 	
 	public native Float getUnderlineOffset();
@@ -444,11 +456,12 @@ public class CharacterStyle extends PathStyle {
 	private native void nativeSetFigureStyle(Integer caps);
 
 	public FigureStyle getFigureStyle() {
-		return FigureStyle.get(nativeGetFigureStyle());
+		return (FigureStyle) IntegerEnumUtils.get(FigureStyle.class,
+				nativeGetFigureStyle());
 	}
 
 	public void setFigureStyle(FigureStyle type) {
-		nativeSetFigureStyle(type != null ? type.toInteger() : null);
+		nativeSetFigureStyle(type != null ? type.value : null);
 	}
 
 	public native Boolean getNoBreak();

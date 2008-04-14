@@ -321,23 +321,4 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		this.resolution = resolution;
 		markDirty();
 	}
-	
-	/*
-	 * For JDK 1.4
-	 */
-	public void setClip(boolean clip) {
-		setClip(new Boolean(clip));
-	}
-
-	public void setLockClip(boolean lockClip) {
-		setLockClip(new Boolean(lockClip));
-	}
-
-	public void setEvenOdd(boolean evenOdd) {
-		setEvenOdd(new Boolean(evenOdd));
-	}
-
-	public void setResolution(float resolution) {
-		setResolution(new Float(resolution));
-	}
 }

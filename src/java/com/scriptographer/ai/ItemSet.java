@@ -40,19 +40,19 @@ import com.scratchdisk.list.Lists;
 /**
  * @author lehni
  */
-public class ItemSet extends ArrayList {
-	HashMap map;
+public class ItemSet extends ArrayList<Item> {
+	HashMap<Item, Item> map;
 
 	public ItemSet() {
-		map = new HashMap();
+		map = new HashMap<Item, Item>();
 	}
 
-	public ItemSet(ExtendedList items) {
+	public ItemSet(ExtendedList<Item> items) {
 		this();
 		addAll(items);
 	}
 
-	public ItemSet(Object[] items) {
+	public ItemSet(Item[] items) {
 		this(Lists.asList(items));
 	}
 
@@ -66,20 +66,18 @@ public class ItemSet extends ArrayList {
 	 * @param item
 	 * @return true if the item was added to the set.
 	 */
-	public Object add(int index, Object item) {
-		if (item instanceof Item) {
-			if (map.get(item) == null) {
-				if (super.add(index, item) != null) {
-					map.put(item, item);
-					return item;
-				}
+	public Item add(int index, Item item) {
+		if (map.get(item) == null) {
+			if (super.add(index, item) != null) {
+				map.put(item, item);
+				return item;
 			}
 		}
 		return null;
 	}
 
-	public Object remove(int index) {
-		Object obj = super.remove(index);
+	public Item remove(int index) {
+		Item obj = super.remove(index);
 		if (obj != null)
 			map.remove(obj);
 		return obj;

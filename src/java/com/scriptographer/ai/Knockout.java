@@ -31,27 +31,26 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * AIKnockout
  * 
  * @author lehni
  */
-public class Knockout extends NamedOption {
+public enum Knockout implements IntegerEnum {
+	UNKNOWN(-1),
+	OFF(0),
+	ON(1),
+	INHERIT(2);
 
-	public static final Knockout
-		UNKNOWN		= new Knockout("unknown",	-1),
-		OFF			= new Knockout("off",		0),
-		ON 			= new Knockout("on", 		1),
-		INHERIT		= new Knockout("inherit", 	2);
+	protected int value;
 
-
-	private Knockout(String name, int value) {
-		super(name, value);
+	private Knockout(int value) {
+		this.value = value;
 	}
 
-	protected static Knockout get(int value) {
-		return (Knockout) get(Knockout.class, value);
+	public int value() {
+		return value;
 	}
 }

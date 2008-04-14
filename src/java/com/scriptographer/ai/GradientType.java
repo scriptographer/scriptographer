@@ -31,23 +31,23 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * @author lehni
  *
  */
-public class GradientType extends NamedOption {
-	
-	public static final GradientType
-		LINEAR = new GradientType("linear", 0),
-		RADIAL = new GradientType("radial", 1);
+public enum GradientType implements IntegerEnum {
+	LINEAR(0),
+	RADIAL(1);
 
-	private GradientType(String name, int value) {
-		super(name, value);
+	protected int value;
+
+	private GradientType(int value) {
+		this.value = value;
 	}
 
-	protected static GradientType get(int value) {
-		return (GradientType) get(GradientType.class, value);
+	public int value() {
+		return value;
 	}
 }

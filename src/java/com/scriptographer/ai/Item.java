@@ -32,9 +32,11 @@
 package com.scriptographer.ai;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 import com.scratchdisk.list.List;
 import com.scratchdisk.list.Lists;
+import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
 
@@ -55,7 +57,7 @@ public abstract class Item extends DictionaryObject {
 	
 	// internal hash map that keeps track of already wrapped objects. defined
 	// as soft.
-	private static SoftIntMap items = new SoftIntMap();
+	private static SoftIntMap<Item> items = new SoftIntMap<Item>();
 	
 	/* TODO: needed?
 	// The same, but for the children of one object, and not weak,
@@ -126,32 +128,6 @@ public abstract class Item extends DictionaryObject {
 		// Lehni: self defined type for layer groups:
 		TYPE_LAYER = 100,
 		TYPE_TRACING = 101;
-
-	public static final int 
-		TRANSFORM_OBJECTS			= 1 << 0,
-		TRANSFORM_FILL_GRADIENTS	= 1 << 1,
-		TRANSFORM_FILL_PATTERNS		= 1 << 2,
-		TRANSFORM_STROKE_PATTERNS	= 1 << 3,
-		TRANSFORM_LINES				= 1 << 4,
-		TRANSFORM_LINKED_MASKS		= 1 << 5,
-		TRANSFORM_CHILDREN			= 1 << 6,
-		TRANSFORM_SELECTION_ONLY	= 1 << 7;
-	
-	// AIExpandFlagValue:
-	public static final int
-		EXPAND_PLUGINART	    = 0x0001,
-		EXPAND_TEXT			    = 0x0002,
-		EXPAND_STROKE		    = 0x0004,
-		EXPAND_PATTERN		    = 0x0008,
-		EXPAND_GRADIENTTOMESH   = 0x0010,
-		EXPAND_GRADIENTTOPATHS	= 0x0020,
-		EXPAND_SYMBOLINSTANCES	= 0x0040,
-	
-		EXPAND_ONEATATIME	    = 0x4000,
-		EXPAND_SHOWPROGRESS	    = 0x8000,
-		// By default objects that are locked such as those on a locked layer
-		// cannot be expanded. Setting this flag allows them to be expanded.
-		EXPAND_LOCKEDOBJECTS    = 0x10000;
 
 	/**
 	 * Creates an item that wraps an existing AIArtHandle. Make sure the
@@ -427,15 +403,13 @@ public abstract class Item extends DictionaryObject {
 	 * @jsbean An array of items contained within this item
 	 */
 	public Item[] getChildren() {
-		ArrayList list = new ArrayList();
+		ArrayList<Item> list = new ArrayList<Item>();
 		Item child = getFirstChild();
 		while (child != null) {
 			list.add(child);
 			child = child.getNextSibling();
 		}
-		Item[] children = new Item[list.size()];
-		list.toArray(children);
-		return children;
+		return list.toArray(new Item[list.size()]);
 	}
 
 	public void setChildren(List elements) {
@@ -690,7 +664,7 @@ public abstract class Item extends DictionaryObject {
 	}
 
 	public void setClipMask(boolean clipMask) {
-		setAttribute(ItemAttribute.IS_CLIPMASK, clipMask);
+		setAttribute(ItemAttribute.CLIPMASK, clipMask);
 	}
 
 	/**
@@ -714,10 +688,11 @@ public abstract class Item extends DictionaryObject {
 	private native void nativeSetBlendMode(int mode);
 
 	public BlendMode getBlendMode() {
-		return BlendMode.get(nativeGetBlendMode());
+		return (BlendMode) IntegerEnumUtils.get(BlendMode.class,
+				nativeGetBlendMode());
 	}
 
-	void setBlendMode(BlendMode blend) {
+	public void setBlendMode(BlendMode blend) {
 		nativeSetBlendMode(blend.value);
 	}
 
@@ -737,7 +712,8 @@ public abstract class Item extends DictionaryObject {
 	private native void nativeSetKnockout(int knockout);
 
 	public Knockout getKnockout(boolean inherited) {
-		return Knockout.get(nativeGetKnockout(inherited));
+		return (Knockout) IntegerEnumUtils.get(Knockout.class,
+				nativeGetKnockout(inherited));
 	}
 
 	public Knockout getKnockout() {
@@ -800,22 +776,29 @@ public abstract class Item extends DictionaryObject {
 	 */
 	public native boolean moveBelow(Item item);
 
+	private native void nativeTransform(Matrix matrix, int flags);
 	/**
 	 * Transforms the item with custom flags to be set.
 	 * 
 	 * @param at
-	 * @param flags Item.TRANSFORM_*
+	 * @param flags
 	 */
-	public native void transform(Matrix matrix, int flags);
+	public void transform(Matrix matrix, EnumSet<TransformFlag> flags) {
+		nativeTransform(matrix, IntegerEnumUtils.getFlags(flags));
+	}
+
+	private static int defaultTransformFlags =
+			IntegerEnumUtils.getFlags(EnumSet.of(TransformFlag.OBJECTS,
+					TransformFlag.CHILDREN));
 
 	/**
-	 * Transforms the item with the flags Item.TRANSFORM_OBJECTS and
-	 * Item.TRANSFORM_DEEP set
+	 * Transforms the item with the flags TransformFlag.OBJECTS, and
+	 * TransformFlag.CHILDREN set
 	 * 
 	 * @param matrix
 	 */
 	public void transform(Matrix matrix) {
-		transform(matrix, TRANSFORM_OBJECTS | TRANSFORM_CHILDREN);
+		nativeTransform(matrix, defaultTransformFlags);
 	}
 
 	protected Matrix centered(Matrix matrix) {
@@ -925,20 +908,20 @@ public abstract class Item extends DictionaryObject {
 		return rasterize(-1, 0, 4, -1, -1);
 	}
 
-	public HitTest hitTest(Point point, int type, float tolerance) {
-		return document.nativeHitTest(point, type, tolerance, this);
+	public HitTest hitTest(Point point, HitRequest type, float tolerance) {
+		return document.nativeHitTest(point, (type != null ? type
+				: HitRequest.ALL).value, tolerance, this);
 	}
 
-	public HitTest hitTest(Point point, int type) {
-		return document.nativeHitTest(point, type,
-				HitTest.DEFAULT_TOLERANCE, this);
+	public HitTest hitTest(Point point, HitRequest type) {
+		return hitTest(point, type, HitTest.DEFAULT_TOLERANCE);
 	}
 
 	public HitTest hitTest(Point point) {
-		return document.nativeHitTest(point, HitTest.TEST_ALL,
-				HitTest.DEFAULT_TOLERANCE, this);
+		return hitTest(point, HitRequest.ALL, HitTest.DEFAULT_TOLERANCE);
 	}
-	
+
+	private native Item nativeExpand(int flags, int steps);
 	/**
 	 * Breaks artwork up into individual parts and works just like calling
 	 * "expand" from the Object menu in Illustrator.
@@ -948,28 +931,39 @@ public abstract class Item extends DictionaryObject {
 	 * The item itself is removed, and the newly created item containing the
 	 * expanded artwork is returned.
 	 * 
-	 * @param flags #EXPAND_*
+	 * @param flags
 	 * @param steps the amount of steps for gradient, when the
-	 *        #EXPAND_GRADIENTTOPATHS flag is set
+	 *        ExpandFlag#GRADIENT_TO_PATHS flag is set
 	 * @return the newly created item containing the expanded artwork
 	 */
-	public native Item expand(int flags, int steps);
+	public Item expand(EnumSet<ExpandFlag> flags, int steps) {
+		return nativeExpand(IntegerEnumUtils.getFlags(flags), steps);
+	}
+
+	public Item expand(EnumSet<ExpandFlag> flags) {
+		return expand(flags, 0);
+	}
+
+	private static int defaultExpandFlags =
+		IntegerEnumUtils.getFlags(EnumSet.of(ExpandFlag.PLUGIN_ART,
+				ExpandFlag.TEXT, ExpandFlag.STROKE, ExpandFlag.PATTERN,
+				ExpandFlag.SYMBOL_INSTANCES));
 
 	/**
-	 * Calls {@link #expand(int, int)} with these flags set: #EXPAND_PLUGINART,
-	 * #EXPAND_TEXT, #EXPAND_STROKE, #EXPAND_PATTERN, #EXPAND_SYMBOLINSTANCES
+	 * Calls {@link #expand(int, int)} with these flags set: ExpandFlag#PLUGIN_ART,
+	 * ExpandFlag#TEXT, ExpandFlag#STROKE, ExpandFlag#PATTERN, ExpandFlag#SYMBOL_INSTANCES
 	 * 
 	 * @return the newly created item containing the expanded artwork
 	 */
 	public Item expand() {
-		return expand(EXPAND_PLUGINART | EXPAND_TEXT | EXPAND_STROKE |
-				EXPAND_PATTERN | EXPAND_SYMBOLINSTANCES, 0);
+		return nativeExpand(defaultExpandFlags, 0);
 	}
 
 	protected native int nativeGetOrder(Item item);
 
 	public ItemOrder getOrder(Item item) {
-		return ItemOrder.get(nativeGetOrder(item));
+		return (ItemOrder) IntegerEnumUtils.get(ItemOrder.class,
+				nativeGetOrder(item));
 	}
 
 	/**

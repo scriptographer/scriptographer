@@ -26,7 +26,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.ArrayList;
 
 /**
  *  Hashtable-based map with integer keys that allows values to be removed 
@@ -44,25 +43,35 @@ import java.util.ArrayList;
  *
  *  @see java.lang.ref.Reference
  */
-public class IntMap extends AbstractMap {
 
-	protected static class Entry {
+public class IntMap<V> extends AbstractMap<Integer, V> {
+
+	protected static class Entry<V> implements Map.Entry<Integer, V>{
 		protected int key;
-		protected Entry next;
-		
+		protected Entry<V> next;
 		/**
 		 * Reference value.  Note this can never be null.
 		 */
-		protected Object value;
+		protected V value;
 
-		public Entry(int key, Object value, Entry next) {
+		public Entry(int key, V value, Entry<V> next) {
 			this.key = key;
 			this.value = value;
 			this.next = next;
 		}
 
-		public Object getValue() {
+		public V getValue() {
 			return value;
+		}
+
+		public Integer getKey() {
+			return key;
+		}
+
+		public V setValue(V value) {
+			V prev = this.value;
+			this.value = value;
+			return prev;
 		}
 	}
 
@@ -85,7 +94,7 @@ public class IntMap extends AbstractMap {
 	/**
 	 *  The hash table.  Its length is always a power of two.  
 	 */
-	transient Entry[] table;
+	transient Entry<V>[] table;
 
 	/**
 	 *  When size reaches threshold, the map is resized.  
@@ -101,18 +110,18 @@ public class IntMap extends AbstractMap {
 	/**
 	 * Cached key set. May be null if key set is never accessed.
 	 */
-	transient Set keySet;
+	transient Set<Integer> keySet;
 
 
     /**
 	 * Cached entry set. May be null if entry set is never accessed.
 	 */
-	transient Set entrySet;
+	transient Set<Map.Entry<Integer, V>> entrySet;
 
 	/**
 	 * Cached values. May be null if values() is never accessed.
 	 */
-	transient Collection values;
+	transient Collection<V> values;
 
     /**
      * Constructs a new <Code>IntMap</Code>
@@ -128,6 +137,7 @@ public class IntMap extends AbstractMap {
 	 *  @param capacity  the initial capacity for the map
 	 *  @param loadFactor  the load factor for the map
 	 */
+	@SuppressWarnings("unchecked")
 	public IntMap(int capacity, float loadFactor) {
 		super();
 		if (capacity <= 0)
@@ -148,10 +158,10 @@ public class IntMap extends AbstractMap {
 	 * @param key
 	 * @return
 	 */
-	protected Object doRemove(int key) {
+	protected V doRemove(int key) {
 		int index = indexFor(key);
-		Entry previous = null;
-		Entry entry = table[index];
+		Entry<V> previous = null;
+		Entry<V> entry = table[index];
 		while (entry != null) {
 			if (key == entry.key) {
 				if (previous == null)
@@ -190,8 +200,8 @@ public class IntMap extends AbstractMap {
      *  @return  the entry associated with that key, or null
      *    if the key is not in this map
      */
-	public Entry getEntry(int key) {
-		for (Entry entry = table[indexFor(key)]; entry != null; entry = entry.next)
+	public Entry<V> getEntry(int key) {
+		for (Entry<V> entry = table[indexFor(key)]; entry != null; entry = entry.next)
 			if (entry.key == key)
 				return entry;
 		return null;
@@ -238,9 +248,9 @@ public class IntMap extends AbstractMap {
 	 *  @return the value associated with the given key, or <Code>null</Code>
 	 *   if the key maps to no value
 	 */
-	public Object get(int key) {
+	public V get(int key) {
         purge();
-        Entry entry = getEntry(key);
+        Entry<V> entry = getEntry(key);
         if (entry == null) return null;
         return entry.getValue();
 	}
@@ -248,8 +258,8 @@ public class IntMap extends AbstractMap {
 	/**
 	 * java.util.Map compatible version of get
 	 */
-	public Object get(Object key) {
-		return key instanceof Number ? get(((Number) key).intValue()) : null;
+	public V get(Integer key) {
+		return get(key.intValue());
 	}
 
 	/**
@@ -260,8 +270,8 @@ public class IntMap extends AbstractMap {
 	 * @param next The next value in the entry's collision chain
 	 * @return The new table entry
 	 */
-	protected Entry createEntry(int key, Object value, Entry next) {
-		return new Entry(key, value, next);
+	protected Entry<V> createEntry(int key, V value, Entry<V> next) {
+		return new Entry<V>(key, value, next);
 	}
 	
 	/**
@@ -273,7 +283,7 @@ public class IntMap extends AbstractMap {
 	 * @param value the value of the mapping
 	 * @throws NullPointerException if either the key or value is null
 	 */
-	public Object put(int key, Object value) {
+	public V put(int key, V value) {
 		if (value == null)
 			throw new NullPointerException("null values not allowed");
 
@@ -283,11 +293,11 @@ public class IntMap extends AbstractMap {
 			resize();
 
 		int index = indexFor(key);
-		Entry previous = null;
-		Entry entry = table[index];
+		Entry<V> previous = null;
+		Entry<V> entry = table[index];
 		while (entry != null) {
 			if (key == entry.key) {
-				Object result = entry.getValue();
+				V result = entry.getValue();
 				if (previous == null)
 					table[index] = createEntry(key, value, entry.next);
 				else
@@ -304,10 +314,8 @@ public class IntMap extends AbstractMap {
 		return null;
 	}
 
-	public Object put(Object key, Object value) {
-		if (key instanceof Number)
-			return put(((Number) key).intValue(), value);
-		return null;
+	public V put(Integer key, V value) {
+		return put(key.intValue(), value);
 	}
 
 	/**
@@ -317,15 +325,13 @@ public class IntMap extends AbstractMap {
 	 * @return the value associated with that key, or null if the key was not in
 	 * the map
 	 */
-	public Object remove(int key) {
+	public V remove(int key) {
 		purge();
 		return doRemove(key);
 	}
 	
-	public Object remove(Object key) {
-		if (key instanceof Number)
-			return remove(((Number) key).intValue());
-		return null;
+	public V remove(Integer key) {
+		return remove(key.intValue());
 	}
 
     /**
@@ -342,14 +348,15 @@ public class IntMap extends AbstractMap {
 	 *  be copied from the old smaller table to the new 
 	 *  bigger table.
 	 */
+	@SuppressWarnings("unchecked")
 	private void resize() {
-		Entry[] old = table;
+		Entry<V>[] old = table;
 		table = new Entry[old.length * 2];
 
 		for (int i = 0; i < old.length; i++) {
-			Entry next = old[i];
+			Entry<V> next = old[i];
 			while (next != null) {
-				Entry entry = next;
+				Entry<V> entry = next;
 				next = next.next;
 				int index = indexFor(entry.key);
 				entry.next = table[index];
@@ -365,10 +372,10 @@ public class IntMap extends AbstractMap {
 	 * 
 	 * @return a set view of this map's entries
 	 */
-	public Set entrySet() {
+	public Set<Map.Entry<Integer, V>> entrySet() {
 		if (entrySet != null)
 			return entrySet;
-		entrySet = new AbstractSet() {
+		entrySet = new AbstractSet<Map.Entry<Integer, V>>() {
 			public int size() {
 				return IntMap.this.size();
 			}
@@ -402,22 +409,12 @@ public class IntMap extends AbstractMap {
 				return r;
 			}
 
-			public Iterator iterator() {
+			public Iterator<Map.Entry<Integer, V>> iterator() {
 				return new EntryIterator();
 			}
 
 			public Object[] toArray() {
 				return toArray(new Object[0]);
-			}
-
-			public Object[] toArray(Object[] arr) {
-				ArrayList list = new ArrayList();
-				Iterator iterator = iterator();
-				while (iterator.hasNext()) {
-					Entry e = (Entry) iterator.next();
-					list.add(new DefaultMapEntry(e.key, e.getValue()));
-				}
-				return list.toArray(arr);
 			}
 		};
 		return entrySet;
@@ -428,15 +425,15 @@ public class IntMap extends AbstractMap {
 	 *
 	 *  @return a set view of this map's keys
 	 */
-	public Set keySet() {
+	public Set<Integer> keySet() {
 		if (keySet != null)
 			return keySet;
-		keySet = new AbstractSet() {
+		keySet = new AbstractSet<Integer>() {
 			public int size() {
 				return size;
 			}
 
-			public Iterator iterator() {
+			public Iterator<Integer> iterator() {
 				return new KeyIterator();
 			}
 
@@ -461,10 +458,10 @@ public class IntMap extends AbstractMap {
 	 *
 	 *  @return a collection view of this map's values.
 	 */
-	public Collection values() {
+	public Collection<V> values() {
 		if (values != null)
 			return values;
-		values = new AbstractCollection() {
+		values = new AbstractCollection<V>() {
 			public int size() {
 				return size;
 			}
@@ -473,18 +470,18 @@ public class IntMap extends AbstractMap {
 				IntMap.this.clear();
 			}
 
-			public Iterator iterator() {
+			public Iterator<V> iterator() {
 				return new ValueIterator();
 			}
 		};
 		return values;
 	}
 
-	private class EntryIterator implements Iterator {
+	private abstract class AbstractIterator<E> implements Iterator<E> {
 		// These fields keep track of where we are in the table.
 		int index;
-		Entry entry;
-		Entry previous;
+		Entry<V> entry;
+		Entry<V> previous;
 
 		// These Object fields provide hard references to the
 		// current and next entry; this assures that if hasNext()
@@ -494,7 +491,7 @@ public class IntMap extends AbstractMap {
 
 		int expectedModCount;
 
-		public EntryIterator() {
+		public AbstractIterator() {
 			index = (size() != 0 ? table.length : 0);
 			// have to do this here!  size() invocation above
 			// may have altered the modCount.
@@ -504,7 +501,7 @@ public class IntMap extends AbstractMap {
 		public boolean hasNext() {
 			checkMod();
 			while (nextNull()) {
-				Entry e = entry;
+				Entry<V> e = entry;
 				int i = index;
 				while ((e == null) && (i > 0)) {
 					i--;
@@ -535,7 +532,7 @@ public class IntMap extends AbstractMap {
 			return (nextKey == -1) || (nextValue == null);
 		}
 
-		protected Entry nextEntry() {
+		protected Entry<V> nextEntry() {
 			checkMod();
 			if (nextNull() && !hasNext())
 				throw new NoSuchElementException();
@@ -548,10 +545,6 @@ public class IntMap extends AbstractMap {
 			return previous;
 		}
 
-		public Object next() {
-			return nextEntry();
-		}
-
 		public void remove() {
 			checkMod();
 			if (previous == null)
@@ -562,114 +555,23 @@ public class IntMap extends AbstractMap {
 			currentValue = null;
 			expectedModCount = modCount;
 		}
-
 	}
 
-	private class ValueIterator extends EntryIterator {
-		public Object next() {
+	private class EntryIterator extends AbstractIterator<Map.Entry<Integer, V>> {
+		public Map.Entry<Integer, V> next() {
+			return nextEntry();
+		}
+	}
+
+	private class ValueIterator extends AbstractIterator<V> {
+		public V next() {
 			return nextEntry().getValue();
 		}
 	}
 
-	private class KeyIterator extends EntryIterator {
-		public Object next() {
+	private class KeyIterator extends AbstractIterator<Integer> {
+		public Integer next() {
 			return new Integer(nextEntry().key);
 		}
-	}
-
-	/** A default implementation of {@link java.util.Map.Entry}
-	 *
-	 * @since 1.0
-	 * @author <a href="mailto:jstrachan@apache.org">James Strachan</a>
-	 * @author <a href="mailto:mas@apache.org">Michael A. Smith</a>
-	 */
-
-	private class DefaultMapEntry implements Map.Entry {
-		private int key;
-		private Object value;
-
-		/**
-		 *  Constructs a new <Code>DefaultMapEntry</Code> with a null key
-		 *  and null value.
-		 */
-		DefaultMapEntry() {
-		}
-
-		/**
-		 *  Constructs a new <Code>DefaultMapEntry</Code> with the given
-		 *  key and given value.
-		 *
-		 *  @param key  the key for the entry, may be null
-		 *  @param value  the value for the entyr, may be null
-		 */
-		DefaultMapEntry(int key, Object value) {
-			this.key = key;
-			this.value = value;
-		}
-
-		/**
-		 *  Implemented per API documentation of
-		 *  {@link java.util.Map.Entry#equals(java.lang.Object)}
-		 **/
-		public boolean equals(Object o) {
-			if (o == null)
-				return false;
-			if (o == this)
-				return true;
-
-			if (!(o instanceof Map.Entry))
-				return false;
-			Map.Entry e2 = (Map.Entry) o;
-			return ((getKey() == null ? e2.getKey() == null : getKey().equals(e2.getKey())) && (getValue() == null ? e2.getValue() == null
-				: getValue().equals(e2.getValue())));
-		}
-
-		/**
-		 *  Implemented per API documentation of
-		 *  {@link java.util.Map.Entry#hashCode()}
-		 **/
-		public int hashCode() {
-			return ((getKey() == null ? 0 : getKey().hashCode()) ^ (getValue() == null ? 0 : getValue().hashCode()));
-		}
-
-		/**
-		 *  Returns the key.
-		 *
-		 *  @return the key
-		 */
-		public Object getKey() {
-			return new Integer(key);
-		}
-
-		/**
-		 *  Returns the value.
-		 *
-		 *  @return the value
-		 */
-		public Object getValue() {
-			return value;
-		}
-
-		/**
-		 *  Sets the key.  This method does not modify any map.
-		 *
-		 *  @param key  the new key
-		 */
-		public void setKey(int key) {
-			this.key = key;
-		}
-
-		/** Note that this method only sets the local reference inside this object and
-		 * does not modify the original Map.
-		 *
-		 * @return the old value of the value
-		 * @param value the new value
-		 */
-		public Object setValue(Object value) {
-			Object answer = this.value;
-			this.value = value;
-			return answer;
-		}
-
 	}
 }

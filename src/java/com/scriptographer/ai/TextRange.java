@@ -40,34 +40,18 @@ import com.scratchdisk.list.ArrayList;
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
+import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
  * @author lehni
  */
 public class TextRange extends NativeObject implements Commitable {
-
-	// CaseChangeType
-	public static final int CASE_UPPER = 0;
-	public static final int CASE_LOWER = 1;
-	public static final int CASE_TITLE = 2;
-	public static final int CASE_SENTENCE = 3;
-
-	// ASCharType
-	/** undefined character */
-	public static final int CHAR_UNDEFINED = -1;
-	/** space character */
-	public static final int CHAR_SPACE = 0;
-	/** punctuation character */
-	public static final int CHAR_PUNCTUATION = 1;
-	/** paragraph end character CR */
-	public static final int CHAR_PARAGRAPH_END = 2;
-	/** this character is anything but space, punctuation or paragraphend */
-	public static final int CHAR_NORMAL = 3;
 	
 	// values for the native environment,
 	// to cash glyph run references, once their
 	// found. these values need to be cleared in
 	// setStart, setEnd ,setRange and finalize
+	@SuppressWarnings("unused")
 	private int glyphRuns;
 	
 	protected Document document;
@@ -149,13 +133,13 @@ public class TextRange extends NativeObject implements Commitable {
 	 */
 	public native TextFrame getLastFrame();
 	
-	public ReadOnlyList getFrames() {
+	public ReadOnlyList<TextFrame> getFrames() {
 		TextFrame frame = getFirstFrame();
 		TextFrame lastFrame = getLastFrame();
 		if (frame != null) {
 			if (lastFrame == null)
 				lastFrame = frame;
-			ArrayList list = new ArrayList();
+			ArrayList<TextFrame> list = new ArrayList<TextFrame>();
 			do {
 				list.add(frame);
 				frame = frame.getNextFrame();
@@ -421,11 +405,17 @@ public class TextRange extends NativeObject implements Commitable {
 		return getStory().getRange(index + start, index + end);
 	}
 
+	private native boolean nativeChangeCase(int change);
+
 	/**
 	 * Changes the case of the text in the text range.
-	 * @param type TextRange.CASE_*
+	 * @param change
 	 */
-	public native void changeCase(int type);
+	public boolean changeCase(TextCase change) {
+		if (change != null)
+			return nativeChangeCase(change.value);
+		return false;
+	}
 	
 	/**
 	 * Adjusts the tracking of the text in the text range to fit on one line
@@ -433,14 +423,17 @@ public class TextRange extends NativeObject implements Commitable {
 	 */
 	public native void fitHeadlines();
 	
+	private native int nativeGetCharacterType();
 	/**
 	 * Returns the character type of the text range.
-	 * This range has to be of size equal to 1, any other size will throw error
-	 * (kBadParameter)
+	 * This range has to be of size equal to 1 character.
 	 * 
 	 * @return TextRange.CHAR_*
 	 */
-	public native int getCharacterType();
+	public CharacterType getCharacterType() {
+		return IntegerEnumUtils.get(CharacterType.class,
+				nativeGetCharacterType());
+	}
 	
 	// TODO:
 	//	ATEErr (*SetStory) ( TextRangeRef textrange, const StoryRef story);
@@ -520,11 +513,11 @@ public class TextRange extends NativeObject implements Commitable {
 	/**
 	 * The base class for all TextRangeList classes
 	 */
-	abstract class TextRangeList implements ReadOnlyList {
-		ArrayList.List list;
+	abstract class TextRangeList<E> implements ReadOnlyList<TextRange> {
+		ArrayList.List<E> list;
 		
 		TextRangeList() {
-			list = new ArrayList.List();
+			list = new ArrayList.List<E>();
 		}
 
 		public int size() {
@@ -539,7 +532,7 @@ public class TextRange extends NativeObject implements Commitable {
 			list.clear();
 		}
 
-		public ExtendedList getSubList(int fromIndex, int toIndex) {
+		public ExtendedList<TextRange> getSubList(int fromIndex, int toIndex) {
 			return Lists.createSubList(this, fromIndex, toIndex);
 		}
 	}
@@ -549,7 +542,7 @@ public class TextRange extends NativeObject implements Commitable {
 	 * token to the list as a TextRange. The Ranges are only created when
 	 * needed, The delimiter chars are included in the tokens at the end.
 	 */
-	class TokenizerList extends TextRangeList {
+	class TokenizerList extends TextRangeList<TokenizerList.Token> {
 
 		class Token {
 			int start;
@@ -686,7 +679,7 @@ public class TextRange extends NativeObject implements Commitable {
 			return end;
 		}
 
-		public Object get(int index) {
+		public TextRange get(int index) {
 			Token token = (Token) list.get(index);
 			return token.getRange();
 		}
@@ -695,7 +688,7 @@ public class TextRange extends NativeObject implements Commitable {
 	/**
 	 * A list of text ranges for each character in this text range.
 	 */
-	class CharacterList extends TextRangeList {
+	class CharacterList extends TextRangeList<TextRange> {
 		void update() {
 			list.setSize(TextRange.this.getLength());
 		}
@@ -735,7 +728,7 @@ public class TextRange extends NativeObject implements Commitable {
 			}
 		}
 
-		public Object get(int index) {
+		public TextRange get(int index) {
 			TextRange range = (TextRange) list.get(index);
 			if (range == null) {
 				int start = getStart() + index;

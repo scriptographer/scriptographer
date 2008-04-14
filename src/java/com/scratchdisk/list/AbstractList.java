@@ -35,9 +35,9 @@ package com.scratchdisk.list;
 /**
  * @author lehni
  */
-public abstract class AbstractList extends AbstractReadOnlyList implements List {
+public abstract class AbstractList<E> extends AbstractReadOnlyList<E> implements List<E> {
 
-	public Object add(Object element) {
+	public E add(E element) {
 		return add(size(), element);
 	}
 
@@ -56,7 +56,7 @@ public abstract class AbstractList extends AbstractReadOnlyList implements List 
 	 * required by ExtendedList. It is easier to implement all
 	 * in one go like this though.
 	 */
-	public boolean addAll(int index, List elements) {
+	public boolean addAll(int index, List<? extends E> elements) {
 		boolean modified = false;
 		for (int i = 0, size = elements.size(); i < size; i++) {
 			if (add(index++, elements.get(i)) != null)
@@ -65,15 +65,15 @@ public abstract class AbstractList extends AbstractReadOnlyList implements List 
 		return modified;
 	}
 
-	public final boolean addAll(List elements) {
+	public boolean addAll(List<? extends E> elements) {
 		return addAll(size(), elements);
 	}
 
-	public final boolean addAll(int index, Object[] elements) {
+	public final boolean addAll(int index, E[] elements) {
 		return addAll(index, Lists.asList(elements));
 	}
 
-	public final boolean addAll(Object[] elements) {
+	public final boolean addAll(E[] elements) {
 		return addAll(size(), elements);
 	}
 }

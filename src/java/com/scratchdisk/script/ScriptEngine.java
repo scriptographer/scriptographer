@@ -42,11 +42,13 @@ import com.scratchdisk.util.ClassUtils;
  *
  */
 public abstract class ScriptEngine {
-	private static HashMap enginesByName = new HashMap();
-	private static HashMap enginesByExtension = new HashMap();
+	private static HashMap<String, ScriptEngine> enginesByName =
+		new HashMap<String, ScriptEngine>();
+	private static HashMap<String, ScriptEngine> enginesByExtension =
+		new HashMap<String, ScriptEngine>();
 	private static boolean loaded = false;
-
-	private HashMap scriptCache = new HashMap();
+	private HashMap<File, Script> scriptCache =
+		new HashMap<File, Script>();
 
 	public static void loadEngines() {
 		// Do not call loadEngines immediately, as we want the scripting engines

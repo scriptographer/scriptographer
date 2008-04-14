@@ -39,44 +39,43 @@ import java.util.Arrays;
  * 
  * @author lehni
  */
-public class ArrayList extends AbstractExtendedList {
-	List list;
+public class ArrayList<E> extends AbstractExtendedList<E> {
+	List<E> list;
 
 	public ArrayList() {
-		list = new List();
+		list = new List<E>();
 	}
 
 	public ArrayList(int initialCapacity) {
-		list = new List(initialCapacity);
+		list = new List<E>(initialCapacity);
 	}
 
-	public ArrayList(Object[] objects) {
-		this(objects.length);
-		list.addAll(Arrays.asList(objects));
+	public ArrayList(E[] objects) {
+		list = new List<E>(Arrays.asList(objects));
 	}
 
-	public ArrayList(List list) {
-		this(list.toArray());
+	public ArrayList(List<E> list) {
+		list = new List<E>(list);
 	}
 
 	public int size() {
 		return list.size();
 	}
 
-	public Object get(int index) {
+	public E get(int index) {
 		return list.get(index);
 	}
 
-	public Object add(int index, Object element) {
+	public E add(int index, E element) {
 		list.add(index, element);
 		return element;
 	}
 
-	public Object set(int index, Object element) {
+	public E set(int index, E element) {
 		return list.set(index, element);
 	}
 
-	public Object remove(int index) {
+	public E remove(int index) {
 		return list.remove(index);
 	}
 
@@ -84,20 +83,20 @@ public class ArrayList extends AbstractExtendedList {
 		list.remove(fromIndex, toIndex);
 	}
 
-	public Object add(Object element) {
+	public E add(E element) {
 		if (list.add(element))
 			return element;
 		return null;
 	}
 
-	public boolean addAll(int index, Collection c) {
+	public boolean addAll(int index, Collection<? extends E> c) {
 		return list.addAll(index, c);
 	}
 
 	/*
 	 * Adds setSize and the public removeRange to java.util.ArrayList:
 	 */
-	public static class List extends java.util.ArrayList {
+	public static class List<E> extends java.util.ArrayList<E> {
 		public List() {
 			super();
 		}
@@ -105,6 +104,10 @@ public class ArrayList extends AbstractExtendedList {
 		public List(int initialCapacity) {
 			super(initialCapacity);
 		}
+
+	    public List(Collection<? extends E> c) {
+	    	super(c);
+	    }
 
 		public void setSize(int newSize) {
 			int size = size();
@@ -114,7 +117,6 @@ public class ArrayList extends AbstractExtendedList {
 				for (int i = size; i < newSize; i++)
 					add(i, null);
 			} else if (newSize < size) {
-				// remove the unneeded beziers:
 				remove(newSize, size);
 			}
 		}

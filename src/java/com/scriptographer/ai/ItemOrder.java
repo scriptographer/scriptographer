@@ -31,28 +31,27 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * AIArtOrder
  * 
  * @author lehni
  */
-public class ItemOrder extends NamedOption {
+public enum ItemOrder implements IntegerEnum {
+	UNKNOWN(0),
+	ABOVE(1),
+	BELOW(2),
+	INSIDE(3),
+	ANCHESTOR(4);
 
-	public static final ItemOrder
-		UNKNOWN		= new ItemOrder("unknown",		0),
-		ABOVE		= new ItemOrder("above",		1),
-		BELOW		= new ItemOrder("below",		2),
-		INSIDE		= new ItemOrder("inside", 		3),
-		ANCHESTOR	= new ItemOrder("anchestor",	4);
+	protected int value;
 
-
-	private ItemOrder(String name, int value) {
-		super(name, value);
+	private ItemOrder(int value) {
+		this.value = value;
 	}
 
-	protected static ItemOrder get(int value) {
-		return (ItemOrder) get(ItemOrder.class, value);
+	public int value() {
+		return value;
 	}
 }

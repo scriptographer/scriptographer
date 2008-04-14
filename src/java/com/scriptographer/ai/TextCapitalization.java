@@ -31,26 +31,26 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * FontCapsOption
  * 
  * @author lehni
  */
-public class Capitalization extends NamedOption {
+public enum TextCapitalization implements IntegerEnum {
+	NORMAL(0),
+	SMALL(1),
+	ALL(2),
+	ALL_SMALL(3);
 
-	public static final Capitalization
-		NORMAL		= new Capitalization("normal",		0),
-		SMALL		= new Capitalization("small",		1),
-		ALL			= new Capitalization("all",		2),
-		ALL_SMALL	= new Capitalization("allSmall",	3);
+	protected int value;
 
-	private Capitalization(String name, int value) {
-		super(name, value);
+	private TextCapitalization(int value) {
+		this.value = value;
 	}
 
-	protected static Capitalization get(Object key) {
-		return (Capitalization) get(Capitalization.class, key);
+	public int value() {
+		return value;
 	}
 }

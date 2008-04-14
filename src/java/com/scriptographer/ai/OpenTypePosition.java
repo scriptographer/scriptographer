@@ -31,27 +31,27 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.NamedOption;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * FontOpenTypePositionOption
  * 
  * @author lehni
  */
-public class OpenTypePosition extends NamedOption {
+public enum OpenTypePosition implements IntegerEnum {
+	NORMAL(0),
+	SUPERSCRIPT(1),
+	SUBSCRIPT(2),
+	NUMERATOR(3),
+	DENOMINATOR(4);
 
-	public static final OpenTypePosition
-		NORMAL			= new OpenTypePosition("normal",			0),
-		SUPERSCRIPT		= new OpenTypePosition("superscript",		1),
-		SUBSCRIPT		= new OpenTypePosition("subscript",		2),
-		NUMERATOR		= new OpenTypePosition("numerator",		3),
-		DENOMINATOR		= new OpenTypePosition("denominator",		4);
+	protected int value;
 
-	private OpenTypePosition(String name, int value) {
-		super(name, value);
+	private OpenTypePosition(int value) {
+		this.value = value;
 	}
 
-	protected static OpenTypePosition get(Object key) {
-		return (OpenTypePosition) get(OpenTypePosition.class, key);
+	public int value() {
+		return value;
 	}
 }

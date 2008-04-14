@@ -204,7 +204,7 @@ public abstract class Dialog extends Component {
 	// need to know anything about the fact if it's a script or a java class.
 	private Preferences preferences;
 
-	private static ArrayList dialogs = new ArrayList();
+	private static ArrayList<Dialog> dialogs = new ArrayList<Dialog>();
 
 	private static int uniqueId = 0;
 
@@ -667,6 +667,7 @@ public abstract class Dialog extends Component {
 	 * private callback method, to be called from the native environment
 	 * It calls onResize
 	 */
+	@SuppressWarnings("unused")
 	private void onSizeChanged(int width, int height) {
 		if (!ignoreSizeChange && size != null)
 			updateSize(width - size.width, height - size.height);

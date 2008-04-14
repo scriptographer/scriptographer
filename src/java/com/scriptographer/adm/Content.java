@@ -32,7 +32,6 @@
 package com.scriptographer.adm;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import com.scratchdisk.list.AbstractExtendedList;
@@ -48,7 +47,7 @@ import com.scriptographer.adm.Component.AWTContainer;
  * 
  * @author lehni
  */
-class Content extends AbstractExtendedList implements StringIndexList {
+class Content extends AbstractExtendedList<Component> implements StringIndexList<Component> {
 
 	private Component component;
 
@@ -78,7 +77,7 @@ class Content extends AbstractExtendedList implements StringIndexList {
 	}
 	// Keep track of set constraints in an internal HashMap,
 	// so they can be removed again as well.
-	HashMap constraints = new HashMap();
+	HashMap<String,Component> constraints = new HashMap<String,Component>();
 
 	protected String capitalize(String constraint) {
 		return constraint.length() > 0
@@ -87,14 +86,14 @@ class Content extends AbstractExtendedList implements StringIndexList {
 				: constraint;
 	}
 
-	public Object get(String name) {
+	public Component get(String name) {
 		name = capitalize(name);
 		return constraints.get(name);
 	}
 
-	public Object remove(String name) {
+	public Component remove(String name) {
 		name = capitalize(name);
-		Object element = constraints.get(name);
+		Component element = constraints.get(name);
 		if (element != null) {
 			java.awt.Component component = getAWTComponent(element);
 			// Now search for this component:
@@ -116,17 +115,17 @@ class Content extends AbstractExtendedList implements StringIndexList {
 		return getAWTContainer().getComponentCount();
 	}
 
-	public Object set(int index, Object element) {
-		Object previous = this.remove(index);
+	public Component set(int index, Component element) {
+		Component previous = this.remove(index);
 		this.add(index, element);
 		return previous;
 	}
 
-	public Object get(int index) {
+	public Component get(int index) {
 		return getComponent(getAWTContainer().getComponent(index));
 	}
 
-	public Object add(Object element) {
+	public Component add(Component element) {
 		java.awt.Component component = getAWTComponent(element);
 		if (component != null) {
 			getAWTContainer().add(component);
@@ -136,7 +135,7 @@ class Content extends AbstractExtendedList implements StringIndexList {
 		return null;
 	}
 
-	public Object add(int index, Object element) {
+	public Component add(int index, Component element) {
 		java.awt.Component component = getAWTComponent(element);
 		if (component != null) {
 			getAWTContainer().add(component, index);
@@ -146,14 +145,12 @@ class Content extends AbstractExtendedList implements StringIndexList {
 		return null;
 	}
 
-	public void addAll(Map elements) {
-		for (Iterator it = elements.entrySet().iterator(); it.hasNext();) {
-			Map.Entry entry = (Map.Entry) it.next();
+	public void addAll(Map<String,? extends Component> elements) {
+		for (Map.Entry<String,? extends Component> entry : elements.entrySet())
 			set(entry.getKey().toString(), entry.getValue());
-		}
 	}
 
-	public Object remove(int index) {
+	public Component remove(int index) {
 		AWTContainer container = getAWTContainer();
 		Component component = getComponent(container.getComponent(index));
 		container.remove(index);
@@ -168,11 +165,11 @@ class Content extends AbstractExtendedList implements StringIndexList {
 		container.removeAll();
 	}
 
-	public Object set(String name, Object element) {
+	public Component set(String name, Component element) {
 		name = capitalize(name);
 		java.awt.Component component = getAWTComponent(element);
 		if (component != null) {
-			Object previous = this.get(name);
+			Component previous = this.get(name);
 			getAWTContainer().add(component, name);
 			addComponent((Component) element);
 			constraints.put(name, element);

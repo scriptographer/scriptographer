@@ -115,7 +115,7 @@ public class TextStory extends NativeObject {
 	
 	protected native TextFrame nativeGetTextFrame(int handle, int index);
 	
-	class TextFrameList implements ReadOnlyList {
+	class TextFrameList implements ReadOnlyList<TextFrame> {
 		int length = 0;
 		int version = -1;
 		
@@ -131,7 +131,7 @@ public class TextStory extends NativeObject {
 			return length;
 		}
 
-		public Object get(int index) {
+		public TextFrame get(int index) {
 			return nativeGetTextFrame(handle, index);
 		}
 
@@ -139,7 +139,7 @@ public class TextStory extends NativeObject {
 			return size() == 0;
 		}
 
-		public ExtendedList getSubList(int fromIndex, int toIndex) {
+		public ExtendedList<TextFrame> getSubList(int fromIndex, int toIndex) {
 			return Lists.createSubList(this, fromIndex, toIndex);
 		}
 	}

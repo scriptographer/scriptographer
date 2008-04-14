@@ -37,8 +37,8 @@ import com.scratchdisk.list.StringIndexReadOnlyList;
 /**
  * @author lehni
  */
-public class GradientList extends AbstractReadOnlyList implements
-		StringIndexReadOnlyList {
+public class GradientList extends AbstractReadOnlyList<Gradient> implements
+		StringIndexReadOnlyList<Gradient> {
 	Document document;
 
 	protected GradientList(Document document) {
@@ -53,21 +53,13 @@ public class GradientList extends AbstractReadOnlyList implements
 
 	private static native int nativeGet(int docHandle, int index);
 
-	public Object get(int index) {
+	public Gradient get(int index) {
 		return Gradient.wrapHandle(nativeGet(document.handle, index), document);
 	}
 
 	private static native int nativeGet(int docHandle, String name);
 
-	public Object get(String name) {
+	public Gradient get(String name) {
 		return Gradient.wrapHandle(nativeGet(document.handle, name), document);
-	}
-
-	public Gradient getGradient(int index) {
-		return (Gradient) get(index);
-	}
-
-	public Gradient getGradient(String name) {
-		return (Gradient) get(name);
 	}
 }

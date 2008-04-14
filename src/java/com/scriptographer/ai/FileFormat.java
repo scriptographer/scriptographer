@@ -181,15 +181,15 @@ public class FileFormat extends NativeObject {
 		lookup.put(handle, this);
 	}
 
-	private static ArrayList formats = null;
-	private static IntMap lookup = new IntMap();
+	private static ArrayList<FileFormat> formats = null;
+	private static IntMap<FileFormat> lookup = new IntMap<FileFormat>();
 
-	private static native ArrayList nativeGetFileFormats();
+	private static native ArrayList<FileFormat> nativeGetFileFormats();
 
 	public static FileFormat[] getFileFormats() {
 		if (formats == null)
 			formats = nativeGetFileFormats();
-		return (FileFormat[]) formats.toArray(new FileFormat[formats.size()]);
+		return formats.toArray(new FileFormat[formats.size()]);
 	}
 
 	public String getName() {

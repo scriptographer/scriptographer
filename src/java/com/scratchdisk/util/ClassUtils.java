@@ -39,8 +39,6 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 
-import com.scratchdisk.script.ScriptEngine;
-
 /**
  * @author lehni
  *
@@ -62,7 +60,7 @@ public class ClassUtils {
 		InputStream in = cls.getResourceAsStream(
 				"/META-INF/services/" + cls.getName());
 		if (in != null) {
-			ArrayList lines = new ArrayList();
+			ArrayList<String> lines = new ArrayList<String>();
 			try {
 				BufferedReader buffer = new BufferedReader(new InputStreamReader(in));
 				for (String line = buffer.readLine(); line != null; line = buffer.readLine()) {
@@ -77,7 +75,7 @@ public class ClassUtils {
 		return null;
 	}
 
-	public static Constructor getConstructor(Class cls, Class[] args, IdentityHashMap cache) {
+	public static Constructor getConstructor(Class cls, Class[] args, IdentityHashMap<Class, Constructor> cache) {
 		Constructor ctor = cache != null ? (Constructor) cache.get(cls) : null;
 		if (ctor == null) {
 			try {

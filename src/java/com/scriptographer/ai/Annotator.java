@@ -46,10 +46,10 @@ import com.scriptographer.adm.Drawer;
 public class Annotator extends NativeObject {
 	private boolean active;
 
-	private static IntMap annotators = new IntMap();
-	private static ArrayList unusedAnnotators = null;
+	private static IntMap<Annotator> annotators = new IntMap<Annotator>();
+	private static ArrayList<Annotator> unusedAnnotators = null;
 	// this is list of drawers that map viewports to created ADM Drawer objects:
-	private static SoftIntMap drawers = new SoftIntMap();
+	private static SoftIntMap<Drawer> drawers = new SoftIntMap<Drawer>();
 	private static int counter = 0;
 	
 	public Annotator() {
@@ -135,13 +135,13 @@ public class Annotator extends NativeObject {
 			((Drawer) drawers[i]).dispose();
 	}
 	
-	private static ArrayList getUnusedAnnotators() {
+	private static ArrayList<Annotator> getUnusedAnnotators() {
 		if (unusedAnnotators == null)
 			unusedAnnotators = nativeGetAnnotators();
 		return unusedAnnotators;
 	}
 
-	private static native ArrayList nativeGetAnnotators();
+	private static native ArrayList<Annotator> nativeGetAnnotators();
 
 	private Callable onDraw = null;
 
@@ -177,6 +177,7 @@ public class Annotator extends NativeObject {
 	/**
 	 * To be called from the native environment:
 	 */
+	@SuppressWarnings("unused")
 	private static void onDraw(int handle, int portHandle, int viewHandle)
 			throws Exception {
 		Annotator annotator = getAnnotator(handle);
@@ -186,6 +187,7 @@ public class Annotator extends NativeObject {
 		}
 	}
 	
+	@SuppressWarnings("unused")
 	private static void onInvalidate(int handle) throws Exception {
 		Annotator annotator = getAnnotator(handle);
 		if (annotator != null) {

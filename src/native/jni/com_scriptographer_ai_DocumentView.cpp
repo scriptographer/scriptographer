@@ -158,11 +158,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_viewToArtwork_
 	return NULL;
 }
 
-
 /*
- * void setScreenMode(int mode)
+ * void nativeSetScreenMode(int mode)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_setScreenMode(JNIEnv *env, jobject obj, jint mode) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_nativeSetScreenMode(JNIEnv *env, jobject obj, jint mode) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		sAIDocumentView->SetScreenMode(view, (AIScreenMode) mode);
@@ -170,9 +169,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_setScreenMode(JNI
 }
 
 /*
- * int getScreenMode()
+ * int nativeGetScreenMode()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentView_getScreenMode(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentView_nativeGetScreenMode(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		AIScreenMode mode = kNoScreenMode;
@@ -231,9 +230,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_DocumentView_invalidate(JNIEnv
 }
 
 /*
- * int getStyle()
+ * int nativeGetStyle()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentView_getStyle(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_DocumentView_nativeGetStyle(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentViewHandle view = gEngine->getDocumentViewHandle(env, obj);
 		short style;
