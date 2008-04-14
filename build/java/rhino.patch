@@ -1,8 +1,8 @@
 Index: org/mozilla/javascript/Context.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Context.java,v
-retrieving revision 1.268
-diff -r1.268 Context.java
+retrieving revision 1.269
+diff -r1.269 Context.java
 1969a1970,1982
 >     public final void setOperatorHandler(OperatorHandler operatorHandler)
 >     {
@@ -465,17 +465,15 @@ diff -r1.19 WrapFactory.java
 >     public static final byte CONVERSION_NONTRIVIAL   = 0;
 >     public static final byte CONVERSION_NONE         = 99;
 > 
-> 	public int getConversionWeight(Object from, Class to, int defaultWeight) {
+> 	public int getConversionWeight(Object from, Class<?> to, int defaultWeight) {
 >         return defaultWeight;
 > 	}
 > 
->     public Object coerceType(Class type, Object value) {
+>     public Object coerceType(Class<?> type, Object value) {
 >     	return null;
 >     }
 > 
 >     /**
-182d197
-< 
 Index: org/mozilla/javascript/NativeJavaObject.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaObject.java,v
@@ -512,7 +510,7 @@ diff -r1.84 NativeJavaObject.java
 ---
 >         return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, CONVERSION_NONE);
 499a510,519
->     static Object coerce(Class type, Object value) {
+>     static Object coerce(Class<?> type, Object value) {
 >         Object obj = Context.getContext().getWrapFactory().coerceType(type, value);
 >         if (obj == null) {
 >             if (value == Undefined.instance)
@@ -522,69 +520,71 @@ diff -r1.84 NativeJavaObject.java
 >         return obj;
 >     }
 > 
-509a530,531
+502a523
+>      * @param genericType 
+509a531,532
 >         Object original = value;
 > 
-525c547
+525c548
 <                 reportConversionError("undefined", type);
 ---
 >             	return coerce(type, value);
-527d548
+527d549
 <             break;
-540c561
+540c562
 <                 reportConversionError(value, type);
 ---
 >                 return coerce(type, value);
-542d562
+542d563
 <             break;
-556c576
+556c577
 <                 reportConversionError(value, type);
 ---
 >                 return coerce(type, value);
-558d577
+558d578
 <             break;
-584c603
+584c604
 <                 reportConversionError(value, type);
 ---
 >                 return coerce(type, value);
-586d604
+586d605
 <             break;
-601c619
+601c620
 <                 reportConversionError(value, type);
 ---
 >                 return coerce(type, original);
-603d620
+603d621
 <             break;
-606c623
+606c624
 <         case JSTYPE_JAVA_ARRAY:              
 ---
 >         case JSTYPE_JAVA_ARRAY:
-612c629
+612c630
 <                     reportConversionError(value, type);
 ---
 >                     return coerce(type, original);
-625c642,645
+625c643,646
 <                         reportConversionError(value, type);
 ---
 >                         // We must be here because canConvert returned true
 >                         // Give it a try. pass the wrapped value, to let the
 >                         // wrap factory decide what to do with it.
 >                         return coerce(type, original);
-629d648
+629d649
 <             break;
-637c656
+637c657
 <                     reportConversionError(value, type);
 ---
 >                     return coerce(type, value);
-674c693
+674c694
 <                 reportConversionError(value, type);
 ---
 >                 return coerce(type, original);
-696c715
+696c716
 <                     // Store for later retrival
 ---
 >                     // Store for later retrieval
-700,702c719,722
+700,702c720,723
 <                 reportConversionError(value, type);
 <             } else {
 <                 reportConversionError(value, type);
@@ -593,7 +593,7 @@ diff -r1.84 NativeJavaObject.java
 >             }
 >             else {
 >                 return coerce(type, value);
-704d723
+704d724
 <             break;
 Index: org/mozilla/javascript/JavaMembers.java
 ===================================================================
@@ -629,10 +629,7 @@ Index: org/mozilla/javascript/Token.java
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Token.java,v
 retrieving revision 1.43
 diff -r1.43 Token.java
-44a45,46
-> import java.io.IOException;
-> 
-433a436,472
+433a434,470
 > 
 >     /**
 >      * The token type.
@@ -679,55 +676,56 @@ diff -r1.18 MemberBox.java
 < final class MemberBox implements Serializable
 ---
 > public final class MemberBox implements Serializable
-65c65
+65c65,66
 <     MemberBox(Method method)
 ---
+> 
 >     public MemberBox(Method method)
-70c70
+70c71
 <     MemberBox(Constructor<?> constructor)
 ---
 >     public MemberBox(Constructor<?> constructor)
-89c89
+89c90
 <     Method method()
 ---
 >     public Method method()
-94c94
+94c95
 <     Constructor<?> ctor()
 ---
 >     public Constructor<?> ctor()
-99c99
+99c100
 <     Member member()
 ---
 >     public Member member()
-104c104
+104c105
 <     boolean isMethod()
 ---
 >     public boolean isMethod()
-109c109
+109c110
 <     boolean isCtor()
 ---
 >     public boolean isCtor()
-114c114
+114c115
 <     boolean isStatic()
 ---
 >     public boolean isStatic()
-119c119
+119c120
 <     String getName()
 ---
 >     public String getName()
-124c124
+124c125
 <     Class<?> getDeclaringClass()
 ---
 >     public Class<?> getDeclaringClass()
-129c129
+129c130
 <     String toJavaDeclaration()
 ---
 >     public String toJavaDeclaration()
-156c156
+156c157
 <     Object invoke(Object target, Object[] args)
 ---
 >     public Object invoke(Object target, Object[] args)
-180c180
+180c181
 <     Object newInstance(Object[] args)
 ---
 >     public Object newInstance(Object[] args)
