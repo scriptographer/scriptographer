@@ -29,13 +29,7 @@
  * $Id$
  */
 
-// var consoleDialog = new FloatingDialog ('tabbed show-cycle resizing remember-placing', function() {
-var consoleDialog = new FloatingDialog (
-		FloatingDialog.OPTION_TABBED |
-		FloatingDialog.OPTION_SHOW_CYCLE |
-		FloatingDialog.OPTION_RESIZING |
-		FloatingDialog.OPTION_REMEMBER_PLACING, function() {
-
+var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing', function() {
 	var engine = ScriptEngine.getEngineByName('JavaScript');
 	var consoleScope = engine != null ? engine.createScope() : null;
 

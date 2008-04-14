@@ -66,11 +66,11 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 	}
 
 	public Scriptable wrapCustom(Context cx, Scriptable scope,
-			Object javaObj, Class staticType) {
+			Object javaObj, Class<?> staticType) {
 		return null;
 	}
 
-	public Object wrap(Context cx, Scriptable scope, Object obj, Class staticType) {
+	public Object wrap(Context cx, Scriptable scope, Object obj, Class<?> staticType) {
         if (obj == null || obj == Undefined.instance || obj instanceof Scriptable)
             return obj;
 		if (obj instanceof RhinoCallable) {
@@ -96,7 +96,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 	}
 
 	public Scriptable wrapAsJavaObject(Context cx, Scriptable scope,
-			Object javaObj, Class staticType) {
+			Object javaObj, Class<?> staticType) {
 		// Keep track of wrappers so that if a given object needs to be
 		// wrapped again, take the wrapper from the pool...
         WeakReference ref = (WeakReference) wrappers.get(javaObj);
@@ -125,7 +125,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		return obj;
 	}
 
-	public int getConversionWeight(Object from, Class to, int defaultWeight) {
+	public int getConversionWeight(Object from, Class<?> to, int defaultWeight) {
 		// See if object "from" can be converted to an instance of class "to"
 		// by the use of a map constructor or the setting of all the fields
 		// of a NativeObject on the instance after its creation,
@@ -165,7 +165,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		return null;
 	}
 
-	public Object coerceType(Class type, Object value) {
+	public Object coerceType(Class<?> type, Object value) {
 		// Coerce native objects to maps when needed
 		if (value instanceof Function) {
 			if (type == Callable.class)
@@ -206,7 +206,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		return null;
 	}
 
-	public Object convert(Object from, Class to) {
+	public Object convert(Object from, Class<?> to) {
 		return Context.jsToJava(from, to);
 	}
 
@@ -238,7 +238,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 	 * @return true if the class has a zero argument constructor, false
 	 *         otherwise.
 	 */
-	private static Constructor getZeroArgumentConstructor(Class cls) {
+	private static Constructor getZeroArgumentConstructor(Class<?> cls) {
 		return ClassUtils.getConstructor(cls, new Class[] { }, zeroArgumentConstructors);
 	}
 

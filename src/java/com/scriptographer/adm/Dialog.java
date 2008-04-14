@@ -32,6 +32,7 @@
 package com.scriptographer.adm;
 
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.ScriptographerEngine; 
 import com.scriptographer.ScriptographerException;
 
@@ -40,6 +41,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.prefs.Preferences;
 import java.util.prefs.BackingStoreException;
@@ -51,52 +53,6 @@ public abstract class Dialog extends Component {
 	
 	public native int createPlatformControl();
 	public native void dumpControlHierarchy(File file);
-
-	// Dialog options (for Create() call)
-	public static final int OPTION_NONE = 0;
-
-	// Default ADM options:
-
-	/**
-	 * Keypad 'enter' key does not activate default item.
-	 */
-	public static final int OPTION_IGNORE_KEYPAD_ENTER = 1 << 3;
-
-	/**
-	 * Reduce flicker by creating items hidden.
-	 */
-	public static final int OPTION_ITEMS_HIDDEN = 1 << 4;
-
-	/**
-	 * Forces for all items within dialog, except as overridden.
-	 */
-	public static final int OPTION_FORCE_ROMAN = 1 << 5;
-
-	/**
-	 * Track the enter keys carriage return and keypad enter before the
-	 * dialog treats the event as equivalent to pressing the OK button --
-	 * and prevent that behavior if the tracker returns true. Note that by
-	 * default, the enter keys cause text item trackers to commit their text
-	 * and return true, so this option normally prevents the "OK" behavior
-	 * when enter is pressed within a text item.
-	 * This option currently relevant only on Mac platform.
-	 */
-	public static final int OPTION_ENTER_BEFORE_OK = 1 << 6;
-
-	// pseudo options, to simulate the various window styles (above 1 << 16)
-
-	/**
-	 * Create the dialog hidden
-	 */
-	public static final int OPTION_HIDDEN = 1 << 17;
-
-	/**
-	 * Remember placing of the dialog by automatically storing its state in
-	 * the preference file. For each script, a sub-node is created in the
-	 * preferences. The dialog's title needs to be unique within one such node,
-	 * as it is used to store the dialog's state.
-	 */
-	public static final int OPTION_REMEMBER_PLACING = 1 << 18;
 
 	//	Dialog styles (for Create() call).
 	protected final static int
@@ -161,7 +117,7 @@ public abstract class Dialog extends Component {
 
 	private ArrayList items;
 
-	private int options;
+	private EnumSet<DialogOption> options;
 	// the outside dimensions of the dialog, including borders and titlebars
 	private Rectangle bounds;
 	// the inside dimensions of the dialog, as used by layout managers and such
@@ -208,14 +164,12 @@ public abstract class Dialog extends Component {
 
 	private static int uniqueId = 0;
 
-	protected Dialog(int style, int options) {
+	protected Dialog(int style, EnumSet<DialogOption> options) {
 		preferences = ScriptographerEngine.getPreferences(true);
 		items = new ArrayList();
 		// create a unique name for this session:
 		String name = "Scriptographer Dialog " + (++uniqueId);
-		// filter out the pseudo styles from the options:
-		// (max. real bit is 16, and the mask is (1 << (max + 1)) - 1
-		handle = nativeCreate(name, style, options & ((1 << 17) - 1));
+		handle = nativeCreate(name, style, IntegerEnumUtils.getFlags(options));
 		bounds = nativeGetBounds();
 		size = nativeGetSize();
 		isResizing = style == STYLE_RESIZING_FLOATING ||
@@ -226,7 +180,8 @@ public abstract class Dialog extends Component {
 			minSize = nativeGetMinSize();
 			maxSize = nativeGetMaxSize();
 		}
-		this.options = options;
+		this.options = options != null ? options.clone()
+				: EnumSet.noneOf(DialogOption.class);
 		if (handle != 0)
 			dialogs.add(this);
 		// always set dialogs hidden first. 
@@ -263,7 +218,7 @@ public abstract class Dialog extends Component {
 				unitialized = false;
 				// if setVisible was called before proper initialization, visible
 				// is set but it was not nativelly executed yet. handle this here
-				boolean show = (options & OPTION_HIDDEN) == 0 || visible;
+				boolean show = !options.contains(DialogOption.HIDDEN) || visible;
 				if (container != null) {
 					if (isResizing) {
 						setMinSize(new Size(container.getMinimumSize()));
@@ -276,7 +231,7 @@ public abstract class Dialog extends Component {
 				}
 				// Center it on screen first
 				this.centerOnScreen();
-				if ((options & OPTION_REMEMBER_PLACING) != 0)
+				if (options.contains(DialogOption.REMEMBER_PLACING))
 					show = !loadPreferences(title);
 				initialized = true;
 				// execute callback handler
@@ -601,7 +556,7 @@ public abstract class Dialog extends Component {
 			initialize(true);
 			break;
 		case Notifier.NOTIFIER_DESTROY:
-			if ((options & OPTION_REMEMBER_PLACING) != 0)
+			if (options.contains(DialogOption.REMEMBER_PLACING))
 				savePreferences(title);
 			onDestroy();
 			break;

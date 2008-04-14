@@ -31,61 +31,51 @@
 
 package com.scriptographer.adm;
 
+import java.util.Arrays;
+import java.util.EnumSet;
+
 /**
  * @author lehni
  */
 public class FloatingDialog extends Dialog {
-	// standard options from ADM:
 
-	/**
-	 * When creating tabbed dialog with a cycle button on the tab.
-	 */
-	public static final int OPTION_SHOW_CYCLE = 1 << 0;
-
-	// pseudo options, to simulate the various window styles
-	public static final int OPTION_RESIZING = 1 << 20;
-
-	public static final int OPTION_TABBED = 1 << 21;
-
-	public static final int OPTION_LEFTSIDED = 1 << 22;
-
-	public static final int OPTION_NOCLOSE = 1 << 23;
-	
-	// TODO: define kADMDocumentWindowLayerDialogOption,
-	// kADMPaletteLayerDialogOption
-
-	public FloatingDialog(int options) {
+	public FloatingDialog(EnumSet<DialogOption> options) {
 		super(getStyle(options), options);
 	}
 
-	public FloatingDialog() {
-		this(OPTION_NONE);
+	public FloatingDialog(DialogOption[] options) {
+		this(EnumSet.copyOf(Arrays.asList(options)));
 	}
-	
+
+	public FloatingDialog() {
+		this((EnumSet<DialogOption>) null);
+	}
+
 	/*
 	 * Extract the style from the pseudo options:
 	 */
-	private static int getStyle(int options) {
-		if ((options & OPTION_TABBED) != 0) {
-			if ((options & OPTION_RESIZING) != 0) {
-				return STYLE_TABBED_RESIZING_FLOATING;
+	private static int getStyle(EnumSet<DialogOption> options) {
+		if (options != null) {
+			if (options.contains(DialogOption.TABBED)) {
+				if (options.contains(DialogOption.RESIZING)) {
+					return STYLE_TABBED_RESIZING_FLOATING;
+				} else {
+					return STYLE_TABBED_FLOATING;
+				}
+			} else if (options.contains(DialogOption.LEFT_SIDED)) {
+				if (options.contains(DialogOption.NO_CLOSE)) {
+					return STYLE_LEFTSIDED_NOCLOSE_FLOATING;
+				} else {
+					return STYLE_LEFTSIDED_FLOATING;
+				}
 			} else {
-				return STYLE_TABBED_FLOATING;
-			}
-		} else if ((options & OPTION_LEFTSIDED) != 0) {
-			if ((options & OPTION_NOCLOSE) != 0) {
-				return STYLE_LEFTSIDED_NOCLOSE_FLOATING;
-			} else {
-				return STYLE_LEFTSIDED_FLOATING;
-			}
-		} else {
-			if ((options & OPTION_RESIZING) != 0) {
-				return STYLE_RESIZING_FLOATING;
-			} else if ((options & OPTION_NOCLOSE) != 0) {
-				return STYLE_NOCLOSE_FLOATING;
-			} else {
-				return STYLE_FLOATING;
+				if (options.contains(DialogOption.RESIZING)) {
+					return STYLE_RESIZING_FLOATING;
+				} else if (options.contains(DialogOption.NO_CLOSE)) {
+					return STYLE_NOCLOSE_FLOATING;
+				}
 			}
 		}
+		return STYLE_FLOATING;
 	}
 }

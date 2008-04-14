@@ -330,8 +330,8 @@ public abstract class Item extends Component {
 		return type;
 	}
 
-	public native void setStyle(int style);
-	public native int getStyle();
+	protected native void nativeSetStyle(int style);
+	protected native int nativeGetStyle();
 	
 	protected native int getChildItemHandle(int itemID);
 

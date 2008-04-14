@@ -38,7 +38,7 @@ import java.util.HashMap;
  * @author lehni
  *
  */
-public class IntegerEnumUtils extends EnumUtils {
+public class IntegerEnumUtils {
 
 	protected IntegerEnumUtils() {
 	}
@@ -65,7 +65,7 @@ public class IntegerEnumUtils extends EnumUtils {
 		HashMap<Integer, T> lookup = new HashMap<Integer, T>();
 
 		Lookup(Class<T> cls) {
-			for (T value : getValues(cls))
+			for (T value : cls.getEnumConstants())
 				lookup.put(value.value(), value);
 		}
 
@@ -87,7 +87,7 @@ public class IntegerEnumUtils extends EnumUtils {
 
 	public <T extends Enum<T>> EnumSet<T> getSet(Class<T> cls, int flags) {
 		EnumSet<T> set = EnumSet.noneOf(cls);
-		for (T e : getValues(cls))
+		for (T e : cls.getEnumConstants())
 			if ((((IntegerEnum) e).value() & flags) != 0)
 				set.add(e);
 		return set;

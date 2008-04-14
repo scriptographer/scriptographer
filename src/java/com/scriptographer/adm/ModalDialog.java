@@ -31,66 +31,54 @@
 
 package com.scriptographer.adm;
 
+import java.util.Arrays;
+import java.util.EnumSet;
+
 /**
  * @author lehni
  */
 public class ModalDialog extends Dialog {
-	// standard options from ADM:
-	/**
-	 * To allow modal dialogs pass mouse down events through to
-	 * the user dialog tracker on the application side.
-	 */
-	public static final int OPTION_PASS_MOUSEDOWN_EVENT = 1 << 1;
-		
-	/**
-	 * 0 by default. If set, ADM Modal dialogs on Windows will have a 
-	 * close box on the top right hand corner. Also there is a host
-	 * option that a user can use if all dialogs in the application
-	 * need that behavior. 
-	 */
-	public static final int OPTION_HAS_SYSTEM_CONTROLS = 1 << 7;
-	
-	// pseudo options, to simulate the various window styles
-	public static final int OPTION_RESIZING = 1 << 20;
-
-	/**
-	 * Modal Alert, cannot be combined with OPTION_RESIZING
-	 */
-	public static final int OPTION_ALERT = 1 << 21;
-
-	/**
-	 * 	Modal System Alert, cannot be combined with OPTION_RESIZING
-	 */
-	public static final int OPTION_SYSTEM_ALERT = 1 << 22;
 
 	private boolean modal;
 
 	private boolean fixModal;
 	
-	protected ModalDialog(int style, int options) {
+	protected ModalDialog(int style, EnumSet<DialogOption> options) {
 		// Always create ModalDialogs hidden, as they need to be shown
 		// explicitly
-		super(style, options | OPTION_HIDDEN);
+		super(style, getOptions(options));
 	}
 
-	public ModalDialog(int options) {
+	public ModalDialog(EnumSet<DialogOption> options) {
 		this(getStyle(options), options);		
 	}
 
+	public ModalDialog(DialogOption[] options) {
+		this(EnumSet.copyOf(Arrays.asList(options)));
+	}
+
 	public ModalDialog() {
-		this(OPTION_NONE);
+		this((EnumSet<DialogOption>) null);
+	}
+
+	private static EnumSet<DialogOption> getOptions(EnumSet<DialogOption> options) {
+		options = options != null ? options.clone() : EnumSet.noneOf(DialogOption.class);
+		options.add(DialogOption.HIDDEN);
+		return options;
 	}
 
 	/*
 	 * Extract the style from the pseudo options:
 	 */
-	private static int getStyle(int options) {
-		if ((options & OPTION_RESIZING) != 0) {
-			return STYLE_RESIZING_MODAL;
-		} else if ((options & OPTION_ALERT) != 0) {
-			return STYLE_ALERT;
-		} else if ((options & OPTION_SYSTEM_ALERT) != 0) {
-			return STYLE_SYSTEM_ALERT;
+	private static int getStyle(EnumSet<DialogOption> options) {
+		if (options != null) {
+			if (options.contains(DialogOption.RESIZING)) {
+				return STYLE_RESIZING_MODAL;
+			} else if (options.contains(DialogOption.ALERT)) {
+				return STYLE_ALERT;
+			} else if (options.contains(DialogOption.SYSTEM_ALERT)) {
+				return STYLE_SYSTEM_ALERT;
+			}
 		}
 		return STYLE_MODAL;
 	}

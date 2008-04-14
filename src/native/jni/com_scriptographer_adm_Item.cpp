@@ -196,9 +196,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetDrawCallback(JN
 
 
 /*
- * void setStyle(int style)
+ * void nativeSetStyle(int style)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setStyle(JNIEnv *env, jobject obj, jint style) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetStyle(JNIEnv *env, jobject obj, jint style) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetItemStyle(item, (ADMItemStyle) style);
@@ -206,9 +206,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setStyle(JNIEnv *env, jo
 }
 
 /*
- * int getStyle()
+ * int nativeGetStyle()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getStyle(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeGetStyle(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return (jint) sADMItem->GetItemStyle(item);

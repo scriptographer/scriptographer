@@ -38,7 +38,7 @@ import java.util.HashMap;
  * @author lehni
  *
  */
-public class EnumUtils extends com.scratchdisk.util.EnumUtils {
+public class EnumUtils {
 
 	protected EnumUtils() {
 	}

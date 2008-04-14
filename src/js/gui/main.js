@@ -29,12 +29,7 @@
  * $Id$
  */
 
-var mainDialog = new FloatingDialog(
-		FloatingDialog.OPTION_TABBED |
-		FloatingDialog.OPTION_SHOW_CYCLE |
-		FloatingDialog.OPTION_RESIZING |
-		Dialog.OPTION_REMEMBER_PLACING, function() {
-
+var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing', function() {
 	if (app.macintosh) {
 		function executeProcess() {
 			if (arguments.length == 1) {

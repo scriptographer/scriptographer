@@ -31,38 +31,30 @@
 
 package com.scriptographer.adm;
 
+import java.util.EnumSet;
+import java.util.Arrays;
 /**
  * @author lehni
  */
 public class PopupDialog extends ModalDialog {
-	public static final int
-	// standard options from ADM:
-	
-		OPTION_AS_FLOATING = 1 << 8,
-	//	 If this option is set for a dialog of style kADMPopupControldialogStyle
-	//	 then ADM will create the dialog of kFloatingwindowclass. This option
-	//	 is currently used only on MacOSX.
 
-	// pseudo options, to simulate the various window styles (above 1 << 8)
+	public PopupDialog(EnumSet<DialogOption> options) {
+		super(getStyle(options), options);		
+	}
 
-		OPTION_CONTROL = 1 << 11;
-	//   create a STYLE_POPUP_CONTROL instead of STYLE_POPUP
-
-	public PopupDialog(int options) {
-		// filter out the pseudo styles from the options:
-		// (max. real bitis 8, and the mask is (1 << (max + 1)) - 1
-		super(getStyle(options), options & ((1 << 9) - 1));		
+	public PopupDialog(DialogOption[] options) {
+		this(EnumSet.copyOf(Arrays.asList(options)));
 	}
 
 	public PopupDialog() {
-		this(OPTION_NONE);
+		this((EnumSet<DialogOption>) null);
 	}
 	
 	/*
 	 * Extract the style from the pseudo options:
 	 */
-	private static int getStyle(int options) {
-		if ((options & OPTION_CONTROL) != 0) {
+	private static int getStyle(EnumSet<DialogOption> options) {
+		if (options.contains(DialogOption.CONTROL)) {
 			return STYLE_POPUP;
 		} else {
 			return STYLE_POPUP_CONTROL;
