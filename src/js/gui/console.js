@@ -29,6 +29,7 @@
  * $Id$
  */
 
+// var consoleDialog = new FloatingDialog ('tabbed show-cycle resizing remember-placing', function() {
 var consoleDialog = new FloatingDialog (
 		FloatingDialog.OPTION_TABBED |
 		FloatingDialog.OPTION_SHOW_CYCLE |
@@ -40,7 +41,7 @@ var consoleDialog = new FloatingDialog (
 
 	var textIn = new TextEdit(this, TextEdit.OPTION_MULTILINE) {
 		size: [300, 100],
-		minimumSize: [200, 18],
+		minSize: [200, 18],
 		onTrack: function(tracker) {
 			if (tracker.action == Tracker.ACTION_KEY_STROKE
 				&& tracker.virtualKey == Tracker.KEY_RETURN) {
@@ -74,10 +75,11 @@ var consoleDialog = new FloatingDialog (
 		}
 	};
 
+//	var textOut = new TextEdit(this, 'readonly multiline') {
 	var textOut = new TextEdit(this, TextEdit.OPTION_READONLY
 		| TextEdit.OPTION_MULTILINE) {
 		size: [300, 100],
-		minimumSize: [200, 18],
+		minSize: [200, 18],
 		backgroundColor: Drawer.COLOR_INACTIVE_TAB,
 		// the onDraw workaround for display problems is only needed on mac
 		onDraw: app.macintosh && function(drawer) {

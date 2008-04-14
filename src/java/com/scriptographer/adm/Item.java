@@ -564,29 +564,29 @@ public abstract class Item extends Component {
 		return prefSize != null ? prefSize : getBestSize();
 	}
 
-	public void setMinimumSize(int width, int height) {
+	public void setMinSize(int width, int height) {
 		minSize = new Size(width, height);
 	}
 
-	public void setMinimumSize(Size size) {
+	public void setMinSize(Size size) {
 		if (size == null) minSize = null;
-		else setMinimumSize(size.width, size.height);
+		else setMinSize(size.width, size.height);
 	}
 
-	public Size getMinimumSize() {
+	public Size getMinSize() {
 		return minSize != null ? minSize : getBestSize();
 	}
 
-	public void setMaximumSize(int width, int height) {
+	public void setMaxSize(int width, int height) {
 		maxSize = new Size(width, height);
 	}
 
-	public void setMaximumSize(Size size) {
+	public void setMaxSize(Size size) {
 		if (size == null) maxSize = null;
-		else setMaximumSize(size.width, size.height);
+		else setMaxSize(size.width, size.height);
 	}
 
-	public Size getMaximumSize() {
+	public Size getMaxSize() {
 		return maxSize != null ? maxSize : getSize();
 	}
 
@@ -740,13 +740,13 @@ public abstract class Item extends Component {
 			super.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 		}
 
-		public Dimension getMaximumSize() {
-			Size size = Item.this.getMaximumSize();
+		public Dimension getMaxSize() {
+			Size size = Item.this.getMaxSize();
 			return new Dimension(size.width, size.height);
 		}
 
-		public Dimension getMinimumSize() {
-			Size size = Item.this.getMinimumSize();
+		public Dimension getMinSize() {
+			Size size = Item.this.getMinSize();
 			return new Dimension(size.width, size.height);
 		}
 
@@ -813,19 +813,19 @@ public abstract class Item extends Component {
 
 		public Dimension getMinimumSize() {
 			// If this is a group item such as Frame or ItemGroup, do not
-			// use the native items's minimum size
+			// use the native items's min size
 			if (Item.this instanceof ComponentGroup)
 				return super.getMinimumSize();
-			Size size = Item.this.getMinimumSize();
+			Size size = Item.this.getMinSize();
 			return new Dimension(size.width, size.height);
 		}
 
 		public Dimension getMaximumSize() {
 			// If this is a group item such as Frame or ItemGroup, do not
-			// use the native items's maximum size
+			// use the native items's max size
 			if (Item.this instanceof ComponentGroup)
 				return super.getMaximumSize();
-			Size size = Item.this.getMaximumSize();
+			Size size = Item.this.getMaxSize();
 			return new Dimension(size.width, size.height);
 		}
 

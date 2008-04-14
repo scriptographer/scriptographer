@@ -266,9 +266,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setPosition(JNIEnv *en
 }
 
 /*
- * com.scriptographer.adm.Size nativeGetMinimumSize()
+ * com.scriptographer.adm.Size nativeGetMinSize()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetMinimumSize(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetMinSize(JNIEnv *env, jobject obj) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		ADMPoint pt;
@@ -280,9 +280,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetMinimumSiz
 }
 
 /*
- * void nativeSetMinimumSize(int width, int height)
+ * void nativeSetMinSize(int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetMinimumSize(JNIEnv *env, jobject obj, jint width, jint height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetMinSize(JNIEnv *env, jobject obj, jint width, jint height) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		sADMDialog->SetMinWidth(dialog, width);
@@ -291,9 +291,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetMinimumSize(J
 }
 
 /*
- * com.scriptographer.adm.Size nativeGetMaximumSize()
+ * com.scriptographer.adm.Size nativeGetMaxSize()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetMaximumSize(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetMaxSize(JNIEnv *env, jobject obj) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		DEFINE_ADM_POINT(pt, sADMDialog->GetMaxWidth(dialog), sADMDialog->GetMaxHeight(dialog));
@@ -303,9 +303,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Dialog_nativeGetMaximumSiz
 }
 
 /*
- * void nativeSetMaximumSize(int width, int height)
+ * void nativeSetMaxSize(int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetMaximumSize(JNIEnv *env, jobject obj, jint width, jint height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetMaxSize(JNIEnv *env, jobject obj, jint width, jint height) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		sADMDialog->SetMaxWidth(dialog, width);

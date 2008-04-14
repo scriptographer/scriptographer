@@ -75,14 +75,14 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 		setHyphenateCapitalized(reader.readBoolean("hyphenateCapitalized"));
 		setHyphenationPreference(reader.readFloat("hyphenationPreference"));
 		setDesiredWordSpacing(reader.readFloat("desiredWordSpacing"));
-		setMaximumWordSpacing(reader.readFloat("maximumWordSpacing"));
-		setMinimumWordSpacing(reader.readFloat("minimumWordSpacing"));
+		setMaxWordSpacing(reader.readFloat("maxWordSpacing"));
+		setMinWordSpacing(reader.readFloat("minWordSpacing"));
 		setDesiredLetterSpacing(reader.readFloat("desiredLetterSpacing"));
-		setMaximumLetterSpacing(reader.readFloat("maximumLetterSpacing"));
-		setMinimumLetterSpacing(reader.readFloat("minimumLetterSpacing"));
+		setMaxLetterSpacing(reader.readFloat("maxLetterSpacing"));
+		setMinLetterSpacing(reader.readFloat("minLetterSpacing"));
 		setDesiredGlyphScaling(reader.readFloat("desiredGlyphScaling"));
-		setMaximumGlyphScaling(reader.readFloat("maximumGlyphScaling"));
-		setMinimumGlyphScaling(reader.readFloat("minimumGlyphSpacing"));
+		setMaxGlyphScaling(reader.readFloat("maxGlyphScaling"));
+		setMinGlyphScaling(reader.readFloat("minGlyphSpacing"));
 		setSingleWordJustification(reader.readInteger("singleWordJustification"));
 		setAutoLeadingPercentage(reader.readFloat("autoLeadingPercentage"));
 		setLeadingType(reader.readInteger("leadingType"));
@@ -189,29 +189,29 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	public native Float getDesiredWordSpacing();
 	public native void setDesiredWordSpacing(Float spacing);
 	
-	public native Float getMaximumWordSpacing();
-	public native void setMaximumWordSpacing(Float spacing);
+	public native Float getMaxWordSpacing();
+	public native void setMaxWordSpacing(Float spacing);
 	
-	public native Float getMinimumWordSpacing();
-	public native void setMinimumWordSpacing(Float spacing);
+	public native Float getMinWordSpacing();
+	public native void setMinWordSpacing(Float spacing);
 	
 	public native Float getDesiredLetterSpacing();
 	public native void setDesiredLetterSpacing(Float spacing);
 	
-	public native Float getMaximumLetterSpacing();
-	public native void setMaximumLetterSpacing(Float spacing);
+	public native Float getMaxLetterSpacing();
+	public native void setMaxLetterSpacing(Float spacing);
 	
-	public native Float getMinimumLetterSpacing();
-	public native void setMinimumLetterSpacing(Float spacing);
+	public native Float getMinLetterSpacing();
+	public native void setMinLetterSpacing(Float spacing);
 	
 	public native Float getDesiredGlyphScaling();
 	public native void setDesiredGlyphScaling(Float scaling);
 	
-	public native Float getMaximumGlyphScaling();
-	public native void setMaximumGlyphScaling(Float scaling);
+	public native Float getMaxGlyphScaling();
+	public native void setMaxGlyphScaling(Float scaling);
 	
-	public native Float getMinimumGlyphScaling();
-	public native void setMinimumGlyphScaling(Float scaling);
+	public native Float getMinGlyphScaling();
+	public native void setMinGlyphScaling(Float scaling);
 	
 	public native Integer getSingleWordJustification();
 	public native void setSingleWordJustification(Integer justification);

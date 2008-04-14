@@ -35,7 +35,6 @@ import com.scratchdisk.util.IntegerEnum;
 
 /**
  * @author lehni
- *
  */
 public enum TransformFlag implements IntegerEnum {
 	OBJECTS(1 << 0),

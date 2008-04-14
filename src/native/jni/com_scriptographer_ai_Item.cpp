@@ -777,9 +777,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_moveBelow(JNIEnv *env
 }
 
 /*
- * void transform(com.scriptographer.ai.Matrix matrix, int scaleFlags)
+ * void nativeTransform(com.scriptographer.ai.Matrix matrix, int scaleFlags)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_transform(JNIEnv *env, jobject obj, jobject matrix, jint flags) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeTransform(JNIEnv *env, jobject obj, jobject matrix, jint flags) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealMatrix mx;
@@ -803,7 +803,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_transform(JNIEnv *env, jo
 		AIReal sx, sy;
 		sAIRealMath->AIRealMatrixGetScale(&mx, &sx, &sy);
 		AIReal lineScale = sAIRealMath->AIRealSqrt(sx) * sAIRealMath->AIRealSqrt(sy);
-		Item_commit(env, art, true, flags & com_scriptographer_ai_Item_TRANSFORM_CHILDREN);
+		Item_commit(env, art, true, flags & kTransformChildren);
 		sAITransformArt->TransformArt(art, &mx, lineScale, flags);
 	} EXCEPTION_CONVERT(env);
 }
@@ -822,9 +822,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_rasterize(JNIEnv *env,
 }
 
 /*
- * com.scriptographer.ai.Item expand(int flags, int steps)
+ * com.scriptographer.ai.Item nativeExpand(int flags, int steps)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_expand(JNIEnv *env, jobject obj, jint flags, jint steps) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeExpand(JNIEnv *env, jobject obj, jint flags, jint steps) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		// commit pending changes first, before native expand is called!

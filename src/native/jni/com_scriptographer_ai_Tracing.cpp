@@ -163,9 +163,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setResampleResolution(
 }
 
 /*
- * int getMode()
+ * int nativeGetMode()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getMode(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeGetMode(JNIEnv *env, jobject obj) {
 	ASInt32 mode = 0;
 	try {
 #if kPluginInterfaceVersion >= kAI12
@@ -178,9 +178,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getMode(JNIEnv *env, j
 }
 
 /*
- * void setMode(int mode)
+ * void nativeSetMode(int mode)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMode(JNIEnv *env, jobject obj, jint mode) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_nativeSetMode(JNIEnv *env, jobject obj, jint mode) {
 	try {
 #if kPluginInterfaceVersion >= kAI12
 		TRACING_SET_OPTION(kTracingModeKey, Integer, mode);
@@ -471,9 +471,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setMinArea(JNIEnv *env
 }
 
 /*
- * int getVectorDisplay()
+ * int nativeGetVectorDisplay()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getVectorDisplay(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeGetVectorDisplay(JNIEnv *env, jobject obj) {
 	ASInt32 display = 0;
 	try {
 #if kPluginInterfaceVersion >= kAI12
@@ -486,9 +486,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getVectorDisplay(JNIEn
 }
 
 /*
- * void setVectorDisplay(int display)
+ * void nativeSetVectorDisplay(int display)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setVectorDisplay(JNIEnv *env, jobject obj, jint display) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_nativeSetVectorDisplay(JNIEnv *env, jobject obj, jint display) {
 	try {
 #if kPluginInterfaceVersion >= kAI12
 		TRACING_SET_OPTION(kTracingVisualizeVectorKey, Integer, display);
@@ -499,9 +499,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setVectorDisplay(JNIEn
 }
 
 /*
- * int getRasterDisplay()
+ * int nativeGetRasterDisplay()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getRasterDisplay(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeGetRasterDisplay(JNIEnv *env, jobject obj) {
 	ASInt32 display = 0;
 	try {
 #if kPluginInterfaceVersion >= kAI12
@@ -514,9 +514,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_getRasterDisplay(JNIEn
 }
 
 /*
- * void setRasterDisplay(int display)
+ * void nativeSetRasterDisplay(int display)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_setRasterDisplay(JNIEnv *env, jobject obj, jint display) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_nativeSetRasterDisplay(JNIEnv *env, jobject obj, jint display) {
 	try {
 #if kPluginInterfaceVersion >= kAI12
 		TRACING_SET_OPTION(kTracingVisualizeRasterKey, Integer, display);

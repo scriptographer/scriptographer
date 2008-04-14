@@ -686,13 +686,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_deselect(JNIEnv *env
 }
 
 /*
- * void changeCase(int type)
+ * boolean nativeChangeCase(int type)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_changeCase(JNIEnv *env, jobject obj, jint type) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextRange_nativeChangeCase(JNIEnv *env, jobject obj, jint type) {
 	try {
 		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
-		sTextRange->ChangeCase(range, (CaseChangeType) type);
+		return !sTextRange->ChangeCase(range, (CaseChangeType) type);
 	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -706,9 +707,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_fitHeadlines(JNIEnv 
 }
 
 /*
- * int getCharacterType()
+ * int nativeGetCharacterType()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getCharacterType(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_nativeGetCharacterType(JNIEnv *env, jobject obj) {
 	try {
 		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
 		ASCharType type;

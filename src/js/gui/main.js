@@ -74,7 +74,7 @@ var mainDialog = new FloatingDialog(
 	scriptList = new HierarchyList(this) {
 		style: List.STYLE_BLACK_RECT,
 		size: [208, 20 * lineHeight],
-		minimumSize: [208, 8 * lineHeight],
+		minSize: [208, 8 * lineHeight],
 		entrySize: [2000, lineHeight],
 		entryTextRect: [0, 0, 2000, lineHeight],
 		// TODO: consider adding onDoubleClick, instead of this nasty workaround here!
