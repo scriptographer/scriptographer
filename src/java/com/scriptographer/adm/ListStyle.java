@@ -23,41 +23,36 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 03.01.2005.
+ * 
+ * File created on Apr 15, 2008.
  *
  * $Id$
  */
 
 package com.scriptographer.adm;
 
-import com.scratchdisk.util.IntegerEnumUtils;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * @author lehni
+ *
  */
-public class List extends ListItem {
+public enum ListStyle implements IntegerEnum {
+	MULTISELECT(1 << 0),
+	DIVIDED(1 << 1),
+	TILE(1 << 2),
+	ENTRY_ALWAYS_SELECTED(1 << 3),
+	BLACK_RECT(1 << 4),
+	USE_IMAGE(1 << 5),
+	ENTRYTEXT_EDITABLE(1 << 6);
 
-	protected List(Dialog dialog, ItemType type) {
-		super(dialog, type);
+	protected int value;
+
+	private ListStyle(int value) {
+		this.value = value;
 	}
 
-	public List(Dialog dialog) {
-		this(dialog, ItemType.LISTBOX);
-	}
-	
-	/**
-	 * Empty constructor used for nested HierarchyLists 
-	 */
-	protected List() {
-	}
-
-	public ListStyle getStyle() {
-		return IntegerEnumUtils.get(ListStyle.class, nativeGetStyle());
-	}
-
-	public void setStyle(ListStyle style) {
-		if (style != null)
-			nativeSetStyle(style.value);
+	public int value() {
+		return value;
 	}
 }

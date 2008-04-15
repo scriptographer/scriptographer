@@ -79,7 +79,7 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 			// color
 			// do not get completely filled
 			// Fill in the missing parts.
-			drawer.setColor('inactive-tab');
+			drawer.color = 'inactive-tab';
 			var rect = drawer.boundsRect;
 			// a tet line with the small font is 11 pixels heigh. there
 			// seems to be a shift,

@@ -67,7 +67,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 
 	// Script List:
 	scriptList = new HierarchyList(this) {
-		style: List.STYLE_BLACK_RECT,
+		style: 'black-rect',
 		size: [208, 20 * lineHeight],
 		minSize: [208, 8 * lineHeight],
 		entrySize: [2000, lineHeight],
