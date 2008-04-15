@@ -81,10 +81,9 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 			// Fill in the missing parts.
 			drawer.color = 'inactive-tab';
 			var rect = drawer.boundsRect;
-			// a tet line with the small font is 11 pixels heigh. there
-			// seems to be a shift,
-			// which was detected by trial and error. This might change in
-			// future versions!
+			// A tet line with the small font is 11 pixels heigh. there
+			// seems to be a shift, which was detected by trial and error.
+			// This might change in future versions!
 			var height = rect.height - (rect.height - 6) % 11 - 3;
 			// 18 is the width of the scrollbar. This might change in future
 			// versions!

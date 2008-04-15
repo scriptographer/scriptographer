@@ -86,35 +86,6 @@ public abstract class Dialog extends Component {
 		ITEM_PRIVATE_UNIQUE = -7,
 		ITEM_FIRST_UNUSED_PRIVATE = -8;
 
-	// TODO: Think about where to move all the ADM constants
-	// (Dialog.CURSOR_, Dialog.FONT_, Drawer.COLOR_
-	public static final int
-		CURSOR_IBEAM = -1,
-		CURSOR_CROSS = -2,
-		CURSOR_WAIT = -3,
-		CURSOR_ARROW = -4,
-		CURSOR_CANCEL = -5,
-		CURSOR_FINGER = -6,
-		CURSOR_FIST = -7,
-		CURSOR_FISTPLUS = -8,
-		CURSOR_HOSTCONTROLS = -9;
-
-	// ADMFont
-	public static final int
-		FONT_DEFAULT = 0,
-		FONT_DIALOG = 1,
-		FONT_PALETTE = 2,
-		FONT_ITALIC_DIALOG = 3,
-		FONT_ITALIC_PALETTE = 4,
-		FONT_BOLD_DIALOG = 5,
-		FONT_BOLD_PALETTE = 6,
-		FONT_BOLD_ITALIC_DIALOG = 7,
-		FONT_BOLD_ITALIC_PALETTE = 8,
-		FONT_FIXEDWIDTH = 9,
-		FONT_ITALIC_FIXEDWIDTH = 10,
-		FONT_BOLD_FIXEDWIDTH = 11,
-		FONT_BOLD_ITALIC_FIXEDWIDTH = 12;
-
 	private ArrayList items;
 
 	private EnumSet<DialogOption> options;
@@ -842,9 +813,18 @@ public abstract class Dialog extends Component {
 	 * 
 	 */
 
-	public native int getCursor();
+	private native int nativeGetCursor();
 	
-	public native void setCursor(int cursor);
+	private native void nativeSetCursor(int cursor);
+
+	public Cursor getCursor() {
+		return IntegerEnumUtils.get(Cursor.class, nativeGetCursor());
+	}
+
+	public void setCursor(Cursor cursor) {
+		if (cursor != null)
+			nativeSetCursor(cursor.value);
+	}
 
 	/* 
 	 * Dialog text accessors
@@ -853,9 +833,18 @@ public abstract class Dialog extends Component {
 
 	private native void nativeSetTitle(String title);
 
-	public native int getFont();
+	private native int nativeGetFont();
 	
-	public native void setFont(int font);
+	private native void nativeSetFont(int font);
+
+	public DialogFont getFont() {
+		return IntegerEnumUtils.get(DialogFont.class, nativeGetFont());
+	}
+
+	public void setFont(DialogFont font) {
+		if (font != null)
+			nativeSetFont(font.value);
+	}
 
 	public String getTitle() {
 		return title;

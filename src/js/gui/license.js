@@ -30,8 +30,6 @@
  */
 
 var licenseDialog = new ModalDialog(function() {
-	// this.font = Dialog.FONT_PALETTE;
-
 	// Add trailing zeros to revision
 	var revision = scriptographer.revision + '';
 	while (revision.length < 3)
@@ -83,6 +81,7 @@ var licenseDialog = new ModalDialog(function() {
 			'preferred fill preferred preferred',
 			'preferred fill preferred'
 		],
+		// font: 'palette';
 		content: {
 			'0, 0, L, T': logo,
 			'1, 0, 3, 1': text,

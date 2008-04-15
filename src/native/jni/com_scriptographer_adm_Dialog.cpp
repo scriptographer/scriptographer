@@ -516,9 +516,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Dialog_isCollapsed(JNIEnv
 }
 
 /*
- * int getCursor()
+ * int nativeGetCursor()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_getCursor(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_nativeGetCursor(JNIEnv *env, jobject obj) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		long cursor;
@@ -530,9 +530,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_getCursor(JNIEnv *env,
 }
 
 /*
- * void setCursor(int cursor)
+ * void nativeSetCursor(int cursor)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setCursor(JNIEnv *env, jobject obj, jint cursor) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetCursor(JNIEnv *env, jobject obj, jint cursor) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		if (cursor >= 0) {
@@ -559,9 +559,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetTitle(JNIEnv 
 }
 
 /*
- * int getFont()
+ * int nativeGetFont()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_getFont(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_nativeGetFont(JNIEnv *env, jobject obj) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		return sADMDialog->GetFont(dialog);
@@ -570,9 +570,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Dialog_getFont(JNIEnv *env, j
 }
 
 /*
- * void setFont(int font)
+ * void nativeSetFont(int font)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_setFont(JNIEnv *env, jobject obj, jint font) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Dialog_nativeSetFont(JNIEnv *env, jobject obj, jint font) {
 	try {
 	    ADMDialogRef dialog = gEngine->getDialogRef(env, obj);
 		if (font >= 0) sADMDialog->SetFont(dialog, (ADMFont)font);

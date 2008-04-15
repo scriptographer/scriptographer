@@ -526,8 +526,18 @@ public abstract class Item extends Component {
 		invalidate(rt.x, rt.y, rt.width, rt.height);
 	}
 
-	public native int getFont();
-	public native void setFont(int font);
+	private native int nativeGetFont();
+	
+	private native void nativeSetFont(int font);
+
+	public DialogFont getFont() {
+		return IntegerEnumUtils.get(DialogFont.class, nativeGetFont());
+	}
+
+	public void setFont(DialogFont font) {
+		if (font != null)
+			nativeSetFont(font.value);
+	}
 
 	private native void nativeSetBackgroundColor(int color);
 	private native int nativeGetBackgroundColor();
@@ -546,8 +556,18 @@ public abstract class Item extends Component {
 	 * 
 	 */
 	
-	public native int getCursor();
-	public native void setCursor(int cursor);
+	private native int nativeGetCursor();
+	
+	private native void nativeSetCursor(int cursor);
+
+	public Cursor getCursor() {
+		return IntegerEnumUtils.get(Cursor.class, nativeGetCursor());
+	}
+
+	public void setCursor(Cursor cursor) {
+		if (cursor != null)
+			nativeSetCursor(cursor.value);
+	}
 	
 	/*
 	 * tooltips

@@ -37,7 +37,7 @@ import com.scriptographer.ai.Rectangle;
  * @author lehni
  */
 public class HierarchyListEntry extends ListEntry {
-	private int font = Dialog.FONT_DEFAULT;
+	private DialogFont font = DialogFont.DEFAULT;
 	private DialogColor bgColor = DialogColor.BACKGROUND;
 	private DialogColor textColor = DialogColor.TEXT;
 	private DialogColor dividerColor = DialogColor.BLACK;
@@ -132,12 +132,14 @@ public class HierarchyListEntry extends ListEntry {
 	public native void nativeSetBackgroundColor(int color); // Drawer.COLOR_*
 	public native void nativeSetDividerColor(int color);
 
-	public void setFont(int font) {
-		this.font = font;
-		nativeSetFont(font);
+	public void setFont(DialogFont font) {
+		if (font != null) {
+			this.font = font;
+			nativeSetFont(font.value);
+		}
 	}
 	
-	public int getFont() {
+	public DialogFont getFont() {
 		return font;
 	}
 

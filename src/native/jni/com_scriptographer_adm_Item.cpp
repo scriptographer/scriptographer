@@ -468,9 +468,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setKnown(JNIEnv *env, jo
 }
 
 /*
- * int getCursor()
+ * int nativeGetCursor()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getCursor(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeGetCursor(JNIEnv *env, jobject obj) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		long cursor;
@@ -483,9 +483,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getCursor(JNIEnv *env, j
 }
 
 /*
- * void setCursor(int arg1)
+ * void nativeSetCursor(int cursor)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setCursor(JNIEnv *env, jobject obj, jint cursor) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetCursor(JNIEnv *env, jobject obj, jint cursor) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		if (cursor >= 0) {
@@ -571,9 +571,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_hideToolTip(JNIEnv *env,
 }
 
 /*
- * void setFont(int font)
+ * void nativeSetFont(int font)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setFont(JNIEnv *env, jobject obj, jint font) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetFont(JNIEnv *env, jobject obj, jint font) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetFont(item, (ADMFont)font);
@@ -581,9 +581,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setFont(JNIEnv *env, job
 }
 
 /*
- * int getFont()
+ * int nativeGetFont()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getFont(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeGetFont(JNIEnv *env, jobject obj) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetFont(item);
