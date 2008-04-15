@@ -23,27 +23,39 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 03.01.2005.
+ * 
+ * File created on Apr 15, 2008.
  *
  * $Id$
  */
 
 package com.scriptographer.adm;
 
+import com.scratchdisk.util.IntegerEnum;
+
 /**
  * @author lehni
+ *
  */
-public class Slider extends ValueItem {
+public enum TextOption implements IntegerEnum {
+	PASSWORD(1 << 1),
+	UNICODE(1 << 2), // [cpaduan] 6/18/02 - Creates a Unicode based edit box (if possible). Currently has no effect on Windows.
+	DISABLE_DRAG_DROP(1 << 3), // Disables drag & drop from or to text edits. Currently mac-only.
 
-	// ADMSliderStyle
-	public static final int
-		STYLE_NONE = 0,
-		STYLE_NONLINEAR = 1,
-		STYLE_SHOW_FRACTION = 2;
+	// Self defined pseudo options), for creation of the right TYPE:
+	READONLY(0),
+	MULTILINE(0), 
+	// for TYPE_TEXT_EDIT_POPUP:
+	POPUP(0),
+	SCROLLING(0);
 
-	public Slider(Dialog dialog) {
-		super(dialog, ItemType.SLIDER);
+	protected int value;
+
+	private TextOption(int value) {
+		this.value = value;
 	}
 
+	public int value() {
+		return value;
+	}
 }

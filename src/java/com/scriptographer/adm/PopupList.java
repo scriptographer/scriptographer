@@ -35,26 +35,16 @@ package com.scriptographer.adm;
  * @author lehni
  */
 public class PopupList extends ListItem {
-	// Options
-	public static final int
-	// self defined pseudo options, for creation of the right TYPE:
-		OPTION_SCROLLING = 1 << 1;
 	
 	protected PopupList(Dialog dialog, long handle) {
 		super(dialog, handle);
 	}
 
-	public PopupList(Dialog dialog, int options) {
-		super(dialog, getType(options), OPTION_NONE);
+	public PopupList(Dialog dialog, boolean scrolling) {
+		super(dialog, scrolling ? ItemType.SCROLLING_POPUP_LIST : ItemType.POPUP_LIST);
 	}
 
 	public PopupList(Dialog dialog) {
-		this(dialog, OPTION_NONE);
-	}
-
-	private static int getType(int options) {
-		// abuse the ADM's password style for creating it as a type...
-		return (options & OPTION_SCROLLING) != 0 ? TYPE_SCROLLING_POPUP_LIST
-			: TYPE_POPUP_LIST;
+		this(dialog, false);
 	}
 }

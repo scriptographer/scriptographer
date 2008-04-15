@@ -90,17 +90,17 @@ public class CharacterStyle extends PathStyle {
 		setTracking(reader.readInteger("tracking"));
 		setBaselineShift(reader.readFloat("baselineShift"));
 		setRotation(reader.readFloat("Rotation"));
-		setKerningType((KerningType) EnumUtils.get(KerningType.class,
+		setKerningType(EnumUtils.get(KerningType.class,
 				reader.readString("kerningType")));
-		setCapitalization((TextCapitalization) EnumUtils.get(TextCapitalization.class,
+		setCapitalization(EnumUtils.get(TextCapitalization.class,
 				reader.readString("capitalization")));
-		setBaselineOption((BaselineOption) EnumUtils.get(BaselineOption.class,
+		setBaselineOption(EnumUtils.get(BaselineOption.class,
 				reader.readString("baselineOption")));
-		setOpenTypePosition((OpenTypePosition) EnumUtils.get(OpenTypePosition.class,
+		setOpenTypePosition(EnumUtils.get(OpenTypePosition.class,
 				reader.readString("openTypePosition")));
-		setStrikethroughPosition((StrikethroughPosition) EnumUtils.get(StrikethroughPosition.class,
+		setStrikethroughPosition(EnumUtils.get(StrikethroughPosition.class,
 				reader.readString("strikethroughPosition")));
-		setUnderlinePosition((UnderlinePosition) EnumUtils.get(UnderlinePosition.class,
+		setUnderlinePosition(EnumUtils.get(UnderlinePosition.class,
 				reader.readString("underlinePosition")));
 		setUnderlineOffset(reader.readFloat("underlineOffset"));
 		setLigature(reader.readBoolean("ligature"));
@@ -115,7 +115,7 @@ public class CharacterStyle extends PathStyle {
 		setConnectionForms(reader.readBoolean("forms"));
 		setStylisticAlternates(reader.readBoolean("stylisticAlternates"));
 		setOrnaments(reader.readBoolean("ornaments"));
-		setFigureStyle((FigureStyle) EnumUtils.get(FigureStyle.class,
+		setFigureStyle(EnumUtils.get(FigureStyle.class,
 				reader.readString("figureStyle")));
 		setNoBreak(reader.readBoolean("noBreak"));
 	}

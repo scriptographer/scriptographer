@@ -32,9 +32,9 @@
 package com.scriptographer.adm;
 
 import java.awt.Dimension;
-import java.util.HashMap;
 
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.ScriptographerEngine; 
 import com.scriptographer.ScriptographerException;
 
@@ -42,122 +42,8 @@ import com.scriptographer.ScriptographerException;
  * @author lehni
  */
 public abstract class Item extends Component {
-
-	// options
-	public static final int
-		OPTION_NONE = 0;
-
-	// ADMItemType:
-	protected final static int
-		TYPE_DIAL = 0, // wrapped
-		TYPE_FRAME = 1, // wrapped
-		TYPE_ITEMGROUP = 2,  // wrapped
-		TYPE_TABBED_MENU = 3,  // deprecated
-		TYPE_LISTBOX = 4, // wrapped
-		TYPE_HIERARCHY_LISTBOX = 5, // wrapped
-		TYPE_PICTURE_CHECKBOX = 6, // wrapped
-		TYPE_PICTURE_PUSHBUTTON = 7, // wrapped
-		TYPE_PICTURE_RADIOBUTTON = 8, // wrapped
-		TYPE_PICTURE_STATIC = 9, // wrapped
-		TYPE_POPUP_CONTROL = 10,
-		TYPE_POPUP_CONTROLBUTTON = 11,
-		TYPE_POPUP_SPINEDIT_CONTROL = 12,
-		TYPE_POPUP_LIST = 13, // wrapped
-		TYPE_POPUP_MENU = 14, // wrapped
-		TYPE_RESIZE = 15, // wrapped (dialog.getResizeButton() Button)
-		TYPE_SCROLLBAR = 16, // wrapped
-		TYPE_SCROLLING_POPUP_LIST = 17, // wrapped
-		TYPE_SLIDER = 18, // wrapped
-		TYPE_SPINEDIT = 19, // wrapped
-		TYPE_SPINEDIT_POPUP = 20, // wrapped
-		TYPE_SPINEDIT_SCROLLING_POPUP = 21, // wrapped
-		TYPE_TEXT_CHECKBOX = 22, // wrapped
-		TYPE_TEXT_EDIT = 23, // wrapped
-		TYPE_TEXT_EDIT_READONLY = 24, // wrapped
-		TYPE_TEXT_EDIT_MULTILINE = 25, // wrapped
-		TYPE_TEXT_EDIT_MULTILINE_READONLY = 26, // wrapped
-		TYPE_TEXT_EDIT_POPUP = 27, // wrapped
-		TYPE_TEXT_EDIT_SCROLLING_POPUP = 28, // wrapped
-		TYPE_TEXT_EDIT_PASSWORD = 29, // wrapped
-		TYPE_TEXT_PUSHBUTTON = 30, // wrapped
-		TYPE_TEXT_RADIOBUTTON = 31, // wrapped
-		TYPE_TEXT_STATIC = 32, // wrapped
-		TYPE_TEXT_STATIC_MULTILINE = 33, // wrapped
-		TYPE_PROGRESS_BAR = 34, // wrapped
-		TYPE_CHASING_ARROWS = 35, // wrapped
-		TYPE_USER = 36,
-		TYPE_MULTICOLUMN_LISTVIEW = 37,
-		TYPE_SCROLLING_VIEW = 38,
-		TYPE_TABGROUP = 39;
 	
-	protected static final String[] itemTypes = {
-		"ADM Dial Type",
-		"ADM Frame Type",
-		"ADM Item Group Type",
-		"ADM Tabbed Menu Type", // deprecated
-		"ADM List Box Type",
-		"ADM Hierarchy List Box Type",
-		"ADM Picture Check Box Button Type",
-		"ADM Picture Push Button Type",
-		"ADM Picture Radio Button Type",
-		"ADM Picture Static Type",
-		"ADM Popup Control Type",
-		"ADM Popup Control Button Type",
-		"ADM Popup Spin Edit Control Type",
-		"ADM Popup List Type",
-		"ADM Popup Menu Type",
-		"ADM Resize Type",
-		"ADM Scrollbar Type",
-		"ADM Scrolling Popup List Type",
-		"ADM Slider Type",
-		"ADM Spin Edit Type",
-		"ADM Spin Edit Popup Type",
-		"ADM Spin Edit Scrolling Popup Type",
-		"ADM Text Check Box Type",
-		"ADM Text Edit Type",
-		"ADM Text Edit Read-only Type",
-		"ADM Text Edit Multi Line Type",
-		"ADM Text Edit Multi Line Read-only Type",
-		"ADM Text Edit Popup Type",
-		"ADM Text Edit Scrolling Popup Type",
-		"ADM Password Text Edit Type",
-		"ADM Text Push Button Type",
-		"ADM Text Radio Button Type",
-		"ADM Text Static Type",
-		"ADM Text Static Multi Line Type",
-		"ADM Progress Bar Type",
-		"ADM Chasing Arrows Type",
-		"ADM User Type",
-		"ADM Multi Column List View Type",
-		"ADM Scrolling View Type",
-		"ADM Tab Group Type"
-	};
-
-	// hashmap for conversation to unique ids that can be compared with ==
-	// instead of .equals
-	private static HashMap<String, Integer> types = new HashMap<String, Integer>();
-	
-	static {
-		for (int i = 0; i < itemTypes.length; i++)
-			types.put(itemTypes[i], i);
-	}
-	
-	protected static int convertType(String type) {
-		Integer value = (Integer) types.get(type);
-		if (value != null)
-			return value.intValue();
-		else return -1;
-	}
-	
-	protected static String convertType(int type) {
-		return itemTypes[type];
-	}
-	
-	/**
-	 * used for storing the ADMItemRef in this object
-	 */
-	protected int type;
-	protected int options;
+	protected ItemType type;
 
 	protected Dialog dialog;
 
@@ -185,15 +71,18 @@ public abstract class Item extends Component {
 	 * @param type
 	 * @param options
 	 */
-	protected Item(Dialog dialog, int type, int options) {
+	protected Item(Dialog dialog, ItemType type, int options) {
 		this();
-		this.handle = nativeCreate(dialog.handle, convertType(type), options);
+		this.handle = nativeCreate(dialog.handle, type.name, options);
 		this.dialog = dialog;
 		this.type = type;
-		this.options = options;
 		initBounds();
 	}
-	
+
+	protected Item(Dialog dialog, ItemType type) {
+		this(dialog, type, 0);
+	}
+
 	/**
 	 * Constructor for allready existing Items that get wrapped,
 	 * e.g. PopupMenu 
@@ -205,8 +94,7 @@ public abstract class Item extends Component {
 		this();
 		this.handle = (int) handle;
 		this.dialog = dialog;
-		this.type = convertType(nativeInit(this.handle));
-		this.options = 0;
+		this.type = ItemType.get(nativeInit(this.handle));
 		initBounds();
 	}
 	
@@ -268,12 +156,12 @@ public abstract class Item extends Component {
 			ScriptographerEngine.invoke(onDestroy, this);
 	}
 
-	protected void onNotify(int notifier) throws Exception {
+	protected void onNotify(Notifier notifier) throws Exception {
 		switch (notifier) {
-		case Notifier.NOTIFIER_INITIALIZE:
+		case INITIALIZE:
 			onInitialize();
 			break;
-		case Notifier.NOTIFIER_DESTROY:
+		case DESTROY:
 			onDestroy();
 			break;
 		}
@@ -325,10 +213,6 @@ public abstract class Item extends Component {
 	 * item information accessors
 	 * 
 	 */
-	
-	protected int getType() {
-		return type;
-	}
 
 	protected native void nativeSetStyle(int style);
 	protected native int nativeGetStyle();
@@ -482,10 +366,10 @@ public abstract class Item extends Component {
 		// TODO: verify for which items nativeGetBestSize really works!
 		Size size = null;
 		switch (type) {
-			case TYPE_PICTURE_STATIC:
-			case TYPE_PICTURE_CHECKBOX:
-			case TYPE_PICTURE_PUSHBUTTON:
-			case TYPE_PICTURE_RADIOBUTTON:
+			case PICTURE_STATIC:
+			case PICTURE_CHECKBOX:
+			case PICTURE_PUSHBUTTON:
+			case PICTURE_RADIOBUTTON:
 				Image image = null;
 				if (this instanceof ImageStatic)
 					image = ((ImageStatic) this).getImage();
@@ -494,7 +378,7 @@ public abstract class Item extends Component {
 				if (image != null)
 					size = image.getSize();
 				break;
-			case TYPE_POPUP_LIST:
+			case POPUP_LIST:
 				PopupList list = (PopupList) this;
 				if (list.size() > 0) {
 					size = new Size(0, 0);
@@ -645,9 +529,18 @@ public abstract class Item extends Component {
 	public native int getFont();
 	public native void setFont(int font);
 
-	public native void setBackgroundColor(int color); // Drawer.COLOR_*
-	public native int getBackgroundColor();
+	private native void nativeSetBackgroundColor(int color);
+	private native int nativeGetBackgroundColor();
 
+	public void setBackgroundColor(DialogColor color) {
+		if (color != null)
+			nativeSetBackgroundColor(color.value);
+	}
+
+	public DialogColor getBackgroundColor() {
+		return IntegerEnumUtils.get(DialogColor.class,
+				nativeGetBackgroundColor());
+	}
 	/* 
 	 * cursor ID accessors
 	 * 

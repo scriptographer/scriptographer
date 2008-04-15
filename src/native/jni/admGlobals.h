@@ -57,6 +57,10 @@ void ASAPI HierarchyListEntry_onNotify(ADMListEntryRef entry, ADMNotifierRef not
 ASBoolean ASAPI HierarchyListEntry_onTrack(ADMListEntryRef entry, ADMTrackerRef tracker);
 void ASAPI HierarchyListEntry_onDraw(ADMListEntryRef entry, ADMDrawerRef drawer);
 
+// Pseudo notifiers: 
+#define kADMInitializeWindowNotifier "ADM Initialize Window Notifier"
+#define kADMDestroyNotifier "ADM Destroy Notifier"
+
 #define DEFINE_ADM_POINT(PT, X, Y) \
 	ADMPoint PT; \
 	PT.h = (short) X; \

@@ -33,7 +33,7 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 	var engine = ScriptEngine.getEngineByName('JavaScript');
 	var consoleScope = engine != null ? engine.createScope() : null;
 
-	var textIn = new TextEdit(this, TextEdit.OPTION_MULTILINE) {
+	var textIn = new TextEdit(this, 'multiline') {
 		size: [300, 100],
 		minSize: [200, 18],
 		onTrack: function(tracker) {
@@ -69,19 +69,17 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 		}
 	};
 
-//	var textOut = new TextEdit(this, 'readonly multiline') {
-	var textOut = new TextEdit(this, TextEdit.OPTION_READONLY
-		| TextEdit.OPTION_MULTILINE) {
+	var textOut = new TextEdit(this, 'readonly multiline') {
 		size: [300, 100],
 		minSize: [200, 18],
-		backgroundColor: Drawer.COLOR_INACTIVE_TAB,
+		backgroundColor: 'inactive-tab',
 		// the onDraw workaround for display problems is only needed on mac
 		onDraw: app.macintosh && function(drawer) {
 			// Workaround for mac, where TextEdit fields with a background
 			// color
 			// do not get completely filled
 			// Fill in the missing parts.
-			drawer.setColor(Drawer.COLOR_INACTIVE_TAB);
+			drawer.setColor('inactive-tab');
 			var rect = drawer.boundsRect;
 			// a tet line with the small font is 11 pixels heigh. there
 			// seems to be a shift,

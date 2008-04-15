@@ -31,6 +31,8 @@ package com.scriptographer.adm;
 
 import java.awt.Color;
 
+import com.scratchdisk.util.IntegerEnumUtils;
+
 /**
  * @author lehni
  */
@@ -38,41 +40,6 @@ public class Drawer extends NativeObject {
 	// if this drawer draws into an image:
 	private Image image;
 	private boolean destroy;
-	
-	// ADMColor
-	public static final int
-		COLOR_BLACK = 0,
-		COLOR_WHITE = 1,
-		COLOR_HILITE = 2,
-		COLOR_HILITE_TEXT = 3,
-		COLOR_LIGHT = 4,
-		COLOR_BACKGROUND = 5,
-		COLOR_SHADOW = 6,
-		COLOR_DISABLED = 7,
-		COLOR_BUTTON_UP = 8,
-		COLOR_BUTTON_DOWN = 9,
-		COLOR_BUTTON_DOWN_SHADOW = 10,
-		COLOR_TOOLTIP_BACKGROUND = 11,
-		COLOR_TOOLTIP_FOREGROUND = 12,
-		COLOR_WINDOW = 13,
-		COLOR_FOREGROUND = 14,
-		COLOR_TEXT = 15,
-		COLOR_RED = 16,
-		COLOR_TAB_BACKGROUND = 17,
-		COLOR_ACTIVE_TAB = 18,
-		COLOR_INACTIVE_TAB = 19;
-
-	// ADMDrawMode
-	public static final int
-		MODE_NORMAL = 0,
-		MODE_XOR = 1;
-
-	// ADMRecolorStyle
-	public static final int
-		RECOLOR_NO = 0,
-		RECOLOR_ACTIVE = 1,
-		RECOLOR_INACTIVE = 2,
-		RECOLOR_DISABLED = 3;
 
 	protected Drawer(int handle, Image image, boolean destroy) {
 		super(handle);
@@ -179,11 +146,25 @@ public class Drawer extends NativeObject {
 	
 	public native Color getColor();
 	public native void setColor(Color color);
-	public native void setColor(int colorType); // Drawer.COLOR_ segmentValues
+
+	private native void nativeSetColor(int color);
+	public void setColor(DialogColor color) {
+		if (color != null)
+			nativeSetColor(color.value);
+	}
 	
-	public native int getDrawMode(); // Drawer.MODE_ segmentValues
-	public native void setDrawMode(int mode);
-	
+	private native int nativeGetDrawMode(); // Drawer.MODE_ segmentValues
+	private native void nativeSetDrawMode(int mode);
+
+	public DrawMode getDrawMode() {
+		return IntegerEnumUtils.get(DrawMode.class, nativeGetDrawMode());
+	}
+
+	public void setDrawMode(DrawMode mode) {
+		if (mode != null)
+			nativeSetDrawMode(mode.value);
+	}
+
 	public native int getFont(); // Dialog.FONT_ segmentValues
 	public native void setFont(int font);
 
@@ -256,22 +237,26 @@ public class Drawer extends NativeObject {
 	 * 
 	 */
 
+	private native void nativeDrawImage(Image image, int x, int y, int style);
+
 	/**
 	 * Draws the image with a recoloring style
 	 * @param image
 	 * @param x
 	 * @param y
-	 * @param style Drawer.RECOLOR_ values
+	 * @param style
 	 */
-	public native void drawImage(Image image, int x, int y, int style);
+	public void drawImage(Image image, int x, int y, RecolorStyle style) {
+		nativeDrawImage(image, x, y, (style != null ? style : RecolorStyle.NO).value);
+	}
 
 	/**
 	 * Draws the image with a recoloring style
 	 * @param image
 	 * @param point
-	 * @param style Drawer.RECOLOR_ values
+	 * @param style
 	 */
-	public void drawImage(Image image, Point point, int style) {
+	public void drawImage(Image image, Point point, RecolorStyle style) {
 		drawImage(image, point.x, point.y, style);
 	}
 
@@ -281,6 +266,8 @@ public class Drawer extends NativeObject {
 		drawImage(image, point.x, point.y);
 	}
 	
+	private native void nativeDrawImage(Image image, int x, int y,
+			int width, int height, int style);
 	/**
 	 * Draws the image centered in a rectangle, with a recoloring style
 	 * 
@@ -291,8 +278,11 @@ public class Drawer extends NativeObject {
 	 * @param height
 	 * @param style style Drawer.RECOLOR_ values
 	 */
-	public native void drawImage(Image image, int x, int y,
-			int width, int height, int style);
+	public void drawImage(Image image, int x, int y,
+			int width, int height, RecolorStyle style) {
+		nativeDrawImage(image, x, y, width, height,
+				(style != null ? style : RecolorStyle.NO).value);
+	}
 
 	/**
 	 * Draws the image centered in a rectangle, with a recoloring style
@@ -301,7 +291,7 @@ public class Drawer extends NativeObject {
 	 * @param rect
 	 * @param style style Drawer.RECOLOR_ values
 	 */
-	public void drawImage(Image image, Rectangle rt, int style) {
+	public void drawImage(Image image, Rectangle rt, RecolorStyle style) {
 		drawImage(image, rt.x, rt.y, rt.width, rt.height, style);
 	}
 

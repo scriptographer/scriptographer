@@ -31,25 +31,17 @@
 
 package com.scriptographer.adm;
 
+import java.util.Arrays;
+import java.util.EnumSet;
+
 import com.scriptographer.ScriptographerEngine; 
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
  * @author lehni
  */
 public class TextEdit extends TextValueItem {
-	// Options
-	public static final int
-		OPTION_PASSWORD = 1 << 1,
-		OPTION_UNICODE = 1 << 2, // [cpaduan] 6/18/02 - Creates a Unicode based edit box (if possible). Currently has no effect on Windows.
-		OPTION_DISABLE_DRAG_DROP = 1 << 3, // Disables drag & drop from or to text edits. Currently mac-only.
-
-	// self defined pseudo options, for creation of the right TYPE:
-		OPTION_READONLY = 1 << 4,
-		OPTION_MULTILINE = 1 << 5, 
-		// for TYPE_TEXT_EDIT_POPUP:
-		OPTION_POPUP = 1 << 6,
-		OPTION_SCROLLING = 1 << 7;
 
 	// ADMTextEditStyle, ADMTextEditPopupStyle
 	public static final int
@@ -60,7 +52,7 @@ public class TextEdit extends TextValueItem {
 		STYLE_PASSWORD = 32;      // Win32 value for ES_PADMSWORD
 
 	private boolean unitInitialized = false;
-	
+
 	protected TextEdit(Dialog dialog, long handle) {
 		super(dialog, handle);
 	}
@@ -72,36 +64,43 @@ public class TextEdit extends TextValueItem {
 	 * @param type
 	 * @param options
 	 */
-	protected TextEdit(Dialog dialog, int type, int options) {
-		super(dialog, type, options);
+	protected TextEdit(Dialog dialog, ItemType type, EnumSet<TextOption> options) {
+		super(dialog, type, IntegerEnumUtils.getFlags(options));
 	}
 	
-	public TextEdit(Dialog dialog, int options) {
+	public TextEdit(Dialog dialog, EnumSet<TextOption> options) {
 		// filter out the pseudo styles from the options:
 		// (max. real bit is 3, and the mask is (1 << (max + 1)) - 1
-		super(dialog, getType(options), options & ((1 << 4) - 1));
+		this(dialog, getType(options), options);
+	}
+
+	public TextEdit(Dialog dialog, TextOption[] options) {
+		this(dialog, EnumSet.copyOf(Arrays.asList(options)));
 	}
 
 	public TextEdit(Dialog dialog) {
-		this(dialog, OPTION_NONE);
+		this(dialog, (EnumSet<TextOption>) null);
 	}
 
-	private static int getType(int options) {
-		// abuse the ADM's password style for creating it as a type...
-		if ((options & OPTION_PASSWORD) != 0) {
-			return TYPE_TEXT_EDIT_PASSWORD;
-		} else if ((options & OPTION_POPUP) != 0) {
-			return (options & OPTION_SCROLLING) != 0 ? TYPE_TEXT_EDIT_SCROLLING_POPUP
-					: TYPE_TEXT_EDIT_POPUP;
-		} else {
-			boolean multiline = ((options & OPTION_MULTILINE) != 0);
-			if ((options & OPTION_READONLY) != 0) {
-				return multiline ? TYPE_TEXT_EDIT_MULTILINE_READONLY
-						: TYPE_TEXT_EDIT_READONLY;
+	private static ItemType getType(EnumSet<TextOption> options) {
+		if (options != null) {
+			// abuse the ADM's password style for creating it as a type...
+			if (options.contains(TextOption.PASSWORD)) {
+				return ItemType.TEXT_EDIT_PASSWORD;
+			} else if (options.contains(TextOption.POPUP)) {
+				return options.contains(TextOption.SCROLLING) ? ItemType.TEXT_EDIT_SCROLLING_POPUP
+						: ItemType.TEXT_EDIT_POPUP;
 			} else {
-				return multiline ? TYPE_TEXT_EDIT_MULTILINE : TYPE_TEXT_EDIT;
+				boolean multiline = (options.contains(TextOption.MULTILINE));
+				if (options.contains(TextOption.READONLY)) {
+					return multiline ? ItemType.TEXT_EDIT_MULTILINE_READONLY
+							: ItemType.TEXT_EDIT_READONLY;
+				} else if (multiline) {
+					return ItemType.TEXT_EDIT_MULTILINE;
+				}
 			}
 		}
+		return ItemType.TEXT_EDIT;
 	}
 
 	public void setValue(float value) {
@@ -331,48 +330,48 @@ public class TextEdit extends TextValueItem {
 			ScriptographerEngine.invoke(onUndo, this);
 	}
 	
-	protected void onNotify(int notifier, ListEntry entry) throws Exception {
+	protected void onNotify(Notifier notifier, ListEntry entry) throws Exception {
 		switch (notifier) {
-			case Notifier.NOTIFIER_PRE_CLIPBOARD_CUT:
+			case PRE_CLIPBOARD_CUT:
 				onPreCut();
 				break;
-			case Notifier.NOTIFIER_POST_CLIPBOARD_CUT:
+			case POST_CLIPBOARD_CUT:
 				onCut();
 				break;
-			case Notifier.NOTIFIER_PRE_CLIPBOARD_COPY:
+			case PRE_CLIPBOARD_COPY:
 				onPreCopy();
 				break;
-			case Notifier.NOTIFIER_POST_CLIPBOARD_COPY:
+			case POST_CLIPBOARD_COPY:
 				onCopy();
 				break;
-			case Notifier.NOTIFIER_PRE_CLIPBOARD_PASTE:
+			case PRE_CLIPBOARD_PASTE:
 				onPrePaste();
 				break;
-			case Notifier.NOTIFIER_POST_CLIPBOARD_PASTE:
+			case POST_CLIPBOARD_PASTE:
 				onPaste();
 				break;
-			case Notifier.NOTIFIER_PRE_CLIPBOARD_CLEAR:
+			case PRE_CLIPBOARD_CLEAR:
 				onPreClear();
 				break;
-			case Notifier.NOTIFIER_POST_CLIPBOARD_CLEAR:
+			case POST_CLIPBOARD_CLEAR:
 				onClear();
 				break;
-			case Notifier.NOTIFIER_PRE_TEXT_SELECTION_CHANGED:
+			case PRE_TEXT_SELECTION_CHANGED:
 				onPreSelectionChange();
 				break;
-			case Notifier.NOTIFIER_TEXT_SELECTION_CHANGED:
+			case TEXT_SELECTION_CHANGED:
 				onSelectionChange();
 				break;
-			case Notifier.NOTIFIER_PRE_CLIPBOARD_REDO:
+			case PRE_CLIPBOARD_REDO:
 				onPreRedo();
 				break;
-			case Notifier.NOTIFIER_POST_CLIPBOARD_REDO:
+			case POST_CLIPBOARD_REDO:
 				onRedo();
 				break;
-			case Notifier.NOTIFIER_PRE_CLIPBOARD_UNDO:
+			case PRE_CLIPBOARD_UNDO:
 				onPreUndo();
 				break;
-			case Notifier.NOTIFIER_POST_CLIPBOARD_UNDO:
+			case POST_CLIPBOARD_UNDO:
 				onUndo();
 				break;
 		}

@@ -377,7 +377,7 @@ public class Document extends DictionaryObject {
 		for (Map.Entry entry : attributes.entrySet()) {
 			Object key = entry.getKey();
 			if (!(key instanceof ItemAttribute)) {
-				key = (ItemAttribute) EnumUtils.get(ItemAttribute.class, key.toString());
+				key = EnumUtils.get(ItemAttribute.class, key.toString());
 				if (key == null)
 					throw new ScriptographerException("Undefined attribute: " + key);
 			}

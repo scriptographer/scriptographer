@@ -43,10 +43,13 @@ public abstract class ValueItem extends Item {
 		super(dialog, handle);
 	}
 
-	protected ValueItem(Dialog dialog, int type, int options) {
+	protected ValueItem(Dialog dialog, ItemType type, int options) {
 		super(dialog, type, options);
 	}
 	
+	protected ValueItem(Dialog dialog, ItemType type) {
+		super(dialog, type, 0);
+	}
 	/*
 	 * Callback functions
 	 */
@@ -96,16 +99,16 @@ public abstract class ValueItem extends Item {
 			ScriptographerEngine.invoke(onNumberOutOfBounds, this);
 	}
 
-	protected void onNotify(int notifier) throws Exception {
+	protected void onNotify(Notifier notifier) throws Exception {
 		super.onNotify(notifier);
 		switch (notifier) {
-			case Notifier.NOTIFIER_NUMBER_OUT_OF_BOUNDS:
+			case NUMBER_OUT_OF_BOUNDS:
 				onNumberOutOfBounds();
 				break;
-			case Notifier.NOTIFIER_USER_CHANGED:
+			case USER_CHANGED:
 				onChange();
 				break;
-			case Notifier.NOTIFIER_INTERMEDIATE_CHANGED:
+			case INTERMEDIATE_CHANGED:
 				onPreChange();
 				break;
 		}

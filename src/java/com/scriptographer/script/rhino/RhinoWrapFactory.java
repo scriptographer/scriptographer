@@ -71,12 +71,13 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 		return weight;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object coerceType(Class<?> type, Object value) {
 		Object res = super.coerceType(type, value);
 		if (res == null) {
 			if (value instanceof String) {
 				if (Enum.class.isAssignableFrom(type)) {
-					return EnumUtils.get(type, (String) value);
+					return EnumUtils.get((Class<Enum>) type, (String) value);
 				} else if (type.isArray()) {
 					// Convert a string to an array by splitting into words
 					// and trying to convert each to the desired type

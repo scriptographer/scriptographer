@@ -89,10 +89,8 @@ public class StrokeStyle implements Style {
 				reader.readFloat("width"),
 				reader.readFloat("dashOffset"),
 				(float[]) reader.readObject("dashArray", float[].class),
-				(StrokeCap) EnumUtils.get(StrokeCap.class,
-						reader.readString("cap")),
-				(StrokeJoin) EnumUtils.get(StrokeJoin.class,
-						reader.readString("join")),
+				EnumUtils.get(StrokeCap.class, reader.readString("cap")),
+				EnumUtils.get(StrokeJoin.class, reader.readString("join")),
 				reader.readFloat("miterLimit")
 		);
 	}

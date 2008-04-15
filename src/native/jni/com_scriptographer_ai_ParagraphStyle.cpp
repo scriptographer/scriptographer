@@ -92,16 +92,16 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_release(JNIEnv 
 }
 
 /*
- * java.lang.Integer getJustification()
+ * java.lang.Integer nativeGetJustification()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getJustification(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_nativeGetJustification(JNIEnv *env, jobject obj) {
 	PARAGRAPHSTYLE_GET_ENUM(Justification, ParagraphJustification)
 }
 
 /*
- * void setJustification(java.lang.Integer value)
+ * void nativeSetJustification(java.lang.Integer value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setJustification(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_nativeSetJustification(JNIEnv *env, jobject obj, jobject value) {
 	PARAGRAPHSTYLE_SET_ENUM(Justification, ParagraphJustification)
 }
 
@@ -414,16 +414,16 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setMinGlyphScal
 }
 
 /*
- * java.lang.Integer getSingleWordJustification()
+ * java.lang.Integer nativeGetSingleWordJustification()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getSingleWordJustification(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_nativeGetSingleWordJustification(JNIEnv *env, jobject obj) {
 	PARAGRAPHSTYLE_GET_ENUM(SingleWordJustification, ParagraphJustification)
 }
 
 /*
- * void setSingleWordJustification(java.lang.Integer value)
+ * void nativeSetSingleWordJustification(java.lang.Integer value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setSingleWordJustification(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_nativeSetSingleWordJustification(JNIEnv *env, jobject obj, jobject value) {
 	PARAGRAPHSTYLE_SET_ENUM(SingleWordJustification, ParagraphJustification)
 }
 
@@ -442,16 +442,16 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setAutoLeadingP
 }
 
 /*
- * java.lang.Integer getLeadingType()
+ * java.lang.Integer nativeGetLeading()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_getLeadingType(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ParagraphStyle_nativeGetLeading(JNIEnv *env, jobject obj) {
 	PARAGRAPHSTYLE_GET_ENUM(LeadingType, LeadingType)
 }
 
 /*
- * void setLeadingType(java.lang.Integer value)
+ * void nativeSetLeading(java.lang.Integer value)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_setLeadingType(JNIEnv *env, jobject obj, jobject value) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_ParagraphStyle_nativeSetLeading(JNIEnv *env, jobject obj, jobject value) {
 	PARAGRAPHSTYLE_SET_ENUM(LeadingType, LeadingType)
 }
 

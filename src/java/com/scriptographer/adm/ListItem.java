@@ -62,8 +62,8 @@ The following item types have valid list objects:
 
 public abstract class ListItem extends Item implements List<ListEntry> {
 
-	protected ListItem(Dialog dialog, int type, int options) {
-		super(dialog, type, options);
+	protected ListItem(Dialog dialog, ItemType type) {
+		super(dialog, type);
 		listHandle = nativeInit(handle);
 	}
 	
@@ -108,17 +108,17 @@ public abstract class ListItem extends Item implements List<ListEntry> {
 		this.onChange = onChange;
 	}
 
-	protected void onNotify(int notifier) throws Exception {
+	protected void onNotify(Notifier notifier) throws Exception {
 		super.onNotify(notifier);
 		switch(notifier) {
-			case Notifier.NOTIFIER_USER_CHANGED:
+		case USER_CHANGED:
 			onChange();
 			// Notify entry too:
 			ListEntry entry = getActiveEntry();
 			if (entry != null)
 				entry.onNotify(notifier);
 			break;
-		case Notifier.NOTIFIER_INTERMEDIATE_CHANGED:
+		case INTERMEDIATE_CHANGED:
 			onPreChange();
 			break;
 		}
@@ -127,7 +127,7 @@ public abstract class ListItem extends Item implements List<ListEntry> {
 	protected int listHandle = 0;
 	private int uniqueId = 0;
 
-	private int bgColor = Drawer.COLOR_BACKGROUND;
+	private DialogColor bgColor = DialogColor.BACKGROUND;
 	
 	protected int getUniqueId() {
 		return uniqueId++;
@@ -212,7 +212,7 @@ public abstract class ListItem extends Item implements List<ListEntry> {
 		this.onChangeEntryText = onChangeEntryText;
 	}
 
-	protected void onNotify(int notifier, ListEntry entry) throws Exception {
+	protected void onNotify(Notifier notifier, ListEntry entry) throws Exception {
 		// redirect to the entry that takes care of this:
 		entry.onNotify(notifier);
 	}
@@ -284,14 +284,16 @@ public abstract class ListItem extends Item implements List<ListEntry> {
 	 *
 	 */
 	
-	private native void nativeSetBackgroundColor(int color); // Drawer.COLOR_*
+	private native void nativeSetBackgroundColor(int color);
 
-	public void setBackgroundColor(int color) {
-		bgColor = color;
-		nativeSetBackgroundColor(color);
+	public void setBackgroundColor(DialogColor color) {
+		if (color != null) {
+			bgColor = color;
+			nativeSetBackgroundColor(color.value);
+		}
 	}
 
-	public int getBackgroundColor() {
+	public DialogColor getBackgroundColor() {
 		return bgColor;
 	}
 

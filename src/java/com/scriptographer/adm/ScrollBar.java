@@ -40,7 +40,7 @@ import com.scratchdisk.script.Callable;
 public class ScrollBar extends ValueItem {
 
 	public ScrollBar(Dialog dialog) {
-		super(dialog, TYPE_SCROLLBAR, OPTION_NONE);
+		super(dialog, ItemType.SCROLLBAR);
 	}
 	
 	private Callable onChange = null;
@@ -56,13 +56,13 @@ public class ScrollBar extends ValueItem {
 	protected void onChange() throws Exception {
 		ScriptographerEngine.invoke(onChange, this);
 	}
-	
-	protected void onNotify(int notifier, ListEntry entry) throws Exception {
+
+	protected void onNotify(Notifier notifier, ListEntry entry) throws Exception {
 		// override the default behavior and give onChange for both
 		// notifiers:
 		switch(notifier) {
-			case Notifier.NOTIFIER_USER_CHANGED:
-			case Notifier.NOTIFIER_INTERMEDIATE_CHANGED:
+			case USER_CHANGED:
+			case INTERMEDIATE_CHANGED:
 				onChange();
 				break;
 		}

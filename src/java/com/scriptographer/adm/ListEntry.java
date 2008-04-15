@@ -151,15 +151,15 @@ public class ListEntry extends NotificationHandler {
 					new Object[] { this });
 	}
 	
-	protected void onNotify(int notifier) throws Exception {
+	protected void onNotify(Notifier notifier) throws Exception {
 		switch (notifier) {
-		case Notifier.NOTIFIER_USER_CHANGED:
+		case USER_CHANGED:
 			onSelect();
 			break;
-		case Notifier.NOTIFIER_DESTROY:
+		case DESTROY:
 			onDestroy();
 			break;
-		case Notifier.NOTIFIER_ENTRY_TEXT_CHANGED:
+		case ENTRY_TEXT_CHANGED:
 			onChangeText();
 			break;
 		}

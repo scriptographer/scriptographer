@@ -38,9 +38,9 @@ import com.scriptographer.ai.Rectangle;
  */
 public class HierarchyListEntry extends ListEntry {
 	private int font = Dialog.FONT_DEFAULT;
-	private int bgColor = Drawer.COLOR_BACKGROUND;
-	private int textColor = Drawer.COLOR_TEXT;
-	private int dividerColor = Drawer.COLOR_BLACK;
+	private DialogColor bgColor = DialogColor.BACKGROUND;
+	private DialogColor textColor = DialogColor.TEXT;
+	private DialogColor dividerColor = DialogColor.BLACK;
 	protected HierarchyList childList = null;
 	
 	protected HierarchyListEntry(HierarchyList list, int index) {
@@ -141,30 +141,36 @@ public class HierarchyListEntry extends ListEntry {
 		return font;
 	}
 
-	public void setTextColor(int color) {
-		textColor = color;
-		nativeSetTextColor(color);
+	public void setTextColor(DialogColor color) {
+		if (color != null) {
+			textColor = color;
+			nativeSetTextColor(color.value);
+		}
 	}
 	
-	public int getTextColor() {
+	public DialogColor getTextColor() {
 		return textColor;
 	}
 
-	public void setBackgroundColor(int color) {
-		bgColor = color;
-		nativeSetBackgroundColor(color);
+	public void setBackgroundColor(DialogColor color) {
+		if (color != null) {
+			bgColor = color;
+			nativeSetBackgroundColor(color.value);
+		}
 	}
 	
-	public int getBackgroundColor() {
+	public DialogColor getBackgroundColor() {
 		return bgColor;
 	}
 
-	public void setDividerColor(int color) {
-		dividerColor = color;
-		nativeSetDividerColor(color);
+	public void setDividerColor(DialogColor color) {
+		if (color != null) {
+			dividerColor = color;
+			nativeSetDividerColor(color.value);
+		}
 	}
 	
-	public int getDividerColor() {
+	public DialogColor getDividerColor() {
 		return dividerColor;
 	}
 }

@@ -23,27 +23,50 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 03.01.2005.
+ * 
+ * File created on Apr 15, 2008.
  *
  * $Id$
  */
 
 package com.scriptographer.adm;
 
+import com.scratchdisk.util.IntegerEnum;
+
 /**
+ * ADMColor
+ * 
  * @author lehni
  */
-public class Slider extends ValueItem {
+public enum DialogColor implements IntegerEnum {
+	BLACK(0),
+	WHITE(1),
+	HILITE(2),
+	HILITE_TEXT(3),
+	LIGHT(4),
+	BACKGROUND(5),
+	SHADOW(6),
+	DISABLED(7),
+	BUTTON_UP(8),
+	BUTTON_DOWN(9),
+	BUTTON_DOWN_SHADOW(10),
+	TOOLTIP_BACKGROUND(11),
+	TOOLTIP_FOREGROUND(12),
+	WINDOW(13),
+	FOREGROUND(14),
+	TEXT(15),
+	RED(16),
+	TAB_BACKGROUND(17),
+	ACTIVE_TAB(18),
+	INACTIVE_TAB(19);
 
-	// ADMSliderStyle
-	public static final int
-		STYLE_NONE = 0,
-		STYLE_NONLINEAR = 1,
-		STYLE_SHOW_FRACTION = 2;
+	protected int value;
 
-	public Slider(Dialog dialog) {
-		super(dialog, ItemType.SLIDER);
+	private DialogColor(int value) {
+		this.value = value;
 	}
 
+	public int value() {
+		return value;
+	}
 }

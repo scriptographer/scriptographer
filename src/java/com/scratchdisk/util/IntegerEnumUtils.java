@@ -80,8 +80,9 @@ public class IntegerEnumUtils {
 	 */
 	public static int getFlags(EnumSet<? extends Enum<?>> set) {
 		int flags = 0;
-		for (Enum e : set)
-			flags |= ((IntegerEnum) e).value();
+		if (set != null)
+			for (Enum e : set)
+				flags |= ((IntegerEnum) e).value();
 		return flags;
 	}
 

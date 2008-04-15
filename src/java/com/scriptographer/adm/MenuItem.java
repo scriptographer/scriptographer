@@ -95,7 +95,7 @@ public class MenuItem extends NativeObject{
 	 * group with other options is needed, use createSubGroup and pass the
 	 * resulting group to the constructor that takes a group as third parameter.
 	 * 
-	 * @param name
+	 * @param notifer
 	 * @param text
 	 * @param parentItem
 	 * @param options

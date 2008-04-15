@@ -44,7 +44,7 @@ public class ImageButton extends Button {
 		STYLE_BLACK_RECT = 1;
 	
 	public ImageButton(Dialog dialog) {
-		super(dialog, TYPE_PICTURE_PUSHBUTTON);
+		super(dialog, ItemType.PICTURE_PUSHBUTTON);
 	}
 	
 	public Image getImage() {

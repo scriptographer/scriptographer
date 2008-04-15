@@ -62,7 +62,7 @@ public abstract class TextValueItem extends ValueItem {
 		super(dialog, handle);
 	}
 
-	protected TextValueItem(Dialog dialog, int type, int options) {
+	protected TextValueItem(Dialog dialog, ItemType type, int options) {
 		super(dialog, type, options);
 	}
 

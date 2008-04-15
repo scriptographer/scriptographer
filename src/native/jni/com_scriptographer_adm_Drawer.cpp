@@ -223,9 +223,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Drawer_getColor(JNIEnv *en
 }
 
 /*
- * void setColor(java.awt.Color arg1)
+ * void setColor(java.awt.Color color)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setColor__Ljava_awt_Color_2(JNIEnv *env, jobject obj, jobject color) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setColor(JNIEnv *env, jobject obj, jobject color) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		ADMRGBColor col;
@@ -235,19 +235,19 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setColor__Ljava_awt_Co
 }
 
 /*
- * void setColor(int colorType)
+ * void nativeSetColor(int color)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setColor__I(JNIEnv *env, jobject obj, jint colorType) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_nativeSetColor(JNIEnv *env, jobject obj, jint color) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
-		sADMDrawer->SetADMColor(drawer, (ADMColor)colorType);
+		sADMDrawer->SetADMColor(drawer, (ADMColor)color);
 	} EXCEPTION_CONVERT(env);
 }
 
 /*
- * int getDrawMode()
+ * int nativeGetDrawMode()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Drawer_getDrawMode(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Drawer_nativeGetDrawMode(JNIEnv *env, jobject obj) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		return sADMDrawer->GetDrawMode(drawer);
@@ -256,9 +256,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Drawer_getDrawMode(JNIEnv *en
 }
 
 /*
- * void setDrawMode(int mode)
+ * void nativeSetDrawMode(int mode)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_setDrawMode(JNIEnv *env, jobject obj, jint mode) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_nativeSetDrawMode(JNIEnv *env, jobject obj, jint mode) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		sADMDrawer->SetDrawMode(drawer, (ADMDrawMode)mode);
@@ -428,9 +428,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_script
 }
 
 /*
- * void drawImage(com.scriptographer.adm.Image image, int x, int y, int style)
+ * void nativeDrawImage(com.scriptographer.adm.Image image, int x, int y, int style)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_scriptographer_adm_Image_2III(JNIEnv *env, jobject obj, jobject image, jint x, jint y, jint style) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_nativeDrawImage__Lcom_scriptographer_adm_Image_2III(JNIEnv *env, jobject obj, jobject image, jint x, jint y, jint style) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		ADMImageRef img = gEngine->getImageRef(env, image);
@@ -455,9 +455,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_script
 }
 
 /*
- * void drawImage(com.scriptographer.adm.Image image, Lint x, int y, int width, int height, int style)
+ * void nativeDrawImage(com.scriptographer.adm.Image image, Lint x, int y, int width, int height, int style)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_drawImage__Lcom_scriptographer_adm_Image_2IIIII(JNIEnv *env, jobject obj, jobject image, jint x, jint y, jint width, jint height, jint style) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_nativeDrawImage__Lcom_scriptographer_adm_Image_2IIIII(JNIEnv *env, jobject obj, jobject image, jint x, jint y, jint width, jint height, jint style) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerRef(env, obj);
 		ADMImageRef img = gEngine->getImageRef(env, image);

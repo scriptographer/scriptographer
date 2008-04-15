@@ -47,7 +47,7 @@ public class Frame extends TextItem implements ComponentGroup {
 		STYLE_ETCHED = 4;
 
 	public Frame(Dialog dialog) {
-		super(dialog, TYPE_FRAME);
+		super(dialog,ItemType.FRAME);
 		setPadding(0, 0, 0, 0);
 	}
 

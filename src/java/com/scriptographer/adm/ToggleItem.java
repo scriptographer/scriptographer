@@ -35,7 +35,7 @@ package com.scriptographer.adm;
  * @author lehni
  */
 public abstract class ToggleItem extends Button {
-	protected ToggleItem(Dialog dialog, int type) {
+	protected ToggleItem(Dialog dialog, ItemType type) {
 		super(dialog, type);
 	}
 

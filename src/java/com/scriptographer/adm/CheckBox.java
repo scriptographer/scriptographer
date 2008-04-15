@@ -42,11 +42,11 @@ package com.scriptographer.adm;
  */
 public class CheckBox extends ToggleItem {
 	
-	protected CheckBox(Dialog dialog, int type) {
+	protected CheckBox(Dialog dialog, ItemType type) {
 		super(dialog, type);
 	}
 
 	public CheckBox(Dialog dialog) {
-		super(dialog, TYPE_TEXT_CHECKBOX);
+		super(dialog, ItemType.TEXT_CHECKBOX);
 	}
 }

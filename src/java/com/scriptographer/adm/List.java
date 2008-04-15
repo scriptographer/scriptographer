@@ -46,12 +46,12 @@ public class List extends ListItem {
 		STYLE_USE_IMAGE = (1 << 5),
 		STYLE_ENTRYTEXT_EDITABLE = (1 << 6);
 
-	protected List(Dialog dialog, int type, int options) {
-		super(dialog, type, options);
+	protected List(Dialog dialog, ItemType type) {
+		super(dialog, type);
 	}
 
 	public List(Dialog dialog) {
-		this(dialog, TYPE_LISTBOX, OPTION_NONE);
+		this(dialog, ItemType.LISTBOX);
 	}
 	
 	/**

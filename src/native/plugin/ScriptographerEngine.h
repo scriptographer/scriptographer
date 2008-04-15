@@ -352,8 +352,7 @@ public:
 	jclass cls_adm_NotificationHandler;
 	jfieldID fid_adm_NotificationHandler_tracker;
 	jfieldID fid_adm_NotificationHandler_drawer;
-	jmethodID mid_adm_NotificationHandler_onNotify_String;
-	jmethodID mid_adm_NotificationHandler_onNotify_int;
+	jmethodID mid_adm_NotificationHandler_onNotify;
 	jmethodID mid_adm_NotificationHandler_onDraw;
 		
 	jclass cls_adm_Tracker;
@@ -539,6 +538,7 @@ public:
 	
 	// ADM CallbackListener
 	void callOnNotify(jobject handler, ADMNotifierRef notifier); 
+	void callOnNotify(jobject handler, char *notifier); 
 	void callOnDestroy(jobject handler); 
 	bool callOnTrack(jobject handler, ADMTrackerRef tracker);
 	void callOnDraw(jobject handler, ADMDrawerRef drawer);

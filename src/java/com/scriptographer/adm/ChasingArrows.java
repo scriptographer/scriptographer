@@ -37,6 +37,6 @@ package com.scriptographer.adm;
 public class ChasingArrows extends Item {
 
 	public ChasingArrows(Dialog dialog) {
-		super(dialog, TYPE_CHASING_ARROWS, OPTION_NONE);
+		super(dialog, ItemType.CHASING_ARROWS);
 	}
 }

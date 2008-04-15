@@ -39,7 +39,7 @@ import java.io.IOException;
 public class ImageCheckBox extends CheckBox {
 
 	public ImageCheckBox(Dialog dialog) {
-		super(dialog, TYPE_PICTURE_CHECKBOX);
+		super(dialog, ItemType.PICTURE_CHECKBOX);
 	}
 	
 	public Image getImage() {

@@ -23,27 +23,32 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 03.01.2005.
+ * 
+ * File created on Apr 15, 2008.
  *
  * $Id$
  */
 
 package com.scriptographer.adm;
 
+import com.scratchdisk.util.IntegerEnum;
+
 /**
+ * ADMDrawMode
+ * 
  * @author lehni
  */
-public class Slider extends ValueItem {
+public enum DrawMode implements IntegerEnum {
+	NORMAL(0),
+	XOR(1);
 
-	// ADMSliderStyle
-	public static final int
-		STYLE_NONE = 0,
-		STYLE_NONLINEAR = 1,
-		STYLE_SHOW_FRACTION = 2;
+	protected int value;
 
-	public Slider(Dialog dialog) {
-		super(dialog, ItemType.SLIDER);
+	private DrawMode(int value) {
+		this.value = value;
 	}
 
+	public int value() {
+		return value;
+	}
 }

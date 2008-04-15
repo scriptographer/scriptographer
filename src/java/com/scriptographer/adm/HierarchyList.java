@@ -37,17 +37,9 @@ import com.scratchdisk.script.Callable;
  * @author lehni
  */
 public class HierarchyList extends List {
-	public static final int
-	// hathaway : 8/22/02 : Added to support creation of hierarchical palette
-	// popups for Pangea Popup menu creation options
-		OPTION_HIERARCHY_POPUP = (1 << 0);
-	
-	public HierarchyList(Dialog dialog, int options) {
-		super(dialog, TYPE_HIERARCHY_LISTBOX, options);
-	}
 	
 	public HierarchyList(Dialog dialog) {
-		this(dialog, OPTION_NONE);
+		super(dialog, ItemType.HIERARCHY_LISTBOX);
 	}
 
 	private HierarchyListEntry parentEntry = null;

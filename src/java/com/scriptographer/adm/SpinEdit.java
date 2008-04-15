@@ -31,6 +31,9 @@
 
 package com.scriptographer.adm;
 
+import java.util.Arrays;
+import java.util.EnumSet;
+
 /**
  * @author lehni
  */
@@ -50,22 +53,25 @@ public class SpinEdit extends TextEdit {
 	 *            only TextEdit.OPTION_POPUP and TextEdit.OPTION_SCROLLING are
 	 *            valid for SpinEdit
 	 */
-	public SpinEdit(Dialog dialog, int options) {
-		super(dialog, getType(options), OPTION_NONE);
+	public SpinEdit(Dialog dialog, EnumSet<TextOption> options) {
+		super(dialog, getType(options), options);
+	}
+
+	public SpinEdit(Dialog dialog, TextOption[] options) {
+		this(dialog, EnumSet.copyOf(Arrays.asList(options)));
 	}
 
 	public SpinEdit(Dialog dialog) {
-		this(dialog, OPTION_NONE);
+		this(dialog, (EnumSet<TextOption>) null);
 	}
 
-	private static int getType(int options) {
+	private static ItemType getType(EnumSet<TextOption> options) {
 		// abuse the ADM's password style for creating it as a type...
-		if ((options & OPTION_POPUP) != 0) {
-			return (options & OPTION_SCROLLING) != 0 ? TYPE_SPINEDIT_SCROLLING_POPUP
-					: TYPE_SPINEDIT_POPUP;
-		} else {
-			return TYPE_SPINEDIT;
+		if (options != null && options.contains(TextOption.POPUP)) {
+			return options.contains(TextOption.SCROLLING) ? ItemType.SPINEDIT_SCROLLING_POPUP
+					: ItemType.SPINEDIT_POPUP;
 		}
+		return ItemType.SPINEDIT;
 	}
 	
 	/*

@@ -37,6 +37,6 @@ package com.scriptographer.adm;
 public class ProgressBar extends ValueItem {
 
 	public ProgressBar(Dialog dialog) {
-		super(dialog, TYPE_PROGRESS_BAR, OPTION_NONE);
+		super(dialog, ItemType.PROGRESS_BAR);
 	}
 }

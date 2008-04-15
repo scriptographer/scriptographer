@@ -23,27 +23,31 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 03.01.2005.
+ * 
+ * File created on Apr 14, 2008.
  *
  * $Id$
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.ai;
+
+import com.scratchdisk.util.IntegerEnum;
 
 /**
  * @author lehni
+ *
  */
-public class Slider extends ValueItem {
+public enum LeadingType implements IntegerEnum {
+	ROMAN(0),
+	JAPANESE(1);
+	
+	protected int value;
 
-	// ADMSliderStyle
-	public static final int
-		STYLE_NONE = 0,
-		STYLE_NONLINEAR = 1,
-		STYLE_SHOW_FRACTION = 2;
-
-	public Slider(Dialog dialog) {
-		super(dialog, ItemType.SLIDER);
+	private LeadingType(int value) {
+		this.value = value;
 	}
 
+	public int value() {
+		return value;
+	}
 }

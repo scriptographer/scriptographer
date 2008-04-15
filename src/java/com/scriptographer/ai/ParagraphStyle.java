@@ -32,8 +32,10 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.script.ArgumentReader;
+import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
 import com.scriptographer.Commitable;
+import com.scriptographer.script.EnumUtils;
 
 /**
  * @author lehni
@@ -60,7 +62,10 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 
 	public ParagraphStyle(ArgumentReader reader) {
 		this();
-		setJustification(reader.readInteger("justification"));
+		setJustification(EnumUtils.get(ParagraphJustification.class,
+				reader.readString("justification")));
+		setSingleWordJustification(EnumUtils.get(ParagraphJustification.class,
+				reader.readString("singleWordJustification")));
 		setFirstLineIndent(reader.readFloat("firstLineIndent"));
 		setStartIndent(reader.readFloat("startIndent"));
 		setEndIndent(reader.readFloat("endIndent"));
@@ -83,9 +88,9 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 		setDesiredGlyphScaling(reader.readFloat("desiredGlyphScaling"));
 		setMaxGlyphScaling(reader.readFloat("maxGlyphScaling"));
 		setMinGlyphScaling(reader.readFloat("minGlyphSpacing"));
-		setSingleWordJustification(reader.readInteger("singleWordJustification"));
 		setAutoLeadingPercentage(reader.readFloat("autoLeadingPercentage"));
-		setLeadingType(reader.readInteger("leadingType"));
+		setLeading(EnumUtils.get(LeadingType.class,
+				reader.readString("leading")));
 		// TODO: setTabStops((TabStopList) reader.readObject("tabStop", TabStopList.class));
 		setDefaultTabWidth(reader.readFloat("defaultTabWidth"));
 	}
@@ -136,9 +141,28 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	// Justification
 	// ------------------------------------------------------------------
 
-	public native Integer getJustification();
-	public native void setJustification(Integer justification);
+	private native Integer nativeGetJustification();
+	private native void nativeSetJustification(Integer justification);
 	
+	public ParagraphJustification getJustification() {
+		return IntegerEnumUtils.get(ParagraphJustification.class, nativeGetJustification());
+	}
+
+	public void setJustification(ParagraphJustification type) {
+		nativeSetJustification(type != null ? type.value : null);
+	}
+	
+	private native Integer nativeGetSingleWordJustification();
+	private native void nativeSetSingleWordJustification(Integer justification);
+
+	public ParagraphJustification getSingleWordJustification() {
+		return IntegerEnumUtils.get(ParagraphJustification.class, nativeGetSingleWordJustification());
+	}
+
+	public void setSingleWordJustification(ParagraphJustification type) {
+		nativeSetSingleWordJustification(type != null ? type.value : null);
+	}
+
 	public native Float getFirstLineIndent();
 	public native void setFirstLineIndent(Float indent);
 	
@@ -213,14 +237,19 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	public native Float getMinGlyphScaling();
 	public native void setMinGlyphScaling(Float scaling);
 	
-	public native Integer getSingleWordJustification();
-	public native void setSingleWordJustification(Integer justification);
-	
 	public native Float getAutoLeadingPercentage();
 	public native void setAutoLeadingPercentage(Float percentage);
 	
-	public native Integer getLeadingType();
-	public native void setLeadingType(Integer type);
+	private native Integer nativeGetLeading();
+	private native void nativeSetLeading(Integer type);
+	
+	public LeadingType getLeading() {
+		return IntegerEnumUtils.get(LeadingType.class, nativeGetLeading());
+	}
+
+	public void setLeading(LeadingType type) {
+		nativeSetLeading(type != null ? type.value : null);
+	}
 	
 	/* TODO: implement
 	public native TabStopList getTabStops();

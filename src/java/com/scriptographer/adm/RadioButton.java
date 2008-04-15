@@ -47,11 +47,11 @@ public class RadioButton extends ToggleItem {
 		STYLE_ONE_ALWAYS_SET = 0,
 		STYLE_ALLOW_NONE_SET = 2;
 	
-	protected RadioButton(Dialog dialog, int type) {
+	protected RadioButton(Dialog dialog, ItemType type) {
 		super(dialog, type);
 	}
 
 	public RadioButton(Dialog dialog) {
-		super(dialog, TYPE_TEXT_RADIOBUTTON);
+		super(dialog, ItemType.TEXT_RADIOBUTTON);
 	}
 }

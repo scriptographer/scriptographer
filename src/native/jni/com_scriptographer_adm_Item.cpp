@@ -51,12 +51,11 @@ ASErr ASAPI Item_onInit(ADMItemRef item) {
 	DEFINE_CALLBACK_PROC(Item_onNotify);
 	sADMItem->SetNotifyProc(item, (ADMItemNotifyProc) CALLBACK_PROC(Item_onNotify));
 
-	// Call onNotify with NOTIFIER_INITIALIZE
+	// Call onNotify with kADMInitializeWindowNotifier
 	JNIEnv *env = gEngine->getEnv();
 	try {
 		jobject obj = gEngine->getItemObject(item);
-		gEngine->callVoidMethodReport(env, obj, gEngine->mid_adm_NotificationHandler_onNotify_int,
-									  (jint) com_scriptographer_adm_Notifier_NOTIFIER_INITIALIZE);
+		gEngine->callOnNotify(obj, kADMInitializeWindowNotifier);
 	} EXCEPTION_CATCH_REPORT(env);
 	return kNoErr;
 }
@@ -593,9 +592,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getFont(JNIEnv *env, job
 }
 
 /*
- * void setBackgroundColor(int color)
+ * void nativeSetBackgroundColor(int color)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setBackgroundColor(JNIEnv *env, jobject obj, jint color) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetBackgroundColor(JNIEnv *env, jobject obj, jint color) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetBackColor(item, (ADMColor) color);
@@ -603,9 +602,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setBackgroundColor(JNIEn
 }
 
 /*
- * int getBackgroundColor()
+ * int nativeGetBackgroundColor()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getBackgroundColor(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeGetBackgroundColor(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetBackColor(item);

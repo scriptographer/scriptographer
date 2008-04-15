@@ -72,8 +72,7 @@ ADMBoolean ADMAPI Dialog_onInitialize(ADMDialogRef dialog, ADMTimerRef timerID) 
 	JNIEnv *env = gEngine->getEnv();
 	try {
 		jobject obj = gEngine->getDialogObject(dialog);
-		gEngine->callVoidMethodReport(env, obj, gEngine->mid_adm_NotificationHandler_onNotify_int,
-									  (jint) com_scriptographer_adm_Notifier_NOTIFIER_INITIALIZE);
+		gEngine->callOnNotify(obj, kADMInitializeWindowNotifier);
 	} EXCEPTION_CATCH_REPORT(env);
 	return true;
 }

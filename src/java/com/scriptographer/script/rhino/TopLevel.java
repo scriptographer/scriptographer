@@ -62,7 +62,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		ItemSet.class,
 		CharacterStyle.class,
 		CMYKColor.class,
-		Color.class,
+		DialogColor.class,
 		CompoundPath.class,
 		Curve.class,
 		CurveList.class,

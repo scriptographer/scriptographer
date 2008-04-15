@@ -44,7 +44,7 @@ package com.scriptographer.adm;
 public class ItemGroup extends Item implements ComponentGroup {
 
 	public ItemGroup(Dialog dialog) {
-		super(dialog, TYPE_ITEMGROUP, OPTION_NONE);
+		super(dialog, ItemType.ITEMGROUP);
 	}
 
 	private native void nativeAdd(Item item);

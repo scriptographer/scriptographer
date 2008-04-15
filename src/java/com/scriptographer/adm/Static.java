@@ -31,10 +31,13 @@
 
 package com.scriptographer.adm;
 
+import java.util.Arrays;
+import java.util.EnumSet;
+
 /**
  * @author lehni
  */
-public class Static extends TextValueItem {
+public class Static extends TextEdit {
 
 	//  Text static styles
 	public static final int
@@ -43,23 +46,21 @@ public class Static extends TextValueItem {
 		STYLE_TRUNCATE_ENDTEXT 				= 1 << 2, // clipped style has priority
 		STYLE_TRUNCATE_MIDDLETEXT 			= 1 << 3; // truncate end has priority
 
-	public static final int
-		// a fake option that tells the constructor to construct a MULTILINE
-		// static item.
-		OPTION_MULTILINE = 1 << 1;
-
 	/**
 	 * Creates a text based Static item.
 	 * @param dialog
 	 * @param options
 	 */
-	public Static(Dialog dialog, int options) {
-		super(dialog,
-			(options & OPTION_MULTILINE) != 0 ? TYPE_TEXT_STATIC_MULTILINE
-				: TYPE_TEXT_STATIC, OPTION_NONE);
+	public Static(Dialog dialog, EnumSet<TextOption> options) {
+		super(dialog, options != null && options.contains(TextOption.MULTILINE)
+				? ItemType.TEXT_STATIC_MULTILINE : ItemType.TEXT_STATIC, options);
+	}
+
+	public Static(Dialog dialog, TextOption[] options) {
+		this(dialog, EnumSet.copyOf(Arrays.asList(options)));
 	}
 	
 	public Static(Dialog dialog) {
-		this(dialog, OPTION_NONE);
+		this(dialog, (EnumSet<TextOption>) null);
 	}
 }

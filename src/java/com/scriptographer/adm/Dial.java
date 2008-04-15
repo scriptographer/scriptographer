@@ -31,18 +31,23 @@
 
 package com.scriptographer.adm;
 
+import com.scratchdisk.util.IntegerEnumUtils;
+
 /**
  * @author lehni
  */
 public class Dial extends ValueItem {
 
-	// ADMDialStyle
-	public static final int
-		STYLE_NO_ARROW = 0,
-		STYLE_ARROW_AT_END = 1,
-		STYLE_ARROW_AT_CENTER = 2;
-
 	public Dial(Dialog dialog) {
-		super(dialog, TYPE_DIAL, OPTION_NONE);
+		super(dialog, ItemType.DIAL);
+	}
+
+	public DialStyle getStyle() {
+		return IntegerEnumUtils.get(DialStyle.class, nativeGetStyle());
+	}
+
+	public void setStyle(DialStyle style) {
+		if (style != null)
+			nativeSetStyle(style.value);
 	}
 }

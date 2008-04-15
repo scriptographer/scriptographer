@@ -31,7 +31,7 @@
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
 #include "com_scriptographer_ai_Item.h" // for com_scriptographer_ai_Item_TYPE_LAYER
-#include "com_scriptographer_adm_Notifier.h"
+#include "admGlobals.h"
 
 #ifdef WIN_ENV
 #include "loadJava.h"
@@ -615,8 +615,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_adm_NotificationHandler = loadClass(env, "com/scriptographer/adm/NotificationHandler");
 	fid_adm_NotificationHandler_tracker = getFieldID(env, cls_adm_NotificationHandler, "tracker", "Lcom/scriptographer/adm/Tracker;");
 	fid_adm_NotificationHandler_drawer = getFieldID(env, cls_adm_NotificationHandler, "drawer", "Lcom/scriptographer/adm/Drawer;");
-	mid_adm_NotificationHandler_onNotify_String = getMethodID(env, cls_adm_NotificationHandler, "onNotify", "(Ljava/lang/String;)V");
-	mid_adm_NotificationHandler_onNotify_int = getMethodID(env, cls_adm_NotificationHandler, "onNotify", "(I)V");
+	mid_adm_NotificationHandler_onNotify = getMethodID(env, cls_adm_NotificationHandler, "onNotify", "(Ljava/lang/String;)V");
 	mid_adm_NotificationHandler_onDraw = getMethodID(env, cls_adm_NotificationHandler, "onDraw", "(Lcom/scriptographer/adm/Drawer;)V");
 	
 	cls_adm_Tracker = loadClass(env, "com/scriptographer/adm/Tracker");
@@ -2185,13 +2184,16 @@ ASErr ScriptographerEngine::annotatorInvalidate(AIAnnotatorMessage *message) {
 void ScriptographerEngine::callOnNotify(jobject handler, ADMNotifierRef notifier) {
 	char type[64];
 	sADMNotifier->GetNotifierType(notifier, type, 64);
+	callOnNotify(handler, type);
+}
+
+void ScriptographerEngine::callOnNotify(jobject handler, char *notifier) {
 	JNIEnv *env = getEnv();
-	callVoidMethodReport(env, handler, mid_adm_NotificationHandler_onNotify_String, env->NewStringUTF(type));
+	callVoidMethodReport(env, handler, mid_adm_NotificationHandler_onNotify, env->NewStringUTF(notifier));
 }
 
 void ScriptographerEngine::callOnDestroy(jobject handler) {
-	callVoidMethodReport(NULL, handler, mid_adm_NotificationHandler_onNotify_int,
-				(jint) com_scriptographer_adm_Notifier_NOTIFIER_DESTROY);
+	callOnNotify(handler, kADMDestroyNotifier);
 }
 
 /**

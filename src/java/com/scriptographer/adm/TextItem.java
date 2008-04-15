@@ -40,8 +40,8 @@ public abstract class TextItem extends Item {
 		super(dialog, handle);
 	}
 
-	protected TextItem(Dialog dialog, int type) {
-		super(dialog, type, OPTION_NONE);
+	protected TextItem(Dialog dialog, ItemType type) {
+		super(dialog, type);
 	}
 
 	/*

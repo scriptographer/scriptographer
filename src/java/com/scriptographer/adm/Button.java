@@ -47,7 +47,7 @@ import com.scriptographer.ScriptographerEngine;
  */
 public class Button extends TextItem {
 
-	protected Button(Dialog dialog, int type) {
+	protected Button(Dialog dialog, ItemType type) {
 		super(dialog, type);
 	}
 
@@ -56,7 +56,7 @@ public class Button extends TextItem {
 	}
 	
 	public Button(Dialog dialog) {
-		super(dialog, TYPE_TEXT_PUSHBUTTON);
+		super(dialog, ItemType.TEXT_PUSHBUTTON);
 	}
 
 	/*
@@ -78,10 +78,10 @@ public class Button extends TextItem {
 			ScriptographerEngine.invoke(onClick, this);
 	}
 	
-	protected void onNotify(int notifier) throws Exception {
+	protected void onNotify(Notifier notifier) throws Exception {
 		super.onNotify(notifier);
 		switch (notifier) {
-			case Notifier.NOTIFIER_USER_CHANGED:
+			case USER_CHANGED:
 				onClick();
 				break;
 		}

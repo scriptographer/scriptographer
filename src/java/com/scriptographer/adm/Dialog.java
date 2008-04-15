@@ -550,34 +550,34 @@ public abstract class Dialog extends Component {
 			ScriptographerEngine.invoke(onContextMenuChange, this);
 	}
 
-	protected void onNotify(int notifier) throws Exception {
+	protected void onNotify(Notifier notifier) throws Exception {
 		switch (notifier) {
-		case Notifier.NOTIFIER_INITIALIZE:
+		case INITIALIZE:
 			initialize(true);
 			break;
-		case Notifier.NOTIFIER_DESTROY:
+		case DESTROY:
 			if (options.contains(DialogOption.REMEMBER_PLACING))
 				savePreferences(title);
 			onDestroy();
 			break;
-		case Notifier.NOTIFIER_WINDOW_ACTIVATE:
+		case WINDOW_ACTIVATE:
 			// See comment for initialize to understand why this is fired here too
 			initialize(true);
 			active = true;
 			onActivate();
 			break;
-		case Notifier.NOTIFIER_WINDOW_DEACTIVATE:
+		case WINDOW_DEACTIVATE:
 			active = false;
 			onDeactivate();
 			break;
-		case Notifier.NOTIFIER_WINDOW_SHOW:
+		case WINDOW_SHOW:
 			// See comment for initialize to understand why this is fired here too
 			initialize(true);
 			visible = true;
 			fireOnClose = true;
 			onShow();
 			break;
-		case Notifier.NOTIFIER_WINDOW_HIDE:
+		case WINDOW_HIDE:
 			if (fireOnClose) {
 				// Workaround for missing onClose on CS3. This bug was 
 				// reported to Adobe too late, hopefully it will be back
@@ -592,27 +592,27 @@ public abstract class Dialog extends Component {
 			visible = false;
 			onHide();
 			break;
-		case Notifier.NOTIFIER_WINDOW_DRAG_MOVED:
+		case WINDOW_DRAG_MOVED:
 			onMove();
 			break;
-		case Notifier.NOTIFIER_CLOSE_HIT:
+		case CLOSE_HIT:
 			// prevent onClose from being called twice...
 			if (fireOnClose)
 				onClose();
 			break;
-		case Notifier.NOTIFIER_ZOOM_HIT:
+		case ZOOM_HIT:
 			onZoom();
 			break;
-		case Notifier.NOTIFIER_CYCLE:
+		case CYCLE:
 			onCycle();
 			break;
-		case Notifier.NOTIFIER_COLLAPSE:
+		case COLLAPSE:
 			onCollapse();
 			break;
-		case Notifier.NOTIFIER_EXPAND:
+		case EXPAND:
 			onExpand();
 			break;
-		case Notifier.NOTIFIER_CONTEXT_MENU_CHANGED:
+		case CONTEXT_MENU_CHANGED:
 			onContextMenuChange();
 			break;
 		}

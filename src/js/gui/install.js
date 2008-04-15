@@ -102,7 +102,7 @@ if (app.macintosh) {
 					'Please enter your password now:'
 			};
 
-			var passwordField = new TextEdit(this, TextEdit.OPTION_PASSWORD);
+			var passwordField = new TextEdit(this, 'password');
 
 			var cancelButton = new Button(this) {
 				text: 'Cancel'

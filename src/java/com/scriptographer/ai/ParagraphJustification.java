@@ -23,27 +23,38 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 03.01.2005.
+ * 
+ * File created on Apr 14, 2008.
  *
  * $Id$
  */
 
-package com.scriptographer.adm;
+package com.scriptographer.ai;
+
+import com.scratchdisk.util.IntegerEnum;
 
 /**
+ * ParagraphJustification
+ * 
  * @author lehni
+ *
  */
-public class Slider extends ValueItem {
+public enum ParagraphJustification implements IntegerEnum {
+	LEFT(0),
+	RIGHT(1),
+	CENTER(2),
+	FULL_LAST_LINE_LEFT(3),
+	FULL_LAST_LINE_RIGHT(4),
+	FULL_LAST_LINE_CENTER(5),
+	FULL(6);
 
-	// ADMSliderStyle
-	public static final int
-		STYLE_NONE = 0,
-		STYLE_NONLINEAR = 1,
-		STYLE_SHOW_FRACTION = 2;
+	protected int value;
 
-	public Slider(Dialog dialog) {
-		super(dialog, ItemType.SLIDER);
+	private ParagraphJustification(int value) {
+		this.value = value;
 	}
 
+	public int value() {
+		return value;
+	}
 }

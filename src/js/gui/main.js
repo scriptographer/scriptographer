@@ -108,7 +108,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		var entry = new HierarchyListEntry(list) {
 			text: file.name,
 			selected: selected && selected[file] || selected == true,
-			// backgroundColor: Drawer.COLOR_BACKGROUND,
+			// backgroundColor: 'background',
 			file: file,
 			directory: file.isDirectory()
 		};

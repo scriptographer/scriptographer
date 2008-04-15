@@ -39,7 +39,7 @@ import java.io.IOException;
 public class ImageRadioButton extends RadioButton {
 
 	public ImageRadioButton(Dialog dialog) {
-		super(dialog, TYPE_PICTURE_RADIOBUTTON);
+		super(dialog, ItemType.PICTURE_RADIOBUTTON);
 	}
 	
 	public Image getImage() {

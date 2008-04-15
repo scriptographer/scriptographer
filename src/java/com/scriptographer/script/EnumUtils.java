@@ -31,7 +31,6 @@
 
 package com.scriptographer.script;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 
 /**
@@ -62,32 +61,31 @@ public class EnumUtils {
 		return name;
 	}
 
-	public static Enum get(Class cls, String name) {
+	public static <T extends Enum<T>> T get(Class<T> cls, String name) {
 		return getLookup(cls).get(name);
 	}
 
 	private static HashMap<Class, Lookup> lookups =
 		new HashMap<Class, Lookup>();
 
-	private static Lookup getLookup(Class cls) {
-		Lookup lookup =	 lookups.get(cls);
+	@SuppressWarnings("unchecked")
+	private static <T extends Enum<T>> Lookup<T> getLookup(Class<T> cls) {
+		Lookup<T> lookup =	 lookups.get(cls);
 		// Create lookup information grouped by class and name / value:
 		if (lookup == null) {
-			lookup = new Lookup(cls);
+			lookup = new Lookup<T>(cls);
 			lookups.put(cls, lookup);
 		}
 		return lookup;
 	}
 
-	private static class Lookup {
-		HashMap<String, Enum> lookup = new HashMap<String, Enum>();
+	private static class Lookup<T extends Enum<T>> {
+		HashMap<String, T> lookup = new HashMap<String, T>();
 
-		Lookup(Class cls) {
+		Lookup(Class<T> cls) {
 			try {
-				// Assume it's an enum implementing option and call its status values() method:
-				Method getValues = cls.getDeclaredMethod("values", new Class[] {});
-				Enum values[] = (Enum[]) getValues.invoke(cls, new Object[] {});
-				for (Enum value : values) {
+				T values[] = (T[]) cls.getEnumConstants();
+				for (T value : values) {
 					// put both variants in:
 					lookup.put(getScriptName(value), value);
 					lookup.put(value.name(), value);
@@ -97,7 +95,7 @@ public class EnumUtils {
 			}
 		}
 
-		Enum get(String name) {
+		T get(String name) {
 			return lookup.get(name);
 		}
 	}
