@@ -51,7 +51,7 @@ public class Button extends TextItem {
 		super(dialog, type);
 	}
 
-	protected Button(Dialog dialog, long handle) {
+	protected Button(Dialog dialog, int handle) {
 		super(dialog, handle);
 	}
 	

@@ -37,26 +37,10 @@ import com.scratchdisk.util.ConversionUtils;
  * @author lehni
  */
 public class PromptItem {
-	public static final int
-		TYPE_STRING = 0,
-		TYPE_NUMBER = 1,
-		TYPE_UNIT = 2,
-		TYPE_RANGE = 3,
-		TYPE_CHECKBOX = 4,
-		TYPE_LIST = 5;
-	
-	protected static final String[] typeNames = {
-		"String",
-		"Number",
-		"Unit",
-		"Range",
-		"CheckBox",
-		"List"
-	};
 	
 	String description;
 	String name; // for preferences
-	int type;
+	PromptItemType type;
 	Object value;
 	Object values[];
 	float min;
@@ -66,7 +50,7 @@ public class PromptItem {
 	Item item;
 	int width;
 	
-	public PromptItem(int type, String description, Object value) {
+	public PromptItem(PromptItemType type, String description, Object value) {
 		this.description = description;
 		this.type = type;
 		this.value = value;
@@ -78,52 +62,52 @@ public class PromptItem {
 	}
 
 	/**
-	 * Creates a TYPE_STRING Item
+	 * Creates a STRING Item
 	 */
 	public PromptItem(String description, String value) {
-		this(TYPE_STRING, description, value);
+		this(PromptItemType.STRING, description, value);
 	}
 
 	/**
-	 * Creates a TYPE_NUMBER Item
+	 * Creates a NUMBER Item
 	 */
 	public PromptItem(String description, Number value) {
-		this(TYPE_NUMBER, description, value);
+		this(PromptItemType.NUMBER, description, value);
 	}
 
 	public PromptItem(String description, float value) {
-		this(TYPE_NUMBER, description, new Float(value));
+		this(PromptItemType.NUMBER, description, new Float(value));
 	}
 
 	/**
-	 * Creates a TYPE_BOOLEAN Item
+	 * Creates a BOOLEAN Item
 	 */
 	public PromptItem(String description, Boolean value) {
-		this(TYPE_CHECKBOX, description, value);
+		this(PromptItemType.CHECKBOX, description, value);
 	}
 
 	public PromptItem(String description, boolean value) {
 		this(description, new Boolean(value));
 	}
 	/**
-	 * Creates a TYPE_RANGE Item
+	 * Creates a RANGE Item
 	 */
 	public PromptItem(String description, Number value, float min, float max,
 			float step) {
-		this(TYPE_RANGE, description, value);
+		this(PromptItemType.RANGE, description, value);
 		this.setRange(min, max);
 		this.increment = step;
 	}
 	
 	/**
-	 * Creates a TYPE_LIST Item
+	 * Creates a LIST Item
 	 */
 	public PromptItem(String description, Object value, Object[] values) {
-		this(TYPE_LIST, description, value);
+		this(PromptItemType.LIST, description, value);
 		this.values = values;
 	}
 	
-	// TODO: make constructor for TYPE_UNIT
+	// TODO: make constructor for UNIT
 	
 	/*
 	 * Setters
@@ -204,13 +188,13 @@ public class PromptItem {
 		// Item:
 		item = null;
 		switch (type) {
-			case TYPE_RANGE:
+			case RANGE:
 				item = new Slider(dialog);
 				break;
-			case TYPE_CHECKBOX:
+			case CHECKBOX:
 				item = new CheckBox(dialog);
 				break;
-			case TYPE_LIST:
+			case LIST:
 				item = new PopupList(dialog);
 				break;
 			default:
@@ -219,28 +203,28 @@ public class PromptItem {
 		
 		// Value:
 		switch (type) {
-			case TYPE_STRING:
-				((TextEdit) item).setText(value.toString());
+			case STRING:
+				((TextEditItem) item).setText(value.toString());
 				break;
-			case TYPE_NUMBER:
-			case TYPE_UNIT:
-			case TYPE_RANGE:
-				if (item instanceof TextEdit) {
-					((TextEdit) item).setAllowMath(true);
-					((TextEdit) item).setAllowUnits(true);
-					((TextEdit) item).setShowUnits(type == TYPE_UNIT);
-					((TextEdit) item).setPrecision(precision);
+			case NUMBER:
+			case UNIT:
+			case RANGE:
+				if (item instanceof TextEditItem) {
+					((TextEditItem) item).setAllowMath(true);
+					((TextEditItem) item).setAllowUnits(true);
+					((TextEditItem) item).setShowUnits(type == PromptItemType.UNIT);
+					((TextEditItem) item).setPrecision(precision);
 				}
-				if (type == TYPE_RANGE) {
+				if (type == PromptItemType.RANGE) {
 					((Slider) item).setIncrements(increment, 8 * increment);
 				}
 				((ValueItem) item).setRange(min, max);
 				((ValueItem) item).setValue((float) ConversionUtils.toDouble(value));
 				break;
-			case TYPE_CHECKBOX:
+			case CHECKBOX:
 				((CheckBox) item).setChecked(ConversionUtils.toBoolean(value));
 				break;
-			case TYPE_LIST: {
+			case LIST: {
 					PopupList list = (PopupList) item;
 					for (int i = 0; i < values.length; i++) {
 						ListEntry entry = (ListEntry) list.add(values[i]);
@@ -260,27 +244,19 @@ public class PromptItem {
 	
 	protected Object getResult() {
 		switch(type) {
-			case TYPE_STRING:
+			case STRING:
 				return ((TextValueItem) item).getText();
-			case TYPE_NUMBER:
-			case TYPE_UNIT:
-			case TYPE_RANGE:
+			case NUMBER:
+			case UNIT:
+			case RANGE:
 				return new Float(((ValueItem) item).getValue());
-			case TYPE_CHECKBOX:
+			case CHECKBOX:
 				return new Boolean(((ToggleItem) item).isChecked());
-			case TYPE_LIST:
+			case LIST:
 				ListEntry active = ((PopupList) item).getActiveEntry();
 				if (active != null)
 					return active.getText();
 		}
 		return null;
-	}
-	
-	protected static int getType(String type) {
-		for (int i = 0; i < typeNames.length; i++) {
-			if (typeNames[i].equals(type))
-				return i;
-		}
-		return -1;
 	}
 }

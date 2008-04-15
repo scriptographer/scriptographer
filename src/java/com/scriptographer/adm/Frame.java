@@ -31,20 +31,13 @@
 
 package com.scriptographer.adm;
 
+import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.ScriptographerEngine;
 
 /**
  * @author lehni
  */
 public class Frame extends TextItem implements ComponentGroup {
-
-	// ADMFrameStyle
-	public static final int
-		STYLE_BLACK = 0,
-		STYLE_GRAY = 1,
-		STYLE_SUNKEN = 2,
-		STYLE_RAISED = 3,
-		STYLE_ETCHED = 4;
 
 	public Frame(Dialog dialog) {
 		super(dialog,ItemType.FRAME);
@@ -69,6 +62,15 @@ public class Frame extends TextItem implements ComponentGroup {
 		Border padding = getPadding();
 		super.setText(text);
 		setPadding(padding);
+	}
+
+	public FrameStyle getStyle() {
+		return IntegerEnumUtils.get(FrameStyle.class, nativeGetStyle());
+	}
+
+	public void setStyle(FrameStyle style) {
+		if (style != null)
+			nativeSetStyle(style.value);
 	}
 
 	private Border padding = null;

@@ -39,7 +39,7 @@ import com.scratchdisk.script.Callable;
  */
 public abstract class ValueItem extends Item {
 
-	protected ValueItem(Dialog dialog, long handle) {
+	protected ValueItem(Dialog dialog, int handle) {
 		super(dialog, handle);
 	}
 

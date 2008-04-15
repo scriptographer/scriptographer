@@ -349,7 +349,7 @@
 			<class name="com.scriptographer.adm.ToggleItem" />
 			<class name="com.scriptographer.adm.ItemGroup" />
 		   	<class name="com.scriptographer.adm.ImageStatic" />
-		   	<class name="com.scriptographer.adm.TextEdit" />
+		   	<class name="com.scriptographer.adm.TextEditItem" />
 
 		   	<class name="com.scriptographer.adm.ListItem" />
 		   	<class name="com.scriptographer.adm.ListEntry" />

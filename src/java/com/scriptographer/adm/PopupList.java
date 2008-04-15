@@ -36,7 +36,7 @@ package com.scriptographer.adm;
  */
 public class PopupList extends ListItem {
 	
-	protected PopupList(Dialog dialog, long handle) {
+	protected PopupList(Dialog dialog, int handle) {
 		super(dialog, handle);
 	}
 

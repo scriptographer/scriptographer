@@ -33,18 +33,24 @@ package com.scriptographer.adm;
 
 import java.io.IOException;
 
+import com.scratchdisk.util.IntegerEnumUtils;
+
 /**
  * @author lehni
  */
 public class ImageButton extends Button {
-
-	// ADMPictureButtonStyle
-	public static final int
-		STYLE_BLACK_SUNKEN_RECT = 0,
-		STYLE_BLACK_RECT = 1;
 	
 	public ImageButton(Dialog dialog) {
 		super(dialog, ItemType.PICTURE_PUSHBUTTON);
+	}
+
+	public ImageButtonStyle getStyle() {
+		return IntegerEnumUtils.get(ImageButtonStyle.class, nativeGetStyle());
+	}
+
+	public void setStyle(ImageButtonStyle style) {
+		if (style != null)
+			nativeSetStyle(style.value);
 	}
 	
 	public Image getImage() {

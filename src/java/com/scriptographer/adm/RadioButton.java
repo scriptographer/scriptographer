@@ -41,11 +41,6 @@ package com.scriptographer.adm;
  * @author lehni
  */
 public class RadioButton extends ToggleItem {
-
-	// ADMRadioButtonStyle
-	public static final int
-		STYLE_ONE_ALWAYS_SET = 0,
-		STYLE_ALLOW_NONE_SET = 2;
 	
 	protected RadioButton(Dialog dialog, ItemType type) {
 		super(dialog, type);

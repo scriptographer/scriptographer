@@ -23,46 +23,33 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
+ * 
+ * File created on Apr 14, 2008.
  *
- * File created on 18.10.2005.
- *
- * $Id:TextItem.java 402 2007-08-22 23:24:49Z lehni $
+ * $Id$
  */
 
 package com.scriptographer.adm;
 
+import com.scratchdisk.util.IntegerEnum;
+
 /**
+ * ADMJustify
+ * 
  * @author lehni
  */
-public abstract class TextItem extends Item {
+public enum TextJustification implements IntegerEnum {
+	LEFT(0),
+	CENTER(1),
+	RIGHT(2);
 
-	protected TextItem(Dialog dialog, int handle) {
-		super(dialog, handle);
+	protected int value;
+
+	private TextJustification(int value) {
+		this.value = value;
 	}
 
-	protected TextItem(Dialog dialog, ItemType type) {
-		super(dialog, type);
-	}
-
-	/*
-	 * item text accessors
-	 * 
-	 */
-
-	private String text = "";
-
-	private native void nativeSetText(String text);
-
-	public void setText(String text) {
-		this.text = text;
-		// Text item often use space for centering text on bigger
-		// buttons, etc. Since the native elements center correctly
-		// trim the space here, but store it in the text field,
-		// so getBestSize takes it into account.
-		nativeSetText(text.trim());
-	}
-
-	public String getText() {
-		return text;
+	public int value() {
+		return value;
 	}
 }

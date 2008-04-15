@@ -131,17 +131,14 @@ public class PromptDialog extends ModalDialog {
 				Object valueObj = map.get("value");
 				double increment = 0;
 				Object[] values = null;
-				int type = -1;
+				PromptItemType type = null;
 				if (typeObj != null) {
-					if (typeObj instanceof String) {
-						type = PromptItem.getType((String) typeObj);
-					} else if (typeObj instanceof Number) {
-						type = ((Number) typeObj).intValue();
-					}
+					if (typeObj instanceof String)
+						type = PromptItemType.get((String) typeObj);
 				} else { // determine type from value and step:
 					Object incrementObj = map.get("increment");
 					if (incrementObj != null) {
-						type = PromptItem.TYPE_RANGE;
+						type = PromptItemType.RANGE;
 						increment = ConversionUtils.toDouble(incrementObj);
 						if (Double.isNaN(increment))
 							increment = 0;
@@ -150,16 +147,16 @@ public class PromptDialog extends ModalDialog {
 						if (valuesObj != null && valuesObj instanceof Object[])
 							values = (Object[]) valuesObj;
 						if (values != null)
-							type = PromptItem.TYPE_LIST;
+							type = PromptItemType.LIST;
 						else if (valueObj instanceof Number)
-							type = PromptItem.TYPE_NUMBER;
+							type = PromptItemType.NUMBER;
 						else if (valueObj instanceof Boolean)
-							type = PromptItem.TYPE_CHECKBOX;
+							type = PromptItemType.CHECKBOX;
 						else if (valueObj instanceof String) 
-							type = PromptItem.TYPE_STRING;
+							type = PromptItemType.STRING;
 					}
 				}
-				if (type != -1) {
+				if (type != null) {
 					PromptItem item = new PromptItem(type, ConversionUtils.getString(map, "description"), valueObj);
 					item.setName(ConversionUtils.getString(map, "name"));
 

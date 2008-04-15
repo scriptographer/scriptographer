@@ -31,19 +31,23 @@
 
 package com.scriptographer.adm;
 
+import com.scratchdisk.util.IntegerEnumUtils;
+
 /**
  * @author lehni
  */
 public class Slider extends ValueItem {
 
-	// ADMSliderStyle
-	public static final int
-		STYLE_NONE = 0,
-		STYLE_NONLINEAR = 1,
-		STYLE_SHOW_FRACTION = 2;
-
 	public Slider(Dialog dialog) {
 		super(dialog, ItemType.SLIDER);
 	}
 
+	public SliderStyle getStyle() {
+		return IntegerEnumUtils.get(SliderStyle.class, nativeGetStyle());
+	}
+
+	public void setStyle(SliderStyle style) {
+		if (style != null)
+			nativeSetStyle(style.value);
+	}
 }

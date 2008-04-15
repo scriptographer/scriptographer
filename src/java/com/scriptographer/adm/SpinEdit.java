@@ -37,15 +37,7 @@ import java.util.EnumSet;
 /**
  * @author lehni
  */
-public class SpinEdit extends TextEdit {
-
-	public static final int
-	// ADMSpinEditStyle
-		STYLE_VERTICAL = 0,
-		STYLE_HORIZONTAL = 1,
-	// ADMSpinEditPopupStyle
-		STYLE_POPUP_VERTICAL = 0,
-		STYLE_POPUP_HORIZONTAL = 4;
+public class SpinEdit extends TextEditItem<SpinEditStyle> {
 
 	/**
 	 * @param dialog
@@ -74,6 +66,18 @@ public class SpinEdit extends TextEdit {
 		return ItemType.SPINEDIT;
 	}
 	
+	public SpinEditStyle getStyle() {
+		// For some weird reason vertical has different values for popup and non-popup
+		return nativeGetStyle() != 0 ? SpinEditStyle.VERTICAL : SpinEditStyle.HORIZONTAL;
+	}
+
+	public void setStyle(SpinEditStyle style) {
+		// VERTICAL = 4 for popups and 1 for non popups
+		nativeSetStyle(style == SpinEditStyle.VERTICAL
+				? (type == ItemType.SPINEDIT ? 1 : 4)
+				: 0);
+	}
+
 	/*
 	 *  child items
 	 */
@@ -87,7 +91,7 @@ public class SpinEdit extends TextEdit {
 	
 	public Button getUpButton() {
 		if (upButton == null) {
-			long handle = getChildItemHandle(ITEM_UP_BUTTON);
+			int handle = getChildItemHandle(ITEM_UP_BUTTON);
 			upButton = handle != 0 ? new Button(dialog, handle) : null;
 		}
 		return upButton;
@@ -95,7 +99,7 @@ public class SpinEdit extends TextEdit {
 	
 	public Button getDownButton() {
 		if (upButton == null) {
-			long handle = getChildItemHandle(ITEM_DOWN_BUTTON);
+			int handle = getChildItemHandle(ITEM_DOWN_BUTTON);
 			downButton = handle != 0 ? new Button(dialog, handle) : null;
 		}
 		return downButton;

@@ -31,19 +31,23 @@
 
 package com.scriptographer.adm;
 
+import com.scratchdisk.util.IntegerEnumUtils;
+
 /**
  * @author lehni
  */
 public class PopupMenu extends ListItem {
-	
-	// ADMPopupMenuStyle
-	public static final int
-		STYLE_MENU_RIGHT = 0,
-		STYLE_MENU_BOTTOM = 1,
-		STYLE_MENU_ROUND = 2,
-		STYLE_MENU_ROUND_HIERARCHY = 4;
 
-	protected PopupMenu(Dialog dialog, long handle) {
+	protected PopupMenu(Dialog dialog, int handle) {
 		super(dialog, handle);
+	}
+
+	public PopupMenuStyle getStyle() {
+		return IntegerEnumUtils.get(PopupMenuStyle.class, nativeGetStyle());
+	}
+
+	public void setStyle(PopupMenuStyle style) {
+		if (style != null)
+			nativeSetStyle(style.value);
 	}
 }

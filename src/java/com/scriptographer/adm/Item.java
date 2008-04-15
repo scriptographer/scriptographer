@@ -84,13 +84,13 @@ public abstract class Item extends Component {
 	}
 
 	/**
-	 * Constructor for allready existing Items that get wrapped,
+	 * Constructor for already existing Items that get wrapped,
 	 * e.g. PopupMenu 
 	 * 
 	 * @param dialog
 	 * @param handle
 	 */
-	protected Item(Dialog dialog, long handle) {
+	protected Item(Dialog dialog, int handle) {
 		this();
 		this.handle = (int) handle;
 		this.dialog = dialog;
@@ -413,7 +413,7 @@ public abstract class Item extends Component {
 						if (this instanceof Button) {
 							size.width += size.height * 2;
 							size.height += 6;
-						} else if (this instanceof TextEdit) {
+						} else if (this instanceof TextEditItem) {
 							// Ignore the text width for a TextEdit,
 							// just use the text height and use a
 							// default width across Scriptographer.

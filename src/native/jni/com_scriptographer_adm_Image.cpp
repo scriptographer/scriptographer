@@ -42,16 +42,16 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Image_nativeCreate(JNIEnv *en
 	try {
 		ADMImageRef image = NULL;
 		switch(type) {
-			case com_scriptographer_adm_Image_TYPE_RGB:
+			case 0:
 				image = sADMImage->Create(width, height, 0);
 				break;
-			case com_scriptographer_adm_Image_TYPE_ARGB:
+			case 1:
 				image = sADMImage->Create(width, height, kADMImageHasAlphaChannelOption);
 				break;
-			case com_scriptographer_adm_Image_TYPE_SCREEN:
+			case 2:
 				image = sADMImage->CreateOffscreen(width, height, 0);
 				break;
-			case com_scriptographer_adm_Image_TYPE_ASCREEN:
+			case 3:
 				image = sADMImage->CreateOffscreen(width, height, kADMImageHasAlphaChannelOption);
 				break;
 		}

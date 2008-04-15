@@ -34,17 +34,12 @@ package com.scriptographer.adm;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import com.scratchdisk.util.IntegerEnumUtils;
+
 /**
  * @author lehni
  */
-public class Static extends TextEdit {
-
-	//  Text static styles
-	public static final int
-		STYLE_CLIPPEDTEXT 					= 1 << 0,
-		STYLE_DISABLE_AUTO_ACTIVATE_TEXT 	= 1 << 1,
-		STYLE_TRUNCATE_ENDTEXT 				= 1 << 2, // clipped style has priority
-		STYLE_TRUNCATE_MIDDLETEXT 			= 1 << 3; // truncate end has priority
+public class Static extends TextValueItem {
 
 	/**
 	 * Creates a text based Static item.
@@ -53,7 +48,8 @@ public class Static extends TextEdit {
 	 */
 	public Static(Dialog dialog, EnumSet<TextOption> options) {
 		super(dialog, options != null && options.contains(TextOption.MULTILINE)
-				? ItemType.TEXT_STATIC_MULTILINE : ItemType.TEXT_STATIC, options);
+				? ItemType.TEXT_STATIC_MULTILINE : ItemType.TEXT_STATIC,
+				IntegerEnumUtils.getFlags(options));
 	}
 
 	public Static(Dialog dialog, TextOption[] options) {
@@ -62,5 +58,14 @@ public class Static extends TextEdit {
 	
 	public Static(Dialog dialog) {
 		this(dialog, (EnumSet<TextOption>) null);
+	}
+
+	public StaticStyle getStyle() {
+		return IntegerEnumUtils.get(StaticStyle.class, nativeGetStyle());
+	}
+
+	public void setStyle(StaticStyle style) {
+		if (style != null)
+			nativeSetStyle(style.value);
 	}
 }

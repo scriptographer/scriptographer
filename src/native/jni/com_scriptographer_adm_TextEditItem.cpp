@@ -24,12 +24,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $Id$
+ * $Id: com_scriptographer_adm_TextEditItem.cpp 460 2008-02-28 17:06:09Z lehni $
  */
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
-#include "com_scriptographer_adm_TextEdit.h"
+#include "com_scriptographer_adm_TextEditItem.h"
 
 /*
  * com.scriptographer.adm.TextEdit
@@ -38,7 +38,7 @@
 /*
  * int getPrecision()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEdit_getPrecision(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEditItem_getPrecision(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetPrecision(item);
@@ -49,7 +49,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEdit_getPrecision(JNIEnv 
 /*
  * void setPrecision(int precision)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setPrecision(JNIEnv *env, jobject obj, jint precision) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setPrecision(JNIEnv *env, jobject obj, jint precision) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetPrecision(item, precision);
@@ -59,7 +59,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setPrecision(JNIEnv 
 /*
  * void setMaxLength(int length)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setMaxLength(JNIEnv *env, jobject obj, jint length) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setMaxLength(JNIEnv *env, jobject obj, jint length) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetMaxTextLength(item, length);
@@ -69,7 +69,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setMaxLength(JNIEnv 
 /*
  * int getMaxLength()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEdit_getMaxLength(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEditItem_getMaxLength(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetMaxTextLength(item);
@@ -80,7 +80,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEdit_getMaxLength(JNIEnv 
 /*
  * void setSelection(int start, int end)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setSelection(JNIEnv *env, jobject obj, jint start, jint end) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setSelection(JNIEnv *env, jobject obj, jint start, jint end) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetSelectionRange(item, start, end);
@@ -90,7 +90,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setSelection(JNIEnv 
 /*
  * int[] getSelection()
  */
-JNIEXPORT jintArray JNICALL Java_com_scriptographer_adm_TextEdit_getSelection(JNIEnv *env, jobject obj) {
+JNIEXPORT jintArray JNICALL Java_com_scriptographer_adm_TextEditItem_getSelection(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		long start, end;
@@ -109,7 +109,7 @@ JNIEXPORT jintArray JNICALL Java_com_scriptographer_adm_TextEdit_getSelection(JN
 /*
  * void selectAll()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_selectAll(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_selectAll(JNIEnv *env, jobject obj) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SelectAll(item);
@@ -119,7 +119,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_selectAll(JNIEnv *en
 /*
  * void setAllowMath(boolean arg1)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setAllowMath(JNIEnv *env, jobject obj, jboolean allowMath) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setAllowMath(JNIEnv *env, jobject obj, jboolean allowMath) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetAllowUnits(item, allowMath);
@@ -129,7 +129,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setAllowMath(JNIEnv 
 /*
  * boolean geAllowMath()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_TextEdit_getAllowMath(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_TextEditItem_getAllowMath(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetAllowMath(item);
@@ -140,7 +140,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_TextEdit_getAllowMath(JNI
 /*
  * void setAllowUnits(boolean arg1)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setAllowUnits(JNIEnv *env, jobject obj, jboolean allowUnits) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setAllowUnits(JNIEnv *env, jobject obj, jboolean allowUnits) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetAllowUnits(item, allowUnits);
@@ -150,7 +150,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEdit_setAllowUnits(JNIEnv
 /*
  * boolean getAllowUnits()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_TextEdit_getAllowUnits(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_TextEditItem_getAllowUnits(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetAllowUnits(item);

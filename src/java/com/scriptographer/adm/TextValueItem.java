@@ -31,34 +31,14 @@
 
 package com.scriptographer.adm;
 
+import com.scratchdisk.util.IntegerEnumUtils;
+
 /**
  * @author lehni
  */
 public abstract class TextValueItem extends ValueItem {
 
-	// ADMJustify
-	public static final int
-		JUSTIFY_LEFT = 0,
-		JUSTIFY_CENTER = 1,
-		JUSTIFY_RIGHT = 2;
-	
-	// ADMUnits
-	public static final int
-		UNITS_NO = 0,
-		UNITS_POINT = 1,
-		UNITS_INCH = 2,
-		UNITS_MILLIMETER = 3,
-		UNITS_CENTIMETER = 4,
-		UNITS_PICA = 5,
-		UNITS_PERCENT = 6,
-		UNITS_DEGREE = 7,
-		UNITS_Q = 8,
-		UNITS_BASE16 = 9,
-		UNITS_PIXEL = 10,
-		UNITS_TIME = 11,
-		UNITS_HA = 12;
-
-	protected TextValueItem(Dialog dialog, long handle) {
+	protected TextValueItem(Dialog dialog, int handle) {
 		super(dialog, handle);
 	}
 
@@ -74,14 +54,32 @@ public abstract class TextValueItem extends ValueItem {
 	public native void setText(String text);
 	public native String getText();
 	
-	public native void setJustify(int justify);
-	public native int getJustify();
+	private native void nativeSetJustification(int justification);
+	private native int nativeGetJustification();
 	
-	// justify and units: usefull for TextEdit and Static
+	public void setJustification(TextJustification justification) {
+		if (justification != null)
+			nativeSetJustification(justification.value);
+	}
 
-	public native void setUnits(int units);
-	public native int getUnits();
+	public TextJustification getJustification() {
+		return IntegerEnumUtils.get(TextJustification.class,
+				nativeGetJustification());
+	}
+	// justify and units: useful for TextEdit and Static
 
+	private native void nativeSetUnits(int units);
+	private native int nativeGetUnits();
+
+	public void setUnits(TextUnits units) {
+		nativeSetUnits((units != null ? units : TextUnits.NONE).value);
+	}
+
+	public TextUnits getUnits() {
+		return IntegerEnumUtils.get(TextUnits.class,
+				nativeGetUnits());
+	}
+	
 	public native void setShowUnits(boolean showUnits);
 	public native boolean getShowUnits();
 

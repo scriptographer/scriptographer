@@ -67,7 +67,7 @@ public abstract class ListItem extends Item implements List<ListEntry> {
 		listHandle = nativeInit(handle);
 	}
 	
-	protected ListItem(Dialog dialog, long handle) {
+	protected ListItem(Dialog dialog, int handle) {
 		super(dialog, handle);
 		listHandle = nativeInit((int) handle);
 	}

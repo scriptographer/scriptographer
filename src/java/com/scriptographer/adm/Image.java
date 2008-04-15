@@ -54,25 +54,18 @@ public class Image extends NativeObject {
 	
 	private int width;
 	private int height;
-	private int type;
+	private ImageType type;
 	// these variables are set from nativeCreate
 	private int byteWidth;
 	private int bitsPerPixel;
 	
 	private Drawer drawer;
 
-	// image types
-	public static final int
-		TYPE_RGB = 0,
-		TYPE_ARGB = 1,
-		TYPE_SCREEN = 2,
-		TYPE_ASCREEN = 3;
-	
-	public Image(int width, int height, int type) {
+	public Image(int width, int height, ImageType type) {
 		this.width = width;
 		this.height = height;
-		this.type = type;
-		handle = nativeCreate(width, height, type);
+		this.type = type != null ? type : ImageType.RGB;
+		handle = nativeCreate(width, height, type.value);
 	}
 	
 	public Object clone() {
@@ -104,11 +97,11 @@ public class Image extends NativeObject {
 			switch(imgType) {
 				// direct types:
 				case BufferedImage.TYPE_INT_RGB:
-					type = TYPE_RGB;
+					type = ImageType.RGB;
 					break;
 				case BufferedImage.TYPE_INT_ARGB:
 				case BufferedImage.TYPE_INT_ARGB_PRE:
-					type = TYPE_ARGB;
+					type = ImageType.ARGB;
 					break;
 
 				// indirect types, copying is needed:
@@ -119,7 +112,7 @@ public class Image extends NativeObject {
 							BufferedImage.TYPE_INT_ARGB);
 					tmp.createGraphics().drawImage(buf, null, 0, 0);
 					image = tmp;
-					type = TYPE_ARGB;
+					type = ImageType.ARGB;
 				}
 				break;
 				default: {
@@ -127,7 +120,7 @@ public class Image extends NativeObject {
 							BufferedImage.TYPE_INT_ARGB);
 					tmp.createGraphics().drawImage(buf, null, 0, 0);
 					buf = tmp;
-					type = TYPE_ARGB;
+					type = ImageType.ARGB;
 				}
 			}
 		} else {
@@ -135,9 +128,9 @@ public class Image extends NativeObject {
 			height = image.getHeight(null);
 			buf = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 			buf.getGraphics().drawImage(image, 0, 0, null);
-			type = TYPE_ARGB;
+			type = ImageType.ARGB;
 		}
-		handle = nativeCreate(width, height, type);
+		handle = nativeCreate(width, height, type.value);
 		DataBufferInt buffer = (DataBufferInt) buf.getRaster().getDataBuffer();
 		int data[] = buffer.getData();
 		nativeSetPixels(data, width, height, byteWidth);
@@ -227,8 +220,8 @@ public class Image extends NativeObject {
 
 	public int getCompatibleType() {
 		switch(type) {
-		case TYPE_ARGB:
-		case TYPE_ASCREEN:
+		case ARGB:
+		case ASCREEN:
 			return BufferedImage.TYPE_INT_ARGB;
 		default:
 			return BufferedImage.TYPE_INT_RGB;

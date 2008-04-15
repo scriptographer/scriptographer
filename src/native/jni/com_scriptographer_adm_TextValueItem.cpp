@@ -64,19 +64,19 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_adm_TextValueItem_getText(JNIE
 }
 
 /*
- * void setJustify(int Justify)
+ * void nativeSetJustification(int justification)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextValueItem_setJustify(JNIEnv *env, jobject obj, jint justify) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextValueItem_nativeSetJustification(JNIEnv *env, jobject obj, jint justification) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
-		sADMItem->SetJustify(item, (ADMJustify)justify);
+		sADMItem->SetJustify(item, (ADMJustify) justification);
 	} EXCEPTION_CONVERT(env);
 }
 
 /*
- * int getJustify()
+ * int nativeGetJustification()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextValueItem_getJustify(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextValueItem_nativeGetJustification(JNIEnv *env, jobject obj) {
 	try {
 	    ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetJustify(item);
@@ -85,9 +85,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextValueItem_getJustify(JNIE
 }
 
 /*
- * void setUnits(int units)
+ * void nativeSetUnits(int units)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextValueItem_setUnits(JNIEnv *env, jobject obj, jint units) {
+JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextValueItem_nativeSetUnits(JNIEnv *env, jobject obj, jint units) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		sADMItem->SetUnits(item, (ADMUnits)units);
@@ -95,9 +95,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextValueItem_setUnits(JNIEnv
 }
 
 /*
- * int getUnits()
+ * int nativeGetUnits()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextValueItem_getUnits(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextValueItem_nativeGetUnits(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemRef(env, obj);
 		return sADMItem->GetUnits(item);

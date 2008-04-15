@@ -198,7 +198,7 @@ public abstract class Dialog extends Component {
 			return new Image(PromptDialog.class.getClassLoader().getResource("com/scriptographer/adm/resources/" + filename));
 		} catch (IOException e) {
 			System.err.println(e);
-			return new Image(1, 1, Image.TYPE_RGB);
+			return new Image(1, 1, ImageType.RGB);
 		}
 	}	
 
@@ -960,7 +960,7 @@ public abstract class Dialog extends Component {
 
 	public PopupMenu getPopupMenu() {
 		if (popupMenu == null) {
-			long handle = getItemHandle(ITEM_MENU);
+			int handle = getItemHandle(ITEM_MENU);
 			popupMenu = handle != 0 ? new PopupMenu(this, handle) : null;
 		}
 		return popupMenu;
@@ -970,7 +970,7 @@ public abstract class Dialog extends Component {
 
 	public Button getResizeButton() {
 		if (resizeButton == null) {
-			long handle = getItemHandle(ITEM_RESIZE);
+			int handle = getItemHandle(ITEM_RESIZE);
 			resizeButton = handle != 0 ? new Button(this, handle) : null;
 		}
 		return resizeButton;
