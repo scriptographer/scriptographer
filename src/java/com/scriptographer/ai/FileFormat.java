@@ -171,9 +171,6 @@ public class FileFormat extends NativeObject {
 
 	protected FileFormat(int handle, String name, String title, String extension, long options) {
 		super(handle);
-		// Do not pass String name as for some formats this appears
-		// to be undefined (e.g. Freehand) and leads to a crash.
-		// define getName natively instead)
 		this.name = name;
 		this.title = title;
 		this.extensions = extension.split("\\s*,\\s*");
@@ -181,16 +178,9 @@ public class FileFormat extends NativeObject {
 		lookup.put(handle, this);
 	}
 
-	private static ArrayList<FileFormat> formats = null;
 	private static IntMap<FileFormat> lookup = new IntMap<FileFormat>();
 
-	private static native ArrayList<FileFormat> nativeGetFileFormats();
-
-	public static FileFormat[] getFileFormats() {
-		if (formats == null)
-			formats = nativeGetFileFormats();
-		return formats.toArray(new FileFormat[formats.size()]);
-	}
+	protected static native ArrayList<FileFormat> getFileFormats();
 
 	public String getName() {
 		return name;

@@ -7,9 +7,9 @@
  */
 
 /*
- * java.util.ArrayList nativeGetFileFormats()
+ * java.util.ArrayList getFileFormats()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_FileFormat_nativeGetFileFormats(JNIEnv *env, jclass cls) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_FileFormat_getFileFormats(JNIEnv *env, jclass cls) {
 	try {
 		long count;
 		if (!sAIFileFormat->CountFileFormats(&count)) {

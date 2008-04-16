@@ -318,8 +318,14 @@ public class Document extends DictionaryObject {
 	private native boolean nativeWrite(File file, int formatHandle, boolean ask);
 	
 	public boolean write(File file, FileFormat format, boolean ask) {
-		if (format == null)
-			format = this.getFileFormat();
+		if (format == null) {
+			// Try to get format by extension
+			String name = file.getName();
+			int pos = name.lastIndexOf('.');
+			format = FileFormatList.getInstance().get(name.substring(pos + 1));
+			if (format == null)
+				format = this.getFileFormat();
+		}
 		return nativeWrite(file, format != null ? format.handle : 0, ask);
 	}
 
