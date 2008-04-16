@@ -34,7 +34,7 @@ package com.scriptographer.adm;
 /**
  * @author lehni
  */
-public class PopupList extends ListItem {
+public class PopupList extends ListItem<ListEntry> {
 	
 	protected PopupList(Dialog dialog, int handle) {
 		super(dialog, handle);
@@ -46,5 +46,9 @@ public class PopupList extends ListItem {
 
 	public PopupList(Dialog dialog) {
 		this(dialog, false);
+	}
+
+	protected ListEntry createEntry(int index) {
+		return new ListEntry(this, index);
 	}
 }

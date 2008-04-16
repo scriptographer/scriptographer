@@ -36,7 +36,7 @@ import com.scratchdisk.util.IntegerEnumUtils;
 /**
  * @author lehni
  */
-public class PopupMenu extends ListItem {
+public class PopupMenu extends ListItem<ListEntry> {
 
 	protected PopupMenu(Dialog dialog, int handle) {
 		super(dialog, handle);
@@ -49,5 +49,9 @@ public class PopupMenu extends ListItem {
 	public void setStyle(PopupMenuStyle style) {
 		if (style != null)
 			nativeSetStyle(style.value);
+	}
+
+	protected ListEntry createEntry(int index) {
+		return new ListEntry(this, index);
 	}
 }

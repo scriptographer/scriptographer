@@ -60,7 +60,7 @@ The following item types have valid list objects:
 #define kADMTextEditScrollingPopupType "ADM Text Edit Scrolling Popup Type"
 */
 
-public abstract class ListItem extends Item implements List<ListEntry> {
+public abstract class ListItem<E extends ListEntry> extends Item implements List<E> {
 
 	protected ListItem(Dialog dialog, ItemType type) {
 		super(dialog, type);
@@ -114,7 +114,7 @@ public abstract class ListItem extends Item implements List<ListEntry> {
 		case USER_CHANGED:
 			onChange();
 			// Notify entry too:
-			ListEntry entry = getActiveEntry();
+			E entry = getActiveEntry();
 			if (entry != null)
 				entry.onNotify(notifier);
 			break;
@@ -212,7 +212,7 @@ public abstract class ListItem extends Item implements List<ListEntry> {
 		this.onChangeEntryText = onChangeEntryText;
 	}
 
-	protected void onNotify(Notifier notifier, ListEntry entry) throws Exception {
+	protected void onNotify(Notifier notifier, E entry) throws Exception {
 		// redirect to the entry that takes care of this:
 		entry.onNotify(notifier);
 	}
@@ -309,15 +309,15 @@ public abstract class ListItem extends Item implements List<ListEntry> {
 	 *
 	 */
 
-	public native ListEntry get(String text);
-	public native ListEntry getAt(int x, int y);
+	public native E get(String text);
+	public native E getAt(int x, int y);
 	
-	public void getAt(Point point) {
-		getAt(point.x, point.y);
+	public E getAt(Point point) {
+		return getAt(point.x, point.y);
 	}
 
-	public native ListEntry getActiveEntry();
-	public native ListEntry[] getSelected();
+	public native E getActiveEntry();
+	public native E[] getSelected();
 	
 	/*
 	 * List interface 
@@ -326,22 +326,20 @@ public abstract class ListItem extends Item implements List<ListEntry> {
 
 	public native int size();
 
-	public native ListEntry get(int index);
+	public native E get(int index);
 
-	public ListEntry set(int index, ListEntry element) {
-		ListEntry old = remove(index);
+	public E set(int index, E element) {
+		E old = remove(index);
 		if (old != null && add(index, element) != null) {
 			return old;
 		}
 		return null;
 	}
 	
-	protected ListEntry createEntry(int index) {
-		return new ListEntry(this, index);
-	}
+	protected abstract E createEntry(int index);
 
-	public ListEntry add(int index, ListEntry entry) {
-		ListEntry res = createEntry(index);
+	public E add(int index, E entry) {
+		E res = createEntry(index);
 		res.setText(entry.getText());
 		res.setEnabled(entry.isEnabled());
 		res.setActive(entry.isActive());
@@ -357,29 +355,25 @@ public abstract class ListItem extends Item implements List<ListEntry> {
 		return res;
 	}
 
-	public ListEntry add(int index, Object element) {
-		if (element instanceof ListEntry) {
-			return add(index, (ListEntry) element);
-		} else if (element != null) {
-			ListEntry entry = createEntry(index);
-			entry.setText(element.toString());
-			return entry;
-		}
-		return null;
+	public E add(int index, String element) {
+		E entry = createEntry(index);
+		entry.setText(element);
+		return entry;
 	}
-	// TODO: think about some kind of field value cashing in ListEntry
+
+	// TODO: think about some kind of field value cashing in E
 	// otherwise values returned by remove() are unusable and cannot 
 	// be added to the list again.
-	public native ListEntry remove(int index);
+	public native E remove(int index);
 
 	// as there is no Polymorphism in Java, so all these need to be copied 
 	// over from AbstractList.
 	
-	public ListEntry add(ListEntry element) {
+	public E add(E element) {
 		return add(-1, element);
 	}
 
-	public ListEntry add(Object element) {
+	public E add(String element) {
 		return add(-1, element);
 	}
 
@@ -392,7 +386,7 @@ public abstract class ListItem extends Item implements List<ListEntry> {
 		remove(0, size());
 	}
 
-	public boolean addAll(List<? extends ListEntry> elements) {
+	public boolean addAll(List<? extends E> elements) {
 		boolean modified = false;
 		int size = elements.size();
 		int index = size();
@@ -403,11 +397,11 @@ public abstract class ListItem extends Item implements List<ListEntry> {
 		return modified;
 	}
 
-	public final boolean addAll(ListEntry[] elements) {
+	public final boolean addAll(E[] elements) {
 		return addAll(Lists.asList(elements));
 	}
 
-	public ExtendedList<ListEntry> getSubList(int fromIndex, int toIndex) {
+	public ExtendedList<E> getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
 	}
 

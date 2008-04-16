@@ -227,7 +227,7 @@ public class PromptItem {
 			case LIST: {
 					PopupList list = (PopupList) item;
 					for (int i = 0; i < values.length; i++) {
-						ListEntry entry = (ListEntry) list.add(values[i]);
+						ListEntry entry = (ListEntry) list.add((ListEntry) values[i]);
 						if (ConversionUtils.equals(value, values[i]))
 							entry.setSelected(true);
 					}

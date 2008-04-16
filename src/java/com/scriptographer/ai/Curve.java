@@ -113,7 +113,7 @@ public class Curve {
 
 	private static Point getPoint(ArgumentReader reader, String name, boolean allowNull) {
 		Point point = (Point) reader.readObject(name, Point.class);
-		return point != null ? point : new Point();
+		return allowNull || point != null ? point : new Point();
 	}
 
 	protected void init(Point pt1, Point h1, Point h2, Point pt2) {

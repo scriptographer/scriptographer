@@ -95,7 +95,7 @@ public enum Notifier {
 		if (notifier != null)
 			return notifier;
 		else {
-			System.out.println("Notifier not found " + name);
+			System.err.println("Notifier not found " + name);
 			return null;
 		}
 	}

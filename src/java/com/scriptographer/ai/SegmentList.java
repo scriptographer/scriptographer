@@ -249,18 +249,25 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	}
 	
 	/**
-	 * Adds a segment to the SegmentList.
+	 * Adds a point to the SegmentList.
+	 * The point is converted to a segment with no handles.
 	 * @param index the index where to add the segment
 	 * @param obj either a Segment or a Point
 	 * @return the new segment
 	 */
-	public Segment add(int index, Object obj) {
-		if (obj instanceof Segment) {
-			return add(index, (Segment) obj);
-		} else if (obj instanceof Point) {
-			return add(index, new Segment((Point) obj));
-		}
-		return null;
+	public Segment add(int index, Point point) {
+		return add(index, new Segment((Point) point));
+	}
+
+	/*
+	 * This method is redefined here so that Rhino finds it.
+	 */
+	public Segment add(Segment segment) {
+		return add(size(), segment);
+	}
+
+	public Segment add(Point point) {
+		return add(size(), point);
 	}
 
 	public boolean addAll(int index, List elements) {

@@ -149,7 +149,7 @@ public class Segment implements Commitable {
 
 	private static Point getPoint(ArgumentReader reader, String name, boolean allowNull) {
 		Point point = (Point) reader.readObject(name, Point.class);
-		return point != null ? point : new Point();
+		return allowNull || point != null ? point : new Point();
 	}
 
 	protected void init(float x, float y, float inX, float inY, float outX,

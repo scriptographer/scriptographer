@@ -423,30 +423,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getFile(JNIEnv *en
 }
 
 /*
- * java.lang.String[] nativeGetFormats()
- */
-JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Document_nativeGetFormats(JNIEnv *env, jclass cls) {
-	try {
-		long count;
-		sAIFileFormat->CountFileFormats(&count);
-		jobjectArray array = env->NewObjectArray(count, gEngine->cls_String, NULL); 
-		for (int i = 0; i < count; i++) {
-			AIFileFormatHandle fileFormat = NULL;
-			sAIFileFormat->GetNthFileFormat(i, &fileFormat);
-			if (fileFormat != NULL) {
-				char *name = NULL;
-				sAIFileFormat->GetFileFormatName(fileFormat, &name);
-				if (name != NULL) {
-					env->SetObjectArrayElement(array, i, gEngine->convertString(env, name));
-				}
-			}
-		}
-		return array;
-	} EXCEPTION_CONVERT(env);
-	return NULL;
-}
-
-/*
  * void print(int dialogStatus)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_print(JNIEnv *env, jobject obj, jint dialogStatus) {

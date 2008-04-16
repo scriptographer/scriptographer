@@ -32,11 +32,12 @@
 package com.scriptographer.adm;
 
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
  * @author lehni
  */
-public class HierarchyList extends List {
+public class HierarchyList extends ListItem<HierarchyListEntry> {
 	
 	public HierarchyList(Dialog dialog) {
 		super(dialog, ItemType.HIERARCHY_LISTBOX);
@@ -55,6 +56,15 @@ public class HierarchyList extends List {
 		// as otherwise only the parent list would recieve callbacks!
 		this.setTrackEntryCallback(parentList.getTrackEntryCallback());
 		this.setDrawEntryCallback(parentList.getDrawEntryCallback());
+	}
+
+	public ListStyle getStyle() {
+		return IntegerEnumUtils.get(ListStyle.class, nativeGetStyle());
+	}
+
+	public void setStyle(ListStyle style) {
+		if (style != null)
+			nativeSetStyle(style.value);
 	}
 	
 	public boolean remove() {
@@ -312,7 +322,7 @@ public class HierarchyList extends List {
 	 *
 	 */
 	
-	protected ListEntry createEntry(int index) {
+	protected HierarchyListEntry createEntry(int index) {
 		return new HierarchyListEntry(this, index);
 	}
 

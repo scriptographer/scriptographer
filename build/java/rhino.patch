@@ -501,15 +501,22 @@ diff -r1.84 NativeJavaObject.java
 >                 	return getConversionWeight(
 >                 			((NativeArray) fromObj).get(0, (Scriptable) fromObj),
 >                 			to.getComponentType());
-404c414
+389c399,402
+<                 return 3;
+---
+>                 // Prefer conversion from NativeString to a java String
+>                 // over the above conversion to a object.
+>                 // (typeof obj == 'object', not 'string'!)
+>                 return fromObj instanceof NativeString ? 1 : 3;
+404c417
 <                 return 11;
 ---
 >                 return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, 11);
-412c422
+412c425
 <         return CONVERSION_NONE;
 ---
 >         return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, CONVERSION_NONE);
-499a510,519
+499a513,522
 >     static Object coerce(Class<?> type, Object value) {
 >         Object obj = Context.getContext().getWrapFactory().coerceType(type, value);
 >         if (obj == null) {
@@ -520,71 +527,71 @@ diff -r1.84 NativeJavaObject.java
 >         return obj;
 >     }
 > 
-502a523
+502a526
 >      * @param genericType 
-509a531,532
+509a534,535
 >         Object original = value;
 > 
-525c548
+525c551
 <                 reportConversionError("undefined", type);
 ---
 >             	return coerce(type, value);
-527d549
+527d552
 <             break;
-540c562
+540c565
 <                 reportConversionError(value, type);
 ---
 >                 return coerce(type, value);
-542d563
+542d566
 <             break;
-556c577
+556c580
 <                 reportConversionError(value, type);
 ---
 >                 return coerce(type, value);
-558d578
+558d581
 <             break;
-584c604
+584c607
 <                 reportConversionError(value, type);
 ---
 >                 return coerce(type, value);
-586d605
+586d608
 <             break;
-601c620
+601c623
 <                 reportConversionError(value, type);
 ---
 >                 return coerce(type, original);
-603d621
+603d624
 <             break;
-606c624
+606c627
 <         case JSTYPE_JAVA_ARRAY:              
 ---
 >         case JSTYPE_JAVA_ARRAY:
-612c630
+612c633
 <                     reportConversionError(value, type);
 ---
 >                     return coerce(type, original);
-625c643,646
+625c646,649
 <                         reportConversionError(value, type);
 ---
 >                         // We must be here because canConvert returned true
 >                         // Give it a try. pass the wrapped value, to let the
 >                         // wrap factory decide what to do with it.
 >                         return coerce(type, original);
-629d649
+629d652
 <             break;
-637c657
+637c660
 <                     reportConversionError(value, type);
 ---
 >                     return coerce(type, value);
-674c694
+674c697
 <                 reportConversionError(value, type);
 ---
 >                 return coerce(type, original);
-696c716
+696c719
 <                     // Store for later retrival
 ---
 >                     // Store for later retrieval
-700,702c720,723
+700,702c723,726
 <                 reportConversionError(value, type);
 <             } else {
 <                 reportConversionError(value, type);
@@ -593,7 +600,7 @@ diff -r1.84 NativeJavaObject.java
 >             }
 >             else {
 >                 return coerce(type, value);
-704d724
+704d727
 <             break;
 Index: org/mozilla/javascript/JavaMembers.java
 ===================================================================

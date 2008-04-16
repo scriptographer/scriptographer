@@ -102,7 +102,7 @@ public enum ItemType {
 		if (type != null)
 			return type;
 		else {
-			System.out.println("ItemType not found " + name);
+			System.err.println("ItemType not found " + name);
 			return null;
 		}
 	}

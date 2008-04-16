@@ -36,7 +36,7 @@ import com.scratchdisk.util.IntegerEnumUtils;
 /**
  * @author lehni
  */
-public class List extends ListItem {
+public class List extends ListItem<ListEntry> {
 
 	protected List(Dialog dialog, ItemType type) {
 		super(dialog, type);
@@ -46,6 +46,10 @@ public class List extends ListItem {
 		this(dialog, ItemType.LISTBOX);
 	}
 	
+	protected ListEntry createEntry(int index) {
+		return new ListEntry(this, index);
+	}
+
 	/**
 	 * Empty constructor used for nested HierarchyLists 
 	 */

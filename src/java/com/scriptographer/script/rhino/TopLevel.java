@@ -32,8 +32,6 @@
 package com.scriptographer.script.rhino;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.io.File;
 
 import org.mozilla.javascript.Context;
@@ -58,8 +56,6 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		// AI, alphabetically
 		Annotator.class,
 		AreaText.class,
-		com.scriptographer.ai.Item.class,
-		ItemSet.class,
 		CharacterStyle.class,
 		CMYKColor.class,
 		DialogColor.class,
@@ -84,6 +80,8 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		GrayColor.class,
 		Group.class,
 		HitTest.class,
+		com.scriptographer.ai.Item.class,
+		ItemSet.class,
 		Layer.class,
 		LayerList.class,
 		LiveEffect.class,
@@ -120,6 +118,8 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Tracing.class,
 
 		// ADM, alphabetically
+		Border.class,
+		BorderLayout.class,
 		Button.class,
 		ChasingArrows.class,
 		Dial.class,
@@ -128,6 +128,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		DialogGroupInfo.class,
 		Drawer.class,
 		FloatingDialog.class,
+		FlowLayout.class,
 		FontInfo.class,
 		Frame.class,
 		HierarchyList.class,
@@ -161,12 +162,6 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		TextValueItem.class,
 		ToggleItem.class,
 		Tracker.class,
-		Border.class,
-
-		// AWT Layout classes
-		BorderLayout.class,
-		Dimension.class,
-		FlowLayout.class,
 
 		// SG
 		com.scriptographer.sg.File.class

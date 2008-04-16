@@ -47,8 +47,7 @@ public class ListEntry extends NotificationHandler {
 	protected ListItem list;
 	
 	public ListEntry(ListItem list, int index) {
-		if (!(this instanceof HierarchyListEntry)
-				&& list instanceof HierarchyList)
+		if (list instanceof HierarchyList && !(this instanceof HierarchyListEntry))
 			throw new ScriptographerException(
 					"Use HierarchyListEntry objects for HierarchyList");
 		handle = nativeCreate(list, index, list.getUniqueId());

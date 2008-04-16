@@ -32,11 +32,10 @@
 package com.scriptographer.script;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.util.HashMap;
 
 import com.scratchdisk.script.ArgumentConverter;
 import com.scratchdisk.script.ArgumentReader;
+import com.scriptographer.adm.FlowLayout;
 import com.scriptographer.adm.TableLayout;
 
 /**
@@ -45,24 +44,15 @@ import com.scriptographer.adm.TableLayout;
  */
 public class LayoutConverter extends ArgumentConverter {
 
-	private static HashMap<String, Integer> flowLayoutAlignment = new HashMap<String, Integer>();
-	static {
-		flowLayoutAlignment.put("left", FlowLayout.LEFT);
-		flowLayoutAlignment.put("center", FlowLayout.CENTER);
-		flowLayoutAlignment.put("right", FlowLayout.RIGHT);
-		flowLayoutAlignment.put("leading", FlowLayout.LEADING);
-		flowLayoutAlignment.put("trailing", FlowLayout.TRAILING);
-	}
-
 	public Object convert(ArgumentReader reader, Object from) {
 		if (reader.isArray()) {
 			String str = reader.readString();
 			if (str != null) {
-				Integer alignment = (Integer) flowLayoutAlignment.get(str);
-				if (alignment != null) {
+				// See if it's an available alignment for FlowLayout
+				if (FlowLayout.getAlignment(str) != null) {
 					// FlowLayout
 					return new FlowLayout(
-							alignment.intValue(),
+							str,
 							reader.readInteger(0),
 							reader.readInteger(0));
 				} else {
@@ -92,6 +82,7 @@ public class LayoutConverter extends ArgumentConverter {
 			}
 		} else if (reader.isHash()) {
 			if (reader.has("columns")) {
+				// TableLayout
 				String str = reader.readString("columns");
 				if (str != null) {
 					return new TableLayout(	str,
@@ -105,18 +96,20 @@ public class LayoutConverter extends ArgumentConverter {
 								(Object[]) reader.readObject("rows", Object[].class),
 								reader.readInteger("hgap", 0),
 								reader.readInteger("vgap", 0));
+					} else {
+						throw new RuntimeException("Unsupported format for TableLayout");
 					}
 				}
 			} else if (reader.has("alignment")) {
 				// FlowLayout
-				Integer alignment = reader.readInteger("alignment");
-				if (alignment == null)
-					alignment = (Integer) flowLayoutAlignment.get(reader.readString("alignment"));
-				if (alignment != null) {
+				String alignment = reader.readString("alignment");
+				if (FlowLayout.getAlignment(alignment) != null) {
 					return new FlowLayout(
-							alignment.intValue(),
+							alignment,
 							reader.readInteger("hgap", 0),
 							reader.readInteger("vgap", 0));
+				} else {
+					throw new RuntimeException("Unsupported alignment for FlowLayout: " + alignment);
 				}
 			} else {
 				return new BorderLayout(
