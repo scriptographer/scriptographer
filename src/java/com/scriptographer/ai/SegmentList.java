@@ -502,7 +502,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		double h = Math.sqrt(x1 * x1 + y1 * y1);
 		if (s == 0 || Double.isNaN(s) || h == 0)
 			throw new UnsupportedOperationException(
-					"Cannot create an arc with the given center and starting point: "
+					"Unable to create an arc with the given center and starting point: "
 							+ centerX + ", " + centerY + "; " +
 							startX + ", " + startY);
 		double w = h / s;

@@ -114,7 +114,7 @@ AIArtHandle Item_getInsertionPoint(short *paintOrder, AIDocumentHandle doc) {
 	ASBoolean editable = false;
 	sAIArt->GetInsertionPoint(&art, paintOrder, &editable);
 	if (!editable)
-		throw new StringException("Cannot create art object. The active layer is not editable.");
+		throw new StringException("Unable to create item. The active layer is not editable.");
 	return art;
 }
 
@@ -261,14 +261,14 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_nativeCreate(JNIEnv *env,
 			if (layer != NULL)
 				sAIArt->GetFirstArtOfLayer(layer, &art);
 			if (art == NULL)
-				throw new StringException("Cannot create layer. Please make sure there is an open document.");
+				throw new StringException("Unable to create layer. Make sure there is an open document.");
 		} else { // create a normal art object
 			short paintOrder;
 			AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);
 			// try to create in the active layer
 			sAIArt->NewArt(type, paintOrder, artInsert, &art);
 			if (art == NULL)
-				throw new StringException("Cannot create art object. Please make sure there is an open document.");
+				throw new StringException("Unable to create item. Make sure there is an open document.");
 		}
 	} EXCEPTION_CONVERT(env);
 	return (jint) art;

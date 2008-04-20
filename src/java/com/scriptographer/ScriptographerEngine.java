@@ -36,6 +36,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.prefs.Preferences;
 
@@ -60,6 +61,7 @@ public class ScriptographerEngine {
 	private static File scriptDir = null;
 	private static File pluginDir = null;
 	private static PrintStream logger = null;
+	private static Thread mainThread;
 
 	/**
      * Don't let anyone instantiate this class.
@@ -68,6 +70,7 @@ public class ScriptographerEngine {
 	}
 
 	public static void init(String javaPath) throws Exception {
+		mainThread = Thread.currentThread();
 		// Redirect system streams to the console.
 		ConsoleOutputStream.enableRedirection(true);
 
@@ -162,7 +165,18 @@ public class ScriptographerEngine {
 			prefs = prefs.node(parts.get(i));
 		return prefs;
 	}
+
+	public static void logError(Throwable t) {
+		logger.println(new Date());
+		t.printStackTrace(logger);
+		logger.println();
+	}
 	
+	public static void logError(String str) {
+		logger.println(new Date());
+		logger.println(str);
+	}
+
 	public static void reportError(Throwable t) {
 		try {
 			String error;
@@ -183,16 +197,14 @@ public class ScriptographerEngine {
 				error = "Unsupported Operation: " + error;
 			// Shorten file names by removing the script directory form it
 			if (scriptDir != null)
-				error = StringUtils.replace(error, scriptDir.getAbsolutePath() + System.getProperty("file.separator"), "");
+				error = StringUtils.replace(error, scriptDir.getAbsolutePath()
+						+ System.getProperty("file.separator"), "");
 			// Add a line break at the end if the error does
 			// not contain one already.
 			if (!error.matches("(?:\\n\\r|\\n|\\r)$"))
 				error +=  System.getProperty("line.separator");
-			logger.print(error);
-			logger.print("Stacktrace: ");
 			System.err.print(error);
-			t.printStackTrace(logger);
-			logger.println();
+			logError(t);
 		} catch (Throwable e) {
 			// Report an error in reportError code...
 			// This should not happen!
@@ -256,7 +268,7 @@ public class ScriptographerEngine {
 					scope.put("script", script, true);
 				}
 			}
-			if (file == null || script.getShowProgress())
+			if (file == null || script.getShowProgress() && !file.getName().startsWith("__"))
 				showProgress(file != null ? "Executing " + file.getName() + "..." : "Executing...");
 			return true;
 		}
@@ -284,13 +296,8 @@ public class ScriptographerEngine {
 	 * Invokes the method on the object, passing the arguments to it and calling
 	 * beginExecution before and endExecution after it, which commits all
 	 * changes after execution.
-	 * 
-	 * @param onDraw
-	 * @param annotator
-	 * @param objects
-	 * @throws ScriptException 
 	 */
-	public static Object invoke(Callable callable, Object obj, Object[] args) {
+	public static Object invoke(Callable callable, Object obj, Object... args) {
 		boolean started = beginExecution(null, null);
 		// Retrieve wrapper object for the native java object, and
 		// call the function on it.
@@ -305,21 +312,9 @@ public class ScriptographerEngine {
 			if (started)
 				endExecution();
 		}
-		// Do not allow script cancelation during error reporting,
-		// as this is now handled by scripts too
-		allowScriptCancelation = false;
-		if (throwable instanceof ScriptException) {
-			ScriptographerEngine.reportError(throwable);
-		} else if (throwable instanceof ScriptCanceledException) {
-			System.out.println("Execution canceled");
-		}
-		allowScriptCancelation = true;
+		if (throwable != null)
+			handleException(throwable, null);
 		return null;
-	}
-
-	public static Object invoke(Callable callable, Object obj)
-			throws ScriptException {
-		return invoke(callable, obj, new Object[0]);
 	}
 
 	/**
@@ -340,6 +335,7 @@ public class ScriptographerEngine {
 			throw new ScriptException("Unable to compile script " + file);
 		boolean started = false;
 		Object ret = null;
+		Throwable throwable = null;
 		try {
 			if (scope == null)
 				scope = script.getEngine().createScope();
@@ -357,23 +353,35 @@ public class ScriptographerEngine {
 					stopScripts.add(scriptObj);
 				}
 			}
-		} catch (ScriptCanceledException e) {
-			System.out.println(file != null ? file.getName() + " canceled" :
-				"Execution canceled");
 		} catch (Throwable t) {
-			reportError(t);
+			throwable = t;
 		} finally {
 			// commit all the changes, even when script has crashed,
 			// to synch with direct changes such as creation of paths,
 			// etc
-			if (started) {
+			if (started)
 				endExecution();
-				// now re-enable the console, this also writes out all
-				// the things that were printed in the meantime:
-				// ConsoleOutputStream.enableOutput(true);
-			}
 		}
+		if (throwable != null)
+			handleException(throwable, file);
 		return ret;
+	}
+
+	protected static void handleException(Throwable t, File file) {
+		// Do not allow script cancellation during error reporting,
+		// as this is now handled by scripts too
+		allowScriptCancelation = false;
+		// Unwrap ScriptCanceledExceptions
+		Throwable cause = t.getCause();
+		if (cause instanceof ScriptCanceledException)
+			t = cause;
+		if (t instanceof ScriptException) {
+			ScriptographerEngine.reportError(t);
+		} else if (t instanceof ScriptCanceledException) {
+			System.out.println(file != null ? file.getName() + " canceled"
+					: "Execution canceled");
+		}
+		allowScriptCancelation = true;
 	}
 
 	/**
@@ -468,12 +476,16 @@ public class ScriptographerEngine {
 	}
 
 	public static boolean updateProgress() {
-		boolean ret = nativeUpdateProgress(progressCurrent, progressMax, progressVisible);
-		if (progressVisible && progressAutomatic) {
-			progressCurrent++;
-			progressMax++;
+		if (allowUserInteraction()) {
+			boolean ret = nativeUpdateProgress(progressCurrent, progressMax, progressVisible);
+			if (progressVisible && progressAutomatic) {
+				progressCurrent++;
+				progressMax++;
+			}
+			return !allowScriptCancelation || ret;
+		} else {
+			return true;
 		}
-		return !allowScriptCancelation || ret;
 	}
 
 	private static native void nativeCloseProgress();
@@ -482,7 +494,10 @@ public class ScriptographerEngine {
 		progressVisible  = false;
 		nativeCloseProgress();
 	}
-	
+
+	public static boolean allowUserInteraction() {
+		return Thread.currentThread().equals(mainThread);
+	}
 
 	/**
 	 * @jshide

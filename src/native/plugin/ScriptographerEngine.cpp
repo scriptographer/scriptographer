@@ -117,10 +117,10 @@ ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 	}
 	if (exc != NULL) {
 		JNIEnv *env = getEnv();
-		gPlugin->log("Cannot create ScriptographerEngine: %s", exc->toString(env));
+		gPlugin->log("Unable to create ScriptographerEngine: %s", exc->toString(env));
 		exc->report(env);
 		delete exc;
-		throw new StringException("Cannot create ScriptographerEngine.");
+		throw new StringException("Unable to create ScriptographerEngine.");
 	}
 	gEngine = this;
 }
@@ -246,12 +246,12 @@ void ScriptographerEngine::init() {
 	jint res = createJavaVM(&m_javaVM, (void **) &env, (void *) &args);
 	if (res < 0) {
 		gPlugin->log("Error creataing Java VM: %i", res);
-		throw new StringException("Cannot create Java VM.");
+		throw new StringException("Unable to create Java VM.");
 	}
 #ifndef GCJ
 	cls_Loader = env->FindClass("com/scriptographer/loader/Loader");
 	if (cls_Loader == NULL)
-		throw new StringException("Cannot load loader.jar. Please make sure that the java folder was copied together with the Scriptographer plugin.");
+		throw new StringException("Unable to load loader.jar. Make sure that the java folder was copied together with the Scriptographer plugin.");
 	mid_Loader_init = getStaticMethodID(env, cls_Loader, "init", "(Ljava/lang/String;)V");
 	mid_Loader_reload = getStaticMethodID(env, cls_Loader, "reload", "()Ljava/lang/String;");
 	mid_Loader_loadClass = getStaticMethodID(env, cls_Loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
@@ -1348,7 +1348,7 @@ AIDictionaryRef ScriptographerEngine::convertDictionary(JNIEnv *env, jobject map
 	if (dictionary == NULL) {
 		sAIDictionary->CreateDictionary(&dictionary);
 		if (dictionary == NULL)
-			throw new StringException("Cannot create the dictionary");
+			throw new StringException("Unable to create the dictionary");
 	} else if (removeOld) {
 		// scan through the dictionary and remove the entries that are not contained
 		// in the map any longer (just tell by name):
@@ -1879,7 +1879,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 	AITextFrameType textType = kUnknownTextType;
 	ASBoolean isLayer = false;
 	if (sAIArt->GetArtType(art, &type) || sAIArt->IsArtLayerGroup(art, &isLayer))
-		throw new StringException("Cannot determine the art object's type");
+		throw new StringException("Cannot determine the item's type");
 	if (isLayer) {
 		// self defined type for layer groups
 		type = com_scriptographer_ai_Item_TYPE_LAYER;

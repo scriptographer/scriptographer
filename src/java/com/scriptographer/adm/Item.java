@@ -366,62 +366,62 @@ public abstract class Item extends Component {
 		// TODO: verify for which items nativeGetBestSize really works!
 		Size size = null;
 		switch (type) {
-			case PICTURE_STATIC:
-			case PICTURE_CHECKBOX:
-			case PICTURE_PUSHBUTTON:
-			case PICTURE_RADIOBUTTON:
-				Image image = null;
-				if (this instanceof ImageStatic)
-					image = ((ImageStatic) this).getImage();
-				else if (this instanceof Button)
-					image = ((Button) this).getImage();
-				if (image != null)
-					size = image.getSize();
-				break;
-			case POPUP_LIST:
-				PopupList list = (PopupList) this;
-				if (list.size() > 0) {
-					size = new Size(0, 0);
-					for (int i = 0, l = list.size(); i < l; i++) {
-						ListEntry entry = (ListEntry) list.get(i);
-						String text = entry.getText();
-						Size entrySize = getTextSize(text, -1);
-						size.width = Math.max(size.width, entrySize.width);
-						size.height = Math.max(size.height, entrySize.height);
-					}
-				} else {
-					// Empty list, make sure height is at least set
-					size = getTextSize(" ", -1);
+		case PICTURE_STATIC:
+		case PICTURE_CHECKBOX:
+		case PICTURE_PUSHBUTTON:
+		case PICTURE_RADIOBUTTON:
+			Image image = null;
+			if (this instanceof ImageStatic)
+				image = ((ImageStatic) this).getImage();
+			else if (this instanceof Button)
+				image = ((Button) this).getImage();
+			if (image != null)
+				size = image.getSize();
+			break;
+		case POPUP_LIST:
+			PopupList list = (PopupList) this;
+			if (list.size() > 0) {
+				size = new Size(0, 0);
+				for (int i = 0, l = list.size(); i < l; i++) {
+					ListEntry entry = (ListEntry) list.get(i);
+					String text = entry.getText();
+					Size entrySize = getTextSize(text, -1);
+					size.width = Math.max(size.width, entrySize.width);
+					size.height = Math.max(size.height, entrySize.height);
 				}
-				// 38 is a mac specific value, defined by the size
-				// of pulldown menu interface elements.
-				// TODO: Check on windows!
-				size.width += size.height >= 16 ? 38 : 32;
-				size.height += 8;
-				break;
-			default:
-				String text = null;
-				if (this instanceof TextValueItem)
-					text = ((TextValueItem) this).getText();
-				else if (this instanceof TextItem)
-					text = ((TextItem) this).getText();
-				if (text != null) {
-					if (text.equals(""))
-						text = " ";
-					size = getTextSize(text, -1);
-					if (size != null) {
-						if (this instanceof Button) {
-							size.width += size.height * 2;
-							size.height += 6;
-						} else if (this instanceof TextEditItem) {
-							// Ignore the text width for a TextEdit,
-							// just use the text height and use a
-							// default width across Scriptographer.
-							size.height += 6;
-							size.width = size.height * 3;
-						}
+			} else {
+				// Empty list, make sure height is at least set
+				size = getTextSize(" ", -1);
+			}
+			// 38 is a mac specific value, defined by the size
+			// of pulldown menu interface elements.
+			// TODO: Check on windows!
+			size.width += size.height >= 16 ? 38 : 32;
+			size.height += 8;
+			break;
+		default:
+			String text = null;
+			if (this instanceof TextValueItem)
+				text = ((TextValueItem) this).getText();
+			else if (this instanceof TextItem)
+				text = ((TextItem) this).getText();
+			if (text != null) {
+				if (text.equals(""))
+					text = " ";
+				size = getTextSize(text, -1);
+				if (size != null) {
+					if (this instanceof Button) {
+						size.width += size.height * 2;
+						size.height += 6;
+					} else if (this instanceof TextEditItem) {
+						// Ignore the text width for a TextEdit,
+						// just use the text height and use a
+						// default width across Scriptographer.
+						size.height += 6;
+						size.width = size.height * 3;
 					}
 				}
+			}
 		}
 		if (size == null) {
 			// If it's not a button, use the current size of the object.
@@ -448,29 +448,29 @@ public abstract class Item extends Component {
 		return prefSize != null ? prefSize : getBestSize();
 	}
 
-	public void setMinSize(int width, int height) {
+	public void setMinimumSize(int width, int height) {
 		minSize = new Size(width, height);
 	}
 
-	public void setMinSize(Size size) {
+	public void setMinimumSize(Size size) {
 		if (size == null) minSize = null;
-		else setMinSize(size.width, size.height);
+		else setMinimumSize(size.width, size.height);
 	}
 
-	public Size getMinSize() {
+	public Size getMinimumSize() {
 		return minSize != null ? minSize : getBestSize();
 	}
 
-	public void setMaxSize(int width, int height) {
+	public void setMaximumSize(int width, int height) {
 		maxSize = new Size(width, height);
 	}
 
-	public void setMaxSize(Size size) {
+	public void setMaximumSize(Size size) {
 		if (size == null) maxSize = null;
-		else setMaxSize(size.width, size.height);
+		else setMaximumSize(size.width, size.height);
 	}
 
-	public Size getMaxSize() {
+	public Size getMaximumSize() {
 		return maxSize != null ? maxSize : getSize();
 	}
 
@@ -653,13 +653,13 @@ public abstract class Item extends Component {
 			super.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 		}
 
-		public Dimension getMaxSize() {
-			Size size = Item.this.getMaxSize();
+		public Dimension getMaximumSize() {
+			Size size = Item.this.getMaximumSize();
 			return new Dimension(size.width, size.height);
 		}
 
-		public Dimension getMinSize() {
-			Size size = Item.this.getMinSize();
+		public Dimension getMinimumSize() {
+			Size size = Item.this.getMinimumSize();
 			return new Dimension(size.width, size.height);
 		}
 
@@ -729,7 +729,7 @@ public abstract class Item extends Component {
 			// use the native items's min size
 			if (Item.this instanceof ComponentGroup)
 				return super.getMinimumSize();
-			Size size = Item.this.getMinSize();
+			Size size = Item.this.getMinimumSize();
 			return new Dimension(size.width, size.height);
 		}
 
@@ -738,7 +738,7 @@ public abstract class Item extends Component {
 			// use the native items's max size
 			if (Item.this instanceof ComponentGroup)
 				return super.getMaximumSize();
-			Size size = Item.this.getMaxSize();
+			Size size = Item.this.getMaximumSize();
 			return new Dimension(size.width, size.height);
 		}
 

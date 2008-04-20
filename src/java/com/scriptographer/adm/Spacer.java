@@ -39,6 +39,8 @@ public class Spacer extends Item {
 	private boolean visible;
 
 	public Spacer(int width, int height) {
+		// Don't call super prototype, since we're not actually creating a new item
+		type = ItemType.SPACER;
 		bounds = new Rectangle(0, 0, width, height);
 		visible = true;
 	}

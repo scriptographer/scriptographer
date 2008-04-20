@@ -78,7 +78,9 @@ public enum ItemType {
 	USER("ADM User Type"),
 	MULTICOLUMN_LISTVIEW("ADM Multi Column List View Type"),
 	SCROLLING_VIEW("ADM Scrolling View Type"),
-	TABGROUP("ADM Tab Group Type");
+	TABGROUP("ADM Tab Group Type"),
+	// Fake Types
+	SPACER("ADM Spacer");
 
 
 	protected String name;

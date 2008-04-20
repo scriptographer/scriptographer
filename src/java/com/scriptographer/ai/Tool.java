@@ -230,7 +230,7 @@ public class Tool extends NativeObject {
 	
 	protected void onMouseDown(Event event) throws Exception {
 		if (scope != null && onMouseDown != null)
-			ScriptographerEngine.invoke(onMouseDown, this, new Object[] { event });
+			ScriptographerEngine.invoke(onMouseDown, this, event);
 	}
 
 	private Callable onMouseDrag;
@@ -245,7 +245,7 @@ public class Tool extends NativeObject {
 	
 	protected void onMouseDrag(Event event) throws Exception {
 		if (scope != null && onMouseDrag != null)
-			ScriptographerEngine.invoke(onMouseDrag, this, new Object[] { event });
+			ScriptographerEngine.invoke(onMouseDrag, this, event);
 	}
 
 	private Callable onMouseMove;
@@ -261,7 +261,7 @@ public class Tool extends NativeObject {
 	protected void onMouseMove(Event event) throws Exception {
 		// Make sure the first move event initializes both delta and count.
 		if (scope != null && onMouseMove != null)
-			ScriptographerEngine.invoke(onMouseMove, this, new Object[] { event });
+			ScriptographerEngine.invoke(onMouseMove, this, event);
 	}
 
 	private Callable onMouseUp;
@@ -276,7 +276,7 @@ public class Tool extends NativeObject {
 		
 	protected void onMouseUp(Event event) throws Exception {
 		if (scope != null && onMouseUp != null)
-			ScriptographerEngine.invoke(onMouseUp, this, new Object[] { event });
+			ScriptographerEngine.invoke(onMouseUp, this, event);
 	}
 
 	private static final int EVENT_EDIT_OPTIONS = 0;

@@ -24,8 +24,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * File created on 25.03.2005.
- *
  * $Id$
  */
 
@@ -69,7 +67,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	scriptList = new HierarchyList(this) {
 		style: 'black-rect',
 		size: [208, 20 * lineHeight],
-		minSize: [208, 8 * lineHeight],
+		minimumSize: [208, 8 * lineHeight],
 		entrySize: [2000, lineHeight],
 		entryTextRect: [0, 0, 2000, lineHeight],
 		// TODO: consider adding onDoubleClick, instead of this nasty workaround here!

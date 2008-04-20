@@ -80,7 +80,7 @@ public class MenuItem extends NativeObject{
 			handle = nativeCreate(this.name, this.name, group.name, options);
 
 		if (handle == 0)
-			throw new ScriptographerException("Unable to create MenuItem");
+			throw new ScriptographerException("Unable to create MenuItem.");
 
 		items.put(this.handle, this);
 	}

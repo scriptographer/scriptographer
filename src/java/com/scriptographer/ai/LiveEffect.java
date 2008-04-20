@@ -220,7 +220,7 @@ public class LiveEffect extends NativeObject {
 		}
 
 		if (handle == 0)
-			throw new ScriptographerException("Unable to create LifeEffect");
+			throw new ScriptographerException("Unable to create LifeEffect.");
 
 		effects.put(handle, this);
 	}
@@ -335,8 +335,7 @@ public class LiveEffect extends NativeObject {
 
 	protected void onEditParameters(Map parameters) throws Exception {
 		if (onEditParameters != null)
-			ScriptographerEngine.invoke(onEditParameters, this,
-					new Object[] { parameters });
+			ScriptographerEngine.invoke(onEditParameters, this, parameters);
 	}
 
 	private Callable onCalculate = null;
@@ -351,8 +350,7 @@ public class LiveEffect extends NativeObject {
 
 	protected Item onCalculate(Map parameters, Item item) throws Exception {
 		if (onCalculate != null) {
-			Object ret = ScriptographerEngine.invoke(onCalculate, this,
-					new Object[] { parameters, item });
+			Object ret = ScriptographerEngine.invoke(onCalculate, this, parameters, item);
 			// it is only possible to either return the art itself or set the
 			// art to null!
 			// everything else semse to cause a illustrator crash
@@ -385,7 +383,7 @@ public class LiveEffect extends NativeObject {
 	protected int onGetInputType(Map parameters, Item item) throws Exception {
 		if (onGetInputType != null) {
 			return ConversionUtils.toInt(ScriptographerEngine.invoke(
-					onGetInputType, new Object[] { parameters, item }));
+					onGetInputType, parameters, item));
 			
 		}
 		return 0;

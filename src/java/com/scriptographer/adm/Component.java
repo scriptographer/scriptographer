@@ -109,8 +109,7 @@ abstract class Component extends NotificationHandler {
 		// e.g. HierarchyList
 		Callable onTrack = this.getOnTrack();
 		if (onTrack != null) {
-			Object result = ScriptographerEngine.invoke(onTrack, this,
-					new Object[] { tracker });
+			Object result = ScriptographerEngine.invoke(onTrack, this, tracker);
 			if (result != null)
 				return ConversionUtils.toBoolean(result);
 		}
@@ -131,8 +130,7 @@ abstract class Component extends NotificationHandler {
 		// e.g. HierarchyList
 		Callable onDraw = this.getOnDraw();
 		if (onDraw != null)
-			ScriptographerEngine.invoke(onDraw, this,
-					new Object[] { drawer });
+			ScriptographerEngine.invoke(onDraw, this, drawer);
 	}
 	
 	protected Callable onResize = null;
@@ -150,8 +148,7 @@ abstract class Component extends NotificationHandler {
 		// e.g. HierarchyList
 		Callable onResize = this.getOnResize();
 		if (onResize != null)
-			ScriptographerEngine.invoke(onResize, this,
-					new Object[] { new Integer(dx), new Integer(dy) });
+			ScriptographerEngine.invoke(onResize, this, dx, dy);
 	}
 
 	/*

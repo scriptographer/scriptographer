@@ -44,7 +44,6 @@ public class ConsoleOutputStream extends OutputStream {
 	 * the singleton object
 	 */
 	private static ConsoleOutputStream console = new ConsoleOutputStream();
-	private static Thread mainThread = Thread.currentThread();
 
 	/**
 	 * some constants
@@ -86,7 +85,7 @@ public class ConsoleOutputStream extends OutputStream {
 			// Only print to the console if we're in the right thread.
 			// This prevents crashes and filters out weird
 			// java.lang.ClassCastExceptions on Mac OSX:
-			if (enabled && Thread.currentThread().equals(mainThread)) {
+			if (enabled && ScriptographerEngine.allowUserInteraction()) {
 				String str = buffer.toString();
 				// Filter out weird java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment on OSX 10.5
 				if (!ScriptographerEngine.isMacintosh() || str.indexOf("java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment") == -1) {
@@ -101,6 +100,10 @@ public class ConsoleOutputStream extends OutputStream {
 					str = str.replaceAll("\\t", "    ");
 					callback.println(str);
 					buffer.reset();
+				} else {
+					// Log this error for debugging. It seems that console
+					// output stops working after it occurred the first time
+					ScriptographerEngine.logError(str);
 				}
 			} else {
 				buffer.write(lineSeparator.getBytes());

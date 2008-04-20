@@ -99,7 +99,7 @@ public class Script {
 	public void setOnStop(Callable onStop) {
 		this.onStop = onStop;
 	}
-	
+
 	public boolean getShowProgress() {
 		return showProgress;
 	}

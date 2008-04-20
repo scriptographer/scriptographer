@@ -516,7 +516,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeCreate(JNIEnv *en
 			}
 		}
 		if (art == NULL)
-			throw new StringException("Cannot create raster from file %s.", path);
+			throw new StringException("Unable to create raster from file %s.", path);
 	} EXCEPTION_CONVERT(env);
 	delete path;
 	return (jint) art;				

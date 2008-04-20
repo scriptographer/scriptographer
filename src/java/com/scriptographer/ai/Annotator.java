@@ -69,7 +69,7 @@ public class Annotator extends NativeObject {
 		}		
 
 		if (handle == 0)
-			throw new ScriptographerException("Unable to create Annotator");
+			throw new ScriptographerException("Unable to create Annotator.");
 		
 		active = false;
 		
@@ -156,7 +156,7 @@ public class Annotator extends NativeObject {
 
 	protected void onDraw(Drawer drawer, DocumentView view) throws Exception {
 		if (onDraw != null)
-			ScriptographerEngine.invoke(onDraw, this, new Object[] { drawer, view });
+			ScriptographerEngine.invoke(onDraw, this, drawer, view);
 	}
 
 	private Callable onInvalidate = null;

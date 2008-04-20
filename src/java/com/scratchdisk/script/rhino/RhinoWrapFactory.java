@@ -130,29 +130,41 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		// by the use of a map constructor or the setting of all the fields
 		// of a NativeObject on the instance after its creation,
 		// all added features of JS in Scriptographer:
-		if (from instanceof Scriptable || from instanceof String) { // Let through string as well, for ArgumentReader
+		boolean isString = false;
+		// Let through string as well, for ArgumentReader
+		if (from instanceof Scriptable || (isString = from instanceof String)) {
 			// The preferred conversion is from a native object / array to
 			// a class that supports an ArgumentReader constructor.
 			// Everything else is less preferred (even conversion using
 			// the same constructor and another Scriptable object, e.g.
 			// a wrapped Java object).
-			if (from instanceof NativeObject || from instanceof NativeArray || from instanceof String) {
+			boolean isNativeObject = from instanceof NativeObject;
+			if (isNativeObject || from instanceof NativeArray || isString) {
 				if (ArgumentReader.class.isAssignableFrom(to))
 					return CONVERSION_TRIVIAL + 1;
 				else if (ArgumentReader.canConvert(to))
 					return CONVERSION_TRIVIAL + 2;
 			}
-			if (ArgumentReader.canConvert(to) || from instanceof NativeObject
-					&& (Map.class.isAssignableFrom(to) || getZeroArgumentConstructor(to) != null)) {
-				if (from instanceof Wrapper)
-					from = ((Wrapper) from).unwrap();
-				// Now if there are more options here to convert from, e.g. Size and Point
-				// prefer the one that has the same simple name, to encourage conversion
-				// between ADM and AI Size, Rectangle, Point objects!
-				if (ClassUtils.getSimpleName(from.getClass()).equals(ClassUtils.getSimpleName(to)))
+			if (isNativeObject && Map.class.isAssignableFrom(to)) {
+				// If there are two version of a method, e.g. one with Map and the other with EnumMap
+				// prefer the more general one:
+				if (Map.class.equals(to))
 					return CONVERSION_TRIVIAL + 3;
 				else
 					return CONVERSION_TRIVIAL + 4;
+			} else if (!isString) {
+				// String and ArgumentReader we tried above already
+				if (getZeroArgumentConstructor(to) != null || ArgumentReader.canConvert(to)) {
+					if (from instanceof Wrapper)
+						from = ((Wrapper) from).unwrap();
+					// Now if there are more options here to convert from, e.g. Size and Point
+					// prefer the one that has the same simple name, to encourage conversion
+					// between ADM and AI Size, Rectangle, Point objects!
+					if (ClassUtils.getSimpleName(from.getClass()).equals(ClassUtils.getSimpleName(to)))
+						return CONVERSION_TRIVIAL + 5;
+					else
+						return CONVERSION_TRIVIAL + 6;
+				}
 			}
 		}
 		return defaultWeight;

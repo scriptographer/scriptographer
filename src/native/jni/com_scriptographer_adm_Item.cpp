@@ -122,7 +122,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeCreate(JNIEnv *env
 		ADMItemRef item = sADMItem->Create((ADMDialogRef) dialogHandle, kADMUniqueItemID, itemType, &rect, (ADMItemInitProc) CALLBACK_PROC(Item_onInit), env->NewGlobalRef(obj), options);
 		delete itemType;
 		if (item == NULL)
-			throw new StringException("Cannot create dialog item.");
+			throw new StringException("Unable to create dialog item.");
 
 		return (jint) item;
 	} EXCEPTION_CONVERT(env);

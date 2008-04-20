@@ -48,7 +48,7 @@ AIArtHandle JNICALL PlacedItem_place(JNIEnv *env, AIDocumentHandle doc, jobject 
 	request.m_lPlaceMode = kVanillaPlace;
 	if (file != NULL) {
 		if (!gEngine->convertFile(env, file, &fileSpec))
-			throw new StringException("Cannot create placed item.");
+			throw new StringException("Unable to create placed item.");
 #if kPluginInterfaceVersion < kAI12
 		request.m_pSPFSSpec = &fileSpec;
 #else
@@ -64,7 +64,7 @@ AIArtHandle JNICALL PlacedItem_place(JNIEnv *env, AIDocumentHandle doc, jobject 
 		sAIPlaced->ExecPlaceRequest(request)
 #endif
 		|| request.m_hNewArt == NULL)
-		throw new StringException("Cannot create placed item.");
+		throw new StringException("Unable to create placed item.");
 	
 	return request.m_hNewArt;
 }

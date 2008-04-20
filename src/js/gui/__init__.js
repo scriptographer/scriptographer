@@ -24,14 +24,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * File created on 25.03.2005.
- *
  * $Id$
  */
 
 importPackage(Packages.com.scriptographer);
 importPackage(Packages.com.scratchdisk.script);
 importPackage(Packages.com.scriptographer.script);
+
+script.showProgress = false;
 
 var buttonSize = new Size(27, 17);
 var lineBreak = java.lang.System.getProperty('line.separator');
@@ -42,7 +42,8 @@ function getImage(filename) {
 
 function chooseScriptDirectory(dir) {
 	dir = Dialog.chooseDirectory(
-		'Please choose the Scriptographer script directory', dir || scriptographer.scriptDirectory || scriptographer.pluginDirectory);
+		'Please choose the Scriptographer script directory',
+		dir || scriptographer.scriptDirectory || scriptographer.pluginDirectory);
 	if (dir && dir.isDirectory()) {
 		script.preferences.scriptDirectory = dir.path;
 		setScriptDirectory(dir);

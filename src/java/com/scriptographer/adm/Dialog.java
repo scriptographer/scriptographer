@@ -148,8 +148,8 @@ public abstract class Dialog extends Component {
 			style == STYLE_TABBED_RESIZING_HIERARCHY_FLOATING;
 
 		if (isResizing) {
-			minSize = nativeGetMinSize();
-			maxSize = nativeGetMaxSize();
+			minSize = nativeGetMinimumSize();
+			maxSize = nativeGetMaximumSize();
 		}
 		this.options = options != null ? options.clone()
 				: EnumSet.noneOf(DialogOption.class);
@@ -192,8 +192,8 @@ public abstract class Dialog extends Component {
 				boolean show = !options.contains(DialogOption.HIDDEN) || visible;
 				if (container != null) {
 					if (isResizing) {
-						setMinSize(new Size(container.getMinimumSize()));
-						setMaxSize(new Size(container.getMaximumSize()));
+						setMinimumSize(new Size(container.getMinimumSize()));
+						setMaximumSize(new Size(container.getMaximumSize()));
 					}
 					// if no bounds where specified yet, set the preferred size
 					// as defined by the layout
@@ -217,8 +217,8 @@ public abstract class Dialog extends Component {
 			// because it would be too early to set it there. At least on Mac CS3
 			// this causes problems
 			if (setBoundaries && !boundariesSet) {
-				nativeSetMinSize(minSize.width, minSize.height);
-				nativeSetMaxSize(maxSize.width, maxSize.height);
+				nativeSetMinimumSize(minSize.width, minSize.height);
+				nativeSetMaximumSize(maxSize.width, maxSize.height);
 				boundariesSet = true;
 			}
 		}
@@ -866,39 +866,39 @@ public abstract class Dialog extends Component {
 	 * properties in the wrapper and then only set them natively when the dialog
 	 * is activate.
 	 */
-	private native Size nativeGetMinSize();
+	private native Size nativeGetMinimumSize();
 	
-	private native void nativeSetMinSize(int width, int height);
+	private native void nativeSetMinimumSize(int width, int height);
 
-	private native Size nativeGetMaxSize();
+	private native Size nativeGetMaximumSize();
 	
-	private native void nativeSetMaxSize(int width, int height);
+	private native void nativeSetMaximumSize(int width, int height);
 
-	public Size getMinSize() {
+	public Size getMinimumSize() {
 		return isResizing ? minSize : this.getSize();
 	}
 
-	public void setMinSize(int width, int height) {
+	public void setMinimumSize(int width, int height) {
 		if (isResizing) {
 			minSize = new Size(width, height);
 			if (initialized) {
-				nativeSetMinSize(width, height);
+				nativeSetMinimumSize(width, height);
 			} else {
 				boundariesSet = false;
 			}
 		}
 	}
 	
-	public void setMinSize(Size size) {
+	public void setMinimumSize(Size size) {
 		if (size != null)
-			setMinSize(size.width, size.height);
+			setMinimumSize(size.width, size.height);
 	}
 
-	public Size getMaxSize() {
+	public Size getMaximumSize() {
 		return isResizing ? maxSize : this.getSize();
 	}
 
-	public void setMaxSize(int width, int height) {
+	public void setMaximumSize(int width, int height) {
 		if (isResizing) {
 			if (width > Short.MAX_VALUE)
 				width = Short.MAX_VALUE;
@@ -906,16 +906,16 @@ public abstract class Dialog extends Component {
 				height = Short.MAX_VALUE;
 			maxSize = new Size(width, height);
 			if (initialized) {
-				nativeSetMaxSize(width, height);
+				nativeSetMaximumSize(width, height);
 			} else {
 				boundariesSet = false;
 			}
 		}
 	}
 
-	public void setMaxSize(Size size) {
+	public void setMaximumSize(Size size) {
 		if (size != null)
-			setMaxSize(size.width, size.height);
+			setMaximumSize(size.width, size.height);
 	}
 
 	public native Size getIncrement();

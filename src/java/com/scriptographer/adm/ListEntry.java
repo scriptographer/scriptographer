@@ -52,7 +52,7 @@ public class ListEntry extends NotificationHandler {
 					"Use HierarchyListEntry objects for HierarchyList");
 		handle = nativeCreate(list, index, list.getUniqueId());
 		if (handle == 0)
-			throw new ScriptographerException("Cannot create list entry");
+			throw new ScriptographerException("Unable to create list entry.");
 		this.list = list;
 	}
 
@@ -77,15 +77,13 @@ public class ListEntry extends NotificationHandler {
 	protected void onDraw(Drawer drawer) throws Exception {
 		Callable onDrawEntry = list.getOnDrawEntry();
 		if (onDrawEntry != null)
-			ScriptographerEngine.invoke(onDrawEntry, list,
-					new Object[] { drawer, this });
+			ScriptographerEngine.invoke(onDrawEntry, list, drawer, this);
 	}
 
 	protected boolean onTrack(Tracker tracker) throws Exception {
 		Callable onTrackEntry = list.getOnTrackEntry();
 		if (onTrackEntry != null) {
-			Object res = ScriptographerEngine.invoke(onTrackEntry, list,
-					new Object[] { tracker, this });
+			Object res = ScriptographerEngine.invoke(onTrackEntry, list, tracker, this);
 			if (res != null)
 				return ConversionUtils.toBoolean(res);
 		}
@@ -108,8 +106,7 @@ public class ListEntry extends NotificationHandler {
 		
 		Callable onDestroyEntry = list.getOnDestroyEntry();
 		if (onDestroyEntry != null)
-			ScriptographerEngine.invoke(onDestroyEntry, list,
-					new Object[] { this });
+			ScriptographerEngine.invoke(onDestroyEntry, list, this);
 	}
 	
 	Callable onSelect = null;
@@ -127,8 +124,7 @@ public class ListEntry extends NotificationHandler {
 			ScriptographerEngine.invoke(onSelect, this);
 		Callable onSelectEntry = list.getOnSelectEntry();
 		if (onSelectEntry != null)
-			ScriptographerEngine.invoke(onSelectEntry, list,
-					new Object[] { this });
+			ScriptographerEngine.invoke(onSelectEntry, list, this);
 	}
 	
 	Callable onChangeText = null;
@@ -146,8 +142,7 @@ public class ListEntry extends NotificationHandler {
 			ScriptographerEngine.invoke(onChangeText, this);
 		Callable onChangeEntryText = list.getOnChangeEntryText();
 		if (onChangeEntryText != null)
-			ScriptographerEngine.invoke(onChangeEntryText, list,
-					new Object[] { this });
+			ScriptographerEngine.invoke(onChangeEntryText, list, this);
 	}
 	
 	protected void onNotify(Notifier notifier) throws Exception {

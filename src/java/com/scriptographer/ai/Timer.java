@@ -45,7 +45,7 @@ import com.scratchdisk.util.IntMap;
 public class Timer extends NativeObject {
 	private boolean active;
 	private boolean periodic;
-	private float period;
+	private double period;
 
 	private static IntMap<Timer> timers = new IntMap<Timer>();
 	private static ArrayList<Timer> unusedTimers = null;
@@ -57,7 +57,7 @@ public class Timer extends NativeObject {
 	 * @param period The timer's period in milliseconds.
 	 * @param periodic Controls whether the timer is one-shop or periodic. 
 	 */
-	public Timer(float period, boolean periodic) {
+	public Timer(double period, boolean periodic) {
 		// now see first whether there is an unusedEffect already:
 		ArrayList unusedTimers = getUnusedTimers();
 		
@@ -77,7 +77,7 @@ public class Timer extends NativeObject {
 		}		
 
 		if (handle == 0)
-			throw new ScriptographerException("Unable to create Timer");
+			throw new ScriptographerException("Unable to create Timer.");
 
 		active = false;
 		this.periodic = periodic;
@@ -85,18 +85,16 @@ public class Timer extends NativeObject {
 		timers.put(handle, this);
 	}
 
-	/* TODO: add this, change "int handle" constructor to "long handle"
-	public Timer(int period) {
+	public Timer(double period) {
 		this(period, true);
 	}
-	*/
 	
-	private float ticksToMilliseconds(int ticks) {
-		return ticks * 1000 / 60f;
+	private double ticksToMilliseconds(int ticks) {
+		return ticks * 1000.0 / 60.0;
 	}
 
-	private int millisecondsToTicks(float period) {
-		return (int)(period * 1000 / 60);
+	private int millisecondsToTicks(double period) {
+		return (int)(period * 60.0 / 1000.0);
 	}
 
 	/**
@@ -139,11 +137,11 @@ public class Timer extends NativeObject {
 		}
 	}
 	
-	public float getPeriod() {
+	public double getPeriod() {
 		return period;
 	}
 	
-	public void setPeriod(float period) {
+	public void setPeriod(double period) {
 		int ticks = millisecondsToTicks(period);
 		if (nativeSetPeriod(handle, ticks))
 			this.period = ticksToMilliseconds(ticks);

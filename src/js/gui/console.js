@@ -24,8 +24,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * File created on 25.03.2005.
- *
  * $Id$
  */
 
@@ -35,7 +33,7 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 
 	var textIn = new TextEdit(this, 'multiline') {
 		size: [300, 100],
-		minSize: [200, 18],
+		minimumSize: [200, 18],
 		onTrack: function(tracker) {
 			if (tracker.action == Tracker.ACTION_KEY_STROKE
 				&& tracker.virtualKey == Tracker.KEY_RETURN) {
@@ -71,7 +69,7 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 
 	var textOut = new TextEdit(this, 'readonly multiline') {
 		size: [300, 100],
-		minSize: [200, 18],
+		minimumSize: [200, 18],
 		backgroundColor: 'inactive-tab',
 		// the onDraw workaround for display problems is only needed on mac
 		onDraw: app.macintosh && function(drawer) {

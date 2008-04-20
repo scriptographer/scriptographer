@@ -436,7 +436,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_nativeDrawImage__Lcom_
 		ADMImageRef img = gEngine->getImageRef(env, image);
 		ADMIconRef icn = (ADMIconRef)gEngine->callIntMethod(env, obj, gEngine->mid_adm_Image_getIconHandle);
 		if (icn == NULL)
-			throw new StringException("Cannot create icon from image.");
+			throw new StringException("Unable to create icon from image.");
 		DEFINE_ADM_POINT(pt, x, y);
 		sADMDrawer->DrawRecoloredIcon(drawer, icn, &pt, (ADMRecolorStyle)style);
 	} EXCEPTION_CONVERT(env);
@@ -463,7 +463,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Drawer_nativeDrawImage__Lcom_
 		ADMImageRef img = gEngine->getImageRef(env, image);
 		ADMIconRef icn = (ADMIconRef)gEngine->callIntMethod(env, obj, gEngine->mid_adm_Image_getIconHandle);
 		if (icn == NULL)
-			throw new StringException("Cannot create icon from image.");
+			throw new StringException("Unable to create icon from image.");
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMDrawer->DrawRecoloredIconCentered(drawer, icn, &rt, (ADMRecolorStyle)style);
 	} EXCEPTION_CONVERT(env);

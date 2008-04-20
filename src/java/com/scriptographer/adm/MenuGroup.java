@@ -205,7 +205,7 @@ public class MenuGroup extends NativeObject {
 		handle = nativeCreate(this.name, near.name, 0, options);
 
 		if (handle == 0)
-			throw new ScriptographerException("Unable to create MenuGroup");
+			throw new ScriptographerException("Unable to create MenuGroup.");
 
 		putGroup(this);
 	}
@@ -226,7 +226,7 @@ public class MenuGroup extends NativeObject {
 		}
 
 		if (handle == 0)
-			throw new ScriptographerException("Unable to create MenuGroup");
+			throw new ScriptographerException("Unable to create MenuGroup.");
 
 		putGroup(this);
 	}
