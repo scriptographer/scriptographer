@@ -57,8 +57,8 @@ import com.scratchdisk.util.WeakIdentityHashMap;
  * @author lehni
  */
 public class RhinoWrapFactory extends WrapFactory implements Converter {
-	private WeakIdentityHashMap<Object, WeakReference> wrappers =
-		new WeakIdentityHashMap<Object, WeakReference>();
+	private WeakIdentityHashMap wrappers =
+		new WeakIdentityHashMap();
 	protected RhinoEngine engine;
 
 	public RhinoWrapFactory() {
