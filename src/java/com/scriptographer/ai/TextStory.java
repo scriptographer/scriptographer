@@ -29,8 +29,11 @@
 
 package com.scriptographer.ai;
 
+import java.util.Iterator;
+
 import com.scriptographer.CommitManager;
 import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.ListIterator;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
 
@@ -141,6 +144,10 @@ public class TextStory extends NativeObject {
 
 		public ExtendedList<TextFrame> getSubList(int fromIndex, int toIndex) {
 			return Lists.createSubList(this, fromIndex, toIndex);
+		}
+
+		public Iterator<TextFrame> iterator() {
+			return new ListIterator<TextFrame>(this);
 		}
 	}
 }

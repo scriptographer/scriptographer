@@ -32,9 +32,11 @@
 package com.scriptographer.adm;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import com.scriptographer.ScriptographerEngine; 
 import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.ListIterator;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.List;
 import com.scratchdisk.script.Callable;
@@ -407,5 +409,9 @@ public abstract class ListItem<E extends ListEntry> extends Item implements List
 
 	public boolean isEmpty() {
 		return size() == 0;
+	}
+
+	public Iterator<E> iterator() {
+		return new ListIterator<E>(this);
 	}
 }

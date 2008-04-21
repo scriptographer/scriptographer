@@ -338,13 +338,13 @@ public class Curve {
 		);
 	}
 
-	private native static float nativeSize(float p1x, float p1y,
+	private native static float nativeGetLength(float p1x, float p1y,
 			float h1x, float h1y, float h2x, float h2y, float p2x, float p2y,
 			float flatness);
 
 	public float getLength(float flatness) {
 		updateSegments();
-		return nativeSize(
+		return nativeGetLength(
 				segment1.point.x, segment1.point.y,
 				segment1.handleOut.x + segment1.point.x, segment1.handleOut.y + segment1.point.y,
 				segment2.handleIn.x + segment2.point.x, segment2.handleIn.y + segment2.point.y,
@@ -568,7 +568,7 @@ public class Curve {
 			toParameter = 1;
 
 		// get the point in order to calculate the new fromParameter for the
-		// divided curve afterwards (TODO: ther must be a simpler solution for
+		// divided curve afterwards (TODO: there must be a simpler solution for
 		// getting that value)
 		if (toParameter < 1) {
 			double fromX = 0;
@@ -603,7 +603,7 @@ public class Curve {
 			divide(curve, fromParameter, null, tempCurve);
 			curve = tempCurve;
 		}
-		return nativeSize(
+		return nativeGetLength(
 				(float) curve[0][0], (float) curve[0][1],
 				(float) curve[1][0], (float) curve[1][1],
 				(float) curve[2][0], (float) curve[2][1],

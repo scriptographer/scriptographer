@@ -23,8 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 16.02.2005.
+ * 
+ * File created on Apr 21, 2008.
  *
  * $Id$
  */
@@ -33,34 +33,32 @@ package com.scratchdisk.list;
 
 import java.util.Iterator;
 
-
 /**
  * @author lehni
+ *
  */
-public abstract class AbstractReadOnlyList<E> implements ReadOnlyList<E> {
+public class ListIterator<E> implements Iterator<E> {
+	private ReadOnlyList<E> list;
+	private int index;
 
-	public boolean isEmpty() {
-		return size() == 0;
+	public ListIterator(ReadOnlyList<E> list) {
+		this.list = list;
+		this.index = 0;
 	}
 
-	public ExtendedList<E> getSubList(int fromIndex, int toIndex) {
-		return Lists.createSubList(this, fromIndex, toIndex);
+	public boolean hasNext() {
+		return index < list.size();
 	}
 
-	public String toString() {
-		StringBuffer buf = new StringBuffer(256);
-		buf.append("[ ");
-		int size = size();
-		for (int i = 0; i < size; i++) {
-			Object obj = get(i);
-			if (i > 0) buf.append(", ");
-			buf.append(obj.toString());
+	public E next() {
+		return list.get(index++);
+	}
+
+	public void remove() {
+		if (list instanceof List) {
+			((List) list).remove(index++);
+		} else {
+			throw new UnsupportedOperationException("Cannot remove on ReadOnlyLists");
 		}
-		buf.append(" ]");
-		return buf.toString();
-	}
-
-	public Iterator<E> iterator() {
-		return new ListIterator<E>(this);
 	}
 }

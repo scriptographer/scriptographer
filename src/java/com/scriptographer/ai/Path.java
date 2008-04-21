@@ -70,12 +70,12 @@ public class Path extends PathItem {
 		super(TYPE_PATH);
 	}
 
-	public Path(List segments) {
+	public Path(List<? extends Segment> segments) {
 		this();
 		setSegments(segments);
 	}
 
-	public Path(Object[] segments) {
+	public Path(Segment[] segments) {
 		this(Lists.asList(segments));
 	}
 	
@@ -108,7 +108,7 @@ public class Path extends PathItem {
 		return segments;
 	}
 
-	public void setSegments(List list) {
+	public void setSegments(List<? extends Segment> list) {
 		SegmentList segments = getSegments();
 		// TODO: Implement SegmentList.setAll so clear is not necessary and
 		// nativeCommit is used instead of nativeInsert removeRange would still
@@ -250,7 +250,7 @@ public class Path extends PathItem {
 
 	public Path split(int index, float parameter) {
 		SegmentList segments = getSegments();
-		ExtendedList newSegments = null;
+		ExtendedList<Segment> newSegments = null;
 
 		if (parameter < 0.0f) parameter = 0.0f;
 		else if (parameter >= 1.0f) {
@@ -259,7 +259,7 @@ public class Path extends PathItem {
 			parameter = 0.0f;
 		}
 		if (index >= 0 && index < segments.size - 1) {
-			if (parameter == 0.0) { // spezial case
+			if (parameter == 0.0) { // special case
 				if (index > 0) {
 					// split at index
 					newSegments = segments.getSubList(index, segments.size);
@@ -305,6 +305,8 @@ public class Path extends PathItem {
 		return hitTest(point, Curve.EPSILON);
 	}
 
+	// TODO: move to CurveList, to make accessible when not using
+	// paths directly too?
 	public HitTest getPositionWithLength(float length, float flatness) {
 		CurveList curves = getCurves();
 		float currentLength = 0;

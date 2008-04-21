@@ -31,9 +31,11 @@
 
 package com.scriptographer.ai;
 
+import java.util.Iterator;
 import java.util.WeakHashMap;
 
 import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.ListIterator;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.list.StringIndexReadOnlyList;
@@ -109,6 +111,10 @@ public class FontList implements ReadOnlyList<FontFamily>, StringIndexReadOnlyLi
 
 	public ExtendedList<FontFamily> getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
+	}
+
+	public Iterator<FontFamily> iterator() {
+		return new ListIterator<FontFamily>(this);
 	}
 
 	private static FontList fonts;

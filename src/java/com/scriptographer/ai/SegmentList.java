@@ -270,7 +270,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		return add(size(), point);
 	}
 
-	public boolean addAll(int index, List elements) {
+	public boolean addAll(int index, List<? extends Segment> elements) {
 		if (index < 0 || index > size)
 			throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
 
@@ -307,7 +307,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 			if (segment != null) {
 				// add to internal structure
 				list.add(addIndex, segment);
-				// update verion:
+				// update version:
 				segment.version = commitVersion;
 				// and link segment to this list
 				segment.segments = this;
@@ -344,7 +344,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		return false;
 	}
 
-	public boolean addAll(List elements) {
+	public boolean addAll(List<? extends Segment> elements) {
 		return addAll(size(), elements);
 	}
 
@@ -360,13 +360,8 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		return ret;
 	}
 
-	public Segment set(int index, Object obj) {
-		if (obj instanceof Segment) {
-			set(index, (Segment) obj);
-		} else if (obj instanceof Point) {
-			set(index, new Segment((Point) obj));
-		}
-		return null;
+	public Segment set(int index, Point point) {
+		return set(index, new Segment(point));
 	}
 
 	public int size() {

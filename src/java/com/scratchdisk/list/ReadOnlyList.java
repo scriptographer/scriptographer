@@ -35,7 +35,7 @@ package com.scratchdisk.list;
 /**
  * @author lehni 
  */
-public interface ReadOnlyList<E> {
+public interface ReadOnlyList<E> extends Iterable<E> {
 	int size();
 	boolean isEmpty();
 	E get(int index);

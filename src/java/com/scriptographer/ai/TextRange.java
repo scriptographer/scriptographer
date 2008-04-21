@@ -31,6 +31,7 @@
 
 package com.scriptographer.ai;
 
+import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.zip.Adler32;
 
@@ -38,6 +39,7 @@ import com.scriptographer.CommitManager;
 import com.scriptographer.Commitable;
 import com.scratchdisk.list.ArrayList;
 import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.ListIterator;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.util.IntegerEnumUtils;
@@ -534,6 +536,10 @@ public class TextRange extends NativeObject implements Commitable {
 
 		public ExtendedList<TextRange> getSubList(int fromIndex, int toIndex) {
 			return Lists.createSubList(this, fromIndex, toIndex);
+		}
+
+		public Iterator<TextRange> iterator() {
+			return new ListIterator<TextRange>(this);
 		}
 	}
 

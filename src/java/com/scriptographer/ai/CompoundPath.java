@@ -35,7 +35,7 @@ import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 
-import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.List;
 import com.scratchdisk.list.Lists;
 import com.scriptographer.ScriptographerException;
 
@@ -61,13 +61,10 @@ public class CompoundPath extends PathItem {
 		super(TYPE_COMPOUNDPATH);
 	}
 	
-	public CompoundPath(ExtendedList children) {
+	public CompoundPath(List<? extends Item> children) {
 		this();
-		for (int i = 0; i < children.size(); i++) {
-			Object obj = children.get(i);
-			if (obj instanceof Item)
-				this.appendChild((Item) obj);
-		}
+		for (Item item : children)
+			this.appendChild(item);
 	}
 	
 	public CompoundPath(Item[] children) {

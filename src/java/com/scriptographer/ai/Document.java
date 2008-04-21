@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.List;
 import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.ScriptographerException;
@@ -533,12 +534,12 @@ public class Document extends DictionaryObject {
 		return new Path();
 	}
 	
-	public Path createPath(ExtendedList segments) {
+	public Path createPath(List<? extends Segment> segments) {
 		activate(false, true);
 		return new Path(segments);
 	}
 	
-	public Path createPath(Object[] segments) {
+	public Path createPath(Segment[] segments) {
 		activate(false, true);
 		return new Path(segments);
 	}
@@ -563,7 +564,7 @@ public class Document extends DictionaryObject {
 		return new CompoundPath();
 	}
 	
-	public CompoundPath createCompoundPath(ExtendedList children) {
+	public CompoundPath createCompoundPath(List<? extends Item> children) {
 		activate(false, true);
 		return new CompoundPath(children);
 	}

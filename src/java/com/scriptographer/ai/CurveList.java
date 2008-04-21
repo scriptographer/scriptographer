@@ -103,7 +103,7 @@ public class CurveList extends AbstractFetchList<Curve> {
 	}
 
 	public Curve get(int index) {
-		Curve curve = (Curve) list.get(index);
+		Curve curve = list.get(index);
 		if (curve == null) {
 			curve = new Curve(segments, index);
 			list.set(index, curve);

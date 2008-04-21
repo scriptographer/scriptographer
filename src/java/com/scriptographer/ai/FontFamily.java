@@ -31,7 +31,10 @@
 
 package com.scriptographer.ai;
 
+import java.util.Iterator;
+
 import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.ListIterator;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.list.StringIndexReadOnlyList;
@@ -98,6 +101,10 @@ public class FontFamily extends NativeWrapper implements ReadOnlyList<FontWeight
 
 	public ExtendedList<FontWeight> getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
+	}
+
+	public Iterator<FontWeight> iterator() {
+		return new ListIterator<FontWeight>(this);
 	}
 	
 	protected static FontFamily wrapHandle(int handle) {
