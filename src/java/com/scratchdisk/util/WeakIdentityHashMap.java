@@ -1,1019 +1,804 @@
+/* WeakIdentityHashMap -- an identity hashtable that keeps only weak references
+ to its keys, allowing the virtual machine to reclaim them
+ Copyright (C) 1999, 2000, 2001, 2002, 2003, 2004, 2006 Free Software Foundation, Inc.
+
+ This file is part of GNU Classpath.
+
+ GNU Classpath is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2, or (at your option)
+ any later version.
+
+ GNU Classpath is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with GNU Classpath; see the file COPYING.  If not, write to the
+ Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ 02110-1301 USA.
+
+ Linking this library statically or dynamically with other modules is
+ making a combined work based on this library.  Thus, the terms and
+ conditions of the GNU General Public License cover the whole
+ combination.
+
+ As a special exception, the copyright holders of this library give you
+ permission to link this library with independent modules to produce an
+ executable, regardless of the license terms of these independent
+ modules, and to copy and distribute the resulting executable under
+ terms of your choice, provided that you also meet, for each linked
+ independent module, the terms and conditions of the license of that
+ module.  An independent module is a module which is not derived from
+ or based on this library.  If you modify this library, you may extend
+ this exception to your version of the library, but you are not
+ obligated to do so.  If you do not wish to do so, delete this
+ exception statement from your version. */
+
 package com.scratchdisk.util;
 
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
+import java.util.AbstractMap;
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.AbstractMap;
-import java.util.Set;
-import java.util.AbstractSet;
 import java.util.NoSuchElementException;
-import java.util.Collection;
-import java.util.AbstractCollection;
-import java.util.ConcurrentModificationException;
-import java.util.ArrayList;
-
-import java.lang.ref.WeakReference;
-import java.lang.ref.ReferenceQueue;
+import java.util.Set;
 
 /**
- * This is a modified version of @see{WeakHashMap} from JDK 1.5.
- * This modification uses System.identityHashCode() rather than
- * the object's hash code.  All equality checks are identity checks
- * (==) rather than object equality (.equals); @see{IdentityHashMap}
- * for more information on the changes made in an identity hash map.
+ * A weak hash map has only weak references to the key. This means that it
+ * allows the key to be garbage collected if it is not used otherwise. If
+ * this happens, the entry will eventually disappear from the map,
+ * asynchronously.
  *
- * A hashtable-based <tt>Map</tt> implementation with <em>weak
- * keys</em>.  An entry in a <tt>WeakIdentityHashMap</tt> will
- * automatically be removed when its key is no longer in ordinary use.
- * More precisely, the presence of a mapping for a given key will not
- * prevent the key from being discarded by the garbage collector, that
- * is, made finalizable, finalized, and then reclaimed.  When a key
- * has been discarded its entry is effectively removed from the map,
- * so this class behaves somewhat differently than other <tt>Map</tt>
- * implementations.
+ * <p>Other strange behaviors to be aware of: The size of this map may
+ * spontaneously shrink (even if you use a synchronized map and synchronize
+ * it); it behaves as if another thread removes entries from this table
+ * without synchronization.  The entry set returned by <code>entrySet</code>
+ * has similar phenomenons: The size may spontaneously shrink, or an
+ * entry, that was in the set before, suddenly disappears.
  *
- * <p> Both null values and the null key are supported. This class has
- * performance characteristics similar to those of the <tt>HashMap</tt>
- * class, and has the same efficiency parameters of <em>initial capacity</em>
- * and <em>load factor</em>.
+ * <p>A weak hash map is not meant for caches; use a normal map, with
+ * soft references as values instead, or try {@link LinkedHashMap}.
  *
- * <p> Like most collection classes, this class is not synchronized.  A
- * synchronized <tt>WeakIdentityHashMap</tt> may be constructed using the
- * <tt>Collections.synchronizedMap</tt> method.
+ * <p>The weak hash map supports null values and null keys.  The null key
+ * is never deleted from the map (except explictly of course). The
+ * performance of the methods are similar to that of a hash map.
  *
- * <p> The behavior of the <tt>WeakIdentityHashMap</tt> class depends
- * in part upon the actions of the garbage collector, so several
- * familiar (though not required) <tt>Map</tt> invariants do not hold
- * for this class.  Because the garbage collector may discard keys at
- * any time, a <tt>WeakIdentityHashMap</tt> may behave as though an
- * unknown thread is silently removing entries.  In particular, even
- * if you synchronize on a <tt>WeakIdentityHashMap</tt> instance and
- * invoke none of its mutator methods, it is possible for the
- * <tt>size</tt> method to return smaller values over time, for the
- * <tt>isEmpty</tt> method to return <tt>false</tt> and then
- * <tt>true</tt>, for the <tt>containsKey</tt> method to return
- * <tt>true</tt> and later <tt>false</tt> for a given key, for the
- * <tt>get</tt> method to return a value for a given key but later
- * return <tt>null</tt>, for the <tt>put</tt> method to return
- * <tt>null</tt> and the <tt>remove</tt> method to return
- * <tt>false</tt> for a key that previously appeared to be in the map,
- * and for successive examinations of the key set, the value set, and
- * the entry set to yield successively smaller numbers of elements.
+ * <p>The value objects are strongly referenced by this table.  So if a
+ * value object maintains a strong reference to the key (either direct
+ * or indirect) the key will never be removed from this map.  According
+ * to Sun, this problem may be fixed in a future release.  It is not
+ * possible to do it with the jdk 1.2 reference model, though.
  *
- * <p> Each key object in a <tt>WeakIdentityHashMap</tt> is stored
- * indirectly as the referent of a weak reference.  Therefore a key
- * will automatically be removed only after the weak references to it,
- * both inside and outside of the map, have been cleared by the
- * garbage collector.
+ * @author Jochen Hoenicke
+ * @author Eric Blake (ebb9@email.byu.edu)
+ * @author Jeroen Frijters
  *
- * <p> <strong>Implementation note:</strong> The value objects in a
- * <tt>WeakIdentityHashMap</tt> are held by ordinary strong
- * references.  Thus care should be taken to ensure that value objects
- * do not strongly refer to their own keys, either directly or
- * indirectly, since that will prevent the keys from being discarded.
- * Note that a value object may refer indirectly to its key via the
- * <tt>WeakIdentityHashMap</tt> itself; that is, a value object may
- * strongly refer to some other key object whose associated value
- * object, in turn, strongly refers to the key of the first value
- * object.  One way to deal with this is to wrap values themselves
- * within <tt>WeakReferences</tt> before inserting, as in:
- * <tt>m.put(key, new WeakReference(value))</tt>, and then unwrapping
- * upon each <tt>get</tt>.
- *
- * <p>The iterators returned by all of this class's "collection view methods"
- * are <i>fail-fast</i>: if the map is structurally modified at any time after
- * the iterator is created, in any way except through the iterator's own
- * <tt>remove</tt> or <tt>add</tt> methods, the iterator will throw a
- * <tt>ConcurrentModificationException</tt>.  Thus, in the face of concurrent
- * modification, the iterator fails quickly and cleanly, rather than risking
- * arbitrary, non-deterministic behavior at an undetermined time in the
- * future.
- *
- * <p>Note that the fail-fast behavior of an iterator cannot be guaranteed
- * as it is, generally speaking, impossible to make any hard guarantees in the
- * presence of unsynchronized concurrent modification.  Fail-fast iterators
- * throw <tt>ConcurrentModificationException</tt> on a best-effort basis.
- * Therefore, it would be wrong to write a program that depended on this
- * exception for its correctness:  <i>the fail-fast behavior of iterators
- * should be used only to detect bugs.</i>
- *
- * @see		 java.util.HashMap
- * @see		 java.lang.ref.WeakReference
+ * @see HashMap
+ * @see WeakReference
+ * @see WeakHashMap
+ * @see IdentityHashMap
+ * @see LinkedHashMap
  */
-public class WeakIdentityHashMap<K,V>
-	extends AbstractMap<K,V>
-	implements Map<K,V> {
-
+public class WeakIdentityHashMap extends AbstractMap implements Map {
 	/**
-	 * The default initial capacity -- MUST be a power of two.
+	 * The default capacity for an instance of HashMap.
+	 * Sun's documentation mildly suggests that this (11) is the correct
+	 * value.
 	 */
-	private static final int DEFAULT_INITIAL_CAPACITY = 16;
+	private static final int DEFAULT_CAPACITY = 11;
 
 	/**
-	 * The maximum capacity, used if a higher value is implicitly specified
-	 * by either of the constructors with arguments.
-	 * MUST be a power of two <= 1<<30.
+	 * The default load factor of a HashMap.
 	 */
-	private static final int MAXIMUM_CAPACITY = 1 << 30;
+	private static final float DEFAULT_LOAD_FACTOR = 0.75F;
 
 	/**
-	 * The load fast used when none specified in constructor.
+	 * This is used instead of the key value <i>null</i>.  It is needed
+	 * to distinguish between an null key and a removed key.
 	 */
-	private static final float DEFAULT_LOAD_FACTOR = 0.75f;
+	// Package visible for use by nested classes.
+	static final Object NULL_KEY = new Object();
 
 	/**
-	 * The table, resized as necessary. Length MUST Always be a power of two.
+	 * The reference queue where our buckets (which are WeakReferences) are
+	 * registered to.
 	 */
-	private Entry<K,V>[] table;
+	private final ReferenceQueue queue;
 
 	/**
-	 * The number of key-value mappings contained in this weak hash map.
+	 * The number of entries in this hash map.
 	 */
-	private int size;
+	// Package visible for use by nested classes.
+	int size;
 
 	/**
-	 * The next size value at which to resize (capacity * load factor).
+	 * The load factor of this WeakIdentityHashMap.  This is the maximum ratio of
+	 * size versus number of buckets.  If size grows the number of buckets
+	 * must grow, too.
+	 */
+	private float loadFactor;
+
+	/**
+	 * The rounded product of the capacity (i.e. number of buckets) and
+	 * the load factor. When the number of elements exceeds the
+	 * threshold, the HashMap calls <code>rehash()</code>.
 	 */
 	private int threshold;
 
 	/**
-	 * The load factor for the hash table.
+	 * The number of structural modifications.  This is used by
+	 * iterators, to see if they should fail.  This doesn't count
+	 * the silent key removals, when a weak reference is cleared
+	 * by the garbage collection.  Instead the iterators must make
+	 * sure to have strong references to the entries they rely on.
 	 */
-	private final float loadFactor;
+	// Package visible for use by nested classes.
+	int modCount;
 
 	/**
-	 * Reference queue for cleared WeakEntries
+	 * The entry set.  There is only one instance per hashmap, namely
+	 * theEntrySet.  Note that the entry set may silently shrink, just
+	 * like the WeakIdentityHashMap.
 	 */
-	private final ReferenceQueue<K> queue = new ReferenceQueue<K>();
+	private final class WeakEntrySet extends AbstractSet {
+		/**
+		 * Non-private constructor to reduce bytecode emitted.
+		 */
+		WeakEntrySet() {
+		}
 
-	/**
-	 * The number of times this HashMap has been structurally modified
-	 * Structural modifications are those that change the number of mappings in
-	 * the HashMap or otherwise modify its internal structure (e.g.,
-	 * rehash).  This field is used to make iterators on Collection-views of
-	 * the HashMap fail-fast.  (See ConcurrentModificationException).
-	 */
-	private volatile int modCount;
+		/**
+		 * Returns the size of this set.
+		 *
+		 * @return the set size
+		 */
+		public int size() {
+			return size;
+		}
 
-	/**
-	 * Constructs a new, empty <tt>WeakIdentityHashMap</tt> with the
-	 * given initial capacity and the given load factor.
-	 *
-	 * @param  initialCapacity The initial capacity of the
-	 *	  <tt>WeakIdentityHashMap</tt>
-	 * @param  loadFactor	  The load factor of the
-	 *	  <tt>WeakIdentityHashMap</tt>
-	 * @throws IllegalArgumentException  If the initial capacity is negative,
-	 *	  or if the load factor is non-positive.
-	 */
-	@SuppressWarnings("unchecked")
-	public WeakIdentityHashMap(int initialCapacity, float loadFactor) {
-		if (initialCapacity < 0)
-			throw new IllegalArgumentException("Illegal Initial Capacity: "+
-											   initialCapacity);
-		if (initialCapacity > MAXIMUM_CAPACITY)
-			initialCapacity = MAXIMUM_CAPACITY;
+		/**
+		 * Returns an iterator for all entries.
+		 *
+		 * @return an Entry iterator
+		 */
+		public Iterator iterator() {
+			return new Iterator() {
+				/**
+				 * The entry that was returned by the last
+				 * <code>next()</code> call.  This is also the entry whose
+				 * bucket should be removed by the <code>remove</code> call. <br>
+				 *
+				 * It is null, if the <code>next</code> method wasn't
+				 * called yet, or if the entry was already removed.  <br>
+				 *
+				 * Remembering this entry here will also prevent it from
+				 * being removed under us, since the entry strongly refers
+				 * to the key.
+				 */
+				WeakBucket.WeakEntry lastEntry;
 
-		if (loadFactor <= 0 || Float.isNaN(loadFactor))
-			throw new IllegalArgumentException("Illegal Load factor: "+
-											   loadFactor);
-		int capacity = 1;
-		while (capacity < initialCapacity)
-			capacity <<= 1;
-		table = (Entry<K,V>[]) new Entry[capacity]; // unchecked cast
-		this.loadFactor = loadFactor;
-		threshold = (int)(capacity * loadFactor);
+				/**
+				 * The entry that will be returned by the next
+				 * <code>next()</code> call.  It is <code>null</code> if there
+				 * is no further entry. <br>
+				 *
+				 * Remembering this entry here will also prevent it from
+				 * being removed under us, since the entry strongly refers
+				 * to the key.
+				 */
+				WeakBucket.WeakEntry nextEntry = findNext(null);
+
+				/**
+				 * The known number of modification to the list, if it differs
+				 * from the real number, we throw an exception.
+				 */
+				int knownMod = modCount;
+
+				/**
+				 * Check the known number of modification to the number of
+				 * modifications of the table.  If it differs from the real
+				 * number, we throw an exception.
+				 * @throws ConcurrentModificationException if the number
+				 *         of modifications doesn't match.
+				 */
+				private void checkMod() {
+					// This method will get inlined.
+					cleanQueue();
+					if (knownMod != modCount)
+						throw new ConcurrentModificationException(knownMod
+								+ " != " + modCount);
+				}
+
+				/**
+				 * Get a strong reference to the next entry after
+				 * lastBucket.
+				 * @param lastEntry the previous bucket, or null if we should
+				 * get the first entry.
+				 * @return the next entry.
+				 */
+				private WeakBucket.WeakEntry findNext(
+						WeakBucket.WeakEntry lastEntry) {
+					int slot;
+					WeakBucket nextBucket;
+					if (lastEntry != null) {
+						nextBucket = lastEntry.getBucket().next;
+						slot = lastEntry.getBucket().slot;
+					} else {
+						nextBucket = buckets[0];
+						slot = 0;
+					}
+
+					while (true) {
+						while (nextBucket != null) {
+							WeakBucket.WeakEntry entry = nextBucket.getEntry();
+							if (entry != null)
+								// This is the next entry.
+								return entry;
+
+							// Entry was cleared, try next.
+							nextBucket = nextBucket.next;
+						}
+
+						slot++;
+						if (slot == buckets.length)
+							// No more buckets, we are through.
+							return null;
+
+						nextBucket = buckets[slot];
+					}
+				}
+
+				/**
+				 * Checks if there are more entries.
+				 * @return true, iff there are more elements.
+				 * @throws ConcurrentModificationException if the hash map was
+				 *         modified.
+				 */
+				public boolean hasNext() {
+					checkMod();
+					return nextEntry != null;
+				}
+
+				/**
+				 * Returns the next entry.
+				 * @return the next entry.
+				 * @throws ConcurrentModificationException if the hash map was
+				 *         modified.
+				 * @throws NoSuchElementException if there is no entry.
+				 */
+				public Object next() {
+					checkMod();
+					if (nextEntry == null)
+						throw new NoSuchElementException();
+					lastEntry = nextEntry;
+					nextEntry = findNext(lastEntry);
+					return lastEntry;
+				}
+
+				/**
+				 * Removes the last returned entry from this set.  This will
+				 * also remove the bucket of the underlying weak hash map.
+				 * @throws ConcurrentModificationException if the hash map was
+				 *         modified.
+				 * @throws IllegalStateException if <code>next()</code> was
+				 *         never called or the element was already removed.
+				 */
+				public void remove() {
+					checkMod();
+					if (lastEntry == null)
+						throw new IllegalStateException();
+					modCount++;
+					internalRemove(lastEntry.getBucket());
+					lastEntry = null;
+					knownMod++;
+				}
+			};
+		}
 	}
 
 	/**
-	 * Constructs a new, empty <tt>WeakIdentityHashMap</tt> with the
-	 * given initial capacity and the default load factor, which is
-	 * <tt>0.75</tt>.
+	 * A bucket is a weak reference to the key, that contains a strong
+	 * reference to the value, a pointer to the next bucket and its slot
+	 * number. <br>
 	 *
-	 * @param  initialCapacity The initial capacity of the
-	 *	  <tt>WeakIdentityHashMap</tt>
-	 * @throws IllegalArgumentException  If the initial capacity is negative.
+	 * It would be cleaner to have a WeakReference as field, instead of
+	 * extending it, but if a weak reference gets cleared, we only get
+	 * the weak reference (by queue.poll) and wouldn't know where to
+	 * look for this reference in the hashtable, to remove that entry.
+	 *
+	 * @author Jochen Hoenicke
+	 */
+	private static class WeakBucket extends WeakReference {
+		/**
+		 * The value of this entry.  The key is stored in the weak
+		 * reference that we extend.
+		 */
+		Object value;
+
+		/**
+		 * The next bucket describing another entry that uses the same
+		 * slot.
+		 */
+		WeakBucket next;
+
+		/**
+		 * The slot of this entry. This should be
+		 * <code>Math.abs(key.hashCode() % buckets.length)</code>.
+		 *
+		 * But since the key may be silently removed we have to remember
+		 * the slot number.
+		 *
+		 * If this bucket was removed the slot is -1.  This marker will
+		 * prevent the bucket from being removed twice.
+		 */
+		int slot;
+
+		/**
+		 * Creates a new bucket for the given key/value pair and the specified
+		 * slot.
+		 * @param key the key
+		 * @param queue the queue the weak reference belongs to
+		 * @param value the value
+		 * @param slot the slot.  This must match the slot where this bucket
+		 *        will be enqueued.
+		 */
+		public WeakBucket(Object key, ReferenceQueue queue, Object value,
+				int slot) {
+			super(key, queue);
+			this.value = value;
+			this.slot = slot;
+		}
+
+		/**
+		 * This class gives the <code>Entry</code> representation of the
+		 * current bucket.  It also keeps a strong reference to the
+		 * key; bad things may happen otherwise.
+		 */
+		class WeakEntry implements Map.Entry {
+			/**
+			 * The strong ref to the key.
+			 */
+			Object key;
+
+			/**
+			 * Creates a new entry for the key.
+			 * @param key the key
+			 */
+			public WeakEntry(Object key) {
+				this.key = key;
+			}
+
+			/**
+			 * Returns the underlying bucket.
+			 * @return the owning bucket
+			 */
+			public WeakBucket getBucket() {
+				return WeakBucket.this;
+			}
+
+			/**
+			 * Returns the key.
+			 * @return the key
+			 */
+			public Object getKey() {
+				return key == NULL_KEY ? null : key;
+			}
+
+			/**
+			 * Returns the value.
+			 * @return the value
+			 */
+			public Object getValue() {
+				return value;
+			}
+
+			/**
+			 * This changes the value.  This change takes place in
+			 * the underlying hash map.
+			 * @param newVal the new value
+			 * @return the old value
+			 */
+			public Object setValue(Object newVal) {
+				Object oldVal = value;
+				value = newVal;
+				return oldVal;
+			}
+
+			/**
+			 * The hashCode as specified in the Entry interface.
+			 * @return the hash code
+			 */
+			public int hashCode() {
+				return System.identityHashCode(key)
+						^ (value == null ? 0 : value.hashCode());
+			}
+
+			/**
+			 * The equals method as specified in the Entry interface.
+			 * @param o the object to compare to
+			 * @return true iff o represents the same key/value pair
+			 */
+			public boolean equals(Object o) {
+				if (o instanceof Map.Entry) {
+					Map.Entry e = (Map.Entry) o;
+					return getKey() == e.getKey()
+							&& (value == null ? e.getValue() == null : value
+									.equals(e.getValue()));
+				}
+				return false;
+			}
+
+			public String toString() {
+				return getKey() + "=" + value;
+			}
+		}
+
+		/**
+		 * This returns the entry stored in this bucket, or null, if the
+		 * bucket got cleared in the mean time.
+		 * @return the Entry for this bucket, if it exists
+		 */
+		WeakEntry getEntry() {
+			final Object key = this.get();
+			if (key == null)
+				return null;
+			return new WeakEntry(key);
+		}
+	}
+
+	/**
+	 * The entry set returned by <code>entrySet()</code>.
+	 */
+	private final WeakEntrySet theEntrySet;
+
+	/**
+	 * The hash buckets.  These are linked lists. Package visible for use in
+	 * nested classes.
+	 */
+	WeakBucket[] buckets;
+
+	/**
+	 * Creates a new weak hash map with default load factor and default
+	 * capacity.
+	 */
+	public WeakIdentityHashMap() {
+		this(DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR);
+	}
+
+	/**
+	 * Creates a new weak hash map with default load factor and the given
+	 * capacity.
+	 * @param initialCapacity the initial capacity
+	 * @throws IllegalArgumentException if initialCapacity is negative
 	 */
 	public WeakIdentityHashMap(int initialCapacity) {
 		this(initialCapacity, DEFAULT_LOAD_FACTOR);
 	}
 
 	/**
-	 * Constructs a new, empty <tt>WeakIdentityHashMap</tt> with the
-	 * default initial capacity (16) and the default load factor
-	 * (0.75).
+	 * Creates a new weak hash map with the given initial capacity and
+	 * load factor.
+	 * @param initialCapacity the initial capacity.
+	 * @param loadFactor the load factor (see class description of HashMap).
+	 * @throws IllegalArgumentException if initialCapacity is negative, or
+	 *         loadFactor is non-positive
 	 */
-	@SuppressWarnings("unchecked")
-	public WeakIdentityHashMap() {
-		this.loadFactor = DEFAULT_LOAD_FACTOR;
-		threshold = DEFAULT_INITIAL_CAPACITY;
-		table = (Entry<K,V>[]) new Entry[DEFAULT_INITIAL_CAPACITY]; // unchecked cast
+	public WeakIdentityHashMap(int initialCapacity, float loadFactor) {
+		// Check loadFactor for NaN as well.
+		if (initialCapacity < 0 || !(loadFactor > 0))
+			throw new IllegalArgumentException();
+		if (initialCapacity == 0)
+			initialCapacity = 1;
+		this.loadFactor = loadFactor;
+		threshold = (int) (initialCapacity * loadFactor);
+		theEntrySet = new WeakEntrySet();
+		queue = new ReferenceQueue();
+		buckets = new WeakBucket[initialCapacity];
 	}
 
 	/**
-	 * Constructs a new <tt>WeakIdentityHashMap</tt> with the same
-	 * mappings as the specified <tt>Map</tt>.  The
-	 * <tt>WeakIdentityHashMap</tt> is created with default load
-	 * factor, which is <tt>0.75</tt> and an initial capacity
-	 * sufficient to hold the mappings in the specified <tt>Map</tt>.
+	 * Construct a new WeakIdentityHashMap with the same mappings as the given map.
+	 * The WeakIdentityHashMap has a default load factor of 0.75.
 	 *
-	 * @param   t the map whose mappings are to be placed in this map.
-	 * @throws  NullPointerException if the specified map is null.
-	 * @since   1.3
+	 * @param m the map to copy
+	 * @throws NullPointerException if m is null
+	 * @since 1.3
 	 */
-	public WeakIdentityHashMap(Map<? extends K, ? extends V> t) {
-		this(Math.max((int) (t.size() / DEFAULT_LOAD_FACTOR) + 1, 16),
-			 DEFAULT_LOAD_FACTOR);
-		putAll(t);
-	}
-
-	// internal utilities
-
-	/**
-	 * Value representing null keys inside tables.
-	 */
-	// This is problematic because it isn't of the right type.
-	private static final Object NULL_KEY = new Object();
-
-	/**
-	 * Use NULL_KEY for key if it is null.
-	 */
-	// not: "private static <K> K maskNull(K key)" because NULL_KEY isn't of type K.
-	private static Object maskNull(Object key) {
-		return (key == null ? NULL_KEY : key);
+	public WeakIdentityHashMap(Map m) {
+		this(m.size(), DEFAULT_LOAD_FACTOR);
+		putAll(m);
 	}
 
 	/**
-	 * Return internal representation of null key back to caller as null
+	 * Simply hashes a non-null Object to its array index.
+	 * @param key the key to hash
+	 * @return its slot number
 	 */
-	private static <K> K unmaskNull(K key) {
-		return (key == NULL_KEY ? null : key);
+	private int hash(Object key) {
+		return Math.abs(System.identityHashCode(key) % buckets.length);
 	}
 
 	/**
-	 * Check for equality of non-null reference x and possibly-null y.  Uses
-	 * identity equality.
+	 * Cleans the reference queue.  This will poll all references (which
+	 * are WeakBuckets) from the queue and remove them from this map.
+	 * This will not change modCount, even if it modifies the map.  The
+	 * iterators have to make sure that nothing bad happens.  <br>
+	 *
+	 * Currently the iterator maintains a strong reference to the key, so
+	 * that is no problem.
 	 */
-	static boolean eq(Object x, Object y) {
-		return x == y;
-	}
-
-	/** Return the hash code for x **/
-	static int hasher (Object x) {
-		return System.identityHashCode (x);
+	// Package visible for use by nested classes.
+	void cleanQueue() {
+		Object bucket = queue.poll();
+		while (bucket != null) {
+			internalRemove((WeakBucket) bucket);
+			bucket = queue.poll();
+		}
 	}
 
 	/**
-	 * Return index for hash code h.
+	 * Rehashes this hashtable.  This will be called by the
+	 * <code>add()</code> method if the size grows beyond the threshold.
+	 * It will grow the bucket size at least by factor two and allocates
+	 * new buckets.
 	 */
-	static int indexFor(int h, int length) {
-		return h & (length-1);
-	}
+	private void rehash() {
+		WeakBucket[] oldBuckets = buckets;
+		int newsize = buckets.length * 2 + 1; // XXX should be prime.
+		threshold = (int) (newsize * loadFactor);
+		buckets = new WeakBucket[newsize];
 
-	/**
-	 * Expunge stale entries from the table.
-	 */
-	@SuppressWarnings("unchecked")
-	private void expungeStaleEntries() {
-		Entry<K,V> e;
-		// These types look wrong to me.
-		while ( (e = (Entry<K,V>) queue.poll()) != null) { // unchecked cast
-			int h = e.hash;
-			int i = indexFor(h, table.length);
+		// Now we have to insert the buckets again.
+		for (int i = 0; i < oldBuckets.length; i++) {
+			WeakBucket bucket = oldBuckets[i];
+			WeakBucket nextBucket;
+			while (bucket != null) {
+				nextBucket = bucket.next;
 
-			Entry<K,V> prev = table[i];
-			Entry<K,V> p = prev;
-			while (p != null) {
-				Entry<K,V> next = p.next;
-				if (p == e) {
-					if (prev == e)
-						table[i] = next;
-					else
-						prev.next = next;
-					e.next = null;  // Help GC
-					e.value = null; //  "   "
+				Object key = bucket.get();
+				if (key == null) {
+					// This bucket should be removed; it is probably
+					// already on the reference queue.  We don't insert it
+					// at all, and mark it as cleared.
+					bucket.slot = -1;
 					size--;
-					break;
+				} else {
+					// Add this bucket to its new slot.
+					int slot = hash(key);
+					bucket.slot = slot;
+					bucket.next = buckets[slot];
+					buckets[slot] = bucket;
 				}
-				prev = p;
-				p = next;
+				bucket = nextBucket;
 			}
 		}
 	}
 
 	/**
-	 * Return the table after first expunging stale entries
+	 * Finds the entry corresponding to key.  Since it returns an Entry
+	 * it will also prevent the key from being removed under us.
+	 * @param key the key, may be null
+	 * @return The WeakBucket.WeakEntry or null, if the key wasn't found.
 	 */
-	private Entry<K,V>[] getTable() {
-		expungeStaleEntries();
-		return table;
+	private WeakBucket.WeakEntry internalGet(Object key) {
+		if (key == null)
+			key = NULL_KEY;
+		int slot = hash(key);
+		WeakBucket bucket = buckets[slot];
+		while (bucket != null) {
+			WeakBucket.WeakEntry entry = bucket.getEntry();
+			if (entry != null && key == entry.key)
+				return entry;
+
+			bucket = bucket.next;
+		}
+		return null;
 	}
 
 	/**
-	 * Returns the number of key-value mappings in this map.
-	 * This result is a snapshot, and may not reflect unprocessed
-	 * entries that will be removed before next attempted access
-	 * because they are no longer referenced.
+	 * Adds a new key/value pair to the hash map.
+	 * @param key the key. This mustn't exists in the map. It may be null.
+	 * @param value the value.
+	 */
+	private void internalAdd(Object key, Object value) {
+		if (key == null)
+			key = NULL_KEY;
+		int slot = hash(key);
+		WeakBucket bucket = new WeakBucket(key, queue, value, slot);
+		bucket.next = buckets[slot];
+		buckets[slot] = bucket;
+		size++;
+	}
+
+	/**
+	 * Removes a bucket from this hash map, if it wasn't removed before
+	 * (e.g. one time through rehashing and one time through reference queue).
+	 * Package visible for use in nested classes.
+	 *
+	 * @param bucket the bucket to remove.
+	 */
+	void internalRemove(WeakBucket bucket) {
+		int slot = bucket.slot;
+		if (slot == -1)
+			// This bucket was already removed.
+			return;
+
+		// Mark the bucket as removed.  This is necessary, since the
+		// bucket may be enqueued later by the garbage collection, and
+		// internalRemove will be called a second time.
+		bucket.slot = -1;
+
+		WeakBucket prev = null;
+		WeakBucket next = buckets[slot];
+		while (next != bucket) {
+			if (next == null)
+				throw new InternalError(
+						"WeakIdentityHashMap in inconsistent state");
+			prev = next;
+			next = prev.next;
+		}
+		if (prev == null)
+			buckets[slot] = bucket.next;
+		else
+			prev.next = bucket.next;
+
+		size--;
+	}
+
+	/**
+	 * Returns the size of this hash map.  Note that the size() may shrink
+	 * spontaneously, if the some of the keys were only weakly reachable.
+	 * @return the number of entries in this hash map.
 	 */
 	public int size() {
-		if (size == 0)
-			return 0;
-		expungeStaleEntries();
+		cleanQueue();
 		return size;
 	}
 
 	/**
-	 * Returns <tt>true</tt> if this map contains no key-value mappings.
-	 * This result is a snapshot, and may not reflect unprocessed
-	 * entries that will be removed before next attempted access
-	 * because they are no longer referenced.
+	 * Tells if the map is empty.  Note that the result may change
+	 * spontanously, if all of the keys were only weakly reachable.
+	 * @return true, iff the map is empty.
 	 */
 	public boolean isEmpty() {
-		return size() == 0;
+		cleanQueue();
+		return size == 0;
 	}
 
 	/**
-	 * Returns the value to which the specified key is mapped in this weak
-	 * hash map, or <tt>null</tt> if the map contains no mapping for
-	 * this key.  A return value of <tt>null</tt> does not <i>necessarily</i>
-	 * indicate that the map contains no mapping for the key; it is also
-	 * possible that the map explicitly maps the key to <tt>null</tt>. The
-	 * <tt>containsKey</tt> method may be used to distinguish these two
-	 * cases.
-	 *
-	 * @param   key the key whose associated value is to be returned.
-	 * @return  the value to which this map maps the specified key, or
-	 *		  <tt>null</tt> if the map contains no mapping for this key.
-	 * @see #put(Object, Object)
-	 */
-	public V get(Object key) {
-		Object k = maskNull(key);
-		int h = hasher (k);
-		Entry<K,V>[] tab = getTable();
-		int index = indexFor(h, tab.length);
-		Entry<K,V> e = tab[index];
-		while (e != null) {
-			if (e.hash == h && eq(k, e.get()))
-				return e.value;
-			e = e.next;
-		}
-		return null;
-	}
-
-	/**
-	 * Returns <tt>true</tt> if this map contains a mapping for the
-	 * specified key.
-	 *
-	 * @param   key   The key whose presence in this map is to be tested
-	 * @return  <tt>true</tt> if there is a mapping for <tt>key</tt>;
-	 *		  <tt>false</tt> otherwise
+	 * Tells if the map contains the given key.  Note that the result
+	 * may change spontanously, if the key was only weakly
+	 * reachable.
+	 * @param key the key to look for
+	 * @return true, iff the map contains an entry for the given key.
 	 */
 	public boolean containsKey(Object key) {
-		return getEntry(key) != null;
+		cleanQueue();
+		return internalGet(key) != null;
 	}
 
 	/**
-	 * Returns the entry associated with the specified key in the HashMap.
-	 * Returns null if the HashMap contains no mapping for this key.
+	 * Gets the value the key is mapped to.
+	 * @return the value the key was mapped to.  It returns null if
+	 *         the key wasn't in this map, or if the mapped value was
+	 *         explicitly set to null.
 	 */
-	Entry<K,V> getEntry(Object key) {
-		Object k = maskNull(key);
-		int h = hasher (k);
-		Entry<K,V>[] tab = getTable();
-		int index = indexFor(h, tab.length);
-		Entry<K,V> e = tab[index];
-		while (e != null && !(e.hash == h && eq(k, e.get())))
-			e = e.next;
-		return e;
+	public Object get(Object key) {
+		cleanQueue();
+		WeakBucket.WeakEntry entry = internalGet(key);
+		return entry == null ? null : entry.getValue();
 	}
 
 	/**
-	 * Associates the specified value with the specified key in this map.
-	 * If the map previously contained a mapping for this key, the old
-	 * value is replaced.
-	 *
-	 * @param key key with which the specified value is to be associated.
-	 * @param value value to be associated with the specified key.
-	 * @return previous value associated with specified key, or <tt>null</tt>
-	 *		 if there was no mapping for key.  A <tt>null</tt> return can
-	 *		 also indicate that the HashMap previously associated
-	 *		 <tt>null</tt> with the specified key.
+	 * Adds a new key/value mapping to this map.
+	 * @param key the key, may be null
+	 * @param value the value, may be null
+	 * @return the value the key was mapped to previously.  It returns
+	 *         null if the key wasn't in this map, or if the mapped value
+	 *         was explicitly set to null.
 	 */
-	public V put(K key, V value) {
-		@SuppressWarnings("unchecked")
-		K k = (K) maskNull(key);
-		int h = System.identityHashCode (k);
-		Entry<K,V>[] tab = getTable();
-		int i = indexFor(h, tab.length);
-
-		for (Entry<K,V> e = tab[i]; e != null; e = e.next) {
-			if (h == e.hash && eq(k, e.get())) {
-				V oldValue = e.value;
-				if (value != oldValue)
-					e.value = value;
-				return oldValue;
-			}
-		}
+	public Object put(Object key, Object value) {
+		cleanQueue();
+		WeakBucket.WeakEntry entry = internalGet(key);
+		if (entry != null)
+			return entry.setValue(value);
 
 		modCount++;
-		Entry<K,V> e = tab[i];
-		tab[i] = new Entry<K,V>(k, value, queue, h, e);
-		if (++size >= threshold)
-			resize(tab.length * 2);
+		if (size >= threshold)
+			rehash();
+
+		internalAdd(key, value);
 		return null;
 	}
 
 	/**
-	 * Rehashes the contents of this map into a new array with a
-	 * larger capacity.  This method is called automatically when the
-	 * number of keys in this map reaches its threshold.
-	 *
-	 * If current capacity is MAXIMUM_CAPACITY, this method does not
-	 * resize the map, but sets threshold to Integer.MAX_VALUE.
-	 * This has the effect of preventing future calls.
-	 *
-	 * @param newCapacity the new capacity, MUST be a power of two;
-	 *		must be greater than current capacity unless current
-	 *		capacity is MAXIMUM_CAPACITY (in which case value
-	 *		is irrelevant).
+	 * Removes the key and the corresponding value from this map.
+	 * @param key the key. This may be null.
+	 * @return the value the key was mapped to previously.  It returns
+	 *         null if the key wasn't in this map, or if the mapped value was
+	 *         explicitly set to null.
 	 */
-	void resize(int newCapacity) {
-		Entry<K,V>[] oldTable = getTable();
-		int oldCapacity = oldTable.length;
-		if (oldCapacity == MAXIMUM_CAPACITY) {
-			threshold = Integer.MAX_VALUE;
-			return;
-		}
-
-		@SuppressWarnings("unchecked")
-		Entry<K,V>[] newTable = (Entry<K,V>[]) new Entry[newCapacity];
-		transfer(oldTable, newTable);
-		table = newTable;
-
-		/*
-		 * If ignoring null elements and processing ref queue caused massive
-		 * shrinkage, then restore old table.  This should be rare, but avoids
-		 * unbounded expansion of garbage-filled tables.
-		 */
-		if (size >= threshold / 2) {
-			threshold = (int)(newCapacity * loadFactor);
-		} else {
-			expungeStaleEntries();
-			transfer(newTable, oldTable);
-			table = oldTable;
-		}
-	}
-
-	/** Transfer all entries from src to dest tables */
-	private void transfer(Entry<K,V>[] src, Entry<K,V>[] dest) {
-		for (int j = 0; j < src.length; ++j) {
-			Entry<K,V> e = src[j];
-			src[j] = null;
-			while (e != null) {
-				Entry<K,V> next = e.next;
-				Object key = e.get();
-				if (key == null) {
-					e.next = null;  // Help GC
-					e.value = null; //  "   "
-					size--;
-				} else {
-					int i = indexFor(e.hash, dest.length);
-					e.next = dest[i];
-					dest[i] = e;
-				}
-				e = next;
-			}
-		}
-	}
-
-	/**
-	 * Copies all of the mappings from the specified map to this map These
-	 * mappings will replace any mappings that this map had for any of the
-	 * keys currently in the specified map.<p>
-	 *
-	 * @param m mappings to be stored in this map.
-	 * @throws  NullPointerException if the specified map is null.
-	 */
-	public void putAll(Map<? extends K, ? extends V> m) {
-		int numKeysToBeAdded = m.size();
-		if (numKeysToBeAdded == 0)
-			return;
-
-		/*
-		 * Expand the map if the map if the number of mappings to be added
-		 * is greater than or equal to threshold.  This is conservative; the
-		 * obvious condition is (m.size() + size) >= threshold, but this
-		 * condition could result in a map with twice the appropriate capacity,
-		 * if the keys to be added overlap with the keys already in this map.
-		 * By using the conservative calculation, we subject ourself
-		 * to at most one extra resize.
-		 */
-		if (numKeysToBeAdded > threshold) {
-			int targetCapacity = (int)(numKeysToBeAdded / loadFactor + 1);
-			if (targetCapacity > MAXIMUM_CAPACITY)
-				targetCapacity = MAXIMUM_CAPACITY;
-			int newCapacity = table.length;
-			while (newCapacity < targetCapacity)
-				newCapacity <<= 1;
-			if (newCapacity > table.length)
-				resize(newCapacity);
-		}
-
-		for (Iterator<? extends Map.Entry<? extends K, ? extends V>> i = m.entrySet().iterator(); i.hasNext(); ) {
-			Map.Entry<? extends K, ? extends V> e = i.next();
-			put(e.getKey(), e.getValue());
-		}
-	}
-
-	/**
-	 * Removes the mapping for this key from this map if present.
-	 *
-	 * @param key key whose mapping is to be removed from the map.
-	 * @return previous value associated with specified key, or <tt>null</tt>
-	 *		 if there was no mapping for key.  A <tt>null</tt> return can
-	 *		 also indicate that the map previously associated <tt>null</tt>
-	 *		 with the specified key.
-	 */
-	public V remove(Object key) {
-		Object k = maskNull(key);
-		int h = hasher (k);
-		Entry<K,V>[] tab = getTable();
-		int i = indexFor(h, tab.length);
-		Entry<K,V> prev = tab[i];
-		Entry<K,V> e = prev;
-
-		while (e != null) {
-			Entry<K,V> next = e.next;
-			if (h == e.hash && eq(k, e.get())) {
-				modCount++;
-				size--;
-				if (prev == e)
-					tab[i] = next;
-				else
-					prev.next = next;
-				return e.value;
-			}
-			prev = e;
-			e = next;
-		}
-
-		return null;
-	}
-
-
-
-	/** Special version of remove needed by Entry set */
-	Entry<K,V> removeMapping(Object o) {
-		if (!(o instanceof Map.Entry))
+	public Object remove(Object key) {
+		cleanQueue();
+		WeakBucket.WeakEntry entry = internalGet(key);
+		if (entry == null)
 			return null;
-		Entry<K,V>[] tab = getTable();
-		Map.Entry entry = (Map.Entry)o;
-		Object k = maskNull(entry.getKey());
-		int h = hasher (k);
-		int i = indexFor(h, tab.length);
-		Entry<K,V> prev = tab[i];
-		Entry<K,V> e = prev;
 
-		while (e != null) {
-			Entry<K,V> next = e.next;
-			if (h == e.hash && e.equals(entry)) {
-				modCount++;
-				size--;
-				if (prev == e)
-					tab[i] = next;
-				else
-					prev.next = next;
-				return e;
-			}
-			prev = e;
-			e = next;
-		}
-
-		return null;
+		modCount++;
+		internalRemove(entry.getBucket());
+		return entry.getValue();
 	}
 
 	/**
-	 * Removes all mappings from this map.
+	 * Returns a set representation of the entries in this map.  This
+	 * set will not have strong references to the keys, so they can be
+	 * silently removed.  The returned set has therefore the same
+	 * strange behaviour (shrinking size(), disappearing entries) as
+	 * this weak hash map.
+	 * @return a set representation of the entries.
+	 */
+	public Set entrySet() {
+		cleanQueue();
+		return theEntrySet;
+	}
+
+	/**
+	 * Clears all entries from this map.
 	 */
 	public void clear() {
-		// clear out ref queue. We don't need to expunge entries
-		// since table is getting cleared.
-		while (queue.poll() != null)
-			;
-
-		modCount++;
-		Entry<K,V>[] tab = table;
-		for (int i = 0; i < tab.length; ++i)
-			tab[i] = null;
-		size = 0;
-
-		// Allocation of array may have caused GC, which may have caused
-		// additional entries to go stale.  Removing these entries from the
-		// reference queue will make them eligible for reclamation.
-		while (queue.poll() != null)
-			;
-   }
+		super.clear();
+	}
 
 	/**
-	 * Returns <tt>true</tt> if this map maps one or more keys to the
-	 * specified value.
-	 *
-	 * @param value value whose presence in this map is to be tested.
-	 * @return <tt>true</tt> if this map maps one or more keys to the
-	 *		 specified value.
+	 * Returns true if the map contains at least one key which points to
+	 * the specified object as a value.  Note that the result
+	 * may change spontanously, if its key was only weakly reachable.
+	 * @param value the value to search for
+	 * @return true if it is found in the set.
 	 */
 	public boolean containsValue(Object value) {
-		if (value==null)
-			return containsNullValue();
-
-		Entry<K,V>[] tab = getTable();
-		for (int i = tab.length ; i-- > 0 ;)
-			for (Entry e = tab[i] ; e != null ; e = e.next)
-				if (value.equals(e.value))
-					return true;
-		return false;
+		cleanQueue();
+		return super.containsValue(value);
 	}
 
 	/**
-	 * Special-case code for containsValue with null argument
+	 * Returns a set representation of the keys in this map.  This
+	 * set will not have strong references to the keys, so they can be
+	 * silently removed.  The returned set has therefore the same
+	 * strange behaviour (shrinking size(), disappearing entries) as
+	 * this weak hash map.
+	 * @return a set representation of the keys.
 	 */
-	private boolean containsNullValue() {
-		Entry<K,V>[] tab = getTable();
-		for (int i = tab.length ; i-- > 0 ;)
-			for (Entry e = tab[i] ; e != null ; e = e.next)
-				if (e.value==null)
-					return true;
-		return false;
+	public Set keySet() {
+		cleanQueue();
+		return super.keySet();
 	}
 
 	/**
-	 * The entries in this hash table extend WeakReference, using its main ref
-	 * field as the key.
+	 * Puts all of the mappings from the given map into this one. If the
+	 * key already exists in this map, its value is replaced.
+	 * @param m the map to copy in
 	 */
-	private static class Entry<K,V> extends WeakReference<K> implements Map.Entry<K,V> {
-		private V value;
-		private final int hash;
-		private Entry<K,V> next;
-
-		/**
-		 * Create new entry.
-		 */
-		Entry(K key, V value,
-			  ReferenceQueue<K> queue,
-			  int hash, Entry<K,V> next) {
-			super(key, queue);
-			this.value = value;
-			this.hash  = hash;
-			this.next  = next;
-		}
-
-		public K getKey() {
-			return WeakIdentityHashMap.<K>unmaskNull(get());
-		}
-
-		public V getValue() {
-			return value;
-		}
-
-		public V setValue(V newValue) {
-			V oldValue = value;
-			value = newValue;
-			return oldValue;
-		}
-
-		public boolean equals(Object o) {
-			if (!(o instanceof Map.Entry))
-				return false;
-			Map.Entry e = (Map.Entry)o;
-			Object k1 = getKey();
-			Object k2 = e.getKey();
-			if (eq (k1, k2)) {
-				Object v1 = getValue();
-				Object v2 = e.getValue();
-				if (v1 == v2 || (v1 != null && v1.equals(v2)))
-					return true;
-			}
-			return false;
-		}
-
-		public int hashCode() {
-			Object k = getKey();
-			Object v = getValue();
-			return  ((k==null ? 0 : hasher (k)) ^
-					 (v==null ? 0 : v.hashCode()));
-		}
-
-		public String toString() {
-			return getKey() + "=" + getValue();
-		}
-	}
-
-	private abstract class HashIterator<T> implements Iterator<T> {
-		int index;
-		Entry<K,V> entry = null;
-		Entry<K,V> lastReturned = null;
-		int expectedModCount = modCount;
-
-		/**
-		 * Strong reference needed to avoid disappearance of key
-		 * between hasNext and next
-		 */
-		Object nextKey = null;
-
-		/**
-		 * Strong reference needed to avoid disappearance of key
-		 * between nextEntry() and any use of the entry
-		 */
-		Object currentKey = null;
-
-		HashIterator() {
-			index = (size() != 0 ? table.length : 0);
-		}
-
-		public boolean hasNext() {
-			Entry<K,V>[] t = table;
-
-			while (nextKey == null) {
-				Entry<K,V> e = entry;
-				int i = index;
-				while (e == null && i > 0)
-					e = t[--i];
-				entry = e;
-				index = i;
-				if (e == null) {
-					currentKey = null;
-					return false;
-				}
-				nextKey = e.get(); // hold on to key in strong ref
-				if (nextKey == null)
-					entry = entry.next;
-			}
-			return true;
-		}
-
-		/** The common parts of next() across different types of iterators */
-		protected Entry<K,V> nextEntry() {
-			if (modCount != expectedModCount)
-				throw new ConcurrentModificationException();
-			if (nextKey == null && !hasNext())
-				throw new NoSuchElementException();
-
-			lastReturned = entry;
-			entry = entry.next;
-			currentKey = nextKey;
-			nextKey = null;
-			return lastReturned;
-		}
-
-		public void remove() {
-			if (lastReturned == null)
-				throw new IllegalStateException();
-			if (modCount != expectedModCount)
-				throw new ConcurrentModificationException();
-
-			WeakIdentityHashMap.this.remove(currentKey);
-			expectedModCount = modCount;
-			lastReturned = null;
-			currentKey = null;
-		}
-
-	}
-
-	private class ValueIterator extends HashIterator<V> {
-		public V next() {
-			return nextEntry().value;
-		}
-	}
-
-	private class KeyIterator extends HashIterator<K> {
-		public K next() {
-			return nextEntry().getKey();
-		}
-	}
-
-	private class EntryIterator extends HashIterator<Map.Entry<K,V>> {
-		public Map.Entry<K,V> next() {
-			return nextEntry();
-		}
-	}
-
-	// Views
-
-	private transient Set<Map.Entry<K,V>> entrySet = null;
-	private transient volatile Set<K>   our_keySet = null;
-
-	/**
-	 * Returns a set view of the keys contained in this map.  The set is
-	 * backed by the map, so changes to the map are reflected in the set, and
-	 * vice-versa.  The set supports element removal, which removes the
-	 * corresponding mapping from this map, via the <tt>Iterator.remove</tt>,
-	 * <tt>Set.remove</tt>, <tt>removeAll</tt>, <tt>retainAll</tt>, and
-	 * <tt>clear</tt> operations.  It does not support the <tt>add</tt> or
-	 * <tt>addAll</tt> operations.
-	 *
-	 * @return a set view of the keys contained in this map.
-	 */
-	public Set<K> keySet() {
-		Set<K> ks = our_keySet;
-		return (ks != null ? ks : (our_keySet = new KeySet()));
-	}
-
-	private class KeySet extends AbstractSet<K> {
-		public Iterator<K> iterator() {
-			return new KeyIterator();
-		}
-
-		public int size() {
-			return WeakIdentityHashMap.this.size();
-		}
-
-		public boolean contains(Object o) {
-			return containsKey(o);
-		}
-
-		public boolean remove(Object o) {
-			if (containsKey(o)) {
-				WeakIdentityHashMap.this.remove(o);
-				return true;
-			}
-			else
-				return false;
-		}
-
-		public void clear() {
-			WeakIdentityHashMap.this.clear();
-		}
-
-		public Object[] toArray() {
-			Collection<K> c = new ArrayList<K>(size());
-			for (Iterator<K> i = iterator(); i.hasNext(); )
-				c.add(i.next());
-			return c.toArray();
-		}
-
-		public <T> T[] toArray(T[] a) {
-			Collection<K> c = new ArrayList<K>(size());
-			for (Iterator<K> i = iterator(); i.hasNext(); )
-				c.add(i.next());
-			return c.toArray(a);
-		}
-	}
-
-	transient volatile Collection<V> our_values = null;
-
-	/**
-	 * Returns a collection view of the values contained in this map.  The
-	 * collection is backed by the map, so changes to the map are reflected in
-	 * the collection, and vice-versa.  The collection supports element
-	 * removal, which removes the corresponding mapping from this map, via the
-	 * <tt>Iterator.remove</tt>, <tt>Collection.remove</tt>,
-	 * <tt>removeAll</tt>, <tt>retainAll</tt>, and <tt>clear</tt> operations.
-	 * It does not support the <tt>add</tt> or <tt>addAll</tt> operations.
-	 *
-	 * @return a collection view of the values contained in this map.
-	 */
-	public Collection<V> values() {
-		Collection<V> vs = our_values;
-		return (vs != null ?  vs : (our_values = new Values()));
-	}
-
-	private class Values extends AbstractCollection<V> {
-		public Iterator<V> iterator() {
-			return new ValueIterator();
-		}
-
-		public int size() {
-			return WeakIdentityHashMap.this.size();
-		}
-
-		public boolean contains(Object o) {
-			return containsValue(o);
-		}
-
-		public void clear() {
-			WeakIdentityHashMap.this.clear();
-		}
-
-		public Object[] toArray() {
-			Collection<V> c = new ArrayList<V>(size());
-			for (Iterator<V> i = iterator(); i.hasNext(); )
-				c.add(i.next());
-			return c.toArray();
-		}
-
-		public <T> T[] toArray(T[] a) {
-			Collection<V> c = new ArrayList<V>(size());
-			for (Iterator<V> i = iterator(); i.hasNext(); )
-				c.add(i.next());
-			return c.toArray(a);
-		}
+	public void putAll(Map m) {
+		super.putAll(m);
 	}
 
 	/**
-	 * Returns a collection view of the mappings contained in this map.  Each
-	 * element in the returned collection is a <tt>Map.Entry</tt>.  The
-	 * collection is backed by the map, so changes to the map are reflected in
-	 * the collection, and vice-versa.  The collection supports element
-	 * removal, which removes the corresponding mapping from the map, via the
-	 * <tt>Iterator.remove</tt>, <tt>Collection.remove</tt>,
-	 * <tt>removeAll</tt>, <tt>retainAll</tt>, and <tt>clear</tt> operations.
-	 * It does not support the <tt>add</tt> or <tt>addAll</tt> operations.
-	 *
-	 * @return a collection view of the mappings contained in this map.
-	 * @see java.util.Map.Entry
+	 * Returns a collection representation of the values in this map.  This
+	 * collection will not have strong references to the keys, so mappings
+	 * can be silently removed.  The returned collection has therefore the same
+	 * strange behaviour (shrinking size(), disappearing entries) as
+	 * this weak hash map.
+	 * @return a collection representation of the values.
 	 */
-	public Set<Map.Entry<K,V>> entrySet() {
-		Set<Map.Entry<K,V>> es = entrySet;
-		return (es != null ? es : (entrySet = new EntrySet()));
+	public Collection values() {
+		cleanQueue();
+		return super.values();
 	}
-
-	private class EntrySet extends AbstractSet<Map.Entry<K,V>> {
-		public Iterator<Map.Entry<K,V>> iterator() {
-			return new EntryIterator();
-		}
-
-		public boolean contains(Object o) {
-			if (!(o instanceof Map.Entry))
-				return false;
-			Map.Entry e = (Map.Entry)o;
-			Entry candidate = getEntry(e.getKey());
-			return candidate != null && candidate.equals(e);
-		}
-
-		public boolean remove(Object o) {
-			return removeMapping(o) != null;
-		}
-
-		public int size() {
-			return WeakIdentityHashMap.this.size();
-		}
-
-		public void clear() {
-			WeakIdentityHashMap.this.clear();
-		}
-
-		public Object[] toArray() {
-			Collection<Map.Entry<K,V>> c = new ArrayList<Map.Entry<K,V>>(size());
-			for (Iterator<Map.Entry<K,V>> i = iterator(); i.hasNext(); )
-				c.add(new OurSimpleEntry<K,V>(i.next()));
-			return c.toArray();
-		}
-
-		public <T> T[] toArray(T[] a) {
-			Collection<Map.Entry<K,V>> c = new ArrayList<Map.Entry<K,V>>(size());
-			for (Iterator<Map.Entry<K,V>> i = iterator(); i.hasNext(); )
-				c.add(new OurSimpleEntry<K,V>(i.next()));
-			return c.toArray(a);
-		}
-	}
-
-	/** Version copied from Abstract Map because it is not public **/
-	static class OurSimpleEntry<K,V> implements Map.Entry<K,V> {
-		K key;
-		V value;
-
-		public OurSimpleEntry(K key, V value) {
-			this.key   = key;
-				this.value = value;
-		}
-
-		public OurSimpleEntry(Map.Entry<K,V> e) {
-			this.key   = e.getKey();
-				this.value = e.getValue();
-		}
-
-		public K getKey() {
-			return key;
-		}
-
-		public V getValue() {
-			return value;
-		}
-
-		public V setValue(V value) {
-			V oldValue = this.value;
-			this.value = value;
-			return oldValue;
-		}
-
-		public boolean equals(Object o) {
-			if (!(o instanceof Map.Entry))
-			return false;
-			Map.Entry e = (Map.Entry)o;
-			return WeakIdentityHashMap.eq(key, e.getKey())
-				&& eq(value, e.getValue());
-		}
-
-		public int hashCode() {
-			return ((key   == null)   ? 0 :   key.hashCode()) ^
-			   ((value == null)   ? 0 : value.hashCode());
-		}
-
-		public String toString() {
-			return key + "=" + value;
-		}
-
-		private static boolean eq(Object o1, Object o2) {
-			return (o1 == null ? o2 == null : o1.equals(o2));
-		}
-	}
-}
+} // class WeakIdentityHashMap
