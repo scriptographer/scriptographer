@@ -19,15 +19,6 @@ diff -r1.269 Context.java
 > 
 2489a2503
 >     private OperatorHandler operatorHandler;
-Index: org/mozilla/javascript/NativeJavaTopPackage.java
-===================================================================
-RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaTopPackage.java,v
-retrieving revision 1.19
-diff -r1.19 NativeJavaTopPackage.java
-77c77
-<     NativeJavaTopPackage(ClassLoader loader)
----
->     public NativeJavaTopPackage(ClassLoader loader)
 Index: org/mozilla/javascript/NativeJavaPackage.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaPackage.java,v
@@ -452,28 +443,6 @@ diff -r1.344 Interpreter.java
 >         // If we're still here, perform  double sign operator
 >         stack[stackTop] = UniqueTag.DOUBLE_MARK;
 >         sDbl[stackTop] = operator == Token.NEG ? -rDbl : rDbl;
-Index: org/mozilla/javascript/WrapFactory.java
-===================================================================
-RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/WrapFactory.java,v
-retrieving revision 1.19
-diff -r1.19 WrapFactory.java
-153a154,169
->      * Same as NativeJavaObject CONVERSION_*, but to be used
->      * by WrapFactory#getConversionWeight
->      */
->     public static final byte CONVERSION_TRIVIAL      = 1;
->     public static final byte CONVERSION_NONTRIVIAL   = 0;
->     public static final byte CONVERSION_NONE         = 99;
-> 
-> 	public int getConversionWeight(Object from, Class<?> to, int defaultWeight) {
->         return defaultWeight;
-> 	}
-> 
->     public Object coerceType(Class<?> type, Object value) {
->     	return null;
->     }
-> 
->     /**
 Index: org/mozilla/javascript/NativeJavaObject.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaObject.java,v
@@ -631,6 +600,64 @@ diff -r1.76 JavaMembers.java
 <     Object[] getIds(boolean isStatic)
 ---
 >     public Object[] getIds(boolean isStatic)
+346,347c346,347
+<                     while (clazz != null) {
+<                         try {
+---
+>                     try {
+>                         while (clazz != null) {
+353c353,354
+<                                 if (Modifier.isPublic(mods) ||
+---
+>                                 if (!Modifier.isVolatile(mods) && (
+>                                     Modifier.isPublic(mods) ||
+355c356
+<                                     includePrivate)
+---
+>                                     includePrivate))
+363,376d363
+<                         } catch (SecurityException e) {
+<                             // Some security settings (i.e., applets) disallow
+<                             // access to Class.getDeclaredMethods. Fall back to
+<                             // Class.getMethods.
+<                             Method[] methods = clazz.getMethods();
+<                             for (int i = 0; i < methods.length; i++) {
+<                                 Method method = methods[i];
+<                                 MethodSignature sig 
+<                                     = new MethodSignature(method);
+<                                 if (map.get(sig) == null)
+<                                     map.put(sig, method);
+<                             }
+<                             break; // getMethods gets superclass methods, no
+<                                    // need to loop any more
+378,385c365,382
+<                     }
+<                 } else {
+<                     Method[] methods = clazz.getMethods();
+<                     for (int i = 0; i < methods.length; i++) {
+<                         Method method = methods[i];
+<                         MethodSignature sig = new MethodSignature(method);
+<                         map.put(sig, method);
+<                     }
+---
+>                         // We're done, jump out.
+>                         return;
+>                     } catch (SecurityException e) {
+>                         // Some security settings (i.e., applets) disallow
+>                         // access to Class.getDeclaredMethods. Fall back to
+>                         // Class.getMethods bellow:
+>                     }
+>                 }
+>                 Method[] methods = clazz.getMethods();
+>                 for (int i = 0; i < methods.length; i++) {
+>                     Method method = methods[i];
+>                     int mods = method.getModifiers();
+>                     // Ignore volatile methods since they seem to get introduced
+>                     // by Java's generic code and confuse class casts by pretending
+>                     // to take java.lang.Object but actually only take specific
+>                     // classes (erasures).
+>                     if (!Modifier.isVolatile(mods))
+>                         map.put(new MethodSignature(method), method);
 Index: org/mozilla/javascript/Token.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Token.java,v
@@ -736,6 +763,67 @@ diff -r1.18 MemberBox.java
 <     Object newInstance(Object[] args)
 ---
 >     public Object newInstance(Object[] args)
+Index: org/mozilla/javascript/ScriptRuntime.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/ScriptRuntime.java,v
+retrieving revision 1.295
+diff -r1.295 ScriptRuntime.java
+3204a3205
+>             ScriptableObject.putProperty(errorObject, "exception", re);
+Index: org/mozilla/javascript/NativeJavaTopPackage.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaTopPackage.java,v
+retrieving revision 1.19
+diff -r1.19 NativeJavaTopPackage.java
+77c77
+<     NativeJavaTopPackage(ClassLoader loader)
+---
+>     public NativeJavaTopPackage(ClassLoader loader)
+Index: org/mozilla/javascript/WrapFactory.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/WrapFactory.java,v
+retrieving revision 1.19
+diff -r1.19 WrapFactory.java
+153a154,169
+>      * Same as NativeJavaObject CONVERSION_*, but to be used
+>      * by WrapFactory#getConversionWeight
+>      */
+>     public static final byte CONVERSION_TRIVIAL      = 1;
+>     public static final byte CONVERSION_NONTRIVIAL   = 0;
+>     public static final byte CONVERSION_NONE         = 99;
+> 
+> 	public int getConversionWeight(Object from, Class<?> to, int defaultWeight) {
+>         return defaultWeight;
+> 	}
+> 
+>     public Object coerceType(Class<?> type, Object value) {
+>     	return null;
+>     }
+> 
+>     /**
+Index: org/mozilla/javascript/NativeJavaMethod.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaMethod.java,v
+retrieving revision 1.63
+diff -r1.63 NativeJavaMethod.java
+436c436
+<         } else if (extraBestFitsCount == 0) {
+---
+>         } else /*if (extraBestFitsCount == 0)*/ {
+440c440
+< 
+---
+>         /*
+460c460
+<                 "msg.constructor.ambiguous",
+---
+>                 "msg.method.ambiguous",
+464c464
+<                 "msg.method.ambiguous", memberClass,
+---
+>                 "msg.constructor.ambiguous", memberClass,
+466a467
+>         */
 Index: org/mozilla/javascript/Parser.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Parser.java,v

@@ -37,7 +37,10 @@ import java.io.StringWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
 import com.scratchdisk.script.ScriptException;
@@ -61,6 +64,14 @@ public class RhinoScriptException extends ScriptException {
 			// Unwrapped multiply wrapped Rhino Exceptions
 			if (wrapped instanceof RhinoException)
 				cause = wrapped;
+		} else if (cause instanceof JavaScriptException) {
+		    JavaScriptException jse = (JavaScriptException) cause;
+		    Object value = jse.getValue();
+		    if (value instanceof Scriptable) {
+		        Object exception = ScriptableObject.getProperty((Scriptable) value, "exception");
+		        if (exception instanceof Throwable)
+		            return (Throwable) exception;
+		    }
 		}
 		return cause;
 	}
