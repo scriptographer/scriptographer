@@ -41,6 +41,7 @@ import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptException;
 import com.sun.javadoc.DocErrorReporter;
 import com.sun.javadoc.Doclet;
+import com.sun.javadoc.LanguageVersion;
 import com.sun.javadoc.RootDoc;
 
 public class RhinoDoclet extends Doclet {
@@ -87,7 +88,11 @@ public class RhinoDoclet extends Doclet {
 		}
 		return true;
 	}
-	
+
+	public static LanguageVersion languageVersion() {
+		return LanguageVersion.JAVA_1_5;
+	}
+
 	public static class RhinoDocletEngine extends RhinoEngine {
 
 		protected TopLevel makeTopLevel(Context context) {

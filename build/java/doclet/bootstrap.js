@@ -734,7 +734,7 @@ Json = new function() {
 		encode: function(obj) {
 			switch (Base.type(obj)) {
 				case 'string':
-					return '"' + obj.replace(/[\x00-\x1f\\"]/g, replace) + '"';
+					return uneval(obj);
 				case 'array':
 					return '[' + obj.collect(Json.encode) + ']';
 				case 'object':

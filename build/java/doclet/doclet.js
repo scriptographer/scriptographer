@@ -192,6 +192,7 @@ ClassDocImpl.inject({
 // Type helpers
 
 Type = Object.extend({
+	// Marks already extended native instance in initialize
 	_extended: true,
 
 	initialize: function(type) {
@@ -199,7 +200,8 @@ Type = Object.extend({
 		// type instead of this!
 		// We need to do this because it is not possible to access the native
 		// class for types. Sometimes they seem to just be ClassDocImpls
-		if (!type._extended) type.inject(this.__proto__);
+		if (!type._extended)
+			type.inject(this.__proto__);
 		return type;
 	},
 
@@ -217,13 +219,23 @@ Type = Object.extend({
 
 	isArray: function() {
 		var cd = this.asClassDoc();
-		return this.dimension() == '[]' || cd &&
-			cd.hasInterface('java.util.Collection');
+		return this.dimension() == '[]'/* || cd &&
+			cd.hasInterface('java.util.Collection')*/;
 	},
 	
 	isMap: function() {
 		var cd = this.asClassDoc();
 		return cd && cd.hasInterface('java.util.Map');
+	},
+
+	isEnum: function() {
+		var cd = this.asClassDoc();
+		return cd && cd.hasSuperclass('java.lang.Enum');
+	},
+
+	isEnumSet: function() {
+		var cd = this.asClassDoc();
+		return cd && cd.qualifiedName() == 'java.util.EnumSet';
 	},
 	
 	isPoint: function() {
@@ -256,6 +268,16 @@ Type = Object.extend({
 			this.isFile() && type.isFile();
 	},
 
+	getEnumValues: function() {
+		var cls = Packages;
+		this.qualifiedName().split('.').each(function(part) {
+			cls = cls[part];
+		});
+		return '(' + cls.values().map(function(value) {
+			return '"' + Packages.com.scriptographer.script.EnumUtils.getScriptName(value) + '"';
+		}).join(', ') + ')';
+	},
+
 	renderLink: function() {
 		if (this.isNumber()) {
 			return 'Number';
@@ -271,6 +293,15 @@ Type = Object.extend({
 					: this.typeName().match(/^(\w*)/)[0].capitalize());
 		} else if (this.isMap()) {
 			return 'Object';
+		} else if (this.isEnum()) {
+			return 'String ' + this.getEnumValues();
+		} else if (this.isEnumSet()) {
+			var types = this.typeArguments();
+			if (types.length > 0) {
+				return 'Array of String ' + new Type(types[0]).getEnumValues();
+			} else {
+				return this.typeName();
+			}
 		} else {
 			var cls = this.asClassDoc();
 			if (cls && cls.isVisible()) {
@@ -1182,7 +1213,6 @@ ClassObject = Object.extend({
 								inherited.push(member);
 						});
 					}
-
 					// First non-static, then static:
 					addNonSimilar(fields[1]);
 					addNonSimilar(fields[0]);
@@ -1240,12 +1270,9 @@ ClassObject = Object.extend({
 						return filter == name || filter.endsWith('*') &&
 							name.startsWith(filter.substring(0, filter.length - 1));
 					});
-				// Do not add any of the named options, since they are represented
+				// Do not add any of Enums, since they are represented
 				// as strings in the scripting environment.
-				// TODO: automatically render all the string options with each
-				// function where they are to be used, by instanciating the class
-				// in the doclet and looping trough its options (NamedOption.getAll()).
-				if (cd.hasSuperclass('com.scriptographer.NamedOption'))
+				if (cd.hasSuperclass('java.lang.Enum'))
 					add = false;
 				if (add)
 					this.classes[name] = new ClassObject(cd);
