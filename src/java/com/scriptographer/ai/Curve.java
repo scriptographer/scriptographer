@@ -156,7 +156,7 @@ public class Curve {
 			if (index2 >= segments.size)
 				index2 = 0;
 			
-			// check whether the segments were moved (others were deleted), the path was updated or the segments even moved to
+			// Check whether the segments were moved (others were deleted), the path was updated or the segments even moved to
 			// another path. fetch again if they were:
 
 			if (segment1 == null || segment1.index != index1 ||
@@ -383,10 +383,14 @@ public class Curve {
 		}
 	}
 
-	/* TODO: implement ?
-	public void transform(Matrix matrix) {
+	public Curve transform(Matrix matrix) {
+		updateSegments();
+		return new Curve(
+				matrix.transform(segment1.point),
+				matrix.transform(segment1.handleOut),
+				matrix.transform(segment2.handleIn),
+				matrix.transform(segment2.point));
 	}
-	*/
 	
 	public Curve divide(double t) {
 		if (t > 0 && t < 1f) {
@@ -465,22 +469,25 @@ public class Curve {
 			return 1;
 		double[][] curve = getCurveArray();
 		double[][] temp = new double[4][];
-		double param = length / bezierLength, oldF = 1;
-		// TODO: find a better approach for this:
-		for (int i = 0; i < 100; i++) { // prevent too many iterations...
-			double stepLength = getPartLength(curve, 0, param, flatness, temp);
-			double step = (length - stepLength) / bezierLength;
-			double f = Math.abs(step); // f: value for exactness
-			// if it's exact enough or even getting worse with iteration, break
-			// the loop...
-			if (f < 0.00001 || f >= oldF) break;
-			param += step * 0.5; // (1 + f) * step;
-			if (param < 0) param = 0;
-			else if (param > 1) param = 1;
-			// if pos < 0 then pos = 0
-			oldF = f;
+		// Use length / bezierLength as a first guess, then iterate closer
+		double t = length / bezierLength, prevCloseness = 1;
+		// TODO: Find a better approach for this:
+		// Make sure we're not iterating endlessly...
+		for (int i = 0; i < 100; i++) {
+			double partLength = getPartLength(curve, 0, t, flatness, temp);
+			double distance = (length - partLength) / bezierLength;
+			// closeness: value for the 'exactness' of the current guess
+			double closeness = Math.abs(distance);
+			// If it's exact enough or even getting worse again,
+			// break the loop...
+			if (closeness < 0.00001 || closeness >= prevCloseness)
+				break;
+			t += distance * 0.5;
+			if (t < 0) t = 0;
+			else if (t > 1) t = 1;
+			prevCloseness = closeness;
 		}
-		return (float) param;
+		return (float) t;
 	}
 
 	public float getParameterWithLength(float length) {
