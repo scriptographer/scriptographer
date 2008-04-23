@@ -268,16 +268,6 @@ Type = Object.extend({
 			this.isFile() && type.isFile();
 	},
 
-	getEnumValues: function() {
-		var cls = Packages;
-		this.qualifiedName().split('.').each(function(part) {
-			cls = cls[part];
-		});
-		return '(' + cls.values().map(function(value) {
-			return '"' + Packages.com.scriptographer.script.EnumUtils.getScriptName(value) + '"';
-		}).join(', ') + ')';
-	},
-
 	renderLink: function() {
 		if (this.isNumber()) {
 			return 'Number';
@@ -294,11 +284,11 @@ Type = Object.extend({
 		} else if (this.isMap()) {
 			return 'Object';
 		} else if (this.isEnum()) {
-			return 'String ' + this.getEnumValues();
+			return 'String';
 		} else if (this.isEnumSet()) {
 			var types = this.typeArguments();
 			if (types.length > 0) {
-				return 'Array of String ' + new Type(types[0]).getEnumValues();
+				return 'Array of String';
 			} else {
 				return this.typeName();
 			}
@@ -315,6 +305,26 @@ Type = Object.extend({
 			} else {
 				return cls ? cls.name() : this.typeName();
 			}
+		}
+	},
+
+	getEnumValues: function() {
+		var cls = Packages;
+		this.qualifiedName().split('.').each(function(part) {
+			cls = cls[part];
+		});
+		return cls.values().map(function(value) {
+			return code_filter('"' + Packages.com.scriptographer.script.EnumUtils.getScriptName(value) + '"');
+		}).join(', ');
+	},
+
+	renderAdditional: function() {
+		if (this.isEnum()) {
+			return '(One of: ' + this.getEnumValues() + ')';
+		} else if (this.isEnumSet()) {
+			var types = this.typeArguments();
+			if (types.length > 0)
+				return '(Any of: ' + new Type(types[0]).getEnumValues() + ')';
 		}
 	}
 });
