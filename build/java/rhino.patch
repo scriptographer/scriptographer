@@ -606,16 +606,17 @@ diff -r1.76 JavaMembers.java
 ---
 >                     try {
 >                         while (clazz != null) {
-353c353,354
+352,356c352,354
+<     
 <                                 if (Modifier.isPublic(mods) ||
----
->                                 if (!Modifier.isVolatile(mods) && (
->                                     Modifier.isPublic(mods) ||
-355c356
+<                                     Modifier.isProtected(mods) ||
 <                                     includePrivate)
+<                                 {
 ---
->                                     includePrivate))
-363,376d363
+>                                 if (Modifier.isPublic(mods)
+>                                     || Modifier.isProtected(mods)
+>                                     || includePrivate) {
+363,376d360
 <                         } catch (SecurityException e) {
 <                             // Some security settings (i.e., applets) disallow
 <                             // access to Class.getDeclaredMethods. Fall back to
@@ -630,7 +631,7 @@ diff -r1.76 JavaMembers.java
 <                             }
 <                             break; // getMethods gets superclass methods, no
 <                                    // need to loop any more
-378,385c365,382
+378,384c362,367
 <                     }
 <                 } else {
 <                     Method[] methods = clazz.getMethods();
@@ -638,7 +639,6 @@ diff -r1.76 JavaMembers.java
 <                         Method method = methods[i];
 <                         MethodSignature sig = new MethodSignature(method);
 <                         map.put(sig, method);
-<                     }
 ---
 >                         // We're done, jump out.
 >                         return;
@@ -646,18 +646,53 @@ diff -r1.76 JavaMembers.java
 >                         // Some security settings (i.e., applets) disallow
 >                         // access to Class.getDeclaredMethods. Fall back to
 >                         // Class.getMethods bellow:
->                     }
->                 }
+386a370,374
 >                 Method[] methods = clazz.getMethods();
 >                 for (int i = 0; i < methods.length; i++) {
 >                     Method method = methods[i];
->                     int mods = method.getModifiers();
->                     // Ignore volatile methods since they seem to get introduced
->                     // by Java's generic code and confuse class casts by pretending
->                     // to take java.lang.Object but actually only take specific
->                     // classes (erasures).
->                     if (!Modifier.isVolatile(mods))
->                         map.put(new MethodSignature(method), method);
+>                     map.put(new MethodSignature(method), method);
+>                 }
+489,496c477,507
+<                     ObjArray overloadedMethods = (ObjArray)value;
+<                     int N = overloadedMethods.size();
+<                     if (N < 2) Kit.codeBug();
+<                     methodBoxes = new MemberBox[N];
+<                     for (int i = 0; i != N; ++i) {
+<                         Method method = (Method)overloadedMethods.get(i);
+<                         methodBoxes[i] = new MemberBox(method);
+<                     }
+---
+>                     ObjArray overloadedMethods = (ObjArray) value;
+>                     // Filter out synthetic bridge methods, generated for
+>                     // generics (see ClassFileFormat-Java5.pdf).
+>                     // These methods may pretend to take Objects but then
+>                     // cast to the type defined by erasures, leading to
+>                     // Rhino preferring the wrong versions and then
+>                     // throwing a ClassCastException.
+>                     // Do not filter in discoverAccessibleMethods since
+>                     // it is easier to discover synthetic-only methods
+>                     // that should still be added, since methods are 
+>                     // grouped by name here. This happens for example
+>                     // in various classes of the Java 1.6 Doclet API,
+>                     // but not in 1.5. No idea where these modifiers 
+>                     // come from there.
+>                     int count = overloadedMethods.size();
+>                     if (count< 2) Kit.codeBug();
+>                     ObjArray validMethods = new ObjArray();
+>                     for (int i = 0; i < count; i++) {
+>                         Method method = (Method) overloadedMethods.get(i);
+>                         if (!method.isBridge() || !method.isSynthetic())
+>                             validMethods.add(method);
+>                     }
+>                     // If they are all synthetic bridge methods, add them still:
+>                     if (validMethods.size() == 0) {
+>                         validMethods = overloadedMethods;
+>                     } else {
+>                         count = validMethods.size();
+>                     }
+>                     methodBoxes = new MemberBox[count];
+>                     for (int i = 0; i != count; ++i)
+>                         methodBoxes[i] = new MemberBox((Method) validMethods.get(i));
 Index: org/mozilla/javascript/Token.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Token.java,v
@@ -827,12 +862,12 @@ diff -r1.63 NativeJavaMethod.java
 Index: org/mozilla/javascript/Parser.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Parser.java,v
-retrieving revision 1.126
-diff -r1.126 Parser.java
+retrieving revision 1.127
+diff -r1.127 Parser.java
 50a51,52
 > import java.io.StringReader;
 > import java.util.ArrayList;
-324a327,376
+323a326,375
 >     /**
 >      * Parse the given sourceReader into an array of {@link Token} objects.
 >      * This can be useful for inspecting a JavaScript resource for other goals
@@ -883,7 +918,7 @@ diff -r1.126 Parser.java
 >         return (Token[]) list.toArray(new Token[list.size()]);
 >     }
 > 
-347c399
+346c398
 <      * Build a parse tree from the given sourceString.
 ---
 >      * Build a parse tree from the given sourceReader.
