@@ -52,6 +52,7 @@ import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.script.Scope;
+import com.scratchdisk.util.ClassUtils;
 import com.scratchdisk.util.StringUtils;
 
 /**
@@ -523,4 +524,27 @@ public class ScriptographerEngine {
 	public static native String getApplicationVersion();
 
 	public static native int getApplicationRevision();
+
+	private static String version = null;
+	private static int revision = -1;
+
+	public static String getPluginVersion() {
+		if (version == null)
+			readVersion();
+		return version;
+	}
+
+	public static int getPluginRevision() {
+		if (revision == -1)
+			readVersion();
+		return revision;
+	}
+
+	private static void readVersion() {
+		String[] lines = ClassUtils.getServiceInformation(ScriptographerEngine.class);
+		if (lines != null) {
+			version = lines[0];
+			revision = Integer.parseInt(lines[1]);
+		}
+	}
 }

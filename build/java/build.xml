@@ -186,8 +186,8 @@
 			<replacefilter token="@build.number@" value="${build.number}" />
 			<replacefilter token="@year@" value="${year}" />
 		</replace>
-		<copy file="${resources.meta}/version.in" tofile="${resources.meta}/version" overwrite="true" />
-		<replace file="${resources.meta}/version">
+		<copy file="${resources.meta}/services/com.scriptographer.ScriptographerEngine.in" tofile="${resources.meta}/services/com.scriptographer.ScriptographerEngine" overwrite="true" />
+		<replace file="${resources.meta}/services/com.scriptographer.ScriptographerEngine">
 			<replacefilter token="@version@" value="${version}" />
 			<replacefilter token="@build.number@" value="${build.number}" />
 		</replace>

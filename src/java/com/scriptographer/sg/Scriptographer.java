@@ -31,73 +31,55 @@
 
 package com.scriptographer.sg;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
-import com.scratchdisk.script.ScriptEngine;
 import com.scriptographer.ScriptographerEngine;
 
 /**
  * @author lehni
  *
+ * @jsnostatic
  */
 public class Scriptographer {
 
 	private Scriptographer() {
+		// Do not let anyone to instantiate this class.
 	}
 
+	/**
+	 * @jsbean Returns Scriptographer's main directory.
+	 */
 	public File getPluginDirectory() {
 		return ScriptographerEngine.getPluginDirectory();
 	}
 
+	/**
+	 * @jsbean Returns Scriptographer's script directory.
+	 */
 	public File getScriptDirectory() {
 		return ScriptographerEngine.getScriptDirectory();
 	}
 
-	private String version = null;
-	private int revision = -1;
-
+	/**
+	 * @jsbean Returns Scriptographer's version description.
+	 */
 	public String getVersion() {
-		if (version == null)
-			readVersion();
-		return version;
+		return ScriptographerEngine.getPluginVersion();
 	}
-
-	public int getRevision() {
-		if (revision == -1)
-			readVersion();
-		return revision;
-	}
-
-	private void readVersion() {
-		// Read the version from the file...
-		InputStream in = ScriptEngine.class.getResourceAsStream(
-				"/META-INF/version");
-		if (in != null) {
-			try {
-				BufferedReader buffer = new BufferedReader(
-						new InputStreamReader(in));
-				version = buffer.readLine();
-				revision = Integer.parseInt(buffer.readLine());
-				in.close();
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
-			}
-		}
-	}
-	
-	private static Scriptographer scripto = null;
 
 	/**
-	 * @jshide all
+	 * @jsbean Returns Scriptographer's revision number.
 	 */
+	public int getRevision() {
+		return ScriptographerEngine.getPluginRevision();
+	}
+	
+	private static Scriptographer scriptographer = null;
+
 	public static Scriptographer getInstance() {
-		if (scripto == null)
-			scripto = new Scriptographer();
-		return scripto;
+		if (scriptographer == null)
+			scriptographer = new Scriptographer();
+		return scriptographer;
 	}
 
 }
