@@ -69,7 +69,7 @@
 <% #return %>
 <div class="member-paragraph"><b>Returns:</b>
 <div> 
-<%= param.returnType.renderLink() | code %>
+<%= param.returnType.renderLink(true) | code %>
 <% foreach $tag in param.tags prefix=" - " %>
 <% tags classDoc=param.classDoc tags=$tag.inlineTags() -%>
 <% end %>

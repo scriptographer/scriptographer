@@ -8,6 +8,7 @@
 
 importPackage(Packages.com.sun.javadoc);
 importPackage(Packages.com.sun.tools.javadoc);
+importPackage(Packages.com.scriptographer.script);
 
 include('bootstrap.js');
 include('template.js');
@@ -219,7 +220,7 @@ Type = Object.extend({
 
 	isArray: function() {
 		var cd = this.asClassDoc();
-		return this.dimension() == '[]'/* || cd &&
+		return this.dimension() != ''/* || cd &&
 			cd.hasInterface('java.util.Collection')*/;
 	},
 	
@@ -236,6 +237,11 @@ Type = Object.extend({
 	isEnumSet: function() {
 		var cd = this.asClassDoc();
 		return cd && cd.qualifiedName() == 'java.util.EnumSet';
+	},
+
+	isEnumMap: function() {
+		var cd = this.asClassDoc();
+		return cd && cd.qualifiedName() == 'java.util.EnumMap';
 	},
 	
 	isPoint: function() {
@@ -257,7 +263,7 @@ Type = Object.extend({
 	
 	isCompatible: function(type) {
 		var cd1 = this.asClassDoc(), cd2 = type.asClassDoc();
-		return this.typeName() == type.typeName() ||
+		return this.typeName() == type.typeName() && this.dimension() == type.dimension() ||
 			cd1 && cd2 && (cd1.subclassOf(cd2) || cd2.subclassOf(cd1)) ||
 			this.isNumber() && type.isNumber() ||
 			this.isBoolean() && type.isBoolean() ||
@@ -268,44 +274,50 @@ Type = Object.extend({
 			this.isFile() && type.isFile();
 	},
 
-	renderLink: function() {
+	renderLink: function(additional) {
+		var str;
 		if (this.isNumber()) {
-			return 'Number';
+			str = 'Number';
 		} else if (this.isBoolean()) {
-			return 'Boolean';
+			str = 'Boolean';
 		} else if (this.isArray()) {
-			var doc = this.asClassDoc();
-			return 'Array of ' + (doc
-				? doc.renderClassLink()
-				: /^(short|int|long|double|float)/.test(this.typeName())
-					? 'Numbers'
-					// Strip away [] at the end of the typeName()
-					: this.typeName().match(/^(\w*)/)[0].capitalize());
+			var doc = new Type(this.asClassDoc());
+			str = 'Array of ' + (doc
+				? doc.renderLink(true)
+				: /^(short|int|long|float|double)$/.test(this.typeName())
+					? 'Number'
+					: this.typeName().capitalize());
 		} else if (this.isMap()) {
-			return 'Object';
+			str = 'Object';
 		} else if (this.isEnum()) {
-			return 'String';
+			str = 'String';
 		} else if (this.isEnumSet()) {
 			var types = this.typeArguments();
 			if (types.length > 0) {
-				return 'Array of String';
+				str = 'Array of String';
 			} else {
-				return this.typeName();
+				str = this.typeName() + this.dimension();
 			}
 		} else {
 			var cls = this.asClassDoc();
 			if (cls && cls.isVisible()) {
-				return cls.renderClassLink();
+				str = cls.renderClassLink();
 			} else if (this.isPoint()) {
-				return ClassObject.renderLink('Point', 'com.scriptographer.ai.Point');
+				str = ClassObject.renderLink('Point', 'com.scriptographer.ai.Point');
 			} else if (this.isRectangle()) {
-				return ClassObject.renderLink('Rectangle', 'com.scriptographer.ai.Rectangle');
+				str = ClassObject.renderLink('Rectangle', 'com.scriptographer.ai.Rectangle');
 			} else if (this.isFile()) {
-				return ClassObject.renderLink('File', 'com.scriptographer.sg.File');
+				str = ClassObject.renderLink('File', 'com.scriptographer.sg.File');
 			} else {
-				return cls ? cls.name() : this.typeName();
+				str = cls ? cls.name() : this.typeName() + this.dimension();
 			}
 		}
+		if (additional) {
+			additional = this.renderAdditional();
+			if (additional)
+				str += ' ' + additional;
+		}
+		return str;
 	},
 
 	getEnumValues: function() {
@@ -314,17 +326,29 @@ Type = Object.extend({
 			cls = cls[part];
 		});
 		return cls.values().map(function(value) {
-			return code_filter('"' + Packages.com.scriptographer.script.EnumUtils.getScriptName(value) + '"');
+			return code_filter('"' + EnumUtils.getScriptName(value) + '"');
 		}).join(', ');
 	},
 
 	renderAdditional: function() {
-		if (this.isEnum()) {
-			return '(One of: ' + this.getEnumValues() + ')';
-		} else if (this.isEnumSet()) {
-			var types = this.typeArguments();
-			if (types.length > 0)
-				return '(Any of: ' + new Type(types[0]).getEnumValues() + ')';
+		if (!this.isArray()) {
+			if (this.isEnum()) {
+				return '(' + this.getEnumValues() + ')';
+			} else if (this.isEnumSet()) {
+				var types = this.typeArguments();
+				if (types.length == 1) {
+					var type = new Type(types[0]);
+					return '(' + type.getEnumValues() + ')';
+				}
+			} else if (this.isEnumMap()) {
+				var types = this.typeArguments();
+				if (types.length == 2) {
+					var keyType = new Type(types[0]);
+					var valueType = new Type(types[1]);
+					return '(Values: ' + code_filter(valueType.renderLink()) 
+						+ ', Keys: ' + keyType.getEnumValues() + ')';
+				}
+			}
 		}
 	}
 });
@@ -381,18 +405,9 @@ Tag = Object.extend({
 
 // Parameter helpers
 
-// Fix a bug in the Type returned by Parameter.type(), where toString
-// does not return [] for arrays and there does not seem to be another way
-// to find out if it's an array or not...
-
 ParameterImpl.inject({
 	paramType: function() {
-		var type = new Type(this.type());
-		var name = this.typeName();
-		type.typeName = function() {
-			return name;
-		}
-		return type;
+		return new Type(this.type());
 	}
 });
 
@@ -418,7 +433,7 @@ MemberDocImpl.inject({
 					return false;
 			return true;
 		}
-		// fields cannot be grouped
+		// Fields cannot be grouped
 		return false;
 	},
 
@@ -986,7 +1001,9 @@ MemberListGroup = Object.extend({
 			name = key;
 			if (member instanceof MethodDoc)
 				// For methods, use the return type for grouping as well!
-				key = member.returnType().typeName() + ' ' + name;
+				var type = member.returnType();
+				if (type)
+					key = type.typeName() + type.dimension() + ' ' + name;
 
 			group = this.groups[key]; 
 			if (!group) {
