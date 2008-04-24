@@ -63,13 +63,14 @@ public class global {
 	public Script script;
 
 	/**
-	 * Prints one or more passed parameters to the console.
+	 * Prints one or more passed parameters to the console, seperated by white
+	 * space.
 	 */
 	public void print() {
 	}
 
 	/**
-	 * Includes and evaluates one or more other javascripts.
+	 * Loads and evaluates one or more javascript files.
 	 * <p>e.g:
 	 * <pre>include("raster.js", "mysql.js");</pre>
 	 */

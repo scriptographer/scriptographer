@@ -55,12 +55,11 @@ public class Script {
 	}
 
 	/**
-	 * Returns the script's preferences, as an object in which data
-	 * can be stored and retrieved from:
-	 * <pre>
-	 * script.preferences.value = 10;
-	 * </pre>
-	 * @return the script's preferences object.
+	 * @jsbean Returns the script's preferences, as an object in which data
+	 * @jsbean can be stored and retrieved from:
+	 * @jsbean <pre>
+	 * @jsbean script.preferences.value = 10;
+	 * @jsbean </pre>
 	 */
 	public Preferences getPreferences() {
 		if (prefs == null)
@@ -69,21 +68,22 @@ public class Script {
 	}
 
 	/**
-	 * Returns the script file.
-	 * @return the script file.
+	 * @jsbean Returns the script file.
 	 */
 	public File getFile() {
 		return file;
 	}
 
 	/**
-	 * Returns the directory in which the script is stored in.
-	 * @return the script's parent directory.
+	 * @jsbean Returns the directory in which the script is stored in.
 	 */
 	public File getDirectory() {
 		return file.getParentFile();
 	}
 
+	/**
+	 * @jsbean The handler function to be called when the script is executed.
+	 */
 	public Callable getOnStart() {
 		return onStart;
 	}
@@ -92,6 +92,10 @@ public class Script {
 		this.onStart = onStart;
 	}
 
+	/**
+	 * @jsbean The handler function to be called when the script is stopped
+	 * @jsbean through the stop button in the Scriptographer GUI.
+	 */
 	public Callable getOnStop() {
 		return onStop;
 	}
@@ -100,6 +104,10 @@ public class Script {
 		this.onStop = onStop;
 	}
 
+	/**
+	 * @jsbean Determines wether the scripts wants to display the progress bar
+	 * @jsbean or not
+	 */
 	public boolean getShowProgress() {
 		return showProgress;
 	}

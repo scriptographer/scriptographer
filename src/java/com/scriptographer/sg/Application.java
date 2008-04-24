@@ -40,84 +40,121 @@ import com.scriptographer.ai.FontList;
 
 /**
  * @author lehni
+ * 
  * @jsnostatic
  */
 public class Application {
 
 	private Application() {
+		// Do not let anyone to instantiate this class.
 	}
 
+	/**
+	 * @jsbean Returns Adobe Illustrator's version description.
+	 */
 	public String getVersion() {
 		return ScriptographerEngine.getApplicationVersion();
 	}
 
+	/**
+	 * @jsbean Returns Adobe Illustrator's revision number.
+	 */
 	public int getRevision() {
 		return ScriptographerEngine.getApplicationRevision();
 	}
 
+	/**
+	 * @jsbean Returns a list of all installed fonts.
+	 */
 	public FontList getFonts() {
 		return FontList.getInstance();
 	}
 
+	/**
+	 * @jsbean Returns a list of all file formats available for writing of
+	 * @jsbean documents.
+	 */
 	public FileFormatList getFileFormats() {
 		return FileFormatList.getInstance();
 	}
 
+	/**
+	 * Commits all pending cached changes to the native objects.
+	 * This should usually not be necessary to be called since Scriptographer
+	 * handles this transparently behind the scenes. It might be useful for
+	 * temporary bug fixes though for cases where the automatic execution
+	 * was forgotten.
+	 */
 	public void commit() {
 		CommitManager.commit(null);
 	}
 
+	/**
+	 * @jsbean Returns true if the system is Windows, false otherwise.
+	 */
 	public boolean isWindows() {
 		return ScriptographerEngine.isWindows();
 	}
 
+	/**
+	 * @jsbean Returns true if the system is Macintosh, false otherwise.
+	 */
 	public boolean isMacintosh() {
 		return ScriptographerEngine.isMacintosh();
 	}
-	
+
+	/**
+	 * Launches the given filename or URL through the operating system.
+	 */
 	public boolean launch(String filename) {
 		return ScriptographerEngine.launch(filename);
 	}
 
+	/**
+	 * Launches the given file through the operating system.
+	 */
 	public boolean launch(File file) {
 		return ScriptographerEngine.launch(file);
 	}
 
 	/**
-	 * Returns the current system time in nano seconds.
-	 * This is very useful for high resolution time measurements.
-	 * @return the current system time.
+	 * @jsbean Returns the current system time in nanoseconds. This is very
+	 * @jsbean useful for high resolution time measurements.
 	 */
 	public long getNanoTime() {
 		return ScriptographerEngine.getNanoTime();
 	}
 
 	/**
+	 * Updates the progress bar dialog.
 	 * 
-	 * @param current the current slider position
-	 * @param max the maximum slider position
-	 * @return
+	 * @param current the current progress bar position
+	 * @param max the maximum progress bar position
+	 * @return false if the user aborted script execution, true otherwise.
 	 */
 	public boolean updateProgress(long current, long max) {
 		return ScriptographerEngine.updateProgress(current, max);
 	}
 
+	/**
+	 * Displays the progress bar dialog.
+	 */
 	public void showProgress() {
 		ScriptographerEngine.showProgress();
 	}
-	
+
+	/**
+	 * Closes the progress bar dialog.
+	 */
 	public void closeProgress() {
 		ScriptographerEngine.closeProgress();
 	}
 
-	private static Application app = null;
-	
-	/**
-	 * @jshide all
-	 */
+	private static Application application = null;
+
 	public static Application getInstance() {
-		if (app == null)
-			app = new Application();
-		return app;
+		if (application == null)
+			application = new Application();
+		return application;
 	}
 }

@@ -45,9 +45,6 @@ public class Preferences extends AbstractMap {
 
 	java.util.prefs.Preferences prefs;
 
-	/**
-	 * @jshide
-	 */
 	public Preferences(java.util.prefs.Preferences prefs) {
 		this.prefs = prefs;
 	}
