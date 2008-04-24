@@ -165,7 +165,7 @@ public class TopLevel extends ImporterTopLevel {
 			Function funObj) {
 		for (int i = 0; i < args.length; i++) {
 			if (i > 0)
-				System.out.print(", ");
+				System.out.print(" ");
 
 			// Convert the arbitrary JavaScript value into a string form.
 			String s = Context.toString(args[i]);
