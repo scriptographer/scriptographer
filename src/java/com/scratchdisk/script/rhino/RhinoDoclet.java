@@ -130,7 +130,7 @@ public class RhinoDoclet extends Doclet {
 				script.execute(createScope());
 				return true;
 			} catch (ScriptException e) {
-				System.err.println(e.getMessage());
+				System.err.println(e.getFullMessage());
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
