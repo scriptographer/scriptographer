@@ -66,7 +66,7 @@ import java.util.Set;
  * soft references as values instead, or try {@link LinkedHashMap}.
  *
  * <p>The weak hash map supports null values and null keys.  The null key
- * is never deleted from the map (except explictly of course). The
+ * is never deleted from the map (except explicitly of course). The
  * performance of the methods are similar to that of a hash map.
  *
  * <p>The value objects are strongly referenced by this table.  So if a
@@ -78,6 +78,7 @@ import java.util.Set;
  * @author Jochen Hoenicke
  * @author Eric Blake (ebb9@email.byu.edu)
  * @author Jeroen Frijters
+ * @author JŸrg Lehni
  *
  * @see HashMap
  * @see WeakReference
@@ -85,7 +86,7 @@ import java.util.Set;
  * @see IdentityHashMap
  * @see LinkedHashMap
  */
-public class WeakIdentityHashMap extends AbstractMap implements Map {
+public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,V> {
 	/**
 	 * The default capacity for an instance of HashMap.
 	 * Sun's documentation mildly suggests that this (11) is the correct
@@ -109,7 +110,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 * The reference queue where our buckets (which are WeakReferences) are
 	 * registered to.
 	 */
-	private final ReferenceQueue queue;
+	private final ReferenceQueue<Object> queue;
 
 	/**
 	 * The number of entries in this hash map.
@@ -146,7 +147,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 * theEntrySet.  Note that the entry set may silently shrink, just
 	 * like the WeakIdentityHashMap.
 	 */
-	private final class WeakEntrySet extends AbstractSet {
+	private final class WeakEntrySet extends AbstractSet<Map.Entry<K,V>> {
 		/**
 		 * Non-private constructor to reduce bytecode emitted.
 		 */
@@ -167,8 +168,8 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 		 *
 		 * @return an Entry iterator
 		 */
-		public Iterator iterator() {
-			return new Iterator() {
+		public Iterator<Map.Entry<K,V>> iterator() {
+			return new Iterator<Map.Entry<K,V>>() {
 				/**
 				 * The entry that was returned by the last
 				 * <code>next()</code> call.  This is also the entry whose
@@ -181,7 +182,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 				 * being removed under us, since the entry strongly refers
 				 * to the key.
 				 */
-				WeakBucket.WeakEntry lastEntry;
+				WeakBucket<K,V>.WeakEntry lastEntry;
 
 				/**
 				 * The entry that will be returned by the next
@@ -192,7 +193,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 				 * being removed under us, since the entry strongly refers
 				 * to the key.
 				 */
-				WeakBucket.WeakEntry nextEntry = findNext(null);
+				WeakBucket<K,V>.WeakEntry nextEntry = findNext(null);
 
 				/**
 				 * The known number of modification to the list, if it differs
@@ -222,10 +223,10 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 				 * get the first entry.
 				 * @return the next entry.
 				 */
-				private WeakBucket.WeakEntry findNext(
-						WeakBucket.WeakEntry lastEntry) {
+				private WeakBucket<K,V>.WeakEntry findNext(
+						WeakBucket<K,V>.WeakEntry lastEntry) {
 					int slot;
-					WeakBucket nextBucket;
+					WeakBucket<K,V> nextBucket;
 					if (lastEntry != null) {
 						nextBucket = lastEntry.getBucket().next;
 						slot = lastEntry.getBucket().slot;
@@ -236,7 +237,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 
 					while (true) {
 						while (nextBucket != null) {
-							WeakBucket.WeakEntry entry = nextBucket.getEntry();
+							WeakBucket<K,V>.WeakEntry entry = nextBucket.getEntry();
 							if (entry != null)
 								// This is the next entry.
 								return entry;
@@ -272,7 +273,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 				 *         modified.
 				 * @throws NoSuchElementException if there is no entry.
 				 */
-				public Object next() {
+				public Entry<K, V> next() {
 					checkMod();
 					if (nextEntry == null)
 						throw new NoSuchElementException();
@@ -314,18 +315,18 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 *
 	 * @author Jochen Hoenicke
 	 */
-	private static class WeakBucket extends WeakReference {
+	private static class WeakBucket<K, V> extends WeakReference<Object> {
 		/**
 		 * The value of this entry.  The key is stored in the weak
 		 * reference that we extend.
 		 */
-		Object value;
+		V value;
 
 		/**
 		 * The next bucket describing another entry that uses the same
 		 * slot.
 		 */
-		WeakBucket next;
+		WeakBucket<K,V> next;
 
 		/**
 		 * The slot of this entry. This should be
@@ -348,7 +349,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 		 * @param slot the slot.  This must match the slot where this bucket
 		 *        will be enqueued.
 		 */
-		public WeakBucket(Object key, ReferenceQueue queue, Object value,
+		public WeakBucket(Object key, ReferenceQueue<Object> queue, V value,
 				int slot) {
 			super(key, queue);
 			this.value = value;
@@ -360,9 +361,9 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 		 * current bucket.  It also keeps a strong reference to the
 		 * key; bad things may happen otherwise.
 		 */
-		class WeakEntry implements Map.Entry {
+		class WeakEntry implements Map.Entry<K, V> {
 			/**
-			 * The strong ref to the key.
+			 * The strong reference to the key.
 			 */
 			Object key;
 
@@ -378,7 +379,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 			 * Returns the underlying bucket.
 			 * @return the owning bucket
 			 */
-			public WeakBucket getBucket() {
+			public WeakBucket<K,V> getBucket() {
 				return WeakBucket.this;
 			}
 
@@ -386,15 +387,16 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 			 * Returns the key.
 			 * @return the key
 			 */
-			public Object getKey() {
-				return key == NULL_KEY ? null : key;
+			@SuppressWarnings("unchecked")
+			public K getKey() {
+				return key == NULL_KEY ? null : (K) key;
 			}
 
 			/**
 			 * Returns the value.
 			 * @return the value
 			 */
-			public Object getValue() {
+			public V getValue() {
 				return value;
 			}
 
@@ -404,8 +406,8 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 			 * @param newVal the new value
 			 * @return the old value
 			 */
-			public Object setValue(Object newVal) {
-				Object oldVal = value;
+			public V setValue(V newVal) {
+				V oldVal = value;
 				value = newVal;
 				return oldVal;
 			}
@@ -422,7 +424,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 			/**
 			 * The equals method as specified in the Entry interface.
 			 * @param o the object to compare to
-			 * @return true iff o represents the same key/value pair
+			 * @return true if o represents the same key/value pair
 			 */
 			public boolean equals(Object o) {
 				if (o instanceof Map.Entry) {
@@ -461,7 +463,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 * The hash buckets.  These are linked lists. Package visible for use in
 	 * nested classes.
 	 */
-	WeakBucket[] buckets;
+	WeakBucket<K,V>[] buckets;
 
 	/**
 	 * Creates a new weak hash map with default load factor and default
@@ -489,6 +491,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 * @throws IllegalArgumentException if initialCapacity is negative, or
 	 *         loadFactor is non-positive
 	 */
+	@SuppressWarnings("unchecked")
 	public WeakIdentityHashMap(int initialCapacity, float loadFactor) {
 		// Check loadFactor for NaN as well.
 		if (initialCapacity < 0 || !(loadFactor > 0))
@@ -498,7 +501,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 		this.loadFactor = loadFactor;
 		threshold = (int) (initialCapacity * loadFactor);
 		theEntrySet = new WeakEntrySet();
-		queue = new ReferenceQueue();
+		queue = new ReferenceQueue<Object>();
 		buckets = new WeakBucket[initialCapacity];
 	}
 
@@ -510,7 +513,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 * @throws NullPointerException if m is null
 	 * @since 1.3
 	 */
-	public WeakIdentityHashMap(Map m) {
+	public WeakIdentityHashMap(Map<? extends K, ? extends V> m) {
 		this(m.size(), DEFAULT_LOAD_FACTOR);
 		putAll(m);
 	}
@@ -534,6 +537,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 * that is no problem.
 	 */
 	// Package visible for use by nested classes.
+	@SuppressWarnings("unchecked")
 	void cleanQueue() {
 		Object bucket = queue.poll();
 		while (bucket != null) {
@@ -548,16 +552,17 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 * It will grow the bucket size at least by factor two and allocates
 	 * new buckets.
 	 */
+	@SuppressWarnings("unchecked")
 	private void rehash() {
-		WeakBucket[] oldBuckets = buckets;
+		WeakBucket<K,V>[] oldBuckets = buckets;
 		int newsize = buckets.length * 2 + 1; // XXX should be prime.
 		threshold = (int) (newsize * loadFactor);
 		buckets = new WeakBucket[newsize];
 
 		// Now we have to insert the buckets again.
 		for (int i = 0; i < oldBuckets.length; i++) {
-			WeakBucket bucket = oldBuckets[i];
-			WeakBucket nextBucket;
+			WeakBucket<K,V> bucket = oldBuckets[i];
+			WeakBucket<K,V> nextBucket;
 			while (bucket != null) {
 				nextBucket = bucket.next;
 
@@ -586,13 +591,13 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 * @param key the key, may be null
 	 * @return The WeakBucket.WeakEntry or null, if the key wasn't found.
 	 */
-	private WeakBucket.WeakEntry internalGet(Object key) {
+	private WeakBucket<K,V>.WeakEntry internalGet(Object key) {
 		if (key == null)
 			key = NULL_KEY;
 		int slot = hash(key);
-		WeakBucket bucket = buckets[slot];
+		WeakBucket<K,V> bucket = buckets[slot];
 		while (bucket != null) {
-			WeakBucket.WeakEntry entry = bucket.getEntry();
+			WeakBucket<K,V>.WeakEntry entry = bucket.getEntry();
 			if (entry != null && key == entry.key)
 				return entry;
 
@@ -606,11 +611,11 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 * @param key the key. This mustn't exists in the map. It may be null.
 	 * @param value the value.
 	 */
-	private void internalAdd(Object key, Object value) {
+	private void internalAdd(Object key, V value) {
 		if (key == null)
 			key = NULL_KEY;
 		int slot = hash(key);
-		WeakBucket bucket = new WeakBucket(key, queue, value, slot);
+		WeakBucket<K,V> bucket = new WeakBucket<K,V>(key, queue, value, slot);
 		bucket.next = buckets[slot];
 		buckets[slot] = bucket;
 		size++;
@@ -623,7 +628,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 *
 	 * @param bucket the bucket to remove.
 	 */
-	void internalRemove(WeakBucket bucket) {
+	void internalRemove(WeakBucket<K,V> bucket) {
 		int slot = bucket.slot;
 		if (slot == -1)
 			// This bucket was already removed.
@@ -634,8 +639,8 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 		// internalRemove will be called a second time.
 		bucket.slot = -1;
 
-		WeakBucket prev = null;
-		WeakBucket next = buckets[slot];
+		WeakBucket<K,V> prev = null;
+		WeakBucket<K,V> next = buckets[slot];
 		while (next != bucket) {
 			if (next == null)
 				throw new InternalError(
@@ -663,8 +668,8 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 
 	/**
 	 * Tells if the map is empty.  Note that the result may change
-	 * spontanously, if all of the keys were only weakly reachable.
-	 * @return true, iff the map is empty.
+	 * Spontaneously, if all of the keys were only weakly reachable.
+	 * @return true, if the map is empty.
 	 */
 	public boolean isEmpty() {
 		cleanQueue();
@@ -673,10 +678,10 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 
 	/**
 	 * Tells if the map contains the given key.  Note that the result
-	 * may change spontanously, if the key was only weakly
+	 * may change spontaneously, if the key was only weakly
 	 * reachable.
 	 * @param key the key to look for
-	 * @return true, iff the map contains an entry for the given key.
+	 * @return true, if the map contains an entry for the given key.
 	 */
 	public boolean containsKey(Object key) {
 		cleanQueue();
@@ -689,9 +694,9 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 *         the key wasn't in this map, or if the mapped value was
 	 *         explicitly set to null.
 	 */
-	public Object get(Object key) {
+	public V get(Object key) {
 		cleanQueue();
-		WeakBucket.WeakEntry entry = internalGet(key);
+		WeakBucket<K,V>.WeakEntry entry = internalGet(key);
 		return entry == null ? null : entry.getValue();
 	}
 
@@ -703,9 +708,9 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 *         null if the key wasn't in this map, or if the mapped value
 	 *         was explicitly set to null.
 	 */
-	public Object put(Object key, Object value) {
+	public V put(K key, V value) {
 		cleanQueue();
-		WeakBucket.WeakEntry entry = internalGet(key);
+		WeakBucket<K,V>.WeakEntry entry = internalGet(key);
 		if (entry != null)
 			return entry.setValue(value);
 
@@ -724,9 +729,9 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 *         null if the key wasn't in this map, or if the mapped value was
 	 *         explicitly set to null.
 	 */
-	public Object remove(Object key) {
+	public V remove(Object key) {
 		cleanQueue();
-		WeakBucket.WeakEntry entry = internalGet(key);
+		WeakBucket<K,V>.WeakEntry entry = internalGet(key);
 		if (entry == null)
 			return null;
 
@@ -739,11 +744,11 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 * Returns a set representation of the entries in this map.  This
 	 * set will not have strong references to the keys, so they can be
 	 * silently removed.  The returned set has therefore the same
-	 * strange behaviour (shrinking size(), disappearing entries) as
+	 * strange behavior (shrinking size(), disappearing entries) as
 	 * this weak hash map.
 	 * @return a set representation of the entries.
 	 */
-	public Set entrySet() {
+	public Set<Map.Entry<K,V>> entrySet() {
 		cleanQueue();
 		return theEntrySet;
 	}
@@ -758,7 +763,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	/**
 	 * Returns true if the map contains at least one key which points to
 	 * the specified object as a value.  Note that the result
-	 * may change spontanously, if its key was only weakly reachable.
+	 * may change spontaneously, if its key was only weakly reachable.
 	 * @param value the value to search for
 	 * @return true if it is found in the set.
 	 */
@@ -771,11 +776,11 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 * Returns a set representation of the keys in this map.  This
 	 * set will not have strong references to the keys, so they can be
 	 * silently removed.  The returned set has therefore the same
-	 * strange behaviour (shrinking size(), disappearing entries) as
+	 * strange behavior (shrinking size(), disappearing entries) as
 	 * this weak hash map.
 	 * @return a set representation of the keys.
 	 */
-	public Set keySet() {
+	public Set<K> keySet() {
 		cleanQueue();
 		return super.keySet();
 	}
@@ -785,7 +790,7 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 * key already exists in this map, its value is replaced.
 	 * @param m the map to copy in
 	 */
-	public void putAll(Map m) {
+	public void putAll(Map<? extends K, ? extends V> m) {
 		super.putAll(m);
 	}
 
@@ -793,11 +798,11 @@ public class WeakIdentityHashMap extends AbstractMap implements Map {
 	 * Returns a collection representation of the values in this map.  This
 	 * collection will not have strong references to the keys, so mappings
 	 * can be silently removed.  The returned collection has therefore the same
-	 * strange behaviour (shrinking size(), disappearing entries) as
+	 * strange behavior (shrinking size(), disappearing entries) as
 	 * this weak hash map.
 	 * @return a collection representation of the values.
 	 */
-	public Collection values() {
+	public Collection<V> values() {
 		cleanQueue();
 		return super.values();
 	}
