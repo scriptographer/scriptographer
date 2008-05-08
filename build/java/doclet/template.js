@@ -545,7 +545,7 @@ Template.prototype = {
 		if (object) {
 			var macro = object[name + '_macro'];
 			if (macro) {
-				try {
+//				try {
 					var prm = args[0];
 					if (prm.param)
 						for (var i in prm.param)
@@ -555,7 +555,7 @@ Template.prototype = {
 					prm.__param__ = param;
 					prm.__out__ = out;
 					value = macro.apply(object, args);
-				} catch (e) {
+/*				} catch (e) {
 					var tag = this.getTagFromException(e);
 					var message = e.message || e;
 					if (tag && tag.content) {
@@ -565,7 +565,7 @@ Template.prototype = {
 						message += ' (' + e.fileName + '; line ' + e.lineNumber + ')';
 					}
 					out.write('[Macro error in ' + command + ': ' + message + ']');
-				}
+				}*/
 			} else {
 				value = object[name];
 				if (value === undefined)

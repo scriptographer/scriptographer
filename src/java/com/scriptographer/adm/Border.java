@@ -26,7 +26,7 @@
  * 
  * File created on May 11, 2007.
  *
- * $Id: Border.java 410 2007-12-06 18:32:41Z lehni $
+ * $Id$
  */
 
 package com.scriptographer.adm;

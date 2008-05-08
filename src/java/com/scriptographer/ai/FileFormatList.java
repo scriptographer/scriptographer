@@ -26,7 +26,7 @@
  *
  * File created on  16.02.2005.
  *
- * $Id: DocumentList.java 537 2008-04-14 14:41:26Z lehni $
+ * $Id$
  */
 
 package com.scriptographer.ai;

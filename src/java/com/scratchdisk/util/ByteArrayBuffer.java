@@ -43,13 +43,15 @@ public class ByteArrayBuffer {
 
 	protected byte[] buffer;
 	protected int offset;
+	protected int length;
 	protected boolean bigEndian;
 
 	public ByteArrayBuffer(int length, boolean bigEndian) {
 		// Create byte array of given length:
+		this.length = length;
+		this.buffer = new byte[length];
 		this.bigEndian = bigEndian;
-		buffer = new byte[length];
-		offset = 0;
+		this.offset = 0;
 	}
 
 	public ByteArrayBuffer(int length) {
@@ -136,6 +138,13 @@ public class ByteArrayBuffer {
 		writeInt((int) value);
 	}
 
+	public void fill(int length, byte value) {
+		int next = offset + length;
+		for (int i = offset; i < next; i++)
+			buffer[i] = value;
+		offset = next;
+	}
+
 	public int readFrom(InputStream in) throws IOException {
 		return in.read(buffer);
 	}
@@ -144,7 +153,49 @@ public class ByteArrayBuffer {
 		out.write(buffer);
 	}
 
+	public int readFrom(ByteArrayBuffer in, int offset, int length) {
+		if (this.offset + length > this.length)
+			length = this.length - this.offset;
+		if (length > 0)
+			System.arraycopy(in.buffer, offset, this.buffer, this.offset, length);
+		return length < 0 ? -1 : length;
+	}
+
+	public int readFrom(ByteArrayBuffer in) {
+		return readFrom(in, 0, in.length);
+	}
+
+	public int writeTo(ByteArrayBuffer out, int offset, int length) {
+		return out.readFrom(this, offset, length);
+	}
+
+	public int writeTo(ByteArrayBuffer out) {
+		return writeTo(out, 0, length);
+	}
+
 	public int getOffset() {
 		return offset;
+	}
+
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+	
+	public int getLength() {
+		return length;
+	}
+
+	public String toString() {
+		String str = "[";
+		for (int i = 0; i < length; i++) {
+			if (i > 0)
+				str += ' ';
+			String part = Integer.toHexString(buffer[i] & 0xff);
+			if (part.length() == 1)
+				str += '0';
+			str += part;
+		}
+		str += ']';
+		return str;
 	}
 }

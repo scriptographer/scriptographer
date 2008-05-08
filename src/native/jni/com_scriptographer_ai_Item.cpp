@@ -24,7 +24,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $Id: com_scriptographer_ai_Item.cpp 504 2008-03-03 22:49:18Z lehni $
+ * $Id$
  */
  
 #include "stdHeaders.h"
