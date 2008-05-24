@@ -335,7 +335,7 @@ diff -r1.344 Interpreter.java
 >                     break;
 >                 default:
 >                     throw Kit.codeBug();
-4589a4499,4543
+4589a4499,4567
 >         } else {
 >             if (lhsIsDouble && lhsNumber == null)
 >                 lhs = ScriptRuntime.wrapNumber(lhsDouble);
@@ -352,6 +352,30 @@ diff -r1.344 Interpreter.java
 >                 case Token.ADD:
 >                     result = ScriptRuntime.add(lhs, rhs, cx);
 >                     break;
+>                 case Token.SUB :
+>                 case Token.MUL :
+>                 case Token.DIV :
+>                 case Token.MOD: {
+>                     lhsDouble = ScriptRuntime.toNumber(lhs);
+>                     rhsDouble = ScriptRuntime.toNumber(rhs);
+>                     switch (operator) {
+>                         case Token.SUB:
+>                             lhsDouble -= rhsDouble;
+>                             break;
+>                         case Token.MUL:
+>                             lhsDouble *= rhsDouble;
+>                             break;
+>                         case Token.DIV:
+>                             lhsDouble /= rhsDouble;
+>                             break;
+>                         case Token.MOD:
+>                             lhsDouble %= rhsDouble;
+>                             break;
+>                     }
+>                     stack[stackTop] = UniqueTag.DOUBLE_MARK;
+>                     sDbl[stackTop] = lhsDouble;
+>                     break;
+>                 }
 >                 case Token.EQ:
 >                     stack[stackTop] = ScriptRuntime.wrapBoolean(ScriptRuntime.eq(lhs, rhs));
 >                     break;
@@ -381,7 +405,7 @@ diff -r1.344 Interpreter.java
 >                     stack[stackTop] = UniqueTag.DOUBLE_MARK;
 >                     sDbl[stackTop] = Double.NaN;
 >             }
-4591,4605c4545,4548
+4591,4605c4569,4572
 < 
 <         // handle object(lhs) + number(d) code
 <         if (lhs instanceof Scriptable) {
@@ -402,11 +426,11 @@ diff -r1.344 Interpreter.java
 >             if (result instanceof Double) {
 >                 stack[stackTop] = UniqueTag.DOUBLE_MARK;
 >                 sDbl[stackTop] = ((Double) result).doubleValue();
-4607c4550
+4607c4574
 <                 stack[stackTop] = rstr.concat(lstr);
 ---
 >                 stack[stackTop] = result;
-4608a4552,4560
+4608a4576,4584
 >         }
 >     }
 > 
@@ -416,7 +440,7 @@ diff -r1.344 Interpreter.java
 >         double rDbl;
 >         if (rhs == UniqueTag.DOUBLE_MARK) {
 >             rDbl = sDbl[stackTop];
-4610,4613c4562,4578
+4610,4613c4586,4602
 <             double lDbl = (lhs instanceof Number)
 <                 ? ((Number)lhs).doubleValue() : ScriptRuntime.toNumber(lhs);
 <             stack[stackTop] = UniqueTag.DOUBLE_MARK;
@@ -439,7 +463,7 @@ diff -r1.344 Interpreter.java
 >                     return;
 >                 }
 >             }
-4614a4580,4582
+4614a4604,4606
 >         // If we're still here, perform  double sign operator
 >         stack[stackTop] = UniqueTag.DOUBLE_MARK;
 >         sDbl[stackTop] = operator == Token.NEG ? -rDbl : rDbl;
