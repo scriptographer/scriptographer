@@ -31,6 +31,7 @@
 
 package com.scratchdisk.script.rhino;
 
+import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
@@ -65,11 +66,19 @@ public class RhinoScope extends Scope {
 
 	public Object put(String name, Object value, boolean readOnly) {
 		Object prev = this.get(name);
-		if (readOnly && scope instanceof ScriptableObject)
-			((ScriptableObject) scope).defineProperty(name, value,
-			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
-		else
-			scope.put(name, scope, value);
+		if (scope instanceof ScriptableObject) {
+			// Remove READONLY attribute first if the field already existed,
+			// to make sure new value can be set
+			ScriptableObject scriptable = (ScriptableObject) scope;
+			if (scriptable.has(name, scriptable))
+				scriptable.setAttributes(name, ScriptableObject.DONTENUM);
+			if (readOnly) {
+				scriptable.defineProperty(name, value,
+						ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+				return prev;
+			}
+		}
+		scope.put(name, scope, Context.javaToJS(value, scope));
 		return prev;
 	}
 }

@@ -40,8 +40,6 @@ import com.scriptographer.ai.Color;
 import com.scriptographer.ai.FontWeight;
 import com.scriptographer.ai.Style;
 
-// wrappable interface
-
 /**
  * Create a simple wrapper that converts null to Undefined in both ways, and
  * null to Color.NONE in case of color

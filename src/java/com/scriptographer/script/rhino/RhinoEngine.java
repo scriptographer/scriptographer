@@ -41,7 +41,9 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Token;
 
+import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.ScriptCanceledException;
+import com.scratchdisk.script.rhino.RhinoScope;
 import com.scriptographer.ScriptographerEngine;
 
 /**
@@ -135,6 +137,12 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine implem
 		   }
 		}
 		return null;
+	}
+
+	public Scope createScope() {
+		Scope scope = super.createScope();
+		scope.put("global", ((RhinoScope) scope).getScope());
+		return scope;
 	}
 
 	public Object handleSignOperator(Context cx, Scriptable scope, int operator, Object rhs) {

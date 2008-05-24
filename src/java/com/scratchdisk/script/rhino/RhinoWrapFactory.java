@@ -57,8 +57,9 @@ import com.scratchdisk.util.WeakIdentityHashMap;
  * @author lehni
  */
 public class RhinoWrapFactory extends WrapFactory implements Converter {
-	private WeakIdentityHashMap wrappers =
-		new WeakIdentityHashMap();
+	private WeakIdentityHashMap<Object, WeakReference<Scriptable>> wrappers =
+		new WeakIdentityHashMap<Object, WeakReference<Scriptable>>();
+
 	protected RhinoEngine engine;
 
 	public RhinoWrapFactory() {
@@ -99,8 +100,8 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 			Object javaObj, Class<?> staticType) {
 		// Keep track of wrappers so that if a given object needs to be
 		// wrapped again, take the wrapper from the pool...
-        WeakReference ref = (WeakReference) wrappers.get(javaObj);
-		Scriptable obj = ref == null ? null : (Scriptable) ref.get();
+        WeakReference<Scriptable> ref = wrappers.get(javaObj);
+		Scriptable obj = ref == null ? null : ref.get();
 		if (obj == null) {
 	        // Allays override staticType and set it to the native type
 			// of the class. Sometimes the interface used to access an
@@ -182,7 +183,8 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		if (value instanceof Function) {
 			if (type == Callable.class)
 				return new RhinoCallable(engine, (Function) value);
-		} else if (value instanceof Scriptable || value instanceof String) { // Let through string as well, for ArgumentReader
+		} else if (value instanceof Scriptable || value instanceof String) {
+			// Let through string as well, for ArgumentReader
 			if (Map.class.isAssignableFrom(type)) {
 				return toMap((Scriptable) value);
 			} else {

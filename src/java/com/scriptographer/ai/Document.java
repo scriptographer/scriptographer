@@ -258,10 +258,18 @@ public class Document extends DictionaryObject {
 	/**
 	 * Prints the document
 	 * 
-	 * @param dialogStatus <tt>Document.DIALOG_*</tt>
+	 * @param dialogStatus
 	 */
-	public native void print(int dialogStatus);
-	
+	private native void nativePrint(int status);
+
+	public void print(DialogStatus status) {
+		nativePrint(status.value);
+	}
+
+	public void print() {
+		print(DialogStatus.OFF);
+	}
+
 	/**
 	 * Saves the document
 	 */

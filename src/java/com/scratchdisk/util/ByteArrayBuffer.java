@@ -58,6 +58,14 @@ public class ByteArrayBuffer {
 		this(length, true);
 	}
 
+	public ByteArrayBuffer(boolean bigEndian) {
+		this(0, bigEndian);
+	}
+
+	public ByteArrayBuffer() {
+		this(0, true);
+	}
+
 	public byte readByte() {
 		return buffer[offset++];
 	}
@@ -146,11 +154,11 @@ public class ByteArrayBuffer {
 	}
 
 	public int readFrom(InputStream in) throws IOException {
-		return in.read(buffer);
+		return in.read(buffer, offset, length - offset);
 	}
 
 	public void writeTo(OutputStream out) throws IOException {
-		out.write(buffer);
+		out.write(buffer, 0, length);
 	}
 
 	public int readFrom(ByteArrayBuffer in, int offset, int length) {
@@ -180,9 +188,18 @@ public class ByteArrayBuffer {
 	public void setOffset(int offset) {
 		this.offset = offset;
 	}
-	
+
 	public int getLength() {
 		return length;
+	}
+
+	public void setLength(int length) {
+		if (length > buffer.length) {
+			byte[] newBuffer = new byte[length];
+			System.arraycopy(buffer, 0, newBuffer, 0, buffer.length);
+			buffer = newBuffer;
+		}
+		this.length = length;
 	}
 
 	public String toString() {

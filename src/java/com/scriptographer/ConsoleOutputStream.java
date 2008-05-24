@@ -99,12 +99,12 @@ public class ConsoleOutputStream extends OutputStream {
 					// And convert tabs to 4 spaces
 					str = str.replaceAll("\\t", "    ");
 					callback.println(str);
-					buffer.reset();
 				} else {
 					// Log this error for debugging. It seems that console
 					// output stops working after it occurred the first time
 					ScriptographerEngine.logError(str);
 				}
+				buffer.reset();
 			} else {
 				buffer.write(lineSeparator.getBytes());
 			}

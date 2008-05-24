@@ -39,8 +39,10 @@ import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.script.rhino.ExtendedJavaClass;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.adm.*;
@@ -220,12 +222,28 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 	 */
 	protected static File getDirectory(Scriptable scope) {
 		Object obj = scope.get("script", scope);
-		if (obj == Scriptable.NOT_FOUND) obj = null;
-		com.scriptographer.sg.Script script = (com.scriptographer.sg.Script) obj;
-		if (script != null)
-			return script.getFile().getParentFile();
+		if (obj instanceof com.scriptographer.sg.Script)
+			return ((com.scriptographer.sg.Script) obj).getFile().getParentFile();
 		else
 			return ScriptographerEngine.getScriptDirectory();
+	}
+
+	/**
+	 * @param script
+	 * @param scope
+	 * @throws ScriptException 
+	 */
+	private static void executeScript(Script script, Scope scope) throws ScriptException {
+		if (script != null) {
+			// Temporarily override script with the new one, so includes in other directories work
+			Object prevScript = scope.get("script");
+			try {
+				scope.put("script", new com.scriptographer.sg.Script(script.getFile()), true);
+				script.execute(scope);
+			} finally {
+				scope.put("script", prevScript, true);
+			}
+		}
 	}
 
 	/*
@@ -244,9 +262,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		ScriptEngine engine = ScriptEngine.getEngineByName("JavaScript");
 		for (int i = 0; i < args.length; i++) {
 			File file = new File(baseDir, Context.toString(args[i]));
-			Script script = engine.compile(file);
-			if (script != null)
-				script.execute(engine.getScope(thisObj));
+			executeScript(engine.compile(file), engine.getScope(thisObj));
 		}
 	}
 
@@ -260,9 +276,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		ScriptEngine engine = ScriptEngine.getEngineByName("JavaScript");
 		for (int i = 0; i < args.length; i++) {
 			File file = new File(baseDir, Context.toString(args[i]));
-			Script script = engine.compile(file);
-			if (script != null)
-				script.execute(engine.createScope());
+			executeScript(engine.compile(file), engine.createScope());
 		}
 	}
 
