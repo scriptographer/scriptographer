@@ -66,6 +66,7 @@ public class RhinoScope extends Scope {
 
 	public Object put(String name, Object value, boolean readOnly) {
 		Object prev = this.get(name);
+		value = Context.javaToJS(value, scope);
 		if (scope instanceof ScriptableObject) {
 			// Remove READONLY attribute first if the field already existed,
 			// to make sure new value can be set
@@ -78,7 +79,7 @@ public class RhinoScope extends Scope {
 				return prev;
 			}
 		}
-		scope.put(name, scope, Context.javaToJS(value, scope));
+		scope.put(name, scope, value);
 		return prev;
 	}
 }
