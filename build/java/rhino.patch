@@ -598,8 +598,8 @@ diff -r1.84 NativeJavaObject.java
 Index: org/mozilla/javascript/JavaMembers.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/JavaMembers.java,v
-retrieving revision 1.76
-diff -r1.76 JavaMembers.java
+retrieving revision 1.77
+diff -r1.77 JavaMembers.java
 55c55
 < class JavaMembers
 ---
@@ -676,7 +676,7 @@ diff -r1.76 JavaMembers.java
 >                     Method method = methods[i];
 >                     map.put(new MethodSignature(method), method);
 >                 }
-489,496c477,507
+489,495c477,519
 <                     ObjArray overloadedMethods = (ObjArray)value;
 <                     int N = overloadedMethods.size();
 <                     if (N < 2) Kit.codeBug();
@@ -684,7 +684,6 @@ diff -r1.76 JavaMembers.java
 <                     for (int i = 0; i != N; ++i) {
 <                         Method method = (Method)overloadedMethods.get(i);
 <                         methodBoxes[i] = new MemberBox(method);
-<                     }
 ---
 >                     ObjArray overloadedMethods = (ObjArray) value;
 >                     // Filter out synthetic bridge methods, generated for
@@ -705,9 +704,31 @@ diff -r1.76 JavaMembers.java
 >                     ObjArray validMethods = new ObjArray();
 >                     for (int i = 0; i < count; i++) {
 >                         Method method = (Method) overloadedMethods.get(i);
->                         if (!method.isBridge() || !method.isSynthetic())
+>                         if (method.isBridge() && method.isSynthetic()) {
+>                             // See if there is another method with a similar signature.
+>                             // If there is, do not add this one, otherwise keep it
+>                             boolean overrides = false;
+>                             Class<?> returnType = method.getReturnType();
+>                             Class<?>[] types = method.getParameterTypes();
+>                             for (int j = 0; j < count && !overrides; j++) {
+>                                 if (j != i) {
+>                                     Method otherMethod = (Method) overloadedMethods.get(j);
+>                                     overrides = returnType.isAssignableFrom(otherMethod.getReturnType());
+>                                     if (overrides) {
+>                                         Class<?>[] otherTypes = otherMethod.getParameterTypes();
+>                                         if (types.length == otherTypes.length)
+>                                             for (int k = 0; k < types.length && overrides; k++)
+>                                                 overrides = types[k].isAssignableFrom(otherTypes[k]);
+>                                     }
+>                                 }
+>                             }
+>                             // Add it if it does not override another real method
+>                             if (!overrides)
+>                                 validMethods.add(method);
+>                         } else {
 >                             validMethods.add(method);
->                     }
+>                         }
+496a521,529
 >                     // If they are all synthetic bridge methods, add them still:
 >                     if (validMethods.size() == 0) {
 >                         validMethods = overloadedMethods;
@@ -825,9 +846,9 @@ diff -r1.18 MemberBox.java
 Index: org/mozilla/javascript/ScriptRuntime.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/ScriptRuntime.java,v
-retrieving revision 1.295
-diff -r1.295 ScriptRuntime.java
-3204a3205
+retrieving revision 1.297
+diff -r1.297 ScriptRuntime.java
+3202a3203
 >             ScriptableObject.putProperty(errorObject, "exception", re);
 Index: org/mozilla/javascript/NativeJavaTopPackage.java
 ===================================================================
@@ -886,8 +907,8 @@ diff -r1.63 NativeJavaMethod.java
 Index: org/mozilla/javascript/Parser.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Parser.java,v
-retrieving revision 1.127
-diff -r1.127 Parser.java
+retrieving revision 1.128
+diff -r1.128 Parser.java
 50a51,52
 > import java.io.StringReader;
 > import java.util.ArrayList;
