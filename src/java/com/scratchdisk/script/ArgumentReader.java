@@ -168,7 +168,12 @@ public abstract class ArgumentReader {
 					throw new IllegalArgumentException("Cannot read from " + obj);
 				res = converter.convert(reader, this.converter.unwrap(obj));
 			} else {
-				res = this.converter.convert(obj, type);
+				try {
+	                res = this.converter.convert(obj, type);
+				} catch (Exception e) {
+					// TODO: report?
+					res = null;
+				}
 			}
 			return res;
 		}
