@@ -38,6 +38,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Wrapper;
 
 import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.Script;
@@ -222,6 +223,8 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 	 */
 	protected static File getDirectory(Scriptable scope) {
 		Object obj = scope.get("script", scope);
+		if (obj instanceof Wrapper)
+			obj = ((Wrapper) obj).unwrap();
 		if (obj instanceof com.scriptographer.sg.Script)
 			return ((com.scriptographer.sg.Script) obj).getFile().getParentFile();
 		else
