@@ -55,27 +55,27 @@ public class ItemPoint extends Point {
 		}
 	}
 
-	public void set(float x, float y) {
+	public void set(double x, double y) {
 		// This updates the point object itself too:
 		item.setPosition(x, y);
 	}
 
-	public void setX(float x) {
+	public void setX(double x) {
 		update();
 		set(x, y);
 	}
 
-	public void setY(float y) {
+	public void setY(double y) {
 		update();
 		set(x, y);
 	}
 	
-	public float getX() {
+	public double getX() {
 		update();
 		return x;
 	}
 	
-	public float getY() {
+	public double getY() {
 		update();
 		return y;
 	}

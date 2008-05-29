@@ -43,10 +43,10 @@ import com.scratchdisk.script.ArgumentReader;
  * @author lehni
  */
 public class Rectangle {
-	protected float x;
-	protected float y;
-	protected float width;
-	protected float height;
+	protected double x;
+	protected double y;
+	protected double width;
+	protected double height;
 	
 	public Rectangle() {
 		x = y = width = height = 0;
@@ -59,15 +59,18 @@ public class Rectangle {
 	 * @param width
 	 * @param height
 	 */
-	public Rectangle(float x, float y, float width, float height) {
+	public Rectangle(double x, double y, double width, double height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 	}
 
-	public Rectangle(double x, double y, double w, double h) {
-		this((float) x, (float) y, (float) w, (float) h);
+	public Rectangle(float x, float y, float width, float height) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
 	}
 
 	/**
@@ -104,10 +107,10 @@ public class Rectangle {
 	 * @param map <code>{x, y, width, height}</code>
 	 */
 	public Rectangle(ArgumentReader reader) {
-		this(reader.readFloat("x", 0),
-				reader.readFloat("y", 0),
-				reader.readFloat("width", 0),
-				reader.readFloat("height", 0));
+		this(reader.readDouble("x", 0),
+				reader.readDouble("y", 0),
+				reader.readDouble("width", 0),
+				reader.readDouble("height", 0));
 	}
 
 	/**
@@ -117,25 +120,21 @@ public class Rectangle {
 	 * @param width
 	 * @param height
 	 */
-	public void set(float x, float y, float width, float height) {
+	public void set(double x, double y, double width, double height) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 	}
 
-	public void set(double x, double y, double width, double height) {
-		set((float) x, (float) y, (float) width, (float) height);
-	}
-
 	/**
 	 * @jsbean The x position of the rectangle.
 	 */
-	public float getX() {
+	public double getX() {
 		return x;
 	}
 
-	public void setX(float x) {
+	public void setX(double x) {
 		this.x = x;
 	}
 
@@ -143,33 +142,33 @@ public class Rectangle {
 	 * @jsbean The y position of the rectangle. In the AI coordinate
 	 * @jsbean system, the y axis grows from bottom to top.
 	 */
-	public float getY() {
+	public double getY() {
 		return y;
 	}
 
-	public void setY(float y) {
+	public void setY(double y) {
 		this.y = y;
 	}
 
 	/**
 	 * @jsbean The width of the rectangle.
 	 */
-	public float getWidth() {
+	public double getWidth() {
 		return width;
 	}
 	
-	public void setWidth(float width) {
+	public void setWidth(double width) {
 		this.width = width;
 	}
 
 	/**
 	 * @jsbean The height of the rectangle.
 	 */
-	public float getHeight() {
+	public double getHeight() {
 		return height;
 	}
 	
-	public void setHeight(float height) {
+	public void setHeight(double height) {
 		this.height = height;
 	}
 
@@ -177,11 +176,11 @@ public class Rectangle {
 	 * @jsbean The position of the left hand side of the rectangle. Note that this
 	 * @jsbean doesn't move the whole rectangle; the right hand side stays where it was.
 	 */
-	public float getLeft() {
+	public double getLeft() {
 		return x;
 	}
 
-	public void setLeft(float left) {
+	public void setLeft(double left) {
 		// right should not move
 		width -= left - x;
 		x = left;
@@ -191,11 +190,11 @@ public class Rectangle {
 	 * @jsbean The position of the right hand side of the rectangle. Note that this
 	 * @jsbean doesn't move the whole rectangle; the left hand side stays where it was.
 	 */
-	public float getRight() {
+	public double getRight() {
 		return x + width;
 	}
 
-	public void setRight(float right) {
+	public void setRight(double right) {
 		width = right - x;
 	}
 
@@ -204,11 +203,11 @@ public class Rectangle {
 	 * @jsbean system, the y axis grows from bottom to top. Note that this doesn't move
 	 * @jsbean the whole rectangle: the top won't move.
 	 */
-	public float getBottom() {
+	public double getBottom() {
 		return y;
 	}
 	
-	public void setBottom(float bottom) {
+	public void setBottom(double bottom) {
 		// top should not move
 		height -= bottom - y;
 		y = bottom;
@@ -219,11 +218,11 @@ public class Rectangle {
 	 * @jsbean system, the y axis grows from bottom to top. Note that this
 	 * @jsbean doesn't move the whole rectangle: the bottom won't move.
 	 */
-	public float getTop() {
+	public double getTop() {
 		return y + height;
 	}
 	
-	public void setTop(float top) {
+	public void setTop(double top) {
 		height = top - y;
 	}
 	
@@ -318,6 +317,22 @@ public class Rectangle {
 		}
 	}
 
+	public Rectangle add(Point pt) {
+		return new Rectangle(x + pt.x, y + pt.y, width, height);
+	}
+
+	public Rectangle subtract(Point pt) {
+		return new Rectangle(x - pt.x, y - pt.y, width, height);
+	}
+
+	public Rectangle multiply(double value) {
+		return new Rectangle(x * value, y * value, width * value, height * value);
+	}
+
+	public Rectangle divide(double value) {
+		return new Rectangle(x / value, y / value, width / value, height / value);
+	}
+
 	/**
 	 * @jsbean Returns <code>true</code> if the rectangle is empty,
 	 *         <code>false</code> otherwise.
@@ -333,7 +348,7 @@ public class Rectangle {
 	 * @return <code>true</code> if the specified coordinates are inside the
 	 *         boundary of the rectangle; <code>false</code> otherwise.
 	 */
-	public boolean contains(float x, float y) {
+	public boolean contains(double x, double y) {
 		return x >= this.x &&
 			y >= this.y &&
 			x < this.x + width &&
@@ -392,10 +407,10 @@ public class Rectangle {
 	 *         and in this rectangle.
 	 */
 	public Rectangle intersect(Rectangle r) {
-		float x1 = Math.max(x, r.x);
-		float y1 = Math.max(y, r.y);
-		float x2 = Math.min(x + width, r.x + r.width);
-		float y2 = Math.min(y + height, r.y + r.height);
+		double x1 = Math.max(x, r.x);
+		double y1 = Math.max(y, r.y);
+		double x2 = Math.min(x + width, r.x + r.width);
+		double y2 = Math.min(y + height, r.y + r.height);
 		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
     }
 
@@ -408,17 +423,17 @@ public class Rectangle {
 	 *         and this rectangle.
 	 */
 	public Rectangle union(Rectangle r) {
-		float x1 = Math.min(x, r.x);
-		float y1 = Math.min(y, r.y);
-		float x2 = Math.max(x + width, r.x + r.width);
-		float y2 = Math.max(y + height, r.y + r.height);
+		double x1 = Math.min(x, r.x);
+		double y1 = Math.min(y, r.y);
+		double x2 = Math.max(x + width, r.x + r.width);
+		double y2 = Math.max(y + height, r.y + r.height);
 		if (x2 < x1) {
-			float t = x1;
+			double t = x1;
 		    x1 = x2;
 		    x2 = t;
 		}
 		if (y2 < y1) {
-		    float t = y1;
+			double t = y1;
 		    y1 = y2;
 		    y2 = t;
 		}
@@ -440,9 +455,9 @@ public class Rectangle {
 	 * 
 	 * @param px, py The coordinates of the point.
 	 */
-	public void include(float px, float py) {
-		float nx = Math.min(x, px);
-		float ny = Math.min(y, px);
+	public void include(double px, double py) {
+		double nx = Math.min(x, px);
+		double ny = Math.min(y, px);
 		width = Math.max(x + width, px) - nx;
 		height = Math.max(y + height, py) - ny;
 		x = nx;
@@ -474,8 +489,8 @@ public class Rectangle {
 	 * @param rect the rectangle to add to this rectangle.
 	 */
 	public void include(Rectangle rect) {
-		float nx = Math.min(x, rect.x);
-		float ny = Math.min(y, rect.y);
+		double nx = Math.min(x, rect.x);
+		double ny = Math.min(y, rect.y);
 		width = Math.max(x + width, rect.x + rect.width) - nx;
 		height = Math.max(y + width, rect.y + rect.width) - ny;
 		x = nx;
@@ -486,6 +501,6 @@ public class Rectangle {
 	 * @return
 	 */
 	protected Rectangle2D toRectangle2D() {
-		return new Rectangle2D.Float(x, y, width, height);
+		return new Rectangle2D.Double(x, y, width, height);
 	}
 }

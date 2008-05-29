@@ -157,9 +157,9 @@ public class Path extends PathItem {
 		setTabletData(values.toArray(new TabletValue[values.size()]));
 	}
 
-	public native float getLength(float flatness);
+	public native double getLength(double flatness);
 
-	public float getLength() {
+	public double getLength() {
 		return getLength(Curve.FLATNESS);
 	}
 
@@ -218,12 +218,12 @@ public class Path extends PathItem {
 	private native int nativeCurvesToPoints(float maxPointDistance,
 			float flatness);
 
-	public void curvesToPoints(float maxPointDistance, float flatness) {
-		int size = nativeCurvesToPoints(maxPointDistance, flatness);
+	public void curvesToPoints(double maxPointDistance, double flatness) {
+		int size = nativeCurvesToPoints((float) maxPointDistance, (float) flatness);
 		updateSize(size);
 	}
 
-	public void curvesToPoints(float maxPointDistance) {
+	public void curvesToPoints(double maxPointDistance) {
 		curvesToPoints(maxPointDistance, Curve.FLATNESS);
 	}
 
@@ -233,8 +233,8 @@ public class Path extends PathItem {
 
 	private native void nativeReduceSegments(float flatness);
 
-	public void reduceSegments(float flatness) {
-		nativeReduceSegments(flatness);
+	public void reduceSegments(double flatness) {
+		nativeReduceSegments((float) flatness);
 		updateSize(-1);
 	}
 
@@ -242,13 +242,13 @@ public class Path extends PathItem {
 		reduceSegments(Curve.FLATNESS);
 	}
 	
-	public Path split(float position) {
+	public Path split(double position) {
 		int index = (int) Math.floor(position);
-		float parameter = position - index;
+		double parameter = position - index;
 		return this.split(index, parameter);
 	}
 
-	public Path split(int index, float parameter) {
+	public Path split(int index, double parameter) {
 		SegmentList segments = getSegments();
 		ExtendedList<Segment> newSegments = null;
 
@@ -288,13 +288,13 @@ public class Path extends PathItem {
 		return split(index, 0f);
 	}
 
-	public HitTest hitTest(Point point, float epsilon) {
+	public HitTest hitTest(Point point, double epsilon) {
 		CurveList curves = getCurves();
 		int length = curves.size();
 		
 		for (int i = 0; i < length; i++) {
 			Curve curve = (Curve) curves.get(i);
-			float t = curve.hitTest(point, epsilon);
+			double t = curve.hitTest(point, epsilon);
 			if (t >= 0)
 				return new HitTest(curve, t);
 		}
@@ -307,16 +307,16 @@ public class Path extends PathItem {
 
 	// TODO: move to CurveList, to make accessible when not using
 	// paths directly too?
-	public HitTest getPositionWithLength(float length, float flatness) {
+	public HitTest getPositionWithLength(double length, double flatness) {
 		CurveList curves = getCurves();
-		float currentLength = 0;
+		double currentLength = 0;
 		for (int i = 0; i < curves.size; i++) {
-			float startLength = currentLength;
+			double startLength = currentLength;
 			Curve curve = (Curve) curves.get(i);
 			currentLength += curve.getLength(flatness);
 			if (currentLength >= length) {
 				// found the segment within which the length lies
-				float t = curve.getParameterWithLength(length - startLength,
+				double t = curve.getParameterWithLength(length - startLength,
 						flatness);
 				return new HitTest(curve, t);
 			}
@@ -339,24 +339,24 @@ public class Path extends PathItem {
 	 *  PostScript-like interface: moveTo, lineTo, curveTo, arcTo
 	 */
 
-	public void moveTo(float x, float y) {
+	public void moveTo(double x, double y) {
 		getSegments().moveTo(x, y);
 	}
 	
-	public void lineTo(float x, float y) {
+	public void lineTo(double x, double y) {
 		getSegments().lineTo(x, y);
 	}
 	
-	public void curveTo(float c1x, float c1y, float c2x, float c2y, float x,
-			float y) {
+	public void curveTo(double c1x, double c1y, double c2x, double c2y, double x,
+			double y) {
 		getSegments().curveTo(c1x, c1y, c2x, c2y, x, y);
 	}
 	
-	public void quadTo(float cx, float cy, float x, float y) {
+	public void quadTo(double cx, double cy, double x, double y) {
 		getSegments().quadTo(cx, cy, x, y);
 	}
 	
-	public void arcTo(float centerX, float centerY, float endX, float endY,
+	public void arcTo(double centerX, double centerY, double endX, double endY,
 			int ccw) {
 		getSegments().arcTo(centerX, centerY, endX, endY, ccw);
 	}
@@ -424,19 +424,25 @@ public class Path extends PathItem {
 		GeneralPath path = new GeneralPath();
 		SegmentList segments = getSegments();
 		Segment first = (Segment) segments.getFirst();
-		path.moveTo(first.point.x, first.point.y);
+		path.moveTo((float) first.point.x, (float) first.point.y);
 		Segment seg = first;
 		for (int i = 1; i < segments.size; i++) {
 			Segment next = (Segment) segments.get(i);
-			path.curveTo(seg.point.x + seg.handleOut.x, seg.point.y + seg.handleOut.y,
-					next.point.x + next.handleIn.x, next.point.y + next.handleIn.y,
-					next.point.x, next.point.y);
+			path.curveTo((float) (seg.point.x + seg.handleOut.x),
+					(float) (seg.point.y + seg.handleOut.y),
+					(float) (next.point.x + next.handleIn.x),
+					(float) (next.point.y + next.handleIn.y),
+					(float) next.point.x,
+					(float) next.point.y);
 			seg = next;
 		}
 		if (isClosed()) {
-			path.curveTo(seg.point.x + seg.handleOut.x, seg.point.y + seg.handleOut.y,
-					first.point.x + first.handleIn.x, first.point.y + first.handleIn.y,
-					first.point.x, first.point.y);
+			path.curveTo((float) (seg.point.x + seg.handleOut.x),
+					(float) (seg.point.y + seg.handleOut.y),
+					(float) (first.point.x + first.handleIn.x),
+					(float) (first.point.y + first.handleIn.y),
+					(float) first.point.x,
+					(float) first.point.y);
 			path.closePath();
 		}
 		Boolean evenOdd = getStyle().getEvenOdd();

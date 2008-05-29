@@ -86,27 +86,27 @@ public class CompoundPath extends PathItem {
 	/*
 	 *  PostScript-like interface: moveTo, lineTo, curveTo, arcTo
 	 */
-	public void moveTo(float x, float y) {
+	public void moveTo(double x, double y) {
 		// moveTo always creates a new path:
 		Path path = new Path();
 		appendChild(path);
 		path.moveTo(x, y);
 	}
 	
-	public void lineTo(float x, float y) {
+	public void lineTo(double x, double y) {
 		getPreviousPath().lineTo(x, y);
 	}
 	
-	public void curveTo(float c1x, float c1y, float c2x, float c2y,
-			float x, float y) {
+	public void curveTo(double c1x, double c1y, double c2x, double c2y,
+			double x, double y) {
 		getPreviousPath().curveTo(c1x, c1y, c2x, c2y, x, y);
 	}
 	
-	public void quadTo(float cx, float cy, float x, float y) {
+	public void quadTo(double cx, double cy, double x, double y) {
 		getPreviousPath().quadTo(cx, cy, x, y);
 	}
 
-	public void arcTo(float centerX, float centerY, float endX, float endY,
+	public void arcTo(double centerX, double centerY, double endX, double endY,
 			int ccw) {
 		getPreviousPath().arcTo(centerX, centerY, endX, endY, ccw);
 	}

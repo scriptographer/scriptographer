@@ -461,7 +461,7 @@ public abstract class Item extends DictionaryObject {
 		return bounds;
 	}
 
-	public void setBounds(float x, float y, float width, float height) {
+	public void setBounds(double x, double y, double width, double height) {
 		Rectangle rect = getBounds();
 		Matrix matrix = new Matrix();
 		// Read this from bottom to top:
@@ -509,7 +509,7 @@ public abstract class Item extends DictionaryObject {
 		return position;
 	}
 
-	public void setPosition(float x, float y) {
+	public void setPosition(double x, double y) {
 		Point point = getPosition();
 		translate(x - point.x, y - point.y);
 		// This is always defined now since we're using getPosition above
@@ -861,7 +861,7 @@ public abstract class Item extends DictionaryObject {
 	 * @param theta the rotation angle in radians
 	 * @see Matrix#rotate(double, double, double)
 	 */
-	public void rotate(double theta, float x, float y) {
+	public void rotate(double theta, double x, double y) {
 		transform(new Matrix().rotate(theta, x, y));
 	}
 

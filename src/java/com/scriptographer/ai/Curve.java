@@ -44,8 +44,8 @@ public class Curve {
 	private Segment segment2;
 	protected int fetchCount = -1;
 	
-	protected static final float EPSILON = 0.00001f;
-	protected static final float FLATNESS = 0.1f;
+	protected static final double EPSILON = 0.00001;
+	protected static final double FLATNESS = 0.1;
 
 	public Curve() {
 		segment1 = new Segment();
@@ -74,8 +74,8 @@ public class Curve {
 		this(pt, pt);
 	}
 
-	public Curve(float p1x, float p1y, float h1x, float h1y,
-			float h2x, float h2y, float p2x, float p2y) {
+	public Curve(double p1x, double p1y, double h1x, double h1y,
+			double h2x, double h2y, double p2x, double p2y) {
 		segment1 = new Segment(p1x, p1y, 0, 0, h1x, h1y, false);
 		segment2 = new Segment(p2x, p2y, h2x, h2y, 0, 0, false);
 	}
@@ -93,14 +93,14 @@ public class Curve {
 			);
 		} else if (reader.isArray()) {
 			init(
-				reader.readFloat(0),
-				reader.readFloat(0),
-				reader.readFloat(0),
-				reader.readFloat(0),
-				reader.readFloat(0),
-				reader.readFloat(0),
-				reader.readFloat(0),
-				reader.readFloat(0)
+				reader.readDouble(0),
+				reader.readDouble(0),
+				reader.readDouble(0),
+				reader.readDouble(0),
+				reader.readDouble(0),
+				reader.readDouble(0),
+				reader.readDouble(0),
+				reader.readDouble(0)
 			);		
 		}
 	}
@@ -121,8 +121,8 @@ public class Curve {
 		segment2 = new Segment(pt2, h2, null, false);
 	}
 
-	protected void init(float p1x, float p1y, float h1x, float h1y,
-			float h2x, float h2y, float p2x, float p2y) {
+	protected void init(double p1x, double p1y, double h1x, double h1y,
+			double h2x, double h2y, double p2x, double p2y) {
 		segment1 = new Segment(p1x, p1y, 0, 0, h1x, h1y, false);
 		segment2 = new Segment(p2x, p2y, h2x, h2y, 0, 0, false);
 	}
@@ -185,7 +185,7 @@ public class Curve {
 		segment1.point.set(pt);
 	}
 
-	public void setPoint1(float x, float y) {
+	public void setPoint1(double x, double y) {
 		updateSegments();
 		segment1.point.set(x, y);
 	}
@@ -200,7 +200,7 @@ public class Curve {
 		segment1.handleOut.set(pt);
 	}
 
-	public void setHandle1(float x, float y) {
+	public void setHandle1(double x, double y) {
 		updateSegments();
 		segment1.handleOut.set(x, y);
 	}
@@ -215,7 +215,7 @@ public class Curve {
 		segment2.handleIn.set(pt);
 	}
 
-	public void setHandle2(float x, float y) {
+	public void setHandle2(double x, double y) {
 		updateSegments();
 		segment2.handleIn.set(x, y);
 	}
@@ -230,7 +230,7 @@ public class Curve {
 		segment2.point.set(pt);
 	}
 
-	public void setPoint2(float x, float y) {
+	public void setPoint2(double x, double y) {
 		updateSegments();
 		segment2.point.set(x, y);
 	}
@@ -259,19 +259,19 @@ public class Curve {
 	 * Instead of using the underlying AI functions and loose time for calling
 	 * natives, let's do the dirty work ourselves:
 	 */
-	public Point getPoint(float parameter) {
+	public Point getPoint(double parameter) {
 		updateSegments();
 		// calculate the polynomial coefficients. caution: handles are relative
 		// to points
-		float dx = segment2.point.x - segment1.point.x;
-		float cx = 3f * segment1.handleOut.x;
-		float bx = 3f * (dx + segment2.handleIn.x - segment1.handleOut.x) - cx;
-		float ax = dx - cx - bx;
+		double dx = segment2.point.x - segment1.point.x;
+		double cx = 3f * segment1.handleOut.x;
+		double bx = 3f * (dx + segment2.handleIn.x - segment1.handleOut.x) - cx;
+		double ax = dx - cx - bx;
 
-		float dy = segment2.point.y - segment1.point.y;
-		float cy = 3f * segment1.handleOut.y;
-		float by = 3f * (dy + segment2.handleIn.y - segment1.handleOut.y) - cy;
-		float ay = dy - cy - by;
+		double dy = segment2.point.y - segment1.point.y;
+		double cy = 3f * segment1.handleOut.y;
+		double by = 3f * (dy + segment2.handleIn.y - segment1.handleOut.y) - cy;
+		double ay = dy - cy - by;
 		
 		return new Point(
 			((ax * parameter + bx) * parameter + cx) * parameter + segment1.point.x,
@@ -279,7 +279,7 @@ public class Curve {
 		);
 	}
 
-	public Point getTangent(float parameter) {
+	public Point getTangent(double parameter) {
 		updateSegments();
 
 		double t = parameter;
@@ -309,7 +309,7 @@ public class Curve {
 		);
 	}
 
-	public Point getNormal(float parameter) {
+	public Point getNormal(double parameter) {
 		updateSegments();
 
 		double t = parameter;
@@ -342,18 +342,22 @@ public class Curve {
 			float h1x, float h1y, float h2x, float h2y, float p2x, float p2y,
 			float flatness);
 
-	public float getLength(float flatness) {
+	public double getLength(double flatness) {
 		updateSegments();
 		return nativeGetLength(
-				segment1.point.x, segment1.point.y,
-				segment1.handleOut.x + segment1.point.x, segment1.handleOut.y + segment1.point.y,
-				segment2.handleIn.x + segment2.point.x, segment2.handleIn.y + segment2.point.y,
-				segment2.point.x, segment2.point.y,
-				flatness
+				(float) segment1.point.x,
+				(float) segment1.point.y,
+				(float) (segment1.handleOut.x + segment1.point.x),
+				(float) (segment1.handleOut.y + segment1.point.y),
+				(float) (segment2.handleIn.x + segment2.point.x),
+				(float) (segment2.handleIn.y + segment2.point.y),
+				(float) segment2.point.x,
+				(float) segment2.point.y,
+				(float) flatness
 		);
 	}
 
-	public float getLength() {
+	public double getLength() {
 		return getLength(FLATNESS);
 	}
 
@@ -365,13 +369,13 @@ public class Curve {
 	private native static void nativeAdjustThroughPoint(float[] values,
 			float x, float y, float parameter);
 
-	public void adjustThroughPoint(Point pt, float parameter) {
+	public void adjustThroughPoint(Point pt, double parameter) {
 		updateSegments();
 
 		float[] values = new float[2 * SegmentList.VALUES_PER_SEGMENT];
 		segment1.getValues(values, 0);
 		segment2.getValues(values, 1);
-		nativeAdjustThroughPoint(values, pt.x, pt.y, parameter);
+		nativeAdjustThroughPoint(values, (float) pt.x, (float) pt.y, (float) parameter);
 		segment1.setValues(values, 0);
 		segment2.setValues(values, 1);
 		// don't mark dirty, commit immediately both as all the values have
@@ -405,11 +409,11 @@ public class Curve {
 					left[1][1] - segment1.point.y);
 	
 			// create the new segment, absolute -> relative:
-			float x = (float) left[3][0];
-			float y = (float) left[3][1];
+			double x = left[3][0];
+			double y = left[3][1];
 			Segment newSegment = new Segment(x, y,
-					(float) left[2][0] - x, (float) left[2][1] - y,
-					(float) right[1][0] - x, (float) right[1][1] - y, false);
+					left[2][0] - x, left[2][1] - y,
+					right[1][0] - x, right[1][1] - y, false);
 	
 			// and insert it, if needed:
 			if (segments != null)
@@ -439,32 +443,32 @@ public class Curve {
 	 * @param epsilon
 	 * @return
 	 */
-	public float hitTest(Point point, float epsilon) {
+	public double hitTest(Point point, double epsilon) {
 		updateSegments();
 		
 		return hitTest(getCurveArray(), point.x, point.y, epsilon);
 	}
 
-	public float hitTest(Point point) {
+	public double hitTest(Point point) {
 		return hitTest(point, EPSILON);
 	}
 
-	public float getPartLength(float fromParameter, float toParameter,
-			float flatness) {
+	public double getPartLength(double fromParameter, double toParameter,
+			double flatness) {
 		updateSegments();
 		double[][] curve = getCurveArray();
 		return getPartLength(curve, fromParameter, toParameter, flatness, curve);
 	}
 
-	public float getPartLength(float fromParameter, float toParameter) {
+	public double getPartLength(double fromParameter, double toParameter) {
 		return getPartLength(fromParameter, toParameter, FLATNESS);
 	}
 
-	public float getParameterWithLength(float length, float flatness) {
+	public double getParameterWithLength(double length, double flatness) {
 		if (length <= 0)
 			return 0;
 		// updateSegments is not necessary here, as it is called in getLength!
-		float bezierLength = getLength(flatness);
+		double bezierLength = getLength(flatness);
 		if (length >= bezierLength)
 			return 1;
 		double[][] curve = getCurveArray();
@@ -487,10 +491,10 @@ public class Curve {
 			else if (t > 1) t = 1;
 			prevCloseness = closeness;
 		}
-		return (float) t;
+		return t;
 	}
 
-	public float getParameterWithLength(float length) {
+	public double getParameterWithLength(double length) {
 		return getParameterWithLength(length, FLATNESS);
 	}
 	
@@ -558,7 +562,7 @@ public class Curve {
 	 * curve is only modified if it is passed as tempCurve as well. this is
 	 * needed in getParameterWithLength above...
 	 */
-	private static float getPartLength(double curve[][], double fromParameter,
+	private static double getPartLength(double curve[][], double fromParameter,
 			double toParameter, double flatness, double tempCurve[][]) {
 		if (fromParameter > toParameter) {
 			double temp = fromParameter;
@@ -716,7 +720,7 @@ public class Curve {
 		return solveCubicRoots(a, b, c, d, roots, epsilon);
 	}
 	
-	private static float hitTest(double[][] curve, double x, double y,
+	private static double hitTest(double[][] curve, double x, double y,
 			double epsilon) {
 		double txs[] = { 0, 0, 0 }; 
 		double tys[] = { 0, 0, 0 };
@@ -738,7 +742,7 @@ public class Curve {
 						if (sx == -1) tx = ty;
 						else if (sy == -1) ty = tx;
 						if (Math.abs(tx - ty) < epsilon) { // tolerance
-							return (float) ((tx + ty) * 0.5);
+							return (tx + ty) * 0.5;
 						}
 					}
 				}

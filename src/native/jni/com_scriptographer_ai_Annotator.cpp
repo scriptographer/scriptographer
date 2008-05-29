@@ -87,7 +87,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Annotator_nativeSetActive(
 /*
  * void nativeInvalidate(int viewHandle, int x, int y, int width, int height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Annotator_nativeInvalidate(JNIEnv *env, jobject obj, jint viewHandle, jfloat x, jfloat y, jfloat width, jfloat height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Annotator_nativeInvalidate(JNIEnv *env, jobject obj, jint viewHandle, jint x, jint y, jint width, jint height) {
 	DEFINE_ADM_RECT(rect, x, y, width, height);
 	sAIAnnotator->InvalAnnotationRect((AIDocumentViewHandle) viewHandle, &rect);
 }

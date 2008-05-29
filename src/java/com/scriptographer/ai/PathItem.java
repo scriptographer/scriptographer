@@ -67,17 +67,17 @@ abstract class PathItem extends Item {
 	 *  PostScript-like interface: moveTo, lineTo, curveTo, arcTo
 	 */
 
-	public abstract void moveTo(float x, float y);	
+	public abstract void moveTo(double x, double y);	
 
-	public abstract void lineTo(float x, float y);
+	public abstract void lineTo(double x, double y);
 
-	public abstract void curveTo(float c1x, float c1y, float c2x, float c2y,
-			float x, float y);
+	public abstract void curveTo(double c1x, double c1y, double c2x, double c2y,
+			double x, double y);
 	
-	public abstract void quadTo(float cx, float cy, float x, float y);
+	public abstract void quadTo(double cx, double cy, double x, double y);
 
-	public abstract void arcTo(float centerX, float centerY, float endX,
-			float endY, int ccw);
+	public abstract void arcTo(double centerX, double centerY, double endX,
+			double endY, int ccw);
 	
 	public abstract void closePath();
 

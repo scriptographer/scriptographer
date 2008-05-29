@@ -49,33 +49,33 @@ public class SegmentPoint extends Point {
 		this.index = index;
 	}
 
-	protected SegmentPoint(Segment segment, int index, float x, float y) {
+	protected SegmentPoint(Segment segment, int index, double x, double y) {
 		super(x, y);
 		this.segment = segment;
 		this.index = index;
 	}
 
-	public void set(float x, float y) {
+	public void set(double x, double y) {
 		segment.update();
 		this.x = x;
 		this.y = y;
 		segment.markDirty(Segment.DIRTY_POINTS);
 	}
 
-	public void setX(float x) {
+	public void setX(double x) {
 		set(x, y);
 	}
 
-	public void setY(float y) {
+	public void setY(double y) {
 		set(x, y);
 	}
 	
-	public float getX() {
+	public double getX() {
 		segment.update();
 		return x;
 	}
 	
-	public float getY() {
+	public double getY() {
 		segment.update();
 		return y;
 	}

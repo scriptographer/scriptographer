@@ -51,11 +51,15 @@ public class PointText extends TextFrame {
 	public PointText(Point point, TextOrientation orientation) {
 		this(nativeCreate(orientation != null
 				? orientation.value : TextOrientation.HORIZONTAL.value,
-				point.x, point.y));
+				(float) point.x, (float) point.y));
 	}
 
 	public PointText(Point point) {
 		this(point, TextOrientation.HORIZONTAL);
+	}
+
+	public PointText() {
+		this(new Point());
 	}
 
 	// read only. AITransformArt suite can be used to change a kPointTextType's

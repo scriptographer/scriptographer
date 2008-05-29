@@ -65,7 +65,7 @@ public class DocumentView extends NativeWrapper {
 	public native void setCenter(float x, float y);
 
 	public void setCenter(Point point) {
-		setCenter(point.x, point.y);
+		setCenter((float) point.x, (float) point.y);
 	}
 
 	/**
@@ -88,14 +88,14 @@ public class DocumentView extends NativeWrapper {
 	public native Point artworkToView(float x, float y);
 
 	public Point artworkToView(Point point) {
-		return artworkToView(point.x, point.y);
+		return artworkToView((float) point.x, (float) point.y);
 	}
 
 	public native Rectangle artworkToView(float x, float y, float width,
 			float height);
 
 	public Rectangle artworkToView(Rectangle rect) {
-		return artworkToView(rect.x, rect.y, rect.width, rect.height);
+		return artworkToView((float) rect.x, (float) rect.y, (float) rect.width, (float) rect.height);
 	}
 
 	/**
@@ -105,14 +105,14 @@ public class DocumentView extends NativeWrapper {
 	public native Point viewToArtwork(float x, float y);
 
 	public Point viewToArtwork(Point point) {
-		return viewToArtwork(point.x, point.y);
+		return viewToArtwork((float) point.x, (float) point.y);
 	}
 
 	public native Rectangle viewToArtwork(float x, float y, float width,
 			float height);
 
 	public Rectangle viewToArtwork(Rectangle rect) {
-		return viewToArtwork(rect.x, rect.y, rect.width, rect.height);
+		return viewToArtwork((float) rect.x, (float) rect.y, (float) rect.width, (float) rect.height);
 	}
 
 	private native void nativeSetScreenMode(int mode);
@@ -149,7 +149,7 @@ public class DocumentView extends NativeWrapper {
 	public native void scrollBy(float x, float y);
 
 	public void scrollBy(Point point) {
-		scrollBy(point.x, point.y);
+		scrollBy((float) point.x, (float) point.y);
 	}
 
 	/**
@@ -163,7 +163,7 @@ public class DocumentView extends NativeWrapper {
 	public native void invalidate(float x, float y, float width, float height);
 
 	public void invalidate(Rectangle rect) {
-		invalidate(rect.x, rect.y, rect.width, rect.height);
+		invalidate((float) rect.x, (float) rect.y, (float) rect.width, (float) rect.height);
 	}
 
 	private native int nativeGetStyle();

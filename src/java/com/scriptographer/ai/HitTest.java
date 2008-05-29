@@ -47,7 +47,7 @@ public class HitTest {
 	private Curve curve;
 	private Item item;
 	private Point point;
-	private float parameter;
+	private double parameter;
 
 	/**
 	 * 
@@ -56,7 +56,7 @@ public class HitTest {
 	 * @param parameter
 	 * @param point
 	 */
-	protected HitTest(HitType type, Curve curve, float parameter, Point point) {
+	protected HitTest(HitType type, Curve curve, double parameter, Point point) {
 		this.type = type;
 		this.curve = curve;
 		this.item = curve.getPath();
@@ -64,7 +64,7 @@ public class HitTest {
 		this.point = point;
 	}
 
-	protected HitTest(Curve curve, float parameter) {
+	protected HitTest(Curve curve, double parameter) {
 		// passing null for point only calls curve.getPoint(t) if the point is requested, see HitTest
 		this(
 			parameter > 0 && parameter < 1 ? HitType.CURVE : HitType.ANCHOR,
@@ -77,7 +77,7 @@ public class HitTest {
 	/**
 	 * To be called from the native environment
 	 */
-	protected HitTest(int type, Item item, int index, float parameter, Point point) {
+	protected HitTest(int type, Item item, int index, double parameter, Point point) {
 		this.type = IntegerEnumUtils.get(HitType.class, type);
 		this.item = item;
 		this.parameter = parameter;
@@ -121,7 +121,7 @@ public class HitTest {
 			return -1;
 	}
 	
-	public float getParameter() {
+	public double getParameter() {
 		return parameter;
 	}
 	

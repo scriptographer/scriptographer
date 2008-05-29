@@ -411,7 +411,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	/*
 	 *  postscript-like interface: moveTo, lineTo, curveTo, arcTo
 	 */	
-	public void moveTo(float x, float y) {
+	public void moveTo(double x, double y) {
 		if (size > 0)
 			throw new UnsupportedOperationException(
 					"moveTo can only be called at the beginning of a SegmentList");
@@ -422,7 +422,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		moveTo(pt.x, pt.y);
 	}
 	
-	public void lineTo(float x, float y) {
+	public void lineTo(double x, double y) {
 		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		add(new Segment(x, y));
@@ -432,8 +432,8 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		lineTo(pt.x, pt.y);
 	}
 	
-	public void curveTo(float c1x, float c1y, float c2x, float c2y, float x,
-			float y) {
+	public void curveTo(double c1x, double c1y, double c2x, double c2y, double x,
+			double y) {
 		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		// first modify the current segment:
@@ -450,15 +450,15 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		curveTo(c1.x, c1.y, c2.x, c2.y, pt.x, pt.y);
 	}
 	
-	public void quadTo(float cx, float cy, float x, float y) {
+	public void quadTo(double cx, double cy, double x, double y) {
 		// This is exact:
 		// If we have the three quad poits: A E D,
 		// and the cubic is A B C D,
 		// B = E + 1/3 (A - E)
 		// C = E + 1/3 (D - E)
 		Segment segment = get(size - 1);
-		float x1 = segment.point.x;
-		float y1 = segment.point.y;
+		double x1 = segment.point.x;
+		double y1 = segment.point.y;
 		curveTo(cx + (1f/3f) * (x1 - cx), cy + (1f/3f) * (y1 - cy), 
 				cx + (1f/3f) * (x - cx), cy + (1f/3f) * (y - cy),
 				x, y);
@@ -468,15 +468,15 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		quadTo(c.x, c.y, pt.x, pt.y);		
 	}
 
-	public void arcTo(float centerX, float centerY, float endX, float endY,
+	public void arcTo(double centerX, double centerY, double endX, double endY,
 			int ccw) {
 		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		
 		// Get the startPoint:
 		Segment startSegment = (Segment) getLast();
-		float startX = startSegment.point.x;
-		float startY = startSegment.point.y;
+		double startX = startSegment.point.x;
+		double startY = startSegment.point.y;
 		
 		// Determine the width and height of the ellipse by the 3 given points
 		// center, startPoint and endPoint:
@@ -484,10 +484,10 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		// would fit. the resulting radius is the ellipse's height.
 		// Then apply the opposite factor to the radius in order to get the width.
 		
-		float x1 = startX - centerX;
-		float y1 = startY - centerY;
-		float x2 = endX - centerX;
-		float y2 = endY - centerY;
+		double x1 = startX - centerX;
+		double y1 = startY - centerY;
+		double x2 = endX - centerX;
+		double y2 = endY - centerY;
 		
 		double s = Math.sqrt(
 			(y2 * y2 - y1 * y1) /

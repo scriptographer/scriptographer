@@ -329,9 +329,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSize(JNIEnv *en
 }
 
 /*
- * void setSize(float width, float height)
+ * void setSize(double width, double height)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setSize(JNIEnv *env, jobject obj, jfloat width, jfloat height) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setSize(JNIEnv *env, jobject obj, jdouble width, jdouble height) {
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
@@ -423,12 +423,12 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getFile(JNIEnv *en
 }
 
 /*
- * void print(int dialogStatus)
+ * void nativePrint(int status)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_print(JNIEnv *env, jobject obj, jint dialogStatus) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativePrint(JNIEnv *env, jobject obj, jint status) {
 	try {
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
-		sAIDocumentList->Print(doc, (ActionDialogStatus) dialogStatus);
+		sAIDocumentList->Print(doc, (ActionDialogStatus) status);
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -866,7 +866,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 					jobject item = gEngine->wrapArtHandle(env, toolHit.object);
 					jobject point = gEngine->convertPoint(env, &toolHit.point);
 					hitTest = gEngine->newObject(env, gEngine->cls_ai_HitTest, gEngine->cid_ai_HitTest, hitType, item,
-												 (jint) toolHit.segment, (jfloat) toolHit.t, point);
+												 (jint) toolHit.segment, (jdouble) toolHit.t, point);
 				}
 			}
 			sAIHitTest->Release(hit);

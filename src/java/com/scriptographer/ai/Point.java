@@ -45,11 +45,16 @@ import com.scriptographer.adm.Size;
  */
 public class Point {
 
-	protected float x;
-	protected float y;
+	protected double x;
+	protected double y;
 	
 	public Point() {
 		x = y = 0;
+	}
+
+	public Point(double x, double y) {
+		this.x = x;
+		this.y = y;
 	}
 
 	public Point(float x, float y) {
@@ -57,16 +62,12 @@ public class Point {
 		this.y = y;
 	}
 
-	public Point(double x, double y) {
-		this((float) x, (float) y);
-	}
-
 	public Point(Point pt) {
 		this(pt.x, pt.y);
 	}
 
 	public Point(Point2D p) {
-		this((float) p.getX(), (float) p.getY());
+		this(p.getX(), p.getY());
 	}
 
 	public Point(Size size) {
@@ -75,36 +76,32 @@ public class Point {
 	}
 
 	public Point(ArgumentReader reader) {
-		this(reader.readFloat("x", 0),
-				reader.readFloat("y", 0));
-	}
-
-	public void set(float x, float y) {
-		this.x = x;
-		this.y = y;
+		this(reader.readDouble("x", 0),
+				reader.readDouble("y", 0));
 	}
 
 	public void set(double x, double y) {
-		set((float) x, (float) y);
+		this.x = x;
+		this.y = y;
 	}
 
 	public void set(Point pt) {
 		set(pt.x, pt.y);
 	}
 
-	public float getX() {
+	public double getX() {
 		return x;
 	}
 
-	public void setX(float x) {
+	public void setX(double x) {
 		this.x = x;
 	}
 
-	public float getY() {
+	public double getY() {
 		return y;
 	}
 
-	public void setY(float y) {
+	public void setY(double y) {
 		this.y = y;
 	}
 
@@ -136,7 +133,7 @@ public class Point {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Returns the addition of the supplied point to the point object as a new
 	 * point. The object itself is not modified!
@@ -169,12 +166,12 @@ public class Point {
 	 * @param y the y value to add
 	 * @return the addition of the two points as a new point
 	 */
-	public Point add(float x, float y) {
+	public Point add(double x, double y) {
 		return new Point(this.x + x, this.y + y);
 	}
 
-	public Point add(float value) {
-		return new Point(this.x + value, this.y + value);
+	public Point add(double value) {
+		return new Point(x + value, y + value);
 	}
 
 	/**
@@ -209,12 +206,12 @@ public class Point {
 	 * @param y The y value to subtract
 	 * @return the subtraction of the two points as a new point
 	 */
-	public Point subtract(float x, float y) {
+	public Point subtract(double x, double y) {
 		return new Point(this.x - x, this.y - y);
 	}
 
-	public Point subtract(float value) {
-		return new Point(this.x - value, this.y - value);
+	public Point subtract(double value) {
+		return new Point(x - value, y - value);
 	}
 
 	/**
@@ -254,11 +251,11 @@ public class Point {
 	 * @param y the y value to multiply with
 	 * @return the multiplication of the two points as a new point
 	 */
-	public Point multiply(float x, float y) {
+	public Point multiply(double x, double y) {
 		return new Point(this.x * x, this.y * y);
 	}
 
-	public Point multiply(float value) {
+	public Point multiply(double value) {
 		return new Point(x * value, y * value);
 	}
 
@@ -266,11 +263,11 @@ public class Point {
 		return new Point(x / pt.x, y / pt.y);
 	}
 
-	public Point divide(float x, float y) {
+	public Point divide(double x, double y) {
 		return new Point(this.x / x, this.y / y);
 	}
 
-	public Point divide(float value) {
+	public Point divide(double value) {
 		return new Point(x / value, y / value);
 	}
 
@@ -286,7 +283,7 @@ public class Point {
 	 * @return <code>true</code> if it is within the given distance, false
 	 *         otherwise
 	 */
-	public boolean isClose(Point pt, float tolerance) {
+	public boolean isClose(Point pt, double tolerance) {
 		return getDistance(pt) < tolerance;
 	}
 	
@@ -304,10 +301,10 @@ public class Point {
 	 * @param py
 	 * @return
 	 */
-	public float getDistance(float px, float py) {
+	public double getDistance(double px, double py) {
 		px -= x;
 		py -= y;
-		return (float) Math.sqrt(px * px + py * py);
+		return Math.sqrt(px * px + py * py);
 	}
 
 	/**
@@ -326,50 +323,61 @@ public class Point {
 	 * @param py
 	 * @return
 	 */
-	public float getDistance(Point pt) {
+	public double getDistance(Point pt) {
 		return getDistance(pt.x, pt.y);
 	}
 
-	public float getDistanceSquared(float px, float py) {
+	public double getDistanceSquared(double px, double py) {
 		px -= x;
 		py -= y;
 		return px * px + py * py;
 	}
 
-	public float getDistanceSquared(Point pt) {
-		return getDistanceSquared(pt.x, (float) pt.y);
+	public double getDistanceSquared(Point pt) {
+		return getDistanceSquared(pt.x, pt.y);
 	}
 
-	public float getLength() {
-		return (float) Math.sqrt(x * x + y * y);
+	public double getLength() {
+		return Math.sqrt(x * x + y * y);
 	}
 
 	/**
-	 * Returns the angle between the point and another point in radians.
+	 * Returns the angle from the x axis to the vector in radians,
+	 * measured in counter clockwise direction.
+	 */
+	public double getAngle() {
+		return Math.atan2(y, x);
+	}
+
+	/**
+	 * Returns the smaller angle between two vectors in radians.
+	 * The angle is unsigned, no information about rotational
+	 * direction is given.
 	 * 
 	 * @param pt
 	 * @return
 	 */
-	public float getAngle(Point pt) {
-		float div = getLength() * pt.getLength();
-		if (div == 0) return 0;
-		else {
-			double v = (x * pt.y - y * pt.x) / div;
-			if (v < -1.0) v = -1.0;
-			else if (v > 1.0) v = 1.0;
-			return (float) Math.asin(v);
-		}
+	public double getAngle(Point pt) {
+		double div = getLength() * pt.getLength();
+		if (div == 0) return Double.NaN;
+		else return Math.acos(this.dot(pt) / div);
 	}
 
-	public float getAngle() {
-		if (x > 0) return (float) Math.atan(y / x);
-		else if (x < 0) {
-			if (y >= 0) return (float) (Math.atan(y / x) + Math.PI);
-			else return (float) (Math.atan(y / x) - Math.PI);
-		} else {
-			if (y >= 0) return (float) Math.PI * 0.5f;
-			else return (float) -Math.PI * 0.5f;
-		}
+	/**
+	 * Returns the angle between two vectors in radians.
+	 * The angle is directional and signed, giving information about
+	 * the rotational direction.
+	 * 
+	 * @param pt
+	 * @return
+	 */
+	public double getDirectedAngle(Point pt) {
+		double angle = this.getAngle() - pt.getAngle();
+		if (angle < -Math.PI)
+			return angle + Math.PI * 2;
+		else if (angle > Math.PI)
+			return angle - Math.PI * 2;
+		return angle;
 	}
 
 	/**
@@ -380,7 +388,7 @@ public class Point {
 	 * @param t the position between the two points as a value between 0 and 1
 	 * @return the interpolation point
 	 */
-	public Point interpolate(Point pt, float t) {
+	public Point interpolate(Point pt, double t) {
 		return new Point(
 			x * (1f - t) + pt.x * t,
 			y * (1f - t) + pt.y * t
@@ -398,22 +406,18 @@ public class Point {
 		return rect.contains(this);
 	}
 
-	public Point normalize(float length) {
-		float len = getLength();
+	public Point normalize(double length) {
+		double len = getLength();
 		if (len != 0) {
-			float scale = length / len;
+			double scale = length / len;
 			return new Point(x * scale, y * scale);
 		} else {
 			return new Point(this);
 		}
 	}
 
-	public Point normalize(double length) {
-		return normalize((float) length);
-	}
-
 	public Point normalize() {
-		return normalize(1f);
+		return normalize(1);
 	}
 
 	/**
@@ -422,7 +426,7 @@ public class Point {
 	 * @param theta the rotation angle in radians
 	 * @return the rotated point
 	 */
-	public Point rotate(float theta) {
+	public Point rotate(double theta) {
 		double s = Math.sin(theta);
 		double c = Math.cos(theta);
 		return new Point(
@@ -431,17 +435,13 @@ public class Point {
  		);
 	}
 
-	public Point rotate(double theta) {
-		return rotate((float) theta);
-	}
-
 	/**
 	 * Returns the dot product of the point and another point.
 	 * @param pt
 	 * @return the dot product of the two points
 	 */
 
-	public float dot(Point pt) {
+	public double dot(Point pt) {
 		return x * pt.x + y * pt.y;
 	}
 
@@ -456,7 +456,7 @@ public class Point {
 		if (pt.x == 0 && pt.y == 0) {
 			return new Point(0, 0);
 		} else {
-			float scale = dot(pt) / pt.dot(pt);
+			double scale = dot(pt) / pt.dot(pt);
 			return new Point(
 				pt.x * scale,
 				pt.y * scale
@@ -472,7 +472,7 @@ public class Point {
 	 * @return
 	 */
 	protected Point2D toPoint2D() {
-		return new Point2D.Float(x, y);
+		return new Point2D.Double(x, y);
 	}
 
 	public String toString() {

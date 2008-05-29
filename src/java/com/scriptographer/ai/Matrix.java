@@ -291,7 +291,7 @@ public class Matrix {
 		return this;
 	}
 
-	public Matrix rotate(double theta, float centerX, float centerY) {
+	public Matrix rotate(double theta, double centerX, double centerY) {
 		at.rotate(theta, centerX, centerY);
 		return this;
 	}
@@ -316,9 +316,9 @@ public class Matrix {
 		return this;
 	}
 
-	public Point transform(float x, float y) {
+	public Point transform(double x, double y) {
 		// A bit of converting from Point2D <-> Point
-		return new Point(at.transform(new Point2D.Float(x, y), new Point2D.Float()));
+		return new Point(at.transform(new Point2D.Double(x, y), new Point2D.Double()));
 	}
 
 	public Point transform(Point src) {

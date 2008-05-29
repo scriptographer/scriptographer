@@ -38,19 +38,19 @@ import com.scratchdisk.script.ArgumentReader;
  *
  */
 public class Size {
-	protected float width;
-	protected float height;
+	protected double width;
+	protected double height;
 
 	public Size() {
 		width = height = 0;
 	}
 
-	public Size(float width, float height) {
+	public Size(double width, double height) {
 		set(width, height);
 	}
 
-	public Size(double x, double y) {
-		this((float) x, (float) y);
+	public Size(float width, float height) {
+		set(width, height);
 	}
 
 	public Size(Size size) {
@@ -62,11 +62,11 @@ public class Size {
 	}
 
 	public Size(ArgumentReader reader) {
-		this(reader.readFloat("width", 0),
-				reader.readFloat("height", 0));
+		this(reader.readDouble("width", 0),
+				reader.readDouble("height", 0));
 	}
 
-	public void set(float width, float height) {
+	public void set(double width, double height) {
 		this.width = width;
 		this.height = height;
 	}
@@ -74,22 +74,22 @@ public class Size {
 	/**
 	 * @jsbean The width of the size.
 	 */
-	public float getWidth() {
+	public double getWidth() {
 		return width;
 	}
 	
-	public void setWidth(float width) {
+	public void setWidth(double width) {
 		this.width = width;
 	}
 
 	/**
 	 * @jsbean The height of the size.
 	 */
-	public float getHeight() {
+	public double getHeight() {
 		return height;
 	}
 	
-	public void setHeight(float height) {
+	public void setHeight(double height) {
 		this.height = height;
 	}
 

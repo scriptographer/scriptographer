@@ -77,17 +77,17 @@ public class Segment implements Commitable {
 		init(0, 0, 0, 0, 0, 0, false);
 	}
 
-	public Segment(float x, float y, float inX, float inY, float outX,
-			float outY, boolean corner) {
+	public Segment(double x, double y, double inX, double inY, double outX,
+			double outY, boolean corner) {
 		init(x, y, inX, inY, outX, outY, corner);
 	}
 
-	public Segment(float x, float y, float inX, float inY, float outX,
-			float outY) {
+	public Segment(double x, double y, double inX, double inY, double outX,
+			double outY) {
 		init(x, y, inX, inY, outX, outY, false);
 	}
 
-	public Segment(float x, float y) {
+	public Segment(double x, double y) {
 		init(x, y, 0, 0, 0, 0, false);
 	}
 
@@ -122,19 +122,19 @@ public class Segment implements Commitable {
 			if (reader.isHash()) {
 				if (reader.has("x")) {
 					init(
-						reader.readFloat("x", 0),
-						reader.readFloat("y", 0),
+						reader.readDouble("x", 0),
+						reader.readDouble("y", 0),
 						0, 0, 0, 0, false
 					);
 				} 
 			} else {
 				init(
-					reader.readFloat(0),
-					reader.readFloat(0),
-					reader.readFloat(0),
-					reader.readFloat(0),
-					reader.readFloat(0),
-					reader.readFloat(0),
+					reader.readDouble(0),
+					reader.readDouble(0),
+					reader.readDouble(0),
+					reader.readDouble(0),
+					reader.readDouble(0),
+					reader.readDouble(0),
 					reader.readBoolean(false)
 				);		
 			}
@@ -152,8 +152,8 @@ public class Segment implements Commitable {
 		return allowNull || point != null ? point : new Point();
 	}
 
-	protected void init(float x, float y, float inX, float inY, float outX,
-			float outY, boolean corner) {
+	protected void init(double x, double y, double inX, double inY, double outX,
+			double outY, boolean corner) {
 		point = new SegmentPoint(this, 0, x, y);
 		handleIn = new SegmentPoint(this, 2, inX, inY);
 		handleOut = new SegmentPoint(this, 4, outX, outY);
@@ -168,6 +168,14 @@ public class Segment implements Commitable {
 	}
 
 	/**
+	 * Read and write directly to native segment struct, which is represented
+	 * here as a float array. Byte alignment wise this works since all fields
+	 * are floats except the last one which is a boolean, but aligns like float
+	 * too.
+	 * We use double precision for all calculations but still have to store
+	 * as floats, since that's what Illustrator uses. Calculations in SG
+	 * will be much more precise though.
+	 * 
 	 * Warning: This does not call markDirty(). This needs to be taken care of
 	 * after.
 	 * 
@@ -185,12 +193,12 @@ public class Segment implements Commitable {
 	}
 
 	protected void getValues(float[] values, int valueIndex) {
-		values[valueIndex] = point.x;
-		values[valueIndex + 1] = point.y;
-		values[valueIndex + 2] = handleIn.x + point.x;
-		values[valueIndex + 3] = handleIn.y + point.y;
-		values[valueIndex + 4] = handleOut.x + point.x;
-		values[valueIndex + 5] = handleOut.y + point.y;
+		values[valueIndex] = (float) point.x;
+		values[valueIndex + 1] = (float) point.y;
+		values[valueIndex + 2] = (float) (handleIn.x + point.x);
+		values[valueIndex + 3] = (float) (handleIn.y + point.y);
+		values[valueIndex + 4] = (float) (handleOut.x + point.x);
+		values[valueIndex + 5] = (float) (handleOut.y + point.y);
 		// don't care about the exact value for true, as long as it's != 0 it
 		// works:
 		values[valueIndex + 6] = corner ? 1f : 0f;
@@ -201,9 +209,13 @@ public class Segment implements Commitable {
 			Path path = segments.path;
 			if ((dirty & DIRTY_POINTS) != 0) {
 				SegmentList.nativeSet(path.handle, path.document.handle, index,
-						point.x, point.y,
-						handleIn.x + point.x, handleIn.y + point.y,
-						handleOut.x + point.x, handleOut.y + point.y, corner);
+						(float) point.x,
+						(float) point.y,
+						(float) (handleIn.x + point.x),
+						(float) (handleIn.y + point.y),
+						(float) (handleOut.x + point.x),
+						(float) (handleOut.y + point.y),
+						corner);
 			}
 			if ((dirty & DIRTY_SELECTION) != 0) {
 				SegmentList.nativeSetSelectionState(path.handle,
@@ -223,9 +235,13 @@ public class Segment implements Commitable {
 		if (segments != null && segments.path != null) {
 			Path path = segments.path;
 			SegmentList.nativeInsert(path.handle, path.document.handle, index,
-					point.x, point.y,
-					handleIn.x + point.x, handleIn.y + point.y,
-					handleOut.x + point.x, handleOut.y + point.y, corner);
+					(float) point.x,
+					(float) point.y,
+					(float) (handleIn.x + point.x),
+					(float) (handleIn.y + point.y),
+					(float) (handleOut.x + point.x),
+					(float) (handleOut.y + point.y),
+					corner);
 			// update to current version after commit.
 			version = segments.path.version;
 			dirty = DIRTY_NONE;
@@ -279,10 +295,6 @@ public class Segment implements Commitable {
 		point.set(pt);
 	}
 
-	public void setPoint(float x, float y) {
-		point.set(x, y);
-	}
-
 	public void setPoint(double x, double y) {
 		point.set(x, y);
 	}
@@ -296,10 +308,6 @@ public class Segment implements Commitable {
 		handleIn.set(pt);
 	}
 
-	public void setHandleIn(float x, float y) {
-		handleIn.set(x, y);
-	}
-
 	public void setHandleIn(double x, double y) {
 		handleIn.set(x, y);
 	}
@@ -311,10 +319,6 @@ public class Segment implements Commitable {
 
 	public void setHandleOut(Point pt) {
 		handleOut.set(pt);
-	}
-
-	public void setHandleOut(float x, float y) {
-		handleOut.set(x, y);
 	}
 
 	public void setHandleOut(double x, double y) {
@@ -391,7 +395,7 @@ public class Segment implements Commitable {
 		}
 	}
 
-	public Segment divide(float parameter) {
+	public Segment divide(double parameter) {
 		Curve curve = getCurve();
 		if (curve == null)
 			return null;

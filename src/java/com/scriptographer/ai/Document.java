@@ -228,7 +228,7 @@ public class Document extends DictionaryObject {
 	 * @param width
 	 * @param height
 	 */
-	public native void setSize(float width, float height);
+	public native void setSize(double width, double height);
 	
 	public void setSize(Size size) {
 		setSize(size.width, size.height);
@@ -321,7 +321,7 @@ public class Document extends DictionaryObject {
 	public native void invalidate(float x, float y, float width, float height);
 	
 	public void invalidate(Rectangle rect) {
-		invalidate(rect.x, rect.y, rect.width, rect.height);
+		invalidate((float) rect.x, (float) rect.y, (float) rect.width, (float) rect.height);
 	}
 
 	private native boolean nativeWrite(File file, int formatHandle, boolean ask);

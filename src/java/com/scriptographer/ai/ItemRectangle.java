@@ -56,88 +56,88 @@ public class ItemRectangle extends Rectangle {
 		}
 	}
 
-	public void set(float x, float y, float width, float height) {
+	public void set(double x, double y, double width, double height) {
 		// This updates the rectangle object itself too:
 		item.setBounds(x, y, width, height);
 	}
 
-	public float getX() {
+	public double getX() {
 		update();
 		return x;
 	}
 
-	public void setX(float x) {
+	public void setX(double x) {
 		update();
 		set(x, y, width, height);
 	}
 
-	public float getY() {
+	public double getY() {
 		update();
 		return y;
 	}
 
-	public void setY(float y) {
+	public void setY(double y) {
 		update();
 		set(x, y, width, height);
 	}
 
-	public float getWidth() {
+	public double getWidth() {
 		update();
 		return width;
 	}
 	
-	public void setWidth(float width) {
+	public void setWidth(double width) {
 		update();
 		set(x, y, width, height);
 	}
 
-	public float getHeight() {
+	public double getHeight() {
 		update();
 		return height;
 	}
 
-	public void setHeight(float height) {
+	public void setHeight(double height) {
 		update();
 		set(x, y, width, height);
 	}
 
-	public float getLeft() {
+	public double getLeft() {
 		update();
 		return x;
 	}
 
-	public void setLeft(float left) {
+	public void setLeft(double left) {
 		update();
 		set(left, y, width - left + x, height);
 	}
 
-	public float getRight() {
+	public double getRight() {
 		update();
 		return x + width;
 	}
 
-	public void setRight(float right) {
+	public void setRight(double right) {
 		update();
 		set(x, y, right - x, height);
 	}
 
-	public float getBottom() {
+	public double getBottom() {
 		update();
 		return y;
 	}
 	
-	public void setBottom(float bottom) {
+	public void setBottom(double bottom) {
 		update();
 		// top should not move
 		set(x, bottom, width, height - bottom + y);
 	}
 
-	public float getTop() {
+	public double getTop() {
 		update();
 		return y + height;
 	}
 	
-	public void setTop(float top) {
+	public void setTop(double top) {
 		update();
 		set(x, y, width, top - y);
 	}

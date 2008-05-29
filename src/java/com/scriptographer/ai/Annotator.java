@@ -107,11 +107,12 @@ public class Annotator extends NativeObject {
 	
 	public void invalidate(Rectangle rect) {
 		// TODO: implement DocumentView and pass handle to it!
-		nativeInvalidate(handle, rect.x, rect.y, rect.width, rect.height);
+		nativeInvalidate(handle, (int) rect.x, (int) rect.y,
+				(int) rect.width, (int) rect.height);
 	}
 	
-	private native void nativeInvalidate(int viewHandle, float x, float y,
-			float width, float height);
+	private native void nativeInvalidate(int viewHandle, int x, int y,
+			int width, int height);
 	
 	public void dispose() {
 		// see whether we're still linked:
