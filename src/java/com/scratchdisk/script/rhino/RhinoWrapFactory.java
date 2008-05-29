@@ -161,7 +161,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 					// Now if there are more options here to convert from, e.g. Size and Point
 					// prefer the one that has the same simple name, to encourage conversion
 					// between ADM and AI Size, Rectangle, Point objects!
-					if (ClassUtils.getSimpleName(from.getClass()).equals(ClassUtils.getSimpleName(to)))
+					if (from.getClass().getSimpleName().equals(to.getSimpleName()))
 						return CONVERSION_TRIVIAL + 5;
 					else
 						return CONVERSION_TRIVIAL + 6;

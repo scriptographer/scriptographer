@@ -39,7 +39,6 @@ import java.util.Map;
 import org.mozilla.javascript.*;
 
 import com.scratchdisk.script.ArgumentReader;
-import com.scratchdisk.util.ClassUtils;
 
 /**
  * @author lehni
@@ -59,7 +58,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 		setParentScope(scope);
 		setPrototype(ScriptableObject.getFunctionPrototype(scope));
 		// Determine short className:
-		className = ClassUtils.getSimpleName(cls);
+		className = cls.getSimpleName();
 		properties = unsealed ? new HashMap<String, Object>() : null;
 		// put it in the class wrapper table
 		classes.put(cls, this);

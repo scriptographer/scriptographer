@@ -44,7 +44,6 @@ import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
 
 import com.scratchdisk.script.ScriptException;
-import com.scratchdisk.util.ClassUtils;
 
 /**
  * ScriptException for Rhino, preferably called RhinoException, but
@@ -137,7 +136,7 @@ public class RhinoScriptException extends ScriptException {
 			}
 			*/
 			String message = cause.getMessage();
-			String error = ClassUtils.getSimpleName(cause.getClass());
+			String error = cause.getClass().getSimpleName();
 			if (message != null && message.length() != 0)
 				error += ": " + message;
 			return error;

@@ -79,7 +79,7 @@ public class TopLevel extends ImporterTopLevel {
 		ScriptableObject objProto = (ScriptableObject) getObjectPrototype(this);
 		objProto.defineFunctionProperties(new String[] { "dontEnum", "toJava" }, TopLevel.class,
                     DONTENUM | READONLY | PERMANENT);
-}
+    }
 
 	public static void defineProperty(ScriptableObject obj, String name,
 			String getter, String setter) throws SecurityException, NoSuchMethodException {

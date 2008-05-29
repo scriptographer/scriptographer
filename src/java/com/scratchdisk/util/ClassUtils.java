@@ -47,15 +47,6 @@ public class ClassUtils {
 	private ClassUtils() {
 	}
 
-	public static String getSimpleName(Class cls) {
-		// Class#getSimpleName only works on 1.5
-		String name = cls.getName();
-		int pos = name.lastIndexOf('.');
-		if (pos > 0)
-			name = name.substring(pos + 1);
-		return name;
-	}
-
 	public static String[] getServiceInformation(Class cls) {
 		InputStream in = cls.getResourceAsStream(
 				"/META-INF/services/" + cls.getName());
