@@ -1,9 +1,9 @@
 Index: org/mozilla/javascript/Context.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Context.java,v
-retrieving revision 1.269
-diff -r1.269 Context.java
-1969a1970,1982
+retrieving revision 1.272
+diff -r1.272 Context.java
+2077a2078,2090
 >     public final void setOperatorHandler(OperatorHandler operatorHandler)
 >     {
 >         if (sealed) onSealedMutation();
@@ -17,7 +17,7 @@ diff -r1.269 Context.java
 >         return operatorHandler;
 >     }
 > 
-2489a2503
+2595a2609
 >     private OperatorHandler operatorHandler;
 Index: org/mozilla/javascript/NativeJavaPackage.java
 ===================================================================
@@ -35,9 +35,9 @@ diff -r1.43 NativeJavaPackage.java
 Index: org/mozilla/javascript/Interpreter.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Interpreter.java,v
-retrieving revision 1.344
-diff -r1.344 Interpreter.java
-2697,2755d2696
+retrieving revision 1.346
+diff -r1.346 Interpreter.java
+2700,2758d2699
 <     case Token.GE :
 <     case Token.LE :
 <     case Token.GT :
@@ -97,7 +97,7 @@ diff -r1.344 Interpreter.java
 <         stack[stackTop] = ScriptRuntime.wrapBoolean(valBln);
 <         continue Loop;
 <     }
-2772,2832d2712
+2775,2805d2715
 <     case Token.EQ :
 <     case Token.NE : {
 <         --stackTop;
@@ -124,42 +124,12 @@ diff -r1.344 Interpreter.java
 <     case Token.SHEQ :
 <     case Token.SHNE : {
 <         --stackTop;
-<         Object rhs = stack[stackTop + 1];
-<         Object lhs = stack[stackTop];
-<         boolean valBln;
-<       shallow_compare: {
-<             double rdbl, ldbl;
-<             if (rhs == DBL_MRK) {
-<                 rdbl = sDbl[stackTop + 1];
-<                 if (lhs == DBL_MRK) {
-<                     ldbl = sDbl[stackTop];
-<                 } else if (lhs instanceof Number) {
-<                     ldbl = ((Number)lhs).doubleValue();
-<                 } else {
-<                     valBln = false;
-<                     break shallow_compare;
-<                 }
-<             } else if (lhs == DBL_MRK) {
-<                 ldbl = sDbl[stackTop];
-<                 if (rhs == DBL_MRK) {
-<                     rdbl = sDbl[stackTop + 1];
-<                 } else if (rhs instanceof Number) {
-<                     rdbl = ((Number)rhs).doubleValue();
-<                 } else {
-<                     valBln = false;
-<                     break shallow_compare;
-<                 }
-<             } else {
-<                 valBln = ScriptRuntime.shallowEq(lhs, rhs);
-<                 break shallow_compare;
-<             }
-<             valBln = (ldbl == rdbl);
-<         }
+<         boolean valBln = shallowEquals(stack, sDbl, stackTop);
 <         valBln ^= (op == Token.SHNE);
 <         stack[stackTop] = ScriptRuntime.wrapBoolean(valBln);
 <         continue Loop;
 <     }
-2973,2982c2853,2860
+2946,2955c2856,2863
 <     case Token.NEG :
 <     case Token.POS : {
 <         double rDbl = stack_double(frame, stackTop);
@@ -179,16 +149,16 @@ diff -r1.344 Interpreter.java
 >     case Token.LE :
 >     case Token.GT :
 >     case Token.LT :
-2984,2986d2861
+2957,2959d2864
 <         --stackTop;
 <         do_add(stack, sDbl, stackTop, cx);
 <         continue Loop;
-2990,2991c2865
+2963,2964c2868
 <     case Token.MOD : {
 <         double rDbl = stack_double(frame, stackTop);
 ---
 >     case Token.MOD :
-2993,3009c2867,2871
+2966,2982c2870,2874
 <         double lDbl = stack_double(frame, stackTop);
 <         stack[stackTop] = DBL_MRK;
 <         switch (op) {
@@ -212,14 +182,46 @@ diff -r1.344 Interpreter.java
 >     case Token.NEG :
 >     case Token.POS : {
 >         do_sign_operator(op, stack, sDbl, stackTop, cx, frame.scope);
-4550,4552c4412,4413
+3996,4026d3887
+<     
+<     private static boolean shallowEquals(Object[] stack, double[] sDbl,
+<             int stackTop)
+<     {
+<         Object rhs = stack[stackTop + 1];
+<         Object lhs = stack[stackTop];
+<         final Object DBL_MRK = UniqueTag.DOUBLE_MARK;
+<         double rdbl, ldbl;
+<         if (rhs == DBL_MRK) {
+<             rdbl = sDbl[stackTop + 1];
+<             if (lhs == DBL_MRK) {
+<                 ldbl = sDbl[stackTop];
+<             } else if (lhs instanceof Number) {
+<                 ldbl = ((Number)lhs).doubleValue();
+<             } else {
+<                 return false;
+<             }
+<         } else if (lhs == DBL_MRK) {
+<             ldbl = sDbl[stackTop];
+<             if (rhs == DBL_MRK) {
+<                 rdbl = sDbl[stackTop + 1];
+<             } else if (rhs instanceof Number) {
+<                 rdbl = ((Number)rhs).doubleValue();
+<             } else {
+<                 return false;
+<             }
+<         } else {
+<             return ScriptRuntime.shallowEq(lhs, rhs);
+<         }
+<         return (ldbl == rdbl);
+<     }
+4582,4584c4443,4444
 <     private static void do_add(Object[] stack, double[] sDbl, int stackTop,
 <                               Context cx)
 <     {
 ---
 >     private static void do_operator(int operator, Object[] stack, double[] sDbl,
 >             int stackTop, Context cx, Scriptable scope) {
-4555,4556c4416,4431
+4587,4588c4447,4462
 <         double d;
 <         boolean leftRightOrder;
 ---
@@ -239,7 +241,7 @@ diff -r1.344 Interpreter.java
 >             lhsNumber = null;
 >             lhsDouble = 0; // prevent compilation error
 >         }
-4558,4587c4433,4496
+4590,4619c4464,4527
 <             d = sDbl[stackTop + 1];
 <             if (lhs == UniqueTag.DOUBLE_MARK) {
 <                 sDbl[stackTop] += d;
@@ -335,7 +337,7 @@ diff -r1.344 Interpreter.java
 >                     break;
 >                 default:
 >                     throw Kit.codeBug();
-4589a4499,4567
+4621a4530,4598
 >         } else {
 >             if (lhsIsDouble && lhsNumber == null)
 >                 lhs = ScriptRuntime.wrapNumber(lhsDouble);
@@ -405,7 +407,7 @@ diff -r1.344 Interpreter.java
 >                     stack[stackTop] = UniqueTag.DOUBLE_MARK;
 >                     sDbl[stackTop] = Double.NaN;
 >             }
-4591,4605c4569,4572
+4623,4637c4600,4603
 < 
 <         // handle object(lhs) + number(d) code
 <         if (lhs instanceof Scriptable) {
@@ -426,11 +428,11 @@ diff -r1.344 Interpreter.java
 >             if (result instanceof Double) {
 >                 stack[stackTop] = UniqueTag.DOUBLE_MARK;
 >                 sDbl[stackTop] = ((Double) result).doubleValue();
-4607c4574
+4639c4605
 <                 stack[stackTop] = rstr.concat(lstr);
 ---
 >                 stack[stackTop] = result;
-4608a4576,4584
+4640a4607,4615
 >         }
 >     }
 > 
@@ -440,7 +442,7 @@ diff -r1.344 Interpreter.java
 >         double rDbl;
 >         if (rhs == UniqueTag.DOUBLE_MARK) {
 >             rDbl = sDbl[stackTop];
-4610,4613c4586,4602
+4642,4645c4617,4633
 <             double lDbl = (lhs instanceof Number)
 <                 ? ((Number)lhs).doubleValue() : ScriptRuntime.toNumber(lhs);
 <             stack[stackTop] = UniqueTag.DOUBLE_MARK;
@@ -463,7 +465,7 @@ diff -r1.344 Interpreter.java
 >                     return;
 >                 }
 >             }
-4614a4604,4606
+4646a4635,4637
 >         // If we're still here, perform  double sign operator
 >         stack[stackTop] = UniqueTag.DOUBLE_MARK;
 >         sDbl[stackTop] = operator == Token.NEG ? -rDbl : rDbl;
@@ -784,8 +786,8 @@ diff -r1.43 Token.java
 Index: org/mozilla/javascript/MemberBox.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/MemberBox.java,v
-retrieving revision 1.18
-diff -r1.18 MemberBox.java
+retrieving revision 1.19
+diff -r1.19 MemberBox.java
 55c55
 < final class MemberBox implements Serializable
 ---
@@ -839,7 +841,7 @@ diff -r1.18 MemberBox.java
 <     Object invoke(Object target, Object[] args)
 ---
 >     public Object invoke(Object target, Object[] args)
-180c181
+189c190
 <     Object newInstance(Object[] args)
 ---
 >     public Object newInstance(Object[] args)
