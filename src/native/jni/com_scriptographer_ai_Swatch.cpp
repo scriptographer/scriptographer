@@ -42,6 +42,7 @@
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Swatch_nativeCreate(JNIEnv *env, jclass cls) {
 	try {
+		// Make sure we're switching to the right doc (gCreationDoc)
 		Document_activate();
 		AISwatchListRef list = NULL;
 		if (!sAISwatchList->GetSwatchList(NULL, &list))

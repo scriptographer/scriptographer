@@ -40,14 +40,12 @@ import com.scratchdisk.list.ReadOnlyList;
 /**
  * @author lehni
  */
-public class TextStory extends NativeObject {
+public class TextStory extends DocumentObject {
 	
-	private Document document;
 	private TextRange range = null;
 	
 	protected TextStory(int handle, Document document) {
-		super(handle);
-		this.document = document;
+		super(handle, document);
 	}
 	
 	public native int getLength();
@@ -70,10 +68,6 @@ public class TextStory extends NativeObject {
 	public native TextRange getSelection();
 	
 	public native int getIndex();
-	
-	public Document getDocument() {
-		return document;
-	}
 	
 	public ReadOnlyList getStories() {
 		return document.getStories();
@@ -103,20 +97,21 @@ public class TextStory extends NativeObject {
 	
 	public native boolean equals(Object obj);
 	
-	protected native void release();
+	private native void nativeRelease(int handle);
 	
 	protected void finalize() {
-		release();
+		nativeRelease(handle);
+		handle = 0;
 	}
 	
 	protected void changeHandle(int newHandle) {
-		release(); // release old handle
+		nativeRelease(handle); // release old handle
 		handle = newHandle;
 	}
 	
 	protected native int nativeGetTexListLength(int handle);
 	
-	protected native TextFrame nativeGetTextFrame(int handle, int index);
+	protected native TextFrame nativeGetTextFrame(int storyHandle, int docHandle, int index);
 	
 	class TextFrameList implements ReadOnlyList<TextFrame> {
 		int length = 0;
@@ -135,7 +130,7 @@ public class TextStory extends NativeObject {
 		}
 
 		public TextFrame get(int index) {
-			return nativeGetTextFrame(handle, index);
+			return nativeGetTextFrame(handle, document.handle, index);
 		}
 
 		public boolean isEmpty() {

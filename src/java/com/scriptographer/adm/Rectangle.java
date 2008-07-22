@@ -55,6 +55,15 @@ public class Rectangle {
 		set(rect.x, rect.y, rect.width, rect.height);
 	}
 
+	public Rectangle(Point topLeft, Point bottomRight) {
+		this(topLeft.x, topLeft.y,
+				bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
+	}
+
+	public Rectangle(Point point, Size size) {
+		this(point.x, point.y, size.width, size.height);
+	}
+
 	public Rectangle(ArgumentReader reader) {
 		this(reader.readInteger("x", 0),
 				reader.readInteger("y", 0),

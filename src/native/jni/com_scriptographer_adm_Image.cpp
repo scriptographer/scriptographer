@@ -77,7 +77,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeDestroy(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels___3IIII(JNIEnv *env, jobject obj, jintArray data, jint width, jint height, jint byteWidth) {
 	try {
-		ADMImageRef image = gEngine->getImageRef(env, obj);
+		ADMImageRef image = gEngine->getImageHandle(env, obj);
 		jint len = env->GetArrayLength(data);
 		char *src = (char *) env->GetPrimitiveArrayCritical(data, 0);
 		if (data == NULL) EXCEPTION_CHECK(env);
@@ -110,7 +110,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels___3IIII
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels__II(JNIEnv *env, jobject obj, jint handle, jint numBytes) {
 	try {
-		ADMImageRef dstImage = gEngine->getImageRef(env, obj);
+		ADMImageRef dstImage = gEngine->getImageHandle(env, obj);
 		ADMImageRef srcImage = (ADMImageRef) handle;
 		char *src = (char *) sADMImage->BeginBaseAddressAccess(srcImage); 
 		char *dst = (char *) sADMImage->BeginBaseAddressAccess(dstImage); 
@@ -127,7 +127,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeSetPixels__II(JNI
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeGetPixels(JNIEnv *env, jobject obj, jintArray data, jint width, jint height, jint byteWidth) {
 	try {
-		ADMImageRef image = gEngine->getImageRef(env, obj);
+		ADMImageRef image = gEngine->getImageHandle(env, obj);
 		jint len = env->GetArrayLength(data);
 		char *dst = (char *)env->GetPrimitiveArrayCritical(data, 0);
 		if (data == NULL) EXCEPTION_CHECK(env);
@@ -160,7 +160,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeGetPixels(JNIEnv 
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Image_nativeCreateIcon(JNIEnv *env, jobject obj) {
 	try {
-		ADMImageRef image = gEngine->getImageRef(env, obj);
+		ADMImageRef image = gEngine->getImageHandle(env, obj);
 		return (jint)sADMIcon->CreateFromImage(image);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -171,7 +171,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Image_nativeCreateIcon(JNIEnv
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Image_nativeBeginDrawer(JNIEnv *env, jobject obj) {
 	try {
-		ADMImageRef image = gEngine->getImageRef(env, obj);
+		ADMImageRef image = gEngine->getImageHandle(env, obj);
 		return (jint)sADMImage->BeginADMDrawer(image);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -182,7 +182,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Image_nativeBeginDrawer(JNIEn
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeEndDrawer(JNIEnv *env, jobject obj) {
 	try {
-		ADMImageRef image = gEngine->getImageRef(env, obj);
+		ADMImageRef image = gEngine->getImageHandle(env, obj);
 		sADMImage->EndADMDrawer(image);
 	} EXCEPTION_CONVERT(env);
 }

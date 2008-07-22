@@ -103,7 +103,7 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	}
 	
 	protected void changeHandle(int newHandle) {
-		release(); // release old handle
+		nativeRelease(handle); // release old handle
 		handle = newHandle;
 	}
 	
@@ -278,9 +278,10 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	ATEErr (*GetDefaultCharFeatures) ( ParaFeaturesRef parafeatures, bool* isAssigned, CharFeaturesRef* ret);
 	*/
 	
-	protected native void release();
+	private native void nativeRelease(int handle);
 	
 	protected void finalize() {
-		release();
+		nativeRelease(handle);
+		handle = 0;
 	}
 }

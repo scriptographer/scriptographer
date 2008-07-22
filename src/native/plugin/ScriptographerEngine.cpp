@@ -410,10 +410,14 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 // AI:
 	cls_ai_NativeObject = loadClass(env, "com/scriptographer/ai/NativeObject");
 	fid_ai_NativeObject_handle = getFieldID(env, cls_ai_NativeObject, "handle", "I");
-	
-	cls_ai_NativeWrapper = loadClass(env, "com/scriptographer/ai/NativeWrapper");
-	fid_ai_NativeWrapper_document = getFieldID(env, cls_ai_NativeWrapper, "document", "Lcom/scriptographer/ai/Document;");
-	
+
+	cls_ai_DocumentObject = loadClass(env, "com/scriptographer/ai/DocumentObject");
+	fid_ai_DocumentObject_document = getFieldID(env, cls_ai_DocumentObject, "document", "Lcom/scriptographer/ai/Document;");
+
+	cls_ai_Dictionary = loadClass(env, "com/scriptographer/ai/Dictionary");
+	fid_ai_Dictionary_handle = getFieldID(env, cls_ai_Dictionary, "handle", "I");
+	mid_ai_Dictionary_wrapHandle = getStaticMethodID(env, cls_ai_Dictionary, "wrapHandle", "(II)Lcom/scriptographer/ai/Dictionary;");
+
 	cls_ai_Tool = loadClass(env, "com/scriptographer/ai/Tool");
 	cid_ai_Tool = getConstructorID(env, cls_ai_Tool, "(II)V");
 	mid_ai_Tool_onHandleEvent = getStaticMethodID(env, cls_ai_Tool, "onHandleEvent", "(ILjava/lang/String;FFI)I");
@@ -470,8 +474,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_ai_Item = loadClass(env, "com/scriptographer/ai/Item");
 	fid_ai_Item_version = getFieldID(env, cls_ai_Item, "version", "I");
-	fid_ai_Item_document = getFieldID(env, cls_ai_Item, "document", "Lcom/scriptographer/ai/Document;");
-	fid_ai_Item_dictionaryRef = getFieldID(env, cls_ai_Item, "dictionaryRef", "I");
+	fid_ai_Item_dictionaryHandle = getFieldID(env, cls_ai_Item, "dictionaryHandle", "I");
 	mid_ai_Item_wrapHandle = getStaticMethodID(env, cls_ai_Item, "wrapHandle", "(ISIIIZ)Lcom/scriptographer/ai/Item;");
 	mid_ai_Item_getIfWrapped = getStaticMethodID(env, cls_ai_Item, "getIfWrapped", "(I)Lcom/scriptographer/ai/Item;");
 	mid_ai_Item_updateIfWrapped = getStaticMethodID(env, cls_ai_Item, "updateIfWrapped", "([I)V");
@@ -542,9 +545,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ai_LiveEffect = loadClass(env, "com/scriptographer/ai/LiveEffect");
 	cid_ai_LiveEffect = getConstructorID(env, cls_ai_LiveEffect, "(ILjava/lang/String;Ljava/lang/String;IIIII)V");
-	mid_ai_LiveEffect_onEditParameters = getStaticMethodID(env, cls_ai_LiveEffect, "onEditParameters", "(ILjava/util/Map;IZ)V");
-	mid_ai_LiveEffect_onCalculate = getStaticMethodID(env, cls_ai_LiveEffect, "onCalculate", "(ILjava/util/Map;Lcom/scriptographer/ai/Item;)I");
-	mid_ai_LiveEffect_onGetInputType = getStaticMethodID(env, cls_ai_LiveEffect, "onGetInputType", "(ILjava/util/Map;Lcom/scriptographer/ai/Item;)I");
+	mid_ai_LiveEffect_onEditParameters = getStaticMethodID(env, cls_ai_LiveEffect, "onEditParameters", "(IIIZ)V");
+	mid_ai_LiveEffect_onCalculate = getStaticMethodID(env, cls_ai_LiveEffect, "onCalculate", "(IILcom/scriptographer/ai/Item;)I");
+	mid_ai_LiveEffect_onGetInputType = getStaticMethodID(env, cls_ai_LiveEffect, "onGetInputType", "(IILcom/scriptographer/ai/Item;)I");
 	
 	cls_ai_Timer = loadClass(env, "com/scriptographer/ai/Timer");
 	cid_ai_Timer = getConstructorID(env, cls_ai_Timer, "(I)V");
@@ -552,7 +555,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ai_Annotator = loadClass(env, "com/scriptographer/ai/Annotator");
 	cid_ai_Annotator = getConstructorID(env, cls_ai_Annotator, "(I)V");
-	mid_ai_Annotator_onDraw = getStaticMethodID(env, cls_ai_Annotator, "onDraw", "(III)V");
+	mid_ai_Annotator_onDraw = getStaticMethodID(env, cls_ai_Annotator, "onDraw", "(IIII)V");
 	mid_ai_Annotator_onInvalidate = getStaticMethodID(env, cls_ai_Annotator, "onInvalidate", "(I)V");
 	
 	cls_ai_HitTest = loadClass(env, "com/scriptographer/ai/HitTest");
@@ -708,8 +711,46 @@ void ScriptographerEngine::reportError(JNIEnv *env) {
 	}
 }
 
-// com.scriptographer.ai.Point <-> AIRealPoint
+// java.lang.Boolean <-> jboolean
+jobject ScriptographerEngine::convertBoolean(JNIEnv *env, jboolean value) {
+	jobject res = newObject(env, cls_Boolean, cid_Boolean, value);
+	EXCEPTION_CHECK(env);
+	return res;
+}
 
+jboolean ScriptographerEngine::convertBoolean(JNIEnv *env, jobject value) {
+	jboolean res = callBooleanMethod(env, value, mid_Boolean_booleanValue);
+	EXCEPTION_CHECK(env);
+	return res;
+}
+
+// java.lang.Integer <-> jint
+jobject ScriptographerEngine::convertInteger(JNIEnv *env, jint value) {
+	jobject res = newObject(env, cls_Integer, cid_Integer, value);
+	EXCEPTION_CHECK(env);
+	return res;
+}
+
+jint ScriptographerEngine::convertInteger(JNIEnv *env, jobject value) {
+	jint res = callIntMethod(env, value, mid_Number_intValue);
+	EXCEPTION_CHECK(env);
+	return res;
+}
+
+// java.lang.Float <-> jfloat
+jobject ScriptographerEngine::convertFloat(JNIEnv *env, jfloat value) {
+	jobject res = newObject(env, cls_Float, cid_Float, value);
+	EXCEPTION_CHECK(env);
+	return res;
+}
+
+jfloat ScriptographerEngine::convertFloat(JNIEnv *env, jobject value) {
+	jfloat res = callIntMethod(env, value, mid_Number_floatValue);
+	EXCEPTION_CHECK(env);
+	return res;
+}
+
+// com.scriptographer.ai.Point <-> AIRealPoint
 jobject ScriptographerEngine::convertPoint(JNIEnv *env, AIReal x, AIReal y, jobject res) {
 	if (res == NULL) {
 		return newObject(env, cls_ai_Point, cid_ai_Point, (jdouble) x, (jdouble) y);
@@ -744,7 +785,7 @@ jobject ScriptographerEngine::convertPoint(JNIEnv *env, int x, int y, jobject re
 	}
 }
 
-// This handles 3 types of points: com.scriptographer.adm.Point,com.scriptographer.ai.Point, java.awt.geom.Point2D
+// This handles 2 types of points: com.scriptographer.adm.Point,com.scriptographer.ai.Point
 ADMPoint *ScriptographerEngine::convertPoint(JNIEnv *env, jobject pt, ADMPoint *res) {
 	if (res == NULL)
 		res = new ADMPoint;
@@ -1172,344 +1213,6 @@ AIArtSet ScriptographerEngine::convertArtSet(JNIEnv *env, jobject itemSet) {
 	EXCEPTION_CHECK(env);
 	return set;
 }
-// java.util.Map <-> AIDictionaryRef
-jobject ScriptographerEngine::convertDictionary(JNIEnv *env, AIDictionaryRef dictionary, jobject map, bool dontOverwrite, bool removeOld) {
-	JNI_CHECK_ENV
-	AIDictionaryIterator iterator = NULL;
-	ScriptographerException *exc = NULL;
-	try {
-		if (map == NULL) {
-			map = newObject(env, cls_HashMap, cid_HashMap);
-		} else if (removeOld) {
-			// scan through the map and remove the entries that are not contained
-			// in the dictionary any longer (just tell by name):
-
-			// use the env's version of the callers for speed reasons. check for exceptions only once for every entry:
-			jobject keySet = env->CallObjectMethod(map, mid_Map_keySet);
-			jobject iterator = env->CallObjectMethod(keySet, mid_Set_iterator);
-			while (env->CallBooleanMethod(iterator, mid_Iterator_hasNext)) {
-				jobject key = env->CallObjectMethod(iterator, mid_Iterator_next);
-				char *name = convertString(env, (jstring) env->CallObjectMethod(key, mid_Object_toString));
-				// now see if there's an entry called like this, and if not, removed it
-				// from the map as well:
-				if (!sAIDictionary->IsKnown(dictionary, sAIDictionary->Key(name))) {
-					env->CallVoidMethod(iterator, mid_Iterator_remove);
-				}
-				delete name;
-				EXCEPTION_CHECK(env);
-			}
-		}
-		// walk through the dictionary and see what we can add:
-		if (!sAIDictionary->Begin(dictionary, &iterator)) {
-			while (!sAIDictionaryIterator->AtEnd(iterator)) {
-				AIDictKey key = sAIDictionaryIterator->GetKey(iterator);
-				const char *name = sAIDictionary->GetKeyString(key);
-				jobject keyObj = convertString(env, name); // consider newStringUTF!
-				// if dontOverwrite is set, check first wether that key already exists in the map and if so, skip it:
-				if (dontOverwrite && callObjectMethod(env, map, mid_Map_get, keyObj) != NULL) {
-					// skip this entry
-					sAIDictionaryIterator->Next(iterator);
-					continue;
-				}
-				AIEntryRef entry = sAIDictionary->Get(dictionary, key);
-				jobject obj = NULL;
-				if (entry != NULL) {
-					try {
-						AIEntryType type = sAIEntry->GetType(entry);
-						switch (type) {
-							/*
-							TODO: implement these:
-							UnknownType,
-							// array
-							ArrayType,
-							// Binary data. if the data is stored to file it is the clients responsibility to
-								deal with the endianess of the data.
-							BinaryType,
-							// a reference to a pattern
-							PatternRefType,
-							// a reference to a brush pattern
-							BrushPatternRefType,
-							// a reference to a custom color (either spot or global process)
-							CustomColorRefType,
-							// a reference to a gradient
-							GradientRefType,
-							// a reference to a plugin global object
-							PluginObjectRefType,
-							// an unique id
-							UIDType,
-							// an unique id reference
-							UIDREFType,
-							// an XML node
-							XMLNodeType,
-							// a SVG filter
-							SVGFilterType,
-							// an art style
-							ArtStyleType,
-							// a symbol definition reference
-							SymbolPatternRefType,
-							// a graph design reference
-							GraphDesignRefType,
-							// a blend style (transpareny attributes)
-							BlendStyleType,
-							// a graphical object
-							GraphicObjectType
-							*/
-							case IntegerType: {
-								ASInt32 value;
-								if (!sAIEntry->ToInteger(entry, &value)) {
-									obj = newObject(env, cls_Integer, cid_Integer, (jint) value);
-								}
-							} break;
-							case BooleanType: {
-								ASBoolean value;
-								if (!sAIEntry->ToBoolean(entry, &value)) {
-									obj = newObject(env, cls_Boolean, cid_Boolean, (jboolean) value);
-								}
-							} break;
-							case RealType: {
-								ASReal value;
-								if (!sAIEntry->ToReal(entry, &value)) {
-									obj = newObject(env, cls_Float, cid_Float, (jfloat) value);
-								}
-							} break;
-							case StringType: {
-								const char *value;
-								if (!sAIEntry->ToString(entry, &value)) {
-									obj = convertString(env, value);
-								}
-							} break;
-							case DictType: {
-								AIDictionaryRef dict;
-								// this could be an art object:
-								AIArtHandle art;
-								if (!sAIEntry->ToArt(entry, &art)) {
-									obj = wrapArtHandle(env, art, dictionary);
-								} else if (!sAIEntry->ToDict(entry, &dict)) {
-									// add to the existing object, if there's any
-									jobject subMap = callObjectMethod(env, map, mid_Map_get, keyObj);
-									if (subMap != NULL && !env->IsInstanceOf(subMap, cls_Map))
-										subMap = NULL;
-									obj = convertDictionary(env, dict, subMap, dontOverwrite, removeOld);
-								}
-							} break;
-							case PointType: {
-								AIRealPoint point;
-								if (!sAIEntry->ToRealPoint(entry, &point)) {
-									obj = convertPoint(env, &point);
-								}
-							} break;
-							case MatrixType: {
-								AIRealMatrix matrix;
-								if (!sAIEntry->ToRealMatrix(entry, &matrix)) {
-									obj = convertMatrix(env, &matrix);
-								}
-							} break;
-							case FillStyleType: {
-								AIFillStyle fill;
-								if (!sAIEntry->ToFillStyle(entry, &fill)) {
-									obj = convertFillStyle(env, &fill);
-								}
-							}
-							break;
-							case StrokeStyleType: {
-								AIStrokeStyle stroke;
-								if (!sAIEntry->ToStrokeStyle(entry, &stroke)) {
-									obj = convertStrokeStyle(env,&stroke);
-								}
-							}
-						}
-					} catch(ScriptographerException *e) {
-						exc = e;
-					}
-					sAIEntry->Release(entry);
-					if (exc != NULL)
-						throw exc;
-				}
-				if (obj != NULL) {
-					callObjectMethod(env, map, mid_Map_put, keyObj, obj);
-				}
-				sAIDictionaryIterator->Next(iterator);
-			}
-		}
-	} catch(ScriptographerException *e) {
-		exc = e;
-	}
-	if (iterator != NULL)
-		sAIDictionaryIterator->Release(iterator);
-	
-	if (exc != NULL)
-		throw exc;
-	
-	return map;
-}
-
-AIDictionaryRef ScriptographerEngine::convertDictionary(JNIEnv *env, jobject map, AIDictionaryRef dictionary, bool dontOverwrite, bool removeOld) {
-	JNI_CHECK_ENV
-	if (dictionary == NULL) {
-		sAIDictionary->CreateDictionary(&dictionary);
-		if (dictionary == NULL)
-			throw new StringException("Unable to create the dictionary");
-	} else if (removeOld) {
-		// scan through the dictionary and remove the entries that are not contained
-		// in the map any longer (just tell by name):
-		AIDictionaryIterator iterator = NULL;
-		ScriptographerException *exc = NULL;
-		try {
-			if (!sAIDictionary->Begin(dictionary, &iterator)) {
-				while (!sAIDictionaryIterator->AtEnd(iterator)) {
-					AIDictKey key = sAIDictionaryIterator->GetKey(iterator);
-					jobject keyObj = convertString(env, sAIDictionary->GetKeyString(key)); // consider newStringUTF!
-					// now see if there's an entry called like this, and if not, removed it
-					// from the dictionary as well:
-					jobject obj = callObjectMethod(env, map, mid_Map_get, keyObj);
-					if (obj == NULL) {
-						// be carefull: only delete objects that can actually be wrapped
-						// in java. the others are not from us because they could not be wrapped
-						// when creating the map, so don't remove them now.
-						// TODO: Make sure this list is allways the opposite of what is handled bellow:
-						AIEntryType type = UnknownType;
-						sAIDictionary->GetEntryType(dictionary, key, &type);
-						switch (type) {
-							UnknownType:
-							ArrayType:
-							BinaryType:
-							PatternRefType:
-							BrushPatternRefType:
-							CustomColorRefType:
-							GradientRefType:
-							PluginObjectRefType:
-							UIDType:
-							UIDREFType:
-							XMLNodeType:
-							SVGFilterType:
-							ArtStyleType:
-							SymbolPatternRefType:
-							GraphDesignRefType:
-							BlendStyleType:
-							GraphicObjectType:
-							// do nothing
-							break;
-						default:
-							sAIDictionary->DeleteEntry(dictionary, key);
-						}
-						
-					}
-					sAIDictionaryIterator->Next(iterator);
-				}
-			}
-		} catch(ScriptographerException *e) {
-			exc = e;
-		}
-		if (iterator != NULL)
-			sAIDictionaryIterator->Release(iterator);
-		
-		if (exc != NULL)
-			throw exc;
-	}
-	// walk through the map and see what we can add:
-	// use the env's version of the callers for speed reasons. check for exceptions only once for every entry:
-	jobject keySet = env->CallObjectMethod(map, mid_Map_keySet);
-	jobject iterator = env->CallObjectMethod(keySet, mid_Set_iterator);
-	while (env->CallBooleanMethod(iterator, mid_Iterator_hasNext)) {
-		jobject keyObj = env->CallObjectMethod(iterator, mid_Iterator_next);
-		jobject value = env->CallObjectMethod(map, mid_Map_get, keyObj);
-		char *name = convertString(env, (jstring) env->CallObjectMethod(keyObj, mid_Object_toString));
-		EXCEPTION_CHECK(env);
-		// if dontOverwrite is set, check first wether that key already exists in the dictionary and if so, skip it:
-		AIDictKey key = sAIDictionary->Key(name);
-		delete name;
-		if (dontOverwrite && sAIDictionary->IsKnown(dictionary, key)) {
-			// skip this entry
-			continue;
-		}
-
-		/*
-		TODO: implement these:
-		UnknownType,
-		// array
-		ArrayType,
-		// Binary data. if the data is stored to file it is the clients responsibility to
-			deal with the endianess of the data.
-		BinaryType,
-		// a reference to a pattern
-		PatternRefType,
-		// a reference to a brush pattern
-		BrushPatternRefType,
-		// a reference to a custom color (either spot or global process)
-		CustomColorRefType,
-		// a reference to a gradient
-		GradientRefType,
-		// a reference to a plugin global object
-		PluginObjectRefType,
-		// an unique id
-		UIDType,
-		// an unique id reference
-		UIDREFType,
-		// an XML node
-		XMLNodeType,
-		// a SVG filter
-		SVGFilterType,
-		// an art style
-		ArtStyleType,
-		// a symbol definition reference
-		SymbolPatternRefType,
-		// a graph design reference
-		GraphDesignRefType,
-		// a blend style (transpareny attributes)
-		BlendStyleType,
-		// a graphical object
-		GraphicObjectType
-		*/
-		AIEntryRef entry = NULL;
-
-		if (value == NULL) {
-			sAIDictionary->SetBinaryEntry(dictionary, key, NULL, 0); 
-		} else {
-			if (env->IsInstanceOf(value, cls_Integer)) {
-				entry = sAIEntry->FromInteger(callIntMethod(env, value, mid_Number_intValue));
-			} else if (env->IsInstanceOf(value, cls_Boolean)) {
-				entry = sAIEntry->FromBoolean(callBooleanMethod(env, value, mid_Boolean_booleanValue));
-			} else if (env->IsInstanceOf(value, cls_Float)) {
-				entry = sAIEntry->FromInteger((ASInt32) callFloatMethod(env, value, mid_Number_floatValue));
-			} else if (env->IsInstanceOf(value, cls_String)) {
-				char *string = convertString(env, (jstring) value);
-				entry = sAIEntry->FromString(string);
-				delete string;
-			} else if (env->IsInstanceOf(value, cls_ai_Item)) {
-				AIArtHandle art = getArtHandle(env, value);
-				sAIDictionary->MoveArtToEntry(dictionary, key, art);
-				// let the art object know it's part of a dictionary now:
-				setIntField(env, value, fid_ai_Item_dictionaryRef, (jint) dictionary);
-			} else if (env->IsInstanceOf(value, cls_Map)) {
-				// add to the existing object, if there's any
-				AIDictionaryRef subDictionary = NULL;
-				sAIDictionary->GetDictEntry(dictionary, key, &subDictionary);
-				subDictionary = convertDictionary(env, value, subDictionary, dontOverwrite, removeOld);
-				entry = sAIEntry->FromDict(subDictionary);
-			} else if (env->IsInstanceOf(value, cls_adm_Point)) {
-				AIRealPoint point;
-				convertPoint(env, value, &point);
-				entry = sAIEntry->FromRealPoint(&point);
-			} else if (env->IsInstanceOf(value, cls_ai_Matrix)) {
-				AIRealMatrix matrix;
-				convertMatrix(env, value, &matrix);
-				entry = sAIEntry->FromRealMatrix(&matrix);
-			} else if (env->IsInstanceOf(value, cls_ai_FillStyle)) {
-				AIFillStyle style;
-				convertFillStyle(env, value, &style);
-				entry = sAIEntry->FromFillStyle(&style);
-			} else if (env->IsInstanceOf(value, cls_ai_StrokeStyle)) {
-				AIStrokeStyle style;
-				convertStrokeStyle(env, value, &style);
-				entry = sAIEntry->FromStrokeStyle(&style);
-			}
-			if (entry != NULL)
-				sAIDictionary->Set(dictionary, key, entry);
-		}
-	}
-	
-	return dictionary;
-}
 
 // java.io.File <-> SPPlatformFileSpecification
 
@@ -1539,6 +1242,67 @@ SPPlatformFileSpecification *ScriptographerEngine::convertFile(JNIEnv *env, jobj
 	return res;
 }
 
+void ScriptographerEngine::commit(JNIEnv *env) {
+	callStaticVoidMethod(env, cls_CommitManager, mid_CommitManager_commit, NULL);
+}
+
+void ScriptographerEngine::resumeSuspendedDocuments() {
+	for (int i = m_suspendedDocuments.size() - 1; i >= 0; i--) {
+		AIDocumentHandle doc = m_suspendedDocuments.get(i);
+		if (doc != gWorkingDoc) {
+			sAIDocumentList->Activate(doc, false);
+			gWorkingDoc = doc;
+		}
+		sAIDocument->ResumeTextReflow();
+		AIDictionaryRef dict = NULL;
+		// remove dictionary entry
+		if (!sAIDocument->GetDictionary(&dict)) {
+			sAIDictionary->DeleteEntry(dict, m_docReflowKey);
+			sAIDictionary->Release(dict);
+		}
+	}
+	m_suspendedDocuments.reset();
+}
+
+int ScriptographerEngine::getAIObjectHandle(JNIEnv *env, jobject obj, const char *name) {
+	if (obj = NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	int handle = getIntField(env, obj, fid_ai_NativeObject_handle);
+	if (!handle)
+		throw new StringException("Object is not wrapping a %s handle.", name);
+	return handle;
+}
+
+int ScriptographerEngine::getDocumentObjectHandle(JNIEnv *env, jobject obj, bool activateDoc, const char *name) {
+	int handle = getAIObjectHandle(env, obj, name);
+	if (activateDoc && handle)
+		getDocumentHandle(env, obj, true);
+	return handle;
+}
+
+/**
+ * Returns the wrapped AIDocumentHandle of an object by assuming that it is a Document and
+ * accessing its field 'handle', or an Item, in which case it's document field is fetched first. 
+ *
+ * throws exceptions
+ */
+AIDocumentHandle ScriptographerEngine::getDocumentHandle(JNIEnv *env, jobject obj, bool activate) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	if (env->IsInstanceOf(obj, cls_ai_DocumentObject))
+		// Fetch document field and switch if necessary
+		obj = getObjectField(env, obj, fid_ai_DocumentObject_document);
+	AIDocumentHandle doc = (AIDocumentHandle) getAIObjectHandle(env, obj, "document handle");
+	// Switch to this document if necessary
+	if (activate && doc && doc != gWorkingDoc) {
+		sAIDocumentList->Activate(doc, false);
+		gWorkingDoc = doc;
+	}
+	return doc;
+}
+
 /**
  * Returns the wrapped AIArtHandle of an object by assuming that it is an anchestor of Class Item and
  * accessing its field 'handle':
@@ -1546,32 +1310,27 @@ SPPlatformFileSpecification *ScriptographerEngine::convertFile(JNIEnv *env, jobj
  * throws exceptions
  */
 AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool activateDoc, AIDocumentHandle *doc) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	AIArtHandle art = (AIArtHandle) getIntField(env, obj, fid_ai_NativeObject_handle);
-	if (art == NULL)
-		throw new StringException("Object is not wrapping an art handle.");
+	AIArtHandle art = (AIArtHandle) getAIObjectHandle(env, obj, "art handle");
 	if (activateDoc || doc != NULL) {
-		// fetch docHandle and switch if necessary
-		jobject docObj = getObjectField(env, obj, fid_ai_Item_document);
+		// Fetch docHandle and switch if necessary
+		jobject docObj = getObjectField(env, obj, fid_ai_DocumentObject_document);
 		if (docObj != NULL) {
 			AIDocumentHandle docHandle = (AIDocumentHandle) getIntField(env, docObj, fid_ai_NativeObject_handle);
 			if (doc != NULL)
 				*doc = docHandle;
-			// switch to this document if necessary
+			// Switch to this document if necessary
 			if (activateDoc) {
-				if (docHandle != gActiveDoc) {
+				if (docHandle != gWorkingDoc) {
 					sAIDocumentList->Activate(docHandle, false);
-					gActiveDoc = docHandle;
+					gWorkingDoc = docHandle;
 				}
-				// if it's a text object, suspend the text flow now
+				// If it's a text object, suspend the text flow now
 				// text flow of all suspended documents is resumed at the end
 				// by gEngine->resumeSuspendedDocuments()
 				short type = kAnyArt;
 				AIDictionaryRef dict = NULL;
-				// use a dictionary entry to see if it was suspsended before already
-				if (!sAIArt->GetArtType(art, &type) && type == kTextFrameArt && !sAIDocument->GetDictionary(&dict)) {
+				// Use a dictionary entry to see if it was suspsended before already
+				if (Item_getType(art) == kTextFrameArt && !sAIDocument->GetDictionary(&dict)) {
 					if (!sAIDictionary->IsKnown(dict, m_docReflowKey)) {
 						sAIDocument->SuspendTextReflow();
 						sAIDictionary->SetBooleanEntry(dict, m_docReflowKey, true);
@@ -1583,28 +1342,6 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 		}
 	}
 	return art;
-}
-
-void ScriptographerEngine::commit(JNIEnv *env) {
-	callStaticVoidMethod(env, cls_CommitManager, mid_CommitManager_commit, NULL);
-}
-
-void ScriptographerEngine::resumeSuspendedDocuments() {
-	for (int i = m_suspendedDocuments.size() - 1; i >= 0; i--) {
-		AIDocumentHandle doc = m_suspendedDocuments.get(i);
-		if (doc != gActiveDoc) {
-			sAIDocumentList->Activate(doc, false);
-			gActiveDoc = doc;
-		}
-		sAIDocument->ResumeTextReflow();
-		AIDictionaryRef dict = NULL;
-		// remove dictionary entry
-		if (!sAIDocument->GetDictionary(&dict)) {
-			sAIDictionary->DeleteEntry(dict, m_docReflowKey);
-			sAIDictionary->Release(dict);
-		}
-	}
-	m_suspendedDocuments.reset();
 }
 
 /**
@@ -1620,56 +1357,6 @@ AILayerHandle ScriptographerEngine::getLayerHandle(JNIEnv *env, jobject obj, boo
 	return layer;
 }
 
-void *ScriptographerEngine::getWrapperHandle(JNIEnv *env, jobject obj, bool activateDoc, const char *name) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	void *wrapper = (void *) getIntField(env, obj, fid_ai_NativeObject_handle);
-	if (wrapper == NULL)
-		throw new StringException("Object is not wrapping a %s handle.", name);
-	if (activateDoc) {
-		// fetch docHandle and switch if necessary
-		jobject docObj = getObjectField(env, obj, fid_ai_NativeWrapper_document);
-		if (docObj != NULL) {
-			AIDocumentHandle doc = (AIDocumentHandle) getIntField(env, docObj, fid_ai_NativeObject_handle);
-			// switch to this document if necessary
-			if (doc != gActiveDoc) {
-				sAIDocumentList->Activate(doc, false);
-				gActiveDoc = doc;
-			}
-		}
-	}
-	return wrapper;
-}
-
-AIPatternHandle ScriptographerEngine::getPatternHandle(JNIEnv *env, jobject obj, bool activateDoc) {
-	return (AIPatternHandle) getWrapperHandle(env, obj, activateDoc, "pattern");
-}
-
-AISwatchRef ScriptographerEngine::getSwatchHandle(JNIEnv *env, jobject obj, bool activateDoc) {
-	return (AISwatchRef) getWrapperHandle(env, obj, activateDoc, "swatch");
-}
-
-AIGradientHandle ScriptographerEngine::getGradientHandle(JNIEnv *env, jobject obj, bool activateDoc) {
-	return (AIGradientHandle) ScriptographerEngine::getWrapperHandle(env, obj, activateDoc, "gradient");
-}
-
-/**
- * Returns the wrapped AIFontKey of an object by assuming that it is an anchestor of Class Textfeatures and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-AIFontKey ScriptographerEngine::getFontHandle(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	AIFontKey font = (AIFontKey) getIntField(env, obj, fid_ai_NativeObject_handle);
-	if (font == NULL)
-		throw new StringException("Object is not wrapping a font key.");
-	return font;
-}
-
 /**
  * Returns the AIDictionaryRef that contains the wrapped AIArtHandle, if any
  *
@@ -1679,108 +1366,9 @@ AIDictionaryRef ScriptographerEngine::getArtDictionaryHandle(JNIEnv *env, jobjec
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	return (AIDictionaryRef) gEngine->getIntField(env, obj, gEngine->fid_ai_Item_dictionaryRef);
+	return (AIDictionaryRef) gEngine->getIntField(env, obj, fid_ai_Item_dictionaryHandle);
 }
 
-/**
- * Returns the wrapped AIDocumentHandle of an object by assuming that it is an anchestor of Class Document and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-AIDocumentHandle ScriptographerEngine::getDocumentHandle(JNIEnv *env, jobject obj, bool activate) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	AIDocumentHandle document = (AIDocumentHandle) getIntField(env, obj, fid_ai_NativeObject_handle);
-	if (document == NULL)
-		throw new StringException("Object is not wrapping a document handle.");
-	if (activate && document != gActiveDoc) {
-		sAIDocumentList->Activate(document, false);
-		gActiveDoc = document;
-	}
-	return document;
-}
-
-/**
- * Returns the wrapped AIDocumentViewHandle of an object by assuming that it is an anchestor of Class View and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-AIDocumentViewHandle ScriptographerEngine::getDocumentViewHandle(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	AIDocumentViewHandle view = (AIDocumentViewHandle) getIntField(env, obj, fid_ai_NativeObject_handle);
-	if (view == NULL)
-		throw new StringException("Object is not wrapping a view handle.");
-	return view;
-}
-
-/**
- * Returns the wrapped AIToolHandle of an object by assuming that it is an anchestor of Class Tool and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-AIToolHandle ScriptographerEngine::getToolHandle(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	AIToolHandle tool = (AIToolHandle) getIntField(env, obj, fid_ai_NativeObject_handle);
-	if (tool == NULL)
-		throw new StringException("Object is not wrapping an tool handle.");
-	return tool;
-}
-
-/**
- * Returns the wrapped AILiveEffectHandle of an object by assuming that it is an anchestor of Class LiveEffect and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-AILiveEffectHandle ScriptographerEngine::getLiveEffectHandle(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	AILiveEffectHandle effect = (AILiveEffectHandle) getIntField(env, obj, fid_ai_NativeObject_handle);
-	if (effect == NULL)
-		throw new StringException("Object is not wrapping an effect handle.");
-	return effect;
-}
-
-/**
- * Returns the wrapped AIMenuItemHandle of an object by assuming that it is an anchestor of Class LiveEffect and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-AIMenuItemHandle ScriptographerEngine::getMenuItemHandle(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	AIMenuItemHandle item = (AIMenuItemHandle) getIntField(env, obj, fid_adm_NativeObject_handle);
-	if (item == NULL)
-		throw new StringException("Object is not wrapping a menu item handle.");
-	return item;
-}
-
-/**
- * Returns the wrapped AIMenuGroup of an object by assuming that it is an anchestor of Class LiveEffect and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-AIMenuGroup ScriptographerEngine::getMenuGroupHandle(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	AIMenuGroup group = (AIMenuGroup) getIntField(env, obj, fid_adm_NativeObject_handle);
-	if (group == NULL)
-		throw new StringException("Object is not wrapping a menu group handle.");
-	return group;
-}
 
 /**
  * Returns the wrapped TextFrameRef of an object by assuming that it is an anchestor of Class TextFrame and
@@ -1788,81 +1376,17 @@ AIMenuGroup ScriptographerEngine::getMenuGroupHandle(JNIEnv *env, jobject obj) {
  *
  * throws exceptions
  */
-ATE::TextFrameRef ScriptographerEngine::getTextFrameRef(JNIEnv *env, jobject obj, bool activateDoc) {
+ATE::TextFrameRef ScriptographerEngine::getTextFrameHandle(JNIEnv *env, jobject obj, bool activateDoc) {
 	AIArtHandle art = getArtHandle(env, obj, activateDoc);
-	ATE::TextFrameRef frame = NULL;
-	sAITextFrame->GetATETextFrame(art, &frame);
-	return frame;
-}
-
-/**
- * Returns the wrapped TextRangeRef of an object by assuming that it is an anchestor of Class TextRange and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ATE::TextRangeRef ScriptographerEngine::getTextRangeRef(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ATE::TextRangeRef range = (ATE::TextRangeRef) getIntField(env, obj, fid_ai_NativeObject_handle);
-	if (range == NULL)
-		throw new StringException("Object is not wrapping a text range handle.");
-	return range;
-}
-
-/**
- * Returns the wrapped StoryRef of an object by assuming that it is an anchestor of Class Textstory and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ATE::StoryRef ScriptographerEngine::getStoryRef(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ATE::StoryRef story = (ATE::StoryRef) getIntField(env, obj, fid_ai_NativeObject_handle);
-	if (story == NULL)
-		throw new StringException("Object is not wrapping a text story handle.");
-	return story;
-}
-
-/**
- * Returns the wrapped CharFeaturesRef of an object by assuming that it is an anchestor of Class CharacterStyle and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ATE::CharFeaturesRef ScriptographerEngine::getCharFeaturesRef(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ATE::CharFeaturesRef features = (ATE::CharFeaturesRef) getIntField(env, obj, fid_ai_NativeObject_handle);
-	if (features == NULL)
-		throw new StringException("Object is not wrapping a character style handle.");
-	return features;
-}
-
-/**
- * Returns the wrapped ParaFeaturesRef of an object by assuming that it is an anchestor of Class ParagraphStyle and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ATE::ParaFeaturesRef ScriptographerEngine::getParaFeaturesRef(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ATE::ParaFeaturesRef features = (ATE::ParaFeaturesRef) getIntField(env, obj, fid_ai_NativeObject_handle);
-	if (features == NULL)
-		throw new StringException("Object is not wrapping a paragraph style handle.");
-	return features;
+	ATE::TextFrameRef ref = NULL;
+	sAITextFrame->GetATETextFrame(art, &ref);
+	return ref;
 }
 
 jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range) {
 	// we need to increase the ref count here. this is decreased again in TextRange.finalize
 	ATE::sTextRange->AddRef(range);
-	return newObject(env, cls_ai_TextRange, cid_ai_TextRange, (jint) range, (jint) gActiveDoc);
+	return newObject(env, cls_ai_TextRange, cid_ai_TextRange, (jint) range, (jint) gWorkingDoc);
 }
 
 /**
@@ -1871,7 +1395,7 @@ jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef ra
  *
  * throws exceptions
  */
-jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDictionaryRef dictionary) {
+jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc, AIDictionaryRef dictionary) {
 	JNI_CHECK_ENV
 	if (art == NULL)
 		return NULL;
@@ -1905,11 +1429,14 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDict
 		sAIDictionary->SetIntegerEntry(artDict, m_artHandleKey, (ASInt32) art);
 		sAIDictionary->Release(artDict);
 	}
-	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_wrapHandle, (jint) art, (jshort) type, (jint) textType, (jint) gActiveDoc, (jint) dictionary, (jboolean) wrapped);
+	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_wrapHandle,
+			(jint) art, (jshort) type, (jint) textType,
+			(jint) (doc ? doc : gWorkingDoc),
+			(jint) dictionary, (jboolean) wrapped);
 }
 
-void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject item, AIArtHandle art, AIDictionaryRef dictionary, AIDocumentHandle doc) {
-	callVoidMethod(env, item, mid_ai_Item_changeHandle, (jint) art, (jint) dictionary, (jint) doc);
+void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject item, AIArtHandle art, AIDocumentHandle doc, AIDictionaryRef dictionary) {
+	callVoidMethod(env, item, mid_ai_Item_changeHandle, (jint) art, (jint) doc, (jint) dictionary);
 }
 
 jobject ScriptographerEngine::getIfWrapped(JNIEnv *env, AIArtHandle art) {
@@ -1923,7 +1450,12 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) 
 	AIArtHandle art;
 	if (sAIArt->GetFirstArtOfLayer(layer, &art))
 		throw new StringException("Cannot get layer art");
-	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Item_TYPE_LAYER, (jint) kUnknownTextType, (jint) gActiveDoc, 0);
+	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Item_TYPE_LAYER, (jint) kUnknownTextType, (jint) gWorkingDoc, 0);
+}
+
+jobject ScriptographerEngine::wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc) {
+	JNI_CHECK_ENV
+	return callStaticObjectMethod(env, cls_ai_Dictionary, mid_ai_Dictionary_wrapHandle, (jint) (doc ? doc : gWorkingDoc));
 }
 
 /**
@@ -1951,7 +1483,7 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 	}
 	return NULL;
 }
-
+		
 /**
  * selectionChanged is fired in the following situations:
  * when either a change in the selected art objects occurs or an artwork modification
@@ -2042,28 +1574,6 @@ ASErr ScriptographerEngine::toolHandleEvent(const char * selector, AIToolMessage
  *
  */
 
-jobject ScriptographerEngine::getLiveEffectParameters(JNIEnv *env, AILiveEffectParameters parameters) {
-	// Create a java.util.Map with the needed fields from the parameters list.
-	// Add the result list under the key "java.util.Map" in the dictionary so it does not need to be created each time
-	// and can also be used to store the effect's parameters
-	
-	// see wether there is already a map:
-	AIDictKey key = sAIDictionary->Key("java.util.Map");
-	jobject map = NULL;
-	long size;
-	sAIDictionary->GetBinaryEntry(parameters, key, &map, &size);
-	// if it doesn't exist, create it:
-	if (map == NULL) {
-		map = convertDictionary(env, parameters);
-		// TODO: shouldn't map be protected by a GlobalRef? But how to remove it again then???
-		sAIDictionary->SetBinaryEntry(parameters, key, &map, sizeof(jobject));
-	} else {
-		// else add possible new entry to it:
-		convertDictionary(env, parameters, map, true);
-	}
-	return map;
-}
-
 AILiveEffectParamContext ScriptographerEngine::getLiveEffectContext(JNIEnv *env, jobject parameters) {
 	// gets the value for key "context" from the map and converts it to a AILiveEffectParamContext
 	jobject contextObj = callObjectMethod(env, parameters, mid_Map_get, env->NewStringUTF("context"));
@@ -2076,9 +1586,8 @@ AILiveEffectParamContext ScriptographerEngine::getLiveEffectContext(JNIEnv *env,
 ASErr ScriptographerEngine::liveEffectEditParameters(AILiveEffectEditParamMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		jobject map = getLiveEffectParameters(env, message->parameters);
 		callStaticVoidMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onEditParameters,
-				(jint) message->effect, map, (jint) message->context, (jboolean) message->allowPreview);
+				(jint) message->effect, (jint) message->parameters, (jint) message->context, (jboolean) message->allowPreview);
 		sAILiveEffect->UpdateParameters(message->context);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
@@ -2088,10 +1597,9 @@ ASErr ScriptographerEngine::liveEffectEditParameters(AILiveEffectEditParamMessag
 ASErr ScriptographerEngine::liveEffectCalculate(AILiveEffectGoMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		jobject map = getLiveEffectParameters(env, message->parameters);
 		// TODO: setting art to something else seems to crash!
 		message->art = (AIArtHandle) callStaticIntMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onCalculate,
-				(jint) message->effect, map, wrapArtHandle(env, message->art));
+				(jint) message->effect, (jint) message->parameters, wrapArtHandle(env, message->art));
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -2105,9 +1613,8 @@ ASErr ScriptographerEngine::liveEffectInterpolate(AILiveEffectInterpParamMessage
 ASErr ScriptographerEngine::liveEffectGetInputType(AILiveEffectInputTypeMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		jobject map = getLiveEffectParameters(env, message->parameters);
 		message->typeMask = callStaticIntMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onGetInputType,
-				(jint) message->effect, map, wrapArtHandle(env, message->inputArt));
+				(jint) message->effect, (jint) message->parameters, wrapArtHandle(env, message->inputArt));
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -2161,7 +1668,7 @@ ASErr ScriptographerEngine::annotatorDraw(AIAnnotatorMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_ai_Annotator, mid_ai_Annotator_onDraw,
-				(jint) message->annotator, (jint) message->port, (jint) message->view);
+				(jint) message->annotator, (jint) message->port, (jint) message->view, (jint) gWorkingDoc);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -2196,10 +1703,6 @@ void ScriptographerEngine::callOnDestroy(jobject handler) {
 	callOnNotify(handler, kADMDestroyNotifier);
 }
 
-/**
- *
- *
- */
 bool ScriptographerEngine::callOnTrack(jobject handler, ADMTrackerRef tracker) {
 	JNIEnv *env = getEnv();
 	try {
@@ -2217,15 +1720,11 @@ bool ScriptographerEngine::callOnTrack(jobject handler, ADMTrackerRef tracker) {
 	return true;
 }
 
-/**
- *
- *
- */
 void ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 	JNIEnv *env = getEnv();
 	try {
 		jobject drawerObj = getObjectField(env, handler, fid_adm_NotificationHandler_drawer);
-		setIntField(env, drawerObj, fid_adm_NativeObject_handle, (jint)drawer);
+		setIntField(env, drawerObj, fid_adm_NativeObject_handle, (jint) drawer);
 		callVoidMethod(env, handler, mid_adm_NotificationHandler_onDraw, drawerObj);
 	} EXCEPTION_CATCH_REPORT(env);
 }
@@ -2239,151 +1738,31 @@ ASErr ScriptographerEngine::displayAbout() {
 	return kExceptionErr;
 }
 
-/**
- * Returns the wrapped ADMDialogRef of an object by assuming that it is an anchestor of Class Dialog and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ADMDialogRef ScriptographerEngine::getDialogRef(JNIEnv *env, jobject obj) {
+int ScriptographerEngine::getADMObjectHandle(JNIEnv *env, jobject obj, const char *name) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ADMDialogRef dlg = (ADMDialogRef) getIntField(env, obj, fid_adm_NativeObject_handle);
-	if (dlg == NULL)
-		throw new StringException("Object is not wrapping a dialog ref.");
-	return dlg;
-}
-
-/**
- * Returns the wrapped ADMDrawerRef of an object by assuming that it is an anchestor of Class Drawer and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ADMDrawerRef ScriptographerEngine::getDrawerRef(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ADMDrawerRef drawer = (ADMDrawerRef) getIntField(env, obj, fid_adm_NativeObject_handle);
-	if (drawer == NULL)
-		throw new StringException("Object is not wrapping a drawer ref.");
-	return drawer;
-}
-
-/**
- * Returns the wrapped ADMTrackerRef of an object by assuming that it is an anchestor of Class Tracker and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ADMTrackerRef ScriptographerEngine::getTrackerRef(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ADMTrackerRef tracker = (ADMTrackerRef) getIntField(env, obj, fid_adm_NativeObject_handle);
-	if (tracker == NULL)
-		throw new StringException("Object is not wrapping a tracker ref.");
-	return tracker;
-}
-
-/**
- * Returns the wrapped ADMImageRef of an object by assuming that it is an anchestor of Class Image and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ADMImageRef ScriptographerEngine::getImageRef(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ADMImageRef image = (ADMImageRef) getIntField(env, obj, fid_adm_NativeObject_handle);
-	if (image == NULL)
-		throw new StringException("Object is not wrapping an image ref.");
-	return image;
-}
-
-/**
- * Returns the wrapped ADMItemRef of an object by assuming that it is an anchestor of Class Item and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ADMItemRef ScriptographerEngine::getItemRef(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ADMItemRef item = (ADMItemRef) getIntField(env, obj, fid_adm_NativeObject_handle);
-	if (item == NULL) {
-		// for HierarchyLists it could be that the user wants to call item functions
+	int handle = getIntField(env, obj, fid_adm_NativeObject_handle);
+	if (!handle) {
+		// For HierarchyLists it could be that the user wants to call item functions
 		// on a child list. report that this can only be called on the root list:
 		if (env->IsInstanceOf(obj, cls_adm_HierarchyList)) {
 			throw new StringException("This function can only be called on the root hierarchy list.");
 		} else {
-			throw new StringException("Object is not wrapping an item ref.");
+			throw new StringException("Object is not wrapping a %s.", name);
 		}
 	}
-	return item;
+	return handle;
 }
 
-/**
- * Returns the wrapped ADMListRef of an object by assuming that it is an anchestor of Class ListItem and
- * accessing its field 'listHandle':
- *
- * throws exceptions
- */
-ADMListRef ScriptographerEngine::getListRef(JNIEnv *env, jobject obj) {
+int ScriptographerEngine::getADMListHandle(JNIEnv *env, jobject obj, const char *name) {
 	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
-	ADMListRef list = (ADMListRef) getIntField(env, obj, fid_adm_ListItem_listHandle);
-	if (list == NULL) throw new StringException("Object is not wrapping a list ref.");
-	return list;
-}
-
-/**
- * Returns the wrapped ADMHierarchyListRef of an object by assuming that it is an anchestor of Class ListItem and
- * accessing its field 'listHandle':
- *
- * throws exceptions
- */
-ADMHierarchyListRef ScriptographerEngine::getHierarchyListRef(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ADMHierarchyListRef list = (ADMHierarchyListRef) getIntField(env, obj, fid_adm_ListItem_listHandle);
-	if (list == NULL) throw new StringException("Object is not wrapping a hierarchy list ref.");
-	return list;
-}
-
-/**
- * Returns the wrapped ADMEntryRef of an object by assuming that it is an anchestor of Class Entry and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ADMEntryRef ScriptographerEngine::getListEntryRef(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ADMEntryRef entry = (ADMEntryRef) getIntField(env, obj, fid_adm_NativeObject_handle);
-	if (entry == NULL) throw new StringException("Object is not wrapping a list entry ref.");
-	return entry;
-}
-
-/**
- * Returns the wrapped ADMListEntryRef of an object by assuming that it is an anchestor of Class Entry and
- * accessing its field 'handle':
- *
- * throws exceptions
- */
-ADMListEntryRef ScriptographerEngine::getHierarchyListEntryRef(JNIEnv *env, jobject obj) {
-	if (obj == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	ADMListEntryRef entry = (ADMListEntryRef) getIntField(env, obj, fid_adm_NativeObject_handle);
-	if (entry == NULL) throw new StringException("Object is not wrapping a hierarchy list entry ref.");
-	return entry;
+	int handle = getIntField(env, obj, fid_adm_ListItem_listHandle);
+	if (handle == NULL)
+		throw new StringException("Object is not wrapping a %s.", name);
+	return handle;
 }
 
 jobject ScriptographerEngine::getDialogObject(ADMDialogRef dlg) {

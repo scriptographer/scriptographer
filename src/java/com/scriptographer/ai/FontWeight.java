@@ -34,28 +34,43 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class FontWeight extends NativeWrapper {
-	
+public class FontWeight extends NativeObject {
+
 	public static final FontWeight NONE = new FontWeight(0);
-	
+
 	protected FontWeight(int handle) {
 		super(handle);
 	}
-	
-	public native String getName();
-	
+
+	private native String nativeGetName(int handle);
+
+	public String getName() {
+		return handle == 0 ? "None" : nativeGetName(handle);
+	}
+
 	private native int nativeGetFamily(int handle);
-	
+
 	public FontFamily getFamily() {
 		return FontFamily.wrapHandle(nativeGetFamily(handle));
 	}
-	
-	public native int getIndex();
-	
-	
-	protected static FontWeight wrapHandle(int handle) {
-		return (FontWeight) wrapHandle(FontWeight.class, handle, null, false);
+
+	private native int nativeGetIndex(int handle);
+
+	public int getIndex() {
+		return handle == 0 ? -1 : nativeGetIndex(handle);
 	}
-	
-	public native boolean isValid();
+
+	protected static FontWeight wrapHandle(int handle) {
+		return (FontWeight) (handle == 0 ? null : wrapHandle(FontWeight.class, handle));
+	}
+
+	private native boolean nativeIsValid(int handle);
+
+	public boolean isValid() {
+		return handle == 0 ? false : nativeIsValid(handle);
+	}
+
+	public String toString() {
+		return getFamily() + " " + getName();
+	}
 }

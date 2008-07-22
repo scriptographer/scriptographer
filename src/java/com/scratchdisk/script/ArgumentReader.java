@@ -184,6 +184,14 @@ public abstract class ArgumentReader {
 		return readObject(null, type);
 	}
 
+    public Object readObject(String name) {
+    	return readObject(name, Object.class);
+    }
+
+    public Object readObject() {
+    	return readObject(Object.class);
+    }
+	
 	protected static void registerConverter(Class type, ArgumentConverter converter) {
 		converters.put(type, converter);
 	}

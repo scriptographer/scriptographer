@@ -76,6 +76,16 @@ public class CompoundPath extends PathItem {
 		append(shape);
 	}
 
+	public boolean isGuide() {
+		Item child = getFirstChild();
+		return child != null && ((Path) child).isGuide();
+	}
+	
+	public void setGuide(boolean guide) {
+		for (Item item : getChildren())
+			((Path) item).setGuide(guide);
+	}
+
 	private Path getPreviousPath() {
 		Path prevPath = (Path) getFirstChild();
 		if (prevPath == null)

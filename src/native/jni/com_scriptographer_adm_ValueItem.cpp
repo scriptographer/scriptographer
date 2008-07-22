@@ -40,7 +40,7 @@
  */
 JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_adm_ValueItem_getRange(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		// create a float array with these values:
 		jfloatArray res = env->NewFloatArray(2);
 		jfloat range[] = {
@@ -57,7 +57,7 @@ JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_adm_ValueItem_getRange(JNI
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setRange(JNIEnv *env, jobject obj, jfloat min, jfloat max) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetMinFloatValue(item, min);
 		sADMItem->SetMaxFloatValue(item, max);
 	} EXCEPTION_CONVERT(env);
@@ -68,7 +68,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setRange(JNIEnv *en
  */
 JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_adm_ValueItem_getIncrements(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		// create a float array with these values:
 		jfloatArray res = env->NewFloatArray(2);
 		jfloat range[] = {
@@ -85,7 +85,7 @@ JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_adm_ValueItem_getIncrement
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setIncrements(JNIEnv *env, jobject obj, jfloat smallInc, jfloat largeInc) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetSmallIncrement(item, smallInc);
 		sADMItem->SetLargeIncrement(item, largeInc);
 	} EXCEPTION_CONVERT(env);
@@ -96,7 +96,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setIncrements(JNIEn
  */
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_adm_ValueItem_getValue(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->GetFloatValue(item);
 	} EXCEPTION_CONVERT(env);
 	return 0.0;
@@ -107,7 +107,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_adm_ValueItem_getValue(JNIEnv *
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ValueItem_setValue(JNIEnv *env, jobject obj, jfloat value) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetFloatValue(item, value);
 	} EXCEPTION_CONVERT(env);
 }

@@ -81,10 +81,10 @@ void ASAPI ListEntry_onDraw(ADMEntryRef entry, ADMDrawerRef drawer) {
 
 #define DEFINE_METHOD(METHOD) \
 		if (env->IsInstanceOf(obj, gEngine->cls_adm_HierarchyListEntry)) { \
-			ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj); \
+			ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj); \
 			METHOD(sADMListEntry) \
 		} else { \
-			ADMEntryRef entry = gEngine->getListEntryRef(env, obj); \
+			ADMEntryRef entry = gEngine->getListEntryHandle(env, obj); \
 			METHOD(sADMEntry) \
 		}
 
@@ -95,7 +95,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListEntry_nativeCreate(JNIEnv
 	try {
 		// if index is bellow 0, insert at the end:
 		if (env->IsInstanceOf(obj, gEngine->cls_adm_HierarchyListEntry)) {
-			ADMHierarchyListRef lst = gEngine->getHierarchyListRef(env, list);
+			ADMHierarchyListRef lst = gEngine->getHierarchyListHandle(env, list);
 			ADMListEntryRef entry = index < 0 ? sADMListEntry->Create(lst) :
 				sADMHierarchyList->InsertEntry(lst, index);
 			if (entry != NULL) {
@@ -104,7 +104,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListEntry_nativeCreate(JNIEnv
 			}
 			return (jint) entry;
 		} else {
-			ADMListRef lst = gEngine->getListRef(env, list);
+			ADMListRef lst = gEngine->getListHandle(env, list);
 			ADMEntryRef entry = index < 0 ? sADMEntry->Create(lst) : 
 				sADMList->InsertEntry(lst, index);
 			if (entry != NULL) {
@@ -422,7 +422,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListEntry_invalidate__IIII(JN
 		if (env->IsInstanceOf(obj, gEngine->cls_adm_HierarchyListEntry)) {
 			throw new StringException("invalidate(Rectangle) is not supported in hierarchy list entries.");
 		} else {
-			ADMEntryRef entry = gEngine->getListEntryRef(env, obj);
+			ADMEntryRef entry = gEngine->getListEntryHandle(env, obj);
 			DEFINE_ADM_RECT(rt, x, y, width, height);
 			sADMEntry->InvalidateRect(entry, &rt);
 		}

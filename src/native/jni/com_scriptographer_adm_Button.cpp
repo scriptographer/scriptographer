@@ -40,7 +40,7 @@
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetPicture(item, (ADMIconRef)iconRef);
 	} EXCEPTION_CONVERT(env);
 }
@@ -50,7 +50,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetImage(JNIEnv 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetRolloverImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetRolloverPicture(item, (ADMIconRef)iconRef);
 		sADMItem->SetHasRollOverProperty(item, iconRef != 0); 
 	} EXCEPTION_CONVERT(env);
@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetRolloverImage
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetSelectedImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetSelectedPicture(item, (ADMIconRef)iconRef);
 	} EXCEPTION_CONVERT(env);
 }
@@ -71,7 +71,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetSelectedImage
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Button_nativeSetDisabledImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetDisabledPicture(item, (ADMIconRef)iconRef);
 	} EXCEPTION_CONVERT(env);
 }

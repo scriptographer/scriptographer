@@ -81,7 +81,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_nativeCreateChi
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_nativeRemoveList(JNIEnv *env, jobject obj, jint arg1) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		ADMListEntryRef entry = sADMHierarchyList->GetParentEntry(list);
 		if (entry != NULL) {
 			sADMListEntry->DeleteChildList(entry);
@@ -96,7 +96,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_nativeRemove
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setEntrySize(JNIEnv *env, jobject obj, jint width, jint height, jboolean recursive) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		if (recursive) {
 			sADMHierarchyList->SetEntryWidthRecursive(list, width);
 			sADMHierarchyList->SetEntryHeightRecursive(list, height);
@@ -112,7 +112,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setEntrySize(JN
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setEntryTextRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height, jboolean recursive) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		ADMRect rt;
 		rt.left = x;
 		rt.top = y;
@@ -131,7 +131,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setEntryTextRec
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getNonLeafEntryWidth(JNIEnv *env, jobject obj) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		return sADMHierarchyList->GetNonLeafEntryWidth(list);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -142,7 +142,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getNonLeafEntry
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setNonLeafEntryTextRect(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height, jboolean recursive) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		ADMRect rt;
 		rt.left = x;
 		rt.top = y;
@@ -161,7 +161,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setNonLeafEntry
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getNonLeafEntryTextRect(JNIEnv *env, jobject obj) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		ADMRect rt;
 		sADMHierarchyList->GetEntryTextRect(list, &rt);
 		return gEngine->convertRectangle(env, &rt);
@@ -174,7 +174,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getNonLeafEn
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getLeafAt(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
 		ADMListEntryRef ent = sADMHierarchyList->PickLeafEntry(list, &pt);
 		return gEngine->getListEntryObject(ent);
@@ -187,7 +187,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getLeafAt(JN
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getActiveLeaf(JNIEnv *env, jobject obj) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		ADMListEntryRef entry = sADMHierarchyList->GetActiveLeafEntry(list);
 		if (entry != NULL)
 			return gEngine->getListEntryObject(entry);
@@ -197,7 +197,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getActiveLea
 
 #define GET_ENTRIES(GET_NUMBER, INDEX_ENTRY) \
 	try { \
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj); \
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj); \
 		int length = sADMHierarchyList->GET_NUMBER(list); \
 		jobjectArray res = env->NewObjectArray(length, gEngine->cls_adm_ListEntry, NULL); \
 		if (res == NULL) EXCEPTION_CHECK(env); \
@@ -229,7 +229,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_HierarchyList_getUnne
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getLocalRect(JNIEnv *env, jobject obj) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		ADMRect rt;
 		sADMHierarchyList->GetLocalRect(list, &rt);
 		return gEngine->convertRectangle(env, &rt);
@@ -243,7 +243,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_getLocalRect
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_localToScreen(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
 		sADMHierarchyList->LocalToScreenPoint(list, &pt);
 		return gEngine->convertPoint(env, &pt);
@@ -256,7 +256,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_localToScree
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_screenToLocal(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
 		sADMHierarchyList->ScreenToLocalPoint(list, &pt);
 		return gEngine->convertPoint(env, &pt);
@@ -269,7 +269,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_screenToLoca
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_localToGlobal__II(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
 		sADMHierarchyList->LocalToGlobalPoint(list, &pt);
 		return gEngine->convertPoint(env, &pt);
@@ -282,7 +282,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_localToGloba
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_globalToLocal__II(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
 		sADMHierarchyList->GlobalToLocalPoint(list, &pt);
 		return gEngine->convertPoint(env, &pt);
@@ -295,7 +295,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_globalToLoca
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_localToGlobal__IIII(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMHierarchyList->LocalToGlobalRect(list, &rt);
 		return gEngine->convertRectangle(env, &rt);
@@ -308,7 +308,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_localToGloba
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_globalToLocal__IIII(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMHierarchyList->GlobalToLocalRect(list, &rt);
 		return gEngine->convertRectangle(env, &rt);
@@ -321,7 +321,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyList_globalToLoca
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setIndentationWidth(JNIEnv *env, jobject obj, jint width, jboolean recursive) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		if (recursive)
 			sADMHierarchyList->SetIndentationWidthRecursive(list, width);
 		else 
@@ -334,7 +334,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setIndentationW
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getIndentationWidth(JNIEnv *env, jobject obj) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		return sADMHierarchyList->GetIndentationWidth(list);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -345,7 +345,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getIndentationW
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setLocalLeftMargin(JNIEnv *env, jobject obj, jint width) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		sADMHierarchyList->SetLocalLeftMargin(list, width);
 	} EXCEPTION_CONVERT(env);
 }
@@ -355,7 +355,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setLocalLeftMar
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getLocalLeftMargin(JNIEnv *env, jobject obj) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		return sADMHierarchyList->GetLocalLeftMargin(list);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -366,7 +366,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getLocalLeftMar
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getGlobalLeftMargin(JNIEnv *env, jobject obj) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		return sADMHierarchyList->GetGlobalLeftMargin(list);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -377,7 +377,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getGlobalLeftMa
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setDivided(JNIEnv *env, jobject obj, jboolean divided, jboolean recursive) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		if (recursive)
 			sADMHierarchyList->SetDividedRecursive(list, divided);
 		else 
@@ -390,7 +390,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setDivided(JNIE
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_HierarchyList_isDivided(JNIEnv *env, jobject obj) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		return sADMHierarchyList->GetDivided(list);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -401,7 +401,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_HierarchyList_isDivided(J
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setFlags(JNIEnv *env, jobject obj, jint flags, jboolean recursive) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		if (recursive)
 			sADMHierarchyList->SetFlagsRecursive(list, flags);
 		else 
@@ -414,7 +414,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_setFlags(JNIEnv
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getFlags(JNIEnv *env, jobject obj) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		return sADMHierarchyList->GetFlags(list);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -425,7 +425,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getFlags(JNIEnv
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_invalidate(JNIEnv *env, jobject obj) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		sADMHierarchyList->Invalidate(list);
 	} EXCEPTION_CONVERT(env);
 }
@@ -442,8 +442,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_HierarchyList_getLeaf
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getLeafIndex(JNIEnv *env, jobject obj, jobject entry) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
-		ADMListEntryRef ent = gEngine->getHierarchyListEntryRef(env, entry);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
+		ADMListEntryRef ent = gEngine->getHierarchyListEntryHandle(env, entry);
 		return sADMHierarchyList->GetLeafIndex(list, ent);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -454,7 +454,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getLeafIndex(JN
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_swap(JNIEnv *env, jobject obj, jint fromIndex, jint toIndex) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		sADMHierarchyList->SwapEntries(list, fromIndex, toIndex);
 	} EXCEPTION_CONVERT(env);
 }
@@ -464,7 +464,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_swap(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyList_deselectAll(JNIEnv *env, jobject obj) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		sADMHierarchyList->DeselectAll(list);
 	} EXCEPTION_CONVERT(env);
 }
@@ -481,8 +481,8 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_adm_HierarchyList_getExpa
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyList_getExpandedIndex(JNIEnv *env, jobject obj, jobject entry) {
 	try {
-		ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
-		ADMListEntryRef ent = gEngine->getHierarchyListEntryRef(env, entry);
+		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
+		ADMListEntryRef ent = gEngine->getHierarchyListEntryHandle(env, entry);
 		return sADMHierarchyList->GetExpandedIndex(list, ent);
 	} EXCEPTION_CONVERT(env);
 	return 0;

@@ -41,6 +41,7 @@
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Symbol_nativeCreate(JNIEnv *env, jclass cls, jint artHandle, jboolean listed) {
 	try {
+		// Make sure we're switching to the right doc (gCreationDoc)
 		Document_activate();
 		AIPatternHandle symbol = NULL;
 		sAISymbol->NewSymbolPattern(&symbol, (AIArtHandle) artHandle, !listed);
@@ -95,7 +96,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Symbol_getDefinition(JNIEnv
 		AIPatternHandle symbol = gEngine->getPatternHandle(env, obj);
 		AIArtHandle art = NULL;
 		sAISymbol->GetSymbolPatternArt(symbol, &art);
-		return gEngine->wrapArtHandle(env, art);
+		return gEngine->wrapArtHandle(env, art, gEngine->getDocumentHandle(env, obj));
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

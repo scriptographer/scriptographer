@@ -124,9 +124,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 
 	function addFiles(list, dir, selected) {
 		var files = dir.listFiles(scriptFilter);
-		for (var i = 0; i < files.length; i++) {
+		for (var i = 0; i < files.length; i++)
 			addFile(list, files[i], selected);
-		}
 	}
 
 	function removeFiles() {
@@ -372,7 +371,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	}
 
 	if (scriptographer.scriptDirectory)
-		addFiles(scriptList, scriptographer.scriptDirectory);
+		refreshFiles();
 
 	return {
 		title: 'Scriptographer',

@@ -40,7 +40,7 @@
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ImageStatic_nativeSetImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetPicture(item, (ADMIconRef)iconRef);
 	} EXCEPTION_CONVERT(env);
 }

@@ -102,6 +102,22 @@ public class FontList implements ReadOnlyList<FontFamily>, StringIndexReadOnlyLi
 		return family;
 	}
 
+	public FontWeight getWeight(String fullName) {
+		// first find family:
+		FontFamily family = get(fullName);
+		if (family != null)
+			return family.get(0);
+		int pos = fullName.lastIndexOf(' ');
+		// Now split name into familName weightName and try again:
+		if (pos > 0) {
+			family = get(fullName.substring(0, pos));
+			if (family != null)
+				return family.get(fullName.substring(pos + 1));
+		}
+		return null;
+	}
+	
+	
 	/**
 	 * Boolean value that specifies whether the font list is empty.
 	 */

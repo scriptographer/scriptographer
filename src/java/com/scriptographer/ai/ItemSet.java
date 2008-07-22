@@ -102,7 +102,16 @@ public class ItemSet extends ArrayList<Item> {
 	 */
 	public Raster rasterize(ColorType type, float resolution, int antialiasing,
 			float width, float height) {
+		// Make sure the document is activated.
+		activateDocument(false);
 		return nativeRasterize(type != null ? type.value : -1, resolution, antialiasing, width, height);
+	}
+
+	private void activateDocument(boolean focus) {
+		if (size() > 0) {
+			Document doc = get(0).getDocument();
+			doc.activate(focus);
+		}
 	}
 
 	public Raster rasterize(ColorType type, float resolution, int antialiasing) {

@@ -40,8 +40,8 @@
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ItemGroup_nativeAdd(JNIEnv *env, jobject obj, jobject item) {
 	try {
-	    ADMItemRef itemRef = gEngine->getItemRef(env, obj);
-	    ADMItemRef subItemRef = gEngine->getItemRef(env, item);
+	    ADMItemRef itemRef = gEngine->getItemHandle(env, obj);
+	    ADMItemRef subItemRef = gEngine->getItemHandle(env, item);
 	    sADMItem->AddItem(itemRef, subItemRef);
 	} EXCEPTION_CONVERT(env);
 }
@@ -51,8 +51,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ItemGroup_nativeAdd(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ItemGroup_nativeRemove(JNIEnv *env, jobject obj, jobject item) {
 	try {
-	    ADMItemRef itemRef = gEngine->getItemRef(env, obj);
-	    ADMItemRef subItemRef = gEngine->getItemRef(env, item);
+	    ADMItemRef itemRef = gEngine->getItemHandle(env, obj);
+	    ADMItemRef subItemRef = gEngine->getItemHandle(env, item);
 	    sADMItem->RemoveItem(itemRef, subItemRef);
 	} EXCEPTION_CONVERT(env);
 }

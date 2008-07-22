@@ -304,6 +304,7 @@
 			<class name="com.scriptographer.ai.ItemSet" />
 			<class name="com.scriptographer.ai.Layer" />
 			<class name="com.scriptographer.ai.LayerList" />
+			<class name="com.scriptographer.ai.Dictionary" />
 			<class name="com.scriptographer.ai.Document" />
 			<class name="com.scriptographer.ai.DocumentList" />
 			<class name="com.scriptographer.ai.DocumentView" />

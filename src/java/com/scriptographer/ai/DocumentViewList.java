@@ -53,6 +53,6 @@ public class DocumentViewList extends AbstractReadOnlyList<DocumentView> {
 	private static native int nativeGet(int docHandle, int index);
 
 	public DocumentView get(int index) {
-		return DocumentView.wrapHandle(nativeGet(document.handle, index));
+		return DocumentView.wrapHandle(nativeGet(document.handle, index), document);
 	}
 }

@@ -36,13 +36,12 @@
  */
 
 /*
- * java.lang.String getName()
+ * java.lang.String nativeGetName()
  */
-JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_FontWeight_getName(JNIEnv *env, jobject obj) {
+JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_FontWeight_nativeGetName(JNIEnv *env, jobject obj, jint handle) {
 	try {
-		AIFontKey font = gEngine->getFontHandle(env, obj);
 		ASUnicode name[256];
-		if (!sAIFont->GetFontStyleUINameUnicode(font, name, 256))
+		if (!sAIFont->GetFontStyleUINameUnicode((AIFontKey) handle, name, 256))
 			return gEngine->convertString(env, name);		
 	} EXCEPTION_CONVERT(env);
 	return NULL;
@@ -62,27 +61,25 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_FontWeight_nativeGetFamily(JNI
 }
 
 /*
- * int getIndex()
+ * int nativeGetIndex(int handle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_FontWeight_getIndex(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_FontWeight_nativeGetIndex(JNIEnv *env, jobject obj, jint handle) {
 	try {
-		AIFontKey font = gEngine->getFontHandle(env, obj);
 		AITypefaceKey family;
 		short style;
-		if (!sAIFont->TypefaceAndStyleFromFontKey(font, &family, &style))
+		if (!sAIFont->TypefaceAndStyleFromFontKey((AIFontKey) handle, &family, &style))
 			return (jint) style;
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
 /*
- * boolean isValid()
+ * boolean nativeIsValid(int handle)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_FontWeight_isValid(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_FontWeight_nativeIsValid(JNIEnv *env, jobject obj, jint handle) {
 	try {
-		AIFontKey font = gEngine->getFontHandle(env, obj);
 		FontRef ref;
-		if (!sAIFont->FontFromFontKey(font, &ref) && ref != NULL)
+		if (!sAIFont->FontFromFontKey((AIFontKey) handle, &ref) && ref != NULL)
 			return true;
 	} EXCEPTION_CONVERT(env);
 	return false;

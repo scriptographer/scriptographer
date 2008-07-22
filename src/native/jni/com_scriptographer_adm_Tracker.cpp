@@ -50,7 +50,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Tracker_getCurrentModifiers(J
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Tracker_abort(JNIEnv *env, jobject obj) {
 	try {
-		ADMTrackerRef tracker = gEngine->getTrackerRef(env, obj);
+		ADMTrackerRef tracker = gEngine->getTrackerHandle(env, obj);
 		sADMTracker->Abort(tracker);
 	} EXCEPTION_CONVERT(env);
 }
@@ -60,7 +60,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Tracker_abort(JNIEnv *env, jo
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Tracker_releaseMouseCapture(JNIEnv *env, jobject obj) {
 	try {
-		ADMTrackerRef tracker = gEngine->getTrackerRef(env, obj);
+		ADMTrackerRef tracker = gEngine->getTrackerHandle(env, obj);
 		sADMTracker->ReleaseMouseCapture(tracker);
 	} EXCEPTION_CONVERT(env);
 }

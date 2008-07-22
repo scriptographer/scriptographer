@@ -179,12 +179,12 @@ public class Annotator extends NativeObject {
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static void onDraw(int handle, int portHandle, int viewHandle)
+	private static void onDraw(int handle, int portHandle, int viewHandle, int docHandle)
 			throws Exception {
 		Annotator annotator = getAnnotator(handle);
 		if (annotator != null) {
 			annotator.onDraw(createDrawer(portHandle),
-					DocumentView.wrapHandle(viewHandle));
+					DocumentView.wrapHandle(viewHandle, Document.wrapHandle(docHandle)));
 		}
 	}
 	

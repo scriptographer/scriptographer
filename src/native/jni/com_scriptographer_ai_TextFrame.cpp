@@ -70,10 +70,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_nativeSetOrientation
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_nativeCreateOutline(JNIEnv *env, jobject obj) {
 	try {
+		// Make sure we're switching to the right doc (gCreationDoc)
+		Document_activate();
 		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
 		AIArtHandle outline;
-		if (!sAITextFrame->CreateOutline(text, &outline))
+		if (!sAITextFrame->CreateOutline(text, &outline)) {
+			// No need to pass document since we're activating document in getArtHandle
 			return gEngine->wrapArtHandle(env, outline);
+		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -165,7 +169,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_getSelection(JNIE
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_nativeGetRange(JNIEnv *env, jobject obj, jboolean bIncludeOverflow) {
 	try {
 		// activate document so that text flow gets suspended as soon as the first range is accessed
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj, true);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		TextRangeRef range = NULL;
 		sTextFrame->GetTextRange(frame, bIncludeOverflow, &range);
 		sTextFrame->Release(frame);
@@ -180,7 +184,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_nativeGetRange(JNIEn
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextFrame_getSpacing(JNIEnv *env, jobject obj) {
 	ASReal spacing = 0;
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
 		sTextFrame->GetSpacing(frame, &spacing);
 		sTextFrame->Release(frame);
 	} EXCEPTION_CONVERT(env);
@@ -192,7 +196,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextFrame_getSpacing(JNIEnv 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setSpacing(JNIEnv *env, jobject obj, jfloat spacing) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj, true);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		sTextFrame->SetSpacing(frame, spacing);
 		sTextFrame->Release(frame);
 	} EXCEPTION_CONVERT(env);
@@ -204,7 +208,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setSpacing(JNIEnv *e
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_getOpticalAlignment(JNIEnv *env, jobject obj) {
 	ATEBool8 active = false;
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
 		sTextFrame->GetOpticalAlignment(frame, &active);
 		sTextFrame->Release(frame);
 	} EXCEPTION_CONVERT(env);
@@ -216,7 +220,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_getOpticalAlignm
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOpticalAlignment(JNIEnv *env, jobject obj, jboolean active) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj, true);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		sTextFrame->SetOpticalAlignment(frame, active);
 		sTextFrame->Release(frame);
 	} EXCEPTION_CONVERT(env);
@@ -229,8 +233,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_equals(JNIEnv *e
 	ATEBool8 ret = false;
 	try {
 		if (env->IsInstanceOf(text, gEngine->cls_ai_TextFrame)) {
-			TextFrameRef frame1 = gEngine->getTextFrameRef(env, obj);
-			TextFrameRef frame2 = gEngine->getTextFrameRef(env, text);
+			TextFrameRef frame1 = gEngine->getTextFrameHandle(env, obj);
+			TextFrameRef frame2 = gEngine->getTextFrameHandle(env, text);
 			if (frame2 != NULL) {
 				sTextFrame->IsEqual(frame1, frame2, &ret);
 				sTextFrame->Release(frame2);

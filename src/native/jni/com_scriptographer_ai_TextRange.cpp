@@ -373,7 +373,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, TextRangesRef ranges) {
  */
 JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_TextRange_getOrigins(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj, true);
 		GlyphRuns *glyphRuns = GlyphRuns::get(env, obj, range);
 		if (glyphRuns != NULL)
 			return glyphRuns->getOrigins(env);
@@ -386,7 +386,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_TextRange_getOrigins(J
  */
 JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_TextRange_getTransformations(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj, true);
 		GlyphRuns *glyphRuns = GlyphRuns::get(env, obj, range);
 		if (glyphRuns != NULL)
 			return glyphRuns->getTransformations(env);
@@ -397,7 +397,7 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_TextRange_getTransform
 /*
 JNIEXPORT jintArray JNICALL Java_com_scriptographer_ai_TextRange_getGlyphIds(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		int pos;
 		IGlyphRun glyphRun = TextRange_getGlyphRun(env, obj, range, &pos);
 		if (!glyphRun.IsNull()) {
@@ -416,7 +416,7 @@ JNIEXPORT jintArray JNICALL Java_com_scriptographer_ai_TextRange_getGlyphIds(JNI
 
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getGlyphId(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		int pos;
 		IGlyphRun glyphRun = TextRange_getGlyphRun(env, obj, range, &pos);
 		if (!glyphRun.IsNull()) {
@@ -429,7 +429,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getGlyphId(JNIEnv *e
 
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getCharCount(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		int pos;
 		IGlyphRun glyphRun = TextRange_getGlyphRun(env, obj, range, &pos);
 		return glyphRun.GetCharacterCount();
@@ -439,7 +439,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getCharCount(JNIEnv 
 
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getCount(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		int pos;
 		IGlyphRun glyphRun = TextRange_getGlyphRun(env, obj, range, &pos);
 		return glyphRun.GetSize();
@@ -453,7 +453,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getCount(JNIEnv *env
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_nativeGetStoryIndex(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		StoryRef story;
 		ASInt32 index;
 		// we can't wrap the story here and return it because for stories it's important to only have one reference per story (caching values...)
@@ -469,7 +469,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_nativeGetStoryIndex(
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getStart(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		ASInt32 start;
 		if (!sTextRange->GetStart(range, &start))
 			return start;
@@ -482,7 +482,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getStart(JNIEnv *env
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getEnd(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		ASInt32 end;
 		if (!sTextRange->GetEnd(range, &end))
 			return end;
@@ -495,7 +495,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getEnd(JNIEnv *env, 
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getLength(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		ASInt32 size;
 		if (!sTextRange->GetSize(range, &size))
 			return size;
@@ -508,7 +508,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getLength(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_setRange(JNIEnv *env, jobject obj, jint start, jint end) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		sTextRange->SetRange(range, start, end);
 	} EXCEPTION_CONVERT(env);
 }
@@ -518,7 +518,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_setRange(JNIEnv *env
  */
 JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_TextRange_getContent(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		ASInt32 size;
 		if (!sTextRange->GetSize(range, &size)) {
 			ASUnicode *text = new ASUnicode[size];
@@ -585,13 +585,15 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_nativeAppend__II(JNI
 }
 
 /*
- * void nativeRemove(int handle)
+ * boolean nativeRemove(int handle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeRemove(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextRange_nativeRemove(JNIEnv *env, jobject obj, jint handle) {
 	try {
 		sTextRange->Remove((TextRangeRef) handle);
 		GlyphRuns::release(env, obj);
+		return true;
 	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
@@ -599,15 +601,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeRemove(JNIEnv 
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextRange_getFirstFrame(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		TextFramesIteratorRef framesRef;
 		if (!sTextRange->GetTextFramesIterator(range, &framesRef)) {
 			ITextFramesIterator frames(framesRef);
 			if (!frames.IsEmpty()) {
 				AIArtHandle art;
-				if (!sAITextFrame->GetAITextFrame( frames.Item().GetRef(), &art)) {
-					return gEngine->wrapArtHandle(env, art);	
-				}
+				if (!sAITextFrame->GetAITextFrame( frames.Item().GetRef(), &art))
+					return gEngine->wrapArtHandle(env, art, gEngine->getDocumentHandle(env, obj));	
 			}
 		}
 	} EXCEPTION_CONVERT(env);
@@ -619,7 +620,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextRange_getFirstFrame(JNI
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextRange_getLastFrame(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		TextFramesIteratorRef framesRef;
 		if (!sTextRange->GetTextFramesIterator(range, &framesRef)) {
 			ITextFramesIterator frames(framesRef);
@@ -628,9 +629,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextRange_getLastFrame(JNIE
 				while(frames.IsNotDone())
 					frames.Next();
 				AIArtHandle art;
-				if (!sAITextFrame->GetAITextFrame(frames.Item().GetRef(), &art)) {
-					return gEngine->wrapArtHandle(env, art);	
-				}
+				if (!sAITextFrame->GetAITextFrame(frames.Item().GetRef(), &art))
+					return gEngine->wrapArtHandle(env, art, gEngine->getDocumentHandle(env, obj));	
 			}
 		}
 	} EXCEPTION_CONVERT(env);
@@ -642,7 +642,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextRange_getLastFrame(JNIE
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextRange_clone(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		TextRangeRef clone;
 		if (!sTextRange->Clone(range, &clone))
 			return gEngine->wrapTextRangeRef(env, clone);
@@ -655,7 +655,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextRange_clone(JNIEnv *env
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getSingleGlyph(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		ATEGlyphID id;
 		ATEBool8 ret;
 		if (!sTextRange->GetSingleGlyphInRange(range, &id, &ret) && ret) {
@@ -670,7 +670,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getSingleGlyph(JNIEn
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_select(JNIEnv *env, jobject obj, jboolean addToSelection) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		sTextRange->Select(range, addToSelection);
 	} EXCEPTION_CONVERT(env);
 }
@@ -680,7 +680,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_select(JNIEnv *env, 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_deselect(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		sTextRange->DeSelect(range);
 	} EXCEPTION_CONVERT(env);
 }
@@ -690,7 +690,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_deselect(JNIEnv *env
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextRange_nativeChangeCase(JNIEnv *env, jobject obj, jint type) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		return !sTextRange->ChangeCase(range, (CaseChangeType) type);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -701,7 +701,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextRange_nativeChangeCase
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_fitHeadlines(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		sTextRange->FitHeadlines(range);
 	} EXCEPTION_CONVERT(env);
 }
@@ -711,7 +711,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_fitHeadlines(JNIEnv 
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_nativeGetCharacterType(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		ASCharType type;
 		if (!sTextRange->GetCharacterType(range, &type)) {
 			return (jint) type;
@@ -721,15 +721,13 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_nativeGetCharacterTy
 }
 
 /*
- * void release()
+ * void nativeRelease()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_release(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_nativeRelease(JNIEnv *env, jobject obj, jint handle) {
 	try {
 		GlyphRuns::release(env, obj);
-		TextRangeRef range = (TextRangeRef) gEngine->getIntField(env, obj, gEngine->fid_ai_NativeObject_handle);
-		if (range != NULL) {
-			sTextRange->Release(range);
-			gEngine->setIntField(env, obj, gEngine->fid_ai_NativeObject_handle, 0);
+		if (handle) {
+			sTextRange->Release((TextRangeRef) handle);
 		}
 	} EXCEPTION_CONVERT(env);
 }
@@ -740,8 +738,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_release(JNIEnv *env,
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextRange_equals(JNIEnv *env, jobject obj, jobject range) {
 	try {
 		if (env->IsInstanceOf(range, gEngine->cls_ai_TextRange)) {
-			TextRangeRef range1 = gEngine->getTextRangeRef(env, obj);
-			TextRangeRef range2 = gEngine->getTextRangeRef(env, range);
+			TextRangeRef range1 = gEngine->getTextRangeHandle(env, obj);
+			TextRangeRef range2 = gEngine->getTextRangeHandle(env, range);
 			if (range2 != NULL) {
 				ATEBool8 ret;
 				if (!sTextRange->IsEqual(range1, range2, &ret))
@@ -757,7 +755,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextRange_equals(JNIEnv *e
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getKerning(JNIEnv *env, jobject obj) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		StoryRef story;
 		ASInt32 kerning;
 		AutoKernType type;
@@ -772,7 +770,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextRange_getKerning(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextRange_setKerning(JNIEnv *env, jobject obj, jint kerning) {
 	try {
-		TextRangeRef range = gEngine->getTextRangeRef(env, obj);
+		TextRangeRef range = gEngine->getTextRangeHandle(env, obj);
 		StoryRef story;
 		ASInt32 start;
 		if (!sTextRange->GetStory(range, &story) && !sTextRange->GetStart(range, &start))

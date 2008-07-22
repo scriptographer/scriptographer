@@ -54,6 +54,11 @@ public abstract class TextFrame extends Item {
 		super(handle);
 	}
 
+	protected void commit(boolean invalidate) {
+		CommitManager.commit(this.getStory());
+		super.commit(invalidate);
+	}
+
 	private native int nativeGetOrientation();
 	private native void nativeSetOrientation(int orientation);
 

@@ -29,6 +29,7 @@
 
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
+#include "aiGlobals.h"
 #include "com_scriptographer_ai_Gradient.h"
 
 /*
@@ -40,6 +41,8 @@
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Gradient_nativeCreate(JNIEnv *env, jclass cls) {
 	try {
+		// Make sure we're switching to the right doc (gCreationDoc)
+		Document_activate();
 		AIGradientHandle gradient = NULL;
 		sAIGradient->NewGradient(&gradient);
 		return (jint) gradient;

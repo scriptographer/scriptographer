@@ -59,7 +59,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeCreate(JN
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeClone(JNIEnv *env, jobject obj) {
 	try {
-		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj);
+		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj);
 		CharFeaturesRef clone;
 		if (!sCharFeatures->Clone(features, &clone)) {
 			// add reference to the handle, which will be released in CharacterStyle.finalize
@@ -112,15 +112,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetStyle(
 }
 
 /*
- * void finalize()
+ * void nativeRelease()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_release(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeRelease(JNIEnv *env, jobject obj, jint handle) {
 	try {
-		CharFeaturesRef features = (CharFeaturesRef) gEngine->getIntField(env, obj, gEngine->fid_ai_NativeObject_handle);
-		if (features != NULL) {
-			sCharFeatures->Release(features);
-			gEngine->setIntField(env, obj, gEngine->fid_ai_NativeObject_handle, 0);
-		}
+		if (handle)
+			sCharFeatures->Release((CharFeaturesRef) handle);
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -129,7 +126,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_release(JNIEnv 
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetFont(JNIEnv *env, jobject obj) {
 	try {
-		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj);
+		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj);
 		ATEBool8 isAssigned;
 		FontRef value;
 		AIFontKey font;
@@ -146,7 +143,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGetFont(J
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSetFont(JNIEnv *env, jobject obj, jint value) {
 	try {
-		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj);
+		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj);
 		ASErr err;
 		FontRef font;
 		if (value == -1)

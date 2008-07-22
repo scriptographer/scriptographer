@@ -80,7 +80,8 @@ ASErr ScriptographerPlugin::createTool(int index, char *title, int iconID, int c
 	data.tooltip = title;
 	
 	data.icon = sADMIcon->GetFromResource(m_pluginRef, NULL, iconID, 0);
-	if (data.icon == NULL || sADMIcon->GetType(data.icon) == kUnknown) throw new ASErrException('!ico');
+	if (data.icon == NULL || sADMIcon->GetType(data.icon) == kUnknown)
+		throw new ASErrException('!ico');
 
 	ASErr error;
 	

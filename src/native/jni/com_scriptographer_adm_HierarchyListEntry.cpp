@@ -91,7 +91,7 @@ void ASAPI HierarchyListEntry_onDraw(ADMListEntryRef entry, ADMDrawerRef drawer)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyListEntry_getItem(JNIEnv *env, jobject obj) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		return gEngine->getItemObject(sADMListEntry->GetItem(entry));
 	} EXCEPTION_CONVERT(env);
 	return NULL;
@@ -102,7 +102,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyListEntry_getItem
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_setExpanded(JNIEnv *env, jobject obj, jboolean expanded) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		sADMListEntry->ExpandHierarchy(entry, expanded);
 	} EXCEPTION_CONVERT(env);
 }
@@ -112,7 +112,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_setExpande
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_HierarchyListEntry_isExpanded(JNIEnv *env, jobject obj) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		return sADMListEntry->IsHierarchyExpanded(entry);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -123,7 +123,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_HierarchyListEntry_isExpa
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_setEntryNameHidden(JNIEnv *env, jobject obj, jboolean nameHidden) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		sADMListEntry->HideEntryName(entry, nameHidden);
 	} EXCEPTION_CONVERT(env);
 }
@@ -133,7 +133,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_setEntryNa
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_HierarchyListEntry_isEntryNameHidden(JNIEnv *env, jobject obj) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		return sADMListEntry->IsEntryNameHidden(entry);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -144,7 +144,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_HierarchyListEntry_isEntr
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_setChildSelectable(JNIEnv *env, jobject obj, jboolean selectable) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		sADMListEntry->EnableChildSelection(entry, selectable);
 	} EXCEPTION_CONVERT(env);
 }
@@ -154,7 +154,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_setChildSe
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_HierarchyListEntry_isChildSelectable(JNIEnv *env, jobject obj) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		return sADMListEntry->IsChildSelectable(entry);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -165,7 +165,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_HierarchyListEntry_isChil
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyListEntry_getDepth(JNIEnv *env, jobject obj) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		return sADMListEntry->GetHierarchyDepth(entry);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -176,7 +176,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyListEntry_getDepth(J
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyListEntry_getVisualDepth(JNIEnv *env, jobject obj) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		return sADMListEntry->GetVisualHierarchyDepth(entry);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -187,7 +187,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_HierarchyListEntry_getVisualD
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_HierarchyListEntry_areChildrenSelected(JNIEnv *env, jobject obj) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		return sADMListEntry->AreChildrenSelected(entry);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -198,7 +198,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_HierarchyListEntry_areChi
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyListEntry_getExpandArrowRect(JNIEnv *env, jobject obj) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		ADMRect rt;
 		sADMListEntry->GetExpandArrowLocalRect(entry, &rt);
 		return gEngine->convertRectangle(env, &rt);
@@ -211,7 +211,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyListEntry_getExpa
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_setTextRect(JNIEnv *env, jobject obj, jobject rect) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		ADMRect rt;
 		gEngine->convertRectangle(env, rect, &rt);
 		sADMListEntry->SetEntryTextRect(entry, &rt);
@@ -223,7 +223,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_setTextRec
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyListEntry_getEntryItem(JNIEnv *env, jobject obj) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		ADMItemRef itm = sADMListEntry->GetEntryItem(entry);
 		if (itm != NULL)
 			return gEngine->getItemObject(itm);	
@@ -236,8 +236,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_HierarchyListEntry_getEntr
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_setEntryItem(JNIEnv *env, jobject obj, jobject item) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
-		ADMItemRef itm = gEngine->getItemRef(env, item);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
+		ADMItemRef itm = gEngine->getItemHandle(env, item);
 		sADMListEntry->SetEntryItem(entry, itm);
 	} EXCEPTION_CONVERT(env);
 }
@@ -247,7 +247,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_setEntryIt
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_nativeSetFont(JNIEnv *env, jobject obj, jint font) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		sADMListEntry->SetFont(entry, (ADMFont)font);
 	} EXCEPTION_CONVERT(env);
 }
@@ -257,7 +257,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_nativeSetF
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_nativeSetTextColor(JNIEnv *env, jobject obj, jint color) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		sADMListEntry->SetTextColor(entry, (ADMColor)color);
 	} EXCEPTION_CONVERT(env);
 }
@@ -267,7 +267,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_nativeSetT
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_nativeSetBackgroundColor(JNIEnv *env, jobject obj, jint color) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		sADMListEntry->SetBackgroundColor(entry, (ADMColor)color);
 	} EXCEPTION_CONVERT(env);
 }
@@ -277,7 +277,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_nativeSetB
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_HierarchyListEntry_nativeSetDividerColor(JNIEnv *env, jobject obj, jint color) {
 	try {
-		ADMListEntryRef entry = gEngine->getHierarchyListEntryRef(env, obj);
+		ADMListEntryRef entry = gEngine->getHierarchyListEntryHandle(env, obj);
 		sADMListEntry->SetDividingLineColor(entry, (ADMColor)color);
 	} EXCEPTION_CONVERT(env);
 }

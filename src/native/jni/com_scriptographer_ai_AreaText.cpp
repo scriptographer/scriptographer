@@ -58,7 +58,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_nativeCreate(JNIEnv *
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_getRowCount(JNIEnv *env, jobject obj) {
 	ASInt32 count = 0;
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
 		sTextFrame->GetRowCount(frame, &count);
 		sTextFrame->Release(frame);
 	} EXCEPTION_CONVERT(env);
@@ -70,7 +70,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_getRowCount(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setRowCount(JNIEnv *env, jobject obj, jint count) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj, true);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		sTextFrame->SetRowCount(frame, count);
 		sTextFrame->Release(frame);
 	} EXCEPTION_CONVERT(env);
@@ -82,7 +82,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setRowCount(JNIEnv *e
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_getColumnCount(JNIEnv *env, jobject obj) {
 	ASInt32 count = 0;
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
 		sTextFrame->GetColumnCount(frame, &count);
 		sTextFrame->Release(frame);
 	} EXCEPTION_CONVERT(env);
@@ -94,7 +94,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_AreaText_getColumnCount(JNIEnv
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setColumnCount(JNIEnv *env, jobject obj, jint count) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj, true);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		sTextFrame->SetColumnCount(frame, count);
 	} EXCEPTION_CONVERT(env);
 }
@@ -105,7 +105,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setColumnCount(JNIEnv
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_AreaText_getRowMajorOrder(JNIEnv *env, jobject obj) {
 	ATEBool8 rowMajorOrder = false;
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
 		sTextFrame->GetRowMajorOrder(frame, &rowMajorOrder);
 		sTextFrame->Release(frame);
 	} EXCEPTION_CONVERT(env);
@@ -117,7 +117,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_AreaText_getRowMajorOrder(
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setRowMajorOrder(JNIEnv *env, jobject obj, jboolean rowMajorOrder) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj, true);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		sTextFrame->SetRowMajorOrder(frame, rowMajorOrder);
 		sTextFrame->Release(frame);
 	} EXCEPTION_CONVERT(env);
@@ -128,7 +128,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setRowMajorOrder(JNIE
  */
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_AreaText_getRowGutter(JNIEnv *env, jobject obj) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
 		ASReal gutter;
 		if (!sTextFrame->GetRowGutter(frame, &gutter))
 			return gutter;
@@ -141,7 +141,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_AreaText_getRowGutter(JNIEnv
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setRowGutter(JNIEnv *env, jobject obj, jfloat gutter) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj, true);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		sTextFrame->SetRowGutter(frame, gutter);
 	} EXCEPTION_CONVERT(env);
 }
@@ -152,7 +152,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setRowGutter(JNIEnv *
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_AreaText_getColumnGutter(JNIEnv *env, jobject obj) {
 	ASReal gutter = 0;
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
 		sTextFrame->GetColumnGutter(frame, &gutter);
 		sTextFrame->Release(frame);
 	} EXCEPTION_CONVERT(env);
@@ -164,7 +164,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_AreaText_getColumnGutter(JNI
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_AreaText_setColumnGutter(JNIEnv *env, jobject obj, jfloat gutter) {
 	try {
-		TextFrameRef frame = gEngine->getTextFrameRef(env, obj, true);
+		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		sTextFrame->SetColumnGutter(frame, gutter);
 		sTextFrame->Release(frame);
 	} EXCEPTION_CONVERT(env);

@@ -34,12 +34,16 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class Pattern extends NativeWrapper {
+public class Pattern extends DocumentObject {
+
+	protected Pattern(int handle, Document document) {
+		super(handle, document);
+	}
 	
 	private static native int nativeCreate();
-	
+
 	public Pattern() {
-		super(nativeCreate(), true);
+		super(nativeCreate());
 	}
 	
 	public Pattern(Item item) {
@@ -48,7 +52,7 @@ public class Pattern extends NativeWrapper {
 	}
 
 	protected static Pattern wrapHandle(int handle, Document document) {
-		return (Pattern) wrapHandle(Pattern.class, handle, document, true);
+		return (Pattern) wrapHandle(Pattern.class, handle, document);
 	}
 	
 	public native String getName();

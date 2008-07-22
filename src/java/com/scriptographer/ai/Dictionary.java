@@ -31,70 +31,82 @@
 
 package com.scriptographer.ai;
 
-import java.util.HashMap;
-
-import com.scriptographer.CommitManager;
-import com.scriptographer.Commitable;
+import com.scratchdisk.list.AbstractMap;
+import com.scratchdisk.util.SoftIntMap;
 
 /**
  * @author lehni
  */
-public class Dictionary extends HashMap<Object, Object> implements Commitable {
+public class Dictionary extends AbstractMap<String, Object> {
+	private int handle;
+	private Document document;
 
-	protected DictionaryObject object;
-	protected boolean dirty = false;
-	protected int version = -1;
+	// Internal hash map that keeps track of already wrapped objects. defined
+	// as soft.
+	private static SoftIntMap<Dictionary> dictionaries = new SoftIntMap<Dictionary>();
 
-	protected Dictionary(DictionaryObject object) {
-		this.object = object;
-		fetch();
-	}
-	
-	protected Dictionary(Document document) {
-		
-	}
-
-	protected void update() {
-		// only update if it didn't change in the meantime:
-		if (!dirty && object != null && version != object.getVersion())
-			fetch();
+	private Dictionary(int handle, Document document) {
+		this.handle = handle;
+		this.document = document;
+		dictionaries.put(handle, this);
 	}
 
-	protected void markDirty() {
-		// only mark it as dirty if it's attached to a path already:
-		if (!dirty && object != null) {
-			CommitManager.markDirty(this.object, this);
-			dirty = true;
-		}
-	}
-	
-	protected void fetch() {
-		object.nativeGetDictionary(this);
-		version = object.getVersion();
-	}
-	
-	public void commit() {
-		if (dirty && object != null) {
-			object.nativeSetDictionary(this);
-			dirty = false;
-		}
-	}
-	
-	public void clear() {
-		super.clear();
-		markDirty();
+	private native Object nativeGet(int handle, int docHandle, Object key);
+
+	public Object get(Object key) {
+		return nativeGet(handle, document.handle, key);
 	}
 
-	public Object put(Object key, Object value) {
-		Object obj = super.put(key, value);
-		markDirty();
-		return obj;
+	private native boolean nativePut(int handle, String key, Object value);
+
+	public Object put(String key, Object value) {
+		Object previous = get(key);
+		if (!nativePut(handle, key, value))
+			throw new IllegalArgumentException();
+		return previous;
 	}
+
+	private native boolean nativeRemove(int handle, Object key);
 
 	public Object remove(Object key) {
-		Object obj = super.remove(key);
-		if (obj != null)
-			markDirty();
-		return obj;
+		Object previous = get(key);
+		return nativeRemove(handle, key) ? previous : null;
+	}
+
+	public native boolean containsKey(Object key);
+
+	public native int size();
+
+	// TODO: instead of producing a full array for all keys, we could add support for 
+	// iterators to AbstractMap as an alternative (supporting both), and implementing
+	// a wrapper for the native dictionary iterator here.
+	protected native String[] keys();
+
+	private native void nativeRelease(int handle);
+
+	protected void finalize() {
+		nativeRelease(handle);
+	}
+
+	public Document getDocument() {
+		return document;
+	}
+
+	protected static Dictionary wrapHandle(int handle, Document document) {
+		Dictionary dictionary = dictionaries.get(handle);
+		if (dictionary == null || dictionary.document != document)
+			dictionary = new Dictionary(handle, document);
+		return dictionary; 
+	}
+
+	protected static Dictionary wrapHandle(int handle) {
+		return wrapHandle(handle, Document.getWorkingDocument());
+	}
+
+	/**
+	 * Called from the native environment to wrap a Dictionary:
+	 */
+	protected static Dictionary wrapHandle(int handle, int docHandle) {
+		return wrapHandle(handle, Document.wrapHandle(docHandle)); 
 	}
 }

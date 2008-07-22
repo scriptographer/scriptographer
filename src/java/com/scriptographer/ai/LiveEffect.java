@@ -250,7 +250,7 @@ public class LiveEffect extends NativeObject {
 	 * there is one. It keeps the effectHandle and puts itself in the list of
 	 * unused effects
 	 */
-	public void remove() {
+	public boolean remove() {
 		// see whether we're still linked:
 		if (effects.get(handle) == this) {
 			// if so remove it and put it to the list of unused effects, for later recycling
@@ -259,7 +259,9 @@ public class LiveEffect extends NativeObject {
 			if (menuItem != null)
 				menuItem.remove();
 			menuItem = null;
+			return true;
 		}
+		return false;
 	}
 
 	public static void removeAll() {
@@ -393,18 +395,22 @@ public class LiveEffect extends NativeObject {
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static void onEditParameters(int handle, Map<String, Object> parameters,
+	private static void onEditParameters(int handle, int parameters,
 			int effectContext, boolean allowPreview) throws Exception {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
-			// put these special values to the parameters for the duration of
+			// TODO: put these special values to the parameters for the duration of
 			// the handler the parameter map then needs to be passed to
 			// functions like updateParameters
+			/*
 			parameters.put("context", new Integer(effectContext));
 			parameters.put("allowPreview", new Boolean(allowPreview));
-			effect.onEditParameters(parameters);
+			*/
+			effect.onEditParameters(Dictionary.wrapHandle(parameters));
+			/*
 			parameters.remove("context");
 			parameters.remove("allowPreview");
+			*/
 		}
 	}
 
@@ -412,11 +418,11 @@ public class LiveEffect extends NativeObject {
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static int onCalculate(int handle, Map parameters, Item item)
+	private static int onCalculate(int handle, int parameters, Item item)
 			throws Exception {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
-			Item newArt = effect.onCalculate(parameters, item);
+			Item newArt = effect.onCalculate(Dictionary.wrapHandle(parameters), item);
 			if (newArt != null)
 				item = newArt;
 		}
@@ -429,11 +435,11 @@ public class LiveEffect extends NativeObject {
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static int onGetInputType(int handle, Map parameters, Item item)
+	private static int onGetInputType(int handle, int parameters, Item item)
 			throws Exception {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null)
-			return effect.onGetInputType(parameters, item);
+			return effect.onGetInputType(Dictionary.wrapHandle(parameters), item);
 		return 0;
 	}
 

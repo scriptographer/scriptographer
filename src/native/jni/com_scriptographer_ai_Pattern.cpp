@@ -30,6 +30,7 @@
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
+#include "aiGlobals.h"
 #include "com_scriptographer_ai_Pattern.h"
 
 /*
@@ -41,6 +42,8 @@
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Pattern_nativeCreate(JNIEnv *env, jclass cls) {
 	try {
+		// Make sure we're switching to the right doc (gCreationDoc)
+		Document_activate();
 		AIPatternHandle pattern = NULL;
 		sAIPattern->NewPattern(&pattern);
 		return (jint) pattern;
@@ -94,7 +97,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pattern_getDefinition(JNIEn
 		AIPatternHandle pattern = gEngine->getPatternHandle(env, obj);
 		AIArtHandle art = NULL;
 		sAIPattern->GetPatternArt(pattern, &art);
-		return gEngine->wrapArtHandle(env, art);
+		return gEngine->wrapArtHandle(env, art, gEngine->getDocumentHandle(env, obj));
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

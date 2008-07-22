@@ -32,7 +32,9 @@
 package com.scriptographer.ai;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.Map;
 
 import com.scratchdisk.list.List;
 import com.scratchdisk.list.Lists;
@@ -43,7 +45,7 @@ import com.scriptographer.CommitManager;
 /**
  * @author lehni
  */
-public abstract class Item extends DictionaryObject {
+public abstract class Item extends DocumentObject {
 	
 	// the internal version. this is used for internally reflected data,
 	// such as segmentList, pathStyle, and so on. Every time an object gets
@@ -52,22 +54,17 @@ public abstract class Item extends DictionaryObject {
 	// update-commit related code needs to check against this variable
 	protected int version = 0;
 	
-	// the reference to the dictionary that contains this item, if any
-	protected int dictionaryRef = 0;
+	// The handle for the dictionary that contains this item, if any
+	protected int dictionaryHandle = 0;
+
+	// The art item's dictionary
+	private Dictionary data = null;
 	
-	// internal hash map that keeps track of already wrapped objects. defined
+	// Internal hash map that keeps track of already wrapped objects. defined
 	// as soft.
 	private static SoftIntMap<Item> items = new SoftIntMap<Item>();
 	
-	/* TODO: needed?
-	// The same, but for the children of one object, and not weak,
-	// so they're kept alive as long as the parent lives:
-	private ArrayList childrenWrappers = new ArrayList();
-	*/
-
 	private PathStyle style = null;
-	
-	protected Document document = null;
 
 	// from AIArt.h
 	
@@ -139,19 +136,11 @@ public abstract class Item extends DictionaryObject {
 	 * @param handle
 	 */
 	protected Item(int handle) {
-		super(handle);
+		// We are setting document to null by default, since it will be
+		// set in wrapHandle.
+		super(handle, null); 
 		// keep track of this object from now on, see wrapArtHandle
 		items.put(this.handle, this);
-		/*
-		// store the wrapper also in the paren'ts childrenWrappers segmentList,
-		// so it becomes permanent as long the object itself exists.
-		// see definitions of items and childrenWrappers.
-		Item parent = getParent();
-		if (parent != null)
-			parent.childrenWrappers.add(this);
-		*/
-		// store reference to the active document
-		this.document = Document.getActiveDocument();
 	}
 
 	private native static int nativeCreate(short type);
@@ -162,7 +151,7 @@ public abstract class Item extends DictionaryObject {
 	 * @param type Item.TYPE_*
 	 */
 	protected Item(short type) {
-		this(nativeCreate(type));
+		super(nativeCreate(type));
 	}
 
 	/**
@@ -174,7 +163,7 @@ public abstract class Item extends DictionaryObject {
 	 * @return the wrapped item
 	 */
 	protected static Item wrapHandle(int artHandle, short type, int textType,
-			int docHandle, int dictionaryRef, boolean wrapped) {
+			int docHandle, int dictionaryHandle, boolean wrapped) {
 		// first see whether the object was already wrapped before:
 		Item item = null;
 		// only try to use the previous wrapper for this address if the object
@@ -226,7 +215,7 @@ public abstract class Item extends DictionaryObject {
 				}
 		}
 		if (item != null) {
-			item.dictionaryRef = dictionaryRef;
+			item.dictionaryHandle = dictionaryHandle;
 			item.document = Document.wrapHandle(docHandle);
 			if (item.millis == 0)
 				item.millis = System.currentTimeMillis();
@@ -235,7 +224,7 @@ public abstract class Item extends DictionaryObject {
 	}
 
 	/**
-	 * returns the wrapper, if the object has one
+	 * Returns the wrapper, if the object has one
 	 * 
 	 * @param artHandle
 	 * @return the wrapper for the artHandle
@@ -287,8 +276,7 @@ public abstract class Item extends DictionaryObject {
 		CommitManager.version++;
 	}
 	
-	protected void changeHandle(int newHandle, int newDictionaryRef,
-			int docHandle) {
+	protected void changeHandle(int newHandle, int docHandle, int newDictionaryHandle) {
 		// Remove the object at the old handle
 		if (handle != newHandle) {
 			items.remove(handle);
@@ -297,7 +285,7 @@ public abstract class Item extends DictionaryObject {
 			// ...and insert it again
 			items.put(newHandle, this);
 		}
-		dictionaryRef = newDictionaryRef;
+		dictionaryHandle = newDictionaryHandle;
 		if (docHandle != 0)
 			document = Document.wrapHandle(docHandle);
 		// Update
@@ -317,15 +305,8 @@ public abstract class Item extends DictionaryObject {
 			version++;
 	}
 
-	/**
-	 * @jsbean Returns the document that the item belongs to.
-	 */
-	public Document getDocument() {
-		return document;
-	}
-
 	private native boolean nativeRemove(int handle, int docHandle,
-			int dictionaryRef);
+			int dictionaryHandle);
 
 	/**
 	 * Removes the item from the document. If the item has children,
@@ -337,7 +318,7 @@ public abstract class Item extends DictionaryObject {
 	public boolean remove() {
 		boolean ret = false;
 		if (handle != 0) {
-			ret = nativeRemove(handle, document.handle, dictionaryRef);
+			ret = nativeRemove(handle, document.handle, dictionaryHandle);
 			items.remove(handle);
 			handle = 0;			
 		}
@@ -369,7 +350,7 @@ public abstract class Item extends DictionaryObject {
 	 * @return the newly cloned item
 	 */
 	public Object clone() {
-		return copyTo(document);
+		return copyTo(getParent());
 	}
 	
 	/**
@@ -454,6 +435,7 @@ public abstract class Item extends DictionaryObject {
 	 * @jsbean The bounds of the item excluding stroke width.
 	 */
 	public Rectangle getBounds() {
+		commit(false);
 		if (bounds == null)
 			bounds = new ItemRectangle(this);
 		else
@@ -626,22 +608,30 @@ public abstract class Item extends DictionaryObject {
 	}
 
 	/**
-	 * @jsbean A boolean value that specifies whether the item is hidden.
+	 * @jsbean A boolean value that specifies whether the item is visible.
 	 * @jsbean Sample code:
 	 * @jsbean
 	 * @jsbean <pre>
 	 * @jsbean var path = new Path();
-	 * @jsbean print(path.hidden) // returns false
-	 * @jsbean path.hidden = true; // hides the path
-	 * @jsbean print(path.hidden) // returns true
+	 * @jsbean print(path.visible) // returns true
+	 * @jsbean path.visible = false; // hides the path
+	 * @jsbean print(path.visible) // returns false
 	 * @jsbean </pre>
 	 */
-	public boolean isHidden() {
-		return getAttribute(ItemAttribute.HIDDEN);
+	public boolean isVisible() {
+		return !getAttribute(ItemAttribute.HIDDEN);
 	}
 
-	public void setHidden(boolean hidden) {
-		setAttribute(ItemAttribute.HIDDEN, hidden);
+	public void setVisible(boolean visible) {
+		setAttribute(ItemAttribute.HIDDEN, !visible);
+	}
+
+	public final boolean isHidden() {
+		return !isVisible();
+	}
+
+	public final void setHidden(boolean hidden) {
+		setVisible(!hidden);
 	}
 
 	// Indicates that the object defines a clip mask. 
@@ -777,6 +767,7 @@ public abstract class Item extends DictionaryObject {
 	public native boolean moveBelow(Item item);
 
 	private native void nativeTransform(Matrix matrix, int flags);
+
 	/**
 	 * Transforms the item with custom flags to be set.
 	 * 
@@ -785,6 +776,10 @@ public abstract class Item extends DictionaryObject {
 	 */
 	public void transform(Matrix matrix, EnumSet<TransformFlag> flags) {
 		nativeTransform(matrix, IntegerEnumUtils.getFlags(flags));
+	}
+
+	public void transform(Matrix matrix, TransformFlag[] flags) {
+		transform(matrix, EnumSet.copyOf(Arrays.asList(flags)));
 	}
 
 	private static int defaultTransformFlags =
@@ -1038,8 +1033,19 @@ public abstract class Item extends DictionaryObject {
 		return getOrder(item) == ItemOrder.ANCHESTOR;		
 	}
 
-	protected native void nativeGetDictionary(Dictionary dictionary);
-	protected native void nativeSetDictionary(Dictionary dictionary);
+	private native int nativeGetData();
+
+	public Dictionary getData() {
+		if (data == null)
+			data = Dictionary.wrapHandle(nativeGetData(), document);
+		return data;	
+	}
+
+	public void setData(Map<String, Object> map) {
+		Dictionary data = getData();
+		data.clear();
+		data.putAll(map);
+	}
 
 	/* TODO:
 	{"equals",			artEquals,				0},
@@ -1048,10 +1054,6 @@ public abstract class Item extends DictionaryObject {
 	{"hasStroke",		artHasStroke,			0},
 	{"isClipping",		artIsClipping,			0},
 	*/
-	
-	protected int getVersion() {
-		return version;
-	}
 	
 	private long millis = 0;
 	

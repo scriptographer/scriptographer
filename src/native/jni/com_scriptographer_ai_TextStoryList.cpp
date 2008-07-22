@@ -70,3 +70,13 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStoryList_nativeGet(JNIEnv
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }
+
+/*
+ * void nativeRelease(int handle)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextStoryList_nativeRelease(JNIEnv *env, jobject obj, jint handle) {
+	try {
+		if (handle)
+			sStories->Release((StoriesRef) handle);
+	} EXCEPTION_CONVERT(env);
+}

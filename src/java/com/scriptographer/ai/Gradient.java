@@ -36,25 +36,25 @@ import com.scratchdisk.util.IntegerEnumUtils;
 /**
  * @author lehni
  */
-public class Gradient extends NativeWrapper {
+public class Gradient extends DocumentObject {
 
 	GradientStopList stops = null;
 
 	/*
-	 * Needed by wrapHandle mechanism
+	 * Needed by wrapHandle mechanism in WrapperObject
 	 */
-	protected Gradient(int handle) {
-		super(handle, true);
+	protected Gradient(int handle, Document document) {
+		super(handle, document);
 	}
 
 	private static native int nativeCreate();
 
 	public Gradient() {
-		super(nativeCreate(), true);
+		super(nativeCreate());
 	}
 	
 	protected static Gradient wrapHandle(int handle, Document document) {
-		return (Gradient) wrapHandle(Gradient.class, handle, document, true);
+		return (Gradient) wrapHandle(Gradient.class, handle, document);
 	}
 	
 	public GradientStopList getStops() {

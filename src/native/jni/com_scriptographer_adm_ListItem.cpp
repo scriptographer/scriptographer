@@ -64,28 +64,28 @@ void ASAPI List_onDestroy(ADMListRef list) {
 
 #define DEFINE_METHOD(METHOD) \
 		if (env->IsInstanceOf(obj, gEngine->cls_adm_HierarchyList)) { \
-			ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj); \
+			ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj); \
 			METHOD(sADMHierarchyList, sADMListEntry, ADMListEntryRef) \
 		} else { \
-			ADMListRef list = gEngine->getListRef(env, obj); \
+			ADMListRef list = gEngine->getListHandle(env, obj); \
 			METHOD(sADMList, sADMEntry, ADMEntryRef) \
 		}
 
 /*
- * int nativeInit(int itemRef)
+ * int nativeInit(int itemHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_nativeInit(JNIEnv *env, jobject obj, jint itemRef) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_nativeInit(JNIEnv *env, jobject obj, jint itemHandle) {
 	try {
 		// the init callbacks need to be called by hand, as 
 		// there are no automatic ones for these
-		ADMListRef list = sADMItem->GetList((ADMItemRef) itemRef);
+		ADMListRef list = sADMItem->GetList((ADMItemRef) itemHandle);
 		if (list != NULL) {
 			// link it with the java object that calls this
 			sADMList->SetUserData(list, env->NewGlobalRef(obj));
 			List_onInit(list);
 			return (jint) list;
 		} else {
-			ADMHierarchyListRef hierarchyList = sADMItem->GetHierarchyList((ADMItemRef) itemRef);
+			ADMHierarchyListRef hierarchyList = sADMItem->GetHierarchyList((ADMItemRef) itemHandle);
 			if (hierarchyList != NULL) {
 				// link it with the java object that calls this
 				sADMHierarchyList->SetUserData(hierarchyList, env->NewGlobalRef(obj));
@@ -103,11 +103,11 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_ListItem_nativeInit(JNIEnv *e
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_nativeSetTrackEntryCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		if (env->IsInstanceOf(obj, gEngine->cls_adm_HierarchyList)) {
-			ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+			ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 			DEFINE_CALLBACK_PROC(HierarchyListEntry_onTrack);
 			sADMHierarchyList->SetTrackProc(list, enabled ? (ADMListEntryTrackProc) CALLBACK_PROC(HierarchyListEntry_onTrack) : NULL);
 		} else {
-			ADMListRef list = gEngine->getListRef(env, obj);
+			ADMListRef list = gEngine->getListHandle(env, obj);
 			DEFINE_CALLBACK_PROC(ListEntry_onTrack);
 			sADMList->SetTrackProc(list, enabled ? (ADMEntryTrackProc) CALLBACK_PROC(ListEntry_onTrack) : NULL);
 		}
@@ -120,11 +120,11 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_nativeSetTrackEntryC
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_nativeSetDrawEntryCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		if (env->IsInstanceOf(obj, gEngine->cls_adm_HierarchyList)) {
-			ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+			ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 			DEFINE_CALLBACK_PROC(HierarchyListEntry_onDraw);
 			sADMHierarchyList->SetDrawProc(list, enabled ? (ADMListEntryDrawProc) CALLBACK_PROC(HierarchyListEntry_onDraw) : NULL);
 		} else {
-			ADMListRef list = gEngine->getListRef(env, obj);
+			ADMListRef list = gEngine->getListHandle(env, obj);
 			DEFINE_CALLBACK_PROC(ListEntry_onDraw);
 			sADMList->SetDrawProc(list, enabled ? (ADMEntryDrawProc) CALLBACK_PROC(ListEntry_onDraw) : NULL);
 		}
@@ -364,7 +364,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_ListItem_selectByText(JNIEnv 
 		if (env->IsInstanceOf(obj, gEngine->cls_adm_HierarchyList)) {
 			throw new StringException("selectByText is not supported in hierarchy lists.");
 		} else {
-			ADMListRef list = gEngine->getListRef(env, obj);
+			ADMListRef list = gEngine->getListHandle(env, obj);
 			ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 			sADMList->SelectByTextW(list, chars);
 			delete chars;

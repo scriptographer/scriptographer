@@ -34,19 +34,19 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class Symbol extends NativeWrapper {
+public class Symbol extends DocumentObject {
 
 	/*
 	 * Needed by wrapHandle mechanism
 	 */
-	protected Symbol(int handle) {
-		super(handle, true);
+	protected Symbol(int handle, Document document) {
+		super(handle, document);
 	}
 
 	private static native int nativeCreate(int artHandle, boolean listed);
 	
 	public Symbol(Item item, boolean listed) {
-		super(nativeCreate(item != null ? item.handle : 0, listed), true);
+		super(nativeCreate(item != null ? item.handle : 0, listed));
 	}
 	
 	public Symbol(Item item) {
@@ -58,7 +58,7 @@ public class Symbol extends NativeWrapper {
 	}
 	
 	protected static Symbol wrapHandle(int handle, Document document) {
-		return (Symbol) wrapHandle(Symbol.class, handle, document, true);
+		return (Symbol) wrapHandle(Symbol.class, handle, document);
 	}
 	
 	public native String getName();

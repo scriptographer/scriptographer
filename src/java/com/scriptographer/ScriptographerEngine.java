@@ -202,7 +202,9 @@ public class ScriptographerEngine {
 						+ System.getProperty("file.separator"), "");
 			// Add a line break at the end if the error does
 			// not contain one already.
-			if (!error.matches("(?:\\n\\r|\\n|\\r)$"))
+			if (!error.endsWith(System.getProperty("line.separator")))
+			// TODO: find out why this regular expression does not work and make it work instead:
+//			if (!Pattern.compile("(?:\\n\\r|\\n|\\r)$").matcher(error).matches())
 				error +=  System.getProperty("line.separator");
 			System.err.print(error);
 			logError(t);

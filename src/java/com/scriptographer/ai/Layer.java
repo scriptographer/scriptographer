@@ -31,7 +31,7 @@
 
 package com.scriptographer.ai;
 
-// TODO: subclass Group instead!
+// TODO: subclass Group instead?
 /**
  * The Layer item represents a layer in an Illustrator document.
  * @author lehni
@@ -62,7 +62,7 @@ public class Layer extends Item {
 	 */
 	public native boolean getPreview();
 	public native void setPreview(boolean preview);
-	
+
 	/**
 	 * @jsbean A boolean value that specifies whether the Layer is considered printable
 	 * @jsbean when printing the document.
@@ -75,7 +75,7 @@ public class Layer extends Item {
 	 */
 	public native boolean isSelected();
 	public native void setSelected(boolean selected);
-	
+
 	/**
 	 * @jsbean Specifies the color used for outlining items when they are selected.
 	 */

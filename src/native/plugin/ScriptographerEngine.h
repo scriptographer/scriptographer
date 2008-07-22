@@ -149,9 +149,13 @@ public:
 	jclass cls_ai_NativeObject;
 	jfieldID fid_ai_NativeObject_handle;
 
-	jclass cls_ai_NativeWrapper;
-	jfieldID fid_ai_NativeWrapper_document;
+	jclass cls_ai_DocumentObject;
+	jfieldID fid_ai_DocumentObject_document;
 	
+	jclass cls_ai_Dictionary;
+	jfieldID fid_ai_Dictionary_handle;
+	jmethodID mid_ai_Dictionary_wrapHandle;
+
 	jclass cls_ai_Tool;
 	jmethodID cid_ai_Tool;
 	jmethodID mid_ai_Tool_onHandleEvent;
@@ -208,8 +212,7 @@ public:
 	
 	jclass cls_ai_Item;
 	jfieldID fid_ai_Item_version;
-	jfieldID fid_ai_Item_document;
-	jfieldID fid_ai_Item_dictionaryRef;
+	jfieldID fid_ai_Item_dictionaryHandle;
 	jmethodID mid_ai_Item_wrapHandle;
 	jmethodID mid_ai_Item_getIfWrapped;
 	jmethodID mid_ai_Item_updateIfWrapped;
@@ -394,6 +397,18 @@ public:
 	void println(JNIEnv *env, const char *str, ...);
 	void reportError(JNIEnv *env);
 
+	// java.lang.Boolean <-> jboolean
+	jobject convertBoolean(JNIEnv *env, jboolean value);	
+	jboolean convertBoolean(JNIEnv *env, jobject value);
+
+	// java.lang.Integer <-> jint
+	jobject convertInteger(JNIEnv *env, jint value);
+	jint convertInteger(JNIEnv *env, jobject value);
+
+	// java.lang.Float <-> jfloat
+	jobject convertFloat(JNIEnv *env, jfloat value);
+	jfloat convertFloat(JNIEnv *env, jobject value);
+	
 	// com.scriptographer.awt.Point <-> AIRealPoint
 	jobject convertPoint(JNIEnv *env, AIReal x, AIReal y, jobject res = NULL);	
 	jobject convertPoint(JNIEnv *env, AIRealPoint *pt, jobject res = NULL) {
@@ -452,25 +467,21 @@ public:
 	// AIColor <-> AIColor
 	AIColor *convertColor(AIColor *srcCol, AIColorConversionSpaceValue dstSpace, AIColor *dstCol = NULL, AIReal srcAlpha = 1.0f, AIReal *dstAlpha = NULL);
 
-	// AIRealMatrix <-> com.scriptoggrapher.ai.Matrix
+	// com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
 	jobject convertMatrix(JNIEnv *env, AIRealMatrix *mt, jobject res = NULL);
 	AIRealMatrix *convertMatrix(JNIEnv *env, jobject mt, AIRealMatrix *res = NULL);
 
-	// AIFillStyle <-> com.scriptoggrapher.ai.FillStyle
+	// com.scriptoggrapher.ai.FillStyle <-> AIFillStyle
 	jobject convertFillStyle(JNIEnv *env, AIFillStyle *style, jobject res = NULL);
 	AIFillStyle *convertFillStyle(JNIEnv *env, jobject style, AIFillStyle *res = NULL);
 
-	// AIStrokeStyle <-> com.scriptoggrapher.ai.StrokeStyle
+	// com.scriptoggrapher.ai.StrokeStyle <-> AIStrokeStyle
 	jobject convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, jobject res = NULL);
 	AIStrokeStyle *convertStrokeStyle(JNIEnv *env, jobject style, AIStrokeStyle *res = NULL);
 
-	// AIArtSet <-> com.scriptoggrapher.ai.ItemSet
+	// com.scriptoggrapher.ai.ItemSet <-> AIArtSet
 	jobject convertArtSet(JNIEnv *env, AIArtSet set, bool layerOnly = false);
 	AIArtSet convertArtSet(JNIEnv *env, jobject itemSet);
-	
-	// java.util.Map <-> AIDictionary
-	jobject convertDictionary(JNIEnv *env, AIDictionaryRef dictionary, jobject map = NULL, bool dontOverwrite = false, bool removeOld = false);
-	AIDictionaryRef convertDictionary(JNIEnv *env, jobject map, AIDictionaryRef dictionary = NULL, bool dontOverwrite = false, bool removeOld = false);
 
 	// java.io.File <-> SPPlatformFileSpecification
 	char *getFilePath(JNIEnv *env, jobject file);
@@ -478,34 +489,75 @@ public:
 	SPPlatformFileSpecification *convertFile(JNIEnv *env, jobject file, SPPlatformFileSpecification *res = NULL);
 	
 	// AI Handles
+	int getAIObjectHandle(JNIEnv *env, jobject obj, const char *name);
+	int getDocumentObjectHandle(JNIEnv *env, jobject obj, bool activateDoc, const char *name);
+
 	AIArtHandle getArtHandle(JNIEnv *env, jobject obj, bool activateDoc = false, AIDocumentHandle *doc = NULL);
 	AILayerHandle getLayerHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
-	void *getWrapperHandle(JNIEnv *env, jobject obj, bool activateDoc, const char *name);
-	AIPatternHandle getPatternHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
-	AISwatchRef getSwatchHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
-	AIGradientHandle getGradientHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
-	AIFontKey getFontHandle(JNIEnv *env, jobject obj);
-	AIDocumentHandle getDocumentHandle(JNIEnv *env, jobject obj, bool activate = false);
-	AIDocumentViewHandle getDocumentViewHandle(JNIEnv *env, jobject obj);
-	AIToolHandle getToolHandle(JNIEnv *env, jobject obj);
-	AILiveEffectHandle getLiveEffectHandle(JNIEnv *env, jobject obj);
-	AIMenuItemHandle getMenuItemHandle(JNIEnv *env, jobject obj);
-	AIMenuGroup getMenuGroupHandle(JNIEnv *env, jobject obj);
+	AIDocumentHandle getDocumentHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
 	AIDictionaryRef getArtDictionaryHandle(JNIEnv *env, jobject obj);
 
-	// ATE Refs
-	ATE::TextFrameRef getTextFrameRef(JNIEnv *env, jobject obj, bool activateDoc = false);
-	ATE::TextRangeRef getTextRangeRef(JNIEnv *env, jobject obj);
-	ATE::StoryRef getStoryRef(JNIEnv *env, jobject obj);
-	ATE::CharFeaturesRef getCharFeaturesRef(JNIEnv *env, jobject obj);
-	ATE::ParaFeaturesRef getParaFeaturesRef(JNIEnv *env, jobject obj);
+	inline AIPatternHandle getPatternHandle(JNIEnv *env, jobject obj, bool activateDoc = false) {
+		return (AIPatternHandle) getDocumentObjectHandle(env, obj, activateDoc, "pattern");
+	}
+	
+	inline AISwatchRef getSwatchHandle(JNIEnv *env, jobject obj, bool activateDoc = false) {
+		return (AISwatchRef) getDocumentObjectHandle(env, obj, activateDoc, "swatch");
+	}
+	
+	inline AIGradientHandle getGradientHandle(JNIEnv *env, jobject obj, bool activateDoc = false) {
+		return (AIGradientHandle) getDocumentObjectHandle(env, obj, activateDoc, "gradient");
+	}
+
+	inline AIDocumentViewHandle getDocumentViewHandle(JNIEnv *env, jobject obj, bool activateDoc = false) {
+		return (AIDocumentViewHandle) getDocumentObjectHandle(env, obj, activateDoc, "view");
+	}
+	
+	inline AIFontKey getFontHandle(JNIEnv *env, jobject obj) {
+		return (AIFontKey) getAIObjectHandle(env, obj, "font");
+	}
+
+	inline AIDictionaryRef getDictionaryHandle(JNIEnv *env, jobject obj) {
+		return (AIDictionaryRef) getAIObjectHandle(env, obj, "dictionary");
+	}
+
+	inline AIToolHandle getToolHandle(JNIEnv *env, jobject obj) {
+		return (AIToolHandle) getAIObjectHandle(env, obj, "tool");
+	}
+
+	inline AILiveEffectHandle getLiveEffectHandle(JNIEnv *env, jobject obj) {
+		return (AILiveEffectHandle) getAIObjectHandle(env, obj, "effect");
+	}
+
+	// ATE Handles
+	ATE::TextFrameRef getTextFrameHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
+
+	inline ATE::TextRangeRef getTextRangeHandle(JNIEnv *env, jobject obj, bool activateDoc = false) {
+		return (ATE::TextRangeRef) getDocumentObjectHandle(env, obj, activateDoc, "text range");
+	}
+	
+	inline ATE::StoryRef getStoryHandle(JNIEnv *env, jobject obj, bool activateDoc = false) {
+		return (ATE::StoryRef) getDocumentObjectHandle(env, obj, activateDoc, "text story");
+	}
+	
+	inline ATE::CharFeaturesRef getCharFeaturesHandle(JNIEnv *env, jobject obj) {
+		return (ATE::CharFeaturesRef) getAIObjectHandle(env, obj, "character style");
+	}
+	
+	inline ATE::ParaFeaturesRef getParaFeaturesHandle(JNIEnv *env, jobject obj) {
+		return (ATE::ParaFeaturesRef) getAIObjectHandle(env, obj, "paragraph style");
+	}
+	
 	jobject wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range);
 	
 	// AI Wrap Handles
-	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDictionaryRef dictionary = NULL);
+	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL);
 	bool updateArtIfWrapped(JNIEnv *env, AIArtHandle art);
-	void changeArtHandle(JNIEnv *env, jobject itemObject, AIArtHandle art, AIDictionaryRef dictionary = NULL, AIDocumentHandle doc = NULL);
+	void changeArtHandle(JNIEnv *env, jobject itemObject, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL);
 	jobject getIfWrapped(JNIEnv *env, AIArtHandle handle);
+
+	jobject wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc = NULL);
+
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
 
@@ -518,7 +570,6 @@ public:
 	ASErr toolHandleEvent(const char * selector, AIToolMessage *message);
 
 	// AI LiveEffect
-	jobject getLiveEffectParameters(JNIEnv *env, AILiveEffectParameters parameters);
 	AILiveEffectParamContext getLiveEffectContext(JNIEnv *env, jobject parameters);
 	ASErr liveEffectEditParameters(AILiveEffectEditParamMessage *message);
 	ASErr liveEffectCalculate(AILiveEffectGoMessage *message);
@@ -545,17 +596,58 @@ public:
 
 	ASErr displayAbout();
 
-	// ADM Refs
-	ADMDialogRef getDialogRef(JNIEnv *env, jobject obj);
-	ADMDrawerRef getDrawerRef(JNIEnv *env, jobject obj);
-	ADMTrackerRef getTrackerRef(JNIEnv *env, jobject obj);
-	ADMIconRef getIconRef(JNIEnv *env, jobject obj);
-	ADMImageRef getImageRef(JNIEnv *env, jobject obj);
-	ADMItemRef getItemRef(JNIEnv *env, jobject obj);
-	ADMListRef getListRef(JNIEnv *env, jobject obj);
-	ADMHierarchyListRef getHierarchyListRef(JNIEnv *env, jobject obj);
-	ADMEntryRef getListEntryRef(JNIEnv *env, jobject obj);
-	ADMListEntryRef getHierarchyListEntryRef(JNIEnv *env, jobject obj);
+	// ADM Handles
+	int getADMObjectHandle(JNIEnv *env, jobject obj, const char *name);
+	int getADMListHandle(JNIEnv *env, jobject obj, const char *name);
+
+	// Menu items are in the ADM package in Scriptographer, although natively they belong to AI
+	inline AIMenuItemHandle getMenuItemHandle(JNIEnv *env, jobject obj) {
+		return (AIMenuItemHandle) getADMObjectHandle(env, obj, "menu item");
+	}
+	
+	inline AIMenuGroup getMenuGroupHandle(JNIEnv *env, jobject obj) {
+		return (AIMenuGroup) getADMObjectHandle(env, obj, "menu group");
+	}
+
+	inline ADMDialogRef getDialogHandle(JNIEnv *env, jobject obj) {
+		return (ADMDialogRef) getADMObjectHandle(env, obj, "dialog");
+	}
+
+	inline ADMDrawerRef getDrawerHandle(JNIEnv *env, jobject obj) {
+		return (ADMDrawerRef) getADMObjectHandle(env, obj, "drawer");
+	}
+
+	inline ADMTrackerRef getTrackerHandle(JNIEnv *env, jobject obj) {
+		return (ADMTrackerRef) getADMObjectHandle(env, obj, "tracker");
+	}
+
+	inline ADMIconRef getIconHandle(JNIEnv *env, jobject obj) {
+		return (ADMIconRef) getADMObjectHandle(env, obj, "icon");
+	}
+
+	inline ADMImageRef getImageHandle(JNIEnv *env, jobject obj) {
+		return (ADMImageRef) getADMObjectHandle(env, obj, "image");
+	}
+
+	inline ADMItemRef getItemHandle(JNIEnv *env, jobject obj) {
+		return (ADMItemRef) getADMObjectHandle(env, obj, "item");
+	}
+
+	inline ADMListRef getListHandle(JNIEnv *env, jobject obj) {
+		return (ADMListRef) getADMListHandle(env, obj, "list");
+	}
+
+	inline ADMHierarchyListRef getHierarchyListHandle(JNIEnv *env, jobject obj) {
+		return (ADMHierarchyListRef) getADMListHandle(env, obj, "hierarchy list");
+	}
+
+	inline ADMEntryRef getListEntryHandle(JNIEnv *env, jobject obj) {
+		return (ADMEntryRef) getADMObjectHandle(env, obj, "list entry");
+	}
+
+	inline ADMListEntryRef getHierarchyListEntryHandle(JNIEnv *env, jobject obj) {
+		return (ADMListEntryRef) getADMObjectHandle(env, obj, "hierarchy list entry");
+	}
 	
 	// ADM Objects
 	jobject getDialogObject(ADMDialogRef dlg);

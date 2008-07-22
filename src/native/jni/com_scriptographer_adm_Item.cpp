@@ -76,11 +76,11 @@ void ASAPI Item_onDestroy(ADMItemRef item) {
 
 			if (env->IsInstanceOf(obj, gEngine->cls_adm_ListItem)) {
 				if (env->IsInstanceOf(obj, gEngine->cls_adm_HierarchyList)) {
-					ADMHierarchyListRef list = gEngine->getHierarchyListRef(env, obj);
+					ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 					sADMHierarchyList->SetUserData(list, obj);
 					HierarchyList_onDestroy(list);
 				} else {
-					ADMListRef list = gEngine->getListRef(env, obj);
+					ADMListRef list = gEngine->getListHandle(env, obj);
 					sADMList->SetUserData(list, obj);
 					List_onDestroy(list);
 				}
@@ -156,7 +156,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeDestroy(JNIEnv *en
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetTrackCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		DEFINE_CALLBACK_PROC(Item_onTrack);
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetTrackProc(item, enabled ? (ADMItemTrackProc) CALLBACK_PROC(Item_onTrack) : NULL);
 	} EXCEPTION_CONVERT(env);
 }
@@ -166,7 +166,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetTrackCallback(J
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getTrackMask(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->GetMask(item);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -177,7 +177,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getTrackMask(JNIEnv *env
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setTrackMask(JNIEnv *env, jobject obj, jint mask) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetMask(item, mask);
 	} EXCEPTION_CONVERT(env);
 }
@@ -188,7 +188,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setTrackMask(JNIEnv *env
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetDrawCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		DEFINE_CALLBACK_PROC(Item_onDraw);
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetDrawProc(item, enabled ? (ADMItemDrawProc) CALLBACK_PROC(Item_onDraw) : NULL);
 	} EXCEPTION_CONVERT(env);
 }
@@ -199,7 +199,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetDrawCallback(JN
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetStyle(JNIEnv *env, jobject obj, jint style) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetItemStyle(item, (ADMItemStyle) style);
 	} EXCEPTION_CONVERT(env);
 }
@@ -209,7 +209,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetStyle(JNIEnv *e
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeGetStyle(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return (jint) sADMItem->GetItemStyle(item);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -220,7 +220,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeGetStyle(JNIEnv *e
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetSize(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		ADMRect size;
 		sADMItem->GetLocalRect(item, &size);
 		return gEngine->convertSize(env, size.right, size.bottom);
@@ -233,7 +233,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetSize(JNIEnv 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetSize(JNIEnv *env, jobject obj, jint width, jint height) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 	    DEFINE_ADM_RECT(rt, 0, 0, width, height);
 		sADMItem->SetLocalRect(item, &rt);
 	} EXCEPTION_CONVERT(env);
@@ -244,7 +244,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetSize(JNIEnv *en
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetBestSize(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		ADMPoint size;
 		sADMItem->GetBestSize(item, &size);
 		return gEngine->convertSize(env, &size);
@@ -258,7 +258,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetBestSize(JNI
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetTextSize(JNIEnv *env, jobject obj, jstring text, jint maxWidth) {
 	if (text != NULL) {
 		try {
-			ADMItemRef item = gEngine->getItemRef(env, obj);
+			ADMItemRef item = gEngine->getItemHandle(env, obj);
 			ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 			ADMImageRef image = sADMImage->Create(1, 1, 0);
 			ADMDrawerRef drawer = sADMImage->BeginADMDrawer(image);
@@ -281,7 +281,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetTextSize(JNI
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetBounds(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		ADMRect rt;
 		sADMItem->GetBoundsRect(item, &rt);
 		return gEngine->convertRectangle(env, &rt);
@@ -294,7 +294,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_nativeGetBounds(JNIEn
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetBounds(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 	    DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMItem->SetBoundsRect(item, &rt);
 	} EXCEPTION_CONVERT(env);
@@ -305,7 +305,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetBounds(JNIEnv *
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_localToScreen__II(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
 		sADMItem->LocalToScreenPoint(item, &pt);
 		return gEngine->convertPoint(env, &pt);
@@ -318,7 +318,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_localToScreen__II(JNI
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_screenToLocal__II(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
 		sADMItem->ScreenToLocalPoint(item, &pt);
 		return gEngine->convertPoint(env, &pt);
@@ -331,7 +331,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_screenToLocal__II(JNI
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_localToScreen__IIII(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMItem->LocalToScreenRect(item, &rt);
 		return gEngine->convertRectangle(env, &rt);
@@ -344,7 +344,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_localToScreen__IIII(J
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_screenToLocal__IIII(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMItem->ScreenToLocalRect(item, &rt);
 		return gEngine->convertRectangle(env, &rt);
@@ -357,7 +357,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_adm_Item_screenToLocal__IIII(J
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_invalidate__(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->Invalidate(item);
 	} EXCEPTION_CONVERT(env);
 }
@@ -367,7 +367,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_invalidate__(JNIEnv *env
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_invalidate__IIII(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		DEFINE_ADM_RECT(rt, x, y, width, height);
 		sADMItem->InvalidateRect(item, &rt);
 	} EXCEPTION_CONVERT(env);
@@ -378,7 +378,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_invalidate__IIII(JNIEnv 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_update(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->Update(item);
 	} EXCEPTION_CONVERT(env);
 }
@@ -388,7 +388,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_update(JNIEnv *env, jobj
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_isVisible(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 	    return sADMItem->IsVisible(item);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -399,7 +399,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_isVisible(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setVisible(JNIEnv *env, jobject obj, jboolean visible) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->Show(item, visible);
 	} EXCEPTION_CONVERT(env);
 }
@@ -409,7 +409,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setVisible(JNIEnv *env, 
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_isActive(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 	    return sADMItem->IsActive(item);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -420,7 +420,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_isActive(JNIEnv *env
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setActive(JNIEnv *env, jobject obj, jboolean active) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->Activate(item, active);
 	} EXCEPTION_CONVERT(env);
 }
@@ -430,7 +430,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setActive(JNIEnv *env, j
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_isEnabled(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 	    return sADMItem->IsEnabled(item);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -441,7 +441,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_isEnabled(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setEnabled(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->Enable(item, enabled);
 	} EXCEPTION_CONVERT(env);
 }
@@ -451,7 +451,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setEnabled(JNIEnv *env, 
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_isKnown(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->IsKnown(item);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -462,7 +462,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_isKnown(JNIEnv *env,
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setKnown(JNIEnv *env, jobject obj, jboolean known) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->Known(item, known);
 	} EXCEPTION_CONVERT(env);
 }
@@ -472,7 +472,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setKnown(JNIEnv *env, jo
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeGetCursor(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		long cursor;
 		const char* name;
 		SPPluginRef pluginRef = sADMItem->GetPluginRef(item);
@@ -487,7 +487,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeGetCursor(JNIEnv *
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetCursor(JNIEnv *env, jobject obj, jint cursor) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		if (cursor >= 0) {
 			SPPluginRef pluginRef = sADMItem->GetPluginRef(item);
 			sADMItem->SetCursorID(item, pluginRef, cursor, NULL);
@@ -500,7 +500,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetCursor(JNIEnv *
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_wantsFocus(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->GetWantsFocus(item);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -511,7 +511,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_wantsFocus(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setWantsFocus(JNIEnv *env, jobject obj, jboolean wantsFocus) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetWantsFocus(item, wantsFocus);
 	} EXCEPTION_CONVERT(env);
 }
@@ -521,7 +521,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setWantsFocus(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetTooltip(JNIEnv *env, jobject obj, jstring toolTip) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		ASUnicode *chars = gEngine->convertString_ASUnicode(env, toolTip);
 		sADMItem->SetTipStringW(item, chars);
 		delete chars;
@@ -533,7 +533,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetTooltip(JNIEnv 
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_isToolTipEnabled(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->IsTipEnabled(item);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -544,7 +544,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_Item_isToolTipEnabled(JNI
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setToolTipEnabled(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->EnableTip(item, enabled);
 	} EXCEPTION_CONVERT(env);
 }
@@ -554,7 +554,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_setToolTipEnabled(JNIEnv
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_showToolTip(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
 		sADMItem->ShowToolTip(item, &pt);
 	} EXCEPTION_CONVERT(env);
@@ -565,7 +565,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_showToolTip(JNIEnv *env,
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_hideToolTip(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->HideToolTip(item);
 	} EXCEPTION_CONVERT(env);
 }
@@ -575,7 +575,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_hideToolTip(JNIEnv *env,
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetFont(JNIEnv *env, jobject obj, jint font) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetFont(item, (ADMFont)font);
 	} EXCEPTION_CONVERT(env);
 }
@@ -585,7 +585,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetFont(JNIEnv *en
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeGetFont(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->GetFont(item);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -596,7 +596,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeGetFont(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetBackgroundColor(JNIEnv *env, jobject obj, jint color) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetBackColor(item, (ADMColor) color);
 	} EXCEPTION_CONVERT(env);
 }
@@ -606,7 +606,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Item_nativeSetBackgroundColor
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeGetBackgroundColor(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->GetBackColor(item);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -617,7 +617,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_nativeGetBackgroundColor
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Item_getChildItemHandle(JNIEnv *env, jobject obj, jint itemID) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return (jint) sADMItem->GetChildItem(item, itemID);
 	} EXCEPTION_CONVERT(env);
 	return 0;

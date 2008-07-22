@@ -27,8 +27,8 @@
  * $Id$
  */
 
-extern AIDocumentHandle gActiveDoc;
 extern AIDocumentHandle gWorkingDoc;
+extern AIDocumentHandle gActiveDoc;
 extern AIDocumentHandle gCreationDoc;
 
 bool Item_isValid(AIArtHandle art);
@@ -94,7 +94,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 // macros for style getters and setters (CharacterStyle, ParagraphStyle)
 #define CHARACTERSTYLE_GET(NAME, TYPE, CLASS, JTYPE) \
 	try { \
-		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj); \
+		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj); \
 		ATEBool8 isAssigned; \
 		TYPE value; \
 		if (!sCharFeatures->Get##NAME(features, &isAssigned, &value) && isAssigned) \
@@ -104,7 +104,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 
 #define CHARACTERSTYLE_SET(NAME, TYPE, METHOD_TYPE, METHOD_NAME) \
 	try { \
-		CharFeaturesRef features = gEngine->getCharFeaturesRef(env, obj); \
+		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj); \
 		ASErr err; \
 		if (value == NULL) \
 			err = sCharFeatures->Clear##NAME(features); \
@@ -140,7 +140,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 
 #define PARAGRAPHSTYLE_GET(NAME, TYPE, CLASS, JTYPE) \
 	try { \
-		ParaFeaturesRef features = gEngine->getParaFeaturesRef(env, obj); \
+		ParaFeaturesRef features = gEngine->getParaFeaturesHandle(env, obj); \
 		ATEBool8 isAssigned; \
 		TYPE value; \
 		if (!sParaFeatures->Get##NAME(features, &isAssigned, &value) && isAssigned) \
@@ -150,7 +150,7 @@ jobject TextRange_convertTextRanges(JNIEnv *env, ATE::TextRangesRef ranges);
 
 #define PARAGRAPHSTYLE_SET_CLEAR(NAME, CLEAR, TYPE, METHOD_TYPE, METHOD_NAME) \
 	try { \
-		ParaFeaturesRef features = gEngine->getParaFeaturesRef(env, obj); \
+		ParaFeaturesRef features = gEngine->getParaFeaturesHandle(env, obj); \
 		ASErr err; \
 		if (value == NULL) \
 			err = sParaFeatures->Clear##CLEAR(features); \

@@ -56,9 +56,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_isVisible(JNIEnv *en
 	try {
 		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
 		AIBoolean visible;
-		if (!sAILayer->GetLayerVisible(layer, &visible)) {
+		if (!sAILayer->GetLayerVisible(layer, &visible))
 			return visible;	
-		}
 	} EXCEPTION_CONVERT(env);
 	return false;
 }

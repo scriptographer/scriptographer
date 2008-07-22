@@ -47,7 +47,7 @@ import com.scratchdisk.util.IntegerEnumUtils;
 /**
  * @author lehni
  */
-public class TextRange extends NativeObject implements Commitable {
+public class TextRange extends DocumentObject implements Commitable {
 	
 	// values for the native environment,
 	// to cash glyph run references, once their
@@ -56,9 +56,8 @@ public class TextRange extends NativeObject implements Commitable {
 	@SuppressWarnings("unused")
 	private int glyphRuns;
 	
-	protected Document document;
 	protected TextStory story = null;
-	protected int version = -1;
+	protected int version = CommitManager.version;
 	protected boolean dirty = false;
 	
 	// Sub Range lists:
@@ -67,8 +66,7 @@ public class TextRange extends NativeObject implements Commitable {
 	CharacterList characters = null;
 
 	protected TextRange(int handle, Document document) {
-		super(handle);
-		this.document = document;
+		super(handle, document);
 	}
 
 	protected TextRange(int handle, int docHandle) {
@@ -78,7 +76,7 @@ public class TextRange extends NativeObject implements Commitable {
 	// Once a range object is created, always return the same reference
 	// and swap handles instead. like this references in JS remain...
 	protected void changeHandle(int newHandle) {
-		release(); // release old handle
+		nativeRelease(handle); // release old handle
 		handle = newHandle;
 		version = CommitManager.version;
 		// Clear the sub ranges, as the items in them are not valid anymore
@@ -96,7 +94,7 @@ public class TextRange extends NativeObject implements Commitable {
 	 */
 	protected void markDirty() {
 		if (!dirty ) {
-			CommitManager.markDirty(this.getStory(), this);
+			CommitManager.markDirty(getStory(), this);
 			dirty = true;
 		}
 	}
@@ -104,16 +102,10 @@ public class TextRange extends NativeObject implements Commitable {
 	public void commit() {
 		// Committing changes for TextRange does not need more than
 		// a reflow of the text layout in the document.
-		document.reflowText();
+		// TODO: Is this really needed?
+		// document.reflowText();
 	}
 
-	/**
-	 * @jsbean Returns the document that the text range belongs to.
-	 */
-	public Document getDocument() {
-		return document;
-	}
-	
 	private native int nativeGetStoryIndex();
 	
 	/**
@@ -229,20 +221,23 @@ public class TextRange extends NativeObject implements Commitable {
 		adjustEnd(nativeAppend(handle, range.handle));
 	}
 	
-	private native void nativeRemove(int handle);
+	private native boolean nativeRemove(int handle);
 	
 	/**
 	 *  Deletes all the characters in the text range.
 	 */
-	public void remove() {
-		if (characters != null)
-			characters.removeAll();
-		if (words != null)
-			words.removeAll();
-		if (paragraphs != null)
-			paragraphs.removeAll();
-		this.markDirty();
-		nativeRemove(handle);
+	public boolean remove() {
+		if (nativeRemove(handle)) {
+			if (characters != null)
+				characters.removeAll();
+			if (words != null)
+				words.removeAll();
+			if (paragraphs != null)
+				paragraphs.removeAll();
+			markDirty();
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -447,10 +442,11 @@ public class TextRange extends NativeObject implements Commitable {
 	
 	public native boolean equals(Object obj);
 	
-	protected native void release();
+	private native void nativeRelease(int handle);
 	
 	protected void finalize() {
-		release();
+		nativeRelease(handle);
+		handle = 0;
 	}
 
 	/**

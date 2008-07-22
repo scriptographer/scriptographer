@@ -41,19 +41,21 @@ import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.List;
 import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.SoftIntMap;
+import com.scriptographer.CommitManager;
 import com.scriptographer.ScriptographerException;
 import com.scriptographer.script.EnumUtils;
 
 /**
  * @author lehni
  */
-public class Document extends DictionaryObject {
+public class Document extends NativeObject {
 
-	protected LayerList layers = null;
-	protected DocumentViewList views = null;
-	protected SymbolList symbols = null;
-	protected SwatchList swatches = null;
-	protected GradientList gradients = null;
+	private LayerList layers = null;
+	private DocumentViewList views = null;
+	private SymbolList symbols = null;
+	private SwatchList swatches = null;
+	private GradientList gradients = null;
+	private Dictionary data = null;
 
 	/**
 	 * Opens an existing document.
@@ -109,13 +111,22 @@ public class Document extends DictionaryObject {
 		return doc;
 	}
 	
-	private static native int getActiveDocumentHandle();
+	private static native int nativeGetActiveDocumentHandle();
 	
+	private static native int nativeGetWorkingDocumentHandle();
+
 	/**
 	 * @jshide
 	 */
 	public static Document getActiveDocument() {
-		return Document.wrapHandle(getActiveDocumentHandle());
+		return Document.wrapHandle(nativeGetActiveDocumentHandle());
+	}
+
+	/**
+	 * @jshide
+	 */
+	public static Document getWorkingDocument() {
+		return Document.wrapHandle(nativeGetWorkingDocumentHandle());
 	}
 
 	/**
@@ -136,7 +147,7 @@ public class Document extends DictionaryObject {
 	 * 
 	 * @param focus When set to true, the document window is brought to the
 	 *        front, otherwise the window sequence remains the same.
-	 * @param forCreation if set to true, the internal pointer gWorkingDoc will
+	 * @param forCreation if set to true, the internal pointer gActiveDoc will
 	 *        not be modified, but gCreationDoc will be set, which then is only
 	 *        used once in the next call to Document_activate() (native stuff).
 	 */
@@ -183,7 +194,7 @@ public class Document extends DictionaryObject {
 	private native int getActiveViewHandle(); 
 
 	public DocumentView getActiveView() {
-		return DocumentView.wrapHandle(getActiveViewHandle());
+		return DocumentView.wrapHandle(getActiveViewHandle(), this);
 	}
 	
 	public SymbolList getSymbols() {
@@ -389,15 +400,17 @@ public class Document extends DictionaryObject {
 		// Convert the attributes list to a new HashMap containing only
 		// integer -> boolean pairs.
 		HashMap<Integer, Boolean> converted = new HashMap<Integer, Boolean>();
-		for (Map.Entry entry : attributes.entrySet()) {
-			Object key = entry.getKey();
-			if (!(key instanceof ItemAttribute)) {
-				key = EnumUtils.get(ItemAttribute.class, key.toString());
-				if (key == null)
-					throw new ScriptographerException("Undefined attribute: " + key);
+		if (attributes != null) {
+			for (Map.Entry entry : attributes.entrySet()) {
+				Object key = entry.getKey();
+				if (!(key instanceof ItemAttribute)) {
+					key = EnumUtils.get(ItemAttribute.class, key.toString());
+					if (key == null)
+						throw new ScriptographerException("Undefined attribute: " + key);
+				}
+				converted.put(((ItemAttribute) key).value,
+						ConversionUtils.toBoolean(entry.getValue()));
 			}
-			converted.put(((ItemAttribute) key).value,
-					ConversionUtils.toBoolean(entry.getValue()));
 		}
 		return nativeGetMatchingItems(type, converted);
 	}
@@ -672,24 +685,36 @@ public class Document extends DictionaryObject {
 	private TextStoryList stories = null;
 	
 	public TextStoryList getStories() {
+		// We need to version TextStoryLists, since document handles seem to not be unique:
+		// When there is only one document, closing it and opening a new one results in the
+		// same document handle. Versioning seems the only way to keep story lists updated.
 		if (stories == null) {
 			int handle = nativeGetStories();
 			if (handle != 0)
 				stories = new TextStoryList(handle, this);
+		} else if (stories.version != CommitManager.version) {
+			int handle = nativeGetStories();
+			if (handle != 0)
+				stories.changeHandle(handle);
+			else
+				stories = null;
 		}
 		return stories;
 	}
-	
-	protected int getVersion() {
-		// TODO: getVersion is used for keeping Dictionaries up to date.
-		// But right now document is not version aware. This means that once
-		// the Dictionary is created, it will ignore changes to the
-		// document's dictionary from other parts of illustrator.
-		// this should be changed!
-		return 0;
+
+	public native boolean isValid();
+
+	private native int nativeGetData();
+
+	public Dictionary getData() {
+		if (data == null)
+			data = Dictionary.wrapHandle(nativeGetData(), this);
+		return data;	
 	}
 
-	protected native void nativeGetDictionary(Dictionary dictionary);
-
-	protected native void nativeSetDictionary(Dictionary dictionary);
+	public void setData(Map<String, Object> map) {
+		Dictionary data = getData();
+		data.clear();
+		data.putAll(map);
+	}
 }

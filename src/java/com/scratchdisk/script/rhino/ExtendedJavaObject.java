@@ -144,7 +144,7 @@ public class ExtendedJavaObject extends NativeJavaObject {
 	}
 	
 	public Object[] getIds() {
-		// concatenate the super classes ids array with the keySet from
+		// Concatenate the super classes ids array with the keySet from
 		// properties HashMap:
 		Object[] javaIds = super.getIds();
 		if (properties != null) {

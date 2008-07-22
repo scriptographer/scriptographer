@@ -223,6 +223,8 @@
 	catch (ScriptographerException *e) { \
 		e->convert(env); \
 		delete e; \
+	} catch (ATE::Exception e) { \
+		ASErrException(e.error).convert(env);\
 	} catch (...) { \
 		env->ThrowNew(gEngine->cls_ScriptographerException, "Unknown error"); \
 	}

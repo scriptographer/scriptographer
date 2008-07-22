@@ -163,8 +163,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ItemSet_nativeRasterize(JNI
 	try {
 		AIArtSet set = gEngine->convertArtSet(env, obj);
 		AIArtHandle raster = ItemSet_rasterize(set, (AIRasterizeType) type, resolution, antialiasing, width, height);
-		if (raster != NULL)
+		if (raster != NULL) {
+			// It's ok not to not pass document here, since the method calling nativeRasterize makes sure the right one is active
 			return gEngine->wrapArtHandle(env, raster);
+		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

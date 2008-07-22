@@ -154,6 +154,9 @@
 		912A22D70AE83B7F00B0ADD6 /* com_scriptographer_ai_PatternList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D10AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp */; };
 		912A22D80AE83B7F00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */; };
 		912A22D90AE83B7F00B0ADD6 /* com_scriptographer_ai_PatternList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D10AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp */; };
+		913020540E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */; };
+		913020550E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */; };
+		913020560E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */; };
 		913C571D0B13CBC100F14113 /* PiPL_MachO.rsrc in Rez */ = {isa = PBXBuildFile; fileRef = 913C571C0B13CBC100F14113 /* PiPL_MachO.rsrc */; };
 		913C571E0B13CBC100F14113 /* PiPL_MachO.rsrc in Rez */ = {isa = PBXBuildFile; fileRef = 913C571C0B13CBC100F14113 /* PiPL_MachO.rsrc */; };
 		913C57220B13CBF900F14113 /* PiPL_MachO_Universal.rsrc in Rez */ = {isa = PBXBuildFile; fileRef = 913C57210B13CBF900F14113 /* PiPL_MachO_Universal.rsrc */; };
@@ -294,18 +297,13 @@
 		910C76A50DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_FileFormat.cpp; path = jni/com_scriptographer_ai_FileFormat.cpp; sourceTree = "<group>"; };
 		910EDB960AD5305400D291C8 /* Array.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = Array.h; sourceTree = "<group>"; };
 		9115002F0A3E360500BC8EC4 /* Info.plist.in */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = Info.plist.in; path = resources/Info.plist.in; sourceTree = "<group>"; };
-		91168DF50A2B62130023EB84 /* js.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; name = js.o; path = ../../../../Java/Rhino/js.o; sourceTree = SOURCE_ROOT; };
-		91168DF60A2B62130023EB84 /* RhinoMessages.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; name = RhinoMessages.o; path = ../../../../Java/Rhino/RhinoMessages.o; sourceTree = SOURCE_ROOT; };
-		91168DF70A2B62130023EB84 /* RhinoToolsMessages.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; name = RhinoToolsMessages.o; path = ../../../../Java/Rhino/RhinoToolsMessages.o; sourceTree = SOURCE_ROOT; };
 		91168EAB0A2B86790023EB84 /* JavaVM.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaVM.framework; path = /System/Library/Frameworks/JavaVM.framework; sourceTree = "<absolute>"; };
-		911690360A2BC5940023EB84 /* libswt-carbon-3139.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libswt-carbon-3139.dylib"; path = "../../../banteng-0.1.1/libswt-carbon-3139.dylib"; sourceTree = SOURCE_ROOT; };
-		911690370A2BC5940023EB84 /* libswt-pi-carbon-3139.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libswt-pi-carbon-3139.dylib"; path = "../../../banteng-0.1.1/libswt-pi-carbon-3139.dylib"; sourceTree = SOURCE_ROOT; };
-		911690380A2BC5940023EB84 /* libswt-webkit-carbon-3139.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libswt-webkit-carbon-3139.dylib"; path = "../../../banteng-0.1.1/libswt-webkit-carbon-3139.dylib"; sourceTree = SOURCE_ROOT; };
 		91193B1F0A2DF3B100B0E3A7 /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
 		91193B760A2DF3C600B0E3A7 /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
 		912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_GradientStopList.cpp; path = jni/com_scriptographer_ai_GradientStopList.cpp; sourceTree = "<group>"; };
 		912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Pattern.cpp; path = jni/com_scriptographer_ai_Pattern.cpp; sourceTree = "<group>"; };
 		912A22D10AE83B7E00B0ADD6 /* com_scriptographer_ai_PatternList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_PatternList.cpp; path = jni/com_scriptographer_ai_PatternList.cpp; sourceTree = "<group>"; };
+		913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Dictionary.cpp; path = jni/com_scriptographer_ai_Dictionary.cpp; sourceTree = "<group>"; };
 		913C56F50B13C85A00F14113 /* CS3_Debug.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CS3_Debug.pch; path = prefix/CS3_Debug.pch; sourceTree = "<group>"; };
 		913C56F60B13C85A00F14113 /* CS3_Release.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CS3_Release.pch; path = prefix/CS3_Release.pch; sourceTree = "<group>"; };
 		913C571B0B13CBB300F14113 /* PiPL_CFM.rsrc */ = {isa = PBXFileReference; lastKnownFileType = archive.rsrc; name = PiPL_CFM.rsrc; path = resources/PiPL_CFM.rsrc; sourceTree = "<group>"; };
@@ -317,18 +315,12 @@
 		91456A920AF7E8F3000FD468 /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/ate/IText.cpp"; sourceTree = SOURCE_ROOT; };
 		91456A930AF7E8F3000FD468 /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/ate/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
 		916B8A820DB4B39400FA4689 /* com_scriptographer_adm_TextEditItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_TextEditItem.cpp; path = jni/com_scriptographer_adm_TextEditItem.cpp; sourceTree = "<group>"; };
-		916E65020A8ACD5400C3508D /* libjvm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjvm.dylib; path = "/usr/local/lib/gcj-4.2.0/libjvm.dylib"; sourceTree = "<absolute>"; };
 		916E65A20A8ACE7A00C3508D /* com */ = {isa = PBXFileReference; lastKnownFileType = folder; name = com; path = ../../src/java/com; sourceTree = SOURCE_ROOT; };
 		916E65A30A8ACE7A00C3508D /* info */ = {isa = PBXFileReference; lastKnownFileType = folder; name = info; path = ../../src/java/info; sourceTree = SOURCE_ROOT; };
 		916FC1420A25BFCC00BF8DE4 /* MachO_CFM_Glue.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MachO_CFM_Glue.cpp; path = ../../src/native/mac/MachO_CFM_Glue.cpp; sourceTree = SOURCE_ROOT; };
 		916FC1430A25BFCC00BF8DE4 /* MachO_CFM_Glue.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MachO_CFM_Glue.h; path = ../../src/native/mac/MachO_CFM_Glue.h; sourceTree = SOURCE_ROOT; };
 		916FC6FD0A264F2800BF8DE4 /* jniMacros.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = jniMacros.h; sourceTree = "<group>"; };
-		918921E10A88B52E00B241AF /* scriptographer.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = scriptographer.o; sourceTree = "<group>"; };
-		918921E50A88B58000B241AF /* swt.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = swt.o; sourceTree = "<group>"; };
-		918921E60A88B58000B241AF /* SWTMessages.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = SWTMessages.o; sourceTree = "<group>"; };
-		918F887D0ADE1E8600F0C100 /* libgcj.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libgcj.dylib; path = /usr/local/lib/libgcj.dylib; sourceTree = "<absolute>"; };
-		918F88C80ADE4DA400F0C100 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "/usr/local/lib/libstdc++.dylib"; sourceTree = "<absolute>"; };
-		919823D40A37257700D57E4C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = Info.plist; path = resources/Info.plist; sourceTree = "<group>"; };
+		919823D40A37257700D57E4C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = resources/Info.plist; sourceTree = "<group>"; };
 		91CA8A6F0A22703F005E0C1A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		91D4E9530A252070002888A3 /* CS_Debug.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CS_Debug.pch; path = prefix/CS_Debug.pch; sourceTree = "<group>"; };
 		91D4E9540A252070002888A3 /* CS_Release.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CS_Release.pch; path = prefix/CS_Release.pch; sourceTree = "<group>"; };
@@ -527,18 +519,6 @@
 			children = (
 				91CA8A6F0A22703F005E0C1A /* Carbon.framework */,
 				91168EAB0A2B86790023EB84 /* JavaVM.framework */,
-				918F887D0ADE1E8600F0C100 /* libgcj.dylib */,
-				916E65020A8ACD5400C3508D /* libjvm.dylib */,
-				918921E10A88B52E00B241AF /* scriptographer.o */,
-				91168DF50A2B62130023EB84 /* js.o */,
-				91168DF60A2B62130023EB84 /* RhinoMessages.o */,
-				91168DF70A2B62130023EB84 /* RhinoToolsMessages.o */,
-				918921E50A88B58000B241AF /* swt.o */,
-				918921E60A88B58000B241AF /* SWTMessages.o */,
-				918F88C80ADE4DA400F0C100 /* libstdc++.dylib */,
-				911690360A2BC5940023EB84 /* libswt-carbon-3139.dylib */,
-				911690370A2BC5940023EB84 /* libswt-pi-carbon-3139.dylib */,
-				911690380A2BC5940023EB84 /* libswt-webkit-carbon-3139.dylib */,
 				91E56C2A0B396EE0004AED6E /* AppKit.framework */,
 			);
 			name = "Frameworks and Libraries";
@@ -596,6 +576,7 @@
 		91EF0B4E0A20A4B900F0EF9A /* AI */ = {
 			isa = PBXGroup;
 			children = (
+				913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */,
 				910C76A50DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp */,
 				91EF0AE20A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp */,
 				91F1E7D60D94032D002C7A53 /* com_scriptographer_ai_ItemSet.cpp */,
@@ -661,8 +642,8 @@
 				91EF0AFD0A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp */,
 				91EF0B060A20A4B200F0EF9A /* com_scriptographer_adm_HierarchyList.cpp */,
 				91EF0B070A20A4B200F0EF9A /* com_scriptographer_adm_ListItem.cpp */,
-				91EF0B080A20A4B200F0EF9A /* com_scriptographer_adm_Tracker.cpp */,
 				91EF0B0C0A20A4B200F0EF9A /* com_scriptographer_adm_ListEntry.cpp */,
+				91EF0B080A20A4B200F0EF9A /* com_scriptographer_adm_Tracker.cpp */,
 				91EF0B100A20A4B200F0EF9A /* com_scriptographer_adm_Button.cpp */,
 				91EF0B120A20A4B200F0EF9A /* com_scriptographer_adm_ValueItem.cpp */,
 				91EF0B130A20A4B200F0EF9A /* com_scriptographer_adm_Item.cpp */,
@@ -903,6 +884,7 @@
 				91F1E7DB0D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */,
 				910C76A70DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				916B8A840DB4B39400FA4689 /* com_scriptographer_adm_TextEditItem.cpp in Sources */,
+				913020550E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -986,6 +968,7 @@
 				91F1E7DD0D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */,
 				910C76A80DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				916B8A850DB4B39400FA4689 /* com_scriptographer_adm_TextEditItem.cpp in Sources */,
+				913020560E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1070,6 +1053,7 @@
 				91F1E7D90D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */,
 				910C76A60DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				916B8A830DB4B39400FA4689 /* com_scriptographer_adm_TextEditItem.cpp in Sources */,
+				913020540E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

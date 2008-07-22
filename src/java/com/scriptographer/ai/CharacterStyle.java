@@ -78,10 +78,17 @@ public class CharacterStyle extends PathStyle {
 		range = null;
 		commitKey = this;
 		// See reading of color in StrokeStyle:
-		FontWeight weight = (FontWeight) reader.readObject("font", FontWeight.class);
+		Object weight = reader.readObject("font");
 		if (weight == null && (!reader.isHash() || reader.has("font")))
 			weight = FontWeight.NONE;
-		setFont(weight);
+		if (weight instanceof String) {
+			setFont((String) weight);
+		} else {
+			if (weight instanceof FontWeight || weight == null)
+				setFont((FontWeight) weight);
+			else
+				setFont(FontWeight.NONE);
+		}
 		setFontSize(reader.readFloat("fontSize"));
 		setHorizontalScale(reader.readFloat("horizontalScale"));
 		setVerticalScale(reader.readFloat("verticalScale"));
@@ -128,7 +135,7 @@ public class CharacterStyle extends PathStyle {
 	}
 	
 	protected void changeHandle(int newHandle) {
-		release(); // release old handle
+		nativeRelease(handle); // release old handle
 		handle = newHandle;
 		pathStyleChanged = false;
 		fetched = false; // force refetch of PathStyle
@@ -243,6 +250,10 @@ public class CharacterStyle extends PathStyle {
 		else
 			font = weight.handle;
 		nativeSetFont(font);
+	}
+
+	public void setFont(String font) {
+		setFont(FontList.getInstance().getWeight(font));
 	}
 	
 	public void setFont(FontFamily font) {
@@ -505,9 +516,10 @@ akiRight
 	ATEErr (*GetRightAki) ( CharFeaturesRef charfeatures, bool* isAssigned, ASReal* ret);
 */
 	
-	protected native void release();
+	private native void nativeRelease(int handle);
 	
 	protected void finalize() {
-		release();
+		nativeRelease(handle);
+		handle = 0;
 	}
 }

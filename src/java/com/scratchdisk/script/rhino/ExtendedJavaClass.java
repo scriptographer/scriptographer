@@ -222,7 +222,6 @@ public class ExtendedJavaClass extends NativeJavaClass {
 				parent = ScriptableObject.getObjectPrototype(this);
 			}
 			instanceProto.setPrototype(parent);
-			instanceProto.put("clazz", instanceProto, getClassObject());
 		}
 		return instanceProto;
 	}

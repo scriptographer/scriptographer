@@ -40,7 +40,7 @@
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_ToggleItem_isChecked(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->GetBooleanValue(item);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -51,7 +51,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_ToggleItem_isChecked(JNIE
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_ToggleItem_setChecked(JNIEnv *env, jobject obj, jboolean checked) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetBooleanValue(item, checked);
 	} EXCEPTION_CONVERT(env);
 }

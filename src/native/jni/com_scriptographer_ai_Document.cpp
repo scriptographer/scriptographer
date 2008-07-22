@@ -38,18 +38,18 @@
  * com.scriptographer.ai.Document
  */
 
-// gActiveDoc allways points to the currently active document. 
+// gWorkingDoc allways points to the document ai is current working in. 
 // whenever getArtHandle is called, it's document is retrieved too, and checked
 // against this. Documents are switched if necessary. At the end of the code
 // execution, the previous active document is restored (see endExecution)
-AIDocumentHandle gActiveDoc = NULL;
-// gWorkingDoc points to the document that the user has chosen to be working in.
-// this can differ from gActiveDoc, because if code works on more than one document
-// at a time, documents are dynamically switched whenever needed, and gActiveDoc
-// keeps track of the one currently active. gWorkingDoc keeps track of the
-// one activated by the user (at the start the same as gActiveDoc, then depending
-// on calls of Document.activate)
 AIDocumentHandle gWorkingDoc = NULL;
+// gActiveDoc points to the document that the user has chosen to be working in.
+// this can differ from gWorkingDoc, because if code works on more than one document
+// at a time, documents are dynamically switched whenever needed, and gWorkingDoc
+// keeps track of the one we are currently working in. gActiveDoc keeps track of the
+// one activated by the user (at the start the same as gWorkingDoc, then depending
+// on calls of Document.activate)
+AIDocumentHandle gActiveDoc = NULL;
 // gCreationDoc is only set when an object needs to be created in another document
 // than the currently active one. It's set in Document.activate and erased after
 // the first usage.
@@ -58,13 +58,13 @@ AIDocumentHandle gCreationDoc = NULL;
 void Document_activate(AIDocumentHandle doc) {
 	if (doc == NULL) {
 		// if Document_activate(NULL) is called,
-		// we switch to gCreationDoc if set, gWorkingDoc otherwise
+		// we switch to gCreationDoc if set, gActiveDoc otherwise
 		// This should only be happening during the creation of new items.
-		doc = gCreationDoc != NULL ? gCreationDoc : gWorkingDoc;
+		doc = gCreationDoc != NULL ? gCreationDoc : gActiveDoc;
 	}
-	if (gActiveDoc != doc) {
+	if (gWorkingDoc != doc) {
 		sAIDocumentList->Activate(doc, false);
-		gActiveDoc = doc;
+		gWorkingDoc = doc;
 	}
 	// erase it again...
 	gCreationDoc = NULL;
@@ -102,9 +102,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_beginExecution(JNIEnv
 		// This is needed as any code that relies on the right document
 		// to be set may switch any time (in fact, the native getArtHandle
 		// function switches all the time.
-		gActiveDoc = NULL;
-		sAIDocument->GetDocument(&gActiveDoc);
-		gWorkingDoc = gActiveDoc;
+		gWorkingDoc = NULL;
+		sAIDocument->GetDocument(&gWorkingDoc);
+		gActiveDoc = gWorkingDoc;
 		gCreationDoc = NULL;
 	} EXCEPTION_CONVERT(env);
 }
@@ -114,16 +114,23 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_beginExecution(JNIEnv
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_endExecution(JNIEnv *env, jclass cls) {
 	try {
 		gEngine->resumeSuspendedDocuments();
-		if (gWorkingDoc != gActiveDoc)
-			sAIDocumentList->Activate(gWorkingDoc, false);
+		if (gActiveDoc != gWorkingDoc)
+			sAIDocumentList->Activate(gActiveDoc, false);
 	} EXCEPTION_CONVERT(env);
 }
 
 /*
- * int getActiveDocumentHandle()
+ * int nativeGetActiveDocumentHandle()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveDocumentHandle(JNIEnv *env, jclass cls) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetActiveDocumentHandle(JNIEnv *env, jclass cls) {
 	return (jint) gActiveDoc;
+}
+
+/*
+ * int nativeGetWorkingDocumentHandle()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetWorkingDocumentHandle(JNIEnv *env, jclass cls) {
+	return (jint) gWorkingDoc;
 }
 
 /*
@@ -146,7 +153,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_i
 #endif
 		}
 		if (doc != NULL)
-			gActiveDoc = doc;
+			gWorkingDoc = doc;
 	} EXCEPTION_CONVERT(env);
 	return (jint) doc;
 }
@@ -181,7 +188,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_l
 		sAIDocumentList->New(preset, &params, (ActionDialogStatus) dialogStatus, &doc);
 	#endif
 		if (doc != NULL)
-			gActiveDoc = doc;
+			gWorkingDoc = doc;
 #endif
 	} EXCEPTION_CONVERT(env);
 	if (str != NULL)
@@ -196,12 +203,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_activate(JNIEnv *env,
 	try {
 		// Do not switch yet as we may want to focus the document too:
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
-		if (doc != gActiveDoc) {
+		if (doc != gWorkingDoc) {
 			sAIDocumentList->Activate(doc, focus);
-			gActiveDoc = doc;
-			// If forCreation is set, set gCreationDoc instead of gWorkingDoc
+			gWorkingDoc = doc;
+			// If forCreation is set, set gCreationDoc instead of gActiveDoc
 			if (forCreation) gCreationDoc = doc;
-			else gWorkingDoc = doc;
+			else gActiveDoc = doc;
 		}
 	} EXCEPTION_CONVERT(env);
 }
@@ -565,9 +572,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_paste(JNIEnv *env, jo
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_place(JNIEnv *env, jobject obj, jobject file, jboolean linked) {
 	try {
-		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
+		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
 		AIArtHandle art = PlacedItem_place(env, doc, file, linked);
-		return gEngine->wrapArtHandle(env, art);
+		return gEngine->wrapArtHandle(env, art, doc);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -660,15 +667,15 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeGetMatchingI
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRectangle(JNIEnv *env, jobject obj, jobject rect) {
 	try {
 		// Activate document
-		gEngine->getDocumentHandle(env, obj, true);
+		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
 		short paintOrder;
 		// simply call for the error message and the doc activation
 		Item_getInsertionPoint(&paintOrder);
 		AIRealRect rt;
 		gEngine->convertRectangle(env, rect, &rt);
-		AIArtHandle handle = NULL;
-		sAIShapeConstruction->NewRect(rt.top, rt.left, rt.bottom, rt.right, false, &handle);
-		return gEngine->wrapArtHandle(env, handle);
+		AIArtHandle art = NULL;
+		sAIShapeConstruction->NewRect(rt.top, rt.left, rt.bottom, rt.right, false, &art);
+		return gEngine->wrapArtHandle(env, art, doc);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -679,15 +686,15 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRectangle(JN
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRoundRectangle(JNIEnv *env, jobject obj, jobject rect, jfloat hor, jfloat ver) {
 	try {
 		// Activate document
-		gEngine->getDocumentHandle(env, obj, true);
+		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
 		short paintOrder;
 		// simply call for the error message and the doc activation
 		Item_getInsertionPoint(&paintOrder);
 		AIRealRect rt;
 		gEngine->convertRectangle(env, rect, &rt);
-		AIArtHandle handle = NULL;
-		sAIShapeConstruction->NewRoundedRect(rt.top, rt.left, rt.bottom, rt.right, hor, ver, false, &handle);
-		return gEngine->wrapArtHandle(env, handle);
+		AIArtHandle art = NULL;
+		sAIShapeConstruction->NewRoundedRect(rt.top, rt.left, rt.bottom, rt.right, hor, ver, false, &art);
+		return gEngine->wrapArtHandle(env, art, doc);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -698,18 +705,18 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRoundRectang
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createOval(JNIEnv *env, jobject obj, jobject rect, jboolean circumscribed) {
 	try {
 		// Activate document
-		gEngine->getDocumentHandle(env, obj, true);
+		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
 		short paintOrder;
 		// simply call for the error message and the doc activation
 		Item_getInsertionPoint(&paintOrder);
 		AIRealRect rt;
 		gEngine->convertRectangle(env, rect, &rt);
-		AIArtHandle handle = NULL;
+		AIArtHandle art = NULL;
 		if (circumscribed)
-			sAIShapeConstruction->NewCircumscribedOval(rt.top, rt.left, rt.bottom, rt.right, false, &handle);
+			sAIShapeConstruction->NewCircumscribedOval(rt.top, rt.left, rt.bottom, rt.right, false, &art);
 		else
-			sAIShapeConstruction->NewInscribedOval(rt.top, rt.left, rt.bottom, rt.right, false, &handle);
-		return gEngine->wrapArtHandle(env, handle);
+			sAIShapeConstruction->NewInscribedOval(rt.top, rt.left, rt.bottom, rt.right, false, &art);
+		return gEngine->wrapArtHandle(env, art, doc);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -720,15 +727,15 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createOval(JNIEnv 
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRegularPolygon(JNIEnv *env, jobject obj, jint numSides, jobject center, jfloat radius) {
 	try {
 		// Activate document
-		gEngine->getDocumentHandle(env, obj, true);
+		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
 		short paintOrder;
 		// simply call for the error message and the doc activation
 		Item_getInsertionPoint(&paintOrder);
 		AIRealPoint pt;
 		gEngine->convertPoint(env, center, &pt);
-		AIArtHandle handle = NULL;
-		sAIShapeConstruction->NewRegularPolygon(numSides, pt.h, pt.v, radius, false, &handle);
-		return gEngine->wrapArtHandle(env, handle);
+		AIArtHandle art = NULL;
+		sAIShapeConstruction->NewRegularPolygon(numSides, pt.h, pt.v, radius, false, &art);
+		return gEngine->wrapArtHandle(env, art, doc);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -739,15 +746,15 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRegularPolyg
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createStar(JNIEnv *env, jobject obj, jint numPoints, jobject center, jfloat radius1, jfloat radius2) {
 	try {
 		// Activate document
-		gEngine->getDocumentHandle(env, obj, true);
+		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
 		short paintOrder;
 		// simply call for the error message and the doc activation
 		Item_getInsertionPoint(&paintOrder);
 		AIRealPoint pt;
 		gEngine->convertPoint(env, center, &pt);
-		AIArtHandle handle;
-		sAIShapeConstruction->NewStar(numPoints, pt.h, pt.v, radius1, radius2, false, &handle);
-		return gEngine->wrapArtHandle(env, handle);
+		AIArtHandle art = NULL;
+		sAIShapeConstruction->NewStar(numPoints, pt.h, pt.v, radius1, radius2, false, &art);
+		return gEngine->wrapArtHandle(env, art, doc);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -758,50 +765,18 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createStar(JNIEnv 
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createSpiral(JNIEnv *env, jobject obj, jobject firstArcCenter, jobject start, jfloat decayPercent, jint numQuarterTurns, jboolean clockwiseFromOutside) {
 	try {
 		// Activate document
-		gEngine->getDocumentHandle(env, obj, true);
+		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
 		short paintOrder;
 		// simply call for the error message and the doc activation
 		Item_getInsertionPoint(&paintOrder);
 		AIRealPoint ptCenter, ptStart;
 		gEngine->convertPoint(env, firstArcCenter, &ptCenter);
 		gEngine->convertPoint(env, start, &ptStart);
-		AIArtHandle handle = NULL;
-		sAIShapeConstruction->NewSpiral(ptCenter, ptStart, decayPercent, numQuarterTurns, clockwiseFromOutside, &handle);
-		return gEngine->wrapArtHandle(env, handle);
+		AIArtHandle art = NULL;
+		sAIShapeConstruction->NewSpiral(ptCenter, ptStart, decayPercent, numQuarterTurns, clockwiseFromOutside, &art);
+		return gEngine->wrapArtHandle(env, art, doc);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
-}
-
-/*
- * void nativeGetDictionary(com.scriptographer.ai.Dictionary map)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeGetDictionary(JNIEnv *env, jobject obj, jobject map) {
-	AIDictionaryRef dictionary = NULL;
-	try {
-		// cause the doc switch if necessary
-		gEngine->getDocumentHandle(env, obj, true);
-		sAIDocument->GetDictionary(&dictionary);
-		if (dictionary != NULL)
-			gEngine->convertDictionary(env, dictionary, map, false, true); 
-	} EXCEPTION_CONVERT(env);
-	if (dictionary != NULL)
-		sAIDictionary->Release(dictionary);
-}
-
-/*
- * void nativeSetDictionary(com.scriptographer.ai.Dictionary map)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetDictionary(JNIEnv *env, jobject obj, jobject map) {
-	AIDictionaryRef dictionary = NULL;
-	try {
-		// cause the doc switch if necessary
-		gEngine->getDocumentHandle(env, obj, true);
-		sAIDocument->GetDictionary(&dictionary);
-		if (dictionary != NULL)
-			gEngine->convertDictionary(env, map, dictionary, false, true); 
-	} EXCEPTION_CONVERT(env);
-	if (dictionary != NULL)
-		sAIDictionary->Release(dictionary);
 }
 
 /*
@@ -810,8 +785,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetDictionary(J
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIEnv *env, jobject obj, jobject point, jint type, jfloat tolerance, jobject item) {
 	jobject hitTest = NULL;
 	try {
-		// cause the doc switch if necessary
-		gEngine->getDocumentHandle(env, obj, true);
+		// Cause the doc switch if necessary
+		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
 
 		AIRealPoint pt;
 		gEngine->convertPoint(env, point, &pt);
@@ -863,7 +838,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 					}
 				}
 				if (hitType >= 0) {
-					jobject item = gEngine->wrapArtHandle(env, toolHit.object);
+					jobject item = gEngine->wrapArtHandle(env, toolHit.object, doc);
 					jobject point = gEngine->convertPoint(env, &toolHit.point);
 					hitTest = gEngine->newObject(env, gEngine->cls_ai_HitTest, gEngine->cid_ai_HitTest, hitType, item,
 												 (jint) toolHit.segment, (jdouble) toolHit.t, point);
@@ -904,6 +879,8 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetStories(JNIE
 					!sTextFrame->GetStory(frame, &story) &&
 					!sStory->GetStories(story, &stories)) {
 					ret = (jint) stories;
+					sTextFrame->Release(frame);
+					sStory->Release(story);
 				}
 			}
 			sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
@@ -943,9 +920,35 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetFileFormat(J
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetFileFormat(JNIEnv *env, jobject obj, jint handle) {
 	try {
-		gEngine->getDocumentHandle(env, obj, true);
 		// Cause the doc switch if necessary
+		gEngine->getDocumentHandle(env, obj, true);
 		if (sAIDocument->SetDocumentFileFormat((AIFileFormatHandle) handle))
 			throw new StringException("Cannot set file format on document");
 	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * boolean isValid()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_isValid(JNIEnv *env, jobject obj) {
+	try {
+		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
+		AIBoolean exists = false;
+		sAIDocument->DocumentExists(doc, &exists);
+		return exists;
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+/*
+ * int nativeGetData()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetData(JNIEnv *env, jobject obj) {
+	AIDictionaryRef dictionary = NULL;
+	try {
+		// Cause the doc switch if necessary
+		gEngine->getDocumentHandle(env, obj, true);
+		sAIDocument->GetDictionary(&dictionary);
+	} EXCEPTION_CONVERT(env);
+	return (jint) dictionary;
 }

@@ -102,8 +102,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedItem_embed(JNIEnv *en
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIArtHandle res = NULL;
 		sAIPlaced->MakePlacedObjectNative(art, &res, askParams);
-		if (res != NULL)
+		if (res != NULL) {
+			// No need to pass document since we're activating document in getArtHandle
 			return gEngine->wrapArtHandle(env, res);
+		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

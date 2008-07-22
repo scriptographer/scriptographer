@@ -59,7 +59,7 @@ public abstract class AbstractMap<K,V> implements Map<K,V> {
 	}
 
 	public boolean isEmpty() {
-		return keys().length == 0;
+		return size() == 0;
 	}
 
 	public void clear() {

@@ -87,12 +87,16 @@ public class Rectangle {
 	
 	/**
 	 * Creates a new rectangle from the passed points.
-	 * @param topLeft The top left point.
-	 * @param bottomRight The bottom right point.
+	 * @param bottomLeft The bottom left point.
+	 * @param topRight The top right point.
 	 */
-	public Rectangle(Point topLeft, Point bottomRight) {
-		this(topLeft.x, bottomRight.y,
-				bottomRight.x - topLeft.x, topLeft.y - bottomRight.y);
+	public Rectangle(Point bottomLeft, Point topRight) {
+		this(bottomLeft.x, bottomLeft.y,
+				topRight.x - bottomLeft.x, topRight.y - bottomLeft.y);
+	}
+
+	public Rectangle(Point point, Size size) {
+		this(point.x, point.y, size.width, size.height);
 	}
 
 	/**

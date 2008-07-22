@@ -38,13 +38,13 @@ import com.scratchdisk.util.IntegerEnumUtils;
 /**
  * @author lehni
  */
-public class DocumentView extends NativeWrapper {
-	protected DocumentView(int handle) {
-		super(handle);
+public class DocumentView extends DocumentObject {
+	protected DocumentView(int handle, Document document) {
+		super(handle, document);
 	}
 
-	protected static DocumentView wrapHandle(int handle) {
-		return (DocumentView) wrapHandle(DocumentView.class, handle, null, true);
+	protected static DocumentView wrapHandle(int handle, Document document) {
+		return (DocumentView) wrapHandle(DocumentView.class, handle, document);
 	}
 
 	/**
@@ -217,13 +217,6 @@ public class DocumentView extends NativeWrapper {
 	 * Set whether the transparency grid is shown in the view.
 	 */
 	public native void setShowTransparencyGrid(boolean show);
-
-	/**
-	 * Get the document displayed in the view.
-	 */
-	public Document getDocument() {
-		return document;
-	}
 	
 	/**
 	 * Return the current mouse position within this view, in document

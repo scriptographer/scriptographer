@@ -36,17 +36,17 @@ import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.ListIterator;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
+import com.scriptographer.CommitManager;
 
 /**
  * @author lehni
  */
-class TextStoryList extends NativeObject implements ReadOnlyList<TextStory> {
+class TextStoryList extends DocumentObject implements ReadOnlyList<TextStory> {
 	ArrayList.List<TextStory> list;
-	Document document;
-	
+	protected int version = CommitManager.version;
+
 	TextStoryList(int handle, Document document) {
-		super(handle);
-		this.document = document;
+		super(handle, document);
 		list = new ArrayList.List<TextStory>();
 	}
 
@@ -91,5 +91,18 @@ class TextStoryList extends NativeObject implements ReadOnlyList<TextStory> {
 		int newHandle = nativeGet(handle, index, story.handle);
 		if (story.handle != newHandle)
 			story.changeHandle(newHandle);
+	}
+
+	protected native void nativeRelease(int handle);
+	
+	protected void finalize() {
+		nativeRelease(handle);
+		handle = 0;
+	}
+	
+	protected void changeHandle(int newHandle) {
+		nativeRelease(handle); // Release old handle
+		handle = newHandle;
+		version = CommitManager.version;
 	}
 }

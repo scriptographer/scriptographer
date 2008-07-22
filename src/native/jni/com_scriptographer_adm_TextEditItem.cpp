@@ -40,7 +40,7 @@
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEditItem_getPrecision(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->GetPrecision(item);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -51,7 +51,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEditItem_getPrecision(JNI
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setPrecision(JNIEnv *env, jobject obj, jint precision) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetPrecision(item, precision);
 	} EXCEPTION_CONVERT(env);
 }
@@ -61,7 +61,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setPrecision(JNI
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setMaxLength(JNIEnv *env, jobject obj, jint length) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetMaxTextLength(item, length);
 	} EXCEPTION_CONVERT(env);
 }
@@ -71,7 +71,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setMaxLength(JNI
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEditItem_getMaxLength(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->GetMaxTextLength(item);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -82,7 +82,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_adm_TextEditItem_getMaxLength(JNI
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setSelection(JNIEnv *env, jobject obj, jint start, jint end) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetSelectionRange(item, start, end);
 	} EXCEPTION_CONVERT(env);
 }
@@ -92,7 +92,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setSelection(JNI
  */
 JNIEXPORT jintArray JNICALL Java_com_scriptographer_adm_TextEditItem_getSelection(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		long start, end;
 		sADMItem->GetSelectionRange(item, &start, &end);
 		// create an int array with these values:
@@ -111,7 +111,7 @@ JNIEXPORT jintArray JNICALL Java_com_scriptographer_adm_TextEditItem_getSelectio
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_selectAll(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemRef(env, obj);
+	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SelectAll(item);
 	} EXCEPTION_CONVERT(env);
 }
@@ -121,7 +121,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_selectAll(JNIEnv
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setAllowMath(JNIEnv *env, jobject obj, jboolean allowMath) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetAllowUnits(item, allowMath);
 	} EXCEPTION_CONVERT(env);
 }
@@ -131,7 +131,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setAllowMath(JNI
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_TextEditItem_getAllowMath(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->GetAllowMath(item);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -142,7 +142,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_TextEditItem_getAllowMath
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setAllowUnits(JNIEnv *env, jobject obj, jboolean allowUnits) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetAllowUnits(item, allowUnits);
 	} EXCEPTION_CONVERT(env);
 }
@@ -152,7 +152,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_TextEditItem_setAllowUnits(JN
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_adm_TextEditItem_getAllowUnits(JNIEnv *env, jobject obj) {
 	try {
-		ADMItemRef item = gEngine->getItemRef(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->GetAllowUnits(item);
 	} EXCEPTION_CONVERT(env);
 	return false;
