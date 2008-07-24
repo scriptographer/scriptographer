@@ -103,13 +103,15 @@ public class RhinoScriptException extends ScriptException {
 			}
 			String[] stackTrace = re.getScriptStackTrace().split("[\\n\\r]");
 			String sourceName = re.sourceName();
-			int lineNumber = re.lineNumber();
-			// Report sourceName / lineNumber if it is not in the stack trace already.
-			// Why is this needed? Rhino bug?
-			if (stackTrace.length == 0 || stackTrace[0].indexOf(sourceName + ":" + lineNumber) == -1) {
-				if (base != null)
-					sourceName = sourceName.substring(base.length());
-				writer.println("    at " + sourceName + ":" + lineNumber);
+			if (sourceName != null) {
+				int lineNumber = re.lineNumber();
+				// Report sourceName / lineNumber if it is not in the stack trace already.
+				// Why is this needed? Rhino bug?
+				if (stackTrace.length == 0 || stackTrace[0].indexOf(sourceName + ":" + lineNumber) == -1) {
+					if (base != null)
+						sourceName = sourceName.substring(base.length());
+					writer.println("    at " + sourceName + ":" + lineNumber);
+				}
 			}
 			// Parse the lines for filename:linenumber
 			Pattern pattern = Pattern.compile("\\s+at\\s+([^:]+):(\\d+)");

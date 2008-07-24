@@ -41,7 +41,7 @@ public class Gradient extends DocumentObject {
 	GradientStopList stops = null;
 
 	/*
-	 * Needed by wrapHandle mechanism in WrapperObject
+	 * Needed by wrapHandle mechanism in NativeObject
 	 */
 	protected Gradient(int handle, Document document) {
 		super(handle, document);
