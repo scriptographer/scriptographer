@@ -67,10 +67,11 @@ public class CommitManager {
 			if (obj != null) {
 				obj.commit();
 				// case it's a text, use the story as a key as well. it's used
-				// like
-				// that in CharacterAttributes
+				// like that in CharacterAttributes
 				if (obj instanceof TextFrame)
 					commit(((TextFrame) obj).getStory());
+				// Remove object after committing
+				commitables.remove(key);
 			}
 		} else if (commitables.size() > 0) {
 			for (Commitable commitable : commitables.values())
@@ -143,6 +144,18 @@ public class CommitManager {
 					return super.put(key, obj);
 				}
 			}
+		}
+
+		public Commitable remove(Object key) {
+			Commitable obj = super.remove(key);
+			if (obj instanceof CommitableList) {
+				for (Commitable commitable : ((CommitableList) obj).values()) {
+					values.remove(commitable);
+				}
+			} else {
+				values.remove(obj);
+			}
+			return obj;
 		}
 
 		public void clear() {
