@@ -1,6 +1,10 @@
 new function() { 
 	function inject(dest, src, base, generics) {
 		function field(name, generics) {
+			if (generics) generics[name] = function(bind) {
+				return bind && dest[name].apply(bind,
+					Array.prototype.slice.call(arguments, 1));
+			}
 			var val = src[name], res = val, prev = dest[name];
 			if (val !== (src.__proto__ || Object.prototype)[name]) {
 				switch (typeof val) {
@@ -9,10 +13,6 @@ new function() {
 						if (match = name.match(/(.*)_(g|s)et$/)) {
 							dest['__define' + match[2].toUpperCase() + 'etter__'](match[1], val);
 							return;
-						}
-						if (generics) generics[name] = function(bind) {
-							return bind && dest[name].apply(bind,
-								Array.prototype.slice.call(arguments, 1));
 						}
 						if (/\[native code/.test(val))
 							return;
@@ -270,7 +270,7 @@ Base.inject({
 
 	debug: function() {
 		return /^(string|number|function|regexp)$/.test(Base.type(this)) ? this
-			: this.each(function(val, key) { this.push(key + ': ' + val); }, []).join(', ');
+			: Base.each(this, function(val, key) { this.push(key + ': ' + val); }, []).join(', ');
 	},
 
 	clone: function() {
@@ -472,6 +472,10 @@ Array.inject(new function() {
 		},
 
 		associate: function(obj) {
+			if (!obj)
+				obj = this;
+			else if (typeof obj == 'function')
+				obj = this.map(obj);
 			if (obj.length != null) {
 				var that = this;
 				return Base.each(obj, function(name, index) {
@@ -479,10 +483,10 @@ Array.inject(new function() {
 					if (index == that.length) throw Base.stop;
 				}, {});
 			} else {
-				obj = Hash.create(obj);
+				obj = Hash.merge({}, obj);
 				return Base.each(this, function(val) {
 					var type = Base.type(val);
-					obj.each(function(hint, name) {
+					Base.each(obj, function(hint, name) {
 						if (hint == 'any' || type == hint) {
 							this[name] = val;
 							delete obj[name];
@@ -510,7 +514,7 @@ Array.inject(new function() {
 		shuffle: function() {
 			var res = this.clone();
 			var i = this.length;
-			while (i--) res.swap(i, Math.rand(0, i));
+			while (i--) res.swap(i, Math.rand(0, i + 1));
 			return res;
 		},
 
@@ -646,7 +650,7 @@ RegExp.inject({
 });
 
 Math.rand = function(min, max) {
-	return Math.floor(Math.random() * (max - min + 1) + min);
+	return Math.floor(Math.random() * (max - min) + min);
 }
 
 Array.inject({
@@ -740,7 +744,7 @@ Json = new function() {
 		encode: function(obj) {
 			switch (Base.type(obj)) {
 				case 'string':
-					return '"' + obj.replace(/[\x00-\x1f\\"]/g, replace) + '"';
+					return uneval(obj.toString());
 				case 'array':
 					return '[' + obj.collect(Json.encode) + ']';
 				case 'object':
