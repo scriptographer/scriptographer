@@ -96,7 +96,7 @@ void Document_deselectAll(bool force) {
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_beginExecution(JNIEnv *env, jclass cls) {
 	try {
-		// fetch the current working document, so it can
+		// Fetch the current working document, so it can
 		// be set again if it was changed by document
 		// handling code in the native environment in the end.
 		// This is needed as any code that relies on the right document

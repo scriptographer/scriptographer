@@ -1265,7 +1265,7 @@ void ScriptographerEngine::resumeSuspendedDocuments() {
 }
 
 int ScriptographerEngine::getAIObjectHandle(JNIEnv *env, jobject obj, const char *name) {
-	if (obj = NULL)
+	if (obj == NULL)
 		return NULL;
 	JNI_CHECK_ENV
 	int handle = getIntField(env, obj, fid_ai_NativeObject_handle);

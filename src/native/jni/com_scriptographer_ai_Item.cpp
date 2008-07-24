@@ -163,29 +163,14 @@ AIDictKey Item_getDictionaryKey(AIDictionaryRef dictionary, AIArtHandle art) {
 
 AIArtHandle Item_copyTo(AIArtHandle artSrc, AIDocumentHandle docSrc, AIDictionaryRef dictSrc, AIArtHandle artDst, AIDocumentHandle docDst, short paintOrder) {
 	AIArtHandle res = NULL;
-	if (docSrc != docDst) {
-		AIDictionaryRef dictDocDst;
-		if (!sAIDocument->GetDictionary(&dictDocDst)) {
-			Document_activate(docSrc);
-			AIDictKey key = sAIDictionary->Key("-scriptographer-append-child");
-			if (!sAIDictionary->CopyArtToEntry(dictDocDst, key, artSrc)) {
-				Document_activate(docDst);
-				sAIDictionary->MoveEntryToArt(dictDocDst, key, paintOrder, artDst, &res);
-			}
-			sAIDictionary->DeleteEntry(dictDocDst, key);
-			sAIDictionary->Release(dictDocDst);
-		}
-		Document_activate(docDst);
-	} else {
-		Document_activate(docDst);
-		if (dictSrc != NULL) {
-			AIDictKey key = Item_getDictionaryKey(dictSrc, artSrc);
-			if (key != NULL)
-				sAIDictionary->CopyEntryToArt(dictSrc, key, paintOrder, artDst, &res);
-		}
-		if (res == NULL) {
-			sAIArt->DuplicateArt(artSrc, paintOrder, artDst, &res);
-		}
+	Document_activate(docDst);
+	if (dictSrc != NULL) {
+		AIDictKey key = Item_getDictionaryKey(dictSrc, artSrc);
+		if (key != NULL)
+			sAIDictionary->CopyEntryToArt(dictSrc, key, paintOrder, artDst, &res);
+	}
+	if (res == NULL) {
+		sAIArt->DuplicateArt(artSrc, paintOrder, artDst, &res);
 	}
 	if (res != NULL) {
 		// Duplicate art also duplicated the dictionary. Remove the artHandleKey from it, since it's
@@ -206,9 +191,9 @@ bool Item_move(JNIEnv *env, jobject obj, jobject item, short paintOrder) {
 			AIArtHandle artSrc = gEngine->getArtHandle(env, obj, true, &docSrc);
 			AIArtHandle artDst = gEngine->getArtHandle(env, item, false, &docDst);
 			if (artSrc != NULL && artDst != NULL && artSrc != artDst) {
-				// simply try to reorder it
+				// Simply try to reorder it
 				if (artSrc != NULL && artDst != NULL) {
-					// if art belongs to a dictionary, treat it differently
+					// If art belongs to a dictionary, treat it differently
 					AIDictionaryRef dictSrc = gEngine->getArtDictionaryHandle(env, obj);
 					if (dictSrc != NULL) {
 						AIDictKey key = Item_getDictionaryKey(dictSrc, artSrc);
@@ -220,7 +205,7 @@ bool Item_move(JNIEnv *env, jobject obj, jobject item, short paintOrder) {
 						}
 					}
 					
-					// if we're in a different document:
+					// If we're in a different document:
 					// move the art from one document to the other by moving it to
 					// the the doc's dictionary first, then into the doc from there
 					// this is the only way that seems to work...
@@ -230,12 +215,14 @@ bool Item_move(JNIEnv *env, jobject obj, jobject item, short paintOrder) {
 							gEngine->changeArtHandle(env, obj, res, docDst, NULL);
 							// now remove the original object in docDst. Moving does not work directly
 							// so this seems to be the most elegant way of handling this
+							// TODO: Since Item_copyTo now seems to work with sAIArt->DuplicateArt for this,
+							// check again if normal oving across documents might work.
 							Document_activate(docSrc);
 							sAIArt->DisposeArt(artSrc);
 							return true;
 						}
 					}
-					// simply reorder
+					// Simply reorder
 					if (!sAIArt->ReorderArt(artSrc, paintOrder, artDst))
 						return true;
 				}
