@@ -93,7 +93,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	 * markDirty is called when content is changed
 	 */
 	protected void markDirty() {
-		if (!dirty ) {
+		if (!dirty) {
 			CommitManager.markDirty(getStory(), this);
 			dirty = true;
 		}
@@ -102,8 +102,10 @@ public class TextRange extends DocumentObject implements Commitable {
 	public void commit() {
 		// Committing changes for TextRange does not need more than
 		// a reflow of the text layout in the document.
-		// TODO: Is this really needed?
-		// document.reflowText();
+		// This is needed since otherwise, the TextFrame's attributes
+		// (bounds, etc) are invalid
+		document.reflowText();
+		dirty = false;
 	}
 
 	private native int nativeGetStoryIndex();

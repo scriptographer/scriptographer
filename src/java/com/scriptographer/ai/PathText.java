@@ -37,7 +37,7 @@ package com.scriptographer.ai;
 public class PathText extends TextFrame {
 
 	protected PathText(int handle) {
-		super(handle);
+		super(handle, false);
 	}
 
 	native private static int nativeCreate(int orientation, int artHandle);
@@ -49,9 +49,9 @@ public class PathText extends TextFrame {
 	 * @param orient the text orientation
 	 */
 	public PathText(Path path, TextOrientation orientation) {
-		this(nativeCreate(orientation != null
+		super(nativeCreate(orientation != null
 				? orientation.value : TextOrientation.HORIZONTAL.value,
-				path != null ? path.handle : 0));
+				path != null ? path.handle : 0), true);
 		// TODO: check what exactly do startT endT vs start anchor!
 	}
 

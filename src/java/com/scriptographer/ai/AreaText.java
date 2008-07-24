@@ -37,7 +37,7 @@ package com.scriptographer.ai;
 public class AreaText extends TextFrame {
 
 	protected AreaText(int handle) {
-		super(handle);
+		super(handle, false);
 	}
 	
 	native private static int nativeCreate(int orientation, int artHandle);
@@ -49,9 +49,9 @@ public class AreaText extends TextFrame {
 	 * @param orient the text orientation
 	 */
 	public AreaText(Path area, TextOrientation orientation) {
-		this(nativeCreate(orientation != null
+		super(nativeCreate(orientation != null
 				? orientation.value : TextOrientation.HORIZONTAL.value,
-				area != null ? area.handle : 0));
+				area != null ? area.handle : 0), true);
 	}
 
 	public AreaText(Path area) {

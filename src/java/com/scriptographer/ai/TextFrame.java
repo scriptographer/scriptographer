@@ -50,8 +50,10 @@ public abstract class TextFrame extends Item {
 	TextRange range = null;
 	TextRange visibleRange = null;
 
-	protected TextFrame(int handle) {
+	protected TextFrame(int handle, boolean created) {
 		super(handle);
+		if (created)
+			document = Document.getWorkingDocument();
 	}
 
 	protected void commit(boolean invalidate) {
@@ -87,11 +89,13 @@ public abstract class TextFrame extends Item {
 	 * @return An item containing the outlined text.
 	 */
 	public Item createOutline() {
-		// apply changes and reflow the layout before creating outlines
-		// All styles regarding this story need to be commited, as
+		// Apply changes and reflow the layout before creating outlines
+		// All styles regarding this story need to be committed, as
 		// CharacterStyle uses Story as the commit key.
 		CommitManager.commit(this.getStory());
-		document.reflowText();
+		// This should not be needed since TextRange takes care of it
+		// when committing already:
+		// document.reflowText();
 		return nativeCreateOutline();
 	}
 
