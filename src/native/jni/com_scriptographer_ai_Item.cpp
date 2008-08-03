@@ -161,18 +161,40 @@ AIDictKey Item_getDictionaryKey(AIDictionaryRef dictionary, AIArtHandle art) {
 	return foundKey;
 }
 
-AIArtHandle Item_copyTo(AIArtHandle artSrc, AIDocumentHandle docSrc, AIDictionaryRef dictSrc, AIArtHandle artDst, AIDocumentHandle docDst, short paintOrder) {
+AIArtHandle Item_copyTo(JNIEnv *env, AIArtHandle artSrc, AIDocumentHandle docSrc, AIDictionaryRef dictSrc, AIArtHandle artDst, AIDocumentHandle docDst, short paintOrder, bool commitFirst = true) {
 	AIArtHandle res = NULL;
-	Document_activate(docDst);
+	AIRealMatrix matrix;
+	bool transform = false;
+	// Determine the shift in coordinate space between the two documents
+	// by hardening and softening an identity transform, then reversing
+	// the transform. This transformation then is applied to the resulting
+	// item further down.
+	if (docSrc != docDst) {
+		Document_activate(docSrc);
+		sAIRealMath->AIRealMatrixSetIdentity(&matrix);
+		sAIHardSoft->AIRealMatrixHarden(&matrix);
+		Document_activate(docDst);
+		sAIHardSoft->AIRealMatrixSoften(&matrix);
+		matrix.tx = -matrix.tx;
+		matrix.ty = -matrix.ty;
+		transform = true;
+	} else {
+		Document_activate(docDst);
+	}
+	// commit
+	if (commitFirst)
+		Item_commit(env, artSrc);
 	if (dictSrc != NULL) {
 		AIDictKey key = Item_getDictionaryKey(dictSrc, artSrc);
 		if (key != NULL)
 			sAIDictionary->CopyEntryToArt(dictSrc, key, paintOrder, artDst, &res);
 	}
-	if (res == NULL) {
+	if (res == NULL)
 		sAIArt->DuplicateArt(artSrc, paintOrder, artDst, &res);
-	}
 	if (res != NULL) {
+		// TODO: Find out which additional options should be passed here:
+		if (transform) 
+			sAITransformArt->TransformArt(res, &matrix, 1, kTransformObjects | kTransformChildren);
 		// Duplicate art also duplicated the dictionary. Remove the artHandleKey from it, since it's
 		// a new object that needs to be wrapped differently:
 		AIDictionaryRef dict;
@@ -190,6 +212,8 @@ bool Item_move(JNIEnv *env, jobject obj, jobject item, short paintOrder) {
 			AIDocumentHandle docSrc, docDst;
 			AIArtHandle artSrc = gEngine->getArtHandle(env, obj, true, &docSrc);
 			AIArtHandle artDst = gEngine->getArtHandle(env, item, false, &docDst);
+			// Commit source first
+			Item_commit(env, artSrc);
 			if (artSrc != NULL && artDst != NULL && artSrc != artDst) {
 				// Simply try to reorder it
 				if (artSrc != NULL && artDst != NULL) {
@@ -210,7 +234,8 @@ bool Item_move(JNIEnv *env, jobject obj, jobject item, short paintOrder) {
 					// the the doc's dictionary first, then into the doc from there
 					// this is the only way that seems to work...
 					if (docSrc != docDst) {
-						AIArtHandle res = Item_copyTo(artSrc, docSrc, NULL, artDst, docDst, paintOrder);
+						// Pass false for commitFirst since it was already commited above
+						AIArtHandle res = Item_copyTo(env, artSrc, docSrc, NULL, artDst, docDst, paintOrder, false);
 						if (res != NULL) {
 							gEngine->changeArtHandle(env, obj, res, docDst, NULL);
 							// now remove the original object in docDst. Moving does not work directly
@@ -320,7 +345,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_copyTo__Lcom_scriptogr
 		short paintOrder;
 		AIArtHandle artDst = Item_getInsertionPoint(&paintOrder);
 		// copy
-		AIArtHandle copy = Item_copyTo(artSrc, docSrc, dictSrc, artDst, docDst, paintOrder);
+		AIArtHandle copy = Item_copyTo(env, artSrc, docSrc, dictSrc, artDst, docDst, paintOrder);
 		if (copy != NULL)
 			return gEngine->wrapArtHandle(env, copy, docDst);
 	} EXCEPTION_CONVERT(env);
@@ -338,7 +363,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_copyTo__Lcom_scriptogr
 	    AIArtHandle artDst = gEngine->getArtHandle(env, item, false, &docDst);
 		AIDictionaryRef dictSrc = gEngine->getArtDictionaryHandle(env, obj);
 		// copy
-		AIArtHandle copy = Item_copyTo(artSrc, docSrc, dictSrc, artDst, docDst, kPlaceInsideOnTop);
+		AIArtHandle copy = Item_copyTo(env, artSrc, docSrc, dictSrc, artDst, docDst, kPlaceInsideOnTop);
 		if (copy != NULL)
 			return gEngine->wrapArtHandle(env, copy, docDst);
 	} EXCEPTION_CONVERT(env);
@@ -784,7 +809,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeTransform(JNIEnv *e
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealMatrix mx;
 		gEngine->convertMatrix(env, matrix, &mx);
-
 /*
 		// Modify the matrix so that it 'acts' on the center of the selected object
 		// TODO: Introduce reg points?
