@@ -59,15 +59,15 @@ public abstract class Item extends DocumentObject {
 
 	// The art item's dictionary
 	private Dictionary data = null;
-	
+
 	// Internal hash map that keeps track of already wrapped objects. defined
 	// as soft.
 	private static SoftIntMap<Item> items = new SoftIntMap<Item>();
-	
+
 	private PathStyle style = null;
 
 	// from AIArt.h
-	
+
 	// AIArtType
 	protected final static short
 		// The special type kAnyArt is never returned as an item type, but
@@ -357,6 +357,11 @@ public abstract class Item extends DocumentObject {
 	 * @jsbean Returns the item that this item is contained within.
 	 */
 	public native Item getParent();
+
+	/**
+	 * @jsbean Returns the item's parent layer, if any,
+	 */
+	public native Layer getLayer();
 
 	/**
 	 * @jsbean Returns the first item contained within this item.

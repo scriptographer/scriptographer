@@ -435,6 +435,21 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getParent(JNIEnv *env,
 }
 
 /*
+ * com.scriptographer.ai.Layer getLayer()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getLayer(JNIEnv *env, jobject obj) {
+	jobject res = NULL;
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AILayerHandle layer = NULL;
+		sAIArt->GetLayerOfArt(art, &layer);
+		if (layer != NULL)
+			res = gEngine->wrapLayerHandle(env, layer, gEngine->getDocumentHandle(env, obj));
+	} EXCEPTION_CONVERT(env);
+	return res;
+}
+
+/*
  * com.scriptographer.ai.Rectangle nativeGetBounds()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeGetBounds(JNIEnv *env, jobject obj) {

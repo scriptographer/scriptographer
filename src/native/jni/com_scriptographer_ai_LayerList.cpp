@@ -63,7 +63,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LayerList_nativeGet__II(JNI
 		AILayerHandle layer = NULL;
 		sAILayer->GetNthLayer(index, &layer);
 		if (layer != NULL)
-			layerObj = gEngine->wrapLayerHandle(env, layer);
+			layerObj = gEngine->wrapLayerHandle(env, layer, (AIDocumentHandle) docHandle);
 	} EXCEPTION_CONVERT(env);
 	return layerObj;
 }
@@ -85,7 +85,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LayerList_nativeGet__ILjava
 		sAILayer->GetLayerByTitle(&layer, str);
 #endif
 		if (layer != NULL)
-			layerObj = gEngine->wrapLayerHandle(env, layer);
+			layerObj = gEngine->wrapLayerHandle(env, layer, (AIDocumentHandle) docHandle);
 	} EXCEPTION_CONVERT(env);
 	return layerObj;
 }

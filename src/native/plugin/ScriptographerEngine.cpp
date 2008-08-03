@@ -1395,34 +1395,37 @@ jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef ra
  *
  * throws exceptions
  */
-jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc, AIDictionaryRef dictionary) {
+jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc, AIDictionaryRef dictionary, short type) {
 	JNI_CHECK_ENV
 	if (art == NULL)
 		return NULL;
-	short type = -1;
 	AITextFrameType textType = kUnknownTextType;
-	ASBoolean isLayer = false;
-	if (sAIArt->GetArtType(art, &type) || sAIArt->IsArtLayerGroup(art, &isLayer))
-		throw new StringException("Cannot determine the item's type");
-	if (isLayer) {
-		// self defined type for layer groups
-		type = com_scriptographer_ai_Item_TYPE_LAYER;
-	} else if (type == kTextFrameArt) {
-		// determine text type as well
-		sAITextFrame->GetType(art, &textType);
-	} else if (type == kPluginArt) {
-		// TODO: add handle of special types
+	// Do we need to determine type or is it passed?
+	// Currently this is only used by wrapLayerHandle.
+	if (type == -1) {
+		ASBoolean isLayer = false;
+		if (sAIArt->GetArtType(art, &type) || sAIArt->IsArtLayerGroup(art, &isLayer))
+			throw new StringException("Cannot determine the item's type");
+		if (isLayer) {
+			// Self defined type for layer groups
+			type = com_scriptographer_ai_Item_TYPE_LAYER;
+		} else if (type == kTextFrameArt) {
+			// Determine text type as well
+			sAITextFrame->GetType(art, &textType);
+		} else if (type == kPluginArt) {
+			// TODO: Add handle of special types
 #if kPluginInterfaceVersion >= kAI12
-		if (sAITracing->IsTracing(art))
-			type = com_scriptographer_ai_Item_TYPE_TRACING;
+			if (sAITracing->IsTracing(art))
+				type = com_scriptographer_ai_Item_TYPE_TRACING;
 #endif
+		}
 	}
-	
+
 	if (dictionary != NULL) // increase reference counter. It's decreased in finalize
 		sAIDictionary->AddRef(dictionary);
-	
-	// store the art object's initial handle value in its own dictionary. see selectionChanged for more explanations
-	bool wrapped = false;
+
+	// Store the art object's initial handle value in its own dictionary. see selectionChanged for more explanations
+	jboolean wrapped = false;
 	AIDictionaryRef artDict;
 	if (!sAIArt->GetDictionary(art, &artDict)) {
 		wrapped = sAIDictionary->IsKnown(artDict, m_artHandleKey);
@@ -1432,7 +1435,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocu
 	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_wrapHandle,
 			(jint) art, (jshort) type, (jint) textType,
 			(jint) (doc ? doc : gWorkingDoc),
-			(jint) dictionary, (jboolean) wrapped);
+			(jint) dictionary, wrapped);
 }
 
 void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject item, AIArtHandle art, AIDocumentHandle doc, AIDictionaryRef dictionary) {
@@ -1443,14 +1446,14 @@ jobject ScriptographerEngine::getIfWrapped(JNIEnv *env, AIArtHandle art) {
 	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_getIfWrapped, (jint) art);
 }
 
-jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer) {
-	// layer handles are not used in java as Layer is derived from Item. Allways use the first invisible
+jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer, AIDocumentHandle doc) {
+	// Layer handles are not used in java as Layer is derived from Item. Allways use the first invisible
 	// Item group in the layer that contains everything (even in AI, layer seems only be a wrapper around
 	// an art group:
 	AIArtHandle art;
 	if (sAIArt->GetFirstArtOfLayer(layer, &art))
 		throw new StringException("Cannot get layer art");
-	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_wrapHandle, (jint) art, (jint) com_scriptographer_ai_Item_TYPE_LAYER, (jint) kUnknownTextType, (jint) gWorkingDoc, 0);
+	return wrapArtHandle(env, art, doc, NULL, com_scriptographer_ai_Item_TYPE_LAYER);
 }
 
 jobject ScriptographerEngine::wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc) {

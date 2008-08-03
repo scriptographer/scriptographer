@@ -220,12 +220,12 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getActiveLayer(JNI
 	jobject layerObj = NULL;
 	try {
 		// Cause the doc switch if necessary
-		gEngine->getDocumentHandle(env, obj, true);
+		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
 		
 		AILayerHandle layer = NULL;
 		sAILayer->GetCurrentLayer(&layer); 
 		if (layer != NULL)
-			layerObj = gEngine->wrapLayerHandle(env, layer);
+			layerObj = gEngine->wrapLayerHandle(env, layer, doc);
 	} EXCEPTION_CONVERT(env);
 	return layerObj;
 }

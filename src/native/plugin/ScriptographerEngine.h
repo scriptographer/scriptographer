@@ -551,15 +551,15 @@ public:
 	jobject wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range);
 	
 	// AI Wrap Handles
-	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL);
+	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL, short type = -1);
 	bool updateArtIfWrapped(JNIEnv *env, AIArtHandle art);
 	void changeArtHandle(JNIEnv *env, jobject itemObject, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL);
 	jobject getIfWrapped(JNIEnv *env, AIArtHandle handle);
 
-	jobject wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc = NULL);
-
-	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer);
+	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer, AIDocumentHandle doc = NULL);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
+	
+	jobject wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc = NULL);
 
 	void commit(JNIEnv *env);
 	void resumeSuspendedDocuments();
