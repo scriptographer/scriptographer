@@ -456,10 +456,11 @@ public abstract class Item extends DocumentObject {
 		matrix.translate(
 				x + width * 0.5f,
 				y + height * 0.5f);
-		// Scale to new Size:
-		matrix.scale(
-				width / rect.width,
-				height / rect.height);
+		// Scale to new Size, if size changes and avoid divisions by 0:
+		if (width != rect.width || height != rect.height)
+			matrix.scale(
+					rect.width != 0 ? width / rect.width : 1,
+					rect.height != 0 ? height / rect.height : 1);
 		// Translate to center:
 		matrix.translate(
 				-(rect.x + rect.width * 0.5f),
