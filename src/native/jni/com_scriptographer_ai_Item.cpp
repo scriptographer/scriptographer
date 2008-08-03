@@ -455,7 +455,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getLayer(JNIEnv *env, 
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeGetBounds(JNIEnv *env, jobject obj) {
 	try {
 		AIRealRect rt;
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		// Commit pending changes first, since they might influence the bounds
 		Item_commit(env, art);
 	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
