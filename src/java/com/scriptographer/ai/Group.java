@@ -87,4 +87,27 @@ public class Group extends Item {
 	 */
 	public native boolean isClipped();
 	public native void setClipped(boolean clipped);
+
+	/*
+	 * Setting selected attribute on groups only works when also explicitly
+	 * applying the same attributes to all the children, even when using setFully
+	 * selected. So override both here.
+	 */
+	public void setSelected(boolean selected) {
+		Item child = getFirstChild();
+		while (child != null) {
+			child.setSelected(selected);
+			child = child.getNextSibling();
+		}
+		super.setSelected(selected);
+	}
+
+	public void setFullySelected(boolean selected) {
+		Item child = getFirstChild();
+		while (child != null) {
+			child.setFullySelected(selected);
+			child = child.getNextSibling();
+		}
+		super.setFullySelected(selected);
+	}
 }
