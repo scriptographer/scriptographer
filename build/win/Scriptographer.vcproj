@@ -794,6 +794,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Dictionary.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Document.cpp"
 						>
 					</File>
