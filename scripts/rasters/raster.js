@@ -5,7 +5,7 @@
 // function
 var raster = null, dots = [];
 
-Art.prototype.getCompoundArea = function(area) {
+Item.prototype.getCompoundArea = function(area) {
 	if (!area) area = 0;
 	if (this instanceof Path) return area + this.getArea();
 	else if (this instanceof CompoundPath || this instanceof Group) {
@@ -62,7 +62,7 @@ function executeRaster(createDot, multiple) {
 		for (var x = 0; x < raster.width; x++) {
 //			var c = new java.awt.Color(img.getRGB(x, y));
 //			var col = 1 - (0.3 * c.red + 0.59  * c.green + 0.11 * c.blue) / 255;
-			var radius = raster.getPixel(x, y).convert(Color.TYPE_GRAY).gray;
+			var radius = raster.getPixel(x, y).convert("gray").gray;
 			var obj = createDot(x, raster.height - y, multiple ? dots : dots[0], radius);
 			if (obj) {
 				obj.translate(origin);
