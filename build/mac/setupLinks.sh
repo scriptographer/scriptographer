@@ -2,6 +2,16 @@ JAVA=../../../../java/build/
 DOCS=../../../../../docs/js/
 GUI=../../../../../src/js/gui/
 
+mkdir build/CS4
+mkdir build/CS4/Debug
+ln -s $JAVA build/CS4/Debug/java
+ln -s $DOCS build/CS4/Debug/doc
+ln -s $GUI build/CS4/Debug/gui
+mkdir build/CS4/Release
+ln -s $JAVA build/CS4/Release/java
+ln -s $DOCS build/CS4/Release/doc
+ln -s $GUI build/CS4/Release/gui
+
 mkdir build/CS3
 mkdir build/CS3/Debug
 ln -s $JAVA build/CS3/Debug/java
