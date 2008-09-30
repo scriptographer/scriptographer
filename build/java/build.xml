@@ -430,7 +430,7 @@
 				<param name="-script" value="doclet/doclet.js"/>
 				<param name="-basepackage" value="com.scriptographer"/>
 				<param name="-filterclasses" value="
-					com.scriptographer.ai.DictionaryObject
+					com.scriptographer.ai.DocumentObject
 					com.scriptographer.ai.ItemPoint
 					com.scriptographer.ai.ItemRectangle
 					com.scriptographer.ai.Dictionary
