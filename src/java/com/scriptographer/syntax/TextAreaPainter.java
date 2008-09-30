@@ -26,7 +26,6 @@ import java.awt.print.*;
  * @author Slava Pestov
  * @version $Id$
  */
-@SuppressWarnings("unchecked")
 public class TextAreaPainter extends JComponent implements TabExpander,
 		Printable {
 	/** True if inside printing, will handle disabling the highlight */

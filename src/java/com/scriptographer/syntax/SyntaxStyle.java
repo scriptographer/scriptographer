@@ -17,7 +17,6 @@ import java.awt.*;
  * @author Slava Pestov
  * @version $Id$
  */
-@SuppressWarnings("unchecked")
 public class SyntaxStyle {
 	/**
 	 * Creates a new SyntaxStyle.
