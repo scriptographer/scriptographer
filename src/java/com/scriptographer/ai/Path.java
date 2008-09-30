@@ -356,9 +356,12 @@ public class Path extends PathItem {
 		getSegments().quadTo(cx, cy, x, y);
 	}
 	
-	public void arcTo(double centerX, double centerY, double endX, double endY,
-			int ccw) {
-		getSegments().arcTo(centerX, centerY, endX, endY, ccw);
+	public void arcTo(double middleX, double middleY, double endX, double endY) {
+		getSegments().arcTo(middleX, middleY, endX, endY);
+	}
+
+	public void arcTo(double endX, double endY) {
+		getSegments().arcTo(endX, endY);
 	}
 
 	public void closePath() {

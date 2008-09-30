@@ -243,6 +243,14 @@ public class Curve {
 		return segment2;
 	}
 
+	public Curve getPrevious() {
+		return index1 > 0 ? segments.get(index1 - 1).getCurve() : null;
+	}
+
+	public Curve getNext() {
+		return index1 < segments.size ? segments.get(index1 + 1).getCurve() : null;
+	}
+
 	public void reverse() {
 		Segment tmp = (Segment) segment1.clone();
 		segment1.setHandleIn(segment2.getHandleOut());

@@ -116,9 +116,12 @@ public class CompoundPath extends PathItem {
 		getPreviousPath().quadTo(cx, cy, x, y);
 	}
 
-	public void arcTo(double centerX, double centerY, double endX, double endY,
-			int ccw) {
-		getPreviousPath().arcTo(centerX, centerY, endX, endY, ccw);
+	public void arcTo(double centerX, double centerY, double endX, double endY) {
+		getPreviousPath().arcTo(centerX, centerY, endX, endY);
+	}
+
+	public void arcTo(double endX, double endY) {
+		getPreviousPath().arcTo(endX, endY);
 	}
 	
 	public void closePath() {

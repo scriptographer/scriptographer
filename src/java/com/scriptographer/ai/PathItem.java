@@ -76,29 +76,40 @@ abstract class PathItem extends Item {
 	
 	public abstract void quadTo(double cx, double cy, double x, double y);
 
-	public abstract void arcTo(double centerX, double centerY, double endX,
-			double endY, int ccw);
+	public abstract void arcTo(double middleX, double middleY, double endX, double endY);
 	
+	public abstract void arcTo(double endX, double endY);
+
 	public abstract void closePath();
 
 	public void moveTo(Point pt) {
-		moveTo(pt.x, pt.y);
+		if (pt == null) moveTo(0, 0);
+		else moveTo(pt.x, pt.y);
 	}
 
 	public void lineTo(Point pt) {
-		lineTo(pt.x, pt.y);
+		if (pt == null) lineTo(0, 0);
+		else lineTo(pt.x, pt.y);
 	}
 
 	public void curveTo(Point c1, Point c2, Point pt) {
-		curveTo(c1, c2, pt);
+		curveTo(c1 != null ? c1.x : 0, c1 != null ? c1.y : 0,
+				c2 != null ? c2.x : 0, c2 != null ? c2.y : 0,
+				pt != null ? pt.x : 0, pt != null ? pt.y : 0);
 	}
 
 	public void quadTo(Point c, Point pt) {
-		quadTo(c, pt);
+		quadTo(c != null ? c.x : 0, c != null ? c.y : 0,
+				pt != null ? pt.x : 0, pt != null ? pt.y : 0);
 	}
 
-	public void arcTo(Point center, Point endPoint, int ccw) {
-		arcTo(center, endPoint, ccw);
+	public void arcTo(Point center, Point endPoint) {
+		arcTo(center != null ? center.x : 0, center != null ? center.y : 0,
+				endPoint != null ? endPoint.x : 0, endPoint != null ? endPoint.y : 0);
+	}
+
+	public void arcTo(Point endPoint) {
+		arcTo(endPoint != null ? endPoint.x : 0, endPoint != null ? endPoint.y : 0);
 	}
 
 	public void append(PathIterator iter) {

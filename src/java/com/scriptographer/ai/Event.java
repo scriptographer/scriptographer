@@ -36,30 +36,41 @@ package com.scriptographer.ai;
  */
 public class Event {
 	private Point point;
+	private Point firstPoint = null;
 	private Point lastPoint;
-	private Point delta;
+	private Point delta = new Point(0, 0);
 	private int count;
+	private boolean isDown;
+	private int downCount = 0;
 	
 	private double pressure;
 	
 	protected Event() {
 		// Start with valid values, for mouse move events before the first mouse up.
-		setValues(0, 0, 0, 0, true);
+		setValues(0, 0, 0, 0, true, false);
 	}
 	
 	protected boolean setValues(float x, float y, int pressure,
-			float deltaThreshold, boolean start) {
-		if (deltaThreshold == 0 || point.getDistance(x, y) >= deltaThreshold) {
+			float distanceThreshold, boolean start, boolean down) {
+		if (start || distanceThreshold == 0 || point.getDistance(x, y) >= distanceThreshold) {
+			isDown = down;
+			Point newPoint = new Point(x, y);
 			if (start) {
-				lastPoint = null;
-				delta = new Point();
+				if (down) {
+					lastPoint = firstPoint;
+					firstPoint = newPoint;
+					downCount++;
+				}
 				count = 0;
 			} else {
 				lastPoint = point;
-				delta.set(x - point.x, y - point.y);
 				count++;
 			}
-			point = new Point(x, y);
+			point = newPoint;
+			if (lastPoint != null)
+				delta.set(x - lastPoint.x, y - lastPoint.y);
+			else
+				delta.set(0, 0);
 			this.pressure = pressure / 255.0;
 			return true;
 		}
@@ -79,7 +90,7 @@ public class Event {
 	}
 
 	public Point getLastPoint() {
-		return new Point(lastPoint);
+		return lastPoint != null ? new Point(lastPoint) : null;
 	}
 
 	public Point getDelta() {
@@ -91,9 +102,9 @@ public class Event {
 	}
 
 	public int getCount() {
-		return count;
+		return isDown ? downCount : count;
 	}
-	
+
 	// TODO: Consider adding these, present since CS2
 	/**
 	 * For graphic tablets, tangential pressure on the finger wheel of the

@@ -31,6 +31,8 @@
 
 package com.scriptographer.ai;
 
+import java.awt.geom.Line2D;
+
 import com.scratchdisk.list.ArrayList;
 import com.scratchdisk.list.List;
 import com.scriptographer.list.AbstractFetchList;
@@ -152,7 +154,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 				// skip the ones that are alreay fetched:
 				Segment segment;
 				while (start < toIndex &&
-						((segment = (Segment) list.get(start)) != null) &&
+						((segment = list.get(start)) != null) &&
 						segment.version == pathVersion) {
 					start++;
 				}
@@ -165,7 +167,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 				end = start + 1;
 
 				while (end < toIndex &&
-						((segment = (Segment) list.get(start)) == null ||
+						((segment = list.get(start)) == null ||
 						segment != null && segment.version != pathVersion)) {
 					end++;
 				}
@@ -180,7 +182,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 					nativeGet(path.handle, start, count, values);
 					int valueIndex = 0;
 					for (int i = start; i < end; i++) {
-						segment = (Segment) list.get(i);
+						segment = list.get(i);
 						if (segment == null) {
 							segment = new Segment(this, i);
 							list.set(i, segment);
@@ -241,7 +243,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		segment.insert();
 		// Update Segment indices
 		for (int i = index + 1; i < size; i++) {
-			Segment seg = (Segment) list.get(i);
+			Segment seg = list.get(i);
 			if (seg != null)
 				seg.index = i;
 		}
@@ -333,7 +335,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 
 			// update Segment indices
 			for (int i = addIndex; i < size; i++) {
-				Segment segment = (Segment) list.get(i);
+				Segment segment = list.get(i);
 				if (segment != null)
 					segment.index = i;
 			}
@@ -384,7 +386,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		if (fromIndex < toIndex) {
 			int newSize = size + fromIndex - toIndex;
 			for (int i = fromIndex; i < toIndex; i++) {
-				Segment seg = (Segment) list.get(i);
+				Segment seg = list.get(i);
 				if (seg != null) {
 					seg.segments = null;
 					seg.index = -1;
@@ -423,8 +425,10 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	}
 	
 	public void lineTo(double x, double y) {
+		/* Let's not be so picky about this for now 
 		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
+		*/
 		add(new Segment(x, y));
 	}
 	
@@ -452,7 +456,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	
 	public void quadTo(double cx, double cy, double x, double y) {
 		// This is exact:
-		// If we have the three quad poits: A E D,
+		// If we have the three quad points: A E D,
 		// and the cubic is A B C D,
 		// B = E + 1/3 (A - E)
 		// C = E + 1/3 (D - E)
@@ -468,49 +472,44 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		quadTo(c.x, c.y, pt.x, pt.y);		
 	}
 
-	public void arcTo(double centerX, double centerY, double endX, double endY,
-			int ccw) {
+	public void arcTo(double middleX, double middleY, double endX, double endY) {
 		if (size == 0)
 			throw new UnsupportedOperationException("Use a moveTo command first");
 		
 		// Get the startPoint:
-		Segment startSegment = (Segment) getLast();
-		double startX = startSegment.point.x;
-		double startY = startSegment.point.y;
+		Segment start = getLast();
+		double x1 = start.point.x, x2 = middleX, x3 = endX;
+		double y1 = start.point.y, y2 = middleY, y3 = endY;
 		
-		// Determine the width and height of the ellipse by the 3 given points
-		// center, startPoint and endPoint:
-		// Find the scaleFactor that scales this system horizontally so a circle
-		// would fit. the resulting radius is the ellipse's height.
-		// Then apply the opposite factor to the radius in order to get the width.
-		
-		double x1 = startX - centerX;
-		double y1 = startY - centerY;
-		double x2 = endX - centerX;
-		double y2 = endY - centerY;
-		
-		double s = Math.sqrt(
-			(y2 * y2 - y1 * y1) /
-			(x1 * x1 - x2 * x2)
-		);
-		
-		double h = Math.sqrt(x1 * x1 + y1 * y1);
-		if (s == 0 || Double.isNaN(s) || h == 0)
-			throw new UnsupportedOperationException(
-					"Unable to create an arc with the given center and starting point: "
-							+ centerX + ", " + centerY + "; " +
-							startX + ", " + startY);
-		double w = h / s;
-		
+		double f = x3 * x3 - x3 * x2 - x1 * x3 + x1 * x2 + y3 * y3 - y3 * y2 - y1 * y3 + y1 * y2;
+		double g = x3 * y1 - x3 * y2 + x1 * y2 - x1 * y3 + x2 * y3 - x2 * y1;
+		double m = g == 0 ? 0 : f / g;
+
+		double c = (m * y2) - x2 - x1 - (m * y1);
+		double d = (m * x1) - y1 - y2 - (x2 * m);
+		double e = (x1 * x2) + (y1 * y2) - (m * x1 * y2) + (m * x2 * y1);
+
+		double centerX = -c / 2;
+		double centerY = -d / 2;
+		double radius = Math.sqrt(centerX * centerX + centerY * centerY - e);
+
 		// Note: reversing the Y equations negates the angle to adjust
 		// for the upside down coordinate system.
-		double angle = Math.atan2(centerY - startY, startX - centerX);
-		double extent = Math.atan2(centerY - endY, endX - centerX);
+		double angle = Math.atan2(centerY - y1, x1 - centerX);
+		double middle = Math.atan2(centerY - y2, x2 - centerX);
+		double extent = Math.atan2(centerY - y3, x3 - centerX);
+
+		double diff = middle - angle;
+		if (diff < -Math.PI)
+			diff += Math.PI * 2;
+		else if (diff > Math.PI)
+			diff -= Math.PI * 2;
+
 		extent -= angle;
-		if (extent <= 0.0) {
+		if (extent <= 0.0)
 			extent += Math.PI * 2.0;
-		}
-		if (ccw < 0) extent = Math.PI * 2.0 - extent;
+
+		if (diff < 0) extent = Math.PI * 2.0 - extent;
 		else extent = -extent;
 		angle = -angle;
 			
@@ -530,25 +529,94 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		for (int i = 0; i <= arcSegs; i++) {
 			double relx = Math.cos(angle);
 			double rely = Math.sin(angle);
-			Point pt = new Point(centerX + relx * w, centerY + rely * h);
+			Point pt = new Point(centerX + relx * radius, centerY + rely * radius);
 			Point out;
 			if (i == arcSegs) out = null;
-			else out = new Point(centerX + (relx - z * rely) * w - pt.x,
-					centerY + (rely + z * relx) * h - pt.y);
+			else out = new Point(centerX + (relx - z * rely) * radius - pt.x,
+					centerY + (rely + z * relx) * radius - pt.y);
 			if (i == 0) {
 				// Modify startSegment
-				startSegment.handleOut.set(out);
+				start.handleOut.set(out);
 			} else {
 				// Add new Segment
-				Point in = new Point(centerX + (relx + z * rely) * w - pt.x,
-						centerY + (rely - z * relx) * h - pt.y);
+				Point in = new Point(
+						centerX + (relx + z * rely) * radius - pt.x,
+						centerY + (rely - z * relx) * radius - pt.y);
 				add(new Segment(pt, in, out, false));
 			}
 			angle += inc;
 		}
 	}
 
-	public void arcTo(Point center, Point endPoint, int ccw) {
-		arcTo(center.x, center.y, endPoint.x, endPoint.y, ccw);
+	public void arcTo(Point middle, Point end) {
+		arcTo(middle.x, middle.y, end.x, end.y);
 	}
+
+	private Point getLineIntersection(Point p1, Point v1, Point p2, Point v2) {
+		// Calculate differences
+		double xD1 = v1.x;
+		double yD1 = v1.y;
+		double xD2 = v2.x;
+		double yD2 = v2.y;
+		double xD3 = p1.x - p2.x;
+		double yD3 = p1.y - p2.y;
+		// Calculate the lengths of the two lines
+		double len1 = Math.sqrt(xD1 * xD1 + yD1 * yD1);
+		double len2 = Math.sqrt(xD2 * xD2 + yD2 * yD2);
+		// Calculate angle between the two lines.
+		double deg = (xD1 * xD2 + yD1 * yD2) / (len1 * len2);
+		// If abs(angle) == 1 then the lines are parallel,
+		// so no intersection is possible
+		if (Math.abs(deg) == 1)
+			return null;
+		// Find intersection Pt between two lines
+		double ua = (xD2 * yD3 - yD2 * xD3) / (yD2 * xD1 - xD2 * yD1);
+		return new Point(
+				p1.x + ua * xD1,
+				p1.y + ua * yD1
+		);
+	}  
+
+	public void arcTo(Point end) {
+		if (size == 0)
+			throw new UnsupportedOperationException("Use a moveTo command first");
+		Segment last = getLast();
+		Point start = last.point;
+		Segment previous = last.getPrevious();
+		Point middle = start.add(end).divide(2);
+		Point point = null;
+		if (previous != null) {
+			Point normal1 = previous.getCurve().getNormal(0.99);
+			Point normal2 = new Point(start.y - end.y, end.x - start.x);
+
+			// normal2 = normal2.rotate(-Math.PI / 2);
+			/*
+			Path path = new Path();
+			path.moveTo(start);
+			path.lineTo(start.add(normal1.normalize(100)));
+			path = new Path();
+			path.moveTo(middle);
+			path.lineTo(middle.add(normal2.normalize(100)));
+			*/
+			Point center = getLineIntersection(start, normal1, middle, normal2);
+			if (center != null) {
+				double radius = center.getDistance(start);
+				point = center.add(middle.subtract(center).normalize(radius));
+				/*
+				Document.getActiveDocument().createOval(new Rectangle(point, new Size(5, 5)));
+				Document.getActiveDocument().createOval(new Rectangle(end, new Size(5, 5)));
+				*/
+			}
+		} else {
+			Point step = middle.subtract(start);
+			point = middle.add(-step.y, step.x);
+		}
+		if (point != null)
+			arcTo(point, end);
+	}
+
+	public void arcTo(double endX, double endY) {
+		arcTo(new Point(endX, endY));
+	}
+
 }

@@ -63,11 +63,11 @@ public class Point {
 	}
 
 	public Point(Point pt) {
-		this(pt.x, pt.y);
+		this(pt != null ? pt.x : 0, pt != null ? pt.y : 0);
 	}
 
 	public Point(Point2D p) {
-		this(p.getX(), p.getY());
+		this(p != null ? p.getX() : 0, p != null ? p.getY() : 0);
 	}
 
 	public Point(Size size) {
@@ -86,7 +86,10 @@ public class Point {
 	}
 
 	public void set(Point pt) {
-		set(pt.x, pt.y);
+		if (pt != null)
+			set(pt.x, pt.y);
+		else
+			set(0, 0);
 	}
 
 	public double getX() {
@@ -421,7 +424,8 @@ public class Point {
 	}
 
 	/**
-	 * Rotates a point. The object itself is not modified!
+	 * Rotates the point by the given angle.
+	 * The object itself is not modified.
 	 * 
 	 * @param theta the rotation angle in radians
 	 * @return the rotated point
@@ -430,9 +434,37 @@ public class Point {
 		double s = Math.sin(theta);
 		double c = Math.cos(theta);
 		return new Point(
-			x * c - y * s,
-			y * c + x * s
+				x * c - y * s,
+				y * c + x * s
  		);
+	}
+
+	/**
+	 * Rotates the point around a center point.
+	 * The object itself is not modified.
+	 * 
+	 * @param theta the rotation angle in radians
+	 * @param center the center point of the rotation
+	 * @return the rotated point
+	 */
+	public Point rotate(double theta, Point center) {
+		return rotate(theta,
+				center != null ? center.x : 0,
+				center != null ? center.y : 0
+		);
+	}
+
+	/**
+	 * Rotates the point around a center point.
+	 * The object itself is not modified.
+	 * 
+	 * @param theta the rotation angle in radians
+	 * @param x the x coordinate of the center point
+	 * @param y the y coordinate of the center point
+	 * @return the rotated point
+	 */
+	public Point rotate(double theta, double x, double y) {
+		return subtract(x, y).rotate(theta).add(x, y);
 	}
 
 	/**

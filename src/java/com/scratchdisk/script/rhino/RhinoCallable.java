@@ -65,11 +65,11 @@ public class RhinoCallable extends Callable {
 			if (ret instanceof Wrapper)
 				ret = ((Wrapper) ret).unwrap();
 			return ret;
-		} catch (RhinoException re) {
+		} catch (Throwable t) {
 			// Rethrow if it was a RhinoScriptException already
-			if (re.getCause() instanceof RhinoScriptException)
-				throw (RhinoScriptException) re.getCause();
-			throw new RhinoScriptException(engine, re);
+			if (t.getCause() instanceof RhinoScriptException)
+				throw (RhinoScriptException) t.getCause();
+			throw new RhinoScriptException(engine, t);
 		}
 	}
 

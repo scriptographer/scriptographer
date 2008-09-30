@@ -420,7 +420,15 @@ public class Segment implements Commitable {
 			return null;
 		}
 	}
-	
+
+	public Segment getPrevious() {
+		return index > 0 ? segments.get(index - 1) : null;
+	}
+
+	public Segment getNext() {
+		return index < segments.size ? segments.get(index + 1) : null;
+	}
+
 	public Object clone() {
 		update();
 		return new Segment(point, handleIn, handleOut, corner);

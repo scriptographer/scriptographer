@@ -9,5 +9,13 @@ Number.inject({
 
 	toDegrees: function() {
 		return this * 180 / Math.PI;
+	},
+
+	isEven: function() {
+		return this % 2 == 0;
+	},
+
+	isOdd: function() {
+		return this % 2 != 0;
 	}
 });

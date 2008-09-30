@@ -267,7 +267,9 @@ public class Matrix {
 	}
 
 	public Matrix translate(Point pt) {
-		at.translate(pt.getX(), pt.getY());
+		at.translate(
+				pt != null ? pt.getX() : 0,
+				pt != null ? pt.getY() : 0);
 		return this;
 	}
 
@@ -282,7 +284,9 @@ public class Matrix {
 	}
 
 	public Matrix scale(Point scale) {
-		at.scale(scale.getX(), scale.getY());
+		at.scale(
+				scale != null ? scale.getX() : 0,
+				scale != null ? scale.getY() : 0);
 		return this;
 	}
 
@@ -297,7 +301,9 @@ public class Matrix {
 	}
 
 	public Matrix rotate(double theta, Point center) {
-		at.rotate(theta, center.getX(), center.getY());
+		at.rotate(theta,
+				center != null ? center.getX() : 0,
+				center != null ? center.getY() : 0);
 		return this;
 	}
 

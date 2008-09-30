@@ -78,6 +78,7 @@ public class Tool extends NativeObject {
 		onMouseMove = null;
 		// Tell onMouseMove to initialize event.delta and event.count
 		firstMove = true;
+		event = new Event();
 		setDistanceThreshold(0);
 		setEventInterval(-1);
 		ScriptEngine engine = ScriptEngine.getEngineByFile(file);
@@ -323,26 +324,26 @@ public class Tool extends NativeObject {
 						tool.onOptions();
 						break;
 					case EVENT_MOUSE_DOWN:
-						tool.event.setValues(x, y, pressure, 0, true);
+						tool.event.setValues(x, y, pressure, 0, true, true);
 						tool.onMouseDown(tool.event);
 						break;
 					case EVENT_MOUSE_DRAG:
-						if (tool.event.setValues(x, y, pressure, tool.distanceThreshold, false))
+						if (tool.event.setValues(x, y, pressure, tool.distanceThreshold, false, false))
 							tool.onMouseDrag(tool.event);
 						break;
 					case EVENT_MOUSE_UP:
-						tool.event.setValues(x, y, pressure, 0, false);
+						tool.event.setValues(x, y, pressure, 0, false, false);
 						try {
 							tool.onMouseUp(tool.event);
 						} finally {
 							// Start with new values for EVENT_TRACK_CURSOR
-							tool.event.setValues(x, y, pressure, 0, true);
+							tool.event.setValues(x, y, pressure, 0, true, false);
 							tool.firstMove = true;
 						}
 						break;
 					case EVENT_TRACK_CURSOR:
 						try {
-							if (tool.event.setValues(x, y, pressure, tool.distanceThreshold, tool.firstMove))
+							if (tool.event.setValues(x, y, pressure, tool.distanceThreshold, tool.firstMove, false))
 								tool.onMouseMove(tool.event);
 						} finally {
 							tool.firstMove = false;
