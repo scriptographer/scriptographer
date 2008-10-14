@@ -487,7 +487,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ai_Path = loadClass(env, "com/scriptographer/ai/Path");
 	cls_ai_CompoundPath = loadClass(env, "com/scriptographer/ai/CompoundPath");
-	cls_ai_TextFrame = loadClass(env, "com/scriptographer/ai/TextFrame");
+	cls_ai_TextItem = loadClass(env, "com/scriptographer/ai/TextItem");
 
 	cls_ai_TextRange = loadClass(env, "com/scriptographer/ai/TextRange");
 	cid_ai_TextRange = getConstructorID(env, cls_ai_TextRange, "(II)V");

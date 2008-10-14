@@ -225,7 +225,7 @@ public:
 
 	jclass cls_ai_Path;
 	jclass cls_ai_CompoundPath;
-	jclass cls_ai_TextFrame;
+	jclass cls_ai_TextItem;
 	
 	jclass cls_ai_TextRange;
 	jmethodID cid_ai_TextRange;

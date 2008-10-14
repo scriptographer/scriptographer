@@ -597,7 +597,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextRange_nativeRemove(JNI
 }
 
 /*
- * com.scriptographer.ai.TextFrame getFirstFrame()
+ * com.scriptographer.ai.TextItem getFirstFrame()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextRange_getFirstFrame(JNIEnv *env, jobject obj) {
 	try {
@@ -616,7 +616,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextRange_getFirstFrame(JNI
 }
 
 /*
- * com.scriptographer.ai.TextFrame getLastFrame()
+ * com.scriptographer.ai.TextItem getLastFrame()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextRange_getLastFrame(JNIEnv *env, jobject obj) {
 	try {

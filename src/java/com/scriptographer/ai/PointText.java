@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class PointText extends TextFrame {
+public class PointText extends TextItem {
 
 	protected PointText(int handle) {
 		super(handle, false);

@@ -122,20 +122,20 @@ public class TextRange extends DocumentObject implements Commitable {
 	/**
 	 * @jsbean Returns the first text frame of the story that this text range belongs to.
 	 */
-	public native TextFrame getFirstFrame();
+	public native TextItem getFirstFrame();
 
 	/**
 	 * @jsbean Returns the last text frame of the story that this text range belongs to.
 	 */
-	public native TextFrame getLastFrame();
+	public native TextItem getLastFrame();
 	
-	public ReadOnlyList<TextFrame> getFrames() {
-		TextFrame frame = getFirstFrame();
-		TextFrame lastFrame = getLastFrame();
+	public ReadOnlyList<TextItem> getFrames() {
+		TextItem frame = getFirstFrame();
+		TextItem lastFrame = getLastFrame();
 		if (frame != null) {
 			if (lastFrame == null)
 				lastFrame = frame;
-			ArrayList<TextFrame> list = new ArrayList<TextFrame>();
+			ArrayList<TextItem> list = new ArrayList<TextItem>();
 			do {
 				list.add(frame);
 				frame = frame.getNextFrame();

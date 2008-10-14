@@ -314,7 +314,7 @@
 			<class name="com.scriptographer.ai.LiveEffect" />
 			<class name="com.scriptographer.ai.Timer" />
 			<class name="com.scriptographer.ai.Annotator" />
-			<class name="com.scriptographer.ai.TextFrame" />
+			<class name="com.scriptographer.ai.TextItem" />
 			<class name="com.scriptographer.ai.PointText" />
 			<class name="com.scriptographer.ai.AreaText" />
 			<class name="com.scriptographer.ai.PathText" />
@@ -434,7 +434,6 @@
 					com.scriptographer.ai.ItemPoint
 					com.scriptographer.ai.ItemRectangle
 					com.scriptographer.ai.Dictionary
-					com.scriptographer.ai.Event
 					com.scriptographer.ai.FileFormat
 					com.scriptographer.ai.Style
 					com.scriptographer.ai.TabletValue

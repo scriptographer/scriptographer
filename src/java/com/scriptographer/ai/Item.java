@@ -196,13 +196,13 @@ public abstract class Item extends DocumentObject {
 					break;
 				case TYPE_TEXTFRAME:
 					switch (textType) {
-						case TextFrame.TEXTTYPE_POINT:
+						case TextItem.TEXTTYPE_POINT:
 							item = new PointText(artHandle);
 							break;
-						case TextFrame.TEXTTYPE_AREA:
+						case TextItem.TEXTTYPE_AREA:
 							item = new AreaText(artHandle);
 							break;
-						case TextFrame.TEXTTYPE_PATH:
+						case TextItem.TEXTTYPE_PATH:
 							item = new PathText(artHandle);
 							break;
 					}

@@ -66,7 +66,7 @@ short Item_getType(JNIEnv *env, jclass cls) {
 		return kPlacedArt;
 	} else if (env->IsSameObject(cls, gEngine->cls_ai_SymbolItem)) {
 		return kSymbolArt;
-	} else if (env->IsAssignableFrom(cls, gEngine->cls_ai_TextFrame)) {
+	} else if (env->IsAssignableFrom(cls, gEngine->cls_ai_TextItem)) {
 		return kTextFrameArt;
 	} else if (env->IsSameObject(cls, gEngine->cls_ai_Tracing)) {
 		// special defined type for tracings, needs handling!

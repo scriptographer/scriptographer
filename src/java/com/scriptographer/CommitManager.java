@@ -33,7 +33,7 @@ package com.scriptographer;
 
 import java.util.IdentityHashMap;
 
-import com.scriptographer.ai.TextFrame;
+import com.scriptographer.ai.TextItem;
 
 /**
  * @author lehni
@@ -68,8 +68,8 @@ public class CommitManager {
 				obj.commit();
 				// case it's a text, use the story as a key as well. it's used
 				// like that in CharacterAttributes
-				if (obj instanceof TextFrame)
-					commit(((TextFrame) obj).getStory());
+				if (obj instanceof TextItem)
+					commit(((TextItem) obj).getStory());
 				// Remove object after committing
 				commitables.remove(key);
 			}

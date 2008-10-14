@@ -60,7 +60,6 @@
 		91193AED0A2DF3B100B0E3A7 /* com_scriptographer_adm_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF60A20A4B200F0EF9A /* com_scriptographer_adm_Drawer.cpp */; };
 		91193AEE0A2DF3B100B0E3A7 /* com_scriptographer_adm_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF70A20A4B200F0EF9A /* com_scriptographer_adm_Dialog.cpp */; };
 		91193AF20A2DF3B100B0E3A7 /* com_scriptographer_ai_TextRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */; };
-		91193AF30A2DF3B100B0E3A7 /* com_scriptographer_ai_TextFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFC0A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp */; };
 		91193AF40A2DF3B100B0E3A7 /* com_scriptographer_adm_ImageStatic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFD0A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp */; };
 		91193AF50A2DF3B100B0E3A7 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp */; };
 		91193AF60A2DF3B100B0E3A7 /* com_scriptographer_ai_DocumentView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp */; };
@@ -117,7 +116,6 @@
 		91193B420A2DF3C600B0E3A7 /* com_scriptographer_adm_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF60A20A4B200F0EF9A /* com_scriptographer_adm_Drawer.cpp */; };
 		91193B430A2DF3C600B0E3A7 /* com_scriptographer_adm_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF70A20A4B200F0EF9A /* com_scriptographer_adm_Dialog.cpp */; };
 		91193B470A2DF3C600B0E3A7 /* com_scriptographer_ai_TextRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */; };
-		91193B480A2DF3C600B0E3A7 /* com_scriptographer_ai_TextFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFC0A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp */; };
 		91193B490A2DF3C600B0E3A7 /* com_scriptographer_adm_ImageStatic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFD0A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp */; };
 		91193B4A0A2DF3C600B0E3A7 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp */; };
 		91193B4B0A2DF3C600B0E3A7 /* com_scriptographer_ai_DocumentView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp */; };
@@ -186,7 +184,6 @@
 		9145699E0AF7CADF000FD468 /* com_scriptographer_adm_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF60A20A4B200F0EF9A /* com_scriptographer_adm_Drawer.cpp */; };
 		9145699F0AF7CADF000FD468 /* com_scriptographer_adm_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF70A20A4B200F0EF9A /* com_scriptographer_adm_Dialog.cpp */; };
 		914569A30AF7CADF000FD468 /* com_scriptographer_ai_TextRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */; };
-		914569A40AF7CADF000FD468 /* com_scriptographer_ai_TextFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFC0A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp */; };
 		914569A50AF7CADF000FD468 /* com_scriptographer_adm_ImageStatic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFD0A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp */; };
 		914569A60AF7CADF000FD468 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp */; };
 		914569A70AF7CADF000FD468 /* com_scriptographer_ai_DocumentView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp */; };
@@ -236,6 +233,10 @@
 		91456A910AF7E8D8000FD468 /* IAIUnicodeString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91456A8F0AF7E8D8000FD468 /* IAIUnicodeString.cpp */; };
 		91456A940AF7E8F3000FD468 /* IText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91456A920AF7E8F3000FD468 /* IText.cpp */; };
 		91456A950AF7E8F3000FD468 /* IThrowException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91456A930AF7E8F3000FD468 /* IThrowException.cpp */; };
+		915A26B40EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 915A26B30EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp */; };
+		915A26B50EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 915A26B30EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp */; };
+		915A26B60EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 915A26B30EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp */; };
+		915A26B70EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 915A26B30EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp */; };
 		915C032D0A435D0E0027685A /* Info.plist in Copy CFM Bundle Resources */ = {isa = PBXBuildFile; fileRef = 919823D40A37257700D57E4C /* Info.plist */; };
 		916B8A830DB4B39400FA4689 /* com_scriptographer_adm_TextEditItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 916B8A820DB4B39400FA4689 /* com_scriptographer_adm_TextEditItem.cpp */; };
 		916B8A840DB4B39400FA4689 /* com_scriptographer_adm_TextEditItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 916B8A820DB4B39400FA4689 /* com_scriptographer_adm_TextEditItem.cpp */; };
@@ -266,7 +267,6 @@
 		9185E4DF0E7FC0DA000BD8BA /* com_scriptographer_adm_Drawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF60A20A4B200F0EF9A /* com_scriptographer_adm_Drawer.cpp */; };
 		9185E4E00E7FC0DA000BD8BA /* com_scriptographer_adm_Dialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AF70A20A4B200F0EF9A /* com_scriptographer_adm_Dialog.cpp */; };
 		9185E4E10E7FC0DA000BD8BA /* com_scriptographer_ai_TextRange.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */; };
-		9185E4E20E7FC0DA000BD8BA /* com_scriptographer_ai_TextFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFC0A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp */; };
 		9185E4E30E7FC0DA000BD8BA /* com_scriptographer_adm_ImageStatic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFD0A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp */; };
 		9185E4E40E7FC0DA000BD8BA /* com_scriptographer_ai_DocumentViewList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp */; };
 		9185E4E50E7FC0DA000BD8BA /* com_scriptographer_ai_DocumentView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp */; };
@@ -397,6 +397,7 @@
 		91456A8F0AF7E8D8000FD468 /* IAIUnicodeString.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IAIUnicodeString.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/illustrator/IAIUnicodeString.cpp"; sourceTree = SOURCE_ROOT; };
 		91456A920AF7E8F3000FD468 /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/ate/IText.cpp"; sourceTree = SOURCE_ROOT; };
 		91456A930AF7E8F3000FD468 /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/ate/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
+		915A26B30EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_TextItem.cpp; path = jni/com_scriptographer_ai_TextItem.cpp; sourceTree = "<group>"; };
 		916B8A820DB4B39400FA4689 /* com_scriptographer_adm_TextEditItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_TextEditItem.cpp; path = jni/com_scriptographer_adm_TextEditItem.cpp; sourceTree = "<group>"; };
 		916E65A20A8ACE7A00C3508D /* com */ = {isa = PBXFileReference; lastKnownFileType = folder; name = com; path = ../../src/java/com; sourceTree = SOURCE_ROOT; };
 		916E65A30A8ACE7A00C3508D /* info */ = {isa = PBXFileReference; lastKnownFileType = folder; name = info; path = ../../src/java/info; sourceTree = SOURCE_ROOT; };
@@ -463,7 +464,6 @@
 		91EF0AF60A20A4B200F0EF9A /* com_scriptographer_adm_Drawer.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_Drawer.cpp; path = jni/com_scriptographer_adm_Drawer.cpp; sourceTree = "<group>"; };
 		91EF0AF70A20A4B200F0EF9A /* com_scriptographer_adm_Dialog.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_Dialog.cpp; path = jni/com_scriptographer_adm_Dialog.cpp; sourceTree = "<group>"; };
 		91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_TextRange.cpp; path = jni/com_scriptographer_ai_TextRange.cpp; sourceTree = "<group>"; };
-		91EF0AFC0A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_TextFrame.cpp; path = jni/com_scriptographer_ai_TextFrame.cpp; sourceTree = "<group>"; };
 		91EF0AFD0A20A4B200F0EF9A /* com_scriptographer_adm_ImageStatic.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_adm_ImageStatic.cpp; path = jni/com_scriptographer_adm_ImageStatic.cpp; sourceTree = "<group>"; };
 		91EF0AFE0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentViewList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_DocumentViewList.cpp; path = jni/com_scriptographer_ai_DocumentViewList.cpp; sourceTree = "<group>"; };
 		91EF0AFF0A20A4B200F0EF9A /* com_scriptographer_ai_DocumentView.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_DocumentView.cpp; path = jni/com_scriptographer_ai_DocumentView.cpp; sourceTree = "<group>"; };
@@ -715,8 +715,8 @@
 				91EF0AEC0A20A4B200F0EF9A /* com_scriptographer_ai_PathText.cpp */,
 				91EF0B0F0A20A4B200F0EF9A /* com_scriptographer_ai_Group.cpp */,
 				91EF0B110A20A4B200F0EF9A /* com_scriptographer_ai_Annotator.cpp */,
+				915A26B30EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp */,
 				91EF0AFB0A20A4B200F0EF9A /* com_scriptographer_ai_TextRange.cpp */,
-				91EF0AFC0A20A4B200F0EF9A /* com_scriptographer_ai_TextFrame.cpp */,
 				91EF0B000A20A4B200F0EF9A /* com_scriptographer_ai_Tool.cpp */,
 				91EF0B010A20A4B200F0EF9A /* com_scriptographer_ai_Timer.cpp */,
 				91EF0B0E0A20A4B200F0EF9A /* com_scriptographer_ai_TextStory.cpp */,
@@ -988,7 +988,6 @@
 				91193AED0A2DF3B100B0E3A7 /* com_scriptographer_adm_Drawer.cpp in Sources */,
 				91193AEE0A2DF3B100B0E3A7 /* com_scriptographer_adm_Dialog.cpp in Sources */,
 				91193AF20A2DF3B100B0E3A7 /* com_scriptographer_ai_TextRange.cpp in Sources */,
-				91193AF30A2DF3B100B0E3A7 /* com_scriptographer_ai_TextFrame.cpp in Sources */,
 				91193AF40A2DF3B100B0E3A7 /* com_scriptographer_adm_ImageStatic.cpp in Sources */,
 				91193AF50A2DF3B100B0E3A7 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */,
 				91193AF60A2DF3B100B0E3A7 /* com_scriptographer_ai_DocumentView.cpp in Sources */,
@@ -1036,6 +1035,7 @@
 				910C76A70DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				916B8A840DB4B39400FA4689 /* com_scriptographer_adm_TextEditItem.cpp in Sources */,
 				913020550E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
+				915A26B60EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1071,7 +1071,6 @@
 				91193B420A2DF3C600B0E3A7 /* com_scriptographer_adm_Drawer.cpp in Sources */,
 				91193B430A2DF3C600B0E3A7 /* com_scriptographer_adm_Dialog.cpp in Sources */,
 				91193B470A2DF3C600B0E3A7 /* com_scriptographer_ai_TextRange.cpp in Sources */,
-				91193B480A2DF3C600B0E3A7 /* com_scriptographer_ai_TextFrame.cpp in Sources */,
 				91193B490A2DF3C600B0E3A7 /* com_scriptographer_adm_ImageStatic.cpp in Sources */,
 				91193B4A0A2DF3C600B0E3A7 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */,
 				91193B4B0A2DF3C600B0E3A7 /* com_scriptographer_ai_DocumentView.cpp in Sources */,
@@ -1120,6 +1119,7 @@
 				910C76A80DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				916B8A850DB4B39400FA4689 /* com_scriptographer_adm_TextEditItem.cpp in Sources */,
 				913020560E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
+				915A26B70EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1157,7 +1157,6 @@
 				9145699E0AF7CADF000FD468 /* com_scriptographer_adm_Drawer.cpp in Sources */,
 				9145699F0AF7CADF000FD468 /* com_scriptographer_adm_Dialog.cpp in Sources */,
 				914569A30AF7CADF000FD468 /* com_scriptographer_ai_TextRange.cpp in Sources */,
-				914569A40AF7CADF000FD468 /* com_scriptographer_ai_TextFrame.cpp in Sources */,
 				914569A50AF7CADF000FD468 /* com_scriptographer_adm_ImageStatic.cpp in Sources */,
 				914569A60AF7CADF000FD468 /* com_scriptographer_ai_DocumentViewList.cpp in Sources */,
 				914569A70AF7CADF000FD468 /* com_scriptographer_ai_DocumentView.cpp in Sources */,
@@ -1205,6 +1204,7 @@
 				910C76A60DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				916B8A830DB4B39400FA4689 /* com_scriptographer_adm_TextEditItem.cpp in Sources */,
 				913020540E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
+				915A26B50EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1238,7 +1238,6 @@
 				9185E4DF0E7FC0DA000BD8BA /* com_scriptographer_adm_Drawer.cpp in Sources */,
 				9185E4E00E7FC0DA000BD8BA /* com_scriptographer_adm_Dialog.cpp in Sources */,
 				9185E4E10E7FC0DA000BD8BA /* com_scriptographer_ai_TextRange.cpp in Sources */,
-				9185E4E20E7FC0DA000BD8BA /* com_scriptographer_ai_TextFrame.cpp in Sources */,
 				9185E4E30E7FC0DA000BD8BA /* com_scriptographer_adm_ImageStatic.cpp in Sources */,
 				9185E4E40E7FC0DA000BD8BA /* com_scriptographer_ai_DocumentViewList.cpp in Sources */,
 				9185E4E50E7FC0DA000BD8BA /* com_scriptographer_ai_DocumentView.cpp in Sources */,
@@ -1290,6 +1289,7 @@
 				9185E5300E7FC1FE000BD8BA /* IThrowException.cpp in Sources */,
 				9185E5330E7FC238000BD8BA /* IAIFilePath.cpp in Sources */,
 				9185E5340E7FC238000BD8BA /* IAIUnicodeString.cpp in Sources */,
+				915A26B40EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

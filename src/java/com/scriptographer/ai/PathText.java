@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class PathText extends TextFrame {
+public class PathText extends TextItem {
 
 	protected PathText(int handle) {
 		super(handle, false);

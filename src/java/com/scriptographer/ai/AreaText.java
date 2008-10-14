@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class AreaText extends TextFrame {
+public class AreaText extends TextItem {
 
 	protected AreaText(int handle) {
 		super(handle, false);

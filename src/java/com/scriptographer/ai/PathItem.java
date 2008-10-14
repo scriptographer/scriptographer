@@ -40,7 +40,7 @@ import java.awt.geom.PathIterator;
  * @author lehni
  *
  */
-abstract class PathItem extends Item {
+public abstract class PathItem extends Item {
 	/**
 	 * Wraps an AIArtHandle in a Path object
 	 */

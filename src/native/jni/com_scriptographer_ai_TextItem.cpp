@@ -30,10 +30,10 @@
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "aiGlobals.h"
-#include "com_scriptographer_ai_TextFrame.h"
+#include "com_scriptographer_ai_TextItem.h"
 
 /*
- * com.scriptographer.ai.TextFrame
+ * com.scriptographer.ai.TextItem
  */
  
 using namespace ATE;
@@ -45,7 +45,7 @@ using namespace ATE;
 /*
  * int nativeGetOrientation()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_nativeGetOrientation(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextItem_nativeGetOrientation(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle text = gEngine->getArtHandle(env, obj);
 		AITextOrientation orient;
@@ -58,7 +58,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_nativeGetOrientation
 /*
  * void nativeSetOrientation(int orient)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_nativeSetOrientation(JNIEnv *env, jobject obj, jint orient) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextItem_nativeSetOrientation(JNIEnv *env, jobject obj, jint orient) {
 	try {
 		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
 		sAITextFrame->SetOrientation(text, (AITextOrientation) orient);
@@ -68,7 +68,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_nativeSetOrientation
 /*
  * com.scriptographer.ai.Item nativeCreateOutline()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_nativeCreateOutline(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextItem_nativeCreateOutline(JNIEnv *env, jobject obj) {
 	try {
 		// Make sure we're switching to the right doc (gCreationDoc)
 		Document_activate();
@@ -84,9 +84,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_nativeCreateOutli
 
 
 /*
- * boolean link(com.scriptographer.ai.TextFrame text)
+ * boolean link(com.scriptographer.ai.TextItem text)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_link(JNIEnv *env, jobject obj, jobject text) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextItem_link(JNIEnv *env, jobject obj, jobject text) {
 	try {
 		AIArtHandle text1 = gEngine->getArtHandle(env, obj, true);
 		AIArtHandle text2 = gEngine->getArtHandle(env, text);
@@ -99,7 +99,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_link(JNIEnv *env
 /*
  * boolean nativeUnlink(boolean before, boolean after)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_nativeUnlink(JNIEnv *env, jobject obj, jboolean before, jboolean after) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextItem_nativeUnlink(JNIEnv *env, jobject obj, jboolean before, jboolean after) {
 	try {
 		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
 		if (!sAITextFrame->Unlink(text, before, after))
@@ -111,7 +111,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_nativeUnlink(JNI
 /*
  * boolean isLinked()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_isLinked(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextItem_isLinked(JNIEnv *env, jobject obj) {
 	try {
 		// TextFrames need document be active for getting story related states too
 		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
@@ -125,7 +125,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_isLinked(JNIEnv 
 /*
  * int getStoryIndex()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_getStoryIndex(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextItem_getStoryIndex(JNIEnv *env, jobject obj) {
 	try {
 		// TextFrames need document be active for getting story related states too
 		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
@@ -139,7 +139,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_getStoryIndex(JNIEnv
 /*
  * int getIndex()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_getIndex(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextItem_getIndex(JNIEnv *env, jobject obj) {
 	try {
 		// TextFrames need document be active for getting too
 		AIArtHandle text = gEngine->getArtHandle(env, obj, true);
@@ -153,7 +153,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_getIndex(JNIEnv *env
 /*
  * com.scriptographer.ai.TextRange getSelection()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_getSelection(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextItem_getSelection(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle text = gEngine->getArtHandle(env, obj);
 		TextRangesRef ranges;
@@ -166,7 +166,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextFrame_getSelection(JNIE
 /*
  * int nativeGetRange(boolean bIncludeOverflow)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_nativeGetRange(JNIEnv *env, jobject obj, jboolean bIncludeOverflow) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextItem_nativeGetRange(JNIEnv *env, jobject obj, jboolean bIncludeOverflow) {
 	try {
 		// activate document so that text flow gets suspended as soon as the first range is accessed
 		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
@@ -181,7 +181,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextFrame_nativeGetRange(JNIEn
 /*
  * float getSpacing()
  */
-JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextFrame_getSpacing(JNIEnv *env, jobject obj) {
+JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextItem_getSpacing(JNIEnv *env, jobject obj) {
 	ASReal spacing = 0;
 	try {
 		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
@@ -194,7 +194,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_TextFrame_getSpacing(JNIEnv 
 /*
  * void setSpacing(float spacing)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setSpacing(JNIEnv *env, jobject obj, jfloat spacing) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextItem_setSpacing(JNIEnv *env, jobject obj, jfloat spacing) {
 	try {
 		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		sTextFrame->SetSpacing(frame, spacing);
@@ -205,7 +205,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setSpacing(JNIEnv *e
 /*
  * boolean getOpticalAlignment()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_getOpticalAlignment(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextItem_getOpticalAlignment(JNIEnv *env, jobject obj) {
 	ATEBool8 active = false;
 	try {
 		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj);
@@ -218,7 +218,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_getOpticalAlignm
 /*
  * void setOpticalAlignment(boolean active)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOpticalAlignment(JNIEnv *env, jobject obj, jboolean active) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextItem_setOpticalAlignment(JNIEnv *env, jobject obj, jboolean active) {
 	try {
 		TextFrameRef frame = gEngine->getTextFrameHandle(env, obj, true);
 		sTextFrame->SetOpticalAlignment(frame, active);
@@ -229,10 +229,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextFrame_setOpticalAlignment(
 /*
  * boolean equals(java.lang.Object text)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextFrame_equals(JNIEnv *env, jobject obj, jobject text) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_TextItem_equals(JNIEnv *env, jobject obj, jobject text) {
 	ATEBool8 ret = false;
 	try {
-		if (env->IsInstanceOf(text, gEngine->cls_ai_TextFrame)) {
+		if (env->IsInstanceOf(text, gEngine->cls_ai_TextItem)) {
 			TextFrameRef frame1 = gEngine->getTextFrameHandle(env, obj);
 			TextFrameRef frame2 = gEngine->getTextFrameHandle(env, text);
 			if (frame2 != NULL) {

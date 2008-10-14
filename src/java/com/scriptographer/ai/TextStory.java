@@ -111,9 +111,9 @@ public class TextStory extends DocumentObject {
 	
 	protected native int nativeGetTexListLength(int handle);
 	
-	protected native TextFrame nativeGetTextFrame(int storyHandle, int docHandle, int index);
+	protected native TextItem nativeGetTextFrame(int storyHandle, int docHandle, int index);
 	
-	class TextFrameList implements ReadOnlyList<TextFrame> {
+	class TextFrameList implements ReadOnlyList<TextItem> {
 		int length = 0;
 		int version = -1;
 		
@@ -129,7 +129,7 @@ public class TextStory extends DocumentObject {
 			return length;
 		}
 
-		public TextFrame get(int index) {
+		public TextItem get(int index) {
 			return nativeGetTextFrame(handle, document.handle, index);
 		}
 
@@ -137,12 +137,12 @@ public class TextStory extends DocumentObject {
 			return size() == 0;
 		}
 
-		public ExtendedList<TextFrame> getSubList(int fromIndex, int toIndex) {
+		public ExtendedList<TextItem> getSubList(int fromIndex, int toIndex) {
 			return Lists.createSubList(this, fromIndex, toIndex);
 		}
 
-		public Iterator<TextFrame> iterator() {
-			return new ListIterator<TextFrame>(this);
+		public Iterator<TextItem> iterator() {
+			return new ListIterator<TextItem>(this);
 		}
 	}
 }

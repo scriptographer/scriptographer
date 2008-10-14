@@ -38,7 +38,7 @@ import com.scriptographer.CommitManager;
 /**
  * @author lehni
  */
-public abstract class TextFrame extends Item {
+public abstract class TextItem extends Item {
 
 	// AITextType
 	protected static final short
@@ -50,7 +50,7 @@ public abstract class TextFrame extends Item {
 	TextRange range = null;
 	TextRange visibleRange = null;
 
-	protected TextFrame(int handle, boolean created) {
+	protected TextItem(int handle, boolean created) {
 		super(handle);
 		if (created)
 			document = Document.getWorkingDocument();
@@ -104,7 +104,7 @@ public abstract class TextFrame extends Item {
 	 * @param next The text frame that will be linked.
 	 * @return True if the text frame was linked, false otherwise
 	 */
-	public native boolean link(TextFrame next);
+	public native boolean link(TextItem next);
 
 	private native boolean nativeUnlink(boolean before, boolean after);
 	
@@ -167,12 +167,12 @@ public abstract class TextFrame extends Item {
 		return null;
 	}
 
-	private TextFrame getFrame(int index) {
+	private TextItem getFrame(int index) {
 		TextStory story = getStory();
 		if (story != null) {
 			ReadOnlyList list = story.getTextFrames();
 			if (index >= 0 && index < list.size())
-				return (TextFrame) list.get(index);
+				return (TextItem) list.get(index);
 		}
 		return null;
 	}
@@ -180,14 +180,14 @@ public abstract class TextFrame extends Item {
 	/**
 	 * @jsbean Returns the next text frame in a story of various linked text frames
 	 */
-	public TextFrame getNextFrame() {
+	public TextItem getNextFrame() {
 		return getFrame(getIndex() + 1);
 	}
 
 	/**
 	 * @jsbean Returns the previous text frame in a story of various linked text frames
 	 */
-	public TextFrame getPreviousFrame() {
+	public TextItem getPreviousFrame() {
 		return getFrame(getIndex() - 1);
 	}
 

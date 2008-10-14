@@ -433,7 +433,7 @@ public class Document extends NativeObject {
 	}
 
 	public ItemSet getTextFrames() throws ScriptographerException {
-		return getMatchingItems(TextFrame.class);
+		return getMatchingItems(TextItem.class);
 	}
 
 	public ItemSet getRasters() throws ScriptographerException {
