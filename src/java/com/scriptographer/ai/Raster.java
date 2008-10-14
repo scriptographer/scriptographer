@@ -436,7 +436,7 @@ public class Raster extends Item {
 		for (int y = 0; y < height; y++) {
 			for (int x = (y == 0) ? 1 : 0; x < width; x++) {
 				if (path == null || path.contains(x + startX, y + startY)) {
-					data = (byte[]) raster.getDataElements(x, height - y, data);
+					data = (byte[]) raster.getDataElements(x, height - 1 - y, data);
 					for (int i = 0; i < data.length; i++)
 						components[i] += data[i] & 0xff;
 					total++;
