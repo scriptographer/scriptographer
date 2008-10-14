@@ -185,8 +185,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			var entry = directoryEntries[file];
 			if (entry) entry.expanded = true;
 		}
-		tool1Button.setCurrentImage();
-		tool2Button.setCurrentImage();
+		toolButton.setCurrentImage();
 	}
 
 	function execute() {
@@ -307,68 +306,59 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	};
 
 	var stopButton = new ImageButton(this) {
+		image: getImage('stop.png'),
+		size: buttonSize,
 		onClick: function() {
 			ScriptographerEngine.stopAll();
-		},
-		image: getImage('stop.png'),
-		size: buttonSize
+		}
 	};
 
 	var refreshButton = new ImageButton(this) {
+		image: getImage('refresh.png'),
+		size: buttonSize,
 		onClick: function() {
 			refreshFiles();
-		},
-		image: getImage('refresh.png'),
-		size: buttonSize
+		}
 	};
 
 	var consoleButton = new ImageButton(this) {
+		image: getImage('console.png'),
+		size: buttonSize,
 		onClick: function() {
 			consoleDialog.setVisible(!consoleDialog.isVisible());
-		},
-		image: getImage('console.png'),
-		size: buttonSize
+		}
 	};
 
 	var newButton = new ImageButton(this) {
+		image: getImage('script.png'),
+		size: buttonSize,
 		onClick: function() {
 			createFile();
-		},
-		image: getImage('script.png'),
-		size: buttonSize
+		}
 	};
 
-	var tool1Button = new ImageButton(this) {
-		image: getImage('tool1.png'),
+	var toolButton = new ImageButton(this) {
+		image: getImage('tool.png'),
 		size: buttonSize,
 		toolIndex: 0,
-		entryImage: getImage('tool1script.png')
-	};
-
-	var tool2Button = new ImageButton(this) {
-		image: getImage('tool2.png'),
-		size: buttonSize,
-		toolIndex: 1,
-		entryImage: getImage('tool2script.png')
-	};
-
-	tool1Button.onClick = tool2Button.onClick = function() {
-		var entry = scriptList.activeLeaf;
-		if (entry && entry.file) {
-			Tool.getTool(this.toolIndex).compileScript(entry.file);
-			if (entry.file != this.curFile) {
-				this.setCurrentImage(scriptImage);
-				entry.image = this.entryImage;
-				this.curFile = entry.file;
+		entryImage: getImage('toolscript.png'),
+		onClick: function() {
+			var entry = scriptList.activeLeaf;
+			if (entry && entry.file) {
+				Tool.getTool(this.toolIndex).compileScript(entry.file);
+				if (entry.file != this.curFile) {
+					this.setCurrentImage(scriptImage);
+					entry.image = this.entryImage;
+					this.curFile = entry.file;
+				}
 			}
+		},
+		setCurrentImage: function(image) {
+			var curEntry = fileEntries[this.curFile];
+			if (curEntry)
+				curEntry.image = image ? image : this.entryImage;
 		}
-	}
-
-	tool1Button.setCurrentImage = tool2Button.setCurrentImage = function(image) {
-		var curEntry = fileEntries[this.curFile];
-		if (curEntry)
-			curEntry.image = image ? image : this.entryImage;
-	}
+	};
 
 	if (scriptographer.scriptDirectory)
 		refreshFiles();
@@ -389,8 +379,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 					newButton,
 					consoleButton,
 					new Spacer(4, 0),
-					tool1Button,
-					tool2Button
+					toolButton
 				]
 			}
 		}

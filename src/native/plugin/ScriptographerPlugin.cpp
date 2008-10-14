@@ -166,10 +166,10 @@ ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
 	char *title1 = "Scriptographer Tool 2";
 	error = createTool(0, title0, kTool1IconID, kTool1CursorID, kToolWantsToTrackCursorOption | kToolWantsBufferedDraggingOption);
 	if (error) return error;
-
+/*
 	error = createTool(1, title1, kTool2IconID, kTool2CursorID, kToolWantsToTrackCursorOption | kToolWantsBufferedDraggingOption, title0);
 	if (error) return error;
-
+*/
 	// make sure the plugin stays in ram all the time and postStartupPlugin gets actually called
 	sSPAccess->AcquirePlugin(m_pluginRef, &m_pluginAccess);
 
