@@ -1,6 +1,6 @@
 /**
  * JavaScript Template Engine
- * (c) 2005 - 2007, Juerg Lehni, http://www.scratchdisk.com
+ * (c) 2005 - 2008, Juerg Lehni, http://www.scratchdisk.com
  *
  * Template.js is released under the MIT license
  * http://dev.helma.org/Wiki/JavaScript+Template+Engine/
@@ -57,9 +57,16 @@ function Template(object, name, parent) {
 Template.prototype = {
 	render: function(object, param, out) {
 		try {
-			if (param && param.__param__) {
+			var parentParam = param && param.__param__;
+			if (parentParam) {
+				if (parentParam instanceof java.util.Map) {
+					var prm = {};
+					for (var i in parentParam)
+						prm[i] = parentParam[i];
+					parentParam = param.__param__ = prm;
+				}
 				function inherit() {};
-				inherit.prototype = param.__param__;
+				inherit.prototype = parentParam;
 				var prm = new inherit();
 				for (var i in param)
 					prm[i] = param[i];
@@ -92,6 +99,7 @@ Template.prototype = {
 		this.tags = []; 
 		this.listId = 0; 
 		var skipLineBreak = false;
+		var skipWhiteSpace = false;
 		var tagCounter = 0;
 		var templateTag = null;
 		var stack = { control: [], loop: {} };
@@ -101,10 +109,18 @@ Template.prototype = {
 		function append() {
 			if (buffer.length) {
 				var part = buffer.join('');
-				if (templateTag)
-					templateTag.buffer.push(part);
-				else 
-					code.push('out.write(' + uneval(part) + ');');
+				if (part && skipWhiteSpace) {
+					part = part.match(/\s*([\u0000-\uffff]*)/);
+					if (part)
+						part = part[1];
+					skipWhiteSpace = false;
+				}
+				if (part) {
+					if (templateTag)
+						templateTag.buffer.push(part);
+					else 
+						code.push('out.write(' + uneval(part) + ');');
+				}
 				buffer.length = 0;
 			}
 		}
@@ -147,6 +163,8 @@ Template.prototype = {
 							} else {
 								if (templateTag)
 									templateTag.buffer.push(tag);
+								else if (tag == '<%-%>')
+									skipWhiteSpace = true;
 								else if (this.parseMacro(tag, code, stack, true) && end == line.length)
 									skipLineBreak = true;
 							}
@@ -182,7 +200,7 @@ Template.prototype = {
 	},
 
 	parseMacroParts: function(tag, code, stack, allowControls) {
-		var match = tag.match(/^<%(=?)\s*(.*?)\s*(-?)%>$/);
+		var match = tag.match(/^<%(=?)\s*([\u0000-\uffff]*?)\s*(-?)%>$/);
 		if (!match)	return null;
 		var isEqualTag = match[1] == '=', content = match[2], swallow = !!match[3];
 
@@ -256,7 +274,7 @@ Template.prototype = {
 				} else {
 					var unnamed = macro.unnamed.join(', ');
 					macro.arguments = '[ { ' + macro.param.join(', ') + ' } ' + (unnamed ? ', ' + unnamed : '') + ' ]';
-					var match = macro.command.match(/^([^.]*)\.(.*)$/);
+					var match = macro.command.match(/^(.*)\.(.*)$/);
 					if (match) {
 						macro.object = match[1];
 						macro.name = match[2];
@@ -271,7 +289,7 @@ Template.prototype = {
 			if (next) {
 				macro = {
 					command: next, opcode: [], param: [], unnamed: [],
-					values: { prefix: null, suffix: null, 'default': null, encoding: null, separator: null }
+					values: { prefix: null, suffix: null, 'default': null, encoding: null, separator: null, 'if': null }
 				};
 				if (isMain) {
 					macro.isControl = allowControls && /^(foreach|if|elseif|else|end)$/.test(next);
@@ -353,15 +371,20 @@ Template.prototype = {
 	},
 
 	parseMacro: function(tag, code, stack, allowControls, toString) {
-		if (/^<%--/.test(tag) || tag == '<%-%>') return true;
+		if (/^<%--/.test(tag))
+			return true;
 		var macro = this.parseMacroParts(tag, code, stack, allowControls);
 		if (!macro)
 			throw 'Invalid tag';
 		var values = macro.values, result;
+		var condition = values['if'];
+		if (condition)
+			code.push(								'if (' + condition + ') {');
 		var postProcess = !!(values.prefix || values.suffix || values.filters);
 		var codeIndexBefore = code.length;
 		if (macro.isData) { 
-			result = this.parseLoopVariables(macro.command + ' ' + macro.opcode, stack);
+			result = this.parseLoopVariables(macro.opcode
+				? macro.command + ' ' + macro.opcode : macro.command, stack);
 		} else if (macro.isControl) {
 			var open = false, close = false;
 			var prevControl = stack.control[stack.control.length - 1];
@@ -479,9 +502,11 @@ Template.prototype = {
 			}
 		}
 		if (toString && postProcess) {
-			code.splice(codeIndexBefore, 0,		'out.push();');
+			code.splice(codeIndexBefore, 0,			'out.push();');
 			return 'out.pop()';
 		}
+		if (condition)
+			code.push(								'}');
 		if (!toString)
 			return macro.swallow;
 	},
@@ -545,7 +570,7 @@ Template.prototype = {
 		if (object) {
 			var macro = object[name + '_macro'];
 			if (macro) {
-//				try {
+				try {
 					var prm = args[0];
 					if (prm.param)
 						for (var i in prm.param)
@@ -555,7 +580,7 @@ Template.prototype = {
 					prm.__param__ = param;
 					prm.__out__ = out;
 					value = macro.apply(object, args);
-/*				} catch (e) {
+				} catch (e) {
 					var tag = this.getTagFromException(e);
 					var message = e.message || e;
 					if (tag && tag.content) {
@@ -565,7 +590,7 @@ Template.prototype = {
 						message += ' (' + e.fileName + '; line ' + e.lineNumber + ')';
 					}
 					out.write('[Macro error in ' + command + ': ' + message + ']');
-				}*/
+				}
 			} else {
 				value = object[name];
 				if (value === undefined)
