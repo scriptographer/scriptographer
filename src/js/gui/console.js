@@ -34,6 +34,7 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 	var textIn = new TextEdit(this, 'multiline') {
 		size: [300, 100],
 		minimumSize: [200, 18],
+		font: 'palette',
 		onTrack: function(tracker) {
 			if (tracker.action == Tracker.ACTION_KEY_STROKE
 				&& tracker.virtualKey == Tracker.KEY_RETURN) {
