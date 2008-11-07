@@ -201,20 +201,20 @@ public class LiveEffect extends NativeObject {
 		this(0, name, title, preferedInput, type, flags, majorVersion,
 				minorVersion);
 
-		ArrayList unusedEffects = getUnusedEffects();
+		ArrayList<LiveEffect> unusedEffects = getUnusedEffects();
 
-		// now see first whether there is an unusedEffect already that fits this
+		// Now see first whether there is an unusedEffect already that fits this
 		// description
 		int index = unusedEffects.indexOf(this);
 		if (index >= 0) {
-			// found one, let's reuse it's handle and remove the old effect from
+			// Found one, let's reuse it's handle and remove the old effect from
 			// the list:
-			LiveEffect effect = (LiveEffect) unusedEffects.get(index);
+			LiveEffect effect = unusedEffects.get(index);
 			handle = effect.handle;
 			effect.handle = 0;
 			unusedEffects.remove(index);
 		} else {
-			// no previously existing effect found, create a new one:
+			// No previously existing effect found, create a new one:
 			handle = nativeCreate(name, title, preferedInput, type, flags,
 					majorVersion, minorVersion);
 		}
@@ -444,6 +444,6 @@ public class LiveEffect extends NativeObject {
 	}
 
 	private static LiveEffect getEffect(int handle) {
-		return (LiveEffect) effects.get(handle);
+		return effects.get(handle);
 	}
 }

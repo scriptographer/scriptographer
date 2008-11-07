@@ -161,7 +161,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_adm_Image_nativeGetPixels(JNIEnv 
 JNIEXPORT jint JNICALL Java_com_scriptographer_adm_Image_nativeCreateIcon(JNIEnv *env, jobject obj) {
 	try {
 		ADMImageRef image = gEngine->getImageHandle(env, obj);
-		return (jint)sADMIcon->CreateFromImage(image);
+		return (jint) sADMIcon->CreateFromImage(image);
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }

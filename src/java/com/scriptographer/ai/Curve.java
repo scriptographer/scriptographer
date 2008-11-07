@@ -251,6 +251,7 @@ public class Curve {
 		return index1 < segments.size ? segments.get(index1 + 1).getCurve() : null;
 	}
 
+	// TODO: return reversed curve as new instance instead of modifiying this curve?
 	public void reverse() {
 		Segment tmp = (Segment) segment1.clone();
 		segment1.setHandleIn(segment2.getHandleOut());
