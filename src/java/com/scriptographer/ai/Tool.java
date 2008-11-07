@@ -32,6 +32,8 @@
 package com.scriptographer.ai;
 
 import com.scriptographer.ScriptographerEngine; 
+import com.scriptographer.ScriptographerException;
+import com.scriptographer.adm.Image;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.script.Callable;
@@ -40,17 +42,51 @@ import com.scratchdisk.util.IntMap;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * @author lehni
  */
 public class Tool extends NativeObject {
-	private int index;
-	private int cursor;
+	// AIToolOptions
+	public static final int
+		OPTION_TRACK_CURSOR = 1 << 0,
+/** Set to disable automatic scrolling. When off (the default), the Illustrator window
+	scrolls when a tool reaches the edge. For tools that manipulate artwork,
+	autoscroll is useful. Set this to turn autoscroll off for a tool that
+	draws to the screen directly, like the built-in Brush tool. */
+		OPTION_NO_AUTO_SCROLL = 1 << 1,
+/**	Set to buffer the drag selectors and messages and send all of them
+	to the tool at once. Useful if a tool is calculation intensive.  The effect
+	is no longer real-time, but has a smoother final output.
+	When off (the default), the tool processes drag selectors and returns frequently,
+	resulting in near real-time feedback. If there are intensive calculations
+	during the drag selector, the tool could miss drag notifications, resulting in rougher
+	tracking.  */
+		OPTION_BUFFERED_DRAGGING = 1 << 2,
+/** Set to maintain the edit context when this tool is selected. For art objects,
+	keeps all current points and handles selected. For text, keeps the insertion
+	point in the current location. Set this option for navigational tools like
+	the Zoom and Scroll tools. */
+		OPTION_MAINTAIN_EDIT_CONTEXT = 1 << 3,
+/** Set to maintain the text edit context when the tool is selected,
+	if \c #kToolMaintainEditContextOption is also set. */
+		OPTION_IS_TEXT_TOOL = 1 << 4,
+/** Set to receive \c #kSelectorAIToolDecreaseDiameter and
+	\c #kSelectorAIToolIncreaseDiameter. Use if the tool needs to change
+	diameter when either '[' or ']' is pressed. */
+		OPTION_CHANGE_DIAMETER = 1 << 5;
+	
+	// TODO: implement a way to set cursors?
+	private int cursor = 128;
 
-	private static IntMap<Tool> tools = null;
+	/**
+	 * tools maps tool handles to their wrappers.
+	 */
+	private static IntMap<Tool> tools = new IntMap<Tool>();
+	private static ArrayList<Tool> unusedTools = null;
+
 
 	private float distanceThreshold;
 	
@@ -59,11 +95,56 @@ public class Tool extends NativeObject {
 
 	private boolean firstMove = true;
 
-	protected Tool(int handle, int index) {
+	private Image icon = null;
+
+	private String name;
+
+	public Tool(String name, Tool groupTool, Tool toolsetTool) {
+		this.name = name;
+
+		ArrayList<Tool> unusedTools = getUnusedTools();
+
+		// Now see first whether there is an unusedEffect already that fits this
+		// description
+		int index = unusedTools.indexOf(this);
+		if (index >= 0) {
+			// Found one, let's reuse it's handle and remove the old effect from
+			// the list:
+			Tool tool = unusedTools.get(index);
+			handle = tool.handle;
+			tool.handle = 0;
+			unusedTools.remove(index);
+		} else {
+			// No previously existing effect found, create a new one:
+			handle = nativeCreate(name,
+					groupTool != null ? groupTool.handle : 0,
+					toolsetTool != null ? toolsetTool.handle : 0);
+		}
+
+		if (handle == 0)
+			throw new ScriptographerException("Unable to create Tool.");
+
+		tools.put(handle, this);
+	}
+
+	public Tool(String name, Tool groupTool) {
+		this(name, groupTool, null);
+	}
+
+	public Tool(String name) {
+		this(name, null, null);
+	}
+
+	/**
+	 * @param title
+	 * @return
+	 */
+	private native int nativeCreate(String name, int groupHandle, int toolsetHandle);
+
+	protected Tool(int handle, String name) {
 		super(handle);
-		this.index = index;
 		// See resourceIds.h:
-		this.cursor = index + 128;
+		this.name = name;
 	}
 	
 	public void compileScript(File file) throws ScriptException, IOException {
@@ -99,28 +180,35 @@ public class Tool extends NativeObject {
 		}
 	}
 
-	private static IntMap<Tool> getTools() {
-		if (tools == null)
-			tools = nativeGetTools();
-		return tools;
-	}
-
-	/**
-	 * Returns all tools that have been created by this plugin. This is
-	 * necessary because the java part of the plugin may be reloaded. The plugin
-	 * needs to be capable of reestablish the connections between the wrappers
-	 * and the real objects.
-	 * 
-	 * @return
-	 */
-	private static native IntMap<Tool> nativeGetTools();
-
 	public native boolean hasPressure();
 	
 	// Interval time in milliseconds
 	public native int getEventInterval();
 	
 	public native void setEventInterval(int interval);
+
+	public native String getTitle();
+
+	public native void setTitle(String title);
+
+	public native String getTooltip();
+
+	public native void setTooltip(String text);
+
+	public native int getOptions();
+
+	public native void setOptions(int options);
+
+	public Image getImage() {
+		return icon;
+	}
+
+	private native void nativeSetImage(int iconHandle);
+
+	public void setImage(Image image) {
+		nativeSetImage(image != null ? image.createIconHandle() : 0);
+		this.icon = image;
+	}
 
 	/**
 	 * @deprecated use Tool#setEventInterval instead.
@@ -288,6 +376,9 @@ public class Tool extends NativeObject {
 	private static final int EVENT_SELECT = 5;
 	private static final int EVENT_DESELECT = 6;
 	private static final int EVENT_RESELECT = 7;
+	// TODO: not implemented yet:
+	private static final int EVENT_DECREASE_DIAMETER = 8;
+	private static final int EVENT_INCREASE_DIAMETER = 9;
 
 	private final static String[] eventTypes = {
 		"AI Edit Options",
@@ -297,7 +388,10 @@ public class Tool extends NativeObject {
 		"AI Mouse Up",
 		"AI Select",
 		"AI Deselect",
-		"AI Reselect"
+		"AI Reselect",
+		// TODO: not implemented yet:
+		"AI Decrease Diameter",
+		"AI Increase Diameter"
 	};
 	// Hashmap for conversation to unique ids that can be compared with ==
 	// instead of .equals
@@ -315,7 +409,7 @@ public class Tool extends NativeObject {
 	@SuppressWarnings("unused")
 	private static int onHandleEvent(int handle, String selector, float x,
 			float y, int pressure) throws Exception {
-		Tool tool = getToolByHandle(handle);
+		Tool tool = getTool(handle);
 		if (tool != null) {
 			Integer event = (Integer) events.get(selector); 
 			if (event != null) {
@@ -365,17 +459,23 @@ public class Tool extends NativeObject {
 		return 0;
 	}
 
-	public static Tool getTool(int index) {
-		for (Iterator iterator = getTools().values().iterator();
-			iterator.hasNext();) {
-			Tool tool = (Tool) iterator.next();
-			if (tool.index == index)
-				return tool;
-		}
-		return null;
+	private static Tool getTool(int handle) {
+		return tools.get(handle);
 	}
 
-	private static Tool getToolByHandle(int handle) {
-		return (Tool) getTools().get(handle);
+	public boolean equals(Object obj) {
+		if (obj instanceof Tool) {
+			Tool tool = (Tool) obj;
+			return name.equals(tool.name);
+		}
+		return false;
 	}
+
+	private static ArrayList<Tool> getUnusedTools() {
+		if (unusedTools == null)
+			unusedTools = nativeGetTools();
+		return unusedTools;
+	}
+
+	private static native ArrayList<Tool> nativeGetTools();
 }

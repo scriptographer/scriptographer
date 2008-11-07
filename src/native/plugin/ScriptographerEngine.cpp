@@ -419,7 +419,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_Dictionary_wrapHandle = getStaticMethodID(env, cls_ai_Dictionary, "wrapHandle", "(II)Lcom/scriptographer/ai/Dictionary;");
 
 	cls_ai_Tool = loadClass(env, "com/scriptographer/ai/Tool");
-	cid_ai_Tool = getConstructorID(env, cls_ai_Tool, "(II)V");
+	cid_ai_Tool = getConstructorID(env, cls_ai_Tool, "(ILjava/lang/String;)V");
 	mid_ai_Tool_onHandleEvent = getStaticMethodID(env, cls_ai_Tool, "onHandleEvent", "(ILjava/lang/String;FFI)I");
 
 	cls_ai_Point = loadClass(env, "com/scriptographer/ai/Point");

@@ -64,11 +64,6 @@ DLLExport SPAPI int main(char *caller, char *selector, void *message);
 
 class ScriptographerEngine;
 
-struct Tool {
-	AIToolHandle m_handle;
-	int m_cursorID;	
-};
-
 class ScriptographerPlugin {
 
 protected:
@@ -78,13 +73,13 @@ protected:
 	SPAccessRef m_pluginAccess;
 	ASErr m_lastError;
 	long m_errorTimeout;
-	ASBoolean m_supressDuplicateErrors;
+	bool m_supressDuplicateErrors;
 	unsigned long m_lastErrorTime;
 	AINotifierHandle m_appStartedNotifier;
 	AINotifierHandle m_selectionChangedNotifier;
-	ASBoolean m_loaded;
+	bool m_loaded;
+	bool m_started; 
 	ScriptographerEngine *m_engine;
-	Tool m_tools[2];
 	
 #ifdef LOGFILE
 	FILE *m_logFile;
@@ -113,9 +108,6 @@ public:
 	bool pathToFileSpec(const char *path, SPPlatformFileSpecification *fileSpec);
 	void setCursor(int cursorID);
 
-	ASErr createTool(int index, char *title, int iconID, int cursorID, long options, char *sameGroupTool = NULL, char *sameToolsetTool = NULL);
-	Tool *getTools(int *count);
-
 	ASErr startupPlugin(SPInterfaceMessage *message); 
 	ASErr shutdownPlugin(SPInterfaceMessage *message); 
 	ASErr unloadPlugin(SPInterfaceMessage *message);
@@ -131,9 +123,17 @@ public:
 		return m_pluginName;	
 	}
 
+	bool isStarted() {
+		return m_started;
+	}
+
+	bool isLoaded() {
+		return m_loaded;
+	}
+	
 	ASErr handleMessage(char *caller, char *selector, void *message);
 
-	ASBoolean purge() {
+	bool purge() {
 		return false;
 	}
 

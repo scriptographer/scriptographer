@@ -164,7 +164,23 @@ ImportSuite startup[] = {
 	kAINotifierSuite, kAINotifierVersion, &sAINotifier, sizeof(AINotifierSuite),
 	kAIToolSuite, kAIToolVersion, &sAITool, sizeof(AIToolSuite),
 	kAIUserSuite, kAIUserSuiteVersion, &sAIUser, sizeof(AIUserSuite),
-	
+
+	// We need these previously post-startup suites now already, since the scripting engine is used	
+	// in pre startup to add toolbar buttons.
+	// Needed for fetching current document
+	kAIDocumentSuite, kAIDocumentSuiteVersion, &sAIDocument, sizeof(AIDocumentSuite),
+	// Needed to create global dictionary symbols
+	kAIDictionarySuite, kAIDictionaryVersion, &sAIDictionary, sizeof(AIDictionarySuite),
+	// Needed to get version numbers
+	kAIRuntimeSuite, kAIRuntimeVersion, &sAIRuntime, sizeof(AIRuntimeSuite),
+	// Needed to install menus
+	kAIMenuSuite, kAIMenuVersion, &sAIMenu, sizeof(AIMenuSuite),
+#if kPluginInterfaceVersion >= kAI12
+	// Needed for string conversion by various underlying method calls
+	kAIUnicodeStringSuite, kAIUnicodeStringSuiteVersion, &sAIUnicodeString, sizeof(AIUnicodeStringSuite),
+#endif
+
+	// Load adm on startup
 	kADMBasicSuite, _kADMBasicSuiteVersion, &sADMBasic, sizeof(_ADMBasicSuite),
 	kADMDialogSuite, _kADMDialogSuiteVersion, &sADMDialog, sizeof(_ADMDialogSuite),
 	kADMItemSuite, _kADMItemSuiteVersion, &sADMItem, sizeof(_ADMItemSuite),
@@ -196,10 +212,8 @@ ImportSuite postStartup[] = {
 	kAIColorConversionSuite, kAIColorConversionVersion, &sAIColorConversion, sizeof(AIColorConversionSuite),
 	kAIOverrideColorConversionSuite, kAIOverrideColorConversionVersion, &sAIOverrideColorConversion, sizeof(AIOverrideColorConversionSuite),
 	kAICursorSnapSuite, kAICursorSnapSuiteVersion, &sAICursorSnap, sizeof(AICursorSnapSuite),
-	kAIDictionarySuite, kAIDictionaryVersion, &sAIDictionary, sizeof(AIDictionarySuite),
 	kAIDictionaryIteratorSuite, kAIDictionaryIteratorVersion, &sAIDictionaryIterator, sizeof(AIDictionaryIteratorSuite),
 	kAICursorSnapSuite, kAICursorSnapSuiteVersion, &sAICursorSnap, sizeof(AICursorSnapSuite),
-	kAIDocumentSuite, kAIDocumentSuiteVersion, &sAIDocument, sizeof(AIDocumentSuite),
 	kAIDocumentListSuite, kAIDocumentListSuiteVersion, &sAIDocumentList, sizeof(AIDocumentListSuite),
 	kAIDocumentViewSuite, kAIDocumentViewSuiteVersion, &sAIDocumentView, sizeof(AIDocumentViewSuite),
 	kAIEntrySuite, kAIEntryVersion, &sAIEntry, sizeof(AIEntrySuite),
@@ -216,7 +230,6 @@ ImportSuite postStartup[] = {
 	kAILiveEffectSuite, kAILiveEffectVersion, &sAILiveEffect, sizeof(AILiveEffectSuite),
 	kAIMatchingArtSuite, kAIMatchingArtVersion, &sAIMatchingArt, sizeof(AIMatchingArtSuite),
 	kAIMeshSuite, kAIMeshVersion, &sAIMesh, sizeof(AIMeshSuite),
-	kAIMenuSuite, kAIMenuVersion, &sAIMenu, sizeof(AIMenuSuite),
 	kAIPaintStyleSuite, kAIPaintStyleSuiteVersion, &sAIPaintStyle, sizeof(AIPaintStyleSuite),
 	kAIPathConstructionSuite, kAIPathConstructionSuiteVersion, &sAIPathConstruction, sizeof(AIPathConstructionSuite),
 	kAIPathfinderSuite, kAIPathfinderSuiteVersion, &sAIPathfinder, sizeof(AIPathfinderSuite),
@@ -231,7 +244,6 @@ ImportSuite postStartup[] = {
 	kAIRasterizeSuite, kAIRasterizeSuiteVersion, &sAIRasterize, sizeof(AIRasterizeSuite),
 	kAIRealBezierSuite, kAIRealBezierSuiteVersion, &sAIRealBezier, sizeof(AIRealBezierSuite),
 	kAIRealMathSuite, kAIRealMathVersion, &sAIRealMath, sizeof(AIRealMathSuite),
-	kAIRuntimeSuite, kAIRuntimeVersion, &sAIRuntime, sizeof(AIRuntimeSuite),
 	kAIShapeConstructionSuite, kAIShapeConstructionSuiteVersion, &sAIShapeConstruction, sizeof(AIShapeConstructionSuite),
 	kAISwatchListSuite, kAISwatchListSuiteVersion, &sAISwatchList, sizeof(AISwatchListSuite),
 	kAISymbolSuite, kAISymbolSuiteVersion, &sAISymbol, sizeof(AISymbolSuite),
@@ -337,7 +349,6 @@ ImportSuite postStartup[] = {
 	
 #if kPluginInterfaceVersion >= kAI12
 	kAIFilePathSuite, kAIFilePathSuiteVersion, &sAIFilePath, sizeof(AIFilePathSuite),
-	kAIUnicodeStringSuite, kAIUnicodeStringSuiteVersion, &sAIUnicodeString, sizeof(AIUnicodeStringSuite),
 	kAITracingSuite, kAITracingSuiteVersion, &sAITracing, sizeof(AITracingSuite),
 	kAITracingIPSuite, kAITracingIPSuiteVersion, &sAITracingIP, sizeof(AITracingIPSuite),
 #endif

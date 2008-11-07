@@ -55,6 +55,7 @@ ScriptographerPlugin::ScriptographerPlugin(SPMessageData *messageData) {
 	m_selectionChangedNotifier = NULL;
 	m_engine = NULL;
 	m_loaded = false;
+	m_started = false;
 	gPlugin = this;
 #ifdef LOGFILE
 	m_logFile = NULL;
@@ -70,50 +71,6 @@ ScriptographerPlugin::~ScriptographerPlugin() {
 }
 
 // ScriptographerPlugin:
-
-ASErr ScriptographerPlugin::createTool(int index, char *title, int iconID, int cursorID, long options, char *sameGroupTool, char *sameToolsetTool) {
-	Tool *tool = &m_tools[index];
-
-	AIAddToolData data;
-	
-	data.title = title;
-	data.tooltip = title;
-	
-	data.icon = sADMIcon->GetFromResource(m_pluginRef, NULL, iconID, 0);
-	if (data.icon == NULL || sADMIcon->GetType(data.icon) == kUnknown)
-		throw new ASErrException('!ico');
-
-	ASErr error;
-	
-	if (sameGroupTool != NULL) {
-		error = sAITool->GetToolNumberFromName(sameGroupTool, &data.sameGroupAs);
-		if (error) return error;
-	} else {
-		data.sameGroupAs = kNoTool;
-	}
-	
-	if (sameToolsetTool != NULL) {
-		error = sAITool->GetToolNumberFromName(sameToolsetTool, &data.sameToolsetAs);
-		if (error) return error;
-	} else {
-		data.sameToolsetAs = kNoTool;
-	}
-
-	error = sAITool->AddTool(m_pluginRef, title, &data, options, &tool->m_handle);
-	if (error) return error;
-
-	error = sAITool->SetToolOptions(tool->m_handle, options);
-	if (error) return error;
-	
-	tool->m_cursorID = cursorID;
-	
-	return kNoErr;
-}
-
-Tool *ScriptographerPlugin::getTools(int *count) {
-	*count = sizeof(m_tools) / sizeof(Tool);
-	return m_tools;
-}
 
 ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
 	// aquire only the basic suites that are needed here. the rest is acquired in postStartup.
@@ -140,14 +97,6 @@ ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
 		
 	error = sSPPlugins->SetPluginName(m_pluginRef, m_pluginName);
 	if (error) return error;
-
-	// add app started notifier
-	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Started", kAIApplicationStartedNotifier, &m_appStartedNotifier);
-	if (error) return error;
-
-	// add selection changed notifier
-	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Selection Changed", kAIArtSelectionChangedNotifier, &m_selectionChangedNotifier);
-	if (error) return error;
 	
 	try {
 		// try to create the Java Engine:
@@ -161,17 +110,19 @@ ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
 		return kCantHappenErr;
 	}
 
-	// add the two script tools:
-	char *title0 = "Scriptographer Tool 1";
-	char *title1 = "Scriptographer Tool 2";
-	error = createTool(0, title0, kTool1IconID, kTool1CursorID, kToolWantsToTrackCursorOption | kToolWantsBufferedDraggingOption);
-	if (error) return error;
-/*
-	error = createTool(1, title1, kTool2IconID, kTool2CursorID, kToolWantsToTrackCursorOption | kToolWantsBufferedDraggingOption, title0);
-	if (error) return error;
-*/
-	// make sure the plugin stays in ram all the time and postStartupPlugin gets actually called
+	// Make sure the plugin stays in ram all the time and postStartupPlugin gets actually called
 	sSPAccess->AcquirePlugin(m_pluginRef, &m_pluginAccess);
+	
+	// And finally initialize the engine:
+	m_engine->initEngine();
+	
+	// Add app started notifier
+	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Started", kAIApplicationStartedNotifier, &m_appStartedNotifier);
+	if (error) return error;
+	
+	// Add selection changed notifier
+	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Selection Changed", kAIArtSelectionChangedNotifier, &m_selectionChangedNotifier);
+	if (error) return error;
 
 	m_loaded = true;
 	
@@ -185,12 +136,11 @@ ASErr ScriptographerPlugin::postStartupPlugin() {
 	if (m_engine == NULL)
 		return kCantHappenErr;
 
-	// now accuire the rest of the suites:
+	// Now accuire the rest of the suites:
 	ASErr error = acquireSuites(&gPostStartupSuites);
 	if (error) return error;
-	
-	// and finally initialize the engine:
-	m_engine->initEngine();
+
+	m_started = true;
 
 	log("postStartupPlugin exit code: %x", error);
 

@@ -72,19 +72,162 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setEventInterval(JNIEnv *
 }
 
 /*
- * com.scriptographer.util.ReferenceMap nativeGetTools()
+ * java.util.ArrayList nativeGetTools()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Tool_nativeGetTools(JNIEnv *env, jclass cls) {
 	try {
-		jobject map = gEngine->newObject(env, gEngine->cls_IntMap, gEngine->cid_IntMap);
-		int count;
-		Tool *tools = gPlugin->getTools(&count);
-		for (int i = 0; i < count; i++) {
-			AIToolHandle handle = tools[i].m_handle;
-			jobject toolObj = gEngine->newObject(env, gEngine->cls_ai_Tool, gEngine->cid_ai_Tool, (jint) handle, i);
-			gEngine->callObjectMethod(env, map, gEngine->mid_IntMap_put, (jint) handle, toolObj);
+		if (gEngine != NULL) {
+			jobject array = gEngine->newObject(env, gEngine->cls_ArrayList, gEngine->cid_ArrayList);
+			long count;
+			sAITool->CountTools(&count);
+			SPPluginRef plugin = gPlugin->getPluginRef();
+			for (int i = 0; i < count; i++) {
+				AIToolHandle tool;
+				SPPluginRef toolPlugin;
+				if (!sAITool->GetNthTool(i, &tool) &&
+					!sAITool->GetToolPlugin(tool, &toolPlugin) &&
+					plugin == toolPlugin) {
+					char *name;
+					sAITool->GetToolName(tool, &name);
+					// Create the wrapper
+					jobject toolObj = gEngine->newObject(env, gEngine->cls_ai_Tool, gEngine->cid_ai_Tool, (jint) tool, gEngine->convertString(env, name));
+					// And add it to the array
+					gEngine->callObjectMethod(env, array, gEngine->mid_Collection_add, toolObj);
+				}
+			}
+			return array;
 		}
-		return map;
 	} EXCEPTION_CONVERT(env);
 	return NULL;
+}
+
+/*
+ * int nativeCreate(java.lang.String name, int groupTool, int toolsetTool)
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_nativeCreate(JNIEnv *env, jobject obj, jstring name, jint groupTool, jint toolsetTool) {
+	try {
+		if (gPlugin->isStarted())
+			throw new StringException("Tools can only be created on startup");
+
+		AIAddToolData data;
+		char *title = gEngine->convertString(env, name);
+		
+		data.title = title;
+		data.tooltip = title;
+		
+		data.icon = NULL;
+		
+		ASErr error = kNoErr;
+
+		// TODO: handle errors
+		if (groupTool != 0) {
+			error = sAITool->GetToolNumberFromHandle((AIToolHandle) groupTool, &data.sameGroupAs);
+//			if (error) return error;
+		} else {
+			data.sameGroupAs = kNoTool;
+		}
+
+		if (toolsetTool != 0) {
+			error = sAITool->GetToolNumberFromHandle((AIToolHandle) toolsetTool, &data.sameToolsetAs);
+//			if (error) return error;
+		} else {
+			data.sameToolsetAs = kNoTool;
+		}
+
+		AIToolHandle handle = NULL;
+		error = sAITool->AddTool(gPlugin->getPluginRef(), title, &data, 0, &handle);
+//		if (error) return error;
+
+		delete title;
+
+		return (jint) handle;
+	} EXCEPTION_CONVERT(env);
+	return 0;
+}
+
+/*
+ * int getOptions()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_getOptions(JNIEnv *env, jobject obj) {
+	try {
+		AIToolHandle tool = gEngine->getToolHandle(env, obj);
+		long options = 0;
+		sAITool->GetToolOptions(tool, &options);
+		return (jint) options;
+	} EXCEPTION_CONVERT(env);
+	return 0;
+}
+
+/*
+ * void setOptions(int options)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setOptions(JNIEnv *env, jobject obj, jint options) {
+	try {
+		AIToolHandle tool = gEngine->getToolHandle(env, obj);
+		sAITool->SetToolOptions(tool, options);
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * java.lang.String getTitle()
+ */
+JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Tool_getTitle(JNIEnv *env, jobject obj) {
+	try {
+		AIToolHandle tool = gEngine->getToolHandle(env, obj);
+		char *title;
+		sAITool->GetToolTitle(tool, &title);
+		return gEngine->convertString(env, title);
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
+
+/*
+ * void setTitle(java.lang.String title)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setTitle(JNIEnv *env, jobject obj, jstring title) {
+	try {
+		if (title != NULL) {
+			AIToolHandle tool = gEngine->getToolHandle(env, obj);
+			char *str = gEngine->convertString(env, title);
+			sAITool->SetToolTitle(tool, str);
+			delete str;
+		}
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * java.lang.String getTooltip()
+ */
+JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Tool_getTooltip(JNIEnv *env, jobject obj) {
+	try {
+		AIToolHandle tool = gEngine->getToolHandle(env, obj);
+		char *title;
+		sAITool->GetTooltip(tool, &title);
+		return gEngine->convertString(env, title);
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
+
+/*
+ * void setTooltip(java.lang.String text)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setTooltip(JNIEnv *env, jobject obj, jstring text) {
+	try {
+		if (text != NULL) {
+			AIToolHandle tool = gEngine->getToolHandle(env, obj);
+			char *str = gEngine->convertString(env, text);
+			sAITool->SetTooltip(tool, str);
+			delete str;
+		}
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * void nativeSetImage(int iconHandle)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_nativeSetImage(JNIEnv *env, jobject obj, jint iconHandle) {
+	try {
+		AIToolHandle tool = gEngine->getToolHandle(env, obj);
+		sAITool->SetToolIcon(tool, (ADMIconRef) iconHandle);
+	} EXCEPTION_CONVERT(env);
 }
