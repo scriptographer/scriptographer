@@ -26,6 +26,10 @@
  *
  * $Id$
  */
+var tool = new Tool("Scriptographer Tool") {
+	image: getImage('tool.png'),
+	tooltip: 'Hello World'
+};
 
 var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing', function() {
 	if (app.macintosh) {
@@ -340,12 +344,11 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	var toolButton = new ImageButton(this) {
 		image: getImage('tool.png'),
 		size: buttonSize,
-		toolIndex: 0,
 		entryImage: getImage('toolscript.png'),
 		onClick: function() {
 			var entry = scriptList.activeLeaf;
 			if (entry && entry.file) {
-				Tool.getTool(this.toolIndex).compileScript(entry.file);
+				tool.compileScript(entry.file);
 				if (entry.file != this.curFile) {
 					this.setCurrentImage(scriptImage);
 					entry.image = this.entryImage;
