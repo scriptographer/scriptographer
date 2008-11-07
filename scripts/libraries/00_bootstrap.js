@@ -1,41 +1,51 @@
 new function() { 
 	function inject(dest, src, base, generics) {
-		function field(name, generics) {
-			if (generics) generics[name] = function(bind) {
+		function field(name, val, generics) {
+			if (!val) {
+				var get = src.__lookupGetter__(name);
+				val = get ? { _get: get, _set: src.__lookupSetter__(name) } : src[name];
+			}
+			var type = typeof val, func = type == 'function', res = val, prev, beans;
+			if (generics && func) generics[name] = function(bind) {
 				return bind && dest[name].apply(bind,
 					Array.prototype.slice.call(arguments, 1));
 			}
-			var val = src[name], res = val, prev = dest[name];
 			if (val !== (src.__proto__ || Object.prototype)[name]) {
-				switch (typeof val) {
-					case 'function':
-						var match;
-						if (match = name.match(/(.*)_(g|s)et$/)) {
-							dest['__define' + match[2].toUpperCase() + 'etter__'](match[1], val);
-							return;
-						}
-						if (/\[native code/.test(val))
-							return;
-						if (prev && /\bthis\.base\b/.test(val)) {
-							var fromBase = base && base[name] == prev;
-							res = (function() {
-								var tmp = this.base;
-								this.base = fromBase ? base[name] : prev;
-								try { return val.apply(this, arguments); }
-								finally { this.base = tmp; }
-							}).pretend(val);
-						}
-						break;
+				if (func) {
+					if (/\[native code/.test(val))
+						return;
+					if ((prev = dest[name]) && /\bthis\.base\b/.test(val)) {
+						var fromBase = base && base[name] == prev;
+						res = (function() {
+							var tmp = this.base;
+							this.base = fromBase ? base[name] : prev;
+							this.dontEnum('base');
+							try { return val.apply(this, arguments); }
+							finally { this.base = tmp; }
+						}).pretend(val);
+					}
+					if (src._beans && (bean = name.match(/^(get|is)(([A-Z])(.*))$/)))
+						field(bean[3].toLowerCase() + bean[4], {
+							_get: src['get' + bean[2]] || src['is' + bean[2]],
+							_set: src['set' + bean[2]]
+						});
 				}
-				dest[name] = res;
+				if (type == 'object' && (val._get || val._set)) {
+					if (val._get)
+						dest.__defineGetter__(name, val._get);
+					if (val._set)
+						dest.__defineSetter__(name, val._set);
+				} else {
+					dest[name] = res;
+				}
 				if (src._hide && dest.dontEnum)
 					dest.dontEnum(name);
 			}
 		}
 		if (src) {
 			for (var name in src)
-				if (!/^(prototype|constructor|toString|valueOf|statics|_generics|_hide)$/.test(name))
-					field(name, generics);
+				if (!/^(prototype|constructor|toString|valueOf|statics|_generics|_beans|_hide)$/.test(name))
+					field(name, null, generics);
 			field('toString');
 			field('valueOf');
 		}
@@ -101,26 +111,32 @@ new function() {
 		extend: function() {
 			var res = new (extend(this));
 			return res.inject.apply(res, arguments);
+		},
+
+		statics: {
+			has: visible
 		}
 	});
+
 }
 
 Function.inject(new function() {
 
 	return {
+		_beans: true,
 		_generics: true,
 
-		name: function() {
+		getName: function() {
 			var match = this.toString().match(/^\s*function\s*(\w*)/);
 			return match && match[1];
 		},
 
-		parameters: function() {
+		getParameters: function() {
 			var str = this.toString().match(/^\s*function[^\(]*\(([^\)]*)/)[1];
 			return str ? str.split(/\s*,\s*/) : [];
 		},
 
-		body: function() {
+		getBody: function() {
 			return this.toString().match(/^\s*function[^\{]*\{([\u0000-\uffff]*)\}\s*$/)[1];
 		},
 
@@ -168,6 +184,7 @@ Enumerable = new function() {
 
 	return {
 		_hide: true,
+		_beans: true,
 		_generics: true,
 
 		each: Base.iterate(function(iter, bind) {
@@ -311,6 +328,7 @@ $type = Base.type;
 
 Hash = Base.extend(Enumerable, {
 	_hide: true,
+	_beans: true,
 	_generics: true,
 
 	initialize: function() {
@@ -326,19 +344,19 @@ Hash = Base.extend(Enumerable, {
 		}, this);
 	},
 
-	keys: function() {
+	getKeys: function() {
 		return this.map(function(val, key) {
 			return key;
 		});
 	},
 
-	length: function() {
-		return this.each(function() {
-			this.length++;
-		}, { length: 0 }).length;
-	},
+	getValues: Enumerable.toArray,
 
-	values: Enumerable.toArray,
+	getSize: function() {
+		return this.each(function() {
+			this.size++;
+		}, { size: 0 }).size;
+	},
 
 	statics: {
 		create: function(obj) {
@@ -438,11 +456,11 @@ Array.inject(new function() {
 			this.length = 0;
 		},
 
-		first: function() {
+		getFirst: function() {
 			return this[0];
 		},
 
-		last: function() {
+		getLast: function() {
 			return this[this.length - 1];
 		},
 
@@ -560,6 +578,7 @@ Array.inject(new function() {
 $A = Array.create;
 
 String.inject({
+	_beans: true,
 	_type: 'string',
 
 	test: function(exp, param) {
@@ -579,20 +598,20 @@ String.inject({
 	},
 
 	camelize: function(separator) {
-		return this.replace(new RegExp(separator || '-', 'g'), function(match) {
+		return this.replace(new RegExp(separator || '\s-', 'g'), function(match) {
 			return match.charAt(1).toUpperCase();
 		});
 	},
 
 	uncamelize: function(separator) {
-		separator = separator || '-';
-		return this.replace(/[a-zA-Z][A-Z0-9]|[0-9][a-zA-Z]/g, function(match) {
-			return match.charAt(0) + separator + match.charAt(1);
+		separator = separator || ' ';
+		return this.replace(/[a-z][A-Z0-9]|[0-9][a-zA-Z]|[A-Z]{2}[a-z]/g, function(match) {
+			return match.charAt(0) + separator + match.substring(1);
 		});
 	},
 
 	hyphenate: function(separator) {
-		return this.uncamelize(separator).toLowerCase();
+		return this.uncamelize(separator || '-').toLowerCase();
 	},
 
 	capitalize: function() {
