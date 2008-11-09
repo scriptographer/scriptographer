@@ -102,9 +102,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Tool_nativeGetTools(JNIEnv 
 }
 
 /*
- * int nativeCreate(java.lang.String name, int groupTool, int toolsetTool)
+ * int nativeCreate(java.lang.String name, int options, int groupTool, int toolsetTool)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_nativeCreate(JNIEnv *env, jobject obj, jstring name, jint groupTool, jint toolsetTool) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_nativeCreate(JNIEnv *env, jobject obj, jstring name, jint options, jint groupTool, jint toolsetTool) {
 	try {
 		if (gPlugin->isStarted())
 			throw new StringException("Tools can only be created on startup");
@@ -135,7 +135,10 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_nativeCreate(JNIEnv *env,
 		}
 
 		AIToolHandle handle = NULL;
-		error = sAITool->AddTool(gPlugin->getPluginRef(), title, &data, 0, &handle);
+		// Always set kToolWantsToTrackCursorOption option on creation of the tool,
+		// since setting that option after seems to have no effect and we need cursor updates.
+		// TODO: Find out if this is true for all options, in which case remove get / setOptions for later modification.
+		error = sAITool->AddTool(gPlugin->getPluginRef(), title, &data, options | kToolWantsToTrackCursorOption, &handle);
 //		if (error) return error;
 
 		delete title;

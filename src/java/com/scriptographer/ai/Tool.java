@@ -99,7 +99,7 @@ public class Tool extends NativeObject {
 
 	private String name;
 
-	public Tool(String name, Tool groupTool, Tool toolsetTool) {
+	public Tool(String name, int options, Tool groupTool, Tool toolsetTool) {
 		this.name = name;
 
 		ArrayList<Tool> unusedTools = getUnusedTools();
@@ -117,6 +117,7 @@ public class Tool extends NativeObject {
 		} else {
 			// No previously existing effect found, create a new one:
 			handle = nativeCreate(name,
+					options,
 					groupTool != null ? groupTool.handle : 0,
 					toolsetTool != null ? toolsetTool.handle : 0);
 		}
@@ -127,19 +128,23 @@ public class Tool extends NativeObject {
 		tools.put(handle, this);
 	}
 
-	public Tool(String name, Tool groupTool) {
-		this(name, groupTool, null);
+	public Tool(String name, int options, Tool groupTool) {
+		this(name, options, groupTool, null);
+	}
+
+	public Tool(String name, int options) {
+		this(name, options, null, null);
 	}
 
 	public Tool(String name) {
-		this(name, null, null);
+		this(name, 0, null, null);
 	}
 
 	/**
 	 * @param title
 	 * @return
 	 */
-	private native int nativeCreate(String name, int groupHandle, int toolsetHandle);
+	private native int nativeCreate(String name, int options, int groupHandle, int toolsetHandle);
 
 	protected Tool(int handle, String name) {
 		super(handle);
