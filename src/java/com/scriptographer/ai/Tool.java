@@ -51,7 +51,10 @@ import java.util.HashMap;
 public class Tool extends NativeObject {
 	// AIToolOptions
 	public static final int
-		OPTION_TRACK_CURSOR = 1 << 0,
+/*
+ *	This option is always on, since we're changing cursors
+ * 		OPTION_TRACK_CURSOR = 1 << 0,
+ */
 /** Set to disable automatic scrolling. When off (the default), the Illustrator window
 	scrolls when a tool reaches the edge. For tools that manipulate artwork,
 	autoscroll is useful. Set this to turn autoscroll off for a tool that
