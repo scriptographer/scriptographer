@@ -324,6 +324,9 @@ extern "C" _ADMListEntrySuite				*sADMListEntry;
 extern "C" _ADMTrackerSuite					*sADMTracker;
 extern "C" _ADMDrawerSuite					*sADMDrawer;
 
+#ifdef MAC_ENV
+extern "C" ADMMacHostSuite					*sADMMacHost;
+#endif
 #ifdef WIN_ENV
 extern "C" ADMWinHostSuite					*sADMWinHost;
 #endif

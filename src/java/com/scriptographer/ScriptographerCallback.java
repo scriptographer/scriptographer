@@ -44,4 +44,8 @@ public interface ScriptographerCallback {
 	 * To display the about dialog.
 	 */
 	void onAbout();
+
+	void onActivate();
+
+	void onDeactivate();
 }

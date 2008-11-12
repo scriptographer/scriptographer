@@ -348,6 +348,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		onClick: function() {
 			var entry = scriptList.activeLeaf;
 			if (entry && entry.file) {
+				tool.tooltip = entry.file.name;
 				tool.compileScript(entry.file);
 				if (entry.file != this.curFile) {
 					this.setCurrentImage(scriptImage);

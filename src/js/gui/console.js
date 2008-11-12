@@ -162,5 +162,11 @@ ScriptographerEngine.setCallback(new ScriptographerCallback() {
 
 	onAbout: function() {
 		aboutDialog.doModal();
+	},
+
+	onActivate: function() {
+	},
+
+	onDeactivate: function() {
 	}
 });

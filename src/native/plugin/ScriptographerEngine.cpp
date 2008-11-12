@@ -400,7 +400,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ScriptographerEngine_init = getStaticMethodID(env, cls_ScriptographerEngine, "init", "(Ljava/lang/String;)V");
 	mid_ScriptographerEngine_destroy = getStaticMethodID(env, cls_ScriptographerEngine, "destroy", "()V");
 	mid_ScriptographerEngine_reportError = getStaticMethodID(env, cls_ScriptographerEngine, "reportError", "(Ljava/lang/Throwable;)V");
-	mid_ScriptographerEngine_onAbout = getStaticMethodID(env, cls_ScriptographerEngine, "onAbout", "()V");
+	mid_ScriptographerEngine_onHandleEvent = getStaticMethodID(env, cls_ScriptographerEngine, "onHandleEvent", "(I)V");
 
 	cls_ScriptographerException = loadClass(env, "com/scriptographer/ScriptographerException");
 
@@ -1732,10 +1732,10 @@ void ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 	} EXCEPTION_CATCH_REPORT(env);
 }
 
-ASErr ScriptographerEngine::displayAbout() {
+ASErr ScriptographerEngine::onHandleEvent(int event) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_onAbout);
+		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_onHandleEvent, event);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -1763,7 +1763,7 @@ int ScriptographerEngine::getADMListHandle(JNIEnv *env, jobject obj, const char 
 		return NULL;
 	JNI_CHECK_ENV
 	int handle = getIntField(env, obj, fid_adm_ListItem_listHandle);
-	if (handle == NULL)
+	if (!handle)
 		throw new StringException("Object is not wrapping a %s.", name);
 	return handle;
 }

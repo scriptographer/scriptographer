@@ -32,6 +32,7 @@
 #include "ScriptographerEngine.h"
 #include "resourceIds.h"
 #include "AppContext.h"
+#include "com_scriptographer_ScriptographerEngine.h"
 
 ScriptographerPlugin *gPlugin = NULL;
 
@@ -70,12 +71,37 @@ ScriptographerPlugin::~ScriptographerPlugin() {
 #endif
 }
 
+#ifdef MAC_ENV
+OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef ref, EventRef event, void* userData) {
+	int type = -1;
+	switch(GetEventKind(event)) {
+		case kEventAppActivated:
+			type = com_scriptographer_ScriptographerEngine_EVENT_APP_ACTIVATED;
+			break;
+		case kEventAppDeactivated:
+			type = com_scriptographer_ScriptographerEngine_EVENT_APP_DEACTIVATED;
+			break;
+	}
+	return type != -1 ? gEngine->onHandleEvent(type) : kNoErr;
+}
+#endif
+
 // ScriptographerPlugin:
 
 ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
 	// aquire only the basic suites that are needed here. the rest is acquired in postStartup.
 	ASErr error = acquireSuites(&gStartupSuites);
 	if (error) return error;
+
+#ifdef MAC_ENV
+	static EventTypeSpec events[] = {
+		{ kEventClassApplication, kEventAppActivated },
+		{ kEventClassApplication, kEventAppDeactivated }
+	};
+	
+	error = InstallApplicationEventHandler(NewEventHandlerUPP(appEventHandler), sizeof(events) / sizeof(EventTypeSpec), events, this, NULL);
+	if (error) return error;
+#endif
 	
 	// determine baseDirectory from plugin location:
 	char homeDir[kMaxPathLength];
@@ -341,7 +367,7 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		}
 	} else if (sSPBasic->IsEqual(caller, kSPInterfaceCaller))  {	
 		if (sSPBasic->IsEqual(selector, kSPInterfaceAboutSelector)) {
-			error = gEngine->displayAbout();
+			error = gEngine->onHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_APP_ABOUT);
 		} else if (sSPBasic->IsEqual(selector, kSPInterfaceStartupSelector)) {
 			error = startupPlugin(static_cast<SPInterfaceMessage *>(message));
 		} else if (sSPBasic->IsEqual(selector, kSPInterfaceShutdownSelector)) {
@@ -700,4 +726,3 @@ DLLExport SPAPI int main(char *caller, char *selector, void *message) {
 	
 	return error;
 }
-

@@ -138,7 +138,7 @@ public:
 	jmethodID mid_ScriptographerEngine_init;
 	jmethodID mid_ScriptographerEngine_destroy;
 	jmethodID mid_ScriptographerEngine_reportError;
-	jmethodID mid_ScriptographerEngine_onAbout;
+	jmethodID mid_ScriptographerEngine_onHandleEvent;
 
 	jclass cls_ScriptographerException;
 
@@ -594,7 +594,7 @@ public:
 	bool callOnTrack(jobject handler, ADMTrackerRef tracker);
 	void callOnDraw(jobject handler, ADMDrawerRef drawer);
 
-	ASErr displayAbout();
+	ASErr onHandleEvent(int type);
 
 	// ADM Handles
 	int getADMObjectHandle(JNIEnv *env, jobject obj, const char *name);

@@ -108,6 +108,10 @@ public:
 	bool pathToFileSpec(const char *path, SPPlatformFileSpecification *fileSpec);
 	void setCursor(int cursorID);
 
+#ifdef MAC_ENV
+	static OSStatus appEventHandler(EventHandlerCallRef ref, EventRef event, void* userData);
+#endif
+
 	ASErr startupPlugin(SPInterfaceMessage *message); 
 	ASErr shutdownPlugin(SPInterfaceMessage *message); 
 	ASErr unloadPlugin(SPInterfaceMessage *message);

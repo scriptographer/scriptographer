@@ -229,15 +229,11 @@ public class ScriptographerEngine {
 
 	public static native String nativeReload();
 
-	static ScriptographerCallback callback;
+	static ScriptographerCallback callback = null;
 
-	public static void setCallback(ScriptographerCallback cback) {
-		callback = cback;
-		ConsoleOutputStream.setCallback(cback);
-	}
-
-	public static void onAbout() {
-		callback.onAbout();
+	public static void setCallback(ScriptographerCallback cb) {
+		callback = cb;
+		ConsoleOutputStream.setCallback(cb);
 	}
 	
 	private static boolean executing = false;
@@ -547,6 +543,31 @@ public class ScriptographerEngine {
 		if (lines != null) {
 			version = lines[0];
 			revision = Integer.parseInt(lines[1]);
+		}
+	}
+
+	/**
+	 * To be called from the native environment.
+	 */
+
+	private static final int EVENT_APP_ACTIVATED = 0;
+	private static final int EVENT_APP_DEACTIVATED = 1;
+	private static final int EVENT_APP_ABOUT = 2;
+
+	@SuppressWarnings("unused")
+	private static void onHandleEvent(int type) throws Exception {
+		if (callback != null) {
+			switch (type) {
+			case EVENT_APP_ABOUT:
+				callback.onAbout();
+				break;
+			case EVENT_APP_ACTIVATED:
+				callback.onActivate();
+				break;
+			case EVENT_APP_DEACTIVATED:
+				callback.onDeactivate();
+				break;
+			}
 		}
 	}
 }
