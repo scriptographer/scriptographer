@@ -80,7 +80,7 @@ public class PatternColor extends Color {
 			Point scaleFactor, float rotationAngle, boolean reflect,
 			float reflectAngle, float shearAngle, float shearAxis,
 			Matrix matrix) {
-		// use the above constructor, but copy origin and matrix
+		// Use the above constructor, but copy origin and matrix
 		// let's not care about the call to wrapHandle above,
 		// as this is not used often
 		this(pattern.handle, shiftDistance, shiftAngle, new Point(scaleFactor),

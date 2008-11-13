@@ -152,6 +152,9 @@ public class Application {
 
 	private static Application application = null;
 
+	/**
+	 * @jshide
+	 */
 	public static Application getInstance() {
 		if (application == null)
 			application = new Application();

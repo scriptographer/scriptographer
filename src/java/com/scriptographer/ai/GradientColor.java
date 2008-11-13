@@ -39,6 +39,13 @@ public class GradientColor extends Color {
 	Point origin;
 	float angle;
 	float length;
+	/*
+	 * The accumulated transformations of the gradient. It is not necessarily the same
+	 * as the transformation matrix of the object containing the gradient.
+	 * When a gradient is first applied to an object, the value is set to the
+	 * identity matrix. When the user transforms the object, the user
+	 * transformation matrix is concatenated to the gradient instance’s matrix.
+	 */
 	Matrix matrix;
 	float hiliteAngle;
 	float hiliteLength;
@@ -66,7 +73,7 @@ public class GradientColor extends Color {
 		this(gradient.handle, new Point(origin), angle, length,
 			new Matrix(matrix), hiliteAngle, hiliteLength);
 	}
-	
+
 	/**
 	 * called from the native environment, to fill a native struct
 	 * @param struct
