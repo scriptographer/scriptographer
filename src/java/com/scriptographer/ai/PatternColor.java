@@ -35,57 +35,21 @@ package com.scriptographer.ai;
  * @author lehni
  */
 public class PatternColor extends Color {
-	/** Reference to the AIPattern which describes instance independent
-	parameters for the paint (the prototype artwork). */
 	Pattern pattern;
-	/** Distance to translate the [unscaled] prototype before filling */
-	float shiftDistance;
-	/** Angle to translate the [unscaled] prototype before filling */
-	float shiftAngle;
-	/** Fraction to scale the prototype before filling */
-	Point scaleFactor;
-	/** Angle to rotate the prototype before filling */
-	float rotationAngle;
-	/** Whether or not the prototype is reflected before filling */
-	boolean reflect;
-	/** Axis around which to reflect */
-	float reflectAngle;
-	/** Angle to slant the shear by */
-	float shearAngle;
-	/** Axis to shear with respect to */
-	float shearAxis;
-	/** Additional transformation arising from manipulating the path */
 	Matrix matrix;
+
 	/**
 	 * Called from the native environment
 	 */
-	protected PatternColor(int patternHandle, float shiftDistance,
-			float shiftAngle, Point scaleFactor, float rotationAngle,
-			boolean reflect, float reflectAngle, float shearAngle,
-			float shearAxis, Matrix matrix) {
+	protected PatternColor(int patternHandle, Matrix matrix) {
 		// do not use constructor bellow as we do not need to copy origin and matrix here
 		this.pattern = Pattern.wrapHandle(patternHandle, null);
-		this.shiftDistance = shiftDistance;
-		this.shiftAngle = shiftAngle;
-		this.scaleFactor = scaleFactor;
-		this.rotationAngle = rotationAngle;
-		this.reflect = reflect;
-		this.reflectAngle = reflectAngle;
-		this.shearAngle = shearAngle;
-		this.shearAxis = shearAxis;
 		this.matrix = matrix;
 	}
 	
-	public PatternColor(Pattern pattern, float shiftDistance, float shiftAngle,
-			Point scaleFactor, float rotationAngle, boolean reflect,
-			float reflectAngle, float shearAngle, float shearAxis,
-			Matrix matrix) {
-		// Use the above constructor, but copy origin and matrix
-		// let's not care about the call to wrapHandle above,
-		// as this is not used often
-		this(pattern.handle, shiftDistance, shiftAngle, new Point(scaleFactor),
-			rotationAngle, reflect, reflectAngle, shearAngle, shearAxis,
-			new Matrix(matrix));
+	public PatternColor(Pattern pattern, Matrix matrix) {
+		this.pattern = pattern;
+		this.matrix = new Matrix(matrix);
 	}
 	
 	/**
@@ -93,9 +57,7 @@ public class PatternColor extends Color {
 	 * @param struct
 	 */
 	protected void set(int pointer) {
-		nativeSetPattern(pointer, pattern.handle, shiftDistance, shiftAngle,
-				scaleFactor, rotationAngle, reflect, reflectAngle, shearAngle,
-				shearAxis, matrix);
+		nativeSetPattern(pointer, pattern.handle, matrix);
 	}
 
 	public boolean equals(Object obj) {
@@ -115,14 +77,6 @@ public class PatternColor extends Color {
 		throw new UnsupportedOperationException("Cannot set alpha on pattern");
 	}
 
-	public Matrix getMatrix() {
-		return matrix;
-	}
-
-	public void setMatrix(Matrix matrix) {
-		this.matrix = new Matrix(matrix);
-	}
-
 	public Pattern getPattern() {
 		return pattern;
 	}
@@ -131,68 +85,11 @@ public class PatternColor extends Color {
 		this.pattern = pattern;
 	}
 
-	public boolean isReflect() {
-		return reflect;
+	public Matrix getMatrix() {
+		return matrix;
 	}
 
-	public void setReflect(boolean reflect) {
-		this.reflect = reflect;
+	public void setMatrix(Matrix matrix) {
+		this.matrix = new Matrix(matrix);
 	}
-
-	public float getReflectAngle() {
-		return reflectAngle;
-	}
-
-	public void setReflectAngle(float reflectAngle) {
-		this.reflectAngle = reflectAngle;
-	}
-
-	public float getRotationAngle() {
-		return rotationAngle;
-	}
-
-	public void setRotationAngle(float rotationAngle) {
-		this.rotationAngle = rotationAngle;
-	}
-
-	public Point getScaleFactor() {
-		return scaleFactor;
-	}
-
-	public void setScaleFactor(Point scaleFactor) {
-		this.scaleFactor = new Point(scaleFactor);
-	}
-
-	public float getShearAngle() {
-		return shearAngle;
-	}
-
-	public void setShearAngle(float shearAngle) {
-		this.shearAngle = shearAngle;
-	}
-
-	public float getShearAxis() {
-		return shearAxis;
-	}
-
-	public void setShearAxis(float shearAxis) {
-		this.shearAxis = shearAxis;
-	}
-
-	public float getShiftAngle() {
-		return shiftAngle;
-	}
-
-	public void setShiftAngle(float shiftAngle) {
-		this.shiftAngle = shiftAngle;
-	}
-
-	public float getShiftDistance() {
-		return shiftDistance;
-	}
-
-	public void setShiftDistance(float shiftDistance) {
-		this.shiftDistance = shiftDistance;
-	}
-
 }

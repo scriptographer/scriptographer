@@ -469,7 +469,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_GradientColor_set = getMethodID(env, cls_ai_GradientColor, "set", "(I)V");
 
 	cls_ai_PatternColor = loadClass(env, "com/scriptographer/ai/PatternColor");
-	cid_ai_PatternColor = getConstructorID(env, cls_ai_PatternColor, "(IFFLcom/scriptographer/ai/Point;FZFFFLcom/scriptographer/ai/Matrix;)V");
+	cid_ai_PatternColor = getConstructorID(env, cls_ai_PatternColor, "(ILcom/scriptographer/ai/Matrix;)V");
 	mid_ai_PatternColor_set = getMethodID(env, cls_ai_PatternColor, "set", "(I)V");
 	
 	cls_ai_Item = loadClass(env, "com/scriptographer/ai/Item");
@@ -933,12 +933,20 @@ jobject ScriptographerEngine::convertColor(JNIEnv *env, AIColor *srcCol, AIReal 
 		}
 		case kPattern: {
 			AIPatternStyle *p = &srcCol->c.p;
+			// TODO: These values always seem to be the same, so we do not need to expose them 
+			// and can only use the Matrix instead. This check here is just there to see if it 
+			// can happen that they contain something else, in which case they would need to
+			// be added to the matrix.
+			if (p->shiftDist != 0 || p->shiftAngle != 0 || p->scale.h != 100 || p->scale.v != 100 || p->rotate != 0
+				|| p->reflect || p->reflectAngle != 0 || p->shearAngle != 0 || p->shearAxis != 0) {
+				throw new StringException("Pattern contains old-style transform definition.\n\
+					Please store file and send to sg@scriptographer.com along with these values:\n\
+					%f %f %f %f %f %i %f %f %f",
+					p->shiftDist, p->shiftAngle, p->scale.h, p->scale.v, p->rotate,
+					p->reflect, p->reflectAngle, p->shearAngle, p->shearAxis);
+			}
 			return newObject(env, cls_ai_PatternColor, cid_ai_PatternColor,
-				 (jint) p->pattern, (jfloat) p->shiftDist, (jfloat) p->shiftAngle,
-				 gEngine->convertPoint(env, &p->scale), (jfloat) p->rotate,
-				 (jboolean) p->reflect, (jfloat) p->reflectAngle,
-				 (jfloat) p->shearAngle, (jfloat) p->shearAxis, 
-				 gEngine->convertMatrix(env, &p->transform));
+				 (jint) p->pattern, gEngine->convertMatrix(env, &p->transform));
 		}
 		case kNoneColor: {
 			return obj_ai_Color_NONE;
