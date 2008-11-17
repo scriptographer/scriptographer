@@ -127,11 +127,11 @@ public abstract class Color {
 	 * Used in GradientColor, but here to reduce amount of native cpp files
 	 */
 	protected static native void nativeSetGradient(int pointer, int gradientHandle,
-		Point origin, float angle, float length, Matrix matrix,
-		float hiliteAngle, float hiliteLength);
+			Point origin, double angle, double length, Matrix matrix,
+			double hiliteAngle, double hiliteLength);
 	
 	protected static native void nativeSetPattern(int pointer, int patternHandle,
-		float shiftDistance, float shiftAngle, Point scaleFactor,
-		float rotationAngle, boolean reflect, float reflectAngle,
-		float shearAngle, float shearAxis, Matrix matrix);
+			double shiftDistance, double shiftAngle, Point scaleFactor,
+			double rotationAngle, boolean reflect, double reflectAngle,
+			double shearAngle, double shearAxis, Matrix matrix);
 }

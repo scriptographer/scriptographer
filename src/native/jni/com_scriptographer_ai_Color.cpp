@@ -90,9 +90,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Color_nativeGetProfile(JNIE
 }
 
 /*
- * void nativeSetGradient(int pointer, int gradientHandle, com.scriptographer.ai.Point origin, float angle, float length, com.scriptographer.ai.Matrix matrix, float hiliteAngle, float hiliteLength)
+ * void nativeSetGradient(int pointer, int gradientHandle, com.scriptographer.ai.Point origin, double angle, double length, com.scriptographer.ai.Matrix matrix, double hiliteAngle, double hiliteLength)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Color_nativeSetGradient(JNIEnv *env, jclass cls, jint pointer, jint gradientHandle, jobject origin, jfloat angle, jfloat length, jobject matrix, jfloat hiliteAngle, jfloat hiliteLength) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Color_nativeSetGradient(JNIEnv *env, jclass cls, jint pointer, jint gradientHandle, jobject origin, jdouble angle, jdouble length, jobject matrix, jdouble hiliteAngle, jdouble hiliteLength) {
 	try {
 		AIGradientStyle *style = (AIGradientStyle *) pointer;
 		style->gradient = (AIGradientHandle) gradientHandle;
@@ -106,9 +106,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Color_nativeSetGradient(JNIEnv
 }
 
 /*
- * void nativeSetPattern(int pointer, int patternHandle, float shiftDistance, float shiftAngle, com.scriptographer.ai.Point scaleFactor, float rotationAngle, boolean reflect, float reflectAngle, float shearAngle, float shearAxis, com.scriptographer.ai.Matrix matrix)
+ * void nativeSetPattern(int pointer, int patternHandle, double shiftDistance, double shiftAngle, com.scriptographer.ai.Point scaleFactor, double rotationAngle, boolean reflect, double reflectAngle, double shearAngle, double shearAxis, com.scriptographer.ai.Matrix matrix)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Color_nativeSetPattern(JNIEnv *env, jclass cls, jint pointer, jint patternHandle, jfloat shiftDistance, jfloat shiftAngle, jobject scaleFactor, jfloat rotationAngle, jboolean reflect, jfloat reflectAngle, jfloat shearAngle, jfloat shearAxis, jobject matrix) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Color_nativeSetPattern(JNIEnv *env, jclass cls, jint pointer, jint patternHandle, jdouble shiftDistance, jdouble shiftAngle, jobject scaleFactor, jdouble rotationAngle, jboolean reflect, jdouble reflectAngle, jdouble shearAngle, jdouble shearAxis, jobject matrix) {
 	try {
 		AIPatternStyle *style = (AIPatternStyle *) pointer;
 		style->pattern = (AIPatternHandle) patternHandle;
