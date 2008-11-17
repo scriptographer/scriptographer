@@ -1049,8 +1049,10 @@ public abstract class Item extends DocumentObject {
 
 	public void setData(Map<String, Object> map) {
 		Dictionary data = getData();
-		data.clear();
-		data.putAll(map);
+		if (map != data) {
+			data.clear();
+			data.putAll(map);
+		}
 	}
 
 	/* TODO:

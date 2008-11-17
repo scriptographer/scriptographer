@@ -707,7 +707,9 @@ public class Document extends NativeObject {
 
 	public void setData(Map<String, Object> map) {
 		Dictionary data = getData();
-		data.clear();
-		data.putAll(map);
+		if (map != data) {
+			data.clear();
+			data.putAll(map);
+		}
 	}
 }
