@@ -53,6 +53,8 @@ public interface ExtendedList<E> extends List<E> {
 	boolean retainAll(ExtendedList<?> elements);
 	boolean retainAll(Object[] elements);
 
+	void setSize(int size);
+
 	E[] toArray();
 	E[] toArray(E elements[]);
 

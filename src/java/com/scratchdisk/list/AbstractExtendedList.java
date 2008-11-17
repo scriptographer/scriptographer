@@ -139,4 +139,15 @@ public abstract class AbstractExtendedList<E> extends AbstractList<E>
 	public final boolean containsAll(Object[] elements) {
 		return containsAll(Lists.asList(elements));
 	}
+
+	public void setSize(int newSize) {
+		int size = size();
+		if (newSize > size) {
+			// fill with null:
+			for (int i = size; i < newSize; i++)
+				add(i, null);
+		} else if (newSize < size) {
+			remove(newSize, size);
+		}
+	}
 }
