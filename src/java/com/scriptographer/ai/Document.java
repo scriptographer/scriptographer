@@ -54,7 +54,6 @@ public class Document extends NativeObject {
 	private DocumentViewList views = null;
 	private SymbolList symbols = null;
 	private SwatchList swatches = null;
-	private GradientList gradients = null;
 	private Dictionary data = null;
 
 	/**
@@ -213,12 +212,6 @@ public class Document extends NativeObject {
 		if (swatches == null)
 			swatches = new SwatchList(this);
 		return swatches;
-	}
-
-	public GradientList getGradients() {
-		if (gradients == null)
-			gradients = new GradientList(this);
-		return gradients;
 	}
 
 	// TODO: getActiveSwatch, getActiveGradient
