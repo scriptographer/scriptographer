@@ -62,9 +62,9 @@ short Item_getType(JNIEnv *env, jclass cls) {
 		return kCompoundPathArt;
 	} else if (env->IsSameObject(cls, gEngine->cls_ai_Raster)) {
 		return kRasterArt;
-	} else if (env->IsSameObject(cls, gEngine->cls_ai_PlacedItem)) {
+	} else if (env->IsSameObject(cls, gEngine->cls_ai_PlacedFile)) {
 		return kPlacedArt;
-	} else if (env->IsSameObject(cls, gEngine->cls_ai_SymbolItem)) {
+	} else if (env->IsSameObject(cls, gEngine->cls_ai_PlacedSymbol)) {
 		return kSymbolArt;
 	} else if (env->IsAssignableFrom(cls, gEngine->cls_ai_TextItem)) {
 		return kTextFrameArt;

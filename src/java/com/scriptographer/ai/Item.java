@@ -186,7 +186,7 @@ public abstract class Item extends DocumentObject {
 					item = new Raster(artHandle);
 					break;
 				case TYPE_PLACED:
-					item = new PlacedItem(artHandle);
+					item = new PlacedFile(artHandle);
 					break;
 				case TYPE_LAYER:
 					item = new Layer(artHandle);
@@ -211,7 +211,7 @@ public abstract class Item extends DocumentObject {
 					item = new Tracing(artHandle);
 					break;
 				case TYPE_SYMBOL:
-					item = new SymbolItem(artHandle);
+					item = new PlacedSymbol(artHandle);
 				}
 		}
 		if (item != null) {

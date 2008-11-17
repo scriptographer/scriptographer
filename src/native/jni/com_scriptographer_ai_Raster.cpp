@@ -506,7 +506,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeCreate(JNIEnv *en
 				strcasecmp(ext, "psd") == 0 ||
 				strcasecmp(ext, "gif") == 0 ||
 				strcasecmp(ext, "tga") == 0) {
-				art = PlacedItem_place(env, NULL, file, false);
+				art = PlacedFile_place(env, NULL, file, false);
 				// in case the newly created object is not a raster, remove it again
 				short type = Item_getType(art);
 				if (type != kRasterArt) {

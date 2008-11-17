@@ -58,7 +58,7 @@ public class Tracing extends Item implements Commitable {
 		this((Item) raster);
 	}
 	
-	public Tracing(PlacedItem raster) {
+	public Tracing(PlacedFile raster) {
 		this((Item) raster);
 	}
 	
