@@ -40,13 +40,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.prefs.Preferences;
 
-import com.scriptographer.adm.Dialog;
-import com.scriptographer.adm.MenuItem;
 import com.scriptographer.ai.Annotator;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.LiveEffect;
 import com.scriptographer.sg.Script;
 import com.scriptographer.sg.Timer;
+import com.scriptographer.ui.Dialog;
+import com.scriptographer.ui.MenuItem;
 import com.scratchdisk.script.ScriptCanceledException;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;

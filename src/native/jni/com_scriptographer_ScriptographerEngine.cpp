@@ -31,7 +31,7 @@
 #include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
 #include "com_scriptographer_ScriptographerEngine.h"
-#include "com_scriptographer_adm_Key.h"
+#include "com_scriptographer_ui_Key.h"
 
 /*
  * com.scriptographer.ScriptographerEngine
@@ -126,7 +126,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_nativeSetPro
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_nativeUpdateProgress(JNIEnv *env, jclass cls, jlong current, jlong max, jboolean visible) {
 	try {
-		if (gEngine->isKeyDown(com_scriptographer_adm_Key_VK_ESCAPE))
+		if (gEngine->isKeyDown(com_scriptographer_ui_Key_VK_ESCAPE))
 			return false;
 		if (visible) {
 			sAIUser->UpdateProgress(current, max);

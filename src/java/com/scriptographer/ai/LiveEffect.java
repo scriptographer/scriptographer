@@ -36,7 +36,7 @@ import com.scriptographer.ScriptographerException;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.IntMap;
-import com.scriptographer.adm.MenuItem;
+import com.scriptographer.ui.MenuItem;
 
 import java.util.Map;
 import java.util.ArrayList;

@@ -46,11 +46,9 @@ import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.script.rhino.ExtendedJavaClass;
 import com.scriptographer.ScriptographerEngine;
-import com.scriptographer.adm.*;
 import com.scriptographer.ai.*;
-import com.scriptographer.sg.Application;
-import com.scriptographer.sg.Scriptographer;
-import com.scriptographer.sg.Timer;
+import com.scriptographer.sg.*;
+import com.scriptographer.ui.*;
 /**
  * @author lehni
  */
@@ -114,11 +112,10 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		TabletValue.class,
 		TextRange.class,
 		TextStory.class,
-		Timer.class,
 		Tool.class,
 		Tracing.class,
 
-		// ADM, alphabetically
+		// UI, alphabetically
 		Border.class,
 		BorderLayout.class,
 		Button.class,
@@ -164,7 +161,8 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Tracker.class,
 
 		// SG
-		com.scriptographer.sg.File.class
+		com.scriptographer.sg.File.class,
+		Timer.class
 	};
 
 	public TopLevel(Context context) {

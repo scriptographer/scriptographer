@@ -38,7 +38,7 @@ import com.scriptographer.ScriptographerException;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.IntMap;
 import com.scratchdisk.util.SoftIntMap;
-import com.scriptographer.adm.Drawer;
+import com.scriptographer.ui.Drawer;
 
 /**
  * @author lehni

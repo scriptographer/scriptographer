@@ -51,8 +51,8 @@ public class JythonEngine extends com.scratchdisk.script.jython.JythonEngine {
 		globals.__setitem__(new PyString("test"), new PyInteger(100));
 	    PyTuple all = new PyTuple(new PyString[] { Py.newString('*') });
 	    __builtin__.__import__("com.scriptographer.ai", globals, globals, all);
-	    __builtin__.__import__("com.scriptographer.adm", globals, globals, all);
+	    __builtin__.__import__("com.scriptographer.ui", globals, globals, all);
 //        __builtin__.eval(new PyString("from com.scriptographer.ai import *"), globals);
-//        __builtin__.eval(new PyString("from com.scriptographer.adm import *"), globals);
+//        __builtin__.eval(new PyString("from com.scriptographer.ui import *"), globals);
 	}
 }

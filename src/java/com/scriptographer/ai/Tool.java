@@ -33,7 +33,7 @@ package com.scriptographer.ai;
 
 import com.scriptographer.ScriptographerEngine; 
 import com.scriptographer.ScriptographerException;
-import com.scriptographer.adm.Image;
+import com.scriptographer.ui.Image;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.script.Callable;

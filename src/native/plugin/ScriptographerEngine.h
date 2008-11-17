@@ -301,72 +301,72 @@ public:
 	jclass cls_ai_FileFormat;
 	jmethodID cid_ai_FileFormat;
 // ADM:
-	jclass cls_adm_NativeObject;
-	jfieldID fid_adm_NativeObject_handle;
+	jclass cls_ui_NativeObject;
+	jfieldID fid_ui_NativeObject_handle;
 
-	jclass cls_adm_Rectangle;
-	jmethodID cid_adm_Rectangle;
-	jfieldID fid_adm_Rectangle_x;
-	jfieldID fid_adm_Rectangle_y;
-	jfieldID fid_adm_Rectangle_width;
-	jfieldID fid_adm_Rectangle_height;
-	jmethodID mid_adm_Rectangle_set;
+	jclass cls_ui_Rectangle;
+	jmethodID cid_ui_Rectangle;
+	jfieldID fid_ui_Rectangle_x;
+	jfieldID fid_ui_Rectangle_y;
+	jfieldID fid_ui_Rectangle_width;
+	jfieldID fid_ui_Rectangle_height;
+	jmethodID mid_ui_Rectangle_set;
 	
-	jclass cls_adm_Point;
-	jmethodID cid_adm_Point;
-	jfieldID fid_adm_Point_x;
-	jfieldID fid_adm_Point_y;
-	jmethodID mid_adm_Point_set;
+	jclass cls_ui_Point;
+	jmethodID cid_ui_Point;
+	jfieldID fid_ui_Point_x;
+	jfieldID fid_ui_Point_y;
+	jmethodID mid_ui_Point_set;
 	
-	jclass cls_adm_Size;
-	jmethodID cid_adm_Size;
-	jfieldID fid_adm_Size_width;
-	jfieldID fid_adm_Size_height;
-	jmethodID mid_adm_Size_set;
+	jclass cls_ui_Size;
+	jmethodID cid_ui_Size;
+	jfieldID fid_ui_Size_width;
+	jfieldID fid_ui_Size_height;
+	jmethodID mid_ui_Size_set;
 
-	jclass cls_adm_Dialog;
-	jmethodID mid_adm_Dialog_onSizeChanged;
+	jclass cls_ui_Dialog;
+	jmethodID mid_ui_Dialog_onSizeChanged;
 
-	jclass cls_adm_PopupDialog;
+	jclass cls_ui_PopupDialog;
 
-	jclass cls_adm_DialogGroupInfo;
-	jmethodID cid_adm_DialogGroupInfo;
+	jclass cls_ui_DialogGroupInfo;
+	jmethodID cid_ui_DialogGroupInfo;
 	
-	jclass cls_adm_Drawer;
-	jmethodID cid_adm_Drawer;
+	jclass cls_ui_Drawer;
+	jmethodID cid_ui_Drawer;
 
-	jclass cls_adm_FontInfo;
-	jmethodID cid_adm_FontInfo;
+	jclass cls_ui_FontInfo;
+	jmethodID cid_ui_FontInfo;
 	
-	jclass cls_adm_Image;
-	jfieldID fid_adm_Image_byteWidth;
-	jfieldID fid_adm_Image_bitsPerPixel;
-	jmethodID mid_adm_Image_getIconHandle;
+	jclass cls_ui_Image;
+	jfieldID fid_ui_Image_byteWidth;
+	jfieldID fid_ui_Image_bitsPerPixel;
+	jmethodID mid_ui_Image_getIconHandle;
 
-	jclass cls_adm_ListItem;
-	jfieldID fid_adm_ListItem_listHandle;
+	jclass cls_ui_ListItem;
+	jfieldID fid_ui_ListItem_listHandle;
 
-	jclass cls_adm_HierarchyList;
+	jclass cls_ui_HierarchyList;
 	
-	jclass cls_adm_ListEntry;
+	jclass cls_ui_ListEntry;
 	
-	jclass cls_adm_HierarchyListEntry;
+	jclass cls_ui_HierarchyListEntry;
 
-	jclass cls_adm_NotificationHandler;
-	jfieldID fid_adm_NotificationHandler_tracker;
-	jfieldID fid_adm_NotificationHandler_drawer;
-	jmethodID mid_adm_NotificationHandler_onNotify;
-	jmethodID mid_adm_NotificationHandler_onDraw;
+	jclass cls_ui_NotificationHandler;
+	jfieldID fid_ui_NotificationHandler_tracker;
+	jfieldID fid_ui_NotificationHandler_drawer;
+	jmethodID mid_ui_NotificationHandler_onNotify;
+	jmethodID mid_ui_NotificationHandler_onDraw;
 		
-	jclass cls_adm_Tracker;
-	jmethodID mid_adm_Tracker_onTrack;
+	jclass cls_ui_Tracker;
+	jmethodID mid_ui_Tracker_onTrack;
 	
-	jclass cls_adm_MenuItem;
-	jmethodID mid_adm_MenuItem_wrapHandle;
-	jmethodID mid_adm_MenuItem_onSelect;
-	jmethodID mid_adm_MenuItem_onUpdate;
+	jclass cls_ui_MenuItem;
+	jmethodID mid_ui_MenuItem_wrapHandle;
+	jmethodID mid_ui_MenuItem_onSelect;
+	jmethodID mid_ui_MenuItem_onUpdate;
 	
-	jclass cls_adm_MenuGroup;
+	jclass cls_ui_MenuGroup;
 	
 public:
 	ScriptographerEngine(const char *homeDir);
@@ -416,7 +416,7 @@ public:
 	}
 	AIRealPoint *convertPoint(JNIEnv *env, jobject pt, AIRealPoint *res = NULL);
 
-	// com.scriptographer.adm.Point <-> ADMPoint
+	// com.scriptographer.ui.Point <-> ADMPoint
 	jobject convertPoint(JNIEnv *env, int x, int y, jobject res = NULL);
 	jobject convertPoint(JNIEnv *env, ADMPoint *pt, jobject res = NULL) {
 		return convertPoint(env, pt->h, pt->v, res);
@@ -444,7 +444,7 @@ public:
 	}
 	AIRealPoint *convertSize(JNIEnv *env, jobject size, AIRealPoint *res = NULL);
 
-	// com.scriptographer.adm.Size <-> ADMPoint
+	// com.scriptographer.ui.Size <-> ADMPoint
 	jobject convertSize(JNIEnv *env, int width, int height, jobject res = NULL);
 	jobject convertSize(JNIEnv *env, ADMPoint *size, jobject res = NULL) {
 		return convertSize(env, size->h, size->v, res);

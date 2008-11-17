@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 import java.awt.geom.Point2D;
 
 import com.scratchdisk.script.ArgumentReader;
-import com.scriptographer.adm.Size;
+import com.scriptographer.ui.Size;
 
 /**
  * The Point object represents a point in the two dimensional space of the

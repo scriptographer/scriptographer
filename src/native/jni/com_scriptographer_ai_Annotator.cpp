@@ -93,7 +93,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Annotator_nativeInvalidate(JNI
 }
 
 /*
- * com.scriptographer.adm.Drawer nativeCreateDrawer(int portHandle)
+ * com.scriptographer.ui.Drawer nativeCreateDrawer(int portHandle)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeCreateDrawer(JNIEnv *env, jclass cls, jint portHandle) {
 	try {
@@ -112,7 +112,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeCreateDrawe
 		// must be actually the same thing...
 	
 		ADMDrawerRef drawer = sADMDrawer->Create((ADMPortRef) portHandle, &rect, kADMDefaultFont, false);
-		return gEngine->newObject(env, gEngine->cls_adm_Drawer, gEngine->cid_adm_Drawer, (jint) drawer);
+		return gEngine->newObject(env, gEngine->cls_ui_Drawer, gEngine->cid_ui_Drawer, (jint) drawer);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

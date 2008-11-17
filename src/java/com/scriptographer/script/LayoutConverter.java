@@ -35,8 +35,8 @@ import java.awt.BorderLayout;
 
 import com.scratchdisk.script.ArgumentConverter;
 import com.scratchdisk.script.ArgumentReader;
-import com.scriptographer.adm.FlowLayout;
-import com.scriptographer.adm.TableLayout;
+import com.scriptographer.ui.FlowLayout;
+import com.scriptographer.ui.TableLayout;
 
 /**
  * @author lehni

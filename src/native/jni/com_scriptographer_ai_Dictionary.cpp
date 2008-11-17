@@ -210,7 +210,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 						// TODO: Should other maps be supported and converted as well?
 						entry = sAIEntry->FromDict(gEngine->getDictionaryHandle(env, value));
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Point) ||
-							   env->IsInstanceOf(value, gEngine->cls_adm_Point)) {
+							   env->IsInstanceOf(value, gEngine->cls_ui_Point)) {
 						AIRealPoint point;
 						gEngine->convertPoint(env, value, &point);
 						entry = sAIEntry->FromRealPoint(&point);

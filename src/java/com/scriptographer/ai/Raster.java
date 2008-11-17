@@ -52,7 +52,7 @@ import java.net.URL;
 
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.NetUtils;
-import com.scriptographer.adm.Size;
+import com.scriptographer.ui.Size;
 
 /**
  * @author lehni
@@ -100,10 +100,10 @@ public class Raster extends Item {
 	}
 
 	/**
-	 * Creates a raster item from an ADM image.
-	 * @param image the ADM image to be converted to a raster item.
+	 * Creates a raster item from an UI image.
+	 * @param image the UI image to be converted to a raster item.
 	 */
-	public Raster(com.scriptographer.adm.Image image) {
+	public Raster(com.scriptographer.ui.Image image) {
 		// TODO: handle this case directly, without converting back and from
 		// a java BufferedImage, through native code?
 		this(image.getImage());

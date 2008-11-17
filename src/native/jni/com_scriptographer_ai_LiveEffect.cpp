@@ -66,7 +66,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_LiveEffect_nativeCreate(JNIEnv
 }
 
 /*
- * com.scriptographer.adm.MenuItem nativeAddMenuItem(String name, String category, String title)
+ * com.scriptographer.ui.MenuItem nativeAddMenuItem(String name, String category, String title)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeAddMenuItem(JNIEnv *env, jobject obj, jstring name, jstring category, jstring title) {
 	try {

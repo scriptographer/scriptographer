@@ -311,7 +311,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Raster_finalize(JNIEnv *env, j
 }
 
 /*
- * com.scriptographer.adm.Size getSize()
+ * com.scriptographer.ui.Size getSize()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Raster_getSize(JNIEnv *env, jobject obj) {
 	try {
