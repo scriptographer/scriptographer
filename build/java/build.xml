@@ -144,8 +144,8 @@
 				<include name="**/*.icc" />
 			</fileset>
 		</copy>
-		<copy todir="${build.classes}/com/scriptographer/adm/resources">
-			<fileset dir="${build.src}/com/scriptographer/adm/resources">
+		<copy todir="${build.classes}/com/scriptographer/ui/resources">
+			<fileset dir="${build.src}/com/scriptographer/ui/resources">
 				<include name="**/*.png" />
 			</fileset>
 		</copy>
@@ -298,7 +298,7 @@
 			<class name="com.scriptographer.ai.PathStyle" />
 			<class name="com.scriptographer.ai.Group" />
 			<class name="com.scriptographer.ai.Raster" />
-			<class name="com.scriptographer.ai.PlacedItem" />
+			<class name="com.scriptographer.ai.PlacedFile" />
 			<class name="com.scriptographer.ai.SegmentList" />
 			<class name="com.scriptographer.ai.Curve" />
 			<class name="com.scriptographer.ai.ItemSet" />
@@ -312,7 +312,6 @@
 			<class name="com.scriptographer.ai.Color" />
 			<class name="com.scriptographer.ai.Pathfinder" />
 			<class name="com.scriptographer.ai.LiveEffect" />
-			<class name="com.scriptographer.ai.Timer" />
 			<class name="com.scriptographer.ai.Annotator" />
 			<class name="com.scriptographer.ai.TextItem" />
 			<class name="com.scriptographer.ai.PointText" />
@@ -328,43 +327,43 @@
 			<class name="com.scriptographer.ai.FontWeight" />
 			<class name="com.scriptographer.ai.Tracing" />
 			<class name="com.scriptographer.ai.Pattern" />
-			<class name="com.scriptographer.ai.PatternList" />
 			<class name="com.scriptographer.ai.Symbol" />
 			<class name="com.scriptographer.ai.SymbolList" />
-			<class name="com.scriptographer.ai.SymbolItem" />
+			<class name="com.scriptographer.ai.PlacedSymbol" />
 			<class name="com.scriptographer.ai.Swatch" />
 			<class name="com.scriptographer.ai.SwatchList" />
 			<class name="com.scriptographer.ai.Gradient" />
-			<class name="com.scriptographer.ai.GradientList" />
 			<class name="com.scriptographer.ai.GradientStopList" />
 			<class name="com.scriptographer.ai.FileFormat" />
 
-			<class name="com.scriptographer.adm.Notifier" />
-			<class name="com.scriptographer.adm.Dialog" />
-			<class name="com.scriptographer.adm.ModalDialog" />
-			<class name="com.scriptographer.adm.Item" />
-		   	<class name="com.scriptographer.adm.ValueItem" />
-		   	<class name="com.scriptographer.adm.TextValueItem" />
-		   	<class name="com.scriptographer.adm.TextItem" />
-		   	<class name="com.scriptographer.adm.Button" />
-			<class name="com.scriptographer.adm.ToggleItem" />
-			<class name="com.scriptographer.adm.ItemGroup" />
-		   	<class name="com.scriptographer.adm.ImageStatic" />
-		   	<class name="com.scriptographer.adm.TextEditItem" />
+			<class name="com.scriptographer.ui.Notifier" />
+			<class name="com.scriptographer.ui.Dialog" />
+			<class name="com.scriptographer.ui.ModalDialog" />
+			<class name="com.scriptographer.ui.Item" />
+		   	<class name="com.scriptographer.ui.ValueItem" />
+		   	<class name="com.scriptographer.ui.TextValueItem" />
+		   	<class name="com.scriptographer.ui.TextItem" />
+		   	<class name="com.scriptographer.ui.Button" />
+			<class name="com.scriptographer.ui.ToggleItem" />
+			<class name="com.scriptographer.ui.ItemGroup" />
+		   	<class name="com.scriptographer.ui.ImageStatic" />
+		   	<class name="com.scriptographer.ui.TextEditItem" />
 
-		   	<class name="com.scriptographer.adm.ListItem" />
-		   	<class name="com.scriptographer.adm.ListEntry" />
-		   	<class name="com.scriptographer.adm.HierarchyList" />
-		   	<class name="com.scriptographer.adm.HierarchyListEntry" />
+		   	<class name="com.scriptographer.ui.ListItem" />
+		   	<class name="com.scriptographer.ui.ListEntry" />
+		   	<class name="com.scriptographer.ui.HierarchyList" />
+		   	<class name="com.scriptographer.ui.HierarchyListEntry" />
 
-		   	<class name="com.scriptographer.adm.Drawer" />
-		   	<class name="com.scriptographer.adm.Image" />
-		   	<class name="com.scriptographer.adm.Tracker" />
+		   	<class name="com.scriptographer.ui.Drawer" />
+		   	<class name="com.scriptographer.ui.Image" />
+		   	<class name="com.scriptographer.ui.Tracker" />
 
-			<class name="com.scriptographer.adm.MenuItem" />
-			<class name="com.scriptographer.adm.MenuGroup" />
+			<class name="com.scriptographer.ui.MenuItem" />
+			<class name="com.scriptographer.ui.MenuGroup" />
 
-			<class name="com.scriptographer.adm.Key" />
+			<class name="com.scriptographer.ui.Key" />
+
+			<class name="com.scriptographer.sg.Timer" />
 		</javah>
 		<echo id="echo" level="info" />
 		<script language="javascript" src="scripts/jni.js">
@@ -438,11 +437,11 @@
 					com.scriptographer.ai.Style
 					com.scriptographer.ai.TabletValue
 					com.scriptographer.ai.Tool
-					com.scriptographer.adm.Point
-					com.scriptographer.adm.Rectangle
-					com.scriptographer.adm.Size
-					com.scriptographer.adm.Notifier
-					com.scriptographer.adm.DialogGroupInfo
+					com.scriptographer.ui.Point
+					com.scriptographer.ui.Rectangle
+					com.scriptographer.ui.Size
+					com.scriptographer.ui.Notifier
+					com.scriptographer.ui.DialogGroupInfo
 					com.scriptographer.sg.Preferences
 					com.scriptographer.js.*
 					com.scriptographer.util.*
