@@ -76,6 +76,9 @@ public class Scriptographer {
 	
 	private static Scriptographer scriptographer = null;
 
+	/**
+	 * @jshide
+	 */
 	public static Scriptographer getInstance() {
 		if (scriptographer == null)
 			scriptographer = new Scriptographer();
