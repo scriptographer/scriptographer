@@ -37,8 +37,11 @@ package com.scriptographer.ai;
 public class GradientColor extends Color {
 	Gradient gradient;
 	Point origin;
-	float angle;
-	float length;
+	Point destination; // angle, length
+	/*
+	 * For radial gradients only
+	 */
+	Point hilite; // hiliteAngle, hiliteLength
 	/*
 	 * The accumulated transformations of the gradient. It is not necessarily the same
 	 * as the transformation matrix of the object containing the gradient.
@@ -47,38 +50,65 @@ public class GradientColor extends Color {
 	 * transformation matrix is concatenated to the gradient instance’s matrix.
 	 */
 	Matrix matrix;
-	float hiliteAngle;
-	float hiliteLength;
 	
 	/**
 	 * Called from the native environment
 	 */
-	protected GradientColor(int gradientHandle, Point origin, float angle,
-		float length, Matrix matrix, float hiliteAngle, float hiliteLength) {
-		this.gradient = Gradient.wrapHandle(gradientHandle, null);
+	protected GradientColor(int gradientHandle, Point origin, double angle,
+		double length, Matrix matrix, double hiliteAngle, double hiliteLength) {
+		gradient = Gradient.wrapHandle(gradientHandle, null);
 		this.origin = origin;
-		this.angle = angle;
-		this.length = length;
+		angle = angle * Math.PI / 180.0;
+		destination = new Point(
+				origin.x + Math.cos(angle) * length,
+				origin.y + Math.sin(angle) * length
+		);
+		hiliteAngle = angle + hiliteAngle * Math.PI / 180.0;
+		hiliteLength *= length;
+		hilite = new Point(
+				origin.x + Math.cos(hiliteAngle) * hiliteLength,
+				origin.y + Math.sin(hiliteAngle) * hiliteLength
+		);
 		this.matrix = matrix;
-		this.hiliteAngle = hiliteAngle;
-		this.hiliteLength = hiliteLength;
 	}
 	
-	public GradientColor(Gradient gradient, Point origin, float angle,
-			float length, Matrix matrix, float hiliteAngle,
-			float hiliteLength) {
-		// use the above constructor, but copy origin and matrix
-		// let's not care about the call to wrapHandle above,
-		// as this is not used often
-		this(gradient.handle, new Point(origin), angle, length,
-			new Matrix(matrix), hiliteAngle, hiliteLength);
+	public GradientColor(Gradient gradient, Point origin, Point destination, Point hilite, Matrix matrix) {
+		this.gradient = gradient;
+		this.origin = new Point(origin);
+		this.destination = new Point(destination);
+		this.hilite = new Point(hilite != null ? hilite : origin);
+		this.matrix = new Matrix(matrix);
+	}
+
+	public GradientColor(Gradient gradient, Point origin, Point destination, Point hilite) {
+		this(gradient, origin, destination, hilite, null);
+	}
+
+	public GradientColor(Gradient gradient, Point origin, Point destination) {
+		this(gradient, origin, destination, null);
 	}
 
 	/**
-	 * called from the native environment, to fill a native struct
+	 * Called from the native environment, to fill a native struct. This is the opposite
+	 * of the above constructor that 's called from the native side only.
 	 * @param struct
 	 */
 	protected void set(int pointer) {
+		// Convert to relative vectors
+		Point destination = this.destination.subtract(origin);
+		Point hilite = this.hilite.subtract(origin);
+		// Calculating hilite is a bit tricky: It's length is a factor
+		// of the total length of the gradient, between 0 and 1, and its
+		// angle is relative to the gradient's angle. This does the trick:
+		double length = destination.getLength();
+		double angle = destination.getAngle() * 180.0 / Math.PI;
+		// Divide by length to scale to range between 0 and 1:
+		double hiliteLength = hilite.getLength() / length;
+		// Subtract angle to get absolute angle:
+		double hiliteAngle = hilite.getAngle() * 180.0 / Math.PI - angle;
+		// Make sure we're not above 1, since that's the maximum allowed value for hilite
+		if (hiliteLength > 1)
+			hiliteLength = 1;
 		nativeSetGradient(pointer, gradient.handle, origin, angle, length,
 				matrix, hiliteAngle, hiliteLength);
 	}
@@ -88,12 +118,9 @@ public class GradientColor extends Color {
 			return true;
 		if (obj instanceof GradientColor) {
 			GradientColor color = (GradientColor) obj;
-			return origin == color.origin
-				&& angle == color.angle
-				&& length == color.length
-				&& matrix.equals(color.matrix)
-				&& hiliteAngle == color.hiliteAngle
-				&& hiliteLength == color.hiliteLength
+			return origin.equals(color.origin)
+				&& destination.equals(color.destination)
+				&& hilite.equals(color.hilite)
 				&& gradient.equals(color.gradient);
 		}
 		return false;
@@ -111,12 +138,20 @@ public class GradientColor extends Color {
 		throw new UnsupportedOperationException("Cannot set alpha on gradient");
 	}
 
-	public float getAngle() {
-		return angle;
+	public Point getOrigin() {
+		return origin;
 	}
 
-	public void setAngle(float angle) {
-		this.angle = angle;
+	public void setOrigin(Point origin) {
+		this.origin = new Point(origin);
+	}
+
+	public Point getDestination() {
+		return destination;
+	}
+
+	public void setDestination(Point destination) {
+		this.destination = destination;
 	}
 
 	public Gradient getGradient() {
@@ -127,28 +162,12 @@ public class GradientColor extends Color {
 		this.gradient = gradient;
 	}
 
-	public float getHiliteAngle() {
-		return hiliteAngle;
+	public Point getHilite() {
+		return hilite;
 	}
 
-	public void setHiliteAngle(float hiliteAngle) {
-		this.hiliteAngle = hiliteAngle;
-	}
-
-	public float getHiliteLength() {
-		return hiliteLength;
-	}
-
-	public void setHiliteLength(float hiliteLength) {
-		this.hiliteLength = hiliteLength;
-	}
-
-	public float getLength() {
-		return length;
-	}
-
-	public void setLength(float length) {
-		this.length = length;
+	public void setHilite(Point hilite) {
+		this.hilite = hilite;
 	}
 
 	public Matrix getMatrix() {
@@ -157,13 +176,5 @@ public class GradientColor extends Color {
 
 	public void setMatrix(Matrix matrix) {
 		this.matrix = new Matrix(matrix);
-	}
-
-	public Point getOrigin() {
-		return origin;
-	}
-
-	public void setOrigin(Point origin) {
-		this.origin = new Point(origin);
 	}
 }

@@ -70,7 +70,7 @@ public class GradientStopList extends AbstractExtendedList<GradientStop> {
 	/**
 	 * updates the synchronization between the cached segments in java
 	 * and the underlying Illustrator object.
-	 * Only called from Path.getSegmentList()
+	 * Only called from Gradient.getStops()
 	 */
 	protected void update() {
 		if (gradient != null && version != CommitManager.version) {
@@ -95,7 +95,7 @@ public class GradientStopList extends AbstractExtendedList<GradientStop> {
 		stop.insert();
 		// update stop indices
 		for (int i = index + 1; i < size; i++) {
-			GradientStop s = (GradientStop) list.get(i);
+			GradientStop s = list.get(i);
 			if (s != null)
 				s.index = i;
 		}
@@ -103,7 +103,8 @@ public class GradientStopList extends AbstractExtendedList<GradientStop> {
 	}
 
 	public GradientStop set(int index, GradientStop stop) {
-		GradientStop ret = (GradientStop) list.set(index, stop);
+		GradientStop ret = get(index);
+		list.set(index, stop);
 		stop.list = this;
 		stop.index = index;
 		stop.markDirty();
@@ -124,7 +125,7 @@ public class GradientStopList extends AbstractExtendedList<GradientStop> {
 				throw new ScriptographerException(
 						"There need to be at least two gradient stops");
 			for (int i = fromIndex; i < toIndex; i++) {
-				GradientStop obj = (GradientStop) list.get(i);
+				GradientStop obj = list.get(i);
 				if (obj != null) {
 					obj.list = null;
 					obj.index = -1;

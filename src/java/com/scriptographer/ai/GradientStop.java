@@ -39,30 +39,36 @@ import com.scriptographer.ScriptographerException;
  * @author lehni
  */
 public class GradientStop implements Commitable {
-	protected float midPoint;
-	protected float rampPoint;
 	protected Color color;
+	protected float rampPoint;
+	protected float midPoint;
 	protected int version = -1;
 	protected int index = -1;
 	protected GradientStopList list;
 	protected boolean dirty = false;
 	
-	public GradientStop(GradientStop stop)
-	throws ScriptographerException {
-		this.init(stop.midPoint, stop.rampPoint, stop.color);
+	public GradientStop(GradientStop stop) {
+		this(stop.color, stop.midPoint, stop.rampPoint);
 	}
 	
-	public GradientStop(float midPoint, float rampPoint, Color color)
-	throws ScriptographerException {
-		this.init(midPoint, rampPoint, color);
+	public GradientStop(Color color, float rampPoint, float midPoint) {
+		if (color == null)
+			throw new IllegalArgumentException("Gradient color cannot be null");
+		this.midPoint = midPoint;
+		this.rampPoint = rampPoint;
+		this.color = color;
 	}
-	
+
+	public GradientStop(Color color, float rampPoint) {
+		this(color, rampPoint, 0.5f);
+	}
+
+	public GradientStop(Color color) {
+		this(color, 0, 0.5f);
+	}
+
 	public GradientStop() {
-		try {
-			this.init(0, 0, new GrayColor(0));
-		} catch (ScriptographerException e) {
-			// never happens as color is not null
-		}
+		this(new GrayColor(0), 0, 0.5f);
 	}
 
 	protected GradientStop(GradientStopList stops, int index) {
@@ -70,17 +76,17 @@ public class GradientStop implements Commitable {
 		this.index = index;
 	}
 	
-	protected void init(float midPoint, float rampPoint, Color color)
-	throws ScriptographerException {
-		if (color == null)
-			throw new ScriptographerException("Gradient color cannot be null");
-		this.midPoint = midPoint;
-		this.rampPoint = rampPoint;
+	/**
+	 * Called from the native side
+	 */
+	protected void set(float midPoint, float rampPoint, Color color) {
+		// Scale native values from 0 .. 100 to 0 .. 1
+		this.midPoint = midPoint / 100;
+		this.rampPoint = rampPoint / 100;
 		this.color = color;
 	}
-
 	/**
-	 * inserts this gradient stop in the underlying AI gradient at position
+	 * Inserts this gradient stop in the underlying AI gradient at position
 	 * index Only call once, when adding this stop to the GradientStopList!
 	 */
 	protected void insert() {
@@ -89,9 +95,10 @@ public class GradientStop implements Commitable {
 			// as otherwise this stop might not be added. Fixes #29
 			CommitManager.commit(list.gradient);
 			Gradient gradient = list.gradient;
+			// Scale values back from 0 .. 1 to 0 .. 100
 			GradientStopList.nativeInsert(
 				gradient.handle, gradient.document.handle, index,
-				midPoint, rampPoint, color.getComponents());
+				midPoint * 100, rampPoint * 100, color.getComponents());
 			version = CommitManager.version;
 			dirty = false;
 		}
@@ -109,9 +116,10 @@ public class GradientStop implements Commitable {
 	public void commit() {
 		if (dirty && list != null && list.gradient != null) {
 			Gradient gradient = list.gradient;
+			// Scale values back from 0 .. 1 to 0 .. 100
 			GradientStopList.nativeSet(
 				gradient.handle, gradient.document.handle, index,
-				midPoint, rampPoint, color.getComponents());
+				midPoint * 100, rampPoint * 100, color.getComponents());
 			dirty = false;
 			version = CommitManager.version;
 		}
@@ -156,6 +164,12 @@ public class GradientStop implements Commitable {
 
 	public void setRampPoint(float rampPoint) {
 		this.update();
+		// Ask Adobe why they choose funny limits like these.
+		// We don't know, but they did:
+		if (rampPoint < 0.13f)
+			rampPoint = 0.13f;
+		else if (rampPoint > 0.87f)
+			rampPoint = 0.87f;
 		this.rampPoint = rampPoint;
 		this.markDirty();
 	}

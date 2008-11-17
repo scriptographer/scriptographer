@@ -47,6 +47,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeGet(JNI
 		jobject color = gEngine->convertColor(env, &s.color);
 #else
 		jobject color = gEngine->convertColor(env, &s.color, s.opacity);
+		if (s.opacity == -1)
+			s.opacity = 1;
 #endif
 		gEngine->callVoidMethod(env, stop, gEngine->mid_ai_GradientStop_set, s.midPoint, s.rampPoint, color);
 	} EXCEPTION_CONVERT(env);
@@ -62,6 +64,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeSet(JNI
 		gEngine->convertColor(env, color, &s.color);
 #else
 		gEngine->convertColor(env, color, &s.color, &s.opacity);
+		if (s.opacity == -1)
+			s.opacity = 1;
 #endif
 		s.rampPoint = rampPoint;
 		s.midPoint = midPoint;
@@ -81,6 +85,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeInsert(
 		gEngine->convertColor(env, color, &s.color);
 #else
 		gEngine->convertColor(env, color, &s.color, &s.opacity);
+		if (s.opacity == -1)
+			s.opacity = 1;
 #endif
 		s.rampPoint = rampPoint;
 		s.midPoint = midPoint;
