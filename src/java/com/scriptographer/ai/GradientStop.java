@@ -33,7 +33,6 @@ package com.scriptographer.ai;
 
 import com.scriptographer.CommitManager;
 import com.scriptographer.Commitable;
-import com.scriptographer.ScriptographerException;
 
 /**
  * @author lehni

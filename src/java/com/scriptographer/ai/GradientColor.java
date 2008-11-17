@@ -63,7 +63,10 @@ public class GradientColor extends Color {
 				origin.x + Math.cos(angle) * length,
 				origin.y + Math.sin(angle) * length
 		);
+		// Hilite angle is relative to gradient angle
 		hiliteAngle = angle + hiliteAngle * Math.PI / 180.0;
+		// Hilite length is a factor of the total length.
+		// See #set
 		hiliteLength *= length;
 		hilite = new Point(
 				origin.x + Math.cos(hiliteAngle) * hiliteLength,
