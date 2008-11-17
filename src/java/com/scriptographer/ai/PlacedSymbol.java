@@ -34,23 +34,23 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class SymbolItem extends Item {
+public class PlacedSymbol extends Item {
 
-	protected SymbolItem(int handle) {
+	protected PlacedSymbol(int handle) {
 		super(handle);
 	}
 
 	private static native int nativeCreate(int symbolHandle, Matrix matrix);
 
-	public SymbolItem(Symbol symbol, Matrix matrix) {
+	public PlacedSymbol(Symbol symbol, Matrix matrix) {
 		super(nativeCreate(symbol.handle, matrix));
 	}
 	
-	public SymbolItem(Symbol symbol, Point pt) {
+	public PlacedSymbol(Symbol symbol, Point pt) {
 		this(symbol, new Matrix().translate(pt));
 	}
 	
-	public SymbolItem(Symbol symbol) {
+	public PlacedSymbol(Symbol symbol) {
 		this(symbol, new Matrix());
 	}
 	

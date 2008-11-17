@@ -30,17 +30,17 @@
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "aiGlobals.h"
-#include "com_scriptographer_ai_SymbolItem.h"
+#include "com_scriptographer_ai_PlacedSymbol.h"
 
 /*
- * com.scriptographer.ai.SymbolItem
+ * com.scriptographer.ai.PlacedSymbol
  */
 
 /*
  * int nativeCreate(int symbolHandle, com.scriptographer.ai.Matrix matrix)
  */
 
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SymbolItem_nativeCreate(JNIEnv *env, jclass cls, jint symbolHandle, jobject matrix) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PlacedSymbol_nativeCreate(JNIEnv *env, jclass cls, jint symbolHandle, jobject matrix) {
 	try {
 		short paintOrder;
 		AIArtHandle artInsert = Item_getInsertionPoint(&paintOrder);
@@ -58,7 +58,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SymbolItem_nativeCreate(JNIEnv
 /*
  * int nativeGetSymbol()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SymbolItem_nativeGetSymbol(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PlacedSymbol_nativeGetSymbol(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIPatternHandle symbol = NULL;
@@ -71,7 +71,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_SymbolItem_nativeGetSymbol(JNI
 /*
  * void setSymbol(com.scriptographer.ai.Symbol symbol)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SymbolItem_setSymbol(JNIEnv *env, jobject obj, jobject symbol) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedSymbol_setSymbol(JNIEnv *env, jobject obj, jobject symbol) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		gEngine->getPatternHandle(env, symbol);
@@ -82,7 +82,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SymbolItem_setSymbol(JNIEnv *e
 /*
  * com.scriptographer.ai.Matrix getMatrix()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_SymbolItem_getMatrix(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedSymbol_getMatrix(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIRealMatrix m;
@@ -95,7 +95,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_SymbolItem_getMatrix(JNIEnv
 /*
  * void setMatrix(com.scriptographer.ai.Matrix matrix)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_SymbolItem_setMatrix(JNIEnv *env, jobject obj, jobject matrix) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedSymbol_setMatrix(JNIEnv *env, jobject obj, jobject matrix) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealMatrix mx;

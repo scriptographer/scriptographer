@@ -50,6 +50,7 @@ import com.scriptographer.adm.*;
 import com.scriptographer.ai.*;
 import com.scriptographer.sg.Application;
 import com.scriptographer.sg.Scriptographer;
+import com.scriptographer.sg.Timer;
 /**
  * @author lehni
  */
@@ -97,7 +98,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Pattern.class,
 		PatternColor.class,
 		PatternList.class,
-		PlacedItem.class,
+		PlacedFile.class,
 		com.scriptographer.ai.Point.class,
 		PointText.class,
 		Raster.class,
@@ -110,7 +111,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Swatch.class,
 		SwatchList.class,
 		Symbol.class,
-		SymbolItem.class,
+		PlacedSymbol.class,
 		SymbolList.class,
 		TabletValue.class,
 		TextRange.class,

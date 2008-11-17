@@ -29,7 +29,7 @@
  * $Id$
  */
 
-package com.scriptographer.ai;
+package com.scriptographer.sg;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -42,9 +42,11 @@ import com.scratchdisk.util.IntMap;
 /**
  * @author lehni
  */
-public class Timer extends NativeObject {
+public class Timer {
+	private int handle;
 	private boolean active;
 	private boolean periodic;
+
 	private double period;
 
 	private static IntMap<Timer> timers = new IntMap<Timer>();
@@ -147,6 +149,14 @@ public class Timer extends NativeObject {
 			this.period = ticksToMilliseconds(ticks);
 	}
 	
+	public boolean isPeriodic() {
+		return periodic;
+	}
+
+	public void setPeriodic(boolean periodic) {
+		this.periodic = periodic;
+	}
+
 	public static void stopAll() {
 		// Stop both used and unused timers:
 		for (Iterator it = timers.values().iterator(); it.hasNext();)

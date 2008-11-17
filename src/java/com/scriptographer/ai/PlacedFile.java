@@ -40,20 +40,20 @@ import com.scratchdisk.util.NetUtils;
 /**
  * @author lehni
  */
-public class PlacedItem extends Item {
+public class PlacedFile extends Item {
 
-	protected PlacedItem(int handle) {
+	protected PlacedFile(int handle) {
 		super(handle);
 	}
 
 	private static native int nativeCreate(File file);
 
-	public PlacedItem(URL url) throws IOException {
+	public PlacedFile(URL url) throws IOException {
 		this(NetUtils.loadFile(url, "sg_"));
 	}
 
 
-	public PlacedItem(File file) {
+	public PlacedFile(File file) {
 		super(nativeCreate(file));
 	}
 		

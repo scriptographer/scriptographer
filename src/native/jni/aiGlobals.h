@@ -44,7 +44,7 @@ void ItemSet_filter(AIArtSet set, bool layerOnly = false);
 jobject ItemSet_getSelected(JNIEnv *env);
 AIArtHandle ItemSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 
-AIArtHandle JNICALL PlacedItem_place(JNIEnv *env, AIDocumentHandle doc, jobject file, jboolean linked);
+AIArtHandle JNICALL PlacedFile_place(JNIEnv *env, AIDocumentHandle doc, jobject file, jboolean linked);
 
 void Document_activate(AIDocumentHandle doc = NULL);
 void Document_deselectAll(bool force = false);

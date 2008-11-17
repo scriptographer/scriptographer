@@ -24,20 +24,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $Id$
+ * $Id: com_scriptographer_ai_PlacedFile.cpp 578 2008-07-22 21:15:16Z lehni $
  */
 
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
 #include "aiGlobals.h"
-#include "com_scriptographer_ai_PlacedItem.h"
+#include "com_scriptographer_ai_PlacedFile.h"
 
 /*
- * com.scriptographer.ai.PlacedItem
+ * com.scriptographer.ai.PlacedFile
  */
 
-AIArtHandle JNICALL PlacedItem_place(JNIEnv *env, AIDocumentHandle doc, jobject file, jboolean linked) {
+AIArtHandle JNICALL PlacedFile_place(JNIEnv *env, AIDocumentHandle doc, jobject file, jboolean linked) {
 	Document_activate(doc);
 	AIPlaceRequestData request;
 	SPPlatformFileSpecification fileSpec;
@@ -72,7 +72,7 @@ AIArtHandle JNICALL PlacedItem_place(JNIEnv *env, AIDocumentHandle doc, jobject 
 /*
  * com.scriptographer.ai.Matrix getMatrix()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedItem_getMatrix(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_getMatrix(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIRealMatrix m;
@@ -85,7 +85,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedItem_getMatrix(JNIEnv
 /*
  * void setMatrix(com.scriptographer.ai.Matrix matrix)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedItem_setMatrix(JNIEnv *env, jobject obj, jobject matrix) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedFile_setMatrix(JNIEnv *env, jobject obj, jobject matrix) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealMatrix mx;
@@ -97,7 +97,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedItem_setMatrix(JNIEnv *e
 /*
  * com.scriptographer.ai.Item embed(boolean askParams)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedItem_embed(JNIEnv *env, jobject obj, jboolean askParams) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_embed(JNIEnv *env, jobject obj, jboolean askParams) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIArtHandle res = NULL;
@@ -113,7 +113,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedItem_embed(JNIEnv *en
 /*
  * com.scriptographer.ai.Rectangle getBoundingBox()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedItem_getBoundingBox(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_getBoundingBox(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealRect rect;
@@ -126,7 +126,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedItem_getBoundingBox(J
 /*
  * java.io.File getFile()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedItem_getFile(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_getFile(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		SPPlatformFileSpecification fileSpec;
@@ -151,7 +151,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedItem_getFile(JNIEnv *
 /*
  * boolean isEps()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_PlacedItem_isEps(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_PlacedFile_isEps(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		short placedType = kOtherType;
@@ -164,9 +164,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_PlacedItem_isEps(JNIEnv *e
 /*
  * int nativeCreate(java.io.File file)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PlacedItem_nativeCreate(JNIEnv *env, jclass cls, jobject file) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PlacedFile_nativeCreate(JNIEnv *env, jclass cls, jobject file) {
 	try {
-		return (jint) PlacedItem_place(env, NULL, file, true);
+		return (jint) PlacedFile_place(env, NULL, file, true);
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }

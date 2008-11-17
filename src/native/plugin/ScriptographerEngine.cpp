@@ -465,7 +465,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cid_ai_CMYKColor = getConstructorID(env, cls_ai_CMYKColor, "(FFFFF)V");
 	
 	cls_ai_GradientColor = loadClass(env, "com/scriptographer/ai/GradientColor");
-	cid_ai_GradientColor = getConstructorID(env, cls_ai_GradientColor, "(ILcom/scriptographer/ai/Point;FFLcom/scriptographer/ai/Matrix;FF)V");
+	cid_ai_GradientColor = getConstructorID(env, cls_ai_GradientColor, "(ILcom/scriptographer/ai/Point;DDLcom/scriptographer/ai/Matrix;DD)V");
 	mid_ai_GradientColor_set = getMethodID(env, cls_ai_GradientColor, "set", "(I)V");
 
 	cls_ai_PatternColor = loadClass(env, "com/scriptographer/ai/PatternColor");
@@ -521,9 +521,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ai_Raster = loadClass(env, "com/scriptographer/ai/Raster");
 	fid_ai_Raster_data = getFieldID(env, cls_ai_Raster, "data", "I");
 	
-	cls_ai_PlacedItem = loadClass(env, "com/scriptographer/ai/PlacedItem");
+	cls_ai_PlacedFile = loadClass(env, "com/scriptographer/ai/PlacedFile");
 	
-	cls_ai_SymbolItem = loadClass(env, "com/scriptographer/ai/SymbolItem");
+	cls_ai_PlacedSymbol = loadClass(env, "com/scriptographer/ai/PlacedSymbol");
 	
 	cls_ai_Tracing = loadClass(env, "com/scriptographer/ai/Tracing");
 	mid_ai_Tracing_markDirty = getMethodID(env, cls_ai_Tracing, "markDirty", "()V");
@@ -539,7 +539,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_ai_TabletValue_value = getFieldID(env, cls_ai_TabletValue, "value", "F");
 	
 	cls_ai_GradientStop = loadClass(env, "com/scriptographer/ai/GradientStop");
-	mid_ai_GradientStop_init = getMethodID(env, cls_ai_GradientStop, "init", "(FFLcom/scriptographer/ai/Color;)V");
+	mid_ai_GradientStop_set = getMethodID(env, cls_ai_GradientStop, "set", "(FFLcom/scriptographer/ai/Color;)V");
 	
 	cls_ai_Document = loadClass(env, "com/scriptographer/ai/Document");
 
@@ -549,9 +549,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_LiveEffect_onCalculate = getStaticMethodID(env, cls_ai_LiveEffect, "onCalculate", "(IILcom/scriptographer/ai/Item;)I");
 	mid_ai_LiveEffect_onGetInputType = getStaticMethodID(env, cls_ai_LiveEffect, "onGetInputType", "(IILcom/scriptographer/ai/Item;)I");
 	
-	cls_ai_Timer = loadClass(env, "com/scriptographer/ai/Timer");
-	cid_ai_Timer = getConstructorID(env, cls_ai_Timer, "(I)V");
-	mid_ai_Timer_onExecute = getStaticMethodID(env, cls_ai_Timer, "onExecute", "(I)V");
+	cls_sg_Timer = loadClass(env, "com/scriptographer/ai/Timer");
+	cid_sg_Timer = getConstructorID(env, cls_sg_Timer, "(I)V");
+	mid_sg_Timer_onExecute = getStaticMethodID(env, cls_sg_Timer, "onExecute", "(I)V");
 
 	cls_ai_Annotator = loadClass(env, "com/scriptographer/ai/Annotator");
 	cid_ai_Annotator = getConstructorID(env, cls_ai_Annotator, "(I)V");
@@ -1119,6 +1119,8 @@ jobject ScriptographerEngine::convertMatrix(JNIEnv *env, AIRealMatrix *mt, jobje
 AIRealMatrix *ScriptographerEngine::convertMatrix(JNIEnv *env, jobject mt, AIRealMatrix *res) {
 	if (res == NULL)
 		res = new AIRealMatrix;
+	// TODO: use same conversion as Gradient where the native side calls a java function on Matrix
+	// to call back into native side with values.
 	res->a = env->CallDoubleMethod(mt, mid_ai_Matrix_getScaleX);
 	res->b = env->CallDoubleMethod(mt, mid_ai_Matrix_getShearY);
 	res->c = env->CallDoubleMethod(mt, mid_ai_Matrix_getShearX);
@@ -1656,7 +1658,7 @@ ASErr ScriptographerEngine::menuItemUpdate(AIMenuMessage *message, long inArtwor
 ASErr ScriptographerEngine::timerExecute(AITimerMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_ai_Timer, mid_ai_Timer_onExecute, (jint) message->timer);
+		callStaticVoidMethod(env, cls_sg_Timer, mid_sg_Timer_onExecute, (jint) message->timer);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;

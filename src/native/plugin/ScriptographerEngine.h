@@ -257,9 +257,9 @@ public:
 	jclass cls_ai_Raster;
 	jfieldID fid_ai_Raster_data;
 	
-	jclass cls_ai_PlacedItem;
+	jclass cls_ai_PlacedFile;
 
-	jclass cls_ai_SymbolItem;
+	jclass cls_ai_PlacedSymbol;
 
 	jclass cls_ai_Tracing;
 	jmethodID mid_ai_Tracing_markDirty;
@@ -275,7 +275,7 @@ public:
 	jfieldID fid_ai_TabletValue_value;
 
 	jclass cls_ai_GradientStop;
-	jmethodID mid_ai_GradientStop_init;
+	jmethodID mid_ai_GradientStop_set;
 	
 	jclass cls_ai_Document;
 	
@@ -286,9 +286,9 @@ public:
 	jmethodID mid_ai_LiveEffect_onInterpolate;
 	jmethodID mid_ai_LiveEffect_onGetInputType;
 	
-	jclass cls_ai_Timer;
-	jmethodID cid_ai_Timer;
-	jmethodID mid_ai_Timer_onExecute;
+	jclass cls_sg_Timer;
+	jmethodID cid_sg_Timer;
+	jmethodID mid_sg_Timer_onExecute;
 	
 	jclass cls_ai_Annotator;
 	jmethodID cid_ai_Annotator;

@@ -24,22 +24,22 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $Id$
+ * $Id: com_scriptographer_sg_Timer.cpp 460 2008-02-28 17:06:09Z lehni $
  */
 
 #include "StdHeaders.h"
 #include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
-#include "com_scriptographer_ai_Timer.h"
+#include "com_scriptographer_sg_Timer.h"
 
 /*
- * com.scriptographer.ai.Timer
+ * com.scriptographer.sg.Timer
  */
 
 /*
  * int nativeCreate(java.lang.String name, int period)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Timer_nativeCreate(JNIEnv *env, jobject obj, jstring name, jint period) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_sg_Timer_nativeCreate(JNIEnv *env, jobject obj, jstring name, jint period) {
 	try {
 		char *str = gEngine->convertString(env, name);
 		AITimerHandle timer = NULL;
@@ -54,21 +54,21 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Timer_nativeCreate(JNIEnv *env
 /*
  * boolean nativeSetActive(int handle, boolean active)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Timer_nativeSetActive(JNIEnv *env, jobject obj, jint handle, jboolean active) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_sg_Timer_nativeSetActive(JNIEnv *env, jobject obj, jint handle, jboolean active) {
 	return !sAITimer->SetTimerActive((AITimerHandle) handle, active);
 }
 
 /*
  * boolean nativeSetPeriod(int handle, int period)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Timer_nativeSetPeriod(JNIEnv *env, jobject obj, jint handle, jint period) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_sg_Timer_nativeSetPeriod(JNIEnv *env, jobject obj, jint handle, jint period) {
 	return !sAITimer->SetTimerPeriod((AITimerHandle) handle, period);
 }
 
 /*
  * java.util.ArrayList nativeGetTimers()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Timer_nativeGetTimers(JNIEnv *env, jclass cls) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_sg_Timer_nativeGetTimers(JNIEnv *env, jclass cls) {
 	try {
 		if (gEngine != NULL) {
 			jobject array = gEngine->newObject(env, gEngine->cls_ArrayList, gEngine->cid_ArrayList);
@@ -81,9 +81,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Timer_nativeGetTimers(JNIEn
 				if (!sAITimer->GetNthTimer(i, &timer) &&
 					!sAITimer->GetTimerPlugin(timer, &timerPlugin) &&
 					plugin == timerPlugin) {
-					// create the wrapper
-					jobject timerObj = gEngine->newObject(env, gEngine->cls_ai_Timer, gEngine->cid_ai_Timer, (jint) timer);
-					// and add it to the array
+					// Create the wrapper...
+					jobject timerObj = gEngine->newObject(env, gEngine->cls_sg_Timer, gEngine->cid_sg_Timer, (jint) timer);
+					// ...and add it to the array
 					gEngine->callObjectMethod(env, array, gEngine->mid_Collection_add, timerObj);
 				}
 			}
