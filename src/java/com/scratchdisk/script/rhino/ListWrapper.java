@@ -31,8 +31,8 @@
 
 package com.scratchdisk.script.rhino;
 
+import org.mozilla.javascript.Callable;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeJavaMethod;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.Wrapper;
@@ -79,7 +79,7 @@ public class ListWrapper extends ExtendedJavaObject {
 			if (value instanceof Wrapper)
 				value = ((Wrapper) value).unwrap();
 			int size = list.size();
-			if (index > size) {
+			if (index >= size) {
 				for (int i = size; i < index; i++)
 					list.add(i, null);
 				list.add(index, value);
@@ -116,9 +116,8 @@ public class ListWrapper extends ExtendedJavaObject {
 		// get / set the item's dimensions.
 		if (name.equals("size") && members.has("setSize", false)) {
 			Object obj = members.get(this, "setSize", javaObject, false);
-			if (obj instanceof NativeJavaMethod) {
-				NativeJavaMethod setSize = (NativeJavaMethod) obj;
-				setSize.call(Context.getCurrentContext(), start.getParentScope(), this, new Object[] { value });
+			if (obj instanceof Callable) {
+				((Callable) obj).call(Context.getCurrentContext(), start.getParentScope(), this, new Object[] { value });
 				return;
 			}
 		} else if (javaObject instanceof StringIndexList && !members.has(name, false)) {
@@ -132,10 +131,8 @@ public class ListWrapper extends ExtendedJavaObject {
 		// Again, allow access to getSize, if it's there. See #put
 		if (name.equals("size") && members.has("getSize", false)) {
 			Object obj = members.get(this, "getSize", javaObject, false);
-			if (obj instanceof NativeJavaMethod) {
-				NativeJavaMethod getSize = (NativeJavaMethod) obj;
-				return getSize.call(Context.getCurrentContext(), start.getParentScope(), this, new Object[] {});
-			}
+			if (obj instanceof Callable)
+				return ((Callable) obj).call(Context.getCurrentContext(), start.getParentScope(), this, new Object[] {});
 		}
 		Object obj = super.get(name, start);
 		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
