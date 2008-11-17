@@ -61,8 +61,13 @@ public class PatternColor extends Color {
 	}
 
 	public boolean equals(Object obj) {
-		// TODO: Implement!
-		return obj == this;
+		if (obj == this)
+			return true;
+		if (obj instanceof PatternColor) {
+			PatternColor col = (PatternColor) obj;
+			return (pattern.equals(col.pattern) && matrix.equals(col.matrix));
+		}
+		return false;
 	}
 
 	public float[] getComponents() {
