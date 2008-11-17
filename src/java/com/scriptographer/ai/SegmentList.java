@@ -31,8 +31,6 @@
 
 package com.scriptographer.ai;
 
-import java.awt.geom.Line2D;
-
 import com.scratchdisk.list.ArrayList;
 import com.scratchdisk.list.List;
 import com.scriptographer.list.AbstractFetchList;

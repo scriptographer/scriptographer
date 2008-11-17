@@ -385,8 +385,10 @@ public class Tool extends NativeObject {
 	private static final int EVENT_DESELECT = 6;
 	private static final int EVENT_RESELECT = 7;
 	// TODO: not implemented yet:
+	/*
 	private static final int EVENT_DECREASE_DIAMETER = 8;
 	private static final int EVENT_INCREASE_DIAMETER = 9;
+	*/
 
 	private final static String[] eventTypes = {
 		"AI Edit Options",
