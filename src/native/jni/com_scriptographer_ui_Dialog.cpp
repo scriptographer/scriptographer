@@ -31,7 +31,7 @@
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
 #include "AppContext.h"
-#include "admGlobals.h"
+#include "uiGlobals.h"
 #include "com_scriptographer_ui_Dialog.h"
 #include "com_scriptographer_ui_Notifier.h"
 #include "resourceIds.h"

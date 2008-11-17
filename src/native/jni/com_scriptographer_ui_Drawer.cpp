@@ -29,7 +29,7 @@
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
-#include "admGlobals.h"
+#include "uiGlobals.h"
 #include "com_scriptographer_ui_Drawer.h"
 
 /*

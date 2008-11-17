@@ -431,7 +431,7 @@
 		91D4E9580A252070002888A3 /* stdPrefix.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = stdPrefix.h; path = prefix/stdPrefix.h; sourceTree = "<group>"; };
 		91D4EDA40A255937002888A3 /* Scriptographer.rsrc */ = {isa = PBXFileReference; lastKnownFileType = archive.rsrc; name = Scriptographer.rsrc; path = resources/Scriptographer.rsrc; sourceTree = "<group>"; };
 		91E56C2A0B396EE0004AED6E /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
-		91EF09BF0A20A2CD00F0EF9A /* admGlobals.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = admGlobals.h; path = jni/admGlobals.h; sourceTree = "<group>"; };
+		91EF09BF0A20A2CD00F0EF9A /* uiGlobals.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = uiGlobals.h; path = jni/uiGlobals.h; sourceTree = "<group>"; };
 		91EF09C00A20A2CD00F0EF9A /* aiGlobals.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = aiGlobals.h; path = jni/aiGlobals.h; sourceTree = "<group>"; };
 		91EF0A470A20A2CD00F0EF9A /* exceptions.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = exceptions.h; sourceTree = "<group>"; };
 		91EF0A4A0A20A2CD00F0EF9A /* resourceIds.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = resourceIds.h; sourceTree = "<group>"; };
@@ -771,7 +771,7 @@
 				91EF0B4E0A20A4B900F0EF9A /* AI */,
 				91EF0B520A20A4CB00F0EF9A /* UI */,
 				918052CF0ED0FF4F007CD826 /* SG */,
-				91EF09BF0A20A2CD00F0EF9A /* admGlobals.h */,
+				91EF09BF0A20A2CD00F0EF9A /* uiGlobals.h */,
 				91EF09C00A20A2CD00F0EF9A /* aiGlobals.h */,
 				91EF0B040A20A4B200F0EF9A /* com_scriptographer_ScriptographerEngine.cpp */,
 				91EF0B030A20A4B200F0EF9A /* registerNatives.cpp */,

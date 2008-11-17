@@ -31,7 +31,7 @@
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
 #include "com_scriptographer_ai_Item.h" // for com_scriptographer_ai_Item_TYPE_LAYER
-#include "admGlobals.h"
+#include "uiGlobals.h"
 
 #ifdef WIN_ENV
 #include "loadJava.h"
@@ -563,11 +563,11 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ai_FileFormat = loadClass(env, "com/scriptographer/ai/FileFormat");
 	cid_ai_FileFormat = getConstructorID(env, cls_ai_FileFormat, "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
-// ADM:
-	cls_ui_NativeObject = loadClass(env, "com/scriptographer/adm/NativeObject");
+// UI:
+	cls_ui_NativeObject = loadClass(env, "com/scriptographer/ui/NativeObject");
 	fid_ui_NativeObject_handle = getFieldID(env, cls_ui_NativeObject, "handle", "I");
 
-	cls_ui_Rectangle = loadClass(env, "com/scriptographer/adm/Rectangle");
+	cls_ui_Rectangle = loadClass(env, "com/scriptographer/ui/Rectangle");
 	cid_ui_Rectangle = getConstructorID(env, cls_ui_Rectangle, "(IIII)V");
 	fid_ui_Rectangle_x = getFieldID(env, cls_ui_Rectangle, "x", "I");
 	fid_ui_Rectangle_y = getFieldID(env, cls_ui_Rectangle, "y", "I");
@@ -575,61 +575,61 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_ui_Rectangle_height = getFieldID(env, cls_ui_Rectangle, "height", "I");
 	mid_ui_Rectangle_set = getMethodID(env, cls_ui_Rectangle, "set", "(IIII)V");
 	
-	cls_ui_Point = loadClass(env, "com/scriptographer/adm/Point");
+	cls_ui_Point = loadClass(env, "com/scriptographer/ui/Point");
 	cid_ui_Point = getConstructorID(env, cls_ui_Point, "(II)V");
 	fid_ui_Point_x = getFieldID(env, cls_ui_Point, "x", "I");
 	fid_ui_Point_y = getFieldID(env, cls_ui_Point, "y", "I");
 	mid_ui_Point_set = getMethodID(env, cls_ui_Point, "set", "(II)V");
 	
-	cls_ui_Size = loadClass(env, "com/scriptographer/adm/Size");
+	cls_ui_Size = loadClass(env, "com/scriptographer/ui/Size");
 	cid_ui_Size = getConstructorID(env, cls_ui_Size, "(II)V");
 	fid_ui_Size_width = getFieldID(env, cls_ui_Size, "width", "I");
 	fid_ui_Size_height = getFieldID(env, cls_ui_Size, "height", "I");
 	mid_ui_Size_set = getMethodID(env, cls_ui_Size, "set", "(II)V");
 
-	cls_ui_Dialog = loadClass(env, "com/scriptographer/adm/Dialog");
+	cls_ui_Dialog = loadClass(env, "com/scriptographer/ui/Dialog");
 	mid_ui_Dialog_onSizeChanged = getMethodID(env, cls_ui_Dialog, "onSizeChanged", "(II)V");
 
-	cls_ui_PopupDialog = loadClass(env, "com/scriptographer/adm/PopupDialog");
+	cls_ui_PopupDialog = loadClass(env, "com/scriptographer/ui/PopupDialog");
 
-	cls_ui_DialogGroupInfo = loadClass(env, "com/scriptographer/adm/DialogGroupInfo");
+	cls_ui_DialogGroupInfo = loadClass(env, "com/scriptographer/ui/DialogGroupInfo");
 	cid_ui_DialogGroupInfo = getConstructorID(env, cls_ui_DialogGroupInfo, "(Ljava/lang/String;I)V");
 
-	cls_ui_Drawer = loadClass(env, "com/scriptographer/adm/Drawer");
+	cls_ui_Drawer = loadClass(env, "com/scriptographer/ui/Drawer");
 	cid_ui_Drawer = getConstructorID(env, cls_ui_Drawer, "(I)V");
 
-	cls_ui_FontInfo = loadClass(env, "com/scriptographer/adm/FontInfo");
+	cls_ui_FontInfo = loadClass(env, "com/scriptographer/ui/FontInfo");
 	cid_ui_FontInfo = getConstructorID(env, cls_ui_FontInfo, "(IIIII)V");
 
-	cls_ui_Image = loadClass(env, "com/scriptographer/adm/Image");
+	cls_ui_Image = loadClass(env, "com/scriptographer/ui/Image");
 	fid_ui_Image_byteWidth = getFieldID(env, cls_ui_Image, "byteWidth", "I");
 	fid_ui_Image_bitsPerPixel = getFieldID(env, cls_ui_Image, "bitsPerPixel", "I");
 	mid_ui_Image_getIconHandle = getMethodID(env, cls_ui_Image, "getIconHandle", "()I");
 
-	cls_ui_ListItem = loadClass(env, "com/scriptographer/adm/ListItem");
+	cls_ui_ListItem = loadClass(env, "com/scriptographer/ui/ListItem");
 	fid_ui_ListItem_listHandle = getFieldID(env, cls_ui_ListItem, "listHandle", "I");	
 	
-	cls_ui_HierarchyList = loadClass(env, "com/scriptographer/adm/HierarchyList");
+	cls_ui_HierarchyList = loadClass(env, "com/scriptographer/ui/HierarchyList");
 
-	cls_ui_ListEntry = loadClass(env, "com/scriptographer/adm/ListEntry");
+	cls_ui_ListEntry = loadClass(env, "com/scriptographer/ui/ListEntry");
 
-	cls_ui_HierarchyListEntry = loadClass(env, "com/scriptographer/adm/HierarchyListEntry");
+	cls_ui_HierarchyListEntry = loadClass(env, "com/scriptographer/ui/HierarchyListEntry");
 
-	cls_ui_NotificationHandler = loadClass(env, "com/scriptographer/adm/NotificationHandler");
-	fid_ui_NotificationHandler_tracker = getFieldID(env, cls_ui_NotificationHandler, "tracker", "Lcom/scriptographer/adm/Tracker;");
-	fid_ui_NotificationHandler_drawer = getFieldID(env, cls_ui_NotificationHandler, "drawer", "Lcom/scriptographer/adm/Drawer;");
+	cls_ui_NotificationHandler = loadClass(env, "com/scriptographer/ui/NotificationHandler");
+	fid_ui_NotificationHandler_tracker = getFieldID(env, cls_ui_NotificationHandler, "tracker", "Lcom/scriptographer/ui/Tracker;");
+	fid_ui_NotificationHandler_drawer = getFieldID(env, cls_ui_NotificationHandler, "drawer", "Lcom/scriptographer/ui/Drawer;");
 	mid_ui_NotificationHandler_onNotify = getMethodID(env, cls_ui_NotificationHandler, "onNotify", "(Ljava/lang/String;)V");
-	mid_ui_NotificationHandler_onDraw = getMethodID(env, cls_ui_NotificationHandler, "onDraw", "(Lcom/scriptographer/adm/Drawer;)V");
+	mid_ui_NotificationHandler_onDraw = getMethodID(env, cls_ui_NotificationHandler, "onDraw", "(Lcom/scriptographer/ui/Drawer;)V");
 	
-	cls_ui_Tracker = loadClass(env, "com/scriptographer/adm/Tracker");
-	mid_ui_Tracker_onTrack = getMethodID(env, cls_ui_Tracker, "onTrack", "(Lcom/scriptographer/adm/NotificationHandler;IIIIIIICJ)Z");
+	cls_ui_Tracker = loadClass(env, "com/scriptographer/ui/Tracker");
+	mid_ui_Tracker_onTrack = getMethodID(env, cls_ui_Tracker, "onTrack", "(Lcom/scriptographer/ui/NotificationHandler;IIIIIIICJ)Z");
 	
-	cls_ui_MenuItem = loadClass(env, "com/scriptographer/adm/MenuItem");
-	mid_ui_MenuItem_wrapHandle = getStaticMethodID(env, cls_ui_MenuItem, "wrapHandle", "(ILjava/lang/String;ILjava/lang/String;)Lcom/scriptographer/adm/MenuItem;");
+	cls_ui_MenuItem = loadClass(env, "com/scriptographer/ui/MenuItem");
+	mid_ui_MenuItem_wrapHandle = getStaticMethodID(env, cls_ui_MenuItem, "wrapHandle", "(ILjava/lang/String;ILjava/lang/String;)Lcom/scriptographer/ui/MenuItem;");
 	mid_ui_MenuItem_onSelect = getStaticMethodID(env, cls_ui_MenuItem, "onSelect", "(I)V");
 	mid_ui_MenuItem_onUpdate = getStaticMethodID(env, cls_ui_MenuItem, "onUpdate", "(IIII)V");
 	
-	cls_ui_MenuGroup = loadClass(env, "com/scriptographer/adm/MenuGroup");
+	cls_ui_MenuGroup = loadClass(env, "com/scriptographer/ui/MenuGroup");
 }
 
 long ScriptographerEngine::getNanoTime() {

@@ -30,7 +30,7 @@
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "aiGlobals.h"
-#include "admGlobals.h"
+#include "uiGlobals.h"
 #include "com_scriptographer_ai_DocumentView.h"
 
 /*
