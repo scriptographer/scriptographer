@@ -54,10 +54,6 @@ public class Pattern extends DocumentObject {
 	protected static Pattern wrapHandle(int handle, Document document) {
 		return (Pattern) wrapHandle(Pattern.class, handle, document);
 	}
-	
-	public native String getName();
-	
-	public native void setName(String name);
 
 	/**
 	 * Returns the pattern definition.

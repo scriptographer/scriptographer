@@ -55,7 +55,6 @@ public class Document extends NativeObject {
 	private SymbolList symbols = null;
 	private SwatchList swatches = null;
 	private GradientList gradients = null;
-	private PatternList patterns = null;
 	private Dictionary data = null;
 
 	/**
@@ -222,11 +221,6 @@ public class Document extends NativeObject {
 		return gradients;
 	}
 
-	public PatternList getPatterns() {
-		if (patterns == null)
-			patterns = new PatternList(this);
-		return patterns;
-	}
 	// TODO: getActiveSwatch, getActiveGradient
 	
 	public native Point getPageOrigin();

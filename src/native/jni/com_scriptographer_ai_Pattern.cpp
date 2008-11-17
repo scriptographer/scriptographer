@@ -52,44 +52,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Pattern_nativeCreate(JNIEnv *e
 }
 
 /*
- * java.lang.String getName()
- */
-JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Pattern_getName(JNIEnv *env, jobject obj) {
-	try {
-		AIPatternHandle pattern = gEngine->getPatternHandle(env, obj);
-#if kPluginInterfaceVersion < kAI12
-		unsigned char name[256];
-		if (!sAIPattern->GetPatternName(pattern, name)) {
-#else
-			ai::UnicodeString name;
-			if (!sAIPattern->GetPatternName(pattern, name)) {
-#endif
-				return gEngine->convertString(env, name);
-			}
-		} EXCEPTION_CONVERT(env);
-	return NULL;
-}
-
-/*
- * void setName(java.lang.String name)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pattern_setName(JNIEnv *env, jobject obj, jstring name) {
-	try {
-		AIPatternHandle pattern = gEngine->getPatternHandle(env, obj, true);
-#if kPluginInterfaceVersion < kAI12
-		char *str = gEngine->convertString(env, name, 256);
-		sAIPattern->NewPatternName(str, 256);
-		sAIPattern->SetPatternName(pattern, gPlugin->toPascal(str, (unsigned char *) str));
-		delete str;
-#else
-		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, name);
-		sAIPattern->NewPatternName(str);
-		sAIPattern->SetPatternName(pattern, str);
-#endif
-	} EXCEPTION_CONVERT(env);
-}
-
-/*
  * com.scriptographer.ai.Item getDefinition()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pattern_getDefinition(JNIEnv *env, jobject obj) {
