@@ -37,11 +37,11 @@ package com.scriptographer.ai;
 public class GradientColor extends Color {
 	Gradient gradient;
 	Point origin;
-	Point destination; // angle, length
+	Point destination;
 	/*
 	 * For radial gradients only
 	 */
-	Point hilite; // hiliteAngle, hiliteLength
+	Point hilite;
 	/*
 	 * The accumulated transformations of the gradient. It is not necessarily the same
 	 * as the transformation matrix of the object containing the gradient.
@@ -121,7 +121,8 @@ public class GradientColor extends Color {
 			return true;
 		if (obj instanceof GradientColor) {
 			GradientColor color = (GradientColor) obj;
-			return origin.equals(color.origin)
+			return gradient.equals(color.gradient)
+				&& origin.equals(color.origin)
 				&& destination.equals(color.destination)
 				&& hilite.equals(color.hilite)
 				&& gradient.equals(color.gradient);
