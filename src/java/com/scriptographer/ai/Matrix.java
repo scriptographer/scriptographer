@@ -72,7 +72,7 @@ public class Matrix {
 	 * @throws NullPointerException if m is null
 	 */
 	public Matrix(Matrix m) {
-		at = m.toAffineTransform();
+		at = m != null ? m.toAffineTransform() : new AffineTransform();
 	}
 
 	public AffineTransform toAffineTransform() {
