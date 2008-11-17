@@ -32,6 +32,7 @@
 #define kAI11	0x11000001	// AI 11.0
 #define kAI12	0x12000001	// AI 12.0
 #define kAI13	0x13000001	// AI 13.0
+#define kAI14	0x14000001	// AI 13.0
 
 // Sweet Pea Headers
 #include "SPConfig.h"

@@ -43,8 +43,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeGet(JNI
 		AIGradientStop s;
 		if (sAIGradient->GetNthGradientStop((AIGradientHandle) handle, index, &s))
 			throw new StringException("Cannot get gradient stop");
+#if kPluginInterfaceVersion < kAI14
 		jobject color = gEngine->convertColor(env, &s.color);
-		gEngine->callVoidMethod(env, stop, gEngine->mid_ai_GradientStop_init, s.midPoint, s.rampPoint, color);
+#else
+		jobject color = gEngine->convertColor(env, &s.color, s.opacity);
+#endif
+		gEngine->callVoidMethod(env, stop, gEngine->mid_ai_GradientStop_set, s.midPoint, s.rampPoint, color);
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -54,8 +58,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeGet(JNI
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeSet(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jfloat midPoint, jfloat rampPoint, jfloatArray color) {
 	try {
 		AIGradientStop s;
-		s.midPoint = midPoint;
+#if kPluginInterfaceVersion < kAI14
+		gEngine->convertColor(env, color, &s.color);
+#else
+		gEngine->convertColor(env, color, &s.color, &s.opacity);
+#endif
 		s.rampPoint = rampPoint;
+		s.midPoint = midPoint;
 		gEngine->convertColor(env, color, &s.color);
 		if (sAIGradient->SetNthGradientStop((AIGradientHandle) handle, index, &s))
 			throw new StringException("Cannot set gradient stop");
@@ -68,9 +77,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeSet(JNI
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeInsert(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jfloat midPoint, jfloat rampPoint, jfloatArray color) {
 	try {
 		AIGradientStop s;
+#if kPluginInterfaceVersion < kAI14
 		gEngine->convertColor(env, color, &s.color);
-		s.midPoint = midPoint;
+#else
+		gEngine->convertColor(env, color, &s.color, &s.opacity);
+#endif
 		s.rampPoint = rampPoint;
+		s.midPoint = midPoint;
 		if (sAIGradient->InsertGradientStop((AIGradientHandle) handle, index, &s))
 			throw new StringException("Cannot insert gradient stop");
 	} EXCEPTION_CONVERT(env);
