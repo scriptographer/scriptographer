@@ -31,6 +31,8 @@
 
 package com.scriptographer.ai;
 
+import com.scratchdisk.list.List;
+import com.scratchdisk.list.Lists;
 import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
@@ -64,11 +66,27 @@ public class Gradient extends DocumentObject {
 			stops.update();
 		return stops;
 	}
-	
-	public native String getName();
-	
-	public native void setName(String name);
-	
+
+	public void setStops(List<GradientStop> list) {
+		int size = list.size();
+		GradientStopList stops = getStops();
+		if (size < 2)
+			throw new UnsupportedOperationException("Gradient stop list needs to contain at least two stops.");
+		for (int i = 0; i < size; i++) {
+			GradientStop stop = list.get(i);
+			if (i < stops.size()) {
+				stops.set(i, stop);
+			} else {
+				stops.add(stop);
+			}
+		}
+		stops.setSize(size);
+	}
+
+	public void setStops(GradientStop[] stops) {
+		setStops(Lists.asList(stops));
+	}
+
 	private native int nativeGetType();
 	
 	private native void nativeSetType(int type);
@@ -89,10 +107,5 @@ public class Gradient extends DocumentObject {
 	public boolean remove() {
 		// make super.remove() public
 		return super.remove();
-	}
-
-	public boolean equals(Object obj) {
-		// TODO: Implement!
-		return obj == this;
 	}
 }

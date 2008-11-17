@@ -51,42 +51,6 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Gradient_nativeCreate(JNIEnv *
 }
 
 /*
- * java.lang.String getName()
- */
-JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Gradient_getName(JNIEnv *env, jobject obj) {
-	try {
-		AIGradientHandle gradient = gEngine->getGradientHandle(env, obj);
-#if kPluginInterfaceVersion < kAI12
-		unsigned char name[256];
-		if (!sAIGradient->GetGradientName(gradient, name)) {
-#else
-		ai::UnicodeString name;
-		if (!sAIGradient->GetGradientName(gradient, name)) {
-#endif
-			return gEngine->convertString(env, name);
-		}
-	} EXCEPTION_CONVERT(env);
-	return NULL;
-}
-
-/*
- * void setName(java.lang.String name)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Gradient_setName(JNIEnv *env, jobject obj, jstring name) {
-	try {
-		AIGradientHandle gradient = gEngine->getGradientHandle(env, obj, true);
-#if kPluginInterfaceVersion < kAI12
-		unsigned char *str = gEngine->convertString_Pascal(env, name);
-		sAIGradient->SetGradientName(gradient, str);
-		delete str;
-#else
-		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, name);
-		sAIGradient->SetGradientName(gradient, str);
-#endif
-	} EXCEPTION_CONVERT(env);
-}
-
-/*
  * int nativeGetType()
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Gradient_nativeGetType(JNIEnv *env, jobject obj) {
