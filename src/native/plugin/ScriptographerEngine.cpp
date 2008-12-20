@@ -37,11 +37,7 @@
 #include "loadJava.h"
 #endif
 
-#ifdef _CLASSPATH_JNI_H
-#define GCJ 1
-#endif
-
-#if defined(MAC_ENV) && !defined(GCJ)
+#if defined(MAC_ENV)
 #define MAC_THREAD
 #endif
 
@@ -199,10 +195,8 @@ void ScriptographerEngine::init() {
 
 	// Define options
 	JVMOptions options;
-#ifndef GCJ
 	// Only add the loader to the classpath, the rest is done in java:
 	options.add("-Djava.class.path=%s" PATH_SEP_STR "loader.jar", m_homeDir);
-#endif // GCJ
 	options.add("-Djava.library.path=%s" PATH_SEP_STR "lib", m_homeDir);
 
 #ifdef MAC_ENV
@@ -231,13 +225,13 @@ void ScriptographerEngine::init() {
 		}
 	}
 
-#if defined(_DEBUG) && !defined(GCJ)
+#if defined(_DEBUG)
 	// Start JVM in debug mode, for remote debuggin on port 8000
 	options.add("-Xdebug");
 	options.add("-Xnoagent");
 	options.add("-Djava.compiler=NONE");
 	options.add("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n");
-#endif // _DEBUG && !GCJ
+#endif // _DEBUG
 
 	options.fillArgs(&args);
 	args.ignoreUnrecognized = true;
@@ -248,7 +242,6 @@ void ScriptographerEngine::init() {
 		gPlugin->log("Error creataing Java VM: %i", res);
 		throw new StringException("Unable to create Java VM.");
 	}
-#ifndef GCJ
 	cls_Loader = env->FindClass("com/scriptographer/loader/Loader");
 	if (cls_Loader == NULL)
 		throw new StringException("Unable to load loader.jar. Make sure that the java folder was copied together with the Scriptographer plugin.");
@@ -256,9 +249,6 @@ void ScriptographerEngine::init() {
 	mid_Loader_reload = getStaticMethodID(env, cls_Loader, "reload", "()Ljava/lang/String;");
 	mid_Loader_loadClass = getStaticMethodID(env, cls_Loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
 	callStaticObjectMethodReport(env, cls_Loader, mid_Loader_init, env->NewStringUTF(m_homeDir));
-#else // !GCJ
-	cls_Loader = NULL;
-#endif // !GCJ
 	
 	// Initialize reflection. This retrieves references to all the classes, fields and methods
 	// that are accessed from native code. Since JSE 1.6, this cannot be called after 
@@ -1968,6 +1958,16 @@ ai::UnicodeString ScriptographerEngine::convertString_UnicodeString(JNIEnv *env,
 
 #endif
 
+#ifdef MAC_ENV
+CFStringRef ScriptographerEngine::convertString_CFString(JNIEnv *env, jstring jstr) {
+	JNI_CHECK_ENV
+	const jchar *chars = env->GetStringCritical(jstr, NULL);
+	CFStringRef str = CFStringCreateWithCharacters(kCFAllocatorDefault, chars, env->GetStringLength(jstr));
+	env->ReleaseStringCritical(jstr, chars); 
+	return str;
+}		
+#endif
+		
 /**
  * Throws an exception with the given name (like "com/scriptographer/ScriptographerException") and message.
  *

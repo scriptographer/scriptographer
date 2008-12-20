@@ -671,7 +671,10 @@ public:
 	jstring convertString(JNIEnv *env, ai::UnicodeString &str);
 	ai::UnicodeString convertString_UnicodeString(JNIEnv *env, jstring jstr);
 #endif
-
+#ifdef MAC_ENV
+	CFStringRef convertString_CFString(JNIEnv *env, jstring jstr);
+#endif
+	
 	void throwException(JNIEnv *env, const char* name, const char* msg);
 	void throwException(JNIEnv *env, const char* msg);
 

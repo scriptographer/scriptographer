@@ -72,18 +72,127 @@ ScriptographerPlugin::~ScriptographerPlugin() {
 }
 
 #ifdef MAC_ENV
-OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef ref, EventRef event, void* userData) {
-	int type = -1;
-	switch(GetEventKind(event)) {
-		case kEventAppActivated:
-			type = com_scriptographer_ScriptographerEngine_EVENT_APP_ACTIVATED;
-			break;
-		case kEventAppDeactivated:
-			type = com_scriptographer_ScriptographerEngine_EVENT_APP_DEACTIVATED;
-			break;
+OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef handler, EventRef event, void* userData) {
+	if (gEngine != NULL) {
+		int type = -1;
+		switch(GetEventKind(event)) {
+			case kEventAppActivated:
+				type = com_scriptographer_ScriptographerEngine_EVENT_APP_ACTIVATED;
+				break;
+			case kEventAppDeactivated:
+				type = com_scriptographer_ScriptographerEngine_EVENT_APP_DEACTIVATED;
+				break;
+		}
+		if (type != -1)
+			return gEngine->onHandleEvent(type);
 	}
-	return type != -1 ? gEngine->onHandleEvent(type) : kNoErr;
+	return kNoErr;
 }
+
+static OSStatus keyHandler(EventHandlerCallRef handler, EventRef event, void *inUserData) {
+	char charCode;
+    UInt32 keyCode;
+    UInt32 modifiers;
+    Point point;
+    UInt32 when = EventTimeToTicks(GetEventTime(event));
+	
+    GetEventParameter( event, kEventParamKeyMacCharCodes, typeChar, NULL,sizeof(char), NULL,&charCode );
+    GetEventParameter( event, kEventParamKeyCode, typeUInt32, NULL,  sizeof(UInt32), NULL, &keyCode );
+	GetEventParameter(event, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &modifiers);
+    GetEventParameter( event, kEventParamMouseLocation, typeQDPoint, NULL,
+					  sizeof( Point ), NULL, &point );
+	
+    UInt32 message = (keyCode << 8) + charCode;
+    switch( GetEventKind( event ) )
+    {
+		case kEventRawKeyDown:
+		case kEventRawKeyRepeat:
+		{
+			int i = 0;
+			// UNICODE?
+			/*
+			if(macKeyModifiers != cmdKey) {
+				UniChar uc;
+				int key = convert_key(macKeyCode);
+				GetEventParameter(event, 
+								  kEventParamKeyUnicodes, typeUnicodeText, NULL, sizeof(uc), NULL, &uc);
+				
+				if(key != -1)
+					kbdputc(kbdq, key);
+				else
+					kbdputc(kbdq, uc);
+			} else {
+				if(macCharCodes == 'f' || macCharCodes == 'F') {
+					full_screen();
+				} else if(macCharCodes == 'q' || macCharCodes 
+						  == 'Q') {
+					exit(0);
+				} 
+			}
+			*/
+		}
+			break;
+			case kEventRawKeyUp :
+		{
+			int j = 0;
+			/*
+            if ( (focus != NULL) && wxTheApp->MacSendKeyUpEvent(
+																focus , message , modifiers , when , point.h , point.v ) )
+            {
+                result = noErr ;
+            }
+			 */
+		}
+            break ;
+        case kEventRawKeyModifiersChanged :
+		{
+			int k = 0;
+			/*
+			wxKeyEvent event(wxEVT_KEY_DOWN);
+			
+			event.m_shiftDown = modifiers & shiftKey;
+			event.m_controlDown = modifiers & controlKey;
+			event.m_altDown = modifiers & optionKey;
+			event.m_metaDown = modifiers & cmdKey;
+			
+			event.m_x = point.h;
+			event.m_y = point.v;
+			event.SetTimestamp(when);
+			wxWindow* focus = wxWindow::FindFocus() ;
+			event.SetEventObject(focus);
+			
+			if ( focus && (modifiers ^ wxTheApp->s_lastModifiers ) & controlKey )
+			{
+				event.m_keyCode = WXK_CONTROL ;
+				event.SetEventType( ( modifiers & controlKey ) ? wxEVT_KEY_DOWN : wxEVT_KEY_UP ) ;
+				focus->GetEventHandler()->ProcessEvent( event ) ;
+			}
+			if ( focus && (modifiers ^ wxTheApp->s_lastModifiers ) & shiftKey )
+			{
+				event.m_keyCode = WXK_SHIFT ;
+				event.SetEventType( ( modifiers & shiftKey ) ? wxEVT_KEY_DOWN : wxEVT_KEY_UP ) ;
+				focus->GetEventHandler()->ProcessEvent( event ) ;
+			}
+			if ( focus && (modifiers ^ wxTheApp->s_lastModifiers ) & optionKey )
+			{
+				event.m_keyCode = WXK_ALT ;
+				event.SetEventType( ( modifiers & optionKey ) ? wxEVT_KEY_DOWN : wxEVT_KEY_UP ) ;
+				focus->GetEventHandler()->ProcessEvent( event ) ;
+			}
+			if ( focus && (modifiers ^ wxTheApp->s_lastModifiers ) & cmdKey )
+			{
+				event.m_keyCode = WXK_COMMAND ;
+				event.SetEventType( ( modifiers & cmdKey ) ? wxEVT_KEY_DOWN : wxEVT_KEY_UP ) ;
+				focus->GetEventHandler()->ProcessEvent( event ) ;
+			}
+			wxTheApp->s_lastModifiers = modifiers ;
+			 */
+		}
+			break ;
+    }
+	return eventNotHandledErr;
+}
+
 #endif
 
 // ScriptographerPlugin:
@@ -94,12 +203,23 @@ ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
 	if (error) return error;
 
 #ifdef MAC_ENV
-	static EventTypeSpec events[] = {
+	static EventTypeSpec appEvents[] = {
 		{ kEventClassApplication, kEventAppActivated },
 		{ kEventClassApplication, kEventAppDeactivated }
 	};
-	
-	error = InstallApplicationEventHandler(NewEventHandlerUPP(appEventHandler), sizeof(events) / sizeof(EventTypeSpec), events, this, NULL);
+	error = InstallApplicationEventHandler(NewEventHandlerUPP(appEventHandler),
+			sizeof(appEvents) / sizeof(EventTypeSpec), appEvents, this, NULL);
+	if (error) return error;
+
+	static EventTypeSpec keyEvents[] = {
+		/*
+		{ kEventClassTextInput, kEventTextInputUnicodeForKeyEvent }
+		 */
+		{ kEventClassKeyboard, kEventRawKeyDown },
+		{ kEventClassKeyboard, kEventRawKeyUp }
+	};
+	error = InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(keyHandler),
+			sizeof(keyEvents) / sizeof(EventTypeSpec), keyEvents, this, NULL);
 	if (error) return error;
 #endif
 	
@@ -395,7 +515,7 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		} else if (msg->notifier == m_appStartedNotifier) {
 			error = postStartupPlugin();
 		}
-		/* is this needed?
+		/* Is this needed?
 		if (!error || error == kUnhandledMsgErr) {
 			if (sSPBasic->IsEqual(selector, kSelectorAINotify)) {
 				error = notify(msg);

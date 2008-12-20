@@ -717,20 +717,57 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeFileDialog(JNI
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseDirectory(JNIEnv *env, jclass cls, jstring message, jobject directory) {
 	jobject ret = NULL;
 	try {
+#ifdef MAC_ENV
+		// CS4 broke this for good. Use native code instead for all versions on Mac.
+		NavDialogCreationOptions options;
+		if(!NavGetDefaultDialogCreationOptions(&options)) {
+			CFStringRef msg = gEngine->convertString_CFString(env, message);
+			options.modality = kWindowModalityAppModal;
+			options.clientName = CFSTR("Scriptographer");
+			options.windowTitle = msg;
+			NavDialogRef dialog = NULL;
+			if (!NavCreateChooseFolderDialog(&options, NULL, NULL, NULL, &dialog)) {
+				if (!NavDialogRun(dialog)) {
+					NavUserAction action = NavDialogGetUserAction(dialog);
+					if (action != kNavUserActionCancel && action != kNavUserActionNone) {
+						NavReplyRecord reply;
+						FSRef ref;
+						AEKeyword keyword;
+						DescType type;
+						Size size;
+						if(!NavDialogGetReply(dialog, &reply) && !AEGetNthPtr(&reply.selection, 1, typeFSRef, &keyword, &type, &ref,  sizeof(FSRef), &size)) {
+							FSSpec spec;
+							OSErr error = FSGetCatalogInfo(&ref, kFSCatInfoNone, nil, nil, &spec, nil);
+							SPPlatformFileSpecification result;
+							result.vRefNum = spec.vRefNum;
+							result.parID = spec.parID;
+							memcpy(result.name, spec.name, 46);
+							ret = gEngine->convertFile(env, &result);
+							NavDisposeReply(&reply);
+						}
+					}
+				}
+				NavDialogDispose(dialog);
+			}
+			CFRelease(msg);
+		}
+#else
+		SPPlatformFileSpecification dir, result;
+		bool hasDir = false;
+		if (directory != NULL)
+			hasDir = gEngine->convertFile(env, directory, &dir) != NULL;
+		
 		// Unicode seems to not work (at least not on Windows?)
 		// So use normal string instead...
 		char *msg = gEngine->convertString(env, message);
-
-		SPPlatformFileSpecification dir, result;
-		bool hasDir = false;
-
-		if (directory != NULL)
-			hasDir = gEngine->convertFile(env, directory, &dir) != NULL;
-
-		if (sADMBasic->StandardGetDirectoryDialog(msg, &dir, &result))
+		if (sADMBasic->StandardGetDirectoryDialog(msg, hasDir ? &dir : NULL, &result))
 			ret = gEngine->convertFile(env, &result);
-
+		
+//		ASUnicode *msg = gEngine->convertString_ASUnicode(env, message);
+//		if (sADMBasic->StandardGetDirectoryDialogW(msg, hasDir ? &dir : NULL, &result))
+//			ret = gEngine->convertFile(env, &result);
 		delete msg;
+#endif
 	} EXCEPTION_CONVERT(env);
 	return ret;
 }

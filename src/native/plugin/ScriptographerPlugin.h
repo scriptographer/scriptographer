@@ -109,7 +109,7 @@ public:
 	void setCursor(int cursorID);
 
 #ifdef MAC_ENV
-	static OSStatus appEventHandler(EventHandlerCallRef ref, EventRef event, void* userData);
+	static OSStatus appEventHandler(EventHandlerCallRef handler, EventRef event, void* userData);
 #endif
 
 	ASErr startupPlugin(SPInterfaceMessage *message); 
