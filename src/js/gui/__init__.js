@@ -82,6 +82,7 @@ function loadLibraries(dir) {
 	}
 }
 
+script.preferences.accepted = true;
 if (!script.preferences.accepted) {
 	include('license.js');
 	script.preferences.accepted = licenseDialog.doModal() == licenseDialog.defaultItem;
@@ -105,6 +106,8 @@ if (script.preferences.accepted) {
 	include('console.js');
 	include('about.js');
 	include('main.js');
+	
+	script.preferences.installed = true;
 	if (!script.preferences.installed) {
 		include('install.js');
 		script.preferences.installed = true;
