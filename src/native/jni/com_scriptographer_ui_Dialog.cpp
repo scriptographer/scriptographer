@@ -721,10 +721,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseDirectory(JNIE
 		// CS4 broke this for good. Use native code instead for all versions on Mac.
 		NavDialogCreationOptions options;
 		if(!NavGetDefaultDialogCreationOptions(&options)) {
-			CFStringRef msg = gEngine->convertString_CFString(env, message);
-			options.modality = kWindowModalityAppModal;
-			options.clientName = CFSTR("Scriptographer");
-			options.windowTitle = msg;
+			options.message = gEngine->convertString_CFString(env, message);
 			NavDialogRef dialog = NULL;
 			if (!NavCreateChooseFolderDialog(&options, NULL, NULL, NULL, &dialog)) {
 				if (!NavDialogRun(dialog)) {
@@ -736,12 +733,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseDirectory(JNIE
 						DescType type;
 						Size size;
 						if(!NavDialogGetReply(dialog, &reply) && !AEGetNthPtr(&reply.selection, 1, typeFSRef, &keyword, &type, &ref,  sizeof(FSRef), &size)) {
-							FSSpec spec;
-							OSErr error = FSGetCatalogInfo(&ref, kFSCatInfoNone, nil, nil, &spec, nil);
 							SPPlatformFileSpecification result;
-							result.vRefNum = spec.vRefNum;
-							result.parID = spec.parID;
-							memcpy(result.name, spec.name, 46);
+							OSErr error = FSGetCatalogInfo(&ref, kFSCatInfoNone, nil, nil, (FSSpec *) &result, nil);
 							ret = gEngine->convertFile(env, &result);
 							NavDisposeReply(&reply);
 						}
@@ -749,7 +742,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseDirectory(JNIE
 				}
 				NavDialogDispose(dialog);
 			}
-			CFRelease(msg);
+			CFRelease(options.message);
 		}
 #else
 		SPPlatformFileSpecification dir, result;
@@ -927,11 +920,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_dumpControlHierarchy(JN
 		ADMWindowRef window = sADMDialog->GetWindowRef(dialog);
 		SPPlatformFileSpecification fsSpec;
 		gEngine->convertFile(env, file, &fsSpec);
-		FSSpec fileSpec;
-		fileSpec.vRefNum = fsSpec.vRefNum;
-		fileSpec.parID = fsSpec.parID;
-		memcpy(fileSpec.name, fsSpec.name, 64);
-		DumpControlHierarchy(window, (FSSpec*) &fileSpec);
+		DumpControlHierarchy(window, (FSSpec*) &fsSpec);
 #endif
 	} EXCEPTION_CONVERT(env);
 }
