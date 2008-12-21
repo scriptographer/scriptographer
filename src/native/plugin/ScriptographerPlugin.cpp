@@ -198,7 +198,7 @@ static OSStatus keyHandler(EventHandlerCallRef handler, EventRef event, void *in
 // ScriptographerPlugin:
 
 ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
-	// aquire only the basic suites that are needed here. the rest is acquired in postStartup.
+	// Aquire only the basic suites that are needed here. the rest is acquired in postStartup.
 	ASErr error = acquireSuites(&gStartupSuites);
 	if (error) return error;
 
@@ -223,14 +223,14 @@ ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
 	if (error) return error;
 #endif
 	
-	// determine baseDirectory from plugin location:
+	// Determine baseDirectory from plugin location:
 	char homeDir[kMaxPathLength];
 	SPPlatformFileSpecification fileSpec;
 	sSPPlugins->GetPluginFileSpecification(m_pluginRef, &fileSpec);
    	if (!fileSpecToPath(&fileSpec, homeDir))
 		return kCantHappenErr;
 	
-	// now find the last occurence of PATH_SEP_CHR and determine the string there:
+	// Now find the last occurence of PATH_SEP_CHR and determine the string there:
 	*(strrchr(homeDir, PATH_SEP_CHR) + 1) = '\0';
 
 	#ifdef LOGFILE
@@ -245,8 +245,8 @@ ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
 	if (error) return error;
 	
 	try {
-		// try to create the Java Engine:
-		// append java to the homeDir
+		// Try to create the Java Engine:
+		// Append java to the homeDir
 		strcat(homeDir, "java");
 		// homeDir now contains the full path to the java stuff
 		m_engine = new ScriptographerEngine(homeDir);
@@ -258,9 +258,6 @@ ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
 
 	// Make sure the plugin stays in ram all the time and postStartupPlugin gets actually called
 	sSPAccess->AcquirePlugin(m_pluginRef, &m_pluginAccess);
-	
-	// And finally initialize the engine:
-	m_engine->initEngine();
 	
 	// Add app started notifier
 	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Started", kAIApplicationStartedNotifier, &m_appStartedNotifier);
@@ -281,11 +278,14 @@ ASErr ScriptographerPlugin::postStartupPlugin() {
 	log("postStartupPlugin. Engine: %x", m_engine);
 	if (m_engine == NULL)
 		return kCantHappenErr;
-
-	// Now accuire the rest of the suites:
+	
+	// Accuire the rest of the suites:
 	ASErr error = acquireSuites(&gPostStartupSuites);
 	if (error) return error;
-
+	
+	// And finally initialize the engine:
+	m_engine->initEngine();
+	
 	m_started = true;
 
 	log("postStartupPlugin exit code: %x", error);
@@ -342,22 +342,21 @@ char *ScriptographerPlugin::fromPascal(const unsigned char *src, char *dst) {
 bool ScriptographerPlugin::fileSpecToPath(SPPlatformFileSpecification *fileSpec, char *path) {
 	// TODO: consider using AIFilePath.h instead of the hacks bellow!
 #ifdef MAC_ENV
-	// java needs a posix path on mac, not a Carbon one, as used by Illustrator:
+	// Java needs a posix path on mac, not a Carbon one, as used by Illustrator:
 	// Then transform this into a real FSSpec
 
-	// as the file refered to by fileSpec may not exist yet, create a FSSpec for its parent directory add the name afterwards
+	// As the file refered to by fileSpec may not exist yet, create a FSSpec for its parent directory add the name afterwards
 	unsigned char empty = 0; // 0-length p-string
 	FSSpec fsSpec;
 	if (FSMakeFSSpec(fileSpec->vRefNum, fileSpec->parID, &empty, &fsSpec) != noErr)
 		return false;
-	// and from there into a Posix path:
+	// And from there into a Posix path:
 	FSRef fsRef;
 	if (FSpMakeFSRef(&fsSpec, &fsRef) != noErr)
 		return false;
 	if (FSRefMakePath(&fsRef, (unsigned char*) path, kMaxPathLength))
 		return false;
-	
-	// now add the name to it:
+	// Now add the name to it:
 	char *name = fromPascal(fileSpec->name);
 	strcat(path, PATH_SEP_STR);
 	strcat(path, name);
@@ -429,17 +428,11 @@ bool ScriptographerPlugin::pathToFileSpec(const char *path, SPPlatformFileSpecif
 	if (FSGetCatalogInfo(&fsRef, kFSCatInfoVolume | kFSCatInfoParentDirID | kFSCatInfoNodeID, &catalogInfo, NULL,  NULL, NULL) != noErr)
 		return false;
 	
-	// and create a FSSpec for the child  with it:
-	FSSpec fsSpec;
-	OSErr error = FSMakeFSSpec(catalogInfo.volume , catalogInfo.nodeID, toPascal(filename, (unsigned char *) filename), &fsSpec);
+	// and create a FSSpec (== SPPlatformFileSpecification) for the child  with it:
+	OSErr error = FSMakeFSSpec(catalogInfo.volume , catalogInfo.nodeID, toPascal(filename, (unsigned char *) filename), (FSSpec *) &fileSpec);
 	// file not found error is ok:
 	if (error != noErr && error != fnfErr)
 		return false;
-
-	// copy FSSpec into fileSpec:
-	fileSpec->vRefNum = fsSpec.vRefNum;
-	fileSpec->parID = fsSpec.parID;
-	memcpy(fileSpec->name, fsSpec.name, 64);
 #else
 	// on windows, things are much easier because we don't have to convert to a posix path:
 	if (sAIUser->Path2SPPlatformFileSpecification(path, fileSpec))

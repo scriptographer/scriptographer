@@ -182,8 +182,13 @@ ImportSuite startup[] = {
 	// Needed for string conversion by various underlying method calls
 	kAIUnicodeStringSuite, kAIUnicodeStringSuiteVersion, &sAIUnicodeString, sizeof(AIUnicodeStringSuite),
 #endif
+	
+	NULL, 0, NULL, 0
+};
 
-	// Load adm on startup
+// postStartup: all suites that are needed after startup (postStartupPlugin)
+ImportSuite postStartup[] = {
+	// ADM
 	kADMBasicSuite, _kADMBasicSuiteVersion, &sADMBasic, sizeof(_ADMBasicSuite),
 	kADMDialogSuite, _kADMDialogSuiteVersion, &sADMDialog, sizeof(_ADMDialogSuite),
 	kADMItemSuite, _kADMItemSuiteVersion, &sADMItem, sizeof(_ADMItemSuite),
@@ -197,18 +202,13 @@ ImportSuite startup[] = {
 	kADMListEntrySuite, _kADMListEntrySuiteVersion, &sADMListEntry, sizeof(_ADMListEntrySuite),
 	kADMTrackerSuite, _kADMTrackerSuiteVersion, &sADMTracker, sizeof(_ADMTrackerSuite),
 	kADMDrawerSuite, _kADMDrawerSuiteVersion, &sADMDrawer, sizeof(_ADMDrawerSuite),
-#ifdef MAC_ENV
+	#ifdef MAC_ENV
 	kADMMacHostSuite, kADMMacHostSuiteVersion, &sADMMacHost, sizeof(ADMMacHostSuite),
-#endif
-#ifdef WIN_ENV
+	#endif
+	#ifdef WIN_ENV
 	kADMWinHostSuite, kADMWinHostSuiteVersion, &sADMWinHost, sizeof(ADMWinHostSuite),
-#endif
-	
-	NULL, 0, NULL, 0
-};
+	#endif
 
-// postStartup: all suites that are needed after startup (postStartupPlugin)
-ImportSuite postStartup[] = {
 	kAIAnnotatorSuite, kAIAnnotatorVersion,	&sAIAnnotator, sizeof(AIAnnotatorSuite),
 	kAIArraySuite, kAIArraySuiteVersion, &sAIArray, sizeof(AIArraySuite),
 	kAIArtStyleSuite, kAIArtStyleVersion, &sAIArtStyle, sizeof(AIArtStyleSuite),

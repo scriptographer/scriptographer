@@ -204,7 +204,7 @@ void ScriptographerEngine::init() {
 	// Start headless, in order to avoid conflicts with AWT and Illustrator
 	options.add("-Djava.awt.headless=true");
 #else // !MAC_THREAD
-	options.add("-Dapple.awt.usingSWT=true");
+	options.add("-XstartOnFirstThread");
 #endif // !MAC_THREAD
 	// Use the carbon line separator instead of the unix one on mac:
 	options.add("-Dline.separator=\r");
