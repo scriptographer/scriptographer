@@ -63,6 +63,23 @@ public class ScriptographerEngine {
 	private static File pluginDir = null;
 	private static PrintStream logger = null;
 	private static Thread mainThread;
+	private static ArrayList<Scope> initScopes;
+
+	protected static final int EVENT_APP_STARTUP = 0;
+	protected static final int EVENT_APP_POSTSTARTUP = 1;
+	protected static final int EVENT_APP_SHUTDOWN = 2;
+	protected static final int EVENT_APP_ACTIVATED = 3;
+	protected static final int EVENT_APP_DEACTIVATED = 4;
+	protected static final int EVENT_APP_ABOUT = 5;
+
+	private static String[] callbackNames = {
+		"onStartup",
+		"onPostStartup",
+		"onShutdown",
+		"onActivate",
+		"onDeactivate",
+		"onAbout"
+	};
 
 	/**
      * Don't let anyone instantiate this class.
@@ -86,19 +103,15 @@ public class ScriptographerEngine {
 		// Loader, so getting the ClassLoader from there is save:
 		Thread.currentThread().setContextClassLoader(
 				ScriptographerEngine.class.getClassLoader());
-
-		// Execute GUI code, if it exists
+		initScopes = new ArrayList<Scope>();
+		// Collect GUI code, if it exists
 		File guiDir = new File(pluginDir, "gui");
 		if (guiDir.isDirectory())
-			callInitScripts(guiDir);
+			collectInitScripts(guiDir, initScopes);
 
-		// Execute all __init__ scripts in the Script folder:
+		// Collect all __init__ scripts in the Script folder:
 		if (scriptDir != null)
-			callInitScripts(scriptDir);
-
-		// Explicitly initialize all dialogs on startup, as otherwise
-		// funny things will happen on CS3 -> see comment in initializeAll
-		Dialog.initializeAll();
+			collectInitScripts(scriptDir, initScopes);
 	}
 
 	public static void destroy() {
@@ -384,13 +397,13 @@ public class ScriptographerEngine {
 	}
 
 	/**
-	 * Executes all scripts named __init__.* in the given folder
+	 * Executes all scripts named __init__.* in the given folder and collects the resulting scopes for callback
 	 *
 	 * @param dir
 	 * @throws IOException 
 	 * @throws ScriptException 
 	 */
-	public static void callInitScripts(File dir) throws ScriptException, IOException {
+	public static void collectInitScripts(File dir, ArrayList<Scope> scopes) {
 		File []files = dir.listFiles();
 		if (files != null) {
 			for (int i = 0; i < files.length; i++) {
@@ -398,9 +411,32 @@ public class ScriptographerEngine {
 				String name = file.getName();
 				if (file.isDirectory() && !name.startsWith(".")
 						&& !name.equals("CVS")) {
-					callInitScripts(file);
+					collectInitScripts(file, scopes);
 				} else if (name.startsWith("__init__")) {
-					execute(file, null);
+					try {
+						ScriptEngine engine = ScriptEngine.getEngineByFile(file);
+						if (engine == null)
+							throw new ScriptException("Unable to find script engine for " + file);
+						// Execute in the tool's scope so setIdleEventInterval can be called
+						Scope scope = engine.createScope();
+						execute(file, scope);
+						scopes.add(scope);
+					} catch (Exception e) {
+						reportError(e);
+					}
+				}
+			}
+		}
+	}
+
+	private static void callInitScripts(ArrayList<Scope> initScopes, int event) {
+		for (Scope scope : initScopes) {
+			Callable callable = scope.getCallable(callbackNames[event]);
+			if (callable != null) {
+				try {
+					callable.call(scope);
+				} catch (ScriptException e) {
+					reportError(e);
 				}
 			}
 		}
@@ -550,24 +586,12 @@ public class ScriptographerEngine {
 	 * To be called from the native environment.
 	 */
 
-	private static final int EVENT_APP_ACTIVATED = 0;
-	private static final int EVENT_APP_DEACTIVATED = 1;
-	private static final int EVENT_APP_ABOUT = 2;
-
 	@SuppressWarnings("unused")
 	private static void onHandleEvent(int type) throws Exception {
-		if (callback != null) {
-			switch (type) {
-			case EVENT_APP_ABOUT:
-				callback.onAbout();
-				break;
-			case EVENT_APP_ACTIVATED:
-				callback.onActivate();
-				break;
-			case EVENT_APP_DEACTIVATED:
-				callback.onDeactivate();
-				break;
-			}
-		}
+		callInitScripts(initScopes, type);
+		// Explicitly initialize all dialogs on startup, as otherwise
+		// funny things will happen on CS3 -> see comment in initializeAll
+		if (type == EVENT_APP_POSTSTARTUP)
+			Dialog.initializeAll();
 	}
 }

@@ -386,6 +386,10 @@ public:
 
 	void initEngine();
 	jstring reloadEngine();
+
+	ASErr onStartup();
+	ASErr onPostStartup();
+	ASErr onShutdown();
 	
 	bool isInitialized() {
 		return m_initialized;
@@ -564,28 +568,28 @@ public:
 	void commit(JNIEnv *env);
 	void resumeSuspendedDocuments();
 	
-	ASErr selectionChanged();
+	ASErr onSelectionChanged();
 	
 	// AI Tool
-	ASErr toolHandleEvent(const char * selector, AIToolMessage *message);
+	ASErr Tool_onHandleEvent(const char * selector, AIToolMessage *message);
 
 	// AI LiveEffect
-	AILiveEffectParamContext getLiveEffectContext(JNIEnv *env, jobject parameters);
-	ASErr liveEffectEditParameters(AILiveEffectEditParamMessage *message);
-	ASErr liveEffectCalculate(AILiveEffectGoMessage *message);
-	ASErr liveEffectInterpolate(AILiveEffectInterpParamMessage *message);
-	ASErr liveEffectGetInputType(AILiveEffectInputTypeMessage *message);
+	AILiveEffectParamContext LiveEffect_getContext(JNIEnv *env, jobject parameters);
+	ASErr LiveEffect_onEditParameters(AILiveEffectEditParamMessage *message);
+	ASErr LiveEffect_onCalculate(AILiveEffectGoMessage *message);
+	ASErr LiveEffect_onInterpolate(AILiveEffectInterpParamMessage *message);
+	ASErr LiveEffect_onGetInputType(AILiveEffectInputTypeMessage *message);
 	
 	// AI MenuItem
-	ASErr menuItemExecute(AIMenuMessage *message);
-	ASErr menuItemUpdate(AIMenuMessage *message, long inArtwork, long isSelected, long isTrue);
+	ASErr MenuItem_onExecute(AIMenuMessage *message);
+	ASErr MenuItem_onUpdate(AIMenuMessage *message, long inArtwork, long isSelected, long isTrue);
 
 	// AI Timer
-	ASErr timerExecute(AITimerMessage *message);
+	ASErr Timer_onExecute(AITimerMessage *message);
 
 	// AI Annotator
-	ASErr annotatorDraw(AIAnnotatorMessage *message);
-	ASErr annotatorInvalidate(AIAnnotatorMessage *message);
+	ASErr Annotator_onDraw(AIAnnotatorMessage *message);
+	ASErr Annotator_onInvalidate(AIAnnotatorMessage *message);
 	
 	// ADM CallbackListener
 	void callOnNotify(jobject handler, ADMNotifierRef notifier); 
@@ -594,7 +598,7 @@ public:
 	bool callOnTrack(jobject handler, ADMTrackerRef tracker);
 	void callOnDraw(jobject handler, ADMDrawerRef drawer);
 
-	ASErr onHandleEvent(int type);
+	ASErr callOnHandleEvent(int type);
 
 	// ADM Handles
 	int getADMObjectHandle(JNIEnv *env, jobject obj, const char *name);

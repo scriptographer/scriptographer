@@ -26,10 +26,6 @@
  *
  * $Id$
  */
-var tool = new Tool("Scriptographer Tool") {
-	image: getImage('tool.png'),
-	tooltip: 'Hello World'
-};
 
 var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing', function() {
 	if (app.macintosh) {
@@ -389,3 +385,12 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	};
 });
+
+
+function onActivate() {
+	
+}
+
+function onDeactivate() {
+	
+}

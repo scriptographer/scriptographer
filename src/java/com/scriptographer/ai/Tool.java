@@ -171,19 +171,19 @@ public class Tool extends NativeObject {
 		setDistanceThreshold(0);
 		setEventInterval(-1);
 		ScriptEngine engine = ScriptEngine.getEngineByFile(file);
-		if (engine != null) {
-			// Execute in the tool's scope so setIdleEventInterval can be called
-			scope = engine.getScope(this);
-			ScriptographerEngine.execute(file, scope);
-			if (scope != null) {
-				try {
-					onInit();
-				} catch (ScriptException e) {
-					// Rethrow
-					throw e;
-				} catch (Exception e) {
-					// cannot happen with scripts
-				}
+		if (engine == null)
+			throw new ScriptException("Unable to find script engine for " + file);
+		// Execute in the tool's scope so setIdleEventInterval can be called
+		scope = engine.getScope(this);
+		ScriptographerEngine.execute(file, scope);
+		if (scope != null) {
+			try {
+				onInit();
+			} catch (ScriptException e) {
+				// Rethrow
+				throw e;
+			} catch (Exception e) {
+				// cannot happen with scripts
 			}
 		}
 	}

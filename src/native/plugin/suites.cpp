@@ -155,7 +155,7 @@ extern "C" {
 // Use this regular expression to convert the list:
 // ^((?:\s*)k([a-zA-Z0-9]*)(.*)),(?:\s*)$ -> \1, sizeof(\2),
 
-// startup: all suites that are needed immediatelly (startupPlugin)
+// startup: all suites that are needed immediatelly (onStartupPlugin)
 ImportSuite startup[] = {
 	kSPBlocksSuite, kSPBlocksSuiteVersion, &sSPBlocks, sizeof(SPBlocksSuite),
 	kAIMdMemorySuite, kAIMdMemorySuiteVersion, &sAIMDMemory, sizeof(AIMdMemorySuite),
@@ -182,12 +182,7 @@ ImportSuite startup[] = {
 	// Needed for string conversion by various underlying method calls
 	kAIUnicodeStringSuite, kAIUnicodeStringSuiteVersion, &sAIUnicodeString, sizeof(AIUnicodeStringSuite),
 #endif
-	
-	NULL, 0, NULL, 0
-};
 
-// postStartup: all suites that are needed after startup (postStartupPlugin)
-ImportSuite postStartup[] = {
 	// ADM
 	kADMBasicSuite, _kADMBasicSuiteVersion, &sADMBasic, sizeof(_ADMBasicSuite),
 	kADMDialogSuite, _kADMDialogSuiteVersion, &sADMDialog, sizeof(_ADMDialogSuite),
@@ -209,6 +204,11 @@ ImportSuite postStartup[] = {
 	kADMWinHostSuite, kADMWinHostSuiteVersion, &sADMWinHost, sizeof(ADMWinHostSuite),
 	#endif
 
+	NULL, 0, NULL, 0
+};
+
+// postStartup: all suites that are needed after startup (onPostStartupPlugin)
+ImportSuite postStartup[] = {
 	kAIAnnotatorSuite, kAIAnnotatorVersion,	&sAIAnnotator, sizeof(AIAnnotatorSuite),
 	kAIArraySuite, kAIArraySuiteVersion, &sAIArray, sizeof(AIArraySuite),
 	kAIArtStyleSuite, kAIArtStyleVersion, &sAIArtStyle, sizeof(AIArtStyleSuite),

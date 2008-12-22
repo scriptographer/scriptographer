@@ -112,9 +112,9 @@ public:
 	static OSStatus appEventHandler(EventHandlerCallRef handler, EventRef event, void* userData);
 #endif
 
-	ASErr startupPlugin(SPInterfaceMessage *message); 
-	ASErr shutdownPlugin(SPInterfaceMessage *message); 
-	ASErr unloadPlugin(SPInterfaceMessage *message);
+	ASErr onStartupPlugin(SPInterfaceMessage *message); 
+	ASErr onShutdownPlugin(SPInterfaceMessage *message); 
+	ASErr onUnloadPlugin(SPInterfaceMessage *message);
 	ASErr acquireProperty(SPPropertiesMessage *message)  {
 		return kUnhandledMsgErr;
 	}
@@ -141,33 +141,33 @@ public:
 		return false;
 	}
 
-	ASErr postStartupPlugin();
+	ASErr onPostStartupPlugin();
 
 	ASErr getFilterParameters(AIFilterMessage *message) {
 		return kUnhandledMsgErr;
 	}
 	
-	ASErr goFilter(AIFilterMessage *message) {
+	ASErr onExecuteFilter(AIFilterMessage *message) {
 		return kUnhandledMsgErr;
 	}
 
-	ASErr pluginGroupNotify(AIPluginGroupMessage *message) {
+	ASErr onPluginGroupNotify(AIPluginGroupMessage *message) {
 		return kUnhandledMsgErr;
 	}
 
-	ASErr pluginGroupUpdate(AIPluginGroupMessage *message) {
+	ASErr onPluginGroupUpdate(AIPluginGroupMessage *message) {
 		return kUnhandledMsgErr;
 	}
 
-	ASErr getFileFormatParameters(AIFileFormatMessage *message) {
+	ASErr onGetFileFormatParameters(AIFileFormatMessage *message) {
 		return kUnhandledMsgErr;
 	}
 
-	ASErr goFileFormat(AIFileFormatMessage *message) {
+	ASErr onExecuteFileFormat(AIFileFormatMessage *message) {
 		return kUnhandledMsgErr;
 	}
 
-	ASErr checkFileFormat(AIFileFormatMessage *message) {
+	ASErr onCheckFileFormat(AIFileFormatMessage *message) {
 		return kUnhandledMsgErr;
 	}
 

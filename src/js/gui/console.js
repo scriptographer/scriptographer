@@ -158,15 +158,9 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 ScriptographerEngine.setCallback(new ScriptographerCallback() {
 	println: function(str) {
 		consoleDialog.println(str);
-	},
-
-	onAbout: function() {
-		aboutDialog.doModal();
-	},
-
-	onActivate: function() {
-	},
-
-	onDeactivate: function() {
 	}
 });
+
+function onAbout() {
+	aboutDialog.doModal();
+}

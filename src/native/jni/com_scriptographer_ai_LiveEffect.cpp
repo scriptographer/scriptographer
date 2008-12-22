@@ -111,7 +111,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeAddMenuIte
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_LiveEffect_updateParameters(JNIEnv *env, jobject obj, jobject parameters) {
 	try {
-		AILiveEffectParamContext context = gEngine->getLiveEffectContext(env, parameters);
+		AILiveEffectParamContext context = gEngine->LiveEffect_getContext(env, parameters);
 		if (context != NULL) {
 			if (!sAILiveEffect->UpdateParameters(context))
 				return true;
@@ -125,7 +125,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_LiveEffect_updateParameter
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_getMenuItem(JNIEnv *env, jobject obj, jobject parameters) {
 	try {
-		AILiveEffectParamContext context = gEngine->getLiveEffectContext(env, parameters);
+		AILiveEffectParamContext context = gEngine->LiveEffect_getContext(env, parameters);
 		AIMenuItemHandle menuItem = sAILiveEffect->GetMenuItem(context);
 		if (menuItem != NULL) {
 			return gEngine->wrapMenuItemHandle(env, menuItem);	

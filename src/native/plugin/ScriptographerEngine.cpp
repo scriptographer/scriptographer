@@ -30,6 +30,7 @@
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
+#include "com_scriptographer_ScriptographerEngine.h"
 #include "com_scriptographer_ai_Item.h" // for com_scriptographer_ai_Item_TYPE_LAYER
 #include "uiGlobals.h"
 
@@ -277,7 +278,7 @@ void ScriptographerEngine::initEngine() {
 	try {
 		// create the art handle key in which the art object's original handle value is stored
 		// as this value is used to lookup wrappers on the java side, this needs to be passed
-		// in selectionChanged, in case the art's handle was changed due to manipulations
+		// in onSelectionChanged, in case the art's handle was changed due to manipulations
 		// the java wrappers can then be updated accordingly
 		
 		// According Adobe: note that entries whose keys are prefixed with
@@ -301,7 +302,23 @@ jstring ScriptographerEngine::reloadEngine() {
 	initReflection(env);
 	registerNatives(env);
 	initEngine();
+	// Do not call onStartup since that will try to install tool buttons which cannot work at this point
+	// But onPostStartup is needed for the interface.
+	onPostStartup();
+	
 	return errors;
+}
+
+ASErr ScriptographerEngine::onStartup() {
+	return callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_APP_STARTUP);
+}
+
+ASErr ScriptographerEngine::onPostStartup() {
+	return callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_APP_POSTSTARTUP);
+}
+
+ASErr ScriptographerEngine::onShutdown() {
+	return callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_APP_SHUTDOWN);
 }
 
 /**
@@ -1424,7 +1441,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocu
 	if (dictionary != NULL) // increase reference counter. It's decreased in finalize
 		sAIDictionary->AddRef(dictionary);
 
-	// Store the art object's initial handle value in its own dictionary. see selectionChanged for more explanations
+	// Store the art object's initial handle value in its own dictionary. see onSelectionChanged for more explanations
 	jboolean wrapped = false;
 	AIDictionaryRef artDict;
 	if (!sAIArt->GetDictionary(art, &artDict)) {
@@ -1488,7 +1505,7 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 }
 		
 /**
- * selectionChanged is fired in the following situations:
+ * onSelectionChanged is fired in the following situations:
  * when either a change in the selected art objects occurs or an artwork modification
  * such as moving a point on a path occurs. In other words EITHER something was selected
  * or deselected or targeted or untargeted, OR some aspect of the current selected
@@ -1496,7 +1513,7 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
  * It calls Item.onSelectionChanged with an array containing all the affected artHandles,
  * which then increases the version variable of already wrapped objects
  */
-ASErr ScriptographerEngine::selectionChanged() {
+ASErr ScriptographerEngine::onSelectionChanged() {
 	JNIEnv *env = getEnv();
 	try {
 //		long t = getNanoTime();
@@ -1561,7 +1578,7 @@ ASErr ScriptographerEngine::selectionChanged() {
  *
  */
 
-ASErr ScriptographerEngine::toolHandleEvent(const char * selector, AIToolMessage *message) {
+ASErr ScriptographerEngine::Tool_onHandleEvent(const char * selector, AIToolMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
 		jint cursorId = callStaticIntMethod(env, cls_ai_Tool, mid_ai_Tool_onHandleEvent, (jint) message->tool, convertString(env, selector), (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
@@ -1577,8 +1594,9 @@ ASErr ScriptographerEngine::toolHandleEvent(const char * selector, AIToolMessage
  *
  */
 
-AILiveEffectParamContext ScriptographerEngine::getLiveEffectContext(JNIEnv *env, jobject parameters) {
-	// gets the value for key "context" from the map and converts it to a AILiveEffectParamContext
+AILiveEffectParamContext ScriptographerEngine::LiveEffect_getContext(JNIEnv *env, jobject parameters) {
+	// Gets the value for key "context" from the map and converts it to a AILiveEffectParamContext
+	// XXX: Transition!
 	jobject contextObj = callObjectMethod(env, parameters, mid_Map_get, env->NewStringUTF("context"));
 	if (contextObj != NULL && env->IsInstanceOf(contextObj, cls_Number)) {
 		return (AILiveEffectParamContext) callIntMethod(env, contextObj, mid_Number_intValue);
@@ -1586,7 +1604,7 @@ AILiveEffectParamContext ScriptographerEngine::getLiveEffectContext(JNIEnv *env,
 	return NULL;
 }
 
-ASErr ScriptographerEngine::liveEffectEditParameters(AILiveEffectEditParamMessage *message) {
+ASErr ScriptographerEngine::LiveEffect_onEditParameters(AILiveEffectEditParamMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onEditParameters,
@@ -1597,7 +1615,7 @@ ASErr ScriptographerEngine::liveEffectEditParameters(AILiveEffectEditParamMessag
 	return kExceptionErr;
 }
 
-ASErr ScriptographerEngine::liveEffectCalculate(AILiveEffectGoMessage *message) {
+ASErr ScriptographerEngine::LiveEffect_onCalculate(AILiveEffectGoMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
 		// TODO: setting art to something else seems to crash!
@@ -1608,12 +1626,12 @@ ASErr ScriptographerEngine::liveEffectCalculate(AILiveEffectGoMessage *message) 
 	return kExceptionErr;
 }
 
-ASErr ScriptographerEngine::liveEffectInterpolate(AILiveEffectInterpParamMessage *message) {
+ASErr ScriptographerEngine::LiveEffect_onInterpolate(AILiveEffectInterpParamMessage *message) {
 	// TODO: define
 	return kNoErr;
 }
 
-ASErr ScriptographerEngine::liveEffectGetInputType(AILiveEffectInputTypeMessage *message) {
+ASErr ScriptographerEngine::LiveEffect_onGetInputType(AILiveEffectInputTypeMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
 		message->typeMask = callStaticIntMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onGetInputType,
@@ -1629,7 +1647,7 @@ ASErr ScriptographerEngine::liveEffectGetInputType(AILiveEffectInputTypeMessage 
  *
  */
 
-ASErr ScriptographerEngine::menuItemExecute(AIMenuMessage *message) {
+ASErr ScriptographerEngine::MenuItem_onExecute(AIMenuMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_ui_MenuItem, mid_ui_MenuItem_onSelect, (jint) message->menuItem);
@@ -1638,7 +1656,7 @@ ASErr ScriptographerEngine::menuItemExecute(AIMenuMessage *message) {
 	return kExceptionErr;
 }
 
-ASErr ScriptographerEngine::menuItemUpdate(AIMenuMessage *message, long inArtwork, long isSelected, long isTrue) {
+ASErr ScriptographerEngine::MenuItem_onUpdate(AIMenuMessage *message, long inArtwork, long isSelected, long isTrue) {
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_ui_MenuItem, mid_ui_MenuItem_onUpdate,
@@ -1653,7 +1671,7 @@ ASErr ScriptographerEngine::menuItemUpdate(AIMenuMessage *message, long inArtwor
  *
  */
 
-ASErr ScriptographerEngine::timerExecute(AITimerMessage *message) {
+ASErr ScriptographerEngine::Timer_onExecute(AITimerMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_sg_Timer, mid_sg_Timer_onExecute, (jint) message->timer);
@@ -1667,7 +1685,7 @@ ASErr ScriptographerEngine::timerExecute(AITimerMessage *message) {
  *
  */
 
-ASErr ScriptographerEngine::annotatorDraw(AIAnnotatorMessage *message) {
+ASErr ScriptographerEngine::Annotator_onDraw(AIAnnotatorMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_ai_Annotator, mid_ai_Annotator_onDraw,
@@ -1677,7 +1695,7 @@ ASErr ScriptographerEngine::annotatorDraw(AIAnnotatorMessage *message) {
 	return kExceptionErr;
 }
 
-ASErr ScriptographerEngine::annotatorInvalidate(AIAnnotatorMessage *message) {
+ASErr ScriptographerEngine::Annotator_onInvalidate(AIAnnotatorMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_ai_Annotator, mid_ai_Annotator_onInvalidate, (jint) message->annotator);
@@ -1732,7 +1750,7 @@ void ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 	} EXCEPTION_CATCH_REPORT(env);
 }
 
-ASErr ScriptographerEngine::onHandleEvent(int event) {
+ASErr ScriptographerEngine::callOnHandleEvent(int event) {
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_onHandleEvent, event);

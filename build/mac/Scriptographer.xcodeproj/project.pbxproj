@@ -387,8 +387,6 @@
 		91456A920AF7E8F3000FD468 /* IText.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IText.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/ate/IText.cpp"; sourceTree = SOURCE_ROOT; };
 		91456A930AF7E8F3000FD468 /* IThrowException.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = IThrowException.cpp; path = "../../../Adobe Illustrator CS3 SDK/illustratorapi/ate/IThrowException.cpp"; sourceTree = SOURCE_ROOT; };
 		915A26B30EA50759003ADD76 /* com_scriptographer_ai_TextItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_TextItem.cpp; path = jni/com_scriptographer_ai_TextItem.cpp; sourceTree = "<group>"; };
-		916E65A20A8ACE7A00C3508D /* com */ = {isa = PBXFileReference; lastKnownFileType = folder; name = com; path = ../../src/java/com; sourceTree = SOURCE_ROOT; };
-		916E65A30A8ACE7A00C3508D /* info */ = {isa = PBXFileReference; lastKnownFileType = folder; name = info; path = ../../src/java/info; sourceTree = SOURCE_ROOT; };
 		916FC1420A25BFCC00BF8DE4 /* MachO_CFM_Glue.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = MachO_CFM_Glue.cpp; path = ../../src/native/mac/MachO_CFM_Glue.cpp; sourceTree = SOURCE_ROOT; };
 		916FC1430A25BFCC00BF8DE4 /* MachO_CFM_Glue.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = MachO_CFM_Glue.h; path = ../../src/native/mac/MachO_CFM_Glue.h; sourceTree = SOURCE_ROOT; };
 		916FC6FD0A264F2800BF8DE4 /* jniMacros.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = jniMacros.h; sourceTree = "<group>"; };
@@ -529,7 +527,6 @@
 			isa = PBXGroup;
 			children = (
 				08FB77ADFE841716C02AAC07 /* Native */,
-				916FC6F40A264CC600BF8DE4 /* Java */,
 				089C167CFE841241C02AAC07 /* Resources */,
 				91CA8A6A0A227031005E0C1A /* Frameworks and Libraries */,
 				19C28FB4FE9D528D11CA2CBB /* Products */,
@@ -580,15 +577,6 @@
 				91456A930AF7E8F3000FD468 /* IThrowException.cpp */,
 			);
 			name = CS3;
-			sourceTree = "<group>";
-		};
-		916FC6F40A264CC600BF8DE4 /* Java */ = {
-			isa = PBXGroup;
-			children = (
-				916E65A20A8ACE7A00C3508D /* com */,
-				916E65A30A8ACE7A00C3508D /* info */,
-			);
-			name = Java;
 			sourceTree = "<group>";
 		};
 		918052CF0ED0FF4F007CD826 /* SG */ = {

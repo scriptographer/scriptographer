@@ -39,13 +39,4 @@ public interface ScriptographerCallback {
 	 * To print to the console.
 	 */
 	void println(String str);
-	
-	/**
-	 * To display the about dialog.
-	 */
-	void onAbout();
-
-	void onActivate();
-
-	void onDeactivate();
 }

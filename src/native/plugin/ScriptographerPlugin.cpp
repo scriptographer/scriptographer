@@ -84,7 +84,7 @@ OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef handler, Even
 				break;
 		}
 		if (type != -1)
-			return gEngine->onHandleEvent(type);
+			return gEngine->callOnHandleEvent(type);
 	}
 	return kNoErr;
 }
@@ -197,9 +197,20 @@ static OSStatus keyHandler(EventHandlerCallRef handler, EventRef event, void *in
 
 // ScriptographerPlugin:
 
-ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
+ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 	// Aquire only the basic suites that are needed here. the rest is acquired in postStartup.
 	ASErr error = acquireSuites(&gStartupSuites);
+	if (error) return error;
+	
+	// Make sure the plugin stays in ram all the time and onPostStartupPlugin gets actually called
+	sSPAccess->AcquirePlugin(m_pluginRef, &m_pluginAccess);
+	
+	// Add app started notifier
+	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Started", kAIApplicationStartedNotifier, &m_appStartedNotifier);
+	if (error) return error;
+	
+	// Add selection changed notifier
+	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Selection Changed", kAIArtSelectionChangedNotifier, &m_selectionChangedNotifier);
 	if (error) return error;
 
 #ifdef MAC_ENV
@@ -255,46 +266,39 @@ ASErr ScriptographerPlugin::startupPlugin(SPInterfaceMessage *message) {
 		delete e;
 		return kCantHappenErr;
 	}
-
-	// Make sure the plugin stays in ram all the time and postStartupPlugin gets actually called
-	sSPAccess->AcquirePlugin(m_pluginRef, &m_pluginAccess);
 	
-	// Add app started notifier
-	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Started", kAIApplicationStartedNotifier, &m_appStartedNotifier);
-	if (error) return error;
+	// And finally initialize the engine:
+	m_engine->initEngine();
+	m_engine->onStartup();
 	
-	// Add selection changed notifier
-	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Selection Changed", kAIArtSelectionChangedNotifier, &m_selectionChangedNotifier);
-	if (error) return error;
-
 	m_loaded = true;
 	
-	log("startupPlugin exit code: %x", error);
+	log("onStartupPlugin exit code: %x", error);
 
 	return error;
 }
 
-ASErr ScriptographerPlugin::postStartupPlugin() {
-	log("postStartupPlugin. Engine: %x", m_engine);
+ASErr ScriptographerPlugin::onPostStartupPlugin() {
+	log("onPostStartupPlugin. Engine: %x", m_engine);
 	if (m_engine == NULL)
 		return kCantHappenErr;
 	
 	// Accuire the rest of the suites:
 	ASErr error = acquireSuites(&gPostStartupSuites);
 	if (error) return error;
-	
-	// And finally initialize the engine:
-	m_engine->initEngine();
-	
+
+	m_engine->onPostStartup();
+
 	m_started = true;
 
-	log("postStartupPlugin exit code: %x", error);
+	log("onPostStartupPlugin exit code: %x", error);
 
 	return error;
 }
 
-ASErr ScriptographerPlugin::shutdownPlugin(SPInterfaceMessage *message) {
-	log("shutdownPlugin");
+ASErr ScriptographerPlugin::onShutdownPlugin(SPInterfaceMessage *message) {
+	log("onShutdownPlugin");
+	m_engine->onShutdown();
 	sSPAccess->ReleasePlugin(m_pluginAccess);
 	m_pluginAccess = NULL;
 	delete m_engine;
@@ -302,11 +306,11 @@ ASErr ScriptographerPlugin::shutdownPlugin(SPInterfaceMessage *message) {
 	return kNoErr;
 }
 
-ASErr ScriptographerPlugin::unloadPlugin(SPInterfaceMessage *message) {
-	log("unloadPlugin");
+ASErr ScriptographerPlugin::onUnloadPlugin(SPInterfaceMessage *message) {
+	log("onUnloadPlugin");
 	releaseSuites(&gStartupSuites);
 	releaseSuites(&gPostStartupSuites);
-	return kUnloadErr; // tell PluginMain to remove the plugin object after this
+	return kUnloadErr; // Tell PluginMain to remove the plugin object after this
 }
 
 unsigned char *ScriptographerPlugin::toPascal(const char *src, unsigned char *dst) {
@@ -472,7 +476,7 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 	// Sweet Pea messages
 	if (sSPBasic->IsEqual(caller, kSPAccessCaller)) {
 		if (sSPBasic->IsEqual(selector, kSPAccessUnloadSelector)) {
-			error = unloadPlugin(static_cast<SPInterfaceMessage *>(message));
+			error = onUnloadPlugin(static_cast<SPInterfaceMessage *>(message));
 		} else if (sSPBasic->IsEqual(selector, kSPAccessReloadSelector)) {
 			// There is no need to handle reload messages, as the plugin is persistent
 			// Through the use of sSPAccess->AcquirePlugin();
@@ -480,11 +484,11 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		}
 	} else if (sSPBasic->IsEqual(caller, kSPInterfaceCaller))  {	
 		if (sSPBasic->IsEqual(selector, kSPInterfaceAboutSelector)) {
-			error = gEngine->onHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_APP_ABOUT);
+			error = gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_APP_ABOUT);
 		} else if (sSPBasic->IsEqual(selector, kSPInterfaceStartupSelector)) {
-			error = startupPlugin(static_cast<SPInterfaceMessage *>(message));
+			error = onStartupPlugin(static_cast<SPInterfaceMessage *>(message));
 		} else if (sSPBasic->IsEqual(selector, kSPInterfaceShutdownSelector)) {
-			error = shutdownPlugin(static_cast<SPInterfaceMessage *>(message));
+			error = onShutdownPlugin(static_cast<SPInterfaceMessage *>(message));
 		}
 	} else if (sSPBasic->IsEqual(caller, kSPCacheCaller)) {	
 		if (sSPBasic->IsEqual(selector, kSPPluginPurgeCachesSelector)) {
@@ -504,9 +508,9 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 
 		AINotifierMessage *msg = (AINotifierMessage *)message;
 		if (msg->notifier == m_selectionChangedNotifier) {
-			error = gEngine->selectionChanged();
+			error = gEngine->onSelectionChanged();
 		} else if (msg->notifier == m_appStartedNotifier) {
-			error = postStartupPlugin();
+			error = onPostStartupPlugin();
 		}
 		/* Is this needed?
 		if (!error || error == kUnhandledMsgErr) {
@@ -518,54 +522,54 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		sAIAppContext->PopAppContext(appContext);
 	} else if (sSPBasic->IsEqual(caller, kCallerAIMenu)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIGoMenuItem)) {
-			error = gEngine->menuItemExecute((AIMenuMessage *) message);
+			error = gEngine->MenuItem_onExecute((AIMenuMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIUpdateMenuItem)) {
 			long inArtwork, isSelected, isTrue;
 			sAIMenu->GetUpdateFlags(&inArtwork, &isSelected, &isTrue);
-			error = gEngine->menuItemUpdate((AIMenuMessage *) message, inArtwork, isSelected, isTrue);
+			error = gEngine->MenuItem_onUpdate((AIMenuMessage *) message, inArtwork, isSelected, isTrue);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIFilter)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIGetFilterParameters)) {
 			error = getFilterParameters((AIFilterMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIGoFilter)) {
-			error = goFilter((AIFilterMessage *) message);
+			error = onExecuteFilter((AIFilterMessage *) message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIPluginGroup)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAINotifyEdits)) {
-			error = pluginGroupNotify((AIPluginGroupMessage *) message);
+			error = onPluginGroupNotify((AIPluginGroupMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIUpdateArt)) {
-			error = pluginGroupUpdate((AIPluginGroupMessage *) message);
+			error = onPluginGroupUpdate((AIPluginGroupMessage *) message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIFileFormat)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIGetFileFormatParameters)) {
-			error = getFileFormatParameters((AIFileFormatMessage *) message);
+			error = onGetFileFormatParameters((AIFileFormatMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIGoFileFormat)) {
-			error = goFileFormat((AIFileFormatMessage *) message);
+			error = onExecuteFileFormat((AIFileFormatMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAICheckFileFormat)) {
-			error = checkFileFormat((AIFileFormatMessage *) message);
+			error = onCheckFileFormat((AIFileFormatMessage *) message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAITool)) {
-		error = gEngine->toolHandleEvent(selector, (AIToolMessage *) message);
+		error = gEngine->Tool_onHandleEvent(selector, (AIToolMessage *) message);
 	} else if (sSPBasic->IsEqual(caller, kCallerAILiveEffect)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIEditLiveEffectParameters)) {
-			error = gEngine->liveEffectEditParameters((AILiveEffectEditParamMessage *) message);
+			error = gEngine->LiveEffect_onEditParameters((AILiveEffectEditParamMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIGoLiveEffect)) {
-			error = gEngine->liveEffectCalculate((AILiveEffectGoMessage *) message);
+			error = gEngine->LiveEffect_onCalculate((AILiveEffectGoMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAILiveEffectInterpolate)) {
-			error = gEngine->liveEffectInterpolate((AILiveEffectInterpParamMessage *) message);
+			error = gEngine->LiveEffect_onInterpolate((AILiveEffectInterpParamMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAILiveEffectInputType)) {
-			error = gEngine->liveEffectGetInputType((AILiveEffectInputTypeMessage *) message);
+			error = gEngine->LiveEffect_onGetInputType((AILiveEffectInputTypeMessage *) message);
 		}
 
 	} else if (sSPBasic->IsEqual(caller, kCallerAITimer)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIGoTimer)) {
-			error = gEngine->timerExecute((AITimerMessage *) message);
+			error = gEngine->Timer_onExecute((AITimerMessage *) message);
 		}
 	} else if (sSPBasic->IsEqual(caller, kCallerAIAnnotation)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIDrawAnnotation)) {
-			error = gEngine->annotatorDraw((AIAnnotatorMessage *) message);
+			error = gEngine->Annotator_onDraw((AIAnnotatorMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIInvalAnnotation)) {
-			error = gEngine->annotatorInvalidate((AIAnnotatorMessage *) message);
+			error = gEngine->Annotator_onInvalidate((AIAnnotatorMessage *) message);
 		}
 	}
 	// We should probably handle some ADM messages too, but I don't know
