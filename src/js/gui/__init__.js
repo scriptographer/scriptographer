@@ -83,12 +83,13 @@ function loadLibraries(dir) {
 }
 
 function onStartup() {
-	// Tools are created on startup
-	include('tools.js');
 }
 
 function onPostStartup() {
+	// Tools are created on startup
+	include('tools.js');
 	// GUI is created after startup
+	script.preferences.accepted = false;
 	if (!script.preferences.accepted) {
 		include('license.js');
 		script.preferences.accepted = licenseDialog.doModal() == licenseDialog.defaultItem;

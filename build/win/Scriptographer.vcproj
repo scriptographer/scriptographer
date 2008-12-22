@@ -3102,19 +3102,11 @@
 				>
 			</File>
 			<File
-				RelativePath="resources\tool1.cur"
+				RelativePath=".\resources\tool.cur"
 				>
 			</File>
 			<File
-				RelativePath="resources\tool1.ico"
-				>
-			</File>
-			<File
-				RelativePath="resources\tool2.cur"
-				>
-			</File>
-			<File
-				RelativePath="resources\tool2.ico"
+				RelativePath=".\resources\tool.ico"
 				>
 			</File>
 		</Filter>

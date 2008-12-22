@@ -31,6 +31,7 @@
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
 #include "com_scriptographer_ai_Tool.h"
+#include "resourceIds.h"
 
 /*
  * com.scriptographer.ai.Tool
@@ -114,9 +115,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_nativeCreate(JNIEnv *env,
 		
 		data.title = title;
 		data.tooltip = title;
-		
-		data.icon = NULL;
-		
+
+		data.icon = sADMIcon->GetFromResource(gPlugin->getPluginRef(), NULL, kEmptyToolIconID, 0);
+
 		ASErr error = kNoErr;
 
 		// TODO: handle errors

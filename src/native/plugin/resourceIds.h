@@ -27,11 +27,9 @@
  * $Id$
  */
 
-#define kTool1CursorID					128
-#define kTool2CursorID					129
+#define kToolCursorID					128
 
-#define kTool1IconID					130
-#define kTool2IconID					131
+#define kEmptyToolIconID				130
 
 #define kEmptyMenuID					800
 

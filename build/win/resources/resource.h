@@ -1,7 +1,9 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by plugin.rc
 //
+#define kToolCursorID                   128
+#define kEmptyToolIconID                130
 
 // Next default values for new objects
 // 
