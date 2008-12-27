@@ -433,7 +433,7 @@ bool ScriptographerPlugin::pathToFileSpec(const char *path, SPPlatformFileSpecif
 		return false;
 	
 	// and create a FSSpec (== SPPlatformFileSpecification) for the child  with it:
-	OSErr error = FSMakeFSSpec(catalogInfo.volume , catalogInfo.nodeID, toPascal(filename, (unsigned char *) filename), (FSSpec *) &fileSpec);
+	OSErr error = FSMakeFSSpec(catalogInfo.volume, catalogInfo.nodeID, toPascal(filename, (unsigned char *) filename), (FSSpec *) fileSpec);
 	// file not found error is ok:
 	if (error != noErr && error != fnfErr)
 		return false;
