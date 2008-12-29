@@ -87,9 +87,8 @@ public:
 			*point = origins.Item(i);
 			m_origins[charIndex++] = point;
 			// Otherwise, add them now
-			if (glyphLength > 0)
-				for (int j = 1; j < glyphLength; j++)
-					m_origins[charIndex++] = NULL;
+			for (int j = 1; j < glyphLength; j++)
+				m_origins[charIndex++] = NULL;
 		}
 	}
 
@@ -133,7 +132,6 @@ public:
 class GlyphRuns {
 
 private:
-
 	Array<GlyphRun *> m_runs;
 	int m_glyphSize;
 	int m_glyphStart;
@@ -168,7 +166,6 @@ private:
 	}
 
 public:
-
 	jobjectArray getOrigins(JNIEnv *env) {
 		int index = 0;
 		jobjectArray array = env->NewObjectArray(m_charSize, gEngine->cls_ai_Point, NULL);
@@ -215,24 +212,6 @@ public:
 		return array;
 	}
 
-	static int getGlyphLength(ITextRange range, int index) {
-		// There is a way to discover ligatures: the TextRange's GetSingleGlyphInRange
-		// only returns if the length is set to the amount of chars that produce a ligature
-		// otherwise it fails. So we can test....
-		// TODO: determine maximum ligature size.
-		// Assumption is 16 for now.
-		// In most cases, 1 will return a result, so there won't be too much iteration here...
-		ATEGlyphID id;
-		int length = 1;
-		for (; length <= 16; length++) {
-			// First set the text range of the glpyhrun to test GetSingleGlyphInRange on
-			range.SetRange(index, index + length);
-			if (range.GetSingleGlyphInRange(&id)) // Found a full glyph?
-				break;
-		}
-		return length;
-	}
-
 	static int getIndex(ITextRange range, int charIndex, Array<int> *glyphLengths = NULL) {
 		// Count glyphs until pos. There is a bug in glyphRun.GetCharacterSize()
 		// and glyphRun.GetContents(), so we cannot count on these.
@@ -245,27 +224,62 @@ public:
 		int glyphPos = 0;
 		int start = range.GetStart();
 		int end = range.GetEnd();
+		int size = range.GetSize();
 		int scanPos = start;
 		while (scanPos < charIndex) {
-			int length = getGlyphLength(range, scanPos);
-			scanPos += length;
-			// Glyph runs do not count paragraph end chars, so don't count them here either.
-			if (range.GetCharacterType() != kParagraphEndChar) {
-				glyphPos++;
-				if (glyphLengths != NULL)
-					glyphLengths->add(length);
-			} else if (glyphLengths != NULL) {
-				int last = glyphLengths->size() - 1;
-				if (last >= 0) {
-					int value = glyphLengths->get(last);
-					// Add length to last one. If it's negative, subtract it, since the range starts with paragraph
-					// end chars (see bellow)
-					if (value < 0) value -= length;
-					else value += length;
-					glyphLengths->set(last, value);
-				} else {
-					// Add a negative value, to indicate that range starts with paragraph end chars
-					glyphLengths->add(-length);
+			// There is a way to discover ligatures: the TextRange's GetSingleGlyphInRange
+			// only returns if the length is set to the amount of chars that produce a ligature
+			// otherwise it fails. So we can test....
+			// TODO: determine maximum ligature size.
+			// Assumption is 16 for now.
+			// In most cases, 1 will return a result, so there won't be too much iteration here...
+			ATEGlyphID id;
+			int length = 1;
+			int max = MIN(16, size - scanPos);
+			for (; length <= max; length++) {
+				// First set the text range of the glpyhrun to test GetSingleGlyphInRange on
+				range.SetRange(scanPos, scanPos + length);
+				// ASCharType type = range.GetCharacterType();
+				if (range.GetSingleGlyphInRange(&id)) // Found a full glyph?
+					break;
+			}
+			// If the length goes all the way to the end, we are likely to have encountered a hyphen glyph, as forced by the
+			// AI layout engine's auto hyphenation.
+			// There seems to be no way to detect this otherwise, and GetSingleGlyphInRange does not return an id
+			// for the situation where the range only describes the one letter before the hyphen. So let's assume
+			// this situation is only encountered for hyphens, and adjust glyphLengths, scanPos and glyphPos accordingly
+			// further bellow.
+			if (length < max || max == 1) {
+				scanPos += length;
+				// Glyph runs do not count paragraph end chars, so don't count them here either.
+				if (range.GetCharacterType() != kParagraphEndChar) {
+					glyphPos++;
+					if (glyphLengths != NULL)
+						glyphLengths->add(length);
+				} else if (glyphLengths != NULL) {
+					int last = glyphLengths->size() - 1;
+					if (last >= 0) {
+						int value = glyphLengths->get(last);
+						// Add length to last one. If it's negative, subtract it, since the range starts with paragraph
+						// end chars (see bellow)
+						if (value < 0) value -= length;
+						else value += length;
+						glyphLengths->set(last, value);
+					} else {
+						// Add a negative value, to indicate that range starts with paragraph end chars
+						glyphLengths->add(-length);
+					}
+				}
+			} else {
+				// Increase glyph pos both for the actual char and the hyphen. This is guessing. There might be situations where
+				// this is wrong, e.g. ligatures before hypenation, etc. TODO: Test!
+				glyphPos += 2;
+				scanPos++;
+				if (glyphLengths != NULL) {
+					// Normal glyph (what if it's a ligature?)
+					glyphLengths->add(1);
+					// The hyphen, to be ignored as a glyph
+					glyphLengths->add(0);
 				}
 			}
 		}
@@ -301,21 +315,16 @@ public:
 			int charEnd = range.GetEnd();
 			int charPos = charStart;
 			int glyphStart = GlyphRuns::getIndex(frameRange, charStart);
-			int glyphEnd = glyphStart + GlyphRuns::getIndex(range, charEnd, &glyphLengths);
+			int glyphEnd = GlyphRuns::getIndex(range, charEnd, &glyphLengths);
 			
 			ASInt32 runStart = 0;
 			ITextLinesIterator lines = frame.GetTextLinesIterator();
 			while (lines.IsNotDone()) {
+				// Get current line's glyph runs
 				IGlyphRunsIterator runs = lines.Item().GetGlyphRunsIterator();
 				while (runs.IsNotDone()) {
 					IGlyphRun run = runs.Item();
 					ASInt32 runEnd = runStart + run.GetSize();
-					if (run.GetSize() == 0) {
-						IArrayRealPoint origins = run.GetOrigins();
-						ASRealMatrix matrix = run.GetMatrix();
-						sAIHardSoft->AIRealMatrixSoften(&matrix);
-						int i = 0;
-					}
 					if (runStart >= glyphEnd) {
 						// Found it already
 						return glyphRuns;
