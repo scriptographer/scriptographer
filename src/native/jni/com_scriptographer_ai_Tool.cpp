@@ -30,8 +30,8 @@
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
-#include "com_scriptographer_ai_Tool.h"
 #include "resourceIds.h"
+#include "com_scriptographer_ai_Tool.h"
 
 /*
  * com.scriptographer.ai.Tool

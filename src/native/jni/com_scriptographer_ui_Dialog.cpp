@@ -32,9 +32,9 @@
 #include "ScriptographerPlugin.h"
 #include "AppContext.h"
 #include "uiGlobals.h"
+#include "resourceIds.h"
 #include "com_scriptographer_ui_Dialog.h"
 #include "com_scriptographer_ui_Notifier.h"
-#include "resourceIds.h"
 
 /*
  * com.scriptographer.ai.Dialog
