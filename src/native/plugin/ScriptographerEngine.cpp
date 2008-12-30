@@ -1748,6 +1748,7 @@ bool ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 		setIntField(env, drawerObj, fid_ui_NativeObject_handle, (jint) drawer);
 		return callBooleanMethod(env, handler, mid_ui_NotificationHandler_onDraw, drawerObj);
 	} EXCEPTION_CATCH_REPORT(env);
+	return true;
 }
 
 ASErr ScriptographerEngine::callOnHandleEvent(int event) {
