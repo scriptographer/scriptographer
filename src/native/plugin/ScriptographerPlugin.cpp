@@ -328,6 +328,14 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 
 ASErr ScriptographerPlugin::onShutdownPlugin(SPInterfaceMessage *message) {
 	log("onShutdownPlugin");
+#ifdef WIN_ENV
+	// If we have overridden the default WindowProc, set it back now, since ours wont 
+	// exist anymore after unloading and that will lead to a crash.
+	if (s_defaultAppWindowProc != NULL) {
+		HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();
+		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG) s_defaultAppWindowProc);
+	}
+#endif
 	m_engine->onShutdown();
 	sSPAccess->ReleasePlugin(m_pluginAccess);
 	m_pluginAccess = NULL;
