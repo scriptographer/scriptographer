@@ -103,12 +103,13 @@ public class ScriptographerEngine {
 		// Loader, so getting the ClassLoader from there is save:
 		Thread.currentThread().setContextClassLoader(
 				ScriptographerEngine.class.getClassLoader());
+		// Collect all init scripts and compile them to scopes.
+		// These are then used to call onStartup / onPostStartup callbacks
 		initScopes = new ArrayList<Scope>();
 		// Collect GUI code, if it exists
 		File guiDir = new File(pluginDir, "gui");
 		if (guiDir.isDirectory())
 			collectInitScripts(guiDir, initScopes);
-
 		// Collect all __init__ scripts in the Script folder:
 		if (scriptDir != null)
 			collectInitScripts(scriptDir, initScopes);
@@ -429,19 +430,6 @@ public class ScriptographerEngine {
 		}
 	}
 
-	private static void callInitScripts(ArrayList<Scope> initScopes, int event) {
-		for (Scope scope : initScopes) {
-			Callable callable = scope.getCallable(callbackNames[event]);
-			if (callable != null) {
-				try {
-					callable.call(scope);
-				} catch (ScriptException e) {
-					reportError(e);
-				}
-			}
-		}
-	}
-
 	public static void stopAll() {
 		Timer.stopAll();
 		// Walk through all the stop scopes and call onStop on them:
@@ -588,7 +576,20 @@ public class ScriptographerEngine {
 
 	@SuppressWarnings("unused")
 	private static void onHandleEvent(int type) throws Exception {
-		callInitScripts(initScopes, type);
+		// Loop through all compiled init script scopes and see if a callback
+		// function for the given event type exists. If so, call it.
+		// This is used to install tools onStartup and GUI stuff onPostStartup
+		// It is also used to call onActivate / onDeactivate
+		for (Scope scope : initScopes) {
+			Callable callable = scope.getCallable(callbackNames[type]);
+			if (callable != null) {
+				try {
+					callable.call(scope);
+				} catch (ScriptException e) {
+					reportError(e);
+				}
+			}
+		}
 		// Explicitly initialize all dialogs on startup, as otherwise
 		// funny things will happen on CS3 -> see comment in initializeAll
 		if (type == EVENT_APP_POSTSTARTUP)

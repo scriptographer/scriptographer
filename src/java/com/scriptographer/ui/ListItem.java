@@ -115,10 +115,6 @@ public abstract class ListItem<E extends ListEntry> extends Item implements List
 		switch(notifier) {
 		case USER_CHANGED:
 			onChange();
-			// Notify entry too:
-			E entry = getActiveEntry();
-			if (entry != null)
-				entry.onNotify(notifier);
 			break;
 		case INTERMEDIATE_CHANGED:
 			onPreChange();
@@ -265,6 +261,11 @@ public abstract class ListItem<E extends ListEntry> extends Item implements List
 	public native Rectangle getEntryTextRect();
 	
 	public void setEntryTextRect(Rectangle rect) {
+		Size entrySize = getEntrySize();
+		if (rect.width > entrySize.width || rect.height > entrySize.height)
+			setEntrySize(
+					Math.max(rect.width, entrySize.width),
+					Math.max(rect.height, entrySize.height));
 		setEntryTextRect(rect.x, rect.y, rect.width, rect.height);
 	}
 

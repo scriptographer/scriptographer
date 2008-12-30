@@ -73,10 +73,11 @@ ASBoolean ASAPI ListEntry_onTrack(ADMEntryRef entry, ADMTrackerRef tracker) {
 }
 
 void ASAPI ListEntry_onDraw(ADMEntryRef entry, ADMDrawerRef drawer) {
-	sADMEntry->DefaultDraw(entry, drawer);
 	ADMListRef list = sADMEntry->GetList(entry);
 	jobject entryObj = gEngine->getListEntryObject(entry);
-	gEngine->callOnDraw(entryObj, drawer);
+	ASBoolean ret = gEngine->callOnDraw(entryObj, drawer);
+	if (ret)
+		sADMEntry->DefaultDraw(entry, drawer);
 }
 
 #define DEFINE_METHOD(METHOD) \
@@ -506,5 +507,30 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_ListEntry_update(JNIEnv *env, 
 			SUITE->Update(entry);
 
 		DEFINE_METHOD(UPDATE)
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * boolean defaultTrack(com.scriptographer.ui.Tracker tracker)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_ListEntry_defaultTrack(JNIEnv *env, jobject obj, jobject tracker) {
+	try {
+		#define DEFAULT_TRACK(SUITE) \
+			return SUITE->DefaultTrack(entry, gEngine->getTrackerHandle(env, tracker));
+				
+		DEFINE_METHOD(DEFAULT_TRACK)
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+/*
+ * void defaultDraw(com.scriptographer.ui.Drawer arg1)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_ListEntry_defaultDraw(JNIEnv *env, jobject obj, jobject drawer) {
+	try {
+		#define DEFAULT_DRAW(SUITE) \
+			SUITE->DefaultDraw(entry, gEngine->getDrawerHandle(env, drawer));
+		
+		DEFINE_METHOD(DEFAULT_DRAW)
 	} EXCEPTION_CONVERT(env);
 }

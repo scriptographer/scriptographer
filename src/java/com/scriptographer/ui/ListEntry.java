@@ -46,7 +46,12 @@ public class ListEntry extends NotificationHandler {
 
 	protected ListItem list;
 	
-	public ListEntry(ListItem list, int index) {
+	/**
+	 * This constructor is only used by ListItem#createEntry / ListItem#add
+	 * @param list
+	 * @param index
+	 */
+	protected ListEntry(ListItem list, int index) {
 		if (list instanceof HierarchyList && !(this instanceof HierarchyListEntry))
 			throw new ScriptographerException(
 					"Use HierarchyListEntry objects for HierarchyList");
@@ -74,10 +79,17 @@ public class ListEntry extends NotificationHandler {
 	 * Callback functions
 	 */
 
-	protected void onDraw(Drawer drawer) throws Exception {
+	public native boolean defaultTrack(Tracker tracker);
+	public native void defaultDraw(Drawer drawer);
+
+	protected boolean onDraw(Drawer drawer) throws Exception {
 		Callable onDrawEntry = list.getOnDrawEntry();
-		if (onDrawEntry != null)
-			ScriptographerEngine.invoke(onDrawEntry, list, drawer, this);
+		if (onDrawEntry != null) {
+			Object result = ScriptographerEngine.invoke(onDrawEntry, list, drawer, this);
+			if (result != null)
+				return ConversionUtils.toBoolean(result);
+		}
+		return true;
 	}
 
 	protected boolean onTrack(Tracker tracker) throws Exception {

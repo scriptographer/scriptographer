@@ -105,9 +105,10 @@ ASBoolean ASAPI Item_onTrack(ADMItemRef item, ADMTrackerRef tracker) {
 }
 
 void ASAPI Item_onDraw(ADMItemRef item, ADMDrawerRef drawer) {
-	sADMItem->DefaultDraw(item, drawer);
 	jobject obj = gEngine->getItemObject(item);
-	gEngine->callOnDraw(obj, drawer);
+	ASBoolean ret = gEngine->callOnDraw(obj, drawer);
+	if (ret)
+		sADMItem->DefaultDraw(item, drawer);
 }
 
 /*
@@ -158,6 +159,27 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Item_nativeSetTrackCallback(JN
 		DEFINE_CALLBACK_PROC(Item_onTrack);
 		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetTrackProc(item, enabled ? (ADMItemTrackProc) CALLBACK_PROC(Item_onTrack) : NULL);
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * boolean defaultTrack(com.scriptographer.ui.Tracker tracker)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Item_defaultTrack(JNIEnv *env, jobject obj, jobject tracker) {
+	try {
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
+		return sADMItem->DefaultTrack(item, gEngine->getTrackerHandle(env, tracker));
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+/*
+ * void defaultDraw(com.scriptographer.ui.Drawer drawer)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Item_defaultDraw(JNIEnv *env, jobject obj, jobject drawer) {
+	try {
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
+		sADMItem->DefaultDraw(item, gEngine->getDrawerHandle(env, drawer));
 	} EXCEPTION_CONVERT(env);
 }
 

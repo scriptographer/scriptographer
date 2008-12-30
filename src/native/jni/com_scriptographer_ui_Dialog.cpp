@@ -120,9 +120,10 @@ ASBoolean ASAPI Dialog_onTrack(ADMDialogRef dialog, ADMTrackerRef tracker) {
 }
 
 void ASAPI Dialog_onDraw(ADMDialogRef dialog, ADMDrawerRef drawer) {
-	sADMDialog->DefaultDraw(dialog, drawer);
 	jobject obj = gEngine->getDialogObject(dialog);
-	gEngine->callOnDraw(obj, drawer);
+	ASBoolean ret = gEngine->callOnDraw(obj, drawer);
+	if (ret)
+		sADMDialog->DefaultDraw(dialog, drawer);
 }
 
 /*
@@ -159,6 +160,27 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetTrackCallback(
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		DEFINE_CALLBACK_PROC(Dialog_onTrack);
 		sADMDialog->SetTrackProc(dialog, enabled ? (ADMDialogTrackProc) CALLBACK_PROC(Dialog_onTrack) : NULL);
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * boolean defaultTrack(com.scriptographer.ui.Tracker tracker)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_defaultTrack(JNIEnv *env, jobject obj, jobject tracker) {
+	try {
+		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
+		return sADMDialog->DefaultTrack(dialog, gEngine->getTrackerHandle(env, tracker));
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+/*
+ * void defaultDraw(com.scriptographer.ui.Drawer drawer)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_defaultDraw(JNIEnv *env, jobject obj, jobject drawer) {
+	try {
+		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
+		sADMDialog->DefaultDraw(dialog, gEngine->getDrawerHandle(env, drawer));
 	} EXCEPTION_CONVERT(env);
 }
 

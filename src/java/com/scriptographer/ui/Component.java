@@ -105,7 +105,7 @@ abstract class Component extends NotificationHandler {
 	}
 
 	protected boolean onTrack(Tracker tracker) throws Exception {
-		// Retrieve through getter so it can be overriden by subclasses,
+		// Retrieve through getter so it can be overridden by subclasses,
 		// e.g. HierarchyList
 		Callable onTrack = this.getOnTrack();
 		if (onTrack != null) {
@@ -125,12 +125,16 @@ abstract class Component extends NotificationHandler {
 		return onDraw;
 	}
 
-	protected void onDraw(Drawer drawer) throws Exception {
-		// Retrieve through getter so it can be overriden by subclasses,
+	protected boolean onDraw(Drawer drawer) throws Exception {
+		// Retrieve through getter so it can be overridden by subclasses,
 		// e.g. HierarchyList
 		Callable onDraw = this.getOnDraw();
-		if (onDraw != null)
-			ScriptographerEngine.invoke(onDraw, this, drawer);
+		if (onDraw != null) {
+			Object result = ScriptographerEngine.invoke(onDraw, this, drawer);
+			if (result != null)
+				return ConversionUtils.toBoolean(result);
+		}
+		return true;
 	}
 	
 	protected Callable onResize = null;

@@ -45,7 +45,12 @@ public class HierarchyList extends ListItem<HierarchyListEntry> {
 
 	private HierarchyListEntry parentEntry = null;
 	
-	public HierarchyList(HierarchyListEntry entry) {
+	/**
+	 * Creates a child List for a HierarchyListEntry. This constructor
+	 * is used indirectly through HierarchyListEntry only.
+	 * @param entry
+	 */
+	protected HierarchyList(HierarchyListEntry entry) {
 		listHandle = nativeCreateChildList(entry.handle);
 		// determine the parent hierarchyList:
 		parentEntry = entry;

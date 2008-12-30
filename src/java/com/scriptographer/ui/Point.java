@@ -72,6 +72,17 @@ public class Point {
 		return new Point(this);
 	}
 
+	/**
+	 * Checks whether the point is inside the rectangle
+	 * 
+	 * @param rect the rectangle to check against
+	 * @return <code>true</code> if the point is inside the rectangle, false
+	 *         otherwise
+	 */
+	public boolean isInside(Rectangle rect) {
+		return rect.contains(this);
+	}
+
 	public boolean equals(Object object) {
 		if (object instanceof Point) {
 			Point pt = (Point) object;

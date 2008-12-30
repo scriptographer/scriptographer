@@ -111,6 +111,10 @@ public:
 #ifdef MAC_ENV
 	static OSStatus appEventHandler(EventHandlerCallRef handler, EventRef event, void* userData);
 #endif
+#ifdef WIN_ENV
+	static WNDPROC s_defaultAppWindowProc;
+	static LRESULT CALLBACK appWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+#endif
 
 	ASErr onStartupPlugin(SPInterfaceMessage *message); 
 	ASErr onShutdownPlugin(SPInterfaceMessage *message); 

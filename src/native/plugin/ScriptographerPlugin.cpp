@@ -72,6 +72,7 @@ ScriptographerPlugin::~ScriptographerPlugin() {
 }
 
 #ifdef MAC_ENV
+
 OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef handler, EventRef event, void* userData) {
 	if (gEngine != NULL) {
 		int type = -1;
@@ -195,6 +196,33 @@ static OSStatus keyHandler(EventHandlerCallRef handler, EventRef event, void *in
 
 #endif
 
+#ifdef WIN_ENV
+
+WNDPROC ScriptographerPlugin::s_defaultAppWindowProc = NULL;
+
+LRESULT CALLBACK ScriptographerPlugin::appWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	if (gEngine != NULL) {
+		int type = -1;
+		switch (uMsg) {
+		case WM_ACTIVATEAPP:
+			switch (LOWORD(wParam)) {
+			case WA_INACTIVE:
+				type = com_scriptographer_ScriptographerEngine_EVENT_APP_DEACTIVATED;
+				break;
+			case WA_ACTIVE:
+				type = com_scriptographer_ScriptographerEngine_EVENT_APP_ACTIVATED;
+				break;
+			}
+			break;
+		}
+		if (type != -1)
+			gEngine->callOnHandleEvent(type);
+	}
+	return ::CallWindowProc(s_defaultAppWindowProc, hwnd, uMsg, wParam, lParam);
+}
+
+#endif
+
 // ScriptographerPlugin:
 
 ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
@@ -213,27 +241,6 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Selection Changed", kAIArtSelectionChangedNotifier, &m_selectionChangedNotifier);
 	if (error) return error;
 
-#ifdef MAC_ENV
-	static EventTypeSpec appEvents[] = {
-		{ kEventClassApplication, kEventAppActivated },
-		{ kEventClassApplication, kEventAppDeactivated }
-	};
-	error = InstallApplicationEventHandler(NewEventHandlerUPP(appEventHandler),
-			sizeof(appEvents) / sizeof(EventTypeSpec), appEvents, this, NULL);
-	if (error) return error;
-
-	static EventTypeSpec keyEvents[] = {
-		/*
-		{ kEventClassTextInput, kEventTextInputUnicodeForKeyEvent }
-		 */
-		{ kEventClassKeyboard, kEventRawKeyDown },
-		{ kEventClassKeyboard, kEventRawKeyUp }
-	};
-	error = InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(keyHandler),
-			sizeof(keyEvents) / sizeof(EventTypeSpec), keyEvents, this, NULL);
-	if (error) return error;
-#endif
-	
 	// Determine baseDirectory from plugin location:
 	char homeDir[kMaxPathLength];
 	SPPlatformFileSpecification fileSpec;
@@ -272,9 +279,6 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 	m_engine->onStartup();
 	
 	m_loaded = true;
-	
-	log("onStartupPlugin exit code: %x", error);
-
 	return error;
 }
 
@@ -288,11 +292,37 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 	if (error) return error;
 
 	m_engine->onPostStartup();
-
 	m_started = true;
+#ifdef MAC_ENV
+	static EventTypeSpec appEvents[] = {
+		{ kEventClassApplication, kEventAppActivated },
+		{ kEventClassApplication, kEventAppDeactivated }
+	};
+	error = InstallApplicationEventHandler(NewEventHandlerUPP(appEventHandler),
+			sizeof(appEvents) / sizeof(EventTypeSpec), appEvents, this, NULL);
+	if (error) return error;
 
-	log("onPostStartupPlugin exit code: %x", error);
-
+	static EventTypeSpec keyEvents[] = {
+		/*
+		{ kEventClassTextInput, kEventTextInputUnicodeForKeyEvent }
+		 */
+		{ kEventClassKeyboard, kEventRawKeyDown },
+		{ kEventClassKeyboard, kEventRawKeyUp }
+	};
+	error = InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(keyHandler),
+			sizeof(keyEvents) / sizeof(EventTypeSpec), keyEvents, this, NULL);
+	if (error) return error;
+#endif
+#ifdef WIN_ENV
+	HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();
+	s_defaultAppWindowProc = (WNDPROC) ::SetWindowLong(hWnd, GWL_WNDPROC, (LONG) appWindowProc);
+	// If the app is active (focus on splasher), send WA_ACTIVE message again, since it was received
+	// before installing the WindowProc.
+	// CAUTION: Installing WindowProc in onStartupPlugin does not seem to work on Windows,
+	// something seems to override it again after.
+	if (hWnd == ::GetParent(::GetForegroundWindow()))
+		appWindowProc(hWnd, WM_ACTIVATEAPP, WA_ACTIVE, 0);
+#endif
 	return error;
 }
 

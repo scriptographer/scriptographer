@@ -68,12 +68,16 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		style: 'black-rect',
 		size: [208, 20 * lineHeight],
 		minimumSize: [208, 8 * lineHeight],
-		entrySize: [2000, lineHeight],
 		entryTextRect: [0, 0, 2000, lineHeight],
-		// TODO: consider adding onDoubleClick, instead of this nasty workaround here!
-		// Avoid onTrack as much as possible in scripts, and add what's needed behind
-		// the scenes
+		// TODO: consider adding onDoubleClick and onExpand / Collapse, instead of this 
+		// workaround here. Avoid onTrack as much as possible in scripts,
+		// and add what's needed behind the scenes.
 		onTrackEntry: function(tracker, entry) {
+			// Detect expansion of unpopulated folders and populate on the fly
+			var expanded = entry.expanded;
+			entry.defaultTrack(tracker); // this might change entry.expanded state
+			if (entry.unpopulated && !expanded && entry.expanded)
+				entry.populate();
 			if (tracker.action == Tracker.ACTION_BUTTON_UP &&
 					(tracker.modifiers & Tracker.MODIFIER_DOUBLE_CLICK) &&
 					tracker.point.x > entry.expandArrowRect.right) {
@@ -81,10 +85,14 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 					entry.expanded = !entry.expanded;
 					entry.list.invalidate();
 				} else {
+					// Edit the file through app.launch
+					// TODO: On windows, this launches the scripting host by default
 					app.launch(entry.file);
 					// execute();
 				}
 			}
+			// Return false to prevent calling of defaultTrack sine we called it already.
+			return false;
 		}
 	};
 
@@ -97,10 +105,13 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	};
 
 	var scriptImage = getImage('script.png');
+	var toolScriptImage = getImage('script-tool.png');
+	var activeToolScriptImage = getImage('script-tool-active.png');
 	var folderImage = getImage('folder.png');
 
 	var directoryEntries = {};
 	var fileEntries = {};
+	var currentToolFile = null;
 
 	function addFile(list, file, selected) {
 		var entry = new HierarchyListEntry(list) {
@@ -111,12 +122,24 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			directory: file.isDirectory()
 		};
 		if (entry.directory) {
-			addFiles(entry.createChildList(), file, selected);
+			// Create empty child list to get the arrow button but do not
+			// populate yet. This is done dynamically in onTrackEntry
+			entry.createChildList();
 			entry.expanded = false;
+			entry.unpopulated = true;
+			entry.populate = function() {
+				if (this.unpopulated) {
+					addFiles(this.childList, this.file, selected);
+					this.unpopulated = false;
+				}
+			}
 			entry.image = folderImage;
 			directoryEntries[file] = entry;
 		} else {
-			entry.image = scriptImage;
+			entry.isTool = /onMouse(Up|Down|Move|Drag)/.test(file.readAll());
+			entry.image = entry.isTool
+				? (currentToolFile == entry.file ? activeToolScriptImage : toolScriptImage)
+				: scriptImage;
 			fileEntries[file] = entry;
 		}
 		return entry;
@@ -125,7 +148,10 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	function addFiles(list, dir, selected) {
 		var files = dir.listFiles(scriptFilter);
 		for (var i = 0; i < files.length; i++)
-			addFile(list, files[i], selected);
+			// TODO: We need to convert back to com.scriptographer.sg.File from
+			// java.io.File here, since listFiles is not using that class.
+			// Decide what to do: Shall we use the boots File object instead?
+			addFile(list, new File(files[i]), selected);
 	}
 
 	function removeFiles() {
@@ -183,15 +209,30 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		// Now restore the expanded state:
 		for (file in expandedDirs) {
 			var entry = directoryEntries[file];
-			if (entry) entry.expanded = true;
+			if (entry) {
+				entry.populate();
+				entry.expanded = true;
+			}
 		}
-		toolButton.setCurrentImage();
 	}
 
 	function execute() {
 		var entry = scriptList.activeLeaf;
-		if (entry && entry.file)
-			ScriptographerEngine.execute(entry.file, null);
+		if (entry && entry.file) {
+			if (entry.isTool) {
+				tool.tooltip = entry.file.name;
+				tool.compileScript(entry.file);
+				if (entry.file != currentToolFile) {
+					var curEntry = fileEntries[currentToolFile];
+					if (curEntry)
+						curEntry.image = toolScriptImage;
+					entry.image = activeToolScriptImage;
+					currentToolFile = entry.file;
+				}
+			} else {
+				ScriptographerEngine.execute(entry.file, null);
+			}
+		}
 	}
 	
 	// Add the menus:
@@ -246,13 +287,6 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		text: 'Execute Script',
 		onSelect: function() {
 			execute();
-		}
-	};
-
-	var refreshEntry = new ListEntry(menu) {
-		text: 'Refresh List',
-		onSelect: function() {
-			refreshFiles();
 		}
 	};
 
@@ -313,14 +347,6 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	};
 
-	var refreshButton = new ImageButton(this) {
-		image: getImage('refresh.png'),
-		size: buttonSize,
-		onClick: function() {
-			refreshFiles();
-		}
-	};
-
 	var consoleButton = new ImageButton(this) {
 		image: getImage('console.png'),
 		size: buttonSize,
@@ -337,31 +363,12 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	};
 
-	var toolButton = new ImageButton(this) {
-		image: getImage('tool.png'),
-		size: buttonSize,
-		entryImage: getImage('toolscript.png'),
-		onClick: function() {
-			var entry = scriptList.activeLeaf;
-			if (entry && entry.file) {
-				tool.tooltip = entry.file.name;
-				tool.compileScript(entry.file);
-				if (entry.file != this.curFile) {
-					this.setCurrentImage(scriptImage);
-					entry.image = this.entryImage;
-					this.curFile = entry.file;
-				}
-			}
-		},
-		setCurrentImage: function(image) {
-			var curEntry = fileEntries[this.curFile];
-			if (curEntry)
-				curEntry.image = image ? image : this.entryImage;
-		}
-	};
-
 	if (scriptographer.scriptDirectory)
 		refreshFiles();
+
+	global.onActivate = function() {
+		refreshFiles();
+	}
 
 	return {
 		title: 'Scriptographer',
@@ -374,23 +381,10 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 					playButton,
 					stopButton,
 					new Spacer(4, 0),
-					refreshButton,
-					new Spacer(4, 0),
 					newButton,
 					consoleButton,
-					new Spacer(4, 0),
-					toolButton
 				]
 			}
 		}
 	};
 });
-
-
-function onActivate() {
-	
-}
-
-function onDeactivate() {
-	
-}

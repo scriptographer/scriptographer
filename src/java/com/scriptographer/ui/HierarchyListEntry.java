@@ -43,14 +43,25 @@ public class HierarchyListEntry extends ListEntry {
 	private DialogColor dividerColor = DialogColor.BLACK;
 	protected HierarchyList childList = null;
 	
+	/**
+	 * This constructor is only used by HierarchyList#createEntry / ListItem#add
+	 * @param list
+	 * @param index
+	 */
 	protected HierarchyListEntry(HierarchyList list, int index) {
 		super(list, index);
 	}
 
-	public HierarchyListEntry(HierarchyList list) {
+	public HierarchyListEntry(HierarchyList list, boolean hasChildren) {
 		super(list);
+		if (hasChildren)
+			createChildList();
 	}
 	
+	public HierarchyListEntry(HierarchyList list) {
+		this(list, false);
+	}
+
 	/*
 	 * container accessors
 	 *

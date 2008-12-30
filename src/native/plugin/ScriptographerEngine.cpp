@@ -626,7 +626,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_ui_NotificationHandler_tracker = getFieldID(env, cls_ui_NotificationHandler, "tracker", "Lcom/scriptographer/ui/Tracker;");
 	fid_ui_NotificationHandler_drawer = getFieldID(env, cls_ui_NotificationHandler, "drawer", "Lcom/scriptographer/ui/Drawer;");
 	mid_ui_NotificationHandler_onNotify = getMethodID(env, cls_ui_NotificationHandler, "onNotify", "(Ljava/lang/String;)V");
-	mid_ui_NotificationHandler_onDraw = getMethodID(env, cls_ui_NotificationHandler, "onDraw", "(Lcom/scriptographer/ui/Drawer;)V");
+	mid_ui_NotificationHandler_onDraw = getMethodID(env, cls_ui_NotificationHandler, "onDraw", "(Lcom/scriptographer/ui/Drawer;)Z");
 	
 	cls_ui_Tracker = loadClass(env, "com/scriptographer/ui/Tracker");
 	mid_ui_Tracker_onTrack = getMethodID(env, cls_ui_Tracker, "onTrack", "(Lcom/scriptographer/ui/NotificationHandler;IIIIIIICJ)Z");
@@ -1741,12 +1741,12 @@ bool ScriptographerEngine::callOnTrack(jobject handler, ADMTrackerRef tracker) {
 	return true;
 }
 
-void ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
+bool ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 	JNIEnv *env = getEnv();
 	try {
 		jobject drawerObj = getObjectField(env, handler, fid_ui_NotificationHandler_drawer);
 		setIntField(env, drawerObj, fid_ui_NativeObject_handle, (jint) drawer);
-		callVoidMethod(env, handler, mid_ui_NotificationHandler_onDraw, drawerObj);
+		return callBooleanMethod(env, handler, mid_ui_NotificationHandler_onDraw, drawerObj);
 	} EXCEPTION_CATCH_REPORT(env);
 }
 

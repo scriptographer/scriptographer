@@ -48,8 +48,11 @@ abstract class NotificationHandler extends NativeObject {
 
 	protected abstract void onNotify(Notifier notifier) throws Exception;
 	protected abstract boolean onTrack(Tracker tracker) throws Exception;
-	protected abstract void onDraw(Drawer drawer) throws Exception;
+	protected abstract boolean onDraw(Drawer drawer) throws Exception;
 
+	public abstract boolean defaultTrack(Tracker tracker);
+	public abstract void defaultDraw(Drawer drawer);
+	
 	protected final void onNotify(String notifier) throws Exception {
 		onNotify(Notifier.get(notifier));
 	}

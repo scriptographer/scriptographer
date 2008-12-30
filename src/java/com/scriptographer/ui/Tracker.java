@@ -31,8 +31,6 @@
 
 package com.scriptographer.ui;
 
-import java.awt.Point;
-
 /**
  * @author lehni
  */
@@ -260,7 +258,7 @@ public class Tracker extends NativeObject {
 		this.handle = handle;
 		this.action = action;
 		this.modifiers = modifiers;
-		this.point.setLocation(px, py);
+		this.point.set(px, py);
 		this.mouseState = mouseState;
 		this.virtualKey = virtualKey;
 		this.character = character;
@@ -312,5 +310,16 @@ public class Tracker extends NativeObject {
 
 	public int getMouseState() {
 		return mouseState;
+	}
+
+	public String toString() {
+		return "{ action: 0x" + Integer.toHexString(action)
+			+ ", modifiers: 0x" + Integer.toHexString(modifiers)
+			+ ", point: " + point
+			+ ", mouseState: 0x" + Integer.toHexString(mouseState)
+			+ ", virtualKey: 0x" + Integer.toHexString(virtualKey)
+			+ ", character: 0x" + Integer.toHexString(character)
+			+ ", time: " + time
+			+ " }";
 	}
 }

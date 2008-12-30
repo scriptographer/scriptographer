@@ -80,10 +80,11 @@ ASBoolean ASAPI HierarchyListEntry_onTrack(ADMListEntryRef entry, ADMTrackerRef 
 }
 
 void ASAPI HierarchyListEntry_onDraw(ADMListEntryRef entry, ADMDrawerRef drawer) {
-	sADMListEntry->DefaultDraw(entry, drawer);
 	ADMHierarchyListRef list = sADMListEntry->GetList(entry);
 	jobject entryObj = gEngine->getListEntryObject(entry);
-	gEngine->callOnDraw(entryObj, drawer);
+	ASBoolean ret = gEngine->callOnDraw(entryObj, drawer);
+	if (ret)
+		sADMListEntry->DefaultDraw(entry, drawer);
 }
 
 /*

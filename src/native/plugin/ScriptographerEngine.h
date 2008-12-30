@@ -596,7 +596,7 @@ public:
 	void callOnNotify(jobject handler, char *notifier); 
 	void callOnDestroy(jobject handler); 
 	bool callOnTrack(jobject handler, ADMTrackerRef tracker);
-	void callOnDraw(jobject handler, ADMDrawerRef drawer);
+	bool callOnDraw(jobject handler, ADMDrawerRef drawer);
 
 	ASErr callOnHandleEvent(int type);
 
