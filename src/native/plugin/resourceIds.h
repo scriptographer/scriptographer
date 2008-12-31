@@ -28,11 +28,7 @@
  */
 
 #define kToolCursorID					128
-
-#define kEmptyToolIconID				130
-
+#define kEmptyIconID					130
 #define kEmptyMenuID					800
-
 #define kEmptyDialogID                  16000
-
 #define kErrorStrings					16050

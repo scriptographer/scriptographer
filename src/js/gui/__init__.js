@@ -87,7 +87,6 @@ var tool = new Tool("Scriptographer Tool") {
 	tooltip: 'Execute a tool script to assign it with this tool button'
 };
 
-script.preferences.accepted = false;
 if (!script.preferences.accepted) {
 	include('license.js');
 	script.preferences.accepted = licenseDialog.doModal() == licenseDialog.defaultItem;

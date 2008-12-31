@@ -116,7 +116,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_nativeCreate(JNIEnv *env,
 		data.title = title;
 		data.tooltip = title;
 
-		data.icon = sADMIcon->GetFromResource(gPlugin->getPluginRef(), NULL, kEmptyToolIconID, 0);
+		data.icon = sADMIcon->GetFromResource(gPlugin->getPluginRef(), NULL, kEmptyIconID, 0);
 
 		ASErr error = kNoErr;
 
