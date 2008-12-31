@@ -388,7 +388,6 @@ public:
 	jstring reloadEngine();
 
 	ASErr onStartup();
-	ASErr onPostStartup();
 	ASErr onShutdown();
 	
 	bool isInitialized() {

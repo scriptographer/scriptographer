@@ -82,12 +82,38 @@ function loadLibraries(dir) {
 	}
 }
 
-function onStartup() {
-	// Tools are created on startup
-	include('tools.js');
+var tool = new Tool("Scriptographer Tool") {
+	image: getImage('tool.png'),
+	tooltip: 'Execute a tool script to assign it with this tool button'
+};
+
+script.preferences.accepted = false;
+if (!script.preferences.accepted) {
+	include('license.js');
+	script.preferences.accepted = licenseDialog.doModal() == licenseDialog.defaultItem;
 }
 
-function onPostStartup() {
-	// GUI is created after startup
-	include('gui.js');
+if (script.preferences.accepted) {
+	// Read the script directory first, or ask for it if its not defined:
+	var dir = script.preferences.scriptDirectory;
+	// If no script directory is defined, try the default place for Scripts:
+	// The subdirectory 'scripts' in the plugin directory:
+	dir = dir
+		? new File(dir)
+		: new File(scriptographer.pluginDirectory, 'scripts');
+	if (!dir.exists() || !dir.isDirectory()) {
+		if (!chooseScriptDirectory(dir))
+			Dialog.alert('Could not find Scriptographer script directory.');
+	} else {
+		setScriptDirectory(dir);
+	}
+
+	include('console.js');
+	include('about.js');
+	include('main.js');
+
+	if (!script.preferences.installed) {
+		include('install.js');
+		script.preferences.installed = true;
+	}
 }

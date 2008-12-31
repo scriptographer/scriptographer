@@ -273,11 +273,7 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 		delete e;
 		return kCantHappenErr;
 	}
-	
-	// And finally initialize the engine:
-	m_engine->initEngine();
-	m_engine->onStartup();
-	
+
 	m_loaded = true;
 	return error;
 }
@@ -291,7 +287,9 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 	ASErr error = acquireSuites(&gPostStartupSuites);
 	if (error) return error;
 
-	m_engine->onPostStartup();
+	
+	// And finally initialize the engine:
+	m_engine->initEngine();
 	m_started = true;
 #ifdef MAC_ENV
 	static EventTypeSpec appEvents[] = {

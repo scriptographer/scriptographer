@@ -288,6 +288,7 @@ void ScriptographerEngine::initEngine() {
 		
 		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_init, env->NewStringUTF(m_homeDir));
 		m_initialized = true;
+		onStartup();
 	} EXCEPTION_CATCH_REPORT(env);
 }
 
@@ -302,19 +303,11 @@ jstring ScriptographerEngine::reloadEngine() {
 	initReflection(env);
 	registerNatives(env);
 	initEngine();
-	// Do not call onStartup since that will try to install tool buttons which cannot work at this point
-	// But onPostStartup is needed for the interface.
-	onPostStartup();
-	
 	return errors;
 }
 
 ASErr ScriptographerEngine::onStartup() {
 	return callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_APP_STARTUP);
-}
-
-ASErr ScriptographerEngine::onPostStartup() {
-	return callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_APP_POSTSTARTUP);
 }
 
 ASErr ScriptographerEngine::onShutdown() {

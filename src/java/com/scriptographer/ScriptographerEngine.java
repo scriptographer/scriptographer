@@ -66,15 +66,13 @@ public class ScriptographerEngine {
 	private static ArrayList<Scope> initScopes;
 
 	protected static final int EVENT_APP_STARTUP = 0;
-	protected static final int EVENT_APP_POSTSTARTUP = 1;
-	protected static final int EVENT_APP_SHUTDOWN = 2;
-	protected static final int EVENT_APP_ACTIVATED = 3;
-	protected static final int EVENT_APP_DEACTIVATED = 4;
-	protected static final int EVENT_APP_ABOUT = 5;
+	protected static final int EVENT_APP_SHUTDOWN = 1;
+	protected static final int EVENT_APP_ACTIVATED = 2;
+	protected static final int EVENT_APP_DEACTIVATED = 3;
+	protected static final int EVENT_APP_ABOUT = 4;
 
 	private static String[] callbackNames = {
 		"onStartup",
-		"onPostStartup",
 		"onShutdown",
 		"onActivate",
 		"onDeactivate",
@@ -592,7 +590,7 @@ public class ScriptographerEngine {
 		}
 		// Explicitly initialize all dialogs after startup, as otherwise
 		// funny things will happen on CS3 -> see comment in initializeAll
-		if (type == EVENT_APP_POSTSTARTUP)
+		if (type == EVENT_APP_STARTUP)
 			Dialog.initializeAll();
 	}
 }
