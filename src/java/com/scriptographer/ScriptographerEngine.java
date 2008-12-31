@@ -590,7 +590,7 @@ public class ScriptographerEngine {
 				}
 			}
 		}
-		// Explicitly initialize all dialogs on startup, as otherwise
+		// Explicitly initialize all dialogs after startup, as otherwise
 		// funny things will happen on CS3 -> see comment in initializeAll
 		if (type == EVENT_APP_POSTSTARTUP)
 			Dialog.initializeAll();
