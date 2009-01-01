@@ -81,6 +81,7 @@ public class ConsoleOutputStream extends OutputStream {
 	 */
 	public void write(int b) throws IOException {
 		char c = (char) b;
+		buffer.write(c);
 		if (c == newLine) {
 			// Only print to the console if we're in the right thread.
 			// This prevents crashes and filters out weird
@@ -108,8 +109,6 @@ public class ConsoleOutputStream extends OutputStream {
 			} else {
 				buffer.write(lineSeparator.getBytes());
 			}
-		} else {
-			buffer.write(c);
 		}
 	}
 
