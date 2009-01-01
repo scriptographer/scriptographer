@@ -3020,6 +3020,10 @@
 			Name="Resources"
 			>
 			<File
+				RelativePath=".\resources\icon.ico"
+				>
+			</File>
+			<File
 				RelativePath="resources\PiPL.bin"
 				>
 			</File>
@@ -3098,15 +3102,15 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\resources\plugin.rc.in"
+				>
+			</File>
+			<File
 				RelativePath="resources\resource.h"
 				>
 			</File>
 			<File
 				RelativePath=".\resources\tool.cur"
-				>
-			</File>
-			<File
-				RelativePath=".\resources\tool.ico"
 				>
 			</File>
 		</Filter>

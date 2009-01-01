@@ -26,15 +26,15 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // PIPL
 //
 
-16000                   PIPL    DISCARDABLE     "PiPL.bin"
+16000                   PIPL                    "PiPL.bin"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-kEmptyDialogID DIALOG DISCARDABLE  0, 0, 140, 139
-STYLE DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+kEmptyDialogID DIALOG  0, 0, 140, 139
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 FONT 7, "Verdana"
 BEGIN
 END
@@ -46,18 +46,18 @@ END
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
-    "#include ""..\\..\\..\\src\\cpp\\plugin\\resourceIds.h""\r\n"
+    "#include ""..\\..\\..\\src\\native\\plugin\\resourceIds.h""\r\n"
     "#include ""afxres.h""\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "\0"
 END
@@ -84,7 +84,7 @@ END
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE 
 BEGIN
     kErrorStrings           "<Mac strings begin at index 1>"
     16051                   "-108"
@@ -121,16 +121,14 @@ LANGUAGE LANG_GERMAN, SUBLANG_GERMAN_SWISS
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-kTool1IconID            ICON    DISCARDABLE     "tool1.ico"
-kTool2IconID            ICON    DISCARDABLE     "tool2.ico"
+kEmptyIconID            ICON                    "icon.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Cursor
 //
 
-kTool1CursorID          CURSOR  DISCARDABLE     "tool1.cur"
-kTool2CursorID          CURSOR  DISCARDABLE     "tool2.cur"
+kToolCursorID           CURSOR                  "tool.cur"
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
