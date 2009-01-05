@@ -489,6 +489,9 @@ public abstract class Item extends DocumentObject {
 
 	private ItemPoint position = null;
 
+	/**
+	 * @jsbean The item's position. This is the center of the bounds rectangle.
+	 */
 	public Point getPosition() {
 		if (position == null)
 			position = new ItemPoint(this);

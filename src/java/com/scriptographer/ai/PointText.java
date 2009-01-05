@@ -62,7 +62,13 @@ public class PointText extends TextItem {
 		this(new Point());
 	}
 
-	// read only. AITransformArt suite can be used to change a kPointTextType's
-	// anchor.
-	public native Point getAnchor();
+	/**
+	 * @jsbean The PointText's anchor point
+	 */
+	public native Point getPoint();
+
+	public void setPoint(Point point) {
+		if (point != null)
+			translate(point.subtract(getPoint()));
+	}
 }
