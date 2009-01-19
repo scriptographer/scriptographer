@@ -549,7 +549,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_LiveEffect_onCalculate = getStaticMethodID(env, cls_ai_LiveEffect, "onCalculate", "(IILcom/scriptographer/ai/Item;)I");
 	mid_ai_LiveEffect_onGetInputType = getStaticMethodID(env, cls_ai_LiveEffect, "onGetInputType", "(IILcom/scriptographer/ai/Item;)I");
 	
-	cls_sg_Timer = loadClass(env, "com/scriptographer/ai/Timer");
+	cls_sg_Timer = loadClass(env, "com/scriptographer/sg/Timer");
 	cid_sg_Timer = getConstructorID(env, cls_sg_Timer, "(I)V");
 	mid_sg_Timer_onExecute = getStaticMethodID(env, cls_sg_Timer, "onExecute", "(I)V");
 
