@@ -661,10 +661,10 @@ Method = Member.extend({
 				this.members = this.members.sortBy(function(mem) {
 					return mem.parameters().length;
 				});
-				this.member = this.members.last();
+				this.member = this.members.last;
 			}
 		} else {
-			this.member = this.members.first();
+			this.member = this.members.first;
 		}
 	},
 
