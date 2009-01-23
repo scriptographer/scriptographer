@@ -67,6 +67,10 @@ public abstract class Color {
 		return alpha == -1f ? 1f : alpha;
 	}
 
+	public boolean hasAlpha() {
+		return alpha != -1f;
+	}
+	
 	/**
 	 * Sets the color's alpha value.
 	 * Setting alpha to -1 deactivates the alpha channel.

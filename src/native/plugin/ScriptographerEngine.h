@@ -459,7 +459,7 @@ public:
 	ADMRGBColor *convertColor(JNIEnv *env, jobject srcCol, ADMRGBColor *dstCol = NULL);	
 
 	// com.scriptoggrapher.ai.Color <-> AIColor
-	jobject convertColor(JNIEnv *env, AIColor *srcCol, AIReal alpha = 1.0f);
+	jobject convertColor(JNIEnv *env, AIColor *srcCol, AIReal alpha = -1.0f);
 	AIColor *convertColor(JNIEnv *env, jobject srcCol, AIColor *dstCol = NULL, AIReal *alpha = NULL);	
 	AIColor *convertColor(JNIEnv *env, jfloatArray srcCol, AIColor *dstCol = NULL, AIReal *alpha = NULL);
 
@@ -468,7 +468,7 @@ public:
 	ADMRGBColor *convertColor(AIColor *srcCol, ADMRGBColor *dstCol = NULL);	
 
 	// AIColor <-> AIColor
-	AIColor *convertColor(AIColor *srcCol, AIColorConversionSpaceValue dstSpace, AIColor *dstCol = NULL, AIReal srcAlpha = 1.0f, AIReal *dstAlpha = NULL);
+	AIColor *convertColor(AIColor *srcCol, AIColorConversionSpaceValue dstSpace, AIColor *dstCol = NULL, AIReal srcAlpha = -1.0f, AIReal *dstAlpha = NULL);
 
 	// com.scriptoggrapher.ai.Matrix <-> AIRealMatrix
 	jobject convertMatrix(JNIEnv *env, AIRealMatrix *mt, jobject res = NULL);

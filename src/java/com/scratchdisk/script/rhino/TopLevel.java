@@ -100,21 +100,31 @@ public class TopLevel extends ImporterTopLevel {
 	 */
 	public static Object dontEnum(Context cx, Scriptable thisObj,
 			Object[] args, Function funObj) {
-		if (!(thisObj instanceof ScriptableObject)) {
-			throw new EvaluatorException(
-					"dontEnum() called on non-ScriptableObject");
-		}
-		ScriptableObject obj = (ScriptableObject) thisObj;
-		for (int i = 0; i < args.length; i++) {
-			if (!(args[i] instanceof String)) {
-				throw new EvaluatorException(
-						"dontEnum() called with non-String argument");
-			}
-			String str = (String) args[i];
-			if (obj.has(str, obj)) {
-				int attr = obj.getAttributes(str);
-				if ((attr & PERMANENT) == 0)
-					obj.setAttributes(str, attr | DONTENUM);
+
+		// Don't throw error for now if dontEnum cannot do anything on this object.
+		// e.g. if it is a NativeJavaObject.
+		// TODO: This needs to change in the future.
+		// But since dontEnum will go away in favor of something the standard
+		// Object.defineProperty() method described in the EcmaScript 3.1,
+		// this is fine for now.
+//		if (!(thisObj instanceof ScriptableObject)) {
+//			throw new EvaluatorException(
+//					"dontEnum() called on non-ScriptableObject");
+//		}
+
+		if (thisObj instanceof ScriptableObject) {
+			ScriptableObject obj = (ScriptableObject) thisObj;
+			for (int i = 0; i < args.length; i++) {
+				if (!(args[i] instanceof String)) {
+					throw new EvaluatorException(
+							"dontEnum() called with non-String argument");
+				}
+				String str = (String) args[i];
+				if (obj.has(str, obj)) {
+					int attr = obj.getAttributes(str);
+					if ((attr & PERMANENT) == 0)
+						obj.setAttributes(str, attr | DONTENUM);
+				}
 			}
 		}
 		return null;

@@ -277,7 +277,7 @@ public class Segment implements Commitable {
 		if (handleOut.x != 0 || handleOut.y != 0)
 			buf.append(", handleOut: ").append(handleOut.toString());
 		if (corner)
-			buf.append(", corner: ").append(Boolean.toString(corner));
+			buf.append(", corner: true ");
 		buf.append(" }");
 		return buf.toString();
 	}
