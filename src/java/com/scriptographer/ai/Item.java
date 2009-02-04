@@ -139,8 +139,8 @@ public abstract class Item extends DocumentObject {
 		// We are setting document to null by default, since it will be
 		// set in wrapHandle.
 		super(handle, null); 
-		// keep track of this object from now on, see wrapArtHandle
-		items.put(this.handle, this);
+		// Keep track of this object from now on, see wrapArtHandle
+		items.put(handle, this);
 	}
 
 	private native static int nativeCreate(short type);
@@ -152,6 +152,8 @@ public abstract class Item extends DocumentObject {
 	 */
 	protected Item(short type) {
 		super(nativeCreate(type));
+		// Keep track of this object from now on, see wrapArtHandle
+		items.put(handle, this);
 	}
 
 	/**
