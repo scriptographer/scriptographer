@@ -111,6 +111,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		PlacedSymbol.class,
 		SymbolList.class,
 		TabletValue.class,
+		com.scriptographer.ai.TextItem.class,
 		TextRange.class,
 		TextStory.class,
 		Tool.class,
