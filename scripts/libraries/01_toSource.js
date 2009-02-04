@@ -66,8 +66,8 @@ Segment.inject({
 			if (!hasHandleIn && !hasHandleOut)
 				return this.point.toSource(true);
 			var parts = [this.point.toSource(true)];
-			if (hasHandleIn)
-				parts.push(this.handleIn.toSource(true));
+			if (hasHandleIn || hasHandleOut)
+				parts.push(hasHandleIn ? this.handleIn.toSource(true) : 'null');
 			if (hasHandleOut)
 				parts.push(this.handleOut.toSource(true));
 			if (this.corner)
