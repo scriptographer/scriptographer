@@ -34,6 +34,7 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 	var textIn = new TextEdit(this, 'multiline') {
 		size: [300, 100],
 		minimumSize: [200, 18],
+		maxLength: 32767,
 		font: 'palette',
 		onTrack: function(tracker) {
 			if (tracker.action == Tracker.ACTION_KEY_STROKE
@@ -71,6 +72,8 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 	var textOut = new TextEdit(this, 'readonly multiline') {
 		size: [300, 100],
 		minimumSize: [200, 18],
+		maxLength: 32767,
+		font: 'palette',
 		backgroundColor: 'inactive-tab',
 		// the onDraw workaround for display problems is only needed on mac
 		onDraw: app.macintosh && function(drawer) {
@@ -97,7 +100,7 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 	function showText() {
 		if (textOut != null) {
 			textOut.text = consoleText;
-			textOut.setSelection(consoleText.length());
+			textOut.setSelection(consoleText.length() - 1);
 			that.setVisible(true);
 		}
 	}
