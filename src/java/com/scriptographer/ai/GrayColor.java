@@ -96,6 +96,11 @@ public class GrayColor extends Color {
 		this.gray = gray;
 	}
 
+	public void set(Color color) {
+		GrayColor other = (GrayColor) color.convert(getType());
+		gray = other.gray;
+	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer(16);
 		buf.append("{ gray: ").append(gray);

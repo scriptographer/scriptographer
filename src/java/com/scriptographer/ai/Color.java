@@ -56,6 +56,8 @@ public abstract class Color {
 
 	public abstract float[] getComponents();
 
+	public abstract void set(Color color);
+
 	/**
 	 * @jsbean A value between 0 and 1 that specifies the color's alpha value.
 	 * @jsbean All colors of the different subclasses support alpha values.
@@ -92,9 +94,28 @@ public abstract class Color {
 	 * @return the converted color.
 	 */
 	public Color convert(ColorType type) {
-		return nativeConvert(type.value);
+		return type == getType() ? this : nativeConvert(type.value);
 	}
 
+	public Color convert(Class type) {
+		return convert(getType(type, hasAlpha()));
+	}
+
+	public static ColorType getType(Class type, boolean alpha) {
+		if (CMYKColor.class.isAssignableFrom(type)) {
+			return alpha ? ColorType.ACMYK : ColorType.CMYK;
+		} else if (RGBColor.class.isAssignableFrom(type)) { 
+			return alpha ? ColorType.ARGB : ColorType.RGB;
+		} else if (GrayColor.class.isAssignableFrom(type)) { 
+			return alpha ? ColorType.AGRAY : ColorType.GRAY;
+		}
+		return null;
+	}
+
+	public ColorType getType() {
+		return getType(getClass(), hasAlpha());
+	}
+	
 	/**
 	 * Returns the native profile for the given space, wrapped in an
 	 * ICC_Profile this is pretty nice: the native ICC profile data from Adobe

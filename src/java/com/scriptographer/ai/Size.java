@@ -62,8 +62,8 @@ public class Size {
 	}
 
 	public Size(ArgumentReader reader) {
-		this(reader.readDouble("width", 0),
-				reader.readDouble("height", 0));
+		this(reader.has("width") ? reader.readDouble("width", 0) : reader.readDouble("x", 0),
+				reader.has("height") ? reader.readDouble("height", 0) : reader.readDouble("y", 0));
 	}
 
 	public void set(double width, double height) {
@@ -91,6 +91,58 @@ public class Size {
 	
 	public void setHeight(double height) {
 		this.height = height;
+	}
+
+	public Size add(double w, double h) {
+		return new Size(width + w, height + h);
+	}
+
+	public Size add(Size size) {
+		return add(size.width, size.height);
+	}
+
+	public Size add(double value) {
+		return add(value, value);
+	}
+
+	public Size subtract(double w, double h) {
+		return new Size(width - w, height - h);
+	}
+
+	public Size subtract(Size size) {
+		return subtract(size.width, size.height);
+	}
+
+	public Size subtract(double value) {
+		return subtract(value, value);
+	}
+
+	public Size multiply(double w, double h) {
+		return new Size(width * w, height * h);
+	}
+
+	public Size multiply(Size size) {
+		return multiply(size.width, size.height);
+	}
+
+	public Size multiply(double value) {
+		return multiply(value, value);
+	}
+
+	public Size divide(double w, double h) {
+		return new Size(width / w, height / h);
+	}
+
+	public Size divide(Size size) {
+		return divide(size.width, size.height);
+	}
+
+	public Size divide(double value) {
+		return divide(value, value);
+	}
+
+	public Size negate() {
+		return new Size(-width, -width);
 	}
 
 	public Object clone() {

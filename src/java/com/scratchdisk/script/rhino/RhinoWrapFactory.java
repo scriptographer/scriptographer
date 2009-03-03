@@ -111,11 +111,11 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 			if (staticType != null && staticType.isArray())
 				obj = new ExtendedJavaArray(scope, javaObj, staticType, true);
 			else {
-				if (javaObj instanceof ReadOnlyList)
+				if (javaObj instanceof ReadOnlyList) {
 					obj = new ListWrapper(scope, (ReadOnlyList) javaObj, staticType, true);
-				else if (javaObj instanceof Map)
+				} else if (javaObj instanceof Map) {
 					obj = new MapWrapper(scope, (Map) javaObj, staticType);
-				else {
+				} else {
 					obj = wrapCustom(cx, scope, javaObj, staticType);
 					if (obj == null)
 						obj = new ExtendedJavaObject(scope, javaObj, staticType, true);
@@ -150,9 +150,9 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 				// If there are two version of a method, e.g. one with Map and the other with EnumMap
 				// prefer the more general one:
 				if (Map.class.equals(to))
-					return CONVERSION_TRIVIAL + 3;
+					return CONVERSION_TRIVIAL + 1;
 				else
-					return CONVERSION_TRIVIAL + 4;
+					return CONVERSION_TRIVIAL + 2;
 			} else if (!isString) {
 				// String and ArgumentReader we tried above already
 				if (getZeroArgumentConstructor(to) != null || ArgumentReader.canConvert(to)) {
@@ -162,9 +162,9 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 					// prefer the one that has the same simple name, to encourage conversion
 					// between ADM and AI Size, Rectangle, Point objects!
 					if (from.getClass().getSimpleName().equals(to.getSimpleName()))
-						return CONVERSION_TRIVIAL + 5;
+						return CONVERSION_TRIVIAL + 1;
 					else
-						return CONVERSION_TRIVIAL + 6;
+						return CONVERSION_TRIVIAL + 2;
 				}
 			}
 		}

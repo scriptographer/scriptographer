@@ -57,7 +57,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextItem_nativeSetText(JNIEnv 
 JNIEXPORT jstring JNICALL Java_com_scriptographer_ui_TextItem_getText(JNIEnv *env, jobject obj) {
 	try {
 	    ADMItemRef item = gEngine->getItemHandle(env, obj);
-		long len = sADMItem->GetTextLength(item);
+		long len = sADMItem->GetTextLengthW(item);
 		ASUnicode *chars = new ASUnicode[len];
 		sADMItem->GetTextW(item, chars, len);
 		jstring res = gEngine->convertString(env, chars, len);

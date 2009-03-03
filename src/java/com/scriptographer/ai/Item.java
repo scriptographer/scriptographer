@@ -171,8 +171,9 @@ public abstract class Item extends DocumentObject {
 		// only try to use the previous wrapper for this address if the object
 		// was marked wrapped otherwise we might get wrong wrappers for objects
 		// that reuse a previous address
+		Item prev = items.get(artHandle);
 		if (wrapped)
-			item = (Item) items.get(artHandle);
+			item = items.get(artHandle);
 		// if it wasn't wrapped yet, do it now:
 		// TODO: don't forget to add all types also to the native
 		// Item_getType function in com_scriptographer_ai_Item.cpp!
@@ -217,6 +218,9 @@ public abstract class Item extends DocumentObject {
 				}
 		}
 		if (item != null) {
+			if (item.getItemType() != Item.getItemType(item.getClass()) && Item.getItemType(item.getClass()) < 100) {
+				int i = 0;
+			}
 			item.dictionaryHandle = dictionaryHandle;
 			item.document = Document.wrapHandle(docHandle);
 			if (item.millis == 0)
@@ -255,7 +259,7 @@ public abstract class Item extends DocumentObject {
 			int prevHandle = artHandles[i + 1];
 			Item item = null;
 			if (prevHandle != 0) {
-				// in case there was already a item with the initial handle
+				// in case there was already an item with the initial handle
 				// before, udpate it now:
 				item = (Item) items.get(prevHandle);
 				if (item != null) {
@@ -387,17 +391,19 @@ public abstract class Item extends DocumentObject {
 
 	// don't implement this in native as the number of items is not known
 	// in advance and like this, a java ArrayList can be used:
+	// TODO: Cache the result. Invalidate cached version when version changes,
+	// or when appendChild / moveAbove / bellow affects this children list.
 	/**
 	 * @jsbean An array of items contained within this item
 	 */
-	public Item[] getChildren() {
-		ArrayList<Item> list = new ArrayList<Item>();
+	public ItemList getChildren() {
+		ItemList list = new ItemList();
 		Item child = getFirstChild();
 		while (child != null) {
 			list.add(child);
 			child = child.getNextSibling();
 		}
-		return list.toArray(new Item[list.size()]);
+		return list;
 	}
 
 	public void setChildren(List elements) {
@@ -502,16 +508,16 @@ public abstract class Item extends DocumentObject {
 		return position;
 	}
 
-	public void setPosition(double x, double y) {
-		Point point = getPosition();
-		translate(x - point.x, y - point.y);
+	public void setPosition(Point pt) {
+		translate(pt.subtract(getPosition()));
 		// This is always defined now since we're using getPosition above
 		position.update();
 	}
 
-	public void setPosition(Point pt) {
-		setPosition(pt.x, pt.y);
+	public void setPosition(double x, double y) {
+		setPosition(new Point(x, y));
 	}
+
 
 	/**
 	 * @jsbean The name of the item as it appears in the layers palette.
@@ -821,25 +827,28 @@ public abstract class Item extends DocumentObject {
 	 * 
 	 * @param sx
 	 * @param sy
-	 * @see Matrix#scale(double, double)
+	 * @see Matrix#scale(double, double, Point center)
 	 */
+	public void scale(double sx, double sy, Point center) {
+		transform(new Matrix().scale(sx, sy, center));
+	}
+
 	public void scale(double sx, double sy) {
-		transform(centered(new Matrix().scale(sx, sy)));
+		scale(sx, sy, getPosition());
+	}
+
+	/**
+	 * Scales the item by the given values from its center point.
+	 * 
+	 * @param scale
+	 * @see Matrix#scale(double, Point center)
+	 */
+	public void scale(double scale, Point center) {
+		scale(scale, scale, center);
 	}
 
 	public void scale(double scale) {
 		scale(scale, scale);
-	}
-
-	/**
-	 * Translates (moves) the item by the given offsets.
-	 * 
-	 * @param tx
-	 * @param ty
-	 * @see Matrix#translate(double, double)
-	 */
-	public void translate(double tx, double ty) {
-		transform(new Matrix().translate(tx, ty));
 	}
 
 	/**
@@ -848,7 +857,18 @@ public abstract class Item extends DocumentObject {
 	 * @param t
 	 */
 	public void translate(Point t) {
-		translate(t.x, t.y);
+		transform(new Matrix().translate(t));
+	}
+
+	/**
+	 * Rotates the item around an anchor point by a given angle around
+	 * the given point.
+	 * 
+	 * @param theta the rotation angle in radians
+	 * @see Matrix#rotate(double, Point)
+	 */
+	public void rotate(double theta, Point anchor) {
+		transform(new Matrix().rotate(theta, anchor));
 	}
 
 	/**
@@ -857,22 +877,7 @@ public abstract class Item extends DocumentObject {
 	 * @param theta the rotation angle in radians
 	 */
 	public void rotate(double theta) {
-		transform(new Matrix().rotate(theta, getPosition()));
-	}
-
-	/**
-	 * Rotates the item around an anchor point by a given angle around
-	 * the given point.
-	 * 
-	 * @param theta the rotation angle in radians
-	 * @see Matrix#rotate(double, double, double)
-	 */
-	public void rotate(double theta, double x, double y) {
-		transform(new Matrix().rotate(theta, x, y));
-	}
-
-	public void rotate(double theta, Point anchor) {
-		transform(new Matrix().rotate(theta, anchor));
+		rotate(theta, getPosition());
 	}
 
 	/**
@@ -1077,4 +1082,8 @@ public abstract class Item extends DocumentObject {
 	public long getMillis() {
 		return millis;
 	}
+
+	public native int getItemType();
+
+	public static native int getItemType(Class cls);
 }

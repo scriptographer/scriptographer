@@ -83,7 +83,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Group.class,
 		HitTest.class,
 		com.scriptographer.ai.Item.class,
-		ItemSet.class,
+		ItemList.class,
 		Layer.class,
 		LayerList.class,
 		LiveEffect.class,

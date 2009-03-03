@@ -1,4 +1,6 @@
 Number.inject({
+	_beans: true,
+
 	format: function(str) {
 		return (new java.text.DecimalFormat(str || '#,##0.00'))['format(double)'](this);
 	},

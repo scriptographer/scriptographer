@@ -203,9 +203,10 @@ public abstract class Dialog extends Component {
 				// Center it on screen first
 				this.centerOnScreen();
 				if (options.contains(DialogOption.REMEMBER_PLACING))
+					// If no placing could be loaded, explicitly show the window
 					show = !loadPreferences(title);
 				initialized = true;
-				// execute callback handler
+				// Execute callback handler
 				onInitialize();
 				// TODO: Calling this after onInitialize might cause trouble?
 				// It was executed before first, but might make more sense
@@ -262,7 +263,8 @@ public abstract class Dialog extends Component {
 	 * @jshide
 	 */
 	public static void initializeAll() throws Exception {
-		for (int i = 0; i < dialogs.size(); i++) {
+		for (int i = dialogs.size() - 1; i >= 0; i--) {
+//		for (int i = 0; i < dialogs.size(); i++) {
 			Dialog dialog = (Dialog) dialogs.get(i);
 			dialog.initialize(false);
 		}
@@ -306,15 +308,17 @@ public abstract class Dialog extends Component {
 				bounds = getBounds();
 				bounds.setPoint(defaultBounds.x, defaultBounds.y);
 			}
-			setBounds(bounds);
-
 			String group = prefs.get("group", "");
 			int positionCode = prefs.getInt("positionCode",
 					DialogGroupInfo.POSITION_DEFAULT);
-			// restore the position code of the dialog
+			// Restore the position code of the dialog
+			// This causes size changes. Ignore these since they're not user made.
 			ignoreSizeChange = true;
 			setGroupInfo(group, positionCode);
 			ignoreSizeChange = false;
+			// Now set the bounds
+			setBounds(bounds);
+
 			return true;
 		}
 		return false;
@@ -554,6 +558,7 @@ public abstract class Dialog extends Component {
 				// reported to Adobe too late, hopefully it will be back
 				// again in CS4...
 				int code = this.getGroupInfo().positionCode;
+//				System.out.println(this.getTitle() + ' ' + code);
 				if ((code & DialogGroupInfo.MASK_DOCK_VISIBLE) == 0 ||
 					(code & DialogGroupInfo.MASK_TAB_HIDDEN) != 0) {
 					fireOnClose = false;

@@ -174,6 +174,10 @@ public class GradientColor extends Color {
 		this.hilite = hilite;
 	}
 
+	public void set(Color color) {
+		throw new UnsupportedOperationException();
+	}
+
 	public Matrix getMatrix() {
 		return matrix;
 	}

@@ -296,6 +296,7 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 		{ kEventClassApplication, kEventAppActivated },
 		{ kEventClassApplication, kEventAppDeactivated }
 	};
+	// TODO: Figure out if this needs DEFINE_CALLBACK_PROC / CALLBACK_PROC as well?
 	error = InstallApplicationEventHandler(NewEventHandlerUPP(appEventHandler),
 			sizeof(appEvents) / sizeof(EventTypeSpec), appEvents, this, NULL);
 	if (error) return error;
@@ -804,9 +805,6 @@ ASErr ScriptographerPlugin::acquireSuite(ImportSuite *suite) {
 	char message[256];
 
 	if (suite->suite != NULL) {
-		if (suite->name == kADMItemSuite) {
-			int i = 0;
-		}
 		error = sSPBasic->AcquireSuite(suite->name, suite->version, (const void **) suite->suite);
 #ifdef MACHO_CFM_GLUE
 		if (!error)

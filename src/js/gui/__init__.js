@@ -112,7 +112,7 @@ if (script.preferences.accepted) {
 	include('main.js');
 
 	if (!script.preferences.installed) {
-		include('install.js');
+		// include('install.js');
 		script.preferences.installed = true;
 	}
 }

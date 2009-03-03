@@ -219,9 +219,9 @@ public:
 	jmethodID mid_ai_Item_changeHandle;
 	jmethodID mid_ai_Item_commit;
 	
-	jclass cls_ai_ItemSet;
-	jmethodID cid_ItemSet;
-	jmethodID mid_ai_ItemSet_add;
+	jclass cls_ai_ItemList;
+	jmethodID cid_ItemList;
+	jmethodID mid_ai_ItemList_add;
 
 	jclass cls_ai_Path;
 	jclass cls_ai_CompoundPath;
@@ -482,7 +482,7 @@ public:
 	jobject convertStrokeStyle(JNIEnv *env, AIStrokeStyle *style, jobject res = NULL);
 	AIStrokeStyle *convertStrokeStyle(JNIEnv *env, jobject style, AIStrokeStyle *res = NULL);
 
-	// com.scriptoggrapher.ai.ItemSet <-> AIArtSet
+	// com.scriptoggrapher.ai.ItemList <-> AIArtSet
 	jobject convertArtSet(JNIEnv *env, AIArtSet set, bool layerOnly = false);
 	AIArtSet convertArtSet(JNIEnv *env, jobject itemSet);
 

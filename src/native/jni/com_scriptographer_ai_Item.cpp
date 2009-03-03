@@ -101,7 +101,7 @@ AIArtHandle Item_rasterize(AIArtHandle art, AIRasterizeType type, float resoluti
 	AIArtSet artSet;
 	sAIArtSet->NewArtSet(&artSet);
 	sAIArtSet->AddArtToArtSet(artSet, art);
-	AIArtHandle raster = ItemSet_rasterize(artSet, type, resolution, antialiasing, width, height);
+	AIArtHandle raster = ItemList_rasterize(artSet, type, resolution, antialiasing, width, height);
 	sAIArtSet->DisposeArtSet(&artSet);
 	return raster;
 }
@@ -161,6 +161,24 @@ AIDictKey Item_getDictionaryKey(AIDictionaryRef dictionary, AIArtHandle art) {
 	return foundKey;
 }
 
+void Item_clearArtHandles(AIArtHandle art) {
+	AIDictionaryRef dict;
+	if (!sAIArt->GetDictionary(art, &dict)) {
+		sAIDictionary->DeleteEntry(dict, gEngine->m_artHandleKey);
+		sAIDictionary->Release(dict);
+	}
+	// Clear children as well:
+	AIArtHandle child = NULL;
+	sAIArt->GetArtFirstChild(art, &child);
+	if (child != NULL) {
+		do {
+			Item_clearArtHandles(child);
+			if (sAIArt->GetArtSibling(child, &child))
+				child = NULL;
+		} while (child != NULL);
+	}
+}
+
 AIArtHandle Item_copyTo(JNIEnv *env, AIArtHandle artSrc, AIDocumentHandle docSrc, AIDictionaryRef dictSrc, AIArtHandle artDst, AIDocumentHandle docDst, short paintOrder, bool commitFirst = true) {
 	AIArtHandle res = NULL;
 	AIRealMatrix matrix;
@@ -196,12 +214,10 @@ AIArtHandle Item_copyTo(JNIEnv *env, AIArtHandle artSrc, AIDocumentHandle docSrc
 		if (transform) 
 			sAITransformArt->TransformArt(res, &matrix, 1, kTransformObjects | kTransformChildren);
 		// Duplicate art also duplicated the dictionary. Remove the artHandleKey from it, since it's
-		// a new object that needs to be wrapped differently:
-		AIDictionaryRef dict;
-		if (!sAIArt->GetDictionary(res, &dict)) {
-			sAIDictionary->DeleteEntry(dict, gEngine->m_artHandleKey);
-			sAIDictionary->Release(dict);
-		}
+		// a new object that needs to be wrapped differently.
+		// It appears that it can also happen that newly duplicated items receive dictionaries from already gone
+		// items, e.g. after undo, at least in CS4. Clearing here gets rid of these problems...
+		Item_clearArtHandles(res);
 	}
 	return res;
 }
@@ -931,4 +947,24 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_nativeGetData(JNIEnv *env
 		sAIArt->GetDictionary(art, &dictionary);
 	} EXCEPTION_CONVERT(env);
 	return (jint) dictionary;
+}
+
+/*
+ * int getItemType()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_getItemType__(JNIEnv *env, jobject obj) {
+	try {
+		return Item_getType(gEngine->getArtHandle(env, obj));
+	} EXCEPTION_CONVERT(env);
+	return 0;
+}
+
+/*
+ * int getItemType(java.lang.Class arg1)
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_getItemType__Ljava_lang_Class_2(JNIEnv *env, jclass cls, jclass arg1) {
+	try {
+		return Item_getType(env, arg1);
+	} EXCEPTION_CONVERT(env);
+	return 0;
 }

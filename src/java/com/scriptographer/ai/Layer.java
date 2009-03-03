@@ -86,7 +86,7 @@ public class Layer extends Item {
 		setColor(new RGBColor(color));
 	}
 
-	public native ItemSet getItems();
+	public native ItemList getItems();
 	
 	/**
 	 * @jsbean Returns a boolean value that specifies whether the Layer is active.

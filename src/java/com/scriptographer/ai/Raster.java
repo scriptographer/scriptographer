@@ -52,7 +52,6 @@ import java.net.URL;
 
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.NetUtils;
-import com.scriptographer.ui.Size;
 
 /**
  * @author lehni
@@ -160,14 +159,14 @@ public class Raster extends Item {
 
 	public native void setMatrix(Matrix matrix);
 
-	public native Size getSize();
+	public native com.scriptographer.ui.Size getSize();
 
 	public void setSize(int width, int height) {
 		// changing the size creates a new art handle internally
 		handle = nativeConvert((short) -1, width, height);
 	}
 
-	public void setSize(Size size) {
+	public void setSize(com.scriptographer.ui.Size size) {
 		setSize(size.width, size.height);
 	}
 
@@ -185,6 +184,17 @@ public class Raster extends Item {
 	 */
 	public int getHeight() {
 		return getSize().height;
+	}
+
+	public Size getPpi() {
+		Matrix matrix = getMatrix();
+		Point orig = new Point(0, 0).transform(matrix);
+		Point u = new Point(1, 0).transform(matrix).subtract(orig);
+		Point v = new Point(0, 1).transform(matrix).subtract(orig);
+		return new Size(
+			72.0 / u.getLength(),
+			72.0 / v.getLength()
+		);
 	}
 
 	private native int nativeGetType();
@@ -331,7 +341,7 @@ public class Raster extends Item {
 	
 	public BufferedImage getSubImage(int x, int y, int width, int height) {
 		if (width == -1 || height == -1) {
-			Size size = getSize();
+			com.scriptographer.ui.Size size = getSize();
 			if (width == -1)
 				width = size.width;
 			if (height == -1)
@@ -340,6 +350,7 @@ public class Raster extends Item {
 		BufferedImage img = createCompatibleImage(width, height);
 		Graphics2D g2d = img.createGraphics();
 		g2d.setColor(java.awt.Color.WHITE);
+//		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.CLEAR, 0));
 		g2d.fillRect(0, 0, width, height);
 		g2d.dispose();
 		WritableRaster raster = img.getRaster();
@@ -415,10 +426,17 @@ public class Raster extends Item {
 			path.append(pi, false);
 			Rectangle2D bounds = path.getBounds2D();
 			// Fetch the sub image to iterate over and calculate average colors from
+			width = getWidth();
+			height = getHeight();
+			// Crop to the maximum size.
+			Rectangle2D.intersect(bounds, new Rectangle2D.Double(0, -height, width, height), bounds);
 			width = (int) Math.ceil(bounds.getWidth());
 			height = (int) Math.ceil(bounds.getHeight());
-			startX = (int) Math.floor(bounds.getMinX());
-			startY = (int) Math.floor(bounds.getMinY());
+			// Are we completely outside the raster? If so, return null
+			if (width <= 0 || height <= 0)
+				return null;
+			startX = (int) Math.floor(bounds.getX());
+			startY = (int) Math.floor(bounds.getY());
 		} else {
 			width = getWidth();
 			height = getHeight();
@@ -456,7 +474,11 @@ public class Raster extends Item {
 		return getAverageColor((Shape) null);
 	}
 
-	public Color getAverageColor(Path path) {
+	public Color getAverageColor(Point point) {
+		return getAverageColor(new Rectangle(point.subtract(0.5, 0.5), new Size(1, 1)));
+	}
+
+	public Color getAverageColor(PathItem path) {
 		return getAverageColor(path.toShape());
 	}
 

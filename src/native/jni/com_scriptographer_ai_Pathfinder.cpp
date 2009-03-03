@@ -75,7 +75,7 @@ jobject Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelect
 	long count;
 	AIArtHandle art;
 	// get the selected results in a set:
-	jobject itemSet = ItemSet_getSelected(env);
+	jobject itemSet = ItemList_getSelected(env);
 	Document_deselectAll(true);
 	// select the previously selected objects:
 	sAIArtSet->CountArtSet(*prevSelected, &count);
@@ -91,7 +91,7 @@ jobject Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelect
 }
 
 /*
- * com.scriptographer.ai.ItemSet unite(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
+ * com.scriptographer.ai.ItemList unite(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_unite(JNIEnv *env, jclass cls, jobjectArray artObjects, jfloat precision, jboolean removePoints, jboolean extractUnpainted) {
 	try {
@@ -106,7 +106,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_unite(JNIEnv *en
 }
 
 /*
- * com.scriptographer.ai.ItemSet intersect(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
+ * com.scriptographer.ai.ItemList intersect(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_intersect(JNIEnv *env, jclass cls, jobjectArray artObjects, jfloat precision, jboolean removePoints, jboolean extractUnpainted) {
 	try {
@@ -121,7 +121,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_intersect(JNIEnv
 }
 
 /*
- * com.scriptographer.ai.ItemSet exclude(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
+ * com.scriptographer.ai.ItemList exclude(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_exclude(JNIEnv *env, jclass cls, jobjectArray artObjects, jfloat precision, jboolean removePoints, jboolean extractUnpainted) {
 	try {
@@ -136,7 +136,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_exclude(JNIEnv *
 }
 
 /*
- * com.scriptographer.ai.ItemSet backMinusFront(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
+ * com.scriptographer.ai.ItemList backMinusFront(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_backMinusFront(JNIEnv *env, jclass cls, jobjectArray artObjects, jfloat precision, jboolean removePoints, jboolean extractUnpainted) {
 	try {
@@ -151,7 +151,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_backMinusFront(J
 }
 
 /*
- * com.scriptographer.ai.ItemSet frontMinusBack(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
+ * com.scriptographer.ai.ItemList frontMinusBack(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_frontMinusBack(JNIEnv *env, jclass cls, jobjectArray artObjects, jfloat precision, jboolean removePoints, jboolean extractUnpainted) {
 	try {
@@ -166,7 +166,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_frontMinusBack(J
 }
 
 /*
- * com.scriptographer.ai.ItemSet divide(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
+ * com.scriptographer.ai.ItemList divide(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_divide(JNIEnv *env, jclass cls, jobjectArray artObjects, jfloat precision, jboolean removePoints, jboolean extractUnpainted) {
 	try {
@@ -181,7 +181,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_divide(JNIEnv *e
 }
 
 /*
- * com.scriptographer.ai.ItemSet outline(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
+ * com.scriptographer.ai.ItemList outline(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_outline(JNIEnv *env, jclass cls, jobjectArray artObjects, jfloat precision, jboolean removePoints, jboolean extractUnpainted) {
 	try {
@@ -196,7 +196,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_outline(JNIEnv *
 }
 
 /*
- * com.scriptographer.ai.ItemSet trim(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
+ * com.scriptographer.ai.ItemList trim(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_trim(JNIEnv *env, jclass cls, jobjectArray artObjects, jfloat precision, jboolean removePoints, jboolean extractUnpainted) {
 	try {
@@ -211,7 +211,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_trim(JNIEnv *env
 }
 
 /*
- * com.scriptographer.ai.ItemSet merge(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
+ * com.scriptographer.ai.ItemList merge(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_merge(JNIEnv *env, jclass cls, jobjectArray artObjects, jfloat precision, jboolean removePoints, jboolean extractUnpainted) {
 	try {
@@ -226,7 +226,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_merge(JNIEnv *en
 }
 
 /*
- * com.scriptographer.ai.ItemSet crop(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
+ * com.scriptographer.ai.ItemList crop(java.lang.Object[] artObjects, float precision, boolean removePoints, boolean extractUnpainted)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pathfinder_crop(JNIEnv *env, jclass cls, jobjectArray artObjects, jfloat precision, jboolean removePoints, jboolean extractUnpainted) {
 	try {

@@ -308,7 +308,7 @@
 		9185E5080E7FC0DA000BD8BA /* com_scriptographer_ai_Gradient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9109E7C60AE6296300D4837B /* com_scriptographer_ai_Gradient.cpp */; };
 		9185E50A0E7FC0DA000BD8BA /* com_scriptographer_ai_GradientStopList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */; };
 		9185E50B0E7FC0DA000BD8BA /* com_scriptographer_ai_Pattern.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */; };
-		9185E50D0E7FC0DA000BD8BA /* com_scriptographer_ai_ItemSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D60D94032D002C7A53 /* com_scriptographer_ai_ItemSet.cpp */; };
+		9185E50D0E7FC0DA000BD8BA /* com_scriptographer_ai_ItemList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D60D94032D002C7A53 /* com_scriptographer_ai_ItemList.cpp */; };
 		9185E50E0E7FC0DA000BD8BA /* com_scriptographer_ai_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D70D94032D002C7A53 /* com_scriptographer_ai_Item.cpp */; };
 		9185E50F0E7FC0DA000BD8BA /* com_scriptographer_ai_FileFormat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 910C76A50DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp */; };
 		9185E5110E7FC0DA000BD8BA /* com_scriptographer_ai_Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */; };
@@ -322,11 +322,11 @@
 		9185E5330E7FC238000BD8BA /* IAIFilePath.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9185E5310E7FC238000BD8BA /* IAIFilePath.cpp */; };
 		9185E5340E7FC238000BD8BA /* IAIUnicodeString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9185E5320E7FC238000BD8BA /* IAIUnicodeString.cpp */; };
 		91E56C2B0B396EE0004AED6E /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 91E56C2A0B396EE0004AED6E /* AppKit.framework */; };
-		91F1E7D80D94032D002C7A53 /* com_scriptographer_ai_ItemSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D60D94032D002C7A53 /* com_scriptographer_ai_ItemSet.cpp */; };
+		91F1E7D80D94032D002C7A53 /* com_scriptographer_ai_ItemList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D60D94032D002C7A53 /* com_scriptographer_ai_ItemList.cpp */; };
 		91F1E7D90D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D70D94032D002C7A53 /* com_scriptographer_ai_Item.cpp */; };
-		91F1E7DA0D94032D002C7A53 /* com_scriptographer_ai_ItemSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D60D94032D002C7A53 /* com_scriptographer_ai_ItemSet.cpp */; };
+		91F1E7DA0D94032D002C7A53 /* com_scriptographer_ai_ItemList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D60D94032D002C7A53 /* com_scriptographer_ai_ItemList.cpp */; };
 		91F1E7DB0D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D70D94032D002C7A53 /* com_scriptographer_ai_Item.cpp */; };
-		91F1E7DC0D94032D002C7A53 /* com_scriptographer_ai_ItemSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D60D94032D002C7A53 /* com_scriptographer_ai_ItemSet.cpp */; };
+		91F1E7DC0D94032D002C7A53 /* com_scriptographer_ai_ItemList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D60D94032D002C7A53 /* com_scriptographer_ai_ItemList.cpp */; };
 		91F1E7DD0D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D70D94032D002C7A53 /* com_scriptographer_ai_Item.cpp */; };
 /* End PBXBuildFile section */
 
@@ -477,7 +477,7 @@
 		91EF0B0E0A20A4B200F0EF9A /* com_scriptographer_ai_TextStory.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_TextStory.cpp; path = jni/com_scriptographer_ai_TextStory.cpp; sourceTree = "<group>"; };
 		91EF0B0F0A20A4B200F0EF9A /* com_scriptographer_ai_Group.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Group.cpp; path = jni/com_scriptographer_ai_Group.cpp; sourceTree = "<group>"; };
 		91EF0B110A20A4B200F0EF9A /* com_scriptographer_ai_Annotator.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Annotator.cpp; path = jni/com_scriptographer_ai_Annotator.cpp; sourceTree = "<group>"; };
-		91F1E7D60D94032D002C7A53 /* com_scriptographer_ai_ItemSet.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_ItemSet.cpp; path = jni/com_scriptographer_ai_ItemSet.cpp; sourceTree = "<group>"; };
+		91F1E7D60D94032D002C7A53 /* com_scriptographer_ai_ItemList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_ItemList.cpp; path = jni/com_scriptographer_ai_ItemList.cpp; sourceTree = "<group>"; };
 		91F1E7D70D94032D002C7A53 /* com_scriptographer_ai_Item.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Item.cpp; path = jni/com_scriptographer_ai_Item.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -681,7 +681,7 @@
 				913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */,
 				910C76A50DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp */,
 				91EF0AE20A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp */,
-				91F1E7D60D94032D002C7A53 /* com_scriptographer_ai_ItemSet.cpp */,
+				91F1E7D60D94032D002C7A53 /* com_scriptographer_ai_ItemList.cpp */,
 				91F1E7D70D94032D002C7A53 /* com_scriptographer_ai_Item.cpp */,
 				912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */,
 				9109E7C60AE6296300D4837B /* com_scriptographer_ai_Gradient.cpp */,
@@ -991,7 +991,7 @@
 				9109E7CE0AE6296300D4837B /* com_scriptographer_ai_Gradient.cpp in Sources */,
 				912A21240AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */,
 				912A22D80AE83B7F00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */,
-				91F1E7DA0D94032D002C7A53 /* com_scriptographer_ai_ItemSet.cpp in Sources */,
+				91F1E7DA0D94032D002C7A53 /* com_scriptographer_ai_ItemList.cpp in Sources */,
 				91F1E7DB0D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */,
 				910C76A70DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				913020550E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
@@ -1073,7 +1073,7 @@
 				9109E7CC0AE6296300D4837B /* com_scriptographer_ai_Gradient.cpp in Sources */,
 				912A21230AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp in Sources */,
 				912A22D60AE83B7F00B0ADD6 /* com_scriptographer_ai_Pattern.cpp in Sources */,
-				91F1E7DC0D94032D002C7A53 /* com_scriptographer_ai_ItemSet.cpp in Sources */,
+				91F1E7DC0D94032D002C7A53 /* com_scriptographer_ai_ItemList.cpp in Sources */,
 				91F1E7DD0D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */,
 				910C76A80DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				913020560E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
@@ -1156,7 +1156,7 @@
 				914569CA0AF7CADF000FD468 /* com_scriptographer_ai_Gradient.cpp in Sources */,
 				914569CC0AF7CADF000FD468 /* com_scriptographer_ai_GradientStopList.cpp in Sources */,
 				914569CD0AF7CADF000FD468 /* com_scriptographer_ai_Pattern.cpp in Sources */,
-				91F1E7D80D94032D002C7A53 /* com_scriptographer_ai_ItemSet.cpp in Sources */,
+				91F1E7D80D94032D002C7A53 /* com_scriptographer_ai_ItemList.cpp in Sources */,
 				91F1E7D90D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */,
 				910C76A60DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				913020540E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */,
@@ -1235,7 +1235,7 @@
 				9185E5080E7FC0DA000BD8BA /* com_scriptographer_ai_Gradient.cpp in Sources */,
 				9185E50A0E7FC0DA000BD8BA /* com_scriptographer_ai_GradientStopList.cpp in Sources */,
 				9185E50B0E7FC0DA000BD8BA /* com_scriptographer_ai_Pattern.cpp in Sources */,
-				9185E50D0E7FC0DA000BD8BA /* com_scriptographer_ai_ItemSet.cpp in Sources */,
+				9185E50D0E7FC0DA000BD8BA /* com_scriptographer_ai_ItemList.cpp in Sources */,
 				9185E50E0E7FC0DA000BD8BA /* com_scriptographer_ai_Item.cpp in Sources */,
 				9185E50F0E7FC0DA000BD8BA /* com_scriptographer_ai_FileFormat.cpp in Sources */,
 				9185E5110E7FC0DA000BD8BA /* com_scriptographer_ai_Dictionary.cpp in Sources */,

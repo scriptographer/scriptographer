@@ -579,7 +579,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_place(JNIEnv *env,
 	return NULL;
 }
 
-// ItemSet stuff:
+// ItemList stuff:
 
 /*
  * boolean hasSelectedItems()
@@ -595,14 +595,14 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_hasSelectedItems(
 }
 
 /*
- * com.scriptographer.ai.ItemSet getSelectedItems()
+ * com.scriptographer.ai.ItemList getSelectedItems()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(JNIEnv *env, jobject obj) {
 	jobject itemSet = NULL;
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		itemSet = ItemSet_getSelected(env);
+		itemSet = ItemList_getSelected(env);
 	} EXCEPTION_CONVERT(env);
 	return itemSet;
 }
@@ -619,7 +619,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_deselectAll(JNIEnv *e
 }
 
 /*
- * com.scriptographer.ai.ItemSet nativeGetMatchingItems(java.lang.Class typeClass, java.util.Map attributes)
+ * com.scriptographer.ai.ItemList nativeGetMatchingItems(java.lang.Class typeClass, java.util.Map attributes)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeGetMatchingItems(JNIEnv *env, jobject obj, jclass typeClass, jobject attributes) {
 	jobject itemSet = NULL;

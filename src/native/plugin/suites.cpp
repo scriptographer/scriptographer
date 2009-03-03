@@ -157,6 +157,8 @@ extern "C" {
 
 // startup: all suites that are needed immediatelly (onStartupPlugin)
 ImportSuite startup[] = {
+	kADMBasicSuite, _kADMBasicSuiteVersion, &sADMBasic, sizeof(_ADMBasicSuite),
+
 	kSPBlocksSuite, kSPBlocksSuiteVersion, &sSPBlocks, sizeof(SPBlocksSuite),
 	kAIMdMemorySuite, kAIMdMemorySuiteVersion, &sAIMDMemory, sizeof(AIMdMemorySuite),
 	kSPAccessSuite, kSPAccessSuiteVersion, &sSPAccess, sizeof(SPAccessSuite),

@@ -40,9 +40,9 @@ AIArtHandle Item_rasterize(AIArtHandle handle, AIRasterizeType type, float resol
 AIArtHandle Item_getInsertionPoint(short *paintOrder, AIDocumentHandle doc = NULL);
 void Item_commit(JNIEnv *env, AIArtHandle art, bool invalidate = false, bool children = true);
 
-void ItemSet_filter(AIArtSet set, bool layerOnly = false);
-jobject ItemSet_getSelected(JNIEnv *env);
-AIArtHandle ItemSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
+void ItemList_filter(AIArtSet set, bool layerOnly = false);
+jobject ItemList_getSelected(JNIEnv *env);
+AIArtHandle ItemList_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 
 AIArtHandle JNICALL PlacedFile_place(JNIEnv *env, AIDocumentHandle doc, jobject file, jboolean linked);
 

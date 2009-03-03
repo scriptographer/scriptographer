@@ -78,6 +78,12 @@ public class Rectangle {
 		this.height = height;
 	}
 
+	/*
+	 * TODO: Consider renaming to getPosition
+	 * But that might be weird, since it would have to be like this in ai.Rectangle too,
+	 * and Item#getPosition does something else... (center).
+	 * How to resolve this? Dialog#getPosition returns upper left...
+	 */
 	public Point getPoint() {
 		return new Point(x, y);
 	}

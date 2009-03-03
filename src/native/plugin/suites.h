@@ -189,8 +189,73 @@ namespace ATE {
 }
 #endif // < kAI13
 
+#define CONCAT(A,B) PASTE(A,B)
+#define INSERT(A) A
+#define PASTE(A,B) INSERT(A B)
+
+#if kPluginInterfaceVersion >= kAI13
+
+#define ADM_BASIC_VERSION 10
+#define ADM_ITEM_VERSION 9
+#define ADM_TRACKER_VERSION 2
+
+#elif kPluginInterfaceVersion >= kAI11
+
+#define ADM_BASIC_VERSION 9
+#define ADM_ITEM_VERSION 9
+#define ADM_TRACKER_VERSION 1
+
+#else
+
+#define ADM_BASIC_VERSION "8"
+#define ADM_ITEM_VERSION "8"
+#define ADM_TRACKER_VERSION "1"
+
+#endif
+
 // ADM Suites default to the oldest versions.
 // Define symbols that point to the newest here und use these bellow:
+
+/*
+#define _kADMBasicSuiteVersion CONCAT("kADMBasicSuiteVersion", ADM_BASIC_VERSION)
+#define _ADMBasicSuite CONCAT("ADMBasicSuite", ADM_BASIC_VERSION)
+
+#define _kADMDialogSuiteVersion CONCAT(kADMDialogSuiteVersion, ADM_BASIC_VERSION)
+#define _ADMDialogSuite CONCAT(ADMDialogSuite, ADM_BASIC_VERSION)
+
+#define _kADMItemSuiteVersion CONCAT(kADMItemSuiteVersion, ADM_ITEM_VERSION)
+#define _ADMItemSuite CONCAT(ADMItemSuite, ADM_ITEM_VERSION)
+
+#define _kADMIconSuiteVersion CONCAT(kADMIconSuiteVersion, 2)
+#define _ADMIconSuite CONCAT(ADMIconSuite, 2)
+
+#define _kADMImageSuiteVersion kADMImageSuiteVersion2 // CONCAT(kADMImageSuiteVersion, 2)
+#define _ADMImageSuite ADMImageSuite2 // CONCAT(ADMImageSuite, 2)
+
+#define _kADMListSuiteVersion CONCAT(kADMListSuiteVersion, 4)
+#define _ADMListSuite CONCAT(ADMListSuite, 4)
+
+#define _kADMHierarchyListSuiteVersion CONCAT(kADMHierarchyListSuiteVersion, 5)
+#define _ADMHierarchyListSuite CONCAT(ADMHierarchyListSuite, 5)
+
+#define _kADMDialogGroupSuiteVersion CONCAT(kADMDialogGroupSuiteVersion, 3)
+#define _ADMDialogGroupSuite CONCAT(ADMDialogGroupSuite, 3)
+
+#define _kADMNotifierSuiteVersion CONCAT(kADMNotifierSuiteVersion, 1)
+#define _ADMNotifierSuite CONCAT(ADMNotifierSuite, 1)
+
+#define _kADMEntrySuiteVersion CONCAT(kADMEntrySuiteVersion, 5)
+#define _ADMEntrySuite CONCAT(ADMEntrySuite, 5)
+
+#define _kADMListEntrySuiteVersion CONCAT(kADMListEntrySuiteVersion, 4)
+#define _ADMListEntrySuite CONCAT(ADMListEntrySuite, 4)
+
+#define _kADMTrackerSuiteVersion CONCAT(kADMTrackerSuiteVersion, ADM_TRACKER_VERSION)
+#define _ADMTrackerSuite CONCAT(ADMTrackerSuite, ADM_TRACKER_VERSION)
+
+#define _kADMDrawerSuiteVersion CONCAT(kADMDrawerSuiteVersion, 5)
+#define _ADMDrawerSuite CONCAT(ADMDrawerSuite, 5)
+*/
 
 #define _kADMBasicSuiteVersion kADMBasicSuiteVersion8
 #define _ADMBasicSuite ADMBasicSuite8
@@ -239,7 +304,7 @@ namespace ATE {
 
 #define _kADMDrawerSuiteVersion kADMDrawerSuiteVersion5
 #define _ADMDrawerSuite ADMDrawerSuite5
-
+ 
 // the basic suite doesn't need to be loaded:
 extern "C" SPBasicSuite 					*sSPBasic;
 

@@ -301,7 +301,7 @@
 			<class name="com.scriptographer.ai.PlacedFile" />
 			<class name="com.scriptographer.ai.SegmentList" />
 			<class name="com.scriptographer.ai.Curve" />
-			<class name="com.scriptographer.ai.ItemSet" />
+			<class name="com.scriptographer.ai.ItemList" />
 			<class name="com.scriptographer.ai.Layer" />
 			<class name="com.scriptographer.ai.LayerList" />
 			<class name="com.scriptographer.ai.Dictionary" />

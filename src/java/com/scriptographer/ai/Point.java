@@ -76,8 +76,8 @@ public class Point {
 	}
 
 	public Point(ArgumentReader reader) {
-		this(reader.readDouble("x", 0),
-				reader.readDouble("y", 0));
+		this(reader.has("x") ? reader.readDouble("x", 0) : reader.readDouble("width", 0),
+				reader.has("y") ? reader.readDouble("y", 0) : reader.readDouble("height", 0));
 	}
 
 	public void set(double x, double y) {
@@ -138,24 +138,6 @@ public class Point {
 	}
 
 	/**
-	 * Returns the addition of the supplied point to the point object as a new
-	 * point. The object itself is not modified!
-	 * Sample code:
-	 * <pre>
-	 * var firstPoint = new Point(5,10);
-	 * var secondPoint = new Point(10,20);
-	 * var thirdPoint = firstPoint.add(secondPoint);
-	 * print(thirdPoint); // returns { x: 15.0, y: 30.0 }
-	 * </pre>
-	 * 
-	 * @param pt the point to add
-	 * @return the addition of the two points as a new point
-	 */
-	public Point add(Point pt) {
-		return new Point(x + pt.x, y + pt.y);
-	}
-
-	/**
 	 * Returns the addition of the supplied x and y values to the point object
 	 * as a new point. The object itself is not modified!
 	 * Sample code:
@@ -173,26 +155,26 @@ public class Point {
 		return new Point(this.x + x, this.y + y);
 	}
 
-	public Point add(double value) {
-		return new Point(x + value, y + value);
-	}
-
 	/**
-	 * Returns the subtraction of the supplied point to the point object as a
-	 * new point. The object itself is not modified!
+	 * Returns the addition of the supplied point to the point object as a new
+	 * point. The object itself is not modified!
 	 * Sample code:
 	 * <pre>
-	 * var firstPoint = new Point(10,20);
-	 * var secondPoint = new Point(5,5);
-	 * var thirdPoint = firstPoint.subtract(secondPoint);
-	 * print(thirdPoint); // returns { x: 5.0, y: 15.0 }
+	 * var firstPoint = new Point(5,10);
+	 * var secondPoint = new Point(10,20);
+	 * var thirdPoint = firstPoint.add(secondPoint);
+	 * print(thirdPoint); // returns { x: 15.0, y: 30.0 }
 	 * </pre>
 	 * 
-	 * @param pt the point to subtract
-	 * @return the subtraction of the two points as a new point
+	 * @param pt the point to add
+	 * @return the addition of the two points as a new point
 	 */
-	public Point subtract(Point pt) {
-		return new Point(x - pt.x, y - pt.y);
+	public Point add(Point pt) {
+		return add(pt.x, pt.y);
+	}
+
+	public Point add(double value) {
+		return add(value, value);
 	}
 
 	/**
@@ -213,26 +195,26 @@ public class Point {
 		return new Point(this.x - x, this.y - y);
 	}
 
-	public Point subtract(double value) {
-		return new Point(x - value, y - value);
-	}
-
 	/**
-	 * Returns the multiplication of the point object by the supplied point as a
+	 * Returns the subtraction of the supplied point to the point object as a
 	 * new point. The object itself is not modified!
 	 * Sample code:
 	 * <pre>
-	 * var firstPoint = new Point(5,10);
-	 * var secondPoint = new Point(4,2);
-	 * var thirdPoint = firstPoint.multiply(secondPoint);
-	 * print(thirdPoint); // returns { x: 20.0, y: 20.0 }
+	 * var firstPoint = new Point(10,20);
+	 * var secondPoint = new Point(5,5);
+	 * var thirdPoint = firstPoint.subtract(secondPoint);
+	 * print(thirdPoint); // returns { x: 5.0, y: 15.0 }
 	 * </pre>
 	 * 
-	 * @param pt the point to multiply with
-	 * @return the multiplication of the two points as a new point
+	 * @param pt the point to subtract
+	 * @return the subtraction of the two points as a new point
 	 */
-	public Point multiply(Point pt) {
-		return new Point(x * pt.x, y * pt.y);
+	public Point subtract(Point pt) {
+		return subtract(pt.x, pt.y);
+	}
+
+	public Point subtract(double value) {
+		return subtract(value, value);
 	}
 
 	/**
@@ -258,20 +240,38 @@ public class Point {
 		return new Point(this.x * x, this.y * y);
 	}
 
-	public Point multiply(double value) {
-		return new Point(x * value, y * value);
+	/**
+	 * Returns the multiplication of the point object by the supplied point as a
+	 * new point. The object itself is not modified!
+	 * Sample code:
+	 * <pre>
+	 * var firstPoint = new Point(5,10);
+	 * var secondPoint = new Point(4,2);
+	 * var thirdPoint = firstPoint.multiply(secondPoint);
+	 * print(thirdPoint); // returns { x: 20.0, y: 20.0 }
+	 * </pre>
+	 * 
+	 * @param pt the point to multiply with
+	 * @return the multiplication of the two points as a new point
+	 */
+	public Point multiply(Point pt) {
+		return multiply(pt.x, pt.y);
 	}
 
-	public Point divide(Point pt) {
-		return new Point(x / pt.x, y / pt.y);
+	public Point multiply(double value) {
+		return multiply(value, value);
 	}
 
 	public Point divide(double x, double y) {
 		return new Point(this.x / x, this.y / y);
 	}
 
+	public Point divide(Point pt) {
+		return divide(pt.x, pt.y);
+	}
+
 	public Point divide(double value) {
-		return new Point(x / value, y / value);
+		return divide(value, value);
 	}
 
 	public Point negate() {

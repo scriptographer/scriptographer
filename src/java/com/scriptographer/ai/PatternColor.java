@@ -90,6 +90,10 @@ public class PatternColor extends Color {
 		this.pattern = pattern;
 	}
 
+	public void set(Color color) {
+		throw new UnsupportedOperationException();
+	}
+
 	public Matrix getMatrix() {
 		return matrix;
 	}

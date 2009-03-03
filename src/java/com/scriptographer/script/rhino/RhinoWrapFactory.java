@@ -34,6 +34,7 @@ package com.scriptographer.script.rhino;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Scriptable;
 
+import com.scriptographer.ai.Color;
 import com.scriptographer.ai.Style;
 import com.scriptographer.script.EnumUtils;
 
@@ -57,6 +58,8 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 			Object javaObj, Class<?> staticType) {
 		if (javaObj instanceof Style)
 			return new StyleWrapper(scope, (Style) javaObj, staticType, true);
+		else if (javaObj instanceof Color)
+			return new ColorWrapper(scope, (Color) javaObj, staticType, true);
 		return null;
 	}
 

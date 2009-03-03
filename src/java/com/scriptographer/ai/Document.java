@@ -358,14 +358,28 @@ public class Document extends NativeObject {
 	 */	
 	public native boolean hasSelectedItems();
 
-	public native ItemSet getSelectedItems();
+	public native ItemList getSelectedItems();
+
+	public ItemList getSelectedItems(Class[] types) {
+		if (types == null) {
+			return getSelectedItems();
+		} else {
+			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			map.put(ItemAttribute.SELECTED, true);
+			return getMatchingItems(types, map);
+		}
+	}
 	
+	public ItemList getSelectedItems(Class type) {
+		return getSelectedItems(new Class[] { type });
+	}
+
 	/**
 	 * Deselects all the selected items in the document.
 	 */
 	public native void deselectAll();
 	
-	private native ItemSet nativeGetMatchingItems(Class type, HashMap<Integer, Boolean> attributes);
+	private native ItemList nativeGetMatchingItems(Class type, HashMap<Integer, Boolean> attributes);
 
 	/**
 	 * Returns all items of a given class that match a set of attributes, as specified by the
@@ -376,8 +390,16 @@ public class Document extends NativeObject {
 	 * @return
 	 * @jshide
 	 */
+	/*
+	 * These versions are needed so the scripting side can convert strings to attributes
+	 */
 	@SuppressWarnings("unchecked")
-	public ItemSet getMatchingItems(Class type, EnumMap<ItemAttribute, Boolean> attributes) {
+	public ItemList getMatchingItems(Class[] types, EnumMap<ItemAttribute, Boolean> attributes) {
+		return getMatchingItems(types, (Map) attributes);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ItemList getMatchingItems(Class type, EnumMap<ItemAttribute, Boolean> attributes) {
 		return getMatchingItems(type, (Map) attributes);
 	}
 
@@ -389,7 +411,7 @@ public class Document extends NativeObject {
 	 * @param attributes
 	 * @return
 	 */
-	public ItemSet getMatchingItems(Class type, Map<Object, Object> attributes) {
+	public ItemList getMatchingItems(Class[] types, Map<Object, Object> attributes) {
 		// Convert the attributes list to a new HashMap containing only
 		// integer -> boolean pairs.
 		HashMap<Integer, Boolean> converted = new HashMap<Integer, Boolean>();
@@ -405,31 +427,60 @@ public class Document extends NativeObject {
 						ConversionUtils.toBoolean(entry.getValue()));
 			}
 		}
-		return nativeGetMatchingItems(type, converted);
+		ItemList set = null;
+		for (int i = 0; i < types.length; i++) {
+			Class type = types[i];
+			ItemList subSet = nativeGetMatchingItems(type, converted);
+			// Filter out TextItems that do not match the given type.
+			// This is needed since nativeGetMatchingItems returns all TextItems...
+			// TODO: Move this to the client side maybe?
+			if (TextItem.class.isAssignableFrom(type))
+				for (Item item : subSet)
+					if (!type.isInstance(item))
+						subSet.remove(item);
+			if (set == null) {
+				set = subSet;
+			} else {
+				set.addAll(subSet);
+			}
+		}
+		// Filter out matched children when the parent matches too
+		for (Item item : set)
+			if (set.contains(item.getParent()))
+				set.remove(item);
+		// TODO: Expand PathItem -> Path / CompoundPath
+		return set;
 	}
 
-	@SuppressWarnings("unchecked")
-	public ItemSet getMatchingItems(Class type) {
-		return getMatchingItems(type, (Map) null);
+	public ItemList getMatchingItems(Class[] types) {
+		return getMatchingItems(types, (Map<Object, Object>) null);
+	}
+
+	public ItemList getMatchingItems(Class type, Map<Object, Object> attributes) {
+		return getMatchingItems(new Class[] { type }, attributes);
 	}
 	
-	public ItemSet getPaths() throws ScriptographerException {
+	public ItemList getMatchingItems(Class type) {
+		return getMatchingItems(new Class[] { type });
+	}
+
+	public ItemList getPaths() throws ScriptographerException {
 		return getMatchingItems(Path.class);
 	}
 
-	public ItemSet getCompoundPaths() throws ScriptographerException {
+	public ItemList getCompoundPaths() throws ScriptographerException {
 		return getMatchingItems(CompoundPath.class);
 	}
 
-	public ItemSet getGroups() throws ScriptographerException {
+	public ItemList getGroups() throws ScriptographerException {
 		return getMatchingItems(Group.class);
 	}
 
-	public ItemSet getTextFrames() throws ScriptographerException {
+	public ItemList getTextFrames() throws ScriptographerException {
 		return getMatchingItems(TextItem.class);
 	}
 
-	public ItemSet getRasters() throws ScriptographerException {
+	public ItemList getRasters() throws ScriptographerException {
 		return getMatchingItems(Raster.class);
 	}
 	

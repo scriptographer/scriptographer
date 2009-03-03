@@ -161,6 +161,14 @@ public class CMYKColor extends Color {
 		this.black = black;
 	}
 
+	public void set(Color color) {
+		CMYKColor other = (CMYKColor) color.convert(getType());
+		cyan = other.cyan;
+		magenta = other.magenta;
+		yellow = other.yellow;
+		black = other.black;
+	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer(32);
 		buf.append("{ cyan: ").append(cyan);

@@ -486,7 +486,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_ListEntry_setText(JNIEnv *env,
 JNIEXPORT jstring JNICALL Java_com_scriptographer_ui_ListEntry_getText(JNIEnv *env, jobject obj) {
 	try {
 		#define GET_TEXT(SUITE) \
-			long len = SUITE->GetTextLength(entry); \
+			long len = SUITE->GetTextLengthW(entry); \
 			ASUnicode *chars = new ASUnicode[len]; \
 			SUITE->GetTextW(entry, chars, len); \
 			jstring res = gEngine->convertString(env, chars, len); \

@@ -36,28 +36,25 @@ import java.util.HashMap;
 import com.scratchdisk.list.ArrayList;
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
+import com.scratchdisk.list.StringIndexReadOnlyList;
 
 /**
  * @author lehni
  */
-public class ItemSet extends ArrayList<Item> {
+public class ItemList extends ArrayList<Item> implements StringIndexReadOnlyList<Item> {
 	HashMap<Item, Item> map;
 
-	public ItemSet() {
+	public ItemList() {
 		map = new HashMap<Item, Item>();
 	}
 
-	public ItemSet(ExtendedList<Item> items) {
+	public ItemList(ExtendedList<Item> items) {
 		this();
 		addAll(items);
 	}
 
-	public ItemSet(Item[] items) {
+	public ItemList(Item[] items) {
 		this(Lists.asList(items));
-	}
-
-	public Item getItem(int index) {
-		return (Item) get(index);
 	}
 
 	/**
@@ -76,6 +73,13 @@ public class ItemSet extends ArrayList<Item> {
 		return null;
 	}
 
+	public Item get(String name) {
+		for (Item item : this)
+			if (!item.isDefaultName() && item.getName().equals(name))
+				return item;
+		return null;
+	}
+
 	public Item remove(int index) {
 		Item obj = super.remove(index);
 		if (obj != null)
@@ -87,8 +91,6 @@ public class ItemSet extends ArrayList<Item> {
 		return map.get(element) != null;
 	}
 
-	public native ItemSet invert();
-	
 	private native Raster nativeRasterize(int type, float resolution,
 			int antialiasing, float width, float height);
 	

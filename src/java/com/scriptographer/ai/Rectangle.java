@@ -176,6 +176,20 @@ public class Rectangle {
 		this.height = height;
 	}
 
+	public Size getSize() {
+		return new Size(width, height);
+	}
+
+	public void setSize(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
+
+	public void setSize(Size size) {
+		this.width = size.width;
+		this.height = size.height;
+	}
+
 	/**
 	 * @jsbean The position of the left hand side of the rectangle. Note that this
 	 * @jsbean doesn't move the whole rectangle; the right hand side stays where it was.
@@ -229,20 +243,33 @@ public class Rectangle {
 	public void setTop(double top) {
 		height = top - y;
 	}
+
+	private double getCenterX() {
+		return x + width * 0.5f;
+	}
+	
+	private double getCenterY() {
+		return y + height * 0.5f;
+	}
+
+	private void setCenterX(double x) {
+		this.x = x - width * 0.5f;
+	}
+
+	private void setCenterY(double y) {
+		this.y = y - height * 0.5f;
+	}
 	
 	/**
 	 * @jsbean The center point of the rectangle.
 	 */
 	public Point getCenter() {
-		return new Point(
-			x + width * 0.5f,
-			y + height * 0.5f
-		);
+		return new Point(getCenterX(), getCenterY());
 	}
 
 	public void setCenter(Point center) {
-		x = center.x - width * 0.5f;
-		y = center.y - height * 0.5f;
+		setCenterX(center.x);
+		setCenterY(center.y);
 	}
 
 	/**
@@ -293,6 +320,42 @@ public class Rectangle {
 		setBottom(pt.y);
 	}
 
+	public Point getLeftMiddle() {
+		return new Point(getLeft(), getCenterY());
+	}
+	
+	public void setLeftMiddle(Point pt) {
+		setLeft(pt.x);
+		setCenterY(pt.y);
+	}
+
+	public Point getTopMiddle() {
+		return new Point(getCenterX(), getTop());
+	}
+	
+	public void setTopMiddle(Point pt) {
+		setCenterX(pt.x);
+		setTop(pt.y);
+	}
+
+	public Point getRightMiddle() {
+		return new Point(getRight(), getCenterY());
+	}
+	
+	public void setRightMiddle(Point pt) {
+		setRight(pt.x);
+		setCenterY(pt.y);
+	}
+
+	public Point getBottomMiddle() {
+		return new Point(getCenterX(), getBottom());
+	}
+	
+	public void setBottomMiddle(Point pt) {
+		setCenterX(pt.x);
+		setBottom(pt.y);
+	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer(128);
 		buf.append("{ x: ").append(x);
@@ -330,11 +393,37 @@ public class Rectangle {
 	}
 
 	public Rectangle multiply(double value) {
-		return new Rectangle(x * value, y * value, width * value, height * value);
+		return new Rectangle(x, y, width * value, height * value);
 	}
 
 	public Rectangle divide(double value) {
-		return new Rectangle(x / value, y / value, width / value, height / value);
+		return new Rectangle(x, y, width / value, height / value);
+	}
+
+	public void scale(double sx, double sy, Point center) {
+		if (center != null) {
+			x += width * (1.0 - sx) / 2;
+			y += height * (1.0 - sy) / 2;
+		}
+		width *= sx;
+		height *= sy;
+	}
+
+	public void scale(double sx, double sy) {
+		scale(sx, sy, null);
+	}
+
+	public void scale(double scale, Point center) {
+		scale(scale, scale, center);
+	}
+
+	public void scale(double value) {
+		scale(value, null);
+	}
+
+	public void translate(Point pt) {
+		x += pt.x;
+		y += pt.y;
 	}
 
 	/**

@@ -481,9 +481,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_Item_changeHandle = getMethodID(env, cls_ai_Item, "changeHandle", "(III)V");
 	mid_ai_Item_commit = getMethodID(env, cls_ai_Item, "commit", "(Z)V");
 
-	cls_ai_ItemSet = loadClass(env, "com/scriptographer/ai/ItemSet");
-	cid_ItemSet = getConstructorID(env, cls_ai_ItemSet, "()V");
-	mid_ai_ItemSet_add = getMethodID(env, cls_ai_ItemSet, "add", "(Ljava/lang/Object;)Ljava/lang/Object;");
+	cls_ai_ItemList = loadClass(env, "com/scriptographer/ai/ItemList");
+	cid_ItemList = getConstructorID(env, cls_ai_ItemList, "()V");
+	mid_ai_ItemList_add = getMethodID(env, cls_ai_ItemList, "add", "(Ljava/lang/Object;)Ljava/lang/Object;");
 
 	cls_ai_Path = loadClass(env, "com/scriptographer/ai/Path");
 	cls_ai_CompoundPath = loadClass(env, "com/scriptographer/ai/CompoundPath");
@@ -1081,7 +1081,7 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSp
 #endif
 		if (dstCol == NULL)
 			dstCol = new AIColor;
-		// init the destCol with 0
+		// Init the destCol with 0
 		// memset(dstCol, 0, sizeof(AIColor));
 		// determine dstCol's kind and sampleSize:
 		int dstSize;
@@ -1110,7 +1110,7 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSp
 		memcpy(&dstCol->c, dst, dstSize * sizeof(AISampleComponent));
 		// get back alpha:
 		if (dstAlpha != NULL)
-			*dstAlpha = dstHasAlpha ? dst[dstSize] : 1;
+			*dstAlpha = dstHasAlpha ? dst[dstSize] : -1.0;
 		return dstCol;
 	}
 	return NULL;
@@ -1187,13 +1187,13 @@ AIStrokeStyle *ScriptographerEngine::convertStrokeStyle(JNIEnv *env, jobject sty
 }
 
 
-// AIArtSet <-> ItemSet
+// AIArtSet <-> ItemList
 
 jobject ScriptographerEngine::convertArtSet(JNIEnv *env, AIArtSet set, bool layerOnly) {
-	ItemSet_filter(set, layerOnly);
+	ItemList_filter(set, layerOnly);
 	long count;
 	sAIArtSet->CountArtSet(set, &count);
-	jobject itemSet = newObject(env, cls_ai_ItemSet, cid_ItemSet); 
+	jobject itemSet = newObject(env, cls_ai_ItemList, cid_ItemList); 
 	for (long i = 0; i < count; i++) {
 		jobject obj;
 		AIArtHandle art;
@@ -1201,7 +1201,7 @@ jobject ScriptographerEngine::convertArtSet(JNIEnv *env, AIArtSet set, bool laye
 			if (art != NULL) {
 				obj = wrapArtHandle(env, art);
 				if (obj != NULL)
-					callBooleanMethod(env, itemSet, mid_ai_ItemSet_add, obj);
+					callBooleanMethod(env, itemSet, mid_ai_ItemList_add, obj);
 			}
 		}
 	}

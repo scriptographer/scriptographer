@@ -58,9 +58,9 @@ public class StyleWrapper extends ExtendedJavaObject {
 	}
 
 	public void put(String name, Scriptable start, Object value) {
-		if (value == Undefined.instance)
+		if (value == Undefined.instance) {
 			value = null;
-		else if (value == null) {
+		} else if (value == null) {
 			if (name.equals("color"))
 				value = Color.NONE;
 			else if (name.equals("font"))

@@ -130,6 +130,13 @@ public class RGBColor extends Color {
 		this.blue = blue;
 	}
 
+	public void set(Color color) {
+		RGBColor other = (RGBColor) color.convert(getType());
+		red = other.red;
+		green = other.green;
+		blue = other.blue;
+	}
+
 	public String toString() {
 		StringBuffer buf = new StringBuffer(32);
 		buf.append("{ red: ").append(red);

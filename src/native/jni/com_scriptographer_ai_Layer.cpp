@@ -178,7 +178,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getColor(JNIEnv *env,
 }
 
 /*
- * com.scriptographer.ai.ItemSet getItems()
+ * com.scriptographer.ai.ItemList getItems()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getItems(JNIEnv *env, jobject obj) {
 	try {
