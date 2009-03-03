@@ -24,20 +24,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $Id$
+ * $Id: com_scriptographer_ai_ItemList.cpp 578 2008-07-22 21:15:16Z lehni $
  */
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "aiGlobals.h"
 #include "com_scriptographer_ai_Item.h"
-#include "com_scriptographer_ai_ItemSet.h"
+#include "com_scriptographer_ai_ItemList.h"
 
 /*
- * com.scriptographer.ai.ItemSet
+ * com.scriptographer.ai.ItemList
  */
 
-void ItemSet_filter(AIArtSet set, bool layerOnly) {
+void ItemList_filter(AIArtSet set, bool layerOnly) {
 	// takes out all kUnknownArt, kTextRunArt, ... objs
 	// removes layergroups as well
 	long count;
@@ -58,7 +58,7 @@ void ItemSet_filter(AIArtSet set, bool layerOnly) {
 	}
 }
 
-jobject ItemSet_getSelected(JNIEnv *env) {
+jobject ItemList_getSelected(JNIEnv *env) {
 	AIArtSet set = NULL;
 	if (!sAIArtSet->NewArtSet(&set)) {
 		if (!sAIArtSet->SelectedArtSet(set)) {
@@ -68,13 +68,13 @@ jobject ItemSet_getSelected(JNIEnv *env) {
 			for (long i = count - 1; i >= 0; i--) {
 				AIArtHandle art;
 				if (!sAIArtSet->IndexArtSet(set, i, &art)) {
-					AIArtHandle parent = NULL;
 					long values;
 					if (!sAIArt->GetArtUserAttr(art, kArtFullySelected, &values) && !(values & kArtFullySelected)) {
 						sAIArtSet->RemoveArtFromArtSet(set, art);
 					} else {
+						AIArtHandle parent = NULL;
 						sAIArt->GetArtParent(art, &parent);
-						if (!Item_isLayer(parent)) {
+						if (parent != NULL && !Item_isLayer(parent)) {
 							if (!sAIArt->GetArtUserAttr(parent, kArtFullySelected, &values) && (values & kArtFullySelected))
 								sAIArtSet->RemoveArtFromArtSet(set, art);
 						}
@@ -89,7 +89,7 @@ jobject ItemSet_getSelected(JNIEnv *env) {
 	return NULL;
 }
 
-AIArtHandle ItemSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
+AIArtHandle ItemList_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
 	AIRasterizeSettings settings;
 	if (type == -1) {
 		// deterimine from document color model:
@@ -140,29 +140,13 @@ AIArtHandle ItemSet_rasterize(AIArtSet artSet, AIRasterizeType type, float resol
 }
 
 /*
- * com.scriptographer.ai.ItemSet invert()
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ItemSet_invert(JNIEnv *env, jobject obj) {
-	try {
-		AIArtSet setFrom = gEngine->convertArtSet(env, obj), setTo;
-		if (setFrom != NULL && !sAIArtSet->NewArtSet(&setTo) && !sAIArtSet->NotArtSet(setFrom, setTo)) {
-				jobject itemSet = gEngine->convertArtSet(env, setTo);
-				sAIArtSet->DisposeArtSet(&setFrom);
-				sAIArtSet->DisposeArtSet(&setTo);
-				return itemSet;
-		}
-	} EXCEPTION_CONVERT(env);
-	return NULL;
-}
-
-/*
  * com.scriptographer.ai.Raster nativeRasterize(int type, float resolution, int antialiasing, float width, float height)
  */
 
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ItemSet_nativeRasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_ItemList_nativeRasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
 	try {
 		AIArtSet set = gEngine->convertArtSet(env, obj);
-		AIArtHandle raster = ItemSet_rasterize(set, (AIRasterizeType) type, resolution, antialiasing, width, height);
+		AIArtHandle raster = ItemList_rasterize(set, (AIRasterizeType) type, resolution, antialiasing, width, height);
 		if (raster != NULL) {
 			// It's ok not to not pass document here, since the method calling nativeRasterize makes sure the right one is active
 			return gEngine->wrapArtHandle(env, raster);
