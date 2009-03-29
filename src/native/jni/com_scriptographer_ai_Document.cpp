@@ -722,9 +722,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createOval(JNIEnv 
 }
 
 /*
- * com.scriptographer.ai.Path createRegularPolygon(int numSides, com.scriptographer.ai.Point center, float radius)
+ * com.scriptographer.ai.Path createRegularPolygon(com.scriptographer.ai.Point center, int numSides, float radius)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRegularPolygon(JNIEnv *env, jobject obj, jint numSides, jobject center, jfloat radius) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRegularPolygon(JNIEnv *env, jobject obj, jobject center, jint numSides, jfloat radius) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
@@ -741,9 +741,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRegularPolyg
 }
 
 /*
- * com.scriptographer.ai.Path createStar(int numPoints, com.scriptographer.ai.Point center, float radius1, float radius2)
+ * com.scriptographer.ai.Path createStar(com.scriptographer.ai.Point center, int numPoints, float radius1, float radius2)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createStar(JNIEnv *env, jobject obj, jint numPoints, jobject center, jfloat radius1, jfloat radius2) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createStar(JNIEnv *env, jobject obj, jobject center, jint numPoints, jfloat radius1, jfloat radius2) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
