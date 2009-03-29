@@ -1,45 +1,14 @@
 Path.inject(new function() {
-
-	function set(res, properties) {
-		if (properties)
-			for (var i in properties)
-				res[i] = properties[i];
-		return res;
-	}
-
-	return {
-		statics: {
-			Line: function(pt1, pt2, properties) {
-				return set(document.createLine(pt1, pt2), properties);
-			},
-
-			Rectangle: function(rect, properties) {
-				return set(document.createRectangle(rect), properties);
-			},
-
-			RoundRectangle: function(rect, hor, ver, properties) {
-				return set(document.createRoundRectangle(rect, hor, ver), properties);
-			},
-
-			RegularPolygon: function(numSides, center, radius, properties) {
-				return set(document.createRegularPolygon(numSides, center, radius), properties);
-			},
-
-			Star: function(numPoints, center, radius1, radius2, properties) {
-				return set(document.createStar(numPoints, center, radius1, radius2), properties);
-			},
-
-			Spiral: function(firstArcCenter, start, decayPercent, numQuarterTurns, clockwiseFromOutside, properties) {
-				return set(document.createSpiral(firstArcCenter, start, decayPercent, numQuarterTurns, clockwiseFromOutside), properties);
-			},
-
-			Oval: function(rect, properties) {
-				return set(document.createOval(rect), properties);
-			},
-
-			Circle: function(point, radius, properties) {
-				return set(document.createCircle(point, radius), properties);
-			}
+	return ['Line', 'Rectangle', 'RoundRectangle', 'RegularPolygon', 'Star', 'Spiral', 'Oval', 'Circle'].each(function(name) {
+		this.statics[name] = function() {
+			var args = Array.create(arguments);
+			var last = args.last;
+			var props = last && last.__proto__ == Object.prototype ? args.pop() : null;
+			var res = document['create' + name].apply(document, args);
+			if (props)
+				for (var i in props)
+					res[i] = props[i];
+			return res;
 		}
-	}
+	}, { statics: {}});
 });

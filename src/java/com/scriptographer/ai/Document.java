@@ -497,6 +497,10 @@ public class Document extends NativeObject {
 		return path;
 	}
 
+	public Path createLine(double x1, double y1, double x2, double y2) {
+		return createLine(new Point(x1, y1), new Point(x2, y2));
+	}
+
 	/**
 	 * Creates a rectangular path
 	 * 
@@ -505,6 +509,10 @@ public class Document extends NativeObject {
 	 */
 	public native Path createRectangle(Rectangle rect);
 
+	public Path createRectangle(double x, double y, double width, double height) {
+		return createRectangle(new Rectangle(x, y, width, height));
+	}
+		
 	/**
 	 * Creates a rectangular path with rounded corners
 	 * 
@@ -514,6 +522,10 @@ public class Document extends NativeObject {
 	 * @return the newly created path
 	 */
 	public native Path createRoundRectangle(Rectangle rect, float hor, float ver);
+
+	public Path createRoundRectangle(double x, double y, double width, double height, float hor, float ver) {
+		return createRoundRectangle(new Rectangle(x, y, width, height), hor, ver);
+	}
 
 	/**
 	 * Creates an oval shaped path
@@ -525,7 +537,24 @@ public class Document extends NativeObject {
 	 * @return the newly created path
 	 */
 	public native Path createOval(Rectangle rect, boolean circumscribed);
+
+	/**
+	 * Creates an oval shaped path
+	 * @param rect
+	 * @return the newly created path
+	 */
+	public Path createOval(Rectangle rect) {
+		return createOval(rect, false);
+	}
+
+	public Path createOval(double x, double y, double width, double height, boolean circumscribed) {
+		return createOval(new Rectangle(x, y, width, height), circumscribed);
+	}
 	
+	public Path createOval(double x, double y, double width, double height) {
+		return createOval(x, y, width, height);
+	}
+
 	/**
 	 * Creates a regular polygon shaped path
 	 * 
@@ -534,7 +563,7 @@ public class Document extends NativeObject {
 	 * @param radius
 	 * @return the newly created path
 	 */
-	public native Path createRegularPolygon(int numSides, Point center,
+	public native Path createRegularPolygon(Point center, int numSides,
 			float radius);
 
 	/**
@@ -550,7 +579,7 @@ public class Document extends NativeObject {
 	 * @param radius2
 	 * @return the newly created path
 	 */
-	public native Path createStar(int numPoints, Point center, float radius1,
+	public native Path createStar(Point center, int numPoints, float radius1,
 			float radius2);
 
 	/**
@@ -571,23 +600,15 @@ public class Document extends NativeObject {
 			float decayPercent, int numQuarterTurns,
 			boolean clockwiseFromOutside);
 
-	/**
-	 * Creates an oval shaped path
-	 * @param rect
-	 * @return the newly created path
-	 */
-	public Path createOval(Rectangle rect) {
-		return createOval(rect, false);
-	}
-
-	public Path createCircle(float x, float y, float radius) {
-		return createCircle(new Point(x, y), radius);
-	}
 
 	public Path createCircle(Point center, float radius) {
 		return createOval(new Rectangle(
 				center.subtract(radius, radius),
 				center.add(radius, radius)));
+	}
+
+	public Path createCircle(float x, float y, float radius) {
+		return createCircle(new Point(x, y), radius);
 	}
 
 	/**
