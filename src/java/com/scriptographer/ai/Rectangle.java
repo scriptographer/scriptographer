@@ -87,12 +87,19 @@ public class Rectangle {
 	
 	/**
 	 * Creates a new rectangle from the passed points.
-	 * @param bottomLeft The bottom left point.
-	 * @param topRight The top right point.
+	 * @param point1 The first point defining the rectangle.
+	 * @param point2 The second point defining the rectangle.
 	 */
-	public Rectangle(Point bottomLeft, Point topRight) {
-		this(bottomLeft.x, bottomLeft.y,
-				topRight.x - bottomLeft.x, topRight.y - bottomLeft.y);
+	public Rectangle(Point point1, Point point2) {
+		this(point1.x, point1.y, point2.x - point1.x, point2.y - point1.y);
+		if (width < 0) {
+			x = point2.x;
+			width = -width;
+		}
+		if (height < 0) {
+			y = point2.y;
+			height = -height;
+		}
 	}
 
 	public Rectangle(Point point, Size size) {
@@ -320,38 +327,38 @@ public class Rectangle {
 		setBottom(pt.y);
 	}
 
-	public Point getLeftMiddle() {
+	public Point getLeftCenter() {
 		return new Point(getLeft(), getCenterY());
 	}
 	
-	public void setLeftMiddle(Point pt) {
+	public void setLeftCenter(Point pt) {
 		setLeft(pt.x);
 		setCenterY(pt.y);
 	}
 
-	public Point getTopMiddle() {
+	public Point getTopCenter() {
 		return new Point(getCenterX(), getTop());
 	}
 	
-	public void setTopMiddle(Point pt) {
+	public void setTopCenter(Point pt) {
 		setCenterX(pt.x);
 		setTop(pt.y);
 	}
 
-	public Point getRightMiddle() {
+	public Point getRightCenter() {
 		return new Point(getRight(), getCenterY());
 	}
 	
-	public void setRightMiddle(Point pt) {
+	public void setRightCenter(Point pt) {
 		setRight(pt.x);
 		setCenterY(pt.y);
 	}
 
-	public Point getBottomMiddle() {
+	public Point getBottomCenter() {
 		return new Point(getCenterX(), getBottom());
 	}
 	
-	public void setBottomMiddle(Point pt) {
+	public void setBottomCenter(Point pt) {
 		setCenterX(pt.x);
 		setBottom(pt.y);
 	}
