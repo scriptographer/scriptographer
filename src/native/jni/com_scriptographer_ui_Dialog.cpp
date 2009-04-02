@@ -742,6 +742,7 @@ public:
 
 private:
 	UniChar *getCharacters(CFStringRef str) {
+		// Returns a 0 determined UniChar string
 		int len = CFStringGetLength(str);
 		UniChar *chars = new UniChar[len + 1];
 		CFRange range = { 0, len };
@@ -921,7 +922,6 @@ public:
 	}
 	
 private:
-
 	CFArrayRef getFilterNames() {
 		CFMutableArrayRef array = CFArrayCreateMutable(NULL, filters.size(), NULL);
 		for (int i = 0; i < filters.size(); i++)
@@ -968,7 +968,6 @@ private:
 		}
 	}
 };
-
 
 #endif
 
