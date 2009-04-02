@@ -698,6 +698,17 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setGroupInfo(JNIEnv *en
 	} EXCEPTION_CONVERT(env);
 }
 
+#ifdef MAC_ENV
+void Dialog_folderDialogCallback(NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParams, void *callBackUserData) {
+	OSStatus status;
+	if (callBackSelector == kNavCBStart && callBackUserData != NULL) {
+		AEDesc location = { typeNull, NULL };
+		OSStatus theStatus = AECreateDesc(typeFSS, (FSSpec*) callBackUserData, sizeof(FSSpec), &location);
+		theStatus = NavCustomControl(callBackParams->context, kNavCtlSetLocation, (void*) &location);
+	}
+}
+#endif
+
 /*
  * java.io.File nativeFileDialog(java.lang.String message, java.lang.String filter, java.io.File directory, java.lang.String filename, boolean open)
  */
@@ -739,13 +750,17 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeFileDialog(JNI
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseDirectory(JNIEnv *env, jclass cls, jstring message, jobject directory) {
 	jobject ret = NULL;
 	try {
+		SPPlatformFileSpecification dir;
+		bool hasDir = false;
+		if (directory != NULL)
+			hasDir = gEngine->convertFile(env, directory, &dir) != NULL;
 #ifdef MAC_ENV
 		// CS4 broke this for good. Use native code instead for all versions on Mac.
 		NavDialogCreationOptions options;
 		if(!NavGetDefaultDialogCreationOptions(&options)) {
 			options.message = gEngine->convertString_CFString(env, message);
 			NavDialogRef dialog = NULL;
-			if (!NavCreateChooseFolderDialog(&options, NULL, NULL, NULL, &dialog)) {
+			if (!NavCreateChooseFolderDialog(&options, &Dialog_folderDialogCallback, NULL, hasDir ? &dir : NULL, &dialog)) {
 				if (!NavDialogRun(dialog)) {
 					NavUserAction action = NavDialogGetUserAction(dialog);
 					if (action != kNavUserActionCancel && action != kNavUserActionNone) {
@@ -767,11 +782,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseDirectory(JNIE
 			CFRelease(options.message);
 		}
 #else
-		SPPlatformFileSpecification dir, result;
-		bool hasDir = false;
-		if (directory != NULL)
-			hasDir = gEngine->convertFile(env, directory, &dir) != NULL;
-		
+		SPPlatformFileSpecification result;
 		// Unicode seems to not work (at least not on Windows?)
 		// So use normal string instead...
 		char *msg = gEngine->convertString(env, message);
