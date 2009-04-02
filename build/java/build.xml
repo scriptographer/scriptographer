@@ -415,7 +415,7 @@
 		<!--
 		<javadoc packagenames="com.scriptographer.test"
 		-->
-		<javadoc packagenames="com.scriptographer,com.scriptographer.sg,com.scriptographer.ai,com.scriptographer.adm,com.scriptographer.util,java.*"
+		<javadoc packagenames="com.scriptographer,com.scriptographer.sg,com.scriptographer.ai,com.scriptographer.ui,com.scriptographer.util,java.*"
 				sourcepathref="docs.sourcepath"
 				destdir="${destdir}"
 				author="false"
@@ -450,7 +450,7 @@
 				<param name="-packagesequence" value="
 					com.scriptographer.sg
 					com.scriptographer.ai
-					com.scriptographer.adm
+					com.scriptographer.ui
 					com.scriptographer.test
 					"/>
 				<param name="-methodfilter" value="

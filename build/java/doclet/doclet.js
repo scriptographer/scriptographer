@@ -247,13 +247,13 @@ Type = Object.extend({
 	isPoint: function() {
 		var cd = this.asClassDoc();
 		return cd && (cd.hasSuperclass('com.scriptographer.ai.Point') ||
-			cd.hasSuperclass('com.scriptographer.adm.Point'));
+			cd.hasSuperclass('com.scriptographer.ui.Point'));
 	},
 
 	isRectangle: function() {
 		var cd = this.asClassDoc();
 		return cd && (cd.hasSuperclass('com.scriptographer.ai.Rectangle') ||
-			cd.hasSuperclass('com.scriptographer.adm.Rectangle'));
+			cd.hasSuperclass('com.scriptographer.ui.Rectangle'));
 	},
 
 	isFile: function() {
