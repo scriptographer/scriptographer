@@ -190,6 +190,12 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 
 		// Properties:
 
+		// Define the global reference here, for scripts that get executed directly in the
+		// TopLevel scope (libraries)
+		// This is overridden by RhinoEngine#createScope for all other scopes.
+		defineProperty("global", this,
+				ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+
 		defineProperty("documents", DocumentList.getInstance(),
 			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 
