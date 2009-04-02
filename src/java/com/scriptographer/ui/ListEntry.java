@@ -47,11 +47,11 @@ public class ListEntry extends NotificationHandler {
 	protected ListItem list;
 	
 	/**
-	 * This constructor is only used by ListItem#createEntry / ListItem#add
+	 * This constructor is used by ListItem#createEntry / ListItem#add
 	 * @param list
 	 * @param index
 	 */
-	protected ListEntry(ListItem list, int index) {
+	public ListEntry(ListItem list, int index) {
 		if (list instanceof HierarchyList && !(this instanceof HierarchyListEntry))
 			throw new ScriptographerException(
 					"Use HierarchyListEntry objects for HierarchyList");

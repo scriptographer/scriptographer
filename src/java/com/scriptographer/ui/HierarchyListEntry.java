@@ -44,11 +44,11 @@ public class HierarchyListEntry extends ListEntry {
 	protected HierarchyList childList = null;
 	
 	/**
-	 * This constructor is only used by HierarchyList#createEntry / ListItem#add
+	 * This constructor is used by HierarchyList#createEntry / ListItem#add
 	 * @param list
 	 * @param index
 	 */
-	protected HierarchyListEntry(HierarchyList list, int index) {
+	public HierarchyListEntry(HierarchyList list, int index) {
 		super(list, index);
 	}
 
