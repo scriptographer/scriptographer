@@ -28,40 +28,6 @@
  */
 
 var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing', function() {
-	if (app.macintosh) {
-		function executeProcess() {
-			if (arguments.length == 1) {
-				var command = arguments[0];
-			} else {
-				var command = [];
-				for (var i = 0; i < arguments.length; i++) {
-					command.push(arguments[i]);
-				}
-			}
-			var proccess = java.lang.Runtime.getRuntime().exec(command);
-			var exitValue = proccess.waitFor();
-
-			function readStream(stream) {
-				var reader = new java.io.BufferedReader(new java.io.InputStreamReader(stream));
-				var res = [], line, first = true;
-				while ((line = reader.readLine()) != null) {
-					if (first) first = false;
-					else res.push(lineBreak);
-					res.push(line);
-				}
-				return res.join('');
-			}
-
-			return {
-				command: command,
-				output: readStream(proccess.getInputStream()),
-				error: readStream(proccess.getErrorStream()),
-				exitValue: exitValue
-			};
-		}
-	}
-
-	var lineHeight = 17;
 
 	// Script List:
 	scriptList = new HierarchyList(this) {
@@ -69,6 +35,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		size: [208, 20 * lineHeight],
 		minimumSize: [208, 8 * lineHeight],
 		entryTextRect: [0, 0, 2000, lineHeight],
+		directory: scriptographer.scriptDirectory,
 		// TODO: consider adding onDoubleClick and onExpand / Collapse, instead of this 
 		// workaround here. Avoid onTrack as much as possible in scripts,
 		// and add what's needed behind the scenes.
@@ -76,12 +43,13 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			// Detect expansion of unpopulated folders and populate on the fly
 			var expanded = entry.expanded;
 			entry.defaultTrack(tracker); // this might change entry.expanded state
-			if (entry.unpopulated && !expanded && entry.expanded)
+			if (!entry.populated && !expanded && entry.expanded)
 				entry.populate();
+			// Detect doubleclicks on files and folders.
 			if (tracker.action == Tracker.ACTION_BUTTON_UP &&
 					(tracker.modifiers & Tracker.MODIFIER_DOUBLE_CLICK) &&
 					tracker.point.x > entry.expandArrowRect.right) {
-				if (entry.directory) {
+				if (entry.isDirectory) {
 					entry.expanded = !entry.expanded;
 					entry.list.invalidate();
 				} else {
@@ -113,45 +81,55 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	var fileEntries = {};
 	var currentToolFile = null;
 
-	function addFile(list, file, selected) {
-		var entry = new HierarchyListEntry(list) {
+	function addFile(list, file, index) {
+		// TODO: We need to convert back to com.scriptographer.sg.File from
+		// java.io.File here, since listFiles is not using that class.
+		// Decide what to do: Shall we use the boots File object instead?
+		if (!(file instanceof File))
+			file = new File(file);
+		var entry = new HierarchyListEntry(list, Base.pick(index, -1)) {
 			text: file.name,
-			selected: selected && selected[file] || selected == true,
 			// backgroundColor: 'background',
 			file: file,
-			directory: file.isDirectory()
+			lastModified: file.lastModified(),
+			isDirectory: file.isDirectory()
 		};
-		if (entry.directory) {
+		if (entry.isDirectory) {
 			// Create empty child list to get the arrow button but do not
-			// populate yet. This is done dynamically in onTrackEntry
+			// populate yet. This is done dynamically in onTrackEntry, when
+			// the user opens the list
 			entry.createChildList();
+			entry.childList.directory = file;
 			entry.expanded = false;
-			entry.unpopulated = true;
+			entry.populated = false;
 			entry.populate = function() {
-				if (this.unpopulated) {
-					addFiles(this.childList, this.file, selected);
-					this.unpopulated = false;
+				if (!this.populated) {
+					this.childList.directory = file;
+					addFiles(this.childList);
+					this.populated = true;
 				}
 			}
 			entry.image = folderImage;
 			directoryEntries[file] = entry;
 		} else {
-			entry.isTool = /onMouse(Up|Down|Move|Drag)/.test(file.readAll());
-			entry.image = entry.isTool
-				? (currentToolFile == entry.file ? activeToolScriptImage : toolScriptImage)
-				: scriptImage;
+			entry.update = function() {
+				this.isTool = /onMouse(Up|Down|Move|Drag)/.test(file.readAll());
+				this.image = this.isTool
+					? (currentToolFile == this.file ? activeToolScriptImage : toolScriptImage)
+					: scriptImage;
+			}
+			entry.update();
 			fileEntries[file] = entry;
 		}
 		return entry;
 	}
 
-	function addFiles(list, dir, selected) {
-		var files = dir.listFiles(scriptFilter);
+	function addFiles(list) {
+		if (!list)
+			list = scriptList;
+		var files = list.directory.listFiles(scriptFilter);
 		for (var i = 0; i < files.length; i++)
-			// TODO: We need to convert back to com.scriptographer.sg.File from
-			// java.io.File here, since listFiles is not using that class.
-			// Decide what to do: Shall we use the boots File object instead?
-			addFile(list, new File(files[i]), selected);
+			addFile(list, files[i]);
 	}
 
 	function removeFiles() {
@@ -160,11 +138,54 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		fileEntries = {};
 	}
 
+	function refreshFiles(list) {
+		if (!list)
+			list = scriptList;
+		// Get new listing of the directory, then match with already inserted files.
+		// Create a lookup object for easily finding and tracking of already inserted files.	
+		var files = list.directory.listFiles(scriptFilter).each(function(file, i) {
+			this[file.path] = {
+				file: file,
+				index: i,
+			};
+		}, {});
+		// Now walk through all the already inserted files, find the ones that
+		// need to be removed, and refresh already populated ones.
+		var removed = list.each(function(entry) {
+			if (!files[entry.file.path]) {
+				// Don't remove right away since that would mess up the each loop.
+				// Instead. we collect them in the removed array, to be removed
+				// in a seperate loop after.
+				this.push(entry);
+			} else {
+				delete files[entry.file.path];
+				// See if the file was changed, and if so, update its icon since
+				// it might be a tool now
+				if (entry.lastModified != entry.file.lastModified()) {
+					entry.lastModified = entry.file.lastModified(); 
+					if (!entry.isDirectory)
+						entry.update();
+				}
+				if (entry.populated)
+					refreshFiles(entry.childList);
+			}
+		}, []);
+		// Remove the deleted files.
+		removed.each(function(entry) {
+			entry.remove();
+		});
+		// Files now only contains new files that are not inserted yet.
+		// Look through them and insert in the right paces.
+		files.each(function(info) {
+			addFile(list, info.file, info.index);
+		});
+	}
+
     function createFile() {
         var entry = scriptList.activeLeaf;
         var list;
         if (entry) {
-            if (entry.directory) {
+            if (entry.isDirectory) {
 				list = entry.childList;
             } else {
                 list = entry.list;
@@ -186,35 +207,14 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
                 'All Files', '*.*'
 			], file);
                // Add it to the list as well:
-            if (file && file.createNewFile())
-				addFile(list, file, true);
+            if (file && file.createNewFile()) {
+				// TODO: Use refreshFiles instead, to make sure it appears
+				// in the right place. Find a way to select the newly created one
+				var entry = addFile(list, file);
+				entry.selected = true;
+			}
         }
     }
-
-	function refreshFiles() {
-		// Collect expanded items:
-		var expandedDirs = {}, selected = {};
-		for (file in directoryEntries) {
-			var entry = directoryEntries[file];
-			if (entry.directory && entry.expanded)
-				expandedDirs[file] = true;
-		}
-		// Create a lookup table for all selected files, so they
-		// can be selected again in addFiles
-		var sel = scriptList.selectedEntries;
-		for (var i = 0; i < sel.length; i++)
-			selected[sel[i].file] = true;
-		removeFiles();
-		addFiles(scriptList, scriptographer.scriptDirectory, selected);
-		// Now restore the expanded state:
-		for (file in expandedDirs) {
-			var entry = directoryEntries[file];
-			if (entry) {
-				entry.populate();
-				entry.expanded = true;
-			}
-		}
-	}
 
 	function execute() {
 		var entry = scriptList.activeLeaf;
@@ -363,12 +363,12 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	};
 
-	if (scriptographer.scriptDirectory)
-		refreshFiles();
-
 	global.onActivate = function() {
 		refreshFiles();
 	}
+
+	if (scriptographer.scriptDirectory)
+		addFiles();
 
 	return {
 		title: 'Scriptographer',

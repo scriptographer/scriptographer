@@ -34,6 +34,7 @@ importPackage(Packages.com.scriptographer.script);
 script.showProgress = false;
 
 var buttonSize = new Size(27, 17);
+var lineHeight = 17;
 var lineBreak = java.lang.System.getProperty('line.separator');
 
 function getImage(filename) {
