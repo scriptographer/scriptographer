@@ -488,8 +488,12 @@ public:
 
 	// java.io.File <-> SPPlatformFileSpecification
 	char *getFilePath(JNIEnv *env, jobject file);
+	jobject convertFile(JNIEnv *env, const char *path);
 	jobject convertFile(JNIEnv *env, SPPlatformFileSpecification *fileSpec);
 	SPPlatformFileSpecification *convertFile(JNIEnv *env, jobject file, SPPlatformFileSpecification *res = NULL);
+#ifdef MAC_ENV
+	jobject convertFile(JNIEnv *env, CFStringRef path);
+#endif
 	
 	// AI Handles
 	int getAIObjectHandle(JNIEnv *env, jobject obj, const char *name);

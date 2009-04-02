@@ -42,6 +42,7 @@ public:
 	bool remove(unsigned int index);
 	void reset();
 	unsigned int size();
+	const TYPE *data();
 	TYPE get(unsigned int index) const;
 	void set(unsigned int index, TYPE element);
 
@@ -107,6 +108,11 @@ inline void Array<TYPE>::set(unsigned int index, TYPE element) {
 template<class TYPE>
 inline unsigned int Array<TYPE>::size() {
 	return m_size;
+}
+
+template<class TYPE>
+inline const TYPE *Array<TYPE>::data() {
+	return m_data;
 }
 
 template<class TYPE>

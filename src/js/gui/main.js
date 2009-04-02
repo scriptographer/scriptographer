@@ -176,9 +176,14 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		});
 		// Files now only contains new files that are not inserted yet.
 		// Look through them and insert in the right paces.
+		var added = [];
 		files.each(function(info) {
-			addFile(list, info.file, info.index);
+			added.push(addFile(list, info.file, info.index));
 		});
+		return {
+			removed: removed,
+			added: added
+		}
 	}
 
     function createFile() {
@@ -208,10 +213,13 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			], file);
                // Add it to the list as well:
             if (file && file.createNewFile()) {
-				// TODO: Use refreshFiles instead, to make sure it appears
-				// in the right place. Find a way to select the newly created one
-				var entry = addFile(list, file);
-				entry.selected = true;
+				// Use refreshFiles to make sure the new item appears in the
+				// right place, and mark the newly added file as selected.
+				var added = refreshFiles(list).added;
+				added.each(function(entry) {
+					if (entry.file == file)
+						entry.selected = true;
+				});
 			}
         }
     }

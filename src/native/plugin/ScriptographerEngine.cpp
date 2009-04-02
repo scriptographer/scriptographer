@@ -1232,13 +1232,33 @@ char *ScriptographerEngine::getFilePath(JNIEnv *env, jobject file) {
 	return path;
 }
 
-jobject ScriptographerEngine::convertFile(JNIEnv *env, SPPlatformFileSpecification *fileSpec) {
-	char path[kMaxPathLength];
-	gPlugin->fileSpecToPath(fileSpec, path);
+jobject ScriptographerEngine::convertFile(JNIEnv *env, const char *path) {
+	if (path == NULL)
+		return NULL;
 	return newObject(env, cls_File, cid_File, convertString(env, path));
 }
 
+#ifdef MAC_ENV
+jobject ScriptographerEngine::convertFile(JNIEnv *env, CFStringRef path) {
+	if (path == NULL)
+		return NULL;
+	char chars[1024];
+	CFStringGetCString(path, chars, 1024, kCFStringEncodingUTF8);
+	return convertFile(env, chars);
+}
+#endif
+
+jobject ScriptographerEngine::convertFile(JNIEnv *env, SPPlatformFileSpecification *fileSpec) {
+	if (fileSpec == NULL)
+		return NULL;
+	char path[kMaxPathLength];
+	gPlugin->fileSpecToPath(fileSpec, path);
+	return convertFile(env, path);
+}
+
 SPPlatformFileSpecification *ScriptographerEngine::convertFile(JNIEnv *env, jobject file, SPPlatformFileSpecification *res) {
+	if (file == NULL)
+		return NULL;
 	char *path = getFilePath(env, file);
 	bool create = res == NULL;
 	if (create)
@@ -1972,6 +1992,8 @@ ai::UnicodeString ScriptographerEngine::convertString_UnicodeString(JNIEnv *env,
 
 #ifdef MAC_ENV
 CFStringRef ScriptographerEngine::convertString_CFString(JNIEnv *env, jstring jstr) {
+	if (jstr == NULL)
+		return NULL;
 	JNI_CHECK_ENV
 	const jchar *chars = env->GetStringCritical(jstr, NULL);
 	CFStringRef str = CFStringCreateWithCharacters(kCFAllocatorDefault, chars, env->GetStringLength(jstr));
