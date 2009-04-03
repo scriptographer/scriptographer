@@ -31,7 +31,6 @@
 
 package com.scriptographer.ai;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
@@ -440,6 +439,31 @@ public abstract class Item extends DocumentObject {
 		return getFirstChild() != null;
 	}
 
+	public boolean hasParent(Item item) {
+		Item parent = getParent();
+		while (parent != null) {
+			if (parent == item)
+				return true;
+			parent = parent.getParent();
+		}
+		return false;
+	}
+
+	public boolean isGroupedWith(Item item) {
+		Item parent = getParent();
+		while (parent != null) {
+			// Find group parents
+			if (parent instanceof Group || parent instanceof CompoundPath) {
+				// see if the item has them as parents
+				if (item.hasParent(parent))
+					return true;
+			}
+			// Keep walking up otherwise
+			parent = parent.getParent();
+		}
+		return false;
+	}
+	
 	protected native Rectangle nativeGetBounds();
 
 	private ItemRectangle bounds = null;
