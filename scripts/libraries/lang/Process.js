@@ -8,6 +8,35 @@ Process = Base.extend(new function() {
 		return res.join(java.lang.System.getProperty('line.separator'));
 	}
 
+	function updateTimer() {
+		if (this.process) {
+			var hasCallback = this._onData || this._onError || this._onDone;
+			if (!this._timer != !hasCallback) { // xor
+				if (hasCallback) {
+					this._timer = (function() {
+						if (this._onError) {
+							var error = this.readError();
+							if (error)
+								this._onError(error);
+						}
+						if (this._onData) {
+							var data = this.readAll();
+							if (data)
+								this._onData(data);
+						}
+						if (!this.isRunning()) {
+							if (this._onDone)
+								this._onDone();
+							this._timer = this._timer.clear();
+						}
+					}).periodic(1, this);
+				} else {
+					this._timer = this._timer.clear();
+				}
+			} 
+		}
+	}
+
 	var fields = {
 		initialize: function() {
 			this._builder = new java.lang.ProcessBuilder(Array.create(arguments));
@@ -24,7 +53,7 @@ Process = Base.extend(new function() {
 			this.output = new java.io.PrintStream(this.process.getOutputStream());
 			this.input = new java.io.BufferedReader(new java.io.InputStreamReader(this.process.getInputStream()));
 			this.error = new java.io.BufferedReader(new java.io.InputStreamReader(this.process.getErrorStream()));
-			this.updateTimer();
+			updateTimer.call(this);
 		},
 
 		write: function(str) {
@@ -81,41 +110,18 @@ Process = Base.extend(new function() {
 			}
 		},
 
-		updateTimer: function() {
-			if (this.process) {
-				var hasCallback = this._onData || this._onError || this._onDone;
-				if (!this._timer != !hasCallback) { // xor
-					if (hasCallback) {
-						this._timer = (function() {
-							if (this._onError) {
-								var error = this.readError();
-								if (error)
-									this._onError(error);
-							}
-							if (this._onData) {
-								var data = this.readAll();
-								if (data)
-									this._onData(data);
-							}
-							if (!this.isRunning()) {
-								if (this._onDone)
-									this._onDone();
-								this._timer = this._timer.clear();
-							}
-						}).periodic(1, this);
-					} else {
-						this._timer = this._timer.clear();
-					}
-				} 
-			}
+		poll: function() {
+			if (this._timer)
+				this._timer();
 		}
 	};
+
 	['onError', 'onData', 'onDone'].each(function(name) {
 		var hidden = '_' + name;
 		fields[name] = {
 			_set: function(handler) {
 				this[hidden] = handler;
-				this.updateTimer();
+				updateTimer.call(this);
 			},
 			_get: function() {
 				return this[hidden];
