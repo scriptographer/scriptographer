@@ -105,4 +105,13 @@ class TextStoryList extends DocumentObject implements ReadOnlyList<TextStory> {
 		handle = newHandle;
 		version = CommitManager.version;
 	}
+
+	public TextStory getFirst() {
+		return size() > 0 ? get(0) : null;
+	}
+
+	public TextStory getLast() {
+		int size = size();
+		return size > 0 ? get(size - 1) : null;
+	}
 }

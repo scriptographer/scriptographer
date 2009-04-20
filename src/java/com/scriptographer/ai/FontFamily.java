@@ -114,4 +114,13 @@ public class FontFamily extends NativeObject implements ReadOnlyList<FontWeight>
 	public String toString() {
 		return getName();
 	}
+
+	public FontWeight getFirst() {
+		return size() > 0 ? get(0) : null;
+	}
+
+	public FontWeight getLast() {
+		int size = size();
+		return size > 0 ? get(size - 1) : null;
+	}
 }

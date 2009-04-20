@@ -58,9 +58,6 @@ public interface ExtendedList<E> extends List<E> {
 	E[] toArray();
 	E[] toArray(E elements[]);
 
-	E getFirst();
-	E getLast();
-
 	E removeFirst();
 	E removeLast();
 }

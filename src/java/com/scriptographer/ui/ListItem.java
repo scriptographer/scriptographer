@@ -415,4 +415,13 @@ public abstract class ListItem<E extends ListEntry> extends Item implements List
 	public Iterator<E> iterator() {
 		return new ListIterator<E>(this);
 	}
+
+	public E getFirst() {
+		return size() > 0 ? get(0) : null;
+	}
+
+	public E getLast() {
+		int size = size();
+		return size > 0 ? get(size - 1) : null;
+	}
 }

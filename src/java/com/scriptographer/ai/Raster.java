@@ -412,6 +412,7 @@ public class Raster extends Item {
 	 *         shape.
 	 */
 	public Color getAverageColor(Shape shape) {
+		Rectangle2D rect = shape.getBounds2D();
 		GeneralPath path;
 		int width, height, startX, startY;
 		if (shape != null) {
@@ -445,6 +446,10 @@ public class Raster extends Item {
 			path = null;
 		}
 		BufferedImage img = getSubImage(startX, -startY - height, width, height);
+
+	//	Raster check = new Raster(img);
+	//	check.setPosition(rect.getCenterX(), rect.getCenterY());
+
 		WritableRaster raster = img.getRaster();
 		byte[] data = (byte[]) raster.getDataElements(0, 0, null);
 		float components[] = new float[data.length];

@@ -144,5 +144,14 @@ public class TextStory extends DocumentObject {
 		public Iterator<TextItem> iterator() {
 			return new ListIterator<TextItem>(this);
 		}
+
+		public TextItem getFirst() {
+			return size() > 0 ? get(0) : null;
+		}
+
+		public TextItem getLast() {
+			int size = size();
+			return size > 0 ? get(size - 1) : null;
+		}
 	}
 }

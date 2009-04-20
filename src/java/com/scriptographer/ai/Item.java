@@ -145,17 +145,6 @@ public abstract class Item extends DocumentObject {
 	private native static int nativeCreate(short type);
 
 	/**
-	 * Creates a new AIArtHandle of the specified type and wraps it in a item
-	 * 
-	 * @param type Item.TYPE_*
-	 */
-	protected Item(short type) {
-		super(nativeCreate(type));
-		// Keep track of this object from now on, see wrapArtHandle
-		items.put(handle, this);
-	}
-
-	/**
 	 * Wraps an AIArtHandle of given type (determined by
 	 * sAIArt->GetType(artHandle)) by the correct Item ancestor class:
 	 * 
@@ -330,6 +319,17 @@ public abstract class Item extends DocumentObject {
 		return ret;
 	}
 	
+	/**
+	 * Creates a new AIArtHandle of the specified type and wraps it in a item
+	 * 
+	 * @param type Item.TYPE_*
+	 */
+	protected Item(short type) {
+		super(nativeCreate(type));
+		// Keep track of this object from now on, see wrapArtHandle
+		items.put(handle, this);
+	}
+
 	protected native void finalize();
 
 	/**
@@ -977,6 +977,10 @@ public abstract class Item extends DocumentObject {
 
 	public Item expand(EnumSet<ExpandFlag> flags) {
 		return expand(flags, 0);
+	}
+
+	public Item expand(ExpandFlag[] flags) {
+		return expand(EnumSet.copyOf(Arrays.asList(flags)));
 	}
 
 	private static int defaultExpandFlags =

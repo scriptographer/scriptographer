@@ -141,4 +141,13 @@ public class FontList implements ReadOnlyList<FontFamily>, StringIndexReadOnlyLi
 
 		return fonts;
 	}
+
+	public FontFamily getFirst() {
+		return size() > 0 ? get(0) : null;
+	}
+
+	public FontFamily getLast() {
+		int size = size();
+		return size > 0 ? get(size - 1) : null;
+	}
 }

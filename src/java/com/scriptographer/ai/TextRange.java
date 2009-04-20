@@ -539,6 +539,15 @@ public class TextRange extends DocumentObject implements Commitable {
 		public Iterator<TextRange> iterator() {
 			return new ListIterator<TextRange>(this);
 		}
+
+		public TextRange getFirst() {
+			return size() > 0 ? get(0) : null;
+		}
+
+		public TextRange getLast() {
+			int size = size();
+			return size > 0 ? get(size - 1) : null;
+		}
 	}
 
 	/**

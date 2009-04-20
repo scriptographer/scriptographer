@@ -386,3 +386,4 @@ public class HierarchyList extends ListItem<HierarchyListEntry> {
 	public native void stopMultipleItemInvalidate();
 	*/
 }
+

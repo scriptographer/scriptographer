@@ -40,4 +40,7 @@ public interface ReadOnlyList<E> extends Iterable<E> {
 	boolean isEmpty();
 	E get(int index);
 	ExtendedList<E> getSubList(int fromIndex, int toIndex);
+
+	E getFirst();
+	E getLast();
 }

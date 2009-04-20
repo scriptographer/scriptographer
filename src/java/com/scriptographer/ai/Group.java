@@ -31,7 +31,7 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.List;
 import com.scratchdisk.list.Lists;
 
 /**
@@ -59,13 +59,10 @@ public class Group extends Item {
 	 * Creates a group item from the supplied list of items
 	 * @param children either an {@link ItemList} or an array
 	 */
-	public Group(ExtendedList children) {
+	public Group(List<? extends Item> children) {
 		this();
-		for (int i = 0; i < children.size(); i++) {
-			Object obj = children.get(i);
-			if (obj instanceof Item)
-				this.appendChild((Item) obj);
-		}
+		for (Item item : children)
+			this.appendChild(item);
 	}
 	
 	public Group(Item[] children) {
