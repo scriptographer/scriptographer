@@ -123,6 +123,12 @@ public class File extends java.io.File {
 		writer.println();
 	}
 
+	public void writeln() {
+		if (writer == null)
+			throw new IllegalStateException("File not opened for writing");
+		writer.println();
+	}
+
 	public void flush() {
 		if (writer == null)
 			throw new IllegalStateException("File not opened for writing");
