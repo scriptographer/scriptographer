@@ -88,8 +88,13 @@ public class ConsoleOutputStream extends OutputStream {
 			// java.lang.ClassCastExceptions on Mac OSX:
 			if (enabled && ScriptographerEngine.allowUserInteraction()) {
 				String str = buffer.toString();
+				buffer.reset();
 				// Filter out weird java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment on OSX 10.5
-				if (!ScriptographerEngine.isMacintosh() || str.indexOf("java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment") == -1) {
+				if (ScriptographerEngine.isMacintosh() && str.indexOf("java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment") != -1) {
+					// Log this error for debugging. It seems that console
+					// output stops working after it occurred the first time
+					ScriptographerEngine.logError(str);
+				} else {
 					// If there already is a newline at the end of this line,
 					// remove it as callback.println adds it again...
 					int pos = str.lastIndexOf(lineSeparator);
@@ -99,13 +104,9 @@ public class ConsoleOutputStream extends OutputStream {
 					str = str.replaceAll("\\n|\\r\\n|\\r", lineSeparator);
 					// And convert tabs to 4 spaces
 					str = str.replaceAll("\\t", "    ");
+					ScriptographerEngine.logConsole(str);
 					callback.println(str);
-				} else {
-					// Log this error for debugging. It seems that console
-					// output stops working after it occurred the first time
-					ScriptographerEngine.logError(str);
 				}
-				buffer.reset();
 			} else {
 				buffer.write(lineSeparator.getBytes());
 			}

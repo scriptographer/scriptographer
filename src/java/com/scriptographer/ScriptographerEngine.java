@@ -61,7 +61,8 @@ import com.scratchdisk.util.StringUtils;
 public class ScriptographerEngine {
 	private static File scriptDir = null;
 	private static File pluginDir = null;
-	private static PrintStream logger = null;
+	private static PrintStream errorLogger = null;
+	private static PrintStream consoleLogger = null;
 	private static Thread mainThread;
 	private static ArrayList<Scope> initScopes;
 
@@ -90,8 +91,10 @@ public class ScriptographerEngine {
 		// Redirect system streams to the console.
 		ConsoleOutputStream.enableRedirection(true);
 
-		logger = new PrintStream(new FileOutputStream(new File(javaPath,
+		errorLogger = new PrintStream(new FileOutputStream(new File(javaPath,
 			"error.log")), true);
+		consoleLogger = new PrintStream(new FileOutputStream(new File(javaPath,
+		"console.log")), true);
 		
 		pluginDir = new File(javaPath).getParentFile();
 
@@ -180,14 +183,18 @@ public class ScriptographerEngine {
 	}
 
 	public static void logError(Throwable t) {
-		logger.println(new Date());
-		t.printStackTrace(logger);
-		logger.println();
+		errorLogger.println(new Date());
+		t.printStackTrace(errorLogger);
+		errorLogger.println();
 	}
 	
 	public static void logError(String str) {
-		logger.println(new Date());
-		logger.println(str);
+		errorLogger.println(new Date());
+		errorLogger.println(str);
+	}
+
+	protected static void logConsole(String str) {
+		consoleLogger.println(str);
 	}
 
 	public static void reportError(Throwable t) {
@@ -241,10 +248,7 @@ public class ScriptographerEngine {
 
 	public static native String nativeReload();
 
-	static ScriptographerCallback callback = null;
-
 	public static void setCallback(ScriptographerCallback cb) {
-		callback = cb;
 		ConsoleOutputStream.setCallback(cb);
 	}
 	
