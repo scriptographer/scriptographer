@@ -310,7 +310,9 @@ public abstract class Item extends Component {
 	protected void fixLayout() {
 		// This is used to fix ADM bugs where an item does not update its native bounds in certain
 		// situations even if it was asked to do so.
-		nativeSetBounds(nativeBounds.x, nativeBounds.y, nativeBounds.width, nativeBounds.height);
+		Rectangle bounds = nativeGetBounds();
+		if (!bounds.equals(nativeBounds))
+			nativeSetBounds(nativeBounds.x, nativeBounds.y, nativeBounds.width, nativeBounds.height);
 	}
 
 	public void setBounds(int x, int y, int width, int height) {
