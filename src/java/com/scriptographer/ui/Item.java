@@ -75,6 +75,7 @@ public abstract class Item extends Component {
 		this();
 		this.handle = nativeCreate(dialog.handle, type.name, options);
 		this.dialog = dialog;
+		dialog.items.add(this);
 		this.type = type;
 		initBounds();
 	}
@@ -268,15 +269,15 @@ public abstract class Item extends Component {
 		int deltaX = nativeWidth - nativeBounds.width;
 		int deltaY = nativeHeight - nativeBounds.height;
 
+		// Update bounds
+		bounds.set(x, y, width, height);
+
 		boolean sizeChanged = deltaX != 0 || deltaY != 0;
 		if (sizeChanged || nativeBounds.x != nativeX ||
 				nativeBounds.y != nativeY) {
 			nativeSetBounds(nativeX, nativeY, nativeWidth, nativeHeight);
 			nativeBounds.set(nativeX, nativeY, nativeWidth, nativeHeight);
 		}
-
-		// Update bounds
-		bounds.set(x, y, width, height);
 
 		// Update bounds in AWT proxy:
 		updateAWTBounds(bounds);
@@ -304,6 +305,12 @@ public abstract class Item extends Component {
 		if (component != null && this instanceof ComponentGroup)
 			this.getAWTContainer().setInsets(margin.top, margin.left,
 					margin.bottom, margin.right);
+	}
+
+	protected void fixLayout() {
+		// This is used to fix ADM bugs where an item does not update its native bounds in certain
+		// situations even if it was asked to do so.
+		nativeSetBounds(nativeBounds.x, nativeBounds.y, nativeBounds.width, nativeBounds.height);
 	}
 
 	public void setBounds(int x, int y, int width, int height) {

@@ -86,7 +86,7 @@ public abstract class Dialog extends Component {
 		ITEM_PRIVATE_UNIQUE = -7,
 		ITEM_FIRST_UNUSED_PRIVATE = -8;
 
-	private ArrayList items;
+	protected ArrayList<Item> items;
 
 	private EnumSet<DialogOption> options;
 	// the outside dimensions of the dialog, including borders and titlebars
@@ -137,7 +137,7 @@ public abstract class Dialog extends Component {
 
 	protected Dialog(int style, EnumSet<DialogOption> options) {
 		preferences = ScriptographerEngine.getPreferences(true);
-		items = new ArrayList();
+		items = new ArrayList<Item>();
 		// create a unique name for this session:
 		String name = "Scriptographer Dialog " + (++uniqueId);
 		handle = nativeCreate(name, style, IntegerEnumUtils.getFlags(options));
@@ -217,10 +217,17 @@ public abstract class Dialog extends Component {
 			// setBoundaries is set to false when calling from initializeAll,
 			// because it would be too early to set it there. At least on Mac CS3
 			// this causes problems
-			if (setBoundaries && !boundariesSet) {
-				nativeSetMinimumSize(minSize.width, minSize.height);
-				nativeSetMaximumSize(maxSize.width, maxSize.height);
-				boundariesSet = true;
+			if (setBoundaries) {
+				if (!boundariesSet) {
+					nativeSetMinimumSize(minSize.width, minSize.height);
+					nativeSetMaximumSize(maxSize.width, maxSize.height);
+					boundariesSet = true;
+				}
+				// Fix a bug on CS4, where some items seem to be positioned wrongly if they were laid out while 
+				// the window was hidden (?). ItemGroup messes up, so do apply there.
+				for (Item item : items) {
+					item.fixLayout();
+				}
 			}
 		}
 	}
@@ -1107,7 +1114,7 @@ public abstract class Dialog extends Component {
 
 //	public static native void alert(String message);
 	public static void alert(String message) {
-		AlertDialog.alert("", message);
+		AlertDialog.alert("Scriptographer", message);
 	}
 
 	public static void alert(String title, String message) {

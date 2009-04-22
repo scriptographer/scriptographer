@@ -81,12 +81,8 @@ public class ItemGroup extends Item implements ComponentGroup {
 		else
 			removeComponent(item);
 	}
-	
-	public void setSize(int width, int height) {
-		super.setSize(width, height);
-	}
 
-	public void setBounds(int x, int y, int width, int height) {
-		super.setBounds(x, y, width, height);
+	protected void fixLayout() {
+		// Do nothing here, since changing ItemGroup layout messes up things...?
 	}
 }
