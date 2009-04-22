@@ -62,6 +62,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextEditItem_setPrecision(JNIE
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextEditItem_setMaxLength(JNIEnv *env, jobject obj, jint length) {
 	try {
 		ADMItemRef item = gEngine->getItemHandle(env, obj);
+		// 32767 appears to be the maximum, so internally it's a signed 16 bit value.
+		if (length > 32767)
+			length = 32767;
 		sADMItem->SetMaxTextLength(item, length);
 	} EXCEPTION_CONVERT(env);
 }
@@ -83,6 +86,11 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_TextEditItem_getMaxLength(JNIE
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextEditItem_setSelection(JNIEnv *env, jobject obj, jint start, jint end) {
 	try {
 		ADMItemRef item = gEngine->getItemHandle(env, obj);
+#if defined(MAC_ENV) and kPluginInterfaceVersion >= kAI14
+		// On Illustrator 14 on Mac, the scrolling only seems to work if update is called on the dialog before.
+		ADMDialogRef dialog = sADMItem->GetDialog(item);
+		sADMDialog->Update(dialog);
+#endif
 		sADMItem->SetSelectionRange(item, start, end);
 	} EXCEPTION_CONVERT(env);
 }
