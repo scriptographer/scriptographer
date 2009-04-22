@@ -64,7 +64,7 @@ public class CompoundPath extends PathItem {
 	public CompoundPath(List<? extends Item> children) {
 		this();
 		for (Item item : children)
-			this.appendChild(item);
+			this.appendBottom(item);
 	}
 	
 	public CompoundPath(Item[] children) {
@@ -99,7 +99,7 @@ public class CompoundPath extends PathItem {
 	public void moveTo(double x, double y) {
 		// moveTo always creates a new path:
 		Path path = new Path();
-		appendChild(path);
+		appendTop(path);
 		path.moveTo(x, y);
 	}
 	

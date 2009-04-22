@@ -410,7 +410,7 @@ public abstract class Item extends DocumentObject {
 		for (int i = 0, size = elements.size(); i < size; i++) {
 			Object obj = elements.get(i);
 			if (obj instanceof Item)
-				appendChild((Item) obj);
+				appendBottom((Item) obj);
 		}
 	}
 
@@ -437,31 +437,6 @@ public abstract class Item extends DocumentObject {
 	 */
 	public boolean hasChildren() {
 		return getFirstChild() != null;
-	}
-
-	public boolean hasParent(Item item) {
-		Item parent = getParent();
-		while (parent != null) {
-			if (parent == item)
-				return true;
-			parent = parent.getParent();
-		}
-		return false;
-	}
-
-	public boolean isGroupedWith(Item item) {
-		Item parent = getParent();
-		while (parent != null) {
-			// Find group parents
-			if (parent instanceof Group || parent instanceof CompoundPath) {
-				// see if the item has them as parents
-				if (item.hasParent(parent))
-					return true;
-			}
-			// Keep walking up otherwise
-			parent = parent.getParent();
-		}
-		return false;
 	}
 	
 	protected native Rectangle nativeGetBounds();
@@ -762,19 +737,49 @@ public abstract class Item extends DocumentObject {
 	public native boolean isValid();
 
 	/**
-	 * Appends the specified item as a child of this item.
-	 * You can use this function for groups, compound paths and layers.
-	 * Sample code:
+	 * Inserts the specified item as a child of this item by appending it to the
+	 * list of children and moving it above all other children.
+	 * 
+	 * You can use this function for groups, compound paths and layers. Sample
+	 * code:
+	 * 
 	 * <pre>
 	 * var group = new Group();
 	 * var path = new Path();
-	 * group.appendChild(path);
-	 * print(path.isInside(group)) // returns true
+	 * group.appendTop(path);
+	 * print(path.isDescendant(group)) // returns true
 	 * </pre>
 	 * 
 	 * @param item The item that will be appended as a child
 	 */
-	public native boolean appendChild(Item item);
+	public native boolean appendTop(Item item);
+
+	/**
+	 * Inserts the specified item as a child of this item by appending it to the
+	 * list of children and moving it bellow all other children.
+	 * 
+	 * You can use this function for groups, compound paths and layers. Sample
+	 * code:
+	 * 
+	 * <pre>
+	 * var group = new Group();
+	 * var path = new Path();
+	 * group.appendTop(path);
+	 * print(path.isDescendant(group)) // returns true
+	 * </pre>
+	 * 
+	 * @param item The item that will be appended as a child
+	 */
+	public native boolean appendBottom(Item item);
+
+	/**
+	 * A link to {@link #appendTop}
+	 * 
+	 * @deprecated use {@link #appendTop} or {@link #appendBottom} instead.
+	 */
+	public boolean appendChild(Item item) {
+		return appendTop(item);
+	}
 	
 	/**
 	 * Moves this item above the specified item.
@@ -806,6 +811,91 @@ public abstract class Item extends DocumentObject {
 	 * @return true if it was moved, false otherwise
 	 */
 	public native boolean moveBelow(Item item);
+
+	/**
+	 * Checks if this item is above the specified item in the stacking
+	 * order of the document.
+	 * Sample code:
+	 * <pre>
+	 * var firstPath = new Path();
+	 * var secondPath = new Path();
+	 * print(secondPath.isAbove(firstPath)) // returns true
+	 * </pre>
+	 * 
+	 * @param item The item to check against
+	 * @return <code>true</code> if it is above the specified item, false
+	 *         otherwise
+	 */
+	public native boolean isAbove(Item item);
+	
+	/**
+	 * Checks if the item is below the specified item in the stacking
+	 * order of the document
+	 * Sample code:
+	 * <pre>
+	 * var firstPath = new Path();
+	 * var secondPath = new Path();
+	 * print(firstPath.isBelow(secondPath)) // returns true
+	 * </pre>
+	 * 
+	 * @param item The item to check against
+	 * @return <code>true</code> if it is below the specified item, false
+	 *         otherwise
+	 */
+	public native boolean isBelow(Item item);
+
+	public boolean isParent(Item item) {
+		return getParent() == item;
+	}
+
+	public boolean isChild(Item item) {
+		return item != null && item.getParent() == this;
+	}
+
+	/**
+	 * Checks if the item is contained within the specified item
+	 * Sample code:
+	 * <pre>
+	 * var group = new Group();
+	 * var path = new Path();
+	 * group.appendChild(path);
+	 * print(path.isDescendant(group)) // returns true
+	 * </pre>
+	 *
+	 * @param item The item to check against
+	 * @return <code>true</code> if it is inside the specified item,
+	 *         false otherwise
+	 */
+	public native boolean isDescendant(Item item);
+
+	/**
+	 * Checks if this item is an ancestor of the specified item.
+	 * Sample code:
+	 * <pre>
+	 * var group = new Group();
+	 * var path = new Path();
+	 * group.appendChild(path);
+	 * print(group.isAncestor(path)) // returns true
+	 * </pre>
+	 * 
+	 * @param item the item to check against
+	 * @return <code>true</code> if it is an ancestor of the specified 
+	 *         item, false otherwise
+	 */
+	public native boolean isAncestor(Item item);
+
+	public boolean isGroupedWith(Item item) {
+		Item parent = getParent();
+		while (parent != null) {
+			// Find group parents
+			if ((parent instanceof Group || parent instanceof CompoundPath) 
+					&& item.isDescendant(parent))
+				return true;
+			// Keep walking up otherwise
+			parent = parent.getParent();
+		}
+		return false;
+	}
 
 	private native void nativeTransform(Matrix matrix, int flags);
 
@@ -996,85 +1086,6 @@ public abstract class Item extends DocumentObject {
 	 */
 	public Item expand() {
 		return nativeExpand(defaultExpandFlags, 0);
-	}
-
-	protected native int nativeGetOrder(Item item);
-
-	public ItemOrder getOrder(Item item) {
-		return (ItemOrder) IntegerEnumUtils.get(ItemOrder.class,
-				nativeGetOrder(item));
-	}
-
-	/**
-	 * Checks if this item is above the specified item in the stacking
-	 * order of the document.
-	 * Sample code:
-	 * <pre>
-	 * var firstPath = new Path();
-	 * var secondPath = new Path();
-	 * print(secondPath.isAbove(firstPath)) // returns true
-	 * </pre>
-	 * 
-	 * @param item The item to check against
-	 * @return <code>true</code> if it is above the specified item, false
-	 *         otherwise
-	 */
-	public boolean isAbove(Item item) {
-		return getOrder(item) == ItemOrder.ABOVE;		
-	}
-	
-	/**
-	 * Checks if the item is below the specified item in the stacking
-	 * order of the document
-	 * Sample code:
-	 * <pre>
-	 * var firstPath = new Path();
-	 * var secondPath = new Path();
-	 * print(firstPath.isBelow(secondPath)) // returns true
-	 * </pre>
-	 * 
-	 * @param item The item to check against
-	 * @return <code>true</code> if it is below the specified item, false
-	 *         otherwise
-	 */
-	public boolean isBelow(Item item) {
-		return getOrder(item) == ItemOrder.BELOW;		
-	}
-	
-	/**
-	 * Checks if the item is contained within the specified item
-	 * Sample code:
-	 * <pre>
-	 * var group = new Group();
-	 * var path = new Path();
-	 * group.appendChild(path);
-	 * print(path.isInside(group)) // returns true
-	 * </pre>
-	 *
-	 * @param item The item to check against
-	 * @return <code>true</code> if it is inside the specified item,
-	 *         false otherwise
-	 */
-	public boolean isInside(Item item) {
-		return getOrder(item) == ItemOrder.INSIDE;		
-	}
-
-	/**
-	 * Checks if this item is an ancestor of the specified item.
-	 * Sample code:
-	 * <pre>
-	 * var group = new Group();
-	 * var path = new Path();
-	 * group.appendChild(path);
-	 * print(group.isAncestor(path)) // returns true
-	 * </pre>
-	 * 
-	 * @param item the item to check against
-	 * @return <code>true</code> if it is an ancestor of the specified 
-	 *         item, false otherwise
-	 */
-	public boolean isAncestor(Item item) {
-		return getOrder(item) == ItemOrder.ANCHESTOR;		
 	}
 
 	private native int nativeGetData();

@@ -273,6 +273,15 @@ bool Item_move(JNIEnv *env, jobject obj, jobject item, short paintOrder) {
 	return false;
 }
 
+short Item_getOrder(JNIEnv *env, jobject obj1, jobject obj2) {
+	// No need to activate docs for only retrieving information!
+	AIArtHandle art1 = gEngine->getArtHandle(env, obj1);
+	AIArtHandle art2 = gEngine->getArtHandle(env, obj2);
+	short order;
+	sAIArt->GetArtOrder(art1, art2, &order);
+	return order;
+}
+
 /*
  * int nativeCreate(short type)
  */
@@ -797,12 +806,65 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isDefaultName(JNIEnv 
 }
 
 /*
- * boolean appendChild(com.scriptographer.ai.Item art)
+ * boolean appendTop(com.scriptographer.ai.Item item)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_appendChild(JNIEnv *env, jobject obj, jobject item) {
-	return Item_move(env, item, obj, kPlaceInsideOnBottom);
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_appendTop(JNIEnv *env, jobject obj, jobject item) {
+	try {
+		return Item_move(env, item, obj, kPlaceInsideOnTop);
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
+/*
+ * boolean appendBottom(com.scriptographer.ai.Item item)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_appendBottom(JNIEnv *env, jobject obj, jobject item) {
+	try {
+		return Item_move(env, item, obj, kPlaceInsideOnBottom);
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+/*
+ * boolean isAbove(com.scriptographer.ai.Item item)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isAbove(JNIEnv *env, jobject obj, jobject item) {
+	try {
+		return Item_getOrder(env, obj, item) == kFirstBeforeSecond;
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+/*
+ * boolean isBelow(com.scriptographer.ai.Item item)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isBelow(JNIEnv *env, jobject obj, jobject item) {
+	try {
+		return Item_getOrder(env, obj, item) == kSecondBeforeFirst;
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+/*
+ * boolean isDescendant(com.scriptographer.ai.Item item)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isDescendant(JNIEnv *env, jobject obj, jobject item) {
+	try {
+		return Item_getOrder(env, obj, item) == kFirstInsideSecond;
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+/*
+ * boolean isAncestor(com.scriptographer.ai.Item item)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isAncestor(JNIEnv *env, jobject obj, jobject item) {
+	try {
+		return Item_getOrder(env, obj, item) == kSecondInsideFirst;
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+	
 /*
  * boolean moveAbove(com.scriptographer.ai.Item art)
  */
@@ -902,21 +964,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeExpand(JNIEnv *e
 }
 
 /*
- * int nativeGetOrder(com.scriptographer.ai.Item art)
- */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_nativeGetOrder(JNIEnv *env, jobject obj, jobject item) {
-	try {
-		// no need to activate docs for only retrieving information!
-		AIArtHandle art1 = gEngine->getArtHandle(env, obj);
-		AIArtHandle art2 = gEngine->getArtHandle(env, item);
-		short order;
-		sAIArt->GetArtOrder(art1, art2, &order);
-		return order;
-	} EXCEPTION_CONVERT(env);
-	return 0;
-}
-
-/*
  * boolean isValid()
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isValid(JNIEnv *env, jobject obj) {
@@ -960,11 +1007,11 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_getItemType__(JNIEnv *env
 }
 
 /*
- * int getItemType(java.lang.Class arg1)
+ * int getItemType(java.lang.Class item)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_getItemType__Ljava_lang_Class_2(JNIEnv *env, jclass cls, jclass arg1) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_getItemType__Ljava_lang_Class_2(JNIEnv *env, jclass cls, jclass item) {
 	try {
-		return Item_getType(env, arg1);
+		return Item_getType(env, item);
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }

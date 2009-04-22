@@ -62,9 +62,9 @@ public class Group extends Item {
 	public Group(List<? extends Item> children) {
 		this();
 		for (Item item : children)
-			this.appendChild(item);
+			this.appendBottom(item);
 	}
-	
+
 	public Group(Item[] children) {
 		this(Lists.asList(children));
 	}
