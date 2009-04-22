@@ -42,8 +42,8 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 				// enter was pressed in the input field. determine the
 				// current line:
 				var text = this.text;
-				var end = this.getSelection()[1] - 1;
-				if (/[\n\r]/.test(text.charAt(end--))) { // empty line?
+				var end = this.selection[1] - 1;
+				if (/[\n\r]/.test(text.charAt(end))) { // empty line?
 					text = '';
 				} else {
 					while (end >= 0 && /[\n\r]/.test(text[end]))
@@ -100,8 +100,8 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 	function showText() {
 		if (textOut != null) {
 			textOut.text = consoleText;
-			textOut.setSelection(consoleText.length() - 1);
-			that.setVisible(true);
+			that.visible = true;
+			textOut.selection = consoleText.length() - 1;
 		}
 	}
 
