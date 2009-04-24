@@ -291,7 +291,7 @@ public abstract class Dialog extends Component {
 		DialogGroupInfo groupInfo = getGroupInfo();
 		Rectangle bounds = getBounds();
 		prefs.put("group", groupInfo.group != null ? groupInfo.group : "");
-		prefs.putLong("positionCode", groupInfo.positionCode);
+		prefs.putInt("positionCode", groupInfo.positionCode);
 		prefs.put("bounds", bounds.x + " " + bounds.y + " " +
 				bounds.width + " " + bounds.height);
 	}
@@ -316,7 +316,7 @@ public abstract class Dialog extends Component {
 				bounds.setPoint(defaultBounds.x, defaultBounds.y);
 			}
 			String group = prefs.get("group", "");
-			long positionCode = prefs.getLong("positionCode",
+			int positionCode = prefs.getInt("positionCode",
 					DialogGroupInfo.POSITION_DEFAULT);
 			// Restore the position code of the dialog
 			// This causes size changes. Ignore these since they're not user made.
@@ -1015,7 +1015,7 @@ public abstract class Dialog extends Component {
 
 	public native DialogGroupInfo getGroupInfo();
 	
-	public native void setGroupInfo(String group, long positionCode);
+	public native void setGroupInfo(String group, int positionCode);
 	
 	public void setGroupInfo(DialogGroupInfo info) {
 		setGroupInfo(info.group, info.positionCode);

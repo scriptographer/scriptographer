@@ -682,27 +682,27 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getGroupInfo(JNIEnv 
 #if _kADMDialogGroupSuiteVersion >= 7
 		ADMPositionCode code;
 		sADMDialogGroup->GetDialogGroupInfo(dialog, &group, &code);
-		jlong positionCode = code.fPositionCode | (jlong(code.fExPositionCode) << 32);
+		ADMInt32 positionCode = code.fPositionCode;
 #else
 		ADMInt32 positionCode = 0;
 		sADMDialogGroup->GetDialogGroupInfo(dialog, &group, &positionCode);
 #endif
-		return gEngine->newObject(env, gEngine->cls_ui_DialogGroupInfo, gEngine->cid_ui_DialogGroupInfo, env->NewStringUTF(group), (jlong) positionCode);
+		return gEngine->newObject(env, gEngine->cls_ui_DialogGroupInfo, gEngine->cid_ui_DialogGroupInfo, env->NewStringUTF(group), (jint) positionCode);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
 
 /*
- * void setGroupInfo(java.lang.String group, long positionCode)
+ * void setGroupInfo(java.lang.String group, int positionCode)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setGroupInfo(JNIEnv *env, jobject obj, jstring group, jlong positionCode) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setGroupInfo(JNIEnv *env, jobject obj, jstring group, jint positionCode) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		char *groupStr = gEngine->convertString(env, group);
 #if _kADMDialogGroupSuiteVersion >= 7
 		ADMPositionCode code;
-		code.fPositionCode= positionCode & 0xffffffff;
-		code.fExPositionCode = (positionCode >> 32) & 0xffffffff;
+		code.fPositionCode= positionCode;
+		code.fExPositionCode = 0;
 		sADMDialogGroup->SetDialogGroupInfo(dialog, groupStr, code);
 #else
 		sADMDialogGroup->SetDialogGroupInfo(dialog, groupStr, positionCode);
