@@ -166,7 +166,7 @@ public class Button extends TextItem {
 	// int top, int left, int bottom, int right
 	protected static final Border MARGIN_IMAGE = new Border(0, 0, 0, 0);
 	protected static final Border MARGIN_TEXT = ScriptographerEngine.isMacintosh() ?
-			new Border(3, 4, 3, 4) : new Border(0, 0, 0, 0);
+			new Border(3, 4, 3, 4) : new Border(1, 2, 1, 2);
 
 	protected Border getButtonMargin() {
 		return MARGIN_TEXT;
