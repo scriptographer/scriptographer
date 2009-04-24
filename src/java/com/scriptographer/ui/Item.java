@@ -260,6 +260,31 @@ public abstract class Item extends Component {
 		return new Rectangle(bounds);
 	}
 
+	public void setBounds(int x, int y, int width, int height) {
+		// Set prefSize so getPreferredSize does not return results from
+		// getBestSize()
+		prefSize = new Size(width, height);
+		// Set minSize if it is not set yet, so getBestSize() is not used
+		// anymore.
+		if (minSize == null)
+			minSize = prefSize;
+		// updateBounds does all the heavy lifting, except for setting
+		// prefSize, which shouldn't be set when changing location or margins.
+		updateBounds(x, y, width, height);
+	}
+
+	public final void setBounds(Rectangle bounds) {
+		setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+	}
+
+	protected void fixBounds() {
+		// This is used to fix ADM bugs where an item does not update its native bounds in certain
+		// situations even if it was asked to do so.
+		Rectangle bounds = nativeGetBounds();
+		if (!bounds.equals(nativeBounds))
+			nativeSetBounds(nativeBounds.x, nativeBounds.y, nativeBounds.width, nativeBounds.height);
+	}
+
 	protected void updateBounds(int x, int y, int width, int height) {
 		// calculate native values
 		int nativeX = x + margin.left;
@@ -305,31 +330,6 @@ public abstract class Item extends Component {
 		if (component != null && this instanceof ComponentGroup)
 			this.getAWTContainer().setInsets(margin.top, margin.left,
 					margin.bottom, margin.right);
-	}
-
-	protected void fixBounds() {
-		// This is used to fix ADM bugs where an item does not update its native bounds in certain
-		// situations even if it was asked to do so.
-		Rectangle bounds = nativeGetBounds();
-		if (!bounds.equals(nativeBounds))
-			nativeSetBounds(nativeBounds.x, nativeBounds.y, nativeBounds.width, nativeBounds.height);
-	}
-
-	public void setBounds(int x, int y, int width, int height) {
-		// Set prefSize so getPreferredSize does not return results from
-		// getBestSize()
-		prefSize = new Size(width, height);
-		// Set minSize if it is not set yet, so getBestSize() is not used
-		// anymore.
-		if (minSize == null)
-			minSize = prefSize;
-		// updateBounds does all the heavy lifting, except for setting
-		// prefSize, which shouldn't be set when changing location or margins.
-		updateBounds(x, y, width, height);
-	}
-
-	public final void setBounds(Rectangle bounds) {
-		setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
 	public void setPosition(int x, int y) {
