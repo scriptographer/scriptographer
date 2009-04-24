@@ -51,17 +51,19 @@ public enum PromptItemType {
 		this.name = name;
 	}
 
-	// hash-map for conversation to unique ids that can be compared with ==
-	// instead of .equals
+	/**
+	 * A hash-map for case insensitive retrieval of type objects based on their
+	 * name.
+	 */
 	private static HashMap<String, PromptItemType> types =
 		new HashMap<String, PromptItemType>();
 
 	static {
 		for (PromptItemType type : values())
-			types.put(type.name, type);
+			types.put(type.name.toLowerCase(), type);
 	}
 	
 	public static PromptItemType get(String name) {
-		return types.get(name);
+		return types.get(name.toLowerCase());
 	}
 }
