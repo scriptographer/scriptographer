@@ -80,9 +80,9 @@ public class DialogGroupInfo {
 		MASK_DOCK_CLOSED			= 0x40000000;
 
 	protected String group;
-	protected int positionCode;
+	protected long positionCode;
 	
-	public DialogGroupInfo(String group, int positionCode) {
+	public DialogGroupInfo(String group, long positionCode) {
 		this.group = group;
 		this.positionCode = positionCode;
 	}
@@ -91,7 +91,7 @@ public class DialogGroupInfo {
 		return group;
 	}
 	
-	public int getPositionCode() {
+	public long getPositionCode() {
 		return positionCode;
 	}
 	

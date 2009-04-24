@@ -593,7 +593,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ui_PopupDialog = loadClass(env, "com/scriptographer/ui/PopupDialog");
 
 	cls_ui_DialogGroupInfo = loadClass(env, "com/scriptographer/ui/DialogGroupInfo");
-	cid_ui_DialogGroupInfo = getConstructorID(env, cls_ui_DialogGroupInfo, "(Ljava/lang/String;I)V");
+	cid_ui_DialogGroupInfo = getConstructorID(env, cls_ui_DialogGroupInfo, "(Ljava/lang/String;J)V");
 
 	cls_ui_Drawer = loadClass(env, "com/scriptographer/ui/Drawer");
 	cid_ui_Drawer = getConstructorID(env, cls_ui_Drawer, "(I)V");
