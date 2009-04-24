@@ -13,11 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// Neutral resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 #pragma code_page(1252)
 #endif //_WIN32
 
@@ -101,19 +101,6 @@ BEGIN
     16062                   "An unknown error occured."
 END
 
-#endif    // English (U.S.) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// German (Switzerland) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DES)
-#ifdef _WIN32
-LANGUAGE LANG_GERMAN, SUBLANG_GERMAN_SWISS
-#pragma code_page(1252)
-#endif //_WIN32
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Icon
@@ -175,7 +162,7 @@ END
 
 #endif    // !_MAC
 
-#endif    // German (Switzerland) resources
+#endif    // !Neutral resources
 /////////////////////////////////////////////////////////////////////////////
 
 

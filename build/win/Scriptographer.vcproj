@@ -982,7 +982,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ai_ItemSet.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_ItemList.cpp"
 						>
 					</File>
 					<File
@@ -1735,7 +1735,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\src\native\plugin\Suites.h"
+					RelativePath="..\..\src\native\plugin\suites.h"
 					>
 				</File>
 				<Filter
