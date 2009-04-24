@@ -110,8 +110,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Annotator_nativeCreateDrawe
 		// on mac, ADMPortRef is a GrafPort *, and AIPortRef is a OpaqueGrafPtr *
 		// but for some reason, assuming it's a ADMPortRef works on both, so it 
 		// must be actually the same thing...
-	
+#if _kADMDrawerSuiteVersion == 5
 		ADMDrawerRef drawer = sADMDrawer->Create((ADMPortRef) portHandle, &rect, kADMDefaultFont, false);
+#else
+		ADMDrawerRef drawer = sADMDrawer->Create((ADMPortRef) portHandle, &rect, kADMDefaultFont);
+#endif
 		return gEngine->newObject(env, gEngine->cls_ui_Drawer, gEngine->cid_ui_Drawer, (jint) drawer);
 	} EXCEPTION_CONVERT(env);
 	return NULL;

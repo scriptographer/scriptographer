@@ -189,126 +189,102 @@ namespace ATE {
 }
 #endif // < kAI13
 
-#define CONCAT(A,B) PASTE(A,B)
-#define INSERT(A) A
-#define PASTE(A,B) INSERT(A B)
-
-#if kPluginInterfaceVersion >= kAI13
-
-#define ADM_BASIC_VERSION 10
-#define ADM_ITEM_VERSION 9
-#define ADM_TRACKER_VERSION 2
-
-#elif kPluginInterfaceVersion >= kAI11
-
-#define ADM_BASIC_VERSION 9
-#define ADM_ITEM_VERSION 9
-#define ADM_TRACKER_VERSION 1
-
-#else
-
-#define ADM_BASIC_VERSION "8"
-#define ADM_ITEM_VERSION "8"
-#define ADM_TRACKER_VERSION "1"
-
-#endif
-
+// ADM Suite versions for different versions of Illustrator
 // ADM Suites default to the oldest versions.
 // Define symbols that point to the newest here und use these bellow:
 
-/*
-#define _kADMBasicSuiteVersion CONCAT("kADMBasicSuiteVersion", ADM_BASIC_VERSION)
-#define _ADMBasicSuite CONCAT("ADMBasicSuite", ADM_BASIC_VERSION)
+#define _kADMIconSuiteVersion 2
+#define _kADMImageSuiteVersion 2
+#define _kADMListSuiteVersion 4
+#define _kADMHierarchyListSuiteVersion 5
+#define _kADMListEntrySuiteVersion 4
 
-#define _kADMDialogSuiteVersion CONCAT(kADMDialogSuiteVersion, ADM_BASIC_VERSION)
-#define _ADMDialogSuite CONCAT(ADMDialogSuite, ADM_BASIC_VERSION)
+#if kPluginInterfaceVersion >= kAI14
 
-#define _kADMItemSuiteVersion CONCAT(kADMItemSuiteVersion, ADM_ITEM_VERSION)
-#define _ADMItemSuite CONCAT(ADMItemSuite, ADM_ITEM_VERSION)
+#define _kADMDialogSuiteVersion 10
+#define _kADMBasicSuiteVersion 11
+#define _kADMItemSuiteVersion 9
+#define _kADMEntrySuiteVersion 6
+#define _kADMNotifierSuiteVersion 2
+#define _kADMDialogGroupSuiteVersion 7
+#define _kADMDrawerSuiteVersion 7
+#define _kADMTrackerSuiteVersion 2
 
-#define _kADMIconSuiteVersion CONCAT(kADMIconSuiteVersion, 2)
-#define _ADMIconSuite CONCAT(ADMIconSuite, 2)
+#elif kPluginInterfaceVersion >= kAI13
 
-#define _kADMImageSuiteVersion kADMImageSuiteVersion2 // CONCAT(kADMImageSuiteVersion, 2)
-#define _ADMImageSuite ADMImageSuite2 // CONCAT(ADMImageSuite, 2)
+#define _kADMDialogSuiteVersion 10
+#define _kADMBasicSuiteVersion 10
+#define _kADMItemSuiteVersion 9
+#define _kADMEntrySuiteVersion 6
+#define _kADMNotifierSuiteVersion 2
+#define _kADMDialogGroupSuiteVersion 6
+#define _kADMDrawerSuiteVersion 6
+#define _kADMTrackerSuiteVersion 2
 
-#define _kADMListSuiteVersion CONCAT(kADMListSuiteVersion, 4)
-#define _ADMListSuite CONCAT(ADMListSuite, 4)
+#elif kPluginInterfaceVersion >= kAI12
 
-#define _kADMHierarchyListSuiteVersion CONCAT(kADMHierarchyListSuiteVersion, 5)
-#define _ADMHierarchyListSuite CONCAT(ADMHierarchyListSuite, 5)
+#define _kADMDialogSuiteVersion 9
+#define _kADMBasicSuiteVersion 9
+#define _kADMItemSuiteVersion 9
+#define _kADMEntrySuiteVersion 6
+#define _kADMNotifierSuiteVersion 2
+#define _kADMDialogGroupSuiteVersion 4
+#define _kADMDrawerSuiteVersion 5
+#define _kADMTrackerSuiteVersion 1
 
-#define _kADMDialogGroupSuiteVersion CONCAT(kADMDialogGroupSuiteVersion, 3)
-#define _ADMDialogGroupSuite CONCAT(ADMDialogGroupSuite, 3)
+#elif kPluginInterfaceVersion >= kAI11
 
-#define _kADMNotifierSuiteVersion CONCAT(kADMNotifierSuiteVersion, 1)
-#define _ADMNotifierSuite CONCAT(ADMNotifierSuite, 1)
-
-#define _kADMEntrySuiteVersion CONCAT(kADMEntrySuiteVersion, 5)
-#define _ADMEntrySuite CONCAT(ADMEntrySuite, 5)
-
-#define _kADMListEntrySuiteVersion CONCAT(kADMListEntrySuiteVersion, 4)
-#define _ADMListEntrySuite CONCAT(ADMListEntrySuite, 4)
-
-#define _kADMTrackerSuiteVersion CONCAT(kADMTrackerSuiteVersion, ADM_TRACKER_VERSION)
-#define _ADMTrackerSuite CONCAT(ADMTrackerSuite, ADM_TRACKER_VERSION)
-
-#define _kADMDrawerSuiteVersion CONCAT(kADMDrawerSuiteVersion, 5)
-#define _ADMDrawerSuite CONCAT(ADMDrawerSuite, 5)
-*/
-
-#define _kADMBasicSuiteVersion kADMBasicSuiteVersion8
-#define _ADMBasicSuite ADMBasicSuite8
-
-#define _kADMDialogSuiteVersion kADMDialogSuiteVersion8
-#define _ADMDialogSuite ADMDialogSuite8
-
-#define _kADMItemSuiteVersion kADMItemSuiteVersion8
-#define _ADMItemSuite ADMItemSuite8
-
-#define _kADMIconSuiteVersion kADMIconSuiteVersion2
-#define _ADMIconSuite ADMIconSuite2
-
-#define _kADMImageSuiteVersion kADMImageSuiteVersion2
-#define _ADMImageSuite ADMImageSuite2
-
-#define _kADMListSuiteVersion kADMListSuiteVersion4
-#define _ADMListSuite ADMListSuite4
-
-#define _kADMHierarchyListSuiteVersion kADMHierarchyListSuiteVersion5
-#define _ADMHierarchyListSuite ADMHierarchyListSuite5
-
-#define _kADMDialogGroupSuiteVersion kADMDialogGroupSuiteVersion3
-#define _ADMDialogGroupSuite ADMDialogGroupSuite3
-
-#define _kADMNotifierSuiteVersion kADMNotifierSuiteVersion1
-#define _ADMNotifierSuite ADMNotifierSuite1
-
-#define _kADMEntrySuiteVersion kADMEntrySuiteVersion5
-#define _ADMEntrySuite ADMEntrySuite5
-
-#define _kADMListEntrySuiteVersion kADMListEntrySuiteVersion4
-#define _ADMListEntrySuite ADMListEntrySuite4
-
-#if kPluginInterfaceVersion < kAI13
-
-#define _kADMTrackerSuiteVersion kADMTrackerSuiteVersion1
-#define _ADMTrackerSuite ADMTrackerSuite1
+#define _kADMDialogSuiteVersion 9
+#define _kADMBasicSuiteVersion 8
+#define _kADMItemSuiteVersion 9
+#define _kADMEntrySuiteVersion 6
+#define _kADMNotifierSuiteVersion 2
+#define _kADMDialogGroupSuiteVersion 3
+#define _kADMDrawerSuiteVersion 5
+#define _kADMTrackerSuiteVersion 1
 
 #else
 
-#define _kADMTrackerSuiteVersion kADMTrackerSuiteVersion2
-#define _ADMTrackerSuite ADMTrackerSuite2
+// Does this even apply? We only support CS and above, right?
+
+#define _kADMDialogSuiteVersion 8
+#define _kADMBasicSuiteVersion 8
+#define _kADMItemSuiteVersion 8
+#define _kADMEntrySuiteVersion 5
+#define _kADMNotifierSuiteVersion 1
+#define _kADMDialogGroupSuiteVersion 3
+#define _kADMDrawerSuiteVersion 5
+#define _kADMTrackerSuiteVersion 1
 
 #endif
 
-#define _kADMDrawerSuiteVersion kADMDrawerSuiteVersion5
-#define _ADMDrawerSuite ADMDrawerSuite5
- 
-// the basic suite doesn't need to be loaded:
+// Macros to concatonate the suite name with the version number, to point
+// to the right structs
+
+#define CONCAT(A,B) PASTE(A,B)
+#define INSERT(A) A
+#define PASTE(A,B) INSERT(A##B)
+
+// References to the structs to use, based on their versions
+
+#define _ADMBasicSuite CONCAT(ADMBasicSuite, _kADMBasicSuiteVersion)
+#define _ADMDialogSuite CONCAT(ADMDialogSuite, _kADMDialogSuiteVersion)
+#define _ADMItemSuite CONCAT(ADMItemSuite, _kADMItemSuiteVersion)
+#define _ADMIconSuite CONCAT(ADMIconSuite, _kADMIconSuiteVersion)
+#define _ADMImageSuite CONCAT(ADMImageSuite, _kADMImageSuiteVersion)
+#define _ADMListSuite CONCAT(ADMListSuite, _kADMListSuiteVersion)
+#define _ADMHierarchyListSuite CONCAT(ADMHierarchyListSuite, _kADMHierarchyListSuiteVersion)
+#define _ADMDialogGroupSuite CONCAT(ADMDialogGroupSuite, _kADMDialogGroupSuiteVersion)
+#define _ADMNotifierSuite CONCAT(ADMNotifierSuite, _kADMNotifierSuiteVersion)
+#define _ADMEntrySuite CONCAT(ADMEntrySuite, _kADMEntrySuiteVersion)
+#define _ADMListEntrySuite CONCAT(ADMListEntrySuite, _kADMListEntrySuiteVersion)
+#define _ADMTrackerSuite CONCAT(ADMTrackerSuite, _kADMTrackerSuiteVersion)
+#define _ADMDrawerSuite CONCAT(ADMDrawerSuite, _kADMDrawerSuiteVersion)
+
+// The basic suite doesn't need to be loaded:
 extern "C" SPBasicSuite 					*sSPBasic;
 
-// suite globals
+// Suite globals
 extern "C" SPBlocksSuite					*sSPBlocks;
 extern "C" AIMdMemorySuite					*sAIMDMemory;
 extern "C" SPAccessSuite					*sSPAccess;
