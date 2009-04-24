@@ -107,12 +107,13 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 
 	// Buttons:
 	var clearButton = new ImageButton(this) {
+		image: getImage('refresh.png'),
+		style: 'black-rect',
+		size: buttonSize,
 		onClick: function() {
 			textOut.text = '';
 			consoleText.setLength(0);
-		},
-		image: getImage('refresh.png'),
-		size: buttonSize
+		}
 	};
 
 	// Layout:
