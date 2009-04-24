@@ -31,6 +31,9 @@
 
 package com.scriptographer.ui;
 
+import java.util.Arrays;
+import java.util.EnumSet;
+
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.IntegerEnumUtils;
 
@@ -63,13 +66,16 @@ public class HierarchyList extends ListItem<HierarchyListEntry> {
 		this.setDrawEntryCallback(parentList.getDrawEntryCallback());
 	}
 
-	public ListStyle getStyle() {
-		return IntegerEnumUtils.get(ListStyle.class, nativeGetStyle());
+	public EnumSet<ListStyle> getStyle() {
+		return IntegerEnumUtils.getSet(ListStyle.class, nativeGetStyle());
 	}
 
-	public void setStyle(ListStyle style) {
-		if (style != null)
-			nativeSetStyle(style.value);
+	public void setStyle(EnumSet<ListStyle> style) {
+		nativeSetStyle(IntegerEnumUtils.getFlags(style));
+	}
+
+	public void setStyle(ListStyle[] style) {
+		setStyle(EnumSet.copyOf(Arrays.asList(style)));
 	}
 	
 	public boolean remove() {

@@ -172,12 +172,7 @@ public class DocumentView extends DocumentObject {
 	 * Get the display mode for the current view. 
 	 */
 	public EnumSet<ViewStyle> getStyle() {
-		int style = nativeGetStyle();
-		EnumSet<ViewStyle> set = EnumSet.noneOf(ViewStyle.class);
-		for (ViewStyle flag : ViewStyle.values())
-			if ((style & flag.value) != 0)
-				set.add(flag);
-		return set;
+		return IntegerEnumUtils.getSet(ViewStyle.class, nativeGetStyle());
 	}
 
 	/**

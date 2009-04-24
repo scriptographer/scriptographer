@@ -78,15 +78,15 @@ public class IntegerEnumUtils {
 	 * @param set
 	 * @return
 	 */
-	public static int getFlags(EnumSet<? extends Enum<?>> set) {
+	public static int getFlags(EnumSet<? extends IntegerEnum> set) {
 		int flags = 0;
 		if (set != null)
-			for (Enum e : set)
-				flags |= ((IntegerEnum) e).value();
+			for (IntegerEnum e : set)
+				flags |= e.value();
 		return flags;
 	}
 
-	public <T extends Enum<T>> EnumSet<T> getSet(Class<T> cls, int flags) {
+	public static <T extends Enum<T>> EnumSet<T> getSet(Class<T> cls, int flags) {
 		EnumSet<T> set = EnumSet.noneOf(cls);
 		for (T e : cls.getEnumConstants())
 			if ((((IntegerEnum) e).value() & flags) != 0)
