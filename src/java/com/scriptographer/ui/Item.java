@@ -307,7 +307,7 @@ public abstract class Item extends Component {
 					margin.bottom, margin.right);
 	}
 
-	protected void fixLayout() {
+	protected void fixBounds() {
 		// This is used to fix ADM bugs where an item does not update its native bounds in certain
 		// situations even if it was asked to do so.
 		Rectangle bounds = nativeGetBounds();

@@ -74,7 +74,10 @@ public class DialogGroupInfo {
 		MASK_DRAWER					= 0x08000000,
 
 		/** Tab/iconic mode icon hidden bit mask. */
-		MASK_TAB_HIDDEN				= 0x10000000;
+		MASK_TAB_HIDDEN				= 0x10000000,
+
+		/** Dock closed bit mask. */
+		MASK_DOCK_CLOSED			= 0x40000000;
 
 	protected String group;
 	protected int positionCode;
@@ -84,11 +87,11 @@ public class DialogGroupInfo {
 		this.positionCode = positionCode;
 	}
 	
-	String getGroup() {
+	public String getGroup() {
 		return group;
 	}
 	
-	int getPositionCode() {
+	public int getPositionCode() {
 		return positionCode;
 	}
 	

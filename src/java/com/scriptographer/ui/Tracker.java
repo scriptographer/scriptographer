@@ -265,31 +265,25 @@ public class Tracker extends NativeObject {
 		this.time = time;
 		return handler.onTrack(this);
 	}
-	
+
 	public Point getPoint() {
 		return point;
 	}
-	
+
 	public int getAction() {
 		return action;
 	}
-	
+
 	public int getModifiers() {
 		return modifiers;
 	}
-	
-	public static native int getCurrentModifiers();
-	
+
 	public boolean testAction(int action) {
 		return this.action == action;
 	}
-	
+
 	public boolean testModifier(int modifier) {
 		return (this.modifiers & modifier) != 0;
-	}
-	
-	public static boolean testCurrentModifier(int modifier) {
-		return (getCurrentModifiers() & modifier) != 0;
 	}
 
 	public long getTime() {

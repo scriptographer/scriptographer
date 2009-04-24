@@ -82,7 +82,7 @@ public class ItemGroup extends Item implements ComponentGroup {
 			removeComponent(item);
 	}
 
-	protected void fixLayout() {
+	protected void fixBounds() {
 		// Do nothing here, since changing ItemGroup layout messes up things...?
 	}
 }

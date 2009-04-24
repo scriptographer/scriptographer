@@ -226,7 +226,7 @@ public abstract class Dialog extends Component {
 				// Fix a bug on CS4, where some items seem to be positioned wrongly if they were laid out while 
 				// the window was hidden (?). ItemGroup messes up, so do apply there.
 				for (Item item : items) {
-					item.fixLayout();
+					item.fixBounds();
 				}
 			}
 		}
@@ -291,7 +291,7 @@ public abstract class Dialog extends Component {
 		DialogGroupInfo groupInfo = getGroupInfo();
 		Rectangle bounds = getBounds();
 		prefs.put("group", groupInfo.group != null ? groupInfo.group : "");
-		prefs.putInt("positionCode", groupInfo.positionCode);
+		prefs.putLong("positionCode", groupInfo.positionCode);
 		prefs.put("bounds", bounds.x + " " + bounds.y + " " +
 				bounds.width + " " + bounds.height);
 	}
@@ -564,10 +564,11 @@ public abstract class Dialog extends Component {
 				// Workaround for missing onClose on CS3. This bug was 
 				// reported to Adobe too late, hopefully it will be back
 				// again in CS4...
-				int code = this.getGroupInfo().positionCode;
-//				System.out.println(this.getTitle() + ' ' + code);
+				// (NOT. But in CS4, MASK_DOCK_CLOSED is now set, not the other two).
+				long code = this.getGroupInfo().positionCode;
 				if ((code & DialogGroupInfo.MASK_DOCK_VISIBLE) == 0 ||
-					(code & DialogGroupInfo.MASK_TAB_HIDDEN) != 0) {
+					(code & DialogGroupInfo.MASK_TAB_HIDDEN) != 0 ||
+					(code & DialogGroupInfo.MASK_DOCK_CLOSED) != 0) {
 					fireOnClose = false;
 					onClose();
 				}
@@ -693,6 +694,7 @@ public abstract class Dialog extends Component {
 		nativeSetActive(active);
 		this.active = active;
 	}
+
 	/* 
 	 * Dialog bounds accessors
 	 *
@@ -1029,7 +1031,7 @@ public abstract class Dialog extends Component {
 	private static File fileDialog(String message, String[] filters,
 			File selectedFile, boolean open) {
 		String filter;
-		// Converts the filters to one long string, seperated by \0
+		// Converts the filters to one long string, separated by \0
 		// as needed by the native function.
 		if (filters == null) {
 			filter = "";
