@@ -81,7 +81,7 @@ public class PromptDialog extends ModalDialog {
 				}
 				
 				com.scriptographer.ui.Item valueItem =
-						promptItem.createItem(this);
+						promptItem.createItem(this, new Border(1, 0, 1, 0));
 				this.addToContent(valueItem, "2, " + i + ", left, center");
 			}
 		}			

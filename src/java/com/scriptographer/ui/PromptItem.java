@@ -184,7 +184,7 @@ public class PromptItem {
 		this.name = name;
 	}
 	
-	protected Item createItem(Dialog dialog) {
+	protected Item createItem(Dialog dialog, Border margin) {
 		// Item:
 		item = null;
 		switch (type) {
@@ -235,6 +235,8 @@ public class PromptItem {
 				break;
 				
 		}
+		// Margin needs to be defined before setting size, since getBestSize is affected by margin
+		item.setMargin(margin);
 		Size size = item.getBestSize();
 		if (width >= 0)
 			size.width = width;
