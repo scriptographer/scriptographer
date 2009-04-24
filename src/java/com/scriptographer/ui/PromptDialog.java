@@ -62,7 +62,7 @@ public class PromptDialog extends ModalDialog {
 
 		TableLayout layout = new TableLayout(sizes);
 		this.setLayout(layout);
-		this.setMargin(6);
+		this.setMargin(8);
 //		this.setFont(Dialog.FONT_PALETTE);
 
 		ImageStatic logo = new ImageStatic(this);

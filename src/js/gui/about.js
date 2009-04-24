@@ -35,7 +35,7 @@ var aboutDialog = new ModalDialog(function() {
 
 	var logo = new ImageStatic(this) {
 		image: getImage('logo.png'),
-		rightMargin: 10
+		margin: [-4, 4, -4, -4]
 	};
 
 	var text = new Static(this) {
@@ -46,7 +46,7 @@ var aboutDialog = new ModalDialog(function() {
 			+ 'All rights reserved.\n\n'
 			+ 'Illustrator ' + app.version + '.' + app.revision + '\n'
 			+ 'Java ' + java.lang.System.getProperty('java.version') + '\n',
-		bottomMargin: 10,
+		bottomMargin: 8,
 
 		onTrack: function(tracker) {
 			if (tracker.modifiers & Tracker.MODIFIER_CLICK) {
@@ -68,7 +68,7 @@ var aboutDialog = new ModalDialog(function() {
 	return {
 		title: 'About Scriptographer',
 		defaultItem: okButton,
-		margin: 10,
+		margin: 8,
 		layout: [
 			'preferred fill preferred',
 			'preferred fill preferred'

@@ -303,6 +303,10 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		text: 'Show / Hide Console',
 		onSelect: function() {
 			consoleDialog.visible = !consoleDialog.visible;
+		},
+		onUpdate: function() {
+			// TODO: Make onUpdate work in ListEntry
+			this.text = (consoleDialog.visible ? 'Hide' : 'Show') + ' Console Palette';
 		}
 	};
 
@@ -341,11 +345,11 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 
 	// Buttons:
 	var playButton = new ImageButton(this) {
+		image: getImage('play.png'),
+		size: buttonSize,
 		onClick: function() {
 			execute();
-		},
-		image: getImage('play.png'),
-		size: buttonSize
+		}
 	};
 
 	var stopButton = new ImageButton(this) {

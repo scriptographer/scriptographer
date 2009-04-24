@@ -46,17 +46,16 @@ public class AlertDialog extends ModalDialog {
 
 		TableLayout layout = new TableLayout(sizes);
 		this.setLayout(layout);
-		this.setMargin(10);
+		this.setMargin(8);
 
 		ImageStatic logo = new ImageStatic(this);
-		Image image = getImage("logo.png");
-		logo.setImage(image);
-		logo.setRightMargin(10);
+		logo.setImage(getImage("logo.png"));
+		logo.setMargin(-4, 4, -4, -4);
 		this.addToContent(logo, "0, 0, 0, 1, L, T");
 
 		Static text = new Static(this);
 		text.setText(message);
-		text.setBottomMargin(10);
+		text.setBottomMargin(8);
 		this.addToContent(text, "1, 0, 2, 0, L, C");
 				
 		Button okButton = new Button(this);
