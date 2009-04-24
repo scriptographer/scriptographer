@@ -98,7 +98,8 @@ public class Tool extends NativeObject {
 
 	private boolean firstMove = true;
 
-	private Image icon = null;
+	private Image image = null;
+	private Image rolloverImage = null;
 
 	private String name;
 
@@ -208,14 +209,25 @@ public class Tool extends NativeObject {
 	public native void setOptions(int options);
 
 	public Image getImage() {
-		return icon;
+		return image;
 	}
 
 	private native void nativeSetImage(int iconHandle);
 
 	public void setImage(Image image) {
 		nativeSetImage(image != null ? image.createIconHandle() : 0);
-		this.icon = image;
+		this.image = image;
+	}
+
+	public Image getRolloverImage() {
+		return rolloverImage;
+	}
+
+	private native void nativeSetRolloverImage(int iconHandle);
+
+	public void setRolloverImage(Image image) {
+		nativeSetRolloverImage(image != null ? image.createIconHandle() : 0);
+		this.rolloverImage = image;
 	}
 
 	/**

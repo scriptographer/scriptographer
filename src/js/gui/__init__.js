@@ -85,6 +85,7 @@ function loadLibraries(dir) {
 
 var tool = new Tool("Scriptographer Tool") {
 	image: getImage('tool.png'),
+	activeImage: getImage('tool-active.png'),
 	tooltip: 'Execute a tool script to assign it with this tool button'
 };
 

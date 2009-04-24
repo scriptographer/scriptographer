@@ -330,18 +330,6 @@
 		91F1E7DD0D94032D002C7A53 /* com_scriptographer_ai_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 91F1E7D70D94032D002C7A53 /* com_scriptographer_ai_Item.cpp */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXBuildRule section */
-		91193B1B0A2DF3B100B0E3A7 /* PBXBuildRule */ = {
-			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.proxy.script;
-			fileType = sourcecode.java;
-			isEditable = 1;
-			outputFiles = (
-			);
-			script = /usr/local/lib/gcj;
-		};
-/* End PBXBuildRule section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		915C03270A435CB70027685A /* Copy CFM Bundle Resources */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -781,7 +769,6 @@
 				91193B180A2DF3B100B0E3A7 /* Rez */,
 			);
 			buildRules = (
-				91193B1B0A2DF3B100B0E3A7 /* PBXBuildRule */,
 			);
 			dependencies = (
 			);

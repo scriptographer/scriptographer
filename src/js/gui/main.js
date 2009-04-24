@@ -229,6 +229,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		if (entry && entry.file) {
 			if (entry.isTool) {
 				tool.tooltip = entry.file.name;
+				tool.image = tool.activeImage;
 				tool.compileScript(entry.file);
 				if (entry.file != currentToolFile) {
 					var curEntry = fileEntries[currentToolFile];

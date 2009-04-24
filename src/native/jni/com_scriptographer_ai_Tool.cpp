@@ -235,3 +235,13 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_nativeSetImage(JNIEnv *en
 		sAITool->SetToolIcon(tool, (ADMIconRef) iconHandle);
 	} EXCEPTION_CONVERT(env);
 }
+
+/*
+ * void nativeSetRolloverImage(int iconHandle)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_nativeSetRolloverImage(JNIEnv *env, jobject obj, jint iconHandle) {
+	try {
+		AIToolHandle tool = gEngine->getToolHandle(env, obj);
+		sAITool->SetToolRolloverIcon(tool, (ADMIconRef) iconHandle);
+	} EXCEPTION_CONVERT(env);
+}
