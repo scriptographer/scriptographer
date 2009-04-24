@@ -291,7 +291,7 @@ public abstract class Dialog extends Component {
 		DialogGroupInfo groupInfo = getGroupInfo();
 		Rectangle bounds = getBounds();
 		prefs.put("group", groupInfo.group != null ? groupInfo.group : "");
-		prefs.putLong("positionCode", groupInfo.positionCode);
+		prefs.putInt("positionCode", groupInfo.positionCode);
 		prefs.put("bounds", bounds.x + " " + bounds.y + " " +
 				bounds.width + " " + bounds.height);
 	}
