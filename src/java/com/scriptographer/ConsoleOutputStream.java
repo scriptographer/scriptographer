@@ -72,6 +72,7 @@ public class ConsoleOutputStream extends OutputStream {
 		enabled = false;
 	}
 
+	private boolean receivedHeadlessError = false;
 	/**
 	 * Adds chars to the internal StringBuffer until a new line char is
 	 * detected, in which case the collected line is written to the native
@@ -80,21 +81,21 @@ public class ConsoleOutputStream extends OutputStream {
 	 * @see java.io.OutputStream#write(int)
 	 */
 	public void write(int b) throws IOException {
+		// Detect the end of a received headless error. The only way to tell is 
+		// once we're receiving a new text from the main thread again.
+		if (receivedHeadlessError && ScriptographerEngine.isMainThreadActive()) {
+			ScriptographerEngine.logError(buffer.toString());
+			buffer.reset();
+			receivedHeadlessError = false;
+		}
 		char c = (char) b;
 		buffer.write(c);
 		if (c == newLine) {
-			// Only print to the console if we're in the right thread.
-			// This prevents crashes and filters out weird
-			// java.lang.ClassCastExceptions on Mac OSX:
-			if (enabled && ScriptographerEngine.allowUserInteraction()) {
-				String str = buffer.toString();
-				buffer.reset();
-				// Filter out weird java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment on OSX 10.5
-				if (ScriptographerEngine.isMacintosh() && str.indexOf("java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment") != -1) {
-					// Log this error for debugging. It seems that console
-					// output stops working after it occurred the first time
-					ScriptographerEngine.logError(str);
-				} else {
+			// Only print to the console if we're in the right thread to prevent UI crashes.
+			if (ScriptographerEngine.isMainThreadActive()) {
+				if (enabled) {
+					String str = buffer.toString();
+					buffer.reset();
 					// If there already is a newline at the end of this line,
 					// remove it as callback.println adds it again...
 					int pos = str.lastIndexOf(lineSeparator);
@@ -107,8 +108,10 @@ public class ConsoleOutputStream extends OutputStream {
 					ScriptographerEngine.logConsole(str);
 					callback.println(str);
 				}
-			} else {
-				buffer.write(lineSeparator.getBytes());
+			} else if (ScriptographerEngine.isMacintosh() && !receivedHeadlessError) {
+				// Filter out weird java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment on OSX 10.5
+				receivedHeadlessError = buffer.toString().indexOf(
+						"java.lang.ClassCastException: sun.java2d.HeadlessGraphicsEnvironment") != -1;
 			}
 		}
 	}

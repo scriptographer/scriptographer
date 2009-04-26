@@ -501,7 +501,7 @@ public class ScriptographerEngine {
 	}
 
 	public static boolean updateProgress() {
-		if (allowUserInteraction()) {
+		if (isMainThreadActive()) {
 			boolean ret = nativeUpdateProgress(progressCurrent, progressMax, progressVisible);
 			if (progressVisible && progressAutomatic) {
 				progressCurrent++;
@@ -520,7 +520,7 @@ public class ScriptographerEngine {
 		nativeCloseProgress();
 	}
 
-	public static boolean allowUserInteraction() {
+	public static boolean isMainThreadActive() {
 		return Thread.currentThread().equals(mainThread);
 	}
 
