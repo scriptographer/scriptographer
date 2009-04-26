@@ -89,8 +89,7 @@ public abstract class AbstractExtendedList<E> extends AbstractList<E>
 	@SuppressWarnings("unchecked")
 	public E[] toArray(E[] array) {
 		if (array == null)
-			array = (E[]) java.lang.reflect.Array.newInstance(
-					array.getClass().getComponentType(), size());
+			array = (E[]) new Object[size()];
 		for (int i = 0; i < array.length; i++)
 			array[i] = get(i);
 		return array;
