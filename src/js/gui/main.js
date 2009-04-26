@@ -346,7 +346,6 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	// Buttons:
 	var playButton = new ImageButton(this) {
 		image: getImage('play.png'),
-		style: 'black-rect',
 		size: buttonSize,
 		onClick: function() {
 			execute();
@@ -355,7 +354,6 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 
 	var stopButton = new ImageButton(this) {
 		image: getImage('stop.png'),
-		style: 'black-rect',
 		size: buttonSize,
 		onClick: function() {
 			ScriptographerEngine.stopAll();
@@ -364,7 +362,6 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 
 	var consoleButton = new ImageButton(this) {
 		image: getImage('console.png'),
-		style: 'black-rect',
 		size: buttonSize,
 		onClick: function() {
 			consoleDialog.setVisible(!consoleDialog.isVisible());
@@ -373,7 +370,6 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 
 	var newButton = new ImageButton(this) {
 		image: getImage('script.png'),
-		style: 'black-rect',
 		size: buttonSize,
 		onClick: function() {
 			createFile();
