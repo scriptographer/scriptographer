@@ -41,7 +41,7 @@ AIArtHandle Item_getInsertionPoint(short *paintOrder, AIDocumentHandle doc = NUL
 void Item_commit(JNIEnv *env, AIArtHandle art, bool invalidate = false, bool children = true);
 
 void ItemList_filter(AIArtSet set, bool layerOnly = false);
-jobject ItemList_getSelected(JNIEnv *env);
+AIArtSet ItemList_getSelected(JNIEnv *env);
 AIArtHandle ItemList_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 
 AIArtHandle JNICALL PlacedFile_place(JNIEnv *env, AIDocumentHandle doc, jobject file, jboolean linked);

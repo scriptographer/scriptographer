@@ -670,7 +670,7 @@ public class Document extends NativeObject {
 		return new Group();
 	}
 	
-	public Group createGroup(ExtendedList children) {
+	public Group createGroup(ExtendedList<? extends Item> children) {
 		activate(false, true);
 		return new Group(children);
 	}

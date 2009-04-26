@@ -58,11 +58,11 @@ void ItemList_filter(AIArtSet set, bool layerOnly) {
 	}
 }
 
-jobject ItemList_getSelected(JNIEnv *env) {
+AIArtSet ItemList_getSelected(JNIEnv *env) {
 	AIArtSet set = NULL;
 	if (!sAIArtSet->NewArtSet(&set)) {
 		if (!sAIArtSet->SelectedArtSet(set)) {
-			// now filter out objects of which the parents are selected too
+			// Now filter out objects of which the parents are selected too
 			long count;
 			sAIArtSet->CountArtSet(set, &count);
 			for (long i = count - 1; i >= 0; i--) {
@@ -81,12 +81,9 @@ jobject ItemList_getSelected(JNIEnv *env) {
 					}
 				}
 			}
-			jobject	itemSet = gEngine->convertArtSet(env, set);
-			sAIArtSet->DisposeArtSet(&set);
-			return itemSet;
 		}
 	}
-	return NULL;
+	return set;
 }
 
 AIArtHandle ItemList_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {

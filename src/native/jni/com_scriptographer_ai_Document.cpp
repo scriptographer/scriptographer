@@ -600,9 +600,13 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_hasSelectedItems(
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(JNIEnv *env, jobject obj) {
 	jobject itemSet = NULL;
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		itemSet = ItemList_getSelected(env);
+		AIArtSet selected = ItemList_getSelected(env);
+		if (selected != NULL) {
+			itemSet = gEngine->convertArtSet(env, selected);
+			sAIArtSet->DisposeArtSet(&selected);
+		}
 	} EXCEPTION_CONVERT(env);
 	return itemSet;
 }

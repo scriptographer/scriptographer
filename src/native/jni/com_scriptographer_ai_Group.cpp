@@ -55,11 +55,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Group_setClipped(JNIEnv *env, 
 	try {
 		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
 		sAIGroup->SetGroupClipped(handle, clipped);
-		if (clipped) {
-			AIArtHandle child = NULL;
-			sAIArt->GetArtFirstChild(handle, &child);
-			if (child != NULL)
-				sAIArt->SetArtUserAttr(child, kArtIsClipMask, kArtIsClipMask);
-		}
+		AIArtHandle child = NULL;
+		sAIArt->GetArtFirstChild(handle, &child);
+		if (child != NULL)
+			sAIArt->SetArtUserAttr(child, kArtIsClipMask, clipped ? kArtIsClipMask : 0);
 	} EXCEPTION_CONVERT(env);
 }

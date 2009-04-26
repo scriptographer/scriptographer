@@ -75,7 +75,20 @@ jobject Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelect
 	long count;
 	AIArtHandle art;
 	// get the selected results in a set:
-	jobject itemSet = ItemList_getSelected(env);
+	jobject result = NULL;
+	AIArtSet selected = ItemList_getSelected(env);
+	if (selected != NULL) {
+		long count = 0;
+		sAIArtSet->CountArtSet(selected, &count);
+		// We're expecting exactly one result from Pathfinder. Either a simple object, a Group or a CompoundPath
+		if (count != 1)
+			throw new StringException("Received more than one object back from Pathfinder.");
+		AIArtHandle art = NULL;
+		sAIArtSet->IndexArtSet(selected, 0, &art);
+		if (art != NULL)
+			result = gEngine->wrapArtHandle(env, art);
+		sAIArtSet->DisposeArtSet(&selected);
+	}
 	Document_deselectAll(true);
 	// select the previously selected objects:
 	sAIArtSet->CountArtSet(*prevSelected, &count);
@@ -87,7 +100,7 @@ jobject Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelect
 	sAIArtSet->DisposeArtSet(prevSelected);
 	delete data->fSelectedArt;
 	
-	return itemSet;
+	return result;
 }
 
 /*

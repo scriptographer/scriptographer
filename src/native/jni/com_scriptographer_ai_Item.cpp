@@ -419,21 +419,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getLastChild(JNIEnv *e
 	    AIArtHandle art = gEngine->getArtHandle(env, obj);
 		if (Item_hasChildren(art)) {
 			AIArtHandle child = NULL;
-#if kPluginInterfaceVersion >= kAI11		
 			sAIArt->GetArtLastChild(art, &child);
-#else
-			// there's no other way to do this on < AI 11
-			AIArtHandle curChild = NULL;
-			sAIArt->GetArtFirstChild(art, &curChild);
-			if (curChild != NULL) {
-				do {
-					child = curChild;
-					// catch errors
-					if (sAIArt->GetArtSibling(child, &curChild))
-						curChild = NULL;
-				} while (curChild != NULL);
-			}
-#endif
 			if (child != NULL)
 				return gEngine->wrapArtHandle(env, child, gEngine->getDocumentHandle(env, obj));
 		}
@@ -491,6 +477,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getLayer(JNIEnv *env, 
 	jobject res = NULL;
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		// If this is already a layer, get the layer of it's parent, since getLayer would point
+		// to itself otherwise (getLayer is supposed to return the layer the item is nested in).
+		if (Item_isLayer(art))
+			sAIArt->GetArtParent(art, &art);
 		AILayerHandle layer = NULL;
 		sAIArt->GetLayerOfArt(art, &layer);
 		if (layer != NULL)
