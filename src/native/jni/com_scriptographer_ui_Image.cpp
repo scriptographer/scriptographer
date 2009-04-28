@@ -172,7 +172,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Image_nativeCreateIcon(JNIEnv 
 JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Image_nativeBeginDrawer(JNIEnv *env, jobject obj) {
 	try {
 		ADMImageRef image = gEngine->getImageHandle(env, obj);
-		return (jint)sADMImage->BeginADMDrawer(image);
+		return (jint) sADMImage->BeginADMDrawer(image);
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }

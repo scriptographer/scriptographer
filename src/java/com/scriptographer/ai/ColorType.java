@@ -50,6 +50,12 @@ public enum ColorType implements IntegerEnum {
 	ACMYK(5, true), // CMYK with alpha
 	AGRAY(6, true), // Grayscale with alpha
 	ABITMAP(8, true); // bitmap with transparent 0-pixels
+	/* TODO: 
+	kRasterizeSeparation,
+	kRasterizeASeparation,
+	kRasterizeNChannel,
+	kRasterizeANChannel
+	*/
 
 	protected int value;
 	protected boolean alpha;

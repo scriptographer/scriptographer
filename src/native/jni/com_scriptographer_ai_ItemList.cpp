@@ -107,6 +107,7 @@ AIArtHandle ItemList_rasterize(AIArtSet artSet, AIRasterizeType type, float reso
 	settings.type = type;
 	settings.resolution = resolution;
 	settings.antialiasing = antialiasing;
+	// TODO: Support options
 	settings.options = kRasterizeOptionsNone;
 	AIRealRect artBounds;
 	sAIRasterize->ComputeArtBounds(artSet, &artBounds, false);

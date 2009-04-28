@@ -84,6 +84,7 @@
 #include "AIDocument.h"
 #include "AIDocumentList.h"
 #include "AIDocumentView.h"
+#include "AIDrawArt.h"
 #include "AIEnvelope.h"
 #include "AIExpand.h"
 #include "AIFileFormat.h"
@@ -307,6 +308,7 @@ extern "C" AIDictionaryIteratorSuite		*sAIDictionaryIterator;
 extern "C" AIDocumentSuite					*sAIDocument;
 extern "C" AIDocumentListSuite				*sAIDocumentList;
 extern "C" AIDocumentViewSuite				*sAIDocumentView;
+extern "C" AIDrawArtSuite					*sAIDrawArt;
 extern "C" AIEntrySuite						*sAIEntry;
 extern "C" AIEnvelopeSuite					*sAIEnvelope;
 extern "C" AIExpandSuite					*sAIExpand;

@@ -40,6 +40,7 @@ import com.scratchdisk.list.Lists;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
+import com.scriptographer.ui.Image;
 
 /**
  * @author lehni
@@ -1018,19 +1019,35 @@ public abstract class Item extends DocumentObject {
 		return str.toString();
 	}
 		
-	public native Raster rasterize(int type, float resolution,
+	private native Raster nativeRasterize(int type, float resolution,
 			int antialiasing, float width, float height);
 	
-	public Raster rasterize(int type, float resolution, int antialiasing) {
+	public Raster rasterize(ColorType type, float resolution, int antialiasing,
+			float width, float height) {
+		return nativeRasterize(type != null ? type.value : -1, resolution,
+				antialiasing, -1, -1);
+	}
+
+	public Raster rasterize(ColorType type, float resolution, int antialiasing) {
 		return rasterize(type, resolution, antialiasing, -1, -1);
 	}
+
+	public Raster rasterize(ColorType type, float resolution) {
+		return rasterize(type, resolution, 4, -1, -1);
+	}
 	
-	public Raster rasterize(int type) {
-		return rasterize(type, 0, 4, -1, -1);
+	public Raster rasterize(ColorType type) {
+		return rasterize(type, 72, 4, -1, -1);
 	}
 	
 	public Raster rasterize() {
-		return rasterize(-1, 0, 4, -1, -1);
+		return rasterize(null, 72, 4, -1, -1);
+	}
+
+	private native void nativeDraw(Image image, int width, int height);
+
+	public void draw(Image image) {
+		nativeDraw(image, image.getWidth(), image.getHeight());
 	}
 
 	public HitTest hitTest(Point point, HitRequest type, float tolerance) {

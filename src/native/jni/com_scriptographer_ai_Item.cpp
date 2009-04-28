@@ -494,10 +494,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getLayer(JNIEnv *env, 
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeGetBounds(JNIEnv *env, jobject obj) {
 	try {
-		AIRealRect rt;
 	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		// Commit pending changes first, since they might influence the bounds
 		Item_commit(env, art);
+		AIRealRect rt;
 	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
 	    return gEngine->convertRectangle(env, &rt);
 	} EXCEPTION_CONVERT(env);
@@ -901,9 +901,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeTransform(JNIEnv *e
 }
 
 /*
- * com.scriptographer.ai.Raster rasterize(int type, float resolution, int antialiasing, float width, float height)
+ * com.scriptographer.ai.Raster nativeRasterize(int type, float resolution, int antialiasing, float width, float height)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_rasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeRasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIArtHandle raster = Item_rasterize(art, (AIRasterizeType) type, resolution, antialiasing, width, height);
@@ -913,6 +913,52 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_rasterize(JNIEnv *env,
 		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;
+}
+
+/*
+ * void nativeDraw(com.scriptographer.ui.Image image, int width, int height)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeDraw(JNIEnv *env, jobject obj, jobject imageObj, jint width, jint height) {
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+
+		Item_commit(env, art);
+		AIRealRect rt;
+	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
+
+		ADMImageRef image = gEngine->getImageHandle(env, imageObj);
+		ADMDrawerRef drawer = sADMImage->BeginADMDrawer(image);
+		ADMAGMPortPtr port = sADMDrawer->GetAGMPort(drawer);
+		
+		AIDrawArtFlags flags = kAIDrawArtPreviewMask;
+		AIDrawArtData drawData;
+		drawData.version = kAIDrawArtVersion;
+		drawData.flags = flags;
+		drawData.type = kAIDrawArtAGMPortOutputV6;
+		drawData.origin.h = rt.left;
+		drawData.origin.v = rt.top;
+		sAIRealMath->AIRealMatrixSetIdentity(&drawData.matrix);
+		drawData.art = art;
+		AIRealRect &clip = drawData.destClipRect;
+		clip.left = clip.top = 0;
+		clip.right = width;
+		clip.bottom = height;
+//		clip.right = rt.right - rt.left;
+//		clip.bottom = rt.top - rt.bottom;
+		drawData.eraseDestClipRect = true;
+		drawData.interruptedArt = NULL;
+		drawData.greekThreshold = -1;
+		drawData.output.port.port = port;
+		AIRect &rect = drawData.output.port.portBounds;
+		rect.left = rect.top = 0;
+		rect.right = width;
+		rect.bottom = height;
+		AIColorConvertOptions drawOptions;
+		// sAIDrawArt->BeginDrawArt(&drawData, drawOptions, flags); 
+		sAIDrawArt->DrawArt(&drawData, drawOptions); 
+		// sAIDrawArt->EndDrawArt(&drawData, drawOptions); 
+		sADMImage->EndADMDrawer(image);
+	} EXCEPTION_CONVERT(env);
 }
 
 /*

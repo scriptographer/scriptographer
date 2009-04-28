@@ -60,6 +60,7 @@ extern "C" {
 	AIDocumentSuite					*sAIDocument;
 	AIDocumentListSuite				*sAIDocumentList;
 	AIDocumentViewSuite				*sAIDocumentView;
+	AIDrawArtSuite					*sAIDrawArt;
 	AIEntrySuite					*sAIEntry;
 	AIEnvelopeSuite					*sAIEnvelope;
 	AIExpandSuite					*sAIExpand;
@@ -224,6 +225,7 @@ ImportSuite postStartup[] = {
 	kAICursorSnapSuite, kAICursorSnapSuiteVersion, &sAICursorSnap, sizeof(AICursorSnapSuite),
 	kAIDocumentListSuite, kAIDocumentListSuiteVersion, &sAIDocumentList, sizeof(AIDocumentListSuite),
 	kAIDocumentViewSuite, kAIDocumentViewSuiteVersion, &sAIDocumentView, sizeof(AIDocumentViewSuite),
+	kAIDrawArtSuite, kAIDrawArtSuiteVersion, &sAIDrawArt, sizeof(AIDrawArtSuite),
 	kAIEntrySuite, kAIEntryVersion, &sAIEntry, sizeof(AIEntrySuite),
 	kAIEnvelopeSuite, kAIEnvelopeSuiteVersion, &sAIEnvelope, sizeof(AIEnvelopeSuite),
 	kAIExpandSuite, kAIExpandSuiteVersion, &sAIExpand, sizeof(AIExpandSuite),
