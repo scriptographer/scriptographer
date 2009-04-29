@@ -124,6 +124,7 @@ public abstract class Dialog extends Component {
 	// used to check if the boundaries (min / max size) are to bet set after
 	// initialization
 	private boolean boundariesSet = true;
+	private boolean boundsInitialized = false;
 
 	// for scripts, we cannot always access ScriptRuntime.getTopCallScope(cx)
 	// store a reference to the script's preferences object so we can always
@@ -181,7 +182,7 @@ public abstract class Dialog extends Component {
 	 * Whatevery fires first, triggers initialize
 	 * @throws Exception 
 	 */
-	private void initialize(boolean setBoundaries) throws Exception {
+	private void initialize(boolean setBoundaries, boolean initBounds) throws Exception {
 		// initialize can also be triggered e.g. by setGroupInfo, which needs to
 		// be ignored
 		if (!ignoreSizeChange) {
@@ -217,17 +218,15 @@ public abstract class Dialog extends Component {
 			// setBoundaries is set to false when calling from initializeAll,
 			// because it would be too early to set it there. At least on Mac CS3
 			// this causes problems
-			if (setBoundaries) {
-				if (!boundariesSet) {
-					nativeSetMinimumSize(minSize.width, minSize.height);
-					nativeSetMaximumSize(maxSize.width, maxSize.height);
-					boundariesSet = true;
-				}
-				// Fix a bug on CS4, where some items seem to be positioned wrongly if they were laid out while 
-				// the window was hidden (?). ItemGroup messes up, so do apply there.
-				for (Item item : items) {
-					item.fixBounds();
-				}
+			if (setBoundaries && !boundariesSet) {
+				nativeSetMinimumSize(minSize.width, minSize.height);
+				nativeSetMaximumSize(maxSize.width, maxSize.height);
+				boundariesSet = true;
+			}
+			if (initBounds && !boundsInitialized) {
+				for (Item item : items)
+					item.initBounds();
+				boundsInitialized = true;
 			}
 		}
 	}
@@ -273,7 +272,7 @@ public abstract class Dialog extends Component {
 		for (int i = dialogs.size() - 1; i >= 0; i--) {
 //		for (int i = 0; i < dialogs.size(); i++) {
 			Dialog dialog = (Dialog) dialogs.get(i);
-			dialog.initialize(false);
+			dialog.initialize(false, false);
 		}
 	}
 
@@ -535,7 +534,7 @@ public abstract class Dialog extends Component {
 	protected void onNotify(Notifier notifier) throws Exception {
 		switch (notifier) {
 		case INITIALIZE:
-			initialize(true);
+			initialize(true, false);
 			break;
 		case DESTROY:
 			if (options.contains(DialogOption.REMEMBER_PLACING))
@@ -544,7 +543,7 @@ public abstract class Dialog extends Component {
 			break;
 		case WINDOW_ACTIVATE:
 			// See comment for initialize to understand why this is fired here too
-			initialize(true);
+			initialize(true, false);
 			active = true;
 			onActivate();
 			break;
@@ -554,7 +553,7 @@ public abstract class Dialog extends Component {
 			break;
 		case WINDOW_SHOW:
 			// See comment for initialize to understand why this is fired here too
-			initialize(true);
+			initialize(true, true);
 			visible = true;
 			fireOnClose = true;
 			onShow();

@@ -52,13 +52,16 @@ public class Spacer extends Item {
 	public Size getPreferredSize() {
 		return bounds.getSize();
 	}
+
+	protected void initBounds() {
+		// Do nothing here
+	}
 	
-	protected void updateBounds(int x, int y, int width, int height) {
+	protected void updateNativeBounds(int x, int y, int width, int height) {
 		// override this as we are not using all the native stuff internally in
 		// spacers.
 		// setBounds does not need to be touched, as it relies on updateBounds
 		// for the heavy lifting.
-		bounds.set(x, y, width, height);
 	}
 
 	public boolean isVisible() {

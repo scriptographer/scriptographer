@@ -57,6 +57,7 @@ public abstract class Item extends Component {
 	private Size minSize = null;
 	private Size maxSize = null;
 	private Size prefSize = null;
+	private boolean sizeSet = false;
 
 	protected Item() {
 		// Call function as it is overridden by Button, where it sets 
@@ -73,11 +74,7 @@ public abstract class Item extends Component {
 	 */
 	protected Item(Dialog dialog, ItemType type, int options) {
 		this();
-		this.handle = nativeCreate(dialog.handle, type.name, options);
-		this.dialog = dialog;
-		dialog.items.add(this);
-		this.type = type;
-		initBounds();
+		init(dialog, nativeCreate(dialog.handle, type.name, options), type);
 	}
 
 	protected Item(Dialog dialog, ItemType type) {
@@ -93,18 +90,29 @@ public abstract class Item extends Component {
 	 */
 	protected Item(Dialog dialog, int handle) {
 		this();
-		this.handle = (int) handle;
-		this.dialog = dialog;
-		this.type = ItemType.get(nativeInit(this.handle));
-		initBounds();
+		init(dialog, handle, ItemType.get(nativeInit(handle)));
 	}
 	
-	protected void initBounds() {
+	protected void init(Dialog dialog, int handle, ItemType type) {
+		this.dialog = dialog;
+		this.handle = handle;
+		this.type = type;
+		dialog.items.add(this);
 		nativeBounds = nativeGetBounds();
 		// nativeSize and nativeBounds are set by the native environment
 		// size and bounds need to be updated depending on margins and
 		// internalInsets
 		bounds = new Rectangle(nativeBounds).add(margin);
+	}
+
+	protected void initBounds() {
+		if (!sizeSet)
+			setSize(getBestSize());
+		// This is used to fix ADM bugs on CS4 where an item does not update its native bounds in certain
+		// situations (hidden window?) even if it was asked to do so.
+		Rectangle bounds = nativeGetBounds();
+		if (!bounds.equals(nativeBounds))
+			nativeSetBounds(nativeBounds.x, nativeBounds.y, nativeBounds.width, nativeBounds.height);
 	}
 
 	public void destroy() {
@@ -261,31 +269,37 @@ public abstract class Item extends Component {
 	}
 
 	public void setBounds(int x, int y, int width, int height) {
-		// Set prefSize so getPreferredSize does not return results from
-		// getBestSize()
-		prefSize = new Size(width, height);
-		// Set minSize if it is not set yet, so getBestSize() is not used
-		// anymore.
-		if (minSize == null)
-			minSize = prefSize;
-		// updateBounds does all the heavy lifting, except for setting
-		// prefSize, which shouldn't be set when changing location or margins.
-		updateBounds(x, y, width, height);
+		updateBounds(x, y, width, height, true);
 	}
 
 	public final void setBounds(Rectangle bounds) {
 		setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
-	protected void fixBounds() {
-		// This is used to fix ADM bugs where an item does not update its native bounds in certain
-		// situations even if it was asked to do so.
-		Rectangle bounds = nativeGetBounds();
-		if (!bounds.equals(nativeBounds))
-			nativeSetBounds(nativeBounds.x, nativeBounds.y, nativeBounds.width, nativeBounds.height);
+	public void updateBounds(int x, int y, int width, int height, boolean sizeChanged) {
+		if (sizeChanged) {
+			// Set prefSize so getPreferredSize does not return results from
+			// getBestSize()
+			prefSize = new Size(width, height);
+			// Set minSize if it is not set yet, so getBestSize() is not used
+			// anymore.
+			if (minSize == null)
+				minSize = prefSize;
+			sizeSet = true;
+		}
+
+		// Update bounds
+		bounds.set(x, y, width, height);
+
+		// Update bounds in AWT proxy:
+		updateAWTBounds(bounds);
+
+		// updateBounds does all the heavy lifting, except for setting
+		// prefSize, which shouldn't be set when changing location or margins.
+		updateNativeBounds(x, y, width, height);
 	}
 
-	protected void updateBounds(int x, int y, int width, int height) {
+	protected void updateNativeBounds(int x, int y, int width, int height) {
 		// calculate native values
 		int nativeX = x + margin.left;
 		int nativeY = y + margin.top;
@@ -294,19 +308,13 @@ public abstract class Item extends Component {
 		int deltaX = nativeWidth - nativeBounds.width;
 		int deltaY = nativeHeight - nativeBounds.height;
 
-		// Update bounds
-		bounds.set(x, y, width, height);
-
 		boolean sizeChanged = deltaX != 0 || deltaY != 0;
 		if (sizeChanged || nativeBounds.x != nativeX ||
 				nativeBounds.y != nativeY) {
 			nativeSetBounds(nativeX, nativeY, nativeWidth, nativeHeight);
 			nativeBounds.set(nativeX, nativeY, nativeWidth, nativeHeight);
 		}
-
-		// Update bounds in AWT proxy:
-		updateAWTBounds(bounds);
-
+		// TODO: Move this to updateBounds, and do not rely on nativeBounds?
 		if (sizeChanged) {
 			try {
 				onResize(deltaX, deltaY);
@@ -333,7 +341,7 @@ public abstract class Item extends Component {
 	}
 
 	public void setPosition(int x, int y) {
-		updateBounds(x, y, bounds.width, bounds.height);
+		updateBounds(x, y, bounds.width, bounds.height, false);
 	}
 
 	public final void setPosition(Point loc) {
@@ -349,7 +357,7 @@ public abstract class Item extends Component {
 	}
 
 	public void setSize(int width, int height) {
-		setBounds(bounds.x, bounds.y, width, height);
+		updateBounds(bounds.x, bounds.y, width, height, true);
 	}
 
 	public final void setSize(Size size) {
@@ -359,7 +367,7 @@ public abstract class Item extends Component {
 	private native Size nativeGetTextSize(String text, int maxWidth);
 	
 	public Size getTextSize(String text, int maxWidth) {
-		// Split at new lines chars, and measure each line seperately
+		// Split at new lines chars, and measure each line separately
 		String[] lines = text.split("\r\n|\n|\r");
 		Size size = new Size(0, 0);
 		for (int i = 0; i < lines.length; i++) {
@@ -493,7 +501,7 @@ public abstract class Item extends Component {
 	public void setMargin(int top, int right, int bottom, int left) {
 		margin = new Border(top, right, bottom, left);
 		if (nativeBounds != null)
-			updateBounds(bounds.x, bounds.y, bounds.width, bounds.height);
+			updateBounds(bounds.x, bounds.y, bounds.width, bounds.height, false);
 		// Update the margins int he AWT proxy as well
 		updateAWTMargin(margin);
 	}
@@ -692,8 +700,7 @@ public abstract class Item extends Component {
 
 		public void setSize(int width, int height) {
 			super.setSize(width, height);
-			java.awt.Rectangle rect = getBounds();
-			Item.this.setBounds(rect.x, rect.y, rect.width, rect.height);
+			Item.this.setSize(width, height);
 		}
 
 		public void setSize(Dimension d) {
@@ -775,14 +782,7 @@ public abstract class Item extends Component {
 
 		public void setSize(int width, int height) {
 			super.setSize(width, height);
-			java.awt.Rectangle rect = getBounds();
-			Item.this.setBounds(rect.x, rect.y, rect.width, rect.height);
-			/*
-			if (frame != null) {
-				java.awt.Point loc = getLocation();
-				frame.setBounds(loc.x, loc.y, width, height);
-			}
-			*/
+			Item.this.setSize(width, height);
 		}
 
 		public void setSize(Dimension d) {

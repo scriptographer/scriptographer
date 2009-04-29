@@ -81,13 +81,12 @@ public class ItemGroup extends Item implements ComponentGroup {
 		else
 			removeComponent(item);
 	}
-
-	protected void updateBounds(int x, int y, int width, int height) {
-		// Just like in Spacer, override this as apparently we should not change ItemGroup size.
-		bounds.set(x, y, width, height);
-	}
 	
-	protected void fixBounds() {
+	protected void initBounds() {
 		// Do nothing here, since changing ItemGroup layout messes up things...?
+	}
+
+	protected void updateNativeBounds(int x, int y, int width, int height) {
+		// Just like in Spacer, override this as apparently we should not change ItemGroup size.
 	}
 }
