@@ -1,43 +1,34 @@
-JAVA=../../../../java/build/
-DOCS=../../../../../docs/js/
-GUI=../../../../../src/js/gui/
+#!/bin/sh
 
-mkdir build/CS4
-mkdir build/CS4/Debug
-ln -s $JAVA build/CS4/Debug/java
-ln -s $DOCS build/CS4/Debug/doc
-ln -s $GUI build/CS4/Debug/gui
-mkdir build/CS4/Release
-ln -s $JAVA build/CS4/Release/java
-ln -s $DOCS build/CS4/Release/doc
-ln -s $GUI build/CS4/Release/gui
+BASE=../../../..
+JAVA=$BASE/java/build/
+DOCS=$BASE/../docs/js/
+CORE=$BASE/../src/js/
 
-mkdir build/CS3
-mkdir build/CS3/Debug
-ln -s $JAVA build/CS3/Debug/java
-ln -s $DOCS build/CS3/Debug/doc
-ln -s $GUI build/CS3/Debug/gui
-mkdir build/CS3/Release
-ln -s $JAVA build/CS3/Release/java
-ln -s $DOCS build/CS3/Release/doc
-ln -s $GUI build/CS3/Release/gui
+makeLink() {
+	if [ -h $2 ]
+	then
+		rm $2
+	fi
+	ln -s $1 $2
+}
 
-mkdir build/CS2
-mkdir build/CS2/Debug
-ln -s $JAVA build/CS2/Debug/java
-ln -s $DOCS build/CS2/Debug/doc
-ln -s $GUI build/CS2/Debug/gui
-mkdir build/CS2/Release
-ln -s $JAVA build/CS2/Release/java
-ln -s $DOCS build/CS2/Release/doc
-ln -s $GUI build/CS2/Release/gui
+makeTargetLinks() {
+	makeLink $JAVA build/$1/$2/java
+	makeLink $DOCS build/$1/$2/doc
+	makeLink $CORE build/$1/$2/core
+} 
 
-mkdir build/CS
-mkdir build/CS/Debug
-ln -s $JAVA build/CS/Debug/java
-ln -s $DOCS build/CS/Debug/doc
-ln -s $GUI build/CS/Debug/gui
-mkdir build/CS/Release
-ln -s $JAVA build/CS/Release/java
-ln -s $DOCS build/CS/Release/doc
-ln -s $GUI build/CS/Release/gui
+makeLinks() {
+	if [ ! -d build/$1 ]
+	then
+		mkdir build/$1
+	fi
+	makeTargetLinks $1 Debug
+	makeTargetLinks $1 Release
+}
+
+makeLinks "CS"
+makeLinks "CS2"
+makeLinks "CS3"
+makeLinks "CS4"
