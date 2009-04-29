@@ -28,7 +28,6 @@
  */
 
 var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing', function() {
-
 	// Script List:
 	scriptList = new HierarchyList(this) {
 		style: 'black-rect',

@@ -28,6 +28,7 @@
  */
 
 var aboutDialog = new ModalDialog(function() {
+	var that = this;
 	// Add trailing zeros to revision
 	var revision = scriptographer.revision + '';
 	while (revision.length < 3)
@@ -64,6 +65,10 @@ var aboutDialog = new ModalDialog(function() {
 	var okButton = new Button(this) {
 		text: '  OK  ',
 	};
+
+	global.onAbout = function() {
+		that.doModal();
+	}
 
 	return {
 		title: 'About Scriptographer',

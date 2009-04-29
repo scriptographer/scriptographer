@@ -28,6 +28,7 @@
  */
 
 var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing', function() {
+	var that = this;
 	var engine = ScriptEngine.getEngineByName('JavaScript');
 	var consoleScope = engine != null ? engine.createScope() : null;
 
@@ -94,7 +95,6 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 		}
 	};
 
-	var that = this;
 	var consoleText = new java.lang.StringBuffer();
 
 	function showText() {
@@ -149,6 +149,13 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 
 		onInitialize: function() {
 			showText();
+
+			// Interface with ScriptographerEngine
+			ScriptographerEngine.setCallback(new ScriptographerCallback() {
+				println: function(str) {
+					that.println(str);
+				}
+			});
 		},
 
 		onDestroy: function() {
@@ -156,14 +163,3 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 		}
 	}
 });
-
-// Interface with ScriptographerEngine
-ScriptographerEngine.setCallback(new ScriptographerCallback() {
-	println: function(str) {
-		consoleDialog.println(str);
-	}
-});
-
-function onAbout() {
-	aboutDialog.doModal();
-}
