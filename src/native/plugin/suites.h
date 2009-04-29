@@ -29,10 +29,10 @@
 
 // Define versions so they can even be used when compiling for 10 or CS1:
 #define kAI10	0x10000001	// AI 10.0
-#define kAI11	0x11000001	// AI 11.0
-#define kAI12	0x12000001	// AI 12.0
-#define kAI13	0x13000001	// AI 13.0
-#define kAI14	0x14000001	// AI 13.0
+#define kAI11	0x11000001	// AI 11.0 (CS)
+#define kAI12	0x12000001	// AI 12.0 (CS2)
+#define kAI13	0x13000001	// AI 13.0 (CS3)
+#define kAI14	0x14000001	// AI 14.0 (CS4)
 
 // Sweet Pea Headers
 #include "SPConfig.h"
