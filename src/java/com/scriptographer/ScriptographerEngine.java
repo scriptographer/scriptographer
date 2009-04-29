@@ -86,17 +86,15 @@ public class ScriptographerEngine {
     private ScriptographerEngine() {
 	}
 
-	public static void init(String javaPath) throws Exception {
+    public static void init(String pluginPath) throws Exception {
 		mainThread = Thread.currentThread();
 		// Redirect system streams to the console.
 		ConsoleOutputStream.enableRedirection(true);
 
-		errorLogger = new PrintStream(new FileOutputStream(new File(javaPath,
-			"error.log")), true);
-		consoleLogger = new PrintStream(new FileOutputStream(new File(javaPath,
-		"console.log")), true);
-		
-		pluginDir = new File(javaPath).getParentFile();
+		pluginDir = new File(pluginPath);
+
+		errorLogger = getLogger("java.log");
+		consoleLogger = getLogger("console.log");
 
 		// This is needed on Mac, where there is more than one thread and the
 		// Loader is initiated on startup
@@ -107,10 +105,10 @@ public class ScriptographerEngine {
 		// Collect all init scripts and compile them to scopes.
 		// These are then used to call onStartup / onPostStartup callbacks
 		initScopes = new ArrayList<Scope>();
-		// Collect GUI code, if it exists
-		File guiDir = new File(pluginDir, "gui");
-		if (guiDir.isDirectory())
-			collectInitScripts(guiDir, initScopes);
+		// Collect core code, if it exists
+		File coreDir = new File(pluginDir, "core");
+		if (coreDir.isDirectory())
+			collectInitScripts(coreDir, initScopes);
 		// Collect all __init__ scripts in the Script folder:
 		if (scriptDir != null)
 			collectInitScripts(scriptDir, initScopes);
@@ -182,19 +180,36 @@ public class ScriptographerEngine {
 		return prefs;
 	}
 
+    private static PrintStream getLogger(String name) {
+		try {
+			File logDir = new File(pluginDir, "log");
+			if (!logDir.exists())
+				logDir.mkdir();
+			return new PrintStream(new FileOutputStream(new File(logDir, name)), true);
+		} catch (Exception e) {
+			// Not allowed to make this log directory or file, so don't log...
+		}
+		return null;
+    }
+
 	public static void logError(Throwable t) {
-		errorLogger.println(new Date());
-		t.printStackTrace(errorLogger);
-		errorLogger.println();
+		if (errorLogger != null) {
+			errorLogger.println(new Date());
+			t.printStackTrace(errorLogger);
+			errorLogger.println();
+		}
 	}
 	
 	public static void logError(String str) {
-		errorLogger.println(new Date());
-		errorLogger.println(str);
+		if (errorLogger != null) {
+			errorLogger.println(new Date());
+			errorLogger.println(str);
+		}
 	}
 
 	protected static void logConsole(String str) {
-		consoleLogger.println(str);
+		if (consoleLogger != null)
+			consoleLogger.println(str);
 	}
 
 	public static void reportError(Throwable t) {

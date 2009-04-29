@@ -242,21 +242,21 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 	if (error) return error;
 
 	// Determine baseDirectory from plugin location:
-	char homeDir[kMaxPathLength];
+	char pluginPath[kMaxPathLength];
 	SPPlatformFileSpecification fileSpec;
 	sSPPlugins->GetPluginFileSpecification(m_pluginRef, &fileSpec);
-   	if (!fileSpecToPath(&fileSpec, homeDir))
+   	if (!fileSpecToPath(&fileSpec, pluginPath))
 		return kCantHappenErr;
 	
 	// Now find the last occurence of PATH_SEP_CHR and determine the string there:
-	*(strrchr(homeDir, PATH_SEP_CHR) + 1) = '\0';
+	*(strrchr(pluginPath, PATH_SEP_CHR) + 1) = '\0';
 
 	#ifdef LOGFILE
 		// Create logfile:
 		char path[512];
-		sprintf(path, "%s" PATH_SEP_STR "scriptographer.log", homeDir);
+		sprintf(path, "%s" PATH_SEP_STR "log" PATH_SEP_STR "native.log", pluginPath);
 		m_logFile = fopen(path, "wt");
-		log("Starting Scriptographer with home folder: %s", homeDir);
+		log("Starting Scriptographer with plugin path: %s", pluginPath);
 	#endif
 		
 	error = sSPPlugins->SetPluginName(m_pluginRef, m_pluginName);
@@ -264,10 +264,7 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 	
 	try {
 		// Try to create the Java Engine:
-		// Append java to the homeDir
-		strcat(homeDir, "java");
-		// homeDir now contains the full path to the java stuff
-		m_engine = new ScriptographerEngine(homeDir);
+		m_engine = new ScriptographerEngine(pluginPath);
 	} catch(ScriptographerException *e) {
 		e->report(NULL);
 		delete e;

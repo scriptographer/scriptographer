@@ -88,11 +88,11 @@ void ScriptographerEngine::javaThread() {
 
 #endif // MAC_THREAD
 
-ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
+ScriptographerEngine::ScriptographerEngine(const char *pluginPath) {
 	m_initialized = false;
 	m_javaVM = NULL;
-	m_homeDir = new char[strlen(homeDir) + 1];
-	strcpy(m_homeDir, homeDir);
+	m_pluginPath = new char[strlen(pluginPath) + 1];
+	strcpy(m_pluginPath, pluginPath);
 	ScriptographerException *exc = NULL;
 
 #ifdef MAC_THREAD
@@ -124,7 +124,7 @@ ScriptographerEngine::ScriptographerEngine(const char *homeDir) {
 
 ScriptographerEngine::~ScriptographerEngine() {
 	gEngine = NULL;
-	delete m_homeDir;
+	delete m_pluginPath;
 	callStaticVoidMethodReport(NULL, cls_ScriptographerEngine, mid_ScriptographerEngine_destroy);
 #ifdef MAC_THREAD
 	if(MPLibraryIsLoaded()) {
@@ -197,8 +197,8 @@ void ScriptographerEngine::init() {
 	// Define options
 	JVMOptions options;
 	// Only add the loader to the classpath, the rest is done in java:
-	options.add("-Djava.class.path=%s" PATH_SEP_STR "loader.jar", m_homeDir);
-	options.add("-Djava.library.path=%s" PATH_SEP_STR "lib", m_homeDir);
+	options.add("-Djava.class.path=%s" PATH_SEP_STR "java" PATH_SEP_STR "loader.jar", m_pluginPath);
+	options.add("-Djava.library.path=%s" PATH_SEP_STR "java" PATH_SEP_STR "lib", m_pluginPath);
 
 #ifdef MAC_ENV
 #ifdef MAC_THREAD
@@ -212,7 +212,7 @@ void ScriptographerEngine::init() {
 #endif // MAC_ENV
 	// Read ini file and add the options here
 	char buffer[512];
-	sprintf(buffer, "%s" PATH_SEP_STR "jvm.ini", m_homeDir);
+	sprintf(buffer, "%s" PATH_SEP_STR "java" PATH_SEP_STR "jvm.ini", m_pluginPath);
 	FILE *file = fopen(buffer, "rt");
 	if (file != NULL) {
 		while (fgets(buffer, sizeof(buffer), file)) {
@@ -249,7 +249,7 @@ void ScriptographerEngine::init() {
 	mid_Loader_init = getStaticMethodID(env, cls_Loader, "init", "(Ljava/lang/String;)V");
 	mid_Loader_reload = getStaticMethodID(env, cls_Loader, "reload", "()Ljava/lang/String;");
 	mid_Loader_loadClass = getStaticMethodID(env, cls_Loader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
-	callStaticObjectMethodReport(env, cls_Loader, mid_Loader_init, env->NewStringUTF(m_homeDir));
+	callStaticObjectMethodReport(env, cls_Loader, mid_Loader_init, env->NewStringUTF(m_pluginPath));
 	
 	// Initialize reflection. This retrieves references to all the classes, fields and methods
 	// that are accessed from native code. Since JSE 1.6, this cannot be called after 
@@ -286,7 +286,7 @@ void ScriptographerEngine::initEngine() {
 		m_artHandleKey = sAIDictionary->Key("-scriptographer-art-handle");
 		m_docReflowKey = sAIDictionary->Key("-scriptographer-doc-reflow-suspended");
 		
-		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_init, env->NewStringUTF(m_homeDir));
+		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_init, env->NewStringUTF(m_pluginPath));
 		m_initialized = true;
 		onStartup();
 	} EXCEPTION_CATCH_REPORT(env);

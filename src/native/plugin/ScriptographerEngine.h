@@ -33,7 +33,7 @@
 class ScriptographerEngine {
 private:
     JavaVM* m_javaVM;
-	char *m_homeDir;
+	char *m_pluginPath;
 	bool m_initialized;
 	Array<AIDocumentHandle> m_suspendedDocuments;
 
@@ -369,7 +369,7 @@ public:
 	jclass cls_ui_MenuGroup;
 	
 public:
-	ScriptographerEngine(const char *homeDir);
+	ScriptographerEngine(const char *pluginPath);
 	~ScriptographerEngine();
 	
 	void init();

@@ -42,14 +42,14 @@ import java.io.*;
  */
 public class Loader {
 	static URLClassLoader loader = null;
-	static String homeDir;
+	static String pluginPath;
 
-	public static void init(String dir) throws MalformedURLException {
-		homeDir = dir;
-		File home = new File(dir);
+	public static void init(String path) throws MalformedURLException {
+		pluginPath = path;
+		File javaDir = new File(pluginPath, "java");
 		// fFlter out all the files in lib that are not jar or zip files and
 		// create a URL array of it:
-		File libDir = new File(home, "lib");
+		File libDir = new File(javaDir, "lib");
 		FilenameFilter filter = new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return name.endsWith(".jar") || name.endsWith(".zip");
@@ -60,11 +60,11 @@ public class Loader {
 		URL[] urls = new URL[libs.length + 2];
 		// And classes and rhino first, libraries after, to get the
 		// priorities right:
-		urls[0] = new File(home, "classes").toURL();
+		urls[0] = new File(javaDir, "classes").toURL();
 		// Rhino is usually loaded from lib, but during development
 		// it can also be live compiled into the rhino folder, which
 		// makes debugging easier:
-		urls[1] = new File(home, "rhino").toURL();
+		urls[1] = new File(javaDir, "rhino").toURL();
 		
 		// Now add the urls from above
 		for (int i = 0; i < libs.length; i++)
@@ -94,7 +94,7 @@ public class Loader {
 		}
 		try {
 			// Now (re)load all:
-			init(homeDir);
+			init(pluginPath);
 		} catch (Exception e) {
 			e.printStackTrace(writer);
 		}
