@@ -33,12 +33,38 @@ importPackage(Packages.com.scriptographer.script);
 
 script.showProgress = false;
 
+// Load the core libraries
+loadLibraries(new File(script.directory.parentFile, 'lib'));
+
 var buttonSize = new Size(27, 17);
 var lineHeight = 17;
 var lineBreak = java.lang.System.getProperty('line.separator');
 
 function getImage(filename) {
 	return new Image(new File(script.directory, 'resources/' + filename));
+}
+
+function loadLibraries(dir) {
+	var files = dir.listFiles();
+	if (files) {
+		for (var i = 0; i < files.length; i++) {
+			var file = files[i];
+			if (file.isDirectory() && !/^\.|^CVS$/.test(file.name)) {
+				loadLibraries(file);
+			} else {
+				try {
+					var engine = ScriptEngine.getEngineByFile(file);
+					if (engine) {
+						var scr = engine.compile(file);
+						if (scr)
+							scr.execute(engine.getGlobalScope());
+					}
+				} catch (e) {
+					print(e);
+				}
+			}
+		}
+	}
 }
 
 function chooseScriptDirectory(dir) {
@@ -55,32 +81,8 @@ function chooseScriptDirectory(dir) {
 function setScriptDirectory(dir) {
 	// Tell Scriptographer about where to look for scripts.
 	ScriptographerEngine.setScriptDirectory(dir);
-	loadLibraries();
-}
-
-function loadLibraries(dir) {
-	if (!dir)
-		dir = new File(scriptographer.scriptDirectory, 'libraries');
-	var files = dir.listFiles();
-	if (files) {
-		for (var i = 0; i < files.length; i++) {
-			var file = files[i];
-			if (file.isDirectory() && !/^\.|^CVS$/.test(file.name)) {
-				loadLibraries(file);
-			} else {
-				try {
-					var engine = ScriptEngine.getEngineByFile(file);
-					if (engine) {
-						var script = engine.compile(file);
-						if (script)
-							script.execute(engine.getGlobalScope());
-					}
-				} catch (e) {
-					print(e);
-				}
-			}
-		}
-	}
+	// Load librarires
+	loadLibraries(new File(dir, 'libraries'));
 }
 
 var tool = new Tool("Scriptographer Tool") {
