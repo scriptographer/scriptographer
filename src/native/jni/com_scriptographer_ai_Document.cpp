@@ -657,7 +657,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeGetMatchingI
 				EXCEPTION_CHECK(env);
 			}
 			if (!sAIArtSet->MatchingArtSet(&spec, 1, set)) {
-				itemSet = gEngine->convertArtSet(env, set);
+				itemSet = gEngine->convertArtSet(env, set, layerOnly);
 				sAIArtSet->DisposeArtSet(&set);
 			}
 		}
