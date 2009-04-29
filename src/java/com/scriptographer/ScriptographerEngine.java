@@ -109,9 +109,6 @@ public class ScriptographerEngine {
 		File coreDir = new File(pluginDir, "core");
 		if (coreDir.isDirectory())
 			collectInitScripts(coreDir, initScopes);
-		// Collect all __init__ scripts in the Script folder:
-		if (scriptDir != null)
-			collectInitScripts(scriptDir, initScopes);
 	}
 
 	public static void destroy() {
@@ -142,7 +139,11 @@ public class ScriptographerEngine {
 	}
 
 	public static void setScriptDirectory(File dir) {
+		// The core gui calls setScriptDirectory each time it runs, so collect init scripts here
 		scriptDir = dir;
+		// Collect all __init__ scripts in the Script folder:
+		if (scriptDir != null)
+			collectInitScripts(scriptDir, initScopes);
 	}
 
 	public static Preferences getPreferences(boolean fromScript) {
