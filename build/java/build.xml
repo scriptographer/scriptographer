@@ -212,9 +212,9 @@
 			</fileset>
 		</copy>
 
-		<!-- GUI -->
-		<copy todir="${build.packages}/Scriptographer/gui">
-			<fileset dir="${home.dir}/src/js/gui"/>
+		<!-- JS Core -->
+		<copy todir="${build.packages}/Scriptographer/core">
+			<fileset dir="${home.dir}/src/js"/>
 		</copy>
 
 		<!-- JS Docs -->
