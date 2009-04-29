@@ -38,6 +38,52 @@
 
 using namespace ATE;
 
+#define CHARACTERSTYLE_GET(NAME, TYPE, CLASS, JTYPE) \
+	try { \
+		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj); \
+		ATEBool8 isAssigned; \
+		TYPE value; \
+		if (!sCharFeatures->Get##NAME(features, &isAssigned, &value) && isAssigned) \
+			return gEngine->newObject(env, gEngine->cls_##CLASS, gEngine->cid_##CLASS, (JTYPE) value); \
+	} EXCEPTION_CONVERT(env); \
+	return NULL;
+
+#define CHARACTERSTYLE_SET(NAME, TYPE, METHOD_TYPE, METHOD_NAME) \
+	try { \
+		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj); \
+		ASErr err; \
+		if (value == NULL) \
+			err = sCharFeatures->Clear##NAME(features); \
+		else \
+			err = sCharFeatures->Set##NAME(features, (TYPE) gEngine->call##METHOD_TYPE##Method(env, value, gEngine->METHOD_NAME)); \
+		if (!err) \
+			gEngine->callVoidMethod(env, obj, gEngine->mid_ai_CharacterStyle_markSetStyle); \
+	} EXCEPTION_CONVERT(env);
+
+#define	CHARACTERSTYLE_GET_FLOAT(NAME) \
+	CHARACTERSTYLE_GET(NAME, ASReal, Float, jfloat)
+
+#define CHARACTERSTYLE_SET_FLOAT(NAME) \
+	CHARACTERSTYLE_SET(NAME, ASReal, Float, mid_Number_floatValue)
+
+#define CHARACTERSTYLE_GET_BOOLEAN(NAME) \
+	CHARACTERSTYLE_GET(NAME, ATEBool8, Boolean, jboolean)
+
+#define CHARACTERSTYLE_SET_BOOLEAN(NAME) \
+	CHARACTERSTYLE_SET(NAME, ATEBool8, Boolean, mid_Boolean_booleanValue)
+
+#define CHARACTERSTYLE_GET_INTEGER(NAME) \
+	CHARACTERSTYLE_GET(NAME, ASInt32, Integer, jint)
+
+#define CHARACTERSTYLE_SET_INTEGER(NAME) \
+	CHARACTERSTYLE_SET(NAME, ASInt32, Int, mid_Number_intValue)
+
+#define CHARACTERSTYLE_GET_ENUM(NAME) \
+	CHARACTERSTYLE_GET(NAME, NAME, Integer, jint)
+
+#define CHARACTERSTYLE_SET_ENUM(NAME) \
+	CHARACTERSTYLE_SET(NAME, NAME, Int, mid_Number_intValue)
+
 /*
  * int nativeCreate()
  */
@@ -466,7 +512,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setOrdinals(JNI
 /*
  * java.lang.Boolean GetSwash()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_GetSwash(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_getSwash(JNIEnv *env, jobject obj) {
 	CHARACTERSTYLE_GET_BOOLEAN(Swash)
 }
 

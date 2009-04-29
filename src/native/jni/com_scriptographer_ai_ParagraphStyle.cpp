@@ -38,6 +38,59 @@
 
 using namespace ATE;
 
+#define PARAGRAPHSTYLE_GET(NAME, TYPE, CLASS, JTYPE) \
+	try { \
+		ParaFeaturesRef features = gEngine->getParaFeaturesHandle(env, obj); \
+		ATEBool8 isAssigned; \
+		TYPE value; \
+		if (!sParaFeatures->Get##NAME(features, &isAssigned, &value) && isAssigned) \
+			return gEngine->newObject(env, gEngine->cls_##CLASS, gEngine->cid_##CLASS, (JTYPE) value); \
+	} EXCEPTION_CONVERT(env); \
+	return NULL;
+
+#define PARAGRAPHSTYLE_SET_CLEAR(NAME, CLEAR, TYPE, METHOD_TYPE, METHOD_NAME) \
+	try { \
+		ParaFeaturesRef features = gEngine->getParaFeaturesHandle(env, obj); \
+		ASErr err; \
+		if (value == NULL) \
+			err = sParaFeatures->Clear##CLEAR(features); \
+		else \
+			err = sParaFeatures->Set##NAME(features, (TYPE) gEngine->call##METHOD_TYPE##Method(env, value, gEngine->METHOD_NAME)); \
+		if (!err) \
+			gEngine->callVoidMethod(env, obj, gEngine->mid_ai_ParagraphStyle_markSetStyle); \
+	} EXCEPTION_CONVERT(env);
+
+#define PARAGRAPHSTYLE_SET(NAME, TYPE, METHOD_TYPE, METHOD_NAME) \
+	PARAGRAPHSTYLE_SET_CLEAR(NAME, NAME, TYPE, METHOD_TYPE, METHOD_NAME)
+
+#define PARAGRAPHSTYLE_GET_FLOAT(NAME) \
+	PARAGRAPHSTYLE_GET(NAME, ASReal, Float, jfloat)
+
+#define PARAGRAPHSTYLE_SET_FLOAT(NAME) \
+	PARAGRAPHSTYLE_SET(NAME, ASReal, Float, mid_Number_floatValue)
+
+#define PARAGRAPHSTYLE_SET_FLOAT_CLEAR(NAME, CLEAR) \
+	PARAGRAPHSTYLE_SET_CLEAR(NAME, CLEAR, ASReal, Float, mid_Number_floatValue)
+
+#define PARAGRAPHSTYLE_GET_BOOLEAN(NAME) \
+	PARAGRAPHSTYLE_GET(NAME, ATEBool8, Boolean, jboolean)
+
+#define PARAGRAPHSTYLE_SET_BOOLEAN(NAME) \
+	PARAGRAPHSTYLE_SET(NAME, ATEBool8, Boolean, mid_Boolean_booleanValue)
+
+#define PARAGRAPHSTYLE_GET_INTEGER(NAME) \
+	PARAGRAPHSTYLE_GET(NAME, ASInt32, Integer, jint)
+
+#define PARAGRAPHSTYLE_SET_INTEGER(NAME) \
+	PARAGRAPHSTYLE_SET(NAME, ASInt32, Int, mid_Number_intValue)
+
+#define PARAGRAPHSTYLE_GET_ENUM(NAME, TYPE) \
+	PARAGRAPHSTYLE_GET(NAME, TYPE, Integer, jint)
+
+#define PARAGRAPHSTYLE_SET_ENUM(NAME, TYPE) \
+	PARAGRAPHSTYLE_SET(NAME, TYPE, Int, mid_Number_intValue)
+
+
 /*
  * int nativeCreate()
  */

@@ -191,17 +191,14 @@ public class CharacterStyle extends PathStyle {
 	 * markDirty is called when a pathStyle field is changed, see PathStyle
 	 */
 	protected void markDirty() {
-		if (!dirty) {
-			CommitManager.markDirty(commitKey, this);
-			dirty = true;
-			// markDirty is only called if PathStyle changes are made and they
-			// need to be
-			pathStyleChanged = true;
-		}
+		markSetStyle();
+		// markDirty is only called if PathStyle changes are made and they
+		// need to be
+		pathStyleChanged = true;
 	}
 	
 	/**
-	 * markSetStyle is called from the native environemnt. it marks dirty but
+	 * markSetStyle is called from the native environment. it marks dirty but
 	 * doesn't set pathStyleChanged, as it's only used for character style
 	 * features
 	 */
@@ -448,7 +445,7 @@ public class CharacterStyle extends PathStyle {
 	public native Boolean getOrdinals();
 	public native void setOrdinals(Boolean ordinals);
 
-	public native Boolean GetSwash();
+	public native Boolean getSwash();
 	public native void setSwash(Boolean swash);
 
 	public native Boolean getTitling();
