@@ -89,10 +89,10 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGet(JNIEn
 				  com.scriptographer.ai.Color fillColor, boolean hasFillColor, short fillOverprint,
 				  com.scriptographer.ai.Color strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
 				  float dashOffset, float[] dashArray,
-				  short cap, short join, float miterLimit,
+				  int cap, int join, float miterLimit,
 				  short clip, short lockClip, short evenOdd, float resolution)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSet(JNIEnv *env, jobject obj, jint handle, jint docHandle, jobject fillColor, jboolean hasFillColor, jshort fillOverprint, jobject strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit, jshort clip, jshort lockClip, jshort evenOdd, jfloat resolution) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSet(JNIEnv *env, jobject obj, jint handle, jint docHandle, jobject fillColor, jboolean hasFillColor, jshort fillOverprint, jobject strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jint cap, jint join, jfloat miterLimit, jshort clip, jshort lockClip, jshort evenOdd, jfloat resolution) {
 	try {
 		AIPathStyle style;
 		AIPathStyleMap map;

@@ -158,16 +158,16 @@ public class CharacterStyle extends PathStyle {
 	}
 	
 	protected native void nativeGet(int handle);
-	
-	protected native void nativeSet(int handle, int docHandle,
-		Color fillColor, boolean hasFillColor,
-		short fillOverprint,
-		Color strokeColor, boolean hasStrokeColor,
-		short strokeOverprint, float strokeWidth,
-		float dashOffset, float[] dashArray,
-		short cap, short join, float miterLimit,
-		short clip, short lockClip, short evenOdd, float resolution);
-	
+
+	protected native void nativeSet(int handle, int docHandle, 
+			Color fillColor, boolean hasFillColor,
+			short fillOverprint,
+			Color strokeColor, boolean hasStrokeColor,
+			short strokeOverprint, float strokeWidth,
+			float dashOffset, float[] dashArray,
+			int cap, int join, float miterLimit,
+			short clip, short lockClip, short evenOdd, float resolution);
+
 	protected native void nativeSetStyle(int handle, int docHandle,
 			int rangeHandle);
 
