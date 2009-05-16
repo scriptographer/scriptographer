@@ -1455,7 +1455,7 @@ function renderLink(qualifiedName, name, anchor, title) {
 		var str = '<a href="';
 		if (qualifiedName) {
 			var path = getRelativeIdentifier(qualifiedName).replace('.', '/');
-			// link to the index file for packages
+			// Link to the index file for packages
 			if (name.charAt(0).isLowerCase() && !name.equals('global'))
 				path += '/index';
 			if (settings.templates)
@@ -1465,7 +1465,6 @@ function renderLink(qualifiedName, name, anchor, title) {
 			str += path;
 		}
 		if (anchor) {
-			if (settings.templates) str += anchor + '/';
 			str += '#' + anchor;
 			str += '" onClick="return toggleMember(\'' + anchor + '\', true);';
 		}
@@ -1480,12 +1479,12 @@ function encodeJs(str) {
 }
 
 function encodeHtml(str) {
-	// encode everything
+	// Encode everything
 	str = Packages.org.htmlparser.util.Translate.encode(str);
 	var tags = {
 		code: true, br: true, p: true, b: true, a: true, i: true,
 		ol: true, li: true, ul: true, tt: true, pre: true };
-	// now replace allowed tags again.
+	// Now replace allowed tags again.
 	return str.replace(/&lt;(\/?)(\w*)(.*?)(\s*\/?)&gt;/g, function(match, open, tag, content, close) {
 		tag = tag.toLowerCase();
 		return tags[tag] ? '<' + open + tag + content + close + '>' : match;

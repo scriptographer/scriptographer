@@ -1,18 +1,9 @@
 <% $id = this.getId() %>
-<% if (settings.templates) %>
-<%= $id prefix='\<\% this.memberLink id="' suffix='" \%\>' %>
-<% else %>
+<div id="<%= $id %>" class="member">
 <div id="<%= $id %>-link" class="member-link">
-<% end %>
-<a name="<%= $id %>" href="#" onClick="return toggleMember('<%= $id %>', false);">
-<%= $title %>
-</a>
+<a name="<%= $id %>" href="#" onClick="return toggleMember('<%= $id %>', false);"><%= $title %></a>
 </div>
-<% if (settings.templates) %>
-<%= $id prefix='\<\% this.memberDescription id="' suffix='" \%\>' %>
-<% else %>
-<div id="<%= $id %>-description" class="member-description">
-<% end %>
+<div id="<%= $id %>-description" class="member-description hidden">
 <div class="member-header">
 <div class="member-title"><a href="#" onClick="return toggleMember('<%= $id %>', false);"><%= $title %></a></div>
 <div class="member-close"><input type="button" value="Close" onClick="toggleMember('<%= $id %>', false);"></div>
@@ -20,9 +11,7 @@
 </div>
 <%= $text prefix='<div class="member-text">' suffix='</div>' %>
 </div>
-<% if (settings.templates) %>
-<%= $id prefix='\<\% this.memberPosts id="' suffix='" \%\>' %>
-<% end %>
+</div>
 
 <% $title -%>
 <tt><b><%-%>
