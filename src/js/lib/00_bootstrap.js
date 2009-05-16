@@ -12,8 +12,6 @@ new function() {
 			}
 			if (val !== (src.__proto__ || Object.prototype)[name]) {
 				if (func) {
-					if (/\[native code/.test(val))
-						return;
 					if ((prev = dest[name]) && /\bthis\.base\b/.test(val)) {
 						var fromBase = base && base[name] == prev;
 						res = (function() {
@@ -233,7 +231,8 @@ Enumerable = new function() {
 		collect: Base.iterate(function(iter, bind, that) {
 			return Base.each(this, function(val, i) {
 			 	val = iter.call(bind, val, i, that);
-				if (val != null) this[this.length] = val;
+				if (val != null)
+					this[this.length] = val;
 			}, []);
 		}),
 
@@ -498,7 +497,8 @@ Array.inject(new function() {
 				var that = this;
 				return Base.each(obj, function(name, index) {
 					this[name] = that[index];
-					if (index == that.length) throw Base.stop;
+					if (index == that.length)
+						throw Base.stop;
 				}, {});
 			} else {
 				obj = Hash.merge({}, obj);
@@ -654,7 +654,8 @@ Number.inject({
 	toFloat: String.prototype.toFloat,
 
 	times: function(func, bind) {
-		for (var i = 0; i < this; ++i) func.call(bind, i);
+		for (var i = 0; i < this; ++i)
+			func.call(bind, i);
 		return bind || this;
 	},
 
@@ -753,24 +754,26 @@ String.inject({
 });
 
 Json = new function() {
-	var special = { '\b': '\\b', '\t': '\\t', '\n': '\\n', '\f': '\\f', '\r': '\\r', '"' : '\\"', '\\': '\\\\' };
-
-	function replace(chr) {
-		return special[chr] || '\\u00' + Math.floor(chr.charCodeAt() / 16).toString(16) + (chr.charCodeAt() % 16).toString(16);
-	}
-
+	var special = { '\b': '\\b', '\t': '\\t', '\n': '\\n', '\f': '\\f', '\r': '\\r', '"' : '\\"', "'" : "\\'", '\\': '\\\\' };
 	return {
-		encode: function(obj) {
+		encode: function(obj, singles) {
 			switch (Base.type(obj)) {
 				case 'string':
-					return uneval(obj.toString());
+					if (!singles)
+						return uneval(obj.toString());
+					var quote = singles ? "'" : '"';
+					return quote + obj.replace(new RegExp('[\\x00-\\x1f\\\\' + quote + ']', 'g'), function(chr) {
+						return special[chr] || '\\u' + chr.charCodeAt(0).toPaddedString(4, 16);
+					}) + quote;
 				case 'array':
-					return '[' + obj.collect(Json.encode) + ']';
+					return '[' + obj.collect(function(val) {
+						return Json.encode(val, singles);
+					}) + ']';
 				case 'object':
 				case 'hash':
 					return '{' + Hash.collect(obj, function(val, key) {
-						val = Json.encode(val);
-						if (val) return Json.encode(key) + ':' + val;
+						val = Json.encode(val, singles);
+						if (val) return Json.encode(key, singles) + ':' + val;
 					}) + '}';
 				default:
 					return obj + '';
