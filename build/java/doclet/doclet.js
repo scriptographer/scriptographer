@@ -554,7 +554,10 @@ Member = Object.extend({
 	},
 
 	getId: function() {
-		return this.name() + this.signature();
+		// Convert name + signature to css friendly id:
+		return (this.name() + '-' + this.signature()).replace(/\W+/g, function(match) {
+			return '-';
+		}).trim('-');
 	},
 
 	getClass: function(current) {
