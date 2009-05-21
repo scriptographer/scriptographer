@@ -211,7 +211,7 @@ Type = Object.extend({
 		return cd && cd.hasSuperclass('java.lang.Number') ||
 			/^(short|int|long|double|float)$/.test(this.typeName());
 	},
-	
+
 	isBoolean: function() {
 		var cd = this.asClassDoc();
 		return cd && cd.hasSuperclass('java.lang.Boolean') ||
@@ -1459,7 +1459,7 @@ function renderLink(qualifiedName, name, anchor, title) {
 			if (name.charAt(0).isLowerCase() && !name.equals('global'))
 				path += '/index';
 			if (settings.templates)
-				path = '/Reference/' + path + '/';
+				path = '/reference/' + path.toLowerCase() + '/';
 			else
 				path = Document.getBasePath() + path + '.html';
 			str += path;
