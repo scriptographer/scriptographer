@@ -1,7 +1,7 @@
 Point.inject(new function() {
 	return ['round', 'ceil', 'floor', 'abs'].each(function(name) {
 		this[name] = function() {
-			return new Size(Math[name](this.x), Math[name](this.y));
+			return new Point(Math[name](this.x), Math[name](this.y));
 		};
 	}, {
 		statics: {
