@@ -398,6 +398,9 @@ public abstract class Item extends Component {
 			if (image != null)
 				size = image.getSize();
 			break;
+		case SLIDER: // Default size for slider
+			size = new Size(100, 16);
+			break;
 		case POPUP_LIST:
 			PopupList list = (PopupList) this;
 			if (list.size() > 0) {
