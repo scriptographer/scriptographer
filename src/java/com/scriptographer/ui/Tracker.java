@@ -278,6 +278,8 @@ public class Tracker extends NativeObject {
 		return modifiers;
 	}
 
+	public static native int getCurrentModifiers(); 
+
 	public boolean testAction(int action) {
 		return this.action == action;
 	}

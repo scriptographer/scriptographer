@@ -36,6 +36,16 @@
  */
 
 /*
+ * int getCurrentModifiers()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Tracker_getCurrentModifiers(JNIEnv *env, jclass cls) {
+	try {
+		return (jint)sADMTracker->GetModifiers(NULL);
+	} EXCEPTION_CONVERT(env);
+	return 0;
+}
+
+/*
  * void abort()
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_Tracker_abort(JNIEnv *env, jobject obj) {
