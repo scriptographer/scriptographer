@@ -45,7 +45,6 @@ public class Curve {
 	protected int fetchCount = -1;
 	
 	protected static final double EPSILON = 0.00001;
-	protected static final double FLATNESS = 0.1;
 
 	public Curve() {
 		segment1 = new Segment();
@@ -348,10 +347,9 @@ public class Curve {
 	}
 
 	private native static float nativeGetLength(float p1x, float p1y,
-			float h1x, float h1y, float h2x, float h2y, float p2x, float p2y,
-			float flatness);
+			float h1x, float h1y, float h2x, float h2y, float p2x, float p2y);
 
-	public double getLength(double flatness) {
+	public double getLength() {
 		updateSegments();
 		return nativeGetLength(
 				(float) segment1.point.x,
@@ -361,13 +359,8 @@ public class Curve {
 				(float) (segment2.handleIn.x + segment2.point.x),
 				(float) (segment2.handleIn.y + segment2.point.y),
 				(float) segment2.point.x,
-				(float) segment2.point.y,
-				(float) flatness
+				(float) segment2.point.y
 		);
-	}
-
-	public double getLength() {
-		return getLength(FLATNESS);
 	}
 
 	public boolean isLinear() {
@@ -462,22 +455,17 @@ public class Curve {
 		return hitTest(point, EPSILON);
 	}
 
-	public double getPartLength(double fromParameter, double toParameter,
-			double flatness) {
+	public double getPartLength(double fromParameter, double toParameter) {
 		updateSegments();
 		double[][] curve = getCurveArray();
-		return getPartLength(curve, fromParameter, toParameter, flatness, curve);
+		return getPartLength(curve, fromParameter, toParameter, curve);
 	}
 
-	public double getPartLength(double fromParameter, double toParameter) {
-		return getPartLength(fromParameter, toParameter, FLATNESS);
-	}
-
-	public double getParameterWithLength(double length, double flatness) {
+	public double getParameterWithLength(double length) {
 		if (length <= 0)
 			return 0;
 		// updateSegments is not necessary here, as it is called in getLength!
-		double bezierLength = getLength(flatness);
+		double bezierLength = getLength();
 		if (length >= bezierLength)
 			return 1;
 		double[][] curve = getCurveArray();
@@ -487,7 +475,7 @@ public class Curve {
 		// TODO: Find a better approach for this:
 		// Make sure we're not iterating endlessly...
 		for (int i = 0; i < 100; i++) {
-			double partLength = getPartLength(curve, 0, t, flatness, temp);
+			double partLength = getPartLength(curve, 0, t, temp);
 			double distance = (length - partLength) / bezierLength;
 			// closeness: value for the 'exactness' of the current guess
 			double closeness = Math.abs(distance);
@@ -501,10 +489,6 @@ public class Curve {
 			prevCloseness = closeness;
 		}
 		return t;
-	}
-
-	public double getParameterWithLength(double length) {
-		return getParameterWithLength(length, FLATNESS);
 	}
 	
 	private double[][] getCurveArray() {
@@ -572,7 +556,7 @@ public class Curve {
 	 * needed in getParameterWithLength above...
 	 */
 	private static double getPartLength(double curve[][], double fromParameter,
-			double toParameter, double flatness, double tempCurve[][]) {
+			double toParameter, double tempCurve[][]) {
 		if (fromParameter > toParameter) {
 			double temp = fromParameter;
 			fromParameter = toParameter;
@@ -627,8 +611,7 @@ public class Curve {
 				(float) curve[0][0], (float) curve[0][1],
 				(float) curve[1][0], (float) curve[1][1],
 				(float) curve[2][0], (float) curve[2][1],
-				(float) curve[3][0], (float) curve[3][1],
-				(float) flatness
+				(float) curve[3][0], (float) curve[3][1]
 		);
 	}
 

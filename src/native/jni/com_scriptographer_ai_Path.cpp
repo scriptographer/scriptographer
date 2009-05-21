@@ -195,14 +195,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setTabletData(JNIEnv *env
 }
 
 /*
- * double getLength(double flatness)
+ * double getLength()
  */
-JNIEXPORT jdouble JNICALL Java_com_scriptographer_ai_Path_getLength(JNIEnv *env, jobject obj, jdouble flatness) {
+JNIEXPORT jdouble JNICALL Java_com_scriptographer_ai_Path_getLength(JNIEnv *env, jobject obj) {
 	try {
 		// no need to activate document for this
 		AIArtHandle handle = gEngine->getArtHandle(env, obj);
 		AIReal length;
-		sAIPath->GetPathLength(handle, &length, flatness);
+		sAIPath->GetPathLength(handle, &length, 0.1f);
 		return length;
 	} EXCEPTION_CONVERT(env);
 	return 0.0;

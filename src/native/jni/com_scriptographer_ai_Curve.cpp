@@ -37,12 +37,12 @@
  */
 
 /*
- * float nativeGetLength(float p1x, float p1y, float h1x, float h1y, float h2x, float h2y, float p2x, float p2y, float flatness)
+ * float nativeGetLength(float p1x, float p1y, float h1x, float h1y, float h2x, float h2y, float p2x, float p2y)
  */
-JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Curve_nativeGetLength(JNIEnv *env, jclass cls, jfloat p1x, jfloat p1y, jfloat h1x, jfloat h1y, jfloat h2x, jfloat h2y, jfloat p2x, jfloat p2y, jfloat flatness) {
+JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Curve_nativeGetLength(JNIEnv *env, jclass cls, jfloat p1x, jfloat p1y, jfloat h1x, jfloat h1y, jfloat h2x, jfloat h2y, jfloat p2x, jfloat p2y) {
 	try {
 		DEFINE_BEZIER(bezier, p1x, p1y, h1x, h1y, h2x, h2y, p2x, p2y);
-		return sAIRealBezier->Length(&bezier, flatness);
+		return sAIRealBezier->Length(&bezier, 0.1f);
 	} EXCEPTION_CONVERT(env);
 	return 0.0;
 }

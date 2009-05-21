@@ -157,11 +157,7 @@ public class Path extends PathItem {
 		setTabletData(values.toArray(new TabletValue[values.size()]));
 	}
 
-	public native double getLength(double flatness);
-
-	public double getLength() {
-		return getLength(Curve.FLATNESS);
-	}
+	public native double getLength();
 
 	public native float getArea();
 
@@ -224,11 +220,11 @@ public class Path extends PathItem {
 	}
 
 	public void curvesToPoints(double maxPointDistance) {
-		curvesToPoints(maxPointDistance, Curve.FLATNESS);
+		curvesToPoints(maxPointDistance, 0.1f);
 	}
 
 	public void curvesToPoints() {
-		curvesToPoints(1000f, Curve.FLATNESS);
+		curvesToPoints(1000f, 0.1f);
 	}
 
 	private native void nativeReduceSegments(float flatness);
@@ -239,7 +235,7 @@ public class Path extends PathItem {
 	}
 
 	public void reduceSegments() {
-		reduceSegments(Curve.FLATNESS);
+		reduceSegments(0.1f);
 	}
 	
 	public Path split(double position) {
@@ -307,34 +303,29 @@ public class Path extends PathItem {
 
 	// TODO: move to CurveList, to make accessible when not using
 	// paths directly too?
-	public HitTest getPositionWithLength(double length, double flatness) {
+	public HitTest getPositionWithLength(double length) {
 		CurveList curves = getCurves();
 		double currentLength = 0;
 		for (int i = 0; i < curves.size; i++) {
 			double startLength = currentLength;
 			Curve curve = (Curve) curves.get(i);
-			currentLength += curve.getLength(flatness);
+			currentLength += curve.getLength();
 			if (currentLength >= length) {
 				// found the segment within which the length lies
-				double t = curve.getParameterWithLength(length - startLength,
-						flatness);
+				double t = curve.getParameterWithLength(length - startLength);
 				return new HitTest(curve, t);
 			}
 		}
-		// it may be that through unpreciseness of getLength, that the end of
+		// it may be that through impreciseness of getLength, that the end of
 		// the curves was missed:
-		if (length <= getLength(flatness)) {
+		if (length <= getLength()) {
 			Curve curve = (Curve) curves.get(curves.size - 1);
-			return new HitTest(HitType.ANCHOR, curve, 1, curve.getPoint2());
+			return new HitTest(HitType.CURVE, curve, 1, curve.getPoint2());
 		} else {
 			return null;
 		}
 	}
 
-	public HitTest getPositionWithLength(float length) {
-		return getPositionWithLength(length, Curve.FLATNESS);
-	}
-	
 	/*
 	 *  PostScript-like interface: moveTo, lineTo, curveTo, arcTo
 	 */
