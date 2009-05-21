@@ -667,7 +667,7 @@ public abstract class Item extends DocumentObject {
 	 * @jsbean </pre>
 	 */
 	public boolean isClipMask() {
-		return getAttribute(ItemAttribute.HIDDEN);
+		return getAttribute(ItemAttribute.CLIPMASK);
 	}
 
 	public void setClipMask(boolean clipMask) {
