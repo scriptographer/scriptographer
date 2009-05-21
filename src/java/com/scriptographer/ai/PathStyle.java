@@ -94,11 +94,9 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		stroke = new StrokeStyle(this);
 	}
 
-	/*
-	 * for CharacterStyle
-	 */
 	protected PathStyle(int handle, ArgumentReader reader) {
 		super(handle);
+		// First try the full fill object
 		fill = (FillStyle) reader.readObject("fill", FillStyle.class);
 		if (fill == null) {
 			fill = new FillStyle(this);
@@ -106,6 +104,8 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 			if (reader.isHash() && reader.has("fill"))
 				fill.setColor(Color.NONE);
 		}
+		fill.setStyle(this);
+		// Otherwise read in redirecting properties...
 		stroke = (StrokeStyle) reader.readObject("stroke", StrokeStyle.class);
 		if (stroke == null) {
 			stroke = new StrokeStyle(this);
@@ -113,8 +113,9 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 			if (reader.isHash() && reader.has("stroke"))
 				stroke.setColor(Color.NONE);
 		}
-		fill.setStyle(this);
 		stroke.setStyle(this);
+		evenOdd = reader.readBoolean("evenOdd");
+		resolution = reader.readFloat("resolution");
 	}
 
 	/*
