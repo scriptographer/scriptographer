@@ -69,7 +69,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		DocumentList.class,
 		DocumentView.class,
 		DocumentViewList.class,
-		Event.class,
+		MouseEvent.class,
 		FileFormat.class,
 		FillStyle.class,
 		FontFamily.class,

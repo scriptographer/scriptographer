@@ -94,7 +94,7 @@ public class Tool extends NativeObject {
 	private float distanceThreshold;
 	
 	private Scope scope;
-	private Event event = new Event();
+	private MouseEvent event = new MouseEvent();
 
 	private boolean firstMove = true;
 
@@ -168,7 +168,7 @@ public class Tool extends NativeObject {
 		onMouseMove = null;
 		// Tell onMouseMove to initialize event.delta and event.count
 		firstMove = true;
-		event = new Event();
+		event = new MouseEvent();
 		setDistanceThreshold(0);
 		setEventInterval(-1);
 		ScriptEngine engine = ScriptEngine.getEngineByFile(file);
@@ -250,14 +250,20 @@ public class Tool extends NativeObject {
 
 	private Callable onInit;
 
+	/**
+	 * @deprecated
+	 */
 	public Callable getOnInit() {
 		return onInit;
 	}
 
+	/**
+	 * @deprecated
+	 */
 	public void setOnInit(Callable onInit) {
 		this.onInit = onInit;
 	}
-	
+
 	protected void onInit() throws Exception {
 		if (scope != null && onInit != null)
 			ScriptographerEngine.invoke(onInit, this);
@@ -337,7 +343,7 @@ public class Tool extends NativeObject {
 		this.onMouseDown = onMouseDown;
 	}
 	
-	protected void onMouseDown(Event event) throws Exception {
+	protected void onMouseDown(MouseEvent event) throws Exception {
 		if (scope != null && onMouseDown != null)
 			ScriptographerEngine.invoke(onMouseDown, this, event);
 	}
@@ -352,7 +358,7 @@ public class Tool extends NativeObject {
 		this.onMouseDrag = onMouseDrag;
 	}
 	
-	protected void onMouseDrag(Event event) throws Exception {
+	protected void onMouseDrag(MouseEvent event) throws Exception {
 		if (scope != null && onMouseDrag != null)
 			ScriptographerEngine.invoke(onMouseDrag, this, event);
 	}
@@ -367,7 +373,7 @@ public class Tool extends NativeObject {
 		this.onMouseMove = onMouseMove;
 	}
 	
-	protected void onMouseMove(Event event) throws Exception {
+	protected void onMouseMove(MouseEvent event) throws Exception {
 		// Make sure the first move event initializes both delta and count.
 		if (scope != null && onMouseMove != null)
 			ScriptographerEngine.invoke(onMouseMove, this, event);
@@ -383,7 +389,7 @@ public class Tool extends NativeObject {
 		this.onMouseUp = onMouseUp;
 	}
 		
-	protected void onMouseUp(Event event) throws Exception {
+	protected void onMouseUp(MouseEvent event) throws Exception {
 		if (scope != null && onMouseUp != null)
 			ScriptographerEngine.invoke(onMouseUp, this, event);
 	}

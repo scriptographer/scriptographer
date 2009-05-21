@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 /**
  * @author lehni
  */
-public class Event {
+public class MouseEvent {
 	private Point point;
 	private Point firstPoint = null;
 	private Point lastPoint;
@@ -45,7 +45,7 @@ public class Event {
 	
 	private double pressure;
 	
-	protected Event() {
+	protected MouseEvent() {
 		// Start with valid values, for mouse move events before the first mouse up.
 		setValues(0, 0, 0, 0, true, false);
 	}
