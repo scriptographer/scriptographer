@@ -35,7 +35,6 @@ import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
 import com.scriptographer.Commitable;
-import com.scriptographer.script.EnumUtils;
 
 /**
  * @author lehni
@@ -62,10 +61,8 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 
 	public ParagraphStyle(ArgumentReader reader) {
 		this();
-		setJustification(EnumUtils.get(ParagraphJustification.class,
-				reader.readString("justification")));
-		setSingleWordJustification(EnumUtils.get(ParagraphJustification.class,
-				reader.readString("singleWordJustification")));
+		setJustification(reader.readEnum("justification", ParagraphJustification.class));
+		setSingleWordJustification(reader.readEnum("singleWordJustification", ParagraphJustification.class));
 		setFirstLineIndent(reader.readFloat("firstLineIndent"));
 		setStartIndent(reader.readFloat("startIndent"));
 		setEndIndent(reader.readFloat("endIndent"));
@@ -89,8 +86,7 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 		setMaxGlyphScaling(reader.readFloat("maxGlyphScaling"));
 		setMinGlyphScaling(reader.readFloat("minGlyphSpacing"));
 		setAutoLeadingPercentage(reader.readFloat("autoLeadingPercentage"));
-		setLeading(EnumUtils.get(LeadingType.class,
-				reader.readString("leading")));
+		setLeading(reader.readEnum("leading", LeadingType.class));
 		// TODO: setTabStops((TabStopList) reader.readObject("tabStop", TabStopList.class));
 		setDefaultTabWidth(reader.readFloat("defaultTabWidth"));
 	}

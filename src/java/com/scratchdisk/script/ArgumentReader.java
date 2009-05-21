@@ -36,6 +36,7 @@ import java.util.IdentityHashMap;
 
 import com.scratchdisk.util.ClassUtils;
 import com.scratchdisk.util.ConversionUtils;
+import com.scriptographer.script.EnumUtils;
 
 /**
  * @author lehni
@@ -191,7 +192,24 @@ public abstract class ArgumentReader {
     public Object readObject() {
     	return readObject(Object.class);
     }
+
+	public <T extends Enum<T>> T readEnum(String name, Class<T> type, T defaultValue) {
+		T value = EnumUtils.get(type, readString(name));
+		return value != null ? value : defaultValue;
+	}
 	
+	public <T extends Enum<T>> T readEnum(String name, Class<T> type) {
+		return readEnum(name, type, null);
+	}
+
+	public <T extends Enum<T>> T readEnum(Class<T> type) {
+		return readEnum(null, type);
+	}
+
+	public <T extends Enum<T>> T readEnum(Class<T> type, T defaultValue) {
+		return readEnum(null, type, defaultValue);
+	}
+
 	protected static void registerConverter(Class type, ArgumentConverter converter) {
 		converters.put(type, converter);
 	}

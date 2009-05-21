@@ -32,6 +32,7 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.script.ArgumentReader;
+import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.Commitable;
 import com.scriptographer.CommitManager;
 
@@ -72,7 +73,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	protected Boolean lockClip;
 
 	// Whether or not to use the even-odd rule to determine path insideness
-	protected Boolean evenOdd;
+	protected WindingRule windingRule;
 	
 	// Path's resolution
 	protected Float resolution;
@@ -114,7 +115,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 				stroke.setColor(Color.NONE);
 		}
 		stroke.setStyle(this);
-		evenOdd = reader.readBoolean("evenOdd");
+		windingRule = reader.readEnum("windingRule", WindingRule.class);
 		resolution = reader.readFloat("resolution");
 	}
 
@@ -171,7 +172,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 			float strokeWidth,
 			float dashOffset, float[] dashArray,
 			short cap, short join, float miterLimit,
-			short clip, short lockClip, short evenOdd, float resolution) {
+			short clip, short lockClip, int windingRule, float resolution) {
 		//  dashArray doesn't need the boolean, as it's {} when set but empty
 		
 		fill.init(fillColor, hasFillColor, fillOverprint);
@@ -180,7 +181,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 
 		this.clip = clip >= 0 ? new Boolean(clip != 0) : null;
 		this.lockClip = lockClip >= 0 ? new Boolean(lockClip != 0) : null;
-		this.evenOdd = evenOdd >= 0 ? new Boolean(evenOdd != 0) : null;
+		this.windingRule = IntegerEnumUtils.get(WindingRule.class, (int) windingRule);
 		this.resolution = resolution >= 0 ? new Float(resolution) : null;
 	}
 	
@@ -193,7 +194,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 			strokeStyle.join, strokeStyle.miterLimit);
 		this.clip = style.clip;
 		this.lockClip = style.lockClip;
-		this.evenOdd = style.evenOdd;
+		this.windingRule = style.windingRule;
 		this.resolution = style.resolution;
 	}
 
@@ -206,7 +207,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 			short strokeOverprint, float strokeWidth,
 			float dashOffset, float[] dashArray,
 			int cap, int join, float miterLimit,
-			short clip, short lockClip, short evenOdd, float resolution);
+			short clip, short lockClip, int windingRule, float resolution);
 
 	// These would belong to FillStyle and StrokeStyle, but in order to safe 4
 	// new native files, they're here:
@@ -238,7 +239,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 			stroke.miterLimit != null ? stroke.miterLimit.floatValue() : -1,
 			clip != null ? (short) (clip.booleanValue() ? 1 : 0) : -1,
 			lockClip != null ? (short) (lockClip.booleanValue() ? 1 : 0) : -1,
-			evenOdd != null ? (short) (evenOdd.booleanValue() ? 1 : 0) : -1,
+			windingRule != null ? windingRule.value() : -1,
 			resolution != null ? resolution.floatValue() : -1
 		);
 	}
@@ -281,10 +282,22 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		markDirty();
 	}
 
+	protected FillStyle getFill(boolean create) {
+		if (fill == null && create)
+			fill = new FillStyle(this);
+ 		return fill;
+	}
+
 	/**
 	 * @jshide
 	 */
 	public StrokeStyle getStroke() {
+ 		return stroke;
+	}
+
+	protected StrokeStyle getStroke(boolean create) {
+		if (stroke == null && create)
+			stroke = new StrokeStyle(this);
  		return stroke;
 	}
 
@@ -296,15 +309,116 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		this.stroke = new StrokeStyle(stroke, this);
 		markDirty();
 	}
-	
-	public Boolean getEvenOdd() {
-		update();
-		return evenOdd;
+
+	/*
+	 * Stroke Styles
+	 */
+
+	public Color getStrokeColor() {
+		// TODO: Return Color.NONE instead of null?
+		return stroke != null ? stroke.getColor() : null;
 	}
 
-	public void setEvenOdd(Boolean evenOdd) {
+	public void setStrokeColor(Color color) {
+		getStroke(true).setColor(color);
+	}
+
+	public void setStrokeColor(java.awt.Color color) {
+		getStroke(true).setColor(color);
+	}
+
+	public Float getStrokeWidth() {
+		return stroke != null ? stroke.getWidth() : null;
+	}
+
+	public void setStrokeWidth(Float width) {
+		getStroke(true).setWidth(width);
+	}
+
+	public StrokeCap getStrokeCap() {
+		return stroke != null ? stroke.getCap() : null;
+	}
+
+	public void setStrokeCap(StrokeCap cap) {
+		getStroke(true).setCap(cap);
+	}
+
+	public StrokeJoin getStrokeJoin() {
+		return stroke != null ? stroke.getJoin() : null;
+	}
+
+	public void setStrokeJoin(StrokeJoin join) {
+		getStroke(true).setJoin(join);
+	}
+
+	public Float getDashOffset() {
+		return stroke != null ? stroke.getWidth() : null;
+	}
+
+	public void setDashOffset(Float offset) {
+		getStroke(true).setDashOffset(offset);
+	}
+	
+	public float[] getDashArray() {
+		return stroke != null ? stroke.getDashArray() : null;
+	}
+
+	public void setDashArray(float[] array) {
+		getStroke(true).setDashArray(array);
+	}
+	
+	public Float getMiterLimit() {
+		return stroke != null ? stroke.getWidth() : null;
+	}
+
+	public void setMiterLimit(Float limit) {
+		getStroke(true).setMiterLimit(limit);
+	}
+
+	public Boolean getStrokeOverprint() {
+		return stroke != null ? stroke.getOverprint() : null;
+	}
+
+	public void setStrokeOverprint(Boolean overprint) {
+		getStroke(true).setOverprint(overprint);
+	}
+
+	/*
+	 * Fill Style
+	 */
+
+	public Color getFillColor() {
+		// TODO: Return Color.NONE instead of null?
+		return fill != null ? fill.getColor() : null;
+	}
+
+	public void setFillColor(Color color) {
+		getFill(true).setColor(color);
+	}
+
+	public void setFillColor(java.awt.Color color) {
+		getFill(true).setColor(color);
+	}
+
+	public Boolean getFillOverprint() {
+		return fill != null ? fill.getOverprint() : null;
+	}
+
+	public void setFillOverprint(Boolean overprint) {
+		getFill(true).setOverprint(overprint);
+	}
+
+	/*
+	 * Path Style
+	 */
+	public WindingRule getWindingRule() {
 		update();
-		this.evenOdd = evenOdd;
+		return windingRule;
+	}
+
+	public void setWindingRule(WindingRule rule) {
+		update();
+		this.windingRule = rule;
 		markDirty();
 	}
 

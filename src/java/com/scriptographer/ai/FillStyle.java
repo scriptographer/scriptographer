@@ -42,8 +42,16 @@ public class FillStyle implements Style {
 	 * Setting color to Color.NONE means defined, but style is 
 	 * deactivated
 	 */
-	protected Color color; 				/* Fill color */
-	protected Boolean overprint;			/* Overprint */
+
+	/**
+	 *  Fill color
+	 */
+	protected Color color;
+
+	/**
+	 * Overprint 
+	 */
+	protected Boolean overprint;
 
 	private PathStyle style = null;
 

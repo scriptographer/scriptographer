@@ -439,10 +439,9 @@ public class Path extends PathItem {
 					(float) first.point.y);
 			path.closePath();
 		}
-		Boolean evenOdd = getStyle().getEvenOdd();
-		path.setWindingRule(evenOdd != null && evenOdd.booleanValue()
-				? GeneralPath.WIND_EVEN_ODD
-				: GeneralPath.WIND_NON_ZERO);
+		path.setWindingRule(getStyle().getWindingRule() == WindingRule.NON_ZERO
+				? GeneralPath.WIND_NON_ZERO
+				: GeneralPath.WIND_EVEN_ODD);
 		return path;
 	}
 }

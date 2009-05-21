@@ -33,7 +33,6 @@ package com.scriptographer.ai;
 
 import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.util.IntegerEnumUtils;
-import com.scriptographer.script.EnumUtils;
 
 /**
  * @author lehni
@@ -89,8 +88,8 @@ public class StrokeStyle implements Style {
 				reader.readFloat("width"),
 				reader.readFloat("dashOffset"),
 				(float[]) reader.readObject("dashArray", float[].class),
-				EnumUtils.get(StrokeCap.class, reader.readString("cap")),
-				EnumUtils.get(StrokeJoin.class, reader.readString("join")),
+				reader.readEnum("cap", StrokeCap.class),
+				reader.readEnum("join", StrokeJoin.class),
 				reader.readFloat("miterLimit")
 		);
 	}
@@ -151,7 +150,6 @@ public class StrokeStyle implements Style {
 		);
 	}
 
-
 	public Color getColor() {
 		if (style != null)
 			style.update();
@@ -171,20 +169,6 @@ public class StrokeStyle implements Style {
 		setColor(new RGBColor(color));
 	}
 
-	public Boolean getOverprint() {
-		if (style != null)
-			style.update();
-		return overprint;
-	}
-
-	public void setOverprint(Boolean overprint) {
-		if (style != null) {
-			style.update();
-			style.markDirty();
-		}
-		this.overprint = overprint;
-	}
-
 	public Float getWidth() {
 		if (style != null)
 			style.update();
@@ -201,7 +185,35 @@ public class StrokeStyle implements Style {
 			this.color = null;
 		this.width = width;
 	}
-	
+
+	public StrokeCap getCap() {
+		if (style != null)
+			style.update();
+		return cap;
+	}
+
+	public void setCap(StrokeCap cap) {
+		if (style != null) {
+			style.update();
+			style.markDirty();
+		}
+		this.cap = cap;
+	}
+
+	public StrokeJoin getJoin() {
+		if (style != null)
+			style.update();
+		return join;
+	}
+
+	public void setJoin(StrokeJoin join) {
+		if (style != null) {
+			style.update();
+			style.markDirty();
+		}
+		this.join = join;
+	}
+
 	public Float getDashOffset() {
 		if (style != null)
 			style.update();
@@ -247,34 +259,6 @@ public class StrokeStyle implements Style {
 		setDashOffset(new Float(offset));
 		setDashArray(array, false);
 	}
-
-	public StrokeCap getCap() {
-		if (style != null)
-			style.update();
-		return cap;
-	}
-
-	public void setCap(StrokeCap cap) {
-		if (style != null) {
-			style.update();
-			style.markDirty();
-		}
-		this.cap = cap;
-	}
-
-	public StrokeJoin getJoin() {
-		if (style != null)
-			style.update();
-		return join;
-	}
-
-	public void setJoin(StrokeJoin join) {
-		if (style != null) {
-			style.update();
-			style.markDirty();
-		}
-		this.join = join;
-	}
 	
 	public Float getMiterLimit() {
 		if (style != null)
@@ -282,11 +266,25 @@ public class StrokeStyle implements Style {
 		return miterLimit;
 	}
 
-	public void setMiterLimit(Float miterLimit) {
+	public void setMiterLimit(Float limit) {
 		if (style != null) {
 			style.update();
 			style.markDirty();
 		}
-		this.miterLimit = miterLimit;
+		this.miterLimit = limit;
+	}
+
+	public Boolean getOverprint() {
+		if (style != null)
+			style.update();
+		return overprint;
+	}
+
+	public void setOverprint(Boolean overprint) {
+		if (style != null) {
+			style.update();
+			style.markDirty();
+		}
+		this.overprint = overprint;
 	}
 }

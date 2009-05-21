@@ -98,7 +98,7 @@ void PathStyle_convertPathStyle(JNIEnv *env, AIPathStyle *style, AIPathStyleMap 
 		jobject fillColor, jboolean hasFillColor, jshort fillOverprint, jobject strokeColor,
 		jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset,
 		jfloatArray dashArray, jshort cap, jshort join, jfloat miterLimit, jshort clip,
-		jshort lockClip, jshort evenOdd, jfloat resolution) {
+		jshort lockClip, jint windingRule, jfloat resolution) {
 	// Fill
 	int fillPaint = PathStyle_convertFillStyle(env, &style->fill, &map->fill, fillColor, hasFillColor, fillOverprint);
 	if (fillPaint != UNDEFINED) {
@@ -124,8 +124,8 @@ void PathStyle_convertPathStyle(JNIEnv *env, AIPathStyle *style, AIPathStyleMap 
 		style->lockClip = lockClip != 0;
 		map->lockClip = true;
 	}
-	if (evenOdd >= 0) {
-		style->evenodd = evenOdd != 0;
+	if (windingRule >= 0) {
+		style->evenodd = windingRule != 0;
 		map->evenodd = true;
 	}
 	if (resolution >= 0) {
@@ -236,9 +236,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeGet(JNIEnv *en
 			com.scriptographer.ai.Color strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
 			float dashOffset, float[] dashArray,
 			short cap, short join, float miterLimit,
-			short clip, short lockClip, short evenOdd, float resolution)
+			short clip, short lockClip, int windingRule, float resolution)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeSet(JNIEnv *env, jobject obj, jint handle, jint docHandle, jobject fillColor, jboolean hasFillColor, jshort fillOverprint, jobject strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jint cap, jint join, jfloat miterLimit, jshort clip, jshort lockClip, jshort evenOdd, jfloat resolution) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeSet(JNIEnv *env, jobject obj, jint handle, jint docHandle, jobject fillColor, jboolean hasFillColor, jshort fillOverprint, jobject strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jint cap, jint join, jfloat miterLimit, jshort clip, jshort lockClip, jint windingRule, jfloat resolution) {
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		AIPathStyle style;
@@ -247,7 +247,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeSet(JNIEnv *en
 		// TODO: instead of the path's style, this should be the current default style?
 		// because if the user sets a value to undefined, this should fall back to the default value...
 		sAIPathStyle->GetPathStyle((AIArtHandle) handle, &style);
-		PathStyle_convertPathStyle(env, &style, &map, fillColor, hasFillColor, fillOverprint, strokeColor, hasStrokeColor, strokeOverprint, strokeWidth, dashOffset, dashArray, cap, join, miterLimit, clip, lockClip, evenOdd, resolution);
+		PathStyle_convertPathStyle(env, &style, &map, fillColor, hasFillColor, fillOverprint, strokeColor, hasStrokeColor, strokeOverprint, strokeWidth, dashOffset, dashArray, cap, join, miterLimit, clip, lockClip, windingRule, resolution);
 		sAIPathStyle->SetPathStyle((AIArtHandle) handle, &style);
 	} EXCEPTION_CONVERT(env);
 }

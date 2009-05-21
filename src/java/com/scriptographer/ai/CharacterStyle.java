@@ -34,7 +34,6 @@ package com.scriptographer.ai;
 import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
-import com.scriptographer.script.EnumUtils;
 
 /**
  * CharacterStyle is built on top of PathStyle and adds the text related fields
@@ -97,18 +96,12 @@ public class CharacterStyle extends PathStyle {
 		setTracking(reader.readInteger("tracking"));
 		setBaselineShift(reader.readFloat("baselineShift"));
 		setRotation(reader.readFloat("Rotation"));
-		setKerningType(EnumUtils.get(KerningType.class,
-				reader.readString("kerningType")));
-		setCapitalization(EnumUtils.get(TextCapitalization.class,
-				reader.readString("capitalization")));
-		setBaselineOption(EnumUtils.get(BaselineOption.class,
-				reader.readString("baselineOption")));
-		setOpenTypePosition(EnumUtils.get(OpenTypePosition.class,
-				reader.readString("openTypePosition")));
-		setStrikethroughPosition(EnumUtils.get(StrikethroughPosition.class,
-				reader.readString("strikethroughPosition")));
-		setUnderlinePosition(EnumUtils.get(UnderlinePosition.class,
-				reader.readString("underlinePosition")));
+		setKerningType(reader.readEnum("kerningType", KerningType.class));
+		setCapitalization(reader.readEnum("capitalization", TextCapitalization.class));
+		setBaselineOption(reader.readEnum("baselineOption", BaselineOption.class));
+		setOpenTypePosition(reader.readEnum("openTypePosition", OpenTypePosition.class));
+		setStrikethroughPosition(reader.readEnum("strikethroughPosition", StrikethroughPosition.class));
+		setUnderlinePosition(reader.readEnum("underlinePosition", UnderlinePosition.class));
 		setUnderlineOffset(reader.readFloat("underlineOffset"));
 		setLigature(reader.readBoolean("ligature"));
 		setDiscretionaryLigature(reader.readBoolean("discretionaryLigature"));
@@ -122,8 +115,7 @@ public class CharacterStyle extends PathStyle {
 		setConnectionForms(reader.readBoolean("forms"));
 		setStylisticAlternates(reader.readBoolean("stylisticAlternates"));
 		setOrnaments(reader.readBoolean("ornaments"));
-		setFigureStyle(EnumUtils.get(FigureStyle.class,
-				reader.readString("figureStyle")));
+		setFigureStyle(reader.readEnum("figureStyle", FigureStyle.class));
 		setNoBreak(reader.readBoolean("noBreak"));
 	}
 

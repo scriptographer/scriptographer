@@ -497,7 +497,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ai_PathStyle = loadClass(env, "com/scriptographer/ai/PathStyle");
 	
-	mid_PathStyle_init = getMethodID(env, cls_ai_PathStyle, "init", "(Lcom/scriptographer/ai/Color;ZSLcom/scriptographer/ai/Color;ZSFF[FSSFSSSF)V");
+	mid_PathStyle_init = getMethodID(env, cls_ai_PathStyle, "init", "(Lcom/scriptographer/ai/Color;ZSLcom/scriptographer/ai/Color;ZSFF[FSSFSSIF)V");
 
 	cls_ai_FillStyle = loadClass(env, "com/scriptographer/ai/FillStyle");
 

@@ -72,7 +72,7 @@ public class Group extends Item {
 	/**
 	 * @jsbean A boolean value that specifies whether the group item is to be clipped.
 	 * @jsbean When setting to true, the first child in the group is automatically
-	 * @jsbean defined as a clipMask by setting its clipMask property to true.
+	 * @jsbean defined as the clipping mask.
 	 * @jsbean
 	 * @jsbean Sample code:
 	 * @jsbean

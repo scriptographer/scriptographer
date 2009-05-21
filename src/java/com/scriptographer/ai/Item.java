@@ -651,12 +651,10 @@ public abstract class Item extends DocumentObject {
 		setVisible(!hidden);
 	}
 
-	// Indicates that the object defines a clip mask. 
-
 	/**
 	 * @jsbean A boolean value that specifies whether the item defines a clip mask.
 	 * @jsbean This can only be set on paths, compound paths, and text frame objects,
-	 * @jsbean and only if the item is already contained within a clip group.
+	 * @jsbean and only if the item is already contained within a clipping group.
 	 * @jsbean Sample code:
 	 * @jsbean
 	 * @jsbean <pre>

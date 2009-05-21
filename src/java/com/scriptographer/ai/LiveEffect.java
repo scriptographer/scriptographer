@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.ArrayList;
 
 /**
- * Wrapper for Illustrator's LiveEffects. Unfortunatelly, Illustrator is not
+ * Wrapper for Illustrator's LiveEffects. Unfortunately, Illustrator is not
  * able to remove once created effects again until the next restart. They can be
  * removed from the menu but not from memory. So In order to recycle effects
  * with the same settings, e.g. during development, where the code often changes
