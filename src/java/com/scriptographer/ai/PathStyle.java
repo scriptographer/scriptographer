@@ -59,10 +59,16 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 
 	protected StrokeStyle stroke;
 	
-	// Whether or not to use this as a clipping path
+	/**
+	 *  Whether or not to use this as a clipping path.
+	 *  @deprecated in Illustrator, but we still need to keep it around to reflect the state
+	 */
 	protected Boolean clip;
 	
-	// Whether or not to lock the clipping path
+	/**
+	 *  Whether or not to lock the clipping path.
+	 *  @deprecated in Illustrator, but we still need to keep it around to reflect the state
+	 */
 	protected Boolean lockClip;
 
 	// Whether or not to use the even-odd rule to determine path insideness
@@ -258,45 +264,35 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		}
 	}
 
+	/**
+	 * @jshide
+	 */
 	public FillStyle getFill() {
 		return fill;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setFill(FillStyle fill) {
 		update();
 		this.fill = new FillStyle(fill, this);
 		markDirty();
 	}
 
+	/**
+	 * @jshide
+	 */
 	public StrokeStyle getStroke() {
  		return stroke;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setStroke(StrokeStyle stroke) {
 		update();
 		this.stroke = new StrokeStyle(stroke, this);
-		markDirty();
-	}
-
-	public Boolean getClip() {
-		update();
-		return clip;
-	}
-
-	public void setClip(Boolean clip) {
-		update();
-		this.clip = clip;
-		markDirty();
-	}
-
-	public Boolean getLockClip() {
-		update();
-		return lockClip;
-	}
-
-	public void setLockClip(Boolean lockClip) {
-		update();
-		this.lockClip = lockClip;
 		markDirty();
 	}
 	
