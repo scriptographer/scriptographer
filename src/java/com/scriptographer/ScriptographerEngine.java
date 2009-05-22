@@ -373,11 +373,8 @@ public class ScriptographerEngine {
 			started = beginExecution(file, scope);
 			ret = script.execute(scope);
 			if (started) {
-				// handle onStart / onStop
+				// handle onStop
 				Script scriptObj = (Script) scope.get("script");
-				Callable onStart = scriptObj.getOnStart();
-				if (onStart != null)
-					onStart.call(scriptObj);
 				if (scriptObj.getOnStop() != null) {
 					// add this scope to the scopes that want onStop to be called
 					// when the stop button is hit by the user

@@ -55,16 +55,22 @@ public class Size {
 		set(size.width, size.height);
 	}
 
+	public Size(Point point) {
+		width = point.x;
+		height = point.y;
+	}
+
+	/**
+	 * @jshide
+	 */
 	public Size(Dimension size) {
 		this.width = size.width;
 		this.height = size.height;
 	}
 
-	public Size(Point size) {
-		width = size.x;
-		height = size.y;
-	}
-
+	/**
+	 * @jshide
+	 */
 	public Size(ArgumentReader reader) {
 		this(reader.readInteger("width", 0),
 				reader.readInteger("height", 0));

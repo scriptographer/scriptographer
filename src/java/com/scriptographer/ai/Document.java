@@ -31,14 +31,11 @@
 
 package com.scriptographer.ai;
 
-import java.awt.Shape;
 import java.io.File;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.scratchdisk.list.ExtendedList;
-import com.scratchdisk.list.List;
 import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
@@ -464,31 +461,16 @@ public class Document extends NativeObject {
 		return getMatchingItems(new Class[] { type });
 	}
 
-	public ItemList getPaths() throws ScriptographerException {
-		return getMatchingItems(Path.class);
-	}
-
-	public ItemList getCompoundPaths() throws ScriptographerException {
-		return getMatchingItems(CompoundPath.class);
-	}
-
-	public ItemList getGroups() throws ScriptographerException {
-		return getMatchingItems(Group.class);
-	}
-
-	public ItemList getTextFrames() throws ScriptographerException {
-		return getMatchingItems(TextItem.class);
-	}
-
-	public ItemList getRasters() throws ScriptographerException {
-		return getMatchingItems(Raster.class);
-	}
-	
 	/* TODO: make these
 	public Item getInsertionItem();
 	public int getInsertionOrder();
 	public boolean isInsertionEditable();
 	*/
+
+	private Path createPath() {
+		activate(false, true);
+		return new Path();
+	}
 
 	public Path createLine(Point pt1, Point pt2) {
 		Path path = this.createPath();
@@ -611,109 +593,6 @@ public class Document extends NativeObject {
 		return createCircle(new Point(x, y), radius);
 	}
 
-	/**
-	 * Creates a new path
-	 * @return the newly created path
-	 */
-	public Path createPath() {
-		activate(false, true);
-		return new Path();
-	}
-	
-	public Path createPath(List<? extends Segment> segments) {
-		activate(false, true);
-		return new Path(segments);
-	}
-	
-	public Path createPath(Segment[] segments) {
-		activate(false, true);
-		return new Path(segments);
-	}
-	
-	public Raster createRaster(ColorType type, int width, int height) {
-		activate(false, true);
-		return new Raster(type, width, height);
-	}
-	
-	public Raster createRaster(int type) {
-		activate(false, true);
-		return new Raster(type);
-	}
-	
-	public Raster createRaster() {
-		activate(false, true);
-		return new Raster();
-	}
-	
-	public CompoundPath createCompoundPath() {
-		activate(false, true);
-		return new CompoundPath();
-	}
-	
-	public CompoundPath createCompoundPath(List<? extends Item> children) {
-		activate(false, true);
-		return new CompoundPath(children);
-	}
-	
-	public CompoundPath createCompoundPath(Item[] children) {
-		activate(false, true);
-		return new CompoundPath(children);
-	}
-	
-	public CompoundPath createCompoundPath(Shape shape) {
-		activate(false, true);
-		return new CompoundPath(shape);
-	}
-	
-	public Group createGroup() {
-		activate(false, true);
-		return new Group();
-	}
-	
-	public Group createGroup(ExtendedList<? extends Item> children) {
-		activate(false, true);
-		return new Group(children);
-	}
-	
-	public Group createGroup(Item[] children) {
-		activate(false, true);
-		return new Group(children);
-	}
-	
-	public AreaText createAreaText(Path area, TextOrientation orientation) {
-		activate(false, true);
-		return new AreaText(area, orientation);
-	}
-
-	public AreaText createAreaText(Path area) {
-		activate(false, true);
-		return new AreaText(area);
-	}
-	
-	public PointText createPointText(Point point, TextOrientation orientation) {
-		activate(false, true);
-		return new PointText(point, orientation);
-	}
-
-	public PointText createPointText(Point point) {
-		activate(false, true);
-		return new PointText(point);
-	}
-	
-	public PathText createPathText(Path path, TextOrientation orientation) {
-		activate(false, true);
-		return new PathText(path, orientation);
-	}
-
-	public PathText createPathText(Path path) {
-		activate(false, true);
-		return new PathText(path);
-	}
-	
-	public Layer createLayer() {
-		activate(false, true);
-		return new Layer();
-	}
 	
 	protected native HitTest nativeHitTest(Point point, int request,
 			float tolerance, Item item); 

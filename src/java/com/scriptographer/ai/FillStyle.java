@@ -81,6 +81,9 @@ public class FillStyle implements Style {
 		init(color, false);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public FillStyle(ArgumentReader reader) {
 		// If color is null, handle it differently for hashes and arrays:
 		// For arrays, it can either be a color or Color.NONE. For hashes

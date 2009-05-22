@@ -238,10 +238,12 @@ public class Path extends PathItem {
 		reduceSegments(0.1f);
 	}
 	
-	public Path split(double position) {
-		int index = (int) Math.floor(position);
-		double parameter = position - index;
-		return this.split(index, parameter);
+	public Path split(double length) {
+		return split(getPositionWithLength(length));
+	}
+
+	public Path split(HitTest position) {
+		return split(position.getCurveIndex(), position.getParameter());
 	}
 
 	public Path split(int index, double parameter) {
@@ -265,7 +267,7 @@ public class Path extends PathItem {
 				// divide the segment at index at parameter
 				Segment segment = (Segment) segments.get(index);
 				if (segment != null) {
-					segment.divide(parameter);
+					segment.split(parameter);
 					// create the new path with the segments to the right of t
 					newSegments = segments.getSubList(index + 1, segments.size);
 					// and delete these segments from the current path, not
@@ -281,7 +283,7 @@ public class Path extends PathItem {
 	}
 
 	public Path split(int index) {
-		return split(index, 0f);
+		return split(index, 0);
 	}
 
 	public HitTest hitTest(Point point, double epsilon) {

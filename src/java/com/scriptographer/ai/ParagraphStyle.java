@@ -59,6 +59,9 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 		commitKey = this;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public ParagraphStyle(ArgumentReader reader) {
 		this();
 		setJustification(reader.readEnum("justification", ParagraphJustification.class));

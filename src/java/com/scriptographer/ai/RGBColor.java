@@ -89,6 +89,9 @@ public class RGBColor extends Color {
 
 	protected static ColorSpace space = null;
 
+	/**
+	 * @jshide
+	 */
 	public static ColorSpace getColorSpace() {
 		if (space == null)
 			space = new ICC_ColorSpace(getProfile(ColorModel.RGB));

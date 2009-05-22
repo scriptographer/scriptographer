@@ -71,6 +71,9 @@ public class CharacterStyle extends PathStyle {
 		commitKey = this;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public CharacterStyle(ArgumentReader reader) {
 		// Handler fill & stroke through PathStyle argument reader constructor
 		super(nativeCreate(), reader);

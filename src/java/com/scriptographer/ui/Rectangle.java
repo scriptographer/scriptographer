@@ -64,6 +64,9 @@ public class Rectangle {
 		this(point.x, point.y, size.width, size.height);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Rectangle(ArgumentReader reader) {
 		this(reader.readInteger("x", 0),
 				reader.readInteger("y", 0),

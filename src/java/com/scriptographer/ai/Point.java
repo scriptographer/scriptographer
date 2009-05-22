@@ -66,6 +66,9 @@ public class Point {
 		this(pt != null ? pt.x : 0, pt != null ? pt.y : 0);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Point(Point2D p) {
 		this(p != null ? p.getX() : 0, p != null ? p.getY() : 0);
 	}
@@ -75,16 +78,25 @@ public class Point {
 		y = size.height;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Point(ArgumentReader reader) {
 		this(reader.has("x") ? reader.readDouble("x", 0) : reader.readDouble("width", 0),
 				reader.has("y") ? reader.readDouble("y", 0) : reader.readDouble("height", 0));
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void set(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void set(Point pt) {
 		if (pt != null)
 			set(pt.x, pt.y);
@@ -279,6 +291,17 @@ public class Point {
 	}
 
 	/**
+	 * Checks whether the point is inside the rectangle
+	 * 
+	 * @param rect the rectangle to check against
+	 * @return <code>true</code> if the point is inside the rectangle, false
+	 *         otherwise
+	 */
+	public boolean isInside(Rectangle rect) {
+		return rect.contains(this);
+	}
+
+	/**
 	 * Checks if the point is within a given distance of another point
 	 * 
 	 * @param pt the point to check against
@@ -330,12 +353,18 @@ public class Point {
 		return getDistance(pt.x, pt.y);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public double getDistanceSquared(double px, double py) {
 		px -= x;
 		py -= y;
 		return px * px + py * py;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public double getDistanceSquared(Point pt) {
 		return getDistanceSquared(pt.x, pt.y);
 	}
@@ -384,6 +413,8 @@ public class Point {
 	}
 
 	/**
+	 * @jshide
+	 * 
 	 * Returns the interpolation point between the point and another point. The
 	 * object itself is not modified!
 	 * 
@@ -396,17 +427,6 @@ public class Point {
 			x * (1f - t) + pt.x * t,
 			y * (1f - t) + pt.y * t
 		);
-	}
-
-	/**
-	 * Checks whether the point is inside the rectangle
-	 * 
-	 * @param rect the rectangle to check against
-	 * @return <code>true</code> if the point is inside the rectangle, false
-	 *         otherwise
-	 */
-	public boolean isInside(Rectangle rect) {
-		return rect.contains(this);
 	}
 
 	public Point normalize(double length) {
@@ -427,12 +447,12 @@ public class Point {
 	 * Rotates the point by the given angle.
 	 * The object itself is not modified.
 	 * 
-	 * @param theta the rotation angle in radians
+	 * @param angle the rotation angle in radians
 	 * @return the rotated point
 	 */
-	public Point rotate(double theta) {
-		double s = Math.sin(theta);
-		double c = Math.cos(theta);
+	public Point rotate(double angle) {
+		double s = Math.sin(angle);
+		double c = Math.cos(angle);
 		return new Point(
 				x * c - y * s,
 				y * c + x * s
@@ -443,12 +463,12 @@ public class Point {
 	 * Rotates the point around a center point.
 	 * The object itself is not modified.
 	 * 
-	 * @param theta the rotation angle in radians
+	 * @param angle the rotation angle in radians
 	 * @param center the center point of the rotation
 	 * @return the rotated point
 	 */
-	public Point rotate(double theta, Point center) {
-		return rotate(theta,
+	public Point rotate(double angle, Point center) {
+		return rotate(angle,
 				center != null ? center.x : 0,
 				center != null ? center.y : 0
 		);
@@ -458,13 +478,15 @@ public class Point {
 	 * Rotates the point around a center point.
 	 * The object itself is not modified.
 	 * 
-	 * @param theta the rotation angle in radians
+	 * @param angle the rotation angle in radians
 	 * @param x the x coordinate of the center point
 	 * @param y the y coordinate of the center point
 	 * @return the rotated point
+	 * 
+	 * @jshide
 	 */
-	public Point rotate(double theta, double x, double y) {
-		return subtract(x, y).rotate(theta).add(x, y);
+	public Point rotate(double angle, double x, double y) {
+		return subtract(x, y).rotate(angle).add(x, y);
 	}
 
 	/**
@@ -500,9 +522,6 @@ public class Point {
 		return m.transform(this);
 	}
 
-	/**
-	 * @return
-	 */
 	protected Point2D toPoint2D() {
 		return new Point2D.Double(x, y);
 	}

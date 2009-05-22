@@ -81,6 +81,9 @@ public class Rectangle {
 		this(rt.x, rt.y, rt.width, rt.height);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Rectangle(Rectangle2D rt) {
 		this(rt.getX(), rt.getY(), rt.getWidth(), rt.getHeight());
 	}
@@ -107,15 +110,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * Creates a new rectangle from the passed object literal.
-	 * Sample code:
-	 * <pre>
-	 * var rect = new Rectangle({x:10,
-	 *                           y:10,
-	 *                           width:320,
-	 *                           height:240});
-	 * </pre>
-	 * @param map <code>{x, y, width, height}</code>
+	 * @jshide
 	 */
 	public Rectangle(ArgumentReader reader) {
 		this(reader.readDouble("x", 0),
@@ -183,20 +178,6 @@ public class Rectangle {
 		this.height = height;
 	}
 
-	public Size getSize() {
-		return new Size(width, height);
-	}
-
-	public void setSize(int width, int height) {
-		this.width = width;
-		this.height = height;
-	}
-
-	public void setSize(Size size) {
-		this.width = size.width;
-		this.height = size.height;
-	}
-
 	/**
 	 * @jsbean The position of the left hand side of the rectangle. Note that this
 	 * @jsbean doesn't move the whole rectangle; the right hand side stays where it was.
@@ -209,6 +190,19 @@ public class Rectangle {
 		// right should not move
 		width -= left - x;
 		x = left;
+	}
+
+	/**
+	 * @jsbean The top coordinate of the rectangle. In the AI coordinate
+	 * @jsbean system, the y axis grows from bottom to top. Note that this
+	 * @jsbean doesn't move the whole rectangle: the bottom won't move.
+	 */
+	public double getTop() {
+		return y + height;
+	}
+	
+	public void setTop(double top) {
+		height = top - y;
 	}
 
 	/**
@@ -238,17 +232,21 @@ public class Rectangle {
 		y = bottom;
 	}
 
-	/**
-	 * @jsbean The top coordinate of the rectangle. In the AI coordinate
-	 * @jsbean system, the y axis grows from bottom to top. Note that this
-	 * @jsbean doesn't move the whole rectangle: the bottom won't move.
-	 */
-	public double getTop() {
-		return y + height;
+	public Size getSize() {
+		return new Size(width, height);
 	}
-	
-	public void setTop(double top) {
-		height = top - y;
+
+	/**
+	 * @jshide
+	 */
+	public void setSize(int width, int height) {
+		this.width = width;
+		this.height = height;
+	}
+
+	public void setSize(Size size) {
+		this.width = size.width;
+		this.height = size.height;
 	}
 
 	private double getCenterX() {
@@ -391,46 +389,24 @@ public class Rectangle {
 		}
 	}
 
-	public Rectangle add(Point pt) {
-		return new Rectangle(x + pt.x, y + pt.y, width, height);
+	public Rectangle add(Point point) {
+		return new Rectangle(x + point.x, y + point.y, width, height);
 	}
 
-	public Rectangle subtract(Point pt) {
-		return new Rectangle(x - pt.x, y - pt.y, width, height);
+	public Rectangle subtract(Point point) {
+		return new Rectangle(x - point.x, y - point.y, width, height);
 	}
 
 	public Rectangle multiply(double value) {
 		return new Rectangle(x, y, width * value, height * value);
 	}
 
+	public Rectangle multiply(Point point) {
+		return new Rectangle(x, y, width * point.x, height * point.y);
+	}
+
 	public Rectangle divide(double value) {
 		return new Rectangle(x, y, width / value, height / value);
-	}
-
-	public void scale(double sx, double sy, Point center) {
-		if (center != null) {
-			x += width * (1.0 - sx) / 2;
-			y += height * (1.0 - sy) / 2;
-		}
-		width *= sx;
-		height *= sy;
-	}
-
-	public void scale(double sx, double sy) {
-		scale(sx, sy, null);
-	}
-
-	public void scale(double scale, Point center) {
-		scale(scale, scale, center);
-	}
-
-	public void scale(double value) {
-		scale(value, null);
-	}
-
-	public void translate(Point pt) {
-		x += pt.x;
-		y += pt.y;
 	}
 
 	/**
@@ -438,7 +414,7 @@ public class Rectangle {
 	 *         <code>false</code> otherwise.
 	 */
 	public boolean isEmpty() {
-	    return width <= 0.0f || height <= 0.0f;
+	    return width <= 0 || height <= 0;
 	}
 
 	/**
@@ -447,6 +423,8 @@ public class Rectangle {
 	 * @param x, y the coordinates to test
 	 * @return <code>true</code> if the specified coordinates are inside the
 	 *         boundary of the rectangle; <code>false</code> otherwise.
+	 * 
+	 * @jshide
 	 */
 	public boolean contains(double x, double y) {
 		return x >= this.x &&
@@ -458,28 +436,12 @@ public class Rectangle {
     /**
 	 * Tests if the specified point is inside the boundary of the rectangle.
 	 * 
-	 * @param p the specified point
+	 * @param point the specified point
 	 * @return <code>true</code> if the point is inside the rectangle's
 	 *         boundary; <code>false</code> otherwise.
 	 */
-	public boolean contains(Point p) {
-		return contains(p.x, p.y);
-	}
-
-	/**
-	 * Tests if the interior of this rectangle intersects the interior of
-	 * another rectangle.
-	 * 
-	 * @param r the specified rectangle
-	 * @return <code>true</code> if the rectangle and the specified rectangle
-	 *         intersect each other; <code>false</code> otherwise.
-	 */
-	public boolean intersects(Rectangle r) {
-		return !isEmpty() && r.width > 0 && r.height > 0 &&
-			r.x + r.width > this.x &&
-			r.y + r.height > this.y &&
-			r.x < this.x + this.width &&
-			r.y < this.y + this.height;
+	public boolean contains(Point point) {
+		return contains(point.x, point.y);
 	}
 	
     /**
@@ -491,26 +453,42 @@ public class Rectangle {
 	 *         specified rectangle; <code>false</code> otherwise.
 	 */
 	public boolean contains(Rectangle rect) {
-	return !isEmpty() && rect.width > 0 && rect.height > 0 &&
-		rect.x >= this.x &&
-		rect.y >= this.y &&
-		rect.x + rect.width <= this.x + this.width &&
-		rect.y + rect.height <= this.y + this.height;
+	return !isEmpty() 
+			&& rect.width > 0 && rect.height > 0
+			&& rect.x >= x && rect.y >= y
+			&& rect.x + rect.width <= x + width
+			&& rect.y + rect.height <= y + height;
+	}
+
+	/**
+	 * Tests if the interior of this rectangle intersects the interior of
+	 * another rectangle.
+	 * 
+	 * @param rect the specified rectangle
+	 * @return <code>true</code> if the rectangle and the specified rectangle
+	 *         intersect each other; <code>false</code> otherwise.
+	 */
+	public boolean intersects(Rectangle rect) {
+		return !isEmpty() && rect.width > 0 && rect.height > 0 &&
+			rect.x + rect.width > this.x &&
+			rect.y + rect.height > this.y &&
+			rect.x < this.x + this.width &&
+			rect.y < this.y + this.height;
 	}
 
 	/**
 	 * Returns a new rectangle representing the intersection of this rectangle
 	 * with the specified rectangle.
 	 * 
-	 * @param r The rectangle to be intersected with this rectangle.
+	 * @param rect The rectangle to be intersected with this rectangle.
 	 * @return The largest rectangle contained in both the specified rectangle
 	 *         and in this rectangle.
 	 */
-	public Rectangle intersect(Rectangle r) {
-		double x1 = Math.max(x, r.x);
-		double y1 = Math.max(y, r.y);
-		double x2 = Math.min(x + width, r.x + r.width);
-		double y2 = Math.min(y + height, r.y + r.height);
+	public Rectangle intersect(Rectangle rect) {
+		double x1 = Math.max(x, rect.x);
+		double y1 = Math.max(y, rect.y);
+		double x2 = Math.min(x + width, rect.x + rect.width);
+		double y2 = Math.min(y + height, rect.y + rect.height);
 		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
     }
 
@@ -518,31 +496,21 @@ public class Rectangle {
 	 * Returns a new rectangle representing the union of this rectangle with the
 	 * specified rectangle.
 	 * 
-	 * @param r the rectangle to be combined with this rectangle
+	 * @param rect the rectangle to be combined with this rectangle
 	 * @return the smallest rectangle containing both the specified rectangle
 	 *         and this rectangle.
 	 */
-	public Rectangle union(Rectangle r) {
-		double x1 = Math.min(x, r.x);
-		double y1 = Math.min(y, r.y);
-		double x2 = Math.max(x + width, r.x + r.width);
-		double y2 = Math.max(y + height, r.y + r.height);
-		if (x2 < x1) {
-			double t = x1;
-		    x1 = x2;
-		    x2 = t;
-		}
-		if (y2 < y1) {
-			double t = y1;
-		    y1 = y2;
-		    y2 = t;
-		}
+	public Rectangle unite(Rectangle rect) {
+		double x1 = Math.min(x, rect.x);
+		double y1 = Math.min(y, rect.y);
+		double x2 = Math.max(x + width, rect.x + rect.width);
+		double y2 = Math.max(y + height, rect.y + rect.height);
 		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
 	}
 
     /**
-	 * Adds a point, specified by the double precision arguments <code>px</code>
-	 * and <code>py</code>, to the rectangle. The resulting rectangle is the
+	 * Adds a point, specified by the arguments <code>x</code>
+	 * and <code>y</code>, to the rectangle. The resulting rectangle is the
 	 * smallest rectangle that contains both the original rectangle and the
 	 * specified point.
 	 * 
@@ -553,15 +521,17 @@ public class Rectangle {
 	 * added point falls on the left or bottom edge of the enlarged rectangle,
 	 * <code>contains</code> returns <code>false</code> for that point.
 	 * 
-	 * @param px, py The coordinates of the point.
+	 * @param px the x coordinate of the point.
+	 * @param py the y coordinate of the point.
+	 * 
+	 * @jshide
 	 */
-	public void include(double px, double py) {
-		double nx = Math.min(x, px);
-		double ny = Math.min(y, px);
-		width = Math.max(x + width, px) - nx;
-		height = Math.max(y + height, py) - ny;
-		x = nx;
-		y = ny;
+	public Rectangle unite(double px, double py) {
+		double x1 = Math.min(x, px);
+		double y1 = Math.min(y, py);
+		double x2 = Math.max(x + width, px);
+		double y2 = Math.max(y + height, py);
+		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
 	}
 
     /**
@@ -576,25 +546,10 @@ public class Rectangle {
 	 * added point falls on the left or bottom edge of the enlarged rectangle,
 	 * <code>contains</code> returns <code>false</code> for that point.
 	 * 
-	 * @param pt
+	 * @param point
 	 */
-	public void include(Point pt) {
-		include(pt.x, pt.y);
-	}
-
-	/**
-	 * Adds a rectangle to this rectangle. The resulting rectangle is the union
-	 * of the two rectangles.
-	 * 
-	 * @param rect the rectangle to add to this rectangle.
-	 */
-	public void include(Rectangle rect) {
-		double nx = Math.min(x, rect.x);
-		double ny = Math.min(y, rect.y);
-		width = Math.max(x + width, rect.x + rect.width) - nx;
-		height = Math.max(y + width, rect.y + rect.width) - ny;
-		x = nx;
-		y = ny;
+	public Rectangle unite(Point point) {
+		return unite(point.x, point.y);
 	}
 
 	/**

@@ -57,15 +57,21 @@ public class Size {
 		this(size.width, size.height);
 	}
 
-	public Size(Point size) {
-		this(size.x, size.y);
+	public Size(Point point) {
+		this(point.x, point.y);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Size(ArgumentReader reader) {
 		this(reader.has("width") ? reader.readDouble("width", 0) : reader.readDouble("x", 0),
 				reader.has("height") ? reader.readDouble("height", 0) : reader.readDouble("y", 0));
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void set(double width, double height) {
 		this.width = width;
 		this.height = height;

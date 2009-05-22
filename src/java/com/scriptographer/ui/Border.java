@@ -61,6 +61,9 @@ public class Border {
 		set(insets.top, insets.right, insets.bottom, insets.left);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Border(ArgumentReader reader) {
 		this(reader.readInteger("top", 0),
 				reader.readInteger("right", 0),

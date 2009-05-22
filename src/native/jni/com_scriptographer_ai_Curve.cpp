@@ -37,11 +37,12 @@
  */
 
 /*
- * float nativeGetLength(float p1x, float p1y, float h1x, float h1y, float h2x, float h2y, float p2x, float p2y)
+ * double nativeGetLength(double p1x, double p1y, double h1x, double h1y, double h2x, double h2y, double p2x, double p2y)
  */
-JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Curve_nativeGetLength(JNIEnv *env, jclass cls, jfloat p1x, jfloat p1y, jfloat h1x, jfloat h1y, jfloat h2x, jfloat h2y, jfloat p2x, jfloat p2y) {
+JNIEXPORT jdouble JNICALL Java_com_scriptographer_ai_Curve_nativeGetLength(JNIEnv *env, jclass cls, jdouble p1x, jdouble p1y, jdouble h1x, jdouble h1y, jdouble h2x, jdouble h2y, jdouble p2x, jdouble p2y) {
 	try {
 		DEFINE_BEZIER(bezier, p1x, p1y, h1x, h1y, h2x, h2y, p2x, p2y);
+		// Use a default value for flatness since AI doc says it ignores it anyway in CS4
 		return sAIRealBezier->Length(&bezier, 0.1f);
 	} EXCEPTION_CONVERT(env);
 	return 0.0;

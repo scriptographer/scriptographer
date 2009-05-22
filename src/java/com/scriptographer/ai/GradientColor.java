@@ -130,6 +130,9 @@ public class GradientColor extends Color {
 		return false;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public float[] getComponents() {
 		throw new UnsupportedOperationException("Cannot convert gradient to components");
 	}

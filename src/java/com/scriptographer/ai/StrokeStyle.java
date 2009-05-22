@@ -75,6 +75,9 @@ public class StrokeStyle implements Style {
 				miterLimit);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public StrokeStyle(ArgumentReader reader) {
 		// If color is null, handle it differently for hashes and arrays:
 		// For arrays, it can either be a color or Color.NONE. For hashes

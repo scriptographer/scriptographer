@@ -41,6 +41,9 @@ import com.scriptographer.ScriptographerException;
  */
 public abstract class Color {
 
+	/**
+	 * @jshide
+	 */
 	public static final Color NONE = new RGBColor(-1, -1, -1, -1);
 
 	protected float alpha;
@@ -49,6 +52,8 @@ public abstract class Color {
 	 * Converts the color to a java.awt.Color equivalent.
 	 *
 	 * @return the converted Color
+	 * 
+	 * @jshide
 	 */
 	public abstract java.awt.Color toAWTColor();
 
@@ -85,7 +90,7 @@ public abstract class Color {
 		else this.alpha = alpha;
 	}
 
-	public native Color nativeConvert(int type);
+	private native Color nativeConvert(int type);
 
 	/**
 	 * Converts the color into another color space.
@@ -97,10 +102,16 @@ public abstract class Color {
 		return type == getType() ? this : nativeConvert(type.value);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Color convert(Class type) {
 		return convert(getType(type, hasAlpha()));
 	}
 
+	/**
+	 * @jshide
+	 */
 	public static ColorType getType(Class type, boolean alpha) {
 		if (CMYKColor.class.isAssignableFrom(type)) {
 			return alpha ? ColorType.ACMYK : ColorType.CMYK;

@@ -79,6 +79,9 @@ public class Curve {
 		segment2 = new Segment(p2x, p2y, h2x, h2y, 0, 0, false);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Curve(ArgumentReader reader) {
 		// First try reading a point, no matter if it is a hash or a array.
 		// If that does not work, fall back to other scenarios:
@@ -346,20 +349,20 @@ public class Curve {
 		);
 	}
 
-	private native static float nativeGetLength(float p1x, float p1y,
-			float h1x, float h1y, float h2x, float h2y, float p2x, float p2y);
+	private native static double nativeGetLength(double p1x, double p1y,
+			double h1x, double h1y, double h2x, double h2y, double p2x, double p2y);
 
 	public double getLength() {
 		updateSegments();
 		return nativeGetLength(
-				(float) segment1.point.x,
-				(float) segment1.point.y,
-				(float) (segment1.handleOut.x + segment1.point.x),
-				(float) (segment1.handleOut.y + segment1.point.y),
-				(float) (segment2.handleIn.x + segment2.point.x),
-				(float) (segment2.handleIn.y + segment2.point.y),
-				(float) segment2.point.x,
-				(float) segment2.point.y
+				segment1.point.x,
+				segment1.point.y,
+				(segment1.handleOut.x + segment1.point.x),
+				(segment1.handleOut.y + segment1.point.y),
+				(segment2.handleIn.x + segment2.point.x),
+				(segment2.handleIn.y + segment2.point.y),
+				segment2.point.x,
+				segment2.point.y
 		);
 	}
 
@@ -398,13 +401,13 @@ public class Curve {
 				matrix.transform(segment2.point));
 	}
 	
-	public Curve divide(double t) {
-		if (t > 0 && t < 1f) {
+	public Curve split(double t) {
+		if (t > 0 && t < 1) {
 			updateSegments();
 			
 			double left[][] = getCurveArray();
 			double right[][] = new double[4][];
-			divide(left, t, left, right);
+			split(left, t, left, right);
 		
 			// write back the results:
 			segment1.handleOut.set(left[1][0] - segment1.point.x,
@@ -429,15 +432,15 @@ public class Curve {
 				// if this curve is linked to a path, get the new curve there
 				return (Curve) segments.path.getCurves().get(index2);
 			} else {
-				// otherwise create it from the result of divide
+				// otherwise create it from the result of split
 				return new Curve(newSegment, segment2);
 			}
 		}
 		return null;
 	}
 
-	public Curve divide() {
-		return divide(0.5f);
+	public Curve split() {
+		return split(0.5f);
 	}
 
 	/**
@@ -505,7 +508,7 @@ public class Curve {
 	 * Low Level Math functions for division and calculation of roots:
 	 */
 	
-	private static void divide(double[][] curve, double t, double[][] left,
+	private static void split(double[][] curve, double t, double[][] left,
 			double[][] right) {
 		double temp[][][] = new double[4][][];
 
@@ -593,7 +596,7 @@ public class Curve {
 								* fromParameter + curve[0][1];
 			}
 			// cut away the second part:
-			divide(curve, toParameter, tempCurve, null);
+			split(curve, toParameter, tempCurve, null);
 			curve = tempCurve;
 			// now adjust fromParameter, by calculating the parameter of
 			// fromX,fromY
@@ -604,14 +607,14 @@ public class Curve {
 			}
 		}
 		if (fromParameter > 0) {
-			divide(curve, fromParameter, null, tempCurve);
+			split(curve, fromParameter, null, tempCurve);
 			curve = tempCurve;
 		}
 		return nativeGetLength(
-				(float) curve[0][0], (float) curve[0][1],
-				(float) curve[1][0], (float) curve[1][1],
-				(float) curve[2][0], (float) curve[2][1],
-				(float) curve[3][0], (float) curve[3][1]
+				curve[0][0], curve[0][1],
+				curve[1][0], curve[1][1],
+				curve[2][0], curve[2][1],
+				curve[3][0], curve[3][1]
 		);
 	}
 

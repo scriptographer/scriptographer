@@ -202,6 +202,7 @@ JNIEXPORT jdouble JNICALL Java_com_scriptographer_ai_Path_getLength(JNIEnv *env,
 		// no need to activate document for this
 		AIArtHandle handle = gEngine->getArtHandle(env, obj);
 		AIReal length;
+		// Use a default value for flatness since AI doc says it ignores it anyway in CS4
 		sAIPath->GetPathLength(handle, &length, 0.1f);
 		return length;
 	} EXCEPTION_CONVERT(env);

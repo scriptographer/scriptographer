@@ -107,6 +107,9 @@ public class Segment implements Commitable {
 		init(segment.point, segment.handleIn, segment.handleOut, segment.corner);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Segment(ArgumentReader reader) {
 		// First try reading a point, no matter if it is a hash or a array.
 		// If that does not work, fall back to other scenarios:
@@ -395,7 +398,7 @@ public class Segment implements Commitable {
 		}
 	}
 
-	public Segment divide(double parameter) {
+	public Segment split(double parameter) {
 		Curve curve = getCurve();
 		if (curve == null)
 			return null;
@@ -406,8 +409,8 @@ public class Segment implements Commitable {
 			return null;
 	}
 	
-	public Segment divide() {
-		return divide(0.5f);
+	public Segment split() {
+		return split(0.5f);
 	}
 	
 	public Curve getCurve() {

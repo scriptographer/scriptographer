@@ -43,7 +43,6 @@ import com.scriptographer.ScriptographerEngine;
 public class Script {
 	private File file;
 	private Preferences prefs = null;
-	private Callable onStart;
 	private Callable onStop;
 	private boolean showProgress = true;
 
@@ -82,17 +81,6 @@ public class Script {
 	}
 
 	/**
-	 * @jsbean The handler function to be called when the script is executed.
-	 */
-	public Callable getOnStart() {
-		return onStart;
-	}
-
-	public void setOnStart(Callable onStart) {
-		this.onStart = onStart;
-	}
-
-	/**
 	 * @jsbean The handler function to be called when the script is stopped
 	 * @jsbean through the stop button in the Scriptographer GUI.
 	 */
@@ -106,7 +94,7 @@ public class Script {
 
 	/**
 	 * @jsbean Determines wether the scripts wants to display the progress bar
-	 * @jsbean or not
+	 * @jsbean or not. <code>true</code> by default.
 	 */
 	public boolean getShowProgress() {
 		return showProgress;

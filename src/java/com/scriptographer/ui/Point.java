@@ -58,6 +58,9 @@ public class Point {
 		y = size.height;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Point(ArgumentReader reader) {
 		this(reader.readInteger("x", 0),
 				reader.readInteger("y", 0));

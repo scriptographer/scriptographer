@@ -84,6 +84,8 @@ public class Application {
 	 * handles this transparently behind the scenes. It might be useful for
 	 * temporary bug fixes though for cases where the automatic execution
 	 * was forgotten.
+	 * 
+	 * @jshide
 	 */
 	public void commit() {
 		CommitManager.commit(null);
@@ -118,8 +120,10 @@ public class Application {
 	}
 
 	/**
-	 * @jsbean Returns the current system time in nanoseconds. This is very
-	 * @jsbean useful for high resolution time measurements.
+	 * Returns the current system time in nanoseconds. This is very
+	 * useful for high resolution time measurements.
+	 * 
+	 * @jshide
 	 */
 	public long getNanoTime() {
 		return ScriptographerEngine.getNanoTime();
@@ -138,7 +142,13 @@ public class Application {
 
 	/**
 	 * Displays the progress bar dialog.
+	 * 
+	 * @param text the optional text to display above the progress bar.
 	 */
+	public void showProgress(String text) {
+		ScriptographerEngine.showProgress(text);
+	}
+
 	public void showProgress() {
 		ScriptographerEngine.showProgress();
 	}

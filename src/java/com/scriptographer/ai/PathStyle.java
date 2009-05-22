@@ -138,6 +138,9 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		this.stroke = new StrokeStyle(stroke, this);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public PathStyle(ArgumentReader reader) {
 		this(0, reader);
 	}

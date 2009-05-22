@@ -59,34 +59,36 @@ import java.awt.geom.Point2D;
  */
 public class Matrix {
 
-	private AffineTransform at;
+	private AffineTransform transform;
 	
 	public Matrix() {
-		at = new AffineTransform();
+		transform = new AffineTransform();
 	}
 
 	/**
 	 * Create a new matrix which copies the given one.
 	 *
-	 * @param m the matrix to copy
+	 * @param matrix the matrix to copy
 	 * @throws NullPointerException if m is null
 	 */
-	public Matrix(Matrix m) {
-		at = m != null ? m.toAffineTransform() : new AffineTransform();
+	public Matrix(Matrix matrix) {
+		transform = matrix != null ? matrix.toAffineTransform() : new AffineTransform();
 	}
 
 	public AffineTransform toAffineTransform() {
-		return new AffineTransform(at);
+		return new AffineTransform(transform);
 	}
 
 	/**
 	 * Create a new matrix from the given AWT AffineTransform.
 	 *
-	 * @param at the transform to copy
+	 * @param transform the affine transformation to copy
 	 * @throws NullPointerException if at is null
+	 * 
+	 * @jshide
 	 */
-	public Matrix(AffineTransform at) {
-		this.at = new AffineTransform(at);
+	public Matrix(AffineTransform transform) {
+		this.transform = new AffineTransform(transform);
 	}
 
 	/**
@@ -107,7 +109,7 @@ public class Matrix {
 	 */
 	public Matrix(double scaleX, double shearY, double shearX, double scaleY,
 			double translateX, double translateY) {
-		at = new AffineTransform(scaleX, shearY, shearX, scaleY,
+		transform = new AffineTransform(scaleX, shearY, shearX, scaleY,
 				translateX, translateY);
 	}
 
@@ -126,7 +128,7 @@ public class Matrix {
 	 * @throws ArrayIndexOutOfBoundsException if values is too small
 	 */
 	public Matrix(double[] values) {
-		at = new AffineTransform(values);
+		transform = new AffineTransform(values);
 	}
 
 	/**
@@ -142,7 +144,7 @@ public class Matrix {
 	 * @throws ArrayIndexOutOfBoundsException if values is too small
 	 */
 	public Matrix(double[][] values) {
-		at = new AffineTransform(
+		transform = new AffineTransform(
 				values[0][0], values[0][1], values[0][2],
 				values[1][0], values[1][1], values[1][2]);
 	}
@@ -166,7 +168,7 @@ public class Matrix {
 	 */
 	public Matrix invert() {
 		try {
-			at = at.createInverse();
+			transform = transform.createInverse();
 			return this;
 		} catch (NoninvertibleTransformException e) {
 			return null;
@@ -174,7 +176,7 @@ public class Matrix {
 	}
 
 	public boolean equals(Object obj) {
-		return at.equals(((Matrix) obj).at);
+		return transform.equals(((Matrix) obj).transform);
 	}
 	
 	/**
@@ -184,7 +186,7 @@ public class Matrix {
 	 * @return true if the matrix is an identity, false otherwise
 	 */
 	public boolean isIdentity() {
-		return at.isIdentity();
+		return transform.isIdentity();
 	}
 
 	/**
@@ -200,57 +202,57 @@ public class Matrix {
 	}
 
 	public double getScaleX() {
-		return at.getScaleX();
+		return transform.getScaleX();
 	}
 
 	public void setScaleX(double scaleX) {
-		at.setTransform(scaleX, at.getShearY(), at.getShearX(), at.getScaleY(),
-				at.getTranslateX(), at.getTranslateY());
+		transform.setTransform(scaleX, transform.getShearY(), transform.getShearX(), transform.getScaleY(),
+				transform.getTranslateX(), transform.getTranslateY());
 	}
 	
 	public double getScaleY() {
-		return at.getScaleY();
+		return transform.getScaleY();
 	}
 
 	public void setScaleY(double scaleY) {
-		at.setTransform(at.getScaleX(), at.getShearY(), at.getShearX(), scaleY,
-				at.getTranslateX(), at.getTranslateY());
+		transform.setTransform(transform.getScaleX(), transform.getShearY(), transform.getShearX(), scaleY,
+				transform.getTranslateX(), transform.getTranslateY());
 	}
 	
 	public double getShearX() {
-		return at.getShearX();
+		return transform.getShearX();
 	}
 
 	public void setShearX(double shearX) {
-		at.setTransform(at.getScaleX(), at.getShearY(), shearX, at.getScaleY(),
-				at.getTranslateX(), at.getTranslateY());
+		transform.setTransform(transform.getScaleX(), transform.getShearY(), shearX, transform.getScaleY(),
+				transform.getTranslateX(), transform.getTranslateY());
 	}
 
 	public double getShearY() {
-		return at.getShearY();
+		return transform.getShearY();
 	}
 
 	public void setShearY(double shearY) {
-		at.setTransform(at.getScaleX(), at.getShearY(), at.getShearX(), shearY,
-				at.getTranslateX(), at.getTranslateY());
+		transform.setTransform(transform.getScaleX(), transform.getShearY(), transform.getShearX(), shearY,
+				transform.getTranslateX(), transform.getTranslateY());
 	}
 
 	public double getTranslateX() {
-		return at.getTranslateX();
+		return transform.getTranslateX();
 	}
 
 	public void setTranslateX(double translateX) {
-		at.setTransform(at.getScaleX(), at.getShearY(), at.getShearX(),
-				at.getScaleY(), translateX, at.getTranslateY());
+		transform.setTransform(transform.getScaleX(), transform.getShearY(), transform.getShearX(),
+				transform.getScaleY(), translateX, transform.getTranslateY());
 	}
 
 	public double getTranslateY() {
-		return at.getTranslateY();
+		return transform.getTranslateY();
 	}
 
 	public void setTranslateY(double translateY) {
-		at.setTransform(at.getScaleX(), at.getShearY(), at.getShearX(),
-				at.getScaleY(), at.getTranslateX(), translateY);
+		transform.setTransform(transform.getScaleX(), transform.getShearY(), transform.getShearX(),
+				transform.getScaleY(), transform.getTranslateX(), translateY);
 	}
 
 	/**
@@ -262,7 +264,7 @@ public class Matrix {
 	 * @return the translated matrix
 	 */
 	public Matrix translate(double x, double y) {
-		at.translate(x, y);
+		transform.translate(x, y);
 		return this;
 	}
 
@@ -273,7 +275,7 @@ public class Matrix {
 	}
 
 	public Matrix scale(double scaleX, double scaleY) {
-		at.scale(scaleX, scaleY);
+		transform.scale(scaleX, scaleY);
 		return this;
 	}
 
@@ -291,55 +293,58 @@ public class Matrix {
 		return scale(scale, scale, center);
 	}
 
-	public Matrix rotate(double theta) {
-		at.rotate(theta);
+	public Matrix rotate(double angle) {
+		transform.rotate(angle);
 		return this;
 	}
 
-	public Matrix rotate(double theta, Point center) {
-		at.rotate(theta,
+	public Matrix rotate(double angle, Point center) {
+		transform.rotate(angle,
 				center != null ? center.getX() : 0,
 				center != null ? center.getY() : 0);
 		return this;
 	}
 
 	public Matrix shear(double shearX, double shearY) {
-		at.shear(shearX, shearY);
+		transform.shear(shearX, shearY);
 		return this;
 	}
 
-	public Matrix concatenate(Matrix mx) {
-		at.concatenate(mx.toAffineTransform());
+	public Matrix concatenate(Matrix matrix) {
+		transform.concatenate(matrix.toAffineTransform());
 		return this;
 	}
 
-	public Matrix preConcatenate(Matrix mx) {
-		at.preConcatenate(mx.toAffineTransform());
+	public Matrix preConcatenate(Matrix matrix) {
+		transform.preConcatenate(matrix.toAffineTransform());
 		return this;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Point transform(double x, double y) {
 		// A bit of converting from Point2D <-> Point
-		return new Point(at.transform(new Point2D.Double(x, y), new Point2D.Double()));
+		return new Point(transform.transform(new Point2D.Double(x, y), new Point2D.Double()));
 	}
 
-	public Point transform(Point src) {
-		return transform(src.x, src.y);
+	public Point transform(Point point) {
+		return transform(point.x, point.y);
 	}
 
 	// Round values to sane precision for printing
     // Note that Math.sin(Math.PI) has an error of about 10^-16
-    private static double round(double matval) {
-    	return Math.rint(matval * 1E15) / 1E15;
+    private static double round(double value) {
+    	return Math.rint(value * 1E15) / 1E15;
     }
 
     public String toString() {
 		return "[["
-			+ round(at.getScaleX()) + ", "
-			+ round(at.getShearX()) + ", "
-			+ round(at.getTranslateX()) + "], ["
-			+ round(at.getShearY()) + ", "
-			+ round(at.getScaleY()) + ", "
-			+ round(at.getTranslateY()) + "]]";
+			+ round(transform.getScaleX()) + ", "
+			+ round(transform.getShearX()) + ", "
+			+ round(transform.getTranslateX()) + "], ["
+			+ round(transform.getShearY()) + ", "
+			+ round(transform.getScaleY()) + ", "
+			+ round(transform.getTranslateY()) + "]]";
     }
 }

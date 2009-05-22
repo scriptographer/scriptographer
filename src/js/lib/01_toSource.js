@@ -117,6 +117,7 @@ PathStyle.inject({
 		var parts = [];
 		parts.push('fill: ' + Object.toSource(this.fill, true));
 		parts.push('stroke: ' + Object.toSource(this.stroke, true));
+		// TODO: Add windingRule, resolution
 		return simple ? '{ ' + parts.join(', ') + ' }' : 'new PathStyle() { ' + parts.join(', ') + ' }';
 	}
 });

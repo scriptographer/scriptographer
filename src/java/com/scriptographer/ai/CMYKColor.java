@@ -71,7 +71,7 @@ public class CMYKColor extends Color {
 		black = components[3];
 		alpha = (components.length > 4) ? components[4] : -1f;
 	}
-	
+
 	public java.awt.Color toAWTColor() {
 		// workaround, as there seems to be a problem with the color profiles
 		// and cmyk:
@@ -93,6 +93,9 @@ public class CMYKColor extends Color {
 
 	protected static ColorSpace space = null;
 
+	/**
+	 * @jshide
+	 */
 	public static ColorSpace getColorSpace() {
 		if (space == null)
 			space = new ICC_ColorSpace(getProfile(ColorModel.CMYK));
