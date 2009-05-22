@@ -559,6 +559,125 @@ public abstract class Item extends DocumentObject {
 		this.style.markDirty();
 	}
 
+	/*
+	 * Stroke Styles
+	 */
+
+	public Color getStrokeColor() {
+		return getStyle().getStrokeColor();
+	}
+
+	public void setStrokeColor(Color color) {
+		getStyle().setStrokeColor(color);
+	}
+
+	public void setStrokeColor(java.awt.Color color) {
+		getStyle().setStrokeColor(color);
+	}
+
+	public Float getStrokeWidth() {
+		return getStyle().getStrokeWidth();
+	}
+
+	public void setStrokeWidth(Float width) {
+		getStyle().setStrokeWidth(width);
+	}
+
+	public StrokeCap getStrokeCap() {
+		return getStyle().getStrokeCap();
+	}
+
+	public void setStrokeCap(StrokeCap cap) {
+		getStyle().setStrokeCap(cap);
+	}
+
+	public StrokeJoin getStrokeJoin() {
+		return getStyle().getStrokeJoin();
+	}
+
+	public void setStrokeJoin(StrokeJoin join) {
+		getStyle().setStrokeJoin(join);
+	}
+
+	public Float getDashOffset() {
+		return getStyle().getDashOffset();
+	}
+
+	public void setDashOffset(Float offset) {
+		getStyle().setDashOffset(offset);
+	}
+	
+	public float[] getDashArray() {
+		return getStyle().getDashArray();
+	}
+
+	public void setDashArray(float[] array) {
+		getStyle().setDashArray(array);
+	}
+	
+	public Float getMiterLimit() {
+		return getStyle().getMiterLimit();
+	}
+
+	public void setMiterLimit(Float limit) {
+		getStyle().setMiterLimit(limit);
+	}
+
+	public Boolean getStrokeOverprint() {
+		return getStyle().getStrokeOverprint();
+	}
+
+	public void setStrokeOverprint(Boolean overprint) {
+		getStyle().setStrokeOverprint(overprint);
+	}
+
+	/*
+	 * Fill Style
+	 */
+
+	public Color getFillColor() {
+		return getStyle().getFillColor();
+	}
+
+	public void setFillColor(Color color) {
+		getStyle().setFillColor(color);
+	}
+
+	public void setFillColor(java.awt.Color color) {
+		getStyle().setFillColor(color);
+	}
+
+	public Boolean getFillOverprint() {
+		return getStyle().getFillOverprint();
+	}
+
+	public void setFillOverprint(Boolean overprint) {
+		getStyle().setFillOverprint(overprint);
+	}
+
+	/*
+	 * Path Style
+	 */
+	public WindingRule getWindingRule() {
+		return getStyle().getWindingRule();
+	}
+
+	public void setWindingRule(WindingRule rule) {
+		getStyle().setWindingRule(rule);
+	}
+
+	public Float getResolution() {
+		return getStyle().getResolution();
+	}
+
+	public void setResolution(Float resolution) {
+		getStyle().setResolution(resolution);
+	}
+
+	/*
+	 * End of Style
+	 */
+
 	public native boolean isCenterVisible();
 	public native void setCenterVisible(boolean centerVisible);
 
