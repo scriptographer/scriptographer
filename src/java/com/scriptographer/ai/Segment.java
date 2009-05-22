@@ -402,7 +402,7 @@ public class Segment implements Commitable {
 		Curve curve = getCurve();
 		if (curve == null)
 			return null;
-		Curve newCurve = curve.divide(parameter);
+		Curve newCurve = curve.split(parameter);
 		if (newCurve != null)
 			return newCurve.getSegment1();
 		else
