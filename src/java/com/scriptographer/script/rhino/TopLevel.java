@@ -81,7 +81,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		GradientStopList.class,
 		GrayColor.class,
 		Group.class,
-		HitTest.class,
+		HitResult.class,
 		com.scriptographer.ai.Item.class,
 		ItemList.class,
 		Layer.class,

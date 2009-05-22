@@ -594,7 +594,7 @@ public class Document extends NativeObject {
 	}
 
 	
-	protected native HitTest nativeHitTest(Point point, int request,
+	protected native HitResult nativeHitTest(Point point, int request,
 			float tolerance, Item item); 
 
 	
@@ -606,16 +606,16 @@ public class Document extends NativeObject {
 	 *        guaranteed to produce correct results for large values.
 	 * @return
 	 */
-	public HitTest hitTest(Point point, HitRequest request, float tolerance) {
+	public HitResult hitTest(Point point, HitRequest request, float tolerance) {
 		return this.nativeHitTest(point, (request != null ? request : HitRequest.ALL).value, tolerance, null);
 	}
 
-	public HitTest hitTest(Point point, HitRequest request) {
-		return this.hitTest(point, request, HitTest.DEFAULT_TOLERANCE);
+	public HitResult hitTest(Point point, HitRequest request) {
+		return this.hitTest(point, request, HitResult.DEFAULT_TOLERANCE);
 	}
 
-	public HitTest hitTest(Point point) {
-		return this.hitTest(point, HitRequest.ALL, HitTest.DEFAULT_TOLERANCE);
+	public HitResult hitTest(Point point) {
+		return this.hitTest(point, HitRequest.ALL, HitResult.DEFAULT_TOLERANCE);
 	}
 	
 	private native int nativeGetStories();

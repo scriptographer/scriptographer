@@ -1167,17 +1167,17 @@ public abstract class Item extends DocumentObject {
 		nativeDraw(image, image.getWidth(), image.getHeight());
 	}
 
-	public HitTest hitTest(Point point, HitRequest type, float tolerance) {
+	public HitResult hitTest(Point point, HitRequest type, float tolerance) {
 		return document.nativeHitTest(point, (type != null ? type
 				: HitRequest.ALL).value, tolerance, this);
 	}
 
-	public HitTest hitTest(Point point, HitRequest type) {
-		return hitTest(point, type, HitTest.DEFAULT_TOLERANCE);
+	public HitResult hitTest(Point point, HitRequest type) {
+		return hitTest(point, type, HitResult.DEFAULT_TOLERANCE);
 	}
 
-	public HitTest hitTest(Point point) {
-		return hitTest(point, HitRequest.ALL, HitTest.DEFAULT_TOLERANCE);
+	public HitResult hitTest(Point point) {
+		return hitTest(point, HitRequest.ALL, HitResult.DEFAULT_TOLERANCE);
 	}
 
 	private native Item nativeExpand(int flags, int steps);

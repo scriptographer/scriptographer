@@ -242,7 +242,7 @@ public class Path extends PathItem {
 		return split(getPositionWithLength(length));
 	}
 
-	public Path split(HitTest position) {
+	public Path split(HitResult position) {
 		return split(position.getCurveIndex(), position.getParameter());
 	}
 
@@ -286,7 +286,7 @@ public class Path extends PathItem {
 		return split(index, 0);
 	}
 
-	public HitTest hitTest(Point point, double epsilon) {
+	public HitResult hitTest(Point point, double epsilon) {
 		CurveList curves = getCurves();
 		int length = curves.size();
 		
@@ -294,18 +294,18 @@ public class Path extends PathItem {
 			Curve curve = (Curve) curves.get(i);
 			double t = curve.hitTest(point, epsilon);
 			if (t >= 0)
-				return new HitTest(curve, t);
+				return new HitResult(curve, t);
 		}
 		return null;
 	}
 
-	public HitTest hitTest(Point point) {
+	public HitResult hitTest(Point point) {
 		return hitTest(point, Curve.EPSILON);
 	}
 
 	// TODO: move to CurveList, to make accessible when not using
 	// paths directly too?
-	public HitTest getPositionWithLength(double length) {
+	public HitResult getPositionWithLength(double length) {
 		CurveList curves = getCurves();
 		double currentLength = 0;
 		for (int i = 0; i < curves.size; i++) {
@@ -315,14 +315,14 @@ public class Path extends PathItem {
 			if (currentLength >= length) {
 				// found the segment within which the length lies
 				double t = curve.getParameterWithLength(length - startLength);
-				return new HitTest(curve, t);
+				return new HitResult(curve, t);
 			}
 		}
 		// it may be that through impreciseness of getLength, that the end of
 		// the curves was missed:
 		if (length <= getLength()) {
 			Curve curve = (Curve) curves.get(curves.size - 1);
-			return new HitTest(HitType.CURVE, curve, 1, curve.getPoint2());
+			return new HitResult(HitType.CURVE, curve, 1, curve.getPoint2());
 		} else {
 			return null;
 		}

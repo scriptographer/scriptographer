@@ -40,7 +40,7 @@ import com.scratchdisk.util.IntegerEnumUtils;
  * 
  * @author lehni
  */
-public class HitTest {
+public class HitResult {
 	protected static final float DEFAULT_TOLERANCE = 2.0f;
 	
 	private HitType type;
@@ -56,7 +56,7 @@ public class HitTest {
 	 * @param parameter
 	 * @param point
 	 */
-	protected HitTest(HitType type, Curve curve, double parameter, Point point) {
+	protected HitResult(HitType type, Curve curve, double parameter, Point point) {
 		this.type = type;
 		this.curve = curve;
 		this.item = curve.getPath();
@@ -64,7 +64,7 @@ public class HitTest {
 		this.point = point;
 	}
 
-	protected HitTest(Curve curve, double parameter) {
+	protected HitResult(Curve curve, double parameter) {
 		// passing null for point only calls curve.getPoint(t) if the point is requested, see HitTest
 		this(
 			parameter > 0 && parameter < 1 ? HitType.CURVE : HitType.ANCHOR,
@@ -77,7 +77,7 @@ public class HitTest {
 	/**
 	 * To be called from the native environment
 	 */
-	protected HitTest(int type, Item item, int index, double parameter, Point point) {
+	protected HitResult(int type, Item item, int index, double parameter, Point point) {
 		this.type = IntegerEnumUtils.get(HitType.class, type);
 		this.item = item;
 		this.parameter = parameter;
