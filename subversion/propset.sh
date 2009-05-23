@@ -7,8 +7,8 @@ find . -name *.xml -exec svn propset svn:eol-style 'native' \{\} \;
 find . -name *.html -exec svn propset svn:eol-style 'native' \{\} \;
 find . -name *.css -exec svn propset svn:eol-style 'native' \{\} \;
 find . -name *.properties -exec svn propset svn:eol-style 'native' \{\} \;
-find . -name *.bat -exec svn propset svn:eol-style 'native' \{\} \;
 find . -name *.sh -exec svn propset svn:eol-style 'native' \{\} \;
+find . -name *.bat -exec svn propset svn:eol-style 'native' \{\} \;
 
 find . -name *.java -exec svn propset svn:keywords 'Author Date Id Rev URL' \{\} \;
 find . -name *.cpp -exec svn propset svn:keywords 'Author Date Id Rev URL' \{\} \;
@@ -19,15 +19,16 @@ find . -name *.xml -exec svn propset svn:keywords 'Author Date Id Rev URL' \{\} 
 find . -name *.html -exec svn propset svn:keywords 'Author Date Id Rev URL' \{\} \;
 find . -name *.css -exec svn propset svn:keywords 'Author Date Id Rev URL' \{\} \;
 find . -name *.properties -exec svn propset svn:keywords 'Author Date Id Rev URL' \{\} \;
-find . -name *.bat -exec svn propset svn:keywords 'Author Date Id Rev URL' \{\} \;
 find . -name *.sh -exec svn propset svn:keywords 'Author Date Id Rev URL' \{\} \;
+find . -name *.bat -exec svn propset svn:keywords 'Author Date Id Rev URL' \{\} \;
 
 find . -name *.java -exec svn propset svn:mime-type 'text/plain' \{\} \;
 find . -name *.cpp -exec svn propset svn:mime-type 'text/plain' \{\} \;
 find . -name *.h -exec svn propset svn:mime-type 'text/plain' \{\} \;
 find . -name *.properties -exec svn propset svn:mime-type 'text/plain' \{\} \;
-find . -name *.bat -exec svn propset svn:mime-type 'text/plain' \{\} \;
-find . -name *.sh -exec svn propset svn:mime-type 'text/plain' \{\} \;
+
+find . -name *.bat -exec svn propset svn:mime-type 'application/x-bat' \{\} \;
+find . -name *.sh -exec svn propset svn:mime-type 'application/x-sh' \{\} \;
 
 find . -name *.css -exec svn propset svn:mime-type 'text/css' \{\} \;
 find . -name *.js -exec svn propset svn:mime-type 'text/javascript' \{\} \;
@@ -45,3 +46,4 @@ find . -name *.tiff -exec svn propset svn:mime-type 'image/tiff' \{\} \;
 find . -name *.pdf -exec svn propset svn:mime-type 'application/pdf' \{\} \;
 
 find . -name *.sh -exec svn propset svn:executable ON \{\} \;
+find . -name *.bat -exec svn propset svn:executable ON \{\} \;
