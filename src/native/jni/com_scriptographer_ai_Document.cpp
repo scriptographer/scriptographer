@@ -784,7 +784,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createSpiral(JNIEn
 }
 
 /*
- * com.scriptographer.ai.HitTest nativeHitTest(com.scriptographer.ai.Point point, int type, float tolerance, com.scriptographer.ai.Item art)
+ * com.scriptographer.ai.HitResult nativeHitTest(com.scriptographer.ai.Point point, int type, float tolerance, com.scriptographer.ai.Item art)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIEnv *env, jobject obj, jobject point, jint type, jfloat tolerance, jobject item) {
 	jobject hitTest = NULL;
@@ -844,7 +844,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 				if (hitType >= 0) {
 					jobject item = gEngine->wrapArtHandle(env, toolHit.object, doc);
 					jobject point = gEngine->convertPoint(env, &toolHit.point);
-					hitTest = gEngine->newObject(env, gEngine->cls_ai_HitTest, gEngine->cid_ai_HitTest, hitType, item,
+					hitTest = gEngine->newObject(env, gEngine->cls_ai_HitResult, gEngine->cid_ai_HitResult, hitType, item,
 												 (jint) toolHit.segment, (jdouble) toolHit.t, point);
 				}
 			}

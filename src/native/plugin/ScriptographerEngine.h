@@ -295,8 +295,8 @@ public:
 	jmethodID mid_ai_Annotator_onDraw;
 	jmethodID mid_ai_Annotator_onInvalidate;
 	
-	jclass cls_ai_HitTest;
-	jmethodID cid_ai_HitTest;
+	jclass cls_ai_HitResult;
+	jmethodID cid_ai_HitResult;
 	
 	jclass cls_ai_FileFormat;
 	jmethodID cid_ai_FileFormat;
