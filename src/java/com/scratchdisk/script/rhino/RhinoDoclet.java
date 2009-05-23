@@ -72,8 +72,9 @@ public class RhinoDoclet extends Doclet {
 			String[] arg = args[i];
 			// cut away the "-" from passed options
 			// not specifying a value for any given parameter equals to true
-			options.put(arg[0].substring(1), options,
-					arg.length > 1 ? arg[1] : "true");
+			String name = arg[0].substring(1);
+			String value = arg.length > 1 ? arg[1] : "true";
+			options.put(name, options, value);
 		}
 		Object value = options.get("script", options);
 		if (value != Scriptable.NOT_FOUND) {

@@ -54,6 +54,7 @@ var settings = {
 	bottom: options.bottom || '',
 	author: options.author || '',
 	filterClasses: (options.filterclasses || '').trim().split(/\s+/),
+	singleClass: options.singleclass || '',
 	packageSequence: (options.packagesequence || '').trim().split(/\s+/),
 	methodFilter: (options.methodfilter || '').trim().split(/\s+/),
 	classOrder: (function() {
@@ -1295,14 +1296,16 @@ ClassObject = Object.extend({
 			root.classes().each(function(cd) {
 				var add = true;
 				var name = cd.qualifiedName();
-				if (settings.filterClasses)
+				if (settings.singleClass)
+					add = name == settings.singleClass;
+				if (add && settings.filterClasses)
 					add = !settings.filterClasses.find(function(filter) {
 						return filter == name || filter.endsWith('*') &&
 							name.startsWith(filter.substring(0, filter.length - 1));
 					});
 				// Do not add any of Enums, since they are represented
 				// as strings in the scripting environment.
-				if (cd.hasSuperclass('java.lang.Enum'))
+				if (add && cd.hasSuperclass('java.lang.Enum'))
 					add = false;
 				if (add)
 					this.classes[name] = new ClassObject(cd);
@@ -1539,6 +1542,7 @@ function main() {
 	if (createSequence)
 		packageSequence = [];
 
+	// Create lookup for packages
 	root.specifiedPackages().each(function(pkg) {
 		var name = pkg.name();
 		packages[name] = pkg;

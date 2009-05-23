@@ -87,16 +87,18 @@
 		<echo message=""/>
 		<echo message=" available targets are:"/>
 		<echo message=""/>
-		<echo message=" compile    --> compiles the source code to ./classes"/>
-		<echo message=" jar        --> generates the ./lib/scriptographer.jar file"/>
-		<echo message=" install    --> installs the jar files in the Adobe Illustrator directory "/>
-		<echo message=" jni        --> generates jni headers and registerNatives.cpp in ./jni/"/>
-		<echo message=" jnibodies  --> generates empty jni bodies in ./jni/"/>
-		<echo message=" javadocs   --> generates the API docs"/>
-		<echo message=" docs       --> tries to retrieve the HTML documentation "/>
-		<echo message="                (may need proxy settings in startscript)"/>
+		<echo message=" compile      --> compiles the source code to ./classes"/>
+		<echo message=" jar          --> generates the ./lib/scriptographer.jar file"/>
+		<echo message=" buildnumber  --> increases the buildnumber that defines the revision"/>
+		<echo message=" resources    --> generates the resources needed to build the native plugin code"/>
+		<echo message=" packages     --> generates the packages for all distributions"/>
+		<echo message=" jniheaders   --> generates jni headers and registerNatives.cpp in ./jni/"/>
+		<echo message=" jnibodies    --> generates empty jni bodies in ./jni/"/>
+		<echo message=" javadocs     --> generates the API docs"/>
+		<echo message=" jsdocs       --> generatres the JS API docs"/>
+		<echo message=" templatedocs --> generatres the website templates for the online JS API docs"/>
 		<echo message=""/>
-		<echo message=" usage	    --> provides help on using the build tool (default)"/>
+		<echo message=" usage        --> provides help on using the build tool (default)"/>
 		<echo message=""/>
 		<echo message=" See comments inside the build.xml file for more details."/>
 		<echo message="-------------------------------------------------------------"/>
@@ -412,6 +414,17 @@
 	<!-- =================================================================== -->
 	<target name="rhinodoclet" depends="init">
 		<mkdir dir="${destdir}"/>
+		<!-- Set singleclass to empty if it's not defined -->
+		<condition property="singleclass" value="${singleclass}" else="">
+			<isset property="singleclass" />
+		</condition>
+		<!-- Prepend com.scriptographer to singleclass if it wasn't added already -->
+		<condition property="singleclass.value" value="${singleclass}" else="com.scriptographer.${singleclass}">
+			<or>
+				<matches string="${singleclass}" pattern="^com\.scriptographer\." />
+                <equals arg1="${singleclass}" arg2="" trim="true" />
+			</or>
+		</condition>
 		<!--
 		<javadoc packagenames="com.scriptographer.test"
 		-->
@@ -435,22 +448,24 @@
 					com.scriptographer.ai.Dictionary
 					com.scriptographer.ai.FileFormat
 					com.scriptographer.ai.Style
+					com.scriptographer.ai.FillStyle
+					com.scriptographer.ai.StrokeStyle
 					com.scriptographer.ai.TabletValue
-					com.scriptographer.ai.Tool
 					com.scriptographer.ui.Point
 					com.scriptographer.ui.Rectangle
 					com.scriptographer.ui.Size
 					com.scriptographer.ui.Notifier
 					com.scriptographer.ui.DialogGroupInfo
 					com.scriptographer.sg.Preferences
+					com.scriptographer.sg.Timer
 					com.scriptographer.js.*
 					com.scriptographer.util.*
 					java.*
 				"/>
 				<param name="-packagesequence" value="
-					com.scriptographer.sg
 					com.scriptographer.ai
 					com.scriptographer.ui
+					com.scriptographer.sg
 					com.scriptographer.test
 					"/>
 				<param name="-methodfilter" value="
@@ -463,6 +478,7 @@
 				<param name="-classorder" value="doclet/classorder.txt"/>
 				<param name="-templates" value="${templates}"/>
 				<param name="-nosummaries" value="true" />
+				<param name="-singleclass" value="${singleclass.value}" />
 			</doclet>
 		</javadoc>
 	</target>
