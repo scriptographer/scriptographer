@@ -43,3 +43,5 @@ find . -name *.tif -exec svn propset svn:mime-type 'image/tiff' \{\} \;
 find . -name *.tiff -exec svn propset svn:mime-type 'image/tiff' \{\} \;
 
 find . -name *.pdf -exec svn propset svn:mime-type 'application/pdf' \{\} \;
+
+find . -name *.sh -exec svn propset svn:executable ON \{\} \;

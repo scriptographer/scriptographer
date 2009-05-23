@@ -24,7 +24,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $Id: com_scriptographer_ui_Image.cpp 603 2008-11-07 00:53:53Z lehni $
+ * $Id$
  */
  
 #include "stdHeaders.h"

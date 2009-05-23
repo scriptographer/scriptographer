@@ -24,7 +24,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  *
- * $Id: uiGlobals.h 542 2008-04-15 01:10:34Z lehni $
+ * $Id$
  */
 
 ASErr ASAPI Dialog_onInit(ADMDialogRef dialog);
