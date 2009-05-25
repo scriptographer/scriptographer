@@ -810,15 +810,24 @@ Method = Member.extend({
  * A virtual field that unifies getter and setter functions, just like Rhino does
  */
 BeanProperty = Member.extend({
-	initialize: function(classObject, name, getter, setter) {
+	initialize: function(classObject, name, getter, setter, setters) {
 		this.base(classObject);
 		this.property = name;
 		this.getter = getter;
 		this.setter = setter;
+		this.setters = setters;
+		// Set reference to the bean, so getters / setters can automatically 
+		// be hidden without removing them.
 		getter.bean = this;
-		if (setter)
-			setter.bean = this;
-
+		if (setters) {
+			setters.list.each(function(setter) {
+				// Make sure we're only setting it on real setters.
+				// There might be other functions with more than one parameter,
+				// which still need to show in the documentation.
+				if (BeanProperty.isSetter(setter))
+					setter.bean = this;
+			}, this);
+		}
 		var tags = getter.tags('jsbean');
 		if (!tags.length && setter)
 			tags = setter.tags('jsbean');
@@ -838,6 +847,9 @@ BeanProperty = Member.extend({
 	},
 
 	isVisible: function() {
+		// SG Convention: Hide read-only is-getter beans and show is-method instead.
+		if (/^is/.test(this.getter.name()) && !this.setter)
+			return false;
 		var getterHide = this.getter.tags('jshide')[0];
 		var setterHide = this.setter && this.setter.tags('jshide')[0];
 		if (getterHide) getterHide = getterHide.text();
@@ -875,6 +887,29 @@ BeanProperty = Member.extend({
 
 	returnType: function() {
 		return this.getter.returnType();
+	},
+
+	statics: {
+		isGetter: function(method) {
+			// As a convention, only add non static bean properties to
+			// the documentation. static properties are all supposed to
+			// be uppercae and constants.
+			// TODO: Do the same on Rhino through filtering
+			return method.parameters().length == 0 && !method.isStatic()
+				&& method.returnType().typeName() != 'void';
+		},
+
+		isSetter: function(method, type, conversion) {
+			var params = method.parameters(), typeClass, paramName;
+			return !method.isStatic()
+				&& method.returnType().typeName() == 'void' && params.length == 1
+				&& (!type
+					|| params[0].typeName() == type.typeName()
+					// TODO: checking both hasSuperclass and hasInterface is necessary to simulate isAssignableFrom
+					// Think of adding this to Type, and calling it here
+					|| conversion && (typeClass = type.asClassDoc()) && (paramName = params[0].paramType().qualifiedName())
+						&& (typeClass.hasSuperclass(paramName) || typeClass.hasInterface(paramName)));
+		}
 	}
 });
 
@@ -884,8 +919,8 @@ BeanProperty = Member.extend({
 MemberList = Object.extend({
 	initialize: function(classObject, name) {
 		this.classObject = classObject;
-		this.lists = [];
-		// used in scanBeanProperties:
+		this.list = [];
+		// Used in scanBeanProperties:
 		this.name = name;
 	},
 
@@ -902,7 +937,7 @@ MemberList = Object.extend({
 			}
 
 			// See if we can add to an existing Member:
-			this.lists.each(function(m) {
+			this.list.each(function(m) {
 				if (m.add(member)) {
 					mem = m;
 					throw $break;
@@ -912,14 +947,14 @@ MemberList = Object.extend({
 			if (!mem) {
 				mem = new Method(this.classObject, name);
 				if (mem.add(member))
-					this.lists.push(mem);
+					this.list.push(mem);
 			}
 		} else {
 			if (member instanceof Member)
 				mem = member;
 			else
 				mem = new Member(this.classObject, member);
-			this.lists.push(mem);
+			this.list.push(mem);
 		}
 		if (mem) {
 			// BeanProperties do not need to be put in the lookup table
@@ -934,58 +969,33 @@ MemberList = Object.extend({
 	},
 
 	init: function() {
-		this.lists.each(function(mem) {
-			mem.init();
+		this.list.each(function(member) {
+			member.init();
 		});
 	},
 
 	appendTo: function(list) {
-		return list.append(this.lists);
+		return list.append(this.list);
 	},
 
-	extractGetMethod: function() {
-		// Inspect the list of all MemberBox for the only one having no
-		// parameters
-		var name = this.name;
-		return this.lists.find(function(method) {
-			// Does getter method have an empty parameter list with a return
-			// value (eg. a getSomething() or isSomething())?
+	extractGetter: function() {
+		return this.list.find(function(method) {
+			if (BeanProperty.isGetter(method))
+				return method;
+		}, this);
+	},
 
-			// As a convention, only add non static bean properties to
-			// the documentation. static properties are all supposed to
-			// be uppercae and constants.
-			// TODO: Control this through a tag instead!
-			if (method.parameters().length == 0 && !method.isStatic() && 
-				method.returnType().typeName() != 'void')
+	extractSetter: function(type) {
+		// Make two passes: the first to find a method with direct type
+		// assignment, and a second one to find a widening conversion.
+		var found = null;
+		for (var pass = 1; pass <= 2 && !found; ++pass) {
+			found = this.list.find(function(method) {
+				if (BeanProperty.isSetter(method, type, pass == 2))
 					return method;
-		});
-	},
-
-	extractSetMethod: function(type) {
-		// Note: it may be preferable to allow
-		// NativeJavaMethod.findFunction()
-		//	   to find the appropriate setter; unfortunately, it requires an
-		//	   instance of the target arg to determine that.
-
-		// Make two passes: one to find a method with direct type
-		// assignment,
-		// and one to find a widening conversion.
-		for (var pass = 1; pass <= 2; ++pass) {
-			var found = this.lists.find(function(method) {
-				var params = method.parameters();
-				// As a convention, only add non static bean properties to
-				// the documentation.
-				// Static properties are all supposed to be uppercae and constants
-				if (!method.isStatic() &&
-					method.returnType().typeName() == 'void' && params.length == 1 &&
-					pass == 1 && params[0].typeName() == type.typeName() ||
-					pass == 2 /* TODO: && params[0].isAssignableFrom(type) */)
-						return method;
-			});
-			if (found)
-				return found;
+			}, this);
 		}
-		return null;
+		return found;
 	}
 });
 
@@ -995,7 +1005,7 @@ MemberList = Object.extend({
 MemberListGroup = Object.extend({
 	initialize: function(classObject) {
 		this.classObject = classObject;
-		this.groups = new Hash();
+		this.lists = new Hash();
 		this.methodLookup = new Hash();
 	},
 
@@ -1009,7 +1019,7 @@ MemberListGroup = Object.extend({
 				if (type)
 					key = type.typeName() + type.dimension() + ' ' + name;
 
-			group = this.groups[key];
+			group = this.lists[key];
 			if (!group) {
 				group = new MemberList(this.classObject, name); 
 				this.methodLookup[name] = group;
@@ -1021,7 +1031,7 @@ MemberListGroup = Object.extend({
 			group = new MemberList(this.classObject, key); 
 		}
 		group.add(member);
-		this.groups[key] = group;
+		this.lists[key] = group;
 	},
 
 	addAll: function(members) {
@@ -1031,19 +1041,19 @@ MemberListGroup = Object.extend({
 	},
 
 	init: function() {
-		this.groups.each(function(group) {
+		this.lists.each(function(group) {
 			group.init();
 		});
 	},
 
 	contains: function(key) {
-		return this.groups[key] != null;
+		return this.lists[key] != null;
 	},
 
 	getFlattened: function() {
 		if (!this.flatList) {
 			// now sort the lists alphabetically
-			var sorted = this.groups.sortBy(function(group) {
+			var sorted = this.lists.sortBy(function(group) {
 				var name = group.name, ch = name[0];
 				// Swap the case of the first char so the sorting shows
 				// lowercase members first
@@ -1060,11 +1070,11 @@ MemberListGroup = Object.extend({
 	},
 
 	scanBeanProperties: function(fields) {
-		this.groups.each(function(member) {
+		this.lists.each(function(member) {
 			var name = member.name;
 			// Is this a getter?
 			var m = name.match(/^(get|is)(.*)$/), kind = m && m[1], component = m && m[2];
-			if (component && kind == 'get' || kind == 'is') {
+			if (kind && component) {
 				// Find the bean property name.
 				var property = component;
 				var match = component.match(/^([A-Z])([a-z]+.*|$)/);
@@ -1072,15 +1082,15 @@ MemberListGroup = Object.extend({
 				// If we already have a member by this name, don't do this
 				// property.
 				if (!fields.contains(property)) {
-					var getter = member.extractGetMethod(), setter = null;
+					var getter = member.extractGetter(), setter = null;
 					if (getter) {
 						// We have a getter. Now, do we have a setter?
 						var setters = this.methodLookup['set' + component];
 						// Is this value a method?
 						if (setters)
-							setter = setters.extractSetMethod(getter.returnType());
+							setter = setters.extractSetter(getter.returnType());
 						// Make the property.
-						var bean = new BeanProperty(this.classObject, property, getter, setter);
+						var bean = new BeanProperty(this.classObject, property, getter, setter, setters);
 						if (bean.isVisible())
 							fields.add(bean);
 					}
@@ -1090,7 +1100,7 @@ MemberListGroup = Object.extend({
 	},
 
 	contains: function(name) {
-		return this.groups.has(name);
+		return this.lists.has(name);
 	}
 });
 
