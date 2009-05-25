@@ -32,6 +32,7 @@
 package com.scriptographer.script.rhino;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.MemberBox;
 import org.mozilla.javascript.Scriptable;
 
 import com.scriptographer.ai.Color;
@@ -94,5 +95,19 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 			}
 		}
 		return res;
+	}
+
+	public boolean shouldAddBean(Class<?> cls, boolean isStatic,
+			MemberBox getter, MemberBox setter) {
+		Package pkg = cls.getPackage();
+		return getter != null
+				&& !(pkg != null && pkg.getName().startsWith("com.scriptographer."))
+				|| setter != null || !getter.getName().startsWith("is");
+	}
+
+	public boolean shouldRemoveGetterSetter(Class<?> cls, boolean isStatic,
+			MemberBox getter, MemberBox setter) {
+		Package pkg = cls.getPackage();
+		return pkg != null && pkg.getName().startsWith("com.scriptographer.");
 	}
 }

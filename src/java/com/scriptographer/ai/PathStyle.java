@@ -132,6 +132,15 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		init(style);
 	}
 
+	public PathStyle() {
+		super();
+		this.fill = new FillStyle(this);
+		this.stroke = new StrokeStyle(this);
+	}
+
+	/**
+	 * @jshide
+	 */
 	public PathStyle(FillStyle fill, StrokeStyle stroke) {
 		super();
 		this.fill = new FillStyle(fill, this);

@@ -114,7 +114,7 @@ public class ExtendedJavaObject extends NativeJavaObject {
 				error = e;
 			}
 		}
-		// Still here? Let's try other things
+		// Still here? An exception has happened. Let's try other things
 		if (name.equals("prototype")) {
 			if (value instanceof Scriptable)
 				setPrototype((Scriptable) value);

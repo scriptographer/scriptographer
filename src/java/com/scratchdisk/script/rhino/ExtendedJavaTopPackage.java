@@ -73,22 +73,6 @@ public class ExtendedJavaTopPackage extends ExtendedJavaPackage {
 		ExtendedJavaTopPackage top = new ExtendedJavaTopPackage(loader);
 		top.setPrototype(getObjectPrototype(scope));
 		top.setParentScope(scope);
-
-		/* TODO: needed?
-		String[] names = Kit.semicolonSplit(commonPackages);
-		for (int i = 0; i != names.length; ++i)
-			top.forcePackage(names[i], scope);
-
-		// getClass implementation
-		IdFunctionObject getClass =
-				new IdFunctionObject(top, FTAG, Id_getClass, "getClass", 1,
-						scope);
-		if (sealed) {
-			getClass.sealObject();
-		}
-		getClass.exportAsScopeProperty();
-		*/
-
 		// It's safe to downcast here since initStandardObjects takes
 		// a ScriptableObject.
 		ScriptableObject global = (ScriptableObject) scope;

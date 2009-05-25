@@ -110,7 +110,7 @@ public class ListWrapper extends ExtendedJavaObject {
 
 	@SuppressWarnings("unchecked")
 	public void put(String name, Scriptable start, Object value) {
-		// Since lists have the native size method that's alredy accessible
+		// Since lists have the native size method that's already accessible
 		// through "length", offer access here to get/setSize if these are
 		// present, such as in Scriptographer's HierarchyList, where they
 		// get / set the item's dimensions.
