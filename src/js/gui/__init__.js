@@ -57,7 +57,7 @@ function loadLibraries(dir) {
 					if (engine) {
 						var scr = engine.compile(file);
 						if (scr)
-							scr.execute(engine.getGlobalScope());
+							scr.execute(engine.globalScope);
 					}
 				} catch (e) {
 					print(e);
@@ -80,7 +80,7 @@ function chooseScriptDirectory(dir) {
 
 function setScriptDirectory(dir) {
 	// Tell Scriptographer about where to look for scripts.
-	ScriptographerEngine.setScriptDirectory(dir);
+	ScriptographerEngine.scriptDirectory = dir;
 	// Load librarires
 	loadLibraries(new File(dir, 'libraries'));
 }

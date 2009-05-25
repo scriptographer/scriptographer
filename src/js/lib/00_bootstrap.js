@@ -327,7 +327,6 @@ $type = Base.type;
 
 Hash = Base.extend(Enumerable, {
 	_hide: true,
-	_beans: true,
 	_generics: true,
 
 	initialize: function() {

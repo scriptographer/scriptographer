@@ -29,7 +29,7 @@
  * $Id$
  */
 
-if (app.macintosh) {
+if (app.isMacintosh()) {
 	function executeProcess(command, input) {
 		var process = java.lang.Runtime.getRuntime().exec(command);
 		if (input) {

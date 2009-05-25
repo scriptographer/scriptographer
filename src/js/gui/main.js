@@ -363,7 +363,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		image: getImage('console.png'),
 		size: buttonSize,
 		onClick: function() {
-			consoleDialog.setVisible(!consoleDialog.isVisible());
+			consoleDialog.visible = !consoleDialog.visible;
 		}
 	};
 
