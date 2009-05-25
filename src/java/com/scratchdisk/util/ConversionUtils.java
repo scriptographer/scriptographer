@@ -93,6 +93,7 @@ public class ConversionUtils {
             return ((String) val).length() != 0;
         if (val instanceof Number) {
             double d = ((Number) val).doubleValue();
+            // Compare with itself to make sure it's not NaN
             return (d == d && d != 0.0);
         }
         return true;

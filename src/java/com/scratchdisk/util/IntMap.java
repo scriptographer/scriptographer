@@ -487,7 +487,7 @@ public class IntMap<V> extends AbstractMap<Integer, V> {
 		// current and next entry; this assures that if hasNext()
 		// returns true, next() will actually return a valid element.
 		int currentKey, nextKey;
-		Object currentValue, nextValue;
+		Object nextValue;
 
 		int expectedModCount;
 
@@ -511,7 +511,6 @@ public class IntMap<V> extends AbstractMap<Integer, V> {
 				index = i;
 				if (e == null) {
 					currentKey = -1;
-					currentValue = null;
 					return false;
 				}
 				nextKey = e.key;
@@ -539,7 +538,6 @@ public class IntMap<V> extends AbstractMap<Integer, V> {
 			previous = entry;
 			entry = entry.next;
 			currentKey = nextKey;
-			currentValue = nextValue;
 			nextKey = -1;
 			nextValue = null;
 			return previous;
@@ -552,7 +550,6 @@ public class IntMap<V> extends AbstractMap<Integer, V> {
 			IntMap.this.remove(currentKey);
 			previous = null;
 			currentKey = -1;
-			currentValue = null;
 			expectedModCount = modCount;
 		}
 	}

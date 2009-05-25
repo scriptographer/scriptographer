@@ -539,7 +539,6 @@ public abstract class Item extends DocumentObject {
 	 * default descriptive name, rather then a user-assigned name.
 	 * 
 	 * @return <tt>true</tt> if it's name is default, <tt>false</tt> otherwise.
-	 * @jshide bean
 	 */
 	public native boolean isDefaultName();
 
