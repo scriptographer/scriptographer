@@ -1123,17 +1123,9 @@ public abstract class Item extends DocumentObject {
 	}
 
 	public String toString() {
-		String name = getClass().getName();
-		StringBuffer str = new StringBuffer();
-		str.append(name.substring(name.lastIndexOf('.') + 1));
-		str.append(" (");
-		if (isDefaultName()) {
-			str.append("@").append(Integer.toHexString(handle));
-		} else {
-			str.append(getName());
-		}
-		str.append(")");
-		return str.toString();
+		return isDefaultName()
+				? super.toString()
+				: getClass().getSimpleName() + " (" +  getName() + ")";
 	}
 		
 	private native Raster nativeRasterize(int type, float resolution,

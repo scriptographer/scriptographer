@@ -145,4 +145,9 @@ abstract class NativeObject {
 		}
 		return false;
 	}
+
+	public String toString() {
+		return getClass().getSimpleName() + " (@"
+				+ Integer.toHexString(handle != 0 ? handle : this.hashCode()) + ")";
+	}
 }

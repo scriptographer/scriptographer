@@ -109,4 +109,8 @@ public class Dictionary extends AbstractMap<String, Object> {
 	protected static Dictionary wrapHandle(int handle, int docHandle) {
 		return wrapHandle(handle, Document.wrapHandle(docHandle)); 
 	}
+
+	public String toString() {
+		return getClass().getSimpleName() + " (@" + Integer.toHexString(handle) + ")";
+	}
 }
