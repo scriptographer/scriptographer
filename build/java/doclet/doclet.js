@@ -1009,7 +1009,7 @@ MemberListGroup = Object.extend({
 				if (type)
 					key = type.typeName() + type.dimension() + ' ' + name;
 
-			group = this.groups[key]; 
+			group = this.groups[key];
 			if (!group) {
 				group = new MemberList(this.classObject, name); 
 				this.methodLookup[name] = group;

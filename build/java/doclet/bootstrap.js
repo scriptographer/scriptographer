@@ -320,7 +320,6 @@ $check = Base.check;
 $type = Base.type;
 
 Hash = Base.extend(Enumerable, {
-	_beans: true,
 	_generics: true,
 
 	initialize: function() {

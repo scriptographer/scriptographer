@@ -518,10 +518,10 @@ Template.prototype = {
 				switch (suffix) {
 				case 'index': return loop.index;
 				case 'length': return loop.length;
-				case 'isFirst': return '(' + loop.index + ' == 0)';
-				case 'isLast': return '(' + loop.index + ' == ' + loop.length + ' - 1)';
-				case 'isEven': return '((' + loop.index + ' & 1) == 0)';
-				case 'isOdd': return '((' + loop.index + ' & 1) == 1)';
+				case 'first': return '(' + loop.index + ' == 0)';
+				case 'last': return '(' + loop.index + ' == ' + loop.length + ' - 1)';
+				case 'even': return '((' + loop.index + ' & 1) == 0)';
+				case 'odd': return '((' + loop.index + ' & 1) == 1)';
 				}
 			}
 			return part;

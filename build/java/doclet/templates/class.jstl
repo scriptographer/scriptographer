@@ -31,7 +31,7 @@
 
 <% #inheritance %>
 <% foreach $class in param.classes %>
-	<% if $class#isFirst %>
+	<% if $class#first %>
 <%= settings.section2Open %>Inheritance<%= settings.section2Close %>
 	<% else %>
 <br />
