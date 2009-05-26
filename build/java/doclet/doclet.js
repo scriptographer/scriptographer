@@ -241,14 +241,8 @@ Type = Object.extend({
 		return cd && cd.qualifiedName() || '';
 	},
 
-	dimension: function() {
-		return '';
-	},
-
 	isArray: function() {
-		// var cd = this.asClassDoc();
-		return this.dimension() != ''/* || cd &&
-			cd.hasInterface('java.util.Collection')*/;
+		return this.dimension() != ''/* || this.hasInterface('java.util.Collection')*/;
 	},
 
 	isNumber: function() {
