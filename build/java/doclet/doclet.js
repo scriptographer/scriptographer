@@ -246,13 +246,13 @@ Type = Object.extend({
 	},
 
 	isNumber: function() {
-		return !this.isArray() && (this.hasSuperclass('java.lang.Number') ||
-			/^(short|int|long|double|float)$/.test(this.typeName()));
+		return !this.isArray() && (Type.isNumber(this.typeName())
+			|| this.hasSuperclass('java.lang.Number'));
 	},
 
 	isBoolean: function() {
-		return !this.isArray() && (this.hasSuperclass('java.lang.Boolean') ||
-			this.typeName() == 'boolean');
+		return !this.isArray() && (this.typeName() == 'boolean'
+			|| this.hasSuperclass('java.lang.Boolean'));
 	},
 
 	isMap: function() {
@@ -286,15 +286,20 @@ Type = Object.extend({
 	},
 
 	isCompatible: function(type) {
-		return this.typeName() == type.typeName() && this.dimension() == type.dimension() ||
-			this.subclassOf(type.asClassDoc()) || type.subclassOf(this.asClassDoc()) ||
-			this.isNumber() && type.isNumber() ||
-			this.isBoolean() && type.isBoolean() ||
-			this.isArray() && type.isArray() ||
-			this.isMap() && type.isMap() ||
-			this.isPoint() && type.isPoint() ||
-			this.isRectangle() && type.isRectangle() ||
-			this.isFile() && type.isFile();
+		var cd1 = this.asClassDoc(), cd2 = type.asClassDoc();
+		return this.typeName() == type.typeName() && this.dimension() == type.dimension()
+			|| cd2 && this.subclassOf(cd2) || cd1 && type.subclassOf(cd1)
+			|| this.isNumber() && type.isNumber()
+			|| this.isBoolean() && type.isBoolean()
+			|| this.isMap() && type.isMap()
+			|| this.isPoint() && type.isPoint()
+			|| this.isRectangle() && type.isRectangle()
+			|| this.isFile() && type.isFile()
+			|| this.isArray() && type.isArray() && (
+				cd1 && cd2 && new Type(cd1).isCompatible(new Type(cd2))
+				|| this.typeName() == type.typeName()
+				|| Type.isNumber(this.typeName()) && Type.isNumber(type.typeName())
+			);
 	},
 
 	renderLink: function(additional) {
@@ -308,7 +313,7 @@ Type = Object.extend({
 			doc = doc && new Type(doc);
 			str = 'Array of ' + (doc
 				? doc.renderLink(true)
-				: /^(short|int|long|float|double)$/.test(this.typeName())
+				: Type.isNumber(this.typeName())
 					? 'Number'
 					: this.typeName().capitalize());
 		} else if (this.isMap()) {
@@ -373,6 +378,12 @@ Type = Object.extend({
 						+ ', Keys: ' + keyType.getEnumValues() + ')';
 				}
 			}
+		}
+	},
+
+	statics: {
+		isNumber: function(typeName) {
+			return /^(short|int|long|float|double)$/.test(typeName);
 		}
 	}
 });
