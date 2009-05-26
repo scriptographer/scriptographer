@@ -13,6 +13,12 @@ importPackage(Packages.com.scriptographer.script);
 include('bootstrap.js');
 include('template.js');
 
+Template.inject({
+	reportMacroError: function(error, command, out) {
+		throw error;
+	}
+});
+
 function print() {
 	java.lang.System.out.println($A(arguments).join(', '));
 }
@@ -198,74 +204,96 @@ Type = Object.extend({
 	_extended: true,
 
 	initialize: function(type) {
+		if (!type)
+			throw 'Parameter for Type constructor cannot be null';
 		// Enhance the prototype of the native object with Type.prototype, and return
 		// type instead of this!
 		// We need to do this because it is not possible to access the native
 		// class for types. Sometimes they seem to just be ClassDocImpls
-		if (!type._extended)
-			type.inject(this.__proto__);
+		if (!type._extended) {
+			// Inject only what's not there already, to avoid overriding native
+			// functions, e.g. hasSuperclass, subclassOf, qualifiedName, etc
+			this.__proto__.each(function(field, key) {
+				if (!this[key])
+					this[key] = field;
+			}, type);
+		}
 		return type;
 	},
 
-	isNumber: function() {
+	hasSuperclass: function(superclass) {
 		var cd = this.asClassDoc();
-		return cd && cd.hasSuperclass('java.lang.Number') ||
-			/^(short|int|long|double|float)$/.test(this.typeName());
+		return cd && cd.hasSuperclass(superclass) || false;
 	},
 
-	isBoolean: function() {
+	hasInterface: function(face) {
 		var cd = this.asClassDoc();
-		return cd && cd.hasSuperclass('java.lang.Boolean') ||
-			this.typeName() == 'boolean';
+		return cd && cd.hasInterface(face) || false;
+	},
+
+	subclassOf: function(other) {
+		var cd = this.asClassDoc();
+		return cd && other && cd.subclassOf(other) || false;
+	},
+
+	qualifiedName: function() {
+		var cd = this.asClassDoc();
+		return cd && cd.qualifiedName() || '';
+	},
+
+	dimension: function() {
+		return '';
 	},
 
 	isArray: function() {
-		var cd = this.asClassDoc();
+		// var cd = this.asClassDoc();
 		return this.dimension() != ''/* || cd &&
 			cd.hasInterface('java.util.Collection')*/;
 	},
-	
+
+	isNumber: function() {
+		return !this.isArray() && (this.hasSuperclass('java.lang.Number') ||
+			/^(short|int|long|double|float)$/.test(this.typeName()));
+	},
+
+	isBoolean: function() {
+		return !this.isArray() && (this.hasSuperclass('java.lang.Boolean') ||
+			this.typeName() == 'boolean');
+	},
+
 	isMap: function() {
-		var cd = this.asClassDoc();
-		return cd && cd.hasInterface('java.util.Map');
+		return !this.isArray() && this.hasInterface('java.util.Map');
 	},
 
 	isEnum: function() {
-		var cd = this.asClassDoc();
-		return cd && cd.hasSuperclass('java.lang.Enum');
+		return !this.isArray() && this.hasSuperclass('java.lang.Enum');
 	},
 
 	isEnumSet: function() {
-		var cd = this.asClassDoc();
-		return cd && cd.qualifiedName() == 'java.util.EnumSet';
+		return !this.isArray() && this.qualifiedName() == 'java.util.EnumSet';
 	},
 
 	isEnumMap: function() {
-		var cd = this.asClassDoc();
-		return cd && cd.qualifiedName() == 'java.util.EnumMap';
+		return !this.isArray() && this.qualifiedName() == 'java.util.EnumMap';
 	},
-	
+
 	isPoint: function() {
-		var cd = this.asClassDoc();
-		return cd && (cd.hasSuperclass('com.scriptographer.ai.Point') ||
-			cd.hasSuperclass('com.scriptographer.ui.Point'));
+		return !this.isArray() && (this.hasSuperclass('com.scriptographer.ai.Point') ||
+			this.hasSuperclass('com.scriptographer.ui.Point'));
 	},
 
 	isRectangle: function() {
-		var cd = this.asClassDoc();
-		return cd && (cd.hasSuperclass('com.scriptographer.ai.Rectangle') ||
-			cd.hasSuperclass('com.scriptographer.ui.Rectangle'));
+		return !this.isArray() && (this.hasSuperclass('com.scriptographer.ai.Rectangle') ||
+			this.hasSuperclass('com.scriptographer.ui.Rectangle'));
 	},
 
 	isFile: function() {
-		var cd = this.asClassDoc();
-		return cd && (cd.hasSuperclass('java.io.File'));
+		return !this.isArray() && this.hasSuperclass('java.io.File');
 	},
-	
+
 	isCompatible: function(type) {
-		var cd1 = this.asClassDoc(), cd2 = type.asClassDoc();
 		return this.typeName() == type.typeName() && this.dimension() == type.dimension() ||
-			cd1 && cd2 && (cd1.subclassOf(cd2) || cd2.subclassOf(cd1)) ||
+			this.subclassOf(type.asClassDoc()) || type.subclassOf(this.asClassDoc()) ||
 			this.isNumber() && type.isNumber() ||
 			this.isBoolean() && type.isBoolean() ||
 			this.isArray() && type.isArray() ||
@@ -282,7 +310,8 @@ Type = Object.extend({
 		} else if (this.isBoolean()) {
 			str = 'Boolean';
 		} else if (this.isArray()) {
-			var doc = new Type(this.asClassDoc());
+			var doc = this.asClassDoc();
+			doc = doc && new Type(doc);
 			str = 'Array of ' + (doc
 				? doc.renderLink(true)
 				: /^(short|int|long|float|double)$/.test(this.typeName())
@@ -427,11 +456,13 @@ MemberDocImpl.inject({
 				return false;
 			var params1 = this.parameters();
 			var params2 = member.parameters();
-			// rule 3: if not the same amount of params, the types need to be the same:
+			// rule 3: if not the same amount of params, the types and names need to be the same:
 			var count = Math.min(params1.length, params2.length);
-			for (var i = 0; i < count; i++)
-				if (!params1[i].paramType().isCompatible(params2[i].paramType()))
+			for (var i = 0; i < count; i++) {
+				if (params1[i].name() != params2[i].name()
+					|| !params1[i].paramType().isCompatible(params2[i].paramType()))
 					return false;
+			}
 			return true;
 		}
 		// Fields cannot be grouped
@@ -489,7 +520,7 @@ Member = Object.extend({
 			return this.renderTemplate('member', {
 				classDoc: classDoc, member: member, containingClass: containingClass,
 				throwsTags: this.member && this.member.throwsTags ? this.member.throwsTags() : null,
-				returnType: returnType && !returnType.typeName().equals('void') ? returnType : null
+				returnType: returnType && returnType.typeName() != 'void' ? returnType : null
 			});
 		}
 	},
@@ -578,7 +609,7 @@ Member = Object.extend({
 	},
 
 	isSimilar: function(mem) {
-		return this.isStatic() == mem.isStatic() && this.name().equals(mem.name());
+		return this.isStatic() == mem.isStatic() && this.name() == mem.name();
 	},
 
 	statics: {
@@ -800,8 +831,8 @@ Method = Member.extend({
 	isSimilar: function(obj) {
 		if (obj instanceof Method)
 			return this.isStatic() == obj.isStatic() &&
-				this.methodName.equals(obj.name()) &&
-				this.renderParameters().equals(obj.renderParameters());
+				this.methodName == obj.name() &&
+				this.renderParameters() == obj.renderParameters();
 		return false;
 	}
 });
@@ -901,13 +932,15 @@ BeanProperty = Member.extend({
 
 		isSetter: function(method, type, conversion) {
 			var params = method.parameters(), typeClass, paramName;
+			var param = params.length == 1 && params[0];
 			return !method.isStatic()
 				&& method.returnType().typeName() == 'void' && params.length == 1
 				&& (!type
 					|| params[0].typeName() == type.typeName()
 					// TODO: checking both hasSuperclass and hasInterface is necessary to simulate isAssignableFrom
 					// Think of adding this to Type, and calling it here
-					|| conversion && (typeClass = type.asClassDoc()) && (paramName = params[0].paramType().qualifiedName())
+					|| conversion && (typeClass = type.asClassDoc())
+						&& (paramName = params[0].paramType().qualifiedName())
 						&& (typeClass.hasSuperclass(paramName) || typeClass.hasInterface(paramName)));
 		}
 	}
@@ -932,7 +965,7 @@ MemberList = Object.extend({
 			if (settings.methodFilter && member instanceof MethodDoc) {
 				// filter out methods that are not allowed:
 				if (settings.methodFilter.some(function(filter) {
-					return filter.equals(name);
+					return filter == name;
 				})) return false;
 			}
 
@@ -1123,7 +1156,7 @@ ClassObject = Object.extend({
 		// Add the members of direct invisible superclasses to
 		// this class for JS documentation:
 		while (superclass && !superclass.isVisible() &&
-				!superclass.qualifiedName().equals('java.lang.Object')) {
+				superclass.qualifiedName() != 'java.lang.Object') {
 			this.add(superclass, false);
 			superclass = superclass.superclass();
 		}
@@ -1241,7 +1274,7 @@ ClassObject = Object.extend({
 			var superclass = cd.superclass();
 
 			var classes = [];
-			while (superclass && !superclass.qualifiedName().equals('java.lang.Object')) {
+			while (superclass && superclass.qualifiedName() != 'java.lang.Object') {
 				if (superclass.isVisible()) {
 					var superProxy = ClassObject.get(superclass);
 					fields = separateStatic(superProxy.fields());
@@ -1444,7 +1477,6 @@ function processClasses(classes) {
 			root.addChild(cls);
 		}
 	});
-
 	classes.each(function(cd) {
 		var cls = cd.classObj;
 		if (cls && cd.superclass()) {
@@ -1469,7 +1501,7 @@ function renderLink(qualifiedName, name, anchor, title) {
 		if (qualifiedName) {
 			var path = getRelativeIdentifier(qualifiedName).replace('.', '/');
 			// Link to the index file for packages
-			if (name.charAt(0).isLowerCase() && !name.equals('global'))
+			if (name.charAt(0).isLowerCase() && name != 'global')
 				path += '/index';
 			if (settings.templates)
 				path = '/reference/' + path.toLowerCase() + '/';
