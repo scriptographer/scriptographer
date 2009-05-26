@@ -76,6 +76,7 @@ var settings = {
 		}
 		return classOrder;
 	})(),
+	sortMembers: options.sortmembers == 'true',
 	templates: options.templates == 'true',
 	inherited: options.noinherited != 'true',
 	summaries: options.nosummaries != 'true',
@@ -241,8 +242,18 @@ Type = Object.extend({
 		return cd && cd.qualifiedName() || '';
 	},
 
+	typeArguments: function() {
+		return [];
+	},
+
 	isArray: function() {
-		return this.dimension() != ''/* || this.hasInterface('java.util.Collection')*/;
+		return this.dimension() != '';
+	},
+
+	isList: function() {
+		if (this.hasInterface('com.scratchdisk.list.ReadOnlyList'))
+			print(this.typeArguments()[0].extendsBounds()[0].getClass());
+		return this.hasInterface('com.scratchdisk.list.ReadOnlyList');
 	},
 
 	isNumber: function() {
@@ -856,7 +867,7 @@ BeanProperty = Member.extend({
 		// be hidden without removing them.
 		getter.bean = this;
 		if (setters) {
-			setters.list.each(function(setter) {
+			setters.members.each(function(setter) {
 				// Make sure we're only setting it on real setters.
 				// There might be other functions with more than one parameter,
 				// which still need to show in the documentation.
@@ -954,10 +965,10 @@ BeanProperty = Member.extend({
 /**
  * A list of members that are unified under the same name 
  */
-MemberList = Object.extend({
+MemberGroup = Object.extend({
 	initialize: function(classObject, name) {
 		this.classObject = classObject;
-		this.list = [];
+		this.members = [];
 		// Used in scanBeanProperties:
 		this.name = name;
 	},
@@ -975,7 +986,7 @@ MemberList = Object.extend({
 			}
 
 			// See if we can add to an existing Member:
-			this.list.each(function(m) {
+			this.members.each(function(m) {
 				if (m.add(member)) {
 					mem = m;
 					throw $break;
@@ -985,14 +996,14 @@ MemberList = Object.extend({
 			if (!mem) {
 				mem = new Method(this.classObject, name);
 				if (mem.add(member))
-					this.list.push(mem);
+					this.members.push(mem);
 			}
 		} else {
 			if (member instanceof Member)
 				mem = member;
 			else
 				mem = new Member(this.classObject, member);
-			this.list.push(mem);
+			this.members.push(mem);
 		}
 		if (mem) {
 			// BeanProperties do not need to be put in the lookup table
@@ -1007,17 +1018,17 @@ MemberList = Object.extend({
 	},
 
 	init: function() {
-		this.list.each(function(member) {
+		this.members.each(function(member) {
 			member.init();
 		});
 	},
 
 	appendTo: function(list) {
-		return list.append(this.list);
+		return list.append(this.members);
 	},
 
 	extractGetter: function() {
-		return this.list.find(function(method) {
+		return this.members.find(function(method) {
 			if (BeanProperty.isGetter(method))
 				return method;
 		}, this);
@@ -1028,7 +1039,7 @@ MemberList = Object.extend({
 		// assignment, and a second one to find a widening conversion.
 		var found = null;
 		for (var pass = 1; pass <= 2 && !found; ++pass) {
-			found = this.list.find(function(method) {
+			found = this.members.find(function(method) {
 				if (BeanProperty.isSetter(method, type, pass == 2))
 					return method;
 			}, this);
@@ -1040,10 +1051,10 @@ MemberList = Object.extend({
 /**
  * A list of member lists, accessible by member name:
  */
-MemberListGroup = Object.extend({
+MemberGroupList = Object.extend({
 	initialize: function(classObject) {
 		this.classObject = classObject;
-		this.lists = new Hash();
+		this.groups = new Hash();
 		this.methodLookup = new Hash();
 	},
 
@@ -1057,19 +1068,19 @@ MemberListGroup = Object.extend({
 				if (type)
 					key = type.typeName() + type.dimension() + ' ' + name;
 
-			group = this.lists[key];
+			group = this.groups[key];
 			if (!group) {
-				group = new MemberList(this.classObject, name); 
+				group = new MemberGroup(this.classObject, name); 
 				this.methodLookup[name] = group;
 			}
 		} else {
 			// Fields won't be grouped, but for simplicty,
 			// greate groups of one element for each field,
 			// so it can be treated the same as functions:
-			group = new MemberList(this.classObject, key); 
+			group = new MemberGroup(this.classObject, key); 
 		}
 		group.add(member);
-		this.lists[key] = group;
+		this.groups[key] = group;
 	},
 
 	addAll: function(members) {
@@ -1079,37 +1090,37 @@ MemberListGroup = Object.extend({
 	},
 
 	init: function() {
-		this.lists.each(function(group) {
+		this.groups.each(function(group) {
 			group.init();
 		});
 	},
 
 	contains: function(key) {
-		return this.lists[key] != null;
+		return this.groups[key] != null;
 	},
 
 	getFlattened: function() {
-		if (!this.flatList) {
-			// now sort the lists alphabetically
-			var sorted = this.lists.sortBy(function(group) {
+		if (!this.flattened) {
+			// Now sort the groups alphabetically
+			var groups = settings.sortMembers ? this.groups.sortBy(function(group) {
 				var name = group.name, ch = name[0];
 				// Swap the case of the first char so the sorting shows
 				// lowercase members first
 				if (ch.isLowerCase()) ch = ch.toUpperCase();
 				else ch = ch.toLowerCase();
 				return ch + name.substring(1);
-			});
-			// flatten the list of groups:
-			this.flatList = sorted.each(function(group) {
+			}) : this.groups;
+			// Flatten the list of groups:
+			this.flattened = groups.each(function(group) {
 				group.appendTo(this);
 			}, []);
 		}
-		return this.flatList;
+		return this.flattened;
 	},
 
 	scanBeanProperties: function(fields) {
-		this.lists.each(function(member) {
-			var name = member.name;
+		this.groups.each(function(group) {
+			var name = group.name;
 			// Is this a getter?
 			var m = name.match(/^(get|is)(.*)$/), kind = m && m[1], component = m && m[2];
 			if (kind && component) {
@@ -1120,7 +1131,7 @@ MemberListGroup = Object.extend({
 				// If we already have a member by this name, don't do this
 				// property.
 				if (!fields.contains(property)) {
-					var getter = member.extractGetter(), setter = null;
+					var getter = group.extractGetter(), setter = null;
 					if (getter) {
 						// We have a getter. Now, do we have a setter?
 						var setters = this.methodLookup['set' + component];
@@ -1138,7 +1149,7 @@ MemberListGroup = Object.extend({
 	},
 
 	contains: function(name) {
-		return this.lists.has(name);
+		return this.groups.has(name);
 	}
 });
 
@@ -1153,9 +1164,9 @@ ClassObject = Object.extend({
 	},
 
 	init: function() {
-		this.fieldLists = new MemberListGroup(this);
-		this.methodLists = new MemberListGroup(this);
-		this.constructorLists = new MemberListGroup(this);
+		this.fieldLists = new MemberGroupList(this);
+		this.methodLists = new MemberGroupList(this);
+		this.constructorLists = new MemberGroupList(this);
 		this.add(this.classDoc, true);
 		var superclass = this.classDoc.superclass();
 		// Add the members of direct invisible superclasses to
