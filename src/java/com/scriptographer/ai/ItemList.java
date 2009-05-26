@@ -34,8 +34,8 @@ package com.scriptographer.ai;
 import java.util.HashMap;
 
 import com.scratchdisk.list.ArrayList;
-import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
+import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.list.StringIndexReadOnlyList;
 
 /**
@@ -48,7 +48,10 @@ public class ItemList extends ArrayList<Item> implements StringIndexReadOnlyList
 		map = new HashMap<Item, Item>();
 	}
 
-	public ItemList(ExtendedList<Item> items) {
+	/**
+	 * @jshide
+	 */
+	public ItemList(ReadOnlyList<Item> items) {
 		this();
 		addAll(items);
 	}

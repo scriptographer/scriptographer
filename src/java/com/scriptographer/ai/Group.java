@@ -31,8 +31,8 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.list.List;
 import com.scratchdisk.list.Lists;
+import com.scratchdisk.list.ReadOnlyList;
 
 /**
  * A Group is a collection of items. When you transform a Group, it's
@@ -56,15 +56,18 @@ public class Group extends Item {
 	}
 	
 	/**
-	 * Creates a group item from the supplied list of items
-	 * @param children either an {@link ItemList} or an array
+	 * @jshide
 	 */
-	public Group(List<? extends Item> children) {
+	public Group(ReadOnlyList<? extends Item> children) {
 		this();
 		for (Item item : children)
 			this.appendBottom(item);
 	}
 
+	/**
+	 * Creates a group item from the supplied list of items
+	 * @param children
+	 */
 	public Group(Item[] children) {
 		this(Lists.asList(children));
 	}

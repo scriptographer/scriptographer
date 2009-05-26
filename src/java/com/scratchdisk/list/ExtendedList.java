@@ -41,10 +41,10 @@ public interface ExtendedList<E> extends List<E> {
 	int lastIndexOf(Object element);
 	boolean contains(Object o);
 
-	boolean addAll(int index, List<? extends E> elements);
+	boolean addAll(int index, ReadOnlyList<? extends E> elements);
 	boolean addAll(int index, E[] elements);
 
-	boolean containsAll(List<?> elementsc);
+	boolean containsAll(ReadOnlyList<?> elementsc);
 	boolean containsAll(Object[] elements);
 
 	boolean removeAll(ExtendedList<?> elements);

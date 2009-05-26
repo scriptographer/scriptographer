@@ -31,8 +31,8 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.list.List;
 import com.scratchdisk.list.Lists;
+import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
@@ -67,7 +67,10 @@ public class Gradient extends DocumentObject {
 		return stops;
 	}
 
-	public void setStops(List<GradientStop> list) {
+	/**
+	 * @jshide
+	 */
+	public void setStops(ReadOnlyList<GradientStop> list) {
 		int size = list.size();
 		GradientStopList stops = getStops();
 		if (size < 2)

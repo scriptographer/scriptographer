@@ -99,6 +99,9 @@ public abstract class AbstractExtendedList<E> extends AbstractList<E>
 		return toArray(null);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public boolean retainAll(ExtendedList<?> elements) {
 		boolean modified = false;
 		for (int i = size() - 1; i >= 0; i--) {
@@ -113,6 +116,9 @@ public abstract class AbstractExtendedList<E> extends AbstractList<E>
 		return retainAll(Lists.asList(elements));
 	}
 
+	/**
+	 * @jshide
+	 */
 	public boolean removeAll(ExtendedList<?> elements) {
 		boolean modified = false;
 		for (int i = size() - 1; i >= 0; i--) {
@@ -127,7 +133,10 @@ public abstract class AbstractExtendedList<E> extends AbstractList<E>
 		return removeAll(Lists.asList(elements));
 	}
 
-	public boolean containsAll(List<?> elements) {
+	/**
+	 * @jshide
+	 */
+	public boolean containsAll(ReadOnlyList<?> elements) {
 		for (int i = elements.size() - 1; i >= 0; i--) {
 			if (!contains(elements.get(i)))
 				return false;

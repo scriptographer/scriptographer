@@ -35,8 +35,8 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
 
-import com.scratchdisk.list.List;
 import com.scratchdisk.list.Lists;
+import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
@@ -406,7 +406,11 @@ public abstract class Item extends DocumentObject {
 		return list;
 	}
 
-	public void setChildren(List elements) {
+	/**
+	 * Creates a group item from the supplied list of items
+	 * @param children either an {@link ItemList} or an array
+	 */
+	public void setChildren(ReadOnlyList<Item> elements) {
 		removeChildren();
 		for (int i = 0, size = elements.size(); i < size; i++) {
 			Object obj = elements.get(i);

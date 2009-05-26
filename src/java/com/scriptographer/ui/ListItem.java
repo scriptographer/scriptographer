@@ -34,12 +34,13 @@ package com.scriptographer.ui;
 import java.io.IOException;
 import java.util.Iterator;
 
-import com.scriptographer.ScriptographerEngine; 
 import com.scratchdisk.list.ExtendedList;
+import com.scratchdisk.list.List;
 import com.scratchdisk.list.ListIterator;
 import com.scratchdisk.list.Lists;
-import com.scratchdisk.list.List;
+import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.script.Callable;
+import com.scriptographer.ScriptographerEngine;
 
 /**
  * ListItem is a UI list item (e.g. ListBox, PopupMenu, ...) and a
@@ -389,7 +390,10 @@ public abstract class ListItem<E extends ListEntry> extends Item implements List
 		remove(0, size());
 	}
 
-	public boolean addAll(List<? extends E> elements) {
+	/**
+	 * @jshide
+	 */
+	public boolean addAll(ReadOnlyList<? extends E> elements) {
 		boolean modified = false;
 		int size = elements.size();
 		int index = size();

@@ -56,7 +56,7 @@ public abstract class AbstractList<E> extends AbstractReadOnlyList<E> implements
 	 * required by ExtendedList. It is easier to implement all
 	 * in one go like this though.
 	 */
-	public boolean addAll(int index, List<? extends E> elements) {
+	public boolean addAll(int index, ReadOnlyList<? extends E> elements) {
 		boolean modified = false;
 		for (int i = 0, size = elements.size(); i < size; i++) {
 			if (add(index++, elements.get(i)) != null)
@@ -65,7 +65,10 @@ public abstract class AbstractList<E> extends AbstractReadOnlyList<E> implements
 		return modified;
 	}
 
-	public boolean addAll(List<? extends E> elements) {
+	/**
+	 * @jshide
+	 */
+	public boolean addAll(ReadOnlyList<? extends E> elements) {
 		return addAll(size(), elements);
 	}
 

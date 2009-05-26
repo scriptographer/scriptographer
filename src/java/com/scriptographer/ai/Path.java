@@ -37,8 +37,8 @@ import java.awt.geom.PathIterator;
 import java.util.ArrayList;
 
 import com.scratchdisk.list.ExtendedList;
-import com.scratchdisk.list.List;
 import com.scratchdisk.list.Lists;
+import com.scratchdisk.list.ReadOnlyList;
 import com.scriptographer.CommitManager;
 
 /**
@@ -70,7 +70,10 @@ public class Path extends PathItem {
 		super(TYPE_PATH);
 	}
 
-	public Path(List<? extends Segment> segments) {
+	/**
+	 * @jshide
+	 */
+	public Path(ReadOnlyList<? extends Segment> segments) {
 		this();
 		setSegments(segments);
 	}
@@ -108,7 +111,10 @@ public class Path extends PathItem {
 		return segments;
 	}
 
-	public void setSegments(List<? extends Segment> list) {
+	/**
+	 * @jshide
+	 */
+	public void setSegments(ReadOnlyList<? extends Segment> list) {
 		SegmentList segments = getSegments();
 		// TODO: Implement SegmentList.setAll so clear is not necessary and
 		// nativeCommit is used instead of nativeInsert removeRange would still

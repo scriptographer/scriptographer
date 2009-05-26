@@ -33,7 +33,7 @@ package com.scriptographer.list;
 
 import com.scratchdisk.list.AbstractExtendedList;
 import com.scratchdisk.list.ExtendedList;
-import com.scratchdisk.list.List;
+import com.scratchdisk.list.ReadOnlyList;
 
 /**
  * AbstractFetchList defines fetch and fetch(fromIndex, toIndex), which are called
@@ -76,7 +76,7 @@ public abstract class AbstractFetchList<E> extends AbstractExtendedList<E> {
 		return super.removeAll(elements);
 	}
 
-	public boolean containsAll(List<?> elements) {
+	public boolean containsAll(ReadOnlyList<?> elements) {
 		fetch();
 		return super.containsAll(elements);
 	}

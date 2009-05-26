@@ -58,7 +58,7 @@ public interface List<E> extends ReadOnlyList<E> {
 	E set(int index, E element);
 	E add(E element);
 	E add(int index, E element);
-	boolean addAll(List<? extends E> list);
+	boolean addAll(ReadOnlyList<? extends E> list);
 	boolean addAll(E[] elements);
 	E remove(int index);
 	void remove(int fromIndex, int toIndex);

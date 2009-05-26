@@ -33,6 +33,7 @@ package com.scriptographer.ai;
 
 import com.scratchdisk.list.ArrayList;
 import com.scratchdisk.list.List;
+import com.scratchdisk.list.ReadOnlyList;
 import com.scriptographer.list.AbstractFetchList;
 
 /**
@@ -344,7 +345,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		return false;
 	}
 
-	public boolean addAll(List<? extends Segment> elements) {
+	public boolean addAll(ReadOnlyList<? extends Segment> elements) {
 		return addAll(size(), elements);
 	}
 
