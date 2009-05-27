@@ -119,9 +119,9 @@ public class DocumentView extends DocumentObject {
 	private native int nativeGetScreenMode();
 
 	/**
-	 * @jsbean The screen mode of the specified view. The screen mode
-	 * @jsbean is selected via the three screen mode icons on the bottom of the tool
-	 * @jsbean palette.
+	 * The screen mode of the specified view. The screen mode
+	 * is selected via the three screen mode icons on the bottom of the tool
+	 * palette.
 	 */
 	public void setScreenMode(ScreenMode mode) {
 		nativeSetScreenMode((mode != null ? mode : ScreenMode.MULTI_WINDOW).value);

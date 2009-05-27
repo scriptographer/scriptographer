@@ -59,7 +59,7 @@ public class DocumentObject extends NativeObject {
 	}
 
 	/**
-	 * @jsbean Returns the document that this object belongs to.
+	 * Returns the document that this object belongs to.
 	 */
 	public Document getDocument() {
 		return document;

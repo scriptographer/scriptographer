@@ -63,7 +63,7 @@ public class PointText extends TextItem {
 	}
 
 	/**
-	 * @jsbean The PointText's anchor point
+	 * The PointText's anchor point
 	 */
 	public native Point getPoint();
 

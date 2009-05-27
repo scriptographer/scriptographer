@@ -35,8 +35,8 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
 
+import com.scratchdisk.list.List;
 import com.scratchdisk.list.Lists;
-import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
@@ -360,32 +360,32 @@ public abstract class Item extends DocumentObject {
 	}
 	
 	/**
-	 * @jsbean Returns the item that this item is contained within.
+	 * Returns the item that this item is contained within.
 	 */
 	public native Item getParent();
 
 	/**
-	 * @jsbean Returns the item's parent layer, if any,
+	 * Returns the item's parent layer, if any,
 	 */
 	public native Layer getLayer();
 
 	/**
-	 * @jsbean Returns the first item contained within this item.
+	 * Returns the first item contained within this item.
 	 */
 	public native Item getFirstChild();
 
 	/**
-	 * @jsbean Returns the last item contained within this item.
+	 * Returns the last item contained within this item.
 	 */
 	public native Item getLastChild();
 	
 	/**
-	 * @jsbean Returns the next item on the same level as this item.
+	 * Returns the next item on the same level as this item.
 	 */
 	public native Item getNextSibling();
 
 	/**
-	 * @jsbean Returns the previous item on the same level as this item.
+	 * Returns the previous item on the same level as this item.
 	 */
 	public native Item getPreviousSibling();
 
@@ -394,7 +394,7 @@ public abstract class Item extends DocumentObject {
 	// TODO: Cache the result. Invalidate cached version when version changes,
 	// or when appendChild / moveAbove / bellow affects this children list.
 	/**
-	 * @jsbean An array of items contained within this item
+	 * An array of items contained within this item
 	 */
 	public ItemList getChildren() {
 		ItemList list = new ItemList();
@@ -406,11 +406,7 @@ public abstract class Item extends DocumentObject {
 		return list;
 	}
 
-	/**
-	 * Creates a group item from the supplied list of items
-	 * @param children either an {@link ItemList} or an array
-	 */
-	public void setChildren(ReadOnlyList<Item> elements) {
+	public void setChildren(List elements) {
 		removeChildren();
 		for (int i = 0, size = elements.size(); i < size; i++) {
 			Object obj = elements.get(i);
@@ -449,7 +445,7 @@ public abstract class Item extends DocumentObject {
 	private ItemRectangle bounds = null;
 
 	/**
-	 * @jsbean The bounds of the item excluding stroke width.
+	 * The bounds of the item excluding stroke width.
 	 */
 	public Rectangle getBounds() {
 		commit(false);
@@ -488,12 +484,12 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * @jsbean The bounds of the item including stroke width.
+	 * The bounds of the item including stroke width.
 	 */
 	public native Rectangle getStrokeBounds();
 
 	/**
-	 * @jsbean The bounds of the item including stroke width and controls.
+	 * The bounds of the item including stroke width and controls.
 	 */
 	public native Rectangle getControlBounds();
 
@@ -502,7 +498,7 @@ public abstract class Item extends DocumentObject {
 	private ItemPoint position = null;
 
 	/**
-	 * @jsbean The item's position. This is the center of the bounds rectangle.
+	 * The item's position. This is the center of the bounds rectangle.
 	 */
 	public Point getPosition() {
 		if (position == null)
@@ -524,15 +520,15 @@ public abstract class Item extends DocumentObject {
 
 
 	/**
-	 * @jsbean The name of the item as it appears in the layers palette.
-	 * @jsbean Sample code:
+	 * The name of the item as it appears in the layers palette.
+	 * Sample code:
 	 * @jsbean
-	 * @jsbean <pre>
-	 * @jsbean var layer = new Layer(); // a layer is an item
-	 * @jsbean print(layer.name); // returns '<Layer 2>'
-	 * @jsbean layer.name = "A nice name";
-	 * @jsbean print(layer.name); // returns 'A nice name'
-	 * @jsbean </pre>
+	 * <pre>
+	 * var layer = new Layer(); // a layer is an item
+	 * print(layer.name); // returns '<Layer 2>'
+	 * layer.name = "A nice name";
+	 * print(layer.name); // returns 'A nice name'
+	 * </pre>
 	 */
 	public native String getName();
 
@@ -696,16 +692,16 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * @jsbean A boolean value that specifies whether an item is selected.
-	 * @jsbean Returns true if the item is selected or partially selected (groups with
-	 * @jsbean some selected objects/partially selected paths), false otherwise.
-	 * @jsbean Sample code:
-	 * @jsbean <pre>
-	 * @jsbean print(activeDocument.selectedItems.length) // returns 0
-	 * @jsbean var path = new Path(); // new items are always created in the active layer
-	 * @jsbean path.selected = true; // select the path
-	 * @jsbean print(activeDocument.selectedItems.length) // returns 1
-	 * @jsbean </pre>
+	 * A boolean value that specifies whether an item is selected.
+	 * Returns true if the item is selected or partially selected (groups with
+	 * some selected objects/partially selected paths), false otherwise.
+	 * Sample code:
+	 * <pre>
+	 * print(activeDocument.selectedItems.length) // returns 0
+	 * var path = new Path(); // new items are always created in the active layer
+	 * path.selected = true; // select the path
+	 * print(activeDocument.selectedItems.length) // returns 1
+	 * </pre>
 	 */
 	public boolean isSelected() {
 		return getAttribute(ItemAttribute.SELECTED);
@@ -716,9 +712,9 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * @jsbean A boolean value that specifies whether the item is fully
-	 * @jsbean selected. For paths this means that all segments are selected,
-	 * @jsbean for container objects all children are selected.
+	 * A boolean value that specifies whether the item is fully
+	 * selected. For paths this means that all segments are selected,
+	 * for container objects all children are selected.
 	 */
 	public boolean isFullySelected() {
 		return getAttribute(ItemAttribute.FULLY_SELECTED);
@@ -729,14 +725,14 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * @jsbean A boolean value that specifies whether the item is locked.
-	 * @jsbean Sample code:
-	 * @jsbean <pre>
-	 * @jsbean var path = new Path();
-	 * @jsbean print(path.locked) // returns false
-	 * @jsbean path.locked = true; // locks the path
-	 * @jsbean print(path.locked) // returns true
-	 * @jsbean </pre>
+	 * A boolean value that specifies whether the item is locked.
+	 * Sample code:
+	 * <pre>
+	 * var path = new Path();
+	 * print(path.locked) // returns false
+	 * path.locked = true; // locks the path
+	 * print(path.locked) // returns true
+	 * </pre>
 	 */
 	public boolean isLocked() {
 		return getAttribute(ItemAttribute.LOCKED);
@@ -747,15 +743,15 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * @jsbean A boolean value that specifies whether the item is visible.
-	 * @jsbean Sample code:
+	 * A boolean value that specifies whether the item is visible.
+	 * Sample code:
 	 * @jsbean
-	 * @jsbean <pre>
-	 * @jsbean var path = new Path();
-	 * @jsbean print(path.visible) // returns true
-	 * @jsbean path.visible = false; // hides the path
-	 * @jsbean print(path.visible) // returns false
-	 * @jsbean </pre>
+	 * <pre>
+	 * var path = new Path();
+	 * print(path.visible) // returns true
+	 * path.visible = false; // hides the path
+	 * print(path.visible) // returns false
+	 * </pre>
 	 */
 	public boolean isVisible() {
 		return !getAttribute(ItemAttribute.HIDDEN);
@@ -774,17 +770,17 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * @jsbean A boolean value that specifies whether the item defines a clip mask.
-	 * @jsbean This can only be set on paths, compound paths, and text frame objects,
-	 * @jsbean and only if the item is already contained within a clipping group.
-	 * @jsbean Sample code:
+	 * A boolean value that specifies whether the item defines a clip mask.
+	 * This can only be set on paths, compound paths, and text frame objects,
+	 * and only if the item is already contained within a clipping group.
+	 * Sample code:
 	 * @jsbean
-	 * @jsbean <pre>
-	 * @jsbean var group = new Group();
-	 * @jsbean group.appendChild(path);
-	 * @jsbean group.clipped = true;
-	 * @jsbean path.clipMask = true;
-	 * @jsbean </pre>
+	 * <pre>
+	 * var group = new Group();
+	 * group.appendChild(path);
+	 * group.clipped = true;
+	 * path.clipMask = true;
+	 * </pre>
 	 */
 	public boolean isClipMask() {
 		return getAttribute(ItemAttribute.CLIPMASK);
@@ -795,13 +791,13 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * @jsbean Returns <code>true</code> when neither the item, nor it's parents are locked or hidden.
+	 * Returns <code>true</code> when neither the item, nor it's parents are locked or hidden.
 	 */
 	public native boolean isEditable();
 
 	/**
-	 * @jsbean The item's blend mode as specified by the <code>Item.BLEND_*</code> static
-	 * @jsbean properties.
+	 * The item's blend mode as specified by the <code>Item.BLEND_*</code> static
+	 * properties.
 	 * 
 	 * @return any of Item.BLEND_*
 	 */
@@ -824,7 +820,7 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * @jsbean A value between 0 and 1 that specifies the opacity of the item.
+	 * A value between 0 and 1 that specifies the opacity of the item.
 	 */
 	public native float getOpacity();
 

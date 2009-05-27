@@ -171,7 +171,7 @@ public class Raster extends Item {
 	}
 
 	/**
-	 * @jsbean The width of the raster
+	 * The width of the raster
 	 * @return
 	 */
 	public int getWidth() {
@@ -179,7 +179,7 @@ public class Raster extends Item {
 	}
 
 	/**
-	 * @jsbean The height of the raster
+	 * The height of the raster
 	 * @return
 	 */
 	public int getHeight() {
@@ -266,7 +266,7 @@ public class Raster extends Item {
 	}
 
 	/**
-	 * @jsbean REturns the Java2D color model of the raster
+	 * REturns the Java2D color model of the raster
 	 * @return
 	 */
 	public ColorModel getColorModel() {

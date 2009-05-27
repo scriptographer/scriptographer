@@ -47,28 +47,28 @@ public class Scriptographer {
 	}
 
 	/**
-	 * @jsbean Returns Scriptographer's main directory.
+	 * Returns Scriptographer's main directory.
 	 */
 	public File getPluginDirectory() {
 		return ScriptographerEngine.getPluginDirectory();
 	}
 
 	/**
-	 * @jsbean Returns Scriptographer's script directory.
+	 * Returns Scriptographer's script directory.
 	 */
 	public File getScriptDirectory() {
 		return ScriptographerEngine.getScriptDirectory();
 	}
 
 	/**
-	 * @jsbean Returns Scriptographer's version description.
+	 * Returns Scriptographer's version description.
 	 */
 	public String getVersion() {
 		return ScriptographerEngine.getPluginVersion();
 	}
 
 	/**
-	 * @jsbean Returns Scriptographer's revision number.
+	 * Returns Scriptographer's revision number.
 	 */
 	public int getRevision() {
 		return ScriptographerEngine.getPluginRevision();

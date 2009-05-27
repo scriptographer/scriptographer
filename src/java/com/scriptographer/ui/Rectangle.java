@@ -223,11 +223,11 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean Returns <code>true</code> if the rectangle is empty,
-	 *         <code>false</code> otherwise.
+	 * Returns <code>true</code> if the rectangle is empty,
+	 * <code>false</code> otherwise.
 	 */
 	public boolean isEmpty() {
-	    return width <= 0.0f || height <= 0.0f;
+	    return width <= 0 || height <= 0;
 	}
 
 	/**

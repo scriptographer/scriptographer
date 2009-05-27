@@ -54,6 +54,16 @@ p {
 	font-weight: normal;
 	display: block;
 	margin: 0 0 14px 0;
+	height: 16px; /* -1 for border */
+	border-bottom: 1px solid black;
+}
+
+
+.documentation h3 {
+	font-size: 11px;
+	font-weight: normal;
+	display: block;
+	margin: 14px 0 14px 0;
 	background: url(dotted.gif) repeat bottom;        
 }
 
@@ -90,6 +100,10 @@ p {
 
 .documentation-paragraph {
 	padding-bottom: 14px;
+}
+
+.group-text {
+	margin-bottom: 14px;
 }
 
 .member-description {

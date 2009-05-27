@@ -134,7 +134,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean The x position of the rectangle.
+	 * The x position of the rectangle.
 	 */
 	public double getX() {
 		return x;
@@ -145,8 +145,8 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean The y position of the rectangle. In the AI coordinate
-	 * @jsbean system, the y axis grows from bottom to top.
+	 * The y position of the rectangle. In the AI coordinate
+	 * system, the y axis grows from bottom to top.
 	 */
 	public double getY() {
 		return y;
@@ -157,7 +157,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean The width of the rectangle.
+	 * The width of the rectangle.
 	 */
 	public double getWidth() {
 		return width;
@@ -168,7 +168,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean The height of the rectangle.
+	 * The height of the rectangle.
 	 */
 	public double getHeight() {
 		return height;
@@ -179,8 +179,8 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean The position of the left hand side of the rectangle. Note that this
-	 * @jsbean doesn't move the whole rectangle; the right hand side stays where it was.
+	 * The position of the left hand side of the rectangle. Note that this
+	 * doesn't move the whole rectangle; the right hand side stays where it was.
 	 */
 	public double getLeft() {
 		return x;
@@ -193,9 +193,9 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean The top coordinate of the rectangle. In the AI coordinate
-	 * @jsbean system, the y axis grows from bottom to top. Note that this
-	 * @jsbean doesn't move the whole rectangle: the bottom won't move.
+	 * The top coordinate of the rectangle. In the AI coordinate
+	 * system, the y axis grows from bottom to top. Note that this
+	 * doesn't move the whole rectangle: the bottom won't move.
 	 */
 	public double getTop() {
 		return y + height;
@@ -206,8 +206,8 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean The position of the right hand side of the rectangle. Note that this
-	 * @jsbean doesn't move the whole rectangle; the left hand side stays where it was.
+	 * The position of the right hand side of the rectangle. Note that this
+	 * doesn't move the whole rectangle; the left hand side stays where it was.
 	 */
 	public double getRight() {
 		return x + width;
@@ -218,9 +218,9 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean The bottom coordinate of the rectangle. In the AI coordinate
-	 * @jsbean system, the y axis grows from bottom to top. Note that this doesn't move
-	 * @jsbean the whole rectangle: the top won't move.
+	 * The bottom coordinate of the rectangle. In the AI coordinate
+	 * system, the y axis grows from bottom to top. Note that this doesn't move
+	 * the whole rectangle: the top won't move.
 	 */
 	public double getBottom() {
 		return y;
@@ -266,7 +266,7 @@ public class Rectangle {
 	}
 	
 	/**
-	 * @jsbean The center point of the rectangle.
+	 * The center point of the rectangle.
 	 */
 	public Point getCenter() {
 		return new Point(getCenterX(), getCenterY());
@@ -278,7 +278,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean The top left point of the rectangle.
+	 * The top left point of the rectangle.
 	 */
 	public Point getTopLeft() {
 		return new Point(getLeft(), getTop());
@@ -290,7 +290,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean The top right point of the rectangle.
+	 * The top right point of the rectangle.
 	 */
 	public Point getTopRight() {
 		return new Point(getRight(), getTop());
@@ -302,7 +302,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean The bottom left point of the rectangle.
+	 * The bottom left point of the rectangle.
 	 */
 	public Point getBottomLeft() {
 		return new Point(getLeft(), getBottom());
@@ -314,7 +314,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean The bottom right point of the rectangle.
+	 * The bottom right point of the rectangle.
 	 */
 	public Point getBottomRight() {
 		return new Point(getRight(), getBottom());
@@ -410,7 +410,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * @jsbean Returns <code>true</code> if the rectangle is empty,
+	 * Returns <code>true</code> if the rectangle is empty,
 	 *         <code>false</code> otherwise.
 	 */
 	public boolean isEmpty() {

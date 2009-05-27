@@ -1,4 +1,6 @@
 <% $id = this.getId() %>
+<%= data.group.title prefix=settings.section3Open suffix=settings.section3Close %>
+<%= data.group.text prefix="<div class=\"group-text\">" suffix="</div>" %>
 <div id="<%= $id %>" class="member">
 <div id="<%= $id %>-link" class="member-link">
 <a name="<%= $id %>" href="#" onClick="return toggleMember('<%= $id %>', false);"><%= $title %></a>

@@ -65,7 +65,7 @@ public abstract class TextItem extends Item {
 	private native void nativeSetOrientation(int orientation);
 
 	/**
-	 * @jsbean The orientation of the text in the text frame.
+	 * The orientation of the text in the text frame.
 	 * @return 
 	 */
 	public TextOrientation getOrientation() {
@@ -138,23 +138,23 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * @jsbean Returns <code>true</code> if the text frame is
+	 * Returns <code>true</code> if the text frame is
 	 *         linked, false otherwise.
 	 */
 	public native boolean isLinked();
 
 	/**
-	 * @jsbean Returns the index of this text frame in the story's list of text frames.
+	 * Returns the index of this text frame in the story's list of text frames.
 	 */
 	public native int getIndex();
 
 	/**
-	 * @jsbean Returns this text frame's story's index in the document's stories array.
+	 * Returns this text frame's story's index in the document's stories array.
 	 */
 	private native int getStoryIndex();
 
 	/**
-	 * @jsbean Returns the Story that the text frame belongs to.
+	 * Returns the Story that the text frame belongs to.
 	 */
 	public TextStory getStory() {
 		// don't wrap directly. always go through StoryList
@@ -178,14 +178,14 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * @jsbean Returns the next text frame in a story of various linked text frames
+	 * Returns the next text frame in a story of various linked text frames
 	 */
 	public TextItem getNextFrame() {
 		return getFrame(getIndex() + 1);
 	}
 
 	/**
-	 * @jsbean Returns the previous text frame in a story of various linked text frames
+	 * Returns the previous text frame in a story of various linked text frames
 	 */
 	public TextItem getPreviousFrame() {
 		return getFrame(getIndex() - 1);
@@ -198,9 +198,9 @@ public abstract class TextItem extends Item {
 	public native int nativeGetRange(boolean includeOverflow);
 
 	/**
-	 * @jsbean In case there's an overflow in the text, this only returns a range
-	 * @jsbean over the visible characters, while getRange() returns one over the
-	 * @jsbean whole text.
+	 * In case there's an overflow in the text, this only returns a range
+	 * over the visible characters, while getRange() returns one over the
+	 * whole text.
 	 */
 	public TextRange getVisibleRange() {
 		// once a range object is created, always return the same reference
@@ -214,8 +214,8 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * @jsbean Returns a text range for all the characters, even the invisible ones outside
-	 * @jsbean the container.
+	 * Returns a text range for all the characters, even the invisible ones outside
+	 * the container.
 	 */
 	public TextRange getRange() {
 		// once a range object is created, always return the same reference
@@ -229,23 +229,23 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * @jsbean Returns the index of the first visible character of the text frame.
-	 * @jsbean (this is the equivalent of calling TextFrame.visibleRange.start)
+	 * Returns the index of the first visible character of the text frame.
+	 * (this is the equivalent of calling TextFrame.visibleRange.start)
 	 */
 	public int getStart() {
 		return getVisibleRange().getStart();
 	}
 
 	/**
-	 * @jsbean Returns the index of the last visible character of the text frame.
-	 * @jsbean (this is the equivalent of calling TextFrame.visibleRange.end)
+	 * Returns the index of the last visible character of the text frame.
+	 * (this is the equivalent of calling TextFrame.visibleRange.end)
 	 */
 	public int getEnd() {
 		return getVisibleRange().getEnd();
 	}
 
 	/**
-	 * @jsbean The text contents of the text frame.
+	 * The text contents of the text frame.
 	 */
 	public String getContent() {
 		return getRange().getContent();
@@ -256,7 +256,7 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * @jsbean The character style of the text frame.
+	 * The character style of the text frame.
 	 */
 	public CharacterStyle getCharacterStyle() {
 		return getRange().getCharacterStyle();
@@ -267,7 +267,7 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * @jsbean The paragraph style of the text frame.
+	 * The paragraph style of the text frame.
 	 */
 	public ParagraphStyle getParagraphStyle() {
 		return getRange().getParagraphStyle();
@@ -278,7 +278,7 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * @jsbean Returns the selected text of the text frame as a text range
+	 * Returns the selected text of the text frame as a text range
 	 */
 	public native TextRange getSelection();
 
@@ -296,13 +296,13 @@ public abstract class TextItem extends Item {
 	//	ATEErr (*GetSelected) ( TextFrameRef textframe, bool* ret);
 
 	/**
-	 * @jsbean The line spacing value for the text frame in points.
+	 * The line spacing value for the text frame in points.
 	 */
 	public native float getSpacing();
 	public native void setSpacing(float spacing);
 
 	/**
-	 * @jsbean Specifies whether to use optical alignment within the text frame.
+	 * Specifies whether to use optical alignment within the text frame.
 	 *         Optical alignment hangs punctuation outside the edges of a text
 	 *         frame.
 	 */

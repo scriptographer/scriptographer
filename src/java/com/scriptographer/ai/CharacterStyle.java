@@ -208,20 +208,20 @@ public class CharacterStyle extends PathStyle {
 	private native void nativeSetFont(int handle);
 	
 	/**
-	 * @jsbean Specifies which font to use in the character style.
-	 * @jsbean If you pass a font family, it will automatically pick the first
-	 * @jsbean of the family's weights.
-	 * @jsbean Sample code:
-	 * @jsbean <pre>
-	 * @jsbean var text = new PointText(new Point(0,0));
-	 * @jsbean text.content = "The content of the text field.";
+	 * Specifies which font to use in the character style.
+	 * If you pass a font family, it will automatically pick the first
+	 * of the family's weights.
+	 * Sample code:
+	 * <pre>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = "The content of the text field.";
 	 * @jsbean
-	 * @jsbean // Sets all the text to Verdana Regular.
-	 * @jsbean text.characterStyle.font = app.fonts["Verdana"];
+	 * // Sets all the text to Verdana Regular.
+	 * text.characterStyle.font = app.fonts["Verdana"];
 	 * @jsbean
-	 * @jsbean //sets the second word to Verdana Bold
-	 * @jsbean text.range.words[1].characterStyle.font = app.fonts["Verdana"]["Bold"];
-	 * @jsbean </pre>
+	 * //sets the second word to Verdana Bold
+	 * text.range.words[1].characterStyle.font = app.fonts["Verdana"]["Bold"];
+	 * </pre>
 	 */
 	public FontWeight getFont() {
 		int handle = nativeGetFont();
@@ -254,55 +254,55 @@ public class CharacterStyle extends PathStyle {
 	}
 	
 	/**
-	 * @jsbean The font size in points.
-	 * @jsbean Sample code:
-	 * @jsbean <pre>
-	 * @jsbean var text = new PointText(new Point(0,0));
-	 * @jsbean text.content = "The content of the text field.";
-	 * @jsbean 
-	 * @jsbean // sets the font size to 10pt
-	 * @jsbean text.characterStyle.fontSize = 10
-	 * @jsbean </pre>
+	 * The font size in points.
+	 * Sample code:
+	 * <pre>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = "The content of the text field.";
+	 * 
+	 * // sets the font size to 10pt
+	 * text.characterStyle.fontSize = 10
+	 * </pre>
 	 */
 	public native Float getFontSize();
 	public native void setFontSize(Float size);
 	
 	/**
-	 * @jsbean The horizontal scale of the character style.
-	 * @jsbean Sample code:
-	 * @jsbean <pre>
-	 * @jsbean var text = new PointText(new Point(0,0));
-	 * @jsbean text.content = "The content of the text field.";
-	 * @jsbean 
-	 * @jsbean // sets the horizontal scale to 200%
-	 * @jsbean text.characterStyle.horizontalScale = 2
-	 * @jsbean </pre>
+	 * The horizontal scale of the character style.
+	 * Sample code:
+	 * <pre>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = "The content of the text field.";
+	 * 
+	 * // sets the horizontal scale to 200%
+	 * text.characterStyle.horizontalScale = 2
+	 * </pre>
 	 */
 	public native Float getHorizontalScale();
 	public native void setHorizontalScale(Float scale);
 
 	/**
-	 * @jsbean The vertical scale of the character style.
-	 * @jsbean Sample code:
-	 * @jsbean <pre>
-	 * @jsbean var text = new PointText(new Point(0,0));
-	 * @jsbean text.content = "The content of the text field.";
-	 * @jsbean 
-	 * @jsbean // sets the vertical scale to 200%
-	 * @jsbean text.characterStyle.verticalScale = 2
-	 * @jsbean </pre>
+	 * The vertical scale of the character style.
+	 * Sample code:
+	 * <pre>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = "The content of the text field.";
+	 * 
+	 * // sets the vertical scale to 200%
+	 * text.characterStyle.verticalScale = 2
+	 * </pre>
 	 */
 	public native Float getVerticalScale();
 	public native void setVerticalScale(Float scale);
 
 	/**
-	 * @jsbean Specifies whether to use auto leading in the character style.
+	 * Specifies whether to use auto leading in the character style.
 	 */
 	public native Boolean getAutoLeading();
 	public native void setAutoLeading(Boolean leading);
 
 	/**
-	 * @jsbean The leading (vertical spacing) of the character style in points.
+	 * The leading (vertical spacing) of the character style in points.
 	 */
 	public native Float getLeading();
 	public native void setLeading(Float leading);
@@ -311,8 +311,8 @@ public class CharacterStyle extends PathStyle {
 	public native void setTracking(Integer tracking);
 
 	/**
-	 * @jsbean The baseline shift of the character style in points.
-	 * @jsbean Baseline shift moves text up or down relative to it's baseline.
+	 * The baseline shift of the character style in points.
+	 * Baseline shift moves text up or down relative to it's baseline.
 	 */
 	public native Float getBaselineShift();
 	public native void setBaselineShift(Float shift);
@@ -324,15 +324,15 @@ public class CharacterStyle extends PathStyle {
 	private native void nativeSetKerningType(Integer method);
 
 	/**
-	 * @jsbean The character style's kerning method.
-	 * @jsbean Sample code:
-	 * @jsbean <pre>
-	 * @jsbean var text = new PointText(new Point(0,0));
-	 * @jsbean text.content = "The content of the text field.";
-	 * @jsbean 
-	 * @jsbean // sets the kerning method to optical
-	 * @jsbean text.characterStyle.kerningType = "optical";
-	 * @jsbean </pre>
+	 * The character style's kerning method.
+	 * Sample code:
+	 * <pre>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = "The content of the text field.";
+	 * 
+	 * // sets the kerning method to optical
+	 * text.characterStyle.kerningType = "optical";
+	 * </pre>
 	 */
 	public KerningType getKerningType() {
 		return (KerningType) IntegerEnumUtils.get(KerningType.class,
@@ -344,16 +344,16 @@ public class CharacterStyle extends PathStyle {
 	}
 	
 	/**
-	 * @jsbean The character style's capitalization as specified by the CharacterStyle.CAPS_*
-	 * @jsbean static properties.
-	 * @jsbean Sample code:
-	 * @jsbean <pre>
-	 * @jsbean var text = new PointText(new Point(0,0));
-	 * @jsbean text.content = "The content of the text field.";
-	 * @jsbean 
-	 * @jsbean // sets the capitalization to use only caps
-	 * @jsbean text.characterStyle.capitalization = CharacterStyle.CAPS_ALL;
-	 * @jsbean </pre>
+	 * The character style's capitalization as specified by the CharacterStyle.CAPS_*
+	 * static properties.
+	 * Sample code:
+	 * <pre>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = "The content of the text field.";
+	 * 
+	 * // sets the capitalization to use only caps
+	 * text.characterStyle.capitalization = CharacterStyle.CAPS_ALL;
+	 * </pre>
 	 */
 	private native Integer nativeGetCapitalization();
 	private native void nativeSetCapitalization(Integer caps);

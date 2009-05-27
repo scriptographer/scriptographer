@@ -100,6 +100,10 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 	public boolean shouldAddBean(Class<?> cls, boolean isStatic,
 			MemberBox getter, MemberBox setter) {
 		Package pkg = cls.getPackage();
+		// Only control adding of beans if we're inside com.scriptographer packages. Outside,
+		// we always add the bean. Inside, we add it except if it's a read-only bean of which
+		// the getter name starts with is, to force isMethodName() style methods to be called
+		// as methods.
 		return getter != null
 				&& !(pkg != null && pkg.getName().startsWith("com.scriptographer."))
 				|| setter != null || !getter.getName().startsWith("is");
@@ -108,6 +112,8 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 	public boolean shouldRemoveGetterSetter(Class<?> cls, boolean isStatic,
 			MemberBox getter, MemberBox setter) {
 		Package pkg = cls.getPackage();
+		// Only remove getter / setters of beans that were added within com.scriptographer
+		// packages. Outside we use the old convention of never removing them.
 		return pkg != null && pkg.getName().startsWith("com.scriptographer.");
 	}
 }

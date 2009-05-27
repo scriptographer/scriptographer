@@ -59,26 +59,26 @@ public class AreaText extends TextItem {
 	}
 
 	/**
-	 * @jsbean Returns the path of the AreaText
+	 * Returns the path of the AreaText
      */
 	public Path getTextPath() {
 		return (Path) getFirstChild();
 	}
 	
 	/**
-	 * @jsbean The number of rows for the text frame.
+	 * The number of rows for the text frame.
 	 */
 	public native int getRowCount();
 	public native void setRowCount(int count);
 	
 	/**
-	 * @jsbean The number of columns for the text frame.
+	 * The number of columns for the text frame.
 	 */
 	public native int getColumnCount();
 	public native void setColumnCount(int count);
 
 	/**
-	 * @jsbean Specifies whether the text area uses row major order.
+	 * Specifies whether the text area uses row major order.
 	 */
 	public native boolean getRowMajorOrder();
 	public native void setRowMajorOrder(boolean isRowMajor);

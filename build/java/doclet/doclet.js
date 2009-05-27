@@ -13,11 +13,7 @@ importPackage(Packages.com.scriptographer.script);
 include('bootstrap.js');
 include('template.js');
 
-Template.inject({
-	reportMacroError: function(error, command, out) {
-		throw error;
-	}
-});
+// Helper functions to print to out / err
 
 function print() {
 	java.lang.System.out.println($A(arguments).join(', '));
@@ -27,30 +23,19 @@ function error() {
 	java.lang.System.err.println($A(arguments).join(', '));
 }
 
+// Change error handling here to just throw errors. This allows us to catch
+// then on execution time, not as error text in the rendered output
+Template.inject({
+	reportMacroError: function(error, command, out) {
+		throw error;
+	}
+});
+
 // Add renderTemplate function with caching to all objects
 Object.inject(Template.methods, true);
 
 // A global template writer
 var out = new TemplateWriter();
-
-// Enhance String a bit:
-String.inject({
-	endsWith: function(end) {
-		return this.length >= end.length && this.substring(this.length - end.length) == end;
-	},
-
-	startsWith: function(start) {
-		return this.length >= start.length && this.substring(0, start.length) == start;
-	},
-
-	isLowerCase: function() {
-		return this.toLowerCase() == this;
-	},
-
-	isUpperCase: function() {
-		return this.toUpperCase() == this;
-	}
-});
 
 // Define settings from passed options:
 var settings = {
@@ -88,8 +73,34 @@ var settings = {
 	section1Open: options.section1open || '<h1>',
 	section1Close: options.section1close || '</h1>',
 	section2Open: options.section2open || '<h2>',
-	section2Close: options.section2close || '</h2>'
+	section2Close: options.section2close || '</h2>',
+	section3Open: options.section2open || '<h3>',
+	section3Close: options.section2close || '</h3>'
 };
+
+// A global data object to store global stuff from templates / macros:
+
+var data = {
+};
+
+// Enhance String a bit:
+String.inject({
+	endsWith: function(end) {
+		return this.length >= end.length && this.substring(this.length - end.length) == end;
+	},
+
+	startsWith: function(start) {
+		return this.length >= start.length && this.substring(0, start.length) == start;
+	},
+
+	isLowerCase: function() {
+		return this.toLowerCase() == this;
+	},
+
+	isUpperCase: function() {
+		return this.toUpperCase() == this;
+	}
+});
 
 // Ehnance some of the javatool classes with usefull methods:
 
@@ -401,51 +412,66 @@ Type = Object.extend({
 
 // Tag
 
-TagImpl.inject({
-	text_macro: function() {
-		var text = this.text();
-		/*
-		if (filterFirstSentence) {
-			// cut away ':' and everything that follows:
-			int pos = text.indexOf(':');
-			if (pos >= 0) {
-				text = text.substring(0, pos) + '.';
-				more = false;
+// A js Tag class, to define own tag lists and override tag names with special
+// text_macro handlers.
+
+Tag = Object.extend(new function() {
+	var tags = {};
+
+	[TagImpl, SeeTagImpl].each(function(impl) {
+		impl.inject({
+			text_macro: function() {
+				var name = this.name();
+				var tag = tags[name];
+				if (tag) {
+					// Call method from pseudo tag implementiation on native tag.
+					return tag.text_macro.apply(this, arguments);
+				} else {
+					// Default
+					return this.text();
+				}
+			}
+		});
+	});
+
+	return {
+		initialize: function(str) {
+			this.str = str;
+		},
+
+		text_macro: function(param) {
+			return this.str;
+		},
+
+		statics: {
+			extend: function(src) {
+				return src._names.split(',').each(function(tag) {
+					tags[tag] = new this();
+				}, this.base(src));
 			}
 		}
-		*/
-		return text;
 	}
 });
 
-SeeTagImpl.inject({
+SeeTag = Tag.extend({
+	_names: '@see,@link',
+
 	text_macro: function(param) {
 		var ref = this.referencedMember() || this.referencedClass();
 		if (ref) {
-			/*
-			if (!mem.renderLink) {
-				var cls = mem.getClass();
-				while (cls)
-					cls = cls.getSuperclass();
-			}
-			*/
 			return code_filter(ref.renderLink(param.classDoc));
 		} else {
-			error(this.position() + ': warning - @link contains undefined reference: ' + this);
+			error(this.position() + ': warning - ' + this.name() + ' contains undefined reference: ' + this);
 			return code_filter(this);
 		}
 	}
 });
 
-// A fake tag, to define own tag lists. Used for bean properties
+GroupTag = Tag.extend({
+	_names: '@grouptitle,@grouptext',
 
-Tag = Object.extend({
-	initialize: function(str) {
-		this.str = str;
-	},
-
-	text_macro: function() {
-		return this.str;
+	text_macro: function(param) {
+		data.group[this.name().substring(6)] = this.text();
 	}
 });
 
@@ -515,6 +541,7 @@ Member = Object.extend({
 	},
 
 	renderMember: function(classDoc, index, member, containingClass) {
+		data.group = {};
 		if (this.isVisible()) {
 			if (!member)
 				member = this;
@@ -875,9 +902,11 @@ BeanProperty = Member.extend({
 					setter.bean = this;
 			}, this);
 		}
-		var tags = getter.tags('jsbean');
+
+//		print(getter.tags('grouptitle')[0].text().split(/\r\n|\n|\r/mg).join(' - '));
+		var tags = getter.inlineTags();
 		if (!tags.length && setter)
-			tags = setter.tags('jsbean');
+			tags = setter.inlineTags();
 
 		this.inlineTagList = [];
 		if (!setter)
@@ -1417,7 +1446,7 @@ ClassObject = Object.extend({
 	}
 });
 
-Test = Document = Object.extend({
+Document = Object.extend({
 	initialize: function(path, name, template) {
 		this.name = name;
 		this.template = template;
@@ -1580,8 +1609,8 @@ function tags_filter(str) {
 	str = str.replace(/<code>\s*([\s\S]*?)\s*<\/code>/g, function(match, content) {
 		return '<code>' + content + '</code>';
 	});
-	// Automatically put <br /> at the end of sentences.
-	str = str.replace(/([.:])\s*(\n|\r\n)/g, function(match, before, lineBreak) {
+	// Automatically put <br /> at the end of sentences with line breaks.
+	str = str.trim().replace(/([.:?!;])\s*(\n|\r\n)/g, function(match, before, lineBreak) {
 		return before + '<br />' + lineBreak;
 	});
 	return str;

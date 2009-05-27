@@ -31,8 +31,8 @@
 
 package com.scriptographer.ai;
 
+import com.scratchdisk.list.List;
 import com.scratchdisk.list.Lists;
-import com.scratchdisk.list.ReadOnlyList;
 
 /**
  * A Group is a collection of items. When you transform a Group, it's
@@ -56,34 +56,31 @@ public class Group extends Item {
 	}
 	
 	/**
-	 * @jshide
+	 * Creates a group item from the supplied list of items
+	 * @param children either an {@link ItemList} or an array
 	 */
-	public Group(ReadOnlyList<? extends Item> children) {
+	public Group(List<? extends Item> children) {
 		this();
 		for (Item item : children)
 			this.appendBottom(item);
 	}
 
-	/**
-	 * Creates a group item from the supplied list of items
-	 * @param children
-	 */
 	public Group(Item[] children) {
 		this(Lists.asList(children));
 	}
 	
 	/**
-	 * @jsbean A boolean value that specifies whether the group item is to be clipped.
-	 * @jsbean When setting to true, the first child in the group is automatically
-	 * @jsbean defined as the clipping mask.
+	 * A boolean value that specifies whether the group item is to be clipped.
+	 * When setting to true, the first child in the group is automatically
+	 * defined as the clipping mask.
 	 * @jsbean
-	 * @jsbean Sample code:
+	 * Sample code:
 	 * @jsbean
-	 * @jsbean <pre>
-	 * @jsbean var group = new Group();
-	 * @jsbean group.appendChild(path);
-	 * @jsbean group.clipped = true;
-	 * @jsbean </pre>
+	 * <pre>
+	 * var group = new Group();
+	 * group.appendChild(path);
+	 * group.clipped = true;
+	 * </pre>
 	 */
 	public native boolean isClipped();
 	public native void setClipped(boolean clipped);

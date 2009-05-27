@@ -111,7 +111,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	private native int nativeGetStoryIndex();
 	
 	/**
-	 * @jsbean Returns the story that the text range belongs to.
+	 * Returns the story that the text range belongs to.
 	 */
 	public TextStory getStory() {
 		if (story == null)
@@ -120,12 +120,12 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 	
 	/**
-	 * @jsbean Returns the first text frame of the story that this text range belongs to.
+	 * Returns the first text frame of the story that this text range belongs to.
 	 */
 	public native TextItem getFirstFrame();
 
 	/**
-	 * @jsbean Returns the last text frame of the story that this text range belongs to.
+	 * Returns the last text frame of the story that this text range belongs to.
 	 */
 	public native TextItem getLastFrame();
 	
@@ -146,19 +146,19 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 
 	/**
-	 * @jsbean Returns the index of the first character of the text range inside the
-	 * @jsbean story in numbers of characters.
+	 * Returns the index of the first character of the text range inside the
+	 * story in numbers of characters.
 	 */
 	public native int getStart();
 	
 	/**
-	 * @jsbean Returns the index of the last character of the text range inside the
-	 * @jsbean story in numbers of characters.
+	 * Returns the index of the last character of the text range inside the
+	 * story in numbers of characters.
 	 */
 	public native int getEnd();
 	
 	/**
-	 * @jsbean Returns the length of the story in number of characters.
+	 * Returns the length of the story in number of characters.
 	 */
 	public native int getLength();
 
@@ -243,7 +243,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 	
 	/**
-	 * @jsbean The text content of the text range.
+	 * The text content of the text range.
 	 */
 	public native String getContent();
 	
@@ -253,7 +253,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 	
 	/**
-	 * @jsbean The kerning between two chars in thousands of em.
+	 * The kerning between two chars in thousands of em.
 	 * TODO: move to CharacterStyle
 	 */
 	public native int getKerning();
@@ -276,7 +276,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	ParagraphStyle paragraphStyle = null;
 
 	/**
-	 * @jsbean The character style of the text range.
+	 * The character style of the text range.
 	 */
 	public CharacterStyle getCharacterStyle() {
 		if (characterStyle == null) {
@@ -301,7 +301,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 	
 	/**
-	 * @jsbean The paragraph style of the text range.
+	 * The paragraph style of the text range.
 	 */
 	public ParagraphStyle getParagraphStyle() {
 		if (paragraphStyle == null) {
@@ -335,7 +335,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 	
 	/**
-	 * @jsbean Returns the point location where the text range starts within the
+	 * Returns the point location where the text range starts within the
 	 *         Illustrator document.
 	 */
 	public native Point[] getOrigins();
@@ -452,17 +452,17 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 
 	/**
-	 * @jsbean Returns a list of text ranges of the words contained within this
+	 * Returns a list of text ranges of the words contained within this
 	 *         text range. Note that the returned text range includes the
 	 *         trailing whitespace characters of the words.
-	 * @jsbean Sample code:
+	 * Sample code:
 	 * 
-	 * @jsbean <pre>
-	 * @jsbean var text = new PointText(new Point(0,0));
-	 * @jsbean text.content = "The contents of the point text.";
-	 * @jsbean var word = text.range.words[1];
-	 * @jsbean print(word.content) //returns 'contents ' - note the space after 'contents';
-	 * @jsbean </pre>
+	 * <pre>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = "The contents of the point text.";
+	 * var word = text.range.words[1];
+	 * print(word.content) //returns 'contents ' - note the space after 'contents';
+	 * </pre>
 	 */
 	public ReadOnlyList getWords() {
 		if (words == null)
@@ -472,17 +472,17 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 
 	/**
-	 * @jsbean Returns a list of text ranges of the paragraphs contained within
-	 * @jsbean this text range. Note that the returned text range includes the
-	 * @jsbean trailing paragraph (\r) characters of the paragraphs.
-	 * @jsbean 
-	 * @jsbean Sample code:
-	 * @jsbean <pre>
-	 * @jsbean var text = new PointText(new Point(0,0));
-	 * @jsbean text.content = "First paragraph\rSecond paragraph"; // "\r" is the escaped character that specifies a new paragraph.
-	 * @jsbean var paragraph = text.range.paragraphs[1];
-	 * @jsbean print(paragraph.content) //returns 'Second paragraph';
-	 * @jsbean </pre>
+	 * Returns a list of text ranges of the paragraphs contained within
+	 * this text range. Note that the returned text range includes the
+	 * trailing paragraph (\r) characters of the paragraphs.
+	 * 
+	 * Sample code:
+	 * <pre>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = "First paragraph\rSecond paragraph"; // "\r" is the escaped character that specifies a new paragraph.
+	 * var paragraph = text.range.paragraphs[1];
+	 * print(paragraph.content) //returns 'Second paragraph';
+	 * </pre>
 	 */
 	public ReadOnlyList getParagraphs() {
 		if (paragraphs == null)
@@ -492,16 +492,16 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 
 	/**
-	 * @jsbean Returns a list of text ranges of the characters contained within
-	 * @jsbean this text range.
+	 * Returns a list of text ranges of the characters contained within
+	 * this text range.
 	 * 
-	 * @jsbean Sample code:
-	 * @jsbean <pre>
-	 * @jsbean var text = new PointText(new Point(0,0));
-	 * @jsbean text.content = "abc";
-	 * @jsbean var character = text.range.characters[1];
-	 * @jsbean print(character.content) //returns 'b';
-	 * @jsbean </pre>
+	 * Sample code:
+	 * <pre>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = "abc";
+	 * var character = text.range.characters[1];
+	 * print(character.content) //returns 'b';
+	 * </pre>
 	 */	
 	public ReadOnlyList getCharacters() {
 		if (characters == null)

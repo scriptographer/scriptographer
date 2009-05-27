@@ -50,29 +50,29 @@ public class Application {
 	}
 
 	/**
-	 * @jsbean Returns Adobe Illustrator's version description.
+	 * Returns Adobe Illustrator's version description.
 	 */
 	public String getVersion() {
 		return ScriptographerEngine.getApplicationVersion();
 	}
 
 	/**
-	 * @jsbean Returns Adobe Illustrator's revision number.
+	 * Returns Adobe Illustrator's revision number.
 	 */
 	public int getRevision() {
 		return ScriptographerEngine.getApplicationRevision();
 	}
 
 	/**
-	 * @jsbean Returns a list of all installed fonts.
+	 * Returns a list of all installed fonts.
 	 */
 	public FontList getFonts() {
 		return FontList.getInstance();
 	}
 
 	/**
-	 * @jsbean Returns a list of all file formats available for writing of
-	 * @jsbean documents.
+	 * Returns a list of all file formats available for writing of
+	 * documents.
 	 */
 	public FileFormatList getFileFormats() {
 		return FileFormatList.getInstance();
@@ -92,14 +92,14 @@ public class Application {
 	}
 
 	/**
-	 * @jsbean Returns true if the system is Windows, false otherwise.
+	 * Returns true if the system is Windows, false otherwise.
 	 */
 	public boolean isWindows() {
 		return ScriptographerEngine.isWindows();
 	}
 
 	/**
-	 * @jsbean Returns true if the system is Macintosh, false otherwise.
+	 * Returns true if the system is Macintosh, false otherwise.
 	 */
 	public boolean isMacintosh() {
 		return ScriptographerEngine.isMacintosh();

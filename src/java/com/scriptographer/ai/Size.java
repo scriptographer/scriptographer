@@ -78,7 +78,7 @@ public class Size {
 	}
 
 	/**
-	 * @jsbean The width of the size.
+	 * The width of the size.
 	 */
 	public double getWidth() {
 		return width;
@@ -89,7 +89,7 @@ public class Size {
 	}
 
 	/**
-	 * @jsbean The height of the size.
+	 * The height of the size.
 	 */
 	public double getHeight() {
 		return height;

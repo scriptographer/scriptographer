@@ -121,7 +121,7 @@ public class CMYKColor extends Color {
 	}
 
 	/**
-	 * @jsbean A value between 0 and 1 that specifies the amount of cyan in the CMYK color.
+	 * A value between 0 and 1 that specifies the amount of cyan in the CMYK color.
 	 */
 	public float getCyan() {
 		return cyan;
@@ -132,7 +132,7 @@ public class CMYKColor extends Color {
 	}
 
 	/**
-	 * @jsbean A value between 0 and 1 that specifies the amount of magenta in the CMYK color.
+	 * A value between 0 and 1 that specifies the amount of magenta in the CMYK color.
 	 */
 	public float getMagenta() {
 		return magenta;
@@ -143,7 +143,7 @@ public class CMYKColor extends Color {
 	}
 
 	/**
-	 * @jsbean A value between 0 and 1 that specifies the amount of yellow in the CMYK color.
+	 * A value between 0 and 1 that specifies the amount of yellow in the CMYK color.
 	 */
 	public float getYellow() {
 		return yellow;
@@ -154,7 +154,7 @@ public class CMYKColor extends Color {
 	}
 
 	/**
-	 * @jsbean A value between 0 and 1 that specifies the amount of black in the CMYK color.
+	 * A value between 0 and 1 that specifies the amount of black in the CMYK color.
 	 */
 	public float getBlack() {
 		return black;
