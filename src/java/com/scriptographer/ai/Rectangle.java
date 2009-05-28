@@ -125,6 +125,8 @@ public class Rectangle {
 	 * @param y The top position.
 	 * @param width
 	 * @param height
+	 * 
+	 * @jshide
 	 */
 	public void set(double x, double y, double width, double height) {
 		this.x = x;

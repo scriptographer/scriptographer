@@ -59,8 +59,14 @@ public abstract class Color {
 
 	public abstract boolean equals(Object obj);
 
+	/**
+	 * @jshide
+	 */
 	public abstract float[] getComponents();
 
+	/**
+	 * @jshide
+	 */
 	public abstract void set(Color color);
 
 	/**

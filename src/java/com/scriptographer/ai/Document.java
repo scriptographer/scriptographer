@@ -127,12 +127,14 @@ public class Document extends NativeObject {
 
 	/**
 	 * Called before ai functions are executed
+	 * 
 	 * @jshide
 	 */
 	public static native void beginExecution();
 	
 	/**
 	 * Called after ai functions are executed
+	 * 
 	 * @jshide
 	 */
 	public static native void endExecution();
@@ -385,6 +387,7 @@ public class Document extends NativeObject {
 	 * @param type
 	 * @param attributes
 	 * @return
+	 * 
 	 * @jshide
 	 */
 	/*

@@ -1241,7 +1241,8 @@ public abstract class Item extends DocumentObject {
 	
 	/**
 	 * This is only there for hunting one of the dreaded bugs.
-	 * @jshide all
+	 * 
+	 * @jshide
 	 */
 	public long getMillis() {
 		return millis;

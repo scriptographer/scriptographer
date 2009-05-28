@@ -70,6 +70,8 @@ public class Matrix {
 	 *
 	 * @param matrix the matrix to copy
 	 * @throws NullPointerException if m is null
+	 * 
+	 * @jshide
 	 */
 	public Matrix(Matrix matrix) {
 		transform = matrix != null ? matrix.toAffineTransform() : new AffineTransform();

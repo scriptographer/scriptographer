@@ -413,14 +413,14 @@ public class Point {
 	}
 
 	/**
-	 * @jshide
-	 * 
 	 * Returns the interpolation point between the point and another point. The
 	 * object itself is not modified!
 	 * 
 	 * @param pt
 	 * @param t the position between the two points as a value between 0 and 1
 	 * @return the interpolation point
+	 * 
+	 * @jshide
 	 */
 	public Point interpolate(Point pt, double t) {
 		return new Point(

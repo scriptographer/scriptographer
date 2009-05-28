@@ -193,7 +193,7 @@ public abstract class TextItem extends Item {
 
 	// ATE
 	/**
-	 * @jshide all
+	 * @jshide
 	 */
 	public native int nativeGetRange(boolean includeOverflow);
 

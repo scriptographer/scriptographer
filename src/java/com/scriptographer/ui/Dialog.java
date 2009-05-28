@@ -266,6 +266,7 @@ public abstract class Dialog extends Component {
 	 * problem. It is fired from {@link ScriptographerEngine.init}
 	 * 
 	 * @throws Exception
+	 * 
 	 * @jshide
 	 */
 	public static void initializeAll() throws Exception {
