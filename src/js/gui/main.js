@@ -236,9 +236,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 					var scope = scrpt.engine.createScope();
 					scope.put('tool', tool, true);
 					if (scrpt) {
-						// Never call scrpt.execute directly, since 
-						// we handle SG specific things in 
-						// ScriptographerEngine.execute:
+						// Don't call scrpt.execute directly, since we handle SG
+						// specific things in ScriptographerEngine.execute:
 						ScriptographerEngine.execute(scrpt, entry.file, scope);
 					}
 					// Now copy over handlers from the scope and set them on the tool,

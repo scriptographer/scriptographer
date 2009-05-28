@@ -349,14 +349,14 @@ public class ScriptographerEngine {
 	}
 
 	/**
-	 * executes the specified script file.
-	 *
+	 * Compiles the script file and throws errors if it cannot be compiled.
+	 * 
 	 * @param file
 	 * @return
-	 * @throws IOException 
-	 * @throws ScriptException 
+	 * @throws ScriptException
+	 * @throws IOException
 	 */
-	public static Object execute(File file, Scope scope)
+	public static com.scratchdisk.script.Script compile(File file)
 			throws ScriptException, IOException {
 		ScriptEngine engine = ScriptEngine.getEngineByFile(file);
 		if (engine == null)
@@ -364,6 +364,34 @@ public class ScriptographerEngine {
 		com.scratchdisk.script.Script script = engine.compile(file);
 		if (script == null)
 			throw new ScriptException("Unable to compile script " + file);
+		return script;
+	}
+
+	/**
+	 * Executes the specified script file.
+	 *
+	 * @param file
+	 * @return
+	 * @throws ScriptException 
+	 * @throws IOException 
+	 */
+	public static Object execute(File file, Scope scope)
+			throws ScriptException, IOException {
+		return execute(compile(file), file, scope);
+	}
+
+	/**
+	 * Executes the compiled script.
+	 * 
+	 * @param script
+	 * @param file
+	 * @param scope
+	 * @return
+	 * @throws ScriptException
+	 * @throws IOException
+	 */
+	public static Object execute(com.scratchdisk.script.Script script, File file, Scope scope)
+			throws ScriptException, IOException {
 		boolean started = false;
 		Object ret = null;
 		Throwable throwable = null;
@@ -376,7 +404,8 @@ public class ScriptographerEngine {
 				// handle onStop
 				Script scriptObj = (Script) scope.get("script");
 				if (scriptObj.getOnStop() != null) {
-					// add this scope to the scopes that want onStop to be called
+					// add this scope to the scopes that want onStop to be
+					// called
 					// when the stop button is hit by the user
 					stopScripts.add(scriptObj);
 				}
