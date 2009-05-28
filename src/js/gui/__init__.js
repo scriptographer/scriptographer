@@ -55,9 +55,11 @@ function loadLibraries(dir) {
 				try {
 					var engine = ScriptEngine.getEngineByFile(file);
 					if (engine) {
-						var scr = engine.compile(file);
-						if (scr)
-							scr.execute(engine.globalScope);
+						var scrpt = engine.compile(file);
+						// Never call scrpt.execute directly, since we handle
+						// SG specific things in ScriptographerEngine.execute:
+						if (scrpt)
+							ScriptographerEngine.execute(scrpt, file, engine.globalScope);
 					}
 				} catch (e) {
 					print(e);

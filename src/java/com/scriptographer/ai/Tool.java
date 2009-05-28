@@ -34,14 +34,9 @@ package com.scriptographer.ai;
 import com.scriptographer.ScriptographerEngine; 
 import com.scriptographer.ScriptographerException;
 import com.scriptographer.ui.Image;
-import com.scratchdisk.script.ScriptEngine;
-import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.script.Callable;
-import com.scratchdisk.script.Scope;
 import com.scratchdisk.util.IntMap;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -93,7 +88,6 @@ public class Tool extends NativeObject {
 
 	private float distanceThreshold;
 	
-	private Scope scope;
 	private MouseEvent event = new MouseEvent();
 
 	private boolean firstMove = true;
@@ -155,9 +149,13 @@ public class Tool extends NativeObject {
 		// See resourceIds.h:
 		this.name = name;
 	}
-	
-	public void compileScript(File file) throws ScriptException, IOException {
-		onInit = null;
+
+	/**
+	 * Resets the tool's settings, so a new tool can be assigned to it
+	 * 
+	 * @jshide
+	 */
+	public void reset() {
 		onOptions = null;
 		onSelect = null;
 		onDeselect = null;
@@ -171,22 +169,6 @@ public class Tool extends NativeObject {
 		event = new MouseEvent();
 		setDistanceThreshold(0);
 		setEventInterval(-1);
-		ScriptEngine engine = ScriptEngine.getEngineByFile(file);
-		if (engine == null)
-			throw new ScriptException("Unable to find script engine for " + file);
-		// Execute in the tool's scope so setIdleEventInterval can be called
-		scope = engine.getScope(this);
-		ScriptographerEngine.execute(file, scope);
-		if (scope != null) {
-			try {
-				onInit();
-			} catch (ScriptException e) {
-				// Rethrow
-				throw e;
-			} catch (Exception e) {
-				// cannot happen with scripts
-			}
-		}
 	}
 
 	public native boolean hasPressure();
@@ -248,27 +230,6 @@ public class Tool extends NativeObject {
 		distanceThreshold = threshold;
 	}
 
-	private Callable onInit;
-
-	/**
-	 * @deprecated
-	 */
-	public Callable getOnInit() {
-		return onInit;
-	}
-
-	/**
-	 * @deprecated
-	 */
-	public void setOnInit(Callable onInit) {
-		this.onInit = onInit;
-	}
-
-	protected void onInit() throws Exception {
-		if (scope != null && onInit != null)
-			ScriptographerEngine.invoke(onInit, this);
-	}
-
 	/*
 	 * TODO: onOptions should be called onEditOptions, or both onOptions,
 	 * but at least the same.
@@ -284,7 +245,7 @@ public class Tool extends NativeObject {
 	}
 
 	protected void onOptions() throws Exception {
-		if (scope != null && onOptions != null)
+		if (onOptions != null)
 			ScriptographerEngine.invoke(onOptions, this);
 	}
 
@@ -299,7 +260,7 @@ public class Tool extends NativeObject {
 	}
 
 	protected void onSelect() throws Exception {
-		if (scope != null && onSelect != null)
+		if (onSelect != null)
 			ScriptographerEngine.invoke(onSelect, this);
 	}
 	
@@ -314,7 +275,7 @@ public class Tool extends NativeObject {
 	}
 	
 	protected void onDeselect() throws Exception {
-		if (scope != null && onDeselect != null)
+		if (onDeselect != null)
 			ScriptographerEngine.invoke(onDeselect, this);
 	}
 
@@ -329,7 +290,7 @@ public class Tool extends NativeObject {
 	}
 
 	protected void onReselect() throws Exception {
-		if (scope != null && onReselect != null)
+		if (onReselect != null)
 			ScriptographerEngine.invoke(onReselect, this);
 	}
 
@@ -344,7 +305,7 @@ public class Tool extends NativeObject {
 	}
 	
 	protected void onMouseDown(MouseEvent event) throws Exception {
-		if (scope != null && onMouseDown != null)
+		if (onMouseDown != null)
 			ScriptographerEngine.invoke(onMouseDown, this, event);
 	}
 
@@ -359,7 +320,7 @@ public class Tool extends NativeObject {
 	}
 	
 	protected void onMouseDrag(MouseEvent event) throws Exception {
-		if (scope != null && onMouseDrag != null)
+		if (onMouseDrag != null)
 			ScriptographerEngine.invoke(onMouseDrag, this, event);
 	}
 
@@ -375,7 +336,7 @@ public class Tool extends NativeObject {
 	
 	protected void onMouseMove(MouseEvent event) throws Exception {
 		// Make sure the first move event initializes both delta and count.
-		if (scope != null && onMouseMove != null)
+		if (onMouseMove != null)
 			ScriptographerEngine.invoke(onMouseMove, this, event);
 	}
 
@@ -390,7 +351,7 @@ public class Tool extends NativeObject {
 	}
 		
 	protected void onMouseUp(MouseEvent event) throws Exception {
-		if (scope != null && onMouseUp != null)
+		if (onMouseUp != null)
 			ScriptographerEngine.invoke(onMouseUp, this, event);
 	}
 

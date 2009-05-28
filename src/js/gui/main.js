@@ -229,7 +229,31 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			if (entry.isTool) {
 				tool.tooltip = entry.file.name;
 				tool.image = tool.activeImage;
-				tool.compileScript(entry.file);
+				// Reset settings
+				tool.reset();
+				var scrpt = ScriptographerEngine.compile(entry.file);
+				if (scrpt) {
+					var scope = scrpt.engine.createScope();
+					scope.put('tool', tool, true);
+					if (scrpt) {
+						// Never call scrpt.execute directly, since 
+						// we handle SG specific things in 
+						// ScriptographerEngine.execute:
+						ScriptographerEngine.execute(scrpt, entry.file, scope);
+					}
+					// Now copy over handlers from the scope and set them on the tool,
+					// to allow them to be defined globally.
+					['onOptions', 'onSelect', 'onDeselect', 'onReselect', 'onMouseDown', 'onMouseUp', 'onMouseDrag', 'onMouseMove'].each(function(name) {
+						var handler = scope.getCallable(name);
+						if (handler)
+							tool[name] = handler;
+					});
+					var onInit = scope.getCallable('onInit');
+					if (onInit)
+						onInit.call(tool);
+				} else {
+					
+				}
 				if (entry.file != currentToolFile) {
 					var curEntry = fileEntries[currentToolFile];
 					if (curEntry)
