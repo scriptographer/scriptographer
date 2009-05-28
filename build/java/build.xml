@@ -474,6 +474,7 @@
 					destroyAll
 					disposeAll
 					removeAll
+					equals
 				"/>
 				<param name="-classorder" value="doclet/classorder.txt"/>
 				<param name="-templates" value="${templates}"/>

@@ -413,19 +413,19 @@ Type = Object.extend({
 // Tag
 
 // A js Tag class, to define own tag lists and override tag names with special
-// text_macro handlers.
+// render handlers.
 
 Tag = Object.extend(new function() {
 	var tags = {};
 
 	[TagImpl, SeeTagImpl].each(function(impl) {
 		impl.inject({
-			text_macro: function() {
+			render_macro: function() {
 				var name = this.name();
 				var tag = tags[name];
 				if (tag) {
 					// Call method from pseudo tag implementiation on native tag.
-					return tag.text_macro.apply(this, arguments);
+					return tag.render.apply(this, arguments);
 				} else {
 					// Default
 					return this.text();
@@ -439,7 +439,7 @@ Tag = Object.extend(new function() {
 			this.str = str;
 		},
 
-		text_macro: function(param) {
+		render_macro: function(param) {
 			return this.str;
 		},
 
@@ -453,13 +453,18 @@ Tag = Object.extend(new function() {
 	}
 });
 
-SeeTag = Tag.extend({
-	_names: '@see,@link',
+LinkTag = Tag.extend({
+	_names: '@link,@see',
 
-	text_macro: function(param) {
+	render: function(param) {
 		var ref = this.referencedMember() || this.referencedClass();
 		if (ref) {
-			return code_filter(ref.renderLink(param.classDoc));
+			if (ref.isVisible()) {
+				return code_filter(ref.renderLink(param.classDoc));
+			} else {
+				error(this.position() + ': warning - ' + this.name() + ' contains reference to invisible object: ' + ref);
+				return code_filter(this);
+			}
 		} else {
 			error(this.position() + ': warning - ' + this.name() + ' contains undefined reference: ' + this);
 			return code_filter(this);
@@ -470,7 +475,7 @@ SeeTag = Tag.extend({
 GroupTag = Tag.extend({
 	_names: '@grouptitle,@grouptext',
 
-	text_macro: function(param) {
+	render: function(param) {
 		data.group[this.name().substring(6)] = this.text();
 	}
 });
@@ -547,12 +552,12 @@ Member = Object.extend({
 				member = this;
 
 			if (!containingClass)
-				containingClass = this.classDoc;
+				containingClass = this.containingClass();
 
 			if (index)
 				index.push('"' + member.getId() + '": { title: "' + this.name() +
 						'", text: "' + encodeJs(renderTags({
-							classDoc: this.classDoc, tags: member.inlineTags()
+							classDoc: classDoc, tags: member.inlineTags()
 						})) + '" }');
 
 			// Thrown exceptions
@@ -903,7 +908,6 @@ BeanProperty = Member.extend({
 			}, this);
 		}
 
-//		print(getter.tags('grouptitle')[0].text().split(/\r\n|\n|\r/mg).join(' - '));
 		var tags = getter.inlineTags();
 		if (!tags.length && setter)
 			tags = setter.inlineTags();
