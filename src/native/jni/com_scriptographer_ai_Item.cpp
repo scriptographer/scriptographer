@@ -953,11 +953,14 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeDraw(JNIEnv *env, j
 		rect.left = rect.top = 0;
 		rect.right = width;
 		rect.bottom = height;
+#if kPluginInterfaceVersion >= kAI12
+		// TODO: implement for CS
 		AIColorConvertOptions drawOptions;
 		// sAIDrawArt->BeginDrawArt(&drawData, drawOptions, flags); 
 		sAIDrawArt->DrawArt(&drawData, drawOptions); 
 		// sAIDrawArt->EndDrawArt(&drawData, drawOptions); 
 		sADMImage->EndADMDrawer(image);
+#endif
 	} EXCEPTION_CONVERT(env);
 }
 
