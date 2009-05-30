@@ -1,3 +1,5 @@
-<% foreach $tag in param.tags prefix=param.prefix suffix=param.suffix separator=param.separator encoding="html" | tags %>
-<% $tag.render default="\n" classDoc=param.classDoc -%>
-<% end %>
+<%-- "We keep this all on one line since we can't use a whitespace stripping tag (<% $tag.render ... -%>),
+as that would strip not only new lines, but also white spaces, which we want to keep between
+the different tags. TODO: Think of adding more control to Template.js?"
+--%>
+<% foreach $tag in param.tags prefix=param.prefix suffix=param.suffix separator=param.separator encoding="html" | tags %><% $tag.render default="\n" classDoc=param.classDoc %><% end %>
