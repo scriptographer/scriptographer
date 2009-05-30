@@ -3,9 +3,10 @@
 BASE=../../../..
 JAVA=$BASE/java/build/
 DOCS=$BASE/../docs/js/
-CORE=$BASE/../src/js/
+CORE=$BASE/../src/js/core/
 
 makeLink() {
+	echo "Linking $2 -> $1"
 	if [ -h $2 ]
 	then
 		rm $2
