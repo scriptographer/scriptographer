@@ -16,11 +16,11 @@ include('template.js');
 // Helper functions to print to out / err
 
 function print() {
-	java.lang.System.out.println($A(arguments).join(', '));
+	java.lang.System.out.println($A(arguments).join(' '));
 }
 
 function error() {
-	java.lang.System.err.println($A(arguments).join(', '));
+	java.lang.System.err.println($A(arguments).join(' '));
 }
 
 // Change error handling here to just throw errors. This allows us to catch
@@ -102,113 +102,6 @@ String.inject({
 	}
 });
 
-// Ehnance some of the javatool classes with usefull methods:
-
-// Class helpers
-
-ClassDocImpl.inject({
-	hasSuperclass: function(superclass) {
-		// cache results
-		if (!this.superCache)
-			this.superCache = {};
-		var val = this.superCache[superclass];
-		if (val !== undefined) return val;
-		val = false;
-		var doc = this;
-		while (doc && !val) {
-			if (doc.qualifiedName() == superclass)
-				val = true;
-			doc = doc.superclass();
-		}
-		this.superCache[superclass] = val;
-		return val;
-	},
-
-	hasInterface: function(face) {
-		// cache results
-		if (!this.interCache)
-			this.interCache = {};
-		var val = this.interCache[face];
-		if (val !== undefined) return val;
-		val = false;
-		if (this.qualifiedName() == face) {
-			val = true;
-		} else {
-			// if an interface extends another one, its superclass is not
-			// set here, but the super interface is simply in the
-			// interfaces() list.  strange...
-			val = this.interfaces().find(function(f) {
-				if (f.hasInterface(face))
-					return f;
-			});
-			if (!val) {
-				var cd = this.superclass();
-				if (cd) val = cd.hasInterface(face);
-			}
-		}
-		this.interCache[face] = val;
-		return val;
-		
-	},
-
-	isVisible: function() {
-		return ClassObject.get(this.qualifiedName()) != null;
-	},
-
-	getListType: function() {
-		if (this.hasInterface('com.scratchdisk.util.SimpleList'))
-			return 'Normal List';
-		else if (this.hasInterface('com.scratchdisk.util.StringIndexList'))
-			return 'String-index List';
-		else if (this.hasInterface('com.scratchdisk.util.ReadOnlyList'))
-			return 'Read-only List';
-	},
-
-	getType: function() {
-		var type;
-		if (this.isInterface()) type = 'Interface';
-		else if (this.isException()) type = 'Exception';
-		else type = 'Prototype';
-		if (this.isAbstract()) type = 'Abstract ' + type;
-		return type;
-	},
-
-	getSuperclass: function() {
-		var sc = this.superclass();
-		if (sc && sc.isVisible())
-			return sc;
-	},
-
-	getSubclasses: function() {
-		return root.classes().each(function(cls) {
-			if (cls.isVisible() && cls.superclass() == this && !cls.equals(this))
-				this.push(cls);
-		}, []);
-	},
-
-	// This is defined outside renderLink so that even when a Type
-	// happens to be its own ClassDoc (as returned by asClassDoc), and therefore
-	// overrides renderLink, it can still call the base version.
-	renderClassLink: function(name) {
-		if (!name) name = this.name();
-		var str = '';
-		if (this.isVisible()) {
-			if (this.isAbstract())
-				str += '<i>';
-			str += renderLink(this.qualifiedName(), this.name(), '', name);
-			if (this.isAbstract())
-				str += '</i>';
-		} else {
-			str = this.name();
-		}
-		return str;
-	},
-
-	renderLink: function(name) {
-		return this.renderClassLink(name);
-	}
-});
-
 // Type helpers
 
 Type = Object.extend({
@@ -234,13 +127,68 @@ Type = Object.extend({
 	},
 
 	hasSuperclass: function(superclass) {
-		var cd = this.asClassDoc();
-		return cd && cd.hasSuperclass(superclass) || false;
+		var doc = this.asClassDoc();
+		if (doc) {
+			// Cache results
+			// TODO: Put cache in __proto__?
+			if (!this.superCache)
+				this.superCache = {};
+			var val = this.superCache[superclass];
+			if (val !== undefined) return val;
+			val = false;
+			while (doc && !val) {
+				if (doc.qualifiedName() == superclass)
+					val = true;
+				doc = doc.superclass();
+			}
+			this.superCache[superclass] = val;
+			return val;
+		}
 	},
 
 	hasInterface: function(face) {
+		var doc = this.asClassDoc();
+		if (doc) {
+			// Cache results
+			// TODO: Put cache in __proto__?
+			if (!this.interCache)
+				this.interCache = {};
+			var val = this.interCache[face];
+			if (val !== undefined) return val;
+			val = false;
+			if (doc.qualifiedName() == face) {
+				val = true;
+			} else {
+				// if an interface extends another one, its superclass is not
+				// set here, but the super interface is simply in the
+				// interfaces() list.  strange...
+				val = doc.interfaces().find(function(f) {
+					if (f.hasInterface(face))
+						return f;
+				});
+				if (!val) {
+					var cd = doc.superclass();
+					if (cd) val = cd.hasInterface(face);
+				}
+			}
+			this.interCache[face] = val;
+			return val;
+		}
+	},
+
+	getSuperclass: function() {
 		var cd = this.asClassDoc();
-		return cd && cd.hasInterface(face) || false;
+		var sc = cd && cd.superclass();
+		if (sc && sc.isVisible())
+			return sc;
+	},
+
+	getSubclasses: function() {
+		var cd = this.asClassDoc();
+		return root.classes().each(function(cls) {
+			if (cls.isVisible() && cls.superclass() == cd && !cls.equals(cd))
+				this.push(cls);
+		}, []);
 	},
 
 	subclassOf: function(other) {
@@ -279,6 +227,10 @@ Type = Object.extend({
 
 	isMap: function() {
 		return !this.isArray() && this.hasInterface('java.util.Map');
+	},
+
+	isException: function() {
+		return !this.isArray() && this.hasInterface('java.lang.Throwable');
 	},
 
 	isEnum: function() {
@@ -324,80 +276,100 @@ Type = Object.extend({
 			);
 	},
 
-	renderLink: function(additional) {
+	getListType: function() {
+		if (this.hasInterface('com.scratchdisk.util.SimpleList'))
+			return 'Normal List';
+		else if (this.hasInterface('com.scratchdisk.util.StringIndexList'))
+			return 'String-index List';
+		else if (this.hasInterface('com.scratchdisk.util.ReadOnlyList'))
+			return 'Read-only List';
+	},
+
+	getType: function() {
+		var type;
+		if (this.isInterface()) type = 'Interface';
+		else if (this.isException()) type = 'Exception';
+		else type = 'Prototype';
+		if (this.isAbstract()) type = 'Abstract ' + type;
+		return type;
+	},
+
+	renderLink: function(param) {
 		var str;
 		if (this.isNumber()) {
-			str = 'Number';
+			str = code_filter('Number');
 		} else if (this.isBoolean()) {
-			str = 'Boolean';
+			str = code_filter('Boolean');
 		} else if (this.isArray()) {
 			var doc = this.asClassDoc();
 			doc = doc && new Type(doc);
 			str = 'Array of ' + (doc
-				? doc.renderLink(true)
-				: Type.isNumber(this.typeName())
+				? doc.renderLink({ additional: true })
+				: code_filter(Type.isNumber(this.typeName())
 					? 'Number'
-					: this.typeName().capitalize());
+					: this.typeName().capitalize()));
 		} else if (this.isMap()) {
-			str = 'Object';
+			str = code_filter('Object');
 		} else if (this.isEnum()) {
-			str = 'String';
+			str = code_filter('String');
 		} else if (this.isEnumSet()) {
 			var types = this.typeArguments();
 			if (types.length > 0) {
-				str = 'Array of String';
+				str = 'Array of ' + code_filter('String');
 			} else {
-				str = this.typeName() + this.dimension();
+				str = code_filter(this.typeName() + this.dimension());
 			}
 		} else {
 			var cls = this.asClassDoc();
 			if (cls && cls.isVisible()) {
-				str = cls.renderClassLink();
+				str = cls.renderClassLink({});
 			} else if (this.isPoint()) {
-				str = ClassObject.renderLink('Point', 'com.scriptographer.ai.Point');
+				str = ClassObject.renderLink({
+					name: 'com.scriptographer.ai.Point'
+				});
 			} else if (this.isRectangle()) {
-				str = ClassObject.renderLink('Rectangle', 'com.scriptographer.ai.Rectangle');
+				str = ClassObject.renderLink({
+					name: 'com.scriptographer.ai.Rectangle'
+				});
 			} else if (this.isFile()) {
-				str = ClassObject.renderLink('File', 'com.scriptographer.sg.File');
+				str = ClassObject.renderLink({
+					name: 'com.scriptographer.sg.File'
+				});
 			} else {
-				str = cls ? cls.name() : this.typeName() + this.dimension();
+				str = code_filter(cls ? cls.name() : this.typeName() + this.dimension());
 			}
 		}
-		if (additional) {
-			additional = this.renderAdditional();
-			if (additional)
-				str += ' ' + additional;
+		if (param.additional) {
+			var add = this.renderAdditional();
+			if (add)
+				str += ' ' + add;
 		}
 		return str;
 	},
 
-	getEnumValues: function() {
-		var cls = Packages;
-		this.qualifiedName().split('.').each(function(part) {
-			cls = cls[part];
-		});
-		return cls.values().map(function(value) {
-			return code_filter('"' + EnumUtils.getScriptName(value) + '"');
+	getEnumConstants: function() {
+		return this.enumConstants().map(function(value) {
+			return code_filter('"' + value.name().toLowerCase().split('_').join('-') + '"');
 		}).join(', ');
 	},
 
 	renderAdditional: function() {
 		if (!this.isArray()) {
 			if (this.isEnum()) {
-				return '(' + this.getEnumValues() + ')';
+				return '(' + this.getEnumConstants() + ')';
 			} else if (this.isEnumSet()) {
 				var types = this.typeArguments();
 				if (types.length == 1) {
 					var type = new Type(types[0]);
-					return '(' + type.getEnumValues() + ')';
+					return '(' + type.getEnumConstants() + ')';
 				}
 			} else if (this.isEnumMap()) {
 				var types = this.typeArguments();
 				if (types.length == 2) {
 					var keyType = new Type(types[0]);
 					var valueType = new Type(types[1]);
-					return '(Values: ' + code_filter(valueType.renderLink()) 
-						+ ', Keys: ' + keyType.getEnumValues() + ')';
+					return '(Values: ' + code_filter(valueType.renderLink({})) 
+						+ ', Keys: ' + keyType.getEnumConstants() + ')';
 				}
 			}
 		}
@@ -406,6 +378,10 @@ Type = Object.extend({
 	statics: {
 		isNumber: function(typeName) {
 			return /^(short|int|long|float|double)$/.test(typeName);
+		},
+
+		getSimpleName: function(name) {
+			return name.substring(name.lastIndexOf('.') + 1);
 		}
 	}
 });
@@ -460,7 +436,7 @@ LinkTag = Tag.extend({
 		var ref = this.referencedMember() || this.referencedClass();
 		if (ref) {
 			if (ref.isVisible()) {
-				return code_filter(ref.renderLink(param.classDoc));
+				return ref.renderLink({ classDoc: param.classDoc });
 			} else {
 				error(this.position() + ': warning - ' + this.name() + ' contains reference to invisible object: ' + ref);
 				return code_filter(this);
@@ -479,6 +455,40 @@ GroupTag = Tag.extend({
 		data.group[this.name().substring(6)] = this.text();
 	}
 });
+
+// Ehnance some of the javatool classes with usefull methods:
+
+// Class helpers
+
+// We're injecting Type.prototype into ClassDocImpl, to enhance all ClassDocs
+// automatically. It's ok to do so since Rhino doesn't allow to override
+// native methods, so e.g. qualifiedName won't loop endlessly.
+ClassDocImpl.inject(Hash.merge({
+	isVisible: function() {
+		return ClassObject.get(this.qualifiedName()) != null;
+	},
+
+	// This is defined outside renderLink so that even when a Type
+	// happens to be its own ClassDoc (as returned by asClassDoc), and therefore
+	// overrides renderLink, it can still call the base version.
+	renderClassLink: function(param) {
+		var str = '';
+		if (this.isVisible()) {
+			if (this.isAbstract())
+				str += '<i>';
+			str += renderLink({
+				name: this.qualifiedName(),
+				anchor: '',
+				title: param.title || code_filter(this.name())
+			});
+			if (this.isAbstract())
+				str += '</i>';
+		} else {
+			str = this.name();
+		}
+		return str;
+	}
+}, Type.prototype));
 
 // Parameter helpers
 
@@ -520,9 +530,9 @@ MemberDocImpl.inject({
 		return Member.get(this.qualifiedName()) != null;
 	},
 
-	renderLink: function(current) {
+	renderLink: function(param) {
 		var mem = Member.get(this);
-		return mem ? mem.renderLink(current) : this.toString();
+		return mem ? mem.renderLink(param) : this.toString();
 	}
 
 });
@@ -647,13 +657,16 @@ Member = Object.extend({
 				containing : current;
 	},
 
-	renderLink: function(current) {
-		var cd = this.getClass(current);
+	renderLink: function(param) {
+		var cd = this.getClass(param.classDoc);
 		// Dont use mem.qualifiedName(). use cd.qualifiedName() + '.' + mem.name()
 		// instead in order to catch the case where functions are moved from
 		// invisible classes to visible ones (e.g. AffineTransform -> Matrix)
-		return renderLink(cd.qualifiedName(), cd.name(), this.getId(),
-				this.name() + this.getNameSuffix());
+		return renderLink({
+			name: cd.qualifiedName(),
+			anchor: this.getId(),
+			title: param.title || code_filter(this.name() + this.getNameSuffix())
+		});
 	},
 
 	isSimilar: function(mem) {
@@ -768,14 +781,15 @@ Method = Member.extend({
 				var overridden = this.member.overriddenMethod();
 				if (overridden) {
 					var mem = Member.get(overridden);
-					// If this method is not wrapped, quickly wrap it just to
-					// call renderMember.
 					// Prevent endless loops that happen when overriden
 					// functions from inivisble classes where moved to the
 					// derived class and Member.get lookup points there
 					// instead of the overridden version:
-					if (mem && mem.member.containingClass() != this.member.overriddenClass())
+					if (mem && mem.member.containingClass() != this.member.overriddenClass()) {
 						mem = null;
+					}
+					// If this method is not wrapped, quickly wrap it just to
+					// call renderMember.
 					if (!mem)
 						mem = new Method(this.classObject, overridden);
 					return mem;
@@ -787,15 +801,15 @@ Method = Member.extend({
 	renderSummary: function(classDoc) {
 		var overridden = this.getOverriddenMethodToUse();
 		if (overridden)
-			overridden.renderSummary(classDoc);
+			return overridden.renderSummary(classDoc);
 		else
-			this.base(classDoc);
+			return this.base(classDoc);
 	},
 
 	renderMember: function(cd, index, member) {
 		var overridden = this.getOverriddenMethodToUse();
 		if (overridden)
-			overridden.renderMember(cd, index, member);
+			return overridden.renderMember(cd, index, member);
 		else
 			return this.base(cd, index, member, this.containingClass());
 	},
@@ -1415,11 +1429,13 @@ ClassObject = Object.extend({
 			return this.classes[param]
 		},
 
-		renderLink: function(name, qualifiedName) {
-			var mem = this.get(qualifiedName);
+		renderLink: function(param) {
+			var mem = this.get(param.name);
 			// use renderClassLink, as renderLink might have been overridden
 			// by new Type(...)
-			return mem && mem.classDoc ? mem.classDoc.renderClassLink() : name;
+			return mem && mem.classDoc
+				? mem.classDoc.renderClassLink({})
+				: code_filter(Type.getSimpleName(param.name));
 		},
 
 		classes: new Hash()
@@ -1544,12 +1560,13 @@ function getRelativeIdentifier(str) {
 			str.substring(settings.basePackage.length + 1) : str;
 }
 
-function renderLink(qualifiedName, name, anchor, title) {
+function renderLink(param) {
 	if (settings.hyperref) {
 		var str = '<a href="';
-		if (qualifiedName) {
-			var path = getRelativeIdentifier(qualifiedName).replace('.', '/');
+		if (param.name) {
+			var path = getRelativeIdentifier(param.name).replace('.', '/');
 			// Link to the index file for packages
+			var name = Type.getSimpleName(param.name);
 			if (name.charAt(0).isLowerCase() && name != 'global')
 				path += '/index';
 			if (settings.templates)
@@ -1558,13 +1575,13 @@ function renderLink(qualifiedName, name, anchor, title) {
 				path = Document.getBasePath() + path + '.html';
 			str += path;
 		}
-		if (anchor) {
-			str += '#' + anchor;
-			str += '" onClick="return toggleMember(\'' + anchor + '\', true);';
+		if (param.anchor) {
+			str += '#' + param.anchor;
+			str += '" onClick="return toggleMember(\'' + param.anchor + '\', true);';
 		}
-		return str + '">' + title + '</a>';
+		return str + '">' + param.title + '</a>';
 	} else {
-	 	return title;
+	 	return param.title;
 	}
 }
 
@@ -1604,6 +1621,10 @@ function code_filter(str) {
 	return '<tt>' + str + '</tt>';
 }
 
+function stripCode_filter(str) {
+	return str.replace(/<tt>|<\/tt>/g, ' ').replace(/\\s+/g, ' ');
+}
+
 function tags_filter(str) {
 	// Replace inline <code></code> with <tt></tt>
 	str = str.replace(/<code>[ \t]*([^\n\r]*?)[ \t]*<\/code>/g, function(match, content) {
@@ -1620,7 +1641,7 @@ function tags_filter(str) {
 	return str;
 }
 
-function stripTags_fitler(str) {
+function stripTags_filter(str) {
 	return str.replace(/<.*?>|<\/.*?>/g, ' ').replace(/\\s+/g, ' ');
 }
 
