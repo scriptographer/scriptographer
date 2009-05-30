@@ -439,7 +439,7 @@
 		    <doctitle><![CDATA[${Name} ${version}]]></doctitle>
 			<bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, <a href="http://www.scratchdisk.com" target="_blank">Scratchdisk.com</a>. All Rights Reserved.]]></bottom>
 			<doclet name="com.scratchdisk.script.rhino.RhinoDoclet" pathref="docs.classpath">
-				<param name="-script" value="doclet/doclet.js"/>
+				<param name="-script" value="doclet/main.js"/>
 				<param name="-basepackage" value="com.scriptographer"/>
 				<param name="-filterclasses" value="
 					com.scriptographer.ai.DocumentObject
