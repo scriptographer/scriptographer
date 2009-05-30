@@ -18,7 +18,8 @@
 
 		<property name="home.dir" value="../.."/>
 		<!-- build.lib contains libraries for building, not built libs. -->
-		<!-- build.libraries contains the products. TODO: find better names. -->
+		<!-- build.libraries contains the products. -->
+		<!-- TODO: clean up, find better names. -->
 		<property name="build.lib" value="${home.dir}/build/java/lib"/>
 		<property name="build.dir" value="${home.dir}/build/java/build"/>
 		<property name="build.src" value="${home.dir}/src/java"/>
@@ -39,6 +40,8 @@
 				<exclude name="**/scriptographer*.jar" />
 			</fileset>
 		</path>
+
+		<property name="docs.script" value="${home.dir}/src/js/doclet/main.js"/>
 
 		<property name="docs.dir" value="${home.dir}/docs"/>
 		<property name="docs.api.dir" value="${docs.dir}/api"/>
@@ -439,7 +442,7 @@
 		    <doctitle><![CDATA[${Name} ${version}]]></doctitle>
 			<bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, <a href="http://www.scratchdisk.com" target="_blank">Scratchdisk.com</a>. All Rights Reserved.]]></bottom>
 			<doclet name="com.scratchdisk.script.rhino.RhinoDoclet" pathref="docs.classpath">
-				<param name="-script" value="doclet/main.js"/>
+				<param name="-script" value="${docs.script}"/>
 				<param name="-basepackage" value="com.scriptographer"/>
 				<param name="-filterclasses" value="
 					com.scriptographer.ai.DocumentObject
@@ -476,7 +479,7 @@
 					removeAll
 					equals
 				"/>
-				<param name="-classorder" value="doclet/classorder.txt"/>
+				<param name="-classorder" value="classorder.txt"/>
 				<param name="-templates" value="${templates}"/>
 				<param name="-nosummaries" value="true" />
 				<param name="-singleclass" value="${singleclass.value}" />
