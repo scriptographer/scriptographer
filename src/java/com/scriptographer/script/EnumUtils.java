@@ -45,17 +45,22 @@ public class EnumUtils {
 	private static HashMap<Enum, String> scriptNames =
 			new HashMap<Enum, String>();
 
+	public static String getScriptName(String name) {
+		String parts[] = name.toLowerCase().split("_");
+		name = parts[0];
+		for (int i = 1; i < parts.length; i++) {
+			// CSS style:
+			name += '-' + parts[i];
+			// Camel Case:
+			// name += Character.toUpperCase(parts[i].charAt(0)) + parts[i].substring(1);
+		}
+		return name;
+	}
+
 	public static String getScriptName(Enum e) {
 		String name = scriptNames.get(e);
 		if (name == null) {
-			String parts[] = e.name().toLowerCase().split("_");
-			name = parts[0];
-			for (int i = 1; i < parts.length; i++) {
-				// CSS style:
-				name += '-' + parts[i];
-				// Camel Case:
-				// name += Character.toUpperCase(parts[i].charAt(0)) + parts[i].substring(1);
-			}
+			name = getScriptName(e.name());
 			scriptNames.put(e, name);
 		}
 		return name;
