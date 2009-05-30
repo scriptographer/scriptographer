@@ -7,7 +7,7 @@
  */
 
 /**
- * A list of member lists, accessible by member name:
+ * A list of member groups, accessible by member name:
  */
 MemberGroupList = Object.extend({
 	initialize: function(classObject) {

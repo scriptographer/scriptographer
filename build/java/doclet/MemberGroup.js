@@ -7,7 +7,7 @@
  */
 
 /**
- * A list of members that are unified under the same name 
+ * A group of members that are unified under the same name 
  */
 MemberGroup = Object.extend({
 	initialize: function(classObject, name) {

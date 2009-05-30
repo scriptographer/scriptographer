@@ -12,6 +12,8 @@
 Tag = Object.extend(new function() {
 	var tags = {};
 
+	// Inject render_macro into native tags. This finds the suitable fake tag
+	// based on tag names and passes on the rendering to it.
 	[TagImpl, SeeTagImpl].each(function(impl) {
 		impl.inject({
 			render_macro: function() {
