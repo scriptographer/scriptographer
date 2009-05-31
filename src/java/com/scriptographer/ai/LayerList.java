@@ -32,7 +32,7 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.list.AbstractReadOnlyList;
-import com.scratchdisk.list.StringIndexReadOnlyList;
+import com.scratchdisk.list.ReadOnlyStringIndexList;
 
 /**
  * The LayerList object represents a list of layers in an Illustrator document.
@@ -41,7 +41,7 @@ import com.scratchdisk.list.StringIndexReadOnlyList;
  * 
  * @author lehni
  */
-public class LayerList extends AbstractReadOnlyList<Layer> implements StringIndexReadOnlyList<Layer> {
+public class LayerList extends AbstractReadOnlyList<Layer> implements ReadOnlyStringIndexList<Layer> {
 	Document document;
 
 	protected LayerList(Document document) {

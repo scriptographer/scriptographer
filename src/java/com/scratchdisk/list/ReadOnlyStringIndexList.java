@@ -37,6 +37,6 @@ package com.scratchdisk.list;
  *
  * @author lehni 
  */
-public interface StringIndexReadOnlyList<E> {
+public interface ReadOnlyStringIndexList<E> {
 	public E get(String name);
 }

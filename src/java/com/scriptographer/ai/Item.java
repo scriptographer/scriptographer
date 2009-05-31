@@ -249,7 +249,7 @@ public abstract class Item extends DocumentObject {
 			Item item = null;
 			if (prevHandle != 0) {
 				// in case there was already an item with the initial handle
-				// before, udpate it now:
+				// before, update it now:
 				item = (Item) items.get(prevHandle);
 				if (item != null) {
 					// remove the old reference
@@ -289,7 +289,7 @@ public abstract class Item extends DocumentObject {
 
 	/**
 	 * Called by native methods that need all cached changes to be
-	 * commited before the objects are modified. The version is then
+	 * committed before the objects are modified. The version is then
 	 * increased to invalidate the cached values, as they were just 
 	 * changed.
 	 */
@@ -389,14 +389,15 @@ public abstract class Item extends DocumentObject {
 	 */
 	public native Item getPreviousSibling();
 
-	// don't implement this in native as the number of items is not known
-	// in advance and like this, a java ArrayList can be used:
-	// TODO: Cache the result. Invalidate cached version when version changes,
-	// or when appendChild / moveAbove / bellow affects this children list.
 	/**
-	 * An array of items contained within this item
+	 * Returns an array of items contained within this item.
 	 */
 	public ItemList getChildren() {
+		// don't implement this in native as the number of items is not known
+		// in advance and like this, a java ArrayList can be used:
+		// TODO: Cache the result. Invalidate cached version when version
+		// changes, or when appendChild / moveAbove / bellow affects this
+		// children list.
 		ItemList list = new ItemList();
 		Item child = getFirstChild();
 		while (child != null) {
@@ -1248,6 +1249,9 @@ public abstract class Item extends DocumentObject {
 		return millis;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public native int getItemType();
 
 	public static native int getItemType(Class cls);

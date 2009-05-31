@@ -35,12 +35,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.scratchdisk.list.AbstractReadOnlyList;
-import com.scratchdisk.list.StringIndexReadOnlyList;
+import com.scratchdisk.list.ReadOnlyStringIndexList;
 
 /**
  * @author lehni
  */
-public class FileFormatList extends AbstractReadOnlyList<FileFormat> implements StringIndexReadOnlyList<FileFormat> {
+public class FileFormatList extends AbstractReadOnlyList<FileFormat> implements ReadOnlyStringIndexList<FileFormat> {
 
 	private ArrayList<FileFormat> formats = null;
 	private HashMap<String, FileFormat> lookup = null;

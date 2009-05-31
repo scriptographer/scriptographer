@@ -37,12 +37,12 @@ import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.ListIterator;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
-import com.scratchdisk.list.StringIndexReadOnlyList;
+import com.scratchdisk.list.ReadOnlyStringIndexList;
 
 /**
  * @author lehni
  */
-public class FontFamily extends NativeObject implements ReadOnlyList<FontWeight>, StringIndexReadOnlyList<FontWeight> {
+public class FontFamily extends NativeObject implements ReadOnlyList<FontWeight>, ReadOnlyStringIndexList<FontWeight> {
 
 	protected FontFamily(int handle) {
 		super(handle);

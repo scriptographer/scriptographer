@@ -32,13 +32,13 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.list.AbstractReadOnlyList;
-import com.scratchdisk.list.StringIndexReadOnlyList;
+import com.scratchdisk.list.ReadOnlyStringIndexList;
 
 /**
  * @author lehni
  */
 public class SymbolList extends AbstractReadOnlyList<Symbol> implements
-		StringIndexReadOnlyList<Symbol> {
+		ReadOnlyStringIndexList<Symbol> {
 	Document document;
 
 	protected SymbolList(Document document) {

@@ -38,7 +38,7 @@ import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.ListIterator;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
-import com.scratchdisk.list.StringIndexReadOnlyList;
+import com.scratchdisk.list.ReadOnlyStringIndexList;
 
 /**
  * The FontList object represents a list of {@link FontFamily} objects. Font
@@ -47,7 +47,7 @@ import com.scratchdisk.list.StringIndexReadOnlyList;
  * 
  * @author lehni
  */
-public class FontList implements ReadOnlyList<FontFamily>, StringIndexReadOnlyList<FontFamily> {
+public class FontList implements ReadOnlyList<FontFamily>, ReadOnlyStringIndexList<FontFamily> {
 
 	/**
      * Don't let anyone instantiate this class.

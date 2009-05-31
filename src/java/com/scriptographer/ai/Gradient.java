@@ -67,9 +67,6 @@ public class Gradient extends DocumentObject {
 		return stops;
 	}
 
-	/**
-	 * @jshide
-	 */
 	public void setStops(ReadOnlyList<GradientStop> list) {
 		int size = list.size();
 		GradientStopList stops = getStops();

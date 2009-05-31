@@ -111,9 +111,6 @@ public class Path extends PathItem {
 		return segments;
 	}
 
-	/**
-	 * @jshide
-	 */
 	public void setSegments(ReadOnlyList<? extends Segment> list) {
 		SegmentList segments = getSegments();
 		// TODO: Implement SegmentList.setAll so clear is not necessary and
@@ -346,8 +343,8 @@ public class Path extends PathItem {
 		getSegments().lineTo(x, y);
 	}
 	
-	public void curveTo(double c1x, double c1y, double c2x, double c2y, double x,
-			double y) {
+	public void curveTo(double c1x, double c1y, double c2x, double c2y,
+			double x, double y) {
 		getSegments().curveTo(c1x, c1y, c2x, c2y, x, y);
 	}
 	

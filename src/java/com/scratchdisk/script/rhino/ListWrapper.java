@@ -39,7 +39,7 @@ import org.mozilla.javascript.Wrapper;
 
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.list.List;
-import com.scratchdisk.list.StringIndexReadOnlyList;
+import com.scratchdisk.list.ReadOnlyStringIndexList;
 import com.scratchdisk.list.StringIndexList;
 
 /**
@@ -104,8 +104,8 @@ public class ListWrapper extends ExtendedJavaObject {
 
 	public boolean has(String name, Scriptable start) {
 		return super.has(name, start) || // TODO: needed? name.equals("length") ||
-			javaObject instanceof StringIndexReadOnlyList && javaObject != null && 
-				((StringIndexReadOnlyList) javaObject).get(name) != null;
+			javaObject instanceof ReadOnlyStringIndexList && javaObject != null && 
+				((ReadOnlyStringIndexList) javaObject).get(name) != null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -138,8 +138,8 @@ public class ListWrapper extends ExtendedJavaObject {
 		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
 			 if (name.equals("length")) {
 				 return new Integer(((ReadOnlyList) javaObject).size());
-			 } else if (javaObject instanceof StringIndexReadOnlyList) {
-				obj = ((StringIndexReadOnlyList) javaObject).get(name);
+			 } else if (javaObject instanceof ReadOnlyStringIndexList) {
+				obj = ((ReadOnlyStringIndexList) javaObject).get(name);
 				if (obj != null)
 					obj = toObject(obj, start);
 				else
