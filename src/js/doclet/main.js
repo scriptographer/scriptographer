@@ -10,8 +10,8 @@ importPackage(Packages.com.sun.javadoc);
 importPackage(Packages.com.sun.tools.javadoc);
 importPackage(Packages.com.scriptographer.script);
 
-include('bootstrap.js');
-include('Template.js');
+include('lib/bootstrap.js');
+include('lib/Template.js');
 include('Type.js');
 include('Tag.js');
 include('Member.js');
@@ -39,6 +39,12 @@ function error() {
 Template.inject({
 	reportMacroError: function(error, command, out) {
 		throw error;
+	},
+
+	// Template.directory points to the place where the templates are found.
+	// The value options.directory is set by the RhinoDoclet
+	statics: {
+		directory: options.directory + '/templates/'
 	}
 });
 

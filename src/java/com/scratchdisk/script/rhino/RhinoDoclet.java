@@ -53,7 +53,6 @@ public class RhinoDoclet extends Doclet {
 			RhinoDocletEngine engine = new RhinoDocletEngine();
 			engine.put("root", root);
 			engine.put("options", options);
-			engine.put("baseDir", file.getParentFile());
 			return engine.evaluate(file);
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -87,6 +86,8 @@ public class RhinoDoclet extends Doclet {
 			err.printError("Please specify a script file.");
 			return false;
 		}
+		// Add the base directory to the options
+		options.put("directory", options, file.getParentFile());
 		return true;
 	}
 
@@ -142,14 +143,13 @@ public class RhinoDoclet extends Doclet {
 		/**
 		 * Loads and executes a set of JavaScript source files in the current scope.
 		 */
-		public static void include(Context cx, Scriptable thisObj, Object[] args,
-				Function funObj) throws Exception {
+		public static void include(Context cx, Scriptable thisObj,
+				Object[] args, Function funObj) throws Exception {
 			for (int i = 0; i < args.length; i++) {
-				File file = new File(
-						(File) ScriptableObject.getProperty(thisObj, "baseDir"),
+				File scriptFile = new File(file.getParentFile(),
 						(String) args[i]);
-				FileReader in = new FileReader(file);
-				cx.evaluateReader(thisObj, in, file.getName(), 1, null);
+				cx.evaluateReader(thisObj, new FileReader(scriptFile),
+						scriptFile.getName(), 1, null);
 			}
 		}
 	}

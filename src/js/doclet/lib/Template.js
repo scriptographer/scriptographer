@@ -705,7 +705,7 @@ Template.methods = new function() {
 			}
 			if (!template)
 				template = templates[name] = new Template(
-					new java.io.File(baseDir + '/templates/' + name + '.jstl'));
+					new java.io.File(Template.directory, name + '.jstl'));
 			return template;
 		},
 

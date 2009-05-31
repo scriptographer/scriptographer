@@ -35,7 +35,7 @@ BeanProperty = Member.extend({
 
 		this.inlineTagList = [];
 		if (!setter)
-			this.inlineTagList.push(new Tag('Read-only.'))
+			this.inlineTagList.push(new Tag('Read-only. '))
 		this.inlineTagList.append(tags);
 	},
 
