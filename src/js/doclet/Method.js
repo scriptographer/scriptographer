@@ -13,19 +13,13 @@
  * all com.scriptogrpaher.ai.Pathfinder functions
  */
 Method = Member.extend({
-	initialize: function(classObject, param) {
+	initialize: function(classObject, member) {
 		this.base(classObject);
 		this.isGrouped = false;
 		this.members = [];
 		this.map = new Hash();
-		if (param instanceof MethodDoc) {
-			// used only in renderMember for overriding tags
-			this.methodName = param.name();
-			this.member = param;
-			this.add(param);
-		} else {
-			this.methodName = param;
-		}
+		if (member)
+			this.add(member);
 	},
 
 	add: function(member) {
@@ -43,6 +37,9 @@ Method = Member.extend({
 			this.isGrouped = true;
 			this.members.push(member);
 		}
+		// Just point member to the first of the members, for name, signature, etc.
+		if (!this.member)
+			this.member = member;
 		return true;
 	},
 
@@ -98,7 +95,11 @@ Method = Member.extend({
 				// methods.
 				var overridden = this.member.overriddenMethod();
 				if (overridden) {
+					print('OR', this.member, overridden);
 					var mem = Member.get(overridden);
+					if (mem) {
+						print(mem.member);
+					}
 					// Prevent endless loops that happen when overriden
 					// functions from inivisble classes where moved to the
 					// derived class and Member.get lookup points there
@@ -183,20 +184,12 @@ Method = Member.extend({
 		return this.renderedParams;
 	},
 	
-	name: function() {
-		return this.methodName;
-	},
-	
 	containingClass: function() {
 		return this.classObject.classDoc;
 	},
 
 	containingPackage: function() {
 		return this.classObject.classDoc.containingPackage();
-	},
-
-	signature: function() {
-		return this.member.signature();
 	},
 
 	parameters: function() {
@@ -211,7 +204,7 @@ Method = Member.extend({
 	isSimilar: function(obj) {
 		if (obj instanceof Method)
 			return this.isStatic() == obj.isStatic() &&
-				this.methodName == obj.name() &&
+				this.name() == obj.name() &&
 				this.renderParameters() == obj.renderParameters();
 		return false;
 	}

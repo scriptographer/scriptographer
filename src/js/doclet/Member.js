@@ -55,6 +55,14 @@ Member = Object.extend({
 		return this.member.name();
 	},
 
+	qualifiedName: function() {
+		return this.member.qualifiedName();
+	},
+
+	signature: function() {
+		return this.member.signature();
+	},
+
 	firstSentenceTags: function() {
 		return this.member.firstSentenceTags();
 	},
@@ -85,10 +93,6 @@ Member = Object.extend({
 
 	seeTags: function() {
 		return this.member.seeTags();
-	},
-
-	signature: function() {
-		return '';
 	},
 
 	getNameSuffix: function() {
@@ -142,14 +146,12 @@ Member = Object.extend({
 	},
 
 	statics: {
-		put: function(name, member) {
-			this.members[name] = member;
+		put: function(member) {
+			this.members[member.qualifiedName() + member.signature()] = member;
 		},
 
-		get: function(param) {
-			if (param instanceof MemberDoc)
-				param = param.qualifiedName();
-			return this.members[param];
+		get: function(member) {
+			return this.members[member.qualifiedName() + member.signature()];
 		},
 
 		members: new Hash()

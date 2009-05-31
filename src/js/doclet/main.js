@@ -191,7 +191,7 @@ MemberDocImpl.inject({
 	},
 
 	isVisible: function() {
-		return Member.get(this.qualifiedName()) != null;
+		return Member.get(this) != null;
 	},
 
 	renderLink: function(param) {

@@ -17,7 +17,7 @@ MemberGroup = Object.extend({
 		this.name = name;
 	},
 
-	add: function(member, lookupName) {
+	add: function(member) {
 		var mem = null;
 		// only group functions
 		if (member instanceof ExecutableMemberDoc) {
@@ -36,9 +36,9 @@ MemberGroup = Object.extend({
 					throw $break;
 				}
 			});
-			// couldn't add to an existing Member, create a new one:
+			// Couldn't add to an existing Member, create a new one:
 			if (!mem) {
-				mem = new Method(this.classObject, name);
+				mem = new Method(this.classObject);
 				if (mem.add(member))
 					this.members.push(mem);
 			}
@@ -53,10 +53,8 @@ MemberGroup = Object.extend({
 			// BeanProperties do not need to be put in the lookup table
 			// They are the only ones passed as Member already, so there
 			// will not be a qualifiedName funciton anyway...
-			if (!lookupName && member.qualifiedName)
-				lookupName = member.qualifiedName();
-			if (lookupName)
-				Member.put(lookupName, mem);
+			if (member.qualifiedName)
+				Member.put(mem);
 		}
 		return mem != null;
 	},

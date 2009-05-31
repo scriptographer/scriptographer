@@ -43,6 +43,14 @@ BeanProperty = Member.extend({
 		return this.property;
 	},
 
+	qualifiedName: function() {
+		return this.classObject.qualifiedName() + '.' + this.property;
+	},
+
+	signature: function() {
+		return '';
+	},
+
 	firstSentenceTags: function() {
 		return this.inlineTags;
 	},
