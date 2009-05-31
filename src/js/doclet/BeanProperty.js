@@ -9,27 +9,27 @@
 /**
  * A virtual field that unifies getter and setter functions, just like Rhino does
  */
-BeanProperty = Member.extend({
+BeanProperty = SyntheticField.extend({
 	initialize: function(classObject, name, getter, setter, setters) {
-		this.base(classObject);
-		this.property = name;
-		this.getter = getter;
-		this.setter = setter;
-		this.setters = setters;
-		// Set reference to the bean, so getters / setters can automatically 
-		// be hidden without removing them.
-		getter.bean = this;
+		this.base(classObject, name, getter); // this.member is the getter
 		if (setters) {
-			setters.members.each(function(setter) {
+			setters.members.each(function(member) {
 				// Make sure we're only setting it on real setters.
 				// There might be other functions with more than one parameter,
 				// which still need to show in the documentation.
-				if (BeanProperty.isSetter(setter))
-					setter.bean = this;
+				if (BeanProperty.isSetter(member))
+					member.synthetic = this;
+				// Set setter to the one with the documentation, so isVisible uses it too
+				var tags = member.inlineTags();
+				if (tags.length)
+					setter = member;
 			}, this);
 		}
+		this.setter = setter;
+		this.setters = setters;
 
 		var tags = getter.inlineTags();
+		// Use the setter that was found to have documentation in the loop above
 		if (!tags.length && setter)
 			tags = setter.inlineTags();
 
@@ -39,59 +39,11 @@ BeanProperty = Member.extend({
 		this.inlineTagList.append(tags);
 	},
 
-	name: function() {
-		return this.property;
-	},
-
-	qualifiedName: function() {
-		return this.classObject.qualifiedName() + '.' + this.property;
-	},
-
-	firstSentenceTags: function() {
-		return this.inlineTags;
-	},
-
 	isVisible: function() {
 		// SG Convention: Hide read-only is-getter beans and show is-method instead.
-		if (/^is/.test(this.getter.name()) && !this.setter)
+		if (/^is/.test(this.member.name()) && !this.setter)
 			return false;
-		var getterHide = this.getter.tags('jshide')[0];
-		var setterHide = this.setter && this.setter.tags('jshide')[0];
-		if (getterHide) getterHide = getterHide.text();
-		if (setterHide) setterHide = setterHide.text();
-		return !/^(bean|all|)$/.test(getterHide) && !/^(bean|all|)$/.test(setterHide);
-	},
-
-	isStatic: function() {
-		return this.getter.isStatic();
-	},
-
-	containingClass: function() {
-		return this.getter.containingClass();
-	},
-
-	inlineTags: function() {
-		return this.inlineTagList;
-	},
-
-	seeTags: function() {
-		return this.seeTagList;
-	},
-
-	containingPackage: function() {
-		return this.getter.containingPackage();
-	},
-
-	modifiers: function() {
-		return '';
-	},
-
-	tags: function(tagname) {
-		return [];
-	},
-
-	returnType: function() {
-		return this.getter.returnType();
+		return this.base() && Member.isVisible(this.setter);
 	},
 
 	statics: {
@@ -99,7 +51,6 @@ BeanProperty = Member.extend({
 			// As a convention, only add non static bean properties to
 			// the documentation. static properties are all supposed to
 			// be uppercae and constants.
-			// TODO: Do the same on Rhino through filtering
 			return method.parameters().length == 0 && !method.isStatic()
 				&& method.returnType().typeName() != 'void';
 		},

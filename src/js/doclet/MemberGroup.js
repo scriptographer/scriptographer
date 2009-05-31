@@ -83,5 +83,12 @@ MemberGroup = Object.extend({
 			}, this);
 		}
 		return found;
+	},
+
+	extractOperator: function() {
+		return this.members.find(function(method) {
+			if (Operator.isOperator(method))
+				return method;
+		}, this);
 	}
 });

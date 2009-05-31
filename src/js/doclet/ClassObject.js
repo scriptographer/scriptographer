@@ -18,6 +18,7 @@ ClassObject = Object.extend({
 		this.fieldLists = new MemberGroupList(this);
 		this.methodLists = new MemberGroupList(this);
 		this.constructorLists = new MemberGroupList(this);
+		this.operatorLists = new MemberGroupList(this);
 		this.add(this.classDoc, true);
 		var superclass = this.classDoc.superclass();
 		// Add the members of direct invisible superclasses to
@@ -27,12 +28,13 @@ ClassObject = Object.extend({
 			this.add(superclass, false);
 			superclass = superclass.superclass();
 		}
-		// now scan for beanProperties:
 		this.methodLists.init();
 		this.constructorLists.init();
-
-		if (this.classDoc.name() != 'global')
+		// now scan for beanProperties and operators:
+		if (this.classDoc.name() != 'global') {
 			this.methodLists.scanBeanProperties(this.fieldLists);
+			this.methodLists.scanOperators(this.operatorLists);
+		}
 	},
 
 	add: function(cd, addConstructors) {
@@ -52,6 +54,10 @@ ClassObject = Object.extend({
 
 	constructors: function() {
 		return this.constructorLists.getFlattened();
+	},
+
+	operators: function() {
+		return this.operatorLists.getFlattened();
 	},
 
 	name: function() {
@@ -105,9 +111,10 @@ ClassObject = Object.extend({
 			}, out);
 		}
 
-		var fields = this.fields();
 		var constructors = this.constructors();
+		var fields = this.fields();
 		var methods = this.methods();
+		var operators = this.operators();
 
 		if (settings.summaries) {
 			if (settings.fieldSummary)
@@ -127,6 +134,7 @@ ClassObject = Object.extend({
 		}
 
 		this.renderMembers({ classDoc: cd, members: constructors, title: 'Constructors', index: index });
+		this.renderMembers({ classDoc: cd, members: operators, title: 'Operators', index: index });
 
 		fields = separateStatic(fields);
 		this.renderMembers({ classDoc: cd, members: fields[0], title: 'Properties', index: index });

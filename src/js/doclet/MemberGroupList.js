@@ -106,6 +106,17 @@ MemberGroupList = Object.extend({
 		}, this);
 	},
 
+	scanOperators: function(fields) {
+		this.groups.each(function(group) {
+			var method = group.extractOperator();
+			if (method) {
+				var operator = new Operator(this.classObject, group.name, method, group);
+				if (operator.isVisible())
+					fields.add(operator);
+			}
+		}, this);
+	},
+
 	contains: function(name) {
 		return this.groups.has(name);
 	}

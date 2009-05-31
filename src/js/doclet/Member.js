@@ -20,7 +20,7 @@ Member = Object.extend({
 	isVisible: function() {
 		var hide = this.tags('jshide')[0];
 		if (hide) hide = hide.text();
-		return !/^(method|all|)$/.test(hide) && (!this.bean || !this.bean.isVisible());
+		return !/^(method|all|)$/.test(hide) && (!this.synthetic || !this.synthetic.isVisible());
 	},
 
 	renderMember: function(classDoc, index, member, containingClass) {
@@ -146,6 +146,8 @@ Member = Object.extend({
 	},
 
 	statics: {
+		members: new Hash(),
+
 		getId: function(member) {
 			var id = member.qualifiedName();
 			if (member.signature)
@@ -161,6 +163,9 @@ Member = Object.extend({
 			return this.members[Member.getId(member)];
 		},
 
-		members: new Hash()
+		isVisible: function(member) {
+			var hide = member && member.tags('jshide')[0];
+			return hide && !/^(bean|all|)$/.test(hide.text()) || !!member;
+		}
 	}
 });
