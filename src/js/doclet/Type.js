@@ -112,8 +112,6 @@ Type = Object.extend({
 	},
 
 	isList: function() {
-		if (this.hasInterface('com.scratchdisk.list.ReadOnlyList'))
-			print(this.typeArguments()[0].extendsBounds()[0].getClass());
 		return this.hasInterface('com.scratchdisk.list.ReadOnlyList');
 	},
 
@@ -163,6 +161,7 @@ Type = Object.extend({
 
 	isCompatible: function(type) {
 		var cd1 = this.asClassDoc(), cd2 = type.asClassDoc();
+		var type1, type2;
 		return this.typeName() == type.typeName() && this.dimension() == type.dimension()
 			|| cd2 && this.subclassOf(cd2) || cd1 && type.subclassOf(cd1)
 			|| this.isNumber() && type.isNumber()
@@ -171,19 +170,43 @@ Type = Object.extend({
 			|| this.isPoint() && type.isPoint()
 			|| this.isRectangle() && type.isRectangle()
 			|| this.isFile() && type.isFile()
+			// Make sure arrays have compatible types
 			|| this.isArray() && type.isArray() && (
 				cd1 && cd2 && new Type(cd1).isCompatible(new Type(cd2))
 				|| this.typeName() == type.typeName()
 				|| Type.isNumber(this.typeName()) && Type.isNumber(type.typeName())
+			)
+			// Treat arrays and lists the same, as long as the component type is compatible
+			|| (this.isArray() || this.isList()) && (type.isArray() || type.isList()) && (
+				(type1 = this.getComponentType()) && (type2 = type.getComponentType()) &&
+				type1.isCompatible(type2)
 			);
 	},
 
-	getListType: function() {
-		if (this.hasInterface('com.scratchdisk.util.SimpleList'))
+	/**
+	 * Returns the component type of arrays and lists
+	 */
+	getComponentType: function() {
+		if (this.isArray()) {
+			var  cd = this.asClassDoc();
+			return cd && new Type(cd);
+		} else if (this.isList()) {
+			// Generics stuff
+			var arg = this.typeArguments()[0];
+			var type = arg && arg.extendsBounds()[0];
+			return type && new Type(type);
+		}
+		return null;
+	},
+
+	getListDescription: function() {
+		if (this.hasInterface('com.scratchdisk.list.List'))
 			return 'Normal List';
-		else if (this.hasInterface('com.scratchdisk.util.StringIndexList'))
+		else if (this.hasInterface('com.scratchdisk.list.StringIndexList'))
 			return 'String-index List';
-		else if (this.hasInterface('com.scratchdisk.util.ReadOnlyList'))
+		else if (this.hasInterface('com.scratchdisk.list.ReadOnlyStringIndexList'))
+			return 'Read-only String-index List';
+		else if (this.hasInterface('com.scratchdisk.list.ReadOnlyList'))
 			return 'Read-only List';
 	},
 

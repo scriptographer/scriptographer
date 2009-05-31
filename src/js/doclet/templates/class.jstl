@@ -2,15 +2,15 @@
 <%= settings.section1Open %><%= this.name() %><%= settings.section1Close %>
 <% end %>
 <% $superclass = this.classDoc.getSuperclass() %>
-<% $listType = this.classDoc.getListType() %>
+<% $listDescription = this.classDoc.getListDescription() %>
 <% $superclass = this.classDoc.getSuperclass() %>
-<% if this.classDoc.isAbstract() || $superclass || $listType || $subclasses  %>
+<% if this.classDoc.isAbstract() || $superclass || $listDescription || $subclasses  %>
 <p><%= param.type %> <%= this.classDoc.renderLink({}) -%>
 <% if $superclass %>
  extends <%= $superclass.renderLink({}) -%>
 <% end %>
-<% if $listType %>
-<% if $superclass %>, <% end %> act as <%= settings.templates ? '<% this.listType type="' + $listType + '" %>' : $listType %>
+<% if $listDescription %>
+<% if $superclass %>, <% end %> act as <%= settings.templates ? '<% this.listDescription type="' + $listDescription + '" %>' : $listDescription %>
 <% end %>
 <% if $subclasses %>
 <br />Inherited by <%= $subclasses %>
