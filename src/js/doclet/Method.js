@@ -80,6 +80,10 @@ Method = Member.extend({
 		}
 	},
 
+	signature: function() {
+		return this.member.signature();
+	},
+
 	getNameSuffix: function() {
 		return this.renderParameters();
 	},
@@ -96,7 +100,6 @@ Method = Member.extend({
 				// methods.
 				var overridden = this.member.overriddenMethod();
 				if (overridden) {
-					print('OR', this.member, overridden);
 					var mem = Member.get(overridden);
 					if (mem) {
 						print(mem.member);

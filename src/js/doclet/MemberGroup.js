@@ -50,13 +50,9 @@ MemberGroup = Object.extend({
 			this.members.push(mem);
 		}
 		if (mem) {
-			// BeanProperties do not need to be put in the lookup table
-			// They are the only ones passed as Member already, so there
-			// will not be a qualifiedName funciton anyway...
-			if (member.qualifiedName)
-				Member.put(mem);
+			Member.put(mem);
+			return true;
 		}
-		return mem != null;
 	},
 
 	init: function() {

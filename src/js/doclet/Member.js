@@ -60,7 +60,7 @@ Member = Object.extend({
 	},
 
 	signature: function() {
-		return this.member.signature();
+		return '';
 	},
 
 	firstSentenceTags: function() {
@@ -146,12 +146,19 @@ Member = Object.extend({
 	},
 
 	statics: {
+		getId: function(member) {
+			var id = member.qualifiedName();
+			if (member.signature)
+				id += member.signature();
+			return id;
+		},
+
 		put: function(member) {
-			this.members[member.qualifiedName() + member.signature()] = member;
+			this.members[Member.getId(member)] = member;
 		},
 
 		get: function(member) {
-			return this.members[member.qualifiedName() + member.signature()];
+			return this.members[Member.getId(member)];
 		},
 
 		members: new Hash()

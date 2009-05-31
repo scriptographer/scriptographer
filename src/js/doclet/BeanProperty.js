@@ -47,10 +47,6 @@ BeanProperty = Member.extend({
 		return this.classObject.qualifiedName() + '.' + this.property;
 	},
 
-	signature: function() {
-		return '';
-	},
-
 	firstSentenceTags: function() {
 		return this.inlineTags;
 	},
