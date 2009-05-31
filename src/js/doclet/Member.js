@@ -63,6 +63,10 @@ Member = Object.extend({
 		return '';
 	},
 
+	toString: function() {
+		return this.member.toString();
+	},
+
 	firstSentenceTags: function() {
 		return this.member.firstSentenceTags();
 	},

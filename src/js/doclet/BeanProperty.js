@@ -43,7 +43,7 @@ BeanProperty = SyntheticField.extend({
 		// SG Convention: Hide read-only is-getter beans and show is-method instead.
 		if (/^is/.test(this.member.name()) && !this.setter)
 			return false;
-		return this.base() && Member.isVisible(this.setter);
+		return this.base() && (!this.setter || Member.isVisible(this.setter));
 	},
 
 	statics: {

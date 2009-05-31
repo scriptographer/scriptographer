@@ -192,8 +192,9 @@ Type = Object.extend({
 			return cd && new Type(cd);
 		} else if (this.isList()) {
 			// Generics stuff
-			var arg = this.typeArguments()[0];
-			var type = arg && arg.extendsBounds()[0];
+			var type = this.typeArguments()[0];
+			if (type && type.extendsBounds)
+				type = type.extendsBounds()[0];
 			return type && new Type(type);
 		}
 		return null;

@@ -101,9 +101,6 @@ Method = Member.extend({
 				var overridden = this.member.overriddenMethod();
 				if (overridden) {
 					var mem = Member.get(overridden);
-					if (mem) {
-						print(mem.member);
-					}
 					// Prevent endless loops that happen when overriden
 					// functions from inivisble classes where moved to the
 					// derived class and Member.get lookup points there
