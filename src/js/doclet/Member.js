@@ -18,9 +18,15 @@ Member = Object.extend({
 	},
 
 	isVisible: function() {
-		var hide = this.tags('jshide')[0];
-		if (hide) hide = hide.text();
-		return !/^(method|all|)$/.test(hide) && (!this.synthetic || !this.synthetic.isVisible());
+		// Returns visibility with caching, for faster processing time.
+		// Override getVisible to handle visibility.
+		if (this._visible === undefined)
+			this._visible = this.getVisible();
+		return this._visible;
+	},
+
+	getVisible: function() {
+		return Member.isVisible(this.member) && (!this.synthetic || !this.synthetic.isVisible());
 	},
 
 	renderMember: function(classDoc, index, member, containingClass) {
@@ -169,7 +175,7 @@ Member = Object.extend({
 
 		isVisible: function(member) {
 			var hide = member && member.tags('jshide')[0];
-			return hide && !/^(bean|all|)$/.test(hide.text()) || !!member;
+			return hide ? !/^(bean|all|)$/.test(hide.text()) : !!member;
 		}
 	}
 });

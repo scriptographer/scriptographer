@@ -89,7 +89,7 @@ Method = Member.extend({
 	},
 
 	getOverriddenMethodToUse: function() {
-		if (this.member instanceof MethodDoc) {
+		if (this.member instanceof MethodDoc && this.isVisible()) {
 			if (!this.member.commentText() &&
 				!this.member.seeTags().length &&
 				!this.member.throwsTags().length &&
@@ -110,8 +110,9 @@ Method = Member.extend({
 					}
 					// If this method is not wrapped, quickly wrap it just to
 					// call renderMember.
-					if (!mem)
+					if (!mem) {
 						mem = new Method(this.classObject, overridden);
+					}
 					return mem;
 				}
 			}

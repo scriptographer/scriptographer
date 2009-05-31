@@ -39,7 +39,7 @@ BeanProperty = SyntheticField.extend({
 		this.inlineTagList.append(tags);
 	},
 
-	isVisible: function() {
+	getVisible: function() {
 		// SG Convention: Hide read-only is-getter beans and show is-method instead.
 		if (/^is/.test(this.member.name()) && !this.setter)
 			return false;
