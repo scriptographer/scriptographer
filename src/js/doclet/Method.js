@@ -7,49 +7,61 @@
  */
 
 /**
- * A group of members that are all 'compatible' in a JS way, e.g. have the same
+ * A group of methods that are all 'compatible' in a JS way, e.g. have the same
  * amount of parameter with different types each (e.g. setters)
  * or various amount of parameters with default parameter versions, e.g.
  * all com.scriptogrpaher.ai.Pathfinder functions
  */
 Method = Member.extend({
-	initialize: function(classObject, member) {
+	initialize: function(classObject, method) {
 		this.base(classObject);
 		this.isGrouped = false;
-		this.members = [];
+		this.methods = [];
 		this.map = new Hash();
-		if (member)
-			this.add(member);
+		if (method)
+			this.add(method);
 	},
 
-	add: function(member) {
+	add: function(method) {
 		var swallow = true;
-		// do not add base versions for overridden functions 
-		var signature = member.signature();
+		// Do not add base versions for overridden functions 
+		var signature = method.signature();
 		if (this.map[signature])
 			swallow = false;
-		this.map[signature] = member;
+		this.map[signature] = method;
 		if (swallow) {
-			// see wther the new member fits the existing ones:
-			if (this.members.find(function(mem) {
-				return !mem.isCompatible(member);
+			// See wether the new method fits the existing ones:
+			if (this.methods.find(function(mem) {
+				return !mem.isCompatible(method);
 			})) return false;
 			this.isGrouped = true;
-			this.members.push(member);
+			this.methods.push(method);
 		}
-		// Just point member to the first of the members, for name, signature, etc.
+		// Just point method to the first of the methods, for name, signature, etc.
 		// This is corrected in init(), if grouping occurs.
 		if (!this.member)
-			this.member = member;
+			this.member = method;
 		return true;
+	},
+
+	remove: function(method) {
+		if (this.methods.remove(method)) {
+			if (this.member == method)
+				this.member = this.methods.first;
+			if (this.member) {
+				this.init();
+			} else {
+				this.group.remove(this);
+			}
+		}
 	},
 
 	init: function() {
 		if (this.isGrouped) {
-			// see if all elements have the same amount of parameters
+			// See if all elements have the same amount of parameters
 			var sameParamCount = true;
 			var firstCount = -1;
-			this.members.each(function(mem) {
+			this.methods.each(function(mem) {
 				var count = mem.parameters().length;
 				if (firstCount == -1) {
 					firstCount = count;
@@ -59,9 +71,9 @@ Method = Member.extend({
 				}
 			});
 			if (sameParamCount) {
-				// find the suiting member: take the one with the most documentation
+				// Find the suiting method: take the one with the most documentation
 				var maxTags = -1;
-				this.members.each(function(mem) {
+				this.methods.each(function(mem) {
 					var numTags = mem.inlineTags().length;
 					if (numTags > maxTags) {
 						this.member = mem;
@@ -69,14 +81,14 @@ Method = Member.extend({
 					}
 				}, this);
 			} else {
-				// now sort the members by param count:
-				this.members = this.members.sortBy(function(mem) {
+				// Now sort the methods by param count:
+				this.methods = this.methods.sortBy(function(mem) {
 					return mem.parameters().length;
 				});
-				this.member = this.members.last;
+				this.member = this.methods.last;
 			}
 		} else {
-			this.member = this.members.first;
+			this.member = this.methods.first;
 		}
 	},
 
@@ -157,7 +169,7 @@ Method = Member.extend({
 			if (this.isGrouped) {
 				var prevCount = 0;
 				var closeCount = 0;
-				this.members.each(function(mem) {
+				this.methods.each(function(mem) {
 					var params = mem.parameters();
 					var count = params.length;
 					if (count > prevCount) {
@@ -204,10 +216,44 @@ Method = Member.extend({
 	},
 
 	isSimilar: function(obj) {
-		if (obj instanceof Method)
+		if (obj instanceof Method) {
 			return this.isStatic() == obj.isStatic() &&
 				this.name() == obj.name() &&
 				this.renderParameters() == obj.renderParameters();
+		}
 		return false;
+	},
+
+	isEmpty: function() {
+		return !this.methods.length;
+	},
+
+	extractGetter: function() {
+		return this.methods.find(function(method) {
+			if (BeanProperty.isGetter(method))
+				return method;
+		});
+	},
+
+	extractSetters: function(type) {
+		// Make two passes: the first to find a method with direct type
+		// assignment, and a second one to find a widening conversion.
+		var setters = [];
+		var added = {};
+		for (var pass = 1; pass <= 2; ++pass) {
+			this.methods.each(function(method) {
+				if (!added[method.qualifiedName() + method.signature()]
+						&& BeanProperty.isSetter(method, type, pass == 2))
+					setters.push(method);
+			});
+		}
+		return setters;
+	},
+
+	extractOperators: function() {
+		return this.methods.collect(function(method) {
+			if (Operator.isOperator(method))
+				return method;
+		});
 	}
 });

@@ -17,9 +17,8 @@ MemberGroupList = Object.extend({
 	},
 
 	add: function(member) {
-		var key = member.name(), name, group;
+		var name = member.name(), key = name, group;
 		if (member instanceof ExecutableMemberDoc) {
-			name = key;
 			if (member instanceof MethodDoc)
 				// For methods, use the return type for grouping as well!
 				var type = member.returnType();
@@ -28,23 +27,33 @@ MemberGroupList = Object.extend({
 
 			group = this.groups[key];
 			if (!group) {
-				group = new MemberGroup(this.classObject, name); 
+				group = new MemberGroup(this.classObject); 
 				this.methodLookup[name] = group;
 			}
 		} else {
 			// Fields won't be grouped, but for simplicty,
 			// greate groups of one element for each field,
 			// so it can be treated the same as functions:
-			group = new MemberGroup(this.classObject, key); 
+			group = new MemberGroup(this.classObject); 
 		}
 		group.add(member);
-		this.groups[key] = group;
+		if (!this.groups[key]) {
+			// Used in scanBeanProperties:
+			group.name = name;
+			// Reference the list so it can remove itself
+			group.list = this;
+			this.groups[key] = group;
+		}
 	},
 
 	addAll: function(members) {
 		members.each(function(member) {
 			this.add(member);
 		}, this);
+	},
+
+	remove: function(group) {
+		return !!this.groups.remove(group);
 	},
 
 	init: function() {
@@ -89,17 +98,21 @@ MemberGroupList = Object.extend({
 				// If we already have a member by this name, don't do this
 				// property.
 				if (!fields.contains(property)) {
-					var getter = group.extractGetter(), setter = null;
+					var getter = group.extractGetter(), setters = null;
 					if (getter) {
 						// We have a getter. Now, do we have a setter?
-						var setters = this.methodLookup['set' + component];
+						var setterGroup = this.methodLookup['set' + component];
 						// Is this value a method?
-						if (setters)
-							setter = setters.extractSetter(getter.returnType());
+						if (setterGroup)
+							setters = setterGroup.extractSetters(getter.returnType());
 						// Make the property.
-						var bean = new BeanProperty(this.classObject, property, getter, setter, setters);
-						if (bean.isVisible())
+						var bean = new BeanProperty(this.classObject, property, getter, setters);
+						if (bean.isVisible()) {
+							group.removeMethod(getter);
+							if (setterGroup)
+								setterGroup.removeMethods(setters);
 							fields.add(bean);
+						}
 					}
 				}
 			}
@@ -108,11 +121,13 @@ MemberGroupList = Object.extend({
 
 	scanOperators: function(fields) {
 		this.groups.each(function(group) {
-			var method = group.extractOperator();
-			if (method) {
-				var operator = new Operator(this.classObject, group.name, method, group);
-				if (operator.isVisible())
+			var operators = group.extractOperators();
+			if (operators) {
+				var operator = new Operator(this.classObject, group.name, operators);
+				if (operator.isVisible()) {
+					group.removeMethods(operators);
 					fields.add(operator);
+				}
 			}
 		}, this);
 	},

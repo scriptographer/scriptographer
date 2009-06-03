@@ -17,18 +17,6 @@ Member = Object.extend({
 		// nothing here, but in the extended classes
 	},
 
-	isVisible: function() {
-		// Returns visibility with caching, for faster processing time.
-		// Override getVisible to handle visibility.
-		if (this._visible === undefined)
-			this._visible = this.getVisible();
-		return this._visible;
-	},
-
-	getVisible: function() {
-		return Member.isVisible(this.member) && (!this.synthetic || !this.synthetic.isVisible());
-	},
-
 	renderMember: function(classDoc, index, member, containingClass) {
 		data.group = {};
 		if (this.isVisible()) {
@@ -69,32 +57,16 @@ Member = Object.extend({
 		return '';
 	},
 
-	toString: function() {
-		return this.member.toString();
-	},
-
-	firstSentenceTags: function() {
-		return this.member.firstSentenceTags();
-	},
-
-	isStatic: function() {
-		if (this._static == undefined) {
-			this._static = this.member.isStatic();
-			// A class can define if it does not want to show static methods as static
-			var noStatics = this.member.containingClass().tags('jsnostatics')[0];
-			if (noStatics) noStatics = noStatics.text();
-			if (noStatics == 'true' || noStatics == undefined)
-				this._static = false;
-		}
-		return this._static;
-	},
-
 	containingClass: function() {
 		return this.member.containingClass();
 	},
 
 	containingPackage: function() {
 		return this.member.containingPackage();
+	},
+
+	firstSentenceTags: function() {
+		return this.member.firstSentenceTags();
 	},
 
 	inlineTags: function() {
@@ -151,8 +123,36 @@ Member = Object.extend({
 		});
 	},
 
+	toString: function() {
+		return this.member.toString();
+	},
+
+	isStatic: function() {
+		if (this._static == undefined) {
+			this._static = this.member.isStatic();
+			// A class can define if it does not want to show static methods as static
+			var noStatics = this.member.containingClass().tags('jsnostatics')[0];
+			if (noStatics) noStatics = noStatics.text();
+			if (noStatics == 'true' || noStatics == undefined)
+				this._static = false;
+		}
+		return this._static;
+	},
+
 	isSimilar: function(mem) {
 		return this.isStatic() == mem.isStatic() && this.name() == mem.name();
+	},
+
+	isVisible: function() {
+		// Returns visibility with caching, for faster processing time.
+		// Override getVisible to handle visibility.
+		if (this._visible === undefined)
+			this._visible = this.getVisible();
+		return this._visible;
+	},
+
+	getVisible: function() {
+		return Member.isVisible(this.member);
 	},
 
 	statics: {
@@ -171,6 +171,10 @@ Member = Object.extend({
 
 		get: function(member) {
 			return this.members[Member.getId(member)];
+		},
+
+		remove: function(member) {
+			delete this.members[Member.getId(member)];
 		},
 
 		isVisible: function(member) {

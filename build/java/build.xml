@@ -477,7 +477,7 @@
 					destroyAll
 					disposeAll
 					removeAll
-					equals
+					toString
 				"/>
 				<param name="-classorder" value="classorder.txt"/>
 				<param name="-templates" value="${templates}"/>

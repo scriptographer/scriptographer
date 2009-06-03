@@ -10,11 +10,14 @@
  * A group of members that are unified under the same name 
  */
 MemberGroup = Object.extend({
-	initialize: function(classObject, name) {
+	initialize: function(classObject, members) {
 		this.classObject = classObject;
 		this.members = [];
-		// Used in scanBeanProperties:
-		this.name = name;
+		if (members) {
+			members.each(function(member) {
+				this.add(member);
+			}, this);
+		}
 	},
 
 	add: function(member) {
@@ -29,7 +32,8 @@ MemberGroup = Object.extend({
 				})) return false;
 			}
 
-			// See if we can add to an existing Member:
+			// See if we can add to an existing Member, based on compatible
+			// variable parameter versions:
 			this.members.each(function(m) {
 				if (m.add(member)) {
 					mem = m;
@@ -40,18 +44,56 @@ MemberGroup = Object.extend({
 			if (!mem) {
 				mem = new Method(this.classObject);
 				if (mem.add(member))
-					this.members.push(mem);
+					return this.add(mem);
 			}
 		} else {
 			if (member instanceof Member)
 				mem = member;
 			else
 				mem = new Member(this.classObject, member);
+			mem.group = this;
 			this.members.push(mem);
 		}
 		if (mem) {
 			Member.put(mem);
 			return true;
+		}
+	},
+
+	remove: function(member) {
+		if (this.members.remove(member)) {
+			// Member.remove(member);
+			if (!this.members.length)
+				this.list.remove(this);
+			return true;
+		}
+	},
+
+	/**
+	 * Removes all 'sub-methods' of a given method from any of the method members.
+	 * Since these can be groups of JS style compatible methods, their members
+	 * need to be iterated as well.
+	 */
+	removeMethod: function(method) {
+		if (method && method instanceof Method) {
+			method.methods.each(function(meth) {
+				this.members.each(function(member) {
+					if (member instanceof Method)
+						member.remove(meth);
+				});
+			}, this);
+		}
+	},
+
+	/**
+	 * Removes all methods and sub-methods contained in the given group by
+	 * looping through its members and passing them to removeMethod.
+	 */
+	removeMethods: function(group) {
+		if (group && group instanceof MemberGroup) {
+			group.members.each(function(member) {
+				this.removeMethod(member);
+			}, this);
 		}
 	},
 
@@ -66,29 +108,23 @@ MemberGroup = Object.extend({
 	},
 
 	extractGetter: function() {
-		return this.members.find(function(method) {
-			if (BeanProperty.isGetter(method))
-				return method;
-		}, this);
+		var getter = this.members.find(function(method) {
+			return method.extractGetter();
+		});
+		return getter && new Method(this.classObject, getter);
 	},
 
-	extractSetter: function(type) {
-		// Make two passes: the first to find a method with direct type
-		// assignment, and a second one to find a widening conversion.
-		var found = null;
-		for (var pass = 1; pass <= 2 && !found; ++pass) {
-			found = this.members.find(function(method) {
-				if (BeanProperty.isSetter(method, type, pass == 2))
-					return method;
-			}, this);
-		}
-		return found;
+	extractSetters: function(type) {
+		var setters = this.members.each(function(method) {
+			this.append(method.extractSetters(type));
+		}, []);
+		return setters.length && new MemberGroup(this.classObject, setters);
 	},
 
-	extractOperator: function() {
-		return this.members.find(function(method) {
-			if (Operator.isOperator(method))
-				return method;
-		}, this);
+	extractOperators: function() {
+		var operators = this.members.each(function(method) {
+			this.append(method.extractOperators());
+		}, []);
+		return operators.length && new MemberGroup(this.classObject, operators);
 	}
 });

@@ -9,24 +9,16 @@
 /**
  */
 Operator = SyntheticField.extend({
-	initialize: function(classObject, name, member, members) {
-		this.base(classObject, name, member);
+	initialize: function(classObject, name, operators) {
+		// Set operator to the one with the documentation, so isVisible uses it too
+		var operator = operators.members.find(function(method) {
+			var tags = method.inlineTags();
+			if (tags.length)
+				return method;
+		}) || operators.members.first;
+		this.base(classObject, name, operator);
 		this.title = Operator.getName(name);
-		this.members = members;
-		// Set reference to the operator, so members can automatically 
-		// be hidden without removing them.
-		var tags = [];
-		members.members.each(function(member) {
-			// Make sure we're only setting it on real setters.
-			// There might be other functions with more than one parameter,
-			// which still need to show in the documentation.
-			if (Operator.isOperator(member)) {
-				member.synthetic = this;
-				if (!tags.tags)
-					tags = member.inlineTags();
-			}
-		}, this);
-		this.inlineTagList = tags;
+		this.operators = operators;
 	},
 
 	name: function() {

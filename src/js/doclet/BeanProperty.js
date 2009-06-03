@@ -10,40 +10,45 @@
  * A virtual field that unifies getter and setter functions, just like Rhino does
  */
 BeanProperty = SyntheticField.extend({
-	initialize: function(classObject, name, getter, setter, setters) {
+	initialize: function(classObject, name, getter, setters) {
 		this.base(classObject, name, getter); // this.member is the getter
-		if (setters) {
-			setters.members.each(function(member) {
-				// Make sure we're only setting it on real setters.
-				// There might be other functions with more than one parameter,
-				// which still need to show in the documentation.
-				if (BeanProperty.isSetter(member))
-					member.synthetic = this;
-				// Set setter to the one with the documentation, so isVisible uses it too
-				var tags = member.inlineTags();
-				if (tags.length)
-					setter = member;
-			}, this);
-		}
-		this.setter = setter;
 		this.setters = setters;
+		// Set setter to the one with the documentation, so isVisible uses it too
+		this.setter = setters && (setters.members.find(function(member) {
+			var tags = member.inlineTags();
+			if (tags.length)
+				return member;
+		}) || setters.members.first);
 
 		var tags = getter.inlineTags();
 		// Use the setter that was found to have documentation in the loop above
-		if (!tags.length && setter)
-			tags = setter.inlineTags();
+		if (!tags.length && this.setter)
+			tags = this.setter.inlineTags();
 
+		this.seeTagList = [];
 		this.inlineTagList = [];
-		if (!setter)
+		if (!this.setter)
 			this.inlineTagList.push(new Tag('Read-only. '))
 		this.inlineTagList.append(tags);
 	},
 
+	firstSentenceTags: function() {
+		return this.inlineTagList;
+	},
+
+	inlineTags: function() {
+		return this.inlineTagList;
+	},
+
+	seeTags: function() {
+		return this.seeTagList;
+	},
+
 	getVisible: function() {
 		// SG Convention: Hide read-only is-getter beans and show is-method instead.
-		if (/^is/.test(this.member.name()) && !this.setter)
+		if (/^is/.test(this.member.name()) && !this.setters)
 			return false;
-		return this.base() && (!this.setter || Member.isVisible(this.setter));
+		return this.base() && (!this.setters || Member.isVisible(this.setter));
 	},
 
 	statics: {

@@ -13,11 +13,6 @@ SyntheticField = Member.extend({
 		this.base(classObject);
 		this.property = name;
 		this.member = member;
-		this.inlineTagList = [];
-		this.seeTagList = [];
-		// Set reference to the field, so operators and getters / setters can
-		// automatically be hidden without removing them.
-		member.synthetic = this;
 	},
 
 	name: function() {
@@ -50,18 +45,6 @@ SyntheticField = Member.extend({
 
 	containingPackage: function() {
 		return this.member.containingPackage();
-	},
-
-	firstSentenceTags: function() {
-		return this.inlineTagList;
-	},
-
-	inlineTags: function() {
-		return this.inlineTagList;
-	},
-
-	seeTags: function() {
-		return this.seeTagList;
 	},
 
 	tags: function(tagname) {
