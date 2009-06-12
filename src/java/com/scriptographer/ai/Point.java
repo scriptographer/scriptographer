@@ -52,6 +52,18 @@ public class Point {
 		x = y = 0;
 	}
 
+	/**
+	 * Creates a Point object with the given x and y coordinates.
+	 * Sample code:
+	 * <pre>
+	 * // Create a point at x: 10pt, y: 5pt
+	 * var point = new Point(10, 5);
+	 * print(point.x); // returns 10
+	 * print(point.y); // returns 5
+	 * </pre>
+	 * @param x The x coordinate of the Point
+	 * @param y The y coordinate of the Point 
+	 */
 	public Point(double x, double y) {
 		this.x = x;
 		this.y = y;
@@ -62,6 +74,10 @@ public class Point {
 		this.y = y;
 	}
 
+	/**
+	 * Creates a Point object using the x and y values of the given Point object.
+	 * @param pt
+	 */
 	public Point(Point pt) {
 		this(pt != null ? pt.x : 0, pt != null ? pt.y : 0);
 	}
@@ -73,6 +89,21 @@ public class Point {
 		this(p != null ? p.getX() : 0, p != null ? p.getY() : 0);
 	}
 
+	/**
+	 * Creates a Point object using the width and height values of the given
+	 * Size object.
+	 * 
+	 * Sample code:
+	 * <pre>
+	 * // Create a Size with a width of 100pt and a height of 50pt
+	 * var size = new Size(100, 50);
+	 * print(size); // prints { width: 100.0, height: 50.0 }
+	 * var point = new Point(size);
+	 * print(point); // prints { x: 100.0, y: 50.0 }
+	 * </pre>
+	 * 
+	 * @param size
+	 */
 	public Point(Size size) {
 		x = size.width;
 		y = size.height;
@@ -104,6 +135,10 @@ public class Point {
 			set(0, 0);
 	}
 
+	/**
+	 * The x coordinate of the Point
+	 * @return
+	 */
 	public double getX() {
 		return x;
 	}
@@ -112,6 +147,10 @@ public class Point {
 		this.x = x;
 	}
 
+	/**
+	 * The y coordinate of the Point
+	 * @return
+	 */
 	public double getY() {
 		return y;
 	}
@@ -294,7 +333,7 @@ public class Point {
 	 * Checks whether the point is inside the rectangle
 	 * 
 	 * @param rect the rectangle to check against
-	 * @return <code>true</code> if the point is inside the rectangle, false
+	 * @return <code>true</code> if the point is inside the rectangle, <code>false</code>
 	 *         otherwise
 	 */
 	public boolean isInside(Rectangle rect) {

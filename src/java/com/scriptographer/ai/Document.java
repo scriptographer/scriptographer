@@ -176,6 +176,12 @@ public class Document extends NativeObject {
 		return layers;
 	}
 
+	/**
+	 * The layer which is currently active. The active layer is indicated in the
+	 * Layers palette by a black triangle. New items will be created on this
+	 * layer by default.
+	 * @return The layer which is currently active
+	 */
 	public native Layer getActiveLayer();
 	
 	public DocumentViewList getViews() {
@@ -203,6 +209,9 @@ public class Document extends NativeObject {
 	
 	private native int getActiveSymbolHandle(); 
 
+	/**
+	 * The symbol which is selected in the Symbols menu.
+	 */
 	public Symbol getActiveSymbol() {
 		return (Symbol) Symbol.wrapHandle(getActiveSymbolHandle(), this);
 	}
@@ -215,10 +224,18 @@ public class Document extends NativeObject {
 
 	// TODO: getActiveSwatch, getActiveGradient
 	
+	/**
+	 * The point of the lower left corner of the imageable page, relative to the
+	 * ruler origin.
+	 */
 	public native Point getPageOrigin();
 	
 	public native void setPageOrigin(Point pt);
 
+	/**
+	 * The point of the ruler origin of the document, relative to the bottom
+	 * left of the artboard.
+	 */
 	public native Point getRulerOrigin();
 	
 	public native void setRulerOrigin(Point pt);
@@ -241,6 +258,11 @@ public class Document extends NativeObject {
 	
 	public native void setCropBox(Rectangle cropBox);
 
+	/**
+	 * Specifies if the document has been edited since it was last saved. When
+	 * set to <code>true</code>, closing the document will present the user
+	 * with a dialog box asking to save the file.
+	 */
 	public native boolean isModified();
 	
 	public native void setModified(boolean modified);
@@ -289,17 +311,18 @@ public class Document extends NativeObject {
 	public native void redraw();
 	
 	/**
-	 * Copies the selected items to the clipboard
+	 * Copies the selected items to the clipboard.
 	 */
 	public native void copy();
 	
 	/**
-	 * Cuts the selected items to the clipboard
+	 * Cuts the selected items to the clipboard.
 	 */
 	public native void cut();
 	
 	/**
-	 * Pastes the selected items to the clipboard
+	 * Pastes the contents of the clipboard into the active layer of the
+	 * document.
 	 */
 	public native void paste();
 
@@ -359,6 +382,17 @@ public class Document extends NativeObject {
 
 	public native ItemList getSelectedItems();
 
+	/**
+	 * Returns the selected items that are instances of one of the passed classes.
+	 * 
+	 * Sample code:
+	 * <pre>
+	 * // Get all selected groups and paths:
+	 * var items = document.getSelectedItems([Group, Path]);
+	 * </pre>
+	 * @param types
+	 * @return
+	 */
 	public ItemList getSelectedItems(Class[] types) {
 		if (types == null) {
 			return getSelectedItems();
@@ -369,6 +403,17 @@ public class Document extends NativeObject {
 		}
 	}
 	
+	/**
+	 * Returns the selected items that are an instance of the passed class.
+	 * 
+	 * Sample code:
+	 * <pre>
+	 * // Get all selected rasters:
+	 * var items = document.getSelectedItems(Raster);
+	 * </pre>
+	 * @param types
+	 * @return
+	 */
 	public ItemList getSelectedItems(Class type) {
 		return getSelectedItems(new Class[] { type });
 	}

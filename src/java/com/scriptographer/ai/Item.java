@@ -523,11 +523,10 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * The name of the item as it appears in the layers palette.
 	 * Sample code:
-	 * @jsbean
 	 * <pre>
 	 * var layer = new Layer(); // a layer is an item
 	 * print(layer.name); // returns '<Layer 2>'
-	 * layer.name = "A nice name";
+	 * layer.name = 'A nice name';
 	 * print(layer.name); // returns 'A nice name'
 	 * </pre>
 	 */
@@ -678,6 +677,9 @@ public abstract class Item extends DocumentObject {
 	 * End of Style
 	 */
 
+	/**
+	 * A boolean value that specifies whether the center point of the item is visible.
+	 */
 	public native boolean isCenterVisible();
 	public native void setCenterVisible(boolean centerVisible);
 
@@ -762,6 +764,17 @@ public abstract class Item extends DocumentObject {
 		setAttribute(ItemAttribute.HIDDEN, !visible);
 	}
 
+	/**
+	 * A boolean value that specifies whether the item is hidden.
+	 * Sample code:
+	 * @jsbean
+	 * <pre>
+	 * var path = new Path();
+	 * print(path.hidden) // returns false
+	 * path.hidden = true; // hides the path
+	 * print(path.hidden) // returns true
+	 * </pre>
+	 */
 	public final boolean isHidden() {
 		return !isVisible();
 	}
@@ -858,8 +871,8 @@ public abstract class Item extends DocumentObject {
 	 * Inserts the specified item as a child of this item by appending it to the
 	 * list of children and moving it above all other children.
 	 * 
-	 * You can use this function for groups, compound paths and layers. Sample
-	 * code:
+	 * You can use this function for groups, compound paths and layers.
+	 * Sample code:
 	 * 
 	 * <pre>
 	 * var group = new Group();
@@ -874,10 +887,10 @@ public abstract class Item extends DocumentObject {
 
 	/**
 	 * Inserts the specified item as a child of this item by appending it to the
-	 * list of children and moving it bellow all other children.
+	 * list of children and moving it below all other children.
 	 * 
-	 * You can use this function for groups, compound paths and layers. Sample
-	 * code:
+	 * You can use this function for groups, compound paths and layers.
+	 * Sample code:
 	 * 
 	 * <pre>
 	 * var group = new Group();
@@ -971,13 +984,13 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * Checks if the item is contained within the specified item
+	 * Checks if the item is contained within the specified item.
 	 * Sample code:
 	 * <pre>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendChild(path);
-	 * print(path.isDescendant(group)) // returns true
+	 * print(path.isDescendant(group)); // returns true
 	 * </pre>
 	 *
 	 * @param item The item to check against
