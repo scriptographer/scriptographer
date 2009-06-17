@@ -42,6 +42,7 @@ import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.WrappedException;
+import org.mozilla.javascript.Wrapper;
 
 import com.scratchdisk.script.ScriptException;
 
@@ -66,11 +67,13 @@ public class RhinoScriptException extends ScriptException {
 		} else if (cause instanceof JavaScriptException) {
 		    JavaScriptException jse = (JavaScriptException) cause;
 		    Object value = jse.getValue();
-		    if (value instanceof Scriptable) {
-		        Object exception = ScriptableObject.getProperty((Scriptable) value, "exception");
-		        if (exception instanceof Throwable)
-		            return (Throwable) exception;
-		    }
+			if (value instanceof Wrapper) {
+				value = ((Wrapper) value).unwrap();
+			} else if (value instanceof Scriptable) {
+				value = ScriptableObject.getProperty((Scriptable) value, "exception");
+			}
+	        if (value instanceof Throwable)
+	            return (Throwable) value;
 		}
 		return cause;
 	}

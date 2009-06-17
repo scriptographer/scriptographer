@@ -97,6 +97,11 @@ public class RhinoDoclet extends Doclet {
 
 	public static class RhinoDocletEngine extends RhinoEngine {
 
+		protected void enter(Context context) {
+			super.enter(context);
+			context.setOptimizationLevel(-1);
+		}
+
 		protected TopLevel makeTopLevel(Context context) {
 			TopLevel topLevel = new TopLevel(context, false);
 			// define some global functions and objects:
