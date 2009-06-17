@@ -45,6 +45,9 @@ public class TextEdit extends TextEditItem<TextEditStyle> {
 		super(dialog, handle);
 	}
 	
+	/**
+	 * @jshide
+	 */
 	public TextEdit(Dialog dialog, EnumSet<TextOption> options) {
 		// filter out the pseudo styles from the options:
 		// (max. real bit is 3, and the mask is (1 << (max + 1)) - 1
