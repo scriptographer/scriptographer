@@ -7,7 +7,12 @@
 </div>
 <div id="<%= $id %>-description" class="member-description hidden">
 <div class="member-header">
-<div class="member-title"><a href="#" onClick="return toggleMember('<%= $id %>', false);"><%= $title %></a></div>
+<div class="member-title"><a href="#" onClick="return toggleMember('<%= $id %>', false);"><% if param.expandedTitle %>
+<tt><b><%= param.expandedTitle %></b></tt><%-%>
+<% else %>
+<%= $title -%>
+<% end %>
+</a></div>
 <div class="member-close"><input type="button" value="Close" onClick="toggleMember('<%= $id %>', false);"></div>
 <div class="clear"></div>
 </div>
@@ -35,13 +40,14 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% $text -%>
 <% $classDoc = this.containingClass() %>
 <% tags classDoc=$classDoc tags=this.inlineTags() prefix='<div class="member-paragraph">' suffix='</div>' %>
-<% this.template "#parameters" classDoc=$classDoc prefix='<div class="member-paragraph"><b>Parameters:</b>' suffix='</div>' %>
-<% this.template "#return" classDoc=$classDoc prefix='<div class="member-paragraph"><b>Returns:</b>' suffix='</div>' %>
-<% this.template "#throws" classDoc=$classDoc prefix='<div class="member-paragraph"><b>Throws:</b>' suffix='</div>' %>
+<% this.template "#parameters" classDoc=$classDoc %>
+<% this.template "#return" classDoc=$classDoc %>
+<% this.template "#throws" classDoc=$classDoc %>
 <% tags classDoc=$classDoc tags=this.seeTags() prefix='<div class="member-paragraph"><b>See also:</b> ' suffix='</div>' separator=', ' %>
 
 <% #parameters -%>
 <% if this.getParameters %>
+<div class="member-paragraph"><b>Parameters:</b>
 <% foreach $param in this.getParameters() %>
 <div><tt><%= $param.name() %>: </tt><%= $param.paramType().renderLink({}) -%>
 <% if $param.tag %>
@@ -50,11 +56,12 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <%= $param.paramType().renderAdditional() prefix=" " -%>
 </div>
 <% end %>
+</div>
 <% end %>
 
 <% #throws -%>
 <% $exceptions = this.throwsTags() %>
-<% foreach $ex in $exceptions %>
+<% foreach $ex in $exceptions prefix='<div class="member-paragraph"><b>Throws:</b>' suffix='</div>' %>
 	<% $cd = $ex.exception() %>
 	<div>
 		<%= $cd ? $cd.renderLink({}) : $ex.exceptionName() %><% tags classDoc=$cd tags=$ex.inlineTags() prefix=" - " %>
@@ -64,7 +71,7 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% #return -%>
 <% $returnType = this.returnType() %>
 <% if $returnType && $returnType.typeName() != 'void' %>
-<div> 
+<div class="member-paragraph"><b>Returns:</b>
 <%= $returnType.renderLink({ additional: true }) %>
 <% foreach $tag in this.tags("return") prefix=" - " %>
 <% tags classDoc=param.classDoc tags=$tag.inlineTags() -%>

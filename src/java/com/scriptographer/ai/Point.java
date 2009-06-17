@@ -54,6 +54,7 @@ public class Point {
 
 	/**
 	 * Creates a Point object with the given x and y coordinates.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * // Create a point at x: 10pt, y: 5pt
@@ -179,19 +180,6 @@ public class Point {
 	}
 
 	/**
-	 * Returns the addition of the supplied x and y values to the point object
-	 * as a new point. The object itself is not modified!
-	 * Sample code:
-	 * <code>
-	 * var firstPoint = new Point(5,10);
-	 * var secondPoint = firstPoint.add(10,20);
-	 * print(secondPoint); // { x: 15.0, y: 30.0 }
-	 * </code>
-	 * 
-	 * @param x the x value to add
-	 * @param y the y value to add
-	 * @return the addition of the two points as a new point
-	 * 
 	 * @jshide
 	 */
 	public Point add(double x, double y) {
@@ -201,12 +189,13 @@ public class Point {
 	/**
 	 * Returns the addition of the supplied point to the point object as a new
 	 * point. The object itself is not modified!
+	 * 
 	 * Sample code:
 	 * <code>
-	 * var firstPoint = new Point(5,10);
-	 * var secondPoint = new Point(10,20);
-	 * var thirdPoint = firstPoint.add(secondPoint);
-	 * print(thirdPoint); // { x: 15.0, y: 30.0 }
+	 * var point1 = new Point(5,10);
+	 * var point2 = new Point(10,20);
+	 * var result = point1 + point2;
+	 * print(result); // { x: 15.0, y: 30.0 }
 	 * </code>
 	 * 
 	 * @param point the point to add
@@ -216,6 +205,20 @@ public class Point {
 		return add(point.x, point.y);
 	}
 
+	/**
+	 * Returns the addition of the supplied value to both coordinates of
+	 * the point object as a new point. The object itself is not modified!
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var point = new Point(5,10);
+	 * var result = point + 20;
+	 * print(result); // { x: 25.0, y: 30.0 }
+	 * </code>
+	 * 
+	 * @param value the value to add
+	 * @return the addition of the point and the value as a new point
+	 */
 	public Point add(double value) {
 		return add(value, value);
 	}

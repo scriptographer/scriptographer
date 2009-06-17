@@ -1,0 +1,10 @@
+<% foreach $member in this.operators.members %>
+<% if !$member#first %>
+<div class="member-operator"><tt><b><%= Operator.getTitle($member) %></b></tt></div>
+<% end %>
+<% $member.template "#text" prefix='<div class="member-text">' suffix='</div>' %>
+<% end %>
+
+<% #text -%>
+<% tags classDoc=param.classDoc tags=this.inlineTags() %>
+<% this.template "member#return" %>

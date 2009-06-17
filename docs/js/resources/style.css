@@ -75,7 +75,7 @@ p {
 	background-image: url(paper.gif);
 	white-space: pre;
 	display: block;
-	margin: 0;
+	margin: 8px 0 0 0;
 }
 
 .documentation-inherited {
@@ -124,6 +124,11 @@ p {
 
 .member-close {
 	float: right;
+}
+
+.member-operator {
+	border-top: 1px solid #999;
+	padding: 8px;
 }
 
 .member-text {

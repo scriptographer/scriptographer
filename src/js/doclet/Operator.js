@@ -19,9 +19,10 @@ Operator = SyntheticField.extend(new function() {
 	return {
 		initialize: function(classObject, operators) {
 			var operator = operators.members[0];
-			this.base(classObject, operator.getId(), operator);
+			var name = Operator.getName(operator);
+			this.base(classObject, name, operator);
 			this.operators = operators;
-			this.title = Operator.getOperator(operator) + ' ' + Operator.getName(operator);
+			this.title = Operator.getOperator(operator) + ' ' + name;
 		},
 
 		name: function() {
@@ -33,12 +34,12 @@ Operator = SyntheticField.extend(new function() {
 		},
 
 		renderMember: function(param) {
+			// Clone so we're not modifying the globally used param object
+			param = param.clone();
 			if (this.isVisible()) {
-				var text = this.operators.members.map(function(member) {
-					var params = member.renderParameters();
-					return member.renderTemplate('operator', param);
-				}).join('');
-				return this.base(Hash.merge({ text: text }, param));
+				param.text = this.renderTemplate('operators', param);
+				param.expandedTitle = Operator.getTitle(this.member);
+				return this.base(param);
 			}
 		},
 
@@ -56,17 +57,17 @@ Operator = SyntheticField.extend(new function() {
 					);
 			},
 
-			getTitle: function(member) {
-				var params = member.renderParameters();
-				return Operator.getOperator(member) + ' ' + params.substring(1, params.length - 1);
-			},
-
 			getOperator: function(member) {
 				return operators[member.name()];
 			},
 
 			getName: function(member) {
 				return names[member.name()];
+			},
+
+			getTitle: function(member) {
+				var param = member.getParameters()[0];
+				return Operator.getOperator(member) + ' ' + stripTags_filter(param.paramType().renderLink({}));
 			}
 		}
 	}
