@@ -123,11 +123,20 @@ MemberGroupList = Object.extend({
 		this.groups.each(function(group) {
 			var operators = group.extractOperators();
 			if (operators) {
-				var operator = new Operator(this.classObject, group.name, operators);
+				var operator = new Operator(this.classObject, operators);
 				if (operator.isVisible()) {
 					group.removeMethods(operators);
 					fields.add(operator);
 				}
+				/*
+				operators.members.each(function(member) {
+					var operator = new Operator(this.classObject, member);
+					if (operator.isVisible()) {
+						group.removeMethod(member);
+						fields.add(operator);
+					}
+				}, this);
+				*/
 			}
 		}, this);
 	},

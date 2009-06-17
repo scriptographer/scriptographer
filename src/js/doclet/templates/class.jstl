@@ -18,7 +18,7 @@
 </p>
 <% end %>
 <% tags classDoc=this.classDoc tags=this.classDoc.inlineTags() prefix="<p>" suffix="</p>" %>
-<% tags classDoc=this.classDoc tags=this.classDoc.seeTags() prefix="<p><b>See also:</b>" suffix="</p>" separator=", " %>
+<% tags classDoc=this.classDoc tags=this.classDoc.seeTags() prefix="<p><b>See also: </b>" suffix="</p>" separator=", " %>
 <% if settings.versionInfo %>
 	<% tags classDoc=this.classDoc tags=this.classDoc.tags("version") prefix=<%= "Version" prefix=settings.section2Open suffix=settings.section2Close %> suffix="</p>" separator=", " %>
 <% end %>

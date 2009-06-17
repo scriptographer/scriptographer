@@ -101,32 +101,31 @@ Method = Member.extend({
 	},
 
 	getOverriddenMethodToUse: function() {
-		if (this.member instanceof MethodDoc && this.isVisible()) {
-			if (!this.member.commentText() &&
-				!this.member.seeTags().length &&
-				!this.member.throwsTags().length &&
-				!this.member.paramTags().length) {
-				// No javadoc available for this method. Recurse through
-				// superclasses
-				// and implemented interfaces to find javadoc of overridden
-				// methods.
-				var overridden = this.member.overriddenMethod();
-				if (overridden) {
-					var mem = Member.get(overridden);
-					// Prevent endless loops that happen when overriden
-					// functions from inivisble classes where moved to the
-					// derived class and Member.get lookup points there
-					// instead of the overridden version:
-					if (mem && mem.member.containingClass() != this.member.overriddenClass()) {
-						mem = null;
-					}
-					// If this method is not wrapped, quickly wrap it just to
-					// call renderMember.
-					if (!mem) {
-						mem = new Method(this.classObject, overridden);
-					}
-					return mem;
-				}
+		function isEmpty(member) {
+			return !member.commentText() &&
+				!member.seeTags().length &&
+				!member.throwsTags().length &&
+				!member.paramTags().length;
+		}
+		if (this.member instanceof MethodDoc && this.isVisible() && isEmpty(this.member)) {
+			// No javadoc available for this method. Recurse through
+			// superclasses
+			// and implemented interfaces to find javadoc of overridden
+			// methods.
+			var overridden = this.member.overriddenMethod();
+			if (overridden && !isEmpty(overridden)) {
+				var mem = Member.get(overridden);
+				// Prevent endless loops that happen when overriden
+				// functions from inivisble classes where moved to the
+				// derived class and Member.get lookup points there
+				// instead of the overridden version:
+				if (mem && mem.member.containingClass() != this.member.overriddenClass())
+					mem = null;
+				// If this method is not wrapped, quickly wrap it just to
+				// call renderMember.
+				if (!mem)
+					mem = new Method(this.classObject, overridden);
+				return mem;
 			}
 		}
 	},
@@ -139,12 +138,13 @@ Method = Member.extend({
 			return this.base(classDoc);
 	},
 
-	renderMember: function(cd, index, member) {
+	renderMember: function(param) {
 		var overridden = this.getOverriddenMethodToUse();
-		if (overridden)
-			return overridden.renderMember(cd, index, member);
-		else
-			return this.base(cd, index, member, this.containingClass());
+		if (overridden) {
+			return overridden.renderMember(param);
+		} else {
+			return this.base(param);
+		}
 	},
 
 	getParameters: function() {

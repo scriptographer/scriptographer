@@ -11,7 +11,11 @@
 <div class="member-close"><input type="button" value="Close" onClick="toggleMember('<%= $id %>', false);"></div>
 <div class="clear"></div>
 </div>
-<%= $text prefix='<div class="member-text">' suffix='</div>' %>
+<% if param.text %>
+<%= param.text %>
+<% else %>
+<% this.template "#text" prefix='<div class="member-text">' suffix='</div>' classDoc=this.containingClass() %>
+<% end %>
 </div>
 </div>
 
@@ -26,31 +30,28 @@
 <% end %>
 </tt>
 
-<% $text -%>
-<% tags tags=param.member.inlineTags() classDoc=param.containingClass prefix='<div class="member-paragraph">' suffix='</div>' %>
-<% if this.getParameters %>
-<% this.template "#parameters" parameters=this.getParameters() classDoc=param.classDoc %>
-<% end %>
-<% if param.returnType %>
-<% this.template "#return" returnType=param.returnType tags=this.tags("return") classDoc=param.containingClass %>
-<% end %>
-<% if param.throwsTags %>
-<% this.template "#throws" exceptions=param.throwsTags %>
-<% end %>
-<% tags tags=param.member.seeTags() classDoc=param.containingClass prefix='<div class="member-paragraph"><b>See also:</b>' suffix='</div>' separator=', ' %>
+<% #text -%>
+<% tags classDoc=param.classDoc tags=this.inlineTags() prefix='<div class="member-paragraph">' suffix='</div>' %>
+<% this.template "#parameters" prefix='<div class="member-paragraph"><b>Parameters:</b>' suffix='</div>' %>
+<% this.template "#return" prefix='<div class="member-paragraph"><b>Returns:</b>' suffix='</div>' %>
+<% this.template "#throws" prefix='<div class="member-paragraph"><b>Throws:</b>' suffix='</div>' %>
+<% tags classDoc=param.classDoc tags=this.seeTags() prefix='<div class="member-paragraph"><b>See also:</b> ' suffix='</div>' separator=', ' %>
 
 <% #parameters %>
-<% foreach $param in param.parameters prefix='<div class="member-paragraph"><b>Parameters:</b>' suffix='</div>' %>
-	<div><tt><%= $param.name() %>: </tt><%= $param.paramType().renderLink({}) -%>
+<% if this.getParameters %>
+<% foreach $param in this.getParameters() %>
+<div><tt><%= $param.name() %>: </tt><%= $param.paramType().renderLink({}) -%>
 <% if $param.tag %>
-<% tags tags=$param.tag.inlineTags() classDoc=param.classDoc prefix=" - " -%>
+<% tags classDoc=param.classDoc tags=$param.tag.inlineTags() prefix=" - " -%>
 <% end %>
 <%= $param.paramType().renderAdditional() prefix=" " -%>
-	</div>
+</div>
+<% end %>
 <% end %>
 
 <% #throws %>
-<% foreach $ex in param.exceptions prefix='<div class="member-paragraph"><b>Throws:</b>' suffix='</div>' %>
+<% $exceptions = this.throwsTags() %>
+<% foreach $ex in $exceptions %>
 	<% $cd = $ex.exception() %>
 	<div>
 		<%= $cd ? $cd.renderLink({}) : $ex.exceptionName() %><% tags classDoc=$cd tags=$ex.inlineTags() prefix=" - " %>
@@ -58,11 +59,18 @@
 <% end %>
 
 <% #return %>
-<div class="member-paragraph"><b>Returns:</b>
+<% $returnType = this.returnType() %>
+<% if $returnType && $returnType.typeName() != 'void' %>
 <div> 
-<%= param.returnType.renderLink({ additional: true }) %>
-<% foreach $tag in param.tags prefix=" - " %>
+<%= $returnType.renderLink({ additional: true }) %>
+<% foreach $tag in this.tags("return") prefix=" - " %>
 <% tags classDoc=param.classDoc tags=$tag.inlineTags() -%>
 <% end %>
 </div> 
+<% end %>
+
+<% #operator %>
+<% $param = this.getParameters()[0] %>
+<div class="member-text"><tt><b><%= Operator.getOperator(this) %></tt> <%= $param.paramType().renderLink({}) %></b>
+<% tags classDoc=param.classDoc tags=this.inlineTags() prefix='<div class="member-paragraph">' suffix='</div>' %>
 </div>

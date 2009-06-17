@@ -266,15 +266,21 @@ function encodeJs(str) {
 
 function encodeHtml(str) {
 	// Encode everything
-	str = Packages.org.htmlparser.util.Translate.encode(str);
+	var Translate = Packages.org.htmlparser.util.Translate;
+	str = Translate.encode(str);
 	var tags = {
 		code: true, br: true, p: true, b: true, a: true, i: true,
-		ol: true, li: true, ul: true, tt: true, pre: true };
+		ol: true, li: true, ul: true, tt: true, pre: true
+	};
 	// Now replace allowed tags again.
 	return str.replace(/&lt;(\/?)(\w*)(.*?)(\s*\/?)&gt;/g, function(match, open, tag, content, close) {
 		tag = tag.toLowerCase();
-		return tags[tag] ? '<' + open + tag + content + close + '>' : match;
+		return tags[tag] ? '<' + open + tag + Translate.decode(content) + close + '>' : match;
 	});
+}
+
+function encodeAll(str) {
+	return Packages.org.htmlparser.util.Translate.encode(str);
 }
 
 /**

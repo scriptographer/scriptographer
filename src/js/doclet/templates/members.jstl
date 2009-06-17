@@ -2,7 +2,7 @@
 
 <% $members -%>
 <% foreach $member in param.members prefix='<div class="documentation-paragraph">' suffix='</div>' %>
-<%= $member.renderMember(param.classDoc, param.index) -%>
+<%= $member.renderMember(param) -%>
 <% end %>
 
 <% $title -%>

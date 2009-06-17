@@ -56,23 +56,10 @@ function Template(object, name, parent) {
 }
 
 Template.prototype = {
-	render: function(object, param, out) {
+	render: function(object, param, parentParam, out) {
 		try {
-			var parentParam = param && param.__param__;
-			if (parentParam) {
-				if (parentParam instanceof java.util.Map) {
-					var prm = {};
-					for (var i in parentParam)
-						prm[i] = parentParam[i];
-					parentParam = param.__param__ = prm;
-				}
-				function inherit() {};
-				inherit.prototype = parentParam;
-				var prm = new inherit();
-				for (var i in param)
-					prm[i] = param[i];
-				param = prm;
-			}
+			if (parentParam)
+				param = this.inherit(param, parentParam);
 			var asString = !out;
 			if (asString) (out = new TemplateWriter()).push();
 			this.__render__.call(object, param, this, out);
@@ -86,14 +73,30 @@ Template.prototype = {
 		}
 	},
 
+	inherit: function(object, parent) {
+		if (parent instanceof java.util.Map) {
+			var obj = {};
+			for (var i in parent)
+				obj[i] = parent[i];
+			parent = obj;
+		}
+		function inherit() {};
+		inherit.prototype = parent;
+		var obj = new inherit();
+		for (var i in object)
+			obj[i] = object[i];
+		return obj;
+	},
+
 	getSubTemplate: function(name) {
 		return this.subTemplates[name];
 	},
 
-	renderSubTemplate: function(object, name, param, out) {
+	renderSubTemplate: function(object, name, param, parentParam, out) {
 		var template = this.subTemplates[name];
-		if (!template) throw 'Unknown sub template: ' + name;
-		return template.render(object, param, out);
+		if (!template)
+			throw 'Unknown sub template: ' + name;
+		return template.render(object, param, parentParam, out);
 	},
 
 	parse: function(lines) {
@@ -566,19 +569,28 @@ Template.prototype = {
 	},
 
 	renderMacro: function(command, object, name, param, args, out) {
-		var unhandled = false, value;
+		var unhandled = false, value, macro;
 		if (object) {
-			var macro = object[name + '_macro'];
+			if (name == 'template') {
+				var that = this;
+				macro = function(prm, name) {
+					if (name[0] == '#') {
+						return (that.parent || that).renderSubTemplate(object, name.substring(1), prm, param);
+					} else {
+						var template = object.getTemplate(name);
+						return template && template.render(object, prm, param);
+					}
+				}
+			} else {
+				macro = object[name + '_macro'];
+			}
 			if (macro) {
 				try {
 					var prm = args[0];
-					if (prm.param)
-						for (var i in prm.param)
-							if (prm[i] === undefined)
-								prm[i] = prm.param[i];
-					prm.__template__ = this.parent || this;
-					prm.__param__ = param;
-					prm.__out__ = out;
+					if (prm && prm.param) {
+						prm = args[0] = this.inherit(prm, prm.param);
+						delete prm.param;
+					}
 					value = macro.apply(object, args);
 				} catch (e) {
 					this.reportMacroError(e, command, out);
@@ -712,15 +724,7 @@ Template.methods = new function() {
 		renderTemplate: function(template, param, out) {
 			template = this.getTemplate(template);
 			if (template)
-				return template.render(this, param, out);
-		},
-
-		template_macro: function(param, name) {
-			if (name[0] == '#') {
-				return param.__template__.renderSubTemplate(this, name.substring(1), param);
-			} else {
-				return this.renderTemplate(name, param);
-			}
+				return template.render(this, param, null, out);
 		}
 	};
 };

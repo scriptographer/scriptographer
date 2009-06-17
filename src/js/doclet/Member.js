@@ -17,31 +17,22 @@ Member = Object.extend({
 		// nothing here, but in the extended classes
 	},
 
-	renderMember: function(classDoc, index, member, containingClass) {
+	renderMember: function(param) {
 		data.group = {};
 		if (this.isVisible()) {
-			if (!member)
-				member = this;
-
-			if (!containingClass)
-				containingClass = this.containingClass();
-
-			if (index)
-				index.push('"' + member.getId() + '": { title: "' + this.name() +
-						'", text: "' + encodeJs(renderTags({
-							classDoc: classDoc, tags: member.inlineTags()
-						})) + '" }');
-
+			if (param.index) {
+				param.index.push('"' + this.getId() + '": { title: "' + this.name() + '", text: "'
+					+ encodeJs(renderTags({
+						classDoc: param.classDoc, tags: this.inlineTags()
+					}))
+					+ '" }'
+				);
+			}
 			// Thrown exceptions
 			// if (this.member.thrownExceptions)
 			//	renderTemplate('exceptions', { exceptions: this.member.thrownExceptions() }, out);
 			// Description
-			var returnType = this.returnType();
-			return this.renderTemplate('member', {
-				classDoc: classDoc, member: member, containingClass: containingClass,
-				throwsTags: this.member && this.member.throwsTags ? this.member.throwsTags() : null,
-				returnType: returnType && returnType.typeName() != 'void' ? returnType : null
-			});
+			return this.renderTemplate('member', param);
 		}
 	},
 
@@ -75,6 +66,10 @@ Member = Object.extend({
 
 	seeTags: function() {
 		return this.member.seeTags();
+	},
+
+	throwsTags: function() {
+		return this.member.throwsTags ? this.member.throwsTags() : null;
 	},
 
 	getNameSuffix: function() {
