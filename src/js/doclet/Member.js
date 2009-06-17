@@ -161,7 +161,13 @@ Member = Object.extend({
 		},
 
 		put: function(member) {
-			this.members[Member.getId(member)] = member;
+			// Store id in member so we do not have to rely on Memer.getId
+			// in Member.remove, since that will not work anymore as its
+			// methods list might be empty at that point already, from removing
+			// all methods from the group.
+			var id = Member.getId(member);
+			member.id = id;
+			this.members[id] = member;
 		},
 
 		get: function(member) {
@@ -169,7 +175,7 @@ Member = Object.extend({
 		},
 
 		remove: function(member) {
-			delete this.members[Member.getId(member)];
+			delete this.members[member.id || Member.getId(member)];
 		},
 
 		isVisible: function(member) {

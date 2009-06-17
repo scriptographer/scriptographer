@@ -368,7 +368,7 @@ Template.prototype = {
 				values['default'] = /^'"/.test(def) ? '"' + global[values.encoder](def.substring(1, def.length - 1)) + '"'
 					: values.encoder + '(' + def + ')';
 		}
-		macro.swallow = swallow || macro.isControl;
+		macro.swallow = swallow || macro.isControl || macro.isSetter;
 		macro.tag = tag;
 		return macro;
 	},

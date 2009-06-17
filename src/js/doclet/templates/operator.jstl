@@ -1,0 +1,4 @@
+<% $param = this.getParameters()[0] %>
+<div class="member-text"><tt><b><%= Operator.getOperator(this) %></tt> <%= $param.paramType().renderLink({}) %></b>
+<% tags classDoc=param.classDoc tags=this.inlineTags() prefix='<div class="member-paragraph">' suffix='</div>' %>
+</div>

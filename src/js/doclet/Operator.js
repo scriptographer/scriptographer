@@ -36,7 +36,7 @@ Operator = SyntheticField.extend(new function() {
 			if (this.isVisible()) {
 				var text = this.operators.members.map(function(member) {
 					var params = member.renderParameters();
-					return member.renderTemplate('member#operator', param);
+					return member.renderTemplate('operator', param);
 				}).join('');
 				return this.base(Hash.merge({ text: text }, param));
 			}
@@ -49,7 +49,7 @@ Operator = SyntheticField.extend(new function() {
 				// be uppercae and constants.
 				return method.parameters().length == 1 && !method.isStatic() && (
 						/^(add|subtract|multiply|divide)$/.test(method.name())
-						&& method.containingClass().isCompatible(method.returnType())
+						&& method.containingClass().isCompatible(new Type(method.returnType()))
 					) || ( // equals
 						method.name() == 'equals'
 						&& method.returnType().typeName() == 'boolean'

@@ -62,7 +62,7 @@ MemberGroup = Object.extend({
 
 	remove: function(member) {
 		if (this.members.remove(member)) {
-			// Member.remove(member);
+			Member.remove(member);
 			if (!this.members.length)
 				this.list.remove(this);
 			return true;

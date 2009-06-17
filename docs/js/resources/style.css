@@ -75,6 +75,7 @@ p {
 	background-image: url(paper.gif);
 	white-space: pre;
 	display: block;
+	margin: 0;
 }
 
 .documentation-inherited {

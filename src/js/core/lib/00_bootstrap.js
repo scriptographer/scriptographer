@@ -161,10 +161,13 @@ Function.inject(new function() {
 Enumerable = new function() {
 	Base.iterate = function(fn) {
 		return function(iter, bind) {
-			if (!iter) iter = function(val) { return val };
-			else if (typeof iter != 'function') iter = function(val) { return val == iter };
+			var func = !iter
+				? function(val) { return val }
+				: typeof iter != 'function'
+					? function(val) { return val == iter }
+					: iter;
 			if (!bind) bind = this;
-			return fn.call(this, iter, bind, this);
+			return fn.call(this, func, bind, this);
 		};
 	};
 

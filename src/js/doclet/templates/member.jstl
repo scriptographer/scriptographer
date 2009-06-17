@@ -14,7 +14,7 @@
 <% if param.text %>
 <%= param.text %>
 <% else %>
-<% this.template "#text" prefix='<div class="member-text">' suffix='</div>' classDoc=this.containingClass() %>
+<%= $text prefix='<div class="member-text">' suffix='</div>' %>
 <% end %>
 </div>
 </div>
@@ -30,14 +30,17 @@
 <% end %>
 </tt>
 
-<% #text -%>
-<% tags classDoc=param.classDoc tags=this.inlineTags() prefix='<div class="member-paragraph">' suffix='</div>' %>
-<% this.template "#parameters" prefix='<div class="member-paragraph"><b>Parameters:</b>' suffix='</div>' %>
-<% this.template "#return" prefix='<div class="member-paragraph"><b>Returns:</b>' suffix='</div>' %>
-<% this.template "#throws" prefix='<div class="member-paragraph"><b>Throws:</b>' suffix='</div>' %>
-<% tags classDoc=param.classDoc tags=this.seeTags() prefix='<div class="member-paragraph"><b>See also:</b> ' suffix='</div>' separator=', ' %>
+<%-- $text cannot be rendered as a sub template since we need the inlineTags to be processed right at
+the beginning of the rendering of this template, in order for data.group stuff to be processed and ready above --%>
+<% $text -%>
+<% $classDoc = this.containingClass() %>
+<% tags classDoc=$classDoc tags=this.inlineTags() prefix='<div class="member-paragraph">' suffix='</div>' %>
+<% this.template "#parameters" classDoc=$classDoc prefix='<div class="member-paragraph"><b>Parameters:</b>' suffix='</div>' %>
+<% this.template "#return" classDoc=$classDoc prefix='<div class="member-paragraph"><b>Returns:</b>' suffix='</div>' %>
+<% this.template "#throws" classDoc=$classDoc prefix='<div class="member-paragraph"><b>Throws:</b>' suffix='</div>' %>
+<% tags classDoc=$classDoc tags=this.seeTags() prefix='<div class="member-paragraph"><b>See also:</b> ' suffix='</div>' separator=', ' %>
 
-<% #parameters %>
+<% #parameters -%>
 <% if this.getParameters %>
 <% foreach $param in this.getParameters() %>
 <div><tt><%= $param.name() %>: </tt><%= $param.paramType().renderLink({}) -%>
@@ -49,7 +52,7 @@
 <% end %>
 <% end %>
 
-<% #throws %>
+<% #throws -%>
 <% $exceptions = this.throwsTags() %>
 <% foreach $ex in $exceptions %>
 	<% $cd = $ex.exception() %>
@@ -58,7 +61,7 @@
 	</div>
 <% end %>
 
-<% #return %>
+<% #return -%>
 <% $returnType = this.returnType() %>
 <% if $returnType && $returnType.typeName() != 'void' %>
 <div> 
@@ -68,9 +71,3 @@
 <% end %>
 </div> 
 <% end %>
-
-<% #operator %>
-<% $param = this.getParameters()[0] %>
-<div class="member-text"><tt><b><%= Operator.getOperator(this) %></tt> <%= $param.paramType().renderLink({}) %></b>
-<% tags classDoc=param.classDoc tags=this.inlineTags() prefix='<div class="member-paragraph">' suffix='</div>' %>
-</div>

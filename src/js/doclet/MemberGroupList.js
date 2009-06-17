@@ -128,15 +128,6 @@ MemberGroupList = Object.extend({
 					group.removeMethods(operators);
 					fields.add(operator);
 				}
-				/*
-				operators.members.each(function(member) {
-					var operator = new Operator(this.classObject, member);
-					if (operator.isVisible()) {
-						group.removeMethod(member);
-						fields.add(operator);
-					}
-				}, this);
-				*/
 			}
 		}, this);
 	},

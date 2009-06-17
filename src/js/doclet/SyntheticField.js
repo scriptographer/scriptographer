@@ -28,7 +28,7 @@ SyntheticField = Member.extend({
 	},
 
 	returnType: function() {
-		return this.member.returnType();
+		return new Type(this.member.returnType());
 	},
 
 	getVisible: function() {
