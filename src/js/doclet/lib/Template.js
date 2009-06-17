@@ -327,6 +327,7 @@ Template.prototype = {
 				isFirst = false;
 				append = true;
 			} else if (/\w=$/.test(part)) { 
+				macro.isSetter = false;
 				var key = part.substring(0, part.length - 1), value = nextPart();
 				value = nestedMacro(this, value, code, stack);
 				macro.param.push('"' + key + '": ' + value);
@@ -368,6 +369,8 @@ Template.prototype = {
 				values['default'] = /^'"/.test(def) ? '"' + global[values.encoder](def.substring(1, def.length - 1)) + '"'
 					: values.encoder + '(' + def + ')';
 		}
+		if (macro.isSetter && !macro.opcode.length)
+			macro.isSetter = false;
 		macro.swallow = swallow || macro.isControl || macro.isSetter;
 		macro.tag = tag;
 		return macro;

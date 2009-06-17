@@ -150,7 +150,7 @@ ClassDocImpl.inject(Hash.merge({
 			if (this.isAbstract())
 				str += '</i>';
 		} else {
-			str = this.name();
+			str = Type.getSimpleName(this.name());
 		}
 		return str;
 	}

@@ -156,7 +156,7 @@ public class Matrix {
 	/**
 	 * Returns a copy of this <code>Matrix</code> object.
 	 * 
-	 * @return an copy of this <code>Matrix</code> object.
+	 * @return a copy of this <code>Matrix</code> object.
 	 */
 	public Object clone() {
 		return new Matrix(this);
@@ -168,7 +168,7 @@ public class Matrix {
 	 * null, otherwise the object itself is modified and a reference to it is
 	 * returned.
 	 * 
-	 * @return the inversed matrix, or null, if the matrix is singular
+	 * @return the inverted matrix, or null, if the matrix is singular
 	 */
 	public Matrix invert() {
 		try {

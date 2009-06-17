@@ -108,7 +108,7 @@ Member = Object.extend({
 
 	renderLink: function(param) {
 		var cd = this.getClass(param.classDoc);
-		// Dont use mem.qualifiedName(). use cd.qualifiedName() + '.' + mem.name()
+		// TODO:? Dont use mem.qualifiedName(). use cd.qualifiedName() + '.' + mem.name()
 		// instead in order to catch the case where functions are moved from
 		// invisible classes to visible ones (e.g. AffineTransform -> Matrix)
 		return renderLink({

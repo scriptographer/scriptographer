@@ -262,7 +262,7 @@ Type = Object.extend({
 					name: 'com.scriptographer.sg.File'
 				});
 			} else {
-				str = code_filter(cls ? cls.name() : this.typeName() + this.dimension());
+				str = code_filter(Type.getSimpleName(cls ? cls.name() : this.typeName() + this.dimension()));
 			}
 		}
 		if (param.additional) {
@@ -307,7 +307,7 @@ Type = Object.extend({
 		},
 
 		getSimpleName: function(name) {
-			return name.substring(name.lastIndexOf('.') + 1);
+			return name.match(/([^.]*)$/)[1];
 		}
 	}
 });

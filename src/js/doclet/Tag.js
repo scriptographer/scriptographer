@@ -55,15 +55,15 @@ LinkTag = Tag.extend({
 	render: function(param) {
 		var ref = this.referencedMember() || this.referencedClass();
 		if (ref) {
+			var link = ref.renderLink({ classDoc: param.classDoc });
 			if (ref.isVisible()) {
-				return ref.renderLink({ classDoc: param.classDoc });
+				return link;
 			} else {
 				error(this.position() + ': warning - ' + this.name() + ' contains reference to invisible object: ' + ref);
-				return code_filter(this);
+				return code_filter(Type.getSimpleName(link));
 			}
 		} else {
 			error(this.position() + ': warning - ' + this.name() + ' contains undefined reference: ' + this);
-			return code_filter(this);
 		}
 	}
 });
