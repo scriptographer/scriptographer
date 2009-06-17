@@ -76,17 +76,17 @@ public class Point {
 
 	/**
 	 * Creates a Point object using the x and y values of the given Point object.
-	 * @param pt
+	 * @param point
 	 */
-	public Point(Point pt) {
-		this(pt != null ? pt.x : 0, pt != null ? pt.y : 0);
+	public Point(Point point) {
+		this(point != null ? point.x : 0, point != null ? point.y : 0);
 	}
 
 	/**
 	 * @jshide
 	 */
-	public Point(Point2D p) {
-		this(p != null ? p.getX() : 0, p != null ? p.getY() : 0);
+	public Point(Point2D point) {
+		this(point != null ? point.getX() : 0, point != null ? point.getY() : 0);
 	}
 
 	/**
@@ -128,9 +128,9 @@ public class Point {
 	/**
 	 * @jshide
 	 */
-	public void set(Point pt) {
-		if (pt != null)
-			set(pt.x, pt.y);
+	public void set(Point point) {
+		if (point != null)
+			set(point.x, point.y);
 		else
 			set(0, 0);
 	}
@@ -178,16 +178,6 @@ public class Point {
 		return new Point(this);
 	}
 
-	public boolean equals(Object object) {
-		if (object instanceof Point) {
-			Point pt = (Point) object;
-			return pt.x == x && pt.y == y;
-		} else {
-			// TODO: support other point types?
-			return false;
-		}
-	}
-
 	/**
 	 * Returns the addition of the supplied x and y values to the point object
 	 * as a new point. The object itself is not modified!
@@ -201,6 +191,8 @@ public class Point {
 	 * @param x the x value to add
 	 * @param y the y value to add
 	 * @return the addition of the two points as a new point
+	 * 
+	 * @jshide
 	 */
 	public Point add(double x, double y) {
 		return new Point(this.x + x, this.y + y);
@@ -217,11 +209,11 @@ public class Point {
 	 * print(thirdPoint); // returns { x: 15.0, y: 30.0 }
 	 * </pre>
 	 * 
-	 * @param pt the point to add
+	 * @param point the point to add
 	 * @return the addition of the two points as a new point
 	 */
-	public Point add(Point pt) {
-		return add(pt.x, pt.y);
+	public Point add(Point point) {
+		return add(point.x, point.y);
 	}
 
 	public Point add(double value) {
@@ -241,6 +233,8 @@ public class Point {
 	 * @param x The x value to subtract
 	 * @param y The y value to subtract
 	 * @return the subtraction of the two points as a new point
+	 * 
+	 * @jshide
 	 */
 	public Point subtract(double x, double y) {
 		return new Point(this.x - x, this.y - y);
@@ -257,11 +251,11 @@ public class Point {
 	 * print(thirdPoint); // returns { x: 5.0, y: 15.0 }
 	 * </pre>
 	 * 
-	 * @param pt the point to subtract
+	 * @param point the point to subtract
 	 * @return the subtraction of the two points as a new point
 	 */
-	public Point subtract(Point pt) {
-		return subtract(pt.x, pt.y);
+	public Point subtract(Point point) {
+		return subtract(point.x, point.y);
 	}
 
 	public Point subtract(double value) {
@@ -286,6 +280,8 @@ public class Point {
 	 * @param x the x (or scale) value to multiply with
 	 * @param y the y value to multiply with
 	 * @return the multiplication of the two points as a new point
+	 * 
+	 * @jshide
 	 */
 	public Point multiply(double x, double y) {
 		return new Point(this.x * x, this.y * y);
@@ -302,31 +298,47 @@ public class Point {
 	 * print(thirdPoint); // returns { x: 20.0, y: 20.0 }
 	 * </pre>
 	 * 
-	 * @param pt the point to multiply with
+	 * @param point the point to multiply with
 	 * @return the multiplication of the two points as a new point
 	 */
-	public Point multiply(Point pt) {
-		return multiply(pt.x, pt.y);
+	public Point multiply(Point point) {
+		return multiply(point.x, point.y);
 	}
 
 	public Point multiply(double value) {
 		return multiply(value, value);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Point divide(double x, double y) {
 		return new Point(this.x / x, this.y / y);
 	}
 
-	public Point divide(Point pt) {
-		return divide(pt.x, pt.y);
+	public Point divide(Point point) {
+		return divide(point.x, point.y);
 	}
 
 	public Point divide(double value) {
 		return divide(value, value);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Point negate() {
 		return new Point(-x, -y);
+	}
+
+	public boolean equals(Object object) {
+		if (object instanceof Point) {
+			Point pt = (Point) object;
+			return pt.x == x && pt.y == y;
+		} else {
+			// TODO: support other point types?
+			return false;
+		}
 	}
 
 	/**
@@ -343,13 +355,13 @@ public class Point {
 	/**
 	 * Checks if the point is within a given distance of another point
 	 * 
-	 * @param pt the point to check against
+	 * @param point the point to check against
 	 * @param tolerance the maximum distance allowed
 	 * @return <code>true</code> if it is within the given distance, false
 	 *         otherwise
 	 */
-	public boolean isClose(Point pt, double tolerance) {
-		return getDistance(pt) < tolerance;
+	public boolean isClose(Point point, double tolerance) {
+		return getDistance(point) < tolerance;
 	}
 	
 	/**
@@ -365,6 +377,8 @@ public class Point {
 	 * @param px
 	 * @param py
 	 * @return
+	 * 
+	 * @jshide
 	 */
 	public double getDistance(double px, double py) {
 		px -= x;
@@ -388,8 +402,8 @@ public class Point {
 	 * @param py
 	 * @return
 	 */
-	public double getDistance(Point pt) {
-		return getDistance(pt.x, pt.y);
+	public double getDistance(Point point) {
+		return getDistance(point.x, point.y);
 	}
 
 	/**
@@ -404,8 +418,8 @@ public class Point {
 	/**
 	 * @jshide
 	 */
-	public double getDistanceSquared(Point pt) {
-		return getDistanceSquared(pt.x, pt.y);
+	public double getDistanceSquared(Point point) {
+		return getDistanceSquared(point.x, point.y);
 	}
 
 	public double getLength() {
@@ -425,13 +439,13 @@ public class Point {
 	 * The angle is unsigned, no information about rotational
 	 * direction is given.
 	 * 
-	 * @param pt
+	 * @param point
 	 * @return
 	 */
-	public double getAngle(Point pt) {
-		double div = getLength() * pt.getLength();
+	public double getAngle(Point point) {
+		double div = getLength() * point.getLength();
 		if (div == 0) return Double.NaN;
-		else return Math.acos(this.dot(pt) / div);
+		else return Math.acos(this.dot(point) / div);
 	}
 
 	/**
@@ -439,11 +453,11 @@ public class Point {
 	 * The angle is directional and signed, giving information about
 	 * the rotational direction.
 	 * 
-	 * @param pt
+	 * @param point
 	 * @return
 	 */
-	public double getDirectedAngle(Point pt) {
-		double angle = this.getAngle() - pt.getAngle();
+	public double getDirectedAngle(Point point) {
+		double angle = this.getAngle() - point.getAngle();
 		if (angle < -Math.PI)
 			return angle + Math.PI * 2;
 		else if (angle > Math.PI)
@@ -455,16 +469,16 @@ public class Point {
 	 * Returns the interpolation point between the point and another point. The
 	 * object itself is not modified!
 	 * 
-	 * @param pt
+	 * @param point
 	 * @param t the position between the two points as a value between 0 and 1
 	 * @return the interpolation point
 	 * 
 	 * @jshide
 	 */
-	public Point interpolate(Point pt, double t) {
+	public Point interpolate(Point point, double t) {
 		return new Point(
-			x * (1f - t) + pt.x * t,
-			y * (1f - t) + pt.y * t
+			x * (1f - t) + point.x * t,
+			y * (1f - t) + point.y * t
 		);
 	}
 
@@ -530,35 +544,35 @@ public class Point {
 
 	/**
 	 * Returns the dot product of the point and another point.
-	 * @param pt
+	 * @param point
 	 * @return the dot product of the two points
 	 */
 
-	public double dot(Point pt) {
-		return x * pt.x + y * pt.y;
+	public double dot(Point point) {
+		return x * point.x + y * point.y;
 	}
 
 	/**
 	 * Returns the projection of the point on another point. Both points are
 	 * interpreted as vectors.
 	 * 
-	 * @param pt
+	 * @param point
 	 * @return the project of the point on another point
 	 */
-	public Point project(Point pt) {
-		if (pt.x == 0 && pt.y == 0) {
+	public Point project(Point point) {
+		if (point.x == 0 && point.y == 0) {
 			return new Point(0, 0);
 		} else {
-			double scale = dot(pt) / pt.dot(pt);
+			double scale = dot(point) / point.dot(point);
 			return new Point(
-				pt.x * scale,
-				pt.y * scale
+				point.x * scale,
+				point.y * scale
 			);
 		}
 	}
 
-	public Point transform(Matrix m) {
-		return m.transform(this);
+	public Point transform(Matrix matrix) {
+		return matrix.transform(this);
 	}
 
 	protected Point2D toPoint2D() {

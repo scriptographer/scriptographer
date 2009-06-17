@@ -520,6 +520,9 @@ public class Document extends NativeObject {
 		return new Path();
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Path createLine(Point pt1, Point pt2) {
 		Path path = this.createPath();
 		path.moveTo(pt1);
@@ -527,6 +530,9 @@ public class Document extends NativeObject {
 		return path;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Path createLine(double x1, double y1, double x2, double y2) {
 		return createLine(new Point(x1, y1), new Point(x2, y2));
 	}
@@ -536,9 +542,14 @@ public class Document extends NativeObject {
 	 * 
 	 * @param rect
 	 * @return the newly created path
+	 * 
+	 * @jshide
 	 */
 	public native Path createRectangle(Rectangle rect);
 
+	/**
+	 * @jshide
+	 */
 	public Path createRectangle(double x, double y, double width, double height) {
 		return createRectangle(new Rectangle(x, y, width, height));
 	}
@@ -550,9 +561,14 @@ public class Document extends NativeObject {
 	 * @param hor the horizontal size of the rounded corners
 	 * @param ver the vertical size of the rounded corners
 	 * @return the newly created path
+	 * 
+	 * @jshide
 	 */
 	public native Path createRoundRectangle(Rectangle rect, float hor, float ver);
 
+	/**
+	 * @jshide
+	 */
 	public Path createRoundRectangle(double x, double y, double width, double height, float hor, float ver) {
 		return createRoundRectangle(new Rectangle(x, y, width, height), hor, ver);
 	}
@@ -565,6 +581,8 @@ public class Document extends NativeObject {
 	 *        created so the rectangle fits into it. If it's set to false the
 	 *        oval path will fit within the rectangle.
 	 * @return the newly created path
+	 * 
+	 * @jshide
 	 */
 	public native Path createOval(Rectangle rect, boolean circumscribed);
 
@@ -572,15 +590,23 @@ public class Document extends NativeObject {
 	 * Creates an oval shaped path
 	 * @param rect
 	 * @return the newly created path
+	 * 
+	 * @jshide
 	 */
 	public Path createOval(Rectangle rect) {
 		return createOval(rect, false);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Path createOval(double x, double y, double width, double height, boolean circumscribed) {
 		return createOval(new Rectangle(x, y, width, height), circumscribed);
 	}
 	
+	/**
+	 * @jshide
+	 */
 	public Path createOval(double x, double y, double width, double height) {
 		return createOval(x, y, width, height);
 	}
@@ -625,18 +651,25 @@ public class Document extends NativeObject {
 	 *        If it's set to <code>false</code> it will spiral in a counter
 	 *        clockwise direction
 	 * @return the newly created path
+	 * 
+	 * @jshide
 	 */
 	public native Path createSpiral(Point firstArcCenter, Point start,
 			float decayPercent, int numQuarterTurns,
 			boolean clockwiseFromOutside);
 
-
+	/**
+	 * @jshide
+	 */
 	public Path createCircle(Point center, float radius) {
 		return createOval(new Rectangle(
 				center.subtract(radius, radius),
 				center.add(radius, radius)));
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Path createCircle(float x, float y, float radius) {
 		return createCircle(new Point(x, y), radius);
 	}

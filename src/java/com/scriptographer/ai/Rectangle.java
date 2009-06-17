@@ -380,17 +380,6 @@ public class Rectangle {
 		return new Rectangle(this);
 	}
 
-	public boolean equals(Object object) {
-		if (object instanceof Rectangle) {
-			Rectangle rt = (Rectangle) object;
-			return rt.x == x && rt.y == y &&
-					rt.width == width && rt.height == height;
-		} else {
-			// TODO: support other rect types?
-			return false;
-		}
-	}
-
 	public Rectangle add(Point point) {
 		return new Rectangle(x + point.x, y + point.y, width, height);
 	}
@@ -411,12 +400,36 @@ public class Rectangle {
 		return new Rectangle(x, y, width / value, height / value);
 	}
 
+	public boolean equals(Object object) {
+		if (object instanceof Rectangle) {
+			Rectangle rt = (Rectangle) object;
+			return rt.x == x && rt.y == y &&
+					rt.width == width && rt.height == height;
+		} else {
+			// TODO: support other rect types?
+			return false;
+		}
+	}
+
 	/**
 	 * Returns <code>true</code> if the rectangle is empty,
 	 *         <code>false</code> otherwise.
 	 */
 	public boolean isEmpty() {
 	    return width <= 0 || height <= 0;
+	}
+
+    /**
+	 * {@grouptitle Geometric Tests}
+	 * 
+	 * Tests if the specified point is inside the boundary of the rectangle.
+	 * 
+	 * @param point the specified point
+	 * @return <code>true</code> if the point is inside the rectangle's
+	 *         boundary; <code>false</code> otherwise.
+	 */
+	public boolean contains(Point point) {
+		return contains(point.x, point.y);
 	}
 
 	/**
@@ -433,17 +446,6 @@ public class Rectangle {
 			y >= this.y &&
 			x < this.x + width &&
 			y < this.y + height;
-	}
-
-    /**
-	 * Tests if the specified point is inside the boundary of the rectangle.
-	 * 
-	 * @param point the specified point
-	 * @return <code>true</code> if the point is inside the rectangle's
-	 *         boundary; <code>false</code> otherwise.
-	 */
-	public boolean contains(Point point) {
-		return contains(point.x, point.y);
 	}
 	
     /**
@@ -479,6 +481,8 @@ public class Rectangle {
 	}
 
 	/**
+	 * {@grouptitle Boolean Operations}
+	 * 
 	 * Returns a new rectangle representing the intersection of this rectangle
 	 * with the specified rectangle.
 	 * 

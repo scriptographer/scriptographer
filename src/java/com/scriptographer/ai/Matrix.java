@@ -77,7 +77,10 @@ public class Matrix {
 		transform = matrix != null ? matrix.toAffineTransform() : new AffineTransform();
 	}
 
-	public AffineTransform toAffineTransform() {
+	/**
+	 * @jshide
+	 */
+	 public AffineTransform toAffineTransform() {
 		return new AffineTransform(transform);
 	}
 

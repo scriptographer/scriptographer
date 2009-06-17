@@ -187,6 +187,9 @@ public class Curve {
 		segment1.point.set(pt);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setPoint1(double x, double y) {
 		updateSegments();
 		segment1.point.set(x, y);
@@ -202,6 +205,9 @@ public class Curve {
 		segment1.handleOut.set(pt);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setHandle1(double x, double y) {
 		updateSegments();
 		segment1.handleOut.set(x, y);
@@ -217,6 +223,9 @@ public class Curve {
 		segment2.handleIn.set(pt);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setHandle2(double x, double y) {
 		updateSegments();
 		segment2.handleIn.set(x, y);
@@ -232,6 +241,9 @@ public class Curve {
 		segment2.point.set(pt);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setPoint2(double x, double y) {
 		updateSegments();
 		segment2.point.set(x, y);
@@ -401,13 +413,13 @@ public class Curve {
 				matrix.transform(segment2.point));
 	}
 	
-	public Curve split(double t) {
-		if (t > 0 && t < 1) {
+	public Curve split(double parameter) {
+		if (parameter > 0 && parameter < 1) {
 			updateSegments();
 			
 			double left[][] = getCurveArray();
 			double right[][] = new double[4][];
-			split(left, t, left, right);
+			split(left, parameter, left, right);
 		
 			// write back the results:
 			segment1.handleOut.set(left[1][0] - segment1.point.x,
