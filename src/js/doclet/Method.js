@@ -211,8 +211,14 @@ Method = Member.extend({
 	},
 
 	returnType: function() {
-		return this.member instanceof MethodDoc ?
-				new Type(this.member.returnType()) : null;
+		// Let clone report the right class type, not basic java Object
+		if (this.member instanceof MethodDoc) {
+			if (this.member.name() == 'clone') {
+				return this.containingClass();
+			} else {
+				return new Type(this.member.returnType());
+			}
+		}
 	},
 
 	isSimilar: function(obj) {

@@ -59,6 +59,19 @@ the beginning of the rendering of this template, in order for data.group stuff t
 </div>
 <% end %>
 
+<% #return -%>
+<% $returnType = this.returnType() %>
+<% if $returnType && $returnType.typeName() != 'void' %>
+<div class="member-paragraph"><b>Returns:</b>
+<div>
+<%= $returnType.renderLink({ additional: true }) %>
+<% foreach $tag in this.tags("return") prefix=" - " %>
+<% tags classDoc=param.classDoc tags=$tag.inlineTags() -%>
+<% end %>
+</div>
+</div> 
+<% end %>
+
 <% #throws -%>
 <% $exceptions = this.throwsTags() %>
 <% foreach $ex in $exceptions prefix='<div class="member-paragraph"><b>Throws:</b>' suffix='</div>' %>
@@ -66,15 +79,4 @@ the beginning of the rendering of this template, in order for data.group stuff t
 	<div>
 		<%= $cd ? $cd.renderLink({}) : $ex.exceptionName() %><% tags classDoc=$cd tags=$ex.inlineTags() prefix=" - " %>
 	</div>
-<% end %>
-
-<% #return -%>
-<% $returnType = this.returnType() %>
-<% if $returnType && $returnType.typeName() != 'void' %>
-<div class="member-paragraph"><b>Returns:</b>
-<%= $returnType.renderLink({ additional: true }) %>
-<% foreach $tag in this.tags("return") prefix=" - " %>
-<% tags classDoc=param.classDoc tags=$tag.inlineTags() -%>
-<% end %>
-</div> 
 <% end %>
