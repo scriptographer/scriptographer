@@ -457,12 +457,12 @@ public class TextRange extends DocumentObject implements Commitable {
 	 *         trailing whitespace characters of the words.
 	 * Sample code:
 	 * 
-	 * <pre>
+	 * <code>
 	 * var text = new PointText(new Point(0,0));
 	 * text.content = "The contents of the point text.";
 	 * var word = text.range.words[1];
 	 * print(word.content) //returns 'contents ' - note the space after 'contents';
-	 * </pre>
+	 * </code>
 	 */
 	public ReadOnlyList getWords() {
 		if (words == null)
@@ -477,12 +477,12 @@ public class TextRange extends DocumentObject implements Commitable {
 	 * trailing paragraph (\r) characters of the paragraphs.
 	 * 
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var text = new PointText(new Point(0,0));
 	 * text.content = "First paragraph\rSecond paragraph"; // "\r" is the escaped character that specifies a new paragraph.
 	 * var paragraph = text.range.paragraphs[1];
 	 * print(paragraph.content) //returns 'Second paragraph';
-	 * </pre>
+	 * </code>
 	 */
 	public ReadOnlyList getParagraphs() {
 		if (paragraphs == null)
@@ -496,12 +496,12 @@ public class TextRange extends DocumentObject implements Commitable {
 	 * this text range.
 	 * 
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var text = new PointText(new Point(0,0));
 	 * text.content = "abc";
 	 * var character = text.range.characters[1];
 	 * print(character.content) //returns 'b';
-	 * </pre>
+	 * </code>
 	 */	
 	public ReadOnlyList getCharacters() {
 		if (characters == null)

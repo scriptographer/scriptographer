@@ -386,10 +386,10 @@ public class Document extends NativeObject {
 	 * Returns the selected items that are instances of one of the passed classes.
 	 * 
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * // Get all selected groups and paths:
 	 * var items = document.getSelectedItems([Group, Path]);
-	 * </pre>
+	 * </code>
 	 * @param types
 	 * @return
 	 */
@@ -407,10 +407,10 @@ public class Document extends NativeObject {
 	 * Returns the selected items that are an instance of the passed class.
 	 * 
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * // Get all selected rasters:
 	 * var items = document.getSelectedItems(Raster);
-	 * </pre>
+	 * </code>
 	 * @param types
 	 * @return
 	 */

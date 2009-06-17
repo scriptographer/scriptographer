@@ -212,7 +212,7 @@ public class CharacterStyle extends PathStyle {
 	 * If you pass a font family, it will automatically pick the first
 	 * of the family's weights.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var text = new PointText(new Point(0,0));
 	 * text.content = "The content of the text field.";
 	 * @jsbean
@@ -221,7 +221,7 @@ public class CharacterStyle extends PathStyle {
 	 * @jsbean
 	 * //sets the second word to Verdana Bold
 	 * text.range.words[1].characterStyle.font = app.fonts["Verdana"]["Bold"];
-	 * </pre>
+	 * </code>
 	 */
 	public FontWeight getFont() {
 		int handle = nativeGetFont();
@@ -256,13 +256,13 @@ public class CharacterStyle extends PathStyle {
 	/**
 	 * The font size in points.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var text = new PointText(new Point(0,0));
 	 * text.content = "The content of the text field.";
 	 * 
 	 * // sets the font size to 10pt
 	 * text.characterStyle.fontSize = 10
-	 * </pre>
+	 * </code>
 	 */
 	public native Float getFontSize();
 	public native void setFontSize(Float size);
@@ -270,13 +270,13 @@ public class CharacterStyle extends PathStyle {
 	/**
 	 * The horizontal scale of the character style.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var text = new PointText(new Point(0,0));
 	 * text.content = "The content of the text field.";
 	 * 
 	 * // sets the horizontal scale to 200%
 	 * text.characterStyle.horizontalScale = 2
-	 * </pre>
+	 * </code>
 	 */
 	public native Float getHorizontalScale();
 	public native void setHorizontalScale(Float scale);
@@ -284,13 +284,13 @@ public class CharacterStyle extends PathStyle {
 	/**
 	 * The vertical scale of the character style.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var text = new PointText(new Point(0,0));
 	 * text.content = "The content of the text field.";
 	 * 
 	 * // sets the vertical scale to 200%
 	 * text.characterStyle.verticalScale = 2
-	 * </pre>
+	 * </code>
 	 */
 	public native Float getVerticalScale();
 	public native void setVerticalScale(Float scale);
@@ -326,13 +326,13 @@ public class CharacterStyle extends PathStyle {
 	/**
 	 * The character style's kerning method.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var text = new PointText(new Point(0,0));
 	 * text.content = "The content of the text field.";
 	 * 
 	 * // sets the kerning method to optical
 	 * text.characterStyle.kerningType = "optical";
-	 * </pre>
+	 * </code>
 	 */
 	public KerningType getKerningType() {
 		return (KerningType) IntegerEnumUtils.get(KerningType.class,
@@ -347,13 +347,13 @@ public class CharacterStyle extends PathStyle {
 	 * The character style's capitalization as specified by the CharacterStyle.CAPS_*
 	 * static properties.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var text = new PointText(new Point(0,0));
 	 * text.content = "The content of the text field.";
 	 * 
 	 * // sets the capitalization to use only caps
 	 * text.characterStyle.capitalization = CharacterStyle.CAPS_ALL;
-	 * </pre>
+	 * </code>
 	 */
 	private native Integer nativeGetCapitalization();
 	private native void nativeSetCapitalization(Integer caps);

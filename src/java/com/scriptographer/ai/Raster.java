@@ -119,9 +119,9 @@ public class Raster extends Item {
 	 * Creates a raster item from a local image file.
 	 * 
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var file = new java.io.File("/folder/image.jpg");
-	 * var raster = new Raster(file);</pre>
+	 * var raster = new Raster(file);</code>
 	 * 
 	 * @param file the image file to be loaded.
 	 */
@@ -134,9 +134,9 @@ public class Raster extends Item {
 	 * This blocks until the image is loaded or an error occured.
 	 * 
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var url = new java.net.URL("http://www.server.com/image.jpg");
-	 * var raster = new Raster(url);</pre>
+	 * var raster = new Raster(url);</code>
      *
 	 * @param url the URL of the image to load.
 	 * @throws IOException
@@ -220,13 +220,13 @@ public class Raster extends Item {
 	/**
 	 * Sets the color of a pixel in the raster.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * // Creates an RGB raster of 1px*1px
 	 * var raster = new Raster(Color.TYPE_RGB,1,1);
 	 * 
 	 * // Changes the color of the first pixel to red
 	 * var redColor = new RGBColor(1,0,0);
-	 * raster.setPixel(0,0,redColor)</pre>
+	 * raster.setPixel(0,0,redColor)</code>
 	 * 
 	 * @param x
 	 * @param y
@@ -248,14 +248,14 @@ public class Raster extends Item {
 	 * Sets the color of a pixel in the raster.
 	 * 
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * // Creates an RGB raster of 1px*1px
 	 * var raster = new Raster(Color.TYPE_RGB,1,1);
 	 * 
 	 * // Changes the color of the first pixel to red
 	 * var redColor = new RGBColor(1,0,0);
 	 * var point = new Point(0,0);
-	 * raster.setPixel(point,redColor)</pre>
+	 * raster.setPixel(point,redColor)</code>
 	 * 
 	 * @param x
 	 * @param y

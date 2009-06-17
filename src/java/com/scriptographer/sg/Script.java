@@ -56,9 +56,9 @@ public class Script {
 	/**
 	 * Returns the script's preferences, as an object in which data
 	 * can be stored and retrieved from:
-	 * <pre>
+	 * <code>
 	 * script.preferences.value = 10;
-	 * </pre>
+	 * </code>
 	 */
 	public Preferences getPreferences() {
 		if (prefs == null)

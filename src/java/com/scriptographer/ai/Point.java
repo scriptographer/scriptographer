@@ -55,12 +55,12 @@ public class Point {
 	/**
 	 * Creates a Point object with the given x and y coordinates.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * // Create a point at x: 10pt, y: 5pt
 	 * var point = new Point(10, 5);
-	 * print(point.x); // returns 10
-	 * print(point.y); // returns 5
-	 * </pre>
+	 * print(point.x); // 10
+	 * print(point.y); // 5
+	 * </code>
 	 * @param x The x coordinate of the Point
 	 * @param y The y coordinate of the Point 
 	 */
@@ -94,13 +94,13 @@ public class Point {
 	 * Size object.
 	 * 
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * // Create a Size with a width of 100pt and a height of 50pt
 	 * var size = new Size(100, 50);
 	 * print(size); // prints { width: 100.0, height: 50.0 }
 	 * var point = new Point(size);
 	 * print(point); // prints { x: 100.0, y: 50.0 }
-	 * </pre>
+	 * </code>
 	 * 
 	 * @param size
 	 */
@@ -163,14 +163,14 @@ public class Point {
 	 * Returns a copy of the point. This is useful as the following code only
 	 * generates a flat copy:
 	 * 
-	 * <pre>
+	 * <code>
 	 * var point1 = new Point();
 	 * var point2 = point1;
 	 * point2.x = 1; // also changes point1.x
 	 * 
 	 * var point2 = pt1.clone();
 	 * point2.x = 1; // doesn't change point1.x
-	 * </pre>
+	 * </code>
 	 * 
 	 * @return the cloned point
 	 */
@@ -182,11 +182,11 @@ public class Point {
 	 * Returns the addition of the supplied x and y values to the point object
 	 * as a new point. The object itself is not modified!
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var firstPoint = new Point(5,10);
 	 * var secondPoint = firstPoint.add(10,20);
-	 * print(secondPoint); // returns { x: 15.0, y: 30.0 }
-	 * </pre>
+	 * print(secondPoint); // { x: 15.0, y: 30.0 }
+	 * </code>
 	 * 
 	 * @param x the x value to add
 	 * @param y the y value to add
@@ -202,12 +202,12 @@ public class Point {
 	 * Returns the addition of the supplied point to the point object as a new
 	 * point. The object itself is not modified!
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var firstPoint = new Point(5,10);
 	 * var secondPoint = new Point(10,20);
 	 * var thirdPoint = firstPoint.add(secondPoint);
-	 * print(thirdPoint); // returns { x: 15.0, y: 30.0 }
-	 * </pre>
+	 * print(thirdPoint); // { x: 15.0, y: 30.0 }
+	 * </code>
 	 * 
 	 * @param point the point to add
 	 * @return the addition of the two points as a new point
@@ -224,11 +224,11 @@ public class Point {
 	 * Returns the subtraction of the supplied x and y values to the point
 	 * object as a new point. The object itself is not modified!
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var firstPoint = new Point(10,20);
 	 * var secondPoint = firstPoint.subtract(5,5);
-	 * print(secondPoint); // returns { x: 5.0, y: 15.0 }
-	 * </pre>
+	 * print(secondPoint); // { x: 5.0, y: 15.0 }
+	 * </code>
 	 * 
 	 * @param x The x value to subtract
 	 * @param y The y value to subtract
@@ -244,12 +244,12 @@ public class Point {
 	 * Returns the subtraction of the supplied point to the point object as a
 	 * new point. The object itself is not modified!
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var firstPoint = new Point(10,20);
 	 * var secondPoint = new Point(5,5);
 	 * var thirdPoint = firstPoint.subtract(secondPoint);
-	 * print(thirdPoint); // returns { x: 5.0, y: 15.0 }
-	 * </pre>
+	 * print(thirdPoint); // { x: 5.0, y: 15.0 }
+	 * </code>
 	 * 
 	 * @param point the point to subtract
 	 * @return the subtraction of the two points as a new point
@@ -267,15 +267,15 @@ public class Point {
 	 * values as a new point. When no y value is supplied, the point's x and y
 	 * values are multiplied by scale (x). The object itself is not modified!
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var firstPoint = new Point(5,10);
 	 * 
 	 * var secondPoint = firstPoint.multiply(4,2);
-	 * print(secondPoint); // returns { x: 20.0, y: 20.0 }
+	 * print(secondPoint); // { x: 20.0, y: 20.0 }
 	 * 
 	 * var secondPoint = firstPoint.multiply(2);
-	 * print(secondPoint); // returns { x: 10.0, y: 20.0 }
-	 * </pre>
+	 * print(secondPoint); // { x: 10.0, y: 20.0 }
+	 * </code>
 	 * 
 	 * @param x the x (or scale) value to multiply with
 	 * @param y the y value to multiply with
@@ -291,12 +291,12 @@ public class Point {
 	 * Returns the multiplication of the point object by the supplied point as a
 	 * new point. The object itself is not modified!
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var firstPoint = new Point(5,10);
 	 * var secondPoint = new Point(4,2);
 	 * var thirdPoint = firstPoint.multiply(secondPoint);
-	 * print(thirdPoint); // returns { x: 20.0, y: 20.0 }
-	 * </pre>
+	 * print(thirdPoint); // { x: 20.0, y: 20.0 }
+	 * </code>
 	 * 
 	 * @param point the point to multiply with
 	 * @return the multiplication of the two points as a new point
@@ -367,13 +367,13 @@ public class Point {
 	/**
 	 * Returns the distance between the point and another point.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var firstPoint = new Point(5,10);
 	 * 
 	 * var distance = firstPoint.getDistance(5,20);
 	 * 
-	 * print(distance); // returns 10
-	 * </pre>
+	 * print(distance); // 10
+	 * </code>
 	 * @param px
 	 * @param py
 	 * @return
@@ -389,14 +389,14 @@ public class Point {
 	/**
 	 * Returns the distance between the point and another point.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var firstPoint = new Point(5, 10);
 	 * var secondPoint = new Point(5, 20);
 	 * 
 	 * var distance = firstPoint.getDistance(secondPoint);
 	 * 
-	 * print(distance); // returns 10
-	 * </pre>
+	 * print(distance); // 10
+	 * </code>
 	 * 
 	 * @param px
 	 * @param py

@@ -45,11 +45,11 @@ import java.awt.geom.Point2D;
  * <code>(x, y)</code>, the transformation <code>(x', y')</code> can be
  * found by:
  * 
- * <pre>
+ * <code>
  * [ x']   [ scaleX shearX translateX ] [ x ]   [ scaleX * x + shearX * y + translateX ]
  * [ y'] = [ shearY scaleY translateY ] [ y ] = [ shearY * x + scaleY * y + translateY ]
  * [ 1 ]   [ 0      0      1          ] [ 1 ]   [ 1                                    ]
- * </pre>
+ * </code>
  * 
  * The bottom row of the matrix is constant, so a transform can be uniquely
  * represented (as in {@link #toString()}) by
@@ -99,11 +99,11 @@ public class Matrix {
 	/**
 	 * Construct a transform with the given matrix entries:
 	 * 
-	 * <pre>
+	 * <code>
 	 *  [ scaleX shearX translateX ]
 	 *  [ shearY scaleY translateY ]
 	 *  [ 0      0      1          ]
-	 * </pre>
+	 * </code>
 	 * 
 	 * @param scaleX the x scaling component
 	 * @param shearY the y shearing component
@@ -122,11 +122,11 @@ public class Matrix {
 	 * Construct a matrix from a sequence of numbers. The array must
 	 * have at least 4 entries, which has a translation factor of 0; or 6
 	 * entries, for specifying all parameters:
-	 * <pre>
+	 * <code>
 	 * [ values[0] values[2] (values[4]) ]
 	 * [ values[1] values[3] (values[5]) ]
 	 * [ 0         0         1           ]
-	 * </pre>
+	 * </code>
 	 *
 	 * @param values the matrix to copy from, with at least 4 (6) entries
 	 * @throws NullPointerException if values is null
@@ -138,11 +138,11 @@ public class Matrix {
 
 	/**
 	 * Construct a matrix from a two dimensional array:
-	 * <pre>
+	 * <code>
 	 * [ values[0][0] values[0][1] values[0][2] ]
 	 * [ values[1][0] values[1][1] values[1][2] ]
 	 * [ 0            0            1            ]
-	 * </pre>
+	 * </code>
 	 *
 	 * @param values the matrix to copy from
 	 * @throws NullPointerException if values is null

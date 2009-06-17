@@ -290,12 +290,12 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 	 * Evaluates the given javascript string in the current scope. Similar to
 	 * eval(), but it allows the use of another object than the global scope:
 	 * e.g.:
-	 * <pre>
+	 * <code>
 	 * var obj = {
 	 *     eval: evaluate
 	 * };
 	 * obj.eval("print(this);");
-	 * </pre>
+	 * </code>
 	 */
 	public static void evaluate(Context cx, Scriptable thisObj, Object[] args,
 			Function funObj) throws Exception {

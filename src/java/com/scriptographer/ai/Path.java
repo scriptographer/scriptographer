@@ -325,7 +325,7 @@ public class Path extends PathItem {
 		// the curves was missed:
 		if (length <= getLength()) {
 			Curve curve = (Curve) curves.get(curves.size - 1);
-			return new HitResult(HitType.CURVE, curve, 1, curve.getPoint2());
+			return new HitResult(curve, 1);
 		} else {
 			return null;
 		}

@@ -523,12 +523,12 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * The name of the item as it appears in the layers palette.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var layer = new Layer(); // a layer is an item
 	 * print(layer.name); // returns '<Layer 2>'
 	 * layer.name = 'A nice name';
 	 * print(layer.name); // returns 'A nice name'
-	 * </pre>
+	 * </code>
 	 */
 	public native String getName();
 
@@ -699,12 +699,12 @@ public abstract class Item extends DocumentObject {
 	 * Returns true if the item is selected or partially selected (groups with
 	 * some selected objects/partially selected paths), false otherwise.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * print(activeDocument.selectedItems.length) // returns 0
 	 * var path = new Path(); // new items are always created in the active layer
 	 * path.selected = true; // select the path
 	 * print(activeDocument.selectedItems.length) // returns 1
-	 * </pre>
+	 * </code>
 	 */
 	public boolean isSelected() {
 		return getAttribute(ItemAttribute.SELECTED);
@@ -730,12 +730,12 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * A boolean value that specifies whether the item is locked.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var path = new Path();
 	 * print(path.locked) // returns false
 	 * path.locked = true; // locks the path
 	 * print(path.locked) // returns true
-	 * </pre>
+	 * </code>
 	 */
 	public boolean isLocked() {
 		return getAttribute(ItemAttribute.LOCKED);
@@ -749,12 +749,12 @@ public abstract class Item extends DocumentObject {
 	 * A boolean value that specifies whether the item is visible.
 	 * Sample code:
 	 * @jsbean
-	 * <pre>
+	 * <code>
 	 * var path = new Path();
 	 * print(path.visible) // returns true
 	 * path.visible = false; // hides the path
 	 * print(path.visible) // returns false
-	 * </pre>
+	 * </code>
 	 */
 	public boolean isVisible() {
 		return !getAttribute(ItemAttribute.HIDDEN);
@@ -768,12 +768,12 @@ public abstract class Item extends DocumentObject {
 	 * A boolean value that specifies whether the item is hidden.
 	 * Sample code:
 	 * @jsbean
-	 * <pre>
+	 * <code>
 	 * var path = new Path();
 	 * print(path.hidden) // returns false
 	 * path.hidden = true; // hides the path
 	 * print(path.hidden) // returns true
-	 * </pre>
+	 * </code>
 	 */
 	public final boolean isHidden() {
 		return !isVisible();
@@ -789,12 +789,12 @@ public abstract class Item extends DocumentObject {
 	 * and only if the item is already contained within a clipping group.
 	 * Sample code:
 	 * @jsbean
-	 * <pre>
+	 * <code>
 	 * var group = new Group();
 	 * group.appendChild(path);
 	 * group.clipped = true;
 	 * path.clipMask = true;
-	 * </pre>
+	 * </code>
 	 */
 	public boolean isClipMask() {
 		return getAttribute(ItemAttribute.CLIPMASK);
@@ -874,12 +874,12 @@ public abstract class Item extends DocumentObject {
 	 * You can use this function for groups, compound paths and layers.
 	 * Sample code:
 	 * 
-	 * <pre>
+	 * <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendTop(path);
 	 * print(path.isDescendant(group)) // returns true
-	 * </pre>
+	 * </code>
 	 * 
 	 * @param item The item that will be appended as a child
 	 */
@@ -892,12 +892,12 @@ public abstract class Item extends DocumentObject {
 	 * You can use this function for groups, compound paths and layers.
 	 * Sample code:
 	 * 
-	 * <pre>
+	 * <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendTop(path);
 	 * print(path.isDescendant(group)) // returns true
-	 * </pre>
+	 * </code>
 	 * 
 	 * @param item The item that will be appended as a child
 	 */
@@ -915,13 +915,13 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * Moves this item above the specified item.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(firstPath.isAbove(secondPath)) // returns false
 	 * firstPath.moveAbove(secondPath);
 	 * print(firstPath.isAbove(secondPath)) // returns true
-	 * </pre>
+	 * </code>
 	 * 
 	 * @param item The item above which it should be moved
 	 * @return true if it was moved, false otherwise
@@ -930,13 +930,13 @@ public abstract class Item extends DocumentObject {
 	
 	/**
 	 * Moves the item below the specified item.
-	 * <pre>
+	 * <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(secondPath.isBelow(firstPath)) // returns false
 	 * secondPath.moveBelow(firstPath);
 	 * print(secondPath.isBelow(firstPath)) // returns true
-	 * </pre>
+	 * </code>
 	 * 
 	 * @param item the item below which it should be moved
 	 * @return true if it was moved, false otherwise
@@ -947,11 +947,11 @@ public abstract class Item extends DocumentObject {
 	 * Checks if this item is above the specified item in the stacking
 	 * order of the document.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(secondPath.isAbove(firstPath)) // returns true
-	 * </pre>
+	 * </code>
 	 * 
 	 * @param item The item to check against
 	 * @return <code>true</code> if it is above the specified item, false
@@ -963,11 +963,11 @@ public abstract class Item extends DocumentObject {
 	 * Checks if the item is below the specified item in the stacking
 	 * order of the document
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(firstPath.isBelow(secondPath)) // returns true
-	 * </pre>
+	 * </code>
 	 * 
 	 * @param item The item to check against
 	 * @return <code>true</code> if it is below the specified item, false
@@ -986,12 +986,12 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * Checks if the item is contained within the specified item.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendChild(path);
 	 * print(path.isDescendant(group)); // returns true
-	 * </pre>
+	 * </code>
 	 *
 	 * @param item The item to check against
 	 * @return <code>true</code> if it is inside the specified item,
@@ -1002,12 +1002,12 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * Checks if this item is an ancestor of the specified item.
 	 * Sample code:
-	 * <pre>
+	 * <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendChild(path);
 	 * print(group.isAncestor(path)) // returns true
-	 * </pre>
+	 * </code>
 	 * 
 	 * @param item the item to check against
 	 * @return <code>true</code> if it is an ancestor of the specified 

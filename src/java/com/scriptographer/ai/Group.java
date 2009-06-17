@@ -76,11 +76,11 @@ public class Group extends Item {
 	 * @jsbean
 	 * Sample code:
 	 * @jsbean
-	 * <pre>
+	 * <code>
 	 * var group = new Group();
 	 * group.appendChild(path);
 	 * group.clipped = true;
-	 * </pre>
+	 * </code>
 	 */
 	public native boolean isClipped();
 	public native void setClipped(boolean clipped);

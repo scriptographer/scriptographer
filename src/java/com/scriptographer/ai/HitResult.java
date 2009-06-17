@@ -65,13 +65,10 @@ public class HitResult {
 	}
 
 	protected HitResult(Curve curve, double parameter) {
-		// passing null for point only calls curve.getPoint(t) if the point is requested, see HitTest
-		this(
-			parameter > 0 && parameter < 1 ? HitType.CURVE : HitType.ANCHOR,
-			curve,
-			parameter,
-			null
-		);
+		// passing null for point only calls curve.getPoint(t) if the point is
+		// requested, see HitTest
+		this(parameter > 0 && parameter < 1 ? HitType.CURVE : HitType.ANCHOR,
+				curve, parameter, null);
 	}
 	
 	/**
