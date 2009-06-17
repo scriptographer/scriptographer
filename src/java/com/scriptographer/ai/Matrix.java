@@ -98,11 +98,10 @@ public class Matrix {
 
 	/**
 	 * Construct a transform with the given matrix entries:
-	 * 
 	 * <code>
-	 *  [ scaleX shearX translateX ]
-	 *  [ shearY scaleY translateY ]
-	 *  [ 0      0      1          ]
+	 * [ scaleX shearX translateX ]
+	 * [ shearY scaleY translateY ]
+	 * [ 0      0      1          ]
 	 * </code>
 	 * 
 	 * @param scaleX the x scaling component
