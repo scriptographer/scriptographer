@@ -38,6 +38,9 @@ import java.util.Arrays;
  */
 public class PopupDialog extends ModalDialog {
 
+	/**
+	 * @jshide
+	 */
 	public PopupDialog(EnumSet<DialogOption> options) {
 		super(getStyle(options), options);		
 	}

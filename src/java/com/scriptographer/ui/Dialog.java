@@ -1160,7 +1160,7 @@ public abstract class Dialog extends Component {
 	 * AWT LayoutManager integration:
 	 */
 
-	public java.awt.Component getAWTComponent() {
+	protected java.awt.Component getAWTComponent() {
 		if (container == null)
 			container = new AWTDialogContainer();
 		return container;

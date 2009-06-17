@@ -42,9 +42,7 @@ import com.scratchdisk.util.IntegerEnumUtils;
 public class Static extends TextValueItem {
 
 	/**
-	 * Creates a text based Static item.
-	 * @param dialog
-	 * @param options
+	 * @jshide
 	 */
 	public Static(Dialog dialog, EnumSet<TextOption> options) {
 		super(dialog, options != null && options.contains(TextOption.MULTILINE)
@@ -52,6 +50,11 @@ public class Static extends TextValueItem {
 				IntegerEnumUtils.getFlags(options));
 	}
 
+	/**
+	 * Creates a text based Static item.
+	 * @param dialog
+	 * @param options
+	 */
 	public Static(Dialog dialog, TextOption[] options) {
 		this(dialog, EnumSet.copyOf(Arrays.asList(options)));
 	}

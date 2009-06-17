@@ -40,15 +40,18 @@ import java.util.EnumSet;
 public class SpinEdit extends TextEditItem<SpinEditStyle> {
 
 	/**
-	 * @param dialog
-	 * @param options
-	 *            only TextEdit.OPTION_POPUP and TextEdit.OPTION_SCROLLING are
-	 *            valid for SpinEdit
+	 * @jshide
 	 */
 	public SpinEdit(Dialog dialog, EnumSet<TextOption> options) {
 		super(dialog, getType(options), options);
 	}
 
+	/**
+	 * @param dialog
+	 * @param options
+	 *            only TextEdit.OPTION_POPUP and TextEdit.OPTION_SCROLLING are
+	 *            valid for SpinEdit
+	 */
 	public SpinEdit(Dialog dialog, TextOption[] options) {
 		this(dialog, EnumSet.copyOf(Arrays.asList(options)));
 	}

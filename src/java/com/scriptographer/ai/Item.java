@@ -698,6 +698,7 @@ public abstract class Item extends DocumentObject {
 	 * A boolean value that specifies whether an item is selected.
 	 * Returns true if the item is selected or partially selected (groups with
 	 * some selected objects/partially selected paths), false otherwise.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * print(activeDocument.selectedItems.length) // returns 0
@@ -1031,15 +1032,18 @@ public abstract class Item extends DocumentObject {
 	private native void nativeTransform(Matrix matrix, int flags);
 
 	/**
-	 * Transforms the item with custom flags to be set.
-	 * 
-	 * @param at
-	 * @param flags
+	 * @jshide
 	 */
 	public void transform(Matrix matrix, EnumSet<TransformFlag> flags) {
 		nativeTransform(matrix, IntegerEnumUtils.getFlags(flags));
 	}
 
+	/**
+	 * Transforms the item with custom flags to be set.
+	 * 
+	 * @param matrix
+	 * @param flags
+	 */
 	public void transform(Matrix matrix, TransformFlag[] flags) {
 		transform(matrix, EnumSet.copyOf(Arrays.asList(flags)));
 	}
@@ -1186,6 +1190,21 @@ public abstract class Item extends DocumentObject {
 	}
 
 	private native Item nativeExpand(int flags, int steps);
+
+	/**
+	 * @jshide
+	 */
+	public Item expand(EnumSet<ExpandFlag> flags, int steps) {
+		return nativeExpand(IntegerEnumUtils.getFlags(flags), steps);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public Item expand(EnumSet<ExpandFlag> flags) {
+		return expand(flags, 0);
+	}
+
 	/**
 	 * Breaks artwork up into individual parts and works just like calling
 	 * "expand" from the Object menu in Illustrator.
@@ -1200,16 +1219,12 @@ public abstract class Item extends DocumentObject {
 	 *        ExpandFlag#GRADIENT_TO_PATHS flag is set
 	 * @return the newly created item containing the expanded artwork
 	 */
-	public Item expand(EnumSet<ExpandFlag> flags, int steps) {
-		return nativeExpand(IntegerEnumUtils.getFlags(flags), steps);
-	}
-
-	public Item expand(EnumSet<ExpandFlag> flags) {
-		return expand(flags, 0);
+	public Item expand(ExpandFlag[] flags, int steps) {
+		return expand(EnumSet.copyOf(Arrays.asList(flags)), steps);
 	}
 
 	public Item expand(ExpandFlag[] flags) {
-		return expand(EnumSet.copyOf(Arrays.asList(flags)));
+		return expand(flags, 0);
 	}
 
 	private static int defaultExpandFlags =
