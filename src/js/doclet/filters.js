@@ -27,9 +27,13 @@ function tags_filter(str) {
 	str = str.replace(/<code>\s*([\u0000-\uffff]*?)\s*<\/code>/g, function(match, content) {
 		// Filter out the first white space at the beginning of each line, since that stems
 		// from the space after the * in the comment.
-		return '<code>' + content.replace(/(\r\n|\n|\r) /mg, function(match, newLine) {
-			return newLine;
+		return '<code>' + content.replace(/(\n|\r\n) /mg, function(match, lineBreak) {
+			return lineBreak;
 		}) + '</code>';
+	});
+	// Empty lines -> Paragraphs
+	str = str.trim().replace(/(\n|\r\n)\s*(\n|\r\n)/g, function(match, lineBreak1, lineBreak2) {
+		return lineBreak1 + '<br />' + lineBreak2;
 	});
 	// Automatically put <br /> at the end of sentences with line breaks.
 	str = str.trim().replace(/([.:?!;])\s*(\n|\r\n)/g, function(match, before, lineBreak) {
