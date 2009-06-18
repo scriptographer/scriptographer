@@ -1,27 +1,24 @@
-var minScale = 0.2;
-var maxScale = 0.8;
-var rotationValue = 0.5;
-var minBranch = 4;
-var maxBranch = 6;
+var values = {
+	minScale: 0.2,
+	maxScale: 0.8,
+	rotation: 0.5,
+	minBranch: 4,
+	maxBranch: 6
+};
 
 function onOptions() {
-	var values = Dialog.prompt('Tree:', [
-		{ value: minScale, description: 'Minimal Scale', width: 50 },
-		{ value: maxScale, description: 'Maximal Scale', width: 50 },
-		{ value: rotationValue, description: 'Rotation', width: 50 },
-		{ value: minBranch, description: 'Minimal Branch Number', width: 50 },
-		{ value: maxBranch, description: 'Maximal Branch Number', width: 50 }
-	]);
+	values = Dialog.prompt('Tree:', {
+		minScale: { description: 'Minimal Scale' },
+		maxScale: { description: 'Maximal Scale' },
+		rotation: { description: 'Rotation' },
+		minBranch: { description: 'Minimal Branch Number' },
+		maxBranch: { description: 'Maximal Branch Number' }
+	}, values);
 
-	if (values != null) {
-		minScale = values[0];
-		maxScale = values[1];
-		rotationValue = values[2];
-		minBranch = values[3];
-		maxBranch = values[4];
-		if (minScale > maxScale) maxScale = minScale;
-		if (minBranch > maxBranch) maxBranch = minBranch;
-	}
+	if (values.minScale > values.maxScale)
+		values.maxScale = values.minScale;
+	if (values.minBranch > values.maxBranch)
+		values.maxBranch = values.minBranch;
 }
 
 var path;
@@ -43,17 +40,15 @@ function onMouseUp(event) {
 				if (branch.scale > 0.2) {
 					var curPath = branch.path;
 					var prevEndPoint = curPath.segments.last.point;
-					var newCount = Math.round(Math.random() * (maxBranch - minBranch) + minBranch);
+					var newCount = Math.rand(values.minBranch, values.maxBranch);
 					for (var j = 0; j < newCount; j++) {
 						var newPath = path.clone();
-						var scale = branch.scale * (Math.random() * (maxScale - minScale) + minScale);
-						var rotation = branch.rotation + (Math.random() - 0.5) * Math.PI * rotationValue;
-						
-						newPath.transform(new Matrix().scale(scale));
+						var scale = branch.scale * (Math.random() * (values.maxScale - values.minScale) + values.minScale);
+						var rotation = branch.rotation + (Math.random() - 0.5) * Math.PI * values.rotation;
+						newPath.scale(scale);
 						var curStartPoint = newPath.segments[0].point;
-						var matrix = new Matrix().translate(prevEndPoint.subtract(curStartPoint));
-						matrix.rotate(rotation, curStartPoint);
-						newPath.transform(matrix);
+						newPath.translate(prevEndPoint - curStartPoint);
+						newPath.rotate(rotation, curStartPoint);
 
 						group.appendChild(newPath);
 						newBranches.push( { path: newPath, scale: scale, rotation: rotation } );

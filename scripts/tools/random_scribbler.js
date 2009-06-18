@@ -1,7 +1,12 @@
-var size = 10;
+var point, path;
+var values = {
+	size: 10
+};
 
 function onOptions() {
-	size = Dialog.prompt('Random Scribbler:', [ { description: 'Radius', value: size, width: 50} ])[0];
+	values = Dialog.prompt('Random Scribbler:', {
+		size: { description: 'Size'}
+	}, values);
 }
 
 function onMouseDown(event) {
@@ -15,6 +20,6 @@ function onMouseUp(event) {
 }
 
 function onMouseDrag(event) {
-	point += (Point.random() - 0.5) * size
+	point += (Point.random() - 0.5) * values.size
 	path.lineTo(point);
 }

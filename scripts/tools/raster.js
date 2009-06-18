@@ -1,8 +1,14 @@
-var size = 10;
 var point, path;
+var values = { size: 10 };
+
+function onOptions() {
+	values = Dialog.prompt('Raster:', {
+		size: { description: 'Size'}
+	}, values);
+}
 
 function getPos(pt) {
-	return (pt / size).round() * size;
+	return (pt / values.size).round() * values.size;
 }
 
 function onMouseDown(event) {

@@ -1,12 +1,9 @@
-var scale = 0.9;
+var values = { scale: 0.9 };
 
 function onOptions() {
-	var values = Dialog.prompt('Grow:', [
-		{ value: scale, description: 'Scale', width: 50 }
-	]);
-	if (values != null) {
-		scale = values[0];
-	}
+	values = Dialog.prompt('Grow:', {
+		scale: { description: 'Scale' }
+	}, values);
 }
 
 var path;
@@ -24,7 +21,7 @@ function onMouseUp(event) {
 		var p2 = lastB.getPoint(1);
 		var a2 = lastB.getTangent(1).angle;
 		var obj = path.clone();
-		obj.scale(scale);
+		obj.scale(values.scale);
 		group.appendChild(obj);
 		if (obj.bounds.width < 1 && obj.bounds.height < 1)
 			break;

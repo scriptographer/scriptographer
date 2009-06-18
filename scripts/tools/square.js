@@ -1,7 +1,9 @@
-var tolerance = 5;
+var values = { tolerance: 5 };
 
 function onOptions() {
-	tolerance = Dialog.prompt('Square:', [ { value: tolerance, description: 'Tolerance', width: 50 } ])[0];
+	values = Dialog.prompt('Square:', {
+		tolerance: { description: 'Tolerance' }
+	}, values);
 }
 
 var prevSeg, curSeg, path;
@@ -29,7 +31,7 @@ function onMouseDrag(event) {
 		} else {
 			curSeg.point = new Point(event.point.x, prevSeg.point.y);
 		}
-		if (minDiff > tolerance) {
+		if (minDiff > values.tolerance) {
 			prevSeg = curSeg;
 			path.segments.add(curSeg);
 			curSeg = path.segments.last;

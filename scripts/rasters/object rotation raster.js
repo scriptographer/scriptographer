@@ -1,13 +1,10 @@
 include('raster.js');
 
-var size = 10;
-var scale = 100;
-
 function createDot(x, y, dot, radius) {
 	if (radius > 0) {
 		var item = dot.clone();
-		item.position += new Point(x, y) * size;
-		item.scale(radius + scale);
+		item.position += new Point(x, y) * values.size;
+		item.scale(radius + values.scale);
 		item.rotate(radius * Math.PI * 2);
 		return item;
 	}
@@ -15,13 +12,12 @@ function createDot(x, y, dot, radius) {
 }
 
 if (initRaster()) {
-	var values = Dialog.prompt('Enter Raster Values:', [
-		{ value: size, description: 'Grid Size:'},
-		{ value: scale, description: 'Object Scale (%):'}
-	]);
+	var values = Dialog.prompt('Enter Raster Values:', {
+		size: { value: 10, description: 'Grid Size'},
+		scale: { value: 100, description: 'Object Scale (%)'}
+	});
 	if (values) {
-		size = values[0];
-		scale = values[1] / 100.0;
+		values.scale /= 100;
 		executeRaster(createDot);
 	}
 }

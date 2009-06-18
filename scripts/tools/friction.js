@@ -1,19 +1,17 @@
-var accel = 10;
-var accelFriction = 0.8;
-var friction = 0.65;
+var values = {
+	accel: 10,
+	accelFriction: 0.8,
+	friction: 0.65
+};
+
 tool.eventInterval = 1000 / 100; // 100 times a second
 
 function onOptions() {
-	var values = Dialog.prompt('Friction:', [
-		{ value: friction, description: 'friction', width: 50 },
-		{ value: accel, description: 'acceleration', width: 50 },
-		{ value: accelFriction, description: 'acceleration friction', width: 50 }
-	]);
-	if (values) {
-		friction = values[0];
-		accel = values[1];
-		accelFriction = values[2];
-	}
+	values = Dialog.prompt('Friction:', {
+		friction: { description: 'friction' },
+		accel: { description: 'acceleration' },
+		accelFriction: { description: 'acceleration friction' }
+	}, values);
 }
 
 var point, velocity, acceleration, path, paths;
@@ -40,8 +38,8 @@ function onMouseUp(event) {
 function onMouseDrag(event) {
 	var diff = event.point - point;
 	var norm = diff.normalize();
-	acceleration = (acceleration + (norm * accel)) * (accelFriction);
-	velocity = (velocity + acceleration) * friction;
+	acceleration = (acceleration + (norm * values.accel)) * values.accelFriction;
+	velocity = (velocity + acceleration) * values.friction;
 	point += velocity;
 	path.lineTo(point);
 	if (path.length > 400) {

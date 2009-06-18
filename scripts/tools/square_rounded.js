@@ -1,21 +1,22 @@
-var tolerance = 10;
-var radius = 5;
+var values = {
+	radius: 10,
+	tolerance: 5
+};
+
 checkValues();
 
 var handle;
 function checkValues() {
-	var min = radius * 2;
-	if (tolerance < min) tolerance = min;
-	handle = radius * 0.5522847498; // kappa
+	var min = values.radius * 2;
+	if (values.tolerance < min) values.tolerance = min;
+	handle = values.radius * 0.5522847498; // kappa
 }
 
 function onOptions() {
-	var values = Dialog.prompt('Square Radius:', [
-		{ value: radius, description: 'Radius', width: 50 },
-		{ value: tolerance, description: 'Tolerance', width: 50 }
-	]);
-	radius = values[0];
-	tolerance = values[1];
+	values = Dialog.prompt('Square Radius:', {
+		radius: { description: 'Radius'},
+		tolerance: { description: 'Tolerance' }
+	}, values);
 	checkValues();
 }
 
@@ -47,13 +48,13 @@ function onMouseDrag(event) {
 	}
 	var normal = (curPoint - prevPoint).normalize();
 	if (curHandleSeg != null) {
-		curHandleSeg.point = prevPoint + (normal * radius);
+		curHandleSeg.point = prevPoint + (normal * values.radius);
 		curHandleSeg.handleIn = normal * -handle;
 	}
 	var minDiff = Math.min(diff.x, diff.y);
-	if (minDiff > tolerance) {
+	if (minDiff > values.tolerance) {
 		var seg = path.segments.removeLast();
-		path.segments.add(new Segment(curPoint - (normal * radius), null, normal * handle));
+		path.segments.add(new Segment(curPoint - (normal * values.radius), null, normal * handle));
 		path.segments.add(seg);
 		curHandleSeg = path.segments.last;
 		prevPoint = curHandleSeg.point.clone(); // clone as we want the unmodified one!

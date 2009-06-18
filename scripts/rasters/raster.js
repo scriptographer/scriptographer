@@ -38,23 +38,14 @@ function initRaster() {
 			// Embed placed images so the raster script can access pixels
 			raster = raster.embed(false);
 		}
+		
+		for (var i = 0; i < sel.length; i++) {
+			var obj = sel[i];
+			if(!obj.isAncestor(raster))
+				dots.push(obj);
+		}
 	}
 	
-
-	for (var i = 0; i < sel.length; i++) {
-		var obj = sel[i];
-		// if (!raster) {
-		// 	if (obj instanceof Raster) {
-		// 		raster = obj;
-		// 	} else if (obj instanceof PlacedFile && !obj.eps) {
-		// 		// Embed placed images so the raster script can access pixels
-		// 		raster = obj.embed(false);
-		// 	}
-		// 	if (raster) continue;
-		// }
-		if(!obj.isAncestor(raster))
-			dots.push(obj);
-	}
 	if (!raster || !dots.length) {
 		Dialog.alert('Please select both a raster item\nand a graphic item.');
 		return false;

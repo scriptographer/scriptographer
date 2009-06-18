@@ -1,12 +1,27 @@
-var size = 10;
-var raster = null, dot = null;
-var sel = activeDocument.selectedItems;
+var raster, dot;
 
-for (var i = 0; i < sel.length; i++) {
-	obj = sel[i];
-	if (raster == null && obj instanceof Raster) raster = obj;
-	else if (dot == null && !(obj instanceof Raster)) dot = obj;
-	if (raster != null && dot != null) break;
+var rasters = document.getSelectedItems([Raster, PlacedFile]);
+
+if(rasters.length) {
+	for (var i = 0, l = rasters.length; i < l; i++) {
+		rasters[i].selected = false;
+	}
+
+	raster = rasters.first;
+	if(raster instanceof PlacedFile && !raster.eps) {
+		// Embed placed images so the raster script can access pixels
+		raster = raster.embed(false);
+	}
+
+	var sel = activeDocument.selectedItems;
+
+	for (var i = 0; i < sel.length; i++) {
+		var obj = sel[i];
+		if(!obj.isAncestor(raster)) {
+			dot = obj;
+			i = sel.length;
+		}
+	}
 }
 
 function setColor(item, color) {
@@ -24,13 +39,13 @@ function setColor(item, color) {
 function createDot(x, y, dot, color) {
 	var item = dot.clone();
 	setColor(item, color);
-	var m = new Matrix();
-	m.translate(x * size, y * size);
-	item.transform(m); 
+	item.position += new Point(x, y) * values.size;
 	return item;
 }
 
-if (raster != null && dot != null) {
+if (!raster || !dot) {
+	Dialog.alert('Please select both a raster item\nand a graphic item.');
+} else {
 	var pixelCount = raster.height * raster.width;
 	var sure = true;
 	if(pixelCount > 20000) {
@@ -40,22 +55,21 @@ if (raster != null && dot != null) {
 	}
 	
 	if (sure) {
-		var values = Dialog.prompt('Enter Raster Values:', [
-			{ value: size, description: 'Grid Size:', width: 100 }
-		]);
+		var values = Dialog.prompt('Enter Raster Values:', {
+			size: { value: 10, description: 'Grid Size', width: 100 }
+		});
 
 		if (values) {
 			activeDocument.deselectAll();
-			size = values[0];
 
 			var group = new Group();
 			var white = new GrayColor(0);
-
+			
 			for (var y = 0; y < raster.height; y++) {
 				for (var x = 0; x < raster.width; x++) {
 					app.updateProgress(y * raster.width + x + 1, pixelCount);
 					var col = raster.getPixel(x, y);
-					if (!white == col) {
+					if (white != col) {
 						group.appendChild(createDot(x, raster.height - y, dot, col));
 					}
 				}

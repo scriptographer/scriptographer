@@ -1,12 +1,9 @@
-var scale = 1;
-
 if(document.selectedItems.length) {
-	var values = Dialog.prompt('Grow:', [
-		{ value: scale, description: 'Scale'}
-	]);
+	var values = Dialog.prompt('Grow:', {
+		scale: { description: 'Scale', value: 1 }
+	});
 
-	if (values != null) {
-		scale = values[0];
+	if (values) {
 		var path = document.selectedItems.first;
 		var group = new Group([path]);
 		var count = 0;
@@ -15,7 +12,7 @@ if(document.selectedItems.length) {
 			var p2 = lastB.getPoint(1);
 			var a2 = lastB.getTangent(1).angle;
 			var obj = path.clone();
-			obj.scale(scale);
+			obj.scale(values.scale);
 			group.appendChild(obj);
 			if (obj.bounds.width < 1 && obj.bounds.height < 1)
 				break;
