@@ -241,10 +241,13 @@ public class PromptDialog extends ModalDialog {
 			Map<String, Map> items, Map<String, Object> values) {
 		PromptItem[] promptItems = getItems(items, values);
 		Object[] results = prompt(title, promptItems);
-		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
-		for (int i = 0; i < promptItems.length; i++)
-			map.put(promptItems[i].getName(), results[i]);
-		return map;
+		if (results != null) {
+			LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+			for (int i = 0; i < promptItems.length; i++)
+				map.put(promptItems[i].getName(), results[i]);
+			return map;
+		}
+		return values;
 	}
 
 	public static Map<String, Object> prompt(String title,
