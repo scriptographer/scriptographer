@@ -32,6 +32,8 @@
 package com.scriptographer.ui;
 
 import java.awt.FlowLayout;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.scratchdisk.util.ConversionUtils;
@@ -73,9 +75,10 @@ public class PromptDialog extends ModalDialog {
 		for (int i = 0; i < items.length; i++) {
 			PromptItem promptItem = items[i];
 			if (promptItem != null) {
-				if (promptItem.description != null) {
+				String desc = promptItem.getDescription();
+				if (desc != null) {
 					Static descItem = new Static(this);
-					descItem.setText(promptItem.description + ":");
+					descItem.setText(desc + ":");
 					descItem.setMargin(0, 4, 0, 0);
 					this.addToContent(descItem, "1, " + i + ", left, center");
 				}
@@ -122,67 +125,80 @@ public class PromptDialog extends ModalDialog {
 		return values;
 	}
 
-	private static PromptItem[] getItems(Map[] items) {
-		PromptItem[] promptItems = new PromptItem[items.length];
-		for (int i = 0; i < items.length; i++) {
-			Map map = items[i];
-			if (map != null) {
-				Object typeObj = map.get("type");
-				Object valueObj = map.get("value");
-				double increment = 0;
-				Object[] values = null;
-				PromptItemType type = null;
-				if (typeObj != null) {
-					if (typeObj instanceof String)
-						type = PromptItemType.get((String) typeObj);
-				} else { // determine type from value and step:
-					Object incrementObj = map.get("increment");
-					if (incrementObj != null) {
-						type = PromptItemType.RANGE;
-						increment = ConversionUtils.toDouble(incrementObj);
-						if (Double.isNaN(increment))
-							increment = 0;
-					} else {
-						Object valuesObj = map.get("values");
-						if (valuesObj != null && valuesObj instanceof Object[])
-							values = (Object[]) valuesObj;
-						if (values != null)
-							type = PromptItemType.LIST;
-						else if (valueObj instanceof Number)
-							type = PromptItemType.NUMBER;
-						else if (valueObj instanceof Boolean)
-							type = PromptItemType.CHECKBOX;
-						else if (valueObj instanceof String) 
-							type = PromptItemType.STRING;
-					}
-				}
-				if (type != null) {
-					PromptItem item = new PromptItem(type, ConversionUtils.getString(map, "description"), valueObj);
-					item.setName(ConversionUtils.getString(map, "name"));
-
-					double width = getDouble(map, "width");
-					if (!Double.isNaN(width))
-						item.setWidth((int) width);
-
-					double precision = getDouble(map, "precision");
-					if (!Double.isNaN(precision))
-						item.setPrecision((int) precision);
-
-					double min = getDouble(map, "min");
-					double max = getDouble(map, "max");
-					if (!Double.isNaN(min) || !Double.isNaN(max))
-						item.setRange((float) min, (float) max);
-					
-					if (values != null)
-						item.setValues(values);
-
-					promptItems[i] = item;
+	private static PromptItem getItem(Map map, String name, Object value) {
+		if (map != null) {
+			Object typeObj = map.get("type");
+			Object valueObj = value != null ? value : map.get("value");
+			double increment = 0;
+			Object[] values = null;
+			PromptItemType type = null;
+			if (typeObj != null) {
+				if (typeObj instanceof String)
+					type = PromptItemType.get((String) typeObj);
+			} else { // determine type from value and step:
+				Object incrementObj = map.get("increment");
+				if (incrementObj != null) {
+					type = PromptItemType.RANGE;
+					increment = ConversionUtils.toDouble(incrementObj);
+					if (Double.isNaN(increment))
+						increment = 0;
 				} else {
-					promptItems[i] = null;
+					Object valuesObj = map.get("values");
+					if (valuesObj != null && valuesObj instanceof Object[])
+						values = (Object[]) valuesObj;
+					if (values != null)
+						type = PromptItemType.LIST;
+					else if (valueObj instanceof Number)
+						type = PromptItemType.NUMBER;
+					else if (valueObj instanceof Boolean)
+						type = PromptItemType.CHECKBOX;
+					else if (valueObj instanceof String) 
+						type = PromptItemType.STRING;
 				}
 			}
+			if (type != null) {
+				PromptItem item = new PromptItem(type, ConversionUtils.getString(map, "description"), valueObj);
+				item.setName(name != null ? name : ConversionUtils.getString(map, "name"));
+
+				double width = getDouble(map, "width");
+				if (!Double.isNaN(width))
+					item.setWidth((int) width);
+
+				double precision = getDouble(map, "precision");
+				if (!Double.isNaN(precision))
+					item.setPrecision((int) precision);
+
+				double min = getDouble(map, "min");
+				double max = getDouble(map, "max");
+				if (!Double.isNaN(min) || !Double.isNaN(max))
+					item.setRange((float) min, (float) max);
+				
+				if (values != null)
+					item.setValues(values);
+
+				return item;
+			}
 		}
+		return null;
+	}
+
+	private static PromptItem[] getItems(Map[] items) {
+		PromptItem[] promptItems = new PromptItem[items.length];
+		for (int i = 0; i < items.length; i++)
+			promptItems[i] = getItem(items[i], null, null);
 		return promptItems;
+	}
+
+	private static PromptItem[] getItems(Map<String, Map> items,
+			Map<String, Object> values) {
+		ArrayList<PromptItem> promptItems = new ArrayList<PromptItem>();
+		for (Map.Entry<String, Map> entry : items.entrySet()) {
+			PromptItem item = getItem(entry.getValue(), entry.getKey(),
+					values != null ? values.get(entry.getKey()) : null);
+			if (item != null)
+				promptItems.add(item);
+		}
+		return promptItems.toArray(new PromptItem[promptItems.size()]);
 	}
 
 	private static double getDouble(Map map, String key) {
@@ -197,11 +213,11 @@ public class PromptDialog extends ModalDialog {
 		for (int i = 0; i < items.length; i++) {
 			PromptItem item = items[i];
 			if (item != null) {
-				if (item.name == null)
-					item.name = itemTitle + item.description + i;
-				Object value = preferences.get(item.name);
+				if (item.getName() == null)
+					item.setName(itemTitle + item.getDescription() + i);
+				Object value = preferences.get(item.getName());
 				if (value != null)
-					item.value = value;
+					item.setValue(value);
 			}
 		}
 		PromptDialog dialog = new PromptDialog(title, items);
@@ -210,7 +226,7 @@ public class PromptDialog extends ModalDialog {
 			for (int i = 0; i < items.length; i++) {
 				PromptItem item = items[i];
 				if (item != null)
-					preferences.put(item.name, values[i]);
+					preferences.put(item.getName(), values[i]);
 			}
 			return values;
 		}
@@ -219,5 +235,20 @@ public class PromptDialog extends ModalDialog {
 
 	public static Object[] prompt(String title, Map[] items) {
 		return prompt(title, getItems(items));
+	}
+
+	public static Map<String, Object> prompt(String title,
+			Map<String, Map> items, Map<String, Object> values) {
+		PromptItem[] promptItems = getItems(items, values);
+		Object[] results = prompt(title, promptItems);
+		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+		for (int i = 0; i < promptItems.length; i++)
+			map.put(promptItems[i].getName(), results[i]);
+		return map;
+	}
+
+	public static Map<String, Object> prompt(String title,
+			Map<String, Map> items) {
+		return prompt(title, items, null);
 	}
 }

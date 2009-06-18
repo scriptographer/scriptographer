@@ -31,11 +31,6 @@
 
 package com.scriptographer.ui;
 
-import com.scratchdisk.script.Callable;
-import com.scratchdisk.util.IntegerEnumUtils;
-import com.scriptographer.ScriptographerEngine; 
-import com.scriptographer.ScriptographerException;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.io.File;
@@ -43,8 +38,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Map;
-import java.util.prefs.Preferences;
 import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
+
+import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.IntegerEnumUtils;
+import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ScriptographerException;
 
 /**
  * @author lehni
@@ -1137,6 +1137,14 @@ public abstract class Dialog extends Component {
 	}
 
 	public static Object[] prompt(String title, Map[] items) {
+		return PromptDialog.prompt(title, items);
+	}
+
+	public static Map prompt(String title, Map<String, Map> items, Map<String, Object> values) {
+		return PromptDialog.prompt(title, items, values);
+	}
+
+	public static Map prompt(String title, Map<String, Map> items) {
 		return PromptDialog.prompt(title, items);
 	}
 

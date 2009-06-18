@@ -38,17 +38,17 @@ import com.scratchdisk.util.ConversionUtils;
  */
 public class PromptItem {
 	
-	String description;
-	String name; // for preferences
-	PromptItemType type;
-	Object value;
-	Object values[];
-	float min;
-	float max;
-	float increment;
-	int precision;
-	Item item;
-	int width;
+	private String description;
+	private String name; // for preferences
+	private PromptItemType type;
+	private Object value;
+	private Object values[];
+	private float min;
+	private float max;
+	private float increment;
+	private int precision;
+	private Item item;
+	private int width;
 	
 	public PromptItem(PromptItemType type, String description, Object value) {
 		this.description = description;
