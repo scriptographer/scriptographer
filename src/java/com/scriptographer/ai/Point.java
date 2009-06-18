@@ -429,6 +429,15 @@ public class Point {
 		return Math.sqrt(x * x + y * y);
 	}
 
+	public void setLength(double length) {
+		double len = getLength();
+		if (len != 0) {
+			double scale = length / len;
+			x *= scale;
+			y *= scale;
+		}
+	}
+
 	/**
 	 * Returns the angle from the x axis to the vector in radians,
 	 * measured in counter clockwise direction.
