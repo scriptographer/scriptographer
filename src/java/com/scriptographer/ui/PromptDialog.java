@@ -53,10 +53,10 @@ public class PromptDialog extends ModalDialog {
 		this.setTitle(title);
 		this.items = items;
 		
-		double[] rows = new double[items.length + 1];
+		double[] rows = new double[items.length + 2];
 		for (int i = 0; i < rows.length; i++)
 			rows[i] = TableLayout.PREFERRED;
-
+		rows[rows.length - 2] = TableLayout.FILL;
 		double[][] sizes = {
 			{ TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED },
 			rows
@@ -70,7 +70,7 @@ public class PromptDialog extends ModalDialog {
 		ImageStatic logo = new ImageStatic(this);
 		logo.setImage(getImage("logo.png"));
 		logo.setMargin(-4, 4, -4, -4);
-		this.addToContent(logo, "0, 0, 0, " + items.length + ", left, top");
+		this.addToContent(logo, "0, 0, 0, " + (rows.length - 2) + ", left, top");
 
 		for (int i = 0; i < items.length; i++) {
 			PromptItem promptItem = items[i];
@@ -102,7 +102,7 @@ public class PromptDialog extends ModalDialog {
 		okButton.setText("  OK  ");
 		buttons.addToContent(okButton);
 
-		this.addToContent(buttons, "0, " + items.length + ", 2, " + items.length + ", right, top");
+		this.addToContent(buttons, "0, " + (rows.length - 1) + ", 2, " + (rows.length - 1) + ", right, top");
 
 		this.setDefaultItem(okButton);
 		this.setCancelItem(cancelButton);
