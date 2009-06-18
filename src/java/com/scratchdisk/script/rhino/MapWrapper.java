@@ -63,16 +63,18 @@ public class MapWrapper extends ExtendedJavaObject {
 
 	public boolean has(int index, Scriptable start) {
 		return javaObject != null
-			&& ((Map) javaObject).get(Integer.toString(index)) != null;
+			&& ((Map) javaObject).containsKey(Integer.toString(index));
 	}
 
 	public Object get(int index, Scriptable scriptable) {
+		// Retrieve from map first, then from super, to give entries priority over methods and fields.
 		if (javaObject != null) {
-			Object obj = ((Map) javaObject).get(Integer.toString(index));
-			if (obj != null)
-				return toObject(obj, scriptable);
+			Map map = (Map) javaObject;
+			String key = Integer.toString(index);
+			if (map.containsKey(key))
+				return toObject(map.get(key), scriptable);
 		}
-		return Scriptable.NOT_FOUND;
+		return super.get(index, scriptable);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -86,19 +88,17 @@ public class MapWrapper extends ExtendedJavaObject {
 
 	public boolean has(String name, Scriptable start) {
 		return super.has(name, start) || javaObject != null
-			&& ((Map) javaObject).get(name) != null;
+			&& ((Map) javaObject).containsKey(name);
 	}
 
 	public Object get(String name, Scriptable scriptable) {
-		Object obj = super.get(name, scriptable);
-		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
-			obj = ((Map) javaObject).get(name);
-			if (obj != null)
-				return toObject(obj, scriptable);
-			else
-				obj = Scriptable.NOT_FOUND;
+		// Retrieve from map first, then from super, to give entries priority over methods and fields.
+		if (javaObject != null) {
+			Map map = (Map) javaObject;
+			if (map.containsKey(name))
+				return toObject(map.get(name), scriptable);
 		}
-		return obj;
+		return super.get(name, scriptable);
 	}
 
 	@SuppressWarnings("unchecked")
