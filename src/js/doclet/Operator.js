@@ -19,14 +19,13 @@ Operator = SyntheticField.extend(new function() {
 	return {
 		initialize: function(classObject, operators) {
 			var operator = operators.members[0];
-			var name = Operator.getName(operator);
-			this.base(classObject, name, operator);
+			this.base(classObject, operator.name(), operator);
 			this.operators = operators;
-			this.title = Operator.getOperator(operator) + ' ' + name;
+			// this.title = Operator.getOperator(operator) + ' ' + Operator.getName(operator);
 		},
 
 		name: function() {
-			return this.title;
+			return this.member.name();
 		},
 
 		getId: function() {
@@ -38,6 +37,9 @@ Operator = SyntheticField.extend(new function() {
 			param = param.clone();
 			if (this.isVisible()) {
 				param.text = this.renderTemplate('operators', param);
+				param.collapsedTitle = this.operators.members.map(function(member) {
+					return Operator.getTitle(member);
+				}).join(', ');
 				param.expandedTitle = Operator.getTitle(this.member);
 				return this.base(param);
 			}
@@ -67,7 +69,7 @@ Operator = SyntheticField.extend(new function() {
 
 			getTitle: function(member) {
 				var param = member.getParameters()[0];
-				return Operator.getOperator(member) + ' ' + stripTags_filter(param.paramType().renderLink({}));
+				return '<tt><b>' + Operator.getOperator(member) + '</b> ' + stripTags_filter(param.paramType().renderLink({})).trim() + '</tt>';
 			}
 		}
 	}

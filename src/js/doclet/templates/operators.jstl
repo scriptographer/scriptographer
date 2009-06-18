@@ -1,6 +1,6 @@
 <% foreach $member in this.operators.members %>
 <% if !$member#first %>
-<div class="member-operator"><tt><b><%= Operator.getTitle($member) %></b></tt></div>
+<% this.template "member#header" id=this.getId() title=<%= Operator.getTitle($member) %> %>
 <% end %>
 <% $member.template "#text" prefix='<div class="member-text">' suffix='</div>' %>
 <% end %>
