@@ -1,16 +1,16 @@
-function onInit() {
-    tolerance = 5;
-}
+var tolerance = 5;
 
 function onOptions() {
-    tolerance = Dialog.prompt("Square:", [ { value: tolerance, description: "Tolerance", width: 50 } ])[0];
+	tolerance = Dialog.prompt('Square:', [ { value: tolerance, description: 'Tolerance', width: 50 } ])[0];
 }
 
+var prevSeg, curSeg, path;
 function onMouseDown(event) {
-    path = new Path();
-	path.segments = [event.point, event.point];
-	prevSeg = path.segments[0];
-	curSeg = path.segments[1];
+	path = new Path() {
+		segments: [event.point, event.point]
+	};
+	prevSeg = path.segments.first;
+	curSeg = path.segments.last;
 }
 
 function onMouseUp(event) {
@@ -22,15 +22,12 @@ function onMouseDrag(event) {
 		path.segments.add(event.point);
 		curSeg = path.segments.last;
 	} else {
-		var xDiff = Math.abs(event.point.x - prevSeg.point.x);
-		var yDiff = Math.abs(event.point.y - prevSeg.point.y);
-		var minDiff = Math.min(xDiff, yDiff);
-		if (xDiff < yDiff) {
-			curSeg.point.x = prevSeg.point.x;
-			curSeg.point.y = event.point.y;
+		var diff = (event.point - prevSeg.point).abs();
+		var minDiff = Math.min(diff.x, diff.y);
+		if (diff.x < diff.y) {
+			curSeg.point = new Point(prevSeg.point.x, event.point.y);
 		} else {
-			curSeg.point.x = event.point.x;
-			curSeg.point.y = prevSeg.point.y;
+			curSeg.point = new Point(event.point.x, prevSeg.point.y);
 		}
 		if (minDiff > tolerance) {
 			prevSeg = curSeg;

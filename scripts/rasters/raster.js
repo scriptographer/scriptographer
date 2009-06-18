@@ -3,11 +3,11 @@
 // as a starting point for some raster processing
 // the only thing that has to be defined is the drawDot 
 // function
-var raster = null, dots = [];
+var raster = null, dots = [], pixelCount;
 
 Item.prototype.getCompoundArea = function(area) {
 	if (!area) area = 0;
-	if (this instanceof Path) return area + this.getArea();
+	if (this instanceof Path) return area + this.area;
 	else if (this instanceof CompoundPath || this instanceof Group) {
 		var child = this.firstChild;
 		while (child) {
@@ -16,32 +16,58 @@ Item.prototype.getCompoundArea = function(area) {
 		}
 	}
 	return area;
-}
+};
 
 function initRaster() {
+	var error = false;
 	if (!document) {
-		Dialog.alert("Please open a document first.");
+		Dialog.alert('Please open a document first.');
 		return false;
 	}
+	
+	var rasters = document.getSelectedItems([Raster, PlacedFile]);
+	for (var i = 0, l = rasters.length; i < l; i++) {
+		rasters[i].selected = false;
+	}
+	
 	var sel = document.selectedItems;
+	
+	if(rasters.length) {
+		raster = rasters.first;
+		if(raster instanceof PlacedFile && !raster.eps) {
+			// Embed placed images so the raster script can access pixels
+			raster = raster.embed(false);
+		}
+	}
+	
+
 	for (var i = 0; i < sel.length; i++) {
 		var obj = sel[i];
-		if (!raster) {
-			if (obj instanceof Raster) {
-				raster = obj;
-			} else if (obj instanceof PlacedItem && !obj.eps) {
-				// Embed placed images so the raster script can access pixels
-				raster = obj.embed(false);
-			}
-			if (raster) continue;
-		}
-		dots.push(obj);
+		// if (!raster) {
+		// 	if (obj instanceof Raster) {
+		// 		raster = obj;
+		// 	} else if (obj instanceof PlacedFile && !obj.eps) {
+		// 		// Embed placed images so the raster script can access pixels
+		// 		raster = obj.embed(false);
+		// 	}
+		// 	if (raster) continue;
+		// }
+		if(!obj.isAncestor(raster))
+			dots.push(obj);
 	}
 	if (!raster || !dots.length) {
-		Dialog.alert("Please select both a raster item\nand a graphic item.");
+		Dialog.alert('Please select both a raster item\nand a graphic item.');
 		return false;
+	} else {
+		pixelCount = raster.height * raster.width;
+		var sure = true;
+		if(pixelCount > 20000) {
+			script.showProgress = false;
+			sure = Dialog.confirm('The image you\'re about to rasterize contains ' + pixelCount + ' pixels.\nRasterizing could take a long time.\nAre you sure you want to proceed?');
+			script.showProgress = true;
+		}
+		return sure;
 	}
-	return true;
 }
 
 function executeRaster(createDot, multiple) {
@@ -52,20 +78,19 @@ function executeRaster(createDot, multiple) {
 		// rasters that scale the dot are simple to realize:
 		var dot = dots[i] = dots[i].clone();
 		var origin = dot.bounds.center;
-		dot.translate(origin.multiply(-1));
+		dot.position -= origin;
 		// Scale multiple dots to the same blackness as the first one
 		if (multiple && i > 0)
 			dot.scale(Math.sqrt(Math.abs(dots[0].getCompoundArea()) / Math.abs(dot.getCompoundArea())));
 	}
-//	var img = raster.getImage();
+
 	for (var y = 0; y < raster.height; y++) {
 		for (var x = 0; x < raster.width; x++) {
-//			var c = new java.awt.Color(img.getRGB(x, y));
-//			var col = 1 - (0.3 * c.red + 0.59  * c.green + 0.11 * c.blue) / 255;
-			var radius = raster.getPixel(x, y).convert("gray").gray;
+			app.updateProgress(y * raster.width + x + 1, pixelCount);
+			var radius = raster.getPixel(x, y).gray;
 			var obj = createDot(x, raster.height - y, multiple ? dots : dots[0], radius);
 			if (obj) {
-				obj.translate(origin);
+				obj.position += origin;
 				group.appendChild(obj);
 			}
 		}

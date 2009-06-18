@@ -1,41 +1,39 @@
-function onInit() {
-    minScale = 0.2;
-    maxScale = 0.8;
-    rotationValue = 0.5;
-    minBranch = 4;
-    maxBranch = 6;
-}
+var minScale = 0.2;
+var maxScale = 0.8;
+var rotationValue = 0.5;
+var minBranch = 4;
+var maxBranch = 6;
 
 function onOptions() {
-	var values = Dialog.prompt("Tree:", [
-        { value: minScale, description: "Minimal Scale", width: 50 },
-        { value: maxScale, description: "Maximal Scale", width: 50 },
-        { value: rotationValue, description: "Rotation", width: 50 },
-        { value: minBranch, description: "Minimal Branch Number", width: 50 },
-        { value: maxBranch, description: "Maximal Branch Number", width: 50 }
+	var values = Dialog.prompt('Tree:', [
+		{ value: minScale, description: 'Minimal Scale', width: 50 },
+		{ value: maxScale, description: 'Maximal Scale', width: 50 },
+		{ value: rotationValue, description: 'Rotation', width: 50 },
+		{ value: minBranch, description: 'Minimal Branch Number', width: 50 },
+		{ value: maxBranch, description: 'Maximal Branch Number', width: 50 }
 	]);
 
-    if (values != null) {
-        minScale = values[0];
-        maxScale = values[1];
-        rotationValue = values[2];
-        minBranch = values[3];
-        maxBranch = values[4];
-        if (minScale > maxScale) maxScale = minScale;
-        if (minBranch > maxBranch) maxBranch = minBranch;
-    }
+	if (values != null) {
+		minScale = values[0];
+		maxScale = values[1];
+		rotationValue = values[2];
+		minBranch = values[3];
+		maxBranch = values[4];
+		if (minScale > maxScale) maxScale = minScale;
+		if (minBranch > maxBranch) maxBranch = minBranch;
+	}
 }
 
+var path;
 function onMouseDown(event) {
-    path = new Path();
-    path.moveTo(event.point);
+	path = new Path();
+	path.moveTo(event.point);
 }
 
 function onMouseUp(event) {
 	if (path.segments.length > 0) {
 		path.pointsToCurves();
-		var group = new Group();
-		group.appendChild(path);
+		var group = new Group([path]);
 		var branches = [ { path: path, scale: 1.0, rotation: 0 } ];
 		var count = 0;
 		while (branches.length != 0) {
@@ -44,7 +42,7 @@ function onMouseUp(event) {
 				var branch = branches[i];
 				if (branch.scale > 0.2) {
 					var curPath = branch.path;
-					var prevEndPoint = curPath.segments[curPath.segments.length - 1].point;
+					var prevEndPoint = curPath.segments.last.point;
 					var newCount = Math.round(Math.random() * (maxBranch - minBranch) + minBranch);
 					for (var j = 0; j < newCount; j++) {
 						var newPath = path.clone();
@@ -74,5 +72,5 @@ function onMouseUp(event) {
 }
 
 function onMouseDrag(event) {
-    path.lineTo(event.point);
+	path.lineTo(event.point);
 }

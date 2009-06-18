@@ -1,8 +1,8 @@
-var sel = document.getMatchingItems(Path, { selected: true });
+var sel = document.getSelectedItems(Path);
 if (sel.length > 0) {
-	values = Dialog.prompt("Stich:", [
-		{ value: 1, description: "Distance", width: 50 },
-		{ value: 10, description: "Size", width: 50 }
+	var values = Dialog.prompt('Stich:', [
+		{ value: 1, description: 'Distance', width: 50 },
+		{ value: 10, description: 'Size', width: 50 }
 	]);
 	if (values) {
 		var dist = values[0];
@@ -19,7 +19,7 @@ if (sel.length > 0) {
 				var n = curve.getNormal(0);
 	            if (n.x != 0 || n.y != 0) {
 	                n = n.normalize(size);
-	                res.segments.add(pt.add(n.multiply(mul)));
+	                res.segments.add(pt + (n * mul));
 	                mul *= -1;
 	            }
 			}
@@ -27,5 +27,5 @@ if (sel.length > 0) {
 		}
 	}
 } else {
-	Dialog.alert("Please select a path.");
+	Dialog.alert('Please select a path first.');
 }

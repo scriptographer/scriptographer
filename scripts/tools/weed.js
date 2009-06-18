@@ -1,11 +1,10 @@
-function onInit() {
-	size = 10;
-	max = 10;
-	setEventInterval(1000 / 100); // 100 times a second
-}
+var size = 10;
+var max = 10;
+var branches;
+tool.eventInterval = 1000 / 100; // 100 times a second
 
 function onOptions() {
-	values = Dialog.prompt("Random Radius:", [
+	var values = Dialog.prompt("Random Radius:", [
 		{ value: size, description: "Size", width: 50},
 		{ value: max, description: "Max", width: 50}
 	]);
@@ -17,7 +16,7 @@ function onOptions() {
 
 function onMouseDown(event) {
 	branches = [];
-	var count = Math.round(Math.random() * (max - 1.0) + 1.0);
+	var count = Math.round(Math.random() * (max - 1) + 1);
 	var group = new Group();
 	for (var i = 0; i < count; i++)
 		branches.push(new Branch(event.point, group));

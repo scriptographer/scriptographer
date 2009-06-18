@@ -1,9 +1,8 @@
-function onInit() {
-    size = 10;
-}
+var size = 10;
+var point, path;
 
 function getPos(pt) {
-    return new Point(Math.round(pt.x / size) * size, Math.round(pt.y / size) * size);
+	return (pt / size).round() * size;
 }
 
 function onMouseDown(event) {
@@ -14,7 +13,7 @@ function onMouseDown(event) {
 
 function onMouseDrag(event) {
     var p = getPos(event.point);
-    if (!point.equals(p)) {
+    if (point != p) {
         path.lineTo(p);
         point = p;
     }

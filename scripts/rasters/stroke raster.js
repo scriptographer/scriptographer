@@ -1,21 +1,21 @@
-include("raster.js");
+include('raster.js');
 
 var size = 10;
 var scale = 10;
 
 function createDot(x, y, dot, radius) {
 	if (radius > 0) {
-		var art = dot.clone();
-		art.style.stroke.width = radius * scale;
-		art.translate(x * size, y * size);
+		var item = dot.clone();
+		item.strokeWidth = radius * scale;
+		item.position += new Point(x, y) * size;
 	}
-	return art;
+	return item;
 }
 
 if (initRaster()) {
-	values = Dialog.prompt("Enter Raster Values:", [
-		{ value: size, description: "Grid Size:", width: 50},
-		{ value: scale, description: "Stroke Scale:", width: 50}
+	var values = Dialog.prompt('Enter Raster Values:', [
+		{ value: size, description: 'Grid Size:'},
+		{ value: scale, description: 'Stroke Scale:'}
 	]);
 	if (values) {
 		size = values[0];

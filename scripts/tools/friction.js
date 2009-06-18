@@ -1,15 +1,13 @@
-function onInit() {
-	accel = 10;
-	accelFriction = 0.8;
-	friction = 0.65;
-	setEventInterval(1000 / 100); // 100 times a second
-}
+var accel = 10;
+var accelFriction = 0.8;
+var friction = 0.65;
+tool.eventInterval = 1000 / 100; // 100 times a second
 
 function onOptions() {
-	var values = Dialog.prompt("Friction:", [
-		{ value: friction, description: "friction", width: 50 },
-		{ value: accel, description: "acceleration", width: 50 },
-		{ value: accelFriction, description: "acceleration friction", width: 50 }
+	var values = Dialog.prompt('Friction:', [
+		{ value: friction, description: 'friction', width: 50 },
+		{ value: accel, description: 'acceleration', width: 50 },
+		{ value: accelFriction, description: 'acceleration friction', width: 50 }
 	]);
 	if (values) {
 		friction = values[0];
@@ -18,6 +16,7 @@ function onOptions() {
 	}
 }
 
+var point, velocity, acceleration, path, paths;
 function onMouseDown(event) {
 	point = event.point;
 	velocity = new Point();
@@ -39,14 +38,13 @@ function onMouseUp(event) {
 }
 
 function onMouseDrag(event) {
-	var diff = event.point.subtract(point);
+	var diff = event.point - point;
 	var norm = diff.normalize();
-	var len = norm.getLength();
-	acceleration = acceleration.add(norm.multiply(len * accel)).multiply(accelFriction);
-	velocity = velocity.add(acceleration).multiply(friction);
-	point = point.add(velocity);
+	acceleration = (acceleration + (norm * accel)) * (accelFriction);
+	velocity = (velocity + acceleration) * friction;
+	point += velocity;
 	path.lineTo(point);
-	if (path.getLength() > 400) {
+	if (path.length > 400) {
 		path.pointsToCurves();
 		path = new Path();
 		path.segments.add(point);
