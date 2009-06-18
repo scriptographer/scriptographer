@@ -52,10 +52,12 @@ public class PromptDialog extends ModalDialog {
 	public PromptDialog(String title, PromptItem[] items) {
 		this.setTitle(title);
 		this.items = items;
-		
+		// Add two more rows, one as a filler in case there's less rows than the
+		// height of the logo, and one for the buttons.
 		double[] rows = new double[items.length + 2];
 		for (int i = 0; i < rows.length; i++)
 			rows[i] = TableLayout.PREFERRED;
+		// Define the filler row, 2nd last
 		rows[rows.length - 2] = TableLayout.FILL;
 		double[][] sizes = {
 			{ TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.PREFERRED },
@@ -70,6 +72,7 @@ public class PromptDialog extends ModalDialog {
 		ImageStatic logo = new ImageStatic(this);
 		logo.setImage(getImage("logo.png"));
 		logo.setMargin(-4, 4, -4, -4);
+		// Logo uses all rows of items + filler row
 		this.addToContent(logo, "0, 0, 0, " + (rows.length - 2) + ", left, top");
 
 		for (int i = 0; i < items.length; i++) {
