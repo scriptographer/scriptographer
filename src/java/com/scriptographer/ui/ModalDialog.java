@@ -34,6 +34,8 @@ package com.scriptographer.ui;
 import java.util.Arrays;
 import java.util.EnumSet;
 
+import com.scriptographer.ScriptographerEngine;
+
 /**
  * @author lehni
  */
@@ -89,9 +91,13 @@ public class ModalDialog extends Dialog {
 	private native Item nativeDoModal();
 
 	public Item doModal() {
+		boolean progressVisible = ScriptographerEngine.getProgressVisible();
+		ScriptographerEngine.setProgressVisible(false);
 		try {
 			modal = true;
-			return nativeDoModal();
+			Item item = nativeDoModal();
+			ScriptographerEngine.setProgressVisible(progressVisible);
+			return item;
 		} finally {
 			modal = false;
 		}

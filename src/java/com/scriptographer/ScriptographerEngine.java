@@ -562,6 +562,22 @@ public class ScriptographerEngine {
 		nativeCloseProgress();
 	}
 
+	public static boolean getProgressVisible() {
+		return progressVisible;
+	}
+
+	public static void setProgressVisible(boolean visible) {
+		if (progressVisible ^ visible) {
+			if (visible) {
+				progressVisible = true;
+				nativeUpdateProgress(progressCurrent, progressMax, true);
+			} else {
+				closeProgress();
+			}
+			
+		}
+	}
+		
 	public static boolean isMainThreadActive() {
 		return Thread.currentThread().equals(mainThread);
 	}
