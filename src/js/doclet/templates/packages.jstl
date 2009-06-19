@@ -29,7 +29,7 @@ createPackage("<%= $packageName %>",
 <%= param.content %>"<%= param.text encoding="js" %>");
 <% else %>
 <li><a href="#" onClick="return togglePackage('<%= $packageName %>', false);"><img name="arrow-<%= $packageName %>" src="../resources/arrow-close.gif" width="8" height="8" border="0"></a><img src="../resources/spacer.gif" width="6" height="1">
-<b><%= renderLink({ name: param.name, title: $packageName }) | stripCode %></b>
+<b><%= renderLink({ path: param.path, title: $packageName }) | stripCode %></b>
 <ul id="package-<%= $packageName %>" class="hidden">
 <%= param.content %>
 </li></ul>

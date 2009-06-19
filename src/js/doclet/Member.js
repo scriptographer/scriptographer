@@ -99,22 +99,19 @@ Member = Object.extend({
 		}).trim('-');
 	},
 
-	getClass: function(current) {
+	renderLink: function(param) {
 		// In case the class is invisible, the current class needs to be used instead
 		var containing = this.containingClass();
-		return containing.isVisible() || current.superclass() != containing ?
-				containing : current;
-	},
-
-	renderLink: function(param) {
-		var cd = this.getClass(param.classDoc);
-		// TODO:? Dont use mem.qualifiedName(). use cd.qualifiedName() + '.' + mem.name()
-		// instead in order to catch the case where functions are moved from
-		// invisible classes to visible ones (e.g. AffineTransform -> Matrix)
+		if (!containing.isVisible() && param.classDoc.superclass() == containing)
+			containing = param.classDoc;
 		return renderLink({
-			name: cd.qualifiedName(),
+			path: containing.qualifiedName(),
 			anchor: this.getId(),
-			title: param.title || code_filter(this.name() + this.getNameSuffix())
+			title: param.title || code_filter(
+				// Add the class name if the link goes accross classes
+				(containing != param.classDoc
+					? containing.name() + (this.isStatic() ? '.' : '#')
+					: '') + this.name() + this.getNameSuffix())
 		});
 	},
 

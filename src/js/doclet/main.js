@@ -143,7 +143,7 @@ ClassDocImpl.inject(Hash.merge({
 			if (this.isAbstract())
 				str += '<i>';
 			str += renderLink({
-				name: this.qualifiedName(),
+				path: this.qualifiedName(),
 				anchor: '',
 				title: param.title || code_filter(this.name())
 			});
@@ -198,7 +198,14 @@ MemberDocImpl.inject({
 
 	renderLink: function(param) {
 		var mem = Member.get(this);
-		return mem ? mem.renderLink(param) : this.toString();
+		return mem
+			? mem.renderLink(param)
+			// Invisible members do not get wrapped in Member objects, so they
+			// need to at least render something that gives a hint which function
+			// they would be. (e.g. when linking to invisible methods using @link)
+			: code_filter((this.containingClass() != param.classDoc
+				? this.containingClass().name() + (this.isStatic() ? '.' : '#')
+				: '') + this.name() + this.signature());
 	}
 });
 
@@ -238,10 +245,10 @@ function getRelativeIdentifier(str) {
 function renderLink(param) {
 	if (settings.hyperref) {
 		var str = '<a href="';
-		if (param.name) {
-			var path = getRelativeIdentifier(param.name).replace('.', '/');
+		if (param.path) {
+			var path = getRelativeIdentifier(param.path).replace('.', '/');
 			// Link to the index file for packages
-			var name = Type.getSimpleName(param.name);
+			var name = Type.getSimpleName(param.path);
 			if (name.charAt(0).isLowerCase() && name != 'global')
 				path += '/index';
 			if (settings.templates)

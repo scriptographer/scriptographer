@@ -55,13 +55,9 @@ LinkTag = Tag.extend({
 	render: function(param) {
 		var ref = this.referencedMember() || this.referencedClass();
 		if (ref) {
-			var link = ref.renderLink({ classDoc: param.classDoc });
-			if (ref.isVisible()) {
-				return link;
-			} else {
+			if (!ref.isVisible())
 				error(this.position() + ': warning - ' + this.name() + ' contains reference to invisible object: ' + ref);
-				return code_filter(Type.getSimpleName(link));
-			}
+			return ref.renderLink({ classDoc: param.classDoc });
 		} else {
 			error(this.position() + ': warning - ' + this.name() + ' contains undefined reference: ' + this);
 		}
