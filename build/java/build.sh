@@ -1,11 +1,14 @@
 #!/bin/sh
 
 TARGET=$1
-OPTIONS=
+shift
 
-if [ $# -eq 2 ]
+OPTIONS=
+if [ $# -gt 0 ]
 then
-	OPTIONS=-Dsingleclass=$2
+	OPTIONS=-Dclassmatch=\"$*\"
 fi
+
+echo $OPTIONS
 
 ant -lib build/classes:build/lib:lib $OPTIONS $TARGET

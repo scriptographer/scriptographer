@@ -64,7 +64,7 @@ var settings = {
 	bottom: options.bottom || '',
 	author: options.author || '',
 	filterClasses: (options.filterclasses || '').trim().split(/\s+/),
-	singleClass: options.singleclass || '',
+	classMatch: options.classmatch ? new RegExp('(' + options.classmatch.replace(/\s/g, '|') + ')$', 'g') : null,
 	packageSequence: (options.packagesequence || '').trim().split(/\s+/),
 	methodFilter: (options.methodfilter || '').trim().split(/\s+/),
 	classOrder: (function() {

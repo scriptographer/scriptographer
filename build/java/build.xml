@@ -417,16 +417,9 @@
 	<!-- =================================================================== -->
 	<target name="rhinodoclet" depends="init">
 		<mkdir dir="${destdir}"/>
-		<!-- Set singleclass to empty if it's not defined -->
-		<condition property="singleclass" value="${singleclass}" else="">
-			<isset property="singleclass" />
-		</condition>
-		<!-- Prepend com.scriptographer to singleclass if it wasn't added already -->
-		<condition property="singleclass.value" value="${singleclass}" else="com.scriptographer.${singleclass}">
-			<or>
-				<matches string="${singleclass}" pattern="^com\.scriptographer\." />
-                <equals arg1="${singleclass}" arg2="" trim="true" />
-			</or>
+		<!-- Set classmatch to empty if it's not defined -->
+		<condition property="classmatch" value="${classmatch}" else="">
+			<isset property="classmatch" />
 		</condition>
 		<!--
 		<javadoc packagenames="com.scriptographer.test"
@@ -482,7 +475,7 @@
 				<param name="-classorder" value="classorder.txt"/>
 				<param name="-templates" value="${templates}"/>
 				<param name="-nosummaries" value="true" />
-				<param name="-singleclass" value="${singleclass.value}" />
+				<param name="-classmatch" value="${classmatch}" />
 			</doclet>
 		</javadoc>
 	</target>

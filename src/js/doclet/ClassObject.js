@@ -214,8 +214,8 @@ ClassObject = Object.extend({
 			root.classes().each(function(cd) {
 				var add = true;
 				var name = cd.qualifiedName();
-				if (settings.singleClass)
-					add = name == settings.singleClass;
+				if (settings.classMatch)
+					add = settings.classMatch.test(name);
 				if (add && settings.filterClasses)
 					add = !settings.filterClasses.find(function(filter) {
 						return filter == name || filter.endsWith('*') &&
