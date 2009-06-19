@@ -167,31 +167,6 @@ ParameterImpl.inject({
 // Member helpers
 
 MemberDocImpl.inject({
-	isCompatible: function(member) {
-		if (this instanceof ExecutableMemberDoc &&
-			member instanceof ExecutableMemberDoc) {
-			// rule 1: static or not
-			if (this.isStatic() != member.isStatic())
-				return false;
-			// rule 2: same return type
-			if (this instanceof MethodDoc && member instanceof MethodDoc &&
-				this.returnType().qualifiedTypeName() != member.returnType().qualifiedTypeName())
-				return false;
-			var params1 = this.parameters();
-			var params2 = member.parameters();
-			// rule 3: if not the same amount of params, the types and names need to be the same:
-			var count = Math.min(params1.length, params2.length);
-			for (var i = 0; i < count; i++) {
-				if (params1[i].name() != params2[i].name()
-					|| !params1[i].paramType().isCompatible(params2[i].paramType()))
-					return false;
-			}
-			return true;
-		}
-		// Fields cannot be grouped
-		return false;
-	},
-
 	isVisible: function() {
 		return Member.get(this) != null;
 	},

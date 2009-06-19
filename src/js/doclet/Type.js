@@ -217,6 +217,17 @@ Type = Object.extend(new function() {
 			} else if (this.isList() || this.isCollection()) {
 				// Generics stuff
 				var type = this.typeArguments()[0];
+				// If there's no typeArgument here, walk up the inheritance chain
+				// and see if we can find something there
+				if (!type && this.superclassType) {
+					var sup = this;
+					while (!type) {
+						sup = sup.superclassType();
+						if (!sup) break;
+						type = sup.asParameterizedType();
+						type = type && type.typeArguments()[0];
+					}
+				}
 				if (type && type.extendsBounds)
 					type = type.extendsBounds()[0];
 				return type && new Type(type);

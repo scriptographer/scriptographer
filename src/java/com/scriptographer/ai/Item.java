@@ -407,10 +407,10 @@ public abstract class Item extends DocumentObject {
 		return list;
 	}
 
-	public void setChildren(List elements) {
+	public void setChildren(List children) {
 		removeChildren();
-		for (int i = 0, size = elements.size(); i < size; i++) {
-			Object obj = elements.get(i);
+		for (int i = 0, size = children.size(); i < size; i++) {
+			Object obj = children.get(i);
 			if (obj instanceof Item)
 				appendBottom((Item) obj);
 		}

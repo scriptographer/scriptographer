@@ -70,9 +70,6 @@ public class Path extends PathItem {
 		super(TYPE_PATH);
 	}
 
-	/**
-	 * @jshide
-	 */
 	public Path(ReadOnlyList<? extends Segment> segments) {
 		this();
 		setSegments(segments);
@@ -114,13 +111,13 @@ public class Path extends PathItem {
 		return segments;
 	}
 
-	public void setSegments(ReadOnlyList<? extends Segment> list) {
-		SegmentList segments = getSegments();
+	public void setSegments(ReadOnlyList<? extends Segment> segments) {
+		SegmentList segs = getSegments();
 		// TODO: Implement SegmentList.setAll so clear is not necessary and
 		// nativeCommit is used instead of nativeInsert removeRange would still
 		// be needed in cases the new list is smaller than the old one...
-		segments.removeAll();
-		segments.addAll(list);
+		segs.removeAll();
+		segs.addAll(segments);
 	}
 
 	public void setSegments(Segment[] segments) {

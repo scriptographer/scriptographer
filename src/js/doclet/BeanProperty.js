@@ -66,12 +66,8 @@ BeanProperty = SyntheticField.extend({
 			return !method.isStatic()
 				&& method.returnType().typeName() == 'void' && params.length == 1
 				&& (!type
-					|| params[0].typeName() == type.typeName()
-					// TODO: checking both hasSuperclass and hasInterface is necessary to simulate isAssignableFrom
-					// Think of adding this to Type, and calling it here
-					|| conversion && (typeClass = type.asClassDoc())
-						&& (paramName = params[0].paramType().qualifiedName())
-						&& (typeClass.hasSuperclass(paramName) || typeClass.hasInterface(paramName)));
+					|| param.typeName() == type.typeName()
+					|| conversion && param.paramType().isCompatible(type));
 		}
 	}
 });
