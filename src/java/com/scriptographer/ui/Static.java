@@ -41,9 +41,6 @@ import com.scratchdisk.util.IntegerEnumUtils;
  */
 public class Static extends TextValueItem {
 
-	/**
-	 * @jshide
-	 */
 	public Static(Dialog dialog, EnumSet<TextOption> options) {
 		super(dialog, options != null && options.contains(TextOption.MULTILINE)
 				? ItemType.TEXT_STATIC_MULTILINE : ItemType.TEXT_STATIC,

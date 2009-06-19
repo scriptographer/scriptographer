@@ -39,9 +39,6 @@ import java.util.EnumSet;
  */
 public class FloatingDialog extends Dialog {
 
-	/**
-	 * @jshide
-	 */
 	public FloatingDialog(EnumSet<DialogOption> options) {
 		super(getStyle(options), options);
 	}

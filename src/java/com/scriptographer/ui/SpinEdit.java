@@ -39,9 +39,6 @@ import java.util.EnumSet;
  */
 public class SpinEdit extends TextEditItem<SpinEditStyle> {
 
-	/**
-	 * @jshide
-	 */
 	public SpinEdit(Dialog dialog, EnumSet<TextOption> options) {
 		super(dialog, getType(options), options);
 	}

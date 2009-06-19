@@ -1031,9 +1031,6 @@ public abstract class Item extends DocumentObject {
 
 	private native void nativeTransform(Matrix matrix, int flags);
 
-	/**
-	 * @jshide
-	 */
 	public void transform(Matrix matrix, EnumSet<TransformFlag> flags) {
 		nativeTransform(matrix, IntegerEnumUtils.getFlags(flags));
 	}
@@ -1192,20 +1189,6 @@ public abstract class Item extends DocumentObject {
 	private native Item nativeExpand(int flags, int steps);
 
 	/**
-	 * @jshide
-	 */
-	public Item expand(EnumSet<ExpandFlag> flags, int steps) {
-		return nativeExpand(IntegerEnumUtils.getFlags(flags), steps);
-	}
-
-	/**
-	 * @jshide
-	 */
-	public Item expand(EnumSet<ExpandFlag> flags) {
-		return expand(flags, 0);
-	}
-
-	/**
 	 * Breaks artwork up into individual parts and works just like calling
 	 * "expand" from the Object menu in Illustrator.
 	 * 
@@ -1216,9 +1199,17 @@ public abstract class Item extends DocumentObject {
 	 * 
 	 * @param flags
 	 * @param steps the amount of steps for gradient, when the
-	 *        ExpandFlag#GRADIENT_TO_PATHS flag is set
+	 *       <code>"gradient-to-paths"</code> flag is passed
 	 * @return the newly created item containing the expanded artwork
 	 */
+	public Item expand(EnumSet<ExpandFlag> flags, int steps) {
+		return nativeExpand(IntegerEnumUtils.getFlags(flags), steps);
+	}
+
+	public Item expand(EnumSet<ExpandFlag> flags) {
+		return expand(flags, 0);
+	}
+
 	public Item expand(ExpandFlag[] flags, int steps) {
 		return expand(EnumSet.copyOf(Arrays.asList(flags)), steps);
 	}

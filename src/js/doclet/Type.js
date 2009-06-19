@@ -111,6 +111,10 @@ Type = Object.extend({
 		return this.dimension() != '';
 	},
 
+	isCollection: function() {
+		return this.hasInterface('java.util.Collection');
+	},
+
 	isList: function() {
 		return this.hasInterface('com.scratchdisk.list.ReadOnlyList');
 	},
@@ -177,20 +181,20 @@ Type = Object.extend({
 				|| Type.isNumber(this.typeName()) && Type.isNumber(type.typeName())
 			)
 			// Treat arrays and lists the same, as long as the component type is compatible
-			|| (this.isArray() || this.isList()) && (type.isArray() || type.isList()) && (
-				(type1 = this.getComponentType()) && (type2 = type.getComponentType()) &&
-				type1.isCompatible(type2)
-			);
+			|| (this.isArray() || this.isList() || this.isCollection())
+				&& (type.isArray() || type.isList() || this.isCollection())
+				&& ((type1 = this.getComponentType()) && (type2 = type.getComponentType())
+					&& type1.isCompatible(type2));
 	},
 
 	/**
-	 * Returns the component type of arrays and lists
+	 * Returns the component type of arrays, lists and collections
 	 */
 	getComponentType: function() {
 		if (this.isArray()) {
 			var  cd = this.asClassDoc();
 			return cd && new Type(cd);
-		} else if (this.isList()) {
+		} else if (this.isList() || this.isCollection()) {
 			// Generics stuff
 			var type = this.typeArguments()[0];
 			if (type && type.extendsBounds)
@@ -226,9 +230,8 @@ Type = Object.extend({
 			str = code_filter('Number');
 		} else if (this.isBoolean()) {
 			str = code_filter('Boolean');
-		} else if (this.isArray()) {
-			var doc = this.asClassDoc();
-			doc = doc && new Type(doc);
+		} else if (this.isArray() || this.isList() || this.isCollection()) {
+			var doc = this.getComponentType();
 			str = 'Array of ' + (doc
 				? doc.renderLink({ additional: true })
 				: code_filter(Type.isNumber(this.typeName())
@@ -238,13 +241,6 @@ Type = Object.extend({
 			str = code_filter('Object');
 		} else if (this.isEnum()) {
 			str = code_filter('String');
-		} else if (this.isEnumSet()) {
-			var types = this.typeArguments();
-			if (types.length > 0) {
-				str = 'Array of ' + code_filter('String');
-			} else {
-				str = code_filter(this.typeName() + this.dimension());
-			}
 		} else {
 			var cls = this.asClassDoc();
 			if (cls && cls.isVisible()) {
@@ -280,23 +276,15 @@ Type = Object.extend({
 	},
 
 	renderAdditional: function() {
-		if (!this.isArray()) {
-			if (this.isEnum()) {
-				return '(' + this.getEnumConstants() + ')';
-			} else if (this.isEnumSet()) {
-				var types = this.typeArguments();
-				if (types.length == 1) {
-					var type = new Type(types[0]);
-					return '(' + type.getEnumConstants() + ')';
-				}
-			} else if (this.isEnumMap()) {
-				var types = this.typeArguments();
-				if (types.length == 2) {
-					var keyType = new Type(types[0]);
-					var valueType = new Type(types[1]);
-					return '(Values: ' + code_filter(valueType.renderLink({})) 
-						+ ', Keys: ' + keyType.getEnumConstants() + ')';
-				}
+		if (this.isEnum()) {
+			return '(' + this.getEnumConstants() + ')';
+		} else if (this.isEnumMap()) {
+			var types = this.typeArguments();
+			if (types.length == 2) {
+				var keyType = new Type(types[0]);
+				var valueType = new Type(types[1]);
+				return '(Values: ' + code_filter(valueType.renderLink({})) 
+					+ ', Keys: ' + keyType.getEnumConstants() + ')';
 			}
 		}
 	},

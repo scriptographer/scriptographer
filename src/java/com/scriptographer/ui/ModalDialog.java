@@ -51,9 +51,6 @@ public class ModalDialog extends Dialog {
 		super(style, getOptions(options));
 	}
 
-	/**
-	 * @jshide
-	 */
 	public ModalDialog(EnumSet<DialogOption> options) {
 		this(getStyle(options), options);		
 	}

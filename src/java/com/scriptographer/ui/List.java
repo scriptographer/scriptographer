@@ -63,9 +63,6 @@ public class List extends ListItem<ListEntry> {
 		return IntegerEnumUtils.getSet(ListStyle.class, nativeGetStyle());
 	}
 
-	/**
-	 * @jshide
-	 */
 	public void setStyle(EnumSet<ListStyle> style) {
 		nativeSetStyle(IntegerEnumUtils.getFlags(style));
 	}
