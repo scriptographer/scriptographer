@@ -57,7 +57,8 @@ Type = Object.extend(new function() {
 			if (doc) {
 				// Cache results
 				var val = getCached(this, superclass, 'superclass');
-				if (val !== undefined) return val;
+				if (val !== undefined)
+					return val;
 				val = false;
 				while (doc && !val) {
 					if (doc.qualifiedName() == superclass)
@@ -74,17 +75,18 @@ Type = Object.extend(new function() {
 			if (doc) {
 				// Cache results
 				var val = getCached(this, face, 'interface');
-				if (val !== undefined) return val;
+				if (val !== undefined)
+					return val;
 				val = false;
 				if (doc.qualifiedName() == face) {
 					val = true;
 				} else {
-					// if an interface extends another one, its superclass is not
+					// If an interface extends another one, its superclass is not
 					// set here, but the super interface is simply in the
-					// interfaces() list.  strange...
+					// interfaces() list. Strange...
 					val = doc.interfaces().find(function(f) {
 						if (f.hasInterface(face))
-							return f;
+							return true;
 					});
 					if (!val) {
 						var cd = doc.superclass();
