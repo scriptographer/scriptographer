@@ -141,7 +141,7 @@ Function.inject(new function() {
 		bind: function(bind, args) {
 			var that = this;
 			return function() {
-				return that.apply(bind, args && args.concat(Array.create(arguments)) || arguments);
+				return that.apply(bind, args);
 			}
 		},
 
@@ -149,7 +149,7 @@ Function.inject(new function() {
 			var that = this;
 			return function() {
 				try {
-					return that.apply(bind, args && args.concat(Array.create(arguments)) || arguments);
+					return that.apply(bind, args);
 				} catch (e) {
 					return e;
 				}
@@ -534,8 +534,12 @@ Array.inject(new function() {
 		shuffle: function() {
 			var res = this.clone();
 			var i = this.length;
-			while (i--) res.swap(i, Math.rand(0, i + 1));
+			while (i--) res.swap(i, Math.rand(i + 1));
 			return res;
+		},
+
+		pick: function() {
+			return this[Math.rand(this.length)];
 		},
 
 		statics: {
@@ -671,8 +675,13 @@ RegExp.inject({
 	_type: 'regexp'
 });
 
-Math.rand = function(min, max) {
-	return Math.floor(Math.random() * (max - min) + min);
+Date.inject({
+});
+
+Math.rand = function(first, second) {
+	return second == undefined
+		? Math.rand(0, first)
+		: Math.floor(Math.random() * (second - first) + first);
 }
 
 Array.inject({
