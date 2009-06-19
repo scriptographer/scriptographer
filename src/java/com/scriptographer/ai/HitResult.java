@@ -34,9 +34,9 @@ package com.scriptographer.ai;
 import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
- * HitTest objects are returned by {@link Document#hitTest} and
- * {@link Path#hitTest}. They represent the result of a hit test, which is
- * reflected in the object's properties as described bellow.
+ * HitResult objects are returned by {@link Document#hitTest} and
+ * {@link Path#hitTest}. They represent the result of a hit test,
+ * which is reflected in the object's properties as described below.
  * 
  * @author lehni
  */

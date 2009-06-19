@@ -457,6 +457,9 @@ public abstract class Item extends DocumentObject {
 		return bounds;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setBounds(double x, double y, double width, double height) {
 		Rectangle rect = getBounds();
 		Matrix matrix = new Matrix();
@@ -515,6 +518,9 @@ public abstract class Item extends DocumentObject {
 		position.update();
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setPosition(double x, double y) {
 		setPosition(new Point(x, y));
 	}
@@ -1016,6 +1022,11 @@ public abstract class Item extends DocumentObject {
 	 */
 	public native boolean isAncestor(Item item);
 
+	/**
+	 * Checks whether the item is grouped with the specified item.
+	 * @param item
+	 * @return <code>true</code> if the items are grouped together, <code>false</code> otherwise.
+	 */
 	public boolean isGroupedWith(Item item) {
 		Item parent = getParent();
 		while (parent != null) {
@@ -1031,6 +1042,9 @@ public abstract class Item extends DocumentObject {
 
 	private native void nativeTransform(Matrix matrix, int flags);
 
+	/**
+	 * @jshide
+	 */
 	public void transform(Matrix matrix, EnumSet<TransformFlag> flags) {
 		nativeTransform(matrix, IntegerEnumUtils.getFlags(flags));
 	}
@@ -1107,8 +1121,7 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * Rotates the item around an anchor point by a given angle around
-	 * the given point.
+	 * Rotates the item by a given angle around the given point.
 	 * 
 	 * @param theta the rotation angle in radians
 	 * @see Matrix#rotate(double, Point)
@@ -1145,30 +1158,72 @@ public abstract class Item extends DocumentObject {
 	private native Raster nativeRasterize(int type, float resolution,
 			int antialiasing, float width, float height);
 	
+	/**
+	 * Rasterizes the item. The item itself is not removed after rasterization.
+	 * 
+	 * @param type the color mode of the raster
+	 * @param resolution the resolution of the raster in dpi
+	 * @param antialiasing the amount of anti-aliasing
+	 * @param width
+	 * @param height
+	 * @return
+	 */
 	public Raster rasterize(ColorType type, float resolution, int antialiasing,
 			float width, float height) {
 		return nativeRasterize(type != null ? type.value : -1, resolution,
 				antialiasing, -1, -1);
 	}
 
+	/**
+	 * Rasterizes the item. The item itself is not removed after rasterization.
+	 * 
+	 * @param type the color mode of the raster
+	 * @param resolution the resolution of the raster in dpi
+	 * @param antialiasing the amount of anti-aliasing
+	 * @return
+	 */
 	public Raster rasterize(ColorType type, float resolution, int antialiasing) {
 		return rasterize(type, resolution, antialiasing, -1, -1);
 	}
 
+	/**
+	 * Rasterizes the item. The item itself is not removed after rasterization.
+	 * 
+	 * @param type the color mode of the raster
+	 * @param resolution the resolution of the raster in dpi
+	 * @return
+	 */
 	public Raster rasterize(ColorType type, float resolution) {
 		return rasterize(type, resolution, 4, -1, -1);
 	}
 	
+	/**
+	 * Rasterizes the item with a resolution of 72 dpi. The item itself is not
+	 * removed after rasterization.
+	 * 
+	 * @param type the color mode of the raster
+	 * @return
+	 */
 	public Raster rasterize(ColorType type) {
 		return rasterize(type, 72, 4, -1, -1);
 	}
 	
+	/**
+	 * Rasterizes the item with a resolution of 72 dpi. The item itself is not
+	 * removed after rasterization.
+	 * 
+	 * @param type the color mode of the raster
+	 * @return
+	 */
 	public Raster rasterize() {
 		return rasterize(null, 72, 4, -1, -1);
 	}
 
 	private native void nativeDraw(Image image, int width, int height);
 
+	/**
+	 * @jshide
+	 */
 	public void draw(Image image) {
 		nativeDraw(image, image.getWidth(), image.getHeight());
 	}
@@ -1273,5 +1328,8 @@ public abstract class Item extends DocumentObject {
 	 */
 	public native int getItemType();
 
+	/**
+	 * @jshide
+	 */
 	public static native int getItemType(Class cls);
 }

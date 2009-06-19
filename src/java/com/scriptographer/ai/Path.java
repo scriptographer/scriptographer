@@ -82,6 +82,9 @@ public class Path extends PathItem {
 		this(Lists.asList(segments));
 	}
 	
+	/**
+	 * @jshide
+	 */
 	public Path(Shape shape) {
 		this();
 		append(shape);
@@ -380,6 +383,7 @@ public class Path extends PathItem {
 	 *        performing any substitution. If this GeneralPath is currently
 	 *        empty, <code>connect</code> is assumed to be <code>false</code>,
 	 *        thus leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
+	 * @jshide
 	 */
 	public void append(PathIterator iter, boolean connect) {
 		float[] f = new float[6];
@@ -419,6 +423,9 @@ public class Path extends PathItem {
 		}
 	}
 
+	/**
+	 * @jshide
+	 */
 	public GeneralPath toShape() {
 		GeneralPath path = new GeneralPath();
 		SegmentList segments = getSegments();

@@ -74,6 +74,9 @@ public class CompoundPath extends PathItem {
 		this(Lists.asList(children));
 	}
 	
+	/**
+	 * @jshide
+	 */
 	public CompoundPath(Shape shape) {
 		this();
 		append(shape);
@@ -148,6 +151,7 @@ public class CompoundPath extends PathItem {
 	 *        performing any substitution. If this GeneralPath is currently
 	 *        empty, <code>connect</code> is assumed to be <code>false</code>,
 	 *        thus leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
+	 * @jshide
 	 */
 	public void append(PathIterator iter, boolean connect) {
 		float[] f = new float[6];
@@ -186,6 +190,9 @@ public class CompoundPath extends PathItem {
 		}
 	}
 
+	/**
+	 * @jshide
+	 */
 	public GeneralPath toShape() {
 		Path path = (Path) getFirstChild();
 		GeneralPath shape = (GeneralPath) path.toShape();

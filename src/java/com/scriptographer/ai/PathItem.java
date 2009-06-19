@@ -59,8 +59,14 @@ public abstract class PathItem extends Item {
 	 * Convert to and from Java2D (java.awt.geom)
 	 */
 	
+	/**
+	 * @jshide
+	 */
 	public abstract GeneralPath toShape();
 
+	/**
+	 * @jshide
+	 */
 	public abstract void append(PathIterator iter, boolean connect);
 
 	/*
@@ -112,6 +118,9 @@ public abstract class PathItem extends Item {
 		arcTo(endPoint != null ? endPoint.x : 0, endPoint != null ? endPoint.y : 0);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void append(PathIterator iter) {
 		append(iter, false);
 	}
@@ -120,31 +129,64 @@ public abstract class PathItem extends Item {
 	 * Appends the segments of a Shape to the path. If <code>connect</code> is
 	 * true, the new path segments are connected to the existing one with a
 	 * line. The winding rule of the Shape is ignored.
+	 * @jshide
 	 */
 	public void append(Shape shape, boolean connect) {
 		append(shape.getPathIterator(null), connect);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void append(Shape shape) {
 		append(shape.getPathIterator(null), false);
 	}
 
+	/**
+	 * Checks if the interior of the path intersects with the interior of the
+	 * specified path.
+	 * 
+	 * @param item
+	 * @return <code>true</code> if the paths intersect, <code>false</code>
+	 *         otherwise.
+	 */
 	public boolean intersects(PathItem item) {
 		Area area = new Area(this.toShape());
 		area.intersect(new Area(item.toShape()));
 		return area.isEmpty();
 	}
 
+	/**
+	 * Checks if the interior of the path contains the interior of the specified
+	 * path.
+	 * 
+	 * @param item
+	 * @return <code>true</code> if the path contains the specified path,
+	 *         <code>false</code> otherwise.
+	 */
 	public boolean contains(PathItem item) {
 		Area area = new Area(item.toShape());
 		area.subtract(new Area(this.toShape()));
 		return area.isEmpty();
 	}
 
+	/**
+	 * Checks if the specified point is contained within the interior of the path.
+	 * 
+	 * @param point
+	 * @return <code>true</code> if the point is contained within the path,
+	 *         <code>false</code> otherwise.
+	 */
 	public boolean contains(Point point) {
 		return new Area(this.toShape()).contains(point.toPoint2D());
 	}
 
+	/**
+	 * Returns the intersection of the paths as a new path
+	 * 
+	 * @param item
+	 * @return
+	 */
 	public PathItem intersect(PathItem item) {
 		Area area = new Area(this.toShape());
 		area.intersect(new Area(item.toShape()));
@@ -153,6 +195,13 @@ public abstract class PathItem extends Item {
 		return compoundPath.simplify();
 	}
 
+	/**
+	 * Adds the shape of the specified path to the path and returns it as a new
+	 * path.
+	 * 
+	 * @param item
+	 * @return
+	 */
 	public PathItem unite(PathItem item) {
 		Area area = new Area(this.toShape());
 		area.add(new Area(item.toShape()));
@@ -161,6 +210,13 @@ public abstract class PathItem extends Item {
 		return compoundPath.simplify();
 	}
 
+	/**
+	 * Subtracts the shape of the specified path from the path and returns it as
+	 * a new path.
+	 * 
+	 * @param item
+	 * @return
+	 */
 	public PathItem exclude(PathItem item) {
 		Area area = new Area(this.toShape());
 		area.subtract(new Area(item.toShape()));
