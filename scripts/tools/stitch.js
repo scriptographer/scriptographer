@@ -14,11 +14,12 @@ var mul, path, res;
 function onMouseDown(event) {
 	mul = 1;
 	path = new Path();
+	path.moveTo(event.point);
 	res = new Path();
 }
 
 function onMouseDrag(event) {
-	path.segments.add(event.point);
+	path.lineTo(event.point);
 	if (path.length > 10) {
 		path.pointsToCurves();
 		path.curvesToPoints(values.distance, 10000);
