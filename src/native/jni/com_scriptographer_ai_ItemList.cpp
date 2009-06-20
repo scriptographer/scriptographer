@@ -58,25 +58,29 @@ void ItemList_filter(AIArtSet set, bool layerOnly) {
 	}
 }
 
-AIArtSet ItemList_getSelected(JNIEnv *env) {
+AIArtSet ItemList_getSelected(bool filter) {
 	AIArtSet set = NULL;
 	if (!sAIArtSet->NewArtSet(&set)) {
 		if (!sAIArtSet->SelectedArtSet(set)) {
-			// Now filter out objects of which the parents are selected too
-			long count;
-			sAIArtSet->CountArtSet(set, &count);
-			for (long i = count - 1; i >= 0; i--) {
-				AIArtHandle art;
-				if (!sAIArtSet->IndexArtSet(set, i, &art)) {
-					long values;
-					if (!sAIArt->GetArtUserAttr(art, kArtFullySelected, &values) && !(values & kArtFullySelected)) {
-						sAIArtSet->RemoveArtFromArtSet(set, art);
-					} else {
-						AIArtHandle parent = NULL;
-						sAIArt->GetArtParent(art, &parent);
-						if (parent != NULL && !Item_isLayer(parent)) {
-							if (!sAIArt->GetArtUserAttr(parent, kArtFullySelected, &values) && (values & kArtFullySelected))
-								sAIArtSet->RemoveArtFromArtSet(set, art);
+			if (filter) {
+				// Now filter out objects of which the parents are selected too
+				long count;
+				sAIArtSet->CountArtSet(set, &count);
+				for (long i = count - 1; i >= 0; i--) {
+					AIArtHandle art;
+					if (!sAIArtSet->IndexArtSet(set, i, &art)) {
+						long values;
+						if (!sAIArt->GetArtUserAttr(art, kArtFullySelected, &values)
+								&& !(values & kArtFullySelected)) {
+							sAIArtSet->RemoveArtFromArtSet(set, art);
+						} else {
+							AIArtHandle parent = NULL;
+							sAIArt->GetArtParent(art, &parent);
+							if (parent != NULL && !Item_isLayer(parent)) {
+								if (!sAIArt->GetArtUserAttr(parent, kArtFullySelected, &values)
+										&& (values & kArtFullySelected))
+									sAIArtSet->RemoveArtFromArtSet(set, art);
+							}
 						}
 					}
 				}
@@ -84,6 +88,23 @@ AIArtSet ItemList_getSelected(JNIEnv *env) {
 		}
 	}
 	return set;
+}
+
+void ItemList_restoreSelected(AIArtSet set, bool dispose) {
+	Document_deselectAll(true);
+	// Select the previously selected objects:
+	long count;
+	if (set != NULL) {
+		sAIArtSet->CountArtSet(set, &count);
+		AIArtHandle art = NULL;
+		for (long i = 0; i < count; i++) {
+			if (!sAIArtSet->IndexArtSet(set, i, &art))
+				sAIArt->SetArtUserAttr(art, kArtSelected, kArtSelected);
+		}
+		// Clean up
+		if (dispose)
+			sAIArtSet->DisposeArtSet(&set);
+	}
 }
 
 AIArtHandle ItemList_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
@@ -136,6 +157,13 @@ AIArtHandle ItemList_rasterize(AIArtSet artSet, AIRasterizeType type, float reso
 	sAIRasterize->Rasterize(artSet, &settings, &artBounds, kPlaceAbove, top, &raster, NULL);
 	return raster;
 }
+
+AIArtSet ItemList_getSelected() {
+	AIArtSet selected = NULL;
+	if (!sAIArtSet->NewArtSet(&selected))
+		sAIArtSet->SelectedArtSet(selected);
+	return selected;
+}	
 
 /*
  * com.scriptographer.ai.Raster nativeRasterize(int type, float resolution, int antialiasing, float width, float height)

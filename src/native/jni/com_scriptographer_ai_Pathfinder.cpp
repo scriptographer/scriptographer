@@ -49,7 +49,7 @@ ASBoolean Pathfinder_begin(JNIEnv *env, jobjectArray artObjects, jfloat precisio
 	for (i = 0; i < length; i++) {
 		jobject obj = env->GetObjectArrayElement(artObjects, i);
 		if (env->IsInstanceOf(obj, gEngine->cls_ai_Item)) {
-			// only activate document of the first object
+			// Only activate document of the first object
 			// then ose IsValid to see if the others are valid (= in the same doc)
 			AIArtHandle art = gEngine->getArtHandle(env, obj, first);
 			if (Item_isValid(art))
@@ -60,23 +60,20 @@ ASBoolean Pathfinder_begin(JNIEnv *env, jobjectArray artObjects, jfloat precisio
 	data->fSelectedArtCount = count;
 	data->fSelectedArt = handles;
 
-	// get the previously selected objects:
-	// because the result is selected after execution of pathfinder...
-	AIArtSet selected = NULL;
-	if (!sAIArtSet->NewArtSet(&selected))
-		sAIArtSet->SelectedArtSet(selected);
-	*prevSelected = selected;
+	// Get the previously selected objects:
+	// Because the result is selected after execution of pathfinder...
+	*prevSelected = ItemList_getSelected(false);
 	Document_deselectAll();
 	return true;
 }
 
 jobject Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelected) {
-	// get the now selected objects (= result) and change the artset:
+	// Get the now selected objects (= result) and change the artset:
 	long count;
 	AIArtHandle art;
-	// get the selected results in a set:
+	// Get the selected results in a set:
 	jobject result = NULL;
-	AIArtSet selected = ItemList_getSelected(env);
+	AIArtSet selected = ItemList_getSelected();
 	if (selected != NULL) {
 		long count = 0;
 		sAIArtSet->CountArtSet(selected, &count);
@@ -89,15 +86,7 @@ jobject Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelect
 			result = gEngine->wrapArtHandle(env, art);
 		sAIArtSet->DisposeArtSet(&selected);
 	}
-	Document_deselectAll(true);
-	// select the previously selected objects:
-	sAIArtSet->CountArtSet(*prevSelected, &count);
-	for (long i = 0; i < count; i++) {
-		if (!sAIArtSet->IndexArtSet(*prevSelected, i, &art))
-			sAIArt->SetArtUserAttr(art, kArtSelected, kArtSelected);
-	}
-	// clean up
-	sAIArtSet->DisposeArtSet(prevSelected);
+	ItemList_restoreSelected(*prevSelected);
 	delete data->fSelectedArt;
 	
 	return result;
