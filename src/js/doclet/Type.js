@@ -331,7 +331,7 @@ Type = Object.extend(new function() {
 
 		getEnumConstants: function() {
 			return this.enumConstants().map(function(value) {
-				return code_filter('"' + value.name().toLowerCase().split('_').join('-') + '"');
+				return code_filter("'" + value.name().toLowerCase().split('_').join('-') + "'");
 			}).join(', ');
 		},
 

@@ -27,9 +27,9 @@ BeanProperty = SyntheticMember.extend({
 
 		this.seeTagList = [];
 		this.inlineTagList = [];
-		if (!this.setter)
-			this.inlineTagList.push(new Tag('Read-only. '))
 		this.inlineTagList.append(tags);
+		if (!this.setter)
+			this.inlineTagList.push(new Tag('\nRead-only.'))
 	},
 
 	firstSentenceTags: function() {
