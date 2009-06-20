@@ -635,6 +635,8 @@ public class Document extends NativeObject {
 	 * @param center
 	 * @param radius
 	 * @return the newly created path
+	 * 
+	 * @jshide
 	 */
 	public native Path createRegularPolygon(Point center, int numSides,
 			float radius);
@@ -651,6 +653,8 @@ public class Document extends NativeObject {
 	 * @param radius1
 	 * @param radius2
 	 * @return the newly created path
+	 * 
+	 * @jshide
 	 */
 	public native Path createStar(Point center, int numPoints, float radius1,
 			float radius2);
