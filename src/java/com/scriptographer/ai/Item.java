@@ -361,11 +361,21 @@ public abstract class Item extends DocumentObject {
 	
 	/**
 	 * Returns the item that this item is contained within.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path();
+	 * print(path.parent) // Layer (Layer 1)
+	 * 
+	 * var group = new Group();
+	 * group.appendTop(path);
+	 * print(path.parent); // Group (@31fbbe00)
+	 * </code>
 	 */
 	public native Item getParent();
 
 	/**
-	 * Returns the item's parent layer, if any,
+	 * Returns the item's parent layer, if any.
 	 */
 	public native Layer getLayer();
 
@@ -391,6 +401,28 @@ public abstract class Item extends DocumentObject {
 
 	/**
 	 * Returns an array of items contained within this item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var group = new Group();
+	 * 
+	 * // the group doesn't have any children yet
+	 * print(group.children.length); // 0
+	 * 
+	 * var path = new Path();
+	 * path.name = 'pathName';
+	 * 
+	 * // append the path in the group
+	 * group.appendTop(path);
+	 * 
+	 * print(group.children.length); // 1
+	 * 
+	 * // access children by index:
+	 * print(group.children[0]); // Path (pathName)
+	 * 
+	 * // access children by name:
+	 * print(group.children['pathName']); // Path (pathName)
+	 * </code>
 	 */
 	public ItemList getChildren() {
 		// don't implement this in native as the number of items is not known
@@ -420,6 +452,12 @@ public abstract class Item extends DocumentObject {
 		setChildren(Lists.asList(children));
 	}
 
+	/**
+	 * Removes all the items contained within the item.
+	 * 
+	 * @return <code>true</code> if removing was successful,
+	 *         <code>false</code> otherwise.
+	 */
 	public boolean removeChildren() {
 		Item child = getFirstChild();
 		boolean removed = false;
@@ -435,7 +473,7 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * Checks if the item has children.
 	 * 
-	 * @return true if it has one or more children, false otherwise
+	 * @return <code>true</code> if it has one or more children, <code>false</code> otherwise
 	 */
 	public boolean hasChildren() {
 		return getFirstChild() != null;
@@ -446,7 +484,7 @@ public abstract class Item extends DocumentObject {
 	private ItemRectangle bounds = null;
 
 	/**
-	 * The bounds of the item excluding stroke width.
+	 * The bounding rectangle of the item excluding stroke width.
 	 */
 	public Rectangle getBounds() {
 		commit(false);
@@ -488,12 +526,12 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * The bounds of the item including stroke width.
+	 * The bounding rectangle of the item including stroke width.
 	 */
 	public native Rectangle getStrokeBounds();
 
 	/**
-	 * The bounds of the item including stroke width and controls.
+	 * The bounding rectangle of the item including stroke width and controls.
 	 */
 	public native Rectangle getControlBounds();
 
@@ -503,6 +541,19 @@ public abstract class Item extends DocumentObject {
 
 	/**
 	 * The item's position. This is the center of the bounds rectangle.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // Create a circle at position { x: 10, y: 10 }
+	 * var circle = new Path.Circle(new Point(10, 10), 10);
+	 * 
+	 * // Move the circle to { x: 20, y: 20 }
+	 * circle.position = new Point(20, 20);
+	 * 
+	 * // Move the circle 10 points to the right
+	 * circle.position += new Point(10, 0);
+	 * print(circle.position); // { x: 30, y: 20 }
+	 * </code>
 	 */
 	public Point getPosition() {
 		if (position == null)
@@ -528,6 +579,7 @@ public abstract class Item extends DocumentObject {
 
 	/**
 	 * The name of the item as it appears in the layers palette.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var layer = new Layer(); // a layer is an item
@@ -544,12 +596,33 @@ public abstract class Item extends DocumentObject {
 	 * Checks if the item's name as it appears in the layers palette is a
 	 * default descriptive name, rather then a user-assigned name.
 	 * 
-	 * @return <tt>true</tt> if it's name is default, <tt>false</tt> otherwise.
+	 * Sample code:
+	 * <code>
+	 * var path = new Path();
+	 * print(path.name); // <Path>
+	 * print(path.isDefaultName()); // true
+	 * 
+	 * path.name = 'a nice name';
+	 * print(path.isDefaultName()); // false
+	 * </code>
+	 * 
+	 * @return <code>true</code> if it's name is default, <code>false</code> otherwise.
 	 */
 	public native boolean isDefaultName();
 
 	/**
 	 * The path style of the item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var circle = new Path.Circle(new Point(10, 10), 10);
+	 * circle.style = {
+	 * 	fillColor: new RGBColor(1, 0, 0),
+	 * 	strokeColor: new RGBColor(0, 1, 0),
+	 * 	strokeWidth: 5
+	 * };
+	 * 
+	 * </code>
 	 * @return
 	 */
 	public PathStyle getStyle() {
@@ -872,6 +945,19 @@ public abstract class Item extends DocumentObject {
 
 	public native void setAlphaIsShape(boolean isShape);
 
+	/**
+	 * Checks whether the item is valid, i.e. it hasn't been removed.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path();
+	 * print(path.isValid()); // true
+	 * path.remove();
+	 * print(path.isValid()); // false
+	 * </code>
+	 * 
+	 * @return <code>true</code> if the item is valid, <code>false</code> otherwise.
+	 */
 	public native boolean isValid();
 
 	/**
@@ -1098,7 +1184,7 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * Scales the item by the given values from its center point.
+	 * Scales the item by the given value from its center point.
 	 * 
 	 * @param scale
 	 * @see Matrix#scale(double, Point center)
