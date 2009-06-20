@@ -121,12 +121,14 @@ Member = Object.extend({
 		var containing = this.containingClass();
 		if (!containing.isVisible() && param.classDoc.superclass() == containing)
 			containing = param.classDoc;
+		var sameClass = containing == param.classDoc;
 		return renderLink({
 			path: containing.qualifiedName(),
 			anchor: this.getId(),
+			toggle: sameClass,
 			title: param.title || code_filter(
 				// Add the class name if the link goes accross classes
-				(containing != param.classDoc
+				(!sameClass && !param.shortTitle
 					? containing.name() + (this.isStatic() ? '.' : '#')
 					: '') + this.name() + this.getNameSuffix())
 		});

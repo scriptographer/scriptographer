@@ -41,7 +41,7 @@
 	<li>
 		<ul>
 	<% foreach $member in $class.members %>
-		<li><%= $member.renderLink({ classDoc: $class.classDoc }) %></li>
+		<li><%= $member.renderLink({ classDoc: param.classDoc, shortTitle: true }) %></li>
 	<% end %>
 		</ul>
 	</li>

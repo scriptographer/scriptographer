@@ -235,7 +235,8 @@ function renderLink(param) {
 		}
 		if (param.anchor) {
 			str += '#' + param.anchor;
-			str += '" onClick="return toggleMember(\'' + param.anchor + '\', true);';
+			if (param.toggle)
+				str += '" onClick="return toggleMember(\'' + param.anchor + '\', true);';
 		}
 		return str + '">' + param.title + '</a>';
 	} else {

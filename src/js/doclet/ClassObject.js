@@ -175,7 +175,7 @@ ClassObject = Object.extend({
 				}
 				superclass = superclass.superclass();
 			}
-			this.renderTemplate('class#inheritance', { classes: classes }, out);
+			this.renderTemplate('class#inheritance', { classDoc: cd, classes: classes }, out);
 		}
 		doc.close();
 		return index;
