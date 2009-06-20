@@ -565,19 +565,18 @@ public class Document extends NativeObject {
 	 * Creates a rectangular path with rounded corners
 	 * 
 	 * @param rect
-	 * @param hor the horizontal size of the rounded corners
-	 * @param ver the vertical size of the rounded corners
+	 * @param size the size of the rounded corners
 	 * @return the newly created path
 	 * 
 	 * @jshide
 	 */
-	public native Path createRoundRectangle(Rectangle rect, float hor, float ver);
+	public native Path createRoundRectangle(Rectangle rect, Size size);
 
 	/**
 	 * @jshide
 	 */
 	public Path createRoundRectangle(double x, double y, double width, double height, float hor, float ver) {
-		return createRoundRectangle(new Rectangle(x, y, width, height), hor, ver);
+		return createRoundRectangle(new Rectangle(x, y, width, height), new Size(hor, ver));
 	}
 
 	/**

@@ -43,7 +43,17 @@ import com.scriptographer.CommitManager;
 
 /**
  * @author lehni
+ * 
+ * @jsextension {@type constructor} {@name Path.Line} {@reference Document#createLine} {@after Path}
+ * @jsextension {@type constructor} {@name Path.Rectangle} {@reference Document#createRectangle} {@after Path}
+ * @jsextension {@type constructor} {@name Path.RoundRectangle} {@reference Document#createRoundRectangle} {@after Path}
+ * @jsextension {@type constructor} {@name Path.RegularPolygon} {@reference Document#createRegularPolygon} {@after Path}
+ * @jsextension {@type constructor} {@name Path.Star} {@reference Document#createStar} {@after Path}
+ * @jsextension {@type constructor} {@name Path.Spiral} {@reference Document#createSpiral} {@after Path}
+ * @jsextension {@type constructor} {@name Path.Oval} {@reference Document#createOval} {@after Path}
+ * @jsextension {@type constructor} {@name Path.Circle} {@reference Document#createCircle} {@after Path}
  */
+
 public class Path extends PathItem {
 
 	private SegmentList segments = null;
