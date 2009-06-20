@@ -1311,6 +1311,15 @@ int ScriptographerEngine::getDocumentObjectHandle(JNIEnv *env, jobject obj, bool
 	return handle;
 }
 
+AIDictionaryRef ScriptographerEngine::getDictionaryHandle(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	int handle = getIntField(env, obj, fid_ai_Dictionary_handle);
+	if (!handle)
+		throw new StringException("Object is not wrapping a dictionary handle.");
+	return (AIDictionaryRef) handle;
+}
 /**
  * Returns the wrapped AIDocumentHandle of an object by assuming that it is a Document and
  * accessing its field 'handle', or an Item, in which case it's document field is fetched first. 

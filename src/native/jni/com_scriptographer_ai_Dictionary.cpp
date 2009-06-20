@@ -261,7 +261,6 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativeRemove(JN
  * boolean containsKey(java.lang.Object key)
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_containsKey(JNIEnv *env, jobject obj, jobject key) {
-	jboolean res = false;
 	try {
 		AIDictionaryRef dictionary = gEngine->getDictionaryHandle(env, obj);
 		char *str = gEngine->convertString(env, (jstring) env->CallObjectMethod(key, gEngine->mid_Object_toString));

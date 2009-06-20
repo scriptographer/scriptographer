@@ -498,7 +498,8 @@ public:
 	// AI Handles
 	int getAIObjectHandle(JNIEnv *env, jobject obj, const char *name);
 	int getDocumentObjectHandle(JNIEnv *env, jobject obj, bool activateDoc, const char *name);
-
+	AIDictionaryRef getDictionaryHandle(JNIEnv *env, jobject obj);
+	
 	AIArtHandle getArtHandle(JNIEnv *env, jobject obj, bool activateDoc = false, AIDocumentHandle *doc = NULL);
 	AILayerHandle getLayerHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
 	AIDocumentHandle getDocumentHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
@@ -522,10 +523,6 @@ public:
 	
 	inline AIFontKey getFontHandle(JNIEnv *env, jobject obj) {
 		return (AIFontKey) getAIObjectHandle(env, obj, "font");
-	}
-
-	inline AIDictionaryRef getDictionaryHandle(JNIEnv *env, jobject obj) {
-		return (AIDictionaryRef) getAIObjectHandle(env, obj, "dictionary");
 	}
 
 	inline AIToolHandle getToolHandle(JNIEnv *env, jobject obj) {
