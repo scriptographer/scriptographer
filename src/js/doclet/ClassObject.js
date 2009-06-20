@@ -69,14 +69,12 @@ ClassObject = Object.extend({
 		return this.classDoc.qualifiedName();
 	},
 
-	hasSimilar: function(member) {
-		(member.isMethod() && this.methods()
-			|| member.isConstructor() && this.constructors()
-			|| this.fields()).each(function(other) {
-			if (member.isSimilar(other))
-				return true;
+	hasCompatible: function(member) {
+		return (member.isMethod() && this.methods()
+				|| member.isConstructor() && this.constructors()
+				|| this.fields()).find(function(other) {
+			return member.isCompatible(other);
 		});
-		return false;
 	},
 
 	renderClass: function() {
@@ -159,7 +157,7 @@ ClassObject = Object.extend({
 
 					function addNonSimilar(members) {
 						members.each(function(member) {
-							if (member.isVisible() && !that.hasSimilar(member))
+							if (member.isVisible() && !that.hasCompatible(member))
 								inherited.push(member);
 						});
 					}

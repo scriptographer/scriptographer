@@ -51,21 +51,17 @@ Method = Member.extend(new function() {
 		},
 
 		add: function(method) {
-			// Do not add base versions for overridden functions 
+			// Do not add superclass versions for overridden methods 
 			var signature = method.signature();
 			if (!this.added[signature]) {
 				// See wether the new method fits the existing ones:
 				if (this.methods.find(function(mem) {
 					return !isCompatible(mem, method);
 				})) return false;
-				// Filter out abstract methods
-				if (method.isMethod() && method.isAbstract())
-					return false;
 				// Filter out methods that do not define a concrete generic
 				var type = method.isMethod() && method.returnType();
-				if (type && type.bounds && type.bounds().length == 0) {
+				if (type && type.bounds && type.bounds().length == 0)
 					return false;
-				}
 				this.isGrouped = true;
 				this.methods.push(method);
 				// Just point method to the first of the methods, for name, signature, etc.
@@ -257,13 +253,18 @@ Method = Member.extend(new function() {
 			}
 		},
 
-		isSimilar: function(obj) {
+		isCompatible: function(obj) {
 			if (obj instanceof Method) {
-				return this.isStatic() == obj.isStatic() &&
-					this.name() == obj.name() &&
-					this.renderParameters() == obj.renderParameters();
+				// Loop through each single 'native' method and call isCompatible
+				// on it agian.
+				return obj.methods.find(function(mem) {
+					return this.isCompatible(mem);
+				}, this);
+			} else {
+				return this.methods.find(function(mem) {
+					return isCompatible(mem, obj);
+				}, this);
 			}
-			return false;
 		},
 
 		isEmpty: function() {

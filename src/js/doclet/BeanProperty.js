@@ -52,8 +52,7 @@ BeanProperty = SyntheticField.extend({
 				this.setters.members.each(function(setter) {
 					var type = setter.parameters()[0].paramType();
 					if (!types.find(function(other) {
-						if (other.isCompatible(type))
-							return true;
+						return other.isCompatible(type)
 					})) {
 						types.push(type);
 					}

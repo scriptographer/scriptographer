@@ -42,13 +42,11 @@ MemberGroup = Object.extend({
 
 			// See if we can add to an existing Member, based on compatible
 			// variable parameter versions:
-			var mem = this.members.find(function(existing) {
-				if (existing.add(member))
-					return existing;
-			});
-			// Couldn't add to an existing Member, try creating a new one:
-			if (!mem) {
-				mem = new Method(this.classObject);
+			if (!this.members.find(function(existing) {
+				return existing.add(member);
+			})) {
+				// Couldn't add to an existing Member, try creating a new one:
+				var mem = new Method(this.classObject);
 				if (mem.add(member))
 					return this.add(mem);
 			}

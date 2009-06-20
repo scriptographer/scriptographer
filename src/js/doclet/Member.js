@@ -148,7 +148,7 @@ Member = Object.extend({
 		return this._static;
 	},
 
-	isSimilar: function(mem) {
+	isCompatible: function(mem) {
 		return this.isStatic() == mem.isStatic() && this.name() == mem.name();
 	},
 
