@@ -42,6 +42,8 @@ import com.scriptographer.ui.Drawer;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class Annotator extends NativeObject {
 	private boolean active;

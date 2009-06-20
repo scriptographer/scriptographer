@@ -32,7 +32,11 @@
 package com.scriptographer.ui;
 
 /**
+ * Mac only, so hidden for now.
+ * 
  * @author lehni
+ * 
+ * @jshide
  */
 public class ChasingArrows extends Item {
 
