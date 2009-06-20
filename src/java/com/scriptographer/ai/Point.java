@@ -513,6 +513,12 @@ public class Point {
 		return getDistanceSquared(point.x, point.y);
 	}
 
+	/**
+	 * The length of the vector that is represented by this point's coordinates.
+	 * Each point can be interpreted as a vector that points from the origin
+	 * (<code>x = 0</code>,<code>y = 0</code>) to the point's location.
+	 * Setting the length changes the location but keeps the vector's angle.
+	 */
 	public double getLength() {
 		return Math.sqrt(x * x + y * y);
 	}
