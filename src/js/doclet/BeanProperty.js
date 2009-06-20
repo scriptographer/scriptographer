@@ -44,6 +44,27 @@ BeanProperty = SyntheticField.extend({
 		return this.seeTagList;
 	},
 
+	getAcceptTypes: function() {
+		// Caching
+		if (this.acceptTypes === undefined) {
+			var types = [];
+			if (this.setters && this.setters.members.length > 1) {
+				this.setters.members.each(function(setter) {
+					var type = setter.parameters()[0].paramType();
+					if (!types.find(function(other) {
+						if (other.isCompatible(type))
+							return true;
+					})) {
+						types.push(type);
+					}
+				});
+			}
+			// Only display accept types if they are more than one.
+			this.acceptTypes = types.length > 1 ? types : null;
+		}
+		return this.acceptTypes;
+	},
+
 	getVisible: function() {
 		// SG Convention: Hide read-only is-getter beans and show is-method instead.
 		if (/^is/.test(this.member.name()) && !this.setters)
@@ -67,7 +88,7 @@ BeanProperty = SyntheticField.extend({
 				&& method.returnType().typeName() == 'void' && params.length == 1
 				&& (!type
 					|| param.typeName() == type.typeName()
-					|| conversion && param.paramType().isCompatible(type));
+					|| conversion/* && param.paramType().isCompatible(type)*/);
 		}
 	}
 });

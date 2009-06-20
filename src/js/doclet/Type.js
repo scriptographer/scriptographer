@@ -211,28 +211,43 @@ Type = Object.extend(new function() {
 		 * Returns the component type of arrays, lists and collections
 		 */
 		getComponentType: function() {
-			if (this.isArray()) {
-				var  cd = this.asClassDoc();
-				return cd && new Type(cd);
-			} else if (this.isList() || this.isCollection()) {
-				// Generics stuff
-				var type = this.typeArguments()[0];
-				// If there's no typeArgument here, walk up the inheritance chain
-				// and see if we can find something there
-				if (!type && this.superclassType) {
-					var sup = this;
-					while (!type) {
-						sup = sup.superclassType();
-						if (!sup) break;
-						type = sup.asParameterizedType();
-						type = type && type.typeArguments()[0];
+			// Caching
+			if (this.componentType === undefined) {
+				this.componentType = null;
+				if (this.isArray()) {
+					var  cd = this.asClassDoc();
+					this.componentType = cd ? new Type(cd) : null;
+				} else if (this.isList() || this.isCollection()) {
+					// Generics stuff
+					var type = this.typeArguments()[0];
+					print('?', this, '--', type, '--', type && type.extendsBounds && true, '--', type && type.bounds && type.bounds());
+					// If there's no typeArgument here, walk up the inheritance chain
+					// and see if we can find something there
+					if (type && type.extendsBounds) // WildcardType
+						type = type.extendsBounds()[0];
+					if (type && type.bounds) print('T', this, ' -- ', type.bounds());
+					if (type && type.bounds) // TypeVariable
+						type = type.bounds()[0];
+					print('!', this, ' -- ', type);
+					type = type && new Type(type);
+					// If we did not find it yet, walk through interfaces first,
+					// then superclasses and check again.
+					if (!type) {
+						type = this.interfaceTypes().find(function(face) {
+							face = new Type(face);
+							if (face.isList())
+								return face.getComponentType();
+						});
+						if (!type && this.superclassType) {
+							var sup = this.superclassType();
+							type = sup && sup.asParameterizedType();
+							type = type && new Type(type).getComponentType();
+						}
 					}
+					this.componentType = type || null;
 				}
-				if (type && type.extendsBounds)
-					type = type.extendsBounds()[0];
-				return type && new Type(type);
 			}
-			return null;
+			return this.componentType;
 		},
 
 		getListDescription: function() {
@@ -267,9 +282,9 @@ Type = Object.extend(new function() {
 			} else if (this.isBoolean()) {
 				str = code_filter('Boolean');
 			} else if (!param.linkOnly && (this.isArray() || this.isList() || this.isCollection())) {
-				var doc = this.getComponentType();
-				str = 'Array of ' + (doc
-					? doc.renderLink({ additional: true })
+				var type = this.getComponentType();
+				str = 'Array of ' + (type
+					? type.renderLink({ additional: true })
 					: code_filter(Type.isNumber(this.typeName())
 						? 'Number'
 						: this.typeName().capitalize()));

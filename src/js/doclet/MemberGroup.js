@@ -43,8 +43,11 @@ MemberGroup = Object.extend({
 			// Couldn't add to an existing Member, create a new one:
 			if (!mem) {
 				mem = new Method(this.classObject);
-				if (mem.add(member))
+				if (mem.add(member)) {
 					return this.add(mem);
+				} else {
+					mem = null;
+				}
 			}
 		} else {
 			if (member instanceof Member)

@@ -45,31 +45,37 @@ Method = Member.extend(new function() {
 			this.base(classObject);
 			this.isGrouped = false;
 			this.methods = [];
-			this.map = new Hash();
+			this.added = {};
 			if (method)
 				this.add(method);
 		},
 
 		add: function(method) {
-			var swallow = true;
 			// Do not add base versions for overridden functions 
 			var signature = method.signature();
-			if (this.map[signature])
-				swallow = false;
-			this.map[signature] = method;
-			if (swallow) {
+			if (!this.added[signature]) {
 				// See wether the new method fits the existing ones:
 				if (this.methods.find(function(mem) {
 					return !isCompatible(mem, method);
 				})) return false;
+				// Filter out abstract methods
+				if (method.isMethod() && method.isAbstract())
+					return false;
+				// Filter out methods that do not define a concrete generic
+				var type = method.isMethod() && method.returnType();
+				if (type && type.bounds && type.bounds().length == 0) {
+					return false;
+				}
 				this.isGrouped = true;
 				this.methods.push(method);
+				// Just point method to the first of the methods, for name, signature, etc.
+				// This is corrected in init(), if grouping occurs.
+				if (!this.member)
+					this.member = method;
+				this.added[signature] = true;
+				return true;
 			}
-			// Just point method to the first of the methods, for name, signature, etc.
-			// This is corrected in init(), if grouping occurs.
-			if (!this.member)
-				this.member = method;
-			return true;
+			return false;
 		},
 
 		remove: function(method) {

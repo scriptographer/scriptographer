@@ -32,6 +32,7 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% $classDoc = this.containingClass() %>
 <% tags classDoc=$classDoc tags=this.inlineTags() prefix='<div class="member-paragraph">' suffix='</div>' %>
 <% this.template "#parameters" classDoc=$classDoc %>
+<% this.template "#accepts" classDoc=$classDoc %>
 <% this.template "#return" classDoc=$classDoc %>
 <% this.template "#throws" classDoc=$classDoc %>
 <% tags classDoc=$classDoc tags=this.seeTags() prefix='<div class="member-paragraph"><b>See also:</b> ' suffix='</div>' separator=', ' %>
@@ -55,6 +56,13 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% end %>
 <% end %>
 
+<% #accepts -%>
+<% if this.getAcceptTypes %>
+<% foreach $accept in this.getAcceptTypes() prefix='<div class="member-paragraph"><b>Accepts:</b>' suffix='</div>' %>
+<div><%= $accept.renderLink({ linkOnly: true }) %></div>
+<% end %>
+<% end %>
+
 <% #return -%>
 <% $returnType = this.returnType() %>
 <% if $returnType && $returnType.typeName() != 'void' %>
@@ -69,8 +77,7 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% end %>
 
 <% #throws -%>
-<% $exceptions = this.throwsTags() %>
-<% foreach $ex in $exceptions prefix='<div class="member-paragraph"><b>Throws:</b>' suffix='</div>' %>
+<% foreach $ex in this.throwsTags() prefix='<div class="member-paragraph"><b>Throws:</b>' suffix='</div>' %>
 	<% $cd = $ex.exception() %>
 	<div>
 		<%= $cd ? $cd.renderLink() : $ex.exceptionName() %><% tags classDoc=$cd tags=$ex.inlineTags() prefix=" - " %>
