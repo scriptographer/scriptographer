@@ -6,4 +6,4 @@
 <% end %>
 
 <% $title -%>
-<%= param.title prefix=settings.section2Open suffix=settings.section2Close %>
+<%= param.title | heading 2 %>

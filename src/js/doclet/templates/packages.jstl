@@ -12,7 +12,7 @@
 <html>
 <body class="documentation">
 <div class="documentation-packages">
-<%= settings.docTitle prefix=settings.section1Open suffix=settings.section1Close %>
+<%= settings.docTitle | heading 1 %>
 <%= settings.author %>
 <ul class="documentation-list">
 <%= this.content %>

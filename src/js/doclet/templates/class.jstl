@@ -1,5 +1,5 @@
 <% if !settings.templates %>
-<%= settings.section1Open %><%= this.name() %><%= settings.section1Close %>
+<%= this.name() | heading 1 %>
 <% end %>
 <% $superclass = this.classDoc.getSuperclass() %>
 <% $listDescription = this.classDoc.getListDescription() %>
@@ -20,7 +20,7 @@
 <% tags classDoc=this.classDoc tags=this.classDoc.inlineTags() prefix="<p>" suffix="</p>" %>
 <% tags classDoc=this.classDoc tags=this.classDoc.seeTags() prefix="<p><b>See also: </b>" suffix="</p>" separator=", " %>
 <% if settings.versionInfo %>
-	<% tags classDoc=this.classDoc tags=this.classDoc.tags("version") prefix=<%= "Version" prefix=settings.section2Open suffix=settings.section2Close %> suffix="</p>" separator=", " %>
+	<% tags classDoc=this.classDoc tags=this.classDoc.tags("version") prefix=<%= "Version" | heading 2 %> suffix="</p>" separator=", " %>
 <% end %>
 
 <% $subclasses -%>
@@ -32,7 +32,7 @@
 <% #inheritance %>
 <% foreach $class in param.classes %>
 	<% if $class#first %>
-<%= settings.section2Open %>Inheritance<%= settings.section2Close %>
+<%= 'Inheritance' | heading 2 %>
 	<% else %>
 <br />
 	<% end %>

@@ -1,4 +1,4 @@
-<%= param.title prefix=settings.section2Open suffix=settings.section2Close %>
+<%= param.title | heading 2 %>
 <ul>
 <% foreach $member in param.members %>
 	<% $member.renderSummary(param.classDoc) %>

@@ -89,13 +89,16 @@ var settings = {
 	hyperref: options.nohyperref != 'true',
 	versionInfo: options.version == 'true',
 	debug: options.shortinherited == 'true',
-	section1Open: options.section1open || '<h1>',
-	section1Close: options.section1close || '</h1>',
-	section2Open: options.section2open || '<h2>',
-	section2Close: options.section2close || '</h2>',
-	section3Open: options.section2open || '<h3>',
-	section3Close: options.section2close || '</h3>'
+	headings: {}
 };
+
+// Section headings
+for (var i = 1; i <= 4; i++) {
+	settings.headings[i] = { 
+		open: options['heading' + i + 'open'] || '<h' + i + '>',
+		close: options['heading' + i + 'close'] || '</h' + i + '>'
+	}
+}
 
 // A global data object to store global stuff from templates / macros:
 

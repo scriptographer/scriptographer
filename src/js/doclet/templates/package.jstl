@@ -1,2 +1,2 @@
-<%= settings.section1Open %><%= param.title %><%= settings.section1Close %>
+<%= param.title | heading 1 %>
 <%= param.text %>

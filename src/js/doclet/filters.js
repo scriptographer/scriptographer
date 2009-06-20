@@ -49,3 +49,8 @@ function tags_filter(str) {
 function stripTags_filter(str) {
 	return str.replace(/<.*?>|<\/.*?>/g, ' ').replace(/\\s+/g, ' ');
 }
+
+function heading_filter(str, param, level) {
+	var heading = settings.headings[level];
+	return heading ? heading.open + str + heading.close : str;
+}
