@@ -194,6 +194,10 @@ Type = Object.extend(new function() {
 			return !this.isArray() && this.hasSuperclass('java.io.File');
 		},
 
+		isFunction: function() {
+			return !this.isArray() && this.hasSuperclass('com.scratchdisk.script.Callable');
+		},
+
 		isCompatible: function(type) {
 			var cd1 = this.asClassDoc(), cd2 = type.asClassDoc();
 			var type1, type2;
@@ -322,6 +326,8 @@ Type = Object.extend(new function() {
 					str = ClassObject.renderLink({
 						name: 'com.scriptographer.sg.File'
 					});
+				} else if (this.isFunction()) {
+					return code_filter('Function');
 				} else {
 					str = code_filter(Type.getSimpleName(cls 
 						? cls.name() 
