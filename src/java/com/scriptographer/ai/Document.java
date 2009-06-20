@@ -60,8 +60,18 @@ public class Document extends NativeObject {
 	 * @param colorModel the document's desired color model
 	 * @param dialogStatus how dialogs should be handled
 	 */
-	public Document(File file, int colorModel, int dialogStatus) {
-		super(nativeCreate(file, colorModel, dialogStatus));
+	public Document(File file, ColorModel colorModel, DialogStatus dialogStatus) {
+		super(nativeCreate(file,
+				(colorModel != null ? colorModel : ColorModel.CMYK).value,
+				(dialogStatus != null ? dialogStatus : DialogStatus.NONE).value));
+	}
+
+	public Document(File file, ColorModel colorModel) {
+		this(file, colorModel, null);
+	}
+
+	public Document(File file) {
+		this(file, null, null);
 	}
 
 	/**
@@ -75,16 +85,17 @@ public class Document extends NativeObject {
 	 */
 	public Document(String title, float width, float height, ColorModel colorModel,
 			DialogStatus dialogStatus) {
-		super(nativeCreate(title, width, height, colorModel.value,
+		super(nativeCreate(title, width, height, 
+				(colorModel != null ? colorModel : ColorModel.CMYK).value,
 				(dialogStatus != null ? dialogStatus : DialogStatus.NONE).value));
 	}
 
 	public Document(String title, float width, float height, ColorModel colorModel) {
-		this(title, width, height, colorModel, DialogStatus.NONE);
+		this(title, width, height, colorModel, null);
 	}
 
 	public Document(String title, float width, float height) {
-		this(title, width, height, ColorModel.CMYK, DialogStatus.NONE);
+		this(title, width, height, null, null);
 	}
 
 	protected Document(int handle) {
