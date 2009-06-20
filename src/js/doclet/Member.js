@@ -18,8 +18,8 @@ Member = Object.extend({
 	},
 
 	renderMember: function(param) {
-		data.group = {};
 		if (this.isVisible()) {
+			data.group = {};
 			if (param.index) {
 				param.index.push('"' + this.getId() + '": { title: "' + this.name() + '", text: "'
 					+ encodeJs(renderTags({
