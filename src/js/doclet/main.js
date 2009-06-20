@@ -133,33 +133,7 @@ String.inject({
 // We're injecting Type.prototype into ClassDocImpl, to enhance all ClassDocs
 // automatically. It's ok to do so since Rhino doesn't allow to override
 // native methods, so e.g. qualifiedName won't loop endlessly.
-ClassDocImpl.inject(Hash.merge({
-	isVisible: function() {
-		var obj = ClassObject.get(this.qualifiedName());
-		return obj && obj.isVisible();
-	},
-
-	// This is defined outside renderLink so that even when a Type
-	// happens to be its own ClassDoc (as returned by asClassDoc), and therefore
-	// overrides renderLink, it can still call the base version.
-	renderClassLink: function(param) {
-		var str = '';
-		if (this.isVisible()) {
-			if (this.isAbstract())
-				str += '<i>';
-			str += renderLink({
-				path: this.qualifiedName(),
-				anchor: '',
-				title: param.title || code_filter(this.name())
-			});
-			if (this.isAbstract())
-				str += '</i>';
-		} else {
-			str = Type.getSimpleName(this.name());
-		}
-		return str;
-	}
-}, Type.prototype));
+ClassDocImpl.inject(Type.prototype);
 
 // Parameter helpers
 

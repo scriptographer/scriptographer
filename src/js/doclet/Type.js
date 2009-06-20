@@ -128,6 +128,12 @@ Type = Object.extend(new function() {
 			return cd && cd.qualifiedName() || '';
 		},
 
+		isVisible: function() {
+			var obj = ClassObject.get(this.asClassDoc());
+			return obj && obj.isVisible();
+			return cd && cd.isVisible() || true;
+		},
+
 		typeArguments: function() {
 			return [];
 		},
@@ -287,10 +293,11 @@ Type = Object.extend(new function() {
 				str = code_filter('Number');
 			} else if (this.isBoolean()) {
 				str = code_filter('Boolean');
-			} else if (!param.linkOnly 
-					&& (this.isArray() || this.isList() || this.isCollection())) {
+			} else if (this.isArray()
+					|| !this.isVisible() && (this.isList() || this.isCollection())) {
 				var type = this.getComponentType();
-				str = 'Array of ' + (type
+				// Support n-dimensional array the lazy way
+				str = this.dimension().replace(/\[\]/g, 'Array of ') + (type
 					? type.renderLink({ additional: true })
 					: code_filter(Type.isNumber(this.typeName())
 						? 'Number'
@@ -325,6 +332,27 @@ Type = Object.extend(new function() {
 				var add = this.renderAdditional();
 				if (add)
 					str += add;
+			}
+			return str;
+		},
+
+		// This is defined outside renderLink so that even when a Type
+		// happens to be its own ClassDoc (as returned by asClassDoc), and therefore
+		// overrides renderLink, it can still call the base version.
+		renderClassLink: function(param) {
+			var str = '';
+			if (this.isVisible()) {
+				if (this.isAbstract())
+					str += '<i>';
+				str += renderLink({
+					path: this.qualifiedName(),
+					anchor: '',
+					title: param.title || code_filter(this.name())
+				});
+				if (this.isAbstract())
+					str += '</i>';
+			} else {
+				str = Type.getSimpleName(this.name());
 			}
 			return str;
 		},

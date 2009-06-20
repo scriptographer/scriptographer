@@ -7,7 +7,7 @@
 <% if this.classDoc.isAbstract() || $superclass || $listDescription || $subclasses  %>
 <p><%= param.type %> <%= this.classDoc.renderLink() -%>
 <% if $superclass %>
- extends <%= $superclass.renderLink({ linkOnly: true }) -%>
+ extends <%= $superclass.renderLink() -%>
 <% end %>
 <% if $listDescription %>
 <% if $superclass %>, <% end %>, <%= settings.templates ? '<% this.listDescription type="' + $listDescription + '" %>' : $listDescription %>

@@ -59,7 +59,7 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% #accepts -%>
 <% if this.getAcceptTypes %>
 <% foreach $accept in this.getAcceptTypes() prefix='<div class="member-paragraph"><b>Accepts:</b>' suffix='</div>' %>
-<div><%= $accept.renderLink({ linkOnly: true }) %></div>
+<div><%= $accept.renderLink() %></div>
 <% end %>
 <% end %>
 
