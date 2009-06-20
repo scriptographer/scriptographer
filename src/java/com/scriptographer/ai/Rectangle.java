@@ -180,7 +180,44 @@ public class Rectangle {
 		this.height = height;
 	}
 
+	public Point getPoint() {
+		return new Point(x, y);
+	}
+
+	public void setPoint(Point point) {
+		this.x = point.x;
+		this.y = point.y;
+	}
+
 	/**
+	 * @jshide
+	 */
+	public void setPoint(double x, double y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	
+	public Size getSize() {
+		return new Size(width, height);
+	}
+
+	public void setSize(Size size) {
+		this.width = size.width;
+		this.height = size.height;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public void setSize(double width, double height) {
+		this.width = width;
+		this.height = height;
+	}
+
+	/**
+	 * {@grouptitle Side Positions}
+	 * 
 	 * The position of the left hand side of the rectangle. Note that this
 	 * doesn't move the whole rectangle; the right hand side stays where it was.
 	 */
@@ -234,23 +271,6 @@ public class Rectangle {
 		y = bottom;
 	}
 
-	public Size getSize() {
-		return new Size(width, height);
-	}
-
-	/**
-	 * @jshide
-	 */
-	public void setSize(int width, int height) {
-		this.width = width;
-		this.height = height;
-	}
-
-	public void setSize(Size size) {
-		this.width = size.width;
-		this.height = size.height;
-	}
-
 	private double getCenterX() {
 		return x + width * 0.5f;
 	}
@@ -268,6 +288,8 @@ public class Rectangle {
 	}
 	
 	/**
+	 * {@grouptitle Corner and Center Point Positions}
+	 * 
 	 * The center point of the rectangle.
 	 */
 	public Point getCenter() {
@@ -378,26 +400,6 @@ public class Rectangle {
 	 */
 	public Object clone() {
 		return new Rectangle(this);
-	}
-
-	public Rectangle add(Point point) {
-		return new Rectangle(x + point.x, y + point.y, width, height);
-	}
-
-	public Rectangle subtract(Point point) {
-		return new Rectangle(x - point.x, y - point.y, width, height);
-	}
-
-	public Rectangle multiply(double value) {
-		return new Rectangle(x, y, width * value, height * value);
-	}
-
-	public Rectangle multiply(Point point) {
-		return new Rectangle(x, y, width * point.x, height * point.y);
-	}
-
-	public Rectangle divide(double value) {
-		return new Rectangle(x, y, width / value, height / value);
 	}
 
 	public boolean equals(Object object) {
