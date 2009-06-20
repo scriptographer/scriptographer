@@ -112,7 +112,7 @@ Member = Object.extend({
 
 	getId: function() {
 		// Convert name + signature to css friendly id:
-		return (this.name() + '-' + this.signature()).replace(/\W+/g, function(match) {
+		return (this.name() + '-' + this.signature()).replace(/[^\w\[\]]+/g, function(match) {
 			return '-';
 		}).trim('-');
 	},

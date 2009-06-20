@@ -27,7 +27,7 @@ ReferenceMember = SyntheticMember.extend({
 				this.list.addAt(this.after, this);
 			for (var i = 1, l = group.members.length; i < l; i++) {
 				var member = group.members[i];
-				this.list.addAt(name, new ReferenceMember(this.classObject,
+				this.list.addAt(group.name, new ReferenceMember(this.classObject,
 						this.data, this.list, member));
 			}
 		}
