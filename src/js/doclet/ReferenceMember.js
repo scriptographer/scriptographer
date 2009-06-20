@@ -7,10 +7,12 @@
  */
 
 ReferenceMember = SyntheticMember.extend({
-	initialize: function(classObject, data) {
+	initialize: function(classObject, data, list) {
 		this.base(classObject, data.name);
-		this.type = data.type;
 		this.reference = data.reference;
+		this.type = data.type;
+		this.after = data.after;
+		this.list = list;
 	},
 
 	resolve: function() {
@@ -22,15 +24,7 @@ ReferenceMember = SyntheticMember.extend({
 		if (!classObject)
 			classObject = ClassObject.put(cls, true);
 		this.member = classObject.getMember(name);
-	},
-
-	isMethod: function() {
-		// This might get called before this.member is set, so make sure to not fail
-		return this.member && this.member.isMethod();
-	},
-
-	isConstructor: function() {
-		// This might get called before this.member is set, so make sure to not fail
-		return this.member && this.member.isConstructor();
-	},
+		if (this.member)
+			this.list.addAt(this.after, this);
+	}
 });

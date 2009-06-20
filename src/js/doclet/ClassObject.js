@@ -45,8 +45,7 @@ ClassObject = Object.extend({
 			if (data.type && data.name) {
 				var list = this.lists[data.type];
 				if (list) {
-					var ref = new ReferenceMember(this, data);
-					list.add(ref);
+					var ref = new ReferenceMember(this, data, list);
 					this.refernceMembers.push(ref);
 				}
 			}

@@ -61,6 +61,25 @@ MemberGroupList = Object.extend({
 		return false;
 	},
 
+	addAt: function(name, member) {
+		var oldGroups = this.groups;
+		// In order to insert into the hash at a certain place, simply create
+		// a new hash, add to it up to this point, then add the member, then
+		// keep adding.
+		this.groups = new Hash();
+		var added = false;
+		oldGroups.each(function(group, key) {
+			this.groups[key] = group;
+			if (/\s/.test(key))
+				key = key.match(/(\w*)$/)[1];
+			if (key == name)
+				added = this.add(member);
+		}, this);
+		if (!added)
+			added = this.add(member);
+		return added;
+	},
+
 	addAll: function(members) {
 		members.each(function(member) {
 			this.add(member);
