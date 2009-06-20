@@ -301,7 +301,8 @@ Type = Object.extend(new function() {
 					|| !this.isVisible() && (this.isList() || this.isCollection())) {
 				var type = this.getComponentType();
 				// Support n-dimensional array the lazy way
-				str = this.dimension().replace(/\[\]/g, 'Array of ') + (type
+				var part = 'Array of ';
+				str = (this.dimension().replace(/\[\]/g, part) || part) + (type
 					? type.renderLink({ additional: true })
 					: code_filter(Type.isNumber(this.typeName())
 						? 'Number'
