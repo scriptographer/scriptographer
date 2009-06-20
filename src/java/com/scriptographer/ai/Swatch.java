@@ -35,6 +35,8 @@ package com.scriptographer.ai;
  * A Swatch represents a named color, tint, gradient or pattern contained within
  * an Illustrator document.
  * 
+ * They can be retrieved from the document through {@link Document#getSwatches}.
+ * 
  * @author lehni
  */
 public class Swatch extends DocumentObject {
