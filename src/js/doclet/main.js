@@ -63,10 +63,10 @@ var settings = {
 	docTitle: options.doctitle || '',
 	bottom: options.bottom || '',
 	author: options.author || '',
-	filterClasses: (options.filterclasses || '').trim().split(/\s+/),
+	methodFilter: (options.methodfilter || '').trim().split(/\s+/),
+	classFilter: (options.classfilter || '').trim().split(/\s+/),
 	classMatch: options.classmatch ? new RegExp('(' + options.classmatch.replace(/\s/g, '|') + ')$', 'g') : null,
 	packageSequence: (options.packagesequence || '').trim().split(/\s+/),
-	methodFilter: (options.methodfilter || '').trim().split(/\s+/),
 	classOrder: (function() {
 		var classOrder = new Hash();
 		if (options.classorder) {
@@ -172,6 +172,7 @@ MemberDocImpl.inject({
 	},
 
 	renderLink: function(param) {
+		param = param || {};
 		var mem = Member.get(this);
 		return mem
 			? mem.renderLink(param)
@@ -180,7 +181,7 @@ MemberDocImpl.inject({
 			// they would be. (e.g. when linking to invisible methods using @link)
 			: code_filter((this.containingClass() != param.classDoc
 				? this.containingClass().name() + (this.isStatic() ? '.' : '#')
-				: '') + this.name() + this.signature());
+				: '') + this.name() + (this.signature ? this.signature() : ''));
 	}
 });
 
@@ -200,13 +201,13 @@ function processClasses(classes) {
 		}
 	});
 	classes.each(function(cd) {
+		var superclass = cd.superclass();
+		while (superclass && !superclass.isVisible() && superclass.qualifiedName() != 'java.lang.Object')
+			superclass = superclass.superclass();
 		var cls = cd.classObj;
-		if (cls && cd.superclass()) {
-			var superclass = cd.superclass().classObj;
-			if (superclass) {
-				root.removeChild(cls);
-				superclass.addChild(cls);
-			}
+		if (cls && superclass && superclass.classObj) {
+			root.removeChild(cls);
+			superclass.classObj.addChild(cls);
 		}
 	});
 	root.renderHierarchy('');

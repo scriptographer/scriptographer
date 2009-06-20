@@ -41,6 +41,8 @@ import com.scratchdisk.list.ReadOnlyStringIndexList;
  * property.
  * 
  * @author lehni
+ * 
+ * @jshide
  */
 public class SwatchList extends AbstractReadOnlyList<Swatch> implements ReadOnlyStringIndexList<Swatch> {
 	Document document;

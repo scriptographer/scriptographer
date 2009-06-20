@@ -35,6 +35,8 @@ package com.scriptographer.ai;
  * A Rectangle class to wrap an item and control its bounds.
  * 
  * @author lehni
+ * 
+ * @jshide
  */
 public class ItemRectangle extends Rectangle {
 	protected Item item;

@@ -35,6 +35,8 @@ import com.scratchdisk.list.AbstractReadOnlyList;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class DocumentViewList extends AbstractReadOnlyList<DocumentView> {
 	

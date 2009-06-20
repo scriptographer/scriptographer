@@ -33,7 +33,8 @@ package com.scriptographer.ui;
 
 /**
  * @author lehni
- *
+ * 
+ * @jshide
  */
 public class AlertDialog extends ModalDialog {
 	public AlertDialog(String title, String message) {

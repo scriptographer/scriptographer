@@ -69,7 +69,7 @@ Operator = SyntheticField.extend(new function() {
 
 			getTitle: function(member) {
 				var param = member.getParameters()[0];
-				return '<tt><b>' + Operator.getOperator(member) + '</b> ' + stripTags_filter(param.paramType().renderLink({})).trim() + '</tt>';
+				return '<tt><b>' + Operator.getOperator(member) + '</b> ' + stripTags_filter(param.paramType().renderLink()).trim() + '</tt>';
 			}
 		}
 	}

@@ -45,16 +45,14 @@ the beginning of the rendering of this template, in order for data.group stuff t
 
 <% #parameters -%>
 <% if this.getParameters %>
-<div class="member-paragraph"><b>Parameters:</b>
-<% foreach $param in this.getParameters() %>
-<div><tt><%= $param.name() %>: </tt><%= $param.paramType().renderLink({}) -%>
+<% foreach $param in this.getParameters() prefix='<div class="member-paragraph"><b>Parameters:</b>' suffix='</div>' %>
+<div><tt><%= $param.name() %>: </tt><%= $param.paramType().renderLink() -%>
 <% if $param.tag %>
 <% tags classDoc=param.classDoc tags=$param.tag.inlineTags() prefix=" - " -%>
 <% end %>
-<%= $param.paramType().renderAdditional() prefix=" " -%>
+<%= $param.paramType().renderAdditional() -%>
 </div>
 <% end %>
-</div>
 <% end %>
 
 <% #return -%>
@@ -75,6 +73,6 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% foreach $ex in $exceptions prefix='<div class="member-paragraph"><b>Throws:</b>' suffix='</div>' %>
 	<% $cd = $ex.exception() %>
 	<div>
-		<%= $cd ? $cd.renderLink({}) : $ex.exceptionName() %><% tags classDoc=$cd tags=$ex.inlineTags() prefix=" - " %>
+		<%= $cd ? $cd.renderLink() : $ex.exceptionName() %><% tags classDoc=$cd tags=$ex.inlineTags() prefix=" - " %>
 	</div>
 <% end %>

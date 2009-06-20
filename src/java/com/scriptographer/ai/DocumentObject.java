@@ -35,6 +35,8 @@ package com.scriptographer.ai;
  * A base class for all classes that are associated with a document.
  * 
  * @author lehni
+ * 
+ * @jshide
  */
 public class DocumentObject extends NativeObject {
 

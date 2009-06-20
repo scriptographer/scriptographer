@@ -33,7 +33,8 @@ package com.scriptographer.ui;
 
 /**
  * @author lehni
- *
+ * 
+ * @jshide
  */
 public class ConfirmDialog extends ModalDialog {
 	public ConfirmDialog(String title, String message) {

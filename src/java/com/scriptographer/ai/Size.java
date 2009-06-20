@@ -35,7 +35,6 @@ import com.scratchdisk.script.ArgumentReader;
 
 /**
  * @author lehni
- *
  */
 public class Size {
 	protected double width;

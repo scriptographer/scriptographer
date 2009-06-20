@@ -112,6 +112,9 @@ public class GradientStop implements Commitable {
 		}
 	}
 	
+	/**
+	 * @jshide
+	 */
 	public void commit() {
 		if (dirty && list != null && list.gradient != null) {
 			Gradient gradient = list.gradient;

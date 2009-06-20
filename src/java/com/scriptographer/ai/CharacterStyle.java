@@ -171,6 +171,9 @@ public class CharacterStyle extends PathStyle {
 		fetched = true;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void commit() {
 		if (dirty) {
 			if (pathStyleChanged)
@@ -215,10 +218,10 @@ public class CharacterStyle extends PathStyle {
 	 * <code>
 	 * var text = new PointText(new Point(0,0));
 	 * text.content = "The content of the text field.";
-	 * @jsbean
+	 *
 	 * // Sets all the text to Verdana Regular.
 	 * text.characterStyle.font = app.fonts["Verdana"];
-	 * @jsbean
+	 *
 	 * //sets the second word to Verdana Bold
 	 * text.range.words[1].characterStyle.font = app.fonts["Verdana"]["Bold"];
 	 * </code>

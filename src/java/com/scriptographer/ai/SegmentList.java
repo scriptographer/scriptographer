@@ -38,6 +38,8 @@ import com.scriptographer.list.AbstractFetchList;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class SegmentList extends AbstractFetchList<Segment> {
 	protected Path path;

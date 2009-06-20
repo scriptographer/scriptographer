@@ -40,6 +40,8 @@ import com.scratchdisk.list.AbstractMap;
  * Map interface.
  * 
  * @author lehni
+ * 
+ * @jshide
  */
 public class Preferences extends AbstractMap {
 

@@ -36,6 +36,8 @@ import com.scratchdisk.list.ReadOnlyStringIndexList;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class SymbolList extends AbstractReadOnlyList<Symbol> implements
 		ReadOnlyStringIndexList<Symbol> {

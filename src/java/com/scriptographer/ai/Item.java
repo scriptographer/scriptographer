@@ -755,7 +755,7 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * A boolean value that specifies whether the item is visible.
 	 * Sample code:
-	 * @jsbean
+	 *
 	 * <code>
 	 * var path = new Path();
 	 * print(path.visible) // returns true
@@ -774,7 +774,7 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * A boolean value that specifies whether the item is hidden.
 	 * Sample code:
-	 * @jsbean
+	 *
 	 * <code>
 	 * var path = new Path();
 	 * print(path.hidden) // returns false
@@ -795,7 +795,7 @@ public abstract class Item extends DocumentObject {
 	 * This can only be set on paths, compound paths, and text frame objects,
 	 * and only if the item is already contained within a clipping group.
 	 * Sample code:
-	 * @jsbean
+	 *
 	 * <code>
 	 * var group = new Group();
 	 * group.appendChild(path);

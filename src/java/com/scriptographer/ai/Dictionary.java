@@ -36,6 +36,8 @@ import com.scratchdisk.util.SoftIntMap;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class Dictionary extends AbstractMap<String, Object> {
 	private int handle;

@@ -5,12 +5,12 @@
 <% $listDescription = this.classDoc.getListDescription() %>
 <% $superclass = this.classDoc.getSuperclass() %>
 <% if this.classDoc.isAbstract() || $superclass || $listDescription || $subclasses  %>
-<p><%= param.type %> <%= this.classDoc.renderLink({}) -%>
+<p><%= param.type %> <%= this.classDoc.renderLink() -%>
 <% if $superclass %>
- extends <%= $superclass.renderLink({}) -%>
+ extends <%= $superclass.renderLink({ linkOnly: true }) -%>
 <% end %>
 <% if $listDescription %>
-<% if $superclass %>, <% end %> act as <%= settings.templates ? '<% this.listDescription type="' + $listDescription + '" %>' : $listDescription %>
+<% if $superclass %>, <% end %>, <%= settings.templates ? '<% this.listDescription type="' + $listDescription + '" %>' : $listDescription %>
 <% end %>
 <% if $subclasses %>
 <br />Inherited by <%= $subclasses %>
@@ -24,7 +24,7 @@
 <% end %>
 
 <% $subclasses -%>
-<% foreach $class in this.classDoc.getSubclasses() separator=", " %><%= $class.renderLink({}) %><% end -%>
+<% foreach $class in this.classDoc.getSubclasses() separator=", " %><%= $class.renderLink() %><% end -%>
 
 <% #interface %>
 <%-- empty --%>
@@ -37,7 +37,7 @@
 <br />
 	<% end %>
 <ul class="documentation-inherited">
-	<li><%= $class.classDoc.renderLink({}) %></li>
+	<li><%= $class.classDoc.renderLink() %></li>
 	<li>
 		<ul>
 	<% foreach $member in $class.members %>

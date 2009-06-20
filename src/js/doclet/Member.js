@@ -100,6 +100,7 @@ Member = Object.extend({
 	},
 
 	renderLink: function(param) {
+		param = param || {};
 		// In case the class is invisible, the current class needs to be used instead
 		var containing = this.containingClass();
 		if (!containing.isVisible() && param.classDoc.superclass() == containing)

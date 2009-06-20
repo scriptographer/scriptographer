@@ -35,6 +35,8 @@ import com.scratchdisk.script.ArgumentReader;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class FillStyle implements Style {
 	/*

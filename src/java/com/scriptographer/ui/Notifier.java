@@ -35,6 +35,8 @@ import java.util.HashMap;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public enum Notifier {
 	USER_CHANGED("ADM User Changed Notifier"),

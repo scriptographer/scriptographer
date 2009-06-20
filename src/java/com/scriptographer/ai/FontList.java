@@ -46,6 +46,8 @@ import com.scratchdisk.list.ReadOnlyStringIndexList;
  * the Application.fonts property.
  * 
  * @author lehni
+ * 
+ * @jshide
  */
 public class FontList implements ReadOnlyList<FontFamily>, ReadOnlyStringIndexList<FontFamily> {
 

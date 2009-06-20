@@ -35,7 +35,8 @@ import com.scratchdisk.script.ArgumentReader;
 
 /**
  * @author lehni
- *
+ * 
+ * @jshide
  */
 public class Point {
 	public int x;

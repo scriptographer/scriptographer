@@ -33,6 +33,8 @@ package com.scriptographer.ui;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public abstract class ToggleItem extends Button {
 	protected ToggleItem(Dialog dialog, ItemType type) {

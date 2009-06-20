@@ -262,6 +262,9 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		fetched = true;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void commit() {
 		if (dirty && item != null) {
 			commit(item.handle, item.document.handle);

@@ -40,6 +40,8 @@ import com.scratchdisk.list.ReadOnlyStringIndexList;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class ItemList extends ArrayList<Item> implements ReadOnlyStringIndexList<Item> {
 	HashMap<Item, Item> map;

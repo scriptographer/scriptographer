@@ -116,6 +116,9 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	
 	protected native void nativeSetStyle(int handle, int rangeHandle);
 
+	/**
+	 * @jshide
+	 */
 	public void commit() {
 		if (dirty) {
 			if (range != null)

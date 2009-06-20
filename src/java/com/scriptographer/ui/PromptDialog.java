@@ -43,6 +43,8 @@ import com.scriptographer.sg.Preferences;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class PromptDialog extends ModalDialog {
 

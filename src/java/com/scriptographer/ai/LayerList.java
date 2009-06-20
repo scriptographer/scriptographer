@@ -40,6 +40,8 @@ import com.scratchdisk.list.ReadOnlyStringIndexList;
  * through the {@link Document#layers} property.
  * 
  * @author lehni
+ * 
+ * @jshide
  */
 public class LayerList extends AbstractReadOnlyList<Layer> implements ReadOnlyStringIndexList<Layer> {
 	Document document;

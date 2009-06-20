@@ -71,6 +71,9 @@ public class Tracing extends Item implements Commitable {
 		}
 	}
 	
+	/**
+	 * @jshide
+	 */
 	public void commit() {
 		if (dirty) {
 			update();

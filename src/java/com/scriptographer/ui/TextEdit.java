@@ -38,6 +38,8 @@ import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class TextEdit extends TextEditItem<TextEditStyle> {
 

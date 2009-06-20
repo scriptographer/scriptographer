@@ -39,6 +39,7 @@ import java.awt.geom.PathIterator;
 /**
  * @author lehni
  *
+ * @jshide
  */
 public abstract class PathItem extends Item {
 	/**

@@ -39,6 +39,8 @@ import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public abstract class TextEditItem<S> extends TextValueItem {
 
@@ -384,6 +386,9 @@ public abstract class TextEditItem<S> extends TextValueItem {
 	public native void setMaxLength(int length);
 	public native int getMaxLength();
 
+	/**
+	 * @jshide
+	 */
 	public native void setSelection(int start, int end);
 	public native int[] getSelection();
 	public native void selectAll();

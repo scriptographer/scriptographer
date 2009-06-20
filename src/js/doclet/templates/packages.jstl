@@ -39,7 +39,7 @@ createPackage("<%= $packageName %>",
 <% if settings.templates %>
 { name: "<%= param.cls.name() %>", isAbstract: <%= param.cls.classDoc.isAbstract() %>, index: { <%= param.index %> }},
 <% else %>
-<li><%= param.cls.classDoc.renderLink({ name: param.cls.qualifiedName() }) | stripCode %></li>
+<li><%= param.cls.classDoc.renderLink({ linkOnly: true }) | stripCode %></li>
 <% end %>
 
 <% #classes -%>

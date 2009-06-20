@@ -41,6 +41,8 @@ import com.scratchdisk.util.IntMap;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class Timer {
 	private int handle;

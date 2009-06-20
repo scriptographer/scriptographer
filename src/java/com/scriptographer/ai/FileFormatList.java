@@ -39,6 +39,8 @@ import com.scratchdisk.list.ReadOnlyStringIndexList;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class FileFormatList extends AbstractReadOnlyList<FileFormat> implements ReadOnlyStringIndexList<FileFormat> {
 

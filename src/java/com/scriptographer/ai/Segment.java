@@ -207,6 +207,9 @@ public class Segment implements Commitable {
 		values[valueIndex + 6] = corner ? 1f : 0f;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void commit() {
 		if (dirty != DIRTY_NONE && segments != null && segments.path != null) {
 			Path path = segments.path;

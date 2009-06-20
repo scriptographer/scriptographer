@@ -23,9 +23,9 @@ ClassObject = Object.extend({
 		var superclass = this.classDoc.superclass();
 		// Add the members of direct invisible superclasses to
 		// this class for JS documentation:
-		while (superclass && !superclass.isVisible() &&
-				superclass.qualifiedName() != 'java.lang.Object') {
-			this.add(superclass, false);
+		while (superclass && superclass.qualifiedName() != 'java.lang.Object') {
+			if (!superclass.isVisible())
+				this.add(superclass, false);
 			superclass = superclass.superclass();
 		}
 		this.methodLists.init();
@@ -216,14 +216,17 @@ ClassObject = Object.extend({
 				var name = cd.qualifiedName();
 				if (settings.classMatch)
 					add = settings.classMatch.test(name);
-				if (add && settings.filterClasses)
-					add = !settings.filterClasses.find(function(filter) {
+				if (add && settings.classFilter)
+					add = !settings.classFilter.find(function(filter) {
 						return filter == name || filter.endsWith('*') &&
 							name.startsWith(filter.substring(0, filter.length - 1));
 					});
 				// Do not add any of Enums, since they are represented
 				// as strings in the scripting environment.
 				if (add && cd.hasSuperclass('java.lang.Enum'))
+					add = false;
+				var hide = cd.tags('jshide')[0];
+				if (hide && /^(bean|all|)$/.test(hide.text()))
 					add = false;
 				if (add)
 					this.classes[name] = new ClassObject(cd);
@@ -242,6 +245,7 @@ ClassObject = Object.extend({
 		},
 
 		renderLink: function(param) {
+			param = param || {};
 			var mem = this.get(param.name);
 			// use renderClassLink, as renderLink might have been overridden
 			// by new Type(...)

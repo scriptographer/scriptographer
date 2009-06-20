@@ -36,6 +36,8 @@ import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class StrokeStyle implements Style {
 	/*

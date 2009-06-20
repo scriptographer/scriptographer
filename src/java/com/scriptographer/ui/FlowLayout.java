@@ -35,7 +35,8 @@ import java.util.HashMap;
 
 /**
  * @author lehni
- *
+ * 
+ * @jshide
  */
 public class FlowLayout extends java.awt.FlowLayout {
 

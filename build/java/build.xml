@@ -437,23 +437,7 @@
 			<doclet name="com.scratchdisk.script.rhino.RhinoDoclet" pathref="docs.classpath">
 				<param name="-script" value="${docs.script}"/>
 				<param name="-basepackage" value="com.scriptographer"/>
-				<param name="-filterclasses" value="
-					com.scriptographer.ai.DocumentObject
-					com.scriptographer.ai.ItemPoint
-					com.scriptographer.ai.ItemRectangle
-					com.scriptographer.ai.Dictionary
-					com.scriptographer.ai.FileFormat
-					com.scriptographer.ai.Style
-					com.scriptographer.ai.FillStyle
-					com.scriptographer.ai.StrokeStyle
-					com.scriptographer.ai.TabletValue
-					com.scriptographer.ui.Point
-					com.scriptographer.ui.Rectangle
-					com.scriptographer.ui.Size
-					com.scriptographer.ui.Notifier
-					com.scriptographer.ui.DialogGroupInfo
-					com.scriptographer.sg.Preferences
-					com.scriptographer.sg.Timer
+				<param name="-classfilter" value="
 					com.scriptographer.js.*
 					com.scriptographer.util.*
 					java.*

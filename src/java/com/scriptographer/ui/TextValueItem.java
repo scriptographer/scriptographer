@@ -35,6 +35,8 @@ import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public abstract class TextValueItem extends ValueItem {
 

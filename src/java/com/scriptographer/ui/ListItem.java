@@ -251,14 +251,22 @@ public abstract class ListItem<E extends ListEntry> extends Item implements List
 	 *
 	 */
 	
+	/**
+	 * @jshide
+	 */
 	public native void setEntrySize(int width, int height);
+
 	public native Size getEntrySize();
 	
 	public void setEntrySize(Size size) {
 		setEntrySize(size.width, size.height);
 	}
 	
+	/**
+	 * @jshide
+	 */
 	public native void setEntryTextRect(int x, int y, int width, int height);
+
 	public native Rectangle getEntryTextRect();
 	
 	public void setEntryTextRect(Rectangle rect) {
@@ -314,8 +322,12 @@ public abstract class ListItem<E extends ListEntry> extends Item implements List
 	 */
 
 	public native E get(String text);
+
+	/**
+	 * @jshide
+	 */
 	public native E getAt(int x, int y);
-	
+
 	public E getAt(Point point) {
 		return getAt(point.x, point.y);
 	}

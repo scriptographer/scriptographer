@@ -36,6 +36,8 @@ import com.scriptographer.list.AbstractFetchList;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class CurveList extends AbstractFetchList<Curve> {
 	protected Path path;

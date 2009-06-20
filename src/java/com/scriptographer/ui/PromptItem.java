@@ -35,6 +35,8 @@ import com.scratchdisk.util.ConversionUtils;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class PromptItem {
 	

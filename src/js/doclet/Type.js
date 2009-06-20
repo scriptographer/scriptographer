@@ -237,13 +237,17 @@ Type = Object.extend(new function() {
 
 		getListDescription: function() {
 			if (this.hasInterface('com.scratchdisk.list.List'))
-				return 'Normal List';
-			else if (this.hasInterface('com.scratchdisk.list.StringIndexList'))
-				return 'String-index List';
+				return null;
+			var stringIndex = 'also accessible by <tt>String</tt> indices';
+			var readOnly = 'read-only';
+			var parts;
+			if (this.hasInterface('com.scratchdisk.list.StringIndexList'))
+				parts = [stringIndex];
 			else if (this.hasInterface('com.scratchdisk.list.ReadOnlyStringIndexList'))
-				return 'Read-only String-index List';
+				parts = [readOnly, stringIndex];
 			else if (this.hasInterface('com.scratchdisk.list.ReadOnlyList'))
-				return 'Read-only List';
+				parts = [readOnly];
+			return parts && parts.join(', ') + '.';
 		},
 
 		getType: function() {
@@ -256,12 +260,13 @@ Type = Object.extend(new function() {
 		},
 
 		renderLink: function(param) {
+			param = param || {};
 			var str;
 			if (this.isNumber()) {
 				str = code_filter('Number');
 			} else if (this.isBoolean()) {
 				str = code_filter('Boolean');
-			} else if (this.isArray() || this.isList() || this.isCollection()) {
+			} else if (!param.linkOnly && (this.isArray() || this.isList() || this.isCollection())) {
 				var doc = this.getComponentType();
 				str = 'Array of ' + (doc
 					? doc.renderLink({ additional: true })
@@ -295,7 +300,7 @@ Type = Object.extend(new function() {
 			if (param.additional) {
 				var add = this.renderAdditional();
 				if (add)
-					str += ' ' + add;
+					str += add;
 			}
 			return str;
 		},
@@ -308,15 +313,19 @@ Type = Object.extend(new function() {
 
 		renderAdditional: function() {
 			if (this.isEnum()) {
-				return '(' + this.getEnumConstants() + ')';
+				return ' (' + this.getEnumConstants() + ')';
 			} else if (this.isEnumMap()) {
 				var types = this.typeArguments();
 				if (types.length == 2) {
 					var keyType = new Type(types[0]);
 					var valueType = new Type(types[1]);
-					return '(Values: ' + code_filter(valueType.renderLink({})) 
+					return ' (Values: ' + code_filter(valueType.renderLink()) 
 						+ ', Keys: ' + keyType.getEnumConstants() + ')';
 				}
+			} else if (this.isList()) {
+				var desc = this.getListDescription();
+				if (desc)
+					return ', ' + desc;
 			}
 		},
 

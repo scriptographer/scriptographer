@@ -35,7 +35,8 @@ package com.scriptographer.ai;
  * A Point class to wrap an item and control its position.
  *
  * @author lehni
- *
+ * 
+ * @jshide
  */
 public class ItemPoint extends Point {
 	protected Item item;

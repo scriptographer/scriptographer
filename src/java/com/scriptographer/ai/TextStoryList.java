@@ -40,6 +40,8 @@ import com.scriptographer.CommitManager;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 class TextStoryList extends DocumentObject implements ReadOnlyList<TextStory> {
 	ArrayList.List<TextStory> list;

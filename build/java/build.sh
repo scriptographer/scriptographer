@@ -9,6 +9,4 @@ then
 	OPTIONS=-Dclassmatch=\"$*\"
 fi
 
-echo $OPTIONS
-
 ant -lib build/classes:build/lib:lib $OPTIONS $TARGET

@@ -79,6 +79,10 @@ public class Document extends NativeObject {
 				(dialogStatus != null ? dialogStatus : DialogStatus.NONE).value));
 	}
 
+	public Document(String title, float width, float height, ColorModel colorModel) {
+		this(title, width, height, colorModel, DialogStatus.NONE);
+	}
+
 	public Document(String title, float width, float height) {
 		this(title, width, height, ColorModel.CMYK, DialogStatus.NONE);
 	}
@@ -157,7 +161,7 @@ public class Document extends NativeObject {
 	 * 
 	 * @param focus When set to <code>true</code>, the document window is
 	 *        brought to the front, otherwise the window sequence remains the
-	 *        same.
+	 *        same. Default is <code>true</code>.
 	 */
 	public void activate(boolean focus) {
 		activate(focus, false);
@@ -240,13 +244,13 @@ public class Document extends NativeObject {
 	
 	public native void setRulerOrigin(Point pt);
 
+	/**
+	 * setSize only works while reading a document!
+	 */
 	public native Size getSize();
 
 	/**
-	 * setSize only works while reading a document!
-	 * 
-	 * @param width
-	 * @param height
+	 * @jshide
 	 */
 	public native void setSize(double width, double height);
 	
@@ -340,12 +344,15 @@ public class Document extends NativeObject {
 	}
 
 	/**
+	 * @jshide
+	 */
+	public native void invalidate(float x, float y, float width, float height);
+	
+	/**
 	 * Invalidates the rectangle in artwork coordinates. This will cause all
 	 * views of the document that contain the given rectangle to update at the
 	 * next opportunity.
 	 */
-	public native void invalidate(float x, float y, float width, float height);
-	
 	public void invalidate(Rectangle rect) {
 		invalidate((float) rect.x, (float) rect.y, (float) rect.width, (float) rect.height);
 	}

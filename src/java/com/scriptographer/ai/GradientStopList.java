@@ -38,6 +38,8 @@ import com.scriptographer.ScriptographerException;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class GradientStopList extends AbstractExtendedList<GradientStop> {
 	protected Gradient gradient;

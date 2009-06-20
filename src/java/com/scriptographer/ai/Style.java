@@ -38,6 +38,8 @@ package com.scriptographer.ai;
  * settings colors / fonts.
  * 
  * @author lehni
+ * 
+ * @jshide
  */
 public interface Style {
 	

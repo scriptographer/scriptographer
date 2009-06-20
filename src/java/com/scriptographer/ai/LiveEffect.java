@@ -53,6 +53,8 @@ import java.util.ArrayList;
  * getUnusedEffects.
  * 
  * @author lehni
+ * 
+ * @jshide
  */
 
 /*

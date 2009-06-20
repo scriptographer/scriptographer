@@ -73,9 +73,9 @@ public class Group extends Item {
 	 * A boolean value that specifies whether the group item is to be clipped.
 	 * When setting to true, the first child in the group is automatically
 	 * defined as the clipping mask.
-	 * @jsbean
+	 *
 	 * Sample code:
-	 * @jsbean
+	 *
 	 * <code>
 	 * var group = new Group();
 	 * group.appendChild(path);

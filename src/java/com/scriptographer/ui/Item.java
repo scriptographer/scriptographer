@@ -268,6 +268,9 @@ public abstract class Item extends Component {
 		return new Rectangle(bounds);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setBounds(int x, int y, int width, int height) {
 		updateBounds(x, y, width, height, true);
 	}
@@ -276,7 +279,7 @@ public abstract class Item extends Component {
 		setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
 	}
 
-	public void updateBounds(int x, int y, int width, int height, boolean sizeChanged) {
+	protected void updateBounds(int x, int y, int width, int height, boolean sizeChanged) {
 		if (sizeChanged) {
 			// Set prefSize so getPreferredSize does not return results from
 			// getBestSize()
@@ -340,6 +343,9 @@ public abstract class Item extends Component {
 					margin.bottom, margin.right);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setPosition(int x, int y) {
 		updateBounds(x, y, bounds.width, bounds.height, false);
 	}
@@ -356,6 +362,9 @@ public abstract class Item extends Component {
 		return bounds.getSize();
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setSize(int width, int height) {
 		updateBounds(bounds.x, bounds.y, width, height, true);
 	}
@@ -458,6 +467,9 @@ public abstract class Item extends Component {
 		return size;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setPreferredSize(int width, int height) {
 		prefSize = new Size(width, height);
 	}
@@ -471,6 +483,9 @@ public abstract class Item extends Component {
 		return prefSize != null ? prefSize : getBestSize();
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setMinimumSize(int width, int height) {
 		minSize = new Size(width, height);
 	}
@@ -484,6 +499,9 @@ public abstract class Item extends Component {
 		return minSize != null ? minSize : getBestSize();
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setMaximumSize(int width, int height) {
 		maxSize = new Size(width, height);
 	}
@@ -501,6 +519,9 @@ public abstract class Item extends Component {
 		return (Border) margin.clone();
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setMargin(int top, int right, int bottom, int left) {
 		margin = new Border(top, right, bottom, left);
 		if (nativeBounds != null)
@@ -509,15 +530,33 @@ public abstract class Item extends Component {
 		updateAWTMargin(margin);
 	}
 
+	public void setMargin(Border margin) {
+		setMargin(margin.top, margin.right, margin.bottom, margin.left);
+	}
+
 	/* 
 	 * coordinate system transformations
 	 * 
 	 */
 	
+	/**
+	 * @jshide
+	 */
 	public native Point localToScreen(int x, int y);
+
+	/**
+	 * @jshide
+	 */
 	public native Point screenToLocal(int x, int y);
 
+	/**
+	 * @jshide
+	 */
 	public native Rectangle localToScreen(int x, int y, int width, int height);
+
+	/**
+	 * @jshide
+	 */
 	public native Rectangle screenToLocal(int x, int y, int width, int height);
 
 	public Point localToScreen(Point pt) {
@@ -542,12 +581,17 @@ public abstract class Item extends Component {
 	 */
 
 	public native void invalidate();
+
+	/**
+	 * @jshide
+	 */
 	public native void invalidate(int x, int y, int width, int height);
-	public native void update();
 
 	public final void invalidate(Rectangle rt) {
 		invalidate(rt.x, rt.y, rt.width, rt.height);
 	}
+	
+	public native void update();
 
 	private native int nativeGetFont();
 	
@@ -600,12 +644,17 @@ public abstract class Item extends Component {
 	private native void nativeSetTooltip(String tooltip);
 	public native boolean isToolTipEnabled();
 	public native void setToolTipEnabled(boolean enabled);
+
+	/**
+	 * @jshide
+	 */
 	public native void showToolTip(int x, int y);
-	public native void hideToolTip();
 
 	public final void showToolTip(Point pt) {
 		showToolTip(pt.x, pt.y);
 	}
+
+	public native void hideToolTip();
 
 	public String getToolTip() {
 		return toolTip;

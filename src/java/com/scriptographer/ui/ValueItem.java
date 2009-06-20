@@ -36,6 +36,8 @@ import com.scratchdisk.script.Callable;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public abstract class ValueItem extends Item {
 
@@ -120,6 +122,10 @@ public abstract class ValueItem extends Item {
 	 */
 
 	public native float[] getRange();
+
+	/**
+	 * @jshide
+	 */
 	public native void setRange(float minValue, float maxValue);
 	
 	public void setRange(float[] range) {
@@ -127,6 +133,10 @@ public abstract class ValueItem extends Item {
 	}
 	
 	public native float[] getIncrements();
+
+	/**
+	 * @jshide
+	 */
 	public native void setIncrements(float small, float large);
 	
 	public void setIncrements(float[] increments) {

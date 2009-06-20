@@ -33,6 +33,8 @@ package com.scriptographer.ui;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class DialogGroupInfo {
 	// dialog position code masks
