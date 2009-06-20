@@ -38,5 +38,9 @@ SyntheticMember = Member.extend({
 
 	tags: function(tagname) {
 		return this.member.tags(tagname);
+	},
+
+	toString: function() {
+		return this.qualifiedName();
 	}
 });

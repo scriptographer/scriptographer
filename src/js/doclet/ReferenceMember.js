@@ -18,14 +18,7 @@ ReferenceMember = SyntheticMember.extend({
 	},
 
 	resolve: function() {
-		var [cls, name] = this.reference.split('#');
-		if (!/\./.test(cls))
-			cls = this.classObject.classDoc.containingPackage().qualifiedName() + '.' + cls;
-		var classObject = ClassObject.get(cls);
-		// If it's a hidden class, force creation through ClassObject.put
-		if (!classObject)
-			classObject = ClassObject.put(cls, true);
-		var group = classObject.getGroup(name);
+		var group = MemberGroup.get(this.reference, this.containingClass());
 		// Since a group can have more than one member, we set the first one to
 		// this ReferenceMember and create more ReferenceMembers for the others
 		if (group) {
@@ -38,6 +31,10 @@ ReferenceMember = SyntheticMember.extend({
 						this.data, this.list, member));
 			}
 		}
+	},
+
+	containingClass: function() {
+		return this.classObject.classDoc;
 	},
 
 	getVisible: function() {

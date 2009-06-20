@@ -55,6 +55,9 @@ LinkTag = Tag.extend({
 	render: function(param) {
 		var ref = this.referencedMember() || this.referencedClass();
 		if (ref) {
+			// Link  getter / setters to their beans
+			if (ref.synthetic)
+				ref = ref.synthetic;
 			if (!ref.isVisible())
 				error(this.position() + ': warning - ' + this.name() + ' contains reference to invisible object: ' + ref);
 			return ref.renderLink({ classDoc: param.classDoc });

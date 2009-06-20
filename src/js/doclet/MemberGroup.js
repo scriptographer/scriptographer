@@ -78,13 +78,16 @@ MemberGroup = Object.extend({
 	 * Removes all 'sub-methods' of a given method from any of the method members.
 	 * Since these can be groups of JS style compatible methods, their members
 	 * need to be iterated as well.
+	 * synthetic is an optional second parameter, to let the removed members
+	 * know the cause of their removal (a synthetic member that they are converted
+	 * into). This is used for example for @link.
 	 */
-	removeMethod: function(method) {
+	removeMethod: function(method, synthetic) {
 		if (method && method instanceof Method) {
 			method.methods.each(function(meth) {
 				this.members.each(function(member) {
-					if (member instanceof Method)
-						member.remove(meth);
+					if (member instanceof Method && member.remove(meth))
+						meth.synthetic = synthetic;
 				});
 			}, this);
 		}
@@ -94,10 +97,10 @@ MemberGroup = Object.extend({
 	 * Removes all methods and sub-methods contained in the given group by
 	 * looping through its members and passing them to removeMethod.
 	 */
-	removeMethods: function(group) {
+	removeMethods: function(group, synthetic) {
 		if (group && group instanceof MemberGroup) {
 			group.members.each(function(member) {
-				this.removeMethod(member);
+				this.removeMethod(member, synthetic);
 			}, this);
 		}
 	},
@@ -131,5 +134,18 @@ MemberGroup = Object.extend({
 			this.append(method.extractOperators());
 		}, []);
 		return operators.length && new MemberGroup(this.classObject, operators);
+	},
+
+	statics: {
+		get: function(reference, classDoc) {
+			var [cls, name] = reference.split('#');
+			if (classDoc && !/\./.test(cls))
+				cls = classDoc.containingPackage().qualifiedName() + '.' + cls;
+			var classObject = ClassObject.get(cls);
+			// If it's a hidden class, force creation through ClassObject.put
+			if (!classObject)
+				classObject = ClassObject.put(cls, true);
+			return classObject.getGroup(name);
+		}
 	}
 });

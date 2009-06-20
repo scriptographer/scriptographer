@@ -259,7 +259,7 @@ Type = Object.extend(new function() {
 		getListDescription: function() {
 			if (this.hasInterface('com.scratchdisk.list.List'))
 				return null;
-			var stringIndex = 'also accessible by <tt>String</tt> indices';
+			var stringIndex = 'also accessible by name';
 			var readOnly = 'read-only';
 			var parts;
 			if (this.hasInterface('com.scratchdisk.list.StringIndexList'))
@@ -287,7 +287,8 @@ Type = Object.extend(new function() {
 				str = code_filter('Number');
 			} else if (this.isBoolean()) {
 				str = code_filter('Boolean');
-			} else if (!param.linkOnly && (this.isArray() || this.isList() || this.isCollection())) {
+			} else if (!param.linkOnly 
+					&& (this.isArray() || this.isList() || this.isCollection())) {
 				var type = this.getComponentType();
 				str = 'Array of ' + (type
 					? type.renderLink({ additional: true })
@@ -315,7 +316,9 @@ Type = Object.extend(new function() {
 						name: 'com.scriptographer.sg.File'
 					});
 				} else {
-					str = code_filter(Type.getSimpleName(cls ? cls.name() : this.typeName() + this.dimension()));
+					str = code_filter(Type.getSimpleName(cls 
+						? cls.name() 
+						: this.typeName() + this.dimension()));
 				}
 			}
 			if (param.additional) {

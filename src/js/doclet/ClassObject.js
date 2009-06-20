@@ -36,6 +36,8 @@ ClassObject = Object.extend({
 			superclass = superclass.superclass();
 		}
 		var extensions = this.classDoc.tags('jsextension');
+		// Loop through the extensions backwards, so insertion sequence through 
+		// @after tags is maintained.
 		for (var i = extensions.length - 1; i >= 0; i--) {
 			var ext = extensions[i];
 			var data = {};

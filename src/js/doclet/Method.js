@@ -113,6 +113,7 @@ Method = Member.extend(new function() {
 				} else {
 					this.group.remove(this);
 				}
+				return true;
 			}
 		},
 
