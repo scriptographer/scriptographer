@@ -16,7 +16,8 @@ include('Type.js');
 include('Tag.js');
 include('Member.js');
 include('Method.js');
-include('SyntheticField.js');
+include('SyntheticMember.js');
+include('ReferenceMember.js');
 include('BeanProperty.js');
 include('Operator.js');
 include('MemberGroup.js');
@@ -134,7 +135,8 @@ String.inject({
 // native methods, so e.g. qualifiedName won't loop endlessly.
 ClassDocImpl.inject(Hash.merge({
 	isVisible: function() {
-		return ClassObject.get(this.qualifiedName()) != null;
+		var obj = ClassObject.get(this.qualifiedName());
+		return obj && obj.isVisible();
 	},
 
 	// This is defined outside renderLink so that even when a Type
@@ -275,7 +277,7 @@ function renderTags(param) {
 }
 
 function main() {
-	ClassObject.put(root);
+	ClassObject.scan(root);
 
 	var packages = new Hash();
 	var packageSequence = settings.packageSequence;

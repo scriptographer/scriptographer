@@ -77,8 +77,12 @@ MemberGroupList = Object.extend({
 		});
 	},
 
-	contains: function(key) {
-		return this.groups[key] != null;
+	get: function(name) {
+		return this.groups[name] || this.methodLookup[name];
+	},
+
+	contains: function(name) {
+		return !!this.get(name);
 	},
 
 	getFlattened: function() {

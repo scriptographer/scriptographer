@@ -8,17 +8,21 @@
 
 // ClassObject
 ClassObject = Object.extend({
-	initialize: function(cd) {
-		this.classDoc = cd;
+	initialize: function(classDoc, visible) {
+		this.classDoc = classDoc;
 		// For the hierarchy:
+		this.visible = visible;
 		this.children = new Hash();
+		this.refernceMembers = [];
+		this.lists = new Hash({
+			field: new MemberGroupList(this),
+			method: new MemberGroupList(this),
+			constructor: new MemberGroupList(this),
+			operator: new MemberGroupList(this)
+		});
 	},
 
 	init: function() {
-		this.fieldLists = new MemberGroupList(this);
-		this.methodLists = new MemberGroupList(this);
-		this.constructorLists = new MemberGroupList(this);
-		this.operatorLists = new MemberGroupList(this);
 		this.add(this.classDoc, true);
 		var superclass = this.classDoc.superclass();
 		// Add the members of direct invisible superclasses to
@@ -31,39 +35,73 @@ ClassObject = Object.extend({
 			this.add(superclass, false);
 			superclass = superclass.superclass();
 		}
-		this.methodLists.init();
-		this.constructorLists.init();
+		this.classDoc.tags('jsextension').each(function(ext) {
+			var data = {};
+			ext.inlineTags().each(function(tag) {
+				var name = tag.name();
+				if (/^@/.test(name))
+					data[name.substring(1)] = tag.text();
+			});
+			if (data.type && data.name) {
+				var list = this.lists[data.type];
+				if (list) {
+					var ref = new ReferenceMember(this, data);
+					list.add(ref);
+					this.refernceMembers.push(ref);
+				}
+			}
+		}, this);
+		// Only method and constructor need to call init for method parameter merging.
+		this.lists.method.init();
+		this.lists.constructor.init();
 	},
 
 	scan: function() {
-		// now scan for beanProperties and operators:
-		if (this.classDoc.name() != 'global') {
-			this.methodLists.scanBeanProperties(this.fieldLists);
-			this.methodLists.scanOperators(this.operatorLists);
-		}
+		// Scan for beanProperties and operators and add these to the 
+		// field / operator lists.
+		this.lists.method.scanBeanProperties(this.lists.field);
+		this.lists.method.scanOperators(this.lists.operator);
+	},
+
+	resolve: function() {
+		this.refernceMembers.each(function(ref) {
+			ref.resolve();
+		});
 	},
 
 	add: function(cd, addConstructors) {
-		this.fieldLists.addAll(cd.fields(true));
-		this.methodLists.addAll(cd.methods(true));
+		this.lists.field.addAll(cd.fields(true));
+		this.lists.method.addAll(cd.methods(true));
 		if (addConstructors)
-			this.constructorLists.addAll(cd.constructors(true));
+			this.lists.constructor.addAll(cd.constructors(true));
+	},
+
+	getGroup: function(name) {
+		return this.lists.find(function(list, key) {
+			return list.get(name);
+		});
+	},
+
+	getMember: function(name) {
+		var group = this.getGroup(name);
+		// Just use the first member in a member group...
+		return group && group.members[0];
 	},
 
 	methods: function() {
-		return this.methodLists.getFlattened();
+		return this.lists.method.getFlattened();
 	},
 
 	fields: function() {
-		return this.fieldLists.getFlattened();
+		return this.lists.field.getFlattened();
 	},
 
 	constructors: function() {
-		return this.constructorLists.getFlattened();
+		return this.lists.constructor.getFlattened();
 	},
 
 	operators: function() {
-		return this.operatorLists.getFlattened();
+		return this.lists.operator.getFlattened();
 	},
 
 	name: function() {
@@ -73,6 +111,14 @@ ClassObject = Object.extend({
 
 	qualifiedName: function() {
 		return this.classDoc.qualifiedName();
+	},
+
+	toString: function() {
+		return this.classDoc.toString();
+	},
+
+	isVisible: function() {
+		return this.visible;
 	},
 
 	hasCompatible: function(member) {
@@ -215,45 +261,74 @@ ClassObject = Object.extend({
 	},
 
 	statics: {
-		put: function(root) {
-			root.classes().each(function(cd) {
-				var add = true;
-				var name = cd.qualifiedName();
-				if (settings.classMatch)
-					add = settings.classMatch.test(name);
-				if (add && settings.classFilter)
-					add = !settings.classFilter.find(function(filter) {
-						return filter == name || filter.endsWith('*') &&
-							name.startsWith(filter.substring(0, filter.length - 1));
-					});
-				// Do not add any of Enums, since they are represented
-				// as strings in the scripting environment.
-				if (add && cd.hasSuperclass('java.lang.Enum'))
-					add = false;
-				var hide = cd.tags('jshide')[0];
-				if (hide && /^(bean|all|)$/.test(hide.text()))
-					add = false;
-				if (add)
-					this.classes[name] = new ClassObject(cd);
-			}, this);
+		scan: function(root) {
+			root.classes().each(function(classDoc) {
+				ClassObject.put(classDoc);
+			});
 			// Now initialize them. init needs all the others to be there,
 			// due to bean prop stuff
-			this.classes.each(function(cls) {
+			this.classObjects.each(function(cls) {
 				cls.init();
 			});
 			// Now after all have initialised, scan for bean properties and 
 			// operators. This needs to happen in a second step, so first
 			// all the methods can be merged and hidden if needed. Only
 			// then getter / setters can be converted and removed.
-			this.classes.each(function(cls) {
+			this.classObjects.each(function(cls) {
 				cls.scan();
 			});
+			// Now call resolve, to resolve references.
+			this.classObjects.each(function(cls) {
+				cls.resolve();
+			});
+		},
+
+		put: function(classDoc, force) {
+			if (typeof classDoc == 'string')
+				classDoc = this.classDocs[classDoc];
+			if (classDoc) {
+				var name = classDoc.qualifiedName();
+				var visible = !(
+					// classMatch regular expression
+					settings.classMatch && !settings.classMatch.test(name)
+					// classFilter matching
+					|| settings.classFilter && settings.classFilter.find(function(filter) {
+						// Support wildcard matching at the end
+						return filter == name || filter.endsWith('*') &&
+							name.startsWith(filter.substring(0, filter.length - 1));
+					})
+					// Do not add any of Enums, since they are represented
+					// as strings in the scripting environment.
+					|| classDoc.hasSuperclass('java.lang.Enum')
+					// Support @jshide tag for classes
+					|| classDoc.tags('jshide')[0]
+				);
+				// Always add to classDocs, even when they're hidden, to be able to
+				// do lookups through getClassDoc.
+				this.classDocs[name] = classDoc;
+				if (visible || force) {
+					var obj = new ClassObject(classDoc, visible);
+					this.classObjects[name] = obj;
+					if (force) {
+						// Execute all initialisation steps at once now.
+						obj.init();
+						obj.scan();
+						obj.resolve();
+					}
+					return obj;
+				}
+			}
+			return null;
 		},
 
 		get: function(param) {
 			if (param && param.qualifiedName)
 				param = param.qualifiedName();
-			return this.classes[param]
+			return this.classObjects[param]
+		},
+
+		getClassDoc: function(name) {
+			return this.classDocs[name];
 		},
 
 		renderLink: function(param) {
@@ -266,7 +341,8 @@ ClassObject = Object.extend({
 				: code_filter(Type.getSimpleName(param.name));
 		},
 
-		classes: new Hash()
+		classObjects: {},
+		classDocs: {}
 	},
 
 	addChild: function(mem) {
@@ -283,12 +359,14 @@ ClassObject = Object.extend({
 		});
 		out.push();
 		sorted.each(function(cls) {
-			var cd = cls.classDoc;
-			var index = cls.renderClass();
-			this.renderTemplate('packages#class', {
-				index: index ? index.join(', ') : null, cls: cls
-			}, out);
-			cls.renderHierarchy();
+			if (cls.isVisible()) {
+				var cd = cls.classDoc;
+				var index = cls.renderClass();
+				this.renderTemplate('packages#class', {
+					index: index ? index.join(', ') : null, cls: cls
+				}, out);
+				cls.renderHierarchy();
+			}
 		});
 		this.renderTemplate('packages#classes', { classes: out.pop() }, out);
 	}

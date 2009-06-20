@@ -8,7 +8,7 @@
 
 /**
  */
-Operator = SyntheticField.extend(new function() {
+Operator = SyntheticMember.extend(new function() {
 	var operators = {
 		add: '+', subtract: '-', multiply: '*', divide: '/', equals: '=='
 	};
@@ -21,7 +21,6 @@ Operator = SyntheticField.extend(new function() {
 			var operator = operators.members[0];
 			this.base(classObject, operator.name(), operator);
 			this.operators = operators;
-			// this.title = Operator.getOperator(operator) + ' ' + Operator.getName(operator);
 		},
 
 		name: function() {
@@ -29,7 +28,7 @@ Operator = SyntheticField.extend(new function() {
 		},
 
 		getId: function() {
-			return this.property;
+			return this._name;
 		},
 
 		renderMember: function(param) {
@@ -43,6 +42,10 @@ Operator = SyntheticField.extend(new function() {
 				param.expandedTitle = Operator.getTitle(this.member);
 				return this.base(param);
 			}
+		},
+
+		isField: function() {
+			return true;
 		},
 
 		statics: {

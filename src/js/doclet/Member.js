@@ -14,7 +14,7 @@ Member = Object.extend({
 	},
 
 	init: function() {
-		// nothing here, but in the extended classes
+		// Nothing here, but used by Method
 	},
 
 	renderMember: function(param) {
@@ -195,8 +195,8 @@ Member = Object.extend({
 		},
 
 		isVisible: function(member) {
-			var hide = member && member.tags('jshide')[0];
-			return hide ? !/^(bean|all|)$/.test(hide.text()) : !!member;
+			// TODO: Check: needed at the end? || !!member;
+			return member && !member.tags('jshide')[0];
 		}
 	}
 });

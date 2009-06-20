@@ -6,25 +6,18 @@
  * http://dev.scriptographer.com/ 
  */
 
-/**
- */
-SyntheticField = Member.extend({
+SyntheticMember = Member.extend({
 	initialize: function(classObject, name, member) {
-		this.base(classObject);
-		this.property = name;
-		this.member = member;
+		this.base(classObject, member);
+		this._name = name;
 	},
 
 	name: function() {
-		return this.property;
+		return this._name;
 	},
 
 	qualifiedName: function() {
-		return this.classObject.qualifiedName() + '.' + this.property;
-	},
-
-	modifiers: function() {
-		return '';
+		return this.classObject.qualifiedName() + '.' + this._name;
 	},
 
 	returnType: function() {
@@ -33,10 +26,6 @@ SyntheticField = Member.extend({
 
 	getVisible: function() {
 		return Member.isVisible(this.member);
-	},
-
-	isField: function() {
-		return true;
 	},
 
 	containingClass: function() {
@@ -48,6 +37,6 @@ SyntheticField = Member.extend({
 	},
 
 	tags: function(tagname) {
-		return [];
+		return this.member.tags(tagname);
 	}
 });

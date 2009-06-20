@@ -9,7 +9,7 @@
 /**
  * A virtual field that unifies getter and setter functions, just like Rhino does
  */
-BeanProperty = SyntheticField.extend({
+BeanProperty = SyntheticMember.extend({
 	initialize: function(classObject, name, getter, setters) {
 		this.base(classObject, name, getter); // this.member is the getter
 		this.setters = setters;
@@ -42,6 +42,10 @@ BeanProperty = SyntheticField.extend({
 
 	seeTags: function() {
 		return this.seeTagList;
+	},
+
+	isField: function() {
+		return true;
 	},
 
 	getAcceptTypes: function() {
