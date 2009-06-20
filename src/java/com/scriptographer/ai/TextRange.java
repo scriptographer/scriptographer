@@ -339,7 +339,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	
 	/**
 	 * Returns the point location where the text range starts within the
-	 *         Illustrator document.
+	 * Illustrator document.
 	 */
 	public native Point[] getOrigins();
 	public native Matrix[] getTransformations();
@@ -358,9 +358,9 @@ public class TextRange extends DocumentObject implements Commitable {
 	 * Selects the text range.
 	 * 
 	 * @param addToSelection If set to <code>true</code>, the text range will
-	 *                       be added to the current selection in the document.
-	 *                       If set to false, it will clear the current selection
-	 *                       in the document and only select the text range.
+	 *        be added to the current selection in the document. If set to
+	 *        false, it will clear the current selection in the document and
+	 *        only select the text range.
 	 */
 	public native void select(boolean addToSelection);
 	// if addToSelection is true, it will add this range to the current document
@@ -455,11 +455,11 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 
 	/**
-	 * Returns a list of text ranges of the words contained within this
-	 *         text range. Note that the returned text range includes the
-	 *         trailing whitespace characters of the words.
-	 * Sample code:
+	 * Returns a list of text ranges of the words contained within this text
+	 * range. Note that the returned text range includes the trailing whitespace
+	 * characters of the words.
 	 * 
+	 * Sample code: 
 	 * <code>
 	 * var text = new PointText(new Point(0,0));
 	 * text.content = "The contents of the point text.";

@@ -37,7 +37,7 @@ import com.scriptographer.CommitManager;
 
 /**
  * The Segment object represents a part of a path which is described by the
- * {@link Item#segments} property. Every segment of path corresponds to an
+ * {@link Path#segments} property. Every segment of a path corresponds to an
  * anchor point (anchor points are the path handles that are visible when the
  * path is selected).
  * 

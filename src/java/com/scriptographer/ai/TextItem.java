@@ -86,7 +86,7 @@ public abstract class TextItem extends Item {
 	 * Converts the text in the text frame to outlines. Unlike the Illustrator
 	 * 'Create Outlines' action, this won't remove the text frame.
 	 * 
-	 * @return An item containing the outlined text.
+	 * @return A new item containing the outlined text.
 	 */
 	public Item createOutline() {
 		// Apply changes and reflow the layout before creating outlines
@@ -102,7 +102,7 @@ public abstract class TextItem extends Item {
 	/**
 	 * Links the supplied text frame to this one.
 	 * @param next The text frame that will be linked.
-	 * @return True if the text frame was linked, false otherwise
+	 * @return <code>true</code> if the text frame was linked, <code>false</code> otherwise
 	 */
 	public native boolean link(TextItem next);
 
@@ -111,7 +111,7 @@ public abstract class TextItem extends Item {
 	/**
 	 * Unlinks the text frame from its current story.
 	 * 
-	 * @return True if the operation was successful, false otherwise
+	 * @return <code>true</code> if the operation as successful, <code>false</code> otherwise
 	 */
 	public boolean unlink() {
 		return nativeUnlink(true, true);
@@ -121,7 +121,7 @@ public abstract class TextItem extends Item {
 	 * Unlinks the text frame from its current story and breaks up the story
 	 * into two parts before the text frame.
 	 * 
-	 * @return True if the operation as successful, false otherwise
+	 * @return <code>true</code> if the operation as successful, <code>false</code> otherwise
 	 */
 	public boolean unlinkBefore() {
 		return nativeUnlink(true, false);
@@ -131,20 +131,19 @@ public abstract class TextItem extends Item {
 	 * Unlinks the text frame from its current story and breaks up the story
 	 * into two parts after the text frame.
 	 * 
-	 * @return True if the operation as successful, false otherwise
+	 * @return <code>true</code> if the operation as successful, <code>false</code> otherwise
 	 */
 	public boolean unlinkAfter() {
 		return nativeUnlink(false, true);
 	}
 
 	/**
-	 * Returns <code>true</code> if the text frame is
-	 *         linked, false otherwise.
+	 * Returns <code>true</code> if the text frame is linked, <code>false</code> otherwise.
 	 */
 	public native boolean isLinked();
 
 	/**
-	 * Returns the index of this text frame in the story's list of text frames.
+	 * Returns the index of this text frame in the {@link TextStory#textFrames} array.
 	 */
 	public native int getIndex();
 
@@ -178,14 +177,14 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * Returns the next text frame in a story of various linked text frames
+	 * Returns the next text frame in a story of various linked text frames.
 	 */
 	public TextItem getNextFrame() {
 		return getFrame(getIndex() + 1);
 	}
 
 	/**
-	 * Returns the previous text frame in a story of various linked text frames
+	 * Returns the previous text frame in a story of various linked text frames.
 	 */
 	public TextItem getPreviousFrame() {
 		return getFrame(getIndex() - 1);
@@ -199,7 +198,7 @@ public abstract class TextItem extends Item {
 
 	/**
 	 * In case there's an overflow in the text, this only returns a range
-	 * over the visible characters, while getRange() returns one over the
+	 * over the visible characters, while {@link TextItem#range} returns one over the
 	 * whole text.
 	 */
 	public TextRange getVisibleRange() {
@@ -278,7 +277,7 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * Returns the selected text of the text frame as a text range
+	 * Returns the selected text of the text frame as a text range.
 	 */
 	public native TextRange getSelection();
 
@@ -302,9 +301,10 @@ public abstract class TextItem extends Item {
 	public native void setSpacing(float spacing);
 
 	/**
-	 * Specifies whether to use optical alignment within the text frame.
-	 *         Optical alignment hangs punctuation outside the edges of a text
-	 *         frame.
+	 * Specifies whether to use optical alignment within the text frame. Optical
+	 * alignment hangs punctuation outside the edges of a text frame.
+	 * 
+	 * @return <code>true</code> if the text frame uses optical alignment, <code>false</code> otherwise.
 	 */
 	public native boolean getOpticalAlignment();
 	public native void setOpticalAlignment(boolean active);
