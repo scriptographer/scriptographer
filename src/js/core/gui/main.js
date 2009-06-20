@@ -227,7 +227,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		var entry = scriptList.activeLeaf;
 		if (entry && entry.file) {
 			if (entry.isTool) {
-				tool.tooltip = entry.file.name;
+				tool.title = tool.tooltip = entry.file.name;
 				tool.image = tool.activeImage;
 				// Reset settings
 				tool.reset();
