@@ -457,13 +457,13 @@ public class Curve {
 
 	/**
 	 * @param point
-	 * @param epsilon
+	 * @param precision
 	 * @return
 	 */
-	public double hitTest(Point point, double epsilon) {
+	public double hitTest(Point point, double precision) {
 		updateSegments();
 		
-		return hitTest(getCurveArray(), point.x, point.y, epsilon);
+		return hitTest(getCurveArray(), point.x, point.y, precision);
 	}
 
 	public double hitTest(Point point) {

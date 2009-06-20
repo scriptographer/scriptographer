@@ -299,13 +299,13 @@ public class Path extends PathItem {
 		return split(index, 0);
 	}
 
-	public HitResult hitTest(Point point, double epsilon) {
+	public HitResult hitTest(Point point, double precision) {
 		CurveList curves = getCurves();
 		int length = curves.size();
 		
 		for (int i = 0; i < length; i++) {
 			Curve curve = (Curve) curves.get(i);
-			double t = curve.hitTest(point, epsilon);
+			double t = curve.hitTest(point, precision);
 			if (t >= 0)
 				return new HitResult(curve, t);
 		}
