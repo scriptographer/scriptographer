@@ -46,7 +46,7 @@ BeanProperty = SyntheticField.extend({
 
 	getAcceptTypes: function() {
 		// Caching
-		if (this.acceptTypes === undefined) {
+		if (this._acceptTypes === undefined) {
 			var types = [];
 			if (this.setters && this.setters.members.length > 1) {
 				this.setters.members.each(function(setter) {
@@ -60,9 +60,9 @@ BeanProperty = SyntheticField.extend({
 				});
 			}
 			// Only display accept types if they are more than one.
-			this.acceptTypes = types.length > 1 ? types : null;
+			this._acceptTypes = types.length > 1 ? types : null;
 		}
-		return this.acceptTypes;
+		return this._acceptTypes;
 	},
 
 	getVisible: function() {

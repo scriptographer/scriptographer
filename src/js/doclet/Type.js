@@ -99,10 +99,15 @@ Type = Object.extend(new function() {
 		},
 
 		getSuperclass: function() {
-			var cd = this.asClassDoc();
-			var sc = cd && cd.superclass();
-			if (sc && sc.isVisible())
-				return sc;
+			// Caching
+			if (this._superclass === undefined) {
+				var cd = this.asClassDoc();
+				var sc = cd.superclass();
+				while (sc && !sc.isVisible())
+					sc = sc.superclass();
+				this._superclass = sc;
+			}
+			return this._superclass;
 		},
 
 		getSubclasses: function() {
@@ -212,11 +217,11 @@ Type = Object.extend(new function() {
 		 */
 		getComponentType: function() {
 			// Caching
-			if (this.componentType === undefined) {
-				this.componentType = null;
+			if (this._componentType === undefined) {
+				this._componentType = null;
 				if (this.isArray()) {
 					var  cd = this.asClassDoc();
-					this.componentType = cd ? new Type(cd) : null;
+					this._componentType = cd ? new Type(cd) : null;
 				} else if (this.isList() || this.isCollection()) {
 					// Generics stuff
 					var type = this.typeArguments()[0];
@@ -245,10 +250,10 @@ Type = Object.extend(new function() {
 							}
 						}
 					}
-					this.componentType = type || null;
+					this._componentType = type || null;
 				}
 			}
-			return this.componentType;
+			return this._componentType;
 		},
 
 		getListDescription: function() {

@@ -201,13 +201,10 @@ function processClasses(classes) {
 		}
 	});
 	classes.each(function(cd) {
-		var superclass = cd.superclass();
-		while (superclass && !superclass.isVisible() && superclass.qualifiedName() != 'java.lang.Object')
-			superclass = superclass.superclass();
-		var cls = cd.classObj;
-		if (cls && superclass && superclass.classObj) {
-			root.removeChild(cls);
-			superclass.classObj.addChild(cls);
+		var superclass = cd.getSuperclass();
+		if (cd.classObj && superclass && superclass.classObj) {
+			root.removeChild(cd.classObj);
+			superclass.classObj.addChild(cd.classObj);
 		}
 	});
 	root.renderHierarchy('');
