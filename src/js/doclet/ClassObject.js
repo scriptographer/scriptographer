@@ -10,7 +10,7 @@
 ClassObject = Object.extend({
 	initialize: function(cd) {
 		this.classDoc = cd;
-		// for the hierarchy:
+		// For the hierarchy:
 		this.children = new Hash();
 	},
 
@@ -33,6 +33,9 @@ ClassObject = Object.extend({
 		}
 		this.methodLists.init();
 		this.constructorLists.init();
+	},
+
+	scan: function() {
 		// now scan for beanProperties and operators:
 		if (this.classDoc.name() != 'global') {
 			this.methodLists.scanBeanProperties(this.fieldLists);
@@ -235,13 +238,20 @@ ClassObject = Object.extend({
 			}, this);
 			// Now initialize them. init needs all the others to be there,
 			// due to bean prop stuff
-			this.classes.each(function(mem, i) {
-				mem.init();
+			this.classes.each(function(cls) {
+				cls.init();
+			});
+			// Now after all have initialised, scan for bean properties and 
+			// operators. This needs to happen in a second step, so first
+			// all the methods can be merged and hidden if needed. Only
+			// then getter / setters can be converted and removed.
+			this.classes.each(function(cls) {
+				cls.scan();
 			});
 		},
 
 		get: function(param) {
-			if (param.qualifiedName)
+			if (param && param.qualifiedName)
 				param = param.qualifiedName();
 			return this.classes[param]
 		},
