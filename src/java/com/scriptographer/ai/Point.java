@@ -161,8 +161,8 @@ public class Point {
 	}
 
 	/**
-	 * Returns a copy of the point. This is useful as the following code only
-	 * generates a flat copy:
+	 * Returns a copy of the point.
+	 * This is useful as the following code only generates a flat copy:
 	 * 
 	 * <code>
 	 * var point1 = new Point();
@@ -188,7 +188,8 @@ public class Point {
 
 	/**
 	 * Returns the addition of the supplied point to the point as a new
-	 * point. The object itself is not modified!
+	 * point.
+	 * The object itself is not modified!
 	 * 
 	 * Sample code:
 	 * <code>
@@ -207,7 +208,8 @@ public class Point {
 
 	/**
 	 * Returns the addition of the supplied value to both coordinates of
-	 * the point as a new point. The object itself is not modified!
+	 * the point as a new point.
+	 * The object itself is not modified!
 	 * 
 	 * Sample code:
 	 * <code>
@@ -225,7 +227,9 @@ public class Point {
 
 	/**
 	 * Returns the subtraction of the supplied x and y values from the point
-	 * as a new point. The object itself is not modified!
+	 * as a new point.
+	 * The object itself is not modified!
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var firstPoint = new Point(10, 20);
@@ -245,7 +249,9 @@ public class Point {
 
 	/**
 	 * Returns the subtraction of the supplied point from the point as a
-	 * new point. The object itself is not modified!
+	 * new point.
+	 * The object itself is not modified!
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var firstPoint = new Point(10, 20);
@@ -263,7 +269,8 @@ public class Point {
 
 	/**
 	 * Returns the subtraction of the supplied value from both coordinates of
-	 * the point as a new point. The object itself is not modified!
+	 * the point as a new point.
+	 * The object itself is not modified!
 	 * 
 	 * Sample code:
 	 * <code>
@@ -282,7 +289,8 @@ public class Point {
 	/**
 	 * Returns the multiplication of the point with the supplied x and y
 	 * values as a new point. When no y value is supplied, the point's x and y
-	 * values are multiplied by scale (x). The object itself is not modified!
+	 * values are multiplied by scale (x).
+	 * The object itself is not modified!
 	 * 
 	 * Sample code:
 	 * <code>
@@ -307,7 +315,8 @@ public class Point {
 
 	/**
 	 * Returns the multiplication of the point with the supplied point as a
-	 * new point. The object itself is not modified!
+	 * new point.
+	 * The object itself is not modified!
 	 * 
 	 * Sample code:
 	 * <code>
@@ -326,7 +335,8 @@ public class Point {
 
 	/**
 	 * Returns the multiplication of the supplied value with both coordinates of
-	 * the point as a new point. The object itself is not modified!
+	 * the point as a new point.
+	 * The object itself is not modified!
 	 * 
 	 * Sample code:
 	 * <code>
@@ -352,7 +362,8 @@ public class Point {
 
 	/**
 	 * Returns the division of the point by the supplied point as a
-	 * new point. The object itself is not modified!
+	 * new point.
+	 * The object itself is not modified!
 	 * 
 	 * Sample code:
 	 * <code>
@@ -371,7 +382,8 @@ public class Point {
 
 	/**
 	 * Returns the division of both coordinates of the point by the supplied
-	 * value and returns it as a new point. The object itself is not modified!
+	 * value and returns it as a new point.
+	 * The object itself is not modified!
 	 * 
 	 * Sample code:
 	 * <code>
@@ -394,6 +406,18 @@ public class Point {
 		return new Point(-x, -y);
 	}
 
+	/**
+	 * Checks wether the coordinates of the point are equal to that of the
+	 * supplied point.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var point = new Point(5, 10);
+	 * print(point == new Point(5, 10)); // true
+	 * print(point == new Point(1, 1)); // false
+	 * print(point != new Point(1, 1)); // true
+	 * </code>
+	 */
 	public boolean equals(Object object) {
 		if (object instanceof Point) {
 			Point pt = (Point) object;
@@ -405,11 +429,11 @@ public class Point {
 	}
 
 	/**
-	 * Checks whether the point is inside the rectangle
+	 * Checks whether the point is inside the boundaries of the rectangle
 	 * 
 	 * @param rect the rectangle to check against
-	 * @return <code>true</code> if the point is inside the rectangle, <code>false</code>
-	 *         otherwise
+	 * @return <code>true</code> if the point is inside the rectangle,
+	 *         <code>false</code> otherwise
 	 */
 	public boolean isInside(Rectangle rect) {
 		return rect.contains(this);
@@ -540,8 +564,8 @@ public class Point {
 	}
 
 	/**
-	 * Returns the interpolation point between the point and another point. The
-	 * object itself is not modified!
+	 * Returns the interpolation point between the point and another point.
+	 * The object itself is not modified!
 	 * 
 	 * @param point
 	 * @param t the position between the two points as a value between 0 and 1
@@ -627,8 +651,8 @@ public class Point {
 	}
 
 	/**
-	 * Returns the projection of the point on another point. Both points are
-	 * interpreted as vectors.
+	 * Returns the projection of the point on another point.
+	 * Both points are interpreted as vectors.
 	 * 
 	 * @param point
 	 * @return the project of the point on another point

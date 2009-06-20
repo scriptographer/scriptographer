@@ -80,6 +80,11 @@ public abstract class Color {
 		return alpha == -1f ? 1f : alpha;
 	}
 
+	/**
+	 * Checks if the color has an alpha value.
+	 * 
+	 * @return <code>true</code> if the color has an alpha value, <code>false</code> otherwise.
+	 */
 	public boolean hasAlpha() {
 		return alpha != -1f;
 	}
@@ -129,6 +134,24 @@ public abstract class Color {
 		return null;
 	}
 
+	/**
+	 * Returns the type of the color as a string.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var color = new RGBColor(1, 0, 0);
+	 * print(color.type); // 'rgb'
+	 * print(color.type == 'cmyk'); // false
+	 * 
+	 * color = color.convert('cmyk') // convert the color to a CMYKColor
+	 * print(color.type); // 'cmyk'
+	 * 
+	 * color.alpha = 0.5; // give the color an alpha value
+	 * print(color.type); // 'acmyk'
+	 * </code>
+	 * 
+	 * @return the color type
+	 */
 	public ColorType getType() {
 		return getType(getClass(), hasAlpha());
 	}

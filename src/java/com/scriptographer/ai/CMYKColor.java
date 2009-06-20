@@ -44,18 +44,28 @@ public class CMYKColor extends Color {
 	protected float black;
 
 	/**
+	 * Creates a CMYKColor with the supplied color component values.
 	 * The color components have values between 0 and 1
 	 * 
-	 * @param c Cyan
-	 * @param m Magenta
-	 * @param y Yellow
-	 * @param k Black
-	 * @param a Alpha
+	 * @param c The amount of cyan
+	 * @param m The amount of magenta
+	 * @param y The amount of yellow
+	 * @param k The amount of black
 	 */
 	public CMYKColor(float c, float m, float y, float k) {
 		this(c, m, y, k, -1f);
 	}
 
+	/**
+	 * Creates a CMYKColor with the supplied color component values.
+	 * The color components have values between 0 and 1.
+	 * 
+	 * @param c The amount of cyan
+	 * @param m The amount of magenta
+	 * @param y The amount of yellow
+	 * @param k The amount of black
+	 * @param a The alpha value
+	 */
 	public CMYKColor(float c, float m, float y, float k, float a) {
 		cyan = c;
 		magenta = m;
@@ -64,6 +74,19 @@ public class CMYKColor extends Color {
 		alpha = a;
 	}
 
+	/**
+	 * Creates a CMYKColor using the values from the supplied array.
+	 * The color components have values between 0 and 1.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var components = [1, 1, 0, 0.5];
+	 * var color = new CMYKColor(components);
+	 * print(color); // { cyan: 1.0, magenta: 1.0, yellow: 0.0, black: 0.5 }
+	 * </code>
+	 * 
+	 * @param component
+	 */
 	public CMYKColor(float components[]) {
 		cyan = components[0];
 		magenta = components[1];
@@ -81,6 +104,15 @@ public class CMYKColor extends Color {
 		// yellow, magenta, black }, alpha);
 	}
 
+	/**
+	 * Returns the color component values as an array.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var color = new CMYKColor(1, 1, 0, 0.5);
+	 * print(color.components) // 1.0, 1.0, 0.0, 0.5, -1.0
+	 * </code>
+	 */
 	public float[] getComponents() {
 		return new float[] {
 			cyan,
@@ -103,10 +135,11 @@ public class CMYKColor extends Color {
 	}
 
 	/**
-	 * Checks if the supplied CMYKColor is the same as this one.
+	 * Checks if the component color values of the CMYKColor are the
+	 * same as those of the supplied one.
 	 * 
 	 * @param obj The CMYKColor to compare with
-	 * @return True if the CMYKColor is the same, false otherwise
+	 * @return <code>true</code> if the CMYKColor is the same, <code>false</code> otherwise
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof CMYKColor) {
@@ -164,6 +197,9 @@ public class CMYKColor extends Color {
 		this.black = black;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void set(Color color) {
 		CMYKColor other = (CMYKColor) color.convert(getType());
 		cyan = other.cyan;

@@ -84,7 +84,7 @@ public class Tracing extends Item implements Commitable {
 	private native void update();
 	
 	/**
-	 * Default: false
+	 * Default: <code>false</code>
 	 * @return
 	 */
 	public native boolean getResample();
@@ -110,7 +110,7 @@ public class Tracing extends Item implements Commitable {
 	private native void nativeSetMode(int mode);
 
 	/**
-	 * Default: {@link TracingMode#BITMAP}
+	 * Default: "bitmap"
 	 */
 	public TracingMode getMode() {
 		return IntegerEnumUtils.get(TracingMode.class, nativeGetMode());
@@ -157,7 +157,7 @@ public class Tracing extends Item implements Commitable {
 	public native void setMaxColors(int maxColors);
 	
 	/**
-	 * Default: true
+	 * Default: <code>true</code>
 	 * @return
 	 */
 	public native boolean getFills();
@@ -169,7 +169,7 @@ public class Tracing extends Item implements Commitable {
 	public native void setFills(boolean fills);
 	
 	/**
-	 * Default: false
+	 * Default: <code>false</code>
 	 * @return
 	 */
 	public native boolean getStrokes();
@@ -244,7 +244,7 @@ public class Tracing extends Item implements Commitable {
 	private native void nativeSetVectorDisplay(int display);
 
 	/**
-	 * Default: {@link TracingVectorDisplay#ARTWORK}
+	 * Default: "artwork"
 	 */
 	public TracingVectorDisplay getVectorDisplay() {
 		return IntegerEnumUtils.get(TracingVectorDisplay.class,
@@ -260,7 +260,7 @@ public class Tracing extends Item implements Commitable {
 	public native void nativeSetRasterDisplay(int display);
 
 	/**
-	 * Default: {@link TracingRasterDisplay#NONE}
+	 * Default: "none"
 	 */
 	public TracingRasterDisplay getRasterDisplay() {
 		return IntegerEnumUtils.get(TracingRasterDisplay.class,
@@ -273,7 +273,7 @@ public class Tracing extends Item implements Commitable {
 	}
 	
 	/**
-	 * Default: false
+	 * Default: <code>false</code>
 	 * @return
 	 */
 	public native boolean getLivePaint();
