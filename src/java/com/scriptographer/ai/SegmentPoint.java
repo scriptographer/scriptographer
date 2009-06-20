@@ -83,7 +83,9 @@ public class SegmentPoint extends Point {
 	}
 
 	/**
-	 * Returns <code>true</code> if this anchor of the segment is selected.
+	 * This property is only present if the point is an anchor or control point
+	 * of a {@link Segment} or a {@link Curve}. In this case, it returns
+	 * <code>true</code> if it is selected by the user, <code>false</code> otherwise.
 	 */
 	public boolean isSelected() {
 		return segment.isSelected(this);
