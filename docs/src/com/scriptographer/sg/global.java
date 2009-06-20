@@ -31,6 +31,8 @@
 
 package com.scriptographer.sg;
 
+import com.scriptographer.ai.Tool;
+
 /*
  * This class is just a dummy to get Javadoc to generate documentation for
  * the global scope

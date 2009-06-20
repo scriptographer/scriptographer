@@ -67,6 +67,9 @@ public class Tool extends NativeObject {
 
 	private String name;
 
+	/**
+	 * @jshide
+	 */
 	public Tool(String name, EnumSet<ToolOption> options, Tool groupTool, Tool toolsetTool) {
 		this.name = name;
 
@@ -156,9 +159,17 @@ public class Tool extends NativeObject {
 
 	public native void setTooltip(String text);
 
-	public native int getOptions();
+	private native int nativeGetOptions();
 
-	public native void setOptions(int options);
+	private native void nativeSetOptions(int options);
+
+	public EnumSet<ToolOption> getOptions() {
+		return IntegerEnumUtils.getSet(ToolOption.class, nativeGetOptions());
+	}
+
+	public void setOptions(EnumSet<ToolOption> options) {
+		nativeSetOptions(IntegerEnumUtils.getFlags(options));
+	}
 
 	public Image getImage() {
 		return image;
@@ -184,6 +195,8 @@ public class Tool extends NativeObject {
 
 	/**
 	 * @deprecated use Tool#setEventInterval instead.
+	 * 
+	 * @jshide
 	 */
 	public void setIdleEventInterval(int interval) {
 		setEventInterval(interval);

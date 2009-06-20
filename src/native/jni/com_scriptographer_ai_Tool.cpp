@@ -150,9 +150,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_nativeCreate(JNIEnv *env,
 }
 
 /*
- * int getOptions()
+ * int nativeGetOptions()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_getOptions(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_nativeGetOptions(JNIEnv *env, jobject obj) {
 	try {
 		AIToolHandle tool = gEngine->getToolHandle(env, obj);
 		long options = 0;
@@ -163,9 +163,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_getOptions(JNIEnv *env, j
 }
 
 /*
- * void setOptions(int options)
+ * void nativeSetOptions(int options)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setOptions(JNIEnv *env, jobject obj, jint options) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_nativeSetOptions(JNIEnv *env, jobject obj, jint options) {
 	try {
 		AIToolHandle tool = gEngine->getToolHandle(env, obj);
 		sAITool->SetToolOptions(tool, options);
