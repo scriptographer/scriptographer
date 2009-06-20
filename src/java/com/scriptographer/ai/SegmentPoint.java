@@ -33,6 +33,8 @@ package com.scriptographer.ai;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class SegmentPoint extends Point {
 	protected Segment segment;
