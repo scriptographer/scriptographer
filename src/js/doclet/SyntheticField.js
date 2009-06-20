@@ -35,8 +35,8 @@ SyntheticField = Member.extend({
 		return Member.isVisible(this.member);
 	},
 
-	isStatic: function() {
-		return this.member.isStatic();
+	isField: function() {
+		return true;
 	},
 
 	containingClass: function() {

@@ -81,11 +81,27 @@ Member = Object.extend({
 	},
 
 	returnType: function() {
-		return this.member instanceof FieldDoc ? new Type(this.member.type()) : null;
+		return this.member.isField() ? new Type(this.member.type()) : null;
 	},
 
 	tags: function(tagname) {
 		return this.member.tags(tagname);
+	},
+
+	isStatic: function() {
+		return this.member.isStatic();
+	},
+
+	isField: function() {
+		return this.member.isField();
+	},
+
+	isMethod: function() {
+		return this.member.isMethod();
+	},
+
+	isConstructor: function() {
+		return this.member.isConstructor();
 	},
 
 	renderSummary: function(classDoc) {

@@ -18,13 +18,13 @@ MemberGroupList = Object.extend({
 
 	add: function(member) {
 		var name = member.name(), key = name, group;
-		if (member instanceof ExecutableMemberDoc) {
-			if (member instanceof MethodDoc)
+		if (member.isMethod() || member.isConstructor()) {
+			if (member.isMethod()) {
 				// For methods, use the return type for grouping as well!
 				var type = member.returnType();
 				if (type)
 					key = type.typeName() + type.dimension() + ' ' + name;
-
+			}
 			group = this.groups[key];
 			if (!group) {
 				group = new MemberGroup(this.classObject); 
@@ -36,13 +36,17 @@ MemberGroupList = Object.extend({
 			// so it can be treated the same as functions:
 			group = new MemberGroup(this.classObject); 
 		}
-		group.add(member);
-		if (!this.groups[key]) {
-			// Used in scanBeanProperties:
-			group.name = name;
-			// Reference the list so it can remove itself
-			group.list = this;
-			this.groups[key] = group;
+		if (group.add(member)) {
+			if (!this.groups[key]) {
+				// Used in scanBeanProperties:
+				group.name = name;
+				// Reference the list so it can remove itself
+				group.list = this;
+				this.groups[key] = group;
+			}
+		} else if (group.isEmpty()) {
+			// Remove empty groups again since nothing could be added to them.
+			group.remove();
 		}
 	},
 

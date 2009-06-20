@@ -73,9 +73,11 @@ Method = Member.extend(new function() {
 				if (!this.member)
 					this.member = method;
 				this.added[signature] = true;
-				return true;
 			}
-			return false;
+			// Always return true, even if this was added before, to 'swallow'
+			// identical methods from superclasses and not have MemerGroup
+			// create a new Method for it instead.
+			return true;
 		},
 
 		remove: function(method) {
@@ -141,7 +143,7 @@ Method = Member.extend(new function() {
 					!member.throwsTags().length &&
 					!member.paramTags().length;
 			}
-			if (this.member instanceof MethodDoc && this.isVisible() && isEmpty(this.member)) {
+			if (this.member.isMethod() && this.isVisible() && isEmpty(this.member)) {
 				// No javadoc available for this method. Recurse through
 				// superclasses
 				// and implemented interfaces to find javadoc of overridden

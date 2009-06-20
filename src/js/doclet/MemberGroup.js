@@ -21,11 +21,19 @@ MemberGroup = Object.extend({
 	},
 
 	add: function(member) {
-		var mem = null;
-		// only group functions
-		if (member instanceof ExecutableMemberDoc) {
+		if (member instanceof Member) {
+			// This only adds object that are instanceof Member. For adding
+			// native types, use #add() above.
+			member.group = this;
+			this.members.push(member);
+			Member.put(member);
+			return true;
+		} else if (member.isField()) {
+			return this.add(new Member(this.classObject, member));
+		} else if (member.isMethod() || member.isConstructor()) {
+			// Only group functions
 			var name = member.name();
-			if (settings.methodFilter && member instanceof MethodDoc) {
+			if (settings.methodFilter && member.isMethod()) {
 				// filter out methods that are not allowed:
 				if (settings.methodFilter.some(function(filter) {
 					return filter == name;
@@ -34,41 +42,37 @@ MemberGroup = Object.extend({
 
 			// See if we can add to an existing Member, based on compatible
 			// variable parameter versions:
-			this.members.each(function(m) {
-				if (m.add(member)) {
-					mem = m;
-					throw $break;
-				}
+			var mem = this.members.find(function(existing) {
+				if (existing.add(member))
+					return existing;
 			});
-			// Couldn't add to an existing Member, create a new one:
+			// Couldn't add to an existing Member, try creating a new one:
 			if (!mem) {
 				mem = new Method(this.classObject);
-				if (mem.add(member)) {
+				if (mem.add(member))
 					return this.add(mem);
-				} else {
-					mem = null;
-				}
 			}
-		} else {
-			if (member instanceof Member)
-				mem = member;
-			else
-				mem = new Member(this.classObject, member);
-			mem.group = this;
-			this.members.push(mem);
 		}
-		if (mem) {
-			Member.put(mem);
-			return true;
-		}
+		return false;
+	},
+
+	isEmpty: function() {
+		return !this.members.length;
 	},
 
 	remove: function(member) {
-		if (this.members.remove(member)) {
-			Member.remove(member);
-			if (!this.members.length)
-				this.list.remove(this);
-			return true;
+		if (member) {
+			// Remove a member from this group, and the group from its parent
+			// list if its empty.
+			if (this.members.remove(member)) {
+				Member.remove(member);
+				if (this.isEmpty())
+					this.remove();
+				return true;
+			}
+		} else if (this.list) {
+			// Remove this group form its parent list
+			this.list.remove(this);
 		}
 	},
 

@@ -70,8 +70,9 @@ ClassObject = Object.extend({
 	},
 
 	hasSimilar: function(member) {
-		(member instanceof ExecutableMemberDoc ? this.methods()
-				: this.fields()).each(function(other) {
+		(member.isMethod() && this.methods()
+			|| member.isConstructor() && this.constructors()
+			|| this.fields()).each(function(other) {
 			if (member.isSimilar(other))
 				return true;
 		});
@@ -239,7 +240,7 @@ ClassObject = Object.extend({
 		},
 
 		get: function(param) {
-			if (param instanceof ClassDoc)
+			if (param.qualifiedName)
 				param = param.qualifiedName();
 			return this.classes[param]
 		},
