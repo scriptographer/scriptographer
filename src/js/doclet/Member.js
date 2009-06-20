@@ -45,6 +45,8 @@ Member = Object.extend({
 	},
 
 	signature: function() {
+		// Do not forward to this.member.signature, since this.member might
+		// be a function e.g. for bean properties. Let Method do the work.
 		return '';
 	},
 
@@ -194,9 +196,9 @@ Member = Object.extend({
 			delete this.members[member.id || Member.getId(member)];
 		},
 
-		isVisible: function(member) {
-			// TODO: Check: needed at the end? || !!member;
-			return member && !member.tags('jshide')[0];
+		isVisible: function(member, forceAll) {
+			var hide = member && member.tags('jshide')[0];
+			return !(hide && (!forceAll || hide.text() == 'all') || !member);
 		}
 	}
 });

@@ -685,9 +685,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRectangle(JN
 }
 
 /*
- * com.scriptographer.ai.Path createRoundRectangle(com.scriptographer.ai.Rectangle rect, float hor, float ver)
+ * com.scriptographer.ai.Path createRoundRectangle(com.scriptographer.ai.Rectangle rect, com.scriptographer.ai.Size size)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRoundRectangle(JNIEnv *env, jobject obj, jobject rect, jfloat hor, jfloat ver) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRoundRectangle(JNIEnv *env, jobject obj, jobject rect, jobject size) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
@@ -695,9 +695,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRoundRectang
 		// simply call for the error message and the doc activation
 		Item_getInsertionPoint(&paintOrder);
 		AIRealRect rt;
+		AIRealPoint pt;
 		gEngine->convertRectangle(env, rect, &rt);
+		gEngine->convertSize(env, size, &pt);
 		AIArtHandle art = NULL;
-		sAIShapeConstruction->NewRoundedRect(rt.top, rt.left, rt.bottom, rt.right, hor, ver, false, &art);
+		sAIShapeConstruction->NewRoundedRect(rt.top, rt.left, rt.bottom, rt.right, pt.h, pt.v, false, &art);
 		return gEngine->wrapArtHandle(env, art, doc);
 	} EXCEPTION_CONVERT(env);
 	return NULL;

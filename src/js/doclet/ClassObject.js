@@ -35,7 +35,9 @@ ClassObject = Object.extend({
 			this.add(superclass, false);
 			superclass = superclass.superclass();
 		}
-		this.classDoc.tags('jsextension').each(function(ext) {
+		var extensions = this.classDoc.tags('jsextension');
+		for (var i = extensions.length - 1; i >= 0; i--) {
+			var ext = extensions[i];
 			var data = {};
 			ext.inlineTags().each(function(tag) {
 				var name = tag.name();
@@ -49,7 +51,7 @@ ClassObject = Object.extend({
 					this.refernceMembers.push(ref);
 				}
 			}
-		}, this);
+		}
 		// Only method and constructor need to call init for method parameter merging.
 		this.lists.method.init();
 		this.lists.constructor.init();
@@ -79,12 +81,6 @@ ClassObject = Object.extend({
 		return this.lists.find(function(list, key) {
 			return list.get(name);
 		});
-	},
-
-	getMember: function(name) {
-		var group = this.getGroup(name);
-		// Just use the first member in a member group...
-		return group && group.members[0];
 	},
 
 	methods: function() {

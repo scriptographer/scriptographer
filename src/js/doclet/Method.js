@@ -244,12 +244,14 @@ Method = Member.extend(new function() {
 
 		returnType: function() {
 			// Let clone report the right class type, not basic java Object
-			if (this.member instanceof MethodDoc) {
+			if (this.member.isMethod()) {
 				if (this.member.name() == 'clone') {
 					return this.containingClass();
 				} else {
 					return new Type(this.member.returnType());
 				}
+			} else if (this.member.isConstructor()) {
+				return this.containingClass();
 			}
 		},
 
