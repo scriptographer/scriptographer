@@ -56,6 +56,12 @@ public class Document extends NativeObject {
 	/**
 	 * Opens an existing document.
 	 * 
+	 * Sample code:
+	 * <code>
+	 * var file = new File('/path/to/poster.ai');
+	 * var poster = new Document(file);
+	 * </code>
+	 * 
 	 * @param file the file to read from
 	 * @param colorModel the document's desired color model
 	 * @param dialogStatus how dialogs should be handled
@@ -76,6 +82,17 @@ public class Document extends NativeObject {
 
 	/**
 	 * Creates a new document.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // Create a new document named 'poster'
+	 * // with a width of 100pt and a height of 200pt:
+	 * var doc = new Document('poster', 100, 200);;
+	 * 
+	 * // Create a document with a CMYK color mode
+	 * // and show Illustrator's 'New Document' dialog:
+	 * var doc = new Document('poster', 100, 200, 'cmyk', 'on');
+	 * </code>
 	 * 
 	 * @param title the title of the document
 	 * @param width the width of the document
@@ -185,6 +202,26 @@ public class Document extends NativeObject {
 		activate(true, false);
 	}
 	
+	/**
+	 * The layers contained within the document.
+	 * 
+	 * Sample code:
+	 * <code>
+	 *  // When you create a new Document it always contains
+	 *  // a layer called 'Layer 1'
+	 *  print(document.layers); // Layer (Layer 1)
+	 *
+	 *  // Create a new layer called 'test' in the document
+	 *  var newLayer = new Layer();
+	 *  newLayer.name = 'test';
+	 *
+	 *  print(document.layers); // Layer (test), Layer (Layer 1)
+	 *  print(document.layers[0]); // Layer (test)
+	 *  print(document.layers.test); // Layer (test)
+	 *  print(document.layers['Layer 1']); // Layer (Layer 1)
+	 * </code>
+	 * @return
+	 */
 	public LayerList getLayers() {
 		if (layers == null)
 			layers = new LayerList(this);
@@ -199,6 +236,9 @@ public class Document extends NativeObject {
 	 */
 	public native Layer getActiveLayer();
 	
+	/**
+	 * The views contained within the document.
+	 */
 	public DocumentViewList getViews() {
 		if (views == null)
 			views = new DocumentViewList(this);
@@ -212,10 +252,16 @@ public class Document extends NativeObject {
 	
 	private native int getActiveViewHandle(); 
 
+	/**
+	 * The document view which is currently active.
+	 */
 	public DocumentView getActiveView() {
 		return DocumentView.wrapHandle(getActiveViewHandle(), this);
 	}
 	
+	/**
+	 * The symbols contained within the document.
+	 */
 	public SymbolList getSymbols() {
 		if (symbols == null)
 			symbols = new SymbolList(this);
@@ -231,6 +277,9 @@ public class Document extends NativeObject {
 		return (Symbol) Symbol.wrapHandle(getActiveSymbolHandle(), this);
 	}
 
+	/**
+	 * The swatches contained within the document.
+	 */
 	public SwatchList getSwatches() {
 		if (swatches == null)
 			swatches = new SwatchList(this);
@@ -256,7 +305,8 @@ public class Document extends NativeObject {
 	public native void setRulerOrigin(Point pt);
 
 	/**
-	 * setSize only works while reading a document!
+	 * The size of the document.
+	 * Setting size only works while reading a document!
 	 */
 	public native Size getSize();
 
@@ -269,6 +319,9 @@ public class Document extends NativeObject {
 		setSize(size.width, size.height);
 	}
 
+	/**
+	 * The document's cropbox.
+	 */
 	public native Rectangle getCropBox();
 	
 	public native void setCropBox(Rectangle cropBox);
@@ -282,6 +335,10 @@ public class Document extends NativeObject {
 	
 	public native void setModified(boolean modified);
 
+	/**
+	 * The document's file.
+	 * @return
+	 */
 	public native File getFile();
 
 	private native int nativeGetFileFormat();
@@ -295,13 +352,14 @@ public class Document extends NativeObject {
 	public void setFileFormat(FileFormat format) {
 		nativeSetFileFormat(format != null ? format.handle : 0);
 	}
-	/**
-	 * Prints the document
-	 * 
-	 * @param dialogStatus
-	 */
+
 	private native void nativePrint(int status);
 
+	/**
+	 * Prints the document.
+	 * 
+	 * @param status
+	 */
 	public void print(DialogStatus status) {
 		nativePrint(status.value);
 	}
@@ -311,17 +369,17 @@ public class Document extends NativeObject {
 	}
 
 	/**
-	 * Saves the document
+	 * Saves the document.
 	 */
 	public native void save();
 	
 	/**
-	 * Closes the document
+	 * Closes the document.
 	 */
 	public native void close();
 	
 	/**
-	 * Forces the document to be redrawn
+	 * Forces the document to be redrawn.
 	 */
 	public native void redraw();
 	
@@ -342,7 +400,13 @@ public class Document extends NativeObject {
 	public native void paste();
 
 	/**
-	 * Places a file in the document
+	 * Places a file in the document.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var file = new File('/path/to/image.jpg');
+	 * var item = document.place(file);
+	 * </code>
 	 * 
 	 * @param file the file to place
 	 * @param linked when set to <code>true</code>, the placed object is a
@@ -398,6 +462,9 @@ public class Document extends NativeObject {
 	 */	
 	public native boolean hasSelectedItems();
 
+	/**
+	 * The selected items contained within the document.
+	 */
 	public native ItemList getSelectedItems();
 
 	/**
@@ -444,10 +511,19 @@ public class Document extends NativeObject {
 	private native ItemList nativeGetMatchingItems(Class type, HashMap<Integer, Boolean> attributes);
 
 	/**
-	 * Returns all items of a given class that match a set of attributes, as specified by the
+	 * Returns all items of the supplied classes that match a set of attributes, as specified by the
 	 * passed map. For each of the keys in the map, the demanded value can either be true or false.
 	 * 
-	 * @param type
+	 * Sample code:
+	 * <code>
+	 * // All hidden paths and rasters contained in the document.
+	 * var hiddenItems = document.getMatchingItems([Path, Raster], { hidden: true });
+	 * 
+	 * // All locked Paths and Layers contained in the document.
+	 * var lockedItems = document.getMatchingItems([Path, Layer], { locked: true });
+	 * </code>
+	 * 
+	 * @param types
 	 * @param attributes
 	 * @return
 	 * 
@@ -461,19 +537,28 @@ public class Document extends NativeObject {
 		return getMatchingItems(types, (Map) attributes);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public ItemList getMatchingItems(Class type, EnumMap<ItemAttribute, Boolean> attributes) {
-		return getMatchingItems(type, (Map) attributes);
-	}
-
 	/**
 	 * Returns all items of a given class that match a set of attributes, as specified by the
 	 * passed map. For each of the keys in the map, the demanded value can either be true or false.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // All hidden paths contained in the document.
+	 * var hiddenPaths = document.getMatchingItems(Path, { hidden: true });
+	 * 
+	 * // All locked Layers contained in the document.
+	 * var lockedItems = document.getMatchingItems(Layer, { locked: true });
+	 * </code>
 	 * 
 	 * @param type
 	 * @param attributes
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
+	public ItemList getMatchingItems(Class type, EnumMap<ItemAttribute, Boolean> attributes) {
+		return getMatchingItems(type, (Map) attributes);
+	}
+
 	public ItemList getMatchingItems(Class[] types, Map<Object, Object> attributes) {
 		// Convert the attributes list to a new HashMap containing only
 		// integer -> boolean pairs.
@@ -730,6 +815,10 @@ public class Document extends NativeObject {
 
 	private TextStoryList stories = null;
 	
+	/**
+	 * The stories contained within the document.
+	 * @return
+	 */
 	public TextStoryList getStories() {
 		// We need to version TextStoryLists, since document handles seem to not be unique:
 		// When there is only one document, closing it and opening a new one results in the
@@ -748,10 +837,34 @@ public class Document extends NativeObject {
 		return stories;
 	}
 
+	/**
+	 * Checks whether the document is valid, i.e. it hasn't been closed.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * print(document.isValid()); // true
+	 * document.close();
+	 * print(document.isValid()); // false
+	 * </code>
+	 * 
+	 * @return <code>true</code> if the document is valid, <code>false</code> otherwise.
+	 */
 	public native boolean isValid();
 
 	private native int nativeGetData();
 
+	/**
+	 * An object contained within the document which can be used to store data.
+	 * The values in this object can be accessed even after the file has been closed and opened again.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * document.data['shoppingList'] = ['oranges', 'apples'];
+	 * print(document.data['shoppingList']); // 'oranges', 'apples'
+	 * </code>
+	 * 
+	 * @return
+	 */
 	public Dictionary getData() {
 		if (data == null)
 			data = Dictionary.wrapHandle(nativeGetData(), this);
