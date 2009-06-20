@@ -33,6 +33,8 @@ package com.scriptographer.ui;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public abstract class TextItem extends Item {
 
