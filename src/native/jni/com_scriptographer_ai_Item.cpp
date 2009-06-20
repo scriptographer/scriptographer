@@ -1009,7 +1009,10 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isValid(JNIEnv *env, 
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		return Item_isValid(art);
-	} EXCEPTION_CONVERT(env);
+	} catch (ScriptographerException *e) {
+		// Do not report, just return false
+		delete e;
+	}
 	return false;
 }
 
