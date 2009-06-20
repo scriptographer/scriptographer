@@ -31,51 +31,21 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.ScriptographerEngine; 
-import com.scriptographer.ScriptographerException;
-import com.scriptographer.ui.Image;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.IntMap;
-
-import java.util.ArrayList;
-import java.util.HashMap;
+import com.scratchdisk.util.IntegerEnumUtils;
+import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ScriptographerException;
+import com.scriptographer.ui.Image;
 
 /**
  * @author lehni
  */
 public class Tool extends NativeObject {
-	// AIToolOptions
-	public static final int
-/*
- *	This option is always on, since we're changing cursors
- * 		OPTION_TRACK_CURSOR = 1 << 0,
- */
-/** Set to disable automatic scrolling. When off (the default), the Illustrator window
-	scrolls when a tool reaches the edge. For tools that manipulate artwork,
-	autoscroll is useful. Set this to turn autoscroll off for a tool that
-	draws to the screen directly, like the built-in Brush tool. */
-		OPTION_NO_AUTO_SCROLL = 1 << 1,
-/**	Set to buffer the drag selectors and messages and send all of them
-	to the tool at once. Useful if a tool is calculation intensive.  The effect
-	is no longer real-time, but has a smoother final output.
-	When off (the default), the tool processes drag selectors and returns frequently,
-	resulting in near real-time feedback. If there are intensive calculations
-	during the drag selector, the tool could miss drag notifications, resulting in rougher
-	tracking.  */
-		OPTION_BUFFERED_DRAGGING = 1 << 2,
-/** Set to maintain the edit context when this tool is selected. For art objects,
-	keeps all current points and handles selected. For text, keeps the insertion
-	point in the current location. Set this option for navigational tools like
-	the Zoom and Scroll tools. */
-		OPTION_MAINTAIN_EDIT_CONTEXT = 1 << 3,
-/** Set to maintain the text edit context when the tool is selected,
-	if \c #kToolMaintainEditContextOption is also set. */
-		OPTION_IS_TEXT_TOOL = 1 << 4,
-/** Set to receive \c #kSelectorAIToolDecreaseDiameter and
-	\c #kSelectorAIToolIncreaseDiameter. Use if the tool needs to change
-	diameter when either '[' or ']' is pressed. */
-		OPTION_CHANGE_DIAMETER = 1 << 5;
-	
 	// TODO: implement a way to set cursors?
 	private int cursor = 128;
 
@@ -97,7 +67,7 @@ public class Tool extends NativeObject {
 
 	private String name;
 
-	public Tool(String name, int options, Tool groupTool, Tool toolsetTool) {
+	public Tool(String name, EnumSet<ToolOption> options, Tool groupTool, Tool toolsetTool) {
 		this.name = name;
 
 		ArrayList<Tool> unusedTools = getUnusedTools();
@@ -115,7 +85,7 @@ public class Tool extends NativeObject {
 		} else {
 			// No previously existing effect found, create a new one:
 			handle = nativeCreate(name,
-					options,
+					IntegerEnumUtils.getFlags(options),
 					groupTool != null ? groupTool.handle : 0,
 					toolsetTool != null ? toolsetTool.handle : 0);
 		}
@@ -126,16 +96,16 @@ public class Tool extends NativeObject {
 		tools.put(handle, this);
 	}
 
-	public Tool(String name, int options, Tool groupTool) {
+	public Tool(String name, EnumSet<ToolOption> options, Tool groupTool) {
 		this(name, options, groupTool, null);
 	}
 
-	public Tool(String name, int options) {
+	public Tool(String name, EnumSet<ToolOption> options) {
 		this(name, options, null, null);
 	}
 
 	public Tool(String name) {
-		this(name, 0, null, null);
+		this(name, null, null, null);
 	}
 
 	/**

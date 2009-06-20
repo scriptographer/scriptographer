@@ -102,7 +102,10 @@ public class Annotator extends NativeObject {
 	}
 	
 	private native boolean nativeSetActive(int handle, boolean active);
-	
+
+	/**
+	 * @jshide
+	 */
 	public void invalidate(int x, int y, int width, int height) {
 		nativeInvalidate(handle, x, y, width, height);
 	}
