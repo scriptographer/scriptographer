@@ -81,7 +81,10 @@ public class SegmentPoint extends Point {
 		segment.update();
 		return y;
 	}
-	
+
+	/**
+	 * Returns <code>true</code> if this anchor of the segment is selected.
+	 */
 	public boolean isSelected() {
 		return segment.isSelected(this);
 	}

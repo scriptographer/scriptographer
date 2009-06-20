@@ -41,6 +41,8 @@ import com.scriptographer.ui.Size;
  * Illustrator document. Some functions also use it as a two dimensional vector
  * object.
  * 
+ * @jsextension {@type field} {@name selected} {@reference SegmentPoint#selected} {@after Point#angle}
+ * 
  * @author lehni
  */
 public class Point {
