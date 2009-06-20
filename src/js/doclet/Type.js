@@ -220,16 +220,14 @@ Type = Object.extend(new function() {
 				} else if (this.isList() || this.isCollection()) {
 					// Generics stuff
 					var type = this.typeArguments()[0];
-					print('?', this, '--', type, '--', type && type.extendsBounds && true, '--', type && type.bounds && type.bounds());
 					// If there's no typeArgument here, walk up the inheritance chain
 					// and see if we can find something there
 					if (type && type.extendsBounds) // WildcardType
 						type = type.extendsBounds()[0];
-					if (type && type.bounds) print('T', this, ' -- ', type.bounds());
 					if (type && type.bounds) // TypeVariable
 						type = type.bounds()[0];
-					print('!', this, ' -- ', type);
-					type = type && new Type(type);
+					if (type)
+					 	type = new Type(type);
 					// If we did not find it yet, walk through interfaces first,
 					// then superclasses and check again.
 					if (!type) {
@@ -240,8 +238,11 @@ Type = Object.extend(new function() {
 						});
 						if (!type && this.superclassType) {
 							var sup = this.superclassType();
-							type = sup && sup.asParameterizedType();
-							type = type && new Type(type).getComponentType();
+							if (sup) {
+								type = sup.asParameterizedType();
+								if (type)
+									type = new Type(type).getComponentType();
+							}
 						}
 					}
 					this.componentType = type || null;
