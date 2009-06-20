@@ -98,6 +98,9 @@ public class Size {
 		this.height = height;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Size add(double w, double h) {
 		return new Size(width + w, height + h);
 	}
@@ -110,6 +113,9 @@ public class Size {
 		return add(value, value);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Size subtract(double w, double h) {
 		return new Size(width - w, height - h);
 	}
@@ -122,6 +128,9 @@ public class Size {
 		return subtract(value, value);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Size multiply(double w, double h) {
 		return new Size(width * w, height * h);
 	}
@@ -134,6 +143,9 @@ public class Size {
 		return multiply(value, value);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Size divide(double w, double h) {
 		return new Size(width / w, height / h);
 	}
@@ -146,6 +158,9 @@ public class Size {
 		return divide(value, value);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Size negate() {
 		return new Size(-width, -width);
 	}

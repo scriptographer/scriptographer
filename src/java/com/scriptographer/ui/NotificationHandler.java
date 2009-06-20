@@ -32,11 +32,8 @@
 package com.scriptographer.ui;
 
 /**
- * The NotificationListener just recieves notifictaions from native code.
+ * The NotificationListener just receives notifications from native code.
  * It can be a Dialog, Item or ListEntry
- * 
- * It implements Wrappable and Unsealed in order to provide the JS environment
- * a means of setting callback functions and calling these from Java.
  * 
  * @author lehni
  */

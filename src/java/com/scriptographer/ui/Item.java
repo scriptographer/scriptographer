@@ -519,19 +519,12 @@ public abstract class Item extends Component {
 		return (Border) margin.clone();
 	}
 
-	/**
-	 * @jshide
-	 */
 	public void setMargin(int top, int right, int bottom, int left) {
 		margin = new Border(top, right, bottom, left);
 		if (nativeBounds != null)
 			updateBounds(bounds.x, bounds.y, bounds.width, bounds.height, false);
 		// Update the margins int he AWT proxy as well
 		updateAWTMargin(margin);
-	}
-
-	public void setMargin(Border margin) {
-		setMargin(margin.top, margin.right, margin.bottom, margin.left);
 	}
 
 	/* 

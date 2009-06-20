@@ -176,6 +176,9 @@ abstract class Component extends NotificationHandler {
 		return this.getAWTContainer().getLayout();
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setMargin(int top, int right, int bottom, int left) {
 		this.getAWTContainer().setInsets(top, left, bottom, right);
 	}
@@ -192,6 +195,9 @@ abstract class Component extends NotificationHandler {
 		setMargin(margin, margin, margin, margin);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setMargin(int ver, int hor) {
 		setMargin(ver, hor, ver, hor);
 	}
@@ -297,30 +303,51 @@ abstract class Component extends NotificationHandler {
 		content.addAll(elements);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void addToContent(Component component) {
 		getContent().add(component);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void addToContent(Component component, String constraints) {
 		getContent().set(constraints, component);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void addToContent(Component component, int index) {
 		getContent().add(index, component);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void removeFromContent(Component component) {
 		getContent().remove(component);
 	}
 	
+	/**
+	 * @jshide
+	 */
 	public void removeFromContent(int index) {
 		getContent().remove(index);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void removeFromContent(String constraints) {
 		getContent().remove(constraints);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void removeContent() {
 		getContent().removeAll();
 	}
