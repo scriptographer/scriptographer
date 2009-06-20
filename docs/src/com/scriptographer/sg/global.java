@@ -63,6 +63,12 @@ public class global {
 	public Script script;
 
 	/**
+	 * The reference to the tool object. This is only set when a tool script is
+	 * executed and assigned with the Scriptographer drawing tool.
+	 */
+	public Tool tool;
+
+	/**
 	 * Prints one or more passed parameters to the console, seperated by white
 	 * space.
 	 */
