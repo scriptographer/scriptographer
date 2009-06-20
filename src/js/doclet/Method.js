@@ -54,6 +54,7 @@ Method = Member.extend(new function() {
 			// Do not add superclass versions for overridden methods 
 			var signature = method.signature();
 			if (!this.added[signature]) {
+				this.added[signature] = true;
 				// See wether the new method fits the existing ones:
 				if (this.methods.find(function(mem) {
 					return !isCompatible(mem, method);
@@ -68,7 +69,6 @@ Method = Member.extend(new function() {
 				// This is corrected in init(), if grouping occurs.
 				if (!this.member)
 					this.member = method;
-				this.added[signature] = true;
 			}
 			// Always return true, even if this was added before, to 'swallow'
 			// identical methods from superclasses and not have MemerGroup

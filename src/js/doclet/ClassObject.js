@@ -22,10 +22,13 @@ ClassObject = Object.extend({
 		this.add(this.classDoc, true);
 		var superclass = this.classDoc.superclass();
 		// Add the members of direct invisible superclasses to
-		// this class for JS documentation:
-		while (superclass && superclass.qualifiedName() != 'java.lang.Object') {
-			if (!superclass.isVisible())
-				this.add(superclass, false);
+		// this class for JS documentation.
+		// Careful: This should only be done with direct invisible superclasses,
+		// Since all the other inheriting classes will link this visible class
+		// for inheritance.
+		while (superclass && !superclass.isVisible()
+				&& superclass.qualifiedName() != 'java.lang.Object') {
+			this.add(superclass, false);
 			superclass = superclass.superclass();
 		}
 		this.methodLists.init();
