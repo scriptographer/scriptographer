@@ -307,8 +307,7 @@ public abstract class Item extends DocumentObject {
 	 * Removes the item from the document. If the item has children,
 	 * they are also removed.
 	 * 
-	 * @return {@true if the item was removed, false
-	 *         otherwise
+	 * @return {@true if the item was removed}
 	 */
 	public boolean remove() {
 		boolean ret = false;
@@ -884,7 +883,7 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * Returns {@true when neither the item, nor it's parents are locked or hidden.
+	 * Returns {@true when neither the item, nor it's parents are locked or hidden}
 	 */
 	public native boolean isEditable();
 
@@ -1046,8 +1045,7 @@ public abstract class Item extends DocumentObject {
 	 * </code>
 	 * 
 	 * @param item The item to check against
-	 * @return {@true if it is above the specified item, false
-	 *         otherwise
+	 * @return {@true if it is above the specified item}
 	 */
 	public native boolean isAbove(Item item);
 	
@@ -1062,8 +1060,7 @@ public abstract class Item extends DocumentObject {
 	 * </code>
 	 * 
 	 * @param item The item to check against
-	 * @return {@true if it is below the specified item, false
-	 *         otherwise
+	 * @return {@true if it is below the specified item}
 	 */
 	public native boolean isBelow(Item item);
 
@@ -1086,8 +1083,7 @@ public abstract class Item extends DocumentObject {
 	 * </code>
 	 *
 	 * @param item The item to check against
-	 * @return {@true if it is inside the specified item,
-	 *         false otherwise
+	 * @return {@true if it is inside the specified item}
 	 */
 	public native boolean isDescendant(Item item);
 
@@ -1102,8 +1098,7 @@ public abstract class Item extends DocumentObject {
 	 * </code>
 	 * 
 	 * @param item the item to check against
-	 * @return {@true if it is an ancestor of the specified 
-	 *         item, false otherwise
+	 * @return {@true if it is an ancestor of the specified item}
 	 */
 	public native boolean isAncestor(Item item);
 

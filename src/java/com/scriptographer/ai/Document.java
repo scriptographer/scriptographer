@@ -457,7 +457,7 @@ public class Document extends NativeObject {
 	/**
 	 * Checks whether the document contains any selected items.
 	 * 
-	 * @return {@true if the document contains selected items,
+	 * @return <code>true</code> if the document contains selected items,
 	 *         false otherwise.
 	 */	
 	public native boolean hasSelectedItems();
@@ -752,7 +752,7 @@ public class Document extends NativeObject {
 	 * @param decayPercent the percentage by which each succeeding arc will be
 	 *        scaled
 	 * @param numQuarterTurns the number of quarter turns (arcs)
-	 * @param clockwiseFromOutside if this is set to {@true the
+	 * @param clockwiseFromOutside if this is set to <code>true</code> the
 	 *        spiral will spiral in a clockwise direction from the first point.
 	 *        If it's set to <code>false</code> it will spiral in a counter
 	 *        clockwise direction

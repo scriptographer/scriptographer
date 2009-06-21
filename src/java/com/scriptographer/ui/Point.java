@@ -80,8 +80,7 @@ public class Point {
 	 * Checks whether the point is inside the rectangle
 	 * 
 	 * @param rect the rectangle to check against
-	 * @return {@true if the point is inside the rectangle, false
-	 *         otherwise
+	 * @return {@true if the point is inside the rectangle}
 	 */
 	public boolean isInside(Rectangle rect) {
 		return rect.contains(this);

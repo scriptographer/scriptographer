@@ -540,7 +540,7 @@ public class File {
 	 * 
 	 * @return {@true if and only if the file denoted by this
 	 *         abstract pathname is hidden according to the conventions of the
-	 *         underlying platform
+	 *         underlying platform}
 	 * 
 	 * @throws SecurityException If a security manager exists and its
 	 *         <code>{@link
@@ -622,7 +622,7 @@ public class File {
 	 * <code>{@link #list()}</code> method, except that the strings in the
 	 * returned array must satisfy the filter. If the given <code>filter</code>
 	 * is <code>null</code> then all names are accepted. Otherwise, a name
-	 * satisfies the filter if and only if the value {@true results
+	 * satisfies the filter if and only if the value <code>true</code> results
 	 * when the <code>{@link
      * FilenameFilter#accept}</code> method of the
 	 * filter is invoked on this abstract pathname and the name of a file or
@@ -691,7 +691,7 @@ public class File {
 	 * the returned array must satisfy the filter. If the given
 	 * <code>filter</code> is <code>null</code> then all pathnames are
 	 * accepted. Otherwise, a pathname satisfies the filter if and only if the
-	 * value {@true results when the
+	 * value <code>results</code> when the
 	 * <code>{@link FilenameFilter#accept}</code> method of the filter is
 	 * invoked on this abstract pathname and the name of a file or directory in
 	 * the directory that it denotes.
@@ -722,7 +722,7 @@ public class File {
 	 * the returned array must satisfy the filter. If the given
 	 * <code>filter</code> is <code>null</code> then all pathnames are
 	 * accepted. Otherwise, a pathname satisfies the filter if and only if the
-	 * value {@true results when the
+	 * value <code>results</code> when the
 	 * <code>{@link FileFilter#accept(java.io.File)}</code> method of the
 	 * filter is invoked on the pathname.
 	 * 
@@ -764,8 +764,7 @@ public class File {
 	 * directories.
 	 * 
 	 * @return {@true if and only if the directory was created,
-	 *         along with all necessary parent directories; <code>false</code>
-	 *         otherwise
+	 *         along with all necessary parent directories}
 	 * 
 	 * @throws SecurityException If a security manager exists and its
 	 *         <code>{@link

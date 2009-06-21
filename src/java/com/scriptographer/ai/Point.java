@@ -445,8 +445,7 @@ public class Point {
 	 * 
 	 * @param point the point to check against
 	 * @param tolerance the maximum distance allowed
-	 * @return {@true if it is within the given distance, false
-	 *         otherwise
+	 * @return {@true if it is within the given distance}
 	 */
 	public boolean isClose(Point point, double tolerance) {
 		return getDistance(point) < tolerance;
