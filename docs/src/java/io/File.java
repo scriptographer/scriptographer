@@ -42,7 +42,7 @@ import sun.security.action.GetPropertyAction;
  * is defined by the system property {@code file.separator}, and is made
  * available in the public static fields <code>{@link
  * #separator}</code> and
- * {@code {@link #separatorChar}} of this class. When a pathname string
+ * {@link #separatorChar} of this class. When a pathname string
  * is converted into an abstract pathname, the names within it may be separated
  * by the default name-separator character or by any other name-separator
  * character that is supported by the underlying system.
@@ -90,14 +90,14 @@ public class File {
     /**
 	 * The system-dependent default name-separator character, represented as a
 	 * string for convenience. This string contains a single character, namely
-	 * {@code {@link #separatorChar}}.
+	 * {@link #separatorChar}.
 	 */
     public static final String separator = "" + separatorChar;
 
     /**
 	 * The system-dependent path-separator character, represented as a string
 	 * for convenience. This string contains a single character, namely
-	 * {@code {@link #pathSeparatorChar}}.
+	 * {@link #pathSeparatorChar}.
 	 */
     public static final String pathSeparator = "" + pathSeparatorChar;
 
@@ -290,7 +290,7 @@ public class File {
 	 * 
 	 * <p>
 	 * If this abstract pathname is already absolute, then the pathname string
-	 * is simply returned as if by the {@code {@link #getPath}} method.
+	 * is simply returned as if by the {@link #getPath} method.
 	 * If this abstract pathname is the empty abstract pathname then the
 	 * pathname string of the current user directory, which is named by the
 	 * system property {@code user.dir}, is returned. Otherwise this
@@ -314,7 +314,7 @@ public class File {
 
     /**
 	 * Returns the absolute form of this abstract pathname. Equivalent to
-	 * {@code new&nbsp;File(this.{@link #getAbsolutePath}())}.
+	 * {@code new File(this.getAbsolutePath())}.
 	 * 
 	 * @return The absolute abstract pathname denoting the same file or
 	 *         directory as this abstract pathname
@@ -369,7 +369,7 @@ public class File {
 
     /**
 	 * Returns the canonical form of this abstract pathname. Equivalent to
-	 * {@code new&nbsp;File(this.{@link #getCanonicalPath}())}.
+	 * {@code new File(this.getCanonicalPath())}.
 	 * 
 	 * @return The canonical pathname string denoting the same file or directory
 	 *         as this abstract pathname
@@ -619,7 +619,7 @@ public class File {
 	 * Returns an array of strings naming the files and directories in the
 	 * directory denoted by this abstract pathname that satisfy the specified
 	 * filter. The behavior of this method is the same as that of the
-	 * {@code {@link #list()}} method, except that the strings in the
+	 * {@link #list()} method, except that the strings in the
 	 * returned array must satisfy the filter. If the given {@code filter}
 	 * is {@code null} then all names are accepted. Otherwise, a name
 	 * satisfies the filter if and only if the value {@code true} results
@@ -687,12 +687,12 @@ public class File {
 	 * Returns an array of abstract pathnames denoting the files and directories
 	 * in the directory denoted by this abstract pathname that satisfy the
 	 * specified filter. The behavior of this method is the same as that of the
-	 * {@code {@link #listFiles()}} method, except that the pathnames in
+	 * {@link #listFiles()} method, except that the pathnames in
 	 * the returned array must satisfy the filter. If the given
 	 * {@code filter} is {@code null} then all pathnames are
 	 * accepted. Otherwise, a pathname satisfies the filter if and only if the
 	 * value {@code results} when the
-	 * {@code {@link FilenameFilter#accept}} method of the filter is
+	 * {@link FilenameFilter#accept} method of the filter is
 	 * invoked on this abstract pathname and the name of a file or directory in
 	 * the directory that it denotes.
 	 * 
@@ -718,12 +718,12 @@ public class File {
 	 * Returns an array of abstract pathnames denoting the files and directories
 	 * in the directory denoted by this abstract pathname that satisfy the
 	 * specified filter. The behavior of this method is the same as that of the
-	 * {@code {@link #listFiles()}} method, except that the pathnames in
+	 * {@link #listFiles()} method, except that the pathnames in
 	 * the returned array must satisfy the filter. If the given
 	 * {@code filter} is {@code null} then all pathnames are
 	 * accepted. Otherwise, a pathname satisfies the filter if and only if the
 	 * value {@code results} when the
-	 * {@code {@link FileFilter#accept(java.io.File)}} method of the
+	 * {@link FileFilter#accept(java.io.File)} method of the
 	 * filter is invoked on the pathname.
 	 * 
 	 * @param filter A file filter
@@ -814,7 +814,7 @@ public class File {
 	 * some provide more precision. The argument will be truncated to fit the
 	 * supported precision. If the operation succeeds and no intervening
 	 * operations on the file take place, then the next invocation of the
-	 * {@code {@link #lastModified}} method will return the (possibly
+	 * {@link #lastModified} method will return the (possibly
 	 * truncated) {@code time} argument that was passed to this method.
 	 * 
 	 * @param time The new last-modified time, measured in milliseconds since

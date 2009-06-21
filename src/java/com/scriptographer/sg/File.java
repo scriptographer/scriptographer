@@ -73,7 +73,7 @@ public class File extends java.io.File {
 	 *pathname, or {@code 0L} if the file does not exist
 	 * 
 	 * @throws SecurityException If a security manager exists and its
-	 *{@code {@link java.lang.SecurityManager#checkRead(java.lang.String)}}
+	 *{@link java.lang.SecurityManager#checkRead(java.lang.String)}
 	 *method denies read access to the file
 	 */
 	public long getLength() {
