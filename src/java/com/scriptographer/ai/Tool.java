@@ -144,17 +144,175 @@ public class Tool extends NativeObject {
 		setEventInterval(-1);
 	}
 
+	/**
+	 * Checks whether the input device of the user has a pressure feature (i.e. a
+	 * drawing tablet)
+	 */
 	public native boolean hasPressure();
 	
 	// Interval time in milliseconds
 	public native int getEventInterval();
 	
 	public native void setEventInterval(int interval);
+	
+	/**
+	 * @deprecated use Tool#setEventInterval instead.
+	 * 
+	 * @jshide
+	 */
+	public void setIdleEventInterval(int interval) {
+		setEventInterval(interval);
+	}
 
+	/**
+	 * The minimum distance the mouse has to drag before firing the onMouseDrag
+	 * event, since the last onMouseDrag event.
+	 * 
+	 * Sample code: <code>
+	 * // Fire the onMouseDrag event after the user has dragged
+	 * // more then 5 points from the last onMouseDrag event:
+	 * tool.distanceThreshold = 5;
+	 * </code>
+	 * 
+	 * @param threshold
+	 */
+	public float getDistanceThreshold() {
+		return distanceThreshold;
+	}
+
+	public void setDistanceThreshold(float threshold) {
+		distanceThreshold = threshold;
+	}
+
+	private Callable onMouseDown;
+
+	/**
+	 * The function to be called when the mouse button is pushed down. The function
+	 * receives a {@link MouseEvent} object which contains information about the
+	 * mouse event.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * function onMouseDown(event) {
+	 * 	// the position of the mouse in document coordinates:
+	 * 	print(event.point);
+	 * }
+	 * </code>
+	 * 
+	 * {@grouptitle Mouse Event Handlers}
+	 */
+	public Callable getOnMouseDown() {
+		return onMouseDown;
+	}
+
+	public void setOnMouseDown(Callable onMouseDown) {
+		this.onMouseDown = onMouseDown;
+	}
+	
+	protected void onMouseDown(MouseEvent event) throws Exception {
+		if (onMouseDown != null)
+			ScriptographerEngine.invoke(onMouseDown, this, event);
+	}
+
+	private Callable onMouseDrag;
+
+	/**
+	 * The function to be called while the mouse is being dragged. The function
+	 * receives a {@link MouseEvent} object which contains information about the
+	 * mouse event.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * function onMouseDrag(event) {
+	 * 	// the position of the mouse in document coordinates:
+	 * 	print(event.point);
+	 * }
+	 * </code>
+	 */
+	public Callable getOnMouseDrag() {
+		return onMouseDrag;
+	}
+
+	public void setOnMouseDrag(Callable onMouseDrag) {
+		this.onMouseDrag = onMouseDrag;
+	}
+	
+	protected void onMouseDrag(MouseEvent event) throws Exception {
+		if (onMouseDrag != null)
+			ScriptographerEngine.invoke(onMouseDrag, this, event);
+	}
+
+	private Callable onMouseMove;
+
+	/**
+	 * The function to be called when the tool is selected and the mouse moves
+	 * within the document. The function receives a {@link MouseEvent} object
+	 * which contains information about the mouse event.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * function onMouseMove(event) {
+	 * 	// the position of the mouse in document coordinates:
+	 * 	print(event.point);
+	 * }
+	 * </code>
+	 */
+	public Callable getOnMouseMove() {
+		return onMouseMove;
+	}
+
+	public void setOnMouseMove(Callable onMouseMove) {
+		this.onMouseMove = onMouseMove;
+	}
+	
+	protected void onMouseMove(MouseEvent event) throws Exception {
+		// Make sure the first move event initializes both delta and count.
+		if (onMouseMove != null)
+			ScriptographerEngine.invoke(onMouseMove, this, event);
+	}
+
+	private Callable onMouseUp;
+
+	/**
+	 * The function to be called when the mouse button is released. The function
+	 * receives a {@link MouseEvent} object which contains information about the
+	 * mouse event.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * function onMouseUp(event) {
+	 * 	// the position of the mouse in document coordinates:
+	 * 	print(event.point);
+	 * }
+	 * </code>
+	 */
+	public Callable getOnMouseUp() {
+		return onMouseUp;
+	}
+
+	public void setOnMouseUp(Callable onMouseUp) {
+		this.onMouseUp = onMouseUp;
+	}
+		
+	protected void onMouseUp(MouseEvent event) throws Exception {
+		if (onMouseUp != null)
+			ScriptographerEngine.invoke(onMouseUp, this, event);
+	}
+	
+	/**
+	 * @jshide
+	 */
 	public native String getTitle();
 
+	/**
+	 * @jshide
+	 */
 	public native void setTitle(String title);
 
+	/**
+	 * The tooltip as seen when you hold the cursor over the tool button.
+	 * {@grouptitle Tool Button Styling}
+	 */
 	public native String getTooltip();
 
 	public native void setTooltip(String text);
@@ -163,10 +321,16 @@ public class Tool extends NativeObject {
 
 	private native void nativeSetOptions(int options);
 
+	/**
+	 * @jshide
+	 */
 	public EnumSet<ToolOption> getOptions() {
 		return IntegerEnumUtils.getSet(ToolOption.class, nativeGetOptions());
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setOptions(EnumSet<ToolOption> options) {
 		nativeSetOptions(IntegerEnumUtils.getFlags(options));
 	}
@@ -193,32 +357,19 @@ public class Tool extends NativeObject {
 		this.rolloverImage = image;
 	}
 
-	/**
-	 * @deprecated use Tool#setEventInterval instead.
-	 * 
-	 * @jshide
-	 */
-	public void setIdleEventInterval(int interval) {
-		setEventInterval(interval);
-	}
-
-	public float getDistanceThreshold() {
-		return distanceThreshold;
-	}
-
-	/**
-	 * @param threshold
-	 */
-	public void setDistanceThreshold(float threshold) {
-		distanceThreshold = threshold;
-	}
-
 	/*
 	 * TODO: onOptions should be called onEditOptions, or both onOptions,
 	 * but at least the same.
 	 */
 	private Callable onOptions;
 
+	/**
+	 * The function to be called when the tool button is double clicked. This is
+	 * often used to present the users with a dialog containing options that
+	 * they can set.
+	 * 
+	 * {@grouptitle Tool Button Event Handlers}
+	 */
 	public Callable getOnOptions() {
 		return onOptions;
 	}
@@ -234,6 +385,9 @@ public class Tool extends NativeObject {
 
 	private Callable onSelect;
 
+	/**
+	 * The function to be called when the tool button is selected.
+	 */
 	public Callable getOnSelect() {
 		return onSelect;
 	}
@@ -249,6 +403,9 @@ public class Tool extends NativeObject {
 	
 	private Callable onDeselect;
 
+	/**
+	 * The function to be called when the tool button is deselected.
+	 */
 	public Callable getOnDeselect() {
 		return onDeselect;
 	}
@@ -264,6 +421,9 @@ public class Tool extends NativeObject {
 
 	private Callable onReselect;
 
+	/**
+	 * The function to be called when the tool button has been reselected.
+	 */
 	public Callable getOnReselect() {
 		return onReselect;
 	}
@@ -275,67 +435,6 @@ public class Tool extends NativeObject {
 	protected void onReselect() throws Exception {
 		if (onReselect != null)
 			ScriptographerEngine.invoke(onReselect, this);
-	}
-
-	private Callable onMouseDown;
-
-	public Callable getOnMouseDown() {
-		return onMouseDown;
-	}
-
-	public void setOnMouseDown(Callable onMouseDown) {
-		this.onMouseDown = onMouseDown;
-	}
-	
-	protected void onMouseDown(MouseEvent event) throws Exception {
-		if (onMouseDown != null)
-			ScriptographerEngine.invoke(onMouseDown, this, event);
-	}
-
-	private Callable onMouseDrag;
-
-	public Callable getOnMouseDrag() {
-		return onMouseDrag;
-	}
-
-	public void setOnMouseDrag(Callable onMouseDrag) {
-		this.onMouseDrag = onMouseDrag;
-	}
-	
-	protected void onMouseDrag(MouseEvent event) throws Exception {
-		if (onMouseDrag != null)
-			ScriptographerEngine.invoke(onMouseDrag, this, event);
-	}
-
-	private Callable onMouseMove;
-
-	public Callable getOnMouseMove() {
-		return onMouseMove;
-	}
-
-	public void setOnMouseMove(Callable onMouseMove) {
-		this.onMouseMove = onMouseMove;
-	}
-	
-	protected void onMouseMove(MouseEvent event) throws Exception {
-		// Make sure the first move event initializes both delta and count.
-		if (onMouseMove != null)
-			ScriptographerEngine.invoke(onMouseMove, this, event);
-	}
-
-	private Callable onMouseUp;
-
-	public Callable getOnMouseUp() {
-		return onMouseUp;
-	}
-
-	public void setOnMouseUp(Callable onMouseUp) {
-		this.onMouseUp = onMouseUp;
-	}
-		
-	protected void onMouseUp(MouseEvent event) throws Exception {
-		if (onMouseUp != null)
-			ScriptographerEngine.invoke(onMouseUp, this, event);
 	}
 
 	private static final int EVENT_EDIT_OPTIONS = 0;
