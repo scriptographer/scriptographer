@@ -27,11 +27,7 @@ Method = Member.extend(new function() {
 		var params1 = mem1.parameters();
 		var params2 = mem2.parameters();
 		var count = Math.min(params1.length, params2.length);
-		// Rule 3: If this is one of the has 0 parameters and we're looking at constructors,
-		// do not count it as compatible
-		if (mem1.isConstructor() && !count)
-			return false;
-		// Rule 4: If not the same amount of params, the types and names need to be the same:
+		// Rule 3: If not the same amount of params, the types and names need to be the same:
 		for (var i = 0; i < count; i++) {
 			if (params1[i].name() != params2[i].name()
 				|| !params1[i].paramType().isCompatible(params2[i].paramType()))
