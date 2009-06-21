@@ -94,6 +94,8 @@ public class ConversionUtils {
         if (val instanceof Number) {
             double d = ((Number) val).doubleValue();
             // Compare with itself to make sure it's not NaN
+            // The warning about it can be ignored, Even Double.isNaN
+            // is implemented this way!
             return (d == d && d != 0.0);
         }
         return true;

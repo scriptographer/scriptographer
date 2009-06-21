@@ -1189,9 +1189,9 @@ AIStrokeStyle *ScriptographerEngine::convertStrokeStyle(JNIEnv *env, jobject sty
 
 // AIArtSet <-> ItemList
 
-jobject ScriptographerEngine::convertArtSet(JNIEnv *env, AIArtSet set, bool layerOnly) {
-	ItemList_filter(set, layerOnly);
-	long count;
+jobject ScriptographerEngine::convertItemSet(JNIEnv *env, AIArtSet set, bool layerOnly) {
+	Item_filter(set, layerOnly);
+	long count = 0;
 	sAIArtSet->CountArtSet(set, &count);
 	jobject itemSet = newObject(env, cls_ai_ItemList, cid_ItemList); 
 	for (long i = 0; i < count; i++) {
@@ -1209,10 +1209,10 @@ jobject ScriptographerEngine::convertArtSet(JNIEnv *env, AIArtSet set, bool laye
 	return itemSet;
 }
 
-AIArtSet ScriptographerEngine::convertArtSet(JNIEnv *env, jobject itemSet) {
+AIArtSet ScriptographerEngine::convertItemSet(JNIEnv *env, jobject itemSet, bool activate) {
 	AIArtSet set = NULL;
 	if (!sAIArtSet->NewArtSet(&set)) {
-		// use a for loop with size instead of hasNext, because that saves us many calls...
+		// Use a for loop with size instead of hasNext, because that saves us many calls...
 		jint size = callIntMethod(env, itemSet, mid_List_size);
 		for (int i = 0; i < size; i++) {
 			jobject obj = callObjectMethod(env, itemSet, mid_List_get, i);
@@ -1220,6 +1220,24 @@ AIArtSet ScriptographerEngine::convertArtSet(JNIEnv *env, jobject itemSet) {
 				sAIArtSet->AddArtToArtSet(set, getArtHandle(env, obj));
 		}
 	}
+	if (activate)
+		Item_activateDocument(env, set);
+	EXCEPTION_CHECK(env);
+	return set;
+}
+
+AIArtSet ScriptographerEngine::convertItemSet(JNIEnv *env, jobjectArray items, bool activate) {
+	AIArtSet set = NULL;
+	if (!sAIArtSet->NewArtSet(&set)) {
+		jint length = env->GetArrayLength(items);
+		for (int i = 0; i < length; i++) {
+			jobject item = env->GetObjectArrayElement(items, i);
+			if (item != NULL)
+				sAIArtSet->AddArtToArtSet(set, getArtHandle(env, item));
+		}
+	}
+	if (activate)
+		Item_activateDocument(env, set);
 	EXCEPTION_CHECK(env);
 	return set;
 }

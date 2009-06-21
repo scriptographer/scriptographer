@@ -97,12 +97,154 @@ jboolean Item_isLayer(AIArtHandle art) {
 	return isLayerGroup;
 }
 
+void Item_filter(AIArtSet set, bool layerOnly) {
+	// takes out all kUnknownArt, kTextRunArt, ... objs
+	// removes layergroups as well
+	long count;
+	sAIArtSet->CountArtSet(set, &count);
+	for (long i = count - 1; i >= 0; i--) {
+		AIArtHandle art = NULL;
+		if (!sAIArtSet->IndexArtSet(set, i, &art)) {
+			short type = Item_getType(art);
+			bool isLayer = Item_isLayer(art);
+			if (type == kUnknownArt ||
+#if kPluginInterfaceVersion < kAI11
+				type == kTextRunArt ||
+#endif
+				(layerOnly && !isLayer || !layerOnly && isLayer)) {
+				sAIArtSet->RemoveArtFromArtSet(set, art);
+			}
+		}
+	}
+}
+
+AIArtSet Item_getSelected(bool filter) {
+	AIArtSet set = NULL;
+	if (!sAIArtSet->NewArtSet(&set)) {
+		if (!sAIArtSet->SelectedArtSet(set)) {
+			if (filter) {
+				// Now filter out objects of which the parents are selected too
+				long count;
+				sAIArtSet->CountArtSet(set, &count);
+				for (long i = count - 1; i >= 0; i--) {
+					AIArtHandle art;
+					if (!sAIArtSet->IndexArtSet(set, i, &art)) {
+						long values;
+						if (!sAIArt->GetArtUserAttr(art, kArtFullySelected, &values)
+							&& !(values & kArtFullySelected)) {
+							sAIArtSet->RemoveArtFromArtSet(set, art);
+						} else {
+							AIArtHandle parent = NULL;
+							sAIArt->GetArtParent(art, &parent);
+							if (parent != NULL && !Item_isLayer(parent)) {
+								if (!sAIArt->GetArtUserAttr(parent, kArtFullySelected, &values)
+									&& (values & kArtFullySelected))
+									sAIArtSet->RemoveArtFromArtSet(set, art);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return set;
+}
+
+void Item_restoreSelected(AIArtSet set, bool dispose) {
+	Document_deselectAll(true);
+	// Select the previously selected objects:
+	long count;
+	if (set != NULL) {
+		sAIArtSet->CountArtSet(set, &count);
+		AIArtHandle art = NULL;
+		for (long i = 0; i < count; i++) {
+			if (!sAIArtSet->IndexArtSet(set, i, &art))
+				sAIArt->SetArtUserAttr(art, kArtSelected, kArtSelected);
+		}
+		// Clean up
+		if (dispose)
+			sAIArtSet->DisposeArtSet(&set);
+	}
+}
+
+AIArtSet Item_getSelected() {
+	AIArtSet selected = NULL;
+	if (!sAIArtSet->NewArtSet(&selected))
+		sAIArtSet->SelectedArtSet(selected);
+	return selected;
+}	
+
+void Item_activateDocument(JNIEnv *env, AIArtSet set) {
+	long count = 0;
+	// Walk through the items to find the first wrapped one and get the document handle from there.
+	sAIArtSet->CountArtSet(set, &count);
+	for (long i = 0; i < count; i++) {
+		AIArtHandle art = NULL;
+		if (!sAIArtSet->IndexArtSet(set, 0, &art)) {
+			jobject obj = gEngine->getIfWrapped(env, art);
+			if (obj != NULL)
+				gEngine->getDocumentHandle(env, obj, true);
+		}
+	}
+}
+
+AIArtHandle Item_rasterize(AIArtSet set, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
+	AIRasterizeSettings settings;
+	if (type == -1) {
+		// deterimine from document color model:
+		short colorModel;
+		sAIDocument->GetDocumentColorModel(&colorModel);
+		switch (colorModel) {
+			case kDocGrayColor:
+				type = kRasterizeAGrayscale;
+				break;
+			case kDocRGBColor:
+				type = kRasterizeARGB;
+				break;
+			case kDocCMYKColor:
+				type = kRasterizeACMYK;
+				break;
+		}
+	}
+	settings.type = type;
+	settings.resolution = resolution;
+	settings.antialiasing = antialiasing;
+	// TODO: Support options
+	settings.options = kRasterizeOptionsNone;
+	AIRealRect artBounds;
+	sAIRasterize->ComputeArtBounds(set, &artBounds, false);
+	if (width >= 0)
+		artBounds.right = artBounds.left + width;
+	if (height >= 0)
+		artBounds.bottom = artBounds.top + height;
+	AIArtHandle raster = NULL;
+	// walk through the set and find the art that is blaced above all others:
+	AIArtHandle top = NULL;
+	long count;
+	sAIArtSet->CountArtSet(set, &count);
+	for (long i = count - 1; i >= 0; i--) {
+		AIArtHandle art;
+		if (!sAIArtSet->IndexArtSet(set, i, &art)) {
+			if (top == NULL) {
+				top = art;
+			} else {
+				short order;
+				sAIArt->GetArtOrder(art, top, &order);
+				if (order == kFirstBeforeSecond || order == kSecondInsideFirst)
+					top = art;
+			}
+		}
+	}
+	sAIRasterize->Rasterize(set, &settings, &artBounds, kPlaceAbove, top, &raster, NULL);
+	return raster;
+}
+
 AIArtHandle Item_rasterize(AIArtHandle art, AIRasterizeType type, float resolution, int antialiasing, float width, float height) {
-	AIArtSet artSet;
-	sAIArtSet->NewArtSet(&artSet);
-	sAIArtSet->AddArtToArtSet(artSet, art);
-	AIArtHandle raster = ItemList_rasterize(artSet, type, resolution, antialiasing, width, height);
-	sAIArtSet->DisposeArtSet(&artSet);
+	AIArtSet set;
+	sAIArtSet->NewArtSet(&set);
+	sAIArtSet->AddArtToArtSet(set, art);
+	AIArtHandle raster = Item_rasterize(set, type, resolution, antialiasing, width, height);
+	sAIArtSet->DisposeArtSet(&set);
 	return raster;
 }
 
@@ -903,12 +1045,27 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeTransform(JNIEnv *e
 /*
  * com.scriptographer.ai.Raster nativeRasterize(int type, float resolution, int antialiasing, float width, float height)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeRasterize(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeRasterize__IFIFF(JNIEnv *env, jobject obj, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIArtHandle raster = Item_rasterize(art, (AIRasterizeType) type, resolution, antialiasing, width, height);
 		if (raster != NULL) {
 			// No need to pass document since we're activating document in getArtHandle
+			return gEngine->wrapArtHandle(env, raster);
+		}
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
+
+/*
+ * com.scriptographer.ai.Raster nativeRasterize(com.scriptographer.ai.Item[] items, int type, float resolution, int antialiasing, float width, float height)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeRasterize___3Lcom_scriptographer_ai_Item_2IFIFF(JNIEnv *env, jclass cls, jobjectArray items, jint type, jfloat resolution, jint antialiasing, jfloat width, jfloat height) {
+	try {
+		AIArtSet set = gEngine->convertItemSet(env, items, true);
+		AIArtHandle raster = Item_rasterize(set, (AIRasterizeType) type, resolution, antialiasing, width, height);
+		if (raster != NULL) {
+			// It's ok not to not pass document here, since the method calling nativeRasterize makes sure the right one is active
 			return gEngine->wrapArtHandle(env, raster);
 		}
 	} EXCEPTION_CONVERT(env);

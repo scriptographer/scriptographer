@@ -1241,62 +1241,54 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * Rasterizes the item. The item itself is not removed after rasterization.
 	 * 
-	 * @param type the color mode of the raster
-	 * @param resolution the resolution of the raster in dpi
-	 * @param antialiasing the amount of anti-aliasing
-	 * @param width
-	 * @param height
+	 * @param type the color mode of the raster {@default same as document}
+	 * @param resolution the resolution of the raster in dpi {@default 72}
+	 * @param antialiasing the amount of anti-aliasing {@default 4}
+	 * @param width {@default automatic}
+	 * @param height {@default automatic}
 	 * @return
 	 */
 	public Raster rasterize(ColorType type, float resolution, int antialiasing,
 			float width, float height) {
 		return nativeRasterize(type != null ? type.value : -1, resolution,
-				antialiasing, -1, -1);
+				antialiasing, width, height);
 	}
 
-	/**
-	 * Rasterizes the item. The item itself is not removed after rasterization.
-	 * 
-	 * @param type the color mode of the raster
-	 * @param resolution the resolution of the raster in dpi
-	 * @param antialiasing the amount of anti-aliasing
-	 * @return
-	 */
 	public Raster rasterize(ColorType type, float resolution, int antialiasing) {
 		return rasterize(type, resolution, antialiasing, -1, -1);
 	}
 
-	/**
-	 * Rasterizes the item. The item itself is not removed after rasterization.
-	 * 
-	 * @param type the color mode of the raster
-	 * @param resolution the resolution of the raster in dpi
-	 * @return
-	 */
 	public Raster rasterize(ColorType type, float resolution) {
 		return rasterize(type, resolution, 4, -1, -1);
 	}
 	
-	/**
-	 * Rasterizes the item with a resolution of 72 dpi. The item itself is not
-	 * removed after rasterization.
-	 * 
-	 * @param type the color mode of the raster
-	 * @return
-	 */
 	public Raster rasterize(ColorType type) {
 		return rasterize(type, 72, 4, -1, -1);
 	}
 	
-	/**
-	 * Rasterizes the item with a resolution of 72 dpi. The item itself is not
-	 * removed after rasterization.
-	 * 
-	 * @param type the color mode of the raster
-	 * @return
-	 */
 	public Raster rasterize() {
 		return rasterize(null, 72, 4, -1, -1);
+	}
+
+	private static native Raster nativeRasterize(Item[] items, int type, float resolution,
+			int antialiasing, float width, float height);
+	
+	public static Raster rasterize(Item[] items, ColorType type, float resolution, int antialiasing,
+			float width, float height) {
+		return nativeRasterize(items, type != null ? type.value : -1, resolution,
+				antialiasing, width, height);
+	}
+
+	public static Raster rasterize(Item[] items, ColorType type, float resolution, int antialiasing) {
+		return rasterize(items, type, resolution, antialiasing, -1, -1);
+	}
+	
+	public static Raster rasterize(Item[] items, ColorType type) {
+		return rasterize(items, type, 0, 4, -1, -1);
+	}
+	
+	public static Raster rasterize(Item[] items) {
+		return rasterize(items, null, 0, 4, -1, -1);
 	}
 
 	private native void nativeDraw(Image image, int width, int height);

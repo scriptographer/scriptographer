@@ -36,14 +36,14 @@ short Item_getType(AIArtHandle handle);
 short Item_getType(JNIEnv *env, jclass cls);
 jboolean Item_hasChildren(AIArtHandle handle);
 jboolean Item_isLayer(AIArtHandle handle);
+void Item_filter(AIArtSet set, bool layerOnly = false);
+AIArtSet Item_getSelected(bool filter = true);
+void Item_restoreSelected(AIArtSet set, bool dispose = true);
+void Item_activateDocument(JNIEnv *env, AIArtSet set);
+AIArtHandle Item_rasterize(AIArtSet set, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 AIArtHandle Item_rasterize(AIArtHandle handle, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 AIArtHandle Item_getInsertionPoint(short *paintOrder, AIDocumentHandle doc = NULL);
 void Item_commit(JNIEnv *env, AIArtHandle art, bool invalidate = false, bool children = true);
-
-void ItemList_filter(AIArtSet set, bool layerOnly = false);
-AIArtSet ItemList_getSelected(bool filter = true);
-void ItemList_restoreSelected(AIArtSet set, bool dispose = true);
-AIArtHandle ItemList_rasterize(AIArtSet artSet, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 	
 AIArtHandle JNICALL PlacedFile_place(JNIEnv *env, AIDocumentHandle doc, jobject file, jboolean linked);
 

@@ -95,43 +95,6 @@ public class ItemList extends ArrayList<Item> implements ReadOnlyStringIndexList
 	public boolean contains(Object element) {
 		return map.get(element) != null;
 	}
-
-	private native Raster nativeRasterize(int type, float resolution,
-			int antialiasing, float width, float height);
-	
-	/**
-	 * @param type
-	 * @param resolution
-	 * @param antialiasing
-	 * @param width
-	 * @param height
-	 * @return
-	 */
-	public Raster rasterize(ColorType type, float resolution, int antialiasing,
-			float width, float height) {
-		// Make sure the document is activated.
-		activateDocument(false);
-		return nativeRasterize(type != null ? type.value : -1, resolution, antialiasing, width, height);
-	}
-
-	private void activateDocument(boolean focus) {
-		if (size() > 0) {
-			Document doc = get(0).getDocument();
-			doc.activate(focus);
-		}
-	}
-
-	public Raster rasterize(ColorType type, float resolution, int antialiasing) {
-		return rasterize(type, resolution, antialiasing, -1, -1);
-	}
-	
-	public Raster rasterize(ColorType type) {
-		return rasterize(type, 0, 4, -1, -1);
-	}
-	
-	public Raster rasterize() {
-		return rasterize(null, 0, 4, -1, -1);
-	}
 	
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();

@@ -186,7 +186,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_getItems(JNIEnv *env,
 		AIArtSet set;
 		if (!sAIArtSet->NewArtSet(&set)) {
 			if (!sAIArtSet->LayerArtSet(layer, set)) {
-				jobject itemSet = gEngine->convertArtSet(env, set);
+				jobject itemSet = gEngine->convertItemSet(env, set);
 				sAIArtSet->DisposeArtSet(&set);
 				return itemSet;
 			}

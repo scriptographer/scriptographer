@@ -602,9 +602,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(J
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		AIArtSet selected = ItemList_getSelected(env);
+		AIArtSet selected = Item_getSelected(env);
 		if (selected != NULL) {
-			itemSet = gEngine->convertArtSet(env, selected);
+			itemSet = gEngine->convertItemSet(env, selected);
 			sAIArtSet->DisposeArtSet(&selected);
 		}
 	} EXCEPTION_CONVERT(env);
@@ -657,7 +657,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeGetMatchingI
 				EXCEPTION_CHECK(env);
 			}
 			if (!sAIArtSet->MatchingArtSet(&spec, 1, set)) {
-				itemSet = gEngine->convertArtSet(env, set, layerOnly);
+				itemSet = gEngine->convertItemSet(env, set, layerOnly);
 				sAIArtSet->DisposeArtSet(&set);
 			}
 		}

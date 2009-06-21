@@ -101,11 +101,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_embed(JNIEnv *en
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIArtHandle res = NULL;
-		AIArtSet set = ItemList_getSelected(false);
+		AIArtSet set = Item_getSelected(false);
 		long values;
 		bool selected = !sAIArt->GetArtUserAttr(art, kArtSelected, &values) && values;
 		sAIPlaced->MakePlacedObjectNative(art, &res, askParams);
-		ItemList_restoreSelected(set);
+		Item_restoreSelected(set);
 		if (res != NULL) {
 			sAIArt->SetArtUserAttr(res, kArtSelected, selected ? kArtSelected : 0);
 			// No need to pass document since we're activating document in getArtHandle

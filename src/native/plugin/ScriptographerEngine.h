@@ -483,8 +483,9 @@ public:
 	AIStrokeStyle *convertStrokeStyle(JNIEnv *env, jobject style, AIStrokeStyle *res = NULL);
 
 	// com.scriptoggrapher.ai.ItemList <-> AIArtSet
-	jobject convertArtSet(JNIEnv *env, AIArtSet set, bool layerOnly = false);
-	AIArtSet convertArtSet(JNIEnv *env, jobject itemSet);
+	jobject convertItemSet(JNIEnv *env, AIArtSet set, bool layerOnly = false);
+	AIArtSet convertItemSet(JNIEnv *env, jobject itemSet, bool activate = false);
+	AIArtSet convertItemSet(JNIEnv *env, jobjectArray items, bool activate = false);
 
 	// java.io.File <-> SPPlatformFileSpecification
 	char *getFilePath(JNIEnv *env, jobject file);
