@@ -74,3 +74,11 @@ GroupTag = Tag.extend({
 		data.group[this.name().substring(6)] = this.text();
 	}
 });
+
+BooleanTag = Tag.extend({
+	_names: '@boolean,@true',
+
+	render: function(param) {
+		return '<code>true</code> ' + this.text() + ', <code>false</code> otherwise';
+	}
+});
