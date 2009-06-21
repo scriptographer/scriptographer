@@ -94,7 +94,7 @@ public class Script {
 
 	/**
 	 * Determines whether the scripts wants to display the progress bar
-	 * or not. <code>true</code> by default.
+	 * or not. {@true by default.
 	 */
 	public boolean getShowProgress() {
 		return showProgress;

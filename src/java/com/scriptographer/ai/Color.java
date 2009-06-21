@@ -83,7 +83,7 @@ public abstract class Color {
 	/**
 	 * Checks if the color has an alpha value.
 	 * 
-	 * @return <code>true</code> if the color has an alpha value, <code>false</code> otherwise.
+	 * @return {@true if the color has an alpha value}
 	 */
 	public boolean hasAlpha() {
 		return alpha != -1f;

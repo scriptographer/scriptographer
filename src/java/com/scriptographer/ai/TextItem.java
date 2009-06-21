@@ -102,7 +102,7 @@ public abstract class TextItem extends Item {
 	/**
 	 * Links the supplied text frame to this one.
 	 * @param next The text frame that will be linked.
-	 * @return <code>true</code> if the text frame was linked, <code>false</code> otherwise
+	 * @return {@true if the text frame was linked}
 	 */
 	public native boolean link(TextItem next);
 
@@ -111,7 +111,7 @@ public abstract class TextItem extends Item {
 	/**
 	 * Unlinks the text frame from its current story.
 	 * 
-	 * @return <code>true</code> if the operation as successful, <code>false</code> otherwise
+	 * @return {@true if the operation as successful}
 	 */
 	public boolean unlink() {
 		return nativeUnlink(true, true);
@@ -121,7 +121,7 @@ public abstract class TextItem extends Item {
 	 * Unlinks the text frame from its current story and breaks up the story
 	 * into two parts before the text frame.
 	 * 
-	 * @return <code>true</code> if the operation as successful, <code>false</code> otherwise
+	 * @return {@true if the operation as successful}
 	 */
 	public boolean unlinkBefore() {
 		return nativeUnlink(true, false);
@@ -131,14 +131,14 @@ public abstract class TextItem extends Item {
 	 * Unlinks the text frame from its current story and breaks up the story
 	 * into two parts after the text frame.
 	 * 
-	 * @return <code>true</code> if the operation as successful, <code>false</code> otherwise
+	 * @return {@true if the operation as successful}
 	 */
 	public boolean unlinkAfter() {
 		return nativeUnlink(false, true);
 	}
 
 	/**
-	 * Returns <code>true</code> if the text frame is linked, <code>false</code> otherwise.
+	 * Returns {@true if the text frame is linked}
 	 */
 	public native boolean isLinked();
 
@@ -304,7 +304,7 @@ public abstract class TextItem extends Item {
 	 * Specifies whether to use optical alignment within the text frame. Optical
 	 * alignment hangs punctuation outside the edges of a text frame.
 	 * 
-	 * @return <code>true</code> if the text frame uses optical alignment, <code>false</code> otherwise.
+	 * @return {@true if the text frame uses optical alignment}
 	 */
 	public native boolean getOpticalAlignment();
 	public native void setOpticalAlignment(boolean active);

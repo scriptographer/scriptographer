@@ -307,7 +307,7 @@ public abstract class Item extends DocumentObject {
 	 * Removes the item from the document. If the item has children,
 	 * they are also removed.
 	 * 
-	 * @return <code>true</code> if the item was removed, false
+	 * @return {@true if the item was removed, false
 	 *         otherwise
 	 */
 	public boolean remove() {
@@ -455,8 +455,7 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * Removes all the items contained within the item.
 	 * 
-	 * @return <code>true</code> if removing was successful,
-	 *         <code>false</code> otherwise.
+	 * @return {@true if removing was successful}
 	 */
 	public boolean removeChildren() {
 		Item child = getFirstChild();
@@ -473,7 +472,7 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * Checks if the item has children.
 	 * 
-	 * @return <code>true</code> if it has one or more children, <code>false</code> otherwise
+	 * @return {@true if it has one or more children}
 	 */
 	public boolean hasChildren() {
 		return getFirstChild() != null;
@@ -606,7 +605,7 @@ public abstract class Item extends DocumentObject {
 	 * print(path.isDefaultName()); // false
 	 * </code>
 	 * 
-	 * @return <code>true</code> if it's name is default, <code>false</code> otherwise.
+	 * @return {@true if it's name is default}
 	 */
 	public native boolean isDefaultName();
 
@@ -617,9 +616,9 @@ public abstract class Item extends DocumentObject {
 	 * <code>
 	 * var circle = new Path.Circle(new Point(10, 10), 10);
 	 * circle.style = {
-	 * 	fillColor: new RGBColor(1, 0, 0),
-	 * 	strokeColor: new RGBColor(0, 1, 0),
-	 * 	strokeWidth: 5
+	 *  	fillColor: new RGBColor(1, 0, 0),
+	 * 		strokeColor: new RGBColor(0, 1, 0),
+	 * 		strokeWidth: 5
 	 * };
 	 * 
 	 * </code>
@@ -885,7 +884,7 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * Returns <code>true</code> when neither the item, nor it's parents are locked or hidden.
+	 * Returns {@true when neither the item, nor it's parents are locked or hidden.
 	 */
 	public native boolean isEditable();
 
@@ -956,7 +955,7 @@ public abstract class Item extends DocumentObject {
 	 * print(path.isValid()); // false
 	 * </code>
 	 * 
-	 * @return <code>true</code> if the item is valid, <code>false</code> otherwise.
+	 * @return {@true if the item is valid}
 	 */
 	public native boolean isValid();
 
@@ -1047,7 +1046,7 @@ public abstract class Item extends DocumentObject {
 	 * </code>
 	 * 
 	 * @param item The item to check against
-	 * @return <code>true</code> if it is above the specified item, false
+	 * @return {@true if it is above the specified item, false
 	 *         otherwise
 	 */
 	public native boolean isAbove(Item item);
@@ -1063,7 +1062,7 @@ public abstract class Item extends DocumentObject {
 	 * </code>
 	 * 
 	 * @param item The item to check against
-	 * @return <code>true</code> if it is below the specified item, false
+	 * @return {@true if it is below the specified item, false
 	 *         otherwise
 	 */
 	public native boolean isBelow(Item item);
@@ -1087,7 +1086,7 @@ public abstract class Item extends DocumentObject {
 	 * </code>
 	 *
 	 * @param item The item to check against
-	 * @return <code>true</code> if it is inside the specified item,
+	 * @return {@true if it is inside the specified item,
 	 *         false otherwise
 	 */
 	public native boolean isDescendant(Item item);
@@ -1103,7 +1102,7 @@ public abstract class Item extends DocumentObject {
 	 * </code>
 	 * 
 	 * @param item the item to check against
-	 * @return <code>true</code> if it is an ancestor of the specified 
+	 * @return {@true if it is an ancestor of the specified 
 	 *         item, false otherwise
 	 */
 	public native boolean isAncestor(Item item);
@@ -1111,7 +1110,7 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * Checks whether the item is grouped with the specified item.
 	 * @param item
-	 * @return <code>true</code> if the items are grouped together, <code>false</code> otherwise.
+	 * @return {@true if the items are grouped together}
 	 */
 	public boolean isGroupedWith(Item item) {
 		Item parent = getParent();

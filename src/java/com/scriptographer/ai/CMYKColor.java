@@ -139,7 +139,7 @@ public class CMYKColor extends Color {
 	 * same as those of the supplied one.
 	 * 
 	 * @param obj The CMYKColor to compare with
-	 * @return <code>true</code> if the CMYKColor is the same, <code>false</code> otherwise
+	 * @return {@true if the CMYKColor is the same}
 	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof CMYKColor) {

@@ -148,8 +148,7 @@ public abstract class PathItem extends Item {
 	 * specified path.
 	 * 
 	 * @param item
-	 * @return <code>true</code> if the paths intersect, <code>false</code>
-	 *         otherwise.
+	 * @return {@true if the paths intersect}
 	 */
 	public boolean intersects(PathItem item) {
 		Area area = new Area(this.toShape());
@@ -162,8 +161,7 @@ public abstract class PathItem extends Item {
 	 * path.
 	 * 
 	 * @param item
-	 * @return <code>true</code> if the path contains the specified path,
-	 *         <code>false</code> otherwise.
+	 * @return {@true if the path contains the specified path}
 	 */
 	public boolean contains(PathItem item) {
 		Area area = new Area(item.toShape());
@@ -175,8 +173,7 @@ public abstract class PathItem extends Item {
 	 * Checks if the specified point is contained within the interior of the path.
 	 * 
 	 * @param point
-	 * @return <code>true</code> if the point is contained within the path,
-	 *         <code>false</code> otherwise.
+	 * @return {@true if the point is contained within the path}
 	 */
 	public boolean contains(Point point) {
 		return new Area(this.toShape()).contains(point.toPoint2D());

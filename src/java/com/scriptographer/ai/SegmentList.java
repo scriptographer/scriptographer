@@ -374,7 +374,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	/**
 	 * Checks whether the SegmentList is empty
 	 * 
-	 * @return <code>true</code> if it's empty, <code>false</code> otherwise
+	 * @return {@true if it's empty}
 	 */
 	public boolean isEmpty() {
 		return size == 0;

@@ -280,8 +280,7 @@ public class File {
 	 * systems, a pathname is absolute if its prefix is a drive specifier
 	 * followed by <code>"\\"</code>, or if its prefix is <code>"\\\\"</code>.
 	 * 
-	 * @return <code>true</code> if this abstract pathname is absolute,
-	 *         <code>false</code> otherwise
+	 * @return {@true if this abstract pathname is absolute}
 	 */
     public boolean isAbsolute() {
     }
@@ -457,9 +456,9 @@ public class File {
 	 * Tests whether the application can read the file denoted by this abstract
 	 * pathname.
 	 * 
-	 * @return <code>true</code> if and only if the file specified by this
+	 * @return {@true if and only if the file specified by this
 	 *         abstract pathname exists <em>and</em> can be read by the
-	 *         application; <code>false</code> otherwise
+	 *         application}
 	 * 
 	 * @throws SecurityException If a security manager exists and its
 	 *         <code>{@link
@@ -473,10 +472,9 @@ public class File {
 	 * Tests whether the application can modify the file denoted by this
 	 * abstract pathname.
 	 * 
-	 * @return <code>true</code> if and only if the file system actually
+	 * @return {@true if and only if the file system actually
 	 *         contains a file denoted by this abstract pathname <em>and</em>
-	 *         the application is allowed to write to the file;
-	 *         <code>false</code> otherwise.
+	 *         the application is allowed to write to the file}
 	 * 
 	 * @throws SecurityException If a security manager exists and its
 	 *         <code>{@link
@@ -490,8 +488,8 @@ public class File {
 	 * Tests whether the file or directory denoted by this abstract pathname
 	 * exists.
 	 * 
-	 * @return <code>true</code> if and only if the file or directory denoted
-	 *         by this abstract pathname exists; <code>false</code> otherwise
+	 * @return {@true if and only if the file or directory denoted
+	 *         by this abstract pathname exists}
 	 * 
 	 * @throws SecurityException If a security manager exists and its
 	 *         <code>{@link
@@ -504,9 +502,8 @@ public class File {
     /**
 	 * Tests whether the file denoted by this abstract pathname is a directory.
 	 * 
-	 * @return <code>true</code> if and only if the file denoted by this
-	 *         abstract pathname exists <em>and</em> is a directory;
-	 *         <code>false</code> otherwise
+	 * @return {@true if and only if the file denoted by this
+	 *         abstract pathname exists <em>and</em> is a directory}
 	 * 
 	 * @throws SecurityException If a security manager exists and its
 	 *         <code>{@link
@@ -522,9 +519,8 @@ public class File {
 	 * addition, satisfies other system-dependent criteria. Any non-directory
 	 * file created by a Java application is guaranteed to be a normal file.
 	 * 
-	 * @return <code>true</code> if and only if the file denoted by this
-	 *         abstract pathname exists <em>and</em> is a normal file;
-	 *         <code>false</code> otherwise
+	 * @return {@true if and only if the file denoted by this
+	 *         abstract pathname exists <em>and</em> is a normal file}
 	 * 
 	 * @throws SecurityException If a security manager exists and its
 	 *         <code>{@link
@@ -542,7 +538,7 @@ public class File {
 	 * file is considered to be hidden if it has been marked as such in the
 	 * filesystem.
 	 * 
-	 * @return <code>true</code> if and only if the file denoted by this
+	 * @return {@true if and only if the file denoted by this
 	 *         abstract pathname is hidden according to the conventions of the
 	 *         underlying platform
 	 * 
@@ -578,8 +574,8 @@ public class File {
 	 * pathname denotes a directory, then the directory must be empty in order
 	 * to be deleted.
 	 * 
-	 * @return <code>true</code> if and only if the file or directory is
-	 *         successfully deleted; <code>false</code> otherwise
+	 * @return {@true if and only if the file or directory is
+	 *         successfully deleted}
 	 * 
 	 * @throws SecurityException If a security manager exists and its
 	 *         <code>{@link
@@ -626,7 +622,7 @@ public class File {
 	 * <code>{@link #list()}</code> method, except that the strings in the
 	 * returned array must satisfy the filter. If the given <code>filter</code>
 	 * is <code>null</code> then all names are accepted. Otherwise, a name
-	 * satisfies the filter if and only if the value <code>true</code> results
+	 * satisfies the filter if and only if the value {@true results
 	 * when the <code>{@link
      * FilenameFilter#accept}</code> method of the
 	 * filter is invoked on this abstract pathname and the name of a file or
@@ -695,7 +691,7 @@ public class File {
 	 * the returned array must satisfy the filter. If the given
 	 * <code>filter</code> is <code>null</code> then all pathnames are
 	 * accepted. Otherwise, a pathname satisfies the filter if and only if the
-	 * value <code>true</code> results when the
+	 * value {@true results when the
 	 * <code>{@link FilenameFilter#accept}</code> method of the filter is
 	 * invoked on this abstract pathname and the name of a file or directory in
 	 * the directory that it denotes.
@@ -726,7 +722,7 @@ public class File {
 	 * the returned array must satisfy the filter. If the given
 	 * <code>filter</code> is <code>null</code> then all pathnames are
 	 * accepted. Otherwise, a pathname satisfies the filter if and only if the
-	 * value <code>true</code> results when the
+	 * value {@true results when the
 	 * <code>{@link FileFilter#accept(java.io.File)}</code> method of the
 	 * filter is invoked on the pathname.
 	 * 
@@ -751,8 +747,7 @@ public class File {
     /**
 	 * Creates the directory named by this abstract pathname.
 	 * 
-	 * @return <code>true</code> if and only if the directory was created;
-	 *         <code>false</code> otherwise
+	 * @return {@true if and only if the directory was created}
 	 * 
 	 * @throws SecurityException If a security manager exists and its
 	 *         <code>{@link
@@ -768,7 +763,7 @@ public class File {
 	 * fails it may have succeeded in creating some of the necessary parent
 	 * directories.
 	 * 
-	 * @return <code>true</code> if and only if the directory was created,
+	 * @return {@true if and only if the directory was created,
 	 *         along with all necessary parent directories; <code>false</code>
 	 *         otherwise
 	 * 
@@ -798,8 +793,7 @@ public class File {
 	 * 
 	 * @param dest The new abstract pathname for the named file
 	 * 
-	 * @return <code>true</code> if and only if the renaming succeeded;
-	 *         <code>false</code> otherwise
+	 * @return {@true if and only if the renaming succeeded}
 	 * 
 	 * @throws SecurityException If a security manager exists and its
 	 *         <code>{@link
@@ -827,8 +821,7 @@ public class File {
 	 * @param time The new last-modified time, measured in milliseconds since
 	 *        the epoch (00:00:00 GMT, January 1, 1970)
 	 * 
-	 * @return <code>true</code> if and only if the operation succeeded;
-	 *         <code>false</code> otherwise
+	 * @return {@true if and only if the operation succeeded}
 	 * 
 	 * @throws IllegalArgumentException If the argument is negative
 	 * 
@@ -849,8 +842,7 @@ public class File {
 	 * marked to allow write access. Whether or not a read-only file or
 	 * directory may be deleted depends upon the underlying system.
 	 * 
-	 * @return <code>true</code> if and only if the operation succeeded;
-	 *         <code>false</code> otherwise
+	 * @return {@true if and only if the operation succeeded}
 	 * 
 	 * @throws SecurityException If a security manager exists and its
 	 *         <code>{@link

@@ -434,8 +434,7 @@ public class Point {
 	 * Checks whether the point is inside the boundaries of the rectangle
 	 * 
 	 * @param rect the rectangle to check against
-	 * @return <code>true</code> if the point is inside the rectangle,
-	 *         <code>false</code> otherwise
+	 * @return {@true if the point is inside the rectangle}
 	 */
 	public boolean isInside(Rectangle rect) {
 		return rect.contains(this);
@@ -446,7 +445,7 @@ public class Point {
 	 * 
 	 * @param point the point to check against
 	 * @param tolerance the maximum distance allowed
-	 * @return <code>true</code> if it is within the given distance, false
+	 * @return {@true if it is within the given distance, false
 	 *         otherwise
 	 */
 	public boolean isClose(Point point, double tolerance) {

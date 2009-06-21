@@ -80,7 +80,7 @@ public class Point {
 	 * Checks whether the point is inside the rectangle
 	 * 
 	 * @param rect the rectangle to check against
-	 * @return <code>true</code> if the point is inside the rectangle, false
+	 * @return {@true if the point is inside the rectangle, false
 	 *         otherwise
 	 */
 	public boolean isInside(Rectangle rect) {

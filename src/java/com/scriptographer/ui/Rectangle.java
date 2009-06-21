@@ -224,8 +224,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * Returns <code>true</code> if the rectangle is empty,
-	 * <code>false</code> otherwise.
+	 * Returns {@true if the rectangle is empty}
 	 */
 	public boolean isEmpty() {
 	    return width <= 0 || height <= 0;
@@ -235,8 +234,8 @@ public class Rectangle {
 	 * Tests if specified coordinates are inside the boundary of the rectangle.
 	 * 
 	 * @param x, y the coordinates to test
-	 * @return <code>true</code> if the specified coordinates are inside the
-	 *         boundary of the rectangle; <code>false</code> otherwise.
+	 * @return {@true if the specified coordinates are inside the
+	 *         boundary of the rectangle}.
 	 */
 	public boolean contains(double x, double y) {
 		return x >= this.x &&
@@ -249,8 +248,8 @@ public class Rectangle {
 	 * Tests if the specified point is inside the boundary of the rectangle.
 	 * 
 	 * @param p the specified point
-	 * @return <code>true</code> if the point is inside the rectangle's
-	 *         boundary; <code>false</code> otherwise.
+	 * @return {@true if the point is inside the rectangle's
+	 *         boundary}
 	 */
 	public boolean contains(Point p) {
 		return contains(p.x, p.y);
@@ -261,8 +260,8 @@ public class Rectangle {
 	 * another rectangle.
 	 * 
 	 * @param r the specified rectangle
-	 * @return <code>true</code> if the rectangle and the specified rectangle
-	 *         intersect each other; <code>false</code> otherwise.
+	 * @return {@true if the rectangle and the specified rectangle
+	 *         intersect each other}
 	 */
 	public boolean intersects(Rectangle r) {
 		return !isEmpty() && r.width > 0 && r.height > 0 &&
@@ -277,8 +276,8 @@ public class Rectangle {
 	 * rectangle.
 	 * 
 	 * @param rect The specified rectangle
-	 * @return <code>true</code> if the rectangle entirely contains the
-	 *         specified rectangle; <code>false</code> otherwise.
+	 * @return {@true if the rectangle entirely contains the
+	 *         specified rectangle}
 	 */
 	public boolean contains(Rectangle rect) {
 	return !isEmpty() && rect.width > 0 && rect.height > 0 &&

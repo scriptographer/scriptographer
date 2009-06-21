@@ -57,7 +57,7 @@ public class Group extends Item {
 	
 	/**
 	 * Creates a group item from the supplied list of items
-	 * @param children either an {@link ItemList} or an array
+	 * @param children the children to be added to the newly created group
 	 */
 	public Group(List<? extends Item> children) {
 		this();
