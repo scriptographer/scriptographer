@@ -35,10 +35,11 @@ import org.mozilla.javascript.Callable;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Wrapper;
 
-import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.list.List;
+import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.list.ReadOnlyStringIndexList;
 import com.scratchdisk.list.StringIndexList;
 
@@ -53,6 +54,12 @@ public class ListWrapper extends ExtendedJavaObject {
 	public ListWrapper(Scriptable scope, ReadOnlyList list,
 			Class staticType, boolean unsealed) {
 		super(scope, list, staticType, unsealed);
+		// Make ListWrappers behave exactly like arrays and inherit all features
+		// from them.
+		// Thanks to the great functionality of our ExtendedJavaObject, there is
+		// no difference between a java List and a JavaScript Array after this,
+		// all features work as long as the list is not read-only!
+		this.setPrototype(ScriptableObject.getClassPrototype(scope, "Array"));
 	}
 
 	public Object[] getIds() {
@@ -134,19 +141,16 @@ public class ListWrapper extends ExtendedJavaObject {
 			if (obj instanceof Callable)
 				return ((Callable) obj).call(Context.getCurrentContext(), start.getParentScope(), this, new Object[] {});
 		}
-		Object obj = super.get(name, start);
-		if (obj == Scriptable.NOT_FOUND && javaObject != null) {
-			 if (name.equals("length")) {
-				 return new Integer(((ReadOnlyList) javaObject).size());
-			 } else if (javaObject instanceof ReadOnlyStringIndexList) {
-				obj = ((ReadOnlyStringIndexList) javaObject).get(name);
+		if (javaObject != null) {
+			if (name.equals("length")) {
+				return new Integer(((ReadOnlyList) javaObject).size());
+			} else if (javaObject instanceof ReadOnlyStringIndexList) {
+				Object obj = ((ReadOnlyStringIndexList) javaObject).get(name);
 				if (obj != null)
-					obj = toObject(obj, start);
-				else
-					obj = Scriptable.NOT_FOUND;
+					return toObject(obj, start);
 			}
 		}
-		return obj;
+		return super.get(name, start);
 	}
 
 	public Object getDefaultValue(Class hint) {
