@@ -82,3 +82,11 @@ BooleanTag = Tag.extend({
 		return '<code>true</code> ' + this.text() + ', <code>false</code> otherwise';
 	}
 });
+
+CodeTag = Tag.extend({
+	_names: '@code',
+
+	render: function(param) {
+		return '<code>' + this.text() + '</code> ';
+	}
+});
