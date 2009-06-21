@@ -70,10 +70,10 @@ public class File extends java.io.File {
 	 * return value is unspecified if this pathname denotes a directory.
 	 * 
 	 * @return The length, in bytes, of the file denoted by this abstract
-	 *pathname, or <code>0L</code> if the file does not exist
+	 *pathname, or {@code 0L} if the file does not exist
 	 * 
 	 * @throws SecurityException If a security manager exists and its
-	 *<code>{@link java.lang.SecurityManager#checkRead(java.lang.String)}</code>
+	 *{@code {@link java.lang.SecurityManager#checkRead(java.lang.String)}}
 	 *method denies read access to the file
 	 */
 	public long getLength() {

@@ -187,9 +187,9 @@ public class Document extends NativeObject {
 	 * Activates this document, so all newly created items will be placed
 	 * in it.
 	 * 
-	 * @param focus When set to <code>true</code>, the document window is
+	 * @param focus When set to {@code true}, the document window is
 	 *        brought to the front, otherwise the window sequence remains the
-	 *        same. Default is <code>true</code>.
+	 *        same. Default is {@code true}.
 	 */
 	public void activate(boolean focus) {
 		activate(focus, false);
@@ -328,7 +328,7 @@ public class Document extends NativeObject {
 
 	/**
 	 * Specifies if the document has been edited since it was last saved. When
-	 * set to <code>true</code>, closing the document will present the user
+	 * set to {@code true}, closing the document will present the user
 	 * with a dialog box asking to save the file.
 	 */
 	public native boolean isModified();
@@ -409,7 +409,7 @@ public class Document extends NativeObject {
 	 * </code>
 	 * 
 	 * @param file the file to place
-	 * @param linked when set to <code>true</code>, the placed object is a
+	 * @param linked when set to {@code true}, the placed object is a
 	 *        link to the file, otherwise it is embedded within the document
 	 */
 	public native Item place(File file, boolean linked);
@@ -457,7 +457,7 @@ public class Document extends NativeObject {
 	/**
 	 * Checks whether the document contains any selected items.
 	 * 
-	 * @return <code>true</code> if the document contains selected items,
+	 * @return {@code true} if the document contains selected items,
 	 *         false otherwise.
 	 */	
 	public native boolean hasSelectedItems();
@@ -729,7 +729,7 @@ public class Document extends NativeObject {
 	/**
 	 * Created a star shaped path
 	 * 
-	 * The largest of <code>radius1</code> and <code>radius2</code> will be
+	 * The largest of {@code radius1} and {@code radius2} will be
 	 * the outer radius of the star. The smallest of radius1 and radius2 will be
 	 * the inner radius.
 	 * 
@@ -752,9 +752,9 @@ public class Document extends NativeObject {
 	 * @param decayPercent the percentage by which each succeeding arc will be
 	 *        scaled
 	 * @param numQuarterTurns the number of quarter turns (arcs)
-	 * @param clockwiseFromOutside if this is set to <code>true</code> the
+	 * @param clockwiseFromOutside if this is set to {@code true} the
 	 *        spiral will spiral in a clockwise direction from the first point.
-	 *        If it's set to <code>false</code> it will spiral in a counter
+	 *        If it's set to {@code false} it will spiral in a counter
 	 *        clockwise direction
 	 * @return the newly created path
 	 * 

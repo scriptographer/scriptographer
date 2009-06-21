@@ -357,7 +357,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	/**
 	 * Selects the text range.
 	 * 
-	 * @param addToSelection If set to <code>true</code>, the text range will
+	 * @param addToSelection If set to {@code true}, the text range will
 	 *        be added to the current selection in the document. If set to
 	 *        false, it will clear the current selection in the document and
 	 *        only select the text range.

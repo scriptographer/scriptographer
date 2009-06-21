@@ -58,7 +58,7 @@ import java.util.Set;
  * <p>Other strange behaviors to be aware of: The size of this map may
  * spontaneously shrink (even if you use a synchronized map and synchronize
  * it); it behaves as if another thread removes entries from this table
- * without synchronization.  The entry set returned by <code>entrySet</code>
+ * without synchronization.  The entry set returned by {@code entrySet}
  * has similar phenomenons: The size may spontaneously shrink, or an
  * entry, that was in the set before, suddenly disappears.
  *
@@ -128,7 +128,7 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 	/**
 	 * The rounded product of the capacity (i.e. number of buckets) and
 	 * the load factor. When the number of elements exceeds the
-	 * threshold, the HashMap calls <code>rehash()</code>.
+	 * threshold, the HashMap calls {@code rehash()}.
 	 */
 	private int threshold;
 
@@ -172,10 +172,10 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 			return new Iterator<Map.Entry<K,V>>() {
 				/**
 				 * The entry that was returned by the last
-				 * <code>next()</code> call.  This is also the entry whose
-				 * bucket should be removed by the <code>remove</code> call. <br>
+				 * {@code next()} call.  This is also the entry whose
+				 * bucket should be removed by the {@code remove} call. <br>
 				 *
-				 * It is null, if the <code>next</code> method wasn't
+				 * It is null, if the {@code next} method wasn't
 				 * called yet, or if the entry was already removed.  <br>
 				 *
 				 * Remembering this entry here will also prevent it from
@@ -186,7 +186,7 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
 				/**
 				 * The entry that will be returned by the next
-				 * <code>next()</code> call.  It is <code>null</code> if there
+				 * {@code next()} call.  It is {@code null} if there
 				 * is no further entry. <br>
 				 *
 				 * Remembering this entry here will also prevent it from
@@ -287,7 +287,7 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 				 * also remove the bucket of the underlying weak hash map.
 				 * @throws ConcurrentModificationException if the hash map was
 				 *         modified.
-				 * @throws IllegalStateException if <code>next()</code> was
+				 * @throws IllegalStateException if {@code next()} was
 				 *         never called or the element was already removed.
 				 */
 				public void remove() {
@@ -330,7 +330,7 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
 		/**
 		 * The slot of this entry. This should be
-		 * <code>Math.abs(key.hashCode() % buckets.length)</code>.
+		 * {@code Math.abs(key.hashCode() % buckets.length)}.
 		 *
 		 * But since the key may be silently removed we have to remember
 		 * the slot number.
@@ -357,7 +357,7 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 		}
 
 		/**
-		 * This class gives the <code>Entry</code> representation of the
+		 * This class gives the {@code Entry} representation of the
 		 * current bucket.  It also keeps a strong reference to the
 		 * key; bad things may happen otherwise.
 		 */
@@ -455,7 +455,7 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 	}
 
 	/**
-	 * The entry set returned by <code>entrySet()</code>.
+	 * The entry set returned by {@code entrySet()}.
 	 */
 	private final WeakEntrySet theEntrySet;
 
@@ -548,7 +548,7 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
 	/**
 	 * Rehashes this hashtable.  This will be called by the
-	 * <code>add()</code> method if the size grows beyond the threshold.
+	 * {@code add()} method if the size grows beyond the threshold.
 	 * It will grow the bucket size at least by factor two and allocates
 	 * new buckets.
 	 */

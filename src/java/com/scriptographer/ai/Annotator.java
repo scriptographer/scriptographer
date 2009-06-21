@@ -88,7 +88,7 @@ public class Annotator extends NativeObject {
 	private native int nativeCreate(String name);
 	
 	/**
-	 * @param active if <code>true</code>, activates the annotator, otherwise
+	 * @param active if {@code true}, activates the annotator, otherwise
 	 *        deactivates it
 	 */
 	public void setActive(boolean active) {

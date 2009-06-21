@@ -888,7 +888,7 @@ public abstract class Item extends DocumentObject {
 	public native boolean isEditable();
 
 	/**
-	 * The item's blend mode as specified by the <code>Item.BLEND_*</code> static
+	 * The item's blend mode as specified by the {@code Item.BLEND_*} static
 	 * properties.
 	 * 
 	 * @return any of Item.BLEND_*
@@ -1334,7 +1334,7 @@ public abstract class Item extends DocumentObject {
 	 * 
 	 * @param flags
 	 * @param steps the amount of steps for gradient, when the
-	 *       <code>"gradient-to-paths"</code> flag is passed
+	 *       {@code "gradient-to-paths"} flag is passed
 	 * @return the newly created item containing the expanded artwork
 	 */
 	public Item expand(EnumSet<ExpandFlag> flags, int steps) {

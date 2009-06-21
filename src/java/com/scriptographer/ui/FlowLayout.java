@@ -50,7 +50,7 @@ public class FlowLayout extends java.awt.FlowLayout {
 	}
 
     /**
-	 * Constructs a new <code>FlowLayout</code> with a centered alignment and
+	 * Constructs a new {@code FlowLayout} with a centered alignment and
 	 * a default 0-unit horizontal and vertical gap.
 	 */
 	public FlowLayout() {
@@ -58,11 +58,11 @@ public class FlowLayout extends java.awt.FlowLayout {
 	}
 
 	/**
-	 * Constructs a new <code>FlowLayout</code> with the specified alignment
+	 * Constructs a new {@code FlowLayout} with the specified alignment
 	 * and a default 0-unit horizontal and vertical gap. The value of the
-	 * alignment argument must be one of <code>"left"</code>,
-	 * <code>"right"</code>, <code>"center"</code>, <code>"leading"</code>
-	 * or <code>"trailing"</code>.
+	 * alignment argument must be one of {@code "left"},
+	 * {@code "right"}, {@code "center"}, {@code "leading"}
+	 * or {@code "trailing"}.
 	 * 
 	 * @param align the alignment value
 	 */
@@ -74,15 +74,15 @@ public class FlowLayout extends java.awt.FlowLayout {
 	 * Creates a new flow layout manager with the indicated alignment and the
 	 * indicated horizontal and vertical gaps.
 	 * <p>
-	 * The value of the alignment argument must be one of <code>"left"</code>,
-	 * <code>"right"</code>, <code>"center"</code>, <code>"leading"</code>
-	 * or <code>"trailing"</code>.
+	 * The value of the alignment argument must be one of {@code "left"},
+	 * {@code "right"}, {@code "center"}, {@code "leading"}
+	 * or {@code "trailing"}.
 	 * 
 	 * @param align the alignment value
 	 * @param hgap the horizontal gap between components and between the
-	 *        components and the borders of the <code>Container</code>
+	 *        components and the borders of the {@code Container}
 	 * @param vgap the vertical gap between components and between the
-	 *        components and the borders of the <code>Container</code>
+	 *        components and the borders of the {@code Container}
 	 */
 	public FlowLayout(String align, int hgap, int vgap) {
 		super(getAlignment(align), hgap, vgap);

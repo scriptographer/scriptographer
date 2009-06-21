@@ -127,7 +127,7 @@ public abstract class PathItem extends Item {
 	}
 
 	/**
-	 * Appends the segments of a Shape to the path. If <code>connect</code> is
+	 * Appends the segments of a Shape to the path. If {@code connect} is
 	 * true, the new path segments are connected to the existing one with a
 	 * line. The winding rule of the Shape is ignored.
 	 * @jshide

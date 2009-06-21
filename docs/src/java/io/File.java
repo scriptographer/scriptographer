@@ -25,8 +25,8 @@ import sun.security.action.GetPropertyAction;
  * 
  * <ol>
  * <li> An optional system-dependent <em>prefix</em> string, such as a
- * disk-drive specifier, <code>"/"</code>&nbsp;for the UNIX root directory,
- * or <code>"\\\\"</code>&nbsp;for a Microsoft Windows UNC pathname, and
+ * disk-drive specifier, {@code "/"}&nbsp;for the UNIX root directory,
+ * or {@code "\\\\"}&nbsp;for a Microsoft Windows UNC pathname, and
  * <li> A sequence of zero or more string <em>names</em>.
  * </ol>
  * 
@@ -39,10 +39,10 @@ import sun.security.action.GetPropertyAction;
  * inherently system-dependent. When an abstract pathname is converted into a
  * pathname string, each name is separated from the next by a single copy of the
  * default <em>separator character</em>. The default name-separator character
- * is defined by the system property <code>file.separator</code>, and is made
+ * is defined by the system property {@code file.separator}, and is made
  * available in the public static fields <code>{@link
  * #separator}</code> and
- * <code>{@link #separatorChar}</code> of this class. When a pathname string
+ * {@code {@link #separatorChar}} of this class. When a pathname string
  * is converted into an abstract pathname, the names within it may be separated
  * by the default name-separator character or by any other name-separator
  * character that is supported by the underlying system.
@@ -53,9 +53,9 @@ import sun.security.action.GetPropertyAction;
  * in that no other information is required in order to locate the file that it
  * denotes. A relative pathname, in contrast, must be interpreted in terms of
  * information taken from some other pathname. By default the classes in the
- * <code>java.io</code> package always resolve relative pathnames against the
+ * {@code java.io} package always resolve relative pathnames against the
  * current user directory. This directory is named by the system property
- * <code>user.dir</code>, and is typically the directory in which the Java
+ * {@code user.dir}, and is typically the directory in which the Java
  * virtual machine was invoked.
  * 
  * <p>
@@ -66,22 +66,22 @@ import sun.security.action.GetPropertyAction;
  * <ul>
  * 
  * <li> For UNIX platforms, the prefix of an absolute pathname is always
- * <code>"/"</code>. Relative pathnames have no prefix. The abstract pathname
- * denoting the root directory has the prefix <code>"/"</code> and an empty
+ * {@code "/"}. Relative pathnames have no prefix. The abstract pathname
+ * denoting the root directory has the prefix {@code "/"} and an empty
  * name sequence.
  * 
  * <li> For Microsoft Windows platforms, the prefix of a pathname that contains
- * a drive specifier consists of the drive letter followed by <code>":"</code>
- * and possibly followed by <code>"\\"</code> if the pathname is absolute. The
- * prefix of a UNC pathname is <code>"\\\\"</code>; the hostname and the
+ * a drive specifier consists of the drive letter followed by {@code ":"}
+ * and possibly followed by {@code "\\"} if the pathname is absolute. The
+ * prefix of a UNC pathname is {@code "\\\\"}; the hostname and the
  * share name are the first two names in the name sequence. A relative pathname
  * that does not specify a drive has no prefix.
  * 
  * </ul>
  * 
  * <p>
- * Instances of the <code>File</code> class are immutable; that is, once
- * created, the abstract pathname represented by a <code>File</code> object
+ * Instances of the {@code File} class are immutable; that is, once
+ * created, the abstract pathname represented by a {@code File} object
  * will never change.
  */
 
@@ -90,83 +90,83 @@ public class File {
     /**
 	 * The system-dependent default name-separator character, represented as a
 	 * string for convenience. This string contains a single character, namely
-	 * <code>{@link #separatorChar}</code>.
+	 * {@code {@link #separatorChar}}.
 	 */
     public static final String separator = "" + separatorChar;
 
     /**
 	 * The system-dependent path-separator character, represented as a string
 	 * for convenience. This string contains a single character, namely
-	 * <code>{@link #pathSeparatorChar}</code>.
+	 * {@code {@link #pathSeparatorChar}}.
 	 */
     public static final String pathSeparator = "" + pathSeparatorChar;
 
     /**
-	 * Creates a new <code>File</code> instance by converting the given
+	 * Creates a new {@code File} instance by converting the given
 	 * pathname string into an abstract pathname. If the given string is the
 	 * empty string, then the result is the empty abstract pathname.
 	 * 
 	 * @param pathname A pathname string
-	 * @throws NullPointerException If the <code>pathname</code> argument is
-	 *         <code>null</code>
+	 * @throws NullPointerException If the {@code pathname} argument is
+	 *         {@code null}
 	 */
     public File(String pathname) {
     }
 
      /**
-	 * Creates a new <code>File</code> instance from a parent pathname string
+	 * Creates a new {@code File} instance from a parent pathname string
 	 * and a child pathname string.
 	 * 
 	 * <p>
-	 * If <code>parent</code> is <code>null</code> then the new
-	 * <code>File</code> instance is created as if by invoking the
-	 * single-argument <code>File</code> constructor on the given
-	 * <code>child</code> pathname string.
+	 * If {@code parent} is {@code null} then the new
+	 * {@code File} instance is created as if by invoking the
+	 * single-argument {@code File} constructor on the given
+	 * {@code child} pathname string.
 	 * 
 	 * <p>
-	 * Otherwise the <code>parent</code> pathname string is taken to denote a
-	 * directory, and the <code>child</code> pathname string is taken to
-	 * denote either a directory or a file. If the <code>child</code> pathname
+	 * Otherwise the {@code parent} pathname string is taken to denote a
+	 * directory, and the {@code child} pathname string is taken to
+	 * denote either a directory or a file. If the {@code child} pathname
 	 * string is absolute then it is converted into a relative pathname in a
-	 * system-dependent way. If <code>parent</code> is the empty string then
-	 * the new <code>File</code> instance is created by converting
-	 * <code>child</code> into an abstract pathname and resolving the result
+	 * system-dependent way. If {@code parent} is the empty string then
+	 * the new {@code File} instance is created by converting
+	 * {@code child} into an abstract pathname and resolving the result
 	 * against a system-dependent default directory. Otherwise each pathname
 	 * string is converted into an abstract pathname and the child abstract
 	 * pathname is resolved against the parent.
 	 * 
 	 * @param parent The parent pathname string
 	 * @param child The child pathname string
-	 * @throws NullPointerException If <code>child</code> is <code>null</code>
+	 * @throws NullPointerException If {@code child} is {@code null}
 	 */
     public File(String parent, String child) {
     }
 
     /**
-	 * Creates a new <code>File</code> instance from a parent abstract
+	 * Creates a new {@code File} instance from a parent abstract
 	 * pathname and a child pathname string.
 	 * 
 	 * <p>
-	 * If <code>parent</code> is <code>null</code> then the new
-	 * <code>File</code> instance is created as if by invoking the
-	 * single-argument <code>File</code> constructor on the given
-	 * <code>child</code> pathname string.
+	 * If {@code parent} is {@code null} then the new
+	 * {@code File} instance is created as if by invoking the
+	 * single-argument {@code File} constructor on the given
+	 * {@code child} pathname string.
 	 * 
 	 * <p>
-	 * Otherwise the <code>parent</code> abstract pathname is taken to denote
-	 * a directory, and the <code>child</code> pathname string is taken to
-	 * denote either a directory or a file. If the <code>child</code> pathname
+	 * Otherwise the {@code parent} abstract pathname is taken to denote
+	 * a directory, and the {@code child} pathname string is taken to
+	 * denote either a directory or a file. If the {@code child} pathname
 	 * string is absolute then it is converted into a relative pathname in a
-	 * system-dependent way. If <code>parent</code> is the empty abstract
-	 * pathname then the new <code>File</code> instance is created by
-	 * converting <code>child</code> into an abstract pathname and resolving
+	 * system-dependent way. If {@code parent} is the empty abstract
+	 * pathname then the new {@code File} instance is created by
+	 * converting {@code child} into an abstract pathname and resolving
 	 * the result against a system-dependent default directory. Otherwise each
 	 * pathname string is converted into an abstract pathname and the child
 	 * abstract pathname is resolved against the parent.
 	 * 
 	 * @param parent The parent abstract pathname
 	 * @param child The child pathname string
-	 * @throws NullPointerException If <code>child</code> is <code>null</code>
+	 * @throws NullPointerException If {@code child} is {@code null}
 	 */
     public File(File parent, String child) {
     }
@@ -226,7 +226,7 @@ public class File {
 
     /**
 	 * Returns the pathname string of this abstract pathname's parent, or
-	 * <code>null</code> if this pathname does not name a parent directory.
+	 * {@code null} if this pathname does not name a parent directory.
 	 * 
 	 * <p>
 	 * The <em>parent</em> of an abstract pathname consists of the pathname's
@@ -235,7 +235,7 @@ public class File {
 	 * parent directory.
 	 * 
 	 * @return The pathname string of the parent directory named by this
-	 *         abstract pathname, or <code>null</code> if this pathname does
+	 *         abstract pathname, or {@code null} if this pathname does
 	 *         not name a parent
 	 */
     public String getParent() {
@@ -243,7 +243,7 @@ public class File {
 
     /**
 	 * Returns the abstract pathname of this abstract pathname's parent, or
-	 * <code>null</code> if this pathname does not name a parent directory.
+	 * {@code null} if this pathname does not name a parent directory.
 	 * 
 	 * <p>
 	 * The <em>parent</em> of an abstract pathname consists of the pathname's
@@ -252,7 +252,7 @@ public class File {
 	 * parent directory.
 	 * 
 	 * @return The abstract pathname of the parent directory named by this
-	 *         abstract pathname, or <code>null</code> if this pathname does
+	 *         abstract pathname, or {@code null} if this pathname does
 	 *         not name a parent
 	 * 
 	 * @since 1.2
@@ -276,9 +276,9 @@ public class File {
     /**
 	 * Tests whether this abstract pathname is absolute. The definition of
 	 * absolute pathname is system dependent. On UNIX systems, a pathname is
-	 * absolute if its prefix is <code>"/"</code>. On Microsoft Windows
+	 * absolute if its prefix is {@code "/"}. On Microsoft Windows
 	 * systems, a pathname is absolute if its prefix is a drive specifier
-	 * followed by <code>"\\"</code>, or if its prefix is <code>"\\\\"</code>.
+	 * followed by {@code "\\"}, or if its prefix is {@code "\\\\"}.
 	 * 
 	 * @return {@true if this abstract pathname is absolute}
 	 */
@@ -290,10 +290,10 @@ public class File {
 	 * 
 	 * <p>
 	 * If this abstract pathname is already absolute, then the pathname string
-	 * is simply returned as if by the <code>{@link #getPath}</code> method.
+	 * is simply returned as if by the {@code {@link #getPath}} method.
 	 * If this abstract pathname is the empty abstract pathname then the
 	 * pathname string of the current user directory, which is named by the
-	 * system property <code>user.dir</code>, is returned. Otherwise this
+	 * system property {@code user.dir}, is returned. Otherwise this
 	 * pathname is resolved in a system-dependent way. On UNIX systems, a
 	 * relative pathname is made absolute by resolving it against the current
 	 * user directory. On Microsoft Windows systems, a relative pathname is made
@@ -314,7 +314,7 @@ public class File {
 
     /**
 	 * Returns the absolute form of this abstract pathname. Equivalent to
-	 * <code>new&nbsp;File(this.{@link #getAbsolutePath}())</code>.
+	 * {@code new&nbsp;File(this.{@link #getAbsolutePath}())}.
 	 * 
 	 * @return The absolute abstract pathname denoting the same file or
 	 *         directory as this abstract pathname
@@ -369,7 +369,7 @@ public class File {
 
     /**
 	 * Returns the canonical form of this abstract pathname. Equivalent to
-	 * <code>new&nbsp;File(this.{@link #getCanonicalPath}())</code>.
+	 * {@code new&nbsp;File(this.{@link #getCanonicalPath}())}.
 	 * 
 	 * @return The canonical pathname string denoting the same file or directory
 	 *         as this abstract pathname
@@ -389,7 +389,7 @@ public class File {
     }
 
     /**
-	 * Converts this abstract pathname into a <code>file:</code> URL. The
+	 * Converts this abstract pathname into a {@code file:} URL. The
 	 * exact form of the URL is system-dependent. If it can be determined that
 	 * the file denoted by this abstract pathname is a directory, then the
 	 * resulting URL will end with a slash.
@@ -534,7 +534,7 @@ public class File {
 	 * Tests whether the file named by this abstract pathname is a hidden file.
 	 * The exact definition of <em>hidden</em> is system-dependent. On UNIX
 	 * systems, a file is considered to be hidden if its name begins with a
-	 * period character (<code>'.'</code>). On Microsoft Windows systems, a
+	 * period character ({@code '.'}). On Microsoft Windows systems, a
 	 * file is considered to be hidden if it has been marked as such in the
 	 * filesystem.
 	 * 
@@ -556,9 +556,9 @@ public class File {
 	 * Returns the time that the file denoted by this abstract pathname was last
 	 * modified.
 	 * 
-	 * @return A <code>long</code> value representing the time the file was
+	 * @return A {@code long} value representing the time the file was
 	 *         last modified, measured in milliseconds since the epoch (00:00:00
-	 *         GMT, January 1, 1970), or <code>0L</code> if the file does not
+	 *         GMT, January 1, 1970), or {@code 0L} if the file does not
 	 *         exist or if an I/O error occurs
 	 * 
 	 * @throws SecurityException If a security manager exists and its
@@ -591,7 +591,7 @@ public class File {
 	 * 
 	 * <p>
 	 * If this abstract pathname does not denote a directory, then this method
-	 * returns <code>null</code>. Otherwise an array of strings is returned,
+	 * returns {@code null}. Otherwise an array of strings is returned,
 	 * one for each file or directory in the directory. Names denoting the
 	 * directory itself and the directory's parent directory are not included in
 	 * the result. Each string is a file name rather than a complete path.
@@ -603,7 +603,7 @@ public class File {
 	 * 
 	 * @return An array of strings naming the files and directories in the
 	 *         directory denoted by this abstract pathname. The array will be
-	 *         empty if the directory is empty. Returns <code>null</code> if
+	 *         empty if the directory is empty. Returns {@code null} if
 	 *         this abstract pathname does not denote a directory, or if an I/O
 	 *         error occurs.
 	 * 
@@ -619,10 +619,10 @@ public class File {
 	 * Returns an array of strings naming the files and directories in the
 	 * directory denoted by this abstract pathname that satisfy the specified
 	 * filter. The behavior of this method is the same as that of the
-	 * <code>{@link #list()}</code> method, except that the strings in the
-	 * returned array must satisfy the filter. If the given <code>filter</code>
-	 * is <code>null</code> then all names are accepted. Otherwise, a name
-	 * satisfies the filter if and only if the value <code>true</code> results
+	 * {@code {@link #list()}} method, except that the strings in the
+	 * returned array must satisfy the filter. If the given {@code filter}
+	 * is {@code null} then all names are accepted. Otherwise, a name
+	 * satisfies the filter if and only if the value {@code true} results
 	 * when the <code>{@link
      * FilenameFilter#accept}</code> method of the
 	 * filter is invoked on this abstract pathname and the name of a file or
@@ -632,9 +632,9 @@ public class File {
 	 * 
 	 * @return An array of strings naming the files and directories in the
 	 *         directory denoted by this abstract pathname that were accepted by
-	 *         the given <code>filter</code>. The array will be empty if the
+	 *         the given {@code filter}. The array will be empty if the
 	 *         directory is empty or if no names were accepted by the filter.
-	 *         Returns <code>null</code> if this abstract pathname does not
+	 *         Returns {@code null} if this abstract pathname does not
 	 *         denote a directory, or if an I/O error occurs.
 	 * 
 	 * @throws SecurityException If a security manager exists and its
@@ -651,7 +651,7 @@ public class File {
 	 * 
 	 * <p>
 	 * If this abstract pathname does not denote a directory, then this method
-	 * returns <code>null</code>. Otherwise an array of <code>File</code>
+	 * returns {@code null}. Otherwise an array of {@code File}
 	 * objects is returned, one for each file or directory in the directory.
 	 * Pathnames denoting the directory itself and the directory's parent
 	 * directory are not included in the result. Each resulting abstract
@@ -670,7 +670,7 @@ public class File {
 	 * @return An array of abstract pathnames denoting the files and directories
 	 *         in the directory denoted by this abstract pathname. The array
 	 *         will be empty if the directory is empty. Returns
-	 *         <code>null</code> if this abstract pathname does not denote a
+	 *         {@code null} if this abstract pathname does not denote a
 	 *         directory, or if an I/O error occurs.
 	 * 
 	 * @throws SecurityException If a security manager exists and its
@@ -687,12 +687,12 @@ public class File {
 	 * Returns an array of abstract pathnames denoting the files and directories
 	 * in the directory denoted by this abstract pathname that satisfy the
 	 * specified filter. The behavior of this method is the same as that of the
-	 * <code>{@link #listFiles()}</code> method, except that the pathnames in
+	 * {@code {@link #listFiles()}} method, except that the pathnames in
 	 * the returned array must satisfy the filter. If the given
-	 * <code>filter</code> is <code>null</code> then all pathnames are
+	 * {@code filter} is {@code null} then all pathnames are
 	 * accepted. Otherwise, a pathname satisfies the filter if and only if the
-	 * value <code>results</code> when the
-	 * <code>{@link FilenameFilter#accept}</code> method of the filter is
+	 * value {@code results} when the
+	 * {@code {@link FilenameFilter#accept}} method of the filter is
 	 * invoked on this abstract pathname and the name of a file or directory in
 	 * the directory that it denotes.
 	 * 
@@ -701,7 +701,7 @@ public class File {
 	 * @return An array of abstract pathnames denoting the files and directories
 	 *         in the directory denoted by this abstract pathname. The array
 	 *         will be empty if the directory is empty. Returns
-	 *         <code>null</code> if this abstract pathname does not denote a
+	 *         {@code null} if this abstract pathname does not denote a
 	 *         directory, or if an I/O error occurs.
 	 * 
 	 * @throws SecurityException If a security manager exists and its
@@ -718,12 +718,12 @@ public class File {
 	 * Returns an array of abstract pathnames denoting the files and directories
 	 * in the directory denoted by this abstract pathname that satisfy the
 	 * specified filter. The behavior of this method is the same as that of the
-	 * <code>{@link #listFiles()}</code> method, except that the pathnames in
+	 * {@code {@link #listFiles()}} method, except that the pathnames in
 	 * the returned array must satisfy the filter. If the given
-	 * <code>filter</code> is <code>null</code> then all pathnames are
+	 * {@code filter} is {@code null} then all pathnames are
 	 * accepted. Otherwise, a pathname satisfies the filter if and only if the
-	 * value <code>results</code> when the
-	 * <code>{@link FileFilter#accept(java.io.File)}</code> method of the
+	 * value {@code results} when the
+	 * {@code {@link FileFilter#accept(java.io.File)}} method of the
 	 * filter is invoked on the pathname.
 	 * 
 	 * @param filter A file filter
@@ -731,7 +731,7 @@ public class File {
 	 * @return An array of abstract pathnames denoting the files and directories
 	 *         in the directory denoted by this abstract pathname. The array
 	 *         will be empty if the directory is empty. Returns
-	 *         <code>null</code> if this abstract pathname does not denote a
+	 *         {@code null} if this abstract pathname does not denote a
 	 *         directory, or if an I/O error occurs.
 	 * 
 	 * @throws SecurityException If a security manager exists and its
@@ -799,8 +799,8 @@ public class File {
      *          java.lang.SecurityManager#checkWrite(java.lang.String)}</code>
 	 *         method denies write access to either the old or new pathnames
 	 * 
-	 * @throws NullPointerException If parameter <code>dest</code> is
-	 *         <code>null</code>
+	 * @throws NullPointerException If parameter {@code dest} is
+	 *         {@code null}
 	 */
     public boolean renameTo(File dest) {
     }
@@ -814,8 +814,8 @@ public class File {
 	 * some provide more precision. The argument will be truncated to fit the
 	 * supported precision. If the operation succeeds and no intervening
 	 * operations on the file take place, then the next invocation of the
-	 * <code>{@link #lastModified}</code> method will return the (possibly
-	 * truncated) <code>time</code> argument that was passed to this method.
+	 * {@code {@link #lastModified}} method will return the (possibly
+	 * truncated) {@code time} argument that was passed to this method.
 	 * 
 	 * @param time The new last-modified time, measured in milliseconds since
 	 *        the epoch (00:00:00 GMT, January 1, 1970)

@@ -55,8 +55,8 @@ public class Layer extends Item {
 	public native void setVisible(boolean visible);
 
 	/**
-	 * A boolean value that sets the layer to preview (<code>true</code>) or outline
-	 * mode (<code>false</code>).
+	 * A boolean value that sets the layer to preview ({@code true}) or outline
+	 * mode ({@code false}).
 	 * If a layer is set to outline mode, items in all it's child
 	 * layers are rendered in outline mode, regardless of their preview settings.
 	 */
@@ -108,7 +108,7 @@ public class Layer extends Item {
 	/**
 	 * Checks whether the Layer is active.
 	 * 
-	 * @return <code>true</code> if the layer is active, <code>false</code>
+	 * @return {@code true} if the layer is active, {@code false}
 	 *         otherwise.
 	 */
 	public native boolean isActive();

@@ -145,11 +145,11 @@ public class CompoundPath extends PathItem {
 	 * is changed into a {@link PathIterator#SEG_LINETO}segment.
 	 * 
 	 * @param iter the PathIterator specifying which segments shall be appended.
-	 * @param connect <code>true</code> for substituting the initial
+	 * @param connect {@code true} for substituting the initial
 	 *        {@link PathIterator#SEG_MOVETO}segment by a {@link
-	 *        PathIterator#SEG_LINETO}, or <code>false</code> for not
+	 *        PathIterator#SEG_LINETO}, or {@code false} for not
 	 *        performing any substitution. If this GeneralPath is currently
-	 *        empty, <code>connect</code> is assumed to be <code>false</code>,
+	 *        empty, {@code connect} is assumed to be {@code false},
 	 *        thus leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
 	 * @jshide
 	 */

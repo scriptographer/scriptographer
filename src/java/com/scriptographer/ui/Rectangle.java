@@ -330,17 +330,17 @@ public class Rectangle {
 	}
 
     /**
-	 * Adds a point, specified by the double precision arguments <code>px</code>
-	 * and <code>py</code>, to the rectangle. The resulting rectangle is the
+	 * Adds a point, specified by the double precision arguments {@code px}
+	 * and {@code py}, to the rectangle. The resulting rectangle is the
 	 * smallest rectangle that contains both the original rectangle and the
 	 * specified point.
 	 * 
-	 * After adding a point, a call to <code>contains</code> with the added
-	 * point as an argument does not necessarily return <code>true</code>.
-	 * The <code>contains</code> method does not return <code>true</code>
+	 * After adding a point, a call to {@code contains} with the added
+	 * point as an argument does not necessarily return {@code true}.
+	 * The {@code contains} method does not return {@code true}
 	 * for points on the right or bottom edges of a rectangle. Therefore, if the
 	 * added point falls on the left or bottom edge of the enlarged rectangle,
-	 * <code>contains</code> returns <code>false</code> for that point.
+	 * {@code contains} returns {@code false} for that point.
 	 * 
 	 * @param px, py The coordinates of the point.
 	 */
@@ -358,12 +358,12 @@ public class Rectangle {
 	 * smallest rectangle that contains both the original rectangle and the
 	 * specified point.
 	 * 
-	 * After adding a point, a call to <code>contains</code> with the added
-	 * point as an argument does not necessarily return <code>true</code>.
-	 * The <code>contains</code> method does not return <code>true</code>
+	 * After adding a point, a call to {@code contains} with the added
+	 * point as an argument does not necessarily return {@code true}.
+	 * The {@code contains} method does not return {@code true}
 	 * for points on the right or bottom edges of a rectangle. Therefore, if the
 	 * added point falls on the left or bottom edge of the enlarged rectangle,
-	 * <code>contains</code> returns <code>false</code> for that point.
+	 * {@code contains} returns {@code false} for that point.
 	 * 
 	 * @param pt
 	 */

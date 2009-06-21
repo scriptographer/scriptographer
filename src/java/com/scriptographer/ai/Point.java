@@ -514,7 +514,7 @@ public class Point {
 	/**
 	 * The length of the vector that is represented by this point's coordinates.
 	 * Each point can be interpreted as a vector that points from the origin
-	 * (<code>x = 0</code>,<code>y = 0</code>) to the point's location.
+	 * ({@code x = 0},{@code y = 0}) to the point's location.
 	 * Setting the length changes the location but keeps the vector's angle.
 	 */
 	public double getLength() {

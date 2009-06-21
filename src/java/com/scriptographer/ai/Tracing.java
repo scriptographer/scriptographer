@@ -84,7 +84,7 @@ public class Tracing extends Item implements Commitable {
 	private native void update();
 	
 	/**
-	 * Default: <code>false</code>
+	 * Default: {@code false}
 	 * @return
 	 */
 	public native boolean getResample();
@@ -157,7 +157,7 @@ public class Tracing extends Item implements Commitable {
 	public native void setMaxColors(int maxColors);
 	
 	/**
-	 * Default: <code>true</code>
+	 * Default: {@code true}
 	 * @return
 	 */
 	public native boolean getFills();
@@ -169,7 +169,7 @@ public class Tracing extends Item implements Commitable {
 	public native void setFills(boolean fills);
 	
 	/**
-	 * Default: <code>false</code>
+	 * Default: {@code false}
 	 * @return
 	 */
 	public native boolean getStrokes();
@@ -273,7 +273,7 @@ public class Tracing extends Item implements Commitable {
 	}
 	
 	/**
-	 * Default: <code>false</code>
+	 * Default: {@code false}
 	 * @return
 	 */
 	public native boolean getLivePaint();
