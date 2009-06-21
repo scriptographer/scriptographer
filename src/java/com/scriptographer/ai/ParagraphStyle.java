@@ -146,6 +146,10 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	private native Integer nativeGetJustification();
 	private native void nativeSetJustification(Integer justification);
 	
+	/**
+	 * The justification of the paragraph.
+	 * {@grouptitle Justification}
+	 */
 	public ParagraphJustification getJustification() {
 		return IntegerEnumUtils.get(ParagraphJustification.class, nativeGetJustification());
 	}
@@ -157,6 +161,9 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	private native Integer nativeGetSingleWordJustification();
 	private native void nativeSetSingleWordJustification(Integer justification);
 
+	/**
+	 * The single word justification of the paragraph.
+	 */
 	public ParagraphJustification getSingleWordJustification() {
 		return IntegerEnumUtils.get(ParagraphJustification.class, nativeGetSingleWordJustification());
 	}
@@ -165,18 +172,35 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 		nativeSetSingleWordJustification(type != null ? type.value : null);
 	}
 
+	/**
+	 * The indentation of the first line in the paragraph.
+	 * {@grouptitle Indentation}
+	 */
 	public native Float getFirstLineIndent();
 	public native void setFirstLineIndent(Float indent);
 	
+	/**
+	 * The indentation at the left of the paragraph.
+	 */
 	public native Float getStartIndent();
 	public native void setStartIndent(Float indent);
 	
+	/**
+	 * The indentation at the right of the paragraph.
+	 */
 	public native Float getEndIndent();
 	public native void setEndIndent(Float indent);
 	
+	/**
+	 * The space after the paragraph.
+	 * {@grouptitle Spacing}
+	 */
 	public native Float getSpaceBefore();
 	public native void setSpaceBefore(Float space);
-	
+
+	/**
+	 * The space before the paragraph.
+	 */
 	public native Float getSpaceAfter();
 	public native void setSpaceAfter(Float space);
 
@@ -184,24 +208,54 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	// Hyphenation Features
 	// ------------------------------------------------------------------
 	
+	/**
+	 * Specifies whether to use hyphenation within the paragraph
+	 * @return {@true if the paragraph uses hyphenation}
+	 * {@grouptitle Hyphenation}
+	 */
 	public native Boolean getHyphenation();
 	public native void setHyphenation(Boolean hyphenate);
 	
+	/**
+	 * The minimum number of characters that a word needs to have to be able to
+	 * be hyphenated.
+	 */
 	public native Integer getHyphenatedWordSize();
 	public native void setHyphenatedWordSize(Integer size);
 	
+	/**
+	 * The minimum number of characters at the beginning of a word
+	 * that can be broken by a hyphen.
+	 */
 	public native Integer getPreHyphenSize();
 	public native void setPreHyphenSize(Integer size);
 	
+	/**
+	 * The minimum number of characters at the end of a word
+	 * that can be broken by a hyphen.
+	 */
 	public native Integer getPostHyphenSize();
 	public native void setPostHyphenSize(Integer size);
 	
+	/**
+	 * The maximum number of consecutive lines on which hyphenation may occur. A
+	 * value of 0 means unlimited consecutive hyphens are allowed at ends of
+	 * lines.
+	 */
 	public native Integer getConsecutiveHyphenLimit();
 	public native void setConsecutiveHyphenLimit(Integer limit);
 	
+	/**
+	 * Specifies a distance from the right edge of the paragraph, where
+	 * hyphenation is not allowed. A value of 0 allows all hyphenation.
+	 */
 	public native Float getHyphenationZone();
 	public native void setHyphenationZone(Float zone);
 	
+	/**
+	 * Specifies whether capitalized words should be hyphenated.
+	 * @return {@true if capitalized words should be hyphenated}
+	 */
 	public native Boolean getHyphenateCapitalized();
 	public native void setHyphenateCapitalized(Boolean hyphenate);
 	
@@ -212,39 +266,76 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	// Justification Features
 	// ------------------------------------------------------------------
 	
+	/**
+	 * The desired word spacing of the paragraph.
+	 * {@grouptitle Word Spacing}
+	 */
 	public native Float getDesiredWordSpacing();
 	public native void setDesiredWordSpacing(Float spacing);
 	
+	/**
+	 * The maximum word spacing of the paragraph.
+	 */
 	public native Float getMaxWordSpacing();
 	public native void setMaxWordSpacing(Float spacing);
 	
+	/**
+	 * The minimum word spacing of the paragraph.
+	 */
 	public native Float getMinWordSpacing();
 	public native void setMinWordSpacing(Float spacing);
 	
+	/**
+	 * The desired letter spacing of the paragraph.
+	 * {@grouptitle Letter Spacing}
+	 */
 	public native Float getDesiredLetterSpacing();
 	public native void setDesiredLetterSpacing(Float spacing);
 	
+	/**
+	 * The maximum letter spacing of the paragraph.
+	 */
 	public native Float getMaxLetterSpacing();
 	public native void setMaxLetterSpacing(Float spacing);
-	
+
+	/**
+	 * The minimum letter spacing of the paragraph.
+	 */
 	public native Float getMinLetterSpacing();
 	public native void setMinLetterSpacing(Float spacing);
 	
+	/**
+	 * The desired glyph scaling of the paragraph as a value between 0 and 1.
+	 * {@grouptitle Glyph Scaling}
+	 */
 	public native Float getDesiredGlyphScaling();
 	public native void setDesiredGlyphScaling(Float scaling);
 	
+	/**
+	 * The maximum glyph scaling of the paragraph as a value between 0 and 1.
+	 */
 	public native Float getMaxGlyphScaling();
 	public native void setMaxGlyphScaling(Float scaling);
 	
+	/**
+	 * The minimum glyph scaling of the paragraph as a value between 0 and 1.
+	 */
 	public native Float getMinGlyphScaling();
 	public native void setMinGlyphScaling(Float scaling);
 	
+	/**
+	 * The auto leading percentage of the paragraph as a value between 0 and 1.
+	 * {@grouptitle Leading}
+	 */
 	public native Float getAutoLeadingPercentage();
 	public native void setAutoLeadingPercentage(Float percentage);
 	
 	private native Integer nativeGetLeading();
 	private native void nativeSetLeading(Integer type);
 	
+	/**
+	 * The leading mode of the paragraph.
+	 */
 	public LeadingType getLeading() {
 		return IntegerEnumUtils.get(LeadingType.class, nativeGetLeading());
 	}
@@ -258,6 +349,10 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	public native void setTabStops(TabStopList tabStops);
 	*/
 	
+	/**
+	 * The default tab width of the paragraph.
+	 * {@grouptitle Tabs}
+	 */
 	public native Float getDefaultTabWidth();
 	public native void setDefaultTabWidth(Float width);
 
