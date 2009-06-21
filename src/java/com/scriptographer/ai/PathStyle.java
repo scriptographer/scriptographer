@@ -326,104 +326,6 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	}
 
 	/*
-	 * Stroke Styles
-	 */
-
-	public Color getStrokeColor() {
-		// TODO: Return Color.NONE instead of null?
-		return stroke != null ? stroke.getColor() : null;
-	}
-
-	public void setStrokeColor(Color color) {
-		getStroke(true).setColor(color);
-	}
-
-	public void setStrokeColor(java.awt.Color color) {
-		getStroke(true).setColor(color);
-	}
-
-	public Float getStrokeWidth() {
-		return stroke != null ? stroke.getWidth() : null;
-	}
-
-	public void setStrokeWidth(Float width) {
-		getStroke(true).setWidth(width);
-	}
-
-	public StrokeCap getStrokeCap() {
-		return stroke != null ? stroke.getCap() : null;
-	}
-
-	public void setStrokeCap(StrokeCap cap) {
-		getStroke(true).setCap(cap);
-	}
-
-	public StrokeJoin getStrokeJoin() {
-		return stroke != null ? stroke.getJoin() : null;
-	}
-
-	public void setStrokeJoin(StrokeJoin join) {
-		getStroke(true).setJoin(join);
-	}
-
-	public Float getDashOffset() {
-		return stroke != null ? stroke.getWidth() : null;
-	}
-
-	public void setDashOffset(Float offset) {
-		getStroke(true).setDashOffset(offset);
-	}
-	
-	public float[] getDashArray() {
-		return stroke != null ? stroke.getDashArray() : null;
-	}
-
-	public void setDashArray(float[] array) {
-		getStroke(true).setDashArray(array);
-	}
-	
-	public Float getMiterLimit() {
-		return stroke != null ? stroke.getWidth() : null;
-	}
-
-	public void setMiterLimit(Float limit) {
-		getStroke(true).setMiterLimit(limit);
-	}
-
-	public Boolean getStrokeOverprint() {
-		return stroke != null ? stroke.getOverprint() : null;
-	}
-
-	public void setStrokeOverprint(Boolean overprint) {
-		getStroke(true).setOverprint(overprint);
-	}
-
-	/*
-	 * Fill Style
-	 */
-
-	public Color getFillColor() {
-		// TODO: Return Color.NONE instead of null?
-		return fill != null ? fill.getColor() : null;
-	}
-
-	public void setFillColor(Color color) {
-		getFill(true).setColor(color);
-	}
-
-	public void setFillColor(java.awt.Color color) {
-		getFill(true).setColor(color);
-	}
-
-	public Boolean getFillOverprint() {
-		return fill != null ? fill.getOverprint() : null;
-	}
-
-	public void setFillOverprint(Boolean overprint) {
-		getFill(true).setOverprint(overprint);
-	}
-
-	/*
 	 * Path Style
 	 */
 	public WindingRule getWindingRule() {
@@ -446,5 +348,201 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		update();
 		this.resolution = resolution;
 		markDirty();
+	}
+	
+	/*
+	 * Stroke Styles
+	 */
+
+	/**
+	 * The color of the stroke.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // Create a circle shaped path at { x: 50, y: 50 } with a radius of 10:
+	 * var circle = new Path.Circle(new Point(50, 50), 10);
+	 * 
+	 * // Set the stroke color of the circle to CMYK red:
+	 * circle.strokeColor = new CMYKColor(1, 1, 0, 0);
+	 * </code>
+	 * {@grouptitle Stroke Style}
+	 */
+	public Color getStrokeColor() {
+		// TODO: Return Color.NONE instead of null?
+		return stroke != null ? stroke.getColor() : null;
+	}
+
+	public void setStrokeColor(Color color) {
+		getStroke(true).setColor(color);
+	}
+
+	public void setStrokeColor(java.awt.Color color) {
+		getStroke(true).setColor(color);
+	}
+
+	/**
+	 * The width of the stroke.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // Create a circle shaped path at { x: 50, y: 50 } with a radius of 10:
+	 * var circle = new Path.Circle(new Point(50, 50), 10);
+	 * 
+	 * // Set the stroke width of the circle to 3pt:
+	 * circle.strokeWidth = 3;
+	 * </code>
+	 */
+	public Float getStrokeWidth() {
+		return stroke != null ? stroke.getWidth() : null;
+	}
+
+	public void setStrokeWidth(Float width) {
+		getStroke(true).setWidth(width);
+	}
+
+	/**
+	 * The cap of the stroke.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // Create a line from { x: 0, y: 50 } to { x: 50, y: 50 };
+	 * var line = new Path.Line(new Point(0, 50), new Point(50, 50));
+	 * 
+	 * // Set the stroke cap of the line to be round:
+	 * line.strokeCap = 'round';
+	 * </code>
+	 */
+	public StrokeCap getStrokeCap() {
+		return stroke != null ? stroke.getCap() : null;
+	}
+
+	public void setStrokeCap(StrokeCap cap) {
+		getStroke(true).setCap(cap);
+	}
+
+	/**
+	 * The join of the stroke.
+	 */
+	public StrokeJoin getStrokeJoin() {
+		return stroke != null ? stroke.getJoin() : null;
+	}
+
+	public void setStrokeJoin(StrokeJoin join) {
+		getStroke(true).setJoin(join);
+	}
+
+	/**
+	 * The dash offset of the stroke.
+	 */
+	public Float getDashOffset() {
+		return stroke != null ? stroke.getWidth() : null;
+	}
+
+	public void setDashOffset(Float offset) {
+		getStroke(true).setDashOffset(offset);
+	}
+	
+	/**
+	 * Specifies an array containing the dash and gap lengths of the stroke.
+	 * 
+	 * Sample code:
+	 * 
+	 * <code>
+	 * // Create a line from { x: 0, y: 50 } to { x: 50, y: 50 };
+	 * var line = new Path.Line(new Point(0, 50), new Point(50, 50));
+	 * 
+	 * line.strokeWidth = 3;
+	 * 
+	 * // Set the dashed stroke to [10pt dash, 5pt gap, 8pt dash, 10pt gap]:
+	 * line.dashArray = [10, 5, 8, 10];
+	 * </code>
+	 * @return
+	 */
+	public float[] getDashArray() {
+		return stroke != null ? stroke.getDashArray() : null;
+	}
+
+	public void setDashArray(float[] array) {
+		getStroke(true).setDashArray(array);
+	}
+	
+	/**
+	 * The miter limit controls when the program switches from a mitered
+	 * (pointed) join to a beveled (squared-off) join. The default miter limit
+	 * is 4, which means that when the length of the point reaches four times
+	 * the stroke weight, the program switches from a miter join to a bevel
+	 * join. A miter limit of 0 results in a bevel join.
+	 * 
+	 * @return the miter limit as a value between 0 and 500
+	 */
+	public Float getMiterLimit() {
+		return stroke != null ? stroke.getWidth() : null;
+	}
+
+	public void setMiterLimit(Float limit) {
+		getStroke(true).setMiterLimit(limit);
+	}
+
+	/**
+	 * Specifies whether to overprint the stroke. By default, when you print
+	 * opaque, overlapping colors, the top color knocks out the area underneath.
+	 * You can use overprinting to prevent knockout and make the topmost
+	 * overlapping printing ink appear transparent in relation to the underlying
+	 * ink.
+	 * 
+	 * @return {@true if the stroke is overprinted}
+	 */
+	public Boolean getStrokeOverprint() {
+		return stroke != null ? stroke.getOverprint() : null;
+	}
+
+	public void setStrokeOverprint(Boolean overprint) {
+		getStroke(true).setOverprint(overprint);
+	}
+
+	/*
+	 * Fill Style
+	 */
+	/**
+	 * The fill color of the path.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // Create a circle shaped path at { x: 50, y: 50 } with a radius of 10:
+	 * var circle = new Path.Circle(new Point(50, 50), 10);
+	 * 
+	 * // Set the fill color of the circle to CMYK red:
+	 * circle.fillColor = new CMYKColor(1, 1, 0, 0);
+	 * </code>
+	 * {@grouptitle Fill Style}
+	 */
+	public Color getFillColor() {
+		// TODO: Return Color.NONE instead of null?
+		return fill != null ? fill.getColor() : null;
+	}
+
+	public void setFillColor(Color color) {
+		getFill(true).setColor(color);
+	}
+
+	public void setFillColor(java.awt.Color color) {
+		getFill(true).setColor(color);
+	}
+
+	/**
+	 * Specifies whether to overprint the fill. By default, when you print
+	 * opaque, overlapping colors, the top color knocks out the area underneath.
+	 * You can use overprinting to prevent knockout and make the topmost
+	 * overlapping printing ink appear transparent in relation to the underlying
+	 * ink.
+	 * 
+	 * @return {@true if the fill is overprinted}
+	 */
+	public Boolean getFillOverprint() {
+		return fill != null ? fill.getOverprint() : null;
+	}
+
+	public void setFillOverprint(Boolean overprint) {
+		getFill(true).setOverprint(overprint);
 	}
 }

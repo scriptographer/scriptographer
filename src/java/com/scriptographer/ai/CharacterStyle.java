@@ -214,16 +214,17 @@ public class CharacterStyle extends PathStyle {
 	 * Specifies which font to use in the character style.
 	 * If you pass a font family, it will automatically pick the first
 	 * of the family's weights.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var text = new PointText(new Point(0,0));
-	 * text.content = "The content of the text field.";
+	 * text.content = 'The content of the text field.';
 	 *
 	 * // Sets all the text to Verdana Regular.
-	 * text.characterStyle.font = app.fonts["Verdana"];
+	 * text.characterStyle.font = app.fonts['Verdana'];
 	 *
 	 * //sets the second word to Verdana Bold
-	 * text.range.words[1].characterStyle.font = app.fonts["Verdana"]["Bold"];
+	 * text.range.words[1].characterStyle.font = app.fonts['Verdana']['Bold'];
 	 * </code>
 	 */
 	public FontWeight getFont() {
@@ -258,10 +259,11 @@ public class CharacterStyle extends PathStyle {
 	
 	/**
 	 * The font size in points.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var text = new PointText(new Point(0,0));
-	 * text.content = "The content of the text field.";
+	 * text.content = 'The content of the text field.';
 	 * 
 	 * // sets the font size to 10pt
 	 * text.characterStyle.fontSize = 10
@@ -272,13 +274,14 @@ public class CharacterStyle extends PathStyle {
 	
 	/**
 	 * The horizontal scale of the character style.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var text = new PointText(new Point(0,0));
-	 * text.content = "The content of the text field.";
+	 * text.content = 'The content of the text field.';
 	 * 
 	 * // sets the horizontal scale to 200%
-	 * text.characterStyle.horizontalScale = 2
+	 * text.characterStyle.horizontalScale = 2;
 	 * </code>
 	 */
 	public native Float getHorizontalScale();
@@ -286,13 +289,14 @@ public class CharacterStyle extends PathStyle {
 
 	/**
 	 * The vertical scale of the character style.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var text = new PointText(new Point(0,0));
-	 * text.content = "The content of the text field.";
+	 * text.content = 'The content of the text field.';
 	 * 
 	 * // sets the vertical scale to 200%
-	 * text.characterStyle.verticalScale = 2
+	 * text.characterStyle.verticalScale = 2;
 	 * </code>
 	 */
 	public native Float getVerticalScale();
@@ -300,16 +304,20 @@ public class CharacterStyle extends PathStyle {
 
 	/**
 	 * Specifies whether to use auto leading in the character style.
+	 * @return {@true if the character style uses auto leading}
 	 */
 	public native Boolean getAutoLeading();
 	public native void setAutoLeading(Boolean leading);
 
 	/**
-	 * The leading (vertical spacing) of the character style in points.
+	 * The leading (vertical spacing) of the character style.
 	 */
 	public native Float getLeading();
 	public native void setLeading(Float leading);
 
+	/**
+	 * The tracking (horizontal character spacing) of the character style.
+	 */
 	public native Integer getTracking();
 	public native void setTracking(Integer tracking);
 
@@ -320,6 +328,21 @@ public class CharacterStyle extends PathStyle {
 	public native Float getBaselineShift();
 	public native void setBaselineShift(Float shift);
 
+	/**
+	 * The rotation of the characters in the text item that the character style
+	 * is applied to.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = 'The content of the text field.';
+	 * 
+	 * // sets the character rotation to 45 degrees:
+	 * text.characterStyle.rotation = (45).toRadians();
+	 * </code>
+	 * 
+	 * @return the rotation in radians
+	 */
 	public native Float getRotation();
 	public native void setRotation(Float rotation);
 
@@ -328,13 +351,14 @@ public class CharacterStyle extends PathStyle {
 
 	/**
 	 * The character style's kerning method.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var text = new PointText(new Point(0,0));
-	 * text.content = "The content of the text field.";
+	 * text.content = 'The content of the text field.';
 	 * 
 	 * // sets the kerning method to optical
-	 * text.characterStyle.kerningType = "optical";
+	 * text.characterStyle.kerningType = 'optical';
 	 * </code>
 	 */
 	public KerningType getKerningType() {
@@ -346,21 +370,21 @@ public class CharacterStyle extends PathStyle {
 		nativeSetKerningType(type != null ? type.value : null);
 	}
 	
-	/**
-	 * The character style's capitalization as specified by the CharacterStyle.CAPS_*
-	 * static properties.
-	 * Sample code:
-	 * <code>
-	 * var text = new PointText(new Point(0,0));
-	 * text.content = "The content of the text field.";
-	 * 
-	 * // sets the capitalization to use only caps
-	 * text.characterStyle.capitalization = CharacterStyle.CAPS_ALL;
-	 * </code>
-	 */
 	private native Integer nativeGetCapitalization();
 	private native void nativeSetCapitalization(Integer caps);
 
+	/**
+	 * The character style's capitalization.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = 'The content of the text field.';
+	 * 
+	 * // sets the capitalization to all caps
+	 * text.characterStyle.capitalization = 'all';
+	 * </code>
+	 */
 	public TextCapitalization getCapitalization() {
 		return IntegerEnumUtils.get(TextCapitalization.class, nativeGetCapitalization());
 	}
@@ -372,6 +396,21 @@ public class CharacterStyle extends PathStyle {
 	private native Integer nativeGetBaselineOption();
 	private native void nativeSetBaselineOption(Integer option);
 	
+	/**
+	 * The character style's baseline option which is used to set the text to
+	 * either subscript or superscript. Superscript and subscript text is
+	 * reduced-size text that is raised or lowered in relation to a font’s
+	 * baseline.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = 'The content of the text field.';
+	 * 
+	 * // sets the baseline option to superscript:
+	 * text.characterStyle.capitalization = 'superscript';
+	 * </code>
+	 */
 	public BaselineOption getBaselineOption() {
 		return IntegerEnumUtils.get(BaselineOption.class, nativeGetBaselineOption());
 	}
@@ -415,6 +454,9 @@ public class CharacterStyle extends PathStyle {
 		nativeSetUnderlinePosition(type != null ? type.value : null);
 	}
 	
+	/**
+	 * Sets the offset of the underline relative to the baseline.
+	 */
 	public native Float getUnderlineOffset();
 	public native void setUnderlineOffset(Float offset);
 
@@ -422,6 +464,9 @@ public class CharacterStyle extends PathStyle {
 	// OpenType features
 	// ------------------------------------------------------------------
 
+	/**
+	 * {@grouptitle OpenType Features}
+	 */
 	public native Boolean getLigature();
 	public native void setLigature(Boolean ligature);
 
