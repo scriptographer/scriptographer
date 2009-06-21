@@ -55,8 +55,8 @@ public class Layer extends Item {
 	public native void setVisible(boolean visible);
 
 	/**
-	 * A boolean value that sets the layer to preview (true) or outline
-	 * mode (false).
+	 * A boolean value that sets the layer to preview (<code>true</code>) or outline
+	 * mode (<code>false</code>).
 	 * If a layer is set to outline mode, items in all it's child
 	 * layers are rendered in outline mode, regardless of their preview settings.
 	 */
@@ -86,15 +86,35 @@ public class Layer extends Item {
 		setColor(new RGBColor(color));
 	}
 
+	/**
+	 * Returns all items contained within the layer, including indirect children
+	 * of the layer.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var group = new Group();
+	 * var path = new Path();
+	 * group.appendTop(path);
+	 * 
+	 * // the direct children of the layer:
+	 * print(document.activeLayer.children); // Group (@31fbd500)
+	 * 
+	 * // all items contained within the layer:
+	 * print(document.activeLayer.items); // Group (@31fbd500), Path (@31fbbb00)
+	 * </code>
+	 */
 	public native ItemList getItems();
 	
 	/**
-	 * Returns a boolean value that specifies whether the Layer is active.
+	 * Checks whether the Layer is active.
+	 * 
+	 * @return <code>true</code> if the layer is active, <code>false</code>
+	 *         otherwise.
 	 */
 	public native boolean isActive();
 	
 	/**
-	 * Activates the layer
+	 * Activates the layer.
 	 */
 	public native void activate();
 }
