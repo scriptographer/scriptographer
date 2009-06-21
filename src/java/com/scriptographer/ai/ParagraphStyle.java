@@ -192,14 +192,14 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	public native void setEndIndent(Float indent);
 	
 	/**
-	 * The space after the paragraph.
+	 * The space before the paragraph.
 	 * {@grouptitle Spacing}
 	 */
 	public native Float getSpaceBefore();
 	public native void setSpaceBefore(Float space);
 
 	/**
-	 * The space before the paragraph.
+	 * The space after the paragraph.
 	 */
 	public native Float getSpaceAfter();
 	public native void setSpaceAfter(Float space);
