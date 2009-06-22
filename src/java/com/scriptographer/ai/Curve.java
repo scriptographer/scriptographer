@@ -61,8 +61,8 @@ public class Curve {
 	}
 
 	public Curve(Point pt1, Point h1, Point h2, Point pt2) {
-		segment1 = new Segment(pt1, null, h1, false);
-		segment2 = new Segment(pt2, h2, null, false);
+		segment1 = new Segment(pt1, null, h1);
+		segment2 = new Segment(pt2, h2, null);
 	}
 
 	public Curve(Point pt1, Point pt2) {
@@ -75,8 +75,8 @@ public class Curve {
 
 	public Curve(double p1x, double p1y, double h1x, double h1y,
 			double h2x, double h2y, double p2x, double p2y) {
-		segment1 = new Segment(p1x, p1y, 0, 0, h1x, h1y, false);
-		segment2 = new Segment(p2x, p2y, h2x, h2y, 0, 0, false);
+		segment1 = new Segment(p1x, p1y, 0, 0, h1x, h1y);
+		segment2 = new Segment(p2x, p2y, h2x, h2y, 0, 0);
 	}
 
 	/**
@@ -119,14 +119,14 @@ public class Curve {
 	}
 
 	protected void init(Point pt1, Point h1, Point h2, Point pt2) {
-		segment1 = new Segment(pt1, null, h1, false);
-		segment2 = new Segment(pt2, h2, null, false);
+		segment1 = new Segment(pt1, null, h1);
+		segment2 = new Segment(pt2, h2, null);
 	}
 
 	protected void init(double p1x, double p1y, double h1x, double h1y,
 			double h2x, double h2y, double p2x, double p2y) {
-		segment1 = new Segment(p1x, p1y, 0, 0, h1x, h1y, false);
-		segment2 = new Segment(p2x, p2y, h2x, h2y, 0, 0, false);
+		segment1 = new Segment(p1x, p1y, 0, 0, h1x, h1y);
+		segment2 = new Segment(p2x, p2y, h2x, h2y, 0, 0);
 	}
 
 	public String toString() {
@@ -271,11 +271,9 @@ public class Curve {
 		segment1.setHandleIn(segment2.getHandleOut());
 		segment1.setHandleOut(segment2.getHandleIn());
 		segment1.setPoint(segment2.getPoint());
-		segment1.setCorner(segment2.getCorner());
 		segment2.setHandleIn(tmp.getHandleOut());
 		segment2.setHandleOut(tmp.getHandleIn());
 		segment2.setPoint(tmp.getPoint());
-		segment2.setCorner(tmp.getCorner());
 	}
 
 	/*
@@ -430,7 +428,7 @@ public class Curve {
 			double y = left[3][1];
 			Segment newSegment = new Segment(x, y,
 					left[2][0] - x, left[2][1] - y,
-					right[1][0] - x, right[1][1] - y, false);
+					right[1][0] - x, right[1][1] - y);
 	
 			// and insert it, if needed:
 			if (segments != null)
