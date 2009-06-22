@@ -118,15 +118,17 @@ Method = Member.extend(new function() {
 				// See if all elements have the same amount of parameters
 				var sameParamCount = true;
 				var firstCount = -1;
+				var minCount = Number.MAX_VALUE;
 				this.methods.each(function(mem) {
 					var count = mem.parameters().length;
+					minCount = Math.min(count, minCount);
 					if (firstCount == -1) {
 						firstCount = count;
 					} else if (count != firstCount) {
 						sameParamCount = false;
-						throw $break;
 					}
 				});
+				this.minCount = minCount;
 				if (sameParamCount) {
 					// Find the suiting method: take the one with the most documentation
 					var maxTags = -1;
@@ -183,12 +185,13 @@ Method = Member.extend(new function() {
 				this[tag.parameterName()] = tag;
 			}, {});
 			// Set the links
-			return params.map(function(param) {
+			return params.map(function(param, i) {
 				return {
 					param: param,
-					tag: lookup[param.name()]
+					tag: lookup[param.name()],
+					optional: i >= this.minCount
 				}
-			});
+			}, this);
 		},
 
 		renderParameters: function() {
