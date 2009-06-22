@@ -141,18 +141,6 @@ Member = Object.extend({
 		return this.member.toString();
 	},
 
-	isStatic: function() {
-		if (this._static == undefined) {
-			this._static = this.member.isStatic();
-			// A class can define if it does not want to show static methods as static
-			var noStatics = this.member.containingClass().tags('jsnostatics')[0];
-			if (noStatics) noStatics = noStatics.text();
-			if (noStatics == 'true' || noStatics == undefined)
-				this._static = false;
-		}
-		return this._static;
-	},
-
 	isCompatible: function(mem) {
 		return this.isStatic() == mem.isStatic() && this.name() == mem.name();
 	},
