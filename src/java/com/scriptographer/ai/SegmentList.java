@@ -446,9 +446,8 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		// convert to relative values:
 		lastSegment.handleOut.set(c1x - lastSegment.point.x, c1y
 				- lastSegment.point.y);
-		lastSegment.setCorner(false);
 		// and add the new segment, with handleIn set to c2
-		add(new Segment(x, y, c2x - x, c2y - y, 0, 0, false));
+		add(new Segment(x, y, c2x - x, c2y - y, 0, 0));
 	}
 	
 	public void curveTo(Point c1, Point c2, Point pt) {
@@ -543,7 +542,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 				Point in = new Point(
 						centerX + (relx + z * rely) * radius - pt.x,
 						centerY + (rely - z * relx) * radius - pt.y);
-				add(new Segment(pt, in, out, false));
+				add(new Segment(pt, in, out));
 			}
 			angle += inc;
 		}
