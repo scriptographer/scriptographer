@@ -114,7 +114,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	private native int nativeGetStoryIndex();
 	
 	/**
-	 * Returns the story that the text range belongs to.
+	 * The story that the text range belongs to.
 	 */
 	public TextStory getStory() {
 		if (story == null)
@@ -123,12 +123,12 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 	
 	/**
-	 * Returns the first text frame of the story that this text range belongs to.
+	 * The first text frame of the story that this text range belongs to.
 	 */
 	public native TextItem getFirstFrame();
 
 	/**
-	 * Returns the last text frame of the story that this text range belongs to.
+	 * The last text frame of the story that this text range belongs to.
 	 */
 	public native TextItem getLastFrame();
 	
@@ -149,19 +149,19 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 
 	/**
-	 * Returns the index of the first character of the text range inside the
-	 * story in numbers of characters.
+	 * The index of the first character of the text range inside the story in
+	 * numbers of characters.
 	 */
 	public native int getStart();
 	
 	/**
-	 * Returns the index of the last character of the text range inside the
-	 * story in numbers of characters.
+	 * The index of the last character of the text range inside the story in
+	 * numbers of characters.
 	 */
 	public native int getEnd();
 	
 	/**
-	 * Returns the length of the story in number of characters.
+	 * The length of the story in number of characters.
 	 */
 	public native int getLength();
 
@@ -338,8 +338,8 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 	
 	/**
-	 * Returns the point location where the text range starts within the
-	 * Illustrator document.
+	 * The point location where the text range starts within the Illustrator
+	 * document.
 	 */
 	public native Point[] getOrigins();
 	public native Matrix[] getTransformations();
@@ -426,11 +426,10 @@ public class TextRange extends DocumentObject implements Commitable {
 	public native void fitHeadlines();
 	
 	private native int nativeGetCharacterType();
+	
 	/**
-	 * Returns the character type of the text range.
+	 * The character type of the text range.
 	 * This range has to be of size equal to 1 character.
-	 * 
-	 * @return TextRange.CHAR_*
 	 */
 	public CharacterType getCharacterType() {
 		return IntegerEnumUtils.get(CharacterType.class,
@@ -455,16 +454,16 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 
 	/**
-	 * Returns a list of text ranges of the words contained within this text
-	 * range. Note that the returned text range includes the trailing whitespace
-	 * characters of the words.
+	 * The text ranges of the words contained within the text range. Note that
+	 * the returned text range includes the trailing whitespace characters of
+	 * the words.
 	 * 
-	 * Sample code: 
+	 * Sample code:
 	 * <code>
 	 * var text = new PointText(new Point(0,0));
-	 * text.content = "The contents of the point text.";
+	 * text.content = 'The contents of the point text.';
 	 * var word = text.range.words[1];
-	 * print(word.content) //returns 'contents ' - note the space after 'contents';
+	 * print(word.content) // 'contents ' - note the space after 'contents';
 	 * </code>
 	 */
 	public ReadOnlyList getWords() {
@@ -475,14 +474,16 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 
 	/**
-	 * Returns a list of text ranges of the paragraphs contained within
-	 * this text range. Note that the returned text range includes the
-	 * trailing paragraph (\r) characters of the paragraphs.
+	 * The text ranges of the paragraphs contained within the text range. Note
+	 * that the returned text range includes the trailing paragraph (\r)
+	 * characters of the paragraphs.
 	 * 
 	 * Sample code:
 	 * <code>
 	 * var text = new PointText(new Point(0,0));
-	 * text.content = "First paragraph\rSecond paragraph"; // "\r" is the escaped character that specifies a new paragraph.
+	 * 
+	 * // ('\r' is the escaped character that specifies a new paragraph)
+	 * text.content = 'First paragraph\rSecond paragraph';
 	 * var paragraph = text.range.paragraphs[1];
 	 * print(paragraph.content) //returns 'Second paragraph';
 	 * </code>
@@ -495,8 +496,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 
 	/**
-	 * Returns a list of text ranges of the characters contained within
-	 * this text range.
+	 * The text ranges of the characters contained within the text range.
 	 * 
 	 * Sample code:
 	 * <code>
