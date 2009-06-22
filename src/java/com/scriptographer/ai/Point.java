@@ -431,7 +431,7 @@ public class Point {
 	}
 
 	/**
-	 * Checks whether the point is inside the boundaries of the rectangle
+	 * Checks whether the point is inside the boundaries of the rectangle.	
 	 * 
 	 * @param rect the rectangle to check against
 	 * @return {@true if the point is inside the rectangle}
@@ -441,7 +441,7 @@ public class Point {
 	}
 
 	/**
-	 * Checks if the point is within a given distance of another point
+	 * Checks if the point is within a given distance of another point.
 	 * 
 	 * @param point the point to check against
 	 * @param tolerance the maximum distance allowed
@@ -449,6 +449,17 @@ public class Point {
 	 */
 	public boolean isClose(Point point, double tolerance) {
 		return getDistance(point) < tolerance;
+	}
+
+	/**
+	 * Checks if the vector represented by this point is parallel (collinear) to
+	 * another vector.
+	 * 
+	 * @param point the vector to check against
+	 * @return {@true if it is parallel}
+	 */
+	public boolean isParallel(Point point) {
+		return Math.abs(x / point.x - y / point.y) < 0.00001;
 	}
 	
 	/**

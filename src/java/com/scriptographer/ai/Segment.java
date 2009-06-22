@@ -50,7 +50,7 @@ public class Segment implements Commitable {
 	protected SegmentPoint point;
 	protected SegmentPoint handleIn;
 	protected SegmentPoint handleOut;
-	// Corner
+	// Corner (hidden to the API, but needed for AI)
 	protected boolean corner;
 	// The selection state is fetched the first time it's used
 	protected short selectionState = SELECTION_FETCH;
@@ -74,37 +74,24 @@ public class Segment implements Commitable {
 		SELECTION_HANDLE_BOTH = 4;
 
 	public Segment() {
-		init(0, 0, 0, 0, 0, 0, false);
-	}
-
-	public Segment(double x, double y, double inX, double inY, double outX,
-			double outY, boolean corner) {
-		init(x, y, inX, inY, outX, outY, corner);
+		init(0, 0, 0, 0, 0, 0);
 	}
 
 	public Segment(double x, double y, double inX, double inY, double outX,
 			double outY) {
-		init(x, y, inX, inY, outX, outY, false);
+		init(x, y, inX, inY, outX, outY);
 	}
 
 	public Segment(double x, double y) {
-		init(x, y, 0, 0, 0, 0, false);
-	}
-
-	public Segment(Point pt, Point in, Point out, boolean corner) {
-		init(pt, in, out, corner);
+		init(x, y, 0, 0, 0, 0);
 	}
 
 	public Segment(Point pt, Point in, Point out) {
-		init(pt, in, out, false);
+		init(pt, in, out);
 	}
 	
 	public Segment(Point pt) {
-		init(pt.x, pt.y, 0, 0, 0, 0, false);
-	}
-
-	public Segment(Segment segment) {
-		init(segment.point, segment.handleIn, segment.handleOut, segment.corner);
+		init(pt, null, null);
 	}
 
 	/**
@@ -118,8 +105,7 @@ public class Segment implements Commitable {
 			init(
 					point,
 					getPoint(reader, "handleIn", false),
-					getPoint(reader, "handleOut", false),
-					reader.readBoolean("corner", false)
+					getPoint(reader, "handleOut", false)
 				);
 		} else {
 			if (reader.isHash()) {
@@ -127,7 +113,7 @@ public class Segment implements Commitable {
 					init(
 						reader.readDouble("x", 0),
 						reader.readDouble("y", 0),
-						0, 0, 0, 0, false
+						0, 0, 0, 0
 					);
 				} 
 			} else {
@@ -137,11 +123,15 @@ public class Segment implements Commitable {
 					reader.readDouble(0),
 					reader.readDouble(0),
 					reader.readDouble(0),
-					reader.readDouble(0),
-					reader.readBoolean(false)
+					reader.readDouble(0)
 				);		
 			}
 		}
+	}
+
+	private static Point getPoint(ArgumentReader reader, String name, boolean allowNull) {
+		Point point = (Point) reader.readObject(name, Point.class);
+		return allowNull || point != null ? point : new Point();
 	}
 
 	protected Segment(SegmentList segments, int index) {
@@ -150,24 +140,28 @@ public class Segment implements Commitable {
 		this.index = index;
 	}
 
-	private static Point getPoint(ArgumentReader reader, String name, boolean allowNull) {
-		Point point = (Point) reader.readObject(name, Point.class);
-		return allowNull || point != null ? point : new Point();
+	public Segment(Segment segment) {
+		point = new SegmentPoint(this, 0, segment.point);
+		handleIn = new SegmentPoint(this, 2, segment.handleIn);
+		handleOut = new SegmentPoint(this, 4, segment.handleOut);
+		corner = segment.corner;
 	}
 
 	protected void init(double x, double y, double inX, double inY, double outX,
-			double outY, boolean corner) {
+			double outY) {
 		point = new SegmentPoint(this, 0, x, y);
 		handleIn = new SegmentPoint(this, 2, inX, inY);
 		handleOut = new SegmentPoint(this, 4, outX, outY);
-		this.corner = corner;
+		// Calculate corner accordingly
+		corner = !handleIn.isParallel(handleOut);
 	}
 
-	protected void init(Point pt, Point in, Point out, boolean corner) {
+	protected void init(Point pt, Point in, Point out) {
 		point = new SegmentPoint(this, 0, pt);
 		handleIn = new SegmentPoint(this, 2, in);
 		handleOut = new SegmentPoint(this, 4, out);
-		this.corner = corner;
+		// Calculate corner accordingly
+		corner = !handleIn.isParallel(handleOut);
 	}
 
 	/**
@@ -282,8 +276,6 @@ public class Segment implements Commitable {
 			buf.append(", handleIn: ").append(handleIn.toString());
 		if (handleOut.x != 0 || handleOut.y != 0)
 			buf.append(", handleOut: ").append(handleOut.toString());
-		if (corner)
-			buf.append(", corner: true ");
 		buf.append(" }");
 		return buf.toString();
 	}
@@ -312,6 +304,8 @@ public class Segment implements Commitable {
 
 	public void setHandleIn(Point pt) {
 		handleIn.set(pt);
+		// Update corner accordingly
+		corner = !handleIn.isParallel(handleOut);
 	}
 
 	public void setHandleIn(double x, double y) {
@@ -325,21 +319,12 @@ public class Segment implements Commitable {
 
 	public void setHandleOut(Point pt) {
 		handleOut.set(pt);
+		// Update corner accordingly
+		corner = !handleIn.isParallel(handleOut);
 	}
 
 	public void setHandleOut(double x, double y) {
 		handleOut.set(x, y);
-	}
-
-	public boolean getCorner() {
-		update();
-		return corner;
-	}
-
-	public void setCorner(boolean corner) {
-		update();
-		this.corner = corner;
-		markDirty(DIRTY_POINTS);
 	}
 
 	protected boolean isSelected(SegmentPoint pt) {
@@ -437,6 +422,6 @@ public class Segment implements Commitable {
 
 	public Object clone() {
 		update();
-		return new Segment(point, handleIn, handleOut, corner);
+		return new Segment(this);
 	}
 }

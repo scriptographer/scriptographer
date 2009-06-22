@@ -46,7 +46,7 @@ public class SegmentPoint extends Point {
 	}
 
 	protected SegmentPoint(Segment segment, int index, Point pt) {
-		super(pt != null ? pt : new Point());
+		super(pt);
 		this.segment = segment;
 		this.index = index;
 	}
