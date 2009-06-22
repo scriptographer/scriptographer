@@ -46,12 +46,12 @@ the beginning of the rendering of this template, in order for data.group stuff t
 
 <% #parameters -%>
 <% if this.getParameters %>
-<% foreach $param in this.getParameters() prefix='<div class="member-paragraph"><b>Parameters:</b>' suffix='</div>' %>
-<div><tt><%= $param.name() %>: </tt><%= $param.paramType().renderLink() -%>
-<% if $param.tag %>
-<% tags classDoc=param.classDoc tags=$param.tag.inlineTags() prefix=" - " -%>
+<% foreach $entry in this.getParameters() prefix='<div class="member-paragraph"><b>Parameters:</b>' suffix='</div>' %>
+<div><tt><%= $entry.param.name() %>: </tt><%= $entry.param.paramType().renderLink() -%>
+<% if $entry.tag %>
+<% tags classDoc=param.classDoc tags=$entry.tag.inlineTags() prefix=" - " -%>
 <% end %>
-<%= $param.paramType().renderAdditional() -%>
+<%= $entry.param.paramType().renderAdditional() -%>
 </div>
 <% end %>
 <% end %>

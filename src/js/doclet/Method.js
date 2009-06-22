@@ -178,17 +178,17 @@ Method = Member.extend(new function() {
 
 		getParameters: function() {
 			var params = this.member.parameters();
-			if (params.length) {
-				// Link parameters to original parameter tags:
-				var lookup = this.member.paramTags().each(function(tag) {
-					this[tag.parameterName()] = tag;
-				}, {});
-				// Set the links
-				params.each(function(param) {
-					param.tag = lookup[param.name()];
-				});
-				return params;
-			}
+			// Link parameters to original parameter tags:
+			var lookup = this.member.paramTags().each(function(tag) {
+				this[tag.parameterName()] = tag;
+			}, {});
+			// Set the links
+			return params.map(function(param) {
+				return {
+					param: param,
+					tag: lookup[param.name()]
+				}
+			});
 		},
 
 		renderParameters: function() {
