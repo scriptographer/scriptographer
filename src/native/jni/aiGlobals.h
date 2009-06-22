@@ -32,7 +32,7 @@ extern AIDocumentHandle gActiveDoc;
 extern AIDocumentHandle gCreationDoc;
 
 bool Item_isValid(AIArtHandle art);
-short Item_getType(AIArtHandle handle);
+short Item_getType(AIArtHandle art);
 short Item_getType(JNIEnv *env, jclass cls);
 jboolean Item_hasChildren(AIArtHandle handle);
 jboolean Item_isLayer(AIArtHandle handle);
@@ -41,7 +41,7 @@ AIArtSet Item_getSelected(bool filter = true);
 void Item_restoreSelected(AIArtSet set, bool dispose = true);
 void Item_activateDocument(JNIEnv *env, AIArtSet set);
 AIArtHandle Item_rasterize(AIArtSet set, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
-AIArtHandle Item_rasterize(AIArtHandle handle, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
+AIArtHandle Item_rasterize(AIArtHandle art, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 AIArtHandle Item_getInsertionPoint(short *paintOrder, AIDocumentHandle doc = NULL);
 void Item_commit(JNIEnv *env, AIArtHandle art, bool invalidate = false, bool children = true);
 	

@@ -1234,12 +1234,13 @@ public abstract class Item extends DocumentObject {
 				? super.toString()
 				: getClass().getSimpleName() + " (" +  getName() + ")";
 	}
-		
+
+
 	private native Raster nativeRasterize(int type, float resolution,
 			int antialiasing, float width, float height);
-	
 	/**
-	 * Rasterizes the item. The item itself is not removed after rasterization.
+	 * Rasterizes the item into a newly created Raster object. The item itself
+	 * is not removed after rasterization.
 	 * 
 	 * @param type the color mode of the raster {@default same as document}
 	 * @param resolution the resolution of the raster in dpi {@default 72}
@@ -1269,10 +1270,20 @@ public abstract class Item extends DocumentObject {
 	public Raster rasterize() {
 		return rasterize(null, 72, 4, -1, -1);
 	}
-
 	private static native Raster nativeRasterize(Item[] items, int type, float resolution,
 			int antialiasing, float width, float height);
-	
+
+	/**
+	 * Rasterizes the passed items into a newly created Raster object. The items
+	 * are not removed after rasterization.
+	 * 
+	 * @param type the color mode of the raster {@default same as document}
+	 * @param resolution the resolution of the raster in dpi {@default 72}
+	 * @param antialiasing the amount of anti-aliasing {@default 4}
+	 * @param width {@default automatic}
+	 * @param height {@default automatic}
+	 * @return the newly created Raster object
+	 */
 	public static Raster rasterize(Item[] items, ColorType type, float resolution, int antialiasing,
 			float width, float height) {
 		return nativeRasterize(items, type != null ? type.value : -1, resolution,

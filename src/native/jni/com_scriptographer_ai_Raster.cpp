@@ -237,7 +237,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Raster_nativeConvert(JNIEnv *e
 
 		// see wether the raster contains some data:
 		if (data->info.byteWidth > 0) {
-			// convert the raster by rasterizing it again and then exchange the
+			// Convert the raster by rasterizing it again and then exchange the
 			// old art by the new one:
 			// TODO: check wether the old art needs to be removed?
 			art = Item_rasterize(art, (AIRasterizeType) type, 0, 0, scaledWidth, scaledHeight);

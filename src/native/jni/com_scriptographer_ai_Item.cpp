@@ -182,8 +182,11 @@ void Item_activateDocument(JNIEnv *env, AIArtSet set) {
 		AIArtHandle art = NULL;
 		if (!sAIArtSet->IndexArtSet(set, 0, &art)) {
 			jobject obj = gEngine->getIfWrapped(env, art);
-			if (obj != NULL)
+			if (obj != NULL) {
 				gEngine->getDocumentHandle(env, obj, true);
+				// Break since we're done.
+				break;
+			}
 		}
 	}
 }
