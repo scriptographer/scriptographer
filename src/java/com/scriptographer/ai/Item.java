@@ -1247,7 +1247,7 @@ public abstract class Item extends DocumentObject {
 	 * @param antialiasing the amount of anti-aliasing {@default 4}
 	 * @param width {@default automatic}
 	 * @param height {@default automatic}
-	 * @return
+	 * @return the newly created Raster item
 	 */
 	public Raster rasterize(ColorType type, float resolution, int antialiasing,
 			float width, float height) {
@@ -1282,7 +1282,7 @@ public abstract class Item extends DocumentObject {
 	 * @param antialiasing the amount of anti-aliasing {@default 4}
 	 * @param width {@default automatic}
 	 * @param height {@default automatic}
-	 * @return the newly created Raster object
+	 * @return the newly created Raster item
 	 */
 	public static Raster rasterize(Item[] items, ColorType type, float resolution, int antialiasing,
 			float width, float height) {
@@ -1337,7 +1337,7 @@ public abstract class Item extends DocumentObject {
 	 * 
 	 * @param flags
 	 * @param steps the amount of steps for gradient, when the
-	 *       {@code "gradient-to-paths"} flag is passed
+	 *       {@code 'gradient-to-paths'} flag is passed
 	 * @return the newly created item containing the expanded artwork
 	 */
 	public Item expand(EnumSet<ExpandFlag> flags, int steps) {
