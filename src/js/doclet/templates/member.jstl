@@ -52,6 +52,7 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% tags classDoc=param.classDoc tags=$entry.tag.inlineTags() prefix=" - " -%>
 <% end %>
 <%= $entry.param.paramType().renderAdditional() -%>
+<% default prefix=' - ' -%>
 </div>
 <% end %>
 <% end %>

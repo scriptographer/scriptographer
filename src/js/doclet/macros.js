@@ -13,3 +13,9 @@ function tags_macro(param) {
 	delete param.suffix;
 	return renderTags(param);
 }
+
+function default_macro(param) {
+	var value = data.defaultValue;
+	data.defaultValue = null;
+	return value;
+}

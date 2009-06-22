@@ -24,7 +24,7 @@ Tag = Object.extend(new function() {
 					return tag.render.apply(this, arguments);
 				} else {
 					// Default
-					return this.text();
+					return name && name[0] == '@' ? name.substring(1) + ' ' + this.text() : this.text();
 				}
 			}
 		});
@@ -79,7 +79,7 @@ BooleanTag = Tag.extend({
 	_names: '@boolean,@true',
 
 	render: function(param) {
-		return '<code>true</code> ' + this.text() + ', <code>false</code> otherwise';
+		return '<tt>true</tt> ' + this.text() + ', <tt>false</tt> otherwise';
 	}
 });
 
@@ -87,6 +87,17 @@ CodeTag = Tag.extend({
 	_names: '@code',
 
 	render: function(param) {
-		return '<code>' + this.text() + '</code> ';
+		return '<tt>' + this.text() + '</tt> ';
+	}
+});
+
+DefaultTag = Tag.extend({
+	_names: '@default',
+
+	render: function(param) {
+		var value = this.text();
+		if (/^([^a-z]|true|false|null|undefined)/.test(value))
+			value = '<tt>' + value + '</tt>';
+		data.defaultValue = 'optional, default: ' + value;
 	}
 });
