@@ -359,7 +359,7 @@ public abstract class Item extends DocumentObject {
 	}
 	
 	/**
-	 * Returns the item that this item is contained within.
+	 * The item that this item is contained within.
 	 * 
 	 * Sample code:
 	 * <code>
@@ -374,32 +374,32 @@ public abstract class Item extends DocumentObject {
 	public native Item getParent();
 
 	/**
-	 * Returns the item's parent layer, if any.
+	 * The item's parent layer, if any.
 	 */
 	public native Layer getLayer();
 
 	/**
-	 * Returns the first item contained within this item.
+	 * The first item contained within this item.
 	 */
 	public native Item getFirstChild();
 
 	/**
-	 * Returns the last item contained within this item.
+	 * The last item contained within this item.
 	 */
 	public native Item getLastChild();
 	
 	/**
-	 * Returns the next item on the same level as this item.
+	 * The next item on the same level as this item.
 	 */
 	public native Item getNextSibling();
 
 	/**
-	 * Returns the previous item on the same level as this item.
+	 * The previous item on the same level as this item.
 	 */
 	public native Item getPreviousSibling();
 
 	/**
-	 * Returns an array of items contained within this item.
+	 * The children items contained within this item.
 	 * 
 	 * Sample code:
 	 * <code>
@@ -452,7 +452,7 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * Removes all the items contained within the item.
+	 * Removes all the children items contained within the item.
 	 * 
 	 * @return {@true if removing was successful}
 	 */
@@ -469,7 +469,7 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * Checks if the item has children.
+	 * Checks if the item contains any children items.
 	 * 
 	 * @return {@true if it has one or more children}
 	 */
@@ -538,7 +538,7 @@ public abstract class Item extends DocumentObject {
 	private ItemPoint position = null;
 
 	/**
-	 * The item's position. This is the center of the bounds rectangle.
+	 * The item's position within the art board. This is the {@link Rectangle#getCenter()} of the {@link Item#bounds} rectangle.
 	 * 
 	 * Sample code:
 	 * <code>
@@ -591,7 +591,7 @@ public abstract class Item extends DocumentObject {
 	public native void setName(String name);
 	
 	/**
-	 * Checks if the item's name as it appears in the layers palette is a
+	 * Checks if the name of the item as it appears in the layers palette is a
 	 * default descriptive name, rather then a user-assigned name.
 	 * 
 	 * Sample code:
@@ -604,7 +604,7 @@ public abstract class Item extends DocumentObject {
 	 * print(path.isDefaultName()); // false
 	 * </code>
 	 * 
-	 * @return {@true if it's name is default}
+	 * @return {@true if the item has a default name}
 	 */
 	public native boolean isDefaultName();
 
@@ -615,11 +615,10 @@ public abstract class Item extends DocumentObject {
 	 * <code>
 	 * var circle = new Path.Circle(new Point(10, 10), 10);
 	 * circle.style = {
-	 *  	fillColor: new RGBColor(1, 0, 0),
-	 * 		strokeColor: new RGBColor(0, 1, 0),
-	 * 		strokeWidth: 5
+	 * 	fillColor: new RGBColor(1, 0, 0),
+	 * 	strokeColor: new RGBColor(0, 1, 0),
+	 * 	strokeWidth: 5
 	 * };
-	 * 
 	 * </code>
 	 * @return
 	 */
@@ -755,7 +754,9 @@ public abstract class Item extends DocumentObject {
 	 */
 
 	/**
-	 * A boolean value that specifies whether the center point of the item is visible.
+	 * A boolean value that specifies whether the center point of the item is
+	 * visible.
+	 * @jshide
 	 */
 	public native boolean isCenterVisible();
 	public native void setCenterVisible(boolean centerVisible);
@@ -772,17 +773,18 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * A boolean value that specifies whether an item is selected.
-	 * Returns true if the item is selected or partially selected (groups with
-	 * some selected objects/partially selected paths), false otherwise.
+	 * Specifies whether an item is selected.
 	 * 
 	 * Sample code:
 	 * <code>
-	 * print(activeDocument.selectedItems.length) // returns 0
-	 * var path = new Path(); // new items are always created in the active layer
+	 * print(document.selectedItems.length); // 0
+	 * var path = new Path();
 	 * path.selected = true; // select the path
-	 * print(activeDocument.selectedItems.length) // returns 1
+	 * print(document.selectedItems.length) // 1
 	 * </code>
+	 * 
+	 * @return {true if the item is selected or partially selected (groups with
+	 * some selected items/partially selected paths)}
 	 */
 	public boolean isSelected() {
 		return getAttribute(ItemAttribute.SELECTED);
@@ -793,9 +795,11 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * A boolean value that specifies whether the item is fully
-	 * selected. For paths this means that all segments are selected,
-	 * for container objects all children are selected.
+	 * Specifies whether the item is fully selected. For paths this means that
+	 * all segments are selected, for container items (groups/layers) all children are
+	 * selected.
+	 * 
+	 * @return {@true if the item is fully selected}
 	 */
 	public boolean isFullySelected() {
 		return getAttribute(ItemAttribute.FULLY_SELECTED);
@@ -806,7 +810,8 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * A boolean value that specifies whether the item is locked.
+	 * Specifies whether the item is locked.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var path = new Path();
@@ -814,6 +819,8 @@ public abstract class Item extends DocumentObject {
 	 * path.locked = true; // locks the path
 	 * print(path.locked) // returns true
 	 * </code>
+	 * 
+	 * @return {@true if the item is locked}
 	 */
 	public boolean isLocked() {
 		return getAttribute(ItemAttribute.LOCKED);
@@ -824,15 +831,17 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * A boolean value that specifies whether the item is visible.
+	 * Specifies whether the item is visible.
+	 * 
 	 * Sample code:
-	 *
 	 * <code>
 	 * var path = new Path();
 	 * print(path.visible) // returns true
 	 * path.visible = false; // hides the path
 	 * print(path.visible) // returns false
 	 * </code>
+	 * 
+	 * @return {@true if the item is visible}
 	 */
 	public boolean isVisible() {
 		return !getAttribute(ItemAttribute.HIDDEN);
@@ -843,15 +852,17 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * A boolean value that specifies whether the item is hidden.
+	 * Specifies whether the item is hidden.
+	 * 
 	 * Sample code:
-	 *
 	 * <code>
 	 * var path = new Path();
-	 * print(path.hidden) // returns false
+	 * print(path.hidden); // returns false
 	 * path.hidden = true; // hides the path
-	 * print(path.hidden) // returns true
+	 * print(path.hidden); // returns true
 	 * </code>
+	 * 
+	 * @return {@true if the item is hidden}
 	 */
 	public final boolean isHidden() {
 		return !isVisible();
@@ -862,17 +873,19 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * A boolean value that specifies whether the item defines a clip mask.
-	 * This can only be set on paths, compound paths, and text frame objects,
-	 * and only if the item is already contained within a clipping group.
+	 * Specifies whether the item defines a clip mask. This can only be set on
+	 * paths, compound paths, and text frame objects, and only if the item is
+	 * already contained within a clipping group.
+	 * 
 	 * Sample code:
-	 *
 	 * <code>
 	 * var group = new Group();
 	 * group.appendChild(path);
 	 * group.clipped = true;
 	 * path.clipMask = true;
 	 * </code>
+	 * 
+	 * @return {@true if the item defines a clip mask}
 	 */
 	public boolean isClipMask() {
 		return getAttribute(ItemAttribute.CLIPMASK);
@@ -883,25 +896,28 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
+	 * Checks whether the item is editable.
+	 * 
 	 * Returns {@true when neither the item, nor it's parents are locked or hidden}
 	 */
 	public native boolean isEditable();
 
-	/**
-	 * The item's blend mode as specified by the {@code Item.BLEND_*} static
-	 * properties.
-	 * 
-	 * @return any of Item.BLEND_*
-	 */
 	private native int nativeGetBlendMode();
 
-	/**
-	 * Set the item's blend mode:
-	 * 
-	 * @param mode Item.BLEND_*
-	 */
 	private native void nativeSetBlendMode(int mode);
 
+	/**
+	 * The blend mode of the item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var circle = new Path.Circle(new Point(50, 50), 10);
+	 * print(circle.blendMode); // normal
+	 * 
+	 * // Change the blend mode of the path item:
+	 * circle.blendMode = 'multiply';
+	 * </code>
+	 */
 	public BlendMode getBlendMode() {
 		return (BlendMode) IntegerEnumUtils.get(BlendMode.class,
 				nativeGetBlendMode());
@@ -912,7 +928,9 @@ public abstract class Item extends DocumentObject {
 	}
 
 	/**
-	 * A value between 0 and 1 that specifies the opacity of the item.
+	 * The opacity of the item.
+	 * 
+	 * @return the opacity of the item as a value between 0 and 1.
 	 */
 	public native float getOpacity();
 
@@ -959,17 +977,16 @@ public abstract class Item extends DocumentObject {
 	public native boolean isValid();
 
 	/**
-	 * Inserts the specified item as a child of this item by appending it to the
+	 * Inserts the specified item as a child of the item by appending it to the
 	 * list of children and moving it above all other children.
-	 * 
 	 * You can use this function for groups, compound paths and layers.
-	 * Sample code:
 	 * 
+	 * Sample code:
 	 * <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendTop(path);
-	 * print(path.isDescendant(group)) // returns true
+	 * print(path.isDescendant(group)); // true
 	 * </code>
 	 * 
 	 * @param item The item that will be appended as a child
@@ -979,15 +996,14 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * Inserts the specified item as a child of this item by appending it to the
 	 * list of children and moving it below all other children.
-	 * 
 	 * You can use this function for groups, compound paths and layers.
-	 * Sample code:
 	 * 
+	 * Sample code:
 	 * <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendTop(path);
-	 * print(path.isDescendant(group)) // returns true
+	 * print(path.isDescendant(group)); // true
 	 * </code>
 	 * 
 	 * @param item The item that will be appended as a child
@@ -1005,13 +1021,14 @@ public abstract class Item extends DocumentObject {
 	
 	/**
 	 * Moves this item above the specified item.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
-	 * print(firstPath.isAbove(secondPath)) // returns false
+	 * print(firstPath.isAbove(secondPath)); // false
 	 * firstPath.moveAbove(secondPath);
-	 * print(firstPath.isAbove(secondPath)) // returns true
+	 * print(firstPath.isAbove(secondPath)); // true
 	 * </code>
 	 * 
 	 * @param item The item above which it should be moved
@@ -1021,12 +1038,14 @@ public abstract class Item extends DocumentObject {
 	
 	/**
 	 * Moves the item below the specified item.
+	 * 
+	 * Sample code:
 	 * <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
-	 * print(secondPath.isBelow(firstPath)) // returns false
+	 * print(secondPath.isBelow(firstPath)); // false
 	 * secondPath.moveBelow(firstPath);
-	 * print(secondPath.isBelow(firstPath)) // returns true
+	 * print(secondPath.isBelow(firstPath)); // true
 	 * </code>
 	 * 
 	 * @param item the item below which it should be moved
@@ -1037,11 +1056,12 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * Checks if this item is above the specified item in the stacking
 	 * order of the document.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
-	 * print(secondPath.isAbove(firstPath)) // returns true
+	 * print(secondPath.isAbove(firstPath)); // true
 	 * </code>
 	 * 
 	 * @param item The item to check against
@@ -1051,12 +1071,13 @@ public abstract class Item extends DocumentObject {
 	
 	/**
 	 * Checks if the item is below the specified item in the stacking
-	 * order of the document
+	 * order of the document.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
-	 * print(firstPath.isBelow(secondPath)) // returns true
+	 * print(firstPath.isBelow(secondPath)); // true
 	 * </code>
 	 * 
 	 * @param item The item to check against
@@ -1074,12 +1095,13 @@ public abstract class Item extends DocumentObject {
 
 	/**
 	 * Checks if the item is contained within the specified item.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var group = new Group();
 	 * var path = new Path();
-	 * group.appendChild(path);
-	 * print(path.isDescendant(group)); // returns true
+	 * group.appendTop(path);
+	 * print(path.isDescendant(group)); // true
 	 * </code>
 	 *
 	 * @param item The item to check against
@@ -1088,17 +1110,19 @@ public abstract class Item extends DocumentObject {
 	public native boolean isDescendant(Item item);
 
 	/**
-	 * Checks if this item is an ancestor of the specified item.
+	 * Checks if the item is an ancestor of the specified item.
+	 * 
 	 * Sample code:
 	 * <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendChild(path);
-	 * print(group.isAncestor(path)) // returns true
+	 * print(group.isAncestor(path)); // true
+	 * print(path.isAncestor(group)); // false
 	 * </code>
 	 * 
 	 * @param item the item to check against
-	 * @return {@true if it is an ancestor of the specified item}
+	 * @return {@true if the item is an ancestor of the specified item}
 	 */
 	public native boolean isAncestor(Item item);
 
@@ -1203,11 +1227,11 @@ public abstract class Item extends DocumentObject {
 	/**
 	 * Rotates the item by a given angle around the given point.
 	 * 
-	 * @param theta the rotation angle in radians
+	 * @param angle the rotation angle in radians
 	 * @see Matrix#rotate(double, Point)
 	 */
-	public void rotate(double theta, Point anchor) {
-		transform(new Matrix().rotate(theta, anchor));
+	public void rotate(double angle, Point anchor) {
+		transform(new Matrix().rotate(angle, anchor));
 	}
 
 	/**
@@ -1215,12 +1239,13 @@ public abstract class Item extends DocumentObject {
 	 * 
 	 * @param theta the rotation angle in radians
 	 */
-	public void rotate(double theta) {
-		rotate(theta, getPosition());
+	public void rotate(double angle) {
+		rotate(angle, getPosition());
 	}
 
 	/**
 	 * Shears the item with a given amount around its center point.
+	 * 
 	 * @param shx
 	 * @param shy
 	 * @see Matrix#shear(double, double)
