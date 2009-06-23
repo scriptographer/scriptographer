@@ -124,11 +124,13 @@ public class TextRange extends DocumentObject implements Commitable {
 	
 	/**
 	 * The first text frame of the story that this text range belongs to.
+	 * @jshide
 	 */
 	public native TextItem getFirstFrame();
 
 	/**
 	 * The last text frame of the story that this text range belongs to.
+	 * @jshide
 	 */
 	public native TextItem getLastFrame();
 	
@@ -161,7 +163,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	public native int getEnd();
 	
 	/**
-	 * The length of the story in number of characters.
+	 * The amount of characters in the range.
 	 */
 	public native int getLength();
 
@@ -255,16 +257,12 @@ public class TextRange extends DocumentObject implements Commitable {
 		append(text);
 	}
 	
+	// TODO: move to CharacterStyle
 	/**
-	 * The kerning between two chars in thousands of em.
-	 * TODO: move to CharacterStyle
+	 * The kerning between two characters in thousands of em.
 	 */
 	public native int getKerning();
 	
-	/**
-	 * Sets the kerning between two chars in thousands of em.
-	 * @param kerning
-	 */
 	public native void setKerning(int kerning);
 
 	/**
@@ -352,6 +350,9 @@ public class TextRange extends DocumentObject implements Commitable {
 	*/
 	
 	// TODO: needed?
+	/**
+	 * @jshide
+	 */
 	public native int getSingleGlyph();
 	
 	/**
