@@ -11,10 +11,12 @@ Member = Object.extend({
 	initialize: function(classObject, member) {
 		this.classObject = classObject;
 		this.member = member;
+		if (member)
+			Member.put(member, this);
 	},
 
 	init: function() {
-		// Nothing here, but used by Method
+		// Do nothing here. Used in Method
 	},
 
 	renderMember: function(param) {
@@ -167,22 +169,28 @@ Member = Object.extend({
 			return id;
 		},
 
-		put: function(member) {
-			// Store id in member so we do not have to rely on Memer.getId
-			// in Member.remove, since that will not work anymore as its
-			// methods list might be empty at that point already, from removing
-			// all methods from the group.
+		put: function(member, obj) {
+			if (member instanceof MemberGroup || member instanceof Method) {
+				member.members.each(function(mem) {
+					Member.put(mem, obj);
+				});
+			} else {
+				this.members[Member.getId(member)] = obj;
+			}
+		},
+
+		remove: function(member, obj) {
+			// Only remove this native member from the lookup if it still
+			// points to the same wrapper. It could be that it was assigned
+			// to a new one in the meantime, e.g. getter method -> bean.
 			var id = Member.getId(member);
-			member.id = id;
-			this.members[id] = member;
+			var val = this.members[id];
+			if (val == obj)
+				delete this.members[id];
 		},
 
 		get: function(member) {
 			return this.members[Member.getId(member)];
-		},
-
-		remove: function(member) {
-			delete this.members[member.id || Member.getId(member)];
 		},
 
 		isVisible: function(member, forceAll) {

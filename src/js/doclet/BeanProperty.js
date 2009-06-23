@@ -13,12 +13,15 @@ BeanProperty = SyntheticMember.extend({
 	initialize: function(classObject, name, getter, setters) {
 		this.base(classObject, name, getter); // this.member is the getter
 		this.setters = setters;
-		// Set setter to the one with the documentation, so isVisible uses it too
-		this.setter = setters && (setters.members.find(function(member) {
-			var tags = member.inlineTags();
-			if (tags.length)
-				return member;
-		}) || setters.members.first);
+		if (setters) {
+			Member.put(setters, this);
+			// Set setter to the one with the documentation, so isVisible uses it too
+			this.setter = setters && (setters.members.find(function(member) {
+				var tags = member.inlineTags();
+				if (tags.length)
+					return member;
+			}) || setters.members.first);
+		}
 
 		var tags = getter.inlineTags();
 		// Use the setter that was found to have documentation in the loop above
@@ -28,9 +31,8 @@ BeanProperty = SyntheticMember.extend({
 		this.seeTagList = [];
 		this.inlineTagList = [];
 		this.inlineTagList.append(tags);
-		if (!this.setter) {
+		if (!this.setter)
 			this.inlineTagList.push(new Tag('\n\nRead-only.'))
-		}
 	},
 
 	firstSentenceTags: function() {

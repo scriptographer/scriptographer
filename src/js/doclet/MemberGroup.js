@@ -26,7 +26,6 @@ MemberGroup = Object.extend({
 			// native types, use #add() above.
 			member.group = this;
 			this.members.push(member);
-			Member.put(member);
 			return true;
 		} else if (member.isField()) {
 			return this.add(new Member(this.classObject, member));
@@ -63,7 +62,6 @@ MemberGroup = Object.extend({
 			// Remove a member from this group, and the group from its parent
 			// list if its empty.
 			if (this.members.remove(member)) {
-				Member.remove(member);
 				if (this.isEmpty())
 					this.remove();
 				return true;
@@ -78,16 +76,13 @@ MemberGroup = Object.extend({
 	 * Removes all 'sub-methods' of a given method from any of the method members.
 	 * Since these can be groups of JS style compatible methods, their members
 	 * need to be iterated as well.
-	 * synthetic is an optional second parameter, to let the removed members
-	 * know the cause of their removal (a synthetic member that they are converted
-	 * into). This is used for example for @link.
 	 */
-	removeMethod: function(method, synthetic) {
+	removeMethod: function(method) {
 		if (method && method instanceof Method) {
-			method.methods.each(function(meth) {
+			method.members.each(function(meth) {
 				this.members.each(function(member) {
-					if (member instanceof Method && member.remove(meth))
-						meth.synthetic = synthetic;
+					if (member instanceof Method)
+						member.remove(meth)
 				});
 			}, this);
 		}
@@ -97,10 +92,10 @@ MemberGroup = Object.extend({
 	 * Removes all methods and sub-methods contained in the given group by
 	 * looping through its members and passing them to removeMethod.
 	 */
-	removeMethods: function(group, synthetic) {
+	removeMethods: function(group) {
 		if (group && group instanceof MemberGroup) {
 			group.members.each(function(member) {
-				this.removeMethod(member, synthetic);
+				this.removeMethod(member);
 			}, this);
 		}
 	},

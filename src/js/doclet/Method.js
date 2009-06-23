@@ -68,7 +68,7 @@ Method = Member.extend(new function() {
 		initialize: function(classObject, method) {
 			this.base(classObject);
 			this.isGrouped = false;
-			this.methods = [];
+			this.members = [];
 			this.added = {};
 			if (method)
 				this.add(method);
@@ -80,7 +80,7 @@ Method = Member.extend(new function() {
 			if (!this.added[signature]) {
 				this.added[signature] = true;
 				// See wether the new method fits the existing ones:
-				if (this.methods.find(function(mem) {
+				if (this.members.find(function(mem) {
 					return !isCompatible(mem, method);
 				})) return false;
 				// Filter out methods that do not define a concrete generic
@@ -88,7 +88,8 @@ Method = Member.extend(new function() {
 				if (type && type.bounds && type.bounds().length == 0)
 					return false;
 				this.isGrouped = true;
-				this.methods.push(method);
+				this.members.push(method);
+				Member.put(method, this);
 				// Just point method to the first of the methods, for name, signature, etc.
 				// This is corrected in init(), if grouping occurs.
 				if (!this.member)
@@ -101,9 +102,10 @@ Method = Member.extend(new function() {
 		},
 
 		remove: function(method) {
-			if (this.methods.remove(method)) {
+			if (this.members.remove(method)) {
+				Member.remove(method, this);
 				if (this.member == method)
-					this.member = this.methods.first;
+					this.member = this.members.first;
 				if (this.member) {
 					this.init();
 				} else {
@@ -119,7 +121,7 @@ Method = Member.extend(new function() {
 				var sameParamCount = true;
 				var firstCount = -1;
 				var minCount = Number.MAX_VALUE;
-				this.methods.each(function(mem) {
+				this.members.each(function(mem) {
 					var count = mem.parameters().length;
 					minCount = Math.min(count, minCount);
 					if (firstCount == -1) {
@@ -127,12 +129,12 @@ Method = Member.extend(new function() {
 					} else if (count != firstCount) {
 						sameParamCount = false;
 					}
-				});
+				}, this);
 				this.minCount = minCount;
 				if (sameParamCount) {
 					// Find the suiting method: take the one with the most documentation
 					var maxTags = -1;
-					this.methods.each(function(mem) {
+					this.members.each(function(mem) {
 						var numTags = mem.inlineTags().length;
 						if (numTags > maxTags) {
 							this.member = mem;
@@ -141,13 +143,13 @@ Method = Member.extend(new function() {
 					}, this);
 				} else {
 					// Now sort the methods by param count:
-					this.methods = this.methods.sortBy(function(mem) {
+					this.members = this.members.sortBy(function(mem) {
 						return mem.parameters().length;
 					});
-					this.member = this.methods.last;
+					this.member = this.members.last;
 				}
 			} else {
-				this.member = this.methods.first;
+				this.member = this.members.first;
 			}
 		},
 
@@ -201,7 +203,7 @@ Method = Member.extend(new function() {
 				if (this.isGrouped) {
 					var prevCount = -1;
 					var closeCount = 0;
-					this.methods.each(function(mem) {
+					this.members.each(function(mem) {
 						var params = mem.parameters();
 						var count = params.length;
 						if (count > prevCount) {
@@ -259,22 +261,22 @@ Method = Member.extend(new function() {
 			if (obj instanceof Method) {
 				// Loop through each single 'native' method and call isCompatible
 				// on it agian.
-				return obj.methods.find(function(mem) {
+				return obj.members.find(function(mem) {
 					return this.isCompatible(mem);
 				}, this);
 			} else {
-				return this.methods.find(function(mem) {
+				return this.members.find(function(mem) {
 					return isCompatible(mem, obj);
 				}, this);
 			}
 		},
 
 		isEmpty: function() {
-			return !this.methods.length;
+			return !this.members.length;
 		},
 
 		extractGetter: function() {
-			return this.methods.find(function(method) {
+			return this.members.find(function(method) {
 				if (BeanProperty.isGetter(method))
 					return method;
 			});
@@ -286,7 +288,7 @@ Method = Member.extend(new function() {
 			var setters = [];
 			var added = {};
 			for (var pass = 1; pass <= 2; ++pass) {
-				this.methods.each(function(method) {
+				this.members.each(function(method) {
 					if (!added[method.qualifiedName() + method.signature()]
 							&& BeanProperty.isSetter(method, type, pass == 2))
 						setters.push(method);
@@ -296,7 +298,7 @@ Method = Member.extend(new function() {
 		},
 
 		extractOperators: function() {
-			return this.methods.collect(function(method) {
+			return this.members.collect(function(method) {
 				if (Operator.isOperator(method))
 					return method;
 			});

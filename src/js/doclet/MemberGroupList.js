@@ -146,9 +146,9 @@ MemberGroupList = Object.extend({
 						// Make the property.
 						var bean = new BeanProperty(this.classObject, property, getter, setters);
 						if (bean.isVisible()) {
-							group.removeMethod(getter, bean);
+							group.removeMethod(getter);
 							if (setterGroup)
-								setterGroup.removeMethods(setters, bean);
+								setterGroup.removeMethods(setters);
 							fields.add(bean);
 						}
 					}
@@ -163,7 +163,7 @@ MemberGroupList = Object.extend({
 			if (operators) {
 				var operator = new Operator(this.classObject, operators);
 				if (operator.isVisible()) {
-					group.removeMethods(operators, operator);
+					group.removeMethods(operators);
 					fields.add(operator);
 				}
 			}

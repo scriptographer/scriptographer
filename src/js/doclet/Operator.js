@@ -21,6 +21,7 @@ Operator = SyntheticMember.extend(new function() {
 			var operator = operators.members[0];
 			this.base(classObject, operator.name(), operator);
 			this.operators = operators;
+			Member.put(operators, this);
 		},
 
 		name: function() {

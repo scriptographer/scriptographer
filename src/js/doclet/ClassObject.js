@@ -54,7 +54,7 @@ ClassObject = Object.extend({
 				}
 			}
 		}
-		// Only method and constructor need to call init for method parameter merging.
+		// Only method and constructor need to call init here for method parameter merging.
 		this.lists.method.init();
 		this.lists.constructor.init();
 	},

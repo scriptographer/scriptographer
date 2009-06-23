@@ -49,10 +49,10 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% foreach $entry in this.getParameters() prefix='<ul><b>Parameters:</b>' suffix='</ul>' %>
 <li><tt><%= $entry.param.name() %>: </tt><%= $entry.param.paramType().renderLink() -%>
 <% if $entry.tag %>
-<% tags classDoc=param.classDoc tags=$entry.tag.inlineTags() stripParagraphs=true prefix=' - ' -%>
+<% tags classDoc=param.classDoc tags=$entry.tag.inlineTags() stripParagraphs=true prefix=' &mdash;&nbsp;' -%>
 <% end %>
 <%= $entry.param.paramType().renderAdditional() -%>
-<% default prefix=' - ' default=<%= $entry.optional ? ' - optional' : '' %> -%>
+<% default prefix=' &mdash;&nbsp;' default=<%= $entry.optional ? ' &mdash;&nbsp;optional' : '' %> -%>
 </li>
 <% end %>
 <% end %>
@@ -70,7 +70,7 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <ul><b>Returns:</b>
 <li>
 <%= $returnType.renderLink({ additional: true }) %>
-<% foreach $tag in this.tags('return') prefix=' - ' %>
+<% foreach $tag in this.tags('return') prefix=' &mdash;&nbsp;' %>
 <% tags classDoc=param.classDoc tags=$tag.inlineTags() stripParagraphs=true -%>
 <% end %>
 </li>
@@ -81,6 +81,6 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% foreach $ex in this.throwsTags() prefix='<ul><b>Throws:</b>' suffix='</ul>' %>
 	<% $cd = $ex.exception() %>
 	<li>
-		<%= $cd ? $cd.renderLink() : $ex.exceptionName() %><% tags classDoc=$cd tags=$ex.inlineTags() prefix=' - ' %>
+		<%= $cd ? $cd.renderLink() : $ex.exceptionName() %><% tags classDoc=$cd tags=$ex.inlineTags() prefix=' &mdash;&nbsp;' %>
 	</li>
 <% end %>
