@@ -782,15 +782,14 @@ public class Document extends NativeObject {
 
 	
 	protected native HitResult nativeHitTest(Point point, int request,
-			float tolerance, Item item); 
+			float tolerance, Item item);
 
-	
 	/**
 	 * @param point
 	 * @param request
-	 * @param tolerance specified in view coordinates (i.e pixels at the current
-	 *        zoom factor). The default value is 2. The algorithm is not
-	 *        guaranteed to produce correct results for large values.
+	 * @param tolerance the hit-test tolerance in view coordinates (pixels at
+	 *        the current zoom factor). correct results for large values are not
+	 *        guaranteed {@default 2}
 	 * @return
 	 */
 	public HitResult hitTest(Point point, HitRequest request, float tolerance) {
