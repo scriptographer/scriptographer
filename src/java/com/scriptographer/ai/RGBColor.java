@@ -42,18 +42,19 @@ public class RGBColor extends Color {
 	protected float green;
 	protected float blue;
 
-	/**
-	 * The color components have values between 0 and 1
-	 * 
-	 * @param r Red
-	 * @param g Green
-	 * @param b Blue
-	 * @param a Alpha
-	 */
 	public RGBColor(float r, float g, float b) {
 		this(r, g, b, -1f);
 	}
 
+	/**
+	 * Creates an RGBColor with the supplied color component values.
+	 * The color components have values between 0 and 1.
+	 * 
+	 * @param r the amount of red
+	 * @param g the amount of green
+	 * @param b the amount of blue
+	 * @param a tha alpha value {@default 1}
+	 */
 	public RGBColor(float r, float g, float b, float a) {
 		red = r;
 		green = g;
@@ -61,6 +62,19 @@ public class RGBColor extends Color {
 		alpha = a;
 	}
 
+	/**
+	 * Creates an RGBColor using the values from the supplied array.
+	 * The color components have values between 0 and 1.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var components = [1, 0, 0];
+	 * var color = new RGBColor(components);
+	 * print(color); // { red: 1.0, green: 0.0, blue: 0.0 }
+	 * </code>
+	 * 
+	 * @param component
+	 */
 	public RGBColor(float components[]) {
 		red = components[0];
 		green = components[1];
@@ -98,6 +112,13 @@ public class RGBColor extends Color {
 		return space;
 	}
 
+	/**
+	 * Checks if the component color values of the RGBColor are the
+	 * same as those of the supplied one.
+	 * 
+	 * @param obj the RGBColor to compare with
+	 * @return {@true if the RGBColor is the same}
+	 */
 	public boolean equals(Object obj) {
 		if (obj instanceof RGBColor) {
 			RGBColor col = (RGBColor) obj;
@@ -109,6 +130,9 @@ public class RGBColor extends Color {
 		return false;
 	}
 
+	/**
+	 * A value between 0 and 1 that specifies the amount of red in the RGB color.
+	 */
 	public float getRed() {
 		return red;
 	}
@@ -117,6 +141,9 @@ public class RGBColor extends Color {
 		this.red = red;
 	}
 
+	/**
+	 * A value between 0 and 1 that specifies the amount of green in the RGB color.
+	 */
 	public float getGreen() {
 		return green;
 	}
@@ -125,6 +152,9 @@ public class RGBColor extends Color {
 		this.green = green;
 	}
 
+	/**
+	 * A value between 0 and 1 that specifies the amount of blue in the RGB color.
+	 */
 	public float getBlue() {
 		return blue;
 	}

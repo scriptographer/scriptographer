@@ -43,15 +43,6 @@ public class CMYKColor extends Color {
 	protected float yellow;
 	protected float black;
 
-	/**
-	 * Creates a CMYKColor with the supplied color component values.
-	 * The color components have values between 0 and 1
-	 * 
-	 * @param c The amount of cyan
-	 * @param m The amount of magenta
-	 * @param y The amount of yellow
-	 * @param k The amount of black
-	 */
 	public CMYKColor(float c, float m, float y, float k) {
 		this(c, m, y, k, -1f);
 	}
@@ -60,11 +51,11 @@ public class CMYKColor extends Color {
 	 * Creates a CMYKColor with the supplied color component values.
 	 * The color components have values between 0 and 1.
 	 * 
-	 * @param c The amount of cyan
-	 * @param m The amount of magenta
-	 * @param y The amount of yellow
-	 * @param k The amount of black
-	 * @param a The alpha value
+	 * @param c the amount of cyan
+	 * @param m the amount of magenta
+	 * @param y the amount of yellow
+	 * @param k the amount of black
+	 * @param a the alpha value {@default 1}
 	 */
 	public CMYKColor(float c, float m, float y, float k, float a) {
 		cyan = c;
@@ -138,7 +129,7 @@ public class CMYKColor extends Color {
 	 * Checks if the component color values of the CMYKColor are the
 	 * same as those of the supplied one.
 	 * 
-	 * @param obj The CMYKColor to compare with
+	 * @param obj the CMYKColor to compare with
 	 * @return {@true if the CMYKColor is the same}
 	 */
 	public boolean equals(Object obj) {
