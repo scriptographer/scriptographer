@@ -1,12 +1,12 @@
 <% $id = this.getId() %>
 <%= data.group.title | heading 3 %>
-<%= data.group.text prefix="<div class=\"group-text\">" suffix="</div>" %>
+<%= data.group.text prefix='<div class="group-text">' suffix='</div>' %>
 <div id="<%= $id %>" class="member">
 <div id="<%= $id %>-link" class="member-link">
 <a name="<%= $id %>" href="#" onClick="return toggleMember('<%= $id %>', false);"><%= param.collapsedTitle || $title %></a>
 </div>
 <div id="<%= $id %>-description" class="member-description hidden">
-<% this.template "#header" id=$id title=<%= param.expandedTitle || $title %> %>
+<% this.template '#header' id=$id title=<%= param.expandedTitle || $title %> %>
 <% if param.text %>
 <%= param.text %>
 <% else %>
@@ -30,12 +30,12 @@
 the beginning of the rendering of this template, in order for data.group stuff to be processed and ready above --%>
 <% $text -%>
 <% $classDoc = this.containingClass() %>
-<% tags classDoc=$classDoc tags=this.inlineTags() prefix='<div class="member-paragraph">' suffix='</div>' %>
-<% this.template "#parameters" classDoc=$classDoc %>
-<% this.template "#accepts" classDoc=$classDoc %>
-<% this.template "#return" classDoc=$classDoc %>
-<% this.template "#throws" classDoc=$classDoc %>
-<% tags classDoc=$classDoc tags=this.seeTags() prefix='<div class="member-paragraph"><b>See also:</b> ' suffix='</div>' separator=', ' %>
+<% tags classDoc=$classDoc tags=this.inlineTags() %>
+<% this.template '#parameters' classDoc=$classDoc %>
+<% this.template '#accepts' classDoc=$classDoc %>
+<% this.template '#return' classDoc=$classDoc %>
+<% this.template '#throws' classDoc=$classDoc %>
+<% tags classDoc=$classDoc tags=this.seeTags() stripParagraphs=true prefix='<p><b>See also:</b> ' suffix='</p>' separator=', ' %>
 
 <% #header -%>
 <div class="member-header">
@@ -46,41 +46,41 @@ the beginning of the rendering of this template, in order for data.group stuff t
 
 <% #parameters -%>
 <% if this.getParameters %>
-<% foreach $entry in this.getParameters() prefix='<div class="member-paragraph"><b>Parameters:</b>' suffix='</div>' %>
-<div><tt><%= $entry.param.name() %>: </tt><%= $entry.param.paramType().renderLink() -%>
+<% foreach $entry in this.getParameters() prefix='<ul><b>Parameters:</b>' suffix='</ul>' %>
+<li><tt><%= $entry.param.name() %>: </tt><%= $entry.param.paramType().renderLink() -%>
 <% if $entry.tag %>
-<% tags classDoc=param.classDoc tags=$entry.tag.inlineTags() prefix=" - " -%>
+<% tags classDoc=param.classDoc tags=$entry.tag.inlineTags() stripParagraphs=true prefix=' - ' -%>
 <% end %>
 <%= $entry.param.paramType().renderAdditional() -%>
 <% default prefix=' - ' default=<%= $entry.optional ? ' - optional' : '' %> -%>
-</div>
+</li>
 <% end %>
 <% end %>
 
 <% #accepts -%>
 <% if this.getAcceptTypes %>
-<% foreach $accept in this.getAcceptTypes() prefix='<div class="member-paragraph"><b>Accepts:</b>' suffix='</div>' %>
-<div><%= $accept.renderLink() %></div>
+<% foreach $accept in this.getAcceptTypes() prefix='<ul><b>Accepts:</b>' suffix='</ul>' %>
+<li><%= $accept.renderLink() %></li>
 <% end %>
 <% end %>
 
 <% #return -%>
 <% $returnType = this.returnType() %>
 <% if $returnType && $returnType.typeName() != 'void' %>
-<div class="member-paragraph"><b>Returns:</b>
-<div>
+<ul><b>Returns:</b>
+<li>
 <%= $returnType.renderLink({ additional: true }) %>
-<% foreach $tag in this.tags("return") prefix=" - " %>
-<% tags classDoc=param.classDoc tags=$tag.inlineTags() -%>
+<% foreach $tag in this.tags('return') prefix=' - ' %>
+<% tags classDoc=param.classDoc tags=$tag.inlineTags() stripParagraphs=true -%>
 <% end %>
-</div>
-</div> 
+</li>
+</ul> 
 <% end %>
 
 <% #throws -%>
-<% foreach $ex in this.throwsTags() prefix='<div class="member-paragraph"><b>Throws:</b>' suffix='</div>' %>
+<% foreach $ex in this.throwsTags() prefix='<ul><b>Throws:</b>' suffix='</ul>' %>
 	<% $cd = $ex.exception() %>
-	<div>
-		<%= $cd ? $cd.renderLink() : $ex.exceptionName() %><% tags classDoc=$cd tags=$ex.inlineTags() prefix=" - " %>
-	</div>
+	<li>
+		<%= $cd ? $cd.renderLink() : $ex.exceptionName() %><% tags classDoc=$cd tags=$ex.inlineTags() prefix=' - ' %>
+	</li>
 <% end %>

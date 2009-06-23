@@ -6,15 +6,29 @@
  * http://dev.scriptographer.com/ 
  */
 
+function stripTags_filter(str, param) {
+	var res = stripTags(str, param.tag);
+	return param.trim ? res.trim() : res;
+}
+
+function stripCode_filter(str) {
+	return stripTags(str, 'tt').trim();
+}
+
+function stripParagraphs_filter(str) {
+	return stripTags(str, 'p').trim();
+}
+
 function code_filter(str) {
 	return '<tt>' + str + '</tt>';
 }
 
-function stripCode_filter(str) {
-	return str.replace(/<tt>|<\/tt>/g, ' ').replace(/\\s+/g, ' ');
+function heading_filter(str, param, level) {
+	var heading = settings.headings[level];
+	return heading ? heading.open + str + heading.close : str;
 }
 
-function tags_filter(str) {
+function content_filter(str) {
 	// Replace inline <code></code> with <tt></tt>
 	str = str.replace(/<code>[ \t]*([^\n\r]*?)[ \t]*<\/code>/g, function(match, content) {
 		return '<tt>' + content + '</tt>';
@@ -33,24 +47,15 @@ function tags_filter(str) {
 	});
 	// Empty lines -> Paragraphs
 	str = str.trim().replace(/(\n|\r\n)\s*(\n|\r\n)/g, function(match, lineBreak1, lineBreak2) {
-		return lineBreak1 + '<br />' + lineBreak2;
+		return '</p>' + lineBreak1 + '<p>';
 	});
-	// Automatically put <br /> at the end of sentences with line breaks.
+	// Automatically put </p><p> at the end of sentences with line breaks.
 	str = str.trim().replace(/([.:?!;])\s*(\n|\r\n)/g, function(match, before, lineBreak) {
-		return before + '<br />' + lineBreak;
+		return before + '</p>' + lineBreak + '<p>';
 	});
-	// Filter out <br /> within <code> blocks again
-	str = str.replace(/(<code>[\u0000-\uffff]*<\/code>)/g, function(match, content) {
-		return content.replace(/<br \/>/g, '');
+	// Filter out </p><p> within and around <code> blocks again
+	str = str.replace(/((?:<p>\s*|)<code>[\u0000-\uffff]*<\/code>(?:\s*<\/p>|))/g, function(match, code) {
+		return stripTags(code, 'p');
 	});
-	return str;
-}
-
-function stripTags_filter(str) {
-	return str.replace(/<.*?>|<\/.*?>/g, ' ').replace(/\\s+/g, ' ');
-}
-
-function heading_filter(str, param, level) {
-	var heading = settings.headings[level];
-	return heading ? heading.open + str + heading.close : str;
+	return '<p>' + str + '</p>';
 }

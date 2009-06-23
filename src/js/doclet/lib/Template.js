@@ -109,7 +109,6 @@ Template.prototype = {
 		var stack = { control: [], loop: {} };
 		var buffer = [];
 		var code = [ 'this.__render__ = function(param, template, out) {' ];
-		var lineBreak = java.lang.System.getProperty('line.separator');
 		function append() {
 			if (buffer.length) {
 				var part = buffer.join('');
@@ -145,7 +144,7 @@ Template.prototype = {
 							if (skipLineBreak)
 								skipLineBreak = false;
 							else
-								buffer.push(line.substring(end), lineBreak);
+								buffer.push(line.substring(end), Template.lineBreak);
 							break;
 						}
 					} else {
@@ -174,7 +173,7 @@ Template.prototype = {
 							}
 							buffer.length = 0;
 						} else {
-							buffer.push(line.substring(start), lineBreak);
+							buffer.push(line.substring(start), Template.lineBreak);
 							break;
 						}
 					}
@@ -197,7 +196,7 @@ Template.prototype = {
 				this.tags.unshift(null);
 			}
 			code.push('}');
-			return code.join(lineBreak);
+			return code.join(Template.lineBreak);
 		} catch (e) {
 			this.throwError(e, code.length);
 		}
@@ -702,6 +701,8 @@ Template.prototype = {
 			return this.getTagFromCodeLine(e.lineNumber);
 	}
 }
+
+Template.lineBreak = java.lang.System.getProperty('line.separator');
 
 Template.methods = new function() {
 	var templates = {};

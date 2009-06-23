@@ -31,8 +31,13 @@ a:hover {
 }
 
 p {
-	margin-top: 0px;
-	margin-bottom: 17px;
+	margin: 0 0 8px 0;
+}
+
+ul {
+	margin: 0px;
+	padding: 0;
+	list-style-type: none;
 }
 
 .clear {
@@ -75,11 +80,11 @@ p {
 	background-image: url(paper.gif);
 	white-space: pre;
 	display: block;
-	margin: 8px 0 0 0;
+	margin: 0 0 8px 0;
 }
 
-.documentation-inherited {
-	margin-left: 0px;
+.documentation-list ul, .documentation-inherited ul {
+	margin-left: 14px;
 }
 
 .documentation-packages, .documentation-packages a {
@@ -89,10 +94,6 @@ p {
 
 .documentation-packages a:hover {
 	background: #e3f4fc;
-}
-
-.documentation-list {
-	margin-left: 0px;
 }
 
 .documentation-end {
@@ -131,24 +132,13 @@ p {
 
 .member-text {
 	border-top: 1px dashed #999;
-	padding: 0 8px 8px 8px;
+	padding: 8px 8px 0 8px;
 }
 
-.member-paragraph {
-	padding-top: 8px;
-}
-
-.member-comments {
-	padding-top: 14px;
-	display: none;
+.member-text ul {
+	padding-bottom: 8px;
 }
 
 .footer {
 	margin-top: 20px;
-}
-
-ul {
-	padding: 0;
-	margin: 0 0 0 14px;
-	list-style-type: none;
 }

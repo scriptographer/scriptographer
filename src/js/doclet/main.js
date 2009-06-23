@@ -250,6 +250,11 @@ function renderTags(param) {
 	return renderTemplate('tags', param);
 }
 
+function stripTags(str, tag) {
+	var tag = tag || '.*?'; // Default: all tags
+	return str.replace(new RegExp('<' + tag + '>|</' + tag + '>', 'g'), '');
+}
+
 function main() {
 	ClassObject.scan(root);
 

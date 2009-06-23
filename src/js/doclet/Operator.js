@@ -72,7 +72,7 @@ Operator = SyntheticMember.extend(new function() {
 
 			getTitle: function(member) {
 				var entry = member.getParameters()[0];
-				return '<tt><b>' + Operator.getOperator(member) + '</b> ' + stripTags_filter(entry.param.paramType().renderLink()).trim() + '</tt>';
+				return '<tt><b>' + Operator.getOperator(member) + '</b> ' + stripTags(entry.param.paramType().renderLink()).trim() + '</tt>';
 			}
 		}
 	}
