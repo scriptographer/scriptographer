@@ -49,29 +49,36 @@ public class Layer extends Item {
 	public native void setLocked(boolean locked);
 
 	/**
-	 * A boolean value that specifies whether the Layer is visible.
+	 * Specifies whether the layer is visible.
+	 * 
+	 * @return {true if the layer is visible}
 	 */
 	public native boolean isVisible();
 	public native void setVisible(boolean visible);
 
 	/**
-	 * A boolean value that sets the layer to preview ({@code true}) or outline
-	 * mode ({@code false}).
-	 * If a layer is set to outline mode, items in all it's child
-	 * layers are rendered in outline mode, regardless of their preview settings.
+	 * Specifies whether the layer is set to preview ({@code true}) or outline
+	 * mode ({@code false}). If a layer is set to outline mode, items in all
+	 * it's child layers are rendered in outline mode, regardless of their
+	 * preview settings.
+	 * 
+	 * @return {@code true} if the layer is set to preview, {@code false} if the
+	 *         layer is set to outline
 	 */
 	public native boolean getPreview();
 	public native void setPreview(boolean preview);
 
 	/**
-	 * A boolean value that specifies whether the Layer is considered printable
+	 * Specifies whether the layer is considered printable
 	 * when printing the document.
+	 * @return {@true if the layer is considered printable}
 	 */
 	public native boolean isPrinted();
 	public native void setPrinted(boolean printed);
 
 	/**
-	 * A boolean value that specifies whether the Layer is selected.
+	 * Specifies whether the layer is selected.
+	 * {@true if the layer is selected}
 	 */
 	public native boolean isSelected();
 	public native void setSelected(boolean selected);
@@ -106,10 +113,9 @@ public class Layer extends Item {
 	public native ItemList getItems();
 	
 	/**
-	 * Checks whether the Layer is active.
+	 * Checks whether the layer is active.
 	 * 
-	 * @return {@code true} if the layer is active, {@code false}
-	 *         otherwise.
+	 * @return {@true if the layer is active}
 	 */
 	public native boolean isActive();
 	
