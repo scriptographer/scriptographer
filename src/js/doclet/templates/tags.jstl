@@ -9,4 +9,4 @@
 as that would strip not only new lines, but also white spaces, which we want to keep between
 the different tags. TODO: Think of adding more control to Template.js?"
 --%>
-<% foreach $tag in param.tags prefix=param.prefix suffix=param.suffix separator=param.separator encoding="html" | content %><% $tag.render default="\n" classDoc=param.classDoc %><% end %>
+<% foreach $tag in param.tags prefix=param.prefix suffix=param.suffix separator=param.separator encoding="html" %><% $tag.render default="\n" classDoc=param.classDoc %><% end %>
