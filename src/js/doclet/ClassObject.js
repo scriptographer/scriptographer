@@ -128,23 +128,26 @@ ClassObject = Object.extend({
 
 	renderClass: function() {
 		var cd = this.classDoc, index = null;
-		if (settings.templates)
-			index = [ '"prototype": { title: "' + cd.name() + '", text: "' +
-					encodeJs(renderTags({ classDoc: cd, tags: cd.inlineTags() })) + '" }' ];
-
+		if (settings.templates) {
+			index = [ 
+				'"prototype": { title: "' + cd.name() + '", text: "' +
+				encodeJs(renderTags({ 
+					classDoc: cd, tags: cd.inlineTags()
+				})) + '" }'
+			];
+		}
 		// Determine folder + filename for class file:
 		var name = this.name();
 		var className = cd.name();
-		// name and className might differ, e.g. for global -> Global Scope!
+		// Name and className might differ, e.g. for global -> Global Scope!
 		var path = cd.qualifiedName();
-		// cut away name:
+		// Cut away name:
 		path = path.substring(0, path.length - className.length);
 		path = getRelativeIdentifier(path);
 		var doc = new Document(path, className, 'document');
-		// from now on, the global out writes to doc
 
+		// From now on, the global out writes to doc
 		this.renderTemplate('class', {}, out);
-
 		if (cd.isInterface()) {
 			var subInterfaces = [];
 			var implementingClasses = [];
@@ -167,10 +170,8 @@ ClassObject = Object.extend({
 		if (settings.summaries) {
 			if (settings.fieldSummary)
 				this.renderSummaries(cd, fields, 'Field summary');
-
 			if (settings.constructorSummary)
 				this.renderSummaries(cd, constructors, 'Constructor summary');
-
 			this.renderSummaries(cd, methods, 'Method summary');
 		}
 

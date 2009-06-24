@@ -62,7 +62,9 @@ var out = new TemplateWriter();
 
 // A global data object to store global stuff from templates / macros:
 
-var data = {};
+var data = {
+	group: {}
+};
 
 // Enhance some of the javatool classes with usefull methods:
 
@@ -157,15 +159,26 @@ function main() {
 	packageSequence.each(function(name) {
 		var pkg = packages[name];
 		if (pkg) {
+			// Write package file:
 			var path = getRelativeIdentifier(name);
-			var first = renderTags({ tags: pkg.firstSentenceTags() });
-			var text = renderTags({ tags: pkg.inlineTags() });
+			// We need to create document before rendering tags and links, so that
+			// the basePath is set correctly.
+			var index = !settings.templates && new Document(path, 'index', 'document');
+			var first = renderTags({ tags: pkg.firstSentenceTags(), packageDoc: pkg });
+			var text = renderTags({ tags: pkg.inlineTags(), packageDoc: pkg });
 			// Remove the first sentence from the main text, and use it as a title
 			if (first && text.startsWith(first)) {
 				text = text.substring(first.length);
 				first = stripParagraphs_filter(first);
 				if (/\.$/.test(first))
 					first = first.substring(0, first.length - 1); // cut away dot
+			}
+			if (index) {
+				renderTemplate('package', {
+					title: first,
+					text: text
+				}, out);
+				index.close();
 			}
 
 			out.push();
@@ -174,19 +187,13 @@ function main() {
 			processClasses(pkg.exceptions());
 			processClasses(pkg.errors());
 
-			renderTemplate('packages#package', {
-				content: out.pop(), name: name, path: path, text: text
-			}, out);
+			// Render list
+			var tag = pkg.tags('packagelist')[0];
+			var list = tag && renderTags({ tags: tag.inlineTags(), packageDoc: pkg });
 
-			if (!settings.templates) {
-				// Write package file:
-				var index = new Document(path, 'index', 'document');
-				renderTemplate('package', {
-					title: first,
-					text: text
-				}, out);
-				index.close();
-			}
+			renderTemplate('packages#package', {
+				content: out.pop(), name: name, path: path, text: text, list: list
+			}, out);
 		}
 	});
 	doc.close();

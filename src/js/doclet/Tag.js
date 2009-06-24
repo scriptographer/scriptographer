@@ -24,7 +24,9 @@ Tag = Object.extend(new function() {
 					return tag.render.apply(this, arguments);
 				} else {
 					// Default
-					return name && name[0] == '@' ? name.substring(1) + ' ' + this.text() : this.text();
+					return name && name[0] == '@'
+						? name.substring(1) + ' ' + this.text()
+						: this.text();
 				}
 			}
 		});
@@ -54,12 +56,22 @@ LinkTag = Tag.extend({
 
 	render: function(param) {
 		var ref = this.referencedMember() || this.referencedClass();
+		if (!ref) {
+			// Try to find this object in the current package
+			var pkg = param.packageDoc || param.classDoc && param.classDoc.containingPackage();
+			if (pkg) {
+				ref = pkg.findClass(this.referencedClassName());
+				// TODO: Search for referencedMemberName now too!
+			}
+		}
 		if (ref) {
 			if (!ref.isVisible())
-				error(this.position() + ': warning - ' + this.name() + ' contains reference to invisible object: ' + ref);
-			return ref.renderLink({ classDoc: param.classDoc });
+				error(this.position() + ': warning - ' + this.name() 
+						+ ' contains reference to invisible object: ' + ref);
+			return ref.renderLink(param);
 		} else {
-			error(this.position() + ': warning - ' + this.name() + ' contains undefined reference: ' + this);
+			error(this.position() + ': warning - ' + this.name()
+					+ ' contains undefined reference: ' + this);
 		}
 	}
 });
@@ -98,3 +110,11 @@ DefaultTag = Tag.extend({
 		data.defaultValue = 'optional, default: ' + value;
 	}
 });
+
+PackageListTag = Tag.extend({
+	_names: '@packagelist',
+
+	render: function(param) {
+		return this.text();
+	}
+})

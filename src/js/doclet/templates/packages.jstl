@@ -32,6 +32,7 @@ createPackage("<%= $packageName %>",
 <b><%= renderLink({ path: param.path, title: $packageName }) | stripCode %></b>
 <ul id="package-<%= $packageName %>" class="hidden">
 <%= param.content %>
+<%= param.list | stripCode %>
 </li></ul>
 <% end %>
 

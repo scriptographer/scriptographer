@@ -23,7 +23,8 @@ Member = Object.extend({
 		if (this.isVisible()) {
 			data.group = {};
 			if (param.index) {
-				param.index.push('"' + this.getId() + '": { title: "' + this.name() + '", text: "'
+				param.index.push('"' + this.getId() + '": { title: "'
+					+ this.name() + '", text: "'
 					+ encodeJs(renderTags({
 						classDoc: param.classDoc, tags: this.inlineTags()
 					}))

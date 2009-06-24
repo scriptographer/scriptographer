@@ -75,8 +75,8 @@ function renderTags(param) {
 	});
 	// Put code tags on the same line as the content, as white-space: pre is set:
 	str = str.replace(/<code>\s*([\u0000-\uffff]*?)\s*<\/code>/g, function(match, content) {
-		// Filter out the first white space at the beginning of each line, since that stems
-		// from the space after the * in the comment.
+		// Filter out the first white space at the beginning of each line, since
+		// that stems from the space after the * in the comment.
 		return '<code>' + content.replace(/(\n|\r\n) /mg, function(match, lineBreak) {
 			return lineBreak;
 		}) + '</code>';
@@ -88,6 +88,8 @@ function renderTags(param) {
 			return '</p>' + lineBreak + '<p>';
 		});
 		// Automatically put </p><p> at the end of sentences with line breaks.
+		// Match following </p> and <p> tags and swallow them. This happens when
+		// the original content contains these.
 		str = str.trim().replace(/([.:?!;])\s*(\n|\r\n)\s*(<\/p>|<p>|)/g, function(match, before, lineBreak, after) {
 			return before + '</p>' + lineBreak + '<p>';
 		});
