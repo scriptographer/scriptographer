@@ -61,7 +61,11 @@ LinkTag = Tag.extend({
 			var pkg = param.packageDoc || param.classDoc && param.classDoc.containingPackage();
 			if (pkg) {
 				ref = pkg.findClass(this.referencedClassName());
-				// TODO: Search for referencedMemberName now too!
+				if (this.referencedMemberName()) {
+					// TODO: Search for referencedMemberName now too!
+					error('ERROR: implement code to search for: ' + this.referencedMemberName());
+					ref = null;
+				}
 			}
 		}
 		if (ref) {
@@ -117,4 +121,21 @@ PackageListTag = Tag.extend({
 	render: function(param) {
 		return this.text();
 	}
-})
+});
+
+HeadingTag = Tag.extend({
+	_names: '@heading',
+
+	render: function(param) {
+		var [all, level, str] = this.text().match(/^(\d*)\s*(.*)$/);
+		if (level) return heading_filter(str, param, level);
+	}
+});
+
+RulerTag = Tag.extend({
+	_names: '@ruler',
+
+	render: function(param) {
+		return '<hr />';
+	}
+}); 

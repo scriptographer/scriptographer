@@ -40,14 +40,18 @@ function encodeHtml(str) {
 	// Encode everything
 	var Translate = Packages.org.htmlparser.util.Translate;
 	str = Translate.encode(str);
-	var tags = {
-		code: true, br: true, p: true, b: true, a: true, i: true,
-		ol: true, li: true, ul: true, tt: true, pre: true
-	};
+	if (!encodeHtml.tags) {
+		var tags = ['code', 'br', 'p', 'b', 'a', 'i', 'ol', 'li', 'ul', 'tt', 'pre', 'hr'];
+		for (var i = 1; i <= 4; i++)
+			tags.push('h' + i);
+		encodeHtml.tags = tags.each(function(tag) {
+			this[tag] = true;
+		}, {});
+	}
 	// Now replace allowed tags again.
 	return str.replace(/&lt;(\/?)(\w*)(.*?)(\s*\/?)&gt;/g, function(match, open, tag, content, close) {
 		tag = tag.toLowerCase();
-		return tags[tag] ? '<' + open + tag + Translate.decode(content) + close + '>' : match;
+		return encodeHtml.tags[tag] ? '<' + open + tag + Translate.decode(content) + close + '>' : match;
 	});
 }
 

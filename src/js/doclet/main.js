@@ -126,7 +126,49 @@ function processClasses(classes) {
 			superclass.classObj.addChild(cd.classObj);
 		}
 	});
-	root.renderHierarchy('');
+	root.renderHierarchy(true);
+}
+
+function processPackage(pkg) {
+	var name = pkg.name();
+	// Write package file:
+	var path = getRelativeIdentifier(name);
+	// We need to create document before rendering tags and links, so that
+	// the basePath is set correctly.
+	var index = !settings.templates && new Document(path, 'index', 'document');
+	var first = renderTags({ tags: pkg.firstSentenceTags(), packageDoc: pkg });
+	var text = renderTags({ tags: pkg.inlineTags(), packageDoc: pkg });
+	// Remove the first sentence from the main text, and use it as a title
+	if (first && text.startsWith(first)) {
+		text = text.substring(first.length);
+		first = stripParagraphs_filter(first);
+		if (/\.$/.test(first))
+			first = first.substring(0, first.length - 1); // cut away dot
+	}
+	if (index) {
+		renderTemplate('package', {
+			title: first,
+			text: text
+		}, out);
+		index.close();
+	}
+
+	// Processing the classes also renders the hierarchy thorugh renderHierarchy
+	out.push();
+	processClasses(pkg.interfaces());
+	processClasses(pkg.allClasses(true));
+	processClasses(pkg.exceptions());
+	processClasses(pkg.errors());
+	var hierarchy = out.pop();
+	// Render classes list
+	var classes = pkg.tags('classes')[0];
+	classes = classes && renderTags({
+		tags: classes.inlineTags(), packageDoc: pkg, stripParagraphs: true
+	}).split(/\r\n|\n|\r/mg);
+	renderTemplate('packages#package', {
+		hierarchy: hierarchy, name: name, path: path, text: text,
+		classes: classes
+	}, out);
 }
 
 function getRelativeIdentifier(str) {
@@ -158,43 +200,8 @@ function main() {
 
 	packageSequence.each(function(name) {
 		var pkg = packages[name];
-		if (pkg) {
-			// Write package file:
-			var path = getRelativeIdentifier(name);
-			// We need to create document before rendering tags and links, so that
-			// the basePath is set correctly.
-			var index = !settings.templates && new Document(path, 'index', 'document');
-			var first = renderTags({ tags: pkg.firstSentenceTags(), packageDoc: pkg });
-			var text = renderTags({ tags: pkg.inlineTags(), packageDoc: pkg });
-			// Remove the first sentence from the main text, and use it as a title
-			if (first && text.startsWith(first)) {
-				text = text.substring(first.length);
-				first = stripParagraphs_filter(first);
-				if (/\.$/.test(first))
-					first = first.substring(0, first.length - 1); // cut away dot
-			}
-			if (index) {
-				renderTemplate('package', {
-					title: first,
-					text: text
-				}, out);
-				index.close();
-			}
-
-			out.push();
-			processClasses(pkg.interfaces());
-			processClasses(pkg.allClasses(true));
-			processClasses(pkg.exceptions());
-			processClasses(pkg.errors());
-
-			// Render list
-			var tag = pkg.tags('packagelist')[0];
-			var list = tag && renderTags({ tags: tag.inlineTags(), packageDoc: pkg });
-
-			renderTemplate('packages#package', {
-				content: out.pop(), name: name, path: path, text: text, list: list
-			}, out);
-		}
+		if (pkg)
+			processPackage(pkg);
 	});
 	doc.close();
 }

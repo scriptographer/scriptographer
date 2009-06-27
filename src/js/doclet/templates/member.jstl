@@ -39,7 +39,11 @@ the beginning of the rendering of this template, in order for data.group stuff t
 
 <% #header -%>
 <div class="member-header">
-<div class="member-title"><a href="#" onClick="return toggleMember('<%= param.id %>', false);"><%= param.title %></a></div>
+<div class="member-title">
+<div class="member-link">
+<a href="#" onClick="return toggleMember('<%= param.id %>', false);"><%= param.title %></a>
+</div>
+</div>
 <div class="member-close"><input type="button" value="Close" onClick="toggleMember('<%= param.id %>', false);"></div>
 <div class="clear"></div>
 </div>

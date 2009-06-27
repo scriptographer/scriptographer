@@ -23,13 +23,12 @@ Member = Object.extend({
 		if (this.isVisible()) {
 			data.group = {};
 			if (param.index) {
-				param.index.push('"' + this.getId() + '": { title: "'
-					+ this.name() + '", text: "'
-					+ encodeJs(renderTags({
+				param.index[this.getId()] = {
+					title: this.name(),
+					text: renderTags({
 						classDoc: param.classDoc, tags: this.inlineTags()
-					}))
-					+ '" }'
-				);
+					})
+				}
 			}
 			// Thrown exceptions
 			// if (this.member.thrownExceptions)

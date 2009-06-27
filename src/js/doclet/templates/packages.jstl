@@ -26,26 +26,26 @@
 <% $packageName = param.path.toUpperCase() %>
 <% if settings.templates %>
 createPackage("<%= $packageName %>",
-<%= param.content %>"<%= param.text encoding="js" %>");
+<%= param.hierarchy %>"<%= param.text encoding="js" %>");
 <% else %>
 <li><a href="#" onClick="return togglePackage('<%= $packageName %>', false);"><img name="arrow-<%= $packageName %>" src="../resources/arrow-close.gif" width="8" height="8" border="0"></a><img src="../resources/spacer.gif" width="6" height="1">
 <b><%= renderLink({ path: param.path, title: $packageName }) | stripCode %></b>
 <ul id="package-<%= $packageName %>" class="hidden">
-<%= param.content %>
-<%= param.list | stripCode %>
+<%= param.hierarchy %>
+<% foreach $class in param.classes prefix='<ul class="package-classes">' suffix='</ul>' %>
+<%= $class prefix='<li>' suffix='</li>' | stripCode %>
+<% end %>
 </li></ul>
 <% end %>
 
-<% #class -%>
+<% #hierarchy -%>
+<% foreach $class in param.classes prefix=<%= settings.templates ? '[' : '<ul' + (param.first ? ' class="package-hierarchy hidden"' : '') + '>' %> suffix=<%= settings.templates ? '], ' : '</ul>' %> %>
+<% if $class.isVisible() %>
 <% if settings.templates %>
-{ name: "<%= param.cls.name() %>", isAbstract: <%= param.cls.classDoc.isAbstract() %>, index: { <%= param.index %> }},
+{ name: "<%= $class.name() %>", isAbstract: <%= $class.classDoc.isAbstract() %>, index: <%= Json.encode($class.renderClass()) %> },
 <% else %>
-<li><%= param.cls.classDoc.renderLink() | stripCode %></li>
+<%= $class.classDoc.renderLink() prefix='<li>' suffix='</li>' | stripCode %>
 <% end %>
-
-<% #classes -%>
-<% if settings.templates %>
-<%= param.classes prefix="[ " suffix=" ], "%><%-%>
-<% else %>
-<%= param.classes prefix="<ul>" suffix="</ul>" %>
+<%= $class.renderHierarchy() %><%-%>
+<% end %>
 <% end %>

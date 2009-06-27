@@ -40,6 +40,11 @@ ul {
 	list-style-type: none;
 }
 
+hr {
+	border-top: none;
+	border-bottom: 1px dotted #000;
+}
+
 .clear {
 	clear: both;
 }
@@ -54,7 +59,7 @@ ul {
 	line-height: 24px;
 }
 
-.documentation h2 {
+.documentation h2, .documentation h3 {
 	font-size: 11px;
 	font-weight: normal;
 	display: block;
@@ -63,13 +68,9 @@ ul {
 	border-bottom: 1px solid black;
 }
 
-
 .documentation h3 {
-	font-size: 11px;
-	font-weight: normal;
-	display: block;
-	margin: 14px 0 14px 0;
-	background: url(dotted.gif) repeat bottom;        
+	margin-top: 14px;
+	border-bottom-style: dotted;
 }
 
 .documentation a tt, .documentation a tt b {
@@ -90,6 +91,11 @@ ul {
 .documentation-packages, .documentation-packages a {
 	color: #009dec;
 	border-bottom: 0px;
+}
+
+.documentation-packages h2, .documentation-packages h3, .documentation-packages hr {
+	margin: 8px 0 8px 0;
+	border-color: #009dec;
 }
 
 .documentation-packages a:hover {
@@ -123,7 +129,7 @@ ul {
 
 .member-title {
 	float: left;
-	width: 350px;
+	width: 400px;
 }
 
 .member-close {
@@ -135,8 +141,23 @@ ul {
 	padding: 8px 8px 0 8px;
 }
 
+.member-link {
+	display: block;
+	text-indent: -30px;
+	padding-left: 30px;
+}
+
+.member-text li, .documentation-inherited ul li {
+	text-indent: -30px;
+	padding-left: 30px;
+}
+
 .member-text ul {
 	padding-bottom: 8px;
+}
+
+.package-classes {
+	margin-top: -8px;
 }
 
 .footer {

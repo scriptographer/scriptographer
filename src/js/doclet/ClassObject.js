@@ -129,12 +129,14 @@ ClassObject = Object.extend({
 	renderClass: function() {
 		var cd = this.classDoc, index = null;
 		if (settings.templates) {
-			index = [ 
-				'"prototype": { title: "' + cd.name() + '", text: "' +
-				encodeJs(renderTags({ 
-					classDoc: cd, tags: cd.inlineTags()
-				})) + '" }'
-			];
+			index = {
+				'class': {
+					title: cd.name(),
+					text: renderTags({ 
+						classDoc: cd, tags: cd.inlineTags()
+					})
+				}
+			};
 		}
 		// Determine folder + filename for class file:
 		var name = this.name();
@@ -351,21 +353,13 @@ ClassObject = Object.extend({
 		delete this.children[mem.qualifiedName()];
 	},
 
-	renderHierarchy: function(prepend) {
-		var sorted = this.children.sortBy(function(mem) {
+	renderHierarchy: function(first) {
+		var classes = this.children.sortBy(function(mem) {
 			return settings.classOrder[mem.name()] || Number.MAX_VALUE;
 		});
-		out.push();
-		sorted.each(function(cls) {
-			if (cls.isVisible()) {
-				var cd = cls.classDoc;
-				var index = cls.renderClass();
-				this.renderTemplate('packages#class', {
-					index: index ? index.join(', ') : null, cls: cls
-				}, out);
-				cls.renderHierarchy();
-			}
-		});
-		this.renderTemplate('packages#classes', { classes: out.pop() }, out);
+		return this.renderTemplate('packages#hierarchy', {
+			classes: classes,
+			first: first
+		}, out);
 	}
 });
