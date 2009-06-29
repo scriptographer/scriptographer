@@ -297,8 +297,9 @@ Type = Object.extend(new function() {
 				str = code_filter('Number');
 			} else if (this.isBoolean()) {
 				str = code_filter('Boolean');
-			} else if (this.isArray()
-					|| !this.isVisible() && (this.isList() || this.isCollection())) {
+			} else if (!param.linksOnly && (this.isArray()
+					|| !this.isVisible()
+							&& (this.isList() || this.isCollection()))) {
 				var type = this.getComponentType();
 				// Support n-dimensional array the lazy way
 				var part = 'Array of ';

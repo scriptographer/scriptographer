@@ -44,7 +44,7 @@ createPackage("<%= $packageName %>",
 <% if settings.templates %>
 { name: "<%= $class.name() %>", isAbstract: <%= $class.doc.isAbstract() %>, index: <%= Json.encode($class.index) %> },
 <% else %>
-<%= $class.doc.renderLink() prefix='<li>' suffix='</li>' | stripCode %>
+<%= $class.doc.renderLink({ linksOnly: true }) prefix='<li>' suffix='</li>' | stripCode %>
 <% end %>
 <%= $class.renderHierarchy() %><%-%>
 <% end %>

@@ -44,7 +44,8 @@ PackageObject = DocObject.extend({
 		// And render the classes list if it exists
 		var classes = this.doc.tags('classes')[0];
 		classes = classes && renderTags({
-			tags: classes.inlineTags(), packageDoc: this.doc, stripParagraphs: true
+			tags: classes.inlineTags(), packageDoc: this.doc,
+			linksOnly: true, stripParagraphs: true
 		}).split(/\r\n|\n|\r/mg);
 		renderTemplate('packages#package', {
 			hierarchy: hierarchy, name: name, path: path, text: text,
