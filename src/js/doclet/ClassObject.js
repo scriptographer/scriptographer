@@ -184,7 +184,7 @@ ClassObject = DocObject.extend({
 		// Cut away name:
 		path = path.substring(0, path.length - className.length);
 		path = DocObject.getRelativeIdentifier(path);
-		var doc = new Document(path, className, 'document');
+		var document = new Document(path, className, 'document');
 
 		// From now on, the global out writes to doc
 		this.renderTemplate('class', {}, out);
@@ -264,7 +264,7 @@ ClassObject = DocObject.extend({
 			}
 			this.renderTemplate('class#inheritance', { doc: doc, classes: classes }, out);
 		}
-		doc.close();
+		document.close();
 	},
 
 	/**
