@@ -222,7 +222,6 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 	 * Scriptographer's base directory is used
 	 * 
 	 * @param scope
-	 * @return
 	 */
 	protected static File getDirectory(Scriptable scope) {
 		Object obj = scope.get("script", scope);

@@ -16,7 +16,6 @@ import sun.security.action.GetPropertyAction;
 /**
  * An abstract representation of file and directory pathnames.
  * 
- * <p>
  * User interfaces and operating systems use system-dependent <em>pathname
  * strings</em>
  * to name files and directories. This class presents an abstract,
@@ -34,7 +33,6 @@ import sun.security.action.GetPropertyAction;
  * the last name may denote either a directory or a file. The <em>empty</em>
  * abstract pathname has no prefix and an empty name sequence.
  * 
- * <p>
  * The conversion of a pathname string to or from an abstract pathname is
  * inherently system-dependent. When an abstract pathname is converted into a
  * pathname string, each name is separated from the next by a single copy of the
@@ -42,12 +40,11 @@ import sun.security.action.GetPropertyAction;
  * is defined by the system property {@code file.separator}, and is made
  * available in the public static fields <code>{@link
  * #separator}</code> and
- * {@link #separatorChar} of this class. When a pathname string
+ * {@link #separator} of this class. When a pathname string
  * is converted into an abstract pathname, the names within it may be separated
  * by the default name-separator character or by any other name-separator
  * character that is supported by the underlying system.
  * 
- * <p>
  * A pathname, whether abstract or in string form, may be either
  * <em>absolute</em> or <em>relative</em>. An absolute pathname is complete
  * in that no other information is required in order to locate the file that it
@@ -58,7 +55,6 @@ import sun.security.action.GetPropertyAction;
  * {@code user.dir}, and is typically the directory in which the Java
  * virtual machine was invoked.
  * 
- * <p>
  * The prefix concept is used to handle root directories on UNIX platforms, and
  * drive specifiers, root directories and UNC pathnames on Microsoft Windows
  * platforms, as follows:
@@ -79,7 +75,6 @@ import sun.security.action.GetPropertyAction;
  * 
  * </ul>
  * 
- * <p>
  * Instances of the {@code File} class are immutable; that is, once
  * created, the abstract pathname represented by a {@code File} object
  * will never change.
@@ -89,17 +84,15 @@ public class File {
 
     /**
 	 * The system-dependent default name-separator character, represented as a
-	 * string for convenience. This string contains a single character, namely
-	 * {@link #separatorChar}.
+	 * string for convenience. This string contains a single character.
 	 */
-    public static final String separator = "" + separatorChar;
+    public static final String separator;
 
     /**
 	 * The system-dependent path-separator character, represented as a string
-	 * for convenience. This string contains a single character, namely
-	 * {@link #pathSeparatorChar}.
+	 * for convenience. This string contains a single character.
 	 */
-    public static final String pathSeparator = "" + pathSeparatorChar;
+    public static final String pathSeparator;
 
     /**
 	 * Creates a new {@code File} instance by converting the given
@@ -117,13 +110,11 @@ public class File {
 	 * Creates a new {@code File} instance from a parent pathname string
 	 * and a child pathname string.
 	 * 
-	 * <p>
 	 * If {@code parent} is {@code null} then the new
 	 * {@code File} instance is created as if by invoking the
 	 * single-argument {@code File} constructor on the given
 	 * {@code child} pathname string.
 	 * 
-	 * <p>
 	 * Otherwise the {@code parent} pathname string is taken to denote a
 	 * directory, and the {@code child} pathname string is taken to
 	 * denote either a directory or a file. If the {@code child} pathname
@@ -146,13 +137,11 @@ public class File {
 	 * Creates a new {@code File} instance from a parent abstract
 	 * pathname and a child pathname string.
 	 * 
-	 * <p>
 	 * If {@code parent} is {@code null} then the new
 	 * {@code File} instance is created as if by invoking the
 	 * single-argument {@code File} constructor on the given
 	 * {@code child} pathname string.
 	 * 
-	 * <p>
 	 * Otherwise the {@code parent} abstract pathname is taken to denote
 	 * a directory, and the {@code child} pathname string is taken to
 	 * denote either a directory or a file. If the {@code child} pathname
@@ -175,11 +164,9 @@ public class File {
 	 * Creates a new <tt>File</tt> instance by converting the given
 	 * <tt>file:</tt> URI into an abstract pathname.
 	 * 
-	 * <p>
 	 * The exact form of a <tt>file:</tt> URI is system-dependent, hence the
 	 * transformation performed by this constructor is also system-dependent.
 	 * 
-	 * <p>
 	 * For a given abstract pathname <i>f</i> it is guaranteed that
 	 * 
 	 * <blockquote><tt>
@@ -228,7 +215,6 @@ public class File {
 	 * Returns the pathname string of this abstract pathname's parent, or
 	 * {@code null} if this pathname does not name a parent directory.
 	 * 
-	 * <p>
 	 * The <em>parent</em> of an abstract pathname consists of the pathname's
 	 * prefix, if any, and each name in the pathname's name sequence except for
 	 * the last. If the name sequence is empty then the pathname does not name a
@@ -245,7 +231,6 @@ public class File {
 	 * Returns the abstract pathname of this abstract pathname's parent, or
 	 * {@code null} if this pathname does not name a parent directory.
 	 * 
-	 * <p>
 	 * The <em>parent</em> of an abstract pathname consists of the pathname's
 	 * prefix, if any, and each name in the pathname's name sequence except for
 	 * the last. If the name sequence is empty then the pathname does not name a
@@ -288,7 +273,6 @@ public class File {
     /**
 	 * Returns the absolute pathname string of this abstract pathname.
 	 * 
-	 * <p>
 	 * If this abstract pathname is already absolute, then the pathname string
 	 * is simply returned as if by the {@link #getPath} method.
 	 * If this abstract pathname is the empty abstract pathname then the
@@ -330,7 +314,6 @@ public class File {
     /**
 	 * Returns the canonical pathname string of this abstract pathname.
 	 * 
-	 * <p>
 	 * A canonical pathname is both absolute and unique. The precise definition
 	 * of canonical form is system-dependent. This method first converts this
 	 * pathname to absolute form if necessary, as if by invoking the
@@ -340,7 +323,6 @@ public class File {
 	 * symbolic links (on UNIX platforms), and converting drive letters to a
 	 * standard case (on Microsoft Windows platforms).
 	 * 
-	 * <p>
 	 * Every pathname that denotes an existing file or directory has a unique
 	 * canonical form. Every pathname that denotes a nonexistent file or
 	 * directory also has a unique canonical form. The canonical form of the
@@ -356,11 +338,6 @@ public class File {
 	 * @throws IOException If an I/O error occurs, which is possible because the
 	 *         construction of the canonical pathname may require filesystem
 	 *         queries
-	 * 
-	 * @throws SecurityException If a required system property value cannot be
-	 *         accessed, or if a security manager exists and its <code>{@link
-     *          java.lang.SecurityManager#checkRead}</code>
-	 *         method denies read access to the file
 	 * 
 	 * @since JDK1.1
 	 */
@@ -378,11 +355,6 @@ public class File {
 	 *         construction of the canonical pathname may require filesystem
 	 *         queries
 	 * 
-	 * @throws SecurityException If a required system property value cannot be
-	 *         accessed, or if a security manager exists and its <code>{@link
-     *          java.lang.SecurityManager#checkRead}</code>
-	 *         method denies read access to the file
-	 * 
 	 * @since 1.2
 	 */
     public File getCanonicalFile() throws IOException {
@@ -394,21 +366,17 @@ public class File {
 	 * the file denoted by this abstract pathname is a directory, then the
 	 * resulting URL will end with a slash.
 	 * 
-	 * <p>
 	 * <b>Usage note:</b> This method does not automatically escape characters
 	 * that are illegal in URLs. It is recommended that new code convert an
 	 * abstract pathname into a URL by first converting it into a URI, via the
 	 * {@link #toURI() toURI} method, and then converting the URI into a URL via
-	 * the {@link java.net.URI#toURL() URI.toURL} method.
+	 * the {@code java.net.URI#toURL()} method.
 	 * 
 	 * @return A URL object representing the equivalent file URL
 	 * 
 	 * @throws MalformedURLException If the path cannot be parsed as a URL
 	 * 
 	 * @see #toURI()
-	 * @see java.net.URI
-	 * @see java.net.URI#toURL()
-	 * @see java.net.URL
 	 * @since 1.2
 	 */
     public URL toURL() throws MalformedURLException {
@@ -417,17 +385,15 @@ public class File {
     /**
 	 * Constructs a <tt>file:</tt> URI that represents this abstract pathname.
 	 * 
-	 * <p>
 	 * The exact form of the URI is system-dependent. If it can be determined
 	 * that the file denoted by this abstract pathname is a directory, then the
 	 * resulting URI will end with a slash.
 	 * 
-	 * <p>
 	 * For a given abstract pathname <i>f</i>, it is guaranteed that
 	 * 
-	 * <blockquote><tt>
-     * new {@link #File(java.net.URI) File}(</tt><i>&nbsp;f</i><tt>.toURI()).equals(</tt><i>&nbsp;f</i><tt>.{@link #getAbsoluteFile() getAbsoluteFile}())
-     * </tt></blockquote>
+	 * <code>
+     * new {@link #File(java.net.URI) File}(f.toURI()).equals(f.{@link #getAbsoluteFile() getAbsoluteFile}())
+     * </code>
 	 * 
 	 * so long as the original abstract pathname, the URI, and the new abstract
 	 * pathname are all created in (possibly different invocations of) the same
@@ -442,8 +408,6 @@ public class File {
 	 *         and undefined authority, query, and fragment components
 	 * 
 	 * @see #File(java.net.URI)
-	 * @see java.net.URI
-	 * @see java.net.URI#toURL()
 	 * @since 1.4
 	 */
     public URI toURI() {
@@ -459,11 +423,6 @@ public class File {
 	 * @return {@true if and only if the file specified by this
 	 *         abstract pathname exists <em>and</em> can be read by the
 	 *         application}
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkRead(java.lang.String)}</code>
-	 *         method denies read access to the file
 	 */
     public boolean canRead() {
     }
@@ -475,11 +434,6 @@ public class File {
 	 * @return {@true if and only if the file system actually
 	 *         contains a file denoted by this abstract pathname <em>and</em>
 	 *         the application is allowed to write to the file}
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkWrite(java.lang.String)}</code>
-	 *         method denies write access to the file
 	 */
     public boolean canWrite() {
     }
@@ -490,11 +444,6 @@ public class File {
 	 * 
 	 * @return {@true if and only if the file or directory denoted
 	 *         by this abstract pathname exists}
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkRead(java.lang.String)}</code>
-	 *         method denies read access to the file or directory
 	 */
     public boolean exists() {
     }
@@ -504,11 +453,6 @@ public class File {
 	 * 
 	 * @return {@true if and only if the file denoted by this
 	 *         abstract pathname exists <em>and</em> is a directory}
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkRead(java.lang.String)}</code>
-	 *         method denies read access to the file
 	 */
     public boolean isDirectory() {
     }
@@ -521,11 +465,6 @@ public class File {
 	 * 
 	 * @return {@true if and only if the file denoted by this
 	 *         abstract pathname exists <em>and</em> is a normal file}
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkRead(java.lang.String)}</code>
-	 *         method denies read access to the file
 	 */
     public boolean isFile() {
     }
@@ -542,11 +481,6 @@ public class File {
 	 *         abstract pathname is hidden according to the conventions of the
 	 *         underlying platform}
 	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkRead(java.lang.String)}</code>
-	 *         method denies read access to the file
-	 * 
 	 * @since 1.2
 	 */
     public boolean isHidden() {
@@ -560,11 +494,6 @@ public class File {
 	 *         last modified, measured in milliseconds since the epoch (00:00:00
 	 *         GMT, January 1, 1970), or {@code 0L} if the file does not
 	 *         exist or if an I/O error occurs
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkRead(java.lang.String)}</code>
-	 *         method denies read access to the file
 	 */
     public long lastModified() {
     }
@@ -576,11 +505,6 @@ public class File {
 	 * 
 	 * @return {@true if and only if the file or directory is
 	 *         successfully deleted}
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkDelete}</code>
-	 *         method denies delete access to the file
 	 */
     public boolean remove() {
     }
@@ -589,14 +513,12 @@ public class File {
 	 * Returns an array of strings naming the files and directories in the
 	 * directory denoted by this abstract pathname.
 	 * 
-	 * <p>
 	 * If this abstract pathname does not denote a directory, then this method
 	 * returns {@code null}. Otherwise an array of strings is returned,
 	 * one for each file or directory in the directory. Names denoting the
 	 * directory itself and the directory's parent directory are not included in
 	 * the result. Each string is a file name rather than a complete path.
 	 * 
-	 * <p>
 	 * There is no guarantee that the name strings in the resulting array will
 	 * appear in any specific order; they are not, in particular, guaranteed to
 	 * appear in alphabetical order.
@@ -606,11 +528,6 @@ public class File {
 	 *         empty if the directory is empty. Returns {@code null} if
 	 *         this abstract pathname does not denote a directory, or if an I/O
 	 *         error occurs.
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkRead(java.lang.String)}</code>
-	 *         method denies read access to the directory
 	 */
     public String[] list() {
     }
@@ -623,7 +540,7 @@ public class File {
 	 * returned array must satisfy the filter. If the given {@code filter}
 	 * is {@code null} then all names are accepted. Otherwise, a name
 	 * satisfies the filter if and only if the value {@code true} results
-	 * when the <code>{@link
+	 * when the <code>{@code
      * FilenameFilter#accept}</code> method of the
 	 * filter is invoked on this abstract pathname and the name of a file or
 	 * directory in the directory that it denotes.
@@ -636,11 +553,6 @@ public class File {
 	 *         directory is empty or if no names were accepted by the filter.
 	 *         Returns {@code null} if this abstract pathname does not
 	 *         denote a directory, or if an I/O error occurs.
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkRead(java.lang.String)}</code>
-	 *         method denies read access to the directory
 	 */
     public String[] list(FilenameFilter filter) {
     }
@@ -649,7 +561,6 @@ public class File {
 	 * Returns an array of abstract pathnames denoting the files in the
 	 * directory denoted by this abstract pathname.
 	 * 
-	 * <p>
 	 * If this abstract pathname does not denote a directory, then this method
 	 * returns {@code null}. Otherwise an array of {@code File}
 	 * objects is returned, one for each file or directory in the directory.
@@ -662,7 +573,6 @@ public class File {
 	 * pathname is absolute; if this pathname is relative then each resulting
 	 * pathname will be relative to the same directory.
 	 * 
-	 * <p>
 	 * There is no guarantee that the name strings in the resulting array will
 	 * appear in any specific order; they are not, in particular, guaranteed to
 	 * appear in alphabetical order.
@@ -672,11 +582,6 @@ public class File {
 	 *         will be empty if the directory is empty. Returns
 	 *         {@code null} if this abstract pathname does not denote a
 	 *         directory, or if an I/O error occurs.
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkRead(java.lang.String)}</code>
-	 *         method denies read access to the directory
 	 * 
 	 * @since 1.2
 	 */
@@ -692,7 +597,7 @@ public class File {
 	 * {@code filter} is {@code null} then all pathnames are
 	 * accepted. Otherwise, a pathname satisfies the filter if and only if the
 	 * value {@code results} when the
-	 * {@link FilenameFilter#accept} method of the filter is
+	 * {@code FilenameFilter#accept} method of the filter is
 	 * invoked on this abstract pathname and the name of a file or directory in
 	 * the directory that it denotes.
 	 * 
@@ -703,11 +608,6 @@ public class File {
 	 *         will be empty if the directory is empty. Returns
 	 *         {@code null} if this abstract pathname does not denote a
 	 *         directory, or if an I/O error occurs.
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkRead(java.lang.String)}</code>
-	 *         method denies read access to the directory
 	 * 
 	 * @since 1.2
 	 */
@@ -723,7 +623,7 @@ public class File {
 	 * {@code filter} is {@code null} then all pathnames are
 	 * accepted. Otherwise, a pathname satisfies the filter if and only if the
 	 * value {@code results} when the
-	 * {@link FileFilter#accept(java.io.File)} method of the
+	 * {@code FileFilter#accept(java.io.File)} method of the
 	 * filter is invoked on the pathname.
 	 * 
 	 * @param filter A file filter
@@ -734,11 +634,6 @@ public class File {
 	 *         {@code null} if this abstract pathname does not denote a
 	 *         directory, or if an I/O error occurs.
 	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkRead(java.lang.String)}</code>
-	 *         method denies read access to the directory
-	 * 
 	 * @since 1.2
 	 */
     public File[] listFiles(FileFilter filter) {
@@ -748,11 +643,6 @@ public class File {
 	 * Creates the directory named by this abstract pathname.
 	 * 
 	 * @return {@true if and only if the directory was created}
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkWrite(java.lang.String)}</code>
-	 *         method does not permit the named directory to be created
 	 */
     public boolean mkdir() {
     }
@@ -765,16 +655,6 @@ public class File {
 	 * 
 	 * @return {@true if and only if the directory was created,
 	 *         along with all necessary parent directories}
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkRead(java.lang.String)}</code>
-	 *         method does not permit verification of the existence of the named
-	 *         directory and all necessary parent directories; or if the
-	 *         <code>{@link 
-     *          java.lang.SecurityManager#checkWrite(java.lang.String)}</code>
-	 *         method does not permit the named directory and all necessary
-	 *         parent directories to be created
 	 */
     public boolean mkdirs() {
     }
@@ -782,7 +662,6 @@ public class File {
     /**
 	 * Renames the file denoted by this abstract pathname.
 	 * 
-	 * <p>
 	 * Many aspects of the behavior of this method are inherently
 	 * platform-dependent: The rename operation might not be able to move a file
 	 * from one filesystem to another, it might not be atomic, and it might not
@@ -794,11 +673,6 @@ public class File {
 	 * 
 	 * @return {@true if and only if the renaming succeeded}
 	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkWrite(java.lang.String)}</code>
-	 *         method denies write access to either the old or new pathnames
-	 * 
 	 * @throws NullPointerException If parameter {@code dest} is
 	 *         {@code null}
 	 */
@@ -809,7 +683,6 @@ public class File {
 	 * Sets the last-modified time of the file or directory named by this
 	 * abstract pathname.
 	 * 
-	 * <p>
 	 * All platforms support file-modification times to the nearest second, but
 	 * some provide more precision. The argument will be truncated to fit the
 	 * supported precision. If the operation succeeds and no intervening
@@ -824,11 +697,6 @@ public class File {
 	 * 
 	 * @throws IllegalArgumentException If the argument is negative
 	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkWrite(java.lang.String)}</code>
-	 *         method denies write access to the named file
-	 * 
 	 * @since 1.2
 	 */
     public boolean setLastModified(long time) {
@@ -842,11 +710,6 @@ public class File {
 	 * directory may be deleted depends upon the underlying system.
 	 * 
 	 * @return {@true if and only if the operation succeeded}
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *         <code>{@link
-     *          java.lang.SecurityManager#checkWrite(java.lang.String)}</code>
-	 *         method denies write access to the named file
 	 * 
 	 * @since 1.2
 	 */

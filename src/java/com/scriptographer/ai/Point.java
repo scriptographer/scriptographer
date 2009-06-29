@@ -140,7 +140,6 @@ public class Point {
 
 	/**
 	 * The x coordinate of the point
-	 * @return
 	 */
 	public double getX() {
 		return x;
@@ -152,7 +151,6 @@ public class Point {
 
 	/**
 	 * The y coordinate of the point
-	 * @return
 	 */
 	public double getY() {
 		return y;
@@ -475,7 +473,6 @@ public class Point {
 	 * </code>
 	 * @param px
 	 * @param py
-	 * @return
 	 * 
 	 * @jshide
 	 */
@@ -500,7 +497,6 @@ public class Point {
 	 * 
 	 * @param px
 	 * @param py
-	 * @return
 	 */
 	public double getDistance(Point point) {
 		return getDistance(point.x, point.y);
@@ -555,7 +551,6 @@ public class Point {
 	 * direction is given.
 	 * 
 	 * @param point
-	 * @return
 	 */
 	public double getAngle(Point point) {
 		double div = getLength() * point.getLength();
@@ -569,7 +564,6 @@ public class Point {
 	 * the rotational direction.
 	 * 
 	 * @param point
-	 * @return
 	 */
 	public double getDirectedAngle(Point point) {
 		double angle = this.getAngle() - point.getAngle();

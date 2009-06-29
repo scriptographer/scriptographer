@@ -61,7 +61,6 @@ public class LayerList extends AbstractReadOnlyList<Layer> implements ReadOnlySt
 	/**
 	 * Retrieves a layer 
 	 * @param index the index of the layer
-	 * @return
 	 */
 	public Layer get(int index) {
 		return nativeGet(document.handle, index);
@@ -72,7 +71,6 @@ public class LayerList extends AbstractReadOnlyList<Layer> implements ReadOnlySt
 	/**
 	 * Retrieves a layer 
 	 * @param name the name of the layer
-	 * @return
 	 */
 	public Layer get(String name) {
 		return nativeGet(document.handle, name);

@@ -113,7 +113,6 @@ public class Tool extends NativeObject {
 
 	/**
 	 * @param title
-	 * @return
 	 */
 	private native int nativeCreate(String name, int options, int groupHandle, int toolsetHandle);
 

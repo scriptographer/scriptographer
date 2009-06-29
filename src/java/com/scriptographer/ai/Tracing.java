@@ -82,7 +82,6 @@ public class Tracing extends Item implements Commitable {
 	
 	/**
 	 * Default: {@code false}
-	 * @return
 	 */
 	public native boolean getResample();
 	
@@ -93,7 +92,6 @@ public class Tracing extends Item implements Commitable {
 	
 	/**
 	 * Default: 72.0
-	 * @return
 	 */
 	public native float getResampleResolution();
 	
@@ -119,7 +117,6 @@ public class Tracing extends Item implements Commitable {
 
 	/**
 	 * Default: 0.0
-	 * @return
 	 */
 	public native float getBlur();
 	
@@ -131,7 +128,6 @@ public class Tracing extends Item implements Commitable {
 	
 	/**
 	 * Default: 128
-	 * @return
 	 */
 	public native int getThreshold();
 	
@@ -143,7 +139,6 @@ public class Tracing extends Item implements Commitable {
 	
 	/**
 	 * Default: 6
-	 * @return
 	 */
 	public native int getMaxColors();
 	
@@ -155,7 +150,6 @@ public class Tracing extends Item implements Commitable {
 	
 	/**
 	 * Default: {@code true}
-	 * @return
 	 */
 	public native boolean getFills();
 	
@@ -167,7 +161,6 @@ public class Tracing extends Item implements Commitable {
 	
 	/**
 	 * Default: {@code false}
-	 * @return
 	 */
 	public native boolean getStrokes();
 	
@@ -179,7 +172,6 @@ public class Tracing extends Item implements Commitable {
 	
 	/**
 	 * Default: 10.0
-	 * @return
 	 */
 	public native float getMaxStrokeWeight();
 	
@@ -191,7 +183,6 @@ public class Tracing extends Item implements Commitable {
 	
 	/**
 	 * Default: 20.0
-	 * @return
 	 */
 	public native float getMinStrokeLength();
 	
@@ -203,7 +194,6 @@ public class Tracing extends Item implements Commitable {
 	
 	/**
 	 * Default: 2.0
-	 * @return
 	 */
 	public native float getPathTightness();
 	
@@ -215,7 +205,6 @@ public class Tracing extends Item implements Commitable {
 	
 	/**
 	 * Default: 20.0
-	 * @return
 	 */
 	public native float getCornerAngle();
 	
@@ -227,7 +216,6 @@ public class Tracing extends Item implements Commitable {
 	
 	/**
 	 * Default: 10
-	 * @return
 	 */
 	public native int getMinArea();
 	
@@ -271,7 +259,6 @@ public class Tracing extends Item implements Commitable {
 	
 	/**
 	 * Default: {@code false}
-	 * @return
 	 */
 	public native boolean getLivePaint();
 	

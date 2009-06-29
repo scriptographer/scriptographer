@@ -213,7 +213,6 @@ public class Annotator extends NativeObject {
 	 * The drawers are cashed and reused for the same port.
 	 * 
 	 * @param portHandle
-	 * @return
 	 */
 	private static Drawer createDrawer(int portHandle) {
 		Drawer drawer = (Drawer) drawers.get(portHandle);

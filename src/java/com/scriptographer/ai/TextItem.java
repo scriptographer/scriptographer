@@ -66,7 +66,6 @@ public abstract class TextItem extends Item {
 
 	/**
 	 * The orientation of the text in the text frame.
-	 * @return 
 	 */
 	public TextOrientation getOrientation() {
 		return (TextOrientation) IntegerEnumUtils.get(TextOrientation.class,
@@ -143,7 +142,7 @@ public abstract class TextItem extends Item {
 	public native boolean isLinked();
 
 	/**
-	 * Returns the index of this text frame in the {@link TextStory#textFrames} array.
+	 * Returns the index of this text frame in the {@link TextStory#getTextFrames()} array.
 	 */
 	public native int getIndex();
 
@@ -198,7 +197,7 @@ public abstract class TextItem extends Item {
 
 	/**
 	 * In case there's an overflow in the text, this only returns a range
-	 * over the visible characters, while {@link TextItem#range} returns one over the
+	 * over the visible characters, while {@link TextItem#getRange()} returns one over the
 	 * whole text.
 	 */
 	public TextRange getVisibleRange() {

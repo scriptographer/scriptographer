@@ -88,7 +88,7 @@ public class TextStory extends DocumentObject {
 	public native void reflow();
 
 	TextFrameList textFrames = null;
-	
+
 	public ReadOnlyList getTextFrames() {
 		if (textFrames == null)
 			textFrames = new TextFrameList();

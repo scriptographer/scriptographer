@@ -57,7 +57,6 @@ public class Pattern extends DocumentObject {
 
 	/**
 	 * Returns the pattern definition.
-	 * @return
 	 */
 	public native Item getDefinition();
 

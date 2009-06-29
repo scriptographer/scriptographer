@@ -220,7 +220,6 @@ public class Document extends NativeObject {
 	 *  print(document.layers.test); // Layer (test)
 	 *  print(document.layers['Layer 1']); // Layer (Layer 1)
 	 * </code>
-	 * @return
 	 */
 	public LayerList getLayers() {
 		if (layers == null)
@@ -337,7 +336,6 @@ public class Document extends NativeObject {
 
 	/**
 	 * The document's file.
-	 * @return
 	 */
 	public native File getFile();
 
@@ -476,7 +474,6 @@ public class Document extends NativeObject {
 	 * var items = document.getSelectedItems([Group, Path]);
 	 * </code>
 	 * @param types
-	 * @return
 	 */
 	public ItemList getSelectedItems(Class[] types) {
 		if (types == null) {
@@ -497,7 +494,6 @@ public class Document extends NativeObject {
 	 * var items = document.getSelectedItems(Raster);
 	 * </code>
 	 * @param types
-	 * @return
 	 */
 	public ItemList getSelectedItems(Class type) {
 		return getSelectedItems(new Class[] { type });
@@ -525,7 +521,6 @@ public class Document extends NativeObject {
 	 * 
 	 * @param types
 	 * @param attributes
-	 * @return
 	 * 
 	 * @jshide
 	 */
@@ -552,7 +547,6 @@ public class Document extends NativeObject {
 	 * 
 	 * @param type
 	 * @param attributes
-	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public ItemList getMatchingItems(Class type, EnumMap<ItemAttribute, Boolean> attributes) {
@@ -790,7 +784,6 @@ public class Document extends NativeObject {
 	 * @param tolerance the hit-test tolerance in view coordinates (pixels at
 	 *        the current zoom factor). correct results for large values are not
 	 *        guaranteed {@default 2}
-	 * @return
 	 */
 	public HitResult hitTest(Point point, HitRequest request, float tolerance) {
 		return this.nativeHitTest(point, (request != null ? request : HitRequest.ALL).value, tolerance, null);
@@ -816,7 +809,6 @@ public class Document extends NativeObject {
 	
 	/**
 	 * The stories contained within the document.
-	 * @return
 	 */
 	public TextStoryList getStories() {
 		// We need to version TextStoryLists, since document handles seem to not be unique:
@@ -862,7 +854,6 @@ public class Document extends NativeObject {
 	 * print(document.data['shoppingList']); // 'oranges', 'apples'
 	 * </code>
 	 * 
-	 * @return
 	 */
 	public Dictionary getData() {
 		if (data == null)

@@ -71,10 +71,6 @@ public class File extends java.io.File {
 	 * 
 	 * @return The length, in bytes, of the file denoted by this abstract
 	 *pathname, or {@code 0L} if the file does not exist
-	 * 
-	 * @throws SecurityException If a security manager exists and its
-	 *{@link java.lang.SecurityManager#checkRead(java.lang.String)}
-	 *method denies read access to the file
 	 */
 	public long getLength() {
 		return length();

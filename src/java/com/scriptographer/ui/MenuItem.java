@@ -95,12 +95,7 @@ public class MenuItem extends NativeObject{
 	 * group with other options is needed, use createSubGroup and pass the
 	 * resulting group to the constructor that takes a group as third parameter.
 	 * 
-	 * @param notifer
-	 * @param text
-	 * @param parentItem
-	 * @param options
-	 * 
-	 * @see MenuItem(MenuGroup, String, String, int)
+	 * @see #MenuItem(MenuGroup, int)
 	 */
 	public MenuItem(MenuItem parentItem, int options) {
 		// If a subGroup as created earlier, createSubGroup does not create a
@@ -119,7 +114,6 @@ public class MenuItem extends NativeObject{
 	/**
 	 *
 	 * @param options MenuGroup.OPTION_*
-	 * @return
 	 */
 	public MenuGroup createSubGroup(int options) {
 		if (subGroup == null)
@@ -153,7 +147,6 @@ public class MenuItem extends NativeObject{
 	 * @param text
 	 * @param groupHandle
 	 * @param groupName
-	 * @return
 	 */
 	protected static MenuItem wrapHandle(int handle, String name,
 			int groupHandle, String groupName) {

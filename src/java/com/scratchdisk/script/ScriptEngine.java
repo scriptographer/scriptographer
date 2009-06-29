@@ -114,7 +114,6 @@ public abstract class ScriptEngine {
 	 * Caching for the compiled scripts is used for speed increase.
 	 * 
 	 * @param file
-	 * @return
 	 * @throws IOException 
 	 * @throws ScriptException 
 	 */

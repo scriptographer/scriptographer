@@ -183,7 +183,6 @@ public abstract class PathItem extends Item {
 	 * Returns the intersection of the paths as a new path
 	 * 
 	 * @param item
-	 * @return
 	 */
 	public PathItem intersect(PathItem item) {
 		Area area = new Area(this.toShape());
@@ -198,7 +197,6 @@ public abstract class PathItem extends Item {
 	 * path.
 	 * 
 	 * @param item
-	 * @return
 	 */
 	public PathItem unite(PathItem item) {
 		Area area = new Area(this.toShape());
@@ -213,7 +211,6 @@ public abstract class PathItem extends Item {
 	 * a new path.
 	 * 
 	 * @param item
-	 * @return
 	 */
 	public PathItem exclude(PathItem item) {
 		Area area = new Area(this.toShape());

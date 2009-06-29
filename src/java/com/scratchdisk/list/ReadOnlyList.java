@@ -37,6 +37,8 @@ package com.scratchdisk.list;
  */
 public interface ReadOnlyList<E> extends Iterable<E> {
 	/**
+	 * The amount of elements contained in the array.
+	 * 
 	 * @jshide
 	 */
 	int size();

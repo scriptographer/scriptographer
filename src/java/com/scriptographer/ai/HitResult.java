@@ -101,7 +101,6 @@ public class HitResult {
 
 	/**
 	 * Returns the item which was hit.
-	 * @return
 	 */
 	public Item getItem() {
 		return item;

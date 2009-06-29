@@ -37,7 +37,7 @@ import com.scriptographer.CommitManager;
 
 /**
  * The Segment object represents a part of a path which is described by the
- * {@link Path#segments} property. Every segment of a path corresponds to an
+ * {@link Path#getSegments()} property. Every segment of a path corresponds to an
  * anchor point (anchor points are the path handles that are visible when the
  * path is selected).
  * 
@@ -277,10 +277,6 @@ public class Segment implements Commitable {
 		return buf.toString();
 	}
 
-	public int getIndex() {
-		return index;
-	}
-
 	public SegmentPoint getPoint() {
 		update();
 		return point;
@@ -290,6 +286,9 @@ public class Segment implements Commitable {
 		point.set(pt);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setPoint(double x, double y) {
 		point.set(x, y);
 	}
@@ -305,6 +304,9 @@ public class Segment implements Commitable {
 		corner = !handleIn.isParallel(handleOut);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setHandleIn(double x, double y) {
 		handleIn.set(x, y);
 	}
@@ -320,8 +322,34 @@ public class Segment implements Commitable {
 		corner = !handleIn.isParallel(handleOut);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void setHandleOut(double x, double y) {
 		handleOut.set(x, y);
+	}
+
+	public int getIndex() {
+		return index;
+	}
+	
+	public Curve getCurve() {
+		if (segments  != null) {
+			CurveList curves = segments.path.getCurves();
+			// the curves list handles closing curves, so the curves.size
+			// is adjusted accordingly. just check to be in the boundaries here: 
+			return index < curves.size ? (Curve) curves.get(index) : null;
+		} else {
+			return null;
+		}
+	}
+
+	public Segment getPrevious() {
+		return index > 0 ? segments.get(index - 1) : null;
+	}
+
+	public Segment getNext() {
+		return index < segments.size ? segments.get(index + 1) : null;
 	}
 
 	protected boolean isSelected(SegmentPoint pt) {
@@ -396,25 +424,6 @@ public class Segment implements Commitable {
 	
 	public Segment split() {
 		return split(0.5f);
-	}
-	
-	public Curve getCurve() {
-		if (segments  != null) {
-			CurveList curves = segments.path.getCurves();
-			// the curves list handles closing curves, so the curves.size
-			// is adjusted accordingly. just check to be in the boundaries here: 
-			return index < curves.size ? (Curve) curves.get(index) : null;
-		} else {
-			return null;
-		}
-	}
-
-	public Segment getPrevious() {
-		return index > 0 ? segments.get(index - 1) : null;
-	}
-
-	public Segment getNext() {
-		return index < segments.size ? segments.get(index + 1) : null;
 	}
 
 	public Object clone() {

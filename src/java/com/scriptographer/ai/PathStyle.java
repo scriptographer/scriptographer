@@ -453,7 +453,6 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	 * // Set the dashed stroke to [10pt dash, 5pt gap, 8pt dash, 10pt gap]:
 	 * line.dashArray = [10, 5, 8, 10];
 	 * </code>
-	 * @return
 	 */
 	public float[] getDashArray() {
 		return stroke != null ? stroke.getDashArray() : null;

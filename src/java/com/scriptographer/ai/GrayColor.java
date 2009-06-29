@@ -112,7 +112,6 @@ public class GrayColor extends Color {
 
 	/**
 	 * A value between 0 and 1 that specifies the amount of gray in the gray color.
-	 * @return
 	 */
 	public float getGray() {
 		return gray;

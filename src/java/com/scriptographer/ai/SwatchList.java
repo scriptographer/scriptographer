@@ -62,7 +62,6 @@ public class SwatchList extends AbstractReadOnlyList<Swatch> implements ReadOnly
 	/**
 	 * Retrieves a swatch 
 	 * @param index the index of the swatch
-	 * @return
 	 */
 	public Swatch get(int index) {
 		return Swatch.wrapHandle(nativeGet(document.handle, index), document);
@@ -73,7 +72,6 @@ public class SwatchList extends AbstractReadOnlyList<Swatch> implements ReadOnly
 	/**
 	 * Retrieves a swatch 
 	 * @param name the name of the swatch
-	 * @return
 	 */
 	public Swatch get(String name) {
 		return Swatch.wrapHandle(nativeGet(document.handle, name), document);

@@ -68,7 +68,6 @@ public class Symbol extends DocumentObject {
 	/**
 	 * Returns the symbol definition. The item returned cannot be edited, just
 	 * examined or duplicated
-	 * @return
 	 */
 	public native Item getDefinition();
 

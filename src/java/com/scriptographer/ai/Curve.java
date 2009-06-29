@@ -456,7 +456,6 @@ public class Curve {
 	/**
 	 * @param point
 	 * @param precision
-	 * @return
 	 */
 	public double hitTest(Point point, double precision) {
 		updateSegments();

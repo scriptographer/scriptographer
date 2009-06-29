@@ -559,9 +559,6 @@ public class Rectangle {
 		return unite(point.x, point.y);
 	}
 
-	/**
-	 * @return
-	 */
 	protected Rectangle2D toRectangle2D() {
 		return new Rectangle2D.Double(x, y, width, height);
 	}

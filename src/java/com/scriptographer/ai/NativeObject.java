@@ -76,7 +76,6 @@ abstract class NativeObject {
 	 * protected scaffold function for removing. subclasses that want to use it
 	 * need to override nativeRemove and make remove public
 	 * 
-	 * @return
 	 */
 	protected boolean remove() {
 		boolean ret = false;

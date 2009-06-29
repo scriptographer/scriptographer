@@ -345,7 +345,6 @@ public abstract class Item extends DocumentObject {
 	 * Copies the item into the specified item.
 	 * 
 	 * @param item
-	 * @return
 	 */
 	public native Item copyTo(Item item);
 
@@ -538,10 +537,10 @@ public abstract class Item extends DocumentObject {
 	private ItemPoint position = null;
 
 	/**
-	 * The item's position within the art board. This is the {@link Rectangle#getCenter()} of the {@link Item#bounds} rectangle.
+	 * The item's position within the art board. This is the
+	 * {@link Rectangle#getCenter()} of the {@link Item#getBounds()} rectangle.
 	 * 
-	 * Sample code:
-	 * <code>
+	 * Sample code: <code>
 	 * // Create a circle at position { x: 10, y: 10 }
 	 * var circle = new Path.Circle(new Point(10, 10), 10);
 	 * 
@@ -620,7 +619,6 @@ public abstract class Item extends DocumentObject {
 	 * 	strokeWidth: 5
 	 * };
 	 * </code>
-	 * @return
 	 */
 	public PathStyle getStyle() {
 		if (style == null)

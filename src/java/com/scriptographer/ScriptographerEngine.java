@@ -352,7 +352,6 @@ public class ScriptographerEngine {
 	 * Compiles the script file and throws errors if it cannot be compiled.
 	 * 
 	 * @param file
-	 * @return
 	 * @throws ScriptException
 	 * @throws IOException
 	 */
@@ -371,7 +370,6 @@ public class ScriptographerEngine {
 	 * Executes the specified script file.
 	 *
 	 * @param file
-	 * @return
 	 * @throws ScriptException 
 	 * @throws IOException 
 	 */
@@ -386,7 +384,6 @@ public class ScriptographerEngine {
 	 * @param script
 	 * @param file
 	 * @param scope
-	 * @return
 	 * @throws ScriptException
 	 * @throws IOException
 	 */

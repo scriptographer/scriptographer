@@ -42,7 +42,7 @@ import java.awt.geom.Point2D;
  * flips, rotations, and shears.
  * 
  * The transformation can be represented using matrix math on a 3x3 array. Given
- * {@code (x, y)}, the transformation {@code (x', y')} can be
+ * {@code (x, y),} the transformation {@code (x', y')} can be
  * found by:
  * 
  * <code>
@@ -52,7 +52,7 @@ import java.awt.geom.Point2D;
  * </code>
  * 
  * The bottom row of the matrix is constant, so a transform can be uniquely
- * represented (as in {@link #toString()}) by
+ * represented by
  * {@code "[[scaleX, shearX, translateX], [shearY, scaleY, translateY]]"}.
  * 
  * @author lehni

@@ -170,7 +170,6 @@ public abstract class Color {
 	 * profiles.
 	 * 
 	 * @param model
-	 * @return
 	 */
 	protected static ICC_Profile getProfile(ColorModel model) {
 		// first try the illustrator internal WS profiles:

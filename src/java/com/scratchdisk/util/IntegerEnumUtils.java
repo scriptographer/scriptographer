@@ -76,7 +76,6 @@ public class IntegerEnumUtils {
 
 	/**
 	 * @param set
-	 * @return
 	 */
 	public static int getFlags(EnumSet<? extends IntegerEnum> set) {
 		int flags = 0;

@@ -172,7 +172,6 @@ public class Raster extends Item {
 
 	/**
 	 * The width of the raster
-	 * @return
 	 */
 	public int getWidth() {
 		return getSize().width;
@@ -180,7 +179,6 @@ public class Raster extends Item {
 
 	/**
 	 * The height of the raster
-	 * @return
 	 */
 	public int getHeight() {
 		return getSize().height;
@@ -213,7 +211,6 @@ public class Raster extends Item {
 	 * Gets the color of a pixel in the raster.
 	 * @param x
 	 * @param y
-	 * @return
 	 */
 	public native Color getPixel(int x, int y);
 
@@ -230,7 +227,6 @@ public class Raster extends Item {
 	 * 
 	 * @param x
 	 * @param y
-	 * @return
 	 */
 	public native void setPixel(int x, int y, Color color);
 
@@ -238,7 +234,6 @@ public class Raster extends Item {
 	 * Gets the color of a pixel in the raster.
 	 * @param x
 	 * @param y
-	 * @return
 	 */
 	public Color getPixel(Point point) {
 		return getPixel((int) point.x, (int) point.y);
@@ -259,7 +254,6 @@ public class Raster extends Item {
 	 * 
 	 * @param x
 	 * @param y
-	 * @return
 	 */
 	public void setPixel(Point point, Color color) {
 		setPixel((int) point.x, (int) point.y, color);
@@ -267,7 +261,6 @@ public class Raster extends Item {
 
 	/**
 	 * REturns the Java2D color model of the raster
-	 * @return
 	 */
 	public ColorModel getColorModel() {
 		ColorType type = getType();

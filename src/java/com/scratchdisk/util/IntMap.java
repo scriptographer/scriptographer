@@ -156,7 +156,6 @@ public class IntMap<V> extends AbstractMap<Integer, V> {
 
 	/**
 	 * @param key
-	 * @return
 	 */
 	protected V doRemove(int key) {
 		int index = indexFor(key);

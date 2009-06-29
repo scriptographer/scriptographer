@@ -50,7 +50,6 @@ public class NetUtils {
 	/**
 	 * Downloads a URL resource into a temporary file on the disk.
 	 * @param url
-	 * @return
 	 * @throws IOException
 	 */
 	public static File loadFile(URL url, String prefix) throws IOException {

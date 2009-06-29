@@ -129,7 +129,6 @@ public class Size {
 	 * The object itself is not modified!
 	 * 
 	 * @param size The addition of the two sizes as a new size
-	 * @return
 	 */
 	public Size add(Size size) {
 		return add(size.width, size.height);
@@ -159,7 +158,6 @@ public class Size {
 	 * The object itself is not modified!
 	 * 
 	 * @param size The subtraction of the two sizes as a new size
-	 * @return
 	 */
 	public Size subtract(Size size) {
 		return subtract(size.width, size.height);
@@ -190,7 +188,6 @@ public class Size {
 	 * The object itself is not modified!
 	 * 
 	 * @param size The multiplication of the two sizes as a new size
-	 * @return
 	 */
 	public Size multiply(Size size) {
 		return multiply(size.width, size.height);
@@ -220,7 +217,6 @@ public class Size {
 	 * The object itself is not modified!
 	 * 
 	 * @param size The division of the two sizes as a new size
-	 * @return
 	 */
 	public Size divide(Size size) {
 		return divide(size.width, size.height);
