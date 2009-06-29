@@ -39,7 +39,18 @@ import java.util.Map;
  * @author lehni 
  */
 public interface StringIndexList<E> extends ReadOnlyStringIndexList<E> {
+	/**
+	 * @jshide
+	 */
 	public E set(String name, E element);
+
+	/**
+	 * @jshide
+	 */
 	public E remove(String name);
+
+	/**
+	 * @jshide
+	 */
 	public void addAll(Map<String,? extends E> elements);
 }

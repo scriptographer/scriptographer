@@ -37,27 +37,83 @@ package com.scratchdisk.list;
  */
 public interface ExtendedList<E> extends List<E> {
 
+	/**
+	 * @jshide
+	 */
 	int indexOf(Object element);
+
+	/**
+	 * @jshide
+	 */
 	int lastIndexOf(Object element);
+
+	/**
+	 * @jshide
+	 */
 	boolean contains(Object o);
 
+	/**
+	 * @jshide
+	 */
 	boolean addAll(int index, ReadOnlyList<? extends E> elements);
+
+	/**
+	 * @jshide
+	 */
 	boolean addAll(int index, E[] elements);
 
+	/**
+	 * @jshide
+	 */
 	boolean containsAll(ReadOnlyList<?> elementsc);
+
+	/**
+	 * @jshide
+	 */
 	boolean containsAll(Object[] elements);
 
+	/**
+	 * @jshide
+	 */
 	boolean removeAll(ExtendedList<?> elements);
+
+	/**
+	 * @jshide
+	 */
 	boolean removeAll(Object[] elements);
 
+	/**
+	 * @jshide
+	 */
 	boolean retainAll(ExtendedList<?> elements);
+
+	/**
+	 * @jshide
+	 */
 	boolean retainAll(Object[] elements);
 
+	/**
+	 * @jshide
+	 */
 	void setSize(int size);
 
+	/**
+	 * @jshide
+	 */
 	E[] toArray();
+
+	/**
+	 * @jshide
+	 */
 	E[] toArray(E elements[]);
 
+	/**
+	 * @jshide
+	 */
 	E removeFirst();
+
+	/**
+	 * @jshide
+	 */
 	E removeLast();
 }
