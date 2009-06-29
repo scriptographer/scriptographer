@@ -117,6 +117,10 @@ Member = Object.extend({
 		return this.member.isConstructor();
 	},
 
+	isCallable: function() {
+		return this.isMethod() || this.isConstructor();
+	},
+
 	renderSummary: function(doc) {
 		return this.renderTemplate('summary', { doc: doc });
 	},
@@ -202,6 +206,14 @@ Member = Object.extend({
 
 		get: function(member) {
 			return this.members[Member.getId(member)];
+		},
+
+		getByReference: function(reference, doc, strict) {
+			var group = MemberGroup.getByReference(reference, doc);
+			if (group) {
+				var [all, signature] = reference.match(/(\([^)]*\))$/) || [];
+				return group.getMember(signature, strict);
+			}
 		},
 
 		isVisible: function(member, forceAll) {

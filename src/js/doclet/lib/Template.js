@@ -49,6 +49,7 @@ function Template(object, name, parent) {
 		if (parent) {
 			parent.subTemplates[name] = this;
 			this.parent = parent;
+			this.pathName = parent.pathName + this.pathName;
 		}
 		this.macroParam = 0;
 		this.compile();
@@ -191,7 +192,7 @@ Template.prototype = {
 			}
 			for (var i = 0; i < this.renderTemplates.length; i++) {
 				var template = this.renderTemplates[i];
-				code.splice(1, 0, 'var $' + template.name + ' = template.renderSubTemplate(this, "' +
+				code.splice(1, 0, 'var ' + template.name + ' = template.renderSubTemplate(this, "' +
 					template.name + '", param)' + (template.trim ? '.trim()' : ''));
 				this.tags.unshift(null);
 			}
@@ -534,13 +535,13 @@ Template.prototype = {
 	},
 
 	parseTemplateTag: function(tag, code) {
-		var match = tag.tag.match(/^<%\s*([$#])(\S*)\s*([+-]?)%>$/);
+		var match = tag.tag.match(/^<%\s*([$#]\S*)\s*([+-]?)%>$/);
 		if (match) {
-			var name = match[2], content = tag.buffer.join(''), end = match[3];
+			var name = match[1], content = tag.buffer.join(''), end = match[2];
 			if (!end) content = content.match(/^\s*[\n\r]?([\u0000-\uffff]*)[\n\r]?\s*$/)[1];
 			else if (end == '-') content = content.trim();
 			new Template(content, name, this);
-			if (match[1] == '$')
+			if (name[0] == '$')
 				this.renderTemplates.push({ name: name, trim: end == '-' });
 		} else
 			throw 'Syntax error in template';
@@ -577,7 +578,7 @@ Template.prototype = {
 				var that = this;
 				macro = function(prm, name) {
 					if (name[0] == '#') {
-						return (that.parent || that).renderSubTemplate(object, name.substring(1), prm, param);
+						return (that.parent || that).renderSubTemplate(object, name, prm, param);
 					} else {
 						var template = object.getTemplate(name);
 						return template && template.render(object, prm, param);
@@ -715,7 +716,7 @@ Template.methods = new function() {
 				if (pos != -1) {
 					template = this.getTemplate(name.substring(0, pos));
 					if (template)
-						return template.getSubTemplate(name.substring(pos + 1));
+						return template.getSubTemplate(name.substring(pos));
 				}
 				template = templates[name];
 			}

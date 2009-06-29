@@ -43,7 +43,7 @@ DocObject = Object.extend({
 		return this.renderTemplate('packages#hierarchy', {
 			classes: classes,
 			first: first
-		}, out);
+		});
 	},
 
 	statics: {

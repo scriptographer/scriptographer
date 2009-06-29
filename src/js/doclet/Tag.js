@@ -69,13 +69,22 @@ LinkTag = Tag.extend({
 			}
 		}
 		if (ref) {
-			if (!ref.isVisible())
+			if (!ref.isVisible()) {
+				// If it's not visible, it might be a relative link that should be resolved again,
+				// since it might point to a visible subclass through comment inheriting.
+				if (/^#/.test(this.text())) {
+					var [reference, label] = this.text().split(/\s/) || [];
+				 	var mem = Member.getByReference(reference, param.doc);
+					if (mem)
+						return mem.renderLink(param);
+				}
 				error(this.position() + ': warning - ' + this.name() 
-						+ ' contains reference to invisible object: ' + ref);
+						+ ' contains reference to invisible object: ' + ref + (param.doc ? ', from ' + param.doc : ''));
+			}
 			return ref.renderLink(param);
 		} else {
 			error(this.position() + ': warning - ' + this.name()
-					+ ' contains undefined reference: ' + this);
+					+ ' contains undefined reference: ' + this + (param.doc ? ', from ' + param.doc : ''));
 		}
 	}
 });
@@ -127,7 +136,7 @@ HeadingTag = Tag.extend({
 	_names: '@heading',
 
 	render: function(param) {
-		var [all, level, str] = this.text().match(/^(\d*)\s*(.*)$/);
+		var [all, level, str] = this.text().match(/^(\d*)\s*(.*)$/) || [];
 		if (level) return heading_filter(str, param, level);
 	}
 });

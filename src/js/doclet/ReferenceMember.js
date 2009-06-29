@@ -17,18 +17,31 @@ ReferenceMember = SyntheticMember.extend({
 	},
 
 	resolve: function() {
-		var group = MemberGroup.get(this.reference, this.containingClass());
+		// Only resolve for members in strict mode, so we find out wether to
+		// reference the whole group otherwise:
+		var members = null;
+		var member = Member.getByReference(this.reference, this.containingClass(), true);
 		// Since a group can have more than one member, we set the first one to
 		// this ReferenceMember and create more ReferenceMembers for the others
-		if (group) {
-			this.member = group.members[0];
+		if (member) {
+			members = [ member ];
+		} else {
+			// Add all members of the group, not just one
+			var group = MemberGroup.getByReference(this.reference, this.containingClass());
+			if (group)
+				members = group.members;
+		}
+		if (members) {
+			this.member = members[0];
 			// Put it into the lookup
 			Member.put(this.member, this);
 			if (this.member)
 				this.list.addAt(this.after, this);
-			for (var i = 1, l = group.members.length; i < l; i++) {
-				var member = group.members[i];
-				this.list.addAt(group.name, new ReferenceMember(this.classObject,
+			// If there's more than one member, add the others after.
+			for (var i = 1, l = members.length; i < l; i++) {
+				var member = members[i];
+				Member.put(member, this);
+				this.list.addAt(this.property, new ReferenceMember(this.classObject,
 						this.data, this.list, member));
 			}
 		}
@@ -42,15 +55,23 @@ ReferenceMember = SyntheticMember.extend({
 		return Member.isVisible(this, true);
 	},
 
+	isMethod: function() {
+		return this.type == 'method';
+	},
+
+	isConstructor: function() {
+		return this.type == 'constructor';
+	},
+
 	signature: function() {
-		return this.member.signature();
+		return this.isCallable() ? this.member.signature() : '';
 	},
 
 	getNameSuffix: function() {
-		return this.member.getNameSuffix();
+		return this.isCallable() ? this.member.getNameSuffix() : '';
 	},
 
 	renderParameters: function() {
-		return this.member.renderParameters && this.member.renderParameters();
+		return this.isCallable() ? this.member.renderParameters() : '';
 	}
 });

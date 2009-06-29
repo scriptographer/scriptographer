@@ -58,7 +58,8 @@ Method = Member.extend(new function() {
 					// functions from inivisble classes where moved to the
 					// derived class and Member.get lookup points there
 					// instead of the overridden version:
-					if (mem && mem.member.containingClass() != member.overriddenClass())
+					if (mem && (mem.member.containingClass() != member.overriddenClass()
+							|| !(mem instanceof Method)))
 						mem = null;
 					// If this method is not wrapped, quickly wrap it just to
 					// call renderMember.

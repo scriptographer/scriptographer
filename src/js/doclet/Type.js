@@ -216,10 +216,17 @@ Type = Object.extend(new function() {
 					|| Type.isNumber(this.typeName()) && Type.isNumber(type.typeName())
 				)
 				// Treat arrays and lists the same, as long as the component type is compatible
-				|| (this.isArray() || this.isList() || this.isCollection())
-					&& (type.isArray() || type.isList() || this.isCollection())
+				|| this.actsAsArray() && type.actsAsArray()
 					&& ((type1 = this.getComponentType()) && (type2 = type.getComponentType())
 						&& type1.isCompatible(type2));
+		},
+
+		/**
+		 * Returns true for all the types that get converted to an Array
+		 * on the JavaScript side.
+		 */
+		actsAsArray: function() {
+			return this.isArray() || this.isList() || this.isCollection();
 		},
 
 		/**
@@ -298,7 +305,7 @@ Type = Object.extend(new function() {
 			} else if (this.isBoolean()) {
 				str = code_filter('Boolean');
 			} else if (!param.linksOnly && (this.isArray()
-					|| !this.isVisible()
+					|| !this.isVisible() // Only show hidden list types as arrays
 							&& (this.isList() || this.isCollection()))) {
 				var type = this.getComponentType();
 				// Support n-dimensional array the lazy way

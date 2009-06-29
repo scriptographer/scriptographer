@@ -57,6 +57,19 @@ MemberGroup = Object.extend({
 		return !this.members.length;
 	},
 
+	getMember: function(signature, strict) {
+		if (signature) {
+			return this.members.find(function(member) {
+				if (member.signature() == signature) {
+					return member;
+				}
+			})
+		} else if (!strict || this.members.lenth == 1) {
+			// When not strict, allow the returning of just the first of many
+			return this.members[0];
+		}
+	},
+
 	remove: function(member) {
 		if (member) {
 			// Remove a member from this group, and the group from its parent
@@ -132,15 +145,18 @@ MemberGroup = Object.extend({
 	},
 
 	statics: {
-		get: function(reference, doc) {
+		getByReference: function(reference, doc) {
 			var [cls, name] = reference.split('#');
-			if (doc && !/\./.test(cls))
-				cls = doc.containingPackage().qualifiedName() + '.' + cls;
-			var classObject = ClassObject.get(cls);
+			if (doc) {
+				if (!cls)
+					cls = doc.name();
+				if (!/\./.test(cls))
+					cls = doc.containingPackage().qualifiedName() + '.' + cls;
+			}
+			var [all, name] = name.match(/^(\w*)/) || [];
 			// If it's a hidden class, force creation through ClassObject.put
-			if (!classObject)
-				classObject = ClassObject.put(cls, true);
-			return classObject.getGroup(name);
+			var obj = ClassObject.get(cls, true);
+			return obj && obj.getGroup(name);
 		}
 	}
 });

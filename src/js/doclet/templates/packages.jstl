@@ -39,7 +39,7 @@ createPackage("<%= $packageName %>",
 <% end %>
 
 <% #hierarchy -%>
-<% foreach $class in param.classes prefix=<%= settings.templates ? '[' : '<ul' + (param.first ? ' class="package-hierarchy hidden"' : '') + '>' %> suffix=<%= settings.templates ? '], ' : '</ul>' %> %>
+<% foreach $class in param.classes prefix=<%= settings.templates ? '[' : '<ul' + (param.first ? ' class="package-hierarchy"' : '') + '>' %> suffix=<%= settings.templates ? '], ' : '</ul>' %> %>
 <% if $class.isVisible() %>
 <% if settings.templates %>
 { name: "<%= $class.name() %>", isAbstract: <%= $class.doc.isAbstract() %>, index: <%= Json.encode($class.index) %> },

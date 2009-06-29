@@ -85,6 +85,6 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% foreach $ex in this.throwsTags() prefix='<ul><b>Throws:</b>' suffix='</ul>' %>
 	<% $cd = $ex.exception() %>
 	<li>
-		<%= $cd ? $cd.renderLink() : $ex.exceptionName() %><% tags doc=$cd tags=$ex.inlineTags() prefix=' &mdash;&nbsp;' %>
+		<%= $cd ? $cd.renderLink() : $ex.exceptionName() %><% tags doc=$cd tags=$ex.inlineTags() stripParagraphs=true prefix=' &mdash;&nbsp;' %>
 	</li>
 <% end %>

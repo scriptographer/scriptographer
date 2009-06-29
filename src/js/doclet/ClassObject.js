@@ -11,7 +11,7 @@ ClassObject = DocObject.extend({
 		this.base(doc);
 		// For the hierarchy:
 		this.visible = visible;
-		this.refernceMembers = [];
+		this.referenceMembers = [];
 		this.lists = new Hash({
 			field: new MemberGroupList(this),
 			method: new MemberGroupList(this),
@@ -21,7 +21,7 @@ ClassObject = DocObject.extend({
 	},
 
 	init: function() {
-		this.add(this.doc, true);
+		this.addDoc(this.doc, true);
 		var superclass = this.doc.superclass();
 		// Add the members of direct invisible superclasses to
 		// this class for JS documentation.
@@ -30,7 +30,7 @@ ClassObject = DocObject.extend({
 		// for inheritance.
 		while (superclass && !superclass.isVisible()
 				&& superclass.qualifiedName() != 'java.lang.Object') {
-			this.add(superclass, false);
+			this.addDoc(superclass, false);
 			superclass = superclass.superclass();
 		}
 		var extensions = this.doc.tags('jsextension');
@@ -48,7 +48,7 @@ ClassObject = DocObject.extend({
 				var list = this.lists[data.type];
 				if (list) {
 					var ref = new ReferenceMember(this, data, list);
-					this.refernceMembers.push(ref);
+					this.referenceMembers.push(ref);
 				}
 			}
 		}
@@ -62,8 +62,23 @@ ClassObject = DocObject.extend({
 	 * field / operator lists.
 	 */
 	scan: function() {
-		this.lists.method.scanBeanProperties(this.lists.field);
-		this.lists.method.scanOperators(this.lists.operator);
+		this.lists.method.scanBeanProperties();
+		this.lists.method.scanOperators();
+	},
+
+	add: function(member) {
+		if (member instanceof Operator)
+			return this.lists.operator.add(member);
+		else if (member instanceof BeanProperty)
+			return this.lists.field.add(member);
+		else if (member instanceof ReferenceMember)
+			return this.lists[member.type].add(member);
+		else
+			return false;
+	},
+
+	hasField: function(name) {
+		return this.lists.field.contains(name);
 	},
 
 	/**
@@ -71,12 +86,40 @@ ClassObject = DocObject.extend({
 	 * processed, e.g. bean properties and operators.
 	 */
 	resolve: function() {
-		this.refernceMembers.each(function(ref) {
+		this.ammend();
+		this.referenceMembers.each(function(ref) {
 			ref.resolve();
 		});
 	},
 
-	add: function(cd, addConstructors) {
+	/**
+	 * Ammends the current class with more members, to reflect the behavior
+	 * of the JS layer.
+	 */
+	ammend: function() {
+		if (this.doc.actsAsArray()) {
+			// Support both read-only and normal lists.
+			var type = this.doc.hasInterface('com.scratchdisk.list.List')
+				? 'com.scratchdisk.list.List'
+				: 'com.scratchdisk.list.ReadOnlyList'; 
+			var obj = ClassObject.get(type, true);
+			if (obj == this) {
+				var getter = obj.getMember('size');
+				// Try setters too, for normal lists
+				if (getter)
+					this.add(new BeanProperty(obj, 'length', getter, this.getMember('setSize')));
+			} else {
+				// Add a reference to the newly added bean above
+				this.referenceMembers.push(new ReferenceMember(this, {
+					name: 'length',
+					reference: type + '#length',
+					type: 'field'
+				}, this.lists.field));
+			}
+		}
+	},
+
+	addDoc: function(cd, addConstructors) {
 		this.lists.field.addAll(cd.fields(true));
 		this.lists.method.addAll(cd.methods(true));
 		if (addConstructors)
@@ -87,6 +130,11 @@ ClassObject = DocObject.extend({
 		return this.lists.find(function(list, key) {
 			return list.get(name);
 		});
+	},
+
+	getMember: function(name, signature) {
+		var group = this.getGroup(name);
+		return group && group.getMember(signature);
 	},
 
 	methods: function() {
@@ -316,10 +364,12 @@ ClassObject = DocObject.extend({
 			return null;
 		},
 
-		get: function(param) {
-			if (param && param.qualifiedName)
-				param = param.qualifiedName();
-			return this.classObjects[param]
+		get: function(param, force) {
+			var name = param && (typeof param == 'string' ? param : param.qualifiedName());
+			var obj = this.classObjects[name];
+			if (!obj && force)
+				obj = ClassObject.put(param, force);
+			return obj;
 		},
 
 		getClassDoc: function(name) {
