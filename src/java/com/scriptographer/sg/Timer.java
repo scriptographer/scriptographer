@@ -168,7 +168,10 @@ public class Timer {
 			for (Iterator it = unused.iterator(); it.hasNext();)
 				((Timer) it.next()).stop();
 	}
-	
+
+	/**
+	 * @jshide
+	 */
 	public static void disposeAll() {
 		// As remove() modifies the map, using an iterator is not possible here:
 		Object[] timers = Timer.timers.values().toArray();

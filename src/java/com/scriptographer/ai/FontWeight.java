@@ -36,6 +36,9 @@ package com.scriptographer.ai;
  */
 public class FontWeight extends NativeObject {
 
+	/**
+	 * @jshide
+	 */
 	public static final FontWeight NONE = new FontWeight(0);
 
 	protected FontWeight(int handle) {

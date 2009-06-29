@@ -450,9 +450,6 @@
 				<param name="-methodfilter" value="
 					iterator
 					hashCode
-					destroyAll
-					disposeAll
-					removeAll
 					toString
 				"/>
 				<param name="-classorder" value="classorder.txt"/>

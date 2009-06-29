@@ -128,7 +128,10 @@ public class Annotator extends NativeObject {
 			getUnusedAnnotators().add(this);
 		}
 	}
-	
+
+	/**
+	 * @jshide
+	 */
 	public static void disposeAll() {
 		// As remove() modifies the map, using an iterator is not possible here:
 		Object[] annotators = Annotator.annotators.values().toArray();
