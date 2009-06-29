@@ -10,7 +10,7 @@ function renderLink(param) {
 	if (settings.hyperref) {
 		var str = '<a href="';
 		if (param.path) {
-			var path = getRelativeIdentifier(param.path).replace('.', '/');
+			var path = DocObject.getRelativeIdentifier(param.path).replace('.', '/');
 			// Link to the index file for packages
 			var name = Type.getSimpleName(param.path);
 			if (name.charAt(0).isLowerCase() && name != 'global')

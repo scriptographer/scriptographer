@@ -6,5 +6,5 @@
 <% end %>
 
 <% #text -%>
-<% tags classDoc=param.classDoc tags=this.inlineTags() %>
+<% tags doc=param.doc tags=this.inlineTags() %>
 <% this.template "member#return" %>

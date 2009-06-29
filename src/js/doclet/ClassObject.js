@@ -6,13 +6,11 @@
  * http://dev.scriptographer.com/ 
  */
 
-// ClassObject
-ClassObject = Object.extend({
-	initialize: function(classDoc, visible) {
-		this.classDoc = classDoc;
+ClassObject = DocObject.extend({
+	initialize: function(doc, visible) {
+		this.base(doc);
 		// For the hierarchy:
 		this.visible = visible;
-		this.children = new Hash();
 		this.refernceMembers = [];
 		this.lists = new Hash({
 			field: new MemberGroupList(this),
@@ -23,8 +21,8 @@ ClassObject = Object.extend({
 	},
 
 	init: function() {
-		this.add(this.classDoc, true);
-		var superclass = this.classDoc.superclass();
+		this.add(this.doc, true);
+		var superclass = this.doc.superclass();
 		// Add the members of direct invisible superclasses to
 		// this class for JS documentation.
 		// Careful: This should only be done with direct invisible superclasses,
@@ -35,7 +33,7 @@ ClassObject = Object.extend({
 			this.add(superclass, false);
 			superclass = superclass.superclass();
 		}
-		var extensions = this.classDoc.tags('jsextension');
+		var extensions = this.doc.tags('jsextension');
 		// Loop through the extensions backwards, so insertion sequence through 
 		// @after tags is maintained.
 		for (var i = extensions.length - 1; i >= 0; i--) {
@@ -59,13 +57,19 @@ ClassObject = Object.extend({
 		this.lists.constructor.init();
 	},
 
+	/**
+	 * Scans for beanProperties and operators and add these to the 
+	 * field / operator lists.
+	 */
 	scan: function() {
-		// Scan for beanProperties and operators and add these to the 
-		// field / operator lists.
 		this.lists.method.scanBeanProperties(this.lists.field);
 		this.lists.method.scanOperators(this.lists.operator);
 	},
 
+	/**
+	 * Resolves reference members after all other things are scanned and
+	 * processed, e.g. bean properties and operators.
+	 */
 	resolve: function() {
 		this.refernceMembers.each(function(ref) {
 			ref.resolve();
@@ -102,16 +106,8 @@ ClassObject = Object.extend({
 	},
 
 	name: function() {
-		var name = this.classDoc.name();
+		var name = this.base();
 		return name == 'global' ? 'Global Scope' : name;
-	},
-
-	qualifiedName: function() {
-		return this.classDoc.qualifiedName();
-	},
-
-	toString: function() {
-		return this.classDoc.toString();
 	},
 
 	isVisible: function() {
@@ -127,13 +123,13 @@ ClassObject = Object.extend({
 	},
 
 	renderClass: function() {
-		var cd = this.classDoc, index = null;
+		var cd = this.doc, index = null;
 		if (settings.templates) {
-			index = {
+			index = this.index = {
 				'class': {
 					title: cd.name(),
 					text: renderTags({ 
-						classDoc: cd, tags: cd.inlineTags()
+						doc: cd, tags: cd.inlineTags()
 					})
 				}
 			};
@@ -145,7 +141,7 @@ ClassObject = Object.extend({
 		var path = cd.qualifiedName();
 		// Cut away name:
 		path = path.substring(0, path.length - className.length);
-		path = getRelativeIdentifier(path);
+		path = DocObject.getRelativeIdentifier(path);
 		var doc = new Document(path, className, 'document');
 
 		// From now on, the global out writes to doc
@@ -184,16 +180,16 @@ ClassObject = Object.extend({
 			}, [[], []]);
 		}
 
-		this.renderMembers({ classDoc: cd, members: constructors, title: 'Constructors', index: index });
-		this.renderMembers({ classDoc: cd, members: operators, title: 'Operators', index: index });
+		this.renderMembers({ doc: cd, members: constructors, title: 'Constructors', index: index });
+		this.renderMembers({ doc: cd, members: operators, title: 'Operators', index: index });
 
 		fields = separateStatic(fields);
-		this.renderMembers({ classDoc: cd, members: fields[0], title: 'Properties', index: index });
-		this.renderMembers({ classDoc: cd, members: fields[1], title: 'Static Properties', index: index });
+		this.renderMembers({ doc: cd, members: fields[0], title: 'Properties', index: index });
+		this.renderMembers({ doc: cd, members: fields[1], title: 'Static Properties', index: index });
 
 		methods = separateStatic(methods);
-		this.renderMembers({ classDoc: cd, members: methods[0], title: 'Functions', index: index });
-		this.renderMembers({ classDoc: cd, members: methods[1], title: 'Static Functions', index: index });
+		this.renderMembers({ doc: cd, members: methods[0], title: 'Functions', index: index });
+		this.renderMembers({ doc: cd, members: methods[1], title: 'Static Functions', index: index });
 
 		if (settings.inherited) {
 			var first = true;
@@ -220,14 +216,13 @@ ClassObject = Object.extend({
 					addNonSimilar(methods[0]);
 
 					if (inherited.length)
-						classes.push({ classDoc: superclass, members: inherited });
+						classes.push({ doc: superclass, members: inherited });
 				}
 				superclass = superclass.superclass();
 			}
-			this.renderTemplate('class#inheritance', { classDoc: cd, classes: classes }, out);
+			this.renderTemplate('class#inheritance', { doc: cd, classes: classes }, out);
 		}
 		doc.close();
-		return index;
 	},
 
 	/**
@@ -256,14 +251,14 @@ ClassObject = Object.extend({
 			}
 		});
 		this.renderTemplate('summaries', {
-			members: members, title: title, classDoc: cd
+			members: members, title: title, doc: cd
 		}, out);
 	},
 
 	statics: {
-		scan: function(root) {
-			root.classes().each(function(classDoc) {
-				ClassObject.put(classDoc);
+		process: function(classes) {
+			classes.each(function(doc) {
+				ClassObject.put(doc);
 			});
 			// Now initialize them. init needs all the others to be there,
 			// due to bean prop stuff
@@ -283,11 +278,11 @@ ClassObject = Object.extend({
 			});
 		},
 
-		put: function(classDoc, force) {
-			if (typeof classDoc == 'string')
-				classDoc = this.classDocs[classDoc];
-			if (classDoc) {
-				var name = classDoc.qualifiedName();
+		put: function(doc, force) {
+			if (typeof doc == 'string')
+				doc = this.docs[doc];
+			if (doc) {
+				var name = doc.qualifiedName();
 				var visible = !(
 					// classMatch regular expression
 					settings.classMatch && !settings.classMatch.test(name)
@@ -299,15 +294,15 @@ ClassObject = Object.extend({
 					})
 					// Do not add any of Enums, since they are represented
 					// as strings in the scripting environment.
-					|| classDoc.hasSuperclass('java.lang.Enum')
+					|| doc.hasSuperclass('java.lang.Enum')
 					// Support @jshide tag for classes
-					|| classDoc.tags('jshide')[0]
+					|| doc.tags('jshide')[0]
 				);
-				// Always add to classDocs, even when they're hidden, to be able to
+				// Always add to docs, even when they're hidden, to be able to
 				// do lookups through getClassDoc.
-				this.classDocs[name] = classDoc;
+				this.docs[name] = doc;
 				if (visible || force) {
-					var obj = new ClassObject(classDoc, visible);
+					var obj = new ClassObject(doc, visible);
 					this.classObjects[name] = obj;
 					if (force) {
 						// Execute all initialisation steps at once now.
@@ -328,7 +323,7 @@ ClassObject = Object.extend({
 		},
 
 		getClassDoc: function(name) {
-			return this.classDocs[name];
+			return this.docs[name];
 		},
 
 		renderLink: function(param) {
@@ -336,30 +331,12 @@ ClassObject = Object.extend({
 			var mem = this.get(param.name);
 			// use renderClassLink, as renderLink might have been overridden
 			// by new Type(...)
-			return mem && mem.classDoc
-				? mem.classDoc.renderClassLink({})
+			return mem && mem.doc
+				? mem.doc.renderClassLink({})
 				: code_filter(Type.getSimpleName(param.name));
 		},
 
 		classObjects: {},
-		classDocs: {}
-	},
-
-	addChild: function(mem) {
-		this.children[mem.qualifiedName()] = mem;
-	},
-
-	removeChild: function(mem) {
-		delete this.children[mem.qualifiedName()];
-	},
-
-	renderHierarchy: function(first) {
-		var classes = this.children.sortBy(function(mem) {
-			return settings.classOrder[mem.name()] || Number.MAX_VALUE;
-		});
-		return this.renderTemplate('packages#hierarchy', {
-			classes: classes,
-			first: first
-		}, out);
+		docs: {}
 	}
 });

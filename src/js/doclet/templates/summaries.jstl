@@ -1,6 +1,6 @@
 <%= param.title | heading 2 %>
 <ul>
 <% foreach $member in param.members %>
-	<% $member.renderSummary(param.classDoc) %>
+	<% $member.renderSummary(param.doc) %>
 <% end %>
 </ul>

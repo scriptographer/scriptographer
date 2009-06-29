@@ -161,12 +161,12 @@ Method = Member.extend(new function() {
 			return this.renderParameters();
 		},
 
-		renderSummary: function(classDoc) {
+		renderSummary: function(doc) {
 			var overridden = getOverriddenCommentedMethod(this.member, this.classObject);
 			if (overridden)
-				return overridden.renderSummary(classDoc);
+				return overridden.renderSummary(doc);
 			else
-				return this.base(classDoc);
+				return this.base(doc);
 		},
 
 		renderMember: function(param) {
@@ -233,11 +233,11 @@ Method = Member.extend(new function() {
 		},
 
 		containingClass: function() {
-			return this.classObject.classDoc;
+			return this.classObject.doc;
 		},
 
 		containingPackage: function() {
-			return this.classObject.classDoc.containingPackage();
+			return this.classObject.doc.containingPackage();
 		},
 
 		parameters: function() {

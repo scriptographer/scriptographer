@@ -58,7 +58,7 @@ LinkTag = Tag.extend({
 		var ref = this.referencedMember() || this.referencedClass();
 		if (!ref) {
 			// Try to find this object in the current package
-			var pkg = param.packageDoc || param.classDoc && param.classDoc.containingPackage();
+			var pkg = param.packageDoc || param.doc && param.doc.containingPackage();
 			if (pkg) {
 				ref = pkg.findClass(this.referencedClassName());
 				if (this.referencedMemberName()) {

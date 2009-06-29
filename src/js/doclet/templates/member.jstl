@@ -18,7 +18,7 @@
 <% $title -%>
 <tt><b><%-%>
 <% if this.isStatic() %>
-<%= param.classDoc.name() %>.<%-%>
+<%= param.doc.name() %>.<%-%>
 <% end %>
 <%= this.name() %></b><%-%>
 <% if this.renderParameters %>
@@ -29,13 +29,13 @@
 <%-- $text cannot be rendered as a sub template since we need the inlineTags to be processed right at
 the beginning of the rendering of this template, in order for data.group stuff to be processed and ready above --%>
 <% $text -%>
-<% $classDoc = this.containingClass() %>
-<% tags classDoc=$classDoc tags=this.inlineTags() %>
-<% this.template '#parameters' classDoc=$classDoc %>
-<% this.template '#accepts' classDoc=$classDoc %>
-<% this.template '#return' classDoc=$classDoc %>
-<% this.template '#throws' classDoc=$classDoc %>
-<% tags classDoc=$classDoc tags=this.seeTags() stripParagraphs=true prefix='<p><b>See also:</b> ' suffix='</p>' separator=', ' %>
+<% $doc = this.containingClass() %>
+<% tags doc=$doc tags=this.inlineTags() %>
+<% this.template '#parameters' doc=$doc %>
+<% this.template '#accepts' doc=$doc %>
+<% this.template '#return' doc=$doc %>
+<% this.template '#throws' doc=$doc %>
+<% tags doc=$doc tags=this.seeTags() stripParagraphs=true prefix='<p><b>See also:</b> ' suffix='</p>' separator=', ' %>
 
 <% #header -%>
 <div class="member-header">
@@ -53,7 +53,7 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% foreach $entry in this.getParameters() prefix='<ul><b>Parameters:</b>' suffix='</ul>' %>
 <li><tt><%= $entry.param.name() %>: </tt><%= $entry.param.paramType().renderLink() -%>
 <% if $entry.tag %>
-<% tags classDoc=param.classDoc tags=$entry.tag.inlineTags() stripParagraphs=true prefix=' &mdash;&nbsp;' -%>
+<% tags doc=param.doc tags=$entry.tag.inlineTags() stripParagraphs=true prefix=' &mdash;&nbsp;' -%>
 <% end %>
 <%= $entry.param.paramType().renderAdditional() -%>
 <% default prefix=' &mdash;&nbsp;' default=<%= $entry.optional ? ' &mdash;&nbsp;optional' : '' %> -%>
@@ -75,7 +75,7 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <li>
 <%= $returnType.renderLink({ additional: true }) %>
 <% foreach $tag in this.tags('return') prefix=' &mdash;&nbsp;' %>
-<% tags classDoc=param.classDoc tags=$tag.inlineTags() stripParagraphs=true -%>
+<% tags doc=param.doc tags=$tag.inlineTags() stripParagraphs=true -%>
 <% end %>
 </li>
 </ul> 
@@ -85,6 +85,6 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% foreach $ex in this.throwsTags() prefix='<ul><b>Throws:</b>' suffix='</ul>' %>
 	<% $cd = $ex.exception() %>
 	<li>
-		<%= $cd ? $cd.renderLink() : $ex.exceptionName() %><% tags classDoc=$cd tags=$ex.inlineTags() prefix=' &mdash;&nbsp;' %>
+		<%= $cd ? $cd.renderLink() : $ex.exceptionName() %><% tags doc=$cd tags=$ex.inlineTags() prefix=' &mdash;&nbsp;' %>
 	</li>
 <% end %>

@@ -26,7 +26,7 @@ Member = Object.extend({
 				param.index[this.getId()] = {
 					title: this.name(),
 					text: renderTags({
-						classDoc: param.classDoc, tags: this.inlineTags()
+						doc: param.doc, tags: this.inlineTags()
 					})
 				}
 			}
@@ -108,8 +108,8 @@ Member = Object.extend({
 		return this.member.isConstructor();
 	},
 
-	renderSummary: function(classDoc) {
-		return this.renderTemplate('summary', { classDoc: classDoc });
+	renderSummary: function(doc) {
+		return this.renderTemplate('summary', { doc: doc });
 	},
 
 	getId: function() {
@@ -124,9 +124,9 @@ Member = Object.extend({
 		param = param || {};
 		// In case the class is invisible, the current class needs to be used instead
 		var containing = this.containingClass();
-		if (!containing.isVisible() && param.classDoc.superclass() == containing)
-			containing = param.classDoc;
-		var sameClass = containing == param.classDoc;
+		if (!containing.isVisible() && param.doc.superclass() == containing)
+			containing = param.doc;
+		var sameClass = containing == param.doc;
 		return renderLink({
 			path: containing.qualifiedName(),
 			anchor: this.getId(),
@@ -197,5 +197,25 @@ Member = Object.extend({
 			var hide = member && member.tags('jshide')[0];
 			return !(hide && (!forceAll || hide.text() == 'all') || !member);
 		}
+	}
+});
+
+// Extend native MemberDocImpl with some helpers:
+MemberDocImpl.inject({
+	isVisible: function() {
+		return !!Member.get(this);
+	},
+
+	renderLink: function(param) {
+		param = param || {};
+		var mem = Member.get(this);
+		return mem
+			? mem.renderLink(param)
+			// Invisible members do not get wrapped in Member objects, so they
+			// need to at least render something that gives a hint which function
+			// they would be. (e.g. when linking to invisible methods using @link)
+			: code_filter((this.containingClass() != param.doc
+				? this.containingClass().name() + (this.isStatic() ? '.' : '#')
+				: '') + this.name() + (this.signature ? this.signature() : ''));
 	}
 });

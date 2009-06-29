@@ -35,7 +35,7 @@ ReferenceMember = SyntheticMember.extend({
 	},
 
 	containingClass: function() {
-		return this.classObject.classDoc;
+		return this.classObject.doc;
 	},
 
 	getVisible: function() {

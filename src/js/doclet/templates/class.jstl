@@ -1,11 +1,11 @@
 <% if !settings.templates %>
 <%= this.name() | heading 1 %>
 <% end %>
-<% $superclass = this.classDoc.getSuperclass() %>
-<% $listDescription = this.classDoc.getListDescription() %>
-<% $superclass = this.classDoc.getSuperclass() %>
-<% if this.classDoc.isAbstract() || $superclass || $listDescription || $subclasses  %>
-<p><%= param.type %> <%= this.classDoc.renderLink() -%>
+<% $superclass = this.doc.getSuperclass() %>
+<% $listDescription = this.doc.getListDescription() %>
+<% $superclass = this.doc.getSuperclass() %>
+<% if this.doc.isAbstract() || $superclass || $listDescription || $subclasses  %>
+<p><%= param.type %> <%= this.doc.renderLink() -%>
 <% if $superclass %>
  extends <%= $superclass.renderLink() -%>
 <% end %>
@@ -17,14 +17,14 @@
 <% end %>
 </p>
 <% end %>
-<% tags classDoc=this.classDoc tags=this.classDoc.inlineTags() prefix="<p>" suffix="</p>" %>
-<% tags classDoc=this.classDoc tags=this.classDoc.seeTags() prefix="<p><b>See also: </b>" suffix="</p>" separator=", " %>
+<% tags doc=this.doc tags=this.doc.inlineTags() prefix="<p>" suffix="</p>" %>
+<% tags doc=this.doc tags=this.doc.seeTags() prefix="<p><b>See also: </b>" suffix="</p>" separator=", " %>
 <% if settings.versionInfo %>
-	<% tags classDoc=this.classDoc tags=this.classDoc.tags("version") prefix=<%= "Version" | heading 2 %> suffix="</p>" separator=", " %>
+	<% tags doc=this.doc tags=this.doc.tags("version") prefix=<%= "Version" | heading 2 %> suffix="</p>" separator=", " %>
 <% end %>
 
 <% $subclasses -%>
-<% foreach $class in this.classDoc.getSubclasses() separator=", " %><%= $class.renderLink() %><% end -%>
+<% foreach $class in this.doc.getSubclasses() separator=", " %><%= $class.renderLink() %><% end -%>
 
 <% #interface %>
 <%-- empty --%>
@@ -37,11 +37,11 @@
 <br />
 	<% end %>
 <ul class="documentation-inherited">
-	<li><%= $class.classDoc.renderLink() %></li>
+	<li><%= $class.doc.renderLink() %></li>
 	<li>
 		<ul>
 	<% foreach $member in $class.members %>
-		<li><%= $member.renderLink({ classDoc: param.classDoc, shortTitle: true }) %></li>
+		<li><%= $member.renderLink({ doc: param.doc, shortTitle: true }) %></li>
 	<% end %>
 		</ul>
 	</li>

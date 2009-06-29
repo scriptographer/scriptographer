@@ -132,10 +132,10 @@ MemberGroup = Object.extend({
 	},
 
 	statics: {
-		get: function(reference, classDoc) {
+		get: function(reference, doc) {
 			var [cls, name] = reference.split('#');
-			if (classDoc && !/\./.test(cls))
-				cls = classDoc.containingPackage().qualifiedName() + '.' + cls;
+			if (doc && !/\./.test(cls))
+				cls = doc.containingPackage().qualifiedName() + '.' + cls;
 			var classObject = ClassObject.get(cls);
 			// If it's a hidden class, force creation through ClassObject.put
 			if (!classObject)
