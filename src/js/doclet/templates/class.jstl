@@ -2,18 +2,17 @@
 <%= this.name() | heading 1 %>
 <% end %>
 <% $superclass = this.doc.getSuperclass() %>
-<% $listDescription = this.doc.getListDescription() %>
-<% $superclass = this.doc.getSuperclass() %>
-<% if this.doc.isAbstract() || $superclass || $listDescription || $subclasses  %>
-<p><%= param.type %> <%= this.doc.renderLink() -%>
+<% $listDescription = this.doc.getListDescription(true) %>
+<% if $superclass || $listDescription || $subclasses  %>
+<p>
 <% if $superclass %>
- extends <%= $superclass.renderLink() -%>
+Extends <%= $superclass.renderLink() -%><br />
 <% end %>
 <% if $listDescription %>
-<% if $superclass %>, <% end %>, <%= settings.templates ? '<% this.listDescription type="' + $listDescription + '" %>' : $listDescription %>
+<%= settings.templates ? '<% this.listDescription type="' + $listDescription + '" %>' : $listDescription %><br />
 <% end %>
 <% if $subclasses %>
-<br />Inherited by <%= $subclasses %>
+Inherited by <%= $subclasses %><br />
 <% end %>
 </p>
 <% end %>
@@ -24,7 +23,7 @@
 <% end %>
 
 <% $subclasses -%>
-<% foreach $class in this.doc.getSubclasses() separator=", " %><%= $class.renderLink() %><% end -%>
+<% foreach $class in this.doc.getSubclasses() separator=', ' %><%= $class.renderLink() %><% end %>
 
 <% #interface %>
 <%-- empty --%>

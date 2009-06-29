@@ -10,6 +10,9 @@
  * A virtual field that unifies getter and setter functions, just like Rhino does
  */
 BeanProperty = SyntheticMember.extend({
+
+	type: 'field',
+
 	initialize: function(classObject, name, getter, setters) {
 		if (getter instanceof MemberGroup)
 			getter = getter.extractGetter();

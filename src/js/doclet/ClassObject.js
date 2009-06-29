@@ -67,14 +67,8 @@ ClassObject = DocObject.extend({
 	},
 
 	add: function(member) {
-		if (member instanceof Operator)
-			return this.lists.operator.add(member);
-		else if (member instanceof BeanProperty)
-			return this.lists.field.add(member);
-		else if (member instanceof ReferenceMember)
-			return this.lists[member.type].add(member);
-		else
-			return false;
+		var list = this.lists[member.type];
+		return list && list.add(member);
 	},
 
 	hasField: function(name) {

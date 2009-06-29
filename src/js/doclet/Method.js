@@ -74,6 +74,9 @@ Method = Member.extend(new function() {
 	}
 
 	return {
+
+		type: 'method',
+
 		initialize: function(classObject, method) {
 			this.base(classObject);
 			this.isGrouped = false;

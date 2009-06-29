@@ -16,7 +16,10 @@ Operator = SyntheticMember.extend(new function() {
 		add: 'Addition', subtract: 'Subtraction', multiply: 'Multiplication',
 		divide: 'Division', equals: 'Comparison'
 	};
+
 	return {
+		type: 'operator',
+
 		initialize: function(classObject, operators) {
 			var operator = operators.members[0];
 			this.base(classObject, operator.name(), operator);

@@ -8,6 +8,11 @@
 
 // Member
 Member = Object.extend({
+
+	// Type identifies which list this member is added to. to be overridden 
+	// in inerhiting prototypes.
+	type: 'field',
+
 	initialize: function(classObject, member) {
 		this.classObject = classObject;
 		this.member = member;

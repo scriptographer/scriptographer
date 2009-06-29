@@ -111,11 +111,12 @@ Type = Object.extend(new function() {
 		},
 
 		getSubclasses: function() {
-			var cd = this.asClassDoc();
-			return root.classes().each(function(cls) {
-				if (cls.isVisible() && cls.superclass() == cd && !cls.equals(cd))
+			var doc = this.asClassDoc();
+			var subs = root.classes().each(function(cls) {
+				if (cls.isVisible() && cls != doc && cls.getSuperclass() == doc)
 					this.push(cls);
 			}, []);
+			return subs;
 		},
 
 		subclassOf: function(other) {
@@ -273,19 +274,23 @@ Type = Object.extend(new function() {
 			return this._componentType;
 		},
 
-		getListDescription: function() {
-			if (this.hasInterface('com.scratchdisk.list.List'))
-				return null;
-			var stringIndex = 'also accessible by name';
-			var readOnly = 'read-only';
-			var parts;
-			if (this.hasInterface('com.scratchdisk.list.StringIndexList'))
-				parts = [stringIndex];
-			else if (this.hasInterface('com.scratchdisk.list.ReadOnlyStringIndexList'))
-				parts = [readOnly, stringIndex];
-			else if (this.hasInterface('com.scratchdisk.list.ReadOnlyList'))
-				parts = [readOnly];
-			return parts && parts.join(', ') + '.';
+		getListDescription: function(full) {
+			if (this.isList()) {
+				if (this.hasInterface('com.scratchdisk.list.List'))
+					return null;
+				var stringIndex = 'also accessible by name';
+				var readOnly = 'read-only';
+				var parts = [];
+				if (this.hasInterface('com.scratchdisk.list.StringIndexList'))
+					parts = [stringIndex];
+				else if (this.hasInterface('com.scratchdisk.list.ReadOnlyStringIndexList'))
+					parts = [readOnly, stringIndex];
+				else if (this.hasInterface('com.scratchdisk.list.ReadOnlyList'))
+					parts = [readOnly];
+				if (full) 
+					parts.unshift(this.renderLink({ arrayOnly: true }));
+				return parts.join(', ') + '.';
+			}
 		},
 
 		getType: function() {
@@ -305,7 +310,7 @@ Type = Object.extend(new function() {
 			} else if (this.isBoolean()) {
 				str = code_filter('Boolean');
 			} else if (!param.linksOnly && (this.isArray()
-					|| !this.isVisible() // Only show hidden list types as arrays
+					|| (!this.isVisible() || param.arrayOnly) // Only show hidden list types as arrays
 							&& (this.isList() || this.isCollection()))) {
 				var type = this.getComponentType();
 				// Support n-dimensional array the lazy way
