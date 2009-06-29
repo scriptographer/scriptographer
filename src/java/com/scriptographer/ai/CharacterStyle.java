@@ -171,9 +171,6 @@ public class CharacterStyle extends PathStyle {
 		fetched = true;
 	}
 
-	/**
-	 * @jshide
-	 */
 	public void commit() {
 		if (dirty) {
 			if (pathStyleChanged)

@@ -38,5 +38,8 @@ package com.scratchdisk.list;
  * @author lehni 
  */
 public interface ReadOnlyStringIndexList<E> {
+	/**
+	 * @jshide
+	 */
 	public E get(String name);
 }

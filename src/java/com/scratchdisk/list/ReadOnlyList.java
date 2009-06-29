@@ -36,11 +36,33 @@ package com.scratchdisk.list;
  * @author lehni 
  */
 public interface ReadOnlyList<E> extends Iterable<E> {
+	/**
+	 * @jshide
+	 */
 	int size();
+
+	/**
+	 * @jshide
+	 */
 	boolean isEmpty();
+
+	/**
+	 * @jshide
+	 */
 	E get(int index);
+
+	/**
+	 * @jshide
+	 */
 	ExtendedList<E> getSubList(int fromIndex, int toIndex);
 
+	/**
+	 * @jshide
+	 */
 	E getFirst();
+
+	/**
+	 * @jshide
+	 */
 	E getLast();
 }

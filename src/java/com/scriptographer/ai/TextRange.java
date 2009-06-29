@@ -99,9 +99,6 @@ public class TextRange extends DocumentObject implements Commitable {
 		}
 	}
 
-	/**
-	 * @jshide
-	 */
 	public void commit() {
 		// Committing changes for TextRange does not need more than
 		// a reflow of the text layout in the document.

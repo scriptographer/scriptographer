@@ -37,6 +37,8 @@ package com.scriptographer;
 public interface Commitable {
 	/**
 	 * Commits the cached change to the native object.
+	 * 
+	 * @jshide
 	 */
 	public abstract void commit();
 }
