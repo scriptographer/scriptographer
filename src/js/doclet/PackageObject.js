@@ -61,21 +61,21 @@ PackageObject = DocObject.extend({
 	processClasses: function(classes) {
 		// Loop twice, as in the second loop, superclasses are picked from nodes
 		// which is filled in the firs loop
-		classes.each(function(cd) {
-			var cls = ClassObject.get(cd);
+		classes.each(function(doc) {
+			var cls = ClassObject.get(doc);
 			if (cls) {
-				cd.classObj = cls;
+				doc.classObj = cls;
 				this.addChild(cls);
 				// Render this class
 				cls.renderClass();
 			}
 		}, this);
 		// Order according inheritance
-		classes.each(function(cd) {
-			var superclass = cd.getSuperclass();
-			if (cd.classObj && superclass && superclass.classObj) {
-				this.removeChild(cd.classObj);
-				superclass.classObj.addChild(cd.classObj);
+		classes.each(function(doc) {
+			var superclass = doc.getSuperclass();
+			if (doc.classObj && superclass && superclass.classObj) {
+				this.removeChild(doc.classObj);
+				superclass.classObj.addChild(doc.classObj);
 			}
 		}, this);
 	}

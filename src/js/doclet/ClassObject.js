@@ -113,11 +113,11 @@ ClassObject = DocObject.extend({
 		}
 	},
 
-	addDoc: function(cd, addConstructors) {
-		this.lists.field.addAll(cd.fields(true));
-		this.lists.method.addAll(cd.methods(true));
+	addDoc: function(doc, addConstructors) {
+		this.lists.field.addAll(doc.fields(true));
+		this.lists.method.addAll(doc.methods(true));
 		if (addConstructors)
-			this.lists.constructor.addAll(cd.constructors(true));
+			this.lists.constructor.addAll(doc.constructors(true));
 	},
 
 	getGroup: function(name) {
@@ -165,22 +165,22 @@ ClassObject = DocObject.extend({
 	},
 
 	renderClass: function() {
-		var cd = this.doc, index = null;
+		var doc = this.doc, index = null;
 		if (settings.templates) {
 			index = this.index = {
 				'class': {
-					title: cd.name(),
+					title: doc.name(),
 					text: renderTags({ 
-						doc: cd, tags: cd.inlineTags()
+						doc: doc, tags: doc.inlineTags()
 					})
 				}
 			};
 		}
 		// Determine folder + filename for class file:
 		var name = this.name();
-		var className = cd.name();
+		var className = doc.name();
 		// Name and className might differ, e.g. for global -> Global Scope!
-		var path = cd.qualifiedName();
+		var path = doc.qualifiedName();
 		// Cut away name:
 		path = path.substring(0, path.length - className.length);
 		path = DocObject.getRelativeIdentifier(path);
@@ -188,12 +188,12 @@ ClassObject = DocObject.extend({
 
 		// From now on, the global out writes to doc
 		this.renderTemplate('class', {}, out);
-		if (cd.isInterface()) {
+		if (doc.isInterface()) {
 			var subInterfaces = [];
 			var implementingClasses = [];
 			root.classes().each(function(cls) {
 				if (cls.interfaces().find(function(inter) {
-					return inter.equals(cd);
+					return inter.equals(doc);
 				})) (cls.isInterface() ? subInterfaces : implementingClasses).push(cls);
 			});
 			this.renderTemplate('class#interface', {
@@ -209,10 +209,10 @@ ClassObject = DocObject.extend({
 
 		if (settings.summaries) {
 			if (settings.fieldSummary)
-				this.renderSummaries(cd, fields, 'Field summary');
+				this.renderSummaries(doc, fields, 'Field summary');
 			if (settings.constructorSummary)
-				this.renderSummaries(cd, constructors, 'Constructor summary');
-			this.renderSummaries(cd, methods, 'Method summary');
+				this.renderSummaries(doc, constructors, 'Constructor summary');
+			this.renderSummaries(doc, methods, 'Method summary');
 		}
 
 		// Filter members into static and non-static ones:
@@ -222,20 +222,20 @@ ClassObject = DocObject.extend({
 			}, [[], []]);
 		}
 
-		this.renderMembers({ doc: cd, members: constructors, title: 'Constructors', index: index });
-		this.renderMembers({ doc: cd, members: operators, title: 'Operators', index: index });
+		this.renderMembers({ doc: doc, members: constructors, title: 'Constructors', index: index });
+		this.renderMembers({ doc: doc, members: operators, title: 'Operators', index: index });
 
 		fields = separateStatic(fields);
-		this.renderMembers({ doc: cd, members: fields[0], title: 'Properties', index: index });
-		this.renderMembers({ doc: cd, members: fields[1], title: 'Static Properties', index: index });
+		this.renderMembers({ doc: doc, members: fields[0], title: 'Properties', index: index });
+		this.renderMembers({ doc: doc, members: fields[1], title: 'Static Properties', index: index });
 
 		methods = separateStatic(methods);
-		this.renderMembers({ doc: cd, members: methods[0], title: 'Functions', index: index });
-		this.renderMembers({ doc: cd, members: methods[1], title: 'Static Functions', index: index });
+		this.renderMembers({ doc: doc, members: methods[0], title: 'Functions', index: index });
+		this.renderMembers({ doc: doc, members: methods[1], title: 'Static Functions', index: index });
 
 		if (settings.inherited) {
 			var first = true;
-			var superclass = cd.superclass();
+			var superclass = doc.superclass();
 
 			var classes = [];
 			while (superclass && superclass.qualifiedName() != 'java.lang.Object') {
@@ -262,7 +262,7 @@ ClassObject = DocObject.extend({
 				}
 				superclass = superclass.superclass();
 			}
-			this.renderTemplate('class#inheritance', { doc: cd, classes: classes }, out);
+			this.renderTemplate('class#inheritance', { doc: doc, classes: classes }, out);
 		}
 		doc.close();
 	},
@@ -281,7 +281,7 @@ ClassObject = DocObject.extend({
 	 * @param members The fields to be summarized.
 	 * @param title The title of the section.
 	 */
-	renderSummaries: function(cd, members, title) {
+	renderSummaries: function(doc, members, title) {
 		// Only show each name once, and only if the member is visible:
 		var prevName;
 		members = members.select(function(member) {
@@ -293,7 +293,7 @@ ClassObject = DocObject.extend({
 			}
 		});
 		this.renderTemplate('summaries', {
-			members: members, title: title, doc: cd
+			members: members, title: title, doc: doc
 		}, out);
 	},
 

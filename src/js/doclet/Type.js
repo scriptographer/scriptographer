@@ -89,8 +89,8 @@ Type = Object.extend(new function() {
 							return true;
 					});
 					if (!val) {
-						var cd = doc.superclass();
-						if (cd) val = cd.hasInterface(face);
+						var doc = doc.superclass();
+						if (doc) val = doc.hasInterface(face);
 					}
 				}
 				setCached(this, face, 'interface', val);
@@ -101,8 +101,8 @@ Type = Object.extend(new function() {
 		getSuperclass: function() {
 			// Caching
 			if (this._superclass === undefined) {
-				var cd = this.asClassDoc();
-				var sc = cd.superclass();
+				var doc = this.asClassDoc();
+				var sc = doc.superclass();
 				while (sc && !sc.isVisible())
 					sc = sc.superclass();
 				this._superclass = sc;
@@ -120,19 +120,19 @@ Type = Object.extend(new function() {
 		},
 
 		subclassOf: function(other) {
-			var cd = this.asClassDoc();
-			return cd && other && cd.subclassOf(other) || false;
+			var doc = this.asClassDoc();
+			return doc && other && doc.subclassOf(other) || false;
 		},
 
 		qualifiedName: function() {
-			var cd = this.asClassDoc();
-			return cd && cd.qualifiedName() || '';
+			var doc = this.asClassDoc();
+			return doc && doc.qualifiedName() || '';
 		},
 
 		isVisible: function() {
 			var obj = ClassObject.get(this.asClassDoc());
 			return obj && obj.isVisible();
-			return cd && cd.isVisible() || true;
+			return doc && doc.isVisible() || true;
 		},
 
 		typeArguments: function() {
@@ -238,8 +238,8 @@ Type = Object.extend(new function() {
 			if (this._componentType === undefined) {
 				this._componentType = null;
 				if (this.isArray()) {
-					var  cd = this.asClassDoc();
-					this._componentType = cd ? new Type(cd) : null;
+					var  doc = this.asClassDoc();
+					this._componentType = doc ? new Type(doc) : null;
 				} else if (this.isList() || this.isCollection()) {
 					// Generics stuff
 					var type = this.typeArguments()[0];
