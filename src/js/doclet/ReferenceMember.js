@@ -39,7 +39,7 @@ ReferenceMember = SyntheticMember.extend({
 	},
 
 	getVisible: function() {
-		return Member.isVisible(this.member, true);
+		return Member.isVisible(this, true);
 	},
 
 	signature: function() {

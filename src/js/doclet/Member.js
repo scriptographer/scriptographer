@@ -60,20 +60,33 @@ Member = Object.extend({
 		return this.member.containingPackage();
 	},
 
+	/**
+	 * Returns the member to use for comments. Allows for easy overriding in
+	 * any of the subclasses. Used in Method, for overridden methods with comments.
+	 */ 
+	getCommentedMember: function() {
+		return this.member;
+	},
+
 	firstSentenceTags: function() {
-		return this.member.firstSentenceTags();
+		return this.getCommentedMember().firstSentenceTags();
 	},
 
 	inlineTags: function() {
-		return this.member.inlineTags();
+		return this.getCommentedMember().inlineTags();
 	},
 
 	seeTags: function() {
-		return this.member.seeTags();
+		return this.getCommentedMember().seeTags();
 	},
 
 	throwsTags: function() {
-		return this.member.throwsTags ? this.member.throwsTags() : null;
+		var commented = this.getCommentedMember();
+		return commented.throwsTags ? commented.throwsTags() : null;
+	},
+
+	tags: function(tagname) {
+		return this.getCommentedMember().tags(tagname);
 	},
 
 	getNameSuffix: function() {
@@ -86,10 +99,6 @@ Member = Object.extend({
 
 	returnType: function() {
 		return this.member.isField() ? new Type(this.member.type()) : null;
-	},
-
-	tags: function(tagname) {
-		return this.member.tags(tagname);
 	},
 
 	isStatic: function() {
@@ -156,7 +165,9 @@ Member = Object.extend({
 	},
 
 	getVisible: function() {
-		return Member.isVisible(this.member);
+		// Do not pass this.member, but this, to allow Method to search
+		// for a commented overridden method.
+		return Member.isVisible(this);
 	},
 
 	statics: {

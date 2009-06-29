@@ -36,13 +36,21 @@ Method = Member.extend(new function() {
 		return true;
 	}
 
-	function getOverriddenCommentedMethod(member, classObject) {
+	function getCommentedMethod(member, classObject) {
 		if (member.isMethod() && !member.getRawCommentText()) {
 			// No javadoc available for this method. Recurse through
-			// superclasses
-			// and implemented interfaces to find javadoc of overridden
-			// methods.
+			// superclasses and implemented interfaces to find javadoc of
+			// overridden methods.
 			var overridden = member.overriddenMethod();
+			if (!overridden) {
+				// If we can't find it this way, scan through interfaces manually.
+				overridden = member.containingClass().interfaces().find(function(face) {
+					return face.methods(true).find(function(method) {
+						if (member.overrides(method))
+							return method;
+					});
+				});
+			}
 			if (overridden) {
 				if (overridden.getRawCommentText()) {
 					var mem = Member.get(overridden);
@@ -56,10 +64,10 @@ Method = Member.extend(new function() {
 					// call renderMember.
 					if (!mem)
 						mem = new Method(classObject, overridden);
-					return mem;
-				} else {
-					return getOverriddenCommentedMethod(overridden, classObject);
+					if (!mem.isEmpty())
+						return mem;
 				}
+				return getCommentedMethod(overridden, classObject);
 			}
 		}
 	}
@@ -71,22 +79,24 @@ Method = Member.extend(new function() {
 			this.members = [];
 			this.added = {};
 			if (method)
-				this.add(method);
+				this.add(method, true);
 		},
 
-		add: function(method) {
+		add: function(method, force) {
 			// Do not add superclass versions for overridden methods 
 			var signature = method.signature();
 			if (!this.added[signature]) {
 				this.added[signature] = true;
-				// See wether the new method fits the existing ones:
-				if (this.members.find(function(mem) {
-					return !isCompatible(mem, method);
-				})) return false;
-				// Filter out methods that do not define a concrete generic
-				var type = method.isMethod() && method.returnType();
-				if (type && type.bounds && type.bounds().length == 0)
-					return false;
+				if (!force) {
+					// See wether the new method fits the existing ones:
+					if (this.members.find(function(mem) {
+						return !isCompatible(mem, method);
+					})) return false;
+					// Filter out methods that do not define a concrete generic
+					var type = method.isMethod() && method.returnType();
+					if (type && type.bounds && type.bounds().length == 0)
+						return false;
+				}
 				this.isGrouped = true;
 				this.members.push(method);
 				Member.put(method, this);
@@ -161,23 +171,11 @@ Method = Member.extend(new function() {
 			return this.renderParameters();
 		},
 
-		renderSummary: function(doc) {
-			var overridden = getOverriddenCommentedMethod(this.member, this.classObject);
-			if (overridden)
-				return overridden.renderSummary(doc);
-			else
-				return this.base(doc);
-		},
-
-		renderMember: function(param) {
-			if (this.isVisible()) {
-				var overridden = getOverriddenCommentedMethod(this.member, this.classObject);
-				if (overridden) {
-					return overridden.renderMember(param);
-				} else {
-					return this.base(param);
-				}
-			}
+		getCommentedMember: function() {
+			if (this._commented === undefined)
+				this._commented = getCommentedMethod(this.member, this.classObject)
+						|| this.member;
+			return this._commented;
 		},
 
 		getParameters: function() {
