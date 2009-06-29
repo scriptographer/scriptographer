@@ -423,7 +423,7 @@
 		<!--
 		<javadoc packagenames="com.scriptographer.test"
 		-->
-		<javadoc packagenames="com.scriptographer,com.scriptographer.sg,com.scriptographer.ai,com.scriptographer.ui,com.scriptographer.util,java.*"
+		<javadoc packagenames="java.*,com.scriptographer,com.scriptographer.ai,com.scriptographer.ui,com.scriptographer.sg,com.scratchdisk.list"
 				sourcepathref="docs.sourcepath"
 				destdir="${destdir}"
 				author="false"
