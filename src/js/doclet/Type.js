@@ -274,22 +274,14 @@ Type = Object.extend(new function() {
 			return this._componentType;
 		},
 
-		getListDescription: function(full) {
+		getListDescription: function() {
 			if (this.isList()) {
-				if (this.hasInterface('com.scratchdisk.list.List'))
-					return null;
-				var stringIndex = 'also accessible by name';
-				var readOnly = 'read-only';
 				var parts = [];
-				if (this.hasInterface('com.scratchdisk.list.StringIndexList'))
-					parts = [stringIndex];
-				else if (this.hasInterface('com.scratchdisk.list.ReadOnlyStringIndexList'))
-					parts = [readOnly, stringIndex];
-				else if (this.hasInterface('com.scratchdisk.list.ReadOnlyList'))
-					parts = [readOnly];
-				if (full) 
-					parts.unshift(this.renderLink({ arrayOnly: true }));
-				return parts.join(', ') + '.';
+				if (!this.hasInterface('com.scratchdisk.list.List'))
+					parts.push('read-only');
+				if (this.hasInterface('com.scratchdisk.list.ReadOnlyStringIndexList'))
+					parts.push('also accessible by name');
+				return parts.length ? parts.join(', ') + '.' : '';
 			}
 		},
 
@@ -305,49 +297,55 @@ Type = Object.extend(new function() {
 		renderLink: function(param) {
 			param = param || {};
 			var str;
-			if (this.isNumber()) {
-				str = code_filter('Number');
-			} else if (this.isBoolean()) {
-				str = code_filter('Boolean');
-			} else if (!param.linksOnly && (this.isArray()
+			// Complicated array handling first.
+			if (!param.linksOnly && (this.isArray()
 					|| (!this.isVisible() || param.arrayOnly) // Only show hidden list types as arrays
 							&& (this.isList() || this.isCollection()))) {
 				var type = this.getComponentType();
 				// Support n-dimensional array the lazy way
 				var part = 'Array of ';
+				param.arrayOnly = false;
 				str = (this.dimension().replace(/\[\]/g, part) || part) + (type
-					? type.renderLink({ additional: true })
+					? type.renderLink(param)
 					: code_filter(Type.isNumber(this.typeName())
 						? 'Number'
 						: this.typeName().capitalize()));
-			} else if (this.isMap()) {
-				str = code_filter('Object');
-			} else if (this.isEnum()) {
-				str = code_filter('String');
-			} else {
-				var cls = this.asClassDoc();
-				if (cls && cls.isVisible()) {
-					str = cls.renderClassLink({});
-				} else if (this.isPoint()) {
-					str = ClassObject.renderLink({
-						name: 'com.scriptographer.ai.Point'
-					});
-				} else if (this.isRectangle()) {
-					str = ClassObject.renderLink({
-						name: 'com.scriptographer.ai.Rectangle'
-					});
-				} else if (this.isFile()) {
-					str = ClassObject.renderLink({
-						name: 'com.scriptographer.sg.File'
-					});
-				} else if (this.isFunction()) {
-					return code_filter('Function');
+			} else if (!param.arrayOnly) {
+				if (this.isNumber()) {
+					str = code_filter('Number');
+				} else if (this.isBoolean()) {
+					str = code_filter('Boolean');
+				} else if (this.isMap()) {
+					str = code_filter('Object');
+				} else if (this.isEnum()) {
+					str = code_filter('String');
 				} else {
-					str = code_filter(Type.getSimpleName(cls 
-						? cls.name() 
-						: this.typeName() + this.dimension()));
+					var cls = this.asClassDoc();
+					if (cls && cls.isVisible()) {
+						str = cls.renderClassLink({});
+					} else if (this.isPoint()) {
+						str = ClassObject.renderLink({
+							name: 'com.scriptographer.ai.Point'
+						});
+					} else if (this.isRectangle()) {
+						str = ClassObject.renderLink({
+							name: 'com.scriptographer.ai.Rectangle'
+						});
+					} else if (this.isFile()) {
+						str = ClassObject.renderLink({
+							name: 'com.scriptographer.sg.File'
+						});
+					} else if (this.isFunction()) {
+						return code_filter('Function');
+					} else {
+						str = code_filter(Type.getSimpleName(cls 
+							? cls.name() 
+							: this.typeName() + this.dimension()));
+					}
 				}
 			}
+			if (param.description)
+				str += param.description;
 			if (param.additional) {
 				var add = this.renderAdditional();
 				if (add)

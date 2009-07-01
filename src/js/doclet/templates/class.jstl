@@ -2,7 +2,7 @@
 <%= this.name() | heading 1 %>
 <% end %>
 <% $superclass = this.doc.getSuperclass() %>
-<% $listDescription = this.doc.getListDescription(true) %>
+<% $listDescription = this.doc.renderLink({ arrayOnly: true, additional: true }) %>
 <% if $superclass || $listDescription || $subclasses  %>
 <p>
 <% if $superclass %>

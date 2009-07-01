@@ -299,6 +299,9 @@ Template.prototype = {
 					macro.isControl = allowControls && /^(foreach|if|elseif|else|end)$/.test(next);
 					macro.isData = isEqualTag;
 					macro.isSetter = next[0] == '$'; 
+					var match = macro.isSetter && next.match(/(\$\w*)=$/);
+					if (match)
+						macro.command = match[1];
 				}
 			}
 		}
@@ -337,15 +340,13 @@ Template.prototype = {
 			} else if (part == '|') { 
 				isFirst = true;
 			} else { 
-				if (macro.isSetter && !macro.opcode.length && part[0] != '=')
-					macro.isSetter = false;
-				if (!macro.isData && !macro.isControl && !macro.isSetter) {
-					part = nestedMacro(this, part, code, stack);
-					macro.unnamed.push(part);
+				if (!macro.isData && !macro.isControl) {
+					if (!macro.isSetter || part != '=') {
+						part = nestedMacro(this, part, code, stack);
+						macro.unnamed.push(part);
+					}
 					append = false;
 				} else if (append) { 
-					if (macro.isSetter) 
-						part = nestedMacro(this, part, code, stack);
 					macro.opcode.push(part);
 				} else {
 					throw "Syntax error: '" + part + "'";
@@ -369,8 +370,7 @@ Template.prototype = {
 				values['default'] = /^'"/.test(def) ? '"' + global[values.encoder](def.substring(1, def.length - 1)) + '"'
 					: values.encoder + '(' + def + ')';
 		}
-		if (macro.isSetter && !macro.opcode.length)
-			macro.isSetter = false;
+		macro.isSetter = macro.isSetter && !!macro.unnamed.length;
 		macro.swallow = swallow || macro.isControl || macro.isSetter;
 		macro.tag = tag;
 		return macro;
@@ -383,11 +383,11 @@ Template.prototype = {
 		if (!macro)
 			throw 'Invalid tag';
 		var values = macro.values, result;
+		var codeIndexBefore = code.length;
 		var condition = values['if'];
 		if (condition)
 			code.push(								'if (' + condition + ') {');
 		var postProcess = !!(values.prefix || values.suffix || values.filters);
-		var codeIndexBefore = code.length;
 		if (macro.isData) { 
 			result = this.parseLoopVariables(macro.opcode
 				? macro.command + ' ' + macro.opcode : macro.command, stack);
@@ -467,18 +467,15 @@ Template.prototype = {
 				}
 			}
 		} else { 
-			if (macro.opcode) {
-				if (macro.isSetter)
-					code.push(						'var ' + macro.command + ' ' + this.parseLoopVariables(macro.opcode, stack) + ';');
-				else
-					throw 'Syntax error'; 
+			if (macro.isSetter) {
+				code.push(							'var ' + macro.command + ' = ' + this.parseLoopVariables(macro.unnamed.join(''), stack) + ';');
 			} else {
 				var object = macro.object;
 				postProcess = postProcess | macro.swallow;
 				code.push(		postProcess		?	'out.push();' : null,
 													'var val = template.renderMacro("' + macro.command + '", ' + object + ', "' +
 															macro.name + '", param, ' + this.parseLoopVariables(macro.arguments, stack) + ', out);',
-								macro.swallow	?	'if (val) val = val.toString().trim()' : null,
+								macro.swallow	?	'if (val) val = val.toString().trim();' : null,
 								postProcess		?	'template.write(out.pop()' + (macro.swallow ? '.trim()' : '') + ', ' + values.filters + ', ' + values.prefix + ', ' +
 															values.suffix + ', null, out);' : null);
 				result = 'val';
@@ -492,9 +489,7 @@ Template.prototype = {
 				code.push(							'template.write(' + result + ', ' + values.filters + ', ' + values.prefix + ', ' +
 															values.suffix + ', ' + values['default']  + ', out);');
 			else {
-				if (toString) {
-					return result;
-				} else {
+				if (!toString) {
 					if (/[.()\s]/.test(result)) {
 						code.push(					'var val = ' + result + ';');
 						result = 'val';
@@ -509,12 +504,11 @@ Template.prototype = {
 		}
 		if (toString && postProcess) {
 			code.splice(codeIndexBefore, 0,			'out.push();');
-			return 'out.pop()';
+			result = 'out.pop()';
 		}
 		if (condition)
 			code.push(								'}');
-		if (!toString)
-			return macro.swallow;
+		return toString ? result : macro.swallow;
 	},
 
 	parseLoopVariables: function(str, stack) {

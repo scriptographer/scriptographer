@@ -51,11 +51,8 @@ the beginning of the rendering of this template, in order for data.group stuff t
 <% #parameters -%>
 <% if this.getParameters %>
 <% foreach $entry in this.getParameters() prefix='<ul><b>Parameters:</b>' suffix='</ul>' %>
-<li><tt><%= $entry.param.name() %>: </tt><%= $entry.param.paramType().renderLink() -%>
-<% if $entry.tag %>
-<% tags doc=param.doc tags=$entry.tag.inlineTags() stripParagraphs=true prefix=' &mdash;&nbsp;' -%>
-<% end %>
-<%= $entry.param.paramType().renderAdditional() -%>
+<% $tags=<% tags if=$entry.tag doc=param.doc tags=$entry.tag.inlineTags() stripParagraphs=true prefix=' &mdash;&nbsp;' -%> %>
+<li><tt><%= $entry.param.name() %>: </tt><%= $entry.param.paramType().renderLink({ description: $tags, additional: true }) -%>
 <% default prefix=' &mdash;&nbsp;' default=<%= $entry.optional ? ' &mdash;&nbsp;optional' : '' %> -%>
 </li>
 <% end %>
