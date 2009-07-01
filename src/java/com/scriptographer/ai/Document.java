@@ -575,11 +575,10 @@ public class Document extends NativeObject {
 
 	/**
 	 * Returns all items that match a set of attributes, as specified by the
-	 * passed map.
-	 * For each of the keys in the map, the demanded value can either be true or false.
+	 * passed map. For each of the keys in the map, the demanded value can
+	 * either be true or false.
 	 * 
-	 * Sample code:
-	 * <code>
+	 * Sample code: <code>
 	 * // All hidden paths and rasters contained in the document.
 	 * var hiddenItems = document.getItems({ 
 	 *     types: [Path, Raster], 
@@ -593,8 +592,9 @@ public class Document extends NativeObject {
 	 * });
 	 * </code>
 	 * 
-	 * @param types
-	 * @param attributes
+	 * @param attributes an object containing the various attributes to check
+	 *        for. The key {@code types} defines a single prototype or an array of prototypes to check for.
+	 *        The following keys have {@code Boolean} values to check for the state of the matching items: {@enum ItemAttribute}.
 	 */
 	public ItemList getItems(Map<Object, Object> attributes) {
 		ArrayList<Class> classes = new ArrayList<Class>();
