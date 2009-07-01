@@ -375,7 +375,7 @@ Type = Object.extend(new function() {
 			return str;
 		},
 
-		getEnumConstants: function() {
+		renderEnumConstants: function() {
 			return this.enumConstants().map(function(value) {
 				return code_filter("'" + value.name().toLowerCase().split('_').join('-') + "'");
 			}).join(', ');
@@ -383,14 +383,14 @@ Type = Object.extend(new function() {
 
 		renderAdditional: function() {
 			if (this.isEnum()) {
-				return ' (' + this.getEnumConstants() + ')';
+				return ' (' + this.renderEnumConstants() + ')';
 			} else if (this.isEnumMap()) {
 				var types = this.typeArguments();
 				if (types.length == 2) {
 					var keyType = new Type(types[0]);
 					var valueType = new Type(types[1]);
 					return ' (Values: ' + code_filter(valueType.renderLink()) 
-						+ ', Keys: ' + keyType.getEnumConstants() + ')';
+						+ ', Keys: ' + keyType.renderEnumConstants() + ')';
 				}
 			} else if (this.isList()) {
 				var desc = this.getListDescription();

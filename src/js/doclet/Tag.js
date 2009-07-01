@@ -46,6 +46,11 @@ Tag = Object.extend(new function() {
 				return src._names.split(',').each(function(tag) {
 					tags[tag] = new this();
 				}, this.base(src));
+			},
+
+			findClass: function(name, param) {
+				var pkg = param.packageDoc || param.doc && param.doc.containingPackage();
+				return pkg && pkg.findClass(name);
 			}
 		}
 	}
@@ -58,14 +63,11 @@ LinkTag = Tag.extend({
 		var ref = this.referencedMember() || this.referencedClass();
 		if (!ref) {
 			// Try to find this object in the current package
-			var pkg = param.packageDoc || param.doc && param.doc.containingPackage();
-			if (pkg) {
-				ref = pkg.findClass(this.referencedClassName());
-				if (this.referencedMemberName()) {
-					// TODO: Search for referencedMemberName now too!
-					error('ERROR: implement code to search for: ' + this.referencedMemberName());
-					ref = null;
-				}
+			ref = Tag.findClass(this.referencedClassName(), param);
+			if (this.referencedMemberName()) {
+				// TODO: Search for referencedMemberName now too!
+				error('ERROR: implement code to search for: ' + this.referencedMemberName());
+				ref = null;
 			}
 		}
 		if (ref) {
@@ -82,6 +84,34 @@ LinkTag = Tag.extend({
 						+ ' contains reference to invisible object: ' + ref + (param.doc ? ', from ' + param.doc : ''));
 			}
 			return ref.renderLink(param);
+		} else {
+			error(this.position() + ': warning - ' + this.name()
+					+ ' contains undefined reference: ' + this + (param.doc ? ', from ' + param.doc : ''));
+		}
+	}
+});
+
+AdditionalTag = Tag.extend({
+	_names: '@additional',
+
+	render: function(param) {
+		var ref = Tag.findClass(this.text(), param);
+		if (ref) {
+			return ref.renderAdditional();
+		} else {
+			error(this.position() + ': warning - ' + this.name()
+					+ ' contains undefined reference: ' + this + (param.doc ? ', from ' + param.doc : ''));
+		}
+	}
+});
+
+EnumTag = Tag.extend({
+	_names: '@enum',
+
+	render: function(param) {
+		var ref = Tag.findClass(this.text(), param);
+		if (ref) {
+			return ref.renderEnumConstants();
 		} else {
 			error(this.position() + ': warning - ' + this.name()
 					+ ' contains undefined reference: ' + this + (param.doc ? ', from ' + param.doc : ''));
