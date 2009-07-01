@@ -67,10 +67,8 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 	public int getConversionWeight(Object from, Class<?> to, int defaultWeight) {
 		int weight = super.getConversionWeight(from, to, defaultWeight);
 		if (weight == defaultWeight) {
-			if (from instanceof String) {
-				if (Enum.class.isAssignableFrom(to) || to.isArray())
-					return CONVERSION_TRIVIAL + 1;
-			}
+			if (from instanceof String && (Enum.class.isAssignableFrom(to) || to.isArray()))
+				weight = CONVERSION_TRIVIAL + 1;
 		}
 		return weight;
 	}

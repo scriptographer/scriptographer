@@ -32,7 +32,7 @@
 package com.scriptographer.ai;
 
 import java.io.File;
-import java.util.EnumMap;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -457,7 +457,9 @@ public class Document extends NativeObject {
 	 * 
 	 * @return {@code true} if the document contains selected items,
 	 *         false otherwise.
-	 */	
+	 * 
+	 * @jshide
+	 */
 	public native boolean hasSelectedItems();
 
 	/**
@@ -481,7 +483,7 @@ public class Document extends NativeObject {
 		} else {
 			HashMap<Object, Object> map = new HashMap<Object, Object>();
 			map.put(ItemAttribute.SELECTED, true);
-			return getMatchingItems(types, map);
+			return getItems(types, map);
 		}
 	}
 	
@@ -507,53 +509,9 @@ public class Document extends NativeObject {
 	private native ItemList nativeGetMatchingItems(Class type, HashMap<Integer, Boolean> attributes);
 
 	/**
-	 * Returns all items of the supplied classes that match a set of attributes, as specified by the
-	 * passed map. For each of the keys in the map, the demanded value can either be true or false.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * // All hidden paths and rasters contained in the document.
-	 * var hiddenItems = document.getMatchingItems([Path, Raster], { hidden: true });
-	 * 
-	 * // All locked Paths and Layers contained in the document.
-	 * var lockedItems = document.getMatchingItems([Path, Layer], { locked: true });
-	 * </code>
-	 * 
-	 * @param types
-	 * @param attributes
-	 * 
 	 * @jshide
 	 */
-	/*
-	 * These versions are needed so the scripting side can convert strings to attributes
-	 */
-	@SuppressWarnings("unchecked")
-	public ItemList getMatchingItems(Class[] types, EnumMap<ItemAttribute, Boolean> attributes) {
-		return getMatchingItems(types, (Map) attributes);
-	}
-	
-	/**
-	 * Returns all items of a given class that match a set of attributes, as specified by the
-	 * passed map. For each of the keys in the map, the demanded value can either be true or false.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * // All hidden paths contained in the document.
-	 * var hiddenPaths = document.getMatchingItems(Path, { hidden: true });
-	 * 
-	 * // All locked Layers contained in the document.
-	 * var lockedItems = document.getMatchingItems(Layer, { locked: true });
-	 * </code>
-	 * 
-	 * @param type
-	 * @param attributes
-	 */
-	@SuppressWarnings("unchecked")
-	public ItemList getMatchingItems(Class type, EnumMap<ItemAttribute, Boolean> attributes) {
-		return getMatchingItems(type, (Map) attributes);
-	}
-
-	public ItemList getMatchingItems(Class[] types, Map<Object, Object> attributes) {
+	public ItemList getItems(Class[] types, Map<Object, Object> attributes) {
 		// Convert the attributes list to a new HashMap containing only
 		// integer -> boolean pairs.
 		HashMap<Integer, Boolean> converted = new HashMap<Integer, Boolean>();
@@ -563,7 +521,7 @@ public class Document extends NativeObject {
 				if (!(key instanceof ItemAttribute)) {
 					key = EnumUtils.get(ItemAttribute.class, key.toString());
 					if (key == null)
-						throw new ScriptographerException("Undefined attribute: " + key);
+						throw new ScriptographerException("Undefined attribute: " + entry.getKey());
 				}
 				converted.put(((ItemAttribute) key).value,
 						ConversionUtils.toBoolean(entry.getValue()));
@@ -594,16 +552,68 @@ public class Document extends NativeObject {
 		return set;
 	}
 
-	public ItemList getMatchingItems(Class[] types) {
-		return getMatchingItems(types, (Map<Object, Object>) null);
+	/**
+	 * @jshide
+	 */
+	public ItemList getItems(Class[] types) {
+		return getItems(types, (Map<Object, Object>) null);
 	}
 
-	public ItemList getMatchingItems(Class type, Map<Object, Object> attributes) {
-		return getMatchingItems(new Class[] { type }, attributes);
+	/**
+	 * @jshide
+	 */
+	public ItemList getItems(Class type, Map<Object, Object> attributes) {
+		return getItems(new Class[] { type }, attributes);
 	}
 	
-	public ItemList getMatchingItems(Class type) {
-		return getMatchingItems(new Class[] { type });
+	/**
+	 * @jshide
+	 */
+	public ItemList getItems(Class type) {
+		return getItems(new Class[] { type });
+	}
+
+	/**
+	 * Returns all items that match a set of attributes, as specified by the
+	 * passed map.
+	 * For each of the keys in the map, the demanded value can either be true or false.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // All hidden paths and rasters contained in the document.
+	 * var hiddenItems = document.getItems({ 
+	 *     types: [Path, Raster], 
+	 *     hidden: true
+	 * });
+	 * 
+	 * // All locked Paths contained in the document.
+	 * var lockedItems = document.getItems({
+	 *     types: Path,
+	 *     locked: true
+	 * });
+	 * </code>
+	 * 
+	 * @param types
+	 * @param attributes
+	 */
+	public ItemList getItems(Map<Object, Object> attributes) {
+		ArrayList<Class> classes = new ArrayList<Class>();
+		// Convert types to class array:
+		Object types = attributes.get("types");
+		if (types != null) {
+			if (types instanceof Object[]) {
+				for (Object type : (Object[]) types) {
+					if (type instanceof Class)
+						classes.add((Class) type);
+					// TODO: else Convert from string?
+				}
+			} else if (types instanceof Class)
+				classes.add((Class) types);
+		}
+		// Remove types from map that's passed to getItems.
+		HashMap<Object, Object> clone = new HashMap<Object, Object>(attributes);
+		clone.remove("types");
+		return getItems(classes.toArray(new Class[classes.size()]), clone);
 	}
 
 	/* TODO: make these
