@@ -6,7 +6,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Context.java,v
 retrieving revision 1.279
 diff -u -r1.279 Context.java
 --- src/org/mozilla/javascript/Context.java	15 May 2009 12:09:51 -0000	1.279
-+++ src/org/mozilla/javascript/Context.java	25 May 2009 08:30:55 -0000
++++ src/org/mozilla/javascript/Context.java	1 Jul 2009 09:26:36 -0000
 @@ -2112,6 +2112,19 @@
          return wrapFactory;
      }
@@ -41,7 +41,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaObject.
 retrieving revision 1.88
 diff -u -r1.88 NativeJavaObject.java
 --- src/org/mozilla/javascript/NativeJavaObject.java	19 Mar 2009 13:19:55 -0000	1.88
-+++ src/org/mozilla/javascript/NativeJavaObject.java	25 May 2009 08:30:56 -0000
++++ src/org/mozilla/javascript/NativeJavaObject.java	1 Jul 2009 09:26:41 -0000
 @@ -364,9 +364,10 @@
              }
              else if (to.isPrimitive() && to != Boolean.TYPE) {
@@ -254,29 +254,13 @@ diff -u -r1.88 NativeJavaObject.java
          }
  
          return value;
-Index: src/org/mozilla/javascript/NativeJavaTopPackage.java
-===================================================================
-RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaTopPackage.java,v
-retrieving revision 1.22
-diff -u -r1.22 NativeJavaTopPackage.java
---- src/org/mozilla/javascript/NativeJavaTopPackage.java	5 Apr 2009 09:09:42 -0000	1.22
-+++ src/org/mozilla/javascript/NativeJavaTopPackage.java	25 May 2009 08:30:56 -0000
-@@ -71,7 +71,7 @@
-             {"javax", "swing"}
-     };
- 
--    NativeJavaTopPackage(ClassLoader loader)
-+    public NativeJavaTopPackage(ClassLoader loader)
-     {
-         super(true, "", loader);
-     }
 Index: src/org/mozilla/javascript/JavaMembers.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/JavaMembers.java,v
-retrieving revision 1.79
-diff -u -r1.79 JavaMembers.java
---- src/org/mozilla/javascript/JavaMembers.java	9 Feb 2009 16:33:30 -0000	1.79
-+++ src/org/mozilla/javascript/JavaMembers.java	25 May 2009 08:30:56 -0000
+retrieving revision 1.80
+diff -u -r1.80 JavaMembers.java
+--- src/org/mozilla/javascript/JavaMembers.java	6 Jun 2009 14:11:24 -0000	1.80
++++ src/org/mozilla/javascript/JavaMembers.java	1 Jul 2009 09:26:39 -0000
 @@ -52,9 +52,9 @@
   * @see NativeJavaObject
   * @see NativeJavaClass
@@ -518,13 +502,55 @@ diff -u -r1.79 JavaMembers.java
      private Constructor<?>[] getAccessibleConstructors()
      {
        // The JVM currently doesn't allow changing access on java.lang.Class
+Index: src/org/mozilla/javascript/NativeJavaTopPackage.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaTopPackage.java,v
+retrieving revision 1.22
+diff -u -r1.22 NativeJavaTopPackage.java
+--- src/org/mozilla/javascript/NativeJavaTopPackage.java	5 Apr 2009 09:09:42 -0000	1.22
++++ src/org/mozilla/javascript/NativeJavaTopPackage.java	1 Jul 2009 09:26:49 -0000
+@@ -71,7 +71,7 @@
+             {"javax", "swing"}
+     };
+ 
+-    NativeJavaTopPackage(ClassLoader loader)
++    public NativeJavaTopPackage(ClassLoader loader)
+     {
+         super(true, "", loader);
+     }
+Index: src/org/mozilla/javascript/ScriptableObject.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/ScriptableObject.java,v
+retrieving revision 1.151
+diff -u -r1.151 ScriptableObject.java
+--- src/org/mozilla/javascript/ScriptableObject.java	22 Jun 2009 01:08:20 -0000	1.151
++++ src/org/mozilla/javascript/ScriptableObject.java	1 Jul 2009 09:26:52 -0000
+@@ -2827,6 +2827,18 @@
+             return null;
+         } else if (value instanceof Wrapper) {
+             return ((Wrapper) value).unwrap();
++        // Lehni: Convert NativeArray to Java Object Arrays
++        } else if (value instanceof NativeArray) {
++            NativeArray array = (NativeArray) value;
++            int length = (int) array.getLength();
++            Object[] list = new Object[length];
++            for (int i = 0; i < length; i++) {
++                Object obj = array.get(i, array);
++                if (obj instanceof Wrapper)
++                    obj = ((Wrapper) obj).unwrap();
++                list[i] = obj;
++            }
++            return list;
+         } else {
+             return value;
+         }
 Index: src/org/mozilla/javascript/NativeJavaMethod.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaMethod.java,v
-retrieving revision 1.64
-diff -u -r1.64 NativeJavaMethod.java
---- src/org/mozilla/javascript/NativeJavaMethod.java	5 Dec 2008 12:15:57 -0000	1.64
-+++ src/org/mozilla/javascript/NativeJavaMethod.java	25 May 2009 08:30:56 -0000
+retrieving revision 1.65
+diff -u -r1.65 NativeJavaMethod.java
+--- src/org/mozilla/javascript/NativeJavaMethod.java	9 Jun 2009 17:43:45 -0000	1.65
++++ src/org/mozilla/javascript/NativeJavaMethod.java	1 Jul 2009 09:26:40 -0000
 @@ -433,11 +433,11 @@
          if (firstBestFit < 0) {
              // Nothing was found
@@ -562,7 +588,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaPackage
 retrieving revision 1.45
 diff -u -r1.45 NativeJavaPackage.java
 --- src/org/mozilla/javascript/NativeJavaPackage.java	5 Nov 2008 21:37:23 -0000	1.45
-+++ src/org/mozilla/javascript/NativeJavaPackage.java	25 May 2009 08:30:56 -0000
++++ src/org/mozilla/javascript/NativeJavaPackage.java	1 Jul 2009 09:26:44 -0000
 @@ -60,7 +60,7 @@
  {
      static final long serialVersionUID = 7445054382212031523L;
@@ -587,7 +613,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/MemberBox.java,v
 retrieving revision 1.19
 diff -u -r1.19 MemberBox.java
 --- src/org/mozilla/javascript/MemberBox.java	26 Jun 2008 13:57:11 -0000	1.19
-+++ src/org/mozilla/javascript/MemberBox.java	25 May 2009 08:30:56 -0000
++++ src/org/mozilla/javascript/MemberBox.java	1 Jul 2009 09:26:39 -0000
 @@ -52,7 +52,7 @@
   * @author Igor Bukanov
   */
@@ -688,53 +714,13 @@ diff -u -r1.19 MemberBox.java
      {
          Constructor<?> ctor = ctor();
          try {
-Index: src/org/mozilla/javascript/NativeJavaClass.java
-===================================================================
-RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaClass.java,v
-retrieving revision 1.55
-diff -u -r1.55 NativeJavaClass.java
---- src/org/mozilla/javascript/NativeJavaClass.java	5 Nov 2008 21:37:22 -0000	1.55
-+++ src/org/mozilla/javascript/NativeJavaClass.java	25 May 2009 08:30:56 -0000
-@@ -181,6 +181,12 @@
-         return construct(cx, scope, args);
-     }
- 
-+    protected MemberBox findConstructor(Context cx, Object[] args)
-+    {
-+        int index = NativeJavaMethod.findFunction(cx, members.ctors, args);
-+        return index >= 0 ? members.ctors[index] : null;
-+    }
-+
-     public Scriptable construct(Context cx, Scriptable scope, Object[] args)
-     {
-         Class<?> classObject = getClassObject();
-@@ -188,16 +194,15 @@
-         if (! (Modifier.isInterface(modifiers) ||
-                Modifier.isAbstract(modifiers)))
-         {
--            MemberBox[] ctors = members.ctors;
--            int index = NativeJavaMethod.findFunction(cx, ctors, args);
--            if (index < 0) {
-+            MemberBox ctor = findConstructor(cx, args);
-+            if (ctor == null) {
-                 String sig = NativeJavaMethod.scriptSignature(args);
-                 throw Context.reportRuntimeError2(
-                     "msg.no.java.ctor", classObject.getName(), sig);
-             }
- 
-             // Found the constructor, so try invoking it.
--            return constructSpecific(cx, scope, args, ctors[index]);
-+            return constructSpecific(cx, scope, args, ctor);
-         } else {
-             Scriptable topLevel = ScriptableObject.getTopLevelScope(this);
-             String msg = "";
 Index: src/org/mozilla/javascript/WrapFactory.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/WrapFactory.java,v
 retrieving revision 1.20
 diff -u -r1.20 WrapFactory.java
 --- src/org/mozilla/javascript/WrapFactory.java	13 Nov 2008 18:03:40 -0000	1.20
-+++ src/org/mozilla/javascript/WrapFactory.java	25 May 2009 08:30:56 -0000
++++ src/org/mozilla/javascript/WrapFactory.java	1 Jul 2009 09:26:53 -0000
 @@ -151,6 +151,32 @@
      }
  
@@ -768,14 +754,54 @@ diff -u -r1.20 WrapFactory.java
       * Return <code>false</code> if result of Java method, which is instance of
       * <code>String</code>, <code>Number</code>, <code>Boolean</code> and
       * <code>Character</code>, should be used directly as JavaScript primitive
+Index: src/org/mozilla/javascript/NativeJavaClass.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaClass.java,v
+retrieving revision 1.55
+diff -u -r1.55 NativeJavaClass.java
+--- src/org/mozilla/javascript/NativeJavaClass.java	5 Nov 2008 21:37:22 -0000	1.55
++++ src/org/mozilla/javascript/NativeJavaClass.java	1 Jul 2009 09:26:39 -0000
+@@ -181,6 +181,12 @@
+         return construct(cx, scope, args);
+     }
+ 
++    protected MemberBox findConstructor(Context cx, Object[] args)
++    {
++        int index = NativeJavaMethod.findFunction(cx, members.ctors, args);
++        return index >= 0 ? members.ctors[index] : null;
++    }
++
+     public Scriptable construct(Context cx, Scriptable scope, Object[] args)
+     {
+         Class<?> classObject = getClassObject();
+@@ -188,16 +194,15 @@
+         if (! (Modifier.isInterface(modifiers) ||
+                Modifier.isAbstract(modifiers)))
+         {
+-            MemberBox[] ctors = members.ctors;
+-            int index = NativeJavaMethod.findFunction(cx, ctors, args);
+-            if (index < 0) {
++            MemberBox ctor = findConstructor(cx, args);
++            if (ctor == null) {
+                 String sig = NativeJavaMethod.scriptSignature(args);
+                 throw Context.reportRuntimeError2(
+                     "msg.no.java.ctor", classObject.getName(), sig);
+             }
+ 
+             // Found the constructor, so try invoking it.
+-            return constructSpecific(cx, scope, args, ctors[index]);
++            return constructSpecific(cx, scope, args, ctor);
+         } else {
+             Scriptable topLevel = ScriptableObject.getTopLevelScope(this);
+             String msg = "";
 Index: src/org/mozilla/javascript/ScriptRuntime.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/ScriptRuntime.java,v
-retrieving revision 1.312
-diff -u -r1.312 ScriptRuntime.java
---- src/org/mozilla/javascript/ScriptRuntime.java	21 May 2009 20:30:58 -0000	1.312
-+++ src/org/mozilla/javascript/ScriptRuntime.java	25 May 2009 08:30:56 -0000
-@@ -3258,6 +3258,10 @@
+retrieving revision 1.313
+diff -u -r1.313 ScriptRuntime.java
+--- src/org/mozilla/javascript/ScriptRuntime.java	25 Jun 2009 19:47:26 -0000	1.313
++++ src/org/mozilla/javascript/ScriptRuntime.java	1 Jul 2009 09:26:51 -0000
+@@ -3256,6 +3256,10 @@
  
              Scriptable errorObject = cx.newObject(scope, errorName, args);
              ScriptableObject.putProperty(errorObject, "name", errorName);
@@ -792,7 +818,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Interpreter.java,
 retrieving revision 1.355
 diff -u -r1.355 Interpreter.java
 --- src/org/mozilla/javascript/Interpreter.java	16 Mar 2009 22:58:37 -0000	1.355
-+++ src/org/mozilla/javascript/Interpreter.java	25 May 2009 08:30:56 -0000
++++ src/org/mozilla/javascript/Interpreter.java	1 Jul 2009 09:26:38 -0000
 @@ -1055,65 +1055,6 @@
          throwable = stack[indexReg];
          break withoutExceptions;
