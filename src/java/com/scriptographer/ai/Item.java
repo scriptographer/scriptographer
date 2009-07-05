@@ -627,7 +627,11 @@ public abstract class Item extends DocumentObject {
 	}
 
 	public void setStyle(PathStyle style) {
-		getStyle(); // make sure it's created
+		// Make sure it's created
+		getStyle();
+		// Make sure it's fetched, since the newly set style might not define
+		// all fields.
+		this.style.update();
 		this.style.init(style);
 		this.style.markDirty();
 	}

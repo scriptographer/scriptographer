@@ -95,28 +95,46 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		stroke = new StrokeStyle(this);
 	}
 
+	/*
+	 * Used by both PathStyle and CharacterStyle, which provides a native handle.
+	 */
 	protected PathStyle(int handle, ArgumentReader reader) {
 		super(handle);
-		// First try the full fill object
-		fill = (FillStyle) reader.readObject("fill", FillStyle.class);
-		if (fill == null) {
-			fill = new FillStyle(this);
-			// reader defines fill as null? set color to NONE
-			if (reader.isHash() && reader.has("fill"))
-				fill.setColor(Color.NONE);
-		}
+		// First try the full fill and stroke objects
+		if (reader.has("fill"))
+			fill = (FillStyle) reader.readObject("fill", FillStyle.class);
+		if (reader.has("stroke"))
+			stroke = (StrokeStyle) reader.readObject("stroke", StrokeStyle.class);
+		if (fill == null)
+			fill = new FillStyle(
+					getColor(reader, "fillColor"),
+					reader.readBoolean("overprint")
+			);
+		if (stroke == null)
+			stroke = new StrokeStyle(
+					getColor(reader, "strokeColor"),
+					reader.readBoolean("strokeOverprint"),
+					reader.readFloat("strokeWidth"),
+					reader.readEnum("strokeCap", StrokeCap.class),
+					reader.readEnum("strokeJoin", StrokeJoin.class),
+					reader.readFloat("miterLimit"),
+					reader.readFloat("dashOffset"),
+					(float[]) reader.readObject("dashArray", float[].class)
+			);
 		fill.setStyle(this);
-		// Otherwise read in redirecting properties...
-		stroke = (StrokeStyle) reader.readObject("stroke", StrokeStyle.class);
-		if (stroke == null) {
-			stroke = new StrokeStyle(this);
-			// reader defines stroke as null? set color to NONE
-			if (reader.isHash() && reader.has("stroke"))
-				stroke.setColor(Color.NONE);
-		}
 		stroke.setStyle(this);
+		// PathStyle fields
 		windingRule = reader.readEnum("windingRule", WindingRule.class);
 		resolution = reader.readFloat("resolution");
+	}
+
+	private static Color getColor(ArgumentReader reader, String name) {
+		// If color is null, handle it differently for hashes and arrays:
+		// For arrays, it can either be a color or Color.NONE. For hashes
+		// it can be both undefined -> null or null -> Color.NONE:
+		Color color = (Color) reader.readObject(name, Color.class);
+		return color == null && (!reader.isHash() || reader.has(name))
+				? Color.NONE : color;
 	}
 
 	/*
@@ -182,14 +200,15 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 			Color fillColor, boolean hasFillColor, short fillOverprint,
 			Color strokeColor, boolean hasStrokeColor, short strokeOverprint,
 			float strokeWidth,
+			short strokeCap, short strokeJoin, float miterLimit,
 			float dashOffset, float[] dashArray,
-			short cap, short join, float miterLimit,
 			short clip, short lockClip, int windingRule, float resolution) {
 		//  dashArray doesn't need the boolean, as it's {} when set but empty
 		
 		fill.init(fillColor, hasFillColor, fillOverprint);
 		stroke.init(strokeColor, hasStrokeColor, strokeOverprint, strokeWidth,
-			dashOffset, dashArray, cap, join, miterLimit);
+				strokeCap, strokeJoin, miterLimit,
+				dashOffset, dashArray);
 
 		this.clip = clip >= 0 ? new Boolean(clip != 0) : null;
 		this.lockClip = lockClip >= 0 ? new Boolean(lockClip != 0) : null;
@@ -202,8 +221,8 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		StrokeStyle strokeStyle = style.stroke;
 		fill.init(fillStyle.color, fillStyle.overprint);
 		stroke.init(strokeStyle.color, strokeStyle.overprint, strokeStyle.width,
-			strokeStyle.dashOffset, strokeStyle.dashArray, strokeStyle.cap,
-			strokeStyle.join, strokeStyle.miterLimit);
+				strokeStyle.cap, strokeStyle.join, strokeStyle.miterLimit,
+				strokeStyle.dashOffset, strokeStyle.dashArray);
 		this.clip = style.clip;
 		this.lockClip = style.lockClip;
 		this.windingRule = style.windingRule;
@@ -217,15 +236,16 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 			short fillOverprint,
 			Color strokeColor, boolean hasStrokeColor,
 			short strokeOverprint, float strokeWidth,
+			int strokeCap, int strokeJoin, float miterLimit,
 			float dashOffset, float[] dashArray,
-			int cap, int join, float miterLimit,
 			short clip, short lockClip, int windingRule, float resolution);
 
 	// These would belong to FillStyle and StrokeStyle, but in order to safe 4
 	// new native files, they're here:
 	protected static native void nativeInitStrokeStyle(int handle, Color color,
-		boolean hasColor, short overprint, float width, float dashOffset,
-		float[] dashArray, int cap, int join, float miterLimit);
+		boolean hasColor, short overprint, float width,
+		int strokeCap, int strokeJoin, float miterLimit,
+		float dashOffset, float[] dashArray);
 
 	protected static native void nativeInitFillStyle(int handle, Color color,
 		boolean hasColor, short overprint);
@@ -244,11 +264,11 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 			stroke.color != null,
 			stroke.overprint != null ? (short) (stroke.overprint.booleanValue() ? 1 : 0) : -1,
 			stroke.width != null ? stroke.width.floatValue() : -1,
-			stroke.dashOffset != null ? stroke.dashOffset.floatValue() : -1,
-			stroke.dashArray,
 			stroke.cap != null ? stroke.cap.value : -1,
 			stroke.join != null ? stroke.join.value : -1,
 			stroke.miterLimit != null ? stroke.miterLimit.floatValue() : -1,
+			stroke.dashOffset != null ? stroke.dashOffset.floatValue() : -1,
+			stroke.dashArray,
 			clip != null ? (short) (clip.booleanValue() ? 1 : 0) : -1,
 			lockClip != null ? (short) (lockClip.booleanValue() ? 1 : 0) : -1,
 			windingRule != null ? windingRule.value() : -1,
@@ -432,7 +452,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	 * The dash offset of the stroke.
 	 */
 	public Float getDashOffset() {
-		return stroke != null ? stroke.getWidth() : null;
+		return stroke != null ? stroke.getDashOffset() : null;
 	}
 
 	public void setDashOffset(Float offset) {
@@ -472,7 +492,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	 * @return the miter limit as a value between 0 and 500
 	 */
 	public Float getMiterLimit() {
-		return stroke != null ? stroke.getWidth() : null;
+		return stroke != null ? stroke.getMiterLimit() : null;
 	}
 
 	public void setMiterLimit(Float limit) {

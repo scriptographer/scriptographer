@@ -66,15 +66,16 @@ public class StrokeStyle implements Style {
 	}
 
 	public StrokeStyle(StrokeStyle stroke) {
-		init(stroke.color, stroke.overprint, stroke.width, stroke.dashOffset,
-				stroke.dashArray, stroke.cap, stroke.join, stroke.miterLimit);
+		init(stroke.color, stroke.overprint, stroke.width,
+				stroke.cap, stroke.join, stroke.miterLimit, 
+				stroke.dashOffset, stroke.dashArray);
 	}
 
 	public StrokeStyle(Color color, Boolean overprint, Float width,
-			Float dashOffset, float[] dashArray, StrokeCap cap, StrokeJoin join,
-			Float miterLimit) {
-		init(color, overprint, width, dashOffset, dashArray, cap, join,
-				miterLimit);
+			StrokeCap cap, StrokeJoin join, Float miterLimit,
+			Float dashOffset, float[] dashArray) {
+		init(color, overprint, width, cap, join, miterLimit,
+				dashOffset, dashArray);
 	}
 
 	/**
@@ -91,11 +92,11 @@ public class StrokeStyle implements Style {
 				color,
 				reader.readBoolean("overprint"),
 				reader.readFloat("width"),
-				reader.readFloat("dashOffset"),
-				(float[]) reader.readObject("dashArray", float[].class),
 				reader.readEnum("cap", StrokeCap.class),
 				reader.readEnum("join", StrokeJoin.class),
-				reader.readFloat("miterLimit")
+				reader.readFloat("miterLimit"),
+				reader.readFloat("dashOffset"),
+				(float[]) reader.readObject("dashArray", float[].class)
 		);
 	}
 
@@ -103,23 +104,23 @@ public class StrokeStyle implements Style {
 	 * called from the native environment
 	 */
 	protected StrokeStyle(Color color, boolean hasColor, short overprint,
-			float width, float dashOffset, float[] dashArray, int cap,
-			int join, float miterLimit) {
-		init(color, hasColor, overprint, width, dashOffset, dashArray, cap,
-				join, miterLimit);
+			float width, int cap, int join, float miterLimit,
+			float dashOffset, float[] dashArray) {
+		init(color, hasColor, overprint, width, cap, join, miterLimit,
+				dashOffset, dashArray);
 	}
 
 	protected void init(Color color, Boolean overprint, Float width,
-			Float dashOffset, float[] dashArray, StrokeCap cap, StrokeJoin join,
-			Float miterLimit) {
+			StrokeCap cap, StrokeJoin join, Float miterLimit,
+			Float dashOffset, float[] dashArray) {
 		this.color = color;
 		this.overprint = overprint;
 		this.width = width;
-		this.dashOffset = dashOffset;
-		this.setDashArray(dashArray, false);
 		this.cap = cap;
 		this.join = join;
 		this.miterLimit = miterLimit;
+		this.dashOffset = dashOffset;
+		this.setDashArray(dashArray, false);
 	}
 
 	protected void setStyle(PathStyle style) {
@@ -130,16 +131,16 @@ public class StrokeStyle implements Style {
 	 * called from the native environment
 	 */
 	protected void init(Color color, boolean hasColor, short overprint,
-			float width, float dashOffset, float[] dashArray, int cap,
-			int join, float miterLimit) {
+			float width, int cap, int join, float miterLimit,
+			float dashOffset, float[] dashArray) {
 		this.color = hasColor && color == null ? Color.NONE : color;
 		this.overprint = overprint >= 0 ? new Boolean(overprint != 0) : null;
 		this.width = width >= 0 ? new Float(width) : null;
-		this.dashOffset = dashOffset >= 0 ? new Float(dashOffset) : null;
-		this.setDashArray(dashArray, false);
 		this.cap = (StrokeCap) IntegerEnumUtils.get(StrokeCap.class, cap);
 		this.join = (StrokeJoin) IntegerEnumUtils.get(StrokeJoin.class, join);
 		this.miterLimit = miterLimit >= 0 ? new Float(miterLimit) : null;
+		this.dashOffset = dashOffset >= 0 ? new Float(dashOffset) : null;
+		this.setDashArray(dashArray, false);
 	}
 	
 	protected void initNative(int handle) {
@@ -147,11 +148,11 @@ public class StrokeStyle implements Style {
 				color != null && color != Color.NONE ? color : null, color != null, 
 				overprint != null ? (short) (overprint.booleanValue() ? 1 : 0) : -1,
 				width != null ? width.floatValue() : -1,
-				dashOffset != null ? dashOffset.floatValue() : -1,
-				dashArray,
 				cap != null ? cap.value : -1,
 				join != null ? join.value : -1,
-				miterLimit != null ? miterLimit.floatValue() : -1
+				miterLimit != null ? miterLimit.floatValue() : -1,
+				dashOffset != null ? dashOffset.floatValue() : -1,
+				dashArray
 		);
 	}
 

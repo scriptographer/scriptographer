@@ -132,17 +132,22 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGet(JNIEn
 
 /*
  * void nativeSet(int handle, int docHandle,
-				  com.scriptographer.ai.Color fillColor, boolean hasFillColor, short fillOverprint,
-				  com.scriptographer.ai.Color strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
-				  float dashOffset, float[] dashArray,
-				  int cap, int join, float miterLimit,
-				  short clip, short lockClip, short evenOdd, float resolution)
+				com.scriptographer.ai.Color fillColor, boolean hasFillColor, short fillOverprint,
+				com.scriptographer.ai.Color strokeColor, boolean hasStrokeColor, short strokeOverprint, float strokeWidth,
+				int strokeCap, int strokeJoin, float miterLimit,
+				float dashOffset, float[] dashArray,
+				short clip, short lockClip, int windingRule, float resolution)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSet(JNIEnv *env, jobject obj, jint handle, jint docHandle, jobject fillColor, jboolean hasFillColor, jshort fillOverprint, jobject strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jfloat dashOffset, jfloatArray dashArray, jint cap, jint join, jfloat miterLimit, jshort clip, jshort lockClip, jshort evenOdd, jfloat resolution) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeSet(JNIEnv *env, jobject obj, jint handle, jint docHandle, jobject fillColor, jboolean hasFillColor, jshort fillOverprint, jobject strokeColor, jboolean hasStrokeColor, jshort strokeOverprint, jfloat strokeWidth, jint strokeCap, jint strokeJoin, jfloat miterLimit, jfloat dashOffset, jfloatArray dashArray, jshort clip, jshort lockClip, jint windingRule, jfloat resolution) {
 	try {
 		AIPathStyle style;
 		AIPathStyleMap map;
-		PathStyle_convertPathStyle(env, &style, &map, fillColor, hasFillColor, fillOverprint, strokeColor, hasStrokeColor, strokeOverprint, strokeWidth, dashOffset, dashArray, cap, join, miterLimit, clip, lockClip, evenOdd, resolution);
+		PathStyle_convertPathStyle(env, &style, &map,
+				fillColor, hasFillColor, fillOverprint,
+				strokeColor, hasStrokeColor, strokeOverprint, strokeWidth,
+				strokeCap, strokeJoin, miterLimit,
+				dashOffset, dashArray,
+				clip, lockClip, windingRule, resolution);
 		sAIATEPaint->GetCharFeatures(&style, &map, (CharFeaturesRef) handle);
 	} EXCEPTION_CONVERT(env);
 }

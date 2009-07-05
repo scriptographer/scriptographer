@@ -497,7 +497,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ai_PathStyle = loadClass(env, "com/scriptographer/ai/PathStyle");
 	
-	mid_PathStyle_init = getMethodID(env, cls_ai_PathStyle, "init", "(Lcom/scriptographer/ai/Color;ZSLcom/scriptographer/ai/Color;ZSFF[FSSFSSIF)V");
+	mid_PathStyle_init = getMethodID(env, cls_ai_PathStyle, "init", "(Lcom/scriptographer/ai/Color;ZSLcom/scriptographer/ai/Color;ZSFSSFF[FSSIF)V");
 
 	cls_ai_FillStyle = loadClass(env, "com/scriptographer/ai/FillStyle");
 
@@ -506,8 +506,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_FillStyle_initNative = getMethodID(env, cls_ai_FillStyle, "initNative", "(I)V");
 	
 	cls_ai_StrokeStyle = loadClass(env, "com/scriptographer/ai/StrokeStyle");
-	cid_ai_StrokeStyle = getConstructorID(env, cls_ai_StrokeStyle, "(Lcom/scriptographer/ai/Color;ZSFF[FIIF)V");
-	mid_ai_StrokeStyle_init = getMethodID(env, cls_ai_StrokeStyle, "init", "(Lcom/scriptographer/ai/Color;ZSFF[FIIF)V");
+	cid_ai_StrokeStyle = getConstructorID(env, cls_ai_StrokeStyle, "(Lcom/scriptographer/ai/Color;ZSFIIFF[F)V");
+	mid_ai_StrokeStyle_init = getMethodID(env, cls_ai_StrokeStyle, "init", "(Lcom/scriptographer/ai/Color;ZSFIIFF[F)V");
 	mid_ai_StrokeStyle_initNative = getMethodID(env, cls_ai_StrokeStyle, "initNative", "(I)V");
 	
 	cls_ai_CharacterStyle = loadClass(env, "com/scriptographer/ai/CharacterStyle");
@@ -1169,12 +1169,14 @@ jobject ScriptographerEngine::convertStrokeStyle(JNIEnv *env, AIStrokeStyle *sty
 	env->SetFloatArrayRegion(dashArray, 0, count, style->dash.array);
 	if (res == NULL) {
 		res = newObject(env, cls_ai_StrokeStyle, cid_ai_StrokeStyle, color, true,
-			style->overprint, style->width, style->dash.offset, dashArray,
-			style->cap, style->join, style->miterLimit);
+			style->overprint, style->width,
+			style->cap, style->join, style->miterLimit,
+			style->dash.offset, dashArray);
 	} else {
 		callVoidMethod(env, res, mid_ai_StrokeStyle_init, color, true,
-			style->overprint, style->width, style->dash.offset, dashArray,
-			style->cap, style->join, style->miterLimit);
+			style->overprint, style->width,
+			style->cap, style->join, style->miterLimit,
+			style->dash.offset, dashArray);
 	}
 	return res;
 }

@@ -159,9 +159,9 @@ public class CharacterStyle extends PathStyle {
 			short fillOverprint,
 			Color strokeColor, boolean hasStrokeColor,
 			short strokeOverprint, float strokeWidth,
-			float dashOffset, float[] dashArray,
 			int cap, int join, float miterLimit,
-			short clip, short lockClip, short evenOdd, float resolution);
+			float dashOffset, float[] dashArray,
+			short clip, short lockClip, int windingRule, float resolution);
 
 	protected native void nativeSetStyle(int handle, int docHandle,
 			int rangeHandle);
