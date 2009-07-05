@@ -142,11 +142,7 @@ public abstract class TextItem extends Item {
 	public native boolean isLinked();
 
 	/**
-<<<<<<< .mine
 	 * Returns the index of the text frame in its {@link TextItem#getStory()}.
-=======
-	 * Returns the index of this text frame in the {@link TextStory#getTextFrames()} array.
->>>>>>> .r916
 	 */
 	public native int getIndex();
 
