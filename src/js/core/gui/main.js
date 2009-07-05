@@ -114,7 +114,9 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			entry.update = function() {
 				this.isTool = /onMouse(Up|Down|Move|Drag)/.test(file.readAll());
 				this.image = this.isTool
-					? (currentToolFile == this.file ? activeToolScriptImage : toolScriptImage)
+					? (currentToolFile == this.file
+						? activeToolScriptImage
+						: toolScriptImage)
 					: scriptImage;
 			}
 			entry.update();
@@ -231,18 +233,19 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				tool.image = tool.activeImage;
 				// Reset settings
 				tool.reset();
-				var scrpt = ScriptographerEngine.compile(entry.file);
-				if (scrpt) {
-					var scope = scrpt.engine.createScope();
+				var scr = ScriptographerEngine.compile(entry.file);
+				if (scr) {
+					var scope = scr.engine.createScope();
 					scope.put('tool', tool, true);
-					if (scrpt) {
-						// Don't call scrpt.execute directly, since we handle SG
+					if (scr) {
+						// Don't call scr.execute directly, since we handle SG
 						// specific things in ScriptographerEngine.execute:
-						ScriptographerEngine.execute(scrpt, entry.file, scope);
+						ScriptographerEngine.execute(scr, entry.file, scope);
 					}
 					// Now copy over handlers from the scope and set them on the tool,
 					// to allow them to be defined globally.
-					['onOptions', 'onSelect', 'onDeselect', 'onReselect', 'onMouseDown', 'onMouseUp', 'onMouseDrag', 'onMouseMove'].each(function(name) {
+					['onOptions', 'onSelect', 'onDeselect', 'onReselect', 'onMouseDown',
+							'onMouseUp', 'onMouseDrag', 'onMouseMove'].each(function(name) {
 						var handler = scope.getCallable(name);
 						if (handler)
 							tool[name] = handler;
@@ -267,7 +270,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	}
 	
 	// Add the menus:
-	var scriptographerGroup = new MenuGroup(MenuGroup.GROUP_TOOL_PALETTES, MenuGroup.OPTION_ADD_ABOVE | MenuGroup.OPTION_SEPARATOR_ABOVE);
+	var scriptographerGroup = new MenuGroup(MenuGroup.GROUP_TOOL_PALETTES,
+			MenuGroup.OPTION_ADD_ABOVE | MenuGroup.OPTION_SEPARATOR_ABOVE);
 
 	var scriptographerItem = new MenuItem(scriptographerGroup) {
 		text: 'Scriptographer'

@@ -29,7 +29,7 @@ Size.inject(new function() {
 Rectangle.inject(new function() {
 	return ['round', 'ceil', 'floor', 'abs'].each(function(name) {
 		this[name] = function() {
-			return new Rectangle(Math[name](this.bottomRight), Math[name](this.size));
+			return new Rectangle(Math[name](this.point), Math[name](this.size));
 		};
 	}, {});
 });

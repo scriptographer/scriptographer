@@ -18,7 +18,7 @@ Object.inject({
 			if (obj === null) return 'null';
 			else if (obj === undefined) return 'undefined';
 			else if (fields) {
-				// Used by StrokeStyle and FillStyle
+				// Used by PathStyle, StrokeStyle, FillStyle
 				if (simple) {
 					var parts = [];
 					for (var i = 0, l = fields.length; i < l; i++) {
@@ -34,13 +34,13 @@ Object.inject({
 					var parts = [];
 					for (var i = 0, l = fields.length; i < l; i++)
 						parts.push(Object.toSource(obj[fields[i]], true));
-					return 'new ' + obj.getClass().simpleName + '(' + parts.join(', ') + ')';
+					return 'new ' + obj['class'].simpleName + '(' + parts.join(', ') + ')';
 				}
 			} else {
 				var type = typeof obj;
 				if (type == 'boolean' || type == 'string' || type == 'number')
 					return uneval(obj);
-				else if (obj.toSource)
+				else if (obj && obj.toSource)
 					return obj.toSource(simple);
 				else
 					return uneval(obj);
@@ -89,7 +89,7 @@ Color.inject({
 			var comps = this.components;
 			if (!this.hasAlpha())
 				comps = comps.slice(0, comps.length - 1);
-			return 'new ' + this.getClass().simpleName + '(' + comps.join(', ') + ')';
+			return 'new ' + this['class'].simpleName + '(' + comps.join(', ') + ')';
 		}
 	}
 })
@@ -104,7 +104,8 @@ FillStyle.inject(new function() {
 });
 
 StrokeStyle.inject(new function() {
-	var fields = ['color', 'overprint', 'width', 'dashOffset', 'dashArray', 'cap', 'join', 'miterLimit'];
+	var fields = ['color', 'overprint', 'width', 'cap', 'join', 'miterLimit',
+			'dashOffset', 'dashArray'];
 	return {
 		toSource: function(simple) {
 			return Object.toSource(this, simple, fields);
@@ -112,14 +113,16 @@ StrokeStyle.inject(new function() {
 	};
 });
 
-PathStyle.inject({
-	toSource: function(simple) {
-		var parts = [];
-		parts.push('fill: ' + Object.toSource(this.fill, true));
-		parts.push('stroke: ' + Object.toSource(this.stroke, true));
-		// TODO: Add windingRule, resolution
-		return simple ? '{ ' + parts.join(', ') + ' }' : 'new PathStyle() { ' + parts.join(', ') + ' }';
-	}
+PathStyle.inject(new function() {
+	var fields = ['fillColor', 'fillOverprint',
+			'strokeColor', 'strokeOverprint', 'strokeWidth',
+			'strokeCap', 'strokeJoin', 'miterLimit',
+			'dashOffset', 'dashArray', 'windingRule', 'resolution'];
+	return {
+		toSource: function(simple) {
+			return Object.toSource(this, simple, fields);
+		}
+	};
 });
 
 Path.inject({
