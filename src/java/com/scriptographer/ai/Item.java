@@ -45,7 +45,7 @@ import com.scriptographer.ui.Image;
 /**
  * @author lehni
  */
-public abstract class Item extends DocumentObject {
+public abstract class Item extends DocumentObject implements Style {
 	
 	// the internal version. this is used for internally reflected data,
 	// such as segmentList, pathStyle, and so on. Every time an object gets

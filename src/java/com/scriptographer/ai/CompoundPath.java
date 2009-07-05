@@ -55,7 +55,7 @@ public class CompoundPath extends PathItem {
 	}
 
 	/**
-	 * Creates a compound path item
+	 * Creates a compound path item.
 	 */
 	public CompoundPath() {
 		super(TYPE_COMPOUNDPATH);
