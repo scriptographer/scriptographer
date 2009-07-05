@@ -281,7 +281,7 @@ Type = Object.extend(new function() {
 					parts.push('read-only');
 				if (this.hasInterface('com.scratchdisk.list.ReadOnlyStringIndexList'))
 					parts.push('also accessible by name');
-				return parts.length ? parts.join(', ') + '.' : '';
+				return parts.length ? parts.join(', ') : '';
 			}
 		},
 

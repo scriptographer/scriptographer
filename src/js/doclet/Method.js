@@ -92,6 +92,8 @@ Method = Member.extend(new function() {
 			if (!this.added[signature]) {
 				this.added[signature] = true;
 				if (!force) {
+					if (!Member.isVisible(method))
+						return false;
 					// See wether the new method fits the existing ones:
 					if (this.members.find(function(mem) {
 						return !isCompatible(mem, method);
