@@ -88,7 +88,7 @@ public class FontFamily extends NativeObject implements ReadOnlyList<FontWeight>
 		if (name != null) {
 			for (int i = size() - 1; i >= 0; i--) {
 				FontWeight weight = (FontWeight) get(i);
-				if (name.equals(weight.getName()))
+				if (name.equalsIgnoreCase(weight.getName()))
 					return weight;
 			}
 		}
