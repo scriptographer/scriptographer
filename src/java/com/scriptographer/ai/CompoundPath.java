@@ -60,10 +60,7 @@ public class CompoundPath extends PathItem {
 	public CompoundPath() {
 		super(TYPE_COMPOUNDPATH);
 	}
-	
-	/**
-	 * @jshide
-	 */
+
 	public CompoundPath(ReadOnlyList<? extends Item> children) {
 		this();
 		for (Item item : children)
