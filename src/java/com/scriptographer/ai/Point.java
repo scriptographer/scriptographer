@@ -64,8 +64,8 @@ public class Point {
 	 * print(point.x); // 10
 	 * print(point.y); // 5
 	 * </code>
-	 * @param x The x coordinate of the Point
-	 * @param y The y coordinate of the Point 
+	 * @param x The x coordinate of the point {@default 0}
+	 * @param y The y coordinate of the point {@default 0}
 	 */
 	public Point(double x, double y) {
 		this.x = x;

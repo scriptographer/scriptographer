@@ -54,10 +54,11 @@ public class Rectangle {
 
 	/**
 	 * Creates a new rectangle.
-	 * @param x	The left coordinate.
-	 * @param y The top coordinate.
-	 * @param width
-	 * @param height
+	 * 
+	 * @param x	the left coordinate {@default 0}
+	 * @param y the top coordinate {@default 0}
+	 * @param width {@default 0}
+	 * @param height {@default 0}
 	 */
 	public Rectangle(double x, double y, double width, double height) {
 		this.x = x;

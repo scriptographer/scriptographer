@@ -63,8 +63,8 @@ public class Document extends NativeObject {
 	 * </code>
 	 * 
 	 * @param file the file to read from
-	 * @param colorModel the document's desired color model
-	 * @param dialogStatus how dialogs should be handled
+	 * @param colorModel the document's desired color model {@default 'CMYK'}
+	 * @param dialogStatus how dialogs should be handled {@default 'none'}
 	 */
 	public Document(File file, ColorModel colorModel, DialogStatus dialogStatus) {
 		super(nativeCreate(file,
@@ -97,8 +97,8 @@ public class Document extends NativeObject {
 	 * @param title the title of the document
 	 * @param width the width of the document
 	 * @param height the height of the document
-	 * @param colorModel the document's desired color model
-	 * @param dialogStatus how dialogs should be handled
+	 * @param colorModel the document's desired color model {@default 'CMYK'}
+	 * @param dialogStatus how dialogs should be handled {@default 'none'}
 	 */
 	public Document(String title, float width, float height, ColorModel colorModel,
 			DialogStatus dialogStatus) {

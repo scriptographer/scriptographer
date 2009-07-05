@@ -142,7 +142,11 @@ public abstract class TextItem extends Item {
 	public native boolean isLinked();
 
 	/**
+<<<<<<< .mine
+	 * Returns the index of the text frame in its {@link TextItem#getStory()}.
+=======
 	 * Returns the index of this text frame in the {@link TextStory#getTextFrames()} array.
+>>>>>>> .r916
 	 */
 	public native int getIndex();
 
@@ -152,7 +156,7 @@ public abstract class TextItem extends Item {
 	private native int getStoryIndex();
 
 	/**
-	 * Returns the Story that the text frame belongs to.
+	 * Returns the story that the text frame belongs to.
 	 */
 	public TextStory getStory() {
 		// don't wrap directly. always go through StoryList

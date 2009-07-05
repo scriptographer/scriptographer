@@ -56,7 +56,21 @@ public class Group extends Item {
 	}
 	
 	/**
-	 * Creates a group item from the supplied list of items
+	 * Creates a group item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // Create an empty group:
+	 * var group = new Group();
+	 * // Append a path to the group:
+	 * var line = new Path.Line(new Point(10, 10), new Point(50, 50));
+	 * group.appendTop(line);
+	 * 
+	 * // Create a group containing a path:
+	 * var circle = new Path.Circle(new Point(10, 10), 100);
+	 * var circleGroup = new Group([circle]);
+	 * </code>
+	 * 
 	 * @param children the children to be added to the newly created group
 	 */
 	public Group(List<? extends Item> children) {
@@ -70,17 +84,17 @@ public class Group extends Item {
 	}
 	
 	/**
-	 * A boolean value that specifies whether the group item is to be clipped.
+	 * Specifies whether the group item is to be clipped.
 	 * When setting to true, the first child in the group is automatically
 	 * defined as the clipping mask.
 	 *
 	 * Sample code:
-	 *
 	 * <code>
 	 * var group = new Group();
 	 * group.appendChild(path);
 	 * group.clipped = true;
 	 * </code>
+	 * @return {@true if the group item is to be clipped.
 	 */
 	public native boolean isClipped();
 	public native void setClipped(boolean clipped);
