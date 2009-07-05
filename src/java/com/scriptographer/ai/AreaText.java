@@ -43,10 +43,27 @@ public class AreaText extends TextItem {
 	native private static int nativeCreate(int orientation, int artHandle);
 	
 	/**
-	 * Creates an area text object
+	 * Creates an area text item using the supplied path.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // create an abstract rectangle:
+	 * var bottomLeft = new Point(10, 10);
+	 * var size = new Size(200, 100);
+	 * var rectangle = new Rectangle(bottomLeft, size);
+	 * 
+	 * // create a rectangular path using the abstract rectangle:
+	 * var path = new Path.Rectangle(rectangle);
+	 * 
+	 * // create a area text item using the path:
+	 * var areaText = new AreaText(path);
+	 * 
+	 * // add some text to the path
+	 * areaText.content = 'Text which will appear within the path';
+	 * </code>
 	 * 
 	 * @param area the path in which the text will appear
-	 * @param orient the text orientation
+	 * @param orient the text orientation {@default 'horizontal'}
 	 */
 	public AreaText(Path area, TextOrientation orientation) {
 		super(nativeCreate(orientation != null
@@ -59,7 +76,7 @@ public class AreaText extends TextItem {
 	}
 
 	/**
-	 * Returns the path of the AreaText
+	 * The path of the area text.
      */
 	public Path getTextPath() {
 		return (Path) getFirstChild();
@@ -67,6 +84,7 @@ public class AreaText extends TextItem {
 	
 	/**
 	 * The number of rows for the text frame.
+	 * {@grouptitle Rows and Columns}
 	 */
 	public native int getRowCount();
 	public native void setRowCount(int count);
@@ -79,6 +97,10 @@ public class AreaText extends TextItem {
 
 	/**
 	 * Specifies whether the text area uses row major order.
+	 * When set to <code>true</code>, the text flows through the columns
+	 * after which it flows to the first column of the next row. When set to
+	 * <code>false</code>, the text flows through the rows after which it
+	 * flows to the first row of the next column.
 	 */
 	public native boolean getRowMajorOrder();
 	public native void setRowMajorOrder(boolean isRowMajor);
