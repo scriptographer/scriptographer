@@ -402,6 +402,21 @@ public class Point {
 	/**
 	 * @jshide
 	 */
+	public Point modulo(double x, double y) {
+		return new Point(this.x % x, this.y % y);
+	}
+
+	public Point modulo(Point point) {
+		return modulo(point.x, point.y);
+	}
+
+	public Point modulo(double value) {
+		return modulo(value, value);
+	}
+
+	/**
+	 * @jshide
+	 */
 	public Point negate() {
 		return new Point(-x, -y);
 	}

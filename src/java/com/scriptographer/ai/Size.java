@@ -236,6 +236,21 @@ public class Size {
 	/**
 	 * @jshide
 	 */
+	public Size modulo(double w, double h) {
+		return new Size(this.width % w, this.height % h);
+	}
+
+	public Size modulo(Point point) {
+		return modulo(point.x, point.y);
+	}
+
+	public Size modulo(double value) {
+		return modulo(value, value);
+	}
+
+	/**
+	 * @jshide
+	 */
 	public Size negate() {
 		return new Size(-width, -height);
 	}
