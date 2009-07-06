@@ -333,8 +333,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 	
 	/**
-	 * The point location where the text range starts within the Illustrator
-	 * document.
+	 * The origin points of the characters in the text range.
 	 */
 	public native Point[] getOrigins();
 	public native Matrix[] getTransformations();
@@ -428,6 +427,18 @@ public class TextRange extends DocumentObject implements Commitable {
 	/**
 	 * The character type of the text range.
 	 * This range has to be of size equal to 1 character.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var text = new PointText(new Point(50, 100));
+	 * text.content = 'Text.';
+	 * 
+	 * var firstCharacter = text.range.characters.first;
+	 * print(firstCharacter.characterType) // 'normal'
+	 * 
+	 * var lastCharacter = text.range.characters.last;
+	 * print(lastCharacter.characterType); // 'punctuation'
+	 * </code>
 	 */
 	public CharacterType getCharacterType() {
 		return IntegerEnumUtils.get(CharacterType.class,
@@ -499,7 +510,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	 * Sample code:
 	 * <code>
 	 * var text = new PointText(new Point(0,0));
-	 * text.content = "abc";
+	 * text.content = 'abc';
 	 * var character = text.range.characters[1];
 	 * print(character.content) //returns 'b';
 	 * </code>

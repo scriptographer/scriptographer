@@ -251,7 +251,7 @@ public class Tool extends NativeObject {
 	 * Sample code:
 	 * <code>
 	 * function onMouseMove(event) {
-	 * 	// the position of the mouse in document coordinates:
+	 * 	// the position of the mouse in document coordinates
 	 * 	print(event.point);
 	 * }
 	 * </code>
@@ -280,7 +280,7 @@ public class Tool extends NativeObject {
 	 * Sample code:
 	 * <code>
 	 * function onMouseUp(event) {
-	 * 	// the position of the mouse in document coordinates:
+	 * 	// the position of the mouse in document coordinates
 	 * 	print(event.point);
 	 * }
 	 * </code>

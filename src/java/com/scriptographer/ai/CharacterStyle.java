@@ -36,10 +36,22 @@ import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
 
 /**
- * CharacterStyle is built on top of PathStyle and adds the text related fields
+ * The CharacterStyle object represents the character style of a text item ({@link TextItem#getCharacterStyle()})
+ * or a text range ({@link TextRange#getCharacterStyle()}).
+ * 
+ * Sample code:
+ * <code>
+ * var text = new PointText(new Point(50, 100));
+ * text.content = 'Hello world.';
+ * text.characterStyle.font = app.fonts['helvetica'];
+ * text.characterStyle.fontSize = 10;
+ * text.characterStyle.tracking = 100;
+ * </code>
  * 
  * @author lehni
- **/
+ */
+
+// CharacterStyle is built on top of PathStyle and adds the text related fields
 
 /*
  * This is pretty hackish due to the way PathStyle was implemented:

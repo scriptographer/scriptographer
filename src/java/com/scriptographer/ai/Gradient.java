@@ -59,6 +59,9 @@ public class Gradient extends DocumentObject {
 		return (Gradient) wrapHandle(Gradient.class, handle, document);
 	}
 	
+	/**
+	 * The gradient stops on the gradient ramp.
+	 */
 	public GradientStopList getStops() {
 		if (stops == null)
 			stops = new GradientStopList(this);
@@ -91,6 +94,9 @@ public class Gradient extends DocumentObject {
 	
 	private native void nativeSetType(int type);
 
+	/**
+	 * The type of the gradient.
+	 */
 	public GradientType getType() {
 		return (GradientType) IntegerEnumUtils.get(GradientType.class,
 				nativeGetType());

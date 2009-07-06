@@ -45,8 +45,14 @@ public class PointText extends TextItem {
 	/**
 	 * Creates a point text item
 	 * 
+	 * Sample code:
+	 * <code>
+	 * var text = new PointText(new Point(50, 100));
+	 * text.content = 'The contents of the point text';
+	 * </code>
+	 * 
 	 * @param point the point where the text will begin
-	 * @param orient the text orientation
+	 * @param orient the text orientation {@default 'horizontal'}
 	 */
 	public PointText(Point point, TextOrientation orientation) {
 		super(nativeCreate(orientation != null

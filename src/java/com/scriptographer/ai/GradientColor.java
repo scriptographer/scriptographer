@@ -75,6 +75,36 @@ public class GradientColor extends Color {
 		this.matrix = matrix;
 	}
 	
+	/**
+	 * Creates a new GradientColor object.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // a radial gradient from white to black
+	 * var gradient = new Gradient() {
+	 * 	type: 'radial',
+	 * 	stops: [
+	 * 		new GradientStop(new GrayColor(0), 0),
+	 * 		new GradientStop(new GrayColor(1), 1)
+	 * 	]
+	 * };
+	 * 
+	 * var origin = new Point(0, 0);
+	 * var destination = new Point(0, 100);
+	 * var gradientColor = new GradientColor(gradient, origin, destination);
+	 * 
+	 * // create a circle filled with the gradient color
+	 * var circle = new Path.Circle(new Point(0, 0), 100) {
+	 * 	fillColor: gradientColor
+	 * };
+	 * </code>
+	 * 
+	 * @param gradient the gradient
+	 * @param origin the origin point
+	 * @param destination the destination point
+	 * @param hilite the hilite point (only for radial gradients)
+	 * @param matrix the tranformation matrix
+	 */
 	public GradientColor(Gradient gradient, Point origin, Point destination, Point hilite, Matrix matrix) {
 		this.gradient = gradient;
 		this.origin = new Point(origin);
@@ -145,6 +175,9 @@ public class GradientColor extends Color {
 		throw new UnsupportedOperationException("Cannot set alpha on gradient");
 	}
 
+	/**
+	 * The origin point of the gradient.
+	 */
 	public Point getOrigin() {
 		return origin;
 	}
@@ -153,6 +186,9 @@ public class GradientColor extends Color {
 		this.origin = new Point(origin);
 	}
 
+	/**
+	 * The destination point of the gradient.
+	 */
 	public Point getDestination() {
 		return destination;
 	}
@@ -169,6 +205,11 @@ public class GradientColor extends Color {
 		this.gradient = gradient;
 	}
 
+	/**
+	 * The hilite of the gradient. The hilite is only visible in radial
+	 * gradients and allows you to move the center of the gradient while leaving
+	 * the boundaries of the gradient alone.
+	 */
 	public Point getHilite() {
 		return hilite;
 	}

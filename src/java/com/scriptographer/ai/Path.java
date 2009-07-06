@@ -140,6 +140,10 @@ public class Path extends PathItem {
 		return curves;
 	}
 
+	/**
+	 * Specifies whether the path is closed. If it is closed, Illustrator
+	 * connects the first and last segments.
+	 */
 	public native boolean isClosed();
 	
 	private native void nativeSetClosed(boolean closed);
@@ -151,6 +155,9 @@ public class Path extends PathItem {
 			curves.updateSize();
 	}
 	
+	/**
+	 * Specifies whether the path is used as a guide.
+	 */
 	public native boolean isGuide();
 	
 	public native void setGuide(boolean guide);
@@ -170,16 +177,21 @@ public class Path extends PathItem {
 		setTabletData(values.toArray(new TabletValue[values.size()]));
 	}
 
+	/**
+	 * The length of the perimeter of the path.
+	 */
 	public native double getLength();
 
+	/**
+	 * The area of the path. Self-intersecting paths can contain sub-areas that
+	 * cancel each other out.
+	 */
 	public native float getArea();
 
 	private native void nativeReverse();
 
 	/**
-	 * Reverses the segments of a path. This is only important for sub paths of
-	 * compound paths, since the winding order controls the insideness of the
-	 * compound path.
+	 * Reverses the segments of the path.
 	 */
 	public void reverse() {
 		// First save all changes:
@@ -370,6 +382,10 @@ public class Path extends PathItem {
 		getSegments().arcTo(endX, endY);
 	}
 
+	/**
+	 * Closes the path. If it is closed, Illustrator connects the first and last
+	 * segments.
+	 */
 	public void closePath() {
 		setClosed(true);
 	}

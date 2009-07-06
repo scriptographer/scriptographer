@@ -47,8 +47,8 @@ public class Size {
 	/**
 	 * Creates a Size object with the given width and height.
 	 * 
-	 * @param width The width of the Size
-	 * @param height The height of the Size
+	 * @param width The width of the Size {@default 0}
+	 * @param height The height of the Size {@default 0}
 	 */
 	public Size(double width, double height) {
 		set(width, height);

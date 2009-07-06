@@ -46,10 +46,14 @@ public class GradientStop implements Commitable {
 	protected GradientStopList list;
 	protected boolean dirty = false;
 	
-	public GradientStop(GradientStop stop) {
-		this(stop.color, stop.midPoint, stop.rampPoint);
-	}
-	
+	/**
+	 * Creates a new GradientStop object.
+	 * 
+	 * @param color the color of the stop {@default new GrayColor(0)}
+	 * @param rampPoint the position of the stop on the gradient ramp {@default 0}
+	 * @param midPoint the position where the color of the stop blends equally
+	 *        with the color of the next stop. {@default 0.5}
+	 */
 	public GradientStop(Color color, float rampPoint, float midPoint) {
 		if (color == null)
 			throw new IllegalArgumentException("Gradient color cannot be null");
@@ -68,6 +72,10 @@ public class GradientStop implements Commitable {
 
 	public GradientStop() {
 		this(new GrayColor(0), 0, 0.5f);
+	}
+	
+	public GradientStop(GradientStop stop) {
+		this(stop.color, stop.midPoint, stop.rampPoint);
 	}
 
 	protected GradientStop(GradientStopList stops, int index) {
@@ -132,6 +140,9 @@ public class GradientStop implements Commitable {
 		}
 	}
 
+	/**
+	 * The color of the gradient stop.
+	 */
 	public Color getColor() {
 		this.update();
 		return color;
@@ -145,6 +156,11 @@ public class GradientStop implements Commitable {
 		}
 	}
 
+	/**
+	 * The midpoint of the gradient stop describes the position where the color
+	 * of the stop blends equally with the color of the next gradient stop.
+	 * @return the midpoint of the gradient as a value between 0 and 1
+	 */
 	public float getMidPoint() {
 		this.update();
 		return midPoint;
@@ -156,6 +172,10 @@ public class GradientStop implements Commitable {
 		this.markDirty();
 	}
 
+	/**
+	 * The position of the gradient stop on the gradient ramp.
+	 * @return a value between 0 and 1
+	 */
 	public float getRampPoint() {
 		this.update();
 		return rampPoint;
@@ -173,10 +193,16 @@ public class GradientStop implements Commitable {
 		this.markDirty();
 	}
 	
+	/**
+	 * The {@link Gradient} that this gradient stop belongs to.
+	 */
 	public Gradient getGradient() {
 		return this.list != null ? this.list.gradient : null;
 	}
 	
+	/**
+	 * The index of the gradient stop in the {@link Gradient} it belongs to.
+	 */
 	public int getIndex() {
 		return index;
 	}

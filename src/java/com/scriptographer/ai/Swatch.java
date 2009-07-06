@@ -50,6 +50,21 @@ public class Swatch extends DocumentObject {
 
 	private static native int nativeCreate();
 	
+	/**
+	 * Creates a new Swatch object.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // create the swatch
+	 * var swatch = new Swatch() {
+	 * 	color: new RGBColor(1, 0, 0),
+	 * 	name: 'Red'
+	 * };
+	 * 
+	 * // add it to the document's swatch list
+	 * document.swatches.push(swatch);
+	 * </code>
+	 */
 	public Swatch() {
 		super(nativeCreate());
 	}
@@ -58,10 +73,16 @@ public class Swatch extends DocumentObject {
 		return (Swatch) wrapHandle(Swatch.class, handle, document);
 	}
 	
+	/**
+	 * The name of the swatch.
+	 */
 	public native String getName();
 	
 	public native void setName(String name);
 
+	/**
+	 * The color of the swatch.
+	 */
 	public native Color getColor();
 	
 	public native void setColor(Color color);
@@ -69,7 +90,7 @@ public class Swatch extends DocumentObject {
 	protected native boolean nativeRemove();
 	
 	/**
-	 * Removes the swatch
+	 * Removes the swatch from the document's swatch list.
 	 */
 	public boolean remove() {
 		// make it public

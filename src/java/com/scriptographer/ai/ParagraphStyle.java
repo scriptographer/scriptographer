@@ -37,6 +37,15 @@ import com.scriptographer.CommitManager;
 import com.scriptographer.Commitable;
 
 /**
+ * The ParagraphStyle object represents the paragraph style of a text item ({@link TextRange#getParagraphStyle()})
+ * or a text range ({@link TextRange#getParagraphStyle()}).
+ * 
+ * Sample code:
+ * <code>
+ * var text = new PointText(new Point(0,0));
+ * text.content = 'Hello world.';
+ * text.paragraphStyle.justification = 'center';
+ * </code>
  * @author lehni
  */
 public class ParagraphStyle extends NativeObject implements Style, Commitable {
