@@ -134,8 +134,8 @@ public class MouseEvent {
 	}
 
 	/**
-	 * The amount of force being applied pressure-sensitive input device, such
-	 * as a graphic tablet.
+	 * The amount of force being applied by a pressure-sensitive input device,
+	 * such as a graphic tablet.
 	 * 
 	 * @return the pressure as a value between 0 and 1
 	 */
