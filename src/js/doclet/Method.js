@@ -92,8 +92,6 @@ Method = Member.extend(new function() {
 			if (!this.added[signature]) {
 				this.added[signature] = true;
 				if (!force) {
-					if (!Member.isVisible(method))
-						return false;
 					// See wether the new method fits the existing ones:
 					if (this.members.find(function(mem) {
 						return !isCompatible(mem, method);
@@ -149,14 +147,22 @@ Method = Member.extend(new function() {
 				this.minCount = minCount;
 				if (sameParamCount) {
 					// Find the suiting method: take the one with the most documentation
-					var maxTags = -1;
+					var maxLength = -1;
+					this.member = null;
+					var found = null;
 					this.members.each(function(mem) {
-						var numTags = mem.inlineTags().length;
-						if (numTags > maxTags) {
-							this.member = mem;
-							maxTags = numTags;
+						var length = mem.getRawCommentText().length;
+						if (length > maxLength) {
+							found = mem;
+							if (Member.isVisible(mem))
+								this.member = mem;
+							maxLength = length;
 						}
 					}, this);
+					// If we have not found a visible one with documentation,
+					// use the jshide one then for the whole group.
+					if (!this.member)
+						this.member = found;
 				} else {
 					// Now sort the methods by param count:
 					this.members = this.members.sortBy(function(mem) {

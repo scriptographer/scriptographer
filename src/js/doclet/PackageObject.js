@@ -11,8 +11,9 @@ PackageObject = DocObject.extend({
 		this.base(doc);
 	},
 
-	processPackage: function() {
+	renderPackage: function() {
 		var name = this.doc.name();
+		print('Rendering Package ' + name);
 		// Write package file:
 		var path = DocObject.getRelativeIdentifier(name);
 		// We need to create document before rendering tags and links, so that
@@ -35,10 +36,10 @@ PackageObject = DocObject.extend({
 			index.close();
 		}
 
-		this.processClasses(this.doc.interfaces());
-		this.processClasses(this.doc.allClasses(true));
-		this.processClasses(this.doc.exceptions());
-		this.processClasses(this.doc.errors());
+		this.renderClasses(this.doc.interfaces());
+		this.renderClasses(this.doc.allClasses(true));
+		this.renderClasses(this.doc.exceptions());
+		this.renderClasses(this.doc.errors());
 		// Now produce the hierarchy:
 		var hierarchy = this.renderHierarchy(true);
 		// And render the classes list if it exists
@@ -58,7 +59,7 @@ PackageObject = DocObject.extend({
 	 * Orders the classes according to their inheritance 
 	 * and calls renderClass on each of the visible ones.
 	 */
-	processClasses: function(classes) {
+	renderClasses: function(classes) {
 		// Loop twice, as in the second loop, superclasses are picked from nodes
 		// which is filled in the firs loop
 		classes.each(function(doc) {
@@ -67,6 +68,7 @@ PackageObject = DocObject.extend({
 				doc.classObj = cls;
 				this.addChild(cls);
 				// Render this class
+				print('Rendering ' + cls);
 				cls.renderClass();
 			}
 		}, this);

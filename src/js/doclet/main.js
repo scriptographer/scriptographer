@@ -103,7 +103,7 @@ function main() {
 	packageSequence.each(function(name) {
 		var pkg = packages[name];
 		if (pkg)
-			pkg.processPackage();
+			pkg.renderPackage();
 	});
 	doc.close();
 }

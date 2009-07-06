@@ -305,6 +305,7 @@ ClassObject = DocObject.extend({
 			// Now initialize them. init needs all the others to be there,
 			// due to bean prop stuff
 			this.classObjects.each(function(cls) {
+				print('Initialising ' + cls);
 				cls.init();
 			});
 			// Now after all have initialised, scan for bean properties and 
@@ -312,10 +313,12 @@ ClassObject = DocObject.extend({
 			// all the methods can be merged and hidden if needed. Only
 			// then getter / setters can be converted and removed.
 			this.classObjects.each(function(cls) {
+				print('Scanning ' + cls);
 				cls.scan();
 			});
 			// Now call resolve, to resolve references.
 			this.classObjects.each(function(cls) {
+				print('Resolving ' + cls);
 				cls.resolve();
 			});
 		},
