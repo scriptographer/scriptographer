@@ -10,5 +10,7 @@ Path.inject(new function() {
 					res[i] = props[i];
 			return res;
 		}
-	}, { statics: {}});
+	}, {
+		statics: {}
+	});
 });
