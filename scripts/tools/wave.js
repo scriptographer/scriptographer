@@ -1,5 +1,21 @@
-// the mouse has to move at least 10 points
-distanceThreshold = (10);
+var values = {
+	curviness: 0.5,
+	distance: 10,
+	offset: 10,
+	mouseOffset: true
+};
+
+tool.distanceThreshold = values.distance;
+
+function onOptions() {
+	values = Dialog.prompt('Wave settings:', {
+		curviness: { description: 'Curviness (between 0 and 1)' },
+		distance: { description: 'Distance threshold' },
+		offset: { description: 'Size' },
+		mouseOffset: { description: 'Define size by mouse speed', type: 'checkbox'}
+	}, values);
+	tool.distanceThreshold = values.distance;
+}
 
 var path;
 
@@ -9,8 +25,19 @@ function onMouseDown(event) {
 
 function onMouseDrag(event) {
 	var rotation = event.count.isEven() ? 90 : -90;
-	var vector = event.delta.rotate(rotation.toDegrees());
-	path.lineTo(event.point + vector);
-	path.segments.last.handleIn = -event.delta/2;
-	path.segments.last.handleOut = event.delta/2;
+	
+	var step = event.delta.clone();
+	
+	if(!values.mouseOffset) {
+		step.length = values.offset;
+	}
+	
+	var vector = step.rotate(rotation.toDegrees());
+	
+	var segment = new Segment() {
+		point: event.point + vector,
+		handleIn: -event.delta * values.curviness,
+		handleOut: event.delta * values.curviness
+	};
+	path.segments.push(segment);
 }
