@@ -612,7 +612,7 @@ public class Document extends NativeObject {
 					} else if (type instanceof String) {
 						// Try loading class from String name.
 						try {
-							classes.add(Class.forName(Item.class.getPackage() + "." + type));
+							classes.add(Class.forName(Item.class.getPackage().getName() + "." + type));
 						} catch (ClassNotFoundException e) {
 						}
 					}
