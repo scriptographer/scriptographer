@@ -45,7 +45,7 @@ import com.scriptographer.ui.Image;
 /**
  * @author lehni
  */
-public abstract class Item extends DocumentObject implements Style {
+public class Item extends DocumentObject implements Style {
 	
 	// the internal version. this is used for internally reflected data,
 	// such as segmentList, pathStyle, and so on. Every time an object gets
@@ -65,6 +65,9 @@ public abstract class Item extends DocumentObject implements Style {
 	private static SoftIntMap<Item> items = new SoftIntMap<Item>();
 
 	private PathStyle style = null;
+
+	// For Document#currentStyleItem
+	protected final static int HANDLE_CURRENT_STYLE = -1;
 
 	// from AIArt.h
 
@@ -130,17 +133,20 @@ public abstract class Item extends DocumentObject implements Style {
 	 * Creates an item that wraps an existing AIArtHandle. Make sure the
 	 * right constructor is used (Path, Raster). Use wrapArtHandle instead of
 	 * directly calling this constructor (it is called from the anchestor's
-	 * constructors). Integer is used instead of int so Item(int handle) can be
-	 * distinguished from the Item(Integer handle) constructor
+	 * constructors).
 	 * 
 	 * @param handle
 	 */
+	protected Item(int handle, Document document) {
+		super(handle, document); 
+		// Keep track of this object from now on, see wrapArtHandle
+		items.put(handle, this);
+	}
+
 	protected Item(int handle) {
 		// We are setting document to null by default, since it will be
 		// set in wrapHandle.
-		super(handle, null); 
-		// Keep track of this object from now on, see wrapArtHandle
-		items.put(handle, this);
+		this(handle, null);
 	}
 
 	private native static int nativeCreate(short type);
@@ -155,16 +161,16 @@ public abstract class Item extends DocumentObject implements Style {
 	 */
 	protected static Item wrapHandle(int artHandle, short type, int textType,
 			int docHandle, int dictionaryHandle, boolean wrapped) {
-		// first see whether the object was already wrapped before:
+		// First see whether the object was already wrapped before:
 		Item item = null;
-		// only try to use the previous wrapper for this address if the object
+		// Only try to use the previous wrapper for this address if the object
 		// was marked wrapped otherwise we might get wrong wrappers for objects
 		// that reuse a previous address
 		Item prev = items.get(artHandle);
 		if (wrapped)
 			item = items.get(artHandle);
-		// if it wasn't wrapped yet, do it now:
-		// TODO: don't forget to add all types also to the native
+		// If it wasn't wrapped yet, do it now:
+		// TODO: Don't forget to add all types also to the native
 		// Item_getType function in com_scriptographer_ai_Item.cpp!
 		if (item == null) {
 			switch (type) {
@@ -204,10 +210,11 @@ public abstract class Item extends DocumentObject implements Style {
 					break;
 				case TYPE_SYMBOL:
 					item = new PlacedSymbol(artHandle);
-				}
+			}
 		}
 		if (item != null) {
-			if (item.getItemType() != Item.getItemType(item.getClass()) && Item.getItemType(item.getClass()) < 100) {
+			if (item.getItemType() != Item.getItemType(item.getClass())
+					&& Item.getItemType(item.getClass()) < 100) {
 				int i = 0;
 			}
 			item.dictionaryHandle = dictionaryHandle;
@@ -621,19 +628,19 @@ public abstract class Item extends DocumentObject implements Style {
 	 * </code>
 	 */
 	public PathStyle getStyle() {
-		if (style == null)
+		if (style == null) {
 			style = new PathStyle(this);
+		} else {
+			style.update();
+		}
 		return style;
 	}
 
 	public void setStyle(PathStyle style) {
-		// Make sure it's created
+		// Make sure it's created and fetched
 		getStyle();
-		// Make sure it's fetched, since the newly set style might not define
-		// all fields.
-		this.style.update();
-		this.style.init(style);
-		this.style.markDirty();
+		style.init(style);
+		style.markDirty();
 	}
 
 	/*
@@ -758,6 +765,7 @@ public abstract class Item extends DocumentObject implements Style {
 	/**
 	 * A boolean value that specifies whether the center point of the item is
 	 * visible.
+	 * 
 	 * @jshide
 	 */
 	public native boolean isCenterVisible();
@@ -767,6 +775,9 @@ public abstract class Item extends DocumentObject implements Style {
 	private native boolean nativeGetAttribute(int attribute);
 
 	public void setAttribute(ItemAttribute attribute, boolean value) {
+		if (attribute == ItemAttribute.SELECTED
+				|| attribute == ItemAttribute.FULLY_SELECTED)
+			document.onPreSelectionChange();
 		nativeSetAttribute(attribute.value, value);
 	}
 

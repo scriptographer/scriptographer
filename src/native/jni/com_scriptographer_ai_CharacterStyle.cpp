@@ -117,9 +117,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeClone(JNI
 }
 
 /*
- * void nativeGet(int handle)
+ * void nativeGet(int handle, int docHandle)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGet(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_nativeGet(JNIEnv *env, jobject obj, jint handle, jint docHandle) {
 	try {
 		AIPathStyle style;
 		AIPathStyleMap map;

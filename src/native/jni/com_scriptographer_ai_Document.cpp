@@ -612,9 +612,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(J
 }
 
 /*
- * void deselectAll()
+ * void nativeDeselectAll()
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_deselectAll(JNIEnv *env, jobject obj) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeDeselectAll(JNIEnv *env, jobject obj) {
 	try {
 		// cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);

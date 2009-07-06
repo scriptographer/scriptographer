@@ -229,7 +229,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		this.resolution = style.resolution;
 	}
 
-	protected native void nativeGet(int handle);
+	protected native void nativeGet(int handle, int docHandle);
 	
 	protected native void nativeSet(int handle, int docHandle, 
 			Color fillColor, boolean hasFillColor,
@@ -277,7 +277,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	}
 
 	protected void fetch() {
-		nativeGet(item.handle);
+		nativeGet(item.handle, item.document.handle);
 		version = item.version;
 		fetched = true;
 	}

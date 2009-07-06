@@ -52,6 +52,7 @@ public class Document extends NativeObject {
 	private SymbolList symbols = null;
 	private SwatchList swatches = null;
 	private Dictionary data = null;
+	private Item currentStyleItem = null;
 
 	/**
 	 * Opens an existing document.
@@ -475,7 +476,10 @@ public class Document extends NativeObject {
 	 * // Get all selected groups and paths:
 	 * var items = document.getSelectedItems([Group, Path]);
 	 * </code>
+	 * 
 	 * @param types
+	 * 
+	 * @jshide
 	 */
 	public ItemList getSelectedItems(Class[] types) {
 		if (types == null) {
@@ -495,16 +499,24 @@ public class Document extends NativeObject {
 	 * // Get all selected rasters:
 	 * var items = document.getSelectedItems(Raster);
 	 * </code>
+	 * 
 	 * @param types
+	 * 
+	 * @jshide
 	 */
 	public ItemList getSelectedItems(Class type) {
 		return getSelectedItems(new Class[] { type });
 	}
 
+	private native void nativeDeselectAll();
+
 	/**
-	 * Deselects all the selected items in the document.
+	 * Deselects all selected items in the document.
 	 */
-	public native void deselectAll();
+	public void deselectAll() {
+		onPreSelectionChange();
+		nativeDeselectAll();
+	}
 	
 	private native ItemList nativeGetMatchingItems(Class type, HashMap<Integer, Boolean> attributes);
 
@@ -899,5 +911,31 @@ public class Document extends NativeObject {
 			data.clear();
 			data.putAll(map);
 		}
+	}
+
+	private Item getCurrentStyleItem() {
+		// This is a bit of a hack: We use a special handle HANDLE_CURRENT_STYLE
+		// to tell the native side that this is in fact the current style, not an
+		// item handle...
+		if (currentStyleItem == null)
+			currentStyleItem = new Item(Item.HANDLE_CURRENT_STYLE, this);
+		// Update version so style gets refetched from native side.
+		currentStyleItem.version = CommitManager.version;
+		return currentStyleItem;
+	}
+
+	public PathStyle getCurrentStyle() {
+		return getCurrentStyleItem().getStyle();
+	}
+
+	public void setCurrentStyle(PathStyle style) {
+		getCurrentStyleItem().setStyle(style);
+	}
+
+	protected void onPreSelectionChange() {
+		// Make sure style change gets commited before selection changes,
+		// since it affects the selection.
+		if (currentStyleItem != null)
+			CommitManager.commit(currentStyleItem);
 	}
 }

@@ -152,7 +152,7 @@ public class CharacterStyle extends PathStyle {
 			fetch();
 	}
 	
-	protected native void nativeGet(int handle);
+	protected native void nativeGet(int handle, int docHandle);
 
 	protected native void nativeSet(int handle, int docHandle, 
 			Color fillColor, boolean hasFillColor,
@@ -167,7 +167,13 @@ public class CharacterStyle extends PathStyle {
 			int rangeHandle);
 
 	protected void fetch() {
-		nativeGet(handle);
+		// TODO: Find out if ATE CharacterStyle also needs activation of document, and
+		// pass it if so: range != null ? range.document.handle : 0
+		// This also needs code on the native side:
+		// if (docHandle != NULL)
+		//     Document_activate((AIDocumentHandle) docHandle);
+		nativeGet(handle, 0);
+		version = CommitManager.version;
 		fetched = true;
 	}
 

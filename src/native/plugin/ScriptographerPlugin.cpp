@@ -540,7 +540,7 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		AIAppContextHandle appContext = NULL;
 		sAIAppContext->PushAppContext(m_pluginRef, &appContext);
 
-		AINotifierMessage *msg = (AINotifierMessage *)message;
+		AINotifierMessage *msg = (AINotifierMessage *) message;
 		if (msg->notifier == m_selectionChangedNotifier) {
 			error = gEngine->onSelectionChanged();
 		} else if (msg->notifier == m_appStartedNotifier) {
