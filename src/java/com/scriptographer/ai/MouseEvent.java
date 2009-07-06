@@ -32,6 +32,17 @@
 package com.scriptographer.ai;
 
 /**
+ * The MouseEvent object is recieved by the {@link Tool}'s mouse event handlers and
+ * contains information about the mouse event.
+ * 
+ * Sample code:
+ * <code>
+ * function onMouseUp(event) {
+ * 	// the position of the mouse when it is released
+ * 	print(event.point);
+ * }
+ * </code>
+ * 
  * @author lehni
  */
 public class MouseEvent {
@@ -85,22 +96,71 @@ public class MouseEvent {
 		return buf.toString();
 	}
 
+	/**
+	 * The position of the mouse in document coordinates when the event was
+	 * fired.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * function onMouseDrag(event) {
+	 * 	// the position of the mouse when it is dragged
+	 * 	print(event.point);
+	 * }
+	 * 
+	 * function onMouseUp(event) {
+	 * 	// the position of the mouse when it is released
+	 * 	print(event.point);
+	 * }
+	 * </code>
+	 */
 	public Point getPoint() {
 		return new Point(point);
 	}
 
+	/**
+	 * The last position of the mouse in document coordinates when the event was
+	 * fired.
+	 */
 	public Point getLastPoint() {
 		return lastPoint != null ? new Point(lastPoint) : null;
 	}
 
+	/**
+	 * The difference between the current position and the last position of the
+	 * mouse when the event was fired.
+	 */
 	public Point getDelta() {
 		return new Point(delta);
 	}
 
+	/**
+	 * The pressure of a pressure-sensitive input device, such as a graphic
+	 * tablet.
+	 * 
+	 * @return the pressure as a value between 0 and 1
+	 */
 	public double getPressure() {
 		return pressure;
 	}
 
+	/**
+	 * The number of times the mouse event was fired.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * function onMouseDrag(event) {
+	 * 	// the amount of times the onMouseDrag event was fired
+	 * 	// since the last onMouseDown event
+	 * 	print(event.count);
+	 * }
+	 * 
+	 * function onMouseUp(event) {
+	 * 	// the amount of times the onMouseUp event was fired
+	 * 	// since the tool was activated 
+	 * 	print(event.point);
+	 * }
+	 * </code>
+	 */
 	public int getCount() {
 		return isDown ? downCount : count;
 	}
