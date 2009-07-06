@@ -94,7 +94,7 @@ public class Group extends Item {
 	 * group.appendChild(path);
 	 * group.clipped = true;
 	 * </code>
-	 * @return {@true if the group item is to be clipped.
+	 * @return {@true if the group item is to be clipped}
 	 */
 	public native boolean isClipped();
 	public native void setClipped(boolean clipped);
