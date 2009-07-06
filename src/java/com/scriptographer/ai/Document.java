@@ -595,14 +595,18 @@ public class Document extends NativeObject {
 	 * </code>
 	 * 
 	 * @param attributes an object containing the various attributes to check
-	 *        for. The key {@code type} defines a single prototype or an array of prototypes to check for.
-	 *        The following keys have {@code Boolean} values to check for the state of the matching items: {@enum ItemAttribute}.
+	 *        for. The key {@code type} defines a single prototype, an array of
+	 *        prototypes or a comma separated {@String} of prototype
+	 *        names to check for. The following keys have {@code Boolean} values
+	 *        to check for the state of the matching items: {@enum
+	 *        ItemAttribute}.
 	 */
 	public ItemList getItems(Map<Object, Object> attributes) {
 		ArrayList<Class> classes = new ArrayList<Class>();
-		// Convert types to class array:
+		// Convert "type" to class array:
 		Object types = attributes.get("type");
 		if (types != null) {
+			// Support comma separated String lists.
 			if (types instanceof String)
 				types = ((String) types).split(",");
 			if (types instanceof Object[]) {
@@ -612,7 +616,8 @@ public class Document extends NativeObject {
 					} else if (type instanceof String) {
 						// Try loading class from String name.
 						try {
-							classes.add(Class.forName(Item.class.getPackage().getName() + "." + type));
+							classes.add(Class.forName(Item.class.getPackage().getName()
+									+ "." + type));
 						} catch (ClassNotFoundException e) {
 						}
 					}
@@ -627,7 +632,7 @@ public class Document extends NativeObject {
 		// If no class was specified, match them all through Item.
 		if (classes.isEmpty())
 			classes.add(Item.class);
-		// Remove types from map that's passed to getItems.
+		// Remove "type" from the cloned map that's passed to getItems.
 		HashMap<Object, Object> clone = new HashMap<Object, Object>(attributes);
 		clone.remove("type");
 		return getItems(classes.toArray(new Class[classes.size()]), clone);
