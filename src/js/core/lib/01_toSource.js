@@ -15,9 +15,11 @@ Object.inject({
 
 	statics: {
 		toSource: function(obj, simple, fields) {
-			if (obj === null) return 'null';
-			else if (obj === undefined) return 'undefined';
-			else if (fields) {
+			if (obj === null) {
+				return 'null';
+			} else if (obj === undefined) {
+				return 'undefined';
+			} else if (fields) {
 				// Used by PathStyle, StrokeStyle, FillStyle
 				if (simple) {
 					var parts = [];
@@ -36,14 +38,10 @@ Object.inject({
 						parts.push(Object.toSource(obj[fields[i]], true));
 					return 'new ' + obj['class'].simpleName + '(' + parts.join(', ') + ')';
 				}
+			} else if (!obj.toSource || /^(boolean|string|number)$/.test(typeof obj)) {
+				return uneval(obj);
 			} else {
-				var type = typeof obj;
-				if (type == 'boolean' || type == 'string' || type == 'number')
-					return uneval(obj);
-				else if (obj && obj.toSource)
-					return obj.toSource(simple);
-				else
-					return uneval(obj);
+				return obj.toSource(simple);
 			}
 		}
 	}
