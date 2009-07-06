@@ -533,7 +533,7 @@ public class Document extends NativeObject {
 			ItemList subSet = nativeGetMatchingItems(type, converted);
 			// Filter out TextItems that do not match the given type.
 			// This is needed since nativeGetMatchingItems returns all TextItems...
-			// TODO: Move this to the client side maybe?
+			// TODO: Move this to the native side maybe?
 			if (TextItem.class.isAssignableFrom(type))
 				for (Item item : subSet)
 					if (!type.isInstance(item))
@@ -545,9 +545,11 @@ public class Document extends NativeObject {
 			}
 		}
 		// Filter out matched children when the parent matches too
-		for (Item item : set)
+		for (int i = set.size() - 1; i >= 0; i--) {
+			Item item = set.get(i);
 			if (set.contains(item.getParent()))
-				set.remove(item);
+				set.remove(i);
+		}
 		// TODO: Expand PathItem -> Path / CompoundPath
 		return set;
 	}
@@ -581,38 +583,53 @@ public class Document extends NativeObject {
 	 * Sample code: <code>
 	 * // All hidden paths and rasters contained in the document.
 	 * var hiddenItems = document.getItems({ 
-	 *     types: [Path, Raster], 
+	 *     type: [Path, Raster], 
 	 *     hidden: true
 	 * });
 	 * 
 	 * // All locked Paths contained in the document.
 	 * var lockedItems = document.getItems({
-	 *     types: Path,
+	 *     type: Path,
 	 *     locked: true
 	 * });
 	 * </code>
 	 * 
 	 * @param attributes an object containing the various attributes to check
-	 *        for. The key {@code types} defines a single prototype or an array of prototypes to check for.
+	 *        for. The key {@code type} defines a single prototype or an array of prototypes to check for.
 	 *        The following keys have {@code Boolean} values to check for the state of the matching items: {@enum ItemAttribute}.
 	 */
 	public ItemList getItems(Map<Object, Object> attributes) {
 		ArrayList<Class> classes = new ArrayList<Class>();
 		// Convert types to class array:
-		Object types = attributes.get("types");
+		Object types = attributes.get("type");
 		if (types != null) {
+			if (types instanceof String)
+				types = ((String) types).split(",");
 			if (types instanceof Object[]) {
 				for (Object type : (Object[]) types) {
-					if (type instanceof Class)
+					if (type instanceof Class) {
 						classes.add((Class) type);
-					// TODO: else Convert from string?
+					} else if (type instanceof String) {
+						// Try loading class from String name.
+						try {
+							classes.add(Class.forName(Item.class.getPackage() + "." + type));
+						} catch (ClassNotFoundException e) {
+						}
+					}
 				}
 			} else if (types instanceof Class)
 				classes.add((Class) types);
 		}
+		// Filter out classes again that are not inheriting Item.
+		for (int i = classes.size() - 1; i >= 0; i--)
+			if (!Item.class.isAssignableFrom((classes.get(i))))
+				classes.remove(i);
+		// If no class was specified, match them all through Item.
+		if (classes.isEmpty())
+			classes.add(Item.class);
 		// Remove types from map that's passed to getItems.
 		HashMap<Object, Object> clone = new HashMap<Object, Object>(attributes);
-		clone.remove("types");
+		clone.remove("type");
 		return getItems(classes.toArray(new Class[classes.size()]), clone);
 	}
 
