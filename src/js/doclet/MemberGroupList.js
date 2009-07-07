@@ -20,15 +20,6 @@ MemberGroupList = Object.extend({
 		var name = member.name(), key = name, group;
 		if (member.isMethod() || member.isConstructor()) {
 			if (member.isMethod()) {
-				// Check if the method is overriding another, and if that one was
-				// already added to a visible superclass.
-				// Only do so if it does not have a comment, in which case
-				// it might do something differently and should show.
-				if (!(member instanceof Member) && !member.getRawCommentText()) {
-					var overridden = member.overriddenMethod();
-					if (overridden && overridden.containingClass().isVisible())
-						return false;
-				}
 				// For methods, use the return type for grouping as well!
 				var type = member.returnType();
 				if (type)

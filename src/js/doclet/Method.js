@@ -285,6 +285,20 @@ Method = Member.extend(new function() {
 			return !this.members.length;
 		},
 
+		getVisible: function() {
+			// Check if the method is overriding another, and if that one was
+			// already added to a visible superclass.
+			// Only do so if it does not have a comment, in which case
+			// it might do something differently and should show.
+			if (this.member.isMethod() && !this.member.getRawCommentText()) {
+				var overridden = this.member.overriddenMethod();
+				if (overridden && overridden.containingClass().isVisible())
+					return false;
+			}
+			return this.base();
+		},
+
+
 		extractGetter: function() {
 			return this.members.find(function(method) {
 				if (BeanProperty.isGetter(method))
