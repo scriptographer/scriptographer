@@ -54,6 +54,7 @@ public class Layer extends Item {
 	 * @return {true if the layer is visible}
 	 */
 	public native boolean isVisible();
+
 	public native void setVisible(boolean visible);
 
 	/**
@@ -66,6 +67,7 @@ public class Layer extends Item {
 	 *         layer is set to outline
 	 */
 	public native boolean getPreview();
+
 	public native void setPreview(boolean preview);
 
 	/**
@@ -74,6 +76,7 @@ public class Layer extends Item {
 	 * @return {@true if the layer is considered printable}
 	 */
 	public native boolean isPrinted();
+
 	public native void setPrinted(boolean printed);
 
 	/**
@@ -81,12 +84,14 @@ public class Layer extends Item {
 	 * {@true if the layer is selected}
 	 */
 	public native boolean isSelected();
+
 	public native void setSelected(boolean selected);
 
 	/**
 	 * Specifies the color used for outlining items when they are selected.
 	 */
 	public native RGBColor getColor();
+
 	public native void setColor(Color color);
 
 	public void setColor(java.awt.Color color) {

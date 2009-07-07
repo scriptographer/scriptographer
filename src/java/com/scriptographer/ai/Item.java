@@ -647,6 +647,9 @@ public class Item extends DocumentObject implements Style {
 	 * Stroke Styles
 	 */
 
+	/**
+	 * @copy PathStyle#getStrokeColor()
+	 */
 	public Color getStrokeColor() {
 		return getStyle().getStrokeColor();
 	}
@@ -659,6 +662,9 @@ public class Item extends DocumentObject implements Style {
 		getStyle().setStrokeColor(color);
 	}
 
+	/**
+	 * @copy PathStyle#getStrokeWidth()
+	 */
 	public Float getStrokeWidth() {
 		return getStyle().getStrokeWidth();
 	}
