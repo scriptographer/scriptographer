@@ -57,6 +57,10 @@ MemberGroup = Object.extend({
 		return !this.members.length;
 	},
 
+	qualifiedName: function() {
+		return this.classObject.doc.qualifiedName() + '.' + this.name;
+	},
+
 	getMember: function(signature, strict) {
 		if (signature) {
 			return this.members.find(function(member) {
@@ -153,7 +157,7 @@ MemberGroup = Object.extend({
 				if (!/\./.test(cls))
 					cls = doc.containingPackage().qualifiedName() + '.' + cls;
 			}
-			var [all, name] = name.match(/^(\w*)/) || [];
+			var [all, name] = name && name.match(/^(\w*)/) || [];
 			// If it's a hidden class, force creation through ClassObject.put
 			var obj = ClassObject.get(cls, true);
 			return obj && obj.getGroup(name);

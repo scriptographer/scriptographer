@@ -35,10 +35,8 @@ Member = Object.extend({
 					})
 				}
 			}
-			// Thrown exceptions
-			// if (this.member.thrownExceptions)
-			//	renderTemplate('exceptions', { exceptions: this.member.thrownExceptions() }, out);
-			// Description
+			var copy = this.tags('copy')[0];
+		 	param.commentObject = copy && Member.getByReference(copy.text(), param.doc) || this;
 			return this.renderTemplate('member', param);
 		}
 	},
@@ -217,7 +215,13 @@ Member = Object.extend({
 			var group = MemberGroup.getByReference(reference, doc);
 			if (group) {
 				var [all, signature] = reference.match(/(\([^)]*\))$/) || [];
-				return group.getMember(signature, strict);
+				var member = group.getMember(signature, strict);
+				if (member)
+					return member;
+				// If this did not work, use the raw id through members.
+				// This is for example needed for methods that turned into beans.
+				// This need to produce the same syntax as getId above.
+				return this.members[group.qualifiedName() + signature];
 			}
 		},
 

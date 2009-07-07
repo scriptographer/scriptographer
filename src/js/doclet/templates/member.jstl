@@ -30,12 +30,12 @@
 the beginning of the rendering of this template, in order for data.group stuff to be processed and ready above --%>
 <% $text -%>
 <% $doc = this.containingClass() %>
-<% tags doc=$doc tags=this.inlineTags() %>
+<% tags doc=$doc tags=param.commentObject.inlineTags() %>
 <% this.template '#parameters' doc=$doc %>
 <% this.template '#accepts' doc=$doc %>
 <% this.template '#return' doc=$doc %>
 <% this.template '#throws' doc=$doc %>
-<% tags doc=$doc tags=this.seeTags() stripParagraphs=true prefix='<p><b>See also:</b> ' suffix='</p>' separator=', ' %>
+<% tags doc=$doc tags=param.commentObject.seeTags() stripParagraphs=true prefix='<p><b>See also:</b> ' suffix='</p>' separator=', ' %>
 
 <% #header -%>
 <div class="member-header">
