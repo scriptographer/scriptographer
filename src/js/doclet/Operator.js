@@ -10,11 +10,12 @@
  */
 Operator = SyntheticMember.extend(new function() {
 	var operators = {
-		add: '+', subtract: '-', multiply: '*', divide: '/', equals: '=='
+		add: '+', subtract: '-', multiply: '*', divide: '/', equals: '==',
+		modulo: '%'
 	};
 	var names = {
 		add: 'Addition', subtract: 'Subtraction', multiply: 'Multiplication',
-		divide: 'Division', equals: 'Comparison'
+		divide: 'Division', equals: 'Comparison', modulo: 'Modulo'
 	};
 
 	return {
@@ -58,7 +59,7 @@ Operator = SyntheticMember.extend(new function() {
 				// the documentation. static properties are all supposed to
 				// be uppercae and constants.
 				return method.parameters().length == 1 && !method.isStatic() && (
-						/^(add|subtract|multiply|divide)$/.test(method.name())
+						/^(add|subtract|multiply|divide|modulo)$/.test(method.name())
 						&& method.containingClass().isCompatible(new Type(method.returnType()))
 					) || ( // equals
 						method.name() == 'equals'
