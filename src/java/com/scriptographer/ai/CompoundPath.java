@@ -79,6 +79,10 @@ public class CompoundPath extends PathItem {
 		append(shape);
 	}
 
+	/**
+	 * Specifies whether the compound path is used as a guide.
+	 * @return {@true if the compound path is used as a guide}
+	 */
 	public boolean isGuide() {
 		Item child = getFirstChild();
 		return child != null && ((Path) child).isGuide();
@@ -141,7 +145,7 @@ public class CompoundPath extends PathItem {
 	 * the initial {@link PathIterator#SEG_MOVETO}segment of the appended path
 	 * is changed into a {@link PathIterator#SEG_LINETO}segment.
 	 * 
-	 * @param iter the PathIterator specifying which segments shall be appended.
+	 * @param iter the PathIterator specifying which segments shall be appended
 	 * @param connect {@code true} for substituting the initial
 	 *        {@link PathIterator#SEG_MOVETO}segment by a {@link
 	 *        PathIterator#SEG_LINETO}, or {@code false} for not

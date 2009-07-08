@@ -90,7 +90,7 @@ public class Raster extends Item {
 
 	/**
 	 * Creates a raster item from an AWT image.
-	 * @param image the AWT image to be converted to a raster item.
+	 * @param image the AWT image to be converted to a raster item
 	 */
 	public Raster(Image image) {
 		this(getCompatibleType(image), image.getWidth(null),
@@ -100,7 +100,7 @@ public class Raster extends Item {
 
 	/**
 	 * Creates a raster item from an UI image.
-	 * @param image the UI image to be converted to a raster item.
+	 * @param image the UI image to be converted to a raster item
 	 */
 	public Raster(com.scriptographer.ui.Image image) {
 		// TODO: handle this case directly, without converting back and from
@@ -120,25 +120,25 @@ public class Raster extends Item {
 	 * 
 	 * Sample code:
 	 * <code>
-	 * var file = new java.io.File("/folder/image.jpg");
+	 * var file = new java.io.File('/folder/image.jpg');
 	 * var raster = new Raster(file);</code>
 	 * 
-	 * @param file the image file to be loaded.
+	 * @param file the image file to be loaded
 	 */
 	public Raster(File file) {
 		this(file, false);
 	}
 
 	/**
-	 * Creates a raster image from an URL.
+	 * Creates a raster image from a URL.
 	 * This blocks until the image is loaded or an error occured.
 	 * 
 	 * Sample code:
 	 * <code>
-	 * var url = new java.net.URL("http://www.server.com/image.jpg");
+	 * var url = new java.net.URL('http://www.server.com/image.jpg');
 	 * var raster = new Raster(url);</code>
      *
-	 * @param url the URL of the image to load.
+	 * @param url the URL of the image to load
 	 * @throws IOException
 	 */
 	public Raster(URL url) throws IOException {
@@ -260,7 +260,7 @@ public class Raster extends Item {
 	}
 
 	/**
-	 * REturns the Java2D color model of the raster
+	 * The Java2D color model of the raster
 	 */
 	public ColorModel getColorModel() {
 		ColorType type = getType();
@@ -397,12 +397,7 @@ public class Raster extends Item {
 	}
 	
 	/**
-	 * Calculate the average color of the image within the given shape. This can
-	 * be used for creating raster image effects.
-	 * 
-	 * @param shape
-	 * @return the average color contained in the area covered by the specified
-	 *         shape.
+	 * @jshide
 	 */
 	public Color getAverageColor(Shape shape) {
 		Rectangle2D rect = shape.getBounds2D();
@@ -468,18 +463,45 @@ public class Raster extends Item {
 		else return new GrayColor(components);
 	}
 
+	/**
+	 * The average color of the raster.
+	 */
 	public Color getAverageColor() {
 		return getAverageColor((Shape) null);
 	}
 
-	public Color getAverageColor(Point point) {
-		return getAverageColor(new Rectangle(point.subtract(0.5, 0.5), new Size(1, 1)));
-	}
-
+	/**
+	 * Calculates the average color of the image within the given path. This can
+	 * be used for creating raster image effects.
+	 * 
+	 * @param path
+	 * @return the average color contained in the area covered by the specified
+	 *         path.
+	 */
 	public Color getAverageColor(PathItem path) {
 		return getAverageColor(path.toShape());
 	}
 
+	/**
+	 * Calculates the average color of the image within the given point in the
+	 * document. This can be used for creating raster image effects.
+	 * 
+	 * @param point
+	 * @return the average color contained in the area described by the specified
+	 *         point.
+	 */
+	public Color getAverageColor(Point point) {
+		return getAverageColor(new Rectangle(point.subtract(0.5, 0.5), new Size(1, 1)));
+	}
+
+	/**
+	 * Calculates the average color of the image within the given rectangle.
+	 * This can be used for creating raster image effects.
+	 * 
+	 * @param rect
+	 * @return the average color contained in the area described by the specified
+	 *         rectangle.
+	 */
 	public Color getAverageColor(Rectangle rect) {
 		return getAverageColor(rect.toRectangle2D());
 	}

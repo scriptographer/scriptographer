@@ -100,7 +100,7 @@ public abstract class TextItem extends Item {
 
 	/**
 	 * Links the supplied text frame to this one.
-	 * @param next The text frame that will be linked.
+	 * @param next The text frame that will be linked
 	 * @return {@true if the text frame was linked}
 	 */
 	public native boolean link(TextItem next);
@@ -294,7 +294,7 @@ public abstract class TextItem extends Item {
 	//	ATEErr (*GetSelected) ( TextFrameRef textframe, bool* ret);
 
 	/**
-	 * The line spacing value for the text frame in points.
+	 * The padding within the text area.
 	 */
 	public native float getSpacing();
 	public native void setSpacing(float spacing);

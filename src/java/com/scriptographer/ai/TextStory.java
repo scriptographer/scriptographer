@@ -48,6 +48,9 @@ public class TextStory extends DocumentObject {
 		super(handle, document);
 	}
 	
+	/**
+	 * The amount of characters in the story.
+	 */
 	public native int getLength();
 	
 	private native int nativeGetRange();

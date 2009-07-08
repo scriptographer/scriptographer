@@ -53,7 +53,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * Creates a new rectangle.
+	 * Creates a rectangle object.
 	 * 
 	 * @param x	the left coordinate {@default 0}
 	 * @param y the top coordinate {@default 0}
@@ -75,7 +75,7 @@ public class Rectangle {
 	}
 
 	/**
-	 * Creates a new rectangle from the passed rectangle.
+	 * Creates a new rectangle object from the passed rectangle object.
 	 * @param rt
 	 */
 	public Rectangle(Rectangle rt) {
@@ -90,9 +90,9 @@ public class Rectangle {
 	}
 	
 	/**
-	 * Creates a new rectangle from the passed points.
-	 * @param point1 The first point defining the rectangle.
-	 * @param point2 The second point defining the rectangle.
+	 * Creates a rectangle object from the passed points.
+	 * @param point1 The first point defining the rectangle
+	 * @param point2 The second point defining the rectangle
 	 */
 	public Rectangle(Point point1, Point point2) {
 		this(point1.x, point1.y, point2.x - point1.x, point2.y - point1.y);
@@ -122,8 +122,9 @@ public class Rectangle {
 
 	/**
 	 * Changes the boundary properties of the rectangle.
-	 * @param x The left position.
-	 * @param y The top position.
+	 * 
+	 * @param x The left position
+	 * @param y The top position
 	 * @param width
 	 * @param height
 	 * 
@@ -488,7 +489,7 @@ public class Rectangle {
 	 * Returns a new rectangle representing the intersection of this rectangle
 	 * with the specified rectangle.
 	 * 
-	 * @param rect The rectangle to be intersected with this rectangle.
+	 * @param rect The rectangle to be intersected with this rectangle
 	 * @return The largest rectangle contained in both the specified rectangle
 	 *         and in this rectangle.
 	 */
@@ -529,8 +530,8 @@ public class Rectangle {
 	 * added point falls on the left or bottom edge of the enlarged rectangle,
 	 * {@code contains} returns {@code false} for that point.
 	 * 
-	 * @param px the x coordinate of the point.
-	 * @param py the y coordinate of the point.
+	 * @param px the x coordinate of the point
+	 * @param py the y coordinate of the point
 	 * 
 	 * @jshide
 	 */

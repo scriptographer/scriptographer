@@ -76,7 +76,7 @@ public class GradientColor extends Color {
 	}
 	
 	/**
-	 * Creates a new GradientColor object.
+	 * Creates a GradientColor object.
 	 * 
 	 * Sample code:
 	 * <code>

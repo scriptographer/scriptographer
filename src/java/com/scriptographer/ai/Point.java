@@ -406,10 +406,35 @@ public class Point {
 		return new Point(this.x % x, this.y % y);
 	}
 
+	/**
+	 * The modulo operator returns the integer remainders of dividing the point
+	 * by the supplied point as a new point.
+	 * 
+	 * Sample code: <code>
+	 * var point = new Point(12, 6);
+	 * print(point % new Point(5, 2)); // {x: 2, y: 0}
+	 * </code>
+	 * 
+	 * @param point
+	 * @return the integer remainders of dividing the points by each other as a
+	 *         new point
+	 */
 	public Point modulo(Point point) {
 		return modulo(point.x, point.y);
 	}
 
+	/**
+	 * The modulo operator returns the integer remainders of dividing the point
+	 * by the supplied value as a new point.
+	 * 
+	 * Sample code: <code>
+	 * var point = new Point(12, 6);
+	 * print(point % 5); // {x: 2, y: 1}
+	 * </code>
+	 * 
+	 * @param value
+	 * @return the integer remainders of dividing the point by the value as a new point
+	 */
 	public Point modulo(double value) {
 		return modulo(value, value);
 	}
