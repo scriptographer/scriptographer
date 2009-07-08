@@ -32,6 +32,7 @@
 package com.scriptographer.ai;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,18 +67,26 @@ public class Document extends NativeObject {
 	 * @param file the file to read from
 	 * @param colorModel the document's desired color model {@default 'cmyk'}
 	 * @param dialogStatus how dialogs should be handled {@default 'none'}
+	 * @throws FileNotFoundException 
 	 */
-	public Document(File file, ColorModel colorModel, DialogStatus dialogStatus) {
+	public Document(File file, ColorModel colorModel, DialogStatus dialogStatus)
+			throws FileNotFoundException {
 		super(nativeCreate(file,
 				(colorModel != null ? colorModel : ColorModel.CMYK).value,
 				(dialogStatus != null ? dialogStatus : DialogStatus.NONE).value));
+		if (handle == 0) {
+			if (!file.exists())
+				throw new FileNotFoundException("Unable to create document from non existing file: " + file);
+			throw new ScriptographerException("Unable to create document from file: " + file);
+		}
 	}
 
-	public Document(File file, ColorModel colorModel) {
+	public Document(File file, ColorModel colorModel)
+			throws FileNotFoundException {
 		this(file, colorModel, null);
 	}
 
-	public Document(File file) {
+	public Document(File file) throws FileNotFoundException {
 		this(file, null, null);
 	}
 
@@ -120,7 +129,7 @@ public class Document extends NativeObject {
 		super(handle);
 	}
 
-	private static native int nativeCreate(File file, int colorModel,
+	private static native int nativeCreate(java.io.File file, int colorModel,
 			int dialogStatus);
 
 	private static native int nativeCreate(String title, float width,
