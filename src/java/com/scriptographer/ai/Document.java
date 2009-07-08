@@ -696,6 +696,13 @@ public class Document extends NativeObject {
 	}
 		
 	/**
+	 * @jshide
+	 */
+	public Path createRectangle(Point point, Size size) {
+		return createRectangle(new Rectangle(point, size));
+	}
+
+	/**
 	 * Creates a rectangular path with rounded corners
 	 * 
 	 * @param rect
