@@ -47,7 +47,7 @@ public class GradientColor extends Color {
 	 * as the transformation matrix of the object containing the gradient.
 	 * When a gradient is first applied to an object, the value is set to the
 	 * identity matrix. When the user transforms the object, the user
-	 * transformation matrix is concatenated to the gradient instance’s matrix.
+	 * transformation matrix is concatenated to the gradient instance's matrix.
 	 */
 	Matrix matrix;
 	
