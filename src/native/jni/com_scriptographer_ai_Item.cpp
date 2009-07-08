@@ -477,7 +477,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_finalize(JNIEnv *env, job
 /*
  * boolean nativeRemove(int handle, int docHandle, jint dictionaryHandle)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeRemove(JNIEnv *env, jobject obj, jint handle, jint docHandle, jint dictionaryHandle) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeRemove(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint dictionaryHandle) {
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		AIArtHandle art = (AIArtHandle) handle;

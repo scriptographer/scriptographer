@@ -359,7 +359,7 @@ public class Curve {
 		);
 	}
 
-	private native static double nativeGetLength(double p1x, double p1y,
+	private static native double nativeGetLength(double p1x, double p1y,
 			double h1x, double h1y, double h2x, double h2y, double p2x, double p2y);
 
 	public double getLength() {
@@ -381,7 +381,7 @@ public class Curve {
 			&& segment2.handleIn.y == 0 && segment2.handleIn.y == 0;
 	}
 
-	private native static void nativeAdjustThroughPoint(float[] values,
+	private static native void nativeAdjustThroughPoint(float[] values,
 			float x, float y, float parameter);
 
 	public void adjustThroughPoint(Point pt, double parameter) {

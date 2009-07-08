@@ -172,6 +172,8 @@ public class Document extends NativeObject {
 	 */
 	public static native void endExecution();
 
+	private native void nativeActivate(boolean focus, boolean forCreation);
+
 	/**
 	 * Activates this document, so all newly created items will be placed
 	 * in it.
@@ -182,7 +184,11 @@ public class Document extends NativeObject {
 	 *        not be modified, but gCreationDoc will be set, which then is only
 	 *        used once in the next call to Document_activate() (native stuff).
 	 */
-	private native void activate(boolean focus, boolean forCreation);
+	protected void activate(boolean focus, boolean forCreation) {
+		nativeActivate(focus, forCreation);
+		if (forCreation)
+			commitCurrentStyle();
+	}
 
 	/**
 	 * Activates this document, so all newly created items will be placed
@@ -514,7 +520,7 @@ public class Document extends NativeObject {
 	 * Deselects all selected items in the document.
 	 */
 	public void deselectAll() {
-		onPreSelectionChange();
+		commitCurrentStyle();
 		nativeDeselectAll();
 	}
 	
@@ -678,6 +684,8 @@ public class Document extends NativeObject {
 		return createLine(new Point(x1, y1), new Point(x2, y2));
 	}
 
+	private native Path nativeCreateRectangle(Rectangle rect);
+
 	/**
 	 * Creates a rectangular path
 	 * 
@@ -686,7 +694,10 @@ public class Document extends NativeObject {
 	 * 
 	 * @jshide
 	 */
-	public native Path createRectangle(Rectangle rect);
+	public Path createRectangle(Rectangle rect) {
+		activate(false, true);
+		return nativeCreateRectangle(rect);
+	}
 
 	/**
 	 * @jshide
@@ -694,13 +705,15 @@ public class Document extends NativeObject {
 	public Path createRectangle(double x, double y, double width, double height) {
 		return createRectangle(new Rectangle(x, y, width, height));
 	}
-		
+
 	/**
 	 * @jshide
 	 */
 	public Path createRectangle(Point point, Size size) {
 		return createRectangle(new Rectangle(point, size));
 	}
+
+	private native Path nativeCreateRoundRectangle(Rectangle rect, Size size);
 
 	/**
 	 * Creates a rectangular path with rounded corners
@@ -711,14 +724,21 @@ public class Document extends NativeObject {
 	 * 
 	 * @jshide
 	 */
-	public native Path createRoundRectangle(Rectangle rect, Size size);
+	public Path createRoundRectangle(Rectangle rect, Size size) {
+		activate(false, true);
+		return nativeCreateRoundRectangle(rect, size);
+	}
 
 	/**
 	 * @jshide
 	 */
-	public Path createRoundRectangle(double x, double y, double width, double height, float hor, float ver) {
-		return createRoundRectangle(new Rectangle(x, y, width, height), new Size(hor, ver));
+	public Path createRoundRectangle(double x, double y, double width,
+			double height, float hor, float ver) {
+		return createRoundRectangle(new Rectangle(x, y, width, height),
+				new Size(hor, ver));
 	}
+
+	private native Path nativeCreateOval(Rectangle rect, boolean circumscribed);
 
 	/**
 	 * Creates an oval shaped path
@@ -731,10 +751,14 @@ public class Document extends NativeObject {
 	 * 
 	 * @jshide
 	 */
-	public native Path createOval(Rectangle rect, boolean circumscribed);
+	public Path createOval(Rectangle rect, boolean circumscribed) {
+		activate(false, true);
+		return nativeCreateOval(rect, circumscribed);
+	}
 
 	/**
 	 * Creates an oval shaped path
+	 * 
 	 * @param rect
 	 * @return the newly created path
 	 * 
@@ -747,16 +771,35 @@ public class Document extends NativeObject {
 	/**
 	 * @jshide
 	 */
-	public Path createOval(double x, double y, double width, double height, boolean circumscribed) {
+	public Path createOval(double x, double y, double width, double height,
+			boolean circumscribed) {
 		return createOval(new Rectangle(x, y, width, height), circumscribed);
 	}
-	
+
 	/**
 	 * @jshide
 	 */
 	public Path createOval(double x, double y, double width, double height) {
 		return createOval(x, y, width, height);
 	}
+
+	/**
+	 * @jshide
+	 */
+	public Path createCircle(Point center, float radius) {
+		return createOval(new Rectangle(center.subtract(radius, radius), center
+				.add(radius, radius)));
+	}
+
+	/**
+	 * @jshide
+	 */
+	public Path createCircle(float x, float y, float radius) {
+		return createCircle(new Point(x, y), radius);
+	}
+
+	private native Path nativeCreateRegularPolygon(Point center, int numSides,
+			float radius);
 
 	/**
 	 * Creates a regular polygon shaped path
@@ -768,15 +811,20 @@ public class Document extends NativeObject {
 	 * 
 	 * @jshide
 	 */
-	public native Path createRegularPolygon(Point center, int numSides,
-			float radius);
+	public Path createRegularPolygon(Point center, int numSides, float radius) {
+		activate(false, true);
+		return nativeCreateRegularPolygon(center, numSides, radius);
+	}
+
+	private native Path nativeCreateStar(Point center, int numPoints,
+			float radius1, float radius2);
 
 	/**
 	 * Created a star shaped path
 	 * 
-	 * The largest of {@code radius1} and {@code radius2} will be
-	 * the outer radius of the star. The smallest of radius1 and radius2 will be
-	 * the inner radius.
+	 * The largest of {@code radius1} and {@code radius2} will be the outer
+	 * radius of the star. The smallest of radius1 and radius2 will be the inner
+	 * radius.
 	 * 
 	 * @param numPoints the number of points of the star
 	 * @param center
@@ -786,8 +834,15 @@ public class Document extends NativeObject {
 	 * 
 	 * @jshide
 	 */
-	public native Path createStar(Point center, int numPoints, float radius1,
-			float radius2);
+	public Path createStar(Point center, int numPoints, float radius1,
+			float radius2) {
+		activate(false, true);
+		return nativeCreateStar(center, numPoints, radius1, radius2);
+	}
+
+	private native Path nativeCreateSpiral(Point firstArcCenter, Point start,
+			float decayPercent, int numQuarterTurns,
+			boolean clockwiseFromOutside);
 
 	/**
 	 * Creates a spiral shaped path
@@ -797,34 +852,21 @@ public class Document extends NativeObject {
 	 * @param decayPercent the percentage by which each succeeding arc will be
 	 *        scaled
 	 * @param numQuarterTurns the number of quarter turns (arcs)
-	 * @param clockwiseFromOutside if this is set to {@code true} the
-	 *        spiral will spiral in a clockwise direction from the first point.
-	 *        If it's set to {@code false} it will spiral in a counter
-	 *        clockwise direction
+	 * @param clockwiseFromOutside if this is set to {@code true} the spiral
+	 *        will spiral in a clockwise direction from the first point. If it's
+	 *        set to {@code false} it will spiral in a counter clockwise
+	 *        direction
 	 * @return the newly created path
 	 * 
 	 * @jshide
 	 */
-	public native Path createSpiral(Point firstArcCenter, Point start,
+	public Path createSpiral(Point firstArcCenter, Point start,
 			float decayPercent, int numQuarterTurns,
-			boolean clockwiseFromOutside);
-
-	/**
-	 * @jshide
-	 */
-	public Path createCircle(Point center, float radius) {
-		return createOval(new Rectangle(
-				center.subtract(radius, radius),
-				center.add(radius, radius)));
+			boolean clockwiseFromOutside) {
+		activate(false, true);
+		return nativeCreateSpiral(firstArcCenter, start, decayPercent,
+				numQuarterTurns, clockwiseFromOutside);
 	}
-
-	/**
-	 * @jshide
-	 */
-	public Path createCircle(float x, float y, float radius) {
-		return createCircle(new Point(x, y), radius);
-	}
-
 	
 	protected native HitResult nativeHitTest(Point point, int request,
 			float tolerance, Item item);
@@ -939,8 +981,8 @@ public class Document extends NativeObject {
 		getCurrentStyleItem().setStyle(style);
 	}
 
-	protected void onPreSelectionChange() {
-		// Make sure style change gets commited before selection changes,
+	protected void commitCurrentStyle() {
+		// Make sure style change gets committed before selection changes,
 		// since it affects the selection.
 		if (currentStyleItem != null)
 			CommitManager.commit(currentStyleItem);

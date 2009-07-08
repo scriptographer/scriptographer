@@ -197,9 +197,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_l
 }
 
 /*
- * void activate(boolean focus, boolean forCreation)
+ * void nativeActivate(boolean focus, boolean forCreation)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_activate(JNIEnv *env, jobject obj, jboolean focus, jboolean forCreation) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeActivate(JNIEnv *env, jobject obj, jboolean focus, jboolean forCreation) {
 	try {
 		// Do not switch yet as we may want to focus the document too:
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
@@ -666,9 +666,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeGetMatchingI
 }
 
 /*
- * com.scriptographer.ai.Path createRectangle(com.scriptographer.ai.Rect rect)
+ * com.scriptographer.ai.Path nativeCreateRectangle(com.scriptographer.ai.Rect rect)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRectangle(JNIEnv *env, jobject obj, jobject rect) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRectangle(JNIEnv *env, jobject obj, jobject rect) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
@@ -685,9 +685,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRectangle(JN
 }
 
 /*
- * com.scriptographer.ai.Path createRoundRectangle(com.scriptographer.ai.Rectangle rect, com.scriptographer.ai.Size size)
+ * com.scriptographer.ai.Path nativeCreateRoundRectangle(com.scriptographer.ai.Rectangle rect, com.scriptographer.ai.Size size)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRoundRectangle(JNIEnv *env, jobject obj, jobject rect, jobject size) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRoundRectangle(JNIEnv *env, jobject obj, jobject rect, jobject size) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
@@ -706,9 +706,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRoundRectang
 }
 
 /*
- * com.scriptographer.ai.Path createOval(com.scriptographer.ai.Rectangle rect, boolean circumscribed)
+ * com.scriptographer.ai.Path nativeCreateOval(com.scriptographer.ai.Rectangle rect, boolean circumscribed)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createOval(JNIEnv *env, jobject obj, jobject rect, jboolean circumscribed) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateOval(JNIEnv *env, jobject obj, jobject rect, jboolean circumscribed) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
@@ -728,9 +728,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createOval(JNIEnv 
 }
 
 /*
- * com.scriptographer.ai.Path createRegularPolygon(com.scriptographer.ai.Point center, int numSides, float radius)
+ * com.scriptographer.ai.Path nativeCreateRegularPolygon(com.scriptographer.ai.Point center, int numSides, float radius)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRegularPolygon(JNIEnv *env, jobject obj, jobject center, jint numSides, jfloat radius) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRegularPolygon(JNIEnv *env, jobject obj, jobject center, jint numSides, jfloat radius) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
@@ -747,9 +747,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createRegularPolyg
 }
 
 /*
- * com.scriptographer.ai.Path createStar(com.scriptographer.ai.Point center, int numPoints, float radius1, float radius2)
+ * com.scriptographer.ai.Path nativeCreateStar(com.scriptographer.ai.Point center, int numPoints, float radius1, float radius2)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createStar(JNIEnv *env, jobject obj, jobject center, jint numPoints, jfloat radius1, jfloat radius2) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateStar(JNIEnv *env, jobject obj, jobject center, jint numPoints, jfloat radius1, jfloat radius2) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
@@ -766,9 +766,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createStar(JNIEnv 
 }
 
 /*
- * com.scriptographer.ai.Path createSpiral(com.scriptographer.ai.Point firstArcCenter, com.scriptographer.ai.Point start, float decayPercent, int numQuarterTurns, boolean clockwiseFromOutside)
+ * com.scriptographer.ai.Path nativeCreateSpiral(com.scriptographer.ai.Point firstArcCenter, com.scriptographer.ai.Point start, float decayPercent, int numQuarterTurns, boolean clockwiseFromOutside)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_createSpiral(JNIEnv *env, jobject obj, jobject firstArcCenter, jobject start, jfloat decayPercent, jint numQuarterTurns, jboolean clockwiseFromOutside) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateSpiral(JNIEnv *env, jobject obj, jobject firstArcCenter, jobject start, jfloat decayPercent, jint numQuarterTurns, jboolean clockwiseFromOutside) {
 	try {
 		// Activate document
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);

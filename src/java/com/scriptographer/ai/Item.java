@@ -149,7 +149,7 @@ public class Item extends DocumentObject implements Style {
 		this(handle, null);
 	}
 
-	private native static int nativeCreate(short type);
+	private static native int nativeCreate(short type);
 
 	/**
 	 * Wraps an AIArtHandle of given type (determined by
@@ -307,7 +307,7 @@ public class Item extends DocumentObject implements Style {
 			version++;
 	}
 
-	private native boolean nativeRemove(int handle, int docHandle,
+	private static native boolean nativeRemove(int handle, int docHandle,
 			int dictionaryHandle);
 
 	/**
@@ -332,7 +332,13 @@ public class Item extends DocumentObject implements Style {
 	 * @param type Item.TYPE_*
 	 */
 	protected Item(short type) {
-		super(nativeCreate(type));
+		// Create with false handle, to get document pointer and have time to
+		// activate with forCreation = true, to make sure currentStyle gets
+		// committed, etc.
+		super(0);
+		document.activate(false, true);
+		// Now set the handle
+		handle = nativeCreate(type);
 		// Keep track of this object from now on, see wrapArtHandle
 		items.put(handle, this);
 	}
@@ -783,7 +789,7 @@ public class Item extends DocumentObject implements Style {
 	public void setAttribute(ItemAttribute attribute, boolean value) {
 		if (attribute == ItemAttribute.SELECTED
 				|| attribute == ItemAttribute.FULLY_SELECTED)
-			document.onPreSelectionChange();
+			document.commitCurrentStyle();
 		nativeSetAttribute(attribute.value, value);
 	}
 
