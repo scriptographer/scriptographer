@@ -45,6 +45,14 @@ public class Symbol extends DocumentObject {
 
 	private static native int nativeCreate(int artHandle, boolean listed);
 	
+	/**
+	 * Creates a Symbol item.
+	 * 
+	 * @param item the source item which is copied as the definition of the symbol
+	 * @param listed specifies whether the item should appear in the symbols
+	 *        palette. Listed symbols are saved when a document is closed, even
+	 *        if there are no instances of them within the document. {@default true}
+	 */
 	public Symbol(Item item, boolean listed) {
 		super(nativeCreate(item != null ? item.handle : 0, listed));
 	}
@@ -61,41 +69,64 @@ public class Symbol extends DocumentObject {
 		return (Symbol) wrapHandle(Symbol.class, handle, document);
 	}
 	
+	/**
+	 * The name of the symbol which may not exceed 64 characters.
+	 */
 	public native String getName();
 	
 	public native void setName(String name);
 
 	/**
-	 * Returns the symbol definition. The item returned cannot be edited, just
-	 * examined or duplicated
+	 * The symbol definition. The definition itself cannot be edited, just
+	 * examined, replaced or cloned.
 	 */
 	public native Item getDefinition();
 
-	/**
-	 * Copy the item as the new symbol definition. Any existing
-	 * instances of the symbol will be updated
-	 * @param item
-	 */
 	public native void setDefinition(Item item);
 
+	/**
+ 	 * Checks whether the symbol is valid, i.e. it hasn't been removed.
+ 	 * 
+	 * @return {@true if the symbol is valid}
+	 */
 	public native boolean isValid();
 
+	/**
+	 * Specifies whether the item appears in the symbols palette. Listed symbols
+	 * are saved when a document is closed, even if there are no instances of
+	 * them within the document.
+	 * 
+	 * @return {@true if the item appears in the symbols palette}
+	 */
 	public native boolean isListed();
-	
+
 	public native void setListed(boolean listed);
 	
+	/**
+	 * Checks whether the symbol is selected in the symbols palette.
+	 * 
+	 * @return {@true if the symbol is selected}
+	 */
 	public native boolean isSelected();
 	
+	/**
+	 * Activates the symbol in the symbols palette. The current active symbol
+	 * can be retrieved from {@link Document#getActiveSymbol()}.
+	 */
 	public native void activate();
 	
 	/**
-	 * Set the index of the listed symbol
-	 * @param index -1 to move to end of list.
+	 * Set the index of the listed symbol in the symbols palette.
+	 * 
+	 * @param index -1 to move to end of list
 	 */
 	public native void setIndex(int index);
 	
 	protected native boolean nativeRemove();
 	
+	/**
+	 * Removes the symbol from the symbols palette.
+	 */
 	public boolean remove() {
 		// make it public
 		return super.remove();
