@@ -48,11 +48,35 @@ public class PlacedFile extends Item {
 
 	private static native int nativeCreate(File file);
 
+	/**
+	 * Creates a PlacedFile item from a URL.
+	 * This blocks until the file is loaded or an error occured.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var url = new java.net.URL('http://www.server.com/image.jpg');
+	 * var raster = new PlacedFile(url);
+	 * </code>
+	 * 
+	 * @param url the URL of the file to place
+	 * @throws IOException
+	 */
 	public PlacedFile(URL url) throws IOException {
 		this(NetUtils.loadFile(url, "sg_"));
 	}
 
 
+	/**
+	 * Creates a PlacedFile from a local file.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var file = new java.io.File('/folder/image.jpg');
+	 * var raster = new PlacedFile(file);
+	 * </code>
+	 * 
+	 * @param file the file to be placed
+	 */
 	public PlacedFile(File file) {
 		super(nativeCreate(file));
 	}
@@ -63,14 +87,31 @@ public class PlacedFile extends Item {
 	
 	public native void setMatrix(Matrix matrix);
 	
+	/**
+	 * The file associated with the placed file item.
+	 * @return
+	 */
 	public native File getFile();
 	
+	/**
+	 * Checks whether the placed file item is an eps.
+	 * @return {@true if the placed file item is an eps}
+	 */
 	public native boolean isEps();
 	
+	/**
+	 * Traces the placed file.
+	 * @return the newly created tracing item
+	 */
 	public Tracing trace() {
 		return new Tracing(this);
 	}
 	
+	/**
+	 * Embeds the placed file within the document.
+	 * @param askParams specifies whether to show dialog for user input if needed {@default false}
+	 * @return the embedded item
+	 */
 	public native Item embed(boolean askParams);
 	
 	public Item embed() {
