@@ -216,10 +216,14 @@ AIArtHandle Item_rasterize(AIArtSet set, AIRasterizeType type, float resolution,
 	settings.options = kRasterizeOptionsNone;
 	AIRealRect artBounds;
 	sAIRasterize->ComputeArtBounds(set, &artBounds, false);
+	artBounds.left = floor(artBounds.left);
+	artBounds.bottom = floor(artBounds.bottom);
 	if (width >= 0)
 		artBounds.right = artBounds.left + width;
 	if (height >= 0)
-		artBounds.bottom = artBounds.top + height;
+		artBounds.top = artBounds.bottom + height;
+	artBounds.right = ceil(artBounds.right);
+	artBounds.top = ceil(artBounds.top);
 	AIArtHandle raster = NULL;
 	// walk through the set and find the art that is blaced above all others:
 	AIArtHandle top = NULL;
