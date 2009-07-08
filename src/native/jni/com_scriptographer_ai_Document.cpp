@@ -171,9 +171,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_l
 		sAIDocumentList->New(str, &model, &width, &height, (ActionDialogStatus) dialogStatus, &doc);
 #else
 		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, title);
-	#if kPluginInterfaceVersion < kAI13
+#if kPluginInterfaceVersion < kAI13
 		sAIDocumentList->New(str, &model, &width, &height, (ActionDialogStatus) dialogStatus, &doc);
-	#else
+#else // kPluginInterfaceVersion >= kAI13
 		AINewDocumentPreset params;
 		params.docTitle = str;
 		params.docWidth = width;
@@ -185,8 +185,15 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeCreate__Ljava_l
 		params.docTransparencyGrid = kAITransparencyGridNone;
 		params.docRasterResolution = kAIRasterResolutionScreen;
 		ai::UnicodeString preset("");
+#if kPluginInterfaceVersion >= kAI14
+		// TODO: Add additional version that allow configuration of art boards for CS4?
+		params.docNumArtboards = 1;
+		params.docArtboardLayout = kAIArtboardLayoutGridByRow;
+		params.docArtboardSpacing = 0;
+		params.docArtboardRowsOrCols = 1;
+#endif // kPluginInterfaceVersion >= kAI14
 		sAIDocumentList->New(preset, &params, (ActionDialogStatus) dialogStatus, &doc);
-	#endif
+#endif // kPluginInterfaceVersion >= kAI13 
 		if (doc != NULL)
 			gWorkingDoc = doc;
 #endif
