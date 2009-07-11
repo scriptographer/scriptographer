@@ -54,6 +54,7 @@ ScriptographerPlugin::ScriptographerPlugin(SPMessageData *messageData) {
 	m_lastErrorTime = 0;
 	m_appStartedNotifier = NULL;
 	m_selectionChangedNotifier = NULL;
+	m_documentClosedNotifier = NULL;
 	m_engine = NULL;
 	m_loaded = false;
 	m_started = false;
@@ -239,6 +240,10 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 	
 	// Add selection changed notifier
 	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Selection Changed", kAIArtSelectionChangedNotifier, &m_selectionChangedNotifier);
+	if (error) return error;
+
+	// Add document closed notifier
+	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Document Closed", kAIDocumentClosedNotifier, &m_documentClosedNotifier);
 	if (error) return error;
 
 	// Determine baseDirectory from plugin location:
@@ -543,6 +548,10 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		AINotifierMessage *msg = (AINotifierMessage *) message;
 		if (msg->notifier == m_selectionChangedNotifier) {
 			error = gEngine->onSelectionChanged();
+		} else if (msg->notifier == m_documentClosedNotifier) {
+			// We need to remove wrappers for document handles since
+			// handles seem to get reused for new documents.
+			error = gEngine->onDocumentClosed((AIDocumentHandle) msg->notifyData);
 		} else if (msg->notifier == m_appStartedNotifier) {
 			error = onPostStartupPlugin();
 		}

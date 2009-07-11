@@ -417,6 +417,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ai_Dictionary = loadClass(env, "com/scriptographer/ai/Dictionary");
 	fid_ai_Dictionary_handle = getFieldID(env, cls_ai_Dictionary, "handle", "I");
 	mid_ai_Dictionary_wrapHandle = getStaticMethodID(env, cls_ai_Dictionary, "wrapHandle", "(II)Lcom/scriptographer/ai/Dictionary;");
+	
+	cls_ai_Document = loadClass(env, "com/scriptographer/ai/Document");
+	mid_ai_Document_removeHandle = getStaticMethodID(env, cls_ai_Document, "removeHandle", "(I)V");
 
 	cls_ai_Tool = loadClass(env, "com/scriptographer/ai/Tool");
 	cid_ai_Tool = getConstructorID(env, cls_ai_Tool, "(ILjava/lang/String;)V");
@@ -543,8 +546,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_ai_Artboard = loadClass(env, "com/scriptographer/ai/Artboard");
 	mid_ai_Artboard_set = getMethodID(env, cls_ai_Artboard, "set", "(Lcom/scriptographer/ai/Rectangle;ZZZD)V");
-
-	cls_ai_Document = loadClass(env, "com/scriptographer/ai/Document");
 
 	cls_ai_LiveEffect = loadClass(env, "com/scriptographer/ai/LiveEffect");
 	cid_ai_LiveEffect = getConstructorID(env, cls_ai_LiveEffect, "(ILjava/lang/String;Ljava/lang/String;IIIII)V");
@@ -1613,6 +1614,16 @@ ASErr ScriptographerEngine::onSelectionChanged() {
 			callStaticVoidMethod(env, cls_ai_Item, mid_ai_Item_updateIfWrapped, artHandles);
 		}
 //		println(env, "%i", (getNanoTime() - t) / 1000000);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env);
+	return kExceptionErr;
+}
+
+		
+ASErr ScriptographerEngine::onDocumentClosed(AIDocumentHandle handle) {
+	JNIEnv *env = getEnv();
+	try {
+		callStaticVoidMethod(env, cls_ai_Document, mid_ai_Document_removeHandle, (jint) handle);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;

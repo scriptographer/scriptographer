@@ -149,7 +149,15 @@ public class Document extends NativeObject {
 		}
 		return doc;
 	}
-	
+
+	/*
+	 * Since AI reused document handles, we have to manually remove wrappers when documents 
+	 * get closed. This happens through a kDocumentClosedNotifier on the native side.
+	 */
+	protected static void removeHandle(int handle) {
+		documents.remove(handle);
+	}
+
 	private static native int nativeGetActiveDocumentHandle();
 	
 	private static native int nativeGetWorkingDocumentHandle();

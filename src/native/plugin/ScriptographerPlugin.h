@@ -77,6 +77,7 @@ protected:
 	unsigned long m_lastErrorTime;
 	AINotifierHandle m_appStartedNotifier;
 	AINotifierHandle m_selectionChangedNotifier;
+	AINotifierHandle m_documentClosedNotifier;
 	bool m_loaded;
 	bool m_started; 
 	ScriptographerEngine *m_engine;

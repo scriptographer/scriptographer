@@ -156,6 +156,9 @@ public:
 	jfieldID fid_ai_Dictionary_handle;
 	jmethodID mid_ai_Dictionary_wrapHandle;
 
+	jclass cls_ai_Document;
+	jmethodID mid_ai_Document_removeHandle;
+	
 	jclass cls_ai_Tool;
 	jmethodID cid_ai_Tool;
 	jmethodID mid_ai_Tool_onHandleEvent;
@@ -279,8 +282,6 @@ public:
 
 	jclass cls_ai_Artboard;
 	jmethodID mid_ai_Artboard_set;
-
-	jclass cls_ai_Document;
 	
 	jclass cls_ai_LiveEffect;
 	jmethodID cid_ai_LiveEffect;
@@ -573,6 +574,7 @@ public:
 	void resumeSuspendedDocuments();
 	
 	ASErr onSelectionChanged();
+	ASErr onDocumentClosed(AIDocumentHandle handle);
 	
 	// AI Tool
 	ASErr Tool_onHandleEvent(const char * selector, AIToolMessage *message);
