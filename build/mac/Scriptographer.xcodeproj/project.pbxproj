@@ -113,6 +113,10 @@
 		913020540E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */; };
 		913020550E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */; };
 		913020560E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */; };
+		9139C9E810074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9139C9E710074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp */; };
+		9139C9E910074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9139C9E710074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp */; };
+		9139C9EA10074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9139C9E710074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp */; };
+		9139C9EB10074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9139C9E710074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp */; };
 		913C571D0B13CBC100F14113 /* PiPL_MachO.rsrc in Rez */ = {isa = PBXBuildFile; fileRef = 913C571C0B13CBC100F14113 /* PiPL_MachO.rsrc */; };
 		913C571E0B13CBC100F14113 /* PiPL_MachO.rsrc in Rez */ = {isa = PBXBuildFile; fileRef = 913C571C0B13CBC100F14113 /* PiPL_MachO.rsrc */; };
 		913C57220B13CBF900F14113 /* PiPL_MachO_Universal.rsrc in Rez */ = {isa = PBXBuildFile; fileRef = 913C57210B13CBF900F14113 /* PiPL_MachO_Universal.rsrc */; };
@@ -360,6 +364,7 @@
 		912A21200AE81DDE00B0ADD6 /* com_scriptographer_ai_GradientStopList.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_GradientStopList.cpp; path = jni/com_scriptographer_ai_GradientStopList.cpp; sourceTree = "<group>"; };
 		912A22D00AE83B7E00B0ADD6 /* com_scriptographer_ai_Pattern.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Pattern.cpp; path = jni/com_scriptographer_ai_Pattern.cpp; sourceTree = "<group>"; };
 		913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_Dictionary.cpp; path = jni/com_scriptographer_ai_Dictionary.cpp; sourceTree = "<group>"; };
+		9139C9E710074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ai_ArtboardList.cpp; path = jni/com_scriptographer_ai_ArtboardList.cpp; sourceTree = "<group>"; };
 		913C56F50B13C85A00F14113 /* CS3_Debug.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CS3_Debug.pch; path = prefix/CS3_Debug.pch; sourceTree = "<group>"; };
 		913C56F60B13C85A00F14113 /* CS3_Release.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CS3_Release.pch; path = prefix/CS3_Release.pch; sourceTree = "<group>"; };
 		913C571B0B13CBB300F14113 /* PiPL_CFM.rsrc */ = {isa = PBXFileReference; lastKnownFileType = archive.rsrc; name = PiPL_CFM.rsrc; path = resources/PiPL_CFM.rsrc; sourceTree = "<group>"; };
@@ -661,6 +666,7 @@
 		91EF0B4E0A20A4B900F0EF9A /* AI */ = {
 			isa = PBXGroup;
 			children = (
+				9139C9E710074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp */,
 				913020530E34F20700853A5D /* com_scriptographer_ai_Dictionary.cpp */,
 				910C76A50DAE8CF400EB6A53 /* com_scriptographer_ai_FileFormat.cpp */,
 				91EF0AE20A20A4B200F0EF9A /* com_scriptographer_ai_LiveEffect.cpp */,
@@ -999,6 +1005,7 @@
 				9180534B0ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp in Sources */,
 				9180534C0ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */,
 				9180534D0ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */,
+				9139C9EA10074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1080,6 +1087,7 @@
 				918053600ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp in Sources */,
 				918053610ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */,
 				918053620ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */,
+				9139C9EB10074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1162,6 +1170,7 @@
 				918053360ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp in Sources */,
 				918053370ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */,
 				918053380ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */,
+				9139C9E910074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1244,6 +1253,7 @@
 				918053210ED108AC007CD826 /* com_scriptographer_ui_ToggleItem.cpp in Sources */,
 				918053220ED108AC007CD826 /* com_scriptographer_ui_Tracker.cpp in Sources */,
 				918053230ED108AC007CD826 /* com_scriptographer_ui_ValueItem.cpp in Sources */,
+				9139C9E810074B5F00366735 /* com_scriptographer_ai_ArtboardList.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

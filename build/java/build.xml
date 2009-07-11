@@ -338,6 +338,7 @@
 			<class name="com.scriptographer.ai.SwatchList" />
 			<class name="com.scriptographer.ai.Gradient" />
 			<class name="com.scriptographer.ai.GradientStopList" />
+			<class name="com.scriptographer.ai.ArtboardList" />
 			<class name="com.scriptographer.ai.FileFormat" />
 
 			<class name="com.scriptographer.ui.Notifier" />
