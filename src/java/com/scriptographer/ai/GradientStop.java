@@ -31,20 +31,16 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.CommitManager;
-import com.scriptographer.Commitable;
+import com.scriptographer.list.AbstractStructList;
+
 
 /**
  * @author lehni
  */
-public class GradientStop implements Commitable {
+public class GradientStop extends AbstractStructList.Entry<Gradient> {
 	protected Color color;
-	protected float rampPoint;
-	protected float midPoint;
-	protected int version = -1;
-	protected int index = -1;
-	protected GradientStopList list;
-	protected boolean dirty = false;
+	protected double rampPoint;
+	protected double midPoint;
 	
 	/**
 	 * Creates a new GradientStop object.
@@ -54,7 +50,7 @@ public class GradientStop implements Commitable {
 	 * @param midPoint the position where the color of the stop blends equally
 	 *        with the color of the next stop. {@default 0.5}
 	 */
-	public GradientStop(Color color, float rampPoint, float midPoint) {
+	public GradientStop(Color color, double rampPoint, double midPoint) {
 		if (color == null)
 			throw new IllegalArgumentException("Gradient color cannot be null");
 		this.midPoint = midPoint;
@@ -62,82 +58,51 @@ public class GradientStop implements Commitable {
 		this.color = color;
 	}
 
-	public GradientStop(Color color, float rampPoint) {
-		this(color, rampPoint, 0.5f);
+	public GradientStop(Color color, double rampPoint) {
+		this(color, rampPoint, 0.5);
 	}
 
 	public GradientStop(Color color) {
-		this(color, 0, 0.5f);
+		this(color, 0, 0.5);
 	}
 
 	public GradientStop() {
-		this(new GrayColor(0), 0, 0.5f);
+		this(new GrayColor(0), 0, 0.5);
 	}
 	
 	public GradientStop(GradientStop stop) {
 		this(stop.color, stop.midPoint, stop.rampPoint);
 	}
 
-	protected GradientStop(GradientStopList stops, int index) {
-		this.list = stops;
-		this.index = index;
+	protected GradientStop(Gradient gradient, int index) {
+		super(gradient, index);
 	}
 	
 	/**
 	 * Called from the native side
 	 */
-	protected void set(float midPoint, float rampPoint, Color color) {
+	protected void set(double midPoint, double rampPoint, Color color) {
 		// Scale native values from 0 .. 100 to 0 .. 1
 		this.midPoint = midPoint / 100;
 		this.rampPoint = rampPoint / 100;
 		this.color = color;
 	}
-	/**
-	 * Inserts this gradient stop in the underlying AI gradient at position
-	 * index Only call once, when adding this stop to the GradientStopList!
-	 */
-	protected void insert() {
-		if (list != null && list.gradient != null) {
-			// Make sure changes to the other stops get committed first,
-			// as otherwise this stop might not be added. Fixes #29
-			CommitManager.commit(list.gradient);
-			Gradient gradient = list.gradient;
-			// Scale values back from 0 .. 1 to 0 .. 100
-			GradientStopList.nativeInsert(
-				gradient.handle, gradient.document.handle, index,
-				midPoint * 100, rampPoint * 100, color.getComponents());
-			version = CommitManager.version;
-			dirty = false;
-		}
+	
+	protected void nativeGet() {
+		GradientStopList.nativeGet(reference.handle, index, this);
 	}
 
-	protected void markDirty() {
-		// only mark it as dirty if it's attached to a path already and
-		// if the given dirty flag is not already set
-		if (!dirty && list != null && list.gradient != null) {
-			CommitManager.markDirty(list.gradient, this);
-			dirty = true;
-		}
-	}
-	
-	public void commit() {
-		if (dirty && list != null && list.gradient != null) {
-			Gradient gradient = list.gradient;
-			// Scale values back from 0 .. 1 to 0 .. 100
-			GradientStopList.nativeSet(
-				gradient.handle, gradient.document.handle, index,
+	protected void nativeInsert() {
+		GradientStopList.nativeInsert(
+				reference.handle, reference.document.handle, index,
 				midPoint * 100, rampPoint * 100, color.getComponents());
-			dirty = false;
-			version = CommitManager.version;
-		}
 	}
 	
-	protected void update() {
-		if (!dirty && list != null && list.gradient != null &&
-			version != CommitManager.version) {
-			GradientStopList.nativeGet(list.gradient.handle, index, this);
-			version = CommitManager.version;
-		}
+	protected void nativeSet() {
+		// Scale values back from 0 .. 1 to 0 .. 100
+		GradientStopList.nativeSet(
+				reference.handle, reference.document.handle, index,
+				midPoint * 100, rampPoint * 100, color.getComponents());
 	}
 
 	/**
@@ -161,12 +126,12 @@ public class GradientStop implements Commitable {
 	 * of the stop blends equally with the color of the next gradient stop.
 	 * @return the midpoint of the gradient as a value between 0 and 1
 	 */
-	public float getMidPoint() {
+	public double getMidPoint() {
 		this.update();
 		return midPoint;
 	}
 
-	public void setMidPoint(float midPoint) {
+	public void setMidPoint(double midPoint) {
 		this.update();
 		this.midPoint = midPoint;
 		this.markDirty();
@@ -176,12 +141,12 @@ public class GradientStop implements Commitable {
 	 * The position of the gradient stop on the gradient ramp.
 	 * @return a value between 0 and 1
 	 */
-	public float getRampPoint() {
+	public double getRampPoint() {
 		this.update();
 		return rampPoint;
 	}
 
-	public void setRampPoint(float rampPoint) {
+	public void setRampPoint(double rampPoint) {
 		this.update();
 		// Ask Adobe why they choose funny limits like these.
 		// We don't know, but they did:
@@ -197,7 +162,7 @@ public class GradientStop implements Commitable {
 	 * The {@link Gradient} that this gradient stop belongs to.
 	 */
 	public Gradient getGradient() {
-		return this.list != null ? this.list.gradient : null;
+		return reference;
 	}
 	
 	/**
@@ -208,7 +173,14 @@ public class GradientStop implements Commitable {
 	}
 
 	public boolean equals(Object obj) {
-		// TODO: Implement!
-		return obj == this;
+		if (obj == this) {
+			return true;
+		} else if (obj instanceof GradientStop) {
+			GradientStop stop = (GradientStop) obj;
+			return color.equals(stop.color)
+					&& rampPoint == stop.rampPoint
+					&& midPoint == stop.midPoint;
+		}
+		return false;
 	}
 }

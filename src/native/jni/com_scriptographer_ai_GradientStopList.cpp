@@ -36,6 +36,36 @@
  */
 
 /*
+ * int nativeGetSize(int handle)
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_GradientStopList_nativeGetSize(JNIEnv *env, jclass cls, jint handle) {
+	try {
+		// TODO: Does document need activating?
+		short count = 0;
+		sAIGradient->GetGradientStopCount((AIGradientHandle) handle, &count);
+		return count;
+	} EXCEPTION_CONVERT(env);
+	return 0;
+}
+
+/*
+ * int nativeRemove(int handle, int docHandle, int fromIndex, int toIndex)
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_GradientStopList_nativeRemove(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint fromIndex, jint toIndex) {
+	try {
+		// TODO: Does document need activating?
+		for (int i = toIndex - 1; i >= fromIndex; i--) {
+			AIGradientStop s;
+			sAIGradient->DeleteGradientStop((AIGradientHandle) handle, i, &s);
+		}
+		short count = 0;
+		sAIGradient->GetGradientStopCount((AIGradientHandle) handle, &count);
+		return count;
+	} EXCEPTION_CONVERT(env);
+	return 0;
+}
+
+/*
  * void nativeGet(int handle, int index, com.scriptographer.ai.GradientStop stop)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeGet(JNIEnv *env, jclass cls, jint handle, jint index, jobject stop) {
@@ -55,9 +85,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeGet(JNI
 }
 
 /*
- * void nativeSet(int handle, int docHandle, int index, float midPoint, float rampPoint, float[] color)
+ * void nativeSet(int handle, int docHandle, int index, double midPoint, double rampPoint, float[] color)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeSet(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jfloat midPoint, jfloat rampPoint, jfloatArray color) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeSet(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jdouble midPoint, jdouble rampPoint, jfloatArray color) {
 	try {
 		AIGradientStop s;
 #if kPluginInterfaceVersion < kAI14
@@ -76,9 +106,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeSet(JNI
 }
 
 /*
- * void nativeInsert(int handle, int docHandle, int index, float midPoint, float rampPoint, float[] color)
+ * void nativeInsert(int handle, int docHandle, int index, double midPoint, double rampPoint, float[] color)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeInsert(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jfloat midPoint, jfloat rampPoint, jfloatArray color) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeInsert(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jdouble midPoint, jdouble rampPoint, jfloatArray color) {
 	try {
 		AIGradientStop s;
 #if kPluginInterfaceVersion < kAI14
@@ -93,32 +123,4 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeInsert(
 		if (sAIGradient->InsertGradientStop((AIGradientHandle) handle, index, &s))
 			throw new StringException("Cannot insert gradient stop");
 	} EXCEPTION_CONVERT(env);
-}
-
-/*
- * int nativeGetSize(int handle)
- */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_GradientStopList_nativeGetSize(JNIEnv *env, jclass cls, jint handle) {
-	try {
-		short count = 0;
-		sAIGradient->GetGradientStopCount((AIGradientHandle) handle, &count);
-		return count;
-	} EXCEPTION_CONVERT(env);
-	return 0;
-}
-
-/*
- * int nativeRemove(int handle, int docHandle, int fromIndex, int toIndex)
- */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_GradientStopList_nativeRemove(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint fromIndex, jint toIndex) {
-	try {
-		for (int i = toIndex - 1; i >= fromIndex; i--) {
-			AIGradientStop s;
-			sAIGradient->DeleteGradientStop((AIGradientHandle) handle, i, &s);
-		}
-		short count = 0;
-		sAIGradient->GetGradientStopCount((AIGradientHandle) handle, &count);
-		return count;
-	} EXCEPTION_CONVERT(env);
-	return 0;
 }

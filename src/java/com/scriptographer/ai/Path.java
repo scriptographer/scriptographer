@@ -281,12 +281,13 @@ public class Path extends PathItem {
 			index++;
 			parameter = 0.0f;
 		}
-		if (index >= 0 && index < segments.size - 1) {
+		int numSegments = segments.size();
+		if (index >= 0 && index < numSegments - 1) {
 			if (parameter == 0.0) { // special case
 				if (index > 0) {
 					// split at index
-					newSegments = segments.getSubList(index, segments.size);
-					segments.remove(index + 1, segments.size);
+					newSegments = segments.getSubList(index, numSegments);
+					segments.remove(index + 1, numSegments);
 				}
 			} else {
 				// divide the segment at index at parameter
@@ -294,10 +295,10 @@ public class Path extends PathItem {
 				if (segment != null) {
 					segment.split(parameter);
 					// create the new path with the segments to the right of t
-					newSegments = segments.getSubList(index + 1, segments.size);
+					newSegments = segments.getSubList(index + 1, numSegments);
 					// and delete these segments from the current path, not
 					// including the divided point
-					segments.remove(index + 2, segments.size);
+					segments.remove(index + 2, numSegments);
 				}
 			}
 		}
@@ -333,7 +334,7 @@ public class Path extends PathItem {
 	public HitResult getPositionWithLength(double length) {
 		CurveList curves = getCurves();
 		double currentLength = 0;
-		for (int i = 0; i < curves.size; i++) {
+		for (int i = 0, l = curves.size(); i < l; i++) {
 			double startLength = currentLength;
 			Curve curve = (Curve) curves.get(i);
 			currentLength += curve.getLength();
@@ -346,7 +347,7 @@ public class Path extends PathItem {
 		// it may be that through impreciseness of getLength, that the end of
 		// the curves was missed:
 		if (length <= getLength()) {
-			Curve curve = (Curve) curves.get(curves.size - 1);
+			Curve curve = (Curve) curves.getLast();
 			return new HitResult(curve, 1);
 		} else {
 			return null;
@@ -455,7 +456,7 @@ public class Path extends PathItem {
 		Segment first = (Segment) segments.getFirst();
 		path.moveTo((float) first.point.x, (float) first.point.y);
 		Segment seg = first;
-		for (int i = 1; i < segments.size; i++) {
+		for (int i = 1, l = segments.size(); i < l; i++) {
 			Segment next = (Segment) segments.get(i);
 			path.curveTo((float) (seg.point.x + seg.handleOut.x),
 					(float) (seg.point.y + seg.handleOut.y),

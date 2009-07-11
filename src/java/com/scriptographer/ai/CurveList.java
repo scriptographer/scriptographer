@@ -31,7 +31,6 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.list.ArrayList;
 import com.scriptographer.list.AbstractFetchList;
 
 /**
@@ -41,15 +40,12 @@ import com.scriptographer.list.AbstractFetchList;
  */
 public class CurveList extends AbstractFetchList<Curve> {
 	protected Path path;
-	protected int size;
 	protected SegmentList segments;
-	protected ArrayList.List<Curve> list;
 
 	protected CurveList(Path path, SegmentList segments) {
 		this.path = path;
 		this.segments = segments;
 		segments.curves = this;
-		list = new ArrayList.List<Curve>();
 		updateSize();
 	}
 	
@@ -61,7 +57,7 @@ public class CurveList extends AbstractFetchList<Curve> {
 	 * This is called from the linked SegmentList, when this path changes.
 	 */
 	protected void updateSize() {
-		int newSize = segments.size;
+		int newSize = segments.size();
 		// Reduce length by one if it's an open path:
 		if (!path.isClosed() && newSize > 0)
 			newSize--;
@@ -74,15 +70,11 @@ public class CurveList extends AbstractFetchList<Curve> {
 
 	protected void fetch(int fromIndex, int toIndex) {
 		// Prefetch all the needed segments now:
-		segments.fetch(fromIndex, Math.min(segments.size - 1, toIndex + 1));
+		segments.fetch(fromIndex, Math.min(segments.size() - 1, toIndex + 1));
 	}
 
-	protected void fetch() {
-		if (size > 0)
-			fetch(0, size);
-	}
-
-	// This list is read only:
+	// This list is read only for now.
+	// TODO: Implement?
 	/**
 	 * @jshide
 	 */
@@ -100,7 +92,7 @@ public class CurveList extends AbstractFetchList<Curve> {
 	/**
 	 * @jshide
 	 */
-	public Curve remove(int index) {
+	public void remove(int fromIndex, int toIndex) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -113,13 +105,5 @@ public class CurveList extends AbstractFetchList<Curve> {
 			curve.updateSegments();
 		}
 		return curve;
-	}
-
-	public int size() {
-		return size;
-	}
-
-	public boolean isEmpty() {
-		return size == 0;
 	}
 }

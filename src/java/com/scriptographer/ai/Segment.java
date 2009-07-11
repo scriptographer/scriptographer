@@ -338,7 +338,7 @@ public class Segment implements Commitable {
 			CurveList curves = segments.path.getCurves();
 			// the curves list handles closing curves, so the curves.size
 			// is adjusted accordingly. just check to be in the boundaries here: 
-			return index < curves.size ? (Curve) curves.get(index) : null;
+			return index < curves.size() ? (Curve) curves.get(index) : null;
 		} else {
 			return null;
 		}
@@ -349,7 +349,7 @@ public class Segment implements Commitable {
 	}
 
 	public Segment getNext() {
-		return index < segments.size ? segments.get(index + 1) : null;
+		return index < segments.size() ? segments.get(index + 1) : null;
 	}
 
 	protected boolean isSelected(SegmentPoint pt) {

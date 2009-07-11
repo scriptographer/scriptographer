@@ -31,8 +31,6 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.list.ArrayList;
-import com.scratchdisk.list.List;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scriptographer.list.AbstractFetchList;
 
@@ -43,10 +41,7 @@ import com.scriptographer.list.AbstractFetchList;
  */
 public class SegmentList extends AbstractFetchList<Segment> {
 	protected Path path;
-	protected int size;
 	protected CurveList curves = null;
-
-	private ArrayList.List<Segment> list;
 
 	private int lengthVersion = -1;
 
@@ -63,12 +58,9 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	protected static final int VALUES_PER_SEGMENT = 7;
 
 	public SegmentList() {
-		list = new ArrayList.List<Segment>();
-		size = 0;
 	}
 
 	protected SegmentList(Path path) {
-		this();
 		this.path = path;
 		updateSize(-1);
 	}
@@ -204,11 +196,6 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		}
 	}
 
-	protected void fetch() {
-		if (size > 0)
-			fetch(0, size);
-	}
-
 	public Segment get(int index) {
 		// as fetching doesn't cost so much but calling JNI functions does,
 		// fetch a few elements in the neighborhood at a time:
@@ -250,30 +237,8 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		}
 		return segment;
 	}
-	
-	/**
-	 * Adds a point to the SegmentList.
-	 * The point is converted to a segment with no handles.
-	 * @param index the index where to add the segment
-	 * @param obj either a Segment or a Point
-	 * @return the new segment
-	 */
-	public Segment add(int index, Point point) {
-		return add(index, new Segment((Point) point));
-	}
 
-	/*
-	 * This method is redefined here so that Rhino finds it.
-	 */
-	public Segment add(Segment segment) {
-		return add(size(), segment);
-	}
-
-	public Segment add(Point point) {
-		return add(size(), point);
-	}
-
-	public boolean addAll(int index, List<? extends Segment> elements) {
+	public boolean addAll(int index, ReadOnlyList<? extends Segment> elements) {
 		if (index < 0 || index > size)
 			throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
 
@@ -348,7 +313,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	}
 
 	public boolean addAll(ReadOnlyList<? extends Segment> elements) {
-		return addAll(size(), elements);
+		return addAll(size, elements);
 	}
 
 	public Segment set(int index, Segment segment) {
@@ -362,22 +327,24 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		}
 		return ret;
 	}
+	
+	/**
+	 * Adds a point to the SegmentList.
+	 * The point is converted to a segment with no handles.
+	 * @param index the index where to add the segment
+	 * @param obj either a Segment or a Point
+	 * @return the new segment
+	 */
+	public Segment add(int index, Point point) {
+		return add(index, new Segment((Point) point));
+	}
+
+	public Segment add(Point point) {
+		return add(new Segment((Point) point));
+	}
 
 	public Segment set(int index, Point point) {
 		return set(index, new Segment(point));
-	}
-
-	public int size() {
-		return size;
-	}
-
-	/**
-	 * Checks whether the SegmentList is empty
-	 * 
-	 * @return {@true if it's empty}
-	 */
-	public boolean isEmpty() {
-		return size == 0;
 	}
 
 	private static native int nativeRemove(int handle, int docHandle,
@@ -403,12 +370,6 @@ public class SegmentList extends AbstractFetchList<Segment> {
 				curves.updateSize();
 		}
 
-	}
-
-	public Segment remove(int index) {
-		Segment segment = get(index);
-		remove(index, index + 1);
-		return segment;
 	}
 	
 	/*

@@ -133,7 +133,9 @@ public class CMYKColor extends Color {
 	 * @return {@true if the CMYKColor is the same}
 	 */
 	public boolean equals(Object obj) {
-		if (obj instanceof CMYKColor) {
+		if (obj == this) {
+			return true;
+		} else if (obj instanceof CMYKColor) {
 			CMYKColor col = (CMYKColor) obj;
 			return  cyan == col.cyan &&
 					magenta == col.magenta &&

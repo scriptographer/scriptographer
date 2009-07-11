@@ -1,13 +1,13 @@
 /*
  * Scriptographer
- * 
+ *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
- * 
+ *
  * Copyright (c) 2002-2008 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
- * 
+ *
  * -- GPL LICENSE NOTICE --
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,29 +24,28 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Oct 18, 2006.
- * 
+ * File created on Jul 9, 2009.
+ *
  * $Id$
  */
 
 package com.scriptographer.ai;
 
-import com.scriptographer.ScriptographerException;
 import com.scriptographer.list.AbstractStructList;
 
 /**
  * @author lehni
- * 
+ *
  * @jshide
  */
-public class GradientStopList extends AbstractStructList<Gradient, GradientStop> {
-
-	protected GradientStopList(Gradient gradient) {
-		super(gradient);
-	}
+public class ArtboardList extends AbstractStructList<Document, Artboard> {
 	
-	public Gradient getGradient() {
-		return reference;
+	protected ArtboardList(Document document) {
+		super(document);
+	}
+
+	protected Artboard createEntry(int index) {
+		return new Artboard(reference, index);
 	}
 
 	protected int nativeGetSize() {
@@ -54,33 +53,20 @@ public class GradientStopList extends AbstractStructList<Gradient, GradientStop>
 	}
 
 	protected int nativeRemove(int fromIndex, int toIndex) {
-		return nativeRemove(reference.handle, reference.document.handle,
-				fromIndex, toIndex);
-	}
-
-	protected GradientStop createEntry(int index) {
-		return new GradientStop(reference, index);
-	}
-
-	public void remove(int fromIndex, int toIndex) {
-		if (fromIndex < toIndex && size + fromIndex - toIndex < 2)
-			throw new ScriptographerException(
-					"There need to be at least two gradient stops");
-
-		super.remove(fromIndex, toIndex);
+		return nativeRemove(reference.handle, fromIndex, toIndex);
 	}
 
 	private static native int nativeGetSize(int handle);
 
-	private static native int nativeRemove(int handle, int docHandle,
-			int fromIndex, int toIndex);
+	private static native int nativeRemove(int handle, int fromIndex, int toIndex);
 
-	protected static native void nativeGet(int handle, int index,
-			GradientStop stop);
+	protected static native void nativeGet(int handle, int index, Artboard artboard);
 
-	protected static native void nativeSet(int handle, int docHandle,
-			int index, double midPoint, double rampPoint, float[] color);
+	protected static native void nativeInsert(int handle, int index,
+			Rectangle bounds, boolean showCenter, boolean showCrossHairs,
+			boolean showSafeAreas, double pixelAspectRatio);
 
-	protected static native void nativeInsert(int handle, int docHandle,
-			int index, double midPoint, double rampPoint, float[] color);
+	protected static native void nativeSet(int handle, int index,
+			Rectangle bounds, boolean showCenter, boolean showCrossHairs,
+			boolean showSafeAreas, double pixelAspectRatio);
 }

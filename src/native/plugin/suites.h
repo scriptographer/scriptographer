@@ -79,6 +79,7 @@
 #include "AIOverrideColorConversion.h"
 #include "AIColorConversion.h"
 #include "AIContext.h"
+#include "AICropArea.h"
 #include "AICursorSnap.h"
 #include "AICustomColor.h"
 #include "AIDocument.h"
@@ -127,10 +128,6 @@
 #include "AIUndo.h"
 #include "AIURL.h"
 
-#if kPluginInterfaceVersion >= kAI12
-#include "AITracing.h"
-#endif// >= kAI12
-
 #include "AIContext.h"
 #include "AIPreference.h"
 
@@ -140,14 +137,23 @@
 #include "AIATEPaint.h"
 #include "AIATECurrTextFeatures.h"
 #include "ATETextSuitesExtern.h"
-#else // < kAI11
+#else // kPluginInterfaceVersion < kAI11
 #include "AIText.h"
 #include "AITextFaceStyle.h"
 #include "AITextLine.h"
 #include "AITextPath.h"
 #include "AITextRun.h"
 #include "AITextStream.h"
-#endif // < kAI11
+#endif // kPluginInterfaceVersion < kAI11
+
+#if kPluginInterfaceVersion >= kAI12
+#include "AITracing.h"
+#endif // kPluginInterfaceVersion >= kAI12
+
+
+#if kPluginInterfaceVersion >= kAI13
+#include "AITracing.h"
+#endif // kPluginInterfaceVersion >= kAI13
 
 typedef struct {
 	char *name;
@@ -172,7 +178,7 @@ extern ImportSuites gPostStartupSuites;
 // the old ASxxx types in ASTypes.h.
 #define ADMRect ASRect
 #define ADMPoint ASPoint
-#endif // < kAI11
+#endif // kPluginInterfaceVersion < kAI11
 
 #if kPluginInterfaceVersion < kAI12
 // GetWSProfile in AIOverrideColorConversion.h takes AIColorProfile instead of ASUInt32 since AI12
@@ -181,14 +187,14 @@ extern ImportSuites gPostStartupSuites;
 namespace ATE {
 	typedef ATE::GlyphID ATEGlyphID;
 }
-#endif // < kAI12
+#endif // kPluginInterfaceVersion < kAI12
 
 #if kPluginInterfaceVersion < kAI13
 // AI13 Introduced ATEBool8 for ATE, before it simply was bool:
 namespace ATE {
 	typedef bool ATEBool8;
 }
-#endif // < kAI13
+#endif // kPluginInterfaceVersion < kAI13
 
 // ADM Suite versions for different versions of Illustrator
 // ADM Suites default to the oldest versions.
@@ -370,10 +376,10 @@ extern "C" _ADMDrawerSuite					*sADMDrawer;
 
 #ifdef MAC_ENV
 extern "C" ADMMacHostSuite					*sADMMacHost;
-#endif
+#endif // MAC_ENV
 #ifdef WIN_ENV
 extern "C" ADMWinHostSuite					*sADMWinHost;
-#endif
+#endif // WIN_ENV
 
 #if kPluginInterfaceVersion >= kAI11
 extern "C" AITextFrameSuite					*sAITextFrame;
@@ -385,11 +391,15 @@ extern "C" AITextLineSuite					*sAITextLine;
 extern "C" AITextPathSuite					*sAITextPath;
 extern "C" AITextRunSuite					*sAITextRun;
 extern "C" AITextStreamSuite				*sAITextStream;
-#endif
+#endif // kPluginInterfaceVersion >= kAI11
 
 #if kPluginInterfaceVersion >= kAI12
 extern "C" AIFilePathSuite					*sAIFilePath;
 extern "C" AIUnicodeStringSuite				*sAIUnicodeString;
 extern "C" AITracingSuite					*sAITracing;
 extern "C" AITracingIPSuite					*sAITracingIP;
-#endif
+#endif // kPluginInterfaceVersion >= kAI12
+
+#if kPluginInterfaceVersion >= kAI13
+extern "C" AICropAreaSuite					*sAICropArea;
+#endif // kPluginInterfaceVersion >= kAI13

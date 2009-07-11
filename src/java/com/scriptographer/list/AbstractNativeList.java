@@ -31,8 +31,8 @@
 
 package com.scriptographer.list;
 
-import com.scratchdisk.list.ExtendedList;
-import com.scratchdisk.list.ReadOnlyList;
+import com.scratchdisk.list.AbstractExtendedList;
+import com.scratchdisk.list.ArrayList;
 
 /**
  * AbstractFetchList defines fetch and fetch(fromIndex, toIndex), which are called
@@ -41,57 +41,31 @@ import com.scratchdisk.list.ReadOnlyList;
  * 
  * @author lehni
  */
-public abstract class AbstractFetchList<E> extends AbstractNativeList<E> {
+public abstract class AbstractNativeList<E> extends AbstractExtendedList<E> {
+	protected int size;
+	protected ArrayList.List<E> list;
 
-	protected abstract void fetch(int fromIndex, int toIndex);
-
-	protected void fetch() {
-		if (size > 0)
-			fetch(0, size);
+	protected AbstractNativeList() {
+		list = new ArrayList.List<E>();
+		size = 0;
 	}
 
-	public boolean contains(Object element) {
-		fetch();
-		return super.contains(element);
+	public int size() {
+		return size;
 	}
 
-	public int indexOf(Object element) {
-		fetch();
-		return super.indexOf(element);
+	/**
+	 * Checks whether the list is empty
+	 * 
+	 * @return {@true if it's empty}
+	 */
+	public boolean isEmpty() {
+		return size == 0;
 	}
 
-	public int lastIndexOf(Object element) {
-		fetch();
-		return super.lastIndexOf(element);
-	}
-
-	public E[] toArray(E[] array) {
-		fetch();
-		return super.toArray(array);
-	}
-
-	public boolean retainAll(ExtendedList<?> elements) {
-		fetch();
-		return super.retainAll(elements);
-	}
-
-	public boolean removeAll(ExtendedList<?> elements) {
-		fetch();
-		return super.removeAll(elements);
-	}
-
-	public boolean containsAll(ReadOnlyList<?> elements) {
-		fetch();
-		return super.containsAll(elements);
-	}
-	
-	public ExtendedList<E> getSubList(int fromIndex, int toIndex) {
-		fetch();
-		return super.getSubList(fromIndex, toIndex);
-	}
-
-	public String toString() {
-		fetch();
-		return super.toString();
+	public E remove(int index) {
+		E element = get(index);
+		remove(index, index + 1);
+		return element;
 	}
 }

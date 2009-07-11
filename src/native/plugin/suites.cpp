@@ -122,30 +122,34 @@ extern "C" {
 	
 #ifdef MAC_ENV
 	ADMMacHostSuite					*sADMMacHost;
-#endif
+#endif // MAC_ENV
 #ifdef WIN_ENV
 	ADMWinHostSuite					*sADMWinHost;
-#endif
+#endif // WIN_ENV
 
 #if kPluginInterfaceVersion >= kAI11
 	AITextFrameSuite				*sAITextFrame;
 	AIATECurrentTextFeaturesSuite	*sAIATECurrentTextFeatures;
 	EXTERN_TEXT_SUITES
-#else
+#else // kPluginInterfaceVersion < kAI11
 	AITextSuite						*sAIText;
 	AITextFaceStyleSuite			*sAITextFaceStyle;
 	AITextLineSuite					*sAITextLine;
 	AITextPathSuite					*sAITextPath;
 	AITextRunSuite					*sAITextRun;
 	AITextStreamSuite				*sAITextStream;
-#endif
+#endif // kPluginInterfaceVersion < kAI11
 
 #if kPluginInterfaceVersion >= kAI12
 	AIFilePathSuite					*sAIFilePath;
 	AIUnicodeStringSuite			*sAIUnicodeString;
 	AITracingSuite					*sAITracing;
 	AITracingIPSuite				*sAITracingIP;
-#endif
+#endif // kPluginInterfaceVersion >= kAI12
+
+#if kPluginInterfaceVersion >= kAI13
+	AICropAreaSuite					*sAICropArea;
+#endif // kPluginInterfaceVersion >= kAI13
 }
 
 // The startup and postStartup array contains all the suites which
@@ -363,6 +367,10 @@ ImportSuite postStartup[] = {
 	kAITracingIPSuite, kAITracingIPSuiteVersion, &sAITracingIP, sizeof(AITracingIPSuite),
 #endif
 	
+#if kPluginInterfaceVersion >= kAI13
+	kAICropAreaSuite, kAICropAreaSuiteVersion, &sAICropArea, sizeof(AICropAreaSuite),
+#endif
+
 	NULL, 0, NULL, 0
 };
 

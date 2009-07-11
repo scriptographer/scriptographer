@@ -155,7 +155,7 @@ public class Curve {
 		if (segments != null) {
 			index2 = index1 + 1;
 			// a closing bezier?
-			if (index2 >= segments.size)
+			if (index2 >= segments.size())
 				index2 = 0;
 			
 			// Check whether the segments were moved (others were deleted), the path was updated or the segments even moved to
@@ -262,7 +262,7 @@ public class Curve {
 	}
 
 	public Curve getNext() {
-		return index1 < segments.size ? segments.get(index1 + 1).getCurve() : null;
+		return index1 < segments.size() ? segments.get(index1 + 1).getCurve() : null;
 	}
 
 	// TODO: return reversed curve as new instance instead of modifiying this curve?

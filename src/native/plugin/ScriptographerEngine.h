@@ -276,7 +276,10 @@ public:
 
 	jclass cls_ai_GradientStop;
 	jmethodID mid_ai_GradientStop_set;
-	
+
+	jclass cls_ai_Artboard;
+	jmethodID mid_ai_Artboard_set;
+
 	jclass cls_ai_Document;
 	
 	jclass cls_ai_LiveEffect;

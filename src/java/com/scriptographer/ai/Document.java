@@ -52,6 +52,7 @@ public class Document extends NativeObject {
 	private DocumentViewList views = null;
 	private SymbolList symbols = null;
 	private SwatchList swatches = null;
+	private ArtboardList artboards = null;
 	private Dictionary data = null;
 	private Item currentStyleItem = null;
 
@@ -299,6 +300,15 @@ public class Document extends NativeObject {
 		if (swatches == null)
 			swatches = new SwatchList(this);
 		return swatches;
+	}
+
+	/**
+	 * The artboards contained in the document.
+	 */
+	public ArtboardList getArtboards() {
+		if (artboards == null)
+			artboards = new ArtboardList(this);
+		return artboards;
 	}
 
 	// TODO: getActiveSwatch, getActiveGradient
