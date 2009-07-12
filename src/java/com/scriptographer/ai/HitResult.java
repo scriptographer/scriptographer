@@ -110,7 +110,7 @@ public class HitResult {
 		return curve;
 	}
 	
-	public int getCurveIndex() {
+	public int getIndex() {
 		if (curve != null)
 			return curve.getIndex();
 		else
@@ -132,6 +132,6 @@ public class HitResult {
 	}
 	
 	public String toString() {
-		return " { type: " + this.type + ", item: " + item + ", index: " + getCurveIndex() + ", parameter: " + parameter + " }";
+		return " { type: " + this.type + ", item: " + item + ", index: " + getIndex() + ", parameter: " + parameter + " }";
 	}
 }
