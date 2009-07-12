@@ -540,6 +540,16 @@ public class Document extends NativeObject {
 	public ItemList getSelectedItems(Class type) {
 		return getSelectedItems(new Class[] { type });
 	}
+	
+	private native void nativeSelectAll();
+
+	/**
+	 * Selects all items in the document.
+	 */
+	public void selectAll() {
+		commitCurrentStyle();
+		nativeSelectAll();
+	}
 
 	private native void nativeDeselectAll();
 
@@ -550,7 +560,7 @@ public class Document extends NativeObject {
 		commitCurrentStyle();
 		nativeDeselectAll();
 	}
-	
+
 	private native ItemList nativeGetMatchingItems(Class type, HashMap<Integer, Boolean> attributes);
 
 	/**

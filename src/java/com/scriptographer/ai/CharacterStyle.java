@@ -97,11 +97,12 @@ public class CharacterStyle extends PathStyle {
 			weight = FontWeight.NONE;
 		if (weight instanceof String) {
 			setFont((String) weight);
+		} else if (weight instanceof FontWeight || weight == null) {
+			setFont((FontWeight) weight);
+		} else if (weight instanceof FontFamily) {
+			setFont((FontFamily) weight);
 		} else {
-			if (weight instanceof FontWeight || weight == null)
-				setFont((FontWeight) weight);
-			else
-				setFont(FontWeight.NONE);
+			setFont(FontWeight.NONE);
 		}
 		setFontSize(reader.readFloat("fontSize"));
 		setHorizontalScale(reader.readFloat("horizontalScale"));

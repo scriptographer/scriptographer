@@ -619,11 +619,33 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSelectedItems(J
 }
 
 /*
+ * void nativeSelectAll()
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSelectAll(JNIEnv *env, jobject obj) {
+	try {
+		// Cause the doc switch if necessary
+		gEngine->getDocumentHandle(env, obj, true);
+		// Get all unselected items
+		AIMatchingArtSpec spec;
+		spec.type = kAnyArt;
+		spec.whichAttr = kArtFullySelected;
+		spec.attr = 0;
+		AIArtHandle **matches;
+		long numMatches;
+		if (!sAIMatchingArt->GetMatchingArt(&spec, 1, &matches, &numMatches)) {
+			for (long i = 0; i < numMatches; i++)
+				sAIArt->SetArtUserAttr((*matches)[i], kArtSelected, kArtSelected);
+			sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
+		}
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
  * void nativeDeselectAll()
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeDeselectAll(JNIEnv *env, jobject obj) {
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		Document_deselectAll();
 	} EXCEPTION_CONVERT(env);
@@ -871,11 +893,11 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetStories(JNIE
 	
 	jint ret = 0;
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
-		// this is annoying:
-		// request a text frame and get the stories from there....
+		// This is annoying:
+		// Request a text frame and get the stories from there....
 		AIMatchingArtSpec spec;
 		spec.type = kTextFrameArt;
 		spec.whichAttr = 0;
