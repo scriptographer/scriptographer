@@ -123,7 +123,7 @@ public class Path extends PathItem {
 
 	public void setSegments(ReadOnlyList<? extends Segment> segments) {
 		SegmentList segs = getSegments();
-		// TODO: Implement SegmentList.setAll so clear is not necessary and
+		// TODO: Implement SegmentList.setAll so removeAll is not necessary and
 		// nativeCommit is used instead of nativeInsert removeRange would still
 		// be needed in cases the new list is smaller than the old one...
 		segs.removeAll();
@@ -268,7 +268,7 @@ public class Path extends PathItem {
 	}
 
 	public Path split(HitResult position) {
-		return split(position.getCurveIndex(), position.getParameter());
+		return split(position.getIndex(), position.getParameter());
 	}
 
 	public Path split(int index, double parameter) {

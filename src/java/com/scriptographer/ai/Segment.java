@@ -352,6 +352,10 @@ public class Segment implements Commitable {
 		return index < segments.size() ? segments.get(index + 1) : null;
 	}
 
+	public Path getPath() {
+		return segments != null ? segments.path : null;
+	}
+
 	protected boolean isSelected(SegmentPoint pt) {
 		update();
 		if (selectionState == SELECTION_FETCH) {
