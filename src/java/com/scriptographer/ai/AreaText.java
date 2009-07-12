@@ -75,6 +75,18 @@ public class AreaText extends TextItem {
 		this(area, TextOrientation.HORIZONTAL);
 	}
 
+	public AreaText(Rectangle rect, TextOrientation orientation) {
+		super(nativeCreate(orientation != null
+				? orientation.value 
+				: TextOrientation.HORIZONTAL.value,
+				Document.getWorkingDocument().createRectangle(
+						rect).handle), true);
+	}
+
+	public AreaText(Rectangle rect) {
+		this(rect, TextOrientation.HORIZONTAL);
+	}
+
 	/**
 	 * The path item that defines the text item's area.
      */
