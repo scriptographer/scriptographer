@@ -44,12 +44,12 @@ public class ArtboardList extends AbstractStructList<Document, Artboard> {
 		super(document);
 	}
 
-	protected Artboard createEntry(int index) {
-		return new Artboard(reference, index);
-	}
-
 	public Class<Artboard> getComponentType() {
 		return Artboard.class;
+	}
+
+	protected Artboard createEntry(int index) {
+		return new Artboard(reference, index);
 	}
 
 	protected int nativeGetSize() {

@@ -48,7 +48,11 @@ public class CurveList extends AbstractFetchList<Curve> {
 		segments.curves = this;
 		updateSize();
 	}
-	
+
+	public Class<Curve> getComponentType() {
+		return Curve.class;
+	}
+
 	public Path getPath() {
 		return path;
 	}
@@ -105,9 +109,5 @@ public class CurveList extends AbstractFetchList<Curve> {
 			curve.updateSegments();
 		}
 		return curve;
-	}
-
-	public Class<Curve> getComponentType() {
-		return Curve.class;
 	}
 }

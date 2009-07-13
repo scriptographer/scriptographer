@@ -55,6 +55,10 @@ class Content extends AbstractExtendedList<Component> implements StringIndexList
 		this.component = component;
 	}
 
+	public Class<?> getComponentType() {
+		return Component.class;
+	}
+
 	protected AWTContainer getAWTContainer() {
 		return component.getAWTContainer();
 	}
@@ -176,9 +180,5 @@ class Content extends AbstractExtendedList<Component> implements StringIndexList
 			return previous;
 		}
 		return null;
-	}
-
-	public Class<?> getComponentType() {
-		return Component.class;
 	}
 }

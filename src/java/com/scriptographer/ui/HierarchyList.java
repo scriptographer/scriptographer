@@ -66,6 +66,10 @@ public class HierarchyList extends ListItem<HierarchyListEntry> {
 		this.setDrawEntryCallback(parentList.getDrawEntryCallback());
 	}
 
+	public Class<? extends ListEntry> getComponentType() {
+		return HierarchyListEntry.class;
+	}
+
 	public EnumSet<ListStyle> getStyle() {
 		return IntegerEnumUtils.getSet(ListStyle.class, nativeGetStyle());
 	}
@@ -391,9 +395,5 @@ public class HierarchyList extends ListItem<HierarchyListEntry> {
 	public native void startMultipleItemInvalidate();
 	public native void stopMultipleItemInvalidate();
 	*/
-
-	public Class<? extends ListEntry> getComponentType() {
-		return HierarchyListEntry.class;
-	}
 }
 

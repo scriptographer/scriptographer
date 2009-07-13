@@ -62,6 +62,10 @@ public class ItemList extends ArrayList<Item> implements ReadOnlyStringIndexList
 		this(Lists.asList(items));
 	}
 
+	public Class<Item> getComponentType() {
+		return Item.class;
+	}
+
 	/**
 	 * Adds the item to the ItemSet, only if it does not already exist in it.
 	 * @param index
@@ -94,10 +98,6 @@ public class ItemList extends ArrayList<Item> implements ReadOnlyStringIndexList
 
 	public boolean contains(Object element) {
 		return map.get(element) != null;
-	}
-
-	public Class<Item> getComponentType() {
-		return Item.class;
 	}
 	
 	public String toString() {
