@@ -42,7 +42,7 @@ public interface StringIndexList<E> extends ReadOnlyStringIndexList<E> {
 	/**
 	 * @jshide
 	 */
-	public E set(String name, E element);
+	public E put(String name, E element);
 
 	/**
 	 * @jshide

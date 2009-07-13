@@ -89,5 +89,14 @@ public interface List<E> extends ReadOnlyList<E> {
 	 * @jshide
 	 */
 	void remove(int fromIndex, int toIndex);
+
+	/**
+	 * @jshide
+	 */
 	void removeAll();
+
+	/**
+	 * @jshide
+	 */
+	Class<?> getComponentType();
 }

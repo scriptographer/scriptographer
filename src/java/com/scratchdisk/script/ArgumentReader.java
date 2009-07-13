@@ -216,8 +216,8 @@ public abstract class ArgumentReader {
 
 	public static boolean canConvert(Class to) {
 		return ArgumentReader.class.isAssignableFrom(to)
-			|| getArgumentReaderConstructor(to) != null
-			|| converters.get(to) != null;
+				|| getArgumentReaderConstructor(to) != null
+				|| converters.get(to) != null;
 	}
 
 	public static Object convert(ArgumentReader reader, Object from, Class to) {

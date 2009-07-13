@@ -106,4 +106,8 @@ public class CurveList extends AbstractFetchList<Curve> {
 		}
 		return curve;
 	}
+
+	public Class<Curve> getComponentType() {
+		return Curve.class;
+	}
 }

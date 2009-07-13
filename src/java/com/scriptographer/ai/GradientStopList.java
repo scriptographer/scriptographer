@@ -49,6 +49,10 @@ public class GradientStopList extends AbstractStructList<Gradient, GradientStop>
 		return reference;
 	}
 
+	public Class<GradientStop> getComponentType() {
+		return GradientStop.class;
+	}
+
 	protected int nativeGetSize() {
 		return nativeGetSize(reference.handle);
 	}

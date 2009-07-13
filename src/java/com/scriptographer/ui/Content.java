@@ -147,7 +147,7 @@ class Content extends AbstractExtendedList<Component> implements StringIndexList
 
 	public void addAll(Map<String,? extends Component> elements) {
 		for (Map.Entry<String,? extends Component> entry : elements.entrySet())
-			set(entry.getKey().toString(), entry.getValue());
+			put(entry.getKey().toString(), entry.getValue());
 	}
 
 	public Component remove(int index) {
@@ -165,7 +165,7 @@ class Content extends AbstractExtendedList<Component> implements StringIndexList
 		container.removeAll();
 	}
 
-	public Component set(String name, Component element) {
+	public Component put(String name, Component element) {
 		name = capitalize(name);
 		java.awt.Component component = getAWTComponent(element);
 		if (component != null) {
@@ -176,5 +176,9 @@ class Content extends AbstractExtendedList<Component> implements StringIndexList
 			return previous;
 		}
 		return null;
+	}
+
+	public Class<?> getComponentType() {
+		return Component.class;
 	}
 }

@@ -48,6 +48,10 @@ public class ArtboardList extends AbstractStructList<Document, Artboard> {
 		return new Artboard(reference, index);
 	}
 
+	public Class<Artboard> getComponentType() {
+		return Artboard.class;
+	}
+
 	protected int nativeGetSize() {
 		return nativeGetSize(reference.handle);
 	}

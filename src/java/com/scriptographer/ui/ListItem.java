@@ -440,4 +440,8 @@ public abstract class ListItem<E extends ListEntry> extends Item implements List
 		int size = size();
 		return size > 0 ? get(size - 1) : null;
 	}
+
+	public Class<? extends ListEntry> getComponentType() {
+		return ListEntry.class;
+	}
 }

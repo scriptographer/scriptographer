@@ -95,6 +95,10 @@ public class ItemList extends ArrayList<Item> implements ReadOnlyStringIndexList
 	public boolean contains(Object element) {
 		return map.get(element) != null;
 	}
+
+	public Class<Item> getComponentType() {
+		return Item.class;
+	}
 	
 	public String toString() {
 		StringBuffer buffer = new StringBuffer();

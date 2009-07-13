@@ -371,6 +371,10 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		}
 
 	}
+
+	public Class<Segment> getComponentType() {
+		return Segment.class;
+	}
 	
 	/*
 	 *  postscript-like interface: moveTo, lineTo, curveTo, arcTo

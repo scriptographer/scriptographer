@@ -64,7 +64,7 @@ public class ItemGroup extends Item implements ComponentGroup {
 
 	public void add(Item item, String constraints) {
 		if (constraints != null)
-			getContent().set(constraints, item);
+			getContent().put(constraints, item);
 		else if (component != null)
 			getContent().add(item);
 		else

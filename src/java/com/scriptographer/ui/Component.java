@@ -314,7 +314,7 @@ abstract class Component extends NotificationHandler {
 	 * @jshide
 	 */
 	public void addToContent(Component component, String constraints) {
-		getContent().set(constraints, component);
+		getContent().put(constraints, component);
 	}
 
 	/**

@@ -86,6 +86,7 @@ public class ListWrapper extends ExtendedJavaObject {
 			if (value instanceof Wrapper)
 				value = ((Wrapper) value).unwrap();
 			int size = list.size();
+			value = getCompatibleValue(value);
 			if (index >= size) {
 				for (int i = size; i < index; i++)
 					list.add(i, null);
@@ -128,7 +129,7 @@ public class ListWrapper extends ExtendedJavaObject {
 				return;
 			}
 		} else if (javaObject instanceof StringIndexList && !members.has(name, false)) {
-			((StringIndexList) javaObject).set(name, value);
+			((StringIndexList) javaObject).put(name, getCompatibleValue(value));
 			return;
 		}
 		super.put(name, start, value);
@@ -166,5 +167,13 @@ public class ListWrapper extends ExtendedJavaObject {
 		} else {
 			return super.getDefaultValue(hint);
 		}
+	}
+
+	private Object getCompatibleValue(Object value) {
+		Class type = ((List) javaObject).getComponentType();
+		// Use WrapFactory to coerce type if not compatible
+		return type.isInstance(value)
+				? value
+				: Context.getCurrentContext().getWrapFactory().coerceType(type, value);
 	}
 }

@@ -88,6 +88,10 @@ public class Artboard extends AbstractStructList.Entry<Document> {
 		this(bounds, false, false, false, 1);
 	}
 
+	public Artboard() {
+		this(new Rectangle(), false, false, false, 1);
+	}
+
 	protected Artboard(Document document, int index) {
 		super(document, index);
 	}

@@ -391,5 +391,9 @@ public class HierarchyList extends ListItem<HierarchyListEntry> {
 	public native void startMultipleItemInvalidate();
 	public native void stopMultipleItemInvalidate();
 	*/
+
+	public Class<? extends ListEntry> getComponentType() {
+		return HierarchyListEntry.class;
+	}
 }
 

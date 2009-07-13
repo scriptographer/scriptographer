@@ -79,4 +79,12 @@ public abstract class AbstractList<E> extends AbstractReadOnlyList<E> implements
 	public final boolean addAll(E[] elements) {
 		return addAll(size(), elements);
 	}
+
+	public Class<?> getComponentType() {
+		// The standard behavior is to just return Object.class.
+		// We need to define component types only for non flexible lists, such as
+		// Segment lists, Artboard lists, etc, to tell the Scripting engine what
+		// type to convert to.
+		return Object.class;
+	}
 }
