@@ -918,6 +918,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\..\src\native\jni\com_scriptographer_ai_ArtboardList.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\..\src\native\jni\com_scriptographer_ai_CharacterStyle.cpp"
 						>
 					</File>
@@ -979,10 +983,6 @@
 					</File>
 					<File
 						RelativePath="..\..\src\native\jni\com_scriptographer_ai_Item.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ai_ItemList.cpp"
 						>
 					</File>
 					<File

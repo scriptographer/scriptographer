@@ -86,7 +86,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_TextEditItem_getMaxLength(JNIE
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextEditItem_setSelection(JNIEnv *env, jobject obj, jint start, jint end) {
 	try {
 		ADMItemRef item = gEngine->getItemHandle(env, obj);
-#if defined(MAC_ENV) and kPluginInterfaceVersion >= kAI14
+#if defined(MAC_ENV) && kPluginInterfaceVersion >= kAI14
 		// On Illustrator 14 on Mac, the scrolling only seems to work if update is called on the dialog before.
 		ADMDialogRef dialog = sADMItem->GetDialog(item);
 		sADMDialog->Update(dialog);
