@@ -679,6 +679,9 @@ public class Item extends DocumentObject implements Style {
 		getStyle().setStrokeWidth(width);
 	}
 
+	/**
+	 * @copy PathStyle#getStrokeCap()
+	 */
 	public StrokeCap getStrokeCap() {
 		return getStyle().getStrokeCap();
 	}
@@ -687,6 +690,9 @@ public class Item extends DocumentObject implements Style {
 		getStyle().setStrokeCap(cap);
 	}
 
+	/**
+	 * @copy PathStyle#getStrokeJoin()
+	 */
 	public StrokeJoin getStrokeJoin() {
 		return getStyle().getStrokeJoin();
 	}
@@ -695,6 +701,9 @@ public class Item extends DocumentObject implements Style {
 		getStyle().setStrokeJoin(join);
 	}
 
+	/**
+	 * @copy PathStyle#getDashOffset()
+	 */
 	public Float getDashOffset() {
 		return getStyle().getDashOffset();
 	}
@@ -702,7 +711,10 @@ public class Item extends DocumentObject implements Style {
 	public void setDashOffset(Float offset) {
 		getStyle().setDashOffset(offset);
 	}
-	
+
+	/**
+	 * @copy PathStyle#getDashArray()
+	 */
 	public float[] getDashArray() {
 		return getStyle().getDashArray();
 	}
@@ -711,6 +723,9 @@ public class Item extends DocumentObject implements Style {
 		getStyle().setDashArray(array);
 	}
 	
+	/**
+	 * @copy PathStyle#getMiterLimit()
+	 */
 	public Float getMiterLimit() {
 		return getStyle().getMiterLimit();
 	}
@@ -719,6 +734,9 @@ public class Item extends DocumentObject implements Style {
 		getStyle().setMiterLimit(limit);
 	}
 
+	/**
+	 * @copy PathStyle#getStrokeOverprint()
+	 */
 	public Boolean getStrokeOverprint() {
 		return getStyle().getStrokeOverprint();
 	}
@@ -731,6 +749,9 @@ public class Item extends DocumentObject implements Style {
 	 * Fill Style
 	 */
 
+	/**
+	 * @copy PathStyle#getFillColor()
+	 */
 	public Color getFillColor() {
 		return getStyle().getFillColor();
 	}
@@ -743,6 +764,9 @@ public class Item extends DocumentObject implements Style {
 		getStyle().setFillColor(color);
 	}
 
+	/**
+	 * @copy PathStyle#getFillOverprint()
+	 */
 	public Boolean getFillOverprint() {
 		return getStyle().getFillOverprint();
 	}
@@ -754,6 +778,9 @@ public class Item extends DocumentObject implements Style {
 	/*
 	 * Path Style
 	 */
+	/**
+	 * @copy PathStyle#getWindingRule()
+	 */
 	public WindingRule getWindingRule() {
 		return getStyle().getWindingRule();
 	}
@@ -762,6 +789,9 @@ public class Item extends DocumentObject implements Style {
 		getStyle().setWindingRule(rule);
 	}
 
+	/**
+	 * @copy PathStyle#getResolution()
+	 */
 	public Float getResolution() {
 		return getStyle().getResolution();
 	}
