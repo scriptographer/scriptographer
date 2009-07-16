@@ -9,7 +9,6 @@
 <link rel="stylesheet" href="../resources/style.css" type="text/css">
 <script src="../resources/scripts.js" type="text/javascript"></script>
 </head>
-<html>
 <body class="documentation">
 <div class="documentation-packages">
 <%= settings.docTitle | heading 1 %>
