@@ -76,6 +76,23 @@ public abstract class TextItem extends Item {
 		nativeSetOrientation(orientation.value);
 	}
 
+	/**
+	 * The padding within the text area.
+	 */
+	public native float getSpacing();
+
+	public native void setSpacing(float spacing);
+
+	/**
+	 * Specifies whether to use optical alignment within the text frame. Optical
+	 * alignment hangs punctuation outside the edges of a text frame.
+	 * 
+	 * @return {@true if the text frame uses optical alignment}
+	 */
+	public native boolean getOpticalAlignment();
+
+	public native void setOpticalAlignment(boolean active);
+	
 	// TODO:
 	 // AIAPI AIErr (*DoTextFrameHit)	( const AIHitRef hitRef, TextRangeRef*	textRange );
 
@@ -85,7 +102,8 @@ public abstract class TextItem extends Item {
 	 * Converts the text in the text frame to outlines. Unlike the Illustrator
 	 * 'Create Outlines' action, this won't remove the text frame.
 	 * 
-	 * @return A new item containing the outlined text.
+	 * @return a {@link Group} item containing the outlined text as {@link Path}
+	 *         and {@link CompoundPath} items.
 	 */
 	public Item createOutline() {
 		// Apply changes and reflow the layout before creating outlines
@@ -100,13 +118,20 @@ public abstract class TextItem extends Item {
 
 	/**
 	 * Links the supplied text frame to this one.
+	 * 
 	 * @param next The text frame that will be linked
 	 * @return {@true if the text frame was linked}
+	 * {@grouptitle Text Frame Linking}
 	 */
 	public native boolean link(TextItem next);
 
-	private native boolean nativeUnlink(boolean before, boolean after);
+	/**
+	 * Returns {@true if the text frame is linked}
+	 */
+	public native boolean isLinked();
 	
+	private native boolean nativeUnlink(boolean before, boolean after);
+
 	/**
 	 * Unlinks the text frame from its current story.
 	 * 
@@ -137,12 +162,8 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * Returns {@true if the text frame is linked}
-	 */
-	public native boolean isLinked();
-
-	/**
 	 * Returns the index of the text frame in its {@link TextItem#getStory()}.
+	 * {@grouptitle Hierarchy}
 	 */
 	public native int getIndex();
 
@@ -190,30 +211,27 @@ public abstract class TextItem extends Item {
 	}
 
 	// ATE
+
+	/**
+	 * The text contents of the text item.
+	 * {@grouptitle Range Properties}
+	 */
+	public String getContent() {
+		return getRange().getContent();
+	}
+
+	public void setContent(String text) {
+		getRange().setContent(text);
+	}
+	
 	/**
 	 * @jshide
 	 */
 	public native int nativeGetRange(boolean includeOverflow);
 
 	/**
-	 * In case there's an overflow in the text, this only returns a range
-	 * over the visible characters, while {@link TextItem#getRange()} returns one over the
-	 * whole text.
-	 */
-	public TextRange getVisibleRange() {
-		// once a range object is created, always return the same reference
-		// and swap handles instead. like this references in JS remain...
-		if (visibleRange == null) {
-			visibleRange = new TextRange(nativeGetRange(false), document);
-		} else if (visibleRange.version != CommitManager.version) {
-			visibleRange.changeHandle(nativeGetRange(false));
-		}
-		return visibleRange;
-	}
-
-	/**
-	 * Returns a text range for all the characters, even the invisible ones outside
-	 * the container.
+	 * Returns a text range for all the characters, even the invisible ones
+	 * outside the container.
 	 */
 	public TextRange getRange() {
 		// once a range object is created, always return the same reference
@@ -227,34 +245,45 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * Returns the index of the first visible character of the text frame.
-	 * (this is the equivalent of calling TextFrame.visibleRange.start)
+	 * In case there's an overflow in the text, this only returns a range over
+	 * the visible characters, while {@link TextItem#getRange()} returns one
+	 * over the whole text.
+	 */
+	public TextRange getVisibleRange() {
+		// once a range object is created, always return the same reference
+		// and swap handles instead. like this references in JS remain...
+		if (visibleRange == null) {
+			visibleRange = new TextRange(nativeGetRange(false), document);
+		} else if (visibleRange.version != CommitManager.version) {
+			visibleRange.changeHandle(nativeGetRange(false));
+		}
+		return visibleRange;
+	}
+
+	/**
+	 * Returns the selected text of the text frame as a text range.
+	 */
+	public native TextRange getSelection();
+	
+	/**
+	 * Returns the index of the first visible character of the text frame. (this
+	 * is the equivalent of calling TextFrame.visibleRange.start)
 	 */
 	public int getStart() {
 		return getVisibleRange().getStart();
 	}
 
 	/**
-	 * Returns the index of the last visible character of the text frame.
-	 * (this is the equivalent of calling TextFrame.visibleRange.end)
+	 * Returns the index of the last visible character of the text frame. (this
+	 * is the equivalent of calling TextFrame.visibleRange.end)
 	 */
 	public int getEnd() {
 		return getVisibleRange().getEnd();
 	}
 
 	/**
-	 * The text contents of the text frame.
-	 */
-	public String getContent() {
-		return getRange().getContent();
-	}
-
-	public void setContent(String text) {
-		getRange().setContent(text);
-	}
-
-	/**
 	 * The character style of the text frame.
+	 * {@grouptitle Style Properties}
 	 */
 	public CharacterStyle getCharacterStyle() {
 		return getRange().getCharacterStyle();
@@ -275,11 +304,6 @@ public abstract class TextItem extends Item {
 		getRange().setParagraphStyle(style);
 	}
 
-	/**
-	 * Returns the selected text of the text frame as a text range.
-	 */
-	public native TextRange getSelection();
-
 	public native boolean equals(Object obj);
 
 	// TODO:
@@ -292,19 +316,4 @@ public abstract class TextItem extends Item {
 	API for that.  In Illustrator case, you can use AIArtSuite to set the selection.
 	*/
 	//	ATEErr (*GetSelected) ( TextFrameRef textframe, bool* ret);
-
-	/**
-	 * The padding within the text area.
-	 */
-	public native float getSpacing();
-	public native void setSpacing(float spacing);
-
-	/**
-	 * Specifies whether to use optical alignment within the text frame. Optical
-	 * alignment hangs punctuation outside the edges of a text frame.
-	 * 
-	 * @return {@true if the text frame uses optical alignment}
-	 */
-	public native boolean getOpticalAlignment();
-	public native void setOpticalAlignment(boolean active);
 }
