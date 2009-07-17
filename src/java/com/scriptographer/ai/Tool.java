@@ -148,8 +148,21 @@ public class Tool extends NativeObject {
 	 * drawing tablet)
 	 */
 	public native boolean hasPressure();
-	
-	// Interval time in milliseconds
+
+	/**
+	 * Sets the fixed time delay between each call to the {@link #onMouseDrag}
+	 * event. Setting this to an interval means the {@link #onMouseDrag} event
+	 * is called repeatedly after the initial {@link #onMouseDown} until the
+	 * user releases the mouse.
+	 * 
+	 * Sample code: <code>
+	 * // Fire the onMouseDrag event once a second,
+	 * // while the mouse button is down
+	 * tool.eventInterval = 1000;
+	 * </code>
+	 * 
+	 * @return the interval time in milliseconds
+	 */
 	public native int getEventInterval();
 	
 	public native void setEventInterval(int interval);
@@ -186,9 +199,9 @@ public class Tool extends NativeObject {
 	private Callable onMouseDown;
 
 	/**
-	 * The function to be called when the mouse button is pushed down. The function
-	 * receives a {@link MouseEvent} object which contains information about the
-	 * mouse event.
+	 * The function to be called when the mouse button is pushed down. The
+	 * function receives a {@link MouseEvent} object which contains information
+	 * about the mouse event.
 	 * 
 	 * Sample code:
 	 * <code>
@@ -216,14 +229,17 @@ public class Tool extends NativeObject {
 	private Callable onMouseDrag;
 
 	/**
-	 * The function to be called while the mouse is being dragged. The function
-	 * receives a {@link MouseEvent} object which contains information about the
-	 * mouse event.
+	 * The function to be called when the mouse position changes while the mouse
+	 * is being dragged. The function receives a {@link MouseEvent} object which
+	 * contains information about the mouse event.
+	 * 
+	 * This function can also be called periodically while the mouse doesn't
+	 * move by setting the {@link getEventInterval()}
 	 * 
 	 * Sample code:
 	 * <code>
 	 * function onMouseDrag(event) {
-	 * 	// the position of the mouse in document coordinates:
+	 * 	// the position of the mouse in document coordinates
 	 * 	print(event.point);
 	 * }
 	 * </code>
