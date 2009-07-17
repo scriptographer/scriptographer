@@ -183,8 +183,8 @@ public class Path extends PathItem {
 	public native double getLength();
 
 	/**
-	 * The area of the path. Self-intersecting paths can contain sub-areas that
-	 * cancel each other out.
+	 * The area of the path in square points. Self-intersecting paths can
+	 * contain sub-areas that cancel each other out.
 	 */
 	public native float getArea();
 
@@ -213,6 +213,23 @@ public class Path extends PathItem {
 	private native int nativePointsToCurves(float tolerance, float threshold,
 			int cornerRadius, float scale);
 
+	/**
+	 * Approximates the path by converting the points in the path to curves. It
+	 * only uses the {@link Segment#getPoint()} property of each segment and
+	 * ignores the {@link Segment#getHandleIn()} and
+	 * {@link Segment#getHandleOut()} properties.
+	 * 
+	 * @param tolerance a smaller tolerance gives a more exact fit and more
+	 *        segments, a larger tolerance gives a less exact fit and fewer
+	 *        segments. {@default 2.5}
+	 * @param threshold {@default 1}
+	 * @param cornerRadius if, at any point in the fitted curve, the radius of
+	 *        an inscribed circle that has the same tangent and curvature is
+	 *        less than the cornerRadius, a corner point is generated there;
+	 *        otherwise the path is smooth at that point. {@default 1}
+	 * @param scale the scale factor by which the points and other input units
+	 *        (such as the corner radius) are multiplied {@default 1}
+	 */
 	public void pointsToCurves(float tolerance, float threshold,
 			int cornerRadius, float scale) {
 		updateSize(nativePointsToCurves(tolerance, threshold, cornerRadius,
@@ -239,6 +256,14 @@ public class Path extends PathItem {
 	private native int nativeCurvesToPoints(float maxPointDistance,
 			float flatness);
 
+	/**
+	 * Converts the curves in the path to points.
+	 * 
+	 * @param maxPointDistance the maximum distance between the generated points
+	 *        {@default 1000}
+	 * @param flatness a value which controls the exactness of the algorithm
+	 *        {@default 0.1}
+	 */
 	public void curvesToPoints(double maxPointDistance, double flatness) {
 		int size = nativeCurvesToPoints((float) maxPointDistance, (float) flatness);
 		updateSize(size);
@@ -254,6 +279,12 @@ public class Path extends PathItem {
 
 	private native void nativeReduceSegments(float flatness);
 
+	/**
+	 * Reduces the amount of segments in the path.
+	 * 
+	 * @param flatness a value which controls the exactness of the algorithm
+	 *        {@default 0.1}
+	 */
 	public void reduceSegments(double flatness) {
 		nativeReduceSegments((float) flatness);
 		updateSize(-1);
