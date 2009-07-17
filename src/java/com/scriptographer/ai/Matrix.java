@@ -45,11 +45,11 @@ import java.awt.geom.Point2D;
  * {@code (x, y),} the transformation {@code (x', y')} can be
  * found by:
  * 
- * <code>
+ * <pre>
  * [ x']   [ scaleX shearX translateX ] [ x ]   [ scaleX * x + shearX * y + translateX ]
  * [ y'] = [ shearY scaleY translateY ] [ y ] = [ shearY * x + scaleY * y + translateY ]
  * [ 1 ]   [ 0      0      1          ] [ 1 ]   [ 1                                    ]
- * </code>
+ * </pre>
  * 
  * The bottom row of the matrix is constant, so a transform can be uniquely
  * represented by
