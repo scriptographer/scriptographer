@@ -41,13 +41,39 @@ public class PlacedSymbol extends Item {
 	}
 
 	private static native int nativeCreate(int symbolHandle, Matrix matrix);
-
-	public PlacedSymbol(Symbol symbol, Matrix matrix) {
-		super(nativeCreate(symbol.handle, matrix));
-	}
 	
+	/**
+	 * Creates a new PlacedSymbol Item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var symbol = document.symbols['Rocket'];
+	 * var placedSymbol = new PlacedSymbol(symbol, new Point(100, 100));
+	 * </code>
+	 * 
+	 * @param symbol the symbol to place
+	 * @param pt the center point of the placed symbol
+	 */
 	public PlacedSymbol(Symbol symbol, Point pt) {
 		this(symbol, new Matrix().translate(pt));
+	}
+
+	/**
+	 * Creates a new PlacedSymbol Item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var symbol = document.symbols['Rocket'];
+	 * var rotation = (45).toRadians();
+	 * var matrix = new Matrix().translate(100, 100).rotate(rotation);
+	 * var placedSymbol = new PlacedSymbol(symbol, matrix);
+	 * </code>
+	 * 
+	 * @param symbol the symbol to place
+	 * @param matrix
+	 */
+	public PlacedSymbol(Symbol symbol, Matrix matrix) {
+		super(nativeCreate(symbol.handle, matrix));
 	}
 	
 	public PlacedSymbol(Symbol symbol) {
@@ -56,6 +82,9 @@ public class PlacedSymbol extends Item {
 	
 	private native int nativeGetSymbol();
 	
+	/**
+	 * The symbol contained within the placed symbol.
+	 */
 	public Symbol getSymbol() {
 		return Symbol.wrapHandle(nativeGetSymbol(), document);
 	}
