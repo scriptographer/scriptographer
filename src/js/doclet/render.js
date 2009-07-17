@@ -73,10 +73,6 @@ function renderTags(param) {
 	str = str.replace(/<code>[ \t]*([^\n\r]*?)[ \t]*<\/code>/g, function(match, content) {
 		return '<tt>' + content + '</tt>';
 	});
-	// Repace pre with code
-	str = str.replace(/<pre>([\u0000-\uffff]*)<\/pre>/g, function(match, content) {
-		return '<code>' + content + '</code>';
-	});
 	// Put code tags on the same line as the content, as white-space: pre is set:
 	str = str.replace(/<code>\s*([\u0000-\uffff]*?)\s*<\/code>/g, function(match, content) {
 		// Filter out the first white space at the beginning of each line, since
