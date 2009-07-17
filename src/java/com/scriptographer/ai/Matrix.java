@@ -154,19 +154,19 @@ public class Matrix {
 	}
 
 	/**
-	 * Returns a copy of this {@code Matrix} object.
+	 * Returns a copy of the {@code Matrix} object.
 	 * 
-	 * @return a copy of this {@code Matrix} object.
+	 * @return a copy of the {@code Matrix} object.
 	 */
 	public Object clone() {
 		return new Matrix(this);
 	}
 
 	/**
-	 * Creates the inverse transformation of the object. If the object is not
-	 * invertible (in which case {@link #isSingular()} returns true), invert() returns
-	 * null, otherwise the object itself is modified and a reference to it is
-	 * returned.
+	 * Creates the inverse transformation of the matrix. If the matrix is not
+	 * invertible (in which case {@link #isSingular()} returns true), invert()
+	 * returns null, otherwise the matrix itself is modified and a reference to
+	 * it is returned.
 	 * 
 	 * @return the inverted matrix, or null, if the matrix is singular
 	 */
@@ -181,28 +181,6 @@ public class Matrix {
 
 	public boolean equals(Object obj) {
 		return transform.equals(((Matrix) obj).transform);
-	}
-	
-	/**
-	 * Checks whether the matrix is an identity. Identity matrices are equal to
-	 * their inversion.
-	 * 
-	 * @return true if the matrix is an identity, false otherwise
-	 */
-	public boolean isIdentity() {
-		return transform.isIdentity();
-	}
-
-	/**
-	 * Checks whether the matrix is singular or not. Singular matrices cannot be
-	 * inverted.
-	 * 
-	 * @return true if the matrix is singular, false otherwise
-	 */
-	public boolean isSingular() {
-		// There seems to be no other way to find out if we can 
-		// invert than actually trying:
-		return invert() == null;
 	}
 
 	public double getScaleX() {
@@ -260,22 +238,61 @@ public class Matrix {
 	}
 
 	/**
+	 * @jshide
+	 */
+	public Point transform(double x, double y) {
+		// A bit of converting from Point2D <-> Point
+		return new Point(transform.transform(new Point2D.Double(x, y),
+				new Point2D.Double()));
+	}
+
+	public Point transform(Point point) {
+		return transform(point.x, point.y);
+	}
+	
+	/**
 	 * Concatenates the matrix with a translation matrix that translates by
-	 * {@code (x, y)}. The object itself is modified and a reference to
-	 * it is returned.
+	 * {@code (x, y)}. The object itself is modified and a reference to it is
+	 * returned.
 	 * 
-	 * @param x,&nbsp;y the coordinates of the translation
+	 * @param x the x coordinate of the translation
+	 * @param y the y coordinate of the translation
 	 * @return the translated matrix
+	 * {@grouptitle Matrix Concatenation}
 	 */
 	public Matrix translate(double x, double y) {
 		transform.translate(x, y);
 		return this;
 	}
 
+	/**
+	 * Concatenates the matrix with a translation matrix that translates by the
+	 * specified point. The object itself is modified and a reference to it is
+	 * returned.
+	 * 
+	 * @param pt the coordinates of the translation
+	 * @return the translated matrix
+	 */
 	public Matrix translate(Point pt) {
 		return translate(
 				pt != null ? pt.getX() : 0,
 				pt != null ? pt.getY() : 0);
+	}
+
+	/**
+	 * Concatenates the matrix with a scaling matrix that scales by the
+	 * specified {@code (scaleX, scaleY)} factors. The object itself is modified
+	 * and a reference to it is returned.
+	 * 
+	 * @param scaleX
+	 * @param scaleY
+	 * @param center
+	 * @return a reference to the matrix
+	 */
+	public Matrix scale(double scaleX, double scaleY, Point center) {
+		translate(center);
+		scale(scaleX, scaleY);
+		return translate(center.negate());
 	}
 
 	public Matrix scale(double scaleX, double scaleY) {
@@ -283,18 +300,21 @@ public class Matrix {
 		return this;
 	}
 
-	public Matrix scale(double scaleX, double scaleY, Point center) {
-		translate(center);
-		scale(scaleX, scaleY);
-		return translate(center.negate());
+	/**
+	 * Concatenates the matrix with a scaling matrix that scales by the
+	 * specified {@code scale} factor. The object itself is modified and a
+	 * reference to it is returned.
+	 * 
+	 * @param scale
+	 * @param center
+	 * @return a reference to the matrix
+	 */
+	public Matrix scale(double scale, Point center) {
+		return scale(scale, scale, center);
 	}
 
 	public Matrix scale(double scale) {
 		return scale(scale, scale);
-	}
-
-	public Matrix scale(double scale, Point center) {
-		return scale(scale, scale, center);
 	}
 
 	public Matrix rotate(double angle) {
@@ -302,6 +322,15 @@ public class Matrix {
 		return this;
 	}
 
+	/**
+	 * Concatenates the matrix with a matrix that rotates coordinates by a
+	 * specified angle (and around a center point, if specified). The matrix
+	 * itself is modified and a reference to it is returned.
+	 * 
+	 * @param angle the angle to rotate by in radians
+	 * @param center the center point around which to rotate
+	 * @return a reference to the matrix
+	 */
 	public Matrix rotate(double angle, Point center) {
 		transform.rotate(angle,
 				center != null ? center.getX() : 0,
@@ -309,46 +338,83 @@ public class Matrix {
 		return this;
 	}
 
+	/**
+	 * Concatenates the matrix with a shearing matrix. The object itself is
+	 * modified and a reference to it is returned.
+	 * 
+	 * @param shearX the horizontal shearing
+	 * @param shearY the vertical shearing
+	 * @return a reference to the matrix
+	 */
 	public Matrix shear(double shearX, double shearY) {
 		transform.shear(shearX, shearY);
 		return this;
 	}
 
+	/**
+	 * Concatenates the specified matrix to the matrix in the most commonly
+	 * useful way to provide a new user space that is mapped to the former user
+	 * space by the specified matrix. The matrix itself is modified and a
+	 * reference to it is returned.
+	 * 
+	 * @param matrix
+	 * @return a reference to the matrix
+	 */
 	public Matrix concatenate(Matrix matrix) {
 		transform.concatenate(matrix.toAffineTransform());
 		return this;
 	}
 
+	/**
+	 * Concatenates the specified matrix to the matrix in a less commonly used
+	 * way such that the specified matrix modifies the coordinate transformation
+	 * relative to the absolute pixel space rather than relative to the existing
+	 * user space. The object itself is modified and a reference to it is
+	 * returned.
+	 * 
+	 * @param matrix
+	 * @return a reference to the matrix
+	 */
 	public Matrix preConcatenate(Matrix matrix) {
 		transform.preConcatenate(matrix.toAffineTransform());
 		return this;
 	}
 
-	/**
-	 * @jshide
-	 */
-	public Point transform(double x, double y) {
-		// A bit of converting from Point2D <-> Point
-		return new Point(transform.transform(new Point2D.Double(x, y), new Point2D.Double()));
-	}
-
-	public Point transform(Point point) {
-		return transform(point.x, point.y);
-	}
-
 	// Round values to sane precision for printing
-    // Note that Math.sin(Math.PI) has an error of about 10^-16
-    private static double round(double value) {
-    	return Math.rint(value * 1E15) / 1E15;
-    }
+	// Note that Math.sin(Math.PI) has an error of about 10^-16
+	private static double round(double value) {
+		return Math.rint(value * 1E15) / 1E15;
+	}
 
-    public String toString() {
-		return "[["
-			+ round(transform.getScaleX()) + ", "
-			+ round(transform.getShearX()) + ", "
-			+ round(transform.getTranslateX()) + "], ["
-			+ round(transform.getShearY()) + ", "
-			+ round(transform.getScaleY()) + ", "
-			+ round(transform.getTranslateY()) + "]]";
-    }
+	public String toString() {
+		return "[[" + round(transform.getScaleX()) + ", "
+				+ round(transform.getShearX()) + ", "
+				+ round(transform.getTranslateX()) + "], ["
+				+ round(transform.getShearY()) + ", "
+				+ round(transform.getScaleY()) + ", "
+				+ round(transform.getTranslateY()) + "]]";
+	}
+	
+	/**
+	 * Checks whether the matrix is an identity. Identity matrices are equal to
+	 * their inversion.
+	 * 
+	 * @return true if the matrix is an identity, false otherwise
+	 * {@grouptitle Tests}
+	 */
+	public boolean isIdentity() {
+		return transform.isIdentity();
+	}
+
+	/**
+	 * Checks whether the matrix is singular or not. Singular matrices cannot be
+	 * inverted.
+	 * 
+	 * @return true if the matrix is singular, false otherwise
+	 */
+	public boolean isSingular() {
+		// There seems to be no other way to find out if we can
+		// invert than actually trying:
+		return invert() == null;
+	}
 }
