@@ -342,8 +342,8 @@ public class Document extends NativeObject {
 	 * 
 	 * Sample code:
 	 * <code>
-	 * document.data['shoppingList'] = ['oranges', 'apples'];
-	 * print(document.data['shoppingList']); // 'oranges', 'apples'
+	 * document.data['remember'] = 'to pick up some flowers';
+	 * print(document.data['remember']); // 'to pick up some flowers'
 	 * </code>
 	 * 
 	 */
@@ -770,6 +770,17 @@ public class Document extends NativeObject {
 	}
 
 	/**
+	 * Creates a Path Item with two anchor points forming a line.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path.Line(new Point(20, 20, new Point(100, 100));
+	 * </code>
+	 * 
+	 * @param pt1 the first anchor point of the path
+	 * @param pt2 the second anchor point of the path
+	 * @return the newly created path
+	 * 
 	 * @jshide
 	 */
 	public Path createLine(Point pt1, Point pt2) {
@@ -780,6 +791,19 @@ public class Document extends NativeObject {
 	}
 
 	/**
+	 * Creates a Path Item with two anchor points forming a line.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path.Line(20, 20, 100, 100);
+	 * </code>
+	 * 
+	 * @param x1 the x position of the first point
+	 * @param y1 the y position of the first point
+	 * @param x2 the x position of the second point
+	 * @param y2 the y position of the second point
+	 * @return the newly created path
+	 * 
 	 * @jshide
 	 */
 	public Path createLine(double x1, double y1, double x2, double y2) {
@@ -789,7 +813,13 @@ public class Document extends NativeObject {
 	private native Path nativeCreateRectangle(Rectangle rect);
 
 	/**
-	 * Creates a rectangular path
+	 * Creates a rectangular shaped Path Item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var rectangle = new Rectangle(new Point(100, 100), new Size(100, 100));
+	 * var path = new Path.Rectangle(rectangle);
+	 * </code>
 	 * 
 	 * @param rect
 	 * @return the newly created path
@@ -802,6 +832,13 @@ public class Document extends NativeObject {
 	}
 
 	/**
+	 * Creates a rectangular shaped Path Item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path.Rectangle(100, 100, 10, 10);
+	 * </code>
+	 * 
 	 * @jshide
 	 */
 	public Path createRectangle(double x, double y, double width, double height) {
@@ -809,6 +846,17 @@ public class Document extends NativeObject {
 	}
 
 	/**
+	 * Creates a rectangle shaped Path Item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path.Rectangle(new Point(100, 100), new Size(10, 10));
+	 * </code>
+	 * 
+	 * @param point the bottom left point of the rectangle
+	 * @param size the size of the rectangle
+	 * @return the newly created path
+	 * 
 	 * @jshide
 	 */
 	public Path createRectangle(Point point, Size size) {
@@ -818,7 +866,13 @@ public class Document extends NativeObject {
 	private native Path nativeCreateRoundRectangle(Rectangle rect, Size size);
 
 	/**
-	 * Creates a rectangular path with rounded corners
+	 * Creates a rectangular Path Item with rounded corners.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var rectangle = new Rectangle(new Point(100, 100), new Size(100, 100));
+	 * var path = new Path.RoundRectangle(rectangle, new Size(30, 30));
+	 * </code>
 	 * 
 	 * @param rect
 	 * @param size the size of the rounded corners
@@ -832,6 +886,21 @@ public class Document extends NativeObject {
 	}
 
 	/**
+	 * Creates a rectangular Path Item with rounded corners.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path.RoundRectangle(50, 50, 100, 100, 30, 30);
+	 * </code>
+	 * 
+	 * @param x the left position of the rectangle
+	 * @param y the bottom position of the rectangle
+	 * @param width the width of the rectangle
+	 * @param height the height of the rectangle
+	 * @param hor the horizontal size of the rounder corners
+	 * @param ver the vertical size of the rounded corners
+	 * @return the newly created path
+	 * 
 	 * @jshide
 	 */
 	public Path createRoundRectangle(double x, double y, double width,
@@ -843,12 +912,18 @@ public class Document extends NativeObject {
 	private native Path nativeCreateOval(Rectangle rect, boolean circumscribed);
 
 	/**
-	 * Creates an oval shaped path
+	 * Creates an oval shaped Path Item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var rectangle = new Rectangle(new Point(100, 100), new Size(150, 100));
+	 * var path = new Path.Oval(rectangle);
+	 * </code>
 	 * 
 	 * @param rect
 	 * @param circumscribed if this is set to true the oval shaped path will be
 	 *        created so the rectangle fits into it. If it's set to false the
-	 *        oval path will fit within the rectangle.
+	 *        oval path will fit within the rectangle. {@default false}
 	 * @return the newly created path
 	 * 
 	 * @jshide
@@ -859,11 +934,6 @@ public class Document extends NativeObject {
 	}
 
 	/**
-	 * Creates an oval shaped path
-	 * 
-	 * @param rect
-	 * @return the newly created path
-	 * 
 	 * @jshide
 	 */
 	public Path createOval(Rectangle rect) {
@@ -871,6 +941,23 @@ public class Document extends NativeObject {
 	}
 
 	/**
+	 * Creates an oval shaped Path Item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var rectangle = new Rectangle(100, 100, 150, 100);
+	 * var path = new Path.Oval(rectangle);
+	 * </code>
+	 * 
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 * @param circumscribed if this is set to true the oval shaped path will be
+	 *        created so the rectangle fits into it. If it's set to false the
+	 *        oval path will fit within the rectangle. {@default false}
+	 * @return the newly created path
+	 * 
 	 * @jshide
 	 */
 	public Path createOval(double x, double y, double width, double height,
@@ -886,7 +973,16 @@ public class Document extends NativeObject {
 	}
 
 	/**
-	 * @jshide
+	 * Creates a circle shaped Path Item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path.Circle(new Point(100, 100), 50);
+	 * </code>
+	 * 
+	 * @param center the center point of the circle
+	 * @param radius the radius of the circle
+	 * @return the newly created path
 	 */
 	public Path createCircle(Point center, float radius) {
 		return createOval(new Rectangle(center.subtract(radius, radius), center
@@ -894,6 +990,19 @@ public class Document extends NativeObject {
 	}
 
 	/**
+	 * Creates a circle shaped Path Item.
+	 * 
+	 * Sample code:
+	 * 
+	 * <code>
+	 * var path = new Path.Circle(100, 100, 50);
+	 * </code>
+	 * 
+	 * @param x the horizontal center position of the circle
+	 * @param y the vertical center position of the circle
+	 * @param radius the radius of the circle
+	 * @return the newly created path
+	 * 
 	 * @jshide
 	 */
 	public Path createCircle(float x, float y, float radius) {
@@ -904,11 +1013,20 @@ public class Document extends NativeObject {
 			float radius);
 
 	/**
-	 * Creates a regular polygon shaped path
+	 * Creates a regular polygon shaped Path Item.
 	 * 
+	 * Sample code:
+	 * <code>
+	 * // Create a triangle shaped path
+	 * var triangle = new Path.RegularPolygon(new Point(100, 100), 3, 50);
+	 * 
+	 * // Create a decahedron shaped path
+	 * var decahedron = new Path.RegularPolygon(new Point(200, 100), 10, 50);
+	 * </code>
+	 * 
+	 * @param center the center point of the polygon
 	 * @param numSides the number of sides of the polygon
-	 * @param center
-	 * @param radius
+	 * @param radius the radius of the polygon
 	 * @return the newly created path
 	 * 
 	 * @jshide
@@ -922,14 +1040,23 @@ public class Document extends NativeObject {
 			float radius1, float radius2);
 
 	/**
-	 * Created a star shaped path
+	 * Creates a star shaped Path Item.
 	 * 
 	 * The largest of {@code radius1} and {@code radius2} will be the outer
 	 * radius of the star. The smallest of radius1 and radius2 will be the inner
 	 * radius.
 	 * 
+	 * Sample code:
+	 * <code>
+	 * var center = new Point(100, 100);
+	 * var points = 6;
+	 * var innerRadius = 20;
+	 * var outerRadius = 50;
+	 * var path = new Path.Star(center, points, innerRadius, outerRadius);
+	 * </code>
+	 * 
+	 * @param center the center point of the star
 	 * @param numPoints the number of points of the star
-	 * @param center
 	 * @param radius1
 	 * @param radius2
 	 * @return the newly created path
@@ -947,7 +1074,17 @@ public class Document extends NativeObject {
 			boolean clockwiseFromOutside);
 
 	/**
-	 * Creates a spiral shaped path
+	 * Creates a spiral shaped Path Item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var firstArcCenter = new Point(100, 100);
+	 * var start = new Point(50, 50);
+	 * var decayPercent = 90;
+	 * var numQuarterTurns = 25;
+	 * 
+	 * var path = new Path.Spiral(firstArcCenter, start, decayPercent, numQuarterTurns, true);
+	 * </code>
 	 * 
 	 * @param firstArcCenter the center point of the first arc
 	 * @param start the starting point of the spiral

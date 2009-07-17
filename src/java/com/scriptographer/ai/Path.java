@@ -73,9 +73,6 @@ public class Path extends PathItem {
 		super(type);
 	}
 
-	/**
-	 * Creates a path item
-	 */
 	public Path() {
 		super(TYPE_PATH);
 	}
@@ -85,6 +82,25 @@ public class Path extends PathItem {
 		setSegments(segments);
 	}
 
+	/**
+	 * Creates a new Path Item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var firstSegment = new Segment(30, 30);
+	 * var secondSegment = new Segment(100, 100);
+	 * var path = new Path([firstSegment, secondSegment]);
+	 * </code>
+	 * 
+	 * <code>
+	 * var path = new Path();
+	 * path.moveTo(30, 30);
+	 * path.lineTo(100, 100);
+	 * </code>
+	 * 
+	 * @param segments the segments to be added to the {@link #getSegments()} array
+	 * @return the newly created path
+	 */
 	public Path(Segment[] segments) {
 		this(Lists.asList(segments));
 	}
@@ -113,6 +129,9 @@ public class Path extends PathItem {
 		return super.clone();
 	}
 
+	/**
+	 * The segments contained within the path.
+	 */
 	public SegmentList getSegments() {
 		if (segments == null)
 			segments = new SegmentList(this);
@@ -134,6 +153,9 @@ public class Path extends PathItem {
 		setSegments(Lists.asList(segments));
 	}
 
+	/**
+	 * The curves contained within the path.
+	 */
 	public CurveList getCurves() {
 		if (curves == null)
 			curves = new CurveList(this, getSegments());
