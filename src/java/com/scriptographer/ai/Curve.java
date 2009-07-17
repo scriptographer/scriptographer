@@ -73,6 +73,9 @@ public class Curve {
 		this(pt, pt);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public Curve(double p1x, double p1y, double h1x, double h1y,
 			double h2x, double h2y, double p2x, double p2y) {
 		segment1 = new Segment(p1x, p1y, 0, 0, h1x, h1y);
@@ -147,6 +150,9 @@ public class Curve {
 		return new Curve(segment1, segment2);
 	}
 	
+	/**
+	 * The path that the curve belongs to.
+	 */
 	public Path getPath() {
 		return segments.path;
 	}
@@ -173,10 +179,16 @@ public class Curve {
 		}
 	}
 
+	/**
+	 * The index of the curve in the {@link Path#getCurves()} array.
+	 */
 	public int getIndex() {
 		return index1;
 	}
 
+	/**
+	 * The first anchor point of the curve.
+	 */
 	public SegmentPoint getPoint1() {
 		updateSegments();
 		return segment1.point;
@@ -195,42 +207,9 @@ public class Curve {
 		segment1.point.set(x, y);
 	}
 
-	public SegmentPoint getHandle1() {
-		updateSegments();
-		return segment1.handleOut;
-	}
-
-	public void setHandle1(Point pt) {
-		updateSegments();
-		segment1.handleOut.set(pt);
-	}
-
 	/**
-	 * @jshide
+	 * The second anchor point of the curve.
 	 */
-	public void setHandle1(double x, double y) {
-		updateSegments();
-		segment1.handleOut.set(x, y);
-	}
-
-	public SegmentPoint getHandle2() {
-		updateSegments();
-		return segment2.handleIn;
-	}
-
-	public void setHandle2(Point pt) {
-		updateSegments();
-		segment2.handleIn.set(pt);
-	}
-
-	/**
-	 * @jshide
-	 */
-	public void setHandle2(double x, double y) {
-		updateSegments();
-		segment2.handleIn.set(x, y);
-	}
-
 	public SegmentPoint getPoint2() {
 		updateSegments();
 		return segment2.point;
@@ -249,23 +228,80 @@ public class Curve {
 		segment2.point.set(x, y);
 	}
 	
+	/**
+	 * The handle point that describes the tangent in the first anchor point.
+	 */
+	public SegmentPoint getHandle1() {
+		updateSegments();
+		return segment1.handleOut;
+	}
+
+	public void setHandle1(Point pt) {
+		updateSegments();
+		segment1.handleOut.set(pt);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public void setHandle1(double x, double y) {
+		updateSegments();
+		segment1.handleOut.set(x, y);
+	}
+
+	/**
+	 * The handle point that describes the tangent in the second anchor point.
+	 */
+	public SegmentPoint getHandle2() {
+		updateSegments();
+		return segment2.handleIn;
+	}
+
+	public void setHandle2(Point pt) {
+		updateSegments();
+		segment2.handleIn.set(pt);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public void setHandle2(double x, double y) {
+		updateSegments();
+		segment2.handleIn.set(x, y);
+	}
+	
+	/**
+	 * The first segment of the curve.
+	 */
 	public Segment getSegment1() {
 		return segment1;
 	}
 
+	/**
+	 * The second segment of the curve.
+	 */
 	public Segment getSegment2() {
 		return segment2;
 	}
 
+	/**
+	 * The next curve in the {@link Path#getCurves()} array.
+	 */
+	public Curve getNext() {
+		return index1 < segments.size() ? segments.get(index1 + 1).getCurve() : null;
+	}
+	
+	/**
+	 * The previous curve in the {@link Path#getCurves()} array.
+	 */
 	public Curve getPrevious() {
 		return index1 > 0 ? segments.get(index1 - 1).getCurve() : null;
 	}
 
-	public Curve getNext() {
-		return index1 < segments.size() ? segments.get(index1 + 1).getCurve() : null;
-	}
-
 	// TODO: return reversed curve as new instance instead of modifiying this curve?
+	/**
+	 * Reverses the curve.
+	 */
 	public void reverse() {
 		Segment tmp = (Segment) segment1.clone();
 		segment1.setHandleIn(segment2.getHandleOut());
@@ -279,6 +315,12 @@ public class Curve {
 	/*
 	 * Instead of using the underlying AI functions and loose time for calling
 	 * natives, let's do the dirty work ourselves:
+	 */
+	/**
+	 * Returns the point on the curve at the specified position.
+	 * 
+	 * @param parameter the position at which to find the point as a value
+	 *        between 0 and 1.
 	 */
 	public Point getPoint(double parameter) {
 		updateSegments();
@@ -362,6 +404,9 @@ public class Curve {
 	private static native double nativeGetLength(double p1x, double p1y,
 			double h1x, double h1y, double h2x, double h2y, double p2x, double p2y);
 
+	/**
+	 * The approximated length of the curve in points.
+	 */
 	public double getLength() {
 		updateSegments();
 		return nativeGetLength(
@@ -410,7 +455,17 @@ public class Curve {
 				matrix.transform(segment2.handleIn),
 				matrix.transform(segment2.point));
 	}
-	
+
+	/**
+	 * Splits the curve into two at the specified position. The curve itself is
+	 * modified and becomes the first part, the second part is returned as a new
+	 * curve. If the modified curve belongs to a path item, the second part is
+	 * added to it.
+	 * 
+	 * @param parameter the position at which to split the curve as a value
+	 *        between 0 and 1 {@default 0.5}
+	 * @return the second part of the splitted curve
+	 */
 	public Curve split(double parameter) {
 		if (parameter > 0 && parameter < 1) {
 			updateSegments();
