@@ -76,7 +76,8 @@ public abstract class AbstractStructList<R, E extends AbstractStructList.Entry<R
 			element = createEntry(index);
 			list.set(index, element);
 		}
-		// Always update, even when newly fetched, to make sure it is initialised.
+		// Always update, even when newly fetched, to make sure it is
+		// initialised.
 		element.update();
 		return element;
 	}
@@ -107,7 +108,8 @@ public abstract class AbstractStructList<R, E extends AbstractStructList.Entry<R
 		element.reference = reference;
 		element.index = index;
 		element.markDirty();
-		// It might be that this element was already inserted elsewhere in the same list.
+		// It might be that this element was already inserted elsewhere in the
+		// same list.
 		// Only clear reference / index if it is still valid.
 		if (ret != null && ret.index == index) {
 			ret.reference = null;
@@ -158,8 +160,8 @@ public abstract class AbstractStructList<R, E extends AbstractStructList.Entry<R
 		}
 
 		protected void markDirty() {
-			// Only mark it as dirty if it's attached to a object already and
-			// if the given dirty flag is not already set
+			// Only mark it as dirty if it's attached to an object already and
+			// if the dirty flag is not already set.
 			// Put both non dirty ones that were fetched before and dirty ones
 			// that were never fetched so far (= newly created entries) into
 			// the commitable list.
