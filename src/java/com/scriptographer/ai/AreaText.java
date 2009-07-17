@@ -75,6 +75,26 @@ public class AreaText extends TextItem {
 		this(area, TextOrientation.HORIZONTAL);
 	}
 
+	/**
+	 * Creates an area text item using the supplied rectangle.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // create an abstract rectangle:
+	 * var bottomLeft = new Point(10, 10);
+	 * var size = new Size(200, 100);
+	 * var rectangle = new Rectangle(bottomLeft, size);
+	 * 
+	 * // create an area text item using the rectangle:
+	 * var areaText = new AreaText(rectangle);
+	 * 
+	 * // add some text to the path
+	 * areaText.content = 'Text which will appear within the path';
+	 * </code>
+	 * 
+	 * @param rectangle
+	 * @param orient the text orientation {@default 'horizontal'}
+	 */
 	public AreaText(Rectangle rect, TextOrientation orientation) {
 		super(nativeCreate(orientation != null
 				? orientation.value 
