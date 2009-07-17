@@ -136,6 +136,10 @@ public class Artboard extends AbstractStructList.Entry<Document> {
 		}
 	}
 
+	/**
+	 * Specifies whether the center mark of the artboard is visible.
+	 * @return {@true if the center mark is visible}
+	 */
 	public boolean getShowCenter() {
 		update();
 		return showCenter;
@@ -147,6 +151,10 @@ public class Artboard extends AbstractStructList.Entry<Document> {
 		markDirty();
 	}
 
+	/**
+	 * Specifies whether crosshairs are shown on the artboard.
+	 * @return {@true if crosshairs are visible}
+	 */
 	public boolean getShowCrossHairs() {
 		update();
 		return showCrossHairs;
@@ -158,6 +166,10 @@ public class Artboard extends AbstractStructList.Entry<Document> {
 		markDirty();
 	}
 
+	/**
+	 * Specifies whether to show title and action safe areas (for video).
+	 * @return {@true if title and action safe areas are visible}
+	 */
 	public boolean getShowSafeAreas() {
 		update();
 		return showSafeAreas;
@@ -169,6 +181,9 @@ public class Artboard extends AbstractStructList.Entry<Document> {
 		markDirty();
 	}
 
+	/**
+	 * The pixel aspect ratio which is used in ruler visualization if the units are pixels.
+	 */
 	public double getPixelAspectRatio() {
 		update();
 		return pixelAspectRatio;

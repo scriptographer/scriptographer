@@ -356,6 +356,9 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 		markDirty();
 	}
 
+	/**
+	 * The output resolution for the path.
+	 */
 	public Float getResolution() {
 		update();
 		return resolution;

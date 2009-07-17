@@ -32,8 +32,11 @@
 package com.scriptographer.ai;
 
 /**
- * The MouseEvent object is recieved by the {@link Tool}'s mouse event handlers and
- * contains information about the mouse event.
+ * The MouseEvent object is received by the {@link Tool}'s mouse event handlers
+ * {@link Tool#getOnMouseDown()}, {@link Tool#getOnMouseDrag()},
+ * {@link Tool#getOnMouseMove()} and {@link Tool#getOnMouseUp()}. The MouseEvent
+ * object is the only parameter passed to these functions and contains
+ * information about the mouse event.
  * 
  * Sample code:
  * <code>

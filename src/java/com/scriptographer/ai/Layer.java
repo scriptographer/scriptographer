@@ -42,6 +42,15 @@ public class Layer extends Item {
 		super(handle);
 	}
 
+	/**
+	 * Creates a new Layer item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var layer = new Layer();
+	 * layer.name = 'the new layer';
+	 * </code>
+	 */
 	public Layer() {
 		super(TYPE_LAYER);
 	}
@@ -51,7 +60,7 @@ public class Layer extends Item {
 	/**
 	 * Specifies whether the layer is visible.
 	 * 
-	 * @return {true if the layer is visible}
+	 * @return {@true if the layer is visible}
 	 */
 	public native boolean isVisible();
 
@@ -126,6 +135,14 @@ public class Layer extends Item {
 	
 	/**
 	 * Activates the layer.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var layer = new Layer();
+	 * layer.name = 'new layer';
+	 * layer.activate();
+	 * print(document.activeLayer) // 'Layer (new layer)'
+	 * </code>
 	 */
 	public native void activate();
 }

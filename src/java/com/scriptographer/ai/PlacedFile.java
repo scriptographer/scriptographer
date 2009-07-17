@@ -89,7 +89,6 @@ public class PlacedFile extends Item {
 	
 	/**
 	 * The file associated with the placed file item.
-	 * @return
 	 */
 	public native File getFile();
 	

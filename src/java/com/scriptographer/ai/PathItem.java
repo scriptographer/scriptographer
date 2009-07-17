@@ -74,6 +74,9 @@ public abstract class PathItem extends Item {
 	 *  PostScript-like interface: moveTo, lineTo, curveTo, arcTo
 	 */
 
+	/**
+	 * {@grouptitle Drawing Functions}
+	 */
 	public abstract void moveTo(double x, double y);	
 
 	public abstract void lineTo(double x, double y);
@@ -149,6 +152,7 @@ public abstract class PathItem extends Item {
 	 * 
 	 * @param item
 	 * @return {@true if the paths intersect}
+	 * {@grouptitle Geometric Tests}
 	 */
 	public boolean intersects(PathItem item) {
 		Area area = new Area(this.toShape());
@@ -183,6 +187,7 @@ public abstract class PathItem extends Item {
 	 * Returns the intersection of the paths as a new path
 	 * 
 	 * @param item
+	 * {@grouptitle Boolean Operations}
 	 */
 	public PathItem intersect(PathItem item) {
 		Area area = new Area(this.toShape());
