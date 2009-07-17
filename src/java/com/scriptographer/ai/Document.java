@@ -99,7 +99,9 @@ public class Document extends NativeObject {
 	 * // Create a new document named 'poster'
 	 * // with a width of 100pt and a height of 200pt:
 	 * var doc = new Document('poster', 100, 200);;
+	 * </code>
 	 * 
+	 * <code>
 	 * // Create a document with a CMYK color mode
 	 * // and show Illustrator's 'New Document' dialog:
 	 * var doc = new Document('poster', 100, 200, 'cmyk', 'on');
@@ -228,6 +230,138 @@ public class Document extends NativeObject {
 	}
 	
 	/**
+	 * Checks whether the document contains any selected items.
+	 * 
+	 * @return {@code true} if the document contains selected items,
+	 *         false otherwise.
+	 * 
+	 * @jshide
+	 */
+	public native boolean hasSelectedItems();
+
+	/**
+	 * The selected items contained within the document.
+	 */
+	public native ItemList getSelectedItems();
+	
+	private Item getCurrentStyleItem() {
+		// This is a bit of a hack: We use a special handle HANDLE_CURRENT_STYLE
+		// to tell the native side that this is in fact the current style, not an
+		// item handle...
+		if (currentStyleItem == null)
+			currentStyleItem = new Item(Item.HANDLE_CURRENT_STYLE, this);
+		// Update version so style gets refetched from native side.
+		currentStyleItem.version = CommitManager.version;
+		return currentStyleItem;
+	}
+
+	public PathStyle getCurrentStyle() {
+		return getCurrentStyleItem().getStyle();
+	}
+
+	public void setCurrentStyle(PathStyle style) {
+		getCurrentStyleItem().setStyle(style);
+	}
+
+	protected void commitCurrentStyle() {
+		// Make sure style change gets committed before selection changes,
+		// since it affects the selection.
+		if (currentStyleItem != null)
+			CommitManager.commit(currentStyleItem);
+	}
+	
+	/**
+	 * The point of the lower left corner of the imageable page, relative to the
+	 * ruler origin.
+	 */
+	public native Point getPageOrigin();
+	
+	public native void setPageOrigin(Point pt);
+
+	/**
+	 * The point of the ruler origin of the document, relative to the bottom
+	 * left of the artboard.
+	 */
+	public native Point getRulerOrigin();
+	
+	public native void setRulerOrigin(Point pt);
+
+	/**
+	 * The size of the document.
+	 * Setting size only works while reading a document!
+	 */
+	public native Size getSize();
+
+	/**
+	 * @jshide
+	 */
+	public native void setSize(double width, double height);
+	
+	public void setSize(Size size) {
+		setSize(size.width, size.height);
+	}
+
+	/**
+	 * The size of the visible area of an EPS file.
+	 */
+	public native Rectangle getCropBox();
+	
+	public native void setCropBox(Rectangle cropBox);
+
+	/**
+	 * Specifies if the document has been edited since it was last saved. When
+	 * set to {@code true}, closing the document will present the user
+	 * with a dialog box asking to save the file.
+	 */
+	public native boolean isModified();
+	
+	public native void setModified(boolean modified);
+
+	/**
+	 * The document's file.
+	 */
+	public native File getFile();
+
+	private native int nativeGetFileFormat();
+
+	private native void nativeSetFileFormat(int handle);
+	
+	public FileFormat getFileFormat() {
+		return FileFormat.getFormat(nativeGetFileFormat());
+	}
+
+	public void setFileFormat(FileFormat format) {
+		nativeSetFileFormat(format != null ? format.handle : 0);
+	}
+	
+	private native int nativeGetData();
+
+	/**
+	 * An object contained within the document which can be used to store data.
+	 * The values in this object can be accessed even after the file has been closed and opened again.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * document.data['shoppingList'] = ['oranges', 'apples'];
+	 * print(document.data['shoppingList']); // 'oranges', 'apples'
+	 * </code>
+	 * 
+	 */
+	public Dictionary getData() {
+		if (data == null)
+			data = Dictionary.wrapHandle(nativeGetData(), this);
+		return data;	
+	}
+
+	public void setData(Map<String, Object> map) {
+		Dictionary data = getData();
+		if (map != data) {
+			data.clear();
+			data.putAll(map);
+		}
+	}
+	
+	/**
 	 * The layers contained within the document.
 	 * 
 	 * Sample code:
@@ -245,6 +379,7 @@ public class Document extends NativeObject {
 	 *  print(document.layers.test); // Layer (test)
 	 *  print(document.layers['Layer 1']); // Layer (Layer 1)
 	 * </code>
+	 * {@grouptitle Document Hierarchy}
 	 */
 	public LayerList getLayers() {
 		if (layers == null)
@@ -259,29 +394,6 @@ public class Document extends NativeObject {
 	 * @return The layer which is currently active
 	 */
 	public native Layer getActiveLayer();
-	
-	/**
-	 * The views contained within the document.
-	 */
-	public DocumentViewList getViews() {
-		if (views == null)
-			views = new DocumentViewList(this);
-		return views;
-	}
-	
-	// getActiveView can not be native as there is no wrapViewHandle defined
-	// nativeGetActiveView returns the handle, that still needs to be wrapped
-	// here. as this is only used once, that's the prefered way (just like
-	// DocumentList.getActiveDocument
-	
-	private native int getActiveViewHandle(); 
-
-	/**
-	 * The document view which is currently active.
-	 */
-	public DocumentView getActiveView() {
-		return DocumentView.wrapHandle(getActiveViewHandle(), this);
-	}
 	
 	/**
 	 * The symbols contained within the document.
@@ -319,70 +431,54 @@ public class Document extends NativeObject {
 		return artboards;
 	}
 
+	/**
+	 * The document views contained within the document.
+	 */
+	public DocumentViewList getViews() {
+		if (views == null)
+			views = new DocumentViewList(this);
+		return views;
+	}
+	
+	// getActiveView can not be native as there is no wrapViewHandle defined
+	// nativeGetActiveView returns the handle, that still needs to be wrapped
+	// here. as this is only used once, that's the prefered way (just like
+	// DocumentList.getActiveDocument
+	
+	private native int getActiveViewHandle(); 
+
+	/**
+	 * The document view which is currently active.
+	 */
+	public DocumentView getActiveView() {
+		return DocumentView.wrapHandle(getActiveViewHandle(), this);
+	}
+	
 	// TODO: getActiveSwatch, getActiveGradient
 	
-	/**
-	 * The point of the lower left corner of the imageable page, relative to the
-	 * ruler origin.
-	 */
-	public native Point getPageOrigin();
+	private native int nativeGetStories();
 	
-	public native void setPageOrigin(Point pt);
-
-	/**
-	 * The point of the ruler origin of the document, relative to the bottom
-	 * left of the artboard.
-	 */
-	public native Point getRulerOrigin();
+	private TextStoryList stories = null;
 	
-	public native void setRulerOrigin(Point pt);
-
 	/**
-	 * The size of the document.
-	 * Setting size only works while reading a document!
+	 * The stories contained within the document.
 	 */
-	public native Size getSize();
-
-	/**
-	 * @jshide
-	 */
-	public native void setSize(double width, double height);
-	
-	public void setSize(Size size) {
-		setSize(size.width, size.height);
-	}
-
-	/**
-	 * The document's cropbox.
-	 */
-	public native Rectangle getCropBox();
-	
-	public native void setCropBox(Rectangle cropBox);
-
-	/**
-	 * Specifies if the document has been edited since it was last saved. When
-	 * set to {@code true}, closing the document will present the user
-	 * with a dialog box asking to save the file.
-	 */
-	public native boolean isModified();
-	
-	public native void setModified(boolean modified);
-
-	/**
-	 * The document's file.
-	 */
-	public native File getFile();
-
-	private native int nativeGetFileFormat();
-
-	private native void nativeSetFileFormat(int handle);
-	
-	public FileFormat getFileFormat() {
-		return FileFormat.getFormat(nativeGetFileFormat());
-	}
-
-	public void setFileFormat(FileFormat format) {
-		nativeSetFileFormat(format != null ? format.handle : 0);
+	public TextStoryList getStories() {
+		// We need to version TextStoryLists, since document handles seem to not be unique:
+		// When there is only one document, closing it and opening a new one results in the
+		// same document handle. Versioning seems the only way to keep story lists updated.
+		if (stories == null) {
+			int handle = nativeGetStories();
+			if (handle != 0)
+				stories = new TextStoryList(handle, this);
+		} else if (stories.version != CommitManager.version) {
+			int handle = nativeGetStories();
+			if (handle != 0)
+				stories.changeHandle(handle);
+			else
+				stories = null;
+		}
+		return stories;
 	}
 
 	private native void nativePrint(int status);
@@ -414,22 +510,6 @@ public class Document extends NativeObject {
 	 * Forces the document to be redrawn.
 	 */
 	public native void redraw();
-	
-	/**
-	 * Copies the selected items to the clipboard.
-	 */
-	public native void copy();
-	
-	/**
-	 * Cuts the selected items to the clipboard.
-	 */
-	public native void cut();
-	
-	/**
-	 * Pastes the contents of the clipboard into the active layer of the
-	 * document.
-	 */
-	public native void paste();
 
 	/**
 	 * Places a file in the document.
@@ -485,21 +565,6 @@ public class Document extends NativeObject {
 	public boolean write(File file) {
 		return write(file, null, false);
 	}
-
-	/**
-	 * Checks whether the document contains any selected items.
-	 * 
-	 * @return {@code true} if the document contains selected items,
-	 *         false otherwise.
-	 * 
-	 * @jshide
-	 */
-	public native boolean hasSelectedItems();
-
-	/**
-	 * The selected items contained within the document.
-	 */
-	public native ItemList getSelectedItems();
 
 	/**
 	 * Returns the selected items that are instances of one of the passed classes.
@@ -927,36 +992,11 @@ public class Document extends NativeObject {
 		return this.hitTest(point, HitRequest.ALL, HitResult.DEFAULT_TOLERANCE);
 	}
 	
-	private native int nativeGetStories();
-	
 	/**
 	 * Text reflow is suspended during script execution. when reflowText() is
 	 * called, the reflow of text is forced.
 	 */
 	public native void reflowText();
-
-	private TextStoryList stories = null;
-	
-	/**
-	 * The stories contained within the document.
-	 */
-	public TextStoryList getStories() {
-		// We need to version TextStoryLists, since document handles seem to not be unique:
-		// When there is only one document, closing it and opening a new one results in the
-		// same document handle. Versioning seems the only way to keep story lists updated.
-		if (stories == null) {
-			int handle = nativeGetStories();
-			if (handle != 0)
-				stories = new TextStoryList(handle, this);
-		} else if (stories.version != CommitManager.version) {
-			int handle = nativeGetStories();
-			if (handle != 0)
-				stories.changeHandle(handle);
-			else
-				stories = null;
-		}
-		return stories;
-	}
 
 	/**
 	 * Checks whether the document is valid, i.e. it hasn't been closed.
@@ -971,57 +1011,21 @@ public class Document extends NativeObject {
 	 * @return {@true if the document is valid}
 	 */
 	public native boolean isValid();
-
-	private native int nativeGetData();
-
+	
 	/**
-	 * An object contained within the document which can be used to store data.
-	 * The values in this object can be accessed even after the file has been closed and opened again.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * document.data['shoppingList'] = ['oranges', 'apples'];
-	 * print(document.data['shoppingList']); // 'oranges', 'apples'
-	 * </code>
-	 * 
+	 * Cuts the selected items to the clipboard.
+	 * {@grouptitle Clipboard Functions}
 	 */
-	public Dictionary getData() {
-		if (data == null)
-			data = Dictionary.wrapHandle(nativeGetData(), this);
-		return data;	
-	}
-
-	public void setData(Map<String, Object> map) {
-		Dictionary data = getData();
-		if (map != data) {
-			data.clear();
-			data.putAll(map);
-		}
-	}
-
-	private Item getCurrentStyleItem() {
-		// This is a bit of a hack: We use a special handle HANDLE_CURRENT_STYLE
-		// to tell the native side that this is in fact the current style, not an
-		// item handle...
-		if (currentStyleItem == null)
-			currentStyleItem = new Item(Item.HANDLE_CURRENT_STYLE, this);
-		// Update version so style gets refetched from native side.
-		currentStyleItem.version = CommitManager.version;
-		return currentStyleItem;
-	}
-
-	public PathStyle getCurrentStyle() {
-		return getCurrentStyleItem().getStyle();
-	}
-
-	public void setCurrentStyle(PathStyle style) {
-		getCurrentStyleItem().setStyle(style);
-	}
-
-	protected void commitCurrentStyle() {
-		// Make sure style change gets committed before selection changes,
-		// since it affects the selection.
-		if (currentStyleItem != null)
-			CommitManager.commit(currentStyleItem);
-	}
+	public native void cut();
+	
+	/**
+	 * Copies the selected items to the clipboard.
+	 */
+	public native void copy();
+	
+	/**
+	 * Pastes the contents of the clipboard into the active layer of the
+	 * document.
+	 */
+	public native void paste();
 }
