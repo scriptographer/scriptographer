@@ -37,8 +37,8 @@ import com.scriptographer.CommitManager;
 
 /**
  * The Segment object represents a part of a path which is described by the
- * {@link Path#getSegments()} property. Every segment of a path corresponds to an
- * anchor point (anchor points are the path handles that are visible when the
+ * {@link Path#getSegments()} array. Every segment of a path corresponds to
+ * an anchor point (anchor points are the path handles that are visible when the
  * path is selected).
  * 
  * @author lehni
@@ -77,14 +77,70 @@ public class Segment implements Commitable {
 		init(0, 0, 0, 0, 0, 0);
 	}
 
-	public Segment(Point pt, Point in, Point out) {
-		init(pt, in, out);
+	/**
+	 * Creates a new Segment object.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var handleIn = new Point(-40, -50);
+	 * var handleOut = new Point(40, 50);
+	 *
+	 * var firstPoint = new Point(100, 50);
+	 * var firstSegment = new Segment(firstPoint, null, handleOut);
+	 *
+	 * var secondPoint = new Point(200, 50);
+	 * var secondSegment = new Segment(secondPoint, handleIn, null);
+	 *
+	 * var path = new Path();
+	 * path.segments = [firstSegment, secondSegment];
+	 * </code>
+	 * 
+	 * @param pt the anchor point of the segment
+	 * @param handleIn the handle point relative to the anchor point of the
+	 *        segment that describes the in tangent of the segment. {@default x:
+	 *        0, y: 0}
+	 * @param handleOut the handle point relative to the anchor point of the
+	 *        segment that describes the out tangent of the segment. {@default
+	 *        x: 0, y: 0}
+	 */
+	public Segment(Point pt, Point handleIn, Point handleOut) {
+		init(pt, handleIn, handleOut);
 	}
 	
 	public Segment(Point pt) {
 		init(pt, null, null);
 	}
 
+	/**
+	 * Creates a new Segment object.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var handleIn = new Point(-40, -50);
+	 * var handleOut = new Point(40, 50);
+	 *
+	 * var firstSegment = new Segment(100, 50, 0, 0, handleOut.x, handleOut.y);
+	 * var secondSegment = new Segment(200, 50, handleIn.x, handleIn.y, 0, 0);
+	 *
+	 * var path = new Path();
+	 * path.segments = [firstSegment, secondSegment];
+	 * </code>
+	 * 
+	 * @param x the x coordinate of the anchor point of the segment
+	 * @param y the y coordinate of the anchor point of the segment
+	 * @param inX the x coordinate of the handle point relative to the anchor
+	 *        point of the segment that describes the in tangent of the segment.
+	 *        {@default 0}
+	 * @param inY the y coordinate of the handle point relative to the anchor
+	 *        point of the segment that describes the in tangent of the segment.
+	 *        {@default 0}
+	 * @param outX the x coordinate of the handle point relative to the anchor
+	 *        point of the segment that describes the out tangent of the
+	 *        segment. {@default 0}
+	 * @param outY the y coordinate of the handle point relative to the anchor
+	 *        point of the segment that describes the out tangent of the
+	 *        segment. {@default 0}
+	 */
 	public Segment(double x, double y, double inX, double inY, double outX,
 			double outY) {
 		init(x, y, inX, inY, outX, outY);
@@ -140,6 +196,11 @@ public class Segment implements Commitable {
 		this.index = index;
 	}
 
+	/**
+	 * Creates a new Segment object from the specified Segment object.
+	 * 
+	 * @param segment
+	 */
 	public Segment(Segment segment) {
 		point = new SegmentPoint(this, 0, segment.point);
 		handleIn = new SegmentPoint(this, 2, segment.handleIn);
@@ -277,6 +338,9 @@ public class Segment implements Commitable {
 		return buf.toString();
 	}
 
+	/**
+	 * The anchor point of the segment.
+	 */
 	public SegmentPoint getPoint() {
 		update();
 		return point;
@@ -293,6 +357,10 @@ public class Segment implements Commitable {
 		point.set(x, y);
 	}
 
+	/**
+	 * The handle point relative to the anchor point of the segment that
+	 * describes the in tangent of the segment.
+	 */
 	public SegmentPoint getHandleIn() {
 		update();
 		return handleIn;
@@ -311,6 +379,10 @@ public class Segment implements Commitable {
 		handleIn.set(x, y);
 	}
 
+	/**
+	 * The handle point relative to the anchor point of the segment that
+	 * describes the out tangent of the segment.
+	 */
 	public SegmentPoint getHandleOut() {
 		update();
 		return handleOut;
@@ -329,10 +401,25 @@ public class Segment implements Commitable {
 		handleOut.set(x, y);
 	}
 
+	/**
+	 * The index of the segment in the {@link Path#getSegments()} array that the
+	 * segment belongs to.
+	 * {@grouptitle Hierarchy}
+	 */
 	public int getIndex() {
 		return index;
 	}
 	
+	/**
+	 * The path that the segment belongs to.
+	 */
+	public Path getPath() {
+		return segments != null ? segments.path : null;
+	}
+	
+	/**
+	 * The curve that the segment belongs to.
+	 */
 	public Curve getCurve() {
 		if (segments  != null) {
 			CurveList curves = segments.path.getCurves();
@@ -344,16 +431,21 @@ public class Segment implements Commitable {
 		}
 	}
 
-	public Segment getPrevious() {
-		return index > 0 ? segments.get(index - 1) : null;
-	}
-
+	/**
+	 * The next segment in the {@link Path#getSegments()} array that the segment
+	 * belongs to.
+	 * {@grouptitle Sibling segments}
+	 */
 	public Segment getNext() {
 		return index < segments.size() ? segments.get(index + 1) : null;
 	}
-
-	public Path getPath() {
-		return segments != null ? segments.path : null;
+	
+	/**
+	 * The previous segment in the {@link Path#getSegments()} array that the
+	 * segment belongs to.
+	 */
+	public Segment getPrevious() {
+		return index > 0 ? segments.get(index - 1) : null;
 	}
 
 	protected boolean isSelected(SegmentPoint pt) {
