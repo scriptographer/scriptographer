@@ -108,10 +108,38 @@ public class TextRange extends DocumentObject implements Commitable {
 		dirty = false;
 	}
 
+	/**
+	 * The text content of the text range.
+	 */
+	public native String getContent();
+	
+	public void setContent(String text) {
+		remove();
+		append(text);
+	}
+	
+	/**
+	 * The index of the first character of the text range inside the story in
+	 * numbers of characters.
+	 */
+	public native int getStart();
+	
+	/**
+	 * The index of the last character of the text range inside the story in
+	 * numbers of characters.
+	 */
+	public native int getEnd();
+	
+	/**
+	 * The amount of characters in the range.
+	 */
+	public native int getLength();
+
 	private native int nativeGetStoryIndex();
 	
 	/**
 	 * The story that the text range belongs to.
+	 * {@grouptitle Hierarchy}
 	 */
 	public TextStory getStory() {
 		if (story == null)
@@ -130,7 +158,11 @@ public class TextRange extends DocumentObject implements Commitable {
 	 * @jshide
 	 */
 	public native TextItem getLastFrame();
-	
+
+	/**
+	 * An array of linked text frames that the text range is contained
+	 * within.
+	 */
 	public ReadOnlyList<TextItem> getFrames() {
 		TextItem frame = getFirstFrame();
 		TextItem lastFrame = getLastFrame();
@@ -146,23 +178,6 @@ public class TextRange extends DocumentObject implements Commitable {
 		}
 		return null;
 	}
-
-	/**
-	 * The index of the first character of the text range inside the story in
-	 * numbers of characters.
-	 */
-	public native int getStart();
-	
-	/**
-	 * The index of the last character of the text range inside the story in
-	 * numbers of characters.
-	 */
-	public native int getEnd();
-	
-	/**
-	 * The amount of characters in the range.
-	 */
-	public native int getLength();
 
 	protected native void setRange(int start, int end);
 	
@@ -245,24 +260,6 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 	
 	/**
-	 * The text content of the text range.
-	 */
-	public native String getContent();
-	
-	public void setContent(String text) {
-		remove();
-		append(text);
-	}
-	
-	// TODO: move to CharacterStyle
-	/**
-	 * The kerning between two characters in thousands of em.
-	 */
-	public native int getKerning();
-	
-	public native void setKerning(int kerning);
-
-	/**
 	 * gets the character style handle and adds reference to it. 
 	 * attention! this needs to be wrapped in CharacterStyle so
 	 * the reference gets released in the end.
@@ -275,6 +272,7 @@ public class TextRange extends DocumentObject implements Commitable {
 
 	/**
 	 * The character style of the text range.
+	 * {@grouptitle Style Properties}
 	 */
 	public CharacterStyle getCharacterStyle() {
 		if (characterStyle == null) {
@@ -332,10 +330,32 @@ public class TextRange extends DocumentObject implements Commitable {
 			paragraphStyle.commit();
 	}
 	
+	// TODO: move to CharacterStyle
+	/**
+	 * The kerning between two characters in thousands of em.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var text = new PointText(new Point(100, 100));
+	 * text.content = 'abc';
+	 * var range = text.range.characters[1];
+	 * print(range.content); // 'b'
+	 * range.kerning = 400;
+	 * </code>
+	 * {@grouptitle Character Range Properties}
+	 */
+	public native int getKerning();
+	
+	public native void setKerning(int kerning);
+
 	/**
 	 * The origin points of the characters in the text range.
 	 */
 	public native Point[] getOrigins();
+	
+	/**
+	 * The transformation matrices of the characters in the text range.
+	 */
 	public native Matrix[] getTransformations();
 	/*
 	TODO: ...
@@ -408,6 +428,22 @@ public class TextRange extends DocumentObject implements Commitable {
 
 	/**
 	 * Changes the case of the text in the text range.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var text = new PointText();
+	 * text.content = 'the title of a book';
+	 * text.range.changeCase('title');
+	 * print(text.content); // 'The Title Of A Book'
+	 * </code>
+	 * 
+	 * <code>
+	 * var text = new PointText();
+	 * text.content = 'one two three';
+	 * text.range.words[1].changeCase('upper');
+	 * print(text.content); // 'one TWO three'
+	 * </code>
+	 * 
 	 * @param change
 	 */
 	public boolean changeCase(TextCase change) {
@@ -474,6 +510,7 @@ public class TextRange extends DocumentObject implements Commitable {
 	 * var word = text.range.words[1];
 	 * print(word.content) // 'contents ' - note the space after 'contents';
 	 * </code>
+	 * {@grouptitle Sub Ranges}
 	 */
 	public ReadOnlyList getWords() {
 		if (words == null)

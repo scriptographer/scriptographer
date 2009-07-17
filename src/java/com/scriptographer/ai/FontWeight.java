@@ -47,18 +47,27 @@ public class FontWeight extends NativeObject {
 
 	private native String nativeGetName(int handle);
 
+	/**
+	 * The name of the font weight.
+	 */
 	public String getName() {
 		return handle == 0 ? "None" : nativeGetName(handle);
 	}
 
 	private native int nativeGetFamily(int handle);
 
+	/**
+	 * The font family array that the font weight belongs to.
+	 */
 	public FontFamily getFamily() {
 		return FontFamily.wrapHandle(nativeGetFamily(handle));
 	}
 
 	private native int nativeGetIndex(int handle);
 
+	/**
+	 * The index of the font weight in it's font family array.
+	 */
 	public int getIndex() {
 		return handle == 0 ? -1 : nativeGetIndex(handle);
 	}

@@ -50,6 +50,9 @@ public class FontFamily extends NativeObject implements ReadOnlyList<FontWeight>
 
 	private native String nativeGetName(int handle);	
 
+	/**
+	 * The name of the font family.
+	 */
 	public  String getName() {
 		return nativeGetName(handle);
 	}

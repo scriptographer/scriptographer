@@ -64,6 +64,15 @@ public class Artboard extends AbstractStructList.Entry<Document> {
 	 */
 	private double pixelAspectRatio;
 
+	/**
+	 * Creates a new Artboard in the document.
+	 * 
+	 * @param bounds the bounding rectangle of the Artboard
+	 * @param showCenter {@default false}
+	 * @param showCrossHairs {@default false}
+	 * @param showSafeAreas {@default false}
+	 * @param pixelAspectRatio {@default 1}
+	 */
 	public Artboard(Rectangle bounds, boolean showCenter,
 			boolean showCrossHairs, boolean showSafeAreas,
 			double pixelAspectRatio) {
@@ -123,6 +132,9 @@ public class Artboard extends AbstractStructList.Entry<Document> {
 				showCrossHairs, showSafeAreas, pixelAspectRatio);
 	}
 
+	/**
+	 * The bounding rectangle of the artboard.
+	 */
 	public Rectangle getBounds() {
 		update();
 		return bounds;

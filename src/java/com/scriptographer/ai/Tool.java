@@ -180,7 +180,8 @@ public class Tool extends NativeObject {
 	 * The minimum distance the mouse has to drag before firing the onMouseDrag
 	 * event, since the last onMouseDrag event.
 	 * 
-	 * Sample code: <code>
+	 * Sample code:
+	 * <code>
 	 * // Fire the onMouseDrag event after the user has dragged
 	 * // more then 5 points from the last onMouseDrag event:
 	 * tool.distanceThreshold = 5;
