@@ -327,6 +327,23 @@ public class Item extends DocumentObject implements Style {
 	}
 	
 	/**
+	 * Removes all the children items contained within the item.
+	 * 
+	 * @return {@true if removing was successful}
+	 */
+	public boolean removeChildren() {
+		Item child = getFirstChild();
+		boolean removed = false;
+		while (child != null) {
+			Item next = child.getNextSibling();
+			child.remove();
+			child = next;
+			removed = true;
+		}
+		return removed;
+	}
+	
+	/**
 	 * Creates a new AIArtHandle of the specified type and wraps it in a item
 	 * 
 	 * @param type Item.TYPE_*
@@ -369,6 +386,325 @@ public class Item extends DocumentObject implements Style {
 	public Object clone() {
 		return copyTo(getParent());
 	}
+
+	/**
+	 * The name of the item as it appears in the layers palette.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var layer = new Layer(); // a layer is an item
+	 * print(layer.name); // '<Layer 2>'
+	 * layer.name = 'A nice name';
+	 * print(layer.name); // 'A nice name'
+	 * </code>
+	 */
+	public native String getName();
+
+	public native void setName(String name);
+	
+	protected native Point nativeGetPosition();
+
+	private ItemPoint position = null;
+
+	/**
+	 * The item's position within the art board. This is the
+	 * {@link Rectangle#getCenter()} of the {@link Item#getBounds()} rectangle.
+	 * 
+	 * Sample code: <code>
+	 * // Create a circle at position { x: 10, y: 10 }
+	 * var circle = new Path.Circle(new Point(10, 10), 10);
+	 * 
+	 * // Move the circle to { x: 20, y: 20 }
+	 * circle.position = new Point(20, 20);
+	 * 
+	 * // Move the circle 10 points to the right
+	 * circle.position += new Point(10, 0);
+	 * print(circle.position); // { x: 30, y: 20 }
+	 * </code>
+	 */
+	public Point getPosition() {
+		if (position == null)
+			position = new ItemPoint(this);
+		else
+			position.update();
+		return position;
+	}
+
+	public void setPosition(Point pt) {
+		translate(pt.subtract(getPosition()));
+		// This is always defined now since we're using getPosition above
+		position.update();
+	}
+
+	/**
+	 * @jshide
+	 */
+	public void setPosition(double x, double y) {
+		setPosition(new Point(x, y));
+	}
+	
+	/**
+	 * The path style of the item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var circle = new Path.Circle(new Point(10, 10), 10);
+	 * circle.style = {
+	 * 	fillColor: new RGBColor(1, 0, 0),
+	 * 	strokeColor: new RGBColor(0, 1, 0),
+	 * 	strokeWidth: 5
+	 * };
+	 * </code>
+	 */
+	public PathStyle getStyle() {
+		if (style == null) {
+			style = new PathStyle(this);
+		} else {
+			style.update();
+		}
+		return style;
+	}
+
+	public void setStyle(PathStyle style) {
+		// Make sure it's created and fetched
+		getStyle();
+		style.init(style);
+		style.markDirty();
+	}
+
+	/**
+	 * A boolean value that specifies whether the center point of the item is
+	 * visible.
+	 * 
+	 * @jshide
+	 */
+	public native boolean isCenterVisible();
+
+	/**
+	 * @jshide
+	 */
+	public native void setCenterVisible(boolean centerVisible);
+
+	private native void nativeSetAttribute(int attribute, boolean value);
+	private native boolean nativeGetAttribute(int attribute);
+
+	/**
+	 * @jshide
+	 */
+	public void setAttribute(ItemAttribute attribute, boolean value) {
+		if (attribute == ItemAttribute.SELECTED
+				|| attribute == ItemAttribute.FULLY_SELECTED)
+			document.commitCurrentStyle();
+		nativeSetAttribute(attribute.value, value);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public boolean getAttribute(ItemAttribute attribute) {
+		return nativeGetAttribute(attribute.value);
+	}
+
+	/**
+	 * Specifies whether an item is selected.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * print(document.selectedItems.length); // 0
+	 * var path = new Path();
+	 * path.selected = true; // select the path
+	 * print(document.selectedItems.length) // 1
+	 * </code>
+	 * 
+	 * @return {true if the item is selected or partially selected (groups with
+	 * some selected items/partially selected paths)}
+	 */
+	public boolean isSelected() {
+		return getAttribute(ItemAttribute.SELECTED);
+	}
+
+	public void setSelected(boolean selected) {
+		setAttribute(ItemAttribute.SELECTED, selected);
+	}
+
+	/**
+	 * Specifies whether the item is fully selected. For paths this means that
+	 * all segments are selected, for container items (groups/layers) all children are
+	 * selected.
+	 * 
+	 * @return {@true if the item is fully selected}
+	 */
+	public boolean isFullySelected() {
+		return getAttribute(ItemAttribute.FULLY_SELECTED);
+	}
+
+	public void setFullySelected(boolean selected) {
+		setAttribute(ItemAttribute.FULLY_SELECTED, selected);
+	}
+
+	/**
+	 * Specifies whether the item is locked.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path();
+	 * print(path.locked) // false
+	 * path.locked = true; // locks the path
+	 * </code>
+	 * 
+	 * @return {@true if the item is locked}
+	 */
+	public boolean isLocked() {
+		return getAttribute(ItemAttribute.LOCKED);
+	}
+
+	public void setLocked(boolean locked) {
+		setAttribute(ItemAttribute.LOCKED, locked);
+	}
+
+	/**
+	 * Specifies whether the item is visible.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path();
+	 * print(path.visible) // true
+	 * path.visible = false; // hides the path
+	 * </code>
+	 * 
+	 * @return {@true if the item is visible}
+	 */
+	public boolean isVisible() {
+		return !getAttribute(ItemAttribute.HIDDEN);
+	}
+
+	public void setVisible(boolean visible) {
+		setAttribute(ItemAttribute.HIDDEN, !visible);
+	}
+
+	/**
+	 * Specifies whether the item is hidden.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path();
+	 * print(path.hidden); // false
+	 * path.hidden = true; // hides the path
+	 * </code>
+	 * 
+	 * @return {@true if the item is hidden}
+	 */
+	public final boolean isHidden() {
+		return !isVisible();
+	}
+
+	public final void setHidden(boolean hidden) {
+		setVisible(!hidden);
+	}
+
+	/**
+	 * Specifies whether the item defines a clip mask. This can only be set on
+	 * paths, compound paths, and text frame objects, and only if the item is
+	 * already contained within a clipping group.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var group = new Group();
+	 * group.appendChild(path);
+	 * group.clipped = true;
+	 * path.clipMask = true;
+	 * </code>
+	 * 
+	 * @return {@true if the item defines a clip mask}
+	 */
+	public boolean isClipMask() {
+		return getAttribute(ItemAttribute.CLIPMASK);
+	}
+
+	public void setClipMask(boolean clipMask) {
+		setAttribute(ItemAttribute.CLIPMASK, clipMask);
+	}
+	
+	private native int nativeGetBlendMode();
+
+	private native void nativeSetBlendMode(int mode);
+
+	/**
+	 * The blend mode of the item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var circle = new Path.Circle(new Point(50, 50), 10);
+	 * print(circle.blendMode); // normal
+	 * 
+	 * // Change the blend mode of the path item:
+	 * circle.blendMode = 'multiply';
+	 * </code>
+	 */
+	public BlendMode getBlendMode() {
+		return (BlendMode) IntegerEnumUtils.get(BlendMode.class,
+				nativeGetBlendMode());
+	}
+
+	public void setBlendMode(BlendMode blend) {
+		nativeSetBlendMode(blend.value);
+	}
+
+	/**
+	 * The opacity of the item.
+	 * 
+	 * @return the opacity of the item as a value between 0 and 1.
+	 */
+	public native float getOpacity();
+
+	public native void setOpacity(float opacity);
+
+	public native boolean getIsolated();
+
+	public native void setIsolated(boolean isolated);
+
+	private native int nativeGetKnockout(boolean inherited);
+
+	private native void nativeSetKnockout(int knockout);
+
+	public Knockout getKnockout(boolean inherited) {
+		return (Knockout) IntegerEnumUtils.get(Knockout.class,
+				nativeGetKnockout(inherited));
+	}
+
+	public Knockout getKnockout() {
+		return getKnockout(false);
+	}
+
+	public void setKnockout(Knockout knockout) {
+		nativeSetKnockout(knockout.value);
+	}
+
+	public native boolean getAlphaIsShape();
+
+	public native void setAlphaIsShape(boolean isShape);
+	
+	private native int nativeGetData();
+
+	public Dictionary getData() {
+		if (data == null)
+			data = Dictionary.wrapHandle(nativeGetData(), document);
+		return data;	
+	}
+
+	public void setData(Map<String, Object> map) {
+		Dictionary data = getData();
+		if (map != data) {
+			data.clear();
+			data.putAll(map);
+		}
+	}
+	
+	/**
+	 * The item's parent layer, if any.
+	 * {@grouptitle Document Hierarchy}
+	 */
+	public native Layer getLayer();
 	
 	/**
 	 * The item that this item is contained within.
@@ -384,31 +720,6 @@ public class Item extends DocumentObject implements Style {
 	 * </code>
 	 */
 	public native Item getParent();
-
-	/**
-	 * The item's parent layer, if any.
-	 */
-	public native Layer getLayer();
-
-	/**
-	 * The first item contained within this item.
-	 */
-	public native Item getFirstChild();
-
-	/**
-	 * The last item contained within this item.
-	 */
-	public native Item getLastChild();
-	
-	/**
-	 * The next item on the same level as this item.
-	 */
-	public native Item getNextSibling();
-
-	/**
-	 * The previous item on the same level as this item.
-	 */
-	public native Item getPreviousSibling();
 
 	/**
 	 * The children items contained within this item.
@@ -464,30 +775,24 @@ public class Item extends DocumentObject implements Style {
 	}
 
 	/**
-	 * Removes all the children items contained within the item.
-	 * 
-	 * @return {@true if removing was successful}
+	 * The first item contained within this item.
 	 */
-	public boolean removeChildren() {
-		Item child = getFirstChild();
-		boolean removed = false;
-		while (child != null) {
-			Item next = child.getNextSibling();
-			child.remove();
-			child = next;
-			removed = true;
-		}
-		return removed;
-	}
+	public native Item getFirstChild();
 
 	/**
-	 * Checks if the item contains any children items.
-	 * 
-	 * @return {@true if it has one or more children}
+	 * The last item contained within this item.
 	 */
-	public boolean hasChildren() {
-		return getFirstChild() != null;
-	}
+	public native Item getLastChild();
+	
+	/**
+	 * The next item on the same level as this item.
+	 */
+	public native Item getNextSibling();
+
+	/**
+	 * The previous item on the same level as this item.
+	 */
+	public native Item getPreviousSibling();
 	
 	protected native Rectangle nativeGetBounds();
 
@@ -495,6 +800,7 @@ public class Item extends DocumentObject implements Style {
 
 	/**
 	 * The bounding rectangle of the item excluding stroke width.
+	 * {@grouptitle Bounding Rectangles}
 	 */
 	public Rectangle getBounds() {
 		commit(false);
@@ -544,110 +850,6 @@ public class Item extends DocumentObject implements Style {
 	 * The bounding rectangle of the item including stroke width and controls.
 	 */
 	public native Rectangle getControlBounds();
-
-	protected native Point nativeGetPosition();
-
-	private ItemPoint position = null;
-
-	/**
-	 * The item's position within the art board. This is the
-	 * {@link Rectangle#getCenter()} of the {@link Item#getBounds()} rectangle.
-	 * 
-	 * Sample code: <code>
-	 * // Create a circle at position { x: 10, y: 10 }
-	 * var circle = new Path.Circle(new Point(10, 10), 10);
-	 * 
-	 * // Move the circle to { x: 20, y: 20 }
-	 * circle.position = new Point(20, 20);
-	 * 
-	 * // Move the circle 10 points to the right
-	 * circle.position += new Point(10, 0);
-	 * print(circle.position); // { x: 30, y: 20 }
-	 * </code>
-	 */
-	public Point getPosition() {
-		if (position == null)
-			position = new ItemPoint(this);
-		else
-			position.update();
-		return position;
-	}
-
-	public void setPosition(Point pt) {
-		translate(pt.subtract(getPosition()));
-		// This is always defined now since we're using getPosition above
-		position.update();
-	}
-
-	/**
-	 * @jshide
-	 */
-	public void setPosition(double x, double y) {
-		setPosition(new Point(x, y));
-	}
-
-
-	/**
-	 * The name of the item as it appears in the layers palette.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * var layer = new Layer(); // a layer is an item
-	 * print(layer.name); // returns '<Layer 2>'
-	 * layer.name = 'A nice name';
-	 * print(layer.name); // returns 'A nice name'
-	 * </code>
-	 */
-	public native String getName();
-
-	public native void setName(String name);
-	
-	/**
-	 * Checks if the name of the item as it appears in the layers palette is a
-	 * default descriptive name, rather then a user-assigned name.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * var path = new Path();
-	 * print(path.name); // <Path>
-	 * print(path.isDefaultName()); // true
-	 * 
-	 * path.name = 'a nice name';
-	 * print(path.isDefaultName()); // false
-	 * </code>
-	 * 
-	 * @return {@true if the item has a default name}
-	 */
-	public native boolean isDefaultName();
-
-	/**
-	 * The path style of the item.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * var circle = new Path.Circle(new Point(10, 10), 10);
-	 * circle.style = {
-	 * 	fillColor: new RGBColor(1, 0, 0),
-	 * 	strokeColor: new RGBColor(0, 1, 0),
-	 * 	strokeWidth: 5
-	 * };
-	 * </code>
-	 */
-	public PathStyle getStyle() {
-		if (style == null) {
-			style = new PathStyle(this);
-		} else {
-			style.update();
-		}
-		return style;
-	}
-
-	public void setStyle(PathStyle style) {
-		// Make sure it's created and fetched
-		getStyle();
-		style.init(style);
-		style.markDirty();
-	}
 
 	/*
 	 * Stroke Styles
@@ -804,151 +1006,174 @@ public class Item extends DocumentObject implements Style {
 	 * End of Style
 	 */
 
+	public String toString() {
+		return isDefaultName()
+				? super.toString()
+				: getClass().getSimpleName() + " (" +  getName() + ")";
+	}
+
+	public HitResult hitTest(Point point, HitRequest type, float tolerance) {
+		return document.nativeHitTest(point, (type != null ? type
+				: HitRequest.ALL).value, tolerance, this);
+	}
+
+	public HitResult hitTest(Point point, HitRequest type) {
+		return hitTest(point, type, HitResult.DEFAULT_TOLERANCE);
+	}
+
+	public HitResult hitTest(Point point) {
+		return hitTest(point, HitRequest.ALL, HitResult.DEFAULT_TOLERANCE);
+	}
+
+	private native Item nativeExpand(int flags, int steps);
+
 	/**
-	 * A boolean value that specifies whether the center point of the item is
-	 * visible.
+	 * Breaks artwork up into individual parts and works just like calling
+	 * "expand" from the Object menu in Illustrator.
 	 * 
+	 * It outlines stroked lines, text objects, gradients, patterns, etc.
+	 * 
+	 * The item itself is removed, and the newly created item containing the
+	 * expanded artwork is returned.
+	 * 
+	 * @param flags
+	 * @param steps the amount of steps for gradient, when the
+	 *       {@code 'gradient-to-paths'} flag is passed
+	 * @return the newly created item containing the expanded artwork
+	 */
+	public Item expand(EnumSet<ExpandFlag> flags, int steps) {
+		return nativeExpand(IntegerEnumUtils.getFlags(flags), steps);
+	}
+
+	public Item expand(EnumSet<ExpandFlag> flags) {
+		return expand(flags, 0);
+	}
+
+	public Item expand(ExpandFlag[] flags, int steps) {
+		return expand(EnumSet.copyOf(Arrays.asList(flags)), steps);
+	}
+
+	public Item expand(ExpandFlag[] flags) {
+		return expand(flags, 0);
+	}
+
+	private static int defaultExpandFlags =
+		IntegerEnumUtils.getFlags(EnumSet.of(ExpandFlag.PLUGIN_ART,
+				ExpandFlag.TEXT, ExpandFlag.STROKE, ExpandFlag.PATTERN,
+				ExpandFlag.SYMBOL_INSTANCES));
+
+	/**
+	 * Calls {@link #expand(int, int)} with these flags set: ExpandFlag#PLUGIN_ART,
+	 * ExpandFlag#TEXT, ExpandFlag#STROKE, ExpandFlag#PATTERN, ExpandFlag#SYMBOL_INSTANCES
+	 * 
+	 * @return the newly created item containing the expanded artwork
+	 */
+	public Item expand() {
+		return nativeExpand(defaultExpandFlags, 0);
+	}
+
+	private native Raster nativeRasterize(int type, float resolution,
+			int antialiasing, float width, float height);
+	/**
+	 * Rasterizes the item into a newly created Raster object. The item itself
+	 * is not removed after rasterization.
+	 * 
+	 * @param type the color mode of the raster {@default same as document}
+	 * @param resolution the resolution of the raster in dpi {@default 72}
+	 * @param antialiasing the amount of anti-aliasing {@default 4}
+	 * @param width {@default automatic}
+	 * @param height {@default automatic}
+	 * @return the newly created Raster item
+	 */
+	public Raster rasterize(ColorType type, float resolution, int antialiasing,
+			float width, float height) {
+		return nativeRasterize(type != null ? type.value : -1, resolution,
+				antialiasing, width, height);
+	}
+
+	public Raster rasterize(ColorType type, float resolution, int antialiasing) {
+		return rasterize(type, resolution, antialiasing, -1, -1);
+	}
+
+	public Raster rasterize(ColorType type, float resolution) {
+		return rasterize(type, resolution, 4, -1, -1);
+	}
+	
+	public Raster rasterize(ColorType type) {
+		return rasterize(type, 72, 4, -1, -1);
+	}
+	
+	public Raster rasterize() {
+		return rasterize(null, 72, 4, -1, -1);
+	}
+	private static native Raster nativeRasterize(Item[] items, int type, float resolution,
+			int antialiasing, float width, float height);
+
+	/**
+	 * Rasterizes the passed items into a newly created Raster object. The items
+	 * are not removed after rasterization.
+	 * 
+	 * @param type the color mode of the raster {@default same as document}
+	 * @param resolution the resolution of the raster in dpi {@default 72}
+	 * @param antialiasing the amount of anti-aliasing {@default 4}
+	 * @param width {@default automatic}
+	 * @param height {@default automatic}
+	 * @return the newly created Raster item
+	 */
+	public static Raster rasterize(Item[] items, ColorType type, float resolution, int antialiasing,
+			float width, float height) {
+		return nativeRasterize(items, type != null ? type.value : -1, resolution,
+				antialiasing, width, height);
+	}
+
+	public static Raster rasterize(Item[] items, ColorType type, float resolution, int antialiasing) {
+		return rasterize(items, type, resolution, antialiasing, -1, -1);
+	}
+	
+	public static Raster rasterize(Item[] items, ColorType type) {
+		return rasterize(items, type, 0, 4, -1, -1);
+	}
+	
+	public static Raster rasterize(Item[] items) {
+		return rasterize(items, null, 0, 4, -1, -1);
+	}
+
+	private native void nativeDraw(Image image, int width, int height);
+
+	/**
 	 * @jshide
 	 */
-	public native boolean isCenterVisible();
-	public native void setCenterVisible(boolean centerVisible);
-
-	private native void nativeSetAttribute(int attribute, boolean value);
-	private native boolean nativeGetAttribute(int attribute);
-
-	public void setAttribute(ItemAttribute attribute, boolean value) {
-		if (attribute == ItemAttribute.SELECTED
-				|| attribute == ItemAttribute.FULLY_SELECTED)
-			document.commitCurrentStyle();
-		nativeSetAttribute(attribute.value, value);
+	public void draw(Image image) {
+		nativeDraw(image, image.getWidth(), image.getHeight());
 	}
-
-	public boolean getAttribute(ItemAttribute attribute) {
-		return nativeGetAttribute(attribute.value);
-	}
-
+	
 	/**
-	 * Specifies whether an item is selected.
+	 * Checks if the item contains any children items.
 	 * 
-	 * Sample code:
-	 * <code>
-	 * print(document.selectedItems.length); // 0
-	 * var path = new Path();
-	 * path.selected = true; // select the path
-	 * print(document.selectedItems.length) // 1
-	 * </code>
-	 * 
-	 * @return {true if the item is selected or partially selected (groups with
-	 * some selected items/partially selected paths)}
+	 * @return {@true if it has one or more children}
+	 * {@grouptitle Tests}
 	 */
-	public boolean isSelected() {
-		return getAttribute(ItemAttribute.SELECTED);
+	public boolean hasChildren() {
+		return getFirstChild() != null;
 	}
-
-	public void setSelected(boolean selected) {
-		setAttribute(ItemAttribute.SELECTED, selected);
-	}
-
+	
 	/**
-	 * Specifies whether the item is fully selected. For paths this means that
-	 * all segments are selected, for container items (groups/layers) all children are
-	 * selected.
-	 * 
-	 * @return {@true if the item is fully selected}
-	 */
-	public boolean isFullySelected() {
-		return getAttribute(ItemAttribute.FULLY_SELECTED);
-	}
-
-	public void setFullySelected(boolean selected) {
-		setAttribute(ItemAttribute.FULLY_SELECTED, selected);
-	}
-
-	/**
-	 * Specifies whether the item is locked.
+	 * Checks if the name of the item as it appears in the layers palette is a
+	 * default descriptive name, rather then a user-assigned name.
 	 * 
 	 * Sample code:
 	 * <code>
 	 * var path = new Path();
-	 * print(path.locked) // returns false
-	 * path.locked = true; // locks the path
-	 * print(path.locked) // returns true
+	 * print(path.name); // <Path>
+	 * print(path.isDefaultName()); // true
+	 * 
+	 * path.name = 'a nice name';
+	 * print(path.isDefaultName()); // false
 	 * </code>
 	 * 
-	 * @return {@true if the item is locked}
+	 * @return {@true if the item has a default name}
 	 */
-	public boolean isLocked() {
-		return getAttribute(ItemAttribute.LOCKED);
-	}
-
-	public void setLocked(boolean locked) {
-		setAttribute(ItemAttribute.LOCKED, locked);
-	}
-
-	/**
-	 * Specifies whether the item is visible.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * var path = new Path();
-	 * print(path.visible) // returns true
-	 * path.visible = false; // hides the path
-	 * print(path.visible) // returns false
-	 * </code>
-	 * 
-	 * @return {@true if the item is visible}
-	 */
-	public boolean isVisible() {
-		return !getAttribute(ItemAttribute.HIDDEN);
-	}
-
-	public void setVisible(boolean visible) {
-		setAttribute(ItemAttribute.HIDDEN, !visible);
-	}
-
-	/**
-	 * Specifies whether the item is hidden.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * var path = new Path();
-	 * print(path.hidden); // returns false
-	 * path.hidden = true; // hides the path
-	 * print(path.hidden); // returns true
-	 * </code>
-	 * 
-	 * @return {@true if the item is hidden}
-	 */
-	public final boolean isHidden() {
-		return !isVisible();
-	}
-
-	public final void setHidden(boolean hidden) {
-		setVisible(!hidden);
-	}
-
-	/**
-	 * Specifies whether the item defines a clip mask. This can only be set on
-	 * paths, compound paths, and text frame objects, and only if the item is
-	 * already contained within a clipping group.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * var group = new Group();
-	 * group.appendChild(path);
-	 * group.clipped = true;
-	 * path.clipMask = true;
-	 * </code>
-	 * 
-	 * @return {@true if the item defines a clip mask}
-	 */
-	public boolean isClipMask() {
-		return getAttribute(ItemAttribute.CLIPMASK);
-	}
-
-	public void setClipMask(boolean clipMask) {
-		setAttribute(ItemAttribute.CLIPMASK, clipMask);
-	}
+	public native boolean isDefaultName();
 
 	/**
 	 * Checks whether the item is editable.
@@ -956,66 +1181,7 @@ public class Item extends DocumentObject implements Style {
 	 * Returns {@true when neither the item, nor it's parents are locked or hidden}
 	 */
 	public native boolean isEditable();
-
-	private native int nativeGetBlendMode();
-
-	private native void nativeSetBlendMode(int mode);
-
-	/**
-	 * The blend mode of the item.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * var circle = new Path.Circle(new Point(50, 50), 10);
-	 * print(circle.blendMode); // normal
-	 * 
-	 * // Change the blend mode of the path item:
-	 * circle.blendMode = 'multiply';
-	 * </code>
-	 */
-	public BlendMode getBlendMode() {
-		return (BlendMode) IntegerEnumUtils.get(BlendMode.class,
-				nativeGetBlendMode());
-	}
-
-	public void setBlendMode(BlendMode blend) {
-		nativeSetBlendMode(blend.value);
-	}
-
-	/**
-	 * The opacity of the item.
-	 * 
-	 * @return the opacity of the item as a value between 0 and 1.
-	 */
-	public native float getOpacity();
-
-	public native void setOpacity(float opacity);
-
-	public native boolean getIsolated();
-
-	public native void setIsolated(boolean isolated);
-
-	private native int nativeGetKnockout(boolean inherited);
-
-	private native void nativeSetKnockout(int knockout);
-
-	public Knockout getKnockout(boolean inherited) {
-		return (Knockout) IntegerEnumUtils.get(Knockout.class,
-				nativeGetKnockout(inherited));
-	}
-
-	public Knockout getKnockout() {
-		return getKnockout(false);
-	}
-
-	public void setKnockout(Knockout knockout) {
-		nativeSetKnockout(knockout.value);
-	}
-
-	public native boolean getAlphaIsShape();
-
-	public native void setAlphaIsShape(boolean isShape);
-
+	
 	/**
 	 * Checks whether the item is valid, i.e. it hasn't been removed.
 	 * 
@@ -1030,7 +1196,7 @@ public class Item extends DocumentObject implements Style {
 	 * @return {@true if the item is valid}
 	 */
 	public native boolean isValid();
-
+	
 	/**
 	 * Inserts the specified item as a child of the item by appending it to the
 	 * list of children and moving it above all other children.
@@ -1045,6 +1211,7 @@ public class Item extends DocumentObject implements Style {
 	 * </code>
 	 * 
 	 * @param item The item that will be appended as a child
+	 * {@grouptitle Hierarchy Operations}
 	 */
 	public native boolean appendTop(Item item);
 
@@ -1121,6 +1288,7 @@ public class Item extends DocumentObject implements Style {
 	 * 
 	 * @param item The item to check against
 	 * @return {@true if it is above the specified item}
+	 * {@grouptitle Hierarchy Tests}
 	 */
 	public native boolean isAbove(Item item);
 	
@@ -1246,6 +1414,8 @@ public class Item extends DocumentObject implements Style {
 	 * 
 	 * @param sx
 	 * @param sy
+	 * @param center {@default the center point of the item}
+ 	 * {@grouptitle Transform Functions}
 	 * @see Matrix#scale(double, double, Point center)
 	 */
 	public void scale(double sx, double sy, Point center) {
@@ -1259,7 +1429,8 @@ public class Item extends DocumentObject implements Style {
 	/**
 	 * Scales the item by the given value from its center point.
 	 * 
-	 * @param scale
+	 * @param scale the scale factor
+	 * @param center {@default the center point of the item}
 	 * @see Matrix#scale(double, Point center)
 	 */
 	public void scale(double scale, Point center) {
@@ -1307,164 +1478,6 @@ public class Item extends DocumentObject implements Style {
 	 */
 	public void shear(double shx, double shy) {
 		transform(centered(new Matrix().shear(shx, shy)));
-	}
-
-	public String toString() {
-		return isDefaultName()
-				? super.toString()
-				: getClass().getSimpleName() + " (" +  getName() + ")";
-	}
-
-
-	private native Raster nativeRasterize(int type, float resolution,
-			int antialiasing, float width, float height);
-	/**
-	 * Rasterizes the item into a newly created Raster object. The item itself
-	 * is not removed after rasterization.
-	 * 
-	 * @param type the color mode of the raster {@default same as document}
-	 * @param resolution the resolution of the raster in dpi {@default 72}
-	 * @param antialiasing the amount of anti-aliasing {@default 4}
-	 * @param width {@default automatic}
-	 * @param height {@default automatic}
-	 * @return the newly created Raster item
-	 */
-	public Raster rasterize(ColorType type, float resolution, int antialiasing,
-			float width, float height) {
-		return nativeRasterize(type != null ? type.value : -1, resolution,
-				antialiasing, width, height);
-	}
-
-	public Raster rasterize(ColorType type, float resolution, int antialiasing) {
-		return rasterize(type, resolution, antialiasing, -1, -1);
-	}
-
-	public Raster rasterize(ColorType type, float resolution) {
-		return rasterize(type, resolution, 4, -1, -1);
-	}
-	
-	public Raster rasterize(ColorType type) {
-		return rasterize(type, 72, 4, -1, -1);
-	}
-	
-	public Raster rasterize() {
-		return rasterize(null, 72, 4, -1, -1);
-	}
-	private static native Raster nativeRasterize(Item[] items, int type, float resolution,
-			int antialiasing, float width, float height);
-
-	/**
-	 * Rasterizes the passed items into a newly created Raster object. The items
-	 * are not removed after rasterization.
-	 * 
-	 * @param type the color mode of the raster {@default same as document}
-	 * @param resolution the resolution of the raster in dpi {@default 72}
-	 * @param antialiasing the amount of anti-aliasing {@default 4}
-	 * @param width {@default automatic}
-	 * @param height {@default automatic}
-	 * @return the newly created Raster item
-	 */
-	public static Raster rasterize(Item[] items, ColorType type, float resolution, int antialiasing,
-			float width, float height) {
-		return nativeRasterize(items, type != null ? type.value : -1, resolution,
-				antialiasing, width, height);
-	}
-
-	public static Raster rasterize(Item[] items, ColorType type, float resolution, int antialiasing) {
-		return rasterize(items, type, resolution, antialiasing, -1, -1);
-	}
-	
-	public static Raster rasterize(Item[] items, ColorType type) {
-		return rasterize(items, type, 0, 4, -1, -1);
-	}
-	
-	public static Raster rasterize(Item[] items) {
-		return rasterize(items, null, 0, 4, -1, -1);
-	}
-
-	private native void nativeDraw(Image image, int width, int height);
-
-	/**
-	 * @jshide
-	 */
-	public void draw(Image image) {
-		nativeDraw(image, image.getWidth(), image.getHeight());
-	}
-
-	public HitResult hitTest(Point point, HitRequest type, float tolerance) {
-		return document.nativeHitTest(point, (type != null ? type
-				: HitRequest.ALL).value, tolerance, this);
-	}
-
-	public HitResult hitTest(Point point, HitRequest type) {
-		return hitTest(point, type, HitResult.DEFAULT_TOLERANCE);
-	}
-
-	public HitResult hitTest(Point point) {
-		return hitTest(point, HitRequest.ALL, HitResult.DEFAULT_TOLERANCE);
-	}
-
-	private native Item nativeExpand(int flags, int steps);
-
-	/**
-	 * Breaks artwork up into individual parts and works just like calling
-	 * "expand" from the Object menu in Illustrator.
-	 * 
-	 * It outlines stroked lines, text objects, gradients, patterns, etc.
-	 * 
-	 * The item itself is removed, and the newly created item containing the
-	 * expanded artwork is returned.
-	 * 
-	 * @param flags
-	 * @param steps the amount of steps for gradient, when the
-	 *       {@code 'gradient-to-paths'} flag is passed
-	 * @return the newly created item containing the expanded artwork
-	 */
-	public Item expand(EnumSet<ExpandFlag> flags, int steps) {
-		return nativeExpand(IntegerEnumUtils.getFlags(flags), steps);
-	}
-
-	public Item expand(EnumSet<ExpandFlag> flags) {
-		return expand(flags, 0);
-	}
-
-	public Item expand(ExpandFlag[] flags, int steps) {
-		return expand(EnumSet.copyOf(Arrays.asList(flags)), steps);
-	}
-
-	public Item expand(ExpandFlag[] flags) {
-		return expand(flags, 0);
-	}
-
-	private static int defaultExpandFlags =
-		IntegerEnumUtils.getFlags(EnumSet.of(ExpandFlag.PLUGIN_ART,
-				ExpandFlag.TEXT, ExpandFlag.STROKE, ExpandFlag.PATTERN,
-				ExpandFlag.SYMBOL_INSTANCES));
-
-	/**
-	 * Calls {@link #expand(int, int)} with these flags set: ExpandFlag#PLUGIN_ART,
-	 * ExpandFlag#TEXT, ExpandFlag#STROKE, ExpandFlag#PATTERN, ExpandFlag#SYMBOL_INSTANCES
-	 * 
-	 * @return the newly created item containing the expanded artwork
-	 */
-	public Item expand() {
-		return nativeExpand(defaultExpandFlags, 0);
-	}
-
-	private native int nativeGetData();
-
-	public Dictionary getData() {
-		if (data == null)
-			data = Dictionary.wrapHandle(nativeGetData(), document);
-		return data;	
-	}
-
-	public void setData(Map<String, Object> map) {
-		Dictionary data = getData();
-		if (map != data) {
-			data.clear();
-			data.putAll(map);
-		}
 	}
 
 	/* TODO:
