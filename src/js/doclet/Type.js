@@ -411,10 +411,11 @@ Type = Object.extend(new function() {
 	}
 });
 
-// We're injecting Type.prototype into the native ClassDocImpl, to enhance all
-// ClassDocs automatically. It's ok to do so since Rhino doesn't allow to
-// override native methods, so e.g. qualifiedName won't loop endlessly.
-ClassDocImpl.inject(Type.prototype);
+// Extend ClassDocImpl by Type, but only override what's not already there.
+// The easiest way is to have Type wrap ClassDocImpl.prototype, since the
+// initializer already has the code to check.
+// This is to avoid e.g. qualifiedName from looping endlessly.
+new Type(ClassDocImpl.prototype);
 
 // Add a method to directly produce a Type for ParameterImpl objects.
 ParameterImpl.inject({
