@@ -433,7 +433,7 @@ public class Segment implements Commitable {
 	}
 
 	/**
-	 * {@grouptitle Sibling segments}
+	 * {@grouptitle Sibling Segments}
 	 * 
 	 * The next segment in the {@link Path#getSegments()} array that the segment
 	 * belongs to.
