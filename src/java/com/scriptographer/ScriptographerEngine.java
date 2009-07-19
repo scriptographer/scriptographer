@@ -208,7 +208,7 @@ public class ScriptographerEngine {
 		}
 	}
 
-	protected static void logConsole(String str) {
+	public static void logConsole(String str) {
 		if (consoleLogger != null)
 			consoleLogger.println(str);
 	}

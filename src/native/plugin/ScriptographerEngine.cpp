@@ -638,6 +638,11 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ui_MenuItem_onUpdate = getStaticMethodID(env, cls_ui_MenuItem, "onUpdate", "(IIII)V");
 	
 	cls_ui_MenuGroup = loadClass(env, "com/scriptographer/ui/MenuGroup");
+
+#if defined(MAC_ENV) && kPluginInterfaceVersion >= kAI14
+	cls_ui_TextEditItem = loadClass(env, "com/scriptographer/ui/TextEditItem");
+	fid_ui_TextEditItem_setSelectionTimer = getFieldID(env, cls_ui_TextEditItem, "setSelectionTimer", "I");
+#endif
 }
 
 long ScriptographerEngine::getNanoTime() {

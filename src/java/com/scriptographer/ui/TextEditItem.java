@@ -401,6 +401,12 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		setSelection(pos, pos);
 	}
 
+	/*
+	 * Needed for a workaround on CS4, Mac. See native code.
+	 */
+	@SuppressWarnings("unused")
+	private int setSelectionTimer = 0;
+
 	public native void setAllowMath(boolean allowMath);
 	public native boolean getAllowMath();
 	

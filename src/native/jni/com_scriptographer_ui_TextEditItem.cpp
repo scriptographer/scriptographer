@@ -29,6 +29,7 @@
  
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
+#include "ScriptographerPlugin.h"
 #include "com_scriptographer_ui_TextEditItem.h"
 
 /*
@@ -80,6 +81,54 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_TextEditItem_getMaxLength(JNIE
 	return 0;
 }
 
+#if defined(MAC_ENV) && kPluginInterfaceVersion >= kAI14
+
+// On Illustrator 14 on Mac, the scrolling only seems to work if update is called on the dialog before.
+// Execute a one-shot timer in setSelection that updates the state after execution of the script
+// only once, for a massive speed increase of e.g. console printing.
+
+class SetSelectionTimer {
+public:
+	ADMItemRef m_item;
+	ADMTimerRef m_timerId;
+	int m_start;
+	int m_end;
+	
+	SetSelectionTimer(ADMItemRef item) {
+		m_item = item;
+		DEFINE_CALLBACK_PROC(SetSelectionTimer::setSelection);
+		m_timerId = sADMItem->CreateTimer(item, 0, 0, (ADMItemTimerProc) CALLBACK_PROC(SetSelectionTimer::setSelection), NULL, 0);
+	}
+	
+	void setRange(int start, int end) {
+		m_start = start;
+		m_end = end;
+	}
+
+	void setSelection() {
+		ADMDialogRef dialog = sADMItem->GetDialog(m_item);
+		sADMDialog->Update(dialog);
+		sADMItem->SetSelectionRange(m_item, m_start, m_end);
+	}
+
+	static ADMBoolean ADMAPI setSelection(ADMItemRef item, ADMTimerRef timerID) {
+		// Clear timer
+		sADMItem->AbortTimer(item, timerID);
+		JNIEnv *env = gEngine->getEnv();
+		try {
+			jobject obj = gEngine->getItemObject(item);
+			SetSelectionTimer *timer = (SetSelectionTimer *) gEngine->getIntField(env, obj, gEngine->fid_ui_TextEditItem_setSelectionTimer);
+			timer->setSelection();
+			// Clean up again, since we're done
+			delete timer;
+			gEngine->setIntField(env, obj, gEngine->fid_ui_TextEditItem_setSelectionTimer, 0);
+		} EXCEPTION_CATCH_REPORT(env);
+		return true;
+	}
+};
+
+#endif
+
 /*
  * void setSelection(int start, int end)
  */
@@ -87,11 +136,16 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextEditItem_setSelection(JNIE
 	try {
 		ADMItemRef item = gEngine->getItemHandle(env, obj);
 #if defined(MAC_ENV) && kPluginInterfaceVersion >= kAI14
-		// On Illustrator 14 on Mac, the scrolling only seems to work if update is called on the dialog before.
-		ADMDialogRef dialog = sADMItem->GetDialog(item);
-		sADMDialog->Update(dialog);
-#endif
+		// See if a previous timer was started already. if so, just update its data.
+		SetSelectionTimer *timer = (SetSelectionTimer *) gEngine->getIntField(env, obj, gEngine->fid_ui_TextEditItem_setSelectionTimer);
+		if (timer == NULL) {
+			timer = new SetSelectionTimer(item);
+			gEngine->setIntField(env, obj, gEngine->fid_ui_TextEditItem_setSelectionTimer, (jint) timer);
+		}
+		timer->setRange(start, end);
+#else
 		sADMItem->SetSelectionRange(item, start, end);
+#endif
 	} EXCEPTION_CONVERT(env);
 }
 

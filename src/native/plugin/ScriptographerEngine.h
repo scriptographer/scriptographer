@@ -375,7 +375,12 @@ public:
 	jmethodID mid_ui_MenuItem_onUpdate;
 	
 	jclass cls_ui_MenuGroup;
-	
+
+#if defined(MAC_ENV) && kPluginInterfaceVersion >= kAI14
+	jclass cls_ui_TextEditItem;
+	jfieldID fid_ui_TextEditItem_setSelectionTimer;
+#endif
+
 public:
 	ScriptographerEngine(const char *pluginPath);
 	~ScriptographerEngine();
