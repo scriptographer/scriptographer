@@ -402,9 +402,10 @@ public class Segment implements Commitable {
 	}
 
 	/**
+	 * {@grouptitle Hierarchy}
+	 * 
 	 * The index of the segment in the {@link Path#getSegments()} array that the
 	 * segment belongs to.
-	 * {@grouptitle Hierarchy}
 	 */
 	public int getIndex() {
 		return index;
@@ -432,9 +433,10 @@ public class Segment implements Commitable {
 	}
 
 	/**
+	 * {@grouptitle Sibling segments}
+	 * 
 	 * The next segment in the {@link Path#getSegments()} array that the segment
 	 * belongs to.
-	 * {@grouptitle Sibling segments}
 	 */
 	public Segment getNext() {
 		return index < segments.size() ? segments.get(index + 1) : null;

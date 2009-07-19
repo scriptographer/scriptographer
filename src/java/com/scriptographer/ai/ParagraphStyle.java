@@ -153,8 +153,9 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	private native void nativeSetJustification(Integer justification);
 	
 	/**
-	 * The justification of the paragraph.
 	 * {@grouptitle Justification}
+	 * 
+	 * The justification of the paragraph.
 	 */
 	public ParagraphJustification getJustification() {
 		return IntegerEnumUtils.get(ParagraphJustification.class, nativeGetJustification());
@@ -179,8 +180,9 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	}
 
 	/**
-	 * The indentation of the first line in the paragraph.
 	 * {@grouptitle Indentation}
+	 * 
+	 * The indentation of the first line in the paragraph.
 	 */
 	public native Float getFirstLineIndent();
 	public native void setFirstLineIndent(Float indent);
@@ -198,8 +200,9 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	public native void setEndIndent(Float indent);
 	
 	/**
-	 * The space before the paragraph.
 	 * {@grouptitle Spacing}
+	 * 
+	 * The space before the paragraph.
 	 */
 	public native Float getSpaceBefore();
 	public native void setSpaceBefore(Float space);
@@ -215,9 +218,10 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	// ------------------------------------------------------------------
 	
 	/**
+	 * {@grouptitle Hyphenation}
+	 * 
 	 * Specifies whether to use hyphenation within the paragraph
 	 * @return {@true if the paragraph uses hyphenation}
-	 * {@grouptitle Hyphenation}
 	 */
 	public native Boolean getHyphenation();
 	public native void setHyphenation(Boolean hyphenate);
@@ -273,8 +277,9 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	// ------------------------------------------------------------------
 	
 	/**
-	 * The desired word spacing of the paragraph.
 	 * {@grouptitle Word Spacing}
+	 * 
+	 * The desired word spacing of the paragraph.
 	 */
 	public native Float getDesiredWordSpacing();
 	public native void setDesiredWordSpacing(Float spacing);
@@ -292,8 +297,9 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	public native void setMinWordSpacing(Float spacing);
 	
 	/**
-	 * The desired letter spacing of the paragraph.
 	 * {@grouptitle Letter Spacing}
+	 * 
+	 * The desired letter spacing of the paragraph.
 	 */
 	public native Float getDesiredLetterSpacing();
 	public native void setDesiredLetterSpacing(Float spacing);
@@ -311,8 +317,9 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	public native void setMinLetterSpacing(Float spacing);
 	
 	/**
-	 * The desired glyph scaling of the paragraph as a value between 0 and 1.
 	 * {@grouptitle Glyph Scaling}
+	 * 
+	 * The desired glyph scaling of the paragraph as a value between 0 and 1.
 	 */
 	public native Float getDesiredGlyphScaling();
 	public native void setDesiredGlyphScaling(Float scaling);
@@ -330,8 +337,9 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	public native void setMinGlyphScaling(Float scaling);
 	
 	/**
-	 * The auto leading percentage of the paragraph as a value between 0 and 1.
 	 * {@grouptitle Leading}
+	 * 
+	 * The auto leading percentage of the paragraph as a value between 0 and 1.
 	 */
 	public native Float getAutoLeadingPercentage();
 	public native void setAutoLeadingPercentage(Float percentage);
@@ -356,8 +364,9 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 	*/
 	
 	/**
-	 * The default tab width of the paragraph.
 	 * {@grouptitle Tabs}
+	 * 
+	 * The default tab width of the paragraph.
 	 */
 	public native Float getDefaultTabWidth();
 	public native void setDefaultTabWidth(Float width);

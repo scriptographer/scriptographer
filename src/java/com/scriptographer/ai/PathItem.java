@@ -147,12 +147,13 @@ public abstract class PathItem extends Item {
 	}
 
 	/**
+	 * {@grouptitle Geometric Tests}
+	 * 
 	 * Checks if the interior of the path intersects with the interior of the
 	 * specified path.
 	 * 
 	 * @param item
 	 * @return {@true if the paths intersect}
-	 * {@grouptitle Geometric Tests}
 	 */
 	public boolean intersects(PathItem item) {
 		Area area = new Area(this.toShape());
@@ -184,10 +185,11 @@ public abstract class PathItem extends Item {
 	}
 
 	/**
+	 * {@grouptitle Boolean Operations}
+	 * 
 	 * Returns the intersection of the paths as a new path
 	 * 
 	 * @param item
-	 * {@grouptitle Boolean Operations}
 	 */
 	public PathItem intersect(PathItem item) {
 		Area area = new Area(this.toShape());

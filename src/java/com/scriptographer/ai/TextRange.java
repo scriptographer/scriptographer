@@ -138,8 +138,9 @@ public class TextRange extends DocumentObject implements Commitable {
 	private native int nativeGetStoryIndex();
 	
 	/**
-	 * The story that the text range belongs to.
 	 * {@grouptitle Hierarchy}
+	 * 
+	 * The story that the text range belongs to.
 	 */
 	public TextStory getStory() {
 		if (story == null)
@@ -271,8 +272,9 @@ public class TextRange extends DocumentObject implements Commitable {
 	ParagraphStyle paragraphStyle = null;
 
 	/**
-	 * The character style of the text range.
 	 * {@grouptitle Style Properties}
+	 * 
+	 * The character style of the text range.
 	 */
 	public CharacterStyle getCharacterStyle() {
 		if (characterStyle == null) {
@@ -332,6 +334,8 @@ public class TextRange extends DocumentObject implements Commitable {
 	
 	// TODO: move to CharacterStyle
 	/**
+	 * {@grouptitle Character Range Properties}
+	 * 
 	 * The kerning between two characters in thousands of em.
 	 * 
 	 * Sample code:
@@ -342,7 +346,6 @@ public class TextRange extends DocumentObject implements Commitable {
 	 * print(range.content); // 'b'
 	 * range.kerning = 400;
 	 * </code>
-	 * {@grouptitle Character Range Properties}
 	 */
 	public native int getKerning();
 	
@@ -499,6 +502,8 @@ public class TextRange extends DocumentObject implements Commitable {
 	}
 
 	/**
+	 * {@grouptitle Sub Ranges}
+	 * 
 	 * The text ranges of the words contained within the text range. Note that
 	 * the returned text range includes the trailing whitespace characters of
 	 * the words.
@@ -510,7 +515,6 @@ public class TextRange extends DocumentObject implements Commitable {
 	 * var word = text.range.words[1];
 	 * print(word.content) // 'contents ' - note the space after 'contents';
 	 * </code>
-	 * {@grouptitle Sub Ranges}
 	 */
 	public ReadOnlyList getWords() {
 		if (words == null)

@@ -375,6 +375,8 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	 */
 
 	/**
+	 * {@grouptitle Stroke Style}
+	 * 
 	 * The color of the stroke.
 	 * 
 	 * Sample code:
@@ -385,7 +387,6 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	 * // Set the stroke color of the circle to CMYK red:
 	 * circle.strokeColor = new CMYKColor(1, 1, 0, 0);
 	 * </code>
-	 * {@grouptitle Stroke Style}
 	 */
 	public Color getStrokeColor() {
 		// TODO: Return Color.NONE instead of null?
@@ -523,6 +524,8 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	 * Fill Style
 	 */
 	/**
+	 * {@grouptitle Fill Style}
+	 * 
 	 * The fill color of the path.
 	 * 
 	 * Sample code:
@@ -533,7 +536,6 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	 * // Set the fill color of the circle to CMYK red:
 	 * circle.fillColor = new CMYKColor(1, 1, 0, 0);
 	 * </code>
-	 * {@grouptitle Fill Style}
 	 */
 	public Color getFillColor() {
 		// TODO: Return Color.NONE instead of null?

@@ -115,8 +115,9 @@ public class AreaText extends TextItem {
 	}
 	
 	/**
+ 	 * {@grouptitle Rows and Columns}
+	 * 
 	 * The number of rows for the text frame.
-	 * {@grouptitle Rows and Columns}
 	 */
 	public native int getRowCount();
 	public native void setRowCount(int count);

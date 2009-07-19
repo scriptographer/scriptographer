@@ -251,6 +251,8 @@ public class Matrix {
 	}
 	
 	/**
+	 * {@grouptitle Matrix Concatenation}
+	 * 
 	 * Concatenates the matrix with a translation matrix that translates by
 	 * {@code (x, y)}. The object itself is modified and a reference to it is
 	 * returned.
@@ -258,7 +260,6 @@ public class Matrix {
 	 * @param x the x coordinate of the translation
 	 * @param y the y coordinate of the translation
 	 * @return the translated matrix
-	 * {@grouptitle Matrix Concatenation}
 	 */
 	public Matrix translate(double x, double y) {
 		transform.translate(x, y);
@@ -396,11 +397,12 @@ public class Matrix {
 	}
 	
 	/**
+	 * {@grouptitle Tests}
+	 * 
 	 * Checks whether the matrix is an identity. Identity matrices are equal to
 	 * their inversion.
 	 * 
 	 * @return true if the matrix is an identity, false otherwise
-	 * {@grouptitle Tests}
 	 */
 	public boolean isIdentity() {
 		return transform.isIdentity();

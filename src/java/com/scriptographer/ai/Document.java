@@ -365,6 +365,8 @@ public class Document extends NativeObject {
 	}
 	
 	/**
+	 * {@grouptitle Document Hierarchy}
+	 * 
 	 * The layers contained within the document.
 	 * 
 	 * Sample code:
@@ -382,7 +384,6 @@ public class Document extends NativeObject {
 	 *  print(document.layers.test); // Layer (test)
 	 *  print(document.layers['Layer 1']); // Layer (Layer 1)
 	 * </code>
-	 * {@grouptitle Document Hierarchy}
 	 */
 	public LayerList getLayers() {
 		if (layers == null)
@@ -1153,8 +1154,9 @@ public class Document extends NativeObject {
 	public native boolean isValid();
 	
 	/**
-	 * Cuts the selected items to the clipboard.
 	 * {@grouptitle Clipboard Functions}
+	 * 
+	 * Cuts the selected items to the clipboard.
 	 */
 	public native void cut();
 	

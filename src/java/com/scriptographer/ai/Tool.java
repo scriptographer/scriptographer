@@ -200,6 +200,8 @@ public class Tool extends NativeObject {
 	private Callable onMouseDown;
 
 	/**
+	 * {@grouptitle Mouse Event Handlers}
+	 * 
 	 * The function to be called when the mouse button is pushed down. The
 	 * function receives a {@link MouseEvent} object which contains information
 	 * about the mouse event.
@@ -211,8 +213,6 @@ public class Tool extends NativeObject {
 	 * 	print(event.point);
 	 * }
 	 * </code>
-	 * 
-	 * {@grouptitle Mouse Event Handlers}
 	 */
 	public Callable getOnMouseDown() {
 		return onMouseDown;
@@ -326,8 +326,9 @@ public class Tool extends NativeObject {
 	public native void setTitle(String title);
 
 	/**
-	 * The tooltip as seen when you hold the cursor over the tool button.
 	 * {@grouptitle Tool Button Styling}
+	 * 
+	 * The tooltip as seen when you hold the cursor over the tool button.
 	 */
 	public native String getTooltip();
 
@@ -380,11 +381,11 @@ public class Tool extends NativeObject {
 	private Callable onOptions;
 
 	/**
+	 * {@grouptitle Tool Button Event Handlers}
+	 * 
 	 * The function to be called when the tool button is double clicked. This is
 	 * often used to present the users with a dialog containing options that
 	 * they can set.
-	 * 
-	 * {@grouptitle Tool Button Event Handlers}
 	 */
 	public Callable getOnOptions() {
 		return onOptions;

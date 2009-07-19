@@ -117,11 +117,12 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
+	 * {@grouptitle Text Frame Linking}
+	 * 
 	 * Links the supplied text frame to this one.
 	 * 
 	 * @param next The text frame that will be linked
 	 * @return {@true if the text frame was linked}
-	 * {@grouptitle Text Frame Linking}
 	 */
 	public native boolean link(TextItem next);
 
@@ -162,8 +163,9 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * Returns the index of the text frame in its {@link TextItem#getStory()}.
 	 * {@grouptitle Hierarchy}
+	 * 
+	 * Returns the index of the text frame in its {@link TextItem#getStory()}.
 	 */
 	public native int getIndex();
 
@@ -213,8 +215,9 @@ public abstract class TextItem extends Item {
 	// ATE
 
 	/**
-	 * The text contents of the text item.
 	 * {@grouptitle Range Properties}
+	 * 
+	 * The text contents of the text item.
 	 */
 	public String getContent() {
 		return getRange().getContent();
@@ -282,8 +285,9 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * The character style of the text frame.
 	 * {@grouptitle Style Properties}
+	 * 
+	 * The character style of the text frame.
 	 */
 	public CharacterStyle getCharacterStyle() {
 		return getRange().getCharacterStyle();
