@@ -337,6 +337,9 @@ ClassObject = DocObject.extend({
 						return filter == name || filter.endsWith('*') &&
 							name.startsWith(filter.substring(0, filter.length - 1));
 					})
+					|| !settings.packageSequence.find(function(pkg) {
+						return name.startsWith(pkg);
+					})
 					// Do not add any of Enums, since they are represented
 					// as strings in the scripting environment.
 					|| doc.hasSuperclass('java.lang.Enum')
