@@ -108,7 +108,6 @@ public class HitResult {
 
 	/**
 	 * The curve which was hit, if any.
-	 * @return
 	 */
 	public Curve getCurve() {
 		return curve;
