@@ -64,7 +64,7 @@ public class Dictionary extends AbstractMap<String, Object> {
 	public Object put(String key, Object value) {
 		Object previous = get(key);
 		if (!nativePut(handle, key, value))
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("Dictionaries do not support objects of type " + value.getClass().getSimpleName());
 		return previous;
 	}
 

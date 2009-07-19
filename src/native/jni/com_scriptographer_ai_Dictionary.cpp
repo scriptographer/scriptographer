@@ -225,6 +225,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 						entry = sAIEntry->FromBoolean(gEngine->convertBoolean(env, value));
 					} else if (env->IsInstanceOf(value, gEngine->cls_Float)) {
 						entry = sAIEntry->FromReal(gEngine->convertFloat(env, value));
+					} else if (env->IsInstanceOf(value, gEngine->cls_Double)) {
+						entry = sAIEntry->FromReal(gEngine->convertDouble(env, value));
 					} else if (env->IsInstanceOf(value, gEngine->cls_String)) {
 						char *strValue = gEngine->convertString(env, (jstring) value);
 						entry = sAIEntry->FromString(strValue);

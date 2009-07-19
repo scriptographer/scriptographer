@@ -72,6 +72,7 @@ public:
 	jclass cls_Number;
 	jmethodID mid_Number_intValue;
 	jmethodID mid_Number_floatValue;
+	jmethodID mid_Number_doubleValue;
 	
 	jclass cls_Integer;
 	jmethodID cid_Integer;
@@ -79,6 +80,9 @@ public:
 	jclass cls_Float;
 	jmethodID cid_Float;
 	
+	jclass cls_Double;
+	jmethodID cid_Double;
+
 	jclass cls_Boolean;
 	jmethodID cid_Boolean;
 	jmethodID mid_Boolean_booleanValue;
@@ -415,6 +419,10 @@ public:
 	// java.lang.Float <-> jfloat
 	jobject convertFloat(JNIEnv *env, jfloat value);
 	jfloat convertFloat(JNIEnv *env, jobject value);
+
+	// java.lang.Double <-> jdouble
+	jobject convertDouble(JNIEnv *env, jdouble value);
+	jdouble convertDouble(JNIEnv *env, jobject value);
 	
 	// com.scriptographer.awt.Point <-> AIRealPoint
 	jobject convertPoint(JNIEnv *env, AIReal x, AIReal y, jobject res = NULL);	

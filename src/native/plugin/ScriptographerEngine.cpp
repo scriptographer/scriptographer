@@ -340,12 +340,16 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_Number = loadClass(env, "java/lang/Number");
 	mid_Number_intValue = getMethodID(env, cls_Number, "intValue", "()I");
 	mid_Number_floatValue = getMethodID(env, cls_Number, "floatValue", "()F");
+	mid_Number_doubleValue = getMethodID(env, cls_Number, "doubleValue", "()D");
 
 	cls_Integer = loadClass(env, "java/lang/Integer");
 	cid_Integer = getConstructorID(env, cls_Integer, "(I)V");
 
 	cls_Float = loadClass(env, "java/lang/Float");
 	cid_Float = getConstructorID(env, cls_Float, "(F)V");
+
+	cls_Double = loadClass(env, "java/lang/Double");
+	cid_Double = getConstructorID(env, cls_Double, "(D)V");
 
 	cls_Boolean = loadClass(env, "java/lang/Boolean");
 	cid_Boolean = getConstructorID(env, cls_Boolean, "(Z)V");
@@ -749,7 +753,20 @@ jobject ScriptographerEngine::convertFloat(JNIEnv *env, jfloat value) {
 }
 
 jfloat ScriptographerEngine::convertFloat(JNIEnv *env, jobject value) {
-	jfloat res = callIntMethod(env, value, mid_Number_floatValue);
+	jfloat res = callFloatMethod(env, value, mid_Number_floatValue);
+	EXCEPTION_CHECK(env);
+	return res;
+}
+
+// java.lang.Double <-> jdouble
+jobject ScriptographerEngine::convertDouble(JNIEnv *env, jdouble value) {
+	jobject res = newObject(env, cls_Double, cid_Double, value);
+	EXCEPTION_CHECK(env);
+	return res;
+}
+
+jdouble ScriptographerEngine::convertDouble(JNIEnv *env, jobject value) {
+	jdouble res = callDoubleMethod(env, value, mid_Number_doubleValue);
 	EXCEPTION_CHECK(env);
 	return res;
 }
