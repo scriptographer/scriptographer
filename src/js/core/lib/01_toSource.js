@@ -56,28 +56,69 @@ Point.inject({
 	}
 });
 
+Size.inject({
+	toSource: function(simple) {
+		if (simple)
+			return '{ width: ' + this.width + ', height: ' + this.height + ' }';
+		else
+			return 'new Size(' + this.width + ', ' + this.height + ')';
+	}
+});
+
+Rectangle.inject({
+	toSource: function(simple) {
+		if (simple)
+			return '{ x: ' + this.x + ', y: ' + this.y + ', width: ' + this.width + ', height: ' + this.height + ' }';
+		else
+			return 'new Rectangle(' + this.x + ', ' + this.y + ', ' + this.width + ', ' + this.height + ')';
+	}
+});
+
 Segment.inject({
 	toSource: function(simple) {
+		var hasHandleIn = !this.handleIn.isZero();
+		var hasHandleOut = !this.handleOut.isZero();
+		var parts = [this.point.toSource(simple)];
+		if (hasHandleIn || hasHandleOut)
+			parts.push(hasHandleIn ? this.handleIn.toSource(simple) : 'null');
+		if (hasHandleOut)
+			parts.push(this.handleOut.toSource(simple));
 		if (simple) {
-			var hasHandleIn = this.handleIn.x != 0 || this.handleIn.y != 0;
-			var hasHandleOut = this.handleOut.x != 0 || this.handleOut.y != 0;
-			if (!hasHandleIn && !hasHandleOut)
-				return this.point.toSource(true);
-			var parts = [this.point.toSource(true)];
-			if (hasHandleIn || hasHandleOut)
-				parts.push(hasHandleIn ? this.handleIn.toSource(true) : 'null');
-			if (hasHandleOut)
-				parts.push(this.handleOut.toSource(true));
-			if (this.corner)
-				parts.push('true');
-			return '[' + parts.join(', ') + ']';
+			// If there's only one point, return a point instead of a list
+			return parts.length == 1 ? parts[0] : '[' + parts.join(', ') + ']';
 		} else {
-			var parts = ['new Segment(', this.point.toSource(false)];
-			parts.push(')');
-			return parts.join('');
+			return 'new Segment(' + parts.join(', ') + ')';
 		}
 	}
 });
+
+Curve.inject({
+	toSource: function(simple) {
+		if (simple) {
+			var parts = [];
+			parts.push('{ point1: ' + this.point1.toSource(true));
+			if (!this.handle1.isZero())
+				parts.push(', handle1: ' + this.handle1.toSource(true));
+			if (!this.handle2.isZero())
+				parts.push(', handle2: ' + this.handle2.toSource(true));
+			parts.push(', point2: ' + this.point2.toSource(true));
+			parts.push(' }');
+			return parts.join('');
+		} else {
+			var parts = [this.point1.toSource(false)];
+			var hasHandle1 = !this.handle1.isZero();
+			var hasHandle2 = !this.handle2.isZero();
+			if (hasHandle1 || hasHandle2) {
+				parts.push(
+					hasHandle1 ? this.handle1.toSource(false) : null,
+					hasHandle2 ? this.handle2.toSource(false) : null
+				);
+			}
+			parts.push(this.point2.toSource(false));
+			return 'new Curve(' + parts.join(', ') + ')';
+		}
+	}
+})
 
 Color.inject({
 	toSource: function(simple) {
@@ -116,6 +157,16 @@ PathStyle.inject(new function() {
 			'strokeColor', 'strokeOverprint', 'strokeWidth',
 			'strokeCap', 'strokeJoin', 'miterLimit',
 			'dashOffset', 'dashArray', 'windingRule', 'resolution'];
+	return {
+		toSource: function(simple) {
+			return Object.toSource(this, simple, fields);
+		}
+	};
+});
+
+Artboard.inject(new function() {
+	var fields = ['bounds', 'showCenter', 'showCrossHairs',
+			'showSafeAreas', 'pixelAspectRatio'];
 	return {
 		toSource: function(simple) {
 			return Object.toSource(this, simple, fields);
