@@ -6,7 +6,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Context.java,v
 retrieving revision 1.279
 diff -u -r1.279 Context.java
 --- src/org/mozilla/javascript/Context.java	15 May 2009 12:09:51 -0000	1.279
-+++ src/org/mozilla/javascript/Context.java	1 Jul 2009 09:26:36 -0000
++++ src/org/mozilla/javascript/Context.java	19 Jul 2009 17:40:55 -0000
 @@ -2112,6 +2112,19 @@
          return wrapFactory;
      }
@@ -41,7 +41,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaObject.
 retrieving revision 1.88
 diff -u -r1.88 NativeJavaObject.java
 --- src/org/mozilla/javascript/NativeJavaObject.java	19 Mar 2009 13:19:55 -0000	1.88
-+++ src/org/mozilla/javascript/NativeJavaObject.java	1 Jul 2009 09:26:41 -0000
++++ src/org/mozilla/javascript/NativeJavaObject.java	19 Jul 2009 17:41:08 -0000
 @@ -364,9 +364,10 @@
              }
              else if (to.isPrimitive() && to != Boolean.TYPE) {
@@ -55,7 +55,7 @@ diff -u -r1.88 NativeJavaObject.java
  
          case JSTYPE_OBJECT:
              // Other objects takes #1-#3 spots
-@@ -379,14 +380,27 @@
+@@ -379,14 +380,28 @@
                      // This is a native array conversion to a java array
                      // Array conversions are all equal, and preferable to object
                      // and string conversion, per LC3.
@@ -78,6 +78,7 @@ diff -u -r1.88 NativeJavaObject.java
              }
              else if (to == ScriptRuntime.StringClass) {
 -                return 3;
++                // Lehni:
 +                // Prefer conversion from NativeString to a java String
 +                // over the above conversion to a object.
 +                // (typeof obj == 'object', not 'string'!)
@@ -85,7 +86,7 @@ diff -u -r1.88 NativeJavaObject.java
              }
              else if (to == ScriptRuntime.DateClass) {
                  if (fromObj instanceof NativeDate) {
-@@ -401,7 +415,7 @@
+@@ -401,7 +416,7 @@
                          return 1;
                      }
                  }
@@ -94,7 +95,7 @@ diff -u -r1.88 NativeJavaObject.java
              }
              else if (to.isPrimitive() && to != Boolean.TYPE) {
                  return 3 + getSizeRank(to);
-@@ -409,7 +423,7 @@
+@@ -409,7 +424,7 @@
              break;
          }
  
@@ -103,7 +104,7 @@ diff -u -r1.88 NativeJavaObject.java
      }
  
      static int getSizeRank(Class<?> aType) {
-@@ -497,9 +511,20 @@
+@@ -497,9 +512,19 @@
          return coerceTypeImpl(type, value);
      }
  
@@ -111,7 +112,6 @@ diff -u -r1.88 NativeJavaObject.java
 +        Object obj = Context.getContext().getWrapFactory().coerceType(type, value);
 +        // Allow Undefined.instance being coerced to null, but nothing else
 +        if (obj == null && value != Undefined.instance) {
-+            obj = Context.getContext().getWrapFactory().coerceType(type, value);
 +            reportConversionError(value instanceof Wrapper ? ((Wrapper) value).unwrap() : value, type);
 +        }
 +        return obj;
@@ -260,7 +260,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/JavaMembers.java,
 retrieving revision 1.80
 diff -u -r1.80 JavaMembers.java
 --- src/org/mozilla/javascript/JavaMembers.java	6 Jun 2009 14:11:24 -0000	1.80
-+++ src/org/mozilla/javascript/JavaMembers.java	1 Jul 2009 09:26:39 -0000
++++ src/org/mozilla/javascript/JavaMembers.java	19 Jul 2009 17:41:02 -0000
 @@ -52,9 +52,9 @@
   * @see NativeJavaObject
   * @see NativeJavaClass
@@ -508,7 +508,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaTopPack
 retrieving revision 1.22
 diff -u -r1.22 NativeJavaTopPackage.java
 --- src/org/mozilla/javascript/NativeJavaTopPackage.java	5 Apr 2009 09:09:42 -0000	1.22
-+++ src/org/mozilla/javascript/NativeJavaTopPackage.java	1 Jul 2009 09:26:49 -0000
++++ src/org/mozilla/javascript/NativeJavaTopPackage.java	19 Jul 2009 17:41:09 -0000
 @@ -71,7 +71,7 @@
              {"javax", "swing"}
      };
@@ -524,7 +524,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/ScriptableObject.
 retrieving revision 1.151
 diff -u -r1.151 ScriptableObject.java
 --- src/org/mozilla/javascript/ScriptableObject.java	22 Jun 2009 01:08:20 -0000	1.151
-+++ src/org/mozilla/javascript/ScriptableObject.java	1 Jul 2009 09:26:52 -0000
++++ src/org/mozilla/javascript/ScriptableObject.java	19 Jul 2009 17:41:25 -0000
 @@ -2827,6 +2827,18 @@
              return null;
          } else if (value instanceof Wrapper) {
@@ -550,7 +550,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaMethod.
 retrieving revision 1.65
 diff -u -r1.65 NativeJavaMethod.java
 --- src/org/mozilla/javascript/NativeJavaMethod.java	9 Jun 2009 17:43:45 -0000	1.65
-+++ src/org/mozilla/javascript/NativeJavaMethod.java	1 Jul 2009 09:26:40 -0000
++++ src/org/mozilla/javascript/NativeJavaMethod.java	19 Jul 2009 17:41:05 -0000
 @@ -433,11 +433,11 @@
          if (firstBestFit < 0) {
              // Nothing was found
@@ -588,7 +588,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaPackage
 retrieving revision 1.45
 diff -u -r1.45 NativeJavaPackage.java
 --- src/org/mozilla/javascript/NativeJavaPackage.java	5 Nov 2008 21:37:23 -0000	1.45
-+++ src/org/mozilla/javascript/NativeJavaPackage.java	1 Jul 2009 09:26:44 -0000
++++ src/org/mozilla/javascript/NativeJavaPackage.java	19 Jul 2009 17:41:08 -0000
 @@ -60,7 +60,7 @@
  {
      static final long serialVersionUID = 7445054382212031523L;
@@ -613,7 +613,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/MemberBox.java,v
 retrieving revision 1.19
 diff -u -r1.19 MemberBox.java
 --- src/org/mozilla/javascript/MemberBox.java	26 Jun 2008 13:57:11 -0000	1.19
-+++ src/org/mozilla/javascript/MemberBox.java	1 Jul 2009 09:26:39 -0000
++++ src/org/mozilla/javascript/MemberBox.java	19 Jul 2009 17:41:03 -0000
 @@ -52,7 +52,7 @@
   * @author Igor Bukanov
   */
@@ -720,7 +720,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/WrapFactory.java,
 retrieving revision 1.20
 diff -u -r1.20 WrapFactory.java
 --- src/org/mozilla/javascript/WrapFactory.java	13 Nov 2008 18:03:40 -0000	1.20
-+++ src/org/mozilla/javascript/WrapFactory.java	1 Jul 2009 09:26:53 -0000
++++ src/org/mozilla/javascript/WrapFactory.java	19 Jul 2009 17:41:26 -0000
 @@ -151,6 +151,32 @@
      }
  
@@ -760,7 +760,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaClass.j
 retrieving revision 1.55
 diff -u -r1.55 NativeJavaClass.java
 --- src/org/mozilla/javascript/NativeJavaClass.java	5 Nov 2008 21:37:22 -0000	1.55
-+++ src/org/mozilla/javascript/NativeJavaClass.java	1 Jul 2009 09:26:39 -0000
++++ src/org/mozilla/javascript/NativeJavaClass.java	19 Jul 2009 17:41:03 -0000
 @@ -181,6 +181,12 @@
          return construct(cx, scope, args);
      }
@@ -800,7 +800,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/ScriptRuntime.jav
 retrieving revision 1.313
 diff -u -r1.313 ScriptRuntime.java
 --- src/org/mozilla/javascript/ScriptRuntime.java	25 Jun 2009 19:47:26 -0000	1.313
-+++ src/org/mozilla/javascript/ScriptRuntime.java	1 Jul 2009 09:26:51 -0000
++++ src/org/mozilla/javascript/ScriptRuntime.java	19 Jul 2009 17:41:19 -0000
 @@ -3256,6 +3256,10 @@
  
              Scriptable errorObject = cx.newObject(scope, errorName, args);
@@ -815,10 +815,10 @@ diff -u -r1.313 ScriptRuntime.java
 Index: src/org/mozilla/javascript/Interpreter.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Interpreter.java,v
-retrieving revision 1.355
-diff -u -r1.355 Interpreter.java
---- src/org/mozilla/javascript/Interpreter.java	16 Mar 2009 22:58:37 -0000	1.355
-+++ src/org/mozilla/javascript/Interpreter.java	1 Jul 2009 09:26:38 -0000
+retrieving revision 1.356
+diff -u -r1.356 Interpreter.java
+--- src/org/mozilla/javascript/Interpreter.java	4 Jul 2009 12:14:49 -0000	1.356
++++ src/org/mozilla/javascript/Interpreter.java	19 Jul 2009 17:41:01 -0000
 @@ -1055,65 +1055,6 @@
          throwable = stack[indexReg];
          break withoutExceptions;
@@ -981,7 +981,7 @@ diff -u -r1.355 Interpreter.java
          continue Loop;
      }
      case Token.NOT :
-@@ -3002,71 +2894,201 @@
+@@ -3001,71 +2893,201 @@
          }
      }
  
