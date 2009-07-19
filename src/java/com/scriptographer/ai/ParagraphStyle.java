@@ -31,7 +31,6 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
 import com.scriptographer.Commitable;
@@ -66,41 +65,6 @@ public class ParagraphStyle extends NativeObject implements Style, Commitable {
 		this(nativeCreate());
 		range = null;
 		commitKey = this;
-	}
-
-	/**
-	 * @jshide
-	 */
-	public ParagraphStyle(ArgumentReader reader) {
-		this();
-		setJustification(reader.readEnum("justification", ParagraphJustification.class));
-		setSingleWordJustification(reader.readEnum("singleWordJustification", ParagraphJustification.class));
-		setFirstLineIndent(reader.readFloat("firstLineIndent"));
-		setStartIndent(reader.readFloat("startIndent"));
-		setEndIndent(reader.readFloat("endIndent"));
-		setSpaceBefore(reader.readFloat("spaceBefore"));
-		setSpaceAfter(reader.readFloat("spaceAfter"));
-		setHyphenation(reader.readBoolean("hyphenation"));
-		setHyphenatedWordSize(reader.readInteger("hyphenatedWordSize"));
-		setPreHyphenSize(reader.readInteger("preHyphenSize"));
-		setPostHyphenSize(reader.readInteger("postHyphenSize"));
-		setConsecutiveHyphenLimit(reader.readInteger("consecutiveHyphenLimit"));
-		setHyphenationZone(reader.readFloat("hyphenationZone"));
-		setHyphenateCapitalized(reader.readBoolean("hyphenateCapitalized"));
-		setHyphenationPreference(reader.readFloat("hyphenationPreference"));
-		setDesiredWordSpacing(reader.readFloat("desiredWordSpacing"));
-		setMaxWordSpacing(reader.readFloat("maxWordSpacing"));
-		setMinWordSpacing(reader.readFloat("minWordSpacing"));
-		setDesiredLetterSpacing(reader.readFloat("desiredLetterSpacing"));
-		setMaxLetterSpacing(reader.readFloat("maxLetterSpacing"));
-		setMinLetterSpacing(reader.readFloat("minLetterSpacing"));
-		setDesiredGlyphScaling(reader.readFloat("desiredGlyphScaling"));
-		setMaxGlyphScaling(reader.readFloat("maxGlyphScaling"));
-		setMinGlyphScaling(reader.readFloat("minGlyphSpacing"));
-		setAutoLeadingPercentage(reader.readFloat("autoLeadingPercentage"));
-		setLeading(reader.readEnum("leading", LeadingType.class));
-		// TODO: setTabStops((TabStopList) reader.readObject("tabStop", TabStopList.class));
-		setDefaultTabWidth(reader.readFloat("defaultTabWidth"));
 	}
 
 	protected ParagraphStyle(int handle, TextRange range) {
