@@ -60,17 +60,17 @@ public class Curve {
 		this(curve.segment1, curve.segment2);
 	}
 
-	public Curve(Point pt1, Point h1, Point h2, Point pt2) {
-		segment1 = new Segment(pt1, null, h1);
-		segment2 = new Segment(pt2, h2, null);
+	public Curve(Point point1, Point handle1, Point handle2, Point point2) {
+		segment1 = new Segment(point1, null, handle1);
+		segment2 = new Segment(point2, handle2, null);
 	}
 
-	public Curve(Point pt1, Point pt2) {
-		this(pt1, null, null, pt2);
+	public Curve(Point point1, Point point2) {
+		this(point1, null, null, point2);
 	}
 
-	public Curve(Point pt) {
-		this(pt, pt);
+	public Curve(Point point) {
+		this(point, point);
 	}
 
 	/**
