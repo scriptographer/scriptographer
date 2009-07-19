@@ -40,7 +40,7 @@ import com.scratchdisk.script.ArgumentReader;
  * Illustrator document. Some functions also use it as a two dimensional vector
  * object.
  * 
- * @jsextension {@type field} {@name selected} {@reference SegmentPoint#selected} {@after angle}
+ * @jsreference {@type field} {@name selected} {@reference SegmentPoint#selected} {@after angle}
  * 
  * @author lehni
  */
