@@ -33,13 +33,13 @@ ClassObject = DocObject.extend({
 			this.addDoc(superclass, false);
 			superclass = superclass.superclass();
 		}
-		var extensions = this.doc.tags('jsextension');
-		// Loop through the extensions backwards, so insertion sequence through 
+		var references = this.doc.tags('jsreference');
+		// Loop through the references backwards, so insertion sequence through 
 		// @after tags is maintained.
-		for (var i = extensions.length - 1; i >= 0; i--) {
-			var ext = extensions[i];
+		for (var i = references.length - 1; i >= 0; i--) {
+			var ref = references[i];
 			var data = {};
-			ext.inlineTags().each(function(tag) {
+			ref.inlineTags().each(function(tag) {
 				var name = tag.name();
 				if (/^@/.test(name))
 					data[name.substring(1)] = tag.text();

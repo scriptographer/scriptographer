@@ -28,8 +28,13 @@ ReferenceMember = SyntheticMember.extend({
 		} else {
 			// Add all members of the group, not just one
 			var group = MemberGroup.getByReference(this.reference, this.containingClass());
-			if (group)
+			if (group) {
 				members = group.members;
+				// Remove referenced group from list if it's in same classObject,
+				// since we're inserting it elsewhere.
+				if (group.classObject == this.classObject)
+					this.list.remove(group);
+			}
 		}
 		if (members) {
 			this.member = members[0];
