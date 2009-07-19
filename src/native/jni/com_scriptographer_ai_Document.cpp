@@ -359,36 +359,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setSize(JNIEnv *env, 
 }
 
 /*
- * com.scriptographer.ai.Rectangle getCropBox()
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getCropBox(JNIEnv *env, jobject obj) {
-	jobject cropBox = NULL;
-	try {
-		// cause the doc switch if necessary
-		gEngine->getDocumentHandle(env, obj, true);
-		
-		AIRealRect rt;
-		sAIDocument->GetDocumentCropBox(&rt);
-		cropBox = gEngine->convertRectangle(env, &rt);
-	} EXCEPTION_CONVERT(env);
-	return cropBox;
-}
-
-/*
- * void setCropBox(com.scriptographer.ai.Rectangle cropBox)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setCropBox(JNIEnv *env, jobject obj, jobject cropBox) {
-	try {
-		// cause the doc switch if necessary
-		gEngine->getDocumentHandle(env, obj, true);
-		
-		AIRealRect rt;
-		gEngine->convertRectangle(env, cropBox, &rt);
-		sAIDocument->SetDocumentCropBox(&rt);
-	} EXCEPTION_CONVERT(env);
-}
-
-/*
  * boolean isModified()
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_isModified(JNIEnv *env, jobject obj) {

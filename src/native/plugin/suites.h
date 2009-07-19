@@ -79,7 +79,6 @@
 #include "AIOverrideColorConversion.h"
 #include "AIColorConversion.h"
 #include "AIContext.h"
-#include "AICropArea.h"
 #include "AICursorSnap.h"
 #include "AICustomColor.h"
 #include "AIDocument.h"
@@ -150,9 +149,8 @@
 #include "AITracing.h"
 #endif // kPluginInterfaceVersion >= kAI12
 
-
 #if kPluginInterfaceVersion >= kAI13
-#include "AITracing.h"
+#include "AICropArea.h"
 #endif // kPluginInterfaceVersion >= kAI13
 
 typedef struct {

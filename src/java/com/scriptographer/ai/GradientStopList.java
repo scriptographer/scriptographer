@@ -79,12 +79,12 @@ public class GradientStopList extends AbstractStructList<Gradient, GradientStop>
 	private static native int nativeRemove(int handle, int docHandle,
 			int fromIndex, int toIndex);
 
-	protected static native void nativeGet(int handle, int index,
+	protected static native boolean nativeGet(int handle, int index,
 			GradientStop stop);
 
-	protected static native void nativeSet(int handle, int docHandle,
+	protected static native boolean nativeSet(int handle, int docHandle,
 			int index, double midPoint, double rampPoint, float[] color);
 
-	protected static native void nativeInsert(int handle, int docHandle,
+	protected static native boolean nativeInsert(int handle, int docHandle,
 			int index, double midPoint, double rampPoint, float[] color);
 }

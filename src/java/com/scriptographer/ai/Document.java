@@ -302,13 +302,6 @@ public class Document extends NativeObject {
 	}
 
 	/**
-	 * The size of the visible area of an EPS file.
-	 */
-	public native Rectangle getCropBox();
-	
-	public native void setCropBox(Rectangle cropBox);
-
-	/**
 	 * Specifies if the document has been edited since it was last saved. When
 	 * set to {@code true}, closing the document will present the user
 	 * with a dialog box asking to save the file.

@@ -64,13 +64,13 @@ public class ArtboardList extends AbstractStructList<Document, Artboard> {
 
 	private static native int nativeRemove(int handle, int fromIndex, int toIndex);
 
-	protected static native void nativeGet(int handle, int index, Artboard artboard);
+	protected static native boolean nativeGet(int handle, int index, Artboard artboard);
 
-	protected static native void nativeInsert(int handle, int index,
+	protected static native boolean nativeInsert(int handle, int index,
 			Rectangle bounds, boolean showCenter, boolean showCrossHairs,
 			boolean showSafeAreas, double pixelAspectRatio);
 
-	protected static native void nativeSet(int handle, int index,
+	protected static native boolean nativeSet(int handle, int index,
 			Rectangle bounds, boolean showCenter, boolean showCrossHairs,
 			boolean showSafeAreas, double pixelAspectRatio);
 }

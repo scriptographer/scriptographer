@@ -88,19 +88,19 @@ public class GradientStop extends AbstractStructList.Entry<Gradient> {
 		this.color = color;
 	}
 	
-	protected void nativeGet() {
-		GradientStopList.nativeGet(reference.handle, index, this);
+	protected boolean nativeGet() {
+		return GradientStopList.nativeGet(reference.handle, index, this);
 	}
 
-	protected void nativeInsert() {
-		GradientStopList.nativeInsert(
+	protected boolean nativeInsert() {
+		return GradientStopList.nativeInsert(
 				reference.handle, reference.document.handle, index,
 				midPoint * 100, rampPoint * 100, color.getComponents());
 	}
 	
-	protected void nativeSet() {
+	protected boolean nativeSet() {
 		// Scale values back from 0 .. 1 to 0 .. 100
-		GradientStopList.nativeSet(
+		return GradientStopList.nativeSet(
 				reference.handle, reference.document.handle, index,
 				midPoint * 100, rampPoint * 100, color.getComponents());
 	}

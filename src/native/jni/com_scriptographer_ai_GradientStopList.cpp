@@ -66,9 +66,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_GradientStopList_nativeRemove(
 }
 
 /*
- * void nativeGet(int handle, int index, com.scriptographer.ai.GradientStop stop)
+ * boolean nativeGet(int handle, int index, com.scriptographer.ai.GradientStop stop)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeGet(JNIEnv *env, jclass cls, jint handle, jint index, jobject stop) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_GradientStopList_nativeGet(JNIEnv *env, jclass cls, jint handle, jint index, jobject stop) {
 	try {
 		AIGradientStop s;
 		if (sAIGradient->GetNthGradientStop((AIGradientHandle) handle, index, &s))
@@ -81,13 +81,15 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeGet(JNI
 			s.opacity = 1;
 #endif
 		gEngine->callVoidMethod(env, stop, gEngine->mid_ai_GradientStop_set, s.midPoint, s.rampPoint, color);
+		return true;
 	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
- * void nativeSet(int handle, int docHandle, int index, double midPoint, double rampPoint, float[] color)
+ * boolean nativeSet(int handle, int docHandle, int index, double midPoint, double rampPoint, float[] color)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeSet(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jdouble midPoint, jdouble rampPoint, jfloatArray color) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_GradientStopList_nativeSet(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jdouble midPoint, jdouble rampPoint, jfloatArray color) {
 	try {
 		AIGradientStop s;
 #if kPluginInterfaceVersion < kAI14
@@ -102,13 +104,15 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeSet(JNI
 		gEngine->convertColor(env, color, &s.color);
 		if (sAIGradient->SetNthGradientStop((AIGradientHandle) handle, index, &s))
 			throw new StringException("Cannot set gradient stop");
+		return true;
 	} EXCEPTION_CONVERT(env);
+	return false;
 }
 
 /*
- * void nativeInsert(int handle, int docHandle, int index, double midPoint, double rampPoint, float[] color)
+ * boolean nativeInsert(int handle, int docHandle, int index, double midPoint, double rampPoint, float[] color)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeInsert(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jdouble midPoint, jdouble rampPoint, jfloatArray color) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_GradientStopList_nativeInsert(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint index, jdouble midPoint, jdouble rampPoint, jfloatArray color) {
 	try {
 		AIGradientStop s;
 #if kPluginInterfaceVersion < kAI14
@@ -122,5 +126,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_GradientStopList_nativeInsert(
 		s.midPoint = midPoint;
 		if (sAIGradient->InsertGradientStop((AIGradientHandle) handle, index, &s))
 			throw new StringException("Cannot insert gradient stop");
+		return true;
 	} EXCEPTION_CONVERT(env);
+	return false;
 }

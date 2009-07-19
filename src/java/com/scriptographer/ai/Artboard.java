@@ -118,17 +118,17 @@ public class Artboard extends AbstractStructList.Entry<Document> {
 		this.pixelAspectRatio = pixelAspectRatio;
 	}
 
-	protected void nativeGet() {
-		ArtboardList.nativeGet(reference.handle, index, this);
+	protected boolean nativeGet() {
+		return ArtboardList.nativeGet(reference.handle, index, this);
 	}
 
-	protected void nativeInsert() {
-		ArtboardList.nativeInsert(reference.handle, index, bounds, showCenter,
+	protected boolean nativeInsert() {
+		return ArtboardList.nativeInsert(reference.handle, index, bounds, showCenter,
 				showCrossHairs, showSafeAreas, pixelAspectRatio);
 	}
 
-	protected void nativeSet() {
-		ArtboardList.nativeSet(reference.handle, index, bounds, showCenter,
+	protected boolean nativeSet() {
+		return ArtboardList.nativeSet(reference.handle, index, bounds, showCenter,
 				showCrossHairs, showSafeAreas, pixelAspectRatio);
 	}
 

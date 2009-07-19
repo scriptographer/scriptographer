@@ -78,8 +78,7 @@ public abstract class AbstractStructList<R, E extends AbstractStructList.Entry<R
 		}
 		// Always update, even when newly fetched, to make sure it is
 		// initialised.
-		element.update();
-		return element;
+		return element.update() ? element : null;
 	}
 
 	public E add(int index, E element) {
@@ -89,17 +88,19 @@ public abstract class AbstractStructList<R, E extends AbstractStructList.Entry<R
 		element.version = CommitManager.version;
 		element.index = index;
 		element.reference = reference;
-		// Increase size
-		size++;
 		// And add to illustrator as well
-		element.insert();
-		// Update indices
-		for (int i = index + 1; i < size; i++) {
-			E e = list.get(i);
-			if (e != null)
-				e.index = i;
+		if (element.insert()) {
+			// Increase size
+			size++;
+			// Update indices
+			for (int i = index + 1; i < size; i++) {
+				E e = list.get(i);
+				if (e != null)
+					e.index = i;
+			}
+			return element;
 		}
-		return element;
+		return null;
 	}
 
 	public E set(int index, E element) {
@@ -171,35 +172,39 @@ public abstract class AbstractStructList<R, E extends AbstractStructList.Entry<R
 			}
 		}
 		
-		protected abstract void nativeInsert();
+		protected abstract boolean nativeInsert();
 
-		protected abstract void nativeSet();
+		protected abstract boolean nativeSet();
 
-		protected abstract void nativeGet();
+		protected abstract boolean nativeGet();
 
-		protected void insert() {
+		protected boolean insert() {
 			if (reference != null && index != -1) {
 				CommitManager.commit(reference);
-				nativeInsert();
-				version = CommitManager.version;
-				dirty = false;
+				if (nativeInsert()) {
+					version = CommitManager.version;
+					dirty = false;
+					return true;
+				}
 			}
+			return false;
 		}
 
 		public void commit() {
-			if (dirty && reference != null && index != -1) {
-				nativeSet();
+			if (dirty && reference != null && index != -1 && nativeSet()) {
 				version = CommitManager.version;
 				dirty = false;
 			}
 		}
 		
-		protected void update() {
+		protected boolean update() {
 			if (!dirty && reference != null && index != -1
 					&& version != CommitManager.version) {
-				nativeGet();
+				if (!nativeGet())
+					return false;
 				version = CommitManager.version;
 			}
+			return true;
 		}
 
 		/**
