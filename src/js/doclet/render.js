@@ -90,8 +90,9 @@ function renderTags(param) {
 		// Automatically put </p><p> at the end of sentences with line breaks.
 		// Match following </p> and <p> tags and swallow them. This happens when
 		// the original content contains these.
-		str = str.trim().replace(/([.:?!;])\s*(\n|\r\n)\s*(<\/p>|<p>|)/g, function(match, before, lineBreak, after) {
-			return before + '</p>' + lineBreak + '<p>';
+		str = str.trim().replace(/([.:?!;])\s*(\n|\r\n)(\s*)(<\/p>|<p>|)/g, function(match, before, lineBreak, whiteSpace, after) {
+			// Include following whiteSpace as well, since for code blocks they are relevant (e.g. indentation on new line)
+			return before + '</p>' + lineBreak + whiteSpace + '<p>';
 		});
 		// Filter out <p> tags within and around <code> blocks again
 		str = str.replace(/((?:<p>\s*|)<code>[\u0000-\uffff]*<\/code>(?:\s*<\/p>|))/g, function(match, code) {
