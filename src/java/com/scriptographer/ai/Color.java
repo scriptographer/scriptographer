@@ -72,12 +72,10 @@ public abstract class Color {
 	/**
 	 * A value between 0 and 1 that specifies the color's alpha value.
 	 * All colors of the different subclasses support alpha values.
-	 * A value of 1f is sometimes treated as a color without alpha channel.
 	 */
-	public float getAlpha() {
-		// an alpha value of -1 means no alpha channel. return 1 here as no
-		// alpha means 100% alpha
-		return alpha == -1f ? 1f : alpha;
+	public Float getAlpha() {
+		// an alpha value of -1 means no alpha channel.
+		return alpha == -1f ? null : alpha;
 	}
 
 	/**
@@ -91,12 +89,13 @@ public abstract class Color {
 	
 	/**
 	 * Sets the color's alpha value.
-	 * Setting alpha to -1 deactivates the alpha channel.
+	 * Setting alpha to null deactivates the alpha channel.
 	 *
 	 * @param alpha the color's new alpha value
 	 */
-	public void setAlpha(float alpha) {
-		if (alpha < 0f && alpha != -1f) this.alpha = 0f;
+	public void setAlpha(Float alpha) {
+		if (alpha == null || alpha == -1) this.alpha = -1f;
+		else if (alpha < 0f) this.alpha = 0f;
 		else if (alpha > 1f) this.alpha = 1f;
 		else this.alpha = alpha;
 	}
