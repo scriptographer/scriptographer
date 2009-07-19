@@ -100,16 +100,23 @@ public class HitResult {
 	}
 
 	/**
-	 * Returns the item which was hit.
+	 * The item which was hit.
 	 */
 	public Item getItem() {
 		return item;
 	}
 
+	/**
+	 * The curve which was hit, if any.
+	 * @return
+	 */
 	public Curve getCurve() {
 		return curve;
 	}
 	
+	/**
+	 * The index of the curve which was hit, if any.
+	 */
 	public int getIndex() {
 		if (curve != null)
 			return curve.getIndex();
@@ -121,12 +128,19 @@ public class HitResult {
 		return parameter;
 	}
 	
+	/**
+	 * The point which was hit.
+	 */
 	public Point getPoint() {
 		if (point == null && curve != null)
 			point = curve.getPoint(parameter);
 		return point;
 	}
 	
+	/**
+	 * Describes the type of the hit result.
+	 * For example, if you hit an anchor point, the type would be 'anchor'.
+	 */
 	public HitType getType() {
 		return type;
 	}
