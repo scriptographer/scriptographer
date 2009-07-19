@@ -400,7 +400,7 @@ public class Document extends NativeObject {
 			symbols = new SymbolList(this);
 		return symbols;
 	}
-	
+
 	private native int getActiveSymbolHandle(); 
 
 	/**
@@ -426,6 +426,18 @@ public class Document extends NativeObject {
 		if (artboards == null)
 			artboards = new ArtboardList(this);
 		return artboards;
+	}
+
+	private native int getActiveArtboardIndex();
+
+	private native void setActiveArtboardIndex(int index);
+
+	public Artboard getActiveArtboard() {
+		return getArtboards().get(getActiveArtboardIndex());
+	}
+
+	public void setActiveArtboard(Artboard board) {
+		setActiveArtboardIndex(board.getIndex());
 	}
 
 	/**

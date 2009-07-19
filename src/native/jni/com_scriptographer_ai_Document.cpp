@@ -236,16 +236,17 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getActiveLayer(JNI
 	} EXCEPTION_CONVERT(env);
 	return layerObj;
 }
+
 /*
  * int getActiveViewHandle()
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveViewHandle(JNIEnv *env, jobject obj) {
 	AIDocumentViewHandle view = NULL;
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
-		// the active view is at index 0:
+		// The active view is at index 0:
 		sAIDocumentView->GetNthDocumentView(0, &view);
 	} EXCEPTION_CONVERT(env);
 	return (jint) view;
@@ -256,13 +257,44 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveViewHandle(J
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveSymbolHandle(JNIEnv *env, jobject obj) {
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		AIPatternHandle symbol = NULL;
 		sAISymbolPalette->GetCurrentSymbol(&symbol);
 		return (jint) symbol;
 	} EXCEPTION_CONVERT(env);
 	return 0;
+}
+
+/*
+ * int getActiveArtboardIndex()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_getActiveArtboardIndex(JNIEnv *env, jobject obj) {
+#if kPluginInterfaceVersion >= kAI13
+	try {
+		// Cause the doc switch if necessary
+		gEngine->getDocumentHandle(env, obj, true);
+		ASInt32 index;
+		if (!sAICropArea->GetActive(&index))
+			return index;
+	} EXCEPTION_CONVERT(env);
+	return -1;
+#else // kPluginInterfaceVersion < kAI13
+	return 0;
+#endif // kPluginInterfaceVersion < kAI13 
+}
+
+/*
+ * void setActiveArtboardIndex(int index)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setActiveArtboardIndex(JNIEnv *env, jobject obj, jint index) {
+#if kPluginInterfaceVersion >= kAI13
+	try {
+		// Cause the doc switch if necessary
+		gEngine->getDocumentHandle(env, obj, true);
+		sAICropArea->SetActive(index);
+	} EXCEPTION_CONVERT(env);
+#endif // kPluginInterfaceVersion < kAI13 
 }
 
 /*
