@@ -498,6 +498,15 @@ public class Point {
 	public boolean isParallel(Point point) {
 		return Math.abs(x / point.x - y / point.y) < 0.00001;
 	}
+
+	/**
+	 * Checks if this point has both the x and y coordinate set to 0. 
+	 * 
+	 * @return {@true if both x and y are 0}
+	 */
+	public boolean isZero() {
+		return x == 0 && y == 0;
+	}
 	
 	/**
 	 * Returns the distance between the point and another point.
