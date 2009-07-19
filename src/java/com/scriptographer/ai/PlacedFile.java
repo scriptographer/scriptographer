@@ -80,8 +80,26 @@ public class PlacedFile extends Item {
 	public PlacedFile(File file) {
 		super(nativeCreate(file));
 	}
-		
-	public native Rectangle getBoundingBox();
+
+	/**
+	 * The original size of the placed file, ignoring any transformation
+	 * matrices applied to it in the document.
+	 */
+	public native com.scriptographer.ui.Size getSize();
+
+	/**
+	 * The original width of the placed file.
+	 */
+	public int getWidth() {
+		return getSize().width;
+	}
+
+	/**
+	 * The original height of the placed file.
+	 */
+	public int getHeight() {
+		return getSize().height;
+	}
 	
 	public native Matrix getMatrix();
 	

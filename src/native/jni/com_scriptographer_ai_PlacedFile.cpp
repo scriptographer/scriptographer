@@ -116,14 +116,16 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_embed(JNIEnv *en
 }
 
 /*
- * com.scriptographer.ai.Rectangle getBoundingBox()
+ * com.scriptographer.ui.Size getSize()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_getBoundingBox(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_getSize(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealRect rect;
-		sAIPlaced->GetPlacedBoundingBox(art, &rect);
-		return gEngine->convertRectangle(env, &rect);
+		if (!sAIPlaced->GetPlacedBoundingBox(art, &rect)) {
+			DEFINE_POINT(point, rect.right - rect.right, rect.top - rect.bottom);
+			return gEngine->convertSize(env, &point);
+		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
