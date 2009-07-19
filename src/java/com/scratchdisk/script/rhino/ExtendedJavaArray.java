@@ -59,13 +59,8 @@ public class ExtendedJavaArray extends NativeJavaArray {
 			// see whether this object defines the property.
 			result = properties.get(name);
 		} else {
-			Scriptable prototype = this.getPrototype();
+			Scriptable prototype = getPrototype();
 			if (name.equals("prototype")) {
-				if (prototype == null) {
-					// If no prototype object was created it, produce it on the fly.
-					prototype = new NativeObject();
-					this.setPrototype(prototype);
-				}
 				result = prototype;
 			} else if (prototype != null) {
 				// if not, see whether the prototype maybe defines it.

@@ -36,7 +36,14 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import org.mozilla.javascript.*;
+import org.mozilla.javascript.Callable;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.EvaluatorException;
+import org.mozilla.javascript.MemberBox;
+import org.mozilla.javascript.NativeJavaClass;
+import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
 import com.scratchdisk.script.ArgumentReader;
 
@@ -178,7 +185,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 			}
 		}
 		// Throw exception again, if nothing was found and the class was sealed.
-		if (properties == null && result == ScriptableObject.NOT_FOUND && exc != null)
+		if (exc != null && properties == null && result == ScriptableObject.NOT_FOUND)
 			throw exc;
 		return result;
 	}
@@ -208,7 +215,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 
 	public Scriptable getInstancePrototype() {
 		if (instanceProto == null) {
-			instanceProto = new NativeObject();
+			instanceProto = new ExtendedJavaPrototype(members);
 			// Set the prototype chain correctly for this prototype object, 
 			// so properties in the prototype of parent classes are found too:
 			Class sup = getClassObject().getSuperclass();

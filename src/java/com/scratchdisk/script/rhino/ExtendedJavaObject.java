@@ -31,9 +31,14 @@
 
 package com.scratchdisk.script.rhino;
 
-import java.util.*;
+import java.util.HashMap;
 
-import org.mozilla.javascript.*;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.EcmaError;
+import org.mozilla.javascript.EvaluatorException;
+import org.mozilla.javascript.NativeJavaObject;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
 /**
  * @author lehni
@@ -51,16 +56,24 @@ public class ExtendedJavaObject extends NativeJavaObject {
 		Class staticType, boolean unsealed) {
 		super(scope, javaObject, staticType);
 		properties = unsealed ? new HashMap<String, Object>() : null;
-		classWrapper = staticType != null ?
-				ExtendedJavaClass.getClassWrapper(scope, staticType) : null;
+		classWrapper = ExtendedJavaClass.getClassWrapper(scope, staticType);
 	}
 
 	public Scriptable getPrototype() {
 		Scriptable prototype = super.getPrototype();
-	    if (prototype == null && classWrapper != null) {
-	    	prototype = classWrapper.getInstancePrototype();
-	    }
-	    return prototype;
+		return prototype == null
+				? classWrapper.getInstancePrototype()
+				: prototype;
+	}
+
+	public void setPrototype(Scriptable proto) {
+		if (!(proto instanceof ExtendedJavaPrototype)) {
+			// Create a new ExtendedJavaPrototype around proto and inherit from proto.
+			ExtendedJavaPrototype mergedProto = new ExtendedJavaPrototype(members);
+			mergedProto.setPrototype(proto);
+			proto = mergedProto;
+		}
+		super.setPrototype(proto);
 	}
 
 	public Object get(String name, Scriptable start) {
@@ -70,35 +83,19 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			// See whether this object defines the property.
 			return properties.get(name);
 		} else {
-			// Careful: We cannot on members.has, as this does not
-			// check static fields the way members.get does...
-			Object res = members.get(this, name, javaObject, false);
-			if (res != null && res != Scriptable.NOT_FOUND)
-			    return res;
+			// First see if the prototype defines the field
 			Scriptable prototype = getPrototype();
-			if (name.equals("prototype")) {
-				if (prototype == null) {
-					// If no prototype object was created it, produce it on the fly.
-					prototype = new NativeObject();
-					setPrototype(prototype);
-				}
+			// If not, see whether the prototype maybe defines it.
+			// NativeJavaObject misses to do so:
+			Object result = prototype.get(name, start);
+			if (result != Scriptable.NOT_FOUND)
+				return result;
+			if (name.equals("prototype"))
 				return prototype;
-			} else if (prototype != null && prototype.has(name, start)) {
-				// If not, see whether the prototype maybe defines it.
-				// NativeJavaObject misses to do so:
-				return prototype.get(name, start);
-			}
 			return Scriptable.NOT_FOUND;
-			/*
-			// TODO: What does fieldAndMethods do? Is it needed?
-			else if (fieldAndMethods != null && fieldAndMethods.containsKey(name)) {
-				// Static field or method?
-				return fieldAndMethods.get(name);
-			}
-			*/
 		}
 	}
-	
+
 	public void put(String name, Scriptable start, Object value) {
 		EvaluatorException error = null;
         if (members.has(name, false)) {
@@ -132,7 +129,7 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			throw error;
 		}
 	}
-	
+
 	public boolean has(String name, Scriptable start) {
 		return members.has(name, false) ||
 				properties != null && properties.containsKey(name);
@@ -163,8 +160,19 @@ public class ExtendedJavaObject extends NativeJavaObject {
 	protected Object toObject(Object obj, Scriptable scope) {
 		// Use this instead of Context.toObject, since that one
 		// seems to handle Booleans wrongly (wrapping it in objects).
+		// TODO: Is this a Rhino bug? If so, fix it.
 		scope = ScriptableObject.getTopLevelScope(scope);
 		Context cx = Context.getCurrentContext();
         return cx.getWrapFactory().wrap(cx, scope, obj, null);
+	}
+
+	public Object getDefaultValue(Class<?> hint) {
+		// Try the ScriptableObject version first that tries to call toString / valueOf,
+		// and fallback on the Java toString only if that does not work out.
+		try {
+			return ScriptableObject.getDefaultValue(this, hint);
+		} catch (EcmaError e) {
+			return super.getDefaultValue(hint);
+		}
 	}
 }
