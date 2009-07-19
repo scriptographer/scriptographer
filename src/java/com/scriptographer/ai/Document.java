@@ -338,12 +338,15 @@ public class Document extends NativeObject {
 
 	/**
 	 * An object contained within the document which can be used to store data.
-	 * The values in this object can be accessed even after the file has been closed and opened again.
+	 * The values in this object can be accessed even after the file has been
+	 * closed and opened again. Since these values are stored in a native
+	 * structure, only a limited amount of value types are supported: Number,
+	 * String, Boolean, Item, Point, Matrix.
 	 * 
 	 * Sample code:
 	 * <code>
-	 * document.data['remember'] = 'to pick up some flowers';
-	 * print(document.data['remember']); // 'to pick up some flowers'
+	 * document.data.point = new Point(50, 50);
+	 * print(document.data.point); // {x: 50, y: 50}
 	 * </code>
 	 * 
 	 */

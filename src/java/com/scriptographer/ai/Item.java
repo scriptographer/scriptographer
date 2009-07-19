@@ -688,6 +688,20 @@ public class Item extends DocumentObject implements Style {
 	
 	private native int nativeGetData();
 
+	/**
+	 * An object contained within the item which can be used to store data.
+	 * The values in this object can be accessed even after the file has been
+	 * closed and opened again. Since these values are stored in a native
+	 * structure, only a limited amount of value types are supported: Number,
+	 * String, Boolean, Item, Point, Matrix.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path.Circle(new Point(50, 50), 50);
+	 * path.data.point = new Point(50, 50);
+	 * print(path.data.point); // {x: 50, y: 50}
+	 * </code>
+	 */
 	public Dictionary getData() {
 		if (data == null)
 			data = Dictionary.wrapHandle(nativeGetData(), document);
