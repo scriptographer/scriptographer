@@ -717,8 +717,9 @@ public class Item extends DocumentObject implements Style {
 	}
 	
 	/**
-	 * The item's parent layer, if any.
 	 * {@grouptitle Document Hierarchy}
+	 * 
+	 * The item's parent layer, if any.
 	 */
 	public native Layer getLayer();
 	
@@ -815,8 +816,9 @@ public class Item extends DocumentObject implements Style {
 	private ItemRectangle bounds = null;
 
 	/**
-	 * The bounding rectangle of the item excluding stroke width.
 	 * {@grouptitle Bounding Rectangles}
+	 * 
+	 * The bounding rectangle of the item excluding stroke width.
 	 */
 	public Rectangle getBounds() {
 		commit(false);
@@ -997,6 +999,8 @@ public class Item extends DocumentObject implements Style {
 	 * Path Style
 	 */
 	/**
+	 * {@grouptitle Path Style}
+	 * 
 	 * @copy PathStyle#getWindingRule()
 	 */
 	public WindingRule getWindingRule() {
@@ -1164,10 +1168,11 @@ public class Item extends DocumentObject implements Style {
 	}
 	
 	/**
+	 * {@grouptitle Tests}
+	 * 
 	 * Checks if the item contains any children items.
 	 * 
 	 * @return {@true if it has one or more children}
-	 * {@grouptitle Tests}
 	 */
 	public boolean hasChildren() {
 		return getFirstChild() != null;
@@ -1214,6 +1219,8 @@ public class Item extends DocumentObject implements Style {
 	public native boolean isValid();
 	
 	/**
+	 * {@grouptitle Hierarchy Operations}
+	 * 
 	 * Inserts the specified item as a child of the item by appending it to the
 	 * list of children and moving it above all other children.
 	 * You can use this function for groups, compound paths and layers.
@@ -1227,7 +1234,6 @@ public class Item extends DocumentObject implements Style {
 	 * </code>
 	 * 
 	 * @param item The item that will be appended as a child
-	 * {@grouptitle Hierarchy Operations}
 	 */
 	public native boolean appendTop(Item item);
 
@@ -1292,6 +1298,8 @@ public class Item extends DocumentObject implements Style {
 	public native boolean moveBelow(Item item);
 
 	/**
+	 * {@grouptitle Hierarchy Tests}
+	 * 
 	 * Checks if this item is above the specified item in the stacking
 	 * order of the document.
 	 * 
@@ -1304,7 +1312,6 @@ public class Item extends DocumentObject implements Style {
 	 * 
 	 * @param item The item to check against
 	 * @return {@true if it is above the specified item}
-	 * {@grouptitle Hierarchy Tests}
 	 */
 	public native boolean isAbove(Item item);
 	
@@ -1426,12 +1433,14 @@ public class Item extends DocumentObject implements Style {
 	}
 	
 	/**
+ 	 * {@grouptitle Transform Functions}
+ 	 * 
 	 * Scales the item by the given values from its center point.
 	 * 
 	 * @param sx
 	 * @param sy
 	 * @param center {@default the center point of the item}
- 	 * {@grouptitle Transform Functions}
+	 * 
 	 * @see Matrix#scale(double, double, Point center)
 	 */
 	public void scale(double sx, double sy, Point center) {
