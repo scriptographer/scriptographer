@@ -268,7 +268,7 @@ public class Size {
 	 * size2.x = 1; // doesn't change size1.x
 	 * </code>
 	 * 
-	 * @return the cloned point
+	 * @return the cloned size object
 	 */
 	public Object clone() {
 		return new Size(this);
