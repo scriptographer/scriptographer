@@ -701,16 +701,16 @@ public class Document extends NativeObject {
 	 * either be true or false.
 	 * 
 	 * Sample code: <code>
-	 * // All hidden paths and rasters contained in the document.
-	 * var hiddenItems = document.getItems({ 
+	 * // All selected paths and rasters contained in the document.
+	 * var selectedItems = document.getItems({ 
 	 *     type: [Path, Raster], 
-	 *     hidden: true
+	 *     selected: true
 	 * });
 	 * 
-	 * // All locked Paths contained in the document.
-	 * var lockedItems = document.getItems({
+	 * // All hidden Paths contained in the document.
+	 * var hiddenItems = document.getItems({
 	 *     type: Path,
-	 *     locked: true
+	 *     hidden: true
 	 * });
 	 * </code>
 	 * 
