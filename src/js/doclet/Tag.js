@@ -123,7 +123,12 @@ GroupTag = Tag.extend({
 	_names: '@grouptitle,@grouptext',
 
 	render: function(param) {
-		data.group[this.name().substring(6)] = this.text();
+		var name = this.name().substring(6);
+		print(name, this.text(), data.group[name]);
+		// Do not override if it's defined already, to allow @copy tags in comments
+		// still define different title (or even erase them)
+		if (data.group[name] === undefined)
+			data.group[name] = this.text();
 	}
 });
 

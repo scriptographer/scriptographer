@@ -36,7 +36,12 @@ Member = Object.extend({
 				}
 			}
 			var copy = this.tags('copy')[0];
-		 	param.commentObject = copy && Member.getByReference(copy.text(), param.doc) || this;
+			copy = copy && Member.getByReference(copy.text(), param.doc);
+			if (copy) {
+				// Render own comment even for copy tags to offer support for grouptitles.
+				renderTags({ doc: this.containingClass(), tags: this.inlineTags() });
+			}
+		 	param.commentObject = copy || this;
 			return this.renderTemplate('member', param);
 		}
 	},
