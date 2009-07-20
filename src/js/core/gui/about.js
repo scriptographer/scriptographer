@@ -39,24 +39,38 @@ var aboutDialog = new ModalDialog(function() {
 		margin: [-4, 4, -4, -4]
 	};
 
+	var lines = [
+		'Scriptographer ' + scriptographer.version + '.' + revision,
+		'http://scriptographer.com',
+		'',
+		'Copyright \u00a9 2001-' + (new Date().getFullYear()) + ' J\u00fcrg Lehni',
+		'All rights reserved.',
+		'',
+		'Conception, API Design, Programming',
+		'J\u00fcrg Lehni',
+		'',
+		'Documentation, API Design',
+		'Jonathan Puckey',
+		'',
+		'Illustrator ' + app.version + '.' + app.revision,
+		'Java ' + java.lang.System.getProperty('java.version')
+	];
+
+	var urls = {
+		1: 'http://scriptographer.com',
+		7: 'http://scratchdisk.com',
+		10: 'http://jonathanpuckey.com'
+	};
+
 	var text = new TextPane(this) {
-		text: 'Scriptographer ' + scriptographer.version + '.' + revision + '\n'
-			+ 'http://www.scriptographer.com\n\n'
-			+ '\u00a9 2001-' + (new Date().getFullYear()) + ' J\u00fcrg Lehni\n'
-			+ 'http://www.scratchdisk.com\n\n'
-			+ 'All rights reserved.\n\n'
-			+ 'Illustrator ' + app.version + '.' + app.revision + '\n'
-			+ 'Java ' + java.lang.System.getProperty('java.version') + '\n',
+		text: lines.join('\n'),
 		bottomMargin: 8,
 
 		onTrack: function(tracker) {
 			if (tracker.modifiers & Tracker.MODIFIER_CLICK) {
 				var line = Math.floor(tracker.point.y / this.getTextSize(' ', -1).height);
-				var url = line == 1 ? 'http://www.scriptographer.com'
-						: line == 4 ? 'http://www.scratchdisk.com'
-						: null;
-				if (url && tracker.point.x < this.getTextSize(url, -1).width)
-					app.launch(url);
+				if (urls[line] && tracker.point.x < this.getTextSize(lines[line], -1).width)
+					app.launch(urls[line]);
 			}
 			return true;
 		}
