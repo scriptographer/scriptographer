@@ -32,7 +32,7 @@
 package com.scriptographer.ai;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import com.scratchdisk.list.AbstractReadOnlyList;
 import com.scratchdisk.list.ReadOnlyStringIndexList;
@@ -45,11 +45,11 @@ import com.scratchdisk.list.ReadOnlyStringIndexList;
 public class FileFormatList extends AbstractReadOnlyList<FileFormat> implements ReadOnlyStringIndexList<FileFormat> {
 
 	private ArrayList<FileFormat> formats = null;
-	private HashMap<String, FileFormat> lookup = null;
+	private LinkedHashMap<String, FileFormat> lookup = null;
 	
 	private FileFormatList() {
 		formats = FileFormat.getFileFormats();
-		lookup = new HashMap<String, FileFormat>();
+		lookup = new LinkedHashMap<String, FileFormat>();
 		for (FileFormat format : formats)
 			for (String extension : format.getExtensions())
 				lookup.put(extension.toLowerCase(), format);
@@ -74,5 +74,9 @@ public class FileFormatList extends AbstractReadOnlyList<FileFormat> implements 
 
 	public FileFormat get(String extenion) {
 		return lookup.get(extenion.toLowerCase());
+	}
+
+	public String[] getExtensions() {
+		return lookup.keySet().toArray(new String[lookup.size()]);
 	}
 }

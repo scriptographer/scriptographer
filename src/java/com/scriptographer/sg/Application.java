@@ -74,8 +74,8 @@ public class Application {
 	 * Returns a list of all file formats available for writing of
 	 * documents.
 	 */
-	public FileFormatList getFileFormats() {
-		return FileFormatList.getInstance();
+	public String[] getFileFormats() {
+		return FileFormatList.getInstance().getExtensions();
 	}
 
 	/**

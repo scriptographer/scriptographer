@@ -554,7 +554,10 @@ public class Document extends NativeObject {
 	}
 
 	private native boolean nativeWrite(File file, int formatHandle, boolean ask);
-	
+
+	/**
+	 * @jshide
+	 */
 	public boolean write(File file, FileFormat format, boolean ask) {
 		if (format == null) {
 			// Try to get format by extension
@@ -567,12 +570,11 @@ public class Document extends NativeObject {
 		return nativeWrite(file, format != null ? format.handle : 0, ask);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public boolean write(File file, FileFormat format) {
 		return write(file, format, false);
-	}
-
-	public boolean write(File file) {
-		return write(file, (FileFormat) null, false);
 	}
 
 	public boolean write(File file, String format, boolean ask) {
@@ -581,6 +583,14 @@ public class Document extends NativeObject {
 
 	public boolean write(File file, String format) {
 		return write(file, format, false);
+	}
+
+	public boolean write(File file, boolean ask) {
+		return write(file, (FileFormat) null, ask);
+	}
+
+	public boolean write(File file) {
+		return write(file, false);
 	}
 
 	/**

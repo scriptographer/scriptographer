@@ -37,6 +37,8 @@ import com.scratchdisk.util.IntMap;
 
 /**
  * @author lehni
+ * 
+ * @jshide
  */
 public class FileFormat extends NativeObject {
 
