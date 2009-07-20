@@ -43,9 +43,17 @@ import com.scriptographer.CommitManager;
 import com.scriptographer.ui.Image;
 
 /**
+ * The Item type allows you to access and modify the artwork items in
+ * Illustrator documents. Its functionality is inherited by different document
+ * item types such as {@link Path}, {@link CompoundPath}, {@link Group},
+ * {@link Layer} and {@link Raster}. They each add a layer of functionality that
+ * is unique to their type, but share the underlying properties and functions
+ * that they inherit from Item.
+ * 
  * @author lehni
- *
- * @jsreference {@type field} {@name document} {@reference Item#document} {@after data}
+ * 
+ * @jsreference {@type field} {@name document} {@reference Item#document}
+ *              {@after data}
  */
 public class Item extends DocumentObject implements Style {
 	

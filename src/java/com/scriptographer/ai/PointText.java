@@ -32,6 +32,9 @@
 package com.scriptographer.ai;
 
 /**
+ * A PointText item represents text in an Illustrator document which starts from
+ * a certain point and expands by the amount of characters contained in it.
+ * 
  * @author lehni
  */
 public class PointText extends TextItem {

@@ -32,6 +32,9 @@
 package com.scriptographer.ai;
 
 /**
+ * A PathText item represents a path in an Illustrator document which has text
+ * running along it.
+ * 
  * @author lehni
  */
 public class PathText extends TextItem {

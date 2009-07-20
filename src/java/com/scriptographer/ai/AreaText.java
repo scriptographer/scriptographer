@@ -32,6 +32,12 @@
 package com.scriptographer.ai;
 
 /**
+ * An AreaText item represents a path in an Illustrator document which has text
+ * running within it's area. It uses the boundaries of the path to control the
+ * flow of characters, either horizontally or vertically. When the text reaches
+ * a boundary, it automatically wraps to fit inside the area defined by the
+ * path.
+ * 
  * @author lehni
  */
 public class AreaText extends TextItem {

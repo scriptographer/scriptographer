@@ -36,6 +36,12 @@ import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
 
 /**
+ * The TextItem type allows you to access and modify the text items in
+ * Illustrator documents. Its functionality is inherited by different text item
+ * types such as {@link PointText}, {@link PathText} and {@link AreaText}. They
+ * each add a layer of functionality that is unique to their type, but share the
+ * underlying properties and functions that they inherit from TextItem.
+ * 
  * @author lehni
  */
 public abstract class TextItem extends Item {
