@@ -80,10 +80,12 @@ function renderTags(param) {
 	// Put code and pre tags on the same line as the content, as white-space: pre is set:
 	str = str.replace(/(<(?:code|pre)>)\s*([\u0000-\uffff]*?)\s*(<\/(?:code|pre)>)/g, function(match, open, content, close) {
 		// Filter out the first white space at the beginning of each line, since
-		// that stems from the space after the * in the comment.
-		return open + content.replace(/(\r\n|\n|\r) /mg, function(match, lineBreak) {
+		// that stems from the space after the * in the comment and replace <code>
+		// with <pre class="js">, to fix a IE problem where lighter.js does not
+		// receive linebreaks from code tags weven when white-space: pre is set.
+		return '<pre' + (open == '<code>' ? ' class="js"' : '') + '>' + content.replace(/(\r\n|\n|\r) /mg, function(match, lineBreak) {
 			return lineBreak;
-		}) + close;
+		}) + '</pre>';
 	});
 	// Empty lines -> Paragraphs
 	if (!param.stripParagraphs) {
@@ -100,8 +102,8 @@ function renderTags(param) {
 			// Include following whiteSpace as well, since for code blocks they are relevant (e.g. indentation on new line)
 			return before + '</p>' + lineBreak + whiteSpace + '<p>';
 		});
-		// Filter out <p> tags within and around <code> blocks again
-		str = str.replace(/((?:<p>\s*|)<code>[\u0000-\uffff]*<\/code>(?:\s*<\/p>|))/g, function(match, code) {
+		// Filter out <p> tags within and around <code> and <pre> blocks again
+		str = str.replace(/((?:<p>\s*|)<(?:code|pre)[^>]*>[\u0000-\uffff]*<\/(?:code|pre)>(?:\s*<\/p>|))/g, function(match, code) {
 			return stripTags(code, 'p');
 		});
 		// Filter out empty paragraphs
