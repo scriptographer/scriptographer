@@ -848,26 +848,43 @@ Json = new function() {
 };
 
 Browser = new function() {
-	var name = (navigator.platform.match(/(MAC)|(WIN)|(LINUX)|(NIX)/i) || ['OTHER'])[0].toUpperCase();
-	var js/*@cc_on=@_jscript_version@*/, xpath = !!document.evaluate;
-	var webkit = document.childNodes && !document.all && !navigator.taintEnabled;
+	var name = window.orientation != undefined ? 'ipod'
+			: (navigator.platform.match(/mac|win|linux|nix/i) || ['other'])[0].toLowerCase();
 	var ret = {
 		PLATFORM: name,
-		WEBKIT: webkit,
-		WEBKIT2: webkit && !xpath,
-		WEBKIT3: webkit && xpath,
-		OPERA: !!window.opera,
-		GECKO: !!document.getBoxObjectFor,
-		IE: !!js,
-		IE5: js >= 5 && js < 5.5,
-		IE55: js == 5.5,
-		IE6: js == 5.6,
-		IE7: js == 5.7,
-		IE8: js == 5.8,
-		MACIE: js && name == 'MAC',
-		XPATH: xpath
+		XPATH: !!document.evaluate,
+		QUERY: !!document.querySelector
 	};
-	ret[name] = true;
+	var engines = {
+		presto: function() {
+			return !window.opera ? false : arguments.callee.caller ? 960 : document.getElementsByClassName ? 950 : 925;
+		},
+
+		trident: function() {
+			var ver/*@cc_on=@_jscript_version@*/;
+			return !ver ? false : ver >= 5 && ver < 5.5 ? 5 : ver == 5.5 ? 5.5 : ver * 10 - 50;
+		},
+
+		webkit: function() {
+			return navigator.taintEnabled ? false : ret.XPATH ? ret.QUERY ? 525 : 420 : 419;
+		},
+
+		gecko: function() {
+			return !document.getBoxObjectFor ? false : document.getElementsByClassName ? 19 : 18;
+		}
+	};
+	for (var engine in engines) {
+		var version = engines[engine]();
+		if (version) {
+			ret.ENGINE = engine;
+			ret.VERSION = version;
+			engine = engine.toUpperCase();
+			ret[engine] = true;
+			ret[(engine + version).replace(/\./g, '')] = true;
+			break;
+		}
+	}
+	ret[name.toUpperCase()] = true;
 	return ret;
 };
 
@@ -936,15 +953,15 @@ DomElement = Base.extend(new function() {
 	function dispose(force) {
 		for (var i = elements.length - 1; i >= 0; i--) {
 			var el = elements[i];
-	        if (force || (!el || el != window && el != document &&
+			if (force || (!el || el != window && el != document &&
 				(!el.parentNode || !el.offsetParent))) {
-	            if (el) {
+				if (el) {
 					var obj = el._wrapper;
 					if (obj && obj.finalize) obj.finalize();
 					el._wrapper = el._unique = null;
 				}
 				if (!force) elements.splice(i, 1);
-	        }
+			}
 		}
 	}
 
@@ -1083,7 +1100,7 @@ DomElement = Base.extend(new function() {
 			},
 
 			create: function(tag, props, doc) {
-				if (Browser.IE && props) {
+				if (Browser.TRIDENT && props) {
 					['name', 'type', 'checked'].each(function(key) {
 						if (props[key]) {
 							tag += ' ' + key + '="' + props[key] + '"';
@@ -1108,10 +1125,11 @@ DomElement = Base.extend(new function() {
 			},
 
 			isAncestor: function(el, parent) {
-				if (parent != document)
-					for (el = el && el.parentNode; el != parent; el = el.parentNode)
-						if (!el) return false;
-				return true;
+				return !el ? false : Browser.WEBKIT && Browser.VERSION < 420
+					? Array.create(parent.getElementsByTagName(el.tagName)).indexOf(el) != -1
+					: parent.contains 
+						? parent != el && parent.contains(el)
+						: !!(parent.compareDocumentPosition(el) & 16);
 			},
 
 			dispose: function() {
@@ -1129,8 +1147,8 @@ DomElement.inject(new function() {
 		'disabled', 'readonly', 'multiple', 'selected', 'noresize', 'defer'
 	].associate();
 	var properties = Hash.merge({ 
-		text: Browser.IE ? 'innerText' : 'textContent', html: 'innerHTML',
-		'class': 'className', className: 'className', 'for': 'htmlFor'
+		text: Browser.TRIDENT || Browser.WEBKIT && Browser.VERSION < 420 ? 'innerText' : 'textContent',
+		html: 'innerHTML', 'class': 'className', className: 'className', 'for': 'htmlFor'
 	}, [ 
 		'value', 'accessKey', 'cellPadding', 'cellSpacing', 'colSpan',
 		'frameBorder', 'maxLength', 'readOnly', 'rowSpan', 'tabIndex',
@@ -1234,9 +1252,9 @@ DomElement.inject(new function() {
 			return walk(this, 'previousSibling', 'lastChild', match);
 		},
 
-		hasChild: function(el) {
+		hasChild: function(match) {
 			return Base.type(match) == 'element'
-				? DomElement.isAncestor(DomElement.unwrap(el), this.$)
+				? DomElement.isAncestor(DomElement.unwrap(match), this.$)
 				: !!this.getFirst(match);
 		},
 
@@ -1250,7 +1268,7 @@ DomElement.inject(new function() {
 
 		hasParent: function(match) {
 			return Base.type(match) == 'element'
-				? DomElement.isAncestor(this.$, DomElement.unwrap(el))
+				? DomElement.isAncestor(this.$, DomElement.unwrap(match))
 				: !!this.getParent(match);
 		},
 
@@ -1272,7 +1290,7 @@ DomElement.inject(new function() {
 
 		appendChild: function(el) {
 			if (el = DomElement.wrap(el)) {
-				var text = Browser.IE && el.$.text;
+				var text = Browser.TRIDENT && el.$.text;
 				if (text) el.$.text = '';
 				this.$.appendChild(el.$);
 				if (text) el.$.text = text;
@@ -1386,7 +1404,7 @@ DomElement.inject(new function() {
 	var inserters = {
 		before: function(source, dest) {
 			if (source && dest && dest.$.parentNode) {
-				var text = Browser.IE && dest.$.text;
+				var text = Browser.TRIDENT && dest.$.text;
 				if (text) dest.$.text = '';
 				dest.$.parentNode.insertBefore(source.$, dest.$);
 				if (text) dest.$.text = text;
@@ -1441,7 +1459,7 @@ DomDocument = DomElement.extend({
 	_type: 'document',
 
 	initialize: function() {
-		if(Browser.IE)
+		if(Browser.TRIDENT && Browser.VERSION < 7)
 			try {
 				this.$.execCommand('BackgroundImageCache', false, true);
 			} catch (e) {}
@@ -1652,25 +1670,22 @@ DomElement.inject(new function() {
 }, {
 
 	getSize: function() {
-		var doc = this.getDocument().$, view = this.getWindow().$, html = doc.documentElement;
-		return Browser.WEBKIT2 && { width: view.innerWidth, height: view.innerHeight }
-			|| Browser.OPERA && { width: doc.body.clientWidth, height: doc.body.clientHeight }
-			|| { width: html.clientWidth, height: html.clientHeight };
+		if (Browser.PRESTO || Browser.WEBKIT) {
+			var win = this.getWindow().$;
+			return { width: win.innerWidth, height: win.innerHeight };
+		}
+		var doc = this.getCompatElement();
+		return { width: doc.clientWidth, height: doc.clientHeight };
 	},
 
 	getScrollOffset: function() {
-		var doc = this.getDocument().$, view = this.getWindow().$, html = doc.documentElement;
-		return {
-			x: view.pageXOffset || html.scrollLeft || doc.body.scrollLeft || 0,
-			y: view.pageYOffset || html.scrollTop || doc.body.scrollTop || 0
-		}
+		var win = this.getWindow().$, doc = this.getCompatElement();
+		return { x: win.pageXOffset || doc.scrollLeft, y: win.pageYOffset || doc.scrollTop };
 	},
 
 	getScrollSize: function() {
-		var doc = this.getDocument().$, html = doc.documentElement;
-		return Browser.IE && { x: Math.max(html.clientWidth, html.scrollWidth), y: Math.max(html.clientHeight, html.scrollHeight) }
-			|| Browser.WEBKIT && { x: doc.body.scrollWidth, y: doc.body.scrollHeight }
-			|| { x: html.scrollWidth, y: html.scrollHeight };
+		var doc = this.getCompatElement(), min = this.getSize();
+		return { width: Math.max(doc.scrollWidth, min.width), width: Math.max(doc.scrollHeight, min.height) };
 	},
 
 	getOffset: function() {
@@ -1710,6 +1725,11 @@ DomElement.inject(new function() {
 			if (max < 0) break;
 		}
 		return el;
+	},
+
+	getCompatElement: function() {
+		var doc = this.getDocument();
+		return !doc.compatMode || doc.compatMode == 'CSS1Compat' ? doc.html : doc.body;
 	}
 });
 
@@ -1803,35 +1823,36 @@ DomEvent = Base.extend(new function() {
 				mousewheel: { type: Browser.GECKO ? 'DOMMouseScroll' : 'mousewheel' },
 
 				domready: function(func) {
-					if (Browser.loaded) func.call(this);
-					else if (!this.domReady) {
-						this.domReady = true;
-						var domReady = function() {
+					var win = this.getWindow(), doc = this.getDocument();
+					if (Browser.loaded) {
+						func.call(this);
+					} else if (!doc.onDomReady) {
+						doc.onDomReady = function() {
 							if (!Browser.loaded) {
 								Browser.loaded = true;
-								this.fireEvent('domready');
+								doc.fireEvent('domready');
+								win.fireEvent('domready');
 							}
-						}.bind(this);
-						var doc = this.getDocument();
-						if (Browser.WEBKIT) {
-							(function() {
-								if (/^(loaded|complete)$/.test(doc.$.readyState)) domReady();
-								else arguments.callee.delay(50);
-							})();
-						} else if (Browser.IE) {
+						}
+						if (Browser.TRIDENT) {
 							var temp = doc.createElement('div');
 							(function() {
 								try {
 									temp.$.doScroll('left');
-									temp = null;
-									domReady();
+									temp.insertBottom(DomElement.get('body')).setHtml('temp').remove();
+									doc.onDomReady();
 								} catch (e) {
 									arguments.callee.delay(50);
 								}
+							}).delay(0);
+						} else if (Browser.WEBKIT && Browser.VERSION < 525){
+							(function() {
+								/^(loaded|complete)$/.test(doc.$.readyState)
+									? doc.onDomReady() : arguments.callee.delay(50);
 							})();
 						} else {
-							this.getWindow().addEvent('load', domReady);
-							doc.addEvent('DOMContentLoaded', domReady);
+							win.addEvent('load', doc.onDomReady);
+							doc.addEvent('DOMContentLoaded', doc.onDomReady);
 						}
 					}
 				}
@@ -2559,7 +2580,7 @@ String.inject({
 			div.innerHTML = wrap[1] + this + wrap[2];
 			while (wrap[0]--)
 				div = div.firstChild;
-			if (Browser.IE) {
+			if (Browser.TRIDENT) {
 				var els = [];
 				if (!str.indexOf('<table') && str.indexOf('<tbody') < 0) {
 					els = div.firstChild && div.firstChild.childNodes;
@@ -2653,16 +2674,16 @@ HtmlElement.inject(new function() {
 				return /^(visible|inherit(|ed))$/.test(style);
 			var color = style && style.match(/rgb[a]?\([\d\s,]+\)/);
 			if (color) return style.replace(color[0], color[0].rgbToHex());
-			if (Browser.IE && isNaN(parseInt(style))) {
+			if (Browser.PRESTO || (Browser.TRIDENT && isNaN(parseInt(style)))) {
 				if (/^(width|height)$/.test(name)) {
 					var size = 0;
 					(name == 'width' ? ['left', 'right'] : ['top', 'bottom']).each(function(val) {
 						size += this.getStyle('border-' + val + '-width').toInt() + this.getStyle('padding-' + val).toInt();
 					}, this);
 					return (this.$['offset' + name.capitalize()] - size) + 'px';
-				} else if (/border(.+)Width|margin|padding/.test(name)) {
-					return '0px';
 				}
+				if (Browser.PRESTO && /px/.test(style)) return style;
+				if (/border(.+)Width|margin|padding/.test(name)) return '0px';
 			}
 			return style;
 		},
@@ -2672,7 +2693,7 @@ HtmlElement.inject(new function() {
 			var el = this.$;
 			switch (name) {
 				case 'float':
-					name = Browser.IE ? 'styleFloat' : 'cssFloat';
+					name = Browser.TRIDENT ? 'styleFloat' : 'cssFloat';
 					break;
 				case 'clip':
 					if (value == true)
@@ -2701,7 +2722,7 @@ HtmlElement.inject(new function() {
 					this.setStyle('visibility', !!value);
 					if (!value) value = 1;
 					if (!el.currentStyle || !el.currentStyle.hasLayout) el.style.zoom = 1;
-					if (Browser.IE) el.style.filter = value > 0 && value < 1 ? 'alpha(opacity=' + value * 100 + ')' : '';
+					if (Browser.TRIDENT) el.style.filter = value > 0 && value < 1 ? 'alpha(opacity=' + value * 100 + ')' : '';
 					el.style.opacity = value;
 					return this;
 			}
@@ -2875,7 +2896,7 @@ FormElement.inject({
 	setSelection: function(start, end) {
 		var sel = end == undefined ? start : { start: start, end: end };
 		this.focus();
-		if(Browser.IE) {
+		if(Browser.TRIDENT) {
 			var range = this.$.createTextRange();
 			range.collapse(true);
 			range.moveStart('character', sel.start);
@@ -2885,7 +2906,7 @@ FormElement.inject({
 		return this;
 	},
 	getSelection: function() {
-		if(Browser.IE) {
+		if(Browser.TRIDENT) {
 			this.focus();
 			var range = document.selection.createRange();
 			var tmp = range.duplicate();
@@ -2983,7 +3004,7 @@ Request = Base.extend(Chain, Callback, new function() {
 	function createRequest(that) {
 		if (!that.transport)
 			that.transport = window.XMLHttpRequest && new XMLHttpRequest()
-				|| Browser.IE && new ActiveXObject('Microsoft.XMLHTTP');
+				|| Browser.TRIDENT && new ActiveXObject('Microsoft.XMLHTTP');
 	}
 
 	function createFrame(that, form) {
@@ -3064,7 +3085,7 @@ Request = Base.extend(Chain, Callback, new function() {
 				this.running = false;
 				var doc = (frame.contentDocument || frame.contentWindow || frame).document;
 				var text = doc && doc.body && (doc.body.textContent || doc.body.innerText || doc.body.innerHTML) || '';
-				var head = Browser.IE && doc.getElementsByTagName('head')[0];
+				var head = Browser.TRIDENT && doc.getElementsByTagName('head')[0];
 				text = (head && head.innerHTML || '') + text;
 				var div = this.frame.div;
 				div.remove();
