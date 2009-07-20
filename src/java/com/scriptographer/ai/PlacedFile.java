@@ -38,6 +38,9 @@ import java.net.URL;
 import com.scratchdisk.util.NetUtils;
 
 /**
+ * A PlacedFile represents a file which has been placed in an Illustrator
+ * document.
+ * 
  * @author lehni
  */
 public class PlacedFile extends Item {

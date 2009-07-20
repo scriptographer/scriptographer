@@ -32,6 +32,9 @@
 package com.scriptographer.ai;
 
 /**
+ * A PlacedSymbol represents a symbol which has been placed in an Illustrator
+ * document.
+ * 
  * @author lehni
  */
 public class PlacedSymbol extends Item {
