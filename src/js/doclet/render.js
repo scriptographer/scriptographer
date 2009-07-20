@@ -69,6 +69,10 @@ function stripTags(str, tag) {
  */
 function renderTags(param) {
 	var str = renderTemplate('tags', param);
+	// Convert any type of lineBreak to the one we're using now:
+	str = str.replace(/(\r\n|\n|\r)/g, function(match, lineBreak) {
+		return Template.lineBreak;
+	});
 	// Replace inline <code></code> with <tt></tt>
 	str = str.replace(/<code>[ \t]*([^\n\r]*?)[ \t]*<\/code>/g, function(match, content) {
 		return '<tt>' + content + '</tt>';
@@ -77,20 +81,22 @@ function renderTags(param) {
 	str = str.replace(/(<(?:code|pre)>)\s*([\u0000-\uffff]*?)\s*(<\/(?:code|pre)>)/g, function(match, open, content, close) {
 		// Filter out the first white space at the beginning of each line, since
 		// that stems from the space after the * in the comment.
-		return open + content.replace(/(\n|\r\n) /mg, function(match, lineBreak) {
+		return open + content.replace(/(\r\n|\n|\r) /mg, function(match, lineBreak) {
 			return lineBreak;
 		}) + close;
 	});
 	// Empty lines -> Paragraphs
 	if (!param.stripParagraphs) {
 		str = '<p>' + str.trim() + '</p>';
-		str = str.trim().replace(/(\n|\r\n)\s*(\n|\r\n)/g, function(match, lineBreak) {
+		// The following regexps use [\s&&[^\n\r]]* in a few places instead of simply \s*, to not
+		// eat up chars that are part of windows \r\n sequence
+		str = str.trim().replace(/(\r\n|\n|\r)[\s&&[^\n\r]]*(\r\n|\n|\r)/g, function(match, lineBreak) {
 			return '</p>' + lineBreak + '<p>';
 		});
 		// Automatically put </p><p> at the end of sentences with line breaks.
 		// Match following </p> and <p> tags and swallow them. This happens when
 		// the original content contains these.
-		str = str.trim().replace(/([.:?!;])\s*(\n|\r\n)(\s*)(<\/p>|<p>|)/g, function(match, before, lineBreak, whiteSpace, after) {
+		str = str.trim().replace(/([.:?!;])[\s&&[^\n\r]]*(\r\n|\n|\r)([\s&&[^\n\r]]*)(<\/p>|<p>|)/g, function(match, before, lineBreak, whiteSpace, after) {
 			// Include following whiteSpace as well, since for code blocks they are relevant (e.g. indentation on new line)
 			return before + '</p>' + lineBreak + whiteSpace + '<p>';
 		});
