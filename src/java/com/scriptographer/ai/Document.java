@@ -572,7 +572,15 @@ public class Document extends NativeObject {
 	}
 
 	public boolean write(File file) {
-		return write(file, null, false);
+		return write(file, (FileFormat) null, false);
+	}
+
+	public boolean write(File file, String format, boolean ask) {
+		return write(file, FileFormatList.getInstance().get(format), ask);
+	}
+
+	public boolean write(File file, String format) {
+		return write(file, format, false);
 	}
 
 	/**
