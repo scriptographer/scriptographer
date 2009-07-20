@@ -577,10 +577,16 @@ public class Document extends NativeObject {
 		return write(file, format, false);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public boolean write(File file, String format, boolean ask) {
 		return write(file, FileFormatList.getInstance().get(format), ask);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public boolean write(File file, String format) {
 		return write(file, format, false);
 	}
