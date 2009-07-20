@@ -49,7 +49,7 @@ var aboutDialog = new ModalDialog(function() {
 		'Conception, API Design, Programming',
 		'J\u00fcrg Lehni',
 		'',
-		'Documentation, API Design',
+		'Documentation, API Design, Testing',
 		'Jonathan Puckey',
 		'',
 		'Illustrator ' + app.version + '.' + app.revision,
