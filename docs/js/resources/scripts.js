@@ -1,14 +1,16 @@
 // This is  identical with server sided code
 
+var lighterSettings = {
+	altLines: 'hover',
+	indent: 4,
+	mode: 'ol',
+	fuel: 'js'
+};
+
 $document.addEvent('domready', function() {
 	var h = unescape(document.location.hash);
 	if (h) scrollToElement(h.substring(1));
-	$$('.documentation-class pre.js').light({
-		altLines: 'hover',
-		indent: 4,
-		mode: 'ol',
-		fuel: 'js'
-	});
+	$$('.documentation-class pre.js').light(lighterSettings);
 });
 
 var lastMemberId = null;
@@ -26,12 +28,7 @@ function toggleMember(id, scrollTo) {
 		link.modifyClass('hidden', v);
 		desc.modifyClass('hidden', !v);
 		if (!desc.code && v) {
-			desc.code = $$('pre.js', desc).light({
-				altLines: 'hover',
-				indent: 4,
-				mode: 'ol',
-				fuel: 'js'
-			});
+			desc.code = $$('pre.js', desc).light(lighterSettings);
 		}
 		if (scrollTo)
 			scrollToMember(id);
