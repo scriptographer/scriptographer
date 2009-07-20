@@ -33,12 +33,12 @@ var licenseDialog = new ModalDialog(function() {
 	while (revision.length < 3)
 		revision = '0' + revision;
 
-	var logo = new ImageStatic(this) {
+	var logo = new ImagePane(this) {
 		image: getImage('logo.png'),
 		rightMargin: 10
 	};
 
-	var text = new Static(this) {
+	var text = new TextPane(this) {
 		text: 'You seem to be running a new version of Scriptographer\n'
 			+ 'for the first time.\n\n'
 			+ 'Please read the terms and conditions carefully:\n\n'

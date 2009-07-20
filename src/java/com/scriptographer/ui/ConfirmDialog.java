@@ -48,14 +48,14 @@ public class ConfirmDialog extends ModalDialog {
 		this.setLayout(layout);
 		this.setMargin(10);
 
-		ImageStatic logo = new ImageStatic(this);
+		ImagePane logo = new ImagePane(this);
 		Image image = getImage("logo.png");
 		logo.setImage(image);
 		logo.setRightMargin(10);
 
 		this.addToContent(logo, "0, 0, 0, 1, L, T");
 
-		Static text = new Static(this);
+		TextPane text = new TextPane(this);
 		text.setText(message);
 		text.setBottomMargin(10);
 		this.addToContent(text, "1, 0, 3, 0, L, C");

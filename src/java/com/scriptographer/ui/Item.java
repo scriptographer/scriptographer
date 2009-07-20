@@ -400,8 +400,8 @@ public abstract class Item extends Component {
 		case PICTURE_PUSHBUTTON:
 		case PICTURE_RADIOBUTTON:
 			Image image = null;
-			if (this instanceof ImageStatic)
-				image = ((ImageStatic) this).getImage();
+			if (this instanceof ImagePane)
+				image = ((ImagePane) this).getImage();
 			else if (this instanceof Button)
 				image = ((Button) this).getImage();
 			if (image != null)

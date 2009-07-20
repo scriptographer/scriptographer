@@ -49,12 +49,12 @@ public class AlertDialog extends ModalDialog {
 		this.setLayout(layout);
 		this.setMargin(8);
 
-		ImageStatic logo = new ImageStatic(this);
+		ImagePane logo = new ImagePane(this);
 		logo.setImage(getImage("logo.png"));
 		logo.setMargin(-4, 4, -4, -4);
 		this.addToContent(logo, "0, 0, 0, 1, L, T");
 
-		Static text = new Static(this);
+		TextPane text = new TextPane(this);
 		text.setText(message);
 		text.setBottomMargin(8);
 		this.addToContent(text, "1, 0, 2, 0, L, C");

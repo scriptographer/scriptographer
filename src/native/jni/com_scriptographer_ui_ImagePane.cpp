@@ -29,16 +29,16 @@
 
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
-#include "com_scriptographer_ui_ImageStatic.h"
+#include "com_scriptographer_ui_ImagePane.h"
 
 /*
- * com.scriptographer.ui.ImageStatic
+ * com.scriptographer.ui.ImagePane
  */
 
 /*
  * void nativeSetImage(int iconRef)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_ImageStatic_nativeSetImage(JNIEnv *env, jobject obj, jint iconRef) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_ImagePane_nativeSetImage(JNIEnv *env, jobject obj, jint iconRef) {
 	try {
 	    ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetPicture(item, (ADMIconRef)iconRef);

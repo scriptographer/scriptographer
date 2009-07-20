@@ -36,7 +36,7 @@ import java.io.IOException;
 /**
  * @author lehni
  */
-public class ImageStatic extends Item {
+public class ImagePane extends Item {
 
 	/**
 	 * Creates a ImageStatic Item.
@@ -44,7 +44,7 @@ public class ImageStatic extends Item {
 	 * @param dialog
 	 * @param image
 	 */
-	public ImageStatic(Dialog dialog) {
+	public ImagePane(Dialog dialog) {
 		super(dialog, ItemType.PICTURE_STATIC);
 	}
 

@@ -351,7 +351,7 @@
 		   	<class name="com.scriptographer.ui.Button" />
 			<class name="com.scriptographer.ui.ToggleItem" />
 			<class name="com.scriptographer.ui.ItemGroup" />
-		   	<class name="com.scriptographer.ui.ImageStatic" />
+		   	<class name="com.scriptographer.ui.ImagePane" />
 		   	<class name="com.scriptographer.ui.TextEditItem" />
 
 		   	<class name="com.scriptographer.ui.ListItem" />

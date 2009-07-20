@@ -34,12 +34,12 @@ var aboutDialog = new ModalDialog(function() {
 	while (revision.length < 3)
 		revision = '0' + revision;
 
-	var logo = new ImageStatic(this) {
+	var logo = new ImagePane(this) {
 		image: getImage('logo.png'),
 		margin: [-4, 4, -4, -4]
 	};
 
-	var text = new Static(this) {
+	var text = new TextPane(this) {
 		text: 'Scriptographer ' + scriptographer.version + '.' + revision + '\n'
 			+ 'http://www.scriptographer.com\n\n'
 			+ '\u00a9 2001-' + (new Date().getFullYear()) + ' J\u00fcrg Lehni\n'

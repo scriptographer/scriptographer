@@ -90,11 +90,11 @@ if (app.isMacintosh()) {
 	var file = new java.io.File('/var/lock');
 	if (!file.exists() || !found) {
 		var dialog = new ModalDialog(function() {
-			var logo = new ImageStatic(this) {
+			var logo = new ImagePane(this) {
 				image: getImage('logo.png')
 			};
 
-			var text = new Static(this) {
+			var text = new TextPane(this) {
 				text: 'You appear to be runing Scriptographer for the first time.\n\n' +
 					'If you would like to use the included RXTX library for\n' +
 					'serial port communication, some modifications would need\n' +

@@ -71,7 +71,7 @@ public class PromptDialog extends ModalDialog {
 		this.setMargin(8);
 //		this.setFont(Dialog.FONT_PALETTE);
 
-		ImageStatic logo = new ImageStatic(this);
+		ImagePane logo = new ImagePane(this);
 		logo.setImage(getImage("logo.png"));
 		logo.setMargin(-4, 4, -4, -4);
 		// Logo uses all rows of items + filler row
@@ -82,7 +82,7 @@ public class PromptDialog extends ModalDialog {
 			if (promptItem != null) {
 				String desc = promptItem.getDescription();
 				if (desc != null) {
-					Static descItem = new Static(this);
+					TextPane descItem = new TextPane(this);
 					descItem.setText(desc + ":");
 					descItem.setMargin(0, 4, 0, 0);
 					this.addToContent(descItem, "1, " + i + ", left, center");

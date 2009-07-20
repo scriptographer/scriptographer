@@ -23,49 +23,34 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 03.01.2005.
+ * 
+ * File created on Apr 14, 2008.
  *
  * $Id$
  */
 
 package com.scriptographer.ui;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-
-import com.scratchdisk.util.IntegerEnumUtils;
+import com.scratchdisk.util.IntegerEnum;
 
 /**
+ * ADMFrameStyle
+ * 
  * @author lehni
  */
-public class Static extends TextValueItem {
+public enum TextPaneStyle implements IntegerEnum {
+	CLIP(1 << 0),
+	DISABLE_AUTO_ACTIVATE(1 << 1),
+	TRUNCATE_END(1 << 2), // clipped style has priority
+	TRUNCATE_MIDDLE(1 << 3); // truncate end has priority
 
-	public Static(Dialog dialog, EnumSet<TextOption> options) {
-		super(dialog, options != null && options.contains(TextOption.MULTILINE)
-				? ItemType.TEXT_STATIC_MULTILINE : ItemType.TEXT_STATIC,
-				IntegerEnumUtils.getFlags(options));
+	protected int value;
+
+	private TextPaneStyle(int value) {
+		this.value = value;
 	}
 
-	/**
-	 * Creates a text based Static item.
-	 * @param dialog
-	 * @param options
-	 */
-	public Static(Dialog dialog, TextOption[] options) {
-		this(dialog, EnumSet.copyOf(Arrays.asList(options)));
-	}
-	
-	public Static(Dialog dialog) {
-		this(dialog, (EnumSet<TextOption>) null);
-	}
-
-	public StaticStyle getStyle() {
-		return IntegerEnumUtils.get(StaticStyle.class, nativeGetStyle());
-	}
-
-	public void setStyle(StaticStyle style) {
-		if (style != null)
-			nativeSetStyle(style.value);
+	public int value() {
+		return value;
 	}
 }

@@ -420,10 +420,16 @@ public abstract class ListItem<E extends ListEntry> extends Item implements List
 		return addAll(Lists.asList(elements));
 	}
 
+	/**
+	 * @jshide
+	 */
 	public ExtendedList<E> getSubList(int fromIndex, int toIndex) {
 		return Lists.createSubList(this, fromIndex, toIndex);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public boolean isEmpty() {
 		return size() == 0;
 	}
