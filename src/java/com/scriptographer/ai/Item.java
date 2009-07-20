@@ -52,8 +52,7 @@ import com.scriptographer.ui.Image;
  * 
  * @author lehni
  * 
- * @jsreference {@type field} {@name document} {@reference Item#document}
- *              {@after data}
+ * @jsreference {@type field} {@name document} {@reference Item#document} {@after data}
  */
 public class Item extends DocumentObject implements Style {
 	
