@@ -23,7 +23,7 @@ a {
 }
 
 img {
-	border: 0px;
+	border: 0;
 }
 
 a:hover {
@@ -53,6 +53,15 @@ hr {
 	display: none;
 }
 
+.documentation-packages, .documentation-packages a {
+	color: #009dec;
+	border-bottom: 0px;
+}
+
+.documentation-packages a:hover {
+	background: #e3f4fc;
+}
+
 .documentation h1 {
 	font-size: 18px;
 	font-weight: normal;
@@ -70,7 +79,9 @@ hr {
 
 .documentation h3 {
 	margin-top: 14px;
-	border-bottom-style: dotted;
+	height: 17px;
+	border-bottom: none;
+	background: url(dotted.gif) repeat bottom;
 }
 
 .documentation a tt, .documentation a tt b {
@@ -79,8 +90,6 @@ hr {
 
 .documentation pre.js {
 	background-image: url(paper.gif);
-	white-space: pre;
-	display: block;
 	margin: 0 0 8px 0;
 }
 
@@ -88,9 +97,8 @@ hr {
 	margin-left: 14px;
 }
 
-.documentation-packages, .documentation-packages a {
-	color: #009dec;
-	border-bottom: 0px;
+.documentation-packages {
+	margin-left: 0px;
 }
 
 .documentation-packages h2, .documentation-packages h3, .documentation-packages hr {
@@ -102,19 +110,24 @@ hr {
 	margin-left: -10px;
 }
 
-.documentation-packages a:hover {
-	background: #e3f4fc;
+* html .documentation-packages img {
+	margin-top: 5px;
+}
+
+.documentation-packages li {
+	list-style: none;
+	list-style-image: none; /* needed for ie 6 */
 }
 
 .documentation-end {
 	height: 600px;
 }
 
-.documentation-paragraph {
+.documentation-members {
 	padding-bottom: 14px;
 }
 
-.group-text {
+.member-group-text {
 	margin-bottom: 14px;
 }
 

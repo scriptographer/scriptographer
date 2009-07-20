@@ -1,9 +1,6 @@
-<%= $members prefix=$title %>
+<%= $members prefix='<div class="documentation-members">' suffix='</div>' %>
 
 <% $members -%>
-<% foreach $member in param.members prefix='<div class="documentation-paragraph">' suffix='</div>' %>
+<% foreach $member in param.members prefix=<%= param.title | heading 2 %> %>
 <%= $member.renderMember(param) -%>
 <% end %>
-
-<% $title -%>
-<%= param.title | heading 2 %>

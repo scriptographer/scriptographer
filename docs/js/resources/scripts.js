@@ -3,7 +3,7 @@
 $document.addEvent('domready', function() {
 	var h = unescape(document.location.hash);
 	if (h) scrollToElement(h.substring(1));
-	$$('pre.js').light({
+	$$('.documentation-class pre.js').light({
 		altLines: 'hover',
 		indent: 4,
 		mode: 'ol',
@@ -25,6 +25,14 @@ function toggleMember(id, scrollTo) {
 		lastMemberId = v && id;
 		link.modifyClass('hidden', v);
 		desc.modifyClass('hidden', !v);
+		if (!desc.code && v) {
+			desc.code = $$('pre.js', desc).light({
+				altLines: 'hover',
+				indent: 4,
+				mode: 'ol',
+				fuel: 'js'
+			});
+		}
 		if (scrollTo)
 			scrollToMember(id);
 		return false;

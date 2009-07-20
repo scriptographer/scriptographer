@@ -97,8 +97,8 @@ function main() {
 	ClassObject.process(root.classes());
 
 	// Now start rendering:
-	var doc = new Document('', settings.templates ? 'packages.js'
-			: 'packages.html', 'packages');
+	var doc = new Document('', settings.templates
+			? 'packages.js' : 'packages.html', 'packages');
 
 	packageSequence.each(function(name) {
 		var pkg = packages[name];
