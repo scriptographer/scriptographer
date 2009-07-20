@@ -98,6 +98,10 @@ hr {
 	border-color: #009dec;
 }
 
+.documentation li h2 {
+	margin-left: -10px;
+}
+
 .documentation-packages a:hover {
 	background: #e3f4fc;
 }
@@ -147,7 +151,7 @@ hr {
 	padding-left: 30px;
 }
 
-.member-text li, .documentation-inherited ul li {
+.documentation-inherited ul li {
 	text-indent: -30px;
 	padding-left: 30px;
 }
