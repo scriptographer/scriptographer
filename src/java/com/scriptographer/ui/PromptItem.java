@@ -44,7 +44,7 @@ public class PromptItem {
 	private String name; // for preferences
 	private PromptItemType type;
 	private Object value;
-	private Object values[];
+	private Object options[];
 	private float min;
 	private float max;
 	private float increment;
@@ -56,7 +56,7 @@ public class PromptItem {
 		this.description = description;
 		this.type = type;
 		this.value = value;
-		this.values = null;
+		this.options = null;
 		this.width = -1;
 		this.setRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
 		this.increment = 0;
@@ -104,9 +104,9 @@ public class PromptItem {
 	/**
 	 * Creates a LIST Item
 	 */
-	public PromptItem(String description, Object value, Object[] values) {
+	public PromptItem(String description, Object value, Object[] options) {
 		this(PromptItemType.LIST, description, value);
-		this.values = values;
+		this.options = options;
 	}
 	
 	// TODO: make constructor for UNIT
@@ -153,12 +153,12 @@ public class PromptItem {
 		this.increment = step;
 	}
 
-	public Object[] getValues() {
-		return values;
+	public Object[] getOptions() {
+		return options;
 	}
 
-	public void setValues(Object[] values) {
-		this.values = values;
+	public void setOptions(Object[] options) {
+		this.options = options;
 	}
 
 	public Object getValue() {
@@ -229,18 +229,18 @@ public class PromptItem {
 			break;
 		case LIST: {
 			PopupList list = (PopupList) item;
-			for (int i = 0; i < values.length; i++) {
-				Object value = values[i];
+			for (int i = 0; i < options.length; i++) {
+				Object option = options[i];
 				ListEntry entry = null;
-				if (value instanceof ListEntry) {
-					entry = (ListEntry) value;
+				if (option instanceof ListEntry) {
+					entry = (ListEntry) option;
 					entry = list.add(entry);
 				} else {
 					entry = new ListEntry(list);
-					entry.setText(value.toString());
+					entry.setText(option.toString());
 				}
 				if (entry != null) {
-					if (ConversionUtils.equals(this.value, value))
+					if (ConversionUtils.equals(value, option))
 						entry.setSelected(true);
 				}
 			}

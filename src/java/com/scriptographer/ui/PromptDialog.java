@@ -135,7 +135,7 @@ public class PromptDialog extends ModalDialog {
 			Object typeObj = map.get("type");
 			Object valueObj = value != null ? value : map.get("value");
 			double increment = 0;
-			Object[] values = null;
+			Object[] options = null;
 			PromptItemType type = null;
 			if (typeObj != null) {
 				if (typeObj instanceof String)
@@ -148,10 +148,10 @@ public class PromptDialog extends ModalDialog {
 					if (Double.isNaN(increment))
 						increment = 0;
 				} else {
-					Object valuesObj = map.get("values");
-					if (valuesObj != null && valuesObj instanceof Object[])
-						values = (Object[]) valuesObj;
-					if (values != null)
+					Object optionsObj = map.get("options");
+					if (optionsObj != null && optionsObj instanceof Object[])
+						options = (Object[]) optionsObj;
+					if (options != null)
 						type = PromptItemType.LIST;
 					else if (valueObj instanceof Number)
 						type = PromptItemType.NUMBER;
@@ -178,8 +178,8 @@ public class PromptDialog extends ModalDialog {
 				if (!Double.isNaN(min) || !Double.isNaN(max))
 					item.setRange((float) min, (float) max);
 				
-				if (values != null)
-					item.setValues(values);
+				if (options != null)
+					item.setOptions(options);
 
 				return item;
 			}
