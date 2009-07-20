@@ -54,6 +54,8 @@ import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.NetUtils;
 
 /**
+ * The Raster item represents an image in an Illustrator document.
+ * 
  * @author lehni
  */
 public class Raster extends Item {
@@ -159,8 +161,14 @@ public class Raster extends Item {
 
 	public native void setMatrix(Matrix matrix);
 
+	/**
+	 * The size of the raster in pixels.
+	 */
 	public native com.scriptographer.ui.Size getSize();
 
+	/**
+	 * @jshide
+	 */
 	public void setSize(int width, int height) {
 		// changing the size creates a new art handle internally
 		handle = nativeConvert((short) -1, width, height);
@@ -171,19 +179,22 @@ public class Raster extends Item {
 	}
 
 	/**
-	 * The width of the raster
+	 * The width of the raster in pixels.
 	 */
 	public int getWidth() {
 		return getSize().width;
 	}
 
 	/**
-	 * The height of the raster
+	 * The height of the raster in pixels.
 	 */
 	public int getHeight() {
 		return getSize().height;
 	}
 
+	/**
+	 * Pixels per inch of the raster at it's current size.
+	 */
 	public Size getPpi() {
 		Matrix matrix = getMatrix();
 		Point orig = new Point(0, 0).transform(matrix);
@@ -197,6 +208,9 @@ public class Raster extends Item {
 
 	private native int nativeGetType();
 
+	/**
+	 * The color type of the raster.
+	 */
 	public ColorType getType() {
 		return (ColorType) IntegerEnumUtils.get(ColorType.class,
 				nativeGetType());
@@ -208,59 +222,8 @@ public class Raster extends Item {
 	}
 
 	/**
-	 * Gets the color of a pixel in the raster.
-	 * @param x
-	 * @param y
-	 */
-	public native Color getPixel(int x, int y);
-
-	/**
-	 * Sets the color of a pixel in the raster.
-	 * Sample code:
-	 * <code>
-	 * // Creates an RGB raster of 1px*1px
-	 * var raster = new Raster(Color.TYPE_RGB,1,1);
-	 * 
-	 * // Changes the color of the first pixel to red
-	 * var redColor = new RGBColor(1,0,0);
-	 * raster.setPixel(0,0,redColor)</code>
-	 * 
-	 * @param x
-	 * @param y
-	 */
-	public native void setPixel(int x, int y, Color color);
-
-	/**
-	 * Gets the color of a pixel in the raster.
-	 * @param x
-	 * @param y
-	 */
-	public Color getPixel(Point point) {
-		return getPixel((int) point.x, (int) point.y);
-	}
-
-	/**
-	 * Sets the color of a pixel in the raster.
-	 * 
-	 * Sample code:
-	 * <code>
-	 * // Creates an RGB raster of 1px*1px
-	 * var raster = new Raster(Color.TYPE_RGB,1,1);
-	 * 
-	 * // Changes the color of the first pixel to red
-	 * var redColor = new RGBColor(1,0,0);
-	 * var point = new Point(0,0);
-	 * raster.setPixel(point,redColor)</code>
-	 * 
-	 * @param x
-	 * @param y
-	 */
-	public void setPixel(Point point, Color color) {
-		setPixel((int) point.x, (int) point.y, color);
-	}
-
-	/**
-	 * The Java2D color model of the raster
+	 * The Java2D color model of the raster.
+	 * @jshide
 	 */
 	public ColorModel getColorModel() {
 		ColorType type = getType();
@@ -310,6 +273,9 @@ public class Raster extends Item {
 		return cm;
 	}
 	
+	/**
+	 * @jshide
+	 */
 	public static ColorType getCompatibleType(Image image) {
 		if (image instanceof BufferedImage) {
 			ColorModel cm = ((BufferedImage) image).getColorModel();
@@ -326,6 +292,9 @@ public class Raster extends Item {
 		return null;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public BufferedImage createCompatibleImage(int width, int height) {
 		ColorModel cm = getColorModel();
 		WritableRaster raster = cm.createCompatibleWritableRaster(width, height);
@@ -380,6 +349,9 @@ public class Raster extends Item {
 		drawImage(image, 0, 0);
 	}
 	
+	/**
+	 * Traces the raster.
+	 */
 	public Tracing trace() {
 		return new Tracing(this);
 	}
@@ -471,6 +443,7 @@ public class Raster extends Item {
 	}
 
 	/**
+	 * {@grouptitle Average Color}
 	 * Calculates the average color of the image within the given path. This can
 	 * be used for creating raster image effects.
 	 * 
@@ -506,6 +479,60 @@ public class Raster extends Item {
 		return getAverageColor(rect.toRectangle2D());
 	}
 
+	/**
+	 * {@grouptitle Pixels}
+	 * 
+	 * Gets the color of a pixel in the raster.
+	 * @param x
+	 * @param y
+	 */
+	public native Color getPixel(int x, int y);
+
+	/**
+	 * Sets the color of a pixel in the raster.
+	 * Sample code:
+	 * <code>
+	 * // Creates an RGB raster of 1px*1px
+	 * var raster = new Raster(Color.TYPE_RGB,1,1);
+	 * 
+	 * // Changes the color of the first pixel to red
+	 * var redColor = new RGBColor(1,0,0);
+	 * raster.setPixel(0,0,redColor)</code>
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public native void setPixel(int x, int y, Color color);
+
+	/**
+	 * Gets the color of a pixel in the raster.
+	 * @param x
+	 * @param y
+	 */
+	public Color getPixel(Point point) {
+		return getPixel((int) point.x, (int) point.y);
+	}
+
+	/**
+	 * Sets the color of a pixel in the raster.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * // Creates an RGB raster of 1px*1px
+	 * var raster = new Raster(Color.TYPE_RGB,1,1);
+	 * 
+	 * // Changes the color of the first pixel to red
+	 * var redColor = new RGBColor(1,0,0);
+	 * var point = new Point(0,0);
+	 * raster.setPixel(point,redColor)</code>
+	 * 
+	 * @param x
+	 * @param y
+	 */
+	public void setPixel(Point point, Color color) {
+		setPixel((int) point.x, (int) point.y, color);
+	}
+	
 	private native void nativeSetPixels(byte[] data, int numComponents, int x,
 			int y, int width, int height);
 
