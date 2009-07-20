@@ -190,54 +190,66 @@ public class PromptItem {
 		// Item:
 		item = null;
 		switch (type) {
-			case RANGE:
-				item = new Slider(dialog);
-				break;
-			case CHECKBOX:
-				item = new CheckBox(dialog);
-				break;
-			case LIST:
-				item = new PopupList(dialog);
-				break;
-			default:
-				item = new TextEdit(dialog);
+		case RANGE:
+			item = new Slider(dialog);
+			break;
+		case CHECKBOX:
+			item = new CheckBox(dialog);
+			break;
+		case LIST:
+			item = new PopupList(dialog);
+			break;
+		default:
+			item = new TextEdit(dialog);
 		}
-		
+
 		// Value:
 		switch (type) {
-			case STRING:
-				((TextEditItem) item).setText(value.toString());
-				break;
-			case NUMBER:
-			case UNIT:
-			case RANGE:
-				if (item instanceof TextEditItem) {
-					((TextEditItem) item).setAllowMath(true);
-					((TextEditItem) item).setAllowUnits(true);
-					((TextEditItem) item).setShowUnits(type == PromptItemType.UNIT);
-					((TextEditItem) item).setPrecision(precision);
+		case STRING:
+			((TextEditItem) item).setText(value.toString());
+			break;
+		case NUMBER:
+		case UNIT:
+		case RANGE:
+			if (item instanceof TextEditItem) {
+				((TextEditItem) item).setAllowMath(true);
+				((TextEditItem) item).setAllowUnits(true);
+				((TextEditItem) item).setShowUnits(type == PromptItemType.UNIT);
+				((TextEditItem) item).setPrecision(precision);
+			}
+			if (type == PromptItemType.RANGE) {
+				((Slider) item).setIncrements(increment, 8 * increment);
+			}
+			((ValueItem) item).setRange(min, max);
+			((ValueItem) item).setValue(
+					(float) ConversionUtils.toDouble(value));
+			break;
+		case CHECKBOX:
+			((CheckBox) item).setChecked(ConversionUtils.toBoolean(value));
+			break;
+		case LIST: {
+			PopupList list = (PopupList) item;
+			for (int i = 0; i < values.length; i++) {
+				Object value = values[i];
+				ListEntry entry = null;
+				if (value instanceof ListEntry) {
+					entry = (ListEntry) value;
+					entry = list.add(entry);
+				} else {
+					entry = new ListEntry(list);
+					entry.setText(value.toString());
 				}
-				if (type == PromptItemType.RANGE) {
-					((Slider) item).setIncrements(increment, 8 * increment);
+				if (entry != null) {
+					if (ConversionUtils.equals(this.value, value))
+						entry.setSelected(true);
 				}
-				((ValueItem) item).setRange(min, max);
-				((ValueItem) item).setValue((float) ConversionUtils.toDouble(value));
-				break;
-			case CHECKBOX:
-				((CheckBox) item).setChecked(ConversionUtils.toBoolean(value));
-				break;
-			case LIST: {
-					PopupList list = (PopupList) item;
-					for (int i = 0; i < values.length; i++) {
-						ListEntry entry = (ListEntry) list.add((ListEntry) values[i]);
-						if (ConversionUtils.equals(value, values[i]))
-							entry.setSelected(true);
-					}
-				}
-				break;
-				
+			}
 		}
-		// Margin needs to be defined before setting size, since getBestSize is affected by margin
+			break;
+
+		}
+		// Margin needs to be defined before setting size, since getBestSize is
+		// affected by margin
 		item.setMargin(margin);
 		Size size = item.getBestSize();
 		if (width >= 0)
@@ -245,7 +257,7 @@ public class PromptItem {
 		item.setSize(size);
 		return item;
 	}
-	
+
 	protected Object getResult() {
 		switch(type) {
 			case STRING:
