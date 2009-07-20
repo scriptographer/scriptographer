@@ -61,13 +61,11 @@ window.onload = function()  {
 	if (h) toggleMember(unescape(h.substring(1)), true);
 }
 
-if(typeof $$ != 'undefined') {
-	$document.addEvent('domready', function() {
-  			$$('code').light({
-			altLines: 'hover',
-			indent: 4,
-			mode: 'ol',
-			fuel: 'js'
-		});
+$document.addEvent('domready', function() {
+ 			$$('code').light({
+		altLines: 'hover',
+		indent: 4,
+		mode: 'ol',
+		fuel: 'js'
 	});
-};
+});
