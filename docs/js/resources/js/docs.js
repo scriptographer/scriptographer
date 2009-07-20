@@ -1,5 +1,4 @@
-// This is  identical with server sided code
-
+// This is identical with server sided code
 var lighterSettings = {
 	altLines: 'hover',
 	indent: 4,
@@ -28,9 +27,8 @@ function toggleMember(id, scrollTo) {
 		lastMemberId = v && id;
 		link.modifyClass('hidden', v);
 		desc.modifyClass('hidden', !v);
-		if (!desc.code && v) {
+		if (!desc.code && v)
 			desc.code = $$('pre.js', desc).light(lighterSettings);
-		}
 		if (scrollTo)
 			scrollToMember(id);
 		return false;

@@ -1,0 +1,56 @@
+body {
+	background-color: #fff;
+	margin: 16px;
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	font-size: 11px;
+	line-height: 17px;
+	color: #000;
+	max-width: 480px;
+}
+
+select, input, textarea {
+	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
+	font-size: 10px;
+	margin: 0px;
+	color: #000;
+}
+
+a {
+	color: #000;
+	text-decoration: none;
+	padding-bottom: 1px;
+	border-bottom: 1px solid #000;
+}
+
+img {
+	border: 0;
+}
+
+a:hover {
+	background: #e5e5e5;
+}
+
+p {
+	margin: 0 0 8px 0;
+}
+
+.clear {
+	clear: both;
+}
+
+.hidden {
+	display: none;
+}
+
+.documentation-packages, .documentation-packages a {
+	color: #009dec;
+	border-bottom: 0px;
+}
+
+.documentation-packages a:hover {
+	background: #e3f4fc;
+}
+
+.footer {
+	margin-top: 20px;
+}
