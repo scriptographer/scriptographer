@@ -77,7 +77,7 @@ hr {
 	padding-bottom: 1px;
 }
 
-.documentation code {
+.documentation pre.js {
 	background-image: url(paper.gif);
 	white-space: pre;
 	display: block;
@@ -123,7 +123,6 @@ hr {
 	/* .member-header defines border-top for operator lists */
 	border-top: 0;
 	margin: 14px 0 14px 0;
-	display: none;
 }
 
 .member-header {
