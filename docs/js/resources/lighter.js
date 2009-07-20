@@ -16,7 +16,7 @@
  *   - Initial Release
  * 
  */
-var Fuel = Base.extend(Callback, {
+Fuel = Base.extend(Callback, {
 	
 	options: {
 		matchType: 'standard',
@@ -272,7 +272,7 @@ var Wick = Base.extend({
  *   - Initial Release
  *
  */
-var Flame = Base.extend(Callback, {
+Flame = Base.extend(Callback, {
 	
 	shortName:  'lt',
 	aliases:    new Hash(),
@@ -457,7 +457,7 @@ var Flame = Base.extend(Callback, {
 		newStyle += "}\n";
 		// Insert into Flame's styleTag.
 		if (browserTrident()) {
-			this.styleTag.styleSheet.cssText += newStyle;
+			this.styleTag.$.styleSheet.cssText += newStyle;
 		} else {
 			this.styleTag.appendText(newStyle);
 		}
@@ -495,7 +495,7 @@ function browserTrident(){
 	return (!window.ActiveXObject) ? false : ((window.XMLHttpRequest) ? 5 : 4);
 }
 
-var Lighter = Base.extend(Callback, {
+Lighter = Base.extend(Callback, {
 	name: 'Lighter',
 	options: {
 		altLines: '', // Pseudo-selector enabled.
