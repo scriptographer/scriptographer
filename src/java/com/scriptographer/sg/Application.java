@@ -94,14 +94,14 @@ public class Application {
 	}
 
 	/**
-	 * Returns true if the system is Windows, false otherwise.
+	 * Returns {@true if the system is Windows}.
 	 */
 	public boolean isWindows() {
 		return ScriptographerEngine.isWindows();
 	}
 
 	/**
-	 * Returns true if the system is Macintosh, false otherwise.
+	 * Returns {@true if the system is Macintosh}.
 	 */
 	public boolean isMacintosh() {
 		return ScriptographerEngine.isMacintosh();
