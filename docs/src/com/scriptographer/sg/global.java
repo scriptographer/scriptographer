@@ -32,6 +32,8 @@
 package com.scriptographer.sg;
 
 import com.scriptographer.ai.Tool;
+import com.scriptographer.ai.DocumentList;
+import com.scriptographer.ai.Document;
 
 /*
  * This class is just a dummy to get Javadoc to generate documentation for
@@ -58,6 +60,16 @@ public class global {
 	 * The global application object.
 	 */
 	public Application app;
+	
+	/**
+	 * The global documents array.
+	 */
+	public DocumentList documents;
+
+	/**
+	 * The global active document object.
+	 */
+	public Document document;
 
 	/**
 	 * The global script object.
