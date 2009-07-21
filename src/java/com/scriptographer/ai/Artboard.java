@@ -31,13 +31,14 @@
 
 package com.scriptographer.ai;
 
+import com.scratchdisk.script.ChangeListener;
 import com.scriptographer.list.AbstractStructList;
 
 /**
  * @author lehni
  *
  */
-public class Artboard extends AbstractStructList.Entry<Document> {
+public class Artboard extends AbstractStructList.Entry<Document> implements ChangeListener {
 
 	/**
 	 * The bounds of the artboard in points in document coordinate system
