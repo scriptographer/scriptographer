@@ -73,10 +73,16 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			// See whether this object defines the property.
 			return properties.get(name);
 		} else {
+			Scriptable prototype = getPrototype();
+			Object result = prototype.get(name, this);
+			if (result != Scriptable.NOT_FOUND)
+				return result;
+			result = members.get(this, name, javaObject, false);
+			if (result != Scriptable.NOT_FOUND)
+				return result;
 			if (name.equals("prototype"))
-				return getPrototype();
-			else
-				return members.get(this, name, javaObject, false);
+				return prototype;
+			return Scriptable.NOT_FOUND;
 		}
 	}
 
