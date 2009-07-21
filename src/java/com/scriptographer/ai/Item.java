@@ -37,6 +37,7 @@ import java.util.Map;
 
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
+import com.scratchdisk.script.ChangeListener;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
@@ -55,7 +56,7 @@ import com.scriptographer.ui.Image;
  * 
  * @jsreference {@type field} {@name document} {@reference Item#document} {@after data}
  */
-public class Item extends DocumentObject implements Style {
+public class Item extends DocumentObject implements Style, ChangeListener {
 	
 	// the internal version. this is used for internally reflected data,
 	// such as segmentList, pathStyle, and so on. Every time an object gets
@@ -416,7 +417,7 @@ public class Item extends DocumentObject implements Style {
 	
 	protected native Point nativeGetPosition();
 
-	private ItemPoint position = null;
+	// private ItemPoint position = null;
 
 	/**
 	 * The item's position within the art board. This is the
@@ -435,17 +436,20 @@ public class Item extends DocumentObject implements Style {
 	 * </code>
 	 */
 	public Point getPosition() {
+		return nativeGetPosition();
+		/*
 		if (position == null)
 			position = new ItemPoint(this);
 		else
 			position.update();
 		return position;
+		*/
 	}
 
 	public void setPosition(Point pt) {
 		translate(pt.subtract(getPosition()));
 		// This is always defined now since we're using getPosition above
-		position.update();
+		// position.update();
 	}
 
 	/**
@@ -820,7 +824,7 @@ public class Item extends DocumentObject implements Style {
 	
 	protected native Rectangle nativeGetBounds();
 
-	private ItemRectangle bounds = null;
+	// private ItemRectangle bounds = null;
 
 	/**
 	 * {@grouptitle Bounding Rectangles}
@@ -828,12 +832,15 @@ public class Item extends DocumentObject implements Style {
 	 * The bounding rectangle of the item excluding stroke width.
 	 */
 	public Rectangle getBounds() {
+		return nativeGetBounds();
+		/*
 		commit(false);
 		if (bounds == null)
 			bounds = new ItemRectangle(this);
 		else
 			bounds.update();
 		return bounds;
+		*/
 	}
 
 	/**
@@ -859,7 +866,7 @@ public class Item extends DocumentObject implements Style {
 		// Now execute the transformation:
 		transform(matrix);
 		// This is always defined now since we're using getBounds above
-		bounds.update();
+		// bounds.update();
 	}
 
 	public void setBounds(Rectangle rect) {

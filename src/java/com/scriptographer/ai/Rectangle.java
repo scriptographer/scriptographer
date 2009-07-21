@@ -34,6 +34,8 @@ package com.scriptographer.ai;
 import java.awt.geom.Rectangle2D;
 
 import com.scratchdisk.script.ArgumentReader;
+import com.scratchdisk.script.ChangeNotifier;
+import com.scratchdisk.script.ChangeListener;
 
 /**
  * A Rectangle specifies an area that is enclosed by it's top-left point (x, y),
@@ -42,7 +44,7 @@ import com.scratchdisk.script.ArgumentReader;
  * 
  * @author lehni
  */
-public class Rectangle {
+public class Rectangle implements ChangeNotifier, ChangeListener {
 	protected double x;
 	protected double y;
 	protected double width;

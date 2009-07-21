@@ -33,6 +33,7 @@ package com.scriptographer;
 
 import java.util.IdentityHashMap;
 
+import com.scratchdisk.script.rhino.ExtendedJavaObject;
 import com.scriptographer.ai.TextItem;
 
 /**
@@ -85,6 +86,8 @@ public class CommitManager {
 	 */
 	public static void commit() {
 		version++;
+		// Also set the modificationVersion to allow versioning for increased performance.
+		ExtendedJavaObject.changeVersion = version;
 		commit(null);
 	}
 

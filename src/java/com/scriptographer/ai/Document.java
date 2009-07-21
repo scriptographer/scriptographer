@@ -39,6 +39,7 @@ import java.util.Map;
 
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
+import com.scratchdisk.script.ChangeListener;
 import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
@@ -56,7 +57,7 @@ import com.scriptographer.script.EnumUtils;
  * 
  * @author lehni
  */
-public class Document extends NativeObject {
+public class Document extends NativeObject implements ChangeListener {
 
 	private LayerList layers = null;
 	private DocumentViewList views = null;
