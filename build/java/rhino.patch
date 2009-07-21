@@ -1,266 +1,49 @@
 ### Eclipse Workspace Patch 1.0
 #P Rhino
-Index: src/org/mozilla/javascript/Context.java
+Index: src/org/mozilla/javascript/NativeString.java
 ===================================================================
-RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Context.java,v
-retrieving revision 1.279
-diff -u -r1.279 Context.java
---- src/org/mozilla/javascript/Context.java	15 May 2009 12:09:51 -0000	1.279
-+++ src/org/mozilla/javascript/Context.java	19 Jul 2009 17:40:55 -0000
-@@ -2112,6 +2112,19 @@
-         return wrapFactory;
-     }
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeString.java,v
+retrieving revision 1.66
+diff -u -r1.66 NativeString.java
+--- src/org/mozilla/javascript/NativeString.java	21 Jul 2009 16:58:06 -0000	1.66
++++ src/org/mozilla/javascript/NativeString.java	21 Jul 2009 21:05:32 -0000
+@@ -25,7 +25,6 @@
+  *   Tom Beauvais
+  *   Norris Boyd
+  *   Mike McCabe
+- *   Cameron McCormack
+  *
+  * Alternatively, the contents of this file may be used under the terms of
+  * the GNU General Public License Version 2 or later (the "GPL"), in which
+@@ -42,7 +41,6 @@
+ package org.mozilla.javascript;
  
-+    public final void setOperatorHandler(OperatorHandler operatorHandler)
-+    {
-+        if (sealed) onSealedMutation();
-+        if (operatorHandler == null)
-+            throw new IllegalArgumentException();
-+        this.operatorHandler = operatorHandler;
-+    }
-+
-+    public final OperatorHandler getOperatorHandler()
-+    {
-+        return operatorHandler;
-+    }
-+
-     /**
-      * Return the current debugger.
-      * @return the debugger, or null if none is attached.
-@@ -2636,6 +2649,7 @@
-     private int optimizationLevel;
-     private int maximumInterpreterStackDepth;
-     private WrapFactory wrapFactory;
-+    private OperatorHandler operatorHandler;
-     Debugger debugger;
-     private Object debuggerData;
-     private int enterCount;
-Index: src/org/mozilla/javascript/NativeJavaObject.java
-===================================================================
-RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaObject.java,v
-retrieving revision 1.88
-diff -u -r1.88 NativeJavaObject.java
---- src/org/mozilla/javascript/NativeJavaObject.java	19 Mar 2009 13:19:55 -0000	1.88
-+++ src/org/mozilla/javascript/NativeJavaObject.java	19 Jul 2009 17:41:08 -0000
-@@ -364,9 +364,10 @@
-             }
-             else if (to.isPrimitive() && to != Boolean.TYPE) {
-                 return (fromCode == JSTYPE_JAVA_ARRAY)
--                       ? CONVERSION_NONE : 2 + getSizeRank(to);
-+                       ? CONVERSION_NONE : 3 + getSizeRank(to);
-+            } else {
-+                return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, CONVERSION_NONE);
-             }
--            break;
+ import java.text.Collator;
+-import java.util.Locale;
  
-         case JSTYPE_OBJECT:
-             // Other objects takes #1-#3 spots
-@@ -379,14 +380,28 @@
-                     // This is a native array conversion to a java array
-                     // Array conversions are all equal, and preferable to object
-                     // and string conversion, per LC3.
--                    return 1;
-+
-+                    // Lehni:
-+                    // Look at the first element in the array to determine
-+                    // conversion weight further. While this approach is not
-+                    // perfect, it is certainly better than simply returning 1.
-+                    // The only case where this does not work is with arrays
-+                    // containing null at that position, and arrays containing
-+                    // different types.
-+                    return getConversionWeight(
-+                            ((NativeArray) fromObj).get(0, (Scriptable) fromObj),
-+                            to.getComponentType());
-                 }
-             }
-             else if (to == ScriptRuntime.ObjectClass) {
-                 return 2;
-             }
-             else if (to == ScriptRuntime.StringClass) {
--                return 3;
-+                // Lehni:
-+                // Prefer conversion from NativeString to a java String
-+                // over the above conversion to a object.
-+                // (typeof obj == 'object', not 'string'!)
-+                return fromObj instanceof NativeString ? 1 : 3;
-             }
-             else if (to == ScriptRuntime.DateClass) {
-                 if (fromObj instanceof NativeDate) {
-@@ -401,7 +416,7 @@
-                         return 1;
-                     }
-                 }
--                return 11;
-+                return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, 11);
-             }
-             else if (to.isPrimitive() && to != Boolean.TYPE) {
-                 return 3 + getSizeRank(to);
-@@ -409,7 +424,7 @@
-             break;
-         }
- 
--        return CONVERSION_NONE;
-+        return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, CONVERSION_NONE);
-     }
- 
-     static int getSizeRank(Class<?> aType) {
-@@ -497,9 +512,19 @@
-         return coerceTypeImpl(type, value);
-     }
- 
-+    static Object coerce(Class<?> type, Object value) {
-+        Object obj = Context.getContext().getWrapFactory().coerceType(type, value);
-+        // Allow Undefined.instance being coerced to null, but nothing else
-+        if (obj == null && value != Undefined.instance) {
-+            reportConversionError(value instanceof Wrapper ? ((Wrapper) value).unwrap() : value, type);
-+        }
-+        return obj;
-+    }
-+
-     /**
-      * Type-munging for field setting and method invocation.
-      * Conforms to LC3 specification
-+     * @param genericType 
-      */
-     static Object coerceTypeImpl(Class<?> type, Object value)
-     {
-@@ -507,6 +532,8 @@
-             return value;
-         }
- 
-+        Object original = value;
-+
-         switch (getJSTypeCode(value)) {
- 
-         case JSTYPE_NULL:
-@@ -522,9 +549,8 @@
-                 return "undefined";
-             }
-             else {
--                reportConversionError("undefined", type);
-+            	return coerce(type, value);
-             }
--            break;
- 
-         case JSTYPE_BOOLEAN:
-             // Under LC3, only JS Booleans can be coerced into a Boolean value
-@@ -537,9 +563,8 @@
-                 return value.toString();
-             }
-             else {
--                reportConversionError(value, type);
-+                return coerce(type, value);
-             }
--            break;
- 
-         case JSTYPE_NUMBER:
-             if (type == ScriptRuntime.StringClass) {
-@@ -553,9 +578,8 @@
-                 return coerceToNumber(type, value);
-             }
-             else {
--                reportConversionError(value, type);
-+                return coerce(type, value);
-             }
--            break;
- 
-         case JSTYPE_STRING:
-             if (type == ScriptRuntime.StringClass || type.isInstance(value)) {
-@@ -581,9 +605,8 @@
-                 return coerceToNumber(type, value);
-             }
-             else {
--                reportConversionError(value, type);
-+                return coerce(type, value);
-             }
--            break;
- 
-         case JSTYPE_JAVA_CLASS:
-             if (value instanceof Wrapper) {
-@@ -598,18 +621,17 @@
-                 return value.toString();
-             }
-             else {
--                reportConversionError(value, type);
-+                return coerce(type, original);
-             }
--            break;
- 
-         case JSTYPE_JAVA_OBJECT:
--        case JSTYPE_JAVA_ARRAY:              
-+        case JSTYPE_JAVA_ARRAY:
-             if (value instanceof Wrapper) {
-               value = ((Wrapper)value).unwrap();
-             }
-             if (type.isPrimitive()) {
-                 if (type == Boolean.TYPE) {
--                    reportConversionError(value, type);
-+                    return coerce(type, original);
-                 }
-                 return coerceToNumber(type, value);
-             }
-@@ -622,11 +644,13 @@
-                         return value;
-                     }
-                     else {
--                        reportConversionError(value, type);
-+                        // We must be here because canConvert returned true
-+                        // Give it a try. pass the wrapped value, to let the
-+                        // wrap factory decide what to do with it.
-+                        return coerce(type, original);
-                     }
-                 }
-             }
--            break;
- 
-         case JSTYPE_OBJECT:
-             if (type == ScriptRuntime.StringClass) {
-@@ -634,7 +658,7 @@
-             }
-             else if (type.isPrimitive()) {
-                 if (type == Boolean.TYPE) {
--                    reportConversionError(value, type);
-+                    return coerce(type, value);
-                 }
-                 return coerceToNumber(type, value);
-             }
-@@ -671,7 +695,7 @@
-                 value = ((Wrapper)value).unwrap();
-                 if (type.isInstance(value))
-                     return value;
--                reportConversionError(value, type);
-+                return coerce(type, original);
-             }
-             else if (type.isInterface() && value instanceof Callable) {
-                 // Try to use function as implementation of Java interface.
-@@ -693,15 +717,15 @@
-                     Context cx = Context.getContext();
-                     Object glue
-                         = InterfaceAdapter.create(cx, type, (Callable)value);
--                    // Store for later retrival
-+                    // Store for later retrieval
-                     glue = so.associateValue(key, glue);
-                     return glue;
-                 }
--                reportConversionError(value, type);
--            } else {
--                reportConversionError(value, type);
-+                return coerce(type, value);
-+            }
-+            else {
-+                return coerce(type, value);
-             }
--            break;
-         }
- 
-         return value;
+ /**
+  * This class implements the String native object.
+@@ -310,11 +308,11 @@
+     
+               case Id_toLowerCase:
+                 // See ECMA 15.5.4.11
+-                return ScriptRuntime.toString(thisObj).toLowerCase(Locale.ROOT);
++                return ScriptRuntime.toString(thisObj).toLowerCase();
+     
+               case Id_toUpperCase:
+                 // See ECMA 15.5.4.12
+-                return ScriptRuntime.toString(thisObj).toUpperCase(Locale.ROOT);
++                return ScriptRuntime.toString(thisObj).toUpperCase();
+     
+               case Id_substr:
+                 return js_substr(ScriptRuntime.toString(thisObj), args);
 Index: src/org/mozilla/javascript/JavaMembers.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/JavaMembers.java,v
 retrieving revision 1.80
 diff -u -r1.80 JavaMembers.java
 --- src/org/mozilla/javascript/JavaMembers.java	6 Jun 2009 14:11:24 -0000	1.80
-+++ src/org/mozilla/javascript/JavaMembers.java	19 Jul 2009 17:41:02 -0000
++++ src/org/mozilla/javascript/JavaMembers.java	21 Jul 2009 21:05:30 -0000
 @@ -52,9 +52,9 @@
   * @see NativeJavaObject
   * @see NativeJavaClass
@@ -291,7 +74,17 @@ diff -u -r1.80 JavaMembers.java
                 boolean isStatic)
      {
          Map<String,Object> ht = isStatic ? staticMembers : members;
-@@ -130,7 +130,7 @@
+@@ -99,8 +99,7 @@
+             member = staticMembers.get(name);
+         }
+         if (member == null) {
+-            member = this.getExplicitFunction(scope, name,
+-                                              javaObject, isStatic);
++            member = this.getExplicitFunction(scope, name, isStatic);
+             if (member == null)
+                 return Scriptable.NOT_FOUND;
+         }
+@@ -130,7 +129,7 @@
          return cx.getWrapFactory().wrap(cx, scope, rval, type);
      }
  
@@ -300,7 +93,7 @@ diff -u -r1.80 JavaMembers.java
               Object value, boolean isStatic)
      {
          Map<String,Object> ht = isStatic ? staticMembers : members;
-@@ -195,7 +195,7 @@
+@@ -195,7 +194,7 @@
          }
      }
  
@@ -309,7 +102,17 @@ diff -u -r1.80 JavaMembers.java
      {
          Map<String,Object> map = isStatic ? staticMembers : members;
          return map.keySet().toArray(new Object[map.size()]);
-@@ -487,13 +487,59 @@
+@@ -285,8 +284,7 @@
+         return null;
+     }
+ 
+-    private Object getExplicitFunction(Scriptable scope, String name,
+-                                       Object javaObject, boolean isStatic)
++    private Object getExplicitFunction(Scriptable scope, String name, boolean isStatic)
+     {
+         Map<String,Object> ht = isStatic ? staticMembers : members;
+         Object member = null;
+@@ -487,13 +485,59 @@
                      methodBoxes[0] = new MemberBox((Method)value);
                  } else {
                      ObjArray overloadedMethods = (ObjArray)value;
@@ -375,7 +178,7 @@ diff -u -r1.80 JavaMembers.java
                  }
                  NativeJavaMethod fun = new NativeJavaMethod(methodBoxes);
                  if (scope != null) {
-@@ -559,6 +605,9 @@
+@@ -559,6 +603,9 @@
              }
          }
  
@@ -385,7 +188,7 @@ diff -u -r1.80 JavaMembers.java
          // Create bean properties from corresponding get/set methods first for
          // static members and then for instance members
          for (int tableCursor = 0; tableCursor != 2; ++tableCursor) {
-@@ -566,6 +615,8 @@
+@@ -566,6 +613,8 @@
              Map<String,Object> ht = isStatic ? staticMembers : members;
  
              Map<String,BeanProperty> toAdd = new HashMap<String,BeanProperty>();
@@ -394,7 +197,7 @@ diff -u -r1.80 JavaMembers.java
  
              // Now, For each member, make "bean" properties.
              for (String name: ht.keySet()) {
-@@ -646,10 +697,36 @@
+@@ -646,10 +695,36 @@
                              }
                          }
                      }
@@ -435,7 +238,7 @@ diff -u -r1.80 JavaMembers.java
                  }
              }
  
-@@ -658,6 +735,27 @@
+@@ -658,6 +733,27 @@
                  Object value = toAdd.get(key);
                  ht.put(key, value);
              }
@@ -463,7 +266,7 @@ diff -u -r1.80 JavaMembers.java
          }
  
          // Reflect constructors
-@@ -668,6 +766,38 @@
+@@ -668,6 +764,38 @@
          }
      }
  
@@ -508,7 +311,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaTopPack
 retrieving revision 1.22
 diff -u -r1.22 NativeJavaTopPackage.java
 --- src/org/mozilla/javascript/NativeJavaTopPackage.java	5 Apr 2009 09:09:42 -0000	1.22
-+++ src/org/mozilla/javascript/NativeJavaTopPackage.java	19 Jul 2009 17:41:09 -0000
++++ src/org/mozilla/javascript/NativeJavaTopPackage.java	21 Jul 2009 21:05:31 -0000
 @@ -71,7 +71,7 @@
              {"javax", "swing"}
      };
@@ -518,39 +321,13 @@ diff -u -r1.22 NativeJavaTopPackage.java
      {
          super(true, "", loader);
      }
-Index: src/org/mozilla/javascript/ScriptableObject.java
-===================================================================
-RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/ScriptableObject.java,v
-retrieving revision 1.151
-diff -u -r1.151 ScriptableObject.java
---- src/org/mozilla/javascript/ScriptableObject.java	22 Jun 2009 01:08:20 -0000	1.151
-+++ src/org/mozilla/javascript/ScriptableObject.java	19 Jul 2009 17:41:25 -0000
-@@ -2827,6 +2827,18 @@
-             return null;
-         } else if (value instanceof Wrapper) {
-             return ((Wrapper) value).unwrap();
-+        // Lehni: Convert NativeArray to Java Object Arrays
-+        } else if (value instanceof NativeArray) {
-+            NativeArray array = (NativeArray) value;
-+            int length = (int) array.getLength();
-+            Object[] list = new Object[length];
-+            for (int i = 0; i < length; i++) {
-+                Object obj = array.get(i, array);
-+                if (obj instanceof Wrapper)
-+                    obj = ((Wrapper) obj).unwrap();
-+                list[i] = obj;
-+            }
-+            return list;
-         } else {
-             return value;
-         }
 Index: src/org/mozilla/javascript/NativeJavaMethod.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaMethod.java,v
 retrieving revision 1.65
 diff -u -r1.65 NativeJavaMethod.java
 --- src/org/mozilla/javascript/NativeJavaMethod.java	9 Jun 2009 17:43:45 -0000	1.65
-+++ src/org/mozilla/javascript/NativeJavaMethod.java	19 Jul 2009 17:41:05 -0000
++++ src/org/mozilla/javascript/NativeJavaMethod.java	21 Jul 2009 21:05:31 -0000
 @@ -433,11 +433,11 @@
          if (firstBestFit < 0) {
              // Nothing was found
@@ -582,13 +359,312 @@ diff -u -r1.65 NativeJavaMethod.java
      }
  
      /** Types are equal */
+Index: src/org/mozilla/javascript/Context.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Context.java,v
+retrieving revision 1.279
+diff -u -r1.279 Context.java
+--- src/org/mozilla/javascript/Context.java	15 May 2009 12:09:51 -0000	1.279
++++ src/org/mozilla/javascript/Context.java	21 Jul 2009 21:05:27 -0000
+@@ -2112,6 +2112,19 @@
+         return wrapFactory;
+     }
+ 
++    public final void setOperatorHandler(OperatorHandler operatorHandler)
++    {
++        if (sealed) onSealedMutation();
++        if (operatorHandler == null)
++            throw new IllegalArgumentException();
++        this.operatorHandler = operatorHandler;
++    }
++
++    public final OperatorHandler getOperatorHandler()
++    {
++        return operatorHandler;
++    }
++
+     /**
+      * Return the current debugger.
+      * @return the debugger, or null if none is attached.
+@@ -2636,6 +2649,7 @@
+     private int optimizationLevel;
+     private int maximumInterpreterStackDepth;
+     private WrapFactory wrapFactory;
++    private OperatorHandler operatorHandler;
+     Debugger debugger;
+     private Object debuggerData;
+     private int enterCount;
+Index: src/org/mozilla/javascript/NativeJavaObject.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaObject.java,v
+retrieving revision 1.88
+diff -u -r1.88 NativeJavaObject.java
+--- src/org/mozilla/javascript/NativeJavaObject.java	19 Mar 2009 13:19:55 -0000	1.88
++++ src/org/mozilla/javascript/NativeJavaObject.java	21 Jul 2009 21:05:31 -0000
+@@ -42,10 +42,15 @@
+ 
+ package org.mozilla.javascript;
+ 
+-import java.io.*;
+-import java.lang.reflect.*;
+-import java.util.Map;
++import java.io.IOException;
++import java.io.ObjectInputStream;
++import java.io.ObjectOutputStream;
++import java.io.Serializable;
++import java.lang.reflect.Array;
++import java.lang.reflect.InvocationTargetException;
++import java.lang.reflect.Method;
+ import java.util.Date;
++import java.util.Map;
+ 
+ /**
+  * This class reflects non-Array Java objects into the JavaScript environment.  It
+@@ -364,9 +369,10 @@
+             }
+             else if (to.isPrimitive() && to != Boolean.TYPE) {
+                 return (fromCode == JSTYPE_JAVA_ARRAY)
+-                       ? CONVERSION_NONE : 2 + getSizeRank(to);
++                       ? CONVERSION_NONE : 3 + getSizeRank(to);
++            } else {
++                return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, CONVERSION_NONE);
+             }
+-            break;
+ 
+         case JSTYPE_OBJECT:
+             // Other objects takes #1-#3 spots
+@@ -379,14 +385,28 @@
+                     // This is a native array conversion to a java array
+                     // Array conversions are all equal, and preferable to object
+                     // and string conversion, per LC3.
+-                    return 1;
++
++                    // Lehni:
++                    // Look at the first element in the array to determine
++                    // conversion weight further. While this approach is not
++                    // perfect, it is certainly better than simply returning 1.
++                    // The only case where this does not work is with arrays
++                    // containing null at that position, and arrays containing
++                    // different types.
++                    return getConversionWeight(
++                            ((NativeArray) fromObj).get(0, (Scriptable) fromObj),
++                            to.getComponentType());
+                 }
+             }
+             else if (to == ScriptRuntime.ObjectClass) {
+                 return 2;
+             }
+             else if (to == ScriptRuntime.StringClass) {
+-                return 3;
++                // Lehni:
++                // Prefer conversion from NativeString to a java String
++                // over the above conversion to a object.
++                // (typeof obj == 'object', not 'string'!)
++                return fromObj instanceof NativeString ? 1 : 3;
+             }
+             else if (to == ScriptRuntime.DateClass) {
+                 if (fromObj instanceof NativeDate) {
+@@ -401,7 +421,7 @@
+                         return 1;
+                     }
+                 }
+-                return 11;
++                return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, 11);
+             }
+             else if (to.isPrimitive() && to != Boolean.TYPE) {
+                 return 3 + getSizeRank(to);
+@@ -409,7 +429,7 @@
+             break;
+         }
+ 
+-        return CONVERSION_NONE;
++        return Context.getContext().getWrapFactory().getConversionWeight(fromObj, to, CONVERSION_NONE);
+     }
+ 
+     static int getSizeRank(Class<?> aType) {
+@@ -497,9 +517,19 @@
+         return coerceTypeImpl(type, value);
+     }
+ 
++    static Object coerce(Class<?> type, Object value) {
++        Object obj = Context.getContext().getWrapFactory().coerceType(type, value);
++        // Allow Undefined.instance being coerced to null, but nothing else
++        if (obj == null && value != Undefined.instance) {
++            reportConversionError(value instanceof Wrapper ? ((Wrapper) value).unwrap() : value, type);
++        }
++        return obj;
++    }
++
+     /**
+      * Type-munging for field setting and method invocation.
+      * Conforms to LC3 specification
++     * @param genericType 
+      */
+     static Object coerceTypeImpl(Class<?> type, Object value)
+     {
+@@ -507,6 +537,8 @@
+             return value;
+         }
+ 
++        Object original = value;
++
+         switch (getJSTypeCode(value)) {
+ 
+         case JSTYPE_NULL:
+@@ -522,9 +554,8 @@
+                 return "undefined";
+             }
+             else {
+-                reportConversionError("undefined", type);
++            	return coerce(type, value);
+             }
+-            break;
+ 
+         case JSTYPE_BOOLEAN:
+             // Under LC3, only JS Booleans can be coerced into a Boolean value
+@@ -537,9 +568,8 @@
+                 return value.toString();
+             }
+             else {
+-                reportConversionError(value, type);
++                return coerce(type, value);
+             }
+-            break;
+ 
+         case JSTYPE_NUMBER:
+             if (type == ScriptRuntime.StringClass) {
+@@ -553,9 +583,8 @@
+                 return coerceToNumber(type, value);
+             }
+             else {
+-                reportConversionError(value, type);
++                return coerce(type, value);
+             }
+-            break;
+ 
+         case JSTYPE_STRING:
+             if (type == ScriptRuntime.StringClass || type.isInstance(value)) {
+@@ -581,9 +610,8 @@
+                 return coerceToNumber(type, value);
+             }
+             else {
+-                reportConversionError(value, type);
++                return coerce(type, value);
+             }
+-            break;
+ 
+         case JSTYPE_JAVA_CLASS:
+             if (value instanceof Wrapper) {
+@@ -598,18 +626,17 @@
+                 return value.toString();
+             }
+             else {
+-                reportConversionError(value, type);
++                return coerce(type, original);
+             }
+-            break;
+ 
+         case JSTYPE_JAVA_OBJECT:
+-        case JSTYPE_JAVA_ARRAY:              
++        case JSTYPE_JAVA_ARRAY:
+             if (value instanceof Wrapper) {
+               value = ((Wrapper)value).unwrap();
+             }
+             if (type.isPrimitive()) {
+                 if (type == Boolean.TYPE) {
+-                    reportConversionError(value, type);
++                    return coerce(type, original);
+                 }
+                 return coerceToNumber(type, value);
+             }
+@@ -622,11 +649,13 @@
+                         return value;
+                     }
+                     else {
+-                        reportConversionError(value, type);
++                        // We must be here because canConvert returned true
++                        // Give it a try. pass the wrapped value, to let the
++                        // wrap factory decide what to do with it.
++                        return coerce(type, original);
+                     }
+                 }
+             }
+-            break;
+ 
+         case JSTYPE_OBJECT:
+             if (type == ScriptRuntime.StringClass) {
+@@ -634,7 +663,7 @@
+             }
+             else if (type.isPrimitive()) {
+                 if (type == Boolean.TYPE) {
+-                    reportConversionError(value, type);
++                    return coerce(type, value);
+                 }
+                 return coerceToNumber(type, value);
+             }
+@@ -671,7 +700,7 @@
+                 value = ((Wrapper)value).unwrap();
+                 if (type.isInstance(value))
+                     return value;
+-                reportConversionError(value, type);
++                return coerce(type, original);
+             }
+             else if (type.isInterface() && value instanceof Callable) {
+                 // Try to use function as implementation of Java interface.
+@@ -693,15 +722,15 @@
+                     Context cx = Context.getContext();
+                     Object glue
+                         = InterfaceAdapter.create(cx, type, (Callable)value);
+-                    // Store for later retrival
++                    // Store for later retrieval
+                     glue = so.associateValue(key, glue);
+                     return glue;
+                 }
+-                reportConversionError(value, type);
+-            } else {
+-                reportConversionError(value, type);
++                return coerce(type, value);
++            }
++            else {
++                return coerce(type, value);
+             }
+-            break;
+         }
+ 
+         return value;
+Index: src/org/mozilla/javascript/ScriptableObject.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/ScriptableObject.java,v
+retrieving revision 1.151
+diff -u -r1.151 ScriptableObject.java
+--- src/org/mozilla/javascript/ScriptableObject.java	22 Jun 2009 01:08:20 -0000	1.151
++++ src/org/mozilla/javascript/ScriptableObject.java	21 Jul 2009 21:05:36 -0000
+@@ -2827,6 +2827,18 @@
+             return null;
+         } else if (value instanceof Wrapper) {
+             return ((Wrapper) value).unwrap();
++        // Lehni: Convert NativeArray to Java Object Arrays
++        } else if (value instanceof NativeArray) {
++            NativeArray array = (NativeArray) value;
++            int length = (int) array.getLength();
++            Object[] list = new Object[length];
++            for (int i = 0; i < length; i++) {
++                Object obj = array.get(i, array);
++                if (obj instanceof Wrapper)
++                    obj = ((Wrapper) obj).unwrap();
++                list[i] = obj;
++            }
++            return list;
+         } else {
+             return value;
+         }
 Index: src/org/mozilla/javascript/NativeJavaPackage.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaPackage.java,v
 retrieving revision 1.45
 diff -u -r1.45 NativeJavaPackage.java
 --- src/org/mozilla/javascript/NativeJavaPackage.java	5 Nov 2008 21:37:23 -0000	1.45
-+++ src/org/mozilla/javascript/NativeJavaPackage.java	19 Jul 2009 17:41:08 -0000
++++ src/org/mozilla/javascript/NativeJavaPackage.java	21 Jul 2009 21:05:31 -0000
 @@ -60,7 +60,7 @@
  {
      static final long serialVersionUID = 7445054382212031523L;
@@ -613,7 +689,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/MemberBox.java,v
 retrieving revision 1.19
 diff -u -r1.19 MemberBox.java
 --- src/org/mozilla/javascript/MemberBox.java	26 Jun 2008 13:57:11 -0000	1.19
-+++ src/org/mozilla/javascript/MemberBox.java	19 Jul 2009 17:41:03 -0000
++++ src/org/mozilla/javascript/MemberBox.java	21 Jul 2009 21:05:30 -0000
 @@ -52,7 +52,7 @@
   * @author Igor Bukanov
   */
@@ -714,53 +790,13 @@ diff -u -r1.19 MemberBox.java
      {
          Constructor<?> ctor = ctor();
          try {
-Index: src/org/mozilla/javascript/WrapFactory.java
-===================================================================
-RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/WrapFactory.java,v
-retrieving revision 1.20
-diff -u -r1.20 WrapFactory.java
---- src/org/mozilla/javascript/WrapFactory.java	13 Nov 2008 18:03:40 -0000	1.20
-+++ src/org/mozilla/javascript/WrapFactory.java	19 Jul 2009 17:41:26 -0000
-@@ -151,6 +151,32 @@
-     }
- 
-     /**
-+     * Same as NativeJavaObject CONVERSION_*, but to be used
-+     * by WrapFactory#getConversionWeight
-+     */
-+    public static final byte CONVERSION_TRIVIAL      = 1;
-+    public static final byte CONVERSION_NONTRIVIAL   = 0;
-+    public static final byte CONVERSION_NONE         = 99;
-+
-+	public int getConversionWeight(Object from, Class<?> to, int defaultWeight) {
-+        return defaultWeight;
-+	}
-+
-+    public Object coerceType(Class<?> type, Object value) {
-+    	return null;
-+    }
-+
-+    public boolean shouldAddBean(Class<?> cls, boolean isStatic,
-+            MemberBox getter, MemberBox setter) {
-+        return true;
-+    }
-+
-+    public boolean shouldRemoveGetterSetter(Class<?> cls, boolean isStatic,
-+            MemberBox getter, MemberBox setter) {
-+        return false;
-+    }
-+    
-+    /**
-      * Return <code>false</code> if result of Java method, which is instance of
-      * <code>String</code>, <code>Number</code>, <code>Boolean</code> and
-      * <code>Character</code>, should be used directly as JavaScript primitive
 Index: src/org/mozilla/javascript/NativeJavaClass.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaClass.java,v
 retrieving revision 1.55
 diff -u -r1.55 NativeJavaClass.java
 --- src/org/mozilla/javascript/NativeJavaClass.java	5 Nov 2008 21:37:22 -0000	1.55
-+++ src/org/mozilla/javascript/NativeJavaClass.java	19 Jul 2009 17:41:03 -0000
++++ src/org/mozilla/javascript/NativeJavaClass.java	21 Jul 2009 21:05:30 -0000
 @@ -181,6 +181,12 @@
          return construct(cx, scope, args);
      }
@@ -794,13 +830,53 @@ diff -u -r1.55 NativeJavaClass.java
          } else {
              Scriptable topLevel = ScriptableObject.getTopLevelScope(this);
              String msg = "";
+Index: src/org/mozilla/javascript/WrapFactory.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/WrapFactory.java,v
+retrieving revision 1.20
+diff -u -r1.20 WrapFactory.java
+--- src/org/mozilla/javascript/WrapFactory.java	13 Nov 2008 18:03:40 -0000	1.20
++++ src/org/mozilla/javascript/WrapFactory.java	21 Jul 2009 21:05:36 -0000
+@@ -151,6 +151,32 @@
+     }
+ 
+     /**
++     * Same as NativeJavaObject CONVERSION_*, but to be used
++     * by WrapFactory#getConversionWeight
++     */
++    public static final byte CONVERSION_TRIVIAL      = 1;
++    public static final byte CONVERSION_NONTRIVIAL   = 0;
++    public static final byte CONVERSION_NONE         = 99;
++
++	public int getConversionWeight(Object from, Class<?> to, int defaultWeight) {
++        return defaultWeight;
++	}
++
++    public Object coerceType(Class<?> type, Object value) {
++    	return null;
++    }
++
++    public boolean shouldAddBean(Class<?> cls, boolean isStatic,
++            MemberBox getter, MemberBox setter) {
++        return true;
++    }
++
++    public boolean shouldRemoveGetterSetter(Class<?> cls, boolean isStatic,
++            MemberBox getter, MemberBox setter) {
++        return false;
++    }
++    
++    /**
+      * Return <code>false</code> if result of Java method, which is instance of
+      * <code>String</code>, <code>Number</code>, <code>Boolean</code> and
+      * <code>Character</code>, should be used directly as JavaScript primitive
 Index: src/org/mozilla/javascript/ScriptRuntime.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/ScriptRuntime.java,v
 retrieving revision 1.313
 diff -u -r1.313 ScriptRuntime.java
 --- src/org/mozilla/javascript/ScriptRuntime.java	25 Jun 2009 19:47:26 -0000	1.313
-+++ src/org/mozilla/javascript/ScriptRuntime.java	19 Jul 2009 17:41:19 -0000
++++ src/org/mozilla/javascript/ScriptRuntime.java	21 Jul 2009 21:05:34 -0000
 @@ -3256,6 +3256,10 @@
  
              Scriptable errorObject = cx.newObject(scope, errorName, args);
@@ -818,7 +894,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Interpreter.java,
 retrieving revision 1.356
 diff -u -r1.356 Interpreter.java
 --- src/org/mozilla/javascript/Interpreter.java	4 Jul 2009 12:14:49 -0000	1.356
-+++ src/org/mozilla/javascript/Interpreter.java	19 Jul 2009 17:41:01 -0000
++++ src/org/mozilla/javascript/Interpreter.java	21 Jul 2009 21:05:29 -0000
 @@ -1055,65 +1055,6 @@
          throwable = stack[indexReg];
          break withoutExceptions;
