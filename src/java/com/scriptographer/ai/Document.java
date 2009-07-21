@@ -46,6 +46,14 @@ import com.scriptographer.ScriptographerException;
 import com.scriptographer.script.EnumUtils;
 
 /**
+ * The Document item refers to an Illustrator document.
+ * 
+ * The currently active document can be accessed through the global {@code
+ * document} variable.
+ * 
+ * An array of all open documents is accessible through the global {@code
+ * documents} variable.
+ * 
  * @author lehni
  */
 public class Document extends NativeObject {
@@ -257,6 +265,10 @@ public class Document extends NativeObject {
 		return currentStyleItem;
 	}
 
+	/**
+	 * The currently active Illustrator path style. All selected items and newly
+	 * created items will be styled with this style.
+	 */
 	public PathStyle getCurrentStyle() {
 		return getCurrentStyleItem().getStyle();
 	}
@@ -313,7 +325,7 @@ public class Document extends NativeObject {
 	public native void setModified(boolean modified);
 
 	/**
-	 * The document's file.
+	 * The file associated with the document.
 	 */
 	public native File getFile();
 
