@@ -43,9 +43,9 @@ import com.scriptographer.ScriptographerException;
 import com.scriptographer.ui.Image;
 
 /**
- * The Tool object refers to the Scriptographer tool in the tool palette and can
- * be accessed through the global {@code tool} variable. All its properties are
- * also available in the global scope.
+ * The Tool object refers to the Scriptographer tool in the Illustrator tool
+ * palette and can be accessed through the global {@code tool} variable. All its
+ * properties are also available in the global scope.
  * 
  * The global {@code tool} variable only exists in scripts that contain mouse
  * handler functions ({@link #getOnMouseDown()}, {@link #getOnMouseDrag()},
