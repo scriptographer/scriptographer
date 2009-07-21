@@ -51,6 +51,13 @@ p {
 	background: #e3f4fc;
 }
 
+.documentation h1 {
+	font-size: 18px;
+	font-weight: normal;
+	line-height: 24px;
+	border: none;
+}
+
 .footer {
 	margin-top: 20px;
 }

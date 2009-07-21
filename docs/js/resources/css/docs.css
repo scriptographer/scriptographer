@@ -1,10 +1,4 @@
-.documentation h1 {
-	font-size: 18px;
-	font-weight: normal;
-	line-height: 24px;
-}
-
-.documentation h2, .documentation h3 {
+.documentation h1, .documentation h2, .documentation h3 {
 	font-size: 11px;
 	font-weight: normal;
 	display: block;
@@ -32,10 +26,6 @@
 .documentation ul {
 	margin: 0;
 	padding: 0;
-	list-style-type: none;
-}
-
-.documentation li {
 	list-style: none;
 }
 

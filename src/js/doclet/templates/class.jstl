@@ -5,8 +5,8 @@
 <% $superclass = this.doc.getSuperclass() %>
 <% $listDescription = this.doc.renderLink({ arrayOnly: true, additional: true }) %>
 <% if $superclass || $listDescription || $subclasses  %>
-<p>
 <% if $superclass %>
+<p>
 Extends <%= $superclass.renderLink() -%><br />
 <% end %>
 <% if $listDescription %>
@@ -14,10 +14,10 @@ Extends <%= $superclass.renderLink() -%><br />
 <% end %>
 <% if $subclasses %>
 Inherited by <%= $subclasses %><br />
-<% end %>
 </p>
 <% end %>
-<% tags doc=this.doc tags=this.doc.inlineTags() prefix="<p>" suffix="</p>" %>
+<% end %>
+<% tags doc=this.doc tags=this.doc.inlineTags() %>
 <% tags doc=this.doc tags=this.doc.seeTags() prefix="<p><b>See also: </b>" suffix="</p>" separator=", " %>
 <% if settings.versionInfo %>
 	<% tags doc=this.doc tags=this.doc.tags("version") prefix=<%= "Version" | heading 2 %> suffix="</p>" separator=", " %>
