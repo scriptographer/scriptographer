@@ -43,6 +43,34 @@ import com.scriptographer.ScriptographerException;
 import com.scriptographer.ui.Image;
 
 /**
+ * The Tool object refers to the Scriptographer tool in the tool palette and can
+ * be accessed through the global {@code tool} variable. All its properties are
+ * also available in the global scope.
+ * 
+ * The global {@code tool} variable only exists in scripts that contain mouse
+ * handler functions ({@link #getOnMouseDown()}, {@link #getOnMouseDrag()},
+ * {@link #getOnMouseUp()}), which are automatically associated with the tool
+ * button on execution.
+ * 
+ * Sample code:
+ * <code>
+ * var path;
+ * 
+ * // Only execute onMouseDrag when the mouse
+ * // has moved at least 10 points:
+ * tool.distanceThreshold = 10;
+ * 
+ * function onMouseDown(event) {
+ * 	// Create a new path every time the mouse is clicked
+ * 	path = new Path();
+ * }
+ * 
+ * function onMouseDrag(event) {
+ * 	// Add a point to the path every time the mouse is dragged
+ * 	path.lineTo(event.point);
+ * }
+ * </code>
+ * 
  * @author lehni
  */
 public class Tool extends NativeObject {
