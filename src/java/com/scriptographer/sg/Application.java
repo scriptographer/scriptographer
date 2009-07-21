@@ -39,6 +39,9 @@ import com.scriptographer.ai.FileFormatList;
 import com.scriptographer.ai.FontList;
 
 /**
+ * The Application object represents the Illustrator application and can be
+ * accessed through the global {@code app} variable.
+ * 
  * @author lehni
  * 
  * @jsnostatic
@@ -50,29 +53,28 @@ public class Application {
 	}
 
 	/**
-	 * Returns Adobe Illustrator's version description.
+	 * Adobe Illustrator's version description.
 	 */
 	public String getVersion() {
 		return ScriptographerEngine.getApplicationVersion();
 	}
 
 	/**
-	 * Returns Adobe Illustrator's revision number.
+	 * Adobe Illustrator's revision number.
 	 */
 	public int getRevision() {
 		return ScriptographerEngine.getApplicationRevision();
 	}
 
 	/**
-	 * Returns a list of all installed fonts.
+	 * An array of all installed fonts.
 	 */
 	public FontList getFonts() {
 		return FontList.getInstance();
 	}
 
 	/**
-	 * Returns a list of all file formats available for writing of
-	 * documents.
+	 * An array of all file formats available for writing of documents.
 	 * 
 	 * @jshide
 	 */
@@ -108,6 +110,8 @@ public class Application {
 	}
 
 	/**
+	 * {@grouptitle File Launching}
+	 * 
 	 * Launches the given filename or URL through the operating system.
 	 */
 	public boolean launch(String filename) {
@@ -132,6 +136,8 @@ public class Application {
 	}
 
 	/**
+	 * {@grouptitle Progress Bar}
+	 * 
 	 * Updates the progress bar dialog.
 	 * 
 	 * @param current the current progress bar position
