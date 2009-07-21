@@ -40,7 +40,7 @@ package com.scriptographer.ai;
  * 
  * Sample code:
  * <code>
- * print(document.activeLayer.name) // 'Layer 1'
+ * print(document.activeLayer.name); // 'Layer 1'
  * var layer = new Layer();
  * layer.name = 'A new layer';
  * layer.activate();
