@@ -382,7 +382,7 @@ ClassObject = DocObject.extend({
 			// use renderClassLink, as renderLink might have been overridden
 			// by new Type(...)
 			return mem && mem.doc
-				? mem.doc.renderClassLink({})
+				? mem.doc.renderClassLink(param)
 				: code_filter(Type.getSimpleName(param.name));
 		},
 

@@ -71,6 +71,10 @@ LinkTag = Tag.extend({
 			}
 		}
 		if (ref) {
+			// Create a new param object that has the title set to label, if defined
+			var label = this.label();
+			if (label)
+				param = Hash.merge({ title: label }, param);
 			if (!ref.isVisible()) {
 				// If it's not visible, it might be a relative link that should be resolved again,
 				// since it might point to a visible subclass through comment inheriting.

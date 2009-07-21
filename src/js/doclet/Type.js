@@ -322,7 +322,7 @@ Type = Object.extend(new function() {
 				} else {
 					var cls = this.asClassDoc();
 					if (cls && cls.isVisible()) {
-						str = cls.renderClassLink({});
+						str = cls.renderClassLink(param);
 					} else if (this.isPoint()) {
 						str = ClassObject.renderLink({
 							name: 'com.scriptographer.ai.Point'
