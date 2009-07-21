@@ -52,6 +52,10 @@ ReferenceMember = SyntheticMember.extend({
 		}
 	},
 
+	getId: function() {
+		return this.member.getId();
+	},
+
 	containingClass: function() {
 		return this.classObject.doc;
 	},
