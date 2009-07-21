@@ -425,6 +425,8 @@ public class Document extends NativeObject {
 	public ArtboardList getArtboards() {
 		if (artboards == null)
 			artboards = new ArtboardList(this);
+		else
+			artboards.update();
 		return artboards;
 	}
 
