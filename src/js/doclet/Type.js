@@ -411,10 +411,8 @@ Type = Object.extend(new function() {
 	}
 });
 
-// Extend ClassDocImpl by Type, but only override what's not already there.
-// The easiest way is to have Type wrap ClassDocImpl.prototype, since the
-// initializer already has the code to check.
-// This is to avoid e.g. qualifiedName from looping endlessly.
+// Extend ClassDocImpl by Type. Mind that prototype won't override existing
+// java methods, so endless loops e.g. in qualifiedName won't happen.
 new Type(ClassDocImpl.prototype);
 
 // Add a method to directly produce a Type for ParameterImpl objects.
