@@ -86,7 +86,7 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			// the underlying native object each time.
 			if (changeListener != null && currentChangeVersion != changeVersion) {
 				Object result = changeListener.get(changeName, this);
-				if (result instanceof ExtendedJavaObject) {
+				if (result != this && result instanceof ExtendedJavaObject) {
 					ExtendedJavaObject update = (ExtendedJavaObject) result;
 					javaObject = update.javaObject;
 					// Help the garbage collector
