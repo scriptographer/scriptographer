@@ -40,6 +40,9 @@ import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
+import com.scratchdisk.script.ChangeNotifier;
+import com.scratchdisk.script.ChangeListener;
+
 /**
  * @author lehni
  */
@@ -66,6 +69,11 @@ public class ExtendedJavaObject extends NativeJavaObject {
 				: prototype;
 	}
 
+	protected ExtendedJavaObject changeListener = null;
+	protected String changeName = null;
+	protected int currentChangeVersion = -1;
+	public static int changeVersion = -1;
+
 	public Object get(String name, Scriptable start) {
 		// Properties need to come first, as they might override something
 		// defined in the underlying Java object
@@ -73,13 +81,37 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			// See whether this object defines the property.
 			return properties.get(name);
 		} else {
+			// If there is a modification listener, fetch the new value of this object
+			// from it before calling anything on it. We are doing this by replacing
+			// the underlying native object each time.
+			if (changeListener != null && currentChangeVersion != changeVersion) {
+				Object result = changeListener.get(changeName, this);
+				if (result instanceof ExtendedJavaObject) {
+					ExtendedJavaObject update = (ExtendedJavaObject) result;
+					javaObject = update.javaObject;
+					// Help the garbage collector
+					update.javaObject = null;
+				}
+				currentChangeVersion = changeVersion;
+			}
 			Scriptable prototype = getPrototype();
 			Object result = prototype.get(name, this);
 			if (result != Scriptable.NOT_FOUND)
 				return result;
 			result = members.get(this, name, javaObject, false);
-			if (result != Scriptable.NOT_FOUND)
+			if (result != Scriptable.NOT_FOUND) {
+				// Now see if the result is a modification dispatcher for this listener.
+				// If so, create the links between the two.
+				if (javaObject instanceof ChangeListener
+						&& result instanceof ExtendedJavaObject) {
+					ExtendedJavaObject other = (ExtendedJavaObject) result;
+					if (other.javaObject instanceof ChangeNotifier) {
+						other.changeListener = this;
+						other.changeName = name;
+					}
+				}
 				return result;
+			}
 			if (name.equals("prototype"))
 				return prototype;
 			return Scriptable.NOT_FOUND;
@@ -94,6 +126,9 @@ public class ExtendedJavaObject extends NativeJavaObject {
 		        // prototype. Since we can't add a property to a Java object,
 		        // we modify it in the prototype rather than copy it down.
 	            members.put(this, name, javaObject, value, false);
+	            // If there is a modification listener, update this field in it right away now.
+	            if (changeListener != null)
+	            	changeListener.put(changeName, changeListener, this);
 				return; // done
 			} catch (EvaluatorException e) {
 				if (e.getMessage().indexOf("Cannot convert") != -1)
