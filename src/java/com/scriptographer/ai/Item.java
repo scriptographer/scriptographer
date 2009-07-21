@@ -415,8 +415,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 
 	public native void setName(String name);
 	
-	// private ItemPoint position = null;
-
 	/**
 	 * The item's position within the art board. This is the
 	 * {@link Rectangle#getCenter()} of the {@link Item#getBounds()} rectangle.
@@ -808,8 +806,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * The previous item on the same level as this item.
 	 */
 	public native Item getPreviousSibling();
-
-	// private ItemRectangle bounds = null;
 
 	/**
 	 * {@grouptitle Bounding Rectangles}
