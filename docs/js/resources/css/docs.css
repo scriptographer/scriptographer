@@ -112,3 +112,7 @@
 .member-text ul {
 	padding-bottom: 8px;
 }
+
+ul.package-classes {
+	padding-bottom: 4px;
+}

@@ -33,7 +33,7 @@ createPackage("<%= $name %>",
 <b><%= renderLink({ path: param.path, title: $name }) | stripCode %></b>
 <ul id="package-<%= $name %>" class="hidden">
 <%= param.hierarchy %>
-<% foreach $class in param.classes prefix='<ul>' suffix='</ul>' %>
+<% foreach $class in param.classes prefix='<ul class="package-classes">' suffix='</ul>' %>
 <%= $class prefix=<%= $class#first ? '<li class="first">' : '<li>' %> suffix='</li>' | stripCode %>
 <% end %>
 </li></ul>
