@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.scratchdisk.list.Lists;
+import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
@@ -428,6 +430,17 @@ public class Document extends NativeObject {
 		else
 			artboards.update();
 		return artboards;
+	}
+
+	public void setArtboards(ReadOnlyList<Artboard> boards) {
+		ArtboardList artboards = getArtboards();
+		for (int i = 0, l = boards.size(); i < l; i++)
+			artboards.set(i, boards.get(i));
+		artboards.setSize(boards.size());
+	}
+
+	public void setArtboards(Artboard[] boards) {
+		setArtboards(Lists.asList(boards));
 	}
 
 	private native int getActiveArtboardIndex();

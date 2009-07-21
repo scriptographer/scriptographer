@@ -75,8 +75,8 @@ public class Group extends Item {
 	 */
 	public Group(List<? extends Item> children) {
 		this();
-		for (Item item : children)
-			this.appendBottom(item);
+		for (Item child : children)
+			this.appendBottom(child);
 	}
 
 	public Group(Item[] children) {

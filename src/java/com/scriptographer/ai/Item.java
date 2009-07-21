@@ -35,8 +35,8 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
 
-import com.scratchdisk.list.List;
 import com.scratchdisk.list.Lists;
+import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
@@ -788,13 +788,10 @@ public class Item extends DocumentObject implements Style {
 		return list;
 	}
 
-	public void setChildren(List children) {
+	public void setChildren(ReadOnlyList<Item> children) {
 		removeChildren();
-		for (int i = 0, size = children.size(); i < size; i++) {
-			Object obj = children.get(i);
-			if (obj instanceof Item)
-				appendBottom((Item) obj);
-		}
+		for (Item child : children)
+			appendBottom(child);
 	}
 
 	public void setChildren(Item[] children) {
