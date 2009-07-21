@@ -639,9 +639,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getLayer(JNIEnv *env, 
 }
 
 /*
- * com.scriptographer.ai.Rectangle nativeGetBounds()
+ * com.scriptographer.ai.Rectangle getBounds()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeGetBounds(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getBounds(JNIEnv *env, jobject obj) {
 	try {
 	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		// Commit pending changes first, since they might influence the bounds
@@ -684,9 +684,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getControlBounds(JNIEn
 }
 
 /*
- * com.scriptographer.ai.Point nativeGetPosition()
+ * com.scriptographer.ai.Point getPosition()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeGetPosition(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getPosition(JNIEnv *env, jobject obj) {
 	try {
 		AIRealRect rt;
 	    AIArtHandle art = gEngine->getArtHandle(env, obj);

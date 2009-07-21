@@ -415,8 +415,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 
 	public native void setName(String name);
 	
-	protected native Point nativeGetPosition();
-
 	// private ItemPoint position = null;
 
 	/**
@@ -435,21 +433,10 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * print(circle.position); // { x: 30, y: 20 }
 	 * </code>
 	 */
-	public Point getPosition() {
-		return nativeGetPosition();
-		/*
-		if (position == null)
-			position = new ItemPoint(this);
-		else
-			position.update();
-		return position;
-		*/
-	}
+	public native Point getPosition();
 
 	public void setPosition(Point pt) {
 		translate(pt.subtract(getPosition()));
-		// This is always defined now since we're using getPosition above
-		// position.update();
 	}
 
 	/**
@@ -821,8 +808,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * The previous item on the same level as this item.
 	 */
 	public native Item getPreviousSibling();
-	
-	protected native Rectangle nativeGetBounds();
 
 	// private ItemRectangle bounds = null;
 
@@ -831,17 +816,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * 
 	 * The bounding rectangle of the item excluding stroke width.
 	 */
-	public Rectangle getBounds() {
-		return nativeGetBounds();
-		/*
-		commit(false);
-		if (bounds == null)
-			bounds = new ItemRectangle(this);
-		else
-			bounds.update();
-		return bounds;
-		*/
-	}
+	public native Rectangle getBounds();
 
 	/**
 	 * @jshide
@@ -865,8 +840,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 				-(rect.y + rect.height * 0.5f));
 		// Now execute the transformation:
 		transform(matrix);
-		// This is always defined now since we're using getBounds above
-		// bounds.update();
 	}
 
 	public void setBounds(Rectangle rect) {
