@@ -36,8 +36,11 @@ import java.io.File;
 import com.scriptographer.ScriptographerEngine;
 
 /**
+ * The Scriptographer object represents the Scriptographer plugin and can be
+ * accessed through the global {@code scriptographer} variable.
+ * 
  * @author lehni
- *
+ * 
  * @jsnostatic
  */
 public class Scriptographer {
@@ -47,28 +50,28 @@ public class Scriptographer {
 	}
 
 	/**
-	 * Returns Scriptographer's main directory.
+	 * Scriptographer's main directory.
 	 */
 	public File getPluginDirectory() {
 		return ScriptographerEngine.getPluginDirectory();
 	}
 
 	/**
-	 * Returns Scriptographer's script directory.
+	 * Scriptographer's script directory.
 	 */
 	public File getScriptDirectory() {
 		return ScriptographerEngine.getScriptDirectory();
 	}
 
 	/**
-	 * Returns Scriptographer's version description.
+	 * Scriptographer's version description.
 	 */
 	public String getVersion() {
 		return ScriptographerEngine.getPluginVersion();
 	}
 
 	/**
-	 * Returns Scriptographer's revision number.
+	 * Scriptographer's revision number.
 	 */
 	public int getRevision() {
 		return ScriptographerEngine.getPluginRevision();
