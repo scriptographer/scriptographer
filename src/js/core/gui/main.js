@@ -125,9 +125,16 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		return entry;
 	}
 
-	function addFiles(list) {
-		if (!list)
+	function getList(list) {
+		if (!list) {
 			list = scriptList;
+			list.directory = scriptographer.scriptDirectory;
+		}
+		return list;
+	}
+
+	function addFiles(list) {
+		list = getList(list);
 		var files = list.directory.listFiles(scriptFilter);
 		for (var i = 0; i < files.length; i++)
 			addFile(list, files[i]);
@@ -140,8 +147,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	}
 
 	function refreshFiles(list) {
-		if (!list)
-			list = scriptList;
+		list = getList(list);
 		// Get new listing of the directory, then match with already inserted files.
 		// Create a lookup object for easily finding and tracking of already inserted files.	
 		var files = list.directory.listFiles(scriptFilter).each(function(file, i) {
