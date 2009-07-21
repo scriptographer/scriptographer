@@ -40,6 +40,7 @@ import com.scratchdisk.list.Lists;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
+import com.scriptographer.ScriptographerException;
 import com.scriptographer.ui.Image;
 
 /**
@@ -355,13 +356,15 @@ public class Item extends DocumentObject implements Style {
 	/**
 	 * Creates a new AIArtHandle of the specified type and wraps it in a item
 	 * 
-	 * @param type Item.TYPE_*
+	 * @param type Item.TYPE_
 	 */
 	protected Item(short type) {
 		// Create with false handle, to get document pointer and have time to
 		// activate with forCreation = true, to make sure currentStyle gets
 		// committed, etc.
 		super(0);
+		if (document == null)
+		    throw new ScriptographerException("Unable to create item. There is no document.");
 		document.activate(false, true);
 		// Now set the handle
 		handle = nativeCreate(type);
@@ -477,8 +480,8 @@ public class Item extends DocumentObject implements Style {
 	public void setStyle(PathStyle style) {
 		// Make sure it's created and fetched
 		getStyle();
-		style.init(style);
-		style.markDirty();
+		this.style.init(style);
+		this.style.markDirty();
 	}
 
 	/**

@@ -132,7 +132,7 @@ public class RhinoScriptException extends ScriptException {
 					}
 				}
 			}
-			return buf.toString();
+			return buf.toString().trim();
 		} else {
 			/*
 			if (cause instanceof EvaluatorException) {
