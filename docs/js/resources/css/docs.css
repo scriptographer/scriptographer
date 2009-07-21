@@ -9,9 +9,7 @@
 
 .documentation h3 {
 	margin-top: 14px;
-	height: 17px;
-	border-bottom: none;
-	background: url(../media/dotted.gif) repeat bottom;
+	border-bottom-style: dotted;
 }
 
 .documentation a tt, .documentation a tt b {
@@ -34,7 +32,7 @@
 }
 
 .documentation hr {
-	border-top: none;
+	border: none;
 	border-bottom: 1px dotted #000;
 }
 
@@ -47,6 +45,10 @@
 	border-color: #009dec;
 }
 
+.documentation-packages .first h2 {
+	margin-top: 0;
+}
+
 .documentation li h2 {
 	margin-left: -10px;
 }
@@ -54,7 +56,6 @@
 * html .documentation-packages img {
 	margin-top: 5px;
 }
-
 .documentation-packages li {
 	list-style: none;
 	list-style-image: none; /* needed for ie 6 */
@@ -110,8 +111,4 @@
 
 .member-text ul {
 	padding-bottom: 8px;
-}
-
-.package-classes {
-	margin-top: -8px;
 }

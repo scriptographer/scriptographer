@@ -10,7 +10,9 @@ var lighterSettings = {
 $document.addEvent('domready', function() {
 	var h = unescape(document.location.hash);
 	if (h) scrollToElement(h.substring(1));
-	$$('.documentation-class pre.js').light(lighterSettings);
+	var code = $$('.documentation-class pre.js');
+	if (code.length)
+		code.light(lighterSettings);
 });
 
 var lastMemberId = null;
