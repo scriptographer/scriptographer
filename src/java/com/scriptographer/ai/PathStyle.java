@@ -53,6 +53,27 @@ import com.scriptographer.CommitManager;
  */
 
 /**
+ * PathStyle is used for changing the visual styles of items contained within an
+ * Illustrator document and is returned by {@link Item#getStyle()} and {@link Document#getCurrentStyle}.
+ * 
+ * All properties of PathStyle are also reflected directly in {@link Item},
+ * i.e.: {@link Item#getFillColor()}.
+ * 
+ * To set multiple style properties in one go, you can pass an object to
+ * {@link Item#getStyle()}. This is a convenient way to define a style once and
+ * apply it to a series of items:
+ * 
+ * <code>
+ * var circleStyle = {
+ * 	fillColor: new RGBColor(1, 0, 0),
+ * 	strokeColor: new GrayColor(1),
+ * 	strokeWidth: 5
+ * };
+ * 
+ * var path = new Path.Circle(new Point(50, 50), 50);
+ * path.style = circleStyle;
+ * </code>
+ * 
  * @author lehni
  */
 public class PathStyle extends NativeObject implements Style, Commitable {
