@@ -1729,7 +1729,8 @@ DomElement.inject(new function() {
 
 	getCompatElement: function() {
 		var doc = this.getDocument();
-		return !doc.compatMode || doc.compatMode == 'CSS1Compat' ? doc.html : doc.body;
+		return doc.getElement(!doc.$.compatMode
+				|| doc.$.compatMode == 'CSS1Compat' ? 'html' : 'body').$;
 	}
 });
 
