@@ -143,6 +143,10 @@ public abstract class ValueItem extends Item {
 		setIncrements(increments[0], increments[1]);
 	}
 	
+	public void setIncrements(float increments) {
+		setIncrements(increments, increments * 10);
+	}
+
 	public native float getValue();
 	public native void setValue(float value);
 }

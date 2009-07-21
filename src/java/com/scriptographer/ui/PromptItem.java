@@ -149,8 +149,8 @@ public class PromptItem {
 		return increment;
 	}
 
-	public void setStep(float step) {
-		this.increment = step;
+	public void setIncrement(float increment) {
+		this.increment = increment;
 	}
 
 	public Object[] getOptions() {
@@ -218,7 +218,7 @@ public class PromptItem {
 				((TextEditItem) item).setPrecision(precision);
 			}
 			if (type == PromptItemType.RANGE) {
-				((Slider) item).setIncrements(increment, 8 * increment);
+				((Slider) item).setIncrements(increment);
 			}
 			((ValueItem) item).setRange(min, max);
 			((ValueItem) item).setValue(

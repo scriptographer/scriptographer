@@ -134,7 +134,7 @@ public class PromptDialog extends ModalDialog {
 		if (map != null) {
 			Object typeObj = map.get("type");
 			Object valueObj = value != null ? value : map.get("value");
-			double increment = 0;
+			float increment = 0;
 			Object[] options = null;
 			PromptItemType type = null;
 			if (typeObj != null) {
@@ -144,7 +144,7 @@ public class PromptDialog extends ModalDialog {
 				Object incrementObj = map.get("increment");
 				if (incrementObj != null) {
 					type = PromptItemType.RANGE;
-					increment = ConversionUtils.toDouble(incrementObj);
+					increment = ConversionUtils.toFloat(incrementObj);
 					if (Double.isNaN(increment))
 						increment = 0;
 				} else {
@@ -162,7 +162,10 @@ public class PromptDialog extends ModalDialog {
 				}
 			}
 			if (type != null) {
-				PromptItem item = new PromptItem(type, ConversionUtils.getString(map, "description"), valueObj);
+				String description = ConversionUtils.getString(map, "description");
+				if (description == null && name != null)
+					description = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+				PromptItem item = new PromptItem(type, description, valueObj);
 				item.setName(name != null ? name : ConversionUtils.getString(map, "name"));
 
 				double width = getDouble(map, "width");
@@ -181,6 +184,8 @@ public class PromptDialog extends ModalDialog {
 				if (options != null)
 					item.setOptions(options);
 
+				item.setIncrement(increment);
+				
 				return item;
 			}
 		}
