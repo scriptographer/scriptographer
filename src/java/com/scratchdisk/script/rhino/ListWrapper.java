@@ -36,6 +36,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.WrapFactory;
 import org.mozilla.javascript.Wrapper;
 
 import com.scratchdisk.list.List;
@@ -161,7 +162,9 @@ public class ListWrapper extends ExtendedJavaObject {
 			for (int i = 0, l = list.size(); i < l; i++) {
 				if (i > 0)
 					buffer.append(", ");
-				buffer.append(list.get(i));
+				Object entry = list.get(i);
+				Scriptable obj = Context.toObject(entry, this);
+				buffer.append(obj.getDefaultValue(hint));
 			}
 			return buffer.toString();
 		} else {
