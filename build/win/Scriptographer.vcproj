@@ -1110,7 +1110,7 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_ImageStatic.cpp"
+						RelativePath="..\..\src\native\jni\com_scriptographer_ui_ImagePane.cpp"
 						>
 					</File>
 					<File
