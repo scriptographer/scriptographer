@@ -34,6 +34,19 @@ package com.scriptographer.ai;
 // TODO: subclass Group instead?
 /**
  * The Layer item represents a layer in an Illustrator document.
+ * 
+ * The layer which is currently active can be accessed through {@link Document#getActiveLayer()}.
+ * An array of all layers in a document can be accessed through {@link Document#getLayers()}.
+ * 
+ * Sample code:
+ * <code>
+ * print(document.activeLayer.name) // 'Layer 1'
+ * var layer = new Layer();
+ * layer.name = 'A new layer';
+ * layer.activate();
+ * print(document.activeLayer.name); // 'A new layer'
+ * print(document.layers.length); // 2
+ * </code>
  * @author lehni
  */
 public class Layer extends Item {
