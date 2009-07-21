@@ -411,11 +411,20 @@ Type = Object.extend(new function() {
 	}
 });
 
-// Extend ClassDocImpl by Type. Mind that prototype won't override existing
-// java methods, so endless loops e.g. in qualifiedName won't happen.
-new Type(ClassDocImpl.prototype);
+// Extend ClassDocImpl by Type. Only add field to prototype that do not exist
+// natively. To check this, we need a actual instance of ClassDoc since right now
+// ClassDocImpl.prototype is empty and does not provide references to native fields
+// yet.
+// TODO: Pick up the Scriptographer java-proto tag again and fix the problems with
+// it (calling of native methods on non native instance when acccessing __proto__).
+Type.prototype.each(function(value, name) {
+	if (this.doc && this.doc[name] === undefined)
+		this.docType[name] = value;
+}, {
+	doc: root.classes().first,
+	docType: ClassDocImpl.prototype
+});
 
-// Add a method to directly produce a Type for ParameterImpl objects.
 ParameterImpl.inject({
 	paramType: function() {
 		return new Type(this.type());
