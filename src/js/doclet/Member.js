@@ -134,11 +134,7 @@ Member = Object.extend({
 	},
 
 	getId: function() {
-		// Convert name + signature to css friendly id:
-		// Allow [] in id since it's used to distinguish arrays from their component types
-		return (this.name() + '-' + this.signature()).replace(/[^\w\[\]]+/g, function(match) {
-			return '-';
-		}).trim('-');
+		return this.name();
 	},
 
 	renderLink: function(param) {

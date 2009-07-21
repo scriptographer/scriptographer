@@ -206,6 +206,13 @@ Method = Member.extend(new function() {
 			}, this);
 		},
 
+		getId: function() {
+			var params = this.member.parameters().map(function(param) {
+				return param.name();
+			}).join('-');
+			return this.name() + (params ? '-' + params : '');
+		},
+
 		renderParameters: function() {
 			if (!this.renderedParams) {
 				var buf = [];
