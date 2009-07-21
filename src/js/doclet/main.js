@@ -69,7 +69,7 @@ Template.inject({
 });
 
 // Add renderTemplate function with caching to all objects
-Object.inject(Template.methods, true);
+Object.inject(Hash.merge({ _hide: true }, Template.methods));
 
 // A global template writer
 var out = new TemplateWriter();

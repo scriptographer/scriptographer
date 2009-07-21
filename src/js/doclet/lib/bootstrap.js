@@ -17,6 +17,7 @@ new function() {
 						res = (function() {
 							var tmp = this.base;
 							this.base = fromBase ? base[name] : prev;
+							this.dontEnum('base');
 							try { return val.apply(this, arguments); }
 							finally { this.base = tmp; }
 						}).pretend(val);
@@ -35,11 +36,13 @@ new function() {
 				} else {
 					dest[name] = res;
 				}
+				if (src._hide && dest.dontEnum)
+					dest.dontEnum(name);
 			}
 		}
 		if (src) {
 			for (var name in src)
-				if (visible(src, name) && !/^(prototype|constructor|toString|valueOf|statics|_generics|_beans)$/.test(name))
+				if (!/^(prototype|constructor|toString|valueOf|statics|_generics|_beans|_hide)$/.test(name))
 					field(name, null, generics);
 			field('toString');
 			field('valueOf');
@@ -59,7 +62,7 @@ new function() {
 	}
 
 	function visible(obj, name) {
-		return !obj.__lookupGetter__(name) && obj[name] !== obj.__proto__[name];
+		return name in obj;
 	}
 
 	inject(Function.prototype, {
@@ -74,6 +77,7 @@ new function() {
 
 		extend: function(src) {
 			var proto = new this(this.dont), ctor = proto.constructor = extend(proto);
+			proto.dontEnum('constructor');
 			ctor.dont = {};
 			inject(ctor, this);
 			return this.inject.apply(ctor, arguments);
@@ -91,6 +95,7 @@ new function() {
 	});
 
 	Base = Object.inject({
+		_hide: true,
 		has: function(name) {
 			return visible(this, name);
 		},
@@ -175,11 +180,11 @@ Enumerable = new function() {
 
 	var each_Object = function(iter, bind) {
 		for (var i in this)
-			if (!this.__lookupGetter__(i) && this[i] !== this.__proto__[i])
-				iter.call(bind, this[i], i, this);
+			iter.call(bind, this[i], i, this);
 	};
 
 	return {
+		_hide: true,
 		_beans: true,
 		_generics: true,
 
@@ -277,6 +282,7 @@ Enumerable = new function() {
 }
 
 Base.inject({
+	_hide: true,
 	_generics: true,
 
 	each: Enumerable.each,
@@ -323,6 +329,7 @@ $check = Base.check;
 $type = Base.type;
 
 Hash = Base.extend(Enumerable, {
+	_hide: true,
 	_generics: true,
 
 	initialize: function() {
@@ -366,6 +373,7 @@ Array.inject(new function() {
 	var proto = Array.prototype;
 
 	var fields = Hash.merge({}, Enumerable, {
+		_hide: true,
 		_generics: true,
 		_type: 'array',
 
@@ -677,6 +685,7 @@ Math.rand = function(first, second) {
 }
 
 Array.inject({
+	_hide: true,
 
 	hexToRgb: function(toArray) {
 		if (this.length >= 3) {
