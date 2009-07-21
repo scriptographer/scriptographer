@@ -60,7 +60,8 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 					engine.evaluate(text, consoleScope);
 				} catch (e) {
 					if (e.javaException) {
-						print(e.javaException.message);
+						e = e.javaException;
+						print(e.fullMessage || e.message);
 					} else {
 						print(e);
 					}
