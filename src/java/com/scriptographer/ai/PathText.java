@@ -46,10 +46,17 @@ public class PathText extends TextItem {
 	native private static int nativeCreate(int orientation, int artHandle);
 
 	/**
-	 * Creates a path text item
+	 * Creates a path text item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path.Circle(new Point(150, 150), 40);
+	 * var text = new PathText(path);
+	 * text.content = 'Some text running along a circle';
+	 * </code>
 	 * 
 	 * @param path the path that the text will run along
-	 * @param orient the text orientation
+	 * @param orient the text orientation {@default 'horizontal'}
 	 */
 	public PathText(Path path, TextOrientation orientation) {
 		super(nativeCreate(orientation != null
