@@ -66,16 +66,6 @@ public class ExtendedJavaObject extends NativeJavaObject {
 				: prototype;
 	}
 
-	public void setPrototype(Scriptable proto) {
-		if (!(proto instanceof ExtendedJavaPrototype)) {
-			// Create a new ExtendedJavaPrototype around proto and inherit from proto.
-			ExtendedJavaPrototype mergedProto = new ExtendedJavaPrototype(members);
-			mergedProto.setPrototype(proto);
-			proto = mergedProto;
-		}
-		super.setPrototype(proto);
-	}
-
 	public Object get(String name, Scriptable start) {
 		// Properties need to come first, as they might override something
 		// defined in the underlying Java object
@@ -83,16 +73,10 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			// See whether this object defines the property.
 			return properties.get(name);
 		} else {
-			// First see if the prototype defines the field
-			Scriptable prototype = getPrototype();
-			// If not, see whether the prototype maybe defines it.
-			// NativeJavaObject misses to do so:
-			Object result = prototype.get(name, start);
-			if (result != Scriptable.NOT_FOUND)
-				return result;
 			if (name.equals("prototype"))
-				return prototype;
-			return Scriptable.NOT_FOUND;
+				return getPrototype();
+			else
+				return members.get(this, name, javaObject, false);
 		}
 	}
 

@@ -215,7 +215,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 
 	public Scriptable getInstancePrototype() {
 		if (instanceProto == null) {
-			instanceProto = new ExtendedJavaPrototype(members);
+			instanceProto = new NativeObject();
 			// Set the prototype chain correctly for this prototype object, 
 			// so properties in the prototype of parent classes are found too:
 			Class sup = getClassObject().getSuperclass();
