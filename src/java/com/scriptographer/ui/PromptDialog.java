@@ -37,7 +37,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.scratchdisk.util.ConversionUtils;
-import com.scratchdisk.util.StringUtils;
 
 /**
  * @author lehni

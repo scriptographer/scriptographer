@@ -1132,6 +1132,9 @@ public abstract class Dialog extends Component {
 		return ConfirmDialog.confirm(title, message);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public static Object[] prompt(String title, PromptItem[] items) {
 		return PromptDialog.prompt(title, items);
 	}
