@@ -42,6 +42,8 @@ import com.scratchdisk.list.ReadOnlyList;
 import com.scriptographer.CommitManager;
 
 /**
+ * The Path item represents a path in an Illustrator document.
+ * 
  * @author lehni
  * 
  * @jsreference {@type constructor} {@name Path.Line} {@reference Document#createLine} {@after Path}
@@ -77,11 +79,6 @@ public class Path extends PathItem {
 		super(TYPE_PATH);
 	}
 
-	public Path(ReadOnlyList<? extends Segment> segments) {
-		this();
-		setSegments(segments);
-	}
-
 	/**
 	 * Creates a new Path Item.
 	 * 
@@ -101,6 +98,11 @@ public class Path extends PathItem {
 	 * @param segments the segments to be added to the {@link #getSegments()} array
 	 * @return the newly created path
 	 */
+	public Path(ReadOnlyList<? extends Segment> segments) {
+		this();
+		setSegments(segments);
+	}
+
 	public Path(Segment[] segments) {
 		this(Lists.asList(segments));
 	}
