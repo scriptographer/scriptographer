@@ -443,9 +443,9 @@
 					java.*
 				"/>
 				<param name="-packagesequence" value="
+					com.scriptographer.sg
 					com.scriptographer.ai
 					com.scriptographer.ui
-					com.scriptographer.sg
 					com.scriptographer.test
 					"/>
 				<param name="-methodfilter" value="
