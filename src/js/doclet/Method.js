@@ -210,7 +210,7 @@ Method = Member.extend(new function() {
 			var params = this.member.parameters().map(function(param) {
 				return param.name();
 			}).join('-');
-			return this.name() + (params ? '-' + params : '');
+			return (this.name() + (params ? '-' + params : '')).toLowerCase();
 		},
 
 		renderParameters: function() {

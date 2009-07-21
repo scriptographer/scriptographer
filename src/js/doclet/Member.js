@@ -134,7 +134,7 @@ Member = Object.extend({
 	},
 
 	getId: function() {
-		return this.name();
+		return this.name().toLowerCase();
 	},
 
 	renderLink: function(param) {
