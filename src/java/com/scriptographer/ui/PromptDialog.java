@@ -38,8 +38,6 @@ import java.util.Map;
 
 import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.StringUtils;
-import com.scriptographer.ScriptographerEngine;
-import com.scriptographer.sg.Preferences;
 
 /**
  * @author lehni
@@ -217,27 +215,33 @@ public class PromptDialog extends ModalDialog {
 	}
 
 	public static Object[] prompt(String title, PromptItem[] items) {
+		/*
 		Preferences preferences = 
 			new Preferences(ScriptographerEngine.getPreferences(true));
+		*/
 		String itemTitle = "item" + StringUtils.capitalize(title);
 		for (int i = 0; i < items.length; i++) {
 			PromptItem item = items[i];
 			if (item != null) {
 				if (item.getName() == null)
 					item.setName(itemTitle + item.getDescription() + i);
+				/*
 				Object value = preferences.get(item.getName());
 				if (value != null)
 					item.setValue(value);
+				*/
 			}
 		}
 		PromptDialog dialog = new PromptDialog(title, items);
 		if (dialog.doModal() == dialog.getDefaultItem()) {
 			Object[] values = dialog.getValues();
+			/*
 			for (int i = 0; i < items.length; i++) {
 				PromptItem item = items[i];
 				if (item != null)
 					preferences.put(item.getName(), values[i]);
 			}
+			*/
 			return values;
 		}
 		return null;
