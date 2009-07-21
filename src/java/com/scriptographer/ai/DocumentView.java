@@ -166,6 +166,10 @@ public class DocumentView extends DocumentObject {
 		invalidate((float) rect.x, (float) rect.y, (float) rect.width, (float) rect.height);
 	}
 
+	public void invalidate() {
+		invalidate(getBounds());
+	}
+
 	private native int nativeGetStyle();
 
 	/**
