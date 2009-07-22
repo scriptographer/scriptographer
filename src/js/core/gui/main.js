@@ -168,8 +168,9 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				delete files[entry.file.path];
 				// See if the file was changed, and if so, update its icon since
 				// it might be a tool now
-				if (entry.lastModified != entry.file.lastModified()) {
-					entry.lastModified = entry.file.lastModified(); 
+				var lastModified = entry.file.lastModified();
+				if (entry.lastModified != lastModified) {
+					entry.lastModified = lastModified; 
 					if (!entry.isDirectory)
 						entry.update();
 				}
