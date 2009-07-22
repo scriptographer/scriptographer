@@ -51,7 +51,10 @@ public class ColorConverter extends ArgumentConverter {
 			String str = reader.readString();
 			if (!str.startsWith("#"))
 				str = '#' + str;
-			return new RGBColor(java.awt.Color.decode(str));
+			try {
+				return new RGBColor(java.awt.Color.decode(str));
+			} catch (Exception e) {
+			}
 		} else if (reader.isArray()) {
 			int size = reader.size();
 			if (size == 4) {
