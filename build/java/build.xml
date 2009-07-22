@@ -418,7 +418,10 @@
 	<target name="rhinodoclet" depends="init">
 		<mkdir dir="${destdir}"/>
 		<!-- Set classmatch to empty if it's not defined -->
-		<condition property="classmatch" value="${classmatch}" else="">
+		<!-- If it's not defined, pass " " instead of "" since on Windows, passing
+	         "" makes ant ignore that line and assume the next line as classmatch
+	         which results in confusion -->
+		<condition property="classmatch" value="${classmatch}" else=" ">
 			<isset property="classmatch" />
 		</condition>
 		<!--

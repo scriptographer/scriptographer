@@ -7,7 +7,7 @@ var settings = {
 	author: options.author || '',
 	methodFilter: (options.methodfilter || '').trim().split(/\s+/),
 	classFilter: (options.classfilter || '').trim().split(/\s+/),
-	classMatch: options.classmatch ? new RegExp('(' + options.classmatch.replace(/\s/g, '|') + ')$', 'g') : null,
+	classMatch: options.classmatch.trim() ? new RegExp('(' + options.classmatch.trim().replace(/\s/g, '|') + ')$', 'g') : null,
 	packageSequence: (options.packagesequence || '').trim().split(/\s+/),
 	classOrder: (function() {
 		var classOrder = new Hash();
@@ -33,6 +33,8 @@ var settings = {
 	debug: options.shortinherited == 'true',
 	headings: {}
 };
+
+print(options.classmatch);
 
 // Section headings
 for (var i = 1; i <= 4; i++) {
