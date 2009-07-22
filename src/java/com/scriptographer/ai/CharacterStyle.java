@@ -415,7 +415,7 @@ public class CharacterStyle extends PathStyle {
 	/**
 	 * The character style's baseline option which is used to set the text to
 	 * either subscript or superscript. Superscript and subscript text is
-	 * reduced-size text that is raised or lowered in relation to a font’s
+	 * reduced-size text that is raised or lowered in relation to a font's
 	 * baseline.
 	 * 
 	 * Sample code:
