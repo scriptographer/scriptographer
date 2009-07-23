@@ -78,7 +78,7 @@ import java.util.Set;
  * @author Jochen Hoenicke
  * @author Eric Blake (ebb9@email.byu.edu)
  * @author Jeroen Frijters
- * @author JŸrg Lehni
+ * @author Juerg Lehni
  *
  * @see HashMap
  * @see WeakReference
