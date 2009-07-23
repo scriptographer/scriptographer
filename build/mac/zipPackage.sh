@@ -24,7 +24,7 @@ fi
 ditto "$PACKAGES/$TARGET/Release/$PLUGIN" root/Scriptographer/$PLUGIN
 
 # Create a DMG file containing the folder
-DMG=Scriptographer_Mac_$TARGET_$VERSION.dmg
+DMG=Scriptographer_Mac_${TARGET}_${VERSION}.dmg
 
 # Remove it if it exists already
 if [ -e $DMG ]
