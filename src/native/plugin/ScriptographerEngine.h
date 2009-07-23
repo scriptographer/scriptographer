@@ -112,7 +112,7 @@ public:
 	jmethodID mid_Iterator_hasNext;
 	jmethodID mid_Iterator_next;
 	jmethodID mid_Iterator_remove;
-
+	
 	jclass cls_OutOfMemoryError;
 	
 	jclass cls_awt_Color;
@@ -334,6 +334,7 @@ public:
 
 	jclass cls_ui_Dialog;
 	jmethodID mid_ui_Dialog_onSizeChanged;
+	jmethodID mid_ui_Dialog_onInvokeLater;
 
 	jclass cls_ui_PopupDialog;
 

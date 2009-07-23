@@ -597,6 +597,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ui_Dialog = loadClass(env, "com/scriptographer/ui/Dialog");
 	mid_ui_Dialog_onSizeChanged = getMethodID(env, cls_ui_Dialog, "onSizeChanged", "(II)V");
+	mid_ui_Dialog_onInvokeLater = getMethodID(env, cls_ui_Dialog, "onInvokeLater", "(I)V");
 
 	cls_ui_PopupDialog = loadClass(env, "com/scriptographer/ui/PopupDialog");
 

@@ -1205,3 +1205,30 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_dumpControlHierarchy(JN
 #endif
 	} EXCEPTION_CONVERT(env);
 }
+
+ADMBoolean ADMAPI Dialog_onInvokeLater(ADMDialogRef dialog, ADMTimerRef timerId) {
+	// Clear timer
+	sADMDialog->AbortTimer(dialog, timerId);
+	// Call run on runnable
+	JNIEnv *env = gEngine->getEnv();
+	try {
+		jobject obj = gEngine->getDialogObject(dialog);
+		gEngine->callVoidMethod(env, obj, gEngine->mid_ui_Dialog_onInvokeLater, (jint) timerId);
+	} EXCEPTION_CATCH_REPORT(env);
+	return true;
+}
+
+/*
+ * int nativeInvokeLater()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeInvokeLater(JNIEnv *env, jobject obj) {
+	try {
+		// Execute a one-shot timer right after
+		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
+		DEFINE_CALLBACK_PROC(Dialog_onInvokeLater);
+		ADMTimerRef timerId = sADMDialog->CreateTimer(dialog, 0, 0, (ADMDialogTimerProc) CALLBACK_PROC(Dialog_onInvokeLater), NULL, 0);
+		return (jint) timerId;
+	} EXCEPTION_CONVERT(env);
+	return 0;
+}
+

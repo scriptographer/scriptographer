@@ -42,9 +42,11 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.IntMap;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
+import com.scriptographer.script.RunnableCallable;
 
 /**
  * @author lehni
@@ -96,6 +98,7 @@ public abstract class Dialog extends Component {
 	private Size minSize;
 	private Size maxSize;
 	private boolean isResizing = false;
+	private boolean isNotifying = false;
 	private String title = "";
 	private boolean visible = true;
 	private boolean active = false;
@@ -236,9 +239,19 @@ public abstract class Dialog extends Component {
 	}
 
 	public void destroy() {
-		nativeDestroy(handle);
-		dialogs.remove(this);
-		handle = 0;
+		if (isNotifying) {
+			// If we're in a notification, invoke destroy later to fix
+			// a bug on Windows PC and possible future bugs on Mac.
+			invokeLater(new Runnable() {
+				public void run() {
+					Dialog.this.destroy();
+				}
+			});
+		} else {
+			nativeDestroy(handle);
+			dialogs.remove(this);
+			handle = 0;
+		}
 	}
 	
 	/**
@@ -287,7 +300,7 @@ public abstract class Dialog extends Component {
 
 	public void savePreferences(String name) throws BackingStoreException {
 		Preferences prefs = preferences.node(name);
-		// saving the palette position, tab/dock preference.
+		// Saving the palette position, tab/dock preference.
 		DialogGroupInfo groupInfo = getGroupInfo();
 		Rectangle bounds = getBounds();
 		prefs.put("group", groupInfo.group != null ? groupInfo.group : "");
@@ -300,7 +313,7 @@ public abstract class Dialog extends Component {
 		if (preferences.nodeExists(name)) {
 			Preferences prefs = preferences.node(name);
 
-			// restore the size and location of the dialog
+			// Restore the size and location of the dialog
 			String[] parts = prefs.get("bounds", "").split("\\s");
 			Rectangle bounds;
 			if (parts.length == 4) {
@@ -329,6 +342,32 @@ public abstract class Dialog extends Component {
 			return true;
 		}
 		return false;
+	}
+
+	private IntMap<Runnable> runnables = new IntMap<Runnable>();
+
+	private native int nativeInvokeLater();
+
+	public boolean invokeLater(Runnable runnable) {
+		int timerId = nativeInvokeLater();
+		if (timerId != 0) {
+			runnables.put(timerId, runnable);
+			return true;
+		}
+		return false;
+	}
+
+	public boolean invokeLater(Callable function) {
+		return invokeLater(new RunnableCallable(function, this));
+	}
+	
+	/**
+	 * Called from the timer on the native side to execute the registered runnable.
+	 */
+	protected void onInvokeLater(int timerId) {
+		Runnable runnable = runnables.get(timerId);
+		if (runnable != null)
+			runnable.run();
 	}
 
 	/*
@@ -533,72 +572,77 @@ public abstract class Dialog extends Component {
 	}
 
 	protected void onNotify(Notifier notifier) throws Exception {
-		switch (notifier) {
-		case INITIALIZE:
-			initialize(true, false);
-			break;
-		case DESTROY:
-			if (options.contains(DialogOption.REMEMBER_PLACING))
-				savePreferences(title);
-			onDestroy();
-			break;
-		case WINDOW_ACTIVATE:
-			// See comment for initialize to understand why this is fired here too
-			initialize(true, false);
-			active = true;
-			onActivate();
-			break;
-		case WINDOW_DEACTIVATE:
-			active = false;
-			onDeactivate();
-			break;
-		case WINDOW_SHOW:
-			// See comment for initialize to understand why this is fired here too
-			initialize(true, true);
-			visible = true;
-			fireOnClose = true;
-			onShow();
-			break;
-		case WINDOW_HIDE:
-			if (fireOnClose) {
-				// Workaround for missing onClose on CS3. This bug was 
-				// reported to Adobe too late, hopefully it will be back
-				// again in CS4...
-				// (NOT. But in CS4, MASK_DOCK_CLOSED is now set, not the other two).
-				long code = this.getGroupInfo().positionCode;
-				if ((code & DialogGroupInfo.MASK_DOCK_VISIBLE) == 0 ||
-					(code & DialogGroupInfo.MASK_TAB_HIDDEN) != 0 ||
-					(code & DialogGroupInfo.MASK_DOCK_CLOSED) != 0) {
-					fireOnClose = false;
-					onClose();
+		isNotifying = true;
+		try {
+			switch (notifier) {
+			case INITIALIZE:
+				initialize(true, false);
+				break;
+			case DESTROY:
+				if (options.contains(DialogOption.REMEMBER_PLACING))
+					savePreferences(title);
+				onDestroy();
+				break;
+			case WINDOW_ACTIVATE:
+				// See comment for initialize to understand why this is fired here too
+				initialize(true, false);
+				active = true;
+				onActivate();
+				break;
+			case WINDOW_DEACTIVATE:
+				active = false;
+				onDeactivate();
+				break;
+			case WINDOW_SHOW:
+				// See comment for initialize to understand why this is fired here too
+				initialize(true, true);
+				visible = true;
+				fireOnClose = true;
+				onShow();
+				break;
+			case WINDOW_HIDE:
+				if (fireOnClose) {
+					// Workaround for missing onClose on CS3. This bug was 
+					// reported to Adobe too late, hopefully it will be back
+					// again in CS4...
+					// (NOT. But in CS4, MASK_DOCK_CLOSED is now set, not the other two).
+					long code = this.getGroupInfo().positionCode;
+					if ((code & DialogGroupInfo.MASK_DOCK_VISIBLE) == 0 ||
+						(code & DialogGroupInfo.MASK_TAB_HIDDEN) != 0 ||
+						(code & DialogGroupInfo.MASK_DOCK_CLOSED) != 0) {
+						fireOnClose = false;
+						onClose();
+					}
 				}
+				visible = false;
+				onHide();
+				break;
+			case WINDOW_DRAG_MOVED:
+				onMove();
+				break;
+			case CLOSE_HIT:
+				// prevent onClose from being called twice...
+				if (fireOnClose)
+					onClose();
+				break;
+			case ZOOM_HIT:
+				onZoom();
+				break;
+			case CYCLE:
+				onCycle();
+				break;
+			case COLLAPSE:
+				onCollapse();
+				break;
+			case EXPAND:
+				onExpand();
+				break;
+			case CONTEXT_MENU_CHANGED:
+				onContextMenuChange();
+				break;
 			}
-			visible = false;
-			onHide();
-			break;
-		case WINDOW_DRAG_MOVED:
-			onMove();
-			break;
-		case CLOSE_HIT:
-			// prevent onClose from being called twice...
-			if (fireOnClose)
-				onClose();
-			break;
-		case ZOOM_HIT:
-			onZoom();
-			break;
-		case CYCLE:
-			onCycle();
-			break;
-		case COLLAPSE:
-			onCollapse();
-			break;
-		case EXPAND:
-			onExpand();
-			break;
-		case CONTEXT_MENU_CHANGED:
-			onContextMenuChange();
-			break;
+		} finally {
+			isNotifying = false;
 		}
 	}
 
