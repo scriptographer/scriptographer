@@ -16,65 +16,75 @@
 		</tstamp>
 		<property name="year" value="2001-${now}"/>
 
-		<property name="home.dir" value="../.."/>
-		<!-- build.lib contains libraries for building, not built libs. -->
-		<!-- build.libraries contains the products. -->
-		<!-- TODO: clean up, find better names. -->
-		<property name="build.lib" value="${home.dir}/build/java/lib"/>
-		<property name="build.dir" value="${home.dir}/build/java/build"/>
-		<property name="build.src" value="${home.dir}/src/java"/>
-		<property name="build.jni" value="${home.dir}/src/native/jni"/>
-		<property name="build.classes" value="${build.dir}/classes"/>
-		<property name="build.libraries" value="${build.dir}/lib"/>
-		<property name="build.packages" value="${home.dir}/build/packages"/>
-		<loadproperties srcfile="build.number"/>
-		<condition property="build.platform.mac">
-	    	<os family="mac"/>
-		</condition>
-		<condition property="build.platform.win">
-	    	<os family="windows"/>
-		</condition>
+		<property name="project.dir" value="../.."/>
+
+		<!-- Sources -->
+		<property name="src.java" value="${project.dir}/src/java"/>
+		<property name="src.jni" value="${project.dir}/src/native/jni"/>
+		<property name="src.js" value="${project.dir}/src/js"/>
+
+		<property name="build.dir" value="${project.dir}/build"/>
+		<property name="build.java" value="${build.dir}/java"/>
+		<!-- build.lib contains libraries for building, not built libs. Built libs go to target.lib -->
+		<property name="build.lib" value="${build.java}/lib"/>
+		<property name="build.mac" value="${build.dir}/mac"/>
+		<property name="build.win" value="${build.dir}/win"/>
+
 		<path id="build.classpath">
-			<fileset dir="${build.libraries}">
+			<fileset dir="${target.lib}">
 				<include name="**/*.jar" />
 				<exclude name="**/scriptographer*.jar" />
 			</fileset>
 		</path>
 
-		<property name="docs.script" value="${home.dir}/src/js/doclet/main.js"/>
+		<loadproperties srcfile="build.number"/>
 
-		<property name="docs.dir" value="${home.dir}/docs"/>
-		<property name="docs.api.dir" value="${docs.dir}/api"/>
-		<property name="docs.js.dir" value="${docs.dir}/js"/>
-		<property name="docs.templates.dir" value="${docs.dir}/templates"/>
-		<!-- this is used for importing comments from the gnu classpath file into the js documentation -->
+		<condition property="build.platform.mac">
+	    	<os family="mac"/>
+		</condition>
+
+		<condition property="build.platform.win">
+	    	<os family="windows"/>
+		</condition>
+
+		<!-- The places for the built results -->
+		<property name="target.java" value="${build.java}/build"/>
+		<property name="target.lib" value="${target.java}/lib"/>
+		<property name="target.classes" value="${target.java}/classes"/>
+		<property name="target.packages" value="${build.dir}/packages"/>
+
+		<property name="docs.dir" value="${project.dir}/docs"/>
+		<property name="docs.dir.api" value="${docs.dir}/api"/>
+		<property name="docs.dir.js" value="${docs.dir}/js"/>
+		<property name="docs.dir.templates" value="${docs.dir}/templates"/>
+		<!-- This is used for importing comments from the gnu classpath file into the js documentation -->
 		<property name="docs.src" value="${docs.dir}/src"/>
 		
 		<path id="docs.sourcepath" >
-			<pathelement location="${build.src}" />
+			<pathelement location="${src.java}" />
 			<pathelement location="${docs.src}" />
 		</path>
 
 		<path id="docs.classpath">
-			<pathelement path="${build.classes}"/>
+			<pathelement path="${target.classes}"/>
 			<fileset dir="${build.lib}">
 				<include name="**/*.jar" />
 			</fileset>
-			<fileset dir="${build.libraries}">
+			<fileset dir="${target.lib}">
 				<include name="**/*.jar" />
 				<exclude name="**/scriptographer*.jar" />
 			</fileset>
 		</path>
 
-		<property name="scripts.dir" value="${home.dir}/scripts"/>
+		<property name="scripts.dir" value="${project.dir}/scripts"/>
 
 		<property name="jar.name" value="${project}"/>
 		<property name="package.name" value="${project}-${version}"/>
 
-		<property name="debug" value="off"/>
-		<property name="optimize" value="on"/>
-		<property name="target" value="1.5"/>
-		<property name="deprecation" value="off"/>
+		<property name="java.debug" value="off"/>
+		<property name="java.optimize" value="on"/>
+		<property name="java.version" value="1.5"/>
+		<property name="java.deprecation" value="off"/>
 	</target>
 
 
@@ -114,26 +124,26 @@
 	<!-- Compiles the source directory                                       -->
 	<!-- =================================================================== -->
 	<target name="compile" depends="init">
-		<mkdir dir="${build.classes}"/>
+		<mkdir dir="${target.classes}"/>
 		<!-- copy the icc profiles -->
-		<copy todir="${build.classes}/com/scriptographer/cmm">
-			<fileset dir="${build.src}/com/scriptographer/cmm">
+		<copy todir="${target.classes}/com/scriptographer/cmm">
+			<fileset dir="${src.java}/com/scriptographer/cmm">
 				<include name="**/*.icc" />
 			</fileset>
 		</copy>
 		<!-- copy the meta resources -->
-		<copy todir="${build.classes}/META-INF">
-			<fileset dir="${build.src}/META-INF">
+		<copy todir="${target.classes}/META-INF">
+			<fileset dir="${src.java}/META-INF">
 				<exclude name="**/*.in" />
 			</fileset>
 		</copy>
-		<javac srcdir="${build.src}"
-			destdir="${build.classes}"
-			debug="${debug}"
-			deprecation="${deprecation}"
-			optimize="${optimize}"
-			source="${target}"
-			target="${target}">
+		<javac srcdir="${src.java}"
+			destdir="${target.classes}"
+			debug="${java.debug}"
+			deprecation="${java.deprecation}"
+			optimize="${java.optimize}"
+			source="${java.version}"
+			target="${java.version}">
 			<classpath refid="build.classpath" />
 			<exclude name="**/global.java"/>
 		</javac>
@@ -144,21 +154,21 @@
 	<!-- Creates scriptographer.jar and loader.jar in the lib-directory      -->
 	<!-- =================================================================== -->
 	<target name="jar" depends="compile">
-		<copy todir="${build.classes}/com/scriptographer/cmm">
-			<fileset dir="${build.src}/com/scriptographer/cmm">
+		<copy todir="${target.classes}/com/scriptographer/cmm">
+			<fileset dir="${src.java}/com/scriptographer/cmm">
 				<include name="**/*.icc" />
 			</fileset>
 		</copy>
-		<copy todir="${build.classes}/com/scriptographer/ui/resources">
-			<fileset dir="${build.src}/com/scriptographer/ui/resources">
+		<copy todir="${target.classes}/com/scriptographer/ui/resources">
+			<fileset dir="${src.java}/com/scriptographer/ui/resources">
 				<include name="**/*.png" />
 			</fileset>
 		</copy>
-		<jar jarfile="${build.libraries}/${jar.name}.jar"
-			basedir="${build.classes}"
+		<jar jarfile="${target.lib}/${jar.name}.jar"
+			basedir="${target.classes}"
 			excludes="**/loader/**,**/test/**,**/jython/**"/>
-		<jar jarfile="${build.dir}/loader.jar"
-			basedir="${build.classes}"
+		<jar jarfile="${target.java}/loader.jar"
+			basedir="${target.classes}"
 			includes="**/loader/**"/>
 	</target>
 
@@ -175,9 +185,9 @@
 	</target>
 	
 	<target name="resources" depends="init">
-		<property name="resources.mac" value="${home.dir}/build/mac/resources" />
-		<property name="resources.win" value="${home.dir}/build/win/resources" />
-		<property name="resources.meta" value="${build.src}/META-INF/" />
+		<property name="resources.mac" value="${build.mac}/resources" />
+		<property name="resources.win" value="${build.win}/resources" />
+		<property name="resources.meta" value="${src.java}/META-INF/" />
 		<copy file="${resources.mac}/Info.plist.in" tofile="${resources.mac}/Info.plist" overwrite="true" />
 		<replace file="${resources.mac}/Info.plist">
 			<replacefilter token="@version@" value="${version}" />
@@ -201,34 +211,40 @@
 	<!-- =================================================================== -->
 	<!-- Creates install packages of Scriptographer for download             -->
 	<!-- =================================================================== -->
-	<target name="packages" depends="jar">
-		<mkdir dir="${build.packages}"/>
+	<target name="packages" depends="jar, packages.cleanup">
+		<mkdir dir="${target.packages}"/>
 
-		<mkdir dir="${build.packages}/Scriptographer"/>
-		<mkdir dir="${build.packages}/Scriptographer/java"/>
-		<copy todir="${build.packages}/Scriptographer/java">
-			<fileset dir="${build.dir}">
+		<!-- Clean up first, Remove everything except the archives -->
+		<delete includeEmptyDirs="true">
+			<fileset dir="${target.packages}">
+				<exclude name="**/Scriptographer*.zip"/>
+				<exclude name="**/Scriptographer*.dmg"/>
+			</fileset>
+		</delete>
+
+		<mkdir dir="${target.packages}/Scriptographer"/>
+		<mkdir dir="${target.packages}/Scriptographer/java"/>
+		<copy todir="${target.packages}/Scriptographer/java">
+			<fileset dir="${target.java}">
 				<include name="**/loader.jar"/>
 				<include name="**/${jar.name}.jar"/>
 				<include name="**/js.jar"/>
 				<exclude name="**/jython.jar"/>
-				<!-- Copy the platform independent RXTX stuff here -->
-				<include name="**/rxtx.jar"/>
 			</fileset>
 		</copy>
 
 		<!-- JS Core -->
-		<copy todir="${build.packages}/Scriptographer/core">
-			<fileset dir="${home.dir}/src/js"/>
+		<copy todir="${target.packages}/Scriptographer/js">
+			<fileset dir="${src.js}/core/gui"/>
 		</copy>
 
 		<!-- JS Docs -->
-		<copy todir="${build.packages}/Scriptographer/doc">
-			<fileset dir="${docs.js.dir}"/>
+		<copy todir="${target.packages}/Scriptographer/doc">
+			<fileset dir="${docs.dir.js}"/>
 		</copy>
 
 		<!-- Scripts -->
-		<copy todir="${build.packages}/Scriptographer/scripts">
+		<copy todir="${target.packages}/Scriptographer/scripts">
 			<fileset dir="${scripts.dir}">
 				<exclude name="**/*.ai"/>
 			</fileset>
@@ -236,9 +252,13 @@
 
 		<antcall target="packages.platform" />
 
-		<!-- Remove everything except the archives -->
+		<antcall target="packages.cleanup" />
+	</target>
+
+	<target name="packages.cleanup">
+		<!-- Remove everything except the packages -->
 		<delete includeEmptyDirs="true">
-			<fileset dir="${build.packages}">
+			<fileset dir="${target.packages}">
 				<exclude name="**/Scriptographer*.zip"/>
 				<exclude name="**/Scriptographer*.dmg"/>
 			</fileset>
@@ -254,16 +274,16 @@
 	<target name="packages.platform.mac" depends="init" if="build.platform.mac">
 		<echo>Executing Mac specific tasks</echo>
 
-		<!-- Copy platform dependent RXTX stuff -->
-		<copy todir="${build.packages}/Scriptographer/java">
-			<fileset dir="${build.dir}">
-				<include name="**/librxtxSerial.jnilib"/>
-			</fileset>
-		</copy>
+		<!-- Build the targets -->
+		<exec executable="xcodebuild" dir="${build.mac}">
+			<arg value="-alltargets"/>
+			<arg value="-configuration"/>
+			<arg value="Release"/>
+		</exec>
 
 		<!-- Make the packages -->
-		<exec executable="${home.dir}/build/mac/zipPackages.sh" dir="${build.packages}">
-			<arg path="${home.dir}/build/mac/build"/>
+		<exec executable="${build.mac}/zipPackages.sh" dir="${target.packages}">
+			<arg path="${build.mac}/build"/>
 			<arg line="${version}.${build.number}"/>
 		</exec>
 	</target>
@@ -271,18 +291,11 @@
 	<target name="packages.platform.win" depends="init" if="build.platform.win">
 		<echo>Executing Windows specific tasks</echo>
 
-		<!-- Copy platform dependent RXTX stuff -->
-		<copy todir="${build.packages}/Scriptographer/java">
-			<fileset dir="${build.dir}">
-				<include name="**/rxtxSerial.dll"/>
-			</fileset>
-		</copy>
-
 		<!-- Make the packages -->
-		<exec executable="cmd.exe" dir="${build.packages}">
+		<exec executable="cmd.exe" dir="${target.packages}">
 			<arg line="/C"/>
-			<arg path="${home.dir}/build/win/zipPackages.bat"/>
-			<arg path="${home.dir}/build/win"/>
+			<arg path="${build.win}/zipPackages.bat"/>
+			<arg path="${build.win}"/>
 			<arg line="${version}.${build.number}"/>
 		</exec>
 	</target>
@@ -291,8 +304,8 @@
 	<!-- Compiles the source directory                                       -->
 	<!-- =================================================================== -->
 	<target name="jniheaders" depends="compile">
-		<mkdir dir="${build.jni}"/>
-		<javah destdir="${build.jni}" classpath="${build.classes}">
+		<mkdir dir="${src.jni}"/>
+		<javah destdir="${src.jni}" classpath="${target.classes}">
 			<classpath refid="build.classpath" />
 
 			<class name="com.scriptographer.ScriptographerEngine" />
@@ -374,7 +387,7 @@
 		<script language="javascript" src="scripts/jni.js">
 		<![CDATA[
 			// create registerNatives.cpp by parsing the generated files by javah, see jni.js:
-			registerNatives(project.getProperty("build.jni"), project.getProperty("build.jni") + "/registerNatives.cpp");
+			registerNatives(project.getProperty("src.jni"), project.getProperty("src.jni") + "/registerNatives.cpp");
 		]]>
 		</script>
 	</target>
@@ -387,7 +400,7 @@
 		<script language="javascript" src="scripts/jni.js">
 		<![CDATA[
 			// create jni bodies by parsing the generated files by javah, see jni.js:
-			createJniBodies(project.getProperty("build.jni"));
+			createJniBodies(project.getProperty("src.jni"));
 		]]>
 		</script>
 	</target>
@@ -397,10 +410,10 @@
 	<!-- Creates the API documentation                                       -->
 	<!-- =================================================================== -->
 	<target name="javadocs" depends="init">
-		<mkdir dir="${docs.api.dir}"/>
+		<mkdir dir="${docs.dir.api}"/>
 		<javadoc packagenames="com.scriptographer.*"
   				sourcepathref="docs.sourcepath"
-				destdir="${docs.api.dir}"
+				destdir="${docs.dir.api}"
 				author="false"
 				version="false"
 				private="false"
@@ -438,7 +451,7 @@
 		    <doctitle><![CDATA[${Name} ${version}]]></doctitle>
 			<bottom><![CDATA[Copyright &#169; ${year} J&uuml;rg Lehni, <a href="http://www.scratchdisk.com" target="_blank">Scratchdisk.com</a>. All Rights Reserved.]]></bottom>
 			<doclet name="com.scratchdisk.script.rhino.RhinoDoclet" pathref="docs.classpath">
-				<param name="-script" value="${docs.script}"/>
+				<param name="-script" value="${src.js}/doclet/main.js"/>
 				<param name="-basepackage" value="com.scriptographer"/>
 				<param name="-classfilter" value="
 					com.scriptographer.js.*
@@ -468,10 +481,10 @@
 	<!-- Creates the JS API documentation                                    -->
 	<!-- =================================================================== -->
 	<target name="jsdocs" depends="init">
-		<mkdir dir="${docs.js.dir}/packages"/>
+		<mkdir dir="${docs.dir.js}/packages"/>
 		<antcall target="rhinodoclet">
 			<param name="templates" value="false"/>
-			<param name="destdir" value="${docs.js.dir}"/>
+			<param name="destdir" value="${docs.dir.js}"/>
 		</antcall>
 	</target>
 
@@ -481,7 +494,7 @@
 	<target name="templatedocs" depends="init">
 		<antcall target="rhinodoclet">
 			<param name="templates" value="true"/>
-			<param name="destdir" value="${docs.templates.dir}"/>
+			<param name="destdir" value="${docs.dir.templates}"/>
 		</antcall>
 	</target>
 </project>
