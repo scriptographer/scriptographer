@@ -10,7 +10,7 @@
 		<property name="version" value="${version.major}.${version.minor}"/>
 		<property name="project" value="scriptographer"/>
 		<tstamp>
-			<!-- get current year -->
+			<!-- Get current year -->
 			<format property="now" pattern="yyyy"/>
 			<format property="date" pattern="yyyy_MM_dd"/>
 		</tstamp>
@@ -234,15 +234,14 @@
 		</copy>
 
 		<!-- JS Core -->
-		<copy todir="${target.packages}/Scriptographer/js">
-			<fileset dir="${src.js}/core/gui"/>
+		<copy todir="${target.packages}/Scriptographer/core">
+			<fileset dir="${src.js}/core"/>
 		</copy>
 
 		<!-- JS Docs -->
 		<copy todir="${target.packages}/Scriptographer/doc">
 			<fileset dir="${docs.dir.js}"/>
 		</copy>
-
 		<!-- Scripts -->
 		<copy todir="${target.packages}/Scriptographer/scripts">
 			<fileset dir="${scripts.dir}">
@@ -250,11 +249,20 @@
 			</fileset>
 		</copy>
 
-		<antcall target="packages.platform" />
-
+		<antcall target="packages.platform">
+			<param name="target" value="CS4"/>
+		</antcall>
+		<antcall target="packages.platform">
+			<param name="target" value="CS3"/>
+		</antcall>
+		<antcall target="packages.platform">
+			<param name="target" value="CS2"/>
+		</antcall>
+		<antcall target="packages.platform">
+			<param name="target" value="CS"/>
+		</antcall>
 		<antcall target="packages.cleanup" />
 	</target>
-
 	<target name="packages.cleanup">
 		<!-- Remove everything except the packages -->
 		<delete includeEmptyDirs="true">
@@ -268,7 +276,7 @@
 	<!-- =================================================================== -->
 	<!-- Platform Specific Package related Tasks for Mac and Windows         -->
 	<!-- =================================================================== -->
-	<target name="packages.platform" depends="packages.platform.mac,packages.platform.win">
+	<target name="packages.platform" depends="init,packages.platform.mac,packages.platform.win">
 	</target>
 
 	<target name="packages.platform.mac" depends="init" if="build.platform.mac">
@@ -284,19 +292,28 @@
 		<!-- Make the packages -->
 		<exec executable="${build.mac}/zipPackages.sh" dir="${target.packages}">
 			<arg path="${build.mac}/build"/>
-			<arg line="${version}.${build.number}"/>
+			<arg value="${version}.${build.number}"/>
 		</exec>
 	</target>
 
 	<target name="packages.platform.win" depends="init" if="build.platform.win">
 		<echo>Executing Windows specific tasks</echo>
 
+		<!-- Build the targets -->
+		<exec executable="cmd.exe" dir="${build.win}">
+			<arg line="/C devenv.com"/>
+			<arg value="Scriptographer.sln"/>
+			<arg value="/build"/>
+			<arg value="${target} Release"/>
+		</exec>
+
 		<!-- Make the packages -->
 		<exec executable="cmd.exe" dir="${target.packages}">
-			<arg line="/C"/>
-			<arg path="${build.win}/zipPackages.bat"/>
+			<arg value="/C"/>
+			<arg path="${build.win}/zipPackage.bat"/>
 			<arg path="${build.win}"/>
-			<arg line="${version}.${build.number}"/>
+			<arg value="${target}"/>
+			<arg value="${version}.${build.number}"/>
 		</exec>
 	</target>
 
