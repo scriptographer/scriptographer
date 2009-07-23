@@ -47,6 +47,11 @@ p {
 	border-bottom: 0px;
 }
 
+/* border-bottom color for headers and ruler */
+.documentation-packages h2, .documentation-packages h3, .documentation-packages hr {
+	border-color: #009dec;
+}
+
 .documentation-packages a:hover {
 	background: #e3f4fc;
 }

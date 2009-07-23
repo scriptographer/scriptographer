@@ -42,15 +42,10 @@
 
 .documentation-packages h2, .documentation-packages h3, .documentation-packages hr {
 	margin: 8px 0 8px 0;
-	border-color: #009dec;
 }
 
 .documentation-packages .first h2 {
 	margin-top: 0;
-}
-
-.documentation li h2 {
-	margin-left: -10px;
 }
 
 * html .documentation-packages img {
@@ -115,4 +110,12 @@
 
 ul.package-classes {
 	padding-bottom: 4px;
+}
+
+.package-classes li {
+	margin-left: 8px;
+}
+
+.package-classes li h2 {
+	margin-left: -8px;
 }

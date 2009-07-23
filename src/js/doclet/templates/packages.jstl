@@ -23,19 +23,22 @@
 </html>
 <% end %>
 
-<% #package -%>
-<% $name = param.path.toUpperCase() %>
-<% if settings.templates %>
-createPackage("<%= $name %>",
-<%= param.hierarchy %>"<%= param.text encoding="js" %>");
-<% else %>
-<li><a href="#" onClick="return togglePackage('<%= $name %>', false);"><img name="arrow-<%= $name %>" src="../resources/media/arrow-close.gif" width="8" height="8" border="0"></a><img src="../resources/media/spacer.gif" width="6" height="1">
-<b><%= renderLink({ path: param.path, title: $name }) | stripCode %></b>
-<ul id="package-<%= $name %>" class="hidden">
-<%= param.hierarchy %>
-<% foreach $class in param.classes prefix='<ul class="package-classes">' suffix='</ul>' %>
+<% #classes -%>
+<% foreach $class in param.classes %>
 <%= $class prefix=<%= $class#first ? '<li class="first">' : '<li>' %> suffix='</li>' | stripCode %>
 <% end %>
+
+<% #package -%>
+<% $name = param.path.toUpperCase() %>
+<% $classes = <% template '#classes' classes=param.classes %> %>
+<% if settings.templates %>
+createPackage("<%= $name %>",
+<%= param.hierarchy %>"<%= param.text encoding="js" %>", "<%= $classes encoding="js" %>");
+<% else %>
+<li><a href="#" onClick="return togglePackage('<%= $name %>', false);"><img name="arrow-<%= $name %>" src="../resources/media/arrow-close.gif" width="8" height="8"></a><img src="../resources/media/spacer.gif" width="6" height="1"><b><%= renderLink({ path: param.path, title: $name }) | stripCode %></b>
+<ul id="package-<%= $name %>" class="package-classes hidden">
+<%-- We could output param.hierarchy here instead --%>
+<%= $classes %>
 </li></ul>
 <% end %>
 
