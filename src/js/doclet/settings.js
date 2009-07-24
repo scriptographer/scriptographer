@@ -34,8 +34,6 @@ var settings = {
 	headings: {}
 };
 
-print(options.classmatch);
-
 // Section headings
 for (var i = 1; i <= 4; i++) {
 	settings.headings[i] = { 

@@ -19,8 +19,8 @@ PackageObject = DocObject.extend({
 		// We need to create document before rendering tags and links, so that
 		// the basePath is set correctly.
 		var index = !settings.templates && new Document(path, 'index', 'document');
-		var first = renderTags({ tags: this.doc.firstSentenceTags(), packageDoc: this.doc });
-		var text = renderTags({ tags: this.doc.inlineTags(), packageDoc: this.doc });
+		var first = renderTags({ tags: this.doc.firstSentenceTags(), packageDoc: this.doc, wrapInParagraphs: false });
+		var text = renderTags({ tags: this.doc.inlineTags(), packageDoc: this.doc, wrapInParagraphs: false });
 		// Remove the first sentence from the main text, and use it as a title
 		if (first && text.startsWith(first)) {
 			text = text.substring(first.length);

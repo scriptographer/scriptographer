@@ -89,7 +89,8 @@ function renderTags(param) {
 	});
 	// Empty lines -> Paragraphs
 	if (!param.stripParagraphs) {
-		str = '<p>' + str.trim() + '</p>';
+		if (param.wrapInParagraphs === undefined || param.wrapInParagraphs)
+			str = '<p>' + str.trim() + '</p>';
 		// The following regexps use [\s&&[^\n\r]]* in a few places instead of simply \s*, to not
 		// eat up chars that are part of windows \r\n sequence
 		str = str.trim().replace(/(\r\n|\n|\r)[\s&&[^\n\r]]*(\r\n|\n|\r)/g, function(match, lineBreak) {
