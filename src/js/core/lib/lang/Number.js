@@ -1,23 +1,31 @@
-Number.inject({
-	_beans: true,
+Number.inject(new function() {
+	var formats = {};
 
-	format: function(str) {
-		return (new java.text.DecimalFormat(str || '#,##0.00'))['format(double)'](this);
-	},
+	return {
+		_beans: true,
 
-	toRadians: function() {
-		return this * Math.PI / 180;
-	},
+		format: function(str) {
+			str = str || '#,##0.00';
+			var format = formats[str];
+			if (!format)
+				format = formats[str] = new java.text.DecimalFormat(str);
+			return format['format(double)'](this);
+		},
 
-	toDegrees: function() {
-		return this * 180 / Math.PI;
-	},
+		toRadians: function() {
+			return this * Math.PI / 180;
+		},
 
-	isEven: function() {
-		return this % 2 == 0;
-	},
+		toDegrees: function() {
+			return this * 180 / Math.PI;
+		},
 
-	isOdd: function() {
-		return this % 2 != 0;
+		isEven: function() {
+			return this % 2 == 0;
+		},
+
+		isOdd: function() {
+			return this % 2 != 0;
+		}
 	}
 });
