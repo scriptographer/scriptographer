@@ -440,7 +440,7 @@ public class Segment implements Commitable, ChangeListener {
 	 * belongs to.
 	 */
 	public Segment getNext() {
-		return index < segments.size() ? segments.get(index + 1) : null;
+		return index < segments.size() - 1 ? segments.get(index + 1) : null;
 	}
 	
 	/**
