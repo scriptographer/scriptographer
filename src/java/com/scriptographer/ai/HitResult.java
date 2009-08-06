@@ -48,6 +48,7 @@ public class HitResult {
 	private Item item;
 	private Point point;
 	private double parameter;
+	private Segment segment = null;
 
 	/**
 	 * 
@@ -76,27 +77,32 @@ public class HitResult {
 	 */
 	protected HitResult(int type, Item item, int index, double parameter, Point point) {
 		this.type = IntegerEnumUtils.get(HitType.class, type);
-		this.item = item;
-		this.parameter = parameter;
-		this.point = point;
-		this.curve = null;
+		curve = null;
 		if (item instanceof Path && type < HitType.FILL.value) {
 			Path path = (Path) item;
 			CurveList curves = path.getCurves();
-			// calculate the curve index in the curve list according to the segment index:
-			// curve = segment - 1, if curve < 0, curve += segmentCount
-			index--;
-			if (index < 0)
-				index += curves.size();
+			// If we are between segments or click on the last right one,
+			// calculate the curve index in the curve list according to the
+			// segment index.
+			if (parameter > 0.0 && parameter < 1.0 || index == curves.size()) {
+				// curve = segment - 1, if curve < 0, curve += amount of curves
+				index--;
+				// Only for closed paths...
+				if (index < 0)
+					index += curves.size();
+			}
 			if (index < curves.size()) {
-				this.curve = (Curve) curves.get(index);
+				curve = (Curve) curves.get(index);
 				// if parameter == -1 and index is valid, we're hitting
 				// a segment point. just set parameter to 0 and the
 				// curve / parameter pair is valid
 				if (parameter == -1)
-					this.parameter = 0;
+					parameter = 0;
 			}
 		}
+		this.item = item;
+		this.parameter = parameter;
+		this.point = point;
 	}
 
 	/**
@@ -113,6 +119,28 @@ public class HitResult {
 		return curve;
 	}
 	
+	/**
+	 * The segment of the curve that was hit and that is closer to the hit
+	 * point.
+	 */
+	public Segment getSegment() {
+		if (segment == null) {
+			// Determine the segment closest to the hit point
+			if (parameter == 0) {
+				segment = curve.getSegment1();
+			} else if (parameter == 1) {
+				segment = curve.getSegment2();
+			} else {
+				// Determine the closest segment by comparing curve lengths
+				Curve rightCurve = ((Curve) curve.clone()).split(parameter);
+				segment = rightCurve.getLength() > curve.getLength() / 2
+						? curve.getSegment1()
+						: curve.getSegment2();
+			}
+		}
+		return segment;
+	}
+
 	/**
 	 * The index of the curve which was hit, if any.
 	 */
