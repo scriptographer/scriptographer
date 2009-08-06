@@ -126,6 +126,16 @@ public class Rectangle {
 		x = left;
 	}
 
+	public int getTop() {
+		return y;
+	}
+	
+	public void setTop(int top) {
+		// bottom should not move
+		height -= top - y;
+		y = top;
+	}
+
 	public int getRight() {
 		return x + width;
 	}
@@ -141,27 +151,30 @@ public class Rectangle {
 	public void setBottom(int bottom) {
 		height = bottom - y;
 	}
+	
+	private int getCenterX() {
+		return x + width / 2;
+	}
+	
+	private int getCenterY() {
+		return y + height / 2;
+	}
 
-	public int getTop() {
-		return y;
+	private void setCenterX(int x) {
+		this.x = x - width / 2;
 	}
-	
-	public void setTop(int top) {
-		// bottom should not move
-		height -= top - y;
-		y = top;
+
+	private void setCenterY(int y) {
+		this.y = y - height / 2;
 	}
-	
+
 	public Point getCenter() {
-		return new Point(
-			x + width / 2,
-			y + height / 2
-		);
+		return new Point(getCenterX(), getCenterY());
 	}
 
 	public void setCenter(Point center) {
-		x = center.x - width / 2;
-		y = center.y - height / 2;
+		setCenterX(center.x);
+		setCenterY(center.y);
 	}
 
 	public Point getTopLeft() {
@@ -200,6 +213,101 @@ public class Rectangle {
 		setBottom(y);
 	}
 
+	public Point getLeftCenter() {
+		return new Point(getLeft(), getCenterY());
+	}
+	
+	public void setLeftCenter(Point pt) {
+		setLeft(pt.x);
+		setCenterY(pt.y);
+	}
+
+	public Point getTopCenter() {
+		return new Point(getCenterX(), getTop());
+	}
+	
+	public void setTopCenter(Point pt) {
+		setCenterX(pt.x);
+		setTop(pt.y);
+	}
+
+	public Point getRightCenter() {
+		return new Point(getRight(), getCenterY());
+	}
+	
+	public void setRightCenter(Point pt) {
+		setRight(pt.x);
+		setCenterY(pt.y);
+	}
+
+	public Point getBottomCenter() {
+		return new Point(getCenterX(), getBottom());
+	}
+	
+	public void setBottomCenter(Point pt) {
+		setCenterX(pt.x);
+		setBottom(pt.y);
+	}
+
+	public boolean isEmpty() {
+	    return width <= 0 || height <= 0;
+	}
+
+	public boolean contains(Point point) {
+		return contains(point.x, point.y);
+	}
+
+	public boolean contains(double x, double y) {
+		return x >= this.x &&
+			y >= this.y &&
+			x < this.x + width &&
+			y < this.y + height;
+	}
+	
+ 	public boolean contains(Rectangle rect) {
+ 		return !isEmpty() 
+			&& rect.width > 0 && rect.height > 0
+			&& rect.x >= x && rect.y >= y
+			&& rect.x + rect.width <= x + width
+			&& rect.y + rect.height <= y + height;
+	}
+
+	public boolean intersects(Rectangle rect) {
+		return !isEmpty() && rect.width > 0 && rect.height > 0 &&
+			rect.x + rect.width > this.x &&
+			rect.y + rect.height > this.y &&
+			rect.x < this.x + this.width &&
+			rect.y < this.y + this.height;
+	}
+
+	public Rectangle intersect(Rectangle rect) {
+		int x1 = Math.max(x, rect.x);
+		int y1 = Math.max(y, rect.y);
+		int x2 = Math.min(x + width, rect.x + rect.width);
+		int y2 = Math.min(y + height, rect.y + rect.height);
+		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
+    }
+
+	public Rectangle unite(Rectangle rect) {
+		int x1 = Math.min(x, rect.x);
+		int y1 = Math.min(y, rect.y);
+		int x2 = Math.max(x + width, rect.x + rect.width);
+		int y2 = Math.max(y + height, rect.y + rect.height);
+		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
+	}
+
+	public Rectangle unite(int px, int py) {
+		int x1 = Math.min(x, px);
+		int y1 = Math.min(y, py);
+		int x2 = Math.max(x + width, px);
+		int y2 = Math.max(y + height, py);
+		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
+	}
+
+	public Rectangle unite(Point point) {
+		return unite(point.x, point.y);
+	}
+
 	/**
 	 * Adds the padding to the given rectangle and returns the modified rectangle
 	 * @param border
@@ -221,169 +329,6 @@ public class Rectangle {
 		width -= border.left + border.right;
 		height -= border.top + border.bottom;
 		return this;
-	}
-
-	/**
-	 * Returns {@true if the rectangle is empty}
-	 */
-	public boolean isEmpty() {
-	    return width <= 0 || height <= 0;
-	}
-
-	/**
-	 * Tests if specified coordinates are inside the boundary of the rectangle.
-	 * 
-	 * @param x, y the coordinates to test
-	 * @return {@true if the specified coordinates are inside the
-	 *         boundary of the rectangle}.
-	 */
-	public boolean contains(double x, double y) {
-		return x >= this.x &&
-			y >= this.y &&
-			x < this.x + width &&
-			y < this.y + height;
-	}
-
-    /**
-	 * Tests if the specified point is inside the boundary of the rectangle.
-	 * 
-	 * @param p the specified point
-	 * @return {@true if the point is inside the rectangle's
-	 *         boundary}
-	 */
-	public boolean contains(Point p) {
-		return contains(p.x, p.y);
-	}
-
-	/**
-	 * Tests if the interior of this rectangle intersects the interior of
-	 * another rectangle.
-	 * 
-	 * @param r the specified rectangle
-	 * @return {@true if the rectangle and the specified rectangle
-	 *         intersect each other}
-	 */
-	public boolean intersects(Rectangle r) {
-		return !isEmpty() && r.width > 0 && r.height > 0 &&
-			r.x + r.width > this.x &&
-			r.y + r.height > this.y &&
-			r.x < this.x + this.width &&
-			r.y < this.y + this.height;
-	}
-	
-    /**
-	 * Tests if the interior of the rectangle entirely contains the specified
-	 * rectangle.
-	 * 
-	 * @param rect The specified rectangle
-	 * @return {@true if the rectangle entirely contains the
-	 *         specified rectangle}
-	 */
-	public boolean contains(Rectangle rect) {
-	return !isEmpty() && rect.width > 0 && rect.height > 0 &&
-		rect.x >= this.x &&
-		rect.y >= this.y &&
-		rect.x + rect.width <= this.x + this.width &&
-		rect.y + rect.height <= this.y + this.height;
-	}
-
-	/**
-	 * Returns a new rectangle representing the intersection of this rectangle
-	 * with the specified rectangle.
-	 * 
-	 * @param r The rectangle to be intersected with this rectangle.
-	 * @return The largest rectangle contained in both the specified rectangle
-	 *         and in this rectangle.
-	 */
-	public Rectangle intersect(Rectangle r) {
-		int x1 = Math.max(x, r.x);
-		int y1 = Math.max(y, r.y);
-		int x2 = Math.min(x + width, r.x + r.width);
-		int y2 = Math.min(y + height, r.y + r.height);
-		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
-    }
-
-	/**
-	 * Returns a new rectangle representing the union of this rectangle with the
-	 * specified rectangle.
-	 * 
-	 * @param r the rectangle to be combined with this rectangle
-	 * @return the smallest rectangle containing both the specified rectangle
-	 *         and this rectangle.
-	 */
-	public Rectangle union(Rectangle r) {
-		int x1 = Math.min(x, r.x);
-		int y1 = Math.min(y, r.y);
-		int x2 = Math.max(x + width, r.x + r.width);
-		int y2 = Math.max(y + height, r.y + r.height);
-		if (x2 < x1) {
-			int t = x1;
-		    x1 = x2;
-		    x2 = t;
-		}
-		if (y2 < y1) {
-			int t = y1;
-		    y1 = y2;
-		    y2 = t;
-		}
-		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
-	}
-
-    /**
-	 * Adds a point, specified by the double precision arguments {@code px}
-	 * and {@code py}, to the rectangle. The resulting rectangle is the
-	 * smallest rectangle that contains both the original rectangle and the
-	 * specified point.
-	 * 
-	 * After adding a point, a call to {@code contains} with the added
-	 * point as an argument does not necessarily return {@code true}.
-	 * The {@code contains} method does not return {@code true}
-	 * for points on the right or bottom edges of a rectangle. Therefore, if the
-	 * added point falls on the left or bottom edge of the enlarged rectangle,
-	 * {@code contains} returns {@code false} for that point.
-	 * 
-	 * @param px, py The coordinates of the point.
-	 */
-	public void include(int px, int py) {
-		int nx = Math.min(x, px);
-		int ny = Math.min(y, px);
-		width = Math.max(x + width, px) - nx;
-		height = Math.max(y + height, py) - ny;
-		x = nx;
-		y = ny;
-	}
-
-    /**
-	 * Adds a point to this rectangle. The resulting rectangle is the
-	 * smallest rectangle that contains both the original rectangle and the
-	 * specified point.
-	 * 
-	 * After adding a point, a call to {@code contains} with the added
-	 * point as an argument does not necessarily return {@code true}.
-	 * The {@code contains} method does not return {@code true}
-	 * for points on the right or bottom edges of a rectangle. Therefore, if the
-	 * added point falls on the left or bottom edge of the enlarged rectangle,
-	 * {@code contains} returns {@code false} for that point.
-	 * 
-	 * @param pt
-	 */
-	public void include(Point pt) {
-		include(pt.x, pt.y);
-	}
-
-	/**
-	 * Adds a rectangle to this rectangle. The resulting rectangle is the union
-	 * of the two rectangles.
-	 * 
-	 * @param rect the rectangle to add to this rectangle.
-	 */
-	public void include(Rectangle rect) {
-		int nx = Math.min(x, rect.x);
-		int ny = Math.min(y, rect.y);
-		width = Math.max(x + width, rect.x + rect.width) - nx;
-		height = Math.max(y + width, rect.y + rect.width) - ny;
-		x = nx;
-		y = ny;
 	}
 
 	public Object clone() {

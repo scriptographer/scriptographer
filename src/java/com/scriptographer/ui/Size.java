@@ -82,6 +82,86 @@ public class Size {
 		this.height = height;
 	}
 
+	public double getWidth() {
+		return width;
+	}
+	
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+	
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public Size add(int w, int h) {
+		return new Size(width + w, height + h);
+	}
+
+	public Size add(Size size) {
+		return add(size.width, size.height);
+	}
+
+	public Size add(int value) {
+		return add(value, value);
+	}
+
+	public Size subtract(int w, int h) {
+		return new Size(width - w, height - h);
+	}
+
+	public Size subtract(Size size) {
+		return subtract(size.width, size.height);
+	}
+
+	public Size subtract(int value) {
+		return subtract(value, value);
+	}
+
+	public Size multiply(int w, int h) {
+		return new Size(width * w, height * h);
+	}
+
+	public Size multiply(Size size) {
+		return multiply(size.width, size.height);
+	}
+
+	public Size multiply(int value) {
+		return multiply(value, value);
+	}
+
+	public Size divide(int w, int h) {
+		return new Size(width / w, height / h);
+	}
+
+	public Size divide(Size size) {
+		return divide(size.width, size.height);
+	}
+
+	public Size divide(int value) {
+		return divide(value, value);
+	}
+
+	public Size modulo(int w, int h) {
+		return new Size(this.width % w, this.height % h);
+	}
+
+	public Size modulo(Point point) {
+		return modulo(point.x, point.y);
+	}
+
+	public Size modulo(int value) {
+		return modulo(value, value);
+	}
+
+	public Size negate() {
+		return new Size(-width, -height);
+	}
+
 	public Object clone() {
 		return new Size(this);
 	}

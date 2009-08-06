@@ -76,14 +76,68 @@ public class Point {
 		return new Point(this);
 	}
 
-	/**
-	 * Checks whether the point is inside the rectangle
-	 * 
-	 * @param rect the rectangle to check against
-	 * @return {@true if the point is inside the rectangle}
-	 */
-	public boolean isInside(Rectangle rect) {
-		return rect.contains(this);
+	public Point add(int x, int y) {
+		return new Point(this.x + x, this.y + y);
+	}
+
+	public Point add(Point point) {
+		return add(point.x, point.y);
+	}
+
+	public Point add(int value) {
+		return add(value, value);
+	}
+
+	public Point subtract(int x, int y) {
+		return new Point(this.x - x, this.y - y);
+	}
+
+	public Point subtract(Point point) {
+		return subtract(point.x, point.y);
+	}
+
+	public Point subtract(int value) {
+		return subtract(value, value);
+	}
+
+	public Point multiply(int x, int y) {
+		return new Point(this.x * x, this.y * y);
+	}
+
+	public Point multiply(Point point) {
+		return multiply(point.x, point.y);
+	}
+
+	public Point multiply(int value) {
+		return multiply(value, value);
+	}
+
+	public Point divide(int x, int y) {
+		return new Point(this.x / x, this.y / y);
+	}
+
+	public Point divide(Point point) {
+		return divide(point.x, point.y);
+	}
+
+	public Point divide(int value) {
+		return divide(value, value);
+	}
+
+	public Point modulo(int x, int y) {
+		return new Point(this.x % x, this.y % y);
+	}
+
+		public Point modulo(Point point) {
+		return modulo(point.x, point.y);
+	}
+
+	public Point modulo(int value) {
+		return modulo(value, value);
+	}
+
+	public Point negate() {
+		return new Point(-x, -y);
 	}
 
 	public boolean equals(Object object) {
@@ -94,6 +148,10 @@ public class Point {
 			// TODO: support other point types?
 			return false;
 		}
+	}
+
+	public boolean isInside(Rectangle rect) {
+		return rect.contains(this);
 	}
 
 	public String toString() {

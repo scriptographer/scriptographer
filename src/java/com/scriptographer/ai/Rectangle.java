@@ -389,16 +389,6 @@ public class Rectangle implements ChangeNotifier, ChangeListener {
 		setBottom(pt.y);
 	}
 
-	public String toString() {
-		StringBuffer buf = new StringBuffer(128);
-		buf.append("{ x: ").append(x);
-		buf.append(", y: ").append(y);
-		buf.append(", width: ").append(width);
-		buf.append(", height: ").append(height);
-		buf.append(" }");
-		return buf.toString();
-	}
-
 	/**
 	 * Clones the rectangle.
 	 */
@@ -565,5 +555,15 @@ public class Rectangle implements ChangeNotifier, ChangeListener {
 
 	protected Rectangle2D toRectangle2D() {
 		return new Rectangle2D.Double(x, y, width, height);
+	}
+
+	public String toString() {
+		StringBuffer buf = new StringBuffer(128);
+		buf.append("{ x: ").append(x);
+		buf.append(", y: ").append(y);
+		buf.append(", width: ").append(width);
+		buf.append(", height: ").append(height);
+		buf.append(" }");
+		return buf.toString();
 	}
 }
