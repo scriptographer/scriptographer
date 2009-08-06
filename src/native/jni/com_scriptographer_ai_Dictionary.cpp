@@ -233,7 +233,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 						delete strValue;
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Item)) {
 						AIArtHandle art = gEngine->getArtHandle(env, value);
-						sAIDictionary->MoveArtToEntry(dictionary, dictKey, art);
+						res = !sAIDictionary->MoveArtToEntry(dictionary, dictKey, art);
 						// Let the art object know it's part of a dictionary now:
 						gEngine->setIntField(env, value, gEngine->fid_ai_Item_dictionaryHandle, (jint) dictionary);
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Dictionary)) {
