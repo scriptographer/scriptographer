@@ -1072,7 +1072,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseColor(JNIEnv *
 			pt.h = (rect.right - rect.left) / 2;
 			pt.v = (rect.bottom - rect.top) / 2;
 		}
-		sADMBasic->ChooseColor(pt, &col, &result);
+		if (sADMBasic->ChooseColor(pt, &col, &result))
+			return gEngine->convertColor(env, &result);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -1083,8 +1084,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_chooseColor(JNIEnv *
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getPaletteLayoutBounds(JNIEnv *env, jclass cls) {
 	try {
 		ADMRect bounds;
-		sADMBasic->GetPaletteLayoutBounds(&bounds);
-		return gEngine->convertRectangle(env, &bounds);
+		if (sADMBasic->GetPaletteLayoutBounds(&bounds))
+			return gEngine->convertRectangle(env, &bounds);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
