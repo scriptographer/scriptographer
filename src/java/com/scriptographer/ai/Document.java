@@ -1189,6 +1189,10 @@ public class Document extends NativeObject implements ChangeListener {
 	public HitResult hitTest(Point point) {
 		return this.hitTest(point, HitRequest.ALL, HitResult.DEFAULT_TOLERANCE);
 	}
+
+	public HitResult hitTest(Point point, float tolerance) {
+		return this.hitTest(point, HitRequest.ALL, tolerance);
+	}
 	
 	/**
 	 * Text reflow is suspended during script execution. when reflowText() is
