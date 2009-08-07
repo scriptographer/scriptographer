@@ -39,6 +39,16 @@
  
 #define UNDEFINED -1
 
+bool PathStyle_hasColor(AIColor* color, AIColorMap* map) {
+	return map->kind && (
+		color->kind == kGrayColor
+			&& map->c.g.gray
+		|| color->kind == kThreeColor
+			&& map->c.rgb.red && map->c.rgb.green && map->c.rgb.blue
+		|| color->kind == kFourColor
+			&& map->c.f.cyan && map->c.f.magenta && map->c.f.yellow && map->c.f.black);
+}
+
 /**
  * map can be NULL
  */
@@ -47,17 +57,17 @@ void PathStyle_init(JNIEnv *env, jobject obj, AIPathStyle *style, AIPathStyleMap
 	jfloatArray dashArray;
 
 	// Fill
-	// if map is set, don't check every component. just assume that if kind is set, the rest is as well. that should
-	// be enough for ATE... (TODO: is it???)
-	if (style->fillPaint && (map == NULL || map->fillPaint && map->fill.color.kind)) {
+	// if map is set, check every component through PathStyle_hasColor
+	if (style->fillPaint && (map == NULL || map->fillPaint
+			&& PathStyle_hasColor(&style->fill.color, &map->fill.color))) {
 		fillColor = gEngine->convertColor(env, &style->fill.color);
 	} else {
 		fillColor = NULL;
 	}
 	// Stroke
-	// if map is set, don't check every component. just assume that if kind is set, the rest is as well. that should
-	// be enough for ATE... (TODO: is it???)
-	if (style->strokePaint && (map == NULL || map->strokePaint && map->stroke.color.kind)) {
+	// if map is set, don't check every component through PathStyle_hasColor
+	if (style->strokePaint && (map == NULL || map->strokePaint
+			&& PathStyle_hasColor(&style->stroke.color, &map->stroke.color))) {
 		strokeColor = gEngine->convertColor(env, &style->stroke.color);
 	} else {
 		strokeColor = NULL;
