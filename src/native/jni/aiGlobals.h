@@ -31,7 +31,6 @@ extern AIDocumentHandle gWorkingDoc;
 extern AIDocumentHandle gActiveDoc;
 extern AIDocumentHandle gCreationDoc;
 
-bool Item_isValid(AIArtHandle art);
 short Item_getType(AIArtHandle art);
 short Item_getType(JNIEnv *env, jclass cls);
 jboolean Item_hasChildren(AIArtHandle handle);

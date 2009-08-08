@@ -37,16 +37,6 @@
  * com.scriptographer.ai.Item
  */
 
-bool Item_isValid(AIArtHandle art) {
-#if kPluginInterfaceVersion < kAI12
-	return sAIArt->ValidArt(art);
-#else
-	// TODO: If searchAllLayerLists is true, then this does a search through all layers in
-	// all layer lists. Otherwise, it only does a search on the current layer list.
-	return sAIArt->ValidArt(art, false);
-#endif
-}
-
 short Item_getType(AIArtHandle art) {
 	short type = -1;
 	sAIArt->GetArtType(art, &type);
@@ -503,7 +493,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeRemove(JNIEnv *
 			if (!sAILayer->DeleteLayer(layer))
 				return true;
 		} else {
-			if (!sAIArt->DisposeArt(art))
+			if (sAIArt->ValidArt(art, true) && !sAIArt->DisposeArt(art))
 				return true;
 		}
 	} EXCEPTION_CONVERT(env);
@@ -1178,9 +1168,15 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeExpand(JNIEnv *e
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isValid(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
-		return Item_isValid(art);
+#if kPluginInterfaceVersion < kAI12
+		return sAIArt->ValidArt(art);
+#else
+		// Search in all layers, whatever that means.
+		return sAIArt->ValidArt(art, true);
+#endif
 	} catch (ScriptographerException *e) {
-		// Do not report, just return false
+		// Do not report the error from getArtHandle since we're checking for valid.
+		// Just return false.
 		delete e;
 	}
 	return false;
