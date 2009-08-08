@@ -477,40 +477,30 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeRemove(JNIEnv *
 	try {
 		Document_activate((AIDocumentHandle) docHandle);
 		AIArtHandle art = (AIArtHandle) handle;
-		// treat the object differently if it's in a dictionary than in the
-		// normal artwork tree of the document:
-		AIDictionaryRef dictionary = (AIDictionaryRef) dictionaryHandle;
-		if (dictionary != NULL) {
-			AIDictKey key = Item_getDictionaryKey(dictionary, art);
-			if (key != NULL) {
-				sAIDictionary->DeleteEntry(dictionary, key);
-				return true;
-			}
-		}
-		if (Item_isLayer(art)) {
-			AILayerHandle layer;
-			sAIArt->GetLayerOfArt(art, &layer);
-			if (!sAILayer->DeleteLayer(layer))
-				return true;
-		} else {
-			try {
-#ifdef MAC_ENV
-				// On the Mac, sometimes removing non-valid items, e.g. after undo was
-				// executed, leads to crashes that cannot be caught in a catch even.
-				// We need to check for them to be valid there. On PC, this is not done
-				// for better performance.
-#if kPluginInterfaceVersion < kAI12
-				if (sAIArt->ValidArt(art) && !sAIArt->DisposeArt(art))
-#else // kPluginInterfaceVersion >= kAI12
-				if (sAIArt->ValidArt(art, false) && !sAIArt->DisposeArt(art))
-#endif // kPluginInterfaceVersion >= kAI12
-#else // !MAC_ENV
-				if (!sAIArt->DisposeArt(art))
-#endif // !MAC_ENV
-					
+		// Sometimes removing non-valid items, e.g. after undo was executed, leads
+		// to crashes that cannot be caught in a catch even (at least on Mac).
+		// We need to check for them to be valid. The check is simply seeing if
+		// GetArtUserAttr executes without problems...
+		long values;
+		if (!sAIArt->GetArtUserAttr(art, kArtLocked, &values)) { 
+			// Treat the object differently if it's in a dictionary than in the
+			// normal artwork tree of the document:
+			AIDictionaryRef dictionary = (AIDictionaryRef) dictionaryHandle;
+			if (dictionary != NULL) {
+				AIDictKey key = Item_getDictionaryKey(dictionary, art);
+				if (key != NULL) {
+					sAIDictionary->DeleteEntry(dictionary, key);
 					return true;
-			} catch (...) {
-				return false;
+				}
+			}
+			if (Item_isLayer(art)) {
+				AILayerHandle layer;
+				sAIArt->GetLayerOfArt(art, &layer);
+				if (!sAILayer->DeleteLayer(layer))
+					return true;
+			} else {
+				if (!sAIArt->DisposeArt(art))
+					return true;
 			}
 		}
 	} EXCEPTION_CONVERT(env);
@@ -754,8 +744,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeGetAttribute(JN
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		long values;
-		sAIArt->GetArtUserAttr(art, attribute, &values);
-		return values & attribute;
+		if (!sAIArt->GetArtUserAttr(art, attribute, &values))
+			return values & attribute;
     } EXCEPTION_CONVERT(env);
 	return false;
 }
@@ -1185,12 +1175,12 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeExpand(JNIEnv *e
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isValid(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
-#if kPluginInterfaceVersion < kAI12
-		return sAIArt->ValidArt(art);
-#else
-		// Search in all layers, whatever that means.
-		return sAIArt->ValidArt(art, true);
-#endif
+		// Instead of using sAIArt->ValidArt which is slow because it scans layer lists and
+		// does not work for art in dictionaries, use this litte hack here that does the trick
+		// far faster.
+		long values;
+		if (!sAIArt->GetArtUserAttr(art, kArtLocked, &values))
+			return true;
 	} catch (ScriptographerException *e) {
 		// Do not report the error from getArtHandle since we're checking for valid.
 		// Just return false.
