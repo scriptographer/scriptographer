@@ -458,6 +458,12 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_nativeCreate(JNIEnv *env,
 			if (art == NULL)
 				throw new StringException("Unable to create item. Make sure there is an open document.");
 		}
+		// Set the m_artHandleKey value on newly created items, so they are found in the wrappers list.
+		AIDictionaryRef dict;
+		if (!sAIArt->GetDictionary(art, &dict)) {
+			sAIDictionary->SetIntegerEntry(dict, gEngine->m_artHandleKey, (ASInt32) art);
+			sAIDictionary->Release(dict);
+		}
 	} EXCEPTION_CONVERT(env);
 	return (jint) art;
 }
