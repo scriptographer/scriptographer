@@ -89,7 +89,7 @@ public class RGBColor extends Color {
 
 	public java.awt.Color toAWTColor() {
 		return new java.awt.Color(getColorSpace(),
-				new float[] { red, green, blue }, alpha);
+				new float[] { red, green, blue }, hasAlpha() ? alpha : 1f);
 	}
 
 	public float[] getComponents() {
