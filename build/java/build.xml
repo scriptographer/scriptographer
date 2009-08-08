@@ -16,6 +16,14 @@
 		</tstamp>
 		<property name="year" value="2001-${now}"/>
 
+		<property name="jar.name" value="${project}"/>
+		<property name="package.name" value="${project}-${version}"/>
+
+		<property name="build.debug" value="off"/>
+		<property name="build.optimize" value="on"/>
+		<property name="build.version" value="1.5"/>
+		<property name="build.deprecation" value="off"/>
+
 		<property name="project.dir" value="../.."/>
 
 		<!-- Sources -->
@@ -77,14 +85,6 @@
 		</path>
 
 		<property name="scripts.dir" value="${project.dir}/scripts"/>
-
-		<property name="jar.name" value="${project}"/>
-		<property name="package.name" value="${project}-${version}"/>
-
-		<property name="build.debug" value="off"/>
-		<property name="build.optimize" value="on"/>
-		<property name="build.version" value="1.5"/>
-		<property name="build.deprecation" value="off"/>
 	</target>
 
 
