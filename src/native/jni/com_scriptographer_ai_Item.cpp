@@ -493,9 +493,21 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeRemove(JNIEnv *
 			if (!sAILayer->DeleteLayer(layer))
 				return true;
 		} else {
-			// sAIArt->ValidArt(art, true) && 
 			try {
+#ifdef MAC_ENV
+				// On the Mac, sometimes removing non-valid items, e.g. after undo was
+				// executed, leads to crashes that cannot be caught in a catch even.
+				// We need to check for them to be valid there. On PC, this is not done
+				// for better performance.
+#if kPluginInterfaceVersion < kAI12
+				if (sAIArt->ValidArt(art) && !sAIArt->DisposeArt(art))
+#else // kPluginInterfaceVersion >= kAI12
+				if (sAIArt->ValidArt(art, false) && !sAIArt->DisposeArt(art))
+#endif // kPluginInterfaceVersion >= kAI12
+#else // !MAC_ENV
 				if (!sAIArt->DisposeArt(art))
+#endif // !MAC_ENV
+					
 					return true;
 			} catch (...) {
 				return false;
