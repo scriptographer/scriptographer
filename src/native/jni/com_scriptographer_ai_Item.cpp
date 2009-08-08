@@ -493,8 +493,13 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeRemove(JNIEnv *
 			if (!sAILayer->DeleteLayer(layer))
 				return true;
 		} else {
-			if (sAIArt->ValidArt(art, true) && !sAIArt->DisposeArt(art))
-				return true;
+			// sAIArt->ValidArt(art, true) && 
+			try {
+				if (!sAIArt->DisposeArt(art))
+					return true;
+			} catch (...) {
+				return false;
+			}
 		}
 	} EXCEPTION_CONVERT(env);
 	return false;
