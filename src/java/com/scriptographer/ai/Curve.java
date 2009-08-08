@@ -509,10 +509,9 @@ public class Curve implements ChangeListener {
 		return split(0.5f);
 	}
 
-	/**
-	 * @param point
-	 * @param precision
-	 */
+	// No need to expose these since they are confused with the native HitTest
+	// TODO: Decide if maybe useful under different name?
+	/*
 	public double hitTest(Point point, double precision) {
 		updateSegments();
 		
@@ -522,6 +521,7 @@ public class Curve implements ChangeListener {
 	public double hitTest(Point point) {
 		return hitTest(point, EPSILON);
 	}
+	*/
 
 	public double getPartLength(double fromParameter, double toParameter) {
 		updateSegments();

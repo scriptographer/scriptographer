@@ -367,6 +367,9 @@ public class Path extends PathItem {
 		return split(index, 0);
 	}
 
+	// No need to expose these since they override the native one.
+	// TODO: Decide if maybe useful under different name?
+	/*
 	public HitResult hitTest(Point point, double precision) {
 		CurveList curves = getCurves();
 		int length = curves.size();
@@ -383,6 +386,7 @@ public class Path extends PathItem {
 	public HitResult hitTest(Point point) {
 		return hitTest(point, Curve.EPSILON);
 	}
+	*/
 
 	// TODO: move to CurveList, to make accessible when not using
 	// paths directly too?

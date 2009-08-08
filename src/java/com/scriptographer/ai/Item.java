@@ -1023,6 +1023,10 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		return hitTest(point, HitRequest.ALL, HitResult.DEFAULT_TOLERANCE);
 	}
 
+	public HitResult hitTest(Point point, float tolerance) {
+		return hitTest(point, HitRequest.ALL, tolerance);
+	}
+
 	private native Item nativeExpand(int flags, int steps);
 
 	/**

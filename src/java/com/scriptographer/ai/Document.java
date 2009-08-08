@@ -1192,19 +1192,19 @@ public class Document extends NativeObject implements ChangeListener {
 	 *        guaranteed {@default 2}
 	 */
 	public HitResult hitTest(Point point, HitRequest request, float tolerance) {
-		return this.nativeHitTest(point, (request != null ? request : HitRequest.ALL).value, tolerance, null);
+		return nativeHitTest(point, (request != null ? request : HitRequest.ALL).value, tolerance, null);
 	}
 
 	public HitResult hitTest(Point point, HitRequest request) {
-		return this.hitTest(point, request, HitResult.DEFAULT_TOLERANCE);
+		return hitTest(point, request, HitResult.DEFAULT_TOLERANCE);
 	}
 
 	public HitResult hitTest(Point point) {
-		return this.hitTest(point, HitRequest.ALL, HitResult.DEFAULT_TOLERANCE);
+		return hitTest(point, HitRequest.ALL, HitResult.DEFAULT_TOLERANCE);
 	}
 
 	public HitResult hitTest(Point point, float tolerance) {
-		return this.hitTest(point, HitRequest.ALL, tolerance);
+		return hitTest(point, HitRequest.ALL, tolerance);
 	}
 	
 	/**
