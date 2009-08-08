@@ -177,7 +177,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		// Only try to use the previous wrapper for this address if the object
 		// was marked wrapped otherwise we might get wrong wrappers for objects
 		// that reuse a previous address
-		Item prev = items.get(artHandle);
 		if (wrapped)
 			item = items.get(artHandle);
 		// If it wasn't wrapped yet, do it now:
@@ -224,10 +223,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 			}
 		}
 		if (item != null) {
-			if (item.getItemType() != Item.getItemType(item.getClass())
-					&& Item.getItemType(item.getClass()) < 100) {
-				int i = 0;
-			}
 			item.dictionaryHandle = dictionaryHandle;
 			item.document = Document.wrapHandle(docHandle);
 			if (item.millis == 0)
