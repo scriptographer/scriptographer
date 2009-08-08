@@ -303,7 +303,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setActiveArtboardInde
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getPageOrigin(JNIEnv *env, jobject obj) {
 	jobject origin = NULL;
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
 		AIRealPoint pt;
@@ -318,7 +318,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getPageOrigin(JNIE
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setPageOrigin(JNIEnv *env, jobject obj, jobject origin) {
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
 		AIRealPoint pt;
@@ -333,7 +333,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setPageOrigin(JNIEnv 
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getRulerOrigin(JNIEnv *env, jobject obj) {
 	jobject origin = NULL;
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
 		AIRealPoint pt;
@@ -348,7 +348,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getRulerOrigin(JNI
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setRulerOrigin(JNIEnv *env, jobject obj, jobject origin) {
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
 		AIRealPoint pt;
@@ -363,7 +363,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setRulerOrigin(JNIEnv
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSize(JNIEnv *env, jobject obj) {
 	jobject size = NULL;
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
 		AIDocumentSetup setup;
@@ -379,7 +379,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getSize(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setSize(JNIEnv *env, jobject obj, jdouble width, jdouble height) {
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
 		AIDocumentSetup setup;
@@ -391,12 +391,36 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setSize(JNIEnv *env, 
 }
 
 /*
+ * int nativeGetColormodel()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetColormodel(JNIEnv *env, jobject obj) {
+	short model = kDocUnknownColor;
+	try {
+		// Cause the doc switch if necessary
+		gEngine->getDocumentHandle(env, obj, true);
+		sAIDocument->GetDocumentColorModel(&model);
+	} EXCEPTION_CONVERT(env);
+	return model;
+}
+
+/*
+ * void nativeSetColormodel(int model)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetColormodel(JNIEnv *env, jobject obj, jint model) {
+	try {
+		// Cause the doc switch if necessary
+		gEngine->getDocumentHandle(env, obj, true);
+		sAIDocument->SetDocumentColorModel((short) model);
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
  * boolean isModified()
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_isModified(JNIEnv *env, jobject obj) {
 	ASBoolean modified = false;
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
 		sAIDocument->GetDocumentModified(&modified);
@@ -409,7 +433,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_isModified(JNIEnv
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setModified(JNIEnv *env, jobject obj, jboolean modified) {
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
 		sAIDocument->SetDocumentModified(modified);
@@ -422,7 +446,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_setModified(JNIEnv *e
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getFile(JNIEnv *env, jobject obj) {
 	jobject file = NULL;
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
 		SPPlatformFileSpecification fileSpec;
@@ -464,7 +488,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_save(JNIEnv *env, job
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_nativeWrite(JNIEnv *env, jobject obj, jobject file, jint formatHandle, jboolean ask) {
 	jboolean ret = false;
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		gEngine->commit(env);
 		
@@ -516,7 +540,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_close(JNIEnv *env, jo
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw(JNIEnv *env, jobject obj) {
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		gEngine->commit(env);
 		sAIDocument->RedrawDocument();
@@ -528,7 +552,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw(JNIEnv *env, j
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_invalidate(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		
 		// use the DocumentView's function SetDocumentViewInvalidDocumentRect that fits
@@ -545,7 +569,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_invalidate(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_copy(JNIEnv *env, jobject obj) {
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		gEngine->commit(env);
 		sAIDocument->Copy();
@@ -557,7 +581,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_copy(JNIEnv *env, job
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_cut(JNIEnv *env, jobject obj) {
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		gEngine->commit(env);
 		sAIDocument->Cut();
@@ -569,7 +593,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_cut(JNIEnv *env, jobj
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_paste(JNIEnv *env, jobject obj) {
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		gEngine->commit(env);
 		sAIDocument->Paste();
@@ -596,7 +620,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_place(JNIEnv *env,
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_hasSelectedItems(JNIEnv *env, jobject obj) {
 	jboolean selected = false;
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		selected = sAIMatchingArt->IsSomeArtSelected();
 	} EXCEPTION_CONVERT(env);
@@ -931,7 +955,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetStories(JNIE
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_reflowText(JNIEnv *env, jobject obj) {
 	try {
-		// cause the doc switch if necessary
+		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		sAIDocument->ResumeTextReflow();
 		sAIDocument->SuspendTextReflow();

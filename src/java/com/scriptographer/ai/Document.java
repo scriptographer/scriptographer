@@ -41,6 +41,7 @@ import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.script.ChangeListener;
 import com.scratchdisk.util.ConversionUtils;
+import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
 import com.scriptographer.ScriptographerException;
@@ -314,6 +315,18 @@ public class Document extends NativeObject implements ChangeListener {
 	
 	public void setSize(Size size) {
 		setSize(size.width, size.height);
+	}
+
+	private native int nativeGetColormodel();
+	private native void nativeSetColormodel(int model);
+
+	public ColorModel getColorModel() {
+		return IntegerEnumUtils.get(ColorModel.class, nativeGetColormodel());
+	}
+
+	public void setColorModel(ColorModel model) {
+		if (model != null)
+			nativeSetColormodel(model.value);
 	}
 
 	/**

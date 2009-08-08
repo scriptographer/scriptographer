@@ -113,10 +113,27 @@ public abstract class Color {
 	}
 
 	/**
-	 * @jshide
+	 * Converts the color into another type.
+	 * 
+	 * @param type the type of the color to convert to, e.g. {@code RGBColor},
+	 *        {@code CMYKColor}, {@code GrayColor}.
+	 * @return the converted color.
 	 */
 	public Color convert(Class type) {
 		return convert(getType(type, hasAlpha()));
+	}
+
+	/**
+	 * Converts the color into a color model, as returned by
+	 * {@link Document#getColorModel}.
+	 * 
+	 * @param model the conversion color type
+	 * @return the converted color.
+	 * 
+	 * @jshide
+	 */
+	public Color convert(ColorModel model) {
+		return convert(getType(model, hasAlpha()));
 	}
 
 	/**
@@ -128,6 +145,21 @@ public abstract class Color {
 		} else if (RGBColor.class.isAssignableFrom(type)) { 
 			return alpha ? ColorType.ARGB : ColorType.RGB;
 		} else if (GrayColor.class.isAssignableFrom(type)) { 
+			return alpha ? ColorType.AGRAY : ColorType.GRAY;
+		}
+		return null;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public static ColorType getType(ColorModel model, boolean alpha) {
+		switch (model) {
+		case CMYK:
+			return alpha ? ColorType.ACMYK : ColorType.CMYK;
+		case RGB:
+			return alpha ? ColorType.ARGB : ColorType.RGB;
+		case GRAY:
 			return alpha ? ColorType.AGRAY : ColorType.GRAY;
 		}
 		return null;
