@@ -84,12 +84,14 @@ public class HitResult {
 			// If we are between segments or click on the last right one,
 			// calculate the curve index in the curve list according to the
 			// segment index.
-			if (parameter > 0.0 && parameter < 1.0 || index == curves.size()) {
-				// curve = segment - 1, if curve < 0, curve += amount of curves
+			if (parameter == -1 && index == curves.size()) {
+				// Click on the last segment, decrease index and set paremter to the 2nd point.
 				index--;
-				// Only for closed paths...
-				if (index < 0)
-					index += curves.size();
+				parameter = 1.0;
+			}
+			if (parameter > 0.0 && parameter < 1.0) {
+				// curve = segment - 1, or if segment = 0, curve = last curve, for closed paths.
+				index = index == 0 ? curves.size() - 1 : index - 1;
 			}
 			if (index < curves.size()) {
 				curve = (Curve) curves.get(index);
