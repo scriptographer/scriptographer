@@ -186,8 +186,8 @@ public class StrokeStyle implements Style {
 			style.update();
 			style.markDirty();
 		}
-		// setting with to 0 equals to setting color to null!
-		if (width.floatValue() == 0)
+		// Setting with to 0 or null equals to setting color to null!
+		if (width == null || width.floatValue() == 0)
 			this.color = null;
 		this.width = width;
 	}
