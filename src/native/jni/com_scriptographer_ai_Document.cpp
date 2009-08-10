@@ -548,6 +548,30 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw(JNIEnv *env, j
 }
 
 /*
+ * void undo()
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_undo(JNIEnv *env, jobject obj) {
+	try {
+		// Cause the doc switch if necessary
+		gEngine->getDocumentHandle(env, obj, true);
+		gEngine->commit(env);
+		sAIDocument->Undo();
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * void redo()
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redo(JNIEnv *env, jobject obj) {
+	try {
+		// Cause the doc switch if necessary
+		gEngine->getDocumentHandle(env, obj, true);
+		gEngine->commit(env);
+		sAIDocument->Redo();
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
  * void invalidate(float x, float y, float width, float height)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_invalidate(JNIEnv *env, jobject obj, jfloat x, jfloat y, jfloat width, jfloat height) {

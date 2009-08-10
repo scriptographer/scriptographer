@@ -561,6 +561,10 @@ public class Document extends NativeObject implements ChangeListener {
 	 */
 	public native void redraw();
 
+	public native void undo();
+
+	public native void redo();
+
 	/**
 	 * Places a file in the document.
 	 * 
