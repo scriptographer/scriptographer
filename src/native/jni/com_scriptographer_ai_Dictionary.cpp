@@ -56,109 +56,107 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 		AIDocumentHandle document = (AIDocumentHandle) docHandle;
 		char *str = gEngine->convertString(env, (jstring) env->CallObjectMethod(key, gEngine->mid_Object_toString));
 		AIDictKey dictKey = sAIDictionary->Key(str);
+		delete str;
 		if (KEY_VISIBLE(dictKey)) {
 			AIEntryRef entry = sAIDictionary->Get(dictionary, dictKey);
-			delete str;
+			// There is no reason to release entry if it is used for one of the sAIEntry->To* methods,
+			// since these aure auto-releasing.
+			// But do release if its type cannot be handled (default:)
 			if (entry != NULL) {
-				std::exception *exc = NULL;
-				try {
-					AIEntryType type = sAIEntry->GetType(entry);
-					switch (type) {
-							/*
-							 TODO: implement these:
-							 UnknownType,
-							 // array
-							 ArrayType,
-							 // Binary data. if the data is stored to file it is the clients responsibility to
-							 deal with the endianess of the data.
-							 BinaryType,
-							 // a reference to a pattern
-							 PatternRefType,
-							 // a reference to a brush pattern
-							 BrushPatternRefType,
-							 // a reference to a custom color (either spot or global process)
-							 CustomColorRefType,
-							 // a reference to a gradient
-							 GradientRefType,
-							 // a reference to a plugin global object
-							 PluginObjectRefType,
-							 // an unique id
-							 UIDType,
-							 // an unique id reference
-							 UIDREFType,
-							 // an XML node
-							 XMLNodeType,
-							 // a SVG filter
-							 SVGFilterType,
-							 // an art style
-							 ArtStyleType,
-							 // a symbol definition reference
-							 SymbolPatternRefType,
-							 // a graph design reference
-							 GraphDesignRefType,
-							 // a blend style (transpareny attributes)
-							 BlendStyleType,
-							 // a graphical object
-							 GraphicObjectType
-							 */
-						case IntegerType: {
-							ASInt32 value;
-							if (!sAIEntry->ToInteger(entry, &value))
-								res = gEngine->convertInteger(env, value);
-						} break;
-						case BooleanType: {
-							ASBoolean value;
-							if (!sAIEntry->ToBoolean(entry, &value))
-								res = gEngine->convertBoolean(env, value);
-						} break;
-						case RealType: {
-							ASReal value;
-							if (!sAIEntry->ToReal(entry, &value))
-								res = gEngine->convertFloat(env, value);
-						} break;
-						case StringType: {
-							const char *value;
-							if (!sAIEntry->ToString(entry, &value))
-								res = gEngine->convertString(env, value);
-						} break;
-						case DictType: {
-							// This can be either an art object or a dictionary:
-							AIDictionaryRef dict;
-							AIArtHandle art;
-							if (!sAIEntry->ToArt(entry, &art)) {
-								res = gEngine->wrapArtHandle(env, art, document, dictionary);
-							} else if (!sAIEntry->ToDict(entry, &dict)) {
-								res = gEngine->wrapDictionaryHandle(env, dict);
-							}
-						} break;
-						case PointType: {
-							AIRealPoint point;
-							if (!sAIEntry->ToRealPoint(entry, &point))
-								res = gEngine->convertPoint(env, &point);
-						} break;
-						case MatrixType: {
-							AIRealMatrix matrix;
-							if (!sAIEntry->ToRealMatrix(entry, &matrix))
-								res = gEngine->convertMatrix(env, &matrix);
-						} break;
-						case FillStyleType: {
-							AIFillStyle fill;
-							if (!sAIEntry->ToFillStyle(entry, &fill))
-								res = gEngine->convertFillStyle(env, &fill);
+				AIEntryType type = sAIEntry->GetType(entry);
+				switch (type) {
+						/*
+						 TODO: implement these:
+						 UnknownType,
+						 // array
+						 ArrayType,
+						 // Binary data. if the data is stored to file it is the clients responsibility to
+						 deal with the endianess of the data.
+						 BinaryType,
+						 // a reference to a pattern
+						 PatternRefType,
+						 // a reference to a brush pattern
+						 BrushPatternRefType,
+						 // a reference to a custom color (either spot or global process)
+						 CustomColorRefType,
+						 // a reference to a gradient
+						 GradientRefType,
+						 // a reference to a plugin global object
+						 PluginObjectRefType,
+						 // an unique id
+						 UIDType,
+						 // an unique id reference
+						 UIDREFType,
+						 // an XML node
+						 XMLNodeType,
+						 // a SVG filter
+						 SVGFilterType,
+						 // an art style
+						 ArtStyleType,
+						 // a symbol definition reference
+						 SymbolPatternRefType,
+						 // a graph design reference
+						 GraphDesignRefType,
+						 // a blend style (transpareny attributes)
+						 BlendStyleType,
+						 // a graphical object
+						 GraphicObjectType
+						 */
+					case IntegerType: {
+						ASInt32 value;
+						if (!sAIEntry->ToInteger(entry, &value))
+							res = gEngine->convertInteger(env, value);
+					} break;
+					case BooleanType: {
+						ASBoolean value;
+						if (!sAIEntry->ToBoolean(entry, &value))
+							res = gEngine->convertBoolean(env, value);
+					} break;
+					case RealType: {
+						ASReal value;
+						if (!sAIEntry->ToReal(entry, &value))
+							res = gEngine->convertFloat(env, value);
+					} break;
+					case StringType: {
+						const char *value;
+						if (!sAIEntry->ToString(entry, &value))
+							res = gEngine->convertString(env, value);
+					} break;
+					case DictType: {
+						// This can be either an art object or a dictionary:
+						AIDictionaryRef dict;
+						AIArtHandle art;
+						if (!sAIEntry->ToArt(entry, &art)) {
+							res = gEngine->wrapArtHandle(env, art, document, dictionary);
+						} else if (!sAIEntry->ToDict(entry, &dict)) {
+							res = gEngine->wrapDictionaryHandle(env, dict);
 						}
-							break;
-						case StrokeStyleType: {
-							AIStrokeStyle stroke;
-							if (!sAIEntry->ToStrokeStyle(entry, &stroke))
-								res = gEngine->convertStrokeStyle(env,&stroke);
-						}
+					} break;
+					case PointType: {
+						AIRealPoint point;
+						if (!sAIEntry->ToRealPoint(entry, &point))
+							res = gEngine->convertPoint(env, &point);
+					} break;
+					case MatrixType: {
+						AIRealMatrix matrix;
+						if (!sAIEntry->ToRealMatrix(entry, &matrix))
+							res = gEngine->convertMatrix(env, &matrix);
+					} break;
+					case FillStyleType: {
+						AIFillStyle fill;
+						if (!sAIEntry->ToFillStyle(entry, &fill))
+							res = gEngine->convertFillStyle(env, &fill);
 					}
-				} catch(std::exception *e) {
-					exc = e;
+						break;
+					case StrokeStyleType: {
+						AIStrokeStyle stroke;
+						if (!sAIEntry->ToStrokeStyle(entry, &stroke))
+							res = gEngine->convertStrokeStyle(env,&stroke);
+					}
+					default: {
+						sAIEntry->Release(entry);
+					}
 				}
-				sAIEntry->Release(entry);
-				if (exc != NULL)
-					throw exc;
 			}
 		}
 	} EXCEPTION_CONVERT(env);
