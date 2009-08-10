@@ -59,10 +59,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 		delete str;
 		if (KEY_VISIBLE(dictKey)) {
 			AIEntryRef entry = sAIDictionary->Get(dictionary, dictKey);
-			// There is no reason to release entry if it is used for one of the sAIEntry->To* methods,
-			// since these aure auto-releasing.
-			// But do release if its type cannot be handled (default:)
 			if (entry != NULL) {
+				// Keep track of wether the entry was converted to a value or not, 
+				// so we know if it was auto-released or not. See below.
+				bool converted = false;
 				AIEntryType type = sAIEntry->GetType(entry);
 				switch (type) {
 						/*
@@ -104,59 +104,60 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 						 */
 					case IntegerType: {
 						ASInt32 value;
-						if (!sAIEntry->ToInteger(entry, &value))
+						if (converted = !sAIEntry->ToInteger(entry, &value))
 							res = gEngine->convertInteger(env, value);
 					} break;
 					case BooleanType: {
 						ASBoolean value;
-						if (!sAIEntry->ToBoolean(entry, &value))
+						if (converted = !sAIEntry->ToBoolean(entry, &value))
 							res = gEngine->convertBoolean(env, value);
 					} break;
 					case RealType: {
 						ASReal value;
-						if (!sAIEntry->ToReal(entry, &value))
+						if (converted = !sAIEntry->ToReal(entry, &value))
 							res = gEngine->convertFloat(env, value);
 					} break;
 					case StringType: {
 						const char *value;
-						if (!sAIEntry->ToString(entry, &value))
+						if (converted = !sAIEntry->ToString(entry, &value))
 							res = gEngine->convertString(env, value);
 					} break;
 					case DictType: {
 						// This can be either an art object or a dictionary:
 						AIDictionaryRef dict;
 						AIArtHandle art;
-						if (!sAIEntry->ToArt(entry, &art)) {
+						if (converted = !sAIEntry->ToArt(entry, &art)) {
 							res = gEngine->wrapArtHandle(env, art, document, dictionary);
-						} else if (!sAIEntry->ToDict(entry, &dict)) {
+						} else if (converted = !sAIEntry->ToDict(entry, &dict)) {
 							res = gEngine->wrapDictionaryHandle(env, dict);
 						}
 					} break;
 					case PointType: {
 						AIRealPoint point;
-						if (!sAIEntry->ToRealPoint(entry, &point))
+						if (converted = !sAIEntry->ToRealPoint(entry, &point))
 							res = gEngine->convertPoint(env, &point);
 					} break;
 					case MatrixType: {
 						AIRealMatrix matrix;
-						if (!sAIEntry->ToRealMatrix(entry, &matrix))
+						if (converted = !sAIEntry->ToRealMatrix(entry, &matrix))
 							res = gEngine->convertMatrix(env, &matrix);
 					} break;
 					case FillStyleType: {
 						AIFillStyle fill;
-						if (!sAIEntry->ToFillStyle(entry, &fill))
+						if (converted = !sAIEntry->ToFillStyle(entry, &fill))
 							res = gEngine->convertFillStyle(env, &fill);
 					}
 						break;
 					case StrokeStyleType: {
 						AIStrokeStyle stroke;
-						if (!sAIEntry->ToStrokeStyle(entry, &stroke))
+						if (converted = !sAIEntry->ToStrokeStyle(entry, &stroke))
 							res = gEngine->convertStrokeStyle(env,&stroke);
 					}
-					default: {
-						sAIEntry->Release(entry);
-					}
 				}
+				// If the entry was not converted through any of the sAIEntry->To* methods,
+				// which all auto-release the entry, we need to release it manually.
+				if (!converted)
+					sAIEntry->Release(entry);
 			}
 		}
 	} EXCEPTION_CONVERT(env);
