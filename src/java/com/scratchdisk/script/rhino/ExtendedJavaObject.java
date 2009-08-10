@@ -122,16 +122,16 @@ public class ExtendedJavaObject extends NativeJavaObject {
 		EvaluatorException error = null;
         if (members.has(name, false)) {
 			try {
-		        // We could be asked to modify the value of a property in the
-		        // prototype. Since we can't add a property to a Java object,
-		        // we modify it in the prototype rather than copy it down.
+				// Try setting the value on member first
 	            members.put(this, name, javaObject, value, false);
 	            // If there is a modification listener, update this field in it right away now.
 	            if (changeListener != null)
 	            	changeListener.put(changeName, changeListener, this);
 				return; // done
 			} catch (EvaluatorException e) {
-				if (e.getMessage().indexOf("Cannot convert") != -1)
+				// Rethrow errors that have another cause (a real Java exception from the
+				// called getter / setter) or that are about conversion problems.
+				if (e.getCause() != null || e.getMessage().indexOf("Cannot convert") != -1)
 					throw e;
 				error = e;
 			}
@@ -146,8 +146,6 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			// override a Java method or field. We allow this on the level of
 			// the wrapper though, if the wrapper was created unsealed (meaning
 			// properties exist).
-			// TODO: Find out what other EvaluatorException might get thrown
-			// where this should not be done, and compare strings if needed...
 			properties.put(name, value);
 		} else if (error != null) {
 			// If nothing of the above worked, throw the error again.
