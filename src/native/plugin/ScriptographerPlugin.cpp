@@ -542,8 +542,8 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 	}
 	// Some common AI messages
 	else if (sSPBasic->IsEqual(caller, kCallerAINotify)) {
-		AIAppContextHandle appContext = NULL;
-		sAIAppContext->PushAppContext(m_pluginRef, &appContext);
+		// TODO: Is AppContext needed here?
+		AppContext context;
 
 		AINotifierMessage *msg = (AINotifierMessage *) message;
 		if (msg->notifier == m_selectionChangedNotifier) {
@@ -562,7 +562,6 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 			}
 		}
 		*/
-		sAIAppContext->PopAppContext(appContext);
 	} else if (sSPBasic->IsEqual(caller, kCallerAIMenu)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIGoMenuItem)) {
 			error = gEngine->MenuItem_onExecute((AIMenuMessage *) message);
