@@ -78,7 +78,7 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 		font: 'palette',
 		backgroundColor: 'inactive-tab',
 		// the onDraw workaround for display problems is only needed on mac
-		onDraw: app.isMacintosh() && function(drawer) {
+		onDraw: null && app.isMacintosh() && function(drawer) {
 			// Workaround for mac, where TextEdit fields with a background
 			// color
 			// do not get completely filled
