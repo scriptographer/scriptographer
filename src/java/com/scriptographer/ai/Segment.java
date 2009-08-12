@@ -264,7 +264,8 @@ public class Segment implements Commitable, ChangeListener {
 	}
 
 	public void commit() {
-		if (dirty != DIRTY_NONE && segments != null && segments.path != null) {
+		if (dirty != DIRTY_NONE && segments != null && segments.path != null
+				&& segments.path.isValid()) {
 			Path path = segments.path;
 			if ((dirty & DIRTY_POINTS) != 0) {
 				SegmentList.nativeSet(path.handle, path.document.handle, index,
@@ -281,8 +282,9 @@ public class Segment implements Commitable, ChangeListener {
 						path.document.handle, index, selectionState);
 			}
 			dirty = DIRTY_NONE;
-			// update to current path version after commit.
+			// Update to current path version after commit.
 			version = segments.path.version;
+			path.setModified();
 		}
 	}
 
@@ -291,7 +293,8 @@ public class Segment implements Commitable, ChangeListener {
 	 * Only call once, when adding this segment to the segmentList!
 	 */
 	protected void insert() {
-		if (segments != null && segments.path != null) {
+		if (segments != null && segments.path != null
+				&& segments.path.isValid()) {
 			Path path = segments.path;
 			SegmentList.nativeInsert(path.handle, path.document.handle, index,
 					(float) point.x,
@@ -301,9 +304,10 @@ public class Segment implements Commitable, ChangeListener {
 					(float) (handleOut.x + point.x),
 					(float) (handleOut.y + point.y),
 					corner);
-			// update to current version after commit.
-			version = segments.path.version;
 			dirty = DIRTY_NONE;
+			// Update to current version after commit.
+			version = segments.path.version;
+			path.setModified();
 		}
 	}
 
@@ -318,9 +322,8 @@ public class Segment implements Commitable, ChangeListener {
 	}
 	
 	protected void update() {
-		if ((dirty & DIRTY_POINTS) == 0 &&
-			segments != null && segments.path != null &&
-			version != segments.path.version) {
+		if ((dirty & DIRTY_POINTS) == 0 && segments != null
+				&& segments.path != null && segments.path.needsUpdate(version)) {
 			// this handles all the updating automatically:
 			segments.get(index);
 			// version has changed, force regetting of selection state:

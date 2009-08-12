@@ -64,8 +64,8 @@ public class Raster extends Item {
 	@SuppressWarnings("unused")
 	private int data = 0;
 
-	protected Raster(int handle) {
-		super(handle);
+	protected Raster(int handle, int docHandle) {
+		super(handle, docHandle);
 	}
 
 	private native int nativeConvert(int type, int width, int height);
@@ -361,7 +361,7 @@ public class Raster extends Item {
 
 	private Matrix getInverseMatrix() {
 		// Cache the inverse matrix as it might be used often for rastering images
-		if (inverseVersion != version) {
+		if (needsUpdate(inverseVersion)) {
 			inverse = this.getMatrix().invert();
 			inverseVersion = version;
 		}

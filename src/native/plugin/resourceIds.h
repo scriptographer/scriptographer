@@ -30,5 +30,5 @@
 #define kToolCursorID					128
 #define kEmptyIconID					130
 #define kEmptyMenuID					800
-#define kEmptyDialogID                  16000
+#define kEmptyDialogID					16000
 #define kErrorStrings					16050

@@ -40,7 +40,7 @@
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextValueItem_setText(JNIEnv *env, jobject obj, jstring text) {
 	try {
-	    ADMItemRef item = gEngine->getItemHandle(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 		sADMItem->SetTextW(item, chars);
 		delete chars;
@@ -52,7 +52,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextValueItem_setText(JNIEnv *
  */
 JNIEXPORT jstring JNICALL Java_com_scriptographer_ui_TextValueItem_getText(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemHandle(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		long len = sADMItem->GetTextLengthW(item);
 		ASUnicode *chars = new ASUnicode[len];
 		sADMItem->GetTextW(item, chars, len);
@@ -68,7 +68,7 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ui_TextValueItem_getText(JNIEn
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextValueItem_nativeSetJustification(JNIEnv *env, jobject obj, jint justification) {
 	try {
-	    ADMItemRef item = gEngine->getItemHandle(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetJustify(item, (ADMJustify) justification);
 	} EXCEPTION_CONVERT(env);
 }
@@ -78,7 +78,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextValueItem_nativeSetJustifi
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ui_TextValueItem_nativeGetJustification(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemHandle(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->GetJustify(item);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -110,7 +110,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_TextValueItem_nativeGetUnits(J
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextValueItem_setShowUnits(JNIEnv *env, jobject obj, jboolean showUnits) {
 	try {
-	    ADMItemRef item = gEngine->getItemHandle(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->ShowUnits(item, showUnits);
 	} EXCEPTION_CONVERT(env);
 }
@@ -120,7 +120,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextValueItem_setShowUnits(JNI
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_TextValueItem_getShowUnits(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemHandle(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->GetShowUnits(item);
 	} EXCEPTION_CONVERT(env);
 	return false;

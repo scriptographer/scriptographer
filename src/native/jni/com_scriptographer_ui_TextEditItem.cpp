@@ -173,7 +173,7 @@ JNIEXPORT jintArray JNICALL Java_com_scriptographer_ui_TextEditItem_getSelection
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextEditItem_selectAll(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemHandle(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SelectAll(item);
 	} EXCEPTION_CONVERT(env);
 }

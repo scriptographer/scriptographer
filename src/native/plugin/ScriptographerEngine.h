@@ -162,6 +162,7 @@ public:
 
 	jclass cls_ai_Document;
 	jmethodID mid_ai_Document_removeHandle;
+	jmethodID mid_ai_Document_onSelectionChanged;
 	
 	jclass cls_ai_Tool;
 	jmethodID cid_ai_Tool;
@@ -222,7 +223,6 @@ public:
 	jfieldID fid_ai_Item_dictionaryHandle;
 	jmethodID mid_ai_Item_wrapHandle;
 	jmethodID mid_ai_Item_getIfWrapped;
-	jmethodID mid_ai_Item_updateIfWrapped;
 	jmethodID mid_ai_Item_changeHandle;
 	jmethodID mid_ai_Item_commit;
 	

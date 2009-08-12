@@ -50,8 +50,8 @@ public class CompoundPath extends PathItem {
 	/**
 	 * Wraps an AIArtHandle in a Path object
 	 */
-	protected CompoundPath(int handle) {
-		super(handle);
+	protected CompoundPath(int handle, int docHandle) {
+		super(handle, docHandle);
 	}
 
 	/**

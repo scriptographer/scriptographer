@@ -361,8 +361,8 @@ public:
 };
 
 jobject TextRange_convertTextRanges(JNIEnv *env, TextRangesRef ranges) {
-    // assume that this allways returns either 0 or 1. an exception is thrown if not so we know about it.
-    // in this case, the assumption was wrong and scripto probably needs a few changes
+	// assume that this allways returns either 0 or 1. an exception is thrown if not so we know about it.
+	// in this case, the assumption was wrong and scripto probably needs a few changes
 	ASInt32 size;
 	if (!sTextRanges->GetSize(ranges, &size)) {
 		if (size > 1) {

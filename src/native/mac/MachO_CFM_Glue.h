@@ -30,8 +30,8 @@
 #include <MacTypes.h>
 
 typedef struct {
-    ProcPtr procPtr;
-    UInt32 toc;
+	ProcPtr procPtr;
+	UInt32 toc;
 } TVector;
 
 void *createCFMGlue(void* machoProc, TVector *vector = NULL);

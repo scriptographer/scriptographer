@@ -70,7 +70,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Pattern_getDefinition(JNIEn
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Pattern_setDefinition(JNIEnv *env, jobject obj, jobject item) {
 	try {
 		AIPatternHandle pattern = gEngine->getPatternHandle(env, obj, true);
-		AIArtHandle art = gEngine->getArtHandle(env, item);
+		AIArtHandle art = gEngine->getArtHandle(env, item, true);
 		// TODO: see what happens if pattern and art are not from the same document!
 		// consider adding a special case where this could work if it does not already (Using Item_copyTo?)
 		sAIPattern->SetPatternArt(pattern, art);

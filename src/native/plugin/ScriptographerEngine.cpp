@@ -424,6 +424,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	
 	cls_ai_Document = loadClass(env, "com/scriptographer/ai/Document");
 	mid_ai_Document_removeHandle = getStaticMethodID(env, cls_ai_Document, "removeHandle", "(I)V");
+	mid_ai_Document_onSelectionChanged = getStaticMethodID(env, cls_ai_Document, "onSelectionChanged", "(I[III)V");
 
 	cls_ai_Tool = loadClass(env, "com/scriptographer/ai/Tool");
 	cid_ai_Tool = getConstructorID(env, cls_ai_Tool, "(ILjava/lang/String;)V");
@@ -484,7 +485,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_ai_Item_dictionaryHandle = getFieldID(env, cls_ai_Item, "dictionaryHandle", "I");
 	mid_ai_Item_wrapHandle = getStaticMethodID(env, cls_ai_Item, "wrapHandle", "(ISIIIZ)Lcom/scriptographer/ai/Item;");
 	mid_ai_Item_getIfWrapped = getStaticMethodID(env, cls_ai_Item, "getIfWrapped", "(I)Lcom/scriptographer/ai/Item;");
-	mid_ai_Item_updateIfWrapped = getStaticMethodID(env, cls_ai_Item, "updateIfWrapped", "([I)V");
 	mid_ai_Item_changeHandle = getMethodID(env, cls_ai_Item, "changeHandle", "(III)V");
 	mid_ai_Item_commit = getMethodID(env, cls_ai_Item, "commit", "(Z)V");
 
@@ -1559,10 +1559,10 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 #if kPluginInterfaceVersion < kAI12
 	char *name, *groupName;
 	if (!sAIMenu->GetMenuItemName(item, &name) &&
-#else
+#else // kPluginInterfaceVersion >= kAI12
 	const char *name, *groupName;
 	if (!sAIMenu->GetMenuItemKeyboardShortcutDictionaryKey(item, &name) &&
-#endif
+#endif // kPluginInterfaceVersion >= kAI12
 		!sAIMenu->GetItemMenuGroup(item, &group) &&
 		!sAIMenu->GetMenuGroupName(group, &groupName)) {
 		return callStaticObjectMethod(env, cls_ui_MenuItem, mid_ui_MenuItem_wrapHandle,
@@ -1591,6 +1591,7 @@ ASErr ScriptographerEngine::onSelectionChanged() {
 		long numMatches;
 		ASErr error = sAIMatchingArt->GetSelectedArt(&matches, &numMatches);
 		if (error) return error;
+		jintArray artHandles;
 		if (numMatches > 0) {
 			// pass an array of twice the size to the java side:
 			// i + 0 contains the current handle
@@ -1627,15 +1628,23 @@ ASErr ScriptographerEngine::onSelectionChanged() {
 					sAIDictionary->Release(artDict);
 				}
 			}
-
+			// TODO: Does this need disposing even if numMatches == 0?
 			sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
-
-			jintArray artHandles = env->NewIntArray(count);
+		
+			artHandles = env->NewIntArray(count);
 			env->SetIntArrayRegion(artHandles, 0, count, (jint *) handles);
 			delete handles;
-			
-			callStaticVoidMethod(env, cls_ai_Item, mid_ai_Item_updateIfWrapped, artHandles);
+		} else {
+			artHandles = NULL;
 		}
+
+		// Pass undoLevel and redoLevel to onSelectionChanged as well.
+		long undoLevel = 0, redoLevel = 0;
+		sAIUndo->CountTransactions(&undoLevel, &redoLevel);
+		AIDocumentHandle doc = NULL;
+		sAIDocument->GetDocument(&doc);
+		callStaticVoidMethod(env, cls_ai_Document, mid_ai_Document_onSelectionChanged,
+				(jint) doc, artHandles, undoLevel, redoLevel);
 //		println(env, "%i", (getNanoTime() - t) / 1000000);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);

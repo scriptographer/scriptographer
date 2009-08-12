@@ -92,22 +92,32 @@ void Document_deselectAll(bool force) {
 }
 
 /*
- * void beginExecution()
+ * void nativeBeginExecution(int[] values)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_beginExecution(JNIEnv *env, jclass cls) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeBeginExecution(JNIEnv *env, jclass cls, jintArray values) {
 	try {
 		// Fetch the current working document, so it can
 		// be set again if it was changed by document
 		// handling code in the native environment in the end.
 		// This is needed as any code that relies on the right document
 		// to be set may switch any time (in fact, the native getArtHandle
-		// function switches all the time.
+		// function switches all the time).
 		gWorkingDoc = NULL;
 		sAIDocument->GetDocument(&gWorkingDoc);
 		gActiveDoc = gWorkingDoc;
 		gCreationDoc = NULL;
+		long undoLevel = 0, redoLevel = 0;
+		sAIUndo->CountTransactions(&undoLevel, &redoLevel);
+		// Return values through int array, for performance
+		jint data[] = {
+			(jint) gWorkingDoc,
+			undoLevel,
+			redoLevel
+		};
+		env->SetIntArrayRegion(values, 0, 3, data);
 	} EXCEPTION_CONVERT(env);
 }
+
 /*
  * void endExecution()
  */

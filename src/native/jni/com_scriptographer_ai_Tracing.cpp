@@ -98,7 +98,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tracing_nativeCreate(JNIEnv *e
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tracing_update(JNIEnv *env, jobject obj) {
 	try {
 #if kPluginInterfaceVersion >= kAI12
-	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAITracing->Update(art);
 #else
 		TRACING_EXCEPTION

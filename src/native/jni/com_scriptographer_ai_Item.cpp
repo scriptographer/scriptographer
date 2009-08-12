@@ -471,6 +471,35 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_finalize(JNIEnv *env, job
 }
 
 /*
+ * boolean[] checkValid(int[] handles)
+ */
+JNIEXPORT jbooleanArray JNICALL Java_com_scriptographer_ai_Item_checkValid(JNIEnv *env, jclass cls, jintArray handles) {
+	try {
+		// Get handles
+		int length = env->GetArrayLength(handles);
+		jint *values = new jint[length];
+		env->GetIntArrayRegion(handles, 0, length, values);
+		// Collect valid values
+		jboolean *valid = new jboolean[length];
+		// TODO: ValidArt seems necessary here, since the attribute check
+		// do not work for items removed through undo. But ValidArt does
+		// not work for art in dictionaries, so more checks are needed here!
+		for (int i = 0; i < length; i++) {
+#if kPluginInterfaceVersion < kAI12
+			valid[i] = sAIArt->ValidArt((AIArtHandle) values[i]);
+#else // kPluginInterfaceVersion >= kAI12
+			valid[i] = sAIArt->ValidArt((AIArtHandle) values[i], false);
+#endif // kPluginInterfaceVersion >= kAI12
+		}
+		// Set the valid values and return
+		jbooleanArray validArray = env->NewBooleanArray(length);
+		env->SetBooleanArrayRegion(validArray, 0, length, valid);
+		return validArray;
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
+
+/*
  * boolean nativeRemove(int handle, int docHandle, jint dictionaryHandle)
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeRemove(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint dictionaryHandle) {
@@ -514,7 +543,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_copyTo__Lcom_scriptogr
 	try {
 		// src
 		AIDocumentHandle docSrc = NULL;
-	    AIArtHandle artSrc = gEngine->getArtHandle(env, obj, false, &docSrc);
+		AIArtHandle artSrc = gEngine->getArtHandle(env, obj, false, &docSrc);
 		AIDictionaryRef dictSrc = gEngine->getArtDictionaryHandle(env, obj);
 		// dst: from insertion point
 		AIDocumentHandle docDst = gEngine->getDocumentHandle(env, document);
@@ -536,8 +565,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_copyTo__Lcom_scriptogr
 	try {
 		// src & dst
 		AIDocumentHandle docSrc, docDst;
-	    AIArtHandle artSrc = gEngine->getArtHandle(env, obj, false, &docSrc);
-	    AIArtHandle artDst = gEngine->getArtHandle(env, item, false, &docDst);
+		AIArtHandle artSrc = gEngine->getArtHandle(env, obj, false, &docSrc);
+		AIArtHandle artDst = gEngine->getArtHandle(env, item, false, &docDst);
 		AIDictionaryRef dictSrc = gEngine->getArtDictionaryHandle(env, obj);
 		// copy
 		AIArtHandle copy = Item_copyTo(env, artSrc, docSrc, dictSrc, artDst, docDst, kPlaceInsideOnTop);
@@ -552,7 +581,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_copyTo__Lcom_scriptogr
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getFirstChild(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		if (Item_hasChildren(art)) {
 			AIArtHandle child = NULL;
 			sAIArt->GetArtFirstChild(art, &child);
@@ -568,7 +597,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getFirstChild(JNIEnv *
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getLastChild(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		if (Item_hasChildren(art)) {
 			AIArtHandle child = NULL;
 			sAIArt->GetArtLastChild(art, &child);
@@ -584,7 +613,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getLastChild(JNIEnv *e
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getNextSibling(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIArtHandle child = NULL;
 		sAIArt->GetArtSibling(art, &child);
 		if (child != NULL)
@@ -598,7 +627,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getNextSibling(JNIEnv 
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getPreviousSibling(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIArtHandle child = NULL;
 		sAIArt->GetArtPriorSibling(art, &child);
 		if (child != NULL)
@@ -613,7 +642,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getPreviousSibling(JNI
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getParent(JNIEnv *env, jobject obj) {
 	jobject res = NULL;
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIArtHandle parent = NULL;
 		sAIArt->GetArtParent(art, &parent);
 		if (parent != NULL)
@@ -646,12 +675,13 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getLayer(JNIEnv *env, 
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getBounds(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		// TODO: Document activation needed?
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		// Commit pending changes first, since they might influence the bounds
 		Item_commit(env, art);
 		AIRealRect rt;
-	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
-	    return gEngine->convertRectangle(env, &rt);
+		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
+		return gEngine->convertRectangle(env, &rt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -662,11 +692,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getBounds(JNIEnv *env,
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getStrokeBounds(JNIEnv *env, jobject obj) {
 	try {
 		AIRealRect rt;
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		// Commit pending changes first, since they might influence the bounds
 		Item_commit(env, art);
-	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kExcludeGuideBounds, &rt);
-	    return gEngine->convertRectangle(env, &rt);
+		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kExcludeGuideBounds, &rt);
+		return gEngine->convertRectangle(env, &rt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -677,11 +707,11 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getStrokeBounds(JNIEnv
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getControlBounds(JNIEnv *env, jobject obj) {
 	try {
 		AIRealRect rt;
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		// Commit pending changes first, since they might influence the bounds
 		Item_commit(env, art);
-	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kControlBounds | kExcludeGuideBounds, &rt);
-	    return gEngine->convertRectangle(env, &rt);
+		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kControlBounds | kExcludeGuideBounds, &rt);
+		return gEngine->convertRectangle(env, &rt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -692,14 +722,14 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getControlBounds(JNIEn
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getPosition(JNIEnv *env, jobject obj) {
 	try {
 		AIRealRect rt;
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		// Commit pending changes first, since they might influence the bounds
 		Item_commit(env, art);
 		// Return the center point of the bounds
 		// TODO: maybe find a way to define and store reg points per art objects?
-	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
+		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
 		DEFINE_POINT(pt, (rt.left + rt.right) / 2.0, (rt.top + rt.bottom) / 2.0);
-	    return gEngine->convertPoint(env, &pt);
+		return gEngine->convertPoint(env, &pt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -709,7 +739,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getPosition(JNIEnv *en
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isCenterVisible(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIBoolean visible;
 		if (!sAIArt->GetArtCenterPointVisible(art, &visible))
 			return visible;
@@ -722,7 +752,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isCenterVisible(JNIEn
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_setCenterVisible(JNIEnv *env, jobject obj, jboolean visible) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAIArt->SetArtCenterPointVisible(art, visible);
 	} EXCEPTION_CONVERT(env);
 }
@@ -732,9 +762,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_setCenterVisible(JNIEnv *
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeSetAttribute(JNIEnv *env, jobject obj, jint attribute, jboolean value) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAIArt->SetArtUserAttr(art, attribute, value ? attribute : 0);
-    } EXCEPTION_CONVERT(env);
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
@@ -746,7 +776,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeGetAttribute(JN
 		long values;
 		if (!sAIArt->GetArtUserAttr(art, attribute, &values))
 			return values & attribute;
-    } EXCEPTION_CONVERT(env);
+	} EXCEPTION_CONVERT(env);
 	return false;
 }
 
@@ -790,7 +820,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isEditable(JNIEnv *en
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_nativeGetBlendMode(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		return sAIBlendStyle->GetBlendingMode(art);
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -801,7 +831,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_nativeGetBlendMode(JNIEnv
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeSetBlendMode(JNIEnv *env, jobject obj, jint mode) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAIBlendStyle->SetBlendingMode(art, (AIBlendingMode) mode);
 	} EXCEPTION_CONVERT(env);
 }
@@ -811,7 +841,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeSetBlendMode(JNIEnv
  */
 JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Item_getOpacity(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		return sAIBlendStyle->GetOpacity(art);
 	} EXCEPTION_CONVERT(env);
 	return 0.0;
@@ -822,7 +852,7 @@ JNIEXPORT jfloat JNICALL Java_com_scriptographer_ai_Item_getOpacity(JNIEnv *env,
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_setOpacity(JNIEnv *env, jobject obj, jfloat opacity) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAIBlendStyle->SetOpacity(art, opacity);
 	} EXCEPTION_CONVERT(env);
 }
@@ -832,7 +862,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_setOpacity(JNIEnv *env, j
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_getIsolated(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		return sAIBlendStyle->GetIsolated(art);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -843,7 +873,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_getIsolated(JNIEnv *e
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_setIsolated(JNIEnv *env, jobject obj, jboolean isolated) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAIBlendStyle->SetIsolated(art, isolated);
 	} EXCEPTION_CONVERT(env);
 }
@@ -853,7 +883,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_setIsolated(JNIEnv *env, 
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_nativeGetKnockout(JNIEnv *env, jobject obj, jboolean inherited) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		return inherited ? sAIBlendStyle->GetInheritedKnockout(art) : sAIBlendStyle->GetKnockout(art);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -864,7 +894,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_nativeGetKnockout(JNIEnv 
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeSetKnockout(JNIEnv *env, jobject obj, jint knockout) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAIBlendStyle->SetKnockout(art, (AIKnockout) knockout);
 	} EXCEPTION_CONVERT(env);
 }
@@ -874,7 +904,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeSetKnockout(JNIEnv 
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_getAlphaIsShape(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		return sAIBlendStyle->GetAlphaIsShape(art);
 	} EXCEPTION_CONVERT(env);
 	return false;
@@ -885,7 +915,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_getAlphaIsShape(JNIEn
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_setAlphaIsShape(JNIEnv *env, jobject obj, jboolean isAlpha) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAIBlendStyle->SetAlphaIsShape(art, isAlpha);
 	} EXCEPTION_CONVERT(env);
 }
@@ -914,7 +944,7 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Item_getName(JNIEnv *env, j
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_setName(JNIEnv *env, jobject obj, jstring name) {
 	try {
-		// intersting: setting name does not need document to be active
+		// Intersting: setting name does not need document to be active
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 #if kPluginInterfaceVersion < kAI12
 		char *str = gEngine->convertString(env, name);
@@ -1033,7 +1063,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeTransform(JNIEnv *e
 		// Modify the matrix so that it 'acts' on the center of the selected object
 		// TODO: Introduce reg points?
 		AIRealRect bounds;
-	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &bounds);
+		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &bounds);
 		DEFINE_POINT(center,
 			(bounds.left + bounds.right) / 2,
 			(bounds.top + bounds.bottom) / 2);
@@ -1091,7 +1121,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeDraw(JNIEnv *env, j
 
 		Item_commit(env, art);
 		AIRealRect rt;
-	    sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
+		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &rt);
 
 		ADMImageRef image = gEngine->getImageHandle(env, imageObj);
 		ADMDrawerRef drawer = sADMImage->BeginADMDrawer(image);
@@ -1167,26 +1197,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeExpand(JNIEnv *e
 		return gEngine->wrapArtHandle(env, res);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
-}
-
-/*
- * boolean isValid()
- */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isValid(JNIEnv *env, jobject obj) {
-	try {
-		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
-		// Instead of using sAIArt->ValidArt which is slow because it scans layer lists and
-		// does not work for art in dictionaries, use this litte hack here that does the trick
-		// far faster.
-		long values;
-		if (!sAIArt->GetArtUserAttr(art, kArtLocked, &values))
-			return true;
-	} catch (ScriptographerException *e) {
-		// Do not report the error from getArtHandle since we're checking for valid.
-		// Just return false.
-		delete e;
-	}
-	return false;
 }
 
 /*

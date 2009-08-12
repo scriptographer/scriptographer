@@ -45,8 +45,8 @@ public abstract class PathItem extends Item {
 	/**
 	 * Wraps an AIArtHandle in a Path object
 	 */
-	protected PathItem(int handle) {
-		super(handle);
+	protected PathItem(int handle, int docHandle) {
+		super(handle, docHandle);
 	}
 
 	/**

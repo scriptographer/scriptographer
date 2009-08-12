@@ -39,8 +39,8 @@ package com.scriptographer.ai;
  */
 public class PointText extends TextItem {
 
-	protected PointText(int handle) {
-		super(handle, false);
+	protected PointText(int handle, int docHandle) {
+		super(handle, docHandle);
 	}
 
 	native private static int nativeCreate(int orientation, float x, float y);
@@ -60,7 +60,7 @@ public class PointText extends TextItem {
 	public PointText(Point point, TextOrientation orientation) {
 		super(nativeCreate(orientation != null
 				? orientation.value : TextOrientation.HORIZONTAL.value,
-				(float) point.x, (float) point.y), true);
+				(float) point.x, (float) point.y));
 	}
 
 	public PointText(Point point) {

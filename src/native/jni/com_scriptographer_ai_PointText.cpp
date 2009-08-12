@@ -59,7 +59,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PointText_nativeCreate(JNIEnv 
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PointText_getPoint(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle text = gEngine->getArtHandle(env, obj);
+		AIArtHandle text = gEngine->getArtHandle(env, obj);
 		AIRealPoint anchor;
 		if (!sAITextFrame->GetPointTextAnchor(text, &anchor))
 			return gEngine->convertPoint(env, &anchor);		

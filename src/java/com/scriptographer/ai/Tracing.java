@@ -43,14 +43,14 @@ public class Tracing extends Item implements Commitable {
 	protected int optionsHandle = 0;
 	protected int statisticsHandle = 0;
 
-	protected Tracing(int handle) {
-		super(handle);
+	protected Tracing(int handle, int docHandle) {
+		super(handle, docHandle);
 	}
 
 	private static native int nativeCreate(int docHandle, int artHandle);
 
 	protected Tracing(Item item) {
-		super(nativeCreate(item.document.handle, item.handle));
+		super(nativeCreate(item.document.handle, item.handle), item.document);
 		markDirty(); // force a first update
 	}
 	

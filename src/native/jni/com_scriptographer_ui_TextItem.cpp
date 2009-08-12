@@ -40,7 +40,7 @@
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextItem_nativeSetText(JNIEnv *env, jobject obj, jstring text) {
 	try {
-	    ADMItemRef item = gEngine->getItemHandle(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		if (text != NULL) {
 			ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
 			sADMItem->SetTextW(item, chars);
@@ -56,7 +56,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextItem_nativeSetText(JNIEnv 
  */
 JNIEXPORT jstring JNICALL Java_com_scriptographer_ui_TextItem_getText(JNIEnv *env, jobject obj) {
 	try {
-	    ADMItemRef item = gEngine->getItemHandle(env, obj);
+		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		long len = sADMItem->GetTextLengthW(item);
 		ASUnicode *chars = new ASUnicode[len];
 		sADMItem->GetTextW(item, chars, len);

@@ -102,9 +102,8 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	 * Only called from Path.getSegmentList()
 	 */
 	protected void update() {
-		if (path != null && lengthVersion != path.version) {
+		if (path != null && path.needsUpdate(lengthVersion))
 			updateSize(-1);
-		}
 	}
 
 	protected static native void nativeGet(int handle, int index, int count,
@@ -139,6 +138,9 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	 */
 	protected void fetch(int fromIndex, int toIndex) {
 		if (path != null) {
+			// To reduced needsUpdate calls, see if path needs an update
+			// regardless of the version, and then compare with that each time.
+			boolean needsUpdate = path.needsUpdate();
 			int pathVersion = path.version;
 			// if all are out of maxVersion or only one segment is fetched, no
 			// scanning for valid segments is needed:
@@ -148,24 +150,22 @@ public class SegmentList extends AbstractFetchList<Segment> {
 
 			float []values = null;
 			while (true) {
-				// skip the ones that are alreay fetched:
+				// Skip the ones that are already fetched:
 				Segment segment;
-				while (start < toIndex &&
-						((segment = list.get(start)) != null) &&
-						segment.version == pathVersion) {
+				while (start < toIndex && (segment = list.get(start)) != null
+						&& (!needsUpdate && segment.version == pathVersion)) {
 					start++;
 				}
 
 				if (start == toIndex) // all fetched, jump out
 					break;
 
-				// now determine the length of the block that needs to be
+				// Now determine the length of the block that needs to be
 				// fetched:
 				end = start + 1;
 
-				while (end < toIndex &&
-						((segment = list.get(start)) == null ||
-						segment != null && segment.version != pathVersion)) {
+				while (end < toIndex && ((segment = list.get(start)) == null
+						|| needsUpdate || segment.version != pathVersion)) {
 					end++;
 				}
 

@@ -64,8 +64,8 @@ public class Path extends PathItem {
 	/**
 	 * Wraps an AIArtHandle in a Path object
 	 */
-	protected Path(int handle) {
-		super(handle);
+	protected Path(int handle, int docHandle) {
+		super(handle, docHandle);
 	}
 
 	/**
@@ -223,12 +223,12 @@ public class Path extends PathItem {
 		// Reverse underlying AI structures:
 		nativeReverse();
 		// Increase version as all segments have changed
-		this.version++;
+		version++;
 	}
 	
 	private void updateSize(int size) {
-		// increase version as all segments have changed
-		this.version++;
+		// Increase version as all segments have changed
+		version++;
 		if (segments != null)
 			segments.updateSize(size);
 		

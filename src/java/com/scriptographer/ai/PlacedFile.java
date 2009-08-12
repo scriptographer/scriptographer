@@ -45,8 +45,8 @@ import com.scratchdisk.util.NetUtils;
  */
 public class PlacedFile extends Item {
 
-	protected PlacedFile(int handle) {
-		super(handle);
+	protected PlacedFile(int handle, int docHandle) {
+		super(handle, docHandle);
 	}
 
 	private static native int nativeCreate(File file);

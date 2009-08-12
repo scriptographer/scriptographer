@@ -56,10 +56,12 @@ public abstract class TextItem extends Item {
 	TextRange range = null;
 	TextRange visibleRange = null;
 
-	protected TextItem(int handle, boolean created) {
+	protected TextItem(int handle, int docHandle) {
+		super(handle, docHandle);
+	}
+
+	protected TextItem(int handle) {
 		super(handle);
-		if (created)
-			document = Document.getWorkingDocument();
 	}
 
 	protected void commit(boolean invalidate) {

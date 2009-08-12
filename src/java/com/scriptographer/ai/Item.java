@@ -58,26 +58,52 @@ import com.scriptographer.ui.Image;
  */
 public class Item extends DocumentObject implements Style, ChangeListener {
 	
-	// the internal version. this is used for internally reflected data,
-	// such as segmentList, pathStyle, and so on. Every time an object gets
-	// modified, ScriptographerEngine.selectionChanged() gets fired that
-	// increases the version of all involved items.
-	// update-commit related code needs to check against this variable
+	/**
+	 * The internal version. this is used for internally reflected data, such as
+	 * segmentList, pathStyle, and so on. Every time an object gets modified,
+	 * ScriptographerEngine.selectionChanged() gets fired that increases the
+	 * version of all involved items. update-commit related code needs to check
+	 * against this variable
+	 */
 	protected int version = 0;
 	
-	// The handle for the dictionary that contains this item, if any
+	/**
+	 * The history level at the time of the creation of this item. This is used for
+	 * isValid checks. If historyLevel is below creationLevel, the item does not
+	 * exist anymore and is invalid (happens through undo's). Set to -1 if
+	 * creation level is unknown, for existing items that are wrapped, rather
+	 * than newly created.
+	 */
+	protected int creationLevel;
+
+	/**
+	 * Then history level of the last modification of this item. Refetching is
+	 * needed for any item for which the current historyLevel is between between
+	 * creationLevel and modificationLevel.
+	 */
+	protected int modificationLevel;
+
+	/**
+	 * The handle for the dictionary that contains this item, if any
+	 */
 	protected int dictionaryHandle = 0;
 
-	// The art item's dictionary
+	/**
+	 * The art item's dictionary
+	 */
 	private Dictionary data = null;
 
-	// Internal hash map that keeps track of already wrapped objects. defined
-	// as soft.
+	/**
+	 * Internal hash map that keeps track of already wrapped objects. defined
+	 * as soft.
+	 */
 	private static SoftIntMap<Item> items = new SoftIntMap<Item>();
 
 	private PathStyle style = null;
 
-	// For Document#currentStyleItem
+	/**
+	 * For Document#currentStyleItem
+	 */
 	protected final static int HANDLE_CURRENT_STYLE = -1;
 
 	// from AIArt.h
@@ -140,6 +166,34 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		TYPE_LAYER = 100,
 		TYPE_TRACING = 101;
 
+	private static native int nativeCreate(short type);
+	
+	/**
+	 * Creates a new AIArtHandle of the specified type and wraps it in a item
+	 * 
+	 * @param type Item.TYPE_
+	 */
+	protected Item(short type) {
+		// Create with false handle, to get document pointer and have time to
+		// activate with forCreation = true, to make sure currentStyle gets
+		// committed, etc.
+		super(0);
+		if (document == null)
+		    throw new ScriptographerException(
+		    		"Unable to create item. There is no open document.");
+		document.activate(false, true);
+		// Now set the handle
+		handle = nativeCreate(type);
+		// Set the history levels to the current level for this newly created
+		// item, so that isValid works right away. After the history
+		// transaction, these values are set one higher, since this items
+		// really belongs to the document.historyLevel + 1 cycle.
+		creationLevel = modificationLevel = document.historyLevel;
+		// Keep track of this object from now on, see wrapArtHandle
+		items.put(handle, this);
+		document.updateLevelItems.add(this);
+	}
+
 	/**
 	 * Creates an item that wraps an existing AIArtHandle. Make sure the
 	 * right constructor is used (Path, Raster). Use wrapArtHandle instead of
@@ -149,18 +203,31 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @param handle
 	 */
 	protected Item(int handle, Document document) {
-		super(handle, document); 
+		super(handle, document);
+		// Pass null (or docHandle == 0) for the working document
+		if (document == null)
+			document = Document.getWorkingDocument();
+		// This is an existing item of which the creation level is unknown.
+		// set levels to -1
+		creationLevel = -1;
+		// Use the current history level for the modification level, to force
+		// updates bellow this level, since we do not know when exactly
+		// the item was created or last modified.
+		modificationLevel = document.historyLevel;
 		// Keep track of this object from now on, see wrapArtHandle
 		items.put(handle, this);
+		// Since creationLevel for this item is not known, add it to
+		// the items to check on each undo.
+		document.checkValidItems.add(this);
+	}
+
+	protected Item(int handle, int docHandle) {
+		this(handle, Document.wrapHandle(docHandle));
 	}
 
 	protected Item(int handle) {
-		// We are setting document to null by default, since it will be
-		// set in wrapHandle.
 		this(handle, null);
 	}
-
-	private static native int nativeCreate(short type);
 
 	/**
 	 * Wraps an AIArtHandle of given type (determined by
@@ -184,49 +251,46 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		// Item_getType function in com_scriptographer_ai_Item.cpp!
 		if (item == null) {
 			switch (type) {
-				case TYPE_PATH:
-					item = new Path(artHandle);
+			case TYPE_PATH:
+				item = new Path(artHandle, docHandle);
+				break;
+			case TYPE_GROUP:
+				item = new Group(artHandle, docHandle);
+				break;
+			case TYPE_RASTER:
+				item = new Raster(artHandle, docHandle);
+				break;
+			case TYPE_PLACED:
+				item = new PlacedFile(artHandle, docHandle);
+				break;
+			case TYPE_LAYER:
+				item = new Layer(artHandle, docHandle);
+				break;
+			case TYPE_COMPOUNDPATH:
+				item = new CompoundPath(artHandle, docHandle);
+				break;
+			case TYPE_TEXTFRAME:
+				switch (textType) {
+				case TextItem.TEXTTYPE_POINT:
+					item = new PointText(artHandle, docHandle);
 					break;
-				case TYPE_GROUP:
-					item = new Group(artHandle);
+				case TextItem.TEXTTYPE_AREA:
+					item = new AreaText(artHandle, docHandle);
 					break;
-				case TYPE_RASTER:
-					item = new Raster(artHandle);
+				case TextItem.TEXTTYPE_PATH:
+					item = new PathText(artHandle, docHandle);
 					break;
-				case TYPE_PLACED:
-					item = new PlacedFile(artHandle);
-					break;
-				case TYPE_LAYER:
-					item = new Layer(artHandle);
-					break;
-				case TYPE_COMPOUNDPATH:
-					item = new CompoundPath(artHandle);
-					break;
-				case TYPE_TEXTFRAME:
-					switch (textType) {
-						case TextItem.TEXTTYPE_POINT:
-							item = new PointText(artHandle);
-							break;
-						case TextItem.TEXTTYPE_AREA:
-							item = new AreaText(artHandle);
-							break;
-						case TextItem.TEXTTYPE_PATH:
-							item = new PathText(artHandle);
-							break;
-					}
-					break;
-				case TYPE_TRACING:
-					item = new Tracing(artHandle);
-					break;
-				case TYPE_SYMBOL:
-					item = new PlacedSymbol(artHandle);
+				}
+				break;
+			case TYPE_TRACING:
+				item = new Tracing(artHandle, docHandle);
+				break;
+			case TYPE_SYMBOL:
+				item = new PlacedSymbol(artHandle, docHandle);
 			}
 		}
 		if (item != null) {
 			item.dictionaryHandle = dictionaryHandle;
-			item.document = Document.wrapHandle(docHandle);
-			if (item.millis == 0)
-				item.millis = System.currentTimeMillis();
 		}
 		return item;
 	}
@@ -245,46 +309,49 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * Increases the version of the items associated with artHandles, if
 	 * there are any. It does not wrap the artHandles if they weren't already.
 	 * 
-	 * @param artHandles
+	 * Called from the native environment.
 	 */
 	protected static void updateIfWrapped(int[] artHandles) {
-		// reuse one object for lookups, instead of creating a new one
+		// Reuse item objects for lookups, instead of creating a new one
 		// for every artHandle
 		for (int i = 0; i < artHandles.length; i+=2) {
-			// artHandles contains two entries for every object:
-			// the current handle, and the initial handle that was stored
+			// artHandles contains two entries for every item:
+			// The current handle, and the initial handle that was stored
 			// in the item's dictionary when it was wrapped. 
-			// see the native side for more explanations
+			// See the native side for more explanations
 			// (ScriptographerEngine::wrapArtHandle,
-			// ScriptographerEngine::selectionChanged)
+			// ScriptographerEngine::onSelectionChanged)
 			int curHandle = artHandles[i];
 			int prevHandle = artHandles[i + 1];
 			Item item = null;
-			if (prevHandle != 0) {
-				// in case there was already an item with the initial handle
-				// before, update it now:
-				item = (Item) items.get(prevHandle);
+			// Only change the handle if it has changed.
+			// Items where the handle has not changed are also included,
+			// since their version numbers needs to increase.
+			if (prevHandle != 0 && prevHandle != curHandle) {
+				// In case there was already an item with the initial handle
+				// before, change its handle now:
+				item = items.get(prevHandle);
 				if (item != null) {
-					// remove the old reference
+					// Remove the old reference
 					items.remove(prevHandle);
-					// update object
+					// Update object
 					item.handle = curHandle;
-					// and store the new reference
+					// And store the new reference
 					items.put(curHandle, item);
 				}
-			}
-			if (item == null) {
-				item = (Item) items.get(curHandle);
+			} else {
+				item = items.get(curHandle);
 			}
 			// now update it if it was found
-			if (item != null) {
+			if (item != null)
 				item.version++;
-			}
 		}
-		CommitManager.version++;
 	}
 	
-	protected void changeHandle(int newHandle, int docHandle, int newDictionaryHandle) {
+	protected static native boolean[] checkValid(int[] handles);
+
+	protected void changeHandle(int newHandle, int docHandle,
+			int newDictionaryHandle) {
 		// Remove the object at the old handle
 		if (handle != newHandle) {
 			items.remove(handle);
@@ -301,6 +368,13 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	}
 
 	/**
+	 * Call to update the item's modification level
+	 */
+	protected void setModified() {
+		modificationLevel = document.historyLevel + 1;
+	}
+
+	/**
 	 * Called by native methods that need all cached changes to be
 	 * committed before the objects are modified. The version is then
 	 * increased to invalidate the cached values, as they were just 
@@ -313,6 +387,23 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 			version++;
 	}
 
+	/**
+	 * Checks a cached version number against the internal version and decides
+	 * if the cached data needs an update. Also takes history levels into
+	 * account.
+	 */
+	protected boolean needsUpdate(int version) {
+		return version != this.version || document.historyLevel < modificationLevel;
+	}
+
+	/**
+	 * Returns true if this item needs an update regardless of the cached
+	 * version, due to history changes.
+	 */
+	protected boolean needsUpdate() {
+		return this.needsUpdate(version);
+	}
+
 	private static native boolean nativeRemove(int handle, int docHandle,
 			int dictionaryHandle);
 
@@ -323,13 +414,13 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @return {@true if the item was removed}
 	 */
 	public boolean remove() {
-		boolean ret = false;
-		if (handle != 0) {
-			ret = nativeRemove(handle, document.handle, dictionaryHandle);
+		if (handle != 0
+				&& nativeRemove(handle, document.handle, dictionaryHandle)) {
 			items.remove(handle);
-			handle = 0;			
+			handle = 0;
+			return true;
 		}
-		return ret;
+		return false;
 	}
 	
 	/**
@@ -347,25 +438,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 			removed = true;
 		}
 		return removed;
-	}
-	
-	/**
-	 * Creates a new AIArtHandle of the specified type and wraps it in a item
-	 * 
-	 * @param type Item.TYPE_
-	 */
-	protected Item(short type) {
-		// Create with false handle, to get document pointer and have time to
-		// activate with forCreation = true, to make sure currentStyle gets
-		// committed, etc.
-		super(0);
-		if (document == null)
-		    throw new ScriptographerException("Unable to create item. There is no document.");
-		document.activate(false, true);
-		// Now set the handle
-		handle = nativeCreate(type);
-		// Keep track of this object from now on, see wrapArtHandle
-		items.put(handle, this);
 	}
 
 	protected native void finalize();
@@ -525,8 +597,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 
 	/**
 	 * Specifies whether the item is fully selected. For paths this means that
-	 * all segments are selected, for container items (groups/layers) all children are
-	 * selected.
+	 * all segments are selected, for container items (groups/layers) all
+	 * children are selected.
 	 * 
 	 * @return {@true if the item is fully selected}
 	 */
@@ -1065,8 +1137,9 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 				ExpandFlag.SYMBOL_INSTANCES));
 
 	/**
-	 * Calls {@link #expand(int, int)} with these flags set: ExpandFlag#PLUGIN_ART,
-	 * ExpandFlag#TEXT, ExpandFlag#STROKE, ExpandFlag#PATTERN, ExpandFlag#SYMBOL_INSTANCES
+	 * Calls {@link #expand(int, int)} with these flags set:
+	 * ExpandFlag#PLUGIN_ART, ExpandFlag#TEXT, ExpandFlag#STROKE,
+	 * ExpandFlag#PATTERN, ExpandFlag#SYMBOL_INSTANCES
 	 * 
 	 * @return the newly created item containing the expanded artwork
 	 */
@@ -1076,6 +1149,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 
 	private native Raster nativeRasterize(int type, float resolution,
 			int antialiasing, float width, float height);
+
 	/**
 	 * Rasterizes the item into a newly created Raster object. The item itself
 	 * is not removed after rasterization.
@@ -1108,8 +1182,9 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	public Raster rasterize() {
 		return rasterize(null, 72, 4, -1, -1);
 	}
-	private static native Raster nativeRasterize(Item[] items, int type, float resolution,
-			int antialiasing, float width, float height);
+
+	private static native Raster nativeRasterize(Item[] items, int type,
+			float resolution, int antialiasing, float width, float height);
 
 	/**
 	 * Rasterizes the passed items into a newly created Raster object. The items
@@ -1122,13 +1197,14 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @param height {@default automatic}
 	 * @return the newly created Raster item
 	 */
-	public static Raster rasterize(Item[] items, ColorType type, float resolution, int antialiasing,
-			float width, float height) {
-		return nativeRasterize(items, type != null ? type.value : -1, resolution,
-				antialiasing, width, height);
+	public static Raster rasterize(Item[] items, ColorType type,
+			float resolution, int antialiasing, float width, float height) {
+		return nativeRasterize(items, type != null ? type.value : -1,
+				resolution, antialiasing, width, height);
 	}
 
-	public static Raster rasterize(Item[] items, ColorType type, float resolution, int antialiasing) {
+	public static Raster rasterize(Item[] items, ColorType type,
+			float resolution, int antialiasing) {
 		return rasterize(items, type, resolution, antialiasing, -1, -1);
 	}
 	
@@ -1164,8 +1240,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * Checks if the name of the item as it appears in the layers palette is a
 	 * default descriptive name, rather then a user-assigned name.
 	 * 
-	 * Sample code:
-	 * <code>
+	 * Sample code: <code>
 	 * var path = new Path();
 	 * print(path.name); // <Path>
 	 * print(path.isDefaultName()); // true
@@ -1181,15 +1256,15 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	/**
 	 * Checks whether the item is editable.
 	 * 
-	 * Returns {@true when neither the item, nor it's parents are locked or hidden}
+	 * Returns {@true when neither the item, nor it's parents are locked or
+	 * hidden}
 	 */
 	public native boolean isEditable();
 	
 	/**
 	 * Checks whether the item is valid, i.e. it hasn't been removed.
 	 * 
-	 * Sample code:
-	 * <code>
+	 * Sample code: <code>
 	 * var path = new Path();
 	 * print(path.isValid()); // true
 	 * path.remove();
@@ -1198,17 +1273,18 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * 
 	 * @return {@true if the item is valid}
 	 */
-	public native boolean isValid();
-	
+	public boolean isValid() {
+		return handle != 0 && document.historyLevel >= creationLevel;
+	}
+
 	/**
 	 * {@grouptitle Hierarchy Operations}
 	 * 
 	 * Inserts the specified item as a child of the item by appending it to the
-	 * list of children and moving it above all other children.
-	 * You can use this function for groups, compound paths and layers.
+	 * list of children and moving it above all other children. You can use this
+	 * function for groups, compound paths and layers.
 	 * 
-	 * Sample code:
-	 * <code>
+	 * Sample code: <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendTop(path);
@@ -1221,11 +1297,10 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 
 	/**
 	 * Inserts the specified item as a child of this item by appending it to the
-	 * list of children and moving it below all other children.
-	 * You can use this function for groups, compound paths and layers.
+	 * list of children and moving it below all other children. You can use this
+	 * function for groups, compound paths and layers.
 	 * 
-	 * Sample code:
-	 * <code>
+	 * Sample code: <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendTop(path);
@@ -1244,12 +1319,11 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	public boolean appendChild(Item item) {
 		return appendTop(item);
 	}
-	
+
 	/**
 	 * Moves this item above the specified item.
 	 * 
-	 * Sample code:
-	 * <code>
+	 * Sample code: <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(firstPath.isAbove(secondPath)); // false
@@ -1261,12 +1335,11 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @return true if it was moved, false otherwise
 	 */
 	public native boolean moveAbove(Item item);
-	
+
 	/**
 	 * Moves the item below the specified item.
 	 * 
-	 * Sample code:
-	 * <code>
+	 * Sample code: <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(secondPath.isBelow(firstPath)); // false
@@ -1282,11 +1355,10 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	/**
 	 * {@grouptitle Hierarchy Tests}
 	 * 
-	 * Checks if this item is above the specified item in the stacking
-	 * order of the document.
+	 * Checks if this item is above the specified item in the stacking order of
+	 * the document.
 	 * 
-	 * Sample code:
-	 * <code>
+	 * Sample code: <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(secondPath.isAbove(firstPath)); // true
@@ -1296,13 +1368,12 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @return {@true if it is above the specified item}
 	 */
 	public native boolean isAbove(Item item);
-	
+
 	/**
-	 * Checks if the item is below the specified item in the stacking
-	 * order of the document.
+	 * Checks if the item is below the specified item in the stacking order of
+	 * the document.
 	 * 
-	 * Sample code:
-	 * <code>
+	 * Sample code: <code>
 	 * var firstPath = new Path();
 	 * var secondPath = new Path();
 	 * print(firstPath.isBelow(secondPath)); // true
@@ -1324,14 +1395,13 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	/**
 	 * Checks if the item is contained within the specified item.
 	 * 
-	 * Sample code:
-	 * <code>
+	 * Sample code: <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendTop(path);
 	 * print(path.isDescendant(group)); // true
 	 * </code>
-	 *
+	 * 
 	 * @param item The item to check against
 	 * @return {@true if it is inside the specified item}
 	 */
@@ -1340,8 +1410,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	/**
 	 * Checks if the item is an ancestor of the specified item.
 	 * 
-	 * Sample code:
-	 * <code>
+	 * Sample code: <code>
 	 * var group = new Group();
 	 * var path = new Path();
 	 * group.appendChild(path);
@@ -1356,6 +1425,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 
 	/**
 	 * Checks whether the item is grouped with the specified item.
+	 * 
 	 * @param item
 	 * @return {@true if the items are grouped together}
 	 */
@@ -1363,7 +1433,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		Item parent = getParent();
 		while (parent != null) {
 			// Find group parents
-			if ((parent instanceof Group || parent instanceof CompoundPath) 
+			if ((parent instanceof Group || parent instanceof CompoundPath)
 					&& item.isDescendant(parent))
 				return true;
 			// Keep walking up otherwise
@@ -1415,8 +1485,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	}
 	
 	/**
- 	 * {@grouptitle Transform Functions}
- 	 * 
+	 * {@grouptitle Transform Functions}
+	 * 
 	 * Scales the item by the given values from its center point.
 	 * 
 	 * @param sx
@@ -1495,17 +1565,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	{"isClipping",		artIsClipping,			0},
 	*/
 	
-	private long millis = 0;
-	
-	/**
-	 * This is only there for hunting one of the dreaded bugs.
-	 * 
-	 * @jshide
-	 */
-	public long getMillis() {
-		return millis;
-	}
-
 	/**
 	 * @jshide
 	 */

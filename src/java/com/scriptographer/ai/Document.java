@@ -36,6 +36,7 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
@@ -67,6 +68,31 @@ public class Document extends NativeObject implements ChangeListener {
 	private ArtboardList artboards = null;
 	private Dictionary data = null;
 	private Item currentStyleItem = null;
+
+	/**
+	 * The current level in the undo history.
+	 */
+	private int undoLevel = -1;
+
+	/**
+	 * The "future" of the undo history, in case the user went back through undos.
+	 */
+	private int redoLevel = -1;
+
+	protected int historyLevel = -1;
+	
+	protected int maxLevelBase = 0;
+	protected int levelBase = 0;
+	protected Stack<Integer> levelBaseHistory = new Stack<Integer>();
+	
+	/**
+	 * Internal list that keeps track of wrapped objects that have no clear
+	 * creation level. These need to be checked if they are valid in each undo.
+	 * 
+	 * TODO: use a SoftReference ArrayList!
+	 */
+	protected ArrayList<Item> checkValidItems = new ArrayList<Item>();
+	protected ArrayList<Item> updateLevelItems = new ArrayList<Item>();
 
 	/**
 	 * Opens an existing document.
@@ -191,14 +217,89 @@ public class Document extends NativeObject implements ChangeListener {
 	}
 
 	/**
-	 * Called before ai functions are executed
+	 * Called from the native environment.
+	 */
+	protected static void onSelectionChanged(int docHandle, int[] artHandles, int undoLevel, int redoLevel) {
+		if (artHandles != null)
+			Item.updateIfWrapped(artHandles);
+		CommitManager.version++;
+		Document document = wrapHandle(docHandle);
+		if (document != null)
+			document.setHistoryLevels(undoLevel, redoLevel);
+	}
+
+	private static native void nativeBeginExecution(int[] values);
+
+	/**
+	 * Called before AI functions are executed.
+	 * 
+	 * @return The current undo level
 	 * 
 	 * @jshide
 	 */
-	public static native void beginExecution();
-	
+	public static void beginExecution() {
+		int[] values = new int[3]; // docHandle, undoLevel, redoLevel
+		nativeBeginExecution(values);
+		Document document = wrapHandle(values[0]);
+		if (document != null) {
+			document.setHistoryLevels(values[1], values[2]);
+		}
+	}
+
+	private void setHistoryLevels(int undoLevel, int redoLevel) {
+		if (undoLevel != this.undoLevel || redoLevel != this.redoLevel) {
+			if (undoLevel > this.undoLevel) {
+				// A new undo transaction cycle was completed.
+				// Scan through newly created items and update levels
+				for (Item item : updateLevelItems)
+					item.creationLevel = item.modificationLevel = undoLevel;
+				updateLevelItems.clear();
+				if (this.redoLevel > redoLevel) {
+					// A previous branch was wiped, time to change level base
+					levelBase = ++maxLevelBase;
+				}
+				levelBaseHistory.push(levelBase);
+			} else if (undoLevel < this.undoLevel) {
+				// Undo was executed. Go back to previous level base:
+				levelBase = levelBaseHistory.pop();
+				// Scan through all the wrappers without an defined
+				// creationLevel and set it to the current undoLevel if they are
+				// not valid at this point anymore. This will tell getArtHandle
+				// to ignore it at this level and throw a IgnoreException.
+				int[] handles = new int[checkValidItems.size()];
+				// Check all these handles in one go, for increased performance
+				for (int i = 0, l = handles.length; i < l; i++)
+					handles[i] = checkValidItems.get(i).handle;
+				boolean[] valid = Item.checkValid(handles);
+				// Update creationLevel so that it is not valid anymore
+				// at this cycle.
+				// Create historyLevel in the same way as below!
+				int level = (levelBase << 16) | (undoLevel + 1);
+				for (int i = valid.length - 1; i >= 0; i--) {
+					if (!valid[i]) {
+						checkValidItems.get(i).creationLevel = level;
+						// Remove it from the list
+						checkValidItems.remove(i);
+					}
+				}
+			} else {
+				System.out.println("WEIRD UNDO CASE: "
+						+ undoLevel + ", " + redoLevel +  "; "
+						+ this.undoLevel + ", " + this.redoLevel +  "; ");
+			}
+			if (undoLevel != levelBaseHistory.size() - 1)
+				System.out.println(
+						"ASSERTION FAILED: undoLevel != levelBaseHistory.size() - 1: "
+						+ undoLevel + ", " + (levelBaseHistory.size() - 1));
+			this.undoLevel = undoLevel;
+			this.redoLevel = redoLevel;
+			this.historyLevel = (levelBase << 16) | undoLevel;
+			System.out.println("LEVELS: " + undoLevel + " " + redoLevel + " " + historyLevel);
+		}
+	}
+
 	/**
-	 * Called after ai functions are executed
+	 * Called after AI functions are executed
 	 * 
 	 * @jshide
 	 */

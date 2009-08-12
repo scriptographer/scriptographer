@@ -170,12 +170,12 @@ public class Curve implements ChangeListener {
 
 			if (segment1 == null || segment1.index != index1 ||
 					segments != segment1.segments || segments.path != null &&
-					segments.path.version != segment1.version)
+					segments.path.needsUpdate(segment1.version))
 				segment1 = (Segment) segments.get(index1);
 
 			if (segment2 == null || segment2.index != index2 ||
 					segments != segment2.segments || segments.path != null &&
-					segments.path.version != segment2.version)
+					segments.path.needsUpdate(segment2.version))
 				segment2 = (Segment) segments.get(index2);
 		}
 	}

@@ -40,6 +40,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.prefs.Preferences;
 
+import com.scratchdisk.script.Callable;
+import com.scratchdisk.script.Scope;
+import com.scratchdisk.script.ScriptCanceledException;
+import com.scratchdisk.script.ScriptEngine;
+import com.scratchdisk.script.ScriptException;
+import com.scratchdisk.util.ClassUtils;
+import com.scratchdisk.util.StringUtils;
 import com.scriptographer.ai.Annotator;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.LiveEffect;
@@ -47,13 +54,6 @@ import com.scriptographer.sg.Script;
 import com.scriptographer.sg.Timer;
 import com.scriptographer.ui.Dialog;
 import com.scriptographer.ui.MenuItem;
-import com.scratchdisk.script.ScriptCanceledException;
-import com.scratchdisk.script.ScriptEngine;
-import com.scratchdisk.script.ScriptException;
-import com.scratchdisk.script.Callable;
-import com.scratchdisk.script.Scope;
-import com.scratchdisk.util.ClassUtils;
-import com.scratchdisk.util.StringUtils;
 
 /**
  * @author lehni
@@ -139,7 +139,8 @@ public class ScriptographerEngine {
 	}
 
 	public static void setScriptDirectory(File dir) {
-		// The core gui calls setScriptDirectory each time it runs, so collect init scripts here
+		// The core gui calls setScriptDirectory each time it runs, so collect
+		// init scripts here
 		scriptDir = dir;
 		// Collect all __init__ scripts in the Script folder:
 		if (scriptDir != null)
@@ -186,7 +187,8 @@ public class ScriptographerEngine {
 			File logDir = new File(pluginDir, "log");
 			if (!logDir.exists())
 				logDir.mkdir();
-			return new PrintStream(new FileOutputStream(new File(logDir, name)), true);
+			return new PrintStream(
+					new FileOutputStream(new File(logDir, name)), true);
 		} catch (Exception e) {
 			// Not allowed to make this log directory or file, so don't log...
 		}
@@ -237,9 +239,10 @@ public class ScriptographerEngine {
 						+ System.getProperty("file.separator"), "");
 			// Add a line break at the end if the error does
 			// not contain one already.
+			// TODO: find out why this regular expression does not work and make
+			// it work instead:
+			// if (!Pattern.compile("(?:\\n\\r|\\n|\\r)$").matcher(error).matches())
 			if (!error.endsWith(System.getProperty("line.separator")))
-			// TODO: find out why this regular expression does not work and make it work instead:
-//			if (!Pattern.compile("(?:\\n\\r|\\n|\\r)$").matcher(error).matches())
 				error +=  System.getProperty("line.separator");
 			System.err.print(error);
 			logError(t);
@@ -277,10 +280,14 @@ public class ScriptographerEngine {
 	 * To be called before AI functions are executed
 	 */
 	private static boolean beginExecution(File file, Scope scope) {
-		// Since the interface is done in scripts too, we need to cheat
-		// a bit here. When file is set, we ignore the current state
-		// of "executing", as we're about to to execute a new script...
+		// Since the interface is done in scripts too and we receive being /
+		// endExecution events for all UI notifications as well, we need to
+		// cheat a bit here.
+		// When file is set, we ignore the current state of "executing",
+		// as we're about to to execute a new script...
 		if (!executing || file != null) {
+			// Only call Document.beginExecution if it has not already
+			// been called through the UI notification callback.
 			if (!executing)
 				Document.beginExecution();
 			// Disable output to the console while the script is
@@ -299,8 +306,10 @@ public class ScriptographerEngine {
 					scope.put("script", script, true);
 				}
 			}
-			if (file == null || script.getShowProgress() && !file.getName().startsWith("__"))
-				showProgress(file != null ? "Executing " + file.getName() + "..." : "Executing...");
+			if (file == null || script.getShowProgress()
+					&& !file.getName().startsWith("__"))
+				showProgress(file != null ? "Executing " + file.getName()
+						+ "..." : "Executing...");
 			return true;
 		}
 		return false;
@@ -387,8 +396,8 @@ public class ScriptographerEngine {
 	 * @throws ScriptException
 	 * @throws IOException
 	 */
-	public static Object execute(com.scratchdisk.script.Script script, File file, Scope scope)
-			throws ScriptException, IOException {
+	public static Object execute(com.scratchdisk.script.Script script,
+			File file, Scope scope) throws ScriptException, IOException {
 		boolean started = false;
 		Object ret = null;
 		Throwable throwable = null;
@@ -439,11 +448,12 @@ public class ScriptographerEngine {
 	}
 
 	/**
-	 * Executes all scripts named __init__.* in the given folder and collects the resulting scopes for callback
-	 *
+	 * Executes all scripts named __init__.* in the given folder and collects
+	 * the resulting scopes for callback
+	 * 
 	 * @param dir
-	 * @throws IOException 
-	 * @throws ScriptException 
+	 * @throws IOException
+	 * @throws ScriptException
 	 */
 	public static void collectInitScripts(File dir, ArrayList<Scope> scopes) {
 		File []files = dir.listFiles();
@@ -456,10 +466,13 @@ public class ScriptographerEngine {
 					collectInitScripts(file, scopes);
 				} else if (name.startsWith("__init__")) {
 					try {
-						ScriptEngine engine = ScriptEngine.getEngineByFile(file);
+						ScriptEngine engine =
+								ScriptEngine.getEngineByFile(file);
 						if (engine == null)
-							throw new ScriptException("Unable to find script engine for " + file);
-						// Execute in the tool's scope so setIdleEventInterval can be called
+							throw new ScriptException(
+									"Unable to find script engine for " + file);
+						// Execute in the tool's scope so setIdleEventInterval
+						// can be called
 						Scope scope = engine.createScope();
 						execute(file, scope);
 						scopes.add(scope);
@@ -527,7 +540,8 @@ public class ScriptographerEngine {
 		nativeSetProgressText(text);
 	}
 	
-	private static native boolean nativeUpdateProgress(long current, long max, boolean visible);
+	private static native boolean nativeUpdateProgress(long current, long max,
+			boolean visible);
 
 	public static  boolean updateProgress(long current, long max) {
 		if (progressVisible) {
@@ -541,7 +555,9 @@ public class ScriptographerEngine {
 
 	public static boolean updateProgress() {
 		if (isMainThreadActive()) {
-			boolean ret = nativeUpdateProgress(progressCurrent, progressMax, progressVisible);
+			boolean ret =
+					nativeUpdateProgress(progressCurrent, progressMax,
+							progressVisible);
 			if (progressVisible && progressAutomatic) {
 				progressCurrent++;
 				progressMax++;
@@ -620,7 +636,8 @@ public class ScriptographerEngine {
 	}
 
 	private static void readVersion() {
-		String[] lines = ClassUtils.getServiceInformation(ScriptographerEngine.class);
+		String[] lines = ClassUtils.getServiceInformation(
+				ScriptographerEngine.class);
 		if (lines != null) {
 			version = lines[0];
 			revision = Integer.parseInt(lines[1]);

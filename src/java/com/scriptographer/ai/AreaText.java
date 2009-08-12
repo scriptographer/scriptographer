@@ -42,8 +42,8 @@ package com.scriptographer.ai;
  */
 public class AreaText extends TextItem {
 
-	protected AreaText(int handle) {
-		super(handle, false);
+	protected AreaText(int handle, int docHandle) {
+		super(handle, docHandle);
 	}
 	
 	native private static int nativeCreate(int orientation, int artHandle);
@@ -74,7 +74,7 @@ public class AreaText extends TextItem {
 	public AreaText(Path area, TextOrientation orientation) {
 		super(nativeCreate(orientation != null
 				? orientation.value : TextOrientation.HORIZONTAL.value,
-				area != null ? area.handle : 0), true);
+				area != null ? area.handle : 0));
 	}
 
 	public AreaText(Path area) {
@@ -106,7 +106,7 @@ public class AreaText extends TextItem {
 				? orientation.value 
 				: TextOrientation.HORIZONTAL.value,
 				Document.getWorkingDocument().createRectangle(
-						rect).handle), true);
+						rect).handle));
 	}
 
 	public AreaText(Rectangle rect) {

@@ -206,7 +206,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	
 	protected void update() {
 		// Only update if it didn't change in the meantime:
-		if (item != null && (!fetched || (!dirty && version != item.version)))
+		if (item != null && (!fetched || (!dirty && item.needsUpdate(version))))
 			fetch();
 	}
 
@@ -304,9 +304,10 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	}
 
 	public void commit() {
-		if (dirty && item != null) {
+		if (dirty && item != null && item.isValid()) {
 			commit(item.handle, item.document.handle);
 			version = item.version;
+			item.setModified();
 			dirty = false;
 		}
 	}

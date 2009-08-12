@@ -54,9 +54,9 @@ ASBoolean Pathfinder_begin(JNIEnv *env, jobjectArray artObjects, jfloat precisio
 			AIArtHandle art = gEngine->getArtHandle(env, obj, first);
 #if kPluginInterfaceVersion < kAI12
 			if (sAIArt->ValidArt(art))
-#else
+#else // kPluginInterfaceVersion >= kAI12
 			if (sAIArt->ValidArt(art, false))
-#endif
+#endif // kPluginInterfaceVersion >= kAI12
 				handles[count++] = art;
 			first = false;
 		}

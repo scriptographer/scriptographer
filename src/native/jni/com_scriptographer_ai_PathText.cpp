@@ -73,7 +73,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_PathText_nativeCreate__IIFF(JN
  */
 JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_ai_PathText_getPathRange(JNIEnv *env, jobject obj) {
 	try {
-	    AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		AIReal start, end;
 		if (!sAITextFrame->GetOnPathTextTRange(art, &start, &end)) {
 			// create a float array with these values:
@@ -94,7 +94,7 @@ JNIEXPORT jfloatArray JNICALL Java_com_scriptographer_ai_PathText_getPathRange(J
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathText_setPathRange(JNIEnv *env, jobject obj, jfloat start, jfloat end) {
 	try {
 		// suspend reflow by passing true here
-	    AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		sAITextFrame->SetOnPathTextTRange(art, start, end);
 	} EXCEPTION_CONVERT(env);
 }
