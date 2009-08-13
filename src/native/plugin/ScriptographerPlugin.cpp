@@ -206,7 +206,7 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Redo", "AI Command Notifier: After Redo", &m_afterRedoNotifier));
 
 	// Add after revert menu notifier
-	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Revert", "AI Command Notifier: After Revert", &m_afterRevertNotifier));
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Revert", "AI Command Notifier: After Revert To Saved", &m_afterRevertNotifier));
 
 	// Add after clear menu notifier
 	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Before Clear", "AI Command Notifier: Before Clear", &m_beforeClearNotifier));

@@ -77,13 +77,13 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * These version values include both branch and level information.
 	 * See Document.
 	 */
-	public long creationVersion;
+	protected long creationVersion;
 
 	/**
 	 * The history version at which this item was removed. Set to an invalid value
 	 * as long as it is not removed. This is used in isValid checks.
 	 */
-	public long deletionVersion = Long.MAX_VALUE;
+	protected long deletionVersion = Long.MAX_VALUE;
 
 	/**
 	 * Then history version of the last modification of this item. Refetching is
@@ -92,7 +92,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * These version values include both branch and level information.
 	 * See Document.
 	 */
-	public long modificationVersion;
+	protected long modificationVersion;
 
 	/**
 	 * The handle for the dictionary that contains this item, if any
@@ -215,11 +215,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * 
 	 * @param handle
 	 */
-	protected Item(int handle, Document document) {
-		super(handle, document);
-		// Pass null (or docHandle == 0) for the working document
-		if (document == null)
-			document = Document.getWorkingDocument();
+	protected Item(int handle, Document doc) {
+		super(handle, doc);
 		// This is an existing item of which the creation level is unknown.
 		// set levels to -1
 		creationVersion = -1;

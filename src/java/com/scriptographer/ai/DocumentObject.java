@@ -47,7 +47,10 @@ public class DocumentObject extends NativeObject {
 	 */
 	protected DocumentObject(int handle, Document document) {
 		super(handle);
-		this.document = document;
+		// Pass null (or docHandle == 0) for the working document
+		this.document = document == null
+				? Document.getWorkingDocument()
+				: document;
 	}
 
 	/**

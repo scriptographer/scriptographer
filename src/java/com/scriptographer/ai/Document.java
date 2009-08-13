@@ -72,16 +72,16 @@ public class Document extends NativeObject implements ChangeListener {
 	/**
 	 * The current level in the undo history.
 	 */
-	private int undoLevel = -1;
+	private int undoLevel;
 
 	/**
 	 * The "future" of the undo history, in case the user went back through undos.
 	 */
-	private int redoLevel = -1;
+	private int redoLevel;
 
-	protected long historyVersion = -1;
+	protected long historyVersion;
 
-	private int maxHistoryBranch = -1;
+	private int maxHistoryBranch;
 
 	protected HashMap<Long, HistoryBranch> history;
 
@@ -214,6 +214,10 @@ public class Document extends NativeObject implements ChangeListener {
 	}
 
 	private void resetHistory() {
+		undoLevel = -1;
+		redoLevel = -1;
+		historyVersion = 0;
+		maxHistoryBranch = -1;
 		historyBranch = new HistoryBranch(null);
 		history = new HashMap<Long, HistoryBranch>();
 		history.put(historyBranch.branch, historyBranch);
@@ -270,6 +274,7 @@ public class Document extends NativeObject implements ChangeListener {
 			this.redoLevel = redoLevel;
 			// Update the current historyEntry level to the current level
 			historyBranch.level = undoLevel;
+			if (false)
 			System.out.println("undoLevel = " + undoLevel + ", redoLevel = "
 					+ redoLevel + ", version = " + historyBranch.branch
 					+ ", previous = " + (historyBranch.previous != null 
@@ -315,6 +320,8 @@ public class Document extends NativeObject implements ChangeListener {
 	}
 
 	protected void onRevert() {
+		if (false)
+		System.out.println("Revert");
 		resetHistory();
 	}
 
@@ -324,12 +331,13 @@ public class Document extends NativeObject implements ChangeListener {
 	protected void onSelectionChanged(int[] artHandles, int undoLevel, int redoLevel) {
 		if (artHandles != null)
 			Item.updateIfWrapped(artHandles);
-		// TODO: Make CommitManager.version document dependent?
+		// TODO: Look into making CommitManager.version document dependent?
 		CommitManager.version++;
 		setHistoryLevels(undoLevel, redoLevel, true);
 	}
 
 	protected void onUndo(int undoLevel, int redoLevel) {
+		if (false)
 		System.out.println("Undo");
 		// Check if we were going back to a previous branch, and if so, switch
 		// back.
@@ -361,6 +369,7 @@ public class Document extends NativeObject implements ChangeListener {
 	}
 
 	protected void onRedo(int undoLevel, int redoLevel) {
+		if (false)
 		System.out.println("Redo");
 		// Check if we were going forward to a "future" branch, and if so,
 		// switch again.
@@ -371,8 +380,10 @@ public class Document extends NativeObject implements ChangeListener {
 	}
 
 	protected void onClear(int[] artHandles) {
+		if (false)
 		System.out.println("Clear");
-		Item.removeIfWrapped(artHandles, false);
+		if (artHandles != null)
+			Item.removeIfWrapped(artHandles, false);
 	}
 
 	private static native void nativeBeginExecution(int[] values);

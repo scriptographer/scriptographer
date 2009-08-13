@@ -1736,10 +1736,16 @@ ASErr ScriptographerEngine::onRevert() {
 	JNIEnv *env = getEnv();
 	try {
 		ASErr error;
-		AIDocumentHandle doc;
-		RETURN_ERROR(sAIDocument->GetDocument(&doc));
-		jobject document = gEngine->wrapDocumentHandle(env, doc);
-		callVoidMethod(env, document, mid_ai_Document_onRevert);
+		// Filter out canceling the revert command by detecting still
+		// modified document
+		ASBoolean modified;
+		RETURN_ERROR(sAIDocument->GetDocumentModified(&modified));
+		if (!modified) {
+			AIDocumentHandle doc;
+			RETURN_ERROR(sAIDocument->GetDocument(&doc));
+			jobject document = gEngine->wrapDocumentHandle(env, doc);
+			callVoidMethod(env, document, mid_ai_Document_onRevert);
+		}
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
