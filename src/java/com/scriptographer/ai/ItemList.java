@@ -33,7 +33,7 @@ package com.scriptographer.ai;
 
 import java.util.HashMap;
 
-import com.scratchdisk.list.ArrayList;
+import com.scratchdisk.list.ExtendedArrayList;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.list.ReadOnlyStringIndexList;
@@ -43,7 +43,7 @@ import com.scratchdisk.list.ReadOnlyStringIndexList;
  * 
  * @jshide
  */
-public class ItemList extends ArrayList<Item> implements ReadOnlyStringIndexList<Item> {
+public class ItemList extends ExtendedArrayList<Item> implements ReadOnlyStringIndexList<Item> {
 	HashMap<Item, Item> map;
 
 	public ItemList() {

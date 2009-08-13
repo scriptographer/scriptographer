@@ -155,14 +155,19 @@ public:
 
 	jclass cls_ai_DocumentObject;
 	jfieldID fid_ai_DocumentObject_document;
+
+	jclass cls_ai_Document;
+	jmethodID mid_ai_Document_wrapHandle;
+	jmethodID mid_ai_Document_onClosed;
+	jmethodID mid_ai_Document_onSelectionChanged;
+	jmethodID mid_ai_Document_onUndo;
+	jmethodID mid_ai_Document_onRedo;
+	jmethodID mid_ai_Document_onClear;
+	jmethodID mid_ai_Document_onRevert;
 	
 	jclass cls_ai_Dictionary;
 	jfieldID fid_ai_Dictionary_handle;
 	jmethodID mid_ai_Dictionary_wrapHandle;
-
-	jclass cls_ai_Document;
-	jmethodID mid_ai_Document_removeHandle;
-	jmethodID mid_ai_Document_onSelectionChanged;
 	
 	jclass cls_ai_Tool;
 	jmethodID cid_ai_Tool;
@@ -582,6 +587,7 @@ public:
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer, AIDocumentHandle doc = NULL);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
 	
+	jobject wrapDocumentHandle(JNIEnv *env, AIDocumentHandle doc);
 	jobject wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc = NULL);
 
 	void commit(JNIEnv *env);
@@ -589,6 +595,10 @@ public:
 	
 	ASErr onSelectionChanged();
 	ASErr onDocumentClosed(AIDocumentHandle handle);
+	ASErr onUndo();
+	ASErr onRedo();
+	ASErr onClear();
+	ASErr onRevert();
 	
 	// AI Tool
 	ASErr Tool_onHandleEvent(const char * selector, AIToolMessage *message);
@@ -601,7 +611,7 @@ public:
 	ASErr LiveEffect_onGetInputType(AILiveEffectInputTypeMessage *message);
 	
 	// AI MenuItem
-	ASErr MenuItem_onExecute(AIMenuMessage *message);
+	ASErr MenuItem_onSelect(AIMenuMessage *message);
 	ASErr MenuItem_onUpdate(AIMenuMessage *message, long inArtwork, long isSelected, long isTrue);
 
 	// AI Timer

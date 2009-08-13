@@ -129,7 +129,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 						if (converted = !sAIEntry->ToArt(entry, &art)) {
 							res = gEngine->wrapArtHandle(env, art, document, dictionary);
 						} else if (converted = !sAIEntry->ToDict(entry, &dict)) {
-							res = gEngine->wrapDictionaryHandle(env, dict);
+							res = gEngine->wrapDictionaryHandle(env, dict, document);
 						}
 					} break;
 					case PointType: {

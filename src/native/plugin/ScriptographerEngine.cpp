@@ -417,14 +417,19 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ai_DocumentObject = loadClass(env, "com/scriptographer/ai/DocumentObject");
 	fid_ai_DocumentObject_document = getFieldID(env, cls_ai_DocumentObject, "document", "Lcom/scriptographer/ai/Document;");
+	
+	cls_ai_Document = loadClass(env, "com/scriptographer/ai/Document");
+	mid_ai_Document_wrapHandle = getStaticMethodID(env, cls_ai_Document, "wrapHandle", "(I)Lcom/scriptographer/ai/Document;");
+	mid_ai_Document_onClosed = getMethodID(env, cls_ai_Document, "onClosed", "()V");
+	mid_ai_Document_onSelectionChanged = getMethodID(env, cls_ai_Document, "onSelectionChanged", "([III)V");
+	mid_ai_Document_onUndo = getMethodID(env, cls_ai_Document, "onUndo", "(II)V");
+	mid_ai_Document_onRedo = getMethodID(env, cls_ai_Document, "onRedo", "(II)V");
+	mid_ai_Document_onClear = getMethodID(env, cls_ai_Document, "onClear", "([I)V");
+	mid_ai_Document_onRevert = getMethodID(env, cls_ai_Document, "onRevert", "()V");
 
 	cls_ai_Dictionary = loadClass(env, "com/scriptographer/ai/Dictionary");
 	fid_ai_Dictionary_handle = getFieldID(env, cls_ai_Dictionary, "handle", "I");
 	mid_ai_Dictionary_wrapHandle = getStaticMethodID(env, cls_ai_Dictionary, "wrapHandle", "(II)Lcom/scriptographer/ai/Dictionary;");
-	
-	cls_ai_Document = loadClass(env, "com/scriptographer/ai/Document");
-	mid_ai_Document_removeHandle = getStaticMethodID(env, cls_ai_Document, "removeHandle", "(I)V");
-	mid_ai_Document_onSelectionChanged = getStaticMethodID(env, cls_ai_Document, "onSelectionChanged", "(I[III)V");
 
 	cls_ai_Tool = loadClass(env, "com/scriptographer/ai/Tool");
 	cid_ai_Tool = getConstructorID(env, cls_ai_Tool, "(ILjava/lang/String;)V");
@@ -1510,7 +1515,8 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocu
 	if (dictionary != NULL) // increase reference counter. It's decreased in finalize
 		sAIDictionary->AddRef(dictionary);
 
-	// Store the art object's initial handle value in its own dictionary. see onSelectionChanged for more explanations
+	// Store the art object's initial handle value in its own dictionary.
+	// See onSelectionChanged for more explanations
 	jboolean wrapped = false;
 	AIDictionaryRef artDict;
 	if (!sAIArt->GetDictionary(art, &artDict)) {
@@ -1542,9 +1548,15 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer, 
 	return wrapArtHandle(env, art, doc, NULL, com_scriptographer_ai_Item_TYPE_LAYER);
 }
 
+jobject ScriptographerEngine::wrapDocumentHandle(JNIEnv *env, AIDocumentHandle doc) {
+	JNI_CHECK_ENV
+	return callStaticObjectMethod(env, cls_ai_Document, mid_ai_Document_wrapHandle, (jint) doc);
+}
+
 jobject ScriptographerEngine::wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc) {
 	JNI_CHECK_ENV
-	return callStaticObjectMethod(env, cls_ai_Dictionary, mid_ai_Dictionary_wrapHandle, (jint) (doc ? doc : gWorkingDoc));
+	return callStaticObjectMethod(env, cls_ai_Dictionary, mid_ai_Dictionary_wrapHandle,
+			(jint) dictionary, (jint) (doc ? doc : gWorkingDoc));
 }
 
 /**
@@ -1585,12 +1597,11 @@ jobject ScriptographerEngine::wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle i
 ASErr ScriptographerEngine::onSelectionChanged() {
 	JNIEnv *env = getEnv();
 	try {
+		ASErr error;
 //		long t = getNanoTime();
-
 		AIArtHandle **matches;
 		long numMatches;
-		ASErr error = sAIMatchingArt->GetSelectedArt(&matches, &numMatches);
-		if (error) return error;
+		RETURN_ERROR(sAIMatchingArt->GetSelectedArt(&matches, &numMatches));
 		jintArray artHandles;
 		if (numMatches > 0) {
 			// pass an array of twice the size to the java side:
@@ -1629,8 +1640,7 @@ ASErr ScriptographerEngine::onSelectionChanged() {
 				}
 			}
 			// TODO: Does this need disposing even if numMatches == 0?
-			sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
-		
+			RETURN_ERROR(sAIMDMemory->MdMemoryDisposeHandle((void **) matches));
 			artHandles = env->NewIntArray(count);
 			env->SetIntArrayRegion(artHandles, 0, count, (jint *) handles);
 			delete handles;
@@ -1639,12 +1649,13 @@ ASErr ScriptographerEngine::onSelectionChanged() {
 		}
 
 		// Pass undoLevel and redoLevel to onSelectionChanged as well.
-		long undoLevel = 0, redoLevel = 0;
-		sAIUndo->CountTransactions(&undoLevel, &redoLevel);
-		AIDocumentHandle doc = NULL;
-		sAIDocument->GetDocument(&doc);
-		callStaticVoidMethod(env, cls_ai_Document, mid_ai_Document_onSelectionChanged,
-				(jint) doc, artHandles, undoLevel, redoLevel);
+		long undoLevel, redoLevel;
+		RETURN_ERROR(sAIUndo->CountTransactions(&undoLevel, &redoLevel));
+		AIDocumentHandle doc;
+		RETURN_ERROR(sAIDocument->GetDocument(&doc));
+		jobject document = gEngine->wrapDocumentHandle(env, doc);
+		callVoidMethod(env, document, mid_ai_Document_onSelectionChanged,
+				artHandles, undoLevel, redoLevel);
 //		println(env, "%i", (getNanoTime() - t) / 1000000);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
@@ -1655,7 +1666,80 @@ ASErr ScriptographerEngine::onSelectionChanged() {
 ASErr ScriptographerEngine::onDocumentClosed(AIDocumentHandle handle) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_ai_Document, mid_ai_Document_removeHandle, (jint) handle);
+		jobject document = gEngine->wrapDocumentHandle(env, handle);
+		callVoidMethod(env, document, mid_ai_Document_onClosed);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env);
+	return kExceptionErr;
+}
+		
+ASErr ScriptographerEngine::onUndo() {
+	JNIEnv *env = getEnv();
+	try {
+		ASErr error;
+		long undoLevel, redoLevel;
+		RETURN_ERROR(sAIUndo->CountTransactions(&undoLevel, &redoLevel));
+		AIDocumentHandle doc;
+		RETURN_ERROR(sAIDocument->GetDocument(&doc));
+		jobject document = gEngine->wrapDocumentHandle(env, doc);
+		callVoidMethod(env, document, mid_ai_Document_onUndo, undoLevel, redoLevel);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env);
+	return kExceptionErr;
+}
+
+ASErr ScriptographerEngine::onRedo() {
+	JNIEnv *env = getEnv();
+	try {
+		ASErr error;
+		long undoLevel, redoLevel;
+		RETURN_ERROR(sAIUndo->CountTransactions(&undoLevel, &redoLevel));
+		AIDocumentHandle doc;
+		RETURN_ERROR(sAIDocument->GetDocument(&doc));
+		jobject document = gEngine->wrapDocumentHandle(env, doc);
+		callVoidMethod(env, document, mid_ai_Document_onRedo, undoLevel, redoLevel);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env);
+	return kExceptionErr;
+}
+
+ASErr ScriptographerEngine::onClear() {
+	JNIEnv *env = getEnv();
+	try {
+		ASErr error;
+		AIArtHandle **matches;
+		long numMatches;
+		RETURN_ERROR(sAIMatchingArt->GetSelectedArt(&matches, &numMatches));
+		jintArray artHandles;
+		if (numMatches > 0) {
+			jint *handles = new jint[numMatches];
+			for (int i = 0; i < numMatches; i++)
+				handles[i] = (jint) (*matches)[i];
+			// TODO: Does this need disposing even if numMatches == 0?
+			RETURN_ERROR(sAIMDMemory->MdMemoryDisposeHandle((void **) matches));
+			artHandles = env->NewIntArray(numMatches);
+			env->SetIntArrayRegion(artHandles, 0, numMatches, (jint *) handles);
+			delete handles;
+		} else {
+			artHandles = NULL;
+		}
+		AIDocumentHandle doc;
+		RETURN_ERROR(sAIDocument->GetDocument(&doc));
+		jobject document = gEngine->wrapDocumentHandle(env, doc);
+		callVoidMethod(env, document, mid_ai_Document_onClear, artHandles);
+		return kNoErr;
+	} EXCEPTION_CATCH_REPORT(env);
+	return kExceptionErr;
+}
+
+ASErr ScriptographerEngine::onRevert() {
+	JNIEnv *env = getEnv();
+	try {
+		ASErr error;
+		AIDocumentHandle doc;
+		RETURN_ERROR(sAIDocument->GetDocument(&doc));
+		jobject document = gEngine->wrapDocumentHandle(env, doc);
+		callVoidMethod(env, document, mid_ai_Document_onRevert);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -1669,7 +1753,10 @@ ASErr ScriptographerEngine::onDocumentClosed(AIDocumentHandle handle) {
 ASErr ScriptographerEngine::Tool_onHandleEvent(const char * selector, AIToolMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		jint cursorId = callStaticIntMethod(env, cls_ai_Tool, mid_ai_Tool_onHandleEvent, (jint) message->tool, convertString(env, selector), (jfloat) message->cursor.h, (jfloat) message->cursor.v, (jint) message->pressure);
+		jint cursorId = callStaticIntMethod(env, cls_ai_Tool, mid_ai_Tool_onHandleEvent,
+				(jint) message->tool, convertString(env, selector),
+				(jfloat) message->cursor.h, (jfloat) message->cursor.v,
+				(jint) message->pressure);
 		if (cursorId)
 			gPlugin->setCursor(cursorId);
 		return kNoErr;
@@ -1696,7 +1783,8 @@ ASErr ScriptographerEngine::LiveEffect_onEditParameters(AILiveEffectEditParamMes
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onEditParameters,
-				(jint) message->effect, (jint) message->parameters, (jint) message->context, (jboolean) message->allowPreview);
+				(jint) message->effect, (jint) message->parameters, (jint) message->context,
+				(jboolean) message->allowPreview);
 		sAILiveEffect->UpdateParameters(message->context);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
@@ -1735,10 +1823,11 @@ ASErr ScriptographerEngine::LiveEffect_onGetInputType(AILiveEffectInputTypeMessa
  *
  */
 
-ASErr ScriptographerEngine::MenuItem_onExecute(AIMenuMessage *message) {
+ASErr ScriptographerEngine::MenuItem_onSelect(AIMenuMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_ui_MenuItem, mid_ui_MenuItem_onSelect, (jint) message->menuItem);
+		callStaticVoidMethod(env, cls_ui_MenuItem, mid_ui_MenuItem_onSelect,
+				(jint) message->menuItem);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -1762,7 +1851,8 @@ ASErr ScriptographerEngine::MenuItem_onUpdate(AIMenuMessage *message, long inArt
 ASErr ScriptographerEngine::Timer_onExecute(AITimerMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_sg_Timer, mid_sg_Timer_onExecute, (jint) message->timer);
+		callStaticVoidMethod(env, cls_sg_Timer, mid_sg_Timer_onExecute,
+				(jint) message->timer);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -1786,7 +1876,8 @@ ASErr ScriptographerEngine::Annotator_onDraw(AIAnnotatorMessage *message) {
 ASErr ScriptographerEngine::Annotator_onInvalidate(AIAnnotatorMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		callStaticVoidMethod(env, cls_ai_Annotator, mid_ai_Annotator_onInvalidate, (jint) message->annotator);
+		callStaticVoidMethod(env, cls_ai_Annotator, mid_ai_Annotator_onInvalidate,
+				(jint) message->annotator);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -1805,7 +1896,8 @@ void ScriptographerEngine::callOnNotify(jobject handler, ADMNotifierRef notifier
 
 void ScriptographerEngine::callOnNotify(jobject handler, char *notifier) {
 	JNIEnv *env = getEnv();
-	callVoidMethodReport(env, handler, mid_ui_NotificationHandler_onNotify, env->NewStringUTF(notifier));
+	callVoidMethodReport(env, handler, mid_ui_NotificationHandler_onNotify,
+			env->NewStringUTF(notifier));
 }
 
 void ScriptographerEngine::callOnDestroy(jobject handler) {

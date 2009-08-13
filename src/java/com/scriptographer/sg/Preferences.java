@@ -33,7 +33,7 @@ package com.scriptographer.sg;
 
 import java.util.prefs.BackingStoreException;
 
-import com.scratchdisk.list.AbstractMap;
+import com.scratchdisk.util.AbstractMap;
 
 /**
  * Preferences wraps a java.util.prefs.Preferences instance in a

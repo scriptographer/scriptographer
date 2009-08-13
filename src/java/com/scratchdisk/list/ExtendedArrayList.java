@@ -34,28 +34,31 @@ package com.scratchdisk.list;
 import java.util.Collection;
 import java.util.Arrays;
 
+import com.scratchdisk.util.ArrayList;
+
 /**
- * Wraps an extended java.util.ArrayList in an ExtendedList interface
+ * Wraps an com.scratchdisk.util.ArrayList (which is an extended
+ * java.util.ArrayList) in an ExtendedList interface.
  * 
  * @author lehni
  */
-public class ArrayList<E> extends AbstractExtendedList<E> {
-	List<E> list;
+public class ExtendedArrayList<E> extends AbstractExtendedList<E> {
+	ArrayList<E> list;
 
-	public ArrayList() {
-		list = new List<E>();
+	public ExtendedArrayList() {
+		list = new ArrayList<E>();
 	}
 
-	public ArrayList(int initialCapacity) {
-		list = new List<E>(initialCapacity);
+	public ExtendedArrayList(int initialCapacity) {
+		list = new ArrayList<E>(initialCapacity);
 	}
 
-	public ArrayList(E[] objects) {
-		list = new List<E>(Arrays.asList(objects));
+	public ExtendedArrayList(E[] objects) {
+		list = new ArrayList<E>(Arrays.asList(objects));
 	}
 
-	public ArrayList(List<E> list) {
-		list = new List<E>(list);
+	public ExtendedArrayList(ArrayList<E> list) {
+		list = new ArrayList<E>(list);
 	}
 
 	public int size() {
@@ -91,38 +94,5 @@ public class ArrayList<E> extends AbstractExtendedList<E> {
 
 	public boolean addAll(int index, Collection<? extends E> c) {
 		return list.addAll(index, c);
-	}
-
-	/*
-	 * Adds setSize and the public removeRange to java.util.ArrayList:
-	 */
-	public static class List<E> extends java.util.ArrayList<E> {
-		public List() {
-			super();
-		}
-
-		public List(int initialCapacity) {
-			super(initialCapacity);
-		}
-
-	    public List(Collection<? extends E> c) {
-	    	super(c);
-	    }
-
-		public void setSize(int newSize) {
-			int size = size();
-			if (newSize > size) {
-				// fill with null:
-				ensureCapacity(newSize);
-				for (int i = size; i < newSize; i++)
-					add(i, null);
-			} else if (newSize < size) {
-				remove(newSize, size);
-			}
-		}
-
-		public void remove(int fromIndex, int toIndex) {
-			super.removeRange(fromIndex, toIndex);
-		}
 	}
 }

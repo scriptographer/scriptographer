@@ -33,14 +33,14 @@ package com.scriptographer.ai;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
+import java.lang.ref.SoftReference;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Stack;
 
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.script.ChangeListener;
+import com.scratchdisk.util.ArrayList;
 import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.SoftIntMap;
@@ -79,20 +79,29 @@ public class Document extends NativeObject implements ChangeListener {
 	 */
 	private int redoLevel = -1;
 
-	protected int historyLevel = -1;
-	
-	protected int maxLevelBase = 0;
-	protected int levelBase = 0;
-	protected Stack<Integer> levelBaseHistory = new Stack<Integer>();
-	
+	protected long historyVersion = -1;
+
+	private int maxHistoryBranch = -1;
+
+	protected HashMap<Long, HistoryBranch> history;
+
+	private HistoryBranch historyBranch;
+
 	/**
 	 * Internal list that keeps track of wrapped objects that have no clear
 	 * creation level. These need to be checked if they are valid in each undo.
-	 * 
-	 * TODO: use a SoftReference ArrayList!
 	 */
-	protected ArrayList<Item> checkValidItems = new ArrayList<Item>();
-	protected ArrayList<Item> updateLevelItems = new ArrayList<Item>();
+	protected ArrayList<SoftReference<Item>> checkValidItems = new ArrayList<SoftReference<Item>>();
+
+	protected ArrayList<Item> createdItems = new ArrayList<Item>();
+	protected ArrayList<Item> modifiedItems = new ArrayList<Item>();
+	protected ArrayList<Item> removedItems = new ArrayList<Item>();
+
+	protected Document(int handle) {
+		super(handle);
+		// Initialise history data for this document.
+		resetHistory();
+	}
 
 	/**
 	 * Opens an existing document.
@@ -110,7 +119,7 @@ public class Document extends NativeObject implements ChangeListener {
 	 */
 	public Document(File file, ColorModel colorModel, DialogStatus dialogStatus)
 			throws FileNotFoundException {
-		super(nativeCreate(file,
+		this(nativeCreate(file,
 				(colorModel != null ? colorModel : ColorModel.CMYK).value,
 				(dialogStatus != null ? dialogStatus : DialogStatus.NONE).value));
 		if (handle == 0) {
@@ -153,7 +162,7 @@ public class Document extends NativeObject implements ChangeListener {
 	 */
 	public Document(String title, float width, float height, ColorModel colorModel,
 			DialogStatus dialogStatus) {
-		super(nativeCreate(title, width, height, 
+		this(nativeCreate(title, width, height, 
 				(colorModel != null ? colorModel : ColorModel.CMYK).value,
 				(dialogStatus != null ? dialogStatus : DialogStatus.NONE).value));
 	}
@@ -164,10 +173,6 @@ public class Document extends NativeObject implements ChangeListener {
 
 	public Document(String title, float width, float height) {
 		this(title, width, height, null, null);
-	}
-
-	protected Document(int handle) {
-		super(handle);
 	}
 
 	private static native int nativeCreate(java.io.File file, int colorModel,
@@ -190,14 +195,6 @@ public class Document extends NativeObject implements ChangeListener {
 		return doc;
 	}
 
-	/*
-	 * Since AI reused document handles, we have to manually remove wrappers when documents 
-	 * get closed. This happens through a kDocumentClosedNotifier on the native side.
-	 */
-	protected static void removeHandle(int handle) {
-		documents.remove(handle);
-	}
-
 	private static native int nativeGetActiveDocumentHandle();
 	
 	private static native int nativeGetWorkingDocumentHandle();
@@ -216,16 +213,166 @@ public class Document extends NativeObject implements ChangeListener {
 		return Document.wrapHandle(nativeGetWorkingDocumentHandle());
 	}
 
+	private void resetHistory() {
+		historyBranch = new HistoryBranch(null);
+		history = new HashMap<Long, HistoryBranch>();
+		history.put(historyBranch.branch, historyBranch);
+	}
+
+	private void setHistoryLevels(int undoLevel, int redoLevel, boolean checkLevel) {
+		if (undoLevel != this.undoLevel || redoLevel != this.redoLevel) {
+			boolean updateItems = false;
+			if (checkLevel && undoLevel > this.undoLevel) {
+				// A new history cycle was completed.
+				if (this.redoLevel > redoLevel) {
+					// A previous branch was broken off by going back in the
+					// undo history first and then starting a new branch.
+					// Store the level of the current history branch first.
+					historyBranch.level = this.undoLevel;
+					// Create a new branch
+					historyBranch = new HistoryBranch(historyBranch);
+					history.put(historyBranch.branch, historyBranch);
+				}
+				// Update the current historyEntry's future to the new level
+				// This is the maximum possible level for a branch
+				historyBranch.future = undoLevel;
+				// Update newly created and modified items, after new historyVersion
+				// is set.
+				updateItems = true;
+			}
+			// Set new history version, to be used by items for setting of
+			// creation / modification version and execution of checks.
+			historyVersion = historyBranch.getVersion(undoLevel);
+			if (updateItems) {
+				// Scan through newly created, modified and deleted items and
+				// update versions. We cannot set this while they are created or
+				// modified, since that will still be during the old
+				// history cycle, with the old version, and anticipating
+				// the new version would break isValid and needsUpdate calls
+				// during that cycle.
+				if (!createdItems.isEmpty()) {
+					for (Item item : createdItems)
+						item.creationVersion = item.modificationVersion = historyVersion;
+					createdItems.clear();
+				}
+				if (!modifiedItems.isEmpty()) {
+					for (Item item : modifiedItems)
+						item.modificationVersion = historyVersion;
+					modifiedItems.clear();
+				}
+				if (!removedItems.isEmpty()) {
+					for (Item item : removedItems)
+						item.deletionVersion = historyVersion;
+					removedItems.clear();
+				}
+			}
+			this.undoLevel = undoLevel;
+			this.redoLevel = redoLevel;
+			// Update the current historyEntry level to the current level
+			historyBranch.level = undoLevel;
+			System.out.println("undoLevel = " + undoLevel + ", redoLevel = "
+					+ redoLevel + ", version = " + historyBranch.branch
+					+ ", previous = " + (historyBranch.previous != null 
+							? historyBranch.previous.level : -1)
+					+ ", level = " + historyVersion);
+		}
+	}
+
+	private class HistoryBranch {
+		long branch;
+		long level;
+		long future;
+		HistoryBranch previous;
+		HistoryBranch next;
+
+		HistoryBranch(HistoryBranch previous) {
+			// make sure we're not reusing branch numbers that were used for
+			// previous branches before, by continuously adding to
+			// maxHistoryBranch.
+			this.branch = ++maxHistoryBranch;
+			this.previous = previous;
+			if (previous != null) {
+				if (previous.next != null) {
+					// A previous "future" branch is cleared, remove it from the
+					// history.
+					history.remove(previous.next.branch);
+				}
+				previous.next = this;
+			}
+		}
+
+		long getVersion(long level) {
+			return (branch << 32) | level;
+		}
+	};
+
+	protected void onClosed() {
+		// Since AI reused document handles, we have to manually remove wrappers
+		// when documents get closed. This happens through a kDocumentClosedNotifier
+		// on the native side.
+		documents.remove(handle);
+		handle = 0;
+	}
+
+	protected void onRevert() {
+		resetHistory();
+	}
+
 	/**
 	 * Called from the native environment.
 	 */
-	protected static void onSelectionChanged(int docHandle, int[] artHandles, int undoLevel, int redoLevel) {
+	protected void onSelectionChanged(int[] artHandles, int undoLevel, int redoLevel) {
 		if (artHandles != null)
 			Item.updateIfWrapped(artHandles);
+		// TODO: Make CommitManager.version document dependent?
 		CommitManager.version++;
-		Document document = wrapHandle(docHandle);
-		if (document != null)
-			document.setHistoryLevels(undoLevel, redoLevel);
+		setHistoryLevels(undoLevel, redoLevel, true);
+	}
+
+	protected void onUndo(int undoLevel, int redoLevel) {
+		System.out.println("Undo");
+		// Check if we were going back to a previous branch, and if so, switch
+		// back.
+		if (historyBranch.previous != null
+				&& undoLevel <= historyBranch.previous.level)
+			historyBranch = historyBranch.previous;
+		// Scan through all the wrappers without an defined creationLevel and
+		// set it to the current undoLevel if they are not valid at this point
+		// anymore. Do this before the new historyLevel is set!
+		if (!checkValidItems.isEmpty()) {
+			int[] handles = new int[checkValidItems.size()];
+			// Check all these handles in one go, for increased performance
+			for (int i = 0, l = handles.length; i < l; i++)
+				handles[i] = checkValidItems.get(i).get().handle;
+			boolean[] valid = Item.checkValid(handles);
+			// Update historyVersion so that it is not valid anymore at this
+			// cycle, by adding 1.
+			long version = historyVersion + 1;
+			for (int i = valid.length - 1; i >= 0; i--) {
+				if (!valid[i]) {
+					checkValidItems.get(i).get().creationVersion = version;
+					// Remove it from the list
+					checkValidItems.remove(i);
+				}
+			}
+		}
+		// Now set levels. This also sets historyLevel correctly
+		setHistoryLevels(undoLevel, redoLevel, false);
+	}
+
+	protected void onRedo(int undoLevel, int redoLevel) {
+		System.out.println("Redo");
+		// Check if we were going forward to a "future" branch, and if so,
+		// switch again.
+		if (historyBranch.next != null
+				&& undoLevel > historyBranch.future)
+			historyBranch = historyBranch.next;
+		setHistoryLevels(undoLevel, redoLevel, false);
+	}
+
+	protected void onClear(int[] artHandles) {
+		System.out.println("Clear");
+		Item.removeIfWrapped(artHandles, false);
 	}
 
 	private static native void nativeBeginExecution(int[] values);
@@ -242,59 +389,7 @@ public class Document extends NativeObject implements ChangeListener {
 		nativeBeginExecution(values);
 		Document document = wrapHandle(values[0]);
 		if (document != null) {
-			document.setHistoryLevels(values[1], values[2]);
-		}
-	}
-
-	private void setHistoryLevels(int undoLevel, int redoLevel) {
-		if (undoLevel != this.undoLevel || redoLevel != this.redoLevel) {
-			if (undoLevel > this.undoLevel) {
-				// A new undo transaction cycle was completed.
-				// Scan through newly created items and update levels
-				for (Item item : updateLevelItems)
-					item.creationLevel = item.modificationLevel = undoLevel;
-				updateLevelItems.clear();
-				if (this.redoLevel > redoLevel) {
-					// A previous branch was wiped, time to change level base
-					levelBase = ++maxLevelBase;
-				}
-				levelBaseHistory.push(levelBase);
-			} else if (undoLevel < this.undoLevel) {
-				// Undo was executed. Go back to previous level base:
-				levelBase = levelBaseHistory.pop();
-				// Scan through all the wrappers without an defined
-				// creationLevel and set it to the current undoLevel if they are
-				// not valid at this point anymore. This will tell getArtHandle
-				// to ignore it at this level and throw a IgnoreException.
-				int[] handles = new int[checkValidItems.size()];
-				// Check all these handles in one go, for increased performance
-				for (int i = 0, l = handles.length; i < l; i++)
-					handles[i] = checkValidItems.get(i).handle;
-				boolean[] valid = Item.checkValid(handles);
-				// Update creationLevel so that it is not valid anymore
-				// at this cycle.
-				// Create historyLevel in the same way as below!
-				int level = (levelBase << 16) | (undoLevel + 1);
-				for (int i = valid.length - 1; i >= 0; i--) {
-					if (!valid[i]) {
-						checkValidItems.get(i).creationLevel = level;
-						// Remove it from the list
-						checkValidItems.remove(i);
-					}
-				}
-			} else {
-				System.out.println("WEIRD UNDO CASE: "
-						+ undoLevel + ", " + redoLevel +  "; "
-						+ this.undoLevel + ", " + this.redoLevel +  "; ");
-			}
-			if (undoLevel != levelBaseHistory.size() - 1)
-				System.out.println(
-						"ASSERTION FAILED: undoLevel != levelBaseHistory.size() - 1: "
-						+ undoLevel + ", " + (levelBaseHistory.size() - 1));
-			this.undoLevel = undoLevel;
-			this.redoLevel = redoLevel;
-			this.historyLevel = (levelBase << 16) | undoLevel;
-			System.out.println("LEVELS: " + undoLevel + " " + redoLevel + " " + historyLevel);
+			document.setHistoryLevels(values[1], values[2], true);
 		}
 	}
 
@@ -805,7 +900,8 @@ public class Document extends NativeObject implements ChangeListener {
 		nativeDeselectAll();
 	}
 
-	private native ItemList nativeGetMatchingItems(Class type, HashMap<Integer, Boolean> attributes);
+	private native ItemList nativeGetMatchingItems(Class type,
+			HashMap<Integer, Boolean> attributes);
 
 	/**
 	 * @jshide
@@ -820,7 +916,8 @@ public class Document extends NativeObject implements ChangeListener {
 				if (!(key instanceof ItemAttribute)) {
 					key = EnumUtils.get(ItemAttribute.class, key.toString());
 					if (key == null)
-						throw new ScriptographerException("Undefined attribute: " + entry.getKey());
+						throw new ScriptographerException("Undefined attribute: "
+								+ entry.getKey());
 				}
 				converted.put(((ItemAttribute) key).value,
 						ConversionUtils.toBoolean(entry.getValue()));
@@ -915,7 +1012,8 @@ public class Document extends NativeObject implements ChangeListener {
 					} else if (type instanceof String) {
 						// Try loading class from String name.
 						try {
-							classes.add(Class.forName(Item.class.getPackage().getName()
+							classes.add(Class.forName(
+									Item.class.getPackage().getName()
 									+ "." + type));
 						} catch (ClassNotFoundException e) {
 						}
@@ -935,6 +1033,24 @@ public class Document extends NativeObject implements ChangeListener {
 		HashMap<Object, Object> clone = new HashMap<Object, Object>(attributes);
 		clone.remove("type");
 		return getItems(classes.toArray(new Class[classes.size()]), clone);
+	}
+	/**
+	 * @param version
+	 * @return
+	 */
+	protected boolean isValidVersion(long version) {
+		if (version == -1)
+			return true;
+		// Branch = upper 32 bits
+		long branch = (version >> 32) & 0xffffffffl;
+		HistoryBranch entry = history.get(branch);
+		if (entry != null) {
+			// Version = lower 32 bits
+			long level = version & 0xffffffffl;
+			return level <= entry.level
+					&& (entry.previous == null || level > entry.previous.level);
+		}
+		return false;
 	}
 
 	/* TODO: make these
@@ -1297,7 +1413,9 @@ public class Document extends NativeObject implements ChangeListener {
 	 *        guaranteed {@default 2}
 	 */
 	public HitResult hitTest(Point point, HitRequest request, float tolerance) {
-		return nativeHitTest(point, (request != null ? request : HitRequest.ALL).value, tolerance, null);
+		return nativeHitTest(point,
+				(request != null ? request : HitRequest.ALL).value,
+				tolerance, null);
 	}
 
 	public HitResult hitTest(Point point, HitRequest request) {

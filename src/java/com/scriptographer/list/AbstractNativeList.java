@@ -32,7 +32,7 @@
 package com.scriptographer.list;
 
 import com.scratchdisk.list.AbstractExtendedList;
-import com.scratchdisk.list.ArrayList;
+import com.scratchdisk.util.ArrayList;
 
 /**
  * AbstractFetchList defines fetch and fetch(fromIndex, toIndex), which are called
@@ -43,10 +43,10 @@ import com.scratchdisk.list.ArrayList;
  */
 public abstract class AbstractNativeList<E> extends AbstractExtendedList<E> {
 	protected int size;
-	protected ArrayList.List<E> list;
+	protected ArrayList<E> list;
 
 	protected AbstractNativeList() {
-		list = new ArrayList.List<E>();
+		list = new ArrayList<E>();
 		size = 0;
 	}
 

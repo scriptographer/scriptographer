@@ -62,6 +62,9 @@ DLLExport SPAPI int main(char *caller, char *selector, void *message);
 
 #endif
 
+#define RETURN_ERROR(CALL) error = CALL; \
+	if (error) return error;
+
 class ScriptographerEngine;
 
 class ScriptographerPlugin {
@@ -78,6 +81,10 @@ protected:
 	AINotifierHandle m_appStartedNotifier;
 	AINotifierHandle m_selectionChangedNotifier;
 	AINotifierHandle m_documentClosedNotifier;
+	AINotifierHandle m_afterUndoNotifier;
+	AINotifierHandle m_afterRedoNotifier;
+	AINotifierHandle m_afterRevertNotifier;
+	AINotifierHandle m_beforeClearNotifier;
 	bool m_loaded;
 	bool m_started; 
 	ScriptographerEngine *m_engine;
@@ -111,6 +118,7 @@ public:
 
 #ifdef MAC_ENV
 	static OSStatus appEventHandler(EventHandlerCallRef handler, EventRef event, void* userData);
+	static OSStatus keyEventHandler(EventHandlerCallRef handler, EventRef event, void *userData);
 #endif
 #ifdef WIN_ENV
 	static WNDPROC s_defaultAppWindowProc;

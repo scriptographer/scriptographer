@@ -37,7 +37,7 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Wrapper;
 
-import com.scratchdisk.list.AbstractMap;
+import com.scratchdisk.util.AbstractMap;
 
 /**
  * MapAdapter wraps a Rhino ScriptableObject instance in a Map interface.

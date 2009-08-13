@@ -31,11 +31,11 @@ package com.scriptographer.ai;
 
 import java.util.Iterator;
 
-import com.scratchdisk.list.ArrayList;
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.ListIterator;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
+import com.scratchdisk.util.ArrayList;
 import com.scriptographer.CommitManager;
 
 /**
@@ -44,12 +44,12 @@ import com.scriptographer.CommitManager;
  * @jshide
  */
 class TextStoryList extends DocumentObject implements ReadOnlyList<TextStory> {
-	ArrayList.List<TextStory> list;
+	ArrayList<TextStory> list;
 	protected int version = CommitManager.version;
 
 	TextStoryList(int handle, Document document) {
 		super(handle, document);
-		list = new ArrayList.List<TextStory>();
+		list = new ArrayList<TextStory>();
 	}
 
 	private native int nativeSize(int handle);

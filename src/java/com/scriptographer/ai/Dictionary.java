@@ -31,7 +31,7 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.list.AbstractMap;
+import com.scratchdisk.util.AbstractMap;
 import com.scratchdisk.util.SoftIntMap;
 
 /**

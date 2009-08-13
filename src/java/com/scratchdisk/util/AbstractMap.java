@@ -29,7 +29,7 @@
  * $Id$
  */
 
-package com.scratchdisk.list;
+package com.scratchdisk.util;
 
 import java.util.AbstractSet;
 import java.util.ArrayList;

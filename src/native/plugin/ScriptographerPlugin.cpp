@@ -33,6 +33,9 @@
 #include "resourceIds.h"
 #include "AppContext.h"
 #include "com_scriptographer_ScriptographerEngine.h"
+// For Menu notifiers. Can't add this to suites.h,
+// since it directly defines the char *MenuCommands[] array and we only need it here...
+#include "AIMenuCommandNotifiers.h"
 
 ScriptographerPlugin *gPlugin = NULL;
 
@@ -55,6 +58,10 @@ ScriptographerPlugin::ScriptographerPlugin(SPMessageData *messageData) {
 	m_appStartedNotifier = NULL;
 	m_selectionChangedNotifier = NULL;
 	m_documentClosedNotifier = NULL;
+	m_afterUndoNotifier = NULL;
+	m_afterRedoNotifier = NULL;
+	m_afterRevertNotifier = NULL;
+	m_beforeClearNotifier = NULL;
 	m_engine = NULL;
 	m_loaded = false;
 	m_started = false;
@@ -91,106 +98,55 @@ OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef handler, Even
 	return kNoErr;
 }
 
-static OSStatus keyHandler(EventHandlerCallRef handler, EventRef event, void *inUserData) {
+OSStatus ScriptographerPlugin::keyEventHandler(EventHandlerCallRef handler, EventRef event, void *userData) {
 	char charCode;
     UInt32 keyCode;
     UInt32 modifiers;
-    Point point;
     UInt32 when = EventTimeToTicks(GetEventTime(event));
+	UniChar uniChar;
 	
-    GetEventParameter( event, kEventParamKeyMacCharCodes, typeChar, NULL,sizeof(char), NULL,&charCode );
-    GetEventParameter( event, kEventParamKeyCode, typeUInt32, NULL,  sizeof(UInt32), NULL, &keyCode );
+    GetEventParameter(event, kEventParamKeyMacCharCodes, typeChar, NULL,sizeof(char), NULL,&charCode);
+    GetEventParameter(event, kEventParamKeyCode, typeUInt32, NULL,  sizeof(UInt32), NULL, &keyCode);
 	GetEventParameter(event, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &modifiers);
-    GetEventParameter( event, kEventParamMouseLocation, typeQDPoint, NULL,
-					  sizeof( Point ), NULL, &point );
-	
+	GetEventParameter(event, kEventParamKeyUnicodes, typeUnicodeText, NULL, sizeof(UniChar), NULL, &uniChar);
+	/*
+    Point point;
+    GetEventParameter(event, kEventParamMouseLocation, typeQDPoint, NULL, sizeof(Point), NULL, &point);
+	*/
     UInt32 message = (keyCode << 8) + charCode;
-    switch( GetEventKind( event ) )
-    {
-		case kEventRawKeyDown:
-		case kEventRawKeyRepeat:
-		{
-			int i = 0;
-			// UNICODE?
-			/*
-			if(macKeyModifiers != cmdKey) {
-				UniChar uc;
-				int key = convert_key(macKeyCode);
-				GetEventParameter(event, 
-								  kEventParamKeyUnicodes, typeUnicodeText, NULL, sizeof(uc), NULL, &uc);
-				
-				if(key != -1)
-					kbdputc(kbdq, key);
-				else
-					kbdputc(kbdq, uc);
-			} else {
-				if(macCharCodes == 'f' || macCharCodes == 'F') {
-					full_screen();
-				} else if(macCharCodes == 'q' || macCharCodes 
-						  == 'Q') {
-					exit(0);
-				} 
-			}
-			*/
+    switch(GetEventKind(event)) {
+	case kEventRawKeyDown:
+	case kEventRawKeyRepeat: {
+		int i = 0;
+		if (charCode == '\b') {
+			AppContext context;
+			gEngine->onClear();
 		}
-			break;
-			case kEventRawKeyUp :
+	}
+	break;
+	case kEventRawKeyUp: {
+		int j = 0;
+		/*
+		if ( (focus != NULL) && wxTheApp->MacSendKeyUpEvent(
+															focus , message , modifiers , when , point.h , point.v ) )
 		{
-			int j = 0;
-			/*
-            if ( (focus != NULL) && wxTheApp->MacSendKeyUpEvent(
-																focus , message , modifiers , when , point.h , point.v ) )
-            {
-                result = noErr ;
-            }
-			 */
+			result = noErr ;
 		}
-            break ;
-        case kEventRawKeyModifiersChanged :
-		{
-			int k = 0;
-			/*
-			wxKeyEvent event(wxEVT_KEY_DOWN);
-			
-			event.m_shiftDown = modifiers & shiftKey;
-			event.m_controlDown = modifiers & controlKey;
-			event.m_altDown = modifiers & optionKey;
-			event.m_metaDown = modifiers & cmdKey;
-			
-			event.m_x = point.h;
-			event.m_y = point.v;
-			event.SetTimestamp(when);
-			wxWindow* focus = wxWindow::FindFocus() ;
-			event.SetEventObject(focus);
-			
-			if ( focus && (modifiers ^ wxTheApp->s_lastModifiers ) & controlKey )
-			{
-				event.m_keyCode = WXK_CONTROL ;
-				event.SetEventType( ( modifiers & controlKey ) ? wxEVT_KEY_DOWN : wxEVT_KEY_UP ) ;
-				focus->GetEventHandler()->ProcessEvent( event ) ;
-			}
-			if ( focus && (modifiers ^ wxTheApp->s_lastModifiers ) & shiftKey )
-			{
-				event.m_keyCode = WXK_SHIFT ;
-				event.SetEventType( ( modifiers & shiftKey ) ? wxEVT_KEY_DOWN : wxEVT_KEY_UP ) ;
-				focus->GetEventHandler()->ProcessEvent( event ) ;
-			}
-			if ( focus && (modifiers ^ wxTheApp->s_lastModifiers ) & optionKey )
-			{
-				event.m_keyCode = WXK_ALT ;
-				event.SetEventType( ( modifiers & optionKey ) ? wxEVT_KEY_DOWN : wxEVT_KEY_UP ) ;
-				focus->GetEventHandler()->ProcessEvent( event ) ;
-			}
-			if ( focus && (modifiers ^ wxTheApp->s_lastModifiers ) & cmdKey )
-			{
-				event.m_keyCode = WXK_COMMAND ;
-				event.SetEventType( ( modifiers & cmdKey ) ? wxEVT_KEY_DOWN : wxEVT_KEY_UP ) ;
-				focus->GetEventHandler()->ProcessEvent( event ) ;
-			}
-			wxTheApp->s_lastModifiers = modifiers ;
-			 */
-		}
-			break ;
+		 */
+	}
+	break ;
+	case kEventRawKeyModifiersChanged: {
+		int k = 0;
+		/*
+		wxKeyEvent event(wxEVT_KEY_DOWN);
+		
+		event.m_shiftDown = modifiers & shiftKey;
+		event.m_controlDown = modifiers & controlKey;
+		event.m_altDown = modifiers & optionKey;
+		event.m_metaDown = modifiers & cmdKey;
+		 */
+	}
+	break;
     }
 	return eventNotHandledErr;
 }
@@ -228,24 +184,33 @@ LRESULT CALLBACK ScriptographerPlugin::appWindowProc(HWND hwnd, UINT uMsg, WPARA
 
 ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 	// Aquire only the basic suites that are needed here. the rest is acquired in postStartup.
-	ASErr error = acquireSuites(&gStartupSuites);
-	if (error) return error;
+	ASErr error;
+	RETURN_ERROR(acquireSuites(&gStartupSuites));
 	
 	// Make sure the plugin stays in ram all the time and onPostStartupPlugin gets actually called
 	sSPAccess->AcquirePlugin(m_pluginRef, &m_pluginAccess);
 	
 	// Add app started notifier
-	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Started", kAIApplicationStartedNotifier, &m_appStartedNotifier);
-	if (error) return error;
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Started", kAIApplicationStartedNotifier, &m_appStartedNotifier));
 	
 	// Add selection changed notifier
-	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Selection Changed", kAIArtSelectionChangedNotifier, &m_selectionChangedNotifier);
-	if (error) return error;
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Selection Changed", kAIArtSelectionChangedNotifier, &m_selectionChangedNotifier));
 
 	// Add document closed notifier
-	error = sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Document Closed", kAIDocumentClosedNotifier, &m_documentClosedNotifier);
-	if (error) return error;
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Document Closed", kAIDocumentClosedNotifier, &m_documentClosedNotifier));
 
+	// Add after undo menu notifier
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Undo", "AI Command Notifier: After Undo", &m_afterUndoNotifier));
+
+	// Add after redo menu notifier
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Redo", "AI Command Notifier: After Redo", &m_afterRedoNotifier));
+
+	// Add after revert menu notifier
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Revert", "AI Command Notifier: After Revert", &m_afterRevertNotifier));
+
+	// Add after clear menu notifier
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Before Clear", "AI Command Notifier: Before Clear", &m_beforeClearNotifier));
+	
 	// Determine baseDirectory from plugin location:
 	char pluginPath[kMaxPathLength];
 	SPPlatformFileSpecification fileSpec;
@@ -264,8 +229,7 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 		log("Starting Scriptographer with plugin path: %s", pluginPath);
 	#endif
 		
-	error = sSPPlugins->SetPluginName(m_pluginRef, m_pluginName);
-	if (error) return error;
+	RETURN_ERROR(sSPPlugins->SetPluginName(m_pluginRef, m_pluginName));
 	
 	try {
 		// Try to create the Java Engine:
@@ -286,9 +250,8 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 		return kCantHappenErr;
 	
 	// Accuire the rest of the suites:
-	ASErr error = acquireSuites(&gPostStartupSuites);
-	if (error) return error;
-
+	ASErr error;
+	RETURN_ERROR(acquireSuites(&gPostStartupSuites));
 	
 	// And finally initialize the engine:
 	m_engine->initEngine();
@@ -299,9 +262,8 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 		{ kEventClassApplication, kEventAppDeactivated }
 	};
 	// TODO: Figure out if this needs DEFINE_CALLBACK_PROC / CALLBACK_PROC as well?
-	error = InstallApplicationEventHandler(NewEventHandlerUPP(appEventHandler),
-			sizeof(appEvents) / sizeof(EventTypeSpec), appEvents, this, NULL);
-	if (error) return error;
+	RETURN_ERROR(InstallApplicationEventHandler(NewEventHandlerUPP(appEventHandler),
+			sizeof(appEvents) / sizeof(EventTypeSpec), appEvents, this, NULL));
 
 	static EventTypeSpec keyEvents[] = {
 		/*
@@ -310,9 +272,8 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 		{ kEventClassKeyboard, kEventRawKeyDown },
 		{ kEventClassKeyboard, kEventRawKeyUp }
 	};
-	error = InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(keyHandler),
-			sizeof(keyEvents) / sizeof(EventTypeSpec), keyEvents, this, NULL);
-	if (error) return error;
+	RETURN_ERROR(InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(keyEventHandler),
+			sizeof(keyEvents) / sizeof(EventTypeSpec), keyEvents, this, NULL));
 #endif
 #ifdef WIN_ENV
 	HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();
@@ -512,42 +473,22 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 	
 	log("handleMessage: %s %s", caller, selector);
 
-	// Sweet Pea messages
-	if (sSPBasic->IsEqual(caller, kSPAccessCaller)) {
-		if (sSPBasic->IsEqual(selector, kSPAccessUnloadSelector)) {
-			error = onUnloadPlugin(static_cast<SPInterfaceMessage *>(message));
-		} else if (sSPBasic->IsEqual(selector, kSPAccessReloadSelector)) {
-			// There is no need to handle reload messages, as the plugin is persistent
-			// Through the use of sSPAccess->AcquirePlugin();
-			error = kNoErr;
-		}
-	} else if (sSPBasic->IsEqual(caller, kSPInterfaceCaller))  {	
-		if (sSPBasic->IsEqual(selector, kSPInterfaceAboutSelector)) {
-			error = gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_APP_ABOUT);
-		} else if (sSPBasic->IsEqual(selector, kSPInterfaceStartupSelector)) {
-			error = onStartupPlugin(static_cast<SPInterfaceMessage *>(message));
-		} else if (sSPBasic->IsEqual(selector, kSPInterfaceShutdownSelector)) {
-			error = onShutdownPlugin(static_cast<SPInterfaceMessage *>(message));
-		}
-	} else if (sSPBasic->IsEqual(caller, kSPCacheCaller)) {	
-		if (sSPBasic->IsEqual(selector, kSPPluginPurgeCachesSelector)) {
-			error = purge() ? kSPPluginCachesFlushResponse : kSPPluginCouldntFlushResponse;
-		}
-	} else if (sSPBasic->IsEqual(caller, kSPPropertiesCaller)) {
-		if (sSPBasic->IsEqual(selector, kSPPropertiesAcquireSelector)) {
-			error = acquireProperty((SPPropertiesMessage *) message);
-		} else if (sSPBasic->IsEqual(selector, kSPPropertiesReleaseSelector)) {
-			error = releaseProperty((SPPropertiesMessage *) message);
-		}
-	}
-	// Some common AI messages
-	else if (sSPBasic->IsEqual(caller, kCallerAINotify)) {
+	// Common AI messages
+	if (sSPBasic->IsEqual(caller, kCallerAINotify)) {
 		// TODO: Is AppContext needed here?
 		AppContext context;
 
 		AINotifierMessage *msg = (AINotifierMessage *) message;
 		if (msg->notifier == m_selectionChangedNotifier) {
 			error = gEngine->onSelectionChanged();
+		} else if (msg->notifier == m_afterUndoNotifier) {
+			error = gEngine->onUndo();
+		} else if (msg->notifier == m_afterRedoNotifier) {
+			error = gEngine->onRedo();
+		} else if (msg->notifier == m_beforeClearNotifier) {
+			error = gEngine->onClear();
+		} else if (msg->notifier == m_afterRevertNotifier) {
+			error = gEngine->onRevert();
 		} else if (msg->notifier == m_documentClosedNotifier) {
 			// We need to remove wrappers for document handles since
 			// handles seem to get reused for new documents.
@@ -564,7 +505,7 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		*/
 	} else if (sSPBasic->IsEqual(caller, kCallerAIMenu)) {
 		if (sSPBasic->IsEqual(selector, kSelectorAIGoMenuItem)) {
-			error = gEngine->MenuItem_onExecute((AIMenuMessage *) message);
+			error = gEngine->MenuItem_onSelect((AIMenuMessage *) message);
 		} else if (sSPBasic->IsEqual(selector, kSelectorAIUpdateMenuItem)) {
 			long inArtwork, isSelected, isTrue;
 			sAIMenu->GetUpdateFlags(&inArtwork, &isSelected, &isTrue);
@@ -614,6 +555,35 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 			error = gEngine->Annotator_onInvalidate((AIAnnotatorMessage *) message);
 		}
 	}
+	// Sweet Pea messages
+	else if (sSPBasic->IsEqual(caller, kSPAccessCaller)) {
+		if (sSPBasic->IsEqual(selector, kSPAccessUnloadSelector)) {
+			error = onUnloadPlugin(static_cast<SPInterfaceMessage *>(message));
+		} else if (sSPBasic->IsEqual(selector, kSPAccessReloadSelector)) {
+			// There is no need to handle reload messages, as the plugin is persistent
+			// Through the use of sSPAccess->AcquirePlugin();
+			error = kNoErr;
+		}
+	} else if (sSPBasic->IsEqual(caller, kSPInterfaceCaller))  {	
+		if (sSPBasic->IsEqual(selector, kSPInterfaceAboutSelector)) {
+			error = gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_APP_ABOUT);
+		} else if (sSPBasic->IsEqual(selector, kSPInterfaceStartupSelector)) {
+			error = onStartupPlugin(static_cast<SPInterfaceMessage *>(message));
+		} else if (sSPBasic->IsEqual(selector, kSPInterfaceShutdownSelector)) {
+			error = onShutdownPlugin(static_cast<SPInterfaceMessage *>(message));
+		}
+	} else if (sSPBasic->IsEqual(caller, kSPCacheCaller)) {	
+		if (sSPBasic->IsEqual(selector, kSPPluginPurgeCachesSelector)) {
+			error = purge() ? kSPPluginCachesFlushResponse : kSPPluginCouldntFlushResponse;
+		}
+	} else if (sSPBasic->IsEqual(caller, kSPPropertiesCaller)) {
+		if (sSPBasic->IsEqual(selector, kSPPropertiesAcquireSelector)) {
+			error = acquireProperty((SPPropertiesMessage *) message);
+		} else if (sSPBasic->IsEqual(selector, kSPPropertiesReleaseSelector)) {
+			error = releaseProperty((SPPropertiesMessage *) message);
+		}
+	}
+	
 	// We should probably handle some ADM messages too, but I don't know
 	// which ones right now...
 
@@ -784,10 +754,10 @@ void ScriptographerPlugin::disposeGluedSuite(void *suite, int size) {
 ASErr ScriptographerPlugin::acquireSuites(ImportSuites *suites) {
 	if (!suites->acquired) {
 		suites->acquired = true;
+		ASErr error;
 		ImportSuite *list = suites->suites;
 		for (int i = 0; list[i].name != NULL; i++) {
-			ASErr error = acquireSuite(&list[i]);
-			if (error) return error;	
+			RETURN_ERROR(acquireSuite(&list[i]));
 		}
 	}
 	return kNoErr;
@@ -796,10 +766,10 @@ ASErr ScriptographerPlugin::acquireSuites(ImportSuites *suites) {
 ASErr ScriptographerPlugin::releaseSuites(ImportSuites *suites) {
 	if (suites->acquired) {
 		suites->acquired = false;
+		ASErr error;
 		ImportSuite *list = suites->suites;
 		for (int i = 0; list[i].name != NULL; i++) {
-			ASErr error = releaseSuite(&list[i]);
-			if (error) return error;
+			RETURN_ERROR(releaseSuite(&list[i]));
 		}
 	}
 	return kNoErr;

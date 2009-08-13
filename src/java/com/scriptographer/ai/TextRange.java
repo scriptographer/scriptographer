@@ -37,11 +37,12 @@ import java.util.zip.Adler32;
 
 import com.scriptographer.CommitManager;
 import com.scriptographer.Commitable;
-import com.scratchdisk.list.ArrayList;
+import com.scratchdisk.list.ExtendedArrayList;
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.ListIterator;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
+import com.scratchdisk.util.ArrayList;
 import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
@@ -170,7 +171,7 @@ public class TextRange extends DocumentObject implements Commitable {
 		if (frame != null) {
 			if (lastFrame == null)
 				lastFrame = frame;
-			ArrayList<TextItem> list = new ArrayList<TextItem>();
+			ExtendedArrayList<TextItem> list = new ExtendedArrayList<TextItem>();
 			do {
 				list.add(frame);
 				frame = frame.getNextFrame();
@@ -567,10 +568,10 @@ public class TextRange extends DocumentObject implements Commitable {
 	 * The base class for all TextRangeList classes
 	 */
 	abstract class TextRangeList<E> implements ReadOnlyList<TextRange> {
-		ArrayList.List<E> list;
+		ArrayList<E> list;
 		
 		TextRangeList() {
-			list = new ArrayList.List<E>();
+			list = new ArrayList<E>();
 		}
 
 		public int size() {

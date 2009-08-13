@@ -31,6 +31,7 @@
 
 package com.scriptographer.ai;
 
+import java.lang.ref.SoftReference;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
@@ -68,20 +69,30 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	protected int version = 0;
 	
 	/**
-	 * The history level at the time of the creation of this item. This is used for
-	 * isValid checks. If historyLevel is below creationLevel, the item does not
+	 * The history version at the time of the creation of this item. This is used for
+	 * isValid checks. If historyVersion is below creationVersion, the item does not
 	 * exist anymore and is invalid (happens through undo's). Set to -1 if
-	 * creation level is unknown, for existing items that are wrapped, rather
+	 * creation version is unknown, for existing items that are wrapped, rather
 	 * than newly created.
+	 * These version values include both branch and level information.
+	 * See Document.
 	 */
-	protected int creationLevel;
+	public long creationVersion;
 
 	/**
-	 * Then history level of the last modification of this item. Refetching is
-	 * needed for any item for which the current historyLevel is between between
-	 * creationLevel and modificationLevel.
+	 * The history version at which this item was removed. Set to an invalid value
+	 * as long as it is not removed. This is used in isValid checks.
 	 */
-	protected int modificationLevel;
+	public long deletionVersion = Long.MAX_VALUE;
+
+	/**
+	 * Then history version of the last modification of this item. Refetching is
+	 * needed for any item for which the current historyVersion is between between
+	 * creationVersion and modificationVersion.
+	 * These version values include both branch and level information.
+	 * See Document.
+	 */
+	public long modificationVersion;
 
 	/**
 	 * The handle for the dictionary that contains this item, if any
@@ -186,12 +197,14 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		handle = nativeCreate(type);
 		// Set the history levels to the current level for this newly created
 		// item, so that isValid works right away. After the history
-		// transaction, these values are set one higher, since this items
-		// really belongs to the document.historyLevel + 1 cycle.
-		creationLevel = modificationLevel = document.historyLevel;
+		// cycle, these values are set one higher, since this items
+		// really belongs to the document.historyVersion + 1 cycle.
+		creationVersion = modificationVersion = document.historyVersion;
 		// Keep track of this object from now on, see wrapArtHandle
 		items.put(handle, this);
-		document.updateLevelItems.add(this);
+		// This item's versions need to be updated after the history cycle
+		// is finished.
+		document.createdItems.add(this);
 	}
 
 	/**
@@ -209,16 +222,16 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 			document = Document.getWorkingDocument();
 		// This is an existing item of which the creation level is unknown.
 		// set levels to -1
-		creationLevel = -1;
+		creationVersion = -1;
 		// Use the current history level for the modification level, to force
 		// updates bellow this level, since we do not know when exactly
 		// the item was created or last modified.
-		modificationLevel = document.historyLevel;
+		modificationVersion = document.historyVersion;
 		// Keep track of this object from now on, see wrapArtHandle
 		items.put(handle, this);
 		// Since creationLevel for this item is not known, add it to
 		// the items to check on each undo.
-		document.checkValidItems.add(this);
+		document.checkValidItems.add(new SoftReference<Item>(this));
 	}
 
 	protected Item(int handle, int docHandle) {
@@ -347,7 +360,15 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 				item.version++;
 		}
 	}
-	
+
+	public static void removeIfWrapped(int[] artHandles, boolean removeHandles) {
+		for (int i = 0; i < artHandles.length; i++) {
+			Item item = items.get(artHandles[i]);
+			if (item != null)
+				item.remove(removeHandles);
+		}
+	}
+
 	protected static native boolean[] checkValid(int[] handles);
 
 	protected void changeHandle(int newHandle, int docHandle,
@@ -371,7 +392,9 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * Call to update the item's modification level
 	 */
 	protected void setModified() {
-		modificationLevel = document.historyLevel + 1;
+		modificationVersion = document.historyVersion;
+		// This item's modification date needs updating after the cycle.
+		document.modifiedItems.add(this);
 	}
 
 	/**
@@ -393,7 +416,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * account.
 	 */
 	protected boolean needsUpdate(int version) {
-		return version != this.version || document.historyLevel < modificationLevel;
+		return isValid() && (version != this.version
+				|| document.historyVersion < modificationVersion);
 	}
 
 	/**
@@ -407,6 +431,19 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	private static native boolean nativeRemove(int handle, int docHandle,
 			int dictionaryHandle);
 
+	protected boolean remove(boolean removeHandle) {
+		if (handle != 0 && (!removeHandle
+				|| nativeRemove(handle, document.handle, dictionaryHandle))) {
+			items.remove(handle);
+			deletionVersion = document.historyVersion;
+			// This item's versions need to be updated after the history cycle
+			// is finished.
+			document.removedItems.add(this);
+			return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Removes the item from the document. If the item has children,
 	 * they are also removed.
@@ -414,13 +451,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @return {@true if the item was removed}
 	 */
 	public boolean remove() {
-		if (handle != 0
-				&& nativeRemove(handle, document.handle, dictionaryHandle)) {
-			items.remove(handle);
-			handle = 0;
-			return true;
-		}
-		return false;
+		return remove(true);
 	}
 	
 	/**
@@ -1274,7 +1305,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @return {@true if the item is valid}
 	 */
 	public boolean isValid() {
-		return handle != 0 && document.historyLevel >= creationLevel;
+		return handle != 0 && document.isValidVersion(creationVersion)
+				&& !document.isValidVersion(deletionVersion);
 	}
 
 	/**
