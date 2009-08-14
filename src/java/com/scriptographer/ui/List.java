@@ -31,9 +31,9 @@
 
 package com.scriptographer.ui;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 
+import com.scratchdisk.util.EnumUtils;
 import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
@@ -68,6 +68,6 @@ public class List extends ListItem<ListEntry> {
 	}
 
 	public void setStyle(ListStyle[] style) {
-		setStyle(EnumSet.copyOf(Arrays.asList(style)));
+		setStyle(EnumUtils.asSet(style));
 	}
 }

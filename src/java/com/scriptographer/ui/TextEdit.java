@@ -31,9 +31,9 @@
 
 package com.scriptographer.ui;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 
+import com.scratchdisk.util.EnumUtils;
 import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
@@ -52,7 +52,7 @@ public class TextEdit extends TextEditItem<TextEditStyle> {
 	}
 
 	public TextEdit(Dialog dialog, TextOption[] options) {
-		this(dialog, EnumSet.copyOf(Arrays.asList(options)));
+		this(dialog, EnumUtils.asSet(options));
 	}
 
 	public TextEdit(Dialog dialog) {

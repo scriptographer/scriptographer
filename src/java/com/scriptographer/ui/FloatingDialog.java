@@ -31,8 +31,9 @@
 
 package com.scriptographer.ui;
 
-import java.util.Arrays;
 import java.util.EnumSet;
+
+import com.scratchdisk.util.EnumUtils;
 
 /**
  * @author lehni
@@ -44,7 +45,7 @@ public class FloatingDialog extends Dialog {
 	}
 
 	public FloatingDialog(DialogOption[] options) {
-		this(EnumSet.copyOf(Arrays.asList(options)));
+		this(EnumUtils.asSet(options));
 	}
 
 	public FloatingDialog() {

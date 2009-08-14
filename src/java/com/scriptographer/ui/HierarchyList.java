@@ -31,10 +31,10 @@
 
 package com.scriptographer.ui;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.EnumUtils;
 import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
@@ -79,7 +79,7 @@ public class HierarchyList extends ListItem<HierarchyListEntry> {
 	}
 
 	public void setStyle(ListStyle[] style) {
-		setStyle(EnumSet.copyOf(Arrays.asList(style)));
+		setStyle(EnumUtils.asSet(style));
 	}
 	
 	public boolean remove() {

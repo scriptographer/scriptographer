@@ -31,8 +31,9 @@
 
 package com.scriptographer.ui;
 
-import java.util.Arrays;
 import java.util.EnumSet;
+
+import com.scratchdisk.util.EnumUtils;
 
 /**
  * @author lehni
@@ -50,7 +51,7 @@ public class SpinEdit extends TextEditItem<SpinEditStyle> {
 	 *            valid for SpinEdit
 	 */
 	public SpinEdit(Dialog dialog, TextOption[] options) {
-		this(dialog, EnumSet.copyOf(Arrays.asList(options)));
+		this(dialog, EnumUtils.asSet(options));
 	}
 
 	public SpinEdit(Dialog dialog) {

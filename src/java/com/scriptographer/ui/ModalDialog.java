@@ -31,9 +31,9 @@
 
 package com.scriptographer.ui;
 
-import java.util.Arrays;
 import java.util.EnumSet;
 
+import com.scratchdisk.util.EnumUtils;
 import com.scriptographer.ScriptographerEngine;
 
 /**
@@ -56,7 +56,7 @@ public class ModalDialog extends Dialog {
 	}
 
 	public ModalDialog(DialogOption[] options) {
-		this(EnumSet.copyOf(Arrays.asList(options)));
+		this(EnumUtils.asSet(options));
 	}
 
 	public ModalDialog() {

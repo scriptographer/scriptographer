@@ -32,7 +32,8 @@
 package com.scriptographer.ui;
 
 import java.util.EnumSet;
-import java.util.Arrays;
+
+import com.scratchdisk.util.EnumUtils;
 /**
  * @author lehni
  */
@@ -43,7 +44,7 @@ public class PopupDialog extends ModalDialog {
 	}
 
 	public PopupDialog(DialogOption[] options) {
-		this(EnumSet.copyOf(Arrays.asList(options)));
+		this(EnumUtils.asSet(options));
 	}
 
 	public PopupDialog() {

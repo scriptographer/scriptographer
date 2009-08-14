@@ -99,7 +99,7 @@ void ASAPI Dialog_onSizeChanged(ADMItemRef item, ADMNotifierRef notifier) {
 			jobject obj = gEngine->getDialogObject(dialog);
 			ADMRect size;
 			sADMDialog->GetLocalRect(dialog, &size);
-			gEngine->callVoidMethod(env, obj, gEngine->mid_ui_Dialog_onSizeChanged, size.right, size.bottom);
+			gEngine->callVoidMethod(env, obj, gEngine->mid_ui_Dialog_onSizeChanged, size.right, size.bottom, true);
 		} EXCEPTION_CATCH_REPORT(env);
 	}
 }
@@ -258,8 +258,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_nativeGetBounds(JNIE
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetBounds(JNIEnv *env, jobject obj, jint x, jint y, jint width, jint height) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
-		DEFINE_ADM_RECT(rt, x, y, width, height);
-		sADMDialog->SetBoundsRect(dialog, &rt);
+		DEFINE_ADM_RECT(rect, x, y, width, height);
+		sADMDialog->SetBoundsRect(dialog, &rect);
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -581,6 +581,22 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetTitle(JNIEnv *
 }
 
 /*
+ * void nativeSetName(java.lang.String name)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetName(JNIEnv *env, jobject obj, jstring name) {
+	try {
+		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
+		if (name != NULL) {
+			char *chars = gEngine->convertString(env, name);
+			sADMDialog->SetDialogName(dialog, chars);
+			delete chars;
+		} else {
+			sADMDialog->SetDialogName(dialog, "");
+		}
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
  * int nativeGetFont()
  */
 JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeGetFont(JNIEnv *env, jobject obj) {
@@ -693,9 +709,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getGroupInfo(JNIEnv 
 }
 
 /*
- * void setGroupInfo(java.lang.String group, int positionCode)
+ * void nativeSetGroupInfo(java.lang.String group, int positionCode)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setGroupInfo(JNIEnv *env, jobject obj, jstring group, jint positionCode) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetGroupInfo(JNIEnv *env, jobject obj, jstring group, jint positionCode) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		char *groupStr = gEngine->convertString(env, group);
@@ -1232,4 +1248,3 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_nativeInvokeLater(JNIEn
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }
-

@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
@@ -91,16 +92,15 @@ public abstract class Dialog extends Component {
 	protected ArrayList<Item> items;
 
 	private EnumSet<DialogOption> options;
-	// the outside dimensions of the dialog, including borders and titlebars
-	private Rectangle bounds;
-	// the inside dimensions of the dialog, as used by layout managers and such
+	// The inside dimensions of the dialog, as used by layout managers and such
 	private Size size;
 	private Size minSize;
 	private Size maxSize;
 	private boolean isResizing = false;
 	private boolean isNotifying = false;
 	private String title = "";
-	private boolean visible = true;
+	private String name = "";
+	private boolean visible = false;
 	private boolean active = false;
 
 	protected AWTDialogContainer container = null;
@@ -116,37 +116,34 @@ public abstract class Dialog extends Component {
 	 * change event in this case, still the old dimensions are returned (!)
 	 */
 	private boolean ignoreSizeChange = false;
-	// use two boolean values to monitor the initialized state,
+	// Use two boolean values to monitor the initialized state,
 	// to make the distinction between completely initialized (initialized ==
 	// true) and somewhere during the call of initialize() (uninitialized == false)
 	private boolean unitialized = true;
 	private boolean initialized = false;
-	// used to see whether the size where specified before the dialog is
+	// Used to see whether the size where specified before the dialog is
 	// initialized
 	private boolean sizeSet = false;
-	// used to check if the boundaries (min / max size) are to bet set after
+	// Used to check if the boundaries (min / max size) are to bet set after
 	// initialization
 	private boolean boundariesSet = true;
 	private boolean boundsInitialized = false;
 
-	// for scripts, we cannot always access ScriptRuntime.getTopCallScope(cx)
+	// For scripts, we cannot always access ScriptRuntime.getTopCallScope(cx)
 	// store a reference to the script's preferences object so we can always
 	// use it this happens completely transparently, the dialog class does not
 	// need to know anything about the fact if it's a script or a java class.
 	private Preferences preferences;
 
 	private static ArrayList<Dialog> dialogs = new ArrayList<Dialog>();
-
-	private static int uniqueId = 0;
+	private static HashMap<String, Dialog> dialogsByName = new HashMap<String, Dialog>();
 
 	protected Dialog(int style, EnumSet<DialogOption> options) {
 		preferences = ScriptographerEngine.getPreferences(true);
 		items = new ArrayList<Item>();
-		// create a unique name for this session:
-		String name = "Scriptographer Dialog " + (++uniqueId);
 		handle = nativeCreate(name, style, IntegerEnumUtils.getFlags(options));
-		bounds = nativeGetBounds();
 		size = nativeGetSize();
+
 		isResizing = style == STYLE_RESIZING_FLOATING ||
 			style == STYLE_TABBED_RESIZING_FLOATING ||
 			style == STYLE_TABBED_RESIZING_HIERARCHY_FLOATING;
@@ -159,7 +156,7 @@ public abstract class Dialog extends Component {
 				: EnumSet.noneOf(DialogOption.class);
 		if (handle != 0)
 			dialogs.add(this);
-		// always set dialogs hidden first. 
+		// Always set dialogs hidden first. 
 		// if the OPTION_HIDDEN pseudo flag is not set, the dialog is then
 		// displayed in initialize
 		setVisible(false);
@@ -194,27 +191,23 @@ public abstract class Dialog extends Component {
 				// if setVisible was called before proper initialization, visible
 				// is set but it was not nativelly executed yet. handle this here
 				boolean show = !options.contains(DialogOption.HIDDEN) || visible;
+				// Center it on screen first
+				this.centerOnScreen();
+				if (options.contains(DialogOption.REMEMBER_PLACING))
+					loadPreferences(title);
 				if (container != null) {
 					if (isResizing) {
 						setMinimumSize(new Size(container.getMinimumSize()));
 						setMaximumSize(new Size(container.getMaximumSize()));
 					}
-					// if no bounds where specified yet, set the preferred size
+					// If no bounds where specified yet, set the preferred size
 					// as defined by the layout
 					if (!sizeSet)
 						setSize(new Size(container.getPreferredSize()));
 				}
-				// Center it on screen first
-				this.centerOnScreen();
-				if (options.contains(DialogOption.REMEMBER_PLACING))
-					// If no placing could be loaded, explicitly show the window
-					show = !loadPreferences(title);
 				initialized = true;
 				// Execute callback handler
 				onInitialize();
-				// TODO: Calling this after onInitialize might cause trouble?
-				// It was executed before first, but might make more sense
-				// after to avoid flickering in onInitialize(). Find out...
 				if (show)
 					setVisible(true);
 			}
@@ -250,6 +243,7 @@ public abstract class Dialog extends Component {
 		} else {
 			nativeDestroy(handle);
 			dialogs.remove(this);
+			dialogsByName.remove(name);
 			handle = 0;
 		}
 	}
@@ -266,6 +260,7 @@ public abstract class Dialog extends Component {
 	 * @jshide
 	 */
 	public static void destroyAll() {
+		// Loop backwards since destroy removes from the list
 		for (int i = dialogs.size() - 1; i >= 0; i--) {
 			Dialog dialog = (Dialog) dialogs.get(i);
 			dialog.destroy();
@@ -332,13 +327,13 @@ public abstract class Dialog extends Component {
 			int positionCode = prefs.getInt("positionCode",
 					DialogGroupInfo.POSITION_DEFAULT);
 			// Restore the position code of the dialog
-			// This causes size changes. Ignore these since they're not user made.
-			ignoreSizeChange = true;
 			setGroupInfo(group, positionCode);
-			ignoreSizeChange = false;
 			// Now set the bounds
-			setBounds(bounds);
-
+			if (isResizing)
+				setBounds(bounds);
+			else
+				setPosition(bounds.getPoint());
+			
 			return true;
 		}
 		return false;
@@ -650,10 +645,26 @@ public abstract class Dialog extends Component {
 	 * private callback method, to be called from the native environment
 	 * It calls onResize
 	 */
-	@SuppressWarnings("unused")
-	private void onSizeChanged(int width, int height) {
-		if (!ignoreSizeChange && size != null)
-			updateSize(width - size.width, height - size.height);
+	private void onSizeChanged(int width, int height, boolean invoke) {
+		if (!ignoreSizeChange && size != null) {
+			int deltaX = width - size.width;
+			int deltaY = height - size.height;
+			// On some dialog types on OSX (non tabbed resizing),
+			// the new size is not ready in the nSizeChanged handler.
+			// Detect this here and use invokeLater to fix it by calling again.
+			if (deltaX != 0 || deltaY != 0) {
+				updateSize(deltaX, deltaY);
+			} else if (invoke) {
+				invokeLater(new Runnable() {
+					public void run() {
+						Size size = nativeGetSize();
+						onSizeChanged(size.width, size.height, false);
+						// These dialogs also seem to need a repaint
+						update();
+					}
+				});
+			}
+		}
 	}
 
 	/*
@@ -712,10 +723,11 @@ public abstract class Dialog extends Component {
 	}
 
 	protected native void nativeSetVisible(boolean visible);
-	
+
 	public void setVisible(boolean visible) {
-		// do not set visibility natively before the dialog was properly
+		// Do not set visibility natively before the dialog was properly
 		// initialized. otherwise we get a crash.
+		// TODO: Found out about which platform and version?
 		if (initialized) {
 			fireOnClose  = false;
 			nativeSetVisible(visible);
@@ -753,16 +765,13 @@ public abstract class Dialog extends Component {
 	private native void nativeSetBounds(int x, int y, int width, int height);
 
 	public Rectangle getBounds() {
-		// As kADMWindowDragMovedNotifier does not seem to work, always
-		// fetch bounds natively.
-		// If kADMWindowDragMovedNotifier was working, the reflected value could
-		// be kept up to date...
-		bounds = nativeGetBounds();
-		return bounds;
+		// As kADMWindowDragMovedNotifier does not seem to work, fetch bounds natively.
+		return nativeGetBounds();
 	}
 
 	public void setBounds(int x, int y, int width, int height) {
 		ignoreSizeChange = true;
+		Rectangle bounds = nativeGetBounds();
 		nativeSetBounds(x, y, width, height);
 		updateSize(width - bounds.width, height - bounds.height);
 		ignoreSizeChange = false;
@@ -801,7 +810,6 @@ public abstract class Dialog extends Component {
 	protected void updateSize(int deltaX, int deltaY) {
 		if (deltaX != 0 || deltaY != 0) {
 			size.set(size.width + deltaX, size.height + deltaY);
-			bounds.setSize(bounds.width + deltaX, bounds.height + deltaY);
 			// If a container was created, the layout needs to be recalculated now:
 			if (container != null)
 				container.updateSize(size);
@@ -890,8 +898,6 @@ public abstract class Dialog extends Component {
 	 *
 	 */
 
-	private native void nativeSetTitle(String title);
-
 	private native int nativeGetFont();
 	
 	private native void nativeSetFont(int font);
@@ -909,12 +915,44 @@ public abstract class Dialog extends Component {
 		return title;
 	}
 
+	private native void nativeSetTitle(String title);
+
 	public void setTitle(String title) {
-		this.title = title;
+		this.title = title != null ? title : "";
 		nativeSetTitle(title);
+		// If the dialog name is not set yet, use the title
+		if (name.equals(""))
+			setName(title);
 	}
 
-	/* 
+	public String getName() {
+		return name;
+	}
+
+	private native void nativeSetName(String name);
+
+	public void setName(String name) {
+		// If we are changing the name, remove the previous lookup
+		if (!this.name.equals(""))
+			dialogsByName.remove(this.name);
+		this.name = name != null ? name : "";
+		// See if there was a dialog with this name already, and if so
+		// destroy it first. This allows script to easily replace their
+		// own dialogs.
+		// TODO: Shall scripts prepend their names with their script name and path,
+		// so they cannot do harm???
+		if (!this.name.equals("")) {
+			Dialog other = dialogsByName.get(this.name);
+			if (other != null) {
+				other.setVisible(false);
+				other.destroy();
+			}
+			dialogsByName.put(this.name, this);
+		}
+		nativeSetName(name);
+	}
+
+	/*
 	 * dialog length constraints
 	 * 
 	 */
@@ -1059,8 +1097,19 @@ public abstract class Dialog extends Component {
 
 	public native DialogGroupInfo getGroupInfo();
 	
-	public native void setGroupInfo(String group, int positionCode);
+	private native void nativeSetGroupInfo(String group, int positionCode);
 	
+	public void setGroupInfo(String group, int positionCode) {
+		// ignore size changes since it would happen to early and the
+		// new size would not be returned by native ADM from within setGroupInfo.
+		// So get the new size after and call onSizeChanged manually.
+		ignoreSizeChange = true;
+		nativeSetGroupInfo(group, positionCode);
+		ignoreSizeChange = false;
+		Size size = nativeGetSize();
+		onSizeChanged(size.width, size.height, false);
+	}
+
 	public void setGroupInfo(DialogGroupInfo info) {
 		setGroupInfo(info.group, info.positionCode);
 	}

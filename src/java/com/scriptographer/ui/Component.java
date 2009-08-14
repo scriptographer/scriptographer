@@ -54,6 +54,7 @@ import com.scratchdisk.util.ConversionUtils;
  * @author lehni
  */
 abstract class Component extends NotificationHandler {
+
 	/*
 	 * Use an activation mechanism for the expensive callback routines (the ones
 	 * that get called often). These are only activated if the user actually
@@ -351,7 +352,12 @@ abstract class Component extends NotificationHandler {
 	public void removeContent() {
 		getContent().removeAll();
 	}
-/**
+
+	public boolean isValid() {
+		return handle != 0;
+	}
+
+	/**
 	 * An abstract class that adds some commonly used things like
 	 * setInsets to java.awt.Container.
 	 * 

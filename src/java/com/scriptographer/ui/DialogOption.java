@@ -49,7 +49,7 @@ public enum DialogOption implements IntegerEnum {
 	/**
 	 * Reduce flicker by creating items hidden.
 	 */
-	ITEMS_HIDDEN(1 << 4),
+//	ITEMS_HIDDEN(1 << 4),
 	/**
 	 * Forces for all items within dialog, except as overridden.
 	 */
