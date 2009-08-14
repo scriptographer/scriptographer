@@ -39,7 +39,7 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 		font: 'palette',
 		onTrack: function(tracker) {
 			if (tracker.action == Tracker.ACTION_KEY_STROKE
-				&& tracker.virtualKey == Tracker.KEY_RETURN) {
+					&& tracker.virtualKey == Tracker.KEY_RETURN) {
 				// enter was pressed in the input field. determine the
 				// current line:
 				var text = this.text;

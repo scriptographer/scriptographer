@@ -83,10 +83,13 @@ protected:
 	AINotifierHandle m_documentClosedNotifier;
 	AINotifierHandle m_afterUndoNotifier;
 	AINotifierHandle m_afterRedoNotifier;
+	AINotifierHandle m_beforeRevertNotifier;
 	AINotifierHandle m_afterRevertNotifier;
 	AINotifierHandle m_beforeClearNotifier;
+	AINotifierHandle m_afterClearNotifier;
 	bool m_loaded;
-	bool m_started; 
+	bool m_started;
+	bool m_reverting; 
 	ScriptographerEngine *m_engine;
 	
 #ifdef LOGFILE

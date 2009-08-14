@@ -37,6 +37,11 @@ private:
 	bool m_initialized;
 	Array<AIDocumentHandle> m_suspendedDocuments;
 
+	// for onBeforeClear / onAfterClear
+	long m_numClearItems;
+	long m_clearLevel;
+	AIArtHandle **m_clearItems;
+
 #ifdef MAC_ENV
 	// used for the javaThread workaround:
 	MPQueueID m_requestQueue;
@@ -226,6 +231,7 @@ public:
 	jclass cls_ai_Item;
 	jfieldID fid_ai_Item_version;
 	jfieldID fid_ai_Item_dictionaryHandle;
+	jfieldID fid_ai_Item_dictionaryKey;
 	jmethodID mid_ai_Item_wrapHandle;
 	jmethodID mid_ai_Item_getIfWrapped;
 	jmethodID mid_ai_Item_changeHandle;
@@ -528,7 +534,8 @@ public:
 	AILayerHandle getLayerHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
 	AIDocumentHandle getDocumentHandle(JNIEnv *env, jobject obj, bool activateDoc = false);
 	AIDictionaryRef getArtDictionaryHandle(JNIEnv *env, jobject obj);
-
+	AIDictKey getArtDictionaryKey(JNIEnv *env, jobject obj);
+	
 	inline AIPatternHandle getPatternHandle(JNIEnv *env, jobject obj, bool activateDoc = false) {
 		return (AIPatternHandle) getDocumentObjectHandle(env, obj, activateDoc, "pattern");
 	}
@@ -581,7 +588,7 @@ public:
 	// AI Wrap Handles
 	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL, short type = -1);
 	bool updateArtIfWrapped(JNIEnv *env, AIArtHandle art);
-	void changeArtHandle(JNIEnv *env, jobject itemObject, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL);
+	void changeArtHandle(JNIEnv *env, jobject itemObject, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL, AIDictKey key = NULL);
 	jobject getIfWrapped(JNIEnv *env, AIArtHandle handle);
 
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer, AIDocumentHandle doc = NULL);
@@ -597,7 +604,8 @@ public:
 	ASErr onDocumentClosed(AIDocumentHandle handle);
 	ASErr onUndo();
 	ASErr onRedo();
-	ASErr onClear();
+	ASErr onBeforeClear();
+	ASErr onAfterClear();
 	ASErr onRevert();
 	
 	// AI Tool

@@ -120,6 +120,7 @@ extern "C" {
 	_ADMTrackerSuite				*sADMTracker;
 	_ADMDrawerSuite					*sADMDrawer;
 	
+	_ADMHostSuite					*sADMHost;
 #ifdef MAC_ENV
 	ADMMacHostSuite					*sADMMacHost;
 #endif // MAC_ENV
@@ -204,6 +205,7 @@ ImportSuite startup[] = {
 	kADMListEntrySuite, _kADMListEntrySuiteVersion, &sADMListEntry, sizeof(_ADMListEntrySuite),
 	kADMTrackerSuite, _kADMTrackerSuiteVersion, &sADMTracker, sizeof(_ADMTrackerSuite),
 	kADMDrawerSuite, _kADMDrawerSuiteVersion, &sADMDrawer, sizeof(_ADMDrawerSuite),
+	kADMHostSuite, _kADMHostSuiteVersion, &sADMHost, sizeof(ADMHostSuite),
 	#ifdef MAC_ENV
 	kADMMacHostSuite, kADMMacHostSuiteVersion, &sADMMacHost, sizeof(ADMMacHostSuite),
 	#endif

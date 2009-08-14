@@ -279,27 +279,6 @@ void Item_commit(JNIEnv *env, AIArtHandle art, bool invalidate, bool children) {
 	}
 }
 
-/*
- * Walks through the given dictionary and finds the key for art :)
- */
-AIDictKey Item_getDictionaryKey(AIDictionaryRef dictionary, AIArtHandle art) {
-	AIDictKey foundKey = NULL;
-	AIDictionaryIterator iterator;
-	if (!sAIDictionary->Begin(dictionary, &iterator)) {
-		while (!sAIDictionaryIterator->AtEnd(iterator)) {
-			AIDictKey key = sAIDictionaryIterator->GetKey(iterator);
-			AIArtHandle curArt;
-			if (!sAIDictionary->GetArtEntry(dictionary, key, &curArt) && art == curArt) {
-				foundKey = key;
-				break;
-			}
-			sAIDictionaryIterator->Next(iterator);
-		}
-		sAIDictionaryIterator->Release(iterator);
-	}
-	return foundKey;
-}
-
 void Item_clearArtHandles(AIArtHandle art) {
 	AIDictionaryRef dict;
 	if (!sAIArt->GetDictionary(art, &dict)) {
@@ -318,7 +297,11 @@ void Item_clearArtHandles(AIArtHandle art) {
 	}
 }
 
-AIArtHandle Item_copyTo(JNIEnv *env, AIArtHandle artSrc, AIDocumentHandle docSrc, AIDictionaryRef dictSrc, AIArtHandle artDst, AIDocumentHandle docDst, short paintOrder, bool commitFirst = true) {
+AIArtHandle Item_copyTo(JNIEnv *env, jobject src, AIArtHandle artDst, AIDocumentHandle docDst, short paintOrder, bool commitFirst = true) {
+	// src
+	AIDocumentHandle docSrc = NULL;
+	AIArtHandle artSrc = gEngine->getArtHandle(env, src, false, &docSrc);
+	AIDictionaryRef dictSrc = gEngine->getArtDictionaryHandle(env, src);
 	AIArtHandle res = NULL;
 	AIRealMatrix matrix;
 	bool transform = false;
@@ -342,7 +325,7 @@ AIArtHandle Item_copyTo(JNIEnv *env, AIArtHandle artSrc, AIDocumentHandle docSrc
 	if (commitFirst)
 		Item_commit(env, artSrc);
 	if (dictSrc != NULL) {
-		AIDictKey key = Item_getDictionaryKey(dictSrc, artSrc);
+		AIDictKey key = gEngine->getArtDictionaryKey(env, src);
 		if (key != NULL)
 			sAIDictionary->CopyEntryToArt(dictSrc, key, paintOrder, artDst, &res);
 	}
@@ -361,6 +344,8 @@ AIArtHandle Item_copyTo(JNIEnv *env, AIArtHandle artSrc, AIDocumentHandle docSrc
 	return res;
 }
 
+// TODO: clear dicitionaryHandle and key after moving!
+
 bool Item_move(JNIEnv *env, jobject obj, jobject item, short paintOrder) {
 	try {
 		if (item != NULL) {
@@ -375,9 +360,10 @@ bool Item_move(JNIEnv *env, jobject obj, jobject item, short paintOrder) {
 					// If art belongs to a dictionary, treat it differently
 					AIDictionaryRef dictSrc = gEngine->getArtDictionaryHandle(env, obj);
 					if (dictSrc != NULL) {
-						AIDictKey key = Item_getDictionaryKey(dictSrc, artSrc);
+						AIDictKey key = gEngine->getArtDictionaryKey(env, obj);
 						if (key != NULL) {
 							if (!sAIDictionary->MoveEntryToArt(dictSrc, key, paintOrder, artDst, &artSrc)) {
+								// changeArtHandle also erases dictionaryHandle and dictionaryKey in obj
 								gEngine->changeArtHandle(env, obj, artSrc);
 								return true;
 							}
@@ -385,14 +371,12 @@ bool Item_move(JNIEnv *env, jobject obj, jobject item, short paintOrder) {
 					}
 					
 					// If we're in a different document:
-					// move the art from one document to the other by moving it to
-					// the the doc's dictionary first, then into the doc from there
-					// this is the only way that seems to work...
+					// move the art from one document to the other by copying it over and then removing it.
 					if (docSrc != docDst) {
 						// Pass false for commitFirst since it was already commited above
-						AIArtHandle res = Item_copyTo(env, artSrc, docSrc, NULL, artDst, docDst, paintOrder, false);
+						AIArtHandle res = Item_copyTo(env, obj, artDst, docDst, paintOrder, false);
 						if (res != NULL) {
-							gEngine->changeArtHandle(env, obj, res, docDst, NULL);
+							gEngine->changeArtHandle(env, obj, res, docDst);
 							// now remove the original object in docDst. Moving does not work directly
 							// so this seems to be the most elegant way of handling this
 							// TODO: Since Item_copyTo now seems to work with sAIArt->DuplicateArt for this,
@@ -471,35 +455,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_finalize(JNIEnv *env, job
 }
 
 /*
- * boolean[] checkValid(int[] handles)
- */
-JNIEXPORT jbooleanArray JNICALL Java_com_scriptographer_ai_Item_checkValid(JNIEnv *env, jclass cls, jintArray handles) {
-	try {
-		// Get handles
-		int length = env->GetArrayLength(handles);
-		jint *values = new jint[length];
-		env->GetIntArrayRegion(handles, 0, length, values);
-		// Collect valid values
-		jboolean *valid = new jboolean[length];
-		// TODO: ValidArt seems necessary here, since the attribute check
-		// do not work for items removed through undo. But ValidArt does
-		// not work for art in dictionaries, so more checks are needed here!
-		for (int i = 0; i < length; i++) {
-#if kPluginInterfaceVersion < kAI12
-			valid[i] = sAIArt->ValidArt((AIArtHandle) values[i]);
-#else // kPluginInterfaceVersion >= kAI12
-			valid[i] = sAIArt->ValidArt((AIArtHandle) values[i], false);
-#endif // kPluginInterfaceVersion >= kAI12
-		}
-		// Set the valid values and return
-		jbooleanArray validArray = env->NewBooleanArray(length);
-		env->SetBooleanArrayRegion(validArray, 0, length, valid);
-		return validArray;
-	} EXCEPTION_CONVERT(env);
-	return NULL;
-}
-
-/*
  * boolean nativeRemove(int handle, int docHandle, jint dictionaryHandle)
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeRemove(JNIEnv *env, jclass cls, jint handle, jint docHandle, jint dictionaryHandle) {
@@ -516,7 +471,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeRemove(JNIEnv *
 			// normal artwork tree of the document:
 			AIDictionaryRef dictionary = (AIDictionaryRef) dictionaryHandle;
 			if (dictionary != NULL) {
-				AIDictKey key = Item_getDictionaryKey(dictionary, art);
+				AIDictKey key = NULL; // TODO: Item_getDictionaryKey(dictionary, art);
 				if (key != NULL) {
 					sAIDictionary->DeleteEntry(dictionary, key);
 					return true;
@@ -541,17 +496,13 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeRemove(JNIEnv *
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_copyTo__Lcom_scriptographer_ai_Document_2(JNIEnv *env, jobject obj, jobject document) {
 	try {
-		// src
-		AIDocumentHandle docSrc = NULL;
-		AIArtHandle artSrc = gEngine->getArtHandle(env, obj, false, &docSrc);
-		AIDictionaryRef dictSrc = gEngine->getArtDictionaryHandle(env, obj);
 		// dst: from insertion point
 		AIDocumentHandle docDst = gEngine->getDocumentHandle(env, document);
 		Document_activate(docDst);
 		short paintOrder;
 		AIArtHandle artDst = Item_getInsertionPoint(&paintOrder);
 		// copy
-		AIArtHandle copy = Item_copyTo(env, artSrc, docSrc, dictSrc, artDst, docDst, paintOrder);
+		AIArtHandle copy = Item_copyTo(env, obj, artDst, docDst, paintOrder);
 		if (copy != NULL)
 			return gEngine->wrapArtHandle(env, copy, docDst);
 	} EXCEPTION_CONVERT(env);
@@ -559,17 +510,15 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_copyTo__Lcom_scriptogr
 }
 
 /*
- * com.scriptographer.ai.Item copyTo(com.scriptographer.ai.Item art)
+ * com.scriptographer.ai.Item copyTo(com.scriptographer.ai.Item item)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_copyTo__Lcom_scriptographer_ai_Item_2(JNIEnv *env, jobject obj, jobject item) {
 	try {
 		// src & dst
-		AIDocumentHandle docSrc, docDst;
-		AIArtHandle artSrc = gEngine->getArtHandle(env, obj, false, &docSrc);
+		AIDocumentHandle docDst;
 		AIArtHandle artDst = gEngine->getArtHandle(env, item, false, &docDst);
-		AIDictionaryRef dictSrc = gEngine->getArtDictionaryHandle(env, obj);
 		// copy
-		AIArtHandle copy = Item_copyTo(env, artSrc, docSrc, dictSrc, artDst, docDst, kPlaceInsideOnTop);
+		AIArtHandle copy = Item_copyTo(env, obj, artDst, docDst, kPlaceInsideOnTop);
 		if (copy != NULL)
 			return gEngine->wrapArtHandle(env, copy, docDst);
 	} EXCEPTION_CONVERT(env);

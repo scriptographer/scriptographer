@@ -148,8 +148,8 @@ public class ScriptographerEngine {
 	}
 
 	public static Preferences getPreferences(boolean fromScript) {
-		if (fromScript && currentFile != null)
-			return getPreferences(currentFile);
+		if (fromScript && currentScriptFile != null)
+			return getPreferences(currentScriptFile);
 		// the base preferences for Scriptographer are:
 		// com.scriptographer.preferences on Mac, three nodes seem
 		// to be necessary, otherwise things get mixed up...
@@ -182,7 +182,11 @@ public class ScriptographerEngine {
 		return prefs;
 	}
 
-    private static PrintStream getLogger(String name) {
+	public File getCurrentScriptFile() {
+		return currentScriptFile;
+	}
+
+	private static PrintStream getLogger(String name) {
 		try {
 			File logDir = new File(pluginDir, "log");
 			if (!logDir.exists())
@@ -272,7 +276,7 @@ public class ScriptographerEngine {
 	}
 	
 	private static boolean executing = false;
-	private static File currentFile = null;
+	private static File currentScriptFile = null;
 	private static ArrayList<Script> stopScripts = new ArrayList<Script>();
 	private static boolean allowScriptCancelation = true;
 
@@ -297,7 +301,7 @@ public class ScriptographerEngine {
 
 			Script script = null;
 			if (file != null) {
-				currentFile = file;
+				currentScriptFile = file;
 				// Put a script object in the scope to offer the user
 				// access to information about it.
 				script = (Script) scope.get("script");
@@ -327,7 +331,7 @@ public class ScriptographerEngine {
 			}
 			Document.endExecution();
 			closeProgress();
-			currentFile = null;
+			currentScriptFile = null;
 			executing = false;
 		}
 	}

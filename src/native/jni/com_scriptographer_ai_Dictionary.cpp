@@ -233,8 +233,11 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Item)) {
 						AIArtHandle art = gEngine->getArtHandle(env, value);
 						res = !sAIDictionary->MoveArtToEntry(dictionary, dictKey, art);
-						// Let the art object know it's part of a dictionary now:
-						gEngine->setIntField(env, value, gEngine->fid_ai_Item_dictionaryHandle, (jint) dictionary);
+						if (res) {
+							// Let the art object know it's part of a dictionary now:
+							gEngine->setIntField(env, value, gEngine->fid_ai_Item_dictionaryHandle, (jint) dictionary);
+							gEngine->setIntField(env, value, gEngine->fid_ai_Item_dictionaryKey, (jint) dictKey);
+						}
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Dictionary)) {
 						// TODO: How can such dictionaries be created?
 						// TODO: Should other maps be supported and converted as well?

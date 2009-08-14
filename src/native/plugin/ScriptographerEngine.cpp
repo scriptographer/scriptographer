@@ -488,9 +488,10 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ai_Item = loadClass(env, "com/scriptographer/ai/Item");
 	fid_ai_Item_version = getFieldID(env, cls_ai_Item, "version", "I");
 	fid_ai_Item_dictionaryHandle = getFieldID(env, cls_ai_Item, "dictionaryHandle", "I");
+	fid_ai_Item_dictionaryKey = getFieldID(env, cls_ai_Item, "dictionaryKey", "I");
 	mid_ai_Item_wrapHandle = getStaticMethodID(env, cls_ai_Item, "wrapHandle", "(ISIIIZ)Lcom/scriptographer/ai/Item;");
 	mid_ai_Item_getIfWrapped = getStaticMethodID(env, cls_ai_Item, "getIfWrapped", "(I)Lcom/scriptographer/ai/Item;");
-	mid_ai_Item_changeHandle = getMethodID(env, cls_ai_Item, "changeHandle", "(III)V");
+	mid_ai_Item_changeHandle = getMethodID(env, cls_ai_Item, "changeHandle", "(IIII)V");
 	mid_ai_Item_commit = getMethodID(env, cls_ai_Item, "commit", "(Z)V");
 
 	cls_ai_ItemList = loadClass(env, "com/scriptographer/ai/ItemList");
@@ -601,7 +602,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ui_Size_set = getMethodID(env, cls_ui_Size, "set", "(II)V");
 
 	cls_ui_Dialog = loadClass(env, "com/scriptographer/ui/Dialog");
-	mid_ui_Dialog_onSizeChanged = getMethodID(env, cls_ui_Dialog, "onSizeChanged", "(II)V");
+	mid_ui_Dialog_onSizeChanged = getMethodID(env, cls_ui_Dialog, "onSizeChanged", "(IIZ)V");
 	mid_ui_Dialog_onInvokeLater = getMethodID(env, cls_ui_Dialog, "onInvokeLater", "(I)V");
 
 	cls_ui_PopupDialog = loadClass(env, "com/scriptographer/ui/PopupDialog");
@@ -1460,6 +1461,12 @@ AIDictionaryRef ScriptographerEngine::getArtDictionaryHandle(JNIEnv *env, jobjec
 	return (AIDictionaryRef) gEngine->getIntField(env, obj, fid_ai_Item_dictionaryHandle);
 }
 
+AIDictKey ScriptographerEngine::getArtDictionaryKey(JNIEnv *env, jobject obj) {
+	if (obj == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	return (AIDictKey) gEngine->getIntField(env, obj, fid_ai_Item_dictionaryKey);
+}
 
 /**
  * Returns the wrapped TextFrameRef of an object by assuming that it is an anchestor of Class TextFrame and
@@ -1530,8 +1537,8 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocu
 			(jint) dictionary, wrapped);
 }
 
-void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject item, AIArtHandle art, AIDocumentHandle doc, AIDictionaryRef dictionary) {
-	callVoidMethod(env, item, mid_ai_Item_changeHandle, (jint) art, (jint) doc, (jint) dictionary);
+void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject item, AIArtHandle art, AIDocumentHandle doc, AIDictionaryRef dictionary, AIDictKey key) {
+	callVoidMethod(env, item, mid_ai_Item_changeHandle, (jint) art, (jint) doc, (jint) dictionary, (jint) key);
 }
 
 jobject ScriptographerEngine::getIfWrapped(JNIEnv *env, AIArtHandle art) {
@@ -1703,30 +1710,55 @@ ASErr ScriptographerEngine::onRedo() {
 	return kExceptionErr;
 }
 
-ASErr ScriptographerEngine::onClear() {
+ASErr ScriptographerEngine::onBeforeClear() {
+	// onClear is split into onBefore / onAfter so the selection can be stored
+	// and then cleared if a undo cycle has happened in between.
+	// We need to do this since we're intercepting the delete key, for which
+	// Illustrator does not send a notification and which could also happen
+	// in dialogs.
+	// TODO: Is there a better workaround, e.g. finding the dialog with focus?
+	ASErr error;
+	AIDocumentHandle doc;
+	RETURN_ERROR(sAIDocument->GetDocument(&doc));
+	if (doc != NULL) {
+		long redoLevel;
+		RETURN_ERROR(sAIUndo->CountTransactions(&m_clearLevel, &redoLevel));
+		RETURN_ERROR(sAIMatchingArt->GetSelectedArt(&m_clearItems, &m_numClearItems));
+	} else {
+		// Tell onAfterClear not to execute onClear
+		m_numClearItems = -1;
+	}
+}
+
+ASErr ScriptographerEngine::onAfterClear() {
 	JNIEnv *env = getEnv();
 	try {
-		ASErr error;
-		AIArtHandle **matches;
-		long numMatches;
-		RETURN_ERROR(sAIMatchingArt->GetSelectedArt(&matches, &numMatches));
-		jintArray artHandles;
-		if (numMatches > 0) {
-			jint *handles = new jint[numMatches];
-			for (int i = 0; i < numMatches; i++)
-				handles[i] = (jint) (*matches)[i];
-			// TODO: Does this need disposing even if numMatches == 0?
-			RETURN_ERROR(sAIMDMemory->MdMemoryDisposeHandle((void **) matches));
-			artHandles = env->NewIntArray(numMatches);
-			env->SetIntArrayRegion(artHandles, 0, numMatches, (jint *) handles);
-			delete handles;
-		} else {
-			artHandles = NULL;
+		if (m_numClearItems != -1) {
+			ASErr error;
+			// Only execute onClear if a history cycle was completed in the meantime (the clear one).
+			// See onBeforeClear for an explanation.
+			long undoLevel, redoLevel;
+			RETURN_ERROR(sAIUndo->CountTransactions(&undoLevel, &redoLevel));
+			if (undoLevel > m_clearLevel) {
+				jintArray artHandles;
+				if (m_numClearItems > 0) {
+					jint *handles = new jint[m_numClearItems];
+					for (int i = 0; i < m_numClearItems; i++)
+						handles[i] = (jint) (*m_clearItems)[i];
+					// TODO: Does this need disposing even if m_numClearItems == 0?
+					RETURN_ERROR(sAIMDMemory->MdMemoryDisposeHandle((void **) m_clearItems));
+					artHandles = env->NewIntArray(m_numClearItems);
+					env->SetIntArrayRegion(artHandles, 0, m_numClearItems, (jint *) handles);
+					delete handles;
+				} else {
+					artHandles = NULL;
+				}
+				AIDocumentHandle doc;
+				RETURN_ERROR(sAIDocument->GetDocument(&doc));
+				jobject document = gEngine->wrapDocumentHandle(env, doc);
+				callVoidMethod(env, document, mid_ai_Document_onClear, artHandles);
+			}
 		}
-		AIDocumentHandle doc;
-		RETURN_ERROR(sAIDocument->GetDocument(&doc));
-		jobject document = gEngine->wrapDocumentHandle(env, doc);
-		callVoidMethod(env, document, mid_ai_Document_onClear, artHandles);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;

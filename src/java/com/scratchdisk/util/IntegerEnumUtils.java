@@ -47,29 +47,29 @@ public class IntegerEnumUtils {
 			new HashMap<Class, Lookup>();
 
 	@SuppressWarnings("unchecked")
-	private static <T extends IntegerEnum> Lookup<T> getLookup(Class<T> cls) {
-		Lookup<T> lookup = lookups.get(cls);
+	private static <E extends IntegerEnum> Lookup<E> getLookup(Class<E> cls) {
+		Lookup<E> lookup = lookups.get(cls);
 		// Create lookup information grouped by class and name / value:
 		if (lookup == null) {
-			lookup = new Lookup<T>(cls);
+			lookup = new Lookup<E>(cls);
 			lookups.put(cls, lookup);
 		}
 		return lookup;
 	}
 
-	public static <T extends IntegerEnum> T get(Class<T> cls, Integer value) {
+	public static <E extends IntegerEnum> E get(Class<E> cls, Integer value) {
 		return getLookup(cls).get(value);
 	}
 
-	private static class Lookup<T extends IntegerEnum> {
-		HashMap<Integer, T> lookup = new HashMap<Integer, T>();
+	private static class Lookup<E extends IntegerEnum> {
+		HashMap<Integer, E> lookup = new HashMap<Integer, E>();
 
-		Lookup(Class<T> cls) {
-			for (T value : cls.getEnumConstants())
+		Lookup(Class<E> cls) {
+			for (E value : cls.getEnumConstants())
 				lookup.put(value.value(), value);
 		}
 
-		T get(Integer value) {
+		E get(Integer value) {
 			return lookup.get(value);
 		}
 	}
@@ -85,9 +85,9 @@ public class IntegerEnumUtils {
 		return flags;
 	}
 
-	public static <T extends Enum<T>> EnumSet<T> getSet(Class<T> cls, int flags) {
-		EnumSet<T> set = EnumSet.noneOf(cls);
-		for (T e : cls.getEnumConstants())
+	public static <E extends Enum<E>> EnumSet<E> getSet(Class<E> cls, int flags) {
+		EnumSet<E> set = EnumSet.noneOf(cls);
+		for (E e : cls.getEnumConstants())
 			if ((((IntegerEnum) e).value() & flags) != 0)
 				set.add(e);
 		return set;

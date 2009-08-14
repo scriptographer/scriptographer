@@ -61,6 +61,8 @@ import com.scriptographer.script.EnumUtils;
  */
 public class Document extends NativeObject implements ChangeListener {
 
+	private static final boolean report = true;
+
 	private LayerList layers = null;
 	private DocumentViewList views = null;
 	private SymbolList symbols = null;
@@ -274,12 +276,12 @@ public class Document extends NativeObject implements ChangeListener {
 			this.redoLevel = redoLevel;
 			// Update the current historyEntry level to the current level
 			historyBranch.level = undoLevel;
-			if (false)
-			System.out.println("undoLevel = " + undoLevel + ", redoLevel = "
-					+ redoLevel + ", version = " + historyBranch.branch
-					+ ", previous = " + (historyBranch.previous != null 
-							? historyBranch.previous.level : -1)
-					+ ", level = " + historyVersion);
+			if (report)
+				System.out.println("undoLevel = " + undoLevel + ", redoLevel = "
+						+ redoLevel + ", version = " + historyBranch.branch
+						+ ", previous = " + (historyBranch.previous != null 
+								? historyBranch.previous.level : -1)
+						+ ", level = " + historyVersion);
 		}
 	}
 
@@ -311,6 +313,32 @@ public class Document extends NativeObject implements ChangeListener {
 		}
 	};
 
+	private static native boolean[] nativeCheckValidItems(int[] values);
+
+	protected void checkValidItems(long version) {
+		if (!checkValidItems.isEmpty()) {
+			int[] values = new int[checkValidItems.size() * 3];
+			// Check all these handles in one go, for increased performance
+			// We need to pass dictionaryHandle and key as well, so these
+			// art items can be checked for validity differently.
+			for (int i = 0, j = 0, l = checkValidItems.size(); i < l; i++) {
+				Item item = checkValidItems.get(i).get();
+				values[j++] = item.handle;
+				values[j++] = item.dictionaryHandle;
+				values[j++] = item.dictionaryKey;
+			}
+			boolean[] valid = nativeCheckValidItems(values);
+			// Update historyVersion to one that is not valid anymore
+			for (int i = valid.length - 1; i >= 0; i--) {
+				if (!valid[i]) {
+					checkValidItems.get(i).get().creationVersion = version;
+					// Remove it from the list
+					checkValidItems.remove(i);
+				}
+			}
+		}
+	}
+
 	protected void onClosed() {
 		// Since AI reused document handles, we have to manually remove wrappers
 		// when documents get closed. This happens through a kDocumentClosedNotifier
@@ -320,9 +348,10 @@ public class Document extends NativeObject implements ChangeListener {
 	}
 
 	protected void onRevert() {
-		if (false)
-		System.out.println("Revert");
+		if (report)
+			System.out.println("Revert");
 		resetHistory();
+		checkValidItems(Long.MAX_VALUE);
 	}
 
 	/**
@@ -337,40 +366,26 @@ public class Document extends NativeObject implements ChangeListener {
 	}
 
 	protected void onUndo(int undoLevel, int redoLevel) {
-		if (false)
-		System.out.println("Undo");
+		if (report)
+			System.out.println("Undo");
 		// Check if we were going back to a previous branch, and if so, switch
 		// back.
 		if (historyBranch.previous != null
 				&& undoLevel <= historyBranch.previous.level)
 			historyBranch = historyBranch.previous;
-		// Scan through all the wrappers without an defined creationLevel and
+		// Scan through all the wrappers without a defined creationLevel and
 		// set it to the current undoLevel if they are not valid at this point
 		// anymore. Do this before the new historyLevel is set!
-		if (!checkValidItems.isEmpty()) {
-			int[] handles = new int[checkValidItems.size()];
-			// Check all these handles in one go, for increased performance
-			for (int i = 0, l = handles.length; i < l; i++)
-				handles[i] = checkValidItems.get(i).get().handle;
-			boolean[] valid = Item.checkValid(handles);
-			// Update historyVersion so that it is not valid anymore at this
-			// cycle, by adding 1.
-			long version = historyVersion + 1;
-			for (int i = valid.length - 1; i >= 0; i--) {
-				if (!valid[i]) {
-					checkValidItems.get(i).get().creationVersion = version;
-					// Remove it from the list
-					checkValidItems.remove(i);
-				}
-			}
-		}
+		// Update historyVersion so that it is not valid anymore at this
+		// cycle, by adding 1.
+		checkValidItems(historyVersion + 1);
 		// Now set levels. This also sets historyLevel correctly
 		setHistoryLevels(undoLevel, redoLevel, false);
 	}
 
 	protected void onRedo(int undoLevel, int redoLevel) {
-		if (false)
-		System.out.println("Redo");
+		if (report)
+			System.out.println("Redo");
 		// Check if we were going forward to a "future" branch, and if so,
 		// switch again.
 		if (historyBranch.next != null
@@ -380,8 +395,8 @@ public class Document extends NativeObject implements ChangeListener {
 	}
 
 	protected void onClear(int[] artHandles) {
-		if (false)
-		System.out.println("Clear");
+		if (report)
+			System.out.println("Clear");
 		if (artHandles != null)
 			Item.removeIfWrapped(artHandles, false);
 	}

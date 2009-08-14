@@ -60,11 +60,14 @@ ScriptographerPlugin::ScriptographerPlugin(SPMessageData *messageData) {
 	m_documentClosedNotifier = NULL;
 	m_afterUndoNotifier = NULL;
 	m_afterRedoNotifier = NULL;
+	m_beforeRevertNotifier = NULL;
 	m_afterRevertNotifier = NULL;
 	m_beforeClearNotifier = NULL;
+	m_afterClearNotifier = NULL;
 	m_engine = NULL;
 	m_loaded = false;
 	m_started = false;
+	m_reverting = false;
 	gPlugin = this;
 #ifdef LOGFILE
 	m_logFile = NULL;
@@ -109,30 +112,28 @@ OSStatus ScriptographerPlugin::keyEventHandler(EventHandlerCallRef handler, Even
     GetEventParameter(event, kEventParamKeyCode, typeUInt32, NULL,  sizeof(UInt32), NULL, &keyCode);
 	GetEventParameter(event, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &modifiers);
 	GetEventParameter(event, kEventParamKeyUnicodes, typeUnicodeText, NULL, sizeof(UniChar), NULL, &uniChar);
+	UInt32 kind = GetEventKind(event);
+
+	if (charCode == '\b' && (kind == kEventRawKeyDown || kind == kEventRawKeyUp)) {
+		// Intercept clear key and handle onBeforeClear / onAfterClear
+		AppContext context;
+		if (kind == kEventRawKeyDown)
+			gEngine->onBeforeClear();
+		else if (kind == kEventRawKeyUp)
+			gEngine->onAfterClear();
+	}
 	/*
     Point point;
     GetEventParameter(event, kEventParamMouseLocation, typeQDPoint, NULL, sizeof(Point), NULL, &point);
 	*/
-    UInt32 message = (keyCode << 8) + charCode;
-    switch(GetEventKind(event)) {
+    switch (kind) {
 	case kEventRawKeyDown:
 	case kEventRawKeyRepeat: {
 		int i = 0;
-		if (charCode == '\b') {
-			AppContext context;
-			gEngine->onClear();
-		}
 	}
 	break;
 	case kEventRawKeyUp: {
 		int j = 0;
-		/*
-		if ( (focus != NULL) && wxTheApp->MacSendKeyUpEvent(
-															focus , message , modifiers , when , point.h , point.v ) )
-		{
-			result = noErr ;
-		}
-		 */
 	}
 	break ;
 	case kEventRawKeyModifiersChanged: {
@@ -205,11 +206,17 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 	// Add after redo menu notifier
 	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Redo", "AI Command Notifier: After Redo", &m_afterRedoNotifier));
 
+	// Add before revert menu notifier
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Before Revert", "AI Command Notifier: Before Revert To Saved", &m_beforeRevertNotifier));
+
 	// Add after revert menu notifier
 	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Revert", "AI Command Notifier: After Revert To Saved", &m_afterRevertNotifier));
 
-	// Add after clear menu notifier
+	// Add before clear menu notifier
 	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Before Clear", "AI Command Notifier: Before Clear", &m_beforeClearNotifier));
+
+	// Add after clear menu notifier
+	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Clear", "AI Command Notifier: After Clear", &m_afterClearNotifier));
 	
 	// Determine baseDirectory from plugin location:
 	char pluginPath[kMaxPathLength];
@@ -446,26 +453,7 @@ bool ScriptographerPlugin::pathToFileSpec(const char *path, SPPlatformFileSpecif
 }
 
 void ScriptographerPlugin::setCursor(int cursorID) {
-	ASErr error = kNoErr;
-#ifdef MAC_ENV
-	CursHandle cursor = GetCursor(cursorID);
-	if (cursor)
-		SetCursor(*cursor);
-#else ifdef WIN_ENV
-	HCURSOR cursor;
-	SPAccessRef access;
-	SPPlatformAccessInfo accessInfo;
-
-	error = sSPAccess->GetPluginAccess(m_pluginRef, &access);
-	if(kNoErr == error)
-		error = sSPAccess->GetAccessInfo(access, &accessInfo);
-	if(kNoErr == error) {
-		cursor = LoadCursor((HINSTANCE) accessInfo.defaultAccess, MAKEINTRESOURCE(cursorID));
-		if (cursor)
-			SetCursor(cursor);
-	}
-#endif
-	return;
+	sADMBasic->SetPlatformCursor(m_pluginRef, cursorID);
 }
 
 ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *message) {
@@ -486,13 +474,18 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		} else if (msg->notifier == m_afterRedoNotifier) {
 			error = gEngine->onRedo();
 		} else if (msg->notifier == m_beforeClearNotifier) {
-			error = gEngine->onClear();
+			error = gEngine->onBeforeClear();
+		} else if (msg->notifier == m_afterClearNotifier) {
+			error = gEngine->onAfterClear();
+		} else if (msg->notifier == m_beforeRevertNotifier) {
+			m_reverting = true;
 		} else if (msg->notifier == m_afterRevertNotifier) {
 			error = gEngine->onRevert();
+			m_reverting = false;
 		} else if (msg->notifier == m_documentClosedNotifier) {
-			// We need to remove wrappers for document handles since
-			// handles seem to get reused for new documents.
-			error = gEngine->onDocumentClosed((AIDocumentHandle) msg->notifyData);
+			// Only send onClose events if we're not reverting the document.
+			if (!m_reverting)
+				error = gEngine->onDocumentClosed((AIDocumentHandle) msg->notifyData);
 		} else if (msg->notifier == m_appStartedNotifier) {
 			error = onPostStartupPlugin();
 		}

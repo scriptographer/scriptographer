@@ -214,6 +214,7 @@ namespace ATE {
 #define _kADMDialogGroupSuiteVersion 7
 #define _kADMDrawerSuiteVersion 7
 #define _kADMTrackerSuiteVersion 2
+#define _kADMHostSuiteVersion 7
 
 #elif kPluginInterfaceVersion >= kAI13
 
@@ -225,6 +226,7 @@ namespace ATE {
 #define _kADMDialogGroupSuiteVersion 6
 #define _kADMDrawerSuiteVersion 6
 #define _kADMTrackerSuiteVersion 2
+#define _kADMHostSuiteVersion 7
 
 #elif kPluginInterfaceVersion >= kAI12
 
@@ -236,6 +238,7 @@ namespace ATE {
 #define _kADMDialogGroupSuiteVersion 4
 #define _kADMDrawerSuiteVersion 5
 #define _kADMTrackerSuiteVersion 1
+#deifne _kADMHostSuiteVersion 6
 
 #elif kPluginInterfaceVersion >= kAI11
 
@@ -247,6 +250,7 @@ namespace ATE {
 #define _kADMDialogGroupSuiteVersion 3
 #define _kADMDrawerSuiteVersion 5
 #define _kADMTrackerSuiteVersion 1
+#deifne _kADMHostSuiteVersion 5
 
 #else
 
@@ -260,6 +264,7 @@ namespace ATE {
 #define _kADMDialogGroupSuiteVersion 3
 #define _kADMDrawerSuiteVersion 5
 #define _kADMTrackerSuiteVersion 1
+#deifne _kADMHostSuiteVersion 5
 
 #endif
 
@@ -285,6 +290,7 @@ namespace ATE {
 #define _ADMListEntrySuite CONCAT(ADMListEntrySuite, _kADMListEntrySuiteVersion)
 #define _ADMTrackerSuite CONCAT(ADMTrackerSuite, _kADMTrackerSuiteVersion)
 #define _ADMDrawerSuite CONCAT(ADMDrawerSuite, _kADMDrawerSuiteVersion)
+#define _ADMHostSuite CONCAT(ADMHostSuite, _kADMHostSuiteVersion)
 
 // The basic suite doesn't need to be loaded:
 extern "C" SPBasicSuite 					*sSPBasic;
@@ -371,6 +377,7 @@ extern "C" _ADMEntrySuite					*sADMEntry;
 extern "C" _ADMListEntrySuite				*sADMListEntry;
 extern "C" _ADMTrackerSuite					*sADMTracker;
 extern "C" _ADMDrawerSuite					*sADMDrawer;
+extern "C" _ADMHostSuite					*sADMHost;
 
 #ifdef MAC_ENV
 extern "C" ADMMacHostSuite					*sADMMacHost;

@@ -100,6 +100,11 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	protected int dictionaryHandle = 0;
 
 	/**
+	 * The key under which this item was inserted into the dictionary
+	 */
+	protected int dictionaryKey = 0;
+
+	/**
 	 * The art item's dictionary
 	 */
 	private Dictionary data = null;
@@ -365,11 +370,9 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 				item.remove(removeHandles);
 		}
 	}
-
-	protected static native boolean[] checkValid(int[] handles);
-
+	
 	protected void changeHandle(int newHandle, int docHandle,
-			int newDictionaryHandle) {
+			int newDictionaryHandle, int newDicStringKey) {
 		// Remove the object at the old handle
 		if (handle != newHandle) {
 			items.remove(handle);
@@ -379,6 +382,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 			items.put(newHandle, this);
 		}
 		dictionaryHandle = newDictionaryHandle;
+		dictionaryKey = newDicStringKey;
 		if (docHandle != 0)
 			document = Document.wrapHandle(docHandle);
 		// Update

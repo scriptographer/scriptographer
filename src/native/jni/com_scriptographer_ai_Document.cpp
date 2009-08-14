@@ -1047,3 +1047,50 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetData(JNIEnv 
 	} EXCEPTION_CONVERT(env);
 	return (jint) dictionary;
 }
+
+/*
+ * boolean[] nativeCheckValidItems(int[] values)
+ */
+JNIEXPORT jbooleanArray JNICALL Java_com_scriptographer_ai_Document_nativeCheckValidItems(JNIEnv *env, jclass cls, jintArray array) {
+	try {
+		// Get handles
+		int length = env->GetArrayLength(array);
+		jint *values = new jint[length];
+		env->GetIntArrayRegion(array, 0, length, values);
+		// Collect valid values
+		int validLength = length / 3;
+		jboolean *valid = new jboolean[validLength];
+		// In order to check dictionary art items, we need to see if their dictionary
+		// still contains them. If the dicitionary is not valid any longer, or it does
+		// not contain the item any longer, it is not regarded as valid.
+		// 'values' contains tripples of handle / dict / key for each item to check.
+		for (int i = 0, j = 0; i < length; j++) {
+			AIArtHandle art = (AIArtHandle) values[i++];
+			AIDictionaryRef dict = (AIDictionaryRef) values[i++];
+			AIDictKey key = (AIDictKey) values[i++];
+			if (dict != NULL) {
+				AIArtHandle other;
+				valid[j] = !sAIDictionary->GetArtEntry(dict, key, &other) && other == art;
+			} else {
+#if kPluginInterfaceVersion < kAI12
+				valid[j] = sAIArt->ValidArt(art);
+#else // kPluginInterfaceVersion >= kAI12
+				valid[j] = sAIArt->ValidArt(art, false);
+#endif // kPluginInterfaceVersion >= kAI12
+			}
+		}
+		// Set the valid values and return
+		jbooleanArray validArray = env->NewBooleanArray(validLength);
+		env->SetBooleanArrayRegion(validArray, 0, validLength, valid);
+		return validArray;
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
+/*
+ * boolean[] checkValid(int[] handles)
+ */
+JNIEXPORT jbooleanArray JNICALL Java_com_scriptographer_ai_Item_checkValid(JNIEnv *env, jclass cls, jintArray handles) {
+	try {
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
