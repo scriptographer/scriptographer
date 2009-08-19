@@ -37,8 +37,10 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.prefs.Preferences;
+
+import org.mozilla.javascript.Undefined;
 
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.script.Scope;
@@ -46,6 +48,7 @@ import com.scratchdisk.script.ScriptCanceledException;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
 import com.scratchdisk.util.ClassUtils;
+import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.StringUtils;
 import com.scriptographer.ai.Annotator;
 import com.scriptographer.ai.Document;
@@ -61,25 +64,32 @@ import com.scriptographer.ui.MenuItem;
 public class ScriptographerEngine {
 	private static File scriptDir = null;
 	private static File pluginDir = null;
+	private static File coreDir = null;
 	private static PrintStream errorLogger = null;
 	private static PrintStream consoleLogger = null;
 	private static Thread mainThread;
-	private static ArrayList<Scope> initScopes;
 
-	protected static final int EVENT_APP_STARTUP = 0;
-	protected static final int EVENT_APP_SHUTDOWN = 1;
-	protected static final int EVENT_APP_ACTIVATED = 2;
-	protected static final int EVENT_APP_DEACTIVATED = 3;
-	protected static final int EVENT_APP_ABOUT = 4;
+	private static HashMap<String, ArrayList<Scope>> callbackScopes;
 
 	private static String[] callbackNames = {
 		"onStartup",
 		"onShutdown",
 		"onActivate",
 		"onDeactivate",
-		"onAbout"
+		"onAbout",
+		"onKeyDown",
+		"onKeyUp"
 	};
 
+	// App Event callbacks. Their numbers need to match calbackNames indices.
+	protected static final int EVENT_APP_STARTUP = 0;
+	protected static final int EVENT_APP_SHUTDOWN = 1;
+	protected static final int EVENT_APP_ACTIVATED = 2;
+	protected static final int EVENT_APP_DEACTIVATED = 3;
+	protected static final int EVENT_APP_ABOUT = 4;
+
+	protected static final int EVENT_KEY_DOWN = 0;
+	protected static final int EVENT_KEY_UP = 1;
 	/**
      * Don't let anyone instantiate this class.
      */
@@ -102,13 +112,11 @@ public class ScriptographerEngine {
 		// Loader, so getting the ClassLoader from there is save:
 		Thread.currentThread().setContextClassLoader(
 				ScriptographerEngine.class.getClassLoader());
-		// Collect all init scripts and compile them to scopes.
-		// These are then used to call onStartup / onPostStartup callbacks
-		initScopes = new ArrayList<Scope>();
-		// Collect core code, if it exists
-		File coreDir = new File(pluginDir, "core");
+		// Compile all core init scripts
+		callbackScopes = new HashMap<String, ArrayList<Scope>>();
+		coreDir = new File(pluginDir, "core");
 		if (coreDir.isDirectory())
-			collectInitScripts(coreDir, initScopes);
+			compileInitScripts(coreDir);
 	}
 
 	public static void destroy() {
@@ -139,12 +147,47 @@ public class ScriptographerEngine {
 	}
 
 	public static void setScriptDirectory(File dir) {
-		// The core gui calls setScriptDirectory each time it runs, so collect
+		// The core GUI calls setScriptDirectory each time it runs, so collect
 		// init scripts here
 		scriptDir = dir;
-		// Collect all __init__ scripts in the Script folder:
+		// First reset callbackScopes
+		removeCallbacks();
+		// Now compile all __init__ scripts in the Script folder:
 		if (scriptDir != null)
-			collectInitScripts(scriptDir, initScopes);
+			compileInitScripts(scriptDir);
+	}
+
+	/**
+	 * Executes all scripts named __init__.* in the given folder
+	 * 
+	 * @param dir
+	 * @throws IOException
+	 * @throws ScriptException
+	 */
+	public static void compileInitScripts(File dir) {
+		File []files = dir.listFiles();
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				File file = files[i];
+				String name = file.getName();
+				if (file.isDirectory() && !name.startsWith(".")
+						&& !name.equals("CVS")) {
+					compileInitScripts(file);
+				} else if (name.startsWith("__init__")) {
+					try {
+						ScriptEngine engine =
+								ScriptEngine.getEngineByFile(file);
+						if (engine == null)
+							throw new ScriptException(
+									"Unable to find script engine for " + file);
+						Scope scope = engine.createScope();
+						execute(file, scope);
+					} catch (Exception e) {
+						reportError(e);
+					}
+				}
+			}
+		}
 	}
 
 	public static Preferences getPreferences(boolean fromScript) {
@@ -277,7 +320,6 @@ public class ScriptographerEngine {
 	
 	private static boolean executing = false;
 	private static File currentScriptFile = null;
-	private static ArrayList<Script> stopScripts = new ArrayList<Script>();
 	private static boolean allowScriptCancelation = true;
 
 	/**
@@ -410,16 +452,8 @@ public class ScriptographerEngine {
 				scope = script.getEngine().createScope();
 			started = beginExecution(file, scope);
 			ret = script.execute(scope);
-			if (started) {
-				// handle onStop
-				Script scriptObj = (Script) scope.get("script");
-				if (scriptObj.getOnStop() != null) {
-					// add this scope to the scopes that want onStop to be
-					// called
-					// when the stop button is hit by the user
-					stopScripts.add(scriptObj);
-				}
-			}
+			if (started)
+				addCallbacks(scope, file);
 		} catch (Throwable t) {
 			throwable = t;
 		} finally {
@@ -434,7 +468,7 @@ public class ScriptographerEngine {
 		return ret;
 	}
 
-	protected static void handleException(Throwable t, File file) {
+	private static void handleException(Throwable t, File file) {
 		// Do not allow script cancellation during error reporting,
 		// as this is now handled by scripts too
 		allowScriptCancelation = false;
@@ -451,61 +485,99 @@ public class ScriptographerEngine {
 		allowScriptCancelation = true;
 	}
 
-	/**
-	 * Executes all scripts named __init__.* in the given folder and collects
-	 * the resulting scopes for callback
-	 * 
-	 * @param dir
-	 * @throws IOException
-	 * @throws ScriptException
-	 */
-	public static void collectInitScripts(File dir, ArrayList<Scope> scopes) {
-		File []files = dir.listFiles();
-		if (files != null) {
-			for (int i = 0; i < files.length; i++) {
-				File file = files[i];
-				String name = file.getName();
-				if (file.isDirectory() && !name.startsWith(".")
-						&& !name.equals("CVS")) {
-					collectInitScripts(file, scopes);
-				} else if (name.startsWith("__init__")) {
-					try {
-						ScriptEngine engine =
-								ScriptEngine.getEngineByFile(file);
-						if (engine == null)
-							throw new ScriptException(
-									"Unable to find script engine for " + file);
-						// Execute in the tool's scope so setIdleEventInterval
-						// can be called
-						Scope scope = engine.createScope();
-						execute(file, scope);
-						scopes.add(scope);
-					} catch (Exception e) {
-						reportError(e);
+	private static File getScriptFile(Scope scope) {
+		Script scriptObj = (Script) scope.get("script");
+		return scriptObj != null ? scriptObj.getFile() : null;
+	}
+
+	private static void addCallbacks(Scope scope, File file) {
+		// Scan through callback names and add to callback scope sublists if
+		// found.
+		for (String name : callbackNames) {
+			Callable callback = scope.getCallable(name);
+			if (callback != null) {
+				ArrayList<Scope> list = callbackScopes.get(name);
+				if (list == null) {
+					list = new ArrayList<Scope>();
+					callbackScopes.put(name, list);
+				} else {
+					// Remove old scope for this script before adding new one
+					for (int i = list.size() - 1; i >= 0; i--) {
+						if (getScriptFile(list.get(i)).equals(file)) {
+							list.remove(i);
+							break;
+						}
 					}
 				}
+				list.add(scope);
 			}
 		}
+	}
+
+	private static void removeCallbacks(String name) {
+		// Remove specified scopes from callbackScopes, but keep core stuff in,
+		// by looking through the scopes and analyzing each "script" object's
+		// file value.
+		String corePath = coreDir.getPath();
+		ArrayList<Scope> list = callbackScopes.get(name);
+		if (list != null) {
+			for (int i = list.size() - 1; i >= 0; i--)
+				if (!getScriptFile(list.get(i)).getPath().startsWith(corePath))
+					list.remove(i);
+		}
+	}
+
+	private static void removeCallbacks() {
+		for (String name : callbackScopes.keySet())
+			removeCallbacks(name);
+	}
+	
+	private static boolean callCallbacks(String name, Object[] args) {
+		ArrayList<Scope> list = callbackScopes.get(name);
+		// The first callback handler that returns true stops the others
+		// (and in the case of keyDown / up also the native one!)
+		if (list != null) {
+			for (Scope scope : list) {
+				Callable callback = scope.getCallable(name);
+				Object res = invoke(callback, scope, args);
+				if (res == Undefined.instance)
+					res = null;
+				if (ConversionUtils.toBoolean(res))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	private static void callCallbacks(String name) {
+		// TODO: emptyArgs?
+		callCallbacks(name, new Object[0]);
 	}
 
 	public static void stopAll() {
 		Timer.stopAll();
-		// Walk through all the stop scopes and call onStop on them:
-		for (Iterator it = stopScripts.iterator(); it.hasNext();) {
-			Script script = (Script) it.next();
-			Callable onStop = script.getOnStop();
-			if (onStop != null) {
-				try {
-					onStop.call(script);
-				} catch (ScriptException e) {
-					reportError(e);
-				}
-			}
-		}
-		stopScripts.clear();
+		callCallbacks("onStop");
+		removeCallbacks();
 	}
 
+	/**
+	 * To be called from the native environment.
+	 */
+	@SuppressWarnings("unused")
+	private static void onHandleEvent(int type) throws Exception {
+		callCallbacks(callbackNames[type]);
+		// Explicitly initialize all dialogs after startup, as otherwise
+		// funny things will happen on CS3 -> see comment in initializeAll
+		if (type == EVENT_APP_STARTUP)
+			Dialog.initializeAll();
+	}
 
+	@SuppressWarnings("unused")
+	private static boolean onHandleKeyEvent(int type, int keyCode, char character, int modifiers) {
+		return callCallbacks(type == EVENT_KEY_DOWN ? "onKeyDown" : "onKeyUp",
+				new Object[] { keyCode, character, modifiers });
+	}
+	
 	/**
 	 * Launches the filename with the default associated editor.
 	 * 
@@ -646,31 +718,5 @@ public class ScriptographerEngine {
 			version = lines[0];
 			revision = Integer.parseInt(lines[1]);
 		}
-	}
-
-	/**
-	 * To be called from the native environment.
-	 */
-
-	@SuppressWarnings("unused")
-	private static void onHandleEvent(int type) throws Exception {
-		// Loop through all compiled init script scopes and see if a callback
-		// function for the given event type exists. If so, call it.
-		// This is used to install tools onStartup and GUI stuff onPostStartup
-		// It is also used to call onActivate / onDeactivate
-		for (Scope scope : initScopes) {
-			Callable callable = scope.getCallable(callbackNames[type]);
-			if (callable != null) {
-				try {
-					callable.call(scope);
-				} catch (ScriptException e) {
-					reportError(e);
-				}
-			}
-		}
-		// Explicitly initialize all dialogs after startup, as otherwise
-		// funny things will happen on CS3 -> see comment in initializeAll
-		if (type == EVENT_APP_STARTUP)
-			Dialog.initializeAll();
 	}
 }

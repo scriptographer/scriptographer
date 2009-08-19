@@ -66,7 +66,8 @@ public class MouseEvent {
 	
 	protected boolean setValues(float x, float y, int pressure,
 			float distanceThreshold, boolean start, boolean down) {
-		if (start || distanceThreshold == 0 || point.getDistance(x, y) >= distanceThreshold) {
+		if (start || distanceThreshold == 0
+				|| point.getDistance(x, y) >= distanceThreshold) {
 			isDown = down;
 			Point newPoint = new Point(x, y);
 			if (start) {

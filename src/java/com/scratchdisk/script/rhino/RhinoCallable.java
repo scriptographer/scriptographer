@@ -35,6 +35,7 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.WrapFactory;
 import org.mozilla.javascript.Wrapper;
 
 import com.scratchdisk.script.Callable;
@@ -56,10 +57,13 @@ public class RhinoCallable extends Callable {
 		// Retrieve wrapper object for the native java object, and call the
 		// function on it.
 		try {
-			Scriptable scope = RhinoEngine.getWrapper(
-					ScriptableObject.getTopLevelScope(function), obj);
-			Object ret = function.call(Context.getCurrentContext(),
-					scope, scope, args);
+			Scriptable scope = RhinoEngine.getWrapper(obj,
+					ScriptableObject.getTopLevelScope(function));
+			Context cx = Context.getCurrentContext();
+			WrapFactory factory = cx.getWrapFactory();
+			for (int i = 0; i < args.length; i++)
+				args[i] = factory.wrap(cx, scope, args[i], null);
+			Object ret = function.call(cx, scope, scope, args);
 			// unwrap if the return value is a native java object:
 			if (ret instanceof Wrapper)
 				ret = ((Wrapper) ret).unwrap();

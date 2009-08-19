@@ -37,11 +37,6 @@ private:
 	bool m_initialized;
 	Array<AIDocumentHandle> m_suspendedDocuments;
 
-	// for onBeforeClear / onAfterClear
-	long m_numClearItems;
-	long m_clearLevel;
-	AIArtHandle **m_clearItems;
-
 #ifdef MAC_ENV
 	// used for the javaThread workaround:
 	MPQueueID m_requestQueue;
@@ -148,6 +143,7 @@ public:
 	jmethodID mid_ScriptographerEngine_destroy;
 	jmethodID mid_ScriptographerEngine_reportError;
 	jmethodID mid_ScriptographerEngine_onHandleEvent;
+	jmethodID mid_ScriptographerEngine_onHandleKeyEvent;
 
 	jclass cls_ScriptographerException;
 
@@ -418,9 +414,6 @@ public:
 	bool isInitialized() {
 		return m_initialized;
 	}
-
-	long getNanoTime();
-	bool isKeyDown(short keycode);
 	
 	void println(JNIEnv *env, const char *str, ...);
 	void reportError(JNIEnv *env);
@@ -604,8 +597,7 @@ public:
 	ASErr onDocumentClosed(AIDocumentHandle handle);
 	ASErr onUndo();
 	ASErr onRedo();
-	ASErr onBeforeClear();
-	ASErr onAfterClear();
+	ASErr onClear();
 	ASErr onRevert();
 	
 	// AI Tool
@@ -636,6 +628,7 @@ public:
 	bool callOnTrack(jobject handler, ADMTrackerRef tracker);
 	bool callOnDraw(jobject handler, ADMDrawerRef drawer);
 
+	bool callOnHandleKeyEvent(ASUInt32 type, ASUInt32 keyCode, ASUnicode character, ASUInt32 modifiers);
 	ASErr callOnHandleEvent(int type);
 
 	// ADM Handles

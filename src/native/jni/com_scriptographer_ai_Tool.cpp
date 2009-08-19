@@ -227,6 +227,45 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setTooltip(JNIEnv *env, j
 }
 
 /*
+ * boolean getSelected()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Tool_getSelected(JNIEnv *env, jobject obj) {
+	try {
+		AIToolHandle tool = gEngine->getToolHandle(env, obj);
+		AIToolHandle selected;
+		if (!sAITool->GetSelectedTool(&selected) && selected == tool)
+			return true;
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+/*
+ * void setSelected(boolean selected)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_setSelected(JNIEnv *env, jobject obj, jboolean selected) {
+	try {
+		AIToolHandle tool = gEngine->getToolHandle(env, obj);
+		if (!selected) {
+			// If we're deselecting, we need to select the previous or next tool instead
+			AIToolType toolNum;
+			long count;
+			if (!sAITool->GetToolNumberFromHandle(tool, &toolNum)
+					&& !sAITool->CountTools(&count)) {
+				if (toolNum < count - 1)
+					toolNum++;
+				else
+					toolNum--;
+				if (sAITool->GetToolHandleFromNumber(toolNum, &tool))
+					tool = NULL;
+			}
+		}
+		if (tool != NULL) {
+			sAITool->SetSelectedTool(tool);
+		}
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
  * void nativeSetImage(int iconHandle)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Tool_nativeSetImage(JNIEnv *env, jobject obj, jint iconHandle) {

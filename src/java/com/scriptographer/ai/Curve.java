@@ -299,7 +299,8 @@ public class Curve implements ChangeListener {
 		return index1 > 0 ? segments.get(index1 - 1).getCurve() : null;
 	}
 
-	// TODO: return reversed curve as new instance instead of modifiying this curve?
+	// TODO: Shall we return reversed curve as new instance instead of modifying
+	// this curve?
 	/**
 	 * Reverses the curve.
 	 */
@@ -540,7 +541,7 @@ public class Curve implements ChangeListener {
 		double[][] temp = new double[4][];
 		// Use length / bezierLength as a first guess, then iterate closer
 		double t = length / bezierLength, prevCloseness = 1;
-		// TODO: Find a better approach for this:
+		// TODO: Find a better approach for this. Try Regula Falsi?
 		// Make sure we're not iterating endlessly...
 		for (int i = 0; i < 100; i++) {
 			double partLength = getPartLength(curve, 0, t, temp);

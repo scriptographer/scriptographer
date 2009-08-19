@@ -52,7 +52,7 @@ public class ConversionUtils {
 		if (val == null)
 			return +0.0;
 		if (val instanceof String)
-            return Double.valueOf((String) val).doubleValue();
+			return Double.valueOf((String) val).doubleValue();
 		if (val instanceof Boolean)
 			return ((Boolean) val).booleanValue() ? 1 : +0.0;
 		return Double.NaN;
@@ -73,32 +73,29 @@ public class ConversionUtils {
 	}
 
 	public static int toInt(Object val) {
-        if (val instanceof Integer)
-            return ((Integer) val).intValue();
-        else return (int) Math.round(toDouble(val));
+		if (val instanceof Integer)
+			return ((Integer) val).intValue();
+		else return (int) Math.round(toDouble(val));
 	}
 
 	public static int toInt(Object val, int defaultValue) {
-        if (val instanceof Integer)
-            return ((Integer) val).intValue();
-        else return (int) Math.round(toDouble(val, defaultValue));
+		if (val instanceof Integer)
+			return ((Integer) val).intValue();
+		else return (int) Math.round(toDouble(val, defaultValue));
 	}
 
 	public static boolean toBoolean(Object val) {
-        if (val instanceof Boolean)
-            return ((Boolean) val).booleanValue();
-        if (val == null)
-            return false;
-        if (val instanceof String)
-            return ((String) val).length() != 0;
-        if (val instanceof Number) {
-            double d = ((Number) val).doubleValue();
-            // Compare with itself to make sure it's not NaN
-            // The warning about it can be ignored, Even Double.isNaN
-            // is implemented this way!
-            return (d == d && d != 0.0);
-        }
-        return true;
+		if (val instanceof Boolean)
+			return ((Boolean) val).booleanValue();
+		if (val == null)
+			return false;
+		if (val instanceof String)
+			return ((String) val).length() != 0;
+		if (val instanceof Number) {
+			double d = ((Number) val).doubleValue();
+			return d != 0.0 && !Double.isNaN(d);
+		}
+		return true;
 	}
 
 	public static String toString(Object val) {
@@ -109,47 +106,47 @@ public class ConversionUtils {
 		return val != null ? val.toString() : defaultValue;
 	}
 
-    public static boolean equals(Object x, Object y) {
-        if (x == null) {
-            return y == null;
-        } else if (x instanceof Number) {
-            return equals(((Number)x).doubleValue(), y);
-        } else if (x instanceof String) {
-            return equals((String)x, y);
-        } else if (x instanceof Boolean) {
-            boolean b = ((Boolean)x).booleanValue();
-            if (y instanceof Boolean)
-                return b == ((Boolean)y).booleanValue();
-            return equals(b ? 1.0 : 0.0, y);
-        }
-        return false;
-    }
+	public static boolean equals(Object x, Object y) {
+		if (x == null) {
+			return y == null;
+		} else if (x instanceof Number) {
+			return equals(((Number)x).doubleValue(), y);
+		} else if (x instanceof String) {
+			return equals((String)x, y);
+		} else if (x instanceof Boolean) {
+			boolean b = ((Boolean)x).booleanValue();
+			if (y instanceof Boolean)
+				return b == ((Boolean)y).booleanValue();
+			return equals(b ? 1.0 : 0.0, y);
+		}
+		return false;
+	}
 
-    static boolean equals(double x, Object y) {
-        if (y == null) {
-            return false;
-        } else if (y instanceof Number) {
-            return x == ((Number)y).doubleValue();
-        } else if (y instanceof String) {
-            return x == toDouble(y);
-        } else if (y instanceof Boolean) {
-            return x == (((Boolean)y).booleanValue() ? 1.0 : +0.0);
-        }
-        return false;
-    }
+	static boolean equals(double x, Object y) {
+		if (y == null) {
+			return false;
+		} else if (y instanceof Number) {
+			return x == ((Number)y).doubleValue();
+		} else if (y instanceof String) {
+			return x == toDouble(y);
+		} else if (y instanceof Boolean) {
+			return x == (((Boolean)y).booleanValue() ? 1.0 : +0.0);
+		}
+		return false;
+	}
 
-    private static boolean equals(String x, Object y) {
-        if (y == null) {
-            return false;
-        } else if (y instanceof String) {
-            return x.equals(y);
-        } else if (y instanceof Number) {
-            return toDouble(x) == ((Number)y).doubleValue();
-        } else if (y instanceof Boolean) {
-            return toDouble(x) == (((Boolean)y).booleanValue() ? 1.0 : 0.0);
-        }
-        return false;
-    }
+	private static boolean equals(String x, Object y) {
+		if (y == null) {
+			return false;
+		} else if (y instanceof String) {
+			return x.equals(y);
+		} else if (y instanceof Number) {
+			return toDouble(x) == ((Number)y).doubleValue();
+		} else if (y instanceof Boolean) {
+			return toDouble(x) == (((Boolean)y).booleanValue() ? 1.0 : 0.0);
+		}
+		return false;
+	}
  
 	/*
 	 * Helpers to retrieve values from maps. Used by native

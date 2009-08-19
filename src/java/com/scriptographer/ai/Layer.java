@@ -31,7 +31,6 @@
 
 package com.scriptographer.ai;
 
-// TODO: subclass Group instead?
 /**
  * The Layer item represents a layer in an Illustrator document.
  * 

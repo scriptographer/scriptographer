@@ -98,7 +98,8 @@ public class Tool extends NativeObject {
 	/**
 	 * @jshide
 	 */
-	public Tool(String name, EnumSet<ToolOption> options, Tool groupTool, Tool toolsetTool) {
+	public Tool(String name, EnumSet<ToolOption> options, Tool groupTool,
+			Tool toolsetTool) {
 		this.name = name;
 
 		ArrayList<Tool> unusedTools = getUnusedTools();
@@ -139,10 +140,8 @@ public class Tool extends NativeObject {
 		this(name, null, null, null);
 	}
 
-	/**
-	 * @param title
-	 */
-	private native int nativeCreate(String name, int options, int groupHandle, int toolsetHandle);
+	private native int nativeCreate(String name, int options, int groupHandle,
+			int toolsetHandle);
 
 	protected Tool(int handle, String name) {
 		super(handle);
@@ -369,6 +368,16 @@ public class Tool extends NativeObject {
 	/**
 	 * @jshide
 	 */
+	public native boolean getSelected();
+
+	/**
+	 * @jshide
+	 */
+	public native void setSelected(boolean selected);
+
+	/**
+	 * @jshide
+	 */
 	public EnumSet<ToolOption> getOptions() {
 		return IntegerEnumUtils.getSet(ToolOption.class, nativeGetOptions());
 	}
@@ -511,7 +520,8 @@ public class Tool extends NativeObject {
 	};
 	// Hashmap for conversation to unique ids that can be compared with ==
 	// instead of .equals
-	private static HashMap<String, Integer> events = new HashMap<String, Integer>();
+	private static HashMap<String, Integer> events =
+			new HashMap<String, Integer>();
 
 	static {
 		for (int i = 0; i < eventTypes.length; i++)
@@ -529,48 +539,50 @@ public class Tool extends NativeObject {
 		if (tool != null) {
 			Integer event = (Integer) events.get(selector); 
 			if (event != null) {
-				switch(event.intValue()) {
-					case EVENT_EDIT_OPTIONS:
-						tool.onOptions();
-						break;
-					case EVENT_MOUSE_DOWN:
-						tool.event.setValues(x, y, pressure, 0, true, true);
-						tool.onMouseDown(tool.event);
-						break;
-					case EVENT_MOUSE_DRAG:
-						if (tool.event.setValues(x, y, pressure, tool.distanceThreshold, false, false))
-							tool.onMouseDrag(tool.event);
-						break;
-					case EVENT_MOUSE_UP:
-						tool.event.setValues(x, y, pressure, 0, false, false);
-						try {
-							tool.onMouseUp(tool.event);
-						} finally {
-							// Start with new values for EVENT_TRACK_CURSOR
-							tool.event.setValues(x, y, pressure, 0, true, false);
-							tool.firstMove = true;
-						}
-						break;
-					case EVENT_TRACK_CURSOR:
-						try {
-							if (tool.event.setValues(x, y, pressure, tool.distanceThreshold, tool.firstMove, false))
-								tool.onMouseMove(tool.event);
-						} finally {
-							tool.firstMove = false;
-						}
-						// Tell the native side to update the cursor
-						return tool.cursor;
-					case EVENT_SELECT:
-						tool.onSelect();
-						break;
-					case EVENT_DESELECT:
-						tool.onDeselect();
-						break;
-					case EVENT_RESELECT:
-						tool.onReselect();
-						break;
+				switch (event.intValue()) {
+				case EVENT_EDIT_OPTIONS:
+					tool.onOptions();
+					break;
+				case EVENT_MOUSE_DOWN:
+					tool.event.setValues(x, y, pressure, 0, true, true);
+					tool.onMouseDown(tool.event);
+					break;
+				case EVENT_MOUSE_DRAG:
+					if (tool.event.setValues(x, y, pressure,
+							tool.distanceThreshold, false, false))
+						tool.onMouseDrag(tool.event);
+					break;
+				case EVENT_MOUSE_UP:
+					tool.event.setValues(x, y, pressure, 0, false, false);
+					try {
+						tool.onMouseUp(tool.event);
+					} finally {
+						// Start with new values for EVENT_TRACK_CURSOR
+						tool.event.setValues(x, y, pressure, 0, true, false);
+						tool.firstMove = true;
+					}
+					break;
+				case EVENT_TRACK_CURSOR:
+					try {
+						if (tool.event.setValues(x, y, pressure,
+								tool.distanceThreshold, tool.firstMove, false))
+							tool.onMouseMove(tool.event);
+					} finally {
+						tool.firstMove = false;
+					}
+					// Tell the native side to update the cursor
+					return tool.cursor;
+				case EVENT_SELECT:
+					tool.onSelect();
+					break;
+				case EVENT_DESELECT:
+					tool.onDeselect();
+					break;
+				case EVENT_RESELECT:
+					tool.onReselect();
+					break;
 				}
-			}
+		}
 		}
 		return 0;
 	}

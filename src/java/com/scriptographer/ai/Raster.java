@@ -372,7 +372,7 @@ public class Raster extends Item {
 	 * @jshide
 	 */
 	public Color getAverageColor(Shape shape) {
-		Rectangle2D rect = shape.getBounds2D();
+//		Rectangle2D rect = shape.getBounds2D();
 		GeneralPath path;
 		int width, height, startX, startY;
 		if (shape != null) {

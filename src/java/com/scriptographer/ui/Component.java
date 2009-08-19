@@ -64,27 +64,35 @@ abstract class Component extends NotificationHandler {
 	 * native track and draw proc procedures:
 	 */
 	private boolean trackCallback = false;
-	private boolean drawCallback = false;
+
+	/**
+	 * @jshide
+	 */
+	public boolean getTrackCallback() {
+		return trackCallback;
+	}
 
 	abstract protected void nativeSetTrackCallback(boolean enabled);
-	abstract protected void nativeSetDrawCallback(boolean enabled);
 
 	public void setTrackCallback(boolean enabled) {
 		nativeSetTrackCallback(enabled);
 		trackCallback = enabled;
 	}
 
-	public boolean getTrackCallback() {
-		return trackCallback;
+	private boolean drawCallback = false;
+
+	/**
+	 * @jshide
+	 */
+	public boolean getDrawCallback() {
+		return drawCallback;
 	}
+
+	abstract protected void nativeSetDrawCallback(boolean enabled);
 
 	public void setDrawCallback(boolean enabled) {
 		nativeSetDrawCallback(enabled);
 		drawCallback = enabled;
-	}
-
-	public boolean getDrawCallback() {
-		return drawCallback;
 	}
 	
 	/**

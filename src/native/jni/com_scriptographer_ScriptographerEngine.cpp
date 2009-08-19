@@ -31,7 +31,6 @@
 #include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
 #include "com_scriptographer_ScriptographerEngine.h"
-#include "com_scriptographer_ui_Key.h"
 
 /*
  * com.scriptographer.ScriptographerEngine
@@ -101,7 +100,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_launch(J
  * long getNanoTime()
  */
 JNIEXPORT jlong JNICALL Java_com_scriptographer_ScriptographerEngine_getNanoTime(JNIEnv *env, jclass cls) {
-	return gEngine->getNanoTime();
+	return gPlugin->getNanoTime();
 }
 
 /*
@@ -126,7 +125,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_nativeSetPro
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_nativeUpdateProgress(JNIEnv *env, jclass cls, jlong current, jlong max, jboolean visible) {
 	try {
-		if (gEngine->isKeyDown(com_scriptographer_ui_Key_VK_ESCAPE))
+		// Is escape pressed?
+		// TODO: What's the escaped character for escape?
+		if (gPlugin->isKeyDown('\x27'))
 			return false;
 		if (visible) {
 			sAIUser->UpdateProgress(current, max);

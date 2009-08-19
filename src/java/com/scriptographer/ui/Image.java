@@ -145,7 +145,7 @@ public class Image extends NativeObject {
 
 	// TODO: ImageIO (or sun graphics) on OS X have a bug with the headless mode.
 	// some images cannot be used and throw a HeadlessException when used, others
-	// work just fine. The workaround is to rely on the toolkit funtion.
+	// work just fine. The workaround is to rely on the toolkit function.
 	// The resolution is to use helma's image object and generator mechanism here
 	// too:
 	public Image(File file) throws IOException {

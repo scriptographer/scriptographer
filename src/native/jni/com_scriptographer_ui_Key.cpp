@@ -1,5 +1,6 @@
 #include "StdHeaders.h"
 #include "ScriptographerEngine.h"
+#include "ScriptographerPlugin.h"
 #include "com_scriptographer_ui_Key.h"
 
 /*
@@ -7,11 +8,11 @@
  */
 
 /*
- * boolean isDown(short keycode)
+ * boolean nativeIsDown(int keycode)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Key_isDown(JNIEnv *env, jclass cls, jshort keycode) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Key_nativeIsDown(JNIEnv *env, jclass cls, jint keycode) {
 	try {
-		return gEngine->isKeyDown(keycode);
+		return gPlugin->isKeyDown(keycode);
 	} EXCEPTION_CONVERT(env);
 	return false;
 }

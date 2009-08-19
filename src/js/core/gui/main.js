@@ -413,6 +413,13 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		refreshFiles();
 	}
 
+	global.onKeyDown = function(keyCode, character) {
+		if (character == '`') {
+			tool.selected = true;
+			return true;
+		}
+	}
+
 	if (scriptographer.scriptDirectory)
 		addFiles();
 

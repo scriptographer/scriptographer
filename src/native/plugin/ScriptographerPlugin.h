@@ -86,7 +86,6 @@ protected:
 	AINotifierHandle m_beforeRevertNotifier;
 	AINotifierHandle m_afterRevertNotifier;
 	AINotifierHandle m_beforeClearNotifier;
-	AINotifierHandle m_afterClearNotifier;
 	bool m_loaded;
 	bool m_started;
 	bool m_reverting; 
@@ -127,6 +126,9 @@ public:
 	static WNDPROC s_defaultAppWindowProc;
 	static LRESULT CALLBACK appWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif
+
+	long getNanoTime();
+	bool isKeyDown(int keycode);
 
 	ASErr onStartupPlugin(SPInterfaceMessage *message); 
 	ASErr onShutdownPlugin(SPInterfaceMessage *message); 

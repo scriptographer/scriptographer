@@ -862,7 +862,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * </code>
 	 */
 	public ItemList getChildren() {
-		// don't implement this in native as the number of items is not known
+		// Don't implement this in native as the number of items is not known
 		// in advance and like this, a java ArrayList can be used:
 		// TODO: Cache the result. Invalidate cached version when version
 		// changes, or when appendChild / moveAbove / bellow affects this

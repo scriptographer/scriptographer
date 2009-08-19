@@ -33,8 +33,6 @@
 #include "resourceIds.h"
 #include "AppContext.h"
 #include "com_scriptographer_ScriptographerEngine.h"
-// For Menu notifiers. Can't add this to suites.h,
-// since it directly defines the char *MenuCommands[] array and we only need it here...
 #include "AIMenuCommandNotifiers.h"
 
 ScriptographerPlugin *gPlugin = NULL;
@@ -63,7 +61,6 @@ ScriptographerPlugin::ScriptographerPlugin(SPMessageData *messageData) {
 	m_beforeRevertNotifier = NULL;
 	m_afterRevertNotifier = NULL;
 	m_beforeClearNotifier = NULL;
-	m_afterClearNotifier = NULL;
 	m_engine = NULL;
 	m_loaded = false;
 	m_started = false;
@@ -102,54 +99,72 @@ OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef handler, Even
 }
 
 OSStatus ScriptographerPlugin::keyEventHandler(EventHandlerCallRef handler, EventRef event, void *userData) {
-	char charCode;
-    UInt32 keyCode;
-    UInt32 modifiers;
-    UInt32 when = EventTimeToTicks(GetEventTime(event));
-	UniChar uniChar;
-	
-    GetEventParameter(event, kEventParamKeyMacCharCodes, typeChar, NULL,sizeof(char), NULL,&charCode);
-    GetEventParameter(event, kEventParamKeyCode, typeUInt32, NULL,  sizeof(UInt32), NULL, &keyCode);
-	GetEventParameter(event, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &modifiers);
-	GetEventParameter(event, kEventParamKeyUnicodes, typeUnicodeText, NULL, sizeof(UniChar), NULL, &uniChar);
-	UInt32 kind = GetEventKind(event);
-
-	if (charCode == '\b' && (kind == kEventRawKeyDown || kind == kEventRawKeyUp)) {
-		// Intercept clear key and handle onBeforeClear / onAfterClear
+	// Only interfere with short cuts when wearre not in ADM dialogs
+	if (GetUserFocusWindow() == ActiveNonFloatingWindow()) {
 		AppContext context;
-		if (kind == kEventRawKeyDown)
-			gEngine->onBeforeClear();
-		else if (kind == kEventRawKeyUp)
-			gEngine->onAfterClear();
-	}
-	/*
-    Point point;
-    GetEventParameter(event, kEventParamMouseLocation, typeQDPoint, NULL, sizeof(Point), NULL, &point);
-	*/
-    switch (kind) {
-	case kEventRawKeyDown:
-	case kEventRawKeyRepeat: {
-		int i = 0;
-	}
-	break;
-	case kEventRawKeyUp: {
-		int j = 0;
-	}
-	break ;
-	case kEventRawKeyModifiersChanged: {
-		int k = 0;
+		UInt32 kind = GetEventKind(event);
+		UInt32 when = EventTimeToTicks(GetEventTime(event));
+		UInt32 keyCode;
+		GetEventParameter(event, kEventParamKeyCode, typeUInt32, NULL, sizeof(UInt32), NULL, &keyCode);
+		UniChar uniChar;
+		GetEventParameter(event, kEventParamKeyUnicodes, typeUnicodeText, NULL, sizeof(UniChar), NULL, &uniChar);
+		UInt32 modifiers;
+		GetEventParameter(event, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &modifiers);
 		/*
-		wxKeyEvent event(wxEVT_KEY_DOWN);
-		
-		event.m_shiftDown = modifiers & shiftKey;
-		event.m_controlDown = modifiers & controlKey;
-		event.m_altDown = modifiers & optionKey;
-		event.m_metaDown = modifiers & cmdKey;
-		 */
+		Point point;
+		GetEventParameter(event, kEventParamMouseLocation, typeQDPoint, NULL, sizeof(Point), NULL, &point);
+		*/
+
+		bool handled = false;
+		switch (kind) {
+		case kEventRawKeyDown:
+			if (uniChar == '\b') // back space
+				gEngine->onClear();
+			handled = gEngine->callOnHandleKeyEvent(com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN,
+					keyCode, uniChar, modifiers);
+			break;
+		case kEventRawKeyUp:
+			handled = gEngine->callOnHandleKeyEvent(com_scriptographer_ScriptographerEngine_EVENT_KEY_UP,
+					keyCode, uniChar, modifiers);
+			break;
+		case kEventRawKeyRepeat:
+			handled = gEngine->callOnHandleKeyEvent(com_scriptographer_ScriptographerEngine_EVENT_KEY_UP,
+					keyCode, uniChar, modifiers)
+				|| gEngine->callOnHandleKeyEvent(com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN,
+					keyCode, uniChar, modifiers);
+			break;
+
+		/*
+		case kEventRawKeyDown: {
+			if (charCode == '\b')
+				gEngine->onClear();
+		}
+		break;
+		case kEventRawKeyRepeat: {
+			int i = 0;
+		}
+		break;
+		case kEventRawKeyUp: {
+			int i = 0;
+		}
+		break ;
+		case kEventRawKeyModifiersChanged: {
+			int i = 0;
+			event.m_shiftDown = modifiers & shiftKey;
+			event.m_controlDown = modifiers & controlKey;
+			event.m_altDown = modifiers & optionKey;
+			event.m_metaDown = modifiers & cmdKey;
+		}
+		break;
+		*/
+		}
+		/* do not allow preventing of native handling for now
+		if (handled)
+			return noErr;
+		*/
 	}
-	break;
-    }
-	return eventNotHandledErr;
+
+	return eventNotHandledErr; // noErr if handled
 }
 
 #endif
@@ -180,6 +195,63 @@ LRESULT CALLBACK ScriptographerPlugin::appWindowProc(HWND hwnd, UINT uMsg, WPARA
 }
 
 #endif
+
+
+bool ScriptographerPlugin::isKeyDown(int keycode) {
+#ifdef MAC_ENV
+	// Table that converts Java keycodes to Mac keycodes:
+	// TODO: Check Open JDK about how it translates this
+	static unsigned char keycodeToMac[256] = {
+		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x33,0x30,0x4c,0xff,0xff,0x24,0xff,0xff,
+		0x38,0x3b,0x36,0xff,0x39,0xff,0xff,0xff,0xff,0xff,0xff,0x35,0xff,0xff,0xff,0xff,
+		0x31,0x74,0x79,0x77,0x73,0x7b,0x7e,0x7c,0x7d,0xff,0xff,0xff,0x2b,0xff,0x2f,0x2c,
+		0x1d,0x12,0x13,0x14,0x15,0x17,0x16,0x1a,0x1c,0x19,0xff,0x29,0xff,0x18,0xff,0xff,
+		0xff,0x00,0x0b,0x08,0x02,0x0e,0x03,0x05,0x04,0x22,0x26,0x28,0x25,0x2e,0x2d,0x1f,
+		0x23,0x0c,0x0f,0x01,0x11,0x20,0x09,0x0d,0x07,0x10,0x06,0x21,0x2a,0x1e,0xff,0xff,
+		0x52,0x53,0x54,0x55,0x56,0x57,0x58,0x59,0x5b,0x5c,0x43,0x45,0xff,0x1b,0x41,0x4b,
+		0x7a,0x78,0x63,0x76,0x60,0x61,0x62,0x64,0x65,0x6d,0x67,0x6f,0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x3a,0xff,0xff,
+		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+		0x27,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x32,0xff,
+		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
+		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff
+	};
+	if (keycode >= 0 && keycode <= 255) {
+		keycode = keycodeToMac[keycode];
+		if (keycode != 0xff) {
+			KeyMap keys;
+			GetKeys(keys);
+			// return BitTst(&keys, keycode) != 0;
+			return (((unsigned char *) keys)[keycode >> 3] & (1 << (keycode & 7))) != 0;
+		}
+	}
+	return false;
+#endif
+#ifdef WIN_ENV
+	return (GetAsyncKeyState(keycode) & 0x8000) ? 1 : 0;
+#endif
+}
+
+long ScriptographerPlugin::getNanoTime() {
+#ifdef MAC_ENV
+		Nanoseconds nano = AbsoluteToNanoseconds(UpTime());
+		return UnsignedWideToUInt64(nano);
+#endif
+#ifdef WIN_ENV
+		static int scaleFactor = 0;
+		if (scaleFactor == 0) {
+			LARGE_INTEGER frequency;
+			QueryPerformanceFrequency (&frequency);
+			scaleFactor = frequency.QuadPart;
+		}
+		LARGE_INTEGER counter;
+		QueryPerformanceCounter (& counter);
+		return counter.QuadPart * 1000000 / scaleFactor;
+#endif
+}
 
 // ScriptographerPlugin:
 
@@ -214,15 +286,12 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 
 	// Add before clear menu notifier
 	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Before Clear", "AI Command Notifier: Before Clear", &m_beforeClearNotifier));
-
-	// Add after clear menu notifier
-	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer After Clear", "AI Command Notifier: After Clear", &m_afterClearNotifier));
 	
 	// Determine baseDirectory from plugin location:
 	char pluginPath[kMaxPathLength];
 	SPPlatformFileSpecification fileSpec;
 	sSPPlugins->GetPluginFileSpecification(m_pluginRef, &fileSpec);
-   	if (!fileSpecToPath(&fileSpec, pluginPath))
+	if (!fileSpecToPath(&fileSpec, pluginPath))
 		return kCantHappenErr;
 	
 	// Now find the last occurence of PATH_SEP_CHR and determine the string there:
@@ -273,12 +342,12 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 			sizeof(appEvents) / sizeof(EventTypeSpec), appEvents, this, NULL));
 
 	static EventTypeSpec keyEvents[] = {
-		/*
-		{ kEventClassTextInput, kEventTextInputUnicodeForKeyEvent }
-		 */
 		{ kEventClassKeyboard, kEventRawKeyDown },
-		{ kEventClassKeyboard, kEventRawKeyUp }
+		{ kEventClassKeyboard, kEventRawKeyUp },
+		{ kEventClassKeyboard, kEventRawKeyRepeat },
+//		{ kEventClassKeyboard, kEventRawKeyModifiersChanged }
 	};
+	// TODO: Figure out if this needs DEFINE_CALLBACK_PROC / CALLBACK_PROC as well?
 	RETURN_ERROR(InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(keyEventHandler),
 			sizeof(keyEvents) / sizeof(EventTypeSpec), keyEvents, this, NULL));
 #endif
@@ -436,10 +505,10 @@ bool ScriptographerPlugin::pathToFileSpec(const char *path, SPPlatformFileSpecif
 	
 	// get the information of the parent dir:
 	FSCatalogInfo catalogInfo;
-	if (FSGetCatalogInfo(&fsRef, kFSCatInfoVolume | kFSCatInfoParentDirID | kFSCatInfoNodeID, &catalogInfo, NULL,  NULL, NULL) != noErr)
+	if (FSGetCatalogInfo(&fsRef, kFSCatInfoVolume | kFSCatInfoParentDirID | kFSCatInfoNodeID, &catalogInfo, NULL, NULL, NULL) != noErr)
 		return false;
 	
-	// and create a FSSpec (== SPPlatformFileSpecification) for the child  with it:
+	// and create a FSSpec (== SPPlatformFileSpecification) for the child with it:
 	OSErr error = FSMakeFSSpec(catalogInfo.volume, catalogInfo.nodeID, toPascal(filename, (unsigned char *) filename), (FSSpec *) fileSpec);
 	// file not found error is ok:
 	if (error != noErr && error != fnfErr)
@@ -474,9 +543,7 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 		} else if (msg->notifier == m_afterRedoNotifier) {
 			error = gEngine->onRedo();
 		} else if (msg->notifier == m_beforeClearNotifier) {
-			error = gEngine->onBeforeClear();
-		} else if (msg->notifier == m_afterClearNotifier) {
-			error = gEngine->onAfterClear();
+			error = gEngine->onClear();
 		} else if (msg->notifier == m_beforeRevertNotifier) {
 			m_reverting = true;
 		} else if (msg->notifier == m_afterRevertNotifier) {
@@ -557,7 +624,7 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 			// Through the use of sSPAccess->AcquirePlugin();
 			error = kNoErr;
 		}
-	} else if (sSPBasic->IsEqual(caller, kSPInterfaceCaller))  {	
+	} else if (sSPBasic->IsEqual(caller, kSPInterfaceCaller)) {	
 		if (sSPBasic->IsEqual(selector, kSPInterfaceAboutSelector)) {
 			error = gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_APP_ABOUT);
 		} else if (sSPBasic->IsEqual(selector, kSPInterfaceStartupSelector)) {
@@ -639,7 +706,7 @@ void ScriptographerPlugin::reportError(ASErr error) {
 
 				if (strlen(m) < 120) {
 					char errString[10];
-					if (error < 16385) {  // Then probably a plain ol' number
+					if (error < 16385) { // Then probably a plain ol' number
 						sprintf(errString, "%d", error);
 
 					} else {	// Yucky 4-byte string
@@ -689,7 +756,7 @@ char *ScriptographerPlugin::findMsg(ASErr error, char *buf, int len) {
 				return getMsgString(n++, buf, len);
 
 		} else {
-			// non numeric 4 byte err code.  (e.g.) '!sel'.
+			// non numeric 4 byte err code. (e.g.) '!sel'.
 			int	c, i;
 			c = 0;
 

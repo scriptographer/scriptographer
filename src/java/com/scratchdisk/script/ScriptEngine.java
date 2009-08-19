@@ -134,7 +134,7 @@ public abstract class ScriptEngine {
 	 * Returns the base of all paths, to be cut away from Error messages,
 	 * if desired.
 	 * TODO: This should be changed to a more script oriented approach,
-	 * Where the base directy is determined from a variable in the current
+	 * Where the base directly is determined from a variable in the current
 	 * scope...
 	 * Think about a convention for naming baseDirectroies, scriptFiles, etc.
 	 * in the scope. e.g. app.directory, script.file, ...

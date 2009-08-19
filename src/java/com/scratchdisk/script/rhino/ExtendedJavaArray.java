@@ -35,7 +35,6 @@ import java.lang.reflect.Array;
 import java.util.HashMap;
 
 import org.mozilla.javascript.NativeJavaArray;
-import org.mozilla.javascript.NativeObject;
 import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
 

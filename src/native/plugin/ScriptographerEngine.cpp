@@ -405,6 +405,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ScriptographerEngine_destroy = getStaticMethodID(env, cls_ScriptographerEngine, "destroy", "()V");
 	mid_ScriptographerEngine_reportError = getStaticMethodID(env, cls_ScriptographerEngine, "reportError", "(Ljava/lang/Throwable;)V");
 	mid_ScriptographerEngine_onHandleEvent = getStaticMethodID(env, cls_ScriptographerEngine, "onHandleEvent", "(I)V");
+	mid_ScriptographerEngine_onHandleKeyEvent = getStaticMethodID(env, cls_ScriptographerEngine, "onHandleKeyEvent", "(IICI)Z");
 
 	cls_ScriptographerException = loadClass(env, "com/scriptographer/ScriptographerException");
 
@@ -649,60 +650,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 #if defined(MAC_ENV) && kPluginInterfaceVersion >= kAI14
 	cls_ui_TextEditItem = loadClass(env, "com/scriptographer/ui/TextEditItem");
 	fid_ui_TextEditItem_setSelectionTimer = getFieldID(env, cls_ui_TextEditItem, "setSelectionTimer", "I");
-#endif
-}
-
-long ScriptographerEngine::getNanoTime() {
-#ifdef MAC_ENV
-		Nanoseconds nano = AbsoluteToNanoseconds(UpTime());
-		return UnsignedWideToUInt64(nano);
-#endif
-#ifdef WIN_ENV
-		static int scaleFactor = 0;
-		if (scaleFactor == 0) {
-			LARGE_INTEGER frequency;
-			QueryPerformanceFrequency (&frequency);
-			scaleFactor = frequency.QuadPart;
-		}
-		LARGE_INTEGER counter;
-		QueryPerformanceCounter (& counter);
-		return counter.QuadPart * 1000000 / scaleFactor;
-#endif
-}
-
-bool ScriptographerEngine::isKeyDown(short keycode) {
-#ifdef MAC_ENV
-	// table that converts java keycodes to mac keycodes:
-	static unsigned char keycodeToMac[256] = {
-		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0x33,0x30,0x4c,0xff,0xff,0x24,0xff,0xff,0x38,
-		0x3b,0x36,0xff,0x39,0xff,0xff,0xff,0xff,0xff,0xff,0x35,0xff,0xff,0xff,0xff,0x31,0x74,
-		0x79,0x77,0x73,0x7b,0x7e,0x7c,0x7d,0xff,0xff,0xff,0x2b,0xff,0x2f,0x2c,0x1d,0x12,0x13,
-		0x14,0x15,0x17,0x16,0x1a,0x1c,0x19,0xff,0x29,0xff,0x18,0xff,0xff,0xff,0x00,0x0b,0x08,
-		0x02,0x0e,0x03,0x05,0x04,0x22,0x26,0x28,0x25,0x2e,0x2d,0x1f,0x23,0x0c,0x0f,0x01,0x11,
-		0x20,0x09,0x0d,0x07,0x10,0x06,0x21,0x2a,0x1e,0xff,0xff,0x52,0x53,0x54,0x55,0x56,0x57,
-		0x58,0x59,0x5b,0x5c,0x43,0x45,0xff,0x1b,0x41,0x4b,0x7a,0x78,0x63,0x76,0x60,0x61,0x62,
-		0x64,0x65,0x6d,0x67,0x6f,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
-		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
-		0xff,0xff,0xff,0xff,0x3a,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
-		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
-		0xff,0xff,0xff,0xff,0xff,0x27,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
-		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
-		0xff,0x32,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
-		0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,0xff,
-	};
-	if (keycode >= 0 && keycode <= 255) {
-		keycode = keycodeToMac[keycode];
-		if (keycode != 0xff) {
-			KeyMap keys;
-			GetKeys(keys);
-			// return BitTst(&keys, keycode) != 0;
-			return (((unsigned char *) keys)[keycode >> 3] & (1 << (keycode & 7))) != 0;
-		}
-	}
-	return false;
-#endif
-#ifdef WIN_ENV
-	return (GetAsyncKeyState(keycode) & 0x8000) ? 1 : 0;
 #endif
 }
 
@@ -1710,54 +1657,33 @@ ASErr ScriptographerEngine::onRedo() {
 	return kExceptionErr;
 }
 
-ASErr ScriptographerEngine::onBeforeClear() {
-	// onClear is split into onBefore / onAfter so the selection can be stored
-	// and then cleared if a undo cycle has happened in between.
-	// We need to do this since we're intercepting the delete key, for which
-	// Illustrator does not send a notification and which could also happen
-	// in dialogs.
-	// TODO: Is there a better workaround, e.g. finding the dialog with focus?
-	ASErr error;
-	AIDocumentHandle doc;
-	RETURN_ERROR(sAIDocument->GetDocument(&doc));
-	if (doc != NULL) {
-		long redoLevel;
-		RETURN_ERROR(sAIUndo->CountTransactions(&m_clearLevel, &redoLevel));
-		RETURN_ERROR(sAIMatchingArt->GetSelectedArt(&m_clearItems, &m_numClearItems));
-	} else {
-		// Tell onAfterClear not to execute onClear
-		m_numClearItems = -1;
-	}
-}
-
-ASErr ScriptographerEngine::onAfterClear() {
+ASErr ScriptographerEngine::onClear() {
 	JNIEnv *env = getEnv();
 	try {
-		if (m_numClearItems != -1) {
-			ASErr error;
-			// Only execute onClear if a history cycle was completed in the meantime (the clear one).
-			// See onBeforeClear for an explanation.
-			long undoLevel, redoLevel;
-			RETURN_ERROR(sAIUndo->CountTransactions(&undoLevel, &redoLevel));
-			if (undoLevel > m_clearLevel) {
-				jintArray artHandles;
-				if (m_numClearItems > 0) {
-					jint *handles = new jint[m_numClearItems];
-					for (int i = 0; i < m_numClearItems; i++)
-						handles[i] = (jint) (*m_clearItems)[i];
-					// TODO: Does this need disposing even if m_numClearItems == 0?
-					RETURN_ERROR(sAIMDMemory->MdMemoryDisposeHandle((void **) m_clearItems));
-					artHandles = env->NewIntArray(m_numClearItems);
-					env->SetIntArrayRegion(artHandles, 0, m_numClearItems, (jint *) handles);
-					delete handles;
-				} else {
-					artHandles = NULL;
-				}
-				AIDocumentHandle doc;
-				RETURN_ERROR(sAIDocument->GetDocument(&doc));
-				jobject document = gEngine->wrapDocumentHandle(env, doc);
-				callVoidMethod(env, document, mid_ai_Document_onClear, artHandles);
+		ASErr error;
+		AIDocumentHandle doc;
+		RETURN_ERROR(sAIDocument->GetDocument(&doc));
+		if (doc != NULL) {
+			AIArtHandle **matches;
+			long numMatches;
+			RETURN_ERROR(sAIMatchingArt->GetSelectedArt(&matches, &numMatches));
+			jintArray artHandles;
+			if (numMatches > 0) {
+				jint *handles = new jint[numMatches];
+				for (int i = 0; i < numMatches; i++)
+					handles[i] = (jint) (*matches)[i];
+				// TODO: Does this need disposing even if m_numClearItems == 0?
+				RETURN_ERROR(sAIMDMemory->MdMemoryDisposeHandle((void **) matches));
+				artHandles = env->NewIntArray(numMatches);
+				env->SetIntArrayRegion(artHandles, 0, numMatches, (jint *) handles);
+				delete handles;
+			} else {
+				artHandles = NULL;
 			}
+			AIDocumentHandle doc;
+			RETURN_ERROR(sAIDocument->GetDocument(&doc));
+			jobject document = gEngine->wrapDocumentHandle(env, doc);
+			callVoidMethod(env, document, mid_ai_Document_onClear, artHandles);
 		}
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
@@ -1791,6 +1717,17 @@ ASErr ScriptographerEngine::onRevert() {
 ASErr ScriptographerEngine::Tool_onHandleEvent(const char * selector, AIToolMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
+		// TODO: Wrap additional mesage->event properties too and add support for these:
+		/*
+		// For graphic tablets, tangential pressure on the finger wheel of the airbrush tool.
+		AIToolPressure stylusWheel;
+		// How the tool is angled, also called altitude or elevation.
+		AIToolAngle tilt;
+		// The direction of tilt, measured clockwise in degrees around the Z axis, also called azimuth,
+		AIToolAngle bearing;
+		// Rotation of the tool, measured clockwise in degrees around the tool's barrel.
+		AIToolAngle rotation;
+		*/
 		jint cursorId = callStaticIntMethod(env, cls_ai_Tool, mid_ai_Tool_onHandleEvent,
 				(jint) message->tool, convertString(env, selector),
 				(jfloat) message->cursor.h, (jfloat) message->cursor.v,
@@ -1976,6 +1913,15 @@ ASErr ScriptographerEngine::callOnHandleEvent(int event) {
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
+}
+
+bool ScriptographerEngine::callOnHandleKeyEvent(ASUInt32 type, ASUInt32 keyCode, ASUnicode character, ASUInt32 modifiers) {
+	JNIEnv *env = getEnv();
+	try {
+		return callStaticBooleanMethodReport(NULL, cls_ScriptographerEngine, mid_ScriptographerEngine_onHandleKeyEvent,
+				type, keyCode, character, modifiers);
+	} EXCEPTION_CATCH_REPORT(env);
+	return false;
 }
 
 int ScriptographerEngine::getADMObjectHandle(JNIEnv *env, jobject obj, const char *name) {

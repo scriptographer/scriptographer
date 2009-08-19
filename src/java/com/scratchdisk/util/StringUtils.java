@@ -64,8 +64,7 @@ public class StringUtils {
 			if (i > 0) res.append(delimiter);
 			String part = parts[i];
 			res.append(Character.toUpperCase(part.charAt(0)));
-			// TODO: For JDK 1.5 res.append(part, 1, part.length());
-			res.append(part.substring(1));
+			res.append(part, 1, part.length());
 		}
 		return res.toString();
 	}

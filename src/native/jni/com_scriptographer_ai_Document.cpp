@@ -712,9 +712,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeDeselectAll(JNI
 }
 
 /*
- * com.scriptographer.ai.ItemList nativeGetMatchingItems(java.lang.Class typeClass, java.util.Map attributes)
+ * com.scriptographer.ai.ItemList getMatchingItems(java.lang.Class typeClass, java.util.Map attributes)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeGetMatchingItems(JNIEnv *env, jobject obj, jclass typeClass, jobject attributes) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getMatchingItems(JNIEnv *env, jobject obj, jclass typeClass, jobject attributes) {
 	jobject itemSet = NULL;
 	try {
 		// Cause the doc switch if necessary

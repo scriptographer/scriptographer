@@ -161,7 +161,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		return new RhinoScope(this, scope);
 	}
 	
-	protected static Scriptable getWrapper(Scriptable scope, Object obj) {
+	protected static Scriptable getWrapper(Object obj, Scriptable scope) {
 		if (obj instanceof Scriptable) {
 			return (Scriptable) obj;
 		} else {
@@ -181,7 +181,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		if (obj instanceof Scriptable) {
 			scope = (Scriptable) obj;
 		} else {
-			scope = getWrapper(topLevel, obj);
+			scope = getWrapper(obj, topLevel);
 			// scope.setParentScope(topLevel);
 			scope.setPrototype(topLevel);
 			scope.setParentScope(null);
@@ -190,7 +190,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 	}
 
 	public Scope getGlobalScope() {
-		return getScope(topLevel);
+		return new RhinoScope(this, topLevel);
 	}
 
 	public Scriptable getScope() {

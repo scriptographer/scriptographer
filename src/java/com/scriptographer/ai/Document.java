@@ -126,8 +126,10 @@ public class Document extends NativeObject implements ChangeListener {
 				(dialogStatus != null ? dialogStatus : DialogStatus.NONE).value));
 		if (handle == 0) {
 			if (!file.exists())
-				throw new FileNotFoundException("Unable to create document from non existing file: " + file);
-			throw new ScriptographerException("Unable to create document from file: " + file);
+				throw new FileNotFoundException(
+						"Unable to create document from non existing file: " + file);
+			throw new ScriptographerException(
+					"Unable to create document from file: " + file);
 		}
 	}
 
@@ -926,7 +928,7 @@ public class Document extends NativeObject implements ChangeListener {
 		nativeDeselectAll();
 	}
 
-	private native ItemList nativeGetMatchingItems(Class type,
+	private native ItemList getMatchingItems(Class type,
 			HashMap<Integer, Boolean> attributes);
 
 	/**
@@ -949,31 +951,32 @@ public class Document extends NativeObject implements ChangeListener {
 						ConversionUtils.toBoolean(entry.getValue()));
 			}
 		}
-		ItemList set = null;
+		ItemList items = new ItemList();
 		for (int i = 0; i < types.length; i++) {
 			Class type = types[i];
-			ItemList subSet = nativeGetMatchingItems(type, converted);
-			// Filter out TextItems that do not match the given type.
-			// This is needed since nativeGetMatchingItems returns all TextItems...
-			// TODO: Move this to the native side maybe?
-			if (TextItem.class.isAssignableFrom(type))
-				for (Item item : subSet)
-					if (!type.isInstance(item))
-						subSet.remove(item);
-			if (set == null) {
-				set = subSet;
+			// Expand PathItem -> Path / CompoundPath
+			if (PathItem.class.isAssignableFrom(type)) {
+				items.addAll(getMatchingItems(Path.class, converted));
+				items.addAll(getMatchingItems(CompoundPath.class, converted));
 			} else {
-				set.addAll(subSet);
+				ItemList list = getMatchingItems(type, converted);
+				// Filter out TextItems that do not match the given type.
+				// This is needed since nativeGetMatchingItems returns all TextItems...
+				// TODO: Move this to the native side maybe?
+				if (TextItem.class.isAssignableFrom(type))
+					for (Item item : list)
+						if (!type.isInstance(item))
+							list.remove(item);
+				items.addAll(list);
 			}
 		}
 		// Filter out matched children when the parent matches too
-		for (int i = set.size() - 1; i >= 0; i--) {
-			Item item = set.get(i);
-			if (set.contains(item.getParent()))
-				set.remove(i);
+		for (int i = items.size() - 1; i >= 0; i--) {
+			Item item = items.get(i);
+			if (items.contains(item.getParent()))
+				items.remove(i);
 		}
-		// TODO: Expand PathItem -> Path / CompoundPath
-		return set;
+		return items;
 	}
 
 	/**
