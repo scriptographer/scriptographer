@@ -562,10 +562,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw(JNIEnv *env, j
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_undo(JNIEnv *env, jobject obj) {
 	try {
+#if kPluginInterfaceVersion >= kAI12
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		gEngine->commit(env);
 		sAIDocument->Undo();
+#endif // kPluginInterfaceVersion >= kAI12
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -574,10 +576,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_undo(JNIEnv *env, job
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redo(JNIEnv *env, jobject obj) {
 	try {
+#if kPluginInterfaceVersion >= kAI12
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		gEngine->commit(env);
 		sAIDocument->Redo();
+#endif // kPluginInterfaceVersion >= kAI12
 	} EXCEPTION_CONVERT(env);
 }
 

@@ -250,7 +250,7 @@ namespace ATE {
 #define _kADMDialogGroupSuiteVersion 3
 #define _kADMDrawerSuiteVersion 5
 #define _kADMTrackerSuiteVersion 1
-#deifne _kADMHostSuiteVersion 5
+#define _kADMHostSuiteVersion 5
 
 #else
 
