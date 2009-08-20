@@ -61,7 +61,7 @@ import com.scriptographer.script.EnumUtils;
  */
 public class Document extends NativeObject implements ChangeListener {
 
-	private static final boolean report = true;
+	private static final boolean report = false;
 
 	private LayerList layers = null;
 	private DocumentViewList views = null;
@@ -217,6 +217,38 @@ public class Document extends NativeObject implements ChangeListener {
 		return Document.wrapHandle(nativeGetWorkingDocumentHandle());
 	}
 
+	/*
+	 * Undo / Redo History Stuff
+	 */
+
+	private class HistoryBranch {
+		long branch;
+		long level;
+		long future;
+		HistoryBranch previous;
+		HistoryBranch next;
+
+		HistoryBranch(HistoryBranch previous) {
+			// make sure we're not reusing branch numbers that were used for
+			// previous branches before, by continuously adding to
+			// maxHistoryBranch.
+			this.branch = ++maxHistoryBranch;
+			this.previous = previous;
+			if (previous != null) {
+				if (previous.next != null) {
+					// A previous "future" branch is cleared, remove it from the
+					// history.
+					history.remove(previous.next.branch);
+				}
+				previous.next = this;
+			}
+		}
+
+		long getVersion(long level) {
+			return (branch << 32) | level;
+		}
+	};
+
 	private void resetHistory() {
 		undoLevel = -1;
 		redoLevel = -1;
@@ -287,33 +319,20 @@ public class Document extends NativeObject implements ChangeListener {
 		}
 	}
 
-	private class HistoryBranch {
-		long branch;
-		long level;
-		long future;
-		HistoryBranch previous;
-		HistoryBranch next;
-
-		HistoryBranch(HistoryBranch previous) {
-			// make sure we're not reusing branch numbers that were used for
-			// previous branches before, by continuously adding to
-			// maxHistoryBranch.
-			this.branch = ++maxHistoryBranch;
-			this.previous = previous;
-			if (previous != null) {
-				if (previous.next != null) {
-					// A previous "future" branch is cleared, remove it from the
-					// history.
-					history.remove(previous.next.branch);
-				}
-				previous.next = this;
-			}
+	protected boolean isValidVersion(long version) {
+		if (version == -1)
+			return true;
+		// Branch = upper 32 bits
+		long branch = (version >> 32) & 0xffffffffl;
+		HistoryBranch entry = history.get(branch);
+		if (entry != null) {
+			// Version = lower 32 bits
+			long level = version & 0xffffffffl;
+			return level <= entry.level
+					&& (entry.previous == null || level > entry.previous.level);
 		}
-
-		long getVersion(long level) {
-			return (branch << 32) | level;
-		}
-	};
+		return false;
+	}
 
 	private static native boolean[] nativeCheckValidItems(int[] values);
 
@@ -1062,24 +1081,6 @@ public class Document extends NativeObject implements ChangeListener {
 		HashMap<Object, Object> clone = new HashMap<Object, Object>(attributes);
 		clone.remove("type");
 		return getItems(classes.toArray(new Class[classes.size()]), clone);
-	}
-	/**
-	 * @param version
-	 * @return
-	 */
-	protected boolean isValidVersion(long version) {
-		if (version == -1)
-			return true;
-		// Branch = upper 32 bits
-		long branch = (version >> 32) & 0xffffffffl;
-		HistoryBranch entry = history.get(branch);
-		if (entry != null) {
-			// Version = lower 32 bits
-			long level = version & 0xffffffffl;
-			return level <= entry.level
-					&& (entry.previous == null || level > entry.previous.level);
-		}
-		return false;
 	}
 
 	/* TODO: make these
