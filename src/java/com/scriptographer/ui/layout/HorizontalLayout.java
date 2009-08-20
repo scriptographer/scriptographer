@@ -29,31 +29,30 @@
  * $Id$
  */
 
-package com.scriptographer.ui;
+package com.scriptographer.ui.layout;
 
 import java.util.HashMap;
 
 /**
  * @author lehni
- * 
- * @jshide
  */
-public class FlowLayout extends java.awt.FlowLayout {
+public class HorizontalLayout extends java.awt.FlowLayout {
 
-	private static HashMap<String, Integer> alignment = new HashMap<String, Integer>();
+	private static HashMap<String, Integer> alignMap = new HashMap<String, Integer>();
+
 	static {
-		alignment.put("left", FlowLayout.LEFT);
-		alignment.put("center", FlowLayout.CENTER);
-		alignment.put("right", FlowLayout.RIGHT);
-		alignment.put("leading", FlowLayout.LEADING);
-		alignment.put("trailing", FlowLayout.TRAILING);
+		alignMap.put("left", HorizontalLayout.LEFT);
+		alignMap.put("center", HorizontalLayout.CENTER);
+		alignMap.put("right", HorizontalLayout.RIGHT);
+		alignMap.put("leading", HorizontalLayout.LEADING);
+		alignMap.put("trailing", HorizontalLayout.TRAILING);
 	}
 
     /**
 	 * Constructs a new {@code FlowLayout} with a centered alignment and
 	 * a default 0-unit horizontal and vertical gap.
 	 */
-	public FlowLayout() {
+	public HorizontalLayout() {
 		super(CENTER, 0, 0);
 	}
 
@@ -66,7 +65,7 @@ public class FlowLayout extends java.awt.FlowLayout {
 	 * 
 	 * @param align the alignment value
 	 */
-	public FlowLayout(String align) {
+	public HorizontalLayout(String align) {
 		this(align, 0, 0);
 	}
 
@@ -84,7 +83,7 @@ public class FlowLayout extends java.awt.FlowLayout {
 	 * @param vgap the vertical gap between components and between the
 	 *        components and the borders of the {@code Container}
 	 */
-	public FlowLayout(String align, int hgap, int vgap) {
+	public HorizontalLayout(String align, int hgap, int vgap) {
 		super(getAlignment(align), hgap, vgap);
 	}
 
@@ -93,6 +92,6 @@ public class FlowLayout extends java.awt.FlowLayout {
 	}
 
 	public static Integer getAlignment(String align) {
-		return alignment.get(align);
+		return alignMap.get(align);
 	}
 }

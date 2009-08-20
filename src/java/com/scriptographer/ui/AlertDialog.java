@@ -31,6 +31,8 @@
 
 package com.scriptographer.ui;
 
+import com.scriptographer.ui.layout.TableLayout;
+
 /**
  * @author lehni
  * 

@@ -29,14 +29,12 @@
  * $Id:TableLayout.java 402 2007-08-22 23:24:49Z lehni $
  */
 
-package com.scriptographer.ui;
+package com.scriptographer.ui.layout;
 
 import com.scratchdisk.util.ConversionUtils;
 
 /**
  * @author lehni
- * 
- * @jshide
  */
 public class TableLayout extends info.clearthought.layout.TableLayout {
 

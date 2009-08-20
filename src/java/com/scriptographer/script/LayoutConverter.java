@@ -35,8 +35,8 @@ import java.awt.BorderLayout;
 
 import com.scratchdisk.script.ArgumentConverter;
 import com.scratchdisk.script.ArgumentReader;
-import com.scriptographer.ui.FlowLayout;
-import com.scriptographer.ui.TableLayout;
+import com.scriptographer.ui.layout.HorizontalLayout;
+import com.scriptographer.ui.layout.TableLayout;
 
 /**
  * @author lehni
@@ -49,9 +49,9 @@ public class LayoutConverter extends ArgumentConverter {
 			String str = reader.readString();
 			if (str != null) {
 				// See if it's an available alignment for FlowLayout
-				if (FlowLayout.getAlignment(str) != null) {
+				if (HorizontalLayout.getAlignment(str) != null) {
 					// FlowLayout
-					return new FlowLayout(
+					return new HorizontalLayout(
 							str,
 							reader.readInteger(0),
 							reader.readInteger(0));
@@ -103,8 +103,8 @@ public class LayoutConverter extends ArgumentConverter {
 			} else if (reader.has("alignment")) {
 				// FlowLayout
 				String alignment = reader.readString("alignment");
-				if (FlowLayout.getAlignment(alignment) != null) {
-					return new FlowLayout(
+				if (HorizontalLayout.getAlignment(alignment) != null) {
+					return new HorizontalLayout(
 							alignment,
 							reader.readInteger("hgap", 0),
 							reader.readInteger("vgap", 0));

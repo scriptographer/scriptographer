@@ -74,6 +74,7 @@ public enum DialogOption implements IntegerEnum {
 	 * preferences. The dialog's title needs to be unique within one such node,
 	 * as it is used to store the dialog's state.
 	 */
+	// TODO: Rename to REMEMBER?
 	REMEMBER_PLACING(0),
 	/**
 	 * For FloatingDialog
@@ -84,6 +85,7 @@ public enum DialogOption implements IntegerEnum {
 	/**
 	 * For FloatingDialog and ModalDialog
 	 */
+	// TODO: Rename to RESIZABLE?
 	RESIZING(0),
 	/**
 	 * For FloatingDialog
