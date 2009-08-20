@@ -47,9 +47,9 @@ public class Frame extends TextItem implements ComponentGroup {
 	protected void updateAWTMargin(Border margin) {
 		if (padding != null) {
 			// Add padding to AWT margin
-			super.updateAWTMargin(new Border(margin).add(padding));
+			super.updateAWTMargin(margin.add(padding));
 			// Remove padding from AWT bounds
-			updateAWTBounds(new Rectangle(bounds).subtract(padding));
+			updateAWTBounds(bounds.subtract(padding));
 		}
 	}
 
@@ -75,20 +75,19 @@ public class Frame extends TextItem implements ComponentGroup {
 
 	private Border padding = null;
 
-	protected static final Border PADDING_TEXT = ScriptographerEngine.isMacintosh() ?
-			new Border(10, 4, 5, 4) : new Border(10, 4, 5, 4);
+	protected static final Border PADDING_TEXT = new Border(10, 4, 5, 4);
 
 	public Border getPadding() {
 		Border border = new Border(padding);
 		if (hasText())
-			border.subtract(PADDING_TEXT);
+			border = border.subtract(PADDING_TEXT);
 		return border;
 	}
 
 	public void setPadding(int top, int right, int bottom, int left) {
 		padding = new Border(top, right, bottom, left);
 		if (hasText())
-			padding.add(PADDING_TEXT);
+			padding = padding.add(PADDING_TEXT);
 		// Update AWT margin, but only if it's used
 		if (component != null)
 			updateAWTMargin(margin);

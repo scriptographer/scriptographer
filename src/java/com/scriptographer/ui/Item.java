@@ -535,12 +535,19 @@ public abstract class Item extends Component {
 		return maxSize != null ? maxSize : getSize();
 	}
 
+	// top, right, bottom, left
+	protected static final Border MARGIN_NONE = new Border(0, 0, 0, 0);
+
+	protected Border getNativeMargin() {
+		return MARGIN_NONE;
+	}
+
 	public Border getMargin() {
-		return (Border) margin.clone();
+		return margin.subtract(getNativeMargin());
 	}
 
 	public void setMargin(int top, int right, int bottom, int left) {
-		margin = new Border(top, right, bottom, left);
+		margin = new Border(top, right, bottom, left).add(getNativeMargin());
 		if (nativeBounds != null)
 			updateBounds(bounds.x, bounds.y, bounds.width, bounds.height, false);
 		// Update the margins int he AWT proxy as well

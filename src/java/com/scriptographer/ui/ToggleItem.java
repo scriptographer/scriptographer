@@ -41,10 +41,8 @@ public abstract class ToggleItem extends Button {
 		super(dialog, type);
 	}
 
-	protected static final Border INSETS = new Border(0, 0, 0, 0);
-
-	protected Border getButtonMargin() {
-		return INSETS;
+	protected Border getNativeMargin() {
+		return MARGIN_NONE;
 	}
 
 	/* 

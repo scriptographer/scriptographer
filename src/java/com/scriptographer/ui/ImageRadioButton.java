@@ -90,7 +90,7 @@ public class ImageRadioButton extends RadioButton {
 		super.setDisabledImage(obj);
 	}
 
-	protected Border getButtonMargin() {
-		return MARGIN_IMAGE;
+	protected Border getNativeMargin() {
+		return MARGIN_NONE;
 	}
 }

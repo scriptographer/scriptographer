@@ -313,22 +313,22 @@ public class Rectangle {
 	 * @param border
 	 */
 	public Rectangle add(Border border) {
-		x -= border.left;
-		y -= border.top;
-		width += border.left + border.right;
-		height += border.top + border.bottom;
-		return this;
+		return new Rectangle(
+				x - border.left,
+				y - border.top,
+				width + border.left + border.right,
+				height + border.top + border.bottom);
 	}
 
 	/**
 	 * @param border
 	 */
 	public Rectangle subtract(Border border) {
-		x += border.left;
-		y += border.top;
-		width -= border.left + border.right;
-		height -= border.top + border.bottom;
-		return this;
+		return new Rectangle(
+				x + border.left,
+				y + border.top,
+				width - border.left - border.right,
+				height - border.top - border.bottom);
 	}
 
 	public Object clone() {

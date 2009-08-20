@@ -79,19 +79,17 @@ public class Border {
 	}
 
 	public Border add(Border border) {
-		top += border.top;
-		right += border.right;
-		bottom += border.bottom;
-		left += border.left;
-		return this;
+		return new Border(top + border.top,
+				right + border.right,
+				bottom + border.bottom,
+				left + border.left);
 	}
 
 	public Border subtract(Border border) {
-		top -= border.top;
-		right -= border.right;
-		bottom -= border.bottom;
-		left -= border.left;
-		return this;
+		return new Border(top - border.top,
+				right - border.right,
+				bottom - border.bottom,
+				left - border.left);
 	}
 
 	public Insets toInsets() {

@@ -31,6 +31,8 @@
 
 package com.scriptographer.ui;
 
+import com.scriptographer.ScriptographerEngine;
+
 /**
  * @author lehni
  */
@@ -50,5 +52,12 @@ public class PopupList extends ListItem<ListEntry> {
 
 	protected ListEntry createEntry(int index) {
 		return new ListEntry(this, index);
+	}
+
+	protected static final Border MARGIN_POPUPLIST = ScriptographerEngine.isMacintosh() ?
+			new Border(4, 4, 0, 4) : new Border(1, 2, 1, 2);
+
+	protected Border getNativeMargin() {
+		return MARGIN_POPUPLIST;
 	}
 }

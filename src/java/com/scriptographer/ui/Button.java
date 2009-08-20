@@ -163,23 +163,10 @@ public class Button extends TextItem {
 		setDisabledImage(Image.getImage(obj));
 	}
 	
-	// int top, int left, int bottom, int right
-	protected static final Border MARGIN_IMAGE = new Border(0, 0, 0, 0);
-	protected static final Border MARGIN_TEXT = ScriptographerEngine.isMacintosh() ?
+	protected static final Border MARGIN_BUTTON = ScriptographerEngine.isMacintosh() ?
 			new Border(3, 4, 3, 4) : new Border(1, 2, 1, 2);
 
-	protected Border getButtonMargin() {
-		return MARGIN_TEXT;
-	}
-
-	public void setMargin(int top, int right, int bottom, int left) {
-		Border margin = new Border(top, right, bottom, left).add(getButtonMargin());
-		// We cannot call setMargin(Border margin) here, since that creates
-		// an endless recursion
-		super.setMargin(margin.top, margin.right, margin.bottom, margin.left);
-	}
-	
-	public Border getMargin() {
-		return new Border(margin).subtract(getButtonMargin());
+	protected Border getNativeMargin() {
+		return MARGIN_BUTTON;
 	}
 }
