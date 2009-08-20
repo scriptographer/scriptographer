@@ -373,6 +373,26 @@ public abstract class Item extends Component {
 		setSize(size.width, size.height);
 	}
 
+	public int getWidth() {
+		return getSize().width;
+	}
+
+	public void setWidth(int width) {
+		Size size = sizeSet ? getSize() : getBestSize();
+		size.width = width;
+		setSize(size);
+	}
+
+	public int getHeight() {
+		return getSize().height;
+	}
+
+	public void setHeight(int height) {
+		Size size = sizeSet ? getSize() : getBestSize();
+		size.height = height;
+		setSize(size);
+	}
+
 	private native Size nativeGetTextSize(String text, int maxWidth);
 	
 	public Size getTextSize(String text, int maxWidth) {
