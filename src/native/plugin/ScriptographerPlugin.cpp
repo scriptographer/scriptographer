@@ -133,21 +133,7 @@ OSStatus ScriptographerPlugin::keyEventHandler(EventHandlerCallRef handler, Even
 				|| gEngine->callOnHandleKeyEvent(com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN,
 					keyCode, uniChar, modifiers);
 			break;
-
 		/*
-		case kEventRawKeyDown: {
-			if (charCode == '\b')
-				gEngine->onClear();
-		}
-		break;
-		case kEventRawKeyRepeat: {
-			int i = 0;
-		}
-		break;
-		case kEventRawKeyUp: {
-			int i = 0;
-		}
-		break ;
 		case kEventRawKeyModifiersChanged: {
 			int i = 0;
 			event.m_shiftDown = modifiers & shiftKey;
@@ -158,13 +144,13 @@ OSStatus ScriptographerPlugin::keyEventHandler(EventHandlerCallRef handler, Even
 		break;
 		*/
 		}
-		/* do not allow preventing of native handling for now
+		/* Do not allow preventing of native event processing for now
 		if (handled)
 			return noErr;
 		*/
 	}
-
-	return eventNotHandledErr; // noErr if handled
+	// Do not interfere with AI and allow it to further process this event.
+	return eventNotHandledErr;
 }
 
 #endif
