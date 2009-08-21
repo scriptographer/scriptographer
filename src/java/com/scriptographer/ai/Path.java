@@ -320,15 +320,28 @@ public class Path extends PathItem {
 		SegmentList segments = getSegments();
 		CurveList curves = getCurves();
 		if (index >= 0 && index < curves.size()) {
+			boolean hasTabletData = hasTabletData();
+			// If there is tablet data, we need to measure the offset of
+			// the split point, as a value between 0 and 1
+			double length, partLength;
+			if (hasTabletData) {
+				length = getLength();
+				// Add up length of the new path by getting the curves lengths
+				partLength = 0;
+				for (int i = 0; i < index; i++)
+					partLength += curves.get(i).getLength();
+			} else {
+				length = partLength = 0;
+			}
 			// Only divide curves if we're not on an existing segment already
 			if (parameter > 0.0) {
 				// Divide the curve with the index at given parameter
 				Curve curve = curves.get(index);
-				if (curve != null) {
-					curve.divide(parameter);
-					// Dividing adds more segments to the path
-					index++;
-				}
+				curve.divide(parameter);
+				if (hasTabletData)
+					partLength += curve.getLength();
+				// Dividing adds more segments to the path
+				index++;
 			}
 			// Create the new path with the segments to the right of given parameter
 			ExtendedList<Segment> newSegments = segments.getSubList(index, segments.size());
@@ -342,6 +355,8 @@ public class Path extends PathItem {
 				setSegments(newSegments);
 				setClosed(false);
 				setAttributes(attributes);
+				if (hasTabletData)
+					nativeSwapTabletData(partLength / length);
 				return this;
 			} else if (index > 0) {
 				// Delete the segments from the current path, not including the divided point
@@ -351,6 +366,7 @@ public class Path extends PathItem {
 				// TODO: Split TabletData arrays as well! kTransferLivePaintPathTags?
 				Path newPath = (Path) clone();
 				newPath.setSegments(newSegments);
+				nativeSplitTabletData(partLength / length, newPath);
 				return newPath;
 			}
 		}
@@ -428,9 +444,16 @@ public class Path extends PathItem {
 	
 	private native void nativeSetTabletData(int type, float[][] data);
 
+	private native boolean nativeSplitTabletData(double offset, Path other);
+
+	private native boolean nativeSwapTabletData(double offset);
+
 	/**
 	 * {@grouptitle Tablet Data}
 	 */
+
+	public native boolean hasTabletData();
+
 	public float[][] getTabletPressure() {
 		return nativeGetTabletData(TABLET_PRESSURE);
 	}

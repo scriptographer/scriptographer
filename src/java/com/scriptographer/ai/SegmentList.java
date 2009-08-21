@@ -148,7 +148,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 
 			int start = fromIndex, end;
 
-			float []values = null;
+			float[] values = null;
 			while (true) {
 				// Skip the ones that are already fetched:
 				Segment segment;
@@ -227,17 +227,23 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		// And link segment to this list
 		segment.segments = this;
 		segment.index = index;
+		// And add to illustrator as well
+		segment.insert();
+
 		// Increase size
 		size++;
 		if (curves != null)
 			curves.updateSize();
-		// And add to illustrator as well
-		segment.insert();
-		// Update Segment indices
-		for (int i = index + 1; i < size; i++) {
+		
+		// Update segment and curve indices
+		for (int i = index; i < size; i++) {
 			Segment seg = list.get(i);
-			if (seg != null)
+			if (seg != null) {
 				seg.index = i;
+				Curve curve = seg.getCurve();
+				if (curve != null)
+					curve.setIndex(i);
+			}
 		}
 		return segment;
 	}
@@ -356,7 +362,6 @@ public class SegmentList extends AbstractFetchList<Segment> {
 
 	public void remove(int fromIndex, int toIndex) {
 		if (fromIndex < toIndex) {
-			int newSize = size + fromIndex - toIndex;
 			for (int i = fromIndex; i < toIndex; i++) {
 				Segment seg = list.get(i);
 				if (seg != null) {
@@ -367,13 +372,13 @@ public class SegmentList extends AbstractFetchList<Segment> {
 			if (path != null) {
 				size = nativeRemove(path.handle, path.document.handle,
 						fromIndex, toIndex - fromIndex);
+			} else {
+				size -= toIndex - fromIndex;
 			}
 			list.remove(fromIndex, toIndex);
-			size = newSize;
 			if (curves != null)
 				curves.updateSize();
 		}
-
 	}
 	
 	/*

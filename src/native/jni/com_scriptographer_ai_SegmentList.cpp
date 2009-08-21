@@ -61,6 +61,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_SegmentList_nativeGet(JNIEnv *
 		// the first byte of the 7th represents the boolean value. if this float is set
 		// to 0 before fetching, it will be == 0 if false, and != 0 if true, so that's 
 		// all we want in the java environment!
+		short c;
+		sAIPath->GetPathSegmentCount((AIArtHandle) handle, &c);
 		if (count == 1) {
 			// for only one segment, this seems to be faster than the GetPrimitiveArrayCritical way.
 			jfloat data[com_scriptographer_ai_SegmentList_VALUES_PER_SEGMENT];

@@ -161,7 +161,7 @@ public class Curve implements ChangeListener {
 	protected void updateSegments() {
 		if (segments != null) {
 			index2 = index1 + 1;
-			// a closing bezier?
+			// A closing curve?
 			if (index2 >= segments.size())
 				index2 = 0;
 			
@@ -178,6 +178,11 @@ public class Curve implements ChangeListener {
 					segments.path.needsUpdate(segment2.version))
 				segment2 = (Segment) segments.get(index2);
 		}
+	}
+
+	protected void setIndex(int i) {
+		index1 = i;
+		updateSegments();
 	}
 
 	/**
@@ -289,14 +294,18 @@ public class Curve implements ChangeListener {
 	 * The next curve in the {@link Path#getCurves()} array.
 	 */
 	public Curve getNext() {
-		return index1 < segments.size() ? segments.get(index1 + 1).getCurve() : null;
+		return segments != null && index1 < segments.size()
+				? segments.get(index1 + 1).getCurve()
+				: null;
 	}
 	
 	/**
 	 * The previous curve in the {@link Path#getCurves()} array.
 	 */
 	public Curve getPrevious() {
-		return index1 > 0 ? segments.get(index1 - 1).getCurve() : null;
+		return segments != null && index1 > 0
+				? segments.get(index1 - 1).getCurve()
+				: null;
 	}
 
 	// TODO: Shall we return reversed curve as new instance instead of modifying
@@ -474,33 +483,43 @@ public class Curve implements ChangeListener {
 			double left[][] = getCurveArray();
 			double right[][] = new double[4][];
 			split(left, parameter, left, right);
-		
-			// write back the results:
+	
+			// Write back the results:
 			segment1.handleOut.set(left[1][0] - segment1.point.x,
 					left[1][1] - segment1.point.y);
-	
-			// create the new segment, absolute -> relative:
+			
+			// segment2 is the end segment. By inserting newSegment
+			// between segment1 and 2, 2 becomes the end segment.
+			// absolute->relative
+			segment2.handleIn.set(right[2][0] - segment2.point.x,
+					right[2][1] - segment2.point.y);
+
+			// Create the new segment, absolute -> relative:
 			double x = left[3][0];
 			double y = left[3][1];
 			Segment newSegment = new Segment(x, y,
 					left[2][0] - x, left[2][1] - y,
 					right[1][0] - x, right[1][1] - y);
 	
-			// and insert it, if needed:
-			if (segments != null)
-				segments.add(index2, newSegment);
-	
-			// absolute->relative
-			segment2.handleIn.set(right[2][0] - segment2.point.x,
-					right[2][1] - segment2.point.y);
-	
-			Path path = getPath();
-			if (path != null) {
+			// Insert it in the segments list, if needed:
+			if (segments != null) {
+				// Insert at the end if this curve is a closing curve
+				// of a closed path, since otherwise it would be inserted
+				// at 0
+				if (index1 > 0 && index2 == 0)
+					segments.add(newSegment);
+				else
+                    segments.add(index2, newSegment);
+				updateSegments();
+			}
+			if (segments != null) {
 				// if this curve is linked to a path, get the new curve there
-				return (Curve) path.getCurves().get(index2);
+				return getNext();
 			} else {
 				// otherwise create it from the result of split
-				return new Curve(newSegment, segment2);
+				Segment endSegment = segment2;
+				segment2 = newSegment;
+				return new Curve(newSegment, endSegment);
 			}
 		}
 		return null;

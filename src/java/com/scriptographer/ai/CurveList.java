@@ -74,7 +74,7 @@ public class CurveList extends AbstractFetchList<Curve> {
 
 	protected void fetch(int fromIndex, int toIndex) {
 		// Prefetch all the needed segments now:
-		segments.fetch(fromIndex, Math.min(segments.size() - 1, toIndex + 1));
+		segments.fetch(fromIndex, Math.min(segments.size(), toIndex + 1));
 	}
 
 	// This list is read only for now.

@@ -243,25 +243,56 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_nativeReverse(JNIEnv *env
 	} EXCEPTION_CONVERT(env);
 }
 
+AITabletProfile *Path_getTabletData(AIArtHandle handle, AITabletDataType type, int *count) {
+	AITabletProfile *data = NULL;
+	// First get the number of data:
+	*count = 0;
+	sAITabletData->GetTabletData(handle, &data, count, type);
+	// Create the array
+	data = new AITabletProfile[*count];
+	// Get the values:
+	sAITabletData->GetTabletData(handle, &data, count, type);
+	return data;
+}
+
+void Path_setTabletData(AIArtHandle handle, AITabletDataType type, AITabletProfile *data, int count) {
+	// At least on CS2, setting the size to 0 first seems to be necessary, when
+	// tabletData was already in use before. Otherwise Illustrator crashes (#6).
+	ASBoolean inUse = false;
+	sAITabletData->GetTabletDataInUse(handle, &inUse);
+	AIErr err = 0;
+	if (inUse)
+		err = sAITabletData->SetTabletData(handle, NULL, 0, (AITabletDataType) type);
+	err = sAITabletData->SetTabletData(handle, data, count, (AITabletDataType) type);
+	int i = 0;
+}
+
+/*
+ * boolean hasTabletData()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Path_hasTabletData(JNIEnv *env, jobject obj) {
+	try {
+		AIArtHandle handle = gEngine->getArtHandle(env, obj);
+		ASBoolean inUse = false;
+		sAITabletData->GetTabletDataInUse(handle, &inUse);
+		return inUse;
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
 /*
  * float[][] nativeGetTabletData(int type)
  */
 JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Path_nativeGetTabletData(JNIEnv *env, jobject obj, jint type) {
 	try {
 		AIArtHandle handle = gEngine->getArtHandle(env, obj);
-		// return null if it's not in use:
+		// Return null if it's not in use:
 		ASBoolean inUse = false;
 		sAITabletData->GetTabletDataInUse(handle, &inUse);
 		if (inUse) {
 			// get the tabletData:
-			// first get the number of data:
 			int count = 0;
-			AITabletProfile *profiles = NULL;
-			sAITabletData->GetTabletData(handle, &profiles, &count, (AITabletDataType) type);
-			// create the array
-			profiles = new AITabletProfile[count];
-			// and get the values:
-			sAITabletData->GetTabletData(handle, &profiles, &count, (AITabletDataType) type);
+			AITabletProfile *profiles = Path_getTabletData(handle, (AITabletDataType) type, &count);
 			jobjectArray array = NULL;
 			for (int i = 0; i < count; i++) {
 				jfloatArray entry = (jfloatArray) env->NewFloatArray(2);
@@ -284,7 +315,6 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Path_nativeGetTabletDa
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_nativeSetTabletData(JNIEnv *env, jobject obj, jint type, jobjectArray data) {
 	try {
 		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
-		AITabletDataType dataType = (AITabletDataType) type;
 		// Get the tabletData:
 		if (data != NULL) {
 			// First convert the passed array to a AITabletProfile array:
@@ -295,14 +325,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_nativeSetTabletData(JNIEn
 				env->GetFloatArrayRegion(entry, 0, 2, (jfloat *) &profiles[i]);
 			}
 			// Now set the new values:
-			// At least on CS2, setting the size to 0 first seems to be necessary, when
-			// tabletData was already in use before. Otherwise Illustrator crashes (#6).
-			ASBoolean inUse = false;
-			sAITabletData->GetTabletDataInUse(handle, &inUse);
-			if (inUse)
-				sAITabletData->SetTabletData(handle, NULL, 0, (AITabletDataType) type);
-			sAITabletData->SetTabletData(handle, profiles, count, (AITabletDataType) type);
-			sAITabletData->SetTabletDataInUse(handle, count > 0);
+			Path_setTabletData(handle, (AITabletDataType) type, profiles, count);
+			sAITabletData->SetTabletDataInUse(handle, true);
 			delete profiles;
 		} else {
 			// Just setting to 0 doesn't seem to do the trick.
@@ -319,9 +343,72 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_nativeSetTabletData(JNIEn
 		// Simply swap the closed flag of this path in order to get  
 		// Illustrator to recognize the change in the object, because
 		// SetTabletData seems be ignored as a change:
-		AIBoolean closed = false;
-		sAIPath->GetPathClosed(handle, &closed);
-		sAIPath->SetPathClosed(handle, !closed);
-		sAIPath->SetPathClosed(handle, closed);
+		AIBoolean closed;
+		if (!sAIPath->GetPathClosed(handle, &closed)) {
+			sAIPath->SetPathClosed(handle, !closed);
+			sAIPath->SetPathClosed(handle, closed);
+		}
 	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * boolean nativeSplitTabletData(double offset, com.scriptographer.ai.Path other)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Path_nativeSplitTabletData(JNIEnv *env, jobject obj, jdouble offset, jobject other) {
+	try {
+		AIArtHandle handle1 = gEngine->getArtHandle(env, obj);
+		AIArtHandle handle2 = gEngine->getArtHandle(env, other);
+		ASBoolean inUse;
+		if (!sAITabletData->GetTabletDataInUse(handle1, &inUse) && inUse) {
+			for (int type = 0; type < kTabletTypeCount; type++) {
+				int count = 0;
+				AITabletProfile *data = Path_getTabletData(handle1, (AITabletDataType) type, &count);
+				// When splitting, the new arrays need a maximum of the size of the old one.
+				int count1 = count, count2 = count;
+				AITabletProfile *part1 = new AITabletProfile[count1];
+				AITabletProfile *part2 = new AITabletProfile[count2];
+				AIErr err = sAITabletData->SplitTabletData(data, count, &part1, &count1, &part2, &count2, (AIReal) offset);
+				Path_setTabletData(handle1, (AITabletDataType) type, part1, count1);
+				Path_setTabletData(handle2, (AITabletDataType) type, part2, count2);
+				delete data;
+				delete part1;
+				delete part2;
+			}
+			sAITabletData->SetTabletDataInUse(handle1, true);
+			sAITabletData->SetTabletDataInUse(handle2, true);
+		}
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+/*
+ * boolean nativeSwapTabletData(double offset)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Path_nativeSwapTabletData(JNIEnv *env, jobject obj, jdouble offset) {
+	try {
+		AIArtHandle handle = gEngine->getArtHandle(env, obj);
+		ASBoolean inUse;
+		if (!sAITabletData->GetTabletDataInUse(handle, &inUse) && inUse) {
+			for (int type = 0; type < kTabletTypeCount; type++) {
+				int count = 0;
+				AITabletProfile *data = Path_getTabletData(handle, (AITabletDataType) type, &count);
+				// When splitting, the new arrays need a maximum of the size of the old one.
+				int count1 = count, count2 = count;
+				AITabletProfile *part1 = new AITabletProfile[count1];
+				AITabletProfile *part2 = new AITabletProfile[count2];
+				AIErr err = sAITabletData->SplitTabletData(data, count, &part1, &count1, &part2, &count2, offset);
+				count *= 2;
+				AITabletProfile *result = new AITabletProfile[count];
+				offset = 1 - offset;
+				err = sAITabletData->JoinTabletData(part2, count2, part1, count1, &result, &count, offset, offset);
+				Path_setTabletData(handle, (AITabletDataType) type, result, count);
+
+				delete data;
+				delete part1;
+				delete part2;
+			}
+			sAITabletData->SetTabletDataInUse(handle, true);
+		}
+	} EXCEPTION_CONVERT(env);
+	return false;
 }
