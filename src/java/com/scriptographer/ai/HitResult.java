@@ -134,7 +134,7 @@ public class HitResult {
 				segment = curve.getSegment2();
 			} else {
 				// Determine the closest segment by comparing curve lengths
-				Curve rightCurve = ((Curve) curve.clone()).split(parameter);
+				Curve rightCurve = ((Curve) curve.clone()).divide(parameter);
 				segment = rightCurve.getLength() > curve.getLength() / 2
 						? curve.getSegment1()
 						: curve.getSegment2();

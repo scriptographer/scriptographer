@@ -185,6 +185,8 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 				return new RhinoCallable(engine, (Function) value);
 		} else if (value instanceof Scriptable || value instanceof String) {
 			// Let through string as well, for ArgumentReader
+			// TODO: Add support for constructor detection that receives the passed value,
+			// or can convert to it.
 			if (Map.class.isAssignableFrom(type)) {
 				return toMap((Scriptable) value);
 			} else {

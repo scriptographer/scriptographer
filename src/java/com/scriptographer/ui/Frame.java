@@ -32,7 +32,6 @@
 package com.scriptographer.ui;
 
 import com.scratchdisk.util.IntegerEnumUtils;
-import com.scriptographer.ScriptographerEngine;
 
 /**
  * @author lehni

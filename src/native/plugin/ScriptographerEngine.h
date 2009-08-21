@@ -283,11 +283,6 @@ public:
 	jclass cls_ai_Segment;
 	jclass cls_ai_Curve;
 	
-	jclass cls_ai_TabletValue;
-	jmethodID cid_ai_TabletValue;
-	jfieldID fid_ai_TabletValue_offset;
-	jfieldID fid_ai_TabletValue_value;
-
 	jclass cls_ai_GradientStop;
 	jmethodID mid_ai_GradientStop_set;
 

@@ -87,7 +87,6 @@ import com.scriptographer.ai.Segment;
 import com.scriptographer.ai.StrokeStyle;
 import com.scriptographer.ai.Swatch;
 import com.scriptographer.ai.Symbol;
-import com.scriptographer.ai.TabletValue;
 import com.scriptographer.ai.TextRange;
 import com.scriptographer.ai.TextStory;
 import com.scriptographer.ai.Tool;
@@ -188,7 +187,6 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Swatch.class,
 		Symbol.class,
 		PlacedSymbol.class,
-		TabletValue.class,
 		com.scriptographer.ai.TextItem.class,
 		TextRange.class,
 		TextStory.class,

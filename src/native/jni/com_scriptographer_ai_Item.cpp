@@ -707,26 +707,26 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_setCenterVisible(JNIEnv *
 }
 
 /*
- * void nativeSetAttribute(long attribute, boolean value)
+ * int nativeGetAttributes(int attributes)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeSetAttribute(JNIEnv *env, jobject obj, jint attribute, jboolean value) {
-	try {
-		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
-		sAIArt->SetArtUserAttr(art, attribute, value ? attribute : 0);
-	} EXCEPTION_CONVERT(env);
-}
-
-/*
- * boolean nativeGetAttribute(long attribute)
- */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeGetAttribute(JNIEnv *env, jobject obj, jint attribute) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_nativeGetAttributes(JNIEnv *env, jobject obj, jint attributes) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 		long values;
-		if (!sAIArt->GetArtUserAttr(art, attribute, &values))
-			return values & attribute;
+		if (!sAIArt->GetArtUserAttr(art, attributes, &values))
+			return values;
 	} EXCEPTION_CONVERT(env);
-	return false;
+	return 0;
+}
+
+/*
+ * void nativeSetAttributes(int attributes, jint values)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_nativeSetAttributes(JNIEnv *env, jobject obj, jint attributes, jint values) {
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		sAIArt->SetArtUserAttr(art, attributes, values);
+	} EXCEPTION_CONVERT(env);
 }
 
 /*

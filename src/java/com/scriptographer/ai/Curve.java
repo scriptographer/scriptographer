@@ -155,7 +155,7 @@ public class Curve implements ChangeListener {
 	 * The path that the curve belongs to.
 	 */
 	public Path getPath() {
-		return segments.path;
+		return segments != null ? segments.path : null;
 	}
 
 	protected void updateSegments() {
@@ -440,13 +440,12 @@ public class Curve implements ChangeListener {
 		nativeAdjustThroughPoint(values, (float) pt.x, (float) pt.y, (float) parameter);
 		segment1.setValues(values, 0);
 		segment2.setValues(values, 1);
-		// don't mark dirty, commit immediately both as all the values have
+		// Don't mark dirty, commit immediately both as all the values have
 		// been modified:
-		if (segments.path != null) {
-			Path path = segments.path;
+		Path path = getPath();
+		if (path != null)
 			SegmentList.nativeSet(path.handle, path.document.handle,
 					index1, 2, values);
-		}
 	}
 
 	public Curve transform(Matrix matrix) {
@@ -459,16 +458,16 @@ public class Curve implements ChangeListener {
 	}
 
 	/**
-	 * Splits the curve into two at the specified position. The curve itself is
+	 * Divides the curve into two at the specified position. The curve itself is
 	 * modified and becomes the first part, the second part is returned as a new
 	 * curve. If the modified curve belongs to a path item, the second part is
 	 * added to it.
 	 * 
 	 * @param parameter the position at which to split the curve as a value
 	 *        between 0 and 1 {@default 0.5}
-	 * @return the second part of the splitted curve
+	 * @return the second part of the divided curve
 	 */
-	public Curve split(double parameter) {
+	public Curve divide(double parameter) {
 		if (parameter > 0 && parameter < 1) {
 			updateSegments();
 			
@@ -495,9 +494,10 @@ public class Curve implements ChangeListener {
 			segment2.handleIn.set(right[2][0] - segment2.point.x,
 					right[2][1] - segment2.point.y);
 	
-			if (segments != null && segments.path != null) {
+			Path path = getPath();
+			if (path != null) {
 				// if this curve is linked to a path, get the new curve there
-				return (Curve) segments.path.getCurves().get(index2);
+				return (Curve) path.getCurves().get(index2);
 			} else {
 				// otherwise create it from the result of split
 				return new Curve(newSegment, segment2);
@@ -506,8 +506,23 @@ public class Curve implements ChangeListener {
 		return null;
 	}
 
-	public Curve split() {
-		return split(0.5f);
+	public Curve divide() {
+		return divide(0.5f);
+	}
+
+	/**
+	 * Splits the curve at the given parameter. If this curve is part of a path,
+	 * it executes {@link Path#split(int, double)}, otherwise
+	 * {@link #divide(double)}.
+	 */
+	public Curve split(double parameter) {
+		Path path = getPath();
+		if (path != null) {
+			Path newPath = path.split(index1, parameter);
+			return newPath.getCurves().getFirst();
+		} else {
+			return divide(parameter);
+		}
 	}
 
 	// No need to expose these since they are confused with the native HitTest

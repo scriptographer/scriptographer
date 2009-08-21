@@ -113,88 +113,6 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setGuide(JNIEnv *env, job
 }
 
 /*
- * com.scriptographer.TabletValue[] getTabletData()
- */
-JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Path_getTabletData(JNIEnv *env, jobject obj) {
-	try {
-		AIArtHandle handle = gEngine->getArtHandle(env, obj);
-		// return null if it's not in use:
-		ASBoolean inUse = false;
-		sAITabletData->GetTabletDataInUse(handle, &inUse);
-		if (inUse) {
-			// get the tabletData:
-			// first get the number of data:
-			int count = 0;
-			AITabletProfile *profiles = NULL;
-			sAITabletData->GetTabletData(handle, &profiles, &count, kTabletPressure);
-			// create the array
-			profiles = new AITabletProfile[count];
-			// and get the values:
-			sAITabletData->GetTabletData(handle, &profiles, &count, kTabletPressure);
-			
-			// create an array with the tabletProfiles:
-			jobjectArray array = env->NewObjectArray(count, gEngine->cls_ai_TabletValue, NULL); 
-			for (int i = 0; i < count; i++) {
-				jobject value = env->NewObject(gEngine->cls_ai_TabletValue, gEngine->cid_ai_TabletValue, (jfloat) profiles[i].offset, (jfloat) profiles[i].value);
-				env->SetObjectArrayElement(array, i, value); 
-			}
-			delete profiles;
-			return array;
-		}
-	} EXCEPTION_CONVERT(env);
-	return NULL;
-}
-
-/*
- * void setTabletData(com.scriptographer.TabletValue[] data)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_setTabletData(JNIEnv *env, jobject obj, jobjectArray data) {
-	try {
-		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
-		// Get the tabletData:
-		if (data != NULL) {
-			// First convert the passed array to a AITabletProfile array:
-			int count = env->GetArrayLength(data);
-			AITabletProfile *profiles = new AITabletProfile[count];
-			for (int i = 0; i < count; i++) {
-				jobject obj = env->GetObjectArrayElement(data, i);
-				AITabletProfile *profile = &profiles[i];
-				profile->offset = env->GetFloatField(obj, gEngine->fid_ai_TabletValue_offset);
-				profile->value = env->GetFloatField(obj, gEngine->fid_ai_TabletValue_value);
-			}
-			// Now set the new values:
-			// At least on CS2, setting the size to 0 first seems to be necessary, when
-			// tabletData was already in use before. Otherwise Illustrator crashes (#6).
-			ASBoolean inUse = false;
-			sAITabletData->GetTabletDataInUse(handle, &inUse);
-			if (inUse)
-				sAITabletData->SetTabletData(handle, NULL, 0, kTabletPressure);
-			sAITabletData->SetTabletData(handle, profiles, count, kTabletPressure);
-			sAITabletData->SetTabletDataInUse(handle, count > 0);
-			delete profiles;
-		} else {
-			// Just setting to 0 doesn't seem to do the trick.
-			// First set to a straight envelope, then to 0
-			AITabletProfile profiles[] = {
-				{ 0, 1 },
-				{ 1, 1 }
-			};
-			sAITabletData->SetTabletData(handle, profiles, 2, kTabletPressure);
-			// Now set to 0
-			sAITabletData->SetTabletData(handle, profiles, 0, kTabletPressure);
-			sAITabletData->SetTabletDataInUse(handle, false);
-		}
-		// Simply swap the closed flag of this path in order to get  
-		// Illustrator to recognize the change in the object, because
-		// SetTabletData seems be ignored as a change:
-		AIBoolean closed = false;
-		sAIPath->GetPathClosed(handle, &closed);
-		sAIPath->SetPathClosed(handle, !closed);
-		sAIPath->SetPathClosed(handle, closed);
-	} EXCEPTION_CONVERT(env);
-}
-
-/*
  * double getLength()
  */
 JNIEXPORT jdouble JNICALL Java_com_scriptographer_ai_Path_getLength(JNIEnv *env, jobject obj) {
@@ -322,5 +240,88 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_nativeReverse(JNIEnv *env
 		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
 		if (sAIPath->ReversePathSegments(handle))
 			throw new StringException("Cannot reverse path segments");
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * float[][] nativeGetTabletData(int type)
+ */
+JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Path_nativeGetTabletData(JNIEnv *env, jobject obj, jint type) {
+	try {
+		AIArtHandle handle = gEngine->getArtHandle(env, obj);
+		// return null if it's not in use:
+		ASBoolean inUse = false;
+		sAITabletData->GetTabletDataInUse(handle, &inUse);
+		if (inUse) {
+			// get the tabletData:
+			// first get the number of data:
+			int count = 0;
+			AITabletProfile *profiles = NULL;
+			sAITabletData->GetTabletData(handle, &profiles, &count, (AITabletDataType) type);
+			// create the array
+			profiles = new AITabletProfile[count];
+			// and get the values:
+			sAITabletData->GetTabletData(handle, &profiles, &count, (AITabletDataType) type);
+			jobjectArray array = NULL;
+			for (int i = 0; i < count; i++) {
+				jfloatArray entry = (jfloatArray) env->NewFloatArray(2);
+				env->SetFloatArrayRegion(entry, 0, 2, (jfloat *) &profiles[i]);
+				// We need entry to create the array, so only create it the first time here in the loop
+				if (array == NULL)
+					array = env->NewObjectArray(count, env->GetObjectClass(entry), NULL);
+				env->SetObjectArrayElement(array, i, entry); 
+			}
+			delete profiles;
+			return array;
+		}
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
+
+/*
+ * void nativeSetTabletData(int type, float[][] data)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Path_nativeSetTabletData(JNIEnv *env, jobject obj, jint type, jobjectArray data) {
+	try {
+		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
+		AITabletDataType dataType = (AITabletDataType) type;
+		// Get the tabletData:
+		if (data != NULL) {
+			// First convert the passed array to a AITabletProfile array:
+			int count = env->GetArrayLength(data);
+			AITabletProfile *profiles = new AITabletProfile[count];
+			for (int i = 0; i < count; i++) {
+				jfloatArray entry = (jfloatArray) env->GetObjectArrayElement(data, i);
+				env->GetFloatArrayRegion(entry, 0, 2, (jfloat *) &profiles[i]);
+			}
+			// Now set the new values:
+			// At least on CS2, setting the size to 0 first seems to be necessary, when
+			// tabletData was already in use before. Otherwise Illustrator crashes (#6).
+			ASBoolean inUse = false;
+			sAITabletData->GetTabletDataInUse(handle, &inUse);
+			if (inUse)
+				sAITabletData->SetTabletData(handle, NULL, 0, (AITabletDataType) type);
+			sAITabletData->SetTabletData(handle, profiles, count, (AITabletDataType) type);
+			sAITabletData->SetTabletDataInUse(handle, count > 0);
+			delete profiles;
+		} else {
+			// Just setting to 0 doesn't seem to do the trick.
+			// First set to a straight envelope, then to 0
+			AITabletProfile profiles[] = {
+				{ 0, 1 },
+				{ 1, 1 }
+			};
+			sAITabletData->SetTabletData(handle, profiles, 2, (AITabletDataType) type);
+			// Now set to 0
+			sAITabletData->SetTabletData(handle, profiles, 0, (AITabletDataType) type);
+			sAITabletData->SetTabletDataInUse(handle, false);
+		}
+		// Simply swap the closed flag of this path in order to get  
+		// Illustrator to recognize the change in the object, because
+		// SetTabletData seems be ignored as a change:
+		AIBoolean closed = false;
+		sAIPath->GetPathClosed(handle, &closed);
+		sAIPath->SetPathClosed(handle, !closed);
+		sAIPath->SetPathClosed(handle, closed);
 	} EXCEPTION_CONVERT(env);
 }

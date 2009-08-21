@@ -34,7 +34,6 @@ package com.scriptographer.ai;
 import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
-import java.util.ArrayList;
 
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
@@ -154,6 +153,14 @@ public class Path extends PathItem {
 	public void setSegments(Segment[] segments) {
 		setSegments(Lists.asList(segments));
 	}
+	
+	private void updateSize(int size) {
+		// Increase version as all segments have changed
+		version++;
+		if (segments != null)
+			segments.updateSize(size);
+		
+	}
 
 	/**
 	 * The curves contained within the path.
@@ -185,21 +192,6 @@ public class Path extends PathItem {
 	public native boolean isGuide();
 	
 	public native void setGuide(boolean guide);
-	
-	public native TabletValue[] getTabletData();
-	
-	public native void setTabletData(TabletValue[] data);
-	
-	public void setTabletData(float[][] data) {
-		// Convert to a TabletValue[] data array:
-		ArrayList<TabletValue> values = new ArrayList<TabletValue>();
-		for (int i = 0; i < data.length; i++) {
-			float[] pair = data[i];
-			if (pair != null && pair.length >= 2)
-				values.add(new TabletValue(pair[0], pair[1]));
-		}
-		setTabletData(values.toArray(new TabletValue[values.size()]));
-	}
 
 	/**
 	 * The length of the perimeter of the path.
@@ -224,14 +216,6 @@ public class Path extends PathItem {
 		nativeReverse();
 		// Increase version as all segments have changed
 		version++;
-	}
-	
-	private void updateSize(int size) {
-		// Increase version as all segments have changed
-		version++;
-		if (segments != null)
-			segments.updateSize(size);
-		
 	}
 
 	private native int nativePointsToCurves(float tolerance, float threshold,
@@ -327,40 +311,50 @@ public class Path extends PathItem {
 	}
 
 	public Path split(int index, double parameter) {
-		SegmentList segments = getSegments();
-		ExtendedList<Segment> newSegments = null;
-
-		if (parameter < 0.0f) parameter = 0.0f;
-		else if (parameter >= 1.0f) {
+		if (parameter < 0.0) parameter = 0.0;
+		else if (parameter >= 1.0) {
 			// t = 1 is the same as t = 0 and index ++
 			index++;
-			parameter = 0.0f;
+			parameter = 0.0;
 		}
-		int numSegments = segments.size();
-		if (index >= 0 && index < numSegments - 1) {
-			if (parameter == 0.0) { // special case
-				if (index > 0) {
-					// split at index
-					newSegments = segments.getSubList(index, numSegments);
-					segments.remove(index + 1, numSegments);
-				}
-			} else {
-				// divide the segment at index at parameter
-				Segment segment = (Segment) segments.get(index);
-				if (segment != null) {
-					segment.split(parameter);
-					// create the new path with the segments to the right of t
-					newSegments = segments.getSubList(index + 1, numSegments);
-					// and delete these segments from the current path, not
-					// including the divided point
-					segments.remove(index + 2, numSegments);
+		SegmentList segments = getSegments();
+		CurveList curves = getCurves();
+		if (index >= 0 && index < curves.size()) {
+			// Only divide curves if we're not on an existing segment already
+			if (parameter > 0.0) {
+				// Divide the curve with the index at given parameter
+				Curve curve = curves.get(index);
+				if (curve != null) {
+					curve.divide(parameter);
+					// Dividing adds more segments to the path
+					index++;
 				}
 			}
+			// Create the new path with the segments to the right of given parameter
+			ExtendedList<Segment> newSegments = segments.getSubList(index, segments.size());
+			// If the path was closed, make it an open one and move the segments around,
+			// instead of creating a new path. Otherwise create two paths.
+			if (isClosed()) {
+				// Changing an item's segments also seems to change user attributes,
+				// i.e. selection state, so save them and restore them again.
+				int attributes = getAttributes();
+				newSegments.addAll(segments.getSubList(0, index + 1));
+				setSegments(newSegments);
+				setClosed(false);
+				setAttributes(attributes);
+				return this;
+			} else if (index > 0) {
+				// Delete the segments from the current path, not including the divided point
+				segments.remove(index + 1, segments.size());
+				// TODO: Instead of cloning, find a way to copy all necessary attributes over?
+				// AIArtSuite::TransferAttributes?
+				// TODO: Split TabletData arrays as well! kTransferLivePaintPathTags?
+				Path newPath = (Path) clone();
+				newPath.setSegments(newSegments);
+				return newPath;
+			}
 		}
-		if (newSegments != null)
-			return new Path(newSegments);
-		else
-			return null;
+		return null;
 	}
 
 	public Path split(int index) {
@@ -413,10 +407,91 @@ public class Path extends PathItem {
 		}
 	}
 
+
+	/*
+	 * Tablet Data Stuff
+	 */
+	
+	private static final int
+			/** Stylus pressure. */
+			TABLET_PRESSURE = 0,
+			/** Stylus wheel pressure, also called tangential or barrel pressure */
+			TABLET_BARREL_PRESSURE = 1,
+			/** Tilt, also called altitude. */
+			TABLET_TILT = 2,
+			/** Bearing, also called azimuth. */
+			TABLET_BEARING = 3,
+			/** Rotation. */
+			TABLET_ROTATION = 4;
+
+	private native float[][] nativeGetTabletData(int type);
+	
+	private native void nativeSetTabletData(int type, float[][] data);
+
+	/**
+	 * {@grouptitle Tablet Data}
+	 */
+	public float[][] getTabletPressure() {
+		return nativeGetTabletData(TABLET_PRESSURE);
+	}
+
+	public void setTabletPressure(float[][] data) {
+		nativeSetTabletData(TABLET_PRESSURE, data);
+	}
+
+	public float[][] getTabletBarrelPressure() {
+		return nativeGetTabletData(TABLET_BARREL_PRESSURE);
+	}
+
+	public void setTabletBarrelPressure(float[][] data) {
+		nativeSetTabletData(TABLET_BARREL_PRESSURE, data);
+	}
+
+	public float[][] getTabletTilt() {
+		return nativeGetTabletData(TABLET_TILT);
+	}
+
+	public void setTabletTilt(float[][] data) {
+		nativeSetTabletData(TABLET_TILT, data);
+	}
+
+	public float[][] getTabletBearing() {
+		return nativeGetTabletData(TABLET_BEARING);
+	}
+
+	public void setTabletBearing(float[][] data) {
+		nativeSetTabletData(TABLET_BEARING, data);
+	}
+
+	public float[][] getTabletRotation() {
+		return nativeGetTabletData(TABLET_ROTATION);
+	}
+
+	public void setTabletRotation(float[][] data) {
+		nativeSetTabletData(TABLET_ROTATION, data);
+	}
+
+	/**
+	 * @deprecated Use {@link #getTabletPressure())} instead.
+	 */
+	public float[][] getTabletData() {
+		return nativeGetTabletData(TABLET_PRESSURE);
+	}
+
+	/**
+	 * @deprecated Use {@link #setTabletPressure())} instead.
+	 */
+	public void setTabletData(float[][] data) {
+		nativeSetTabletData(TABLET_PRESSURE, data);
+	}
+	
 	/*
 	 *  PostScript-like interface: moveTo, lineTo, curveTo, arcTo
 	 */
 
+	/**
+	 * {@grouptitle PostScript drawing commands}
+	 */
 	public void moveTo(double x, double y) {
 		getSegments().moveTo(x, y);
 	}

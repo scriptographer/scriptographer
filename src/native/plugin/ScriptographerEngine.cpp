@@ -546,11 +546,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ai_Segment = loadClass(env, "com/scriptographer/ai/Segment");
 	cls_ai_Curve = loadClass(env, "com/scriptographer/ai/Curve");
-
-	cls_ai_TabletValue = loadClass(env, "com/scriptographer/ai/TabletValue");
-	cid_ai_TabletValue = getConstructorID(env, cls_ai_TabletValue, "(FF)V");
-	fid_ai_TabletValue_offset = getFieldID(env, cls_ai_TabletValue, "offset", "F");
-	fid_ai_TabletValue_value = getFieldID(env, cls_ai_TabletValue, "value", "F");
 	
 	cls_ai_GradientStop = loadClass(env, "com/scriptographer/ai/GradientStop");
 	mid_ai_GradientStop_set = getMethodID(env, cls_ai_GradientStop, "set", "(DDLcom/scriptographer/ai/Color;)V");

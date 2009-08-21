@@ -428,7 +428,7 @@ public class Segment implements Commitable, ChangeListener {
 	public Curve getCurve() {
 		if (segments  != null) {
 			CurveList curves = segments.path.getCurves();
-			// the curves list handles closing curves, so the curves.size
+			// The curves list handles closing curves, so the curves.size
 			// is adjusted accordingly. just check to be in the boundaries here: 
 			return index < curves.size() ? (Curve) curves.get(index) : null;
 		} else {
@@ -511,21 +511,6 @@ public class Segment implements Commitable, ChangeListener {
 			selectionState = state;
 			markDirty(DIRTY_SELECTION);
 		}
-	}
-
-	public Segment split(double parameter) {
-		Curve curve = getCurve();
-		if (curve == null)
-			return null;
-		Curve newCurve = curve.split(parameter);
-		if (newCurve != null)
-			return newCurve.getSegment1();
-		else
-			return null;
-	}
-	
-	public Segment split() {
-		return split(0.5f);
 	}
 
 	public Object clone() {

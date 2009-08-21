@@ -585,24 +585,45 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 */
 	public native void setCenterVisible(boolean centerVisible);
 
-	private native void nativeSetAttribute(int attribute, boolean value);
-	private native boolean nativeGetAttribute(int attribute);
+	private native int nativeGetAttributes(int attributes);
 
-	/**
-	 * @jshide
+	private native void nativeSetAttributes(int attributes, int values);
+
+	/*
+	 * This can be used to retrieve all user attributes and restore them again after
+	 * an operation that would change them.
 	 */
-	public void setAttribute(ItemAttribute attribute, boolean value) {
-		if (attribute == ItemAttribute.SELECTED
-				|| attribute == ItemAttribute.FULLY_SELECTED)
-			document.commitCurrentStyle();
-		nativeSetAttribute(attribute.value, value);
+	protected int getAttributes() {
+		return nativeGetAttributes(0xffffffff);
+	}
+
+	protected void setAttributes(int attributes) {
+		// Setting all attributes at once does not seem to work, so loop
+		// through attributes and set separately.
+		//	nativeSetAttributes(0xffffffff, attributes);
+		for (ItemAttribute attribute : ItemAttribute.values())
+			nativeSetAttributes(attribute.value, attributes & attribute.value);
 	}
 
 	/**
 	 * @jshide
 	 */
 	public boolean getAttribute(ItemAttribute attribute) {
-		return nativeGetAttribute(attribute.value);
+		if (attribute != null)
+			return (nativeGetAttributes(attribute.value) & attribute.value) != 0;
+		return false;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public void setAttribute(ItemAttribute attribute, boolean value) {
+		if (attribute != null) {
+			if (attribute == ItemAttribute.SELECTED
+					|| attribute == ItemAttribute.FULLY_SELECTED)
+				document.commitCurrentStyle();
+			nativeSetAttributes(attribute.value, value ? attribute.value : 0);
+		}
 	}
 
 	/**
