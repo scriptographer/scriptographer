@@ -490,10 +490,11 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_ai_Item_version = getFieldID(env, cls_ai_Item, "version", "I");
 	fid_ai_Item_dictionaryHandle = getFieldID(env, cls_ai_Item, "dictionaryHandle", "I");
 	fid_ai_Item_dictionaryKey = getFieldID(env, cls_ai_Item, "dictionaryKey", "I");
-	mid_ai_Item_wrapHandle = getStaticMethodID(env, cls_ai_Item, "wrapHandle", "(ISIIIZ)Lcom/scriptographer/ai/Item;");
+	mid_ai_Item_wrapHandle = getStaticMethodID(env, cls_ai_Item, "wrapHandle", "(ISIIIZZ)Lcom/scriptographer/ai/Item;");
 	mid_ai_Item_getIfWrapped = getStaticMethodID(env, cls_ai_Item, "getIfWrapped", "(I)Lcom/scriptographer/ai/Item;");
 	mid_ai_Item_changeHandle = getMethodID(env, cls_ai_Item, "changeHandle", "(IIII)V");
 	mid_ai_Item_commit = getMethodID(env, cls_ai_Item, "commit", "(Z)V");
+	mid_ai_Item_isValid = getMethodID(env, cls_ai_Item, "isValid", "()Z");
 
 	cls_ai_ItemList = loadClass(env, "com/scriptographer/ai/ItemList");
 	cid_ItemList = getConstructorID(env, cls_ai_ItemList, "()V");
@@ -1328,7 +1329,7 @@ AIDocumentHandle ScriptographerEngine::getDocumentHandle(JNIEnv *env, jobject ob
 	if (env->IsInstanceOf(obj, cls_ai_DocumentObject))
 		// Fetch document field and switch if necessary
 		obj = getObjectField(env, obj, fid_ai_DocumentObject_document);
-	AIDocumentHandle doc = (AIDocumentHandle) getAIObjectHandle(env, obj, "document handle");
+	AIDocumentHandle doc = (AIDocumentHandle) getAIObjectHandle(env, obj, "document");
 	// Switch to this document if necessary
 	if (activate && doc && doc != gWorkingDoc) {
 		sAIDocumentList->Activate(doc, false);
@@ -1344,7 +1345,12 @@ AIDocumentHandle ScriptographerEngine::getDocumentHandle(JNIEnv *env, jobject ob
  * throws exceptions
  */
 AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool activateDoc, AIDocumentHandle *doc) {
-	AIArtHandle art = (AIArtHandle) getAIObjectHandle(env, obj, "art handle");
+	if (obj == NULL)
+		return NULL;
+	AIArtHandle art = (AIArtHandle) getAIObjectHandle(env, obj, "art");
+	// Make sure the object is valid
+	if (!callBooleanMethod(env, obj, mid_ai_Item_isValid))
+		throw new StringException("Object is wrapping an invalid art handle.");
 	if (activateDoc || doc != NULL) {
 		// Fetch docHandle and switch if necessary
 		jobject docObj = getObjectField(env, obj, fid_ai_DocumentObject_document);
@@ -1435,7 +1441,7 @@ jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef ra
  *
  * throws exceptions
  */
-jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc, AIDictionaryRef dictionary, short type) {
+jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc, AIDictionaryRef dictionary, bool created, short type) {
 	JNI_CHECK_ENV
 	if (art == NULL)
 		return NULL;
@@ -1476,7 +1482,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocu
 	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_wrapHandle,
 			(jint) art, (jshort) type, (jint) textType,
 			(jint) (doc ? doc : gWorkingDoc),
-			(jint) dictionary, wrapped);
+			(jint) dictionary, wrapped, created);
 }
 
 void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject item, AIArtHandle art, AIDocumentHandle doc, AIDictionaryRef dictionary, AIDictKey key) {
@@ -1494,7 +1500,7 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer, 
 	AIArtHandle art;
 	if (sAIArt->GetFirstArtOfLayer(layer, &art))
 		throw new StringException("Cannot get layer art");
-	return wrapArtHandle(env, art, doc, NULL, com_scriptographer_ai_Item_TYPE_LAYER);
+	return wrapArtHandle(env, art, doc, NULL, false, com_scriptographer_ai_Item_TYPE_LAYER);
 }
 
 jobject ScriptographerEngine::wrapDocumentHandle(JNIEnv *env, AIDocumentHandle doc) {

@@ -42,8 +42,8 @@ package com.scriptographer.ai;
  */
 public class AreaText extends TextItem {
 
-	protected AreaText(int handle, int docHandle) {
-		super(handle, docHandle);
+	protected AreaText(int handle, int docHandle, boolean created) {
+		super(handle, docHandle, created);
 	}
 	
 	native private static int nativeCreate(int orientation, int artHandle);

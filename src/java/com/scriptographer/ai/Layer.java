@@ -50,8 +50,8 @@ package com.scriptographer.ai;
  */
 public class Layer extends Item {
 
-	protected Layer(int handle, int docHandle) {
-		super(handle, docHandle);
+	protected Layer(int handle, int docHandle, boolean created) {
+		super(handle, docHandle, created);
 	}
 
 	/**

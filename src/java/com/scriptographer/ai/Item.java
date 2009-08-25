@@ -183,9 +183,53 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		TYPE_TRACING = 101;
 
 	private static native int nativeCreate(short type);
-	
+
 	/**
-	 * Creates a new AIArtHandle of the specified type and wraps it in a item
+	 * Creates a wrapper for a AIArtHandle. Make sure the right constructor is
+	 * used (Path, Raster). Use wrapArtHandle instead of directly calling this
+	 * constructor (it is called from the anchestor's constructors).
+	 * 
+	 * @param handle
+	 */
+	protected Item(int handle, Document doc, boolean created, boolean unversioned) {
+		super(handle, doc);
+		if (document == null)
+		    throw new ScriptographerException(
+		    		"Unable to create item. There is no open document.");
+		if (unversioned) {
+			creationVersion = 0;
+		} else if (created) {
+			// Set the creation level to the current level for this newly
+			// created item, so that isValid works right away. After the history
+			// cycle, these values are set one higher, since this items really
+			// belongs to the document.historyVersion + 1 cycle.
+			creationVersion = document.historyVersion;
+			// This item's versions need to be updated after the history cycle
+			// is finished.
+			document.createdItems.add(this);
+		} else {
+			// This is an existing item of which the creation level is unknown.
+			// set levels to -1
+			creationVersion = -1;
+			// Since creationLevel for this item is not known, add it to
+			// the items to check on each undo.
+			document.checkValidItems.add(new SoftReference<Item>(this));
+		}
+		// Use the current history level for the modification level, to force
+		// updates bellow this level, since we do not know when exactly
+		// the item was created or last modified.
+		modificationVersion = document.historyVersion;
+		// Keep track of this object from now on, see wrapArtHandle
+		items.put(handle, this);
+	}
+
+	protected Item(int handle, int docHandle, boolean created) {
+		this(handle, Document.wrapHandle(docHandle), created, false);
+	}
+
+	/**
+	 * Creates a new AIArtHandle of the specified type in the active document
+	 * and wraps it in a item.
 	 * 
 	 * @param type Item.TYPE_
 	 */
@@ -193,55 +237,18 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		// Create with false handle, to get document pointer and have time to
 		// activate with forCreation = true, to make sure currentStyle gets
 		// committed, etc.
-		super(0);
-		if (document == null)
-		    throw new ScriptographerException(
-		    		"Unable to create item. There is no open document.");
+		this(0, null, true, false);
 		document.activate(false, true);
 		// Now set the handle
 		handle = nativeCreate(type);
-		// Set the history levels to the current level for this newly created
-		// item, so that isValid works right away. After the history
-		// cycle, these values are set one higher, since this items
-		// really belongs to the document.historyVersion + 1 cycle.
-		creationVersion = modificationVersion = document.historyVersion;
-		// Keep track of this object from now on, see wrapArtHandle
-		items.put(handle, this);
-		// This item's versions need to be updated after the history cycle
-		// is finished.
-		document.createdItems.add(this);
 	}
 
 	/**
-	 * Creates an item that wraps an existing AIArtHandle. Make sure the
-	 * right constructor is used (Path, Raster). Use wrapArtHandle instead of
-	 * directly calling this constructor (it is called from the anchestor's
-	 * constructors).
-	 * 
-	 * @param handle
+	 * Creates a wrapper for newly created items in the active document.
+	 * Do not use to wrap existing ones, since it passes created = true!
 	 */
-	protected Item(int handle, Document doc) {
-		super(handle, doc);
-		// This is an existing item of which the creation level is unknown.
-		// set levels to -1
-		creationVersion = -1;
-		// Use the current history level for the modification level, to force
-		// updates bellow this level, since we do not know when exactly
-		// the item was created or last modified.
-		modificationVersion = document.historyVersion;
-		// Keep track of this object from now on, see wrapArtHandle
-		items.put(handle, this);
-		// Since creationLevel for this item is not known, add it to
-		// the items to check on each undo.
-		document.checkValidItems.add(new SoftReference<Item>(this));
-	}
-
-	protected Item(int handle, int docHandle) {
-		this(handle, Document.wrapHandle(docHandle));
-	}
-
 	protected Item(int handle) {
-		this(handle, null);
+		this(handle, null, true, false);
 	}
 
 	/**
@@ -253,7 +260,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @return the wrapped item
 	 */
 	protected static Item wrapHandle(int artHandle, short type, int textType,
-			int docHandle, int dictionaryHandle, boolean wrapped) {
+			int docHandle, int dictionaryHandle, boolean wrapped, boolean created) {
 		// First see whether the object was already wrapped before:
 		Item item = null;
 		// Only try to use the previous wrapper for this address if the object
@@ -267,41 +274,41 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		if (item == null) {
 			switch (type) {
 			case TYPE_PATH:
-				item = new Path(artHandle, docHandle);
+				item = new Path(artHandle, docHandle, created);
 				break;
 			case TYPE_GROUP:
-				item = new Group(artHandle, docHandle);
+				item = new Group(artHandle, docHandle, created);
 				break;
 			case TYPE_RASTER:
-				item = new Raster(artHandle, docHandle);
+				item = new Raster(artHandle, docHandle, created);
 				break;
 			case TYPE_PLACED:
-				item = new PlacedFile(artHandle, docHandle);
+				item = new PlacedFile(artHandle, docHandle, created);
 				break;
 			case TYPE_LAYER:
-				item = new Layer(artHandle, docHandle);
+				item = new Layer(artHandle, docHandle, created);
 				break;
 			case TYPE_COMPOUNDPATH:
-				item = new CompoundPath(artHandle, docHandle);
+				item = new CompoundPath(artHandle, docHandle, created);
 				break;
 			case TYPE_TEXTFRAME:
 				switch (textType) {
 				case TextItem.TEXTTYPE_POINT:
-					item = new PointText(artHandle, docHandle);
+					item = new PointText(artHandle, docHandle, created);
 					break;
 				case TextItem.TEXTTYPE_AREA:
-					item = new AreaText(artHandle, docHandle);
+					item = new AreaText(artHandle, docHandle, created);
 					break;
 				case TextItem.TEXTTYPE_PATH:
-					item = new PathText(artHandle, docHandle);
+					item = new PathText(artHandle, docHandle, created);
 					break;
 				}
 				break;
 			case TYPE_TRACING:
-				item = new Tracing(artHandle, docHandle);
+				item = new Tracing(artHandle, docHandle, created);
 				break;
 			case TYPE_SYMBOL:
-				item = new PlacedSymbol(artHandle, docHandle);
+				item = new PlacedSymbol(artHandle, docHandle, created);
 			}
 		}
 		if (item != null) {
@@ -1129,12 +1136,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * End of Style
 	 */
 
-	public String toString() {
-		return isDefaultName()
-				? super.toString()
-				: getClass().getSimpleName() + " (" +  getName() + ")";
-	}
-
 	public HitResult hitTest(Point point, HitRequest type, float tolerance) {
 		return document.nativeHitTest(point, (type != null ? type
 				: HitRequest.ALL).value, tolerance, this);
@@ -1628,4 +1629,12 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @jshide
 	 */
 	public static native int getItemType(Class cls);
+
+	public String toString() {
+		return getClass().getSimpleName() + (isValid()
+				? isDefaultName()
+						? " (" + getId() + ")"
+						: " <" + getName() + "> (" + getId() + ")"
+				: " <invalid>");
+	}
 }

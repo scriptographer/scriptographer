@@ -33,7 +33,6 @@ extern AIDocumentHandle gCreationDoc;
 
 short Item_getType(AIArtHandle art);
 short Item_getType(JNIEnv *env, jclass cls);
-jboolean Item_hasChildren(AIArtHandle handle);
 jboolean Item_isLayer(AIArtHandle handle);
 void Item_filter(AIArtSet set, bool layerOnly = false);
 AIArtSet Item_getSelected(bool filter = true);

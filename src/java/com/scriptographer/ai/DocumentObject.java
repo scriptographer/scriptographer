@@ -43,24 +43,20 @@ public class DocumentObject extends NativeObject {
 	protected Document document;
 
 	/**
-	 * Constructor for wrapping of existing document objects.
+	 * Constructor for wrapping of existing or new document objects.
 	 */
 	protected DocumentObject(int handle, Document document) {
 		super(handle);
-		// Pass null (or docHandle == 0) for the working document
+		// Pass null (or docHandle == 0) for the working document.
+		// This is save since nativeCreate activates the right document
+		// through Document_active / Item_getInsertionPoint
 		this.document = document == null
 				? Document.getWorkingDocument()
 				: document;
 	}
 
-	/**
-	 * Constructor for creation of new document objects. Do not use when wrapping existing ones.
-	 */
 	protected DocumentObject(int handle) {
-		super(handle);
-		// Store reference to the working document. This is save since nativeCreate
-		// activates the right document through Document_active / Item_getInsertionPoint
-		document = Document.getWorkingDocument();
+		this(handle, null);
 	}
 
 	/**

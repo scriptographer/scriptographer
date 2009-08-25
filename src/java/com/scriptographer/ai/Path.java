@@ -63,8 +63,8 @@ public class Path extends PathItem {
 	/**
 	 * Wraps an AIArtHandle in a Path object
 	 */
-	protected Path(int handle, int docHandle) {
-		super(handle, docHandle);
+	protected Path(int handle, int docHandle, boolean created) {
+		super(handle, docHandle, created);
 	}
 
 	/**

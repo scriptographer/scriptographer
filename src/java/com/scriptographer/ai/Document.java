@@ -504,7 +504,7 @@ public class Document extends NativeObject implements ChangeListener {
 		// to tell the native side that this is in fact the current style, not an
 		// item handle...
 		if (currentStyleItem == null)
-			currentStyleItem = new Item(Item.HANDLE_CURRENT_STYLE, this);
+			currentStyleItem = new Item(Item.HANDLE_CURRENT_STYLE, this, false, true);
 		// Update version so style gets refetched from native side.
 		currentStyleItem.version = CommitManager.version;
 		return currentStyleItem;

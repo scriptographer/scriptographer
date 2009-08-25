@@ -39,8 +39,8 @@ package com.scriptographer.ai;
  */
 public class PathText extends TextItem {
 
-	protected PathText(int handle, int docHandle) {
-		super(handle, docHandle);
+	protected PathText(int handle, int docHandle, boolean created) {
+		super(handle, docHandle, created);
 	}
 
 	native private static int nativeCreate(int orientation, int artHandle);

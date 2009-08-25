@@ -156,11 +156,6 @@
 	TYPE call##NAME##MethodReport(JNIEnv *env, jobject obj, jmethodID mid, ...); \
 	TYPE callStatic##NAME##MethodReport(JNIEnv *env, jclass cls, jmethodID mid, ...);
 
-//		CALLER(env->functions->Call##NAME##MethodV(env, obj, mid, args), TYPE, EXCEPTION_CHECK); \
-//		CALLER(env->functions->CallStatic##NAME##MethodV(env, cls, mid, args), TYPE, EXCEPTION_CHECK); \
-//		CALLER(env->functions->Call##NAME##MethodV(env, obj, mid, args), TYPE, EXCEPTION_REPORT); \
-//		CALLER(env->functions->CallStatic##NAME##MethodV(env, cls, mid, args), TYPE, EXCEPTION_REPORT); \
-
 #define JNI_DEFINE_CALLMETHODS(NAME, TYPE, CALLER) \
 	TYPE ScriptographerEngine::call##NAME##Method(JNIEnv *env, jobject obj, jmethodID mid, ...) { \
 		CALLER(env->Call##NAME##MethodV(obj, mid, args), TYPE, EXCEPTION_CHECK); \

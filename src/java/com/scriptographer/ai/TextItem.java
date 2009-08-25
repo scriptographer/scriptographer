@@ -56,8 +56,8 @@ public abstract class TextItem extends Item {
 	TextRange range = null;
 	TextRange visibleRange = null;
 
-	protected TextItem(int handle, int docHandle) {
-		super(handle, docHandle);
+	protected TextItem(int handle, int docHandle, boolean created) {
+		super(handle, docHandle, created);
 	}
 
 	protected TextItem(int handle) {

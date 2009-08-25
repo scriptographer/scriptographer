@@ -39,8 +39,8 @@ package com.scriptographer.ai;
  */
 public class PointText extends TextItem {
 
-	protected PointText(int handle, int docHandle) {
-		super(handle, docHandle);
+	protected PointText(int handle, int docHandle, boolean created) {
+		super(handle, docHandle, created);
 	}
 
 	native private static int nativeCreate(int orientation, float x, float y);

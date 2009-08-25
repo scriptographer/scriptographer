@@ -99,7 +99,7 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 	var consoleText = new java.lang.StringBuffer();
 
 	function showText() {
-		if (textOut != null) {
+		if (textOut) {
 			textOut.text = consoleText;
 			that.visible = true;
 			textOut.selection = consoleText.length() - 1;

@@ -64,8 +64,8 @@ public class Raster extends Item {
 	@SuppressWarnings("unused")
 	private int data = 0;
 
-	protected Raster(int handle, int docHandle) {
-		super(handle, docHandle);
+	protected Raster(int handle, int docHandle, boolean created) {
+		super(handle, docHandle, created);
 	}
 
 	private native int nativeConvert(int type, int width, int height);

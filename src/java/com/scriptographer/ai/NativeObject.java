@@ -92,7 +92,8 @@ abstract class NativeObject {
 	}
 
 	// Cache the factories for the various wrapper classes which use this base class
-	private static HashMap<Class, WrapFactory> factories = new HashMap<Class, WrapFactory>();
+	private static HashMap<Class, WrapFactory> factories
+			= new HashMap<Class, WrapFactory>();
 
 	private static class WrapFactory {
 		// Use a SoftIntMap to keep track of already wrapped objects per factory:
@@ -104,7 +105,8 @@ abstract class NativeObject {
 		WrapFactory(Class cls) {
 			// Get the constructor for this class
 			try {
-				// Use the (int, Document) constructor for DocumentObjects, (int) otherwise
+				// Use the (int, Document) constructor for DocumentObjects,
+				// (int) otherwise
 				hasDocument = DocumentObject.class.isAssignableFrom(cls);
 				ctor = cls.getDeclaredConstructor(hasDocument
 						? new Class[] { Integer.TYPE, Document.class }
@@ -123,7 +125,9 @@ abstract class NativeObject {
 					// Now create a new instance, passing the handle as a
 					// parameter
 					obj = (NativeObject) ctor.newInstance(hasDocument
-							? new Object[] { handle, document != null ? document : Document.getWorkingDocument() }
+							? new Object[] { handle, document != null 
+									? document 
+									: Document.getWorkingDocument() }
 							: new Object[] { handle });
 					wrappers.put(handle, obj);
 				} catch (Exception e) {
@@ -140,13 +144,18 @@ abstract class NativeObject {
 		if (handle == 0) {
 			return this == obj;
 		} else if (obj instanceof NativeObject) {
-			return handle == ((NativeObject) obj).handle && getClass().equals(obj.getClass());
+			return handle == ((NativeObject) obj).handle
+					&& getClass().equals(obj.getClass());
 		}
 		return false;
 	}
 
+	public String getId() {
+		return "@" + Integer.toHexString(
+				handle != 0 ? handle : this.hashCode());
+	}
+
 	public String toString() {
-		return getClass().getSimpleName() + " (@"
-				+ Integer.toHexString(handle != 0 ? handle : this.hashCode()) + ")";
+		return getClass().getSimpleName() + " (" + getId() + ")";
 	}
 }

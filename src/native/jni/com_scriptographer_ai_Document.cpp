@@ -562,12 +562,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw(JNIEnv *env, j
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_undo(JNIEnv *env, jobject obj) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI13
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		gEngine->commit(env);
 		sAIDocument->Undo();
-#endif // kPluginInterfaceVersion >= kAI12
+#endif // kPluginInterfaceVersion >= kAI13
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -576,12 +576,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_undo(JNIEnv *env, job
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redo(JNIEnv *env, jobject obj) {
 	try {
-#if kPluginInterfaceVersion >= kAI12
+#if kPluginInterfaceVersion >= kAI13
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
 		gEngine->commit(env);
 		sAIDocument->Redo();
-#endif // kPluginInterfaceVersion >= kAI12
+#endif // kPluginInterfaceVersion >= kAI13
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -772,7 +772,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRectan
 		gEngine->convertRectangle(env, rect, &rt);
 		AIArtHandle art = NULL;
 		sAIShapeConstruction->NewRect(rt.top, rt.left, rt.bottom, rt.right, false, &art);
-		return gEngine->wrapArtHandle(env, art, doc);
+		return gEngine->wrapArtHandle(env, art, doc, NULL, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -793,7 +793,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRoundR
 		gEngine->convertSize(env, size, &pt);
 		AIArtHandle art = NULL;
 		sAIShapeConstruction->NewRoundedRect(rt.top, rt.left, rt.bottom, rt.right, pt.h, pt.v, false, &art);
-		return gEngine->wrapArtHandle(env, art, doc);
+		return gEngine->wrapArtHandle(env, art, doc, NULL, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -815,7 +815,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateOval(J
 			sAIShapeConstruction->NewCircumscribedOval(rt.top, rt.left, rt.bottom, rt.right, false, &art);
 		else
 			sAIShapeConstruction->NewInscribedOval(rt.top, rt.left, rt.bottom, rt.right, false, &art);
-		return gEngine->wrapArtHandle(env, art, doc);
+		return gEngine->wrapArtHandle(env, art, doc, NULL, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -834,7 +834,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateRegula
 		gEngine->convertPoint(env, center, &pt);
 		AIArtHandle art = NULL;
 		sAIShapeConstruction->NewRegularPolygon(numSides, pt.h, pt.v, radius, false, &art);
-		return gEngine->wrapArtHandle(env, art, doc);
+		return gEngine->wrapArtHandle(env, art, doc, NULL, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -853,7 +853,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateStar(J
 		gEngine->convertPoint(env, center, &pt);
 		AIArtHandle art = NULL;
 		sAIShapeConstruction->NewStar(numPoints, pt.h, pt.v, radius1, radius2, false, &art);
-		return gEngine->wrapArtHandle(env, art, doc);
+		return gEngine->wrapArtHandle(env, art, doc, NULL, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -873,7 +873,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeCreateSpiral
 		gEngine->convertPoint(env, start, &ptStart);
 		AIArtHandle art = NULL;
 		sAIShapeConstruction->NewSpiral(ptCenter, ptStart, decayPercent, numQuarterTurns, clockwiseFromOutside, &art);
-		return gEngine->wrapArtHandle(env, art, doc);
+		return gEngine->wrapArtHandle(env, art, doc, NULL, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -1087,14 +1087,6 @@ JNIEXPORT jbooleanArray JNICALL Java_com_scriptographer_ai_Document_nativeCheckV
 		jbooleanArray validArray = env->NewBooleanArray(validLength);
 		env->SetBooleanArrayRegion(validArray, 0, validLength, valid);
 		return validArray;
-	} EXCEPTION_CONVERT(env);
-	return NULL;
-}
-/*
- * boolean[] checkValid(int[] handles)
- */
-JNIEXPORT jbooleanArray JNICALL Java_com_scriptographer_ai_Item_checkValid(JNIEnv *env, jclass cls, jintArray handles) {
-	try {
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

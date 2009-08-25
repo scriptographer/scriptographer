@@ -39,8 +39,8 @@ package com.scriptographer.ai;
  */
 public class PlacedSymbol extends Item {
 
-	protected PlacedSymbol(int handle, int docHandle) {
-		super(handle, docHandle);
+	protected PlacedSymbol(int handle, int docHandle, boolean created) {
+		super(handle, docHandle, created);
 	}
 
 	private static native int nativeCreate(int symbolHandle, Matrix matrix);
@@ -76,7 +76,7 @@ public class PlacedSymbol extends Item {
 	 * @param matrix
 	 */
 	public PlacedSymbol(Symbol symbol, Matrix matrix) {
-		super(nativeCreate(symbol.handle, matrix), symbol.document);
+		super(nativeCreate(symbol.handle, matrix), symbol.document, true, false);
 	}
 	
 	public PlacedSymbol(Symbol symbol) {

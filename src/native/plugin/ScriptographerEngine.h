@@ -232,6 +232,7 @@ public:
 	jmethodID mid_ai_Item_getIfWrapped;
 	jmethodID mid_ai_Item_changeHandle;
 	jmethodID mid_ai_Item_commit;
+	jmethodID mid_ai_Item_isValid;
 	
 	jclass cls_ai_ItemList;
 	jmethodID cid_ItemList;
@@ -574,7 +575,7 @@ public:
 	jobject wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range);
 	
 	// AI Wrap Handles
-	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL, short type = -1);
+	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL, bool created = false, short type = -1);
 	bool updateArtIfWrapped(JNIEnv *env, AIArtHandle art);
 	void changeArtHandle(JNIEnv *env, jobject itemObject, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL, AIDictKey key = NULL);
 	jobject getIfWrapped(JNIEnv *env, AIArtHandle handle);

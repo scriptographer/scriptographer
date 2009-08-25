@@ -153,6 +153,10 @@
 #include "AICropArea.h"
 #endif // kPluginInterfaceVersion >= kAI13
 
+#if kPluginInterfaceVersion <= kAI11
+#define kTabletTypeCount 1
+#endif // kPluginInterfaceVersion <= kAI11
+
 typedef struct {
 	char *name;
 	int version;
@@ -238,7 +242,7 @@ namespace ATE {
 #define _kADMDialogGroupSuiteVersion 4
 #define _kADMDrawerSuiteVersion 5
 #define _kADMTrackerSuiteVersion 1
-#deifne _kADMHostSuiteVersion 6
+#define _kADMHostSuiteVersion 6
 
 #elif kPluginInterfaceVersion >= kAI11
 
@@ -250,21 +254,7 @@ namespace ATE {
 #define _kADMDialogGroupSuiteVersion 3
 #define _kADMDrawerSuiteVersion 5
 #define _kADMTrackerSuiteVersion 1
-#define _kADMHostSuiteVersion 5
-
-#else
-
-// Does this even apply? We only support CS and above, right?
-
-#define _kADMDialogSuiteVersion 8
-#define _kADMBasicSuiteVersion 8
-#define _kADMItemSuiteVersion 8
-#define _kADMEntrySuiteVersion 5
-#define _kADMNotifierSuiteVersion 1
-#define _kADMDialogGroupSuiteVersion 3
-#define _kADMDrawerSuiteVersion 5
-#define _kADMTrackerSuiteVersion 1
-#deifne _kADMHostSuiteVersion 5
+#define _kADMHostSuiteVersion 6
 
 #endif
 

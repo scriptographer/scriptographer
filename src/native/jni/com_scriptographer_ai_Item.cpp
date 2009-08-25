@@ -71,16 +71,6 @@ short Item_getType(JNIEnv *env, jclass cls) {
 	// TODO: make sure the above list contains all Item classes!
 }
 
-jboolean Item_hasChildren(AIArtHandle art) {
-	// don't show the children of textPaths and pointText 
-#if kPluginInterfaceVersion < kAI11
-	short type = artGetType(art);
-	return (type == kTextArt && artGetTextType(art) != kPointTextType) || (type != kTextPathArt);
-#else
-	return true;
-#endif
-}
-
 jboolean Item_isLayer(AIArtHandle art) {
 	ASBoolean isLayerGroup = false;
 	sAIArt->IsArtLayerGroup(art, &isLayerGroup);
@@ -531,12 +521,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_copyTo__Lcom_scriptogr
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getFirstChild(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		if (Item_hasChildren(art)) {
-			AIArtHandle child = NULL;
-			sAIArt->GetArtFirstChild(art, &child);
-			if (child != NULL)
-				return gEngine->wrapArtHandle(env, child, gEngine->getDocumentHandle(env, obj));
-		}
+		AIArtHandle child = NULL;
+		sAIArt->GetArtFirstChild(art, &child);
+		if (child != NULL)
+			return gEngine->wrapArtHandle(env, child, gEngine->getDocumentHandle(env, obj));
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -547,12 +535,10 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getFirstChild(JNIEnv *
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_getLastChild(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
-		if (Item_hasChildren(art)) {
-			AIArtHandle child = NULL;
-			sAIArt->GetArtLastChild(art, &child);
-			if (child != NULL)
-				return gEngine->wrapArtHandle(env, child, gEngine->getDocumentHandle(env, obj));
-		}
+		AIArtHandle child = NULL;
+		sAIArt->GetArtLastChild(art, &child);
+		if (child != NULL)
+			return gEngine->wrapArtHandle(env, child, gEngine->getDocumentHandle(env, obj));
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -914,7 +900,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isDefaultName(JNIEnv 
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
 #if kPluginInterfaceVersion < kAI12
-		// at least one byte for the name needs to be specified, otherwise this
+		// At least one byte for the name needs to be specified, otherwise this
 		// doesn't work:
 		char name;
 		sAIArt->GetArtName(art, &name, 1, &isDefaultName);
