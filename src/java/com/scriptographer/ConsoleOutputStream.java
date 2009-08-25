@@ -89,7 +89,8 @@ public class ConsoleOutputStream extends OutputStream {
 			receivedHeadlessError = false;
 		}
 		char c = (char) b;
-		buffer.write(c);
+		if (c != 0) // Do not write out 0 chars, since they mess up the client side
+			buffer.write(c);
 		if (c == newLine) {
 			// Only print to the console if we're in the right thread to prevent UI crashes.
 			if (ScriptographerEngine.isMainThreadActive()) {
