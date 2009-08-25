@@ -247,6 +247,7 @@ public class ScriptographerEngine {
 			errorLogger.println(new Date());
 			t.printStackTrace(errorLogger);
 			errorLogger.println();
+			errorLogger.flush();
 		}
 	}
 	
@@ -254,12 +255,15 @@ public class ScriptographerEngine {
 		if (errorLogger != null) {
 			errorLogger.println(new Date());
 			errorLogger.println(str);
+			errorLogger.flush();
 		}
 	}
 
 	public static void logConsole(String str) {
-		if (consoleLogger != null)
+		if (consoleLogger != null) {
 			consoleLogger.println(str);
+			consoleLogger.flush();
+		}
 	}
 
 	public static void reportError(Throwable t) {
