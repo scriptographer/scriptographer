@@ -127,7 +127,13 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 						AIDictionaryRef dict;
 						AIArtHandle art;
 						if (converted = !sAIEntry->ToArt(entry, &art)) {
-							res = gEngine->wrapArtHandle(env, art, document, dictionary);
+							res = gEngine->getItemIfWrapped(env, art);
+							if (res == NULL) {
+								// Produce a new wrapper.
+								res = gEngine->wrapArtHandle(env, art, document);
+							}
+							// And set its dictionary
+							gEngine->setItemDictionary(env, res, dictionary, dictKey);
 						} else if (converted = !sAIEntry->ToDict(entry, &dict)) {
 							res = gEngine->wrapDictionaryHandle(env, dict, document);
 						}
@@ -233,11 +239,8 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Item)) {
 						AIArtHandle art = gEngine->getArtHandle(env, value);
 						res = !sAIDictionary->MoveArtToEntry(dictionary, dictKey, art);
-						if (res) {
-							// Let the art object know it's part of a dictionary now:
-							gEngine->setIntField(env, value, gEngine->fid_ai_Item_dictionaryHandle, (jint) dictionary);
-							gEngine->setIntField(env, value, gEngine->fid_ai_Item_dictionaryKey, (jint) dictKey);
-						}
+						if (res)
+							gEngine->setItemDictionary(env, value, dictionary, dictKey);
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Dictionary)) {
 						// TODO: How can such dictionaries be created?
 						// TODO: Should other maps be supported and converted as well?

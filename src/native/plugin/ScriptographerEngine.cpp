@@ -490,7 +490,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_ai_Item_version = getFieldID(env, cls_ai_Item, "version", "I");
 	fid_ai_Item_dictionaryHandle = getFieldID(env, cls_ai_Item, "dictionaryHandle", "I");
 	fid_ai_Item_dictionaryKey = getFieldID(env, cls_ai_Item, "dictionaryKey", "I");
-	mid_ai_Item_wrapHandle = getStaticMethodID(env, cls_ai_Item, "wrapHandle", "(ISIIIZZ)Lcom/scriptographer/ai/Item;");
+	mid_ai_Item_wrapHandle = getStaticMethodID(env, cls_ai_Item, "wrapHandle", "(ISIIZZ)Lcom/scriptographer/ai/Item;");
 	mid_ai_Item_getIfWrapped = getStaticMethodID(env, cls_ai_Item, "getIfWrapped", "(I)Lcom/scriptographer/ai/Item;");
 	mid_ai_Item_changeHandle = getMethodID(env, cls_ai_Item, "changeHandle", "(IIII)V");
 	mid_ai_Item_commit = getMethodID(env, cls_ai_Item, "commit", "(Z)V");
@@ -1441,7 +1441,7 @@ jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef ra
  *
  * throws exceptions
  */
-jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc, AIDictionaryRef dictionary, bool created, short type) {
+jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc, bool created, short type) {
 	JNI_CHECK_ENV
 	if (art == NULL)
 		return NULL;
@@ -1467,9 +1467,6 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocu
 		}
 	}
 
-	if (dictionary != NULL) // increase reference counter. It's decreased in finalize
-		sAIDictionary->AddRef(dictionary);
-
 	// Store the art object's initial handle value in its own dictionary.
 	// See onSelectionChanged for more explanations
 	jboolean wrapped = false;
@@ -1481,16 +1478,30 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocu
 	}
 	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_wrapHandle,
 			(jint) art, (jshort) type, (jint) textType,
-			(jint) (doc ? doc : gWorkingDoc),
-			(jint) dictionary, wrapped, created);
+			(jint) (doc ? doc : gWorkingDoc), wrapped, created);
 }
 
 void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject item, AIArtHandle art, AIDocumentHandle doc, AIDictionaryRef dictionary, AIDictKey key) {
 	callVoidMethod(env, item, mid_ai_Item_changeHandle, (jint) art, (jint) doc, (jint) dictionary, (jint) key);
 }
 
-jobject ScriptographerEngine::getIfWrapped(JNIEnv *env, AIArtHandle art) {
+jobject ScriptographerEngine::getItemIfWrapped(JNIEnv *env, AIArtHandle art) {
 	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_getIfWrapped, (jint) art);
+}
+
+void ScriptographerEngine::setItemDictionary(JNIEnv *env, jobject item, AIDictionaryRef dictionary, AIDictKey key) {
+	// Release the previous dictionary if there was one. Do this even if it is
+	// the same since we are adding a reference again after.
+	AIDictionaryRef prevDict = getArtDictionaryHandle(env, item);
+	if (prevDict != NULL)
+		sAIDictionary->Release(prevDict);
+	// Let the art object know it's part of a dictionary now:
+	setIntField(env, item, fid_ai_Item_dictionaryHandle, (jint) dictionary);
+	setIntField(env, item, fid_ai_Item_dictionaryKey, (jint) key);
+	// Increase reference counter for the item dictionary.
+	// It's decreased in Item#finalize
+	if (dictionary != NULL)
+		sAIDictionary->AddRef(dictionary);
 }
 
 jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer, AIDocumentHandle doc) {
@@ -1500,7 +1511,7 @@ jobject ScriptographerEngine::wrapLayerHandle(JNIEnv *env, AILayerHandle layer, 
 	AIArtHandle art;
 	if (sAIArt->GetFirstArtOfLayer(layer, &art))
 		throw new StringException("Cannot get layer art");
-	return wrapArtHandle(env, art, doc, NULL, false, com_scriptographer_ai_Item_TYPE_LAYER);
+	return wrapArtHandle(env, art, doc, false, com_scriptographer_ai_Item_TYPE_LAYER);
 }
 
 jobject ScriptographerEngine::wrapDocumentHandle(JNIEnv *env, AIDocumentHandle doc) {

@@ -61,7 +61,7 @@ import com.scriptographer.script.EnumUtils;
  */
 public class Document extends NativeObject implements ChangeListener {
 
-	private static final boolean report = false;
+	private static final boolean report = true;
 
 	private LayerList layers = null;
 	private DocumentViewList views = null;
@@ -334,7 +334,7 @@ public class Document extends NativeObject implements ChangeListener {
 		return false;
 	}
 
-	private static native boolean[] nativeCheckValidItems(int[] values);
+	private static native boolean[] nativeCheckValidItems(int[] values, int length);
 
 	protected void checkValidItems(long version) {
 		if (!checkValidItems.isEmpty()) {
@@ -342,13 +342,16 @@ public class Document extends NativeObject implements ChangeListener {
 			// Check all these handles in one go, for increased performance
 			// We need to pass dictionaryHandle and key as well, so these
 			// art items can be checked for validity differently.
-			for (int i = 0, j = 0, l = checkValidItems.size(); i < l; i++) {
+			int j = 0;
+			for (int i = 0, l = checkValidItems.size(); i < l; i++) {
 				Item item = checkValidItems.get(i).get();
-				values[j++] = item.handle;
-				values[j++] = item.dictionaryHandle;
-				values[j++] = item.dictionaryKey;
+				if (item != null) {
+					values[j++] = item.handle;
+					values[j++] = item.dictionaryHandle;
+					values[j++] = item.dictionaryKey;
+				}
 			}
-			boolean[] valid = nativeCheckValidItems(values);
+			boolean[] valid = nativeCheckValidItems(values, j);
 			// Update historyVersion to one that is not valid anymore
 			for (int i = valid.length - 1; i >= 0; i--) {
 				if (!valid[i]) {

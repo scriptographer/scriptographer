@@ -575,10 +575,11 @@ public:
 	jobject wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range);
 	
 	// AI Wrap Handles
-	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL, bool created = false, short type = -1);
+	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc = NULL, bool created = false, short type = -1);
 	bool updateArtIfWrapped(JNIEnv *env, AIArtHandle art);
 	void changeArtHandle(JNIEnv *env, jobject itemObject, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL, AIDictKey key = NULL);
-	jobject getIfWrapped(JNIEnv *env, AIArtHandle handle);
+	jobject getItemIfWrapped(JNIEnv *env, AIArtHandle handle);
+	void setItemDictionary(JNIEnv *env, jobject obj, AIDictionaryRef dictionary, AIDictKey key);
 
 	jobject wrapLayerHandle(JNIEnv *env, AILayerHandle layer, AIDocumentHandle doc = NULL);
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);

@@ -160,13 +160,17 @@ public class Curve implements ChangeListener {
 
 	protected void updateSegments() {
 		if (segments != null) {
+			// Make sure the segments are up to date first. The size might have
+			// changed in the meantie.
+			segments.update();
 			index2 = index1 + 1;
 			// A closing curve?
 			if (index2 >= segments.size())
 				index2 = 0;
 			
-			// Check whether the segments were moved (others were deleted), the path was updated or the segments even moved to
-			// another path. fetch again if they were:
+			// Check whether the segments were moved (others were deleted), the
+			// path was updated or the segments even moved to another path.
+			// Fetch again if they were:
 
 			if (segment1 == null || segment1.index != index1 ||
 					segments != segment1.segments || segments.path != null &&

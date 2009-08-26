@@ -220,7 +220,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		// the item was created or last modified.
 		modificationVersion = document.historyVersion;
 		// Keep track of this object from now on, see wrapArtHandle
-		items.put(handle, this);
+		if (handle != 0)
+			items.put(handle, this);
 	}
 
 	protected Item(int handle, int docHandle, boolean created) {
@@ -241,6 +242,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		document.activate(false, true);
 		// Now set the handle
 		handle = nativeCreate(type);
+		// Keep track of this object from now on, see wrapArtHandle
+		items.put(handle, this);
 	}
 
 	/**
@@ -260,7 +263,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @return the wrapped item
 	 */
 	protected static Item wrapHandle(int artHandle, short type, int textType,
-			int docHandle, int dictionaryHandle, boolean wrapped, boolean created) {
+			int docHandle, boolean wrapped, boolean created) {
 		// First see whether the object was already wrapped before:
 		Item item = null;
 		// Only try to use the previous wrapper for this address if the object
@@ -310,9 +313,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 			case TYPE_SYMBOL:
 				item = new PlacedSymbol(artHandle, docHandle, created);
 			}
-		}
-		if (item != null) {
-			item.dictionaryHandle = dictionaryHandle;
 		}
 		return item;
 	}
@@ -379,7 +379,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	}
 	
 	protected void changeHandle(int newHandle, int docHandle,
-			int newDictionaryHandle, int newDicStringKey) {
+			int newDictionaryHandle, int newDictionaryKey) {
 		// Remove the object at the old handle
 		if (handle != newHandle) {
 			items.remove(handle);
@@ -389,7 +389,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 			items.put(newHandle, this);
 		}
 		dictionaryHandle = newDictionaryHandle;
-		dictionaryKey = newDicStringKey;
+		dictionaryKey = newDictionaryKey;
 		if (docHandle != 0)
 			document = Document.wrapHandle(docHandle);
 		// Update
@@ -503,7 +503,15 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @return the newly cloned item
 	 */
 	public Object clone() {
-		return copyTo(getParent());
+		Item parent = getParent();
+		// TODO: parent == null: dictionary item -> return valid parent?
+		return parent != null ? copyTo(parent) : copyTo(document);
+	}
+
+	public Dictionary getDictionary() {
+		return dictionaryHandle != 0 
+				? Dictionary.wrapHandle(dictionaryHandle, document)
+				: null;
 	}
 
 	/**

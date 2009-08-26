@@ -42,7 +42,7 @@ AIArtHandle Item_rasterize(AIArtSet set, AIRasterizeType type, float resolution,
 AIArtHandle Item_rasterize(AIArtHandle art, AIRasterizeType type, float resolution, int antialiasing, float width, float height);
 AIArtHandle Item_getInsertionPoint(short *paintOrder, AIDocumentHandle doc = NULL);
 void Item_commit(JNIEnv *env, AIArtHandle art, bool invalidate = false, bool children = true);
-	
+
 AIArtHandle JNICALL PlacedFile_place(JNIEnv *env, AIDocumentHandle doc, jobject file, jboolean linked);
 
 void Document_activate(AIDocumentHandle doc = NULL);
