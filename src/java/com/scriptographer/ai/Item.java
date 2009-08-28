@@ -1336,8 +1336,10 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @return {@true if the item is valid}
 	 */
 	public boolean isValid() {
-		return handle != 0 && document.isValidVersion(creationVersion)
+		boolean valid = handle != 0
+				&& document.isValidVersion(creationVersion)
 				&& !document.isValidVersion(deletionVersion);
+		return valid;
 	}
 
 	/**
