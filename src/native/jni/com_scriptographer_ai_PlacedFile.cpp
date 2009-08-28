@@ -109,7 +109,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_embed(JNIEnv *en
 		if (res != NULL) {
 			sAIArt->SetArtUserAttr(res, kArtSelected, selected ? kArtSelected : 0);
 			// No need to pass document since we're activating document in getArtHandle
-			return gEngine->wrapArtHandle(env, res);
+			return gEngine->wrapArtHandle(env, res, NULL, true);
 		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;

@@ -76,7 +76,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextItem_nativeCreateOutlin
 		AIArtHandle outline;
 		if (!sAITextFrame->CreateOutline(text, &outline)) {
 			// No need to pass document since we're activating document in getArtHandle
-			return gEngine->wrapArtHandle(env, outline);
+			return gEngine->wrapArtHandle(env, outline, NULL, true);
 		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;

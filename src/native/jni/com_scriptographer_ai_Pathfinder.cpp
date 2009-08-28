@@ -87,7 +87,7 @@ jobject Pathfinder_end(JNIEnv *env, AIPathfinderData *data, AIArtSet *prevSelect
 		AIArtHandle art = NULL;
 		sAIArtSet->IndexArtSet(selected, 0, &art);
 		if (art != NULL)
-			result = gEngine->wrapArtHandle(env, art);
+			result = gEngine->wrapArtHandle(env, art, NULL, true);
 		sAIArtSet->DisposeArtSet(&selected);
 	}
 	Item_restoreSelected(*prevSelected);

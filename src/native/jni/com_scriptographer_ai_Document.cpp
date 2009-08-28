@@ -645,7 +645,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_place(JNIEnv *env,
 	try {
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj, true);
 		AIArtHandle art = PlacedFile_place(env, doc, file, linked);
-		return gEngine->wrapArtHandle(env, art, doc);
+		return gEngine->wrapArtHandle(env, art, doc, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

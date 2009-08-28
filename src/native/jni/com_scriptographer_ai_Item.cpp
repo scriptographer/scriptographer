@@ -494,7 +494,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_copyTo__Lcom_scriptogr
 		// copy
 		AIArtHandle copy = Item_copyTo(env, obj, artDst, docDst, paintOrder);
 		if (copy != NULL)
-			return gEngine->wrapArtHandle(env, copy, docDst);
+			return gEngine->wrapArtHandle(env, copy, docDst, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -510,7 +510,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_copyTo__Lcom_scriptogr
 		// copy
 		AIArtHandle copy = Item_copyTo(env, obj, artDst, docDst, kPlaceInsideOnTop);
 		if (copy != NULL)
-			return gEngine->wrapArtHandle(env, copy, docDst);
+			return gEngine->wrapArtHandle(env, copy, docDst, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -1026,7 +1026,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeRasterize__IFIFF
 		AIArtHandle raster = Item_rasterize(art, (AIRasterizeType) type, resolution, antialiasing, width, height);
 		if (raster != NULL) {
 			// No need to pass document since we're activating document in getArtHandle
-			return gEngine->wrapArtHandle(env, raster);
+			return gEngine->wrapArtHandle(env, raster, NULL, true);
 		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;
@@ -1041,7 +1041,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeRasterize___3Lco
 		AIArtHandle raster = Item_rasterize(set, (AIRasterizeType) type, resolution, antialiasing, width, height);
 		if (raster != NULL) {
 			// It's ok not to not pass document here, since the method calling nativeRasterize makes sure the right one is active
-			return gEngine->wrapArtHandle(env, raster);
+			return gEngine->wrapArtHandle(env, raster, NULL, true);
 		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;
@@ -1129,7 +1129,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_nativeExpand(JNIEnv *e
 			sAIArt->SetArtUserAttr((*selected)[i], kArtSelected, kArtSelected);
 		sAIMDMemory->MdMemoryDisposeHandle((void **) selected);
 		// No need to pass document since we're activating document in getArtHandle
-		return gEngine->wrapArtHandle(env, res);
+		return gEngine->wrapArtHandle(env, res, NULL, true);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
