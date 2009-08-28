@@ -161,7 +161,7 @@ public class Curve implements ChangeListener {
 	protected void updateSegments() {
 		if (segments != null) {
 			// Make sure the segments are up to date first. The size might have
-			// changed in the meantie.
+			// changed in the meantime.
 			segments.update();
 			index2 = index1 + 1;
 			// A closing curve?
@@ -481,6 +481,7 @@ public class Curve implements ChangeListener {
 	 * @return the second part of the divided curve
 	 */
 	public Curve divide(double parameter) {
+		Curve result = null;
 		if (parameter > 0 && parameter < 1) {
 			updateSegments();
 			
@@ -510,23 +511,28 @@ public class Curve implements ChangeListener {
 				// Insert at the end if this curve is a closing curve
 				// of a closed path, since otherwise it would be inserted
 				// at 0
-				if (index1 > 0 && index2 == 0)
+				if (index1 > 0 && index2 == 0) {
 					segments.add(newSegment);
-				else
-                    segments.add(index2, newSegment);
+				} else {
+					segments.add(index2, newSegment);
+				}
 				updateSegments();
-			}
-			if (segments != null) {
 				// if this curve is linked to a path, get the new curve there
-				return getNext();
+			}
+			// We need a path to be able to access curves
+			if (segments != null && segments.path != null) {
+				result = getNext();
+				// If it's the last one in a closed path, return the first curve instead
+				if (result == null)
+					result = segments.getFirst().getCurve();
 			} else {
 				// otherwise create it from the result of split
 				Segment endSegment = segment2;
 				segment2 = newSegment;
-				return new Curve(newSegment, endSegment);
+				result = new Curve(newSegment, endSegment);
 			}
 		}
-		return null;
+		return result;
 	}
 
 	public Curve divide() {
