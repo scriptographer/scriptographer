@@ -426,7 +426,7 @@ public class Segment implements Commitable, ChangeListener {
 	 * The curve that the segment belongs to.
 	 */
 	public Curve getCurve() {
-		if (segments  != null) {
+		if (segments  != null && segments.path != null) {
 			CurveList curves = segments.path.getCurves();
 			// The curves list handles closing curves, so the curves.size
 			// is adjusted accordingly. just check to be in the boundaries here: 
