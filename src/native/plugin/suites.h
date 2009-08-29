@@ -33,6 +33,7 @@
 #define kAI12	0x12000001	// AI 12.0 (CS2)
 #define kAI13	0x13000001	// AI 13.0 (CS3)
 #define kAI14	0x14000001	// AI 14.0 (CS4)
+#define kAI15	0x15000001	// AI 15.0 (CS5)
 
 // Sweet Pea Headers
 #include "SPConfig.h"
@@ -208,7 +209,19 @@ namespace ATE {
 #define _kADMHierarchyListSuiteVersion 5
 #define _kADMListEntrySuiteVersion 4
 
-#if kPluginInterfaceVersion >= kAI14
+#if kPluginInterfaceVersion >= kAI15
+
+#define _kADMDialogSuiteVersion 10
+#define _kADMBasicSuiteVersion 11
+#define _kADMItemSuiteVersion 9
+#define _kADMEntrySuiteVersion 6
+#define _kADMNotifierSuiteVersion 2
+#define _kADMDialogGroupSuiteVersion 7
+#define _kADMDrawerSuiteVersion 7
+#define _kADMTrackerSuiteVersion 2
+#define _kADMHostSuiteVersion 7
+
+#elif kPluginInterfaceVersion >= kAI14
 
 #define _kADMDialogSuiteVersion 10
 #define _kADMBasicSuiteVersion 11

@@ -44,7 +44,13 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Symbol_nativeCreate(JNIEnv *en
 		// Make sure we're switching to the right doc (gCreationDoc)
 		Document_activate();
 		AIPatternHandle symbol = NULL;
+#if kPluginInterfaceVersion >= kAI15
+		// TODO: Test these parameters registrationPoint, transformDefinitionArt, decide wether to pass
+		// them and compare with behavior in CS4...
+		sAISymbol->NewSymbolPattern(&symbol, (AIArtHandle) artHandle, kSymbolCenterPoint, true, !listed);
+#else // kPluginInterfaceVersion < kAI15
 		sAISymbol->NewSymbolPattern(&symbol, (AIArtHandle) artHandle, !listed);
+#endif // kPluginInterfaceVersion < kAI15
 		return (jint) symbol;
 	} EXCEPTION_CONVERT(env);
 	return 0;
@@ -56,13 +62,13 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Symbol_nativeCreate(JNIEnv *en
 JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Symbol_getName(JNIEnv *env, jobject obj) {
 	try {
 		AIPatternHandle symbol = gEngine->getPatternHandle(env, obj);
-#if kPluginInterfaceVersion < kAI12
-		char name[kMaxSymbolNameLength];
-		if (!sAISymbol->GetSymbolPatternName(symbol, name, kMaxSymbolNameLength)) {
-#else
+#if kPluginInterfaceVersion >= kAI12
 		ai::UnicodeString name;
 		if (!sAISymbol->GetSymbolPatternName(symbol, name)) {
-#endif
+#else // kPluginInterfaceVersion < kAI12
+		char name[kMaxSymbolNameLength];
+		if (!sAISymbol->GetSymbolPatternName(symbol, name, kMaxSymbolNameLength)) {
+#endif //  kPluginInterfaceVersion < kAI12
 			return gEngine->convertString(env, name);
 		}
 	} EXCEPTION_CONVERT(env);
@@ -75,16 +81,16 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Symbol_getName(JNIEnv *env,
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Symbol_setName(JNIEnv *env, jobject obj, jstring name) {
 	try {
 		AIPatternHandle symbol = gEngine->getPatternHandle(env, obj, true);
-#if kPluginInterfaceVersion < kAI12
+#if kPluginInterfaceVersion >= kAI12
+		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, name);
+		sAISymbol->GetSymbolPatternDisplayName(str);
+		sAISymbol->SetSymbolPatternName(symbol, str);
+#else // kPluginInterfaceVersion < kAI12
 		char *str = gEngine->convertString(env, name, kMaxSymbolNameLength);
 		sAISymbol->GetSymbolPatternDisplayName(str);
 		sAISymbol->SetSymbolPatternName(symbol, str);
 		delete str;
-#else
-		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, name);
-		sAISymbol->GetSymbolPatternDisplayName(str);
-		sAISymbol->SetSymbolPatternName(symbol, str);
-#endif
+#endif // kPluginInterfaceVersion < kAI12
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -110,7 +116,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Symbol_setDefinition(JNIEnv *e
 		AIArtHandle art = gEngine->getArtHandle(env, item);
 		// TODO: see what happens if symbol and art are not from the same document!
 		// consider adding a special case where this could work if it does not already (Using Item_copyTo?)
+#if kPluginInterfaceVersion >= kAI15
+		// TODO: See if transformDefinationArt needs to be set to true to behave the same as CS4
+		sAISymbol->SetSymbolPatternArt(symbol, art, true);
+#else // kPluginInterfaceVersion < kAI15
 		sAISymbol->SetSymbolPatternArt(symbol, art);
+#endif // kPluginInterfaceVersion < kAI15
 	} EXCEPTION_CONVERT(env);
 }
 

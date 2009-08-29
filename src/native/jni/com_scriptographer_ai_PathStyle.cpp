@@ -262,7 +262,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeGet(JNIEnv *en
 		AIPathStyle style;
 		if (handle == com_scriptographer_ai_Item_HANDLE_CURRENT_STYLE) {
 			AIPathStyleMap map;
+#if kPluginInterfaceVersion >= kAI15
+			// TODO: See what advanced stroke parameters are doing in CS5 and decide how to deal with them
+			sAIPathStyle->GetCurrentPathStyle(&style, &map, NULL);
+#else // kPluginInterfaceVersion < kAI15
 			sAIPathStyle->GetCurrentPathStyle(&style, &map);
+#endif // kPluginInterfaceVersion < kAI15
 			PathStyle_init(env, obj, &style, &map);
 		} else {
 			sAIPathStyle->GetPathStyle((AIArtHandle) handle, &style);
@@ -289,7 +294,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeSet(JNIEnv *en
 		// TODO: instead of the path's style, this should be the current default style?
 		// because if the user sets a value to undefined, this should fall back to the default value...
 		if (handle == com_scriptographer_ai_Item_HANDLE_CURRENT_STYLE)
+#if kPluginInterfaceVersion >= kAI15
+			// TODO: See what advanced stroke parameters are doing in CS5 and decide how to deal with them
+			sAIPathStyle->GetCurrentPathStyle(&style, &map, NULL);
+#else // kPluginInterfaceVersion < kAI15
 			sAIPathStyle->GetCurrentPathStyle(&style, &map);
+#endif // kPluginInterfaceVersion < kAI15
 		else
 			sAIPathStyle->GetPathStyle((AIArtHandle) handle, &style);
 		PathStyle_convertPathStyle(env, &style, &map,
@@ -300,7 +310,12 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PathStyle_nativeSet(JNIEnv *en
 				clip, lockClip, windingRule, resolution);
 		// Now set again
 		if (handle == com_scriptographer_ai_Item_HANDLE_CURRENT_STYLE)
+#if kPluginInterfaceVersion >= kAI15
+			// TODO: See what advanced stroke parameters are doing in CS5 and decide how to deal with them
+			sAIPathStyle->SetCurrentPathStyle(&style, &map, NULL);
+#else // kPluginInterfaceVersion < kAI15
 			sAIPathStyle->SetCurrentPathStyle(&style, &map);
+#endif // kPluginInterfaceVersion < kAI15
 		else
 			sAIPathStyle->SetPathStyle((AIArtHandle) handle, &style);
 	} EXCEPTION_CONVERT(env);
