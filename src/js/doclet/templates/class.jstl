@@ -9,9 +9,7 @@
 <p>
 Extends <%= $superclass.renderLink() -%><br />
 <% end %>
-<% if $listDescription %>
-<%= settings.templates ? '<% this.listDescription type="' + encodeJs($listDescription) + '" %>' : $listDescription %><br />
-<% end %>
+<%= $listDescription %>
 <% if $subclasses %>
 Inherited by <%= $subclasses %><br />
 </p>
