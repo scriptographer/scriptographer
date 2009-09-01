@@ -1,1 +1,1 @@
-rsync -avzur --exclude '.DS_Store' templates/ root@www.scriptographer.com:/home/scriptographer/templates/
+rsync -avzur --exclude '.DS_Store' templates/ root@www.scriptographer.org:/srv/www/scriptographer.org/templates/
