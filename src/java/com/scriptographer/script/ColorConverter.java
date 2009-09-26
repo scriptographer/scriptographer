@@ -31,6 +31,9 @@
 
 package com.scriptographer.script;
 
+import java.awt.Color;
+import java.lang.reflect.Field;
+
 import com.scratchdisk.script.ArgumentConverter;
 import com.scratchdisk.script.ArgumentReader;
 import com.scriptographer.ai.CMYKColor;
@@ -48,12 +51,18 @@ public class ColorConverter extends ArgumentConverter {
 		// Since StringArgumentReaders also return true for isArray (they
 		// can behave like arrays as well), always check for isString first!
 		if (reader.isString()) {
-			String str = reader.readString();
-			if (!str.startsWith("#"))
-				str = '#' + str;
+			String name = reader.readString();
 			try {
-				return new RGBColor(java.awt.Color.decode(str));
-			} catch (Exception e) {
+				// Try hex string first
+				String str = name.startsWith("#") ? name : "#" + name;
+				return new RGBColor(Color.decode(str));
+			} catch (Exception e1) {
+				try {
+					// If that does not work, try accessing the static Color.NAME field
+					Field field = Color.class.getField(name.toUpperCase());
+					return new RGBColor((Color) field.get(Color.class));
+				} catch (Exception e2) {
+				}
 			}
 		} else if (reader.isArray()) {
 			int size = reader.size();
