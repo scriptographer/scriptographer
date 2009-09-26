@@ -45,6 +45,7 @@ import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
+import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
 import com.scriptographer.script.EnumUtils;
 
@@ -311,7 +312,7 @@ public class Document extends NativeObject implements ChangeListener {
 			// Update the current historyEntry level to the current level
 			historyBranch.level = undoLevel;
 			if (report)
-				System.out.println("undoLevel = " + undoLevel + ", redoLevel = "
+				ScriptographerEngine.logConsole("undoLevel = " + undoLevel + ", redoLevel = "
 						+ redoLevel + ", version = " + historyBranch.branch
 						+ ", previous = " + (historyBranch.previous != null 
 								? historyBranch.previous.level : -1)
@@ -373,7 +374,7 @@ public class Document extends NativeObject implements ChangeListener {
 
 	protected void onRevert() {
 		if (report)
-			System.out.println("Revert");
+			ScriptographerEngine.logConsole("Revert");
 		resetHistory();
 		checkValidItems(Long.MAX_VALUE);
 	}
@@ -391,7 +392,7 @@ public class Document extends NativeObject implements ChangeListener {
 
 	protected void onUndo(int undoLevel, int redoLevel) {
 		if (report)
-			System.out.println("Undo");
+			ScriptographerEngine.logConsole("Undo");
 		// Check if we were going back to a previous branch, and if so, switch
 		// back.
 		if (historyBranch.previous != null
@@ -409,7 +410,7 @@ public class Document extends NativeObject implements ChangeListener {
 
 	protected void onRedo(int undoLevel, int redoLevel) {
 		if (report)
-			System.out.println("Redo");
+			ScriptographerEngine.logConsole("Redo");
 		// Check if we were going forward to a "future" branch, and if so,
 		// switch again.
 		if (historyBranch.next != null
@@ -420,7 +421,7 @@ public class Document extends NativeObject implements ChangeListener {
 
 	protected void onClear(int[] artHandles) {
 		if (report)
-			System.out.println("Clear");
+			ScriptographerEngine.logConsole("Clear");
 		if (artHandles != null)
 			Item.removeIfWrapped(artHandles, false);
 	}
