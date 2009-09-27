@@ -1550,6 +1550,7 @@
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = NO;
 				PRODUCT_NAME = Scriptographer;
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SHARED_PRECOMPS_DIR = "$(PROJECT_TEMP_DIR)/SharedPrecompiledHeaders";
 				SKIP_INSTALL = YES;
 				SRCROOT_QUOTED = "\"$(SRCROOT)\"";
@@ -1601,6 +1602,7 @@
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = Scriptographer;
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SHARED_PRECOMPS_DIR = "$(PROJECT_TEMP_DIR)/SharedPrecompiledHeaders";
 				SRCROOT_QUOTED = "\"$(SRCROOT)\"";
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -1651,6 +1653,7 @@
 				OTHER_CFLAGS = "";
 				PRODUCT_NAME = Scriptographer;
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SHARED_PRECOMPS_DIR = "$(PROJECT_TEMP_DIR)/SharedPrecompiledHeaders";
 				SKIP_INSTALL = YES;
 				SRCROOT_QUOTED = "\"$(SRCROOT)\"";
@@ -1705,6 +1708,7 @@
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = YES;
 				PRODUCT_NAME = Scriptographer;
 				SCAN_ALL_SOURCE_FILES_FOR_INCLUDES = YES;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 				SHARED_PRECOMPS_DIR = "$(PROJECT_TEMP_DIR)/SharedPrecompiledHeaders";
 				SRCROOT_QUOTED = "\"$(SRCROOT)\"";
 				STRIP_INSTALLED_PRODUCT = YES;
@@ -1753,7 +1757,7 @@
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
 				JNI_HEADERS = ../../src/native/jni/;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT_QUOTED)";
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				OBJROOT = build;
 				ONLY_LINK_ESSENTIAL_SYMBOLS = YES;
 				OTHER_CFLAGS = "";
@@ -1813,7 +1817,7 @@
 				JAVAVM_HEADERS = /System/Library/Frameworks/JavaVM.framework/Headers;
 				JNI_HEADERS = ../../src/native/jni/;
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT_QUOTED)";
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				OBJROOT = build;
 				OTHER_CFLAGS = "";
 				PREBINDING = YES;
