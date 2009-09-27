@@ -239,7 +239,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				tool.title = tool.tooltip = entry.file.name;
 				tool.image = tool.activeImage;
 				// Reset settings
-				tool.reset();
+				tool.initialize();
 				var scr = ScriptographerEngine.compile(entry.file);
 				if (scr) {
 					var scope = scr.engine.createScope();

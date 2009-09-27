@@ -33,7 +33,6 @@ package com.scriptographer.ai;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.IntMap;
@@ -83,12 +82,16 @@ public class Tool extends NativeObject {
 	private static IntMap<Tool> tools = new IntMap<Tool>();
 	private static ArrayList<Tool> unusedTools = null;
 
-
 	private float distanceThreshold;
 	
-	private MouseEvent event = new MouseEvent();
-
-	private boolean firstMove = true;
+	private ToolEvent event = new ToolEvent(this);
+	private boolean firstMove;
+	protected Point point;
+	protected Point downPoint;
+	protected Point lastPoint;
+	protected int count;
+	protected int downCount;
+	protected double pressure;
 
 	private Image image = null;
 	private Image rolloverImage = null;
@@ -125,6 +128,8 @@ public class Tool extends NativeObject {
 		if (handle == 0)
 			throw new ScriptographerException("Unable to create Tool.");
 
+		initialize();
+
 		tools.put(handle, this);
 	}
 
@@ -150,11 +155,11 @@ public class Tool extends NativeObject {
 	}
 
 	/**
-	 * Resets the tool's settings, so a new tool can be assigned to it
+	 * Initializes the tool's settings, so a new tool can be assigned to it
 	 * 
 	 * @jshide
 	 */
-	public void reset() {
+	public void initialize() {
 		onOptions = null;
 		onSelect = null;
 		onDeselect = null;
@@ -163,9 +168,11 @@ public class Tool extends NativeObject {
 		onMouseUp = null;
 		onMouseDrag = null;
 		onMouseMove = null;
-		// Tell onMouseMove to initialize event.delta and event.count
 		firstMove = true;
-		event = new MouseEvent();
+		downPoint = null;
+		lastPoint = null;
+		count = 0;
+		downCount = 0;
 		setDistanceThreshold(0);
 		setEventInterval(-1);
 	}
@@ -230,7 +237,7 @@ public class Tool extends NativeObject {
 	 * {@grouptitle Mouse Event Handlers}
 	 * 
 	 * The function to be called when the mouse button is pushed down. The
-	 * function receives a {@link MouseEvent} object which contains information
+	 * function receives a {@link ToolEvent} object which contains information
 	 * about the mouse event.
 	 * 
 	 * Sample code:
@@ -249,7 +256,7 @@ public class Tool extends NativeObject {
 		this.onMouseDown = onMouseDown;
 	}
 	
-	protected void onMouseDown(MouseEvent event) throws Exception {
+	protected void onMouseDown(ToolEvent event) throws Exception {
 		if (onMouseDown != null)
 			ScriptographerEngine.invoke(onMouseDown, this, event);
 	}
@@ -258,7 +265,7 @@ public class Tool extends NativeObject {
 
 	/**
 	 * The function to be called when the mouse position changes while the mouse
-	 * is being dragged. The function receives a {@link MouseEvent} object which
+	 * is being dragged. The function receives a {@link ToolEvent} object which
 	 * contains information about the mouse event.
 	 * 
 	 * This function can also be called periodically while the mouse doesn't
@@ -280,7 +287,7 @@ public class Tool extends NativeObject {
 		this.onMouseDrag = onMouseDrag;
 	}
 	
-	protected void onMouseDrag(MouseEvent event) throws Exception {
+	protected void onMouseDrag(ToolEvent event) throws Exception {
 		if (onMouseDrag != null)
 			ScriptographerEngine.invoke(onMouseDrag, this, event);
 	}
@@ -289,7 +296,7 @@ public class Tool extends NativeObject {
 
 	/**
 	 * The function to be called when the tool is selected and the mouse moves
-	 * within the document. The function receives a {@link MouseEvent} object
+	 * within the document. The function receives a {@link ToolEvent} object
 	 * which contains information about the mouse event.
 	 * 
 	 * Sample code:
@@ -308,7 +315,7 @@ public class Tool extends NativeObject {
 		this.onMouseMove = onMouseMove;
 	}
 	
-	protected void onMouseMove(MouseEvent event) throws Exception {
+	protected void onMouseMove(ToolEvent event) throws Exception {
 		// Make sure the first move event initializes both delta and count.
 		if (onMouseMove != null)
 			ScriptographerEngine.invoke(onMouseMove, this, event);
@@ -318,7 +325,7 @@ public class Tool extends NativeObject {
 
 	/**
 	 * The function to be called when the mouse button is released. The function
-	 * receives a {@link MouseEvent} object which contains information about the
+	 * receives a {@link ToolEvent} object which contains information about the
 	 * mouse event.
 	 * 
 	 * Sample code:
@@ -337,7 +344,7 @@ public class Tool extends NativeObject {
 		this.onMouseUp = onMouseUp;
 	}
 		
-	protected void onMouseUp(MouseEvent event) throws Exception {
+	protected void onMouseUp(ToolEvent event) throws Exception {
 		if (onMouseUp != null)
 			ScriptographerEngine.invoke(onMouseUp, this, event);
 	}
@@ -491,41 +498,94 @@ public class Tool extends NativeObject {
 			ScriptographerEngine.invoke(onReselect, this);
 	}
 
-	private static final int EVENT_EDIT_OPTIONS = 0;
-	private static final int EVENT_TRACK_CURSOR = 1;
-	private static final int EVENT_MOUSE_DOWN = 2;
-	private static final int EVENT_MOUSE_DRAG = 3;
-	private static final int EVENT_MOUSE_UP = 4;
-	private static final int EVENT_SELECT = 5;
-	private static final int EVENT_DESELECT = 6;
-	private static final int EVENT_RESELECT = 7;
-	// TODO: not implemented yet:
-	/*
-	private static final int EVENT_DECREASE_DIAMETER = 8;
-	private static final int EVENT_INCREASE_DIAMETER = 9;
-	*/
+	private boolean updateEvent(ToolEventType code, float x, float y, int pressure,
+			float threshold, boolean start) {
+		if (start || threshold == 0 || point.getDistance(x, y) >= threshold) {
+			lastPoint = point;
+			switch (code) {
+			case MOUSE_DOWN:
+				lastPoint = downPoint;
+				downPoint = point;
+				downCount++;
+				break;
+			case MOUSE_UP:
+				// Mouse up events return the down point for last point,
+				// so delta is spanning over the whole drag.
+				lastPoint = downPoint;
+				break;
+			}
+			point = new Point(x, y);
+			if (start) {
+				count = 0;
+			} else {
+				count++;
+			}
+			this.pressure = pressure / 255.0;
+			event.update(code);
+			return true;
+		}
+		return false;
+	}
 
-	private final static String[] eventTypes = {
-		"AI Edit Options",
-		"AI Track Cursor",
-		"AI Mouse Down",
-		"AI Mouse Drag",
-		"AI Mouse Up",
-		"AI Select",
-		"AI Deselect",
-		"AI Reselect",
-		// TODO: not implemented yet:
-		"AI Decrease Diameter",
-		"AI Increase Diameter"
-	};
-	// Hashmap for conversation to unique ids that can be compared with ==
-	// instead of .equals
-	private static HashMap<String, Integer> events =
-			new HashMap<String, Integer>();
-
-	static {
-		for (int i = 0; i < eventTypes.length; i++)
-			events.put(eventTypes[i], i);
+	private int onHandleEvent(ToolEventType type, float x, float y, int pressure) {
+		try {
+			switch (type) {
+			case MOUSE_DOWN:
+				updateEvent(type, x, y, pressure, 0, true);
+				onMouseDown(event);
+				break;
+			case MOUSE_DRAG:
+				if (updateEvent(type, x, y, pressure, distanceThreshold, false))
+					onMouseDrag(event);
+				break;
+			case MOUSE_UP:
+				// If the last mouse drag happened in a different place, call
+				// mouse drag first, then mouse up.
+				if (point.x != x || point.y != y
+						&& updateEvent(ToolEventType.MOUSE_DRAG, x, y, pressure,
+								distanceThreshold, false)) {
+					try {
+						onMouseDrag(event);
+					} catch (Exception e) {
+						ScriptographerEngine.reportError(e);
+					}
+				}
+				updateEvent(type, x, y, pressure, 0, false);
+				try {
+					onMouseUp(event);
+				} catch (Exception e) {
+					ScriptographerEngine.reportError(e);
+				}
+				// Start with new values for TRACK_CURSOR
+				updateEvent(type, x, y, pressure, 0, true);
+				firstMove = true;
+				break;
+			case MOUSE_MOVE:
+				try {
+					if (updateEvent(type, x, y, pressure, distanceThreshold, firstMove))
+						onMouseMove(event);
+				} finally {
+					firstMove = false;
+				}
+				// Tell the native side to update the cursor
+				return cursor;
+			case EDIT_OPTIONS:
+				onOptions();
+				break;
+			case SELECT:
+				onSelect();
+				break;
+			case DESELECT:
+				onDeselect();
+				break;
+			case RESELECT:
+				onReselect();
+				break;
+			}
+		} catch (Exception e) {
+			ScriptographerEngine.reportError(e);
+		}
+		return 0;
 	}
 
 	/**
@@ -536,54 +596,9 @@ public class Tool extends NativeObject {
 	private static int onHandleEvent(int handle, String selector, float x,
 			float y, int pressure) throws Exception {
 		Tool tool = getTool(handle);
-		if (tool != null) {
-			Integer event = (Integer) events.get(selector); 
-			if (event != null) {
-				switch (event.intValue()) {
-				case EVENT_EDIT_OPTIONS:
-					tool.onOptions();
-					break;
-				case EVENT_MOUSE_DOWN:
-					tool.event.setValues(x, y, pressure, 0, true, true);
-					tool.onMouseDown(tool.event);
-					break;
-				case EVENT_MOUSE_DRAG:
-					if (tool.event.setValues(x, y, pressure,
-							tool.distanceThreshold, false, false))
-						tool.onMouseDrag(tool.event);
-					break;
-				case EVENT_MOUSE_UP:
-					tool.event.setValues(x, y, pressure, 0, false, false);
-					try {
-						tool.onMouseUp(tool.event);
-					} finally {
-						// Start with new values for EVENT_TRACK_CURSOR
-						tool.event.setValues(x, y, pressure, 0, true, false);
-						tool.firstMove = true;
-					}
-					break;
-				case EVENT_TRACK_CURSOR:
-					try {
-						if (tool.event.setValues(x, y, pressure,
-								tool.distanceThreshold, tool.firstMove, false))
-							tool.onMouseMove(tool.event);
-					} finally {
-						tool.firstMove = false;
-					}
-					// Tell the native side to update the cursor
-					return tool.cursor;
-				case EVENT_SELECT:
-					tool.onSelect();
-					break;
-				case EVENT_DESELECT:
-					tool.onDeselect();
-					break;
-				case EVENT_RESELECT:
-					tool.onReselect();
-					break;
-				}
-		}
-		}
+		ToolEventType type = ToolEventType.get(selector); 
+		if (tool != null && type != null)
+			return tool.onHandleEvent(type, x, y, pressure);
 		return 0;
 	}
 

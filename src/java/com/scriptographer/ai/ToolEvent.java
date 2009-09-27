@@ -31,10 +31,12 @@
 
 package com.scriptographer.ai;
 
+import com.scriptographer.script.EnumUtils;
+
 /**
- * The MouseEvent object is received by the {@link Tool}'s mouse event handlers
+ * The ToolEvent object is received by the {@link Tool}'s mouse event handlers
  * {@link Tool#getOnMouseDown()}, {@link Tool#getOnMouseDrag()},
- * {@link Tool#getOnMouseMove()} and {@link Tool#getOnMouseUp()}. The MouseEvent
+ * {@link Tool#getOnMouseMove()} and {@link Tool#getOnMouseUp()}. The ToolEvent
  * object is the only parameter passed to these functions and contains
  * information about the mouse event.
  * 
@@ -48,54 +50,23 @@ package com.scriptographer.ai;
  * 
  * @author lehni
  */
-public class MouseEvent {
-	private Point point;
-	private Point firstPoint = null;
-	private Point lastPoint;
-	private Point delta = new Point(0, 0);
-	private int count;
-	private boolean isDown;
-	private int downCount = 0;
-	
-	private double pressure;
-	
-	protected MouseEvent() {
-		// Start with valid values, for mouse move events before the first mouse up.
-		setValues(0, 0, 0, 0, true, false);
+public class ToolEvent {
+	private Tool tool;
+	private ToolEventType type;
+
+	protected ToolEvent(Tool tool) {
+		this.tool = tool;
 	}
-	
-	protected boolean setValues(float x, float y, int pressure,
-			float distanceThreshold, boolean start, boolean down) {
-		if (start || distanceThreshold == 0
-				|| point.getDistance(x, y) >= distanceThreshold) {
-			isDown = down;
-			Point newPoint = new Point(x, y);
-			if (start) {
-				if (down) {
-					lastPoint = firstPoint;
-					firstPoint = newPoint;
-					downCount++;
-				}
-				count = 0;
-			} else {
-				lastPoint = point;
-				count++;
-			}
-			point = newPoint;
-			if (lastPoint != null)
-				delta.set(x - lastPoint.x, y - lastPoint.y);
-			else
-				delta.set(0, 0);
-			this.pressure = pressure / 255.0;
-			return true;
-		}
-		return false;
+
+	protected void update(ToolEventType type) {
+		this.type = type;
 	}
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer(16);
-		buf.append("{ point: ").append(point.toString());
-		buf.append(", pressure: ").append(pressure);
+		buf.append("{ type: ").append(EnumUtils.getScriptName(type)); 
+		buf.append(", point: ").append(tool.point.toString());
+		buf.append(", pressure: ").append(tool.pressure);
 		buf.append(" }");
 		return buf.toString();
 	}
@@ -118,23 +89,46 @@ public class MouseEvent {
 	 * </code>
 	 */
 	public Point getPoint() {
-		return new Point(point);
+		return new Point(tool.point);
 	}
 
 	/**
-	 * The last position of the mouse in document coordinates when the event was
-	 * fired.
+	 * The position of the mouse in document coordinates when the previous
+	 * event was fired.
 	 */
 	public Point getLastPoint() {
-		return lastPoint != null ? new Point(lastPoint) : null;
+		return tool.lastPoint != null ? new Point(tool.lastPoint) : null;
+	}
+
+	/**
+	 * The position of the mouse in document coordinates when the mouse button
+	 * was last clicked.
+	 */
+	public Point getDownPoint() {
+		return tool.downPoint != null ? new Point(tool.downPoint) : null;
+	}
+
+	/**
+	 * The point in the middle between {@link #getLastPoint()} and
+	 * {@link #getPoint()}. This is a useful position to use when creating
+	 * artwork based on the moving direction of the mouse, as returned by
+	 * {@link #getDelta()}.
+	 */
+	public Point getMiddlePoint() {
+		if (tool.lastPoint != null)
+			return tool.point.add(tool.lastPoint).divide(2);
+		return null;
 	}
 
 	/**
 	 * The difference between the current position and the last position of the
-	 * mouse when the event was fired.
+	 * mouse when the event was fired. In case of the mouse-up event, the
+	 * difference to the mouse-down position is returned.
 	 */
 	public Point getDelta() {
-		return new Point(delta);
+		if (tool.lastPoint != null)
+			return tool.point.subtract(tool.lastPoint);
+		return null;
 	}
 
 	/**
@@ -144,7 +138,7 @@ public class MouseEvent {
 	 * @return the pressure as a value between 0 and 1
 	 */
 	public double getPressure() {
-		return pressure;
+		return tool.pressure;
 	}
 
 	/**
@@ -166,11 +160,19 @@ public class MouseEvent {
 	 * </code>
 	 */
 	public int getCount() {
-		return isDown ? downCount : count;
+		switch (type) {
+		case MOUSE_DOWN:
+		case MOUSE_UP:
+			// Return downCount for both mouse down and up, since
+			// the count is the same.
+			return tool.downCount;
+		default:
+			return tool.count;
+		}
 	}
 
 	// TODO: Consider adding these, present since CS2
-	/**
+	/*
 	 * For graphic tablets, tangential pressure on the finger wheel of the
 	 * airbrush tool.
 	 */

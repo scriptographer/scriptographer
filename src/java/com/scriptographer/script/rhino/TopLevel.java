@@ -70,7 +70,7 @@ import com.scriptographer.ai.HitResult;
 import com.scriptographer.ai.Layer;
 import com.scriptographer.ai.LiveEffect;
 import com.scriptographer.ai.Matrix;
-import com.scriptographer.ai.MouseEvent;
+import com.scriptographer.ai.ToolEvent;
 import com.scriptographer.ai.ParagraphStyle;
 import com.scriptographer.ai.Path;
 import com.scriptographer.ai.PathStyle;
@@ -153,7 +153,6 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Curve.class,
 		Document.class,
 		DocumentView.class,
-		MouseEvent.class,
 		FileFormat.class,
 		FillStyle.class,
 		FontFamily.class,

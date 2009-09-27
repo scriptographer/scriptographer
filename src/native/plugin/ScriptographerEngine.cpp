@@ -574,6 +574,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ai_FileFormat = loadClass(env, "com/scriptographer/ai/FileFormat");
 	cid_ai_FileFormat = getConstructorID(env, cls_ai_FileFormat, "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
+
 // UI:
 	cls_ui_NativeObject = loadClass(env, "com/scriptographer/ui/NativeObject");
 	fid_ui_NativeObject_handle = getFieldID(env, cls_ui_NativeObject, "handle", "I");
