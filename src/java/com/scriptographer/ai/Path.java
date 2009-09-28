@@ -423,6 +423,48 @@ public class Path extends PathItem {
 		return split(index, 0);
 	}
 
+	public boolean join(Path path) {
+		if (path != null) {
+			SegmentList segments1 = getSegments();
+			SegmentList segments2 = path.getSegments();
+			Segment last1 = segments1.getLast();
+			Segment last2 = segments2.getLast();
+			if (last1.point.equals(last2.point)) {
+				path.reverse();
+			}
+			Segment first2 = segments2.getFirst();
+			if (last1.point.equals(first2.point)) {
+				last1.handleOut.set(first2.handleOut);
+				segments1.addAll(segments2.getSubList(1, segments2.size()));
+			} else {
+				Segment first1 = segments1.getFirst();
+				if (first1.point.equals(first2.point)) {
+					path.reverse();
+				}
+				last2 = segments2.getLast();
+				if (first1.point.equals(last2.point)) {
+					first1.handleIn.set(last2.handleIn);
+					// Prepend all segments from segments2 except last one
+					segments1.addAll(0, segments2.getSubList(0, segments2.size() - 1));
+				} else {
+					segments1.addAll(segments2);
+				}
+			}
+			// TODO: Tablet data!
+			path.remove();
+			// Close if they touch in both places
+			Segment first1 = segments1.getFirst();
+			last1 = segments1.getLast();
+			if (last1.point.equals(first1.point)) {
+				first1.handleIn.set(last1.handleIn);
+				segments1.remove(segments1.size() - 1);
+				setClosed(true);
+			}
+			return true;
+		}
+		return false;
+	}
+
 	// No need to expose these since they override the native one.
 	// TODO: Decide if maybe useful under different name?
 	/*
