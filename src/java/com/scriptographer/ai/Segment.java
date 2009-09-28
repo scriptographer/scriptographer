@@ -181,7 +181,7 @@ public class Segment implements Commitable, ChangeListener {
 					reader.readDouble(0),
 					reader.readDouble(0),
 					reader.readDouble(0)
-				);		
+				);
 			}
 		}
 	}

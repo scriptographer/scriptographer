@@ -115,6 +115,52 @@ public class Path extends PathItem {
 	}
 
 	/**
+	 * Inserts a point to the end of the list of this path's segments
+	 * ({@link #getSegments()}, by converting it to a {@link Segment}.
+	 * 
+	 * @param point the point to be added.
+	 * @return the added segment
+	 */
+	public Segment add(Point point) {
+		return getSegments().add(point);
+	}
+
+	/**
+	 * Inserts a segment to the end of the list of this path's segments.
+	 * 
+	 * @param segment the segment to be added.
+	 * @return the added segment. This is not necessarily the same object, e.g.
+	 *         if the segment to be added already belongs to another path.
+	 */
+	public Segment add(Segment segment) {
+		return getSegments().add(segment);
+	}
+
+	/**
+	 * Inserts a point at a given index in the list of this path's segments
+	 * ({@link #getSegments()}, by converting it to a {@link Segment}.
+	 * 
+	 * @param index the index at which to insert the point.
+	 * @param point the point to be added.
+	 * @return the added segment.
+	 */
+	public Segment add(int index, Point point) {
+		return getSegments().add(index, point);
+	}
+
+	/**
+	 * Inserts a segment at a given index in the list of this path's segments.
+	 * 
+	 * @param index the index at which to insert the segment.
+	 * @param segment the segment to be added.
+	 * @return the added segment. This is not necessarily the same object, e.g.
+	 *         if the segment to be added already belongs to another path.
+	 */
+	public Segment add(int index, Segment segment) {
+		return getSegments().add(index, segment);
+	}
+
+	/**
 	 * Removes the path item from the document.
 	 */
 	public boolean remove() {
@@ -236,7 +282,7 @@ public class Path extends PathItem {
 	 *        less than the cornerRadius, a corner point is generated there;
 	 *        otherwise the path is smooth at that point. {@default 1}
 	 * @param scale the scale factor by which the points and other input units
-	 *        (such as the corner radius) are multiplied {@default 1}
+	 *        (such as the corner radius) are multiplied. {@default 1}
 	 */
 	public void pointsToCurves(float tolerance, float threshold,
 			int cornerRadius, float scale) {
@@ -508,12 +554,8 @@ public class Path extends PathItem {
 		nativeSetTabletData(TABLET_PRESSURE, data);
 	}
 	
-	/*
-	 *  PostScript-like interface: moveTo, lineTo, curveTo, arcTo
-	 */
-
 	/**
-	 * {@grouptitle PostScript drawing commands}
+	 * {@grouptitle PostScript-style drawing commands}
 	 */
 	public void moveTo(double x, double y) {
 		getSegments().moveTo(x, y);
@@ -523,21 +565,29 @@ public class Path extends PathItem {
 		getSegments().lineTo(x, y);
 	}
 	
-	public void curveTo(double c1x, double c1y, double c2x, double c2y,
-			double x, double y) {
-		getSegments().curveTo(c1x, c1y, c2x, c2y, x, y);
+	public void curveTo(double handle1X, double handle1Y,
+			double handle2X, double handle2Y,
+			double endX, double endY) {
+		getSegments().curveTo(handle1X, handle1Y, handle2X, handle2Y, endX, endY);
 	}
-	
-	public void quadTo(double cx, double cy, double x, double y) {
-		getSegments().quadTo(cx, cy, x, y);
-	}
-	
-	public void arcTo(double middleX, double middleY, double endX, double endY) {
-		getSegments().arcTo(middleX, middleY, endX, endY);
+
+	public void curveTo(double handleX, double handleY,
+			double endX, double endY) {
+		getSegments().curveTo(handleX, handleY, endX, endY);
 	}
 
 	public void arcTo(double endX, double endY) {
 		getSegments().arcTo(endX, endY);
+	}
+
+	public void curveThrough(double middleX, double middleY,
+			double endX, double endY, double t) {
+		getSegments().curveThrough(middleX, middleY, endX, endY, t);
+	}
+
+	public void arcThrough(double middleX, double middleY,
+			double endX, double endY) {
+		getSegments().arcThrough(middleX, middleY, endX, endY);
 	}
 
 	/**
@@ -588,7 +638,7 @@ public class Path extends PathItem {
 					segments.lineTo(f[0], f[1]);
 					break;
 				case PathIterator.SEG_QUADTO:
-					quadTo(f[0], f[1], f[2], f[3]);
+					segments.curveTo(f[0], f[1], f[2], f[3]);
 					break;
 				case PathIterator.SEG_CUBICTO:
 					segments.curveTo(f[0], f[1], f[2], f[3], f[4], f[5]);
@@ -604,32 +654,44 @@ public class Path extends PathItem {
 		}
 	}
 
+	private static void addSegment(GeneralPath path, Segment current, Segment next) {
+		Point point1 = current.point;
+		Point handle1 = current.handleOut;
+		Point handle2 = next.handleIn;
+		Point point2 = next.point;
+		if (handle1.isZero() && handle2.isZero()) {
+			path.lineTo(
+					(float) point2.x,
+					(float) point2.y
+			);
+		} else {
+			// TODO: Is there an easy way to detect quads?
+			path.curveTo(
+					(float) (point1.x + handle1.x),
+					(float) (point1.y + handle1.y),
+					(float) (point2.x + handle2.x),
+					(float) (point2.y + handle2.y),
+					(float) point2.x,
+					(float) point2.y
+			);
+		}
+	}
 	/**
 	 * @jshide
 	 */
 	public GeneralPath toShape() {
 		GeneralPath path = new GeneralPath();
 		SegmentList segments = getSegments();
-		Segment first = (Segment) segments.getFirst();
+		Segment first = segments.getFirst();
 		path.moveTo((float) first.point.x, (float) first.point.y);
 		Segment seg = first;
 		for (int i = 1, l = segments.size(); i < l; i++) {
-			Segment next = (Segment) segments.get(i);
-			path.curveTo((float) (seg.point.x + seg.handleOut.x),
-					(float) (seg.point.y + seg.handleOut.y),
-					(float) (next.point.x + next.handleIn.x),
-					(float) (next.point.y + next.handleIn.y),
-					(float) next.point.x,
-					(float) next.point.y);
+			Segment next = segments.get(i);
+			addSegment(path, seg, next);
 			seg = next;
 		}
 		if (isClosed()) {
-			path.curveTo((float) (seg.point.x + seg.handleOut.x),
-					(float) (seg.point.y + seg.handleOut.y),
-					(float) (first.point.x + first.handleIn.x),
-					(float) (first.point.y + first.handleIn.y),
-					(float) first.point.x,
-					(float) first.point.y);
+			addSegment(path, seg, first);
 			path.closePath();
 		}
 		path.setWindingRule(getStyle().getWindingRule() == WindingRule.NON_ZERO

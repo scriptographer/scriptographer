@@ -119,16 +119,20 @@ public class CompoundPath extends PathItem {
 		getPreviousPath().curveTo(c1x, c1y, c2x, c2y, x, y);
 	}
 	
-	public void quadTo(double cx, double cy, double x, double y) {
-		getPreviousPath().quadTo(cx, cy, x, y);
-	}
-
-	public void arcTo(double centerX, double centerY, double endX, double endY) {
-		getPreviousPath().arcTo(centerX, centerY, endX, endY);
+	public void curveTo(double cx, double cy, double x, double y) {
+		getPreviousPath().curveTo(cx, cy, x, y);
 	}
 
 	public void arcTo(double endX, double endY) {
 		getPreviousPath().arcTo(endX, endY);
+	}
+
+	public void curveThrough(double centerX, double centerY, double endX, double endY, double t) {
+		getPreviousPath().curveThrough(centerX, centerY, endX, endY, t);
+	}
+
+	public void arcThrough(double centerX, double centerY, double endX, double endY) {
+		getPreviousPath().arcThrough(centerX, centerY, endX, endY);
 	}
 	
 	public void closePath() {
@@ -176,7 +180,7 @@ public class CompoundPath extends PathItem {
 					lineTo(f[0], f[1]);
 					break;
 				case PathIterator.SEG_QUADTO:
-					quadTo(f[0], f[1], f[2], f[3]);
+					curveTo(f[0], f[1], f[2], f[3]);
 					break;
 				case PathIterator.SEG_CUBICTO:
 					curveTo(f[0], f[1], f[2], f[3], f[4], f[5]);

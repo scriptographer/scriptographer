@@ -508,6 +508,16 @@ public class Point implements ChangeNotifier {
 	public boolean isZero() {
 		return x == 0 && y == 0;
 	}
+
+	/**
+	 * Checks if this point has an undefined value for at least one of its
+	 * coordinates.
+	 * 
+	 * @return {@true if either x or y are not a number}
+	 */
+	public boolean isNaN() {
+		return Double.isNaN(x) || Double.isNaN(y);
+	}
 	
 	/**
 	 * Returns the distance between the point and another point.
@@ -578,9 +588,11 @@ public class Point implements ChangeNotifier {
 	}
 
 	public void setLength(double length) {
-		double len = getLength();
-		if (len != 0) {
-			double scale = length / len;
+		if (isZero()) {
+			// Assume angle = 0
+			x = length;
+		} else {
+			double scale = length / getLength();
 			x *= scale;
 			y *= scale;
 		}
@@ -592,6 +604,16 @@ public class Point implements ChangeNotifier {
 	 */
 	public double getAngle() {
 		return Math.atan2(y, x);
+	}
+
+	public void setAngle(double angle) {
+		if (isZero()) {
+			// TOOD: Solve!
+		} else {
+			double length = getLength();
+			x = Math.cos(angle) * length;
+			y = Math.sin(angle) * length;
+		}
 	}
 
 	/**

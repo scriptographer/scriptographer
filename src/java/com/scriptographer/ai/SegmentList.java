@@ -32,6 +32,7 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.list.ReadOnlyList;
+import com.scriptographer.ScriptographerException;
 import com.scriptographer.list.AbstractFetchList;
 
 /**
@@ -382,12 +383,12 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	}
 	
 	/*
-	 *  postscript-like interface: moveTo, lineTo, curveTo, arcTo
+	 *  PostScript-like interface: moveTo, lineTo, curveTo, arcTo
 	 */	
 	public void moveTo(double x, double y) {
 		if (size > 0)
-			throw new UnsupportedOperationException(
-					"moveTo can only be called at the beginning of a SegmentList");
+			throw new ScriptographerException(
+					"moveTo can only be called at the beginning of a list of segments");
 		add(new Segment(x, y));
 	}
 	
@@ -398,7 +399,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	public void lineTo(double x, double y) {
 		/* Let's not be so picky about this for now 
 		if (size == 0)
-			throw new UnsupportedOperationException("Use a moveTo command first");
+			throw new ScriptographerException("Use a moveTo command first");
 		*/
 		add(new Segment(x, y));
 	}
@@ -407,24 +408,33 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		lineTo(pt.x, pt.y);
 	}
 	
-	public void curveTo(double c1x, double c1y, double c2x, double c2y, double x,
-			double y) {
+	/**
+	 * Adds a cubic bezier curve to the path, defined by two handles and an end point.
+	 */
+	public void curveTo(double handle1X, double handle1Y, double handle2X,
+			double handle2Y, double endX, double endY) {
 		if (size == 0)
-			throw new UnsupportedOperationException("Use a moveTo command first");
+			throw new ScriptographerException("Use a moveTo command first");
 		// first modify the current segment:
 		Segment lastSegment = get(size - 1);
 		// convert to relative values:
-		lastSegment.handleOut.set(c1x - lastSegment.point.x, c1y
+		lastSegment.handleOut.set(handle1X - lastSegment.point.x, handle1Y
 				- lastSegment.point.y);
 		// and add the new segment, with handleIn set to c2
-		add(new Segment(x, y, c2x - x, c2y - y, 0, 0));
+		add(new Segment(endX, endY, handle2X - endX, handle2Y - endY, 0, 0));
 	}
 	
-	public void curveTo(Point c1, Point c2, Point pt) {
-		curveTo(c1.x, c1.y, c2.x, c2.y, pt.x, pt.y);
+	/**
+	 * Adds a cubic bezier curve to the path, defined by two handles and an end point.
+	 */
+	public void curveTo(Point handle1, Point handle2, Point end) {
+		curveTo(handle1.x, handle1.y, handle2.x, handle2.y, end.x, end.y);
 	}
 	
-	public void quadTo(double cx, double cy, double x, double y) {
+	/**
+	 * Adds a quadratic bezier curve to the path, defined by a handle and an end point.
+	 */
+	public void curveTo(double handleX, double handleY, double endX, double endY) {
 		// This is exact:
 		// If we have the three quad points: A E D,
 		// and the cubic is A B C D,
@@ -433,18 +443,51 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		Segment segment = get(size - 1);
 		double x1 = segment.point.x;
 		double y1 = segment.point.y;
-		curveTo(cx + (1f/3f) * (x1 - cx), cy + (1f/3f) * (y1 - cy), 
-				cx + (1f/3f) * (x - cx), cy + (1f/3f) * (y - cy),
-				x, y);
-	}
-	
-	public void quadTo(Point c, Point pt) {
-		quadTo(c.x, c.y, pt.x, pt.y);		
+		curveTo(handleX + (1f/3f) * (x1 - handleX),
+				handleY + (1f/3f) * (y1 - handleY), 
+				handleX + (1f/3f) * (endX - handleX),
+				handleY + (1f/3f) * (endY - handleY),
+				endX,
+				endY);
 	}
 
-	public void arcTo(double middleX, double middleY, double endX, double endY) {
+	/**
+	 * Adds a quadratic bezier curve to the path, defined by a handle and an end point.
+	 */
+	public void curveTo(Point handle, Point end) {
+		curveTo(handle.x, handle.y, end.x, end.y);		
+	}
+
+	public void curveThrough(double middleX, double middleY, double endX, double endY, double t) {
+		curveThrough(new Point(middleX, middleY), new Point(endX, endY), t);
+	}
+
+	public void curveThrough(double middleX, double middleY, double endX, double endY) {
+		curveThrough(middleX, middleY, endX, endY, 0.5);
+	}
+
+	public void curveThrough(Point middle, Point end, double t) {
+		Point start = getLast().getPoint();
+		double otherT = 1 - t;
+		// handle = (middle - (1 - t)^2 * start - t^2 * end) / (2 * (1 - t) * t)
+		Point handle = middle.subtract(
+				start.multiply(otherT * otherT)).subtract(
+						end.multiply(t * t)).divide(2.0 * t * otherT);
+		if (handle.isNaN())
+			throw new ScriptographerException(
+					"Cannot put a curve through points with t=" + t);
+		curveTo(handle, end);
+	}
+
+	public void curveThrough(Point middle, Point end) {
+		curveThrough(middle, end, 0.5);
+	}
+	/**
+	 * Adds a circular arc to the path that passes through the given middle point.
+	 */
+	public void arcThrough(double middleX, double middleY, double endX, double endY) {
 		if (size == 0)
-			throw new UnsupportedOperationException("Use a moveTo command first");
+			throw new ScriptographerException("Use a moveTo command first");
 		
 		// Get the startPoint:
 		Segment start = getLast();
@@ -518,8 +561,11 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		}
 	}
 
-	public void arcTo(Point middle, Point end) {
-		arcTo(middle.x, middle.y, end.x, end.y);
+	/**
+	 * Adds a circular arc to the path that passes through the given middle point.
+	 */
+	public void arcThrough(Point middle, Point end) {
+		arcThrough(middle.x, middle.y, end.x, end.y);
 	}
 
 	private Point getLineIntersection(Point p1, Point v1, Point p2, Point v2) {
@@ -549,7 +595,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 
 	public void arcTo(Point end) {
 		if (size == 0)
-			throw new UnsupportedOperationException("Use a moveTo command first");
+			throw new ScriptographerException("Use a moveTo command first");
 		Segment last = getLast();
 		Point start = last.point;
 		Segment previous = last.getPrevious();
@@ -582,11 +628,10 @@ public class SegmentList extends AbstractFetchList<Segment> {
 			point = middle.add(-step.y, step.x);
 		}
 		if (point != null)
-			arcTo(point, end);
+			arcThrough(point, end);
 	}
 
 	public void arcTo(double endX, double endY) {
 		arcTo(new Point(endX, endY));
 	}
-
 }

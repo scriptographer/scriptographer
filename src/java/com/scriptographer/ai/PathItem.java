@@ -75,52 +75,101 @@ public abstract class PathItem extends Item {
 	 */
 
 	/**
-	 * {@grouptitle Drawing Functions}
+	 * {@grouptitle PostScript-style drawing commands}
 	 */
 	public abstract void moveTo(double x, double y);	
-
-	public abstract void lineTo(double x, double y);
-
-	public abstract void curveTo(double c1x, double c1y, double c2x, double c2y,
-			double x, double y);
-	
-	public abstract void quadTo(double cx, double cy, double x, double y);
-
-	public abstract void arcTo(double middleX, double middleY, double endX, double endY);
-	
-	public abstract void arcTo(double endX, double endY);
-
-	public abstract void closePath();
 
 	public void moveTo(Point pt) {
 		if (pt == null) moveTo(0, 0);
 		else moveTo(pt.x, pt.y);
 	}
 
+	public abstract void lineTo(double x, double y);
+
 	public void lineTo(Point pt) {
 		if (pt == null) lineTo(0, 0);
 		else lineTo(pt.x, pt.y);
 	}
 
-	public void curveTo(Point c1, Point c2, Point pt) {
-		curveTo(c1 != null ? c1.x : 0, c1 != null ? c1.y : 0,
-				c2 != null ? c2.x : 0, c2 != null ? c2.y : 0,
-				pt != null ? pt.x : 0, pt != null ? pt.y : 0);
+	public abstract void curveTo(double handle1X, double handle1Y,
+			double handle2X, double handle2Y,
+			double endX, double endY);
+
+	public void curveTo(Point handle1, Point handle2, Point end) {
+		curveTo(handle1 != null ? handle1.x : 0, handle1 != null ? handle1.y : 0,
+				handle2 != null ? handle2.x : 0, handle2 != null ? handle2.y : 0,
+				end != null ? end.x : 0, end != null ? end.y : 0);
 	}
 
-	public void quadTo(Point c, Point pt) {
-		quadTo(c != null ? c.x : 0, c != null ? c.y : 0,
-				pt != null ? pt.x : 0, pt != null ? pt.y : 0);
+	public abstract void curveTo(double handleX, double handleY,
+			double endX, double endY);
+
+	public void curveTo(Point handle, Point end) {
+		curveTo(handle != null ? handle.x : 0, handle != null ? handle.y : 0,
+				end != null ? end.x : 0, end != null ? end.y : 0);
 	}
 
-	public void arcTo(Point center, Point endPoint) {
-		arcTo(center != null ? center.x : 0, center != null ? center.y : 0,
-				endPoint != null ? endPoint.x : 0, endPoint != null ? endPoint.y : 0);
+	public abstract void arcTo(double endX, double endY);
+
+	public void arcTo(Point end) {
+		arcTo(end != null ? end.x : 0, end != null ? end.y : 0);
 	}
 
-	public void arcTo(Point endPoint) {
-		arcTo(endPoint != null ? endPoint.x : 0, endPoint != null ? endPoint.y : 0);
+	public abstract void curveThrough(double middleX, double middleY,
+			double endX, double endY, double t);
+
+	public void curveThrough(double middleX, double middleY,
+			double endX, double endY) {
+		curveThrough(middleX, middleY, endX, endY, 0.5);
 	}
+
+	public void curveThrough(Point middle, Point end, double t) {
+		curveThrough(middle != null ? middle.x : 0, middle != null ? middle.y : 0,
+				end != null ? end.x : 0, end != null ? end.y : 0, t);
+	}
+
+	public void curveThrough(Point middle, Point end) {
+		curveThrough(middle, end, 0.5);
+	}
+
+	public abstract void arcThrough(double middleX, double middleY,
+			double endX, double endY);
+
+	public void arcThrough(Point middle, Point end) {
+		arcThrough(middle != null ? middle.x : 0, middle != null ? middle.y : 0,
+				end != null ? end.x : 0, end != null ? end.y : 0);
+	}
+
+	public abstract void closePath();
+
+	/**
+	 * @deprecated
+	 */
+	public void quadTo(double handleX, double handleY, double endX, double endY) {
+		curveTo(handleX, handleY, endX, endY);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public void quadTo(Point handle, Point end) {
+		curveTo(handle.x, handle.y, end.x, end.y);		
+	}
+	
+	/**
+	 * @deprecated
+	 */
+	public void arcTo(double middleX, double middleY, double endX, double endY) {
+		curveTo(middleX, middleY, endX, endY);
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public void arcTo(Point middle, Point end) {
+		arcThrough(middle.x, middle.y, end.x, end.y);
+	}
+
 
 	/**
 	 * @jshide
