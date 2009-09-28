@@ -171,6 +171,10 @@ public class ToolEvent {
 		}
 	}
 
+	public ToolEventType getType() {
+		return type;
+	}
+
 	// TODO: Consider adding these, present since CS2
 	/*
 	 * For graphic tablets, tangential pressure on the finger wheel of the

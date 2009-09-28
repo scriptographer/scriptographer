@@ -498,10 +498,11 @@ public class Tool extends NativeObject {
 			ScriptographerEngine.invoke(onReselect, this);
 	}
 
-	private boolean updateEvent(ToolEventType code, float x, float y, int pressure,
+	private boolean updateEvent(ToolEventType code, double x, double y, int pressure,
 			float threshold, boolean start) {
 		if (start || threshold == 0 || point.getDistance(x, y) >= threshold) {
 			lastPoint = point;
+			point = new Point(x, y);
 			switch (code) {
 			case MOUSE_DOWN:
 				lastPoint = downPoint;
@@ -514,7 +515,6 @@ public class Tool extends NativeObject {
 				lastPoint = downPoint;
 				break;
 			}
-			point = new Point(x, y);
 			if (start) {
 				count = 0;
 			} else {
@@ -527,7 +527,7 @@ public class Tool extends NativeObject {
 		return false;
 	}
 
-	private int onHandleEvent(ToolEventType type, float x, float y, int pressure) {
+	private int onHandleEvent(ToolEventType type, double x, double y, int pressure) {
 		try {
 			switch (type) {
 			case MOUSE_DOWN:
@@ -541,7 +541,7 @@ public class Tool extends NativeObject {
 			case MOUSE_UP:
 				// If the last mouse drag happened in a different place, call
 				// mouse drag first, then mouse up.
-				if (point.x != x || point.y != y
+				if ((point.x != x || point.y != y)
 						&& updateEvent(ToolEventType.MOUSE_DRAG, x, y, pressure,
 								distanceThreshold, false)) {
 					try {
