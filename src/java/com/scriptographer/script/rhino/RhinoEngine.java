@@ -147,18 +147,25 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine implem
 	}
 
 	public Object handleSignOperator(Context cx, Scriptable scope, int operator, Object rhs) {
-		if (operator == Token.NEG) {
-			// Wrap String as Scriptable, so we can access its prototype easily too.
-			if (rhs instanceof String)
-				rhs = ScriptRuntime.toObject(cx, scope, rhs);
-			// Now perform the magic
-			if (rhs instanceof Scriptable) {
-				Scriptable scriptable = (Scriptable) rhs;
-				Object obj = ScriptableObject.getProperty(scriptable, "negate");
-				if (obj instanceof Callable)
-					return ((Callable) obj).call(cx, scope, scriptable, new Object[] {});
-			}
-		}
+	    switch (operator) {
+        case Token.NEG:
+            // Wrap String as Scriptable, so we can access its prototype easily too.
+            if (rhs instanceof String)
+                rhs = ScriptRuntime.toObject(cx, scope, rhs);
+            // Now perform the magic
+            if (rhs instanceof Scriptable) {
+                Scriptable scriptable = (Scriptable) rhs;
+                Object obj = ScriptableObject.getProperty(scriptable, "negate");
+                if (obj instanceof Callable)
+                    return ((Callable) obj).call(cx, scope, scriptable, new Object[] {});
+            }
+            break;
+        case Token.POS:
+            // Simple return the rhs, since the standard JS way would be to force conversion
+            // to a number, which would give NaN for new Point(1, 2) * 1, since this is
+            // converted top + new Point(1, 2) by the interpreter...
+            return rhs;
+	    }
 		return null;
 	}
 }
