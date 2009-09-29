@@ -60,6 +60,14 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine implem
 		return new TopLevel(context);
 	}
 
+	protected boolean hasFeature(Context cx, int feature, boolean defaultValue) {
+		switch (feature) {
+		case Context.FEATURE_DYNAMIC_SCOPE:
+			return true;
+		}
+		return super.hasFeature(cx, feature, defaultValue);
+	}
+
 	protected void enter(Context context) {
 		super.enter(context);
 		// Use pure interpreter mode to allow for
