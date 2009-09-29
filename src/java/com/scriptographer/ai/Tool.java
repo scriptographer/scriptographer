@@ -83,15 +83,13 @@ public class Tool extends NativeObject {
 	private static ArrayList<Tool> unusedTools = null;
 
 	private float distanceThreshold;
-	
-	private ToolEvent event = new ToolEvent(this);
+
 	private boolean firstMove;
 	protected Point point;
 	protected Point downPoint;
 	protected Point lastPoint;
 	protected int count;
 	protected int downCount;
-	protected double pressure;
 
 	private Image image = null;
 	private Image rolloverImage = null;
@@ -498,12 +496,12 @@ public class Tool extends NativeObject {
 			ScriptographerEngine.invoke(onReselect, this);
 	}
 
-	private boolean updateEvent(ToolEventType code, double x, double y, int pressure,
+	private boolean updateEvent(ToolEventType type, double x, double y, int pressure,
 			float threshold, boolean start) {
 		if (start || threshold == 0 || point.getDistance(x, y) >= threshold) {
 			lastPoint = point;
 			point = new Point(x, y);
-			switch (code) {
+			switch (type) {
 			case MOUSE_DOWN:
 				lastPoint = downPoint;
 				downPoint = point;
@@ -520,11 +518,13 @@ public class Tool extends NativeObject {
 			} else {
 				count++;
 			}
-			this.pressure = pressure / 255.0;
-			event.update(code);
 			return true;
 		}
 		return false;
+	}
+
+	private ToolEvent createEvent(ToolEventType type, int pressure) {
+		return new ToolEvent(this, type, point, lastPoint, downPoint, pressure);
 	}
 
 	private int onHandleEvent(ToolEventType type, double x, double y, int pressure) {
@@ -532,11 +532,11 @@ public class Tool extends NativeObject {
 			switch (type) {
 			case MOUSE_DOWN:
 				updateEvent(type, x, y, pressure, 0, true);
-				onMouseDown(event);
+				onMouseDown(createEvent(type, pressure));
 				break;
 			case MOUSE_DRAG:
 				if (updateEvent(type, x, y, pressure, distanceThreshold, false))
-					onMouseDrag(event);
+					onMouseDrag(createEvent(type, pressure));
 				break;
 			case MOUSE_UP:
 				// If the last mouse drag happened in a different place, call
@@ -545,14 +545,14 @@ public class Tool extends NativeObject {
 						&& updateEvent(ToolEventType.MOUSE_DRAG, x, y, pressure,
 								distanceThreshold, false)) {
 					try {
-						onMouseDrag(event);
+						onMouseDrag(createEvent(type, pressure));
 					} catch (Exception e) {
 						ScriptographerEngine.reportError(e);
 					}
 				}
 				updateEvent(type, x, y, pressure, 0, false);
 				try {
-					onMouseUp(event);
+					onMouseUp(createEvent(type, pressure));
 				} catch (Exception e) {
 					ScriptographerEngine.reportError(e);
 				}
@@ -563,7 +563,7 @@ public class Tool extends NativeObject {
 			case MOUSE_MOVE:
 				try {
 					if (updateEvent(type, x, y, pressure, distanceThreshold, firstMove))
-						onMouseMove(event);
+						onMouseMove(createEvent(type, pressure));
 				} finally {
 					firstMove = false;
 				}

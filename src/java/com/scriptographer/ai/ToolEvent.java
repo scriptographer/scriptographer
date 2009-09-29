@@ -53,20 +53,29 @@ import com.scriptographer.script.EnumUtils;
 public class ToolEvent {
 	private Tool tool;
 	private ToolEventType type;
+	private Point point;
+	private Point lastPoint;
+	private Point downPoint;
+	private Point middlePoint = null;
+	private Point delta = null;
+	private double pressure;
 
-	protected ToolEvent(Tool tool) {
+	protected ToolEvent(Tool tool, ToolEventType type, Point point,
+			Point lastPoint, Point downPoint, int pressure) {
 		this.tool = tool;
-	}
-
-	protected void update(ToolEventType type) {
 		this.type = type;
+		this.point = point;
+		this.lastPoint = lastPoint;
+		this.downPoint = downPoint;
+		this.pressure = pressure / 255.0;
 	}
 
 	public String toString() {
 		StringBuffer buf = new StringBuffer(16);
 		buf.append("{ type: ").append(EnumUtils.getScriptName(type)); 
-		buf.append(", point: ").append(tool.point.toString());
-		buf.append(", pressure: ").append(tool.pressure);
+		buf.append(", point: ").append(point);
+		buf.append(", pressure: ").append(pressure);
+		buf.append(", count: ").append(getCount());
 		buf.append(" }");
 		return buf.toString();
 	}
@@ -89,7 +98,12 @@ public class ToolEvent {
 	 * </code>
 	 */
 	public Point getPoint() {
-		return new Point(tool.point);
+		return point;
+	}
+
+
+	public void setPoint(Point point) {
+		this.point = point;
 	}
 
 	/**
@@ -97,7 +111,11 @@ public class ToolEvent {
 	 * event was fired.
 	 */
 	public Point getLastPoint() {
-		return tool.lastPoint != null ? new Point(tool.lastPoint) : null;
+		return lastPoint;
+	}
+
+	public void setLastPoint(Point lastPoint) {
+		this.lastPoint = lastPoint;
 	}
 
 	/**
@@ -105,7 +123,11 @@ public class ToolEvent {
 	 * was last clicked.
 	 */
 	public Point getDownPoint() {
-		return tool.downPoint != null ? new Point(tool.downPoint) : null;
+		return downPoint;
+	}
+
+	public void setDownPoint(Point downPoint) {
+		this.downPoint = downPoint;
 	}
 
 	/**
@@ -115,9 +137,13 @@ public class ToolEvent {
 	 * {@link #getDelta()}.
 	 */
 	public Point getMiddlePoint() {
-		if (tool.lastPoint != null)
-			return tool.point.add(tool.lastPoint).divide(2);
-		return null;
+		if (middlePoint == null && lastPoint != null)
+			middlePoint = point.add(lastPoint).divide(2);
+		return middlePoint;
+	}
+
+	public void setMiddlePoint(Point middlePoint) {
+		this.middlePoint = middlePoint;
 	}
 
 	/**
@@ -126,9 +152,13 @@ public class ToolEvent {
 	 * difference to the mouse-down position is returned.
 	 */
 	public Point getDelta() {
-		if (tool.lastPoint != null)
-			return tool.point.subtract(tool.lastPoint);
-		return null;
+		if (delta == null && lastPoint != null)
+			delta = point.subtract(lastPoint);
+		return delta;
+	}
+
+	public void setDelta(Point delta) {
+		this.delta = delta;
 	}
 
 	/**
@@ -138,7 +168,11 @@ public class ToolEvent {
 	 * @return the pressure as a value between 0 and 1
 	 */
 	public double getPressure() {
-		return tool.pressure;
+		return pressure;
+	}
+
+	public void setPressure(double pressure) {
+		this.pressure = pressure;
 	}
 
 	/**
@@ -171,8 +205,22 @@ public class ToolEvent {
 		}
 	}
 
+	public void setCount(int count) {
+		switch (type) {
+		case MOUSE_DOWN:
+		case MOUSE_UP:
+			tool.downCount = count;
+		default:
+			tool.count = count;
+		}
+	}
+
 	public ToolEventType getType() {
 		return type;
+	}
+	
+	public void setType(ToolEventType type) {
+		this.type = type;
 	}
 
 	// TODO: Consider adding these, present since CS2
