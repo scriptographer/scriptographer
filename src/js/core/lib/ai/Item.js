@@ -10,7 +10,6 @@ new function() {
 			var item = set[id];
 			if(item.isValid())
 				item.remove();
-
 			for(var type in sets) {
 				var other = sets[type];
 				if(other != set && other[item.id])
@@ -21,16 +20,22 @@ new function() {
 
 	function installHandler(name) {
 		var handler = 'onMouse' + name.capitalize();
+		// Inject a onMouse handler that performs all the behind the scene
+		// magic and calls the script's handler at the end, if defined.
 		var func = tool[handler];
 		if (!func || !func._installed) {
 			tool.inject(Hash.create(handler, function(event) {
+				// Always clear the drag set on mouse-up
 				if (name == 'up')
 					sets.drag = {};
 				removeAll(sets[name]);
 				sets[name] = {};
+				// Call the script's overridden handler, if defined
 				if(this.base)
 					this.base(event);
 			}));
+			// Only install this handler once, and mark it as installed,
+			// to prevent repeated installing.
 			tool[handler]._installed = true;
 		}
 	}
@@ -44,7 +49,10 @@ new function() {
 			for (var name in obj) {
 				if (obj[name]) {
 					sets[name][this.id] = this;
-					installHandler('up');
+					// Since the drag set gets cleared in up, we need to make
+					// sure it's installed too
+					if (name == 'drag')
+						installHandler('up');
 					installHandler(name);
 				}
 			}
