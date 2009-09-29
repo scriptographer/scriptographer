@@ -359,8 +359,14 @@ $type = Base.type;
 Hash = Base.extend(Enumerable, {
 	_generics: true,
 
-	initialize: function() {
-		return this.merge.apply(this, arguments);
+	initialize: function(arg) {
+		if (typeof arg == 'string') {
+			for (var i = 0, l = arguments.length; i < l; i += 2)
+				this[arguments[i]] = arguments[i + 1];
+		} else {
+			this.merge.apply(this, arguments);
+		}
+		return this;
 	},
 
 	merge: function() {
@@ -390,7 +396,7 @@ Hash = Base.extend(Enumerable, {
 		create: function(obj) {
 			return arguments.length == 1 && obj.constructor == Hash
 				? obj : Hash.prototype.initialize.apply(new Hash(), arguments);
-		}
+		},
 	}
 });
 
@@ -469,6 +475,10 @@ Array.inject(new function() {
 			if (entry.key != null)
 				this.splice(entry.key, 1);
 			return entry.value;
+		},
+
+		contains: function(obj) {
+			return this.indexOf(obj) != -1;
 		},
 
 		toArray: function() {
@@ -920,7 +930,7 @@ DomElements = Array.extend(new function() {
 		statics: {
 			inject: function(src) {
 				var proto = this.prototype;
-				return this.base(Base.each(src || {}, function(val, key) {
+				this.base(Base.each(src || {}, function(val, key) {
 					if (typeof val == 'function') {
 						var func = val, prev = proto[key];
 						var count = func.getParameters().length, prevCount = prev && prev.getParameters().length;
@@ -941,6 +951,9 @@ DomElements = Array.extend(new function() {
 					}
 					this[key] = val; 
 				}, {}));
+				for (var i = 1, l = arguments.length; i < l; i++)
+					this.inject(arguments[i]);
+				return this;
 			}
 		}
 	};
@@ -1051,6 +1064,8 @@ DomElement = Base.extend(new function() {
 					delete src.toString;
 					proto._elements.inject(src);
 				}
+				for (var i = 1, l = arguments.length; i < l; i++)
+					this.inject(arguments[i]);
 				return this;
 			},
 
@@ -1127,7 +1142,7 @@ DomElement = Base.extend(new function() {
 			isAncestor: function(el, parent) {
 				return !el ? false : el.ownerDocument == parent ? true
 					: Browser.WEBKIT && Browser.VERSION < 420
-						? Array.indexOf(parent.getElementsByTagName(el.tagName), el) != -1
+						? Array.contains(parent.getElementsByTagName(el.tagName), el)
 						: parent.contains 
 							? parent != el && parent.contains(el)
 							: !!(parent.compareDocumentPosition(el) & 16)
@@ -1739,7 +1754,7 @@ DomEvent = Base.extend(new function() {
 	var keys = {
 		 '8': 'backspace',
 		'13': 'enter',
-		'27': 'esc',
+		'27': 'escape',
 		'32': 'space',
 		'37': 'left',
 		'38': 'up',
@@ -1897,7 +1912,7 @@ DomElement.inject(new function() {
 				var that = this, bound = listener.getParameters().length == 0
 					? listener.bind(this)
 					: function(event) { 
-						event = event.event ? event : new DomEvent(event);
+						event = event && event.event ? event : new DomEvent(event);
 						if (listener.call(that, event) === false)
 							event.stop();
 					};
