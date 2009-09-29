@@ -332,8 +332,14 @@ Hash = Base.extend(Enumerable, {
 	_hide: true,
 	_generics: true,
 
-	initialize: function() {
-		return this.merge.apply(this, arguments);
+	initialize: function(arg) {
+		if (typeof arg == 'string') {
+			for (var i = 0, l = arguments.length; i < l; i += 2)
+				this[arguments[i]] = arguments[i + 1];
+		} else {
+			this.merge.apply(this, arguments);
+		}
+		return this;
 	},
 
 	merge: function() {
@@ -363,7 +369,7 @@ Hash = Base.extend(Enumerable, {
 		create: function(obj) {
 			return arguments.length == 1 && obj.constructor == Hash
 				? obj : Hash.prototype.initialize.apply(new Hash(), arguments);
-		}
+		},
 	}
 });
 
@@ -443,6 +449,10 @@ Array.inject(new function() {
 			if (entry.key != null)
 				this.splice(entry.key, 1);
 			return entry.value;
+		},
+
+		contains: function(obj) {
+			return this.indexOf(obj) != -1;
 		},
 
 		toArray: function() {

@@ -51,7 +51,6 @@ function Template(object, name, parent) {
 			this.parent = parent;
 			this.pathName = parent.pathName + this.pathName;
 		}
-		this.macroParam = 0;
 		this.compile();
 	}
 }
@@ -145,7 +144,7 @@ Template.prototype = {
 							if (skipLineBreak)
 								skipLineBreak = false;
 							else
-								buffer.push(line.substring(end), Template.lineBreak);
+								buffer.push(line.substring(end), i < lines.length - 1 ? Template.lineBreak : null);
 							break;
 						}
 					} else {
@@ -298,10 +297,12 @@ Template.prototype = {
 				if (isMain) {
 					macro.isControl = allowControls && /^(foreach|if|elseif|else|end)$/.test(next);
 					macro.isData = isEqualTag;
-					macro.isSetter = next[0] == '$'; 
-					var match = macro.isSetter && next.match(/(\$\w*)=$/);
-					if (match)
-						macro.command = match[1];
+					macro.isSetter = !isEqualTag && next[0] == '$'; 
+					if (macro.isSetter) {
+						var match = next.match(/(\$\w*)=$/);
+						if (match)
+							macro.command = match[1];
+					}
 				}
 			}
 		}
@@ -340,11 +341,15 @@ Template.prototype = {
 			} else if (part == '|') { 
 				isFirst = true;
 			} else { 
-				if (!macro.isData && !macro.isControl) {
-					if (!macro.isSetter || part != '=') {
-						part = nestedMacro(this, part, code, stack);
+
+				if (macro.isSetter) {
+					if (part == '=')
+						macro.hasEquals = true;
+					else
 						macro.unnamed.push(part);
-					}
+					append = false;
+				} else if (!macro.isData && !macro.isControl) {
+					macro.unnamed.push(nestedMacro(this, part, code, stack));
 					append = false;
 				} else if (append) { 
 					macro.opcode.push(part);
@@ -370,7 +375,7 @@ Template.prototype = {
 				values['default'] = /^'"/.test(def) ? '"' + global[values.encoder](def.substring(1, def.length - 1)) + '"'
 					: values.encoder + '(' + def + ')';
 		}
-		macro.isSetter = macro.isSetter && !!macro.unnamed.length;
+		macro.isSetter = macro.isSetter && macro.hasEquals && !!macro.unnamed.length;
 		macro.swallow = swallow || macro.isControl || macro.isSetter;
 		macro.tag = tag;
 		return macro;
@@ -628,6 +633,7 @@ Template.prototype = {
 
 	compile: function() {
 		try {
+			this.macroParam = 0;
 			var lines;
 			if  (this.resource) {
 				var reader = new java.io.BufferedReader(
