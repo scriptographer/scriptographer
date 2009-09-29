@@ -54,10 +54,14 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 					while (start >= 0 && !/[\n\r]/.test(text[start]))
 						start--;
 					start++;
-					text = text.substring(start, end + 1);
+					text = text.substring(start, end).trim();
 				}
 				try {
-					engine.evaluate(text, consoleScope);
+					if (text != '') {
+						var res = engine.evaluate(text, consoleScope);
+						if (res !== undefined)
+							print(res);
+					}
 				} catch (e) {
 					if (e.javaException) {
 						e = e.javaException;
@@ -75,25 +79,7 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 		size: [300, 100],
 		minimumSize: [200, 18],
 		maxLength: 32767,
-		font: 'palette',
-		backgroundColor: 'inactive-tab',
-		// the onDraw workaround for display problems is only needed on mac
-		onDraw: null && app.isMacintosh() && function(drawer) {
-			// Workaround for mac, where TextEdit fields with a background
-			// color
-			// do not get completely filled
-			// Fill in the missing parts.
-			drawer.color = 'inactive-tab';
-			var rect = drawer.boundsRect;
-			// A tet line with the small font is 11 pixels heigh. there
-			// seems to be a shift, which was detected by trial and error.
-			// This might change in future versions!
-			var height = rect.height - (rect.height - 6) % 11 - 3;
-			// 18 is the width of the scrollbar. This might change in future
-			// versions!
-			drawer.fillRect(rect.width - 18, 0, 1, height);
-			drawer.fillRect(0, height, rect.width - 1, rect.height - height - 2);
-		}
+		font: 'palette'
 	};
 
 	var consoleText = new java.lang.StringBuffer();

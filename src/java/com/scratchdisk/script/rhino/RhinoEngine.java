@@ -140,12 +140,12 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		}
 	}
 
-	public void evaluate(String string, Scope scope)
+	public Object evaluate(String string, Scope scope)
 			throws RhinoScriptException {
 		try {
 			// TODO: typecast to JsContext can be wrong, e.g. when calling
 			// from another language
-			context.evaluateString(((RhinoScope) scope).getScope(), string,
+			return context.evaluateString(((RhinoScope) scope).getScope(), string,
 					"evaluate", 1, null);
 		} catch (RhinoException e) {
 			throw new RhinoScriptException(this, e);

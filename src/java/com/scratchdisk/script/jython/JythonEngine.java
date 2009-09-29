@@ -81,7 +81,8 @@ public class JythonEngine extends ScriptEngine {
 		return new JythonScope();
 	}
 
-	public void evaluate(String string, Scope scope) throws ScriptException {
+	public Object evaluate(String string, Scope scope) throws ScriptException {
+		return null;
 	}
 
 	public Scope getScope(Object obj) {
