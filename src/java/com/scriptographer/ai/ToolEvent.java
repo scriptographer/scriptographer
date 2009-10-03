@@ -53,21 +53,16 @@ import com.scriptographer.script.EnumUtils;
 public class ToolEvent {
 	private Tool tool;
 	private ToolEventType type;
-	private Point point;
-	private Point lastPoint;
-	private Point downPoint;
+	private Point point = null;
+	private Point lastPoint = null;
+	private Point downPoint = null;
 	private Point middlePoint = null;
 	private Point delta = null;
-	private double pressure;
+	private double pressure = -1;
 
-	protected ToolEvent(Tool tool, ToolEventType type, Point point,
-			Point lastPoint, Point downPoint, int pressure) {
+	protected ToolEvent(Tool tool, ToolEventType type) {
 		this.tool = tool;
 		this.type = type;
-		this.point = point;
-		this.lastPoint = lastPoint;
-		this.downPoint = downPoint;
-		this.pressure = pressure / 255.0;
 	}
 
 	public String toString() {
@@ -98,7 +93,7 @@ public class ToolEvent {
 	 * </code>
 	 */
 	public Point getPoint() {
-		return point;
+		return point != null ? point : new Point(tool.point);
 	}
 
 
@@ -111,7 +106,7 @@ public class ToolEvent {
 	 * event was fired.
 	 */
 	public Point getLastPoint() {
-		return lastPoint;
+		return lastPoint != null ? lastPoint : new Point(tool.lastPoint);
 	}
 
 	public void setLastPoint(Point lastPoint) {
@@ -123,7 +118,7 @@ public class ToolEvent {
 	 * was last clicked.
 	 */
 	public Point getDownPoint() {
-		return downPoint;
+		return downPoint != null ? downPoint : new Point(tool.downPoint);
 	}
 
 	public void setDownPoint(Point downPoint) {
@@ -137,8 +132,9 @@ public class ToolEvent {
 	 * {@link #getDelta()}.
 	 */
 	public Point getMiddlePoint() {
-		if (middlePoint == null && lastPoint != null)
-			middlePoint = point.add(lastPoint).divide(2);
+		// For explanations, see getDelta()
+		if (middlePoint == null && tool.lastPoint != null)
+			return tool.point.add(tool.lastPoint).divide(2);
 		return middlePoint;
 	}
 
@@ -152,8 +148,13 @@ public class ToolEvent {
 	 * difference to the mouse-down position is returned.
 	 */
 	public Point getDelta() {
-		if (delta == null && lastPoint != null)
-			delta = point.subtract(lastPoint);
+		// Do not put the calculated delta into delta, since this only reserved
+		// for overriding event.delta.
+		// Instead, keep calculating the delta each time, so the result can be
+		// directly modified by the script without changing the internal values.
+		// We could cache this and use clone, but this is almost as fast...
+		if (delta == null && tool.lastPoint != null)
+			return tool.point.subtract(tool.lastPoint);
 		return delta;
 	}
 
@@ -168,7 +169,7 @@ public class ToolEvent {
 	 * @return the pressure as a value between 0 and 1
 	 */
 	public double getPressure() {
-		return pressure;
+		return pressure != -1 ? pressure : tool.pressure;
 	}
 
 	public void setPressure(double pressure) {
@@ -210,8 +211,10 @@ public class ToolEvent {
 		case MOUSE_DOWN:
 		case MOUSE_UP:
 			tool.downCount = count;
+			break;
 		default:
 			tool.count = count;
+			break;
 		}
 	}
 

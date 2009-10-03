@@ -90,6 +90,7 @@ public class Tool extends NativeObject {
 	protected Point lastPoint;
 	protected int count;
 	protected int downCount;
+	protected double pressure;
 
 	private Image image = null;
 	private Image rolloverImage = null;
@@ -518,13 +519,10 @@ public class Tool extends NativeObject {
 			} else {
 				count++;
 			}
+			this.pressure = pressure / 255.0;
 			return true;
 		}
 		return false;
-	}
-
-	private ToolEvent createEvent(ToolEventType type, int pressure) {
-		return new ToolEvent(this, type, point, lastPoint, downPoint, pressure);
 	}
 
 	private int onHandleEvent(ToolEventType type, double x, double y, int pressure) {
@@ -532,11 +530,11 @@ public class Tool extends NativeObject {
 			switch (type) {
 			case MOUSE_DOWN:
 				updateEvent(type, x, y, pressure, 0, true);
-				onMouseDown(createEvent(type, pressure));
+				onMouseDown(new ToolEvent(this, type));
 				break;
 			case MOUSE_DRAG:
 				if (updateEvent(type, x, y, pressure, distanceThreshold, false))
-					onMouseDrag(createEvent(type, pressure));
+					onMouseDrag(new ToolEvent(this, type));
 				break;
 			case MOUSE_UP:
 				// If the last mouse drag happened in a different place, call
@@ -545,14 +543,14 @@ public class Tool extends NativeObject {
 						&& updateEvent(ToolEventType.MOUSE_DRAG, x, y, pressure,
 								distanceThreshold, false)) {
 					try {
-						onMouseDrag(createEvent(type, pressure));
+						onMouseDrag(new ToolEvent(this, type));
 					} catch (Exception e) {
 						ScriptographerEngine.reportError(e);
 					}
 				}
 				updateEvent(type, x, y, pressure, 0, false);
 				try {
-					onMouseUp(createEvent(type, pressure));
+					onMouseUp(new ToolEvent(this, type));
 				} catch (Exception e) {
 					ScriptographerEngine.reportError(e);
 				}
@@ -563,7 +561,7 @@ public class Tool extends NativeObject {
 			case MOUSE_MOVE:
 				try {
 					if (updateEvent(type, x, y, pressure, distanceThreshold, firstMove))
-						onMouseMove(createEvent(type, pressure));
+						onMouseMove(new ToolEvent(this, type));
 				} finally {
 					firstMove = false;
 				}
