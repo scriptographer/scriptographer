@@ -155,7 +155,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 	public Scope createScope() {
 		Scriptable scope = new NativeObject();
 		// Sharing the top level scope:
-		// http://www.mozilla.org/rhino/scopes.html
+		// https://developer.mozilla.org/En/Rhino_documentation/Scopes_and_Contexts
 		scope.setPrototype(topLevel);
 		scope.setParentScope(null);
 		return new RhinoScope(this, scope);

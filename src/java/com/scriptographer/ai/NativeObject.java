@@ -102,7 +102,7 @@ abstract class NativeObject {
 		boolean hasDocument;
 		Constructor ctor;
 
-		WrapFactory(Class cls) {
+		WrapFactory(Class<?> cls) {
 			// Get the constructor for this class
 			try {
 				// Use the (int, Document) constructor for DocumentObjects,

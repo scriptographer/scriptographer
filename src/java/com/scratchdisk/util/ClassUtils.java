@@ -66,7 +66,7 @@ public class ClassUtils {
 		return null;
 	}
 
-	public static Constructor getConstructor(Class cls, Class[] args, IdentityHashMap<Class, Constructor> cache) {
+	public static Constructor getConstructor(Class<?> cls, Class[] args, IdentityHashMap<Class, Constructor> cache) {
 		Constructor ctor = cache != null ? (Constructor) cache.get(cls) : null;
 		if (ctor == null) {
 			try {

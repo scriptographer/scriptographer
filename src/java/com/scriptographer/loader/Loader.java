@@ -60,15 +60,15 @@ public class Loader {
 		URL[] urls = new URL[libs.length + 2];
 		// And classes and rhino first, libraries after, to get the
 		// priorities right:
-		urls[0] = new File(javaDir, "classes").toURL();
+		urls[0] = new File(javaDir, "classes").toURI().toURL();
 		// Rhino is usually loaded from lib, but during development
 		// it can also be live compiled into the rhino folder, which
 		// makes debugging easier:
-		urls[1] = new File(javaDir, "rhino").toURL();
+		urls[1] = new File(javaDir, "rhino").toURI().toURL();
 		
 		// Now add the urls from above
 		for (int i = 0; i < libs.length; i++)
-			urls[i + 2] = libs[i].toURL();
+			urls[i + 2] = libs[i].toURI().toURL();
 
 		loader = new URLClassLoader(urls);
 		// Set the new class loader as context class loader
@@ -86,7 +86,7 @@ public class Loader {
 		PrintWriter writer = new PrintWriter(stringWriter);
 		try {
 			// First call destroy in the currently loaded ScriptographerEngine class:
-			Class cls = loader.loadClass("com.scriptographer.ScriptographerEngine");
+			Class<?> cls = loader.loadClass("com.scriptographer.ScriptographerEngine");
 			Method destroy = cls.getDeclaredMethod("destroy", new Class[] {});
 			destroy.invoke(null, new Object[] {});
 		} catch(Exception e) {

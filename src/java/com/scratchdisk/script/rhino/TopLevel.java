@@ -83,7 +83,7 @@ public class TopLevel extends ImporterTopLevel {
 
 	public static void defineProperty(ScriptableObject obj, String name,
 			String getter, String setter) throws SecurityException, NoSuchMethodException {
-		Class cls = obj.getClass();
+		Class<? extends ScriptableObject> cls = obj.getClass();
 		Method getterMethod = getter != null ?
 			cls.getDeclaredMethod(getter,
 				new Class[] { Scriptable.class }) : null;

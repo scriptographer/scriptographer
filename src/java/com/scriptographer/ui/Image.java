@@ -213,7 +213,7 @@ public class Image extends NativeObject {
 	    } catch (MalformedURLException e) {
 	        // try the local file now:
 	    	// url = new URL("file://" + str);
-	    	url = new File(str).toURL();
+	    	url = new File(str).toURI().toURL();
 		}
 		return url;
 	}
