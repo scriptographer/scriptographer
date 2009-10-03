@@ -465,6 +465,10 @@ public class Path extends PathItem {
 		return false;
 	}
 
+	public void smooth() {
+		getSegments().smooth(isClosed());
+	}
+
 	// No need to expose these since they override the native one.
 	// TODO: Decide if maybe useful under different name?
 	/*

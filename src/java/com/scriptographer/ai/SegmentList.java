@@ -585,7 +585,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		// so no intersection is possible
 		if (Math.abs(deg) == 1)
 			return null;
-		// Find intersection Pt between two lines
+		// Find intersection point between two lines
 		double ua = (xD2 * yD3 - yD2 * xD3) / (yD2 * xD1 - xD2 * yD1);
 		return new Point(
 				p1.x + ua * xD1,
@@ -633,5 +633,142 @@ public class SegmentList extends AbstractFetchList<Segment> {
 
 	public void arcTo(double endX, double endY) {
 		arcTo(new Point(endX, endY));
+	}
+
+	/**
+	 * Smooth bezier spline control points, both open ended and closed, by
+	 * averaging overlapping beginning and ends.
+	 * 
+	 * @author Oleg V. Polikarpotchkin
+	 * 
+	 * @param closed
+	 */
+	public void smooth(boolean closed) {
+		// This code is based on the work by Oleg V. Polikarpotchkin,
+		// http://ov-p.spaces.live.com/blog/cns!39D56F0C7A08D703!147.entry
+		// It was extended to support closed paths by averaging overlapping
+		// beginnings and ends. The result of this approach is very close to
+		// Polikarpotchkin's closed curve solution, but reuses the same
+		// algorithm as for open paths, and is probably executing faster as
+		// well, so it is preferred.
+		int size = size();
+		if (size <= 2)
+			return;
+
+		int n = size;
+		// Add overlapping ends for averaging handles in closed paths
+		int overlap;
+		if (closed) {
+			// Overlap 4 points since averaging beziers affect the 4 neighboring
+			// points
+			overlap = 4;
+			n += Math.min(size, overlap) * 2;
+		} else {
+			overlap = 0;
+		}
+		Point[] knots = new Point[n];
+		for (int i = 0; i < size; i++)
+			knots[i + overlap] = get(i).point;
+		if (closed) {
+			// If we're averaging, add the 4 last points again at the beginning,
+			// and the 4 first ones at the end.
+			for (int i = 0; i < overlap; i++) {
+				knots[i] = get(i + size - overlap).point;
+				knots[i + size + overlap] = get(i).point;
+			}
+		} else {
+			n--;
+		}
+		// Calculate first Bezier control points
+		// Right hand side vector
+		double[] rhs = new double[n];
+
+		// Set right hand side X values
+		for (int i = 1; i < n - 1; i++)
+			rhs[i] = 4 * knots[i].x + 2 * knots[i + 1].x;
+		rhs[0] = knots[0].x + 2 * knots[1].x;
+		rhs[n - 1] = 3 * knots[n - 1].x;
+		// Get first control points X-values
+		double[] x = getFirstControlPoints(rhs);
+
+		// Set right hand side Y values
+		for (int i = 1; i < n - 1; i++)
+			rhs[i] = 4 * knots[i].y + 2 * knots[i + 1].y;
+		rhs[0] = knots[0].y + 2 * knots[1].y;
+		rhs[n - 1] = 3 * knots[n - 1].y;
+		// Get first control points Y-values
+		double[] y = getFirstControlPoints(rhs);
+
+		if (closed) {
+			// Do the actual averaging simply by linearly fading between the
+			// overlapping values.
+			for (int i = 0, j = size; i < overlap; i++, j++) {
+				double f1 = (i / (double) overlap);
+				double f2 = 1.0 - f1;
+				// Beginning
+				x[j] = x[i] * f1 + x[j] * f2;
+				y[j] = y[i] * f1 + y[j] * f2;
+				// End
+				int ie = i + overlap, je = j + overlap;
+				x[je] = x[ie] * f2 + x[je] * f1;
+				y[je] = y[ie] * f2 + y[je] * f1;
+			}
+			n--;
+		}
+		Point handleIn = null;
+		// Now set the calculated handles
+		for (int i = overlap; i <= n - overlap; i++) {
+			Segment segment = get(i - overlap);
+			if (handleIn != null)
+				segment.handleIn.set(
+						handleIn.subtract(segment.point));
+			if (i < n) {
+				segment.handleOut.set(
+						new Point(x[i], y[i]).subtract(segment.point));
+				if (i < n - 1)
+					handleIn = new Point(
+							2 * knots[i + 1].x - x[i + 1],
+							2 * knots[i + 1].y - y[i + 1]);
+				else
+					handleIn = new Point(
+							(knots[n].x + x[n - 1]) / 2,
+							(knots[n].y + y[n - 1]) / 2);
+			}
+		}
+		if (closed && handleIn != null) {
+			Segment segment = get(0);
+			segment.handleIn.set(handleIn.subtract(segment.point));
+		}
+	}
+
+	public void smooth() {
+		smooth(false);
+	}
+
+	/**
+	 * Solves a tri-diagonal system for one of coordinates (x or y) of first
+	 * bezier control points.
+	 * 
+	 * @param rhs right hand side vector.
+	 * @return Solution vector.
+	 */
+	private static double[] getFirstControlPoints(double[] rhs) {
+		int n = rhs.length;
+		double[] x = new double[n]; // Solution vector.
+		double[] tmp = new double[n]; // Temporary workspace.
+		double b = 2.0;
+		x[0] = rhs[0] / b;
+		// Decomposition and forward substitution.
+		for (int i = 1; i < n; i++) {
+			tmp[i] = 1 / b;
+			b = (i < n - 1 ? 4.0 : 2.0) - tmp[i];
+			x[i] = (rhs[i] - x[i - 1]) / b;
+		}
+		// Back-substitution.
+		for (int i = 1; i < n; i++) {
+			x[n - i - 1] -= tmp[n - i] * x[n - i];
+		}
+
+		return x;
 	}
 }
