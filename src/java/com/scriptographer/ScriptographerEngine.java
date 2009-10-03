@@ -180,8 +180,7 @@ public class ScriptographerEngine {
 						if (engine == null)
 							throw new ScriptException(
 									"Unable to find script engine for " + file);
-						Scope scope = engine.createScope();
-						execute(file, scope);
+						execute(file, engine.createScope());
 					} catch (Exception e) {
 						reportError(e);
 					}

@@ -24,7 +24,7 @@ new function() {
 		// magic and calls the script's handler at the end, if defined.
 		var func = tool[handler];
 		if (!func || !func._installed) {
-			tool.inject(Hash.create(handler, function(event) {
+			tool.inject(new Hash(handler, function(event) {
 				// Always clear the drag set on mouse-up
 				if (name == 'up')
 					sets.drag = {};
@@ -42,7 +42,7 @@ new function() {
 
 	Item.inject(['up', 'down', 'drag'].each(function(name) {
 		this['removeOn' + name.capitalize()] = function() {
-			return this.removeOn(Hash.create(name, true));
+			return this.removeOn(new Hash(name, true));
 		};
 	}, {
 		removeOn: function(obj) {
