@@ -40,7 +40,9 @@ import com.scriptographer.ui.layout.TableLayout;
  */
 public class AlertDialog extends ModalDialog {
 	public AlertDialog(String title, String message) {
-		this.setTitle(title);
+		// Set a name for auto destruction of dialogs...
+		setName("Scriptographer Alert");
+		setTitle(title);
 		
 		double[][] sizes = {
 			{ TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED },
@@ -48,24 +50,24 @@ public class AlertDialog extends ModalDialog {
 		};
 
 		TableLayout layout = new TableLayout(sizes);
-		this.setLayout(layout);
-		this.setMargin(8);
+		setLayout(layout);
+		setMargin(8);
 
 		ImagePane logo = new ImagePane(this);
 		logo.setImage(getImage("logo.png"));
 		logo.setMargin(-4, 4, -4, -4);
-		this.addToContent(logo, "0, 0, 0, 1, L, T");
+		addToContent(logo, "0, 0, 0, 1, L, T");
 
 		TextPane text = new TextPane(this);
 		text.setText(message);
 		text.setBottomMargin(8);
-		this.addToContent(text, "1, 0, 2, 0, L, C");
+		addToContent(text, "1, 0, 2, 0, L, C");
 				
 		Button okButton = new Button(this);
 		okButton.setText("  OK  ");
-		this.addToContent(okButton, "1, 1, R, T");
+		addToContent(okButton, "1, 1, R, T");
 
-		this.setDefaultItem(okButton);
+		setDefaultItem(okButton);
 	}
 
 	public static void alert(String title, String message) {
