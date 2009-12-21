@@ -207,7 +207,7 @@ public abstract class PathItem extends Item {
 	public boolean intersects(PathItem item) {
 		Area area = new Area(this.toShape());
 		area.intersect(new Area(item.toShape()));
-		return area.isEmpty();
+		return !area.isEmpty();
 	}
 
 	/**
