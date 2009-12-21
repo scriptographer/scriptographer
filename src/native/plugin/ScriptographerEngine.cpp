@@ -191,8 +191,6 @@ void ScriptographerEngine::init() {
 	// Initialize args
 	JavaVMInitArgs args;
 	args.version = JNI_VERSION_1_4;
-	if (args.version < JNI_VERSION_1_4)
-		getDefaultJavaVMInitArgs(&args);
 
 	// Define options
 	JVMOptions options;
