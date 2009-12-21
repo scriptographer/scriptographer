@@ -57,6 +57,7 @@ public class Segment implements Commitable, ChangeListener {
 	protected short selectionState = SELECTION_FETCH;
 	//
 	protected int version = -1;
+	protected int selectionVersion = -1;
 	protected short dirty = DIRTY_NONE;
 
 	// Dirty flags, to be combined bitwise
@@ -326,7 +327,9 @@ public class Segment implements Commitable, ChangeListener {
 				&& segments.path != null && segments.path.needsUpdate(version)) {
 			// this handles all the updating automatically:
 			segments.get(index);
-			// version has changed, force regetting of selection state:
+			// Version has changed, force regetting of selection state:
+			selectionState = SELECTION_FETCH;
+		} else if (selectionVersion != CommitManager.version) {
 			selectionState = SELECTION_FETCH;
 		}
 	}
@@ -462,6 +465,9 @@ public class Segment implements Commitable, ChangeListener {
 						segments.path.handle, index);
 			else
 				selectionState = SELECTION_NONE;
+			// Selection uses its own version number as it might change regardless
+			// of whether the path itself changes or not.
+			selectionVersion = CommitManager.version;
 		}
 		if (pt == point) {
 			return selectionState == SELECTION_POINT;
