@@ -978,7 +978,7 @@ public class Document extends NativeObject implements ChangeListener {
 		for (int i = 0; i < types.length; i++) {
 			Class type = types[i];
 			// Expand PathItem -> Path / CompoundPath
-			if (PathItem.class.isAssignableFrom(type)) {
+			if (PathItem.class.equals(type)) {
 				items.addAll(getMatchingItems(Path.class, converted));
 				items.addAll(getMatchingItems(CompoundPath.class, converted));
 			} else {
