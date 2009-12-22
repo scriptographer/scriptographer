@@ -35,6 +35,7 @@ import java.lang.ref.SoftReference;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Stack;
 
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
@@ -68,6 +69,11 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 */
 	protected int version = 0;
 	
+	/**
+	 * Handle history, to keep track of version / handle pairs in a stack.
+	 */
+	protected Stack<HandleHistoryEntry> handleHistory = null;
+
 	/**
 	 * The history version at the time of the creation of this item. This is used for
 	 * isValid checks. If historyVersion is below creationVersion, the item does not
@@ -353,20 +359,14 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 				// In case there was already an item with the initial handle
 				// before, change its handle now:
 				item = items.get(prevHandle);
-				if (item != null) {
-					// Remove the old reference
-					items.remove(prevHandle);
-					// Update object
-					item.handle = curHandle;
-					// And store the new reference
-					items.put(curHandle, item);
-				}
+				if (item != null)
+					item.changeHandle(curHandle, 0, false);
 			} else {
 				item = items.get(curHandle);
+				// Now update it if it was found
+				if (item != null)
+					item.version++;
 			}
-			// now update it if it was found
-			if (item != null)
-				item.version++;
 		}
 	}
 
@@ -377,21 +377,50 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 				item.remove(removeHandles);
 		}
 	}
+
+	/**
+	 * Simple helper class for handle history entries, to keep track of
+	 * version / handle pairs in a stack.
+	 */
+	static class HandleHistoryEntry {
+		long version;
+		int handle;
+
+		HandleHistoryEntry(long version, int handle) {
+			this.version = version;
+			this.handle = handle;
+		}
+	};
 	
-	protected void changeHandle(int newHandle, int docHandle,
-			int newDictionaryHandle, int newDictionaryKey) {
+	protected void changeHandle(int newHandle, int docHandle, boolean clearDictionary) {
 		// Remove the object at the old handle
 		if (handle != newHandle) {
+			// If there was no handle history yet, add the creation version to
+			// the history as a first element.
+			if (handleHistory == null) {
+				handleHistory = new Stack<HandleHistoryEntry>();
+				handleHistory.push(
+						new HandleHistoryEntry(creationVersion, handle));
+			}
 			items.remove(handle);
 			// Change the handles...
 			handle = newHandle;
 			// ...and insert it again
 			items.put(newHandle, this);
+			// Now add the new handle to the history.
+			handleHistory.push(
+					new HandleHistoryEntry(document.historyVersion, newHandle));
+			// Mark this item as modified. This will update modificationVersion
+			// after the cycle through #updateModified(), which will also adjust
+			// the version of the last HistoryEntry.
+			setModified();
 		}
-		dictionaryHandle = newDictionaryHandle;
-		dictionaryKey = newDictionaryKey;
 		if (docHandle != 0)
 			document = Document.wrapHandle(docHandle);
+		if (clearDictionary) {
+			dictionaryHandle = 0;
+			dictionaryKey = 0;
+		}
 		// Update
 		version++;
 	}
@@ -406,16 +435,17 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	}
 
 	/**
-	 * Called by native methods that need all cached changes to be
-	 * committed before the objects are modified. The version is then
-	 * increased to invalidate the cached values, as they were just 
-	 * changed.
+	 * Called by document to update items in document.modifiedItems after cycle.
 	 */
-	protected void commit(boolean invalidate) {
-		CommitManager.commit(this);
-		// Increasing version by one causes refetching of cached data:
-		if (invalidate)
-			version++;
+	protected void updateModified(long version) {
+		// Adjust last HistoryEntry as well if it was created in the current
+		// cycle.
+		if (handleHistory != null) {
+			HandleHistoryEntry last = handleHistory.peek();
+			if (last.version == modificationVersion)
+				last.version = version;
+		}
+		modificationVersion = version;
 	}
 
 	/**
@@ -424,6 +454,27 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * account.
 	 */
 	protected boolean needsUpdate(int version) {
+		// Before checking if this item is valid or needs updates, check handle
+		// history, and swap back to previous handles if version went back
+		// bellow the last entry on the stack.
+		if (handleHistory != null) {
+			HandleHistoryEntry last = handleHistory.peek();
+			if (document.historyVersion < last.version) {
+				handleHistory.pop();
+				HandleHistoryEntry previous = handleHistory.peek();
+				// Just like in #changeHandle(), remove old handle...
+				items.remove(handle);
+				// ...change the handle to the previous one...
+				handle = previous.handle;
+				// ...and add it again.
+				items.put(handle, this);
+				if (handleHistory.size() <= 1) {
+					// We've reached the end of the history,
+					// switch back to simple mode.
+					handleHistory = null;
+				}
+			}
+		}
 		return isValid() && (version != this.version
 				|| document.historyVersion < modificationVersion);
 	}
@@ -434,6 +485,19 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 */
 	protected boolean needsUpdate() {
 		return this.needsUpdate(version);
+	}
+
+	/**
+	 * Called by native methods that need all cached changes to be
+	 * committed before the objects are modified. The version is then
+	 * increased to invalidate the cached values, as they were just 
+	 * changed.
+	 */
+	protected void commit(boolean invalidate) {
+		CommitManager.commit(this);
+		// Increasing version by one causes refetching of cached data:
+		if (invalidate)
+			version++;
 	}
 
 	private static native boolean nativeRemove(int handle, int docHandle,
@@ -1359,6 +1423,17 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @param item The item that will be appended as a child
 	 */
 	public native boolean appendTop(Item item);
+
+	/*
+	public boolean appendTop(Item... items) {
+		boolean ok = true;
+		for (Item item : items) {
+			if (!appendTop(item))
+				ok = false;
+		}
+		return ok;
+	}
+	*/
 
 	/**
 	 * Inserts the specified item as a child of this item by appending it to the

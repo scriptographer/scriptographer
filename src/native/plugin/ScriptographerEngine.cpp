@@ -490,7 +490,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	fid_ai_Item_dictionaryKey = getFieldID(env, cls_ai_Item, "dictionaryKey", "I");
 	mid_ai_Item_wrapHandle = getStaticMethodID(env, cls_ai_Item, "wrapHandle", "(ISIIZZ)Lcom/scriptographer/ai/Item;");
 	mid_ai_Item_getIfWrapped = getStaticMethodID(env, cls_ai_Item, "getIfWrapped", "(I)Lcom/scriptographer/ai/Item;");
-	mid_ai_Item_changeHandle = getMethodID(env, cls_ai_Item, "changeHandle", "(IIII)V");
+	mid_ai_Item_changeHandle = getMethodID(env, cls_ai_Item, "changeHandle", "(IIZ)V");
 	mid_ai_Item_commit = getMethodID(env, cls_ai_Item, "commit", "(Z)V");
 	mid_ai_Item_isValid = getMethodID(env, cls_ai_Item, "isValid", "()Z");
 
@@ -1480,8 +1480,8 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocu
 			(jint) (doc ? doc : gWorkingDoc), wrapped, created);
 }
 
-void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject item, AIArtHandle art, AIDocumentHandle doc, AIDictionaryRef dictionary, AIDictKey key) {
-	callVoidMethod(env, item, mid_ai_Item_changeHandle, (jint) art, (jint) doc, (jint) dictionary, (jint) key);
+void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject item, AIArtHandle art, AIDocumentHandle doc, bool clearDictionary) {
+	callVoidMethod(env, item, mid_ai_Item_changeHandle, (jint) art, (jint) doc, (jboolean) clearDictionary);
 }
 
 jobject ScriptographerEngine::getItemIfWrapped(JNIEnv *env, AIArtHandle art) {

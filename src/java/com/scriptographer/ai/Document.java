@@ -62,7 +62,7 @@ import com.scriptographer.script.EnumUtils;
  */
 public class Document extends NativeObject implements ChangeListener {
 
-	private static final boolean report = true;
+	private static final boolean report = false;
 
 	private LayerList layers = null;
 	private DocumentViewList views = null;
@@ -298,7 +298,7 @@ public class Document extends NativeObject implements ChangeListener {
 				}
 				if (!modifiedItems.isEmpty()) {
 					for (Item item : modifiedItems)
-						item.modificationVersion = historyVersion;
+						item.updateModified(historyVersion);
 					modifiedItems.clear();
 				}
 				if (!removedItems.isEmpty()) {

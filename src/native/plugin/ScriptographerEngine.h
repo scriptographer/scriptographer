@@ -577,7 +577,7 @@ public:
 	// AI Wrap Handles
 	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc = NULL, bool created = false, short type = -1);
 	bool updateArtIfWrapped(JNIEnv *env, AIArtHandle art);
-	void changeArtHandle(JNIEnv *env, jobject itemObject, AIArtHandle art, AIDocumentHandle doc = NULL, AIDictionaryRef dictionary = NULL, AIDictKey key = NULL);
+	void changeArtHandle(JNIEnv *env, jobject itemObject, AIArtHandle art, AIDocumentHandle doc = NULL, bool clearDictionary = false);
 	jobject getItemIfWrapped(JNIEnv *env, AIArtHandle handle);
 	void setItemDictionary(JNIEnv *env, jobject obj, AIDictionaryRef dictionary, AIDictKey key);
 

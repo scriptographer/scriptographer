@@ -334,8 +334,6 @@ AIArtHandle Item_copyTo(JNIEnv *env, jobject src, AIArtHandle artDst, AIDocument
 	return res;
 }
 
-// TODO: clear dicitionaryHandle and key after moving!
-
 bool Item_move(JNIEnv *env, jobject obj, jobject item, short paintOrder) {
 	try {
 		if (item != NULL) {
@@ -354,7 +352,7 @@ bool Item_move(JNIEnv *env, jobject obj, jobject item, short paintOrder) {
 						if (key != NULL) {
 							if (!sAIDictionary->MoveEntryToArt(dictSrc, key, paintOrder, artDst, &artSrc)) {
 								// changeArtHandle also erases dictionaryHandle and dictionaryKey in obj
-								gEngine->changeArtHandle(env, obj, artSrc);
+								gEngine->changeArtHandle(env, obj, artSrc, NULL, true);
 								return true;
 							}
 						}
@@ -366,7 +364,7 @@ bool Item_move(JNIEnv *env, jobject obj, jobject item, short paintOrder) {
 						// Pass false for commitFirst since it was already commited above
 						AIArtHandle res = Item_copyTo(env, obj, artDst, docDst, paintOrder, false);
 						if (res != NULL) {
-							gEngine->changeArtHandle(env, obj, res, docDst);
+							gEngine->changeArtHandle(env, obj, res, docDst, true);
 							// now remove the original object in docDst. Moving does not work directly
 							// so this seems to be the most elegant way of handling this
 							// TODO: Since Item_copyTo now seems to work with sAIArt->DuplicateArt for this,
