@@ -165,8 +165,10 @@ public class CharacterStyle extends PathStyle {
 			fetch();
 	}
 	
+    @Override
 	protected native void nativeGet(int handle, int docHandle);
 
+    @Override
 	protected native void nativeSet(int handle, int docHandle, 
 			Color fillColor, boolean hasFillColor,
 			short fillOverprint,
@@ -176,6 +178,7 @@ public class CharacterStyle extends PathStyle {
 			float dashOffset, float[] dashArray,
 			short clip, short lockClip, int windingRule, float resolution);
 
+	/* This does not need to override the one in ParagraphStyle */
 	protected native void nativeSetStyle(int handle, int docHandle,
 			int rangeHandle);
 
