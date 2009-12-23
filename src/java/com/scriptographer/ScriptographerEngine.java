@@ -77,17 +77,21 @@ public class ScriptographerEngine {
 		"onActivate",
 		"onDeactivate",
 		"onAbout",
+
 		"onKeyDown",
-		"onKeyUp"
+		"onKeyUp",
+
+		"onStop"
 	};
 
-	// App Event callbacks. Their numbers need to match calbackNames indices.
+	// App Events. Their numbers need to match calbackNames indices.
 	protected static final int EVENT_APP_STARTUP = 0;
 	protected static final int EVENT_APP_SHUTDOWN = 1;
 	protected static final int EVENT_APP_ACTIVATED = 2;
 	protected static final int EVENT_APP_DEACTIVATED = 3;
 	protected static final int EVENT_APP_ABOUT = 4;
 
+	// Key Events.
 	protected static final int EVENT_KEY_DOWN = 0;
 	protected static final int EVENT_KEY_UP = 1;
 	/**

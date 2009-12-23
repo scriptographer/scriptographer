@@ -33,7 +33,6 @@ package com.scriptographer.sg;
 
 import java.io.File;
 
-import com.scratchdisk.script.Callable;
 import com.scriptographer.ScriptographerEngine;
 
 /**
@@ -43,7 +42,6 @@ import com.scriptographer.ScriptographerEngine;
 public class Script {
 	private File file;
 	private Preferences prefs = null;
-	private Callable onStop;
 	private boolean showProgress = true;
 
 	/**
@@ -78,18 +76,6 @@ public class Script {
 	 */
 	public File getDirectory() {
 		return file.getParentFile();
-	}
-
-	/**
-	 * The handler function to be called when the script is stopped
-	 * through the stop button in the Scriptographer GUI.
-	 */
-	public Callable getOnStop() {
-		return onStop;
-	}
-
-	public void setOnStop(Callable onStop) {
-		this.onStop = onStop;
 	}
 
 	/**
