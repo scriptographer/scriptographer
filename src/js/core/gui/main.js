@@ -236,13 +236,19 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		var entry = scriptList.activeLeaf;
 		if (entry && entry.file) {
 			if (entry.isTool) {
+				// Manually call onStop in tool scopes before they get overridden.
+				if (entry.scope) {
+					var onStop = entry.scope.getCallable('onStop');
+					if (onStop)
+						onStop.call(tool);
+				}
 				tool.title = tool.tooltip = entry.file.name;
 				tool.image = tool.activeImage;
 				// Reset settings
 				tool.initialize();
 				var scr = ScriptographerEngine.compile(entry.file);
 				if (scr) {
-					var scope = scr.engine.createScope();
+					var scope = entry.scope = scr.engine.createScope();
 					scope.put('tool', tool, true);
 					if (scr) {
 						// Don't call scr.execute directly, since we handle SG
@@ -257,6 +263,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 						if (handler)
 							tool[name] = handler;
 					});
+					// Call onInit on the tool scope, for backward compatibility.
 					var onInit = scope.getCallable('onInit');
 					if (onInit)
 						onInit.call(tool);
