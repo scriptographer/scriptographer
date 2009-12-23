@@ -798,8 +798,7 @@ public class TextRange extends DocumentObject implements Commitable {
 		public TextRange get(int index) {
 			TextRange range = (TextRange) list.get(index);
 			if (range == null) {
-				int start = getStart() + index;
-				range = getSubRange(start, start + 1);
+				range = getSubRange(index, index + 1);
 				list.set(index, range);
 			}
 			return range;
