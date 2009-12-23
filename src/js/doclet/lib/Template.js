@@ -192,7 +192,7 @@ Template.prototype = {
 			for (var i = 0; i < this.renderTemplates.length; i++) {
 				var template = this.renderTemplates[i];
 				code.splice(1, 0, 'var ' + template.name + ' = template.renderSubTemplate(this, "' +
-					template.name + '", param)' + (template.trim ? '.trim()' : ''));
+					template.name + '", param)' + (template.trim ? '.trim();' : ';'));
 				this.tags.unshift(null);
 			}
 			code.push('}');
@@ -300,14 +300,16 @@ Template.prototype = {
 					macro.isSetter = !isEqualTag && next[0] == '$'; 
 					if (macro.isSetter) {
 						var match = next.match(/(\$\w*)=$/);
-						if (match)
+						if (match) {
 							macro.command = match[1];
+							macro.hasEquals = true;
+						}
 					}
 				}
 			}
 		}
 
-		function nestedMacro(that, value, code, stack) {
+		function nestedMacro(that, macro, value, code, stack) {
 			if (/<%/.test(value)) {
 				var nested = value;
 				value = 'param_' + (that.macroParam++);
@@ -333,7 +335,7 @@ Template.prototype = {
 			} else if (/\w=$/.test(part)) { 
 				macro.isSetter = false;
 				var key = part.substring(0, part.length - 1), value = nextPart();
-				value = nestedMacro(this, value, code, stack);
+				value = nestedMacro(this, macro, value, code, stack);
 				macro.param.push('"' + key + '": ' + value);
 				if (macro.values[key] !== undefined)
 					macro.values[key] = value;
@@ -341,15 +343,11 @@ Template.prototype = {
 			} else if (part == '|') { 
 				isFirst = true;
 			} else { 
-
-				if (macro.isSetter) {
-					if (part == '=')
+				if (!macro.isData && !macro.isControl) {
+					if (macro.isSetter && part == '=')
 						macro.hasEquals = true;
 					else
-						macro.unnamed.push(part);
-					append = false;
-				} else if (!macro.isData && !macro.isControl) {
-					macro.unnamed.push(nestedMacro(this, part, code, stack));
+						macro.unnamed.push(nestedMacro(this, macro, part, code, stack));
 					append = false;
 				} else if (append) { 
 					macro.opcode.push(part);

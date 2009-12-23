@@ -28,7 +28,7 @@ new function() {
 							_set: src['set' + bean[2]]
 						});
 				}
-				if (type == 'object' && (val._get || val._set)) {
+				if (val && type == 'object' && (val._get || val._set)) {
 					if (val._get)
 						dest.__defineGetter__(name, val._get);
 					if (val._set)
@@ -311,7 +311,8 @@ Base.inject({
 		},
 
 		type: function(obj) {
-			return (obj || obj === 0) && (obj._type || typeof obj) || null;
+			return (obj || obj === 0) && (obj._type
+				|| obj instanceof java.lang.Object ? 'java' : typeof obj) || null;
 		},
 
 		pick: function() {
@@ -346,7 +347,8 @@ Hash = Base.extend(Enumerable, {
 		return Base.each(arguments, function(obj) {
 			Base.each(obj, function(val, key) {
 				this[key] = Base.type(this[key]) == 'object'
-					? Hash.prototype.merge.call(this[key], val) : val;
+					? Hash.prototype.merge.call(this[key], val)
+					: Base.type(val) == 'object' ? Base.clone(val) : val;
 			}, this);
 		}, this);
 	},
@@ -369,7 +371,7 @@ Hash = Base.extend(Enumerable, {
 		create: function(obj) {
 			return arguments.length == 1 && obj.constructor == Hash
 				? obj : Hash.prototype.initialize.apply(new Hash(), arguments);
-		},
+		}
 	}
 });
 
@@ -593,6 +595,33 @@ Array.inject(new function() {
 
 $A = Array.create;
 
+Number.inject({
+	_type: 'number',
+
+	limit: function(min, max){
+		return Math.min(max, Math.max(min, this));
+	},
+
+	times: function(func, bind) {
+		for (var i = 0; i < this; ++i)
+			func.call(bind, i);
+		return bind || this;
+	},
+
+	toInt: function(base) {
+		return parseInt(this, base || 10);
+	},
+
+	toFloat: function() {
+		return parseFloat(this);
+	},
+
+	toPaddedString: function(length, base, prefix) {
+		var str = this.toString(base || 10);
+		return (prefix || '0').times(length - str.length) + str;
+	}
+});
+
 String.inject({
 	_beans: true,
 	_type: 'string',
@@ -605,17 +634,13 @@ String.inject({
 		return this ? this.split(/\s+/) : [];
 	},
 
-	toInt: function(base) {
-		return parseInt(this, base || 10);
-	},
+	toInt: Number.prototype.toInt,
 
-	toFloat: function() {
-		return parseFloat(this);
-	},
+	toFloat: Number.prototype.toFloat,
 
 	camelize: function(separator) {
-		return this.replace(new RegExp(separator || '\s-', 'g'), function(match) {
-			return match.charAt(1).toUpperCase();
+		return this.replace(separator ? new RegExp('[' + separator + '](\\w)', 'g') : /-(\w)/g, function(all, chr) {
+			return chr.toUpperCase();
 		});
 	},
 
@@ -649,8 +674,8 @@ String.inject({
 		return this.replace(/\s{2,}/g, ' ').trim();
 	},
 
-	contains: function(string, s) {
-		return (s ? (s + this + s).indexOf(s + string + s) : this.indexOf(string)) != -1;
+	contains: function(string, sep) {
+		return (sep ? (sep + this + sep).indexOf(sep + string + sep) : this.indexOf(string)) != -1;
 	},
 
 	times: function(count) {
@@ -659,25 +684,6 @@ String.inject({
 
 	isHtml: function() {
 		return /^[^<]*(<(.|\s)+>)[^>]*$/.test(this);
-	}
-});
-
-Number.inject({
-	_type: 'number',
-
-	toInt: String.prototype.toInt,
-
-	toFloat: String.prototype.toFloat,
-
-	times: function(func, bind) {
-		for (var i = 0; i < this; ++i)
-			func.call(bind, i);
-		return bind || this;
-	},
-
-	toPaddedString: function(length, base, prefix) {
-		var str = this.toString(base || 10);
-		return (prefix || '0').times(length - str.length) + str;
 	}
 });
 
@@ -796,6 +802,8 @@ Json = new function() {
 						val = Json.encode(val, singles);
 						if (val) return Json.encode(key, singles) + ':' + val;
 					}) + '}';
+				case 'function':
+					return null;
 				default:
 					return obj + '';
 			}
