@@ -356,7 +356,11 @@ public class Document extends NativeObject implements ChangeListener {
 			// Update historyVersion to one that is not valid anymore
 			for (int i = valid.length - 1; i >= 0; i--) {
 				if (!valid[i]) {
-					checkValidItems.get(i).get().creationVersion = version;
+					// Retrieve the item to update through its soft reference.
+					Item item = checkValidItems.get(i).get();
+					// Check for null as the soft reference might have been released
+					if (item != null)
+						item.creationVersion = version;
 					// Remove it from the list
 					checkValidItems.remove(i);
 				}
