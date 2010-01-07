@@ -16,6 +16,8 @@
 		</tstamp>
 		<property name="year" value="2001-${now}"/>
 
+		<property environment="env"/>
+
 		<property name="jar.name" value="${project}"/>
 		<property name="package.name" value="${project}-${version}"/>
 
@@ -24,19 +26,19 @@
 		<property name="build.version" value="1.5"/>
 		<property name="build.deprecation" value="off"/>
 
-		<property name="project.dir" value="../.."/>
+		<property name="project.dir" location="../.."/>
 
 		<!-- Sources -->
-		<property name="src.java" value="${project.dir}/src/java"/>
-		<property name="src.jni" value="${project.dir}/src/native/jni"/>
-		<property name="src.js" value="${project.dir}/src/js"/>
+		<property name="src.java" location="${project.dir}/src/java"/>
+		<property name="src.jni" location="${project.dir}/src/native/jni"/>
+		<property name="src.js" location="${project.dir}/src/js"/>
 
-		<property name="build.dir" value="${project.dir}/build"/>
-		<property name="build.java" value="${build.dir}/java"/>
+		<property name="build.dir" location="${project.dir}/build"/>
+		<property name="build.java" location="${build.dir}/java"/>
 		<!-- build.lib contains libraries for building, not built libs. Built libs go to target.lib -->
-		<property name="build.lib" value="${build.java}/lib"/>
-		<property name="build.mac" value="${build.dir}/mac"/>
-		<property name="build.win" value="${build.dir}/win"/>
+		<property name="build.lib" location="${build.java}/lib"/>
+		<property name="build.mac" location="${build.dir}/mac"/>
+		<property name="build.win" location="${build.dir}/win"/>
 
 		<loadproperties srcfile="build.number"/>
 
@@ -265,7 +267,7 @@
 		<antcall target="packages.cleanup" />
 	</target>
 
-	<target name="packages.cleanup">
+	<target name="packages.cleanup" depends="init">
 		<!-- Remove everything except the packages -->
 		<delete includeEmptyDirs="true">
 			<fileset dir="${target.packages}">
@@ -303,9 +305,9 @@
 		<echo>Executing Windows specific tasks</echo>
 
 		<!-- Build the targets -->
-		<exec executable="cmd.exe" dir="${build.win}">
+		<exec executable="cmd.exe" dir="${env.VS80COMNTOOLS}..\IDE">
 			<arg line="/C devenv.com"/>
-			<arg value="Scriptographer.sln"/>
+			<arg value="${build.win}\Scriptographer.sln"/>
 			<arg value="/build"/>
 			<arg value="${target} Release"/>
 		</exec>
