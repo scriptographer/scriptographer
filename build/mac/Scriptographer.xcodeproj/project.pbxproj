@@ -492,7 +492,6 @@
 		9185E5420E7FC2EE000BD8BA /* CS4_Release.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CS4_Release.pch; path = prefix/CS4_Release.pch; sourceTree = "<group>"; };
 		919823D40A37257700D57E4C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = resources/Info.plist; sourceTree = "<group>"; };
 		91C8B8E41049C0D3002882FE /* Scriptographer.aip */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Scriptographer.aip; sourceTree = BUILT_PRODUCTS_DIR; };
-		91C8B8E51049C0D3002882FE /* Info copy.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "Info copy.plist"; path = "resources/Info copy.plist"; sourceTree = "<group>"; };
 		91C8B8FB1049C211002882FE /* CS5_Debug.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CS5_Debug.pch; path = prefix/CS5_Debug.pch; sourceTree = "<group>"; };
 		91C8B8FC1049C211002882FE /* CS5_Release.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CS5_Release.pch; path = prefix/CS5_Release.pch; sourceTree = "<group>"; };
 		91C8B8FF1049C255002882FE /* IAIFilePath.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = IAIFilePath.cpp; path = "../../../Adobe Illustrator CS5 SDK/illustratorapi/illustrator/IAIFilePath.cpp"; sourceTree = SOURCE_ROOT; };
@@ -630,7 +629,6 @@
 				9115002F0A3E360500BC8EC4 /* Info.plist.in */,
 				919823D40A37257700D57E4C /* Info.plist */,
 				91D4EDA40A255937002888A3 /* Scriptographer.rsrc */,
-				91C8B8E51049C0D3002882FE /* Info copy.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
