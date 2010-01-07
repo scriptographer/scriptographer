@@ -36,10 +36,10 @@ import java.io.File;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Wrapper;
 
+import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
-import com.scratchdisk.script.Scope;
 
 /**
  * @author lehni
@@ -59,16 +59,21 @@ public class RhinoScript extends Script {
 	public ScriptEngine getEngine() {
 		return engine;
 	}
-
+	
 	public Object execute(Scope scope) throws ScriptException {
 		try {
-			Context cx = Context.getCurrentContext();
-			// TODO: typecast to JsContext can be wrong, e.g. when calling
-			// from another language
-			Object ret = script.exec(cx, ((RhinoScope) scope).getScope());
-			if (ret instanceof Wrapper)
-				ret = ((Wrapper) ret).unwrap();
-			return ret;
+	        Context cx = Context.getCurrentContext();
+	        Object result;
+			if (scope == engine.getGlobalScope()) {
+				result = engine.executeInGlobalScope(script);
+			} else {
+				// TODO: typecast to JsContext can be wrong, e.g. when calling
+				// from another language
+				result = script.exec(cx, ((RhinoScope) scope).getScope());
+			}
+			if (result instanceof Wrapper)
+				result = ((Wrapper) result).unwrap();
+			return result;
 		} catch (Throwable t) {
 			throw new RhinoScriptException(engine, t);
 		}

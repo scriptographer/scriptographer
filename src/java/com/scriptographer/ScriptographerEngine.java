@@ -726,4 +726,7 @@ public class ScriptographerEngine {
 			revision = Integer.parseInt(lines[1]);
 		}
 	}
+
+	public static void debug() {
+	}
 }
