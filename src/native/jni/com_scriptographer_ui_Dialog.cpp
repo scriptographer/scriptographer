@@ -1151,59 +1151,21 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getScreenSize(JNIEnv
 }
 
 /*
- * int createPlatformControl()
+ * int getWindowHandle()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_createPlatformControl(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Dialog_getWindowHandle(JNIEnv *env, jobject obj) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		ADMWindowRef window = sADMDialog->GetWindowRef(dialog);
 #ifdef MAC_ENV
-		/*
-		ControlRef ctrl = NULL, root = NULL;
-		Rect rect = { 0, 0, 400, 400 };
-		OSStatus err = CreateUserPaneControl(window, &rect, kControlSupportsEmbedding | kControlSupportsFocus | kControlGetsFocusOnClick, &ctrl);
-		err = AutoEmbedControl(ctrl, window);
-		return (jint) ctrl;
-		*/
-		ControlRef ctrl = NULL, root = NULL;
+		// As new items will be created in the root control (as returned by HIViewGetRoot too),
+		// make sure a root exists. This is required by SWT.
+		ControlRef root;
 		GetRootControl(window, &root);
-		GetIndexedSubControl(root, 1, &ctrl);
-		return (jint) ctrl;
+		if (root == NULL)
+			CreateRootControl(window, &root);
 #endif
-#ifdef WIN_ENV
 		return (jint) window;
-		/*
-		ADMRect rect = {50, 50, 400, 400};
-		ADMItemRef item = sADMItem->Create(dialog, kADMUniqueItemID, kADMItemGroupType, &rect, NULL, NULL, 0);
-		ADMWindowRef itemWnd = sADMItem->GetWindowRef(item);
-		return (jint) itemWnd;
-		/*
-		int hHeap = GetProcessHeap();
-		int hInstance = GetModuleHandle(NULL);
-		WNDCLASS wWndClass;
-		wndClass.hInstance = hInstance;
-		wndClass.lpfnWndProc = windowProc;
-		wndClass.style = OS.CS_BYTEALIGNWINDOW | OS.CS_DBLCLKS;
-		wndClass.hCursor = OS.LoadCursor (0, OS.IDC_ARROW);
-		int byteCount = windowClass.length () * TCHAR.sizeof;
-		lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-		OS.MoveMemory (lpWndClass.lpszClassName, windowClass, byteCount);
-		OS.RegisterClass (lpWndClass);
-		*/
-		/*
-		HWND wnd = CreateWindowEx(
-			0, ("Test"), NULL,
-			WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS, 
-			0, 0,
-			400, 400, 
-			(HWND) window, 
-			0, 
-			GetModuleHandle(NULL),
-			NULL);
-		// SetWindowPos (wnd, (HWND) window, 0, 0, 400, 400, SWP_NOZORDER | SWP_DRAWFRAME | SWP_NOACTIVATE);
-		// ShowWindow(wnd, true);
-		*/
-#endif
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }

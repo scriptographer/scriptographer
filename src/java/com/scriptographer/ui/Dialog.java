@@ -53,9 +53,6 @@ import com.scriptographer.script.RunnableCallable;
  * @author lehni
  */
 public abstract class Dialog extends Component {
-	
-	public native int createPlatformControl();
-	public native void dumpControlHierarchy(File file);
 
 	//	Dialog styles (for Create() call).
 	protected final static int
@@ -676,6 +673,14 @@ public abstract class Dialog extends Component {
 	 * - createNestedItem(...);
 	 * - beginAdjustingFocusOrder, doneAdjustingFocusOrder
 	 */
+
+	/**
+	 * Returns the native window handle. This is a WindowPtr on the mac and a
+	 * HWND on Windows.
+	 * 
+	 * @jshide
+	 */
+	public native int getWindowHandle();
 
 	/*
 	 * Dialog creation/destruction
