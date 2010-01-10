@@ -302,6 +302,16 @@ public class Drawer extends NativeObject {
 		drawImage(image, rt.x, rt.y, rt.width, rt.height);
 	}
 
+	/*
+	 * SWT Bridge
+	 */
+
+	private native void nativeDrawImage(int imageHandle, int x, int y);
+
+	public void drawImage(org.eclipse.swt.graphics.Image image, int x, int y) {
+		nativeDrawImage(image.handle, x, y);
+	}
+
 	/* 
 	 * text drawing
 	 * 

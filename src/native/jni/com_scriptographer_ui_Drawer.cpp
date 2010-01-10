@@ -428,6 +428,29 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Drawer_drawImage__Lcom_scripto
 }
 
 /*
+ * void nativeDrawImage(int imageHandle, int x, int y)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Drawer_nativeDrawImage__III(JNIEnv *env, jobject obj, jint imageHandle, jint x, jint y) {
+	try {
+#ifdef MAC_ENV
+		ADMDrawerRef drawer = gEngine->getDrawerHandle(env, obj);
+		CGImageRef image = (CGImageRef) imageHandle;
+		GrafPtr port = (GrafPtr) sADMDrawer->GetPortRef(drawer);
+		CGContextRef context;
+		CreateCGContextForPort(port, &context);
+		int width = CGImageGetWidth(image);
+		int height = CGImageGetHeight(image);
+		CGRect rect = CGRectMake(x, y, width, height);
+		CGContextDrawImage(context, rect, image);
+		CGContextRelease(context);
+#endif
+#ifdef WIN_ENV
+		// TODO: Define
+#endif
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
  * void nativeDrawImage(com.scriptographer.ui.Image image, int x, int y, int style)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_Drawer_nativeDrawImage__Lcom_scriptographer_ui_Image_2III(JNIEnv *env, jobject obj, jobject image, jint x, jint y, jint style) {
