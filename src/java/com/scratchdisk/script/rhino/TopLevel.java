@@ -63,13 +63,23 @@ public class TopLevel extends ImporterTopLevel {
 		super(context, false);
 	}
 
-    public void initStandardObjects(Context cx, boolean sealed) {
-    	super.initStandardObjects(cx, sealed);
+	protected static final String[] topPackages = {
+		"Packages",		"com.scratchdisk.script.rhino.ExtendedJavaTopPackage",
+		"java",			"com.scratchdisk.script.rhino.ExtendedJavaTopPackage",
+		"javax",		"com.scratchdisk.script.rhino.ExtendedJavaTopPackage",
+		"org",			"com.scratchdisk.script.rhino.ExtendedJavaTopPackage",
+		"com",			"com.scratchdisk.script.rhino.ExtendedJavaTopPackage",
+		"edu",			"com.scratchdisk.script.rhino.ExtendedJavaTopPackage",
+		"net",			"com.scratchdisk.script.rhino.ExtendedJavaTopPackage",
+//	   "getClass",		"com.scratchdisk.script.rhino.ExtendedJavaTopPackage"
+	};
+
+	public void initStandardObjects(Context cx, boolean sealed) {
+		super.initStandardObjects(cx, sealed);
 		// Override the class loading objects with our own extended classes
-    	String packageClass = "com.scratchdisk.script.rhino.ExtendedJavaTopPackage";
-		new LazilyLoadedCtor(this, "Packages", packageClass, false);
-		new LazilyLoadedCtor(this, "java", packageClass, false);
-		// new LazilyLoadedCtor(this, "getClass", packageClass, false);
+
+		for (int i = 0; i != topPackages.length; i += 2)
+			new LazilyLoadedCtor(this, topPackages[i], topPackages[i + 1], false);
 
 		// define some global functions and objects:
 		String[] names = { "print", "evaluate" };

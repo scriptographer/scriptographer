@@ -77,6 +77,10 @@ public class ExtendedJavaTopPackage extends ExtendedJavaPackage {
 		// a ScriptableObject.
 		ScriptableObject global = (ScriptableObject) scope;
 		global.defineProperty("Packages", top, ScriptableObject.DONTENUM);
-		global.defineProperty("java", top.get("java", top), ScriptableObject.DONTENUM);
+		for (int i = 0; i != TopLevel.topPackages.length; i += 2) {
+			String name = TopLevel.topPackages[i];
+			if (!name.equals("Packages"))
+				global.defineProperty(name, top.get(name, top), ScriptableObject.DONTENUM);
+		}
 	}
 }
