@@ -98,10 +98,11 @@ OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef handler, Even
 	return kNoErr;
 }
 
-OSStatus ScriptographerPlugin::keyEventHandler(EventHandlerCallRef handler, EventRef event, void *userData) {
+OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRef event, void *userData) {
 	// Only interfere with short cuts when wearre not in ADM dialogs
 	if (GetUserFocusWindow() == ActiveNonFloatingWindow()) {
 		AppContext context;
+		UInt32 cls = GetEventClass(event);
 		UInt32 kind = GetEventKind(event);
 		UInt32 when = EventTimeToTicks(GetEventTime(event));
 		UInt32 keyCode;
@@ -110,39 +111,79 @@ OSStatus ScriptographerPlugin::keyEventHandler(EventHandlerCallRef handler, Even
 		GetEventParameter(event, kEventParamKeyUnicodes, typeUnicodeText, NULL, sizeof(UniChar), NULL, &uniChar);
 		UInt32 modifiers;
 		GetEventParameter(event, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &modifiers);
-		/*
 		Point point;
 		GetEventParameter(event, kEventParamMouseLocation, typeQDPoint, NULL, sizeof(Point), NULL, &point);
-		*/
 
 		bool handled = false;
-		switch (kind) {
-		case kEventRawKeyDown:
-			if (uniChar == '\b') // back space
-				gEngine->onClear();
-			handled = gEngine->callOnHandleKeyEvent(com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN,
-					keyCode, uniChar, modifiers);
+		switch (cls) {
+		case kEventClassKeyboard:
+			switch (kind) {
+			case kEventRawKeyDown:
+				if (uniChar == '\b') // back space
+					gEngine->onClear();
+				handled = gEngine->callOnHandleKeyEvent(com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN,
+						keyCode, uniChar, modifiers);
+				break;
+			case kEventRawKeyUp:
+				handled = gEngine->callOnHandleKeyEvent(com_scriptographer_ScriptographerEngine_EVENT_KEY_UP,
+						keyCode, uniChar, modifiers);
+				break;
+			case kEventRawKeyRepeat:
+				handled = gEngine->callOnHandleKeyEvent(com_scriptographer_ScriptographerEngine_EVENT_KEY_UP,
+						keyCode, uniChar, modifiers)
+					|| gEngine->callOnHandleKeyEvent(com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN,
+						keyCode, uniChar, modifiers);
+				break;
+			/*
+			case kEventRawKeyModifiersChanged: {
+				int i = 0;
+				event.m_shiftDown = modifiers & shiftKey;
+				event.m_controlDown = modifiers & controlKey;
+				event.m_altDown = modifiers & optionKey;
+				event.m_metaDown = modifiers & cmdKey;
+			}
 			break;
-		case kEventRawKeyUp:
-			handled = gEngine->callOnHandleKeyEvent(com_scriptographer_ScriptographerEngine_EVENT_KEY_UP,
-					keyCode, uniChar, modifiers);
+			*/
+			}
 			break;
-		case kEventRawKeyRepeat:
-			handled = gEngine->callOnHandleKeyEvent(com_scriptographer_ScriptographerEngine_EVENT_KEY_UP,
-					keyCode, uniChar, modifiers)
-				|| gEngine->callOnHandleKeyEvent(com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN,
-					keyCode, uniChar, modifiers);
+		case kEventClassMouse:
+			static bool dragging = false;
+			switch (kind) {
+			case kEventMouseDown: {
+				WindowRef window = NULL;
+				FindWindow(point, &window);
+				HIViewRef view;
+				HIViewGetViewForMouseEvent(HIViewGetRoot(window), event, &view);
+				/*
+				ControlPartCode code;
+				SetPortWindowPort(window);
+				GlobalToLocal(&point);
+				ControlRef view = FindControlUnderMouse(point, window, &code);
+				*/
+				if (view != NULL) {
+					CFStringRef viewClass = HIObjectCopyClassID((HIObjectRef) view);
+					if (viewClass != NULL) {
+						if (CFStringCompare(viewClass, CFSTR("com.adobe.owl.tabgroup"), 0) == 0 ||
+							CFStringCompare(viewClass, CFSTR("com.adobe.owl.dock"), 0) == 0) {
+							dragging = true;
+							gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_DRAG_PANEL_BEGIN);
+						}
+						/*
+						const char *str = CFStringGetCStringPtr(viewClass, kCFStringEncodingMacRoman);
+						gEngine->println(gEngine->getEnv(), "Mouse Event: #%i, x: %i y: %i, view: %x, class: %s", kind, point.h, point.v, view, str);
+						*/
+					}
+				}
+			}
 			break;
-		/*
-		case kEventRawKeyModifiersChanged: {
-			int i = 0;
-			event.m_shiftDown = modifiers & shiftKey;
-			event.m_controlDown = modifiers & controlKey;
-			event.m_altDown = modifiers & optionKey;
-			event.m_metaDown = modifiers & cmdKey;
-		}
-		break;
-		*/
+			case kEventMouseUp:
+				if (dragging) {
+					dragging = false;
+					gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_DRAG_PANEL_END);
+				}
+				break;
+			}
+			break;
 		}
 		/* Do not allow preventing of native event processing for now
 		if (handled)
@@ -319,6 +360,7 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 	m_engine->initEngine();
 	m_started = true;
 #ifdef MAC_ENV
+	// Install App Events
 	static EventTypeSpec appEvents[] = {
 		{ kEventClassApplication, kEventAppActivated },
 		{ kEventClassApplication, kEventAppDeactivated }
@@ -327,15 +369,18 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 	RETURN_ERROR(InstallApplicationEventHandler(NewEventHandlerUPP(appEventHandler),
 			sizeof(appEvents) / sizeof(EventTypeSpec), appEvents, this, NULL));
 
-	static EventTypeSpec keyEvents[] = {
+	// Install Events
+	static EventTypeSpec events[] = {
 		{ kEventClassKeyboard, kEventRawKeyDown },
 		{ kEventClassKeyboard, kEventRawKeyUp },
 		{ kEventClassKeyboard, kEventRawKeyRepeat },
-//		{ kEventClassKeyboard, kEventRawKeyModifiersChanged }
+//		{ kEventClassKeyboard, kEventRawKeyModifiersChanged },
+		{ kEventClassMouse, kEventMouseDown },
+		{ kEventClassMouse, kEventMouseUp }
 	};
 	// TODO: Figure out if this needs DEFINE_CALLBACK_PROC / CALLBACK_PROC as well?
-	RETURN_ERROR(InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(keyEventHandler),
-			sizeof(keyEvents) / sizeof(EventTypeSpec), keyEvents, this, NULL));
+	RETURN_ERROR(InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(eventHandler),
+			sizeof(events) / sizeof(EventTypeSpec), events, this, NULL));
 #endif
 #ifdef WIN_ENV
 	HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();

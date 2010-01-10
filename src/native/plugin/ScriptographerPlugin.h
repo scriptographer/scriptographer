@@ -120,7 +120,7 @@ public:
 
 #ifdef MAC_ENV
 	static OSStatus appEventHandler(EventHandlerCallRef handler, EventRef event, void* userData);
-	static OSStatus keyEventHandler(EventHandlerCallRef handler, EventRef event, void *userData);
+	static OSStatus eventHandler(EventHandlerCallRef handler, EventRef event, void *userData);
 #endif
 #ifdef WIN_ENV
 	static WNDPROC s_defaultAppWindowProc;
