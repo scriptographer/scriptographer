@@ -116,8 +116,14 @@ public class ExtendedJavaClass extends NativeJavaClass {
 	            	// can only be a properties list.
 					properties = (NativeObject) last;
 	            }
+	            if (properties != null) {
+	            	// Support initialize in the passed object literal too.
+	            	Object obj = ScriptableObject.getProperty(properties, "initialize");
+	            	if (obj instanceof Callable)
+	            		initialize = (Callable) obj;
+	            }
 			}
-			// remove the last argument from the list, so the right constructor
+			// Remove the last argument from the list, so the right constructor
 			// will be found:
 			if (initialize != null || properties != null) {
 				Object[] newArgs = new Object[args.length - 1];
@@ -127,24 +133,29 @@ public class ExtendedJavaClass extends NativeJavaClass {
 			}
 		}
 		Scriptable obj = super.construct(cx, scope, args);
+		// If properties are to be added, do it now. Add the ones from the
+		// object literal first, then call initialize and after add the 
+		// properties returned by initialize.
+		if (properties != null)
+			setProperties(obj, properties);
 		// If an initialize function was passed as the last argument, execute
 		// it now. The fields of the result of the function are then injected
-		// into the object, if it is a Scriptable.
+		// into the object after, if it is a NativeObject.
 		if (initialize != null) {
 			Object res = initialize.call(cx, scope, obj, args);
 			if (res instanceof NativeObject)
-				properties = (NativeObject) res;
-		}
-		// If properties are to be added, do it now:
-		if (properties != null) {
-			Object[] ids = properties.getIds();
-			for (int i = 0; i < ids.length; i++) {
-				Object id = ids[i];
-				if (id instanceof String)
-					obj.put((String) id, obj, properties.get((String) id, properties));
-			}
+				setProperties(obj, (NativeObject) res);
 		}
 		return obj;
+	}
+
+	private void setProperties(Scriptable obj, NativeObject properties) {
+		Object[] ids = properties.getIds();
+		for (int i = 0; i < ids.length; i++) {
+			Object id = ids[i];
+			if (id instanceof String && !id.equals("initialize"))
+				obj.put((String) id, obj, properties.get((String) id, properties));
+		}
 	}
 
 	public Class<?> getClassObject() {
