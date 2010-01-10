@@ -212,7 +212,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetDrawCallback(J
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
 		DEFINE_CALLBACK_PROC(Dialog_onTrack);
-		sADMDialog->SetDrawProc(dialog, enabled ? (ADMDialogDrawProc) CALLBACK_PROC(Dialog_onTrack) : NULL);
+		sADMDialog->SetDrawProc(dialog, enabled ? (ADMDialogDrawProc) CALLBACK_PROC(Dialog_onDraw) : NULL);
 	} EXCEPTION_CONVERT(env);
 }
 
@@ -1135,7 +1135,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_confirm(JNIEnv *env
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Dialog_getScreenSize(JNIEnv *env, jclass cls) {
 	try {
-		// TODO: add mulit screen support and place where Illustrator resides?
+		// TODO: add multi screen support and place where Illustrator resides?
 #ifdef MAC_ENV
 		GDHandle screen = DMGetFirstScreenDevice(true);  
 		Rect rect = (*screen)->gdRect;
@@ -1182,6 +1182,20 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_dumpControlHierarchy(JN
 		gEngine->convertFile(env, file, &fsSpec);
 		DumpControlHierarchy(window, (FSSpec*) &fsSpec);
 #endif
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * void makeOverlay(int handle)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_makeOverlay(JNIEnv *env, jobject obj, jint handle) {
+	try {
+		WindowGroupRef groupRef;
+		CreateWindowGroup(kWindowGroupAttrLayerTogether | kWindowGroupAttrHideOnCollapse, &groupRef);
+		// SetWindowGroupParent(groupRef, GetWindowGroupOfClass(kOverlayWindowClass));
+		SendWindowGroupBehind(groupRef, GetWindowGroupOfClass(kAlertWindowClass));
+		OSStatus err = SetWindowGroup(GetControlOwner((ControlRef) handle), groupRef);
+		int i = 0;
 	} EXCEPTION_CONVERT(env);
 }
 

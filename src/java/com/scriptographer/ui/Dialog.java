@@ -682,6 +682,15 @@ public abstract class Dialog extends Component {
 	 */
 	public native int getWindowHandle();
 
+	public native void makeOverlay(int handle);
+
+	/**
+	 * Dumps the Mac control hierarchy to the given file. For debug purposes only.
+	 * 
+	 * @jshide
+	 */
+	public native void dumpControlHierarchy(File file); 
+
 	/*
 	 * Dialog creation/destruction
 	 * 
@@ -881,6 +890,11 @@ public abstract class Dialog extends Component {
 
 	public void invalidate(Rectangle rt) {
 		invalidate(rt.x, rt.y, rt.width, rt.height);
+	}
+
+	public void redraw() {
+		invalidate();
+		update();
 	}
 
 	/*
