@@ -152,26 +152,33 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 			case kEventMouseDown: {
 				WindowRef window = NULL;
 				FindWindow(point, &window);
-				HIViewRef view;
-				HIViewGetViewForMouseEvent(HIViewGetRoot(window), event, &view);
-				/*
-				ControlPartCode code;
-				SetPortWindowPort(window);
-				GlobalToLocal(&point);
-				ControlRef view = FindControlUnderMouse(point, window, &code);
-				*/
-				if (view != NULL) {
-					CFStringRef viewClass = HIObjectCopyClassID((HIObjectRef) view);
-					if (viewClass != NULL) {
-						if (CFStringCompare(viewClass, CFSTR("com.adobe.owl.tabgroup"), 0) == 0 ||
-							CFStringCompare(viewClass, CFSTR("com.adobe.owl.dock"), 0) == 0) {
-							dragging = true;
-							gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_DRAG_PANEL_BEGIN);
+				WindowClass wndClass;
+				WindowAttributes attributes;
+				if (wndClass != kDocumentWindowClass) {
+					HIViewRef view;
+					HIViewGetViewForMouseEvent(HIViewGetRoot(window), event, &view);
+					/*
+					ControlPartCode code;
+					SetPortWindowPort(window);
+					GlobalToLocal(&point);
+					ControlRef view = FindControlUnderMouse(point, window, &code);
+					*/
+					if (view != NULL) {
+						CFStringRef viewClass = HIObjectCopyClassID((HIObjectRef) view);
+						if (viewClass != NULL) {
+							// Detect the potential beginning of a window drag and notify the java side of it, so
+							// it can handle ADM / SWT overlays properly.
+							if (CFStringHasPrefix(viewClass, CFSTR("com.adobe.")) && (
+								CFStringCompare(viewClass, CFSTR("com.adobe.owl.tabgroup"), 0) == 0 ||
+								CFStringCompare(viewClass, CFSTR("com.adobe.owl.dock"), 0) == 0)) {
+								dragging = true;
+								gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_DRAG_PANEL_BEGIN);
+							}
+							/*
+							const char *str = CFStringGetCStringPtr(viewClass, kCFStringEncodingMacRoman);
+							gEngine->println(gEngine->getEnv(), "Mouse Event: #%i, x: %i y: %i, view: %x, class: %s", kind, point.h, point.v, view, str);
+							*/
 						}
-						/*
-						const char *str = CFStringGetCStringPtr(viewClass, kCFStringEncodingMacRoman);
-						gEngine->println(gEngine->getEnv(), "Mouse Event: #%i, x: %i y: %i, view: %x, class: %s", kind, point.h, point.v, view, str);
-						*/
 					}
 				}
 			}
