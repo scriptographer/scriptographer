@@ -103,9 +103,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Tool_nativeGetTools(JNIEnv 
 }
 
 /*
- * int nativeCreate(java.lang.String name, int options, int groupTool, int toolsetTool)
+ * int nativeCreate(java.lang.String name, int iconHandle, int options, int groupTool, int toolsetTool)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_nativeCreate(JNIEnv *env, jobject obj, jstring name, jint options, jint groupTool, jint toolsetTool) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_nativeCreate(JNIEnv *env, jobject obj, jstring name, jint iconHandle, jint options, jint groupTool, jint toolsetTool) {
 	try {
 		if (gPlugin->isStarted())
 			throw new StringException("Tools can only be created on startup");
@@ -116,7 +116,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Tool_nativeCreate(JNIEnv *env,
 		data.title = title;
 		data.tooltip = title;
 
-		data.icon = sADMIcon->GetFromResource(gPlugin->getPluginRef(), NULL, kEmptyIconID, 0);
+		data.icon =  iconHandle != 0 
+			? (ADMIconRef) iconHandle 
+			: sADMIcon->GetFromResource(gPlugin->getPluginRef(), NULL, kEmptyIconID, 0);
 
 		ASErr error = kNoErr;
 

@@ -100,7 +100,7 @@ public class Tool extends NativeObject {
 	/**
 	 * @jshide
 	 */
-	public Tool(String name, EnumSet<ToolOption> options, Tool groupTool,
+	public Tool(String name, Image image, EnumSet<ToolOption> options, Tool groupTool,
 			Tool toolsetTool) {
 		this.name = name;
 
@@ -116,12 +116,15 @@ public class Tool extends NativeObject {
 			handle = tool.handle;
 			tool.handle = 0;
 			unusedTools.remove(index);
+			setImage(image);
 		} else {
 			// No previously existing effect found, create a new one:
 			handle = nativeCreate(name,
+					image != null ? image.createIconHandle() : 0,
 					IntegerEnumUtils.getFlags(options),
 					groupTool != null ? groupTool.handle : 0,
 					toolsetTool != null ? toolsetTool.handle : 0);
+			this.image = image;
 		}
 
 		if (handle == 0)
@@ -132,20 +135,24 @@ public class Tool extends NativeObject {
 		tools.put(handle, this);
 	}
 
-	public Tool(String name, EnumSet<ToolOption> options, Tool groupTool) {
-		this(name, options, groupTool, null);
+	public Tool(String name, Image image, EnumSet<ToolOption> options, Tool groupTool) {
+		this(name, image, options, groupTool, null);
 	}
 
-	public Tool(String name, EnumSet<ToolOption> options) {
-		this(name, options, null, null);
+	public Tool(String name, Image image, EnumSet<ToolOption> options) {
+		this(name, image, options, null, null);
+	}
+
+	public Tool(String name, Image image) {
+		this(name, image, null, null, null);
 	}
 
 	public Tool(String name) {
-		this(name, null, null, null);
+		this(name, null, null, null, null);
 	}
 
-	private native int nativeCreate(String name, int options, int groupHandle,
-			int toolsetHandle);
+	private native int nativeCreate(String name, int iconHandle, int options,
+			int groupHandle, int toolsetHandle);
 
 	protected Tool(int handle, String name) {
 		super(handle);

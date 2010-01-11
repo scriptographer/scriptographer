@@ -448,9 +448,3 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	};
 });
-
-mainDialog.invokeLater(function() {
-	// Trial of a fix for the windows bug where in some occasions the icon does
-	// not appear.
-	tool.image = tool.image;
-});

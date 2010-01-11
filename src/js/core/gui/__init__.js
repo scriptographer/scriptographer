@@ -87,8 +87,7 @@ function setScriptDirectory(dir) {
 	loadLibraries(new File(dir, 'libraries'));
 }
 
-var tool = new Tool('Scriptographer Tool') {
-	image: getImage('tool.png'),
+var tool = new Tool('Scriptographer Tool', getImage('tool.png')) {
 	activeImage: getImage('tool-active.png'),
 	tooltip: 'Execute a tool script to assign it with this tool button'
 };
