@@ -224,7 +224,7 @@ void ScriptographerEngine::init() {
 		}
 	}
 
-#if defined(_DEBUG)
+#ifdef _DEBUG
 	// Start JVM in debug mode, for remote debuggin on port 8000
 	options.add("-Xdebug");
 	options.add("-Xnoagent");

@@ -382,8 +382,12 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 		{ kEventClassKeyboard, kEventRawKeyUp },
 		{ kEventClassKeyboard, kEventRawKeyRepeat },
 //		{ kEventClassKeyboard, kEventRawKeyModifiersChanged },
+#ifdef _DEBUG
+		// Only install the mouse events used for panel move tracking and SWT
+		// in debug mode for now as it is work in progress, unused in final product yet.
 		{ kEventClassMouse, kEventMouseDown },
 		{ kEventClassMouse, kEventMouseUp }
+#endif // _DEBUG
 	};
 	// TODO: Figure out if this needs DEFINE_CALLBACK_PROC / CALLBACK_PROC as well?
 	RETURN_ERROR(InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(eventHandler),
