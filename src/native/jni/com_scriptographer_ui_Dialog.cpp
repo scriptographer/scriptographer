@@ -1190,12 +1190,17 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_dumpControlHierarchy(JN
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_makeOverlay(JNIEnv *env, jobject obj, jint handle) {
 	try {
+#ifdef MAC_ENV
+		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
+		WindowRef admWindow = sADMDialog->GetWindowRef(dialog);
+		WindowRef swtWindow = GetControlOwner((ControlRef) handle);
+		// WindowGroupRef groupRef = GetWindowGroup(admWindow);
 		WindowGroupRef groupRef;
-		CreateWindowGroup(kWindowGroupAttrLayerTogether | kWindowGroupAttrHideOnCollapse, &groupRef);
+		CreateWindowGroup(/* kWindowGroupAttrLayerTogether |*/ kWindowGroupAttrHideOnCollapse, &groupRef);
 		// SetWindowGroupParent(groupRef, GetWindowGroupOfClass(kOverlayWindowClass));
 		SendWindowGroupBehind(groupRef, GetWindowGroupOfClass(kAlertWindowClass));
-		OSStatus err = SetWindowGroup(GetControlOwner((ControlRef) handle), groupRef);
-		int i = 0;
+		SetWindowGroup(swtWindow, groupRef);
+#endif
 	} EXCEPTION_CONVERT(env);
 }
 
