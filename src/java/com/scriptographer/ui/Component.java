@@ -362,10 +362,6 @@ abstract class Component extends NotificationHandler {
 		getContent().removeAll();
 	}
 
-	public boolean isValid() {
-		return handle != 0;
-	}
-
 	/**
 	 * An abstract class that adds some commonly used things like
 	 * setInsets to java.awt.Container.

@@ -311,6 +311,7 @@ public:
 	
 	jclass cls_ai_FileFormat;
 	jmethodID cid_ai_FileFormat;
+
 // ADM:
 	jclass cls_ui_NativeObject;
 	jfieldID fid_ui_NativeObject_handle;

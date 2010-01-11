@@ -49,6 +49,10 @@ abstract class NativeObject {
 	public int hashCode() {
 		return handle;
 	}
+
+	public boolean isValid() {
+		return handle != 0;
+	}
 	
 	public boolean equals(Object obj) {
 		if (obj instanceof NativeObject) {

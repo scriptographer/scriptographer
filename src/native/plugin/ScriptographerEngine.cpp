@@ -1295,7 +1295,7 @@ int ScriptographerEngine::getAIObjectHandle(JNIEnv *env, jobject obj, const char
 	JNI_CHECK_ENV
 	int handle = getIntField(env, obj, fid_ai_NativeObject_handle);
 	if (!handle)
-		throw new StringException("Object is not wrapping a %s handle.", name);
+		throw new StringException("The %i is no longer valid. Use isValid() checks to avoid this error.", name);
 	return handle;
 }
 
@@ -1312,7 +1312,7 @@ AIDictionaryRef ScriptographerEngine::getDictionaryHandle(JNIEnv *env, jobject o
 	JNI_CHECK_ENV
 	int handle = getIntField(env, obj, fid_ai_Dictionary_handle);
 	if (!handle)
-		throw new StringException("Object is not wrapping a dictionary handle.");
+		throw new StringException("The dictionary is no longer valid. Use isValid() checks to avoid this error.");
 	return (AIDictionaryRef) handle;
 }
 /**
@@ -1349,7 +1349,7 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 	AIArtHandle art = (AIArtHandle) getAIObjectHandle(env, obj, "art");
 	// Make sure the object is valid
 	if (!callBooleanMethod(env, obj, mid_ai_Item_isValid))
-		throw new StringException("Object is wrapping an invalid art handle.");
+		throw new StringException("The item is no longer valid, either due to deletion or undoing. Use isValid() checks to avoid this error.");
 	if (activateDoc || doc != NULL) {
 		// Fetch docHandle and switch if necessary
 		jobject docObj = getObjectField(env, obj, fid_ai_DocumentObject_document);
@@ -1946,7 +1946,7 @@ int ScriptographerEngine::getADMObjectHandle(JNIEnv *env, jobject obj, const cha
 		if (env->IsInstanceOf(obj, cls_ui_HierarchyList)) {
 			throw new StringException("This function can only be called on the root hierarchy list.");
 		} else {
-			throw new StringException("Object is not wrapping a %s.", name);
+			throw new StringException("The %s is no longer valid. Use isValid() checks to avoid this error.", name);
 		}
 	}
 	return handle;
@@ -1958,7 +1958,7 @@ int ScriptographerEngine::getADMListHandle(JNIEnv *env, jobject obj, const char 
 	JNI_CHECK_ENV
 	int handle = getIntField(env, obj, fid_ui_ListItem_listHandle);
 	if (!handle)
-		throw new StringException("Object is not wrapping a %s.", name);
+		throw new StringException("The %s is no longer valid. Use isValid() checks to avoid this error.", name);
 	return handle;
 }
 
@@ -1966,7 +1966,7 @@ jobject ScriptographerEngine::getDialogObject(ADMDialogRef dlg) {
 	jobject obj = NULL;
 	if (dlg != NULL && sADMDialog != NULL) {
 		obj = (jobject) sADMDialog->GetUserData(dlg);
-		if (obj == NULL) throw new StringException("Dialog does not have a wrapper object.");
+		if (obj == NULL) throw new StringException("The dialog is not linked to a scripting object.");
 	}
 	return obj;
 }
@@ -1975,7 +1975,7 @@ jobject ScriptographerEngine::getItemObject(ADMItemRef item) {
 	jobject obj = NULL;
 	if (item != NULL && sADMItem != NULL) {
 		obj = (jobject) sADMItem->GetUserData(item);
-		if (obj == NULL) throw new StringException("Item does not have a wrapper object.");
+		if (obj == NULL) throw new StringException("The item is not linked to a scripting object.");
 	}
 	return obj;
 }
@@ -1988,7 +1988,7 @@ jobject ScriptographerEngine::getListObject(ADMListRef list) {
 	jobject obj = NULL;
 	if (list != NULL && sADMList != NULL) {
 		obj = (jobject) sADMList->GetUserData(list);
-		if (obj == NULL) throw new StringException("List does not have a wrapper object.");
+		if (obj == NULL) throw new StringException("The list is not linked to a scripting object.");
 	}
 	return obj;
 }
@@ -1997,7 +1997,7 @@ jobject ScriptographerEngine::getListObject(ADMHierarchyListRef list) {
 	jobject obj = NULL;
 	if (list != NULL && sADMHierarchyList != NULL) {
 		obj = (jobject) sADMHierarchyList->GetUserData(list);
-		if (obj == NULL) throw new StringException("Hierarchy list does not have a wrapper object.");
+		if (obj == NULL) throw new StringException("The list is not linked to a scripting object.");
 	}
 	return obj;
 }
@@ -2006,7 +2006,7 @@ jobject ScriptographerEngine::getListEntryObject(ADMEntryRef entry) {
 	jobject obj = NULL;
 	if (entry != NULL && sADMEntry != NULL) {
 		obj = (jobject) sADMEntry->GetUserData(entry);
-		if (obj == NULL) throw new StringException("Entry does not have a wrapper object.");
+		if (obj == NULL) throw new StringException("The entry is not linked to a scripting object.");
 	}
 	return obj;
 }
@@ -2015,7 +2015,7 @@ jobject ScriptographerEngine::getListEntryObject(ADMListEntryRef entry) {
 	jobject obj = NULL;
 	if (entry != NULL && sADMListEntry != NULL) {
 		obj = (jobject) sADMListEntry->GetUserData(entry);
-		if (obj == NULL) throw new StringException("Hierarchy entry does not have a wrapper object.");
+		if (obj == NULL) throw new StringException("The entry is not linked to a scripting object.");
 	}
 	return obj;
 }
