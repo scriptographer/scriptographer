@@ -1,18 +1,24 @@
 body {
-	background-color: #fff;
+	background: #fff;
 	margin: 16px;
-	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 11px;
-	line-height: 17px;
+	font-family: "Lucida Grande", Geneva, Verdana, Arial, sans-serif;
+	font-size: 12px;
+	line-height: 18px;
 	color: #000;
-	max-width: 480px;
+	max-width: 540px;
 }
 
 select, input, textarea {
-	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	font-size: 10px;
+	font-family: "Lucida Grande", Geneva, Verdana, Arial, sans-serif;
+	font-size: 11px;
 	margin: 0px;
 	color: #000;
+}
+
+p tt, pre {
+	font-family: Monaco, Courier, monospace;
+	font-size: 10px;
+	line-height: 18px;
 }
 
 a {
@@ -31,7 +37,18 @@ a:hover {
 }
 
 p {
-	margin: 0 0 8px 0;
+	margin: 0 0 18px 0;
+}
+
+ul {
+	padding: 0;
+	margin: 0 0 18px 16px;
+	list-style: disc outside url(../assets/bullet.gif);
+}
+
+ol {
+	padding: 0;
+	margin: 0 0 18px 0;
 }
 
 .clear {
@@ -42,21 +59,21 @@ p {
 	display: none;
 }
 
-.documentation-packages, .documentation-packages a {
+.reference-packages, .reference-packages a {
 	color: #009dec;
 	border-bottom: 0px;
 }
 
 /* border-bottom color for headers and ruler */
-.documentation-packages h2, .documentation-packages h3, .documentation-packages hr {
+.reference-packages h2, .reference-packages h3, .reference-packages hr {
 	border-color: #009dec;
 }
 
-.documentation-packages a:hover {
+.reference-packages a:hover {
 	background: #e3f4fc;
 }
 
-.documentation h1 {
+.reference h1 {
 	font-size: 18px;
 	font-weight: normal;
 	line-height: 24px;

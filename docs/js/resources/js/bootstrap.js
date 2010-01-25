@@ -3492,7 +3492,7 @@ Asset = new function() {
 
 		stylesheet: function(src, props) {
 			return new HtmlElement('link', new Hash({
-				rel: 'stylesheet', media: 'screen', type: 'text/css', href: src
+				rel: 'stylesheet', assets: 'screen', type: 'text/css', href: src
 			}, props)).insertInside(DomElement.get('head'));
 		},
 

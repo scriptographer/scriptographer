@@ -1,4 +1,4 @@
-<div class="documentation-class">
+<div class="reference-class">
 <% if !settings.templates %>
 <%= this.name() | heading 1 %>
 <% end %>
@@ -35,7 +35,7 @@ Inherited by <%= $subclasses %><br />
 	<% else %>
 <br />
 	<% end %>
-<ul class="documentation-inherited">
+<ul class="reference-inherited">
 	<li><%= $class.doc.renderLink() %></li>
 	<li>
 		<ul>

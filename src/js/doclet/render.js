@@ -73,17 +73,19 @@ function renderTags(param) {
 	str = str.replace(/(\r\n|\n|\r)/g, function(match, lineBreak) {
 		return Template.lineBreak;
 	});
+
 	// Replace inline <code></code> with <tt></tt>
 	str = str.replace(/<code>[ \t]*([^\n\r]*?)[ \t]*<\/code>/g, function(match, content) {
 		return '<tt>' + content + '</tt>';
 	});
+
 	// Put code and pre tags on the same line as the content, as white-space: pre is set:
 	str = str.replace(/(<(?:code|pre)>)\s*([\u0000-\uffff]*?)\s*(<\/(?:code|pre)>)/g, function(match, open, content, close) {
 		// Filter out the first white space at the beginning of each line, since
 		// that stems from the space after the * in the comment and replace <code>
-		// with <pre class="js">, to fix a IE problem where lighter.js does not
-		// receive linebreaks from code tags weven when white-space: pre is set.
-		return '<pre' + (open == '<code>' ? ' class="js"' : '') + '>' + content.replace(/(\r\n|\n|\r) /mg, function(match, lineBreak) {
+		// with <pre>, to fix a IE problem where lighter.js does not receive
+		// linebreaks from code tags weven when white-space: pre is set.
+		return '<pre>' + content.replace(/(\r\n|\n|\r) /mg, function(match, lineBreak) {
 			return lineBreak;
 		}) + '</pre>';
 	});

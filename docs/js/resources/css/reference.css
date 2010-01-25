@@ -1,83 +1,82 @@
-.documentation h1, .documentation h2, .documentation h3 {
-	font-size: 11px;
+.reference h1, .reference h2, .reference h3 {
+	font-size: 12px;
 	font-weight: normal;
 	display: block;
-	margin: 0 0 14px 0;
-	height: 16px; /* -1 for border */
+	margin: 0 0 16px 0;
+	height: 17px; /* -1 for border */
 	border-bottom: 1px solid black;
 }
 
-.documentation h3 {
-	margin-top: 14px;
+.reference h3 {
+	margin-top: 16px;
 	border-bottom-style: dotted;
 }
 
-.documentation a tt, .documentation a tt b {
+.reference a tt, .reference a tt b {
 	padding-bottom: 1px;
 }
 
-.documentation pre.js {
-	background-image: url(../media/paper-gray.gif);
-	margin: 0 0 8px 0;
+.reference pre {
+	margin: 0 0 18px 0;
 }
 
-.documentation ul {
+.reference ul {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
-.documentation-list ul, .documentation-inherited ul {
-	margin-left: 14px;
+.reference-list ul, .reference-inherited ul {
+	margin-left: 16px;
 }
 
-.documentation hr {
+.reference hr {
 	border: none;
 	border-bottom: 1px dotted #000;
 }
 
-.documentation-packages {
+.reference-packages {
 	margin-left: 0px;
 }
 
-.documentation-packages h2, .documentation-packages h3, .documentation-packages hr {
-	margin: 8px 0 8px 0;
+.reference-packages h2, .reference-packages h3, .reference-packages hr {
+	margin: 10px 0 10px 0;
 }
 
-.documentation-packages .first h2 {
+.reference-packages .first h2 {
 	margin-top: 0;
 }
 
-* html .documentation-packages img {
+* html .reference-packages img {
 	margin-top: 5px;
 }
-.documentation-packages li {
+.reference-packages li {
 	list-style: none;
 	list-style-image: none; /* needed for ie 6 */
 }
 
-.documentation-end {
+.reference-end {
 	height: 600px;
 }
 
-.documentation-members {
-	padding-bottom: 14px;
+.reference-members {
+	padding-bottom: 16px;
 }
 
 .member-group-text {
-	margin-bottom: 14px;
+	margin-bottom: 16px;
 }
 
 .member-description {
 	border: 1px solid #999;
 	/* .member-header defines border-top for operator lists */
 	border-top: 0;
-	margin: 14px 0 14px 0;
+	margin: 16px 0 16px 0;
 }
 
 .member-header {
 	border-top: 1px solid #999;
-	padding: 8px;
+	padding: 10px;
 }
 
 .member-title {
@@ -91,7 +90,7 @@
 
 .member-text {
 	border-top: 1px dashed #999;
-	padding: 8px 8px 0 8px;
+	padding: 10px 10px 0 10px;
 }
 
 .member-link {
@@ -99,13 +98,13 @@
 	padding-left: 30px;
 }
 
-.documentation-inherited ul li {
+.reference-inherited ul li {
 	text-indent: -30px;
 	padding-left: 30px;
 }
 
 .member-text ul {
-	padding-bottom: 8px;
+	padding-bottom: 10px;
 }
 
 ul.package-classes {
@@ -113,9 +112,9 @@ ul.package-classes {
 }
 
 .package-classes li {
-	margin-left: 8px;
+	margin-left: 10px;
 }
 
 .package-classes li h2 {
-	margin-left: -8px;
+	margin-left: -10px;
 }
