@@ -31,12 +31,12 @@
 
 package com.scriptographer.script;
 
-import java.awt.Color;
 import java.lang.reflect.Field;
 
 import com.scratchdisk.script.ArgumentConverter;
 import com.scratchdisk.script.ArgumentReader;
 import com.scriptographer.ai.CMYKColor;
+import com.scriptographer.ai.Color;
 import com.scriptographer.ai.GrayColor;
 import com.scriptographer.ai.RGBColor;
 
@@ -52,15 +52,17 @@ public class ColorConverter extends ArgumentConverter {
 		// can behave like arrays as well), always check for isString first!
 		if (reader.isString()) {
 			String name = reader.readString();
+			if ("".equals(name))
+				return Color.NONE;
 			try {
 				// Try hex string first
 				String str = name.startsWith("#") ? name : "#" + name;
-				return new RGBColor(Color.decode(str));
+				return new RGBColor(java.awt.Color.decode(str));
 			} catch (Exception e1) {
 				try {
 					// If that does not work, try accessing the static Color.NAME field
-					Field field = Color.class.getField(name.toUpperCase());
-					return new RGBColor((Color) field.get(Color.class));
+					Field field = java.awt.Color.class.getField(name.toUpperCase());
+					return new RGBColor((java.awt.Color) field.get(java.awt.Color.class));
 				} catch (Exception e2) {
 				}
 			}
