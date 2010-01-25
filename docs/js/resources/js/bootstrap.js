@@ -631,7 +631,7 @@ $A = Array.create;
 Number.inject({
 	_type: 'number',
 
-	limit: function(min, max){
+	limit: function(min, max) {
 		return Math.min(max, Math.max(min, this));
 	},
 
@@ -1977,7 +1977,7 @@ DomEvent = Base.extend(new function() {
 									arguments.callee.delay(50);
 								}
 							}).delay(0);
-						} else if (Browser.WEBKIT && Browser.VERSION < 525){
+						} else if (Browser.WEBKIT && Browser.VERSION < 525) {
 							(function() {
 								/^(loaded|complete)$/.test(doc.$.readyState)
 									? doc.onDomReady() : arguments.callee.delay(50);
@@ -2909,7 +2909,7 @@ HtmlElement.inject({
 
 	setValue: function(name, val) {
 		var el = this.getElement(name);
-		if (!el) el = this.injectBottom('input', { type: 'hidden', id: name, name: name });
+		if (!el) el = this.injectTop('input', { type: 'hidden', id: name, name: name });
 		return el.setValue(val);
 	},
 
@@ -3492,7 +3492,7 @@ Asset = new function() {
 
 		stylesheet: function(src, props) {
 			return new HtmlElement('link', new Hash({
-				rel: 'stylesheet', assets: 'screen', type: 'text/css', href: src
+				rel: 'stylesheet', media: 'screen', type: 'text/css', href: src
 			}, props)).insertInside(DomElement.get('head'));
 		},
 

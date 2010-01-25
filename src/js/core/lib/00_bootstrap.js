@@ -312,7 +312,9 @@ Base.inject({
 
 		type: function(obj) {
 			return (obj || obj === 0) && (obj._type
-				|| (obj instanceof java.lang.Object ? 'java' : typeof obj)) || null;
+				|| (obj instanceof java.lang.Object
+					&& !(obj instanceof org.mozilla.javascript.Scriptable) 
+					? 'java' : typeof obj)) || null;
 		},
 
 		pick: function() {
@@ -598,7 +600,7 @@ $A = Array.create;
 Number.inject({
 	_type: 'number',
 
-	limit: function(min, max){
+	limit: function(min, max) {
 		return Math.min(max, Math.max(min, this));
 	},
 
