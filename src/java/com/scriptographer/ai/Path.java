@@ -115,18 +115,7 @@ public class Path extends PathItem {
 	}
 
 	/**
-	 * Inserts a point to the end of the list of this path's segments
-	 * ({@link #getSegments()}, by converting it to a {@link Segment}.
-	 * 
-	 * @param point the point to be added.
-	 * @return the added segment
-	 */
-	public Segment add(Point point) {
-		return getSegments().add(point);
-	}
-
-	/**
-	 * Inserts a segment to the end of the list of this path's segments.
+	 * Adds one segment at the end of the segment list of this path.
 	 * 
 	 * @param segment the segment to be added.
 	 * @return the added segment. This is not necessarily the same object, e.g.
@@ -137,27 +126,45 @@ public class Path extends PathItem {
 	}
 
 	/**
-	 * Inserts a point at a given index in the list of this path's segments
-	 * ({@link #getSegments()}, by converting it to a {@link Segment}.
+	 * Adds a variable amount of segments at the end of the segment list of this
+	 * path.
 	 * 
-	 * @param index the index at which to insert the point.
-	 * @param point the point to be added.
-	 * @return the added segment.
+	 * @return the added segments. These are not necessarily the same objects,
+	 *         e.g. if the segments to be added already belongs to another path.
 	 */
-	public Segment add(int index, Point point) {
-		return getSegments().add(index, point);
+	public ReadOnlyList<? extends Segment> add(Segment... segments) {
+		SegmentList segs = getSegments();
+		int start = segs.size();
+		segs.addAll(Lists.asList(segments));
+		return segs.getSubList(start, segs.size());
 	}
 
 	/**
 	 * Inserts a segment at a given index in the list of this path's segments.
 	 * 
 	 * @param index the index at which to insert the segment.
-	 * @param segment the segment to be added.
+	 * @param segment the segment to be inserted.
 	 * @return the added segment. This is not necessarily the same object, e.g.
 	 *         if the segment to be added already belongs to another path.
 	 */
-	public Segment add(int index, Segment segment) {
+	public Segment insert(int index, Segment segment) {
 		return getSegments().add(index, segment);
+	}
+
+	/**
+	 * Inserts a variable amount of segment at a given index in the segment list
+	 * of this path.
+	 * 
+	 * @param index the index at which to insert the segments.
+	 * 
+	 * @return the added segments. These is not necessarily the same objects,
+	 *         e.g. if the segments to be added already belongs to another path.
+	 */
+	public ReadOnlyList<? extends Segment> insert(int index, Segment... segments) {
+		SegmentList segs = getSegments();
+		int start = segs.size();
+		segs.addAll(index, Lists.asList(segments));
+		return segs.getSubList(start, segs.size());
 	}
 
 	/**

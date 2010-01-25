@@ -166,6 +166,7 @@ public class Segment implements Commitable, ChangeListener {
 					getPoint(reader, "handleOut", false)
 				);
 		} else {
+			reader.revert();
 			if (reader.isHash()) {
 				if (reader.has("x")) {
 					init(
