@@ -78,8 +78,8 @@ public class ScriptographerEngine {
 		"onDeactivate",
 		"onAbout",
 
-		"onDragPanelBegin",
-		"onDragPanelEnd",
+		"onOwlDragBegin",
+		"onOwlDragEnd",
 
 		"onKeyDown",
 		"onKeyUp",
@@ -93,8 +93,8 @@ public class ScriptographerEngine {
 	protected static final int EVENT_APP_ACTIVATED = 2;
 	protected static final int EVENT_APP_DEACTIVATED = 3;
 	protected static final int EVENT_APP_ABOUT = 4;
-	protected static final int EVENT_DRAG_PANEL_BEGIN = 5;
-	protected static final int EVENT_DRAG_PANEL_END = 6;
+	protected static final int EVENT_OWL_DRAG_BEGIN = 5;
+	protected static final int EVENT_OWL_DRAG_END = 6;
 
 	// Key Events.
 	protected static final int EVENT_KEY_DOWN = 0;

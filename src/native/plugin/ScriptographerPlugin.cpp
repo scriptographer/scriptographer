@@ -155,24 +155,23 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 				WindowClass wndClass;
 				WindowAttributes attributes;
 				if (wndClass != kDocumentWindowClass) {
-					HIViewRef view;
-					HIViewGetViewForMouseEvent(HIViewGetRoot(window), event, &view);
 					/*
 					ControlPartCode code;
 					SetPortWindowPort(window);
 					GlobalToLocal(&point);
 					ControlRef view = FindControlUnderMouse(point, window, &code);
 					*/
-					if (view != NULL) {
+					HIViewRef view;
+					if (HIViewGetViewForMouseEvent(HIViewGetRoot(window), event, &view) == noErr && view != NULL) {
 						CFStringRef viewClass = HIObjectCopyClassID((HIObjectRef) view);
 						if (viewClass != NULL) {
 							// Detect the potential beginning of a window drag and notify the java side of it, so
 							// it can handle ADM / SWT overlays properly.
-							if (CFStringHasPrefix(viewClass, CFSTR("com.adobe.")) && (
+							if (CFStringHasPrefix(viewClass, CFSTR("com.adobe.owl.")) && (
 								CFStringCompare(viewClass, CFSTR("com.adobe.owl.tabgroup"), 0) == 0 ||
 								CFStringCompare(viewClass, CFSTR("com.adobe.owl.dock"), 0) == 0)) {
 								dragging = true;
-								gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_DRAG_PANEL_BEGIN);
+								gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_BEGIN);
 							}
 							/*
 							const char *str = CFStringGetCStringPtr(viewClass, kCFStringEncodingMacRoman);
@@ -186,7 +185,7 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 			case kEventMouseUp:
 				if (dragging) {
 					dragging = false;
-					gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_DRAG_PANEL_END);
+					gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_END);
 				}
 				break;
 			}
