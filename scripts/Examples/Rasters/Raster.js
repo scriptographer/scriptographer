@@ -1,8 +1,9 @@
-// raster.js is a base script for all the raster scripts
+// Raster.js is a base script for all the raster scripts
 // that take a selection of a raster and a path object
 // as a starting point for some raster processing
 // the only thing that has to be defined is the drawDot 
 // function
+
 var raster = null, dots = [], pixelCount;
 
 Item.prototype.getCompoundArea = function(area) {

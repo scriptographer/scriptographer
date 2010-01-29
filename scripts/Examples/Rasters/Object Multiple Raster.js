@@ -1,4 +1,4 @@
-include('raster.js');
+include('Raster.js');
 
 function createDot(x, y, dots, radius) {
 	if (radius > 0) {

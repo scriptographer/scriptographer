@@ -20,7 +20,7 @@ function onMouseUp(event) {
 }
 
 function onMouseDrag(event) {
-	if (Key.isDown(Key.VK_SPACE)) {
+	if (Key.isDown('space')) {
 		path.segments.add(event.point);
 		curSeg = path.segments.last;
 	} else {

@@ -1,6 +1,6 @@
 if(document.selectedItems.length) {
 	var values = Dialog.prompt('Grow:', {
-		scale: { description: 'Scale', value: 1 }
+		scale: { description: 'Scale', value: 0.95 }
 	});
 
 	if (values) {
@@ -16,7 +16,7 @@ if(document.selectedItems.length) {
 			group.appendChild(obj);
 			if (obj.bounds.width < 1 && obj.bounds.height < 1)
 				break;
-			var firstB = obj.curves[0];
+			var firstB = obj.curves.first;
 			var p1 = firstB.getPoint(0);
 			var a1 = firstB.getTangent(0).angle;
 			obj.rotate(a2 - a1, p1);

@@ -2,7 +2,7 @@ var point, path;
 var values = { size: 10 };
 
 function onOptions() {
-	values = Dialog.prompt('Raster:', {
+	values = Dialog.prompt('Gridder:', {
 		size: { description: 'Size'}
 	}, values);
 }
