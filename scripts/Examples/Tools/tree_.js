@@ -31,9 +31,11 @@ function onMouseUp(event) {
 	if (path.segments.length > 0) {
 		path.pointsToCurves();
 		var group = new Group([path]);
-		var branches = [ { path: path, scale: 1.0, rotation: 0 } ];
+		var branches = [{
+			path: path, scale: 1.0, rotation: 0
+		}];
 		var count = 0;
-		while (branches.length != 0) {
+		while (branches.length > 0) {
 			var newBranches = [];
 			for (var i in branches) {
 				var branch = branches[i];
@@ -46,12 +48,14 @@ function onMouseUp(event) {
 						var scale = branch.scale * (Math.random() * (values.maxScale - values.minScale) + values.minScale);
 						var rotation = branch.rotation + (Math.random() - 0.5) * Math.PI * values.rotation;
 						newPath.scale(scale);
-						var curStartPoint = newPath.segments[0].point;
+						var curStartPoint = newPath.segments.first.point;
 						newPath.translate(prevEndPoint - curStartPoint);
 						newPath.rotate(rotation, curStartPoint);
 
 						group.appendChild(newPath);
-						newBranches.push( { path: newPath, scale: scale, rotation: rotation } );
+						newBranches.push({
+							path: newPath, scale: scale, rotation: rotation
+						});
 
 						count++;
 						if (count > 1000) {
