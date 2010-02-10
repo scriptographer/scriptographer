@@ -211,7 +211,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_setTrackMask(JNIEnv *en
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetDrawCallback(JNIEnv *env, jobject obj, jboolean enabled) {
 	try {
 		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
-		DEFINE_CALLBACK_PROC(Dialog_onTrack);
+		DEFINE_CALLBACK_PROC(Dialog_onDraw);
 		sADMDialog->SetDrawProc(dialog, enabled ? (ADMDialogDrawProc) CALLBACK_PROC(Dialog_onDraw) : NULL);
 	} EXCEPTION_CONVERT(env);
 }
