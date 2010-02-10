@@ -308,10 +308,11 @@ public class Drawer extends NativeObject {
 
 	private native void nativeDrawImage(int imageHandle, int x, int y);
 
+/*
 	public void drawImage(org.eclipse.swt.graphics.Image image, int x, int y) {
 		nativeDrawImage(image.handle, x, y);
 	}
-
+*/
 	/* 
 	 * text drawing
 	 * 
