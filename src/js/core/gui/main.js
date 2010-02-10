@@ -133,9 +133,32 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		return list;
 	}
 
+	function getFiles(list) {
+		if (!list.directory)
+			return [];
+		var files = list.directory.listFiles(scriptFilter);
+		if (list == scriptList) {
+			var order = {
+				'Examples': 1,
+				'Tutorials': 2,
+				'My Scripts': 3
+			};
+			files.sort(function(file1, file2) {
+				var pos1 = order[file1.name] || 4;
+				var pos2 = order[file2.name] || 4;
+				return pos1 < pos2
+					? -1 
+					: pos1 > pos2
+						? 1
+						: 0;
+			});
+		}
+		return files;
+	}
+
 	function addFiles(list) {
 		list = getList(list);
-		var files = list.directory.listFiles(scriptFilter);
+		var files = getFiles(list);
 		for (var i = 0; i < files.length; i++)
 			addFile(list, files[i]);
 	}
@@ -150,7 +173,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		list = getList(list);
 		// Get new listing of the directory, then match with already inserted files.
 		// Create a lookup object for easily finding and tracking of already inserted files.	
-		var files = list.directory.listFiles(scriptFilter).each(function(file, i) {
+		var files = getFiles(list).each(function(file, i) {
 			this[file.path] = {
 				file: file,
 				index: i,
@@ -420,8 +443,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		refreshFiles();
 	}
 
-	global.onKeyDown = function(keyCode, character) {
-		if (character == '`') {
+	global.onKeyDown = function(event) {
+		if (event.character == '`') {
 			tool.selected = true;
 			return true;
 		}
