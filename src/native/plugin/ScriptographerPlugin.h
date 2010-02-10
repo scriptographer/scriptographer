@@ -119,6 +119,8 @@ public:
 	void setCursor(int cursorID);
 
 #ifdef MAC_ENV
+	static unsigned char s_keycodeJavaToMac[256];
+	static unsigned char s_keycodeMacToJava[256];
 	static OSStatus appEventHandler(EventHandlerCallRef handler, EventRef event, void* userData);
 	static OSStatus eventHandler(EventHandlerCallRef handler, EventRef event, void *userData);
 #endif

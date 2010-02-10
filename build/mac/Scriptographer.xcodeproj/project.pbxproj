@@ -193,7 +193,6 @@
 		918053150ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */; };
 		918053160ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */; };
 		918053170ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */; };
-		918053180ED108AC007CD826 /* com_scriptographer_ui_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053030ED108AB007CD826 /* com_scriptographer_ui_Key.cpp */; };
 		918053190ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */; };
 		9180531A0ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */; };
 		9180531B0ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */; };
@@ -214,7 +213,6 @@
 		9180532A0ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */; };
 		9180532B0ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */; };
 		9180532C0ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */; };
-		9180532D0ED108AC007CD826 /* com_scriptographer_ui_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053030ED108AB007CD826 /* com_scriptographer_ui_Key.cpp */; };
 		9180532E0ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */; };
 		9180532F0ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */; };
 		918053300ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */; };
@@ -235,7 +233,6 @@
 		9180533F0ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */; };
 		918053400ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */; };
 		918053410ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */; };
-		918053420ED108AC007CD826 /* com_scriptographer_ui_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053030ED108AB007CD826 /* com_scriptographer_ui_Key.cpp */; };
 		918053430ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */; };
 		918053440ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */; };
 		918053450ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */; };
@@ -256,7 +253,6 @@
 		918053540ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */; };
 		918053550ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */; };
 		918053560ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */; };
-		918053570ED108AC007CD826 /* com_scriptographer_ui_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053030ED108AB007CD826 /* com_scriptographer_ui_Key.cpp */; };
 		918053580ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */; };
 		918053590ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */; };
 		9180535A0ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */; };
@@ -383,7 +379,6 @@
 		91C8B8CA1049C0D3002882FE /* com_scriptographer_ui_ImagePane.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */; };
 		91C8B8CB1049C0D3002882FE /* com_scriptographer_ui_Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */; };
 		91C8B8CC1049C0D3002882FE /* com_scriptographer_ui_ItemGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */; };
-		91C8B8CD1049C0D3002882FE /* com_scriptographer_ui_Key.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053030ED108AB007CD826 /* com_scriptographer_ui_Key.cpp */; };
 		91C8B8CE1049C0D3002882FE /* com_scriptographer_ui_ListEntry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */; };
 		91C8B8CF1049C0D3002882FE /* com_scriptographer_ui_ListItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */; };
 		91C8B8D01049C0D3002882FE /* com_scriptographer_ui_MenuGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */; };
@@ -471,7 +466,6 @@
 		918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_ImagePane.cpp; path = jni/com_scriptographer_ui_ImagePane.cpp; sourceTree = "<group>"; };
 		918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_Item.cpp; path = jni/com_scriptographer_ui_Item.cpp; sourceTree = "<group>"; };
 		918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_ItemGroup.cpp; path = jni/com_scriptographer_ui_ItemGroup.cpp; sourceTree = "<group>"; };
-		918053030ED108AB007CD826 /* com_scriptographer_ui_Key.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_Key.cpp; path = jni/com_scriptographer_ui_Key.cpp; sourceTree = "<group>"; };
 		918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_ListEntry.cpp; path = jni/com_scriptographer_ui_ListEntry.cpp; sourceTree = "<group>"; };
 		918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_ListItem.cpp; path = jni/com_scriptographer_ui_ListItem.cpp; sourceTree = "<group>"; };
 		918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = com_scriptographer_ui_MenuGroup.cpp; path = jni/com_scriptographer_ui_MenuGroup.cpp; sourceTree = "<group>"; };
@@ -838,7 +832,6 @@
 				918053000ED108AB007CD826 /* com_scriptographer_ui_ImagePane.cpp */,
 				918053010ED108AB007CD826 /* com_scriptographer_ui_Item.cpp */,
 				918053020ED108AB007CD826 /* com_scriptographer_ui_ItemGroup.cpp */,
-				918053030ED108AB007CD826 /* com_scriptographer_ui_Key.cpp */,
 				918053040ED108AB007CD826 /* com_scriptographer_ui_ListEntry.cpp */,
 				918053050ED108AB007CD826 /* com_scriptographer_ui_ListItem.cpp */,
 				918053060ED108AB007CD826 /* com_scriptographer_ui_MenuGroup.cpp */,
@@ -1142,7 +1135,6 @@
 				9180533F0ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */,
 				918053400ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */,
 				918053410ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */,
-				918053420ED108AC007CD826 /* com_scriptographer_ui_Key.cpp in Sources */,
 				918053430ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */,
 				918053440ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */,
 				918053450ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */,
@@ -1224,7 +1216,6 @@
 				918053540ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */,
 				918053550ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */,
 				918053560ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */,
-				918053570ED108AC007CD826 /* com_scriptographer_ui_Key.cpp in Sources */,
 				918053580ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */,
 				918053590ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */,
 				9180535A0ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */,
@@ -1307,7 +1298,6 @@
 				9180532A0ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */,
 				9180532B0ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */,
 				9180532C0ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */,
-				9180532D0ED108AC007CD826 /* com_scriptographer_ui_Key.cpp in Sources */,
 				9180532E0ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */,
 				9180532F0ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */,
 				918053300ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */,
@@ -1390,7 +1380,6 @@
 				918053150ED108AC007CD826 /* com_scriptographer_ui_ImagePane.cpp in Sources */,
 				918053160ED108AC007CD826 /* com_scriptographer_ui_Item.cpp in Sources */,
 				918053170ED108AC007CD826 /* com_scriptographer_ui_ItemGroup.cpp in Sources */,
-				918053180ED108AC007CD826 /* com_scriptographer_ui_Key.cpp in Sources */,
 				918053190ED108AC007CD826 /* com_scriptographer_ui_ListEntry.cpp in Sources */,
 				9180531A0ED108AC007CD826 /* com_scriptographer_ui_ListItem.cpp in Sources */,
 				9180531B0ED108AC007CD826 /* com_scriptographer_ui_MenuGroup.cpp in Sources */,
@@ -1469,7 +1458,6 @@
 				91C8B8CA1049C0D3002882FE /* com_scriptographer_ui_ImagePane.cpp in Sources */,
 				91C8B8CB1049C0D3002882FE /* com_scriptographer_ui_Item.cpp in Sources */,
 				91C8B8CC1049C0D3002882FE /* com_scriptographer_ui_ItemGroup.cpp in Sources */,
-				91C8B8CD1049C0D3002882FE /* com_scriptographer_ui_Key.cpp in Sources */,
 				91C8B8CE1049C0D3002882FE /* com_scriptographer_ui_ListEntry.cpp in Sources */,
 				91C8B8CF1049C0D3002882FE /* com_scriptographer_ui_ListItem.cpp in Sources */,
 				91C8B8D01049C0D3002882FE /* com_scriptographer_ui_MenuGroup.cpp in Sources */,

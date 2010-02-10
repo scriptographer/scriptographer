@@ -104,6 +104,16 @@ JNIEXPORT jlong JNICALL Java_com_scriptographer_ScriptographerEngine_getNanoTime
 }
 
 /*
+ * boolean nativeIsDown(int keyCode)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ScriptographerEngine_nativeIsDown(JNIEnv *env, jclass cls, jint keyCode) {
+	try {
+		return gPlugin->isKeyDown(keyCode);
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+/*
  * void nativeSetProgressText(java.lang.String text)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_nativeSetProgressText(JNIEnv *env, jclass cls, jstring text) {

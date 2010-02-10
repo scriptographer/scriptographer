@@ -123,9 +123,9 @@ ScriptographerEngine::ScriptographerEngine(const char *pluginPath) {
 }
 
 ScriptographerEngine::~ScriptographerEngine() {
+	callStaticVoidMethodReport(NULL, cls_ScriptographerEngine, mid_ScriptographerEngine_destroy);
 	gEngine = NULL;
 	delete m_pluginPath;
-	callStaticVoidMethodReport(NULL, cls_ScriptographerEngine, mid_ScriptographerEngine_destroy);
 #ifdef MAC_THREAD
 	if(MPLibraryIsLoaded()) {
 		// notify the JVM thread to end, then clean up:
@@ -432,7 +432,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ai_Tool = loadClass(env, "com/scriptographer/ai/Tool");
 	cid_ai_Tool = getConstructorID(env, cls_ai_Tool, "(ILjava/lang/String;)V");
-	mid_ai_Tool_onHandleEvent = getStaticMethodID(env, cls_ai_Tool, "onHandleEvent", "(ILjava/lang/String;FFI)I");
+	mid_ai_Tool_onHandleEvent = getStaticMethodID(env, cls_ai_Tool, "onHandleEvent", "(ILjava/lang/String;FFII)I");
 
 	cls_ai_Point = loadClass(env, "com/scriptographer/ai/Point");
 	cid_ai_Point = getConstructorID(env, cls_ai_Point, "(DD)V");
@@ -1742,7 +1742,8 @@ ASErr ScriptographerEngine::Tool_onHandleEvent(const char * selector, AIToolMess
 		jint cursorId = callStaticIntMethod(env, cls_ai_Tool, mid_ai_Tool_onHandleEvent,
 				(jint) message->tool, convertString(env, selector),
 				(jfloat) message->cursor.h, (jfloat) message->cursor.v,
-				(jint) message->pressure);
+				(jint) message->pressure,
+				(jint) (message->event != NULL ? message->event->modifiers : 0));
 		if (cursorId)
 			gPlugin->setCursor(cursorId);
 		return kNoErr;
@@ -1926,7 +1927,7 @@ ASErr ScriptographerEngine::callOnHandleEvent(int event) {
 	return kExceptionErr;
 }
 
-bool ScriptographerEngine::callOnHandleKeyEvent(ASUInt32 type, ASUInt32 keyCode, ASUnicode character, ASUInt32 modifiers) {
+bool ScriptographerEngine::callOnHandleKeyEvent(int type, ASUInt32 keyCode, ASUnicode character, ASUInt32 modifiers) {
 	JNIEnv *env = getEnv();
 	try {
 		return callStaticBooleanMethodReport(NULL, cls_ScriptographerEngine, mid_ScriptographerEngine_onHandleKeyEvent,

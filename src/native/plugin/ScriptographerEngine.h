@@ -626,7 +626,7 @@ public:
 	bool callOnTrack(jobject handler, ADMTrackerRef tracker);
 	bool callOnDraw(jobject handler, ADMDrawerRef drawer);
 
-	bool callOnHandleKeyEvent(ASUInt32 type, ASUInt32 keyCode, ASUnicode character, ASUInt32 modifiers);
+	bool callOnHandleKeyEvent(int type, ASUInt32 keyCode, ASUnicode character, ASUInt32 modifiers);
 	ASErr callOnHandleEvent(int type);
 
 	// ADM Handles
