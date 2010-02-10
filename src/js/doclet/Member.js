@@ -29,7 +29,7 @@ Member = Object.extend({
 			data.group = {};
 			if (param.index) {
 				param.index[this.getId()] = {
-					title: this.name(),
+					title: (this.isStatic() ? this.containingClass().name() + '.' : '') + this.name(),
 					text: renderTags({
 						doc: param.doc, tags: this.inlineTags()
 					})
