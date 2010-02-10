@@ -78,12 +78,12 @@ public abstract class AbstractExtendedList<E> extends AbstractList<E>
 		return indexOf(element) != -1;
 	}
 
-	public boolean remove(E element) {
+	public E remove(E element) {
 		int index = indexOf(element);
 		if (index >= 0) {
-			return remove(index) != null;
+			return remove(index);
 		}
-		return false;
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")

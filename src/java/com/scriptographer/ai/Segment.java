@@ -524,4 +524,10 @@ public class Segment implements Commitable, ChangeListener {
 		update();
 		return new Segment(this);
 	}
+
+	public boolean remove() {
+		if (segments != null)
+			return segments.remove(this) != null;
+		return false;
+	}
 }

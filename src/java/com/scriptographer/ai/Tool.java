@@ -532,16 +532,16 @@ public class Tool extends NativeObject {
 		return false;
 	}
 
-	private int onHandleEvent(ToolEventType type, double x, double y, int pressure) {
+	private int onHandleEvent(ToolEventType type, double x, double y, int pressure, int modifiers) {
 		try {
 			switch (type) {
 			case MOUSE_DOWN:
 				updateEvent(type, x, y, pressure, 0, true);
-				onMouseDown(new ToolEvent(this, type));
+				onMouseDown(new ToolEvent(this, type, modifiers));
 				break;
 			case MOUSE_DRAG:
 				if (updateEvent(type, x, y, pressure, distanceThreshold, false))
-					onMouseDrag(new ToolEvent(this, type));
+					onMouseDrag(new ToolEvent(this, type, modifiers));
 				break;
 			case MOUSE_UP:
 				// If the last mouse drag happened in a different place, call
@@ -550,14 +550,14 @@ public class Tool extends NativeObject {
 						&& updateEvent(ToolEventType.MOUSE_DRAG, x, y, pressure,
 								distanceThreshold, false)) {
 					try {
-						onMouseDrag(new ToolEvent(this, type));
+						onMouseDrag(new ToolEvent(this, type, modifiers));
 					} catch (Exception e) {
 						ScriptographerEngine.reportError(e);
 					}
 				}
 				updateEvent(type, x, y, pressure, 0, false);
 				try {
-					onMouseUp(new ToolEvent(this, type));
+					onMouseUp(new ToolEvent(this, type, modifiers));
 				} catch (Exception e) {
 					ScriptographerEngine.reportError(e);
 				}
@@ -568,7 +568,7 @@ public class Tool extends NativeObject {
 			case MOUSE_MOVE:
 				try {
 					if (updateEvent(type, x, y, pressure, distanceThreshold, firstMove))
-						onMouseMove(new ToolEvent(this, type));
+						onMouseMove(new ToolEvent(this, type, modifiers));
 				} finally {
 					firstMove = false;
 				}
@@ -599,11 +599,11 @@ public class Tool extends NativeObject {
 	 */
 	@SuppressWarnings("unused")
 	private static int onHandleEvent(int handle, String selector, float x,
-			float y, int pressure) throws Exception {
+			float y, int pressure, int modifiers) throws Exception {
 		Tool tool = getTool(handle);
 		ToolEventType type = ToolEventType.get(selector); 
 		if (tool != null && type != null)
-			return tool.onHandleEvent(type, x, y, pressure);
+			return tool.onHandleEvent(type, x, y, pressure, modifiers);
 		return 0;
 	}
 

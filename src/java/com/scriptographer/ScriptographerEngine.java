@@ -53,6 +53,8 @@ import com.scratchdisk.util.StringUtils;
 import com.scriptographer.ai.Annotator;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.LiveEffect;
+import com.scriptographer.sg.KeyCode;
+import com.scriptographer.sg.KeyEvent;
 import com.scriptographer.sg.Script;
 import com.scriptographer.sg.Timer;
 import com.scriptographer.ui.Dialog;
@@ -71,6 +73,7 @@ public class ScriptographerEngine {
 
 	private static HashMap<String, ArrayList<Scope>> callbackScopes;
 
+	// All callback functions to be found and collected in the compiled scopes.
 	private static String[] callbackNames = {
 		"onStartup",
 		"onShutdown",
@@ -88,17 +91,18 @@ public class ScriptographerEngine {
 	};
 
 	// App Events. Their numbers need to match calbackNames indices.
-	protected static final int EVENT_APP_STARTUP = 0;
-	protected static final int EVENT_APP_SHUTDOWN = 1;
-	protected static final int EVENT_APP_ACTIVATED = 2;
-	protected static final int EVENT_APP_DEACTIVATED = 3;
-	protected static final int EVENT_APP_ABOUT = 4;
-	protected static final int EVENT_OWL_DRAG_BEGIN = 5;
-	protected static final int EVENT_OWL_DRAG_END = 6;
+	public static final int EVENT_APP_STARTUP = 0;
+	public static final int EVENT_APP_SHUTDOWN = 1;
+	public static final int EVENT_APP_ACTIVATED = 2;
+	public static final int EVENT_APP_DEACTIVATED = 3;
+	public static final int EVENT_APP_ABOUT = 4;
+	public static final int EVENT_OWL_DRAG_BEGIN = 5;
+	public static final int EVENT_OWL_DRAG_END = 6;
 
-	// Key Events.
-	protected static final int EVENT_KEY_DOWN = 0;
-	protected static final int EVENT_KEY_UP = 1;
+	// Key Events. Their numbers need to match calbackNames indices.
+	public static final int EVENT_KEY_DOWN = 7;
+	public static final int EVENT_KEY_UP = 8;
+
 	/**
      * Don't let anyone instantiate this class.
      */
@@ -130,6 +134,7 @@ public class ScriptographerEngine {
 
 	public static void destroy() {
 		// We're shutting down, so do not display console stuff any more
+		ConsoleOutputStream.enableOutput(false);
 		ConsoleOutputStream.enableRedirection(false);
 		stopAll();
 		Dialog.destroyAll();
@@ -577,6 +582,8 @@ public class ScriptographerEngine {
 	 */
 	@SuppressWarnings("unused")
 	private static void onHandleEvent(int type) throws Exception {
+		// TODO: There is currently no way to use these callbacks in a Java-only
+		// use of the API. Find one?
 		callCallbacks(callbackNames[type]);
 		// Explicitly initialize all dialogs after startup, as otherwise
 		// funny things will happen on CS3 -> see comment in initializeAll
@@ -584,10 +591,16 @@ public class ScriptographerEngine {
 			Dialog.initializeAll();
 	}
 
+	/**
+	 * To be called from the native environment.
+	 */
 	@SuppressWarnings("unused")
-	private static boolean onHandleKeyEvent(int type, int keyCode, char character, int modifiers) {
-		return callCallbacks(type == EVENT_KEY_DOWN ? "onKeyDown" : "onKeyUp",
-				new Object[] { keyCode, character, modifiers });
+	private static boolean onHandleKeyEvent(int type, int keyCode,
+			char character, int modifiers) {
+		// TODO: There is currently no way to use these callbacks in a Java-only
+		// use of the API. Find one?
+		return callCallbacks(callbackNames[type],
+				new Object[] { new KeyEvent(type, keyCode, character, modifiers) });
 	}
 	
 	/**
@@ -607,6 +620,12 @@ public class ScriptographerEngine {
 	 * @return the current system time.
 	 */
 	public static native long getNanoTime();
+
+	private static native boolean nativeIsDown(int keyCode);
+
+	public static boolean isKeyDown(KeyCode key) {
+		return key != null ? nativeIsDown(key.value()) : false;
+	}
 
 	private static long progressCurrent;
 	private static long progressMax;
@@ -678,14 +697,11 @@ public class ScriptographerEngine {
 			
 		}
 	}
-		
+
 	public static boolean isMainThreadActive() {
 		return Thread.currentThread().equals(mainThread);
 	}
 
-	/**
-	 * @jshide
-	 */
 	public static native void dispatchNextEvent();
 
 	private static final boolean isWindows, isMacintosh;

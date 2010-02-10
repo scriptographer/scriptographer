@@ -272,18 +272,11 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		int addIndex = index;
 
 		for (int i = 0; i < count; i++) {
-			Object obj = elements.get(i);
-			Segment segment = null;
-			if (obj instanceof Segment) {
-				segment = (Segment) obj;
+			Segment segment = elements.get(i);
+			if (segment != null) {
 				// copy it if it comes from another list:
 				if (segment.segments != null)
 					segment = new Segment(segment);
-			} else if (obj instanceof Point) {
-				// convert single points to a segment
-				segment = new Segment((Point) obj);
-			}
-			if (segment != null) {
 				// add to internal structure
 				list.add(addIndex, segment);
 				// update version:

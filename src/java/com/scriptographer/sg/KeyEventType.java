@@ -1,13 +1,13 @@
 /*
  * Scriptographer
- * 
+ *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
- * 
+ *
  * Copyright (c) 2002-2008 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
  * Please visit http://scriptographer.com/ for updates and contact.
- * 
+ *
  * -- GPL LICENSE NOTICE --
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,28 +24,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on 31.07.2005.
- * 
+ * File created on Feb 9, 2010.
+ *
  * $Id$
  */
 
-package com.scriptographer.ui;
+package com.scriptographer.sg;
 
 /**
  * @author lehni
+ *
  */
-public class Key {
-
-    private Key() {
-    		// Don't let anyone instantiate this class.
-	}
-
-	private static native boolean nativeIsDown(int keycode);
-
-    /**
-	 * @return {@true if the key is pressed}
-	 */
-	public static boolean isDown(KeyCode key) {
-		return key != null ? nativeIsDown(key.code) : false;
-	}
+public enum KeyEventType {
+	KEY_DOWN,
+	KEY_UP
 }

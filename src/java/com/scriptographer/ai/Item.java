@@ -370,6 +370,9 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		}
 	}
 
+	/**
+	 * @jshide
+	 */
 	public static void removeIfWrapped(int[] artHandles, boolean removeHandles) {
 		for (int i = 0; i < artHandles.length; i++) {
 			Item item = items.get(artHandles[i]);

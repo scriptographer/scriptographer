@@ -1,5 +1,5 @@
 /*
- * Scriptographer
+- * Scriptographer
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
@@ -29,7 +29,7 @@
  * $Id$
  */
 
-package com.scriptographer.ui;
+package com.scriptographer.sg;
 
 import com.scratchdisk.util.IntegerEnum;
 

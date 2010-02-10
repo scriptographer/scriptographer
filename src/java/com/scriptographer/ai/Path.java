@@ -35,6 +35,7 @@ import java.awt.Shape;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.PathIterator;
 
+import com.scratchdisk.list.ExtendedArrayList;
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
@@ -115,9 +116,9 @@ public class Path extends PathItem {
 	}
 
 	/**
-	 * Adds one segment at the end of the segment list of this path.
+	 * Adds one segment to the end of the segment list of this path.
 	 * 
-	 * @param segment the segment to be added.
+	 * @param segment the segment or point to be added.
 	 * @return the added segment. This is not necessarily the same object, e.g.
 	 *         if the segment to be added already belongs to another path.
 	 */
@@ -126,6 +127,7 @@ public class Path extends PathItem {
 	}
 
 	/**
+	 * @jshide for now. TODO: Implement varargs in doclet
 	 * Adds a variable amount of segments at the end of the segment list of this
 	 * path.
 	 * 
@@ -143,7 +145,7 @@ public class Path extends PathItem {
 	 * Inserts a segment at a given index in the list of this path's segments.
 	 * 
 	 * @param index the index at which to insert the segment.
-	 * @param segment the segment to be inserted.
+	 * @param segment the segment or point to be inserted.
 	 * @return the added segment. This is not necessarily the same object, e.g.
 	 *         if the segment to be added already belongs to another path.
 	 */
@@ -152,6 +154,7 @@ public class Path extends PathItem {
 	}
 
 	/**
+	 * @jshide for now. TODO: Implement varargs in doclet
 	 * Inserts a variable amount of segment at a given index in the segment list
 	 * of this path.
 	 * 
@@ -162,9 +165,42 @@ public class Path extends PathItem {
 	 */
 	public ReadOnlyList<? extends Segment> insert(int index, Segment... segments) {
 		SegmentList segs = getSegments();
-		int start = segs.size();
+		// Remember previous size so we can find out how many were really added
+		int before = segs.size();
 		segs.addAll(index, Lists.asList(segments));
-		return segs.getSubList(start, segs.size());
+		return segs.getSubList(index, index + segs.size() - before);
+	}
+
+	public Segment remove(int index) {
+		return getSegments().remove(index);
+	}
+
+	public Segment remove(Segment segment) {
+		return getSegments().remove(segment);
+	}
+
+	/**
+	 * @jshide for now. TODO: Implement varargs in doclet
+	 * Adds a variable amount of segments at the end of the segment list of this
+	 * path.
+	 * 
+	 * @return the added segments. These are not necessarily the same objects,
+	 *         e.g. if the segments to be added already belongs to another path.
+	 */
+	public ReadOnlyList<? extends Segment> remove(Segment... segments) {
+		SegmentList segs = getSegments();
+		ExtendedArrayList<Segment> removed = new ExtendedArrayList<Segment>(segments);
+		removed.retainAll(segs);
+		if (segs.removeAll(Lists.asList(segments)))
+			return removed;
+		return null;
+	}
+
+	public ReadOnlyList<? extends Segment> remove(int fromIndex, int toIndex) {
+		SegmentList segs = getSegments();
+		ReadOnlyList<? extends Segment> removed = segs.getSubList(fromIndex, toIndex);
+		segs.remove(fromIndex, toIndex);
+		return removed;
 	}
 
 	/**

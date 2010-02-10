@@ -32,6 +32,7 @@
 package com.scriptographer.ai;
 
 import com.scriptographer.script.EnumUtils;
+import com.scriptographer.sg.Event;
 
 /**
  * The ToolEvent object is received by the {@link Tool}'s mouse event handlers
@@ -50,7 +51,7 @@ import com.scriptographer.script.EnumUtils;
  * 
  * @author lehni
  */
-public class ToolEvent {
+public class ToolEvent extends Event {
 	private Tool tool;
 	private ToolEventType type;
 	private Point point = null;
@@ -60,7 +61,8 @@ public class ToolEvent {
 	private Point delta = null;
 	private double pressure = -1;
 
-	protected ToolEvent(Tool tool, ToolEventType type) {
+	protected ToolEvent(Tool tool, ToolEventType type, int modifiers) {
+		super(modifiers);
 		this.tool = tool;
 		this.type = type;
 	}
@@ -71,6 +73,7 @@ public class ToolEvent {
 		buf.append(", point: ").append(point);
 		buf.append(", pressure: ").append(pressure);
 		buf.append(", count: ").append(getCount());
+		buf.append(", modifiers: ").append(getModifiers());
 		buf.append(" }");
 		return buf.toString();
 	}

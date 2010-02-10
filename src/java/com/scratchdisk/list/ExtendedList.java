@@ -116,4 +116,10 @@ public interface ExtendedList<E> extends List<E> {
 	 * @jshide
 	 */
 	E removeLast();
+
+	/**
+	 * @jshide
+	 */
+
+	E remove(E element);
 }
