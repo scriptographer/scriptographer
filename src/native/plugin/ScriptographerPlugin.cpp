@@ -157,98 +157,105 @@ OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef handler, Even
 }
 
 OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRef event, void *userData) {
-	// Only interfere with short cuts when we are not in ADM dialogs
-	if (GetUserFocusWindow() == ActiveNonFloatingWindow()) {
-		AppContext context;
-		UInt32 cls = GetEventClass(event);
-		UInt32 kind = GetEventKind(event);
-
-		bool handled = false;
-		switch (cls) {
-		case kEventClassKeyboard:
-			switch (kind) {
-			case kEventRawKeyDown:
-			case kEventRawKeyUp:
-			case kEventRawKeyRepeat: {
-				UInt32 keyCode;
-				GetEventParameter(event, kEventParamKeyCode, typeUInt32, NULL, sizeof(UInt32), NULL, &keyCode);
-				UniChar uniChar;
-				GetEventParameter(event, kEventParamKeyUnicodes, typeUnicodeText, NULL, sizeof(UniChar), NULL, &uniChar);
-				UInt32 modifiers;
-				GetEventParameter(event, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &keyModifiers);
-				if (kind == kEventRawKeyDown && uniChar == '\b') // back space
-					gEngine->onClear();
-				int type = kind == kEventRawKeyDown || kind == kEventRawKeyRepeat
-					? com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN
-					: com_scriptographer_ScriptographerEngine_EVENT_KEY_UP;
-				keyCode = keyCode >= 0 && keyCode < 0xff ? s_keycodeMacToJava[keyCode] : 0xff;
-				handled = gEngine->callOnHandleKeyEvent(type, keyCode, uniChar, modifiers);
+	AppContext context;
+	UInt32 cls = GetEventClass(event);
+	UInt32 kind = GetEventKind(event);
+	bool handled = false;
+	switch (cls) {
+		case kEventClassKeyboard: {
+			// Only interfere with key events when we are not in ADM dialogs
+			WindowRef focus = GetUserFocusWindow();
+			UInt32 features;
+			// Filter out modal dialogs and floating windows
+			if (focus == NULL || focus == ActiveNonFloatingWindow() 
+					&& GetWindowFeatures(focus, &features) == noErr
+					&& !(features & kWindowIsModal)) {
+				switch (kind) {
+					case kEventRawKeyDown:
+					case kEventRawKeyUp:
+					case kEventRawKeyRepeat: {
+						UInt32 keyCode;
+						GetEventParameter(event, kEventParamKeyCode, typeUInt32, NULL, sizeof(UInt32), NULL, &keyCode);
+						UniChar uniChar;
+						GetEventParameter(event, kEventParamKeyUnicodes, typeUnicodeText, NULL, sizeof(UniChar), NULL, &uniChar);
+						UInt32 modifiers;
+						GetEventParameter(event, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &modifiers);
+						if (kind == kEventRawKeyDown && uniChar == '\b') // back space
+							gEngine->onClear();
+						int type = kind == kEventRawKeyDown || kind == kEventRawKeyRepeat
+							? com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN
+							: com_scriptographer_ScriptographerEngine_EVENT_KEY_UP;
+						keyCode = keyCode >= 0 && keyCode < 0xff ? s_keycodeMacToJava[keyCode] : 0xff;
+						handled = gEngine->callOnHandleKeyEvent(type, keyCode, uniChar, modifiers);
+					}
+					break;
+					/*
+					case kEventRawKeyModifiersChanged: {
+						int i = 0;
+						event.m_shiftDown = modifiers & shiftKey;
+						event.m_controlDown = modifiers & controlKey;
+						event.m_altDown = modifiers & optionKey;
+						event.m_metaDown = modifiers & cmdKey;
+					}
+					break;
+					*/
+				}
 			}
-			break;
-			/*
-			case kEventRawKeyModifiersChanged: {
-				int i = 0;
-				event.m_shiftDown = modifiers & shiftKey;
-				event.m_controlDown = modifiers & controlKey;
-				event.m_altDown = modifiers & optionKey;
-				event.m_metaDown = modifiers & cmdKey;
-			}
-			break;
-			*/
-			}
-			break;
-		case kEventClassMouse:
+		}
+		break;
+		case kEventClassMouse: {
 			static bool dragging = false;
 			switch (kind) {
-			case kEventMouseDown: {
-				Point point;
-				GetEventParameter(event, kEventParamMouseLocation, typeQDPoint, NULL, sizeof(Point), NULL, &point);
-				WindowRef window = NULL;
-				FindWindow(point, &window);
-				WindowClass wndClass;
-				WindowAttributes attributes;
-				if (wndClass != kDocumentWindowClass) {
-					/*
-					ControlPartCode code;
-					SetPortWindowPort(window);
-					GlobalToLocal(&point);
-					ControlRef view = FindControlUnderMouse(point, window, &code);
-					*/
-					HIViewRef view;
-					if (HIViewGetViewForMouseEvent(HIViewGetRoot(window), event, &view) == noErr && view != NULL) {
-						CFStringRef viewClass = HIObjectCopyClassID((HIObjectRef) view);
-						if (viewClass != NULL) {
-							// Detect the potential beginning of a window drag and notify the java side of it, so
-							// it can handle ADM / SWT overlays properly.
-							if (CFStringHasPrefix(viewClass, CFSTR("com.adobe.owl.")) && (
-								CFStringCompare(viewClass, CFSTR("com.adobe.owl.tabgroup"), 0) == 0 ||
-								CFStringCompare(viewClass, CFSTR("com.adobe.owl.dock"), 0) == 0)) {
-								dragging = true;
-								gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_BEGIN);
+				case kEventMouseDown: {
+					Point point;
+					GetEventParameter(event, kEventParamMouseLocation, typeQDPoint, NULL, sizeof(Point), NULL, &point);
+					WindowRef window = NULL;
+					FindWindow(point, &window);
+					WindowClass wndClass;
+					WindowAttributes attributes;
+					if (wndClass != kDocumentWindowClass) {
+						/*
+						ControlPartCode code;
+						SetPortWindowPort(window);
+						GlobalToLocal(&point);
+						ControlRef view = FindControlUnderMouse(point, window, &code);
+						*/
+						HIViewRef view;
+						if (HIViewGetViewForMouseEvent(HIViewGetRoot(window), event, &view) == noErr && view != NULL) {
+							CFStringRef viewClass = HIObjectCopyClassID((HIObjectRef) view);
+							if (viewClass != NULL) {
+								// Detect the potential beginning of a window drag and notify the java side of it, so
+								// it can handle ADM / SWT overlays properly.
+								if (CFStringHasPrefix(viewClass, CFSTR("com.adobe.owl.")) && (
+									CFStringCompare(viewClass, CFSTR("com.adobe.owl.tabgroup"), 0) == 0 ||
+									CFStringCompare(viewClass, CFSTR("com.adobe.owl.dock"), 0) == 0)) {
+									dragging = true;
+									gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_BEGIN);
+								}
+								/*
+								const char *str = CFStringGetCStringPtr(viewClass, kCFStringEncodingMacRoman);
+								gEngine->println(gEngine->getEnv(), "Mouse Event: #%i, x: %i y: %i, view: %x, class: %s", kind, point.h, point.v, view, str);
+								*/
 							}
-							/*
-							const char *str = CFStringGetCStringPtr(viewClass, kCFStringEncodingMacRoman);
-							gEngine->println(gEngine->getEnv(), "Mouse Event: #%i, x: %i y: %i, view: %x, class: %s", kind, point.h, point.v, view, str);
-							*/
 						}
 					}
 				}
-			}
-			break;
-			case kEventMouseUp:
-				if (dragging) {
-					dragging = false;
-					gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_END);
+				break;
+				case kEventMouseUp: {
+					if (dragging) {
+						dragging = false;
+						gEngine->callOnHandleEvent(com_scriptographer_ScriptographerEngine_EVENT_OWL_DRAG_END);
+					}
 				}
 				break;
 			}
-			break;
 		}
-		/* Do not allow preventing of native event processing for now
-		if (handled)
-			return noErr;
-		*/
+		break;
 	}
+	/* Do not allow preventing of native event processing for now
+	if (handled)
+		return noErr;
+	*/
 	// Do not interfere with AI and allow it to further process this event.
 	return eventNotHandledErr;
 }
