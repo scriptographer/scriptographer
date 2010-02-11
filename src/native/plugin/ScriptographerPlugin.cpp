@@ -292,75 +292,65 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 	if (gEngine != NULL && wParam == PM_REMOVE) {
 		switch (pMsg->message) {
 			case WM_KEYDOWN:
-			case WM_KEYUP:
-			case WM_CHAR: {
+			case WM_KEYUP: {
+				if (pMsg->message == WM_KEYDOWN) {
+					// Filter out windows that should not be handled. 
+					// These are any kind of input fields which are detected by WS_TABSTOP.
+					// As the main app window has this set too, check for a lack of WS_CAPTION
+					// which is set on the app window but not the controls.
+					WINDOWINFO info;
+					GetWindowInfo(pMsg->hwnd, &info);
+					if ((info.dwStyle & WS_TABSTOP) && !(info.dwStyle & WS_CAPTION))
+						break;
+				}
 				// Get scan code and virtual code from key.
+				WCHAR chr = pMsg->wParam;
 				UINT scanCode = (pMsg->lParam >> 16) & 0xff;
 				UINT keyCode = ::MapVirtualKey(scanCode, MAPVK_VSC_TO_VK_EX);
 				BYTE keyboardState[256];
+				GetKeyboardState(keyboardState);
+				int type = -1;
 				// If this is a WM_KEYDOWN, see if it translated to another
-				// unicode char, in which case we can assume there is a WM_CHAR
-				// following. Skip the message if so.
+				// unicode char, which is then to be used instead.
+				// This appears to be the same behavior as the WM_CHAR message
+				// performs behind the scenes, so we do not need to rely on WM_CHAR
+				// here at all, which simplifies finding matching down / up events
+				// a lot.
 				if (pMsg->message == WM_KEYDOWN) {
-					// Of course there are keys that do not translate but still send
-					// two messages, such as escape, backspace, etc.
-					// TODO: Find out all of them
-					if (pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_BACK
-						|| pMsg->wParam == VK_SPACE || pMsg->wParam == VK_RETURN)
-						break;
-					GetKeyboardState(keyboardState);
 					WCHAR unicode[10];
-					int len = ToUnicode(keyCode, scanCode, keyboardState, unicode, 10, 0);
-					// Compare the result of the translation and skip if different,
-					// as we will receive a WM_CHAR message right after.
-					// Also, in case they do match but are uppercase letters, break too
-					// as we'll get a WM_CHAR as well.
-					if (len > 1 || len == 1 && (unicode[0] != pMsg->wParam
-						|| pMsg->wParam >= 'A' && pMsg->wParam <= 'Z'))
-						break;
-				} else {
-					// We need the state for the modifiers below.
-					GetKeyboardState(keyboardState);
-				}
-				int type;
-				if (pMsg->message == WM_KEYDOWN || pMsg->message == WM_CHAR) {
+					if (ToUnicode(keyCode, scanCode, keyboardState, unicode, 10, 0) >= 1)
+						chr = unicode[0];
 					// Detect and handle back space, but filter out repeated
 					// hits by checking previous state (lParam & (1 << 30))
-					if (pMsg->wParam == '\b' && !(pMsg->lParam & (1 << 30)))
+					if (chr == '\b' && !(pMsg->lParam & (1 << 30)))
 						gEngine->onClear();
 					// Store the char used for a keydown / char event so
 					// the same can be used when that key is released again
-					s_keyChars[scanCode] = pMsg->wParam;
+					s_keyChars[scanCode] = chr;
 					type = com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN;
 				} else {
-					pMsg->wParam = s_keyChars[scanCode];
-					type = com_scriptographer_ScriptographerEngine_EVENT_KEY_UP;
+					UINT code = s_keyChars[scanCode];
+					if (code) {
+						chr = code;
+						// Erase so we're not detecting non-matching WM_KEYUP messages.
+						s_keyChars[scanCode] = 0;
+						type = com_scriptographer_ScriptographerEngine_EVENT_KEY_UP;
+					}
 				}
-				int modifiers = 0;
-				if (keyboardState[VK_SHIFT] & 0x80)
-					modifiers |= com_scriptographer_sg_EventModifiers_SHIFT;
-				if (keyboardState[VK_CONTROL] & 0x80)
-					modifiers |= com_scriptographer_sg_EventModifiers_CONTROL;
-				if (keyboardState[VK_MENU] & 0x80)
-					modifiers |= com_scriptographer_sg_EventModifiers_OPTION;
-				if (keyboardState[VK_APPS] & 0x80)
-					modifiers |= com_scriptographer_sg_EventModifiers_META;
-				if (keyboardState[VK_CAPITAL] & 0x01)
-					modifiers |= com_scriptographer_sg_EventModifiers_CAPS_LOCK;
-				handled = gEngine->callOnHandleKeyEvent(type, keyCode, pMsg->wParam, modifiers);
-				/*
-				char *name = pMsg->message == WM_KEYDOWN
-					? "WM_KEYDOWN" : pMsg->message == WM_KEYUP
-						? "WM_KEYUP" : pMsg->message == WM_CHAR
-							? "WM_CHAR" : "";
-				UINT repeat = pMsg->lParam & 0xffff;
-				bool extended = pMsg->lParam & (1 << 24);
-				bool context = pMsg->lParam & (1 << 29);
-				bool previous = pMsg->lParam & (1 << 30);
-				bool transition = pMsg->lParam & (1 << 31);
-				gEngine->println(NULL, "%s %c { w=%x  s=%x v=%x r=%i e=%i p=%i t=%i } %i",
-					name, pMsg->wParam, pMsg->wParam, scanCode, keyCode, repeat, extended, previous, transition, handled);
-				*/
+				if (type != -1) {
+					int modifiers = 0;
+					if (keyboardState[VK_SHIFT] & 0x80)
+						modifiers |= com_scriptographer_sg_EventModifiers_SHIFT;
+					if (keyboardState[VK_CONTROL] & 0x80)
+						modifiers |= com_scriptographer_sg_EventModifiers_CONTROL;
+					if (keyboardState[VK_MENU] & 0x80)
+						modifiers |= com_scriptographer_sg_EventModifiers_OPTION;
+					if (keyboardState[VK_APPS] & 0x80)
+						modifiers |= com_scriptographer_sg_EventModifiers_META;
+					if (keyboardState[VK_CAPITAL] & 0x01)
+						modifiers |= com_scriptographer_sg_EventModifiers_CAPS_LOCK;
+					handled = gEngine->callOnHandleKeyEvent(type, keyCode, chr, modifiers);
+				}
 			}
 			break;
 		}
