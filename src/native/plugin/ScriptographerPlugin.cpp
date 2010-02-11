@@ -174,7 +174,7 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 				GetEventParameter(event, kEventParamKeyCode, typeUInt32, NULL, sizeof(UInt32), NULL, &keyCode);
 				UniChar uniChar;
 				GetEventParameter(event, kEventParamKeyUnicodes, typeUnicodeText, NULL, sizeof(UniChar), NULL, &uniChar);
-				UInt32 keyModifiers;
+				UInt32 modifiers;
 				GetEventParameter(event, kEventParamKeyModifiers, typeUInt32, NULL, sizeof(UInt32), NULL, &keyModifiers);
 				if (kind == kEventRawKeyDown && uniChar == '\b') // back space
 					gEngine->onClear();
@@ -182,20 +182,7 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 					? com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN
 					: com_scriptographer_ScriptographerEngine_EVENT_KEY_UP;
 				keyCode = keyCode >= 0 && keyCode < 0xff ? s_keycodeMacToJava[keyCode] : 0xff;
-				/*
-				int modifiers = 0;
-				if (keyModifiers & shiftKey)
-					modifiers |= com_scriptographer_sg_EventModifiers_SHIFT;
-				if (keyModifiers & controlKey)
-					modifiers |= com_scriptographer_sg_EventModifiers_CONTROL;
-				if (keyModifiers & optionKey)
-					modifiers |= com_scriptographer_sg_EventModifiers_OPTION;
-				if (keyModifiers & cmdKey)
-					modifiers |= com_scriptographer_sg_EventModifiers_META;
-				if (keyModifiers & alphaLock)
-					modifiers |= com_scriptographer_sg_EventModifiers_CAPS_LOCK;
-				*/
-				handled = gEngine->callOnHandleKeyEvent(type, keyCode, uniChar, keyModifiers);
+				handled = gEngine->callOnHandleKeyEvent(type, keyCode, uniChar, modifiers);
 			}
 			break;
 			/*
@@ -273,24 +260,105 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 WNDPROC ScriptographerPlugin::s_defaultAppWindowProc = NULL;
 
 LRESULT CALLBACK ScriptographerPlugin::appWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	if (gEngine != NULL) {
+	if (gEngine != NULL && uMsg == WM_ACTIVATEAPP) {
 		int type = -1;
-		switch (uMsg) {
-		case WM_ACTIVATEAPP:
-			switch (LOWORD(wParam)) {
-			case WA_INACTIVE:
-				type = com_scriptographer_ScriptographerEngine_EVENT_APP_DEACTIVATED;
-				break;
-			case WA_ACTIVE:
-				type = com_scriptographer_ScriptographerEngine_EVENT_APP_ACTIVATED;
-				break;
-			}
+		switch (LOWORD(wParam)) {
+		case WA_INACTIVE:
+			type = com_scriptographer_ScriptographerEngine_EVENT_APP_DEACTIVATED;
+			break;
+		case WA_ACTIVE:
+			type = com_scriptographer_ScriptographerEngine_EVENT_APP_ACTIVATED;
 			break;
 		}
 		if (type != -1)
 			gEngine->callOnHandleEvent(type);
 	}
 	return ::CallWindowProc(s_defaultAppWindowProc, hwnd, uMsg, wParam, lParam);
+}
+
+UINT ScriptographerPlugin::s_keyChars[256];
+HHOOK ScriptographerPlugin::s_defaultGetMessageProc = NULL;
+
+LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, LPARAM lParam) {
+	PMSG pMsg = (PMSG) lParam;
+	bool handled = false;
+	if (gEngine != NULL && wParam == PM_REMOVE) {
+		switch (pMsg->message) {
+			case WM_KEYDOWN:
+			case WM_KEYUP:
+			case WM_CHAR: {
+				// Get scan code and virtual code from key.
+				UINT scanCode = (pMsg->lParam >> 16) & 0xff;
+				UINT keyCode = ::MapVirtualKey(scanCode, MAPVK_VSC_TO_VK_EX);
+				BYTE keyboardState[256];
+				// If this is a WM_KEYDOWN, see if it translated to another
+				// unicode char, in which case we can assume there is a WM_CHAR
+				// following. Skip the message if so.
+				if (pMsg->message == WM_KEYDOWN) {
+					// Of course there are keys that do not translate but still send
+					// two messages, such as escape, backspace, etc.
+					// TODO: Find out all of them
+					if (pMsg->wParam == VK_ESCAPE || pMsg->wParam == VK_BACK
+						|| pMsg->wParam == VK_SPACE || pMsg->wParam == VK_RETURN)
+						break;
+					GetKeyboardState(keyboardState);
+					WCHAR unicode[10];
+					int len = ToUnicode(keyCode, scanCode, keyboardState, unicode, 10, 0);
+					// Compare the result of the translation and skip if different,
+					// as we will receive a WM_CHAR message right after.
+					// Also, in case they do match but are uppercase letters, break too
+					// as we'll get a WM_CHAR as well.
+					if (len > 1 || len == 1 && (unicode[0] != pMsg->wParam
+						|| pMsg->wParam >= 'A' && pMsg->wParam <= 'Z'))
+						break;
+				} else {
+					// We need the state for the modifiers below.
+					GetKeyboardState(keyboardState);
+				}
+				int type;
+				if (pMsg->message == WM_KEYDOWN || pMsg->message == WM_CHAR) {
+					// Detect and handle back space, but filter out repeated
+					// hits by checking previous state (lParam & (1 << 30))
+					if (pMsg->wParam == '\b' && !(pMsg->lParam & (1 << 30)))
+						gEngine->onClear();
+					// Store the char used for a keydown / char event so
+					// the same can be used when that key is released again
+					s_keyChars[scanCode] = pMsg->wParam;
+					type = com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN;
+				} else {
+					pMsg->wParam = s_keyChars[scanCode];
+					type = com_scriptographer_ScriptographerEngine_EVENT_KEY_UP;
+				}
+				int modifiers = 0;
+				if (keyboardState[VK_SHIFT] & 0x80)
+					modifiers |= com_scriptographer_sg_EventModifiers_SHIFT;
+				if (keyboardState[VK_CONTROL] & 0x80)
+					modifiers |= com_scriptographer_sg_EventModifiers_CONTROL;
+				if (keyboardState[VK_MENU] & 0x80)
+					modifiers |= com_scriptographer_sg_EventModifiers_OPTION;
+				if (keyboardState[VK_APPS] & 0x80)
+					modifiers |= com_scriptographer_sg_EventModifiers_META;
+				if (keyboardState[VK_CAPITAL] & 0x01)
+					modifiers |= com_scriptographer_sg_EventModifiers_CAPS_LOCK;
+				handled = gEngine->callOnHandleKeyEvent(type, keyCode, pMsg->wParam, modifiers);
+				/*
+				char *name = pMsg->message == WM_KEYDOWN
+					? "WM_KEYDOWN" : pMsg->message == WM_KEYUP
+						? "WM_KEYUP" : pMsg->message == WM_CHAR
+							? "WM_CHAR" : "";
+				UINT repeat = pMsg->lParam & 0xffff;
+				bool extended = pMsg->lParam & (1 << 24);
+				bool context = pMsg->lParam & (1 << 29);
+				bool previous = pMsg->lParam & (1 << 30);
+				bool transition = pMsg->lParam & (1 << 31);
+				gEngine->println(NULL, "%s %c { w=%x  s=%x v=%x r=%i e=%i p=%i t=%i } %i",
+					name, pMsg->wParam, pMsg->wParam, scanCode, keyCode, repeat, extended, previous, transition, handled);
+				*/
+			}
+			break;
+		}
+	}
+	return CallNextHookEx(s_defaultGetMessageProc, code, wParam, lParam);
 }
 
 #endif
@@ -376,13 +444,13 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 	// Now find the last occurence of PATH_SEP_CHR and determine the string there:
 	*(strrchr(pluginPath, PATH_SEP_CHR) + 1) = '\0';
 
-	#ifdef LOGFILE
+#ifdef LOGFILE
 		// Create logfile:
 		char path[512];
 		sprintf(path, "%s" PATH_SEP_STR "log" PATH_SEP_STR "native.log", pluginPath);
 		m_logFile = fopen(path, "wt");
 		log("Starting Scriptographer with plugin path: %s", pluginPath);
-	#endif
+#endif
 		
 	RETURN_ERROR(sSPPlugins->SetPluginName(m_pluginRef, m_pluginName));
 	
@@ -439,6 +507,8 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 			sizeof(events) / sizeof(EventTypeSpec), events, this, NULL));
 #endif
 #ifdef WIN_ENV
+	s_defaultGetMessageProc = SetWindowsHookEx(WH_GETMESSAGE, getMessageProc,
+			::GetModuleHandle(NULL), ::GetCurrentThreadId());
 	HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();
 	s_defaultAppWindowProc = (WNDPROC) ::SetWindowLong(hWnd, GWL_WNDPROC, (LONG) appWindowProc);
 	// If the app is active (focus on splasher), send WA_ACTIVE message again, since it was received
@@ -460,6 +530,7 @@ ASErr ScriptographerPlugin::onShutdownPlugin(SPInterfaceMessage *message) {
 		HWND hWnd = (HWND) sADMWinHost->GetPlatformAppWindow();
 		::SetWindowLong(hWnd, GWL_WNDPROC, (LONG) s_defaultAppWindowProc);
 	}
+	UnhookWindowsHookEx(s_defaultGetMessageProc);
 #endif
 	m_engine->onShutdown();
 	sSPAccess->ReleasePlugin(m_pluginAccess);

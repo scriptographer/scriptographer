@@ -1122,10 +1122,6 @@
 						>
 					</File>
 					<File
-						RelativePath="..\..\src\native\jni\com_scriptographer_ui_Key.cpp"
-						>
-					</File>
-					<File
 						RelativePath="..\..\src\native\jni\com_scriptographer_ui_ListEntry.cpp"
 						>
 					</File>

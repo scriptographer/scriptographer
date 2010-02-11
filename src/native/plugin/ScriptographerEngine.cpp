@@ -649,6 +649,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 }
 
 void ScriptographerEngine::println(JNIEnv *env, const char *str, ...) {
+	JNI_CHECK_ENV
 	int size = 8192;
 	char *text = new char[size];
 	va_list args;

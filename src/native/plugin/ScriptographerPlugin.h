@@ -127,6 +127,9 @@ public:
 #ifdef WIN_ENV
 	static WNDPROC s_defaultAppWindowProc;
 	static LRESULT CALLBACK appWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	static HHOOK s_defaultGetMessageProc;
+	static UINT s_keyChars[256];
+	static LRESULT CALLBACK getMessageProc(int code, WPARAM wParam, LPARAM lParam);
 #endif
 
 	long getNanoTime();

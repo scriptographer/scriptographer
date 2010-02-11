@@ -350,12 +350,14 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_DocumentView_getMousePoint(
 #ifdef MAC_ENV
 		GrafPtr port;
 		GetPort(&port);
+		// TODO: Test this in OWL / CS3 and above
 		SetPort(GetWindowPort(ActiveNonFloatingWindow()));
 		GlobalToLocal((Point *) &pt);
 		SetPort(port);
 #endif
 #ifdef WIN_ENV
 		HWND wndApp = (HWND) sADMWinHost->GetPlatformAppWindow();
+		// TODO: This does not work in CS3 and above, due to OWL Madness
 		HWND wndMdi = FindWindowEx(wndApp, NULL, "MDIClient", NULL);
 		HWND wnd = FindWindowEx(wndMdi, NULL, "MDIClass", NULL);
 		ScreenToClient(wnd, (LPPOINT) &pt);
