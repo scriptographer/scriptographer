@@ -252,12 +252,8 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 		}
 		break;
 	}
-	/* Do not allow preventing of native event processing for now
-	if (handled)
-		return noErr;
-	*/
-	// Do not interfere with AI and allow it to further process this event.
-	return eventNotHandledErr;
+	// Allow overriding of AI key handling by returning true from the handler...
+	return handled ? noErr : eventNotHandledErr;
 }
 
 #endif
@@ -355,6 +351,10 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 			break;
 		}
 	}
+	// If it was handled already, modify it so it does not get processed, but 
+	// still call CallNextHookEx as we're told to do so.
+	if (handled)
+		pMsg->message = WM_NULL;
 	return CallNextHookEx(s_defaultGetMessageProc, code, wParam, lParam);
 }
 
