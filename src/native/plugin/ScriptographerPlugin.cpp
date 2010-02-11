@@ -253,7 +253,7 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 		break;
 	}
 	// Allow overriding of AI key handling by returning true from the handler...
-	return handled ? noErr : eventNotHandledErr;
+	return handled ? noErr : (OSStatus) eventNotHandledErr;
 }
 
 #endif
