@@ -46,7 +46,7 @@ public class Loader {
 
 	public static void init(String path) throws MalformedURLException {
 		pluginPath = path;
-		File javaDir = new File(pluginPath, "java");
+		File javaDir = new File(new File(pluginPath, "Core"), "Java");
 		// fFlter out all the files in lib that are not jar or zip files and
 		// create a URL array of it:
 		File libDir = new File(javaDir, "lib");

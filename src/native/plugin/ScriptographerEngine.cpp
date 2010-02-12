@@ -188,6 +188,9 @@ void ScriptographerEngine::init() {
 	getDefaultJavaVMInitArgs = JNI_GetDefaultJavaVMInitArgs;
 #endif // !WIN_ENV
 
+	char javaPath[512];
+	sprintf(javaPath, "%s" PATH_SEP_STR "Core" PATH_SEP_STR "Java" PATH_SEP_STR, m_pluginPath);
+
 	// Initialize args
 	JavaVMInitArgs args;
 	args.version = JNI_VERSION_1_4;
@@ -195,8 +198,8 @@ void ScriptographerEngine::init() {
 	// Define options
 	JVMOptions options;
 	// Only add the loader to the classpath, the rest is done in java:
-	options.add("-Djava.class.path=%s" PATH_SEP_STR "java" PATH_SEP_STR "loader.jar", m_pluginPath);
-	options.add("-Djava.library.path=%s" PATH_SEP_STR "java" PATH_SEP_STR "lib", m_pluginPath);
+	options.add("-Djava.class.path=%sloader.jar", javaPath);
+	options.add("-Djava.library.path=%slib", javaPath);
 
 #ifdef MAC_ENV
 #ifdef MAC_THREAD
@@ -210,7 +213,7 @@ void ScriptographerEngine::init() {
 #endif // MAC_ENV
 	// Read ini file and add the options here
 	char buffer[512];
-	sprintf(buffer, "%s" PATH_SEP_STR "java" PATH_SEP_STR "jvm.ini", m_pluginPath);
+	sprintf(buffer, "%sjvm.ini", javaPath);
 	FILE *file = fopen(buffer, "rt");
 	if (file != NULL) {
 		while (fgets(buffer, sizeof(buffer), file)) {

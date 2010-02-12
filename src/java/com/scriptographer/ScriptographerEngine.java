@@ -127,7 +127,7 @@ public class ScriptographerEngine {
 				ScriptographerEngine.class.getClassLoader());
 		// Compile all core init scripts
 		callbackScopes = new HashMap<String, ArrayList<Scope>>();
-		coreDir = new File(pluginDir, "core");
+		coreDir = new File(new File(pluginDir, "Core"), "JavaScript");
 		if (coreDir.isDirectory())
 			compileInitScripts(coreDir);
 	}
@@ -244,7 +244,7 @@ public class ScriptographerEngine {
 
 	private static PrintStream getLogger(String name) {
 		try {
-			File logDir = new File(pluginDir, "log");
+			File logDir = new File(pluginDir, "Logs");
 			if (!logDir.exists())
 				logDir.mkdir();
 			return new PrintStream(

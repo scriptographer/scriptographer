@@ -1,9 +1,9 @@
 #!/bin/sh
 
-BASE=../../../..
+BASE=../../../../..
 JAVA=$BASE/java/build/
-DOCS=$BASE/../docs/js/
-CORE=$BASE/../src/js/core/
+JAVASCRIPT=$BASE/../src/js/core/
+REFERENCE=$BASE/docs/js/
 
 makeLink() {
 	echo "Linking $2 -> $1"
@@ -15,9 +15,13 @@ makeLink() {
 }
 
 makeTargetLinks() {
-	makeLink $JAVA build/$1/$2/java
-	makeLink $DOCS build/$1/$2/doc
-	makeLink $CORE build/$1/$2/core
+	if [ ! -d build/$1/$2/Core ]
+	then
+		mkdir build/$1/$2/Core
+	fi
+	makeLink $JAVA build/$1/$2/Core/Java
+	makeLink $JAVASCRIPT build/$1/$2/Core/JavaScript
+	makeLink $REFERENCE build/$1/$2/Reference
 } 
 
 makeLinks() {

@@ -398,7 +398,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	var referenceEntry = new ListEntry(menu) {
 		text: 'Reference...',
 		onSelect: function() {
-			app.launch('file://' + new File(scriptographer.pluginDirectory, 'doc/index.html'));
+			app.launch('file://' + new File(scriptographer.pluginDirectory, 'Reference/index.html'));
 		}
 	};
 

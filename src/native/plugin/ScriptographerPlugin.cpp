@@ -444,7 +444,7 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 #ifdef LOGFILE
 		// Create logfile:
 		char path[512];
-		sprintf(path, "%s" PATH_SEP_STR "log" PATH_SEP_STR "native.log", pluginPath);
+		sprintf(path, "%s" PATH_SEP_STR "Logs" PATH_SEP_STR "native.log", pluginPath);
 		m_logFile = fopen(path, "wt");
 		log("Starting Scriptographer with plugin path: %s", pluginPath);
 #endif

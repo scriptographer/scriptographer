@@ -6,7 +6,7 @@
 	<target name="init">
 		<property name="Name" value="Scriptographer"/>
 		<property name="version.major" value ="2" />
-		<property name="version.minor" value="5" />
+		<property name="version.minor" value="6" />
 		<property name="version" value="${version.major}.${version.minor}"/>
 		<property name="project" value="scriptographer"/>
 		<tstamp>
@@ -225,8 +225,9 @@
 		</delete>
 
 		<mkdir dir="${target.packages}/Scriptographer"/>
-		<mkdir dir="${target.packages}/Scriptographer/java"/>
-		<copy todir="${target.packages}/Scriptographer/java">
+		<mkdir dir="${target.packages}/Scriptographer/Core"/>
+		<mkdir dir="${target.packages}/Scriptographer/Core/Java"/>
+		<copy todir="${target.packages}/Scriptographer/Core/Java">
 			<fileset dir="${target.java}">
 				<include name="**/loader.jar"/>
 				<include name="**/${jar.name}.jar"/>
@@ -236,16 +237,16 @@
 		</copy>
 
 		<!-- JS Core -->
-		<copy todir="${target.packages}/Scriptographer/core">
+		<copy todir="${target.packages}/Scriptographer/Core/JavaScript">
 			<fileset dir="${src.js}/core"/>
 		</copy>
 
 		<!-- JS Docs -->
-		<copy todir="${target.packages}/Scriptographer/doc">
+		<copy todir="${target.packages}/Scriptographer/Reference">
 			<fileset dir="${docs.dir.js}"/>
 		</copy>
 		<!-- Scripts -->
-		<copy todir="${target.packages}/Scriptographer/scripts">
+		<copy todir="${target.packages}/Scriptographer/Scripts">
 			<fileset dir="${scripts.dir}">
 				<exclude name="**/*.ai"/>
 			</fileset>
