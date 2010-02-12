@@ -67,10 +67,29 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	var scriptFilter = new java.io.FilenameFilter() {
 		accept: function(dir, name) {
 			return !/^__|^\.|^libraries$|^CVS$/.test(name) && 
-				(dir != scriptList.directory && /\.(?:js|rb|py)$/.test(name)
-				|| new File(dir, name).isDirectory());
+				(/\.(?:js|rb|py)$/.test(name) || new File(dir, name).isDirectory());
 		}
 	};
+
+	function chooseScriptDirectory(dir) {
+		dir = Dialog.chooseDirectory(
+			'Please choose the Scriptographer script directory',
+			dir || scriptographer.scriptDirectory || scriptographer.pluginDirectory);
+		if (dir && dir.isDirectory()) {
+			script.preferences.scriptDirectory = dir.path;
+			setScriptDirectory(dir);
+			return true;
+		}
+	}
+
+	function setScriptDirectory(dir) {
+		// Tell Scriptographer about where to look for scripts.
+		ScriptographerEngine.scriptDirectory = dir;
+		// Load librarires:
+		// TODO: Is this still used?
+		loadLibraries(new File(dir, 'Libraries'));
+		refreshList();
+	}
 
 	var scriptImage = getImage('script.png');
 	var toolScriptImage = getImage('script-tool.png');
@@ -80,6 +99,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	var directoryEntries = {};
 	var fileEntries = {};
 	var currentToolFile = null;
+	var myScriptsEntry = null;
 
 	function addFile(list, file, index) {
 		// TODO: We need to convert back to com.scriptographer.sg.File from
@@ -95,18 +115,25 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			lastModified: file.lastModified(),
 			isDirectory: file.isDirectory()
 		};
+		var isRoot = list == scriptList;
 		if (entry.isDirectory) {
 			// Create empty child list to get the arrow button but do not
 			// populate yet. This is done dynamically in onTrackEntry, when
 			// the user opens the list
 			entry.createChildList();
 			entry.childList.directory = file;
+			// Seal Examples and Tutorials and pass on sealed setting
+			entry.childList.sealed = isRoot ? /^(Examples|Tutorials)$/.test(file.name) : list.sealed;
+			if (isRoot && file.name == 'My Scripts')
+				myScriptsEntry = entry;
 			entry.expanded = false;
 			entry.populated = false;
 			entry.populate = function() {
 				if (!this.populated) {
 					this.childList.directory = file;
-					addFiles(this.childList);
+					var files = getFiles(this.childList);
+					for (var i = 0; i < files.length; i++)
+						addFile(this.childList, files[i]);
 					this.populated = true;
 				}
 			}
@@ -125,14 +152,6 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			fileEntries[file] = entry;
 		}
 		return entry;
-	}
-
-	function getList(list) {
-		if (!list) {
-			list = scriptList;
-			list.directory = scriptographer.scriptDirectory;
-		}
-		return list;
 	}
 
 	function getFiles(list) {
@@ -158,21 +177,14 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		return files;
 	}
 
-	function addFiles(list) {
-		list = getList(list);
-		var files = getFiles(list);
-		for (var i = 0; i < files.length; i++)
-			addFile(list, files[i]);
-	}
-
-	function removeFiles() {
-		scriptList.removeAll();
-		directoryEntries = {};
-		fileEntries = {};
-	}
-
-	function refreshFiles(list) {
-		list = getList(list);
+	function refreshList(list) {
+		if (!list) {
+			scriptList.directory = scriptographer.scriptDirectory;
+			list = scriptList;
+		}
+		// Do only refresh populated lists
+		if (list.parentEntry && !list.parentEntry.populated)
+			return null;
 		// Get new listing of the directory, then match with already inserted files.
 		// Create a lookup object for easily finding and tracking of already inserted files.	
 		var files = getFiles(list).each(function(file, i) {
@@ -199,8 +211,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 					if (!entry.isDirectory)
 						entry.update();
 				}
-				if (entry.populated)
-					refreshFiles(entry.childList);
+				refreshList(entry.childList);
 			}
 		}, []);
 		// Remove the deleted files.
@@ -220,9 +231,9 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 
 	function createFile() {
 		var entry = scriptList.activeLeaf;
-		var list = entry
-			? entry.isDirectory ? entry.childList : entry.list
-			: scriptList;
+		var list = entry && (entry.isDirectory ? entry.childList : entry.list);
+		if (!list || list.sealed)
+			list = myScriptsEntry ? myScriptsEntry.childList : scriptList;
 		var dir = list.directory;
 		if (dir) {
 			// Find a non existing filename:
@@ -238,16 +249,18 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			], file);
 			   // Add it to the list as well:
 			if (file && file.createNewFile()) {
-				// Use refreshFiles to make sure the new item appears in the
+				// Use refreshList to make sure the new item appears in the
 				// right place, and mark the newly added file as selected.
-				var added = refreshFiles(list).added;
-				added.each(function(newEntry) {
-					if (newEntry.file == file) {
-						if (entry)
-							entry.selected = false;
-						newEntry.selected = true;
-					}
-				});
+				var res = refreshList(list);
+				if (res) {
+					res.added.each(function(newEntry) {
+						if (newEntry.file == file) {
+							if (entry)
+								entry.selected = false;
+							newEntry.selected = true;
+						}
+					});
+				}
 			}
 		}
 	}
@@ -372,10 +385,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 
 	var scriptDirEntry = new ListEntry(menu) {
 		text: 'Set Script Directory...',
-		onSelect: function() {
-			if (chooseScriptDirectory())
-				refreshFiles();
-		}
+		onSelect: chooseScriptDirectory
 	};
 
 	var aboutEntry = new ListEntry(menu) {
@@ -437,7 +447,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	};
 
 	global.onActivate = function() {
-		refreshFiles();
+		refreshList();
 	}
 
 	global.onKeyDown = function(event) {
@@ -447,8 +457,19 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	}
 
-	if (scriptographer.scriptDirectory)
-		addFiles();
+	// Read the script directory first, or ask for it if its not defined:
+	var dir = script.preferences.scriptDirectory;
+	// If no script directory is defined, try the default place for Scripts:
+	// The subdirectory 'scripts' in the plugin directory:
+	dir = dir
+		? new File(dir)
+		: new File(scriptographer.pluginDirectory, 'Scripts');
+	if (!dir.exists() || !dir.isDirectory()) {
+		if (!chooseScriptDirectory(dir))
+			Dialog.alert('Could not find Scriptographer script directory.');
+	} else {
+		setScriptDirectory(dir);
+	}
 
 	return {
 		title: 'Scriptographer',

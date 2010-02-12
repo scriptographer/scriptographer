@@ -69,24 +69,6 @@ function loadLibraries(dir) {
 	}
 }
 
-function chooseScriptDirectory(dir) {
-	dir = Dialog.chooseDirectory(
-		'Please choose the Scriptographer script directory',
-		dir || scriptographer.scriptDirectory || scriptographer.pluginDirectory);
-	if (dir && dir.isDirectory()) {
-		script.preferences.scriptDirectory = dir.path;
-		setScriptDirectory(dir);
-		return true;
-	}
-}
-
-function setScriptDirectory(dir) {
-	// Tell Scriptographer about where to look for scripts.
-	ScriptographerEngine.scriptDirectory = dir;
-	// Load librarires
-	loadLibraries(new File(dir, 'libraries'));
-}
-
 var tool = new Tool('Scriptographer Tool', getImage('tool.png')) {
 	activeImage: getImage('tool-active.png'),
 	tooltip: 'Execute a tool script to assign it with this tool button'
@@ -98,20 +80,6 @@ if (!script.preferences.accepted) {
 }
 
 if (script.preferences.accepted) {
-	// Read the script directory first, or ask for it if its not defined:
-	var dir = script.preferences.scriptDirectory;
-	// If no script directory is defined, try the default place for Scripts:
-	// The subdirectory 'scripts' in the plugin directory:
-	dir = dir
-		? new File(dir)
-		: new File(scriptographer.pluginDirectory, 'scripts');
-	if (!dir.exists() || !dir.isDirectory()) {
-		if (!chooseScriptDirectory(dir))
-			Dialog.alert('Could not find Scriptographer script directory.');
-	} else {
-		setScriptDirectory(dir);
-	}
-
 	include('console.js');
 	include('about.js');
 	include('main.js');
