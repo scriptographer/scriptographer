@@ -67,7 +67,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	var scriptFilter = new java.io.FilenameFilter() {
 		accept: function(dir, name) {
 			return !/^__|^\.|^libraries$|^CVS$/.test(name) && 
-				(/\.(?:js|rb|py)$/.test(name) || new File(dir, name).isDirectory());
+				(dir != scriptList.directory && /\.(?:js|rb|py)$/.test(name)
+				|| new File(dir, name).isDirectory());
 		}
 	};
 
@@ -84,6 +85,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		// TODO: We need to convert back to com.scriptographer.sg.File from
 		// java.io.File here, since listFiles is not using that class.
 		// Decide what to do: Shall we use the boots File object instead?
+		// Most def!
 		if (!(file instanceof File))
 			file = new File(file);
 		var entry = new HierarchyListEntry(list, Base.pick(index, -1)) {
@@ -207,53 +209,48 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		});
 		// Files now only contains new files that are not inserted yet.
 		// Look through them and insert in the right paces.
-		var added = [];
-		files.each(function(info) {
-			added.push(addFile(list, info.file, info.index));
-		});
+		var added = files.each(function(info) {
+			this.push(addFile(list, info.file, info.index));
+		}, []);
 		return {
 			removed: removed,
 			added: added
 		}
 	}
 
-    function createFile() {
-        var entry = scriptList.activeLeaf;
-        var list;
-        if (entry) {
-            if (entry.isDirectory) {
-				list = entry.childList;
-            } else {
-                list = entry.list;
-                entry = list.parentEntry;
-            }
-        } else list = scriptList;
-        // If we're at root, entry is null:
-        var dir = entry ? entry.file : scriptographer.scriptDirectory;
-        if (dir) {
-            // Find a non existing filename:
-            var file;
-            for (var i = 1;;i++) {
-                file = new File(dir, 'Untitled ' + i + '.js');
-                if (!file.exists())
-                    break;
-            }
-            file = Dialog.fileSave('Create A New Script:', [
-                'JavaScript Files (*.js)', '*.js',
-                'All Files', '*.*'
+	function createFile() {
+		var entry = scriptList.activeLeaf;
+		var list = entry
+			? entry.isDirectory ? entry.childList : entry.list
+			: scriptList;
+		var dir = list.directory;
+		if (dir) {
+			// Find a non existing filename:
+			var file;
+			for (var i = 1; ; i++) {
+				file = new File(dir, 'Untitled ' + i + '.js');
+				if (!file.exists())
+					break;
+			}
+			file = Dialog.fileSave('Create a New Script:', [
+				'JavaScript Files (*.js)', '*.js',
+				'All Files', '*.*'
 			], file);
-               // Add it to the list as well:
-            if (file && file.createNewFile()) {
+			   // Add it to the list as well:
+			if (file && file.createNewFile()) {
 				// Use refreshFiles to make sure the new item appears in the
 				// right place, and mark the newly added file as selected.
 				var added = refreshFiles(list).added;
-				added.each(function(entry) {
-					if (entry.file == file)
-						entry.selected = true;
+				added.each(function(newEntry) {
+					if (newEntry.file == file) {
+						if (entry)
+							entry.selected = false;
+						newEntry.selected = true;
+					}
 				});
 			}
-        }
-    }
+		}
+	}
 
 	function execute() {
 		var entry = scriptList.activeLeaf;
