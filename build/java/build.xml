@@ -213,7 +213,7 @@
 	<!-- =================================================================== -->
 	<!-- Creates install packages of Scriptographer for download             -->
 	<!-- =================================================================== -->
-	<target name="packages" depends="jar, packages.cleanup">
+	<target name="packages" depends="jar, resources, packages.cleanup">
 		<mkdir dir="${target.packages}"/>
 
 		<!-- Clean up first, Remove everything except the archives -->
