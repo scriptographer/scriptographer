@@ -211,7 +211,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 					if (!entry.isDirectory)
 						entry.update();
 				}
-				refreshList(entry.childList);
+				if (entry.populated)
+					refreshList(entry.childList);
 			}
 		}, []);
 		// Remove the deleted files.
