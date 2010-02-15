@@ -118,6 +118,8 @@ public abstract class Color {
 	 * @param type the type of the color to convert to, e.g. {@code RGBColor},
 	 *        {@code CMYKColor}, {@code GrayColor}.
 	 * @return the converted color.
+	 * 
+	 * @jshide
 	 */
 	public Color convert(Class type) {
 		return convert(getType(type, hasAlpha()));

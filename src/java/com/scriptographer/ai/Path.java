@@ -508,6 +508,13 @@ public class Path extends PathItem {
 		return false;
 	}
 
+	/**
+	 * Smooth bezier curves without changing the amount of segments or their
+	 * points, by only smoothing and adjusting their handle points, for both
+	 * open ended and closed paths.
+	 * 
+	 * @author Oleg V. Polikarpotchkin
+	 */
 	public void smooth() {
 		getSegments().smooth(isClosed());
 	}
