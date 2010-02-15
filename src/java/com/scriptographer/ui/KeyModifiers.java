@@ -29,13 +29,12 @@
  * $Id$
  */
 
-package com.scriptographer.sg;
+package com.scriptographer.ui;
 
 /**
  * @author lehni
- *
  */
-public class EventModifiers {
+public class KeyModifiers {
 	// Bit flags based on Mac modifiers that are also used by AI / ADM
 	// See AIEvent.h AIEventModifersValue
 	protected final static int SHIFT = 1 << 9;
@@ -47,26 +46,55 @@ public class EventModifiers {
 
 	private int modifiers;
 
-	protected EventModifiers(int modifiers) {
+	/**
+	 * @jshide
+	 */
+	public KeyModifiers(int modifiers) {
 		this.modifiers = modifiers;
 	}
 
+	/**
+	 * Specifies whether the shift key is pressed.
+	 * 
+	 * @return {@true if the shift key is pressed}
+	 */
 	public boolean getShift() {
 		return (modifiers & SHIFT) != 0;
 	}
 
+	/**
+	 * Specifies whether the control key is pressed.
+	 * 
+	 * @return {@true if the control key is pressed}
+	 */
 	public boolean getControl() {
 		return (modifiers & CONTROL) != 0;
 	}
 
+	/**
+	 * Specifies whether the option key is pressed, often also refered to as alt key.
+	 * 
+	 * @return {@true if the option key is pressed}
+	 */
 	public boolean getOption() {
 		return (modifiers & OPTION) != 0;
 	}
 
+	/**
+	 * Specifies whether the meta key is pressed. This is the Windows / Menu key
+	 * on Windows, and command key on Mac.
+	 * 
+	 * @return {@true if the meta key is pressed}
+	 */
 	public boolean getMeta() {
 		return (modifiers & META) != 0;
 	}
 
+	/**
+	 * Specifies whether caps lock key is activated.
+	 * 
+	 * @return {@true if the caps lock is activated}
+	 */
 	public boolean getCapsLock() {
 		return (modifiers & CAPS_LOCK) != 0;
 	}

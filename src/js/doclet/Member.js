@@ -134,7 +134,13 @@ Member = Object.extend({
 	},
 
 	getId: function() {
-		return this.name().toLowerCase();
+		// name can contains '.' in SyntheticMembers and ReferenceMembers.
+		var id = this.name().toLowerCase().replace(/\./g, '-');
+		// Add the class name to the id for static members, in case there's
+		// a non static one with the same name
+		if (this.isStatic())
+			id = this.containingClass().name().toLowerCase() + '-' + id;
+		return id;
 	},
 
 	renderLink: function(param) {

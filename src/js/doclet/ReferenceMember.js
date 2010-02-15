@@ -53,7 +53,13 @@ ReferenceMember = SyntheticMember.extend({
 	},
 
 	getId: function() {
-		return this.member.getId();
+		// Replace name part of id with new name and keep whatever follows
+		// after...
+		var id = this.member.getId();
+		var name = this.member.name().toLowerCase();
+		if (id.indexOf(name) == 0)
+			id = this.base() + id.substring(name.length);
+		return id;
 	},
 
 	containingClass: function() {

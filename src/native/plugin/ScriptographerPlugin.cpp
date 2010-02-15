@@ -33,7 +33,7 @@
 #include "resourceIds.h"
 #include "AppContext.h"
 #include "com_scriptographer_ScriptographerEngine.h"
-#include "com_scriptographer_sg_EventModifiers.h"
+#include "com_scriptographer_ui_KeyModifiers.h"
 #include "AIMenuCommandNotifiers.h"
  
 ScriptographerPlugin *gPlugin = NULL;

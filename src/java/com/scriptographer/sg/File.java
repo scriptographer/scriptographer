@@ -38,6 +38,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
 
+/**
+ * @author lehni
+ * 
+ * @jshide
+ */
+
 public class File extends java.io.File {
 	private BufferedReader reader = null;
 	private PrintWriter writer = null;

@@ -402,8 +402,9 @@
 			<class name="com.scriptographer.ui.MenuItem" />
 			<class name="com.scriptographer.ui.MenuGroup" />
 
+			<class name="com.scriptographer.ui.KeyModifiers" />
+
 			<class name="com.scriptographer.sg.Timer" />
-			<class name="com.scriptographer.sg.EventModifiers" />
 		</javah>
 		<echo id="echo" level="info" />
 		<script language="javascript" src="scripts/jni.js">

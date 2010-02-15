@@ -29,14 +29,27 @@
  * $Id$
  */
 
-package com.scriptographer.sg;
+package com.scriptographer.ui;
 
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.script.EnumUtils;
+import com.scriptographer.sg.Event;
 
 /**
+ * The KeyEvent object is received by the key event handlers
+ * {@code onKeyDown(event)} and {@code onKeyUp(event)}. The KeyEvent
+ * object is the only parameter passed to these functions and contains
+ * information about the key event.
+ * 
+ * Sample code:
+ * <code>
+ * function onKeyDown(event) {
+ * 	// The character of the key that was pressed
+ * 	print(event.character);
+ * }
+ * </code>
+ * 
  * @author lehni
- *
  */
 public class KeyEvent extends Event {
 
@@ -55,14 +68,30 @@ public class KeyEvent extends Event {
 		this.character = character;
 	}
 
+	/**
+	 * Specifies the type of key event.
+	 * 
+	 * @return the type of key event.
+	 */
 	public KeyEventType getType() {
 		return type;
 	}
 
+	/**
+	 * Specifies the virtual key code of the key that caused this key event.
+	 * 
+	 * @return the virtual key code.
+	 */
 	public int getKeyCode() {
 		return keyCode;
 	}
 
+	/**
+	 * Specifies the {@code String} character of the key that caused this
+	 * key event.
+	 * 
+	 * @return the key character.
+	 */
 	public char getCharacter() {
 		return character;
 	}

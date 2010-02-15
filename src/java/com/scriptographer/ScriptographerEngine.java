@@ -53,11 +53,11 @@ import com.scratchdisk.util.StringUtils;
 import com.scriptographer.ai.Annotator;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.LiveEffect;
-import com.scriptographer.sg.KeyCode;
-import com.scriptographer.sg.KeyEvent;
 import com.scriptographer.sg.Script;
 import com.scriptographer.sg.Timer;
 import com.scriptographer.ui.Dialog;
+import com.scriptographer.ui.KeyCode;
+import com.scriptographer.ui.KeyEvent;
 import com.scriptographer.ui.MenuItem;
 
 /**

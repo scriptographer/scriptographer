@@ -29,7 +29,7 @@
  * $Id$
  */
 
-package com.scriptographer.sg;
+package com.scriptographer.ui;
 
 import com.scratchdisk.util.IntegerEnum;
 

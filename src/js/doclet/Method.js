@@ -207,10 +207,17 @@ Method = Member.extend(new function() {
 		},
 
 		getId: function() {
-			var params = this.member.parameters().map(function(param) {
+			var params = this.member.parameters().collect(function(param, i) {
+				if (i >= this.minCount)
+					throw Base.stop;
 				return param.name();
-			}).join('-');
-			return (this.name() + (params ? '-' + params : '')).toLowerCase();
+			}, this).join('-');
+			var id = (this.name() + (params ? '-' + params : '')).toLowerCase();
+			// Add the class name to the id for static methods, in case there's
+			// a non static one with the same arguments
+			if (this.isStatic())
+				id = this.containingClass().name().toLowerCase() + '-' + id;
+			return id;
 		},
 
 		renderParameters: function() {

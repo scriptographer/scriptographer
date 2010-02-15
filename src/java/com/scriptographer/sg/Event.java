@@ -31,9 +31,12 @@
 
 package com.scriptographer.sg;
 
+import com.scriptographer.ui.KeyModifiers;
+
 /**
  * @author lehni
- *
+ * 
+ * @jshide
  */
 public abstract class Event {
 	private int modifiers;
@@ -41,8 +44,22 @@ public abstract class Event {
 	public Event(int modifiers) {
 		this.modifiers = modifiers;
 	}
-	
-	public EventModifiers getModifiers() {
-		return new EventModifiers(modifiers);
+
+	/**
+	 * Returns an object representing the state of various modifiers keys. These
+	 * properties are supported:
+	 * {@code shift, control, option, meta, capsLock}.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * function onMouseDown(event) {
+	 *     print(event.modifiers.shift);
+	 * }
+	 * </code>
+	 * 
+	 * @return
+	 */
+	public KeyModifiers getModifiers() {
+		return new KeyModifiers(modifiers);
 	}
 }
