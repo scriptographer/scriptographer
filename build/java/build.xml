@@ -245,12 +245,16 @@
 		<copy todir="${target.packages}/Scriptographer/Reference">
 			<fileset dir="${docs.dir.js}"/>
 		</copy>
+
 		<!-- Scripts -->
 		<copy todir="${target.packages}/Scriptographer/Scripts">
 			<fileset dir="${scripts.dir}">
 				<exclude name="**/*.ai"/>
 			</fileset>
 		</copy>
+
+		<!-- License -->
+		<copy todir="${target.packages}/Scriptographer/" file="${docs.dir}/License.txt" />
 
 		<antcall target="packages.platform">
 			<param name="target" value="CS4"/>
