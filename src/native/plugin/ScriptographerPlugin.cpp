@@ -336,15 +336,15 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 				if (type != -1) {
 					int modifiers = 0;
 					if (keyboardState[VK_SHIFT] & 0x80)
-						modifiers |= com_scriptographer_sg_EventModifiers_SHIFT;
+						modifiers |= com_scriptographer_ui_KeyModifiers_SHIFT;
 					if (keyboardState[VK_CONTROL] & 0x80)
-						modifiers |= com_scriptographer_sg_EventModifiers_CONTROL;
+						modifiers |= com_scriptographer_ui_KeyModifiers_CONTROL;
 					if (keyboardState[VK_MENU] & 0x80)
-						modifiers |= com_scriptographer_sg_EventModifiers_OPTION;
+						modifiers |= com_scriptographer_ui_KeyModifiers_OPTION;
 					if (keyboardState[VK_APPS] & 0x80)
-						modifiers |= com_scriptographer_sg_EventModifiers_META;
+						modifiers |= com_scriptographer_ui_KeyModifiers_META;
 					if (keyboardState[VK_CAPITAL] & 0x01)
-						modifiers |= com_scriptographer_sg_EventModifiers_CAPS_LOCK;
+						modifiers |= com_scriptographer_ui_KeyModifiers_CAPS_LOCK;
 					handled = gEngine->callOnHandleKeyEvent(type, keyCode, chr, modifiers);
 				}
 			}
