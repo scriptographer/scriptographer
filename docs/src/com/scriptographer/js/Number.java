@@ -6,7 +6,7 @@
  * Copyright (c) 2002-2007 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
- * Please visit http://scriptographer.com/ for updates and contact.
+ * Please visit http://scriptographer.org/ for updates and contact.
  * 
  * -- GPL LICENSE NOTICE --
  * This program is free software; you can redistribute it and/or

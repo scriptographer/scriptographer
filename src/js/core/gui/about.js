@@ -3,10 +3,10 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2008 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2010 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
- * Please visit http://scriptographer.com/ for updates and contact.
+ * Please visit http://scriptographer.org/ for updates and contact.
  *
  * -- GPL LICENSE NOTICE --
  * This program is free software; you can redistribute it and/or
@@ -41,7 +41,7 @@ var aboutDialog = new ModalDialog(function() {
 
 	var lines = [
 		'Scriptographer ' + scriptographer.version + '.' + revision,
-		'http://scriptographer.com',
+		'http://scriptographer.org',
 		'',
 		'Copyright \u00a9 2001-' + (new Date().getFullYear()) + ' J\u00fcrg Lehni',
 		'All rights reserved.',
@@ -56,8 +56,8 @@ var aboutDialog = new ModalDialog(function() {
 		'Java ' + java.lang.System.getProperty('java.version')
 	];
 
-	var urls = {
-		1: 'http://scriptographer.com',
+	var urls = { // line -> url
+		1: 'http://scriptographer.org',
 		7: 'http://scratchdisk.com',
 		10: 'http://jonathanpuckey.com'
 	};
@@ -67,7 +67,7 @@ var aboutDialog = new ModalDialog(function() {
 		bottomMargin: 8,
 
 		onTrack: function(tracker) {
-			if (tracker.modifiers & Tracker.MODIFIER_CLICK) {
+			if (tracker.modifiers & Tracker.MODIFIER_BUTTON_DONW) {
 				var line = Math.floor(tracker.point.y / this.getTextSize(' ', -1).height);
 				if (urls[line] && tracker.point.x < this.getTextSize(lines[line], -1).width)
 					app.launch(urls[line]);

@@ -3,10 +3,10 @@
  *
  * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
  *
- * Copyright (c) 2002-2008 Juerg Lehni, http://www.scratchdisk.com.
+ * Copyright (c) 2002-2010 Juerg Lehni, http://www.scratchdisk.com.
  * All rights reserved.
  *
- * Please visit http://scriptographer.com/ for updates and contact.
+ * Please visit http://scriptographer.org/ for updates and contact.
  *
  * -- GPL LICENSE NOTICE --
  * This program is free software; you can redistribute it and/or
@@ -42,22 +42,22 @@ var licenseDialog = new ModalDialog(function() {
 		text: 'You seem to be running a new version of Scriptographer\n'
 			+ 'for the first time.\n\n'
 			+ 'Please read the terms and conditions carefully:\n\n'
-			+ 'http://www.scriptographer.com/license\n\n'
+			+ 'http://www.scriptographer.org/license\n\n'
 			+ 'And note that if you use Scriptographer in your work,\n'
 			+ 'you should mention it along with the authors of\n'
 			+ 'the scripts in use along with the product.\n\n'
 			+ 'If you use Scriptographer for commercial projects,\n'
 			+ 'please consider a donation to support the effort:\n\n'
-			+ 'http://www.scriptographer.com/donation\n\n'
+			+ 'http://www.scriptographer.org/donation\n\n'
 			+ 'Thank you!',
 
 		bottomMargin: 10,
 
 		onTrack: function(tracker) {
-			if (tracker.modifiers & Tracker.MODIFIER_CLICK) {
+			if (tracker.modifiers & Tracker.MODIFIER_BUTTON_DONW) {
 				var line = Math.floor(tracker.point.y / this.getTextSize(' ', -1).height);
-				var url = line == 5 ? 'http://www.scriptographer.com/license'
-						: line == 14 ? 'http://www.scriptographer.com/donation'
+				var url = line == 5 ? 'http://www.scriptographer.org/license'
+						: line == 14 ? 'http://www.scriptographer.org/donation'
 						: null;
 				if (url && tracker.point.x < this.getTextSize(url, -1).width)
 					app.launch(url);
