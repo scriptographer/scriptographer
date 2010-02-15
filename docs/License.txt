@@ -23,13 +23,12 @@ holder.
 
 If you use the Scriptographer platform or any of the scripts for commercial use,
 please consider a donation to support the open source effort:
-
 http://scriptographer.org/donation
 
 The Scriptographer plugin software itself is licensed under the GNU Public
 License (GPL): http://gnu.org/copyleft/gpl.html
 
 Refer to the following website for a human readable summary:
-http://creativecommons.org/licenses/GPL/2.0/
+http://creativecommons.org/licenses/GPL/2.0
 
 Your fair use and other rights are in no way affected by the above.
