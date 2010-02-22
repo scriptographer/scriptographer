@@ -40,7 +40,7 @@ public class KeyModifiers {
 	protected final static int SHIFT = 1 << 9;
 	protected final static int CONTROL = 1 << 12;
 	protected final static int OPTION = 1 << 11;
-	protected final static int META = 1 << 8;
+	protected final static int COMMAND = 1 << 8;
 	// Match both Mac and ADM Caps Lock
 	protected final static int CAPS_LOCK = (1 << 10) | (1 << 3);
 
@@ -81,13 +81,13 @@ public class KeyModifiers {
 	}
 
 	/**
-	 * Specifies whether the meta key is pressed. This is the Windows / Menu key
-	 * on Windows, and command key on Mac.
+	 * Specifies whether the command key is pressed. This is the same as the
+	 * control key on Windows.
 	 * 
-	 * @return {@true if the meta key is pressed}
+	 * @return {@true if the command key is pressed}
 	 */
-	public boolean getMeta() {
-		return (modifiers & META) != 0;
+	public boolean getCommand() {
+		return (modifiers & CONTROL) != 0;
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class KeyModifiers {
 		buf.append("{ shift: ").append(getShift());
 		buf.append(", control: ").append(getControl());
 		buf.append(", option: ").append(getOption());
-		buf.append(", meta: ").append(getMeta());
+		buf.append(", command: ").append(getCommand());
 		buf.append(", capsLock: ").append(getCapsLock());
 		buf.append(" }");
 		return buf.toString();

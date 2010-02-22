@@ -334,7 +334,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		onUpdate: function() {
 			this.text = (mainDialog.visible ? 'Hide' : 'Show') + ' Main Palette';
 		}
-	};
+	}.setCommand('M', MenuItem.MODIFIER_SHIFT | MenuItem.MODIFIER_COMMAND);
 
 	new MenuItem(scriptographerItem) {
 		onSelect: function() {
@@ -343,7 +343,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		onUpdate: function() {
 			this.text = (consoleDialog.visible ? 'Hide' : 'Show') + ' Console Palette';
 		}
-	};
+	}.setCommand('C', MenuItem.MODIFIER_SHIFT | MenuItem.MODIFIER_COMMAND);
 
 	new MenuItem(scriptographerItem) {
 		text: 'About...',
@@ -452,7 +452,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	}
 
 	global.onKeyDown = function(event) {
-		if (event.character == '`') {
+		if (event.character == '`' && !event.modifiers.command && !event.modifiers.shift) {
 			tool.selected = true;
 			return true;
 		}

@@ -189,16 +189,11 @@ OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRe
 						handled = gEngine->callOnHandleKeyEvent(type, keyCode, uniChar, modifiers);
 					}
 					break;
-					/*
 					case kEventRawKeyModifiersChanged: {
-						int i = 0;
-						event.m_shiftDown = modifiers & shiftKey;
-						event.m_controlDown = modifiers & controlKey;
-						event.m_altDown = modifiers & optionKey;
-						event.m_metaDown = modifiers & cmdKey;
+						// TODO: analyse modifiers and send key events for modifier keys as well, 
+						// just like on Windows
 					}
 					break;
-					*/
 				}
 			}
 		}
@@ -337,12 +332,13 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 					int modifiers = 0;
 					if (keyboardState[VK_SHIFT] & 0x80)
 						modifiers |= com_scriptographer_ui_KeyModifiers_SHIFT;
-					if (keyboardState[VK_CONTROL] & 0x80)
+					if (keyboardState[VK_CONTROL] & 0x80) {
+						// On Windows, VK_CONTROL matches both Control and Command
 						modifiers |= com_scriptographer_ui_KeyModifiers_CONTROL;
+						modifiers |= com_scriptographer_ui_KeyModifiers_COMMAND;
+					}
 					if (keyboardState[VK_MENU] & 0x80)
 						modifiers |= com_scriptographer_ui_KeyModifiers_OPTION;
-					if (keyboardState[VK_APPS] & 0x80)
-						modifiers |= com_scriptographer_ui_KeyModifiers_META;
 					if (keyboardState[VK_CAPITAL] & 0x01)
 						modifiers |= com_scriptographer_ui_KeyModifiers_CAPS_LOCK;
 					handled = gEngine->callOnHandleKeyEvent(type, keyCode, chr, modifiers);

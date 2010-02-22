@@ -52,6 +52,12 @@ public class MenuItem extends NativeObject{
 		OPTION_ALWAYS_ENABLED	= 1 << 1,
 		OPTION_SEPARATOR		= 1 << 2;
 	
+	public static final int
+		MODIFIER_NONE 			= 0,
+		MODIFIER_SHIFT 			= 1 << 0,
+		MODIFIER_OPTION			= 1 << 1,
+		MODIFIER_COMMAND		= 1 << 2;
+
 	protected String name;
 	protected MenuGroup group;
 	private MenuGroup subGroup;
@@ -61,7 +67,7 @@ public class MenuItem extends NativeObject{
 	private static int uniqueId = 0;
 
 	public MenuItem(MenuGroup group, int options) {
-		this.name = "Scriptographer MenuItem " + (++uniqueId);
+		name = "Scriptographer MenuItem " + (++uniqueId);
 
 		this.group = group;
 
@@ -77,7 +83,7 @@ public class MenuItem extends NativeObject{
 		
 		// if no item has been taken over, create a new one:
 		if (handle == 0)
-			handle = nativeCreate(this.name, this.name, group.name, options);
+			handle = nativeCreate(name, name, group.name, options);
 
 		if (handle == 0)
 			throw new ScriptographerException("Unable to create MenuItem.");
@@ -275,4 +281,6 @@ public class MenuItem extends NativeObject{
 	private static MenuItem getItem(int handle) {
 		return (MenuItem) items.get(handle);
 	}
+
+	public native boolean setCommand(String key, int modifiers);
 }

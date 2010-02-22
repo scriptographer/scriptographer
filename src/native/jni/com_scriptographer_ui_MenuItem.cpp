@@ -180,3 +180,27 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_MenuItem_isChecked(JNIEnv 
 	} EXCEPTION_CONVERT(env);
 	return false;
 }
+
+/*
+ * void nativeTest(java.lang.String arg1)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_MenuItem_nativeTest(JNIEnv *env, jobject obj, jstring name) {
+	try {
+	} EXCEPTION_CONVERT(env);
+}
+
+/*
+ * boolean setCommand(java.lang.String key, int arg2)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_MenuItem_setCommand(JNIEnv *env, jobject obj, jstring key, jint modifiers) {
+	try {
+		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
+		char *chars = gEngine->convertString(env, key);
+		int len = strlen(chars);
+		if (len == 1)
+			sAIMenu->SetItemCmd(item, chars[0], modifiers);
+		else if (len >= 2 && (chars[0] == 'f' || chars[0] == 'F'))
+			sAIMenu->SetItemFunctionKey(item, strtol(&chars[1], NULL, 10), modifiers);
+		delete chars;
+	} EXCEPTION_CONVERT(env);
+}

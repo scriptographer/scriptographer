@@ -202,7 +202,7 @@ public class MenuGroup extends NativeObject {
 		this(null);
 		// use this.name, instead of name, because it was modified
 		// in the constructor above
-		handle = nativeCreate(this.name, near.name, 0, options);
+		handle = nativeCreate(name, near.name, 0, options);
 
 		if (handle == 0)
 			throw new ScriptographerException("Unable to create MenuGroup.");
