@@ -591,11 +591,8 @@ Template.prototype = {
 			if (args.length == 1) {
 				prm = prm.param;
 			} else {
-				var src = prm;
-				prm = prm.param;
-				delete src.param;
-				for (var i in src)
-					prm[i] = src[i];
+				prm = this.inherit(prm, prm.param);
+				delete prm.param;
 			}
 			args.arguments[0] = prm;
 		}
