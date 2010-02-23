@@ -55,6 +55,7 @@ public class Palette extends FloatingDialog {
 		this.items = PaletteItem.getItems(items, values);
 		setTitle(title);
 		createLayout(this, this.items, false, 0);
+		setMargin(2, 2, 0, 4);
 		if (values == null)
 			values = new HashMap<String, Object>();
 		this.values = values;
@@ -103,7 +104,6 @@ public class Palette extends FloatingDialog {
 		};
 		TableLayout layout = new TableLayout(sizes);
 		dialog.setLayout(layout);
-		dialog.setMargin(8);
 		// this.setFont(Dialog.FONT_PALETTE);
 
 		if (hasLogo) {

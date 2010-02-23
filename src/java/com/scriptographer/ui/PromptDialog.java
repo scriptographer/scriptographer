@@ -72,6 +72,7 @@ public class PromptDialog extends ModalDialog {
 
 		setDefaultItem(okButton);
 		setCancelItem(cancelButton);
+		setMargin(8);
 	}
 	
 	public PromptDialog(String title, Map[] items) {
