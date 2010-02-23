@@ -31,6 +31,9 @@
 
 package com.scriptographer.ui;
 
+import java.util.ArrayList;
+import java.util.Map;
+
 import com.scratchdisk.util.ConversionUtils;
 
 /**
@@ -38,11 +41,11 @@ import com.scratchdisk.util.ConversionUtils;
  * 
  * @jshide
  */
-public class PromptItem {
+public class PaletteItem {
 	
 	private String description;
 	private String name; // for preferences
-	private PromptItemType type;
+	private PaletteItemType type;
 	private Object value;
 	private Object options[];
 	private float min;
@@ -52,7 +55,7 @@ public class PromptItem {
 	private Item item;
 	private int width;
 	
-	public PromptItem(PromptItemType type, String description, Object value) {
+	public PaletteItem(PaletteItemType type, String description, Object value) {
 		this.description = description;
 		this.type = type;
 		this.value = value;
@@ -66,37 +69,37 @@ public class PromptItem {
 	/**
 	 * Creates a STRING Item
 	 */
-	public PromptItem(String description, String value) {
-		this(PromptItemType.STRING, description, value);
+	public PaletteItem(String description, String value) {
+		this(PaletteItemType.STRING, description, value);
 	}
 
 	/**
 	 * Creates a NUMBER Item
 	 */
-	public PromptItem(String description, Number value) {
-		this(PromptItemType.NUMBER, description, value);
+	public PaletteItem(String description, Number value) {
+		this(PaletteItemType.NUMBER, description, value);
 	}
 
-	public PromptItem(String description, float value) {
-		this(PromptItemType.NUMBER, description, new Float(value));
+	public PaletteItem(String description, float value) {
+		this(PaletteItemType.NUMBER, description, new Float(value));
 	}
 
 	/**
 	 * Creates a BOOLEAN Item
 	 */
-	public PromptItem(String description, Boolean value) {
-		this(PromptItemType.CHECKBOX, description, value);
+	public PaletteItem(String description, Boolean value) {
+		this(PaletteItemType.CHECKBOX, description, value);
 	}
 
-	public PromptItem(String description, boolean value) {
+	public PaletteItem(String description, boolean value) {
 		this(description, new Boolean(value));
 	}
 	/**
 	 * Creates a RANGE Item
 	 */
-	public PromptItem(String description, Number value, float min, float max,
+	public PaletteItem(String description, Number value, float min, float max,
 			float step) {
-		this(PromptItemType.RANGE, description, value);
+		this(PaletteItemType.RANGE, description, value);
 		this.setRange(min, max);
 		this.increment = step;
 	}
@@ -104,8 +107,8 @@ public class PromptItem {
 	/**
 	 * Creates a LIST Item
 	 */
-	public PromptItem(String description, Object value, Object[] options) {
-		this(PromptItemType.LIST, description, value);
+	public PaletteItem(String description, Object value, Object[] options) {
+		this(PaletteItemType.LIST, description, value);
 		this.options = options;
 	}
 	
@@ -186,21 +189,44 @@ public class PromptItem {
 		this.name = name;
 	}
 	
+	protected static void onChange(PaletteItem item) {
+		if (item.item.dialog instanceof Palette) {
+			Palette palette = (Palette) item.item.dialog;
+			palette.onChange(item);
+		}
+	}
+
 	protected Item createItem(Dialog dialog, Border margin) {
 		// Item:
 		item = null;
 		switch (type) {
 		case RANGE:
-			item = new Slider(dialog);
+			item = new Slider(dialog) {
+				protected void onChange() throws Exception {
+					PaletteItem.onChange(PaletteItem.this);
+				}
+			};
 			break;
 		case CHECKBOX:
-			item = new CheckBox(dialog);
+			item = new CheckBox(dialog) {
+				protected void onClick() throws Exception {
+					PaletteItem.onChange(PaletteItem.this);
+				}
+			};
 			break;
 		case LIST:
-			item = new PopupList(dialog);
+			item = new PopupList(dialog) {
+				protected void onChange() throws Exception {
+					PaletteItem.onChange(PaletteItem.this);
+				}
+			};
 			break;
 		default:
-			item = new TextEdit(dialog);
+			item = new TextEdit(dialog) {
+				protected void onChange() throws Exception {
+					PaletteItem.onChange(PaletteItem.this);
+				}
+			};
 		}
 
 		// Value:
@@ -214,10 +240,10 @@ public class PromptItem {
 			if (item instanceof TextEditItem) {
 				((TextEditItem) item).setAllowMath(true);
 				((TextEditItem) item).setAllowUnits(true);
-				((TextEditItem) item).setShowUnits(type == PromptItemType.UNIT);
+				((TextEditItem) item).setShowUnits(type == PaletteItemType.UNIT);
 				((TextEditItem) item).setPrecision(precision);
 			}
-			if (type == PromptItemType.RANGE) {
+			if (type == PaletteItemType.RANGE) {
 				((Slider) item).setIncrements(increment);
 			}
 			((ValueItem) item).setRange(min, max);
@@ -274,5 +300,94 @@ public class PromptItem {
 					return active.getText();
 		}
 		return null;
+	}
+
+	private static double getDouble(Map map, String key) {
+		Object obj = map.get(key);
+		return obj == null ? Double.NaN : ConversionUtils.toDouble(obj);
+	}
+
+	protected static PaletteItem getItem(Map map, String name, Object value) {
+		if (map != null) {
+			Object typeObj = map.get("type");
+			Object valueObj = value != null ? value : map.get("value");
+			float increment = 0;
+			Object[] options = null;
+			PaletteItemType type = null;
+			if (typeObj != null) {
+				if (typeObj instanceof String)
+					type = PaletteItemType.get((String) typeObj);
+			} else { // determine type from value and step:
+				Object incrementObj = map.get("increment");
+				if (incrementObj != null) {
+					type = PaletteItemType.RANGE;
+					increment = ConversionUtils.toFloat(incrementObj);
+					if (Double.isNaN(increment))
+						increment = 0;
+				} else {
+					Object optionsObj = map.get("options");
+					if (optionsObj != null && optionsObj instanceof Object[])
+						options = (Object[]) optionsObj;
+					if (options != null)
+						type = PaletteItemType.LIST;
+					else if (valueObj instanceof Number)
+						type = PaletteItemType.NUMBER;
+					else if (valueObj instanceof Boolean)
+						type = PaletteItemType.CHECKBOX;
+					else if (valueObj instanceof String) 
+						type = PaletteItemType.STRING;
+				}
+			}
+			if (type != null) {
+				String label = ConversionUtils.getString(map, "label");
+				// Backward compatibility to description:
+				if (label == null)
+					label = ConversionUtils.getString(map, "description");
+				if (label == null && name != null)
+					label = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+				PaletteItem item = new PaletteItem(type, label, valueObj);
+				item.setName(name != null ? name : ConversionUtils.getString(map, "name"));
+
+				double width = getDouble(map, "width");
+				if (!Double.isNaN(width))
+					item.setWidth((int) width);
+
+				double precision = getDouble(map, "precision");
+				if (!Double.isNaN(precision))
+					item.setPrecision((int) precision);
+
+				double min = getDouble(map, "min");
+				double max = getDouble(map, "max");
+				if (!Double.isNaN(min) || !Double.isNaN(max))
+					item.setRange((float) min, (float) max);
+				
+				if (options != null)
+					item.setOptions(options);
+
+				item.setIncrement(increment);
+				
+				return item;
+			}
+		}
+		return null;
+	}
+
+	protected static PaletteItem[] getItems(Map[] items) {
+		PaletteItem[] promptItems = new PaletteItem[items.length];
+		for (int i = 0; i < items.length; i++)
+			promptItems[i] = getItem(items[i], null, null);
+		return promptItems;
+	}
+
+	protected static PaletteItem[] getItems(Map<String, Map> items,
+			Map<String, Object> values) {
+		ArrayList<PaletteItem> promptItems = new ArrayList<PaletteItem>();
+		for (Map.Entry<String, Map> entry : items.entrySet()) {
+			PaletteItem item = getItem(entry.getValue(), entry.getKey(),
+					values != null ? values.get(entry.getKey()) : null);
+			if (item != null)
+				promptItems.add(item);
+		}
+		return promptItems.toArray(new PaletteItem[promptItems.size()]);
 	}
 }

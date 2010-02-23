@@ -40,9 +40,13 @@ import org.mozilla.javascript.Wrapper;
 import com.scratchdisk.util.AbstractMap;
 
 /**
- * MapAdapter wraps a Rhino ScriptableObject instance in a Map interface.
- * All methods are implemented, even entrySet() / keySet()
- * This is the opposite of {@link MapWrapper}.
+ * MapAdapter wraps a Rhino ScriptableObject instance in a Map interface. All
+ * methods are implemented, even entrySet() / keySet() This is the opposite of
+ * {@link MapWrapper}.
+ * 
+ * This class was made redundant by Rhino's support for the java.util.Map
+ * interface in ScriptableObject and my extensions to it, ported over
+ * from MapAdapter. I still keep it around though.
  * 
  * @author lehni
  */

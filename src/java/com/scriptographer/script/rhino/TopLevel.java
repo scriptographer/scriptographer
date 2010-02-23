@@ -120,6 +120,7 @@ import com.scriptographer.ui.ListItem;
 import com.scriptographer.ui.MenuGroup;
 import com.scriptographer.ui.MenuItem;
 import com.scriptographer.ui.ModalDialog;
+import com.scriptographer.ui.Palette;
 import com.scriptographer.ui.PopupDialog;
 import com.scriptographer.ui.PopupList;
 import com.scriptographer.ui.PopupMenu;
@@ -218,6 +219,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		MenuGroup.class,
 		MenuItem.class,
 		ModalDialog.class,
+		Palette.class,
 		PopupDialog.class,
 		PopupList.class,
 		PopupMenu.class,

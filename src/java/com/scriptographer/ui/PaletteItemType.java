@@ -37,7 +37,7 @@ import java.util.HashMap;
  * @author lehni
  *
  */
-public enum PromptItemType {
+public enum PaletteItemType {
 	STRING("String"),
 	NUMBER("Number"),
 	UNIT("Unit"),
@@ -47,7 +47,7 @@ public enum PromptItemType {
 
 	protected String name;
 
-	private PromptItemType(String name) {
+	private PaletteItemType(String name) {
 		this.name = name;
 	}
 
@@ -55,15 +55,15 @@ public enum PromptItemType {
 	 * A hash-map for case insensitive retrieval of type objects based on their
 	 * name.
 	 */
-	private static HashMap<String, PromptItemType> types =
-		new HashMap<String, PromptItemType>();
+	private static HashMap<String, PaletteItemType> types =
+		new HashMap<String, PaletteItemType>();
 
 	static {
-		for (PromptItemType type : values())
+		for (PaletteItemType type : values())
 			types.put(type.name.toLowerCase(), type);
 	}
 	
-	public static PromptItemType get(String name) {
+	public static PaletteItemType get(String name) {
 		return types.get(name.toLowerCase());
 	}
 }
