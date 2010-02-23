@@ -782,46 +782,56 @@ String.inject({
 	}
 });
 
-Json = new function() {
+Json = function() { 
+	var JSON = this.JSON;
 	var special = { '\b': '\\b', '\t': '\\t', '\n': '\\n', '\f': '\\f', '\r': '\\r', '"' : '\\"', "'" : "\\'", '\\': '\\\\' };
 	return {
-		encode: function(obj, singles) {
+		encode: function(obj, properties) {
+			if (JSON)
+				return JSON.stringify(obj, properties);
+			if (Base.type(properties) == 'array') {
+				properties = properties.each(function(val) {
+					this[val] = true;
+				}, {});
+			}
 			switch (Base.type(obj)) {
 				case 'string':
-					if (!singles)
-						return uneval(obj.toString());
-					var quote = singles ? "'" : '"';
-					return quote + obj.replace(new RegExp('[\\x00-\\x1f\\\\' + quote + ']', 'g'), function(chr) {
+					return '"' + obj.replace(/[\x00-\x1f\\"]/g, function(chr) {
 						return special[chr] || '\\u' + chr.charCodeAt(0).toPaddedString(4, 16);
-					}) + quote;
+					}) + '"';
 				case 'array':
 					return '[' + obj.collect(function(val) {
-						return Json.encode(val, singles);
+						return Json.encode(val, properties);
 					}) + ']';
 				case 'object':
 				case 'hash':
 					return '{' + Hash.collect(obj, function(val, key) {
-						val = Json.encode(val, singles);
-						if (val) return Json.encode(key, singles) + ':' + val;
+						if (!properties || properties[key]) {
+							val = Json.encode(val, properties);
+							if (val !== undefined)
+								return Json.encode(key) + ':' + val;
+						}
 					}) + '}';
 				case 'function':
-					return null;
+					return undefined;
 				default:
 					return obj + '';
 			}
-			return null;
+			return undefined;
 		},
 
 		decode: function(str, secure) {
 			try {
-				return (Base.type(str) != 'string' || !str.length) ||
-					(secure && !/^[,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]*$/.test(
-						str.replace(/\\./g, '@').replace(/"[^"\\\n\r]*"/g, '')))
-							? null : eval('(' + str + ')');
+				return Base.type(str) == 'string' && str &&
+					(!secure || JSON || /^[\],:{}\s]*$/.test(
+						str.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, "@")
+							.replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, "]")
+							.replace(/(?:^|:|,)(?:\s*\[)+/g, "")))
+								? JSON ? JSON.parse(str) : (new Function('return ' + str))() : null;
 			} catch (e) {
 				return null;
 			}
 		}
 	};
-};
+}();
 
