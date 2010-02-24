@@ -74,7 +74,7 @@ public class MapWrapper extends ExtendedJavaObject {
 			if (map.containsKey(key))
 				return toObject(map.get(key), scriptable);
 		}
-		return super.get(index, scriptable);
+		return Scriptable.NOT_FOUND;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -87,7 +87,7 @@ public class MapWrapper extends ExtendedJavaObject {
 	}
 
 	public boolean has(String name, Scriptable start) {
-		return super.has(name, start) || javaObject != null
+		return javaObject != null
 			&& ((Map) javaObject).containsKey(name);
 	}
 
@@ -98,7 +98,7 @@ public class MapWrapper extends ExtendedJavaObject {
 			if (map.containsKey(name))
 				return toObject(map.get(name), scriptable);
 		}
-		return super.get(name, scriptable);
+		return Scriptable.NOT_FOUND;
 	}
 
 	@SuppressWarnings("unchecked")
