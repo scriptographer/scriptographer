@@ -180,15 +180,6 @@ public class ExtendedJavaObject extends NativeJavaObject {
 		}
 	}
 
-	protected Object toObject(Object obj, Scriptable scope) {
-		// Use this instead of Context.toObject, since that one
-		// seems to handle Booleans wrongly (wrapping it in objects).
-		// TODO: Is this a Rhino bug? If so, fix it.
-		scope = ScriptableObject.getTopLevelScope(scope);
-		Context cx = Context.getCurrentContext();
-        return cx.getWrapFactory().wrap(cx, scope, obj, null);
-	}
-
 	public Object getDefaultValue(Class<?> hint) {
 		// Try the ScriptableObject version first that tries to call toString / valueOf,
 		// and fallback on the Java toString only if that does not work out.

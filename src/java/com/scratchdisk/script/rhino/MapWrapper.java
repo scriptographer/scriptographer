@@ -31,94 +31,137 @@
 
 package com.scratchdisk.script.rhino;
 
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Wrapper;
-
+	
 import java.util.Map;
 
 /**
- * Wrapper class for java.util.Map objects It adds js object-like properties, so
- * it is possible to access lists like this: map["value"], or map[10] It also
- * defines getIds(), so enumeration is possible too: for (var i in list) ... But
- * it does not allow to access by anything else than Integer or String, so not
- * the whole functionality Of maps is provided. For scriptographer it is enough,
- * though. And the real functions can still be accessed, as the class extends a
- * NativeJavaObject
+ * Wrapper class for java.util.Map objects It adds JS object-like properties, so
+ * it is possible to access lists like this: map["value"], or map[10].
+ * 
+ * It also defines getIds(), so enumeration is possible too: for (var i in list)
+ * ... But it does not allow to access by anything else than Integer or String,
+ * so not the whole functionality Of maps is provided. For Scriptographer it is
+ * enough, though.
  * 
  * @author lehni
  */
-public class MapWrapper extends ExtendedJavaObject {
-	public MapWrapper(Scriptable scope, Map map, Class staticType) {
-		// make it sealed, as we're implementing a map anyhow
-		super(scope, map, staticType, false);
+public class MapWrapper extends ScriptableObject implements Wrapper {
+	private Map map;
+
+	public MapWrapper(Scriptable scope, Map map) {
+		super(scope, ScriptableObject.getObjectPrototype(scope));
+		this.map = map;
 	}
 
+	public boolean has(String name, Scriptable start) {
+		if (map != null) {
+			return map.containsKey(name);
+		} else {
+			return super.has(name, start);
+		}
+	}
+
+	public boolean has(int index, Scriptable start) {
+		if (map != null) {
+			return map.containsKey(Integer.toString(index));
+		} else {
+			return super.has(index, start);
+		}
+	}
+
+	public Object get(String name, Scriptable start) {
+		// Retrieve from map first, then from super, to give entries priority
+		// over methods and fields.
+		if (map != null)
+			return getInternal(name);
+		else
+			return super.get(name, start);
+	}
+
+	public Object get(int index, Scriptable start) {
+		// Retrieve from map first, then from super, to give entries priority over methods and fields.
+		if (map != null)
+			return getInternal(Integer.toString(index));
+		else
+			return super.get(index, start);
+	}
+
+    private Object getInternal(Object key) {
+    	if (map.containsKey(key)) {
+    		Object value = map.get(key);
+            return value != null ? Context.javaToJS(value, getParentScope()) : null;
+    	}
+        return Scriptable.NOT_FOUND;
+    }
+
+	public void put(String name, Scriptable start, Object value) {
+		if (map != null)
+			putInternal(name, value);
+		else
+			super.put(name, start, value);
+	}
+
+	public void put(int index, Scriptable start, Object value) {
+		if (map != null)
+			putInternal(Integer.toString(index), value);
+		else
+			super.put(index, start, value);
+	}
+
+	@SuppressWarnings("unchecked")
+    private void putInternal(Object key, Object value) {
+        try {
+        	map.put(key, Context.jsToJava(value,
+                    ScriptRuntime.ObjectClass));
+        } catch (RuntimeException e) {
+            Context.throwAsScriptRuntimeEx(e);
+        }
+    }
+
+    public void delete(String name) {
+        if (map != null) {
+            try {
+            	map.remove(name);
+            } catch (RuntimeException e) {
+                Context.throwAsScriptRuntimeEx(e);
+            }
+        } else {
+        	super.delete(name);
+        }
+    }
+
+    public void delete(int index) {
+        if (map != null) {
+            try {
+            	map.remove(new Integer(index));
+            } catch (RuntimeException e) {
+                Context.throwAsScriptRuntimeEx(e);
+            }
+        } else {
+        	super.delete(index);
+        }
+    }
+
 	public Object[] getIds() {
-		if (javaObject != null) {
-			return ((Map) javaObject).keySet().toArray();
+		if (map != null) {
+			return map.keySet().toArray();
 		} else {
 			return new Object[0];
 		}
 	}
 
-	public boolean has(int index, Scriptable start) {
-		return javaObject != null
-			&& ((Map) javaObject).containsKey(Integer.toString(index));
+	public String getClassName() {
+		// It looks like an Object, inherits from it, so why not pretending to
+		// be one.
+		return "Object";
 	}
 
-	public Object get(int index, Scriptable scriptable) {
-		// Retrieve from map first, then from super, to give entries priority over methods and fields.
-		if (javaObject != null) {
-			Map map = (Map) javaObject;
-			String key = Integer.toString(index);
-			if (map.containsKey(key))
-				return toObject(map.get(key), scriptable);
-		}
-		return Scriptable.NOT_FOUND;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void put(int index, Scriptable start, Object value) {
-		if (javaObject != null) {
-			if (value instanceof Wrapper)
-				value = ((Wrapper) value).unwrap();
-			((Map) javaObject).put(Integer.toString(index), value);
-		}
-	}
-
-	public boolean has(String name, Scriptable start) {
-		return javaObject != null
-			&& ((Map) javaObject).containsKey(name);
-	}
-
-	public Object get(String name, Scriptable scriptable) {
-		// Retrieve from map first, then from super, to give entries priority over methods and fields.
-		if (javaObject != null) {
-			Map map = (Map) javaObject;
-			if (map.containsKey(name))
-				return toObject(map.get(name), scriptable);
-		}
-		return Scriptable.NOT_FOUND;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void put(String name, Scriptable start, Object value) {
-		if (javaObject != null) {
-			if (value instanceof Wrapper)
-				value = ((Wrapper) value).unwrap();
-			((Map) javaObject).put(name, value);
-		}
-	}
-
-	public void delete(String name) {
-		if (javaObject != null) {
-			((Map) javaObject).remove(name);
-		}
-	}
-
-	public void delete(int index) {
-		if (javaObject != null) {
-			((Map) javaObject).remove(Integer.toString(index));
-		}
+	public Object unwrap() {
+		return map;
 	}
 }

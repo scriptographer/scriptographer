@@ -44,9 +44,24 @@ import com.scratchdisk.list.ReadOnlyStringIndexList;
 import com.scratchdisk.list.StringIndexList;
 
 /**
- * Wrapper class for com.scriptographer.util.List objects It adds array-like
- * properties, so it is possible to access lists like this: list[i] It also
- * defines getIds(), so enumeration is possible too: for (var i in list) ...
+ * Wrapper class for com.scriptographer.util.List objects to make them behave
+ * like NativeArray. The prototype is set to the js Array prototype, so all
+ * Array functions can be used on list objects.
+ * 
+ * Unlike MapWrapper, this is still an ExtendedJavaObject at the same time, so
+ * native methods get passed through too. The reasoning behind this is that in
+ * Map<->Object wrapping, such methods could interfere with the expected
+ * behavior of a native Object (e.g. script.preferences.values returning the
+ * values() method from Map), whereas on lists, such clashes are not going to
+ * happen, and right now list classes still often define other functionality in
+ * Scriptographer, e.g. HierarchyList in the UI framework.
+ * 
+ * TODO: In the future, this should be handled in the same way as MapAdapter,
+ * making the list behave like a 100% native array.
+ * 
+ * It adds array-like properties, so it is possible to access lists like this:
+ * list[i] It also defines getIds(), so enumeration is possible too: for (var i
+ * in list) ...
  * 
  * @author lehni
  */
@@ -102,7 +117,7 @@ public class ListWrapper extends ExtendedJavaObject {
 			try {
 				Object obj = ((ReadOnlyList) javaObject).get(index);
 				if (obj != null)
-					return toObject(obj, start);
+					return Context.javaToJS(obj, getParentScope());
 			} catch (IndexOutOfBoundsException e) {
 				// Don't report
 			}
@@ -148,7 +163,7 @@ public class ListWrapper extends ExtendedJavaObject {
 			} else if (javaObject instanceof ReadOnlyStringIndexList) {
 				Object obj = ((ReadOnlyStringIndexList) javaObject).get(name);
 				if (obj != null)
-					return toObject(obj, start);
+					return Context.javaToJS(obj, getParentScope());
 			}
 		}
 		return super.get(name, start);
