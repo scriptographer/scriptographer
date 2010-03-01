@@ -1,12 +1,40 @@
 ### Eclipse Workspace Patch 1.0
 #P Rhino
+Index: src/org/mozilla/javascript/ScriptRuntime.java
+===================================================================
+RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/ScriptRuntime.java,v
+retrieving revision 1.324
+diff -u -r1.324 ScriptRuntime.java
+--- src/org/mozilla/javascript/ScriptRuntime.java	15 Feb 2010 19:31:11 -0000	1.324
++++ src/org/mozilla/javascript/ScriptRuntime.java	1 Mar 2010 15:52:30 -0000
+@@ -149,7 +149,8 @@
+         ObjectClass       = Kit.classOrNull("java.lang.Object"),
+         ShortClass        = Kit.classOrNull("java.lang.Short"),
+         StringClass       = Kit.classOrNull("java.lang.String"),
+-        DateClass         = Kit.classOrNull("java.util.Date");
++        DateClass         = Kit.classOrNull("java.util.Date"),
++        MapClass          = Kit.classOrNull("java.util.Map");
+ 
+     public final static Class<?>
+         ContextClass
+@@ -3359,6 +3360,10 @@
+ 
+             Scriptable errorObject = cx.newObject(scope, errorName, args);
+             ScriptableObject.putProperty(errorObject, "name", errorName);
++            // Lehni:
++            // Add java exception to the error object so we can do stack traces
++            // from the JavaScript side
++            ScriptableObject.putProperty(errorObject, "exception", re);
+ 
+             if (javaException != null && isVisible(cx, javaException)) {
+                 Object wrap = cx.getWrapFactory().wrap(cx, scope, javaException,
 Index: src/org/mozilla/javascript/JavaMembers.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/JavaMembers.java,v
 retrieving revision 1.80
 diff -u -r1.80 JavaMembers.java
 --- src/org/mozilla/javascript/JavaMembers.java	6 Jun 2009 14:11:24 -0000	1.80
-+++ src/org/mozilla/javascript/JavaMembers.java	23 Feb 2010 21:22:50 -0000
++++ src/org/mozilla/javascript/JavaMembers.java	1 Mar 2010 15:52:26 -0000
 @@ -52,9 +52,9 @@
   * @see NativeJavaObject
   * @see NativeJavaClass
@@ -268,41 +296,13 @@ diff -u -r1.80 JavaMembers.java
      private Constructor<?>[] getAccessibleConstructors()
      {
        // The JVM currently doesn't allow changing access on java.lang.Class
-Index: src/org/mozilla/javascript/ScriptRuntime.java
-===================================================================
-RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/ScriptRuntime.java,v
-retrieving revision 1.324
-diff -u -r1.324 ScriptRuntime.java
---- src/org/mozilla/javascript/ScriptRuntime.java	15 Feb 2010 19:31:11 -0000	1.324
-+++ src/org/mozilla/javascript/ScriptRuntime.java	23 Feb 2010 21:23:01 -0000
-@@ -149,7 +149,8 @@
-         ObjectClass       = Kit.classOrNull("java.lang.Object"),
-         ShortClass        = Kit.classOrNull("java.lang.Short"),
-         StringClass       = Kit.classOrNull("java.lang.String"),
--        DateClass         = Kit.classOrNull("java.util.Date");
-+        DateClass         = Kit.classOrNull("java.util.Date"),
-+        MapClass          = Kit.classOrNull("java.util.Map");
- 
-     public final static Class<?>
-         ContextClass
-@@ -3359,6 +3360,10 @@
- 
-             Scriptable errorObject = cx.newObject(scope, errorName, args);
-             ScriptableObject.putProperty(errorObject, "name", errorName);
-+            // Lehni:
-+            // Add java exception to the error object so we can do stack traces
-+            // from the JavaScript side
-+            ScriptableObject.putProperty(errorObject, "exception", re);
- 
-             if (javaException != null && isVisible(cx, javaException)) {
-                 Object wrap = cx.getWrapFactory().wrap(cx, scope, javaException,
 Index: src/org/mozilla/javascript/MemberBox.java
 ===================================================================
 RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/MemberBox.java,v
 retrieving revision 1.19
 diff -u -r1.19 MemberBox.java
 --- src/org/mozilla/javascript/MemberBox.java	26 Jun 2008 13:57:11 -0000	1.19
-+++ src/org/mozilla/javascript/MemberBox.java	23 Feb 2010 21:22:50 -0000
++++ src/org/mozilla/javascript/MemberBox.java	1 Mar 2010 15:52:27 -0000
 @@ -52,7 +52,7 @@
   * @author Igor Bukanov
   */
@@ -409,8 +409,8 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaMethod.
 retrieving revision 1.66
 diff -u -r1.66 NativeJavaMethod.java
 --- src/org/mozilla/javascript/NativeJavaMethod.java	29 Sep 2009 15:05:45 -0000	1.66
-+++ src/org/mozilla/javascript/NativeJavaMethod.java	23 Feb 2010 21:22:51 -0000
-@@ -433,11 +433,11 @@
++++ src/org/mozilla/javascript/NativeJavaMethod.java	1 Mar 2010 15:52:27 -0000
+@@ -433,11 +433,14 @@
          if (firstBestFit < 0) {
              // Nothing was found
              return -1;
@@ -420,11 +420,14 @@ diff -u -r1.66 NativeJavaMethod.java
              return firstBestFit;
          }
 -
++        // Lehni: Let's not care about ambiguity and allow the WrapFactory
++        // to figure out what's best to do with the parameters.
++        // TODO: Make this an Rhino wide switch?
 +        /*
          // report remaining ambiguity
          StringBuffer buf = new StringBuffer();
          for (int j = -1; j != extraBestFitsCount; ++j) {
-@@ -457,13 +457,14 @@
+@@ -457,13 +460,14 @@
  
          if (methodsOrCtors[0].isMethod()) {
              throw Context.reportRuntimeError3(
@@ -447,7 +450,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Context.java,v
 retrieving revision 1.282
 diff -u -r1.282 Context.java
 --- src/org/mozilla/javascript/Context.java	23 Dec 2009 21:47:43 -0000	1.282
-+++ src/org/mozilla/javascript/Context.java	23 Feb 2010 21:22:45 -0000
++++ src/org/mozilla/javascript/Context.java	1 Mar 2010 15:52:23 -0000
 @@ -2111,6 +2111,19 @@
          return wrapFactory;
      }
@@ -482,7 +485,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/ScriptableObject.
 retrieving revision 1.163
 diff -u -r1.163 ScriptableObject.java
 --- src/org/mozilla/javascript/ScriptableObject.java	15 Feb 2010 19:31:10 -0000	1.163
-+++ src/org/mozilla/javascript/ScriptableObject.java	23 Feb 2010 21:23:04 -0000
++++ src/org/mozilla/javascript/ScriptableObject.java	1 Mar 2010 15:52:37 -0000
 @@ -70,7 +70,7 @@
  
  public abstract class ScriptableObject implements Scriptable, Serializable,
@@ -601,7 +604,34 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/WrapFactory.java,
 retrieving revision 1.20
 diff -u -r1.20 WrapFactory.java
 --- src/org/mozilla/javascript/WrapFactory.java	13 Nov 2008 18:03:40 -0000	1.20
-+++ src/org/mozilla/javascript/WrapFactory.java	23 Feb 2010 21:23:04 -0000
++++ src/org/mozilla/javascript/WrapFactory.java	1 Mar 2010 15:52:37 -0000
+@@ -102,7 +102,7 @@
+         if (cls.isArray()) {
+             return NativeJavaArray.wrap(scope, obj);
+         }
+-        return wrapAsJavaObject(cx, scope, obj, staticType);
++        return wrapAsJavaObject(cx, scope, obj, staticType, false);
+     }
+ 
+     /**
+@@ -121,7 +121,7 @@
+         if (cls.isArray()) {
+             return NativeJavaArray.wrap(scope, obj);
+         }
+-        return wrapAsJavaObject(cx, scope, obj, null);
++        return wrapAsJavaObject(cx, scope, obj, null, true);
+     }
+ 
+     /**
+@@ -143,7 +143,7 @@
+      * @return the wrapped value which shall not be null
+      */
+     public Scriptable wrapAsJavaObject(Context cx, Scriptable scope,
+-                                       Object javaObject, Class<?> staticType)
++                                       Object javaObject, Class<?> staticType, boolean newObject)
+     {
+         Scriptable wrap;
+         wrap = new NativeJavaObject(scope, javaObject, staticType);
 @@ -151,6 +151,32 @@
      }
  
@@ -641,7 +671,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaObject.
 retrieving revision 1.90
 diff -u -r1.90 NativeJavaObject.java
 --- src/org/mozilla/javascript/NativeJavaObject.java	18 Jan 2010 09:03:05 -0000	1.90
-+++ src/org/mozilla/javascript/NativeJavaObject.java	23 Feb 2010 21:22:52 -0000
++++ src/org/mozilla/javascript/NativeJavaObject.java	1 Mar 2010 15:52:28 -0000
 @@ -44,6 +44,7 @@
  
  import java.io.*;
@@ -726,6 +756,15 @@ diff -u -r1.90 NativeJavaObject.java
      }
  
      static int getSizeRank(Class<?> aType) {
+@@ -472,7 +497,7 @@
+                 return JSTYPE_OBJECT;
+             }
+         }
+-        else if (value instanceof Class) {
++        else if (value instanceof Class<?>) {
+             return JSTYPE_JAVA_CLASS;
+         }
+         else {
 @@ -497,6 +522,30 @@
          return coerceTypeImpl(type, value);
      }
@@ -924,7 +963,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaPackage
 retrieving revision 1.45
 diff -u -r1.45 NativeJavaPackage.java
 --- src/org/mozilla/javascript/NativeJavaPackage.java	5 Nov 2008 21:37:23 -0000	1.45
-+++ src/org/mozilla/javascript/NativeJavaPackage.java	23 Feb 2010 21:22:52 -0000
++++ src/org/mozilla/javascript/NativeJavaPackage.java	1 Mar 2010 15:52:28 -0000
 @@ -60,7 +60,7 @@
  {
      static final long serialVersionUID = 7445054382212031523L;
@@ -949,7 +988,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/Interpreter.java,
 retrieving revision 1.358
 diff -u -r1.358 Interpreter.java
 --- src/org/mozilla/javascript/Interpreter.java	18 Jan 2010 09:53:58 -0000	1.358
-+++ src/org/mozilla/javascript/Interpreter.java	23 Feb 2010 21:22:49 -0000
++++ src/org/mozilla/javascript/Interpreter.java	1 Mar 2010 15:52:26 -0000
 @@ -1067,65 +1067,6 @@
          throwable = stack[indexReg];
          break withoutExceptions;
@@ -1377,7 +1416,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJSON.java,v
 retrieving revision 1.2
 diff -u -r1.2 NativeJSON.java
 --- src/org/mozilla/javascript/NativeJSON.java	24 Jul 2009 13:58:30 -0000	1.2
-+++ src/org/mozilla/javascript/NativeJSON.java	23 Feb 2010 21:22:50 -0000
++++ src/org/mozilla/javascript/NativeJSON.java	1 Mar 2010 15:52:27 -0000
 @@ -54,7 +54,7 @@
   * See ECMA 15.12.
   * @author Matthew Crumley, Raphael Speyer
@@ -1402,7 +1441,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/IRFactory.java,v
 retrieving revision 1.128
 diff -u -r1.128 IRFactory.java
 --- src/org/mozilla/javascript/IRFactory.java	9 Oct 2009 17:27:16 -0000	1.128
-+++ src/org/mozilla/javascript/IRFactory.java	23 Feb 2010 21:22:47 -0000
++++ src/org/mozilla/javascript/IRFactory.java	1 Mar 2010 15:52:24 -0000
 @@ -1950,7 +1950,7 @@
              } else if (right.type == Token.NUMBER) {
                  if (right.getDouble() == 1.0) {
@@ -1427,7 +1466,7 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaTopPack
 retrieving revision 1.22
 diff -u -r1.22 NativeJavaTopPackage.java
 --- src/org/mozilla/javascript/NativeJavaTopPackage.java	5 Apr 2009 09:09:42 -0000	1.22
-+++ src/org/mozilla/javascript/NativeJavaTopPackage.java	23 Feb 2010 21:22:52 -0000
++++ src/org/mozilla/javascript/NativeJavaTopPackage.java	1 Mar 2010 15:52:28 -0000
 @@ -71,7 +71,7 @@
              {"javax", "swing"}
      };
@@ -1443,7 +1482,16 @@ RCS file: /cvsroot/mozilla/js/rhino/src/org/mozilla/javascript/NativeJavaClass.j
 retrieving revision 1.55
 diff -u -r1.55 NativeJavaClass.java
 --- src/org/mozilla/javascript/NativeJavaClass.java	5 Nov 2008 21:37:22 -0000	1.55
-+++ src/org/mozilla/javascript/NativeJavaClass.java	23 Feb 2010 21:22:51 -0000
++++ src/org/mozilla/javascript/NativeJavaClass.java	1 Mar 2010 15:52:27 -0000
+@@ -105,7 +105,7 @@
+         if (name.equals("prototype"))
+             return null;
+ 
+-         if (staticFieldAndMethods != null) {
++        if (staticFieldAndMethods != null) {
+             Object result = staticFieldAndMethods.get(name);
+             if (result != null)
+                 return result;
 @@ -181,6 +181,12 @@
          return construct(cx, scope, args);
      }
@@ -1477,6 +1525,22 @@ diff -u -r1.55 NativeJavaClass.java
          } else {
              Scriptable topLevel = ScriptableObject.getTopLevelScope(this);
              String msg = "";
+@@ -312,7 +317,7 @@
+         return false;
+     }
+ 
+-    private static Class<?> findNestedClass(Class<?> parentClass, String name) {
++    protected static Class<?> findNestedClass(Class<?> parentClass, String name) {
+         String nestedClassName = parentClass.getName() + '$' + name;
+         ClassLoader loader = parentClass.getClassLoader();
+         if (loader == null) {
+@@ -326,5 +331,5 @@
+         }
+     }
+ 
+-    private Map<String,FieldAndMethods> staticFieldAndMethods;
++    protected Map<String,FieldAndMethods> staticFieldAndMethods;
+ }
 Index: src/org/mozilla/javascript/OperatorHandler.java
 ===================================================================
 RCS file: src/org/mozilla/javascript/OperatorHandler.java
