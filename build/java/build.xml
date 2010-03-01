@@ -225,6 +225,8 @@
 		</delete>
 
 		<mkdir dir="${target.packages}/Scriptographer"/>
+		<!-- Create Empty Logs Dir -->
+		<mkdir dir="${target.packages}/Scriptographer/Logs"/>
 		<mkdir dir="${target.packages}/Scriptographer/Core"/>
 		<mkdir dir="${target.packages}/Scriptographer/Core/Java"/>
 		<copy todir="${target.packages}/Scriptographer/Core/Java">
@@ -250,6 +252,7 @@
 		<copy todir="${target.packages}/Scriptographer/Scripts">
 			<fileset dir="${scripts.dir}">
 				<exclude name="**/*.ai"/>
+				<exclude name="**/My Scripts/*.*"/>
 			</fileset>
 		</copy>
 
