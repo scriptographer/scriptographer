@@ -31,15 +31,14 @@
 
 package com.scriptographer.ai;
 
-import com.scriptographer.ScriptographerEngine; 
-import com.scriptographer.ScriptographerException;
-import com.scratchdisk.script.Callable;
-import com.scratchdisk.util.ConversionUtils;
-import com.scratchdisk.util.IntMap;
-import com.scriptographer.ui.MenuItem;
-
-import java.util.Map;
 import java.util.ArrayList;
+
+import com.scratchdisk.script.Callable;
+import com.scratchdisk.util.IntMap;
+import com.scratchdisk.util.IntegerEnumUtils;
+import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ScriptographerException;
+import com.scriptographer.ui.MenuItem;
 
 /**
  * Wrapper for Illustrator's LiveEffects. Unfortunately, Illustrator is not
@@ -102,8 +101,9 @@ Hope that helps,
 -Frank
 */
 public class LiveEffect extends NativeObject {
+
 	// AIStyleFilterPreferredInputArtType
-	public static final int
+	protected static final int
 		INPUT_DYNAMIC	 		= 0,
 		INPUT_GROUP 			= 1 << (Item.TYPE_GROUP - 1),
 		INPUT_PATH 				= 1 << (Item.TYPE_PATH - 1),
@@ -142,26 +142,25 @@ public class LiveEffect extends NativeObject {
 		// an exceptional condition and we don't want to require normal filters to explicitly say they're OK.
 		// Also, it is not necessary to turn this flag on if you can't take any paths at all.
 		INPUT_NO_CLIPMASKS		= 0x20000;
-
+	
 	//AIStyleFilterFlags
 	public static final int
-		TYPE_DEFAULT		= 0,
-		TYPE_PRE_EFFECT		= 1,
-		TYPE_POST_EFFECT	= 2,
-		TYPE_STROKE			= 3,
-		TYPE_FILL			= 4;
-	
-	public static final int
 		FLAG_NONE						= 0,
-		FLAG_SPECIAL_GROU_PRE_FILTER 	= 0x010000,
-		FLAG_HAS_SCALABLE_PARAMS 		= 0x020000,
-		FLAG_USE_AUTO_RASTARIZE 		= 0x040000,
-		FLAG_CAN_GENERATE_SVG_FILTER	= 0x080000;
+		/* Parameters can be scaled. */
+		FLAG_HAS_SCALABLE_PARAMS 		= 1 << 17,
+		/* Supports automatic rasterization. */
+		FLAG_USE_AUTO_RASTARIZE 		= 1 << 18,
+		/* Supports the generation of an SVG filter. */
+		FLAG_CAN_GENERATE_SVG_FILTER	= 1 << 19,
+		/* Has parameters that can be modified by a \c #kSelectorAILiveEffectAdjustColors message. */
+		FLAG_HAS_ADJUST_COLOR_HANDLER	= 1 << 20,
+		/* Handles \c #kSelectorAILiveEffectIsCompatible messages. If this flag is not set the message will not be sent. */
+		FLAG_HAS_IS_COMPATIBLE_HANDLER	= 1 << 21;
 
 	private String name;
 	private String title;
-	private int preferedInput;
-	private int type;
+	private LiveEffectPosition position;
+	private int preferredInput;
 	private int flags;
 	private int majorVersion;
 	private int minorVersion;
@@ -170,81 +169,83 @@ public class LiveEffect extends NativeObject {
 	/**
 	 * effects maps effectHandles to their wrappers.
 	 */
-	private static IntMap<LiveEffect> effects = new IntMap<LiveEffect>();
-	private static ArrayList<LiveEffect> unusedEffects = null;
+	private static IntMap<LiveEffect> effects = null;
 
 	/**
 	 * Called from the native environment.
 	 */
-	protected LiveEffect(int handle, String name, String title,
-			int preferedInput, int type, int flags, int majorVersion,
-			int minorVersion) {
+	protected LiveEffect(int handle, String name, String title, int position,
+			int preferredInput, int flags, int majorVersion, int minorVersion) {
 		super(handle);
 		this.name = name;
 		this.title = title;
-		this.preferedInput = preferedInput;
-		this.type = type;
+		this.position = IntegerEnumUtils.get(LiveEffectPosition.class, position);
+		this.preferredInput = preferredInput;
 		this.flags = flags;
 		this.majorVersion = majorVersion;
 		this.minorVersion = minorVersion;
 	}
 
 	/**
-	 * @param name
-	 * @param title
-	 * @param preferedInput a combination of LiveEffect.INPUT_*
-	 * @param type one of LiveEffect.TYPE_
+	 * @param title preferred 
+	 * @param preferred a combination of LiveEffect.INPUT_*
 	 * @param flags a combination of LiveEffect.FLAG_*
 	 * @param majorVersion
 	 * @param minorVersion
 	 */
-	public LiveEffect(String name, String title, int preferedInput, int type,
-			int flags, int majorVersion, int minorVersion) {
-		this(0, name, title, preferedInput, type, flags, majorVersion,
-				minorVersion);
+	public LiveEffect(String title, String category, LiveEffectPosition position,
+			Class preferredInput, int flags, int majorVersion, int minorVersion) {
+		this(0, title, title, position != null ? position.value : 0,
+				getInputType(preferredInput), flags, majorVersion, minorVersion);
 
-		ArrayList<LiveEffect> unusedEffects = getUnusedEffects();
+		IntMap<LiveEffect> effects = getEffects();
 
-		// Now see first whether there is an unusedEffect already that fits this
-		// description
-		int index = unusedEffects.indexOf(this);
-		if (index >= 0) {
+		// Now see first whether there is an effect already that fits this
+		// description. Reuse it, as we're probably re-executing a script
+		// that produces the same effect again.
+		Integer key = effects.keyOf(this);
+		if (key != null) {
 			// Found one, let's reuse it's handle and remove the old effect from
 			// the list:
-			LiveEffect effect = unusedEffects.get(index);
+			LiveEffect effect = effects.get(key);
+			effect.remove();
 			handle = effect.handle;
 			effect.handle = 0;
-			unusedEffects.remove(index);
+			effects.remove(key);
 		} else {
 			// No previously existing effect found, create a new one:
-			handle = nativeCreate(name, title, preferedInput, type, flags,
-					majorVersion, minorVersion);
+			handle = nativeCreate(name, title, this.position.value,
+					this.preferredInput, flags, majorVersion, minorVersion);
 		}
 
 		if (handle == 0)
 			throw new ScriptographerException("Unable to create LifeEffect.");
 
+		if (category != null)
+			menuItem = nativeAddMenuItem(name, category, title + "...");
+
 		effects.put(handle, this);
 	}
 
-	/**
-	 * Same constructor, but name is used for title and name.
-	 * 
-	 * @param name
-	 * @param preferedInput a combination of LiveEffect.INPUT_*
-	 * @param type one of LiveEffect.TYPE_
-	 * @param flags a combination of LiveEffect.FLAG_*
-	 * @param majorVersion
-	 * @param minorVersion
-	 */
-	public LiveEffect(String name, int preferedInput, int type, int flags,
-			int majorVersion, int minorVersion) {
-		this(name, name, preferedInput, type, flags, majorVersion, minorVersion);
+	public LiveEffect(String title, String category, LiveEffectPosition position, Class preferredInput,
+			int flags) {
+		this(title, category, position, preferredInput, flags, 1, 0);
+	}
+
+	public LiveEffect(String title, String category, LiveEffectPosition position, Class preferredInput) {
+		this(title, category, position, preferredInput, FLAG_NONE, 1, 0);
+	}
+
+	public LiveEffect(String title, String category, LiveEffectPosition position) {
+		this(title, category, position, null, FLAG_NONE, 1, 0);
 	}
 
 	private native int nativeCreate(String name, String title,
-			int preferedInput, int type, int flags, int majorVersion,
+			int position, int flags, int preferredInput, int majorVersion,
 			int minorVersion);
+
+	private native MenuItem nativeAddMenuItem(String name, String category,
+			String title);
 
 	/**
 	 * "Removes" the effect. there is no real destroy for LiveEffects in
@@ -256,8 +257,8 @@ public class LiveEffect extends NativeObject {
 		// see whether we're still linked:
 		if (effects.get(handle) == this) {
 			// if so remove it and put it to the list of unused effects, for later recycling
-			effects.remove(handle);
-			getUnusedEffects().add(this);
+//			effects.remove(handle);
+	//		getEffects().add(this);
 			if (menuItem != null)
 				menuItem.remove();
 			menuItem = null;
@@ -268,21 +269,9 @@ public class LiveEffect extends NativeObject {
 
 	public static void removeAll() {
 		// As remove() modifies the map, using an iterator is not possible here:
-		Object[] effects = LiveEffect.effects.values().toArray();
-		for (int i = 0; i < effects.length; i++) {
-			((LiveEffect) effects[i]).remove();
-		}
-	}
-
-	private native MenuItem nativeAddMenuItem(String name, String category,
-			String title);
-
-	public MenuItem addMenuItem(String cateogry, String title) {
-		if (menuItem == null) {
-			menuItem = nativeAddMenuItem(name, cateogry, title);
-			return menuItem;
-		}
-		return null;
+		if (effects != null)
+			for (Object effect : effects.values().toArray())
+				((LiveEffect) effect).remove();
 	}
 
 	public MenuItem getMenuItem() {
@@ -297,8 +286,8 @@ public class LiveEffect extends NativeObject {
 			LiveEffect effect = (LiveEffect) obj;
 			return name.equals(effect.name) &&
 					title.equals(effect.title) &&
-					preferedInput == effect.preferedInput &&
-					type == effect.type &&
+					preferredInput == effect.preferredInput &&
+					position == effect.position &&
 					flags == effect.flags &&
 					majorVersion == effect.majorVersion &&
 					minorVersion == effect.minorVersion;
@@ -306,24 +295,57 @@ public class LiveEffect extends NativeObject {
 		return false;
 	}
 
-	private static ArrayList<LiveEffect> getUnusedEffects() {
-		if (unusedEffects == null)
-			unusedEffects = nativeGetEffects();
-		return unusedEffects;
+	private static IntMap<LiveEffect> getEffects() {
+		if (effects == null) {
+			effects = new IntMap<LiveEffect>();
+			for (LiveEffect effect : nativeGetEffects())
+				effects.put(effect.handle, effect);
+		}
+		return effects;
 	}
 
 	private static native ArrayList<LiveEffect> nativeGetEffects();
 
-	/**
-	 * Call only from onEditParameters!
-	 */
-	public native boolean updateParameters(Map parameters);
+	// Getters:
+
+	public LiveEffectPosition getPosition() {
+		return position;
+	}
 
 	/**
-	 * Call only from onEditParameters!
+	 * @jshide
 	 */
-	// TODO: is this still needed? difference to getMenuItem()?
-	public native Object getMenuItem(Map parameters);
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public String getTitle() {
+		return title;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public int getFlags() {
+		return flags;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public int getMajorVersion() {
+		return majorVersion;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public int getMinorVersion() {
+		return minorVersion;
+	}
 
 	// Callback functions:
 
@@ -337,9 +359,10 @@ public class LiveEffect extends NativeObject {
 		this.onEditParameters = onEditParameters;
 	}
 
-	protected void onEditParameters(Map parameters) throws Exception {
+	protected void onEditParameters(LiveEffectEvent event) throws Exception {
 		if (onEditParameters != null)
-			ScriptographerEngine.invoke(onEditParameters, this, parameters);
+			ScriptographerEngine.invoke(
+					onEditParameters, this, event);
 	}
 
 	private Callable onCalculate = null;
@@ -352,26 +375,9 @@ public class LiveEffect extends NativeObject {
 		this.onCalculate = onCalculate;
 	}
 
-	protected Item onCalculate(Map parameters, Item item) throws Exception {
-		if (onCalculate != null) {
-			Object ret = ScriptographerEngine.invoke(onCalculate, this, parameters, item);
-			// it is only possible to either return the art itself or set the
-			// art to null!
-			// everything else semse to cause a illustrator crash
-
-			// TODO: This is not correct handling:
-			// Am 23.02.2005 um 18:53 schrieb Frank Stokes-Guinan:
-			// When creating output art for the go message, the output art must
-			// be a child of the same parent as the input art. It also must be
-			// the only child of this parent, so if you create a copy of the
-			// input art, work on it and attempt to return the copy as the
-			// output art, you must make sure to dispose the original input art
-			// first. It is not legal to create an item in an arbitrary
-			// place and return that as the output art.
-
-			return ret == item ? item : null;
-		}
-		return null;
+	protected void onCalculate(LiveEffectEvent event) throws Exception {
+		if (onCalculate != null)
+			ScriptographerEngine.invoke(onCalculate, this, event);
 	}
 
 	private Callable onGetInputType = null;
@@ -384,34 +390,53 @@ public class LiveEffect extends NativeObject {
 		this.onGetInputType = onGetInputType;
 	}
 
-	protected int onGetInputType(Map parameters, Item item) throws Exception {
+	protected int onGetInputType(LiveEffectEvent event) throws Exception {
 		if (onGetInputType != null) {
-			return ConversionUtils.toInt(ScriptographerEngine.invoke(
-					onGetInputType, parameters, item));
+			Object ret = ScriptographerEngine.invoke(
+					onGetInputType, this, event);
+			// Determine type from returned class
+			if (ret instanceof Class)
+				return getInputType((Class) ret);
 			
 		}
-		return 0;
+		// Default is INPUT_ANY_BUT_PLUGIN
+		return INPUT_ANY_BUT_PLUGIN;
+	}
+
+	protected static int getInputType(Class cls) {
+		// Default setting for effects that provide no input type is INPUT_DYNAMIC,
+		// so the getInputType handler is asked instead.
+		int type =  INPUT_DYNAMIC;
+		// Determine type from Item class
+		if (cls != null && Item.class.isAssignableFrom(cls)) {
+			type = Item.getItemType(cls);
+			if (type == Item.TYPE_ANY)
+				type = INPUT_ANY_BUT_PLUGIN;
+			else if (type == Item.TYPE_UNKNOWN)
+				type = INPUT_DYNAMIC;
+			else {
+				type = 1 << (type - 1);
+				if (type == INPUT_ANY)
+					type = INPUT_ANY_BUT_PLUGIN;
+			}
+		}
+		return type;
 	}
 
 	/**
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static void onEditParameters(int handle, int parameters,
-			int effectContext, boolean allowPreview) throws Exception {
+	private static void onEditParameters(int handle, int dataHandle) throws Exception {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
-			// TODO: put these special values to the parameters for the duration of
-			// the handler the parameter map then needs to be passed to
-			// functions like updateParameters
+			effect.onEditParameters(new LiveEffectEvent(0, dataHandle));
 			/*
-			parameters.put("context", new Integer(effectContext));
-			parameters.put("allowPreview", new Boolean(allowPreview));
-			*/
-			effect.onEditParameters(Dictionary.wrapHandle(parameters));
-			/*
-			parameters.remove("context");
-			parameters.remove("allowPreview");
+			Dictionary data = Dictionary.wrapHandle(dataHandle, null, true);
+			data.remove("-position");
+			data.remove("-handle");
+			effect.onEditParameters(new LiveEffectEvent(null, data));
+			data.put("-handle", dataHandle);
 			*/
 		}
 	}
@@ -420,13 +445,62 @@ public class LiveEffect extends NativeObject {
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static int onCalculate(int handle, int parameters, Item item)
+	private static int onCalculate(int handle, Item item, int dataHandle)
 			throws Exception {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
-			Item newArt = effect.onCalculate(Dictionary.wrapHandle(parameters), item);
-			if (newArt != null)
-				item = newArt;
+			Document document = item.document;
+			Dictionary data = Dictionary.wrapHandle(dataHandle, document, false);
+			/*
+			Object h = data.get("-handle");
+			if (h instanceof Integer)
+				data = Dictionary.wrapHandle(((Number) h).intValue(), document, false);
+			if (!data.containsKey("-position")) {
+				Item selected = document.getSelectedItems().getFirst();
+				int position = 0;
+				if (selected != null) {
+					LiveEffectPosition pos = selected.getEffectPosition(effect, data);
+					if (pos != null)
+						position = pos.value;
+				}
+				data.put("-position", position);
+			}
+			*/
+			Item parent = item.getParent();
+			// Scriptographer's new item recording feature makes
+			// processing effects extremly convenient. All new items
+			// are automatically collected, and the right thing is
+			// done with them at the end. Since doing the wrong
+			// thing leads to endless crashes, this is the best
+			// way to handle this anyway.
+			Item.collectNewItems();
+			ItemList newItems = null;
+			try {
+				effect.onCalculate(new LiveEffectEvent(item, data));
+			} finally {
+				newItems = Item.retreiveNewItems();
+			}
+			if (newItems.size() > 0) {
+				Item newItem;
+				if (newItems.size() == 1) {
+					newItem = newItems.getFirst();
+				} else {
+					// More than one new item was produced. Group them, as
+					// LiveEffects require one item only.
+					newItem = new Group(newItems);
+				}
+				// "When creating output art for the go message, the output art
+				// must be a child of the same parent as the input art. It also
+				// must be the only child of this parent, so if you create a
+				// copy of the input art, work on it and attempt to return the
+				// copy as the output art, you must make sure to dispose the
+				// original input art first. It is not legal to create an item
+				// in an arbitrary place and return that as the output art."
+				if (newItem.getParent().equals(parent) || parent.appendTop(newItem)) {
+					item.remove();
+					item = newItem;
+				}
+			}
 		}
 		// already return the handle to the native environment so it doesn't
 		// need to access it there...
@@ -437,12 +511,15 @@ public class LiveEffect extends NativeObject {
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static int onGetInputType(int handle, int parameters, Item item)
+	private static int onGetInputType(int handle, int itemHandle, int dataHandle)
 			throws Exception {
+		// For improved performance of onGetInputType, we do not wrap the handle
+		// on the native side already, as often it is not even used. Instead
+		// The LiveEffectEvent takes care of that on demand.
 		LiveEffect effect = getEffect(handle);
 		if (effect != null)
-			return effect.onGetInputType(Dictionary.wrapHandle(parameters), item);
-		return 0;
+			return effect.onGetInputType(new LiveEffectEvent(itemHandle, dataHandle));
+		return INPUT_ANY_BUT_PLUGIN;
 	}
 
 	private static LiveEffect getEffect(int handle) {

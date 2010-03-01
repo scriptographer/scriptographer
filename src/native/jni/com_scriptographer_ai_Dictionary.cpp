@@ -47,6 +47,18 @@ int Dictionary_size(AIDictionaryRef dictionary) {
 }
 
 /*
+ * int nativeCreate()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Dictionary_nativeCreate(JNIEnv *env, jclass obj) {
+	try {
+		AIDictionaryRef dictionary = NULL;
+		sAIDictionary->CreateDictionary(&dictionary);
+		return (jint) dictionary;
+	} EXCEPTION_CONVERT(env);
+	return 0;
+}
+
+/*
  * java.lang.Object nativeGet(int handle, int docHandle, java.lang.Object key)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv *env, jobject obj, jint handle, jint docHandle, jobject key) {
@@ -242,8 +254,12 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 						if (res)
 							gEngine->setItemDictionary(env, value, dictionary, dictKey);
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Dictionary)) {
-						// TODO: How can such dictionaries be created?
-						// TODO: Should other maps be supported and converted as well?
+						entry = sAIEntry->FromDict(gEngine->getDictionaryHandle(env, value));
+					} else if (env->IsInstanceOf(value, gEngine->cls_Map)) {
+						// Convert Map to Dictionary through Dictionary constructor, then
+						// use its handle:
+						value = gEngine->newObject(env, gEngine->cls_ai_Dictionary,
+							gEngine->cid_ai_Dictionary, value);
 						entry = sAIEntry->FromDict(gEngine->getDictionaryHandle(env, value));
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Point) ||
 							   env->IsInstanceOf(value, gEngine->cls_ui_Point)) {
@@ -336,10 +352,20 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Dictionary_keys(JNIEnv
 				}
 				sAIDictionaryIterator->Next(iterator);
 			}
+			sAIDictionaryIterator->Release(iterator);
 			return array;
 		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;
+}
+
+/*
+ * void nativeAddReference(int handle)
+ */
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Dictionary_nativeAddReference(JNIEnv *env, jobject obj, jint handle) {
+	try {
+		sAIDictionary->AddRef((AIDictionaryRef) handle);
+	} EXCEPTION_CONVERT(env);
 }
 
 /*

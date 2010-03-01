@@ -200,8 +200,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	protected Item(int handle, Document doc, boolean created, boolean unversioned) {
 		super(handle, doc);
 		if (document == null)
-		    throw new ScriptographerException(
-		    		"Unable to create item. There is no open document.");
+			throw new ScriptographerException(
+					"Unable to create item. There is no open document.");
 		if (unversioned) {
 			creationVersion = 0;
 		} else if (created) {
@@ -228,6 +228,10 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		// Keep track of this object from now on, see wrapArtHandle
 		if (handle != 0)
 			items.put(handle, this);
+
+		// Collect new items. Used for effects
+		if (created && newItems != null)
+			newItems.add(this);
 	}
 
 	protected Item(int handle, int docHandle, boolean created) {
@@ -322,6 +326,9 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		}
 		return item;
 	}
+
+	protected static native Item wrapHandle(int artHandle, int docHandle,
+			boolean created, boolean checkWrapped);
 
 	/**
 	 * Returns the wrapper, if the object has one
@@ -577,7 +584,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 
 	public Dictionary getDictionary() {
 		return dictionaryHandle != 0 
-				? Dictionary.wrapHandle(dictionaryHandle, document)
+				? Dictionary.wrapHandle(dictionaryHandle, document, false)
 				: null;
 	}
 
@@ -890,6 +897,73 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	private native int nativeGetData();
 
 	/**
+	 * @jshide
+	 */
+	public LiveEffectPosition getEffectPosition(LiveEffect effect, Map<String, Object> data) {
+		if (effect != null)
+			return IntegerEnumUtils.get(LiveEffectPosition.class,
+					nativeGetEffectPosition(effect, data));
+		return null;
+	}
+
+	private native int nativeGetEffectPosition(LiveEffect effect, Map<String, Object> data);
+
+	/**
+	 * @jshide
+	 */
+	public boolean hasEffect(LiveEffect effect, Map<String, Object> data) {
+		return getEffectPosition(effect, data) != null;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public boolean addEffect(LiveEffect effect, Map<String, Object> data,
+			LiveEffectPosition position, boolean editData) {
+		if (effect != null) {
+			return nativeAddEffect(effect,
+				data != null
+					? data instanceof Dictionary
+						? (Dictionary) data
+						: new Dictionary(data)
+					: new Dictionary(),
+				position != null
+					? position.value
+					: effect.getPosition().value,
+				editData);
+		}
+		return false;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public boolean addEffect(LiveEffect effect, Map<String, Object> data, LiveEffectPosition position) {
+		return addEffect(effect, data, position, true);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public boolean addEffect(LiveEffect effect, Map<String, Object> data) {
+		return addEffect(effect, data, effect.getPosition());
+	}
+
+	/**
+	 * @jshide
+	 */
+	public boolean addEffect(LiveEffect effect) {
+		return addEffect(effect, null);
+	}
+
+	private native boolean nativeAddEffect(LiveEffect effect, Dictionary data, int position, boolean editData);
+
+	/**
+	 * @jshide
+	 */
+	public native boolean removeEffect(LiveEffect effect, Map<String, Object> data);
+
+	/**
 	 * An object contained within the item which can be used to store data.
 	 * The values in this object can be accessed even after the file has been
 	 * closed and opened again. Since these values are stored in a native
@@ -905,7 +979,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 */
 	public Dictionary getData() {
 		if (data == null)
-			data = Dictionary.wrapHandle(nativeGetData(), document);
+			data = Dictionary.wrapHandle(nativeGetData(), document, false);
 		return data;	
 	}
 
@@ -1446,7 +1520,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * Sample code: <code>
 	 * var group = new Group();
 	 * var path = new Path();
-	 * group.appendTop(path);
+	 * group.appendBottom(path);
 	 * print(path.isDescendant(group)); // true
 	 * </code>
 	 * 
@@ -1724,5 +1798,28 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 						? " (" + getId() + ")"
 						: " <" + getName() + "> (" + getId() + ")"
 				: " <invalid>");
+	}
+
+	private static ItemList newItems = null;
+	
+	/**
+	 * @jshide
+	 */
+	public static void collectNewItems() {
+		newItems = new ItemList();
+	}
+
+	/**
+	 * @jshide
+	 */
+	public static ItemList retreiveNewItems() {
+		ItemList items = newItems;
+		newItems = null;
+		for (int i = items.size() - 1; i >= 0; i--) {
+			Item item = items.get(i);
+			if (!item.isValid())
+				items.remove(i);
+		}
+		return items;
 	}
 }

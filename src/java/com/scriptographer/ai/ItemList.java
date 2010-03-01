@@ -58,7 +58,7 @@ public class ItemList extends ExtendedArrayList<Item> implements ReadOnlyStringI
 		addAll(items);
 	}
 
-	public ItemList(Item[] items) {
+	public ItemList(Item... items) {
 		this(Lists.asList(items));
 	}
 

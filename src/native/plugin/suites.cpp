@@ -47,6 +47,7 @@ extern "C" {
 	AIAnnotatorSuite				*sAIAnnotator;
 	AIArraySuite					*sAIArray;
 	AIArtStyleSuite					*sAIArtStyle;
+	AIArtStyleParserSuite			*sAIArtStyleParser;
 	AIArtSuite						*sAIArt;
 	AIArtSetSuite					*sAIArtSet;
 	AIATEPaintSuite					*sAIATEPaint;
@@ -221,6 +222,7 @@ ImportSuite postStartup[] = {
 	kAIAnnotatorSuite, kAIAnnotatorVersion,	&sAIAnnotator, sizeof(AIAnnotatorSuite),
 	kAIArraySuite, kAIArraySuiteVersion, &sAIArray, sizeof(AIArraySuite),
 	kAIArtStyleSuite, kAIArtStyleVersion, &sAIArtStyle, sizeof(AIArtStyleSuite),
+	kAIArtStyleParserSuite, kAIArtStyleParserVersion, &sAIArtStyleParser, sizeof(AIArtStyleParserSuite),
 	kAIArtSuite, kAIArtVersion, &sAIArt, sizeof(AIArtSuite),
 	kAIArtSetSuite, kAIArtSetVersion, &sAIArtSet, sizeof(AIArtSetSuite),
 	kAIATEPaintSuite, kAIATEPaintSuiteVersion, &sAIATEPaint, sizeof(AIATEPaintSuite),

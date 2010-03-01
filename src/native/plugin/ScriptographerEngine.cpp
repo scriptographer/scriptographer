@@ -30,6 +30,7 @@
 #include "stdHeaders.h"
 #include "ScriptographerEngine.h"
 #include "ScriptographerPlugin.h"
+#include "AppContext.h"
 #include "com_scriptographer_ScriptographerEngine.h"
 #include "com_scriptographer_ai_Item.h" // for com_scriptographer_ai_Item_TYPE_LAYER
 #include "uiGlobals.h"
@@ -323,6 +324,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 // JSE:
 	cls_Object = loadClass(env, "java/lang/Object");
 	mid_Object_toString = getMethodID(env, cls_Object, "toString", "()Ljava/lang/String;");
+	mid_Object_equals = getMethodID(env, cls_Object, "equals", "(Ljava/lang/Object;)Z");
 
 	cls_System = loadClass(env, "java/lang/System");
 	fid_System_out = getStaticFieldID(env, cls_System, "out", "Ljava/io/PrintStream;");
@@ -396,10 +398,6 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_List_size = getMethodID(env, cls_List, "size", "()I");
 	mid_List_get = getMethodID(env, cls_List, "get", "(I)Ljava/lang/Object;");
 
-	cls_IntMap = loadClass(env, "com/scratchdisk/util/IntMap");
-	cid_IntMap = getConstructorID(env, cls_IntMap, "()V");
-	mid_IntMap_put = getMethodID(env, cls_IntMap, "put", "(ILjava/lang/Object;)Ljava/lang/Object;");
-
 // Scriptographer:
 	cls_ScriptographerEngine = loadClass(env, "com/scriptographer/ScriptographerEngine");
 	mid_ScriptographerEngine_init = getStaticMethodID(env, cls_ScriptographerEngine, "init", "(Ljava/lang/String;)V");
@@ -430,8 +428,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_Document_onRevert = getMethodID(env, cls_ai_Document, "onRevert", "()V");
 
 	cls_ai_Dictionary = loadClass(env, "com/scriptographer/ai/Dictionary");
+	cid_ai_Dictionary = getConstructorID(env, cls_ai_Dictionary, "(Ljava/util/Map;)V");
 	fid_ai_Dictionary_handle = getFieldID(env, cls_ai_Dictionary, "handle", "I");
-	mid_ai_Dictionary_wrapHandle = getStaticMethodID(env, cls_ai_Dictionary, "wrapHandle", "(II)Lcom/scriptographer/ai/Dictionary;");
+	mid_ai_Dictionary_wrapHandle = getStaticMethodID(env, cls_ai_Dictionary, "wrapHandle", "(IIZ)Lcom/scriptographer/ai/Dictionary;");
 
 	cls_ai_Tool = loadClass(env, "com/scriptographer/ai/Tool");
 	cid_ai_Tool = getConstructorID(env, cls_ai_Tool, "(ILjava/lang/String;)V");
@@ -557,9 +556,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 
 	cls_ai_LiveEffect = loadClass(env, "com/scriptographer/ai/LiveEffect");
 	cid_ai_LiveEffect = getConstructorID(env, cls_ai_LiveEffect, "(ILjava/lang/String;Ljava/lang/String;IIIII)V");
-	mid_ai_LiveEffect_onEditParameters = getStaticMethodID(env, cls_ai_LiveEffect, "onEditParameters", "(IIIZ)V");
-	mid_ai_LiveEffect_onCalculate = getStaticMethodID(env, cls_ai_LiveEffect, "onCalculate", "(IILcom/scriptographer/ai/Item;)I");
-	mid_ai_LiveEffect_onGetInputType = getStaticMethodID(env, cls_ai_LiveEffect, "onGetInputType", "(IILcom/scriptographer/ai/Item;)I");
+	mid_ai_LiveEffect_onEditParameters = getStaticMethodID(env, cls_ai_LiveEffect, "onEditParameters", "(II)V");
+	mid_ai_LiveEffect_onCalculate = getStaticMethodID(env, cls_ai_LiveEffect, "onCalculate", "(ILcom/scriptographer/ai/Item;I)I");
+	mid_ai_LiveEffect_onGetInputType = getStaticMethodID(env, cls_ai_LiveEffect, "onGetInputType", "(III)I");
 	
 	cls_sg_Timer = loadClass(env, "com/scriptographer/sg/Timer");
 	cid_sg_Timer = getConstructorID(env, cls_sg_Timer, "(I)V");
@@ -677,56 +676,167 @@ void ScriptographerEngine::reportError(JNIEnv *env) {
 	}
 }
 
-// java.lang.Boolean <-> jboolean
-jobject ScriptographerEngine::convertBoolean(JNIEnv *env, jboolean value) {
-	jobject res = newObject(env, cls_Boolean, cid_Boolean, value);
-	EXCEPTION_CHECK(env);
+/**
+ * Creates a Java String from a given C-String.
+ * TODO: The non depreceated version that takes an encoding parameter should be used in the future.
+ *
+ * throws exceptions
+ */
+jstring ScriptographerEngine::convertString(JNIEnv *env, const char *str) {
+	if (!str)
+		return NULL;
+	JNI_CHECK_ENV
+	int len = strlen(str);
+	jbyteArray bytes = env->NewByteArray(len);
+	if (bytes == NULL) throw new JThrowableClassException(cls_OutOfMemoryError);
+	env->SetByteArrayRegion(bytes, 0, len, (jbyte *) str);
+	jstring res = (jstring) env->NewObject(cls_String, cid_String, bytes);
+	env->DeleteLocalRef(bytes);
+	if (res == NULL) EXCEPTION_CHECK(env);
 	return res;
 }
 
-jboolean ScriptographerEngine::convertBoolean(JNIEnv *env, jobject value) {
-	jboolean res = callBooleanMethod(env, value, mid_Boolean_booleanValue);
-	EXCEPTION_CHECK(env);
+/**
+ * Creates a Java String from a given Pascal-String.
+ * Caution: modifies str!
+ *
+ * throws exceptions
+ */
+jstring ScriptographerEngine::convertString(JNIEnv *env, unsigned char *str) {
+	return convertString(env, gPlugin->fromPascal(str, (char *) str));
+}
+
+/**
+ * Creates a C-String from a given Java String. 
+ * TODO: The non depreceated version that takes an encoding parameter should be used in the future.
+ *
+ * throws exceptions
+ */
+char *ScriptographerEngine::convertString(JNIEnv *env, jstring jstr, int minLength) {
+	if (!jstr)
+		return NULL;
+	JNI_CHECK_ENV
+	jbyteArray bytes = (jbyteArray)callObjectMethod(env, jstr, mid_String_getBytes);
+	jint len = env->GetArrayLength(bytes);
+	jint length = len + 1;
+	if (length < minLength)
+		length = minLength;
+	char *result = new char[length];
+	if (result == NULL) {
+		env->DeleteLocalRef(bytes);
+		throw new JThrowableClassException(cls_OutOfMemoryError);
+	}
+	env->GetByteArrayRegion(bytes, 0, len, (jbyte *) result);
+	result[len] = 0; // NULL-terminate
+	env->DeleteLocalRef(bytes);
+	return result;
+}
+
+jstring ScriptographerEngine::convertString(JNIEnv *env, const ASUnicode *str, int length) {
+	JNI_CHECK_ENV
+	if (length < 0) {
+		// find length
+		length = 0;
+		while (str[length] != 0)
+			length++;
+	}
+	jstring res = env->NewString((jchar *) str, length);
+	if (res == NULL) EXCEPTION_CHECK(env);
 	return res;
+}
+
+ASUnicode *ScriptographerEngine::convertString_ASUnicode(JNIEnv *env, jstring jstr) {
+	JNI_CHECK_ENV
+	int length = env->GetStringLength(jstr);
+	ASUnicode *chars = new ASUnicode[length + 1];
+	env->GetStringRegion(jstr, 0, length, (jchar *) chars);
+	// make it null-determined:
+	chars[length] = 0;
+	return chars;
+}
+
+#if kPluginInterfaceVersion < kAI12
+
+/**
+ * Creates a Java String from a given Pascal-String.
+ * Only supported in CS and bellow
+ */
+unsigned char *ScriptographerEngine::convertString_Pascal(JNIEnv *env, jstring jstr, int minLength) {
+	char *str = convertString(env, jstr, minLength);
+	return gPlugin->toPascal(str, (unsigned char*) str);
+}
+
+#else
+
+/**
+ * Creates a Java String from a given UTF-16-String.
+ * Only supported in CS2 and above
+ */
+jstring ScriptographerEngine::convertString(JNIEnv *env, ai::UnicodeString &str) {
+	JNI_CHECK_ENV
+	const ASUnicode *buffer;
+	int len = str.utf_16(buffer);
+	jstring res = env->NewString(buffer, len);
+	if (res == NULL) EXCEPTION_CHECK(env);
+	return res;
+}
+
+ai::UnicodeString ScriptographerEngine::convertString_UnicodeString(JNIEnv *env, jstring jstr) {
+	JNI_CHECK_ENV
+	const jchar *chars = env->GetStringCritical(jstr, NULL);
+	ai::UnicodeString str(chars, env->GetStringLength(jstr));
+	env->ReleaseStringCritical(jstr, chars); 
+	return str;
+}
+
+#endif
+
+#ifdef MAC_ENV
+CFStringRef ScriptographerEngine::convertString_CFString(JNIEnv *env, jstring jstr) {
+	if (jstr == NULL)
+		return NULL;
+	JNI_CHECK_ENV
+	const jchar *chars = env->GetStringCritical(jstr, NULL);
+	CFStringRef str = CFStringCreateWithCharacters(kCFAllocatorDefault, chars, env->GetStringLength(jstr));
+	env->ReleaseStringCritical(jstr, chars); 
+	return str;
+}		
+#endif
+
+// java.lang.Boolean <-> jboolean
+jobject ScriptographerEngine::convertBoolean(JNIEnv *env, jboolean value) {
+	return newObject(env, cls_Boolean, cid_Boolean, value);
+}
+
+jboolean ScriptographerEngine::convertBoolean(JNIEnv *env, jobject value) {
+	return callBooleanMethod(env, value, mid_Boolean_booleanValue);
 }
 
 // java.lang.Integer <-> jint
 jobject ScriptographerEngine::convertInteger(JNIEnv *env, jint value) {
-	jobject res = newObject(env, cls_Integer, cid_Integer, value);
-	EXCEPTION_CHECK(env);
-	return res;
+	return newObject(env, cls_Integer, cid_Integer, value);
 }
 
 jint ScriptographerEngine::convertInteger(JNIEnv *env, jobject value) {
-	jint res = callIntMethod(env, value, mid_Number_intValue);
-	EXCEPTION_CHECK(env);
-	return res;
+	return callIntMethod(env, value, mid_Number_intValue);
 }
 
 // java.lang.Float <-> jfloat
 jobject ScriptographerEngine::convertFloat(JNIEnv *env, jfloat value) {
-	jobject res = newObject(env, cls_Float, cid_Float, value);
-	EXCEPTION_CHECK(env);
-	return res;
+	return newObject(env, cls_Float, cid_Float, value);
 }
 
 jfloat ScriptographerEngine::convertFloat(JNIEnv *env, jobject value) {
-	jfloat res = callFloatMethod(env, value, mid_Number_floatValue);
-	EXCEPTION_CHECK(env);
-	return res;
+	return callFloatMethod(env, value, mid_Number_floatValue);
 }
 
 // java.lang.Double <-> jdouble
 jobject ScriptographerEngine::convertDouble(JNIEnv *env, jdouble value) {
-	jobject res = newObject(env, cls_Double, cid_Double, value);
-	EXCEPTION_CHECK(env);
-	return res;
+	return newObject(env, cls_Double, cid_Double, value);
 }
 
 jdouble ScriptographerEngine::convertDouble(JNIEnv *env, jobject value) {
-	jdouble res = callDoubleMethod(env, value, mid_Number_doubleValue);
-	EXCEPTION_CHECK(env);
-	return res;
+	return callDoubleMethod(env, value, mid_Number_doubleValue);
 }
 
 // com.scriptographer.ai.Point <-> AIRealPoint
@@ -1444,7 +1554,7 @@ jobject ScriptographerEngine::wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef ra
  *
  * throws exceptions
  */
-jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc, bool created, short type) {
+jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc, bool created, short type, bool checkWrapped) {
 	JNI_CHECK_ENV
 	if (art == NULL)
 		return NULL;
@@ -1474,7 +1584,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocu
 	// See onSelectionChanged for more explanations
 	jboolean wrapped = false;
 	AIDictionaryRef artDict;
-	if (!sAIArt->GetDictionary(art, &artDict)) {
+	if (checkWrapped && !sAIArt->GetDictionary(art, &artDict)) {
 		wrapped = sAIDictionary->IsKnown(artDict, m_artHandleKey);
 		sAIDictionary->SetIntegerEntry(artDict, m_artHandleKey, (ASInt32) art);
 		sAIDictionary->Release(artDict);
@@ -1522,10 +1632,10 @@ jobject ScriptographerEngine::wrapDocumentHandle(JNIEnv *env, AIDocumentHandle d
 	return callStaticObjectMethod(env, cls_ai_Document, mid_ai_Document_wrapHandle, (jint) doc);
 }
 
-jobject ScriptographerEngine::wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc) {
+jobject ScriptographerEngine::wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc, bool addRef) {
 	JNI_CHECK_ENV
 	return callStaticObjectMethod(env, cls_ai_Dictionary, mid_ai_Dictionary_wrapHandle,
-			(jint) dictionary, (jint) (doc ? doc : gWorkingDoc));
+			(jint) dictionary, (jint) (doc ? doc : gWorkingDoc), (jboolean) addRef);
 }
 
 /**
@@ -1757,26 +1867,15 @@ ASErr ScriptographerEngine::Tool_onHandleEvent(const char * selector, AIToolMess
 
 /**
  * AI LiveEffect
- *
  */
-
-AILiveEffectParamContext ScriptographerEngine::LiveEffect_getContext(JNIEnv *env, jobject parameters) {
-	// Gets the value for key "context" from the map and converts it to a AILiveEffectParamContext
-	// XXX: Transition!
-	jobject contextObj = callObjectMethod(env, parameters, mid_Map_get, env->NewStringUTF("context"));
-	if (contextObj != NULL && env->IsInstanceOf(contextObj, cls_Number)) {
-		return (AILiveEffectParamContext) callIntMethod(env, contextObj, mid_Number_intValue);
-	}
-	return NULL;
-}
 
 ASErr ScriptographerEngine::LiveEffect_onEditParameters(AILiveEffectEditParamMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onEditParameters,
-				(jint) message->effect, (jint) message->parameters, (jint) message->context,
-				(jboolean) message->allowPreview);
-		sAILiveEffect->UpdateParameters(message->context);
+				(jint) message->effect, (jint) message->parameters);
+		if (message->allowPreview)
+			sAILiveEffect->UpdateParameters(message->context);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -1787,7 +1886,15 @@ ASErr ScriptographerEngine::LiveEffect_onCalculate(AILiveEffectGoMessage *messag
 	try {
 		// TODO: setting art to something else seems to crash!
 		message->art = (AIArtHandle) callStaticIntMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onCalculate,
-				(jint) message->effect, (jint) message->parameters, wrapArtHandle(env, message->art));
+				(jint) message->effect,
+				// Do not check wrappers as the art items in live effects are duplicated
+				// and therefore seem to contain the m_artHandleKey, causing wrapped to
+				// be set to true when Item#wrapHandle is called. And sometimes their
+				// handles are reused, causing reuse of wrong wrappers.
+				// We could call Item_clearArtHandles but that's slow. Passing false for
+				// checkWrapped should do it.
+				wrapArtHandle(env, message->art, NULL, true, -1, false),
+				(jint) message->parameters);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -1802,7 +1909,9 @@ ASErr ScriptographerEngine::LiveEffect_onGetInputType(AILiveEffectInputTypeMessa
 	JNIEnv *env = getEnv();
 	try {
 		message->typeMask = callStaticIntMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onGetInputType,
-				(jint) message->effect, (jint) message->parameters, wrapArtHandle(env, message->inputArt));
+				(jint) message->effect,
+				(jint) message->inputArt,
+				(jint) message->parameters);
 		return kNoErr;
 	} EXCEPTION_CATCH_REPORT(env);
 	return kExceptionErr;
@@ -1923,6 +2032,7 @@ bool ScriptographerEngine::callOnDraw(jobject handler, ADMDrawerRef drawer) {
 }
 
 ASErr ScriptographerEngine::callOnHandleEvent(int event) {
+	AppContext context;
 	JNIEnv *env = getEnv();
 	try {
 		callStaticVoidMethod(env, cls_ScriptographerEngine, mid_ScriptographerEngine_onHandleEvent, event);
@@ -1932,6 +2042,7 @@ ASErr ScriptographerEngine::callOnHandleEvent(int event) {
 }
 
 bool ScriptographerEngine::callOnHandleKeyEvent(int type, ASUInt32 keyCode, ASUnicode character, ASUInt32 modifiers) {
+	AppContext context;
 	JNIEnv *env = getEnv();
 	try {
 		return callStaticBooleanMethodReport(NULL, cls_ScriptographerEngine, mid_ScriptographerEngine_onHandleKeyEvent,
@@ -2040,135 +2151,7 @@ JNIEnv *ScriptographerEngine::getEnv() {
 		return NULL;
 	}
 }
-
-/**
- * Creates a Java String from a given C-String.
- * TODO: The non depreceated version that takes an encoding parameter should be used in the future.
- *
- * throws exceptions
- */
-jstring ScriptographerEngine::convertString(JNIEnv *env, const char *str) {
-	if (!str)
-		return NULL;
-	JNI_CHECK_ENV
-	int len = strlen(str);
-	jbyteArray bytes = env->NewByteArray(len);
-	if (bytes == NULL) throw new JThrowableClassException(cls_OutOfMemoryError);
-	env->SetByteArrayRegion(bytes, 0, len, (jbyte *) str);
-//	jstring result = (jstring) env->functions->NewObject(env, cls_String, cid_String, bytes);
-	jstring res = (jstring) env->NewObject(cls_String, cid_String, bytes);
-	env->DeleteLocalRef(bytes);
-	if (res == NULL) EXCEPTION_CHECK(env);
-	return res;
-}
-
-/**
- * Creates a Java String from a given Pascal-String.
- * Caution: modifies str!
- *
- * throws exceptions
- */
-jstring ScriptographerEngine::convertString(JNIEnv *env, unsigned char *str) {
-	return convertString(env, gPlugin->fromPascal(str, (char *) str));
-}
-
-/**
- * Creates a C-String from a given Java String. 
- * TODO: The non depreceated version that takes an encoding parameter should be used in the future.
- *
- * throws exceptions
- */
-char *ScriptographerEngine::convertString(JNIEnv *env, jstring jstr, int minLength) {
-	if (!jstr)
-		return NULL;
-	JNI_CHECK_ENV
-	jbyteArray bytes = (jbyteArray)callObjectMethod(env, jstr, mid_String_getBytes);
-	jint len = env->GetArrayLength(bytes);
-	jint length = len + 1;
-	if (length < minLength)
-		length = minLength;
-	char *result = new char[length];
-	if (result == NULL) {
-		env->DeleteLocalRef(bytes);
-		throw new JThrowableClassException(cls_OutOfMemoryError);
-	}
-	env->GetByteArrayRegion(bytes, 0, len, (jbyte *) result);
-	result[len] = 0; // NULL-terminate
-	env->DeleteLocalRef(bytes);
-	return result;
-}
-
-jstring ScriptographerEngine::convertString(JNIEnv *env, const ASUnicode *str, int length) {
-	JNI_CHECK_ENV
-	if (length < 0) {
-		// find length
-		length = 0;
-		while (str[length] != 0)
-			length++;
-	}
-	jstring res = env->NewString((jchar *) str, length);
-	if (res == NULL) EXCEPTION_CHECK(env);
-	return res;
-}
-
-ASUnicode *ScriptographerEngine::convertString_ASUnicode(JNIEnv *env, jstring jstr) {
-	JNI_CHECK_ENV
-	int length = env->GetStringLength(jstr);
-	ASUnicode *chars = new ASUnicode[length + 1];
-	env->GetStringRegion(jstr, 0, length, (jchar *) chars);
-	// make it null-determined:
-	chars[length] = 0;
-	return chars;
-}
-
-#if kPluginInterfaceVersion < kAI12
-
-/**
- * Creates a Java String from a given Pascal-String.
- * Only supported in CS and bellow
- */
-unsigned char *ScriptographerEngine::convertString_Pascal(JNIEnv *env, jstring jstr, int minLength) {
-	char *str = convertString(env, jstr, minLength);
-	return gPlugin->toPascal(str, (unsigned char*) str);
-}
-
-#else
-
-/**
- * Creates a Java String from a given UTF-16-String.
- * Only supported in CS2 and above
- */
-jstring ScriptographerEngine::convertString(JNIEnv *env, ai::UnicodeString &str) {
-	JNI_CHECK_ENV
-	const ASUnicode *buffer;
-	int len = str.utf_16(buffer);
-	jstring res = env->NewString(buffer, len);
-	if (res == NULL) EXCEPTION_CHECK(env);
-	return res;
-}
-
-ai::UnicodeString ScriptographerEngine::convertString_UnicodeString(JNIEnv *env, jstring jstr) {
-	JNI_CHECK_ENV
-	const jchar *chars = env->GetStringCritical(jstr, NULL);
-	ai::UnicodeString str(chars, env->GetStringLength(jstr));
-	env->ReleaseStringCritical(jstr, chars); 
-	return str;
-}
-
-#endif
-
-#ifdef MAC_ENV
-CFStringRef ScriptographerEngine::convertString_CFString(JNIEnv *env, jstring jstr) {
-	if (jstr == NULL)
-		return NULL;
-	JNI_CHECK_ENV
-	const jchar *chars = env->GetStringCritical(jstr, NULL);
-	CFStringRef str = CFStringCreateWithCharacters(kCFAllocatorDefault, chars, env->GetStringLength(jstr));
-	env->ReleaseStringCritical(jstr, chars); 
-	return str;
-}		
-#endif
-		
+	
 /**
  * Throws an exception with the given name (like "com/scriptographer/ScriptographerException") and message.
  *
@@ -2262,11 +2245,16 @@ jfieldID ScriptographerEngine::getStaticFieldID(JNIEnv *env, jclass cls, const c
 jobject ScriptographerEngine::newObject(JNIEnv *env, jclass cls, jmethodID ctor, ...) {
 	JNI_CHECK_ENV
 	JNI_ARGS_BEGIN(ctor)
-//	jobject res = env->functions->NewObjectV(env, cls, ctor, args);
 	jobject res = env->NewObjectV(cls, ctor, args);
 	JNI_ARGS_END
 	if (res == NULL) EXCEPTION_CHECK(env);
 	return res;
+}
+
+jboolean ScriptographerEngine::isEqual(JNIEnv *env, jobject obj1, jobject obj2) {
+	if (obj1 == NULL)
+		return obj2 == NULL;
+	return callBooleanMethod(env, obj1, gEngine->mid_Object_equals, obj2);
 }
 
 // declare macro functions now:

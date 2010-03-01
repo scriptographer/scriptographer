@@ -624,7 +624,7 @@ public class Document extends NativeObject implements ChangeListener {
 	 */
 	public Dictionary getData() {
 		if (data == null)
-			data = Dictionary.wrapHandle(nativeGetData(), this);
+			data = Dictionary.wrapHandle(nativeGetData(), this, false);
 		return data;	
 	}
 

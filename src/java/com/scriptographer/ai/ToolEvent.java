@@ -52,7 +52,7 @@ import com.scriptographer.sg.Event;
  * @author lehni
  */
 public class ToolEvent extends Event {
-	private Tool tool;
+	private ToolEventHandler tool;
 	private ToolEventType type;
 	private Point point = null;
 	private Point lastPoint = null;
@@ -61,7 +61,7 @@ public class ToolEvent extends Event {
 	private Point delta = null;
 	private double pressure = -1;
 
-	protected ToolEvent(Tool tool, ToolEventType type, int modifiers) {
+	protected ToolEvent(ToolEventHandler tool, ToolEventType type, int modifiers) {
 		super(modifiers);
 		this.tool = tool;
 		this.type = type;

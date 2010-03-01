@@ -65,7 +65,7 @@ public abstract class TextItem extends Item {
 	}
 
 	protected void commit(boolean invalidate) {
-		CommitManager.commit(this.getStory());
+		CommitManager.commit(getStory());
 		super.commit(invalidate);
 	}
 
@@ -102,7 +102,7 @@ public abstract class TextItem extends Item {
 	public native void setOpticalAlignment(boolean active);
 	
 	// TODO:
-	 // AIAPI AIErr (*DoTextFrameHit)	( const AIHitRef hitRef, TextRangeRef*	textRange );
+	 // AIAPI AIErr (*DoTextFrameHit)	( const AIHitRef hitRef, TextRangeRef* textRange );
 
 	private native Item nativeCreateOutline();
 

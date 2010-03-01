@@ -54,6 +54,7 @@ public:
 // JSE:
 	jclass cls_Object;
 	jmethodID mid_Object_toString;
+	jmethodID mid_Object_equals;
 
 	jclass cls_System;
 	jfieldID fid_System_out;
@@ -129,10 +130,6 @@ public:
 	jmethodID mid_Loader_loadClass;
 
 // Scratchdisk:
-	jclass cls_IntMap;
-	jmethodID cid_IntMap;
-	jmethodID mid_IntMap_put;
-	
 	jclass cls_List;
 	jmethodID mid_List_size;
 	jmethodID mid_List_get;
@@ -167,6 +164,7 @@ public:
 	jmethodID mid_ai_Document_onRevert;
 	
 	jclass cls_ai_Dictionary;
+	jmethodID cid_ai_Dictionary;
 	jfieldID fid_ai_Dictionary_handle;
 	jmethodID mid_ai_Dictionary_wrapHandle;
 	
@@ -414,6 +412,21 @@ public:
 	
 	void println(JNIEnv *env, const char *str, ...);
 	void reportError(JNIEnv *env);
+	
+	jstring convertString(JNIEnv *env, const char *str);
+	jstring convertString(JNIEnv *env, unsigned char *str);
+	char *convertString(JNIEnv *env, jstring jstr, int minLength = 0);
+	jstring convertString(JNIEnv *env, const ASUnicode *str, int length = -1);
+	ASUnicode *convertString_ASUnicode(JNIEnv *env, jstring jstr);
+#if kPluginInterfaceVersion < kAI12
+	unsigned char *convertString_Pascal(JNIEnv *env, jstring jstr, int minLength = 0);
+#else
+	jstring convertString(JNIEnv *env, ai::UnicodeString &str);
+	ai::UnicodeString convertString_UnicodeString(JNIEnv *env, jstring jstr);
+#endif
+#ifdef MAC_ENV
+	CFStringRef convertString_CFString(JNIEnv *env, jstring jstr);
+#endif
 
 	// java.lang.Boolean <-> jboolean
 	jobject convertBoolean(JNIEnv *env, jboolean value);	
@@ -576,7 +589,7 @@ public:
 	jobject wrapTextRangeRef(JNIEnv *env, ATE::TextRangeRef range);
 	
 	// AI Wrap Handles
-	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc = NULL, bool created = false, short type = -1);
+	jobject wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocumentHandle doc = NULL, bool created = false, short type = -1, bool checkWrapped = true);
 	bool updateArtIfWrapped(JNIEnv *env, AIArtHandle art);
 	void changeArtHandle(JNIEnv *env, jobject itemObject, AIArtHandle art, AIDocumentHandle doc = NULL, bool clearDictionary = false);
 	jobject getItemIfWrapped(JNIEnv *env, AIArtHandle handle);
@@ -586,7 +599,7 @@ public:
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
 	
 	jobject wrapDocumentHandle(JNIEnv *env, AIDocumentHandle doc);
-	jobject wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc = NULL);
+	jobject wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc = NULL, bool addRef = false);
 
 	void commit(JNIEnv *env);
 	void resumeSuspendedDocuments();
@@ -602,7 +615,6 @@ public:
 	ASErr Tool_onHandleEvent(const char * selector, AIToolMessage *message);
 
 	// AI LiveEffect
-	AILiveEffectParamContext LiveEffect_getContext(JNIEnv *env, jobject parameters);
 	ASErr LiveEffect_onEditParameters(AILiveEffectEditParamMessage *message);
 	ASErr LiveEffect_onCalculate(AILiveEffectGoMessage *message);
 	ASErr LiveEffect_onInterpolate(AILiveEffectInterpParamMessage *message);
@@ -693,21 +705,6 @@ public:
 	// JNI stuff:
 	JNIEnv *getEnv();
 	
-	jstring convertString(JNIEnv *env, const char *str);
-	jstring convertString(JNIEnv *env, unsigned char *str);
-	char *convertString(JNIEnv *env, jstring jstr, int minLength = 0);
-	jstring convertString(JNIEnv *env, const ASUnicode *str, int length = -1);
-	ASUnicode *convertString_ASUnicode(JNIEnv *env, jstring jstr);
-#if kPluginInterfaceVersion < kAI12
-	unsigned char *convertString_Pascal(JNIEnv *env, jstring jstr, int minLength = 0);
-#else
-	jstring convertString(JNIEnv *env, ai::UnicodeString &str);
-	ai::UnicodeString convertString_UnicodeString(JNIEnv *env, jstring jstr);
-#endif
-#ifdef MAC_ENV
-	CFStringRef convertString_CFString(JNIEnv *env, jstring jstr);
-#endif
-	
 	void throwException(JNIEnv *env, const char* name, const char* msg);
 	void throwException(JNIEnv *env, const char* msg);
 
@@ -724,6 +721,7 @@ public:
 	
 	// wrappers for JNI function with added exception handling
 	jobject newObject(JNIEnv *env, jclass cls, jmethodID ctr, ...);
+	jboolean isEqual(JNIEnv *env, jobject obj1, jobject obj2);
 
 	// get<type>Field(JNIEnv * env, jobject obj, jfieldID fid);
 	JNI_DECLARE_GETFIELD_FUNCTIONS

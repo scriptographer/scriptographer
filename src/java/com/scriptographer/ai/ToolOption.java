@@ -40,7 +40,7 @@ import com.scratchdisk.util.IntegerEnum;
  */
 public enum ToolOption implements IntegerEnum {
 	/*
-	 *	This option is always on, since we're changing cursors
+	 * This option is always on, since we're changing cursors
 	 */	
 	// TRACK_CURSOR(1 << 0),
 	/**
@@ -50,7 +50,7 @@ public enum ToolOption implements IntegerEnum {
 	 * draws to the screen directly, like the built-in Brush tool.
 	 */
 	NO_AUTO_SCROLL(1 << 1),
-	/**	
+	/**
 	 * Set to buffer the drag selectors and messages and send all of them
 	 * to the tool at once. Useful if a tool is calculation intensive.  The effect
 	 * is no longer real-time, but has a smoother final output.

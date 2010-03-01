@@ -157,7 +157,6 @@ OSStatus ScriptographerPlugin::appEventHandler(EventHandlerCallRef handler, Even
 }
 
 OSStatus ScriptographerPlugin::eventHandler(EventHandlerCallRef handler, EventRef event, void *userData) {
-	AppContext context;
 	UInt32 cls = GetEventClass(event);
 	UInt32 kind = GetEventKind(event);
 	bool handled = false;
@@ -426,7 +425,7 @@ ASErr ScriptographerPlugin::onStartupPlugin(SPInterfaceMessage *message) {
 
 	// Add before clear menu notifier
 	RETURN_ERROR(sAINotifier->AddNotifier(m_pluginRef, "Scriptographer Before Clear", "AI Command Notifier: Before Clear", &m_beforeClearNotifier));
-	
+
 	// Determine baseDirectory from plugin location:
 	char pluginPath[kMaxPathLength];
 	SPPlatformFileSpecification fileSpec;

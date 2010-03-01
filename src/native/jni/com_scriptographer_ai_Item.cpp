@@ -50,6 +50,8 @@ short Item_getType(JNIEnv *env, jclass cls) {
 		return kPathArt;
 	} else if (env->IsSameObject(cls, gEngine->cls_ai_CompoundPath)) {
 		return kCompoundPathArt;
+	} else if (env->IsSameObject(cls, gEngine->cls_ai_Group)) {
+		return kGroupArt;
 	} else if (env->IsSameObject(cls, gEngine->cls_ai_Raster)) {
 		return kRasterArt;
 	} else if (env->IsSameObject(cls, gEngine->cls_ai_PlacedFile)) {
@@ -64,9 +66,7 @@ short Item_getType(JNIEnv *env, jclass cls) {
 	} else if (env->IsSameObject(cls, gEngine->cls_ai_Layer)) {
 		// special defined type for layers, needs handling!
 		return com_scriptographer_ai_Item_TYPE_LAYER;
-	} else if (env->IsSameObject(cls, gEngine->cls_ai_Group)) {
-		return kGroupArt;
-	}
+	} 
 	return kUnknownArt;
 	// TODO: make sure the above list contains all Item classes!
 }
@@ -357,26 +357,30 @@ bool Item_move(JNIEnv *env, jobject obj, jobject item, short paintOrder) {
 							}
 						}
 					}
-					
-					// If we're in a different document:
-					// move the art from one document to the other by copying it over and then removing it.
-					if (docSrc != docDst) {
-						// Pass false for commitFirst since it was already commited above
-						AIArtHandle res = Item_copyTo(env, obj, artDst, docDst, paintOrder, false);
-						if (res != NULL) {
-							gEngine->changeArtHandle(env, obj, res, docDst, true);
-							// now remove the original object in docDst. Moving does not work directly
-							// so this seems to be the most elegant way of handling this
-							// TODO: Since Item_copyTo now seems to work with sAIArt->DuplicateArt for this,
-							// check again if normal oving across documents might work.
-							Document_activate(docSrc);
-							sAIArt->DisposeArt(artSrc);
-							return true;
-						}
-					}
-					// Simply reorder
-					if (!sAIArt->ReorderArt(artSrc, paintOrder, artDst))
+					// If we're in the same document, try to simply reorder
+					// In some occasions this might fail, e.g. when working with life effects,
+					// where group receiving the life effect result has the same document but
+					// is not actually living within the document. In this case, use the same
+					// strategy as for copying accross different document below. 
+					if (docSrc == docDst && !sAIArt->ReorderArt(artSrc, paintOrder, artDst))
 						return true;
+					// We are copying accross documents, or into a live effect group.
+					// move the art from one document to the other by copying it over using
+					// copyTo, then changing the handle and removing the original, to mimick
+					// reordering.
+					// Pass false for commitFirst since it was already commited above.
+					AIArtHandle res = Item_copyTo(env, obj, artDst, docDst, paintOrder, false);
+					if (res != NULL) {
+						gEngine->changeArtHandle(env, obj, res, docDst, true);
+						// now remove the original object in docDst. Moving does not work directly
+						// so this seems to be the most elegant way of handling this
+						// TODO: Since Item_copyTo now seems to work with sAIArt->DuplicateArt for this,
+						// check again if normal moving across documents might work.
+						if (docDst != docSrc)
+							Document_activate(docSrc);
+						sAIArt->DisposeArt(artSrc);
+						return true;
+					}
 				}
 			}
 		}
@@ -1161,7 +1165,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_getItemType__(JNIEnv *env
 	try {
 		return Item_getType(gEngine->getArtHandle(env, obj));
 	} EXCEPTION_CONVERT(env);
-	return 0;
+	return kUnknownArt;
 }
 
 /*
@@ -1171,5 +1175,196 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_getItemType__Ljava_lang_C
 	try {
 		return Item_getType(env, item);
 	} EXCEPTION_CONVERT(env);
+	return kUnknownArt;
+}
+
+/*
+ * com.scriptographer.ai.Item wrapHandle(int artHandle, int docHandle, boolean created, boolean checkWrapped)
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_wrapHandle(JNIEnv *env, jclass cls, jint artHandle, jint docHandle, jboolean created, jboolean checkWrapped) {
+	try {
+		return gEngine->wrapArtHandle(env, (AIArtHandle) artHandle, (AIDocumentHandle) docHandle, created, -1, checkWrapped);
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
+
+/*
+ * boolean nativeAddEffect(com.scriptographer.ai.LiveEffect effect, com.scriptographer.ai.Dictionary data, int position, boolean editData)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeAddEffect(JNIEnv *env, jobject obj, jobject effectObj, jobject dataObj, jint position, jboolean editData) {
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		AILiveEffectHandle liveEffect = gEngine->getLiveEffectHandle(env, effectObj);
+		AIDictionaryRef liveDict = gEngine->getDictionaryHandle(env, dataObj);
+		AIArtStyleHandle style = NULL;
+		sAIArtStyle->GetArtStyle(art, &style);
+		if (style != NULL) {
+			AIStyleParser parser = NULL;
+			sAIArtStyleParser->NewParser(&parser);
+			if (parser != NULL) {
+				bool inserted = false;
+				sAIArtStyleParser->ParseStyle(parser, style);
+				AIParserLiveEffect effect = NULL;
+				sAIArtStyleParser->NewParserLiveEffect(liveEffect, liveDict, &effect);
+				if (effect != NULL) {
+					if (position == kPreEffectFilter) {
+						inserted = !sAIArtStyleParser->InsertNthPreEffect(parser, -1, effect);
+					} else if (position == kPostEffectFilter) {
+						inserted = !sAIArtStyleParser->InsertNthPreEffect(parser, -1, effect);
+					} else {
+						for (int i = sAIArtStyleParser->CountPaintFields(parser) - 1; !inserted && i >= 0; i--) {
+							AIParserPaintField field = NULL;
+							sAIArtStyleParser->GetNthPaintField(parser, i, &field);
+							if (field != NULL) {
+								if (position == kStrokeFilter && sAIArtStyleParser->IsStroke(field)
+										|| position == kFillFilter && sAIArtStyleParser->IsFill(field)) {
+									inserted = !sAIArtStyleParser->InsertNthEffectOfPaintField(parser, field, -1, effect);
+								}
+							}
+						}
+					}
+					if (inserted) {
+						sAIArtStyleParser->CreateNewStyle(parser, &style);
+//						sAIArtStyle->SetArtStyle(art, style);
+						if (editData) {
+							// In order for EditEffectParametersInSelection to work,
+							// we need to parse again.
+							sAIArtStyleParser->ParseStyle(parser, style);
+							sAIArtStyleParser->EditEffectParameters(style, effect);
+						}
+					} else {
+						sAIArtStyleParser->DisposeParserLiveEffect(effect);
+					}
+				}
+				sAIArtStyleParser->DisposeParser(parser);
+				return inserted;
+			}
+		}
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+typedef bool (*EffectIterator)(JNIEnv *env, AIStyleParser parser, AIParserLiveEffect effect, int position, bool *cont, void *data);
+
+bool Item_iterateEffects(JNIEnv *env, AIArtHandle art, EffectIterator iterator, void *data) {
+	AIArtStyleHandle style = NULL;
+	sAIArtStyle->GetArtStyle(art, &style);
+	if (style != NULL) {
+		AIStyleParser parser = NULL;
+		sAIArtStyleParser->NewParser(&parser);
+		if (parser != NULL) {
+			sAIArtStyleParser->ParseStyle(parser, style);
+			bool changed = false, cont = true;
+			for (int i = sAIArtStyleParser->CountPreEffects(parser) - 1; cont && i >= 0; i--) {
+				AIParserLiveEffect effect = NULL;
+				sAIArtStyleParser->GetNthPreEffect(parser, i, &effect);
+				if (effect != NULL)
+					changed = iterator(env, parser, effect, kPreEffectFilter, &cont, data) || changed;
+			}
+			for (int i = sAIArtStyleParser->CountPostEffects(parser) - 1; cont && i >= 0; i--) {
+				AIParserLiveEffect effect = NULL;
+				sAIArtStyleParser->GetNthPostEffect(parser, i, &effect);
+				if (effect != NULL)
+					changed = iterator(env, parser, effect, kPostEffectFilter, &cont, data) || changed;
+			}
+			for (int i = sAIArtStyleParser->CountPaintFields(parser) - 1; cont && i >= 0; i--) {
+				AIParserPaintField field = NULL;
+				sAIArtStyleParser->GetNthPaintField(parser, i, &field);
+				if (field != NULL) {
+					for (int j = sAIArtStyleParser->CountEffectsOfPaintField(field) - 1; cont && j >= 0; j--) {
+						AIParserLiveEffect effect = NULL;
+						sAIArtStyleParser->GetNthEffectOfPaintField(field, j, &effect);
+						if (effect != NULL)
+							changed = iterator(env, parser, effect, 
+							sAIArtStyleParser->IsStroke(field)
+								? kStrokeFilter
+								: sAIArtStyleParser->IsFill(field)
+									? kFillFilter
+									: 0,
+							&cont, data) || changed;
+					}
+				}
+			}
+			if (changed) {
+				sAIArtStyleParser->CreateNewStyle(parser, &style);
+				sAIArtStyle->SetArtStyle(art, style);
+			}
+			sAIArtStyleParser->DisposeParser(parser);
+			return changed;
+		}
+	}
+	return false;
+}
+
+struct Item_effectPositionData {
+	AILiveEffectHandle effect;
+	jobject data;
+	int position;
+};
+
+bool Item_effectPositionIterator(JNIEnv *env, AIStyleParser parser, AIParserLiveEffect effect, int position, bool *cont, void *data) {
+	AILiveEffectHandle liveEffect = NULL;
+	AIDictionaryRef liveDict = NULL;
+	sAIArtStyleParser->GetLiveEffectParams(effect, &liveDict);
+	sAIArtStyleParser->GetLiveEffectHandle(effect, &liveEffect);
+	Item_effectPositionData *positionData = (Item_effectPositionData *) data;
+	if (liveEffect == positionData->effect && (positionData->data == NULL || gEngine->isEqual(env,
+			gEngine->wrapDictionaryHandle(env, liveDict), positionData->data))) {
+		positionData->position = position;
+		*cont = false;
+	}
+	return false;
+}
+
+/*
+ * int nativeGetEffectPosition(com.scriptographer.ai.LiveEffect effect, java.util.Map data)
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_nativeGetEffectPosition(JNIEnv *env, jobject obj, jobject effect, jobject data) {
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		Item_effectPositionData positionData = {
+			gEngine->getLiveEffectHandle(env, effect),
+			data,
+			0
+		};
+		Item_iterateEffects(env, art, Item_effectPositionIterator, &positionData);
+		return positionData.position;
+	} EXCEPTION_CONVERT(env);
 	return 0;
+}
+
+struct Item_effectRemoveData {
+	AILiveEffectHandle effect;
+	jobject data;
+};
+
+bool Item_effectRemoveIterator(JNIEnv *env, AIStyleParser parser, AIParserLiveEffect effect, int position, bool *cont, void *data) {
+	AILiveEffectHandle liveEffect = NULL;
+	AIDictionaryRef liveDict = NULL;
+	sAIArtStyleParser->GetLiveEffectParams(effect, &liveDict);
+	sAIArtStyleParser->GetLiveEffectHandle(effect, &liveEffect);
+	Item_effectRemoveData *removeData = (Item_effectRemoveData *) data;
+	if (liveEffect == removeData->effect && (removeData->data == NULL || gEngine->isEqual(env,
+			gEngine->wrapDictionaryHandle(env, liveDict), removeData->data))) {
+		if (!sAIArtStyleParser->RemovePreEffect(parser, effect, true)) {
+			sAIArtStyleParser->DisposeParserLiveEffect(effect);
+			return true;
+		}
+	}
+	return false;
+}
+
+/*
+ * boolean removeEffect(com.scriptographer.ai.LiveEffect effect, java.util.Map data)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_removeEffect(JNIEnv *env, jobject obj, jobject effect, jobject data) {
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		Item_effectRemoveData removeData = {
+			gEngine->getLiveEffectHandle(env, effect),
+			data
+		};
+		return Item_iterateEffects(env, art, Item_effectRemoveIterator, &removeData);
+	} EXCEPTION_CONVERT(env);
+	return false;
 }

@@ -39,9 +39,9 @@
  */
 
 /*
- * int nativeCreate(java.lang.String name, String title, int preferedInput, int type, int flags, int majorVersion, int minorVersion)
+ * int nativeCreate(java.lang.String name, String title, int position, int preferedInput, int flags, int majorVersion, int minorVersion)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_LiveEffect_nativeCreate(JNIEnv *env, jobject obj, jstring name, jstring title, jint preferedInput, jint type, jint flags, jint majorVersion, jint minorVersion) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_LiveEffect_nativeCreate(JNIEnv *env, jobject obj, jstring name, jstring title, jint position, jint preferedInput, jint flags, jint majorVersion, jint minorVersion) {
 	AILiveEffectHandle liveEffectHandle = NULL;
 	try {
 		AILiveEffectData effectInfo;
@@ -56,7 +56,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_LiveEffect_nativeCreate(JNIEnv
 		effectInfo.majorVersion = majorVersion;
 		effectInfo.minorVersion = minorVersion;
 		effectInfo.prefersAsInput = preferedInput;
-		effectInfo.styleFilterFlags = type | flags;
+		effectInfo.styleFilterFlags = position | flags;
 		sAILiveEffect->AddLiveEffect(&effectInfo, &liveEffectHandle);
 		delete shortName;
 		delete longName;
@@ -86,50 +86,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeAddMenuIte
 		if (menuItem != NULL) {
 			return gEngine->wrapMenuItemHandle(env, menuItem);	
 		}
-		/*
-		AIMenuGroup menuGroup;
-		sAIMenu->GetItemMenuGroup(menuItem, &menuGroup);
-		AIPlatformMenuHandle platformMenuHandle;
-		short firstItem, lastItem;
-		sAIMenu->RemoveMenuItem(menuItem);
-		sAIMenu->GetMenuGroupRange(menuGroup, &platformMenuHandle, &firstItem, &lastItem);
-#ifdef MAC_ENV
-		MenuID id = GetMenuID(platformMenuHandle);
-		ReleaseMenu(platformMenuHandle);
-		DeleteMenu(id);
-		DisposeMenu(platformMenuHandle);
-#else 
-	error
-#endif
-		*/
-	} EXCEPTION_CONVERT(env);
-	return NULL;
-}
-
-/*
- * boolean updateParameters(java.util.Map parameters)
- */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_LiveEffect_updateParameters(JNIEnv *env, jobject obj, jobject parameters) {
-	try {
-		AILiveEffectParamContext context = gEngine->LiveEffect_getContext(env, parameters);
-		if (context != NULL) {
-			if (!sAILiveEffect->UpdateParameters(context))
-				return true;
-		}
-	} EXCEPTION_CONVERT(env);
-	return false;
-}
-
-/*
- * java.lang.Object getMenuItem(java.util.Map parameters)
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_getMenuItem(JNIEnv *env, jobject obj, jobject parameters) {
-	try {
-		AILiveEffectParamContext context = gEngine->LiveEffect_getContext(env, parameters);
-		AIMenuItemHandle menuItem = sAILiveEffect->GetMenuItem(context);
-		if (menuItem != NULL) {
-			return gEngine->wrapMenuItemHandle(env, menuItem);	
-		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }
@@ -155,16 +111,17 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_LiveEffect_nativeGetEffects
 				const char *title;
 				long major, minor, inputPreference, styleFilterFlags;
 				sAILiveEffect->GetLiveEffectTitle(effect, &title);
-				sAILiveEffect->GetLiveEffectVersion(effect, &major, &minor);
-				sAILiveEffect->GetInputPreference(effect, &inputPreference);
 				sAILiveEffect->GetStyleFilterFlags(effect, &styleFilterFlags);
+				sAILiveEffect->GetInputPreference(effect, &inputPreference);
+				sAILiveEffect->GetLiveEffectVersion(effect, &major, &minor);
 				
-				jint type = styleFilterFlags & kFilterTypeMask;
+				// Separate flags into position and flags
+				jint position = styleFilterFlags & kFilterTypeMask;
 				jint flags = styleFilterFlags & ~kFilterTypeMask;
 				// Create the wrapper
 				jobject effectObj = gEngine->newObject(env, gEngine->cls_ai_LiveEffect, gEngine->cid_ai_LiveEffect,
 						(jint) effect, gEngine->convertString(env, realname), gEngine->convertString(env, title),
-						(jint) inputPreference, type, flags, (jint) major, (jint) minor);
+						position, (jint) inputPreference, flags, (jint) major, (jint) minor);
 				// And add it to the array
 				gEngine->callObjectMethod(env, array, gEngine->mid_Collection_add, effectObj);
 			}

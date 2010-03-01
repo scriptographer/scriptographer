@@ -57,7 +57,7 @@ AIDocumentHandle gCreationDoc = NULL;
 
 void Document_activate(AIDocumentHandle doc) {
 	if (doc == NULL) {
-		// if Document_activate(NULL) is called,
+		// If Document_activate(NULL) is called,
 		// we switch to gCreationDoc if set, gActiveDoc otherwise
 		// This should only be happening during the creation of new items.
 		doc = gCreationDoc != NULL ? gCreationDoc : gActiveDoc;
@@ -66,7 +66,7 @@ void Document_activate(AIDocumentHandle doc) {
 		sAIDocumentList->Activate(doc, false);
 		gWorkingDoc = doc;
 	}
-	// erase it again...
+	// Erase it again...
 	gCreationDoc = NULL;
 }
 

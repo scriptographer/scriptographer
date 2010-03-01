@@ -62,8 +62,6 @@
 #define JNI_DECLARE_GETFIELD(NAME, TYPE) \
 	TYPE get##NAME##Field(JNIEnv *env, jobject obj, jfieldID fid);
 
-//		TYPE res = env->functions->Get##NAME##Field(env, obj, fid); \
-
 #define JNI_DEFINE_GETFIELD(NAME, TYPE) \
 	TYPE ScriptographerEngine::get##NAME##Field(JNIEnv *env, jobject obj, jfieldID fid) { \
 		JNI_CHECK_ENV \
@@ -86,8 +84,6 @@
 #define JNI_DECLARE_SETFIELD(NAME, TYPE) \
 	void set##NAME##Field(JNIEnv *env, jobject obj, jfieldID fid, TYPE val);
 
-//		env->functions->Set##NAME##Field(env, obj, fid, val); \
-
 #define JNI_DEFINE_SETFIELD(NAME, TYPE) \
 	void ScriptographerEngine::set##NAME##Field(JNIEnv *env, jobject obj, jfieldID fid, TYPE val) { \
 		JNI_CHECK_ENV \
@@ -108,8 +104,6 @@
 
 #define JNI_DECLARE_GETSTATICFIELD(NAME, TYPE) \
 	TYPE getStatic##NAME##Field(JNIEnv *env, jclass cls, const char *name, const char *signature);
-
-//		TYPE res = env->functions->GetStatic##NAME##Field(env, cls, env->functions->GetStaticFieldID(env, cls, name, signature)); \
 
 #define JNI_DEFINE_GETSTATICFIELD(NAME, TYPE) \
 	TYPE ScriptographerEngine::getStatic##NAME##Field(JNIEnv *env, jclass cls, const char *name, const char *signature) { \
