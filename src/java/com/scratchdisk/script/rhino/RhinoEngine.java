@@ -168,7 +168,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		} else {
 			Context cx = Context.getCurrentContext();
 			return cx.getWrapFactory().wrapAsJavaObject(cx, scope,
-					obj, obj.getClass());
+					obj, obj.getClass(), false);
 		}
 	}
 
@@ -198,43 +198,5 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 
 	public Scriptable getScope() {
 		return topLevel;
-	}
-
-	/* 
-	 * In order to execute in the global scope, we need to start a new
-	 * thread with a different context, as the current one is already being
-	 * executed in a child scope of the topLevel global scope...
-	 * Otherwise dynamic scoping is enforced through Context#topCallScope
-	 * and e.g. bootstrap cannot be compiled into the top level scope, even
-	 * when it is passed from the scripting side through
-	 * ScriptographerEngine.execute. There seems to be no other way in Rhino
-	 * to do this. Not elegant at all, but it works.
-	 */
-	class ThreadExecutor implements Runnable {
-        private org.mozilla.javascript.Script  script;
-		private Scriptable scope;
-		private Object result;
-		
-		public Object execute(org.mozilla.javascript.Script script, Scriptable scope) {
-		    this.script = script;
-		    this.scope = scope;
-		    result = null;
-		    Thread thread = new Thread(this);
-		    thread.start();
-		    try {
-				thread.join();
-			} catch (InterruptedException e) {
-			}
-		    return result;
-		}
-
-		public void run() {
-            result = script.exec(Context.enter(), scope);
-			Context.exit();
-        }
-	}
-
-	public Object executeInGlobalScope(org.mozilla.javascript.Script script) {
-	    return new ThreadExecutor().execute(script, topLevel);
 	}
 }

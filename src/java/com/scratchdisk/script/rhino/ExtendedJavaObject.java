@@ -33,15 +33,14 @@ package com.scratchdisk.script.rhino;
 
 import java.util.HashMap;
 
-import org.mozilla.javascript.Context;
 import org.mozilla.javascript.EcmaError;
 import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
-import com.scratchdisk.script.ChangeNotifier;
 import com.scratchdisk.script.ChangeListener;
+import com.scratchdisk.script.ChangeNotifier;
 
 /**
  * @author lehni
@@ -120,13 +119,13 @@ public class ExtendedJavaObject extends NativeJavaObject {
 
 	public void put(String name, Scriptable start, Object value) {
 		EvaluatorException error = null;
-        if (members.has(name, false)) {
+		if (members.has(name, false)) {
 			try {
 				// Try setting the value on member first
-	            members.put(this, name, javaObject, value, false);
-	            // If there is a modification listener, update this field in it right away now.
-	            if (changeListener != null)
-	            	changeListener.put(changeName, changeListener, this);
+				members.put(this, name, javaObject, value, false);
+				// If there is a modification listener, update this field in it right away now.
+				if (changeListener != null)
+					changeListener.put(changeName, changeListener, this);
 				return; // done
 			} catch (EvaluatorException e) {
 				// Rethrow errors that have another cause (a real Java exception from the

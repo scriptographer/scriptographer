@@ -62,15 +62,11 @@ public class RhinoScript extends Script {
 	
 	public Object execute(Scope scope) throws ScriptException {
 		try {
-	        Context cx = Context.getCurrentContext();
-	        Object result;
-			if (scope == engine.getGlobalScope()) {
-				result = engine.executeInGlobalScope(script);
-			} else {
-				// TODO: typecast to JsContext can be wrong, e.g. when calling
-				// from another language
-				result = script.exec(cx, ((RhinoScope) scope).getScope());
-			}
+			Context cx = Context.getCurrentContext();
+			Object result;
+			// TODO: typecast to JsContext can be wrong, e.g. when calling
+			// from another language
+			result = script.exec(cx, ((RhinoScope) scope).getScope());
 			if (result instanceof Wrapper)
 				result = ((Wrapper) result).unwrap();
 			return result;

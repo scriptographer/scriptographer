@@ -40,7 +40,9 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.NativeArray;
 import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.ScriptRuntime;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.WrapFactory;
 import org.mozilla.javascript.Wrapper;
@@ -66,44 +68,60 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		this.setJavaPrimitiveWrap(false);
 	}
 
+	/**
+	 * wrapCustom should wrap all objects that it would like to be cached in 
+	 * the wrappers WeakIdentityHashMap. If it returns null, a temporary
+	 * ExtendedJavaObject wrapper is created which is not cached.
+	 * This is used for example to allow the definition of JS wrappers for File,
+	 * which in itself then explicitly create java.io.File objects for the
+	 * same file, which would otherwise then already be in wrappers and returned.
+	 */
 	public Scriptable wrapCustom(Context cx, Scriptable scope,
-			Object javaObj, Class<?> staticType) {
-		return null;
+			Object javaObj, Class<?> staticType, boolean newObject) {
+		return new ExtendedJavaObject(scope, javaObj, staticType, true);
 	}
 
 	public Object wrap(Context cx, Scriptable scope, Object obj, Class<?> staticType) {
-        if (obj == null || obj == Undefined.instance || obj instanceof Scriptable)
-            return obj;
+		if (obj == null || obj == Undefined.instance || obj instanceof Scriptable)
+			return obj;
 		if (obj instanceof RhinoCallable) {
 			// Handle the ScriptFunction special case, return the unboxed
 			// function value.
 			obj = ((RhinoCallable) obj).getCallable();
 		}
-        // Allays override staticType and set it to the native type of
+		// Allays override staticType and set it to the native type of
 		// the class. Sometimes the interface used to access an object of
-        // a certain class is passed.
+		// a certain class is passed.
 		// But why should it be wrapped that way?
-        if (staticType == null || !staticType.isPrimitive())
+		if (staticType == null || !staticType.isPrimitive())
 			staticType = obj.getClass();
 		Object result = staticType != null && staticType.isArray() ?
 				new ExtendedJavaArray(scope, obj, staticType, true) :
 				super.wrap(cx, scope, obj, staticType);
-        return result;
+		return result;
 	}
 
 	public Scriptable wrapNewObject(Context cx, Scriptable scope, Object obj) {
-		return (Scriptable) (obj instanceof Scriptable ? obj :
-				wrapAsJavaObject(cx, scope, obj, null));
+		if (obj instanceof Scriptable)
+			return (Scriptable) obj;
+		// TODO: Pass as boolean variable instead and change Rhino further
+		cx.putThreadLocal("newObject", true);
+		try {
+			return wrapAsJavaObject(cx, scope, obj, null, true);
+		} finally {
+			cx.removeThreadLocal("newObject");
+		}
 	}
 
 	public Scriptable wrapAsJavaObject(Context cx, Scriptable scope,
-			Object javaObj, Class<?> staticType) {
+			Object javaObj, Class<?> staticType, boolean newObject) {
 		// Keep track of wrappers so that if a given object needs to be
 		// wrapped again, take the wrapper from the pool...
-        WeakReference<Scriptable> ref = wrappers.get(javaObj);
+		WeakReference<Scriptable> ref = wrappers.get(javaObj);
 		Scriptable obj = ref == null ? null : ref.get();
 		if (obj == null) {
-	        // Allays override staticType and set it to the native type
+			boolean cache = true;
+			// Allays override staticType and set it to the native type
 			// of the class. Sometimes the interface used to access an
 			// object of a certain class is passed. But why should it
 			// be wrapped that way?
@@ -116,17 +134,50 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 				} else if (javaObj instanceof Map) {
 					obj = new MapWrapper(scope, (Map) javaObj);
 				} else {
-					obj = wrapCustom(cx, scope, javaObj, staticType);
-					if (obj == null)
+					obj = wrapCustom(cx, scope, javaObj, staticType, newObject);
+					if (obj == null) {
 						obj = new ExtendedJavaObject(scope, javaObj, staticType, true);
+						// See the comment in wrapCustom for an explanation of this:
+						cache = false;
+					}
 				}
 			}
-			wrappers.put(javaObj, new WeakReference<Scriptable>(obj));
+			if (cache)
+				wrappers.put(javaObj, new WeakReference<Scriptable>(obj));
 		}
 		return obj;
 	}
 
+	private IdentityHashMap<Class, IdentityHashMap<Class, Integer>> conversionTable =
+			new IdentityHashMap<Class, IdentityHashMap<Class, Integer>>();
+
+	/**
+	 * getConversionWeight is defined here to only calculate the weight per from - to - class
+	 * pair once, after that it is cached in the conversionTable and retrieved from there.
+	 * calculateConversionWeight is used instead for the calculations.
+	 */
 	public int getConversionWeight(Object from, Class<?> to, int defaultWeight) {
+		Class fromClass = from.getClass();
+		IdentityHashMap<Class, Integer> fromTable =
+				conversionTable.get(fromClass);
+		if (fromTable == null) {
+			fromTable = new IdentityHashMap<Class, Integer>();
+			conversionTable.put(fromClass, fromTable);
+		}
+		Integer res = fromTable.get(to);
+		if (res != null)
+			return res;
+		int weight = calculateConversionWeight(from, to, defaultWeight);
+		fromTable.put(to, weight);
+		return weight;
+	}
+
+	/**
+	 * getConversionWeight above is defined to call calculateConversionWeight
+	 * and cache the results. Do not override getConversionWeight in any
+	 * subclasses, override calculateConversionWeight instead.
+	 */
+	public int calculateConversionWeight(Object from, Class<?> to, int defaultWeight) {
 		// See if object "from" can be converted to an instance of class "to"
 		// by the use of a map constructor or the setting of all the fields
 		// of a NativeObject on the instance after its creation,
@@ -146,21 +197,29 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 				else if (ArgumentReader.canConvert(to))
 					return CONVERSION_TRIVIAL + 2;
 			}
-			if (isNativeObject && Map.class.isAssignableFrom(to)) {
-				// If there are two version of a method, e.g. one with Map and the other with EnumMap
-				// prefer the more general one:
-				if (Map.class.equals(to))
-					return CONVERSION_TRIVIAL + 1;
-				else
-					return CONVERSION_TRIVIAL + 2;
+			if (isNativeObject) {
+				if (Map.class.isAssignableFrom(to)) {
+					// If there are two version of a method, e.g. one with Map
+					// and the other with EnumMap prefer the more general one:
+					if (Map.class.equals(to))
+						return CONVERSION_TRIVIAL + 1;
+					else
+						return CONVERSION_TRIVIAL + 2;
+				}
+				// Try and see if unwrapping NativeObjects through JS unwrap
+				// method brings us to the right type.
+				Object unwrapped = unwrap(from);
+				if (unwrapped != from && to.isInstance(unwrapped))
+					return CONVERSION_TRIVIAL;
 			} else if (!isString) {
 				// String and ArgumentReader we tried above already
-				if (getZeroArgumentConstructor(to) != null || ArgumentReader.canConvert(to)) {
-					if (from instanceof Wrapper)
-						from = ((Wrapper) from).unwrap();
-					// Now if there are more options here to convert from, e.g. Size and Point
-					// prefer the one that has the same simple name, to encourage conversion
-					// between ADM and AI Size, Rectangle, Point objects!
+				if (getZeroArgumentConstructor(to) != null
+						|| ArgumentReader.canConvert(to)) {
+					from = unwrap(from);
+					// Now if there are more options here to convert from, e.g.
+					// Size and Point prefer the one that has the same simple
+					// name, to encourage conversion between ADM and AI Size,
+					// Rectangle, Point objects!
 					if (from.getClass().getSimpleName().equals(to.getSimpleName()))
 						return CONVERSION_TRIVIAL + 1;
 					else
@@ -172,9 +231,12 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 	}
 
 	private ArgumentReader getArgumentReader(Object obj) {
-		if (obj instanceof NativeArray) return new ArrayArgumentReader(this, (NativeArray) obj);
-		else if (obj instanceof Scriptable) return new HashArgumentReader(this, (Scriptable) obj);
-		else if (obj instanceof String) return new StringArgumentReader(this, (String) obj);
+		if (obj instanceof NativeArray)
+			return new ArrayArgumentReader(this, (NativeArray) obj);
+		else if (obj instanceof Scriptable)
+			return new HashArgumentReader(this, (Scriptable) obj);
+		else if (obj instanceof String)
+			return new StringArgumentReader(this, (String) obj);
 		return null;
 	}
 
@@ -190,10 +252,24 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 			if (Map.class.isAssignableFrom(type)) {
 				return toMap((Scriptable) value);
 			} else {
+				// Try and see if unwrapping NativeObjects through JS unwrap method 
+				// brings us to the right type.
+				Object unwrapped;
+				if (value instanceof NativeObject) {
+					unwrapped = unwrap(value);
+					if (unwrapped != value && type.isInstance(unwrapped))
+						return unwrapped;
+				} else {
+					unwrapped = null;
+				}
 				ArgumentReader reader = null;
-				if (ArgumentReader.canConvert(type) && (reader = getArgumentReader(value)) != null) {
-				    return ArgumentReader.convert(reader, unwrap(value), type);
-				} else if (value instanceof NativeObject && getZeroArgumentConstructor(type) != null) {
+				if (ArgumentReader.canConvert(type)
+						&& (reader = getArgumentReader(value)) != null) {
+					if (unwrapped == null)
+						unwrapped = unwrap(value);
+					return ArgumentReader.convert(reader, unwrapped, type);
+				} else if (value instanceof NativeObject
+						&& getZeroArgumentConstructor(type) != null) {
 					// Try constructing an object of class type, through
 					// the JS ExtendedJavaClass constructor that takes 
 					// a last optional argument: A NativeObject of which
@@ -204,9 +280,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 					if (cls != null) {
 						Object obj = cls.construct(Context.getCurrentContext(),
 								scope, new Object[] { value });
-						if (obj instanceof Wrapper)
-							obj = ((Wrapper) obj).unwrap();
-						return obj;
+						return unwrap(obj);
 					}
 				}
 			}
@@ -227,8 +301,21 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 	}
 
 	public Object unwrap(Object obj) {
-		if (obj instanceof Wrapper)
+		if (obj instanceof Wrapper) {
 			return ((Wrapper) obj).unwrap();
+		} else if (obj instanceof NativeObject) {
+			// Allow JS objects to define a unwrap method:
+			NativeObject object = (NativeObject) obj;
+			Object unwrap = ScriptableObject.getProperty(object, "unwrap");
+			if (unwrap != Scriptable.NOT_FOUND
+					&& unwrap instanceof org.mozilla.javascript.Callable) {
+				obj = ((org.mozilla.javascript.Callable) unwrap).call(
+						Context.getCurrentContext(),
+						engine.topLevel, object, ScriptRuntime.emptyArgs);
+				if (obj != object)
+					return unwrap(obj);
+			}
+		}
 		return obj;
 	}
 
@@ -258,6 +345,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		return ClassUtils.getConstructor(cls, new Class[] { }, zeroArgumentConstructors);
 	}
 
-    private static IdentityHashMap<Class, Constructor> zeroArgumentConstructors = new IdentityHashMap<Class, Constructor>();
+	private static IdentityHashMap<Class, Constructor> zeroArgumentConstructors =
+			new IdentityHashMap<Class, Constructor>();
 }
 

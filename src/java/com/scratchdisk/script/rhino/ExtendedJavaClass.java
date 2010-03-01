@@ -38,7 +38,6 @@ import java.util.Map;
 
 import org.mozilla.javascript.Callable;
 import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EvaluatorException;
 import org.mozilla.javascript.MemberBox;
 import org.mozilla.javascript.NativeJavaClass;
 import org.mozilla.javascript.NativeObject;
@@ -55,7 +54,8 @@ public class ExtendedJavaClass extends NativeJavaClass {
 	private HashMap<String, Object> properties;
 	private Scriptable instanceProto = null;
 	// A lookup for the associated ExtendedJavaClass wrappers
-	private static IdentityHashMap<Class, ExtendedJavaClass> classes = new IdentityHashMap<Class, ExtendedJavaClass>();
+	private static IdentityHashMap<Class, ExtendedJavaClass> classes =
+			new IdentityHashMap<Class, ExtendedJavaClass>();
 
 	public ExtendedJavaClass(Scriptable scope, Class cls, boolean unsealed) {
 		super(scope, cls);
@@ -90,38 +90,39 @@ public class ExtendedJavaClass extends NativeJavaClass {
 			// be set, or a function that is executed on the object and of which
 			// the result can be fields to be set.
 			Object last = args[args.length - 1];
-			if (last instanceof Callable)
+			// Match callables for initialize functions but filter out java constructors
+			// which might be arguments to methods...
+			if (last instanceof Callable && !(last instanceof NativeJavaClass))
 				initialize = (Callable) last;
 			else if (last instanceof NativeObject) {
 				// Now see if the constructor takes a Map as the last argument.
 				// If so, the NativeObject will be converted to it thought
 				// RhinoWrapFactory. Otherwise, the NativeObject is used
 				// as the properties to be set on the instance after creation.
-				MemberBox ctor = null;
-				try {
-					ctor = findConstructor(cx, args);
-				} catch (EvaluatorException e) {
-					// TODO: ambiguous parameters, what to do? report?
-				}
-	            if (ctor != null) {
-		            Class[] types = ctor.ctor().getParameterTypes();
-		            Class lastType = types[types.length - 1];
-		            // Only set the property object if the constructor does
-		            // not expect an ArgumentReader or a Map object, both
-		            // of which NativeObject's can be converted to.
-					if (!ArgumentReader.class.isAssignableFrom(lastType) && !Map.class.isAssignableFrom(lastType))
+				MemberBox ctor = findConstructor(cx, args);
+				if (ctor != null) {
+					Class[] types = ctor.ctor().getParameterTypes();
+					Class lastType = types[types.length - 1];
+					// Only set the property object if the constructor does
+					// not expect an ArgumentReader or a Map object, both
+					// of which NativeObject's can be converted to.
+					if (!ArgumentReader.class.isAssignableFrom(lastType)
+							&& !Map.class.isAssignableFrom(lastType)) {
 						properties = (NativeObject) last;
-	            } else {
-	            	// There is no constructor that has to be checked, so it
-	            	// can only be a properties list.
+						if (ScriptableObject.hasProperty(properties, "unwrap"))
+							properties = null;
+					}
+				} else {
+					// There is no constructor that has to be checked, so it
+					// can only be a properties list.
 					properties = (NativeObject) last;
-	            }
-	            if (properties != null) {
-	            	// Support initialize in the passed object literal too.
-	            	Object obj = ScriptableObject.getProperty(properties, "initialize");
-	            	if (obj instanceof Callable)
-	            		initialize = (Callable) obj;
-	            }
+				}
+				if (properties != null) {
+					// Support initialize in the passed object literal too.
+					Object obj = ScriptableObject.getProperty(properties, "initialize");
+					if (obj instanceof Callable)
+						initialize = (Callable) obj;
+				}
 			}
 			// Remove the last argument from the list, so the right constructor
 			// will be found:
@@ -165,45 +166,62 @@ public class ExtendedJavaClass extends NativeJavaClass {
 	}
 
 	public Object get(String name, Scriptable start) {
-		Object result = Scriptable.NOT_FOUND;
-		// TODO: In NativeJavaClass, first staticFieldAndMethods are checked
-		// why not members? Shouldn't it be the other way round, as this is
-		// the more common case?
-		// TODO: "prototype" is checked there, and null is returned. And here
-		// we have to check for "prototype" again. Ideally, these things would
-		// happen only once.
-		// TODO: Remove nasty exc work-around! 
-		// The goal will be to merge everything into NativeJavaClass
-		RuntimeException exc = null;
-		try {
-			result = super.get(name, start);
-			if (result == null)
-				result = Scriptable.NOT_FOUND;
-		} catch (RuntimeException e) {
-			exc = e;
-		}
-		if (result == Scriptable.NOT_FOUND) {
-			if (properties != null && properties.containsKey(name)) {
-				// see whether this object defines the property.
-				result = properties.get(name);
-			} else if (name.equals("prototype")) {
-				//getPrototype creates prototype Objects on the fly:
-				result = getInstancePrototype();
-			} else {
-				Scriptable proto = getPrototype();
-				if (proto != null)
-					result = proto.get(name, start);
+		// We are completely redefining get here without relying on
+		// NativeJavaClass' implementation, in order to add more JS
+		// like behavior.
+		
+        // When used as a constructor, ScriptRuntime.newObject() asks
+        // for our prototype to create an object of the correct type.
+        // We don't really care what the object is, since we're returning
+        // one constructed out of whole cloth, so we return null.
+		boolean isProto = name.equals("prototype");
+
+		if (!isProto) {
+			if (members.has(name, true)) {
+				return members.get(this, name, javaObject, true);
+			}
+
+			// Changing access sequence of members / staticFieldAndMethods
+			// to be more logical / java-like. TODO: Is this a Rhino bug?
+			if (staticFieldAndMethods != null) {
+				Object result = staticFieldAndMethods.get(name);
+				if (result != null)
+					return result;
 			}
 		}
-		// Throw exception again, if nothing was found and the class was sealed.
-		if (exc != null && properties == null && result == ScriptableObject.NOT_FOUND)
-			throw exc;
-		return result;
-	}
+
+		if (properties != null && properties.containsKey(name)) {
+			// see whether this object defines the property.
+			return properties.get(name);
+		} else if (isProto) {
+			// getPrototype creates prototype Objects on the fly:
+			return getInstancePrototype();
+		} else {
+			Scriptable proto = getPrototype();
+			if (proto != null) {
+				Object result = proto.get(name, start);
+				if (result != Scriptable.NOT_FOUND)
+					return result;
+			}
+		}
+
+		// Experimental: look for nested classes by appending $name to
+		// current class' name.
+		Class<?> nestedClass = findNestedClass(getClassObject(), name);
+		if (nestedClass != null) {
+			ExtendedJavaClass nestedValue = new ExtendedJavaClass(
+					ScriptableObject.getTopLevelScope(this),
+					nestedClass, properties != null);
+			nestedValue.setParentScope(this);
+			return nestedValue;
+		}
+
+        return Scriptable.NOT_FOUND;
+ 	}
 
 	public void put(String name, Scriptable start, Object value) {
-		if (super.has(name, start)) {
-			super.put(name, start, value);
+		if (members.has(name, true)) {
+			members.put(this, name, javaObject, value, true);
 		} else if (name.equals("prototype")) {
 			if (value instanceof Scriptable)
 				this.setPrototype((Scriptable) value);
@@ -213,7 +231,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 	}
 
 	public boolean has(String name, Scriptable start) {
-		boolean has = super.has(name, start);
+		boolean has = members.has(name, true);
 		if (!has && properties != null)
 			has = properties.get(name) != null;
 		return has;
