@@ -87,7 +87,7 @@ if (app.isMacintosh()) {
 	}
 
 	// Also create /var/Lock if it does not exist yet.
-	var file = new java.io.File('/var/lock');
+	var file = new File('/var/lock');
 	if (!file.exists() || !found) {
 		var dialog = new ModalDialog(function() {
 			var logo = new ImagePane(this) {

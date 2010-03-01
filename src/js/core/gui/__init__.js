@@ -27,14 +27,13 @@
  * $Id$
  */
 
+mapJavaClass(java.io.File, File);
+
 importPackage(Packages.com.scriptographer);
 importPackage(Packages.com.scratchdisk.script);
 importPackage(Packages.com.scriptographer.script);
 
 script.showProgress = false;
-
-// Load the core libraries
-loadLibraries(new File(script.directory.parentFile, 'lib'));
 
 var buttonSize = new Size(27, 17);
 var lineHeight = 17;
@@ -43,36 +42,6 @@ var lineBreak = java.lang.System.getProperty('line.separator');
 function getImage(filename) {
 	return new Image(new File(script.directory, 'resources/' + filename));
 }
-
-function loadLibraries(dir) {
-	var files = dir.listFiles();
-	if (files) {
-		for (var i = 0; i < files.length; i++) {
-			var file = files[i];
-			if (file.isDirectory() && !/^\.|^CVS$/.test(file.name)) {
-				loadLibraries(file);
-			} else {
-				try {
-					var engine = ScriptEngine.getEngineByFile(file);
-					if (engine) {
-						var scr = engine.compile(file);
-						// Don't call scr.execute directly, since we handle
-						// SG specific things in ScriptographerEngine.execute:
-						if (scr)
-							ScriptographerEngine.execute(scr, file, engine.globalScope);
-					}
-				} catch (e) {
-					print(e);
-				}
-			}
-		}
-	}
-}
-
-var tool = new Tool('Scriptographer Tool', getImage('tool.png')) {
-	activeImage: getImage('tool-active.png'),
-	tooltip: 'Execute a tool script to assign it with this tool button'
-};
 
 if (!script.preferences.accepted) {
 	include('license.js');

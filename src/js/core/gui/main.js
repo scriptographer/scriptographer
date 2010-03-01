@@ -27,8 +27,21 @@
  * $Id$
  */
 
+// Tool
+
+var tool = new Tool('Scriptographer Tool', getImage('tool.png')) {
+	activeImage: getImage('tool-active.png'),
+	tooltip: 'Execute a tool script to assign it with this tool button'
+};
+
+// Effect
+
+var effect = new LiveEffect('Scriptographer', null, 'pre-effect');
+
 var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing', function() {
-	// Script List:
+
+	// Script List
+
 	scriptList = new HierarchyList(this) {
 		style: 'black-rect',
 		size: [208, 20 * lineHeight],
@@ -63,35 +76,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	};
 
-	// Filter for hiding files:
-	var scriptFilter = new java.io.FilenameFilter() {
-		accept: function(dir, name) {
-			return !/^__|^\.|^libraries$|^CVS$/.test(name) && 
-				(/\.(?:js|rb|py)$/.test(name) || new File(dir, name).isDirectory());
-		}
-	};
-
-	function chooseScriptDirectory(dir) {
-		dir = Dialog.chooseDirectory(
-			'Please choose the Scriptographer script directory',
-			dir || scriptographer.scriptDirectory || scriptographer.pluginDirectory);
-		if (dir && dir.isDirectory()) {
-			script.preferences.scriptDirectory = dir.path;
-			setScriptDirectory(dir);
-			return true;
-		}
-	}
-
-	function setScriptDirectory(dir) {
-		// Tell Scriptographer about where to look for scripts.
-		ScriptographerEngine.scriptDirectory = dir;
-		// Load librarires:
-		// TODO: Is this still used?
-		loadLibraries(new File(dir, 'Libraries'));
-		refreshList();
-	}
-
 	var scriptImage = getImage('script.png');
+	var effectImage = getImage('effect.png');
 	var toolScriptImage = getImage('script-tool.png');
 	var activeToolScriptImage = getImage('script-tool-active.png');
 	var folderImage = getImage('folder.png');
@@ -102,17 +88,11 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	var myScriptsEntry = null;
 
 	function addFile(list, file, index) {
-		// TODO: We need to convert back to com.scriptographer.sg.File from
-		// java.io.File here, since listFiles is not using that class.
-		// Decide what to do: Shall we use the boots File object instead?
-		// Most def!
-		if (!(file instanceof File))
-			file = new File(file);
 		var entry = new HierarchyListEntry(list, Base.pick(index, -1)) {
 			text: file.name,
 			// backgroundColor: 'background',
 			file: file,
-			lastModified: file.lastModified(),
+			lastModified: file.lastModified,
 			isDirectory: file.isDirectory()
 		};
 		var isRoot = list == scriptList;
@@ -141,12 +121,15 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			directoryEntries[file] = entry;
 		} else {
 			entry.update = function() {
-				this.isTool = /onMouse(Up|Down|Move|Drag)/.test(file.readAll());
-				this.image = this.isTool
+				var type = file.readAll().match(/(onMouse(?:Up|Down|Move|Drag))|(onCalculate)/);
+				this.type = type && (type[1] && 'tool' || type[2] && 'effect');
+				this.image = this.type == 'tool'
 					? (currentToolFile == this.file
 						? activeToolScriptImage
 						: toolScriptImage)
-					: scriptImage;
+					: this.type == 'effect'
+						? effectImage
+						: scriptImage;
 			}
 			entry.update();
 			fileEntries[file] = entry;
@@ -157,7 +140,10 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	function getFiles(list) {
 		if (!list.directory)
 			return [];
-		var files = list.directory.listFiles(scriptFilter);
+		var files = list.directory.list(function(file) {
+			return !/^__|^\.|^libraries$|^CVS$/.test(file.name) && 
+				(/\.(?:js|rb|py)$/.test(file.name) || file.isDirectory());
+		});
 		if (list == scriptList) {
 			var order = {
 				'Examples': 1,
@@ -205,7 +191,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				delete files[entry.file.path];
 				// See if the file was changed, and if so, update its icon since
 				// it might be a tool now
-				var lastModified = entry.file.lastModified();
+				var lastModified = entry.file.lastModified;
 				if (entry.lastModified != lastModified) {
 					entry.lastModified = lastModified; 
 					if (!entry.isDirectory)
@@ -266,10 +252,44 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	}
 
-	function execute() {
+	function getSelectedScriptEntry() {
 		var entry = scriptList.activeLeaf;
-		if (entry && entry.file) {
-			if (entry.isTool) {
+		return entry && entry.file ? entry : null;
+	}
+
+	function compileScope(entry, handler) {
+		var scr = ScriptographerEngine.compile(entry.file);
+		if (scr) {
+			var scope = entry.scope = scr.engine.createScope();
+			if (handler instanceof ToolEventHandler)
+				scope.put('tool', handler, true);
+			// Don't call scr.execute directly, since we handle SG
+			// specific things in ScriptographerEngine.execute:
+			ScriptographerEngine.execute(scr, entry.file, scope);
+			// Now copy over handlers from the scope and set them on the tool,
+			// to allow them to be defined globally.
+			var names = entry.type == 'tool'
+				? ['onOptions', 'onSelect', 'onDeselect', 'onReselect',
+					'onMouseDown', 'onMouseUp', 'onMouseDrag', 'onMouseMove']
+				: ['onEditParameters', 'onCalculate', 'onGetInputType'];
+			names.each(function(name) {
+				var func = scope.getCallable(name);
+				if (func)
+					handler[name] = func;
+			});
+			return scope;
+		}
+	}
+
+	function executeEffect() {
+		
+	}
+
+	function execute(asEffect) {
+		var entry = getSelectedScriptEntry();
+		if (entry) {
+			switch (entry.type) {
+			case 'tool':
 				// Manually call onStop in tool scopes before they get overridden.
 				if (entry.scope) {
 					var onStop = entry.scope.getCallable('onStop');
@@ -280,29 +300,12 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				tool.image = tool.activeImage;
 				// Reset settings
 				tool.initialize();
-				var scr = ScriptographerEngine.compile(entry.file);
-				if (scr) {
-					var scope = entry.scope = scr.engine.createScope();
-					scope.put('tool', tool, true);
-					if (scr) {
-						// Don't call scr.execute directly, since we handle SG
-						// specific things in ScriptographerEngine.execute:
-						ScriptographerEngine.execute(scr, entry.file, scope);
-					}
-					// Now copy over handlers from the scope and set them on the tool,
-					// to allow them to be defined globally.
-					['onOptions', 'onSelect', 'onDeselect', 'onReselect', 'onMouseDown',
-							'onMouseUp', 'onMouseDrag', 'onMouseMove'].each(function(name) {
-						var handler = scope.getCallable(name);
-						if (handler)
-							tool[name] = handler;
-					});
+				var scope = compileScope(entry, tool);
+				if (scope) {
 					// Call onInit on the tool scope, for backward compatibility.
 					var onInit = scope.getCallable('onInit');
 					if (onInit)
 						onInit.call(tool);
-				} else {
-					
 				}
 				if (entry.file != currentToolFile) {
 					var curEntry = fileEntries[currentToolFile];
@@ -311,13 +314,162 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 					entry.image = activeToolScriptImage;
 					currentToolFile = entry.file;
 				}
-			} else {
+				break;
+			case 'effect':
+				// This works even for multiple selections, as the path style
+				// apparently is applied to all of the selected items. Fine
+				// with us... But not so clean...
+				var item = document.selectedItems.first;
+				if (item)
+					item.addEffect(effect);
+				else
+					Dialog.alert('In order to assign Scriptographer Effects\n'
+						+ 'to items, please select some items\n'
+						+ 'before executing the script.');
+				break;
+			default:
 				ScriptographerEngine.execute(entry.file, null);
 			}
 		}
 	}
-	
-	// Add the menus:
+
+	// Script Directory Stuff
+
+	function chooseScriptDirectory(dir) {
+		dir = Dialog.chooseDirectory(
+			'Please choose the Scriptographer script directory',
+			dir || scriptographer.scriptDirectory || scriptographer.pluginDirectory);
+		if (dir && dir.isDirectory()) {
+			script.preferences.scriptDirectory = dir.path;
+			setScriptDirectory(dir);
+			return true;
+		}
+	}
+
+	function setScriptDirectory(dir) {
+		// Tell Scriptographer about where to look for scripts.
+		ScriptographerEngine.scriptDirectory = dir;
+		// Load librarires:
+		// TODO: Is this still used?
+		ScriptographerEngine.loadLibraries(new File(dir, 'Libraries'));
+		refreshList();
+	}
+
+	// Read the script directory first, or ask for it if its not defined:
+	var dir = script.preferences.scriptDirectory;
+	// If no script directory is defined, try the default place for Scripts:
+	// The subdirectory 'scripts' in the plugin directory:
+	dir = dir
+		? new File(dir)
+		: new File(scriptographer.pluginDirectory, 'Scripts');
+	if (!dir.exists() || !dir.isDirectory()) {
+		if (!chooseScriptDirectory(dir))
+			Dialog.alert('Could not find Scriptographer script directory.');
+	} else {
+		setScriptDirectory(dir);
+	}
+
+	// Effect
+
+	var effectEntries = {};
+
+	function callEffectHandler(event, name) {
+		if (event.data.file) {
+			var entry = effectEntries[event.data.file];
+			if (!entry) {
+				// TODO: Support finding unindexed effect files from the path inside
+				// scriptList, so effects work after reloading too!
+			}
+			var func = entry && entry.handler && entry.handler[name];
+			if (func)
+				return func.call(entry.scope, event);
+		}
+	}
+
+	function followItem(item, speed, handler, scope) {
+		if (item instanceof Group || item instanceof CompoundPath
+			|| item instanceof Layer) {
+			item.children.each(function(child) {
+				followItem(child, handler, speed);
+			})
+		} else if (item instanceof Path) {
+			handler.onHandleEvent('mouse-down', item.curves.first.point1);
+			for (var pos = speed, length = item.length; pos < length; pos += speed) {
+				var point = item.getPoint(pos);
+				handler.onHandleEvent('mouse-drag', point);
+			}
+			handler.onHandleEvent('mouse-up', item.curves.last.point2);
+		}
+	}
+
+	function compileEffect(entry, data) {
+		var path = entry.file.path;
+		effectEntries[path] = entry;
+		data.file = path;
+		var isTool = entry.type == 'tool';
+		// Create a ToolEventHandler that handles all the complicated ToolEvent
+		// stuff for us, to replicate completely the behavior of tools.
+		var handler = isTool ? new ToolEventHandler() : {};
+		var scope = compileScope(entry, handler);
+		if (scope) {
+			scope.put('effect', effect, true);
+			if (isTool) {
+				var toolHandler = handler;
+				handler = {
+					onEditParameters: function(event) {
+						// TODO: Persist tool script.preferences in event.data
+						toolHandler.onHandleEvent('edit-options', null);
+					},
+
+					onCalculate: function(event) {
+						var speed = 10;
+						if (speed < toolHandler.distanceThreshold)
+							speed = toolHandler.distanceThreshold;
+//						var t = new Date();
+						followItem(event.item, speed, toolHandler, this);
+//						print(new Date() - t);
+					}
+				}
+			}
+		}
+		entry.handler = handler;
+	}
+
+	effect.onEditParameters = function(event) {
+		// A new script?
+		if (!event.data.file) {
+			var entry = getSelectedScriptEntry();
+			if (!entry || !/^(tool|effect)$/.test(entry.type)) {
+				// Clone event.data as it won't be valid outside of this callback
+				// and we need to use a timer to remove the effect again after.
+				Dialog.alert('In order to assign Scriptographer Effects\n'
+					+ 'to items, please select a Tool or Effect Script\n'
+					+ 'in the Scriptographer Main Palette first.');
+				var data = event.data.clone();
+				// Remove this effect again, as no effect script was selected!
+				(function() {
+					document.selectedItems.each(function(item) {
+						item.removeEffect(this, data);
+					}, this);
+				}).delay(0, this);
+				return;
+			} else {
+				compileEffect(entry, event.data);
+			}
+		}
+		return callEffectHandler(event, 'onEditParameters');
+	}
+
+	effect.onCalculate = function(event) {
+		return callEffectHandler(event, 'onCalculate');
+	}
+
+	effect.onGetInputType = function(event) {
+		return callEffectHandler(event, 'onGetInputType');
+	}
+
+	// Menus
+
 	var scriptographerGroup = new MenuGroup(MenuGroup.GROUP_TOOL_PALETTES,
 			MenuGroup.OPTION_ADD_ABOVE | MenuGroup.OPTION_SEPARATOR_ABOVE);
 
@@ -363,7 +515,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	};
 
-	// Add the popup menu
+	// Popup Menu
+
 	var menu = this.popupMenu;
 
 	var executeEntry = new ListEntry(menu) {
@@ -414,6 +567,19 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	};
 
+	// Event Handlers
+
+	global.onActivate = function() {
+		refreshList();
+	}
+
+	global.onKeyDown = function(event) {
+		if (event.character == '`' && !event.modifiers.command && !event.modifiers.shift) {
+			tool.selected = true;
+			return true;
+		}
+	}
+
 	// Buttons:
 	var playButton = new ImageButton(this) {
 		image: getImage('play.png'),
@@ -428,6 +594,14 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		size: buttonSize,
 		onClick: function() {
 			ScriptographerEngine.stopAll();
+		}
+	};
+
+	var effectButton = new ImageButton(this) {
+		image: getImage('effect.png'),
+		size: buttonSize,
+		onClick: function() {
+			execute();
 		}
 	};
 
@@ -447,31 +621,6 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	};
 
-	global.onActivate = function() {
-		refreshList();
-	}
-
-	global.onKeyDown = function(event) {
-		if (event.character == '`' && !event.modifiers.command && !event.modifiers.shift) {
-			tool.selected = true;
-			return true;
-		}
-	}
-
-	// Read the script directory first, or ask for it if its not defined:
-	var dir = script.preferences.scriptDirectory;
-	// If no script directory is defined, try the default place for Scripts:
-	// The subdirectory 'scripts' in the plugin directory:
-	dir = dir
-		? new File(dir)
-		: new File(scriptographer.pluginDirectory, 'Scripts');
-	if (!dir.exists() || !dir.isDirectory()) {
-		if (!chooseScriptDirectory(dir))
-			Dialog.alert('Could not find Scriptographer script directory.');
-	} else {
-		setScriptDirectory(dir);
-	}
-
 	return {
 		title: 'Scriptographer',
 		margin: [0, -1, -1, -1],
@@ -482,6 +631,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				content: [
 					playButton,
 					stopButton,
+					effectButton,
 					new Spacer(4, 0),
 					newButton,
 					consoleButton,
