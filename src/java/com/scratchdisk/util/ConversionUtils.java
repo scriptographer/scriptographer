@@ -60,7 +60,7 @@ public class ConversionUtils {
 
 	public static double toDouble(Object val, double defaultValue) {
 		double value = toDouble(val);
-		return value == Double.NaN ? defaultValue : value;
+		return Double.isNaN(value) ? defaultValue : value;
 	}
 	
 	public static float toFloat(Object val) {
@@ -69,19 +69,21 @@ public class ConversionUtils {
 
 	public static float toFloat(Object val, float defaultValue) {
 		float value = toFloat(val);
-		return value == Float.NaN ? defaultValue : value;
+		return Double.isNaN(value) ? defaultValue : value;
 	}
 
 	public static int toInt(Object val) {
 		if (val instanceof Integer)
 			return ((Integer) val).intValue();
-		else return (int) Math.round(toDouble(val));
+		else 
+			return (int) Math.round(toDouble(val));
 	}
 
 	public static int toInt(Object val, int defaultValue) {
 		if (val instanceof Integer)
 			return ((Integer) val).intValue();
-		else return (int) Math.round(toDouble(val, defaultValue));
+		else 
+			return (int) Math.round(toDouble(val, defaultValue));
 	}
 
 	public static boolean toBoolean(Object val) {
