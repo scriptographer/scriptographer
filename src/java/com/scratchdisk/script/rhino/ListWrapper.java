@@ -74,7 +74,7 @@ public class ListWrapper extends ExtendedJavaObject {
 		// Thanks to the great functionality of our ExtendedJavaObject, there is
 		// no difference between a java List and a JavaScript Array after this,
 		// all features work as long as the list is not read-only!
-		this.setPrototype(ScriptableObject.getClassPrototype(scope, "Array"));
+		setPrototype(ScriptableObject.getArrayPrototype(scope));
 	}
 
 	public Object[] getIds() {
