@@ -76,6 +76,8 @@
 #include "AIArray.h"
 #include "AIArt.h"
 #include "AIArtSet.h"
+#include "AIArtStyle.h"
+#include "AIArtStyleParser.h"
 #include "AIBlock.h"
 #include "AIOverrideColorConversion.h"
 #include "AIColorConversion.h"
@@ -102,6 +104,7 @@
 #include "AIMesh.h"
 #include "AIMenuGroups.h"
 #include "AINotifier.h"
+#include "AIPaintStyle.h"
 #include "AIPaintStyle.h"
 #include "AIPath.h"
 #include "AIPathStyle.h"
@@ -308,6 +311,7 @@ extern "C" SPPluginsSuite 					*sSPPlugins;
 extern "C" AIAnnotatorSuite					*sAIAnnotator;
 extern "C" AIArraySuite						*sAIArray;
 extern "C" AIArtStyleSuite					*sAIArtStyle;
+extern "C" AIArtStyleParserSuite			*sAIArtStyleParser;
 extern "C" AIArtSuite						*sAIArt;
 extern "C" AIArtSetSuite					*sAIArtSet;
 extern "C" AIATEPaintSuite					*sAIATEPaint;

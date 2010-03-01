@@ -41,8 +41,8 @@ import com.scratchdisk.list.AbstractReadOnlyList;
 public class DocumentList extends AbstractReadOnlyList<Document> {
 
 	/**
-     * Don't let anyone instantiate this class.
-     */
+	 * Don't let anyone instantiate this class.
+	 */
 	private DocumentList() {
 	}
 

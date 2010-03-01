@@ -43,15 +43,15 @@ import org.mozilla.javascript.Wrapper;
 public class ExtendedJavaTopPackage extends ExtendedJavaPackage {
 
 	public ExtendedJavaTopPackage(ClassLoader loader) {
-        super("", loader);
+		super("", loader);
 	}
 
-    public Object call(Context cx, Scriptable scope, Scriptable thisObj,
+	public Object call(Context cx, Scriptable scope, Scriptable thisObj,
 			Object[] args) {
 		return construct(cx, scope, args);
 	}
 
-    public Scriptable construct(Context cx, Scriptable scope, Object[] args) {
+	public Scriptable construct(Context cx, Scriptable scope, Object[] args) {
 		ClassLoader loader = null;
 		if (args.length != 0) {
 			Object arg = args[0];

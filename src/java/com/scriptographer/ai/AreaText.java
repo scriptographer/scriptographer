@@ -115,7 +115,7 @@ public class AreaText extends TextItem {
 
 	/**
 	 * The path item that defines the text item's area.
-     */
+	 */
 	public Path getTextPath() {
 		return (Path) getFirstChild();
 	}

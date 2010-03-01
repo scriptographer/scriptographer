@@ -203,10 +203,11 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
 				/**
 				 * Check the known number of modification to the number of
-				 * modifications of the table.  If it differs from the real
+				 * modifications of the table. If it differs from the real
 				 * number, we throw an exception.
-				 * @throws ConcurrentModificationException if the number
-				 *         of modifications doesn't match.
+				 * 
+				 * @throws ConcurrentModificationException if the number of
+				 *         modifications doesn't match.
 				 */
 				private void checkMod() {
 					// This method will get inlined.
@@ -257,6 +258,7 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
 				/**
 				 * Checks if there are more entries.
+				 * 
 				 * @return true, iff there are more elements.
 				 * @throws ConcurrentModificationException if the hash map was
 				 *         modified.
@@ -268,6 +270,7 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 
 				/**
 				 * Returns the next entry.
+				 * 
 				 * @return the next entry.
 				 * @throws ConcurrentModificationException if the hash map was
 				 *         modified.
@@ -283,12 +286,13 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 				}
 
 				/**
-				 * Removes the last returned entry from this set.  This will
-				 * also remove the bucket of the underlying weak hash map.
+				 * Removes the last returned entry from this set. This will also
+				 * remove the bucket of the underlying weak hash map.
+				 * 
 				 * @throws ConcurrentModificationException if the hash map was
 				 *         modified.
-				 * @throws IllegalStateException if {@code next()} was
-				 *         never called or the element was already removed.
+				 * @throws IllegalStateException if {@code next()} was never
+				 *         called or the element was already removed.
 				 */
 				public void remove() {
 					checkMod();
@@ -343,11 +347,12 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 		/**
 		 * Creates a new bucket for the given key/value pair and the specified
 		 * slot.
+		 * 
 		 * @param key the key
 		 * @param queue the queue the weak reference belongs to
 		 * @param value the value
-		 * @param slot the slot.  This must match the slot where this bucket
-		 *        will be enqueued.
+		 * @param slot the slot. This must match the slot where this bucket will
+		 *        be enqueued.
 		 */
 		public WeakBucket(Object key, ReferenceQueue<Object> queue, V value,
 				int slot) {
@@ -489,7 +494,7 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 	 * @param initialCapacity the initial capacity.
 	 * @param loadFactor the load factor (see class description of HashMap).
 	 * @throws IllegalArgumentException if initialCapacity is negative, or
-	 *         loadFactor is non-positive
+	 *    	 loadFactor is non-positive
 	 */
 	@SuppressWarnings("unchecked")
 	public WeakIdentityHashMap(int initialCapacity, float loadFactor) {
@@ -691,8 +696,8 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 	/**
 	 * Gets the value the key is mapped to.
 	 * @return the value the key was mapped to.  It returns null if
-	 *         the key wasn't in this map, or if the mapped value was
-	 *         explicitly set to null.
+	 *    	 the key wasn't in this map, or if the mapped value was
+	 *    	 explicitly set to null.
 	 */
 	public V get(Object key) {
 		cleanQueue();
@@ -705,8 +710,8 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 	 * @param key the key, may be null
 	 * @param value the value, may be null
 	 * @return the value the key was mapped to previously.  It returns
-	 *         null if the key wasn't in this map, or if the mapped value
-	 *         was explicitly set to null.
+	 *    	 null if the key wasn't in this map, or if the mapped value
+	 *    	 was explicitly set to null.
 	 */
 	public V put(K key, V value) {
 		cleanQueue();
@@ -726,8 +731,8 @@ public class WeakIdentityHashMap<K,V> extends AbstractMap<K,V> implements Map<K,
 	 * Removes the key and the corresponding value from this map.
 	 * @param key the key. This may be null.
 	 * @return the value the key was mapped to previously.  It returns
-	 *         null if the key wasn't in this map, or if the mapped value was
-	 *         explicitly set to null.
+	 *    	 null if the key wasn't in this map, or if the mapped value was
+	 *    	 explicitly set to null.
 	 */
 	public V remove(Object key) {
 		cleanQueue();

@@ -42,7 +42,7 @@ public class Key {
 		// Don't let anyone instantiate this class.
 	}
 
-    /**
+	/**
 	 * @return {@true if the key is pressed}
 	 */
 	public static boolean isDown(KeyCode key) {

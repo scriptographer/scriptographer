@@ -65,15 +65,15 @@ public class RhinoScriptException extends ScriptException {
 			if (wrapped instanceof RhinoException)
 				cause = wrapped;
 		} else if (cause instanceof JavaScriptException) {
-		    JavaScriptException jse = (JavaScriptException) cause;
-		    Object value = jse.getValue();
+			JavaScriptException jse = (JavaScriptException) cause;
+			Object value = jse.getValue();
 			if (value instanceof Wrapper) {
 				value = ((Wrapper) value).unwrap();
 			} else if (value instanceof Scriptable) {
 				value = ScriptableObject.getProperty((Scriptable) value, "exception");
 			}
-	        if (value instanceof Throwable)
-	            return (Throwable) value;
+			if (value instanceof Throwable)
+				return (Throwable) value;
 		}
 		return cause;
 	}
@@ -113,7 +113,7 @@ public class RhinoScriptException extends ScriptException {
 				if (stackTrace.length == 0 || stackTrace[0].indexOf(sourceName + ":" + lineNumber) == -1) {
 					if (base != null)
 						sourceName = sourceName.substring(base.length());
-					writer.println("    at " + sourceName + ":" + lineNumber);
+					writer.println("\\tat " + sourceName + ":" + lineNumber);
 				}
 			}
 			// Parse the lines for filename:linenumber

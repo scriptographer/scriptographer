@@ -50,15 +50,15 @@ public class ConsoleOutputStream extends OutputStream {
 	 */
 	private static final String lineSeparator = 
 			System.getProperty("line.separator");
-    private static final char newLine =
-    		lineSeparator.charAt(lineSeparator.length() - 1);
+	private static final char newLine =
+			lineSeparator.charAt(lineSeparator.length() - 1);
 
-    private boolean enabled;
+	private boolean enabled;
 
-    // Use a ByteArrayOutputStream instead of a StringBuffer,
-    // since we receive print(int) with bytes in the platform
-    // encoding, not chars.
-    private ByteArrayOutputStream buffer;
+	// Use a ByteArrayOutputStream instead of a StringBuffer,
+	// since we receive print(int) with bytes in the platform
+	// encoding, not chars.
+	private ByteArrayOutputStream buffer;
 	private PrintStream stream;
 	private PrintStream stdOut;
 	private PrintStream stdErr;

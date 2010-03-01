@@ -56,13 +56,13 @@ public class JythonCallable extends Callable {
 			// self
 			wrappedArgs[0] = Py.java2py(obj);
 			// args
-	        for (int i = 1; i < wrappedArgs.length; i++)
-	        	wrappedArgs[i] = Py.java2py(args[i - 1]);
+			for (int i = 1; i < wrappedArgs.length; i++)
+				wrappedArgs[i] = Py.java2py(args[i - 1]);
 
-	        PyObject ret = function.__call__(wrappedArgs);
+			PyObject ret = function.__call__(wrappedArgs);
 			// unwrap if the return value is a native java object:
-	        Object res = ret.__tojava__(Object.class);
-	        return res != Py.NoConversion ? res : ret;
+			Object res = ret.__tojava__(Object.class);
+			return res != Py.NoConversion ? res : ret;
 		} catch(PyException e) {
 			throw new JythonException(e);
 		}

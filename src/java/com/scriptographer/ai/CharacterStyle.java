@@ -165,10 +165,10 @@ public class CharacterStyle extends PathStyle {
 			fetch();
 	}
 	
-    @Override
+	@Override
 	protected native void nativeGet(int handle, int docHandle);
 
-    @Override
+	@Override
 	protected native void nativeSet(int handle, int docHandle, 
 			Color fillColor, boolean hasFillColor,
 			short fillOverprint,

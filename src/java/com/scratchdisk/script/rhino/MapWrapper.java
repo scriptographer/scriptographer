@@ -91,13 +91,13 @@ public class MapWrapper extends ScriptableObject implements Wrapper {
 			return super.get(index, start);
 	}
 
-    private Object getInternal(Object key) {
-    	if (map.containsKey(key)) {
-    		Object value = map.get(key);
-            return value != null ? Context.javaToJS(value, getParentScope()) : null;
-    	}
-        return Scriptable.NOT_FOUND;
-    }
+	private Object getInternal(Object key) {
+		if (map.containsKey(key)) {
+			Object value = map.get(key);
+			return value != null ? Context.javaToJS(value, getParentScope()) : null;
+		}
+		return Scriptable.NOT_FOUND;
+	}
 
 	public void put(String name, Scriptable start, Object value) {
 		if (map != null)
@@ -114,38 +114,38 @@ public class MapWrapper extends ScriptableObject implements Wrapper {
 	}
 
 	@SuppressWarnings("unchecked")
-    private void putInternal(Object key, Object value) {
-        try {
-        	map.put(key, Context.jsToJava(value,
-                    ScriptRuntime.ObjectClass));
-        } catch (RuntimeException e) {
-            Context.throwAsScriptRuntimeEx(e);
-        }
-    }
+	private void putInternal(Object key, Object value) {
+		try {
+			map.put(key, Context.jsToJava(value,
+					ScriptRuntime.ObjectClass));
+		} catch (RuntimeException e) {
+			Context.throwAsScriptRuntimeEx(e);
+		}
+	}
 
-    public void delete(String name) {
-        if (map != null) {
-            try {
-            	map.remove(name);
-            } catch (RuntimeException e) {
-                Context.throwAsScriptRuntimeEx(e);
-            }
-        } else {
-        	super.delete(name);
-        }
-    }
+	public void delete(String name) {
+		if (map != null) {
+			try {
+				map.remove(name);
+			} catch (RuntimeException e) {
+				Context.throwAsScriptRuntimeEx(e);
+			}
+		} else {
+			super.delete(name);
+		}
+	}
 
-    public void delete(int index) {
-        if (map != null) {
-            try {
-            	map.remove(new Integer(index));
-            } catch (RuntimeException e) {
-                Context.throwAsScriptRuntimeEx(e);
-            }
-        } else {
-        	super.delete(index);
-        }
-    }
+	public void delete(int index) {
+		if (map != null) {
+			try {
+				map.remove(new Integer(index));
+			} catch (RuntimeException e) {
+				Context.throwAsScriptRuntimeEx(e);
+			}
+		} else {
+			super.delete(index);
+		}
+	}
 
 	public Object[] getIds() {
 		if (map != null) {

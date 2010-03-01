@@ -48,7 +48,7 @@ public class HorizontalLayout extends java.awt.FlowLayout {
 		alignMap.put("trailing", HorizontalLayout.TRAILING);
 	}
 
-    /**
+	/**
 	 * Constructs a new {@code FlowLayout} with a centered alignment and
 	 * a default 0-unit horizontal and vertical gap.
 	 */

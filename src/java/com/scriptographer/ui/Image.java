@@ -209,11 +209,11 @@ public class Image extends NativeObject {
 		// both:
 		URL url = null;
 		try {
-	        url = new URL(str);
-	    } catch (MalformedURLException e) {
-	        // try the local file now:
-	    	// url = new URL("file://" + str);
-	    	url = new File(str).toURI().toURL();
+			url = new URL(str);
+		} catch (MalformedURLException e) {
+			// try the local file now:
+			// url = new URL("file://" + str);
+			url = new File(str).toURI().toURL();
 		}
 		return url;
 	}

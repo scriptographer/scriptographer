@@ -88,8 +88,8 @@ public class TopLevel extends ImporterTopLevel {
 
 		ScriptableObject objProto = (ScriptableObject) getObjectPrototype(this);
 		objProto.defineFunctionProperties(new String[] { "dontEnum", "toJava" }, TopLevel.class,
-                    DONTENUM | READONLY | PERMANENT);
-    }
+					DONTENUM | READONLY | PERMANENT);
+	}
 
 	public static void defineProperty(ScriptableObject obj, String name,
 			String getter, String setter) throws SecurityException, NoSuchMethodException {
@@ -140,34 +140,34 @@ public class TopLevel extends ImporterTopLevel {
 		return null;
 	}
 
-    /**
-     * Convert an object into a wrapper that exposes the java
-     * methods of the object to JavaScript. This is useful for
-     * treating native numbers, strings, etc as their java
-     * counterpart such as java.lang.Double, java.lang.String etc.
-     * @param thisObj a java object that is wrapped in a special way
-     * Rhino
-     * @return the object wrapped as NativeJavaObject, exposing
-     * the public methods of the underlying class.
-     */
-    public static Object toJava(Context cx, Scriptable thisObj,
+	/**
+	 * Convert an object into a wrapper that exposes the java methods of the
+	 * object to JavaScript. This is useful for treating native numbers,
+	 * strings, etc as their java counterpart such as java.lang.Double,
+	 * java.lang.String etc.
+	 * 
+	 * @param thisObj a java object that is wrapped in a special way Rhino
+	 * @return the object wrapped as NativeJavaObject, exposing the public
+	 *         methods of the underlying class.
+	 */
+	public static Object toJava(Context cx, Scriptable thisObj,
 			Object[] args, Function funObj) {
-        if (thisObj == null || thisObj instanceof NativeJavaObject
-                || thisObj == Undefined.instance) {
-            return thisObj;
-        }
-        Scriptable topLevel = ScriptRuntime.getTopCallScope(cx);
-        Object obj = thisObj;
-        if (thisObj instanceof Wrapper) {
-        	obj = ((Wrapper) thisObj).unwrap();
-        } else if (thisObj instanceof Scriptable) {
-            if ("Date".equals(((Scriptable) thisObj).getClassName())) {
-                return new NativeJavaObject(topLevel,
-                        new Date((long) ScriptRuntime.toNumber(thisObj)), null);
-            }
-        }
-        return new NativeJavaObject(topLevel, obj, null);
-    }
+		if (thisObj == null || thisObj instanceof NativeJavaObject
+				|| thisObj == Undefined.instance) {
+			return thisObj;
+		}
+		Scriptable topLevel = ScriptRuntime.getTopCallScope(cx);
+		Object obj = thisObj;
+		if (thisObj instanceof Wrapper) {
+			obj = ((Wrapper) thisObj).unwrap();
+		} else if (thisObj instanceof Scriptable) {
+			if ("Date".equals(((Scriptable) thisObj).getClassName())) {
+				return new NativeJavaObject(topLevel,
+						new Date((long) ScriptRuntime.toNumber(thisObj)), null);
+			}
+		}
+		return new NativeJavaObject(topLevel, obj, null);
+	}
 
 	public String getClassName() {
 		return "global";

@@ -59,8 +59,8 @@ public class JythonEngine extends ScriptEngine {
 		super("Python", "py");
 		PySystemState.initialize();
 		PySystemState state = new PySystemState();
-        state.setClassLoader(Thread.currentThread().getContextClassLoader());
-        Py.setSystemState(state);
+		state.setClassLoader(Thread.currentThread().getContextClassLoader());
+		Py.setSystemState(state);
 	}
 
 	protected Script compileScript(File file) throws ScriptException, IOException {

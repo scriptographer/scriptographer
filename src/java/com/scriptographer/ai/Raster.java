@@ -139,7 +139,7 @@ public class Raster extends Item {
 	 * <code>
 	 * var url = new java.net.URL('http://www.server.com/image.jpg');
 	 * var raster = new Raster(url);</code>
-     *
+	 *
 	 * @param url the URL of the image to load
 	 * @throws IOException
 	 */

@@ -250,7 +250,7 @@ public class Rectangle {
 	}
 
 	public boolean isEmpty() {
-	    return width <= 0 || height <= 0;
+		return width <= 0 || height <= 0;
 	}
 
 	public boolean contains(Point point) {
@@ -286,7 +286,7 @@ public class Rectangle {
 		int x2 = Math.min(x + width, rect.x + rect.width);
 		int y2 = Math.min(y + height, rect.y + rect.height);
 		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
-    }
+	}
 
 	public Rectangle unite(Rectangle rect) {
 		int x1 = Math.min(x, rect.x);

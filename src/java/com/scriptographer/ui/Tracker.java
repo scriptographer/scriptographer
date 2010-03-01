@@ -137,11 +137,11 @@ public class Tracker extends NativeObject {
 		MODIFIER_DOUBLE_CLICK			= 0x00000800,
 
 		MODIFIER_CAPS_LOCK_ON			= 0x00001000,
-		
+
 		MODIFIER_TRIPLE_CLICK			= 0x00002000,
-	    
-	    MODIFIER_CONTEXT_MENU_CLICK		= 0x00004000,
-	    
+
+		MODIFIER_CONTEXT_MENU_CLICK		= 0x00004000,
+
 		MODIFIER_DUMMY					= 0xFFFFFFFF;
 
 	// -----------------------------------------------------------------------------

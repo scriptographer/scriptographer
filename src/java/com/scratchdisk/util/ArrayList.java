@@ -48,9 +48,9 @@ public class ArrayList<E> extends java.util.ArrayList<E> {
 		super(initialCapacity);
 	}
 
-    public ArrayList(Collection<? extends E> c) {
-    	super(c);
-    }
+	public ArrayList(Collection<? extends E> c) {
+		super(c);
+	}
 
 	public void setSize(int newSize) {
 		int size = size();

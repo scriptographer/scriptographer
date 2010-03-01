@@ -52,8 +52,8 @@ import com.scratchdisk.list.ReadOnlyStringIndexList;
 public class FontList implements ReadOnlyList<FontFamily>, ReadOnlyStringIndexList<FontFamily> {
 
 	/**
-     * Don't let anyone instantiate this class.
-     */
+	 * Don't let anyone instantiate this class.
+	 */
 	private FontList() {
 	}
 

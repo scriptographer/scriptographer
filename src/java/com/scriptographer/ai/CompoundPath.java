@@ -151,11 +151,11 @@ public class CompoundPath extends PathItem {
 	 * 
 	 * @param iter the PathIterator specifying which segments shall be appended
 	 * @param connect {@code true} for substituting the initial
-	 *        {@link PathIterator#SEG_MOVETO}segment by a {@link
-	 *        PathIterator#SEG_LINETO}, or {@code false} for not
+	 *        {@link PathIterator#SEG_MOVETO}segment by a
+	 *        {@link PathIterator#SEG_LINETO}, or {@code false} for not
 	 *        performing any substitution. If this GeneralPath is currently
-	 *        empty, {@code connect} is assumed to be {@code false},
-	 *        thus leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
+	 *        empty, {@code connect} is assumed to be {@code false}, thus
+	 *        leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
 	 * @jshide
 	 */
 	public void append(PathIterator iter, boolean connect) {
@@ -166,7 +166,7 @@ public class CompoundPath extends PathItem {
 					Path prevPath = (Path) getFirstChild();
 					int size = prevPath != null ?
 							prevPath.getSegments().size() : -1;
-				    if (!connect || size  <= 0) {
+					if (!connect || size <= 0) {
 						moveTo(f[0], f[1]);
 						break;
 					} else {

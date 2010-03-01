@@ -40,10 +40,10 @@ import com.scratchdisk.util.IntegerEnum;
  */
 public enum TextEditStyle implements IntegerEnum {
 	SINGLELINE(0),
-	NUMERIC(2),        // 'Numeric' means float. Default.
-	TRACK_RAW_KEYS(4), // Mac-only; ignores default Carbon event processing; not compatible with kADMUnicodeEditCreateOption
-	EXCLUSIVE(5),      // only for TextEditPopup
-	PASSWORD(32);      // Win32 value for ES_PADMSWORD
+	NUMERIC(2),			// 'Numeric' means float. Default.
+	TRACK_RAW_KEYS(4),	// Mac-only; ignores default Carbon event processing; not compatible with kADMUnicodeEditCreateOption
+	EXCLUSIVE(5),		// only for TextEditPopup
+	PASSWORD(32);		// Win32 value for ES_PADMSWORD
 
 	protected int value;
 

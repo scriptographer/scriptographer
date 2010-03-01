@@ -127,9 +127,8 @@ public class Path extends PathItem {
 	}
 
 	/**
-	 * @jshide for now. TODO: Implement varargs in doclet
-	 * Adds a variable amount of segments at the end of the segment list of this
-	 * path.
+	 * @jshide for now. TODO: Implement varargs in doclet Adds a variable amount
+	 *         of segments at the end of the segment list of this path.
 	 * 
 	 * @return the added segments. These are not necessarily the same objects,
 	 *         e.g. if the segments to be added already belongs to another path.
@@ -154,9 +153,9 @@ public class Path extends PathItem {
 	}
 
 	/**
-	 * @jshide for now. TODO: Implement varargs in doclet
-	 * Inserts a variable amount of segment at a given index in the segment list
-	 * of this path.
+	 * @jshide for now. TODO: Implement varargs in doclet Inserts a variable
+	 *         amount of segment at a given index in the segment list of this
+	 *         path.
 	 * 
 	 * @param index the index at which to insert the segments.
 	 * 
@@ -180,9 +179,8 @@ public class Path extends PathItem {
 	}
 
 	/**
-	 * @jshide for now. TODO: Implement varargs in doclet
-	 * Adds a variable amount of segments at the end of the segment list of this
-	 * path.
+	 * @jshide for now. TODO: Implement varargs in doclet Adds a variable amount
+	 *         of segments at the end of the segment list of this path.
 	 * 
 	 * @return the added segments. These are not necessarily the same objects,
 	 *         e.g. if the segments to be added already belongs to another path.
@@ -207,13 +205,13 @@ public class Path extends PathItem {
 	 * Removes the path item from the document.
 	 */
 	public boolean remove() {
-        boolean ret = super.remove();
-        // Dereference from path if they're used somewhere else!
-        if (segments != null)
-            segments.path = null;
-        return ret;
-    }
-    
+		boolean ret = super.remove();
+		// Dereference from path if they're used somewhere else!
+		if (segments != null)
+			segments.path = null;
+		return ret;
+	}
+	
 	public Object clone() {
 		CommitManager.commit(this);
 		return super.clone();
@@ -565,6 +563,35 @@ public class Path extends PathItem {
 		}
 	}
 
+	/**
+	 * Returns the point of the path at the given length.
+	 */
+	public Point getPoint(double length) {
+		HitResult pos = getPositionWithLength(length);
+		if (pos != null)
+			return pos.getPoint();
+		return null;
+	}
+
+	/**
+	 * Returns the tangent to the path at the given length as a vector point.
+	 */
+	public Point getTangent(double length) {
+		HitResult pos = getPositionWithLength(length);
+		if (pos != null)
+			return pos.getCurve().getTangent(pos.getParameter());
+		return null;
+	}
+
+	/**
+	 * Returns the normal to the path at the given length as a vector point.
+	 */
+	public Point getNormal(double length) {
+		HitResult pos = getPositionWithLength(length);
+		if (pos != null)
+			return pos.getCurve().getNormal(pos.getParameter());
+		return null;
+	}
 
 	/*
 	 * Tablet Data Stuff
@@ -705,11 +732,11 @@ public class Path extends PathItem {
 	 * 
 	 * @param iter the PathIterator specifying which segments shall be appended.
 	 * @param connect {@code true} for substituting the initial
-	 *        {@link PathIterator#SEG_MOVETO}segment by a {@link
-	 *        PathIterator#SEG_LINETO}, or {@code false} for not
+	 *        {@link PathIterator#SEG_MOVETO}segment by a
+	 *        {@link PathIterator#SEG_LINETO}, or {@code false} for not
 	 *        performing any substitution. If this GeneralPath is currently
-	 *        empty, {@code connect} is assumed to be {@code false},
-	 *        thus leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
+	 *        empty, {@code connect} is assumed to be {@code false}, thus
+	 *        leaving the initial {@link PathIterator#SEG_MOVETO}unchanged.
 	 * @jshide
 	 */
 	public void append(PathIterator iter, boolean connect) {

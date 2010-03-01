@@ -46,25 +46,26 @@ public class EnumUtils {
 	}
 
 	/**
-	 * An alternative to EnumSet.copyOf, with the addition to filter out null values.
+	 * An alternative to EnumSet.copyOf, with the addition to filter out null
+	 * values.
 	 */
 	public static <E extends Enum<E>> EnumSet<E> asSet(Collection<E> list) {
-        if (list instanceof EnumSet) {
-            return ((EnumSet<E>)list).clone();
-        } else {
-            Iterator<E> i = list.iterator();
-            E first = i.next();
-            while (first == null)
-            	first = i.next();
-            EnumSet<E> result = EnumSet.of(first);
-            while (i.hasNext()) {
-            	E next = i.next();
-            	if (next != null)
-            		result.add(next);
-            }
-            return result;
-        }
-    }
+		if (list instanceof EnumSet) {
+			return ((EnumSet<E>)list).clone();
+		} else {
+			Iterator<E> i = list.iterator();
+			E first = i.next();
+			while (first == null)
+				first = i.next();
+			EnumSet<E> result = EnumSet.of(first);
+			while (i.hasNext()) {
+				E next = i.next();
+				if (next != null)
+					result.add(next);
+			}
+			return result;
+		}
+	}
 
 	public static <E extends Enum<E>> EnumSet<E> asSet(E[] array) {
 		return asSet(Arrays.asList(array));

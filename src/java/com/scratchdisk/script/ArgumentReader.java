@@ -170,7 +170,7 @@ public abstract class ArgumentReader {
 				res = converter.convert(reader, this.converter.unwrap(obj));
 			} else {
 				try {
-	                res = this.converter.convert(obj, type);
+					res = this.converter.convert(obj, type);
 				} catch (Exception e) {
 					// TODO: report?
 					res = null;
@@ -185,13 +185,13 @@ public abstract class ArgumentReader {
 		return readObject(null, type);
 	}
 
-    public Object readObject(String name) {
-    	return readObject(name, Object.class);
-    }
+	public Object readObject(String name) {
+		return readObject(name, Object.class);
+	}
 
-    public Object readObject() {
-    	return readObject(Object.class);
-    }
+	public Object readObject() {
+		return readObject(Object.class);
+	}
 
 	public <T extends Enum<T>> T readEnum(String name, Class<T> type, T defaultValue) {
 		T value = EnumUtils.get(type, readString(name));
@@ -230,7 +230,7 @@ public abstract class ArgumentReader {
 			} else {
 				Constructor ctor = getArgumentReaderConstructor(to);
 				if (ctor != null) {
-				    // Create an object using the rgumentReader constructor.
+					// Create an object using the rgumentReader constructor.
 					// Argument readers can either be created from
 					// a NativeArray or a Scriptable object
 					try {
@@ -258,6 +258,6 @@ public abstract class ArgumentReader {
 				argumentReaderConstructors);
 	}
 
-    private static IdentityHashMap<Class, Constructor> argumentReaderConstructors =
+	private static IdentityHashMap<Class, Constructor> argumentReaderConstructors =
 			new IdentityHashMap<Class, Constructor>();
 }
