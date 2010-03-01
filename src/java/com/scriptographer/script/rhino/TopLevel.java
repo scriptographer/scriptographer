@@ -53,6 +53,7 @@ import com.scriptographer.ai.CharacterStyle;
 import com.scriptographer.ai.Color;
 import com.scriptographer.ai.CompoundPath;
 import com.scriptographer.ai.Curve;
+import com.scriptographer.ai.Dictionary;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.DocumentList;
 import com.scriptographer.ai.DocumentView;
@@ -89,6 +90,7 @@ import com.scriptographer.ai.Symbol;
 import com.scriptographer.ai.TextRange;
 import com.scriptographer.ai.TextStory;
 import com.scriptographer.ai.Tool;
+import com.scriptographer.ai.ToolEventHandler;
 import com.scriptographer.ai.Tracing;
 import com.scriptographer.sg.Application;
 import com.scriptographer.sg.Scriptographer;
@@ -151,6 +153,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		DialogColor.class,
 		CompoundPath.class,
 		Curve.class,
+		Dictionary.class,
 		Document.class,
 		DocumentView.class,
 		FileFormat.class,
@@ -190,6 +193,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		TextRange.class,
 		TextStory.class,
 		Tool.class,
+		ToolEventHandler.class,
 		Tracing.class,
 
 		// UI, alphabetically
@@ -236,7 +240,6 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		Tracker.class,
 
 		// SG
-		com.scriptographer.sg.File.class,
 		Timer.class
 	};
 
@@ -257,7 +260,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		}
 
 		// Define some global functions and objects:
-		String[] names = { "include", "execute", "evaluate" };
+		String[] names = { "include", "execute", "evaluate", "mapJavaClass" };
 		defineFunctionProperties(names, TopLevel.class,
 			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 
@@ -373,5 +376,24 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 			Function funObj) throws Exception {
 		ScriptEngine engine = ScriptEngine.getEngineByName("JavaScript");
 		engine.evaluate(Context.toString(args[0]), engine.getScope(thisObj));
+	}
+
+	/**
+	 * Maps a Java class to a JavaScript prototype, so this can be used
+	 * instead for wrapping of returned java types. So far this is only
+	 * used for java.io.File in Scriptographer.
+	 */
+	public static void mapJavaClass(Context cx, Scriptable thisObj, Object[] args,
+			Function funObj) throws Exception {
+		if (args.length == 2) {
+			for (int i = 0; i < args.length; i++)
+				args[i] = Context.jsToJava(args[i], Object.class);
+			if (args[0] instanceof Class && args[1] instanceof Function) {
+				Class cls = (Class) args[0];
+				Function proto = (Function) args[1];
+				RhinoWrapFactory factory = (RhinoWrapFactory) cx.getWrapFactory();
+				factory.mapJavaClass(cls, proto);
+			}
+		}
 	}
 }

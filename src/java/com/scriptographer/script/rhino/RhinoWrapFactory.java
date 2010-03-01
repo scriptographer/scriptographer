@@ -31,10 +31,15 @@
 
 package com.scriptographer.script.rhino;
 
+import java.util.IdentityHashMap;
+
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Function;
 import org.mozilla.javascript.MemberBox;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
 
+import com.scratchdisk.script.rhino.ExtendedJavaObject;
 import com.scriptographer.ai.Color;
 import com.scriptographer.ai.Style;
 import com.scriptographer.script.EnumUtils;
@@ -48,24 +53,53 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 	public Object wrap(Context cx, Scriptable scope, Object obj, Class<?> staticType) {
 		// By default, Rhino converts chars to integers. In Scriptographer,
 		// we want a string of length 1:
-        if (staticType == Character.TYPE)
-            return obj.toString();
-        else if (obj instanceof Enum)
-        	return EnumUtils.getScriptName((Enum) obj);
+ 	   if (staticType == Character.TYPE)
+			return obj.toString();
+		else if (obj instanceof Enum)
+			// TODO: Could this be moved to wrapCustom?
+			return EnumUtils.getScriptName((Enum) obj);
 		return super.wrap(cx, scope, obj, staticType);
 	}
 
+	IdentityHashMap<Class, Function> mappedJavaClasses =
+			new IdentityHashMap<Class, Function>();
+	
+	/**
+	 * Maps a Java class to a JavaScript prototype, so this can be used
+	 * instead for wrapping of returned java types. So far this is only
+	 * used for java.io.File in Scriptographer.
+	 */
+	public void mapJavaClass(Class cls, Function ctor) {
+		mappedJavaClasses.put(cls, ctor);
+	}
+
 	public Scriptable wrapCustom(Context cx, Scriptable scope,
-			Object javaObj, Class<?> staticType) {
+			Object javaObj, Class<?> staticType, boolean newObject) {
 		if (javaObj instanceof Style)
 			return new StyleWrapper(scope, (Style) javaObj, staticType, true);
 		else if (javaObj instanceof Color)
 			return new ColorWrapper(scope, (Color) javaObj, staticType, true);
-		return null;
+		else {
+			Function ctor = mappedJavaClasses.get(staticType);
+			if (ctor != null) {
+				// If this native object was explicitly created from JS,
+				// lets wrap it in a uncached ExtendedJavaObject.
+				if (newObject)
+					return null;
+				scope = ScriptableObject.getTopLevelScope(scope);
+				// Do not go through Context.javaToJS as this would again 
+				// end up here in wrapCustom for a native object.
+				// Just wrap it as an ExtendedJavaObject.
+				return ctor.construct(cx, scope, new Object[] { 
+					new ExtendedJavaObject(scope, javaObj, javaObj.getClass(), false)
+				});
+			}
+		}
+		return new ExtendedJavaObject(scope, javaObj, staticType, true);
 	}
 
-	public int getConversionWeight(Object from, Class<?> to, int defaultWeight) {
-		int weight = super.getConversionWeight(from, to, defaultWeight);
+	public int calculateConversionWeight(Object from, Class<?> to, int defaultWeight) {
+		int weight = super.calculateConversionWeight(from, to, defaultWeight);
 		if (weight == defaultWeight) {
 			if (from instanceof String && (Enum.class.isAssignableFrom(to) || to.isArray()))
 				weight = CONVERSION_TRIVIAL + 1;
