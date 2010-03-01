@@ -104,12 +104,12 @@ public class ScriptographerEngine {
 	public static final int EVENT_KEY_UP = 8;
 
 	/**
-     * Don't let anyone instantiate this class.
-     */
-    private ScriptographerEngine() {
+	 * Don't let anyone instantiate this class.
+	 */
+	private ScriptographerEngine() {
 	}
 
-    public static void init(String pluginPath) throws Exception {
+	public static void init(String pluginPath) throws Exception {
 		mainThread = Thread.currentThread();
 		// Redirect system streams to the console.
 		ConsoleOutputStream.enableRedirection(true);
@@ -128,8 +128,11 @@ public class ScriptographerEngine {
 		// Compile all core init scripts
 		callbackScopes = new HashMap<String, ArrayList<Scope>>();
 		coreDir = new File(new File(pluginDir, "Core"), "JavaScript");
-		if (coreDir.isDirectory())
+		if (coreDir.isDirectory()) {
+			// Load the core libraries first.
+			loadLibraries(new File(coreDir, "lib"));
 			compileInitScripts(coreDir);
+		}
 	}
 
 	public static void destroy() {
@@ -203,6 +206,29 @@ public class ScriptographerEngine {
 		}
 	}
 
+	public static void loadLibraries(File dir) {
+		File[] files = dir.listFiles();
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				File file = files[i];
+				String name = file.getName();
+				if (file.isDirectory() && !name.startsWith(".")
+						&& !name.equals("CVS")) {
+					loadLibraries(file);
+				} else {
+					try {
+						ScriptEngine engine =
+								ScriptEngine.getEngineByFile(file);
+						if (engine != null)
+							execute(file, engine.getGlobalScope());
+					} catch (Exception e) {
+						reportError(e);
+					}
+				}
+			}
+		}
+	}
+
 	public static Preferences getPreferences(boolean fromScript) {
 		if (fromScript && currentScriptFile != null)
 			return getPreferences(currentScriptFile);
@@ -253,7 +279,7 @@ public class ScriptographerEngine {
 			// Not allowed to make this log directory or file, so don't log...
 		}
 		return null;
-    }
+	}
 
 	public static void logError(Throwable t) {
 		if (errorLogger != null) {
