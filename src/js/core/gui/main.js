@@ -281,8 +281,19 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	}
 
-	function executeEffect() {
-		
+	function executeEffect(entry) {
+		if (entry && /^(tool|effect)$/.test(entry.type)) {
+			// This works even for multiple selections, as the path style
+			// apparently is applied to all of the selected items. Fine
+			// with us... But not so clean...
+			var item = document.selectedItems.first;
+			if (item)
+				item.addEffect(effect);
+			else
+				Dialog.alert('In order to assign Scriptographer Effects\n'
+					+ 'to items, please select some items\n'
+					+ 'before executing the script.');
+		}
 	}
 
 	function execute(asEffect) {
@@ -316,16 +327,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				}
 				break;
 			case 'effect':
-				// This works even for multiple selections, as the path style
-				// apparently is applied to all of the selected items. Fine
-				// with us... But not so clean...
-				var item = document.selectedItems.first;
-				if (item)
-					item.addEffect(effect);
-				else
-					Dialog.alert('In order to assign Scriptographer Effects\n'
-						+ 'to items, please select some items\n'
-						+ 'before executing the script.');
+				executeEffect(entry);
 				break;
 			default:
 				ScriptographerEngine.execute(entry.file, null);
@@ -601,7 +603,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		image: getImage('effect.png'),
 		size: buttonSize,
 		onClick: function() {
-			execute();
+			executeEffect(getSelectedScriptEntry());
 		}
 	};
 
