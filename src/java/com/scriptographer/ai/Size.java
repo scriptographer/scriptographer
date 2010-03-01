@@ -60,16 +60,6 @@ public class Size implements ChangeNotifier {
 	}
 
 	/**
-	 * Creates a Size object using the width and height of the given Size
-	 * object.
-	 * 
-	 * @param size
-	 */
-	public Size(Size size) {
-		this(size.width, size.height);
-	}
-
-	/**
 	 * Creates a Size object using the x and y coordinates of the given Point
 	 * object.
 	 * 
@@ -77,6 +67,16 @@ public class Size implements ChangeNotifier {
 	 */
 	public Size(Point point) {
 		this(point.x, point.y);
+	}
+
+	/**
+	 * Creates a Size object using the width and height of the given Size
+	 * object.
+	 * 
+	 * @param size
+	 */
+	public Size(Size size) {
+		this(size.width, size.height);
 	}
 
 	/**

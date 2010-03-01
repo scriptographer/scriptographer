@@ -76,19 +76,8 @@ public class Rectangle implements ChangeNotifier, ChangeListener {
 		this.height = height;
 	}
 
-	/**
-	 * Creates a new rectangle object from the passed rectangle object.
-	 * @param rt
-	 */
-	public Rectangle(Rectangle rt) {
-		this(rt.x, rt.y, rt.width, rt.height);
-	}
-
-	/**
-	 * @jshide
-	 */
-	public Rectangle(Rectangle2D rt) {
-		this(rt.getX(), rt.getY(), rt.getWidth(), rt.getHeight());
+	public Rectangle(Point point, Size size) {
+		this(point.x, point.y, size.width, size.height);
 	}
 	
 	/**
@@ -108,8 +97,19 @@ public class Rectangle implements ChangeNotifier, ChangeListener {
 		}
 	}
 
-	public Rectangle(Point point, Size size) {
-		this(point.x, point.y, size.width, size.height);
+	/**
+	 * Creates a new rectangle object from the passed rectangle object.
+	 * @param rt
+	 */
+	public Rectangle(Rectangle rt) {
+		this(rt.x, rt.y, rt.width, rt.height);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public Rectangle(Rectangle2D rt) {
+		this(rt.getX(), rt.getY(), rt.getWidth(), rt.getHeight());
 	}
 
 	/**
@@ -411,10 +411,10 @@ public class Rectangle implements ChangeNotifier, ChangeListener {
 	 * Returns {@true if the rectangle is empty}
 	 */
 	public boolean isEmpty() {
-	    return width <= 0 || height <= 0;
+		return width <= 0 || height <= 0;
 	}
 
-    /**
+	/**
 	 * {@grouptitle Geometric Tests}
 	 * 
 	 * Tests if the specified point is inside the boundary of the rectangle.
@@ -443,7 +443,7 @@ public class Rectangle implements ChangeNotifier, ChangeListener {
 			y < this.y + height;
 	}
 	
-    /**
+	/**
 	 * Tests if the interior of the rectangle entirely contains the specified
 	 * rectangle.
 	 * 
@@ -491,7 +491,7 @@ public class Rectangle implements ChangeNotifier, ChangeListener {
 		double x2 = Math.min(x + width, rect.x + rect.width);
 		double y2 = Math.min(y + height, rect.y + rect.height);
 		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
-    }
+	}
 
 	/**
 	 * Returns a new rectangle representing the union of this rectangle with the
@@ -509,7 +509,7 @@ public class Rectangle implements ChangeNotifier, ChangeListener {
 		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
 	}
 
-    /**
+	/**
 	 * Adds a point, specified by the arguments {@code x}
 	 * and {@code y}, to the rectangle. The resulting rectangle is the
 	 * smallest rectangle that contains both the original rectangle and the
@@ -535,7 +535,7 @@ public class Rectangle implements ChangeNotifier, ChangeListener {
 		return new Rectangle(x1, y1, x2 - x1, y2 - y1);
 	}
 
-    /**
+	/**
 	 * Adds a point to this rectangle. The resulting rectangle is the
 	 * smallest rectangle that contains both the original rectangle and the
 	 * specified point.

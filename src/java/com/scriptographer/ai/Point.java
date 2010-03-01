@@ -78,21 +78,6 @@ public class Point implements ChangeNotifier {
 	}
 
 	/**
-	 * Creates a Point object using the coordinates of the given Point object.
-	 * @param point
-	 */
-	public Point(Point point) {
-		this(point != null ? point.x : 0, point != null ? point.y : 0);
-	}
-
-	/**
-	 * @jshide
-	 */
-	public Point(Point2D point) {
-		this(point != null ? point.getX() : 0, point != null ? point.getY() : 0);
-	}
-
-	/**
 	 * Creates a Point object using the width and height values of the given
 	 * Size object.
 	 * 
@@ -110,6 +95,21 @@ public class Point implements ChangeNotifier {
 	public Point(Size size) {
 		x = size.width;
 		y = size.height;
+	}
+
+	/**
+	 * Creates a Point object using the coordinates of the given Point object.
+	 * @param point
+	 */
+	public Point(Point point) {
+		this(point != null ? point.x : 0, point != null ? point.y : 0);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public Point(Point2D point) {
+		this(point != null ? point.getX() : 0, point != null ? point.getY() : 0);
 	}
 
 	/**
