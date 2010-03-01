@@ -113,7 +113,7 @@ public class IntMap<V> extends AbstractMap<Integer, V> {
 	transient Set<Integer> keySet;
 
 
-    /**
+	/**
 	 * Cached entry set. May be null if entry set is never accessed.
 	 */
 	transient Set<Map.Entry<Integer, V>> entrySet;
@@ -123,12 +123,12 @@ public class IntMap<V> extends AbstractMap<Integer, V> {
 	 */
 	transient Collection<V> values;
 
-    /**
-     * Constructs a new <Code>IntMap</Code>
-     */
-    public IntMap() {
-        this(16, 0.75f);
-    }
+	/**
+	 * Constructs a new <Code>IntMap</Code>
+	 */
+	public IntMap() {
+		this(16, 0.75f);
+	}
 
 	/**
 	 *  Constructs a new <Code>IntMap</Code> with the
@@ -192,13 +192,13 @@ public class IntMap<V> extends AbstractMap<Integer, V> {
 		return hash & (table.length - 1);
 	}
 
-    /**
-     *  Returns the entry associated with the given key.
-     *
-     *  @param key  the key of the entry to look up
-     *  @return  the entry associated with that key, or null
-     *    if the key is not in this map
-     */
+	/**
+	 *  Returns the entry associated with the given key.
+	 *
+	 *  @param key  the key of the entry to look up
+	 *  @return  the entry associated with that key, or null
+	 *    if the key is not in this map
+	 */
 	public Entry<V> getEntry(int key) {
 		for (Entry<V> entry = table[indexFor(key)]; entry != null; entry = entry.next)
 			if (entry.key == key)
@@ -209,7 +209,7 @@ public class IntMap<V> extends AbstractMap<Integer, V> {
 	protected void purge() {
 	}
 
-    /**
+	/**
 	 * Returns the size of this map.
 	 * 
 	 * @return the size of this map
@@ -229,17 +229,28 @@ public class IntMap<V> extends AbstractMap<Integer, V> {
 		return size == 0;
 	}
 	
-    /**
-     *  Returns <Code>true</Code> if this map contains the given key.
-     *
-     *  @return true if the given key is in this map
-     */
-    public boolean containsKey(int key) {
-        purge();
-        Entry entry = getEntry(key);
-        if (entry == null) return false;
-        return entry.getValue() != null;
-    }
+	/**
+	 *  Returns <Code>true</Code> if this map contains the given key.
+	 *
+	 *  @return true if the given key is in this map
+	 */
+	public boolean containsKey(int key) {
+		purge();
+		Entry entry = getEntry(key);
+		if (entry == null) return false;
+		return entry.getValue() != null;
+	}
+
+	public boolean containsKey(Integer key) {
+		return containsKey(key.intValue());
+	}
+
+	/**
+	 * java.util.Map compatible version of containsKey
+	 */
+	public boolean containsKey(Object key) {
+		return key instanceof Number && containsKey(((Number) key).intValue());
+	}
 
 	/**
 	 *  Returns the value associated with the given key, if any.
@@ -248,17 +259,23 @@ public class IntMap<V> extends AbstractMap<Integer, V> {
 	 *   if the key maps to no value
 	 */
 	public V get(int key) {
-        purge();
-        Entry<V> entry = getEntry(key);
-        if (entry == null) return null;
-        return entry.getValue();
+		purge();
+		Entry<V> entry = getEntry(key);
+		if (entry == null) return null;
+		return entry.getValue();
+	}
+
+	public V get(Integer key) {
+		return this.get(key.intValue());
 	}
 
 	/**
 	 * java.util.Map compatible version of get
 	 */
-	public V get(Integer key) {
-		return get(key.intValue());
+	public V get(Object key) {
+		if (key instanceof Number)
+			return get(((Number) key).intValue());
+		return null;
 	}
 
 	/**
@@ -328,12 +345,21 @@ public class IntMap<V> extends AbstractMap<Integer, V> {
 		purge();
 		return doRemove(key);
 	}
-	
+
 	public V remove(Integer key) {
 		return remove(key.intValue());
 	}
 
-    /**
+	/**
+	 * java.util.Map compatible version of remove
+	 */
+	public V remove(Object key) {
+		if (key instanceof Number)
+			return remove(((Number) key).intValue());
+		return null;
+	}
+
+	/**
 	 * Clears this map.
 	 */
 	public void clear() {
@@ -366,7 +392,18 @@ public class IntMap<V> extends AbstractMap<Integer, V> {
 		threshold = (int) (table.length * loadFactor);
 	}
 
-    /**
+	public Integer keyOf(Object value) {
+		purge();
+		Iterator<Map.Entry<Integer, V>> i = entrySet().iterator();
+		while (i.hasNext()) {
+			Map.Entry<Integer, V> e = i.next();
+			if (value.equals(e.getValue()))
+				return e.getKey();
+		}
+		return null;
+	}
+
+	/**
 	 * Returns a set view of this map's entries.
 	 * 
 	 * @return a set view of this map's entries
