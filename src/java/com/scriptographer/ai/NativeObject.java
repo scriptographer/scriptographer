@@ -144,12 +144,16 @@ abstract class NativeObject {
 		if (handle == 0) {
 			return this == obj;
 		} else if (obj instanceof NativeObject) {
-			return handle == ((NativeObject) obj).handle
+			return this == obj || 
+				handle == ((NativeObject) obj).handle
 					&& getClass().equals(obj.getClass());
 		}
 		return false;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public String getId() {
 		return "@" + Integer.toHexString(
 				handle != 0 ? handle : this.hashCode());
