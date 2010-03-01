@@ -919,27 +919,19 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @jshide
 	 */
 	public boolean addEffect(LiveEffect effect, Map<String, Object> data,
-			LiveEffectPosition position, boolean editData) {
+			LiveEffectPosition position) {
 		if (effect != null) {
 			return nativeAddEffect(effect,
 				data != null
-					? data instanceof Dictionary
-						? (Dictionary) data
-						: new Dictionary(data)
-					: new Dictionary(),
+					? data instanceof LiveEffectParameters
+						? (LiveEffectParameters) data
+						: new LiveEffectParameters(data)
+					: new LiveEffectParameters(),
 				position != null
 					? position.value
-					: effect.getPosition().value,
-				editData);
+					: effect.getPosition().value);
 		}
 		return false;
-	}
-
-	/**
-	 * @jshide
-	 */
-	public boolean addEffect(LiveEffect effect, Map<String, Object> data, LiveEffectPosition position) {
-		return addEffect(effect, data, position, true);
 	}
 
 	/**
@@ -956,7 +948,12 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		return addEffect(effect, null);
 	}
 
-	private native boolean nativeAddEffect(LiveEffect effect, Dictionary data, int position, boolean editData);
+	private native boolean nativeAddEffect(LiveEffect effect, LiveEffectParameters data, int position);
+
+	/**
+	 * @jshide
+	 */
+	public native boolean editEffect(LiveEffect effect, Map<String, Object> data);
 
 	/**
 	 * @jshide

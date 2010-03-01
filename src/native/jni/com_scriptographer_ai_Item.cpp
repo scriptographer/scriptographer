@@ -1189,13 +1189,13 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_wrapHandle(JNIEnv *env
 }
 
 /*
- * boolean nativeAddEffect(com.scriptographer.ai.LiveEffect effect, com.scriptographer.ai.Dictionary data, int position, boolean editData)
+ * boolean nativeAddEffect(com.scriptographer.ai.LiveEffect effect, com.scriptographer.ai.Dictionary parameters, int position)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeAddEffect(JNIEnv *env, jobject obj, jobject effectObj, jobject dataObj, jint position, jboolean editData) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeAddEffect(JNIEnv *env, jobject obj, jobject effectObj, jobject parametersObj, jint position) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AILiveEffectHandle liveEffect = gEngine->getLiveEffectHandle(env, effectObj);
-		AIDictionaryRef liveDict = gEngine->getDictionaryHandle(env, dataObj);
+		AIDictionaryRef liveDict = gEngine->getDictionaryHandle(env, parametersObj);
 		AIArtStyleHandle style = NULL;
 		sAIArtStyle->GetArtStyle(art, &style);
 		if (style != NULL) {
@@ -1225,13 +1225,12 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeAddEffect(JNIEn
 					}
 					if (inserted) {
 						sAIArtStyleParser->CreateNewStyle(parser, &style);
-//						sAIArtStyle->SetArtStyle(art, style);
-						if (editData) {
+						sAIArtStyle->SetArtStyle(art, style);
 							// In order for EditEffectParametersInSelection to work,
 							// we need to parse again.
-							sAIArtStyleParser->ParseStyle(parser, style);
-							sAIArtStyleParser->EditEffectParameters(style, effect);
-						}
+//							sAIArtStyleParser->ParseStyle(parser, style);
+//							sAIArtStyleParser->SetFocusEffect(style, parser, effect);
+//							sAIArtStyleParser->EditEffectParameters(style, effect);
 					} else {
 						sAIArtStyleParser->DisposeParserLiveEffect(effect);
 					}
@@ -1244,9 +1243,30 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeAddEffect(JNIEn
 	return false;
 }
 
-typedef bool (*EffectIterator)(JNIEnv *env, AIStyleParser parser, AIParserLiveEffect effect, int position, bool *cont, void *data);
+struct LiveEffect_data {
+	AILiveEffectHandle effect;
+	jobject parameters;
+	int position;
+};
 
-bool Item_iterateEffects(JNIEnv *env, AIArtHandle art, EffectIterator iterator, void *data) {
+typedef bool (*EffectIterator)(JNIEnv *env, AIArtStyleHandle style, AIStyleParser parser,
+		AIParserLiveEffect effect, AIParserPaintField field, int position, bool *cont,
+		LiveEffect_data *data);
+
+bool LiveEffect_callIterator(EffectIterator iterator, JNIEnv *env, AIArtStyleHandle style,
+		AIStyleParser parser, AIParserLiveEffect effect, AIParserPaintField field, 
+		int position, bool *cont, LiveEffect_data *data) {
+	AILiveEffectHandle liveEffect = NULL;
+	AIDictionaryRef liveDict = NULL;
+	sAIArtStyleParser->GetLiveEffectParams(effect, &liveDict);
+	sAIArtStyleParser->GetLiveEffectHandle(effect, &liveEffect);
+	if (liveEffect == data->effect && (data->parameters == NULL || gEngine->isEqual(env,
+			gEngine->wrapDictionaryHandle(env, liveDict), data->parameters))) {
+		return iterator(env, style, parser, effect, field, kPreEffectFilter, cont, data);
+	}
+}
+
+bool LiveEffect_iterate(JNIEnv *env, AIArtHandle art, EffectIterator iterator, LiveEffect_data *data) {
 	AIArtStyleHandle style = NULL;
 	sAIArtStyle->GetArtStyle(art, &style);
 	if (style != NULL) {
@@ -1259,13 +1279,15 @@ bool Item_iterateEffects(JNIEnv *env, AIArtHandle art, EffectIterator iterator, 
 				AIParserLiveEffect effect = NULL;
 				sAIArtStyleParser->GetNthPreEffect(parser, i, &effect);
 				if (effect != NULL)
-					changed = iterator(env, parser, effect, kPreEffectFilter, &cont, data) || changed;
+					changed = LiveEffect_callIterator(iterator, env, style, parser, effect,
+							NULL, kPreEffectFilter, &cont, data) || changed;
 			}
 			for (int i = sAIArtStyleParser->CountPostEffects(parser) - 1; cont && i >= 0; i--) {
 				AIParserLiveEffect effect = NULL;
 				sAIArtStyleParser->GetNthPostEffect(parser, i, &effect);
 				if (effect != NULL)
-					changed = iterator(env, parser, effect, kPostEffectFilter, &cont, data) || changed;
+					changed = LiveEffect_callIterator(iterator, env, style, parser, effect,
+							NULL, kPreEffectFilter, &cont, data) || changed;
 			}
 			for (int i = sAIArtStyleParser->CountPaintFields(parser) - 1; cont && i >= 0; i--) {
 				AIParserPaintField field = NULL;
@@ -1274,14 +1296,15 @@ bool Item_iterateEffects(JNIEnv *env, AIArtHandle art, EffectIterator iterator, 
 					for (int j = sAIArtStyleParser->CountEffectsOfPaintField(field) - 1; cont && j >= 0; j--) {
 						AIParserLiveEffect effect = NULL;
 						sAIArtStyleParser->GetNthEffectOfPaintField(field, j, &effect);
-						if (effect != NULL)
-							changed = iterator(env, parser, effect, 
+						if (effect != NULL) {
+							changed = LiveEffect_callIterator(iterator, env, style, parser, effect, field,
 							sAIArtStyleParser->IsStroke(field)
 								? kStrokeFilter
 								: sAIArtStyleParser->IsFill(field)
 									? kFillFilter
 									: 0,
 							&cont, data) || changed;
+						}
 					}
 				}
 			}
@@ -1296,75 +1319,88 @@ bool Item_iterateEffects(JNIEnv *env, AIArtHandle art, EffectIterator iterator, 
 	return false;
 }
 
-struct Item_effectPositionData {
-	AILiveEffectHandle effect;
-	jobject data;
-	int position;
-};
-
-bool Item_effectPositionIterator(JNIEnv *env, AIStyleParser parser, AIParserLiveEffect effect, int position, bool *cont, void *data) {
-	AILiveEffectHandle liveEffect = NULL;
-	AIDictionaryRef liveDict = NULL;
-	sAIArtStyleParser->GetLiveEffectParams(effect, &liveDict);
-	sAIArtStyleParser->GetLiveEffectHandle(effect, &liveEffect);
-	Item_effectPositionData *positionData = (Item_effectPositionData *) data;
-	if (liveEffect == positionData->effect && (positionData->data == NULL || gEngine->isEqual(env,
-			gEngine->wrapDictionaryHandle(env, liveDict), positionData->data))) {
-		positionData->position = position;
-		*cont = false;
-	}
+bool LiveEffect_positionIterator(JNIEnv *env, AIArtStyleHandle style, AIStyleParser parser,
+		AIParserLiveEffect effect, AIParserPaintField field, int position, bool *cont,
+		LiveEffect_data *data) {
+	data->position = position;
+	*cont = false;
 	return false;
 }
 
 /*
- * int nativeGetEffectPosition(com.scriptographer.ai.LiveEffect effect, java.util.Map data)
+ * int nativeGetEffectPosition(com.scriptographer.ai.LiveEffect effect, java.util.Map parameters)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_nativeGetEffectPosition(JNIEnv *env, jobject obj, jobject effect, jobject data) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Item_nativeGetEffectPosition(JNIEnv *env, jobject obj, jobject effect, jobject parameters) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
-		Item_effectPositionData positionData = {
+		LiveEffect_data effectData = {
 			gEngine->getLiveEffectHandle(env, effect),
-			data,
+			parameters,
 			0
 		};
-		Item_iterateEffects(env, art, Item_effectPositionIterator, &positionData);
-		return positionData.position;
+		LiveEffect_iterate(env, art, LiveEffect_positionIterator, &effectData);
+		return effectData.position;
 	} EXCEPTION_CONVERT(env);
 	return 0;
 }
 
-struct Item_effectRemoveData {
-	AILiveEffectHandle effect;
-	jobject data;
-};
-
-bool Item_effectRemoveIterator(JNIEnv *env, AIStyleParser parser, AIParserLiveEffect effect, int position, bool *cont, void *data) {
-	AILiveEffectHandle liveEffect = NULL;
-	AIDictionaryRef liveDict = NULL;
-	sAIArtStyleParser->GetLiveEffectParams(effect, &liveDict);
-	sAIArtStyleParser->GetLiveEffectHandle(effect, &liveEffect);
-	Item_effectRemoveData *removeData = (Item_effectRemoveData *) data;
-	if (liveEffect == removeData->effect && (removeData->data == NULL || gEngine->isEqual(env,
-			gEngine->wrapDictionaryHandle(env, liveDict), removeData->data))) {
-		if (!sAIArtStyleParser->RemovePreEffect(parser, effect, true)) {
-			sAIArtStyleParser->DisposeParserLiveEffect(effect);
-			return true;
-		}
+bool LiveEffect_removeIterator(JNIEnv *env, AIArtStyleHandle style, AIStyleParser parser,
+		AIParserLiveEffect effect, AIParserPaintField field, int position, bool *cont,
+		LiveEffect_data *data) {
+	bool removed;
+	switch (position) {
+	case kPreEffectFilter:
+		removed = !sAIArtStyleParser->RemovePreEffect(parser, effect, true);
+		break;
+	case kPostEffectFilter:
+		removed = !sAIArtStyleParser->RemovePostEffect(parser, effect, true);
+		break;
+	default:
+		removed = !sAIArtStyleParser->RemoveEffectOfPaintField(parser, field, effect, true);
+	}
+	if (removed) {
+		sAIArtStyleParser->DisposeParserLiveEffect(effect);
+		return true;
 	}
 	return false;
 }
 
 /*
- * boolean removeEffect(com.scriptographer.ai.LiveEffect effect, java.util.Map data)
+ * boolean removeEffect(com.scriptographer.ai.LiveEffect effect, java.util.Map parameters)
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_removeEffect(JNIEnv *env, jobject obj, jobject effect, jobject data) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_removeEffect(JNIEnv *env, jobject obj, jobject effect, jobject parameters) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
-		Item_effectRemoveData removeData = {
+		LiveEffect_data effectData = {
 			gEngine->getLiveEffectHandle(env, effect),
-			data
+			parameters
 		};
-		return Item_iterateEffects(env, art, Item_effectRemoveIterator, &removeData);
+		return LiveEffect_iterate(env, art, LiveEffect_removeIterator, &effectData);
 	} EXCEPTION_CONVERT(env);
 	return false;
 }
+
+bool LiveEffect_editIterator(JNIEnv *env, AIArtStyleHandle style, AIStyleParser parser,
+		AIParserLiveEffect effect, AIParserPaintField field, int position, bool *cont,
+		LiveEffect_data *data) {
+	sAIArtStyleParser->SetFocusEffect(style, parser, effect);
+	sAIArtStyleParser->EditEffectParameters(style, effect);
+	*cont = false;
+	return false;
+}
+
+/*
+ * boolean editEffect(com.scriptographer.ai.LiveEffect effect, java.util.Map parameters)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_editEffect(JNIEnv *env, jobject obj, jobject effect, jobject parameters) {
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
+		LiveEffect_data effectData = {
+			gEngine->getLiveEffectHandle(env, effect),
+			parameters
+		};
+		return LiveEffect_iterate(env, art, LiveEffect_editIterator, &effectData);
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+

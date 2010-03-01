@@ -42,14 +42,14 @@ import com.scratchdisk.util.SoftIntMap;
  * @jshide
  */
 public class Dictionary extends AbstractMap<String, Object> {
-	private int handle;
-	private Document document;
+	protected int handle;
+	protected Document document;
 
 	// Internal hash map that keeps track of already wrapped objects. defined
 	// as soft.
-	private static SoftIntMap<Dictionary> dictionaries = new SoftIntMap<Dictionary>();
+	protected static SoftIntMap<Dictionary> dictionaries = new SoftIntMap<Dictionary>();
 
-	private Dictionary(int handle, Document document, boolean addRef) {
+	protected Dictionary(int handle, Document document, boolean addRef) {
 		this.handle = handle;
 		this.document = document != null ? document : Document.getWorkingDocument();
 		dictionaries.put(handle, this);
@@ -57,11 +57,17 @@ public class Dictionary extends AbstractMap<String, Object> {
 			nativeAddReference(handle);
 	}
 
+	protected Dictionary(int handle) {
+		this(handle, Document.getWorkingDocument(), false);
+	}
+
 	public Dictionary() {
-		this(nativeCreate(),Document.getWorkingDocument(), false);
+		this(nativeCreate());
 	}
 
 	private static native int nativeCreate();
+
+	protected static native int nativeCreateLiveEffectParameters();
 
 	public Dictionary(Map<?, ?> map) {
 		this();

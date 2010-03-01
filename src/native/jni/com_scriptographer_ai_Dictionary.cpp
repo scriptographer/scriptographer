@@ -59,6 +59,20 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Dictionary_nativeCreate(JNIEnv
 }
 
 /*
+ * int nativeCreateLiveEffectParameters()
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Dictionary_nativeCreateLiveEffectParameters(JNIEnv *env, jclass cls) {
+	try {
+		AILiveEffectParameters parameters = NULL;
+		// AI SDK: "The dictionary created by this function supports Undo operations,
+		// which the generic one does not."
+		sAILiveEffect->CreateLiveEffectParameters(&parameters);
+		return (jint) parameters;
+	} EXCEPTION_CONVERT(env);
+	return 0;
+}
+
+/*
  * java.lang.Object nativeGet(int handle, int docHandle, java.lang.Object key)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv *env, jobject obj, jint handle, jint docHandle, jobject key) {

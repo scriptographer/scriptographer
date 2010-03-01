@@ -23,46 +23,38 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 24.03.2005.
+ * 
+ * File created on Mar 1, 2010.
  *
  * $Id$
  */
 
-package com.scriptographer.ui;
+package com.scriptographer.ai;
+
+import java.util.Map;
 
 /**
  * @author lehni
+ *
+ * @jshide
  */
-abstract class NativeObject {
-	// used for storing the native handle for this object
-	protected int handle;
-
-	protected NativeObject() {
-		handle = 0;
+public class LiveEffectParameters extends Dictionary {
+	public LiveEffectParameters() {
+		super(nativeCreateLiveEffectParameters());
 	}
 
-	protected NativeObject(int handle) {
-		this.handle = handle;
+	public LiveEffectParameters(Map<?, ?> map) {
+		super(map);
 	}
 
-	public int hashCode() {
-		return handle;
+	protected LiveEffectParameters(int handle, Document document, boolean addRef) {
+		super(handle, document, addRef);
 	}
 
-	public boolean isValid() {
-		return handle != 0;
-	}
-
-	public boolean equals(Object obj) {
-		if (obj instanceof NativeObject) {
-			return handle == ((NativeObject) obj).handle;
-		}
-		return false;
-	}
-
-	public String toString() {
-		return getClass().getSimpleName() + " (@"
-				+ Integer.toHexString(handle != 0 ? handle : this.hashCode()) + ")";
+	protected static LiveEffectParameters wrapHandle(int handle, Document document, boolean addRef) {
+		LiveEffectParameters parameters = (LiveEffectParameters) dictionaries.get(handle);
+		if (parameters == null || document != null && parameters.document != document)
+			parameters = new LiveEffectParameters(handle, document, addRef);
+		return parameters; 
 	}
 }

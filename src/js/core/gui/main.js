@@ -287,8 +287,14 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			// apparently is applied to all of the selected items. Fine
 			// with us... But not so clean...
 			var item = document.selectedItems.first;
-			if (item)
-				item.addEffect(effect);
+			if (item) {
+				var data = new LiveEffectParameters();
+				item.addEffect(effect, data);
+				// We need to wait for the UI to update before editing the effect.
+				(function() {
+					item.editEffect(effect, data);
+				}).delay(0);
+			}
 			else
 				Dialog.alert('In order to assign Scriptographer Effects\n'
 					+ 'to items, please select some items\n'
@@ -376,8 +382,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	var effectEntries = {};
 
 	function callEffectHandler(event, name) {
-		if (event.data.file) {
-			var entry = effectEntries[event.data.file];
+		if (event.parameters.file) {
+			var entry = effectEntries[event.parameters.file];
 			if (!entry) {
 				// TODO: Support finding unindexed effect files from the path inside
 				// scriptList, so effects work after reloading too!
@@ -419,7 +425,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				var toolHandler = handler;
 				handler = {
 					onEditParameters: function(event) {
-						// TODO: Persist tool script.preferences in event.data
+						// TODO: Persist tool script.preferences in event.parameters
 						toolHandler.onHandleEvent('edit-options', null);
 					},
 
@@ -439,15 +445,15 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 
 	effect.onEditParameters = function(event) {
 		// A new script?
-		if (!event.data.file) {
+		if (!event.parameters.file) {
 			var entry = getSelectedScriptEntry();
 			if (!entry || !/^(tool|effect)$/.test(entry.type)) {
-				// Clone event.data as it won't be valid outside of this callback
+				// Clone event.parameters as it won't be valid outside of this callback
 				// and we need to use a timer to remove the effect again after.
 				Dialog.alert('In order to assign Scriptographer Effects\n'
 					+ 'to items, please select a Tool or Effect Script\n'
 					+ 'in the Scriptographer Main Palette first.');
-				var data = event.data.clone();
+				var data = event.parameters.clone();
 				// Remove this effect again, as no effect script was selected!
 				(function() {
 					document.selectedItems.each(function(item) {
@@ -456,7 +462,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				}).delay(0, this);
 				return;
 			} else {
-				compileEffect(entry, event.data);
+				compileEffect(entry, event.parameters);
 			}
 		}
 		return callEffectHandler(event, 'onEditParameters');

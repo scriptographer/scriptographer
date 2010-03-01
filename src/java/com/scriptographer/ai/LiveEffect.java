@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.IntMap;
 import com.scratchdisk.util.IntegerEnumUtils;
+import com.scriptographer.CommitManager;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
 import com.scriptographer.ui.MenuItem;
@@ -254,11 +255,8 @@ public class LiveEffect extends NativeObject {
 	 * unused effects
 	 */
 	public boolean remove() {
-		// see whether we're still linked:
+		// See whether we're still linked:
 		if (effects.get(handle) == this) {
-			// if so remove it and put it to the list of unused effects, for later recycling
-//			effects.remove(handle);
-	//		getEffects().add(this);
 			if (menuItem != null)
 				menuItem.remove();
 			menuItem = null;
@@ -431,13 +429,6 @@ public class LiveEffect extends NativeObject {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
 			effect.onEditParameters(new LiveEffectEvent(0, dataHandle));
-			/*
-			Dictionary data = Dictionary.wrapHandle(dataHandle, null, true);
-			data.remove("-position");
-			data.remove("-handle");
-			effect.onEditParameters(new LiveEffectEvent(null, data));
-			data.put("-handle", dataHandle);
-			*/
 		}
 	}
 
@@ -450,25 +441,12 @@ public class LiveEffect extends NativeObject {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
 			Document document = item.document;
-			Dictionary data = Dictionary.wrapHandle(dataHandle, document, false);
-			/*
-			Object h = data.get("-handle");
-			if (h instanceof Integer)
-				data = Dictionary.wrapHandle(((Number) h).intValue(), document, false);
-			if (!data.containsKey("-position")) {
-				Item selected = document.getSelectedItems().getFirst();
-				int position = 0;
-				if (selected != null) {
-					LiveEffectPosition pos = selected.getEffectPosition(effect, data);
-					if (pos != null)
-						position = pos.value;
-				}
-				data.put("-position", position);
-			}
-			*/
+			LiveEffectParameters parameters =
+					LiveEffectParameters.wrapHandle(
+							dataHandle, document, false);
 			Item parent = item.getParent();
 			// Scriptographer's new item recording feature makes
-			// processing effects extremly convenient. All new items
+			// processing effects extremely convenient. All new items
 			// are automatically collected, and the right thing is
 			// done with them at the end. Since doing the wrong
 			// thing leads to endless crashes, this is the best
@@ -476,11 +454,12 @@ public class LiveEffect extends NativeObject {
 			Item.collectNewItems();
 			ItemList newItems = null;
 			try {
-				effect.onCalculate(new LiveEffectEvent(item, data));
+				effect.onCalculate(new LiveEffectEvent(item, parameters));
 			} finally {
 				newItems = Item.retreiveNewItems();
 			}
 			if (newItems.size() > 0) {
+				boolean changed = false;
 				Item newItem;
 				if (newItems.size() == 1) {
 					newItem = newItems.getFirst();
@@ -488,6 +467,7 @@ public class LiveEffect extends NativeObject {
 					// More than one new item was produced. Group them, as
 					// LiveEffects require one item only.
 					newItem = new Group(newItems);
+					changed = true;
 				}
 				// "When creating output art for the go message, the output art
 				// must be a child of the same parent as the input art. It also
@@ -499,7 +479,13 @@ public class LiveEffect extends NativeObject {
 				if (newItem.getParent().equals(parent) || parent.appendTop(newItem)) {
 					item.remove();
 					item = newItem;
+					changed = true;
 				}
+				// Since we're outside of Scriptographer's script handling, we
+				// need to take care of committing changes ourselves here before
+				// returning.
+				if (changed)
+					CommitManager.commit();
 			}
 		}
 		// already return the handle to the native environment so it doesn't
@@ -511,14 +497,14 @@ public class LiveEffect extends NativeObject {
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static int onGetInputType(int handle, int itemHandle, int dataHandle)
+	private static int onGetInputType(int handle, int itemHandle, int parametersHandle)
 			throws Exception {
 		// For improved performance of onGetInputType, we do not wrap the handle
 		// on the native side already, as often it is not even used. Instead
 		// The LiveEffectEvent takes care of that on demand.
 		LiveEffect effect = getEffect(handle);
 		if (effect != null)
-			return effect.onGetInputType(new LiveEffectEvent(itemHandle, dataHandle));
+			return effect.onGetInputType(new LiveEffectEvent(itemHandle, parametersHandle));
 		return INPUT_ANY_BUT_PLUGIN;
 	}
 

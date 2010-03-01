@@ -37,44 +37,46 @@ package com.scriptographer.ai;
 public class LiveEffectEvent {
 
 	private int itemHandle;
-	private int dataHandle;
+	private int parametersHandle;
 
 	private Item item;
-	private Dictionary data;
+	private LiveEffectParameters parameters;
 
 	protected LiveEffectEvent(int itemHandle, int dictionaryHandle) {
 		this.itemHandle = itemHandle;
-		this.dataHandle = dictionaryHandle;
+		this.parametersHandle = dictionaryHandle;
 		item = null;
-		data = null;
+		parameters = null;
 	}
 
-	protected LiveEffectEvent(Item item, Dictionary data) {
+	protected LiveEffectEvent(Item item, LiveEffectParameters parameters) {
 		this.item = item;
-		this.data = data;
+		this.parameters = parameters;
 		itemHandle = 0;
-		dataHandle = 0;
+		parametersHandle = 0;
 	}
 
 	public Item getItem() {
 		if (item == null && itemHandle != 0) {
-			// This is the same comment as in LiveEffect_onCalculate on the native
-			// side:
-			// Do not check wrappers as the art items in live effects are duplicated
-			// and therefore seem to contain the m_artHandleKey, causing wrapped to
-			// be set to true when Item#wrapHandle is called. And sometimes their
-			// handles are reused, causing reuse of wrong wrappers.
-			// We could call Item_clearArtHandles but that's slow. Passing false for
-			// checkWrapped should do it.
+			// This is the same comment as in LiveEffect_onCalculate on the
+			// native side:
+			// Do not check wrappers as the art items in live effects are
+			// duplicated and therefore seem to contain the m_artHandleKey,
+			// causing wrapped to be set to true when Item#wrapHandle is called.
+			// And sometimes their handles are reused, causing reuse of wrong
+			// wrappers.
+			// We could call Item_clearArtHandles but that's slow. Passing false
+			// for checkWrapped should do it.
 			item = Item.wrapHandle(itemHandle, 0, true, false);
 		}
 		return item;
 	}
 
-	public Dictionary getData() {
-		if (data == null && dataHandle != 0) {
-			data = Dictionary.wrapHandle(dataHandle, null, false);
+	public LiveEffectParameters getParameters() {
+		if (parameters == null && parametersHandle != 0) {
+			parameters = LiveEffectParameters.wrapHandle(
+					parametersHandle, null, false);
 		}
-		return data;
+		return parameters;
 	}
 }
