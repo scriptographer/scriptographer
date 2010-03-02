@@ -74,8 +74,14 @@ public class JythonScope extends Scope {
 	}
 
 	public Object put(String name, Object value, boolean readOnly) {
-		Object prev = this.get(name);
+		Object prev = get(name);
+		// TODO: Implement readOnly
 		scope.__setitem__(name, Py.java2py(value));
 		return prev;
+	}
+
+	public Object[] getKeys() {
+		// TODO: Implement
+		return new Object[0];
 	}
 }

@@ -37,6 +37,8 @@ package com.scratchdisk.script;
  */
 public abstract class Scope {
 
+	public abstract Object[] getKeys();
+
 	public abstract Object get(String name);
 
 	public abstract Object put(String name, Object value, boolean readOnly);

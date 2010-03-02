@@ -57,29 +57,38 @@ public class RhinoScope extends Scope {
 	}
 
 	public Object get(String name) {
-		Object obj = scope.get(name, scope);
-		if (obj == Scriptable.NOT_FOUND) return null;
-		else if (obj instanceof Function) return new RhinoCallable(engine, (Function) obj);
-		else if (obj instanceof Wrapper) return ((Wrapper) obj).unwrap();
-		else return obj;
+		Object obj = scope.get(name, scope); 
+		if (obj == Scriptable.NOT_FOUND) {
+			return null;
+		} else if (obj instanceof Function) {
+			return new RhinoCallable(engine, (Function) obj);
+		} else if (obj instanceof Wrapper) {
+			return ((Wrapper) obj).unwrap();
+		} else {
+			return obj;
+		}
 	}
 
 	public Object put(String name, Object value, boolean readOnly) {
-		Object prev = this.get(name);
+		Object prev = get(name);
 		value = Context.javaToJS(value, scope);
 		if (scope instanceof ScriptableObject) {
 			// Remove READONLY attribute first if the field already existed,
 			// to make sure new value can be set
 			ScriptableObject scriptable = (ScriptableObject) scope;
 			if (scriptable.has(name, scriptable))
-				scriptable.setAttributes(name, ScriptableObject.DONTENUM);
+				scriptable.setAttributes(name, ScriptableObject.EMPTY);
 			if (readOnly) {
 				scriptable.defineProperty(name, value,
-						ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+						ScriptableObject.READONLY);
 				return prev;
 			}
 		}
 		scope.put(name, scope, value);
 		return prev;
+	}
+
+	public Object[] getKeys() {
+		return scope.getIds();
 	}
 }

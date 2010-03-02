@@ -42,10 +42,10 @@ import org.python.core.PyDictionary;
 import org.python.core.PyException;
 import org.python.core.PySystemState;
 
+import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.script.ScriptException;
-import com.scratchdisk.script.Scope;
 
 /**
  * @author lehni
