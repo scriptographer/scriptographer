@@ -288,12 +288,15 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			// with us... But not so clean...
 			var item = document.selectedItems.first;
 			if (item) {
-				var data = new LiveEffectParameters();
-				item.addEffect(effect, data);
-				// We need to wait for the UI to update before editing the effect.
-				(function() {
-					item.editEffect(effect, data);
-				}).delay(0);
+				var parameters = new LiveEffectParameters();
+				if (compileEffect(entry, parameters)) {
+					item.addEffect(effect, parameters);
+					// We need to wait for the UI to update before editing the
+					// effect.
+					(function() {
+						item.editEffect(effect, parameters);
+					}).delay(0);
+				}
 			}
 			else
 				Dialog.alert('In order to assign Scriptographer Effects\n'
@@ -381,19 +384,6 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 
 	var effectEntries = {};
 
-	function callEffectHandler(event, name) {
-		if (event.parameters.file) {
-			var entry = effectEntries[event.parameters.file];
-			if (!entry) {
-				// TODO: Support finding unindexed effect files from the path inside
-				// scriptList, so effects work after reloading too!
-			}
-			var func = entry && entry.handler && entry.handler[name];
-			if (func)
-				return func.call(entry.scope, event);
-		}
-	}
-
 	function followItem(item, speed, handler, scope) {
 		if (item instanceof Group || item instanceof CompoundPath
 			|| item instanceof Layer) {
@@ -469,10 +459,10 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	}
 
-	function compileEffect(entry, data) {
+	function compileEffect(entry, parameters) {
 		var path = entry.file.path;
 		effectEntries[path] = entry;
-		data.file = path;
+		parameters.file = path;
 		var isTool = entry.type == 'tool';
 		// Create a ToolEventHandler that handles all the complicated ToolEvent
 		// stuff for us, to replicate completely the behavior of tools.
@@ -503,51 +493,36 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 					},
 
 					onCalculate: function(event) {
-						restoreScope(scope, toolHandler, event.parameters);
-						var speed = Math.max(10, toolHandler.distanceThreshold);
-//						var t = new Date();
-						followItem(event.item, speed, toolHandler, this);
-//						print(new Date() - t);
+						if (event.parameters.scope) {
+							restoreScope(scope, toolHandler, event.parameters);
+							var speed = Math.max(10, toolHandler.distanceThreshold);
+//							var t = new Date();
+							followItem(event.item, speed, toolHandler, this);
+//							print(new Date() - t);
+						}
 					}
 				}
 			}
+			entry.handler = handler;
+			return true;
 		}
-		entry.handler = handler;
 	}
 
-	effect.onEditParameters = function(event) {
-		// A new script?
-		if (!event.parameters.file) {
-			var entry = getSelectedScriptEntry();
-			if (!entry || !/^(tool|effect)$/.test(entry.type)) {
-				// Clone event.parameters as it won't be valid outside of this
-				// callback and we need to use a timer to remove the effect
-				// again after.
-				Dialog.alert('In order to assign Scriptographer Effects\n'
-					+ 'to items, please select a Tool or Effect Script\n'
-					+ 'in the Scriptographer Main Palette first.');
-				var data = event.parameters.clone();
-				// Remove this effect again, as no effect script was selected!
-				(function() {
-					document.selectedItems.each(function(item) {
-						item.removeEffect(this, data);
-					}, this);
-				}).delay(0, this);
-				return;
-			} else {
-				compileEffect(entry, event.parameters);
+	// Pass on 
+	['onEditParameters', 'onCalculate', 'onGetInputType'].each(function(name) {
+		effect[name] = function(event) {
+			if (event.parameters.file) {
+				var entry = effectEntries[event.parameters.file];
+				if (!entry) {
+					// TODO: Support finding unindexed effect files from the path inside
+					// scriptList, so effects work after reloading too!
+				}
+				var func = entry && entry.handler && entry.handler[name];
+				if (func)
+					return func.call(entry.scope, event);
 			}
 		}
-		return callEffectHandler(event, 'onEditParameters');
-	}
-
-	effect.onCalculate = function(event) {
-		return callEffectHandler(event, 'onCalculate');
-	}
-
-	effect.onGetInputType = function(event) {
-		return callEffectHandler(event, 'onGetInputType');
-	}
+	});
 
 	// Menus
 
