@@ -497,7 +497,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 						try {
 							toolHandler.onHandleEvent('edit-options', null);
 						} finally {
-							// Save the new values into the scope.
+							// Save the new values from the scope.
 							saveScope(scope, toolHandler, event.parameters);
 						}
 					},
@@ -520,8 +520,9 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		if (!event.parameters.file) {
 			var entry = getSelectedScriptEntry();
 			if (!entry || !/^(tool|effect)$/.test(entry.type)) {
-				// Clone event.parameters as it won't be valid outside of this callback
-				// and we need to use a timer to remove the effect again after.
+				// Clone event.parameters as it won't be valid outside of this
+				// callback and we need to use a timer to remove the effect
+				// again after.
 				Dialog.alert('In order to assign Scriptographer Effects\n'
 					+ 'to items, please select a Tool or Effect Script\n'
 					+ 'in the Scriptographer Main Palette first.');
