@@ -35,7 +35,7 @@ package com.scratchdisk.script;
  * @author lehni
  *
  */
-public class ScriptException extends Exception {
+public class ScriptException extends RuntimeException {
 	public String text;
 
 	public ScriptException(Throwable cause) {
