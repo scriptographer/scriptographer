@@ -406,7 +406,66 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				var point = item.getPoint(pos);
 				handler.onHandleEvent('mouse-drag', point);
 			}
+			/*
+			var path = item.clone();
+			if  (path.closed)
+				path.segments.push(path.segments.first);
+			path.curvesToPoints(speed);
+			for (var i = 0, l = path.segments.length; i < l; i++)
+				handler.onHandleEvent('mouse-drag', path.segments[i].point);
+			path.remove();
+			*/
 			handler.onHandleEvent('mouse-up', item.curves.last.point2);
+		}
+	}
+
+	function saveScope(scope, tool, parameters) {
+		// Create a Json version of all variables in the scope.
+		parameters.scope = Json.encode(scope.getKeys().each(function(key) {
+			if (key != 'global') {
+				var value = scope.get(key);
+				var value = filterScope(value);
+				if (value !== undefined)
+					this[key] = value;
+			}
+		}, {}));
+		// We also need to backup and restore distanceThreshold
+		parameters.distanceThreshold = tool.distanceThreshold;
+	}
+
+	function restoreScope(scope, tool, parameters) {
+		var values = Json.decode(parameters.scope);
+		for (var key in values)
+			scope.put(key, values[key]);
+		tool.distanceThreshold = parameters.distanceThreshold;
+	}
+
+	function filterScope(obj) {
+		if (obj === null)
+			return undefined;
+		var type = Base.type(obj);
+		if (type == 'java' && obj instanceof java.util.Map)
+			type = 'object';
+		switch (type) {
+		case 'object':
+			var res = {};
+			for (var key in obj) {
+				var value = filterScope(obj[key]);
+				if (value !== undefined)
+					res[key] = value;
+			}
+			return res;
+		case 'array':
+			var res = [];
+			for (var i = 0, l = obj.length; i < l; i++)
+				res[i] = filterScope(key[i]);
+			return res;
+		case 'java':
+		case 'function':
+		case 'regexp':
+			return undefined;
+		default:
+			return obj;
 		}
 	}
 
@@ -418,6 +477,11 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		// Create a ToolEventHandler that handles all the complicated ToolEvent
 		// stuff for us, to replicate completely the behavior of tools.
 		var handler = isTool ? new ToolEventHandler() : {};
+		// The same scope is shared among all instances of this Effect.
+		// So we need to save and restore scope variables into the event.parameters
+		// object. The values are saved as Json, as duplicating effects otherwise
+		// does not create deep copies of parameters, which breaks storing values
+		// in JS objects which would get converted to shared Dictionaries otherwise.
 		var scope = compileScope(entry, handler);
 		if (scope) {
 			scope.put('effect', effect, true);
@@ -425,14 +489,22 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				var toolHandler = handler;
 				handler = {
 					onEditParameters: function(event) {
-						// TODO: Persist tool script.preferences in event.parameters
-						toolHandler.onHandleEvent('edit-options', null);
+						// Restore previously saved values into scope,
+						// before executing onOptions, so the right values
+						// are used.
+						if (event.parameters.scope)
+							restoreScope(scope, toolHandler, event.parameters);
+						try {
+							toolHandler.onHandleEvent('edit-options', null);
+						} finally {
+							// Save the new values into the scope.
+							saveScope(scope, toolHandler, event.parameters);
+						}
 					},
 
 					onCalculate: function(event) {
-						var speed = 10;
-						if (speed < toolHandler.distanceThreshold)
-							speed = toolHandler.distanceThreshold;
+						restoreScope(scope, toolHandler, event.parameters);
+						var speed = Math.max(10, toolHandler.distanceThreshold);
 //						var t = new Date();
 						followItem(event.item, speed, toolHandler, this);
 //						print(new Date() - t);
