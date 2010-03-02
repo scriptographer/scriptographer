@@ -1,0 +1,72 @@
+/*
+ * Scriptographer
+ *
+ * This file is part of Scriptographer, a Plugin for Adobe Illustrator.
+ *
+ * Copyright (c) 2002-2010 Juerg Lehni, http://www.scratchdisk.com.
+ * All rights reserved.
+ *
+ * Please visit http://scriptographer.org/ for updates and contact.
+ *
+ * -- GPL LICENSE NOTICE --
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * -- GPL LICENSE NOTICE --
+ * 
+ * File created on Mar 1, 2010.
+ *
+ * $Id$
+ */
+
+package com.scratchdisk.script.rhino.wrapper;
+
+import org.mozilla.javascript.Callable;
+import org.mozilla.javascript.Function;
+import org.mozilla.javascript.NativeArray;
+import org.mozilla.javascript.NativeJavaObject;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.Undefined;
+import org.mozilla.javascript.xml.XMLObject;
+
+/**
+ * @author lehni
+ *
+ */
+public class ObjectWrapper {
+	public static Object wrap(Object object, Callable onChange) {
+		// Filter out easily detectable objects that need no wrapping
+		if (object == null || object == Undefined.instance
+				|| object == Scriptable.NOT_FOUND
+				// filter out the ones that are already wrapped:
+				|| object instanceof Wrapped
+				// Do not wrap native objects:
+				|| object instanceof NativeJavaObject) {
+			return object;
+		}
+		// As XMLList is also seems to implement Function, check that one
+		// before
+		if (object instanceof XMLObject) {
+			return new XMLObjectWrapper((XMLObject) object, onChange);
+		} else if (object instanceof Function) {
+			return new FunctionWrapper((Function) object, onChange);
+		} else if (object instanceof NativeArray) {
+			return new ArrayWrapper((NativeArray) object, onChange);
+		} else if (object instanceof Scriptable) {
+			return new ScriptableWrapper((Scriptable) object, onChange);
+		} else {
+			// Basic types, no wrapping needed to detect change
+			return object;
+		}
+	}
+}
