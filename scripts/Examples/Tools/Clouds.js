@@ -1,5 +1,5 @@
-var path;
 tool.distanceThreshold = 20;
+var path;
 
 function onMouseDown(event) {
 	path = new Path() {
@@ -10,9 +10,8 @@ function onMouseDown(event) {
 }
 
 function onMouseDrag(event) {
-	var center = event.point - event.delta / 2;
 	var vector = (event.delta / 2).rotate((90).toRadians());
-	var circlePoint = center + vector;
+	var circlePoint = event.middlePoint + vector;
 	path.arcTo(circlePoint, event.point);
 }
 
