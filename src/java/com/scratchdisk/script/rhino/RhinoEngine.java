@@ -42,9 +42,9 @@ import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.tools.debugger.ScopeProvider;
 
+import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
-import com.scratchdisk.script.Scope;
 
 /**
  * @author lehni
@@ -152,7 +152,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 			throw new RhinoScriptException(this, e);
 		}
 	}
-
+	
 	public Scope createScope() {
 		Scriptable scope = new NativeObject();
 		// Sharing the top level scope:
@@ -161,7 +161,7 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		scope.setParentScope(null);
 		return new RhinoScope(this, scope);
 	}
-	
+
 	protected static Scriptable getWrapper(Object obj, Scriptable scope) {
 		if (obj instanceof Scriptable) {
 			return (Scriptable) obj;
@@ -173,21 +173,9 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 	}
 
 	public Scope getScope(Object obj) {
-		// Set global as the parent scope, so Tool buttons work.
-		// TODO: this might not work for Jython or JRuby. Find a better 
-		// way to handle this
-
-		// Only wrap object if it's not a Scriptable already
-		Scriptable scope;
-		if (obj instanceof Scriptable) {
-			scope = (Scriptable) obj;
-		} else {
-			scope = getWrapper(obj, topLevel);
-			// scope.setParentScope(topLevel);
-			scope.setPrototype(topLevel);
-			scope.setParentScope(null);
-		}
-		return new RhinoScope(this, scope);
+		if (obj instanceof Scriptable)
+			return new RhinoScope(this, (Scriptable) obj);
+		return null;
 	}
 
 	public Scope getGlobalScope() {
