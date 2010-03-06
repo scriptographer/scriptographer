@@ -197,7 +197,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * 
 	 * @param handle
 	 */
-	protected Item(int handle, Document doc, boolean created, boolean unversioned) {
+	protected Item(int handle, Document doc, boolean created,
+			boolean unversioned) {
 		super(handle, doc);
 		if (document == null)
 			throw new ScriptographerException(
@@ -402,7 +403,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		}
 	};
 	
-	protected void changeHandle(int newHandle, int docHandle, boolean clearDictionary) {
+	protected void changeHandle(int newHandle, int docHandle,
+			boolean clearDictionary) {
 		// Remove the object at the old handle
 		if (handle != newHandle) {
 			// If there was no handle history yet, add the creation version to
@@ -584,7 +586,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 
 	public Dictionary getDictionary() {
 		return dictionaryHandle != 0 
-				? Dictionary.wrapHandle(dictionaryHandle, document, false)
+				? Dictionary.wrapHandle(dictionaryHandle, document)
 				: null;
 	}
 
@@ -679,8 +681,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	private native void nativeSetAttributes(int attributes, int values);
 
 	/*
-	 * This can be used to retrieve all user attributes and restore them again after
-	 * an operation that would change them.
+	 * This can be used to retrieve all user attributes and restore them again
+	 * after an operation that would change them.
 	 */
 	protected int getAttributes() {
 		return nativeGetAttributes(0xffffffff);
@@ -899,14 +901,16 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	/**
 	 * @jshide
 	 */
-	public LiveEffectPosition getEffectPosition(LiveEffect effect, Map<String, Object> data) {
+	public LiveEffectPosition getEffectPosition(LiveEffect effect,
+			Map<String, Object> data) {
 		if (effect != null)
 			return IntegerEnumUtils.get(LiveEffectPosition.class,
 					nativeGetEffectPosition(effect, data));
 		return null;
 	}
 
-	private native int nativeGetEffectPosition(LiveEffect effect, Map<String, Object> data);
+	private native int nativeGetEffectPosition(LiveEffect effect,
+			Map<String, Object> data);
 
 	/**
 	 * @jshide
@@ -948,7 +952,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		return addEffect(effect, null);
 	}
 
-	private native boolean nativeAddEffect(LiveEffect effect, LiveEffectParameters data, int position);
+	private native boolean nativeAddEffect(LiveEffect effect,
+			LiveEffectParameters data, int position);
 
 	/**
 	 * @jshide
@@ -958,7 +963,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	/**
 	 * @jshide
 	 */
-	public native boolean removeEffect(LiveEffect effect, Map<String, Object> data);
+	public native boolean removeEffect(LiveEffect effect,
+			Map<String, Object> data);
 
 	/**
 	 * An object contained within the item which can be used to store data.
@@ -976,7 +982,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 */
 	public Dictionary getData() {
 		if (data == null)
-			data = Dictionary.wrapHandle(nativeGetData(), document, false);
+			data = Dictionary.wrapHandle(nativeGetData(), document);
 		return data;	
 	}
 
@@ -1818,5 +1824,12 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 				items.remove(i);
 		}
 		return items;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public static void debug() {
+		System.out.println("items: " + items.size());
 	}
 }

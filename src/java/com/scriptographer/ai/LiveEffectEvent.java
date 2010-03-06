@@ -74,8 +74,8 @@ public class LiveEffectEvent {
 
 	public LiveEffectParameters getParameters() {
 		if (parameters == null && parametersHandle != 0) {
-			parameters = LiveEffectParameters.wrapHandle(
-					parametersHandle, null, false);
+			parameters =
+					LiveEffectParameters.wrapHandle(parametersHandle, null);
 		}
 		return parameters;
 	}

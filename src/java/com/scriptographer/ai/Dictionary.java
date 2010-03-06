@@ -44,25 +44,25 @@ import com.scratchdisk.util.SoftIntMap;
 public class Dictionary extends AbstractMap<String, Object> {
 	protected int handle;
 	protected Document document;
+	private boolean release;
 
 	// Internal hash map that keeps track of already wrapped objects. defined
 	// as soft.
 	protected static SoftIntMap<Dictionary> dictionaries = new SoftIntMap<Dictionary>();
 
-	protected Dictionary(int handle, Document document, boolean addRef) {
+	protected Dictionary(int handle, Document document, boolean release) {
 		this.handle = handle;
 		this.document = document != null ? document : Document.getWorkingDocument();
+		this.release = release;
 		dictionaries.put(handle, this);
-		if (addRef)
-			nativeAddReference(handle);
 	}
 
-	protected Dictionary(int handle) {
-		this(handle, Document.getWorkingDocument(), false);
+	protected Dictionary(int handle, boolean release) {
+		this(handle, Document.getWorkingDocument(), release);
 	}
 
 	public Dictionary() {
-		this(nativeCreate());
+		this(nativeCreate(), true);
 	}
 
 	private static native int nativeCreate();
@@ -106,22 +106,27 @@ public class Dictionary extends AbstractMap<String, Object> {
 	// a wrapper for the native dictionary iterator here.
 	protected native String[] keys();
 
-	private native void nativeAddReference(int handle);
 	private native void nativeRelease(int handle);
 
 	protected void finalize() {
-		nativeRelease(handle);
+		if (release && handle != 0) {
+			nativeRelease(handle);
+			handle = 0;
+		}
 	}
 
 	public Document getDocument() {
 		return document;
 	}
 
-	protected static Dictionary wrapHandle(int handle, Document document, boolean addRef) {
-		Dictionary dictionary = dictionaries.get(handle);
-		if (dictionary == null || document != null && dictionary.document != document)
-			dictionary = new Dictionary(handle, document, addRef);
-		return dictionary; 
+	protected static Dictionary wrapHandle(int handle, Document document) {
+		Dictionary dict = dictionaries.get(handle);
+		if (dict == null || document != null && dict.document != document) {
+			if (dict != null)
+				dict.handle = 0;
+			dict = new Dictionary(handle, document, true);
+		}
+		return dict; 
 	}
 /*
 	protected static Dictionary wrapHandle(int handle) {
@@ -131,8 +136,8 @@ public class Dictionary extends AbstractMap<String, Object> {
 	/**
 	 * Called from the native environment to wrap a Dictionary:
 	 */
-	protected static Dictionary wrapHandle(int handle, int docHandle, boolean addRef) {
-		return wrapHandle(handle, Document.wrapHandle(docHandle), addRef); 
+	protected static Dictionary wrapHandle(int handle, int docHandle) {
+		return wrapHandle(handle, Document.wrapHandle(docHandle)); 
 	}
 
 	public String toString() {

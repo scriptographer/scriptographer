@@ -440,10 +440,8 @@ public class LiveEffect extends NativeObject {
 			throws Exception {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
-			Document document = item.document;
 			LiveEffectParameters parameters =
-					LiveEffectParameters.wrapHandle(
-							dataHandle, document, false);
+					LiveEffectParameters.wrapHandle(dataHandle, item.document);
 			Item parent = item.getParent();
 			// Scriptographer's new item recording feature makes
 			// processing effects extremely convenient. All new items

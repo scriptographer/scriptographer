@@ -39,22 +39,38 @@ import java.util.Map;
  * @jshide
  */
 public class LiveEffectParameters extends Dictionary {
+
+	protected LiveEffectParameters(int handle, Document document) {
+		super(handle, document, false);
+	}
+
 	public LiveEffectParameters() {
-		super(nativeCreateLiveEffectParameters());
+		super(nativeCreateLiveEffectParameters(), false);
 	}
 
 	public LiveEffectParameters(Map<?, ?> map) {
-		super(map);
+		this();
+		for (Map.Entry<?, ?> entry : map.entrySet())
+			put(entry.getKey().toString(), entry.getValue());
 	}
 
-	protected LiveEffectParameters(int handle, Document document, boolean addRef) {
-		super(handle, document, addRef);
+	public Object clone() {
+		return new LiveEffectParameters(this);
 	}
 
-	protected static LiveEffectParameters wrapHandle(int handle, Document document, boolean addRef) {
-		LiveEffectParameters parameters = (LiveEffectParameters) dictionaries.get(handle);
-		if (parameters == null || document != null && parameters.document != document)
-			parameters = new LiveEffectParameters(handle, document, addRef);
-		return parameters; 
+	protected static LiveEffectParameters wrapHandle(int handle,
+			Document document) {
+		// As we are sharing the lookup table with Dictonary and apparently
+		// there are rare occasions where handles are reused, we need to check
+		// that previous cashed dictionaries are indeed of the required type,
+		// and if not, we create new ones
+		Dictionary dict = dictionaries.get(handle);
+		if (dict == null || !(dict instanceof LiveEffectParameters)
+				|| dict.document != document) {
+			if (dict != null)
+				dict.handle = 0;
+			dict = new LiveEffectParameters(handle, document);
+		}
+		return (LiveEffectParameters) dict; 
 	}
 }
