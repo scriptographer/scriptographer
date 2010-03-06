@@ -84,7 +84,7 @@ public class ItemList extends ExtendedArrayList<Item> implements ReadOnlyStringI
 
 	public Item get(String name) {
 		for (Item item : this)
-			if (!item.isDefaultName() && item.getName().equals(name))
+			if (item.isValid() && !item.isDefaultName() && item.getName().equals(name))
 				return item;
 		return null;
 	}
