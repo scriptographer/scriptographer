@@ -40,6 +40,7 @@ import org.python.core.Py;
 import org.python.core.PyCode;
 import org.python.core.PyDictionary;
 import org.python.core.PyException;
+import org.python.core.PyObject;
 import org.python.core.PySystemState;
 
 import com.scratchdisk.script.Scope;
@@ -85,11 +86,17 @@ public class JythonEngine extends ScriptEngine {
 		return null;
 	}
 
-	public Scope getScope(Object obj) {
-		return new JythonScope(Py.java2py(obj));
+	public Scope getScope(Object object) {
+		return new JythonScope(Py.java2py(object));
 	}
 
 	public Scope getGlobalScope() {
 		return getScope(globals);
+	}
+
+	public Object toJava(Object object, Class type) {
+		if (object instanceof PyObject)
+			return Py.tojava((PyObject) object, type);
+		return null;
 	}
 }

@@ -100,9 +100,20 @@ public abstract class ScriptEngine {
 		return pos != -1 ? getEngineByExtension(name.substring(pos + 1)) : null;
 	}
 
+	public abstract Object toJava(Object object, Class type);
+
+	public static Object convertToJava(Object object, Class type) {
+		for (ScriptEngine engine : enginesByName.values()) {
+			Object res = engine.toJava(object, type);
+			if (type.isInstance(res))
+				return res;
+		}
+		return null;
+	}
+
 	public abstract Scope createScope();
 
-	public abstract Scope getScope(Object obj);
+	public abstract Scope getScope(Object object);
 
 	public abstract Scope getGlobalScope();
 	

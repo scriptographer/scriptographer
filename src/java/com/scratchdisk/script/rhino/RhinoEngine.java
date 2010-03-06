@@ -162,19 +162,19 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		return new RhinoScope(this, scope);
 	}
 
-	protected static Scriptable getWrapper(Object obj, Scriptable scope) {
-		if (obj instanceof Scriptable) {
-			return (Scriptable) obj;
+	protected static Scriptable getWrapper(Object object, Scriptable scope) {
+		if (object instanceof Scriptable) {
+			return (Scriptable) object;
 		} else {
 			Context cx = Context.getCurrentContext();
 			return cx.getWrapFactory().wrapAsJavaObject(cx, scope,
-					obj, obj.getClass(), false);
+					object, object.getClass(), false);
 		}
 	}
 
-	public Scope getScope(Object obj) {
-		if (obj instanceof Scriptable)
-			return new RhinoScope(this, (Scriptable) obj);
+	public Scope getScope(Object object) {
+		if (object instanceof Scriptable)
+			return new RhinoScope(this, (Scriptable) object);
 		return null;
 	}
 
@@ -186,5 +186,11 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 
 	public Scriptable getScope() {
 		return topLevel;
+	}
+
+	public Object toJava(Object object, Class type) {
+		if (object instanceof Scriptable)
+			return Context.jsToJava(object, type);
+		return null;
 	}
 }
