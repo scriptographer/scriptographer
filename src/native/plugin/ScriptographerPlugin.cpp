@@ -490,13 +490,13 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 #ifdef _DEBUG
 		// Only install the mouse events used for panel move tracking and SWT
 		// in debug mode for now as it is work in progress, unused in final product yet.
-		{ kEventClassMouse, kEventMouseDown },
-		{ kEventClassMouse, kEventMouseUp }
+//		{ kEventClassMouse, kEventMouseDown },
+//		{ kEventClassMouse, kEventMouseUp }
 #endif // _DEBUG
 	};
 	// TODO: Figure out if this needs DEFINE_CALLBACK_PROC / CALLBACK_PROC as well?
-	RETURN_ERROR(InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(eventHandler),
-			sizeof(events) / sizeof(EventTypeSpec), events, this, NULL));
+//	RETURN_ERROR(InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(eventHandler),
+//			sizeof(events) / sizeof(EventTypeSpec), events, this, NULL));
 #endif
 #ifdef WIN_ENV
 	s_defaultGetMessageProc = SetWindowsHookEx(WH_GETMESSAGE, getMessageProc,

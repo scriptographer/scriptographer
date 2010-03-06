@@ -45,7 +45,7 @@ void ScriptographerException::report(JNIEnv *env) {
 	} else {
 #ifdef MAC_ENV
 		int len = strlen(str);
-		// convert line breaks on mac:
+		// Convert line breaks on mac:
 		for (int i = 0; i < len; i++) {
 			if (str[i] == '\r') str[i] = '\n';
 		}

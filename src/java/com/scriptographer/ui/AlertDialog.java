@@ -31,6 +31,8 @@
 
 package com.scriptographer.ui;
 
+import java.util.regex.Pattern;
+
 import com.scriptographer.ui.layout.TableLayout;
 
 /**
@@ -59,6 +61,10 @@ public class AlertDialog extends ModalDialog {
 		addToContent(logo, "0, 0, 0, 1, L, T");
 
 		TextPane text = new TextPane(this);
+		if (!Pattern.compile("[\n\r]").matcher(message).find()
+				&& getTextSize(message).width > 320)
+			text.setMaximumSize(new Size(320, -1));
+		text.setMinimumSize(240, -1);
 		text.setText(message);
 		text.setBottomMargin(8);
 		addToContent(text, "1, 0, 2, 0, L, C");

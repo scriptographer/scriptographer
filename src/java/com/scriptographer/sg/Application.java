@@ -55,7 +55,7 @@ public class Application {
 	/**
 	 * Adobe Illustrator's version description.
 	 */
-	public String getVersion() {
+	public double getVersion() {
 		return ScriptographerEngine.getApplicationVersion();
 	}
 

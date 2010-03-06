@@ -599,7 +599,7 @@ public:
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
 	
 	jobject wrapDocumentHandle(JNIEnv *env, AIDocumentHandle doc);
-	jobject wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc = NULL, bool addRef = false);
+	jobject wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc = NULL);
 
 	void commit(JNIEnv *env);
 	void resumeSuspendedDocuments();

@@ -44,6 +44,7 @@ import com.scriptographer.ui.layout.TableLayout;
 import com.scratchdisk.list.List;
 import com.scratchdisk.script.Callable;
 import com.scratchdisk.util.ConversionUtils;
+import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
  * Subclasses the NotificationHandler and adds functionality for
@@ -55,6 +56,55 @@ import com.scratchdisk.util.ConversionUtils;
  * @author lehni
  */
 abstract class Component extends NotificationHandler {
+
+	/*
+	 *  Fonts and Text Size
+	 */
+
+	protected abstract int nativeGetFont();
+	
+	protected abstract void nativeSetFont(int font);
+
+	public DialogFont getFont() {
+		return IntegerEnumUtils.get(DialogFont.class, nativeGetFont());
+	}
+
+	public void setFont(DialogFont font) {
+		if (font != null)
+			nativeSetFont(font.value);
+	}
+
+	public Size getTextSize(String text, int maxWidth) {
+		// Create an image to get a drawer to calculate text sizes
+		Image image = new Image(1, 1, ImageType.RGB);
+		Drawer drawer = image.getDrawer();
+		drawer.setFont(getFont());
+		// Split at new lines chars, and measure each line separately
+		String[] lines = text.split("\r\n|\n|\r");
+		Size size = new Size(0, 0);
+		for (int i = 0; i < lines.length; i++) {
+			String line = lines[i];
+			if (line.length() == 0)
+				line = " "; // Make sure empty lines are measured too
+
+			// Calculate the size of this part, using the drawer
+			int width = drawer.getTextWidth(line);
+			if (maxWidth > 0 && width > maxWidth)
+				width = maxWidth;
+			int height = drawer.getTextHeight(line, width + 1);
+
+			// And add up size
+			if (width > size.width)
+				size.width = width;
+			size.height += height;
+		}
+		drawer.dispose();
+		return size;
+	}
+
+	public Size getTextSize(String text) {
+		return getTextSize(text, -1);
+	}
 
 	/*
 	 * Use an activation mechanism for the expensive callback routines (the ones

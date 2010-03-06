@@ -393,25 +393,10 @@ public abstract class Item extends Component {
 		setSize(size);
 	}
 
-	private native Size nativeGetTextSize(String text, int maxWidth);
-	
-	public Size getTextSize(String text, int maxWidth) {
-		// Split at new lines chars, and measure each line separately
-		String[] lines = text.split("\r\n|\n|\r");
-		Size size = new Size(0, 0);
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i];
-			if (line.length() == 0)
-				line = " "; // Make sure empty lines are measured too
-			Size partSize = nativeGetTextSize(line, maxWidth);
-			if (partSize.width > size.width)
-				size.width = partSize.width;
-			size.height += partSize.height;
-		}
-		return size;
-	}
-
 	public Size getBestSize() {
+		int maxWidth = maxSize != null
+			? maxSize.width - margin.left - margin.right
+			: -1;
 		// TODO: verify for which items nativeGetBestSize really works!
 		Size size = null;
 		switch (type) {
@@ -431,25 +416,29 @@ public abstract class Item extends Component {
 			size = new Size(100, 16);
 			break;
 		case POPUP_LIST:
+			// 38 is a mac specific value, defined by the size
+			// of pulldown menu interface elements.
+			// TODO: Check on windows!
+			Size textSize = getTextSize(" ", -1);
+			int addWidth = textSize.height >= 16 ? 38 : 32;
+			int addHeight = 8;
 			PopupList list = (PopupList) this;
 			if (list.size() > 0) {
 				size = new Size(0, 0);
 				for (int i = 0, l = list.size(); i < l; i++) {
 					ListEntry entry = (ListEntry) list.get(i);
 					String text = entry.getText();
-					Size entrySize = getTextSize(text, -1);
+					Size entrySize = getTextSize(text,
+							maxWidth != -1 ? maxWidth - addWidth : -1);
 					size.width = Math.max(size.width, entrySize.width);
 					size.height = Math.max(size.height, entrySize.height);
 				}
 			} else {
-				// Empty list, make sure height is at least set
-				size = getTextSize(" ", -1);
+				// Empty list, make sure height is at least set for text
+				size = textSize;
 			}
-			// 38 is a mac specific value, defined by the size
-			// of pulldown menu interface elements.
-			// TODO: Check on windows!
-			size.width += size.height >= 16 ? 38 : 32;
-			size.height += 8;
+			size.width += addWidth;
+			size.height += addHeight;
 			break;
 		default:
 			String text = null;
@@ -460,7 +449,7 @@ public abstract class Item extends Component {
 			if (text != null) {
 				if (text.equals(""))
 					text = " ";
-				size = getTextSize(text, -1);
+				size = getTextSize(text, maxWidth);
 				if (size != null) {
 					if (this instanceof Button) {
 						size.width += size.height * 2;
@@ -481,9 +470,15 @@ public abstract class Item extends Component {
 			// is the preferred size too.
 			size = (this instanceof Button) ? new Size(120, 20) : getSize();
 		}
-		// add margins
+		// Add margins
 		size.width += margin.left + margin.right;
 		size.height += margin.top + margin.bottom;
+		if (maxSize != null) {
+			if (maxSize.width >= 0 && size.width > maxSize.width)
+				size.width = maxSize.width;
+			if (maxSize.height >= 0 && size.height > maxSize.height)
+				size.height = maxSize.height;
+		}
 		return size;
 	}
 
@@ -495,8 +490,8 @@ public abstract class Item extends Component {
 	}
 
 	public void setPreferredSize(Size size) {
-		if (size == null) prefSize = null;
-		else setPreferredSize(size.width, size.height);
+		/*if (size == null) prefSize = null;
+		else*/ setPreferredSize(size.width, size.height);
 	}
 
 	public Size getPreferredSize() {
@@ -511,8 +506,8 @@ public abstract class Item extends Component {
 	}
 
 	public void setMinimumSize(Size size) {
-		if (size == null) minSize = null;
-		else setMinimumSize(size.width, size.height);
+		/*if (size == null) minSize = null;
+		else*/ setMinimumSize(size.width, size.height);
 	}
 
 	public Size getMinimumSize() {
@@ -527,8 +522,8 @@ public abstract class Item extends Component {
 	}
 
 	public void setMaximumSize(Size size) {
-		if (size == null) maxSize = null;
-		else setMaximumSize(size.width, size.height);
+		/*if (size == null) maxSize = null;
+		else*/ setMaximumSize(size.width, size.height);
 	}
 
 	public Size getMaximumSize() {
@@ -613,18 +608,9 @@ public abstract class Item extends Component {
 	
 	public native void update();
 
-	private native int nativeGetFont();
+	protected native int nativeGetFont();
 	
-	private native void nativeSetFont(int font);
-
-	public DialogFont getFont() {
-		return IntegerEnumUtils.get(DialogFont.class, nativeGetFont());
-	}
-
-	public void setFont(DialogFont font) {
-		if (font != null)
-			nativeSetFont(font.value);
-	}
+	protected native void nativeSetFont(int font);
 
 	private native void nativeSetBackgroundColor(int color);
 	private native int nativeGetBackgroundColor();

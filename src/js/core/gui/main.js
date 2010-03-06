@@ -291,11 +291,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				var parameters = new LiveEffectParameters();
 				if (compileEffect(entry, parameters)) {
 					item.addEffect(effect, parameters);
-					// We need to wait for the UI to update before editing the
-					// effect.
-					(function() {
-						item.editEffect(effect, parameters);
-					}).delay(0);
+					item.editEffect(effect, parameters);
 				}
 			}
 			else
@@ -391,21 +387,22 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				followItem(child, handler, speed);
 			})
 		} else if (item instanceof Path) {
-			handler.onHandleEvent('mouse-down', item.curves.first.point1);
-			for (var pos = speed, length = item.length; pos < length; pos += speed) {
-				var point = item.getPoint(pos);
-				handler.onHandleEvent('mouse-drag', point);
+			var curve = item.curves.first;
+			if (curve) {
+				handler.onHandleEvent('mouse-down', curve.point1);
+				for (var pos = speed, length = item.length; pos < length; pos += speed)
+					handler.onHandleEvent('mouse-drag', item.getPoint(pos));
+				handler.onHandleEvent('mouse-up', item.curves.last.point2);
+				/*
+				var path = item.clone();
+				if  (path.closed)
+					path.segments.push(path.segments.first);
+				path.curvesToPoints(speed);
+				for (var i = 0, l = path.segments.length; i < l; i++)
+					handler.onHandleEvent('mouse-drag', path.segments[i].point);
+				path.remove();
+				*/
 			}
-			/*
-			var path = item.clone();
-			if  (path.closed)
-				path.segments.push(path.segments.first);
-			path.curvesToPoints(speed);
-			for (var i = 0, l = path.segments.length; i < l; i++)
-				handler.onHandleEvent('mouse-drag', path.segments[i].point);
-			path.remove();
-			*/
-			handler.onHandleEvent('mouse-up', item.curves.last.point2);
 		}
 	}
 
@@ -496,6 +493,10 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 						if (event.parameters.scope) {
 							restoreScope(scope, toolHandler, event.parameters);
 							var speed = Math.max(10, toolHandler.distanceThreshold);
+							// Erase distanceThreshold, as we're stepping exactly
+							// by that amount anyway, and there is always a bit
+							// of imprecision involved with length calculations.
+							toolHandler.distanceThreshold = 0;
 //							var t = new Date();
 							followItem(event.item, speed, toolHandler, this);
 //							print(new Date() - t);
@@ -508,7 +509,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	}
 
-	// Pass on 
+	// Pass on effect handlers.
 	['onEditParameters', 'onCalculate', 'onGetInputType'].each(function(name) {
 		effect[name] = function(event) {
 			if (event.parameters.file) {

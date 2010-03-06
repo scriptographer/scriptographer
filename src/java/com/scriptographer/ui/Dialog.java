@@ -91,8 +91,8 @@ public abstract class Dialog extends Component {
 	private EnumSet<DialogOption> options;
 	// The inside dimensions of the dialog, as used by layout managers and such
 	private Size size;
-	private Size minSize;
-	private Size maxSize;
+	private Size minSize = null;
+	private Size maxSize = null;
 	private boolean isResizing = false;
 	private boolean isNotifying = false;
 	private String title = "";
@@ -123,7 +123,6 @@ public abstract class Dialog extends Component {
 	private boolean sizeSet = false;
 	// Used to check if the boundaries (min / max size) are to bet set after
 	// initialization
-	private boolean boundariesSet = true;
 	private boolean boundsInitialized = false;
 
 	// For scripts, we cannot always access ScriptRuntime.getTopCallScope(cx)
@@ -145,10 +144,11 @@ public abstract class Dialog extends Component {
 			style == STYLE_TABBED_RESIZING_FLOATING ||
 			style == STYLE_TABBED_RESIZING_HIERARCHY_FLOATING;
 
-		if (isResizing) {
-			minSize = nativeGetMinimumSize();
-			maxSize = nativeGetMaximumSize();
-		}
+		/*
+		minSize = nativeGetMinimumSize();
+		maxSize = nativeGetMaximumSize();
+		*/
+
 		this.options = options != null ? options.clone()
 				: EnumSet.noneOf(DialogOption.class);
 		if (handle != 0)
@@ -193,14 +193,20 @@ public abstract class Dialog extends Component {
 				if (options.contains(DialogOption.REMEMBER_PLACING))
 					loadPreferences(title);
 				if (container != null) {
-					if (isResizing) {
+					if (minSize == null)
 						setMinimumSize(new Size(container.getMinimumSize()));
+					if (maxSize == null)
 						setMaximumSize(new Size(container.getMaximumSize()));
-					}
 					// If no bounds where specified yet, set the preferred size
 					// as defined by the layout
-					if (!sizeSet)
-						setSize(new Size(container.getPreferredSize()));
+					if (!sizeSet) {
+						Dimension preferred = container.getPreferredSize();
+						if (preferred.width < minSize.width)
+							preferred.width = minSize.width;
+						if (preferred.height < minSize.height)
+							preferred.height = minSize.height;
+						setSize(new Size(preferred));
+					}
 				}
 				initialized = true;
 				// Execute callback handler
@@ -211,10 +217,11 @@ public abstract class Dialog extends Component {
 			// setBoundaries is set to false when calling from initializeAll,
 			// because it would be too early to set it there. At least on Mac CS3
 			// this causes problems
-			if (setBoundaries && !boundariesSet) {
-				nativeSetMinimumSize(minSize.width, minSize.height);
-				nativeSetMaximumSize(maxSize.width, maxSize.height);
-				boundariesSet = true;
+			if (setBoundaries && isResizing) {
+				if (minSize != null)
+					nativeSetMinimumSize(minSize.width, minSize.height);
+				if (maxSize != null)
+					nativeSetMaximumSize(maxSize.width, maxSize.height);
 			}
 			if (initBounds && !boundsInitialized) {
 				for (Item item : items)
@@ -920,18 +927,9 @@ public abstract class Dialog extends Component {
 	 *
 	 */
 
-	private native int nativeGetFont();
+	protected native int nativeGetFont();
 	
-	private native void nativeSetFont(int font);
-
-	public DialogFont getFont() {
-		return IntegerEnumUtils.get(DialogFont.class, nativeGetFont());
-	}
-
-	public void setFont(DialogFont font) {
-		if (font != null)
-			nativeSetFont(font.value);
-	}
+	protected native void nativeSetFont(int font);
 
 	public String getTitle() {
 		return title;
@@ -985,27 +983,24 @@ public abstract class Dialog extends Component {
 	 * properties in the wrapper and then only set them natively when the dialog
 	 * is activate.
 	 */
+	@SuppressWarnings("unused")
 	private native Size nativeGetMinimumSize();
 	
 	private native void nativeSetMinimumSize(int width, int height);
 
+	@SuppressWarnings("unused")
 	private native Size nativeGetMaximumSize();
 	
 	private native void nativeSetMaximumSize(int width, int height);
 
 	public Size getMinimumSize() {
-		return isResizing ? minSize : this.getSize();
+		return minSize != null ? minSize : getSize();
 	}
 
 	public void setMinimumSize(int width, int height) {
-		if (isResizing) {
-			minSize = new Size(width, height);
-			if (initialized) {
-				nativeSetMinimumSize(width, height);
-			} else {
-				boundariesSet = false;
-			}
-		}
+		minSize = new Size(width, height);
+		if (initialized && isResizing)
+			nativeSetMinimumSize(width, height);
 	}
 	
 	public void setMinimumSize(Size size) {
@@ -1014,22 +1009,17 @@ public abstract class Dialog extends Component {
 	}
 
 	public Size getMaximumSize() {
-		return isResizing ? maxSize : this.getSize();
+		return maxSize != null ? maxSize : getSize();
 	}
 
 	public void setMaximumSize(int width, int height) {
-		if (isResizing) {
-			if (width > Short.MAX_VALUE)
-				width = Short.MAX_VALUE;
-			if (height > Short.MAX_VALUE)
-				height = Short.MAX_VALUE;
-			maxSize = new Size(width, height);
-			if (initialized) {
-				nativeSetMaximumSize(width, height);
-			} else {
-				boundariesSet = false;
-			}
-		}
+		if (width > Short.MAX_VALUE)
+			width = Short.MAX_VALUE;
+		if (height > Short.MAX_VALUE)
+			height = Short.MAX_VALUE;
+		maxSize = new Size(width, height);
+		if (initialized && isResizing)
+			nativeSetMaximumSize(width, height);
 	}
 
 	public void setMaximumSize(Size size) {
@@ -1137,6 +1127,48 @@ public abstract class Dialog extends Component {
 	}
 
 	/*
+	 * Alerts and prompts
+	 */
+
+	public static void alert(String message) {
+		AlertDialog.alert("Scriptographer", message);
+	}
+
+	public static void alert(String title, String message) {
+		AlertDialog.alert(title, message);
+	}
+
+	public static boolean confirm(String message) {
+		return ConfirmDialog.confirm("Scriptographer", message);
+	}
+
+	public static boolean confirm(String title, String message) {
+		return ConfirmDialog.confirm(title, message);
+	}
+
+	public static Map prompt(String title, Map<String, Map> items, Map<String, Object> values) {
+		return PromptDialog.prompt(title, items, values);
+	}
+
+	public static Map prompt(String title, Map<String, Map> items) {
+		return PromptDialog.prompt(title, items);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public static Object[] prompt(String title, PaletteItem[] items) {
+		return PromptDialog.prompt(title, items);
+	}
+
+	/**
+	 * @jshide
+	 */
+	public static Object[] prompt(String title, Map[] items) {
+		return PromptDialog.prompt(title, items);
+	}
+
+	/*
 	 * Support for various standard dialogs:
 	 */
 
@@ -1227,44 +1259,10 @@ public abstract class Dialog extends Component {
 		return chooseColor(null, null);
 	}
 
-	public static native Rectangle getPaletteLayoutBounds();
-
-//	public static native void alert(String message);
-	public static void alert(String message) {
-		AlertDialog.alert("Scriptographer", message);
-	}
-
-	public static void alert(String title, String message) {
-		AlertDialog.alert(title, message);
-	}
-
-//	public static native boolean confirm(String message);
-	public static boolean confirm(String message) {
-		return ConfirmDialog.confirm("", message);
-	}
-
-	public static boolean confirm(String title, String message) {
-		return ConfirmDialog.confirm(title, message);
-	}
-
 	/**
 	 * @jshide
 	 */
-	public static Object[] prompt(String title, PaletteItem[] items) {
-		return PromptDialog.prompt(title, items);
-	}
-
-	public static Object[] prompt(String title, Map[] items) {
-		return PromptDialog.prompt(title, items);
-	}
-
-	public static Map prompt(String title, Map<String, Map> items, Map<String, Object> values) {
-		return PromptDialog.prompt(title, items, values);
-	}
-
-	public static Map prompt(String title, Map<String, Map> items) {
-		return PromptDialog.prompt(title, items);
-	}
+	public static native Rectangle getPaletteLayoutBounds();
 
 	/**
 	 * Returns the screen size for centering of dialogs. Ideally

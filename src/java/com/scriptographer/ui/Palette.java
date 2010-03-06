@@ -51,7 +51,29 @@ public class Palette extends FloatingDialog {
 		super(new DialogOption[] {
 				DialogOption.TABBED,
 				DialogOption.SHOW_CYCLE
+//				DialogOption.RESIZING
 		});
+
+		double version = ScriptographerEngine.getApplicationVersion();
+		boolean upperCase = false;
+		int extraWidth = 32;
+		double factor = 1;
+		if (version >= 14) { // CS4
+			upperCase = true;
+			extraWidth = 64;
+		} else if (version >= 13) { // CS3
+			factor = 1;
+			extraWidth = 82;
+		} else {
+			// TODO: Test / Implement
+		}
+		// Calculate title size. Temporarily set bold font
+		setFont(DialogFont.PALETTE_BOLD);
+		int width = (int) Math.round(getTextSize(upperCase 
+				? title.toUpperCase() : title).width * factor);
+		setFont(DialogFont.PALETTE);
+		// UI Requires 64px more to show title fully in palette windows.
+		setMinimumSize(width + extraWidth, -1);
 		this.items = PaletteItem.getItems(items, values);
 		setTitle(title);
 		createLayout(this, this.items, false, 0);
@@ -95,16 +117,17 @@ public class Palette extends FloatingDialog {
 		// Define the filler row, 2nd last
 		if (hasLogo)
 			rows[rows.length - extraRows] = TableLayout.FILL;
+		else
+			rows[rows.length - 1] = TableLayout.FILL;
 		double[][] sizes = {
 			hasLogo
-				? new double[] { TableLayout.PREFERRED, TableLayout.PREFERRED,
+				? new double[] { TableLayout.PREFERRED, TableLayout.FILL,
 					TableLayout.PREFERRED }
-				: new double[] { TableLayout.PREFERRED, TableLayout.PREFERRED },
+				: new double[] { TableLayout.FILL, TableLayout.PREFERRED },
 			rows
 		};
 		TableLayout layout = new TableLayout(sizes);
 		dialog.setLayout(layout);
-		// this.setFont(Dialog.FONT_PALETTE);
 
 		if (hasLogo) {
 			ImagePane logo = new ImagePane(dialog);

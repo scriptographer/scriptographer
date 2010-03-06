@@ -268,8 +268,8 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 
 		// Properties:
 
-		// Define the global reference here, for scripts that get executed directly in the
-		// TopLevel scope (libraries)
+		// Define the global reference here, for scripts that get executed
+		// directly in the TopLevel scope (libraries)
 		// This is overridden by RhinoEngine#createScope for all other scopes.
 		defineProperty("global", this,
 				ScriptableObject.READONLY | ScriptableObject.DONTENUM);
@@ -316,12 +316,15 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 	 * @param scope
 	 * @throws ScriptException 
 	 */
-	private static void executeScript(Script script, Scope scope) throws ScriptException {
+	private static void executeScript(Script script, Scope scope)
+			throws ScriptException {
 		if (script != null) {
-			// Temporarily override script with the new one, so includes in other directories work
+			// Temporarily override script with the new one, so includes in
+			// other directories work
 			Object prevScript = scope.get("script");
 			try {
-				scope.put("script", new com.scriptographer.sg.Script(script.getFile()), true);
+				scope.put("script", new com.scriptographer.sg.Script(
+						script.getFile()), true);
 				script.execute(scope);
 			} finally {
 				scope.put("script", prevScript, true);
@@ -385,15 +388,16 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 	 * instead for wrapping of returned java types. So far this is only
 	 * used for java.io.File in Scriptographer.
 	 */
-	public static void mapJavaClass(Context cx, Scriptable thisObj, Object[] args,
-			Function funObj) throws Exception {
+	public static void mapJavaClass(Context cx, Scriptable thisObj,
+			Object[] args, Function funObj) throws Exception {
 		if (args.length == 2) {
 			for (int i = 0; i < args.length; i++)
 				args[i] = Context.jsToJava(args[i], Object.class);
 			if (args[0] instanceof Class && args[1] instanceof Function) {
 				Class cls = (Class) args[0];
 				Function proto = (Function) args[1];
-				RhinoWrapFactory factory = (RhinoWrapFactory) cx.getWrapFactory();
+				RhinoWrapFactory factory =
+						(RhinoWrapFactory) cx.getWrapFactory();
 				factory.mapJavaClass(cls, proto);
 			}
 		}

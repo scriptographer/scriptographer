@@ -31,6 +31,8 @@
 
 package com.scriptographer.ui;
 
+import java.util.regex.Pattern;
+
 import com.scriptographer.ui.layout.TableLayout;
 
 /**
@@ -40,7 +42,9 @@ import com.scriptographer.ui.layout.TableLayout;
  */
 public class ConfirmDialog extends ModalDialog {
 	public ConfirmDialog(String title, String message) {
-		this.setTitle(title);
+		setName("Scriptographer Confirm");
+		setTitle(title);
+	
 		double[][] sizes = {
 			{ TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED, TableLayout.PREFERRED },
 			{ TableLayout.FILL, TableLayout.PREFERRED }
@@ -58,6 +62,10 @@ public class ConfirmDialog extends ModalDialog {
 		this.addToContent(logo, "0, 0, 0, 1, L, T");
 
 		TextPane text = new TextPane(this);
+		if (!Pattern.compile("[\n\r]").matcher(message).find()
+				&& getTextSize(message).width > 320)
+			text.setMaximumSize(new Size(320, -1));
+		text.setMinimumSize(240, -1);
 		text.setText(message);
 		text.setBottomMargin(10);
 		this.addToContent(text, "1, 0, 3, 0, L, C");

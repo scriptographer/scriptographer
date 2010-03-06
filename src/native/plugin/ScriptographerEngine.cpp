@@ -430,7 +430,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ai_Dictionary = loadClass(env, "com/scriptographer/ai/Dictionary");
 	cid_ai_Dictionary = getConstructorID(env, cls_ai_Dictionary, "(Ljava/util/Map;)V");
 	fid_ai_Dictionary_handle = getFieldID(env, cls_ai_Dictionary, "handle", "I");
-	mid_ai_Dictionary_wrapHandle = getStaticMethodID(env, cls_ai_Dictionary, "wrapHandle", "(IIZ)Lcom/scriptographer/ai/Dictionary;");
+	mid_ai_Dictionary_wrapHandle = getStaticMethodID(env, cls_ai_Dictionary, "wrapHandle", "(II)Lcom/scriptographer/ai/Dictionary;");
 
 	cls_ai_Tool = loadClass(env, "com/scriptographer/ai/Tool");
 	cid_ai_Tool = getConstructorID(env, cls_ai_Tool, "(ILjava/lang/String;)V");
@@ -1632,10 +1632,10 @@ jobject ScriptographerEngine::wrapDocumentHandle(JNIEnv *env, AIDocumentHandle d
 	return callStaticObjectMethod(env, cls_ai_Document, mid_ai_Document_wrapHandle, (jint) doc);
 }
 
-jobject ScriptographerEngine::wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc, bool addRef) {
+jobject ScriptographerEngine::wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc) {
 	JNI_CHECK_ENV
 	return callStaticObjectMethod(env, cls_ai_Dictionary, mid_ai_Dictionary_wrapHandle,
-			(jint) dictionary, (jint) (doc ? doc : gWorkingDoc), (jboolean) addRef);
+			(jint) dictionary, (jint) (doc ? doc : gWorkingDoc));
 }
 
 /**
@@ -1884,7 +1884,26 @@ ASErr ScriptographerEngine::LiveEffect_onEditParameters(AILiveEffectEditParamMes
 ASErr ScriptographerEngine::LiveEffect_onCalculate(AILiveEffectGoMessage *message) {
 	JNIEnv *env = getEnv();
 	try {
-		// TODO: setting art to something else seems to crash!
+	/*
+		// Filter test code without JS side
+		AIArtHandle art = message->art;
+		AIRealRect bounds;
+		sAIArt->GetArtTransformBounds(art, NULL, kVisibleBounds | kNoStrokeBounds | kNoExtendedBounds | kExcludeGuideBounds, &bounds);
+		DEFINE_POINT(center,
+			(bounds.left + bounds.right) / 2,
+			(bounds.top + bounds.bottom) / 2);
+		AIRealMatrix mx;
+		sAIRealMath->AIRealMatrixSetTranslate(&mx, -center.h, -center.v);
+		sAIRealMath->AIRealMatrixConcatRotate(&mx, random() / double((1 << 31) - 1) * PI * 2);
+		sAIRealMath->AIRealMatrixConcatTranslate(&mx, center.h, center.v);
+		// According to adobe sdk manual: linescale = sqrt(scaleX) * sqrt(scaleY)
+		AIReal sx, sy;
+		sAIRealMath->AIRealMatrixGetScale(&mx, &sx, &sy);
+		AIReal lineScale = sAIRealMath->AIRealSqrt(sx) * sAIRealMath->AIRealSqrt(sy);
+		sAITransformArt->TransformArt(art, &mx, lineScale, kTransformChildren | kTransformObjects);
+		wrapArtHandle(env, message->art, NULL, true, -1, false);
+		return kNoErr;
+	*/
 		message->art = (AIArtHandle) callStaticIntMethod(env, cls_ai_LiveEffect, mid_ai_LiveEffect_onCalculate,
 				(jint) message->effect,
 				// Do not check wrappers as the art items in live effects are duplicated

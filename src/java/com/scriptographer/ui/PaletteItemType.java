@@ -38,12 +38,13 @@ import java.util.HashMap;
  *
  */
 public enum PaletteItemType {
-	STRING("String"),
-	NUMBER("Number"),
-	UNIT("Unit"),
-	RANGE("Range"),
-	CHECKBOX("CheckBox"),
-	LIST("List");
+	STRING("string"),
+	NUMBER("number"),
+	CHECKBOX("checkbox"),
+	BUTTON("button"),
+	UNIT("unit"),
+	RANGE("range"),
+	LIST("list");
 
 	protected String name;
 

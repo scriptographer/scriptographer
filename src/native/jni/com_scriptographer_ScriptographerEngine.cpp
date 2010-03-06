@@ -184,9 +184,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ScriptographerEngine_dispatchNext
 }
 
 /*
- * java.lang.String getApplicationVersion()
+ * jdouble getApplicationVersion()
  */
-JNIEXPORT jstring JNICALL Java_com_scriptographer_ScriptographerEngine_getApplicationVersion(JNIEnv *env, jclass cls) {
+JNIEXPORT jdouble JNICALL Java_com_scriptographer_ScriptographerEngine_getApplicationVersion(JNIEnv *env, jclass cls) {
 	try {
 #if kPluginInterfaceVersion >= kAI12
 		ASInt32 major = sAIRuntime->GetAppMajorVersion();
@@ -196,9 +196,7 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ScriptographerEngine_getApplic
 		ASInt32 major = 11;
 		ASInt32 minor = 0;
 #endif
-		char version[32];
-		sprintf(version, "%i.%i", major, minor);
-		return gEngine->convertString(env, version);
+		return major + minor / 10.0;
 	} EXCEPTION_CONVERT(env);
 	return NULL;
 }

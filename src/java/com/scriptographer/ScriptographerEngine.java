@@ -746,7 +746,7 @@ public class ScriptographerEngine {
 		return isMacintosh;
 	}
 
-	public static native String getApplicationVersion();
+	public static native double getApplicationVersion();
 
 	public static native int getApplicationRevision();
 

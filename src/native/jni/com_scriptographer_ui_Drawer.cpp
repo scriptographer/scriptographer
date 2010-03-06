@@ -266,9 +266,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Drawer_nativeSetDrawMode(JNIEn
 }
 
 /*
- * int getFont()
+ * int nativeGetFont()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Drawer_getFont(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Drawer_nativeGetFont(JNIEnv *env, jobject obj) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerHandle(env, obj);
 		return sADMDrawer->GetFont(drawer);
@@ -277,9 +277,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Drawer_getFont(JNIEnv *env, jo
 }
 
 /*
- * void setFont(int font)
+ * void nativeSetFont(int font)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_Drawer_setFont(JNIEnv *env, jobject obj, jint font) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_Drawer_nativeSetFont(JNIEnv *env, jobject obj, jint font) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerHandle(env, obj);
 		sADMDrawer->SetFont(drawer, (ADMFont)font);
@@ -506,6 +506,20 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Drawer_getTextWidth(JNIEnv *en
 	return 0;
 }
 
+/*
+ * int getTextHeight(java.lang.String text, int width)
+ */
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Drawer_getTextHeight(JNIEnv *env, jobject obj, jstring text, jint width) {
+	try {
+		ADMDrawerRef drawer = gEngine->getDrawerHandle(env, obj);
+		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
+		int height = sADMDrawer->GetTextRectHeightW(drawer, width, chars);
+		delete chars;
+		return height;
+	} EXCEPTION_CONVERT(env);
+	return 0;
+}
+
 jobject drawerGetFontInfo(JNIEnv *env, jobject obj, int font = -1) {
 	try {
 		ADMDrawerRef drawer = gEngine->getDrawerHandle(env, obj);
@@ -654,18 +668,4 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Drawer_getUpdateRect(JNIEnv
 		return gEngine->convertRectangle(env, &rt);
 	} EXCEPTION_CONVERT(env);
 	return NULL;
-}
-
-/*
- * int getTextRectHeight(int height, java.lang.String text)
- */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Drawer_getTextRectHeight(JNIEnv *env, jobject obj, jint height, jstring text) {
-	try {
-		ADMDrawerRef drawer = gEngine->getDrawerHandle(env, obj);
-		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
-		height = sADMDrawer->GetTextRectHeightW(drawer, height, chars);
-		delete chars;
-		return height;
-	} EXCEPTION_CONVERT(env);
-	return 0;
 }

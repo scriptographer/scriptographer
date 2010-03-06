@@ -165,8 +165,18 @@ public class Drawer extends NativeObject {
 			nativeSetDrawMode(mode.value);
 	}
 
-	public native int getFont(); // Dialog.FONT_ segmentValues
-	public native void setFont(int font);
+	private native int nativeGetFont();
+
+	private native void nativeSetFont(int font);
+
+	public DialogFont getFont() {
+		return IntegerEnumUtils.get(DialogFont.class, nativeGetFont());
+	}
+
+	public void setFont(DialogFont font) {
+		if (font != null)
+			nativeSetFont(font.value);
+	}
 
 	/* 
 	 * simple shape drawers
@@ -306,6 +316,7 @@ public class Drawer extends NativeObject {
 	 * SWT Bridge
 	 */
 
+	@SuppressWarnings("unused")
 	private native void nativeDrawImage(int imageHandle, int x, int y);
 
 /*
@@ -314,11 +325,18 @@ public class Drawer extends NativeObject {
 	}
 */
 	/* 
-	 * text drawing
+	 * text measurement
 	 * 
 	 */
 
 	public native int getTextWidth(String text);
+	
+	public native int getTextHeight(String text, int width);
+
+	/* 
+	 * text drawing
+	 * 
+	 */
 	
 	public native void drawText(String text, int x, int y);
 
@@ -417,12 +435,4 @@ public class Drawer extends NativeObject {
 	 */
 
 	public native Rectangle getUpdateRect();
-
-	/* 
-	 * text measurement
-	 * 
-	 */
-	
-	public native int getTextRectHeight(int width, String text);
-
 }

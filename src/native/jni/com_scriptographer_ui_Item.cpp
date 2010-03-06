@@ -275,30 +275,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Item_nativeGetBestSize(JNIE
 }
 
 /*
- * com.scriptographer.ui.Size nativeGetTextSize(java.lang.String text, int maxWidth)
- */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Item_nativeGetTextSize(JNIEnv *env, jobject obj, jstring text, jint maxWidth) {
-	if (text != NULL) {
-		try {
-			ADMItemRef item = gEngine->getItemHandle(env, obj);
-			ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
-			ADMImageRef image = sADMImage->Create(1, 1, 0);
-			ADMDrawerRef drawer = sADMImage->BeginADMDrawer(image);
-			sADMDrawer->SetFont(drawer, sADMItem->GetFont(item));
-			ADMPoint size;
-			size.h = sADMDrawer->GetTextWidthW(drawer, chars);
-			if (maxWidth >= 0 && size.h > maxWidth)
-				size.h = maxWidth;
-			size.v = sADMDrawer->GetTextRectHeightW(drawer, size.h + 1, chars);
-			sADMImage->EndADMDrawer(image);
-			delete chars;
-			return gEngine->convertSize(env, &size);
-		} EXCEPTION_CONVERT(env);
-	}
-	return NULL;
-}
-
-/*
  * java.awt.Rectangle nativeGetBounds()
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_Item_nativeGetBounds(JNIEnv *env, jobject obj) {
