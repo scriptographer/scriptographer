@@ -41,9 +41,13 @@
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextValueItem_setText(JNIEnv *env, jobject obj, jstring text) {
 	try {
 		ADMItemRef item = gEngine->getItemHandle(env, obj);
-		ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
-		sADMItem->SetTextW(item, chars);
-		delete chars;
+		if (text != NULL) {
+			ASUnicode *chars = gEngine->convertString_ASUnicode(env, text);
+			sADMItem->SetTextW(item, chars);
+			delete chars;
+		} else {
+			sADMItem->SetText(item, "");
+		}
 	} EXCEPTION_CONVERT(env);
 }
 
