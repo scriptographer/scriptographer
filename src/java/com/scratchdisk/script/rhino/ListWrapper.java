@@ -126,9 +126,9 @@ public class ListWrapper extends ExtendedJavaObject {
 	}
 
 	public boolean has(String name, Scriptable start) {
-		return super.has(name, start) || // TODO: needed? name.equals("length") ||
-			javaObject instanceof ReadOnlyStringIndexList && javaObject != null && 
-				((ReadOnlyStringIndexList) javaObject).get(name) != null;
+		return super.has(name, start) || name.equals("length") ||
+			javaObject instanceof ReadOnlyStringIndexList && javaObject != null
+			&& ((ReadOnlyStringIndexList) javaObject).get(name) != null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -140,10 +140,12 @@ public class ListWrapper extends ExtendedJavaObject {
 		if (name.equals("size") && members.has("setSize", false)) {
 			Object obj = members.get(this, "setSize", javaObject, false);
 			if (obj instanceof Callable) {
-				((Callable) obj).call(Context.getCurrentContext(), start.getParentScope(), this, new Object[] { value });
+				((Callable) obj).call(Context.getCurrentContext(),
+						start.getParentScope(), this, new Object[] { value });
 				return;
 			}
-		} else if (javaObject instanceof StringIndexList && !members.has(name, false)) {
+		} else if (javaObject instanceof StringIndexList
+				&& !members.has(name, false)) {
 			((StringIndexList) javaObject).put(name, coerceComponentType(value));
 			return;
 		}
@@ -155,12 +157,16 @@ public class ListWrapper extends ExtendedJavaObject {
 		if (name.equals("size") && members.has("getSize", false)) {
 			Object obj = members.get(this, "getSize", javaObject, false);
 			if (obj instanceof Callable)
-				return ((Callable) obj).call(Context.getCurrentContext(), start.getParentScope(), this, new Object[] {});
+				return ((Callable) obj).call(Context.getCurrentContext(),
+						start.getParentScope(), this, new Object[] {});
 		}
 		if (javaObject != null) {
 			if (name.equals("length")) {
 				return new Integer(((ReadOnlyList) javaObject).size());
-			} else if (javaObject instanceof ReadOnlyStringIndexList) {
+			} else if (javaObject instanceof ReadOnlyStringIndexList
+					&& !members.has(name, false)) {
+				// Only check ReadOnlyStringIndexList if members does not
+				// define the same property
 				Object obj = ((ReadOnlyStringIndexList) javaObject).get(name);
 				if (obj != null)
 					return Context.javaToJS(obj, getParentScope());
@@ -191,6 +197,7 @@ public class ListWrapper extends ExtendedJavaObject {
 		// Use WrapFactory to coerce type if not compatible
 		return type.isInstance(value)
 				? value
-				: Context.getCurrentContext().getWrapFactory().coerceType(type, value);
+				: Context.getCurrentContext().getWrapFactory().coerceType(
+						type, value);
 	}
 }
