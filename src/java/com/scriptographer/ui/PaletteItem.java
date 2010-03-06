@@ -34,7 +34,10 @@ package com.scriptographer.ui;
 import java.util.ArrayList;
 import java.util.Map;
 
+import com.scratchdisk.script.Callable;
+import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.util.ConversionUtils;
+import com.scriptographer.ScriptographerEngine;
 
 /**
  * @author lehni
@@ -43,27 +46,27 @@ import com.scratchdisk.util.ConversionUtils;
  */
 public class PaletteItem {
 	
-	private String description;
+	private String label;
 	private String name; // for preferences
 	private PaletteItemType type;
 	private Object value;
-	private Object options[];
+	private Object options[] = null;
+	private int width = -1;
+	private int height = -1;
+	private int rows = -1;
+	private int columns = -1;
 	private float min;
 	private float max;
-	private float increment;
-	private int precision;
+	private float increment = 0;
+	private int precision = 3;
 	private Item item;
-	private int width;
+	private Callable onChange = null;
 	
-	public PaletteItem(PaletteItemType type, String description, Object value) {
-		this.description = description;
+	public PaletteItem(PaletteItemType type, String label, Object value) {
+		this.label = label;
 		this.type = type;
 		this.value = value;
-		this.options = null;
-		this.width = -1;
 		this.setRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
-		this.increment = 0;
-		this.precision = 3;
 	}
 
 	/**
@@ -125,12 +128,36 @@ public class PaletteItem {
 		this.width = width;
 	}
 
-	public String getDescription() {
-		return description;
+	public int getHeight() {
+		return height;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public int getRows() {
+		return rows;
+	}
+
+	public void setRows(int rows) {
+		this.rows = rows;
+	}
+
+	public int getColumns() {
+		return columns;
+	}
+
+	public void setColumns(int columns) {
+		this.columns = columns;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
 	}
 
 	public float[] getRange() {
@@ -188,11 +215,23 @@ public class PaletteItem {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	protected static void onChange(PaletteItem item) {
-		if (item.item.dialog instanceof Palette) {
-			Palette palette = (Palette) item.item.dialog;
-			palette.onChange(item);
+
+	public Callable getOnChange() {
+		return onChange;
+	}
+
+	public void setOnChange(Callable onChange) {
+		this.onChange = onChange;
+	}
+
+	protected void onChange() {
+		String name = getName();
+		Object value = getResult();
+		if (onChange != null)
+			ScriptographerEngine.invoke(onChange, this, name, value);
+		if (item.dialog instanceof Palette) {
+			Palette palette = (Palette) item.dialog;
+			palette.onChange(this, name, value);
 		}
 	}
 
@@ -203,28 +242,38 @@ public class PaletteItem {
 		case RANGE:
 			item = new Slider(dialog) {
 				protected void onChange() throws Exception {
-					PaletteItem.onChange(PaletteItem.this);
+					PaletteItem.this.onChange();
 				}
 			};
 			break;
 		case CHECKBOX:
 			item = new CheckBox(dialog) {
 				protected void onClick() throws Exception {
-					PaletteItem.onChange(PaletteItem.this);
+					PaletteItem.this.onChange();
 				}
 			};
 			break;
 		case LIST:
 			item = new PopupList(dialog) {
 				protected void onChange() throws Exception {
-					PaletteItem.onChange(PaletteItem.this);
+					PaletteItem.this.onChange();
+				}
+			};
+			break;
+		case BUTTON:
+			item = new Button(dialog) {
+				protected void onClick() throws Exception {
+					PaletteItem.this.onChange();
 				}
 			};
 			break;
 		default:
-			item = new TextEdit(dialog) {
+			TextOption[] options = type == PaletteItemType.TEXT
+					? new TextOption[] { TextOption.MULTILINE }
+					: null;
+			item = new TextEdit(dialog, options) {
 				protected void onChange() throws Exception {
-					PaletteItem.onChange(PaletteItem.this);
+					PaletteItem.this.onChange();
 				}
 			};
 		}
@@ -232,7 +281,11 @@ public class PaletteItem {
 		// Value:
 		switch (type) {
 		case STRING:
-			((TextEditItem) item).setText(value.toString());
+		case TEXT:
+			((TextEditItem) item).setText(ConversionUtils.toString(value));
+			break;
+		case BUTTON:
+			((Button) item).setText(ConversionUtils.toString(value));
 			break;
 		case NUMBER:
 		case UNIT:
@@ -277,9 +330,17 @@ public class PaletteItem {
 		// Margin needs to be defined before setting size, since getBestSize is
 		// affected by margin
 		item.setMargin(margin);
-		Size size = item.getBestSize();
-		if (width >= 0)
-			size.width = width;
+		Size size;
+		if (type == PaletteItemType.TEXT) {
+			size = item.getTextSize("H");
+			size = new Size(size.width * columns, size.height * rows);
+		} else {
+			size = item.getBestSize();
+			if (width >= 0)
+				size.width = width;
+			if (height >= 0)
+				size.height = height;
+		}
 		item.setSize(size);
 		return item;
 	}
@@ -287,7 +348,10 @@ public class PaletteItem {
 	protected Object getResult() {
 		switch(type) {
 			case STRING:
+			case TEXT:
 				return ((TextValueItem) item).getText();
+			case BUTTON:
+				return ((Button) item).getText();
 			case NUMBER:
 			case UNIT:
 			case RANGE:
@@ -301,12 +365,16 @@ public class PaletteItem {
 		}
 		return null;
 	}
-
-	private static double getDouble(Map map, String key) {
+/*
+	private static double getDouble(Map map, String key, double defaultValue) {
 		Object obj = map.get(key);
-		return obj == null ? Double.NaN : ConversionUtils.toDouble(obj);
+		return obj == null ? defaultValue : ConversionUtils.toDouble(obj, defaultValue);
 	}
 
+	private static double getDouble(Map map, String key) {
+		return getDouble(map, key, Double.NaN);
+	}
+*/
 	protected static PaletteItem getItem(Map map, String name, Object value) {
 		if (map != null) {
 			Object typeObj = map.get("type");
@@ -343,23 +411,35 @@ public class PaletteItem {
 				// Backward compatibility to description:
 				if (label == null)
 					label = ConversionUtils.getString(map, "description");
-				if (label == null && name != null)
+				// Produce a default label based on the name if it's not a button
+				if (label == null && name != null
+						&& type != PaletteItemType.BUTTON)
 					label = Character.toUpperCase(name.charAt(0)) + name.substring(1);
 				PaletteItem item = new PaletteItem(type, label, valueObj);
 				item.setName(name != null ? name : ConversionUtils.getString(map, "name"));
 
-				double width = getDouble(map, "width");
-				if (!Double.isNaN(width))
-					item.setWidth((int) width);
+				item.setWidth(ConversionUtils.getInt(map, "width", -1));
+				item.setHeight(ConversionUtils.getInt(map, "height", -1));
 
-				double precision = getDouble(map, "precision");
-				if (!Double.isNaN(precision))
-					item.setPrecision((int) precision);
+				if (type == PaletteItemType.TEXT) {
+					item.setRows((int) ConversionUtils.getDouble(map, "rows", 4));
+					item.setColumns((int) ConversionUtils.getDouble(map, "columns", 32));
+				}
 
-				double min = getDouble(map, "min");
-				double max = getDouble(map, "max");
+				item.setPrecision(ConversionUtils.getInt(map, "precision", 3));
+
+				float min = ConversionUtils.getFloat(map, "min");
+				float max = ConversionUtils.getFloat(map, "max");
 				if (!Double.isNaN(min) || !Double.isNaN(max))
-					item.setRange((float) min, (float) max);
+					item.setRange(min, max);
+
+				Object onChange = map.get("onChange");
+				if (onChange == null)
+					onChange = map.get("onClick");
+				if (onChange != null && !(onChange instanceof Callable))
+					onChange = ScriptEngine.convertToJava(onChange, Callable.class);
+				if (onChange != null)
+					item.setOnChange((Callable) onChange);
 				
 				if (options != null)
 					item.setOptions(options);

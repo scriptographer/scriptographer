@@ -64,6 +64,8 @@ public class ConversionUtils {
 	}
 
 	public static double toDouble(Object val, double defaultValue) {
+		if (val == null)
+			return defaultValue;
 		double value = toDouble(val);
 		return Double.isNaN(value) ? defaultValue : value;
 	}
@@ -73,6 +75,8 @@ public class ConversionUtils {
 	}
 
 	public static float toFloat(Object val, float defaultValue) {
+		if (val == null)
+			return defaultValue;
 		float value = toFloat(val);
 		return Double.isNaN(value) ? defaultValue : value;
 	}
@@ -92,10 +96,14 @@ public class ConversionUtils {
 	}
 
 	public static boolean toBoolean(Object val) {
+		return toBoolean(val, false);
+	}
+
+	public static boolean toBoolean(Object val, boolean defaultValue) {
 		if (val instanceof Boolean)
 			return ((Boolean) val).booleanValue();
 		if (val == null)
-			return false;
+			return defaultValue;
 		if (val instanceof String)
 			return ((String) val).length() != 0;
 		if (val instanceof Number) {
@@ -163,16 +171,32 @@ public class ConversionUtils {
 		return toDouble(map.get(key));
 	}
 
+	public static double getDouble(Map map, Object key, double defaultValue) {
+		return toDouble(map.get(key), defaultValue);
+	}
+
 	public static float getFloat(Map map, Object key) {
 		return toFloat(map.get(key));
+	}
+
+	public static float getFloat(Map map, Object key, float defaultValue) {
+		return toFloat(map.get(key), defaultValue);
 	}
 
 	public static int getInt(Map map, Object key) {
 		return toInt(map.get(key));
 	}
 
+	public static int getInt(Map map, Object key, int defaultValue) {
+		return toInt(map.get(key), defaultValue);
+	}
+
 	public static boolean getBoolean(Map map, Object key) {
 		return toBoolean(map.get(key));
+	}
+
+	public static boolean getBoolean(Map map, Object key, boolean defaultValue) {
+		return toBoolean(map.get(key), defaultValue);
 	}
 
 	public static String getString(Map map, Object key) {

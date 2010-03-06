@@ -48,7 +48,7 @@ public class PromptDialog extends ModalDialog {
 	private Object[] values = null;
 
 	public PromptDialog(String title, PaletteItem[] items) {
-		this.setTitle(title);
+		setTitle(title);
 		this.items = items;
 		// Add one more row for the buttons.
 		TableLayout layout = Palette.createLayout(this, items, true, 1);
@@ -78,7 +78,7 @@ public class PromptDialog extends ModalDialog {
 	public PromptDialog(String title, Map[] items) {
 		this(title, PaletteItem.getItems(items));
 	}
-	
+
 	public Object[] getValues() {
 		if (values == null) {
 			values = new Object[items.length];

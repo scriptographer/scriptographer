@@ -68,6 +68,6 @@ public class EnumUtils {
 	}
 
 	public static <E extends Enum<E>> EnumSet<E> asSet(E[] array) {
-		return asSet(Arrays.asList(array));
+		return array != null ? asSet(Arrays.asList(array)) : null;
 	}
 }

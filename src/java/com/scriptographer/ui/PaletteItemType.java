@@ -41,6 +41,7 @@ public enum PaletteItemType {
 	STRING("string"),
 	NUMBER("number"),
 	CHECKBOX("checkbox"),
+	TEXT("text"),
 	BUTTON("button"),
 	UNIT("unit"),
 	RANGE("range"),

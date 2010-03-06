@@ -97,9 +97,7 @@ public class Palette extends FloatingDialog {
 		this.onChange = onChange;
 	}
 
-	protected void onChange(PaletteItem item) {
-		String name = item.getName();
-		Object value = item.getResult();
+	protected void onChange(PaletteItem item, String name, Object value) {
 		values.put(name, value);
 		if (onChange != null)
 			ScriptographerEngine.invoke(onChange, this, name, value);
@@ -142,7 +140,7 @@ public class Palette extends FloatingDialog {
 		for (int i = 0; i < items.length; i++) {
 			PaletteItem promptItem = items[i];
 			if (promptItem != null) {
-				String desc = promptItem.getDescription();
+				String desc = promptItem.getLabel();
 				if (desc != null) {
 					TextPane descItem = new TextPane(dialog);
 					descItem.setText(desc + ":");

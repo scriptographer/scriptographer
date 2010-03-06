@@ -1146,11 +1146,11 @@ public abstract class Dialog extends Component {
 		return ConfirmDialog.confirm(title, message);
 	}
 
-	public static Map prompt(String title, Map<String, Map> items, Map<String, Object> values) {
+	public static Map<String, Object> prompt(String title, Map<String, Map> items, Map<String, Object> values) {
 		return PromptDialog.prompt(title, items, values);
 	}
 
-	public static Map prompt(String title, Map<String, Map> items) {
+	public static Map<String, Object> prompt(String title, Map<String, Map> items) {
 		return PromptDialog.prompt(title, items);
 	}
 
