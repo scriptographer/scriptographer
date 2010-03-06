@@ -42,17 +42,22 @@ public class ConversionUtils {
 	}
 
 	/*
-	 * Helpers, similar to rhino's ScriptRuntime.to* methods,
+	 * Helpers, similar to Rhino's ScriptRuntime.to* methods,
 	 * but language independent. Used mostly for handling values
-	 * returned by callables.
+	 * returned by Callables.
 	 */
 	public static double toDouble(Object val) {
 		if (val instanceof Number)
 			return ((Number) val).doubleValue();
 		if (val == null)
 			return +0.0;
-		if (val instanceof String)
-			return Double.valueOf((String) val).doubleValue();
+		if (val instanceof String) {
+			try {
+				return Double.parseDouble((String) val);
+			} catch (NumberFormatException e) {
+				return Double.NaN;
+			}
+		}
 		if (val instanceof Boolean)
 			return ((Boolean) val).booleanValue() ? 1 : +0.0;
 		return Double.NaN;
@@ -112,13 +117,13 @@ public class ConversionUtils {
 		if (x == null) {
 			return y == null;
 		} else if (x instanceof Number) {
-			return equals(((Number)x).doubleValue(), y);
+			return equals(((Number) x).doubleValue(), y);
 		} else if (x instanceof String) {
-			return equals((String)x, y);
+			return equals((String) x, y);
 		} else if (x instanceof Boolean) {
-			boolean b = ((Boolean)x).booleanValue();
+			boolean b = ((Boolean) x).booleanValue();
 			if (y instanceof Boolean)
-				return b == ((Boolean)y).booleanValue();
+				return b == ((Boolean) y).booleanValue();
 			return equals(b ? 1.0 : 0.0, y);
 		}
 		return false;
@@ -128,11 +133,11 @@ public class ConversionUtils {
 		if (y == null) {
 			return false;
 		} else if (y instanceof Number) {
-			return x == ((Number)y).doubleValue();
+			return x == ((Number) y).doubleValue();
 		} else if (y instanceof String) {
 			return x == toDouble(y);
 		} else if (y instanceof Boolean) {
-			return x == (((Boolean)y).booleanValue() ? 1.0 : +0.0);
+			return x == (((Boolean) y).booleanValue() ? 1.0 : +0.0);
 		}
 		return false;
 	}
@@ -143,9 +148,9 @@ public class ConversionUtils {
 		} else if (y instanceof String) {
 			return x.equals(y);
 		} else if (y instanceof Number) {
-			return toDouble(x) == ((Number)y).doubleValue();
+			return toDouble(x) == ((Number) y).doubleValue();
 		} else if (y instanceof Boolean) {
-			return toDouble(x) == (((Boolean)y).booleanValue() ? 1.0 : 0.0);
+			return toDouble(x) == (((Boolean) y).booleanValue() ? 1.0 : +0.0);
 		}
 		return false;
 	}
