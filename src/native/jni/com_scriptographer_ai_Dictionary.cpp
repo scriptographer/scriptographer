@@ -374,15 +374,6 @@ JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ai_Dictionary_keys(JNIEnv
 }
 
 /*
- * void nativeAddReference(int handle)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Dictionary_nativeAddReference(JNIEnv *env, jobject obj, jint handle) {
-	try {
-		sAIDictionary->AddRef((AIDictionaryRef) handle);
-	} EXCEPTION_CONVERT(env);
-}
-
-/*
  * void nativeRelease(int handle)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Dictionary_nativeRelease(JNIEnv *env, jobject obj, jint handle) {

@@ -1226,11 +1226,6 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeAddEffect(JNIEn
 					if (inserted) {
 						sAIArtStyleParser->CreateNewStyle(parser, &style);
 						sAIArtStyle->SetArtStyle(art, style);
-							// In order for EditEffectParametersInSelection to work,
-							// we need to parse again.
-//							sAIArtStyleParser->ParseStyle(parser, style);
-//							sAIArtStyleParser->SetFocusEffect(style, parser, effect);
-//							sAIArtStyleParser->EditEffectParameters(style, effect);
 					} else {
 						sAIArtStyleParser->DisposeParserLiveEffect(effect);
 					}
@@ -1383,7 +1378,6 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_removeEffect(JNIEnv *
 bool LiveEffect_editIterator(JNIEnv *env, AIArtStyleHandle style, AIStyleParser parser,
 		AIParserLiveEffect effect, AIParserPaintField field, int position, bool *cont,
 		LiveEffect_data *data) {
-	sAIArtStyleParser->SetFocusEffect(style, parser, effect);
 	sAIArtStyleParser->EditEffectParameters(style, effect);
 	*cont = false;
 	return false;
