@@ -583,27 +583,40 @@ public class Curve implements ChangeListener {
 			return 1;
 		double[][] curve = getCurveArray();
 		double[][] temp = new double[4][];
-		// Use length / bezierLength as a first guess, then iterate closer
-		double t = length / bezierLength, prevCloseness = 1;
-		// TODO: Find a better approach for this. Try Regula Falsi?
-		// Make sure we're not iterating endlessly...
-		for (int i = 0; i < 100; i++) {
-			double partLength = getPartLength(curve, 0, t, temp);
-			double distance = (length - partLength) / bezierLength;
-			// closeness: value for the 'exactness' of the current guess
-			double closeness = Math.abs(distance);
-			// If it's exact enough or even getting worse again,
-			// break the loop...
-			if (closeness < 0.00001 || closeness >= prevCloseness)
+
+		// Let's use the Regula Falsi method to find the right length in 
+		// few iterations. Generally only 4 - 7 are required.
+		double left = 0;
+		double right = 1;
+		double error = 5e-15;
+		double fLeft = getLeftLength(curve, left, temp) - length;
+		double fRight = getLeftLength(curve, right, temp) - length;
+		double res = 0;
+		int n = 0, side = 0;
+		do {
+			res = (fLeft * right - fRight * left) / (fLeft - fRight);
+			if (Math.abs(right - left) < error * Math.abs(right + left))
 				break;
-			t += distance * 0.5;
-			if (t < 0) t = 0;
-			else if (t > 1) t = 1;
-			prevCloseness = closeness;
-		}
-		return t;
+			double fRes = getLeftLength(curve, res, temp) - length;;
+			if (fRes * fRight > 0) {
+				right = res; fRight = fRes;
+				if (side == -1)
+					fLeft /= 2;
+				side = -1;
+			} else if (fLeft * fRes > 0) {
+				left = res;  fLeft = fRes;
+				if (side == +1)
+					fRight /= 2;
+				side = +1;
+			} else {
+				break;
+			}
+		} while(n++ < 100);
+//		System.out.println("n: " + n + "r: " + res + "f(r): "
+//				+ getLeftLength(curve, res, temp) + ", len: " + length);
+		return res;
 	}
-	
+
 	private double[][] getCurveArray() {
 		return new double[][] {
 			{ segment1.point.x, segment1.point.y },
@@ -645,7 +658,7 @@ public class Curve implements ChangeListener {
 			}
 		}
 		
-		// only write back left curve if it's not overwritten by right
+		// Only write back left curve if it's not overwritten by right
 		// afterwards
 		if (left != null) {
 			left[0] = temp[0][0];
@@ -654,7 +667,7 @@ public class Curve implements ChangeListener {
 			left[3] = temp[3][0];
 		}
 
-		// curve automatically contains left result, through temp[0],
+		// Curve automatically contains left result, through temp[0],
 		// write right result into right:
 		if (right != null) {
 			right[0] = temp[3][0];
@@ -662,6 +675,22 @@ public class Curve implements ChangeListener {
 			right[2] = temp[1][2];
 			right[3] = temp[0][3];
 		}
+	}
+
+	private static double getLeftLength(double curve[][], double parameter,
+			double tempCurve[][]) {
+		if (parameter == 0)
+			return 0;
+		if (parameter < 1) {
+			split(curve, parameter, tempCurve, null);
+			curve = tempCurve;
+		}
+		return nativeGetLength(
+				curve[0][0], curve[0][1],
+				curve[1][0], curve[1][1],
+				curve[2][0], curve[2][1],
+				curve[3][0], curve[3][1]
+		);
 	}
 
 	/*
@@ -684,48 +713,8 @@ public class Curve implements ChangeListener {
 		if (toParameter > 1)
 			toParameter = 1;
 
-		// get the point in order to calculate the new fromParameter for the
-		// divided curve afterwards (TODO: there must be a simpler solution for
-		// getting that value)
-		if (toParameter < 1) {
-			double fromX = 0;
-			double fromY = 0;
-			if (fromParameter > 0) {
-				// calculate the point of fromParameter (see getPoint)
-				double cx = 3f * (curve[1][0] - curve[0][0]);
-				double bx = 3f * (curve[2][0] - curve[1][0]) - cx;
-				double ax = curve[3][0] - curve[0][0] - cx - bx;
-
-				double cy = 3f * (curve[1][1] - curve[0][1]);
-				double by = 3f * (curve[2][1] - curve[1][1]) - cy;
-				double ay = curve[3][1] - curve[0][1] - cy - by;
-
-				fromX = ((ax * fromParameter + bx) * fromParameter + cx)
-								* fromParameter + curve[0][0];
-				fromY = ((ay * fromParameter + by) * fromParameter + cy)
-								* fromParameter + curve[0][1];
-			}
-			// cut away the second part:
-			split(curve, toParameter, tempCurve, null);
-			curve = tempCurve;
-			// now adjust fromParameter, by calculating the parameter of
-			// fromX,fromY
-			if (fromParameter > 0) {
-				fromParameter = hitTest(curve, fromX, fromY, EPSILON);
-				if (fromParameter == -1)
-					return -1;
-			}
-		}
-		if (fromParameter > 0) {
-			split(curve, fromParameter, null, tempCurve);
-			curve = tempCurve;
-		}
-		return nativeGetLength(
-				curve[0][0], curve[0][1],
-				curve[1][0], curve[1][1],
-				curve[2][0], curve[2][1],
-				curve[3][0], curve[3][1]
-		);
+		return getLeftLength(curve, toParameter, tempCurve)
+			- getLeftLength(curve, fromParameter, tempCurve);
 	}
 
 	private static int solveQuadraticRoots(double a, double b, double c,
@@ -750,14 +739,18 @@ public class Curve implements ChangeListener {
 			}
 			return solutions;
 		}
-		double bb = b*b;
-		double q = bb-4.0*a*c;
-		if (q < 0.0) return solutions;
+		double bb = b * b;
+		double q = bb - 4.0 * a * c;
+		if (q < 0.0)
+			return solutions;
 		q = Math.sqrt(q);
-		if (b < 0.0) q = -q;
+		if (b < 0.0)
+			q = -q;
 		q = -0.5 * (b + q);
-		if (Math.abs(q) >= epsilon) roots[solutions++] = c / q;
-		if (Math.abs(a) >= epsilon) roots[solutions++] = q / a;
+		if (Math.abs(q) >= epsilon)
+			roots[solutions++] = c / q;
+		if (Math.abs(a) >= epsilon)
+			roots[solutions++] = q / a;
 		return solutions;
 	}
 
@@ -825,6 +818,7 @@ public class Curve implements ChangeListener {
 		return solveCubicRoots(a, b, c, d, roots, epsilon);
 	}
 	
+	@SuppressWarnings("unused")
 	private static double hitTest(double[][] curve, double x, double y,
 			double epsilon) {
 		double txs[] = { 0, 0, 0 }; 
