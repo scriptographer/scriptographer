@@ -620,7 +620,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	var reloadEntry = new ListEntry(menu) {
 		text: 'Reload',
 		onSelect: function() {
-			ScriptographerEngine.reload();
+			ScriptographerEngine.reload.delay(1);
 		}
 	};
 
