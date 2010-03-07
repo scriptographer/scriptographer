@@ -33,7 +33,7 @@ package com.scriptographer.ai;
 
 import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.util.IntegerEnumUtils;
-import com.scriptographer.Commitable;
+import com.scriptographer.Committable;
 import com.scriptographer.CommitManager;
 
 /*
@@ -76,7 +76,7 @@ import com.scriptographer.CommitManager;
  * 
  * @author lehni
  */
-public class PathStyle extends NativeObject implements Style, Commitable {
+public class PathStyle extends NativeObject implements Style, Committable {
 	protected FillStyle fill;
 
 	protected StrokeStyle stroke;
@@ -313,7 +313,7 @@ public class PathStyle extends NativeObject implements Style, Commitable {
 	}
 
 	protected void markDirty() {
-		// only mark it as dirty if it's attached to a path already:
+		// Only mark it as dirty if it's attached to a path already:
 		if (!dirty && item != null) {
 			CommitManager.markDirty(item, this);
 			dirty = true;

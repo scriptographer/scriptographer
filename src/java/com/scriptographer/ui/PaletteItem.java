@@ -31,6 +31,7 @@
 
 package com.scriptographer.ui;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -38,6 +39,7 @@ import com.scratchdisk.script.Callable;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.util.ConversionUtils;
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.script.EnumUtils;
 
 /**
  * @author lehni
@@ -49,24 +51,26 @@ public class PaletteItem {
 	private String label;
 	private String name; // for preferences
 	private PaletteItemType type;
-	private Object value;
+	private Object defaultValue;
 	private Object options[] = null;
 	private int width = -1;
 	private int height = -1;
 	private int rows = -1;
+	private int length = -1;
 	private int columns = -1;
-	private float min;
-	private float max;
+	private float min = Float.NaN;
+	private float max = Float.NaN;
 	private float increment = 0;
-	private int precision = 3;
+	private int fractionDigits = 3;
 	private Item item;
 	private Callable onChange = null;
-	
+	private TextUnits units = null;
+	private boolean steppers = false;
+
 	public PaletteItem(PaletteItemType type, String label, Object value) {
 		this.label = label;
 		this.type = type;
-		this.value = value;
-		this.setRange(Integer.MIN_VALUE, Integer.MAX_VALUE);
+		this.defaultValue = value;
 	}
 
 	/**
@@ -102,7 +106,7 @@ public class PaletteItem {
 	 */
 	public PaletteItem(String description, Number value, float min, float max,
 			float step) {
-		this(PaletteItemType.RANGE, description, value);
+		this(PaletteItemType.SLIDER, description, value);
 		this.setRange(min, max);
 		this.increment = step;
 	}
@@ -144,6 +148,14 @@ public class PaletteItem {
 		this.rows = rows;
 	}
 
+	public int getLength() {
+		return length;
+	}
+
+	public void setLength(int length) {
+		this.length = length;
+	}
+
 	public int getColumns() {
 		return columns;
 	}
@@ -175,6 +187,10 @@ public class PaletteItem {
 		setRange(range[0], range[1]);
 	}
 
+	public boolean hasRange() {
+		return !Float.isNaN(min) && !Float.isNaN(max);
+	}
+
 	public float getIncrement() {
 		return increment;
 	}
@@ -191,21 +207,21 @@ public class PaletteItem {
 		this.options = options;
 	}
 
-	public Object getValue() {
-		return value;
+	public Object getDefaultValue() {
+		return defaultValue;
 	}
 
-	public void setValue(Object value) {
-		this.value = value;
+	public void setDefaultValue(Object value) {
+		this.defaultValue = value;
 	}
 	
 
-	public int getPrecision() {
-		return precision;
+	public int getFractionDigits() {
+		return fractionDigits;
 	}
 
-	public void setPrecision(int precision) {
-		this.precision = precision;
+	public void setFractionDigits(int fractionDigits) {
+		this.fractionDigits = fractionDigits;
 	}
 
 	public String getName() {
@@ -224,11 +240,27 @@ public class PaletteItem {
 		this.onChange = onChange;
 	}
 
+	public TextUnits getUnits() {
+		return units;
+	}
+
+	public void setUnits(TextUnits units) {
+		this.units = units;
+	}
+
+	public boolean isSteppers() {
+		return steppers;
+	}
+
+	public void setSteppers(boolean steppers) {
+		this.steppers = steppers;
+	}
+
 	protected void onChange() {
 		String name = getName();
-		Object value = getResult();
+		Object value = getValue();
 		if (onChange != null)
-			ScriptographerEngine.invoke(onChange, this, name, value);
+			ScriptographerEngine.invoke(onChange, this, value);
 		if (item.dialog instanceof Palette) {
 			Palette palette = (Palette) item.dialog;
 			palette.onChange(this, name, value);
@@ -239,9 +271,10 @@ public class PaletteItem {
 		// Item:
 		item = null;
 		switch (type) {
-		case RANGE:
+		case SLIDER:
 			item = new Slider(dialog) {
 				protected void onChange() throws Exception {
+					super.onChange();
 					PaletteItem.this.onChange();
 				}
 			};
@@ -249,6 +282,7 @@ public class PaletteItem {
 		case CHECKBOX:
 			item = new CheckBox(dialog) {
 				protected void onClick() throws Exception {
+					super.onClick();
 					PaletteItem.this.onChange();
 				}
 			};
@@ -256,6 +290,7 @@ public class PaletteItem {
 		case LIST:
 			item = new PopupList(dialog) {
 				protected void onChange() throws Exception {
+					super.onChange();
 					PaletteItem.this.onChange();
 				}
 			};
@@ -263,10 +298,30 @@ public class PaletteItem {
 		case BUTTON:
 			item = new Button(dialog) {
 				protected void onClick() throws Exception {
+					super.onClick();
 					PaletteItem.this.onChange();
 				}
 			};
 			break;
+		case COLOR:
+			item = new ColorButton(dialog) {
+				protected void onClick() throws Exception {
+					super.onClick();
+					PaletteItem.this.onChange();
+				}
+			};
+			break;
+		case NUMBER:
+			if (steppers) {
+				item = new SpinEdit(dialog) {
+					protected void onChange() throws Exception {
+						super.onChange();
+						PaletteItem.this.onChange();
+					}
+				};
+				break;
+			}
+			// No break, as we're moving on to default
 		default:
 			TextOption[] options = type == PaletteItemType.TEXT
 					? new TextOption[] { TextOption.MULTILINE }
@@ -282,70 +337,89 @@ public class PaletteItem {
 		switch (type) {
 		case STRING:
 		case TEXT:
-			((TextEditItem) item).setText(ConversionUtils.toString(value));
+			((TextEditItem) item).setText(ConversionUtils.toString(defaultValue));
 			break;
 		case BUTTON:
-			((Button) item).setText(ConversionUtils.toString(value));
+			((Button) item).setText(ConversionUtils.toString(defaultValue));
 			break;
 		case NUMBER:
-		case UNIT:
-		case RANGE:
+		case SLIDER:
+			((ValueItem) item).setValue(
+					(float) ConversionUtils.toDouble(defaultValue));
+			if (hasRange())
+				((ValueItem) item).setRange(min, max);
+			if (increment != 0)
+				((ValueItem) item).setIncrements(increment);
 			if (item instanceof TextEditItem) {
 				((TextEditItem) item).setAllowMath(true);
 				((TextEditItem) item).setAllowUnits(true);
-				((TextEditItem) item).setShowUnits(type == PaletteItemType.UNIT);
-				((TextEditItem) item).setPrecision(precision);
+				if (units != null && units != TextUnits.NONE) {
+					((TextEditItem) item).setUnits(units);
+					((TextEditItem) item).setShowUnits(true);
+				}
+				((TextEditItem) item).setFractionDigits(fractionDigits);
 			}
-			if (type == PaletteItemType.RANGE) {
-				((Slider) item).setIncrements(increment);
-			}
-			((ValueItem) item).setRange(min, max);
-			((ValueItem) item).setValue(
-					(float) ConversionUtils.toDouble(value));
 			break;
 		case CHECKBOX:
-			((CheckBox) item).setChecked(ConversionUtils.toBoolean(value));
+			((CheckBox) item).setChecked(ConversionUtils.toBoolean(defaultValue));
 			break;
-		case LIST: {
+		case LIST:
 			PopupList list = (PopupList) item;
-			for (int i = 0; i < options.length; i++) {
-				Object option = options[i];
-				ListEntry entry = null;
-				if (option instanceof ListEntry) {
-					entry = (ListEntry) option;
-					entry = list.add(entry);
-				} else {
-					entry = new ListEntry(list);
-					entry.setText(option.toString());
+			if (options != null) {
+				ListEntry selected = null;
+				for (int i = 0; i < options.length; i++) {
+					Object option = options[i];
+					ListEntry entry = null;
+					if (option instanceof ListEntry) {
+						entry = (ListEntry) option;
+						entry = list.add(entry);
+					} else {
+						entry = new ListEntry(list);
+						entry.setText(option.toString());
+					}
+					if (entry != null && selected == null) {
+						if (ConversionUtils.equals(defaultValue, option))
+							selected = entry;
+					}
 				}
-				if (entry != null) {
-					if (ConversionUtils.equals(value, option))
-						entry.setSelected(true);
-				}
+				if (selected == null)
+					selected = list.getFirst();
+				if (selected != null)
+					selected.setSelected(true);
 			}
-		}
 			break;
-
+		case COLOR:
+			Color color = ScriptEngine.convertToJava(defaultValue, Color.class);
+			if (color == null)
+				color = Color.BLACK;
+			((ColorButton) item).setColor(color);
+			break;
 		}
 		// Margin needs to be defined before setting size, since getBestSize is
 		// affected by margin
 		item.setMargin(margin);
 		Size size;
 		if (type == PaletteItemType.TEXT) {
+			// Base width on an average wide character, such as H
 			size = item.getTextSize("H");
-			size = new Size(size.width * columns, size.height * rows);
+			size = new Size(
+					size.width * columns + 8,
+					size.height * rows + 8
+			);
 		} else {
 			size = item.getBestSize();
-			if (width >= 0)
-				size.width = width;
-			if (height >= 0)
-				size.height = height;
+			if (length != -1)
+				size.width = item.getTextSize("H").width * length;
 		}
+		if (width >= 0)
+			size.width = width;
+		if (height >= 0)
+			size.height = height;
 		item.setSize(size);
 		return item;
 	}
 
-	protected Object getResult() {
+	public Object getValue() {
 		switch(type) {
 			case STRING:
 			case TEXT:
@@ -353,8 +427,7 @@ public class PaletteItem {
 			case BUTTON:
 				return ((Button) item).getText();
 			case NUMBER:
-			case UNIT:
-			case RANGE:
+			case SLIDER:
 				return new Float(((ValueItem) item).getValue());
 			case CHECKBOX:
 				return new Boolean(((ToggleItem) item).isChecked());
@@ -362,6 +435,9 @@ public class PaletteItem {
 				ListEntry active = ((PopupList) item).getActiveEntry();
 				if (active != null)
 					return active.getText();
+				break;
+			case COLOR:
+				return ((ColorButton) item).getColor();
 		}
 		return null;
 	}
@@ -379,32 +455,26 @@ public class PaletteItem {
 		if (map != null) {
 			Object typeObj = map.get("type");
 			Object valueObj = value != null ? value : map.get("value");
-			float increment = 0;
-			Object[] options = null;
 			PaletteItemType type = null;
+			Object[] options = null;
+			// See if there are options for a list item
+			Object optionsObj = map.get("options");
+			if (optionsObj != null && optionsObj instanceof Object[]) {
+				options = (Object[]) optionsObj;
+			}
 			if (typeObj != null) {
 				if (typeObj instanceof String)
 					type = PaletteItemType.get((String) typeObj);
-			} else { // determine type from value and step:
-				Object incrementObj = map.get("increment");
-				if (incrementObj != null) {
-					type = PaletteItemType.RANGE;
-					increment = ConversionUtils.toFloat(incrementObj);
-					if (Double.isNaN(increment))
-						increment = 0;
-				} else {
-					Object optionsObj = map.get("options");
-					if (optionsObj != null && optionsObj instanceof Object[])
-						options = (Object[]) optionsObj;
-					if (options != null)
-						type = PaletteItemType.LIST;
-					else if (valueObj instanceof Number)
-						type = PaletteItemType.NUMBER;
-					else if (valueObj instanceof Boolean)
-						type = PaletteItemType.CHECKBOX;
-					else if (valueObj instanceof String) 
-						type = PaletteItemType.STRING;
-				}
+			} else {
+				// Determine type form options
+				if (options != null)
+					type = PaletteItemType.LIST;
+				else if (valueObj instanceof Number)
+					type = PaletteItemType.NUMBER;
+				else if (valueObj instanceof Boolean)
+					type = PaletteItemType.CHECKBOX;
+				else if (valueObj instanceof String) 
+					type = PaletteItemType.STRING;
 			}
 			if (type != null) {
 				String label = ConversionUtils.getString(map, "label");
@@ -414,38 +484,68 @@ public class PaletteItem {
 				// Produce a default label based on the name if it's not a button
 				if (label == null && name != null
 						&& type != PaletteItemType.BUTTON)
-					label = Character.toUpperCase(name.charAt(0)) + name.substring(1);
+					label = Character.toUpperCase(name.charAt(0))
+							+ name.substring(1);
 				PaletteItem item = new PaletteItem(type, label, valueObj);
-				item.setName(name != null ? name : ConversionUtils.getString(map, "name"));
+				item.setName(name != null ? name
+						: ConversionUtils.getString(map, "name"));
 
 				item.setWidth(ConversionUtils.getInt(map, "width", -1));
 				item.setHeight(ConversionUtils.getInt(map, "height", -1));
 
 				if (type == PaletteItemType.TEXT) {
-					item.setRows((int) ConversionUtils.getDouble(map, "rows", 4));
-					item.setColumns((int) ConversionUtils.getDouble(map, "columns", 32));
+					item.setRows(ConversionUtils.getInt(map, "rows", 6));
+					item.setColumns(ConversionUtils.getInt(map, "columns", 32));
+				} else if (type == PaletteItemType.STRING
+						|| type == PaletteItemType.NUMBER) {
+					item.setLength(ConversionUtils.getInt(map, "length",
+							type == PaletteItemType.STRING ? 16 : 8));
 				}
 
-				item.setPrecision(ConversionUtils.getInt(map, "precision", 3));
+				// Support both fractionDigits and precision for backward
+				// compatibility
+				item.setFractionDigits(
+					ConversionUtils.getInt(map, "fractionDigits",
+						ConversionUtils.getInt(map, "precision", 3)));
 
-				float min = ConversionUtils.getFloat(map, "min");
-				float max = ConversionUtils.getFloat(map, "max");
-				if (!Double.isNaN(min) || !Double.isNaN(max))
-					item.setRange(min, max);
+				// Support both range and min / max for backward compatibility
+				Object rangeObj = map.get("range");
+				if (rangeObj instanceof Object[]) {
+					Object[] range = (Object[]) rangeObj;
+					if (range.length >= 2) {
+						item.setRange(
+								ConversionUtils.toFloat(range[0], Float.NaN),
+								ConversionUtils.toFloat(range[1], Float.NaN));
+					}
+				} else {
+					item.setRange(
+							ConversionUtils.getFloat(map, "min", Float.NaN),
+							ConversionUtils.getFloat(map, "max", Float.NaN));
+				}
+				item.setIncrement(ConversionUtils.getFloat(map, "increment", 0));
+
+				item.setSteppers(ConversionUtils.getBoolean(map, "steppers", false));
+
+				Object unitsObj = map.get("units");
+				if (unitsObj != null) {
+					if (unitsObj instanceof TextUnits)
+						item.setUnits((TextUnits) unitsObj);
+					else {
+						item.setUnits(EnumUtils.get(TextUnits.class,
+								String.valueOf(unitsObj)));
+					}
+				}
 
 				Object onChange = map.get("onChange");
 				if (onChange == null)
 					onChange = map.get("onClick");
-				if (onChange != null && !(onChange instanceof Callable))
-					onChange = ScriptEngine.convertToJava(onChange, Callable.class);
 				if (onChange != null)
-					item.setOnChange((Callable) onChange);
-				
+					item.setOnChange(ScriptEngine.convertToJava(
+							onChange, Callable.class));
+
 				if (options != null)
 					item.setOptions(options);
 
-				item.setIncrement(increment);
-				
 				return item;
 			}
 		}
@@ -463,8 +563,12 @@ public class PaletteItem {
 			Map<String, Object> values) {
 		ArrayList<PaletteItem> promptItems = new ArrayList<PaletteItem>();
 		for (Map.Entry<String, Map> entry : items.entrySet()) {
-			PaletteItem item = getItem(entry.getValue(), entry.getKey(),
-					values != null ? values.get(entry.getKey()) : null);
+			PaletteItem item = null;
+			try {
+				item = getItem(entry.getValue(), entry.getKey(),
+						values != null ? values.get(entry.getKey()) : null);
+			} catch (ClassCastException e) {
+			}
 			if (item != null)
 				promptItems.add(item);
 		}

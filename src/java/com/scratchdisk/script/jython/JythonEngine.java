@@ -94,9 +94,10 @@ public class JythonEngine extends ScriptEngine {
 		return getScope(globals);
 	}
 
-	public Object toJava(Object object, Class type) {
+	@SuppressWarnings("unchecked")
+	public <T> T toJava(Object object, Class<T> type) {
 		if (object instanceof PyObject)
-			return Py.tojava((PyObject) object, type);
+			return (T) Py.tojava((PyObject) object, type);
 		return null;
 	}
 }

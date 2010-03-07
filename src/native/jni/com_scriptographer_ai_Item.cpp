@@ -863,14 +863,18 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Item_setAlphaIsShape(JNIEnv *e
 JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Item_getName(JNIEnv *env, jobject obj) {
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		// Handle pseudo HANDLE_CURRENT_STYLE item which returns NULL, but
+		// getName will get called in toString().
+		if (art != NULL) {
 #if kPluginInterfaceVersion < kAI12
-		char name[1024];
-		if (!sAIArt->GetArtName(art, name, 1024, NULL)) {
+			char name[1024];
+			if (!sAIArt->GetArtName(art, name, 1024, NULL)) {
 #else
-		ai::UnicodeString name;
-		if (!sAIArt->GetArtName(art, name, NULL)) {
+			ai::UnicodeString name;
+			if (!sAIArt->GetArtName(art, name, NULL)) {
 #endif
-			return gEngine->convertString(env, name);
+				return gEngine->convertString(env, name);
+			}
 		}
 	} EXCEPTION_CONVERT(env);
 	return NULL;
@@ -901,6 +905,10 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isDefaultName(JNIEnv 
 	ASBoolean isDefaultName = true;
 	try {
 		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		// Handle pseudo HANDLE_CURRENT_STYLE item which returns NULL, but
+		// isDefaultName will get called in toString().
+		if (art == NULL)
+			return true;
 #if kPluginInterfaceVersion < kAI12
 		// At least one byte for the name needs to be specified, otherwise this
 		// doesn't work:

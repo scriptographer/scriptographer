@@ -41,8 +41,8 @@ import com.scratchdisk.script.Callable;
  */
 public abstract class ValueItem extends Item {
 
-	protected ValueItem(Dialog dialog, int handle) {
-		super(dialog, handle);
+	protected ValueItem(Dialog dialog, int handle, boolean isChild) {
+		super(dialog, handle, isChild);
 	}
 
 	protected ValueItem(Dialog dialog, ItemType type, int options) {

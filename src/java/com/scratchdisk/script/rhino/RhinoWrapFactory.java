@@ -156,8 +156,9 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 	 * pair once, after that it is cached in the conversionTable and retrieved from there.
 	 * calculateConversionWeight is used instead for the calculations.
 	 */
-	public int getConversionWeight(Object from, Class<?> to, int defaultWeight) {
-		Class fromClass = from.getClass();
+	public int getConversionWeight(Object from, Object unwrapped, Class<?> to,
+	        int defaultWeight) {
+		Class fromClass = unwrapped.getClass();
 		IdentityHashMap<Class, Integer> fromTable =
 				conversionTable.get(fromClass);
 		if (fromTable == null) {
@@ -167,7 +168,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		Integer res = fromTable.get(to);
 		if (res != null)
 			return res;
-		int weight = calculateConversionWeight(from, to, defaultWeight);
+		int weight = calculateConversionWeight(from, unwrapped, to, defaultWeight);
 		fromTable.put(to, weight);
 		return weight;
 	}
@@ -177,7 +178,8 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 	 * and cache the results. Do not override getConversionWeight in any
 	 * subclasses, override calculateConversionWeight instead.
 	 */
-	public int calculateConversionWeight(Object from, Class<?> to, int defaultWeight) {
+	public int calculateConversionWeight(Object from, Object unwrapped,
+	        Class<?> to, int defaultWeight) {
 		// See if object "from" can be converted to an instance of class "to"
 		// by the use of a map constructor or the setting of all the fields
 		// of a NativeObject on the instance after its creation,
@@ -208,19 +210,18 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 				}
 				// Try and see if unwrapping NativeObjects through JS unwrap
 				// method brings us to the right type.
-				Object unwrapped = unwrap(from);
+				unwrapped = unwrap(from);
 				if (unwrapped != from && to.isInstance(unwrapped))
 					return CONVERSION_TRIVIAL;
 			} else if (!isString) {
 				// String and ArgumentReader we tried above already
 				if (getZeroArgumentConstructor(to) != null
 						|| ArgumentReader.canConvert(to)) {
-					from = unwrap(from);
 					// Now if there are more options here to convert from, e.g.
 					// Size and Point prefer the one that has the same simple
 					// name, to encourage conversion between ADM and AI Size,
 					// Rectangle, Point objects!
-					if (from.getClass().getSimpleName().equals(to.getSimpleName()))
+					if (unwrapped.getClass().getSimpleName().equals(to.getSimpleName()))
 						return CONVERSION_TRIVIAL + 1;
 					else
 						return CONVERSION_TRIVIAL + 2;
@@ -240,7 +241,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		return null;
 	}
 
-	public Object coerceType(Class<?> type, Object value) {
+	public Object coerceType(Class<?> type, Object value, Object unwrapped) {
 		// Coerce native objects to maps when needed
 		if (value instanceof Function) {
 			if (type == Callable.class)
@@ -254,20 +255,15 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 			} else {
 				// Try and see if unwrapping NativeObjects through JS unwrap method 
 				// brings us to the right type.
-				Object unwrapped;
 				if (value instanceof NativeObject) {
 					unwrapped = unwrap(value);
 					if (unwrapped != value && type.isInstance(unwrapped))
 						return unwrapped;
-				} else {
-					unwrapped = null;
 				}
 				ArgumentReader reader = null;
 				if (ArgumentReader.canConvert(type)
 						&& (reader = getArgumentReader(value)) != null) {
-					if (unwrapped == null)
-						unwrapped = unwrap(value);
-					return ArgumentReader.convert(reader, unwrapped, type);
+					return ArgumentReader.convert(reader, unwrapped, type, this);
 				} else if (value instanceof NativeObject
 						&& getZeroArgumentConstructor(type) != null) {
 					// Try constructing an object of class type, through
@@ -296,8 +292,9 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		return null;
 	}
 
-	public Object convert(Object from, Class<?> to) {
-		return Context.jsToJava(from, to);
+	@SuppressWarnings("unchecked")
+	public <T> T convert(Object from, Class<T> to) {
+		return (T) Context.jsToJava(from, to);
 	}
 
 	public Object unwrap(Object obj) {

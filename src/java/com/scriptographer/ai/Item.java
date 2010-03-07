@@ -584,12 +584,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		return parent != null ? copyTo(parent) : copyTo(document);
 	}
 
-	public Dictionary getDictionary() {
-		return dictionaryHandle != 0 
-				? Dictionary.wrapHandle(dictionaryHandle, document)
-				: null;
-	}
-
 	/**
 	 * The name of the item as it appears in the layers palette.
 	 * 
@@ -805,6 +799,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * </code>
 	 * 
 	 * @return {@true if the item is hidden}
+	 * 
+	 * @jshide
 	 */
 	public final boolean isHidden() {
 		return !isVisible();
@@ -993,10 +989,19 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 			data.putAll(map);
 		}
 	}
-	
+
 	/**
 	 * {@grouptitle Document Hierarchy}
 	 * 
+	 * The document that the item belongs to.
+	 */
+	public Document getDocument() {
+		// This is only here for the API document.
+		// It does exactly the same as the definition in DocumentObject
+		return document;
+	}
+
+	/**
 	 * The item's parent layer, if any.
 	 */
 	public native Layer getLayer();
@@ -1661,48 +1666,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		}
 		return false;
 	}
-
-	private native void nativeTransform(Matrix matrix, int flags);
-
-	/**
-	 * @jshide
-	 */
-	public void transform(Matrix matrix, EnumSet<TransformFlag> flags) {
-		nativeTransform(matrix, IntegerEnumUtils.getFlags(flags));
-	}
-
-	/**
-	 * Transforms the item with custom flags to be set.
-	 * 
-	 * @param matrix
-	 * @param flags
-	 */
-	public void transform(Matrix matrix, TransformFlag[] flags) {
-		transform(matrix, EnumSet.copyOf(Arrays.asList(flags)));
-	}
-
-	private static int defaultTransformFlags =
-			IntegerEnumUtils.getFlags(EnumSet.of(TransformFlag.OBJECTS,
-					TransformFlag.CHILDREN));
-
-	/**
-	 * Transforms the item with the flags TransformFlag.OBJECTS, and
-	 * TransformFlag.CHILDREN set
-	 * 
-	 * @param matrix
-	 */
-	public void transform(Matrix matrix) {
-		nativeTransform(matrix, defaultTransformFlags);
-	}
-
-	protected Matrix centered(Matrix matrix) {
-		Matrix centered = new Matrix();
-		Point pos = getPosition();
-		centered.translate(pos.x, pos.y);
-		centered.concatenate(matrix);
-		centered.translate(-pos.x, -pos.y);
-		return centered;
-	}
 	
 	/**
 	 * {@grouptitle Transform Functions}
@@ -1774,7 +1737,47 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @see Matrix#shear(double, double)
 	 */
 	public void shear(double shx, double shy) {
-		transform(centered(new Matrix().shear(shx, shy)));
+		Point pos = getPosition();
+		Matrix matrix = new Matrix();
+		matrix.translate(pos.x, pos.y);
+		matrix.shear(shx, shy);
+		matrix.translate(-pos.x, -pos.y);
+		transform(matrix);
+	}
+
+	/* Matrix Transform */
+	
+	private native void nativeTransform(Matrix matrix, int flags);
+
+	/**
+	 * @jshide
+	 */
+	public void transform(Matrix matrix, EnumSet<TransformFlag> flags) {
+		nativeTransform(matrix, IntegerEnumUtils.getFlags(flags));
+	}
+
+	/**
+	 * Transforms the item with custom flags to be set.
+	 * 
+	 * @param matrix
+	 * @param flags
+	 */
+	public void transform(Matrix matrix, TransformFlag[] flags) {
+		transform(matrix, EnumSet.copyOf(Arrays.asList(flags)));
+	}
+
+	private static int defaultTransformFlags =
+			IntegerEnumUtils.getFlags(EnumSet.of(TransformFlag.OBJECTS,
+					TransformFlag.CHILDREN));
+
+	/**
+	 * Transforms the item with the flags TransformFlag.OBJECTS, and
+	 * TransformFlag.CHILDREN set
+	 * 
+	 * @param matrix
+	 */
+	public void transform(Matrix matrix) {
+		nativeTransform(matrix, defaultTransformFlags);
 	}
 
 	/* TODO:

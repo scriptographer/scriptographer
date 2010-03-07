@@ -53,7 +53,7 @@ public class AlertDialog extends ModalDialog {
 
 		TableLayout layout = new TableLayout(sizes);
 		setLayout(layout);
-		setMargin(8);
+		setMargin(10);
 
 		ImagePane logo = new ImagePane(this);
 		logo.setImage(getImage("logo.png"));
@@ -68,7 +68,7 @@ public class AlertDialog extends ModalDialog {
 		text.setText(message);
 		text.setBottomMargin(8);
 		addToContent(text, "1, 0, 2, 0, L, C");
-				
+
 		Button okButton = new Button(this);
 		okButton.setText("  OK  ");
 		addToContent(okButton, "1, 1, R, T");

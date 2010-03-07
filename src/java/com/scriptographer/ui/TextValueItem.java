@@ -40,8 +40,8 @@ import com.scratchdisk.util.IntegerEnumUtils;
  */
 public abstract class TextValueItem extends ValueItem {
 
-	protected TextValueItem(Dialog dialog, int handle) {
-		super(dialog, handle);
+	protected TextValueItem(Dialog dialog, int handle, boolean isChild) {
+		super(dialog, handle, isChild);
 	}
 
 	protected TextValueItem(Dialog dialog, ItemType type, int options) {
@@ -74,7 +74,9 @@ public abstract class TextValueItem extends ValueItem {
 	private native int nativeGetUnits();
 
 	public void setUnits(TextUnits units) {
-		nativeSetUnits((units != null ? units : TextUnits.NONE).value);
+		if (units == null)
+			units = TextUnits.NONE;
+		nativeSetUnits(units.value);
 	}
 
 	public TextUnits getUnits() {

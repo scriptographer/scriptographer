@@ -69,12 +69,12 @@ public abstract class ListItem<E extends ListEntry> extends Item implements List
 		super(dialog, type);
 		listHandle = nativeInit(handle);
 	}
-	
-	protected ListItem(Dialog dialog, int handle) {
-		super(dialog, handle);
+
+	protected ListItem(Dialog dialog, int handle, boolean isChild) {
+		super(dialog, handle, isChild);
 		listHandle = nativeInit((int) handle);
 	}
-	
+
 	/**
 	 * Empty constructor used for nested HierarchyLists 
 	 */

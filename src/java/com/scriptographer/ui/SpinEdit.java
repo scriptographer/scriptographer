@@ -34,6 +34,7 @@ package com.scriptographer.ui;
 import java.util.EnumSet;
 
 import com.scratchdisk.util.EnumUtils;
+import com.scriptographer.ScriptographerEngine;
 
 /**
  * @author lehni
@@ -46,9 +47,8 @@ public class SpinEdit extends TextEditItem<SpinEditStyle> {
 
 	/**
 	 * @param dialog
-	 * @param options
-	 *            only TextEdit.OPTION_POPUP and TextEdit.OPTION_SCROLLING are
-	 *            valid for SpinEdit
+	 * @param options only TextEdit.OPTION_POPUP and TextEdit.OPTION_SCROLLING
+	 *        are valid for SpinEdit
 	 */
 	public SpinEdit(Dialog dialog, TextOption[] options) {
 		this(dialog, EnumUtils.asSet(options));
@@ -61,15 +61,19 @@ public class SpinEdit extends TextEditItem<SpinEditStyle> {
 	private static ItemType getType(EnumSet<TextOption> options) {
 		// abuse the ADM's password style for creating it as a type...
 		if (options != null && options.contains(TextOption.POPUP)) {
-			return options.contains(TextOption.SCROLLING) ? ItemType.SPINEDIT_SCROLLING_POPUP
+			return options.contains(TextOption.SCROLLING)
+					? ItemType.SPINEDIT_SCROLLING_POPUP
 					: ItemType.SPINEDIT_POPUP;
 		}
 		return ItemType.SPINEDIT;
 	}
 	
 	public SpinEditStyle getStyle() {
-		// For some weird reason vertical has different values for popup and non-popup
-		return nativeGetStyle() != 0 ? SpinEditStyle.VERTICAL : SpinEditStyle.HORIZONTAL;
+		// For some weird reason vertical has different values for popup and
+		// non-popup
+		return nativeGetStyle() != 0
+				? SpinEditStyle.VERTICAL
+				: SpinEditStyle.HORIZONTAL;
 	}
 
 	public void setStyle(SpinEditStyle style) {
@@ -85,15 +89,17 @@ public class SpinEdit extends TextEditItem<SpinEditStyle> {
 
 	private static final int
 		ITEM_UP_BUTTON = 1,
-		ITEM_DOWN_BUTTON = 2;
+		ITEM_DOWN_BUTTON = 2,
+		ITEM_TEXT_EDIT = 3;
 	
 	private Button upButton;
 	private Button downButton;
+	private TextEdit editItem;
 	
 	public Button getUpButton() {
 		if (upButton == null) {
 			int handle = getChildItemHandle(ITEM_UP_BUTTON);
-			upButton = handle != 0 ? new Button(dialog, handle) : null;
+			upButton = handle != 0 ? new Button(dialog, handle, true) : null;
 		}
 		return upButton;
 	}
@@ -101,8 +107,29 @@ public class SpinEdit extends TextEditItem<SpinEditStyle> {
 	public Button getDownButton() {
 		if (upButton == null) {
 			int handle = getChildItemHandle(ITEM_DOWN_BUTTON);
-			downButton = handle != 0 ? new Button(dialog, handle) : null;
+			downButton = handle != 0 ? new Button(dialog, handle, true) : null;
 		}
 		return downButton;
+	}
+
+	public TextEdit getTextEdit() {
+		if (editItem == null) {
+			int handle = getChildItemHandle(ITEM_TEXT_EDIT);
+			editItem = handle != 0 ? new TextEdit(dialog, handle, true) : null;
+		}
+		return editItem;
+	}
+
+	private int xDiff = -1;
+
+	protected void updateBounds(int x, int y, int width, int height, boolean sizeChanged) {
+		// TODO: Check for PC too!
+		if (ScriptographerEngine.isMacintosh()) {
+			TextEdit edit = getTextEdit();
+			if (xDiff == -1)
+				xDiff = edit.getPosition().x + getPosition().x;
+			super.updateBounds(x, y, width, height, sizeChanged);
+			edit.setSize(width - xDiff, height - 2);
+		}
 	}
 }

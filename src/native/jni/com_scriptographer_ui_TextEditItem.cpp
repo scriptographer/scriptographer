@@ -37,9 +37,9 @@
  */
 
 /*
- * int getPrecision()
+ * int getFractionDigits()
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_TextEditItem_getPrecision(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_TextEditItem_getFractionDigits(JNIEnv *env, jobject obj) {
 	try {
 		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		return sADMItem->GetPrecision(item);
@@ -48,9 +48,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_TextEditItem_getPrecision(JNIE
 }
 
 /*
- * void setPrecision(int precision)
+ * void setFractionDigits(int precision)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextEditItem_setPrecision(JNIEnv *env, jobject obj, jint precision) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextEditItem_setFractionDigits(JNIEnv *env, jobject obj, jint precision) {
 	try {
 		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		sADMItem->SetPrecision(item, precision);

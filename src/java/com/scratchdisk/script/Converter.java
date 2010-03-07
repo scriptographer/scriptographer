@@ -31,12 +31,13 @@
 
 package com.scratchdisk.script;
 
+
 /**
  * @author lehni
  *
  */
 public interface Converter {
-	public Object convert(Object from, Class<?> to);
+	public <T> T convert(Object from, Class<T> to);
 
 	public Object unwrap(Object obj);
 }

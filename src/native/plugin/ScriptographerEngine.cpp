@@ -1461,6 +1461,8 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 	if (obj == NULL)
 		return NULL;
 	AIArtHandle art = (AIArtHandle) getAIObjectHandle(env, obj, "art");
+	if (art == (AIArtHandle) com_scriptographer_ai_Item_HANDLE_CURRENT_STYLE)
+		return NULL;
 	// Make sure the object is valid
 	if (!callBooleanMethod(env, obj, mid_ai_Item_isValid))
 		throw new StringException("The item is no longer valid, either due to deletion or undoing. Use isValid() checks to avoid this error.");

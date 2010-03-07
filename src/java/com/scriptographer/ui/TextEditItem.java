@@ -46,10 +46,10 @@ public abstract class TextEditItem<S> extends TextValueItem {
 
 	private boolean unitInitialized = false;
 
-	protected TextEditItem(Dialog dialog, int handle) {
-		super(dialog, handle);
+	protected TextEditItem(Dialog dialog, int handle, boolean isChild) {
+		super(dialog, handle, isChild);
 	}
-	
+
 	/**
 	 * For subclasses
 	 * 
@@ -380,9 +380,25 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		return getText();
 	}
 
-	public native int getPrecision();
-	public native void setPrecision(int precision);
-		
+	public native int getFractionDigits();
+	public native void setFractionDigits(int precision);
+
+	/**
+	 * @jshide
+	 * @deprecated
+	 */
+	public int getPrecision() {
+		return getFractionDigits();
+	}
+
+	/**
+	 * @jshide
+	 * @deprecated
+	 */
+	public void setPrecision(int precision) {
+		setFractionDigits(precision);
+	}
+
 	public native void setMaxLength(int length);
 	public native int getMaxLength();
 
@@ -426,7 +442,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 	public TextEdit getTextEdit() {
 		if (textEdit == null) {
 			int handle = getChildItemHandle(ITEM_TEXTEDIT);
-			textEdit = handle != 0 ? new TextEdit(dialog, handle) : null;
+			textEdit = handle != 0 ? new TextEdit(dialog, handle, true) : null;
 		}
 		return textEdit;
 	}
@@ -434,7 +450,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 	public PopupList getPopupList() {
 		if (popupList == null) {
 			int handle = getChildItemHandle(ITEM_POPUP);
-			popupList = handle != 0 ? new PopupList(dialog, handle) : null;
+			popupList = handle != 0 ? new PopupList(dialog, handle, true) : null;
 		}
 		return popupList;
 	}

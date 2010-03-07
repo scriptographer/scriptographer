@@ -38,8 +38,8 @@ import com.scratchdisk.util.IntegerEnumUtils;
  */
 public class PopupMenu extends ListItem<ListEntry> {
 
-	protected PopupMenu(Dialog dialog, int handle) {
-		super(dialog, handle);
+	protected PopupMenu(Dialog dialog, int handle, boolean isChild) {
+		super(dialog, handle, isChild);
 	}
 
 	public PopupMenuStyle getStyle() {

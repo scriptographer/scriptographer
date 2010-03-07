@@ -812,9 +812,9 @@
 				91EF0AE50A20A4B200F0EF9A /* com_scriptographer_ai_FontWeight.cpp */,
 				91EF0AE60A20A4B200F0EF9A /* com_scriptographer_ai_FontList.cpp */,
 				91EF0AE70A20A4B200F0EF9A /* com_scriptographer_ai_FontFamily.cpp */,
+				91EF0AEB0A20A4B200F0EF9A /* com_scriptographer_ai_ParagraphStyle.cpp */,
 				91EF0AE90A20A4B200F0EF9A /* com_scriptographer_ai_Pathfinder.cpp */,
 				91EF0AEA0A20A4B200F0EF9A /* com_scriptographer_ai_Path.cpp */,
-				91EF0AEB0A20A4B200F0EF9A /* com_scriptographer_ai_ParagraphStyle.cpp */,
 				91EF0AED0A20A4B200F0EF9A /* com_scriptographer_ai_PathStyle.cpp */,
 			);
 			name = AI;

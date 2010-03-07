@@ -52,6 +52,10 @@ public class Size {
 		set(width, height);
 	}
 
+	public Size(double width, double height) {
+		set(width, height);
+	}
+
 	public Size(Size size) {
 		set(size.width, size.height);
 	}
@@ -77,17 +81,32 @@ public class Size {
 				reader.readInteger("height", 0));
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void set(int width, int height) {
 		this.width = width;
 		this.height = height;
 	}
 
-	public double getWidth() {
+	/**
+	 * @jshide
+	 */
+	public void set(double width, double height) {
+		this.width = (int) Math.round(width);
+		this.height = (int) Math.round(height);
+	}
+
+	public int getWidth() {
 		return width;
 	}
 	
 	public void setWidth(int width) {
 		this.width = width;
+	}
+
+	public void setWidth(double width) {
+		this.width = (int) Math.round(width);
 	}
 
 	public int getHeight() {
@@ -98,7 +117,11 @@ public class Size {
 		this.height = height;
 	}
 
-	public Size add(int w, int h) {
+	public void setHeight(double height) {
+		this.height = (int) Math.round(height);
+	}
+
+	public Size add(double w, double h) {
 		return new Size(width + w, height + h);
 	}
 
@@ -106,11 +129,15 @@ public class Size {
 		return add(size.width, size.height);
 	}
 
-	public Size add(int value) {
+	public Size add(Border border) {
+		return add(border.left + border.right, border.top + border.bottom);
+	}
+
+	public Size add(double value) {
 		return add(value, value);
 	}
 
-	public Size subtract(int w, int h) {
+	public Size subtract(double w, double h) {
 		return new Size(width - w, height - h);
 	}
 
@@ -118,11 +145,15 @@ public class Size {
 		return subtract(size.width, size.height);
 	}
 
-	public Size subtract(int value) {
+	public Size subtract(Border border) {
+		return subtract(border.left + border.right, border.top + border.bottom);
+	}
+
+	public Size subtract(double value) {
 		return subtract(value, value);
 	}
 
-	public Size multiply(int w, int h) {
+	public Size multiply(double w, double h) {
 		return new Size(width * w, height * h);
 	}
 
@@ -130,11 +161,11 @@ public class Size {
 		return multiply(size.width, size.height);
 	}
 
-	public Size multiply(int value) {
+	public Size multiply(double value) {
 		return multiply(value, value);
 	}
 
-	public Size divide(int w, int h) {
+	public Size divide(double w, double h) {
 		return new Size(width / w, height / h);
 	}
 
@@ -142,7 +173,7 @@ public class Size {
 		return divide(size.width, size.height);
 	}
 
-	public Size divide(int value) {
+	public Size divide(double value) {
 		return divide(value, value);
 	}
 

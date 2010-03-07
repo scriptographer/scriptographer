@@ -33,12 +33,12 @@ package com.scriptographer.ai;
 
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
-import com.scriptographer.Commitable;
+import com.scriptographer.Committable;
 
 /**
  * @author lehni
  */
-public class Tracing extends Item implements Commitable {
+public class Tracing extends Item implements Committable {
 		
 	protected int optionsHandle = 0;
 	protected int statisticsHandle = 0;

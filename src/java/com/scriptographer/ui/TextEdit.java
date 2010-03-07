@@ -41,10 +41,10 @@ import com.scratchdisk.util.IntegerEnumUtils;
  */
 public class TextEdit extends TextEditItem<TextEditStyle> {
 
-	protected TextEdit(Dialog dialog, int handle) {
-		super(dialog, handle);
+	protected TextEdit(Dialog dialog, int handle, boolean isChild) {
+		super(dialog, handle, isChild);
 	}
-	
+
 	public TextEdit(Dialog dialog, EnumSet<TextOption> options) {
 		// filter out the pseudo styles from the options:
 		// (max. real bit is 3, and the mask is (1 << (max + 1)) - 1

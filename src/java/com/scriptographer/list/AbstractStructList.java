@@ -32,7 +32,7 @@
 package com.scriptographer.list;
 
 import com.scriptographer.CommitManager;
-import com.scriptographer.Commitable;
+import com.scriptographer.Committable;
 
 /**
  * An abstract list to reflect simple struct based native lists, as used by
@@ -138,7 +138,7 @@ public abstract class AbstractStructList<R, E extends AbstractStructList.Entry<R
 
 	}
 
-	public abstract static class Entry<R> implements Commitable {
+	public abstract static class Entry<R> implements Committable {
 		protected R reference;
 		protected int index;
 		protected boolean dirty;
@@ -165,7 +165,7 @@ public abstract class AbstractStructList<R, E extends AbstractStructList.Entry<R
 			// if the dirty flag is not already set.
 			// Put both non dirty ones that were fetched before and dirty ones
 			// that were never fetched so far (= newly created entries) into
-			// the commitable list.
+			// the committable list.
 			if (reference != null && (!dirty && version != -1 || dirty && version == -1)) {
 				CommitManager.markDirty(reference, this);
 				dirty = true;

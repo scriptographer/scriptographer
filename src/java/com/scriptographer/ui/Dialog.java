@@ -1059,7 +1059,8 @@ public abstract class Dialog extends Component {
 	public PopupMenu getPopupMenu() {
 		if (popupMenu == null) {
 			int handle = getItemHandle(ITEM_MENU);
-			popupMenu = handle != 0 ? new PopupMenu(this, handle) : null;
+			// We need to pass false for isChild as we want notifiers installed
+			popupMenu = handle != 0 ? new PopupMenu(this, handle, false) : null;
 		}
 		return popupMenu;
 	}
@@ -1069,7 +1070,7 @@ public abstract class Dialog extends Component {
 	public Button getResizeButton() {
 		if (resizeButton == null) {
 			int handle = getItemHandle(ITEM_RESIZE);
-			resizeButton = handle != 0 ? new Button(this, handle) : null;
+			resizeButton = handle != 0 ? new Button(this, handle, false) : null;
 		}
 		return resizeButton;
 	}

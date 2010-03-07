@@ -41,6 +41,7 @@ import org.mozilla.javascript.ScriptableObject;
 
 import com.scratchdisk.script.rhino.ExtendedJavaObject;
 import com.scriptographer.ai.Color;
+import com.scriptographer.ai.RGBColor;
 import com.scriptographer.ai.Style;
 import com.scriptographer.script.EnumUtils;
 
@@ -49,7 +50,7 @@ import com.scriptographer.script.EnumUtils;
  *
  */
 public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFactory {
-	
+
 	public Object wrap(Context cx, Scriptable scope, Object obj, Class<?> staticType) {
 		// By default, Rhino converts chars to integers. In Scriptographer,
 		// we want a string of length 1:
@@ -79,6 +80,9 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 			return new StyleWrapper(scope, (Style) javaObj, staticType, true);
 		else if (javaObj instanceof Color)
 			return new ColorWrapper(scope, (Color) javaObj, staticType, true);
+		else if (javaObj instanceof java.awt.Color)
+			return new ColorWrapper(scope, (Color) new RGBColor(
+					(java.awt.Color) javaObj), staticType, true);
 		else {
 			Function ctor = mappedJavaClasses.get(staticType);
 			if (ctor != null) {
@@ -98,32 +102,49 @@ public class RhinoWrapFactory extends com.scratchdisk.script.rhino.RhinoWrapFact
 		return new ExtendedJavaObject(scope, javaObj, staticType, true);
 	}
 
-	public int calculateConversionWeight(Object from, Class<?> to, int defaultWeight) {
-		int weight = super.calculateConversionWeight(from, to, defaultWeight);
+	public int calculateConversionWeight(Object from, Object unwrapped, 
+			Class<?> to, int defaultWeight) {
+		int weight = super.calculateConversionWeight(from, unwrapped, to,
+				defaultWeight);
 		if (weight == defaultWeight) {
-			if (from instanceof String && (Enum.class.isAssignableFrom(to) || to.isArray()))
+			if (unwrapped instanceof String
+					&& (Enum.class.isAssignableFrom(to) || to.isArray()))
 				weight = CONVERSION_TRIVIAL + 1;
+			else if (unwrapped instanceof Color
+					&& java.awt.Color.class.equals(to))
+				weight = CONVERSION_TRIVIAL;
+			else if (unwrapped instanceof java.awt.Color
+					&& Color.class.equals(to))
+				weight = CONVERSION_TRIVIAL;
 		}
 		return weight;
 	}
 
 	@SuppressWarnings("unchecked")
-	public Object coerceType(Class<?> type, Object value) {
-		Object res = super.coerceType(type, value);
+	public Object coerceType(Class<?> type, Object value, Object unwrapped) {
+		Object res = super.coerceType(type, value, unwrapped);
 		if (res == null) {
-			if (value instanceof String) {
+			if (unwrapped instanceof String) {
 				if (Enum.class.isAssignableFrom(type)) {
-					return EnumUtils.get((Class<Enum>) type, (String) value);
+					return EnumUtils.get((Class<Enum>) type, (String) unwrapped);
 				} else if (type.isArray()) {
 					// Convert a string to an array by splitting into words
 					// and trying to convert each to the desired type
-					String[] parts = ((String) value).split("\\s");
+					String[] parts = ((String) unwrapped).split("\\s");
 					Class componentType = type.getComponentType();
-					Object[] values = (Object[]) java.lang.reflect.Array.newInstance(componentType, parts.length);
-					for (int i = 0; i < values.length; i++)
-						values[i] = coerceType(componentType, parts[i]);
+					Object[] values = (Object[])
+							java.lang.reflect.Array.newInstance(
+									componentType, parts.length);
+					for (int i = 0; i < values.length; i++) {
+						String part = parts[i];
+						values[i] = coerceType(componentType, part, part);
+					}
 					return values;
 				}
+			} else if (unwrapped instanceof java.awt.Color && Color.class.equals(type)) {
+				return new RGBColor((java.awt.Color) unwrapped);
+			} else if (unwrapped instanceof Color && java.awt.Color.class.equals(type)) {
+				return ((Color) unwrapped).toAWTColor();
 			}
 		}
 		return res;

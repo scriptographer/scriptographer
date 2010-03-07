@@ -131,12 +131,15 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ui_Item_nativeCreate(JNIEnv *env,
 }
 
 /*
- * String nativeInit(int handle)
+ * String nativeInit(int handle, boolean isChild)
  */
-JNIEXPORT jstring JNICALL Java_com_scriptographer_ui_Item_nativeInit(JNIEnv *env, jobject obj, jint handle) {
+JNIEXPORT jstring JNICALL Java_com_scriptographer_ui_Item_nativeInit(JNIEnv *env, jobject obj, jint handle, jboolean isChild) {
 	try {
 		sADMItem->SetUserData((ADMItemRef) handle, env->NewGlobalRef(obj));
-		Item_onInit((ADMItemRef) handle);
+		// We cannot override the ontifier callbacks on child items, as this would
+		// break things like Spin Edits.
+		if (!isChild)
+			Item_onInit((ADMItemRef) handle);
 		return gEngine->convertString(env, sADMItem->GetItemType((ADMItemRef) handle));
 	} EXCEPTION_CONVERT(env);
 	return NULL;

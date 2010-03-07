@@ -38,8 +38,8 @@ package com.scriptographer.ui;
  */
 public abstract class TextItem extends Item {
 
-	protected TextItem(Dialog dialog, int handle) {
-		super(dialog, handle);
+	protected TextItem(Dialog dialog, int handle, boolean isChild) {
+		super(dialog, handle, isChild);
 	}
 
 	protected TextItem(Dialog dialog, ItemType type) {
@@ -61,7 +61,7 @@ public abstract class TextItem extends Item {
 		// buttons, etc. Since the native elements center correctly
 		// trim the space here, but store it in the text field,
 		// so getBestSize takes it into account.
-		nativeSetText(text.trim());
+		nativeSetText(text != null ? text.trim() : text);
 	}
 
 	public String getText() {

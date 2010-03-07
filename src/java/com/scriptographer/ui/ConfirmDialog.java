@@ -55,10 +55,8 @@ public class ConfirmDialog extends ModalDialog {
 		this.setMargin(10);
 
 		ImagePane logo = new ImagePane(this);
-		Image image = getImage("logo.png");
-		logo.setImage(image);
-		logo.setRightMargin(10);
-
+		logo.setImage(getImage("logo.png"));
+		logo.setMargin(-4, 4, -4, -4);
 		this.addToContent(logo, "0, 0, 0, 1, L, T");
 
 		TextPane text = new TextPane(this);
@@ -67,7 +65,7 @@ public class ConfirmDialog extends ModalDialog {
 			text.setMaximumSize(new Size(320, -1));
 		text.setMinimumSize(240, -1);
 		text.setText(message);
-		text.setBottomMargin(10);
+		text.setBottomMargin(8);
 		this.addToContent(text, "1, 0, 3, 0, L, C");
 		
 		Button cancelButton = new Button(this);

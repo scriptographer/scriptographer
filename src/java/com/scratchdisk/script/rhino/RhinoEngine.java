@@ -188,9 +188,8 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		return topLevel;
 	}
 
-	public Object toJava(Object object, Class type) {
-		if (object instanceof Scriptable)
-			return Context.jsToJava(object, type);
-		return null;
+	@SuppressWarnings("unchecked")
+	public <T> T toJava(Object object, Class<T> type) {
+		return (T) Context.jsToJava(object, type);
 	}
 }

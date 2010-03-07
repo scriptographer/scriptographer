@@ -78,6 +78,14 @@ public class ToolEvent extends Event {
 		return buf.toString();
 	}
 
+	private Point getPoint(Point point, Point toolPoint) {
+		if (point != null)
+			return point;
+		if (toolPoint != null)
+			return new Point(toolPoint);
+		return null;
+	}
+
 	/**
 	 * The position of the mouse in document coordinates when the event was
 	 * fired.
@@ -96,9 +104,8 @@ public class ToolEvent extends Event {
 	 * </code>
 	 */
 	public Point getPoint() {
-		return point != null ? point : new Point(tool.point);
+		return getPoint(point, tool.point);
 	}
-
 
 	public void setPoint(Point point) {
 		this.point = point;
@@ -109,7 +116,7 @@ public class ToolEvent extends Event {
 	 * event was fired.
 	 */
 	public Point getLastPoint() {
-		return lastPoint != null ? lastPoint : new Point(tool.lastPoint);
+		return getPoint(lastPoint, tool.lastPoint);
 	}
 
 	public void setLastPoint(Point lastPoint) {
@@ -121,7 +128,7 @@ public class ToolEvent extends Event {
 	 * was last clicked.
 	 */
 	public Point getDownPoint() {
-		return downPoint != null ? downPoint : new Point(tool.downPoint);
+		return getPoint(downPoint, tool.downPoint);
 	}
 
 	public void setDownPoint(Point downPoint) {

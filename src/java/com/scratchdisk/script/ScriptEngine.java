@@ -100,11 +100,14 @@ public abstract class ScriptEngine {
 		return pos != -1 ? getEngineByExtension(name.substring(pos + 1)) : null;
 	}
 
-	public abstract Object toJava(Object object, Class type);
+	public abstract <T> T toJava(Object object, Class<T> type);
 
-	public static Object convertToJava(Object object, Class type) {
+	@SuppressWarnings("unchecked")
+	public static <T> T convertToJava(Object object, Class<T> type) {
+		if (type.isInstance(object))
+			return (T) object;
 		for (ScriptEngine engine : enginesByName.values()) {
-			Object res = engine.toJava(object, type);
+			T res = engine.toJava(object, type);
 			if (type.isInstance(res))
 				return res;
 		}

@@ -50,4 +50,10 @@ public class Slider extends ValueItem {
 		if (style != null)
 			nativeSetStyle(style.value);
 	}
+
+	protected static final Border MARGIN = new Border(4, 0, 0, 0);
+
+	protected Border getNativeMargin() {
+		return MARGIN;
+	}
 }

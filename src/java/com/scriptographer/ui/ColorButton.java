@@ -24,42 +24,59 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Apr 14, 2008.
+ * File created on Mar 7, 2010.
  *
  * $Id$
  */
 
 package com.scriptographer.ui;
 
-import com.scratchdisk.util.IntegerEnum;
+import java.awt.Color;
 
 /**
- * ADMUnits
- * 
  * @author lehni
+ *
  */
-public enum TextUnits implements IntegerEnum {
-	NONE(0),
-	POINT(1),
-	INCH(2),
-	MILLIMETER(3),
-	CENTIMETER(4),
-	PICA(5),
-	PERCENT(6),
-	DEGREE(7),
-//	Q(8),
-//	BASE16(9),
-	PIXEL(10);
-//	TIME(11),
-//	HA(12);
+public class ColorButton extends ImageButton {
 
-	protected int value;
+	private Color color;
 
-	private TextUnits(int value) {
-		this.value = value;
+	public ColorButton(Dialog dialog) {
+		super(dialog);
+		// TODO: Fix this in item instead! Size defaults to 100 / 100...
+		setSize(getBestSize());
 	}
 
-	public int value() {
-		return value;
+	public Color getColor() {
+		return color;
+	}
+
+	public void setColor(Color color) {
+		this.color = color;
+
+		if(color != null) {
+			Rectangle rect = new Rectangle(new Point(),
+					getSize().subtract(getMargin()).subtract(6));
+			Image image = new Image(rect.width, rect.height, ImageType.RGB);
+			Drawer drawer = image.getDrawer();
+			drawer.setColor(color);
+			drawer.fillRect(rect);
+			drawer.dispose();
+			setImage(image);
+		}
+	}
+
+	protected void updateBounds(int x, int y, int width, int height,
+			boolean sizeChanged) {
+		super.updateBounds(x, y, width, height, sizeChanged);
+		setColor(color);
+	}
+
+	protected void onClick() throws Exception {
+		Color color = Dialog.chooseColor(this.color);
+		if(color != null) {
+			setColor(color);
+			super.onClick();
+		}
 	}
 }

@@ -39,14 +39,18 @@ import com.scratchdisk.script.ArgumentReader;
  * @jshide
  */
 public class Point {
-	public int x;
-	public int y;
+	protected int x;
+	protected int y;
 
 	public Point() {
 		x = y = 0;
 	}
 	
 	public Point(int x, int y) {
+		set(x, y);
+	}
+
+	public Point(double x, double y) {
 		set(x, y);
 	}
 
@@ -67,16 +71,50 @@ public class Point {
 				reader.readInteger("y", 0));
 	}
 
+	/**
+	 * @jshide
+	 */
 	public void set(int x, int y) {
 		this.x = x;
 		this.y = y;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public void set(double x, double y) {
+		this.x = (int) Math.round(x);
+		this.y = (int) Math.round(y);
+	}
+	public int getX() {
+		return x;
+	}
+	
+	public void getX(int x) {
+		this.x = x;
+	}
+
+	public void getX(double x) {
+		this.x = (int) Math.round(x);
+	}
+
+	public int getY() {
+		return y;
+	}
+	
+	public void setY(int y) {
+		this.y = y;
+	}
+
+	public void setY(double y) {
+		this.y = (int) Math.round(y);
 	}
 
 	public Object clone() {
 		return new Point(this);
 	}
 
-	public Point add(int x, int y) {
+	public Point add(double x, double y) {
 		return new Point(this.x + x, this.y + y);
 	}
 
@@ -84,11 +122,11 @@ public class Point {
 		return add(point.x, point.y);
 	}
 
-	public Point add(int value) {
+	public Point add(double value) {
 		return add(value, value);
 	}
 
-	public Point subtract(int x, int y) {
+	public Point subtract(double x, double y) {
 		return new Point(this.x - x, this.y - y);
 	}
 
@@ -96,11 +134,11 @@ public class Point {
 		return subtract(point.x, point.y);
 	}
 
-	public Point subtract(int value) {
+	public Point subtract(double value) {
 		return subtract(value, value);
 	}
 
-	public Point multiply(int x, int y) {
+	public Point multiply(double x, double y) {
 		return new Point(this.x * x, this.y * y);
 	}
 
@@ -108,11 +146,11 @@ public class Point {
 		return multiply(point.x, point.y);
 	}
 
-	public Point multiply(int value) {
+	public Point multiply(double value) {
 		return multiply(value, value);
 	}
 
-	public Point divide(int x, int y) {
+	public Point divide(double x, double y) {
 		return new Point(this.x / x, this.y / y);
 	}
 
@@ -120,7 +158,7 @@ public class Point {
 		return divide(point.x, point.y);
 	}
 
-	public Point divide(int value) {
+	public Point divide(double value) {
 		return divide(value, value);
 	}
 

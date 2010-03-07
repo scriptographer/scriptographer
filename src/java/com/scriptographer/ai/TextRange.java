@@ -36,7 +36,7 @@ import java.util.StringTokenizer;
 import java.util.zip.Adler32;
 
 import com.scriptographer.CommitManager;
-import com.scriptographer.Commitable;
+import com.scriptographer.Committable;
 import com.scratchdisk.list.ExtendedArrayList;
 import com.scratchdisk.list.ExtendedList;
 import com.scratchdisk.list.ListIterator;
@@ -48,7 +48,7 @@ import com.scratchdisk.util.IntegerEnumUtils;
 /**
  * @author lehni
  */
-public class TextRange extends DocumentObject implements Commitable {
+public class TextRange extends DocumentObject implements Committable {
 	
 	// values for the native environment,
 	// to cash glyph run references, once their

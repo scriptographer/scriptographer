@@ -157,7 +157,7 @@ public abstract class ArgumentReader {
 	protected static IdentityHashMap<Class, ArgumentConverter> converters =
 		new IdentityHashMap<Class, ArgumentConverter>(); 
 
-	public Object readObject(String name, Class type) {
+	public Object readObject(String name, Class<?> type) {
 		Object obj = readNext(name);
 		if (obj != null) {
 			ArgumentConverter converter = (ArgumentConverter) converters.get(type);
@@ -220,13 +220,24 @@ public abstract class ArgumentReader {
 				|| converters.get(to) != null;
 	}
 
-	public static Object convert(ArgumentReader reader, Object from, Class to) {
+	public static Object convert(ArgumentReader reader, Object from, Class<?> to,
+			Converter converter) {
 		if (ArgumentReader.class.isAssignableFrom(to)) {
 			return reader;
 		} else {
-			ArgumentConverter converter = (ArgumentConverter) converters.get(to);
-			if (converter != null) {
-				return converter.convert(reader, from);
+			ArgumentConverter argumentConverter =
+					(ArgumentConverter) converters.get(to);
+			if (argumentConverter != null) {
+				Object result = argumentConverter.convert(reader, from);
+				// ArgumentConverter can return another convertable type,
+				// to be passed forward to the Converter. This is used
+				// e.g. for java.awt.Color <->
+				// com.scriptographer.script.ColorConverter which returns
+				// com.scriptographer.ai.Color...
+				if (to.isInstance(result))
+					return result;
+				else if (converter != null)
+					return converter.convert(result, to);
 			} else {
 				Constructor ctor = getArgumentReaderConstructor(to);
 				if (ctor != null) {

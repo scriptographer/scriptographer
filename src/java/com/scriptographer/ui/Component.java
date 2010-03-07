@@ -106,6 +106,19 @@ abstract class Component extends NotificationHandler {
 		return getTextSize(text, -1);
 	}
 
+	public boolean isSmall() {
+		DialogFont font = getFont();
+		switch (font) {
+		case PALETTE:
+		case PALETTE_ITALIC:
+		case PALETTE_BOLD:
+		case PALETTE_BOLD_ITALIC:
+			return true;
+		default:
+			return false;
+		}
+	}
+
 	/*
 	 * Use an activation mechanism for the expensive callback routines (the ones
 	 * that get called often). These are only activated if the user actually

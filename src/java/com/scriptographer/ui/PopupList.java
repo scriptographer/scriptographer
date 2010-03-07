@@ -38,8 +38,8 @@ import com.scriptographer.ScriptographerEngine;
  */
 public class PopupList extends ListItem<ListEntry> {
 	
-	protected PopupList(Dialog dialog, int handle) {
-		super(dialog, handle);
+	protected PopupList(Dialog dialog, int handle, boolean isChild) {
+		super(dialog, handle, isChild);
 	}
 
 	public PopupList(Dialog dialog, boolean scrolling) {

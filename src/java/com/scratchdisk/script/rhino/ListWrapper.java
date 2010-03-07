@@ -98,8 +98,6 @@ public class ListWrapper extends ExtendedJavaObject {
 	public void put(int index, Scriptable start, Object value) {
 		if (javaObject != null && javaObject instanceof List) {
 			List list = ((List) javaObject);
-			if (value instanceof Wrapper)
-				value = ((Wrapper) value).unwrap();
 			int size = list.size();
 			value = coerceComponentType(value);
 			if (index >= size) {
@@ -193,11 +191,14 @@ public class ListWrapper extends ExtendedJavaObject {
 	}
 
 	private Object coerceComponentType(Object value) {
+		Object unwrapped = value;
+		if (unwrapped instanceof Wrapper)
+			unwrapped = ((Wrapper) unwrapped).unwrap();
 		Class type = ((List) javaObject).getComponentType();
 		// Use WrapFactory to coerce type if not compatible
 		return type.isInstance(value)
 				? value
 				: Context.getCurrentContext().getWrapFactory().coerceType(
-						type, value);
+						type, value, unwrapped);
 	}
 }

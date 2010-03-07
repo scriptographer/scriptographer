@@ -68,7 +68,8 @@ public class PromptDialog extends ModalDialog {
 		buttons.addToContent(okButton);
 
 		int numRows = layout.getNumRow();
-		addToContent(buttons, "0, " + (numRows - 1) + ", 2, " + (numRows - 1) + ", right, top");
+		addToContent(buttons, "1, " + (numRows - 1) + ", 2, "
+				+ (numRows - 1) + ", right, top");
 
 		setDefaultItem(okButton);
 		setCancelItem(cancelButton);
@@ -86,7 +87,7 @@ public class PromptDialog extends ModalDialog {
 			for (int i = 0; i < items.length; i++) {
 				PaletteItem item = items[i];
 				if (item != null)
-					values[i] = item.getResult();
+					values[i] = item.getValue();
 			}
 		}
 		return values;

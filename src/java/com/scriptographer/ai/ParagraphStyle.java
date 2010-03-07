@@ -33,7 +33,7 @@ package com.scriptographer.ai;
 
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
-import com.scriptographer.Commitable;
+import com.scriptographer.Committable;
 
 /**
  * The ParagraphStyle object represents the paragraph style of a text item ({@link TextRange#getParagraphStyle()})
@@ -47,7 +47,7 @@ import com.scriptographer.Commitable;
  * </code>
  * @author lehni
  */
-public class ParagraphStyle extends NativeObject implements Style, Commitable {
+public class ParagraphStyle extends NativeObject implements Style, Committable {
 
 	private TextRange range;
 	private Object commitKey;

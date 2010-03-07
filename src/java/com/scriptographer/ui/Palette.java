@@ -83,6 +83,10 @@ public class Palette extends FloatingDialog {
 		this.values = values;
 	}
 
+	public Palette(String title, Map<String, Map> items) {
+		this(title, items, null);
+	}
+
 	public Map<String, Object> getValues() {
 		return values;
 	}
@@ -100,7 +104,7 @@ public class Palette extends FloatingDialog {
 	protected void onChange(PaletteItem item, String name, Object value) {
 		values.put(name, value);
 		if (onChange != null)
-			ScriptographerEngine.invoke(onChange, this, name, value);
+			ScriptographerEngine.invoke(onChange, this, item);
 	}
 
 	protected static TableLayout createLayout(Dialog dialog,
@@ -115,7 +119,7 @@ public class Palette extends FloatingDialog {
 		// Define the filler row, 2nd last
 		if (hasLogo)
 			rows[rows.length - extraRows] = TableLayout.FILL;
-		else
+		else if (rows.length > 0)
 			rows[rows.length - 1] = TableLayout.FILL;
 		double[][] sizes = {
 			hasLogo

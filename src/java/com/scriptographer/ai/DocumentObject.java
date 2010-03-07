@@ -60,7 +60,7 @@ public class DocumentObject extends NativeObject {
 	}
 
 	/**
-	 * Returns the document that this object belongs to.
+	 * The document that the object belongs to.
 	 */
 	public Document getDocument() {
 		return document;

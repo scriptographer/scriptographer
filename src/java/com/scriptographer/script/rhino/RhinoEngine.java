@@ -147,13 +147,6 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine implem
 		return null;
 	}
 
-	public Scope createScope() {
-		Scope scope = super.createScope();
-		// Override global to point to the 'local' global scope ;)
-		scope.put("global", ((RhinoScope) scope).getScope());
-		return scope;
-	}
-
 	public Object handleSignOperator(Context cx, Scriptable scope, int operator, Object rhs) {
 		switch (operator) {
 		case Token.NEG:
@@ -175,5 +168,12 @@ public class RhinoEngine extends com.scratchdisk.script.rhino.RhinoEngine implem
 			return rhs;
 		}
 		return null;
+	}
+
+	public Scope createScope() {
+		Scope scope = super.createScope();
+		// Override global to point to the 'local' global scope ;)
+		scope.put("global", ((RhinoScope) scope).getScope());
+		return scope;
 	}
 }

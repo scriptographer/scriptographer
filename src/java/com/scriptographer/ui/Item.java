@@ -58,6 +58,7 @@ public abstract class Item extends Component {
 	private Size maxSize = null;
 	private Size prefSize = null;
 	private boolean sizeSet = false;
+	private boolean isChild = false;
 
 	protected Item() {
 		// Call function as it is overridden by Button, where it sets 
@@ -87,12 +88,14 @@ public abstract class Item extends Component {
 	 * 
 	 * @param dialog
 	 * @param handle
+	 * @param isChild
 	 */
-	protected Item(Dialog dialog, int handle) {
+	protected Item(Dialog dialog, int handle, boolean isChild) {
 		this();
-		init(dialog, handle, ItemType.get(nativeInit(handle)));
+		this.isChild = isChild;
+		init(dialog, handle, ItemType.get(nativeInit(handle, isChild)));
 	}
-	
+
 	protected void init(Dialog dialog, int handle, ItemType type) {
 		this.dialog = dialog;
 		this.handle = handle;
@@ -108,11 +111,19 @@ public abstract class Item extends Component {
 	protected void initBounds() {
 		if (!sizeSet)
 			setSize(getBestSize());
-		// This is used to fix ADM bugs on CS4 where an item does not update its native bounds in certain
-		// situations (hidden window?) even if it was asked to do so.
+		// This is used to fix ADM bugs on CS4 where an item does not update its
+		// native bounds in certain situations (hidden window?) even if it was
+		// asked to do so.
 		Rectangle bounds = nativeGetBounds();
-		if (!bounds.equals(nativeBounds))
-			nativeSetBounds(nativeBounds.x, nativeBounds.y, nativeBounds.width, nativeBounds.height);
+		if (!bounds.equals(nativeBounds)) {
+			// Do not change location for children as this messes things up e.g.
+			// for spin edits
+			if (isChild)
+				nativeSetSize(nativeBounds.width, nativeBounds.height);
+			else
+				nativeSetBounds(nativeBounds.x, nativeBounds.y,
+						nativeBounds.width, nativeBounds.height);
+		}
 	}
 
 	public void destroy() {
@@ -158,7 +169,7 @@ public abstract class Item extends Component {
 	}
 
 	protected void onDestroy() throws Exception {
-		// retrieve through getter so it can be overriden by subclasses,
+		// retrieve through getter so it can be overridden by subclasses,
 		// e.g. HierarchyList
 		Callable onDestroy = this.getOnDestroy();
 		if (onDestroy != null)
@@ -193,7 +204,7 @@ public abstract class Item extends Component {
 	/**
 	 * sets size and bounds to valid values
 	 */
-	private native String nativeInit(int handle);
+	private native String nativeInit(int handle, boolean isChild);
 	
 	private native void nativeDestroy(int handle);
 
@@ -247,7 +258,7 @@ public abstract class Item extends Component {
 
 	public native boolean isKnown();
 	public native void setKnown(boolean known);
-	
+
 	/*
 	 * others...
 	 * 
@@ -263,6 +274,7 @@ public abstract class Item extends Component {
 
 	private native Rectangle nativeGetBounds();
 	private native void nativeSetBounds(int x, int y, int width, int height);
+	private native void nativeSetSize(int width, int height);
 
 	public Rectangle getBounds() {
 		return new Rectangle(bounds);
@@ -314,7 +326,12 @@ public abstract class Item extends Component {
 		boolean sizeChanged = deltaX != 0 || deltaY != 0;
 		if (sizeChanged || nativeBounds.x != nativeX ||
 				nativeBounds.y != nativeY) {
-			nativeSetBounds(nativeX, nativeY, nativeWidth, nativeHeight);
+			// Do not change location for children as this messes things up e.g.
+			// for spin edits
+			if (isChild)
+				nativeSetSize(nativeWidth, nativeHeight);
+			else
+				nativeSetBounds(nativeX, nativeY, nativeWidth, nativeHeight);
 			nativeBounds.set(nativeX, nativeY, nativeWidth, nativeHeight);
 		}
 		// TODO: Move this to updateBounds, and do not rely on nativeBounds?
@@ -399,6 +416,7 @@ public abstract class Item extends Component {
 			: -1;
 		// TODO: verify for which items nativeGetBestSize really works!
 		Size size = null;
+		double factor = isSmall() ? 0.75 : 1;
 		switch (type) {
 		case PICTURE_STATIC:
 		case PICTURE_CHECKBOX:
@@ -411,16 +429,18 @@ public abstract class Item extends Component {
 				image = ((Button) this).getImage();
 			if (image != null)
 				size = image.getSize();
+			else // Default size for image buttons
+				size = new Size(32, 24).multiply(factor);
 			break;
 		case SLIDER: // Default size for slider
-			size = new Size(100, 16);
+			size = new Size(160, 8);
 			break;
 		case POPUP_LIST:
 			// 38 is a mac specific value, defined by the size
 			// of pulldown menu interface elements.
 			// TODO: Check on windows!
 			Size textSize = getTextSize(" ", -1);
-			int addWidth = textSize.height >= 16 ? 38 : 32;
+			int addWidth = isSmall() ? 32 : 38;
 			int addHeight = 8;
 			PopupList list = (PopupList) this;
 			if (list.size() > 0) {
@@ -455,11 +475,13 @@ public abstract class Item extends Component {
 						size.width += size.height * 2;
 						size.height += 6;
 					} else if (this instanceof TextEditItem) {
-						// Ignore the text width for a TextEdit,
-						// just use the text height and use a
-						// default width across Scriptographer.
-						size.height += 6;
-						size.width = size.height * 3;
+						// Ignore the text width for a TextEdit, just use the
+						// text height and use a default width across
+						// Scriptographer for text edits, based on the height.
+						size.width = size.height * 5;
+						// Small Spin Edits on Mac need 2px more...
+						size.height += isSmall() && this instanceof SpinEdit
+							? 8 : 6;
 					}
 				}
 			}
@@ -468,11 +490,19 @@ public abstract class Item extends Component {
 			// If it's not a button, use the current size of the object.
 			// This is needed e.g. for Spacers, where its current size
 			// is the preferred size too.
-			size = (this instanceof Button) ? new Size(120, 20) : getSize();
+			size = this instanceof Button
+					? new Size(120, 20).multiply(factor)
+					: getSize();
 		}
 		// Add margins
 		size.width += margin.left + margin.right;
 		size.height += margin.top + margin.bottom;
+		if (minSize != null) {
+			if (size.width < minSize.width)
+				size.width = minSize.width;
+			if (size.height < minSize.height)
+				size.height = minSize.height;
+		}
 		if (maxSize != null) {
 			if (maxSize.width >= 0 && size.width > maxSize.width)
 				size.width = maxSize.width;

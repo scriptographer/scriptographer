@@ -51,10 +51,10 @@ public class Button extends TextItem {
 		super(dialog, type);
 	}
 
-	protected Button(Dialog dialog, int handle) {
-		super(dialog, handle);
+	protected Button(Dialog dialog, int handle, boolean isChild) {
+		super(dialog, handle, isChild);
 	}
-	
+
 	public Button(Dialog dialog) {
 		super(dialog, ItemType.TEXT_PUSHBUTTON);
 	}
