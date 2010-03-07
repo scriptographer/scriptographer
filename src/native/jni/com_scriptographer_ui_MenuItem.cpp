@@ -197,10 +197,12 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_MenuItem_setCommand(JNIEnv
 		AIMenuItemHandle item = gEngine->getMenuItemHandle(env, obj);
 		char *chars = gEngine->convertString(env, key);
 		int len = strlen(chars);
-		if (len == 1)
-			sAIMenu->SetItemCmd(item, chars[0], modifiers);
-		else if (len >= 2 && (chars[0] == 'f' || chars[0] == 'F'))
-			sAIMenu->SetItemFunctionKey(item, strtol(&chars[1], NULL, 10), modifiers);
+		if (len == 1) {
+			return !sAIMenu->SetItemCmd(item, chars[0], modifiers);
+		} else if (len >= 2 && (chars[0] == 'f' || chars[0] == 'F')) {
+			return !sAIMenu->SetItemFunctionKey(item, strtol(&chars[1], NULL, 10), modifiers);
+		}
 		delete chars;
 	} EXCEPTION_CONVERT(env);
+	return false;
 }
