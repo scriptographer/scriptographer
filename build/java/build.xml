@@ -6,7 +6,7 @@
 	<target name="init">
 		<property name="Name" value="Scriptographer"/>
 		<property name="version.major" value ="2" />
-		<property name="version.minor" value="6" />
+		<property name="version.minor" value="7" />
 		<property name="version" value="${version.major}.${version.minor}"/>
 		<property name="project" value="scriptographer"/>
 		<tstamp>
@@ -253,6 +253,8 @@
 			<fileset dir="${scripts.dir}">
 				<exclude name="**/*.ai"/>
 				<exclude name="**/My Scripts/*.*"/>
+				<!-- Exclude tutorials for now -->
+				<exclude name="**/Tutorials**"/>
 			</fileset>
 		</copy>
 
