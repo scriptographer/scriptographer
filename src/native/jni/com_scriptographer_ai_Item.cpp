@@ -1267,6 +1267,7 @@ bool LiveEffect_callIterator(EffectIterator iterator, JNIEnv *env, AIArtStyleHan
 			gEngine->wrapDictionaryHandle(env, liveDict), data->parameters))) {
 		return iterator(env, style, parser, effect, field, kPreEffectFilter, cont, data);
 	}
+	return false;
 }
 
 bool LiveEffect_iterate(JNIEnv *env, AIArtHandle art, EffectIterator iterator, LiveEffect_data *data) {
@@ -1405,4 +1406,3 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_editEffect(JNIEnv *en
 	} EXCEPTION_CONVERT(env);
 	return false;
 }
-
