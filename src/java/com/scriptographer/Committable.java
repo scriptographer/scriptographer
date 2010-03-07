@@ -34,7 +34,7 @@ package com.scriptographer;
 /**
  * @author lehni
  */
-public interface Commitable {
+public interface Committable {
 	/**
 	 * Commits the cached change to the native object.
 	 * 

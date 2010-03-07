@@ -46,7 +46,7 @@ public class CommitManager {
 		// Don't let anyone instantiate this class.
 	}
 
-	private static CommitableMap commitables = new CommitableMap();
+	private static CommittableMap committables = new CommittableMap();
 
 	/**
 	 * The version that gets increased by one on each commit. This can be used
@@ -65,7 +65,7 @@ public class CommitManager {
 	 */
 	public static void commit(Object key) {
 		if (key != null) {
-			Commitable obj = commitables.get(key);
+			Committable obj = committables.get(key);
 			if (obj != null) {
 				obj.commit();
 				// case it's a text, use the story as a key as well. it's used
@@ -73,12 +73,12 @@ public class CommitManager {
 				if (obj instanceof TextItem)
 					commit(((TextItem) obj).getStory());
 				// Remove object after committing
-				commitables.remove(key);
+				committables.remove(key);
 			}
-		} else if (commitables.size() > 0) {
-			for (Commitable commitable : commitables.values())
-				commitable.commit();
-			commitables.clear();
+		} else if (committables.size() > 0) {
+			for (Committable committable : committables.values())
+				committable.commit();
+			committables.clear();
 		}
 	}
 
@@ -92,25 +92,29 @@ public class CommitManager {
 		commit(null);
 	}
 
-	public static void markDirty(Object key, Commitable commitable) {
-		commitables.put(key, commitable);
+	public static void markDirty(Object key, Committable committable) {
+		committables.put(key, committable);
 	}
 
 	/**
-	 * a hash map that overrides put so that it creates a CommitableList in case
+	 * a hash map that overrides put so that it creates a CommittableList in case
 	 * there was one object under a key already Uses IdentityHashMaps
 	 * internally, to avoid calling of equals on objects
 	 */
 	/*
 	 * Ideally we would be using a LinkedIdentityHashMap here but that class does not exist.
 	 */
-	static class CommitableMap {
-		// A linked map of commitables identified by the identity hash of their key object.
-		// If there is more than one comitable per key, a CommitableGroup is created under the key
-		LinkedHashMap<Integer, Commitable> commitables = new LinkedHashMap<Integer, Commitable>();
-		// Keep track of values that have been added already, identified by their own identity hash.
-		// Commitables that are grouped are still kept in one list here too.
-		LinkedHashMap<Integer, Commitable> values = new LinkedHashMap<Integer, Commitable>();
+	static class CommittableMap {
+		// A linked map of committables identified by the identity hash of their
+		// key object. If there is more than one committable per key, a
+		// CommittableGroup is created under the key
+		LinkedHashMap<Integer, Committable> committables =
+				new LinkedHashMap<Integer, Committable>();
+		// Keep track of values that have been added already, identified by
+		// their own identity hash. Committables that are grouped are still kept
+		// in one list here too.
+		LinkedHashMap<Integer, Committable> values =
+				new LinkedHashMap<Integer, Committable>();
 
 		/**
 		 * A helper class that's needed when there are more than on object for
@@ -120,68 +124,68 @@ public class CommitManager {
 		 * 
 		 * Use a LinkedHashMap in order to preserve sequence of commits
 		 */
-		static class CommitableGroup implements Commitable {
-			LinkedHashMap<Integer, Commitable> commitables = new LinkedHashMap<Integer, Commitable>();
+		static class CommittableGroup implements Committable {
+			LinkedHashMap<Integer, Committable> committables = new LinkedHashMap<Integer, Committable>();
 
 			public void commit() {
-				for (Commitable commitable : commitables.values())
-					commitable.commit();
+				for (Committable committable : committables.values())
+					committable.commit();
 			}
 
-			public void add(Commitable obj) {
-				commitables.put(System.identityHashCode(obj), obj);
+			public void add(Committable obj) {
+				committables.put(System.identityHashCode(obj), obj);
 			}
 
-			public Collection<Commitable> values() {
-				return commitables.values();
+			public Collection<Committable> values() {
+				return committables.values();
 			}
 		}
 
-		public Commitable put(Object key, Commitable obj) {
+		public Committable put(Object key, Committable obj) {
 			int valueHash = System.identityHashCode(obj);
 			if (values.containsKey(valueHash)) {
 				return null;
 			} else {
 				values.put(valueHash, obj);
 				int keyHash = System.identityHashCode(key);
-				Commitable prev = commitables.get(keyHash);
+				Committable prev = committables.get(keyHash);
 				if (prev != null) {
-					if (prev instanceof CommitableGroup) {
+					if (prev instanceof CommittableGroup) {
 						// Add to existing group
-						((CommitableGroup) prev).add(obj);
+						((CommittableGroup) prev).add(obj);
 						return prev;
 					} else {
 						// Create a new group, add both, and put back
-						CommitableGroup list = new CommitableGroup();
+						CommittableGroup list = new CommittableGroup();
 						list.add(prev);
 						list.add(obj);
-						return commitables.put(keyHash, list);
+						return committables.put(keyHash, list);
 					}
 				} else {
 					// Simply add this object
-					return commitables.put(keyHash, obj);
+					return committables.put(keyHash, obj);
 				}
 			}
 		}
 
-		public Commitable get(Object key) {
-			return commitables.get(key);
+		public Committable get(Object key) {
+			return committables.get(System.identityHashCode(key));
 		}
 
-		public Collection<Commitable> values() {
-			return commitables.values();
+		public Collection<Committable> values() {
+			return committables.values();
 		}
 
 		public int size() {
-			return commitables.size();
+			return committables.size();
 		}
 
-		public Commitable remove(Object key) {
+		public Committable remove(Object key) {
 			int keyHash = System.identityHashCode(key);
-			Commitable obj = commitables.remove(keyHash);
-			if (obj instanceof CommitableGroup) {
-				for (Commitable commitable : ((CommitableGroup) obj).values()) {
-					values.remove(System.identityHashCode(commitable));
+			Committable obj = committables.remove(keyHash);
+			if (obj instanceof CommittableGroup) {
+				for (Committable committable : ((CommittableGroup) obj).values()) {
+					values.remove(System.identityHashCode(committable));
 				}
 			} else {
 				values.remove(System.identityHashCode(obj));
@@ -190,7 +194,7 @@ public class CommitManager {
 		}
 
 		public void clear() {
-			commitables.clear();
+			committables.clear();
 			values.clear();
 		}
 	}
