@@ -51,7 +51,6 @@ public class Palette extends FloatingDialog {
 		super(new DialogOption[] {
 				DialogOption.TABBED,
 				DialogOption.SHOW_CYCLE
-//				DialogOption.RESIZING
 		});
 
 		double version = ScriptographerEngine.getApplicationVersion();
@@ -144,12 +143,12 @@ public class Palette extends FloatingDialog {
 		for (int i = 0; i < items.length; i++) {
 			PaletteItem promptItem = items[i];
 			if (promptItem != null) {
-				String desc = promptItem.getLabel();
-				if (desc != null) {
-					TextPane descItem = new TextPane(dialog);
-					descItem.setText(desc + ":");
-					descItem.setMargin(0, 4, 0, 0);
-					dialog.addToContent(descItem, columnIndex + ", " + i
+				String label = promptItem.getLabel();
+				if (label != null && !"".equals(label)) {
+					TextPane labelItem = new TextPane(dialog);
+					labelItem.setText(label + ":");
+					labelItem.setMargin(0, 4, 0, 0);
+					dialog.addToContent(labelItem, columnIndex + ", " + i
 							+ ", left, center");
 				}
 				Item valueItem = promptItem.createItem(dialog,
