@@ -217,7 +217,21 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_CharacterStyle_getFontSize(
  * void setFontSize(java.lang.Float value)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_CharacterStyle_setFontSize(JNIEnv *env, jobject obj, jobject value) {
-	CHARACTERSTYLE_SET_FLOAT(FontSize)
+	//	CHARACTERSTYLE_SET_FLOAT(FontSize), with added check of size for 0
+	try {
+		CharFeaturesRef features = gEngine->getCharFeaturesHandle(env, obj);
+		ASErr err;
+		if (value == NULL) {
+			err = sCharFeatures->ClearFontSize(features);
+		} else {
+			ASReal size = (ASReal) gEngine->callFloatMethod(env, value, gEngine->mid_Number_floatValue);
+			if (size <= 0)
+				size = 0.1;
+			err = sCharFeatures->SetFontSize(features, size);
+		}
+		if (!err)
+			gEngine->callVoidMethod(env, obj, gEngine->mid_ai_CharacterStyle_markSetStyle);
+	} EXCEPTION_CONVERT(env);
 }
 
 /*
