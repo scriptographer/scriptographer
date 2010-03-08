@@ -34,6 +34,8 @@ package com.scriptographer.ai;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
+import com.scriptographer.ai.TextRange.CharacterList;
+import com.scriptographer.ai.TextRange.TokenizerList;
 
 /**
  * The TextItem type allows you to access and modify the text items in
@@ -293,6 +295,59 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
+	 * {@grouptitle Sub Ranges}
+	 * 
+	 * The text ranges of the words contained within the text item. Note that
+	 * the returned text range includes the trailing whitespace characters of
+	 * the words.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = 'The contents of the point text.';
+	 * var word = text.words[1];
+	 * print(word.content) // 'contents ' - note the space after 'contents';
+	 * </code>
+	 */
+	public ReadOnlyList<TextRange> getWords() {
+		return getRange().getWords();
+	}
+
+	/**
+	 * The text ranges of the paragraphs contained within the text item. Note
+	 * that the returned text range includes the trailing paragraph (\r)
+	 * characters of the paragraphs.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var text = new PointText(new Point(0,0));
+	 * 
+	 * // ('\r' is the escaped character that specifies a new paragraph)
+	 * text.content = 'First paragraph\rSecond paragraph';
+	 * var paragraph = text.paragraphs[1];
+	 * print(paragraph.content) //returns 'Second paragraph';
+	 * </code>
+	 */
+	public ReadOnlyList<TextRange> getParagraphs() {
+		return getRange().getParagraphs();
+	}
+
+	/**
+	 * The text ranges of the characters contained within the text item.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var text = new PointText(new Point(0,0));
+	 * text.content = 'abc';
+	 * var character = text.characters[1];
+	 * print(character.content) //returns 'b';
+	 * </code>
+	 */	
+	public ReadOnlyList<TextRange> getCharacters() {
+		return getRange().getCharacters();
+	}
+
+	/**
 	 * {@grouptitle Style Properties}
 	 * 
 	 * The character style of the text frame.
@@ -327,5 +382,4 @@ public abstract class TextItem extends Item {
 	/* Check if this frame is selected.  To set the selection, you have to use application specific
 	API for that.  In Illustrator case, you can use AIArtSuite to set the selection.
 	*/
-	//	ATEErr (*GetSelected) ( TextFrameRef textframe, bool* ret);
 }
