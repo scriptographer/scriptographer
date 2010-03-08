@@ -141,6 +141,15 @@ public class TextRange extends DocumentObject implements Committable {
 	/**
 	 * {@grouptitle Hierarchy}
 	 * 
+	 * The document that the text range belongs to.
+	 */
+	public Document getDocument() {
+		// This is only here for the API document.
+		// It does exactly the same as the definition in DocumentObject
+		return document;
+	}
+
+	/** 
 	 * The story that the text range belongs to.
 	 */
 	public TextStory getStory() {
@@ -517,7 +526,7 @@ public class TextRange extends DocumentObject implements Committable {
 	 * print(word.content) // 'contents ' - note the space after 'contents';
 	 * </code>
 	 */
-	public ReadOnlyList getWords() {
+	public ReadOnlyList<TextRange> getWords() {
 		if (words == null)
 			words = new TokenizerList(" \t\n\r\f");
 		words.update();
@@ -539,7 +548,7 @@ public class TextRange extends DocumentObject implements Committable {
 	 * print(paragraph.content) //returns 'Second paragraph';
 	 * </code>
 	 */
-	public ReadOnlyList getParagraphs() {
+	public ReadOnlyList<TextRange> getParagraphs() {
 		if (paragraphs == null)
 			paragraphs = new TokenizerList("\r");
 		paragraphs.update();
@@ -557,7 +566,7 @@ public class TextRange extends DocumentObject implements Committable {
 	 * print(character.content) //returns 'b';
 	 * </code>
 	 */	
-	public ReadOnlyList getCharacters() {
+	public ReadOnlyList<TextRange> getCharacters() {
 		if (characters == null)
 			characters = new CharacterList();
 		characters.update();
