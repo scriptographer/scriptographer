@@ -66,11 +66,16 @@ abstract class Component extends NotificationHandler {
 	protected abstract void nativeSetFont(int font);
 
 	public DialogFont getFont() {
-		return IntegerEnumUtils.get(DialogFont.class, nativeGetFont());
+		// Only call native function if this is actually a native item.
+		// This avoids isValid() exceptions when using fake UI items such
+		// as spacers.
+		if (handle != 0)
+				return IntegerEnumUtils.get(DialogFont.class, nativeGetFont());
+		return DialogFont.DEFAULT;
 	}
 
 	public void setFont(DialogFont font) {
-		if (font != null)
+		if (font != null && handle != 0)
 			nativeSetFont(font.value);
 	}
 
