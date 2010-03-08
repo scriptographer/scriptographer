@@ -59,7 +59,7 @@ public class RhinoCallable extends Callable {
 			Scriptable scope = ScriptableObject.getTopLevelScope(function);
 			Scriptable wrapper = RhinoEngine.getWrapper(obj, scope);
 			for (int i = 0; i < args.length; i++)
-				args[i] = Context.jsToJava(args[i], Object.class);
+				args[i] = Context.javaToJS(args[i], scope);
 			Context cx = Context.getCurrentContext();
 			Object ret = function.call(cx, scope, wrapper, args);
 			// unwrap if the return value is a native java object:
