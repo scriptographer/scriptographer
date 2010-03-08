@@ -1126,25 +1126,24 @@ ADMRGBColor *ScriptographerEngine::convertColor(AIColor *srcCol, ADMRGBColor *ds
 
 // AIColor <-> AIColor
 AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSpaceValue dstSpace, AIColor *dstCol, AIReal srcAlpha, AIReal *dstAlpha) {
-	// determine srcCol's space and sample size:
+	// Determine srcCol's space and sample size:
 	AIColorConversionSpaceValue srcSpace;
 	int srcSize;
-	bool srcHasAlpha = srcAlpha >= 0;
+
+	// ConvertSampleColor seems to have problems converting alpha color spaces,
+	// so always use the non alpha versions and copy over alpha seperately.
 	switch (srcCol->kind) {
 		case kGrayColor:
 			srcSize = 1;
-			if (srcHasAlpha) srcSpace = kAIAGrayColorSpace;
-			else srcSpace = kAIGrayColorSpace;
+			srcSpace = kAIGrayColorSpace;
 			break;
 		case kThreeColor:
 			srcSize = 3;
-			if (srcHasAlpha) srcSpace = kAIARGBColorSpace;
-			else srcSpace = kAIRGBColorSpace;
+			srcSpace = kAIRGBColorSpace;
 			break;
 		case kFourColor:
 			srcSize = 4;
-			if (srcHasAlpha) srcSpace = kAIACMYKColorSpace;
-			else srcSpace = kAICMYKColorSpace;
+			srcSpace = kAICMYKColorSpace;
 			break;
 		default:
 			return NULL;
@@ -1154,53 +1153,68 @@ AIColor *ScriptographerEngine::convertColor(AIColor *srcCol, AIColorConversionSp
 		dstSpace == kAIARGBColorSpace ||
 		dstSpace == kAIAGrayColorSpace;
 
+	// Change to non alpha version. See explanation above.
+	switch (dstSpace) {
+		case kAIAGrayColorSpace:
+			dstSpace = kAIGrayColorSpace;
+			break;
+		case kAIARGBColorSpace:
+			dstSpace = kAIRGBColorSpace;
+			break;
+		case kAIACMYKColorSpace:
+			dstSpace = kAICMYKColorSpace;
+			break;
+	}
+
 	if (srcSpace >= 0 && dstSpace >= 0) {
-		AISampleComponent src[5];
-		AISampleComponent dst[5];
+		AISampleComponent src[4];
+		AISampleComponent dst[4];
 		memcpy(src, &srcCol->c, srcSize * sizeof(AISampleComponent));
-		if (srcHasAlpha) src[srcSize] = srcAlpha;
 		// TODO: why swapping kGrayColor???
-		if (srcCol->kind == kGrayColor) src[0] = 1.0 - src[0];
+		if (srcCol->kind == kGrayColor)
+			src[0] = 1.0 - src[0];
 		ASBoolean inGamut;
 #if kPluginInterfaceVersion < kAI12
-		sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace, dst, &inGamut);
+		if (!sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace, dst, &inGamut)) {
 #else
 		AIColorConvertOptions options;
-		sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace, dst, options, &inGamut);
+		if (!sAIColorConversion->ConvertSampleColor(srcSpace, src, dstSpace, dst, options, &inGamut)) {
 #endif
-		if (dstCol == NULL)
-			dstCol = new AIColor;
-		// Init the destCol with 0
-		// memset(dstCol, 0, sizeof(AIColor));
-		// determine dstCol's kind and sampleSize:
-		int dstSize;
-		switch (dstSpace) {
-			case kAIMonoColorSpace:
-			case kAIGrayColorSpace:
-			case kAIAGrayColorSpace:
-				dstCol->kind = kGrayColor;
-				dstSize = 1;
-				break;
-			case kAIRGBColorSpace:
-			case kAIARGBColorSpace:
-				dstCol->kind = kThreeColor;
-				dstSize = 3;
-				break;
-			case kAICMYKColorSpace:
-			case kAIACMYKColorSpace:
-				dstCol->kind = kFourColor;
-				dstSize = 4;
-				break;
-			default:
-				return NULL;
+			if (dstCol == NULL)
+				dstCol = new AIColor;
+			// Init the destCol with 0
+			// memset(dstCol, 0, sizeof(AIColor));
+			// determine dstCol's kind and sampleSize:
+			int dstSize;
+			switch (dstSpace) {
+				case kAIMonoColorSpace:
+					dstCol->kind = kGrayColor;
+					dstSize = 1;
+					break;
+				case kAIGrayColorSpace:
+					dstCol->kind = kGrayColor;
+					dstSize = 1;
+					break;
+				case kAIRGBColorSpace:
+					dstCol->kind = kThreeColor;
+					dstSize = 3;
+					break;
+				case kAICMYKColorSpace:
+					dstCol->kind = kFourColor;
+					dstSize = 4;
+					break;
+				default:
+					return NULL;
+			}
+			// TODO: why swapping kGrayColor???
+			if (dstCol->kind == kGrayColor)
+				dst[0] = 1.0 - dst[0];
+			memcpy(&dstCol->c, dst, dstSize * sizeof(AISampleComponent));
+			// get back alpha:
+			if (dstAlpha != NULL)
+				*dstAlpha = dstHasAlpha ? srcAlpha : -1;
+			return dstCol;
 		}
-		// TODO: why swapping kGrayColor???
-		if (dstCol->kind == kGrayColor) dst[0] = 1.0 - dst[0];
-		memcpy(&dstCol->c, dst, dstSize * sizeof(AISampleComponent));
-		// get back alpha:
-		if (dstAlpha != NULL)
-			*dstAlpha = dstHasAlpha ? dst[dstSize] : -1.0;
-		return dstCol;
 	}
 	return NULL;
 }
