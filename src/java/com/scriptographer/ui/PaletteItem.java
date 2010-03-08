@@ -259,12 +259,15 @@ public class PaletteItem {
 	protected void onChange() {
 		String name = getName();
 		Object value = getValue();
-		if (onChange != null)
-			ScriptographerEngine.invoke(onChange, this, value);
+		// First call onChange on Palette, so values get updated
 		if (item.dialog instanceof Palette) {
 			Palette palette = (Palette) item.dialog;
 			palette.onChange(this, name, value);
 		}
+		// And now call onChange on the item. values will contain the same
+		// new value now too.
+		if (onChange != null)
+			ScriptographerEngine.invoke(onChange, this, value);
 	}
 
 	protected Item createItem(Dialog dialog, Border margin) {
