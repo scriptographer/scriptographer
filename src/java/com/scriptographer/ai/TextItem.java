@@ -34,8 +34,6 @@ package com.scriptographer.ai;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
-import com.scriptographer.ai.TextRange.CharacterList;
-import com.scriptographer.ai.TextRange.TokenizerList;
 
 /**
  * The TextItem type allows you to access and modify the text items in
