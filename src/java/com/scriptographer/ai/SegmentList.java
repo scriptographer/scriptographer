@@ -652,9 +652,9 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		// Add overlapping ends for averaging handles in closed paths
 		int overlap;
 		if (closed) {
-			// Overlap 4 points since averaging beziers affect the 4 neighboring
-			// points
-			overlap = 4;
+			// Overlap up to 4 points since averaging beziers affect the 4
+			// neighboring points
+			overlap = Math.min(size, 4);
 			n += Math.min(size, overlap) * 2;
 		} else {
 			overlap = 0;
