@@ -123,7 +123,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedFile_getSize(JNIEnv *
 		AIArtHandle art = gEngine->getArtHandle(env, obj, true);
 		AIRealRect rect;
 		if (!sAIPlaced->GetPlacedBoundingBox(art, &rect)) {
-			DEFINE_POINT(point, rect.right - rect.right, rect.top - rect.bottom);
+			DEFINE_POINT(point, rect.right - rect.left, rect.top - rect.bottom);
 			return gEngine->convertSize(env, &point);
 		}
 	} EXCEPTION_CONVERT(env);
