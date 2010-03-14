@@ -484,6 +484,44 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeRemove(JNIEnv *
 }
 
 /*
+ * boolean[] nativeCheckValidItems(int[] values, int length)
+ */
+JNIEXPORT jbooleanArray JNICALL Java_com_scriptographer_ai_Item_nativeCheckValidItems(JNIEnv *env, jclass cls, jintArray array, jint length) {
+	try {
+		// Get handles
+		jint *values = new jint[length];
+		env->GetIntArrayRegion(array, 0, length, values);
+		// Collect valid values
+		int validLength = length / 3;
+		jboolean *valid = new jboolean[validLength];
+		// In order to check dictionary art items, we need to see if their dictionary
+		// still contains them. If the dicitionary is not valid any longer, or it does
+		// not contain the item any longer, it is not regarded as valid.
+		// 'values' contains tripples of handle / dict / key for each item to check.
+		for (int i = 0, j = 0; i < validLength; i++) {
+			AIArtHandle art = (AIArtHandle) values[j++];
+			AIDictionaryRef dict = (AIDictionaryRef) values[j++];
+			AIDictKey key = (AIDictKey) values[j++];
+			if (dict != NULL) {
+				AIArtHandle other;
+				valid[i] = !sAIDictionary->GetArtEntry(dict, key, &other) && other == art;
+			} else {
+#if kPluginInterfaceVersion < kAI12
+				valid[i] = sAIArt->ValidArt(art);
+#else // kPluginInterfaceVersion >= kAI12
+				valid[i] = sAIArt->ValidArt(art, false);
+#endif // kPluginInterfaceVersion >= kAI12
+			}
+		}
+		// Set the valid values and return
+		jbooleanArray validArray = env->NewBooleanArray(validLength);
+		env->SetBooleanArrayRegion(validArray, 0, validLength, valid);
+		return validArray;
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
+
+/*
  * com.scriptographer.ai.Item copyTo(com.scriptographer.ai.Document document)
  */
 JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Item_copyTo__Lcom_scriptographer_ai_Document_2(JNIEnv *env, jobject obj, jobject document) {
@@ -1403,6 +1441,16 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_editEffect(JNIEnv *en
 			parameters
 		};
 		return LiveEffect_iterate(env, art, LiveEffect_editIterator, &effectData);
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+/*
+ * boolean isValid(int handle)
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isValid(JNIEnv *env, jclass cls, jint handle) {
+	try {
+		return sAIArt->ValidArt((AIArtHandle) handle, false);
 	} EXCEPTION_CONVERT(env);
 	return false;
 }

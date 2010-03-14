@@ -143,16 +143,15 @@ private:
 	GlyphRuns(int glyphStart, int glyphEnd, int charStart, int charEnd) {
 		m_glyphStart = glyphStart;
 		m_glyphEnd = glyphEnd;
-		m_glyphIndex = m_glyphStart;
+		m_glyphIndex = glyphStart;
 		m_glyphSize = glyphEnd - glyphStart;
 		m_charStart = charStart;
 		m_charSize = charEnd - charStart;
 	}
 
-	bool add(IGlyphRun run, Array<int> *glyphLengths) {
-		int glyphSize = run.GetSize();
+	bool add(IGlyphRun run, int glyphSize, Array<int> *glyphLengths) {
 		bool first = m_glyphIndex == m_glyphStart;
-		int nextGlyphIndex = m_glyphIndex + glyphSize;
+		int nextGlyphIndex = first ? glyphSize : m_glyphIndex + glyphSize;
 		bool last = nextGlyphIndex >= m_glyphEnd;
 		int glyphStart = first ? m_glyphStart : 0;
 		int glyphEnd = last ? m_glyphEnd - m_glyphIndex : glyphSize;
@@ -315,7 +314,7 @@ public:
 			int charEnd = range.GetEnd();
 			int charPos = charStart;
 			int glyphStart = GlyphRuns::getIndex(frameRange, charStart);
-			int glyphEnd = GlyphRuns::getIndex(range, charEnd, &glyphLengths);
+			int glyphEnd = GlyphRuns::getIndex(frameRange, charEnd, &glyphLengths);
 			
 			ASInt32 runStart = 0;
 			ITextLinesIterator lines = frame.GetTextLinesIterator();
@@ -324,7 +323,8 @@ public:
 				IGlyphRunsIterator runs = lines.Item().GetGlyphRunsIterator();
 				while (runs.IsNotDone()) {
 					IGlyphRun run = runs.Item();
-					ASInt32 runEnd = runStart + run.GetSize();
+					ASInt32 runSize = run.GetSize();
+					ASInt32 runEnd = runStart + runSize;
 					if (runStart >= glyphEnd) {
 						// Found it already
 						return glyphRuns;
@@ -336,10 +336,16 @@ public:
 							glyphRuns = new GlyphRuns(glyphStart - runStart, glyphEnd - runStart, charStart, charEnd);
 							gEngine->setIntField(env, obj, gEngine->fid_ai_TextRange_glyphRuns, (jint) glyphRuns);
 						}
-						glyphRuns->add(run, &glyphLengths);
+						glyphRuns->add(run, runSize, &glyphLengths);
 						runs.Next();
-						while (runs.IsNotDone() && glyphRuns->add(runs.Item(), &glyphLengths))
+						while (runs.IsNotDone()) {
+							run = runs.Item();
+							runSize = run.GetSize();
+							runEnd = runEnd + runSize;
+							if (!glyphRuns->add(run, runSize, &glyphLengths))
+								break;
 							runs.Next();
+						}
 					}
 					if (runs.IsNotDone())
 						runs.Next();

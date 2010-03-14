@@ -40,9 +40,11 @@ import java.util.Stack;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
 import com.scratchdisk.script.ChangeListener;
+import com.scratchdisk.util.ArrayList;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.SoftIntMap;
 import com.scriptographer.CommitManager;
+import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ScriptographerException;
 import com.scriptographer.ui.Image;
 
@@ -220,7 +222,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 			creationVersion = -1;
 			// Since creationLevel for this item is not known, add it to
 			// the items to check on each undo.
-			document.checkValidItems.add(new SoftReference<Item>(this));
+			document.checkItems.add(new SoftReference<Item>(this));
 		}
 		// Use the current history level for the modification level, to force
 		// updates bellow this level, since we do not know when exactly
@@ -275,6 +277,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 */
 	protected static Item wrapHandle(int artHandle, short type, int textType,
 			int docHandle, boolean wrapped, boolean created) {
+		// ScriptographerEngine.logConsole("wrapHandle: @" + Integer.toHexString(artHandle));
 		// First see whether the object was already wrapped before:
 		Item item = null;
 		// Only try to use the previous wrapper for this address if the object
@@ -1495,10 +1498,67 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @return {@true if the item is valid}
 	 */
 	public boolean isValid() {
+		if (!Document.trackUndoHistory)
+			return Item.isValid(handle);
 		boolean valid = handle != 0
 				&& document.isValidVersion(creationVersion)
 				&& !document.isValidVersion(deletionVersion);
+		if (!valid && Document.reportUndoHistory) {
+			ScriptographerEngine.logConsole(getId() + "is invalid (branch: "
+					+ ((creationVersion >> 32) & 0xffffffffl) + ", level: " 
+					+ (creationVersion & 0xffffffffl) + ")");
+		}
 		return valid;
+	}
+
+	private static native boolean[] nativeCheckValidItems(int[] values,
+			int length);
+
+	protected static void checkValidItems(Document document, long version) {
+		ArrayList<SoftReference<Item>> checkItems = document.checkItems;
+		if (!checkItems.isEmpty()) {
+			int[] values = new int[checkItems.size() * 3];
+			// Check all these handles in one go, for increased performance
+			// We need to pass dictionaryHandle and key as well, so these
+			// art items can be checked for validity differently.
+			int j = 0;
+			for (int i = 0, l = checkItems.size(); i < l; i++) {
+				Item item = checkItems.get(i).get();
+				if (item != null) {
+					values[j++] = item.handle;
+					values[j++] = item.dictionaryHandle;
+					values[j++] = item.dictionaryKey;
+				}
+			}
+			boolean[] valid = nativeCheckValidItems(values, j);
+			// Update historyVersion to one that is not valid anymore
+			for (int i = valid.length - 1; i >= 0; i--) {
+				if (!valid[i]) {
+					// Retrieve the item to update through its soft reference.
+					Item item = checkItems.get(i).get();
+					// Check for null as the soft reference might have been
+					// released
+					if (item != null) {
+						ScriptographerEngine.logConsole("Marking " + item
+								+ " as invalid before version: " + version
+								+ " isValid: " + Item.isValid(item.handle));
+						item.creationVersion = version;
+						// We need to remove items from the cache once they are
+						// known not to be valid anymore, as their handle
+						// appears to quite often be reused very soon. The
+						// better approach would be only to remove them once
+						// their branch gets invalid, as this would assure reuse
+						// of existing wrappers for items that become invalid
+						// and then valid again through undo / redo. Now they
+						// would receive a new wrapper even if the old one
+						// would still be referenced from scripts...
+						items.remove(item.handle);
+					}
+					// Remove it from the list
+					checkItems.remove(i);
+				}
+			}
+		}
 	}
 
 	/**
@@ -1845,4 +1905,10 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	public static void debug() {
 		System.out.println("items: " + items.size());
 	}
+
+	/*
+	 * This is just here for debugging the undo history code. It can be removed
+	 * once that works well.
+	 */
+	protected static native boolean isValid(int handle);
 }

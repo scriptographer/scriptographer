@@ -61,8 +61,12 @@ import com.scriptographer.script.EnumUtils;
  * @author lehni
  */
 public class Document extends NativeObject implements ChangeListener {
-
-	private static final boolean report = false;
+	/*
+	 * These flags are just here to test the undo history code. They
+	 * should be removed once that works well.
+	 */
+	protected static final boolean trackUndoHistory = true;
+	protected static final boolean reportUndoHistory = true;
 
 	private LayerList layers = null;
 	private DocumentViewList views = null;
@@ -94,7 +98,8 @@ public class Document extends NativeObject implements ChangeListener {
 	 * Internal list that keeps track of wrapped objects that have no clear
 	 * creation level. These need to be checked if they are valid in each undo.
 	 */
-	protected ArrayList<SoftReference<Item>> checkValidItems = new ArrayList<SoftReference<Item>>();
+	protected ArrayList<SoftReference<Item>> checkItems =
+			new ArrayList<SoftReference<Item>>();
 
 	protected ArrayList<Item> createdItems = new ArrayList<Item>();
 	protected ArrayList<Item> modifiedItems = new ArrayList<Item>();
@@ -311,17 +316,19 @@ public class Document extends NativeObject implements ChangeListener {
 			this.redoLevel = redoLevel;
 			// Update the current historyEntry level to the current level
 			historyBranch.level = undoLevel;
-			if (report)
-				ScriptographerEngine.logConsole("undoLevel = " + undoLevel + ", redoLevel = "
-						+ redoLevel + ", version = " + historyBranch.branch
+			if (reportUndoHistory)
+				ScriptographerEngine.logConsole("undoLevel = " + undoLevel
+						+ ", redoLevel = " + redoLevel
+						+ ", branch = " + historyBranch.branch
+						+ ", level = " + historyBranch.level
 						+ ", previous = " + (historyBranch.previous != null 
 								? historyBranch.previous.level : -1)
-						+ ", level = " + historyVersion);
+						+ ", version = " + historyVersion);
 		}
 	}
 
 	protected boolean isValidVersion(long version) {
-		if (version == -1)
+		if (version == -1 || !trackUndoHistory)
 			return true;
 		// Branch = upper 32 bits
 		long branch = (version >> 32) & 0xffffffffl;
@@ -329,43 +336,11 @@ public class Document extends NativeObject implements ChangeListener {
 		if (entry != null) {
 			// Version = lower 32 bits
 			long level = version & 0xffffffffl;
-			return level <= entry.level
+			boolean validLevel = level <= entry.level
 					&& (entry.previous == null || level > entry.previous.level);
+			return validLevel;
 		}
 		return false;
-	}
-
-	private static native boolean[] nativeCheckValidItems(int[] values, int length);
-
-	protected void checkValidItems(long version) {
-		if (!checkValidItems.isEmpty()) {
-			int[] values = new int[checkValidItems.size() * 3];
-			// Check all these handles in one go, for increased performance
-			// We need to pass dictionaryHandle and key as well, so these
-			// art items can be checked for validity differently.
-			int j = 0;
-			for (int i = 0, l = checkValidItems.size(); i < l; i++) {
-				Item item = checkValidItems.get(i).get();
-				if (item != null) {
-					values[j++] = item.handle;
-					values[j++] = item.dictionaryHandle;
-					values[j++] = item.dictionaryKey;
-				}
-			}
-			boolean[] valid = nativeCheckValidItems(values, j);
-			// Update historyVersion to one that is not valid anymore
-			for (int i = valid.length - 1; i >= 0; i--) {
-				if (!valid[i]) {
-					// Retrieve the item to update through its soft reference.
-					Item item = checkValidItems.get(i).get();
-					// Check for null as the soft reference might have been released
-					if (item != null)
-						item.creationVersion = version;
-					// Remove it from the list
-					checkValidItems.remove(i);
-				}
-			}
-		}
 	}
 
 	protected void onClosed() {
@@ -377,10 +352,10 @@ public class Document extends NativeObject implements ChangeListener {
 	}
 
 	protected void onRevert() {
-		if (report)
+		if (reportUndoHistory)
 			ScriptographerEngine.logConsole("Revert");
 		resetHistory();
-		checkValidItems(Long.MAX_VALUE);
+		Item.checkValidItems(this, Long.MAX_VALUE);
 	}
 
 	/**
@@ -391,40 +366,48 @@ public class Document extends NativeObject implements ChangeListener {
 			Item.updateIfWrapped(artHandles);
 		// TODO: Look into making CommitManager.version document dependent?
 		CommitManager.version++;
-		setHistoryLevels(undoLevel, redoLevel, true);
+		if (trackUndoHistory) {
+			setHistoryLevels(undoLevel, redoLevel, true);
+		}
 	}
-
+	
 	protected void onUndo(int undoLevel, int redoLevel) {
-		if (report)
+		if (reportUndoHistory)
 			ScriptographerEngine.logConsole("Undo");
-		// Check if we were going back to a previous branch, and if so, switch
-		// back.
-		if (historyBranch.previous != null
-				&& undoLevel <= historyBranch.previous.level)
-			historyBranch = historyBranch.previous;
-		// Scan through all the wrappers without a defined creationLevel and
-		// set it to the current undoLevel if they are not valid at this point
-		// anymore. Do this before the new historyLevel is set!
-		// Update historyVersion so that it is not valid anymore at this
-		// cycle, by adding 1.
-		checkValidItems(historyVersion + 1);
-		// Now set levels. This also sets historyLevel correctly
-		setHistoryLevels(undoLevel, redoLevel, false);
+		if (trackUndoHistory) {
+			// Check if we were going back to a previous branch, and if so, switch
+			// back.
+			if (historyBranch.previous != null
+					&& undoLevel <= historyBranch.previous.level)
+				historyBranch = historyBranch.previous;
+	
+			// Scan through all the wrappers without a defined creationLevel and
+			// set it to the current undoLevel if they are not valid at this point
+			// anymore. Do this before the new historyLevel is set. It will still
+			// be set to the last version where they were valid, which will become
+			// their crationVersion.
+			Item.checkValidItems(this, historyVersion);
+	
+			// Now set levels. This also sets historyVersion correctly
+			setHistoryLevels(undoLevel, redoLevel, false);
+		}
 	}
 
 	protected void onRedo(int undoLevel, int redoLevel) {
-		if (report)
+		if (reportUndoHistory)
 			ScriptographerEngine.logConsole("Redo");
-		// Check if we were going forward to a "future" branch, and if so,
-		// switch again.
-		if (historyBranch.next != null
-				&& undoLevel > historyBranch.future)
-			historyBranch = historyBranch.next;
-		setHistoryLevels(undoLevel, redoLevel, false);
+		if (trackUndoHistory) {
+			// Check if we were going forward to a "future" branch, and if so,
+			// switch again.
+			if (historyBranch.next != null
+					&& undoLevel > historyBranch.future)
+				historyBranch = historyBranch.next;
+			setHistoryLevels(undoLevel, redoLevel, false);
+		}
 	}
 
 	protected void onClear(int[] artHandles) {
-		if (report)
+		if (reportUndoHistory)
 			ScriptographerEngine.logConsole("Clear");
 		if (artHandles != null)
 			Item.removeIfWrapped(artHandles, false);
