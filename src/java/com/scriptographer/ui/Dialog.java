@@ -1178,12 +1178,10 @@ public abstract class Dialog extends Component {
 
 	private static File fileDialog(String message, String[] filters,
 			File selectedFile, boolean open) {
-		String filter;
+		String filter = null;
 		// Converts the filters to one long string, separated by \0
 		// as needed by the native function.
-		if (filters == null) {
-			filter = "";
-		} else {
+		if (filters != null) {
 			StringBuffer buf = new StringBuffer();
 			for (int i = 0; i < filters.length; i++) {
 				buf.append(filters[i]);

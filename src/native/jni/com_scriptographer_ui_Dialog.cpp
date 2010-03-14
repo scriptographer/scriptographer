@@ -837,24 +837,28 @@ public:
 			eventCallbackUPP = NewNavEventUPP(eventCallback);
 			if (type == FileOpen && filter != NULL) {
 				CFStringRef str = gEngine->convertString_CFString(env, filter);
-				CFStringRef seperator = CFStringCreateWithBytes (NULL, (const UInt8*) "\0", 1, kCFStringEncodingUTF8, false);
+				CFStringRef seperator = CFStringCreateWithBytes(NULL, (const UInt8*) "\0", 1, kCFStringEncodingUTF8, false);
 				CFArrayRef parts = CFStringCreateArrayBySeparatingStrings(NULL, str, seperator);
-				CFIndex count = CFArrayGetCount(parts);
-				CFStringRef name;
-				for (int i = 0; i < count; i++) {
-					CFStringRef part = (CFStringRef) CFArrayGetValueAtIndex(parts, i);
-					if (CFStringGetLength(part) == 0)
-						break;
-					if (i % 2 == 0) {
-						name = part;
-					} else {
-						filters.add(new NavigationFilter(name, part));
-						name = NULL;
+				if (parts != NULL) {
+					CFIndex count = CFArrayGetCount(parts);
+					CFStringRef name = NULL;
+					for (int i = 0; i < count; i++) {
+						CFStringRef part = (CFStringRef) CFArrayGetValueAtIndex(parts, i);
+						if (CFStringGetLength(part) == 0)
+							break;
+						if (i % 2 == 0) {
+							name = part;
+						} else {
+							filters.add(new NavigationFilter(name, part));
+							name = NULL;
+						}
 					}
+					// TODO: Do we need to CFRelease any or all elements in CFArrayRef
+					// as received from CFStringCreateArrayBySeparatingStrings?
+					if (name != NULL)
+						CFRelease(name);
+					CFRelease(parts);
 				}
-				if (name != NULL)
-					CFRelease(name);
-				CFRelease(parts);
 				CFRelease(seperator);
 				CFRelease(str);
 				if (filters.size() > 0) {
