@@ -1072,6 +1072,16 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	}
 
 	/**
+	 * Reverses the order of this item's children
+	 */
+	public boolean reverseChildren() {
+		boolean changed = false;
+		for (Item child : getChildren())
+			changed = appendTop(child) | changed;
+		return changed;
+	}
+
+	/**
 	 * The first item contained within this item.
 	 */
 	public native Item getFirstChild();
