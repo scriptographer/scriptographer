@@ -103,3 +103,17 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_PlacedSymbol_setMatrix(JNIEnv 
 		sAISymbol->SetSoftTransformOfSymbolArt(art, &mx);
 	} EXCEPTION_CONVERT(env);
 }
+
+/*
+ * com.scriptographer.ai.Item embed()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_PlacedSymbol_embed(JNIEnv *env, jobject obj) {
+	try {
+		AIArtHandle art = gEngine->getArtHandle(env, obj);
+		AIArtHandle embedded = NULL;
+		if (sAISymbol->BreakLinkToSymbol(art, kPlaceAbove, art, &embedded))
+			throw new StringException("Unable to embed symbol item.");
+		return gEngine->wrapArtHandle(env, embedded, NULL, true);
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}

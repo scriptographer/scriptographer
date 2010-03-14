@@ -37,9 +37,9 @@
  */
 
 /*
- * int nativeCreate(int artHandle, boolean listed)
+ * int nativeCreate(int artHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Symbol_nativeCreate(JNIEnv *env, jclass cls, jint artHandle, jboolean listed) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Symbol_nativeCreate(JNIEnv *env, jclass cls, jint artHandle) {
 	try {
 		// Make sure we're switching to the right doc (gCreationDoc)
 		Document_activate();
@@ -47,9 +47,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Symbol_nativeCreate(JNIEnv *en
 #if kPluginInterfaceVersion >= kAI15
 		// TODO: Test these parameters registrationPoint, transformDefinitionArt, decide wether to pass
 		// them and compare with behavior in CS4...
-		sAISymbol->NewSymbolPattern(&symbol, (AIArtHandle) artHandle, kSymbolCenterPoint, true, !listed);
+		sAISymbol->NewSymbolPattern(&symbol, (AIArtHandle) artHandle, kSymbolCenterPoint, true, false);
 #else // kPluginInterfaceVersion < kAI15
-		sAISymbol->NewSymbolPattern(&symbol, (AIArtHandle) artHandle, !listed);
+		sAISymbol->NewSymbolPattern(&symbol, (AIArtHandle) artHandle, false);
 #endif // kPluginInterfaceVersion < kAI15
 		return (jint) symbol;
 	} EXCEPTION_CONVERT(env);
@@ -81,16 +81,18 @@ JNIEXPORT jstring JNICALL Java_com_scriptographer_ai_Symbol_getName(JNIEnv *env,
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Symbol_setName(JNIEnv *env, jobject obj, jstring name) {
 	try {
 		AIPatternHandle symbol = gEngine->getPatternHandle(env, obj, true);
+		if (name != NULL) {
 #if kPluginInterfaceVersion >= kAI12
-		ai::UnicodeString str = gEngine->convertString_UnicodeString(env, name);
-		sAISymbol->GetSymbolPatternDisplayName(str);
-		sAISymbol->SetSymbolPatternName(symbol, str);
+			ai::UnicodeString str = gEngine->convertString_UnicodeString(env, name);
+			sAISymbol->GetSymbolPatternDisplayName(str);
+			sAISymbol->SetSymbolPatternBaseName(symbol, str);
 #else // kPluginInterfaceVersion < kAI12
-		char *str = gEngine->convertString(env, name, kMaxSymbolNameLength);
-		sAISymbol->GetSymbolPatternDisplayName(str);
-		sAISymbol->SetSymbolPatternName(symbol, str);
-		delete str;
+			char *str = gEngine->convertString(env, name, kMaxSymbolNameLength);
+			sAISymbol->GetSymbolPatternDisplayName(str);
+			sAISymbol->SetSymbolPatternBaseName(symbol, str);
+			delete str;
 #endif // kPluginInterfaceVersion < kAI12
+		}
 	} EXCEPTION_CONVERT(env);
 }
 
