@@ -61,7 +61,7 @@ public class RhinoCallable extends Callable {
 			for (int i = 0; i < args.length; i++)
 				args[i] = Context.javaToJS(args[i], scope);
 			Context cx = Context.getCurrentContext();
-			Object ret = function.call(cx, scope, wrapper, args);
+			Object ret = function.call(cx, wrapper, wrapper, args);
 			// unwrap if the return value is a native java object:
 			if (ret instanceof Wrapper)
 				ret = ((Wrapper) ret).unwrap();
