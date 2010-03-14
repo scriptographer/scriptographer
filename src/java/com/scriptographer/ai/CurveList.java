@@ -58,7 +58,7 @@ public class CurveList extends AbstractFetchList<Curve> {
 	}
 
 	/**
-	 * This is called from the linked SegmentList, when this path changes.
+	 * updateSize is called from the linked SegmentList on size changes.
 	 */
 	protected void updateSize() {
 		int newSize = segments.size();
@@ -70,6 +70,16 @@ public class CurveList extends AbstractFetchList<Curve> {
 			list.setSize(newSize);
 			size = newSize;
 		}
+	}
+
+	/**
+	 * updateIndex is called from the linked SegmentList on index changes.
+	 */
+	protected void updateIndex(int index) {
+		// Only update curve index if curve is created already
+		Curve curve = list.get(index);
+		if (curve != null)
+			curve.setIndex(index);
 	}
 
 	protected void fetch(int fromIndex, int toIndex) {

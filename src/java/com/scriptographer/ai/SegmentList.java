@@ -236,14 +236,14 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		if (curves != null)
 			curves.updateSize();
 		
-		// Update segment and curve indices
+		// Update segment and curve indices above
 		for (int i = index; i < size; i++) {
 			Segment seg = list.get(i);
 			if (seg != null) {
 				seg.index = i;
-				Curve curve = seg.getCurve();
-				if (curve != null)
-					curve.setIndex(i);
+				// Only update curve index if curve is created already
+				if (curves != null)
+					curves.updateIndex(i);
 			}
 		}
 		return segment;
@@ -370,6 +370,16 @@ public class SegmentList extends AbstractFetchList<Segment> {
 				size -= toIndex - fromIndex;
 			}
 			list.remove(fromIndex, toIndex);
+			// Update segment and curve indices of the left entries
+			for (int i = fromIndex; i < size; i++) {
+				Segment seg = list.get(i);
+				if (seg != null) {
+					seg.index = i;
+					// Only update curve index if curve is created already
+					if (curves != null)
+						curves.updateIndex(i);
+				}
+			}
 			if (curves != null)
 				curves.updateSize();
 		}
