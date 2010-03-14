@@ -77,9 +77,11 @@ public class CurveList extends AbstractFetchList<Curve> {
 	 */
 	protected void updateIndex(int index) {
 		// Only update curve index if curve is created already
-		Curve curve = list.get(index);
-		if (curve != null)
-			curve.setIndex(index);
+		if (index < size) {
+			Curve curve = list.get(index);
+			if (curve != null)
+				curve.setIndex(index);
+		}
 	}
 
 	protected void fetch(int fromIndex, int toIndex) {
