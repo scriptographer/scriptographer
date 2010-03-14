@@ -44,7 +44,7 @@ public class PlacedSymbol extends Item {
 	}
 
 	private static native int nativeCreate(int symbolHandle, Matrix matrix);
-	
+
 	/**
 	 * Creates a new PlacedSymbol Item.
 	 * 
@@ -78,23 +78,25 @@ public class PlacedSymbol extends Item {
 	public PlacedSymbol(Symbol symbol, Matrix matrix) {
 		super(nativeCreate(symbol.handle, matrix), symbol.document, true, false);
 	}
-	
+
 	public PlacedSymbol(Symbol symbol) {
 		this(symbol, new Matrix());
 	}
-	
+
 	private native int nativeGetSymbol();
-	
+
 	/**
 	 * The symbol contained within the placed symbol.
 	 */
 	public Symbol getSymbol() {
 		return Symbol.wrapHandle(nativeGetSymbol(), document);
 	}
-	
+
 	public native void setSymbol(Symbol symbol);
-	
+
 	public native Matrix getMatrix();
-	
+
 	public native void setMatrix(Matrix matrix);
+
+	public native Item embed();
 }

@@ -43,26 +43,20 @@ public class Symbol extends DocumentObject {
 		super(handle, document);
 	}
 
-	private static native int nativeCreate(int artHandle, boolean listed);
-	
+	private static native int nativeCreate(int artHandle);
+
 	/**
 	 * Creates a Symbol item.
 	 * 
-	 * @param item the source item which is copied as the definition of the symbol
-	 * @param listed specifies whether the item should appear in the symbols
-	 *        palette. Listed symbols are saved when a document is closed, even
-	 *        if there are no instances of them within the document. {@default true}
+	 * @param item the source item which is copied as the definition of the
+	 *        symbol
 	 */
-	public Symbol(Item item, boolean listed) {
-		super(nativeCreate(item != null ? item.handle : 0, listed));
-	}
-	
 	public Symbol(Item item) {
-		this(item, true);
+		super(nativeCreate(item != null ? item.handle : 0));
 	}
-	
+
 	public Symbol() {
-		this(null, true);
+		this(null);
 	}
 	
 	protected static Symbol wrapHandle(int handle, Document document) {
