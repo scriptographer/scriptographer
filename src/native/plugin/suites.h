@@ -28,7 +28,6 @@
  */
 
 // Define versions so they can even be used when compiling for 10 or CS1:
-#define kAI10	0x10000001	// AI 10.0
 #define kAI11	0x11000001	// AI 11.0 (CS)
 #define kAI12	0x12000001	// AI 12.0 (CS2)
 #define kAI13	0x13000001	// AI 13.0 (CS3)
@@ -134,20 +133,11 @@
 #include "AIContext.h"
 #include "AIPreference.h"
 
-#if kPluginInterfaceVersion >= kAI11
 #include "AITextFrame.h"
 #include "IText.h"
 #include "AIATEPaint.h"
 #include "AIATECurrTextFeatures.h"
 #include "ATETextSuitesExtern.h"
-#else // kPluginInterfaceVersion < kAI11
-#include "AIText.h"
-#include "AITextFaceStyle.h"
-#include "AITextLine.h"
-#include "AITextPath.h"
-#include "AITextRun.h"
-#include "AITextStream.h"
-#endif // kPluginInterfaceVersion < kAI11
 
 #if kPluginInterfaceVersion >= kAI12
 #include "AITracing.h"
@@ -175,16 +165,6 @@ typedef struct {
 
 extern ImportSuites gStartupSuites;
 extern ImportSuites gPostStartupSuites;
-
-#if kPluginInterfaceVersion < kAI11
-// Compatibility for Illustrator version before CS:
-// ASRect, ASPoint, ASRGBColor, etc. have been deprecated in favor of ADM types with the same
-// name, ADMRect, ADMPoint, etc. The switch to ADMxxx types is painless and makes for a more
-// uniform use of standard Adobe types. If for some reason you cannot switch you can uncomment
-// the old ASxxx types in ASTypes.h.
-#define ADMRect ASRect
-#define ADMPoint ASPoint
-#endif // kPluginInterfaceVersion < kAI11
 
 #if kPluginInterfaceVersion < kAI12
 // GetWSProfile in AIOverrideColorConversion.h takes AIColorProfile instead of ASUInt32 since AI12

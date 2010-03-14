@@ -78,9 +78,8 @@ jboolean Item_isLayer(AIArtHandle art) {
 }
 
 void Item_filter(AIArtSet set, bool layerOnly) {
-	// takes out all kUnknownArt, kTextRunArt, ... objs
-	// removes layergroups as well
-	long count;
+	// takes out all kUnknownAr items and layergroups
+	long count = 0;
 	sAIArtSet->CountArtSet(set, &count);
 	for (long i = count - 1; i >= 0; i--) {
 		AIArtHandle art = NULL;
@@ -88,10 +87,7 @@ void Item_filter(AIArtSet set, bool layerOnly) {
 			short type = Item_getType(art);
 			bool isLayer = Item_isLayer(art);
 			if (type == kUnknownArt ||
-#if kPluginInterfaceVersion < kAI11
-				type == kTextRunArt ||
-#endif
-				(layerOnly && !isLayer || !layerOnly && isLayer)) {
+					(layerOnly && !isLayer || !layerOnly && isLayer)) {
 				sAIArtSet->RemoveArtFromArtSet(set, art);
 			}
 		}

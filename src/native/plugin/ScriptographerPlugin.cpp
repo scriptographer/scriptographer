@@ -682,9 +682,6 @@ ASErr ScriptographerPlugin::handleMessage(char *caller, char *selector, void *me
 
 	// Common AI messages
 	if (sSPBasic->IsEqual(caller, kCallerAINotify)) {
-		// TODO: Is AppContext needed here?
-		AppContext context;
-
 		AINotifierMessage *msg = (AINotifierMessage *) message;
 		if (msg->notifier == m_selectionChangedNotifier) {
 			error = gEngine->onSelectionChanged();

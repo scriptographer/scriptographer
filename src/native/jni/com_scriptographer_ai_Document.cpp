@@ -71,14 +71,12 @@ void Document_activate(AIDocumentHandle doc) {
 }
 
 void Document_deselectAll(bool force) {
-#if kPluginInterfaceVersion >= kAI11
 	// in some cases (after Pathfinder / expand)
 	// sAIMatchingArt->DeselectAll does not seem to do the trick
 	// In these cases, the pre AI11 version is still needed
 	if (!force) {
 		sAIMatchingArt->DeselectAll();
 	} else {
-#endif
 		AIArtHandle **matches;
 		long numMatches;
 		if (!sAIMatchingArt->GetSelectedArt(&matches, &numMatches)) {
@@ -86,9 +84,7 @@ void Document_deselectAll(bool force) {
 				sAIArt->SetArtUserAttr((*matches)[i], kArtSelected, 0);
 			sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
 		}
-#if kPluginInterfaceVersion >= kAI11
 	}
-#endif
 }
 
 /*
