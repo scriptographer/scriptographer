@@ -527,7 +527,7 @@ public class Segment implements Committable, ChangeListener {
 
 	public boolean remove() {
 		if (segments != null)
-			return segments.remove(this) != null;
+			return segments.remove(index) != null;
 		return false;
 	}
 }
