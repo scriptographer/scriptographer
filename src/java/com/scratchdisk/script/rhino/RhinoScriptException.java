@@ -111,9 +111,9 @@ public class RhinoScriptException extends ScriptException {
 				// Report sourceName / lineNumber if it is not in the stack trace already.
 				// Why is this needed? Rhino bug?
 				if (stackTrace.length == 0 || stackTrace[0].indexOf(sourceName + ":" + lineNumber) == -1) {
-					if (base != null)
+					if (base != null && sourceName.startsWith(base))
 						sourceName = sourceName.substring(base.length());
-					writer.println("\\tat " + sourceName + ":" + lineNumber);
+					writer.println("\tat " + sourceName + ":" + lineNumber);
 				}
 			}
 			// Parse the lines for filename:linenumber
