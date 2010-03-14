@@ -733,6 +733,16 @@ public class Point implements ChangeNotifier {
 	}
 
 	/**
+	 * Returns the cross product of the point and another point.
+	 * @param point
+	 * @return the cross product of the two points
+	 */
+
+	public double cross(Point point) {
+		return x * point.y - point.x * y;
+	}
+
+	/**
 	 * Returns the projection of the point on another point.
 	 * Both points are interpreted as vectors.
 	 * 
