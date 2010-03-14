@@ -181,8 +181,12 @@ public class ListWrapper extends ExtendedJavaObject {
 				if (i > 0)
 					buffer.append(", ");
 				Object entry = list.get(i);
-				Scriptable obj = Context.toObject(entry, this);
-				buffer.append(obj.getDefaultValue(hint));
+				if (entry != null) {
+	                Scriptable obj = Context.toObject(entry, this);
+	                buffer.append(obj.getDefaultValue(hint));
+				} else {
+				    buffer.append("null");
+				}
 			}
 			return buffer.toString();
 		} else {
