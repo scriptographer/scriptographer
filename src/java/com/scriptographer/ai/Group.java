@@ -121,4 +121,56 @@ public class Group extends Item {
 		}
 		super.setFullySelected(selected);
 	}
+
+	public Rectangle getBounds() {
+		// Delegate to the clipped item...
+		Item item = isClipped() ? getFirstChild() : null;
+		if (item != null)
+			return item.getBounds();
+		item = getFirstChild();
+		if (item != null) {
+			Rectangle bounds = item.getBounds();
+			item = item.getNextSibling();
+			while (item != null) {
+				bounds = bounds.unite(item.getBounds());
+				item = item.getNextSibling();
+			}
+			return bounds;
+		}
+		return super.getBounds();
+	}
+
+	public Rectangle getStrokeBounds() {
+		Item item = isClipped() ? getFirstChild() : null;
+		if (item != null)
+			return item.getStrokeBounds();
+		item = getFirstChild();
+		if (item != null) {
+			Rectangle bounds = item.getStrokeBounds();
+			item = item.getNextSibling();
+			while (item != null) {
+				bounds = bounds.unite(item.getStrokeBounds());
+				item = item.getNextSibling();
+			}
+			return bounds;
+		}
+		return super.getStrokeBounds();
+	}
+
+	public Rectangle getControlBounds() {
+		Item item = isClipped() ? getFirstChild() : null;
+		if (item != null)
+			return item.getControlBounds();
+		item = getFirstChild();
+		if (item != null) {
+			Rectangle bounds = item.getControlBounds();
+			item = item.getNextSibling();
+			while (item != null) {
+				bounds = bounds.unite(item.getControlBounds());
+				item = item.getNextSibling();
+			}
+			return bounds;
+		}
+		return super.getControlBounds();
+	}
 }
