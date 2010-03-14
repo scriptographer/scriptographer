@@ -87,8 +87,9 @@ public class TopLevel extends ImporterTopLevel {
 			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 
 		ScriptableObject objProto = (ScriptableObject) getObjectPrototype(this);
-		objProto.defineFunctionProperties(new String[] { "dontEnum", "toJava" }, TopLevel.class,
-					DONTENUM | READONLY | PERMANENT);
+		objProto.defineFunctionProperties(new String[] {
+				"dontEnum", "toJava", "print", "evaluate"
+				}, TopLevel.class, DONTENUM | READONLY | PERMANENT);
 	}
 
 	public static void defineProperty(ScriptableObject obj, String name,
@@ -208,6 +209,7 @@ public class TopLevel extends ImporterTopLevel {
 	public static void evaluate(Context cx, Scriptable thisObj, Object[] args,
 			Function funObj) throws Exception {
 		ScriptEngine engine = ScriptEngine.getEngineByName("JavaScript");
-		engine.evaluate(Context.toString(args[0]), engine.getScope(thisObj));
+		engine.evaluate(Context.toString(args[0]), "evaluate",
+				engine.getScope(thisObj));
 	}
 }

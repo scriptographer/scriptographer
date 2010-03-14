@@ -262,7 +262,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 		}
 
 		// Define some global functions and objects:
-		String[] names = { "include", "execute", "evaluate", "mapJavaClass" };
+		String[] names = { "include", "execute", "mapJavaClass" };
 		defineFunctionProperties(names, TopLevel.class,
 			ScriptableObject.READONLY | ScriptableObject.DONTENUM);
 
@@ -364,23 +364,6 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 			File file = new File(baseDir, Context.toString(args[i]));
 			executeScript(engine.compile(file), engine.createScope());
 		}
-	}
-
-	/**
-	 * Evaluates the given javascript string in the current scope. Similar to
-	 * eval(), but it allows the use of another object than the global scope:
-	 * e.g.:
-	 * <code>
-	 * var obj = {
-	 *     eval: evaluate
-	 * };
-	 * obj.eval("print(this);");
-	 * </code>
-	 */
-	public static void evaluate(Context cx, Scriptable thisObj, Object[] args,
-			Function funObj) throws Exception {
-		ScriptEngine engine = ScriptEngine.getEngineByName("JavaScript");
-		engine.evaluate(Context.toString(args[0]), engine.getScope(thisObj));
 	}
 
 	/**

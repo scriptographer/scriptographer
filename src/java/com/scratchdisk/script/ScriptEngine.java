@@ -141,7 +141,7 @@ public abstract class ScriptEngine {
 		return script;
 	}
 
-	public abstract Object evaluate(String string, Scope scope)
+	public abstract Object evaluate(String code, String name, Scope scope)
 			throws ScriptException;
 
 	/**

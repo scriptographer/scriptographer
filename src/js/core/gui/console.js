@@ -58,7 +58,7 @@ var consoleDialog = new FloatingDialog('tabbed show-cycle resizing remember-plac
 				}
 				try {
 					if (text != '') {
-						var res = engine.evaluate(text, consoleScope);
+						var res = engine.evaluate(text, 'console', consoleScope);
 						if (res !== undefined)
 							print(res);
 					}
