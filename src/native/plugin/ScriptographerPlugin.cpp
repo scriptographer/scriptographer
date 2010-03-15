@@ -495,8 +495,8 @@ ASErr ScriptographerPlugin::onPostStartupPlugin() {
 #endif // _DEBUG
 	};
 	// TODO: Figure out if this needs DEFINE_CALLBACK_PROC / CALLBACK_PROC as well?
-//	RETURN_ERROR(InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(eventHandler),
-//			sizeof(events) / sizeof(EventTypeSpec), events, this, NULL));
+	RETURN_ERROR(InstallEventHandler(GetEventDispatcherTarget(), NewEventHandlerUPP(eventHandler),
+			sizeof(events) / sizeof(EventTypeSpec), events, this, NULL));
 #endif
 #ifdef WIN_ENV
 	s_defaultGetMessageProc = SetWindowsHookEx(WH_GETMESSAGE, getMessageProc,
