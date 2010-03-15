@@ -467,8 +467,12 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		// cycle.
 		if (handleHistory != null) {
 			HandleHistoryEntry last = handleHistory.peek();
-			if (last.version == modificationVersion)
+			if (last.version == modificationVersion) {
+				if (Document.reportUndoHistory)
+					ScriptographerEngine.logConsole("Updating handleHistory version"
+							+ Integer.toString(last.handle, 16) + ", " + last.version);
 				last.version = version;
+			}
 		}
 		modificationVersion = version;
 	}
@@ -482,6 +486,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		// Before checking if this item is valid or needs updates, check handle
 		// history, and swap back to previous handles if version went back
 		// bellow the last entry on the stack.
+		// TODO: Should this be moved to isValid() instead?
 		if (handleHistory != null) {
 			HandleHistoryEntry last = handleHistory.peek();
 			if (document.historyVersion < last.version) {
@@ -489,6 +494,10 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 				HandleHistoryEntry previous = handleHistory.peek();
 				// Just like in #changeHandle(), remove old handle...
 				items.remove(handle);
+				if (Document.reportUndoHistory)
+					ScriptographerEngine.logConsole("Switching back to handleHistory version for handle "
+							+ Integer.toString(handle, 16) + ": "
+							+ Integer.toString(previous.handle, 16) + ", " + previous.version);
 				// ...change the handle to the previous one...
 				handle = previous.handle;
 				// ...and add it again.
@@ -1549,9 +1558,10 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 					// Check for null as the soft reference might have been
 					// released
 					if (item != null) {
-						ScriptographerEngine.logConsole("Marking " + item
-								+ " as invalid before version: " + version
-								+ " isValid: " + Item.isValid(item.handle));
+						if (Document.reportUndoHistory)
+							ScriptographerEngine.logConsole("Marking " + item
+									+ " as invalid before version: " + version
+									+ " isValid: " + Item.isValid(item.handle));
 						item.creationVersion = version;
 					}
 					// Remove it from the list
@@ -1902,8 +1912,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	/**
 	 * @jshide
 	 */
-	public static void debug() {
-		System.out.println("items: " + items.size());
+	public static void debug(Item item) {
+		item.isValid();
 	}
 
 	/*

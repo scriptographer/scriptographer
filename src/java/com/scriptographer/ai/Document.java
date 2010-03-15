@@ -381,15 +381,16 @@ public class Document extends NativeObject implements ChangeListener {
 					&& undoLevel <= historyBranch.previous.level)
 				historyBranch = historyBranch.previous;
 	
-			// Scan through all the wrappers without a defined creationLevel and
-			// set it to the current undoLevel if they are not valid at this point
-			// anymore. Do this before the new historyLevel is set. It will still
-			// be set to the last version where they were valid, which will become
-			// their crationVersion.
-			Item.checkItems(this, historyVersion);
+			long previousVersion = historyVersion;
 	
-			// Now set levels. This also sets historyVersion correctly
+			// Set levels. This also sets historyVersion correctly
 			setHistoryLevels(undoLevel, redoLevel, false);
+
+			// Scan through all the wrappers without a defined creationLevel and
+			// set it to the previous historyVersion if they are not valid
+			// anymore. Do this after the new historyLevel is set, as this
+			// updates handles form the handleHistory in modified items.
+			Item.checkItems(this, previousVersion);
 		}
 	}
 
