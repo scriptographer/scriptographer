@@ -355,7 +355,7 @@ public class Document extends NativeObject implements ChangeListener {
 		if (reportUndoHistory)
 			ScriptographerEngine.logConsole("Revert");
 		resetHistory();
-		Item.checkValidItems(this, Long.MAX_VALUE);
+		Item.checkItems(this, Long.MAX_VALUE);
 	}
 
 	/**
@@ -386,7 +386,7 @@ public class Document extends NativeObject implements ChangeListener {
 			// anymore. Do this before the new historyLevel is set. It will still
 			// be set to the last version where they were valid, which will become
 			// their crationVersion.
-			Item.checkValidItems(this, historyVersion);
+			Item.checkItems(this, historyVersion);
 	
 			// Now set levels. This also sets historyVersion correctly
 			setHistoryLevels(undoLevel, redoLevel, false);

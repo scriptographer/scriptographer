@@ -480,9 +480,9 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_nativeRemove(JNIEnv *
 }
 
 /*
- * boolean[] nativeCheckValidItems(int[] values, int length)
+ * boolean[] nativeCheckItems(int[] values, int length)
  */
-JNIEXPORT jbooleanArray JNICALL Java_com_scriptographer_ai_Item_nativeCheckValidItems(JNIEnv *env, jclass cls, jintArray array, jint length) {
+JNIEXPORT jbooleanArray JNICALL Java_com_scriptographer_ai_Item_nativeCheckItems(JNIEnv *env, jclass cls, jintArray array, jint length) {
 	try {
 		// Get handles
 		jint *values = new jint[length];

@@ -283,8 +283,13 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		// Only try to use the previous wrapper for this address if the object
 		// was marked wrapped otherwise we might get wrong wrappers for objects
 		// that reuse a previous address
-		if (wrapped)
+		if (wrapped) {
 			item = items.get(artHandle);
+			// Make sure this item is still valid. It might be a reused art
+			// handle too...
+			if (!item.isValid())
+				item = null;
+		}
 		// If it wasn't wrapped yet, do it now:
 		// TODO: Don't forget to add all types also to the native
 		// Item_getType function in com_scriptographer_ai_Item.cpp!
@@ -341,7 +346,12 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @return the wrapper for the artHandle
 	 */
 	protected static Item getIfWrapped(int artHandle) {
-		return (Item) items.get(artHandle);
+		Item item = items.get(artHandle);
+		// Make sure this item is still valid. It might be a reused art handle
+		// too...
+		if (item != null && item.isValid())
+			return item;
+		return null;
 	}
 
 	/**
@@ -1504,17 +1514,17 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 				&& document.isValidVersion(creationVersion)
 				&& !document.isValidVersion(deletionVersion);
 		if (!valid && Document.reportUndoHistory) {
-			ScriptographerEngine.logConsole(getId() + "is invalid (branch: "
+			ScriptographerEngine.logConsole(getId() + " is invalid (branch: "
 					+ ((creationVersion >> 32) & 0xffffffffl) + ", level: " 
 					+ (creationVersion & 0xffffffffl) + ")");
 		}
 		return valid;
 	}
 
-	private static native boolean[] nativeCheckValidItems(int[] values,
+	private static native boolean[] nativeCheckItems(int[] values,
 			int length);
 
-	protected static void checkValidItems(Document document, long version) {
+	protected static void checkItems(Document document, long version) {
 		ArrayList<SoftReference<Item>> checkItems = document.checkItems;
 		if (!checkItems.isEmpty()) {
 			int[] values = new int[checkItems.size() * 3];
@@ -1530,7 +1540,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 					values[j++] = item.dictionaryKey;
 				}
 			}
-			boolean[] valid = nativeCheckValidItems(values, j);
+			boolean[] valid = nativeCheckItems(values, j);
 			// Update historyVersion to one that is not valid anymore
 			for (int i = valid.length - 1; i >= 0; i--) {
 				if (!valid[i]) {
@@ -1543,16 +1553,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 								+ " as invalid before version: " + version
 								+ " isValid: " + Item.isValid(item.handle));
 						item.creationVersion = version;
-						// We need to remove items from the cache once they are
-						// known not to be valid anymore, as their handle
-						// appears to quite often be reused very soon. The
-						// better approach would be only to remove them once
-						// their branch gets invalid, as this would assure reuse
-						// of existing wrappers for items that become invalid
-						// and then valid again through undo / redo. Now they
-						// would receive a new wrapper even if the old one
-						// would still be referenced from scripts...
-						items.remove(item.handle);
 					}
 					// Remove it from the list
 					checkItems.remove(i);
