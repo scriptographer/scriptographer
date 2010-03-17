@@ -1446,7 +1446,11 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_editEffect(JNIEnv *en
  */
 JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Item_isValid(JNIEnv *env, jclass cls, jint handle) {
 	try {
+#if kPluginInterfaceVersion < kAI12
+		return sAIArt->ValidArt((AIArtHandle) handle);
+#else // kPluginInterfaceVersion >= kAI12
 		return sAIArt->ValidArt((AIArtHandle) handle, false);
+#endif // kPluginInterfaceVersion >= kAI12
 	} EXCEPTION_CONVERT(env);
 	return false;
 }
