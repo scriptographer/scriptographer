@@ -287,7 +287,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 			item = items.get(artHandle);
 			// Make sure this item is still valid. It might be a reused art
 			// handle too...
-			if (!item.isValid())
+			if (item != null && !item.isValid())
 				item = null;
 		}
 		// If it wasn't wrapped yet, do it now:
@@ -1523,9 +1523,10 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 				&& document.isValidVersion(creationVersion)
 				&& !document.isValidVersion(deletionVersion);
 		if (!valid && Document.reportUndoHistory) {
-			ScriptographerEngine.logConsole(getId() + " is invalid (branch: "
+			ScriptographerEngine.logConsole(getId() + " is invalid { branch: "
 					+ ((creationVersion >> 32) & 0xffffffffl) + ", level: " 
-					+ (creationVersion & 0xffffffffl) + ")");
+					+ (creationVersion & 0xffffffffl) + " }, isValid: "
+					+ Item.isValid(handle));
 		}
 		return valid;
 	}
@@ -1560,8 +1561,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 					if (item != null) {
 						if (Document.reportUndoHistory)
 							ScriptographerEngine.logConsole("Marking " + item
-									+ " as invalid before version: " + version
-									+ " isValid: " + Item.isValid(item.handle));
+									+ " as invalid before version: " + version);
 						item.creationVersion = version;
 					}
 					// Remove it from the list
@@ -1912,8 +1912,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	/**
 	 * @jshide
 	 */
-	public static void debug(Item item) {
-		item.isValid();
+	public static boolean debug(Item item) {
+		return item.isValid();
 	}
 
 	/*
