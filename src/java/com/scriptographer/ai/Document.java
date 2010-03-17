@@ -228,30 +228,38 @@ public class Document extends NativeObject implements ChangeListener {
 	 */
 
 	private class HistoryBranch {
-		long branch;
-		long level;
-		long future;
+		long branch; // the branch number
+		long level; // the current level within this branch, if it is active
+		long start; // the start level of this branch
+		long end; // the maximum level available in this branch
 		HistoryBranch previous;
 		HistoryBranch next;
 
-		HistoryBranch(HistoryBranch previous) {
+		HistoryBranch(HistoryBranch previous, long start) {
 			// make sure we're not reusing branch numbers that were used for
 			// previous branches before, by continuously adding to
 			// maxHistoryBranch.
 			this.branch = ++maxHistoryBranch;
 			this.previous = previous;
 			if (previous != null) {
-				if (previous.next != null) {
-					// A previous "future" branch is cleared, remove it from the
-					// history.
+				this.start = start;
+				// If a previous "future" branch is cleared, remove it from the
+				// history.
+				if (previous.next != null)
 					history.remove(previous.next.branch);
-				}
 				previous.next = this;
+			} else {
+				start = 0;
 			}
 		}
 
 		long getVersion(long level) {
 			return (branch << 32) | level;
+		}
+
+		public String toString() {
+			return "{ branch: " + branch + ", level: " + level
+					+ ", start: " + start + ", end: " + end + " }";
 		}
 	};
 
@@ -260,7 +268,7 @@ public class Document extends NativeObject implements ChangeListener {
 		redoLevel = -1;
 		historyVersion = 0;
 		maxHistoryBranch = -1;
-		historyBranch = new HistoryBranch(null);
+		historyBranch = new HistoryBranch(null, 0);
 		history = new HashMap<Long, HistoryBranch>();
 		history.put(historyBranch.branch, historyBranch);
 	}
@@ -276,12 +284,12 @@ public class Document extends NativeObject implements ChangeListener {
 					// Store the level of the current history branch first.
 					historyBranch.level = this.undoLevel;
 					// Create a new branch
-					historyBranch = new HistoryBranch(historyBranch);
+					historyBranch = new HistoryBranch(historyBranch, undoLevel);
 					history.put(historyBranch.branch, historyBranch);
 				}
 				// Update the current historyEntry's future to the new level
 				// This is the maximum possible level for a branch
-				historyBranch.future = undoLevel;
+				historyBranch.end = undoLevel;
 				// Update newly created and modified items, after new historyVersion
 				// is set.
 				updateItems = true;
@@ -319,10 +327,8 @@ public class Document extends NativeObject implements ChangeListener {
 			if (reportUndoHistory)
 				ScriptographerEngine.logConsole("undoLevel = " + undoLevel
 						+ ", redoLevel = " + redoLevel
-						+ ", branch = " + historyBranch.branch
-						+ ", level = " + historyBranch.level
-						+ ", previous = " + (historyBranch.previous != null 
-								? historyBranch.previous.level : -1)
+						+ ", current = " + historyBranch
+						+ ", previous = " + historyBranch.previous
 						+ ", version = " + historyVersion);
 		}
 	}
@@ -332,12 +338,18 @@ public class Document extends NativeObject implements ChangeListener {
 			return true;
 		// Branch = upper 32 bits
 		long branch = (version >> 32) & 0xffffffffl;
+		// First see if this branch is still around
 		HistoryBranch entry = history.get(branch);
 		if (entry != null) {
-			// Version = lower 32 bits
+			// Level = lower 32 bits
 			long level = version & 0xffffffffl;
-			boolean validLevel = level <= entry.level
-					&& (entry.previous == null || level > entry.previous.level);
+			// See if the item is valid by comparing levels. If it is above
+			// the current branch level, it will only be valid in the future,
+			// if the user would go back there through redos.
+			// But most of all the main undoLevel needs to be matched, as
+			// otherwise we would also validate objects in future branches
+			boolean validLevel = level <= undoLevel
+					&& level <= entry.level && level >= entry.start;
 			return validLevel;
 		}
 		return false;
@@ -400,9 +412,12 @@ public class Document extends NativeObject implements ChangeListener {
 		if (trackUndoHistory) {
 			// Check if we were going forward to a "future" branch, and if so,
 			// switch again.
-			if (historyBranch.next != null
-					&& undoLevel > historyBranch.future)
+			if (historyBranch.next != null && undoLevel > historyBranch.end) {
+				if (reportUndoHistory)
+					ScriptographerEngine.logConsole("Back to the future: "
+							+ historyBranch.next);
 				historyBranch = historyBranch.next;
+			}
 			setHistoryLevels(undoLevel, redoLevel, false);
 		}
 	}
