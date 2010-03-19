@@ -68,7 +68,7 @@ public class ToolEvent extends Event {
 	}
 
 	public String toString() {
-		StringBuffer buf = new StringBuffer(16);
+		StringBuffer buf = new StringBuffer(32);
 		buf.append("{ type: ").append(EnumUtils.getScriptName(type)); 
 		buf.append(", point: ").append(getPoint());
 		buf.append(", pressure: ").append(getPressure());

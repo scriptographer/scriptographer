@@ -32,6 +32,7 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.util.IntegerEnumUtils;
+import com.scriptographer.script.EnumUtils;
 
 /**
  * HitResult objects are returned by {@link Document#hitTest} and
@@ -85,12 +86,14 @@ public class HitResult {
 			// calculate the curve index in the curve list according to the
 			// segment index.
 			if (parameter == -1 && index == curves.size()) {
-				// Click on the last segment, decrease index and set paremter to the 2nd point.
+				// Click on the last segment, decrease index and set parameter to
+				// the 2nd point.
 				index--;
 				parameter = 1.0;
 			}
 			if (parameter > 0.0 && parameter < 1.0) {
-				// curve = segment - 1, or if segment = 0, curve = last curve, for closed paths.
+				// curve = segment - 1, or if segment = 0, curve = last curve,
+				// for closed paths.
 				index = index == 0 ? curves.size() - 1 : index - 1;
 			}
 			if (index < curves.size()) {
@@ -153,8 +156,8 @@ public class HitResult {
 			return -1;
 	}
 	
-	public double getParameter() {
-		return parameter;
+	public Double getParameter() {
+		return parameter != -1 ? parameter : null;
 	}
 	
 	/**
@@ -175,6 +178,16 @@ public class HitResult {
 	}
 	
 	public String toString() {
-		return " { type: " + this.type + ", item: " + item + ", index: " + getIndex() + ", parameter: " + parameter + " }";
+		StringBuffer buf = new StringBuffer(32);
+		buf.append("{ type: ").append(EnumUtils.getScriptName(type)); 
+		buf.append(", item: ").append(item);
+		if (point != null || curve != null)
+			buf.append(", point: ").append(getPoint());
+		if (curve != null)
+			buf.append(", index: ").append(getIndex());
+		if (parameter != -1)
+			buf.append(", parameter: ").append(parameter);
+		buf.append(" }");
+		return buf.toString();
 	}
 }
