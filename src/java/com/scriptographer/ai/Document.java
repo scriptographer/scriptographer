@@ -66,7 +66,7 @@ public class Document extends NativeObject implements ChangeListener {
 	 * should be removed once that works well.
 	 */
 	protected static final boolean trackUndoHistory = true;
-	protected static final boolean reportUndoHistory = true;
+	protected static final boolean reportUndoHistory = false;
 
 	private LayerList layers = null;
 	private DocumentViewList views = null;
