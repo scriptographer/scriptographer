@@ -1124,6 +1124,19 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	public native Item getPreviousSibling();
 
 	/**
+	 * The index of this item within the list of it's parent's children.
+	 */
+	public int getIndex() {
+		Item item = getPreviousSibling();
+		int i = 0;
+		while (item != null) {
+			item = item.getPreviousSibling();
+			i++;
+		}
+		return i;
+	}
+	
+	/**
 	 * {@grouptitle Bounding Rectangles}
 	 * 
 	 * The bounding rectangle of the item excluding stroke width.
@@ -1559,10 +1572,10 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 					// Check for null as the soft reference might have been
 					// released
 					if (item != null) {
+						item.creationVersion = version;
 						if (Document.reportUndoHistory)
 							ScriptographerEngine.logConsole("Marking " + item
 									+ " as invalid before version: " + version);
-						item.creationVersion = version;
 					}
 					// Remove it from the list
 					checkItems.remove(i);
