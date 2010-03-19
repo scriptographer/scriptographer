@@ -123,13 +123,14 @@ public class SpinEdit extends TextEditItem<SpinEditStyle> {
 	private int xDiff = -1;
 
 	protected void updateBounds(int x, int y, int width, int height, boolean sizeChanged) {
-		// TODO: Check for PC too!
 		if (ScriptographerEngine.isMacintosh()) {
 			TextEdit edit = getTextEdit();
 			if (xDiff == -1)
 				xDiff = edit.getPosition().x + getPosition().x;
 			super.updateBounds(x, y, width, height, sizeChanged);
 			edit.setSize(width - xDiff, height - 2);
+		} else {
+			super.updateBounds(x, y, width, height, sizeChanged);
 		}
 	}
 }
