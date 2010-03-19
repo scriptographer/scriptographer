@@ -1535,12 +1535,14 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		boolean valid = handle != 0
 				&& document.isValidVersion(creationVersion)
 				&& !document.isValidVersion(deletionVersion);
-		if (!valid && Document.reportUndoHistory) {
-			ScriptographerEngine.logConsole(getId() + " is invalid { branch: "
-					+ ((creationVersion >> 32) & 0xffffffffl) + ", level: " 
-					+ (creationVersion & 0xffffffffl) + " }, isValid: "
-					+ Item.isValid(handle));
-		}
+		// Weird stacking of if statements, just so Eclipse does not warn about
+		// dead code
+		if (Document.reportUndoHistory)
+			if (!valid)
+				ScriptographerEngine.logConsole(getId() + " is invalid { branch: "
+						+ ((creationVersion >> 32) & 0xffffffffl) + ", level: " 
+						+ (creationVersion & 0xffffffffl) + " }, isValid: "
+						+ Item.isValid(handle));
 		return valid;
 	}
 
