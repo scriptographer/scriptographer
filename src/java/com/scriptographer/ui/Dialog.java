@@ -188,10 +188,6 @@ public abstract class Dialog extends Component {
 				// if setVisible was called before proper initialization, visible
 				// is set but it was not nativelly executed yet. handle this here
 				boolean show = !options.contains(DialogOption.HIDDEN) || visible;
-				// Center it on screen first
-				this.centerOnScreen();
-				if (options.contains(DialogOption.REMEMBER_PLACING))
-					loadPreferences(title);
 				if (container != null) {
 					if (minSize == null)
 						setMinimumSize(new Size(container.getMinimumSize()));
@@ -208,6 +204,10 @@ public abstract class Dialog extends Component {
 						setSize(new Size(preferred));
 					}
 				}
+				// Center it on screen first
+				centerOnScreen();
+				if (options.contains(DialogOption.REMEMBER_PLACING))
+					loadPreferences(title);
 				initialized = true;
 				// Execute callback handler
 				onInitialize();
