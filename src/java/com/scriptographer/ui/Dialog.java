@@ -215,8 +215,8 @@ public abstract class Dialog extends Component {
 				// Center it on screen first
 				centerOnScreen();
 				if (options.contains(DialogOption.REMEMBER_PLACING)) {
-					loadPreferences(title);
-					show = false;
+					// Only explicitly show dialog if prefs could not be loaded.
+					show = !loadPreferences(title);
 				}
 				initialized = true;
 				// Execute callback handler

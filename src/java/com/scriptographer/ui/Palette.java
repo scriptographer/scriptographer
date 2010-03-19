@@ -50,7 +50,8 @@ public class Palette extends FloatingDialog {
 			Map<String, Object> values) {
 		super(new DialogOption[] {
 				DialogOption.TABBED,
-				DialogOption.SHOW_CYCLE
+				DialogOption.SHOW_CYCLE,
+				DialogOption.REMEMBER_PLACING
 		});
 
 		double version = ScriptographerEngine.getApplicationVersion();
@@ -80,6 +81,13 @@ public class Palette extends FloatingDialog {
 		if (values == null)
 			values = new HashMap<String, Object>();
 		this.values = values;
+	}
+
+	protected void onInitialize() throws Exception {
+		// Since palettes remember placing, we need to explicitly set them
+		// visible when they are created.
+		setVisible(true);
+		super.onInitialize();
 	}
 
 	public Palette(String title, Map<String, Map> items) {
