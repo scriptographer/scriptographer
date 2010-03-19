@@ -612,7 +612,7 @@ public class ScriptographerEngine {
 		// use of the API. Find one?
 		callCallbacks(callbackNames[type]);
 		// Explicitly initialize all dialogs after startup, as otherwise
-		// funny things will happen on CS3 -> see comment in initializeAll
+		// funny things will happen on CS3 and above. See comment in initializeAll
 		if (type == EVENT_APP_STARTUP)
 			Dialog.initializeAll();
 	}

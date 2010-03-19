@@ -509,3 +509,10 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	};
 });
+
+// Force mainDialog to show if this is the first run of Scriptographer
+if (firstRun) {
+	(function() {
+		mainDialog.visible = true;
+	}).delay(0);
+}

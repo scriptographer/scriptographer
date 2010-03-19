@@ -43,7 +43,9 @@ function getImage(filename) {
 	return new Image(new File(script.directory, 'resources/' + filename));
 }
 
-if (!script.preferences.accepted) {
+var firstRun = !script.preferences.accepted;
+
+if (firstRun) {
 	include('license.js');
 	script.preferences.accepted = licenseDialog.doModal() == licenseDialog.defaultItem;
 }

@@ -465,6 +465,17 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_update(JNIEnv *env, job
 }
 
 /*
+ * boolean nativeIsVisible()
+ */
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ui_Dialog_nativeIsVisible(JNIEnv *env, jobject obj) {
+	try {
+		ADMDialogRef dialog = gEngine->getDialogHandle(env, obj);
+		return sADMDialog->IsVisible(dialog);
+	} EXCEPTION_CONVERT(env);
+	return false;
+}
+
+/*
  * void nativeSetVisible(boolean visible)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ui_Dialog_nativeSetVisible(JNIEnv *env, jobject obj, jboolean visible) {

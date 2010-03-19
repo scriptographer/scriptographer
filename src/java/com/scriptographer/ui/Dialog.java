@@ -176,7 +176,7 @@ public abstract class Dialog extends Component {
 	 * It's usually fired a bit after the constructor exits, or
 	 * when setVisible / doModal / setGroupInfo is called.
 	 * We fake this through onActivate and a native dialog timer.
-	 * Whatevery fires first, triggers initialize
+	 * Whatever fires first, triggers initialize
 	 * @throws Exception 
 	 */
 	private void initialize(boolean setBoundaries, boolean initBounds) throws Exception {
@@ -186,7 +186,7 @@ public abstract class Dialog extends Component {
 			if (unitialized) {
 				unitialized = false;
 				// if setVisible was called before proper initialization, visible
-				// is set but it was not nativelly executed yet. handle this here
+				// is set but it was not natively executed yet. handle this here
 				boolean show = !options.contains(DialogOption.HIDDEN) || visible;
 				if (container != null) {
 					if (minSize == null)
@@ -202,12 +202,22 @@ public abstract class Dialog extends Component {
 						if (preferred.height < minSize.height)
 							preferred.height = minSize.height;
 						setSize(new Size(preferred));
+					} else {
+						// If a container was created, the layout needs to be
+						// recalculated now, even if the size has not changed.
+						// This is needed as updateSize might not have fired
+						// correctly before initialization...
+						// This solves the display of uninitialized dialogs
+						// when first running Scriptographer.
+						container.updateSize(size);
 					}
 				}
 				// Center it on screen first
 				centerOnScreen();
-				if (options.contains(DialogOption.REMEMBER_PLACING))
+				if (options.contains(DialogOption.REMEMBER_PLACING)) {
 					loadPreferences(title);
+					show = false;
+				}
 				initialized = true;
 				// Execute callback handler
 				onInitialize();
@@ -282,11 +292,8 @@ public abstract class Dialog extends Component {
 	 * @jshide
 	 */
 	public static void initializeAll() throws Exception {
-		for (int i = dialogs.size() - 1; i >= 0; i--) {
-//		for (int i = 0; i < dialogs.size(); i++) {
-			Dialog dialog = (Dialog) dialogs.get(i);
+		for (Dialog dialog : dialogs)
 			dialog.initialize(false, false);
-		}
 	}
 
 	public boolean removeItem(Item item) {
@@ -333,11 +340,11 @@ public abstract class Dialog extends Component {
 			// Restore the position code of the dialog
 			setGroupInfo(group, positionCode);
 			// Now set the bounds
-			if (isResizing)
+			if (isResizing) {
 				setBounds(bounds);
-			else
+			} else {
 				setPosition(bounds.getPoint());
-			
+			}
 			return true;
 		}
 		return false;
@@ -741,17 +748,25 @@ public abstract class Dialog extends Component {
 	 * Dialog state accessors
 	 *  
 	 */
+
+	private native boolean nativeIsVisible();
 	
 	public boolean isVisible() {
+		// There are rare occasions where the visible property is still out
+		// of sync with the native visibility, especially when launching
+		// Scriptographer or Illustrator for the first time. So keep it synced
+		// to make sure we're fine.
+		if (initialized)
+			visible = nativeIsVisible();
 		return visible;
 	}
 
-	protected native void nativeSetVisible(boolean visible);
+	private native void nativeSetVisible(boolean visible);
 
 	public void setVisible(boolean visible) {
 		// Do not set visibility natively before the dialog was properly
-		// initialized. otherwise we get a crash.
-		// TODO: Found out about which platform and version?
+		// initialized. otherwise we get a crash on certain systems (not sure
+		// which ones anymore, but this works fine).
 		if (initialized) {
 			fireOnClose  = false;
 			nativeSetVisible(visible);
