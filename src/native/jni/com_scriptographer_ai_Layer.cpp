@@ -217,3 +217,29 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_activate(JNIEnv *env, jo
 		sAILayer->SetCurrentLayer(layer);
 	} EXCEPTION_CONVERT(env);
 }
+
+/*
+ * com.scriptographer.ai.Item nativeGetNextLayer()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_nativeGetNextLayer(JNIEnv *env, jobject obj) {
+	try {
+		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
+		AILayerHandle next = NULL;
+		if (!sAILayer->GetNextLayer(layer, &next) && next != NULL)
+			return gEngine->wrapLayerHandle(env, next, gEngine->getDocumentHandle(env, obj));
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}
+
+/*
+ * com.scriptographer.ai.Item nativeGetPreviousLayer()
+ */
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Layer_nativeGetPreviousLayer(JNIEnv *env, jobject obj) {
+	try {
+		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
+		AILayerHandle prev = NULL;
+		if (!sAILayer->GetPrevLayer(layer, &prev) && prev != NULL)
+			return gEngine->wrapLayerHandle(env, prev, gEngine->getDocumentHandle(env, obj));
+	} EXCEPTION_CONVERT(env);
+	return NULL;
+}

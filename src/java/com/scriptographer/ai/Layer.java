@@ -157,4 +157,32 @@ public class Layer extends Item {
 	 * </code>
 	 */
 	public native void activate();
+
+	public Item copyTo(Document document) {
+		Item copy = super.copyTo(document);
+		copy.moveAbove(document.getActiveLayer());
+		return copy;
+	}
+
+	/*
+	 * getPreviousSibling / getNextSibling works for nested layers but not
+	 * for top level layers. Top level layers require nativeGetNextLayer / 
+	 * nativeGetPreviousLayer, which work with the layer list.
+	 * We are deciding which one is required by checking the parent.
+	 */
+	private native Item nativeGetNextLayer();
+
+	private native Item nativeGetPreviousLayer();
+
+	public Item getNextSibling() {
+		if (getParent() == null)
+			return nativeGetNextLayer();
+		return super.getNextSibling();
+	}
+
+	public Item getPreviousSibling() {
+		if (getParent() == null)
+			return nativeGetPreviousLayer();
+		return super.getPreviousSibling();
+	}
 }
