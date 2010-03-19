@@ -256,15 +256,15 @@ AITabletProfile *Path_getTabletData(AIArtHandle handle, AITabletDataType type, i
 }
 
 void Path_setTabletData(AIArtHandle handle, AITabletDataType type, AITabletProfile *data, int count) {
+#if kPluginInterfaceVersion <= kAI12
 	// At least on CS2, setting the size to 0 first seems to be necessary, when
 	// tabletData was already in use before. Otherwise Illustrator crashes (#6).
 	ASBoolean inUse = false;
 	sAITabletData->GetTabletDataInUse(handle, &inUse);
-	AIErr err = 0;
 	if (inUse)
-		err = sAITabletData->SetTabletData(handle, NULL, 0, (AITabletDataType) type);
-	err = sAITabletData->SetTabletData(handle, data, count, (AITabletDataType) type);
-	int i = 0;
+		sAITabletData->SetTabletData(handle, NULL, 0, (AITabletDataType) type);
+#endif // kPluginInterfaceVersion <= kAI12
+	sAITabletData->SetTabletData(handle, data, count, (AITabletDataType) type);
 }
 
 /*
