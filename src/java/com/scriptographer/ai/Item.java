@@ -1899,11 +1899,14 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	public static native int getItemType(Class cls);
 
 	public String toString() {
+		return "item";
+		/*
 		return getClass().getSimpleName() + (isValid()
 				? isDefaultName()
 						? " (" + getId() + ")"
 						: " <" + getName() + "> (" + getId() + ")"
 				: " <invalid>");
+		*/
 	}
 
 	private static ItemList newItems = null;

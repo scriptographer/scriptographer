@@ -1023,9 +1023,9 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_nativeSetFileFormat(J
 }
 
 /*
- * boolean isValid()
+ * boolean nativeIsValid()
  */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_isValid(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Document_nativeIsValid(JNIEnv *env, jobject obj) {
 	try {
 		AIDocumentHandle doc = gEngine->getDocumentHandle(env, obj);
 		AIBoolean exists = false;

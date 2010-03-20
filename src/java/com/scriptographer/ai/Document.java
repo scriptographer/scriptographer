@@ -334,6 +334,10 @@ public class Document extends NativeObject implements ChangeListener {
 	}
 
 	protected boolean isValidVersion(long version) {
+		// We first need to check that document handle is not 0, because if it is
+		// all items inside are invalid. handle is set to 0 in onClosed().
+		if (handle == 0)
+			return false;
 		if (version == -1 || !trackUndoHistory)
 			return true;
 		// Branch = upper 32 bits
@@ -1478,15 +1482,18 @@ public class Document extends NativeObject implements ChangeListener {
 	 * 
 	 * Sample code:
 	 * <code>
-	 * print(document.isValid()); // true
-	 * document.close();
-	 * print(document.isValid()); // false
+	 * var doc = document;
+	 * print(doc.isValid()); // true
+	 * doc.close();
+	 * print(doc.isValid()); // false
 	 * </code>
 	 * 
 	 * @return {@true if the document is valid}
 	 */
-	public native boolean isValid();
-	
+	public boolean isValid() {
+		return handle != 0;
+	}
+
 	/**
 	 * {@grouptitle Clipboard Functions}
 	 * 
