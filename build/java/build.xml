@@ -252,12 +252,16 @@
 		<copy todir="${target.packages}/Scriptographer/Scripts">
 			<fileset dir="${scripts.dir}">
 				<exclude name="**/*.ai"/>
-				<exclude name="**/My Scripts/*.*"/>
-				<!-- Exclude tutorials for now -->
-				<exclude name="**/Tutorials**"/>
+				<!-- Exclude My Scripts folder -->
+				<exclude name="**/My Scripts/**"/>
+				<!-- Exclude Tutorials folder for now -->
+				<exclude name="**/Tutorials/**"/>
 			</fileset>
 		</copy>
+		<!-- Make an empty My Scripts folder -->
+		<mkdir dir="${target.packages}/Scriptographer/Scripts/My Scripts"/>
 
+		
 		<!-- License -->
 		<copy todir="${target.packages}/Scriptographer/" file="${docs.dir}/License.txt" />
 
