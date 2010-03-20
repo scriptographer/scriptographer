@@ -233,8 +233,10 @@ Member = Object.extend({
 		},
 
 		isVisible: function(member, forceAll) {
-			var hide = member && member.tags('jshide')[0];
-			return !(hide && (!forceAll || hide.text() == 'all') || !member);
+			var tag = member && (member.tags('jshide')[0]
+					|| member.tags('deprecated')[0]);
+			return !(tag && (!forceAll || tag.name() == '@deprecated'
+					|| tag.name() == '@jshide' && tag.text() == 'all') || !member);
 		}
 	}
 });
