@@ -1546,6 +1546,11 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		return valid;
 	}
 
+	protected void checkValid() {
+		if (!isValid())
+			throw new ScriptographerException("The item is no longer valid, either due to deletion or undoing. Use isValid() checks to avoid this error.");
+	}
+
 	private static native boolean[] nativeCheckItems(int[] values,
 			int length);
 

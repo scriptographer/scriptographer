@@ -266,9 +266,9 @@ public class Segment implements Committable, ChangeListener {
 	}
 
 	public void commit() {
-		if (dirty != DIRTY_NONE && segments != null && segments.path != null
-				&& segments.path.isValid()) {
+		if (dirty != DIRTY_NONE && segments != null && segments.path != null) {
 			Path path = segments.path;
+			path.checkValid();
 			if ((dirty & DIRTY_POINTS) != 0) {
 				SegmentList.nativeSet(path.handle, path.document.handle, index,
 						(float) point.x,
@@ -295,9 +295,9 @@ public class Segment implements Committable, ChangeListener {
 	 * Only call once, when adding this segment to the segmentList!
 	 */
 	protected void insert() {
-		if (segments != null && segments.path != null
-				&& segments.path.isValid()) {
+		if (segments != null && segments.path != null) {
 			Path path = segments.path;
+			path.checkValid();
 			SegmentList.nativeInsert(path.handle, path.document.handle, index,
 					(float) point.x,
 					(float) point.y,
@@ -461,11 +461,13 @@ public class Segment implements Committable, ChangeListener {
 	protected boolean isSelected(SegmentPoint pt) {
 		update();
 		if (selectionState == SELECTION_FETCH) {
-			if (segments != null && segments.path != null)
+			if (segments != null && segments.path != null) {
+				segments.path.checkValid();
 				selectionState = SegmentList.nativeGetSelectionState(
 						segments.path.handle, index);
-			else
+			} else {
 				selectionState = SELECTION_NONE;
+			}
 			// Selection uses its own version number as it might change regardless
 			// of whether the path itself changes or not.
 			selectionVersion = CommitManager.version;

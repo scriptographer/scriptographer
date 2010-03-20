@@ -456,9 +456,11 @@ public class Curve implements ChangeListener {
 		// Don't mark dirty, commit immediately both as all the values have
 		// been modified:
 		Path path = getPath();
-		if (path != null)
+		if (path != null) {
+			path.checkValid();
 			SegmentList.nativeSet(path.handle, path.document.handle,
 					index1, 2, values);
+		}
 	}
 
 	public Curve transform(Matrix matrix) {

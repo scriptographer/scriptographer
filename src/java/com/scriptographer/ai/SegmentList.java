@@ -86,8 +86,10 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	protected void updateSize(int newSize) {
 		if (path != null) {
 			if (newSize != size) {
-				if (newSize == -1)
+				if (newSize == -1) {
+					path.checkValid();
 					newSize = nativeGetSize(path.handle);
+				}
 				list.setSize(newSize);
 				size = newSize;
 				if (curves != null)
@@ -139,6 +141,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 	 */
 	protected void fetch(int fromIndex, int toIndex) {
 		if (path != null) {
+			path.checkValid();
 			// To reduced needsUpdate calls, see if path needs an update
 			// regardless of the version, and then compare with that each time.
 			boolean needsUpdate = path.needsUpdate();
@@ -260,6 +263,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 		float[] values;
 		int commitVersion;
 		if (path != null) {
+			path.checkValid();
 			values = new float[count * VALUES_PER_SEGMENT];
 			commitVersion = path.version;
 		} else {
@@ -364,6 +368,7 @@ public class SegmentList extends AbstractFetchList<Segment> {
 				}
 			}
 			if (path != null) {
+				path.checkValid();
 				size = nativeRemove(path.handle, path.document.handle,
 						fromIndex, toIndex - fromIndex);
 			} else {
