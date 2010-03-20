@@ -631,11 +631,11 @@ public class Path extends PathItem {
 		nativeSetTabletData(TABLET_PRESSURE, data);
 	}
 
-	public float[][] getTabletBarrelPressure() {
+	public float[][] getTabletWheel() {
 		return nativeGetTabletData(TABLET_BARREL_PRESSURE);
 	}
 
-	public void setTabletBarrelPressure(float[][] data) {
+	public void setTabletWheel(float[][] data) {
 		nativeSetTabletData(TABLET_BARREL_PRESSURE, data);
 	}
 
