@@ -34,6 +34,10 @@ var tool = new Tool('Scriptographer Tool', getImage('tool.png')) {
 	tooltip: 'Execute a tool script to assign it with this tool button'
 };
 
+// Effect
+
+var effect = new LiveEffect('Scriptographer', null, 'pre-effect');
+
 var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing', function() {
 
 	// Script List
@@ -73,6 +77,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	};
 
 	var scriptImage = getImage('script.png');
+	var effectImage = getImage('effect.png');
 	var toolScriptImage = getImage('script-tool.png');
 	var activeToolScriptImage = getImage('script-tool-active.png');
 	var folderImage = getImage('folder.png');
@@ -116,13 +121,15 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			directoryEntries[file] = entry;
 		} else {
 			entry.update = function() {
-				var type = file.readAll().match(/(onMouse(?:Up|Down|Move|Drag))/);
-				this.type = type && (type[1] && 'tool');
+				var type = file.readAll().match(/(onMouse(?:Up|Down|Move|Drag))|(onCalculate)/);
+				this.type = type && (type[1] && 'tool' || type[2] && 'effect');
 				this.image = this.type == 'tool'
 					? (currentToolFile == this.file
 						? activeToolScriptImage
 						: toolScriptImage)
-					: scriptImage;
+					: this.type == 'effect'
+						? effectImage
+						: scriptImage;
 			}
 			entry.update();
 			fileEntries[file] = entry;
@@ -274,7 +281,27 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	}
 
-	function execute() {
+	function executeEffect(entry) {
+		if (entry && /^(tool|effect)$/.test(entry.type)) {
+			// This works even for multiple selections, as the path style
+			// apparently is applied to all of the selected items. Fine
+			// with us... But not so clean...
+			var item = document.selectedItems.first;
+			if (item) {
+				var parameters = new LiveEffectParameters();
+				if (compileEffect(entry, parameters)) {
+					item.addEffect(effect, parameters);
+					item.editEffect(effect, parameters);
+				}
+			}
+			else
+				Dialog.alert('In order to assign Scriptographer Effects\n'
+					+ 'to items, please select some items\n'
+					+ 'before executing the script.');
+		}
+	}
+
+	function execute(asEffect) {
 		var entry = getSelectedScriptEntry();
 		if (entry) {
 			switch (entry.type) {
@@ -303,6 +330,9 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 					entry.image = activeToolScriptImage;
 					currentToolFile = entry.file;
 				}
+				break;
+			case 'effect':
+				executeEffect(entry);
 				break;
 			default:
 				ScriptographerEngine.execute(entry.file, null);
@@ -345,6 +375,155 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	} else {
 		setScriptDirectory(dir);
 	}
+
+	// Effect
+
+	var effectEntries = {};
+
+	function followItem(item, speed, handler, scope) {
+		if (item instanceof Group || item instanceof CompoundPath
+			|| item instanceof Layer) {
+			item.children.each(function(child) {
+				followItem(child, handler, speed);
+			})
+		} else if (item instanceof Path) {
+			var curve = item.curves.first;
+			if (curve) {
+				handler.onHandleEvent('mouse-down', curve.point1);
+				for (var pos = speed, length = item.length; pos < length; pos += speed)
+					handler.onHandleEvent('mouse-drag', item.getPoint(pos));
+				handler.onHandleEvent('mouse-up', item.curves.last.point2);
+				/*
+				var path = item.clone();
+				if  (path.closed)
+					path.segments.push(path.segments.first);
+				path.curvesToPoints(speed);
+				for (var i = 0, l = path.segments.length; i < l; i++)
+					handler.onHandleEvent('mouse-drag', path.segments[i].point);
+				path.remove();
+				*/
+			}
+		}
+	}
+
+	function saveScope(scope, tool, parameters) {
+		// Create a Json version of all variables in the scope.
+		parameters.scope = Json.encode(scope.getKeys().each(function(key) {
+			if (key != 'global') {
+				var value = scope.get(key);
+				var value = filterScope(value);
+				if (value !== undefined)
+					this[key] = value;
+			}
+		}, {}));
+		// We also need to backup and restore distanceThreshold
+		parameters.distanceThreshold = tool.distanceThreshold;
+	}
+
+	function restoreScope(scope, tool, parameters) {
+		var values = Json.decode(parameters.scope);
+		for (var key in values)
+			scope.put(key, values[key]);
+		tool.distanceThreshold = parameters.distanceThreshold;
+	}
+
+	function filterScope(obj) {
+		if (obj === null)
+			return undefined;
+		var type = Base.type(obj);
+		if (type == 'java' && obj instanceof java.util.Map)
+			type = 'object';
+		switch (type) {
+		case 'object':
+			var res = {};
+			for (var key in obj) {
+				var value = filterScope(obj[key]);
+				if (value !== undefined)
+					res[key] = value;
+			}
+			return res;
+		case 'array':
+			var res = [];
+			for (var i = 0, l = obj.length; i < l; i++)
+				res[i] = filterScope(key[i]);
+			return res;
+		case 'java':
+		case 'function':
+		case 'regexp':
+			return undefined;
+		default:
+			return obj;
+		}
+	}
+
+	function compileEffect(entry, parameters) {
+		var path = entry.file.path;
+		effectEntries[path] = entry;
+		parameters.file = path;
+		var isTool = entry.type == 'tool';
+		// Create a ToolEventHandler that handles all the complicated ToolEvent
+		// stuff for us, to replicate completely the behavior of tools.
+		var handler = isTool ? new ToolEventHandler() : {};
+		// The same scope is shared among all instances of this Effect.
+		// So we need to save and restore scope variables into the event.parameters
+		// object. The values are saved as Json, as duplicating effects otherwise
+		// does not create deep copies of parameters, which breaks storing values
+		// in JS objects which would get converted to shared Dictionaries otherwise.
+		var scope = compileScope(entry, handler);
+		if (scope) {
+			scope.put('effect', effect, true);
+			if (isTool) {
+				var toolHandler = handler;
+				handler = {
+					onEditParameters: function(event) {
+						// Restore previously saved values into scope,
+						// before executing onOptions, so the right values
+						// are used.
+						if (event.parameters.scope)
+							restoreScope(scope, toolHandler, event.parameters);
+						try {
+							toolHandler.onHandleEvent('edit-options', null);
+						} finally {
+							// Save the new values from the scope.
+							saveScope(scope, toolHandler, event.parameters);
+						}
+					},
+
+					onCalculate: function(event) {
+						if (event.parameters.scope) {
+							restoreScope(scope, toolHandler, event.parameters);
+							var speed = Math.max(10, toolHandler.distanceThreshold);
+							// Erase distanceThreshold, as we're stepping exactly
+							// by that amount anyway, and there is always a bit
+							// of imprecision involved with length calculations.
+							toolHandler.distanceThreshold = 0;
+//							var t = new Date();
+							followItem(event.item, speed, toolHandler, this);
+//							print(new Date() - t);
+						}
+					}
+				}
+			}
+			entry.handler = handler;
+			return true;
+		}
+	}
+
+	// Pass on effect handlers.
+	['onEditParameters', 'onCalculate', 'onGetInputType'].each(function(name) {
+		effect[name] = function(event) {
+			if (event.parameters.file) {
+				var entry = effectEntries[event.parameters.file];
+				if (!entry) {
+					// TODO: Support finding unindexed effect files from the path inside
+					// scriptList, so effects work after reloading too!
+				}
+				var func = entry && entry.handler && entry.handler[name];
+				if (func)
+					return func.call(entry.scope, event);
+			}
+		}
+	});
 
 	// Menus
 
@@ -475,6 +654,14 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	};
 
+	var effectButton = new ImageButton(this) {
+		image: getImage('effect.png'),
+		size: buttonSize,
+		onClick: function() {
+			executeEffect(getSelectedScriptEntry());
+		}
+	};
+
 	var consoleButton = new ImageButton(this) {
 		image: getImage('console.png'),
 		size: buttonSize,
@@ -501,6 +688,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				content: [
 					playButton,
 					stopButton,
+					effectButton,
 					new Spacer(4, 0),
 					newButton,
 					consoleButton,
@@ -513,6 +701,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 // Force mainDialog to show if this is the first run of Scriptographer
 if (firstRun) {
 	(function() {
+		consoleDialog.visible = false;
 		mainDialog.visible = true;
-	}).delay(0);
+	}).delay(1);
 }
