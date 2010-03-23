@@ -47,7 +47,7 @@ abstract class NativeObject {
 	}
 
 	public int hashCode() {
-		return handle;
+		return handle != 0 ? handle : super.hashCode();
 	}
 
 	public boolean isValid() {
@@ -61,8 +61,14 @@ abstract class NativeObject {
 		return false;
 	}
 
+	/**
+	 * @jshide
+	 */
+	public String getId() {
+		return "@" + Integer.toHexString(hashCode());
+	}
+
 	public String toString() {
-		return getClass().getSimpleName() + " (@"
-				+ Integer.toHexString(handle != 0 ? handle : this.hashCode()) + ")";
+		return getClass().getSimpleName() + " (" + getId() + ")";
 	}
 }
