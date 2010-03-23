@@ -1021,13 +1021,6 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		return data;	
 	}
 
-	public void disposeData() {
-		if (data != null) {
-//			data.finalize();
-//			data = null;
-		}
-	}
-
 	public void setData(Map<String, Object> map) {
 		Dictionary data = getData();
 		if (map != data) {
