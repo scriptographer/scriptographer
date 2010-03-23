@@ -934,38 +934,39 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * @jshide
 	 */
 	public LiveEffectPosition getEffectPosition(LiveEffect effect,
-			Map<String, Object> data) {
+			Map<String, Object> parameters) {
 		if (effect != null)
 			return IntegerEnumUtils.get(LiveEffectPosition.class,
-					nativeGetEffectPosition(effect, data));
+					nativeGetEffectPosition(effect, parameters));
 		return null;
 	}
 
 	private native int nativeGetEffectPosition(LiveEffect effect,
-			Map<String, Object> data);
+			Map<String, Object> parameters);
 
 	/**
 	 * @jshide
 	 */
-	public boolean hasEffect(LiveEffect effect, Map<String, Object> data) {
-		return getEffectPosition(effect, data) != null;
+	public boolean hasEffect(LiveEffect effect, Map<String, Object> parameters) {
+		return getEffectPosition(effect, parameters) != null;
 	}
 
 	/**
 	 * @jshide
 	 */
-	public boolean addEffect(LiveEffect effect, Map<String, Object> data,
+	public boolean addEffect(LiveEffect effect, Map<String, Object> parameters,
 			LiveEffectPosition position) {
 		if (effect != null) {
-			return nativeAddEffect(effect,
-				data != null
-					? data instanceof LiveEffectParameters
-						? (LiveEffectParameters) data
-						: new LiveEffectParameters(data)
-					: new LiveEffectParameters(),
-				position != null
-					? position.value
-					: effect.getPosition().value);
+			LiveEffectParameters params = parameters != null
+			? parameters instanceof LiveEffectParameters
+					? (LiveEffectParameters) parameters
+					: new LiveEffectParameters(parameters)
+				: new LiveEffectParameters();
+			// The moment we pass params to nativeAddEffect, Illustrator
+			// will take care of the releasing, so set release to false.
+			params.release = false;
+			return nativeAddEffect(effect, params, position != null
+					? position.value : effect.getPosition().value);
 		}
 		return false;
 	}
@@ -973,8 +974,8 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	/**
 	 * @jshide
 	 */
-	public boolean addEffect(LiveEffect effect, Map<String, Object> data) {
-		return addEffect(effect, data, effect.getPosition());
+	public boolean addEffect(LiveEffect effect, Map<String, Object> parameters) {
+		return addEffect(effect, parameters, effect.getPosition());
 	}
 
 	/**
@@ -990,13 +991,14 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	/**
 	 * @jshide
 	 */
-	public native boolean editEffect(LiveEffect effect, Map<String, Object> data);
+	public native boolean editEffect(LiveEffect effect,
+			Map<String, Object> parameters);
 
 	/**
 	 * @jshide
 	 */
 	public native boolean removeEffect(LiveEffect effect,
-			Map<String, Object> data);
+			Map<String, Object> parameters);
 
 	/**
 	 * An object contained within the item which can be used to store data.

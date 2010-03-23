@@ -560,6 +560,9 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_LiveEffect_onCalculate = getStaticMethodID(env, cls_ai_LiveEffect, "onCalculate", "(ILcom/scriptographer/ai/Item;I)I");
 	mid_ai_LiveEffect_onGetInputType = getStaticMethodID(env, cls_ai_LiveEffect, "onGetInputType", "(III)I");
 	
+	cls_ai_LiveEffectParameters = loadClass(env, "com/scriptographer/ai/LiveEffectParameters");
+	mid_ai_LiveEffectParameters_wrapHandle = getStaticMethodID(env, cls_ai_LiveEffectParameters, "wrapHandle", "(II)Lcom/scriptographer/ai/LiveEffectParameters;");
+
 	cls_sg_Timer = loadClass(env, "com/scriptographer/sg/Timer");
 	cid_sg_Timer = getConstructorID(env, cls_sg_Timer, "(I)V");
 	mid_sg_Timer_onExecute = getStaticMethodID(env, cls_sg_Timer, "onExecute", "(I)V");
@@ -1650,6 +1653,12 @@ jobject ScriptographerEngine::wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef 
 	JNI_CHECK_ENV
 	return callStaticObjectMethod(env, cls_ai_Dictionary, mid_ai_Dictionary_wrapHandle,
 			(jint) dictionary, (jint) (doc ? doc : gWorkingDoc));
+}
+
+jobject ScriptographerEngine::wrapLiveEffectParameters(JNIEnv *env, AILiveEffectParameters parameters, AIDocumentHandle doc) {
+	JNI_CHECK_ENV
+	return callStaticObjectMethod(env, cls_ai_LiveEffectParameters, mid_ai_LiveEffectParameters_wrapHandle,
+			(jint) parameters, (jint) (doc ? doc : gWorkingDoc));
 }
 
 /**

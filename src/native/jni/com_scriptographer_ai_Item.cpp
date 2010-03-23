@@ -1295,11 +1295,11 @@ bool LiveEffect_callIterator(EffectIterator iterator, JNIEnv *env, AIArtStyleHan
 		AIStyleParser parser, AIParserLiveEffect effect, AIParserPaintField field, 
 		int position, bool *cont, LiveEffect_data *data) {
 	AILiveEffectHandle liveEffect = NULL;
-	AIDictionaryRef liveDict = NULL;
+	AILiveEffectParameters liveDict = NULL;
 	sAIArtStyleParser->GetLiveEffectParams(effect, &liveDict);
 	sAIArtStyleParser->GetLiveEffectHandle(effect, &liveEffect);
 	if (liveEffect == data->effect && (data->parameters == NULL || gEngine->isEqual(env,
-			gEngine->wrapDictionaryHandle(env, liveDict), data->parameters))) {
+			gEngine->wrapLiveEffectParameters(env, liveDict), data->parameters))) {
 		return iterator(env, style, parser, effect, field, kPreEffectFilter, cont, data);
 	}
 	return false;

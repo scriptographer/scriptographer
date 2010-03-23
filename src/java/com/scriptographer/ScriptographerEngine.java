@@ -411,7 +411,7 @@ public class ScriptographerEngine {
 		// When file is set, we ignore the current state of "executing",
 		// as we're about to to execute a new script...
 		if (!executing || file != null) {
-			beginExecution();
+			boolean started = beginExecution();
 
 			Script script = null;
 			if (file != null) {
@@ -428,7 +428,9 @@ public class ScriptographerEngine {
 					&& !file.getName().startsWith("__"))
 				showProgress(file != null ? "Executing " + file.getName()
 						+ "..." : "Executing...");
-			return true;
+
+			// Only return true if we were really beginning execution.
+			return started;
 		}
 		return false;
 	}

@@ -31,11 +31,10 @@
 
 package com.scriptographer.ai;
 
-import java.util.Iterator;
 import java.util.Map;
 
 import com.scratchdisk.util.AbstractMap;
-import com.scratchdisk.util.SoftIntMap;
+import com.scratchdisk.util.IntMap;
 
 /**
  * @author lehni
@@ -45,12 +44,10 @@ import com.scratchdisk.util.SoftIntMap;
 public class Dictionary extends AbstractMap<String, Object> {
 	protected int handle;
 	protected Document document;
-	private boolean release;
+	protected boolean release;
 
-	// Internal hash map that keeps track of already wrapped objects. defined
-	// as soft so they can be finalized by GC.
-	protected static SoftIntMap<Dictionary> dictionaries =
-			new SoftIntMap<Dictionary>();
+	protected static IntMap<Dictionary> dictionaries =
+			new IntMap<Dictionary>();
 
 	protected Dictionary(int handle, Document document, boolean release) {
 		this.handle = handle;
@@ -131,18 +128,6 @@ public class Dictionary extends AbstractMap<String, Object> {
 		return document;
 	}
 
-	protected static Dictionary wrapHandle(int handle, Document document) {
-		Dictionary dict = dictionaries.get(handle);
-		if (dict == null || document != null && dict.document != document) {
-			// Reused handle in a different document, set handle of old
-			// wrapper to 0 and produce a new one.
-			if (dict != null)
-				dict.handle = 0;
-			dict = new Dictionary(handle, document, true);
-		}
-		return dict;
-	}
-
 	public Object clone() {
 		return new Dictionary(this);
 	}
@@ -188,6 +173,18 @@ public class Dictionary extends AbstractMap<String, Object> {
 		return getClass().getSimpleName() + " (" + getId() + ")";
 	}
 
+	protected static Dictionary wrapHandle(int handle, Document document) {
+		Dictionary dict = dictionaries.get(handle);
+		if (dict == null || document != null && dict.document != document) {
+			// Reused handle in a different document, set handle of old
+			// wrapper to 0 and produce a new one.
+			if (dict != null)
+				dict.handle = 0;
+			dict = new Dictionary(handle, document, true);
+		}
+		return dict;
+	}
+
 	/**
 	 * Called from the native environment to wrap a Dictionary:
 	 */
@@ -210,12 +207,9 @@ public class Dictionary extends AbstractMap<String, Object> {
 	 * @jshide
 	 */
 	public static void releaseAll() {
-		// Use Iterator to remove to avoid ConcurrentModificationExceptions
-		Iterator<Dictionary> it = dictionaries.values().iterator();
-		while (it.hasNext()) {
-			Dictionary dict = it.next();
-			if (dict.release())
-				it.remove();
-		}
+		// Release all used dictionaries and then clear the lookup table
+		for (Dictionary dict : dictionaries.values())
+			dict.release();
+		dictionaries.clear();
 	}
 }

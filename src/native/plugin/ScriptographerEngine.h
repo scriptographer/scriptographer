@@ -294,7 +294,10 @@ public:
 	jmethodID mid_ai_LiveEffect_onCalculate;
 	jmethodID mid_ai_LiveEffect_onInterpolate;
 	jmethodID mid_ai_LiveEffect_onGetInputType;
-	
+
+	jclass cls_ai_LiveEffectParameters;
+	jmethodID mid_ai_LiveEffectParameters_wrapHandle;
+
 	jclass cls_sg_Timer;
 	jmethodID cid_sg_Timer;
 	jmethodID mid_sg_Timer_onExecute;
@@ -599,6 +602,7 @@ public:
 	
 	jobject wrapDocumentHandle(JNIEnv *env, AIDocumentHandle doc);
 	jobject wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc = NULL);
+	jobject wrapLiveEffectParameters(JNIEnv *env, AILiveEffectParameters parameters, AIDocumentHandle doc = NULL);
 
 	void commit(JNIEnv *env);
 	void resumeSuspendedDocuments();
