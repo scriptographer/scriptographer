@@ -617,12 +617,11 @@ public class Path extends PathItem {
 
 	private native boolean nativeSwapTabletData(double offset);
 
+	public native boolean hasTabletData();
+
 	/**
 	 * {@grouptitle Tablet Data}
 	 */
-
-	public native boolean hasTabletData();
-
 	public float[][] getTabletPressure() {
 		return nativeGetTabletData(TABLET_PRESSURE);
 	}
