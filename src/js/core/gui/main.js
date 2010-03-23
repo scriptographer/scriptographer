@@ -258,6 +258,30 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		return entry && entry.file ? entry : null;
 	}
 
+	function getEntryPath(entry) {
+		var path = [];
+		do {
+			path.unshift(entry.text);
+			entry = entry.parentEntry;
+		} while (entry);
+		return path.join('/');
+	}
+
+	function getEntryByPath(path) {
+		var path = path.split('/');
+		var list = scriptList, entry; 
+		for (var i = 0, l = path.length; i < l && list; i++) {
+			entry = list[path[i]];
+			if (entry && entry.isDirectory) {
+				entry.populate();
+				list = entry.childList;
+			} else {
+				list = null;
+			}
+		}
+		return i == l ? entry : null;
+	}
+
 	function compileScope(entry, handler) {
 		var scr = ScriptographerEngine.compile(entry.file);
 		if (scr) {
@@ -382,7 +406,11 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 
 	var effectEntries = {};
 
-	function followItem(item, speed, handler, scope) {
+	function followItem(item, speed, handler, first) {
+		if (first && handler.distanceThreshold > 0) {
+			speed = handler.distanceThreshold;
+			handler.distanceThreshold = 0;
+		}
 		if (item instanceof Group || item instanceof CompoundPath
 			|| item instanceof Layer) {
 			item.children.each(function(child) {
@@ -392,7 +420,10 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			var curve = item.curves.first;
 			if (curve) {
 				handler.onHandleEvent('mouse-down', curve.point1);
-				for (var pos = speed, length = item.length; pos < length; pos += speed)
+				var length = item.length;
+				if (true)
+					speed = length / Math.round(length / speed);
+				for (var pos = speed; pos < length; pos += speed)
 					handler.onHandleEvent('mouse-drag', item.getPoint(pos));
 				handler.onHandleEvent('mouse-up', item.curves.last.point2);
 			}
@@ -421,9 +452,13 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	}
 
 	function filterScope(obj) {
+		// Return a copy of obj that only contains values that can be converted
+		// to Json and stored in effect parameters easily.
 		if (obj === null)
 			return undefined;
 		var type = Base.type(obj);
+		// Support java.util.Map, as in Sg they are wrapped to behave like
+		// native objects.
 		if (type == 'java' && obj instanceof java.util.Map)
 			type = 'object';
 		switch (type) {
@@ -443,6 +478,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		case 'java':
 		case 'function':
 		case 'regexp':
+			// Unsupported types
 			return undefined;
 		default:
 			return obj;
@@ -450,9 +486,8 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	}
 
 	function compileEffect(entry, parameters) {
-		var path = entry.file.path;
-		effectEntries[path] = entry;
-		parameters.file = path;
+		var path = getEntryPath(entry);
+		parameters.path = path;
 		var isTool = entry.type == 'tool';
 		// Create a ToolEventHandler that handles all the complicated ToolEvent
 		// stuff for us, to replicate completely the behavior of tools.
@@ -485,18 +520,12 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 					onCalculate: function(event) {
 						if (event.parameters.scope) {
 							restoreScope(scope, toolHandler, event.parameters);
-							var speed = Math.max(10, toolHandler.distanceThreshold);
-							// Erase distanceThreshold, as we're stepping exactly
-							// by that amount anyway, and there is always a bit
-							// of imprecision involved with length calculations.
-							toolHandler.distanceThreshold = 0;
-//							var t = new Date();
-							followItem(event.item, speed, toolHandler, this);
-//							print(new Date() - t);
+							followItem(event.item, 10, toolHandler, true);
 						}
 					}
 				}
 			}
+			effectEntries[path] = entry;
 			entry.handler = handler;
 			return true;
 		}
@@ -505,11 +534,16 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	// Pass on effect handlers.
 	['onEditParameters', 'onCalculate', 'onGetInputType'].each(function(name) {
 		effect[name] = function(event) {
-			if (event.parameters.file) {
-				var entry = effectEntries[event.parameters.file];
+			if (event.parameters.path) {
+				var entry = effectEntries[event.parameters.path];
 				if (!entry) {
-					// TODO: Support finding unindexed effect files from the path inside
-					// scriptList, so effects work after reloading too!
+					entry = getEntryByPath(event.parameters.path);
+					if (entry) {
+						compileEffect(entry, event.parameters);
+					} else {
+						// TODO: Alert?
+						print('Cannot find effect script: ', event.parameters.path);
+					}
 				}
 				var func = entry && entry.handler && entry.handler[name];
 				if (func)
@@ -527,7 +561,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		text: 'Scriptographer'
 	};
 
-// 	var separator = new MenuGroup(scriptographerGroup, MenuGroup.OPTION_ADD_ABOVE);
+	// var separator = new MenuGroup(scriptographerGroup, MenuGroup.OPTION_ADD_ABOVE);
 
 	new MenuItem(scriptographerItem) {
 		onSelect: function() {
