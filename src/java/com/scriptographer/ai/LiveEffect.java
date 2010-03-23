@@ -58,49 +58,60 @@ import com.scriptographer.ui.MenuItem;
  */
 
 /*
-Re: sdk: Illustrator AILiveEffect questions
-Datum: 23. Februar 2005 18:53:13 GMT+01:00
-
-In general, live effects should run on all the art it is given. In the first example of running a post effect on a
-path, the input art is split into two objects: one path that contains just the stroke attributes and another path that
-contains just the fill color. Input art is typically split up this way when effects are involved.
-
-If the effect is dragged before any of the fill/stroke layers in the appearance palette, then the input path the effect
-will see will just be one path, since it has not been split up yet. However, the input path will contain no paint,
-since it has not gone through the fill/stroke layers yet.
-
-In the example of running a post effect on a group with two paths, the input art will be split up again in order to go
-through the fill/stroke layers and the "Contents" layer. Thus, you will see three copies of the group: one that may
-just be filled, one that may just be stroked, and one that contains the original group unchanged.
-
-Because of this redundancy, it is more optimal to register effects as pre effects, if the effect does not care about
-the paint on the input path. For example, the Roughen effect in Illustrator is registered as a pre effect since it
-merely roughens the geometry, regardless of the paint. On the other hand, drop shadow is registered as a post effect,
-since its results depend on the paint applied to the input objects.
-
-While there is redundancy, effects really cannot make any assumptions about the input art they are given and should
-thus attempt to operate on all of the input art. At the end of executing an entire appearance, Illustrator will attempt
-to "clean up" and remove any unnecessary nested groups and unpainted paths.
-
-When creating output art for the go message, the output art must be a child of the same parent as the input art. It
-also must be the only child of this parent, so if you create a copy of the input art, work on it and attempt to return
-the copy as the output art, you must make sure to dispose the original input art first. It is not legal to create an
-item in an arbitrary place and return that as the output art.
-
-Effects are limited in the kinds of attributes that they can attach to the output art. Effects must restrict themselves
-to using "simple" attributes, such as:
-- 1 fill and 1 stroke (AIPathStyle)
-- transparency options (AIBlendStyle)
-It is actually not necessary to use the AIArtStyle suite when generating output art, and effects should try to avoid
-it. Effects also should avoid putting properties on output art that will generate more styled art (ie. nested styled
-art is not allowed).
-
-I suggest playing around with the TwirlFilterProject in Illustrator and expanding the appearance to get a better
-picture of the live effect architecture.
-
-Hope that helps,
--Frank
-*/
+ * Re: sdk: Illustrator AILiveEffect questions Datum: 23. Februar 2005 18:53:13
+ * GMT+01:00
+ * 
+ * In general, live effects should run on all the art it is given. In the first
+ * example of running a post effect on a path, the input art is split into two
+ * objects: one path that contains just the stroke attributes and another path
+ * that contains just the fill color. Input art is typically split up this way
+ * when effects are involved.
+ * 
+ * If the effect is dragged before any of the fill/stroke layers in the
+ * appearance palette, then the input path the effect will see will just be one
+ * path, since it has not been split up yet. However, the input path will
+ * contain no paint, since it has not gone through the fill/stroke layers yet.
+ * 
+ * In the example of running a post effect on a group with two paths, the input
+ * art will be split up again in order to go through the fill/stroke layers and
+ * the "Contents" layer. Thus, you will see three copies of the group: one that
+ * may just be filled, one that may just be stroked, and one that contains the
+ * original group unchanged.
+ * 
+ * Because of this redundancy, it is more optimal to register effects as pre
+ * effects, if the effect does not care about the paint on the input path. For
+ * example, the Roughen effect in Illustrator is registered as a pre effect
+ * since it merely roughens the geometry, regardless of the paint. On the other
+ * hand, drop shadow is registered as a post effect, since its results depend on
+ * the paint applied to the input objects.
+ * 
+ * While there is redundancy, effects really cannot make any assumptions about
+ * the input art they are given and should thus attempt to operate on all of the
+ * input art. At the end of executing an entire appearance, Illustrator will
+ * attempt to "clean up" and remove any unnecessary nested groups and unpainted
+ * paths.
+ * 
+ * When creating output art for the go message, the output art must be a child
+ * of the same parent as the input art. It also must be the only child of this
+ * parent, so if you create a copy of the input art, work on it and attempt to
+ * return the copy as the output art, you must make sure to dispose the original
+ * input art first. It is not legal to create an item in an arbitrary place and
+ * return that as the output art.
+ * 
+ * Effects are limited in the kinds of attributes that they can attach to the
+ * output art. Effects must restrict themselves to using "simple" attributes,
+ * such as: - 1 fill and 1 stroke (AIPathStyle) - transparency options
+ * (AIBlendStyle) It is actually not necessary to use the AIArtStyle suite when
+ * generating output art, and effects should try to avoid it. Effects also
+ * should avoid putting properties on output art that will generate more styled
+ * art (ie. nested styled art is not allowed).
+ * 
+ * I suggest playing around with the TwirlFilterProject in Illustrator and
+ * expanding the appearance to get a better picture of the live effect
+ * architecture.
+ * 
+ * Hope that helps, -Frank
+ */
 public class LiveEffect extends NativeObject {
 
 	// AIStyleFilterPreferredInputArtType
@@ -114,8 +125,8 @@ public class LiveEffect extends NativeObject {
 		INPUT_MYSTERYPATH 		= 1 << (Item.TYPE_MYSTERYPATH - 1),
 		INPUT_RASTER 			= 1 << (Item.TYPE_RASTER - 1),
 
-		// If INPUT_PLUGIN is not specified, the filter will receive the result group of a plugin
-		// group instead of the plugin group itself
+		// If INPUT_PLUGIN is not specified, the filter will receive the result
+		// group of a plugin group instead of the plugin group itself
 		INPUT_PLUGIN			= 1 << (Item.TYPE_PLUGIN - 1),
 		INPUT_MESH 				= 1 << (Item.TYPE_MESH - 1),
 
@@ -128,20 +139,25 @@ public class LiveEffect extends NativeObject {
 
 		// Indicates that the effect can operate on any input art. */
 		INPUT_ANY 				= 0xfff,
-		// Indicates that the effect can operate on any input art other than plugin groups which
-		// are replaced by their result art.
+		// Indicates that the effect can operate on any input art other than
+		// plugin groups which are replaced by their result art.
 		INPUT_ANY_BUT_PLUGIN	= INPUT_ANY & ~INPUT_PLUGIN,
 
-		// Special values that don't correspond to regular art types should be in the high half word
+		// Special values that don't correspond to regular art types should be
+		// in the high half word
 
-		// Wants strokes to be converted to outlines before being filtered (not currently implemented)
+		// Wants strokes to be converted to outlines before being filtered
+		// (not currently implemented)
 		INPUT_OUTLINED_STROKE	= 0x10000,
-		// Doesn't want to take objects that are clipping paths or clipping text (because it destroys them,
-		// e.g. by rasterizing, or by splitting a single path into multiple non-intersecting paths,
-		// or by turning it into a plugin group, like the brush filter).
-		// This flag is on for "Not OK" instead of on for "OK" because destroying clipping paths is
-		// an exceptional condition and we don't want to require normal filters to explicitly say they're OK.
-		// Also, it is not necessary to turn this flag on if you can't take any paths at all.
+		// Doesn't want to take objects that are clipping paths or clipping text
+		// (because it destroys them, e.g. by rasterizing, or by splitting a
+		// single path into multiple non-intersecting paths, or by turning it
+		// into a plugin group, like the brush filter).
+		// This flag is on for "Not OK" instead of on for "OK" because 
+		// destroying clipping paths is an exceptional condition and we don't
+		// want to require normal filters to explicitly say they're OK.
+		// Also, it is not necessary to turn this flag on if you can't take any
+		// paths at all.
 		INPUT_NO_CLIPMASKS		= 0x20000;
 	
 	//AIStyleFilterFlags
@@ -153,9 +169,11 @@ public class LiveEffect extends NativeObject {
 		FLAG_USE_AUTO_RASTARIZE 		= 1 << 18,
 		/* Supports the generation of an SVG filter. */
 		FLAG_CAN_GENERATE_SVG_FILTER	= 1 << 19,
-		/* Has parameters that can be modified by a \c #kSelectorAILiveEffectAdjustColors message. */
+		/* Has parameters that can be modified by a \c
+		 * #kSelectorAILiveEffectAdjustColors message. */
 		FLAG_HAS_ADJUST_COLOR_HANDLER	= 1 << 20,
-		/* Handles \c #kSelectorAILiveEffectIsCompatible messages. If this flag is not set the message will not be sent. */
+		/* Handles \c #kSelectorAILiveEffectIsCompatible messages.
+		 * If this flag is not set the message will not be sent. */
 		FLAG_HAS_IS_COMPATIBLE_HANDLER	= 1 << 21;
 
 	private String name;
@@ -194,8 +212,9 @@ public class LiveEffect extends NativeObject {
 	 * @param majorVersion
 	 * @param minorVersion
 	 */
-	public LiveEffect(String title, String category, LiveEffectPosition position,
-			Class preferredInput, int flags, int majorVersion, int minorVersion) {
+	public LiveEffect(String title, String category,
+			LiveEffectPosition position, Class preferredInput, int flags,
+			int majorVersion, int minorVersion) {
 		this(0, title, title, position != null ? position.value : 0,
 				getInputType(preferredInput), flags, majorVersion, minorVersion);
 
@@ -228,12 +247,13 @@ public class LiveEffect extends NativeObject {
 		effects.put(handle, this);
 	}
 
-	public LiveEffect(String title, String category, LiveEffectPosition position, Class preferredInput,
-			int flags) {
+	public LiveEffect(String title, String category,
+			LiveEffectPosition position, Class preferredInput, int flags) {
 		this(title, category, position, preferredInput, flags, 1, 0);
 	}
 
-	public LiveEffect(String title, String category, LiveEffectPosition position, Class preferredInput) {
+	public LiveEffect(String title, String category,
+			LiveEffectPosition position, Class preferredInput) {
 		this(title, category, position, preferredInput, FLAG_NONE, 1, 0);
 	}
 
@@ -402,8 +422,8 @@ public class LiveEffect extends NativeObject {
 	}
 
 	protected static int getInputType(Class cls) {
-		// Default setting for effects that provide no input type is INPUT_DYNAMIC,
-		// so the getInputType handler is asked instead.
+		// Default setting for effects that provide no input type is
+		// INPUT_DYNAMIC, so the getInputType handler is asked instead.
 		int type =  INPUT_DYNAMIC;
 		// Determine type from Item class
 		if (cls != null && Item.class.isAssignableFrom(cls)) {
@@ -425,7 +445,8 @@ public class LiveEffect extends NativeObject {
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static void onEditParameters(int handle, int dataHandle) throws Exception {
+	private static void onEditParameters(int handle, int dataHandle)
+			throws Exception {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
 			effect.onEditParameters(new LiveEffectEvent(0, dataHandle));
@@ -474,7 +495,8 @@ public class LiveEffect extends NativeObject {
 				// copy as the output art, you must make sure to dispose the
 				// original input art first. It is not legal to create an item
 				// in an arbitrary place and return that as the output art."
-				if (newItem.getParent().equals(parent) || parent.appendTop(newItem)) {
+				if (newItem.getParent().equals(parent)
+						|| parent.appendTop(newItem)) {
 					item.remove();
 					item = newItem;
 					changed = true;
@@ -495,14 +517,15 @@ public class LiveEffect extends NativeObject {
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static int onGetInputType(int handle, int itemHandle, int parametersHandle)
-			throws Exception {
+	private static int onGetInputType(int handle, int itemHandle,
+			int parametersHandle) throws Exception {
 		// For improved performance of onGetInputType, we do not wrap the handle
 		// on the native side already, as often it is not even used. Instead
 		// The LiveEffectEvent takes care of that on demand.
 		LiveEffect effect = getEffect(handle);
 		if (effect != null)
-			return effect.onGetInputType(new LiveEffectEvent(itemHandle, parametersHandle));
+			return effect.onGetInputType(new LiveEffectEvent(itemHandle,
+					parametersHandle));
 		return INPUT_ANY_BUT_PLUGIN;
 	}
 

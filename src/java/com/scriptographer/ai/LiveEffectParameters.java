@@ -67,6 +67,8 @@ public class LiveEffectParameters extends Dictionary {
 		Dictionary dict = dictionaries.get(handle);
 		if (dict == null || !(dict instanceof LiveEffectParameters)
 				|| dict.document != document) {
+			// Reused handle in a different document, set handle of old
+			// wrapper to 0 and produce a new one.
 			if (dict != null)
 				dict.handle = 0;
 			dict = new LiveEffectParameters(handle, document);
