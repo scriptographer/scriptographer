@@ -191,10 +191,7 @@ public abstract class TextItem extends Item {
 		// to the same Story, so things can be cached there:
 		int index = getStoryIndex();
 		ReadOnlyList list = document.getStories();
-		// getStories sometimes seem to return null. This prevents an
-		// exception but does not solve the issue.
-		// TODO: Find out why list can be null here.
-		if (list != null && index >= 0 && index < list.size())
+		if (index >= 0 && index < list.size())
 			return (TextStory) list.get(index);
 		return null;
 	}
