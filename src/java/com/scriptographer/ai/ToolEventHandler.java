@@ -64,7 +64,7 @@ public class ToolEventHandler extends NativeObject {
 	 * @jshide
 	 */
 	public void initialize() {
-		onOptions = null;
+		onEditOptions = null;
 		onSelect = null;
 		onDeselect = null;
 		onReselect = null;
@@ -223,7 +223,7 @@ public class ToolEventHandler extends NativeObject {
 	 * TODO: onOptions should be called onEditOptions, or both onOptions,
 	 * but at least the same.
 	 */
-	private Callable onOptions;
+	private Callable onEditOptions;
 
 	/**
 	 * {@grouptitle Tool Button Event Handlers}
@@ -232,17 +232,17 @@ public class ToolEventHandler extends NativeObject {
 	 * often used to present the users with a dialog containing options that
 	 * they can set.
 	 */
-	public Callable getOnOptions() {
-		return onOptions;
+	public Callable getOnEditOptions() {
+		return onEditOptions;
 	}
 
-	public void setOnOptions(Callable onOptions) {
-		this.onOptions = onOptions;
+	public void setOnEditOptions(Callable onOptions) {
+		this.onEditOptions = onOptions;
 	}
 
-	protected void onOptions() throws Exception {
-		if (onOptions != null)
-			ScriptographerEngine.invoke(onOptions, this);
+	protected void onEditOptions() throws Exception {
+		if (onEditOptions != null)
+			ScriptographerEngine.invoke(onEditOptions, this);
 	}
 
 	private Callable onSelect;
@@ -369,7 +369,7 @@ public class ToolEventHandler extends NativeObject {
 				}
 				break;
 			case EDIT_OPTIONS:
-				onOptions();
+				onEditOptions();
 				break;
 			case SELECT:
 				onSelect();

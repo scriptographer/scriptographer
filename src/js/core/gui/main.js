@@ -171,8 +171,9 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		// Do only refresh populated lists
 		if (list.parentEntry && !list.parentEntry.populated)
 			return null;
-		// Get new listing of the directory, then match with already inserted files.
-		// Create a lookup object for easily finding and tracking of already inserted files.	
+		// Get new listing of the directory, then match with already inserted 
+		// files. Create a lookup object for easily finding and tracking of
+		// already inserted files.	
 		var files = getFiles(list).each(function(file, i) {
 			this[file.path] = {
 				file: file,
@@ -268,14 +269,15 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 			ScriptographerEngine.execute(scr, entry.file, scope);
 			// Now copy over handlers from the scope and set them on the tool,
 			// to allow them to be defined globally.
+			// Support deprecated onOptions too, by converting it to onEditOptions.
 			var names = entry.type == 'tool'
-				? ['onOptions', 'onSelect', 'onDeselect', 'onReselect',
+				? ['onEditOptions', 'onOptions', 'onSelect', 'onDeselect', 'onReselect',
 					'onMouseDown', 'onMouseUp', 'onMouseDrag', 'onMouseMove']
 				: ['onEditParameters', 'onCalculate', 'onGetInputType'];
 			names.each(function(name) {
 				var func = scope.getCallable(name);
 				if (func)
-					handler[name] = func;
+					handler[name == 'onOptions' ? 'onEditOptions' : name] = func;
 			});
 			return scope;
 		}
@@ -393,15 +395,6 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				for (var pos = speed, length = item.length; pos < length; pos += speed)
 					handler.onHandleEvent('mouse-drag', item.getPoint(pos));
 				handler.onHandleEvent('mouse-up', item.curves.last.point2);
-				/*
-				var path = item.clone();
-				if  (path.closed)
-					path.segments.push(path.segments.first);
-				path.curvesToPoints(speed);
-				for (var i = 0, l = path.segments.length; i < l; i++)
-					handler.onHandleEvent('mouse-drag', path.segments[i].point);
-				path.remove();
-				*/
 			}
 		}
 	}
@@ -477,7 +470,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				handler = {
 					onEditParameters: function(event) {
 						// Restore previously saved values into scope,
-						// before executing onOptions, so the right values
+						// before executing onEditOptions, so the right values
 						// are used.
 						if (event.parameters.scope)
 							restoreScope(scope, toolHandler, event.parameters);
