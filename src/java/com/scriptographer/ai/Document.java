@@ -626,7 +626,10 @@ public class Document extends NativeObject implements ChangeListener {
 	 * 
 	 */
 	public Dictionary getData() {
-		if (data == null)
+		// We need to check if existing data references are still valid,
+		// as Dictionary.releaseAll() is invalidating them after each
+		// history cycle. See Dictionary.releaseAll() for more explanations
+		if (data == null || !data.isValid())
 			data = Dictionary.wrapHandle(nativeGetData(), this);
 		return data;	
 	}
@@ -768,9 +771,11 @@ public class Document extends NativeObject implements ChangeListener {
 	 * The stories contained within the document.
 	 */
 	public TextStoryList getStories() {
-		// We need to version TextStoryLists, since document handles seem to not be unique:
-		// When there is only one document, closing it and opening a new one results in the
-		// same document handle. Versioning seems the only way to keep story lists updated.
+		// We need to version TextStoryLists, since document handles seem to not
+		// be unique:
+		// When there is only one document, closing it and opening a new one
+		// results in the same document handle. Versioning seems the only way to
+		// keep story lists updated.
 		if (stories == null) {
 			int handle = nativeGetStories();
 			if (handle != 0)

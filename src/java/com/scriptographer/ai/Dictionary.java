@@ -31,6 +31,7 @@
 
 package com.scriptographer.ai;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import com.scratchdisk.util.AbstractMap;
@@ -47,12 +48,14 @@ public class Dictionary extends AbstractMap<String, Object> {
 	private boolean release;
 
 	// Internal hash map that keeps track of already wrapped objects. defined
-	// as soft.
-	protected static SoftIntMap<Dictionary> dictionaries = new SoftIntMap<Dictionary>();
+	// as soft so they can be finalized by GC.
+	protected static SoftIntMap<Dictionary> dictionaries =
+			new SoftIntMap<Dictionary>();
 
 	protected Dictionary(int handle, Document document, boolean release) {
 		this.handle = handle;
-		this.document = document != null ? document : Document.getWorkingDocument();
+		this.document = document != null
+				 ? document : Document.getWorkingDocument();
 		this.release = release;
 		dictionaries.put(handle, this);
 	}
@@ -86,7 +89,9 @@ public class Dictionary extends AbstractMap<String, Object> {
 	public Object put(String key, Object value) {
 		Object previous = get(key);
 		if (!nativePut(handle, key, value))
-			throw new IllegalArgumentException("Dictionaries do not support objects of type " + value.getClass().getSimpleName());
+			throw new IllegalArgumentException(
+					"Dictionaries do not support objects of type "
+					+ value.getClass().getSimpleName());
 		return previous;
 	}
 
@@ -101,18 +106,25 @@ public class Dictionary extends AbstractMap<String, Object> {
 
 	public native int size();
 
-	// TODO: instead of producing a full array for all keys, we could add support for 
-	// iterators to AbstractMap as an alternative (supporting both), and implementing
-	// a wrapper for the native dictionary iterator here.
+	// TODO: instead of producing a full array for all keys, we could add
+	// support for iterators to AbstractMap as an alternative (supporting both),
+	// and implementing a wrapper for the native dictionary iterator here.
 	protected native String[] keys();
 
 	private native void nativeRelease(int handle);
 
-	protected void finalize() {
+	protected boolean release() {
 		if (release && handle != 0) {
 			nativeRelease(handle);
 			handle = 0;
+			return true;
 		}
+		return false;
+	}
+
+	protected void finalize() {
+		if (release())
+			dictionaries.remove(handle);
 	}
 
 	public Document getDocument() {
@@ -122,26 +134,13 @@ public class Dictionary extends AbstractMap<String, Object> {
 	protected static Dictionary wrapHandle(int handle, Document document) {
 		Dictionary dict = dictionaries.get(handle);
 		if (dict == null || document != null && dict.document != document) {
+			// Reused handle in a different document, set handle of old
+			// wrapper to 0 and produce a new one.
 			if (dict != null)
 				dict.handle = 0;
 			dict = new Dictionary(handle, document, true);
 		}
-		return dict; 
-	}
-/*
-	protected static Dictionary wrapHandle(int handle) {
-		return wrapHandle(handle, Document.getWorkingDocument());
-	}
-*/
-	/**
-	 * Called from the native environment to wrap a Dictionary:
-	 */
-	protected static Dictionary wrapHandle(int handle, int docHandle) {
-		return wrapHandle(handle, Document.wrapHandle(docHandle)); 
-	}
-
-	public String toString() {
-		return getClass().getSimpleName() + " (@" + Integer.toHexString(handle) + ")";
+		return dict;
 	}
 
 	public Object clone() {
@@ -168,5 +167,55 @@ public class Dictionary extends AbstractMap<String, Object> {
 			return true;
 		}
 		return super.equals(obj);
+	}
+
+	public int hashCode() {
+		return handle != 0 ? handle : super.hashCode();
+	}
+
+	public boolean isValid() {
+		return handle != 0;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public String getId() {
+		return "@" + Integer.toHexString(hashCode());
+	}
+
+	public String toString() {
+		return getClass().getSimpleName() + " (" + getId() + ")";
+	}
+
+	/**
+	 * Called from the native environment to wrap a Dictionary:
+	 */
+	protected static Dictionary wrapHandle(int handle, int docHandle) {
+		return wrapHandle(handle, Document.wrapHandle(docHandle)); 
+	}
+
+	/**
+	 * Releases all dictionaries that were used since last executed, and sets
+	 * their handles to 0 so existing references will be invalid.
+	 * 
+	 * This needs to be executed at the end of each history cycle, as 
+	 * Illustrator produces very odd crashes when dictionary references to
+	 * item dictionaries are kept alive to items that do not exist any longer
+	 * due to undoing. Confusingly, these crashes happen either in
+	 * AWS_CUI_RevertAlert or AWS_CUI_GetVersionComments.
+	 * 
+	 * This is called automatically from ScriptographerEngine.endExecution().
+	 * 
+	 * @jshide
+	 */
+	public static void releaseAll() {
+		// Use Iterator to remove to avoid ConcurrentModificationExceptions
+		Iterator<Dictionary> it = dictionaries.values().iterator();
+		while (it.hasNext()) {
+			Dictionary dict = it.next();
+			if (dict.release())
+				it.remove();
+		}
 	}
 }

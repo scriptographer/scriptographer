@@ -91,6 +91,38 @@ abstract class NativeObject {
 		return ret;
 	}
 
+	public int hashCode() {
+		return handle != 0 ? handle : super.hashCode();
+	}
+
+	public boolean isValid() {
+		return handle != 0;
+	}
+	
+	public boolean equals(Object obj) {
+		// Some objects subclass NativeObject and do not use handle,
+		// use a fallback scenario for these!
+		if (handle == 0) {
+			return this == obj;
+		} else if (obj instanceof NativeObject) {
+			return this == obj || 
+				handle == ((NativeObject) obj).handle
+					&& getClass().equals(obj.getClass());
+		}
+		return false;
+	}
+
+	/**
+	 * @jshide
+	 */
+	public String getId() {
+		return "@" + Integer.toHexString(hashCode());
+	}
+
+	public String toString() {
+		return getClass().getSimpleName() + " (" + getId() + ")";
+	}
+
 	// Cache the factories for the various wrapper classes which use this base class
 	private static HashMap<Class, WrapFactory> factories
 			= new HashMap<Class, WrapFactory>();
@@ -136,30 +168,5 @@ abstract class NativeObject {
 			}
 			return obj;
 		}
-	}
-	
-	public boolean equals(Object obj) {
-		// Some objects subclass NativeObject and do not use handle,
-		// use a fallback scenario for these!
-		if (handle == 0) {
-			return this == obj;
-		} else if (obj instanceof NativeObject) {
-			return this == obj || 
-				handle == ((NativeObject) obj).handle
-					&& getClass().equals(obj.getClass());
-		}
-		return false;
-	}
-
-	/**
-	 * @jshide
-	 */
-	public String getId() {
-		return "@" + Integer.toHexString(
-				handle != 0 ? handle : this.hashCode());
-	}
-
-	public String toString() {
-		return getClass().getSimpleName() + " (" + getId() + ")";
 	}
 }

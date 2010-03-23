@@ -349,9 +349,12 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 		Item item = items.get(artHandle);
 		// Make sure this item is still valid. It might be a reused art handle
 		// too...
-		if (item != null && item.isValid())
-			return item;
-		return null;
+		if (item != null && !item.isValid()) {
+			// Remove invalid ones so they dont come back.
+			items.remove(artHandle);
+			item = null;
+		}
+		return item;
 	}
 
 	/**
@@ -522,16 +525,27 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	}
 
 	/**
-	 * Called by native methods that need all cached changes to be
-	 * committed before the objects are modified. The version is then
-	 * increased to invalidate the cached values, as they were just 
-	 * changed.
+	 * Called by native methods through commitIfWrapped if all cached changes
+	 * need to be committed before the objects are modified.
+	 * 
+	 * The version is then increased to invalidate the cached values, as they
+	 * were just changed.
 	 */
 	protected void commit(boolean invalidate) {
 		CommitManager.commit(this);
 		// Increasing version by one causes refetching of cached data:
 		if (invalidate)
 			version++;
+	}
+
+	/**
+	 * Called by native methods if all cached changes need to be committed
+	 * before the objects are modified.
+	 */
+	protected static void commitIfWrapped(int handle, boolean invalidate) {
+		Item item = getIfWrapped(handle);
+		if (item != null) 
+			item.commit(invalidate);
 	}
 
 	private static native boolean nativeRemove(int handle, int docHandle,
@@ -999,9 +1013,19 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * </code>
 	 */
 	public Dictionary getData() {
-		if (data == null)
+		// We need to check if existing data references are still valid,
+		// as Dictionary.releaseAll() is invalidating them after each
+		// history cycle. See Dictionary.releaseAll() for more explanations
+		if (data == null || !data.isValid())
 			data = Dictionary.wrapHandle(nativeGetData(), document);
 		return data;	
+	}
+
+	public void disposeData() {
+		if (data != null) {
+//			data.finalize();
+//			data = null;
+		}
 	}
 
 	public void setData(Map<String, Object> map) {
@@ -1339,8 +1363,9 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 */
 
 	public HitResult hitTest(Point point, HitRequest type, float tolerance) {
-		return document.nativeHitTest(point, (type != null ? type
-				: HitRequest.ALL).value, tolerance, this);
+		return document.nativeHitTest(point,
+				(type != null ? type : HitRequest.ALL).value,
+				tolerance, this);
 	}
 
 	public HitResult hitTest(Point point, HitRequest type) {

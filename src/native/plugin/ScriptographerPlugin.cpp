@@ -31,7 +31,6 @@
 #include "ScriptographerPlugin.h"
 #include "ScriptographerEngine.h"
 #include "resourceIds.h"
-#include "AppContext.h"
 #include "com_scriptographer_ScriptographerEngine.h"
 #include "com_scriptographer_ui_KeyModifiers.h"
 #include "AIMenuCommandNotifiers.h"

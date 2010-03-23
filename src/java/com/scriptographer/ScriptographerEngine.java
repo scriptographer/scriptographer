@@ -51,6 +51,7 @@ import com.scratchdisk.util.ClassUtils;
 import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.StringUtils;
 import com.scriptographer.ai.Annotator;
+import com.scriptographer.ai.Dictionary;
 import com.scriptographer.ai.Document;
 import com.scriptographer.ai.LiveEffect;
 import com.scriptographer.sg.Script;
@@ -368,21 +369,49 @@ public class ScriptographerEngine {
 	/**
 	 * To be called before AI functions are executed
 	 */
-	private static boolean beginExecution(File file, Scope scope) {
+	public static boolean beginExecution() {
+		// Only call Document.beginExecution if it has not already
+		// been called through the UI notification callback.
+		if (!executing) {
+			Document.beginExecution();
+			// Disable output to the console while the script is
+			// executed as it won't get updated anyway
+			// ConsoleOutputStream.enableOutput(false);
+			executing = true;
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * To be called after AI functions were executed
+	 */
+	public static void endExecution() {
+		if (executing) {
+			try {
+				CommitManager.commit();
+			} catch(Throwable t) {
+				ScriptographerEngine.reportError(t);
+			}
+			Dictionary.releaseAll();
+			Document.endExecution();
+			closeProgress();
+			currentScriptFile = null;
+			executing = false;
+		}
+	}
+
+	/**
+	 * To be called before AI functions are executed as scripts
+	 */
+	public static boolean beginExecution(File file, Scope scope) {
 		// Since the interface is done in scripts too and we receive being /
 		// endExecution events for all UI notifications as well, we need to
 		// cheat a bit here.
 		// When file is set, we ignore the current state of "executing",
 		// as we're about to to execute a new script...
 		if (!executing || file != null) {
-			// Only call Document.beginExecution if it has not already
-			// been called through the UI notification callback.
-			if (!executing)
-				Document.beginExecution();
-			// Disable output to the console while the script is
-			// executed as it won't get updated anyway
-			// ConsoleOutputStream.enableOutput(false);
-			executing = true;
+			beginExecution();
 
 			Script script = null;
 			if (file != null) {
@@ -402,23 +431,6 @@ public class ScriptographerEngine {
 			return true;
 		}
 		return false;
-	}
-
-	/**
-	 * To be called after AI functions were executed
-	 */
-	private static void endExecution() {
-		if (executing) {
-			try {
-				CommitManager.commit();
-			} catch(Throwable t) {
-				ScriptographerEngine.reportError(t);
-			}
-			Document.endExecution();
-			closeProgress();
-			currentScriptFile = null;
-			executing = false;
-		}
 	}
 
 	/**

@@ -170,6 +170,7 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStory_getLength(JNIEnv *en
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_TextStory_reflow(JNIEnv *env, jobject obj) {
 	try {
+	// TODO: Do we need to activate doc?
 		StoryRef story = gEngine->getStoryHandle(env, obj);
 		sStory->SuspendReflow(story);
 		sStory->ResumeReflow(story);

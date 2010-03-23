@@ -493,7 +493,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_Item_wrapHandle = getStaticMethodID(env, cls_ai_Item, "wrapHandle", "(ISIIZZ)Lcom/scriptographer/ai/Item;");
 	mid_ai_Item_getIfWrapped = getStaticMethodID(env, cls_ai_Item, "getIfWrapped", "(I)Lcom/scriptographer/ai/Item;");
 	mid_ai_Item_changeHandle = getMethodID(env, cls_ai_Item, "changeHandle", "(IIZ)V");
-	mid_ai_Item_commit = getMethodID(env, cls_ai_Item, "commit", "(Z)V");
+	mid_ai_Item_commitIfWrapped = getStaticMethodID(env, cls_ai_Item, "commitIfWrapped", "(IZ)V");
 	mid_ai_Item_isValid = getMethodID(env, cls_ai_Item, "isValid", "()Z");
 
 	cls_ai_ItemList = loadClass(env, "com/scriptographer/ai/ItemList");
@@ -1396,6 +1396,7 @@ SPPlatformFileSpecification *ScriptographerEngine::convertFile(JNIEnv *env, jobj
 }
 
 void ScriptographerEngine::commit(JNIEnv *env) {
+	// TODO: Add a commmit command that only commits all items of the document
 	callStaticVoidMethod(env, cls_CommitManager, mid_CommitManager_commit, NULL);
 }
 
@@ -1493,10 +1494,10 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 					sAIDocumentList->Activate(docHandle, false);
 					gWorkingDoc = docHandle;
 				}
+				/*
 				// If it's a text object, suspend the text flow now
 				// text flow of all suspended documents is resumed at the end
 				// by gEngine->resumeSuspendedDocuments()
-				short type = kAnyArt;
 				AIDictionaryRef dict = NULL;
 				// Use a dictionary entry to see if it was suspsended before already
 				if (Item_getType(art) == kTextFrameArt && !sAIDocument->GetDictionary(&dict)) {
@@ -1507,6 +1508,7 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 					}
 					sAIDictionary->Release(dict);
 				}
+				*/
 			}
 		}
 	}
@@ -1588,7 +1590,7 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocu
 			// Determine text type as well
 			sAITextFrame->GetType(art, &textType);
 		} else if (type == kPluginArt) {
-			// TODO: Add handle of special types
+			// TODO: Add handling of special types
 #if kPluginInterfaceVersion >= kAI12
 			if (sAITracing->IsTracing(art))
 				type = com_scriptographer_ai_Item_TYPE_TRACING;
@@ -1612,10 +1614,6 @@ jobject ScriptographerEngine::wrapArtHandle(JNIEnv *env, AIArtHandle art, AIDocu
 
 void ScriptographerEngine::changeArtHandle(JNIEnv *env, jobject item, AIArtHandle art, AIDocumentHandle doc, bool clearDictionary) {
 	callVoidMethod(env, item, mid_ai_Item_changeHandle, (jint) art, (jint) doc, (jboolean) clearDictionary);
-}
-
-jobject ScriptographerEngine::getItemIfWrapped(JNIEnv *env, AIArtHandle art) {
-	return callStaticObjectMethod(env, cls_ai_Item, mid_ai_Item_getIfWrapped, (jint) art);
 }
 
 void ScriptographerEngine::setItemDictionary(JNIEnv *env, jobject item, AIDictionaryRef dictionary, AIDictKey key) {

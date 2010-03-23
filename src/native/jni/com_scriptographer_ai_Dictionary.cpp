@@ -153,11 +153,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 						AIDictionaryRef dict;
 						AIArtHandle art;
 						if (converted = !sAIEntry->ToArt(entry, &art)) {
-							res = gEngine->getItemIfWrapped(env, art);
-							if (res == NULL) {
-								// Produce a new wrapper.
-								res = gEngine->wrapArtHandle(env, art, document);
-							}
+							res = gEngine->wrapArtHandle(env, art, document);
 							// And set its dictionary
 							gEngine->setItemDictionary(env, res, dictionary, dictKey);
 						} else if (converted = !sAIEntry->ToDict(entry, &dict)) {

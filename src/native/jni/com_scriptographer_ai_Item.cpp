@@ -157,7 +157,9 @@ void Item_activateDocument(JNIEnv *env, AIArtSet set) {
 	for (long i = 0; i < count; i++) {
 		AIArtHandle art = NULL;
 		if (!sAIArtSet->IndexArtSet(set, 0, &art)) {
-			jobject obj = gEngine->getItemIfWrapped(env, art);
+			jobject obj = gEngine->callStaticObjectMethod(env,
+					gEngine->cls_ai_Item, gEngine->mid_ai_Item_getIfWrapped,
+					(jint) art);
 			if (obj != NULL) {
 				gEngine->getDocumentHandle(env, obj, true);
 				// Break since we're done.
@@ -249,10 +251,9 @@ AIArtHandle Item_getInsertionPoint(short *paintOrder, AIDocumentHandle doc) {
  * invalidates them too.
  */
 void Item_commit(JNIEnv *env, AIArtHandle art, bool invalidate, bool children) {
-	jobject obj = gEngine->getItemIfWrapped(env, art);
-	// only do this if it's wrapped!
-	if (obj != NULL)
-		gEngine->callVoidMethod(env, obj, gEngine->mid_ai_Item_commit, invalidate);
+	// only commit if it's wrapped
+	gEngine->callStaticVoidMethod(env, gEngine->cls_ai_Item,
+			gEngine->mid_ai_Item_commitIfWrapped, (jint) art, invalidate);
 	if (children) {
 		AIArtHandle child = NULL;
 		sAIArt->GetArtFirstChild(art, &child);
