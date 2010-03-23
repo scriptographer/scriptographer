@@ -74,6 +74,9 @@ public class HierarchyListEntry extends ListEntry {
 	 *
 	 */
 	
+	public HierarchyListEntry getParentEntry() {
+		return ((HierarchyList) getList()).getParentEntry();
+	}
 	
 	public HierarchyList getChildList() {
 		return childList;

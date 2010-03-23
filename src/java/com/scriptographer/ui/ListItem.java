@@ -39,6 +39,7 @@ import com.scratchdisk.list.List;
 import com.scratchdisk.list.ListIterator;
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
+import com.scratchdisk.list.ReadOnlyStringIndexList;
 import com.scratchdisk.script.Callable;
 import com.scriptographer.ScriptographerEngine;
 
@@ -63,7 +64,8 @@ The following item types have valid list objects:
 #define kADMTextEditScrollingPopupType "ADM Text Edit Scrolling Popup Type"
 */
 
-public abstract class ListItem<E extends ListEntry> extends Item implements List<E> {
+public abstract class ListItem<E extends ListEntry> extends Item implements
+		List<E>, ReadOnlyStringIndexList<E> {
 
 	protected ListItem(Dialog dialog, ItemType type) {
 		super(dialog, type);
