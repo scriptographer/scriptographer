@@ -50,15 +50,10 @@ public class HitResult {
 	private Point point;
 	private double parameter;
 	private Segment segment = null;
+	private TextRange textRange = null;
 
-	/**
-	 * 
-	 * @param type HitTest.HIT_*
-	 * @param curve
-	 * @param parameter
-	 * @param point
-	 */
-	protected HitResult(HitType type, Curve curve, double parameter, Point point) {
+	protected HitResult(HitType type, Curve curve, double parameter,
+			Point point) {
 		this.type = type;
 		this.curve = curve;
 		this.item = curve.getPath();
@@ -76,7 +71,8 @@ public class HitResult {
 	/**
 	 * To be called from the native environment
 	 */
-	protected HitResult(int type, Item item, int index, double parameter, Point point) {
+	protected HitResult(int docHandle, int type, Item item, int index,
+			double parameter, Point point, int textRangeHandle) {
 		this.type = IntegerEnumUtils.get(HitType.class, type);
 		curve = null;
 		if (item instanceof Path && type < HitType.FILL.value) {
@@ -86,8 +82,8 @@ public class HitResult {
 			// calculate the curve index in the curve list according to the
 			// segment index.
 			if (parameter == -1 && index == curves.size()) {
-				// Click on the last segment, decrease index and set parameter to
-				// the 2nd point.
+				// Click on the last segment, decrease index and set parameter
+				// to the 2nd point.
 				index--;
 				parameter = 1.0;
 			}
@@ -108,6 +104,16 @@ public class HitResult {
 		this.item = item;
 		this.parameter = parameter;
 		this.point = point;
+		// Always wrap textRange even if the user does not request it, so
+		// reference gets released in the end through GC.
+		if (textRangeHandle != 0) {
+			textRange = new TextRange(textRangeHandle,
+					Document.wrapHandle(docHandle));
+			/*
+			int start = textRange.getStart();
+			textRange.setRange(start, start + 1);
+			*/
+		}
 	}
 
 	/**
@@ -168,7 +174,14 @@ public class HitResult {
 			point = curve.getPoint(parameter);
 		return point;
 	}
-	
+
+	/**
+	 * The text range which was hit, if any.
+	 */
+	public TextRange getTextRange() {
+		return textRange;
+	}
+
 	/**
 	 * Describes the type of the hit result.
 	 * For example, if you hit an anchor point, the type would be 'anchor'.

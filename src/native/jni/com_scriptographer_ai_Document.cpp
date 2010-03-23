@@ -903,12 +903,15 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 			AIToolHitData toolHit;
 			if (sAIHitTest->IsHit(hit) && !sAIHitTest->GetHitData(hit, &toolHit)) {
 				int hitType = toolHit.type;
+				TextRangeRef textRange = NULL;
 				// Support for hittest on text frames:
 				if (Item_getType(toolHit.object) == kTextFrameArt) {
 					int textPart = sAITextFrameHit->GetPart(hit);
 					// fake HIT values for Text, added from AITextPart + 10
 					if (textPart != kAITextNowhere)
 						hitType = textPart + 10;
+					if (hitType >= 0)
+						sAITextFrame->DoTextFrameHit(hit, &textRange);
 				} else if (type == kNearestPointOnPathHitRequest) {
 					// filter out to simulate kNearestPointOnPathHitRequest that does not work properly
 					if (hitType > kSegmentHitType)
@@ -935,8 +938,8 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 				if (hitType >= 0) {
 					jobject item = gEngine->wrapArtHandle(env, toolHit.object, doc);
 					jobject point = gEngine->convertPoint(env, &toolHit.point);
-					hitTest = gEngine->newObject(env, gEngine->cls_ai_HitResult, gEngine->cid_ai_HitResult, hitType, item,
-												 (jint) toolHit.segment, (jdouble) toolHit.t, point);
+					hitTest = gEngine->newObject(env, gEngine->cls_ai_HitResult, gEngine->cid_ai_HitResult, (jint) doc,
+							hitType, item, (jint) toolHit.segment, (jdouble) toolHit.t, point, (jint) textRange);
 				}
 			}
 			sAIHitTest->Release(hit);

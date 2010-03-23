@@ -573,7 +573,7 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	mid_ai_Annotator_onInvalidate = getStaticMethodID(env, cls_ai_Annotator, "onInvalidate", "(I)V");
 	
 	cls_ai_HitResult = loadClass(env, "com/scriptographer/ai/HitResult");
-	cid_ai_HitResult = getConstructorID(env, cls_ai_HitResult, "(ILcom/scriptographer/ai/Item;IDLcom/scriptographer/ai/Point;)V");
+	cid_ai_HitResult = getConstructorID(env, cls_ai_HitResult, "(IILcom/scriptographer/ai/Item;IDLcom/scriptographer/ai/Point;I)V");
 
 	cls_ai_FileFormat = loadClass(env, "com/scriptographer/ai/FileFormat");
 	cid_ai_FileFormat = getConstructorID(env, cls_ai_FileFormat, "(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V");
