@@ -548,6 +548,7 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ai_Document_redraw(JNIEnv *env, j
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
+		// TODO: Add a commmit command that only commits all items of the document
 		gEngine->commit(env);
 		sAIDocument->RedrawDocument();
 	} EXCEPTION_CONVERT(env);
@@ -899,7 +900,6 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 		if (type == kNearestPointOnPathHitRequest)
 			request = kAllNoFillHitRequest;
 		if (!sAIHitTest->HitTestEx(handle, &pt, tolerance, request, &hit)) {
-			sAIHitTest->AddRef(hit);
 			AIToolHitData toolHit;
 			if (sAIHitTest->IsHit(hit) && !sAIHitTest->GetHitData(hit, &toolHit)) {
 				int hitType = toolHit.type;
@@ -963,22 +963,25 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetStories(JNIE
 		spec.whichAttr = 0;
 		spec.attr = 0;
 		
-		AIArtHandle **matches;
+		AIArtHandle **matches = NULL;
 		long numMatches;
 		if (!sAIMatchingArt->GetMatchingArt(&spec, 1, &matches, &numMatches)) {
 			if (numMatches > 0) {
 				TextFrameRef frame;
-				StoryRef story;
-				StoriesRef stories;
-				if (!sAITextFrame->GetATETextFrame((*matches)[0], &frame) &&
-					!sTextFrame->GetStory(frame, &story) &&
-					!sStory->GetStories(story, &stories)) {
-					ret = (jint) stories;
+				if (!sAITextFrame->GetATETextFrame((*matches)[0], &frame)) {
+					StoryRef story;
+					if (!sTextFrame->GetStory(frame, &story)) {
+						StoriesRef stories;
+						if (!sStory->GetStories(story, &stories)) {
+							ret = (jint) stories;
+						}
+						sStory->Release(story);
+					}
 					sTextFrame->Release(frame);
-					sStory->Release(story);
 				}
 			}
-			sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
+			if (matches != NULL)
+				sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
 		}
 	} EXCEPTION_CONVERT(env);
 	return ret;
