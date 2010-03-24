@@ -779,7 +779,9 @@ public class Document extends NativeObject implements ChangeListener {
 	protected TextStoryList getStories(TextItem item) {
 		// We need to have a textItem to fetch the document's stories from.
 		// We could use document.getItems() to do so, but there are situations
-		// where this code seems to not work, e.g. during tool dragging. 
+		// where this code seems to not work, e.g. when a text item was just
+		// removed from the document (but is still valid during the cycle and
+		// could be introduced in the DOM again)
 		// So let's be on the save side when directly working with existing
 		// items and always provide the context.
 		// Also we need to version TextStoryLists, since document handles seem
