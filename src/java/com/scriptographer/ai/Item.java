@@ -867,6 +867,11 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 
 	public void setClipMask(boolean clipMask) {
 		setAttribute(ItemAttribute.CLIPMASK, clipMask);
+		if (clipMask) {
+			PathStyle style = getStyle();
+			style.setFillColor(Color.NONE);
+			style.setStrokeColor(Color.NONE);
+		}
 	}
 	
 	private native int nativeGetBlendMode();
