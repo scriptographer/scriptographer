@@ -55,14 +55,14 @@ class TextStoryList extends DocumentObject implements ReadOnlyList<TextStory> {
 	private native int nativeSize(int handle);
 
 	public int size() {
-		return nativeSize(handle);
+		return handle != 0 ? nativeSize(handle) : 0;
 	}
 
 	private native int nativeGet(int handle, int index, int curStoryHandle);
 
 	public TextStory get(int index) {
 		// update buffer length
-		list.setSize(nativeSize(handle));
+		list.setSize(size());
 		// native get returns the old cached value in case it's
 		// referencing the same object, otherwise it wraps the new
 		// story and returns it
@@ -78,7 +78,7 @@ class TextStoryList extends DocumentObject implements ReadOnlyList<TextStory> {
 	}
 
 	public boolean isEmpty() {
-		return nativeSize(handle) == 0;
+		return size() == 0;
 	}
 
 	public ExtendedList<TextStory> getSubList(int fromIndex, int toIndex) {
@@ -96,14 +96,17 @@ class TextStoryList extends DocumentObject implements ReadOnlyList<TextStory> {
 	}
 
 	protected native void nativeRelease(int handle);
-	
+
 	protected void finalize() {
-		nativeRelease(handle);
-		handle = 0;
+		if (handle != 0) {
+			nativeRelease(handle);
+			handle = 0;
+		}
 	}
-	
+
 	protected void changeHandle(int newHandle) {
-		nativeRelease(handle); // Release old handle
+		if (handle != 0)
+			nativeRelease(handle); // Release old handle
 		handle = newHandle;
 		version = CommitManager.version;
 	}

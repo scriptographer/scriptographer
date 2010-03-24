@@ -190,18 +190,18 @@ public abstract class TextItem extends Item {
 		// to make sure we're not getting more than one reference
 		// to the same Story, so things can be cached there:
 		int index = getStoryIndex();
-		ReadOnlyList list = document.getStories();
+		TextStoryList list = document.getStories(this);
 		if (index >= 0 && index < list.size())
-			return (TextStory) list.get(index);
+			return list.get(index);
 		return null;
 	}
 
 	private TextItem getFrame(int index) {
 		TextStory story = getStory();
 		if (story != null) {
-			ReadOnlyList list = story.getTextFrames();
+			ReadOnlyList<TextItem> list = story.getTextFrames();
 			if (index >= 0 && index < list.size())
-				return (TextItem) list.get(index);
+				return list.get(index);
 		}
 		return null;
 	}

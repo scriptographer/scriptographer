@@ -949,42 +949,25 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_nativeHitTest(JNIE
 }
 
 /*
- * int nativeGetStories()
+ * int nativeGetStories(int artHandle)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetStories(JNIEnv *env, jobject obj) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ai_Document_nativeGetStories(JNIEnv *env, jobject obj, jint artHandle) {
 	using namespace ATE;
-	
 	jint ret = 0;
 	try {
 		// Cause the doc switch if necessary
 		gEngine->getDocumentHandle(env, obj, true);
-		
-		// This is annoying:
-		// Request a text frame and get the stories from there....
-		AIMatchingArtSpec spec;
-		spec.type = kTextFrameArt;
-		spec.whichAttr = 0;
-		spec.attr = 0;
-		
-		AIArtHandle **matches = NULL;
-		long numMatches;
-		if (!sAIMatchingArt->GetMatchingArt(&spec, 1, &matches, &numMatches)) {
-			if (numMatches > 0) {
-				TextFrameRef frame;
-				if (!sAITextFrame->GetATETextFrame((*matches)[0], &frame)) {
-					StoryRef story;
-					if (!sTextFrame->GetStory(frame, &story)) {
-						StoriesRef stories;
-						if (!sStory->GetStories(story, &stories)) {
-							ret = (jint) stories;
-						}
-						sStory->Release(story);
-					}
-					sTextFrame->Release(frame);
+		TextFrameRef frame;
+		if (!sAITextFrame->GetATETextFrame((AIArtHandle) artHandle, &frame)) {
+			StoryRef story;
+			if (!sTextFrame->GetStory(frame, &story)) {
+				StoriesRef stories;
+				if (!sStory->GetStories(story, &stories)) {
+					ret = (jint) stories;
 				}
+				sStory->Release(story);
 			}
-			if (matches != NULL)
-				sAIMDMemory->MdMemoryDisposeHandle((void **) matches);
+			sTextFrame->Release(frame);
 		}
 	} EXCEPTION_CONVERT(env);
 	return ret;

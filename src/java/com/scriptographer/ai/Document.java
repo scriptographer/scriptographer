@@ -763,7 +763,7 @@ public class Document extends NativeObject implements ChangeListener {
 	
 	// TODO: getActiveSwatch, getActiveGradient
 	
-	private native int nativeGetStories();
+	protected native int nativeGetStories(int artHandle);
 	
 	private TextStoryList stories = null;
 	
@@ -771,21 +771,28 @@ public class Document extends NativeObject implements ChangeListener {
 	 * The stories contained within the document.
 	 */
 	public TextStoryList getStories() {
-		// We need to version TextStoryLists, since document handles seem to not
-		// be unique:
+		// See getStories(TextItem item) for explanations:
+		ItemList items = getItems(new Class[] { TextItem.class });
+		return getStories((TextItem) items.getFirst());
+	}
+
+	protected TextStoryList getStories(TextItem item) {
+		// We need to have a textItem to fetch the document's stories from.
+		// We could use document.getItems() to do so, but there are situations
+		// where this code seems to not work, e.g. during tool dragging. 
+		// So let's be on the save side when directly working with existing
+		// items and always provide the context.
+		// Also we need to version TextStoryLists, since document handles seem
+		// to not be unique:
 		// When there is only one document, closing it and opening a new one
 		// results in the same document handle. Versioning seems the only way to
 		// keep story lists updated.
-		if (stories == null) {
-			int handle = nativeGetStories();
-			if (handle != 0)
+		if (stories == null || stories.version != CommitManager.version) {
+			int handle = item != null ? nativeGetStories(item.handle) : 0;
+			if (stories == null)
 				stories = new TextStoryList(handle, this);
-		} else if (stories.version != CommitManager.version) {
-			int handle = nativeGetStories();
-			if (handle != 0)
-				stories.changeHandle(handle);
 			else
-				stories = null;
+				stories.changeHandle(handle);
 		}
 		return stories;
 	}

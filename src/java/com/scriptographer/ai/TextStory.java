@@ -72,8 +72,8 @@ public class TextStory extends DocumentObject {
 	
 	public native int getIndex();
 	
-	public ReadOnlyList getStories() {
-		return document.getStories();
+	public TextStoryList getStories() {
+		return document.getStories(getTextFrames().getFirst());
 	}
 
 	public String getContent() {
@@ -92,7 +92,7 @@ public class TextStory extends DocumentObject {
 
 	TextFrameList textFrames = null;
 
-	public ReadOnlyList getTextFrames() {
+	public ReadOnlyList<TextItem> getTextFrames() {
 		if (textFrames == null)
 			textFrames = new TextFrameList();
 		return textFrames;

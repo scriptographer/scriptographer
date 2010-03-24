@@ -87,7 +87,8 @@ public class TextRange extends DocumentObject implements Committable {
 		// Story needs to be updated too, otherwise the old textFrame
 		// (e.g. before moving) keeps being referenced...
 		if (story != null)
-			document.getStories().changeStoryHandle(story, nativeGetStoryIndex());
+			document.getStories(getFirstFrame()).changeStoryHandle(story,
+					nativeGetStoryIndex());
 	}
 	
 	/**
@@ -154,7 +155,8 @@ public class TextRange extends DocumentObject implements Committable {
 	 */
 	public TextStory getStory() {
 		if (story == null)
-			story = (TextStory) document.getStories().get(nativeGetStoryIndex());
+			story = (TextStory) document.getStories(getFirstFrame()).get(
+					nativeGetStoryIndex());
 		return story;
 	}
 	
