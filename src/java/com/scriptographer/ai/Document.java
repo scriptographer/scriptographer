@@ -630,7 +630,7 @@ public class Document extends NativeObject implements ChangeListener {
 		// as Dictionary.releaseAll() is invalidating them after each
 		// history cycle. See Dictionary.releaseAll() for more explanations
 		if (data == null || !data.isValid())
-			data = Dictionary.wrapHandle(nativeGetData(), this);
+			data = Dictionary.wrapHandle(nativeGetData(), this, this);
 		return data;	
 	}
 

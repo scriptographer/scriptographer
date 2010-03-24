@@ -430,7 +430,8 @@ void ScriptographerEngine::initReflection(JNIEnv *env) {
 	cls_ai_Dictionary = loadClass(env, "com/scriptographer/ai/Dictionary");
 	cid_ai_Dictionary = getConstructorID(env, cls_ai_Dictionary, "(Ljava/util/Map;)V");
 	fid_ai_Dictionary_handle = getFieldID(env, cls_ai_Dictionary, "handle", "I");
-	mid_ai_Dictionary_wrapHandle = getStaticMethodID(env, cls_ai_Dictionary, "wrapHandle", "(II)Lcom/scriptographer/ai/Dictionary;");
+	mid_ai_Dictionary_wrapHandle = getStaticMethodID(env, cls_ai_Dictionary, "wrapHandle", "(IILcom/scriptographer/ai/ValidationObject;)Lcom/scriptographer/ai/Dictionary;");
+	mid_ai_Dictionary_setValidation = getMethodID(env, cls_ai_Dictionary, "setValidation", "(Lcom/scriptographer/ai/ValidationObject;)V");
 
 	cls_ai_Tool = loadClass(env, "com/scriptographer/ai/Tool");
 	cid_ai_Tool = getConstructorID(env, cls_ai_Tool, "(ILjava/lang/String;)V");
@@ -1649,10 +1650,10 @@ jobject ScriptographerEngine::wrapDocumentHandle(JNIEnv *env, AIDocumentHandle d
 	return callStaticObjectMethod(env, cls_ai_Document, mid_ai_Document_wrapHandle, (jint) doc);
 }
 
-jobject ScriptographerEngine::wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc) {
+jobject ScriptographerEngine::wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc, jobject validation) {
 	JNI_CHECK_ENV
 	return callStaticObjectMethod(env, cls_ai_Dictionary, mid_ai_Dictionary_wrapHandle,
-			(jint) dictionary, (jint) (doc ? doc : gWorkingDoc));
+			(jint) dictionary, (jint) (doc ? doc : gWorkingDoc), validation);
 }
 
 jobject ScriptographerEngine::wrapLiveEffectParameters(JNIEnv *env, AILiveEffectParameters parameters, AIDocumentHandle doc) {

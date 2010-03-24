@@ -157,7 +157,7 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Dictionary_nativeGet(JNIEnv
 							// And set its dictionary
 							gEngine->setItemDictionary(env, res, dictionary, dictKey);
 						} else if (converted = !sAIEntry->ToDict(entry, &dict)) {
-							res = gEngine->wrapDictionaryHandle(env, dict, document);
+							res = gEngine->wrapDictionaryHandle(env, dict, document, obj);
 						}
 					} break;
 					case PointType: {
@@ -246,6 +246,7 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 				if (value == NULL) {
 					sAIDictionary->SetBinaryEntry(dictionary, dictKey, NULL, 0); 
 				} else {
+					bool isDict = false;
 					if (env->IsInstanceOf(value, gEngine->cls_Integer)) {
 						entry = sAIEntry->FromInteger(gEngine->convertInteger(env, value));
 					} else if (env->IsInstanceOf(value, gEngine->cls_Boolean)) {
@@ -265,12 +266,14 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 							gEngine->setItemDictionary(env, value, dictionary, dictKey);
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Dictionary)) {
 						entry = sAIEntry->FromDict(gEngine->getDictionaryHandle(env, value));
+						isDict = true;
 					} else if (env->IsInstanceOf(value, gEngine->cls_Map)) {
 						// Convert Map to Dictionary through Dictionary constructor, then
 						// use its handle:
 						value = gEngine->newObject(env, gEngine->cls_ai_Dictionary,
 							gEngine->cid_ai_Dictionary, value);
 						entry = sAIEntry->FromDict(gEngine->getDictionaryHandle(env, value));
+						isDict = true;
 					} else if (env->IsInstanceOf(value, gEngine->cls_ai_Point) ||
 							   env->IsInstanceOf(value, gEngine->cls_ui_Point)) {
 						AIRealPoint point;
@@ -289,8 +292,11 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Dictionary_nativePut(JNIEn
 						gEngine->convertStrokeStyle(env, value, &style);
 						entry = sAIEntry->FromStrokeStyle(&style);
 					}
-					if (entry != NULL)
+					if (entry != NULL) {
 						res = !sAIDictionary->Set(dictionary, dictKey, entry);
+						if (isDict)
+							gEngine->callVoidMethod(env, value, gEngine->mid_ai_Dictionary_setValidation, obj);
+					}
 				}
 			} catch(std::exception *e) {
 				exc = e;

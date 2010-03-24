@@ -31,6 +31,7 @@
 
 package com.scriptographer.ai;
 
+import java.util.Iterator;
 import java.util.Map;
 
 import com.scratchdisk.util.AbstractMap;
@@ -41,28 +42,38 @@ import com.scratchdisk.util.IntMap;
  * 
  * @jshide
  */
-public class Dictionary extends AbstractMap<String, Object> {
+public class Dictionary extends AbstractMap<String, Object>
+		implements ValidationObject {
 	protected int handle;
 	protected Document document;
 	protected boolean release;
+	protected ValidationObject validation;
 
 	protected static IntMap<Dictionary> dictionaries =
 			new IntMap<Dictionary>();
 
-	protected Dictionary(int handle, Document document, boolean release) {
+	protected Dictionary(int handle, Document document, boolean release,
+			ValidationObject validation) {
 		this.handle = handle;
 		this.document = document != null
 				 ? document : Document.getWorkingDocument();
 		this.release = release;
+		this.validation = validation;
 		dictionaries.put(handle, this);
 	}
 
-	protected Dictionary(int handle, boolean release) {
-		this(handle, Document.getWorkingDocument(), release);
+	protected Dictionary(int handle, boolean release,
+			ValidationObject validation) {
+		this(handle, Document.getWorkingDocument(), release, validation);
 	}
 
 	public Dictionary() {
-		this(nativeCreate(), true);
+		// TODO: Freshly created dictionaries should not be released in
+		// endExecution. Only the ones retrieved and wrapped should be, 
+		// and new ones that are added to existing dictionaries...
+		// Find a way to accomplish this, e.g. through another flat that is
+		// set to true in wrapHandle, but false here?
+		this(nativeCreate(), true, null);
 	}
 
 	private static native int nativeCreate();
@@ -159,7 +170,19 @@ public class Dictionary extends AbstractMap<String, Object> {
 	}
 
 	public boolean isValid() {
+		// Also check validation object that this dictionary depends on.
+		if (validation != null && !validation.isValid())
+			return false;
 		return handle != 0;
+	}
+
+	/**
+	 * Called from the native environment when a dictionary becomes part of
+	 * another. This will create a validation chain that is checked in isValid,
+	 * down to the originating native object, e.g. Item or Document.
+	 */
+	protected void setValidation(ValidationObject validation) {
+		this.validation = validation;
 	}
 
 	/**
@@ -173,14 +196,15 @@ public class Dictionary extends AbstractMap<String, Object> {
 		return getClass().getSimpleName() + " (" + getId() + ")";
 	}
 
-	protected static Dictionary wrapHandle(int handle, Document document) {
+	protected static Dictionary wrapHandle(int handle, Document document,
+			ValidationObject validation) {
 		Dictionary dict = dictionaries.get(handle);
 		if (dict == null || document != null && dict.document != document) {
 			// Reused handle in a different document, set handle of old
 			// wrapper to 0 and produce a new one.
 			if (dict != null)
 				dict.handle = 0;
-			dict = new Dictionary(handle, document, true);
+			dict = new Dictionary(handle, document, true, validation);
 		}
 		return dict;
 	}
@@ -188,8 +212,9 @@ public class Dictionary extends AbstractMap<String, Object> {
 	/**
 	 * Called from the native environment to wrap a Dictionary:
 	 */
-	protected static Dictionary wrapHandle(int handle, int docHandle) {
-		return wrapHandle(handle, Document.wrapHandle(docHandle)); 
+	protected static Dictionary wrapHandle(int handle, int docHandle,
+			ValidationObject validation) {
+		return wrapHandle(handle, Document.wrapHandle(docHandle), validation); 
 	}
 
 	/**
@@ -207,9 +232,15 @@ public class Dictionary extends AbstractMap<String, Object> {
 	 * @jshide
 	 */
 	public static void releaseAll() {
-		// Release all used dictionaries and then clear the lookup table
-		for (Dictionary dict : dictionaries.values())
-			dict.release();
-		dictionaries.clear();
+		// Release all invalid dictionaries and then clear the lookup table
+		Iterator<Dictionary> it = dictionaries.values().iterator();
+		while (it.hasNext()) {
+			Dictionary dict = it.next();
+			// Also get rid of cached dictionaries that do not need to release
+			// themselves, as we never know when they become invalid
+			if (dict.validation != null && !dict.validation.isValid()
+					&& dict.release() || !dict.release)
+				it.remove();
+		}
 	}
 }

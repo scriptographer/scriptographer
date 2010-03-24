@@ -40,7 +40,7 @@ import java.util.Map;
  */
 public class LiveEffectParameters extends Dictionary {
 	protected LiveEffectParameters(int handle, Document document, boolean release) {
-		super(handle, document, release);
+		super(handle, document, release, null);
 	}
 
 	public LiveEffectParameters() {

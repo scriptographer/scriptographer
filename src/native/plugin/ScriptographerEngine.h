@@ -167,6 +167,7 @@ public:
 	jmethodID cid_ai_Dictionary;
 	jfieldID fid_ai_Dictionary_handle;
 	jmethodID mid_ai_Dictionary_wrapHandle;
+	jmethodID mid_ai_Dictionary_setValidation;
 	
 	jclass cls_ai_Tool;
 	jmethodID cid_ai_Tool;
@@ -601,7 +602,7 @@ public:
 	jobject wrapMenuItemHandle(JNIEnv *env, AIMenuItemHandle item);
 	
 	jobject wrapDocumentHandle(JNIEnv *env, AIDocumentHandle doc);
-	jobject wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc = NULL);
+	jobject wrapDictionaryHandle(JNIEnv *env, AIDictionaryRef dictionary, AIDocumentHandle doc = NULL, jobject validation = NULL);
 	jobject wrapLiveEffectParameters(JNIEnv *env, AILiveEffectParameters parameters, AIDocumentHandle doc = NULL);
 
 	void commit(JNIEnv *env);

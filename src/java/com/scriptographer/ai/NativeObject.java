@@ -40,7 +40,7 @@ import com.scriptographer.ScriptographerException;
 /**
  * @author lehni
  */
-abstract class NativeObject {
+abstract class NativeObject implements ValidationObject {
 	// used for storing the native handle for this object
 	protected int handle;
 	
