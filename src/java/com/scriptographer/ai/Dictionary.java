@@ -68,12 +68,8 @@ public class Dictionary extends AbstractMap<String, Object>
 	}
 
 	public Dictionary() {
-		// TODO: Freshly created dictionaries should not be released in
-		// endExecution. Only the ones retrieved and wrapped should be, 
-		// and new ones that are added to existing dictionaries...
-		// Find a way to accomplish this, e.g. through another flat that is
-		// set to true in wrapHandle, but false here?
-		this(nativeCreate(), true, null);
+		// By default use the working document as the validation scope
+		this(nativeCreate(), true, Document.getWorkingDocument());
 	}
 
 	private static native int nativeCreate();
