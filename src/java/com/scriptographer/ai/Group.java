@@ -97,7 +97,15 @@ public class Group extends Item {
 	 * @return {@true if the group item is to be clipped}
 	 */
 	public native boolean isClipped();
-	public native void setClipped(boolean clipped);
+
+	private native void nativeSetClipped(boolean clipped);
+
+	public void setClipped(boolean clipped) {
+		nativeSetClipped(clipped);
+		Item child = getFirstChild();
+		if (child != null)
+			child.setClipMask(clipped);
+	}
 
 	/*
 	 * Setting selected attribute on groups only works when also explicitly

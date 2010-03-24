@@ -49,15 +49,11 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Group_isClipped(JNIEnv *en
 }
 
 /*
- * void setClipped(boolean clipped)
+ * void nativeSetClipped(boolean clipped)
  */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Group_setClipped(JNIEnv *env, jobject obj, jboolean clipped) {
+JNIEXPORT void JNICALL Java_com_scriptographer_ai_Group_nativeSetClipped(JNIEnv *env, jobject obj, jboolean clipped) {
 	try {
 		AIArtHandle handle = gEngine->getArtHandle(env, obj, true);
 		sAIGroup->SetGroupClipped(handle, clipped);
-		AIArtHandle child = NULL;
-		sAIArt->GetArtFirstChild(handle, &child);
-		if (child != NULL)
-			sAIArt->SetArtUserAttr(child, kArtIsClipMask, clipped ? kArtIsClipMask : 0);
 	} EXCEPTION_CONVERT(env);
 }
