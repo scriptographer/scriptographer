@@ -83,6 +83,18 @@ public class PlacedSymbol extends Item {
 		this(symbol, new Matrix());
 	}
 
+	/**
+	 * Creates a new PlacedSymbol item from the provided item by converting it
+	 * to a Symbol behind and placing it in the same spot as the original item.
+	 * The original item is then removed.
+	 * 
+	 * @param item the item to create a symbol out of
+	 */
+	public PlacedSymbol(Item item) {
+		this(new Symbol(item), item.getPosition());
+		item.remove();
+	}
+
 	private native int nativeGetSymbol();
 
 	/**
