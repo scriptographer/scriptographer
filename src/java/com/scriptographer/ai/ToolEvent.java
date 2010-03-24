@@ -60,6 +60,7 @@ public class ToolEvent extends Event {
 	private Point middlePoint = null;
 	private Point delta = null;
 	private double pressure = -1;
+	private Item item = null;
 
 	protected ToolEvent(ToolEventHandler tool, ToolEventType type, int modifiers) {
 		super(modifiers);
@@ -234,6 +235,26 @@ public class ToolEvent extends Event {
 	
 	public void setType(ToolEventType type) {
 		this.type = type;
+	}
+
+	public Item getItem() {
+		if (item == null) {
+			HitResult result = Document.getActiveDocument().hitTest(getPoint());
+			if (result != null) {
+				item = result.getItem();
+				// Find group parent
+				Item parent = item.getParent();
+				while (parent instanceof Group || parent instanceof CompoundPath) {
+					item = parent;
+					parent = parent.getParent();
+				}
+			}
+		}
+		return item;
+	}
+
+	public void setItem(Item item) {
+		this.item = item;
 	}
 
 	// TODO: Consider adding these, present since CS2
