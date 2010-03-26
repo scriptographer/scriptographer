@@ -31,10 +31,9 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.util.IntegerEnumUtils;
-import com.scriptographer.Committable;
 import com.scriptographer.CommitManager;
+import com.scriptographer.Committable;
 
 /*
  * PathStyle, FillStyle and StrokeStyle are used for Item, CharacterAttributes,
@@ -117,48 +116,6 @@ public class PathStyle extends NativeObject implements Style, Committable {
 	}
 
 	/*
-	 * Used by both PathStyle and CharacterStyle, which provides a native handle.
-	 */
-	protected PathStyle(int handle, ArgumentReader reader) {
-		super(handle);
-		// First try the full fill and stroke objects
-		if (reader.has("fill"))
-			fill = (FillStyle) reader.readObject("fill", FillStyle.class);
-		if (reader.has("stroke"))
-			stroke = (StrokeStyle) reader.readObject("stroke", StrokeStyle.class);
-		if (fill == null)
-			fill = new FillStyle(
-					getColor(reader, "fillColor"),
-					reader.readBoolean("overprint")
-			);
-		if (stroke == null)
-			stroke = new StrokeStyle(
-					getColor(reader, "strokeColor"),
-					reader.readBoolean("strokeOverprint"),
-					reader.readFloat("strokeWidth"),
-					reader.readEnum("strokeCap", StrokeCap.class),
-					reader.readEnum("strokeJoin", StrokeJoin.class),
-					reader.readFloat("miterLimit"),
-					reader.readFloat("dashOffset"),
-					(float[]) reader.readObject("dashArray", float[].class)
-			);
-		fill.setStyle(this);
-		stroke.setStyle(this);
-		// PathStyle fields
-		windingRule = reader.readEnum("windingRule", WindingRule.class);
-		resolution = reader.readFloat("resolution");
-	}
-
-	private static Color getColor(ArgumentReader reader, String name) {
-		// If color is null, handle it differently for hashes and arrays:
-		// For arrays, it can either be a color or Color.NONE. For hashes
-		// it can be both undefined -> null or null -> Color.NONE:
-		Color color = (Color) reader.readObject(name, Color.class);
-		return color == null && (!reader.isHash() || reader.has(name))
-				? Color.NONE : color;
-	}
-
-	/*
 	 * For Item#getStyle
 	 */
 	protected PathStyle(Item item) {
@@ -184,13 +141,6 @@ public class PathStyle extends NativeObject implements Style, Committable {
 		super();
 		this.fill = new FillStyle(fill, this);
 		this.stroke = new StrokeStyle(stroke, this);
-	}
-
-	/**
-	 * @jshide
-	 */
-	public PathStyle(ArgumentReader reader) {
-		this(0, reader);
 	}
 
 	public boolean equals(Object obj) {

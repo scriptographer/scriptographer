@@ -31,7 +31,6 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.script.ArgumentReader;
 
 /**
  * @author lehni
@@ -81,22 +80,6 @@ public class FillStyle implements Style {
 
 	public FillStyle(Color color) {
 		init(color, false);
-	}
-
-	/**
-	 * @jshide
-	 */
-	public FillStyle(ArgumentReader reader) {
-		// If color is null, handle it differently for hashes and arrays:
-		// For arrays, it can either be a color or Color.NONE. For hashes
-		// it can be both undefined -> null or null -> Color.NONE:
-		Color color = (Color) reader.readObject("color", Color.class);
-		if (color == null && (!reader.isHash() || reader.has("color")))
-			color = Color.NONE;
-		init(
-				color,
-				reader.readBoolean("overprint")
-		);
 	}
 
 	/**

@@ -31,7 +31,6 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.util.IntegerEnumUtils;
 
 /**
@@ -76,28 +75,6 @@ public class StrokeStyle implements Style {
 			Float dashOffset, float[] dashArray) {
 		init(color, overprint, width, cap, join, miterLimit,
 				dashOffset, dashArray);
-	}
-
-	/**
-	 * @jshide
-	 */
-	public StrokeStyle(ArgumentReader reader) {
-		// If color is null, handle it differently for hashes and arrays:
-		// For arrays, it can either be a color or Color.NONE. For hashes
-		// it can be both undefined -> null or null -> Color.NONE:
-		Color color = (Color) reader.readObject("color", Color.class);
-		if (color == null && (!reader.isHash() || reader.has("color")))
-			color = Color.NONE;
-		init(
-				color,
-				reader.readBoolean("overprint"),
-				reader.readFloat("width"),
-				reader.readEnum("cap", StrokeCap.class),
-				reader.readEnum("join", StrokeJoin.class),
-				reader.readFloat("miterLimit"),
-				reader.readFloat("dashOffset"),
-				(float[]) reader.readObject("dashArray", float[].class)
-		);
 	}
 
 	/**

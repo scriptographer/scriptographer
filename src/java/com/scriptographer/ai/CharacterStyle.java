@@ -31,7 +31,6 @@
 
 package com.scriptographer.ai;
 
-import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scriptographer.CommitManager;
 
@@ -81,58 +80,6 @@ public class CharacterStyle extends PathStyle {
 		this(nativeCreate());
 		range = null;
 		commitKey = this;
-	}
-
-	/**
-	 * @jshide
-	 */
-	public CharacterStyle(ArgumentReader reader) {
-		// Handler fill & stroke through PathStyle argument reader constructor
-		super(nativeCreate(), reader);
-		range = null;
-		commitKey = this;
-		// See reading of color in StrokeStyle:
-		Object weight = reader.readObject("font");
-		if (weight == null && (!reader.isHash() || reader.has("font")))
-			weight = FontWeight.NONE;
-		if (weight instanceof String) {
-			setFont((String) weight);
-		} else if (weight instanceof FontWeight || weight == null) {
-			setFont((FontWeight) weight);
-		} else if (weight instanceof FontFamily) {
-			setFont((FontFamily) weight);
-		} else {
-			setFont(FontWeight.NONE);
-		}
-		setFontSize(reader.readFloat("fontSize"));
-		setHorizontalScale(reader.readFloat("horizontalScale"));
-		setVerticalScale(reader.readFloat("verticalScale"));
-		setAutoLeading(reader.readBoolean("autoLeading"));
-		setLeading(reader.readFloat("leading"));
-		setTracking(reader.readInteger("tracking"));
-		setBaselineShift(reader.readFloat("baselineShift"));
-		setRotation(reader.readFloat("Rotation"));
-		setKerningType(reader.readEnum("kerningType", KerningType.class));
-		setCapitalization(reader.readEnum("capitalization", TextCapitalization.class));
-		setBaselineOption(reader.readEnum("baselineOption", BaselineOption.class));
-		setOpenTypePosition(reader.readEnum("openTypePosition", OpenTypePosition.class));
-		setStrikethroughPosition(reader.readEnum("strikethroughPosition", StrikethroughPosition.class));
-		setUnderlinePosition(reader.readEnum("underlinePosition", UnderlinePosition.class));
-		setUnderlineOffset(reader.readFloat("underlineOffset"));
-		setLigature(reader.readBoolean("ligature"));
-		setDiscretionaryLigature(reader.readBoolean("discretionaryLigature"));
-		setContextualLigature(reader.readBoolean("contextLigature"));
-		setAlternateLigatures(reader.readBoolean("alternateLigature"));
-		setOldStyle(reader.readBoolean("oldStyle"));
-		setFractions(reader.readBoolean("fractions"));
-		setOrdinals(reader.readBoolean("ordinals"));
-		setSwash(reader.readBoolean("swash"));
-		setTitling(reader.readBoolean("titling"));
-		setConnectionForms(reader.readBoolean("forms"));
-		setStylisticAlternates(reader.readBoolean("stylisticAlternates"));
-		setOrnaments(reader.readBoolean("ornaments"));
-		setFigureStyle(reader.readEnum("figureStyle", FigureStyle.class));
-		setNoBreak(reader.readBoolean("noBreak"));
 	}
 
 	protected CharacterStyle(int handle, TextRange range) {
