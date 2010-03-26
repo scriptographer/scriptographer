@@ -151,9 +151,7 @@ public class ExtendedJavaClass extends NativeJavaClass {
 	}
 
 	private void setProperties(Scriptable obj, NativeObject properties) {
-		Object[] ids = properties.getIds();
-		for (int i = 0; i < ids.length; i++) {
-			Object id = ids[i];
+		for (Object id : properties.getIds()) {
 			if (id instanceof String && !id.equals("initialize"))
 				obj.put((String) id, obj, properties.get((String) id, properties));
 		}

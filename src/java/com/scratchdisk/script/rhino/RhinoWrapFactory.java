@@ -211,6 +211,11 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 				// Try and see if unwrapping NativeObjects through JS unwrap
 				// method brings us to the right type.
 				unwrapped = unwrap(from);
+				// TODO: Should this be run through calculateConversionWeight again?
+				// TODO: The result of this should not be cached under the
+				// wrapper type as it will permanently link NativeObject to the
+				// result. This should be achieved by never caching results when
+				// from is a NativeObject.
 				if (unwrapped != from && to.isInstance(unwrapped))
 					return CONVERSION_TRIVIAL;
 			} else if (!isString) {
@@ -241,6 +246,21 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		return null;
 	}
 
+	private void setProperties(Object object, NativeObject properties) {
+		// Similar to ExtendedJavaClass#setProperties, but we need to wrap the
+		// result in a Scriptable object so we can rely on Rhino to set all
+		// properties on it. It will automatically find the right setters for us
+		// and use all value conversion mechanisms available.
+		Scriptable scriptable = wrapNewObject(
+				Context.getCurrentContext(),
+				engine.getScope(), object);
+		for (Object id : properties.getIds()) {
+			if (id instanceof String)
+				scriptable.put((String) id, scriptable, properties.get(
+						(String) id, properties));
+		}
+	}
+
 	public Object coerceType(Class<?> type, Object value, Object unwrapped) {
 		// Coerce native objects to maps when needed
 		if (value instanceof Function) {
@@ -248,14 +268,15 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 				return new RhinoCallable(engine, (Function) value);
 		} else if (value instanceof Scriptable || value instanceof String) {
 			// Let through string as well, for ArgumentReader
-			// TODO: Add support for constructor detection that receives the passed value,
-			// or can convert to it.
+			// TODO: Add support for constructor detection that receives the
+			// passed value, or can convert to it.
 			if (Map.class.isAssignableFrom(type)) {
 				return toMap((Scriptable) value);
 			} else {
-				// Try and see if unwrapping NativeObjects through JS unwrap method 
-				// brings us to the right type.
-				if (value instanceof NativeObject) {
+				// Try and see if unwrapping NativeObjects through JS unwrap
+				// method brings us to the right type.
+				boolean isNativeObject = value instanceof NativeObject;
+				if (isNativeObject) {
 					unwrapped = unwrap(value);
 					if (unwrapped != value && type.isInstance(unwrapped))
 						return unwrapped;
@@ -264,19 +285,16 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 				if (ArgumentReader.canConvert(type)
 						&& (reader = getArgumentReader(value)) != null) {
 					return ArgumentReader.convert(reader, unwrapped, type, this);
-				} else if (value instanceof NativeObject
-						&& getZeroArgumentConstructor(type) != null) {
-					// Try constructing an object of class type, through
-					// the JS ExtendedJavaClass constructor that takes 
-					// a last optional argument: A NativeObject of which
-					// the fields define the fields to be set in the native type.
-					Scriptable scope = ((RhinoEngine) this.engine).getScope();
-					ExtendedJavaClass cls =
-							ExtendedJavaClass.getClassWrapper(scope, type);
-					if (cls != null) {
-						Object obj = cls.construct(Context.getCurrentContext(),
-								scope, new Object[] { value });
-						return unwrap(obj);
+				} else if (isNativeObject) {
+					Constructor ctor = getZeroArgumentConstructor(type);
+					if (ctor != null) {
+						try {
+							Object result = ctor.newInstance();
+							setProperties(result, (NativeObject) value);
+							return result;
+						} catch (Exception e) {
+				            throw Context.throwAsScriptRuntimeEx(e);
+						}
 					}
 				}
 			}
@@ -285,7 +303,8 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 			if (type == Boolean.TYPE)
 				return Boolean.FALSE;
 		} else if (value instanceof Boolean) {
-			// Convert false to null / undefined for non primitive destination classes.
+			// Convert false to null / undefined for non primitive destination
+			// classes.
 			if (!((Boolean) value).booleanValue() && !type.isPrimitive())
 				return Undefined.instance;
 		}
