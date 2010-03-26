@@ -227,7 +227,7 @@ public class Dictionary extends AbstractMap<String, Object>
 	 * 
 	 * @jshide
 	 */
-	public static void releaseAll() {
+	public static void releaseInvalid() {
 		// Release all invalid dictionaries and then clear the lookup table
 		Iterator<Dictionary> it = dictionaries.values().iterator();
 		while (it.hasNext()) {

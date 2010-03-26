@@ -361,10 +361,14 @@ public class Document extends NativeObject implements ChangeListener {
 
 	protected void onClosed() {
 		// Since AI reused document handles, we have to manually remove wrappers
-		// when documents get closed. This happens through a kDocumentClosedNotifier
-		// on the native side.
+		// when documents get closed. This happens through a
+		// kDocumentClosedNotifier on the native side.
 		documents.remove(handle);
 		handle = 0;
+		// Closing this document has invalidated depending Dictionaries.
+		// We need to call releaseInvalid now before the invalid dictionaries
+		// would cause crashes when released next time this method is called.
+		Dictionary.releaseInvalid();
 	}
 
 	protected void onRevert() {
@@ -391,8 +395,8 @@ public class Document extends NativeObject implements ChangeListener {
 		if (reportUndoHistory)
 			ScriptographerEngine.logConsole("Undo");
 		if (trackUndoHistory) {
-			// Check if we were going back to a previous branch, and if so, switch
-			// back.
+			// Check if we were going back to a previous branch, and if so,
+			// switch back.
 			if (historyBranch.previous != null
 					&& undoLevel <= historyBranch.previous.level)
 				historyBranch = historyBranch.previous;

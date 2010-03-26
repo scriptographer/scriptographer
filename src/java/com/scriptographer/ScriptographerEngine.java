@@ -393,7 +393,7 @@ public class ScriptographerEngine {
 			} catch(Throwable t) {
 				ScriptographerEngine.reportError(t);
 			}
-			Dictionary.releaseAll();
+			Dictionary.releaseInvalid();
 			Document.endExecution();
 			closeProgress();
 			currentScriptFile = null;
