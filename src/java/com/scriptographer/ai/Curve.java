@@ -298,7 +298,7 @@ public class Curve implements ChangeListener {
 	 * The next curve in the {@link Path#getCurves()} array.
 	 */
 	public Curve getNext() {
-		return segments != null && index1 < segments.size()
+		return segments != null && index1 + 1 < segments.size()
 				? segments.get(index1 + 1).getCurve()
 				: null;
 	}
