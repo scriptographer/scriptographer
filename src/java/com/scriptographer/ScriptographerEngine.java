@@ -509,14 +509,12 @@ public class ScriptographerEngine {
 				scope = script.getEngine().createScope();
 			started = beginExecution(file, scope);
 			ret = script.execute(scope);
-			if (started)
-				addCallbacks(scope, file);
+			addCallbacks(scope, file);
 		} catch (Throwable t) {
 			throwable = t;
 		} finally {
-			// commit all the changes, even when script has crashed,
-			// to synch with direct changes such as creation of paths,
-			// etc
+			// Commit all the changes, even when script has caused an error, to
+			// sync with direct changes such as creation of paths, etc.
 			if (started)
 				endExecution();
 		}
@@ -526,8 +524,8 @@ public class ScriptographerEngine {
 	}
 
 	private static void handleException(Throwable t, File file) {
-		// Do not allow script cancellation during error reporting,
-		// as this is now handled by scripts too
+		// Do not allow script cancellation during error reporting, as this is
+		// now handled by scripts too
 		allowScriptCancelation = false;
 		// Unwrap ScriptCanceledExceptions
 		Throwable cause = t.getCause();
