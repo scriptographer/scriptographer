@@ -36,7 +36,8 @@ var tool = new Tool('Scriptographer Tool', getImage('tool.png')) {
 
 // Effect
 
-var effect = new LiveEffect('Scriptographer', null, 'pre-effect');
+var hasEffects = false; // Work in progress, turn off for now
+var effect = hasEffects && new LiveEffect('Scriptographer', null, 'pre-effect');
 
 var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing', function() {
 
@@ -127,7 +128,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 					? (currentToolFile == this.file
 						? activeToolScriptImage
 						: toolScriptImage)
-					: this.type == 'effect'
+					: hasEffects && this.type == 'effect'
 						? effectImage
 						: scriptImage;
 			}
@@ -327,7 +328,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	}
 
-	function execute(asEffect) {
+	function execute() {
 		var entry = getSelectedScriptEntry();
 		if (entry) {
 			switch (entry.type) {
@@ -358,8 +359,10 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 				}
 				break;
 			case 'effect':
-				executeEffect(entry);
-				break;
+			    if (hasEffects) {
+    				executeEffect(entry);
+    				break;
+			    }
 			default:
 				ScriptographerEngine.execute(entry.file, null);
 			}
@@ -532,6 +535,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	}
 
 	// Pass on effect handlers.
+	if (hasEffects)
 	['onEditParameters', 'onCalculate', 'onGetInputType'].each(function(name) {
 		effect[name] = function(event) {
 			if (event.parameters.path) {
@@ -681,7 +685,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 		}
 	};
 
-	var effectButton = new ImageButton(this) {
+	var effectButton = hasEffects && new ImageButton(this) {
 		image: getImage('effect.png'),
 		size: buttonSize,
 		onClick: function() {
