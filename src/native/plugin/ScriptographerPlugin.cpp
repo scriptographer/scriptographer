@@ -312,7 +312,6 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 					WCHAR unicode[16];
 					if (ToUnicode(keyCode, scanCode, keyboardState, unicode, 16, 0) >= 1)
 						chr = unicode[0];
-					gEngine->println(NULL, "KeyDown: SC=%x VK=%x CH=%x", scanCode, keyCode, chr);
 					// Detect and handle back space, but filter out repeated
 					// hits by checking previous state (lParam & (1 << 30))
 					if (keyCode == '\b' && !(pMsg->lParam & (1 << 30)))
