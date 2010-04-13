@@ -293,12 +293,15 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 						break;
 				}
 				// Get scan code and virtual code from key.
-				WCHAR chr = pMsg->wParam;
+				UINT keyCode = pMsg->wParam;
 				UINT scanCode = (pMsg->lParam >> 16) & 0xff;
-				UINT keyCode = ::MapVirtualKey(scanCode, MAPVK_VSC_TO_VK_EX);
 				BYTE keyboardState[256];
 				GetKeyboardState(keyboardState);
 				int type = -1;
+				// If the keyCode / scanCode cannot be translated to a unicode, use
+				// 0xffff, so the key event is still marked as valid in s_keyChars.
+				// When the handler is called, this is then passed as 0.
+				WCHAR chr = 0xffff;
 				// If this is a WM_KEYDOWN, see if it translated to another
 				// unicode char, which is then to be used instead.
 				// This appears to be the same behavior as the WM_CHAR message
@@ -306,12 +309,13 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 				// here at all, which simplifies finding matching down / up events
 				// a lot.
 				if (pMsg->message == WM_KEYDOWN) {
-					WCHAR unicode[10];
-					if (ToUnicode(keyCode, scanCode, keyboardState, unicode, 10, 0) >= 1)
+					WCHAR unicode[16];
+					if (ToUnicode(keyCode, scanCode, keyboardState, unicode, 16, 0) >= 1)
 						chr = unicode[0];
+					gEngine->println(NULL, "KeyDown: SC=%x VK=%x CH=%x", scanCode, keyCode, chr);
 					// Detect and handle back space, but filter out repeated
 					// hits by checking previous state (lParam & (1 << 30))
-					if (chr == '\b' && !(pMsg->lParam & (1 << 30)))
+					if (keyCode == '\b' && !(pMsg->lParam & (1 << 30)))
 						gEngine->onClear();
 					// Store the char used for a keydown / char event so
 					// the same can be used when that key is released again
@@ -327,6 +331,9 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 					}
 				}
 				if (type != -1) {
+					// If there is no unicode translation for this key event, pass 0 for chr.
+					if (chr == 0xffff)
+						chr = 0;
 					int modifiers = 0;
 					if (keyboardState[VK_SHIFT] & 0x80)
 						modifiers |= com_scriptographer_ui_KeyModifiers_SHIFT;
@@ -524,10 +531,10 @@ ASErr ScriptographerPlugin::onShutdownPlugin(SPInterfaceMessage *message) {
 	UnhookWindowsHookEx(s_defaultGetMessageProc);
 #endif
 	m_engine->onShutdown();
-	sSPAccess->ReleasePlugin(m_pluginAccess);
-	m_pluginAccess = NULL;
 	delete m_engine;
 	m_engine = NULL;
+	sSPAccess->ReleasePlugin(m_pluginAccess);
+	m_pluginAccess = NULL;
 	return kNoErr;
 }
 
