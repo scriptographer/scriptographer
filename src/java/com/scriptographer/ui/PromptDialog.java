@@ -133,10 +133,10 @@ public class PromptDialog extends ModalDialog {
 		PaletteItem[] paletteItems = PaletteItem.getItems(items, values);
 		Object[] results = prompt(title, paletteItems);
 		if (results != null) {
-			LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+			if (values == null)
+				values = new LinkedHashMap<String, Object>();
 			for (int i = 0; i < paletteItems.length; i++)
-				map.put(paletteItems[i].getName(), results[i]);
-			return map;
+				values.put(paletteItems[i].getName(), results[i]);
 		}
 		return values;
 	}

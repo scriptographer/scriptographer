@@ -43,8 +43,8 @@ import com.scriptographer.ui.layout.TableLayout;
  * 
  */
 public class Palette extends FloatingDialog {
-	private PaletteItem[] items = null;
-	Map<String, Object> values;
+	private Map<String, Object> values;
+	private boolean hasLabels;
 
 	public Palette(String title, Map<String, Map> items,
 			Map<String, Object> values) {
@@ -58,7 +58,7 @@ public class Palette extends FloatingDialog {
 		boolean upperCase = false;
 		int extraWidth = 32;
 		double factor = 1;
-		if (version >= 14) { // CS4
+		if (version >= 14) { // CS4 and above
 			upperCase = true;
 			extraWidth = 64;
 		} else if (version >= 13) { // CS3
@@ -74,10 +74,22 @@ public class Palette extends FloatingDialog {
 		setFont(DialogFont.PALETTE);
 		// UI Requires 64px more to show title fully in palette windows.
 		setMinimumSize(width + extraWidth, -1);
-		this.items = PaletteItem.getItems(items, values);
 		setTitle(title);
-		createLayout(this, this.items, false, 0);
-		setMargin(2, 2, 0, 4);
+		PaletteItem[] paletteItems = PaletteItem.getItems(items, values);
+		createLayout(this, paletteItems, false, 0);
+		hasLabels = false;
+		for (PaletteItem item : paletteItems) {
+			if (item != null) {
+				String label = item.getLabel();
+				if (label != null && !"".equals(label))
+					hasLabels = true;
+			}
+		}
+
+		if (hasLabels)
+			setMargin(2, 2, 0, 4);
+		else
+			setMargin(2, -1, 0, -1);
 		if (values == null)
 			values = new HashMap<String, Object>();
 		this.values = values;
@@ -128,6 +140,7 @@ public class Palette extends FloatingDialog {
 			rows[rows.length - extraRows] = TableLayout.FILL;
 		else if (rows.length > 0)
 			rows[rows.length - 1] = TableLayout.FILL;
+
 		double[][] sizes = {
 			hasLogo
 				? new double[] { TableLayout.PREFERRED, TableLayout.FILL,
@@ -149,9 +162,9 @@ public class Palette extends FloatingDialog {
 
 		int columnIndex = hasLogo ? 1 : 0;
 		for (int i = 0; i < items.length; i++) {
-			PaletteItem promptItem = items[i];
-			if (promptItem != null) {
-				String label = promptItem.getLabel();
+			PaletteItem item = items[i];
+			if (item != null) {
+				String label = item.getLabel();
 				if (label != null && !"".equals(label)) {
 					TextPane labelItem = new TextPane(dialog);
 					labelItem.setText(label + ":");
@@ -159,7 +172,7 @@ public class Palette extends FloatingDialog {
 					dialog.addToContent(labelItem, columnIndex + ", " + i
 							+ ", left, center");
 				}
-				Item valueItem = promptItem.createItem(dialog,
+				Item valueItem = item.createItem(dialog,
 						new Border(1, 0, 1, 0));
 				dialog.addToContent(valueItem, (columnIndex + 1) + ", " + i
 						+ ", left, center");

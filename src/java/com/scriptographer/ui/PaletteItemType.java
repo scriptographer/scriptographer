@@ -38,14 +38,20 @@ import java.util.HashMap;
  *
  */
 public enum PaletteItemType {
+	// TODO:
+	LABEL("label"),
 	STRING("string"),
 	TEXT("text"),
 	NUMBER("number"),
 	SLIDER("slider"),
 	CHECKBOX("checkbox"),
 	BUTTON("button"),
+	// TODO:
+	BUTTONS("buttons"),
 	LIST("list"),
-	COLOR("color");
+	COLOR("color"),
+	// TODO:
+	FONT("font");
 
 	protected String name;
 

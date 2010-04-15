@@ -47,7 +47,7 @@ import com.scriptographer.script.EnumUtils;
  * @jshide
  */
 public class PaletteItem {
-	
+
 	private String label;
 	private String name; // for preferences
 	private PaletteItemType type;
@@ -101,6 +101,7 @@ public class PaletteItem {
 	public PaletteItem(String description, boolean value) {
 		this(description, new Boolean(value));
 	}
+
 	/**
 	 * Creates a RANGE Item
 	 */
@@ -314,6 +315,9 @@ public class PaletteItem {
 				}
 			};
 			break;
+		case FONT:
+			// TODO:
+			break;
 		case NUMBER:
 			if (steppers) {
 				item = new SpinEdit(dialog) {
@@ -484,11 +488,7 @@ public class PaletteItem {
 				// Backward compatibility to description:
 				if (label == null)
 					label = ConversionUtils.getString(map, "description");
-				// Produce a default label based on the name if it's not a button
-				if (label == null && name != null
-						&& type != PaletteItemType.BUTTON)
-					label = Character.toUpperCase(name.charAt(0))
-							+ name.substring(1);
+
 				PaletteItem item = new PaletteItem(type, label, valueObj);
 				item.setName(name != null ? name
 						: ConversionUtils.getString(map, "name"));
