@@ -124,30 +124,6 @@ JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_isPrinted(JNIEnv *en
 }
 
 /*
- * void setSelected(boolean selected)
- */
-JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setSelected(JNIEnv *env, jobject obj, jboolean selected) {
-	try {
-		AILayerHandle layer = gEngine->getLayerHandle(env, obj, true);
-		sAILayer->SetLayerSelected(layer, selected);
-	} EXCEPTION_CONVERT(env);
-}
-
-/*
- * boolean isSelected()
- */
-JNIEXPORT jboolean JNICALL Java_com_scriptographer_ai_Layer_isSelected(JNIEnv *env, jobject obj) {
-	try {
-		AILayerHandle layer = gEngine->getLayerHandle(env, obj);
-		AIBoolean selected;
-		if (!sAILayer->GetLayerSelected(layer, &selected)) {
-			return selected;	
-		}
-	} EXCEPTION_CONVERT(env);
-	return false;
-}
-
-/*
  * void setColor(com.scriptographer.Color color)
  */
 JNIEXPORT void JNICALL Java_com_scriptographer_ai_Layer_setColor(JNIEnv *env, jobject obj, jobject color) {
