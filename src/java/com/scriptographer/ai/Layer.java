@@ -101,14 +101,6 @@ public class Layer extends Item {
 	public native void setPrinted(boolean printed);
 
 	/**
-	 * Specifies whether the layer is selected.
-	 * {@true if the layer is selected}
-	 */
-	public native boolean isSelected();
-
-	public native void setSelected(boolean selected);
-
-	/**
 	 * Specifies the color used for outlining items when they are selected.
 	 */
 	public native RGBColor getColor();
@@ -139,12 +131,20 @@ public class Layer extends Item {
 	public native ItemList getItems();
 	
 	/**
-	 * Checks whether the layer is active.
+	 * Specifies whether the layer is active.
 	 * 
 	 * @return {@true if the layer is active}
 	 */
 	public native boolean isActive();
-	
+
+	public void setActive(boolean active) {
+		if (active) {
+			activate();
+		} else {
+			// TODO: Activate another layer?
+		}
+	}
+
 	/**
 	 * Activates the layer.
 	 * 
