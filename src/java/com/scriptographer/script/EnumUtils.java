@@ -75,7 +75,7 @@ public class EnumUtils {
 
 	@SuppressWarnings("unchecked")
 	private static <T extends Enum<T>> Lookup<T> getLookup(Class<T> cls) {
-		Lookup<T> lookup =	 lookups.get(cls);
+		Lookup<T> lookup = lookups.get(cls);
 		// Create lookup information grouped by class and name / value:
 		if (lookup == null) {
 			lookup = new Lookup<T>(cls);
@@ -91,7 +91,7 @@ public class EnumUtils {
 			try {
 				T values[] = (T[]) cls.getEnumConstants();
 				for (T value : values) {
-					// put both variants in:
+					// Put both variants (Java name and script name) in:
 					lookup.put(getScriptName(value), value);
 					lookup.put(value.name(), value);
 				}
