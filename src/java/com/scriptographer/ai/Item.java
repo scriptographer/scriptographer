@@ -754,7 +754,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * <code>
 	 * print(document.selectedItems.length); // 0
 	 * var path = new Path();
-	 * path.selected = true; // select the path
+	 * path.selected = true; // Select the path
 	 * print(document.selectedItems.length) // 1
 	 * </code>
 	 * 
@@ -791,7 +791,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * <code>
 	 * var path = new Path();
 	 * print(path.locked) // false
-	 * path.locked = true; // locks the path
+	 * path.locked = true; // Locks the path
 	 * </code>
 	 * 
 	 * @return {@true if the item is locked}
@@ -811,7 +811,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * <code>
 	 * var path = new Path();
 	 * print(path.visible) // true
-	 * path.visible = false; // hides the path
+	 * path.visible = false; // Hides the path
 	 * </code>
 	 * 
 	 * @return {@true if the item is visible}
@@ -831,7 +831,7 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 	 * <code>
 	 * var path = new Path();
 	 * print(path.hidden); // false
-	 * path.hidden = true; // hides the path
+	 * path.hidden = true; // Hides the path
 	 * </code>
 	 * 
 	 * @return {@true if the item is hidden}
@@ -873,7 +873,27 @@ public class Item extends DocumentObject implements Style, ChangeListener {
 			style.setStrokeColor(Color.NONE);
 		}
 	}
-	
+
+	/**
+	 * Specifies whether the item is targeted.
+	 * 
+	 * Sample code:
+	 * <code>
+	 * var path = new Path();
+	 * print(path.targeted) // false
+	 * path.targeted = true; // Marks the the path as targeted
+	 * </code>
+	 * 
+	 * @return {@true if the item is locked}
+	 */
+	public boolean isTargeted() {
+		return getAttribute(ItemAttribute.TARGETED);
+	}
+
+	public void setTargeted(boolean targeted) {
+		setAttribute(ItemAttribute.TARGETED, targeted);
+	}
+
 	private native int nativeGetBlendMode();
 
 	private native void nativeSetBlendMode(int mode);
