@@ -6,7 +6,7 @@
  * http://dev.scriptographer.org/ 
  */
 
-Type = Object.extend(new function() {
+Type = Base.extend(new function() {
 	var ineritanceCache = {};
 
 	function getCache(obj, type) {

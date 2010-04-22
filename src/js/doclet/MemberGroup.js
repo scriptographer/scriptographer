@@ -9,7 +9,7 @@
 /**
  * A group of members that are unified under the same name 
  */
-MemberGroup = Object.extend({
+MemberGroup = Base.extend({
 	initialize: function(classObject, members) {
 		this.classObject = classObject;
 		this.members = [];

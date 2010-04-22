@@ -9,7 +9,7 @@
 /**
  * A list of member groups, accessible by member name:
  */
-MemberGroupList = Object.extend({
+MemberGroupList = Base.extend({
 	initialize: function(classObject) {
 		this.classObject = classObject;
 		this.groups = new Hash();

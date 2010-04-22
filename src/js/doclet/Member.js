@@ -7,7 +7,7 @@
  */
 
 // Member
-Member = Object.extend({
+Member = Base.extend({
 
 	// Type identifies which list this member is added to. to be overridden 
 	// in inerhiting prototypes.
