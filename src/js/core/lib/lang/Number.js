@@ -2,8 +2,6 @@ Number.inject(new function() {
 	var formats = {};
 
 	return {
-		_beans: true,
-
 		format: function(str) {
 			str = str || '#,##0.00';
 			var format = formats[str];

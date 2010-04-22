@@ -5,16 +5,25 @@ if (!this.__proto__) {
 }
 
 new function() { 
-	function inject(dest, src, base, generics) {
-		function field(name, generics) {
-			var val = src[name], func = typeof val == 'function', res = val, prev;
-			if (generics && func) generics[name] = function(bind) {
+	var has = {}.hasOwnProperty
+		? function(obj, name) {
+			return obj.hasOwnProperty(name);
+		}
+		: function(obj, name) {
+			return obj[name] !== (obj.__proto__ || Object.prototype)[name];
+		};
+
+	function inject(dest, src, enumerable, base, generics) {
+		function field(name, dontCheck, generics) {
+			var val = src[name], func = typeof val == 'function', res = val,
+				prev = dest[name];
+			if (generics && func && (!src.preserve || !generics[name])) generics[name] = function(bind) {
 				return bind && dest[name].apply(bind,
 					Array.prototype.slice.call(arguments, 1));
 			}
-			if (val !== (src.__proto__ || Object.prototype)[name]) {
+			if ((dontCheck || val !== undefined && has(src, name)) && (!prev || !src.preserve)) {
 				if (func) {
-					if ((prev = dest[name]) && /\bthis\.base\b/.test(val)) {
+					if (prev && /\bthis\.base\b/.test(val)) {
 						var fromBase = base && base[name] == prev;
 						res = (function() {
 							var tmp = this.base;
@@ -29,8 +38,8 @@ new function() {
 		}
 		if (src) {
 			for (var name in src)
-				if (visible(src, name) && !/^(prototype|constructor|toString|valueOf|statics|_generics)$/.test(name))
-					field(name, generics);
+				if (has(src, name) && !/^(statics|generics|preserve|prototype|constructor|toString|valueOf)$/.test(name))
+					field(name, true, generics);
 			field('toString');
 			field('valueOf');
 		}
@@ -49,15 +58,13 @@ new function() {
 		return ctor;
 	}
 
-	function visible(obj, name) {
-		return (!obj.__proto__ || obj[name] !== obj.__proto__[name]);
-	}
-
 	inject(Function.prototype, {
 		inject: function(src) {
-			var proto = this.prototype, base = proto.__proto__ && proto.__proto__.constructor;
-			inject(proto, src, base && base.prototype, src && src._generics && this);
-			inject(this, src && src.statics, base);
+			if (src) {
+				var proto = this.prototype, base = proto.__proto__ && proto.__proto__.constructor;
+				inject(proto, src, false, base && base.prototype, src.generics && this);
+				inject(this, src.statics, true, base);
+			}
 			for (var i = 1, l = arguments.length; i < l; i++)
 				this.inject(arguments[i]);
 			return this;
@@ -66,8 +73,8 @@ new function() {
 		extend: function(src) {
 			var proto = new this(this.dont), ctor = proto.constructor = extend(proto);
 			ctor.dont = {};
-			inject(ctor, this);
-			return this.inject.apply(ctor, arguments);
+			inject(ctor, this, true);
+			return arguments.length ? this.inject.apply(ctor, arguments) : ctor;
 		},
 
 		pretend: function(fn) {
@@ -81,9 +88,18 @@ new function() {
 		}
 	});
 
+	function each(obj, iter, bind) {
+		return obj ? (typeof obj.length == 'number'
+			? Array : Hash).prototype.each.call(obj, iter, bind) : bind;
+	}
+
 	Base = Object.extend({
 		has: function(name) {
-			return visible(this, name);
+			return has(this, name);
+		},
+
+		each: function(iter, bind) {
+			return each(this, iter, bind);
 		},
 
 		inject: function() {
@@ -98,48 +114,541 @@ new function() {
 		},
 
 		statics: {
-			has: visible
+			has: has,
+			each: each,
+
+			type: function(obj) {
+				return (obj || obj === 0) && (
+					obj._type || obj.nodeName && (
+						obj.nodeType == 1 && 'element' ||
+						obj.nodeType == 3 && 'textnode' ||
+						obj.nodeType == 9 && 'document')
+						|| obj.location && obj.frames && obj.history && 'window'
+						|| typeof obj) || null;
+			},
+
+			check: function(obj) {
+				return !!(obj || obj === 0);
+			},
+
+			pick: function() {
+				for (var i = 0, l = arguments.length; i < l; i++)
+					if (arguments[i] !== undefined)
+						return arguments[i];
+				return null;
+			},
+
+			iterator: function(iter) {
+				return !iter
+					? function(val) { return val }
+					: typeof iter != 'function'
+						? function(val) { return val == iter }
+						: iter;
+			},
+
+			stop: {}
+		}
+	}, {
+		generics: true,
+
+		debug: function() {
+			return /^(string|number|function|regexp)$/.test(Base.type(this)) ? this
+				: Base.each(this, function(val, key) { this.push(key + ': ' + val); }, []).join(', ');
+		},
+
+		clone: function() {
+			return Base.each(this, function(val, i) {
+				this[i] = val;
+			}, new this.constructor());
+		},
+
+		toQueryString: function() {
+			return Base.each(this, function(val, key) {
+				this.push(key + '=' + encodeURIComponent(val));
+			}, []).join('&');
 		}
 	});
-
 }
 
+$each = Base.each;
+$type = Base.type;
+$check = Base.check;
+$pick = Base.pick;
+$stop = $break = Base.stop;
+
+Enumerable = {
+	generics: true,
+	preserve: true,
+
+	findEntry: function(iter, bind) {
+		var that = this, iter = Base.iterator(iter), ret = null;
+		Base.each(this, function(val, key) {
+			var res = iter.call(bind, val, key, that);
+			if (res) {
+				ret = { key: key, value: val, result: res };
+				throw Base.stop;
+			}
+		});
+		return ret;
+	},
+
+	find: function(iter, bind) {
+		var entry = this.findEntry(iter, bind);
+		return entry && entry.result;
+	},
+
+	contains: function(obj) {
+		return !!this.findEntry(obj);
+	},
+
+	remove: function(iter, bind) {
+		var entry = this.findEntry(iter, bind);
+		if (entry) {
+			delete this[entry.key];
+			return entry.value;
+		}
+	},
+
+	filter: function(iter, bind) {
+		var that = this;
+		return Base.each(this, function(val, i) {
+			if (iter.call(bind, val, i, that))
+				this[this.length] = val;
+		}, []);
+	},
+
+	map: function(iter, bind) {
+		var that = this;
+		return Base.each(this, function(val, i) {
+			this[this.length] = iter.call(bind, val, i, that);
+		}, []);
+	},
+
+	every: function(iter, bind) {
+		var that = this;
+		return this.find(function(val, i) {
+			return !iter.call(this, val, i, that);
+		}, bind || null) == null;
+	},
+
+	some: function(iter, bind) {
+		return this.find(iter, bind || null) != null;
+	},
+
+	collect: function(iter, bind) {
+		var that = this, iter = Base.iterator(iter);
+		return Base.each(this, function(val, i) {
+		 	val = iter.call(bind, val, i, that);
+			if (val != null)
+				this[this.length] = val;
+		}, []);
+	},
+
+	max: function(iter, bind) {
+		var that = this;
+		return Base.each(this, function(val, i) {
+			val = iter.call(bind, val, i, that);
+			if (val >= (this.max || val)) this.max = val;
+		}, {}).max;
+	},
+
+	min: function(iter, bind) {
+		var that = this;
+		return Base.each(this, function(val, i) {
+			val = iter.call(bind, val, i, that);
+			if (val <= (this.min || val)) this.min = val;
+		}, {}).min;
+	},
+
+	pluck: function(prop) {
+		return this.map(function(val) {
+			return val[prop];
+		});
+	},
+
+	sortBy: function(iter, bind) {
+		var that = this;
+		return this.map(function(val, i) {
+			return { value: val, compare: iter.call(bind, val, i, that) };
+		}, bind).sort(function(left, right) {
+			var a = left.compare, b = right.compare;
+			return a < b ? -1 : a > b ? 1 : 0;
+		}).pluck('value');
+	},
+
+	toArray: function() {
+		return this.map();
+	}
+};
+
+Hash = Base.extend(Enumerable, {
+	generics: true,
+
+	initialize: function(arg) {
+		if (typeof arg == 'string') {
+			for (var i = 0, l = arguments.length; i < l; i += 2)
+				this[arguments[i]] = arguments[i + 1];
+		} else {
+			this[arguments.length == 1 ? 'append' : 'merge'].apply(this, arguments);
+		}
+		return this;
+	},
+
+	each: function(iter, bind) {
+		if (!bind) bind = this;
+		iter = Base.iterator(iter);
+		try {
+			if (this.hasOwnProperty) {
+				for (var i in this)
+					if (this.hasOwnProperty(i))
+						iter.call(bind, this[i], i, this);
+			} else {
+				for (var i in this)
+				 	if (this[i] !== (this.__proto__ || Object.prototype)[i])
+						iter.call(bind, this[i], i, this);
+			}
+		} catch (e) {
+			if (e !== Base.stop) throw e;
+		}
+		return bind;
+	},
+
+	append: function() {
+		for (var i = 0, l = arguments.length; i < l; i++) {
+			var obj = arguments[i];
+			for (var key in obj)
+				if (Base.has(obj, key))
+					this[key] = obj[key];
+		}
+		return this;
+	},
+
+	merge: function() {
+		return Array.each(arguments, function(obj) {
+			Base.each(obj, function(val, key) {
+				this[key] = Base.type(this[key]) == 'object'
+					? Hash.prototype.merge.call(this[key], val)
+					: Base.type(val) == 'object' ? Base.clone(val) : val;
+			}, this);
+		}, this);
+	},
+
+	getKeys: function() {
+		return Hash.getKeys(this);
+	},
+
+	getValues: Enumerable.toArray,
+
+	getSize: function() {
+		return this.each(function() {
+			this.size++;
+		}, { size: 0 }).size;
+	},
+
+	statics: {
+		create: function(obj) {
+			return arguments.length == 1 && obj.constructor == Hash
+				? obj : Hash.prototype.initialize.apply(new Hash(), arguments);
+		},
+
+		getKeys: Object.keys || function(obj) {
+			return Hash.map(function(val, key) {
+				return key;
+			});
+		}
+	}
+});
+
+$H = Hash.create;
+
+Array.inject({
+	generics: true,
+	preserve: true,
+	_type: 'array',
+
+	forEach: function(iter, bind) {
+		for (var i = 0, l = this.length; i < l; i++)
+			iter.call(bind, this[i], i, this);
+	},
+
+	indexOf: function(obj, i) {
+		i = i || 0;
+		if (i < 0) i = Math.max(0, this.length + i);
+		for (var l = this.length; i < l; i++)
+			if (this[i] == obj) return i;
+		return -1;
+	},
+
+	lastIndexOf: function(obj, i) {
+		i = i != null ? i : this.length - 1;
+		if (i < 0) i = Math.max(0, this.length + i);
+		for (; i >= 0; i--)
+			if (this[i] == obj) return i;
+		return -1;
+	},
+
+	filter: function(iter, bind) {
+		var res = [];
+		for (var i = 0, l = this.length; i < l; i++) {
+			var val = this[i];
+			if (iter.call(bind, val, i, this))
+				res[res.length] = val;
+		}
+		return res;
+	},
+
+	map: function(iter, bind) {
+		var res = new Array(this.length);
+		for (var i = 0, l = this.length; i < l; i++)
+			res[i] = iter.call(bind, this[i], i, this);
+		return res;
+	},
+
+	every: function(iter, bind) {
+		for (var i = 0, l = this.length; i < l; i++)
+			if (!iter.call(bind, this[i], i, this))
+				return false;
+		return true;
+	},
+
+	some: function(iter, bind) {
+		for (var i = 0, l = this.length; i < l; i++)
+			if (iter.call(bind, this[i], i, this))
+				return true;
+		return false;
+	},
+
+	reduce: function(fn, value) {
+		var i = 0;
+		if (arguments.length < 2 && this.length) value = this[i++];
+		for (var l = this.length; i < l; i++)
+			value = fn.call(null, value, this[i], i, this);
+		return value;
+	}
+}, Enumerable, {
+	generics: true,
+
+	each: function(iter, bind) {
+		try {
+			Array.prototype.forEach.call(this, Base.iterator(iter), bind = bind || this);
+		} catch (e) {
+			if (e !== Base.stop) throw e;
+		}
+		return bind;
+	},
+
+	collect: function(iter, bind) {
+		var that = this;
+		return this.each(function(val, i) {
+			if ((val = iter.call(bind, val, i, that)) != null)
+				this[this.length] = val;
+		}, []);
+	},
+
+	findEntry: function(iter, bind) {
+		if (typeof iter != 'function') {
+			var i = this.indexOf(iter);
+			return i == -1 ? null : { key: i, value: iter, result: iter };
+		}
+		return Enumerable.findEntry.call(this, iter, bind);
+	},
+
+	remove: function(iter, bind) {
+		var entry = this.findEntry(iter, bind);
+		if (entry.key != null)
+			this.splice(entry.key, 1);
+		return entry.value;
+	},
+
+	contains: function(obj) {
+		return this.indexOf(obj) != -1;
+	},
+
+	remove: function(iter, bind) {
+		var entry = this.findEntry(iter, bind);
+		if (entry) {
+			this.splice(entry.key, 1);
+			return entry.value;
+		}
+	},
+
+	toArray: function() {
+		var res = this.concat([]);
+		return res[0] == this ? Enumerable.toArray.call(this) : res;
+	},
+
+	clone: function() {
+		return this.toArray();
+	},
+
+	clear: function() {
+		this.length = 0;
+	},
+
+	compact: function() {
+		return this.filter(function(value) {
+			return value != null;
+		});
+	},
+
+	append: function(items) {
+		for (var i = 0, l = items.length; i < l; i++)
+			this[this.length++] = items[i];
+		return this;
+	},
+
+	subtract: function(items) {
+		for (var i = 0, l = items.length; i < l; i++)
+			Array.remove(this, items[i]);
+		return this;
+	},
+
+	intersect: function(items) {
+		for (var i = this.length - 1; i >= 0; i--)
+			if (!items.find(this[i]))
+				this.splice(i, 1);
+		return this;
+	},
+
+	associate: function(obj) {
+		if (!obj)
+			obj = this;
+		else if (typeof obj == 'function')
+			obj = this.map(obj);
+		if (obj.length != null) {
+			var that = this;
+			return Base.each(obj, function(name, index) {
+				this[name] = that[index];
+				if (index == that.length)
+					throw Base.stop;
+			}, {});
+		} else {
+			obj = Hash.append({}, obj);
+			return Array.each(this, function(val) {
+				var type = Base.type(val);
+				Base.each(obj, function(hint, name) {
+					if (hint == 'any' || type == hint) {
+						this[name] = val;
+						delete obj[name];
+						throw Base.stop;
+					}
+				}, this);
+			}, {});
+		}
+	},
+
+	flatten: function() {
+		return Array.each(this, function(val) {
+			if (val != null && val.flatten) this.append(val.flatten());
+			else this.push(val);
+		}, []);
+	},
+
+	swap: function(i, j) {
+		var tmp = this[j];
+		this[j] = this[i];
+		this[i] = tmp;
+		return tmp;
+	},
+
+	shuffle: function() {
+		var res = this.clone();
+		var i = this.length;
+		while (i--) res.swap(i, Math.rand(i + 1));
+		return res;
+	},
+
+	pick: function() {
+		return this[Math.rand(this.length)];
+	},
+
+	getFirst: function() {
+		return this[0];
+	},
+
+	getLast: function() {
+		return this[this.length - 1];
+	}
+});
+
+Array.inject(new function() {
+	var proto = Array.prototype;
+
+	var fields = ['push','pop','shift','unshift','sort','reverse','join','slice','splice','forEach',
+		'indexOf','lastIndexOf','filter','map','every','some','reduce','concat'].each(function(name) {
+		this[name] = proto[name];
+	}, { generics: true, preserve: true });
+
+	Array.inject(fields);
+
+	Hash.append(fields, proto, {
+		clear: function() {
+			for (var i = 0, l = this.length; i < l; i++)
+				delete this[i];
+			this.length = 0;
+		},
+
+		concat: function(list) {
+			return Browser.WEBKIT
+				? new Array(this.length + list.length).append(this).append(list)
+				: Array.concat(this, list);
+		},
+
+		toString: proto.join,
+
+		length: 0
+	});
+
+	return {
+		statics: {
+			create: function(list) {
+				if (!Base.check(list)) return [];
+				if (Base.type(list) == 'array') return list;
+				if (list.toArray)
+					return list.toArray();
+				if (list.length != null) {
+					var res = [];
+					for (var i = 0, l = list.length; i < l; i++)
+						res[i] = list[i];
+				} else {
+					res = [list];
+				}
+				return res;
+			},
+
+			extend: function(src) {
+				var ret = Base.extend(fields, src);
+				ret.extend = Function.extend;
+				return ret;
+			}
+		}
+	};
+});
+
+$A = Array.create;
+
 Function.inject(new function() {
-	function timer(that, type, delay, bind, args) {
+	function timer(that, set, delay, bind, args) {
 		if (delay === undefined)
 			return that.apply(bind, args ? args : []);
-		var fn = that.bind(bind, args);
-		var timer = window['set' + type](fn, delay);
-		fn.clear = function() {
+		var func = that.bind(bind, args);
+		var timer = set(func, delay);
+		func.clear = function() {
 			clearTimeout(timer);
 			clearInterval(timer);
 		};
-		return fn;
+		return func;
 	}
 
 	return {
-		_generics: true,
-
-		getName: function() {
-			var match = this.toString().match(/^\s*function\s*(\w*)/);
-			return match && match[1];
-		},
-
-		getParameters: function() {
-			var str = this.toString().match(/^\s*function[^\(]*\(([^\)]*)/)[1];
-			return str ? str.split(/\s*,\s*/) : [];
-		},
-
-		getBody: function() {
-			return this.toString().match(/^\s*function[^\{]*\{([\u0000-\uffff]*)\}\s*$/)[1];
-		},
+		generics: true,
 
 		delay: function(delay, bind, args) {
-			return timer(this, 'Timeout', delay, bind, args);
+			return timer(this, setTimeout, delay, bind, args);
 		},
 
 		periodic: function(delay, bind, args) {
-			return timer(this, 'Interval', delay, bind, args);
+			return timer(this, setInterval, delay, bind, args);
 		},
 
 		bind: function(bind, args) {
@@ -162,472 +671,6 @@ Function.inject(new function() {
 	}
 });
 
-Enumerable = new function() {
-	Base.iterate = function(fn) {
-		return function(iter, bind) {
-			var func = !iter
-				? function(val) { return val }
-				: typeof iter != 'function'
-					? function(val) { return val == iter }
-					: iter;
-			if (!bind) bind = this;
-			return fn.call(this, func, bind, this);
-		};
-	};
-
-	Base.stop = {};
-
-	var each_Array = Array.prototype.forEach || function(iter, bind) {
-		for (var i = 0, l = this.length; i < l; ++i)
-			iter.call(bind, this[i], i, this);
-	};
-
-	var each_Object = function(iter, bind) {
-		if (this.__proto__ == null) {
-			for (var i in this)
-				iter.call(bind, this[i], i, this);
-		} else {
-			for (var i in this)
-				if (this[i] !== this.__proto__ && this[i] !== this.__proto__[i])
-					iter.call(bind, this[i], i, this);
-		}
-	};
-
-	return {
-		_generics: true,
-
-		each: Base.iterate(function(iter, bind) {
-			try { (typeof this.length == 'number' ? each_Array : each_Object).call(this, iter, bind); }
-			catch (e) { if (e !== Base.stop) throw e; }
-			return bind;
-		}),
-
-		findEntry: Base.iterate(function(iter, bind, that) {
-			return Base.each(this, function(val, key) {
-				this.result = iter.call(bind, val, key, that);
-				if (this.result) {
-					this.key = key;
-					this.value = val;
-					throw Base.stop;
-				}
-			}, {});
-		}),
-
-		find: function(iter, bind) {
-			return this.findEntry(iter, bind).result;
-		},
-
-		remove: function(iter, bind) {
-			var entry = this.findEntry(iter, bind);
-			delete this[entry.key];
-			return entry.value;
-		},
-
-		some: function(iter, bind) {
-			return this.find(iter, bind) != null;
-		},
-
-		every: Base.iterate(function(iter, bind, that) {
-			return this.find(function(val, i) {
-				return !iter.call(this, val, i, that);
-			}, bind) == null;
-		}),
-
-		map: Base.iterate(function(iter, bind, that) {
-			return Base.each(this, function(val, i) {
-				this[this.length] = iter.call(bind, val, i, that);
-			}, []);
-		}),
-
-		collect: Base.iterate(function(iter, bind, that) {
-			return Base.each(this, function(val, i) {
-			 	val = iter.call(bind, val, i, that);
-				if (val != null)
-					this[this.length] = val;
-			}, []);
-		}),
-
-		filter: Base.iterate(function(iter, bind, that) {
-			return Base.each(this, function(val, i) {
-				if (iter.call(bind, val, i, that))
-					this[this.length] = val;
-			}, []);
-		}),
-
-		max: Base.iterate(function(iter, bind, that) {
-			return Base.each(this, function(val, i) {
-				val = iter.call(bind, val, i, that);
-				if (val >= (this.max || val)) this.max = val;
-			}, {}).max;
-		}),
-
-		min: Base.iterate(function(iter, bind, that) {
-			return Base.each(this, function(val, i) {
-				val = iter.call(bind, val, i, that);
-				if (val <= (this.min || val)) this.min = val;
-			}, {}).min;
-		}),
-
-		pluck: function(prop) {
-			return this.map(function(val) {
-				return val[prop];
-			});
-		},
-
-		sortBy: Base.iterate(function(iter, bind, that) {
-			return this.map(function(val, i) {
-				return { value: val, compare: iter.call(bind, val, i, that) };
-			}, bind).sort(function(left, right) {
-				var a = left.compare, b = right.compare;
-				return a < b ? -1 : a > b ? 1 : 0;
-			}).pluck('value');
-		}),
-
-		toArray: function() {
-			return this.map();
-		}
-	};
-}
-
-Base.inject({
-	_generics: true,
-
-	each: Enumerable.each,
-
-	debug: function() {
-		return /^(string|number|function|regexp)$/.test(Base.type(this)) ? this
-			: Base.each(this, function(val, key) { this.push(key + ': ' + val); }, []).join(', ');
-	},
-
-	clone: function() {
-		return Base.each(this, function(val, i) {
-			this[i] = val;
-		}, new this.constructor());
-	},
-
-	toQueryString: function() {
-		return Base.each(this, function(val, key) {
-			this.push(key + '=' + encodeURIComponent(val));
-		}, []).join('&');
-	},
-
-	statics: {
-		inject: function() {
-			var args = arguments;
-			Base.each([Array, Number, RegExp, String], function(ctor) {
-				ctor.inject.apply(ctor, args);
-			});
-			return this.base.apply(this, args);
-		},
-
-		extend: function() {
-			var ret = this.base();
-			ret.extend = Function.extend;
-			ret.inject = Function.inject;
-			ret.inject.apply(ret, arguments);
-			return ret;
-		},
-
-		check: function(obj) {
-			return !!(obj || obj === 0);
-		},
-
-		type: function(obj) {
-			return (obj || obj === 0) && (
-				obj._type || obj.nodeName && (
-					obj.nodeType == 1 && 'element' ||
-					obj.nodeType == 3 && 'textnode' ||
-					obj.nodeType == 9 && 'document')
-					|| obj.location && obj.frames && obj.history && 'window'
-					|| typeof obj) || null;
-		},
-
-		pick: function() {
-			for (var i = 0, l = arguments.length; i < l; i++)
-				if (arguments[i] !== undefined)
-					return arguments[i];
-			return null;
-		}
-	}
-
-}, Base.prototype);
-
-$each = Base.each;
-$stop = $break = Base.stop;
-$check = Base.check;
-$type = Base.type;
-
-Hash = Base.extend(Enumerable, {
-	_generics: true,
-
-	initialize: function(arg) {
-		if (typeof arg == 'string') {
-			for (var i = 0, l = arguments.length; i < l; i += 2)
-				this[arguments[i]] = arguments[i + 1];
-		} else {
-			this.merge.apply(this, arguments);
-		}
-		return this;
-	},
-
-	merge: function() {
-		return Base.each(arguments, function(obj) {
-			Base.each(obj, function(val, key) {
-				this[key] = Base.type(this[key]) == 'object'
-					? Hash.prototype.merge.call(this[key], val)
-					: Base.type(val) == 'object' ? Base.clone(val) : val;
-			}, this);
-		}, this);
-	},
-
-	getKeys: function() {
-		return this.map(function(val, key) {
-			return key;
-		});
-	},
-
-	getValues: Enumerable.toArray,
-
-	getSize: function() {
-		return this.each(function() {
-			this.size++;
-		}, { size: 0 }).size;
-	},
-
-	statics: {
-		create: function(obj) {
-			return arguments.length == 1 && obj.constructor == Hash
-				? obj : Hash.prototype.initialize.apply(new Hash(), arguments);
-		}
-	}
-});
-
-$H = Hash.create;
-
-Array.inject(new function() {
-	var proto = Array.prototype;
-
-	var fields = Hash.merge({}, Enumerable, {
-		_generics: true,
-		_type: 'array',
-
-		indexOf: proto.indexOf || function(obj, i) {
-			i = i || 0;
-			if (i < 0) i = Math.max(0, this.length + i);
-			for (var l = this.length; i < l; ++i)
-				if (this[i] == obj) return i;
-			return -1;
-		},
-
-		lastIndexOf: proto.lastIndexOf || function(obj, i) {
-			i = i != null ? i : this.length - 1;
-			if (i < 0) i = Math.max(0, this.length + i);
-			for (; i >= 0; i--)
-				if (this[i] == obj) return i;
-			return -1;
-		},
-
-		filter: Base.iterate(proto.filter || function(iter, bind, that) {
-			var res = [];
-			for (var i = 0, l = this.length; i < l; ++i)
-				if (iter.call(bind, this[i], i, that))
-					res[res.length] = this[i];
-			return res;
-		}),
-
-		map: Base.iterate(proto.map || function(iter, bind, that) {
-			var res = new Array(this.length);
-			for (var i = 0, l = this.length; i < l; ++i)
-				res[i] = iter.call(bind, this[i], i, that);
-			return res;
-		}),
-
-		every: Base.iterate(proto.every || function(iter, bind, that) {
-			for (var i = 0, l = this.length; i < l; ++i)
-				if (!iter.call(bind, this[i], i, that))
-					return false;
-			return true;
-		}),
-
-		some: Base.iterate(proto.some || function(iter, bind, that) {
-			for (var i = 0, l = this.length; i < l; ++i)
-				if (iter.call(bind, this[i], i, that))
-					return true;
-			return false;
-		}),
-
-		reduce: proto.reduce || function(fn, value) {
-			var i = 0;
-			if (arguments.length < 2 && this.length) value = this[i++];
-			for (var l = this.length; i < l; i++)
-				value = fn.call(null, value, this[i], i, this);
-			return value;
-		},
-
-		findEntry: function(iter, bind) {
-			if (iter && !/^(function|regexp)$/.test(Base.type(iter))) {
-				var i = this.indexOf(iter);
-				return { key: i != -1 ? i : null, value: this[i], result: i != -1 };
-			}
-			return Enumerable.findEntry.call(this, iter, bind);
-		},
-
-		remove: function(iter, bind) {
-			var entry = this.findEntry(iter, bind);
-			if (entry.key != null)
-				this.splice(entry.key, 1);
-			return entry.value;
-		},
-
-		contains: function(obj) {
-			return this.indexOf(obj) != -1;
-		},
-
-		toArray: function() {
-			var res = this.concat([]);
-			return res[0] == this ? Enumerable.toArray.call(this) : res;
-		},
-
-		clone: function() {
-			return this.toArray();
-		},
-
-		clear: function() {
-			this.length = 0;
-		},
-
-		getFirst: function() {
-			return this[0];
-		},
-
-		getLast: function() {
-			return this[this.length - 1];
-		},
-
-		compact: function() {
-			return this.filter(function(value) {
-				return value != null;
-			});
-		},
-
-		append: function(items) {
-			for (var i = 0, l = items.length; i < l; ++i)
-				this[this.length++] = items[i];
-			return this;
-		},
-
-		subtract: function(items) {
-			for (var i = 0, l = items.length; i < l; ++i)
-				Array.remove(this, items[i]);
-			return this;
-		},
-
-		intersect: function(items) {
-			for (var i = this.length - 1; i >= 0; i--)
-				if (!items.find(this[i]))
-					this.splice(i, 1);
-			return this;
-		},
-
-		associate: function(obj) {
-			if (!obj)
-				obj = this;
-			else if (typeof obj == 'function')
-				obj = this.map(obj);
-			if (obj.length != null) {
-				var that = this;
-				return Base.each(obj, function(name, index) {
-					this[name] = that[index];
-					if (index == that.length)
-						throw Base.stop;
-				}, {});
-			} else {
-				obj = Hash.merge({}, obj);
-				return Base.each(this, function(val) {
-					var type = Base.type(val);
-					Base.each(obj, function(hint, name) {
-						if (hint == 'any' || type == hint) {
-							this[name] = val;
-							delete obj[name];
-							throw Base.stop;
-						}
-					}, this);
-				}, {});
-			}
-		},
-
-		flatten: function() {
-			return Array.each(this, function(val) {
-				if (val != null && val.flatten) this.append(val.flatten());
-				else this.push(val);
-			}, []);
-		},
-
-		swap: function(i, j) {
-			var tmp = this[j];
-			this[j] = this[i];
-			this[i] = tmp;
-			return tmp;
-		},
-
-		shuffle: function() {
-			var res = this.clone();
-			var i = this.length;
-			while (i--) res.swap(i, Math.rand(i + 1));
-			return res;
-		},
-
-		pick: function() {
-			return this[Math.rand(this.length)];
-		},
-
-		statics: {
-			create: function(list) {
-				if (!Base.check(list)) return [];
-				if (Base.type(list) == 'array') return list;
-				if (list.toArray)
-					return list.toArray();
-				if (list.length != null) {
-					var res = [];
-					for (var i = 0, l = list.length; i < l; ++i)
-						res[i] = list[i];
-				} else {
-					res = [list];
-				}
-				return res;
-			},
-
-			extend: function(src) {
-				var ret = Base.extend(extend, src);
-				ret.extend = Function.extend;
-				return ret;
-			}
-		}
-	});
-	['push','pop','shift','unshift','sort','reverse','join','slice','splice','concat'].each(function(name) {
-		fields[name] = proto[name];
-	});
-	var extend = Hash.merge({}, fields, {
-		clear: function() {
-			for (var i = 0, l = this.length; i < l; i++)
-				delete this[i];
-			this.length = 0;
-		},
-
-		concat: function(list) {
-			return Browser.WEBKIT
-				? new Array(this.length + list.length).append(this).append(list)
-				: Array.concat(this, list);
-		},
-
-		toString: proto.join
-	});
-	extend.length = 0;
-	return fields;
-});
-
-$A = Array.create;
-
 Number.inject({
 	_type: 'number',
 
@@ -636,7 +679,7 @@ Number.inject({
 	},
 
 	times: function(func, bind) {
-		for (var i = 0; i < this; ++i)
+		for (var i = 0; i < this; i++)
 			func.call(bind, i);
 		return bind || this;
 	},
@@ -746,7 +789,6 @@ Math.rand = function(first, second) {
 }
 
 Array.inject({
-
 	hexToRgb: function(toArray) {
 		if (this.length >= 3) {
 			var rgb = [];
@@ -824,58 +866,65 @@ String.inject({
 	}
 });
 
-Json = function() { 
-	var JSON = this.JSON;
+Json = function(JSON) {
 	var special = { '\b': '\\b', '\t': '\\t', '\n': '\\n', '\f': '\\f', '\r': '\\r', '"' : '\\"', "'" : "\\'", '\\': '\\\\' };
 	return {
-		encode: function(obj, properties) {
-			if (JSON)
-				return JSON.stringify(obj, properties);
-			if (Base.type(properties) == 'array') {
-				properties = properties.each(function(val) {
-					this[val] = true;
-				}, {});
-			}
-			switch (Base.type(obj)) {
-				case 'string':
-					return '"' + obj.replace(/[\x00-\x1f\\"]/g, function(chr) {
-						return special[chr] || '\\u' + chr.charCodeAt(0).toPaddedString(4, 16);
-					}) + '"';
-				case 'array':
-					return '[' + obj.collect(function(val) {
-						return Json.encode(val, properties);
-					}) + ']';
-				case 'object':
-				case 'hash':
-					return '{' + Hash.collect(obj, function(val, key) {
-						if (!properties || properties[key]) {
-							val = Json.encode(val, properties);
-							if (val !== undefined)
-								return Json.encode(key) + ':' + val;
-						}
-					}) + '}';
-				case 'function':
-					return undefined;
-				default:
-					return obj + '';
-			}
-			return undefined;
-		},
-
-		decode: function(str, secure) {
-			try {
-				return Base.type(str) == 'string' && (str = str.trim()) &&
-					(!secure || JSON || /^[\],:{}\s]*$/.test(
-						str.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, "@")
-							.replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, "]")
-							.replace(/(?:^|:|,)(?:\s*\[)+/g, "")))
-								? JSON ? JSON.parse(str) : (new Function('return ' + str))() : null;
-			} catch (e) {
+		encode: JSON
+			? JSON.stringify
+			: function(obj, properties) {
+				if (Base.type(properties) == 'array') {
+					properties = properties.each(function(val) {
+						this[val] = true;
+					}, {});
+				}
+				switch (Base.type(obj)) {
+					case 'string':
+						return '"' + obj.replace(/[\x00-\x1f\\"]/g, function(chr) {
+							return special[chr] || '\\u' + chr.charCodeAt(0).toPaddedString(4, 16);
+						}) + '"';
+					case 'array':
+						return '[' + obj.collect(function(val) {
+							return Json.encode(val, properties);
+						}) + ']';
+					case 'object':
+					case 'hash':
+						return '{' + Hash.collect(obj, function(val, key) {
+							if (!properties || properties[key]) {
+								val = Json.encode(val, properties);
+								if (val !== undefined)
+									return Json.encode(key) + ':' + val;
+							}
+						}) + '}';
+					case 'function':
+						return undefined;
+					default:
+						return obj + '';
+				}
 				return null;
+			},
+
+		decode: JSON
+			? function(str, secure) {
+				try {
+					return JSON.parse(str);
+				} catch (e) {
+					return null;
+				}
 			}
-		}
+			: function(str, secure) {
+				try {
+					return Base.type(str) == 'string' && (str = str.trim()) &&
+						(!secure || /^[\],:{}\s]*$/.test(
+							str.replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, "@")
+								.replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g, "]")
+								.replace(/(?:^|:|,)(?:\s*\[)+/g, "")))
+									? (new Function('return ' + str))() : null;
+				} catch (e) {
+					return null;
+				}
+			}
 	};
-}();
+}(this.JSON);
 
 Browser = new function() {
 	var name = window.orientation != undefined ? 'ipod'
@@ -885,9 +934,16 @@ Browser = new function() {
 		XPATH: !!document.evaluate,
 		QUERY: !!document.querySelector
 	};
+	fields[name.toUpperCase()] = true;
+
+	function getVersion(prefix, min, max) {
+		var ver = (new RegExp(prefix + '([\\d.]+)', 'i').exec(navigator.userAgent) || [0, '0'])[1].split('.');
+		return (ver.slice(0, min).join('') + '.' + ver.slice(min, max || ver.length).join('')).toFloat();
+	}
+
 	var engines = {
 		presto: function() {
-			return !window.opera ? false : arguments.callee.caller ? 960 : document.getElementsByClassName ? 950 : 925;
+			return !window.opera ? false : getVersion('Presto/', 2) || getVersion('Opera[/ ]', 1);
 		},
 
 		trident: function() {
@@ -896,13 +952,14 @@ Browser = new function() {
 		},
 
 		webkit: function() {
-			return navigator.taintEnabled ? false : fields.XPATH ? fields.QUERY ? 525 : 420 : 419;
+			return navigator.taintEnabled ? false : getVersion('WebKit/', 1, 2);
 		},
 
 		gecko: function() {
-			return !document.getBoxObjectFor ? false : document.getElementsByClassName ? 19 : 18;
+			return !document.getBoxObjectFor && window.mozInnerScreenX == null ? false : getVersion('rv:', 2);
 		}
 	};
+
 	for (var engine in engines) {
 		var version = engines[engine]();
 		if (version) {
@@ -914,14 +971,13 @@ Browser = new function() {
 			break;
 		}
 	}
-	fields[name.toUpperCase()] = true;
 
 	fields.log = function() {
 		if (!Browser.TRIDENT && window.console && console.log)
 			console.log.apply(console, arguments);
-		else 
+		else
 			(window.console && console.log
-				|| window.opera && opera.postError 
+				|| window.opera && opera.postError
 				|| alert)(Array.join(arguments, ' '));
 	}
 
@@ -943,7 +999,7 @@ DomNodes = Array.extend(new function() {
 		},
 
 		append: function(items) {
-			for (var i = 0, l = items.length; i < l; ++i) {
+			for (var i = 0, l = items.length; i < l; i++) {
 				var el = items[i];
 				if ((el = el && (el._wrapper || DomNode.wrap(el))) && el._unique != this._unique) {
 					el._unique = this._unique;
@@ -963,8 +1019,7 @@ DomNodes = Array.extend(new function() {
 				this.base(Base.each(src || {}, function(val, key) {
 					if (typeof val == 'function') {
 						var func = val, prev = proto[key];
-						var count = func.getParameters().length,
-							prevCount = prev && prev.getParameters().length;
+						var count = func.length, prevCount = prev && prev.length;
 						val = function() {
 							var args = arguments, values;
 							if (prev && args.length == prevCount
@@ -981,7 +1036,7 @@ DomNodes = Array.extend(new function() {
 							return values || this;
 						}
 					}
-					this[key] = val; 
+					this[key] = val;
 				}, {}));
 				for (var i = 1, l = arguments.length; i < l; i++)
 					this.inject(arguments[i]);
@@ -1019,12 +1074,12 @@ DomNode = Base.extend(new function() {
 			}
 		});
 		(src._properties || []).each(function(name) {
-			var part = name.capitalize();
+			var part = name.capitalize(), prop = name.toLowerCase();
 			src['get' + part] = function() {
-				return this.getProperty(name);
+				return this.getProperty(prop);
 			}
 			src['set' + part] = function(value) {
-				return this.setProperty(name, value);
+				return this.setProperty(prop, value);
 			}
 		});
 		delete src._methods;
@@ -1163,8 +1218,8 @@ DomNode.inject(new function() {
 	var bools = ['compact', 'nowrap', 'ismap', 'declare', 'noshade', 'checked',
 		'disabled', 'readonly', 'multiple', 'selected', 'noresize', 'defer'
 	].associate();
-	var properties = Hash.merge({ 
-		text: Browser.TRIDENT || Browser.WEBKIT && Browser.VERSION < 420
+	var properties = Hash.append({ 
+		text: Browser.TRIDENT || Browser.WEBKIT && Browser.VERSION < 420 || Browser.PRESTO && Browser.VERSION < 9
 			? function(node) {
 				return node.$.innerText !== undefined ? 'innerText' : 'nodeValue'
 			} : 'textContent',
@@ -1172,7 +1227,7 @@ DomNode.inject(new function() {
 	}, [ 
 		'value', 'accessKey', 'cellPadding', 'cellSpacing', 'colSpan',
 		'frameBorder', 'maxLength', 'readOnly', 'rowSpan', 'tabIndex',
-		'useMap', 'width', 'height'
+		'selectedIndex', 'useMap', 'width', 'height'
 	].associate(function(name) {
 		return name.toLowerCase();
 	}), bools);
@@ -1251,7 +1306,7 @@ DomNode.inject(new function() {
 		},
 
 		getChildNodes: function() {
-		 	return new this._collection(this.$.childNodes);
+		 	return new DomNodes(this.$.childNodes);
 		},
 
 		hasChildNodes: function() {
@@ -1373,7 +1428,7 @@ DomNode.inject(new function() {
 		},
 
 		removeProperties: function() {
-			return Base.each(arguments, this.removeProperty, this);
+			return Array.each(arguments, this.removeProperty, this);
 		}
 	};
 
@@ -1464,7 +1519,7 @@ DomElement = DomNode.extend({
 			return !el ? false : el.ownerDocument == parent ? true
 				: Browser.WEBKIT && Browser.VERSION < 420
 					? Array.contains(parent.getElementsByTagName(el.tagName), el)
-					: parent.contains 
+					: parent.contains
 						? parent != el && parent.contains(el)
 						: !!(parent.compareDocumentPosition(el) & 16)
 		}
@@ -1734,12 +1789,6 @@ DomElement.inject(new function() {
 				: { width: this.$.scrollWidth, height: this.$.scrollHeight };
 		},
 
-		getInnerSize: function() {
-			return body(this)
-				? this.getWindow().getScrollSize()
-			 	: { width: this.getStyle('width').toInt(), height: this.getStyle('height').toInt() };
-		},
-
 		getBounds: function(relative) {
 			if (body(this))
 				return this.getWindow().getBounds();
@@ -1900,7 +1949,7 @@ DomEvent = Base.extend(new function() {
 			this.meta = event.metaKey;
 			if (/^(mousewheel|DOMMouseScroll)$/.test(this.type)) {
 				this.wheel = event.wheelDelta ?
-					event.wheelDelta / (window.opera ? -120 : 120) : 
+					event.wheelDelta / (window.opera ? -120 : 120) :
 					- (event.detail || 0) / 3;
 			} else if (/^key/.test(this.type)) {
 				this.code = event.which || event.keyCode;
@@ -1990,7 +2039,7 @@ DomEvent = Base.extend(new function() {
 			}),
 
 			add: function(events) {
-				this.events.merge(events);
+				this.events.append(events);
 			}
 		}
 	};
@@ -2179,7 +2228,7 @@ DomElement.inject(new function() {
 			}
 			var res = (context.ownerDocument || context).evaluate('.//' + items.join(''), context,
 				resolver, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null);
-			for (var i = 0, l = res.snapshotLength; i < l; ++i)
+			for (var i = 0, l = res.snapshotLength; i < l; i++)
 				elements.push(res.snapshotItem(i));
 		}
 	}, { 
@@ -2296,7 +2345,7 @@ DomElement.inject(new function() {
 			separators.push(match.charAt(0));
 			return ':)' + match.charAt(1);
 		}).split(':)');
-		for (var i = 0, l = selector.length; i < l; ++i) {
+		for (var i = 0, l = selector.length; i < l; i++) {
 			var params = parse(selector[i]);
 			if (!params) return elements; 
 			var next = method.getParam(items, separators[i - 1], context, params, data);
@@ -2314,7 +2363,7 @@ DomElement.inject(new function() {
 			selectors = !selectors ? ['*'] : typeof selectors == 'string'
 				? selectors.split(',')
 				: selectors.length != null ? selectors : [selectors];
-			for (var i = 0, l = selectors.length; i < l; ++i) {
+			for (var i = 0, l = selectors.length; i < l; i++) {
 				var selector = selectors[i];
 				if (Base.type(selector) == 'element') elements.push(selector);
 				else filter([], selector, this.$, elements, {});
@@ -2631,7 +2680,7 @@ HtmlElement.inject({
 
 	modifyClass: function(name, add) {
 		if (!this.hasClass(name) ^ !add) 
-			this.$.className = (add ? this.$.className + ' ' + name : 
+			this.$.className = (add ? this.$.className + ' ' + name :
 				this.$.className.replace(name, '')).clean();
 		return this;
 	},
@@ -2853,7 +2902,7 @@ HtmlElement.inject(new function() {
 		},
 
 		getStyles: function() {
-			return arguments.length ? Base.each(arguments, function(name) {
+			return arguments.length ? Array.each(arguments, function(name) {
 				this[name] = that.getStyle(name);
 			}, {}) : this.$.style.cssText;
 		},
@@ -2907,8 +2956,9 @@ HtmlElement.inject({
 
 	getValues: function() {
 		return this.getFormElements().each(function(el) {
-			var name = el.getName();
-			if (name && !el.getDisabled()) this[name] = el.getValue(); 
+			var name = el.getName(), value = el.getValue();
+			if (name && value !== undefined && !el.getDisabled())
+				this[name] = value;
 		}, new Hash());
 	},
 
@@ -2991,7 +3041,7 @@ Select = FormElement.extend({
 	setSelected: function(values) {
 		this.$.selectedIndex = -1;
 		if (values) {
-			Base.each(values.length != null ? values : [values], function(val) {
+			Array.each(values.length != null ? values : [values], function(val) {
 				val = DomElement.unwrap(val);
 				if (val != null)
 					this.getElements('option[value="' + (val.value || val) + '"]').setProperty('selected', true);
@@ -3155,7 +3205,7 @@ Request = Base.extend(Chain, Callback, new function() {
 				|| Browser.TRIDENT && new ActiveXObject('Microsoft.XMLHTTP');
 	}
 
-	function createFrame(that, form) {
+	function createFrame(that) {
 		var id = 'request_' + unique++, load = that.onFrameLoad.bind(that);
 		var div = DomElement.get('body').injectBottom('div', {
 				styles: {
@@ -3168,7 +3218,7 @@ Request = Base.extend(Chain, Callback, new function() {
 			]
 		);
 		that.frame = {
-			id: id, div: div, form: form,
+			id: id, div: div,
 			iframe: window.frames[id] || document.getElementById(id),
 			element: DomElement.get(id)
 		};
@@ -3194,8 +3244,10 @@ Request = Base.extend(Chain, Callback, new function() {
 			this.setOptions(params.options);
 			if (params.handler)
 				this.addEvent('complete', params.handler);
+			if (this.options.update)
+				this.options.type = 'html';
 			this.headers = new Hash(this.options.headers);
-			if (this.options.json) {
+			if (this.options.type == 'json') {
 				this.setHeader('Accept', 'application/json');
 				this.setHeader('X-Request', 'JSON');
 			}
@@ -3203,8 +3255,6 @@ Request = Base.extend(Chain, Callback, new function() {
 				this.setHeader('Content-Type', 'application/x-www-form-urlencoded' +
 					(this.options.encoding ? '; charset=' + this.options.encoding : ''));
 			}
-			if (this.options.update)
-				this.options.html = true;
 			this.headers.merge(this.options.headers);
 		},
 
@@ -3230,12 +3280,11 @@ Request = Base.extend(Chain, Callback, new function() {
 			if (this.running && frame && loc && (!loc.href || loc.href.indexOf(this.url) != -1)
 				&& /^(loaded|complete|undefined)$/.test(doc.readyState)) {
 				this.running = false;
-				var area = !this.options.html && doc.getElementsByTagName('textarea')[0];
+				var html = this.options.type == 'html', area = !html
+					&& doc.getElementsByTagName('textarea')[0];
 				var text = doc && (area && area.value || doc.body
-					&& (this.options.html && doc.body.innerHTML
-						|| doc.body.textContent || doc.body.innerText)) || '';
-				var head = Browser.TRIDENT && this.options.html && doc.getElementsByTagName('head')[0];
-				text = head ? head.innerHTML + text : text;
+					&& (html && doc.body.innerHTML || doc.body.textContent
+					|| doc.body.innerText)) || '';
 				this.frame.element.setProperty('src', '');
 				this.success(text);
 				if (!this.options.link) {
@@ -3249,7 +3298,8 @@ Request = Base.extend(Chain, Callback, new function() {
 
 		success: function(text, xml) {
 			var args;
-			if (this.options.html) {
+			switch (this.options.type) {
+			case 'html':
 				var match = text.match(/<body[^>]*>([\u0000-\uffff]*?)<\/body>/i);
 				var stripped = this.stripScripts(match ? match[1] : text);
 				if (this.options.update)
@@ -3257,9 +3307,11 @@ Request = Base.extend(Chain, Callback, new function() {
 				if (this.options.evalScripts)
 					this.executeScript(stripped.script);
 				args = [ stripped.html, text ];
-			} else if (this.options.json) {
+				break;
+			case 'json':
 				args = [ Json.decode(text, this.options.secure), text ];
-			} else {
+				break;
+			default: 
 				args = [ this.processScripts(text), xml ]
 			}
 			this.fireEvent('complete', args)
@@ -3334,9 +3386,9 @@ Request = Base.extend(Chain, Callback, new function() {
 			var url = params.url || opts.url;
 			switch (Base.type(data)) {
 				case 'element':
-					var el = DomNode.wrap(data);
-					if (el.getTag() != 'form' || !el.hasElement('input[type=file]'))
-						data = el.toQueryString();
+				 	data = DomNode.wrap(data);
+					if (data.getTag() != 'form' || !data.hasElement('input[type=file]'))
+						data = data.toQueryString();
 					break;
 				case 'object':
 					data = Base.toQueryString(data);
@@ -3347,10 +3399,10 @@ Request = Base.extend(Chain, Callback, new function() {
 			var string = typeof data == 'string', method = opts.method;
 			if (opts.emulation && /^(put|delete)$/.test(method)) {
 				if (string) data += '&_method=' + method;
-				else data.setValue('_method', method); 
+				else data.setValue('_method', method);
 				method = 'post';
 			}
-			if (string && !this.options.iframe) { 
+			if (string && !this.options.iframe) {
 				createRequest(this);
 				if (!this.transport) {
 					if (!this.frame)
@@ -3358,7 +3410,7 @@ Request = Base.extend(Chain, Callback, new function() {
 					method = 'get';
 				}
 			} else if (!this.frame) {
-		 		createFrame(this, !string && DomNode.wrap(data));
+ 				createFrame(this);
 			}
 			if (string && data && method == 'get') {
 				url += (url.contains('?') ? '&' : '?') + data;
@@ -3367,16 +3419,18 @@ Request = Base.extend(Chain, Callback, new function() {
 			this.running = true;
 			this.url = url;
 			if (this.frame) {
-				if (this.frame.form)
-					this.frame.form.set({
+				var form = !string && data;
+				if (form) {
+					form.set({
 						target: this.frame.id, action: url, method: method,
 						enctype:  method == 'get'
 							? 'application/x-www-form-urlencoded'
 							: 'multipart/form-data',
 						'accept-charset': opts.encoding || ''
 					}).submit();
-				else
+				} else {
 					this.frame.element.setProperty('src', url);
+				}
 			} else if (this.transport) {
 				try {
 					this.transport.open(method.toUpperCase(), url, opts.async);

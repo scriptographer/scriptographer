@@ -2,8 +2,9 @@ File = Base.extend(new function() {
 	var mimeTypes = null;
 
 	return {
+		beans: true,
+
 		_type: 'file',
-		_beans: true,
 
 		/**
 		 * Constructor for File objects, providing read and 
@@ -24,10 +25,10 @@ File = Base.extend(new function() {
 			if (!this._file.isAbsolute()) {
 				// Immediately convert to absolute path - java.io.File is
 				// incredibly stupid when dealing with relative file names
-				this._file = this._file.getAbsoluteFile();
+				// Do not use this._fil.getAbsoluteFile() as this would
+				// be immediately wrapped in a js File object on Scriptographer.
+				this._file = new java.io.File(this._file.getAbsolutePath());
 			}
-			if (!(this._file instanceof java.io.File))
-				print('Autsch1' + this._file._file);
 			this._eof = false;
 		},
 
@@ -413,9 +414,6 @@ File = Base.extend(new function() {
 		 * @type Number
 		 */
 		getLastModified: function() {
-			if(typeof this._file.lastModified == 'number') {
-				print(this._file instanceof java.io.File);
-			}
 			return this._file.lastModified();
 		},
 

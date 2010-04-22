@@ -104,10 +104,8 @@ Process = Base.extend(new function() {
 			this.process.destroy();
 		},
 
-		exitValue: {
-			_get: function() {
-				return this.process.exitValue();
-			}
+		get exitValue() {
+			return this.process.exitValue();
 		},
 
 		poll: function() {
@@ -119,11 +117,11 @@ Process = Base.extend(new function() {
 	['onError', 'onData', 'onDone'].each(function(name) {
 		var hidden = '_' + name;
 		fields[name] = {
-			_set: function(handler) {
+			set: function(handler) {
 				this[hidden] = handler;
 				updateTimer.call(this);
 			},
-			_get: function() {
+			get: function() {
 				return this[hidden];
 			}
 		};

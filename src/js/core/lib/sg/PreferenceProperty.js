@@ -2,7 +2,7 @@ function PreferenceProperty(name, defaultValue) {
 	var cacheName = '_' + name;
 
 	return {
-		_get: function() {
+		get: function() {
 			var value = this[cacheName];
 			if (value === undefined)
 				value = this[cacheName] = Base.pick(script.preferences[name],
@@ -10,7 +10,7 @@ function PreferenceProperty(name, defaultValue) {
 			return value;
 		},
 
-		_set: function(value) {
+		set: function(value) {
 			this[cacheName] = script.preferences[name] = value;
 		}
 	}

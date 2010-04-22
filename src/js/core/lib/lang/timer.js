@@ -44,7 +44,7 @@ Function.inject(new function() {
 	}
 
 	return {
-		_generics: true,
+		generics: true,
 
 		delay: function(delay, bind, args) {
 			return timer(this, false, delay, bind, args);

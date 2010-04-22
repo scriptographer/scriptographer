@@ -30,25 +30,22 @@ Type = Object.extend(new function() {
 		cache[second.toString()] = value;
 	}
 
-	return {
+	var fields = {
+		// Avoid overriding native functions when injecting fields into type
+		// in the initializer, e.g. hasSuperclass, subclassOf, qualifiedName, etc
+		preserve: true,
 		// Marks already extended native instance in initialize
 		_extended: true,
 
 		initialize: function(type) {
 			if (!type)
 				throw 'Parameter for Type constructor cannot be null';
-			// Enhance the prototype of the native object with Type.prototype, and return
-			// type instead of this!
+			// Enhance the prototype of the native object with Type.prototype,
+			// and return type instead of this!
 			// We need to do this because it is not possible to access the native
 			// class for types. Sometimes they seem to just be ClassDocImpls
-			if (!type._extended) {
-				// Inject only what's not there already, to avoid overriding native
-				// functions, e.g. hasSuperclass, subclassOf, qualifiedName, etc
-				this.__proto__.each(function(field, key) {
-					if (!this[key])
-						this[key] = field;
-				}, type);
-			}
+			if (!type._extended)
+				type.inject(fields);
 			return type;
 		},
 
@@ -354,8 +351,8 @@ Type = Object.extend(new function() {
 			return str;
 		},
 
-		// This is defined outside renderLink so that even when a Type
-		// happens to be its own ClassDoc (as returned by asClassDoc), and therefore
+		// This is defined outside renderLink so that even when a Type happens
+		// to be its own ClassDoc (as returned by asClassDoc), and therefore
 		// overrides renderLink, it can still call the base version.
 		renderClassLink: function(param) {
 			var str = '';
@@ -409,20 +406,23 @@ Type = Object.extend(new function() {
 			}
 		}
 	}
-});
 
-// Extend ClassDocImpl by Type. Only add field to prototype that do not exist
-// natively. To check this, we need a actual instance of ClassDoc since right now
-// ClassDocImpl.prototype is empty and does not provide references to native fields
-// yet.
-// TODO: Pick up the Scriptographer java-proto tag again and fix the problems with
-// it (calling of native methods on non native instance when acccessing __proto__).
-Type.prototype.each(function(value, name) {
-	if (this.doc && this.doc[name] === undefined)
-		this.docType[name] = value;
-}, {
-	doc: root.classes().first,
-	docType: ClassDocImpl.prototype
+	// Extend ClassDocImpl by Type. Only add field to prototype that do not exist
+	// natively. To check this, we need a actual instance of ClassDoc since right
+	// now ClassDocImpl.prototype is empty and does not provide references to
+	// native fields yet.
+	// TODO: Pick up the Scriptographer java-proto tag again and fix the problems
+	// with it (calling of native methods on non native instance when acccessing
+	// __proto__).
+	fields.each(function(value, name) {
+		if (this.doc && this.doc[name] === undefined)
+			this.proto[name] = value;
+	}, {
+		doc: root.classes().first,
+		proto: ClassDocImpl.prototype
+	});
+
+	return fields;
 });
 
 ParameterImpl.inject({
