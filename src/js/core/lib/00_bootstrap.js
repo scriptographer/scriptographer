@@ -5,10 +5,11 @@ new function() {
 
 	function define(obj, name, desc) {
 		try {
-			return Object.defineProperty(obj, name, desc);
+			Object.defineProperty(obj, name, desc);
 		} catch (e) {
 			obj[name] = desc.value;
 		}
+		return obj;
 	}
 
 	function describe(obj, name) {
