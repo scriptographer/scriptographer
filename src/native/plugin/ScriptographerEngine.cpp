@@ -1376,11 +1376,12 @@ jobject ScriptographerEngine::convertFile(JNIEnv *env, CFStringRef path) {
 #endif
 
 jobject ScriptographerEngine::convertFile(JNIEnv *env, SPPlatformFileSpecification *fileSpec) {
-	if (fileSpec == NULL)
-		return NULL;
-	char path[kMaxPathLength];
-	gPlugin->fileSpecToPath(fileSpec, path);
-	return convertFile(env, path);
+	if (fileSpec != NULL) {
+		char path[kMaxPathLength];
+		if (gPlugin->fileSpecToPath(fileSpec, path))
+			return convertFile(env, path);
+	}
+	return NULL;
 }
 
 SPPlatformFileSpecification *ScriptographerEngine::convertFile(JNIEnv *env, jobject file, SPPlatformFileSpecification *res) {

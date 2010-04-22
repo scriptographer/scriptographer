@@ -457,13 +457,14 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_Document_getFile(JNIEnv *en
 		
 		SPPlatformFileSpecification fileSpec;
 #if kPluginInterfaceVersion < kAI12
-		sAIDocument->GetDocumentFileSpecification(&fileSpec);
+		if (!sAIDocument->GetDocumentFileSpecification(&fileSpec)) {
 #else
 		ai::FilePath filePath;
-		sAIDocument->GetDocumentFileSpecification(filePath);
-		filePath.GetAsSPPlatformFileSpec(fileSpec);
+		if (!sAIDocument->GetDocumentFileSpecification(filePath)) {
+			filePath.GetAsSPPlatformFileSpec(fileSpec);
 #endif
-		file = gEngine->convertFile(env, &fileSpec);
+			file = gEngine->convertFile(env, &fileSpec);
+		}
 	} EXCEPTION_CONVERT(env);
 	return file;
 }
