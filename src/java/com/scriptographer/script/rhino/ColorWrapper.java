@@ -75,8 +75,10 @@ public class ColorWrapper extends ExtendedJavaObject {
 			Class type = colorPropertyToClass.get(name);
 			if (type != null) {
 				Color color = ((Color) javaObject).convert(type);
-				Scriptable scriptable = Context.toObject(color, start);
-				return scriptable.get(name, start);
+				if (color != null) {
+	                Scriptable scriptable = Context.toObject(color, start);
+	                return scriptable.get(name, start);
+				}
 			}
 		}
 		return Scriptable.NOT_FOUND;
@@ -91,10 +93,12 @@ public class ColorWrapper extends ExtendedJavaObject {
 			if (type != null) {
 				Color fromColor = (Color) javaObject;
 				Color toColor = fromColor.convert(type);
-				Scriptable scriptable = Context.toObject(toColor, start);
-				scriptable.put(name, start, value);
-				toColor = toColor.convert(fromColor.getClass());
-				fromColor.set(toColor);
+				if (toColor != null) {
+	                Scriptable scriptable = Context.toObject(toColor, start);
+	                scriptable.put(name, start, value);
+	                toColor = toColor.convert(fromColor.getClass());
+	                fromColor.set(toColor);
+				}
 			}
 		}
 	}
