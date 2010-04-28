@@ -77,7 +77,7 @@ void getJREPath(char *jrePath) {
 }
 
 void loadJavaVM(const char *jvmType, CreateJavaVMProc *createJavaVM, GetDefaultJavaVMInitArgsProc *getDefaultJavaVMInitArgs) {
-    char jrePath[MAX_PATH];
+	char jrePath[MAX_PATH];
 	getJREPath(jrePath);
 
 	char jvmPath[MAX_PATH];
@@ -95,4 +95,55 @@ void loadJavaVM(const char *jvmType, CreateJavaVMProc *createJavaVM, GetDefaultJ
 
 	if (createJavaVM == NULL || getDefaultJavaVMInitArgs == NULL)
 		throw new StringException("Cannot find JNI interfaces in: %s", jvmPath);
+}
+
+// Code below from http://forums.sun.com/thread.jspa?threadID=5403763
+
+bool canAllocate(DWORD bytes) {
+	LPVOID lpvBase = VirtualAlloc(NULL, bytes, MEM_RESERVE, PAGE_READWRITE);
+	if (lpvBase == NULL) return false;
+	VirtualFree(lpvBase, 0, MEM_RELEASE);
+	return true;
+}
+
+int getMaxHeapAvailable(int maxPermSize, int maxHeapSize) {
+	SYSTEM_INFO sSysInfo;
+	GetSystemInfo(&sSysInfo);
+
+	// jvm aligns as follows: 
+	// quoted from size_t GenCollectorPolicy::compute_max_alignment() of jdk 7 hotspot code:
+	//	  The card marking array and the offset arrays for old generations are
+	//	  committed in os pages as well. Make sure they are entirely full (to
+	//	  avoid partial page problems), e.g. if 512 bytes heap corresponds to 1
+	//	  byte entry and the os page size is 4096, the maximum heap size should
+	//	  be 512*4096 = 2MB aligned.
+
+	// card_size computation from CardTableModRefBS::SomePublicConstants of jdk 7 hotspot code
+	int card_shift = 9;
+	int card_size = 1 << card_shift;
+
+	DWORD alignmentBytes = sSysInfo.dwPageSize * card_size;
+
+	// make it fit in the alignment structure
+	DWORD maxHeapBytes = maxHeapSize + (maxHeapSize % alignmentBytes);
+	int numMemChunks = maxHeapBytes / alignmentBytes;
+	DWORD originalMaxHeapBytes = maxHeapBytes;
+
+	// loop and decrement requested amount by one chunk
+	// until the available amount is found
+	DWORD numBytesNeeded = maxHeapBytes + maxPermSize;
+	while (!canAllocate(numBytesNeeded) && numMemChunks > 0) {
+		numMemChunks --;
+		maxHeapBytes = numMemChunks * alignmentBytes;
+		numBytesNeeded = maxHeapBytes + maxPermSize;
+	}
+
+	if (numMemChunks == 0)
+		return 0;
+
+	// we can allocate the requested size, return it now
+	if (maxHeapBytes == originalMaxHeapBytes)
+		return maxHeapSize;
+
+	return maxHeapBytes;
 }

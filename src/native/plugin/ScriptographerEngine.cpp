@@ -147,31 +147,95 @@ class JVMOptions {
 	// Make sure we have plenty...
 	JavaVMOption fOptions[128];
 	int fNumOptions;
-	
+	bool fCheckSize;
+	int fStackSize;
+	int fMaxPermSize;
+	int fMinHeapSize;
+	int fMaxHeapSize;
+
 public:
-	JVMOptions() {
+	JVMOptions(bool checkSize, int maxPermSize = 0, int maxHeapSize = 0) {
 		fNumOptions = 0;
 		memset(fOptions, 0, sizeof(fOptions));
+		fCheckSize = checkSize;
+		// Set default sizes 
+		fStackSize = 0;
+		fMaxPermSize = maxPermSize * 1024 * 1024;
+		fMinHeapSize = 0;
+		fMaxHeapSize = maxHeapSize * 1024 * 1024;
 	}
-	
+
 	~JVMOptions() {
 		for (int i = 0; i < fNumOptions; i++) {
 			delete[] fOptions[i].optionString;
 		}
 	}
-	
+
 	void add(const char *str, ...) {
 		char *text = new char[2048];
 		va_list args;
 		va_start(args, str);
 		vsprintf(text, str, args);
 		va_end(args);
-		fOptions[fNumOptions++].optionString = text;
-		if (strlen(text) > 0)
-			gPlugin->log("JVM Option: %s", text);
+		if (strlen(text) > 0) {
+			bool isSize = false;
+			if (strncmp(text, "-Xss", 4) == 0) {
+				fStackSize = parseSize(&text[4]);
+				isSize = true;
+			} else if (strncmp(text, "-Xms", 4) == 0) {
+				fMinHeapSize = parseSize(&text[4]);
+				isSize = true;
+			} else if (strncmp(text, "-Xmx", 4) == 0) {
+				fMaxHeapSize = parseSize(&text[4]);
+				isSize = true;
+			} else if (strncmp(text, "-XX:MaxPermSize=", 16) == 0) {
+				fMaxPermSize = parseSize(&text[16]);
+				isSize = true;
+			}
+			if (!fCheckSize || !isSize) {
+				gPlugin->log("JVM Option: %s", text);
+				fOptions[fNumOptions++].optionString = text;
+			}
+		}
 	}
-	
+
+	int parseSize(char* str) {
+		char* end;
+		int size = strtol(str, &end, 0);
+		switch (end[0]) {
+		case 'b':
+		case 'B':
+			break;
+		case 'k':
+		case 'K':
+			size *= 1024;
+			break;
+		case 'm':
+		case 'M':
+			size *= 1024 * 1024;
+			break;
+		default:
+			break;
+		}
+		return size;
+	}
+
 	void fillArgs(JavaVMInitArgs *args) {
+#ifdef WIN_ENV
+		if (fCheckSize) {
+			fMaxHeapSize = getMaxHeapAvailable(fMaxPermSize, fMaxHeapSize);
+			// Turn off now so the add-calls below actually add the sizes
+			fCheckSize = false;
+		}
+#endif // WIN_ENV
+		if (fStackSize > 0)
+			add("-Xss%im", fStackSize / (1024 * 1024));
+		if (fMinHeapSize > 0)
+			add("-Xms%im", fMinHeapSize / (1024 * 1024));
+		if (fMaxHeapSize > 0)
+			add("-Xmx%im", fMaxHeapSize / (1024 * 1024));
+		if (fMaxPermSize > 0)
+			add("-XX:MaxPermSize=%im", fMaxPermSize / (1024 * 1024));
 		args->options = fOptions;
 		args->nOptions = fNumOptions;
 	}
@@ -197,7 +261,11 @@ void ScriptographerEngine::init() {
 	args.version = JNI_VERSION_1_4;
 
 	// Define options
-	JVMOptions options;
+#ifdef WIN_ENV
+	JVMOptions options(true, 64, 1024);
+#else // !WIN_ENV
+	JVMOptions options(false);
+#endif // !WIN_ENV
 	// Only add the loader to the classpath, the rest is done in java:
 	options.add("-Djava.class.path=%sloader.jar", javaPath);
 	options.add("-Djava.library.path=%slib", javaPath);
