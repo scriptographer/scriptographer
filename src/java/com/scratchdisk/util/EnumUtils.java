@@ -53,17 +53,22 @@ public class EnumUtils {
 		if (list instanceof EnumSet) {
 			return ((EnumSet<E>)list).clone();
 		} else {
-			Iterator<E> i = list.iterator();
-			E first = i.next();
-			while (first == null)
-				first = i.next();
-			EnumSet<E> result = EnumSet.of(first);
-			while (i.hasNext()) {
-				E next = i.next();
-				if (next != null)
-					result.add(next);
+			Iterator<E> it = list.iterator();
+			if (it.hasNext()) {
+				E first = it.next();
+				while (first == null && it.hasNext())
+					first = it.next();
+				if (first != null) {
+					EnumSet<E> result = EnumSet.of(first);
+					while (it.hasNext()) {
+						E next = it.next();
+						if (next != null)
+							result.add(next);
+					}
+					return result;
+				}
 			}
-			return result;
+			return null;
 		}
 	}
 
