@@ -145,29 +145,29 @@ ScriptographerEngine::~ScriptographerEngine() {
 
 class JVMOptions {
 	// Make sure we have plenty...
-	JavaVMOption fOptions[128];
-	int fNumOptions;
-	bool fCheckSize;
-	int fStackSize;
-	int fMaxPermSize;
-	int fMinHeapSize;
-	int fMaxHeapSize;
+	JavaVMOption m_options[128];
+	int m_numOptions;
+	bool m_checkSize;
+	int m_stackSize;
+	int m_maxPermSize;
+	int m_minHeapSize;
+	int m_maxHeapSize;
 
 public:
 	JVMOptions(bool checkSize, int maxPermSize = 0, int maxHeapSize = 0) {
-		fNumOptions = 0;
-		memset(fOptions, 0, sizeof(fOptions));
-		fCheckSize = checkSize;
+		m_numOptions = 0;
+		memset(m_options, 0, sizeof(m_options));
+		m_checkSize = checkSize;
 		// Set default sizes 
-		fStackSize = 0;
-		fMaxPermSize = maxPermSize * 1024 * 1024;
-		fMinHeapSize = 0;
-		fMaxHeapSize = maxHeapSize * 1024 * 1024;
+		m_stackSize = 0;
+		m_maxPermSize = maxPermSize * 1024 * 1024;
+		m_minHeapSize = 0;
+		m_maxHeapSize = maxHeapSize * 1024 * 1024;
 	}
 
 	~JVMOptions() {
-		for (int i = 0; i < fNumOptions; i++) {
-			delete[] fOptions[i].optionString;
+		for (int i = 0; i < m_numOptions; i++) {
+			delete[] m_options[i].optionString;
 		}
 	}
 
@@ -180,21 +180,21 @@ public:
 		if (strlen(text) > 0) {
 			bool isSize = false;
 			if (strncmp(text, "-Xss", 4) == 0) {
-				fStackSize = parseSize(&text[4]);
+				m_stackSize = parseSize(&text[4]);
 				isSize = true;
 			} else if (strncmp(text, "-Xms", 4) == 0) {
-				fMinHeapSize = parseSize(&text[4]);
+				m_minHeapSize = parseSize(&text[4]);
 				isSize = true;
 			} else if (strncmp(text, "-Xmx", 4) == 0) {
-				fMaxHeapSize = parseSize(&text[4]);
+				m_maxHeapSize = parseSize(&text[4]);
 				isSize = true;
 			} else if (strncmp(text, "-XX:MaxPermSize=", 16) == 0) {
-				fMaxPermSize = parseSize(&text[16]);
+				m_maxPermSize = parseSize(&text[16]);
 				isSize = true;
 			}
-			if (!fCheckSize || !isSize) {
+			if (!m_checkSize || !isSize) {
 				gPlugin->log("JVM Option: %s", text);
-				fOptions[fNumOptions++].optionString = text;
+				m_options[m_numOptions++].optionString = text;
 			}
 		}
 	}
@@ -222,22 +222,24 @@ public:
 
 	void fillArgs(JavaVMInitArgs *args) {
 #ifdef WIN_ENV
-		if (fCheckSize) {
-			fMaxHeapSize = getMaxHeapAvailable(fMaxPermSize, fMaxHeapSize);
+		if (m_checkSize) {
+			// Depending on the situation, the JVM seems to require some extra amount of space
+			// 16mb seems to be a good guess ????
+			m_maxHeapSize = getMaxHeapAvailable(m_maxPermSize, m_maxHeapSize, 16 * 1024 * 1024);
 			// Turn off now so the add-calls below actually add the sizes
-			fCheckSize = false;
+			m_checkSize = false;
 		}
 #endif // WIN_ENV
-		if (fStackSize > 0)
-			add("-Xss%im", fStackSize / (1024 * 1024));
-		if (fMinHeapSize > 0)
-			add("-Xms%im", fMinHeapSize / (1024 * 1024));
-		if (fMaxHeapSize > 0)
-			add("-Xmx%im", fMaxHeapSize / (1024 * 1024));
-		if (fMaxPermSize > 0)
-			add("-XX:MaxPermSize=%im", fMaxPermSize / (1024 * 1024));
-		args->options = fOptions;
-		args->nOptions = fNumOptions;
+		if (m_stackSize > 0)
+			add("-Xss%im", m_stackSize / (1024 * 1024));
+		if (m_minHeapSize > 0)
+			add("-Xms%im", m_minHeapSize / (1024 * 1024));
+		if (m_maxHeapSize > 0)
+			add("-Xmx%im", m_maxHeapSize / (1024 * 1024));
+		if (m_maxPermSize > 0)
+			add("-XX:MaxPermSize=%im", m_maxPermSize / (1024 * 1024));
+		args->options = m_options;
+		args->nOptions = m_numOptions;
 	}
 };
 
@@ -262,7 +264,7 @@ void ScriptographerEngine::init() {
 
 	// Define options
 #ifdef WIN_ENV
-	JVMOptions options(true, 64, 1024);
+	JVMOptions options(true, 64, 128);
 #else // !WIN_ENV
 	JVMOptions options(false);
 #endif // !WIN_ENV

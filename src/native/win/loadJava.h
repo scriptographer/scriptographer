@@ -28,4 +28,4 @@
  */
  
 void loadJavaVM(const char *jvmType, CreateJavaVMProc *createJavaVM, GetDefaultJavaVMInitArgsProc *getDefaultJavaVMInitArgs);
-int getMaxHeapAvailable(int maxPermSize, int maxHeapSize);
+int getMaxHeapAvailable(int maxPermSize, int maxHeapSize, int extraSize);

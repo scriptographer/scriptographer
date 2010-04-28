@@ -100,50 +100,45 @@ void loadJavaVM(const char *jvmType, CreateJavaVMProc *createJavaVM, GetDefaultJ
 // Code below from http://forums.sun.com/thread.jspa?threadID=5403763
 
 bool canAllocate(DWORD bytes) {
-	LPVOID lpvBase = VirtualAlloc(NULL, bytes, MEM_RESERVE, PAGE_READWRITE);
-	if (lpvBase == NULL) return false;
-	VirtualFree(lpvBase, 0, MEM_RELEASE);
+	LPVOID base = VirtualAlloc(NULL, bytes, MEM_RESERVE, PAGE_READWRITE);
+	if (base == NULL)
+			return false;
+	VirtualFree(base, 0, MEM_RELEASE);
 	return true;
 }
 
-int getMaxHeapAvailable(int maxPermSize, int maxHeapSize) {
-	SYSTEM_INFO sSysInfo;
-	GetSystemInfo(&sSysInfo);
+int getMaxHeapAvailable(int maxPermSize, int maxHeapSize, int extraSize) {
+	SYSTEM_INFO sysInfo;
+	GetSystemInfo(&sysInfo);
 
-	// jvm aligns as follows: 
-	// quoted from size_t GenCollectorPolicy::compute_max_alignment() of jdk 7 hotspot code:
+	// JVM aligns as follows: 
+	// Quoted from size_t GenCollectorPolicy::compute_max_alignment() of JDK 7 hotspot code:
 	//	  The card marking array and the offset arrays for old generations are
 	//	  committed in os pages as well. Make sure they are entirely full (to
 	//	  avoid partial page problems), e.g. if 512 bytes heap corresponds to 1
 	//	  byte entry and the os page size is 4096, the maximum heap size should
 	//	  be 512*4096 = 2MB aligned.
 
-	// card_size computation from CardTableModRefBS::SomePublicConstants of jdk 7 hotspot code
-	int card_shift = 9;
-	int card_size = 1 << card_shift;
+	// card_size computation from CardTableModRefBS::SomePublicConstants of JDK 7 hotspot code
+	DWORD alignmentBytes = sysInfo.dwPageSize * (1 << 9);
 
-	DWORD alignmentBytes = sSysInfo.dwPageSize * card_size;
-
-	// make it fit in the alignment structure
+	// Make it fit in the alignment structure
 	DWORD maxHeapBytes = maxHeapSize + (maxHeapSize % alignmentBytes);
-	int numMemChunks = maxHeapBytes / alignmentBytes;
 	DWORD originalMaxHeapBytes = maxHeapBytes;
 
-	// loop and decrement requested amount by one chunk
+	// Loop and decrement requested amount by one chunk
 	// until the available amount is found
-	DWORD numBytesNeeded = maxHeapBytes + maxPermSize;
-	while (!canAllocate(numBytesNeeded) && numMemChunks > 0) {
-		numMemChunks --;
+	int numMemChunks = maxHeapBytes / alignmentBytes;
+	while (!canAllocate(maxHeapBytes + maxPermSize + extraSize) && numMemChunks > 0) {
+		numMemChunks--;
 		maxHeapBytes = numMemChunks * alignmentBytes;
-		numBytesNeeded = maxHeapBytes + maxPermSize;
 	}
 
 	if (numMemChunks == 0)
 		return 0;
 
-	// we can allocate the requested size, return it now
-	if (maxHeapBytes == originalMaxHeapBytes)
-		return maxHeapSize;
-
-	return maxHeapBytes;
+	// If we can allocate the requested size, return it instead of the
+	// calculated size.
+	return maxHeapBytes == originalMaxHeapBytes ? maxHeapSize : maxHeapBytes;
 }
+
