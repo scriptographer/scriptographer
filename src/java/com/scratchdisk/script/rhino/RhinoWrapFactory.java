@@ -148,7 +148,7 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 		return obj;
 	}
 
-	private IdentityHashMap<Class, IdentityHashMap<Class, Integer>> conversionTable =
+	private IdentityHashMap<Class, IdentityHashMap<Class, Integer>> conversionCache =
 			new IdentityHashMap<Class, IdentityHashMap<Class, Integer>>();
 
 	/**
@@ -159,17 +159,17 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 	public int getConversionWeight(Object from, Object unwrapped, Class<?> to,
 	        int defaultWeight) {
 		Class fromClass = unwrapped.getClass();
-		IdentityHashMap<Class, Integer> fromTable =
-				conversionTable.get(fromClass);
-		if (fromTable == null) {
-			fromTable = new IdentityHashMap<Class, Integer>();
-			conversionTable.put(fromClass, fromTable);
+		IdentityHashMap<Class, Integer> fromCache =
+				conversionCache.get(fromClass);
+		if (fromCache == null) {
+			fromCache = new IdentityHashMap<Class, Integer>();
+			conversionCache.put(fromClass, fromCache);
 		}
-		Integer res = fromTable.get(to);
+		Integer res = fromCache.get(to);
 		if (res != null)
 			return res;
 		int weight = calculateConversionWeight(from, unwrapped, to, defaultWeight);
-		fromTable.put(to, weight);
+		fromCache.put(to, weight);
 		return weight;
 	}
 
