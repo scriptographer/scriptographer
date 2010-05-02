@@ -59,6 +59,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 	 */
 	protected TextEditItem(Dialog dialog, ItemType type, EnumSet<TextOption> options) {
 		super(dialog, type, IntegerEnumUtils.getFlags(options));
+		setMaxLength(Short.MAX_VALUE);
 	}
 	
 	protected TextEditItem(Dialog dialog, EnumSet<TextOption> options) {
