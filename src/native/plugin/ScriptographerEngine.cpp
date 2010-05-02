@@ -1569,7 +1569,6 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 					sAIDocumentList->Activate(docHandle, false);
 					gWorkingDoc = docHandle;
 				}
-				/*
 				// If it's a text object, suspend the text flow now
 				// text flow of all suspended documents is resumed at the end
 				// by gEngine->resumeSuspendedDocuments()
@@ -1583,7 +1582,6 @@ AIArtHandle ScriptographerEngine::getArtHandle(JNIEnv *env, jobject obj, bool ac
 					}
 					sAIDictionary->Release(dict);
 				}
-				*/
 			}
 		}
 	}
