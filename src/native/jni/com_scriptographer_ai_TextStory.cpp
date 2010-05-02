@@ -139,9 +139,9 @@ JNIEXPORT jint JNICALL Java_com_scriptographer_ai_TextStory_nativeGetTexListLeng
 }
 
 /*
- * com.scriptographer.ai.Text nativeGetTextFrame(int storyHandle, int docHandle, int index)
+ * com.scriptographer.ai.Text nativeGetTextItem(int storyHandle, int docHandle, int index)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_nativeGetTextFrame(JNIEnv *env, jobject obj, jint storyHandle, jint docHandle, jint index) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ai_TextStory_nativeGetTextItem(JNIEnv *env, jobject obj, jint storyHandle, jint docHandle, jint index) {
 	try {
 		TextFrameRef textRef;
 		AIArtHandle textHandle;

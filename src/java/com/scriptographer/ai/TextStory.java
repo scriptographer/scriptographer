@@ -73,7 +73,7 @@ public class TextStory extends DocumentObject {
 	public native int getIndex();
 	
 	public TextStoryList getStories() {
-		return document.getStories(getTextFrames().getFirst());
+		return document.getStories(getTextItems().getFirst());
 	}
 
 	public String getContent() {
@@ -90,12 +90,12 @@ public class TextStory extends DocumentObject {
 	 */
 	public native void reflow();
 
-	TextFrameList textFrames = null;
+	TextItemList textItems = null;
 
-	public ReadOnlyList<TextItem> getTextFrames() {
-		if (textFrames == null)
-			textFrames = new TextFrameList();
-		return textFrames;
+	public ReadOnlyList<TextItem> getTextItems() {
+		if (textItems == null)
+			textItems = new TextItemList();
+		return textItems;
 	}
 	
 	public native boolean equals(Object obj);
@@ -114,9 +114,9 @@ public class TextStory extends DocumentObject {
 	
 	protected native int nativeGetTexListLength(int handle);
 	
-	protected native TextItem nativeGetTextFrame(int storyHandle, int docHandle, int index);
+	protected native TextItem nativeGetTextItem(int storyHandle, int docHandle, int index);
 	
-	class TextFrameList implements ReadOnlyList<TextItem> {
+	class TextItemList implements ReadOnlyList<TextItem> {
 		int length = 0;
 		int version = -1;
 		
@@ -133,7 +133,7 @@ public class TextStory extends DocumentObject {
 		}
 
 		public TextItem get(int index) {
-			return nativeGetTextFrame(handle, document.handle, index);
+			return nativeGetTextItem(handle, document.handle, index);
 		}
 
 		public boolean isEmpty() {

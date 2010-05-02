@@ -73,7 +73,7 @@ public abstract class TextItem extends Item {
 	private native void nativeSetOrientation(int orientation);
 
 	/**
-	 * The orientation of the text in the text frame.
+	 * The orientation of the text in the text item.
 	 */
 	public TextOrientation getOrientation() {
 		return (TextOrientation) IntegerEnumUtils.get(TextOrientation.class,
@@ -92,10 +92,10 @@ public abstract class TextItem extends Item {
 	public native void setSpacing(float spacing);
 
 	/**
-	 * Specifies whether to use optical alignment within the text frame. Optical
-	 * alignment hangs punctuation outside the edges of a text frame.
+	 * Specifies whether to use optical alignment within the text item. Optical
+	 * alignment hangs punctuation outside the edges of a text item.
 	 * 
-	 * @return {@true if the text frame uses optical alignment}
+	 * @return {@true if the text item uses optical alignment}
 	 */
 	public native boolean getOpticalAlignment();
 
@@ -107,8 +107,8 @@ public abstract class TextItem extends Item {
 	private native Item nativeCreateOutline();
 
 	/**
-	 * Converts the text in the text frame to outlines. Unlike the Illustrator
-	 * 'Create Outlines' action, this won't remove the text frame.
+	 * Converts the text in the text item to outlines. Unlike the Illustrator
+	 * 'Create Outlines' action, this won't remove the text item.
 	 * 
 	 * @return a {@link Group} item containing the outlined text as {@link Path}
 	 *         and {@link CompoundPath} items.
@@ -125,24 +125,24 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * {@grouptitle Text Frame Linking}
+	 * {@grouptitle Text Item Linking}
 	 * 
-	 * Links the supplied text frame to this one.
+	 * Links the supplied text item to this one.
 	 * 
-	 * @param next The text frame that will be linked
-	 * @return {@true if the text frame was linked}
+	 * @param next The text item that will be linked
+	 * @return {@true if the text item was linked}
 	 */
 	public native boolean link(TextItem next);
 
 	/**
-	 * Returns {@true if the text frame is linked}
+	 * Returns {@true if the text item is linked}
 	 */
 	public native boolean isLinked();
 	
 	private native boolean nativeUnlink(boolean before, boolean after);
 
 	/**
-	 * Unlinks the text frame from its current story.
+	 * Unlinks the text item from its current story.
 	 * 
 	 * @return {@true if the operation as successful}
 	 */
@@ -151,8 +151,8 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * Unlinks the text frame from its current story and breaks up the story
-	 * into two parts before the text frame.
+	 * Unlinks the text item from its current story and breaks up the story
+	 * into two parts before the text item.
 	 * 
 	 * @return {@true if the operation as successful}
 	 */
@@ -161,8 +161,8 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * Unlinks the text frame from its current story and breaks up the story
-	 * into two parts after the text frame.
+	 * Unlinks the text item from its current story and breaks up the story
+	 * into two parts after the text item.
 	 * 
 	 * @return {@true if the operation as successful}
 	 */
@@ -173,17 +173,17 @@ public abstract class TextItem extends Item {
 	/**
 	 * {@grouptitle Hierarchy}
 	 * 
-	 * Returns the index of the text frame in its {@link TextItem#getStory()}.
+	 * Returns the index of the text item in its {@link TextItem#getStory()}.
 	 */
 	public native int getIndex();
 
 	/**
-	 * Returns this text frame's story's index in the document's stories array.
+	 * Returns this text item's story's index in the document's stories array.
 	 */
 	private native int getStoryIndex();
 
 	/**
-	 * Returns the story that the text frame belongs to.
+	 * Returns the story that the text item belongs to.
 	 */
 	public TextStory getStory() {
 		// don't wrap directly. always go through StoryList
@@ -196,10 +196,10 @@ public abstract class TextItem extends Item {
 		return null;
 	}
 
-	private TextItem getFrame(int index) {
+	private TextItem getTextItem(int index) {
 		TextStory story = getStory();
 		if (story != null) {
-			ReadOnlyList<TextItem> list = story.getTextFrames();
+			ReadOnlyList<TextItem> list = story.getTextItems();
 			if (index >= 0 && index < list.size())
 				return list.get(index);
 		}
@@ -207,17 +207,17 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * Returns the next text frame in a story of various linked text frames.
+	 * Returns the next text item in a story of various linked text items.
 	 */
-	public TextItem getNextFrame() {
-		return getFrame(getIndex() + 1);
+	public TextItem getNextTextItem() {
+		return getTextItem(getIndex() + 1);
 	}
 
 	/**
-	 * Returns the previous text frame in a story of various linked text frames.
+	 * Returns the previous text item in a story of various linked text items.
 	 */
-	public TextItem getPreviousFrame() {
-		return getFrame(getIndex() - 1);
+	public TextItem getPreviousTextItem() {
+		return getTextItem(getIndex() - 1);
 	}
 
 	// ATE
@@ -272,21 +272,21 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * Returns the selected text of the text frame as a text range.
+	 * Returns the selected text of the text item as a text range.
 	 */
 	public native TextRange getSelection();
 	
 	/**
-	 * Returns the index of the first visible character of the text frame. (this
-	 * is the equivalent of calling TextFrame.visibleRange.start)
+	 * Returns the index of the first visible character of the text item. (this
+	 * is the equivalent of calling TextItem.visibleRange.start)
 	 */
 	public int getStart() {
 		return getVisibleRange().getStart();
 	}
 
 	/**
-	 * Returns the index of the last visible character of the text frame. (this
-	 * is the equivalent of calling TextFrame.visibleRange.end)
+	 * Returns the index of the last visible character of the text item. (this
+	 * is the equivalent of calling TextItem.visibleRange.end)
 	 */
 	public int getEnd() {
 		return getVisibleRange().getEnd();
@@ -348,7 +348,7 @@ public abstract class TextItem extends Item {
 	/**
 	 * {@grouptitle Style Properties}
 	 * 
-	 * The character style of the text frame.
+	 * The character style of the text item.
 	 */
 	public CharacterStyle getCharacterStyle() {
 		return getRange().getCharacterStyle();
@@ -359,7 +359,7 @@ public abstract class TextItem extends Item {
 	}
 
 	/**
-	 * The paragraph style of the text frame.
+	 * The paragraph style of the text item.
 	 */
 	public ParagraphStyle getParagraphStyle() {
 		return getRange().getParagraphStyle();

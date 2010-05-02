@@ -84,10 +84,10 @@ public class TextRange extends DocumentObject implements Committable {
 		words = null;
 		paragraphs = null;
 		characters = null;
-		// Story needs to be updated too, otherwise the old textFrame
+		// Story needs to be updated too, otherwise the old TextItem
 		// (e.g. before moving) keeps being referenced...
 		if (story != null)
-			document.getStories(getFirstFrame()).changeStoryHandle(story,
+			document.getStories(getFirstTextItem()).changeStoryHandle(story,
 					nativeGetStoryIndex());
 	}
 	
@@ -104,7 +104,7 @@ public class TextRange extends DocumentObject implements Committable {
 	public void commit() {
 		// Committing changes for TextRange does not need more than
 		// a reflow of the text layout in the document.
-		// This is needed since otherwise, the TextFrame's attributes
+		// This is needed since otherwise, the TextItem's attributes
 		// (bounds, etc) are invalid
 		document.reflowText();
 		dirty = false;
@@ -155,7 +155,7 @@ public class TextRange extends DocumentObject implements Committable {
 	 */
 	public TextStory getStory() {
 		if (story == null)
-			story = (TextStory) document.getStories(getFirstFrame()).get(
+			story = (TextStory) document.getStories(getFirstTextItem()).get(
 					nativeGetStoryIndex());
 		return story;
 	}
@@ -164,29 +164,29 @@ public class TextRange extends DocumentObject implements Committable {
 	 * The first text frame of the story that this text range belongs to.
 	 * @jshide
 	 */
-	public native TextItem getFirstFrame();
+	public native TextItem getFirstTextItem();
 
 	/**
 	 * The last text frame of the story that this text range belongs to.
 	 * @jshide
 	 */
-	public native TextItem getLastFrame();
+	public native TextItem getLastTextItem();
 
 	/**
 	 * An array of linked text frames that the text range is contained
 	 * within.
 	 */
-	public ReadOnlyList<TextItem> getFrames() {
-		TextItem frame = getFirstFrame();
-		TextItem lastFrame = getLastFrame();
+	public ReadOnlyList<TextItem> getTextItems() {
+		TextItem frame = getFirstTextItem();
+		TextItem lastItem = getLastTextItem();
 		if (frame != null) {
-			if (lastFrame == null)
-				lastFrame = frame;
+			if (lastItem == null)
+				lastItem = frame;
 			ExtendedArrayList<TextItem> list = new ExtendedArrayList<TextItem>();
 			do {
 				list.add(frame);
-				frame = frame.getNextFrame();
-			} while (frame != null && frame != lastFrame);
+				frame = frame.getNextTextItem();
+			} while (frame != null && frame != lastItem);
 			return list;
 		}
 		return null;
