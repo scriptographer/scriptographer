@@ -328,9 +328,23 @@ public class HierarchyList extends ListItem<HierarchyListEntry> {
 	 *
 	 */
 
-	public native HierarchyListEntry[] getLeafs();
+	public native HierarchyListEntry[] getLeafEntries();
 
-	public native int getLeafIndex(HierarchyListEntry entry);
+	/**
+	 * @deprecated
+	 */
+	public HierarchyListEntry[] getLeafs() {
+		return getLeafEntries();
+	}
+
+	public native int getLeafEntryIndex(HierarchyListEntry entry);
+
+	/**
+	 * @deprecated
+	 */
+	public int getLeafIndex(HierarchyListEntry entry) {
+		return getLeafEntryIndex(entry);
+	}
 
 	/*
 	 * item list manipulation
@@ -341,12 +355,26 @@ public class HierarchyList extends ListItem<HierarchyListEntry> {
 		return new HierarchyListEntry(this, index);
 	}
 
-	public native HierarchyListEntry getLeafAt(int x, int y);
+	public native HierarchyListEntry getLeafEntryAt(int x, int y);
 
-	public native HierarchyListEntry getActiveLeaf();
+	/**
+	 * @deprecated
+	 */
+	public HierarchyListEntry getLeafAt(int x, int y) {
+		return getLeafEntryAt(x, y);
+	}
 
-	public void getLeafAt(Point point) {
-		getLeafAt(point.x, point.y);
+	public native HierarchyListEntry getSelectedLeafEntry();
+
+	/**
+	 * @deprecated
+	 */
+	public HierarchyListEntry getActiveLeaf() {
+		return getSelectedLeafEntry();
+	}
+
+	public void getLeafEntryAt(Point point) {
+		getLeafEntryAt(point.x, point.y);
 	}
 
 	/*
@@ -383,9 +411,17 @@ public class HierarchyList extends ListItem<HierarchyListEntry> {
 	 *
 	 */
 
-	public native HierarchyListEntry[] getExpanded();
+	public native HierarchyListEntry[] getExpandedEntries();
 
-	public native int getExpandedIndex(HierarchyListEntry entry);
+	public HierarchyListEntry[] getExpanded() {
+		return getExpandedEntries();
+	}
+
+	public native int getExpandedEntryIndex(HierarchyListEntry entry);
+
+	public int getExpandedIndex(HierarchyListEntry entry) {
+		return getExpandedEntryIndex(entry);
+	}
 
 	/*
 	 * restrict item invalidation

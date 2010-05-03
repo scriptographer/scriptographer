@@ -1,3 +1,7 @@
 com.scriptographer.script.ColorConverter:com.scriptographer.ai.Color
+# Support conversion to awt.Color through ColorConverter as well. Although
+# ColorConverter returns ai.Color, this still works, as the Converter framework
+# then tries another conversion on it afterwards, and succeeds.
 com.scriptographer.script.ColorConverter:java.awt.Color
 com.scriptographer.script.LayoutConverter:java.awt.LayoutManager
+com.scriptographer.script.FontWeightConverter:com.scriptographer.ai.FontWeight

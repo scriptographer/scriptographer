@@ -74,7 +74,8 @@ public abstract class TextEditItem<S> extends TextValueItem {
 			if (options.contains(TextOption.PASSWORD)) {
 				return ItemType.TEXT_EDIT_PASSWORD;
 			} else if (options.contains(TextOption.POPUP)) {
-				return options.contains(TextOption.SCROLLING) ? ItemType.TEXT_EDIT_SCROLLING_POPUP
+				return options.contains(TextOption.SCROLLING)
+						? ItemType.TEXT_EDIT_SCROLLING_POPUP
 						: ItemType.TEXT_EDIT_POPUP;
 			} else {
 				boolean multiline = (options.contains(TextOption.MULTILINE));
@@ -466,20 +467,29 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		return popupList;
 	}
 
+	public boolean isPopup() {
+		return type == ItemType.TEXT_EDIT_SCROLLING_POPUP
+		|| type == ItemType.TEXT_EDIT_POPUP;
+	}
+
 	protected void updateBounds(int x, int y, int width, int height, boolean sizeChanged) {
-		if (ScriptographerEngine.isMacintosh()) {
-			if (type == ItemType.TEXT_EDIT_SCROLLING_POPUP
-					|| type == ItemType.TEXT_EDIT_POPUP) {
-				// The size of popup list buttons on Mac seems broken and needs
-				// to be corrected here.
-				PopupList list = getPopupList();
-				if (list != null) {
-					Size size = list.getSize();
-					size.height = height + 4;
-					list.setSize(size);
-				}
+		if (ScriptographerEngine.isMacintosh() && isPopup()) {
+			// The size of popup list buttons on Mac seems broken and needs
+			// to be corrected here.
+			PopupList list = getPopupList();
+			if (list != null) {
+				Size size = list.getSize();
+				size.height = height;
+				list.setSize(size);
 			}
 		}
 		super.updateBounds(x, y, width, height, sizeChanged);
+	}
+
+	protected static final Border MARGIN_POPUP = ScriptographerEngine.isMacintosh() ?
+			new Border(2, 0, 2, 0) : new Border(1, 0, 1, 0);
+
+	protected Border getNativeMargin() {
+		return isPopup() ? MARGIN_POPUP : MARGIN_NONE;
 	}
 }

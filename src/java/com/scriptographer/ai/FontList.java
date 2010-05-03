@@ -105,7 +105,7 @@ public class FontList implements ReadOnlyList<FontFamily>, ReadOnlyStringIndexLi
 	}
 
 	public FontWeight getWeight(String fullName) {
-		// first find family:
+		// First find family:
 		FontFamily family = get(fullName);
 		if (family != null)
 			return family.get(0);

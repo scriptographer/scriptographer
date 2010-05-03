@@ -74,7 +74,6 @@ public abstract class Item extends Component {
 	 * @param options
 	 */
 	protected Item(Dialog dialog, ItemType type, int options) {
-		this();
 		init(dialog, nativeCreate(dialog.handle, type.name, options), type);
 	}
 
@@ -91,7 +90,6 @@ public abstract class Item extends Component {
 	 * @param isChild
 	 */
 	protected Item(Dialog dialog, int handle, boolean isChild) {
-		this();
 		this.isChild = isChild;
 		init(dialog, handle, ItemType.get(nativeInit(handle, isChild)));
 	}
@@ -100,6 +98,9 @@ public abstract class Item extends Component {
 		this.dialog = dialog;
 		this.handle = handle;
 		this.type = type;
+		// Set margin only after type was set, as getNativeMargin() sometimes
+		// depends on it to be set.
+		setMargin(0, 0, 0, 0);
 		dialog.items.add(this);
 		nativeBounds = nativeGetBounds();
 		// nativeSize and nativeBounds are set by the native environment

@@ -219,7 +219,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	}
 
 	function createFile() {
-		var entry = scriptList.activeLeaf;
+		var entry = scriptList.selectedLeafEntry;
 		var list = entry && (entry.isDirectory ? entry.childList : entry.list);
 		if (!list || list.sealed)
 			list = myScriptsEntry ? myScriptsEntry.childList : scriptList;
@@ -255,7 +255,7 @@ var mainDialog = new FloatingDialog('tabbed show-cycle resizing remember-placing
 	}
 
 	function getSelectedScriptEntry() {
-		var entry = scriptList.activeLeaf;
+		var entry = scriptList.selectedLeafEntry;
 		return entry && entry.file ? entry : null;
 	}
 

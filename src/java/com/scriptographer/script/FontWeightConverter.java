@@ -23,50 +23,34 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
- *
- * File created on 11.03.2005.
+ * 
+ * File created on May 3, 2010.
  *
  * $Id$
  */
 
-package com.scriptographer.ui;
+package com.scriptographer.script;
 
-import com.scratchdisk.util.IntegerEnumUtils;
+import com.scratchdisk.script.ArgumentConverter;
+import com.scratchdisk.script.ArgumentReader;
+import com.scriptographer.ai.FontFamily;
+import com.scriptographer.ai.FontList;
+import com.scriptographer.ai.FontWeight;
 
 /**
  * @author lehni
+ *
  */
-public class PopupMenu extends ListItem<ListEntry> {
+public class FontWeightConverter extends ArgumentConverter<FontWeight> {
 
-	protected PopupMenu(Dialog dialog, int handle, boolean isChild) {
-		super(dialog, handle, isChild);
-	}
-
-	public PopupMenuStyle getStyle() {
-		return IntegerEnumUtils.get(PopupMenuStyle.class, nativeGetStyle());
-	}
-
-	public void setStyle(PopupMenuStyle style) {
-		if (style != null)
-			nativeSetStyle(style.value);
-	}
-
-	protected ListEntry createEntry(int index) {
-		return new ListEntry(this, index);
-	}
-
-	protected void onNotify(Notifier notifier) throws Exception {
-		super.onNotify(notifier);
-		// For PopupMenus, we need to notify entries by hand:
-		switch(notifier) {
-		case USER_CHANGED:
-		case INTERMEDIATE_CHANGED:
-			// Notify entry too:
-			ListEntry entry = getSelectedEntry();
-			if (entry != null)
-				entry.onNotify(notifier);
-			onPreChange();
-			break;
+	public FontWeight convert(ArgumentReader reader, Object from) {
+		if (from instanceof FontFamily) {
+			return ((FontFamily) from).getFirst();
+		} else if (from instanceof String) {
+			return FontList.getInstance().getWeight((String) from);
 		}
-	}	
+		// TODO: Map?
+		return null;
+	}
+
 }

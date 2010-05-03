@@ -170,9 +170,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_HierarchyList_getNonLeafEnt
 }
 
 /*
- * com.scriptographer.ui.ListEntry getLeafAt(int x, int y)
+ * com.scriptographer.ui.ListEntry getLeafEntryAt(int x, int y)
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_HierarchyList_getLeafAt(JNIEnv *env, jobject obj, jint x, jint y) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_HierarchyList_getLeafEntryAt(JNIEnv *env, jobject obj, jint x, jint y) {
 	try {
 		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		DEFINE_ADM_POINT(pt, x, y);
@@ -183,9 +183,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_HierarchyList_getLeafAt(JNI
 }
 
 /*
- * com.scriptographer.ui.HierarchyListEntry getActiveLeaf()
+ * com.scriptographer.ui.HierarchyListEntry getSelectedLeafEntry()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_HierarchyList_getActiveLeaf(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_HierarchyList_getSelectedLeafEntry(JNIEnv *env, jobject obj) {
 	try {
 		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		ADMListEntryRef entry = sADMHierarchyList->GetActiveLeafEntry(list);
@@ -431,16 +431,16 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_HierarchyList_invalidate(JNIEn
 }
 
 /*
- * com.scriptographer.ui.HierarchyListEntry[] getLeafs()
+ * com.scriptographer.ui.HierarchyListEntry[] getLeafEntries()
  */
-JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ui_HierarchyList_getLeafs(JNIEnv *env, jobject obj) {
+JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ui_HierarchyList_getLeafEntries(JNIEnv *env, jobject obj) {
 	GET_ENTRIES(NumberOfLeafEntries, IndexLeafEntry)
 }
 
 /*
- * int getLeafIndex(com.scriptographer.ui.HierarchyListEntry entry)
+ * int getLeafEntryIndex(com.scriptographer.ui.HierarchyListEntry entry)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_HierarchyList_getLeafIndex(JNIEnv *env, jobject obj, jobject entry) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_HierarchyList_getLeafEntryIndex(JNIEnv *env, jobject obj, jobject entry) {
 	try {
 		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		ADMListEntryRef ent = gEngine->getHierarchyListEntryHandle(env, entry);
@@ -470,16 +470,16 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_HierarchyList_deselectAll(JNIE
 }
 
 /*
- * com.scriptographer.ui.HierarchyListEntry[] getExpanded()
+ * com.scriptographer.ui.HierarchyListEntry[] getExpandedEntries()
  */
-JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ui_HierarchyList_getExpanded(JNIEnv *env, jobject obj) {
+JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ui_HierarchyList_getExpandedEntries(JNIEnv *env, jobject obj) {
 	GET_ENTRIES(NumberOfExpandedEntries, IndexExpandedEntry)
 }
 
 /*
- * int getExpandedIndex(com.scriptographer.ui.HierarchyListEntry entry)
+ * int getExpandedEntryIndex(com.scriptographer.ui.HierarchyListEntry entry)
  */
-JNIEXPORT jint JNICALL Java_com_scriptographer_ui_HierarchyList_getExpandedIndex(JNIEnv *env, jobject obj, jobject entry) {
+JNIEXPORT jint JNICALL Java_com_scriptographer_ui_HierarchyList_getExpandedEntryIndex(JNIEnv *env, jobject obj, jobject entry) {
 	try {
 		ADMHierarchyListRef list = gEngine->getHierarchyListHandle(env, obj);
 		ADMListEntryRef ent = gEngine->getHierarchyListEntryHandle(env, entry);

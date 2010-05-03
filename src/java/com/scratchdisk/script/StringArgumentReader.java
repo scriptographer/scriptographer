@@ -42,7 +42,7 @@ package com.scratchdisk.script;
  */
 public class StringArgumentReader extends ArrayArgumentReader {
 
-	protected String[] parts;
+	private String[] parts;
 
 	public StringArgumentReader(Converter converter, String string) {
 		super(converter);

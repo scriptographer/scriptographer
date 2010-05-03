@@ -55,7 +55,8 @@ public class ClassUtils {
 			try {
 				BufferedReader buffer = new BufferedReader(new InputStreamReader(in));
 				for (String line = buffer.readLine(); line != null; line = buffer.readLine()) {
-					lines.add(line);
+					if (!line.startsWith("#"))
+						lines.add(line);
 				}
 				in.close();
 			} catch (IOException e) {

@@ -171,16 +171,23 @@ public class Palette extends FloatingDialog {
 		for (int i = 0; i < items.length; i++) {
 			PaletteItem item = items[i];
 			if (item != null) {
+				Item valueItem = item.createItem(dialog,
+						new Border(1, 0, 1, 0));
 				String label = item.getLabel();
 				if (label != null && !"".equals(label)) {
 					TextPane labelItem = new TextPane(dialog);
 					labelItem.setText(label + ":");
-					labelItem.setMargin(0, 4, 0, 0);
+					// Adjust top margin of label to reflect the native margin
+					// in the value item.
+					Item marginItem = valueItem;
+					// If this is an item group, use the first item in it instead
+					// This is only needed for FontPopupList so far.
+					if (marginItem instanceof ItemGroup)
+						marginItem = (Item) ((ItemGroup) marginItem).getContent().get(0);
+					labelItem.setMargin(marginItem.getNativeMargin().top + 4, 4, 0, 0);
 					dialog.addToContent(labelItem, columnIndex + ", " + i
-							+ ", left, center");
+							+ ", left, top");
 				}
-				Item valueItem = item.createItem(dialog,
-						new Border(1, 0, 1, 0));
 				dialog.addToContent(valueItem, (columnIndex + 1) + ", " + i
 						+ ", left, center");
 			}

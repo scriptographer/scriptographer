@@ -62,8 +62,8 @@ public class FontPopupList extends ItemGroup {
 					TextOption.POPUP, TextOption.SCROLLING
 			}) {
 				protected void onChange() throws Exception {
-					chooseFamily();
-					chooseWeight();
+					if (updateTextEdit(this) && updateWeightList())
+						FontPopupList.this.onChange();
 				}
 			};
 			familyItem = familyEdit;
@@ -72,7 +72,8 @@ public class FontPopupList extends ItemGroup {
 					TextOption.POPUP, TextOption.SCROLLING
 			}) {
 				protected void onChange() throws Exception {
-					chooseWeight();
+					if (updateTextEdit(this))
+						FontPopupList.this.onChange();
 				}
 			};
 			weightItem = weightEdit;
@@ -80,13 +81,13 @@ public class FontPopupList extends ItemGroup {
 		} else {
 			familyItem = familyList = new PopupList(dialog) {
 				protected void onChange() throws Exception {
-					chooseFamily();
-					chooseWeight();
-				}
+					if (updateWeightList())
+						FontPopupList.this.onChange();
+			}
 			};
 			weightItem = weightList = new PopupList(dialog){
 				protected void onChange() throws Exception {
-					chooseWeight();
+					FontPopupList.this.onChange();
 				}
 			};
 		}
@@ -94,13 +95,14 @@ public class FontPopupList extends ItemGroup {
 			setLayout(new GridLayout(0, 1, 0, 0));
 		} else {
 			setLayout(new HorizontalLayout());
-			int width = familyItem.getTextSize(" ").width;
-			familyItem.setWidth(width * 48);
-			weightItem.setWidth(width * 32);
 		}
+		int width = familyItem.getTextSize(" ").width;
+		familyItem.setWidth(width * 48);
+		weightItem.setWidth(width * 32);
 		add(familyItem);
 		add(weightItem);
-		updateFontList();
+		updateFamilyList();
+		updateWeightList();
 	}
 
 	public FontPopupList(Dialog dialog, FontPopupListOption[] options) {
@@ -111,41 +113,41 @@ public class FontPopupList extends ItemGroup {
 		this(dialog, (EnumSet<FontPopupListOption>) null);
 	}
 	
-	private void updateFontList() {
+	private void updateFamilyList() {
 		familyList.removeAll();
-		boolean first = true;
 		for (FontFamily family : fontList) {
 			ListEntry entry = new ListEntry(familyList);
 			entry.setText(family.getName());
-			if (first) {
-				entry.setSelected(true);
-				first = false;
-			}
 		}
-		chooseFamily();
+		familyList.setSelectedEntry(familyList.getFirst());
 	}
 
-	private void chooseFamily() {
+	private boolean updateWeightList() {
 		weightList.removeAll();
-		ListEntry entry = familyList.getActiveEntry();
-		if (entry != null) {
-			FontFamily family = fontList.get(entry.getText());
-			if (family != null) {
-				boolean first = true;
-				for (FontWeight weight : family) {
-					entry = new ListEntry(weightList);
-					entry.setText(weight.getName());
-					if (first) {
-						entry.setSelected(true);
-						first = false;
-					}
+		FontFamily family = getFontFamily();
+		if (family != null) {
+			for (FontWeight weight : family) {
+				ListEntry entry = new ListEntry(weightList);
+				entry.setText(weight.getName());
+			}
+			weightList.setSelectedEntry(weightList.getFirst());
+			return true;
+		}
+		return false;
+	}
+
+	protected boolean updateTextEdit(TextEdit textItem) {
+		PopupList list = textItem.getPopupList();
+		String text = textItem.getText().toLowerCase();
+		if (list.get(text) == null) {
+			for (ListEntry entry : list) {
+				if (entry.getText().toLowerCase().startsWith(text)) {
+					list.setSelectedEntry(entry);
+					return true;
 				}
 			}
 		}
-	}
-
-	private void chooseWeight() throws Exception {
-		onChange();
+		return false;
 	}
 
 	private Callable onChange = null;
@@ -161,5 +163,37 @@ public class FontPopupList extends ItemGroup {
 
 	public void setOnChange(Callable onChange) {
 		this.onChange = onChange;
+	}
+
+	public FontFamily getFontFamily() {
+		ListEntry entry = familyList.getSelectedEntry();
+		if (entry != null)
+			return fontList.get(entry.getText());
+		return null;
+	}
+
+	public void setFontFamily(FontFamily family) {
+		ListEntry entry = familyList.get(family.getName());
+		if (entry != null) {
+			familyList.setSelectedEntry(entry);
+			updateWeightList();
+		}
+	}
+
+	public FontWeight getFontWeight() {
+		FontFamily family = getFontFamily();
+		if (family != null) {
+			ListEntry entry = weightList.getSelectedEntry();
+			if (entry != null)
+				return family.get(entry.getText());
+		}
+		return null;
+	}
+
+	public void setFontWeight(FontWeight weight) {
+		setFontFamily(weight.getFamily());
+		ListEntry entry = weightList.get(weight.getName());
+		if (entry != null)
+			weightList.setSelectedEntry(entry);
 	}
 }

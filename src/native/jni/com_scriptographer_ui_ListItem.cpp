@@ -310,9 +310,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_ListItem_getAt(JNIEnv *env,
 }
 
 /*
- * com.scriptographer.ui.ListEntry getActiveEntry()
+ * com.scriptographer.ui.ListEntry getSelectedEntry()
  */
-JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_ListItem_getActiveEntry(JNIEnv *env, jobject obj) {
+JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_ListItem_getSelectedEntry(JNIEnv *env, jobject obj) {
 	try {
 		#define GET_ACTIVE_ENTRY(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			ENTRY_TYPE ent = LIST_SUITE->GetActiveEntry(list); \
@@ -324,9 +324,9 @@ JNIEXPORT jobject JNICALL Java_com_scriptographer_ui_ListItem_getActiveEntry(JNI
 }
 
 /*
- * com.scriptographer.ui.ListEntry[] getSelected()
+ * com.scriptographer.ui.ListEntry[] getSelectedEntries()
  */
-JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ui_ListItem_getSelected(JNIEnv *env, jobject obj) {
+JNIEXPORT jobjectArray JNICALL Java_com_scriptographer_ui_ListItem_getSelectedEntries(JNIEnv *env, jobject obj) {
 	try {
 		#define GET_SELECTED_ENTRIES(LIST_SUITE, ENTRY_SUITE, ENTRY_TYPE) \
 			int length = LIST_SUITE->NumberOfSelectedEntries(list); \

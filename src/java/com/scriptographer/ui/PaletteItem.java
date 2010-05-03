@@ -42,6 +42,7 @@ import com.scratchdisk.script.MapArgumentReader;
 import com.scratchdisk.script.ScriptEngine;
 import com.scratchdisk.util.ConversionUtils;
 import com.scriptographer.ScriptographerEngine;
+import com.scriptographer.ai.FontWeight;
 
 /**
  * @author lehni
@@ -181,12 +182,14 @@ public class PaletteItem {
 			case CHECKBOX:
 				return new Boolean(((ToggleItem) item).isChecked());
 			case LIST:
-				ListEntry active = ((PopupList) item).getActiveEntry();
+				ListEntry active = ((PopupList) item).getSelectedEntry();
 				if (active != null)
 					return active.getText();
 				break;
 			case COLOR:
 				return ((ColorButton) item).getColor();
+			case FONT:
+				return ((FontPopupList) item).getFontWeight();
 			}
 			return null;
 		}
@@ -208,11 +211,6 @@ public class PaletteItem {
 			case SLIDER:
 				((ValueItem) item).setValue(
 						(float) ConversionUtils.toDouble(value));
-				// TODO: Move to createItem?
-				if (item instanceof TextEditItem) {
-					((TextEditItem) item).setAllowMath(true);
-					((TextEditItem) item).setAllowUnits(true);
-				}
 				break;
 			case CHECKBOX:
 				((CheckBox) item).setChecked(ConversionUtils.toBoolean(value));
@@ -236,6 +234,12 @@ public class PaletteItem {
 				if (color == null)
 					color = Color.BLACK;
 				((ColorButton) item).setColor(color);
+				break;
+			case FONT:
+				FontWeight weight = ScriptEngine.convertToJava(value,
+						FontWeight.class);
+				if (weight != null)
+					((FontPopupList) item).setFontWeight(weight);
 				break;
 			}
 		}
@@ -549,7 +553,8 @@ public class PaletteItem {
 			break;
 		case FONT:
 			item = new FontPopupList(dialog, new FontPopupListOption[] {
-					FontPopupListOption.EDITABLE
+					FontPopupListOption.EDITABLE,
+					FontPopupListOption.VERTICAL
 			}) {
 				protected void onChange() throws Exception {
 					PaletteItem.this.onChange();
@@ -571,11 +576,16 @@ public class PaletteItem {
 			TextOption[] options = type == PaletteItemType.TEXT
 					? new TextOption[] { TextOption.MULTILINE }
 					: null;
-			item = new TextEdit(dialog, options) {
+			TextEditItem textItem = new TextEdit(dialog, options) {
 				protected void onChange() throws Exception {
 					PaletteItem.this.onChange();
 				}
 			};
+			item = textItem;
+			if (type == PaletteItemType.NUMBER) {
+				textItem.setAllowMath(true);
+				textItem.setAllowUnits(true);
+			}
 		}
 
 		// Now set all the values again, so the item reflects them:
