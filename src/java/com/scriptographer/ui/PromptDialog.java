@@ -44,14 +44,14 @@ import com.scriptographer.ui.layout.TableLayout;
  */
 public class PromptDialog extends ModalDialog {
 
-	private PaletteItem[] items = null;
+	private PaletteComponent[] components = null;
 	private Object[] values = null;
 
-	public PromptDialog(String title, PaletteItem[] items) {
+	public PromptDialog(String title, PaletteComponent[] components) {
 		setTitle(title);
-		this.items = items;
+		this.components = components;
 		// Add one more row for the buttons.
-		TableLayout layout = Palette.createLayout(this, items, true, 1);
+		TableLayout layout = Palette.createLayout(this, components, true, 1);
 		
 		// Add buttons to the layout
 		ItemGroup buttons = new ItemGroup(this);
@@ -75,17 +75,17 @@ public class PromptDialog extends ModalDialog {
 		setCancelItem(cancelButton);
 		setMargin(8);
 	}
-	
-	public PromptDialog(String title, Map<String, Object>[] items) {
-		this(title, PaletteItem.getItems(items));
+
+	public PromptDialog(String title, Map<String, Object>[] components) {
+		this(title, PaletteComponent.getItems(components));
 	}
 
 	public Object[] getValues() {
 		if (values == null) {
-			values = new Object[items.length];
+			values = new Object[components.length];
 			
-			for (int i = 0; i < items.length; i++) {
-				PaletteItem item = items[i];
+			for (int i = 0; i < components.length; i++) {
+				PaletteComponent item = components[i];
 				if (item != null)
 					values[i] = item.getValue();
 			}
@@ -93,30 +93,30 @@ public class PromptDialog extends ModalDialog {
 		return values;
 	}
 
-	public static Object[] prompt(String title, PaletteItem[] items) {
+	public static Object[] prompt(String title, PaletteComponent[] components) {
 		/* TODO: Remove this code as soon as there is another nice way to store values in preferences.
 		Preferences preferences = 
 			new Preferences(ScriptographerEngine.getPreferences(true));
 		String itemTitle = "item" + StringUtils.capitalize(title);
-		for (int i = 0; i < items.length; i++) {
-			PromptItem item = items[i];
-			if (item != null) {
-				if (item.getName() == null)
-					item.setName(itemTitle + item.getDescription() + i);
-				Object value = preferences.get(item.getName());
+		for (int i = 0; i < components.length; i++) {
+			PaletteComponent component = components[i];
+			if (component != null) {
+				if (component.getName() == null)
+					component.setName(itemTitle + component.getLabel() + i);
+				Object value = preferences.get(component.getName());
 				if (value != null)
-					item.setValue(value);
+					component.setValue(value);
 			}
 		}
 		*/
-		PromptDialog dialog = new PromptDialog(title, items);
+		PromptDialog dialog = new PromptDialog(title, components);
 		if (dialog.doModal() == dialog.getDefaultItem()) {
 			Object[] values = dialog.getValues();
 			/*
-			for (int i = 0; i < items.length; i++) {
-				PromptItem item = items[i];
-				if (item != null)
-					preferences.put(item.getName(), values[i]);
+			for (int i = 0; i < components.length; i++) {
+				PaletteComponent component = components[i];
+				if (component != null)
+					preferences.put(component.getName(), values[i]);
 			}
 			*/
 			return values;
@@ -124,13 +124,13 @@ public class PromptDialog extends ModalDialog {
 		return null;
 	}
 
-	public static Object[] prompt(String title, Map<String, Object>[] items) {
-		return prompt(title, PaletteItem.getItems(items));
+	public static Object[] prompt(String title, Map<String, Object>[] components) {
+		return prompt(title, PaletteComponent.getItems(components));
 	}
 
 	public static Map<String, Object> prompt(String title,
-			Map<String, Map<String, Object>> items, Map<String, Object> values) {
-		PaletteItem[] paletteItems = PaletteItem.getItems(items, values);
+			Map<String, Map<String, Object>> components, Map<String, Object> values) {
+		PaletteComponent[] paletteItems = PaletteComponent.getItems(components, values);
 		Object[] results = prompt(title, paletteItems);
 		if (results != null) {
 			if (values == null)

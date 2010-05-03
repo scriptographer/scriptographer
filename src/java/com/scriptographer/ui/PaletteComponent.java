@@ -49,11 +49,11 @@ import com.scriptographer.ai.FontWeight;
  * 
  * @jshide
  */
-public class PaletteItem {
+public class PaletteComponent {
 
 	private String label;
 	private String name; // for preferences
-	private PaletteItemType type;
+	private PaletteComponentType type;
 	private Object defaultValue;
 	private Object options[] = null;
 	private int width = -1;
@@ -73,30 +73,30 @@ public class PaletteItem {
 	/**
 	 * @jshide
 	 */
-	public PaletteItem(ArgumentReader reader) throws IllegalArgumentException {
+	public PaletteComponent(ArgumentReader reader) throws IllegalArgumentException {
 		if (reader.isMap()) {
-			type = reader.readEnum("type", PaletteItemType.class);
+			type = reader.readEnum("type", PaletteComponentType.class);
 			defaultValue = reader.readObject("value");
 			options = reader.readObject("options", Object[].class);
 			if (type == null) {
 				// Determine type form options and value
 				if (options != null)
-					type = PaletteItemType.LIST;
+					type = PaletteComponentType.LIST;
 				else if (defaultValue instanceof Number)
-					type = PaletteItemType.NUMBER;
+					type = PaletteComponentType.NUMBER;
 				else if (defaultValue instanceof Boolean)
-					type = PaletteItemType.CHECKBOX;
+					type = PaletteComponentType.CHECKBOX;
 				else if (defaultValue instanceof String) 
-					type = PaletteItemType.STRING;
+					type = PaletteComponentType.STRING;
 			}
 			if (type != null) {
 				// Set default values for rows / columns / length
-				if (type == PaletteItemType.TEXT) {
+				if (type == PaletteComponentType.TEXT) {
 					rows = 6;
 					columns = 32;
-				} else if (type == PaletteItemType.STRING
-						|| type == PaletteItemType.NUMBER) {
-					length = type == PaletteItemType.STRING ? 16 : 8;
+				} else if (type == PaletteComponentType.STRING
+						|| type == PaletteComponentType.NUMBER) {
+					length = type == PaletteComponentType.STRING ? 16 : 8;
 				}
 				// Tell the framework to set the properties from the map
 				// on the object after creating through ArgumentReader.
@@ -107,7 +107,7 @@ public class PaletteItem {
 		}
 	}
 
-	public PaletteItem(PaletteItemType type, String label, Object value) {
+	public PaletteComponent(PaletteComponentType type, String label, Object value) {
 		this.label = label;
 		this.type = type;
 		this.defaultValue = value;
@@ -116,38 +116,38 @@ public class PaletteItem {
 	/**
 	 * Creates a STRING Item
 	 */
-	public PaletteItem(String description, String value) {
-		this(PaletteItemType.STRING, description, value);
+	public PaletteComponent(String description, String value) {
+		this(PaletteComponentType.STRING, description, value);
 	}
 
 	/**
 	 * Creates a NUMBER Item
 	 */
-	public PaletteItem(String description, Number value) {
-		this(PaletteItemType.NUMBER, description, value);
+	public PaletteComponent(String description, Number value) {
+		this(PaletteComponentType.NUMBER, description, value);
 	}
 
-	public PaletteItem(String description, float value) {
-		this(PaletteItemType.NUMBER, description, new Float(value));
+	public PaletteComponent(String description, float value) {
+		this(PaletteComponentType.NUMBER, description, new Float(value));
 	}
 
 	/**
 	 * Creates a BOOLEAN Item
 	 */
-	public PaletteItem(String description, Boolean value) {
-		this(PaletteItemType.CHECKBOX, description, value);
+	public PaletteComponent(String description, Boolean value) {
+		this(PaletteComponentType.CHECKBOX, description, value);
 	}
 
-	public PaletteItem(String description, boolean value) {
+	public PaletteComponent(String description, boolean value) {
 		this(description, new Boolean(value));
 	}
 
 	/**
 	 * Creates a RANGE Item
 	 */
-	public PaletteItem(String description, Number value, float min, float max,
+	public PaletteComponent(String description, Number value, float min, float max,
 			float step) {
-		this(PaletteItemType.SLIDER, description, value);
+		this(PaletteComponentType.SLIDER, description, value);
 		this.setRange(min, max);
 		this.increment = step;
 	}
@@ -155,8 +155,8 @@ public class PaletteItem {
 	/**
 	 * Creates a LIST Item
 	 */
-	public PaletteItem(String description, Object value, Object[] options) {
-		this(PaletteItemType.LIST, description, value);
+	public PaletteComponent(String description, Object value, Object[] options) {
+		this(PaletteComponentType.LIST, description, value);
 		this.options = options;
 	}
 	
@@ -313,14 +313,14 @@ public class PaletteItem {
 	 * @deprecated
 	 */
 	public String getDescription() {
-		return label;
+		return getLabel();
 	}
 
 	/**
 	 * @deprecated
 	 */
 	public void setDescription(String description) {
-		this.label = description;
+		setLabel(description);
 	}
 
 	/**
@@ -513,7 +513,7 @@ public class PaletteItem {
 			item = new Slider(dialog) {
 				protected void onChange() throws Exception {
 					super.onChange();
-					PaletteItem.this.onChange();
+					PaletteComponent.this.onChange();
 				}
 			};
 			break;
@@ -521,7 +521,7 @@ public class PaletteItem {
 			item = new CheckBox(dialog) {
 				protected void onClick() throws Exception {
 					super.onClick();
-					PaletteItem.this.onChange();
+					PaletteComponent.this.onChange();
 				}
 			};
 			break;
@@ -529,7 +529,7 @@ public class PaletteItem {
 			item = new PopupList(dialog) {
 				protected void onChange() throws Exception {
 					super.onChange();
-					PaletteItem.this.onChange();
+					PaletteComponent.this.onChange();
 				}
 			};
 			break;
@@ -537,7 +537,7 @@ public class PaletteItem {
 			item = new Button(dialog) {
 				protected void onClick() throws Exception {
 					super.onClick();
-					PaletteItem.this.onChange();
+					PaletteComponent.this.onChange();
 				}
 			};
 			break;
@@ -547,7 +547,7 @@ public class PaletteItem {
 			item = new ColorButton(dialog) {
 				protected void onClick() throws Exception {
 					super.onClick();
-					PaletteItem.this.onChange();
+					PaletteComponent.this.onChange();
 				}
 			};
 			break;
@@ -557,7 +557,7 @@ public class PaletteItem {
 					FontPopupListOption.VERTICAL
 			}) {
 				protected void onChange() throws Exception {
-					PaletteItem.this.onChange();
+					PaletteComponent.this.onChange();
 				}
 			};
 			break;
@@ -566,23 +566,23 @@ public class PaletteItem {
 				item = new SpinEdit(dialog) {
 					protected void onChange() throws Exception {
 						super.onChange();
-						PaletteItem.this.onChange();
+						PaletteComponent.this.onChange();
 					}
 				};
 				break;
 			}
 			// No break, as we're moving on to default
 		default:
-			TextOption[] options = type == PaletteItemType.TEXT
+			TextOption[] options = type == PaletteComponentType.TEXT
 					? new TextOption[] { TextOption.MULTILINE }
 					: null;
 			TextEditItem textItem = new TextEdit(dialog, options) {
 				protected void onChange() throws Exception {
-					PaletteItem.this.onChange();
+					PaletteComponent.this.onChange();
 				}
 			};
 			item = textItem;
-			if (type == PaletteItemType.NUMBER) {
+			if (type == PaletteComponentType.NUMBER) {
 				textItem.setAllowMath(true);
 				textItem.setAllowUnits(true);
 			}
@@ -609,7 +609,7 @@ public class PaletteItem {
 	protected void updateSize() {
 		if (item != null) {
 			Size size;
-			if (type == PaletteItemType.TEXT) {
+			if (type == PaletteComponentType.TEXT) {
 				// Base width on an average wide character, such as H
 				size = item.getTextSize("H");
 				size = new Size(
@@ -629,7 +629,7 @@ public class PaletteItem {
 		}
 	}
 
-	private static PaletteItem getItem(Map<String, Object> map, String name,
+	private static PaletteComponent getItem(Map<String, Object> map, String name,
 			Object value) {
 		if (map != null) {
 			try {
@@ -652,31 +652,31 @@ public class PaletteItem {
 					// reader will inherit all converter functionality from it.
 					reader = new MapArgumentReader(reader, clone);
 				}
-				return new PaletteItem(reader);
+				return new PaletteComponent(reader);
 			} catch (IllegalArgumentException e) {
 			}
 		}
 		return null;
 	}
 
-	protected static PaletteItem[] getItems(Map<String, Object>[] items) {
-		PaletteItem[] promptItems = new PaletteItem[items.length];
+	protected static PaletteComponent[] getItems(Map<String, Object>[] items) {
+		PaletteComponent[] promptItems = new PaletteComponent[items.length];
 		for (int i = 0; i < items.length; i++)
 			promptItems[i] = getItem(items[i], null, null);
 		return promptItems;
 	}
 
-	protected static PaletteItem[] getItems(
+	protected static PaletteComponent[] getItems(
 			Map<String, Map<String, Object>> items, Map<String, Object> values) {
-		ArrayList<PaletteItem> promptItems = new ArrayList<PaletteItem>();
+		ArrayList<PaletteComponent> promptItems = new ArrayList<PaletteComponent>();
 		for (Map.Entry<String, Map<String, Object>> entry : items.entrySet()) {
 			String name = entry.getKey();
 			Map<String, Object> map = entry.getValue();
 			Object value = values != null ? values.get(entry.getKey()) : null;
-			PaletteItem item = getItem(map, name, value);
+			PaletteComponent item = getItem(map, name, value);
 			if (item != null)
 				promptItems.add(item);
 		}
-		return promptItems.toArray(new PaletteItem[promptItems.size()]);
+		return promptItems.toArray(new PaletteComponent[promptItems.size()]);
 	}
 }

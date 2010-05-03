@@ -44,10 +44,10 @@ import com.scriptographer.ui.layout.TableLayout;
  */
 public class Palette extends FloatingDialog {
 	private Map<String, Object> values;
-	private Map<String, PaletteItem> components;
+	private Map<String, PaletteComponent> components;
 	private boolean hasLabels;
 	
-	public Palette(String title, Map<String, Map<String, Object>> items,
+	public Palette(String title, Map<String, Map<String, Object>> components,
 			Map<String, Object> values) {
 		super(new DialogOption[] {
 				DialogOption.TABBED,
@@ -76,13 +76,13 @@ public class Palette extends FloatingDialog {
 		// UI Requires 64px more to show title fully in palette windows.
 		setMinimumSize(width + extraWidth, -1);
 		setTitle(title);
-		PaletteItem[] paletteItems = PaletteItem.getItems(items, values);
+		PaletteComponent[] paletteItems = PaletteComponent.getItems(components, values);
 		createLayout(this, paletteItems, false, 0);
-		components = new LinkedHashMap<String, PaletteItem>();
+		this.components = new LinkedHashMap<String, PaletteComponent>();
 		hasLabels = false;
-		for (PaletteItem item : paletteItems) {
+		for (PaletteComponent item : paletteItems) {
 			if (item != null) {
-				components.put(item.getName(), item);
+				this.components.put(item.getName(), item);
 				String label = item.getLabel();
 				if (label != null && !"".equals(label))
 					hasLabels = true;
@@ -105,15 +105,15 @@ public class Palette extends FloatingDialog {
 		super.onInitialize();
 	}
 
-	public Palette(String title, Map<String, Map<String, Object>> items) {
-		this(title, items, null);
+	public Palette(String title, Map<String, Map<String, Object>> components) {
+		this(title, components, null);
 	}
 
 	public Map<String, Object> getValues() {
 		return values;
 	}
 
-	public Map<String, PaletteItem> getComponents() {
+	public Map<String, PaletteComponent> getComponents() {
 		return components;
 	}
 
@@ -127,19 +127,19 @@ public class Palette extends FloatingDialog {
 		this.onChange = onChange;
 	}
 
-	protected void onChange(PaletteItem item, String name, Object value) {
+	protected void onChange(PaletteComponent item, String name, Object value) {
 		values.put(name, value);
 		if (onChange != null)
 			ScriptographerEngine.invoke(onChange, this, item);
 	}
 
 	protected static TableLayout createLayout(Dialog dialog,
-			PaletteItem[] items, boolean hasLogo, int extraRows) {
+			PaletteComponent[] components, boolean hasLogo, int extraRows) {
 		// Add one more row as a filler in case there's less rows than the
 		// height of the logo.
 		if (hasLogo)
 			extraRows++;
-		double[] rows = new double[items.length + extraRows];
+		double[] rows = new double[components.length + extraRows];
 		for (int i = 0; i < rows.length; i++)
 			rows[i] = TableLayout.PREFERRED;
 		// Define the filler row, 2nd last
@@ -162,14 +162,14 @@ public class Palette extends FloatingDialog {
 			ImagePane logo = new ImagePane(dialog);
 			logo.setImage(Dialog.getImage("logo.png"));
 			logo.setMargin(-4, 4, -4, -4);
-			// Logo uses all rows of items + filler row
+			// Logo uses all rows of components + filler row
 			dialog.addToContent(logo, "0, 0, 0, " + (rows.length - extraRows)
 					+ ", left, top");
 		}
 
 		int columnIndex = hasLogo ? 1 : 0;
-		for (int i = 0; i < items.length; i++) {
-			PaletteItem item = items[i];
+		for (int i = 0; i < components.length; i++) {
+			PaletteComponent item = components[i];
 			if (item != null) {
 				Item valueItem = item.createItem(dialog,
 						new Border(1, 0, 1, 0));

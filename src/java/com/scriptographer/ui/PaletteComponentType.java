@@ -37,7 +37,7 @@ import java.util.HashMap;
  * @author lehni
  *
  */
-public enum PaletteItemType {
+public enum PaletteComponentType {
 	// TODO:
 	LABEL("label"),
 	STRING("string"),
@@ -54,7 +54,7 @@ public enum PaletteItemType {
 
 	protected String name;
 
-	private PaletteItemType(String name) {
+	private PaletteComponentType(String name) {
 		this.name = name;
 	}
 
@@ -62,15 +62,15 @@ public enum PaletteItemType {
 	 * A hash-map for case insensitive retrieval of type objects based on their
 	 * name.
 	 */
-	private static HashMap<String, PaletteItemType> types =
-		new HashMap<String, PaletteItemType>();
+	private static HashMap<String, PaletteComponentType> types =
+		new HashMap<String, PaletteComponentType>();
 
 	static {
-		for (PaletteItemType type : values())
+		for (PaletteComponentType type : values())
 			types.put(type.name.toLowerCase(), type);
 	}
 	
-	public static PaletteItemType get(String name) {
+	public static PaletteComponentType get(String name) {
 		return types.get(name.toLowerCase());
 	}
 }

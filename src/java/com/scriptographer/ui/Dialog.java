@@ -1194,7 +1194,7 @@ public abstract class Dialog extends Component {
 	/**
 	 * @jshide
 	 */
-	public static Object[] prompt(String title, PaletteItem[] items) {
+	public static Object[] prompt(String title, PaletteComponent[] items) {
 		return PromptDialog.prompt(title, items);
 	}
 
