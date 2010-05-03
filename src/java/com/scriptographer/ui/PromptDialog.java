@@ -76,7 +76,7 @@ public class PromptDialog extends ModalDialog {
 		setMargin(8);
 	}
 	
-	public PromptDialog(String title, Map[] items) {
+	public PromptDialog(String title, Map<String, Object>[] items) {
 		this(title, PaletteItem.getItems(items));
 	}
 
@@ -124,12 +124,12 @@ public class PromptDialog extends ModalDialog {
 		return null;
 	}
 
-	public static Object[] prompt(String title, Map[] items) {
+	public static Object[] prompt(String title, Map<String, Object>[] items) {
 		return prompt(title, PaletteItem.getItems(items));
 	}
 
 	public static Map<String, Object> prompt(String title,
-			Map<String, Map> items, Map<String, Object> values) {
+			Map<String, Map<String, Object>> items, Map<String, Object> values) {
 		PaletteItem[] paletteItems = PaletteItem.getItems(items, values);
 		Object[] results = prompt(title, paletteItems);
 		if (results != null) {

@@ -102,6 +102,8 @@ public abstract class ScriptEngine {
 
 	public abstract <T> T toJava(Object object, Class<T> type);
 
+	public abstract ArgumentReader getArgumentReader(Object object);
+
 	@SuppressWarnings("unchecked")
 	public static <T> T convertToJava(Object object, Class<T> type) {
 		if (type.isInstance(object))
@@ -110,6 +112,15 @@ public abstract class ScriptEngine {
 			T res = engine.toJava(object, type);
 			if (type.isInstance(res))
 				return res;
+		}
+		return null;
+	}
+
+	public static ArgumentReader convertToArgumentReader(Object object) {
+		for (ScriptEngine engine : enginesByName.values()) {
+			ArgumentReader reader = engine.getArgumentReader(object);
+			if (reader != null)
+				return reader;
 		}
 		return null;
 	}

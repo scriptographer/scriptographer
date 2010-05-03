@@ -24,21 +24,52 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Feb 12, 2008.
+ * File created on May 2, 2010.
  *
  * $Id$
  */
 
 package com.scratchdisk.script;
 
+import java.util.Map;
+
 /**
  * @author lehni
  *
  */
-public interface Converter {
-	public <T> T convert(Object from, Class<T> to);
+public class MapArgumentReader extends ArgumentReader {
 
-	public Object unwrap(Object obj);
+	protected Map map;
 
-	public void setProperties(Object object, ArgumentReader properties);
+	public MapArgumentReader(Converter converter, Map map) {
+		super(converter);
+		this.map = map;
+	}
+
+	/**
+	 * Creates a new ArgumentReader that shares the converter with an other 
+	 * existing one. This is to be able to create new Maps, copy over values
+	 * form another map or reader, and still be able to use the engine's
+	 * conversion logic.
+	 */
+	public MapArgumentReader(ArgumentReader reader, Map map) {
+		super(reader.converter);
+		this.map = map;
+	}
+
+	public Object[] keys() {
+		return map.keySet().toArray();
+	}
+
+	protected Object readNext(String name) {
+		return map.get(name);
+	}
+
+	public boolean has(String name) {
+		return map.containsKey(name);
+	}
+
+	public boolean isMap() {
+		return true;
+	}
 }

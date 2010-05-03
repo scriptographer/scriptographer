@@ -117,7 +117,8 @@ public class Curve implements ChangeListener {
 		updateSegments();
 	}
 
-	private static Point getPoint(ArgumentReader reader, String name, boolean allowNull) {
+	private static Point getPoint(ArgumentReader reader, String name,
+			boolean allowNull) {
 		Point point = (Point) reader.readObject(name, Point.class);
 		return allowNull || point != null ? point : new Point();
 	}

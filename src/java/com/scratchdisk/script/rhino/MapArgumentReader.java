@@ -41,13 +41,17 @@ import com.scratchdisk.script.Converter;
  * @author lehni
  *
  */
-public class HashArgumentReader extends ArgumentReader {
+public class MapArgumentReader extends ArgumentReader {
 
 	protected Scriptable scriptable;
 
-	public HashArgumentReader(Converter converter, Scriptable scriptable) {
+	public MapArgumentReader(Converter converter, Scriptable scriptable) {
 		super(converter);
 		this.scriptable = scriptable;
+	}
+
+	public Object[] keys() {
+		return scriptable.getIds();
 	}
 
 	protected Object readNext(String name) {
@@ -59,7 +63,7 @@ public class HashArgumentReader extends ArgumentReader {
 		return scriptable.has(name, scriptable);
 	}
 
-	public boolean isHash() {
+	public boolean isMap() {
 		return true;
 	}
 }

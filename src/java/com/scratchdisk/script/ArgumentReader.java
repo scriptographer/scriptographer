@@ -60,6 +60,10 @@ public abstract class ArgumentReader {
 		return -1;
 	}
 
+	public Object[] keys() {
+		return new Object[]{};
+	}
+
 	public boolean isArray() {
 		return false;
 	}
@@ -68,7 +72,7 @@ public abstract class ArgumentReader {
 		return false;
 	}
 
-	public boolean isHash() {
+	public boolean isMap() {
 		return false;
 	}
 
@@ -157,14 +161,25 @@ public abstract class ArgumentReader {
 	protected static IdentityHashMap<Class, ArgumentConverter> converters =
 		new IdentityHashMap<Class, ArgumentConverter>(); 
 
-	public Object readObject(String name, Class<?> type) {
+	protected static void registerConverter(Class type,
+			ArgumentConverter converter) {
+		converters.put(type, converter);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected static <T> ArgumentConverter<T> getConverter(Class<T> type) {
+		return converters.get(type);
+	}
+
+	public <T> T readObject(String name, Class<T> type) {
 		Object obj = readNext(name);
 		if (obj != null) {
-			ArgumentConverter converter = (ArgumentConverter) converters.get(type);
-			Object res;
+			ArgumentConverter<T> converter = getConverter(type);
+			T res;
 			if (converter != null) {
 				// Make a new ArgumentReader for this object first, using convert:
-				ArgumentReader reader = (ArgumentReader) this.converter.convert(obj, ArgumentReader.class);
+				ArgumentReader reader = (ArgumentReader) this.converter.convert(
+						obj, ArgumentReader.class);
 				if (reader == null)
 					throw new IllegalArgumentException("Cannot read from " + obj);
 				res = converter.convert(reader, this.converter.unwrap(obj));
@@ -181,7 +196,7 @@ public abstract class ArgumentReader {
 		return null;
 	}
 
-	public Object readObject(Class type) {
+	public <T> T readObject(Class<T> type) {
 		return readObject(null, type);
 	}
 
@@ -193,7 +208,8 @@ public abstract class ArgumentReader {
 		return readObject(Object.class);
 	}
 
-	public <T extends Enum<T>> T readEnum(String name, Class<T> type, T defaultValue) {
+	public <T extends Enum<T>> T readEnum(String name, Class<T> type,
+			T defaultValue) {
 		T value = EnumUtils.get(type, readString(name));
 		return value != null ? value : defaultValue;
 	}
@@ -210,10 +226,6 @@ public abstract class ArgumentReader {
 		return readEnum(null, type, defaultValue);
 	}
 
-	protected static void registerConverter(Class type, ArgumentConverter converter) {
-		converters.put(type, converter);
-	}
-
 	public static boolean canConvert(Class to) {
 		return ArgumentReader.class.isAssignableFrom(to)
 				|| getArgumentReaderConstructor(to) != null
@@ -225,11 +237,10 @@ public abstract class ArgumentReader {
 		if (ArgumentReader.class.isAssignableFrom(to)) {
 			return reader;
 		} else {
-			ArgumentConverter argumentConverter =
-					(ArgumentConverter) converters.get(to);
+			ArgumentConverter argumentConverter = converters.get(to);
 			if (argumentConverter != null) {
 				Object result = argumentConverter.convert(reader, from);
-				// ArgumentConverter can return another convertable type,
+				// ArgumentConverter can return another convertible type,
 				// to be passed forward to the Converter. This is used
 				// e.g. for java.awt.Color <->
 				// com.scriptographer.script.ColorConverter which returns
@@ -271,4 +282,9 @@ public abstract class ArgumentReader {
 
 	private static IdentityHashMap<Class, Constructor> argumentReaderConstructors =
 			new IdentityHashMap<Class, Constructor>();
+
+
+	public void setProperties(Object object) {
+		converter.setProperties(object, this);
+	}
 }

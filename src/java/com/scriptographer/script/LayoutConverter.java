@@ -32,6 +32,7 @@
 package com.scriptographer.script;
 
 import java.awt.BorderLayout;
+import java.awt.LayoutManager;
 
 import com.scratchdisk.script.ArgumentConverter;
 import com.scratchdisk.script.ArgumentReader;
@@ -42,9 +43,9 @@ import com.scriptographer.ui.layout.TableLayout;
  * @author lehni
  *
  */
-public class LayoutConverter extends ArgumentConverter {
+public class LayoutConverter extends ArgumentConverter<LayoutManager> {
 
-	public Object convert(ArgumentReader reader, Object from) {
+	public LayoutManager convert(ArgumentReader reader, Object from) {
 		if (reader.isArray()) {
 			String str = reader.readString();
 			if (str != null) {
@@ -80,7 +81,7 @@ public class LayoutConverter extends ArgumentConverter {
 							reader.readInteger(0));
 				}
 			}
-		} else if (reader.isHash()) {
+		} else if (reader.isMap()) {
 			if (reader.has("columns")) {
 				// TableLayout
 				String str = reader.readString("columns");

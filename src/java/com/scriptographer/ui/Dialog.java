@@ -188,6 +188,12 @@ public abstract class Dialog extends Component {
 				// if setVisible was called before proper initialization, visible
 				// is set but it was not natively executed yet. handle this here
 				boolean show = !options.contains(DialogOption.HIDDEN) || visible;
+				boolean prefsLoaded = false;
+				if (options.contains(DialogOption.REMEMBER_PLACING)) {
+					prefsLoaded = loadPreferences(title);
+					// Only explicitly show dialog if prefs could not be loaded.
+					show = !prefsLoaded;
+				}
 				if (container != null) {
 					if (minSize == null)
 						setMinimumSize(new Size(container.getMinimumSize()));
@@ -212,12 +218,9 @@ public abstract class Dialog extends Component {
 						container.updateSize(size);
 					}
 				}
-				// Center it on screen first
-				centerOnScreen();
-				if (options.contains(DialogOption.REMEMBER_PLACING)) {
-					// Only explicitly show dialog if prefs could not be loaded.
-					show = !loadPreferences(title);
-				}
+				// Center it on screen now if prefs were not loaded above
+				if (!prefsLoaded)
+					centerOnScreen();
 				initialized = true;
 				// Execute callback handler
 				onInitialize();
@@ -340,16 +343,34 @@ public abstract class Dialog extends Component {
 			// Restore the position code of the dialog
 			setGroupInfo(group, positionCode);
 			// Now set the bounds
-			if (isResizing) {
-				setBounds(bounds);
-			} else {
-				setPosition(bounds.getPoint());
-			}
+			BoundsSetter setter = new BoundsSetter(bounds);
+			setter.run();
+			// Sometimes we need to set bounds again afterwards, as OWL seems
+			// to interfere here...
+			// This leads to annoying jumping around of the dialog.
+			// TODO: See if this can be fixed somehow?
+			invokeLater(setter);
 			return true;
 		}
 		return false;
 	}
 
+	private class BoundsSetter implements Runnable {
+		private Rectangle bounds;
+
+		BoundsSetter(Rectangle bounds) {
+			this.bounds = bounds;
+		}
+
+		public void run() {
+			if (isResizing) {
+				setBounds(bounds);
+			} else {
+				setPosition(bounds.getPoint());
+			}
+		}
+	}
+	
 	private IntMap<Runnable> runnables = new IntMap<Runnable>();
 
 	private native int nativeInvokeLater();
@@ -585,8 +606,6 @@ public abstract class Dialog extends Component {
 				initialize(true, false);
 				break;
 			case DESTROY:
-				if (options.contains(DialogOption.REMEMBER_PLACING))
-					savePreferences(title);
 				onDestroy();
 				break;
 			case WINDOW_ACTIVATE:
@@ -607,6 +626,8 @@ public abstract class Dialog extends Component {
 				onShow();
 				break;
 			case WINDOW_HIDE:
+				if (options.contains(DialogOption.REMEMBER_PLACING))
+					savePreferences(title);
 				if (fireOnClose) {
 					// Workaround for missing onClose on CS3. This bug was 
 					// reported to Adobe too late, hopefully it will be back
@@ -1180,7 +1201,7 @@ public abstract class Dialog extends Component {
 	/**
 	 * @jshide
 	 */
-	public static Object[] prompt(String title, Map[] items) {
+	public static Object[] prompt(String title, Map<String, Object>[] items) {
 		return PromptDialog.prompt(title, items);
 	}
 

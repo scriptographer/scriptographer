@@ -42,6 +42,7 @@ import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.tools.debugger.ScopeProvider;
 
+import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
@@ -162,16 +163,6 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		return new RhinoScope(this, scope);
 	}
 
-	protected static Scriptable getWrapper(Object object, Scriptable scope) {
-		if (object instanceof Scriptable) {
-			return (Scriptable) object;
-		} else {
-			Context cx = Context.getCurrentContext();
-			return cx.getWrapFactory().wrapAsJavaObject(cx, scope,
-					object, object.getClass(), false);
-		}
-	}
-
 	public Scope getScope(Object object) {
 		if (object instanceof Scriptable)
 			return new RhinoScope(this, (Scriptable) object);
@@ -191,5 +182,23 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 	@SuppressWarnings("unchecked")
 	public <T> T toJava(Object object, Class<T> type) {
 		return (T) Context.jsToJava(object, type);
+	}
+
+	public ArgumentReader getArgumentReader(Object object) {
+		return wrapFactory.getArgumentReader(object);
+	}
+
+	/**
+	 * Required by RhinoCallable, to find the wrapper object (scope) for the
+	 * native object the callalbe is executed on.
+	 */
+	protected static Scriptable getWrapper(Object object, Scriptable scope) {
+		if (object instanceof Scriptable) {
+			return (Scriptable) object;
+		} else {
+			Context cx = Context.getCurrentContext();
+			return cx.getWrapFactory().wrapAsJavaObject(cx, scope,
+					object, object.getClass(), false);
+		}
 	}
 }

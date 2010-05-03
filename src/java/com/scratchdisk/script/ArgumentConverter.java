@@ -37,7 +37,7 @@ import com.scratchdisk.util.ClassUtils;
  * @author lehni
  *
  */
-public abstract class ArgumentConverter {
+public abstract class ArgumentConverter<T> {
 
 	public static void loadConverters() {
 		String[] converters = ClassUtils.getServiceInformation(ArgumentConverter.class);
@@ -55,5 +55,5 @@ public abstract class ArgumentConverter {
 		}
 	}
 
-	public abstract Object convert(ArgumentReader reader, Object from);
+	public abstract T convert(ArgumentReader reader, Object from);
 }

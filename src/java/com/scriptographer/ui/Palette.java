@@ -31,7 +31,7 @@
 
 package com.scriptographer.ui;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.scratchdisk.script.Callable;
@@ -44,9 +44,10 @@ import com.scriptographer.ui.layout.TableLayout;
  */
 public class Palette extends FloatingDialog {
 	private Map<String, Object> values;
+	private Map<String, PaletteItem> components;
 	private boolean hasLabels;
-
-	public Palette(String title, Map<String, Map> items,
+	
+	public Palette(String title, Map<String, Map<String, Object>> items,
 			Map<String, Object> values) {
 		super(new DialogOption[] {
 				DialogOption.TABBED,
@@ -77,9 +78,11 @@ public class Palette extends FloatingDialog {
 		setTitle(title);
 		PaletteItem[] paletteItems = PaletteItem.getItems(items, values);
 		createLayout(this, paletteItems, false, 0);
+		components = new LinkedHashMap<String, PaletteItem>();
 		hasLabels = false;
 		for (PaletteItem item : paletteItems) {
 			if (item != null) {
+				components.put(item.getName(), item);
 				String label = item.getLabel();
 				if (label != null && !"".equals(label))
 					hasLabels = true;
@@ -91,7 +94,7 @@ public class Palette extends FloatingDialog {
 		else
 			setMargin(2, -1, 0, -1);
 		if (values == null)
-			values = new HashMap<String, Object>();
+			values = new LinkedHashMap<String, Object>();
 		this.values = values;
 	}
 
@@ -102,12 +105,16 @@ public class Palette extends FloatingDialog {
 		super.onInitialize();
 	}
 
-	public Palette(String title, Map<String, Map> items) {
+	public Palette(String title, Map<String, Map<String, Object>> items) {
 		this(title, items, null);
 	}
 
 	public Map<String, Object> getValues() {
 		return values;
+	}
+
+	public Map<String, PaletteItem> getComponents() {
+		return components;
 	}
 
 	private Callable onChange = null;

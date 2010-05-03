@@ -167,7 +167,7 @@ public class Segment implements Committable, ChangeListener {
 				);
 		} else {
 			reader.revert();
-			if (reader.isHash()) {
+			if (reader.isMap()) {
 				if (reader.has("x")) {
 					init(
 						reader.readDouble("x", 0),

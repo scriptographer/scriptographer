@@ -44,9 +44,9 @@ import com.scriptographer.ai.RGBColor;
  * @author lehni
  *
  */
-public class ColorConverter extends ArgumentConverter {
+public class ColorConverter extends ArgumentConverter<Color> {
 
-	public Object convert(ArgumentReader reader, Object from) {
+	public Color convert(ArgumentReader reader, Object from) {
 		// TODO: gradient & pattern color
 		// Since StringArgumentReaders also return true for isArray (they
 		// can behave like arrays as well), always check for isString first!
@@ -89,7 +89,7 @@ public class ColorConverter extends ArgumentConverter {
 						reader.readFloat(0)
 				);
 			}
-		} else if (reader.isHash()) {
+		} else if (reader.isMap()) {
 			if (reader.has("red")) {
 				return new RGBColor(
 						reader.readFloat("red", 0),

@@ -43,6 +43,7 @@ import org.python.core.PyException;
 import org.python.core.PyObject;
 import org.python.core.PySystemState;
 
+import com.scratchdisk.script.ArgumentReader;
 import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
@@ -99,6 +100,11 @@ public class JythonEngine extends ScriptEngine {
 	public <T> T toJava(Object object, Class<T> type) {
 		if (object instanceof PyObject)
 			return (T) Py.tojava((PyObject) object, type);
+		return null;
+	}
+
+	@Override
+	public ArgumentReader getArgumentReader(Object object) {
 		return null;
 	}
 }
