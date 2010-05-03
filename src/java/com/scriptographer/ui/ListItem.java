@@ -334,6 +334,7 @@ public abstract class ListItem<E extends ListEntry> extends Item implements
 		return getAt(point.x, point.y);
 	}
 
+	// TODO: Renmae getSelectedEntry / getSelectedEntries?
 	public native E getActiveEntry();
 	public native E[] getSelected();
 	

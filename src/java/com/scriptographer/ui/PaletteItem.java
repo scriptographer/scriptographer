@@ -192,6 +192,55 @@ public class PaletteItem {
 		}
 	}
 
+	public void setValue(Object value) {
+		if (item == null) {
+			defaultValue = value;
+		} else {
+			switch (type) {
+			case STRING:
+			case TEXT:
+				((TextEditItem) item).setText(ConversionUtils.toString(value));
+				break;
+			case BUTTON:
+				((Button) item).setText(ConversionUtils.toString(value));
+				break;
+			case NUMBER:
+			case SLIDER:
+				((ValueItem) item).setValue(
+						(float) ConversionUtils.toDouble(value));
+				// TODO: Move to createItem?
+				if (item instanceof TextEditItem) {
+					((TextEditItem) item).setAllowMath(true);
+					((TextEditItem) item).setAllowUnits(true);
+				}
+				break;
+			case CHECKBOX:
+				((CheckBox) item).setChecked(ConversionUtils.toBoolean(value));
+				break;
+			case LIST:
+				PopupList list = (PopupList) item;
+				ListEntry selected = null;
+				for (int i = 0, l = list.size(); i < l && selected == null; i++) {
+					Object option = options[i];
+					ListEntry entry = list.get(i);
+					if (ConversionUtils.equals(value, option))
+						selected = entry;
+				}
+				if (selected == null)
+					selected = list.getFirst();
+				if (selected != null)
+					selected.setSelected(true);
+				break;
+			case COLOR:
+				Color color = ScriptEngine.convertToJava(value, Color.class);
+				if (color == null)
+					color = Color.BLACK;
+				((ColorButton) item).setColor(color);
+				break;
+			}
+		}
+	}
+
 	public int getWidth() {
 		return width;
 	}
@@ -450,59 +499,12 @@ public class PaletteItem {
 			ScriptographerEngine.invoke(onChange, this, value);
 	}
 
-	public void setValue(Object value) {
-		if (item == null) {
-			defaultValue = value;
-		} else {
-			switch (type) {
-			case STRING:
-			case TEXT:
-				((TextEditItem) item).setText(ConversionUtils.toString(value));
-				break;
-			case BUTTON:
-				((Button) item).setText(ConversionUtils.toString(value));
-				break;
-			case NUMBER:
-			case SLIDER:
-				((ValueItem) item).setValue(
-						(float) ConversionUtils.toDouble(value));
-				// TODO: Move to createItem?
-				if (item instanceof TextEditItem) {
-					((TextEditItem) item).setAllowMath(true);
-					((TextEditItem) item).setAllowUnits(true);
-				}
-				break;
-			case CHECKBOX:
-				((CheckBox) item).setChecked(ConversionUtils.toBoolean(value));
-				break;
-			case LIST:
-				PopupList list = (PopupList) item;
-				ListEntry selected = null;
-				for (int i = 0, l = list.size(); i < l && selected == null; i++) {
-					Object option = options[i];
-					ListEntry entry = list.get(i);
-					if (ConversionUtils.equals(value, option))
-						selected = entry;
-				}
-				if (selected == null)
-					selected = list.getFirst();
-				if (selected != null)
-					selected.setSelected(true);
-				break;
-			case COLOR:
-				Color color = ScriptEngine.convertToJava(value, Color.class);
-				if (color == null)
-					color = Color.BLACK;
-				((ColorButton) item).setColor(color);
-				break;
-			}
-		}
-	}
-
 	protected Item createItem(Dialog dialog, Border margin) {
 		// Item:
 		item = null;
 		switch (type) {
+		case LABEL:
+			break;
 		case SLIDER:
 			item = new Slider(dialog) {
 				protected void onChange() throws Exception {
@@ -535,6 +537,8 @@ public class PaletteItem {
 				}
 			};
 			break;
+		case BUTTONS:
+			break;
 		case COLOR:
 			item = new ColorButton(dialog) {
 				protected void onClick() throws Exception {
@@ -544,7 +548,13 @@ public class PaletteItem {
 			};
 			break;
 		case FONT:
-			// TODO:
+			item = new FontPopupList(dialog, new FontPopupListOption[] {
+					FontPopupListOption.EDITABLE
+			}) {
+				protected void onChange() throws Exception {
+					PaletteItem.this.onChange();
+				}
+			};
 			break;
 		case NUMBER:
 			if (steppers) {

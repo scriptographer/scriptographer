@@ -451,8 +451,35 @@ public abstract class TextEditItem<S> extends TextValueItem {
 	public PopupList getPopupList() {
 		if (popupList == null) {
 			int handle = getChildItemHandle(ITEM_POPUP);
-			popupList = handle != 0 ? new PopupList(dialog, handle, true) : null;
+			if (handle != 0) {
+				// Pass on notification to this item, since we are not offering
+				// listeners yet, and there is no other way to receive these
+				// right now...
+				// TODO: Consider adding  support for listeners.
+				popupList = new PopupList(dialog, handle, true) {
+					protected void onNotify(Notifier notifier) throws Exception {
+						onNotify(notifier);
+					}
+				};
+			}
 		}
 		return popupList;
+	}
+
+	protected void updateBounds(int x, int y, int width, int height, boolean sizeChanged) {
+		if (ScriptographerEngine.isMacintosh()) {
+			if (type == ItemType.TEXT_EDIT_SCROLLING_POPUP
+					|| type == ItemType.TEXT_EDIT_POPUP) {
+				// The size of popup list buttons on Mac seems broken and needs
+				// to be corrected here.
+				PopupList list = getPopupList();
+				if (list != null) {
+					Size size = list.getSize();
+					size.height = height + 4;
+					list.setSize(size);
+				}
+			}
+		}
+		super.updateBounds(x, y, width, height, sizeChanged);
 	}
 }

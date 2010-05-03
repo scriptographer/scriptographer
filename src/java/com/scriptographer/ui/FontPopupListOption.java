@@ -24,53 +24,21 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  * -- GPL LICENSE NOTICE --
  * 
- * File created on Apr 15, 2008.
+ * File created on May 3, 2010.
  *
  * $Id$
  */
 
 package com.scriptographer.ui;
 
-import java.util.HashMap;
 
 /**
  * @author lehni
  *
  */
-public enum PaletteItemType {
-	// TODO:
-	LABEL("label"),
-	STRING("string"),
-	TEXT("text"),
-	NUMBER("number"),
-	SLIDER("slider"),
-	CHECKBOX("checkbox"),
-	BUTTON("button"),
-	// TODO:
-	BUTTONS("buttons"),
-	LIST("list"),
-	COLOR("color"),
-	FONT("font");
-
-	protected String name;
-
-	private PaletteItemType(String name) {
-		this.name = name;
-	}
-
-	/**
-	 * A hash-map for case insensitive retrieval of type objects based on their
-	 * name.
-	 */
-	private static HashMap<String, PaletteItemType> types =
-		new HashMap<String, PaletteItemType>();
-
-	static {
-		for (PaletteItemType type : values())
-			types.put(type.name.toLowerCase(), type);
-	}
-	
-	public static PaletteItemType get(String name) {
-		return types.get(name.toLowerCase());
-	}
-}
+public enum FontPopupListOption {
+	HORIZONTAL,
+	VERTICAL,
+	EDITABLE,
+	SIZE;
+};

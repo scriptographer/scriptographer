@@ -455,7 +455,8 @@ public abstract class Item extends Component {
 				}
 			} else {
 				// Empty list, make sure height is at least set for text
-				size = textSize;
+				// and it has some width for future content (32 * space)
+				size = textSize.multiply(32, 1);
 			}
 			size.width += addWidth;
 			size.height += addHeight;
