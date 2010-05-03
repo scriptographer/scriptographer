@@ -616,6 +616,9 @@ public class PaletteItem {
 				ArgumentReader reader =
 						ScriptEngine.convertToArgumentReader(map);
 				if (name != null || value != null) {
+					// We need to create a new map that contains all the values
+					// from map, but also name and value, so the ArgumentReader
+					// constructor can read these from there. Just clone it.
 					Map<String, Object> clone =
 							new HashMap<String, Object>(map);
 					if (name != null)
