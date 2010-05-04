@@ -77,7 +77,7 @@ public class PromptDialog extends ModalDialog {
 	}
 
 	public PromptDialog(String title, Map<String, Object>[] components) {
-		this(title, PaletteComponent.getItems(components));
+		this(title, PaletteComponent.getComponents(components));
 	}
 
 	public Object[] getValues() {
@@ -94,7 +94,9 @@ public class PromptDialog extends ModalDialog {
 	}
 
 	public static Object[] prompt(String title, PaletteComponent[] components) {
-		/* TODO: Remove this code as soon as there is another nice way to store values in preferences.
+		/* 
+		// TODO: Remove this code as soon as there is another nice way to store
+		// values in preferences.
 		Preferences preferences = 
 			new Preferences(ScriptographerEngine.getPreferences(true));
 		String itemTitle = "item" + StringUtils.capitalize(title);
@@ -125,12 +127,13 @@ public class PromptDialog extends ModalDialog {
 	}
 
 	public static Object[] prompt(String title, Map<String, Object>[] components) {
-		return prompt(title, PaletteComponent.getItems(components));
+		return prompt(title, PaletteComponent.getComponents(components));
 	}
 
 	public static Map<String, Object> prompt(String title,
-			Map<String, Map<String, Object>> components, Map<String, Object> values) {
-		PaletteComponent[] paletteItems = PaletteComponent.getItems(components, values);
+			Map<String, Object> components, Map<String, Object> values) {
+		PaletteComponent[] paletteItems =
+				PaletteComponent.getComponents(components, values);
 		Object[] results = prompt(title, paletteItems);
 		if (results != null) {
 			if (values == null)

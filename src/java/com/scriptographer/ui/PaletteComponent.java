@@ -630,53 +630,60 @@ public class PaletteComponent {
 		}
 	}
 
-	private static PaletteComponent getItem(Map<String, Object> map, String name,
+	@SuppressWarnings("unchecked")
+	private static PaletteComponent getItem(Object object, String name,
 			Object value) {
-		if (map != null) {
-			try {
-				ArgumentReader reader =
-						ScriptEngine.convertToArgumentReader(map);
-				if (name != null || value != null) {
-					// We need to create a new map that contains all the values
-					// from map, but also name and value, so the ArgumentReader
-					// constructor can read these from there. Just clone it.
-					Map<String, Object> clone =
-							new HashMap<String, Object>(map);
-					if (name != null)
-						clone.put("name", name);
-					if (value != null)
-						clone.put("value", value);
-					// Make a new ArgumentReader that inherits its converter
-					// from the current reader, which was returned by
-					// ScriptEngine.convertToArgumentReader.
-					// So for example if map actually is a NativeObject, our new
-					// reader will inherit all converter functionality from it.
-					reader = new MapArgumentReader(reader, clone);
+		if (object != null) {
+			if (object instanceof PaletteComponent) {
+				return (PaletteComponent) object;
+			} else if (object instanceof Map) {
+				try {
+					ArgumentReader reader =
+							ScriptEngine.convertToArgumentReader(object);
+					if (name != null || value != null) {
+						// We need to create a new map that contains all the
+						// values from map, but also name and value, so the
+						// ArgumentReader constructor can read these from there.
+						// Just clone it.
+						Map<Object, Object> clone =
+								new HashMap<Object, Object>((Map) object);
+						if (name != null)
+							clone.put("name", name);
+						if (value != null)
+							clone.put("value", value);
+						// Make a new ArgumentReader that inherits its converter
+						// from the current reader, which was returned by
+						// ScriptEngine.convertToArgumentReader. So for example
+						// if map actually is a NativeObject, our new reader will
+						// inherit all converter functionality from it.
+						reader = new MapArgumentReader(reader, clone);
+					}
+					return new PaletteComponent(reader);
+				} catch (IllegalArgumentException e) {
 				}
-				return new PaletteComponent(reader);
-			} catch (IllegalArgumentException e) {
 			}
 		}
 		return null;
 	}
 
-	protected static PaletteComponent[] getItems(Map<String, Object>[] items) {
-		PaletteComponent[] promptItems = new PaletteComponent[items.length];
-		for (int i = 0; i < items.length; i++)
-			promptItems[i] = getItem(items[i], null, null);
+	protected static PaletteComponent[] getComponents(Map<String,
+			Object>[] components) {
+		PaletteComponent[] promptItems = new PaletteComponent[components.length];
+		for (int i = 0; i < components.length; i++)
+			promptItems[i] = getItem(components[i], null, null);
 		return promptItems;
 	}
 
-	protected static PaletteComponent[] getItems(
-			Map<String, Map<String, Object>> items, Map<String, Object> values) {
+	protected static PaletteComponent[] getComponents(
+			Map<String, Object> components, Map<String, Object> values) {
 		ArrayList<PaletteComponent> promptItems = new ArrayList<PaletteComponent>();
-		for (Map.Entry<String, Map<String, Object>> entry : items.entrySet()) {
+		for (Map.Entry<String, Object> entry : components.entrySet()) {
 			String name = entry.getKey();
-			Map<String, Object> map = entry.getValue();
+			Object map = entry.getValue();
 			Object value = values != null ? values.get(entry.getKey()) : null;
-			PaletteComponent item = getItem(map, name, value);
-			if (item != null)
-				promptItems.add(item);
+			PaletteComponent component = getItem(map, name, value);
+			if (component != null)
+				promptItems.add(component);
 		}
 		return promptItems.toArray(new PaletteComponent[promptItems.size()]);
 	}

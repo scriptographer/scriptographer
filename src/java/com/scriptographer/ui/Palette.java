@@ -46,10 +46,10 @@ import com.scriptographer.ui.layout.TableLayout;
  */
 public class Palette extends FloatingDialog implements ChangeObserver {
 	private Map<String, Object> values;
-	private Map<String, PaletteComponent> components;
+	private Map<String, Object> components;
 	private boolean hasLabels;
 
-	public Palette(String title, Map<String, Map<String, Object>> components,
+	public Palette(String title, Map<String, Object> components,
 			Map<String, Object> values) {
 		super(new DialogOption[] {
 				DialogOption.TABBED,
@@ -64,7 +64,10 @@ public class Palette extends FloatingDialog implements ChangeObserver {
 		} else {
 			values = new LinkedHashMap<String, Object>();
 		}
+		if (components == null)
+			components = new LinkedHashMap<String, Object>();
 		this.values = values;
+		this.components = components;
 
 		double version = ScriptographerEngine.getApplicationVersion();
 		boolean upperCase = false;
@@ -88,9 +91,8 @@ public class Palette extends FloatingDialog implements ChangeObserver {
 		setMinimumSize(width + extraWidth, -1);
 		setTitle(title);
 		PaletteComponent[] paletteItems =
-				PaletteComponent.getItems(components, values);
+				PaletteComponent.getComponents(components, values);
 		createLayout(this, paletteItems, false, 0);
-		this.components = new LinkedHashMap<String, PaletteComponent>();
 		hasLabels = false;
 		for (PaletteComponent item : paletteItems) {
 			if (item != null) {
@@ -107,7 +109,7 @@ public class Palette extends FloatingDialog implements ChangeObserver {
 			setMargin(2, -1, 0, -1);
 	}
 
-	public Palette(String title, Map<String, Map<String, Object>> components) {
+	public Palette(String title, Map<String, Object> components) {
 		this(title, components, null);
 	}
 
@@ -122,8 +124,18 @@ public class Palette extends FloatingDialog implements ChangeObserver {
 		return values;
 	}
 
-	public Map<String, PaletteComponent> getComponents() {
+	public Map<String, Object> getComponents() {
 		return components;
+	}
+
+	public PaletteComponent getComponent(String name) {
+		// components only contains PaletteComponent after initialization,
+		// but is not declared in this way as the passed components object
+		// is reused and PaletteComponent are put pack into it. This gives
+		// easy access to them on the Scripting side.
+		Object component = components.get(name);
+		return component instanceof PaletteComponent
+				? (PaletteComponent) component : null;
 	}
 
 	private Callable onChange = null;
@@ -159,7 +171,9 @@ public class Palette extends FloatingDialog implements ChangeObserver {
 	public void onChange(Map object, Object key, Object value) {
 		if (!isChanging) {
 			// System.out.println("Changed " + key + " = " + value);
-			components.get(key).setValue(value);
+			PaletteComponent component = getComponent(key.toString());
+			if (component != null)
+				component.setValue(value);
 		}
 	}
 
