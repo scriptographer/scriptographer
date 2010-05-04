@@ -34,15 +34,21 @@ package com.scratchdisk.script.rhino;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Map;
 
+import org.mozilla.javascript.BaseFunction;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.NativeObject;
+import org.mozilla.javascript.PropertyDescriptor;
 import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.Undefined;
 import org.mozilla.javascript.tools.debugger.ScopeProvider;
 
 import com.scratchdisk.script.ArgumentReader;
+import com.scratchdisk.script.ChangeObserver;
 import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
@@ -179,15 +185,6 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 		return topLevel;
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T toJava(Object object, Class<T> type) {
-		return (T) Context.jsToJava(object, type);
-	}
-
-	public ArgumentReader getArgumentReader(Object object) {
-		return wrapFactory.getArgumentReader(object);
-	}
-
 	/**
 	 * Required by RhinoCallable, to find the wrapper object (scope) for the
 	 * native object the callalbe is executed on.
@@ -199,6 +196,74 @@ public class RhinoEngine extends ScriptEngine implements ScopeProvider {
 			Context cx = Context.getCurrentContext();
 			return cx.getWrapFactory().wrapAsJavaObject(cx, scope,
 					object, object.getClass(), false);
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public <T> T toJava(Object object, Class<T> type) {
+		return (T) Context.jsToJava(object, type);
+	}
+
+	@Override
+	public ArgumentReader getArgumentReader(Object object) {
+		return wrapFactory.getArgumentReader(object);
+	}
+
+	@Override
+	public boolean observe(Map object, Object key, ChangeObserver observer) {
+		if (object instanceof ScriptableObject) {
+			ScriptableObject obj = (ScriptableObject) object;
+			Context cx = Context.getCurrentContext();
+			PropertyDescriptor desc = obj.getOwnPropertyDescriptor(cx, key);
+			if (desc != null && desc.isDataDescriptor()) {
+				obj.defineOwnProperty(cx, key, new PropertyDescriptor(
+						new ObserverGetter(desc),
+						new ObserverSetter(obj, key, desc, observer),
+						desc.isEnumerable(),
+						desc.isConfigurable(),
+						true));
+			}
+			return true;
+		}
+		return false;
+	}
+
+	private static class ObserverGetter extends BaseFunction {
+
+		private PropertyDescriptor descriptor;
+
+		ObserverGetter(PropertyDescriptor descriptor) {
+			this.descriptor = descriptor;
+		}
+
+		public Object call(Context cx, Scriptable scope, Scriptable thisObj,
+				Object[] args) {
+			return descriptor.getValue();
+		}
+	}
+
+	private static class ObserverSetter extends BaseFunction {
+
+		private ScriptableObject object;
+		private Object id;
+		private PropertyDescriptor descriptor;
+		private ChangeObserver observer;
+
+		ObserverSetter(ScriptableObject object, Object id,
+				PropertyDescriptor descriptor, ChangeObserver observer) {
+			this.object = object;
+			this.id = id;
+			this.descriptor = descriptor;
+			this.observer = observer;
+		}
+
+		public Object call(Context cx, Scriptable scope, Scriptable thisObj,
+				Object[] args) {
+			Object value = args[0];
+			descriptor.setValue(value);
+			observer.onChange(object, id, value);
+			return Undefined.instance;
 		}
 	}
 }

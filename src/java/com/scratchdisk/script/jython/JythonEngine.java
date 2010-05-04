@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.python.core.Py;
 import org.python.core.PyCode;
@@ -44,6 +45,7 @@ import org.python.core.PyObject;
 import org.python.core.PySystemState;
 
 import com.scratchdisk.script.ArgumentReader;
+import com.scratchdisk.script.ChangeObserver;
 import com.scratchdisk.script.Scope;
 import com.scratchdisk.script.Script;
 import com.scratchdisk.script.ScriptEngine;
@@ -106,5 +108,10 @@ public class JythonEngine extends ScriptEngine {
 	@Override
 	public ArgumentReader getArgumentReader(Object object) {
 		return null;
+	}
+
+	@Override
+	public boolean observe(Map object, Object key, ChangeObserver observer) {
+		return false;
 	}
 }

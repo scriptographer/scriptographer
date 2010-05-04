@@ -34,6 +34,7 @@ package com.scratchdisk.script;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.scratchdisk.util.ClassUtils;
 
@@ -104,6 +105,8 @@ public abstract class ScriptEngine {
 
 	public abstract ArgumentReader getArgumentReader(Object object);
 
+	public abstract boolean observe(Map object, Object key, ChangeObserver observer);
+
 	@SuppressWarnings("unchecked")
 	public static <T> T convertToJava(Object object, Class<T> type) {
 		if (type.isInstance(object))
@@ -123,6 +126,14 @@ public abstract class ScriptEngine {
 				return reader;
 		}
 		return null;
+	}
+
+	public static boolean observeChanges(Map object, Object key, ChangeObserver observer) {
+		for (ScriptEngine engine : enginesByName.values()) {
+			if (engine.observe(object, key, observer))
+				return true;
+		}
+		return false;
 	}
 
 	public abstract Scope createScope();
