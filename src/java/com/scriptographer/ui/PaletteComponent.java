@@ -242,6 +242,8 @@ public class PaletteComponent {
 					((FontPopupList) item).setFontWeight(weight);
 				break;
 			}
+			// Update palette's value object too
+			this.onChange(false);
 		}
 	}
 
@@ -395,7 +397,7 @@ public class PaletteComponent {
 		if (item instanceof PopupList) {
 			PopupList list = (PopupList) item;
 			list.removeAll();
-			if (options != null) {
+			if (options != null && options.length > 0) {
 				for (int i = 0; i < options.length; i++) {
 					Object option = options[i];
 					ListEntry entry = null;
@@ -406,9 +408,8 @@ public class PaletteComponent {
 						entry = new ListEntry(list);
 						entry.setText(option.toString());
 					}
-					if (i == 0)
-						entry.setSelected(true);
 				}
+				setValue(options[0]);
 			}
 		}
 	}
@@ -489,17 +490,17 @@ public class PaletteComponent {
 		// We cannot and do not support to change this at runtime
 	}
 
-	protected void onChange() {
+	protected void onChange(boolean callback) {
 		String name = getName();
 		Object value = getValue();
 		// First call onChange on Palette, so values get updated
 		if (item.dialog instanceof Palette) {
 			Palette palette = (Palette) item.dialog;
-			palette.onChange(this, name, value);
+			palette.onChange(this, name, value, callback);
 		}
 		// And now call onChange on the item. values will contain the same
 		// new value now too.
-		if (onChange != null)
+		if (callback && onChange != null)
 			ScriptographerEngine.invoke(onChange, this, value);
 	}
 
@@ -513,7 +514,7 @@ public class PaletteComponent {
 			item = new Slider(dialog) {
 				protected void onChange() {
 					super.onChange();
-					PaletteComponent.this.onChange();
+					PaletteComponent.this.onChange(true);
 				}
 			};
 			break;
@@ -521,7 +522,7 @@ public class PaletteComponent {
 			item = new CheckBox(dialog) {
 				protected void onClick() {
 					super.onClick();
-					PaletteComponent.this.onChange();
+					PaletteComponent.this.onChange(true);
 				}
 			};
 			break;
@@ -529,7 +530,7 @@ public class PaletteComponent {
 			item = new PopupList(dialog) {
 				protected void onChange() {
 					super.onChange();
-					PaletteComponent.this.onChange();
+					PaletteComponent.this.onChange(true);
 				}
 			};
 			break;
@@ -537,7 +538,7 @@ public class PaletteComponent {
 			item = new Button(dialog) {
 				protected void onClick() {
 					super.onClick();
-					PaletteComponent.this.onChange();
+					PaletteComponent.this.onChange(true);
 				}
 			};
 			break;
@@ -547,7 +548,7 @@ public class PaletteComponent {
 			item = new ColorButton(dialog) {
 				protected void onClick() {
 					super.onClick();
-					PaletteComponent.this.onChange();
+					PaletteComponent.this.onChange(true);
 				}
 			};
 			break;
@@ -557,7 +558,7 @@ public class PaletteComponent {
 					FontPopupListOption.VERTICAL
 			}) {
 				protected void onChange() {
-					PaletteComponent.this.onChange();
+					PaletteComponent.this.onChange(true);
 				}
 			};
 			break;
@@ -566,7 +567,7 @@ public class PaletteComponent {
 				item = new SpinEdit(dialog) {
 					protected void onChange() {
 						super.onChange();
-						PaletteComponent.this.onChange();
+						PaletteComponent.this.onChange(true);
 					}
 				};
 				break;
@@ -578,7 +579,7 @@ public class PaletteComponent {
 					: null;
 			TextEditItem textItem = new TextEdit(dialog, options) {
 				protected void onChange() {
-					PaletteComponent.this.onChange();
+					PaletteComponent.this.onChange(true);
 				}
 			};
 			item = textItem;

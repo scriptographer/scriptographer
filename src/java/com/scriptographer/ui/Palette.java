@@ -35,6 +35,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.scratchdisk.script.Callable;
+import com.scratchdisk.script.ChangeObserver;
+import com.scratchdisk.script.ScriptEngine;
 import com.scriptographer.ScriptographerEngine;
 import com.scriptographer.ui.layout.TableLayout;
 
@@ -42,11 +44,11 @@ import com.scriptographer.ui.layout.TableLayout;
  * @author lehni
  * 
  */
-public class Palette extends FloatingDialog {
+public class Palette extends FloatingDialog implements ChangeObserver {
 	private Map<String, Object> values;
 	private Map<String, PaletteComponent> components;
 	private boolean hasLabels;
-	
+
 	public Palette(String title, Map<String, Map<String, Object>> components,
 			Map<String, Object> values) {
 		super(new DialogOption[] {
@@ -54,6 +56,15 @@ public class Palette extends FloatingDialog {
 				DialogOption.SHOW_CYCLE,
 				DialogOption.REMEMBER_PLACING
 		});
+
+		if (values != null) {
+			// Observer all existing properties for changes
+			for (Object key : values.keySet())
+				ScriptEngine.observeChanges(values, key, this);	
+		} else {
+			values = new LinkedHashMap<String, Object>();
+		}
+		this.values = values;
 
 		double version = ScriptographerEngine.getApplicationVersion();
 		boolean upperCase = false;
@@ -76,7 +87,8 @@ public class Palette extends FloatingDialog {
 		// UI Requires 64px more to show title fully in palette windows.
 		setMinimumSize(width + extraWidth, -1);
 		setTitle(title);
-		PaletteComponent[] paletteItems = PaletteComponent.getItems(components, values);
+		PaletteComponent[] paletteItems =
+				PaletteComponent.getItems(components, values);
 		createLayout(this, paletteItems, false, 0);
 		this.components = new LinkedHashMap<String, PaletteComponent>();
 		hasLabels = false;
@@ -93,9 +105,10 @@ public class Palette extends FloatingDialog {
 			setMargin(2, 2, 0, 4);
 		else
 			setMargin(2, -1, 0, -1);
-		if (values == null)
-			values = new LinkedHashMap<String, Object>();
-		this.values = values;
+	}
+
+	public Palette(String title, Map<String, Map<String, Object>> components) {
+		this(title, components, null);
 	}
 
 	protected void onInitialize() {
@@ -103,10 +116,6 @@ public class Palette extends FloatingDialog {
 		// visible when they are created.
 		setVisible(true);
 		super.onInitialize();
-	}
-
-	public Palette(String title, Map<String, Map<String, Object>> components) {
-		this(title, components, null);
 	}
 
 	public Map<String, Object> getValues() {
@@ -118,6 +127,7 @@ public class Palette extends FloatingDialog {
 	}
 
 	private Callable onChange = null;
+	private boolean isChanging = false;
 
 	public Callable getOnChange() {
 		return onChange;
@@ -127,10 +137,30 @@ public class Palette extends FloatingDialog {
 		this.onChange = onChange;
 	}
 
-	protected void onChange(PaletteComponent item, String name, Object value) {
+	protected void onChange(PaletteComponent item, String name, Object value,
+			boolean callback) {
+		if (!values.containsKey(name)) {
+			// Make sure we observe new fields too. This has to do with the
+			// nature of change observing on JavaScript, where observers can
+			// only be installed for existing properties.
+			// So add a null property under that name now, then register the 
+			// observer to make sure it can register. The change after then
+			// trigers straight away.
+			values.put(name, null);
+			ScriptEngine.observeChanges(values, name, this);	
+		}
+		isChanging  = true;
 		values.put(name, value);
-		if (onChange != null)
+		isChanging = false;
+		if (callback && onChange != null)
 			ScriptographerEngine.invoke(onChange, this, item);
+	}
+
+	public void onChange(Map object, Object key, Object value) {
+		if (!isChanging) {
+			// System.out.println("Changed " + key + " = " + value);
+			components.get(key).setValue(value);
+		}
 	}
 
 	protected static TableLayout createLayout(Dialog dialog,
