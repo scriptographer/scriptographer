@@ -123,14 +123,23 @@ public class FontPopupList extends ItemGroup {
 	}
 
 	private boolean updateWeightList() {
+		// Try to preserve selected weight across fonts:
+		ListEntry selected = weightList.getSelectedEntry();
+		String current = selected != null ? selected.getText() : null;
+		selected = null;
 		weightList.removeAll();
 		FontFamily family = getFontFamily();
 		if (family != null) {
 			for (FontWeight weight : family) {
 				ListEntry entry = new ListEntry(weightList);
-				entry.setText(weight.getName());
+				String name = weight.getName();
+				entry.setText(name);
+				if (name.equals(current))
+					selected = entry;
 			}
-			weightList.setSelectedEntry(weightList.getFirst());
+			if (selected == null)
+				selected = weightList.getFirst();
+			weightList.setSelectedEntry(selected);
 			return true;
 		}
 		return false;

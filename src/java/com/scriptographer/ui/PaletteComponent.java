@@ -182,9 +182,15 @@ public class PaletteComponent {
 			case CHECKBOX:
 				return new Boolean(((ToggleItem) item).isChecked());
 			case LIST:
-				ListEntry active = ((PopupList) item).getSelectedEntry();
-				if (active != null)
-					return active.getText();
+				ListEntry selected = ((PopupList) item).getSelectedEntry();
+				if (selected != null) {
+					String text = selected.getText();
+					// Find original option.
+					for (Object option : options)
+						if (option != null && text.equals(option.toString()))
+							return option;
+					return null;
+				}
 				break;
 			case COLOR:
 				return ((ColorButton) item).getColor();
@@ -395,11 +401,14 @@ public class PaletteComponent {
 	public void setOptions(Object[] options) {
 		this.options = options;
 		if (item instanceof PopupList) {
+			Object current = getValue(), value = null;
 			PopupList list = (PopupList) item;
 			list.removeAll();
 			if (options != null && options.length > 0) {
 				for (int i = 0; i < options.length; i++) {
 					Object option = options[i];
+					if (option.equals(current))
+						value = option;
 					ListEntry entry = null;
 					if (option instanceof ListEntry) {
 						entry = (ListEntry) option;
@@ -409,7 +418,9 @@ public class PaletteComponent {
 						entry.setText(option.toString());
 					}
 				}
-				setValue(options[0]);
+				if (value == null)
+					value = options[0];
+				setValue(value);
 			}
 		}
 	}
