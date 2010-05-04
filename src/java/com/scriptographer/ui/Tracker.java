@@ -243,12 +243,10 @@ public class Tracker extends NativeObject {
 	 * creation of new Tracker objects on each notification, and nevertheless a
 	 * clean interface on the TrackerListener side. The disadvantage maybe no
 	 * thread safety, but that's not an issue with ADM right now.
-	 * 
-	 * @throws Exception
 	 */
 	protected boolean onTrack(NotificationHandler handler, int handle,
 			int action, int modifiers, int px, int py, int mouseState,
-			int virtualKey, char character, long time) throws Exception {
+			int virtualKey, char character, long time) {
 		this.handle = handle;
 		this.action = action;
 		this.modifiers = modifiers;

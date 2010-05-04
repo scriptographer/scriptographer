@@ -66,14 +66,14 @@ public abstract class ValueItem extends Item {
 		this.onPreChange = onPreChange;
 	}
 	
-	protected void onPreChange() throws Exception {
+	protected void onPreChange() {
 		if (onPreChange != null)
 			ScriptographerEngine.invoke(onPreChange, this);
 	}
 	
 	private Callable onChange = null;
 	
-	protected void onChange() throws Exception {
+	protected void onChange() {
 		if (onChange != null)
 			ScriptographerEngine.invoke(onChange, this);
 	}
@@ -96,12 +96,12 @@ public abstract class ValueItem extends Item {
 		this.onNumberOutOfBounds = onNumberOutOfBounds;
 	}
 	
-	protected void onNumberOutOfBounds() throws Exception {
+	protected void onNumberOutOfBounds() {
 		if (onNumberOutOfBounds != null)
 			ScriptographerEngine.invoke(onNumberOutOfBounds, this);
 	}
 
-	protected void onNotify(Notifier notifier) throws Exception {
+	protected void onNotify(Notifier notifier) {
 		super.onNotify(notifier);
 		switch (notifier) {
 			case NUMBER_OUT_OF_BOUNDS:

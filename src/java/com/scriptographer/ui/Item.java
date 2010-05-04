@@ -154,7 +154,7 @@ public abstract class Item extends Component {
 		this.onInitialize = onInitialize;
 	}
 
-	protected void onInitialize() throws Exception {
+	protected void onInitialize() {
 		if (onInitialize != null)
 			ScriptographerEngine.invoke(onInitialize, this);
 	}
@@ -169,7 +169,7 @@ public abstract class Item extends Component {
 		this.onDestroy = onDestroy;
 	}
 
-	protected void onDestroy() throws Exception {
+	protected void onDestroy() {
 		// retrieve through getter so it can be overridden by subclasses,
 		// e.g. HierarchyList
 		Callable onDestroy = this.getOnDestroy();
@@ -177,7 +177,7 @@ public abstract class Item extends Component {
 			ScriptographerEngine.invoke(onDestroy, this);
 	}
 
-	protected void onNotify(Notifier notifier) throws Exception {
+	protected void onNotify(Notifier notifier) {
 		switch (notifier) {
 		case INITIALIZE:
 			onInitialize();

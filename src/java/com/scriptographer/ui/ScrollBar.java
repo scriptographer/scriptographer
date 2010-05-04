@@ -53,11 +53,11 @@ public class ScrollBar extends ValueItem {
 		this.onChange = onChange;
 	}
 
-	protected void onChange() throws Exception {
+	protected void onChange() {
 		ScriptographerEngine.invoke(onChange, this);
 	}
 
-	protected void onNotify(Notifier notifier, ListEntry entry) throws Exception {
+	protected void onNotify(Notifier notifier, ListEntry entry) {
 		// override the default behavior and give onChange for both
 		// notifiers:
 		switch(notifier) {

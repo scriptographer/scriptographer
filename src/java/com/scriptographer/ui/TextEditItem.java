@@ -122,7 +122,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onPreCut = onPreCut;
 	}
 
-	protected void onPreCut() throws Exception {
+	protected void onPreCut() {
 		if (onPreCut != null)
 			ScriptographerEngine.invoke(onPreCut, this);
 	}
@@ -137,7 +137,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onCut = onCut;
 	}
 
-	protected void onCut() throws Exception {
+	protected void onCut() {
 		if (onCut != null)
 			ScriptographerEngine.invoke(onCut, this);
 	}
@@ -152,7 +152,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onPreCopy = onPreCopy;
 	}
 
-	protected void onPreCopy() throws Exception {
+	protected void onPreCopy() {
 		if (onPreCopy != null)
 			ScriptographerEngine.invoke(onPreCopy, this);
 	}
@@ -167,7 +167,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onCopy = onCopy;
 	}
 
-	protected void onCopy() throws Exception {
+	protected void onCopy() {
 		if (onCopy != null)
 			ScriptographerEngine.invoke(onCopy, this);
 	}
@@ -182,7 +182,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onPrePaste = onPrePaste;
 	}
 
-	protected void onPrePaste() throws Exception {
+	protected void onPrePaste() {
 		if (onPrePaste != null)
 			ScriptographerEngine.invoke(onPrePaste, this);
 	}
@@ -197,7 +197,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onPaste = onPaste;
 	}
 
-	protected void onPaste() throws Exception {
+	protected void onPaste() {
 		if (onPaste != null)
 			ScriptographerEngine.invoke(onPaste, this);
 	}
@@ -212,7 +212,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onPreClear = onPreClear;
 	}
 
-	protected void onPreClear() throws Exception {
+	protected void onPreClear() {
 		if (onPreClear != null)
 			ScriptographerEngine.invoke(onPreClear, this);
 	}
@@ -227,7 +227,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onClear = onClear;
 	}
 
-	protected void onClear() throws Exception {
+	protected void onClear() {
 		if (onClear != null)
 			ScriptographerEngine.invoke(onClear, this);
 	}
@@ -242,7 +242,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onPreSelectionChange = onPreSelectionChange;
 	}
 
-	protected void onPreSelectionChange() throws Exception {
+	protected void onPreSelectionChange() {
 		if (onPreSelectionChange != null)
 			ScriptographerEngine.invoke(onPreSelectionChange, this);
 	}
@@ -257,7 +257,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onSelectionChange = onSelectionChange;
 	}
 
-	protected void onSelectionChange() throws Exception {
+	protected void onSelectionChange() {
 		if (onSelectionChange != null)
 			ScriptographerEngine.invoke(onSelectionChange, this);
 	}
@@ -271,7 +271,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onPreRedo = onPreRedo;
 	}
 
-	protected void onPreRedo() throws Exception {
+	protected void onPreRedo() {
 		if (onPreRedo != null)
 			ScriptographerEngine.invoke(onPreRedo, this);
 	}
@@ -286,7 +286,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onRedo = onRedo;
 	}
 
-	protected void onRedo() throws Exception {
+	protected void onRedo() {
 		if (onRedo != null)
 			ScriptographerEngine.invoke(onRedo, this);
 	}
@@ -301,7 +301,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onPreUndo = onPreUndo;
 	}
 
-	protected void onPreUndo() throws Exception {
+	protected void onPreUndo() {
 		if (onPreUndo != null)
 			ScriptographerEngine.invoke(onPreUndo, this);
 	}
@@ -316,12 +316,12 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		this.onUndo = onUndo;
 	}
 
-	protected void onUndo() throws Exception {
+	protected void onUndo() {
 		if (onUndo != null)
 			ScriptographerEngine.invoke(onUndo, this);
 	}
 	
-	protected void onNotify(Notifier notifier, ListEntry entry) throws Exception {
+	protected void onNotify(Notifier notifier, ListEntry entry) {
 		switch (notifier) {
 			case PRE_CLIPBOARD_CUT:
 				onPreCut();
@@ -458,7 +458,7 @@ public abstract class TextEditItem<S> extends TextValueItem {
 				// right now...
 				// TODO: Consider adding  support for listeners.
 				popupList = new PopupList(dialog, handle, true) {
-					protected void onNotify(Notifier notifier) throws Exception {
+					protected void onNotify(Notifier notifier) {
 						onNotify(notifier);
 					}
 				};

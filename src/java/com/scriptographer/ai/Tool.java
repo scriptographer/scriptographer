@@ -261,7 +261,7 @@ public class Tool extends ToolEventHandler {
 	 */
 	@SuppressWarnings("unused")
 	private static int onHandleEvent(int handle, String selector, float x,
-			float y, int pressure, int modifiers) throws Exception {
+			float y, int pressure, int modifiers) {
 		Tool tool = getTool(handle);
 		ToolEventType type = ToolEventType.get(selector); 
 		if (tool != null && type != null) {

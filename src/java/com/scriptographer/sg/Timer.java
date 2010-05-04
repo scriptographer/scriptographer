@@ -201,7 +201,7 @@ public class Timer {
 		return onExecute;
 	}
 
-	protected void onExecute() throws Exception {
+	protected void onExecute() {
 		if (onExecute != null)
 			ScriptographerEngine.invoke(onExecute, this);
 	}
@@ -210,7 +210,7 @@ public class Timer {
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static void onExecute(int handle) throws Exception {
+	private static void onExecute(int handle) {
 		Timer timer = getTimer(handle);
 		if (timer != null) {
 			// simulate one shot timers:

@@ -82,7 +82,7 @@ public class ListEntry extends NotificationHandler {
 	public native boolean defaultTrack(Tracker tracker);
 	public native void defaultDraw(Drawer drawer);
 
-	protected boolean onDraw(Drawer drawer) throws Exception {
+	protected boolean onDraw(Drawer drawer) {
 		Callable onDrawEntry = list.getOnDrawEntry();
 		if (onDrawEntry != null) {
 			Object result = ScriptographerEngine.invoke(onDrawEntry, list, drawer, this);
@@ -92,7 +92,7 @@ public class ListEntry extends NotificationHandler {
 		return true;
 	}
 
-	protected boolean onTrack(Tracker tracker) throws Exception {
+	protected boolean onTrack(Tracker tracker) {
 		Callable onTrackEntry = list.getOnTrackEntry();
 		if (onTrackEntry != null) {
 			Object res = ScriptographerEngine.invoke(onTrackEntry, list, tracker, this);
@@ -112,7 +112,7 @@ public class ListEntry extends NotificationHandler {
 		this.onDestroy = onDestroy;
 	}
 
-	protected void onDestroy() throws Exception {
+	protected void onDestroy() {
 		if (onDestroy != null)
 			ScriptographerEngine.invoke(onDestroy, this);
 		
@@ -131,7 +131,7 @@ public class ListEntry extends NotificationHandler {
 		this.onSelect = onSelect;
 	}
 
-	protected void onSelect() throws Exception {
+	protected void onSelect() {
 		if (onSelect != null)
 			ScriptographerEngine.invoke(onSelect, this);
 		Callable onSelectEntry = list.getOnSelectEntry();
@@ -149,7 +149,7 @@ public class ListEntry extends NotificationHandler {
 		this.onChangeText = onChangeText;
 	}
 	
-	protected void onChangeText() throws Exception {
+	protected void onChangeText() {
 		if (onChangeText != null)
 			ScriptographerEngine.invoke(onChangeText, this);
 		Callable onChangeEntryText = list.getOnChangeEntryText();
@@ -157,7 +157,7 @@ public class ListEntry extends NotificationHandler {
 			ScriptographerEngine.invoke(onChangeEntryText, list, this);
 	}
 	
-	protected void onNotify(Notifier notifier) throws Exception {
+	protected void onNotify(Notifier notifier) {
 		switch (notifier) {
 		case USER_CHANGED:
 			onSelect();

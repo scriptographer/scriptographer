@@ -39,7 +39,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import com.scratchdisk.script.Callable;
@@ -177,9 +176,8 @@ public abstract class Dialog extends Component {
 	 * when setVisible / doModal / setGroupInfo is called.
 	 * We fake this through onActivate and a native dialog timer.
 	 * Whatever fires first, triggers initialize
-	 * @throws Exception 
 	 */
-	private void initialize(boolean setBoundaries, boolean initBounds) throws Exception {
+	private void initialize(boolean setBoundaries, boolean initBounds) {
 		// initialize can also be triggered e.g. by setGroupInfo, which needs to
 		// be ignored
 		if (!ignoreSizeChange) {
@@ -290,11 +288,9 @@ public abstract class Dialog extends Component {
 	 * with positioning of floating palettes. initalizeAll prevents that
 	 * problem. It is fired from {@link ScriptographerEngine.init}
 	 * 
-	 * @throws Exception
-	 * 
 	 * @jshide
 	 */
-	public static void initializeAll() throws Exception {
+	public static void initializeAll() {
 		for (Dialog dialog : dialogs)
 			dialog.initialize(false, false);
 	}
@@ -307,7 +303,7 @@ public abstract class Dialog extends Component {
 		return false;
 	}
 
-	public void savePreferences(String name) throws BackingStoreException {
+	public void savePreferences(String name) {
 		Preferences prefs = preferences.node(name);
 		// Saving the palette position, tab/dock preference.
 		DialogGroupInfo groupInfo = getGroupInfo();
@@ -318,39 +314,43 @@ public abstract class Dialog extends Component {
 				bounds.width + " " + bounds.height);
 	}
 
-	public boolean loadPreferences(String name) throws BackingStoreException {
-		if (preferences.nodeExists(name)) {
-			Preferences prefs = preferences.node(name);
+	public boolean loadPreferences(String name) {
+		try {
+			if (preferences.nodeExists(name)) {
+				Preferences prefs = preferences.node(name);
 
-			// Restore the size and location of the dialog
-			String[] parts = prefs.get("bounds", "").split("\\s");
-			Rectangle bounds;
-			if (parts.length == 4) {
-				bounds = new Rectangle(Integer.parseInt(parts[0]),
-						Integer.parseInt(parts[1]),
-						Integer.parseInt(parts[2]),
-						Integer.parseInt(parts[3]));
-			} else {
-				// Pick a default location in case it has never come up before
-				// on this machine
-				Rectangle defaultBounds = Dialog.getPaletteLayoutBounds();
-				bounds = getBounds();
-				bounds.setPoint(defaultBounds.x, defaultBounds.y);
+				// Restore the size and location of the dialog
+				String[] parts = prefs.get("bounds", "").split("\\s");
+				Rectangle bounds;
+				if (parts.length == 4) {
+					bounds = new Rectangle(Integer.parseInt(parts[0]),
+							Integer.parseInt(parts[1]),
+							Integer.parseInt(parts[2]),
+							Integer.parseInt(parts[3]));
+				} else {
+					// Pick a default location in case it has never come up before
+					// on this machine
+					Rectangle defaultBounds = Dialog.getPaletteLayoutBounds();
+					bounds = getBounds();
+					bounds.setPoint(defaultBounds.x, defaultBounds.y);
+				}
+				String group = prefs.get("group", "");
+				int positionCode = prefs.getInt("positionCode",
+						DialogGroupInfo.POSITION_DEFAULT);
+				// Restore the position code of the dialog
+				setGroupInfo(group, positionCode);
+				// Now set the bounds
+				BoundsSetter setter = new BoundsSetter(bounds);
+				setter.run();
+				// Sometimes we need to set bounds again afterwards, as OWL seems
+				// to interfere here...
+				// This leads to annoying jumping around of the dialog.
+				// TODO: See if this can be fixed somehow?
+				invokeLater(setter);
+				return true;
 			}
-			String group = prefs.get("group", "");
-			int positionCode = prefs.getInt("positionCode",
-					DialogGroupInfo.POSITION_DEFAULT);
-			// Restore the position code of the dialog
-			setGroupInfo(group, positionCode);
-			// Now set the bounds
-			BoundsSetter setter = new BoundsSetter(bounds);
-			setter.run();
-			// Sometimes we need to set bounds again afterwards, as OWL seems
-			// to interfere here...
-			// This leads to annoying jumping around of the dialog.
-			// TODO: See if this can be fixed somehow?
-			invokeLater(setter);
-			return true;
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 		return false;
 	}
@@ -410,7 +410,7 @@ public abstract class Dialog extends Component {
 		this.onDestroy = onDestroy;
 	}
 
-	protected void onDestroy() throws Exception {
+	protected void onDestroy() {
 		if (onDestroy != null)
 			ScriptographerEngine.invoke(onDestroy, this);
 	}
@@ -425,7 +425,7 @@ public abstract class Dialog extends Component {
 		this.onInitialize = onInitialize;
 	}
 
-	protected void onInitialize() throws Exception {
+	protected void onInitialize() {
 		if (onInitialize != null)
 			ScriptographerEngine.invoke(onInitialize, this);
 	}
@@ -440,7 +440,7 @@ public abstract class Dialog extends Component {
 		this.onActivate = onActivate;
 	}
 
-	protected void onActivate() throws Exception {
+	protected void onActivate() {
 		if (onActivate != null)
 			ScriptographerEngine.invoke(onActivate, this);
 	}
@@ -455,7 +455,7 @@ public abstract class Dialog extends Component {
 		this.onDeactivate = onDeactivate;
 	}
 
-	protected void onDeactivate() throws Exception {
+	protected void onDeactivate() {
 		if (onDeactivate != null)
 			ScriptographerEngine.invoke(onDeactivate, this);
 	}
@@ -470,7 +470,7 @@ public abstract class Dialog extends Component {
 		this.onShow = onShow;
 	}
 
-	protected void onShow() throws Exception {
+	protected void onShow() {
 		if (onShow != null)
 			ScriptographerEngine.invoke(onShow, this);
 	}
@@ -485,7 +485,7 @@ public abstract class Dialog extends Component {
 		this.onHide = onHide;
 	}
 
-	protected void onHide() throws Exception {
+	protected void onHide() {
 		if (onHide != null)
 			ScriptographerEngine.invoke(onHide, this);
 	}
@@ -500,7 +500,7 @@ public abstract class Dialog extends Component {
 		this.onMove = onMove;
 	}
 
-	protected void onMove() throws Exception {
+	protected void onMove() {
 		if (onMove != null)
 			ScriptographerEngine.invoke(onMove, this);
 	}
@@ -515,7 +515,7 @@ public abstract class Dialog extends Component {
 		this.onClose = onClose;
 	}
 
-	protected void onClose() throws Exception {
+	protected void onClose() {
 		if (onClose != null)
 			ScriptographerEngine.invoke(onClose, this);
 	}
@@ -530,7 +530,7 @@ public abstract class Dialog extends Component {
 		this.onZoom = onZoom;
 	}
 
-	protected void onZoom() throws Exception {
+	protected void onZoom() {
 		if (onZoom != null)
 			ScriptographerEngine.invoke(onZoom, this);
 	}
@@ -545,7 +545,7 @@ public abstract class Dialog extends Component {
 		this.onCycle = onCycle;
 	}
 
-	protected void onCycle() throws Exception {
+	protected void onCycle() {
 		if (onCycle != null)
 			ScriptographerEngine.invoke(onCycle, this);
 	}
@@ -560,7 +560,7 @@ public abstract class Dialog extends Component {
 		this.onCollapse = onCollapse;
 	}
 
-	protected void onCollapse() throws Exception {
+	protected void onCollapse() {
 		if (onCollapse != null)
 			ScriptographerEngine.invoke(onCollapse, this);
 	}
@@ -575,7 +575,7 @@ public abstract class Dialog extends Component {
 		this.onExpand = onExpand;
 	}
 
-	protected void onExpand() throws Exception {
+	protected void onExpand() {
 		if (onExpand != null)
 			ScriptographerEngine.invoke(onExpand, this);
 	}
@@ -593,12 +593,12 @@ public abstract class Dialog extends Component {
 		this.onContextMenuChange = onContextMenuChange;
 	}
 
-	protected void onContextMenuChange() throws Exception {
+	protected void onContextMenuChange() {
 		if (onContextMenuChange != null)
 			ScriptographerEngine.invoke(onContextMenuChange, this);
 	}
 
-	protected void onNotify(Notifier notifier) throws Exception {
+	protected void onNotify(Notifier notifier) {
 		isNotifying = true;
 		try {
 			switch (notifier) {

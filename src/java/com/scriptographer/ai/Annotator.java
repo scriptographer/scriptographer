@@ -163,7 +163,7 @@ public class Annotator extends NativeObject {
 		return onDraw;
 	}
 
-	protected void onDraw(Drawer drawer, DocumentView view) throws Exception {
+	protected void onDraw(Drawer drawer, DocumentView view) {
 		if (onDraw != null)
 			ScriptographerEngine.invoke(onDraw, this, drawer, view);
 	}
@@ -178,7 +178,7 @@ public class Annotator extends NativeObject {
 		return onInvalidate;
 	}
 
-	protected void onInvalidate() throws Exception {
+	protected void onInvalidate() {
 		if (onInvalidate != null)
 			ScriptographerEngine.invoke(onInvalidate, this);
 	}
@@ -187,8 +187,7 @@ public class Annotator extends NativeObject {
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static void onDraw(int handle, int portHandle, int viewHandle, int docHandle)
-			throws Exception {
+	private static void onDraw(int handle, int portHandle, int viewHandle, int docHandle) {
 		Annotator annotator = getAnnotator(handle);
 		if (annotator != null) {
 			annotator.onDraw(createDrawer(portHandle),
@@ -197,7 +196,7 @@ public class Annotator extends NativeObject {
 	}
 	
 	@SuppressWarnings("unused")
-	private static void onInvalidate(int handle) throws Exception {
+	private static void onInvalidate(int handle) {
 		Annotator annotator = getAnnotator(handle);
 		if (annotator != null) {
 			annotator.onInvalidate();

@@ -511,7 +511,7 @@ public class PaletteComponent {
 			break;
 		case SLIDER:
 			item = new Slider(dialog) {
-				protected void onChange() throws Exception {
+				protected void onChange() {
 					super.onChange();
 					PaletteComponent.this.onChange();
 				}
@@ -519,7 +519,7 @@ public class PaletteComponent {
 			break;
 		case CHECKBOX:
 			item = new CheckBox(dialog) {
-				protected void onClick() throws Exception {
+				protected void onClick() {
 					super.onClick();
 					PaletteComponent.this.onChange();
 				}
@@ -527,7 +527,7 @@ public class PaletteComponent {
 			break;
 		case LIST:
 			item = new PopupList(dialog) {
-				protected void onChange() throws Exception {
+				protected void onChange() {
 					super.onChange();
 					PaletteComponent.this.onChange();
 				}
@@ -535,7 +535,7 @@ public class PaletteComponent {
 			break;
 		case BUTTON:
 			item = new Button(dialog) {
-				protected void onClick() throws Exception {
+				protected void onClick() {
 					super.onClick();
 					PaletteComponent.this.onChange();
 				}
@@ -545,7 +545,7 @@ public class PaletteComponent {
 			break;
 		case COLOR:
 			item = new ColorButton(dialog) {
-				protected void onClick() throws Exception {
+				protected void onClick() {
 					super.onClick();
 					PaletteComponent.this.onChange();
 				}
@@ -556,7 +556,7 @@ public class PaletteComponent {
 					FontPopupListOption.EDITABLE,
 					FontPopupListOption.VERTICAL
 			}) {
-				protected void onChange() throws Exception {
+				protected void onChange() {
 					PaletteComponent.this.onChange();
 				}
 			};
@@ -564,7 +564,7 @@ public class PaletteComponent {
 		case NUMBER:
 			if (steppers) {
 				item = new SpinEdit(dialog) {
-					protected void onChange() throws Exception {
+					protected void onChange() {
 						super.onChange();
 						PaletteComponent.this.onChange();
 					}
@@ -577,7 +577,7 @@ public class PaletteComponent {
 					? new TextOption[] { TextOption.MULTILINE }
 					: null;
 			TextEditItem textItem = new TextEdit(dialog, options) {
-				protected void onChange() throws Exception {
+				protected void onChange() {
 					PaletteComponent.this.onChange();
 				}
 			};

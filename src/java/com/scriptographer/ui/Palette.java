@@ -98,7 +98,7 @@ public class Palette extends FloatingDialog {
 		this.values = values;
 	}
 
-	protected void onInitialize() throws Exception {
+	protected void onInitialize() {
 		// Since palettes remember placing, we need to explicitly set them
 		// visible when they are created.
 		setVisible(true);

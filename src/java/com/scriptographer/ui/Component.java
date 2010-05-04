@@ -182,7 +182,7 @@ abstract class Component extends NotificationHandler {
 		return onTrack;
 	}
 
-	protected boolean onTrack(Tracker tracker) throws Exception {
+	protected boolean onTrack(Tracker tracker) {
 		// Retrieve through getter so it can be overridden by subclasses,
 		// e.g. HierarchyList
 		Callable onTrack = this.getOnTrack();
@@ -203,7 +203,7 @@ abstract class Component extends NotificationHandler {
 		return onDraw;
 	}
 
-	protected boolean onDraw(Drawer drawer) throws Exception {
+	protected boolean onDraw(Drawer drawer) {
 		// Retrieve through getter so it can be overridden by subclasses,
 		// e.g. HierarchyList
 		Callable onDraw = this.getOnDraw();
@@ -225,7 +225,7 @@ abstract class Component extends NotificationHandler {
 		return onResize;
 	}
 
-	protected void onResize(int dx, int dy) throws Exception {
+	protected void onResize(int dx, int dy) {
 		// Retrieve through getter so it can be overridden by subclasses,
 		// e.g. HierarchyList
 		Callable onResize = this.getOnResize();

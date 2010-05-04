@@ -207,7 +207,7 @@ public class TopLevel extends ImporterTopLevel {
 	 * </code>
 	 */
 	public static void evaluate(Context cx, Scriptable thisObj, Object[] args,
-			Function funObj) throws Exception {
+			Function funObj) {
 		ScriptEngine engine = ScriptEngine.getEngineByName("JavaScript");
 		engine.evaluate(Context.toString(args[0]), "evaluate",
 				engine.getScope(thisObj));

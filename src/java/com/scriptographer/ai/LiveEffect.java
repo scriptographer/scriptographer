@@ -377,7 +377,7 @@ public class LiveEffect extends NativeObject {
 		this.onEditParameters = onEditParameters;
 	}
 
-	protected void onEditParameters(LiveEffectEvent event) throws Exception {
+	protected void onEditParameters(LiveEffectEvent event) {
 		if (onEditParameters != null)
 			ScriptographerEngine.invoke(
 					onEditParameters, this, event);
@@ -393,7 +393,7 @@ public class LiveEffect extends NativeObject {
 		this.onCalculate = onCalculate;
 	}
 
-	protected void onCalculate(LiveEffectEvent event) throws Exception {
+	protected void onCalculate(LiveEffectEvent event) {
 		if (onCalculate != null)
 			ScriptographerEngine.invoke(onCalculate, this, event);
 	}
@@ -408,7 +408,7 @@ public class LiveEffect extends NativeObject {
 		this.onGetInputType = onGetInputType;
 	}
 
-	protected int onGetInputType(LiveEffectEvent event) throws Exception {
+	protected int onGetInputType(LiveEffectEvent event) {
 		if (onGetInputType != null) {
 			Object ret = ScriptographerEngine.invoke(
 					onGetInputType, this, event);
@@ -445,8 +445,7 @@ public class LiveEffect extends NativeObject {
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static void onEditParameters(int handle, int dataHandle)
-			throws Exception {
+	private static void onEditParameters(int handle, int dataHandle) {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
 			effect.onEditParameters(new LiveEffectEvent(0, dataHandle));
@@ -457,8 +456,7 @@ public class LiveEffect extends NativeObject {
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static int onCalculate(int handle, Item item, int dataHandle)
-			throws Exception {
+	private static int onCalculate(int handle, Item item, int dataHandle) {
 		LiveEffect effect = getEffect(handle);
 		if (effect != null) {
 			LiveEffectParameters parameters =
@@ -518,7 +516,7 @@ public class LiveEffect extends NativeObject {
 	 */
 	@SuppressWarnings("unused")
 	private static int onGetInputType(int handle, int itemHandle,
-			int parametersHandle) throws Exception {
+			int parametersHandle) {
 		// For improved performance of onGetInputType, we do not wrap the handle
 		// on the native side already, as often it is not even used. Instead
 		// The LiveEffectEvent takes care of that on demand.

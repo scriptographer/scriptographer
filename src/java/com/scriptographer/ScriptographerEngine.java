@@ -110,7 +110,7 @@ public class ScriptographerEngine {
 	private ScriptographerEngine() {
 	}
 
-	public static void init(String pluginPath) throws Exception {
+	public static void init(String pluginPath) {
 		mainThread = Thread.currentThread();
 		// Redirect system streams to the console.
 		ConsoleOutputStream.enableRedirection(true);
@@ -619,7 +619,7 @@ public class ScriptographerEngine {
 	 * To be called from the native environment.
 	 */
 	@SuppressWarnings("unused")
-	private static void onHandleEvent(int type) throws Exception {
+	private static void onHandleEvent(int type) {
 		// TODO: There is currently no way to use these callbacks in a Java-only
 		// use of the API. Find one?
 		callCallbacks(callbackNames[type]);

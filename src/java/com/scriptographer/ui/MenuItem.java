@@ -232,7 +232,7 @@ public class MenuItem extends NativeObject{
 		this.onSelect = onSelect;
 	}
 
-	protected void onSelect() throws Exception {
+	protected void onSelect() {
 		if (onSelect != null)
 			ScriptographerEngine.invoke(onSelect, this);
 	}
@@ -251,8 +251,7 @@ public class MenuItem extends NativeObject{
 		this.setOptions(options);
 	}
 	
-	protected void onUpdate(int inArtwork, int isSelected, int isTrue)
-			throws Exception {
+	protected void onUpdate(int inArtwork, int isSelected, int isTrue) {
 		if (onUpdate != null)
 			ScriptographerEngine.invoke(onUpdate, this);
 	}
@@ -261,7 +260,7 @@ public class MenuItem extends NativeObject{
 	 * To be called from the native environment:
 	 */
 	@SuppressWarnings("unused")
-	private static void onSelect(int handle) throws Exception {
+	private static void onSelect(int handle) {
 		MenuItem item = getItem(handle);
 		if (item != null)
 			item.onSelect();
@@ -272,7 +271,7 @@ public class MenuItem extends NativeObject{
 	 */
 	@SuppressWarnings("unused")
 	private static void onUpdate(int handle, int inArtwork, int isSelected,
-			int isTrue) throws Exception {
+			int isTrue) {
 		MenuItem item = getItem(handle);
 		if (item != null)
 			item.onUpdate(inArtwork, isSelected, isTrue);

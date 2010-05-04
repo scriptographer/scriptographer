@@ -61,7 +61,7 @@ public class FontPopupList extends ItemGroup {
 			TextEditItem familyEdit = new TextEdit(dialog, new TextOption[] {
 					TextOption.POPUP, TextOption.SCROLLING
 			}) {
-				protected void onChange() throws Exception {
+				protected void onChange() {
 					if (updateTextEdit(this) && updateWeightList())
 						FontPopupList.this.onChange();
 				}
@@ -71,7 +71,7 @@ public class FontPopupList extends ItemGroup {
 			TextEditItem weightEdit = new TextEdit(dialog, new TextOption[] {
 					TextOption.POPUP, TextOption.SCROLLING
 			}) {
-				protected void onChange() throws Exception {
+				protected void onChange() {
 					if (updateTextEdit(this))
 						FontPopupList.this.onChange();
 				}
@@ -80,13 +80,13 @@ public class FontPopupList extends ItemGroup {
 			weightList = weightEdit.getPopupList();
 		} else {
 			familyItem = familyList = new PopupList(dialog) {
-				protected void onChange() throws Exception {
+				protected void onChange() {
 					if (updateWeightList())
 						FontPopupList.this.onChange();
 			}
 			};
 			weightItem = weightList = new PopupList(dialog){
-				protected void onChange() throws Exception {
+				protected void onChange() {
 					FontPopupList.this.onChange();
 				}
 			};
@@ -152,7 +152,7 @@ public class FontPopupList extends ItemGroup {
 
 	private Callable onChange = null;
 
-	protected void onChange() throws Exception {
+	protected void onChange() {
 		if (onChange != null)
 			ScriptographerEngine.invoke(onChange, this);
 	}

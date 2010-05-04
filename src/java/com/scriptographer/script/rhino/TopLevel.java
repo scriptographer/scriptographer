@@ -372,7 +372,7 @@ public class TopLevel extends com.scratchdisk.script.rhino.TopLevel {
 	 * used for java.io.File in Scriptographer.
 	 */
 	public static void mapJavaClass(Context cx, Scriptable thisObj,
-			Object[] args, Function funObj) throws Exception {
+			Object[] args, Function funObj) {
 		if (args.length == 2) {
 			for (int i = 0; i < args.length; i++)
 				args[i] = Context.jsToJava(args[i], Object.class);

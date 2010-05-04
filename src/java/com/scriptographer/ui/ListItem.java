@@ -93,14 +93,14 @@ public abstract class ListItem<E extends ListEntry> extends Item implements
 		this.onPreChange = onPreChange;
 	}
 	
-	protected void onPreChange() throws Exception {
+	protected void onPreChange() {
 		if (onPreChange != null)
 			ScriptographerEngine.invoke(onPreChange, this);
 	}
 	
 	private Callable onChange = null;
 	
-	protected void onChange() throws Exception {
+	protected void onChange() {
 		if (onChange != null)
 			ScriptographerEngine.invoke(onChange, this);
 	}
@@ -113,7 +113,7 @@ public abstract class ListItem<E extends ListEntry> extends Item implements
 		this.onChange = onChange;
 	}
 
-	protected void onNotify(Notifier notifier) throws Exception {
+	protected void onNotify(Notifier notifier) {
 		super.onNotify(notifier);
 		switch(notifier) {
 		case USER_CHANGED:
@@ -213,7 +213,7 @@ public abstract class ListItem<E extends ListEntry> extends Item implements
 		this.onChangeEntryText = onChangeEntryText;
 	}
 
-	protected void onNotify(Notifier notifier, E entry) throws Exception {
+	protected void onNotify(Notifier notifier, E entry) {
 		// redirect to the entry that takes care of this:
 		entry.onNotify(notifier);
 	}

@@ -62,9 +62,9 @@ public class Button extends TextItem {
 	/*
 	 * Callback functions
 	 */
-	
+
 	private Callable onClick = null;
-	
+
 	public Callable getOnClick() {
 		return onClick;
 	}
@@ -73,12 +73,12 @@ public class Button extends TextItem {
 		this.onClick = onClick;
 	}
 
-	protected void onClick() throws Exception {
+	protected void onClick() {
 		if (onClick != null)
 			ScriptographerEngine.invoke(onClick, this);
 	}
-	
-	protected void onNotify(Notifier notifier) throws Exception {
+
+	protected void onNotify(Notifier notifier) {
 		super.onNotify(notifier);
 		switch (notifier) {
 			case USER_CHANGED:
@@ -86,7 +86,7 @@ public class Button extends TextItem {
 				break;
 		}
 	}
-	
+
 	/**
 	 * Picture stuff
 	 */

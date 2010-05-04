@@ -72,7 +72,7 @@ public class ColorButton extends ImageButton {
 		setColor(color);
 	}
 
-	protected void onClick() throws Exception {
+	protected void onClick() {
 		Color color = Dialog.chooseColor(this.color);
 		if(color != null) {
 			setColor(color);

@@ -104,12 +104,12 @@ public class ModalDialog extends Dialog {
 
 	private native void fixModal();
 
-	protected void onHide() throws Exception {
+	protected void onHide() {
 		this.endModal();
 		super.onHide();
 	}
 
-	protected void onActivate() throws Exception {
+	protected void onActivate() {
 		// This is part of a workaround for a bug in Illustrator:
 		// invisible and inactive modal dialogs seem to get active
 		// but remain invisible after another modal dialog was 
@@ -126,7 +126,7 @@ public class ModalDialog extends Dialog {
 		}
 	}
 
-	protected void onDeactivate() throws Exception {
+	protected void onDeactivate() {
 		if (fixModal) {
 			fixModal = false;
 		} else {

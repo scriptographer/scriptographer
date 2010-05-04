@@ -55,7 +55,7 @@ public class PopupMenu extends ListItem<ListEntry> {
 		return new ListEntry(this, index);
 	}
 
-	protected void onNotify(Notifier notifier) throws Exception {
+	protected void onNotify(Notifier notifier) {
 		super.onNotify(notifier);
 		// For PopupMenus, we need to notify entries by hand:
 		switch(notifier) {

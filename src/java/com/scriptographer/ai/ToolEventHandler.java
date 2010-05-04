@@ -126,7 +126,7 @@ public class ToolEventHandler extends NativeObject {
 		this.onMouseDown = onMouseDown;
 	}
 	
-	protected void onMouseDown(ToolEvent event) throws Exception {
+	protected void onMouseDown(ToolEvent event) {
 		if (onMouseDown != null)
 			ScriptographerEngine.invoke(onMouseDown, this, event);
 	}
@@ -157,7 +157,7 @@ public class ToolEventHandler extends NativeObject {
 		this.onMouseDrag = onMouseDrag;
 	}
 	
-	protected void onMouseDrag(ToolEvent event) throws Exception {
+	protected void onMouseDrag(ToolEvent event) {
 		if (onMouseDrag != null)
 			ScriptographerEngine.invoke(onMouseDrag, this, event);
 	}
@@ -185,7 +185,7 @@ public class ToolEventHandler extends NativeObject {
 		this.onMouseMove = onMouseMove;
 	}
 	
-	protected void onMouseMove(ToolEvent event) throws Exception {
+	protected void onMouseMove(ToolEvent event) {
 		// Make sure the first move event initializes both delta and count.
 		if (onMouseMove != null)
 			ScriptographerEngine.invoke(onMouseMove, this, event);
@@ -214,7 +214,7 @@ public class ToolEventHandler extends NativeObject {
 		this.onMouseUp = onMouseUp;
 	}
 		
-	protected void onMouseUp(ToolEvent event) throws Exception {
+	protected void onMouseUp(ToolEvent event) {
 		if (onMouseUp != null)
 			ScriptographerEngine.invoke(onMouseUp, this, event);
 	}
@@ -240,7 +240,7 @@ public class ToolEventHandler extends NativeObject {
 		this.onEditOptions = onOptions;
 	}
 
-	protected void onEditOptions() throws Exception {
+	protected void onEditOptions() {
 		if (onEditOptions != null)
 			ScriptographerEngine.invoke(onEditOptions, this);
 	}
@@ -258,7 +258,7 @@ public class ToolEventHandler extends NativeObject {
 		this.onSelect = onSelect;
 	}
 
-	protected void onSelect() throws Exception {
+	protected void onSelect() {
 		if (onSelect != null)
 			ScriptographerEngine.invoke(onSelect, this);
 	}
@@ -276,7 +276,7 @@ public class ToolEventHandler extends NativeObject {
 		this.onDeselect = onDeselect;
 	}
 	
-	protected void onDeselect() throws Exception {
+	protected void onDeselect() {
 		if (onDeselect != null)
 			ScriptographerEngine.invoke(onDeselect, this);
 	}
@@ -294,7 +294,7 @@ public class ToolEventHandler extends NativeObject {
 		this.onReselect = onReselect;
 	}
 
-	protected void onReselect() throws Exception {
+	protected void onReselect() {
 		if (onReselect != null)
 			ScriptographerEngine.invoke(onReselect, this);
 	}
