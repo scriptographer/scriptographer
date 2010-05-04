@@ -128,6 +128,9 @@ public class Palette extends FloatingDialog implements ChangeObserver {
 		return components;
 	}
 
+	/**
+	 * @jshide
+	 */
 	public PaletteComponent getComponent(String name) {
 		// components only contains PaletteComponent after initialization,
 		// but is not declared in this way as the passed components object

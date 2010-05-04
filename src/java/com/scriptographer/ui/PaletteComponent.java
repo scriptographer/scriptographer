@@ -46,8 +46,6 @@ import com.scriptographer.ai.FontWeight;
 
 /**
  * @author lehni
- * 
- * @jshide
  */
 public class PaletteComponent {
 
@@ -107,6 +105,9 @@ public class PaletteComponent {
 		}
 	}
 
+	/**
+	 * @jshide
+	 */
 	public PaletteComponent(PaletteComponentType type, String label, Object value) {
 		this.label = label;
 		this.type = type;
@@ -115,6 +116,8 @@ public class PaletteComponent {
 
 	/**
 	 * Creates a STRING Item
+	 * 
+	 * @jshide
 	 */
 	public PaletteComponent(String description, String value) {
 		this(PaletteComponentType.STRING, description, value);
@@ -122,28 +125,40 @@ public class PaletteComponent {
 
 	/**
 	 * Creates a NUMBER Item
+	 * 
+	 * @jshide
 	 */
 	public PaletteComponent(String description, Number value) {
 		this(PaletteComponentType.NUMBER, description, value);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public PaletteComponent(String description, float value) {
 		this(PaletteComponentType.NUMBER, description, new Float(value));
 	}
 
 	/**
 	 * Creates a BOOLEAN Item
+	 * 
+	 * @jshide
 	 */
 	public PaletteComponent(String description, Boolean value) {
 		this(PaletteComponentType.CHECKBOX, description, value);
 	}
 
+	/**
+	 * @jshide
+	 */
 	public PaletteComponent(String description, boolean value) {
 		this(description, new Boolean(value));
 	}
 
 	/**
 	 * Creates a RANGE Item
+	 * 
+	 * @jshide
 	 */
 	public PaletteComponent(String description, Number value, float min, float max,
 			float step) {
@@ -154,6 +169,8 @@ public class PaletteComponent {
 	
 	/**
 	 * Creates a LIST Item
+	 * 
+	 * @jshide
 	 */
 	public PaletteComponent(String description, Object value, Object[] options) {
 		this(PaletteComponentType.LIST, description, value);
