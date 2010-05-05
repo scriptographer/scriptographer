@@ -59,7 +59,8 @@ public abstract class TextEditItem<S> extends TextValueItem {
 	 */
 	protected TextEditItem(Dialog dialog, ItemType type, EnumSet<TextOption> options) {
 		super(dialog, type, IntegerEnumUtils.getFlags(options));
-		setMaxLength(Short.MAX_VALUE);
+		// -1 == Maximum length.
+		setMaxLength(-1);
 	}
 	
 	protected TextEditItem(Dialog dialog, EnumSet<TextOption> options) {
@@ -401,6 +402,9 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		setFractionDigits(precision);
 	}
 
+	/**
+	 * @param length -1 for maximum allowed value.
+	 */
 	public native void setMaxLength(int length);
 	public native int getMaxLength();
 

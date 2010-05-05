@@ -64,7 +64,8 @@ JNIEXPORT void JNICALL Java_com_scriptographer_ui_TextEditItem_setMaxLength(JNIE
 	try {
 		ADMItemRef item = gEngine->getItemHandle(env, obj);
 		// 32767 appears to be the maximum, so internally it's a signed 16 bit value.
-		if (length > 32767)
+		// Calling setMaxLength(-1) sets the maximum allowed value.
+		if (length < 0 || length > 32767)
 			length = 32767;
 		sADMItem->SetMaxTextLength(item, length);
 	} EXCEPTION_CONVERT(env);
