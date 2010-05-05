@@ -272,8 +272,12 @@ LRESULT CALLBACK ScriptographerPlugin::appWindowProc(HWND hwnd, UINT uMsg, WPARA
 	return ::CallWindowProc(s_defaultAppWindowProc, hwnd, uMsg, wParam, lParam);
 }
 
-UINT ScriptographerPlugin::s_keyChars[256];
 HHOOK ScriptographerPlugin::s_defaultGetMessageProc = NULL;
+UINT ScriptographerPlugin::s_keyChars[256];
+BYTE ScriptographerPlugin::s_lastKeyboardState[256];
+UINT ScriptographerPlugin::s_lastKeyCode = 0;
+UINT ScriptographerPlugin::s_lastScanCode = 0;
+bool ScriptographerPlugin::s_lastIsDead = false;
 
 LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, LPARAM lParam) {
 	PMSG pMsg = (PMSG) lParam;
@@ -297,6 +301,7 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 				UINT scanCode = (pMsg->lParam >> 16) & 0xff;
 				BYTE keyboardState[256];
 				GetKeyboardState(keyboardState);
+	            bool isDead = false;
 				int type = -1;
 				// If the keyCode / scanCode cannot be translated to a unicode, use
 				// 0xffff, so the key event is still marked as valid in s_keyChars.
@@ -310,8 +315,34 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 				// a lot.
 				if (pMsg->message == WM_KEYDOWN) {
 					WCHAR unicode[16];
-					if (ToUnicode(keyCode, scanCode, keyboardState, unicode, 16, 0) >= 1)
+					HKL layout = GetKeyboardLayout(0);
+					int count = ToUnicodeEx(keyCode, scanCode, keyboardState, unicode, 16, 0, layout);
+					if (count >= 1) {
 						chr = unicode[0];
+					} else if (count < 0) {
+						// Dead keys (^,`...)
+						isDead = true;
+						// We must clear the buffer because ToUnicodeEx messed it up, see below.
+						BYTE keyboardStateNull[256];
+						memset(keyboardStateNull, 0, sizeof(keyboardStateNull));
+						do {
+							count = ToUnicodeEx(keyCode, scanCode, keyboardStateNull, unicode, 16, 0, layout);
+						} while(count < 0);
+					}
+					// We inject the last dead key back, since ToUnicodeEx removed it.
+					// More about this peculiar behavior see e.g: 
+					// http://www.experts-exchange.com/Programming/System/Windows__Programming/Q_23453780.html
+					// http://blogs.msdn.com/michkap/archive/2005/01/19/355870.aspx
+					// http://blogs.msdn.com/michkap/archive/2007/10/27/5717859.aspx
+					if (s_lastKeyCode != 0 && s_lastIsDead) {
+						ToUnicodeEx(s_lastKeyCode, s_lastScanCode, s_lastKeyboardState, unicode, 16, 0, layout);
+						s_lastKeyCode = 0;
+					} else {
+						s_lastKeyCode = keyCode;
+						s_lastScanCode = scanCode;
+						s_lastIsDead = isDead;
+						memcpy(s_lastKeyboardState, keyboardState, sizeof(keyboardState));
+					}
 					// Detect and handle back space, but filter out repeated
 					// hits by checking previous state (lParam & (1 << 30))
 					if (keyCode == '\b' && !(pMsg->lParam & (1 << 30)))
@@ -321,9 +352,9 @@ LRESULT CALLBACK ScriptographerPlugin::getMessageProc(int code, WPARAM wParam, L
 					s_keyChars[scanCode] = chr;
 					type = com_scriptographer_ScriptographerEngine_EVENT_KEY_DOWN;
 				} else {
-					UINT code = s_keyChars[scanCode];
-					if (code) {
-						chr = code;
+					UINT keyChr = s_keyChars[scanCode];
+					if (keyChr) {
+						chr = keyChr;
 						// Erase so we're not detecting non-matching WM_KEYUP messages.
 						s_keyChars[scanCode] = 0;
 						type = com_scriptographer_ScriptographerEngine_EVENT_KEY_UP;

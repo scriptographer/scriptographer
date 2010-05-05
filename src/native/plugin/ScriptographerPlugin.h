@@ -129,6 +129,10 @@ public:
 	static LRESULT CALLBACK appWindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static HHOOK s_defaultGetMessageProc;
 	static UINT s_keyChars[256];
+	static BYTE s_lastKeyboardState[256];
+	static UINT s_lastKeyCode;
+	static UINT s_lastScanCode;
+	static bool s_lastIsDead;
 	static LRESULT CALLBACK getMessageProc(int code, WPARAM wParam, LPARAM lParam);
 #endif
 
