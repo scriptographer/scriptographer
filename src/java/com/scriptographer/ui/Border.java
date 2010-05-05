@@ -53,6 +53,10 @@ public class Border {
 		set(top, right, bottom, left);
 	}
 	
+	public Border(int ver, int hor) {
+		set(ver, hor, ver, hor);
+	}
+
 	public Border(Border margins) {
 		set(margins.top, margins.right, margins.bottom, margins.left);
 	}

@@ -182,16 +182,38 @@ public class Palette extends FloatingDialog implements ChangeObserver {
 
 	protected static TableLayout createLayout(Dialog dialog,
 			PaletteComponent[] components, boolean hasLogo, int extraRows) {
-		// Add one more row as a filler in case there's less rows than the
-		// height of the logo.
-		if (hasLogo)
-			extraRows++;
-		double[] rows = new double[components.length + extraRows];
+		// First collect all content in a LinkedHashMap, then create the layout
+		// at the end, and add the items to it. This allows flexibility
+		// regarding amount of rows, as needed by the ruler element that uses
+		// two rows when it has a title.
+
+		LinkedHashMap<String, Component> content =
+				new LinkedHashMap<String, Component>();
+
+		int column = hasLogo ? 1 : 0, row = 0;
+		for (int i = 0; i < components.length; i++) {
+			PaletteComponent item = components[i];
+			if (item != null)
+				row = item.addToContent(dialog, content, column, row);
+		}
+
+		if (hasLogo) {
+			ImagePane logo = new ImagePane(dialog);
+			logo.setImage(Dialog.getImage("logo.png"));
+			logo.setMargin(-4, 4, -4, -4);
+			// Logo uses all rows of components + filler row
+			content.put("0, 0, 0, " + row + ", left, top",
+					logo);
+			row++;
+		}
+	
+		double[] rows = new double[row + extraRows];
 		for (int i = 0; i < rows.length; i++)
 			rows[i] = TableLayout.PREFERRED;
+
 		// Define the filler row, 2nd last
 		if (hasLogo)
-			rows[rows.length - extraRows] = TableLayout.FILL;
+			rows[rows.length - extraRows - 1] = TableLayout.FILL;
 		else if (rows.length > 0)
 			rows[rows.length - 1] = TableLayout.FILL;
 
@@ -204,41 +226,8 @@ public class Palette extends FloatingDialog implements ChangeObserver {
 		};
 		TableLayout layout = new TableLayout(sizes);
 		dialog.setLayout(layout);
+		dialog.setContent(content);
 
-		if (hasLogo) {
-			ImagePane logo = new ImagePane(dialog);
-			logo.setImage(Dialog.getImage("logo.png"));
-			logo.setMargin(-4, 4, -4, -4);
-			// Logo uses all rows of components + filler row
-			dialog.addToContent(logo, "0, 0, 0, " + (rows.length - extraRows)
-					+ ", left, top");
-		}
-
-		int columnIndex = hasLogo ? 1 : 0;
-		for (int i = 0; i < components.length; i++) {
-			PaletteComponent item = components[i];
-			if (item != null) {
-				Item valueItem = item.createItem(dialog,
-						new Border(1, 0, 1, 0));
-				String label = item.getLabel();
-				if (label != null && !"".equals(label)) {
-					TextPane labelItem = new TextPane(dialog);
-					labelItem.setText(label + ":");
-					// Adjust top margin of label to reflect the native margin
-					// in the value item.
-					Item marginItem = valueItem;
-					// If this is an item group, use the first item in it instead
-					// This is only needed for FontPopupList so far.
-					if (marginItem instanceof ItemGroup)
-						marginItem = (Item) ((ItemGroup) marginItem).getContent().get(0);
-					labelItem.setMargin(marginItem.getNativeMargin().top + 4, 4, 0, 0);
-					dialog.addToContent(labelItem, columnIndex + ", " + i
-							+ ", left, top");
-				}
-				dialog.addToContent(valueItem, (columnIndex + 1) + ", " + i
-						+ ", left, center");
-			}
-		}
 		return layout;
 	}
 }

@@ -34,6 +34,7 @@ package com.scriptographer.ui;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.scratchdisk.script.ArgumentReader;
@@ -53,25 +54,31 @@ public class PaletteComponent {
 	private String name; // for preferences
 	private PaletteComponentType type;
 	private Object defaultValue;
-	private Object options[] = null;
-	private int width = -1;
-	private int height = -1;
-	private int rows = -1;
-	private int length = -1;
-	private int columns = -1;
-	private float min = Float.NaN;
-	private float max = Float.NaN;
-	private float increment = 0;
-	private int fractionDigits = 3;
+	private Object options[];
+	private boolean visible = true;
+	private boolean enabled = true;
+	private boolean full = false;
+	private Integer width;
+	private Integer height;
+	private Integer length;
+	private Integer maxLength;
+	private Boolean multiline;
+	private Integer rows;
+	private Integer columns;
+	private Float min;
+	private Float max;
+	private Float increment;
+	private Integer fractionDigits;
 	private Item item;
-	private Callable onChange = null;
-	private TextUnits units = TextUnits.NONE;
-	private boolean steppers = false;
+	private Callable onChange;
+	private TextUnits units;
+	private Boolean steppers;
 
 	/**
 	 * @jshide
 	 */
-	public PaletteComponent(ArgumentReader reader) throws IllegalArgumentException {
+	public PaletteComponent(ArgumentReader reader)
+			throws IllegalArgumentException {
 		if (reader.isMap()) {
 			type = reader.readEnum("type", PaletteComponentType.class);
 			defaultValue = reader.readObject("value");
@@ -88,14 +95,8 @@ public class PaletteComponent {
 					type = PaletteComponentType.STRING;
 			}
 			if (type != null) {
-				// Set default values for rows / columns / length
-				if (type == PaletteComponentType.TEXT) {
-					rows = 6;
-					columns = 32;
-				} else if (type == PaletteComponentType.STRING
-						|| type == PaletteComponentType.NUMBER) {
-					length = type == PaletteComponentType.STRING ? 16 : 8;
-				}
+				// Call setMultiline to set default value for length
+				setMultiline(false);
 				// Tell the framework to set the properties from the map
 				// on the object after creating through ArgumentReader.
 				reader.setProperties(this);
@@ -108,7 +109,8 @@ public class PaletteComponent {
 	/**
 	 * @jshide
 	 */
-	public PaletteComponent(PaletteComponentType type, String label, Object value) {
+	public PaletteComponent(PaletteComponentType type, String label,
+			Object value) {
 		this.label = label;
 		this.type = type;
 		this.defaultValue = value;
@@ -160,8 +162,8 @@ public class PaletteComponent {
 	 * 
 	 * @jshide
 	 */
-	public PaletteComponent(String description, Number value, float min, float max,
-			float step) {
+	public PaletteComponent(String description, Number value, float min,
+			float max, float step) {
 		this(PaletteComponentType.SLIDER, description, value);
 		this.setRange(min, max);
 		this.increment = step;
@@ -178,7 +180,196 @@ public class PaletteComponent {
 	}
 	
 	// TODO: make constructors for other types
-	
+
+
+	protected Item createItem(Dialog dialog, Border margin) {
+		// Item:
+		item = null;
+		switch (type) {
+		case NUMBER:
+			if (steppers != null && steppers) {
+				item = new SpinEdit(dialog) {
+					protected void onChange() {
+						super.onChange();
+						PaletteComponent.this.onChange(true);
+					}
+				};
+			} else {
+				TextEditItem textItem = new TextEdit(dialog) {
+					protected void onChange() {
+						PaletteComponent.this.onChange(true);
+					}
+				};
+				textItem.setAllowMath(true);
+				textItem.setAllowUnits(true);
+				item = textItem;
+			}
+			break;
+		case STRING:
+			TextOption[] options = multiline != null && multiline
+					? new TextOption[] { TextOption.MULTILINE }
+					: null;
+			item = new TextEdit(dialog, options) {
+				protected void onChange() {
+					PaletteComponent.this.onChange(true);
+				}
+			};
+			break;
+		case TEXT:
+			item = new TextPane(dialog);
+			break;
+		case RULER:
+			Frame frame = new Frame(dialog);
+			frame.setStyle(FrameStyle.SUNKEN);
+			// Margin needs to be set before changing size...
+			// TODO: Fix this?
+			int top = label != null ? 2 : 4, bottom = 4;
+			frame.setMargin(top, 0, bottom, 0);
+			// Make sure we're not setting default margin later on.
+			margin = null;
+			// Margin is included inside size, not added. This is different
+			// to how things works with CSS...
+			// TODO: Correct it?
+			frame.setHeight(2 + top + bottom);
+			item = frame;
+			break;
+		case SLIDER:
+			item = new Slider(dialog) {
+				protected void onChange() {
+					super.onChange();
+					PaletteComponent.this.onChange(true);
+				}
+			};
+			break;
+		case CHECKBOX:
+			item = new CheckBox(dialog) {
+				protected void onClick() {
+					super.onClick();
+					PaletteComponent.this.onChange(true);
+				}
+			};
+			break;
+		case LIST:
+			item = new PopupList(dialog) {
+				protected void onChange() {
+					super.onChange();
+					PaletteComponent.this.onChange(true);
+				}
+			};
+			break;
+		case BUTTON:
+			item = new Button(dialog) {
+				protected void onClick() {
+					super.onClick();
+					PaletteComponent.this.onChange(true);
+				}
+			};
+			break;
+		case COLOR:
+			item = new ColorButton(dialog) {
+				protected void onClick() {
+					super.onClick();
+					PaletteComponent.this.onChange(true);
+				}
+			};
+			break;
+		case FONT:
+			item = new FontPopupList(dialog, new FontPopupListOption[] {
+					FontPopupListOption.EDITABLE,
+					FontPopupListOption.VERTICAL
+			}) {
+				protected void onChange() {
+					PaletteComponent.this.onChange(true);
+				}
+			};
+			break;
+		}
+
+		// Now set all the values again, so the item reflects them:
+		if (!visible)
+			item.setVisible(false);
+		if (!enabled)
+			item.setEnabled(false);
+		setOptions(options);
+		setValue(defaultValue);
+		setRange(min, max);
+		setIncrement(increment);
+		setUnits(units);
+		setFractionDigits(fractionDigits);
+		setMaxLength(maxLength);
+		
+		// Margin needs to be defined before setting size, since getBestSize is
+		// affected by margin
+		if (margin != null)
+			item.setMargin(margin);
+		updateSize();
+
+		return item;
+	}
+
+	protected void updateSize() {
+		if (item != null) {
+			Size size;
+			if (multiline != null && multiline && columns != null && rows != null) {
+				// Base width on an average wide character, such as H
+				size = item.getTextSize("H");
+				size = new Size(
+						size.width * columns + 8,
+						size.height * rows + 8
+				);
+			} else {
+				// Use preferred size instead of best size, as we want to take
+				// into account items of which the size was already set before,
+				// e.g. rulers.
+				size = item.getPreferredSize();
+				if (length != null)
+					size.width = item.getTextSize("H").width * length;
+			}
+			if (width != null)
+				size.width = width;
+			if (height != null)
+				size.height = height;
+			item.setSize(size);
+		}
+	}
+
+	protected int addToContent(Dialog dialog,
+			LinkedHashMap<String, Component> content, int column, int row) {
+		Item valueItem = createItem(dialog, new Border(1, 0, 1, 0));
+		String label = getLabel();
+		boolean isRuler = type == PaletteComponentType.RULER;
+		if (label != null && !"".equals(label)) {
+			TextPane labelItem = new TextPane(dialog);
+			if (isRuler) {
+				// Add label above ruler in its own row.
+				labelItem.setText(label);
+				labelItem.setMargin(4, 0, 0, 4);
+				content.put(column + ", " + row + ", " + (column + 1) + ", "
+						+ row + ", left, top", labelItem);
+				row++;
+			} else {
+				labelItem.setText(label + ":");
+				// Adjust top margin of label to reflect the native margin
+				// in the value item.
+				Item marginItem = valueItem;
+				// If this is an item group, use the first item in it instead
+				// This is only needed for FontPopupList so far.
+				if (marginItem instanceof ItemGroup)
+					marginItem = (Item) ((ItemGroup) marginItem).getContent().get(0);
+				labelItem.setMargin(marginItem.getNativeMargin().top + 4, 4, 0, 0);
+				content.put(column + ", " + row + ", right, top", labelItem);
+			}
+		}
+		String justification = isRuler || full 
+				? "full, center" : "left, center";
+		content.put(isRuler
+				? column + ", " + row  + ", " + (column + 1) + ", " + row + ", "
+						+ justification
+				: (column + 1) + ", " + row + ", " + justification,
+				valueItem);
+		return row + 1;
+	}
+
 	/*
 	 * Beans
 	 */
@@ -189,7 +380,6 @@ public class PaletteComponent {
 		} else {
 			switch (type) {
 			case STRING:
-			case TEXT:
 				return ((TextValueItem) item).getText();
 			case BUTTON:
 				return ((Button) item).getText();
@@ -222,10 +412,12 @@ public class PaletteComponent {
 		if (item == null) {
 			defaultValue = value;
 		} else {
+			boolean resize = false;
 			switch (type) {
 			case STRING:
 			case TEXT:
-				((TextEditItem) item).setText(ConversionUtils.toString(value));
+				((TextValueItem) item).setText(ConversionUtils.toString(value));
+				resize = type == PaletteComponentType.TEXT;
 				break;
 			case BUTTON:
 				((Button) item).setText(ConversionUtils.toString(value));
@@ -265,65 +457,27 @@ public class PaletteComponent {
 					((FontPopupList) item).setFontWeight(weight);
 				break;
 			}
+			if (resize) {
+				// TODO: Make this work!
+				Size size = item.getBestSize();
+				item.setMinimumSize(size);
+				item.setSize(size);
+				item.getDialog().doLayout();
+			}
 			// Update palette's value object too
 			this.onChange(false);
 		}
 	}
 
-	public int getWidth() {
-		return width;
+	/**
+	 * @jshide
+	 */
+	public String getName() {
+		return name;
 	}
 
-	public void setWidth(int width) {
-		this.width = width;
-		// Clear columns and length when setting width and vice versa.
-		columns = -1;
-		length = -1;
-		updateSize();
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public void setHeight(int height) {
-		this.height = height;
-		// Clear rows when setting height and vice versa.
-		rows = -1;
-		updateSize();
-	}
-
-	public int getColumns() {
-		return columns;
-	}
-
-	public void setColumns(int columns) {
-		this.columns = columns;
-		// Clear width when setting columns and vice versa.
-		width = -1;
-		updateSize();
-	}
-
-	public int getRows() {
-		return rows;
-	}
-
-	public void setRows(int rows) {
-		this.rows = rows;
-		// Clear height when setting rows and vice versa.
-		height = -1;
-		updateSize();
-	}
-
-	public int getLength() {
-		return length;
-	}
-
-	public void setLength(int length) {
-		this.length = length;
-		// Clear width when setting length and vice versa.
-		width = -1;
-		updateSize();
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getLabel() {
@@ -351,64 +505,157 @@ public class PaletteComponent {
 	/**
 	 * @deprecated
 	 */
-	public float getMin() {
+	public Float getMin() {
 		return min;
 	}
 
 	/**
 	 * @deprecated
 	 */
-	public void setMin(float min) {
+	public void setMin(Float min) {
 		setRange(min, max);
 	}
 
 	/**
 	 * @deprecated
 	 */
-	public float getMax() {
+	public Float getMax() {
 		return max;
 	}
 
 	/**
 	 * @deprecated
 	 */
-	public void setMax(float max) {
+	public void setMax(Float max) {
 		setRange(min, max);
 	}
 
 	public float[] getRange() {
-		return new float[] {
+		return hasRange() ? new float[] {
 			min, max
-		};
+		} : null;
 	}
 
 	/**
 	 * @jshide
 	 */
-	public void setRange(float min, float max) {
-		this.min = min;
-		this.max = max;
-		if (item instanceof ValueItem)
-			((ValueItem) item).setRange(min, max);
+	public void setRange(Float min, Float max) {
+		if (type == PaletteComponentType.NUMBER
+				|| type == PaletteComponentType.SLIDER) {
+			this.min = min;
+			this.max = max;
+			if (item != null) {
+				((ValueItem) item).setRange(min != null ? min : Float.MIN_VALUE, 
+						max != null ? max : Float.MAX_VALUE);
+			}
+		}
 	}
 
 	public void setRange(float[] range) {
-		setRange(range[0], range[1]);
+		if (range == null)
+			setRange(null, null);
+		else
+			setRange(range[0], range[1]);
 	}
 
 	public boolean hasRange() {
-		return !Float.isNaN(min) && !Float.isNaN(max);
+		return min != null && max != null;
 	}
 
 
-	public float getIncrement() {
+	public Float getIncrement() {
 		return increment;
+		
 	}
 
-	public void setIncrement(float increment) {
-		this.increment = increment;
-		if (item instanceof ValueItem)
-			((ValueItem) item).setIncrements(increment);
+	public void setIncrement(Float increment) {
+		if (type == PaletteComponentType.NUMBER
+				|| type == PaletteComponentType.SLIDER) {
+			if (increment == null)
+				increment = 0f;
+			this.increment = increment;
+			if (item != null)
+				((ValueItem) item).setIncrements(increment);
+		}
+	}
+
+	public Integer getFractionDigits() {
+		return fractionDigits;
+	}
+
+	public void setFractionDigits(Integer fractionDigits) {
+		if (type == PaletteComponentType.NUMBER) {
+			if (fractionDigits == null)
+				fractionDigits = 3;
+			this.fractionDigits = fractionDigits;
+			if (item != null)
+				((TextEditItem) item).setFractionDigits(fractionDigits);
+		}
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public Integer getPrecision() {
+		return getFractionDigits();
+	}
+
+	/**
+	 * @deprecated
+	 */
+	public void setPrecision(Integer precision) {
+		setFractionDigits(precision);
+	}
+
+	public Object getDefaultValue() {
+		return defaultValue;
+	}
+
+	public TextUnits getUnits() {
+		return units;
+	}
+
+	public void setUnits(TextUnits units) {
+		if (type == PaletteComponentType.NUMBER) {
+			if (units == null)
+				units = TextUnits.NONE;
+			this.units = units;
+			if (item != null) {
+				TextEditItem textItem = (TextEditItem) item;
+				textItem.setUnits(units);
+				textItem.setShowUnits(units != TextUnits.NONE);
+			}
+		}
+	}
+
+	public Boolean getSteppers() {
+		return steppers;
+	}
+
+	public void setSteppers(Boolean steppers) {
+		// No support to change this at runtime for now
+		if (type == PaletteComponentType.NUMBER)
+			this.steppers = steppers;
+	}
+
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+		if (item != null)
+			item.setVisible(visible);
+	}
+
+	public boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+		if (item != null)
+			item.setEnabled(enabled);
 	}
 
 	public Object[] getOptions() {
@@ -416,66 +663,155 @@ public class PaletteComponent {
 	}
 
 	public void setOptions(Object[] options) {
-		this.options = options;
-		if (item instanceof PopupList) {
-			Object current = getValue(), value = null;
-			PopupList list = (PopupList) item;
-			list.removeAll();
-			if (options != null && options.length > 0) {
-				for (int i = 0; i < options.length; i++) {
-					Object option = options[i];
-					if (option.equals(current))
-						value = option;
-					ListEntry entry = null;
-					if (option instanceof ListEntry) {
-						entry = (ListEntry) option;
-						entry = list.add(entry);
-					} else {
-						entry = new ListEntry(list);
-						entry.setText(option.toString());
+		if (type == PaletteComponentType.LIST) {
+			this.options = options;
+			if (item != null) {
+				Object current = getValue(), value = null;
+				PopupList list = (PopupList) item;
+				list.removeAll();
+				if (options != null && options.length > 0) {
+					for (int i = 0; i < options.length; i++) {
+						Object option = options[i];
+						if (option.equals(current))
+							value = option;
+						ListEntry entry = null;
+						if (option instanceof ListEntry) {
+							entry = (ListEntry) option;
+							entry = list.add(entry);
+						} else {
+							entry = new ListEntry(list);
+							entry.setText(option.toString());
+						}
 					}
+					if (value == null)
+						value = options[0];
+					setValue(value);
 				}
-				if (value == null)
-					value = options[0];
-				setValue(value);
 			}
 		}
 	}
 
-	public Object getDefaultValue() {
-		return defaultValue;
+	public boolean getFull() {
+		return full;
 	}
 
-	public int getFractionDigits() {
-		return fractionDigits;
+	public void setFull(boolean full) {
+		this.full = full;
+		if (full) {
+			width = null;
+			length = null;
+			columns = null;
+		}
 	}
 
-	public void setFractionDigits(int fractionDigits) {
-		this.fractionDigits = fractionDigits;
-		if (item instanceof TextEditItem)
-			((TextEditItem) item).setFractionDigits(fractionDigits);
+	public Integer getWidth() {
+		return width;
 	}
 
-	/**
-	 * @deprecated
-	 */
-	public int getPrecision() {
-		return getFractionDigits();
+	public void setWidth(Integer width) {
+		this.width = width;
+		// Clear columns and length when setting width and vice versa.
+		full = false;
+		columns = null;
+		length = null;
+		updateSize();
 	}
 
-	/**
-	 * @deprecated
-	 */
-	public void setPrecision(int precision) {
-		setFractionDigits(precision);
+	public Integer getHeight() {
+		return height;
 	}
 
-	public String getName() {
-		return name;
+	public void setHeight(Integer height) {
+		this.height = height;
+		// Clear rows when setting height and vice versa.
+		rows = null;
+		updateSize();
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public Integer getLength() {
+		return length;
+	}
+
+	public void setLength(Integer length) {
+		if (type == PaletteComponentType.STRING ||
+				type == PaletteComponentType.NUMBER) {
+			this.multiline = false;
+			this.length = length;
+			// Clear width and columns when setting length and vice versa.
+			full = false;
+			width = null;
+			columns = null;
+			updateSize();
+		}
+	}
+
+	
+	public Integer getMaxLength() {
+		return maxLength;
+	}
+
+	public void setMaxLength(Integer maxLength) {
+		if (type == PaletteComponentType.STRING ||
+				type == PaletteComponentType.NUMBER) {
+			this.maxLength = maxLength;
+			if (item != null)
+				((TextEditItem) item).setMaxLength(maxLength != null ? maxLength : -1);
+		}
+	}
+
+	public Boolean getMultiline() {
+		return multiline;
+	}
+
+	public void setMultiline(Boolean multiline) {
+		if (type == PaletteComponentType.STRING ||
+				type == PaletteComponentType.NUMBER) {
+			multiline = multiline && type == PaletteComponentType.STRING;
+			// Set default values for length / columns, rows
+			if (multiline) {
+				if (rows == null)
+					rows = 6;
+				if (columns == null)
+					columns = 32;
+				length = null;
+			} else {
+				if (length == null)
+					length = type == PaletteComponentType.STRING ? 16 : 8;
+				columns = null;
+				rows = null;
+			}
+			this.multiline = multiline;
+		}
+	}
+
+	public Integer getColumns() {
+		return columns;
+	}
+
+	public void setColumns(Integer columns) {
+		if (type == PaletteComponentType.STRING) {
+			this.multiline = true;
+			this.columns = columns;
+			// Clear width and length when setting columns and vice versa.
+			full = false;
+			width = null;
+			length = null;
+			updateSize();
+		}
+	}
+
+	public Integer getRows() {
+		return rows;
+	}
+
+	public void setRows(Integer rows) {
+		if (type == PaletteComponentType.STRING) {
+			this.multiline = true;
+			this.rows = rows;
+			// Clear height when setting rows and vice versa.
+			height = null;
+			updateSize();
+		}
 	}
 
 	public Callable getOnChange() {
@@ -494,168 +830,19 @@ public class PaletteComponent {
 		this.onChange = onClick;
 	}
 
-	public TextUnits getUnits() {
-		return units;
-	}
-
-	public void setUnits(TextUnits units) {
-		if (units == null)
-			units = TextUnits.NONE;
-		this.units = units;
-		if (item instanceof TextEditItem) {
-			TextEditItem textItem = (TextEditItem) item;
-			textItem.setUnits(units);
-			textItem.setShowUnits(units != TextUnits.NONE);
-		}
-	}
-
-	public boolean isSteppers() {
-		return steppers;
-	}
-
-	public void setSteppers(boolean steppers) {
-		this.steppers = steppers;
-		// We cannot and do not support to change this at runtime
-	}
-
 	protected void onChange(boolean callback) {
 		String name = getName();
 		Object value = getValue();
 		// First call onChange on Palette, so values get updated
-		if (item.dialog instanceof Palette) {
-			Palette palette = (Palette) item.dialog;
+		Dialog dialog = item.getDialog();
+		if (dialog instanceof Palette) {
+			Palette palette = (Palette) dialog;
 			palette.onChange(this, name, value, callback);
 		}
 		// And now call onChange on the item. values will contain the same
 		// new value now too.
 		if (callback && onChange != null)
 			ScriptographerEngine.invoke(onChange, this, value);
-	}
-
-	protected Item createItem(Dialog dialog, Border margin) {
-		// Item:
-		item = null;
-		switch (type) {
-		case LABEL:
-			break;
-		case SLIDER:
-			item = new Slider(dialog) {
-				protected void onChange() {
-					super.onChange();
-					PaletteComponent.this.onChange(true);
-				}
-			};
-			break;
-		case CHECKBOX:
-			item = new CheckBox(dialog) {
-				protected void onClick() {
-					super.onClick();
-					PaletteComponent.this.onChange(true);
-				}
-			};
-			break;
-		case LIST:
-			item = new PopupList(dialog) {
-				protected void onChange() {
-					super.onChange();
-					PaletteComponent.this.onChange(true);
-				}
-			};
-			break;
-		case BUTTON:
-			item = new Button(dialog) {
-				protected void onClick() {
-					super.onClick();
-					PaletteComponent.this.onChange(true);
-				}
-			};
-			break;
-		case BUTTONS:
-			break;
-		case COLOR:
-			item = new ColorButton(dialog) {
-				protected void onClick() {
-					super.onClick();
-					PaletteComponent.this.onChange(true);
-				}
-			};
-			break;
-		case FONT:
-			item = new FontPopupList(dialog, new FontPopupListOption[] {
-					FontPopupListOption.EDITABLE,
-					FontPopupListOption.VERTICAL
-			}) {
-				protected void onChange() {
-					PaletteComponent.this.onChange(true);
-				}
-			};
-			break;
-		case NUMBER:
-			if (steppers) {
-				item = new SpinEdit(dialog) {
-					protected void onChange() {
-						super.onChange();
-						PaletteComponent.this.onChange(true);
-					}
-				};
-				break;
-			}
-			// No break, as we're moving on to default
-		default:
-			TextOption[] options = type == PaletteComponentType.TEXT
-					? new TextOption[] { TextOption.MULTILINE }
-					: null;
-			TextEditItem textItem = new TextEdit(dialog, options) {
-				protected void onChange() {
-					PaletteComponent.this.onChange(true);
-				}
-			};
-			item = textItem;
-			if (type == PaletteComponentType.NUMBER) {
-				textItem.setAllowMath(true);
-				textItem.setAllowUnits(true);
-			}
-		}
-
-		// Now set all the values again, so the item reflects them:
-		setOptions(options);
-		setValue(defaultValue);
-		if (hasRange())
-			setRange(min, max);
-		if (increment != 0)
-			setIncrement(increment);
-		setUnits(units);
-		setFractionDigits(fractionDigits);
-		
-		// Margin needs to be defined before setting size, since getBestSize is
-		// affected by margin
-		item.setMargin(margin);
-		updateSize();
-
-		return item;
-	}
-
-	protected void updateSize() {
-		if (item != null) {
-			Size size;
-			if (type == PaletteComponentType.TEXT) {
-				// Base width on an average wide character, such as H
-				size = item.getTextSize("H");
-				size = new Size(
-						size.width * columns + 8,
-						size.height * rows + 8
-				);
-			} else {
-				size = item.getBestSize();
-				if (length != -1)
-					size.width = item.getTextSize("H").width * length;
-			}
-			if (width >= 0)
-				size.width = width;
-			if (height >= 0)
-				size.height = height;
-			item.setSize(size);
-		}
 	}
 
 	@SuppressWarnings("unchecked")
