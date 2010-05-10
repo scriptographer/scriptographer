@@ -471,19 +471,25 @@ public abstract class TextEditItem<S> extends TextValueItem {
 		return popupList;
 	}
 
-	public boolean isPopup() {
+	public boolean hasPopupList() {
 		return type == ItemType.TEXT_EDIT_SCROLLING_POPUP
 		|| type == ItemType.TEXT_EDIT_POPUP;
 	}
 
 	protected void updateBounds(int x, int y, int width, int height, boolean sizeChanged) {
-		if (ScriptographerEngine.isMacintosh() && isPopup()) {
-			// The size of popup list buttons on Mac seems broken and needs
-			// to be corrected here.
+		if (hasPopupList()) {
 			PopupList list = getPopupList();
 			if (list != null) {
 				Size size = list.getSize();
-				size.height = height;
+				if (ScriptographerEngine.isMacintosh()) {
+					// On the Mac, the height of popup list buttons are broken
+					// and need to be corrected here.
+					size.height = height;
+				} else if (ScriptographerEngine.isWindows()) {
+					// On Windows, the width of popup list items are set
+					// wrongly and need to be corrected here.
+					size.width = width + 4;
+				}
 				list.setSize(size);
 			}
 		}
@@ -494,6 +500,6 @@ public abstract class TextEditItem<S> extends TextValueItem {
 			new Border(2, 0, 2, 0) : new Border(1, 0, 1, 0);
 
 	protected Border getNativeMargin() {
-		return isPopup() ? MARGIN_POPUP : MARGIN_NONE;
+		return hasPopupList() ? MARGIN_POPUP : MARGIN_NONE;
 	}
 }
