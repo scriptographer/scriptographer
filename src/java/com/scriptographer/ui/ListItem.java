@@ -26,7 +26,7 @@
  *
  * File created on 31.12.2004.
  *
- * $Id$
+ * $Id: ListItem.java 1427 2010-05-04 07:40:12Z lehni $
  */
 
 package com.scriptographer.ui;
@@ -337,9 +337,11 @@ public abstract class ListItem<E extends ListEntry> extends Item implements
 	public native E getSelectedEntry();
 
 	public void setSelectedEntry(E entry) {
-		for (E prev : getSelectedEntries())
-			prev.setSelected(false);
-		entry.setSelected(true);
+		if (entry.getList() == this) {
+			for (E prev : getSelectedEntries())
+				prev.setSelected(false);
+			entry.setSelected(true);
+		}
 	}
 
 	/**
