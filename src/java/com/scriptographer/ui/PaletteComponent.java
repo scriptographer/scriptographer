@@ -681,6 +681,10 @@ public class PaletteComponent {
 							entry.setText(option.toString());
 						}
 					}
+					if (index < 0)
+						index = 0;
+					else if (index >= options.length)
+						index = options.length - 1;
 					setSelectedIndex(index);
 				}
 			}
@@ -692,17 +696,14 @@ public class PaletteComponent {
 	}
 
 	public void setSelectedIndex(Integer index) {
-		if (type == PaletteComponentType.LIST && index != null) {
+		if (type == PaletteComponentType.LIST && index != null && index >= 0
+				&& (options == null || index < options.length)) {
+			selectedIndex = index;
 			if (item != null) {
 				PopupList list = (PopupList) item;
-				if (index < 0)
-					index = 0;
-				else if (index >= list.size())
-					index = list.size() - 1;
 				list.setSelectedEntry(list.get(index));
 				onChange(false);
 			}
-			selectedIndex = index;
 		}
 	}
 
