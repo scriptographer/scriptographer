@@ -38,8 +38,10 @@ Process = Base.extend(new function() {
 	}
 
 	var fields = {
-		initialize: function() {
-			this._builder = new java.lang.ProcessBuilder(Array.create(arguments));
+		initialize: function(args, directory) {
+			this._builder = new java.lang.ProcessBuilder(Array.create(args));
+			if (directory)
+				this._builder.directory(new File(directory));
 			this.environment = this._builder.environment();
 			this._onData = null;
 			this._onError = null;
@@ -47,8 +49,6 @@ Process = Base.extend(new function() {
 		},
 
 		start: function() {
-			if (this.directory)
-				this._builder.directory(this.directory);
 			this.process = this._builder.start();
 			this.output = new java.io.PrintStream(this.process.getOutputStream());
 			this.input = new java.io.BufferedReader(new java.io.InputStreamReader(this.process.getInputStream()));
