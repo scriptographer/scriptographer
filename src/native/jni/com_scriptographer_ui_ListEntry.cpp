@@ -38,10 +38,16 @@
  */
 
 void ASAPI ListEntry_onDestroy(ADMEntryRef entry) {
-	// this seems to be necessary otherwise crashes occur:
-	sADMEntry->SetPicture(entry, NULL);
-	sADMEntry->SetDisabledPicture(entry, NULL);
-	sADMEntry->SetSelectedPicture(entry, NULL);
+	// This seems to be necessary otherwise crashes occur:
+	// But only set them to NULL if they were not already, as otherwise
+	// Windows seems to get issues with removing entries again
+	// (they stay around as zmobies in popup lists)
+	if (sADMEntry->GetPicture(entry) != NULL)
+		sADMEntry->SetPicture(entry, NULL);
+	if (sADMEntry->GetDisabledPicture(entry) != NULL)
+		sADMEntry->SetDisabledPicture(entry, NULL);
+	if (sADMEntry->GetSelectedPicture(entry) != NULL)
+		sADMEntry->SetSelectedPicture(entry, NULL);
 
 	if (gEngine != NULL) {
 		JNIEnv *env = gEngine->getEnv();

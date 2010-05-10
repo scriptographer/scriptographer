@@ -38,10 +38,16 @@
  */
 
 void ASAPI HierarchyListEntry_onDestroy(ADMListEntryRef entry) {
-	// this seems to be necessary:
-	sADMListEntry->SetPicture(entry, NULL);
-	sADMListEntry->SetDisabledPicture(entry, NULL);
-	sADMListEntry->SetSelectedPicture(entry, NULL);
+	// This seems to be necessary otherwise crashes occur:
+	// But only set them to NULL if they were not already, as otherwise
+	// Windows seems to get issues with removing entries again
+	// (they stay around as zmobies in popup lists)
+	if (sADMListEntry->GetPicture(entry) != NULL)
+		sADMListEntry->SetPicture(entry, NULL);
+	if (sADMListEntry->GetDisabledPicture(entry) != NULL)
+		sADMListEntry->SetDisabledPicture(entry, NULL);
+	if (sADMListEntry->GetSelectedPicture(entry) != NULL)
+		sADMListEntry->SetSelectedPicture(entry, NULL);
 
 	if (gEngine != NULL) {
 		JNIEnv *env = gEngine->getEnv();
