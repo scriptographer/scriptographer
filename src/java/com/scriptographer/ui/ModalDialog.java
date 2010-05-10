@@ -65,6 +65,7 @@ public class ModalDialog extends Dialog {
 
 	private static EnumSet<DialogOption> getOptions(EnumSet<DialogOption> options) {
 		options = options != null ? options.clone() : EnumSet.noneOf(DialogOption.class);
+		// Always create modal dialogs hidden, and they show them in doModal()
 		options.add(DialogOption.HIDDEN);
 		return options;
 	}
