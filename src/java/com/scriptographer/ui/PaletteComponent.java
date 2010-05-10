@@ -253,7 +253,7 @@ public class PaletteComponent {
 			};
 			break;
 		case LIST:
-			item = new PopupList(dialog) {
+			item = new PopupList(dialog, true) {
 				protected void onChange() {
 					super.onChange();
 					selectedIndex = this.getSelectedEntry().getIndex();
