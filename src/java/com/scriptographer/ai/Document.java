@@ -39,7 +39,7 @@ import java.util.Map;
 
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
-import com.scratchdisk.script.ChangeListener;
+import com.scratchdisk.script.ChangeReceiver;
 import com.scratchdisk.util.ArrayList;
 import com.scratchdisk.util.ConversionUtils;
 import com.scratchdisk.util.IntegerEnumUtils;
@@ -60,7 +60,7 @@ import com.scriptographer.script.EnumUtils;
  * 
  * @author lehni
  */
-public class Document extends NativeObject implements ChangeListener {
+public class Document extends NativeObject implements ChangeReceiver {
 	/*
 	 * These flags are just here to test the undo history code. They
 	 * should be removed once that works well.

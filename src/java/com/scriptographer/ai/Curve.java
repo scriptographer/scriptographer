@@ -32,12 +32,12 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.script.ArgumentReader;
-import com.scratchdisk.script.ChangeListener;
+import com.scratchdisk.script.ChangeReceiver;
 
 /**
  * @author lehni
  */
-public class Curve implements ChangeListener {
+public class Curve implements ChangeReceiver {
 	protected SegmentList segments = null;
 	protected int index1;
 	protected int index2;

@@ -39,7 +39,7 @@ import java.util.Stack;
 
 import com.scratchdisk.list.Lists;
 import com.scratchdisk.list.ReadOnlyList;
-import com.scratchdisk.script.ChangeListener;
+import com.scratchdisk.script.ChangeReceiver;
 import com.scratchdisk.util.ArrayList;
 import com.scratchdisk.util.IntegerEnumUtils;
 import com.scratchdisk.util.SoftIntMap;
@@ -60,7 +60,7 @@ import com.scriptographer.ui.Image;
  * 
  * @jsreference {@type field} {@name document} {@reference Item#document} {@after data}
  */
-public class Item extends DocumentObject implements Style, ChangeListener {
+public class Item extends DocumentObject implements Style, ChangeReceiver {
 	
 	/**
 	 * The internal version. this is used for internally reflected data, such as

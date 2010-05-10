@@ -35,5 +35,5 @@ package com.scratchdisk.script;
  * @author lehni
  *
  */
-public interface ChangeNotifier {
+public interface ChangeReceiver {
 }

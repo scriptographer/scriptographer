@@ -34,7 +34,7 @@ package com.scriptographer.ai;
 import java.awt.geom.Point2D;
 
 import com.scratchdisk.script.ArgumentReader;
-import com.scratchdisk.script.ChangeNotifier;
+import com.scratchdisk.script.ChangeEmitter;
 
 /**
  * The Point object represents a point in the two dimensional space of the
@@ -45,7 +45,7 @@ import com.scratchdisk.script.ChangeNotifier;
  * 
  * @author lehni
  */
-public class Point implements ChangeNotifier {
+public class Point implements ChangeEmitter {
 
 	protected double x;
 	protected double y;

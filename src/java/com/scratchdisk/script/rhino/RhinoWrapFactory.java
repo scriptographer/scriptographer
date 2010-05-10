@@ -32,6 +32,7 @@
 package com.scratchdisk.script.rhino;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -317,6 +318,16 @@ public class RhinoWrapFactory extends WrapFactory implements Converter {
 			// classes.
 			if (!((Boolean) value).booleanValue() && !type.isPrimitive())
 				return Undefined.instance;
+		} else if (type.isArray() && value instanceof ReadOnlyList) {
+			Class componentType = type.getComponentType();
+			ReadOnlyList list = (ReadOnlyList) value;
+			int size = list.size();
+			Object array = Array.newInstance(componentType, size);
+			for (int i = 0; i < size; i++) {
+				Object entry = Context.jsToJava(list.get(i), componentType);
+				Array.set(array, i, entry);
+			}
+			return array;
 		}
 		return null;
 	}

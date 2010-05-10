@@ -39,8 +39,8 @@ import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
-import com.scratchdisk.script.ChangeListener;
-import com.scratchdisk.script.ChangeNotifier;
+import com.scratchdisk.script.ChangeReceiver;
+import com.scratchdisk.script.ChangeEmitter;
 
 /**
  * @author lehni
@@ -101,10 +101,10 @@ public class ExtendedJavaObject extends NativeJavaObject {
 			if (result != Scriptable.NOT_FOUND) {
 				// Now see if the result is a modification dispatcher for this listener.
 				// If so, create the links between the two.
-				if (javaObject instanceof ChangeListener
+				if (javaObject instanceof ChangeReceiver
 						&& result instanceof ExtendedJavaObject) {
 					ExtendedJavaObject other = (ExtendedJavaObject) result;
-					if (other.javaObject instanceof ChangeNotifier) {
+					if (other.javaObject instanceof ChangeEmitter) {
 						other.changeListener = this;
 						other.changeName = name;
 					}

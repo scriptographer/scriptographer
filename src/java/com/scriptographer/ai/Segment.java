@@ -32,7 +32,7 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.script.ArgumentReader;
-import com.scratchdisk.script.ChangeListener;
+import com.scratchdisk.script.ChangeReceiver;
 import com.scriptographer.Committable;
 import com.scriptographer.CommitManager;
 
@@ -44,7 +44,7 @@ import com.scriptographer.CommitManager;
  * 
  * @author lehni
  */
-public class Segment implements Committable, ChangeListener {
+public class Segment implements Committable, ChangeReceiver {
 	protected SegmentList segments;
 	protected int index;
 	// The internal points

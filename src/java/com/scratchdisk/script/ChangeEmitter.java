@@ -35,5 +35,5 @@ package com.scratchdisk.script;
  * @author lehni
  *
  */
-public interface ChangeListener {
+public interface ChangeEmitter {
 }

@@ -32,12 +32,12 @@
 package com.scriptographer.ai;
 
 import com.scratchdisk.script.ArgumentReader;
-import com.scratchdisk.script.ChangeNotifier;
+import com.scratchdisk.script.ChangeEmitter;
 
 /**
  * @author lehni
  */
-public class Size implements ChangeNotifier {
+public class Size implements ChangeEmitter {
 	protected double width;
 	protected double height;
 
