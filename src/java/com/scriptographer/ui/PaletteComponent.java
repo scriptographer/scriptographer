@@ -55,9 +55,10 @@ public class PaletteComponent {
 	private PaletteComponentType type;
 	private Object defaultValue;
 	private Object options[];
+	private Integer selectedIndex;
 	private boolean visible = true;
 	private boolean enabled = true;
-	private boolean full = false;
+	private boolean fullSize = false;
 	private Integer width;
 	private Integer height;
 	private Integer length;
@@ -217,19 +218,21 @@ public class PaletteComponent {
 			break;
 		case TEXT:
 			item = new TextPane(dialog);
+			// Space a bit more to the top, to compensate the descender space.
+			margin = margin.add(new Border(1, 0, 0, 0));
 			break;
 		case RULER:
 			Frame frame = new Frame(dialog);
 			frame.setStyle(FrameStyle.SUNKEN);
 			// Margin needs to be set before changing size...
-			// TODO: Fix this?
+			// TODO: Fix this in UI package?
 			int top = label != null ? 2 : 4, bottom = 4;
 			frame.setMargin(top, 0, bottom, 0);
 			// Make sure we're not setting default margin later on.
 			margin = null;
 			// Margin is included inside size, not added. This is different
 			// to how things works with CSS...
-			// TODO: Correct it?
+			// TODO: Fix this in UI package?
 			frame.setHeight(2 + top + bottom);
 			item = frame;
 			break;
@@ -253,6 +256,7 @@ public class PaletteComponent {
 			item = new PopupList(dialog) {
 				protected void onChange() {
 					super.onChange();
+					selectedIndex = this.getSelectedEntry().getIndex();
 					PaletteComponent.this.onChange(true);
 				}
 			};
@@ -360,7 +364,7 @@ public class PaletteComponent {
 				content.put(column + ", " + row + ", right, top", labelItem);
 			}
 		}
-		String justification = isRuler || full 
+		String justification = isRuler || fullSize 
 				? "full, center" : "left, center";
 		content.put(isRuler
 				? column + ", " + row  + ", " + (column + 1) + ", " + row + ", "
@@ -380,6 +384,7 @@ public class PaletteComponent {
 		} else {
 			switch (type) {
 			case STRING:
+			case TEXT:
 				return ((TextValueItem) item).getText();
 			case BUTTON:
 				return ((Button) item).getText();
@@ -390,14 +395,8 @@ public class PaletteComponent {
 				return new Boolean(((ToggleItem) item).isChecked());
 			case LIST:
 				ListEntry selected = ((PopupList) item).getSelectedEntry();
-				if (selected != null) {
-					String text = selected.getText();
-					// Find original option.
-					for (Object option : options)
-						if (option != null && text.equals(option.toString()))
-							return option;
-					return null;
-				}
+				if (selected != null)
+					return options[selected.getIndex()];
 				break;
 			case COLOR:
 				return ((ColorButton) item).getColor();
@@ -433,17 +432,15 @@ public class PaletteComponent {
 			case LIST:
 				PopupList list = (PopupList) item;
 				ListEntry selected = null;
+				int index = selectedIndex != null ? selectedIndex : 0;
 				for (int i = 0, l = list.size(); i < l && selected == null; i++) {
 					Object option = options[i];
-					ListEntry entry = list.get(i);
 					if (ConversionUtils.equals(value, option))
-						selected = entry;
+						index = i;
 				}
-				if (selected == null)
-					selected = list.getFirst();
-				if (selected != null)
-					selected.setSelected(true);
-				break;
+				setSelectedIndex(index);
+				// No need to call onChange, as setSelectionIndex already does so.
+				return;
 			case COLOR:
 				Color color = ScriptEngine.convertToJava(value, Color.class);
 				if (color == null)
@@ -465,7 +462,7 @@ public class PaletteComponent {
 				item.getDialog().doLayout();
 			}
 			// Update palette's value object too
-			this.onChange(false);
+			onChange(false);
 		}
 	}
 
@@ -666,14 +663,15 @@ public class PaletteComponent {
 		if (type == PaletteComponentType.LIST) {
 			this.options = options;
 			if (item != null) {
-				Object current = getValue(), value = null;
+				Object current = getValue();
 				PopupList list = (PopupList) item;
 				list.removeAll();
 				if (options != null && options.length > 0) {
+					int index = selectedIndex != null ? selectedIndex : 0;
 					for (int i = 0; i < options.length; i++) {
 						Object option = options[i];
 						if (option.equals(current))
-							value = option;
+							index = i;
 						ListEntry entry = null;
 						if (option instanceof ListEntry) {
 							entry = (ListEntry) option;
@@ -683,21 +681,38 @@ public class PaletteComponent {
 							entry.setText(option.toString());
 						}
 					}
-					if (value == null)
-						value = options[0];
-					setValue(value);
+					setSelectedIndex(index);
 				}
 			}
 		}
 	}
 
-	public boolean getFull() {
-		return full;
+	public Integer getSelectedIndex() {
+		return selectedIndex;
 	}
 
-	public void setFull(boolean full) {
-		this.full = full;
-		if (full) {
+	public void setSelectedIndex(Integer index) {
+		if (type == PaletteComponentType.LIST && index != null) {
+			if (item != null) {
+				PopupList list = (PopupList) item;
+				if (index < 0)
+					index = 0;
+				else if (index >= list.size())
+					index = list.size() - 1;
+				list.setSelectedEntry(list.get(index));
+				onChange(false);
+			}
+			selectedIndex = index;
+		}
+	}
+
+	public boolean getFullSize() {
+		return fullSize;
+	}
+
+	public void setFullSize(boolean fit) {
+		this.fullSize = fit;
+		if (fit) {
 			width = null;
 			length = null;
 			columns = null;
@@ -711,7 +726,7 @@ public class PaletteComponent {
 	public void setWidth(Integer width) {
 		this.width = width;
 		// Clear columns and length when setting width and vice versa.
-		full = false;
+		fullSize = false;
 		columns = null;
 		length = null;
 		updateSize();
@@ -738,7 +753,7 @@ public class PaletteComponent {
 			this.multiline = false;
 			this.length = length;
 			// Clear width and columns when setting length and vice versa.
-			full = false;
+			fullSize = false;
 			width = null;
 			columns = null;
 			updateSize();
@@ -793,7 +808,7 @@ public class PaletteComponent {
 			this.multiline = true;
 			this.columns = columns;
 			// Clear width and length when setting columns and vice versa.
-			full = false;
+			fullSize = false;
 			width = null;
 			length = null;
 			updateSize();
