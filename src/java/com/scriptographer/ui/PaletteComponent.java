@@ -661,9 +661,11 @@ public class PaletteComponent {
 
 	public void setOptions(Object[] options) {
 		if (type == PaletteComponentType.LIST) {
+			// Retrieve current value before setting new options,
+			// as options is used inside getValue().
+			Object current = getValue();
 			this.options = options;
 			if (item != null) {
-				Object current = getValue();
 				PopupList list = (PopupList) item;
 				list.removeAll();
 				if (options != null && options.length > 0) {
