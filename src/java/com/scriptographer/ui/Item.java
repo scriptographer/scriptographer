@@ -484,6 +484,9 @@ public abstract class Item extends Component {
 						// Small Spin Edits on Mac need 2px more...
 						size.height += isSmall() && this instanceof SpinEdit
 							? 8 : 6;
+					} else if (this instanceof TextPane) {
+						size.width += 4;
+						size.height += 4;
 					}
 				}
 			}
