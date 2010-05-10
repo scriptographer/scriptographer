@@ -33,7 +33,7 @@ Function.inject(new function() {
 	function timer(that, periodic, delay, bind, args) {
 		if (delay === undefined)
 			return that.apply(bind, args ? args : []);
-		var fn = that.bind(bind, args);
+		var fn = that.wrap(bind, args);
 		var timer = new Timer(delay, periodic);
 		fn.clear = function() {
 			timer.dispose();

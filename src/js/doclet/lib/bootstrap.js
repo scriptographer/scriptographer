@@ -1,4 +1,5 @@
 new function() { 
+
 	function has(obj, name) {
 		return obj.hasOwnProperty(name);
 	}
@@ -37,10 +38,10 @@ new function() {
 					if (prev && /\bthis\.base\b/.test(val)) {
 						var fromBase = base && base[name] == prev;
 						res = (function() {
-							var tmp = this.base;
+							var tmp = describe(this, 'base');
 							define(this, 'base', { value: fromBase ? base[name] : prev, configurable: true });
 							try { return val.apply(this, arguments); }
-							finally { this.base = tmp; }
+							finally { tmp ? define(this, 'base', tmp) : delete this.base; }
 						}).pretend(val);
 					}
 					if ((src.beans || src._beans) && (bean = name.match(/^(get|is)(([A-Z])(.*))$/)))
@@ -298,7 +299,9 @@ Enumerable = {
 	},
 
 	toArray: function() {
-		return this.map();
+		return this.map(function(value) {
+			return value;
+		});
 	}
 };
 
@@ -310,14 +313,13 @@ Hash = Base.extend(Enumerable, {
 			for (var i = 0, l = arguments.length; i < l; i += 2)
 				this[arguments[i]] = arguments[i + 1];
 		} else {
-			this[arguments.length == 1 ? 'append' : 'merge'].apply(this, arguments);
+			this.append.apply(this, arguments);
 		}
 		return this;
 	},
 
 	each: function(iter, bind) {
-		if (!bind) bind = this;
-		iter = Base.iterator(iter);
+		var bind = bind || this, iter = Base.iterator(iter);
 		try {
 			for (var i in this)
 				if (this.hasOwnProperty(i))
@@ -426,7 +428,7 @@ Array.inject(Enumerable, {
 	},
 
 	toArray: function() {
-		return this.concat([]);
+		return Array.prototype.slice.call(this);
 	},
 
 	clone: function() {
@@ -524,10 +526,9 @@ Array.inject(Enumerable, {
 });
 
 Array.inject(new function() {
-	var proto = Array.prototype;
-
-	var fields = ['push','pop','shift','unshift','sort','reverse','join','slice','splice','forEach',
-		'indexOf','lastIndexOf','filter','map','every','some','reduce','concat'].each(function(name) {
+	var proto = Array.prototype, fields = ['push','pop','shift','unshift','sort',
+		'reverse','join','slice','splice','forEach','indexOf','lastIndexOf',
+		'filter','map','every','some','reduce','concat'].each(function(name) {
 		this[name] = proto[name];
 	}, { generics: true, preserve: true });
 
@@ -547,19 +548,18 @@ Array.inject(new function() {
 
 	return {
 		statics: {
-			create: function(list) {
-				if (!Base.check(list)) return [];
-				if (Base.type(list) == 'array') return list;
-				if (list.toArray)
-					return list.toArray();
-				if (list.length != null) {
-					var res = [];
-					for (var i = 0, l = list.length; i < l; i++)
-						res[i] = list[i];
-				} else {
-					res = [list];
-				}
-				return res;
+			create: function(obj) {
+				if (obj == null)
+					return [];
+				if (obj.toArray)
+					return obj.toArray();
+				if (typeof obj.length == 'number')
+					return Array.prototype.slice.call(obj);
+				return [obj];
+			},
+
+			convert: function(obj) {
+				return Base.type(obj) == 'array' ? obj : Array.create(obj);
 			},
 
 			extend: function(src) {
@@ -574,24 +574,15 @@ Array.inject(new function() {
 $A = Array.create;
 
 Function.inject(new function() {
+
 	return {
 		generics: true,
+		preserve: true,
 
-		bind: function(bind, args) {
+		wrap: function(bind, args) {
 			var that = this;
 			return function() {
 				return that.apply(bind, args || arguments);
-			}
-		},
-
-		attempt: function(bind, args) {
-			var that = this;
-			return function() {
-				try {
-					return that.apply(bind, args || arguments);
-				} catch (e) {
-					return e;
-				}
 			}
 		}
 	}

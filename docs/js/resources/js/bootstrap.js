@@ -1,13 +1,12 @@
-if (!this.__proto__) {
-	var fix = [Function, Number, Boolean, String, Array, Date, RegExp];
-	for (var i in fix)
-		fix[i].prototype.__proto__ = fix[i].prototype;
-}
-
 new function() { 
+	var fix = !this.__proto__ && [Function, Number, Boolean, String, Array, Date, RegExp];
+	if (fix)
+		for (var i in fix)
+			fix[i].prototype.__proto__ = fix[i].prototype;
+
 	var has = {}.hasOwnProperty
 		? function(obj, name) {
-			return obj.hasOwnProperty(name);
+			return (!fix || name != '__proto__') && obj.hasOwnProperty(name);
 		}
 		: function(obj, name) {
 			return obj[name] !== (obj.__proto__ || Object.prototype)[name];
@@ -29,7 +28,7 @@ new function() {
 							var tmp = this.base;
 							this.base = fromBase ? base[name] : prev;
 							try { return val.apply(this, arguments); }
-							finally { this.base = tmp; }
+							finally { tmp ? this.base = tmp : delete this.base; }
 						}).pretend(val);
 					}
 				}
@@ -38,7 +37,7 @@ new function() {
 		}
 		if (src) {
 			for (var name in src)
-				if (has(src, name) && !/^(statics|generics|preserve|prototype|constructor|toString|valueOf)$/.test(name))
+				if (has(src, name) && !/^(statics|generics|preserve|prototype|constructor|__proto__|toString|valueOf)$/.test(name))
 					field(name, true, generics);
 			field('toString');
 			field('valueOf');
@@ -47,7 +46,7 @@ new function() {
 
 	function extend(obj) {
 		function ctor(dont) {
-			this.__proto__ = obj;
+			if (fix) this.__proto__ = obj;
 			if (this.initialize && dont !== ctor.dont)
 				return this.initialize.apply(this, arguments);
 		}
@@ -277,7 +276,9 @@ Enumerable = {
 	},
 
 	toArray: function() {
-		return this.map();
+		return this.map(function(value) {
+			return value;
+		});
 	}
 };
 
@@ -289,24 +290,17 @@ Hash = Base.extend(Enumerable, {
 			for (var i = 0, l = arguments.length; i < l; i += 2)
 				this[arguments[i]] = arguments[i + 1];
 		} else {
-			this[arguments.length == 1 ? 'append' : 'merge'].apply(this, arguments);
+			this.append.apply(this, arguments);
 		}
 		return this;
 	},
 
 	each: function(iter, bind) {
-		if (!bind) bind = this;
-		iter = Base.iterator(iter);
+		var bind = bind || this, iter = Base.iterator(iter), has = Base.has;
 		try {
-			if (this.hasOwnProperty) {
-				for (var i in this)
-					if (this.hasOwnProperty(i))
-						iter.call(bind, this[i], i, this);
-			} else {
-				for (var i in this)
-				 	if (this[i] !== (this.__proto__ || Object.prototype)[i])
-						iter.call(bind, this[i], i, this);
-			}
+			for (var i in this)
+				if (has(this, i))
+					iter.call(bind, this[i], i, this);
 		} catch (e) {
 			if (e !== Base.stop) throw e;
 		}
@@ -473,8 +467,7 @@ Array.inject({
 	},
 
 	toArray: function() {
-		var res = this.concat([]);
-		return res[0] == this ? Enumerable.toArray.call(this) : res;
+		return Array.prototype.slice.call(this);
 	},
 
 	clone: function() {
@@ -572,10 +565,9 @@ Array.inject({
 });
 
 Array.inject(new function() {
-	var proto = Array.prototype;
-
-	var fields = ['push','pop','shift','unshift','sort','reverse','join','slice','splice','forEach',
-		'indexOf','lastIndexOf','filter','map','every','some','reduce','concat'].each(function(name) {
+	var proto = Array.prototype, fields = ['push','pop','shift','unshift','sort',
+		'reverse','join','slice','splice','forEach','indexOf','lastIndexOf',
+		'filter','map','every','some','reduce','concat'].each(function(name) {
 		this[name] = proto[name];
 	}, { generics: true, preserve: true });
 
@@ -601,19 +593,18 @@ Array.inject(new function() {
 
 	return {
 		statics: {
-			create: function(list) {
-				if (!Base.check(list)) return [];
-				if (Base.type(list) == 'array') return list;
-				if (list.toArray)
-					return list.toArray();
-				if (list.length != null) {
-					var res = [];
-					for (var i = 0, l = list.length; i < l; i++)
-						res[i] = list[i];
-				} else {
-					res = [list];
-				}
-				return res;
+			create: function(obj) {
+				if (obj == null)
+					return [];
+				if (obj.toArray)
+					return obj.toArray();
+				if (typeof obj.length == 'number')
+					return Array.prototype.slice.call(obj);
+				return [obj];
+			},
+
+			convert: function(obj) {
+				return Base.type(obj) == 'array' ? obj : Array.create(obj);
 			},
 
 			extend: function(src) {
@@ -628,44 +619,41 @@ Array.inject(new function() {
 $A = Array.create;
 
 Function.inject(new function() {
-	function timer(that, set, delay, bind, args) {
-		if (delay === undefined)
-			return that.apply(bind, args ? args : []);
-		var func = that.bind(bind, args);
-		var timer = set(func, delay);
-		func.clear = function() {
-			clearTimeout(timer);
-			clearInterval(timer);
+
+	function timer(set) {
+		return function(delay, bind, args) {
+			var func = this.wrap(bind, args);
+			if (delay === undefined)
+				return func();
+			var timer = set(func, delay);
+			func.clear = function() {
+				clearTimeout(timer);
+				clearInterval(timer);
+			};
+			return func;
 		};
-		return func;
 	}
 
 	return {
 		generics: true,
+		preserve: true,
 
-		delay: function(delay, bind, args) {
-			return timer(this, setTimeout, delay, bind, args);
-		},
+		delay: timer(setTimeout),
+		periodic: timer(setInterval),
 
-		periodic: function(delay, bind, args) {
-			return timer(this, setInterval, delay, bind, args);
-		},
-
-		bind: function(bind, args) {
-			var that = this;
+		bind: function(bind) {
+			var that = this, slice = Array.prototype.slice,
+				args = arguments.length > 1 ? slice.call(arguments, 1) : null;
 			return function() {
-				return that.apply(bind, args || arguments);
+				return that.apply(bind, args ? arguments.length > 0
+					? args.concat(slice.call(arguments)) : args : arguments);
 			}
 		},
 
-		attempt: function(bind, args) {
+		wrap: function(bind, args) {
 			var that = this;
 			return function() {
-				try {
-					return that.apply(bind, args || arguments);
-				} catch (e) {
-					return e;
-				}
+				return that.apply(bind, args || arguments);
 			}
 		}
 	}
@@ -947,8 +935,7 @@ Browser = new function() {
 		},
 
 		trident: function() {
-			var ver/*@cc_on=@_jscript_version@*/;
-			return !ver ? false : ver >= 5 && ver < 5.5 ? 5 : ver == 5.5 ? 5.5 : ver * 10 - 50;
+			return !window.ActiveXObject ? false : getVersion('MSIE ', 1);
 		},
 
 		webkit: function() {
@@ -1361,11 +1348,21 @@ DomNode.inject(new function() {
 				var els = el.array;
 				if (els.length > 0)
 					this.$.parentNode.replaceChild(els[0].$, this.$);
-				for (var i = els.length - 1; i >= 1; i--)
+				for (var i = els.length - 1; i > 0; i--)
 					els[i].insertAfter(els[0]);
 				return el.result;
 			}
 			return null;
+		},
+
+		wrap: function() {
+			var el = this.injectBefore.apply(this, arguments), last;
+			do {
+				last = el;
+				el = el.getFirst();
+			} while(el);
+			last.appendChild(this);
+			return last;
 		},
 
 		clone: function(contents) {
@@ -1597,16 +1594,6 @@ DomElement.inject(new function() {
 
 		hasChildren: function(match) {
 			return !!this.getChildren(match).length;
-		},
-
-		wrap: function() {
-			var el = this.injectBefore.apply(this, arguments), last;
-			do {
-				last = el;
-				el = el.getFirst();
-			} while(el);
-			last.appendChild(this);
-			return last;
 		},
 
 		toString: function() {
@@ -2591,14 +2578,20 @@ DomElement.pseudos = new function() {
 	return {
 		'nth-child': {
 			parser: function(argument) {
-				var match = argument ? argument.match(/^([+-]?\d*)?([devon]+)?([+-]?\d*)?$/) : [null, 1, 'n', 0];
+				var match = argument ? argument.match(/^([+-]?\d*)?([a-z]+)?([+-]?\d*)?$/) : [null, 1, 'n', 0];
 				if (!match) return null;
-				var i = parseInt(match[1]);
-				var a = isNaN(i) ? 1 : i;
-				var special = match[2];
-				var b = (parseInt(match[3]) || 0) - 1;
-				while (b < 1) b += a;
-				while (b >= a) b -= a;
+				var i = parseInt(match[1]),
+					a = isNaN(i) ? 1 : i,
+					special = match[2],
+					b = parseInt(match[3]) || 0;
+				if (a != 0) {
+					b--;
+					while (b < 1) b += a;
+					while (b >= a) b -= a;
+				} else {
+					a = b;
+					special = 'index';
+				}
 				switch (special) {
 					case 'n': return { a: a, b: b, special: 'n' };
 					case 'odd': return { a: 2, b: 0, special: 'n' };
@@ -3251,11 +3244,11 @@ Request = Base.extend(Chain, Callback, new function() {
 				this.setHeader('Accept', 'application/json');
 				this.setHeader('X-Request', 'JSON');
 			}
-			if (this.options.urlEncoded && this.options.method == 'post') {
+			if (this.options.urlEncoded && /^(post|put)$/.test(this.options.method)) {
 				this.setHeader('Content-Type', 'application/x-www-form-urlencoded' +
 					(this.options.encoding ? '; charset=' + this.options.encoding : ''));
 			}
-			this.headers.merge(this.options.headers);
+			this.headers.append(this.options.headers);
 		},
 
 		onStateChange: function() {
@@ -3377,7 +3370,7 @@ Request = Base.extend(Chain, Callback, new function() {
 						this.cancel();
 						break;
 					case 'chain':
-						this.chain(this.send.bind(this, arguments));
+						this.chain(this.send.wrap(this, arguments));
 					default:
 						return this;
 				}
@@ -3531,7 +3524,7 @@ Asset = new function() {
 			}, getProperties(props)));
 			if (Browser.WEBKIT && Browser.VERSION < 420)
 				new Request({ url: src, method: 'get' }).addEvent('success', function() {
-					script.fireEvent.delay(1, script, ['load']);
+					script.fireEvent('load', [], 1);
 				}).send();
 			return script;
 		},
@@ -3555,7 +3548,7 @@ Asset = new function() {
 				});
 			});
 			if (image.width && image.height)
-				element.fireEvent.delay(1, element, ['load']);
+				element.fireEvent('load', [], 1);
 			return element.setProperties(getProperties(props));
 		},
 
@@ -3786,7 +3779,7 @@ Fx.CSS = new function() {
 
 	return {
 		start: function(element, property, values) {
-			values = Array.create(values);
+			values = Array.convert(values);
 			if (!Base.check(values[1]))
 				values = [ element.getStyle(property), values[0] ];
 			var parsed = values.map(Fx.CSS.set);
@@ -3794,7 +3787,7 @@ Fx.CSS = new function() {
 		},
 
 		set: function(value) {
-			return Array.create(value).map(function(val) {
+			return Array.convert(value).map(function(val) {
 				val = val + '';
 				var res = parsers.find(function(parser, key) {
 					var value = parser.match(val);
